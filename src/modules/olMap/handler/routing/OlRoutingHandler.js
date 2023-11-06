@@ -120,7 +120,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 		this._map.addInteraction(this._selectInteraction);
 
 		if (!this._environmentService.isTouch()) {
-			this._modifyInteraction = this._createModify();
+			this._modifyInteraction = this._createModify(this._routeLayerCopy);
 			this._map.addInteraction(this._modifyInteraction);
 		}
 
@@ -282,13 +282,17 @@ export class OlRoutingHandler extends OlLayerHandler {
 		return select;
 	}
 
-	_createModify() {
-		const modify = new Modify({
+	_getModifyOptions(routeLayerCopy) {
+		return {
 			style: getModifyInteractionStyle(),
-			source: this._routeLayerCopy.getSource(),
+			source: routeLayerCopy.getSource(),
 			pixelTolerance: 5,
 			deleteCondition: () => false
-		});
+		};
+	}
+
+	_createModify(routeLayerCopy) {
+		const modify = new Modify(this._getModifyOptions(routeLayerCopy));
 
 		modify.on('modifyend', (evt) => {
 			if (evt.mapBrowserEvent.type === 'pointerup') {

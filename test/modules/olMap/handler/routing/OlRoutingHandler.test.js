@@ -27,7 +27,7 @@ import Collection from 'ol/Collection.js';
 import { TranslateEvent } from 'ol/interaction/Translate';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
-import { getRoutingStyleFunction } from '../../../../../src/modules/olMap/handler/routing/styleUtils';
+import { getModifyInteractionStyle, getRoutingStyleFunction } from '../../../../../src/modules/olMap/handler/routing/styleUtils';
 import { HelpTooltip } from '../../../../../src/modules/olMap/tooltip/HelpTooltip';
 import { SelectEvent } from 'ol/interaction/Select';
 import { CoordinateProposalType, RoutingStatusCodes } from '../../../../../src/domain/routing';
@@ -134,10 +134,11 @@ describe('OlRoutingHandler', () => {
 		const store = setup(state);
 		const map = setupMap();
 		const instanceUnderTest = new OlRoutingHandler();
-		const getSelectOptionsSpy = spyOn(instanceUnderTest, '_getSelectOptions');
+		const getSelectOptionsSpy = spyOn(instanceUnderTest, '_getSelectOptions').and.callThrough();
+		const getModifyOptionsSpy = spyOn(instanceUnderTest, '_getModifyOptions').and.callThrough();
 		const layer = instanceUnderTest.activate(map);
 		await TestUtils.timeout();
-		return { map, instanceUnderTest, store, layer, getSelectOptionsSpy };
+		return { map, instanceUnderTest, store, layer, getSelectOptionsSpy, getModifyOptionsSpy };
 	};
 
 	it('instantiates the handler', () => {
@@ -480,9 +481,25 @@ describe('OlRoutingHandler', () => {
 		});
 
 		describe('modify', () => {
+			it('is properly configured', async () => {
+				setup();
+				const instanceUnderTest = new OlRoutingHandler();
+				const routeLayerCopyMock = {
+					getSource: () => {}
+				};
+
+				expect(instanceUnderTest._getModifyOptions(routeLayerCopyMock)).toEqual({
+					style: getModifyInteractionStyle(),
+					source: routeLayerCopyMock.getSource(),
+					pixelTolerance: 5,
+					deleteCondition: jasmine.any(Function)
+				});
+				expect(instanceUnderTest._getModifyOptions(routeLayerCopyMock).deleteCondition()).toBeFalse();
+			});
+
 			describe('"modifyend" event', () => {
 				it('calls the correct methods', async () => {
-					const { instanceUnderTest, map, layer } = await newTestInstance();
+					const { instanceUnderTest, map, layer, getModifyOptionsSpy } = await newTestInstance();
 					const requestRouteFromInteractionLayerSpy = spyOn(instanceUnderTest, '_requestRouteFromInteractionLayer');
 					const incrementIndexSpy = spyOn(instanceUnderTest, '_incrementIndex');
 					const addIntermediateInteractionFeatureSpy = spyOn(instanceUnderTest, '_addIntermediateInteractionFeature');
@@ -524,6 +541,7 @@ describe('OlRoutingHandler', () => {
 					expect(incrementIndexSpy).toHaveBeenCalledOnceWith(43);
 					expect(addIntermediateInteractionFeatureSpy).toHaveBeenCalledWith(mockCoordinate, 43);
 					expect(requestRouteFromInteractionLayerSpy).toHaveBeenCalledTimes(1);
+					expect(getModifyOptionsSpy).toHaveBeenCalledWith(instanceUnderTest._routeLayerCopy);
 				});
 
 				it("does nothing when it's not the correct pointer event", async () => {
