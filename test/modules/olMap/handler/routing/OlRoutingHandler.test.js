@@ -459,6 +459,24 @@ describe('OlRoutingHandler', () => {
 				expect(getSelectOptionsSpy).toHaveBeenCalledWith(instanceUnderTest._interactionLayer, instanceUnderTest._alternativeRouteLayer);
 				expect(helpTooltipDeactivateSpy).toHaveBeenCalled();
 			});
+
+			it('does NOT switch to an alternative route when category is not available', async () => {
+				const { instanceUnderTest, map, layer, getSelectOptionsSpy } = await newTestInstance();
+				spyOn(instanceUnderTest, '_switchToAlternativeRoute');
+
+				map.addLayer(layer);
+				const feature = new Feature({
+					geometry: new Point([0, 0])
+				});
+				const mockRoutingResponse = { route: 'foo' };
+				instanceUnderTest._currentRoutingResponse = mockRoutingResponse;
+				const helpTooltipDeactivateSpy = spyOn(instanceUnderTest._helpTooltip, 'deactivate');
+
+				instanceUnderTest._selectInteraction.dispatchEvent(new SelectEvent('select', [feature], [], new Event(MapBrowserEventType.POINTERDOWN)));
+
+				expect(getSelectOptionsSpy).toHaveBeenCalledWith(instanceUnderTest._interactionLayer, instanceUnderTest._alternativeRouteLayer);
+				expect(helpTooltipDeactivateSpy).toHaveBeenCalled();
+			});
 		});
 
 		describe('modify', () => {

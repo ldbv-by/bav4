@@ -269,17 +269,15 @@ export class OlRoutingHandler extends OlLayerHandler {
 	_createSelect(interactionLayer, alternativeRouteLayer) {
 		const select = new Select(this._getSelectOptions(interactionLayer, alternativeRouteLayer));
 		select.on('select', (evt) => {
-			if (evt.selected[0]) {
-				const feature = evt.selected[0];
-				const category = feature.get(ROUTING_CATEGORY);
-				if (category) {
-					// change to alternative route
-					this._catId = category.id;
-					this._switchToAlternativeRoute(this._currentRoutingResponse);
-				}
-				this._helpTooltip.deactivate();
-				select.getFeatures().clear();
+			const feature = evt.selected[0];
+			const category = feature.get(ROUTING_CATEGORY);
+			if (category) {
+				// change to alternative route
+				this._catId = category.id;
+				this._switchToAlternativeRoute(this._currentRoutingResponse);
 			}
+			this._helpTooltip.deactivate();
+			select.getFeatures().clear();
 		});
 		return select;
 	}
