@@ -56,6 +56,7 @@ const droppableClass = 'droppable';
 export class LayerTree extends MvuElement {
 	#currentGeoResourceId;
 	#currentUId;
+	#overTarget;
 
 	constructor() {
 		super({
@@ -94,8 +95,10 @@ export class LayerTree extends MvuElement {
 		// eslint-disable-next-line no-unused-vars
 		this._saveCatalog = (catalogId, catalog) => {};
 		this._addLayerGroup = () => {};
+		this._resetCatalog = () => {};
 
 		this.#currentGeoResourceId = null;
+		this.#overTarget = false;
 	}
 
 	update(type, data, model) {
@@ -147,7 +150,14 @@ export class LayerTree extends MvuElement {
 		};
 
 		const onDragEnd = (event) => {
+			console.log('🚀 ~ LayerTree ~ onDragEnd ~ event:', event);
 			event.target.classList.remove('isdragged');
+
+			console.log('🚀 ~ LayerTree ~ onDragEnd ~ this.#overTarget:', this.#overTarget);
+
+			if (!this.#overTarget) {
+				this._resetCatalog();
+			}
 		};
 
 		const onDragOver = (event, currentCatalogEntry) => {
@@ -166,15 +176,16 @@ export class LayerTree extends MvuElement {
 			const matchedElementUid = types.find((element) => /uid(.+)/i.test(element));
 			const uidFromDrag = matchedElementUid ? matchedElementUid.replace(/uid/, '') : null;
 			if (uidFromDrag) {
+				event.preventDefault();
 				if (uidFromDrag === currentCatalogEntry.uid) {
-					event.preventDefault();
 					return;
 				}
 				if (this.#currentUId === currentCatalogEntry.uid) {
-					event.preventDefault();
 					return;
 				}
 
+				this.#overTarget = true;
+				console.log('🚀 ~ LayerTree ~ onDragOver ~ this.#overTarget:', this.#overTarget);
 				this.#currentUId = currentCatalogEntry.uid;
 				this._moveElement(currentCatalogEntry.uid, uidFromDrag);
 			}
@@ -185,11 +196,19 @@ export class LayerTree extends MvuElement {
 
 		const onDrop = () => {
 			this.#currentGeoResourceId = null;
+			console.log('🚀 ~ LayerTree ~ onDrop ~ this.#overTarget:', this.#overTarget);
 
-			this._addGeoResourcePermanently();
+			if (this.#overTarget) {
+				this.#overTarget = false;
+				this._addGeoResourcePermanently();
+			} else {
+				this._resetCatalog();
+			}
 		};
 
 		const onDragLeave = (event) => {
+			this.#overTarget = false;
+			console.log('🚀 ~ LayerTree ~ onDragLeave ~ this.#overTarget:', this.#overTarget);
 			event.target.classList.add('isdragged');
 			event.target.classList.remove('drag-over');
 			event.preventDefault();
@@ -373,6 +392,17 @@ export class LayerTree extends MvuElement {
 
 	get dummy() {
 		return this.getModel().dummy;
+	}
+
+	/**
+	 * @property {function} addLayerGroup - Callback function
+	 */
+	set resetCatalog(callback) {
+		this._resetCatalog = callback;
+	}
+
+	get resetCatalog() {
+		return this._resetCatalog;
 	}
 
 	/**

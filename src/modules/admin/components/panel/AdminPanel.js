@@ -453,6 +453,12 @@ export class AdminPanel extends MvuElement {
 			console.log('🚀 ~ file: AdminPanel.js:474 ~ AdminPanel ~ saveCatalog ~ xxx:', xxx);
 		};
 
+		const resetCatalog = async () => {
+			console.log('🚀 ~ AdminPanel ~ resetCatalog ');
+			const catalogWithResourceData = this._reduceData(this.#catalog, this._enrichWithGeoResource, this.#geoResources);
+			this.signal(Update_CatalogWithResourceData, catalogWithResourceData);
+		};
+
 		if (this.#currentTopicId) {
 			return html`
 				<style>
@@ -473,6 +479,7 @@ export class AdminPanel extends MvuElement {
 							.removeEntry="${removeEntry}"
 							.showChildren="${showChildren}"
 							.addGeoResourcePermanently="${addGeoResourcePermanently}"
+							.resetCatalog="${resetCatalog}"
 							.addLayerGroup="${addLayerGroup}"
 							.copyBranch="${copyBranch}"
 							.saveCatalog="${saveCatalog}"
