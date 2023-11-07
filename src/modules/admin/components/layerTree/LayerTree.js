@@ -166,6 +166,8 @@ export class LayerTree extends MvuElement {
 					event.preventDefault();
 					return;
 				}
+
+				this.#overTarget = true;
 				this.#currentGeoResourceId = newGeoResourceIdFromList;
 				insertDraggedGeoResource(currentCatalogEntry.uid, newGeoResourceIdFromList);
 			}
