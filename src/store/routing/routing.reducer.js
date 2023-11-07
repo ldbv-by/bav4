@@ -1,4 +1,5 @@
 import { RoutingStatusCodes } from '../../domain/routing';
+import { EventLike, equals } from '../../utils/storeUtils';
 
 export const ROUTING_CATEGORY_CHANGED = 'routing/categoryChanged';
 export const ROUTING_STATUS_CHANGED = 'routing/statusChanged';
@@ -6,10 +7,12 @@ export const ROUTING_ROUTE_CHANGED = 'routing/routeChanged';
 export const ROUTING_STATS_CHANGED = 'routing/statsChanged';
 export const ROUTING_ACTIVE_CHANGED = 'routing/activeChanged';
 export const ROUTING_WAYPOINTS_CHANGED = 'routing/waypointsChanged';
+export const ROUTING_WAYPOINT_DELETED = 'routing/waypointDeleted';
 export const ROUTING_RESET = 'routing/reset';
 export const ROUTING_START_SET = 'routing/startSet';
-export const ROUTING_START_REMOVED = 'routing/startRemoved';
 export const ROUTING_DESTINATION_SET = 'routing/destinationSet';
+export const ROUTING_PROPOSAL_SET = 'routing/proposalSet';
+export const ROUTING_INTERMEDIATE_SET = 'routing/intermediateSet';
 export const ROUTING_HIGHLIGHT_SEGMENTS_SET = 'routing/highlightSet';
 export const ROUTING_HIGHLIGHT_SEGMENTS_REMOVED = 'routing/highlightRemoved';
 
@@ -31,7 +34,7 @@ export const initialState = {
 	 */
 	route: null,
 	/**
-	 * @property {Coordinate[]}
+	 * @property {domain/coordinateTypeDef~Coordinate[]}
 	 */
 	waypoints: [],
 	/**
@@ -41,7 +44,15 @@ export const initialState = {
 	/**
 	 * @property {boolean}
 	 */
-	active: false
+	active: false,
+	/**
+	 *@property {EventLike<store/routing/routing_action~CoordinateProposal>}
+	 */
+	proposal: new EventLike(),
+	/**
+	 *@property {EventLike<domain/coordinateTypeDef~Coordinate>}
+	 */
+	intermediate: new EventLike()
 };
 
 export const routingReducer = (state = initialState, action) => {
@@ -79,6 +90,28 @@ export const routingReducer = (state = initialState, action) => {
 				status: RoutingStatusCodes.Ok
 			};
 		}
+		case ROUTING_WAYPOINT_DELETED: {
+			const index = state.waypoints.findIndex((c) => equals(c, payload));
+			const getNewStatus = () => {
+				if (state.waypoints.length === 1 && index === 0) {
+					return RoutingStatusCodes.Start_Destination_Missing;
+				} else if (state.waypoints.length === 2) {
+					switch (index) {
+						case 0:
+							return RoutingStatusCodes.Start_Missing;
+						case 1:
+							return RoutingStatusCodes.Destination_Missing;
+					}
+				}
+				return state.status;
+			};
+
+			return {
+				...state,
+				waypoints: state.waypoints.filter((c) => !equals(c, payload)),
+				status: getNewStatus()
+			};
+		}
 		case ROUTING_RESET: {
 			return {
 				...state,
@@ -99,6 +132,18 @@ export const routingReducer = (state = initialState, action) => {
 				...state,
 				waypoints: [[...payload]],
 				status: RoutingStatusCodes.Start_Missing
+			};
+		}
+		case ROUTING_PROPOSAL_SET: {
+			return {
+				...state,
+				proposal: payload
+			};
+		}
+		case ROUTING_INTERMEDIATE_SET: {
+			return {
+				...state,
+				intermediate: payload
 			};
 		}
 		case ROUTING_HIGHLIGHT_SEGMENTS_SET: {

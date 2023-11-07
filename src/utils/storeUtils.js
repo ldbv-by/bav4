@@ -76,7 +76,7 @@ export const equals = (value0, value1) => {
  * Wrapper for payloads of actions which dispatch event-like changes of state.
  */
 export class EventLike {
-	constructor(payload) {
+	constructor(payload = null) {
 		this._payload = payload;
 		this._id = createUniqueId();
 	}
