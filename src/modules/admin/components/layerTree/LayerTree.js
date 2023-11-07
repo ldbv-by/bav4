@@ -137,6 +137,9 @@ export class LayerTree extends MvuElement {
 		};
 
 		const onDragStart = (event, draggedEntry) => {
+			if (draggedEntry.showChildren) {
+				this._showChildren(draggedEntry.uid);
+			}
 			const draggedEntryUid = draggedEntry.uid;
 			event.dataTransfer.clearData();
 			event.dataTransfer.setData('UID' + draggedEntryUid, draggedEntryUid);
