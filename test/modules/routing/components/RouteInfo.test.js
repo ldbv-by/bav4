@@ -389,6 +389,20 @@ describe('RoutingInfo', () => {
 				expect(element.shadowRoot.querySelector('.category-icon')).toBeNull();
 			});
 
+			it('renders parent category style, if category.style is missing', async () => {
+				const missingIconCategory = { style: { color: null, icon: null } };
+				const parentCategory = { style: { color: 'blue', icon: 'icon_parent_category' } };
+				spyOn(routingServiceMock, 'getCategoryById').and.callFake((category) => {
+					return category === 'bike' ? missingIconCategory : parentCategory;
+				});
+				const element = await setup(defaultRoutingState);
+
+				setRoute(defaultRoute);
+
+				expect(element.shadowRoot.querySelector('.category-icon').innerHTML).toContain('icon_parent_category');
+				expect(getComputedStyle(element.shadowRoot.querySelector('.routing-info-type')).background).toBe('rgb(0, 0, 255)');
+			});
+
 			describe('when rendering estimate for specific vehicle', () => {
 				it('calculates the estimate for hike', async () => {
 					const state = {
