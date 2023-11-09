@@ -92,10 +92,10 @@ export class WaypointItem extends MvuElement {
 		};
 
 		const getCategoryColor = (categoryId) => {
-			const parentId = this._routingService.getParent(categoryId);
-			const category = this._routingService.getCategoryById(parentId);
+			const parentCategory = this._routingService.getCategoryById(this._routingService.getParent(categoryId));
+			const category = this._routingService.getCategoryById(categoryId);
 
-			return category?.style?.color;
+			return category?.style.color ?? parentCategory?.style.color;
 		};
 
 		const getLabel = (waypoint) => {
