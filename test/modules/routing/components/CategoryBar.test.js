@@ -1,7 +1,6 @@
 import { $injector } from '../../../../src/injection';
 import { MvuElement } from '../../../../src/modules/MvuElement';
 import { CategoryBar } from '../../../../src/modules/routing/components/categoryBar/CategoryBar';
-import { BvvRoutingService } from '../../../../src/services/RoutingService';
 
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { routingReducer } from '../../../../src/store/routing/routing.reducer';
