@@ -47,7 +47,7 @@ describe('RoutingPanel', () => {
 			await setup();
 			const model = new RoutingPanel().getModel();
 
-			expect(model).toEqual({});
+			expect(model).toEqual({ active: false });
 		});
 	});
 
