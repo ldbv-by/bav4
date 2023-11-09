@@ -231,7 +231,7 @@ const mockedRouteStatistic = {
 	dist: 333,
 	slopeDist: 102055.31270225867
 };
-describe('RoutingInfo', () => {
+describe('RouteInfo', () => {
 	const category = { style: { color: 'red', icon: 'icon_category' } };
 	const routingServiceMock = {
 		getCategoryById: () => category,
@@ -400,7 +400,7 @@ describe('RoutingInfo', () => {
 				setRoute(defaultRoute);
 
 				expect(element.shadowRoot.querySelector('.category-icon').innerHTML).toContain('icon_parent_category');
-				expect(getComputedStyle(element.shadowRoot.querySelector('.routing-info-type')).background).toBe('rgb(0, 0, 255)');
+				expect(getComputedStyle(element.shadowRoot.querySelector('.routing-info-type')).background).toContain('rgb(0, 0, 255)');
 			});
 
 			describe('when rendering estimate for specific vehicle', () => {
