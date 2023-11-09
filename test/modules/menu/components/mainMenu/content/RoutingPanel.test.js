@@ -13,7 +13,7 @@ window.customElements.define(RoutingPanel.tag, RoutingPanel);
 
 describe('RoutingPanel', () => {
 	let store;
-	const setup = (state) => {
+	const setup = (state, properties = {}) => {
 		const initialState = {
 			mainMenu: {
 				open: true,
@@ -31,7 +31,7 @@ describe('RoutingPanel', () => {
 			routing: routingReducer
 		});
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
-		return TestUtils.render(RoutingPanel.tag);
+		return TestUtils.render(RoutingPanel.tag, properties);
 	};
 
 	describe('class', () => {
@@ -52,8 +52,16 @@ describe('RoutingPanel', () => {
 	});
 
 	describe('when initialized', () => {
-		it('renders the routing components', async () => {
+		it('does NOT renders the routing components', async () => {
 			const element = await setup();
+
+			expect(element.shadowRoot.querySelectorAll('.container')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-routing-container')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.demo')).toHaveSize(1);
+		});
+
+		it('renders the routing components', async () => {
+			const element = await setup({}, { active: true });
 
 			const container = element.shadowRoot.querySelectorAll('.container');
 
@@ -72,7 +80,7 @@ describe('RoutingPanel', () => {
 	describe('when close icon is clicked', () => {
 		it('updates the store', async () => {
 			const warnSpy = spyOn(console, 'warn').and.callThrough();
-			const element = await setup();
+			const element = await setup({}, { active: true });
 
 			const closeIcon = element.shadowRoot.querySelector('ba-icon');
 
@@ -87,14 +95,14 @@ describe('RoutingPanel', () => {
 
 	describe('when demo content needed', () => {
 		it('renders demo content', async () => {
-			const element = await setup();
+			const element = await setup({}, { active: true });
 			expect(isTemplateResult(element._getDemoContent())).toBeTrue();
 		});
 	});
 
 	describe('when demo buttons pressed', () => {
 		it('loads demo content', async () => {
-			const element = await setup();
+			const element = await setup({}, { active: true });
 
 			const button1 = element.shadowRoot.querySelector('#button1');
 			const button2 = element.shadowRoot.querySelector('#button2');
