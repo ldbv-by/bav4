@@ -23,15 +23,6 @@
 	box-shadow: none;
 }
 
-.category-button__text {
-	color: var(--text1);
-	font-size: 0.8rem;
-	margin: 5.5em 0.3em 0.5em 0.3em;
-	user-select: none;
-	text-align: center;
-	min-width: 5em;
-}
-
 .is-active {
 	fill: var(--text4) !important;
 }
