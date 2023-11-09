@@ -44,11 +44,11 @@ export class CategoryBar extends MvuElement {
 		};
 		const renderCategoryIcon = (category) => {
 			const classes = { 'is-active': selectedCategory === category.id };
-
-			if (category.style.icon) {
+			const iconSource = category.style.icon ?? this._routingService.getCategoryById(this._routingService.getParent(category.id))?.style.icon;
+			if (iconSource) {
 				return html`
 					<svg class="category-icon ${classMap(classes)}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-						${unsafeSVG(category.style.icon)}
+						${unsafeSVG(iconSource)}
 					</svg>
 				`;
 			}

@@ -14,8 +14,7 @@ describe('CategoryBar', () => {
 		getValue: () => {},
 		getValueAsPath: () => {}
 	};
-	const routingService = new BvvRoutingService();
-	let store;
+
 	const categories = [
 		{
 			id: 'category_1',
@@ -36,6 +35,12 @@ describe('CategoryBar', () => {
 			subcategories: []
 		}
 	];
+	const routingServiceMock = {
+		getCategoryById: () => {},
+		getCategories: () => categories,
+		getParent: () => 'foo'
+	};
+	let store;
 
 	const setup = (state) => {
 		const initialState = {
@@ -49,7 +54,7 @@ describe('CategoryBar', () => {
 			media: createNoInitialStateMediaReducer(),
 			routing: routingReducer
 		});
-		$injector.registerSingleton('RoutingService', routingService).registerSingleton('ConfigService', configService);
+		$injector.registerSingleton('RoutingService', routingServiceMock).registerSingleton('ConfigService', configService);
 		return TestUtils.render(CategoryBar.tag);
 	};
 
@@ -74,7 +79,6 @@ describe('CategoryBar', () => {
 
 	describe('when initialized', () => {
 		it('renders a category bar with buttons', async () => {
-			spyOn(routingService, 'getCategories').and.returnValue(categories);
 			const element = await setup({});
 
 			const buttons = element.shadowRoot.querySelectorAll('button');
@@ -83,7 +87,6 @@ describe('CategoryBar', () => {
 		});
 
 		it('renders icon defined by category id', async () => {
-			spyOn(routingService, 'getCategories').and.returnValue(categories);
 			const element = await setup({});
 
 			const icon = element.shadowRoot.querySelectorAll('.category-icon');
@@ -97,7 +100,6 @@ describe('CategoryBar', () => {
 
 	describe('when category button is clicked', () => {
 		it('updates the store', async () => {
-			spyOn(routingService, 'getCategories').and.returnValue(categories);
 			const element = await setup({});
 
 			const category1Button = element.shadowRoot.querySelector('#category_1-button');
