@@ -80,7 +80,8 @@ export class MainMenu extends MvuElement {
 		const tabcontents = [...this._root.querySelectorAll('.tabcontent')];
 		tabcontents.forEach((tabcontent, i) => {
 			const active = Object.values(TabIds)[i] === key;
-			tabcontent.firstElementChild.active = active;
+			// @ts-ignore
+			tabcontent.firstElementChild.setActive?.(active); // child AbstractMvuContentPanel-impl may not yet be fully initialized
 			active ? tabcontent.classList.add('is-active') : tabcontent.classList.remove('is-active');
 		});
 	}
@@ -223,11 +224,6 @@ export class MainMenu extends MvuElement {
 	static get MAX_WIDTH_EM() {
 		return 100;
 	}
-
-	/**
-	 * @override
-	 * @param {Object} globalState
-	 */
 
 	static get tag() {
 		return 'ba-main-menu';

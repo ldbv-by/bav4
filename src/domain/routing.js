@@ -124,3 +124,24 @@ export const RoutingStatusCodes = Object.freeze({
 	Destination_Missing: 901,
 	Start_Missing: 902
 });
+
+/**
+ * Contains a coordinate and its intention.
+ * @typedef {Object} CoordinateProposal
+ * @property {module:domain/coordinateTypeDef~Coordinate}  coordinate The coordinate (in the SRID of the map)
+ * @property {CoordinateProposalType} type Intention of the coordinate
+ * @property {Object} [data] optional data
+ */
+
+/**
+ * @readonly
+ * @enum {Number}
+ */
+export const CoordinateProposalType = Object.freeze({
+	START_OR_DESTINATION: 0,
+	START: 1,
+	DESTINATION: 2,
+	INTERMEDIATE: 3,
+	EXISTING_START_OR_DESTINATION: 4,
+	EXISTING_INTERMEDIATE: 5
+});

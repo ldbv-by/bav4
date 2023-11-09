@@ -25,7 +25,7 @@ import { AbstractMvuContentPanel } from '../../../../../src/modules/menu/compone
 
 window.customElements.define(MainMenu.tag, MainMenu);
 
-// shallow content panels, just for testing if the "active" property is set
+// shallow content panels, just for testing if  "setActive()" property is called
 class MapsContentPanelMock extends AbstractMvuContentPanel {
 	createView() {}
 }
@@ -311,10 +311,10 @@ describe('MainMenu', () => {
 	});
 
 	describe('when tab-index changes', () => {
-		const check = (index, panels, spies) => {
+		const check = (index, panels) => {
 			for (let i = 0; i < panels.length; i++) {
 				expect(panels[i].classList.contains('is-active')).toBe(Object.values(TabIds)[i] === index);
-				expect(spies[i]).toHaveBeenCalledWith(Object.values(TabIds)[i] === index);
+				expect(panels[i].firstElementChild.isActive()).toBe(Object.values(TabIds)[i] === index);
 			}
 		};
 
@@ -322,28 +322,26 @@ describe('MainMenu', () => {
 			const element = await setup();
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
 
-			const spies = [...contentPanels].map((el) => spyOnProperty(el.firstElementChild, 'active', 'set'));
-
 			setTab(TabIds.MAPS);
-			check(TabIds.MAPS, contentPanels, spies);
+			check(TabIds.MAPS, contentPanels);
 
 			setTab(TabIds.MISC);
-			check(TabIds.MISC, contentPanels, spies);
+			check(TabIds.MISC, contentPanels);
 
 			setTab(TabIds.ROUTING);
-			check(TabIds.ROUTING, contentPanels, spies);
+			check(TabIds.ROUTING, contentPanels);
 
 			setTab(TabIds.SEARCH);
-			check(TabIds.SEARCH, contentPanels, spies);
+			check(TabIds.SEARCH, contentPanels);
 
 			setTab(TabIds.FEATUREINFO);
-			check(TabIds.FEATUREINFO, contentPanels, spies);
+			check(TabIds.FEATUREINFO, contentPanels);
 
 			setTab(TabIds.TOPICS);
-			check(TabIds.TOPICS, contentPanels, spies);
+			check(TabIds.TOPICS, contentPanels);
 
 			setTab(TabIds.ROUTING);
-			check(TabIds.ROUTING, contentPanels, spies);
+			check(TabIds.ROUTING, contentPanels);
 		});
 
 		it('adds or removes a special Css class for the FeatureInfoContentPanel', async () => {
