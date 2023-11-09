@@ -9,7 +9,7 @@ const Update_Active = 'update_disabled';
 
 /**
  * Base class for all content panels of the main menu.
- * @property {boolean} active - `true` when the content panel is currently active
+ * The model of this abstract class contains the property `active` which indicates the visibility of the content panel.
  * @class
  * @author taulinger
  * @abstract
@@ -42,11 +42,18 @@ export class AbstractMvuContentPanel extends MvuElement {
 		`;
 	}
 
-	set active(active) {
+	/**
+	 * Updates the `active` property of the internal model.
+	 * @param {boolean} active
+	 */
+	setActive(active) {
 		this.signal(Update_Active, active);
 	}
 
-	get active() {
+	/**
+	 * @returns {boolean} The current value of the `active` property of the internal model
+	 */
+	isActive() {
 		return this.getModel().active;
 	}
 }
