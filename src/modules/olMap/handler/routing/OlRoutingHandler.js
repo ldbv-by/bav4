@@ -533,7 +533,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 				// request route
 				const alternativeCategoryIds = this._routingService.getAlternativeCategoryIds(this._catId);
 				try {
-					this._currentRoutingResponse = await this._requestRouteAndDisplayRoute(this._catId, alternativeCategoryIds, coordinates3857);
+					this._currentRoutingResponse = await this._requestAndDisplayRoute(this._catId, alternativeCategoryIds, coordinates3857);
 					// update store
 					setRoute(this._currentRoutingResponse[this._catId]);
 				} catch (error) {
@@ -561,7 +561,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 		}
 	}
 
-	async _requestRouteAndDisplayRoute(defaultCategoryId, alternativeCategoryIds, coordinates3857) {
+	async _requestAndDisplayRoute(defaultCategoryId, alternativeCategoryIds, coordinates3857) {
 		const categories = this._getIntermediateFeatures().length === 0 ? [defaultCategoryId].concat(alternativeCategoryIds) : [defaultCategoryId];
 
 		const routingResult = await this._routingService.calculateRoute(categories, coordinates3857);

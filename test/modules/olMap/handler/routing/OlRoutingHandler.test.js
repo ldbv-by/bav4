@@ -560,7 +560,7 @@ describe('OlRoutingHandler', () => {
 	});
 
 	describe('methods', () => {
-		describe('_requestRouteAndDisplayRoute', () => {
+		describe('_requestAndDisplayRoute', () => {
 			describe('and no intermediate features are available', () => {
 				it('calls the routing service with correct arguments', async () => {
 					const { instanceUnderTest } = await newTestInstance();
@@ -577,9 +577,9 @@ describe('OlRoutingHandler', () => {
 					const displayCurrentRoutingGeometrySpy = spyOn(instanceUnderTest, '_displayCurrentRoutingGeometry');
 					const displayAlternativeRoutingGeometrySpy = spyOn(instanceUnderTest, '_displayAlternativeRoutingGeometry');
 
-					await expectAsync(
-						instanceUnderTest._requestRouteAndDisplayRoute(defaultCategoryId, alternativeCategoryIds, coordinates3857)
-					).toBeResolvedTo(mockRouteResult);
+					await expectAsync(instanceUnderTest._requestAndDisplayRoute(defaultCategoryId, alternativeCategoryIds, coordinates3857)).toBeResolvedTo(
+						mockRouteResult
+					);
 					expect(displayCurrentRoutingGeometrySpy).toHaveBeenCalledWith(mockRouteResult.defaultCategoryId);
 					expect(displayAlternativeRoutingGeometrySpy).toHaveBeenCalledTimes(2);
 				});
@@ -601,9 +601,7 @@ describe('OlRoutingHandler', () => {
 					const displayAlternativeRoutingGeometrySpy = spyOn(instanceUnderTest, '_displayAlternativeRoutingGeometry');
 					instanceUnderTest._addIntermediateInteractionFeature(15, 15, 1);
 
-					await expectAsync(
-						instanceUnderTest._requestRouteAndDisplayRoute(defaultCategoryId, alternativeCategoryIds, coordinates3857)
-					).toBeResolved();
+					await expectAsync(instanceUnderTest._requestAndDisplayRoute(defaultCategoryId, alternativeCategoryIds, coordinates3857)).toBeResolved();
 					expect(displayCurrentRoutingGeometrySpy).toHaveBeenCalledWith(mockRouteResult.defaultCategoryId);
 					expect(displayAlternativeRoutingGeometrySpy).not.toHaveBeenCalled();
 				});
@@ -649,7 +647,7 @@ describe('OlRoutingHandler', () => {
 						geometry: new Point([0, 0])
 					});
 					const mockResponse = { foo: 'bar' };
-					const requestRouteSpy = spyOn(instanceUnderTest, '_requestRouteAndDisplayRoute').and.resolveTo(mockResponse);
+					const requestRouteSpy = spyOn(instanceUnderTest, '_requestAndDisplayRoute').and.resolveTo(mockResponse);
 					const setInteractionsActiveSpy = spyOn(instanceUnderTest, '_setInteractionsActive');
 					const clearRouteFeatureSpy = spyOn(instanceUnderTest, '_clearRouteFeatures');
 					instanceUnderTest._interactionLayer.getSource().addFeatures([feature0]);
@@ -676,7 +674,7 @@ describe('OlRoutingHandler', () => {
 					const addStartInteractionFeatureSpy = spyOn(instanceUnderTest, '_addStartInteractionFeature');
 					const addIntermediateInteractionFeatureSpy = spyOn(instanceUnderTest, '_addIntermediateInteractionFeature');
 					const addDestinationInteractionFeatureSpy = spyOn(instanceUnderTest, '_addDestinationInteractionFeature');
-					const requestRouteSpy = spyOn(instanceUnderTest, '_requestRouteAndDisplayRoute');
+					const requestRouteSpy = spyOn(instanceUnderTest, '_requestAndDisplayRoute');
 
 					await instanceUnderTest._requestRouteFromCoordinates([], RoutingStatusCodes.Start_Destination_Missing);
 
@@ -705,7 +703,7 @@ describe('OlRoutingHandler', () => {
 					const addIntermediateInteractionFeatureSpy = spyOn(instanceUnderTest, '_addIntermediateInteractionFeature');
 					const addDestinationInteractionFeatureSpy = spyOn(instanceUnderTest, '_addDestinationInteractionFeature');
 					const mockResponse = { catId: { foo: 'bar' } };
-					const requestRouteSpy = spyOn(instanceUnderTest, '_requestRouteAndDisplayRoute').and.resolveTo(mockResponse);
+					const requestRouteSpy = spyOn(instanceUnderTest, '_requestAndDisplayRoute').and.resolveTo(mockResponse);
 					spyOn(routingServiceMock, 'getAlternativeCategoryIds').withArgs(catId).and.returnValue([alternativeCategoryId0]);
 
 					await instanceUnderTest._requestRouteFromCoordinates([coordinate0, coordinate1, coordinate2], RoutingStatusCodes.Ok);
@@ -735,7 +733,7 @@ describe('OlRoutingHandler', () => {
 						const addStartInteractionFeatureSpy = spyOn(instanceUnderTest, '_addStartInteractionFeature');
 						const addIntermediateInteractionFeatureSpy = spyOn(instanceUnderTest, '_addIntermediateInteractionFeature');
 						const addDestinationInteractionFeatureSpy = spyOn(instanceUnderTest, '_addDestinationInteractionFeature');
-						const requestRouteSpy = spyOn(instanceUnderTest, '_requestRouteAndDisplayRoute');
+						const requestRouteSpy = spyOn(instanceUnderTest, '_requestAndDisplayRoute');
 
 						await instanceUnderTest._requestRouteFromCoordinates([coordinate0], RoutingStatusCodes.Destination_Missing);
 
@@ -763,7 +761,7 @@ describe('OlRoutingHandler', () => {
 						const addStartInteractionFeatureSpy = spyOn(instanceUnderTest, '_addStartInteractionFeature');
 						const addIntermediateInteractionFeatureSpy = spyOn(instanceUnderTest, '_addIntermediateInteractionFeature');
 						const addDestinationInteractionFeatureSpy = spyOn(instanceUnderTest, '_addDestinationInteractionFeature');
-						const requestRouteSpy = spyOn(instanceUnderTest, '_requestRouteAndDisplayRoute');
+						const requestRouteSpy = spyOn(instanceUnderTest, '_requestAndDisplayRoute');
 
 						await instanceUnderTest._requestRouteFromCoordinates([coordinate0], RoutingStatusCodes.Start_Missing);
 
@@ -789,7 +787,7 @@ describe('OlRoutingHandler', () => {
 					const coordinate0 = [0, 0];
 					const coordinate1 = [5, 5];
 					const message = 'something got wrong';
-					spyOn(instanceUnderTest, '_requestRouteAndDisplayRoute').and.rejectWith(message);
+					spyOn(instanceUnderTest, '_requestAndDisplayRoute').and.rejectWith(message);
 					const errorSpy = spyOn(console, 'error');
 
 					await instanceUnderTest._requestRouteFromCoordinates([coordinate0, coordinate1], RoutingStatusCodes.Destination_Missing);
