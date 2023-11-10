@@ -390,10 +390,11 @@ describe('RoutingChart', () => {
 	describe('when configure chartjs chart', () => {
 		describe('with _getChartConfig', () => {
 			const routingChartItems = [
-				{ id: 'foo', label: 'Label Foo', data: { absolute: 4200, relative: 84, segments: [] }, color: 'rgb(238,213,183)' },
+				{ id: 'foo', label: 'Label Foo', data: { absolute: 8200, relative: 84, segments: [] }, color: 'rgb(238,213,183)' },
+				{ id: 'bar', label: 'Label Bar', data: { absolute: 4200, relative: 0, segments: [] }, color: 'rgb(123,213,183)' },
 				{
-					id: 'bar',
-					label: 'Label Bar',
+					id: 'baz',
+					label: 'Label Baz',
 					data: { absolute: 21, relative: 0.1, segments: [[4, 5]] },
 					image: 'repeating-linear-gradient(45deg,gray 25%, transparent 25%,transparent 50%, gray 50%, gray 55%, transparent 55%, transparent)',
 					color: 'rgb(123,321,42)'
@@ -408,12 +409,12 @@ describe('RoutingChart', () => {
 					jasmine.objectContaining({
 						type: 'doughnut',
 						data: {
-							labels: ['Label Foo', 'Label Bar'],
+							labels: ['Label Foo', 'Label Bar', 'Label Baz'],
 							datasets: [
 								{
 									label: title,
-									data: [84, 1],
-									backgroundColor: ['rgb(238,213,183)', 'rgb(123,321,42)'],
+									data: [84, 0, 1],
+									backgroundColor: ['rgb(238,213,183)', 'rgb(123,213,183)', 'rgb(123,321,42)'],
 									hoverBorderWidth: 2,
 									hoverOffset: 4
 								}
@@ -442,8 +443,9 @@ describe('RoutingChart', () => {
 				const title = 'FooBar';
 				const actualChartConfig = element._getChartConfig(routingChartItems, title);
 
-				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 0 })).toBe('4.20 km');
-				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 1 })).toBe('21 m');
+				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 0 })).toBe('8 km');
+				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 1 })).toBe('4.20 km');
+				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 2 })).toBe('21 m');
 				expect(store.getState().routing.highlightedSegments.segments).toEqual([[4, 5]]);
 			});
 
@@ -452,7 +454,7 @@ describe('RoutingChart', () => {
 				const title = 'FooBar';
 				const actualChartConfig = element._getChartConfig(routingChartItems, title);
 
-				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 1 })).toBe('21 m');
+				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 2 })).toBe('21 m');
 				expect(store.getState().routing.highlightedSegments.segments).toEqual([[4, 5]]);
 
 				actualChartConfig.options.onHover(new Event('foo'), ['something']);
