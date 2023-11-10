@@ -29,7 +29,7 @@ const Default_Symbol = 'marker';
 export const DEFAULT_TEXT = 'new text';
 export const DEFAULT_STYLE_OPTION = { symbolSrc: null, color: null, scale: null, text: null };
 
-const getTextStyle = (text, color, scale) => {
+const getTextStyle = (text, color, scale, offsetY = -5) => {
 	const strokeWidth = 1;
 	const createStyle = (text, color, scale) => {
 		return new TextStyle({
@@ -43,7 +43,7 @@ const getTextStyle = (text, color, scale) => {
 				color: hexToRgb(color).concat([1])
 			}),
 			scale: scale,
-			offsetY: -5
+			offsetY
 		});
 	};
 	return text ? createStyle(text, color, scale) : null;
@@ -310,7 +310,7 @@ export const markerStyleFunction = (styleOption = DEFAULT_STYLE_OPTION) => {
 	return [
 		new Style({
 			image: new Icon(iconOptions),
-			text: styleOption.text ? getTextStyle(styleOption.text, markerColor, getTextScale(styleOption.scale)) : null
+			text: styleOption.text ? getTextStyle(styleOption.text, markerColor, getTextScale(styleOption.scale), 6) : null
 		})
 	];
 };

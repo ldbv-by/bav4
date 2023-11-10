@@ -1,6 +1,6 @@
 .active-map__background {
 	display: flex;
-	align-items: center;
+	align-items: flex-end;
 	justify-content: center;
 	position: absolute;
 	height: 100%;
@@ -10,11 +10,11 @@
 .active-map__button {
 	opacity: 0;
 	background: var(--text3);
-	min-width: 13em;
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
-	border: 2px solid var(--text3);
-	border-radius: 2em;
 	overflow: hidden;
+	border-radius: 0;
+	margin: 2em;
+	width: 100%;
 }
 .active-map__background:hover .active-map__button {
 	opacity: 1;

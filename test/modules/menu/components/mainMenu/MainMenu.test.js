@@ -21,8 +21,35 @@ import { MapsContentPanel } from '../../../../../src/modules/menu/components/mai
 import { BvvMiscContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/misc/BvvMiscContentPanel';
 import { RoutingPanel } from '../../../../../src/modules/menu/components/mainMenu/content/routing/RoutingPanel';
 import { REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME, TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
+import { AbstractMvuContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
 
 window.customElements.define(MainMenu.tag, MainMenu);
+
+// shallow content panels, just for testing if  "setActive()" property is called
+class MapsContentPanelMock extends AbstractMvuContentPanel {
+	createView() {}
+}
+class BvvMiscContentPanelMock extends AbstractMvuContentPanel {
+	createView() {}
+}
+class RoutingPanelMock extends AbstractMvuContentPanel {
+	createView() {}
+}
+class SearchResultsPanelMock extends AbstractMvuContentPanel {
+	createView() {}
+}
+class TopicsContentPanelMock extends AbstractMvuContentPanel {
+	createView() {}
+}
+class FeatureInfoPanelMock extends AbstractMvuContentPanel {
+	createView() {}
+}
+window.customElements.define(MapsContentPanel.tag, MapsContentPanelMock);
+window.customElements.define(BvvMiscContentPanel.tag, BvvMiscContentPanelMock);
+window.customElements.define(RoutingPanel.tag, RoutingPanelMock);
+window.customElements.define(SearchResultsPanel.tag, SearchResultsPanelMock);
+window.customElements.define(TopicsContentPanel.tag, TopicsContentPanelMock);
+window.customElements.define(FeatureInfoPanel.tag, FeatureInfoPanelMock);
 
 describe('MainMenu', () => {
 	const setup = (state = {}, config = {}) => {
@@ -163,7 +190,7 @@ describe('MainMenu', () => {
 			const element = await setup();
 
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
-			expect(contentPanels.length).toBe(Object.keys(TabIds).length);
+			expect(contentPanels.length).toBe(6);
 			for (let i = 0; i < contentPanels.length; i++) {
 				switch (i) {
 					case TabIds.SEARCH:
@@ -181,6 +208,8 @@ describe('MainMenu', () => {
 					case TabIds.MISC:
 						expect(contentPanels[i].innerHTML.toString().includes(BvvMiscContentPanel.tag)).toBeTrue();
 						break;
+					case TabIds.RoutingPanel:
+						expect(contentPanels[i].innerHTML.toString().includes(RoutingPanel.tag)).toBeTrue();
 				}
 			}
 		});
@@ -197,11 +226,11 @@ describe('MainMenu', () => {
 			expect(element.shadowRoot.querySelector(RoutingPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
 
-		it('display the content panel for default index = 0', async () => {
+		it('displays the content panel for default index = 0', async () => {
 			const element = await setup();
 
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
-			expect(contentPanels.length).toBe(Object.keys(TabIds).length);
+			expect(contentPanels.length).toBe(6);
 			for (let i = 0; i < contentPanels.length; i++) {
 				expect(contentPanels[i].classList.contains('is-active')).toBe(Object.values(TabIds)[i] === 0);
 			}
@@ -218,7 +247,7 @@ describe('MainMenu', () => {
 			const element = await setup(state);
 
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
-			expect(contentPanels.length).toBe(Object.keys(TabIds).length);
+			expect(contentPanels.length).toBe(6);
 			for (let i = 0; i < contentPanels.length; i++) {
 				expect(contentPanels[i].classList.contains('is-active')).toBe(Object.values(TabIds)[i] === activeTabIndex);
 			}
@@ -285,6 +314,7 @@ describe('MainMenu', () => {
 		const check = (index, panels) => {
 			for (let i = 0; i < panels.length; i++) {
 				expect(panels[i].classList.contains('is-active')).toBe(Object.values(TabIds)[i] === index);
+				expect(panels[i].firstElementChild.isActive()).toBe(Object.values(TabIds)[i] === index);
 			}
 		};
 
@@ -309,6 +339,9 @@ describe('MainMenu', () => {
 
 			setTab(TabIds.TOPICS);
 			check(TabIds.TOPICS, contentPanels);
+
+			setTab(TabIds.ROUTING);
+			check(TabIds.ROUTING, contentPanels);
 		});
 
 		it('adds or removes a special Css class for the FeatureInfoContentPanel', async () => {

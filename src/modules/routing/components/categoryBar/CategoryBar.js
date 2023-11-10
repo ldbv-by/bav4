@@ -8,7 +8,6 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import css from './categoryBar.css';
 import { $injector } from '../../../../injection/index';
 
-const Update_Categories = 'update_categories';
 const Update_Selected_Category = 'update_selected_category';
 
 /**
@@ -17,31 +16,32 @@ const Update_Selected_Category = 'update_selected_category';
  */
 export class CategoryBar extends MvuElement {
 	constructor() {
-		super({ categories: [], selectedCategory: null });
+		super({ selectedCategory: null });
 		const { RoutingService } = $injector.inject('RoutingService');
 		this._routingService = RoutingService;
 	}
 
 	update(type, data, model) {
 		switch (type) {
-			case Update_Categories:
-				return { ...model, categories: [...data] };
 			case Update_Selected_Category:
 				return { ...model, selectedCategory: data };
 		}
 	}
 
 	onInitialize() {
-		this.observe(
+		this._unsubscribeFromStore = this.observe(
 			(state) => state.routing.categoryId,
 			(categoryId) => this.signal(Update_Selected_Category, categoryId)
 		);
+	}
 
-		this.signal(Update_Categories, this._routingService.getCategories());
+	onDisconnect() {
+		this._unsubscribeFromStore();
 	}
 
 	createView(model) {
-		const { categories, selectedCategory } = model;
+		const { selectedCategory } = model;
+		const categories = this._routingService.getCategories();
 		const selectCategory = (categoryCandidate) => {
 			setCategory(categoryCandidate);
 		};

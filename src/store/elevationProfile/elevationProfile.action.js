@@ -11,7 +11,7 @@ const getStore = () => {
 
 /**
  * Opens the profile component.
- * @param {Array<Coordinate>} [coordinates] The coordinates for the calculation of the elevation profile
+ * @param {Array<module:domain/coordinateTypeDef~Coordinate>} [coordinates] The coordinates for the calculation of the elevation profile
  * @function
  */
 export const openProfile = (coordinates = []) => {
@@ -26,7 +26,7 @@ export const openProfile = (coordinates = []) => {
 
 /**
  * Updates the coordinates of the elevation profile.
- * @param {Array<Coordinate>} coordinates The coordinates for the calculation of the elevation profile
+ * @param {Array<module:domain/coordinateTypeDef~Coordinate>} coordinates The coordinates for the calculation of the elevation profile
  * @function
  */
 export const updateCoordinates = (coordinates) => {

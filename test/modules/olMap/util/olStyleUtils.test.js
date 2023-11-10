@@ -446,6 +446,7 @@ describe('markerStyleFunction', () => {
 
 		expect(styles).toBeDefined();
 		expect(styles[0].getText().getText()).toBe('foo');
+		expect(styles[0].getText().getOffsetY()).toBe(6);
 	});
 
 	it('should return a style WITHOUT a Text', () => {
