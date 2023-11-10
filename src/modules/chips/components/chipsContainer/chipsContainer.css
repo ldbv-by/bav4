@@ -63,7 +63,7 @@
 	width: 100%;
 	z-index: 100;
 	padding: 0 1em;
-	overflow: hidden;
+	overflow: scroll;
 }
 .chips__scroll-button {
 	display: none;
@@ -122,6 +122,10 @@ iframe {
 	width: 100%;
 	min-width: auto;
 }
+.is-portrait .chips__scroll-button {
+	display: none;
+}
+
 ::-webkit-scrollbar {
 	height: 0;
 }
