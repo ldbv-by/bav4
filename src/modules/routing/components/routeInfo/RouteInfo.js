@@ -72,8 +72,8 @@ export class RouteInfo extends MvuElement {
 		const isVisible = status === RoutingStatusCodes.Ok;
 		const parent = this._routingService.getCategoryById(this._routingService.getParent(categoryId));
 		const category = this._routingService.getCategoryById(categoryId);
-		const color = category.style.color ?? parent.style.color;
-		const iconSource = category.style.icon ?? parent.style.icon;
+		const color = category?.style.color ?? parent?.style.color;
+		const iconSource = category?.style.icon ?? parent?.style.icon;
 
 		const getDuration = () => {
 			const estimate = this._estimateTimeFor(categoryId, stats) ?? stats.time;
