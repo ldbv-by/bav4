@@ -8,6 +8,14 @@ describe('GuiSwitch', () => {
 		TestUtils.setupStoreAndDi({});
 	});
 
+	const getThumbStyleProperties = (thumbElement) => {
+		const computedStyle = window.getComputedStyle(thumbElement);
+		return {
+			thumbPosition: computedStyle.getPropertyValue('--thumb-position'),
+			thumbTransitionDuration: computedStyle.getPropertyValue('--thumb-transition-duration')
+		};
+	};
+
 	describe('when initialized', () => {
 		it('contains default values in the model', async () => {
 			const element = await TestUtils.render(GuiSwitch.tag);
@@ -187,48 +195,35 @@ describe('GuiSwitch', () => {
 					pointerdown.offsetX = 0;
 					guiSwitch.dispatchEvent(pointerdown);
 
-					const computedStyle = window.getComputedStyle(guiSwitch);
-					const thumbPosition = computedStyle.getPropertyValue('--thumb-position');
-					expect(thumbPosition).toBe('0px');
+					const afterPointerDown = getThumbStyleProperties(guiSwitch);
+					expect(afterPointerDown.thumbPosition).toBe('0px');
 				});
 
-				it('sets the "--thumb-transition-duration" CSS variable to "0s"', async () => {
+				it('inits the thumb style ', async () => {
 					const element = await TestUtils.render(GuiSwitch.tag);
 
 					const guiSwitch = element.shadowRoot.querySelector('#guiSwitch');
 					const pointerdown = new Event('pointerdown');
 					guiSwitch.dispatchEvent(pointerdown);
 
-					const computedStyle = window.getComputedStyle(guiSwitch);
-					const thumbTransitionDuration = computedStyle.getPropertyValue('--thumb-transition-duration');
-					expect(thumbTransitionDuration).toBe('0s');
-				});
-
-				it('calls _dragInit ', async () => {
-					const element = await TestUtils.render(GuiSwitch.tag);
-					const dragInitSpy = spyOn(element, '_dragInit').and.callThrough();
-
-					const guiSwitch = element.shadowRoot.querySelector('#guiSwitch');
-					const pointerdown = new Event('pointerdown');
-					guiSwitch.dispatchEvent(pointerdown);
-
-					expect(dragInitSpy).toHaveBeenCalledTimes(1);
+					const afterPointerDown = getThumbStyleProperties(guiSwitch);
+					// property values should NOT be the same as the predefined in guiSwitch.css
+					expect(afterPointerDown.thumbPosition).not.toBe('0%');
+					expect(afterPointerDown.thumbTransitionDuration).toBe('0s');
 				});
 
 				it('does nothing when disabled', async () => {
 					const element = await TestUtils.render(GuiSwitch.tag);
 					element.disabled = true;
-					const dragInitSpy = spyOn(element, '_dragInit').and.callThrough();
 
 					const guiSwitch = element.shadowRoot.querySelector('#guiSwitch');
 					const pointerdown = new Event('pointerdown');
 					guiSwitch.dispatchEvent(pointerdown);
 
-					expect(dragInitSpy).toHaveBeenCalled();
-					const computedStyle = window.getComputedStyle(guiSwitch);
+					const afterPointerDown = getThumbStyleProperties(guiSwitch);
 					// property values should be the same as defined in guiSwitch.css
-					expect(computedStyle.getPropertyValue('--thumb-position')).toBe('0%');
-					expect(computedStyle.getPropertyValue('--thumb-transition-duration')).toBe('0.25s');
+					expect(afterPointerDown.thumbPosition).toBe('0%');
+					expect(afterPointerDown.thumbTransitionDuration).toBe('0.25s');
 				});
 			});
 		});
@@ -237,34 +232,51 @@ describe('GuiSwitch', () => {
 			it('handles all pointer - events and calls the onToggle callback', async () => {
 				const element = await TestUtils.render(GuiSwitch.tag);
 				const onToggleSpy = spyOn(element, 'onToggle').and.callThrough();
-				const spyPointerdown = spyOn(element, '_dragInit').and.callThrough();
 
 				const guiSwitch = element.shadowRoot.querySelector('#guiSwitch');
 				const pointerdown = new Event('pointerdown');
 				guiSwitch.dispatchEvent(pointerdown);
 
-				const computedStyle = window.getComputedStyle(guiSwitch);
-				const thumbTransitionDuration = computedStyle.getPropertyValue('--thumb-transition-duration');
-				expect(thumbTransitionDuration).toBe('0s');
+				const afterPointerDown = getThumbStyleProperties(guiSwitch);
+				expect(afterPointerDown.thumbTransitionDuration).toBe('0s');
 
-				const pointerX = 100; // just more than needed
-				const pointerY = 0;
-
-				const spyPointermove = spyOn(element, '_dragging').and.callThrough();
-				const pointermove = new PointerEvent('pointermove', {
-					bubbles: true,
-					clientX: pointerX,
-					clientY: pointerY
-				});
+				const pointermove = new PointerEvent('pointermove', { bubbles: true, clientX: 100, clientY: 0 });
 				guiSwitch.dispatchEvent(pointermove);
+				const afterPointerMove = getThumbStyleProperties(guiSwitch);
 
-				const spyPointerup = spyOn(element, '_dragEnd').and.callThrough();
+				expect(afterPointerMove.thumbPosition).toBe('32px');
+				expect(afterPointerMove.thumbTransitionDuration).toBe('0s');
+
 				const pointerup = new Event('pointerup');
 				guiSwitch.dispatchEvent(pointerup);
 
-				expect(spyPointerdown).toHaveBeenCalledOnceWith(jasmine.any(Event));
-				expect(spyPointermove).toHaveBeenCalledOnceWith(jasmine.any(Event));
-				expect(spyPointerup).toHaveBeenCalled();
+				const afterPointerUp = getThumbStyleProperties(guiSwitch);
+
+				expect(afterPointerUp.thumbPosition).toBe('calc((calc(2rem * 2) - 100%) * 1)');
+				expect(afterPointerUp.thumbTransitionDuration).toBe('0.25s');
+
+				expect(onToggleSpy).toHaveBeenCalledTimes(1);
+				expect(element.checked).toBeTrue();
+			});
+
+			it('handles pointer down/up - events and calls the onToggle callback', async () => {
+				const element = await TestUtils.render(GuiSwitch.tag);
+				const onToggleSpy = spyOn(element, 'onToggle').and.callThrough();
+
+				const guiSwitch = element.shadowRoot.querySelector('#guiSwitch');
+				const pointerdown = new Event('pointerdown');
+				guiSwitch.dispatchEvent(pointerdown);
+
+				const afterPointerDown = getThumbStyleProperties(guiSwitch);
+				expect(afterPointerDown.thumbTransitionDuration).toBe('0s');
+
+				const pointerup = new Event('pointerup');
+				guiSwitch.dispatchEvent(pointerup);
+
+				const afterPointerUp = getThumbStyleProperties(guiSwitch);
+
+				expect(afterPointerUp.thumbPosition).toBe('calc((calc(2rem * 2) - 100%) * 1)');
+				expect(afterPointerUp.thumbTransitionDuration).toBe('0.25s');
 
 				expect(onToggleSpy).toHaveBeenCalledTimes(1);
 				expect(element.checked).toBeTrue();
@@ -272,7 +284,7 @@ describe('GuiSwitch', () => {
 
 			it('handles window.pointerup ONCE', async () => {
 				const element = await TestUtils.render(GuiSwitch.tag);
-				const spyPointerup = spyOn(element, '_dragEnd').and.callThrough();
+				const spyUpdateChecked = spyOn(element, 'signal').withArgs('update_checked', jasmine.any(Boolean)).and.callThrough();
 
 				const guiSwitch = element.shadowRoot.querySelector('#guiSwitch');
 				const pointerdown = new Event('pointerdown');
@@ -286,13 +298,12 @@ describe('GuiSwitch', () => {
 				window.dispatchEvent(pointerup);
 				window.dispatchEvent(pointerup);
 
-				expect(spyPointerup).toHaveBeenCalledTimes(1);
+				expect(spyUpdateChecked).toHaveBeenCalledTimes(1);
 				expect(element.checked).toBeTrue();
 			});
 
 			it('respects the direction-attribute', async () => {
 				const element = await TestUtils.render(GuiSwitch.tag, {}, { dir: 'rtl' });
-				const spyPointerup = spyOn(element, '_dragEnd').and.callThrough();
 
 				const guiSwitch = element.shadowRoot.querySelector('#guiSwitch');
 				const pointerdown = new Event('pointerdown');
@@ -303,7 +314,6 @@ describe('GuiSwitch', () => {
 				guiSwitch.dispatchEvent(pointermove);
 				guiSwitch.dispatchEvent(pointerup);
 
-				expect(spyPointerup).toHaveBeenCalledTimes(1);
 				expect(element.checked).toBeFalse();
 			});
 
@@ -328,21 +338,6 @@ describe('GuiSwitch', () => {
 				guiSwitch.click();
 
 				expect(onToggleSpy).toHaveBeenCalled();
-			});
-		});
-
-		describe('pointerup event is triggered', () => {
-			it('calls _dragEnd', async () => {
-				const element = await TestUtils.render(GuiSwitch.tag);
-
-				const dragEndSpy = spyOn(element, '_dragEnd').and.callThrough();
-
-				const guiSwitch = element.shadowRoot.querySelector('#guiSwitch');
-
-				const pointerup = new Event('pointerup');
-				guiSwitch.dispatchEvent(pointerup);
-
-				expect(dragEndSpy).toHaveBeenCalledTimes(1);
 			});
 		});
 

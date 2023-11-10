@@ -67,13 +67,10 @@ export class GuiSwitch extends MvuElement {
 		switch (type) {
 			case Update_Checked:
 				return { ...model, checked: returnAndPropagate(data), indeterminate: false };
-
 			case Update_Indeterminate:
 				return { ...model, indeterminate: data };
-
 			case Update_Disabled:
 				return { ...model, disabled: data };
-
 			case Update_Title:
 				return { ...model, title: data };
 		}
@@ -100,9 +97,75 @@ export class GuiSwitch extends MvuElement {
 	createView(model) {
 		const { checked, indeterminate, disabled, title } = model;
 
+		const onLabelClick = (event) => {
+			const target = event.target;
+			const checkbox = target.querySelector('input');
+
+			if (this.#recentlyDragged || !target.classList.contains('ba-switch') || checkbox.disabled) {
+				return;
+			}
+
+			this.signal(Update_Checked, !checkbox.checked);
+			event.preventDefault();
+		};
+
 		const onChange = (event) => {
 			const checked = event.target.checked;
 			this.signal(Update_Checked, checked);
+		};
+
+		const onPointerup = () => {
+			if (!this.#activeThumb) return;
+
+			this.#activeThumb.checked = this.#dragging ? this._determineChecked() : !this._determineChecked();
+			this.signal(Update_Checked, this.#activeThumb.checked);
+
+			this.#activeThumb.style.removeProperty('--thumb-transition-duration');
+			this.#activeThumb.style.removeProperty('--thumb-position');
+			this.#draggingListener.abort();
+			this.#draggingListener = null;
+			this.#activeThumb = null;
+			this.#dragging = false;
+
+			this._padRelease();
+		};
+
+		const dragging = (event) => {
+			this.#activeThumb.style.setProperty('--thumb-position', this._calculateThumbPosition(event.offsetX));
+			this.#dragging = true;
+		};
+
+		const onPointerdown = (event) => {
+			if (event.target.disabled) return;
+
+			this.#activeThumb = event.target;
+			this.#draggingListener = new AbortController();
+			this.#activeThumb.addEventListener('pointermove', dragging, { signal: this.#draggingListener.signal });
+			window.addEventListener('pointerup', onPointerup, { once: true });
+			this.#activeThumb.style.setProperty('--thumb-transition-duration', '0s');
+			this.#activeThumb.style.setProperty('--thumb-position', this._calculateThumbPosition(event.offsetX));
+		};
+
+		const onClick = (event) => {
+			// preventBubbles
+			if (this.#recentlyDragged) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
+		};
+
+		const onKeydown = (event) => {
+			const target = event.target;
+			if (target.disabled) {
+				return;
+			}
+
+			if (event.key === ' ') {
+				this.signal(Update_Checked, !target.checked);
+
+				event.preventDefault();
+				event.stopPropagation();
+			}
 		};
 
 		return html`
@@ -110,14 +173,14 @@ export class GuiSwitch extends MvuElement {
 				${css}
 			</style>
 
-			<label title="${title}" for="guiSwitch" @click=${(e) => this._labelClick(e)} class="ba-switch  ${disabled ? 'cursor-disabled' : ''}">
+			<label title="${title}" for="guiSwitch" @click=${onLabelClick} class="ba-switch  ${disabled ? 'cursor-disabled' : ''}">
 				<slot name="before"></slot>
 				<input
 					@change=${onChange}
-					@pointerdown=${(event) => this._dragInit(event)}
-					@pointerup=${() => this._dragEnd()}
-					@click=${(event) => this._preventBubbles(event)}
-					@keydown=${(event) => this._keydown(event)}
+					@pointerdown=${onPointerdown}
+					@pointerup=${onPointerup}
+					@click=${onClick}
+					@keydown=${onKeydown}
 					id="guiSwitch"
 					type="checkbox"
 					role="switch"
@@ -130,22 +193,6 @@ export class GuiSwitch extends MvuElement {
 				<slot></slot>
 			</label>
 		`;
-	}
-
-	_dragInit(event) {
-		if (event.target.disabled) return;
-
-		this.#activeThumb = event.target;
-		this.#draggingListener = new AbortController();
-		this.#activeThumb.addEventListener('pointermove', (e) => this._dragging(e), { signal: this.#draggingListener.signal });
-		window.addEventListener('pointerup', () => this._dragEnd(), { once: true });
-		this.#activeThumb.style.setProperty('--thumb-transition-duration', '0s');
-		this.#activeThumb.style.setProperty('--thumb-position', this._calculateThumbPosition(event.offsetX));
-	}
-
-	_dragging(event) {
-		this.#activeThumb.style.setProperty('--thumb-position', this._calculateThumbPosition(event.offsetX));
-		this.#dragging = true;
 	}
 
 	_calculateThumbPosition(offsetX) {
@@ -163,61 +210,12 @@ export class GuiSwitch extends MvuElement {
 		return `${track + position}px`;
 	}
 
-	_dragEnd() {
-		if (!this.#activeThumb) return;
-
-		this.#activeThumb.checked = this.#dragging ? this._determineChecked() : !this._determineChecked();
-		this.signal(Update_Checked, this.#activeThumb.checked);
-
-		this.#activeThumb.style.removeProperty('--thumb-transition-duration');
-		this.#activeThumb.style.removeProperty('--thumb-position');
-		this.#draggingListener.abort();
-		this.#draggingListener = null;
-		this.#activeThumb = null;
-		this.#dragging = false;
-
-		this._padRelease();
-	}
-
 	_padRelease() {
 		this.#recentlyDragged = true;
 
 		setTimeout(() => {
 			this.#recentlyDragged = false;
 		}, PAD_RELEASE_TIMEOUT);
-	}
-
-	_preventBubbles(event) {
-		if (this.#recentlyDragged) {
-			event.preventDefault();
-			event.stopPropagation();
-		}
-	}
-
-	_keydown(event) {
-		const target = event.target;
-		if (target.disabled) {
-			return;
-		}
-
-		if (event.key === ' ') {
-			this.signal(Update_Checked, !target.checked);
-
-			event.preventDefault();
-			event.stopPropagation();
-		}
-	}
-
-	_labelClick(event) {
-		const target = event.target;
-		const checkbox = target.querySelector('input');
-
-		if (this.#recentlyDragged || !target.classList.contains('ba-switch') || checkbox.disabled) {
-			return;
-		}
-
-		this.signal(Update_Checked, !checkbox.checked);
-		event.preventDefault();
 	}
 
 	_determineChecked() {
