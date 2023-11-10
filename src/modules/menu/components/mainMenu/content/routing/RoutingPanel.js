@@ -10,6 +10,7 @@ import { TabIds } from '../../../../../../domain/mainMenu';
 import svg from './assets/arrowLeftShort.svg';
 import { setCategory, setRoute, setStatus, setWaypoints } from '../../../../../../store/routing/routing.action';
 import { RoutingStatusCodes } from '../../../../../../domain/routing';
+import { nothing } from '../../../../../../../node_modules/lit-html/lit-html';
 
 /**
  * Container for routing contents.
@@ -24,12 +25,19 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 		this._translationService = TranslationService;
 	}
 
-	createView() {
+	createView(model) {
+		const { active } = model;
 		const translate = (key) => this._translationService.translate(key);
-
 		const close = () => {
 			console.warn("Closing RoutingPanel is temporary implemented by setTab('maps').");
 			setTab(TabIds.MAPS);
+		};
+
+		const getRoutingContent = (active) => {
+			const content = html`<ba-routing-container></ba-routing-container>`;
+			const chunkName = 'routing';
+
+			return active ? html`<ba-lazy-load .chunkName=${chunkName} .content=${content}></ba-lazy-load>` : nothing;
 		};
 
 		return html`
@@ -47,13 +55,7 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 						</span>
 					</li>
 				</ul>
-				<div>
-					<ba-routing-feedback></ba-routing-feedback>
-					<ba-routing-category-bar></ba-routing-category-bar>
-					<ba-routing-waypoints></ba-routing-waypoints>
-					<ba-routing-info></ba-routing-info>
-					<ba-routing-details></ba-routing-details>
-				</div>
+				<div>${getRoutingContent(active)}</div>
 				<div class="chips__container">
 					<ba-profile-chip></ba-profile-chip>
 				</div>

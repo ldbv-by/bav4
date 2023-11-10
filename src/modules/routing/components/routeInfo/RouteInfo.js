@@ -27,20 +27,31 @@ export class RouteInfo extends MvuElement {
 		this._translationService = TranslationService;
 		this._routingService = RoutingService;
 		this._unitsService = UnitsService;
+		this._storeSubscriptions = [];
+	}
 
-		this.observe(
-			(store) => store.routing.status,
-			(status) => this.signal(Update_Status, status)
-		);
+	onInitialize() {
+		this._storeSubscriptions = [
+			this.observe(
+				(store) => store.routing.status,
+				(status) => this.signal(Update_Status, status)
+			),
 
-		this.observe(
-			(store) => store.routing.route,
-			(route) => this.signal(Update_Route, route)
-		);
-		this.observe(
-			(state) => state.routing.categoryId,
-			(categoryId) => this.signal(Update_Category, categoryId)
-		);
+			this.observe(
+				(store) => store.routing.route,
+				(route) => this.signal(Update_Route, route)
+			),
+			this.observe(
+				(state) => state.routing.categoryId,
+				(categoryId) => this.signal(Update_Category, categoryId)
+			)
+		];
+	}
+
+	onDisconnect() {
+		while (this._storeSubscriptions.length > 0) {
+			this._storeSubscriptions.shift()();
+		}
 	}
 
 	update(type, data, model) {

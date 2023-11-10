@@ -141,10 +141,14 @@ export const routingReducer = (state = initialState, action) => {
 			};
 		}
 		case ROUTING_INTERMEDIATE_SET: {
-			return {
-				...state,
-				intermediate: payload
-			};
+			const index = state.waypoints.findIndex((c) => equals(c, payload));
+			if (index === -1) {
+				return {
+					...state,
+					intermediate: payload
+				};
+			}
+			return { ...state };
 		}
 		case ROUTING_HIGHLIGHT_SEGMENTS_SET: {
 			return {

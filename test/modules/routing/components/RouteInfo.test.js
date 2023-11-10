@@ -280,8 +280,8 @@ describe('RouteInfo', () => {
 			const model = new RouteInfo().getModel();
 
 			expect(model).toEqual({
-				status: 900,
-				stats: jasmine.objectContaining({ time: 3600000, dist: 333, twoDiff: [111, 222] }),
+				status: null,
+				stats: null,
 				categoryId: null
 			});
 		});
@@ -538,6 +538,16 @@ describe('RouteInfo', () => {
 					expect(calculatorSpy).toHaveBeenCalled();
 				});
 			});
+		});
+	});
+
+	describe('when disconnected', () => {
+		it('removes all observers', async () => {
+			const element = await setup();
+
+			element.onDisconnect(); // we call onDisconnect manually
+
+			expect(element._storeSubscriptions).toHaveSize(0);
 		});
 	});
 });

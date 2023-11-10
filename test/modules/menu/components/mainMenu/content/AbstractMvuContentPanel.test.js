@@ -60,11 +60,11 @@ describe('AbstractMvuContentPanel', () => {
 		it('updates the model', async () => {
 			const element = await TestUtils.render(AbstractMvuContentPanelImpl.tag);
 
-			expect(element.active).toBeFalse();
+			expect(element.isActive()).toBeFalse();
 
-			element.active = true;
+			element.setActive(true);
 
-			expect(element.active).toBeTrue();
+			expect(element.isActive()).toBeTrue();
 			expect(element.getModel().active).toBeTrue();
 		});
 	});
