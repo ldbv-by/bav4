@@ -5,6 +5,8 @@
 	position: absolute;
 	scroll-behavior: smooth;
 	overflow: hidden;
+	-ms-overflow-style: none;
+	scrollbar-width: none;
 }
 .chips__button {
 	background: var(--chip-background-color);
