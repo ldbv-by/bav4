@@ -126,8 +126,8 @@ export class Waypoints extends MvuElement {
 			return listIndex === 0
 				? ` - ${translate('routing_waypoints_as_start')}`
 				: listIndex / 2 === waypoints.length
-				? ` - ${translate('routing_waypoints_as_destination')}`
-				: '';
+				  ? ` - ${translate('routing_waypoints_as_destination')}`
+				  : '';
 		};
 
 		const onDragStart = (e, waypoint) => {
