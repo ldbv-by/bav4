@@ -80,36 +80,48 @@ export class CatalogService {
 	 * @throws `Error` when storing was not successful
 	 * @returns {Promise<Boolean>} `true` when storing was successful
 	 */
-	async save(topicId, catalog) {
-		// eslint-disable-next-line no-console
-		console.log('🚀 ~ CatalogService ~ save ~ topicId:', topicId);
-		// eslint-disable-next-line no-console
-		console.log('🚀 ~ CatalogService ~ save ~ catalog:', catalog);
+	// Access to fetch at 'http://localhost:8075/ba-backend-v4/adminui/catalog/ba' from origin 'http://localhost:8080' has
+	// been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque
+	// response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.
+	//
+	// async save(topicId, catalog) {
+	// 	try {
+	// 		const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
+	// 		const url = `${configService.getValueAsPath('BACKEND_URL')}adminui/catalog/ba`;
 
-		// eslint-disable-next-line no-unused-vars
-		const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
+	// 		const response = await httpService.post(url, catalog, {
+	// 			headers: {
+	// 				'Content-Type': 'application/json',
+	// 				'X-AUTH-ADMIN-TOKEN': 'adminToken123'
+	// 			}
+	// 		});
+	// 		// eslint-disable-next-line no-console
+	// 		console.log('🚀 ~ file: CatalogService.js:94 ~ CatalogService ~ save ~ response:', response);
+
+	// 		// Handle success if needed
+	// 		// eslint-disable-next-line no-console
+	// 		console.log('Catalog successfully posted.');
+
+	// 		return true;
+	// 	} catch (error) {
+	// 		console.error('There has been a problem with your HTTP request:', error);
+	// 		return false;
+	// 	}
+	// }
+
+	async save(catalog) {
+		const { ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 
 		const url = `${configService.getValueAsPath('BACKEND_URL')}adminui/catalog/ba`;
-		// const headers = {
-		// 	'X-AUTH-ADMIN-TOKEN': 'adminToken123'
-		// };
-
-		// const ret = httpService.post(url, {
-		// 	headers: headers,
-		// 	mode: 'no-cors',
-		// 	timeout: 5000
-		// });
-		// console.log('🚀 ~ file: CatalogService.js:97 ~ CatalogService ~ save ~ ret:', ret);
-		// // const url = `${configService.getValueAsPath('BACKEND_URL')}georesource/info/${geoResource.id}`;
-		// // return httpService.get(url, { timeout: 5000 });
 
 		fetch(url, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				'X-AUTH-ADMIN-TOKEN': 'adminToken123' // include any other headers if required
+				'X-AUTH-ADMIN-TOKEN': 'adminToken123'
 			},
 			body: JSON.stringify(catalog)
+			// body: JSON.stringify(catalog)
 		})
 			// eslint-disable-next-line promise/prefer-await-to-then
 			.then(() => {
@@ -123,14 +135,6 @@ export class CatalogService {
 
 		return true;
 	}
-	// headers: {
-	//     "Content-Type": "application/json",
-
-	//   }
-
-	//   X-AUTH-ADMIN-TOKEN
-
-	//   adminToken123
 
 	/**
 	 * @private

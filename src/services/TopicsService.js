@@ -1,6 +1,7 @@
 /**
  * @module services/TopicsService
  */
+// @ts-ignore
 import { $injector } from '../injection';
 import { Topic } from '../domain/topic';
 import { loadBvvTopics } from './provider/topics.provider';

@@ -102,8 +102,7 @@ export class AdminPanel extends MvuElement {
 		const result = {};
 		if (obj.geoResourceId) {
 			result.geoResourceId = obj.geoResourceId;
-		}
-		if (obj.label) {
+		} else if (obj.label) {
 			result.label = obj.label;
 		}
 		if (obj.children && obj.children.length > 0) {
@@ -196,6 +195,8 @@ export class AdminPanel extends MvuElement {
 
 		try {
 			this.#topics = await this._topicsService.all();
+
+			// console.log(JSON.stringify(this.#topics));
 		} catch (error) {
 			console.warn(error.message);
 		}
@@ -449,7 +450,13 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const saveCatalog = async () => {
-			this._reduceData(catalogWithResourceData, this._extractOriginal);
+			const catalogToSave = this._reduceData(catalogWithResourceData, this._extractOriginal);
+			// eslint-disable-next-line no-console
+			console.log('🚀 ~ AdminPanel ~ saveCatalog ~ catalogToSave:', catalogToSave);
+
+			const xxx = await this._catalogService.save(catalogToSave);
+			// eslint-disable-next-line no-console
+			console.log('🚀 ~ file: AdminPanel.js:458 ~ AdminPanel ~ saveCatalog ~ xxx:', xxx);
 		};
 
 		const resetCatalog = async () => {
