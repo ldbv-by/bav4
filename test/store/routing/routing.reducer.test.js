@@ -1,6 +1,5 @@
-import { RoutingStatusCodes } from '../../../src/domain/routing';
+import { CoordinateProposalType, RoutingStatusCodes } from '../../../src/domain/routing';
 import {
-	CoordinateProposalType,
 	activate,
 	deactivate,
 	removeWaypoint,
