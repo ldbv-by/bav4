@@ -19,9 +19,10 @@ import {
 	getLineString,
 	multiLineStringToLineString,
 	isClockwise,
-	isPolygon
+	isPolygon,
+	getCoordinatesForElevationProfile
 } from '../../../../src/modules/olMap/utils/olGeometryUtils';
-import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing, MultiLineString } from 'ol/geom';
+import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing, MultiLineString, MultiPolygon } from 'ol/geom';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { fromLonLat } from 'ol/proj';
@@ -1161,5 +1162,95 @@ describe('isPolygon', () => {
 		expect(isPolygon(lineString.getCoordinates())).toBeFalse();
 		expect(isPolygon(linearRing.getCoordinates())).toBeTrue();
 		expect(isPolygon(polygon.getCoordinates()[0])).toBeTrue();
+	});
+
+	describe('getCoordinatesForElevationProfile', () => {
+		it('creates a simplified version of a geometry', () => {
+			expect(
+				getCoordinatesForElevationProfile(
+					new LineString([
+						[2, 2, 2],
+						[3, 3, 3]
+					])
+				)
+			).toEqual([
+				[2, 2],
+				[3, 3]
+			]);
+		});
+
+		it('returns an empty array when geometry cannot be converted to a LineString', () => {
+			const multiPolygon = new MultiPolygon([
+				new Polygon([
+					[
+						[3, 3],
+						[4, 4],
+						[4, 3],
+						[3, 3]
+					]
+				]),
+				new Polygon([
+					[
+						[5, 5],
+						[6, 6],
+						[5, 6],
+						[5, 5]
+					]
+				])
+			]);
+
+			expect(getCoordinatesForElevationProfile(multiPolygon)).toEqual([]);
+		});
+
+		it('returns an empty array when a geometry is not a ol geometry', () => {
+			const geometry = {};
+
+			expect(getCoordinatesForElevationProfile(geometry)).toEqual([]);
+		});
+	});
+
+	describe('getCoordinatesForElevationProfile', () => {
+		it('creates a simplified version of a geometry', () => {
+			expect(
+				getCoordinatesForElevationProfile(
+					new LineString([
+						[2, 2, 2],
+						[3, 3, 3]
+					])
+				)
+			).toEqual([
+				[2, 2],
+				[3, 3]
+			]);
+		});
+
+		it('returns an empty array when geometry cannot be converted to a LineString', () => {
+			const multiPolygon = new MultiPolygon([
+				new Polygon([
+					[
+						[3, 3],
+						[4, 4],
+						[4, 3],
+						[3, 3]
+					]
+				]),
+				new Polygon([
+					[
+						[5, 5],
+						[6, 6],
+						[5, 6],
+						[5, 5]
+					]
+				])
+			]);
+
+			expect(getCoordinatesForElevationProfile(multiPolygon)).toEqual([]);
+		});
+
+		it('returns an empty array when a geometry is not a ol geometry', () => {
+			const geometry = {};
+
+			expect(getCoordinatesForElevationProfile(geometry)).toEqual([]);
+		});
 	});
 });

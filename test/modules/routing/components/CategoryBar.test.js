@@ -64,7 +64,6 @@ describe('CategoryBar', () => {
 			const model = new CategoryBar().getModel();
 
 			expect(model).toEqual({
-				categories: [],
 				selectedCategory: null
 			});
 		});
@@ -93,6 +92,16 @@ describe('CategoryBar', () => {
 			expect(buttons[1].classList.contains('icon-category_2')).toBeTrue();
 			expect(buttons[2].classList.contains('category-button')).toBeTrue();
 			expect(buttons[2].classList.contains('icon-category_3')).toBeTrue();
+		});
+	});
+
+	describe('when disconnected', () => {
+		it('removes all observers', async () => {
+			const element = await setup();
+			const spy = spyOn(element, '_unsubscribeFromStore').and.callThrough();
+			element.onDisconnect(); // we call onDisconnect manually
+
+			expect(spy).toHaveBeenCalled();
 		});
 	});
 

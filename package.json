@@ -1,11 +1,11 @@
 {
 	"name": "bav4",
 	"dependencies": {
-		"@geoblocks/ol-maplibre-layer": "0.1.1",
+		"@geoblocks/ol-maplibre-layer": "0.1.2",
 		"chart.js": "4.4.0",
 		"dompurify": "3.0.6",
 		"geographiclib-geodesic": "2.0.0",
-		"lit-html": "3.0.0",
+		"lit-html": "3.0.2",
 		"maplibre-gl": "3.5.2",
 		"ol": "^8.1.0",
 		"proj4": "2.9.2",
@@ -21,7 +21,7 @@
 		"docdash": "2.0.2",
 		"dotenv-webpack": "8.0.1",
 		"es-check": "7.1.1",
-		"eslint": "8.52.0",
+		"eslint": "8.53.0",
 		"eslint-plugin-import": "2.29.0",
 		"eslint-plugin-promise": "6.1.1",
 		"gh-pages": "6.0.0",

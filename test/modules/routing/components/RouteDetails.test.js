@@ -298,12 +298,22 @@ describe('RouteDetails', () => {
 				categoryId: 'bike'
 			}
 		};
-		it('renders RoutingCharts', async () => {
+		it('renders RouteCharts', async () => {
 			const element = await setup(defaultRoutingState);
 
 			const chartElements = element.shadowRoot.querySelectorAll('ba-routing-chart');
 
 			expect(chartElements).toHaveSize(2);
+		});
+	});
+
+	describe('when disconnected', () => {
+		it('removes all observers', async () => {
+			const element = await setup();
+
+			element.onDisconnect(); // we call onDisconnect manually
+
+			expect(element._storeSubscriptions).toHaveSize(0);
 		});
 	});
 

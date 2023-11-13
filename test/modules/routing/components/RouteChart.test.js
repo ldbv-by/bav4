@@ -109,18 +109,14 @@ describe('RoutingChart', () => {
 			const containerElement = element.shadowRoot.querySelector('.container');
 
 			expect(containerElement).toBeTruthy();
-			expect(containerElement.querySelectorAll('.progress-bar')).toHaveSize(2);
-			expect(getComputedStyle(containerElement.querySelectorAll('.progress-bar')[0]).width).toBe('24%');
-			expect(getComputedStyle(containerElement.querySelectorAll('.progress-bar')[0]).backgroundColor).toBe('rgb(190, 190, 190)');
-			expect(getComputedStyle(containerElement.querySelectorAll('.progress-bar')[1]).width).toBe('76%');
-			expect(getComputedStyle(containerElement.querySelectorAll('.progress-bar')[1]).backgroundColor).toBe('rgb(238, 213, 183)');
+			expect(containerElement.querySelectorAll('.chart_section')).toHaveSize(1);
 			expect(containerElement.querySelectorAll('.highlight')).toHaveSize(2);
 			expect(containerElement.querySelectorAll('.highlight')[0].innerText.replace(/\s/g, '')).toBe('baz:18m');
 			expect(containerElement.querySelectorAll('.highlight')[1].innerText.replace(/\s/g, '')).toBe('bar:57m');
 			expect(containerElement.querySelector('.title').innerText).toBe('foo');
 		});
 
-		it('renders element with image style', async () => {
+		it('renders legend with image style', async () => {
 			const properties = {
 				label: 'foo',
 				items: [
@@ -146,9 +142,9 @@ describe('RoutingChart', () => {
 			const containerElement = element.shadowRoot.querySelector('.container');
 
 			expect(containerElement).toBeTruthy();
-			expect(containerElement.querySelectorAll('.progress-bar')).toHaveSize(1);
-			expect(getComputedStyle(containerElement.querySelectorAll('.progress-bar')[0]).backgroundColor).toBe('rgba(0, 0, 0, 0)');
-			expect(getComputedStyle(containerElement.querySelectorAll('.progress-bar')[0]).backgroundImage).toBe(
+			expect(containerElement.querySelectorAll('.legend_item')).toHaveSize(1);
+			expect(getComputedStyle(containerElement.querySelectorAll('.legend_item')[0]).backgroundColor).toBe('rgba(0, 0, 0, 0)');
+			expect(getComputedStyle(containerElement.querySelectorAll('.legend_item')[0]).backgroundImage).toBe(
 				'repeating-linear-gradient(45deg, rgb(238, 238, 238) 0px, rgb(238, 238, 238) 7px, rgb(153, 153, 153) 8px, rgb(153, 153, 153) 10px, rgb(238, 238, 238) 11px)'
 			);
 		});
@@ -206,16 +202,9 @@ describe('RoutingChart', () => {
 			const containerElement = element.shadowRoot.querySelector('.container');
 
 			expect(containerElement).toBeTruthy();
-			expect(containerElement.querySelectorAll('.progress-bar')[0].title).toBe('<1%');
-			expect(getComputedStyle(containerElement.querySelectorAll('.progress-bar')[0]).width).toBe('1%');
-			expect(containerElement.querySelectorAll('.progress-bar')[1].title).toBe('34%');
-			expect(getComputedStyle(containerElement.querySelectorAll('.progress-bar')[1]).width).toBe('34%');
-			expect(containerElement.querySelectorAll('.progress-bar')[2].title).toBe('56%');
-			expect(getComputedStyle(containerElement.querySelectorAll('.progress-bar')[2]).width).toBe('56%');
-
 			expect(containerElement.querySelectorAll('.highlight')[0].innerText.replace(/\s/g, '')).toBe('bar:18m');
-			expect(containerElement.querySelectorAll('.highlight')[1].innerText.replace(/\s/g, '')).toBe('foo:1234.00km');
-			expect(containerElement.querySelectorAll('.highlight')[2].innerText.replace(/\s/g, '')).toBe('baz:5678km');
+			expect(containerElement.querySelectorAll('.highlight')[1].innerText.replace(/\s/g, '')).toBe('foo:1.23km');
+			expect(containerElement.querySelectorAll('.highlight')[2].innerText.replace(/\s/g, '')).toBe('baz:6km');
 		});
 	});
 
@@ -395,6 +384,85 @@ describe('RoutingChart', () => {
 			progressBarElements[0].dispatchEvent(new Event('mouseout'));
 
 			expect(store.getState().routing.highlightedSegments).toBeNull();
+		});
+	});
+
+	describe('when configure chartjs chart', () => {
+		describe('with _getChartConfig', () => {
+			const routingChartItems = [
+				{ id: 'foo', label: 'Label Foo', data: { absolute: 8200, relative: 84, segments: [] }, color: 'rgb(238,213,183)' },
+				{ id: 'bar', label: 'Label Bar', data: { absolute: 4200, relative: 0, segments: [] }, color: 'rgb(123,213,183)' },
+				{
+					id: 'baz',
+					label: 'Label Baz',
+					data: { absolute: 21, relative: 0.1, segments: [[4, 5]] },
+					image: 'repeating-linear-gradient(45deg,gray 25%, transparent 25%,transparent 50%, gray 50%, gray 55%, transparent 55%, transparent)',
+					color: 'rgb(123,321,42)'
+				}
+			];
+			it('creates a chartConfig', async () => {
+				const element = await setup({});
+				const title = 'FooBar';
+				const actualChartConfig = element._getChartConfig(routingChartItems, title);
+
+				expect(actualChartConfig).toEqual(
+					jasmine.objectContaining({
+						type: 'doughnut',
+						data: {
+							labels: ['Label Foo', 'Label Bar', 'Label Baz'],
+							datasets: [
+								{
+									label: title,
+									data: [84, 0, 1],
+									backgroundColor: ['rgb(238,213,183)', 'rgb(123,213,183)', 'rgb(123,321,42)'],
+									hoverBorderWidth: 2,
+									hoverOffset: 4
+								}
+							]
+						},
+						options: {
+							onHover: jasmine.any(Function),
+							plugins: {
+								legend: { display: false },
+								tooltip: {
+									enabled: true,
+									mode: 'nearest',
+									callbacks: { label: jasmine.any(Function) }
+								}
+							},
+							borderWidth: 0,
+							borderAlign: 'inner',
+							cutout: '80%'
+						}
+					})
+				);
+			});
+
+			it('creates a chartConfig with a toolTip function', async () => {
+				const element = await setup({});
+				const title = 'FooBar';
+				const actualChartConfig = element._getChartConfig(routingChartItems, title);
+
+				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 0 })).toBe('8 km');
+				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 1 })).toBe('4.20 km');
+				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 2 })).toBe('21 m');
+				expect(store.getState().routing.highlightedSegments.segments).toEqual([[4, 5]]);
+			});
+
+			it('creates a chartConfig with a onHover function', async () => {
+				const element = await setup({});
+				const title = 'FooBar';
+				const actualChartConfig = element._getChartConfig(routingChartItems, title);
+
+				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 2 })).toBe('21 m');
+				expect(store.getState().routing.highlightedSegments.segments).toEqual([[4, 5]]);
+
+				actualChartConfig.options.onHover(new Event('foo'), ['something']);
+				expect(store.getState().routing.highlightedSegments.segments).toEqual([[4, 5]]);
+
+				actualChartConfig.options.onHover(new Event('foo'), []);
+				expect(store.getState().routing.highlightedSegments).toBeNull();
+			});
 		});
 	});
 });
