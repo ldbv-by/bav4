@@ -19,13 +19,33 @@ describe('CategoryBar', () => {
 			id: 'category_1',
 			label: 'label_category_1',
 			style: { color: 'red', icon: 'icon_category_1' },
-			subcategories: []
+			subcategories: [
+				{
+					id: 'category_11',
+					label: 'label_category_11',
+					style: { color: 'red', icon: 'icon_category_11' },
+					subcategories: []
+				},
+				{
+					id: 'category_12',
+					label: 'label_category_12',
+					style: {},
+					subcategories: []
+				}
+			]
 		},
 		{
 			id: 'category_2',
 			label: 'label_category_2',
 			style: { color: 'blue', icon: 'icon_category_2' },
-			subcategories: []
+			subcategories: [
+				{
+					id: 'category_21',
+					label: 'label_category_21',
+					style: { color: 'blue', icon: 'icon_category_21' },
+					subcategories: []
+				}
+			]
 		},
 		{
 			id: 'category_3',
@@ -37,7 +57,7 @@ describe('CategoryBar', () => {
 	const routingServiceMock = {
 		getCategoryById: () => {},
 		getCategories: () => categories,
-		getParent: () => 'foo'
+		getParent: (id) => (id !== 'category_3' && id !== null && id.length > 10 ? id.slice(0, -1) : id)
 	};
 	let store;
 
@@ -94,6 +114,30 @@ describe('CategoryBar', () => {
 			expect(icon[0].innerHTML.includes('icon_category_1')).toBeTrue();
 
 			expect(icon[1].innerHTML.includes('icon_category_2')).toBeTrue();
+		});
+
+		it('renders an active subcategory', async () => {
+			const element = await setup({ routing: { categoryId: 'category_12' } });
+
+			const icon = element.shadowRoot.querySelectorAll('.category-icon');
+
+			expect(icon).toHaveSize(2);
+			expect(icon[0].innerHTML.includes('icon_category_1')).toBeTrue();
+			expect(icon[0].classList.contains('is-active')).toBeTrue();
+
+			expect(icon[1].innerHTML.includes('icon_category_2')).toBeTrue();
+		});
+
+		it('renders an active category', async () => {
+			const element = await setup({ routing: { categoryId: 'category_2' } });
+
+			const icon = element.shadowRoot.querySelectorAll('.category-icon');
+
+			expect(icon).toHaveSize(2);
+			expect(icon[0].innerHTML.includes('icon_category_1')).toBeTrue();
+
+			expect(icon[1].innerHTML.includes('icon_category_2')).toBeTrue();
+			expect(icon[1].classList.contains('is-active')).toBeTrue();
 		});
 	});
 

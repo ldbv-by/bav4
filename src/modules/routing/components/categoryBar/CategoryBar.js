@@ -46,8 +46,9 @@ export class CategoryBar extends MvuElement {
 		const selectCategory = (categoryCandidate) => {
 			setCategory(categoryCandidate);
 		};
-		const renderCategoryIcon = (category) => {
-			const classes = { 'is-active': selectedCategory === category.id };
+		const renderCategoryIcon = (category, activeCategory) => {
+			// for the is-active state we have to use the parent categoryId on both ends
+			const classes = { 'is-active': this._routingService.getParent(activeCategory) === this._routingService.getParent(category.id) };
 			const iconSource = category.style.icon ?? this._routingService.getCategoryById(this._routingService.getParent(category.id))?.style.icon;
 			if (iconSource) {
 				return html`
@@ -71,7 +72,7 @@ export class CategoryBar extends MvuElement {
 						title=${category.label}
 						@click=${() => selectCategory(category.id)} class='category-button'
 					>
-					${renderCategoryIcon(category)}
+					${renderCategoryIcon(category, selectedCategory)}
 					</button>`;
 				})}
 			</div>
