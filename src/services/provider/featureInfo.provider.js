@@ -5,6 +5,7 @@ import { $injector } from '../../injection';
 import { GeoResourceAuthenticationType } from '../../domain/geoResources';
 import { FeatureInfoResult } from '../FeatureInfoService';
 import { MediaType } from '../../domain/mediaTypes';
+import { isHttpUrl } from '../../utils/checks';
 
 /**
  * A function that takes a coordinate and returns a promise with a FeatureInfoResult.
@@ -41,6 +42,7 @@ export const loadBvvFeatureInfo = async (geoResourceId, coordinate3857, mapResol
 
 		const requestPayload = {
 			...{
+				urlOrId: geoResource.id,
 				easting: coordinate3857[0],
 				northing: coordinate3857[1],
 				srid: 3857,
@@ -49,7 +51,9 @@ export const loadBvvFeatureInfo = async (geoResourceId, coordinate3857, mapResol
 			...determineCredential(geoResource)
 		};
 
-		const url = configService.getValueAsPath('BACKEND_URL') + `getFeature/${geoResourceId}`;
+		const url =
+			configService.getValueAsPath('BACKEND_URL') +
+			`getFeature/${isHttpUrl(geoResourceId) ? 'url' /**just a placeholder in that case */ : geoResourceId}`;
 
 		const result = await httpService.post(url, JSON.stringify(requestPayload), MediaType.JSON, {
 			timeout: 10000
