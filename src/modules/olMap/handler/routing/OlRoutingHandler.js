@@ -23,12 +23,14 @@ import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { unByKey } from 'ol/Observable';
 import { HelpTooltip } from '../../tooltip/HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
-import { setProposal, setRoute, setWaypoints } from '../../../../store/routing/routing.action';
+import { setProposal, setRoute, setRouteStats, setWaypoints } from '../../../../store/routing/routing.action';
 import { CoordinateProposalType, RoutingStatusCodes } from '../../../../domain/routing';
 import { fit } from '../../../../store/position/position.action';
 import { getCoordinatesForElevationProfile } from '../../utils/olGeometryUtils';
 import { updateCoordinates } from '../../../../store/elevationProfile/elevationProfile.action';
 import { equals } from '../../../../../node_modules/ol/coordinate';
+import { GeoJSON as GeoJSONFormat } from 'ol/format';
+import { SourceType, SourceTypeName } from '../../../../domain/sourceType';
 
 export const RoutingFeatureTypes = Object.freeze({
 	START: 'start',
@@ -439,7 +441,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 			this._routeLayerCopy.getSource().addFeature(segmentFeature);
 		}
 
-		updateCoordinates(getCoordinatesForElevationProfile(geometry));
+		this._updateStore(categoryResponse);
 	}
 
 	_displayAlternativeRoutingGeometry(categoryResponse) {
@@ -534,8 +536,6 @@ export class OlRoutingHandler extends OlLayerHandler {
 				const alternativeCategoryIds = this._routingService.getAlternativeCategoryIds(this._catId);
 				try {
 					this._currentRoutingResponse = await this._requestAndDisplayRoute(this._catId, alternativeCategoryIds, coordinates3857);
-					// update store
-					setRoute(this._currentRoutingResponse[this._catId]);
 				} catch (error) {
 					console.error(error);
 					emitNotification(`${this._translationService.translate('global_routingService_exception')}`, LevelTypes.ERROR);
@@ -544,6 +544,17 @@ export class OlRoutingHandler extends OlLayerHandler {
 			// enable interaction also if request failed
 			this._setInteractionsActive(true);
 		}
+	}
+
+	_updateStore(categoryResponse) {
+		const geom = this._polylineToGeometry(categoryResponse.paths[0].points);
+
+		// update stats
+		setRouteStats(this._routingService.calculateRouteStats(categoryResponse));
+		// update elevation profile coordinate
+		updateCoordinates(getCoordinatesForElevationProfile(geom));
+		// update route
+		setRoute({ data: new GeoJSONFormat().writeGeometry(geom), type: new SourceType(SourceTypeName.GEOJSON) });
 	}
 
 	_requestRouteFromInteractionLayer() {
