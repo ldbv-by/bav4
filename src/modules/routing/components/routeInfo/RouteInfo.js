@@ -5,6 +5,7 @@ import { html, nothing } from 'lit-html';
 import { RoutingStatusCodes } from '../../../../domain/routing';
 import { $injector } from '../../../../injection/index';
 import { MvuElement } from '../../../MvuElement';
+import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
 import css from './routeInfo.css';
 
 const Update_Status = 'update_status';
@@ -69,10 +70,10 @@ export class RouteInfo extends MvuElement {
 		const { status, stats, categoryId } = model;
 		const translate = (key) => this._translationService.translate(key);
 		const isVisible = status === RoutingStatusCodes.Ok;
-		const getCategory = (categoryId) => {
-			const parentId = this._routingService.getParent(categoryId);
-			return this._routingService.getCategoryById(parentId);
-		};
+		const parent = this._routingService.getCategoryById(this._routingService.getParent(categoryId));
+		const category = this._routingService.getCategoryById(categoryId);
+		const color = category?.style.color ?? parent?.style.color;
+		const iconSource = category?.style.icon ?? parent?.style.icon;
 
 		const getDuration = () => {
 			const estimate = this._estimateTimeFor(categoryId, stats) ?? stats.time;
@@ -96,15 +97,26 @@ export class RouteInfo extends MvuElement {
 			return stats ? this._unitsService.formatDistance(stats.twoDiff[1]) : '0';
 		};
 
+		const renderCategoryIcon = (iconSource) => {
+			if (iconSource) {
+				return html`
+					<svg class="category-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">${unsafeSVG(iconSource)}</svg>
+				`;
+			}
+			return nothing;
+		};
+
 		return isVisible
 			? html`<style>
 						${css}
 					</style>
 					<div class="header">
 						<span class="routing-info-duration" title=${translate('routing_info_duration')}>${stats ? getDuration() : '-:-'}</span>
-						<div class="badge routing-info-type" style=${`background:${getCategory(categoryId).color};`}>
-							<span class=${`icon icon-${categoryId}`}></span>
-							<span class="text">${getCategory(categoryId).label}<span>
+						<div class="badge routing-info-type" style=${`background:${color};`}>
+							<span class=${`icon icon-${categoryId}`}>
+							${renderCategoryIcon(iconSource)}
+							</span>
+							<span class="text">${category.label}<span>
 						</div>
 					</div>
 					<div class="container">
