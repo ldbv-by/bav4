@@ -71,7 +71,7 @@ export const setRouteStats = (routeStats) => {
 
 /**
  * Updates the `route` property.
- * @param {module:domain/routing~Route|null}  route the new Route or `null`
+ * @param {module:domain/routing~RouteGeometry|null}  route the new RouteGeometry or `null`
  * @function
  */
 export const setRoute = (route) => {
