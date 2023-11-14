@@ -62,23 +62,10 @@ test.describe('page', () => {
 			expect(description).toBe(templateParameters.description);
 		});
 
-		test('should contain 14 top level ba-components', async ({ page }) => {
-			expect(await page.locator('body > *').count()).toBe(14);
+		test('should contain 1 top level ba-components', async ({ page }) => {
+			expect(await page.locator('body > *').count()).toBe(1);
 
-			expect(await page.locator('ba-header').count()).toBe(1);
-			expect(await page.locator('ba-main-menu').count()).toBe(1);
-			expect(await page.locator('ba-dnd-import-panel').count()).toBe(1);
-			expect(await page.locator('ba-ol-map').count()).toBe(1);
-			expect(await page.locator('ba-chips').count()).toBe(1);
-			expect(await page.locator('ba-map-button-container').count()).toBe(1);
-			expect(await page.locator('ba-tool-bar').count()).toBe(1);
-			expect(await page.locator('ba-tool-container').count()).toBe(1);
-			expect(await page.locator('ba-footer').count()).toBe(1);
-			expect(await page.locator('ba-nonembedded-hint').count()).toBe(1);
-			expect(await page.locator('ba-theme-provider').count()).toBe(1);
-			expect(await page.locator('ba-notification-panel').count()).toBe(1);
-			expect(await page.locator('ba-modal').count()).toBe(1);
-			expect(await page.locator('ba-map-context-menu').count()).toBe(1);
+			expect(await page.locator('ba-adminpanel').count()).toBe(1);
 		});
 	});
 });
