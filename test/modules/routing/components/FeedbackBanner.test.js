@@ -64,4 +64,14 @@ describe('FeedbackBanner', () => {
 			expect(spans[0].innerText).toBe('routing_feedback_400');
 		});
 	});
+
+	describe('when disconnected', () => {
+		it('removes all observers', async () => {
+			const element = await setup();
+			const spy = spyOn(element, '_unsubscribeFromStore').and.callThrough();
+			element.onDisconnect(); // we call onDisconnect manually
+
+			expect(spy).toHaveBeenCalled();
+		});
+	});
 });

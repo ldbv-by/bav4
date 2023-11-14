@@ -67,10 +67,14 @@ export class WaypointItem extends MvuElement {
 	}
 
 	onInitialize() {
-		this.observe(
+		this._unsubscribeFromStore = this.observe(
 			(state) => state.routing.categoryId,
 			(categoryId) => this.signal(Update_Category, categoryId)
 		);
+	}
+
+	onDisconnect() {
+		this._unsubscribeFromStore();
 	}
 
 	update(type, data, model) {
@@ -92,10 +96,10 @@ export class WaypointItem extends MvuElement {
 		};
 
 		const getCategoryColor = (categoryId) => {
-			const parentId = this._routingService.getParent(categoryId);
-			const category = this._routingService.getCategoryById(parentId);
+			const parentCategory = this._routingService.getCategoryById(this._routingService.getParent(categoryId));
+			const category = this._routingService.getCategoryById(categoryId);
 
-			return category?.color;
+			return category?.style.color ?? parentCategory?.style.color;
 		};
 
 		const getLabel = (waypoint) => {

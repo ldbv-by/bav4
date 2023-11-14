@@ -165,6 +165,7 @@ describe('store utils', () => {
 			expect(eventLike.payload).toBe('payload');
 			expect(eventLike.id).toBeDefined();
 			expect(equals(new EventLike('some'), new EventLike('some'))).toBeFalse();
+			expect(new EventLike().payload).toBeNull();
 		});
 	});
 });

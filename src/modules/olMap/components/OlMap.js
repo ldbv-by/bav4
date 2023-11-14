@@ -326,8 +326,8 @@ export class OlMap extends MvuElement {
 				const olLayer = geoResource
 					? this._layerService.toOlLayer(id, geoResource, this._map)
 					: this._layerHandler.has(id)
-					? toOlLayerFromHandler(id, this._layerHandler.get(id), this._map)
-					: null;
+					  ? toOlLayerFromHandler(id, this._layerHandler.get(id), this._map)
+					  : null;
 				if (olLayer) {
 					const layer = layers.find((layer) => layer.id === id);
 					updateOlLayer(olLayer, layer);

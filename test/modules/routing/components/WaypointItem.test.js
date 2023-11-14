@@ -7,7 +7,7 @@ import { TestUtils } from '../../../test-utils';
 window.customElements.define(WaypointItem.tag, WaypointItem);
 
 describe('WaypointItem', () => {
-	const category = { color: 'rgb(128, 128, 128)' };
+	const category = { style: { color: 'rgb(128, 128, 128)' } };
 	const routingServiceMock = { getCategoryById: () => category, getParent: () => 'foo' };
 
 	const setup = async (waypoint = null) => {
@@ -100,6 +100,22 @@ describe('WaypointItem', () => {
 			expect(destinationElement.shadowRoot.querySelectorAll('#remove')).toHaveSize(1);
 		});
 
+		it('renders with parent category color', async () => {
+			spyOn(routingServiceMock, 'getCategoryById').and.callFake((id) => (id === 'foo' ? { style: { color: 'rgb(42, 42, 42)' } } : { style: {} }));
+			const waypointElement = await setup(defaultWaypoint);
+
+			expect(waypointElement.shadowRoot.querySelectorAll('.container')).toHaveSize(1);
+			expect(waypointElement.shadowRoot.querySelector('.icon').classList).toHaveSize(1);
+			expect(getComputedStyle(waypointElement.shadowRoot.querySelector('.icon')).background).toContain('rgb(42, 42, 42)');
+			expect(getComputedStyle(waypointElement.shadowRoot.querySelector('.line')).background).toContain('rgb(42, 42, 42)');
+			expect(waypointElement.shadowRoot.querySelector('span').innerText).toBe('routing_waypoints_waypoint 42 - [11.932 47.898]');
+
+			// waypoint action buttons
+			expect(waypointElement.shadowRoot.querySelectorAll('#increase')).toHaveSize(1);
+			expect(waypointElement.shadowRoot.querySelectorAll('#decrease')).toHaveSize(1);
+			expect(waypointElement.shadowRoot.querySelectorAll('#remove')).toHaveSize(1);
+		});
+
 		describe('when buttons clicked', () => {
 			it('raise CustomEvents', async () => {
 				const waypointElement = await setup(defaultWaypoint);
@@ -119,6 +135,16 @@ describe('WaypointItem', () => {
 				expect(decreaseSpy).toHaveBeenCalledOnceWith(jasmine.any(CustomEvent));
 				expect(removeSpy).toHaveBeenCalledOnceWith(jasmine.any(CustomEvent));
 			});
+		});
+	});
+
+	describe('when disconnected', () => {
+		it('removes all observers', async () => {
+			const element = await setup();
+			const spy = spyOn(element, '_unsubscribeFromStore').and.callThrough();
+			element.onDisconnect(); // we call onDisconnect manually
+
+			expect(spy).toHaveBeenCalled();
 		});
 	});
 
