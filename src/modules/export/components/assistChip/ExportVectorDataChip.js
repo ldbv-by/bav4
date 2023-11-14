@@ -11,6 +11,7 @@ const Update_Data = 'update_data';
 /**
  * AssistChip to show the availability of export actions
  * @class
+ * @extends {AbstractAssistChip}
  * @property {String} exportData the stringified representation of the features, available for an export
  * @author thiloSchlemmer
  */

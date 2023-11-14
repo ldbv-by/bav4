@@ -11,8 +11,10 @@ const Update_Coordinate = 'update_coordinate';
 const Update_Status = 'update_status';
 
 /**
- * An AssistChip to start a routing with a proposal point
+ * An AssistChip to start a routing with a proposal {@link module:domain/coordinateTypeDef~Coordinate}
  * @class
+ * @extends {AbstractAssistChip}
+ * @property {module:domain/coordinateTypeDef~Coordinate} coordinate the coordinate which should be used as a routing point(start or destination)
  * @author thiloSchlemmer
  */
 export class RoutingChip extends AbstractAssistChip {
@@ -23,10 +25,17 @@ export class RoutingChip extends AbstractAssistChip {
 		});
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
+	}
+
+	onInitialize() {
 		this._unsubscribeFromStore = this.observe(
 			(state) => state.routing.status,
 			(status) => this.signal(Update_Status, status)
 		);
+	}
+
+	onDisconnect() {
+		this._unsubscribeFromStore();
 	}
 
 	update(type, data, model) {
@@ -38,44 +47,25 @@ export class RoutingChip extends AbstractAssistChip {
 		}
 	}
 
-	/**
-	 * @override
-	 */
 	getIcon() {
 		return routingSvg;
 	}
 
-	/**
-	 * @override
-	 */
 	getLabel() {
 		const translate = (key) => this._translationService.translate(key);
 		return translate('chips_assist_chip_start_routing_here');
 	}
 
-	/**
-	 * @override
-	 */
 	isVisible() {
 		const { status, coordinate } = this.getModel();
 		return status === RoutingStatusCodes.Start_Destination_Missing && coordinate.length === 2;
 	}
 
-	/**
-	 * @override
-	 */
 	onClick() {
 		const { coordinate } = this.getModel();
 		const force2D = (coordinate) => coordinate.slice(0, 2);
 
 		setProposal(force2D(coordinate), CoordinateProposalType.START_OR_DESTINATION);
-	}
-
-	/**
-	 * @override
-	 */
-	onDisconnect() {
-		this._unsubscribeFromStore();
 	}
 
 	static get tag() {

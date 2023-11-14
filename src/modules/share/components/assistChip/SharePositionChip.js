@@ -16,6 +16,7 @@ const Update = 'update';
  * A chip to share a specified position with a link. The link refers
  * to the webapp itself with highlight-feature on the specified position.
  * @class
+ * @extends {AbstractAssistChip}
  * @property {module:domain/coordinateTypeDef~Coordinate} center The center coordinate of the shared position
  * @author thiloSchlemmer
  */
