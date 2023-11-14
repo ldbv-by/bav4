@@ -14,6 +14,7 @@ import { $injector } from '../../../../injection';
 import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { KML } from 'ol/format';
+import { Point } from '../../../../../node_modules/ol/geom';
 
 /**
  * BVV strategy for mapping an olFeature to a FeatureInfo item.
@@ -43,6 +44,8 @@ export const getBvvFeatureInfo = (olFeature, layerProperties) => {
 			PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES,
 			PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857
 		)?.getCoordinates() ?? [];
+	const routingProposalCoordinate = olFeature.getGeometry() instanceof Point ? olFeature.getGeometry().getCoordinates() : null;
+
 	const exportData = new KML().writeFeatures([olFeature], { featureProjection: 'EPSG:' + mapService.getSrid() });
 
 	const getContent = () => {
@@ -53,6 +56,7 @@ export const getBvvFeatureInfo = (olFeature, layerProperties) => {
 			<div class='chips__container'>
 				<ba-profile-chip .coordinates=${elevationProfileCoordinates}></ba-profile-chip>
 				<ba-export-vector-data-chip .exportData=${exportData}></ba-export-vector-data-chip>
+				<ba-routing-chip .coordinate=${routingProposalCoordinate}></ba-routing-chip>
 			</div>`;
 
 		return descContent

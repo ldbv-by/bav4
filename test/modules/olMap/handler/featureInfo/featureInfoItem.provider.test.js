@@ -9,10 +9,12 @@ import { FeatureInfoGeometryTypes } from '../../../../../src/store/featureInfo/f
 import { $injector } from '../../../../../src/injection';
 import { GeometryInfo } from '../../../../../src/modules/featureInfo/components/geometryInfo/GeometryInfo';
 import { ExportVectorDataChip } from '../../../../../src/modules/export/components/assistChip/ExportVectorDataChip';
+import { RoutingChip } from '../../../../../src/modules/routing/components/assistChip/RoutingChip';
 import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(GeometryInfo.tag, GeometryInfo);
 window.customElements.define(ExportVectorDataChip.tag, ExportVectorDataChip);
+window.customElements.define(RoutingChip.tag, RoutingChip);
 
 describe('FeatureInfo provider', () => {
 	const mapServiceMock = {
@@ -240,6 +242,24 @@ describe('FeatureInfo provider', () => {
 				const chipElement = target.querySelector('ba-export-vector-data-chip');
 
 				expect(chipElement.getModel().data.startsWith('<kml')).toBeTrue();
+			});
+
+			it('should supply routingChip with a routing proposal coordinate', () => {
+				const target = document.createElement('div');
+				const geoResourceId = 'geoResourceId';
+				spyOn(geoResourceServiceMock, 'byId').withArgs(geoResourceId).and.returnValue({ label: 'foo' } /*fake GeoResource */);
+				const layerProperties = { ...createDefaultLayerProperties(), geoResourceId: geoResourceId };
+				const geometry = new Point(coordinate);
+				let feature = new Feature({ geometry: geometry });
+				feature = new Feature({ geometry: new Point(coordinate) });
+				feature.set('name', 'name');
+
+				const featureInfo = getBvvFeatureInfo(feature, layerProperties);
+				render(featureInfo.content, target);
+
+				const chipElement = target.querySelector('ba-routing-chip');
+
+				expect(chipElement.getModel().coordinate).toEqual(coordinate);
 			});
 		});
 	});
