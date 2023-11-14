@@ -1,5 +1,5 @@
 import { RoutingChip } from '../../../../src/modules/routing/components/assistChip/RoutingChip';
-import { RoutingStatusCodes } from '../../../../src/domain/routing';
+import { CoordinateProposalType, RoutingStatusCodes } from '../../../../src/domain/routing';
 import { $injector } from '../../../../src/injection';
 import { setStatus } from '../../../../src/store/routing/routing.action';
 import { routingReducer } from '../../../../src/store/routing/routing.reducer';
@@ -9,6 +9,7 @@ import { TestUtils } from '../../../test-utils';
 window.customElements.define(RoutingChip.tag, RoutingChip);
 
 describe('RoutingChip', () => {
+	let store;
 	const defaultRoutingState = {
 		routing: {
 			status: RoutingStatusCodes.Start_Destination_Missing,
@@ -17,7 +18,7 @@ describe('RoutingChip', () => {
 	};
 
 	const setup = async (state = defaultRoutingState, properties = {}, attributes = {}) => {
-		TestUtils.setupStoreAndDi(state, { routing: routingReducer });
+		store = TestUtils.setupStoreAndDi(state, { routing: routingReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 
 		const element = await TestUtils.render(RoutingChip.tag, properties, attributes);
@@ -32,7 +33,7 @@ describe('RoutingChip', () => {
 			await setup();
 			const model = new RoutingChip().getModel();
 
-			expect(model).toEqual({ status: RoutingStatusCodes.Start_Destination_Missing, coordinate: [] });
+			expect(model).toEqual({ status: null, coordinate: [] });
 		});
 
 		it('properly implements abstract methods', async () => {
@@ -106,17 +107,19 @@ describe('RoutingChip', () => {
 	});
 
 	describe('when chip is clicked', () => {
-		// TODO: waiting for a updated implementation of the routing slice-of state
-		it('changes something on click', async () => {
+		it('changes proposal coordinate on click', async () => {
 			const state = { routing: { status: RoutingStatusCodes.Start_Destination_Missing } };
+
 			const properties = { coordinate: coordinate };
 			const element = await setup(state, properties);
 			const button = element.shadowRoot.querySelector('button');
-			const warnSpy = spyOn(console, 'warn').and.callFake(() => {});
 
 			button.click();
 
-			expect(warnSpy).toHaveBeenCalledWith('waiting for implementation of proposalCoordinate:', [42, 21]);
+			expect(store.getState().routing.proposal.payload).toEqual({
+				coord: coordinate,
+				type: CoordinateProposalType.START_OR_DESTINATION
+			});
 		});
 	});
 

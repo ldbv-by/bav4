@@ -1,4 +1,3 @@
-import './i18n';
 import { RoutingChip } from './components/assistChip/RoutingChip';
 
 if (!window.customElements.get(RoutingChip.tag)) {

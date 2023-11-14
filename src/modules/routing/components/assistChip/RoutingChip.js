@@ -1,8 +1,9 @@
 /**
  * @module modules/routing/components/assistChip/RoutingChip
  */
-import { RoutingStatusCodes } from '../../../../domain/routing';
+import { CoordinateProposalType, RoutingStatusCodes } from '../../../../domain/routing';
 import { $injector } from '../../../../injection/index';
+import { setProposal } from '../../../../store/routing/routing.action';
 import { AbstractAssistChip } from '../../../chips/components/assistChips/AbstractAssistChip';
 import routingSvg from '../assets/direction.svg';
 
@@ -67,8 +68,7 @@ export class RoutingChip extends AbstractAssistChip {
 		const { coordinate } = this.getModel();
 		const force2D = (coordinate) => coordinate.slice(0, 2);
 
-		console.warn('waiting for implementation of proposalCoordinate:', force2D(coordinate));
-		// TODO: waiting for s-o-s for a routing proposal coordinate
+		setProposal(force2D(coordinate), CoordinateProposalType.START_OR_DESTINATION);
 	}
 
 	/**
