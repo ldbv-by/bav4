@@ -6,6 +6,7 @@ describe('i18n for chips module', () => {
 
 		expect(map.chips_assist_chip_elevation_profile).toBe('Geländeprofil');
 		expect(map.chips_assist_chip_export).toBe('Export');
+		expect(map.chips_assist_chip_start_routing_here).toBe('Route planen');
 	});
 
 	it('provides translation for en', () => {
@@ -13,10 +14,11 @@ describe('i18n for chips module', () => {
 
 		expect(map.chips_assist_chip_elevation_profile).toBe('Elevation Profile');
 		expect(map.chips_assist_chip_export).toBe('Export');
+		expect(map.chips_assist_chip_start_routing_here).toBe('Plan a route');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 2;
+		const expectedSize = 3;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
