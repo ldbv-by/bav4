@@ -7,7 +7,7 @@ import { $injector } from '../../../../injection/index';
 import { MvuElement } from '../../../MvuElement';
 import css from './routeDetails.css';
 
-const Update_Route = 'update_route';
+const Update_Route_Stats = 'update_route_stats';
 const Update_Status = 'update_status';
 
 /**
@@ -31,8 +31,8 @@ export class RouteDetails extends MvuElement {
 				(status) => this.signal(Update_Status, status)
 			),
 			this.observe(
-				(store) => store.routing.route,
-				(route) => this.signal(Update_Route, route)
+				(store) => store.routing.stats,
+				(stats) => this.signal(Update_Route_Stats, stats)
 			)
 		];
 	}
@@ -43,10 +43,10 @@ export class RouteDetails extends MvuElement {
 	}
 
 	update(type, data, model) {
-		const createChartData = (route) => this._createChartData(this._routingService.calculateRouteStats(route));
-		const createWarnings = (route) => this._createWarnings(this._routingService.calculateRouteStats(route));
+		const createChartData = (stats) => this._createChartData(stats);
+		const createWarnings = (stats) => this._createWarnings(stats);
 		switch (type) {
-			case Update_Route:
+			case Update_Route_Stats:
 				return { ...model, warnings: createWarnings(data), chartData: createChartData(data) };
 			case Update_Status:
 				return { ...model, status: data };

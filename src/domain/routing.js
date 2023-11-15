@@ -1,6 +1,13 @@
 /**
  * @module domain/routing
  */
+
+/**
+ * @typedef  RouteGeometry
+ * @property {String} data the data
+ * @property {SourceType} sourceType the {@link SourceType} of the data
+ */
+
 /**
  * @typedef  RoutingCategory
  * @property {string} id The id of this category
