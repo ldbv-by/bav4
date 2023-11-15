@@ -43,8 +43,8 @@ export class RouteDetails extends MvuElement {
 	}
 
 	update(type, data, model) {
-		const createChartData = (stats) => this._createChartData(this._routingService.calculateRouteStats(stats));
-		const createWarnings = (stats) => this._createWarnings(this._routingService.calculateRouteStats(stats));
+		const createChartData = (stats) => this._createChartData(stats);
+		const createWarnings = (stats) => this._createWarnings(stats);
 		switch (type) {
 			case Update_Route_Stats:
 				return { ...model, warnings: createWarnings(data), chartData: createChartData(data) };
