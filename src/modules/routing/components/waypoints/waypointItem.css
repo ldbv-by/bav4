@@ -11,6 +11,9 @@
 	padding: 0;
 	position: relative;
 	left: -0.7em;
+	display: grid;
+	align-content: center;
+	justify-content: center;
 }
 
 .icon-bg {
@@ -64,12 +67,8 @@
 	margin: auto;
 }
 
-.waypoint-text {
-	margin: 0;
-	position: absolute;
+.waypoint-index {
 	font-weight: bold;
-	top: 2.6em;
-	left: 1.5em;
 	font-size: 0.9em;
 	color: black;
 }

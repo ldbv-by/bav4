@@ -104,7 +104,7 @@ export class WaypointItem extends MvuElement {
 		};
 
 		const getWaypointIndex = () => {
-			return !waypoint?.isDestination && !waypoint?.isStart ? html`<div class="waypoint-text">${waypoint?.index}</div>` : '';
+			return !waypoint?.isDestination && !waypoint?.isStart ? html`<div class="waypoint-index">${waypoint?.index}</div>` : '';
 		};
 
 		const getLabel = (waypoint) => {
@@ -127,8 +127,7 @@ export class WaypointItem extends MvuElement {
 					</style>
 					<div class="container" title="${label} [${round(coordinate[0], 3)} ${round(coordinate[1], 3)}]">
 						<div class="icon-bg ${classMap(classes)}">
-							<div class="icon"></div>
-							${getWaypointIndex()}
+							<div class="icon">${getWaypointIndex()}</div>
 						</div>
 						<div class="line" style=${`background:${getCategoryColor(categoryId)};`}></div>
 						<span class="text"><b>${label} - [${round(coordinate[0], 3)} ${round(coordinate[1], 3)}]</b></span>
