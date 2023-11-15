@@ -92,7 +92,8 @@ export class WaypointItem extends MvuElement {
 
 		const classes = {
 			start: waypoint?.isStart,
-			destination: waypoint?.isDestination
+			destination: waypoint?.isDestination,
+			intermediate: !waypoint?.isDestination && !waypoint?.isStart
 		};
 
 		const getCategoryColor = (categoryId) => {
@@ -100,6 +101,10 @@ export class WaypointItem extends MvuElement {
 			const category = this._routingService.getCategoryById(categoryId);
 
 			return category?.style.color ?? parentCategory?.style.color;
+		};
+
+		const getWaypointIndex = () => {
+			return !waypoint?.isDestination && !waypoint?.isStart ? html`<div class="waypoint-text">${waypoint?.index}</div>` : '';
 		};
 
 		const getLabel = (waypoint) => {
@@ -122,7 +127,8 @@ export class WaypointItem extends MvuElement {
 					</style>
 					<div class="container" title="${label} [${round(coordinate[0], 3)} ${round(coordinate[1], 3)}]">
 						<div class="icon-bg ${classMap(classes)}">
-							<div class="icon" style=${`background:${getCategoryColor(categoryId)};`}></div>
+							<div class="icon"></div>
+							${getWaypointIndex()}
 						</div>
 						<div class="line" style=${`background:${getCategoryColor(categoryId)};`}></div>
 						<span class="text"><b>${label} - [${round(coordinate[0], 3)} ${round(coordinate[1], 3)}]</b></span>
