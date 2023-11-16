@@ -48,7 +48,7 @@ export const updateContextMenu = (content) => {
  * Closes the ContextMenu.
  * @function
  */
-export const close = () => {
+export const closeContextMenu = () => {
 	getStore().dispatch({
 		type: MAP_CONTEXT_MENU_CHANGED,
 		payload: { coordinate: null, content: null }

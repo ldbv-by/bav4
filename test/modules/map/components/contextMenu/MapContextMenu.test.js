@@ -4,7 +4,7 @@ import { TestUtils } from '../../../../test-utils.js';
 import { $injector } from '../../../../../src/injection';
 import { html } from 'lit-html';
 import { mapContextMenuReducer } from '../../../../../src/store/mapContextMenu/mapContextMenu.reducer';
-import { close, openContextMenu } from '../../../../../src/store/mapContextMenu/mapContextMenu.action';
+import { closeContextMenu, openContextMenu } from '../../../../../src/store/mapContextMenu/mapContextMenu.action';
 import { initialState, modalReducer } from '../../../../../src/store/modal/modal.reducer';
 window.customElements.define(MapContextMenu.tag, MapContextMenu);
 
@@ -46,7 +46,7 @@ describe('MapContextMenu', () => {
 			expect(window.getComputedStyle(container).display).toBe('block');
 			expect(content.innerText).toBe('bar');
 
-			close();
+			closeContextMenu();
 
 			expect(element.shadowRoot.querySelector('.context-menu')).toBeFalsy();
 		});

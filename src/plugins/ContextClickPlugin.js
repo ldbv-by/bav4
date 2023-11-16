@@ -4,7 +4,7 @@
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 import { html } from 'lit-html';
-import { close, openContextMenu } from '../store/mapContextMenu/mapContextMenu.action';
+import { closeContextMenu, openContextMenu } from '../store/mapContextMenu/mapContextMenu.action';
 import { $injector } from '../injection';
 import { createUniqueId } from '../utils/numberUtils';
 import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
@@ -49,7 +49,7 @@ export class ContextClickPlugin extends BaPlugin {
 					closeBottomSheet();
 				}
 			} else {
-				close();
+				closeContextMenu();
 			}
 		};
 
