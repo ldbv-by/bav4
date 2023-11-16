@@ -5,7 +5,7 @@
 		"chart.js": "4.4.0",
 		"dompurify": "3.0.6",
 		"geographiclib-geodesic": "2.0.0",
-		"lit-html": "3.0.2",
+		"lit-html": "3.1.0",
 		"maplibre-gl": "3.6.1",
 		"ol": "^8.2.0",
 		"proj4": "2.9.2",
