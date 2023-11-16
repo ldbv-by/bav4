@@ -26,7 +26,7 @@ const getStore = () => {
  * @function
  * @param {ContextMenuData} content the data to display the contextmenu at a specific point with specific entries
  */
-export const open = (coordinate, content) => {
+export const openContextMenu = (coordinate, content) => {
 	getStore().dispatch({
 		type: MAP_CONTEXT_MENU_CHANGED,
 		payload: { coordinate: coordinate, content: content }

@@ -1,6 +1,6 @@
 import { TestUtils } from '../../test-utils.js';
 import { mapContextMenuReducer } from '../../../src/store/mapContextMenu/mapContextMenu.reducer';
-import { close, open, updateContextMenu } from '../../../src/store/mapContextMenu/mapContextMenu.action';
+import { close, openContextMenu, updateContextMenu } from '../../../src/store/mapContextMenu/mapContextMenu.action';
 
 describe('mapContextMenu', () => {
 	const setup = (state) => {
@@ -18,7 +18,7 @@ describe('mapContextMenu', () => {
 	it('updates the "coordinate" and "data" property', () => {
 		const store = setup();
 
-		open([21, 42], 'content');
+		openContextMenu([21, 42], 'content');
 
 		const { coordinate, content } = store.getState().mapContextMenu;
 		expect(coordinate).toEqual([21, 42]);
