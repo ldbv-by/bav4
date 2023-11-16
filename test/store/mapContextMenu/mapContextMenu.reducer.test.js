@@ -1,6 +1,6 @@
 import { TestUtils } from '../../test-utils.js';
 import { mapContextMenuReducer } from '../../../src/store/mapContextMenu/mapContextMenu.reducer';
-import { close, open } from '../../../src/store/mapContextMenu/mapContextMenu.action';
+import { closeContextMenu, openContextMenu, updateContextMenu } from '../../../src/store/mapContextMenu/mapContextMenu.action';
 
 describe('mapContextMenu', () => {
 	const setup = (state) => {
@@ -13,28 +13,51 @@ describe('mapContextMenu', () => {
 		const store = setup();
 		expect(store.getState().mapContextMenu.coordinate).toBeNull();
 		expect(store.getState().mapContextMenu.content).toBeNull();
+		expect(store.getState().mapContextMenu.active).toBeFalse();
 	});
 
-	it("updates the 'coordinate' and 'data' property", () => {
+	it('updates the "coordinate" and "data" property', () => {
 		const store = setup();
 
-		open([21, 42], 'content');
+		openContextMenu([21, 42], 'content');
 
-		const { coordinate, content } = store.getState().mapContextMenu;
+		const { coordinate, content, active } = store.getState().mapContextMenu;
 		expect(coordinate).toEqual([21, 42]);
 		expect(content).toBe('content');
+		expect(active).toBeTrue();
 	});
 
-	it('updates the mode property', () => {
+	it('resets all properties', () => {
 		const store = setup({
 			mapContextMenu: {
 				coordinate: [21, 42],
-				content: 'content'
+				content: 'content',
+				active: true
 			}
 		});
 
-		close();
+		closeContextMenu();
 
-		expect(store).toBeNull;
+		const { coordinate, content, active } = store.getState().mapContextMenu;
+		expect(coordinate).toBeNull();
+		expect(content).toBeNull();
+		expect(active).toBeFalse();
+	});
+
+	it('updates the "content" property', () => {
+		const store = setup({
+			mapContextMenu: {
+				coordinate: [21, 42],
+				content: 'content',
+				active: true
+			}
+		});
+
+		updateContextMenu('new content');
+
+		const { coordinate, content, active } = store.getState().mapContextMenu;
+		expect(coordinate).toEqual([21, 42]);
+		expect(content).toBe('new content');
+		expect(active).toBeTrue();
 	});
 });
