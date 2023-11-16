@@ -10,13 +10,15 @@
 
 	--thumb-color: var(--thumb);
 	--thumb-color-active: var(--secondary-color);
+	--thumb-color-active: var(--primary-color);
 	--thumb-color-highlight: var(--thumb-highlight);
 
 	--track-size: calc(var(--thumb-size) * 2);
-	--track-padding: 0.5em;
+	--track-padding: 0.25em;
 
 	--track-inactive: var(--secondary-bg-color);
 	--track-active: var(--primary-color);
+	--track-active: var(--primary-color-lighter);
 
 	--track-color-inactive: var(--track-inactive);
 	--track-color-active: var(--track-active);
@@ -64,7 +66,12 @@
 	--thumb-transition-duration: var(--animation-duration-small-open);
 	touch-action: pan-y;
 	transition: background-color var(--thumb-transition-duration) ease;
-	border: 0.15em solid var(--tertiary-bg-color);
+	border: 0.2em solid transparent;
+	transition: box-shadow var(--animation-duration-small-open) ease;
+}
+.ba-switch > input:focus-visible {
+	border: 0.2em solid var(--tertiary-bg-color);
+	box-shadow: 0 0 0 0.2em var(--primary-color-lighter);
 }
 
 .ba-switch > input::before {
