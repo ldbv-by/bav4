@@ -9,7 +9,6 @@ import { fromLonLat } from 'ol/proj';
 import VectorSource from 'ol/source/Vector';
 import { OlElevationProfileHandler } from '../../../../../src/modules/olMap/handler/elevationProfile/OlElevationProfileHandler';
 import { InteractionStateType } from '../../../../../src/modules/olMap/utils/olInteractionUtils';
-import { closeProfile, openProfile } from '../../../../../src/store/elevationProfile/elevationProfile.action';
 import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer';
 import { TestUtils } from '../../../../test-utils';
 
