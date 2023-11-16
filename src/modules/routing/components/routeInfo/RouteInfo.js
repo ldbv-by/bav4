@@ -9,7 +9,7 @@ import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
 import css from './routeInfo.css';
 
 const Update_Status = 'update_status';
-const Update_Route = 'update_route';
+const Update_Route_Stats = 'update_route_stats';
 const Update_Category = 'update_category';
 
 const Minute_In_Seconds = 60;
@@ -38,8 +38,8 @@ export class RouteInfo extends MvuElement {
 			),
 
 			this.observe(
-				(store) => store.routing.route,
-				(route) => this.signal(Update_Route, route)
+				(store) => store.routing.stats,
+				(stats) => this.signal(Update_Route_Stats, stats)
 			),
 			this.observe(
 				(state) => state.routing.categoryId,
@@ -55,12 +55,11 @@ export class RouteInfo extends MvuElement {
 	}
 
 	update(type, data, model) {
-		const createStatistics = (route) => this._routingService.calculateRouteStats(route);
 		switch (type) {
 			case Update_Status:
 				return { ...model, status: data };
-			case Update_Route:
-				return { ...model, stats: createStatistics(data) };
+			case Update_Route_Stats:
+				return { ...model, stats: data };
 			case Update_Category:
 				return { ...model, categoryId: data };
 		}

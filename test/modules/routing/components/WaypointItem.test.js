@@ -54,11 +54,12 @@ describe('WaypointItem', () => {
 		it('renders the waypoint view', async () => {
 			const waypointElement = await setup(defaultWaypoint);
 
+			expect(waypointElement.shadowRoot.querySelector('.icon-bg').classList.contains('intermediate')).toBeTrue();
 			expect(waypointElement.shadowRoot.querySelectorAll('.container')).toHaveSize(1);
 			expect(waypointElement.shadowRoot.querySelector('.icon').classList).toHaveSize(1);
-			expect(getComputedStyle(waypointElement.shadowRoot.querySelector('.icon')).background).toContain('rgb(128, 128, 128)');
 			expect(getComputedStyle(waypointElement.shadowRoot.querySelector('.line')).background).toContain('rgb(128, 128, 128)');
 			expect(waypointElement.shadowRoot.querySelector('span').innerText).toBe('routing_waypoints_waypoint 42 - [11.932 47.898]');
+			expect(waypointElement.shadowRoot.querySelectorAll('.waypoint-index')).toHaveSize(1);
 
 			// waypoint action buttons
 			expect(waypointElement.shadowRoot.querySelectorAll('#increase')).toHaveSize(1);
@@ -70,9 +71,9 @@ describe('WaypointItem', () => {
 			const startElement = await setup(startWaypoint);
 
 			expect(startElement.shadowRoot.querySelector('.icon-bg').classList.contains('start')).toBeTrue();
-			expect(getComputedStyle(startElement.shadowRoot.querySelector('.icon')).background).toContain('rgb(128, 128, 128)');
 			expect(getComputedStyle(startElement.shadowRoot.querySelector('.line')).background).toContain('rgb(128, 128, 128)');
 			expect(startElement.shadowRoot.querySelector('span').innerText).toBe('routing_waypoints_start - [11.932 47.898]');
+			expect(startElement.shadowRoot.querySelectorAll('.waypoint-index')).toHaveSize(0);
 
 			const decreaseIconElement = startElement.shadowRoot.querySelector('#decrease');
 			expect(decreaseIconElement).toBeTruthy();
@@ -87,9 +88,9 @@ describe('WaypointItem', () => {
 			const destinationElement = await setup(destinationWaypoint);
 
 			expect(destinationElement.shadowRoot.querySelector('.icon-bg').classList.contains('destination')).toBeTrue();
-			expect(getComputedStyle(destinationElement.shadowRoot.querySelector('.icon')).background).toContain('rgb(128, 128, 128)');
 			expect(getComputedStyle(destinationElement.shadowRoot.querySelector('.line')).background).toContain('rgb(128, 128, 128)');
 			expect(destinationElement.shadowRoot.querySelector('span').innerText).toBe('routing_waypoints_destination - [11.932 47.898]');
+			expect(destinationElement.shadowRoot.querySelectorAll('.waypoint-index')).toHaveSize(0);
 
 			const increaseIconElement = destinationElement.shadowRoot.querySelector('#increase');
 			expect(increaseIconElement).toBeTruthy();
@@ -106,7 +107,6 @@ describe('WaypointItem', () => {
 
 			expect(waypointElement.shadowRoot.querySelectorAll('.container')).toHaveSize(1);
 			expect(waypointElement.shadowRoot.querySelector('.icon').classList).toHaveSize(1);
-			expect(getComputedStyle(waypointElement.shadowRoot.querySelector('.icon')).background).toContain('rgb(42, 42, 42)');
 			expect(getComputedStyle(waypointElement.shadowRoot.querySelector('.line')).background).toContain('rgb(42, 42, 42)');
 			expect(waypointElement.shadowRoot.querySelector('span').innerText).toBe('routing_waypoints_waypoint 42 - [11.932 47.898]');
 

@@ -103,6 +103,9 @@ describe('OlMapContextMenuContent', () => {
 
 			expect(element.shadowRoot.querySelectorAll('ba-map-feedback-chip')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('ba-map-feedback-chip')[0].center).toBe(coordinateMock);
+
+			expect(element.shadowRoot.querySelectorAll('ba-routing-chip')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-routing-chip')[0].coordinate).toBe(coordinateMock);
 		});
 
 		it('renders selectable content', async () => {
