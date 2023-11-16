@@ -3,7 +3,8 @@ export const MAP_CONTEXT_MENU_CONTENT_CHANGED = 'contextMenu/contentChanged';
 
 export const initialState = {
 	coordinate: null,
-	content: null
+	content: null,
+	active: false
 };
 
 export const mapContextMenuReducer = (state = initialState, action) => {
@@ -13,7 +14,8 @@ export const mapContextMenuReducer = (state = initialState, action) => {
 			return {
 				...state,
 				coordinate: payload.coordinate,
-				content: payload.content
+				content: payload.content,
+				active: !!payload.coordinate
 			};
 		}
 		case MAP_CONTEXT_MENU_CONTENT_CHANGED: {
