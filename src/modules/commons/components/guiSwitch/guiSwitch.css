@@ -4,17 +4,18 @@
 	gap: 2ch;
 	justify-content: space-between;
 
-	--thumb-size: 2rem;
-	--thumb: var(--primary-bg-color);
+	--thumb-size: 1.4rem;
+	--thumb: var(--text2);
 	--thumb-highlight: hsl(var(--brand-hue) 0% 100% / 25%); /* todo:transform to/replace with a global defined color */
 
 	--thumb-color: var(--thumb);
+	--thumb-color-active: var(--secondary-color);
 	--thumb-color-highlight: var(--thumb-highlight);
 
 	--track-size: calc(var(--thumb-size) * 2);
-	--track-padding: 2px;
+	--track-padding: 0.5em;
 
-	--track-inactive: hsl(var(--brand-hue) 0% 35%); /* todo:transform to/replace with a global defined color */
+	--track-inactive: var(--secondary-bg-color);
 	--track-active: var(--primary-color);
 
 	--track-color-inactive: var(--track-inactive);
@@ -46,7 +47,6 @@
 .ba-switch > input {
 	appearance: none;
 	pointer-events: none;
-	border: none;
 	outline-offset: 5px;
 	box-sizing: content-box;
 
@@ -61,11 +61,10 @@
 	align-items: center;
 	grid: [track] 1fr / [track] 1fr;
 	--thumb-position: 0%;
-	--thumb-transition-duration: 0.25s;
-
+	--thumb-transition-duration: var(--animation-duration-small-open);
 	touch-action: pan-y;
-
-	transition: background-color 0.25s ease;
+	transition: background-color var(--thumb-transition-duration) ease;
+	border: 0.15em solid var(--tertiary-bg-color);
 }
 
 .ba-switch > input::before {
@@ -82,19 +81,14 @@
 	background: var(--thumb-color);
 	box-shadow: 0 0 0 var(--highlight-size) var(--thumb-color-highlight);
 	border-radius: 50%;
-
-	@media (--motionOK) {
-		& {
-			transition:
-				transform var(--thumb-transition-duration) ease,
-				box-shadow 0.25s ease;
-		}
-	}
+	transition:
+		transform var(--thumb-transition-duration) ease,
+		box-shadow 0.25s ease;
 }
 
 .ba-switch > input:disabled {
 	cursor: not-allowed;
-	--thumb-color: transparent;
+	--thumb-color: transparent !important;
 }
 
 .ba-switch > input:disabled::before {
@@ -111,6 +105,7 @@
 .ba-switch > input:checked {
 	background: var(--track-color-active);
 	--thumb-position: calc((var(--track-size) - 100%) * var(--isLTR));
+	--thumb-color: var(--thumb-color-active);
 }
 
 /* positioned in the center of the track: half the track - half the thumb */
