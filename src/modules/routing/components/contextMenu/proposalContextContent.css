@@ -13,7 +13,6 @@ button {
 	background: transparent;
 	border: none;
 	background-color: var(--primary-color);
-	color: var(--text3);
 	opacity: 0.8;
 	font-weight: bold;
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
