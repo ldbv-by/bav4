@@ -546,13 +546,15 @@ export class OlRoutingHandler extends OlLayerHandler {
 		}
 	}
 
-	_updateStore(categoryResponse) {
-		const geom = this._polylineToGeometry(categoryResponse.paths[0].points);
+	async _updateStore(ghRoute) {
+		const geom = this._polylineToGeometry(ghRoute.paths[0].points);
+		const profileCoordinates = getCoordinatesForElevationProfile(geom);
 
 		// update stats
-		setRouteStats(this._routingService.calculateRouteStats(categoryResponse));
+		const routeStats = await this._routingService.calculateRouteStats(ghRoute, profileCoordinates);
+		setRouteStats(routeStats);
 		// update elevation profile coordinate
-		updateCoordinates(getCoordinatesForElevationProfile(geom));
+		updateCoordinates(profileCoordinates);
 		// update route
 		setRoute({ data: new GeoJSONFormat().writeGeometry(geom), type: new SourceType(SourceTypeName.GEOJSON) });
 	}

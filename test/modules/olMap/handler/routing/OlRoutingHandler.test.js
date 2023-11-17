@@ -667,7 +667,7 @@ describe('OlRoutingHandler', () => {
 		describe('_updateStore', () => {
 			it('updates different slices-of-state', async () => {
 				const { instanceUnderTest, store } = await newTestInstance();
-				const categoryResponse = {
+				const ghRoute = {
 					vehicle: 'foo',
 					paths: [
 						{
@@ -677,9 +677,9 @@ describe('OlRoutingHandler', () => {
 					]
 				};
 				const statsMock = { time: 12345 };
-				spyOn(routingServiceMock, 'calculateRouteStats').withArgs(categoryResponse).and.returnValue(statsMock);
+				spyOn(routingServiceMock, 'calculateRouteStats').withArgs(ghRoute, jasmine.any(Array)).and.returnValue(statsMock);
 
-				instanceUnderTest._updateStore(categoryResponse);
+				await instanceUnderTest._updateStore(ghRoute);
 
 				expect(store.getState().routing.stats).toEqual(statsMock);
 				expect(store.getState().elevationProfile.coordinates.length).toBe(57);
