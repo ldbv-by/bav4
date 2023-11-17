@@ -6,8 +6,12 @@
  * @function
  * @type {module:services/RoutingService~routeStatsProvider}
  */
+
+import { RouteWarningCriticality } from '../../domain/routing';
+
 // eslint-disable-next-line no-unused-vars
-export const bvvRouteStatsProvider = (route) => {
+export const bvvRouteStatsProvider = (ghRoute, profileStats) => {
+	//TODO: Let's calculate here also the ETA time
 	return {
 		time: 20553004,
 		details: {
@@ -189,7 +193,7 @@ export const bvvRouteStatsProvider = (route) => {
 		warnings: {
 			500: {
 				message: 'Evtl. hohes Verkehrsaufkommen',
-				criticality: 'Hint',
+				criticality: RouteWarningCriticality.HINT,
 				segments: [
 					[13, 113],
 					[215, 222],
