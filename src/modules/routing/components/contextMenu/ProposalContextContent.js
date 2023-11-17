@@ -9,6 +9,7 @@ import { MvuElement } from '../../../MvuElement';
 import css from './proposalContextContent.css';
 import { closeBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
 import { closeContextMenu } from '../../../../store/mapContextMenu/mapContextMenu.action';
+import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 
 const Update_Proposal = 'update_proposal';
 const Update_Prevent_Close = 'update_prevent_close';
@@ -42,10 +43,11 @@ const Routing_Button_Configs = [
 ];
 
 /**
- * Renders action buttons based on the current state of
+ * Renders action-buttons based on the current state of
  * the proposal in the 'routing' slice-of-state.
  *
  * @class
+ * @property {boolean} preventClose=false Whether the component should trigger {@link module:store/mapContextMenu/mapContextMenu_action~closeContextMenu} or {@link module:store/bottomSheet/bottomSheet_action~closeBottomSheet} after an button in this component is clicked or not
  * @author thiloSchlemmer
  */
 export class ProposalContextContent extends MvuElement {
@@ -71,7 +73,7 @@ export class ProposalContextContent extends MvuElement {
 	update(type, data, model) {
 		switch (type) {
 			case Update_Proposal:
-				return { ...model, proposal: data.payload };
+				return { ...model, proposal: data?.payload };
 			case Update_Prevent_Close:
 				return { ...model, preventClose: data };
 		}
@@ -100,7 +102,7 @@ export class ProposalContextContent extends MvuElement {
 				: null;
 		};
 
-		const buttons = [...Routing_Button_Configs.map((buttonConfig) => getButton(buttonConfig, proposal))];
+		const buttons = proposal ? [...Routing_Button_Configs.map((buttonConfig) => getButton(buttonConfig, proposal))] : [];
 		return html`<style>
 				${css}
 			</style>
