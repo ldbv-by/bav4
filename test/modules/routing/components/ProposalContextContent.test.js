@@ -57,15 +57,67 @@ describe('ProposalContextContent', () => {
 			expect(spy).toHaveBeenCalled();
 		});
 
-		it('renders action-buttons based on store.routing.proposal s-o-s', async () => {
-			const element = await setup({
-				routing: { proposal: new EventLike({ coordinate: [42, 21], type: CoordinateProposalType.START_OR_DESTINATION }) }
+		describe('and store.routing.proposal s-o-s has a CoordinateProposal', () => {
+			it('renders action-buttons for START_OR_DESTINATION', async () => {
+				const element = await setup({
+					routing: { proposal: new EventLike({ coordinate: [42, 21], type: CoordinateProposalType.START_OR_DESTINATION }) }
+				});
+
+				const buttons = element.shadowRoot.querySelectorAll('button');
+				expect(buttons).toHaveSize(2);
+				expect(buttons[0].id).toBe('start');
+				expect(buttons[1].id).toBe('destination');
 			});
 
-			const buttons = element.shadowRoot.querySelectorAll('button');
-			expect(buttons).toHaveSize(2);
-			expect(buttons[0].id).toBe('start');
-			expect(buttons[1].id).toBe('destination');
+			it('renders action-buttons for START', async () => {
+				const element = await setup({
+					routing: { proposal: new EventLike({ coordinate: [42, 21], type: CoordinateProposalType.START }) }
+				});
+
+				const buttons = element.shadowRoot.querySelectorAll('button');
+				expect(buttons).toHaveSize(1);
+				expect(buttons[0].id).toBe('start');
+			});
+
+			it('renders action-buttons for DESTINATION', async () => {
+				const element = await setup({
+					routing: { proposal: new EventLike({ coordinate: [42, 21], type: CoordinateProposalType.DESTINATION }) }
+				});
+
+				const buttons = element.shadowRoot.querySelectorAll('button');
+				expect(buttons).toHaveSize(1);
+				expect(buttons[0].id).toBe('destination');
+			});
+
+			it('renders action-buttons for INTERMEDIATE', async () => {
+				const element = await setup({
+					routing: { proposal: new EventLike({ coordinate: [42, 21], type: CoordinateProposalType.INTERMEDIATE }) }
+				});
+
+				const buttons = element.shadowRoot.querySelectorAll('button');
+				expect(buttons).toHaveSize(1);
+				expect(buttons[0].id).toBe('intermediate');
+			});
+
+			it('renders action-buttons for EXISTING_INTERMEDIATE', async () => {
+				const element = await setup({
+					routing: { proposal: new EventLike({ coordinate: [42, 21], type: CoordinateProposalType.EXISTING_INTERMEDIATE }) }
+				});
+
+				const buttons = element.shadowRoot.querySelectorAll('button');
+				expect(buttons).toHaveSize(1);
+				expect(buttons[0].id).toBe('remove');
+			});
+
+			it('renders action-buttons for EXISTING_START_OR_DESTINATION', async () => {
+				const element = await setup({
+					routing: { proposal: new EventLike({ coordinate: [42, 21], type: CoordinateProposalType.EXISTING_START_OR_DESTINATION }) }
+				});
+
+				const buttons = element.shadowRoot.querySelectorAll('button');
+				expect(buttons).toHaveSize(1);
+				expect(buttons[0].id).toBe('remove');
+			});
 		});
 	});
 
