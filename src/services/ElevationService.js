@@ -10,7 +10,7 @@ import { $injector } from '../injection';
  * @typedef {Object} Profile
  * @property {Array<Elevation>} elevations elevations objects of this profile
  * @property {string} refSystem label of the underlying height reference system
- * @property {ProfileStats} [stats] objects of this profile
+ * @property {ProfileStats} [stats] statistic data of this profile
  * @property {Array<ProfileAttribute>} attrs available attributes of this profile (may be empty)
  */
 
