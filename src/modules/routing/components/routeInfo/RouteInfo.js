@@ -75,6 +75,7 @@ export class RouteInfo extends MvuElement {
 		const iconSource = category?.style.icon ?? parent?.style.icon;
 
 		const getDuration = () => {
+			// FIXME: state.time already is the ETA calculated time -> "this._estimateTimeFor" can be removed
 			const estimate = this._estimateTimeFor(categoryId, stats) ?? stats.time;
 			const seconds = estimate / 1000;
 			if (seconds < Minute_In_Seconds) {
