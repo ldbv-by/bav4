@@ -8,6 +8,7 @@ import { MvuElement } from '../../../MvuElement';
 import css from './adminPanel.css';
 import { $injector } from '../../../../injection/index';
 import { nothing } from '../../../../../node_modules/lit-html/lit-html';
+import { Topic } from '../../../../domain/topic';
 // // eslint-disable-next-line no-unused-vars
 // import { logOnce, onlyOnce } from '../layerTree/LayerTree';
 
@@ -180,19 +181,25 @@ export class AdminPanel extends MvuElement {
 	}
 
 	async _updateCatalog(currentTopicId) {
-		//
+		// todo remove
 		if (currentTopicId === 'newEntry') {
 			this.#currentTopicId = currentTopicId;
-			this.#catalog = [];
+			this.#catalog = [{ uid: '123123123', label: ' ' }];
+			const existingTopic = this.#topics.find((topic) => topic.id === currentTopicId);
+			if (!existingTopic) {
+				const topic = new Topic(currentTopicId, currentTopicId, currentTopicId);
+				this.#topics.unshift(topic);
+			}
 
-			this._mergeCatalogWithResources();
-		}
-
-		try {
-			const catalogFromService = await this._catalogService.byId(currentTopicId);
-			this.#catalog = this._addUniqueId(catalogFromService);
-		} catch (error) {
-			console.warn(error.message);
+			this.signal(Update_CatalogWithResourceData, this.#catalog);
+		} else {
+			try {
+				const catalogFromService = await this._catalogService.byId(currentTopicId);
+				this.#catalog = this._addUniqueId(catalogFromService);
+				this._mergeCatalogWithResources();
+			} catch (error) {
+				console.warn(error.message);
+			}
 		}
 	}
 
@@ -436,7 +443,7 @@ export class AdminPanel extends MvuElement {
 		const addLayerGroup = () => {
 			const catalog = this._reduceData(catalogWithResourceData, this._extractOriginalIncShowChildren);
 
-			catalog.push({ label: 'XXXXX', children: [{ label: Empty_Label }] });
+			catalog.push({ label: ' ', children: [{ label: Empty_Label }] });
 
 			this.#catalog = this._addUniqueId(catalog);
 			this._mergeCatalogWithResources();
@@ -453,9 +460,9 @@ export class AdminPanel extends MvuElement {
 				...catalogWithResourceData,
 				{ uid: _generateUniqueId(), label: incrementStringDigit(catalogEntry.label), children: newBranch }
 			]);
-			// todo - check if catalog ok in save
 		};
 
+		// todo
 		const saveCatalog = async () => {
 			const catalogToSave = this._reduceData(catalogWithResourceData, this._extractOriginal);
 			// eslint-disable-next-line no-console

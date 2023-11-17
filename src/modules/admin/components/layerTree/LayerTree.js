@@ -248,6 +248,7 @@ export class LayerTree extends MvuElement {
 				li.insertBefore(input, span);
 				li.removeChild(span);
 				button.textContent = 'Save';
+				input.focus();
 			} else if (button.textContent === 'Save') {
 				const input = li.firstElementChild;
 				const span = document.createElement('span');
