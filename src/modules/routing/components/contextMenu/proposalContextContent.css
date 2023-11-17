@@ -64,4 +64,5 @@ button:hover {
 
 .text {
 	color: var(--text3);
+	white-space: nowrap;
 }

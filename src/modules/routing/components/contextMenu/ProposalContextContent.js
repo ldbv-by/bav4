@@ -112,6 +112,6 @@ export class ProposalContextContent extends MvuElement {
 	}
 
 	static get tag() {
-		return 'ba-routing-map-menu';
+		return 'ba-proposal-context-content';
 	}
 }
