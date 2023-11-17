@@ -274,10 +274,9 @@ export class LayerTree extends MvuElement {
 			event.preventDefault();
 		};
 
-		// const handleNewClick = () => {
-		// 	// eslint-disable-next-line no-console
-		// 	// console.log('🚀 ~ LayerTree. ~ handleNewClick ~ e:', e);
-		// };
+		const handleNewTopicClick = () => {
+			this._updateTopic('newEntry');
+		};
 
 		const handleNewLayerGroupClick = () => {
 			this._addLayerGroup();
@@ -324,7 +323,6 @@ export class LayerTree extends MvuElement {
 			`;
 		};
 
-		// <button @click="${handleNewClick}">New</button>			<button @click="${handleSaveClick(catalogWithResourceData)}">sichern</button>
 		if (topics) {
 			return html`
 				<style>
@@ -333,6 +331,7 @@ export class LayerTree extends MvuElement {
 
 				<div>
 					<h2>Layer Tree - Ebenenbaum für Thema</h2>
+					<button @click="${handleNewTopicClick}">New Topic</button>
 					<button @click="${handleNewLayerGroupClick}">neue Ebenengruppe</button>
 					<button @click="${handleSaveClick}">sichern</button>
 

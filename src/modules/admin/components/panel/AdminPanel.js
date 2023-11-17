@@ -180,10 +180,17 @@ export class AdminPanel extends MvuElement {
 	}
 
 	async _updateCatalog(currentTopicId) {
+		//
+		if (currentTopicId === 'newEntry') {
+			this.#currentTopicId = currentTopicId;
+			this.#catalog = [];
+
+			this._mergeCatalogWithResources();
+		}
+
 		try {
 			const catalogFromService = await this._catalogService.byId(currentTopicId);
 			this.#catalog = this._addUniqueId(catalogFromService);
-			this._mergeCatalogWithResources();
 		} catch (error) {
 			console.warn(error.message);
 		}
@@ -470,7 +477,7 @@ export class AdminPanel extends MvuElement {
 					${css}
 				</style>
 
-				<h1>Admin App</h1>
+				<h1 id="admin-app-title">Admin App</h1>
 
 				<div class="container">
 					<div>
