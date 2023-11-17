@@ -56,6 +56,17 @@ describe('ProposalContextContent', () => {
 
 			expect(spy).toHaveBeenCalled();
 		});
+
+		it('renders action-buttons based on store.routing.proposal s-o-s', async () => {
+			const element = await setup({
+				routing: { proposal: new EventLike({ coordinate: [42, 21], type: CoordinateProposalType.START_OR_DESTINATION }) }
+			});
+
+			const buttons = element.shadowRoot.querySelectorAll('button');
+			expect(buttons).toHaveSize(2);
+			expect(buttons[0].id).toBe('start');
+			expect(buttons[1].id).toBe('destination');
+		});
 	});
 
 	describe('when disconnected', () => {
