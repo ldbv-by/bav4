@@ -415,14 +415,14 @@ export class OlRoutingHandler extends OlLayerHandler {
 		return segments;
 	}
 
-	_displayCurrentRoutingGeometry(categoryResponse) {
-		const polyline = categoryResponse.paths[0].points;
+	_displayCurrentRoutingGeometry(ghRoute) {
+		const polyline = ghRoute.paths[0].points;
 		const geometry = this._polylineToGeometry(polyline);
 		const routeFeature = new Feature({
 			geometry: geometry
 		});
 		routeFeature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.ROUTE);
-		routeFeature.set(ROUTING_CATEGORY, this._routingService.getCategoryById(categoryResponse.vehicle));
+		routeFeature.set(ROUTING_CATEGORY, this._routingService.getCategoryById(ghRoute.vehicle));
 		routeFeature.setStyle(getRoutingStyleFunction());
 		this._routeLayer.getSource().addFeature(routeFeature);
 
@@ -435,23 +435,23 @@ export class OlRoutingHandler extends OlLayerHandler {
 			});
 
 			segmentFeature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.ROUTE_SEGMENT);
-			segmentFeature.set(ROUTING_CATEGORY, this._routingService.getCategoryById(categoryResponse.vehicle));
+			segmentFeature.set(ROUTING_CATEGORY, this._routingService.getCategoryById(ghRoute.vehicle));
 			segmentFeature.set(ROUTING_SEGMENT_INDEX, i);
 			segmentFeature.setStyle(getRoutingStyleFunction());
 			this._routeLayerCopy.getSource().addFeature(segmentFeature);
 		}
 
-		this._updateStore(categoryResponse);
+		this._updateStore(ghRoute);
 	}
 
-	_displayAlternativeRoutingGeometry(categoryResponse) {
-		const polyline = categoryResponse.paths[0].points;
+	_displayAlternativeRoutingGeometry(ghRoute) {
+		const polyline = ghRoute.paths[0].points;
 		const geometry = this._polylineToGeometry(polyline);
 		const routeFeature = new Feature({
 			geometry: geometry
 		});
 		routeFeature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.ROUTE_ALTERNATIVE);
-		routeFeature.set(ROUTING_CATEGORY, this._routingService.getCategoryById(categoryResponse.vehicle));
+		routeFeature.set(ROUTING_CATEGORY, this._routingService.getCategoryById(ghRoute.vehicle));
 		routeFeature.setStyle(getRoutingStyleFunction());
 		this._alternativeRouteLayer.getSource().addFeature(routeFeature);
 	}
