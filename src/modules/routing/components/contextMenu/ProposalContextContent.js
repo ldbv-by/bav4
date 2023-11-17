@@ -1,5 +1,5 @@
 /**
- * @module modules/routing/components/contextMenu/MenuContent
+ * @module modules/routing/components/contextMenu/ProposalContextContent
  */
 import { html } from 'lit-html';
 import { CoordinateProposalType } from '../../../../domain/routing';
