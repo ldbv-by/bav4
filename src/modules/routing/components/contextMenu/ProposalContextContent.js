@@ -6,42 +6,37 @@ import { CoordinateProposalType } from '../../../../domain/routing';
 import { $injector } from '../../../../injection/index';
 import { removeWaypoint, setDestination, setIntermediate, setStart } from '../../../../store/routing/routing.action';
 import { MvuElement } from '../../../MvuElement';
-import startIcon from '../assets/start.svg';
-import destinationIcon from '../assets/destination.svg';
-import intermediateIcon from '../assets/intermediate.svg';
-import removeIcon from '../assets/trash.svg';
-import css from './menuContent.css';
+import css from './proposalContextContent.css';
+import { closeBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
+import { closeContextMenu } from '../../../../store/mapContextMenu/mapContextMenu.action';
 
 const Update_Proposal = 'update_proposal';
+const Update_Prevent_Close = 'update_prevent_close';
 
 const Routing_Button_Configs = [
 	{
 		id: 'start',
 		matcher: (proposalType) => proposalType === CoordinateProposalType.START || proposalType === CoordinateProposalType.START_OR_DESTINATION,
-		icon: startIcon,
-		label: 'map_contextMenuContent_routing_start',
+		label: 'routing_contextContent_start',
 		action: (coordinate) => setStart(coordinate)
 	},
 	{
 		id: 'destination',
 		matcher: (proposalType) => proposalType === CoordinateProposalType.DESTINATION || proposalType === CoordinateProposalType.START_OR_DESTINATION,
-		icon: destinationIcon,
-		label: 'map_contextMenuContent_routing_destination',
+		label: 'routing_contextContent_destination',
 		action: (coordinate) => setDestination(coordinate)
 	},
 	{
 		id: 'intermediate',
 		matcher: (proposalType) => proposalType === CoordinateProposalType.INTERMEDIATE,
-		icon: intermediateIcon,
-		label: 'map_contextMenuContent_routing_intermediate',
+		label: 'routing_contextContent_intermediate',
 		action: (coordinate) => setIntermediate(coordinate)
 	},
 	{
-		id: 'remove_existing_waypoint',
+		id: 'remove',
 		matcher: (proposalType) =>
 			proposalType === CoordinateProposalType.EXISTING_INTERMEDIATE || proposalType === CoordinateProposalType.EXISTING_START_OR_DESTINATION,
-		icon: removeIcon,
-		label: 'map_contextMenuContent_routing_remove_waypoint',
+		label: 'routing_contextContent_remove_waypoint',
 		action: (coordinate) => removeWaypoint(coordinate)
 	}
 ];
@@ -53,9 +48,9 @@ const Routing_Button_Configs = [
  * @class
  * @author thiloSchlemmer
  */
-export class MenuContent extends MvuElement {
+export class ProposalContextContent extends MvuElement {
 	constructor() {
-		super({ proposal: null });
+		super({ proposal: null, preventClose: false });
 
 		const { TranslationService: translationService } = $injector.inject('TranslationService');
 		this._translationService = translationService;
@@ -77,22 +72,31 @@ export class MenuContent extends MvuElement {
 		switch (type) {
 			case Update_Proposal:
 				return { ...model, proposal: data.payload };
+			case Update_Prevent_Close:
+				return { ...model, preventClose: data };
 		}
 	}
 
 	createView(model) {
-		const { proposal } = model;
+		const { proposal, preventClose } = model;
 
 		const translate = (key) => this._translationService.translate(key);
+
+		const onClick = (proposalAction) => {
+			const closeAfterAction = !preventClose;
+
+			proposalAction(proposal.coordinate);
+			if (closeAfterAction) {
+				closeBottomSheet();
+				closeContextMenu();
+			}
+		};
+
 		const getButton = (buttonConfig, proposal) => {
 			return buttonConfig.matcher(proposal.type)
-				? html`<ba-button
-						id=${buttonConfig.id}
-						.label=${translate(buttonConfig.label)}
-						.icon=${buttonConfig.icon}
-						.type=${'primary'}
-						@click=${buttonConfig.action(proposal.coordinate)}
-				  ></ba-button>`
+				? html`<button id=${buttonConfig.id} @click=${() => onClick(buttonConfig.action)}>
+						<span class="icon ${buttonConfig.id}"></span><span class="text">${translate(buttonConfig.label)}</span>
+				  </button>`
 				: null;
 		};
 
@@ -101,6 +105,10 @@ export class MenuContent extends MvuElement {
 				${css}
 			</style>
 			<div class="container">${buttons}</div>`;
+	}
+
+	set preventClose(value) {
+		this.signal(Update_Prevent_Close, value);
 	}
 
 	static get tag() {
