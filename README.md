@@ -256,5 +256,6 @@ For example, they could be responsible for setting an initial state or reacting 
 ### Other
 
 - Why I don't miss React: a story about using the platform: https://www.jackfranklin.co.uk/blog/working-with-react-and-the-web-platform/
+- HTML web components: https://adactio.com/journal/20618
 
 _USE THE PLATFORM_
