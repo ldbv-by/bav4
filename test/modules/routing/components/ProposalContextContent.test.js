@@ -4,6 +4,9 @@ import { ProposalContextContent } from '../../../../src/modules/routing/componen
 import { routingReducer } from '../../../../src/store/routing/routing.reducer';
 import { TestUtils } from '../../../test-utils';
 import { MvuElement } from '../../../../src/modules/MvuElement';
+import { EventLike } from '../../../../src/utils/storeUtils';
+import { setProposal } from '../../../../src/store/routing/routing.action';
+import { CoordinateProposalType } from '../../../../src/domain/routing';
 
 window.customElements.define(ProposalContextContent.tag, ProposalContextContent);
 
@@ -29,6 +32,39 @@ describe('ProposalContextContent', () => {
 			const element = await setup();
 
 			expect(element instanceof MvuElement).toBeTrue();
+		});
+	});
+
+	describe('when instantiated', () => {
+		it('has a model containing default values', async () => {
+			await setup();
+			const model = new ProposalContextContent().getModel();
+
+			expect(model).toEqual({
+				proposal: null,
+				preventClose: false
+			});
+		});
+	});
+
+	describe('when initialized', () => {
+		it('observes store.routing.proposal s-o-s', async () => {
+			const element = await setup();
+			const spy = spyOn(element, 'signal').withArgs('update_proposal', jasmine.any(EventLike)).and.callThrough();
+
+			setProposal([0, 0], CoordinateProposalType.START);
+
+			expect(spy).toHaveBeenCalled();
+		});
+	});
+
+	describe('when disconnected', () => {
+		it('removes all observers', async () => {
+			const element = await setup();
+			const spy = spyOn(element, '_unsubscribeFromStore').and.callThrough();
+			element.onDisconnect(); // we call onDisconnect manually
+
+			expect(spy).toHaveBeenCalled();
 		});
 	});
 });
