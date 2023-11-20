@@ -9,7 +9,6 @@ import { MvuElement } from '../../../MvuElement';
 import css from './proposalContextContent.css';
 import { closeBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
 import { closeContextMenu } from '../../../../store/mapContextMenu/mapContextMenu.action';
-import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 
 const Update_Proposal = 'update_proposal';
 const Update_Prevent_Close = 'update_prevent_close';

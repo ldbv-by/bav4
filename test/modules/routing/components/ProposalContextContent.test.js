@@ -5,13 +5,16 @@ import { routingReducer } from '../../../../src/store/routing/routing.reducer';
 import { TestUtils } from '../../../test-utils';
 import { MvuElement } from '../../../../src/modules/MvuElement';
 import { EventLike } from '../../../../src/utils/storeUtils';
-import { setProposal } from '../../../../src/store/routing/routing.action';
-import { CoordinateProposalType } from '../../../../src/domain/routing';
+import { reset, setProposal } from '../../../../src/store/routing/routing.action';
+import { CoordinateProposalType, RoutingStatusCodes } from '../../../../src/domain/routing';
+import { bottomSheetReducer } from '../../../../src/store/bottomSheet/bottomSheet.reducer';
+import { mapContextMenuReducer } from '../../../../src/store/mapContextMenu/mapContextMenu.reducer';
 
 window.customElements.define(ProposalContextContent.tag, ProposalContextContent);
 
 describe('ProposalContextContent', () => {
-	const setup = (state) => {
+	let store;
+	const setup = (state, properties = {}) => {
 		const initialState = {
 			media: {
 				portrait: false
@@ -19,12 +22,14 @@ describe('ProposalContextContent', () => {
 			...state
 		};
 
-		TestUtils.setupStoreAndDi(initialState, {
+		store = TestUtils.setupStoreAndDi(initialState, {
 			media: createNoInitialStateMediaReducer(),
-			routing: routingReducer
+			routing: routingReducer,
+			bottomSheet: bottomSheetReducer,
+			mapContextMenu: mapContextMenuReducer
 		});
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
-		return TestUtils.render(ProposalContextContent.tag);
+		return TestUtils.render(ProposalContextContent.tag, properties);
 	};
 
 	describe('class', () => {
@@ -117,6 +122,136 @@ describe('ProposalContextContent', () => {
 				const buttons = element.shadowRoot.querySelectorAll('button');
 				expect(buttons).toHaveSize(1);
 				expect(buttons[0].id).toBe('remove');
+			});
+
+			describe('and the button is clicked', () => {
+				it('stores the coordinate as starting coordinate', async () => {
+					const element = await setup({
+						routing: { proposal: new EventLike({ coordinate: [42, 21], type: CoordinateProposalType.START }) }
+					});
+
+					element.shadowRoot.querySelector('#start').click();
+
+					expect(store.getState().routing.status).toBe(RoutingStatusCodes.Destination_Missing);
+					expect(store.getState().routing.waypoints).toEqual([[42, 21]]);
+
+					reset();
+
+					setProposal({ coordinate: [42, 21], type: CoordinateProposalType.START_OR_DESTINATION });
+
+					element.shadowRoot.querySelector('#start').click();
+
+					expect(store.getState().routing.status).toBe(RoutingStatusCodes.Destination_Missing);
+					expect(store.getState().routing.waypoints).toEqual([[42, 21]]);
+				});
+
+				it('stores the coordinate as destination coordinate', async () => {
+					const element = await setup({
+						routing: { proposal: new EventLike({ coordinate: [42, 21], type: CoordinateProposalType.DESTINATION }) }
+					});
+
+					element.shadowRoot.querySelector('#destination').click();
+
+					expect(store.getState().routing.status).toBe(RoutingStatusCodes.Start_Missing);
+					expect(store.getState().routing.waypoints).toEqual([[42, 21]]);
+
+					reset();
+
+					setProposal({ coordinate: [42, 21], type: CoordinateProposalType.START_OR_DESTINATION });
+
+					element.shadowRoot.querySelector('#destination').click();
+
+					expect(store.getState().routing.status).toBe(RoutingStatusCodes.Start_Missing);
+					expect(store.getState().routing.waypoints).toEqual([[42, 21]]);
+				});
+
+				it('stores the coordinate as intermediate coordinate', async () => {
+					const element = await setup({
+						routing: {
+							waypoints: [
+								[0, 0],
+								[1, 1]
+							],
+							status: RoutingStatusCodes.Ok,
+							proposal: new EventLike({ coordinate: [42, 21], type: CoordinateProposalType.INTERMEDIATE })
+						}
+					});
+
+					element.shadowRoot.querySelector('#intermediate').click();
+
+					expect(store.getState().routing.intermediate).toEqual(jasmine.objectContaining({ payload: [42, 21] }));
+				});
+
+				it('removes the coordinate as existing intermediate', async () => {
+					const element = await setup({
+						routing: {
+							waypoints: [
+								[0, 0],
+								[42, 21],
+								[1, 1]
+							],
+							status: RoutingStatusCodes.Ok,
+							proposal: new EventLike({ coordinate: [42, 21], type: CoordinateProposalType.EXISTING_INTERMEDIATE })
+						}
+					});
+
+					element.shadowRoot.querySelector('#remove').click();
+
+					expect(store.getState().routing.status).toBe(RoutingStatusCodes.Ok);
+					expect(store.getState().routing.waypoints).toEqual([
+						[0, 0],
+						[1, 1]
+					]);
+				});
+
+				it('removes the coordinate as existing intermediate', async () => {
+					const element = await setup({
+						routing: {
+							waypoints: [
+								[42, 21],
+								[1, 1]
+							],
+							status: RoutingStatusCodes.Ok,
+							proposal: new EventLike({ coordinate: [42, 21], type: CoordinateProposalType.EXISTING_START_OR_DESTINATION })
+						}
+					});
+
+					element.shadowRoot.querySelector('#remove').click();
+
+					expect(store.getState().routing.status).toBe(RoutingStatusCodes.Start_Missing);
+					expect(store.getState().routing.waypoints).toEqual([[1, 1]]);
+				});
+			});
+		});
+
+		it('requests the closing of bottomSheet and ContextMenu', async () => {
+			const element = await setup({
+				routing: { proposal: new EventLike({ coordinate: [42, 21], type: CoordinateProposalType.START }) },
+				bottomSheet: { active: true },
+				mapContextMenu: { active: true }
+			});
+
+			element.shadowRoot.querySelector('#start').click();
+
+			expect(store.getState().bottomSheet.active).toBeFalse();
+			expect(store.getState().mapContextMenu.active).toBeFalse();
+		});
+
+		describe('and preventClose property is set', () => {
+			it('does NOT request the closing of bottomSheet and ContextMenu', async () => {
+				const element = await setup(
+					{
+						routing: { proposal: new EventLike({ coordinate: [42, 21], type: CoordinateProposalType.START }) },
+						bottomSheet: { active: true },
+						mapContextMenu: { active: true }
+					},
+					{ preventClose: true }
+				);
+
+				element.shadowRoot.querySelector('#start').click();
+
+				expect(store.getState().bottomSheet.active).toBeTrue();
+				expect(store.getState().mapContextMenu.active).toBeTrue();
 			});
 		});
 	});
