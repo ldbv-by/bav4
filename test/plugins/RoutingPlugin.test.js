@@ -12,7 +12,6 @@ import { LevelTypes } from '../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../src/store/notifications/notifications.reducer';
 import { CoordinateProposalType } from '../../src/domain/routing';
 import { mapContextMenuReducer } from '../../src/store/mapContextMenu/mapContextMenu.reducer';
-import { Button } from '../../src/modules/commons/components/button/Button';
 import { bottomSheetReducer } from '../../src/store/bottomSheet/bottomSheet.reducer.js';
 import { ProposalContextContent } from '../../src/modules/routing/components/contextMenu/ProposalContextContent.js';
 
