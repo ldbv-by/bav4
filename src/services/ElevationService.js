@@ -5,12 +5,14 @@ import { loadBvvElevation } from './provider/elevation.provider';
 import { isCoordinate } from '../utils/checks';
 import { getBvvProfile } from './provider/profile.provider';
 import { $injector } from '../injection';
+import { hashCode } from '../utils/hashCode';
+import { deepClone } from '../utils/clone';
 
 /**
  * @typedef {Object} Profile
  * @property {Array<Elevation>} elevations elevations objects of this profile
  * @property {string} refSystem label of the underlying height reference system
- * @property {ProfileStats} [stats] objects of this profile
+ * @property {ProfileStats} [stats] statistic data of this profile
  * @property {Array<ProfileAttribute>} attrs available attributes of this profile (may be empty)
  */
 
@@ -44,6 +46,8 @@ import { $injector } from '../injection';
  * @class
  */
 export class ElevationService {
+	#lastProfileResult = {};
+	#environmentService;
 	/**
 	 *
 	 * @param {elevationProvider} [elevationProvider=loadBvvElevation]
@@ -53,7 +57,7 @@ export class ElevationService {
 		this._elevationProvider = elevationProvider;
 		this._profileProvider = profileProvider;
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
-		this._environmentService = environmentService;
+		this.#environmentService = environmentService;
 	}
 
 	/**
@@ -71,7 +75,7 @@ export class ElevationService {
 		try {
 			return await this._elevationProvider(coordinate3857);
 		} catch (e) {
-			if (this._environmentService.isStandalone()) {
+			if (this.#environmentService.isStandalone()) {
 				console.warn('Could not fetch an elevation from backend. Returning a mocked value ...');
 				return this._createMockElevation();
 			}
@@ -96,10 +100,17 @@ export class ElevationService {
 			}
 		});
 
+		const hc = hashCode(coordinates3857);
+		if (this.#lastProfileResult[hc]) {
+			return deepClone(this.#lastProfileResult[hc]);
+		}
+
 		try {
-			return await this._profileProvider(coordinates3857);
+			const profile = await this._profileProvider(coordinates3857);
+			this.#lastProfileResult[hc] = profile;
+			return deepClone(profile);
 		} catch (e) {
-			if (this._environmentService.isStandalone()) {
+			if (this.#environmentService.isStandalone()) {
 				console.warn('Could not fetch an elevation profile from backend. Returning a mocked profile ...');
 				return this._createMockElevationProfile(coordinates3857);
 			}
