@@ -6,7 +6,7 @@ import { styleMap } from 'lit-html/directives/style-map.js';
 import { MvuElement } from '../../../MvuElement';
 import css from './mapContextMenu.css';
 import { $injector } from '../../../../injection';
-import { close } from '../../../../store/mapContextMenu/mapContextMenu.action';
+import { closeContextMenu } from '../../../../store/mapContextMenu/mapContextMenu.action';
 import closeIcon from './assets/x-square.svg';
 
 const Update = 'update';
@@ -32,7 +32,7 @@ export class MapContextMenu extends MvuElement {
 		this.#escKeyListener = (e) => {
 			if (e.key === 'Escape' && !storeService.getStore().getState().modal.active) {
 				e.preventDefault();
-				close();
+				closeContextMenu();
 			}
 		};
 	}
@@ -121,7 +121,7 @@ export class MapContextMenu extends MvuElement {
 						.size=${1.5}
 						.color=${'var(--text2)'}
 						.color_hover=${'var(--text2)'}
-						@click=${close}
+						@click=${closeContextMenu}
 					></ba-icon>
 				</div>
 				${content}

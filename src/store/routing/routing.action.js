@@ -2,7 +2,8 @@
  * @module store/routing/routing_action
  */
 import { $injector } from '../../injection/index';
-import { isCoordinate } from '../../utils/checks';
+import { isCoordinate, isNumber } from '../../utils/checks';
+import { EventLike } from '../../utils/storeUtils';
 import {
 	ROUTING_ACTIVE_CHANGED,
 	ROUTING_CATEGORY_CHANGED,
@@ -14,7 +15,10 @@ import {
 	ROUTING_DESTINATION_SET,
 	ROUTING_WAYPOINTS_CHANGED,
 	ROUTING_HIGHLIGHT_SEGMENTS_SET,
-	ROUTING_HIGHLIGHT_SEGMENTS_REMOVED
+	ROUTING_HIGHLIGHT_SEGMENTS_REMOVED,
+	ROUTING_PROPOSAL_SET,
+	ROUTING_WAYPOINT_DELETED,
+	ROUTING_INTERMEDIATE_SET
 } from './routing.reducer';
 
 /**
@@ -67,7 +71,7 @@ export const setRouteStats = (routeStats) => {
 
 /**
  * Updates the `route` property.
- * @param {module:domain/routing~Route|null}  route the new Route or `null`
+ * @param {module:domain/routing~RouteGeometry|null}  route the new RouteGeometry or `null`
  * @function
  */
 export const setRoute = (route) => {
@@ -78,7 +82,7 @@ export const setRoute = (route) => {
 };
 
 /**
- * Updates the current `waypoints`, updates the `status` to {@link RoutingStatusCodes.Ok}.  A least two coordinates must be given, otherwise please use {@link setStart} and {@link setDestination}
+ * Updates the current `waypoints`, updates the `status` to {@link RoutingStatusCodes.Ok}.  A least two coordinates must be given, otherwise please use {@link setStart} and {@link setDestination}.
  * @param {module:domain/coordinateTypeDef~Coordinate[]}  coordinates the new waypoint coordinates (in the map's SRID)
  * @function
  */
@@ -86,6 +90,20 @@ export const setWaypoints = (coordinates) => {
 	if (coordinates?.length > 1 && !coordinates.some((c) => !isCoordinate(c))) {
 		getStore().dispatch({
 			type: ROUTING_WAYPOINTS_CHANGED,
+			payload: [...coordinates]
+		});
+	}
+};
+
+/**
+ * Removes a waypoint and updates the status when appropriate.
+ * @param {module:domain/coordinateTypeDef~Coordinate[]}  coordinates the coordinate which should be removed from the waypoints (in the map's SRID)
+ * @function
+ */
+export const removeWaypoint = (coordinates) => {
+	if (isCoordinate(coordinates)) {
+		getStore().dispatch({
+			type: ROUTING_WAYPOINT_DELETED,
 			payload: [...coordinates]
 		});
 	}
@@ -103,7 +121,7 @@ export const reset = () => {
 };
 
 /**
- * Sets a coordinate as the start waypoint and updates the status to {@link RoutingStatusCodes.Destination_Missing}
+ * Sets a coordinate as the start waypoint and updates the status to {@link RoutingStatusCodes.Destination_Missing}.
  * @param {module:domain/coordinateTypeDef~Coordinate}  coordinate the start waypoint (in the SRID of the map)
  * @function
  */
@@ -117,7 +135,7 @@ export const setStart = (coordinate) => {
 };
 
 /**
- * Sets a coordinate as the destination waypoint and updates the status to {@link RoutingStatusCodes.Start_Missing}
+ * Sets a coordinate as the destination waypoint and updates the status to {@link RoutingStatusCodes.Start_Missing}.
  * @param {module:domain/coordinateTypeDef~Coordinate}  coordinate the destination waypoint (in the SRID of the map)
  * @function
  */
@@ -126,6 +144,35 @@ export const setDestination = (coordinate) => {
 		getStore().dispatch({
 			type: ROUTING_DESTINATION_SET,
 			payload: coordinate
+		});
+	}
+};
+
+/**
+ * Sets a coordinate as a proposal coordinate.
+ * @param {module:domain/coordinateTypeDef~Coordinate}  coordinate the proposal coordinate (in the SRID of the map)
+ * @param {CoordinateProposalType} type the type of intention of the coordinate
+ * @function
+ */
+export const setProposal = (coordinate, type) => {
+	if (isCoordinate(coordinate) && isNumber(type)) {
+		getStore().dispatch({
+			type: ROUTING_PROPOSAL_SET,
+			payload: new EventLike({ coord: [...coordinate], type })
+		});
+	}
+};
+
+/**
+ * Sets a coordinate as a proposal for a new intermediate waypoint.
+ * @param {module:domain/coordinateTypeDef~Coordinate}  coordinate the coordinate (in the SRID of the map) which should be a new intermediate waypoint of the route
+ * @function
+ */
+export const setIntermediate = (coordinate) => {
+	if (isCoordinate(coordinate)) {
+		getStore().dispatch({
+			type: ROUTING_INTERMEDIATE_SET,
+			payload: new EventLike([...coordinate])
 		});
 	}
 };

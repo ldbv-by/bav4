@@ -1,12 +1,15 @@
-import { RoutingStatusCodes } from '../../../src/domain/routing';
+import { CoordinateProposalType, RoutingStatusCodes } from '../../../src/domain/routing';
 import {
 	activate,
 	deactivate,
+	removeWaypoint,
 	reset,
 	resetHighlightedSegments,
 	setCategory,
 	setDestination,
 	setHighlightedSegments,
+	setIntermediate,
+	setProposal,
 	setRoute,
 	setRouteStats,
 	setStart,
@@ -32,7 +35,9 @@ describe('routingReducer', () => {
 			route: null,
 			waypoints: [],
 			highlightedSegments: null,
-			active: false
+			active: false,
+			proposal: jasmine.objectContaining({ payload: null }),
+			intermediate: jasmine.objectContaining({ payload: null })
 		});
 	});
 
@@ -107,13 +112,22 @@ describe('routingReducer', () => {
 
 	it('resets the "waypoint", "route" and "status" property', () => {
 		const store = setup({
-			waypoints: [
-				[11, 22],
-				[33, 44]
-			],
-			status: RoutingStatusCodes.Ok,
-			route: {}
+			routing: {
+				waypoints: [
+					[11, 22],
+					[33, 44]
+				],
+				status: RoutingStatusCodes.Ok,
+				route: {}
+			}
 		});
+
+		expect(store.getState().routing.waypoints).toEqual([
+			[11, 22],
+			[33, 44]
+		]);
+		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Ok);
+		expect(store.getState().routing.route).not.toBeNull();
 
 		reset();
 
@@ -150,6 +164,79 @@ describe('routingReducer', () => {
 
 		expect(store.getState().routing.waypoints).toEqual([coordinate]);
 		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Start_Missing);
+	});
+
+	it('removes a waypoint', () => {
+		const waypoints = [
+			[11, 22],
+			[33, 44]
+		];
+		const store = setup({
+			routing: {
+				waypoints,
+				status: RoutingStatusCodes.Ok
+			}
+		});
+
+		removeWaypoint([11, 22, 'foo']); //invalid coordinate
+		expect(store.getState().routing.waypoints).toEqual(waypoints);
+
+		removeWaypoint([5, 5]); //unknown coordinate
+		expect(store.getState().routing.waypoints).toEqual(waypoints);
+
+		removeWaypoint([11, 22]); // remove start waypoint
+		expect(store.getState().routing.waypoints).toEqual([[33, 44]]);
+		expect(store.getState().routing.status).toBe(RoutingStatusCodes.Start_Missing);
+
+		setWaypoints(waypoints);
+
+		removeWaypoint([33, 44]); // remove destination waypoint
+		expect(store.getState().routing.waypoints).toEqual([[11, 22]]);
+		expect(store.getState().routing.status).toBe(RoutingStatusCodes.Destination_Missing);
+
+		removeWaypoint([11, 22]); // remove the last waypoint
+		expect(store.getState().routing.waypoints).toEqual([]);
+		expect(store.getState().routing.status).toBe(RoutingStatusCodes.Start_Destination_Missing);
+
+		setWaypoints([...waypoints, [55, 66]]); // we have three three waypoinst now
+
+		removeWaypoint([11, 22]);
+		expect(store.getState().routing.waypoints).toEqual([
+			[33, 44],
+			[55, 66]
+		]);
+		expect(store.getState().routing.status).toBe(RoutingStatusCodes.Ok);
+	});
+
+	it('sets a proposal coordinate', () => {
+		const store = setup();
+		const coordinate = [11, 22];
+
+		setProposal([11, 22, 'foo']);
+
+		expect(store.getState().routing.proposal).toEqual(jasmine.objectContaining({ payload: null }));
+
+		setProposal(coordinate);
+
+		expect(store.getState().routing.proposal).toEqual(jasmine.objectContaining({ payload: null }));
+
+		setProposal(coordinate, CoordinateProposalType.INTERMEDIATE);
+
+		expect(store.getState().routing.proposal.payload.coord).toEqual(coordinate);
+		expect(store.getState().routing.proposal.payload.type).toEqual(CoordinateProposalType.INTERMEDIATE);
+	});
+
+	it('sets a intermediate coordinate', () => {
+		const store = setup();
+		const coordinate = [11, 22];
+
+		setIntermediate([11, 22, 'foo']);
+
+		expect(store.getState().routing.intermediate).toEqual(jasmine.objectContaining({ payload: null }));
+
+		setIntermediate([11, 22]);
+
+		expect(store.getState().routing.intermediate.payload).toEqual(coordinate);
 	});
 
 	it("sets and removes the 'highlightedSegments' property", () => {

@@ -4,11 +4,11 @@
 import { html, nothing } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { setCurrent } from '../../../../store/topics/topics.action';
-import { AbstractContentPanel } from '../../../menu/components/mainMenu/content/AbstractContentPanel';
 import css from './topicsContentPanel.css';
 import commonTopicsCss from './assets/topics.css';
 import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
 import { setIndex } from '../../../../store/topicsContentPanel/topicsContentPanel.action';
+import { AbstractMvuContentPanel } from '../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 
 /**
  * @readonly
@@ -20,27 +20,64 @@ export const TopicsContentPanelIndex = Object.freeze({
 	CATALOG_1: 2
 });
 
+const Update_CurrentTopicId = 'update_currentTopicId';
+const Update_TopicsReady = 'update_TopicsReady';
+const Update_ContentIndex = 'update_ContentIndex';
 /**
  * @class
  * @author taulinger
  * @author alsturm
  */
-export class TopicsContentPanel extends AbstractContentPanel {
+export class TopicsContentPanel extends AbstractMvuContentPanel {
 	constructor() {
-		super();
+		super({
+			currentTopicId: null,
+			topicsReady: false,
+			contentIndex: null
+		});
 		const { TopicsService: topicsService, TranslationService: translationService } = $injector.inject('TopicsService', 'TranslationService');
 		this._topicsService = topicsService;
 		this._translationService = translationService;
 	}
 
-	initialize() {
-		this.observe(['topicsReady', 'contentIndex'], () => this.render());
+	update(type, data, model) {
+		switch (type) {
+			case Update_CurrentTopicId:
+				return { ...model, currentTopicId: data };
+			case Update_TopicsReady:
+				return { ...model, topicsReady: data };
+			case Update_ContentIndex:
+				return { ...model, contentIndex: data };
+		}
+	}
 
-		this.observe('currentTopicId', (currentTopicId) => {
+	onInitialize() {
+		this.observe(
+			(store) => store.topics.current,
+			(current) => {
+				this.signal(Update_CurrentTopicId, current);
+			}
+		);
+		this.observe(
+			(store) => store.topics.ready,
+			(ready) => {
+				this.signal(Update_TopicsReady, ready);
+			}
+		);
+		this.observe(
+			(store) => store.topicsContentPanel.index,
+			(index) => {
+				this.signal(Update_ContentIndex, index);
+			}
+		);
+	}
+
+	onAfterRender() {
+		const { currentTopicId } = this.getModel();
+		if (currentTopicId) {
 			//we add and update the topic specific hue value
 			const topics = this._topicsService.all();
 			const topic = topics.filter((t) => t.id === currentTopicId)[0];
-
 			if (!document.getElementById(TopicsContentPanel.Global_Topic_Hue_Style_Id)) {
 				const styleElement = document.createElement('style');
 				styleElement.id = TopicsContentPanel.Global_Topic_Hue_Style_Id;
@@ -48,7 +85,7 @@ export class TopicsContentPanel extends AbstractContentPanel {
 			}
 			const style = document.getElementById(TopicsContentPanel.Global_Topic_Hue_Style_Id);
 			style.innerHTML = `*{--topic-hue: ${topic.style.hue || 0};}`;
-		});
+		}
 	}
 
 	onWindowLoad() {
@@ -64,8 +101,8 @@ export class TopicsContentPanel extends AbstractContentPanel {
 	/**
 	 * @override
 	 */
-	createView(state) {
-		const { currentTopicId, topicsReady, contentIndex } = state;
+	createView(model) {
+		const { currentTopicId, topicsReady, contentIndex } = model;
 
 		if (topicsReady) {
 			const topics = this._topicsService.all();
@@ -142,18 +179,6 @@ export class TopicsContentPanel extends AbstractContentPanel {
 			`;
 		}
 		return nothing;
-	}
-
-	onStateChanged() {
-		//nothing to do here, we only render on 'topicsReady' and 'contentIndeX' changes (see #initialize)
-	}
-
-	extractState(globalState) {
-		const {
-			topics: { current: currentTopicId, ready: topicsReady },
-			topicsContentPanel: { index: contentIndex }
-		} = globalState;
-		return { currentTopicId, topicsReady, contentIndex };
 	}
 
 	static get tag() {

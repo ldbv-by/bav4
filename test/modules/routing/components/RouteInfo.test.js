@@ -9,7 +9,7 @@ import { TestUtils } from '../../../test-utils';
 
 window.customElements.define(RouteInfo.tag, RouteInfo);
 
-const mockedRouteStatistic = {
+const defaultRouteStatistic = {
 	time: 3600000,
 	details: {
 		surface: {
@@ -231,12 +231,11 @@ const mockedRouteStatistic = {
 	dist: 333,
 	slopeDist: 102055.31270225867
 };
-describe('RoutingInfo', () => {
-	const category = { color: 'gray' };
+describe('RouteInfo', () => {
+	const category = { style: { color: 'red', icon: 'icon_category' } };
 	const routingServiceMock = {
 		getCategoryById: () => category,
 		getParent: () => 'foo',
-		calculateRouteStats: () => mockedRouteStatistic,
 		getETAFor: () => {}
 	};
 
@@ -280,8 +279,8 @@ describe('RoutingInfo', () => {
 			const model = new RouteInfo().getModel();
 
 			expect(model).toEqual({
-				status: 900,
-				stats: jasmine.objectContaining({ time: 3600000, dist: 333, twoDiff: [111, 222] }),
+				status: null,
+				stats: null,
 				categoryId: null
 			});
 		});
@@ -304,13 +303,18 @@ describe('RoutingInfo', () => {
 			};
 
 			it('renders minimum estimate', async () => {
-				const routeStatistics = {
-					dist: '333',
-					twoDiff: [111, 222],
-					time: 42
+				const state = {
+					routing: {
+						status: RoutingStatusCodes.Ok,
+						categoryId: 'bike',
+						stats: {
+							dist: '333',
+							twoDiff: [111, 222],
+							time: 42
+						}
+					}
 				};
-				spyOn(routingServiceMock, 'calculateRouteStats').and.returnValue(routeStatistics);
-				const element = await setup(defaultRoutingState);
+				const element = await setup(state);
 
 				setRoute(defaultRoute);
 
@@ -328,7 +332,8 @@ describe('RoutingInfo', () => {
 				const state = {
 					routing: {
 						status: RoutingStatusCodes.Ok,
-						categoryId: 'some'
+						categoryId: 'some',
+						stats: defaultRouteStatistic
 					}
 				};
 				spyOn(routingServiceMock, 'getETAFor').and.returnValue(null);
@@ -352,12 +357,13 @@ describe('RoutingInfo', () => {
 				const state = {
 					routing: {
 						status: RoutingStatusCodes.Ok,
-						categoryId: 'some'
+						categoryId: 'some',
+						stats: null
 					}
 				};
 
 				spyOn(routingServiceMock, 'getETAFor').and.returnValue(42000000);
-				spyOn(routingServiceMock, 'calculateRouteStats').and.returnValue(null);
+
 				const element = await setup(state);
 				setRoute(defaultRoute);
 
@@ -371,12 +377,45 @@ describe('RoutingInfo', () => {
 				expect(routingElements[2].innerText).toBe('0');
 			});
 
+			it('renders category icon', async () => {
+				const element = await setup(defaultRoutingState);
+
+				setRoute(defaultRoute);
+
+				expect(element.shadowRoot.querySelector('.category-icon').innerHTML).toContain('icon_category');
+			});
+
+			it('renders NOTHING, if category.style.icon is missing', async () => {
+				const missingIconCategory = { style: { color: 'red', icon: null } };
+				spyOn(routingServiceMock, 'getCategoryById').and.returnValue(missingIconCategory);
+				const element = await setup(defaultRoutingState);
+
+				setRoute(defaultRoute);
+
+				expect(element.shadowRoot.querySelector('.category-icon')).toBeNull();
+			});
+
+			it('renders parent category style, if category.style is missing', async () => {
+				const missingIconCategory = { style: { color: null, icon: null } };
+				const parentCategory = { style: { color: 'blue', icon: 'icon_parent_category' } };
+				spyOn(routingServiceMock, 'getCategoryById').and.callFake((category) => {
+					return category === 'bike' ? missingIconCategory : parentCategory;
+				});
+				const element = await setup(defaultRoutingState);
+
+				setRoute(defaultRoute);
+
+				expect(element.shadowRoot.querySelector('.category-icon').innerHTML).toContain('icon_parent_category');
+				expect(getComputedStyle(element.shadowRoot.querySelector('.routing-info-type')).background).toContain('rgb(0, 0, 255)');
+			});
+
 			describe('when rendering estimate for specific vehicle', () => {
 				it('calculates the estimate for hike', async () => {
 					const state = {
 						routing: {
 							status: RoutingStatusCodes.Ok,
-							categoryId: 'bvv-hike'
+							categoryId: 'bvv-hike',
+							stats: defaultRouteStatistic
 						}
 					};
 					const calculatorSpy = spyOn(routingServiceMock, 'getETAFor')
@@ -400,7 +439,8 @@ describe('RoutingInfo', () => {
 					const state = {
 						routing: {
 							status: RoutingStatusCodes.Ok,
-							categoryId: 'bvv-hike'
+							categoryId: 'bvv-hike',
+							stats: defaultRouteStatistic
 						}
 					};
 					const calculatorSpy = spyOn(routingServiceMock, 'getETAFor')
@@ -418,11 +458,12 @@ describe('RoutingInfo', () => {
 					const state = {
 						routing: {
 							status: RoutingStatusCodes.Ok,
-							categoryId: 'bvv-bike'
+							categoryId: 'bike',
+							stats: defaultRouteStatistic
 						}
 					};
 					const calculatorSpy = spyOn(routingServiceMock, 'getETAFor')
-						.withArgs('bvv-bike', jasmine.any(Number), jasmine.any(Number), jasmine.any(Number))
+						.withArgs('bike', jasmine.any(Number), jasmine.any(Number), jasmine.any(Number))
 						.and.returnValue(42000000);
 					const element = await setup(state);
 
@@ -458,7 +499,12 @@ describe('RoutingInfo', () => {
 					const state = {
 						routing: {
 							status: RoutingStatusCodes.Ok,
-							categoryId: 'bvv-mtb'
+							categoryId: 'bvv-mtb',
+							stats: {
+								twoDiff: [111, 222],
+								dist: 333,
+								time: 3600000
+							}
 						}
 					};
 					const calculatorSpy = spyOn(routingServiceMock, 'getETAFor')
@@ -476,7 +522,12 @@ describe('RoutingInfo', () => {
 					const state = {
 						routing: {
 							status: RoutingStatusCodes.Ok,
-							categoryId: 'bvv-mtb'
+							categoryId: 'bvv-mtb',
+							stats: {
+								twoDiff: [111, 222],
+								dist: 333,
+								time: 3600000
+							}
 						}
 					};
 					const calculatorSpy = spyOn(routingServiceMock, 'getETAFor')
@@ -493,7 +544,12 @@ describe('RoutingInfo', () => {
 					const state = {
 						routing: {
 							status: RoutingStatusCodes.Ok,
-							categoryId: 'racingbike'
+							categoryId: 'racingbike',
+							stats: {
+								twoDiff: [111, 222],
+								dist: 333,
+								time: 3600000
+							}
 						}
 					};
 					const calculatorSpy = spyOn(routingServiceMock, 'getETAFor')
@@ -506,6 +562,16 @@ describe('RoutingInfo', () => {
 					expect(calculatorSpy).toHaveBeenCalled();
 				});
 			});
+		});
+	});
+
+	describe('when disconnected', () => {
+		it('removes all observers', async () => {
+			const element = await setup();
+
+			element.onDisconnect(); // we call onDisconnect manually
+
+			expect(element._storeSubscriptions).toHaveSize(0);
 		});
 	});
 });

@@ -13,6 +13,7 @@ const Update = 'update';
  * A chip to share a stored file. The file is stored by the backend and
  * consist of drawings or measurements created within the application.
  * @class
+ * @extends {AbstractAssistChip}
  * @author thiloSchlemmer
  */
 export class ShareDataChip extends AbstractAssistChip {
@@ -44,33 +45,21 @@ export class ShareDataChip extends AbstractAssistChip {
 		}
 	}
 
-	/**
-	 * @override
-	 */
 	getIcon() {
 		return shareIcon;
 	}
 
-	/**
-	 * @override
-	 */
 	getLabel() {
 		const translate = (key) => this._translationService.translate(key);
 		return translate('share_assistChip_share_stored_data');
 	}
 
-	/**
-	 * @override
-	 */
 	isVisible() {
 		const { fileSaveResult } = this.getModel();
 
 		return !!(fileSaveResult?.adminId && fileSaveResult?.fileId);
 	}
 
-	/**
-	 * @override
-	 */
 	async onClick() {
 		const { fileSaveResult } = this.getModel();
 		const translate = (key) => this._translationService.translate(key);
@@ -96,9 +85,6 @@ export class ShareDataChip extends AbstractAssistChip {
 		openModal(title, html`<ba-share-content .urls=${urls}></ba-share-content>`);
 	}
 
-	/**
-	 * @override
-	 */
 	onDisconnect() {
 		this._unsubscribeFromStore();
 	}

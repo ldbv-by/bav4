@@ -1,7 +1,6 @@
 import { $injector } from '../../../../src/injection';
 import { MvuElement } from '../../../../src/modules/MvuElement';
 import { CategoryBar } from '../../../../src/modules/routing/components/categoryBar/CategoryBar';
-import { BvvRoutingService } from '../../../../src/services/RoutingService';
 
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { routingReducer } from '../../../../src/store/routing/routing.reducer';
@@ -14,25 +13,53 @@ describe('CategoryBar', () => {
 		getValue: () => {},
 		getValueAsPath: () => {}
 	};
-	const routingService = new BvvRoutingService();
-	let store;
+
 	const categories = [
 		{
 			id: 'category_1',
 			label: 'label_category_1',
-			subcategories: []
+			style: { color: 'red', icon: 'icon_category_1' },
+			subcategories: [
+				{
+					id: 'category_11',
+					label: 'label_category_11',
+					style: { color: 'red', icon: 'icon_category_11' },
+					subcategories: []
+				},
+				{
+					id: 'category_12',
+					label: 'label_category_12',
+					style: {},
+					subcategories: []
+				}
+			]
 		},
 		{
 			id: 'category_2',
 			label: 'label_category_2',
-			subcategories: []
+			style: { color: 'blue', icon: 'icon_category_2' },
+			subcategories: [
+				{
+					id: 'category_21',
+					label: 'label_category_21',
+					style: { color: 'blue', icon: 'icon_category_21' },
+					subcategories: []
+				}
+			]
 		},
 		{
 			id: 'category_3',
 			label: 'label_category_3',
+			style: { color: 'green' },
 			subcategories: []
 		}
 	];
+	const routingServiceMock = {
+		getCategoryById: () => {},
+		getCategories: () => categories,
+		getParent: (id) => (id !== 'category_3' && id !== null && id.length > 10 ? id.slice(0, -1) : id)
+	};
+	let store;
 
 	const setup = (state) => {
 		const initialState = {
@@ -46,7 +73,7 @@ describe('CategoryBar', () => {
 			media: createNoInitialStateMediaReducer(),
 			routing: routingReducer
 		});
-		$injector.registerSingleton('RoutingService', routingService).registerSingleton('ConfigService', configService);
+		$injector.registerSingleton('RoutingService', routingServiceMock).registerSingleton('ConfigService', configService);
 		return TestUtils.render(CategoryBar.tag);
 	};
 
@@ -71,7 +98,6 @@ describe('CategoryBar', () => {
 
 	describe('when initialized', () => {
 		it('renders a category bar with buttons', async () => {
-			spyOn(routingService, 'getCategories').and.returnValue(categories);
 			const element = await setup({});
 
 			const buttons = element.shadowRoot.querySelectorAll('button');
@@ -79,25 +105,54 @@ describe('CategoryBar', () => {
 			expect(buttons).toHaveSize(3);
 		});
 
-		it('renders button defined by category id', async () => {
-			spyOn(routingService, 'getCategories').and.returnValue(categories);
+		it('renders icon defined by category id', async () => {
 			const element = await setup({});
 
-			const buttons = element.shadowRoot.querySelectorAll('button');
+			const icon = element.shadowRoot.querySelectorAll('.category-icon');
 
-			expect(buttons).toHaveSize(3);
-			expect(buttons[0].classList.contains('category-button')).toBeTrue();
-			expect(buttons[0].classList.contains('icon-category_1')).toBeTrue();
-			expect(buttons[1].classList.contains('category-button')).toBeTrue();
-			expect(buttons[1].classList.contains('icon-category_2')).toBeTrue();
-			expect(buttons[2].classList.contains('category-button')).toBeTrue();
-			expect(buttons[2].classList.contains('icon-category_3')).toBeTrue();
+			expect(icon).toHaveSize(2);
+			expect(icon[0].innerHTML.includes('icon_category_1')).toBeTrue();
+
+			expect(icon[1].innerHTML.includes('icon_category_2')).toBeTrue();
+		});
+
+		it('renders an active subcategory', async () => {
+			const element = await setup({ routing: { categoryId: 'category_12' } });
+
+			const icon = element.shadowRoot.querySelectorAll('.category-icon');
+
+			expect(icon).toHaveSize(2);
+			expect(icon[0].innerHTML.includes('icon_category_1')).toBeTrue();
+			expect(icon[0].classList.contains('is-active')).toBeTrue();
+
+			expect(icon[1].innerHTML.includes('icon_category_2')).toBeTrue();
+		});
+
+		it('renders an active category', async () => {
+			const element = await setup({ routing: { categoryId: 'category_2' } });
+
+			const icon = element.shadowRoot.querySelectorAll('.category-icon');
+
+			expect(icon).toHaveSize(2);
+			expect(icon[0].innerHTML.includes('icon_category_1')).toBeTrue();
+
+			expect(icon[1].innerHTML.includes('icon_category_2')).toBeTrue();
+			expect(icon[1].classList.contains('is-active')).toBeTrue();
+		});
+	});
+
+	describe('when disconnected', () => {
+		it('removes all observers', async () => {
+			const element = await setup();
+			const spy = spyOn(element, '_unsubscribeFromStore').and.callThrough();
+			element.onDisconnect(); // we call onDisconnect manually
+
+			expect(spy).toHaveBeenCalled();
 		});
 	});
 
 	describe('when category button is clicked', () => {
 		it('updates the store', async () => {
-			spyOn(routingService, 'getCategories').and.returnValue(categories);
 			const element = await setup({});
 
 			const category1Button = element.shadowRoot.querySelector('#category_1-button');

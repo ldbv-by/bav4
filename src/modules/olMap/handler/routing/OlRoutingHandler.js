@@ -23,11 +23,14 @@ import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { unByKey } from 'ol/Observable';
 import { HelpTooltip } from '../../tooltip/HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
-import { setRoute, setWaypoints } from '../../../../store/routing/routing.action';
-import { RoutingStatusCodes } from '../../../../domain/routing';
+import { setProposal, setRoute, setRouteStats, setWaypoints } from '../../../../store/routing/routing.action';
+import { CoordinateProposalType, RoutingStatusCodes } from '../../../../domain/routing';
 import { fit } from '../../../../store/position/position.action';
 import { getCoordinatesForElevationProfile } from '../../utils/olGeometryUtils';
 import { updateCoordinates } from '../../../../store/elevationProfile/elevationProfile.action';
+import { equals } from '../../../../../node_modules/ol/coordinate';
+import { GeoJSON as GeoJSONFormat } from 'ol/format';
+import { SourceType, SourceTypeName } from '../../../../domain/sourceType';
 
 export const RoutingFeatureTypes = Object.freeze({
 	START: 'start',
@@ -119,7 +122,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 		this._map.addInteraction(this._selectInteraction);
 
 		if (!this._environmentService.isTouch()) {
-			this._modifyInteraction = this._createModify();
+			this._modifyInteraction = this._createModify(this._routeLayerCopy);
 			this._map.addInteraction(this._modifyInteraction);
 		}
 
@@ -128,9 +131,57 @@ export class OlRoutingHandler extends OlLayerHandler {
 			olMap.on(
 				MapBrowserEventType.POINTERMOVE,
 				this._newPointerMoveHandler(olMap, this._interactionLayer, this._alternativeRouteLayer, this._routeLayerCopy)
-			)
+			),
+			olMap.on(MapBrowserEventType.CLICK, this._newClickHandler(olMap, this._interactionLayer, this._alternativeRouteLayer))
 		);
 		return this._routingLayerGroup;
+	}
+
+	_getFeaturesAtPixelOptionsForClickHandler(interactionLayer, alternativeRouteLayer) {
+		return {
+			layerFilter: (layer) => [interactionLayer, alternativeRouteLayer].includes(layer),
+			hitTolerance: 5
+		};
+	}
+
+	_newClickHandler(map, interactionLayer, alternativeRouteLayer) {
+		return (event) => {
+			const coord = map.getEventCoordinate(event.originalEvent);
+			const pixel = map.getEventPixel(event.originalEvent);
+			const hit = map.getFeaturesAtPixel(pixel, this._getFeaturesAtPixelOptionsForClickHandler(interactionLayer, alternativeRouteLayer));
+
+			if (hit.length > 0) {
+				const feature = hit[0];
+
+				switch (feature.get(ROUTING_FEATURE_TYPE)) {
+					case RoutingFeatureTypes.START:
+					case RoutingFeatureTypes.DESTINATION: {
+						setProposal(coord, CoordinateProposalType.EXISTING_START_OR_DESTINATION);
+						break;
+					}
+					case RoutingFeatureTypes.INTERMEDIATE: {
+						setProposal(coord, CoordinateProposalType.EXISTING_INTERMEDIATE);
+						break;
+					}
+				}
+			} else {
+				if (this._getInteractionFeatures().length === 0) {
+					setProposal(coord, CoordinateProposalType.START_OR_DESTINATION);
+				} else if (
+					this._getInteractionFeatures().length === 1 &&
+					this._getInteractionFeatures()[0].get(ROUTING_FEATURE_TYPE) === RoutingFeatureTypes.START
+				) {
+					setProposal(coord, CoordinateProposalType.DESTINATION);
+				} else if (
+					this._getInteractionFeatures().length === 1 &&
+					this._getInteractionFeatures()[0].get(ROUTING_FEATURE_TYPE) === RoutingFeatureTypes.DESTINATION
+				) {
+					setProposal(coord, CoordinateProposalType.START);
+				} else {
+					setProposal(coord, CoordinateProposalType.INTERMEDIATE);
+				}
+			}
+		};
 	}
 
 	_getFeaturesAtPixelOptionsForPointerMove(interactionLayer, alternativeRouteLayer, routeLayerCopy) {
@@ -202,14 +253,8 @@ export class OlRoutingHandler extends OlLayerHandler {
 		translate.on('translatestart', (evt) => {
 			startCoordinate = evt.coordinate;
 		});
-		translate.on('translating', () => {
-			// this._map.getTarget().classList.add('grabbing');
-			// managePopup();
-			// Todo: hide context menu
-		});
 		translate.on('translateend', (evt) => {
-			// this._map.getTarget().classList.remove('grabbing');
-			if (evt.coordinate[0] !== startCoordinate[0] || evt.coordinate[1] !== startCoordinate[1]) {
+			if (!equals(startCoordinate, evt.coordinate)) {
 				this._requestRouteFromInteractionLayer();
 			}
 		});
@@ -226,48 +271,33 @@ export class OlRoutingHandler extends OlLayerHandler {
 	_createSelect(interactionLayer, alternativeRouteLayer) {
 		const select = new Select(this._getSelectOptions(interactionLayer, alternativeRouteLayer));
 		select.on('select', (evt) => {
-			if (evt.selected[0]) {
-				const feature = evt.selected[0];
-				const category = feature.get(ROUTING_CATEGORY);
-				if (category) {
-					// change to alternative route
-					this._catId = category.id;
-					this._switchToAlternativeRoute(this._currentRoutingResponse);
-					// hideHelpTooltip();
-					// Todo: hide context menu
-				} else {
-					// Update the position of the popup according to the click event.
-					// managePopup(evt.selected[0], evt.mapBrowserEvent.coordinate, function () {
-					// 	select.getFeatures().clear();
-					// });
-					// console.log(feature.getGeometry().getFirstCoordinate());
-					// this._removeFeature(feature);
-					// Todo: update context menu
-				}
-				select.getFeatures().clear();
+			const feature = evt.selected[0];
+			const category = feature.get(ROUTING_CATEGORY);
+			if (category) {
+				// change to alternative route
+				this._catId = category.id;
+				this._switchToAlternativeRoute(this._currentRoutingResponse);
 			}
+			this._helpTooltip.deactivate();
+			select.getFeatures().clear();
 		});
 		return select;
 	}
 
-	_createModify() {
-		const modify = new Modify({
+	_getModifyOptions(routeLayerCopy) {
+		return {
 			style: getModifyInteractionStyle(),
-			source: this._routeLayerCopy.getSource(),
+			source: routeLayerCopy.getSource(),
 			pixelTolerance: 5,
 			deleteCondition: () => false
-		});
-		modify.on('modifystart', (evt) => {
-			if (evt.mapBrowserEvent.type !== 'singleclick') {
-				// this._map.getTarget().classList.add('grabbing');
-				// managePopup();
-				// Todo: show context menu
-			}
-		});
+		};
+	}
+
+	_createModify(routeLayerCopy) {
+		const modify = new Modify(this._getModifyOptions(routeLayerCopy));
+
 		modify.on('modifyend', (evt) => {
 			if (evt.mapBrowserEvent.type === 'pointerup') {
-				// this._map.getTarget().classList.remove('grabbing');
-
 				// find the feature which was modified
 				// be careful with the revision number -> setting the style or properties on a feature also increments it
 				// in our case, the modified feature is the feature which holds the highest revision number
@@ -411,7 +441,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 			this._routeLayerCopy.getSource().addFeature(segmentFeature);
 		}
 
-		updateCoordinates(getCoordinatesForElevationProfile(geometry));
+		this._updateStore(categoryResponse);
 	}
 
 	_displayAlternativeRoutingGeometry(categoryResponse) {
@@ -478,17 +508,6 @@ export class OlRoutingHandler extends OlLayerHandler {
 		this._interactionLayer.getSource().addFeature(iconFeature);
 	}
 
-	// _removeFeature(feature) {
-	// 	const coordinate = feature.getGeometry().getFirstCoordinate();
-
-	// 	const {
-	// 		routing: { waypoints }
-	// 	} = this._storeService.getStore().getState();
-
-	// 	// we just update the store
-	// 	setWaypoints([...waypoints.filter((c) => !equals(c, coordinate))]);
-	// }
-
 	async _requestRouteFromCoordinates(coordinates3857, status) {
 		if (coordinates3857.length > 0) {
 			this._setInteractionsActive(false);
@@ -515,13 +534,27 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 				// request route
 				const alternativeCategoryIds = this._routingService.getAlternativeCategoryIds(this._catId);
-				this._currentRoutingResponse = await this._requestRoute(this._catId, alternativeCategoryIds, coordinates3857);
-				// update store
-				setRoute(this._currentRoutingResponse[this._catId]);
+				try {
+					this._currentRoutingResponse = await this._requestAndDisplayRoute(this._catId, alternativeCategoryIds, coordinates3857);
+				} catch (error) {
+					console.error(error);
+					emitNotification(`${this._translationService.translate('global_routingService_exception')}`, LevelTypes.ERROR);
+				}
 			}
 			// enable interaction also if request failed
 			this._setInteractionsActive(true);
 		}
+	}
+
+	_updateStore(categoryResponse) {
+		const geom = this._polylineToGeometry(categoryResponse.paths[0].points);
+
+		// update stats
+		setRouteStats(this._routingService.calculateRouteStats(categoryResponse));
+		// update elevation profile coordinate
+		updateCoordinates(getCoordinatesForElevationProfile(geom));
+		// update route
+		setRoute({ data: new GeoJSONFormat().writeGeometry(geom), type: new SourceType(SourceTypeName.GEOJSON) });
 	}
 
 	_requestRouteFromInteractionLayer() {
@@ -539,33 +572,27 @@ export class OlRoutingHandler extends OlLayerHandler {
 		}
 	}
 
-	async _requestRoute(defaultCategoryId, alternativeCategoryIds, coordinates3857) {
+	async _requestAndDisplayRoute(defaultCategoryId, alternativeCategoryIds, coordinates3857) {
 		const categories = this._getIntermediateFeatures().length === 0 ? [defaultCategoryId].concat(alternativeCategoryIds) : [defaultCategoryId];
 
-		try {
-			const routingResult = await this._routingService.calculateRoute(categories, coordinates3857);
+		const routingResult = await this._routingService.calculateRoute(categories, coordinates3857);
 
-			this._displayCurrentRoutingGeometry(routingResult[defaultCategoryId]);
+		this._displayCurrentRoutingGeometry(routingResult[defaultCategoryId]);
 
-			if (this._getIntermediateFeatures().length === 0) {
-				alternativeCategoryIds.forEach((id) => {
-					this._displayAlternativeRoutingGeometry(routingResult[id]);
-				});
-			}
-
-			return routingResult;
-		} catch (error) {
-			console.error(error);
-			emitNotification(`${this._translationService.translate('global_routingService_exception')}`, LevelTypes.ERROR);
+		if (this._getIntermediateFeatures().length === 0) {
+			alternativeCategoryIds.forEach((id) => {
+				this._displayAlternativeRoutingGeometry(routingResult[id]);
+			});
 		}
-		return null;
+
+		return routingResult;
 	}
 
 	_highlightSegments(highlightedSegments, highlightLayer, routeLayer) {
 		if (highlightedSegments) {
 			const { segments, zoomToExtent } = highlightedSegments;
 
-			const clearHighlightLayerWithDelay = function () {
+			const clearHighlightLayerWithDelay = () => {
 				setTimeout(() => {
 					highlightLayer.getSource().clear();
 				}, REMOVE_HIGHLIGHTED_SEGMENTS_TIMEOUT_MS);
@@ -597,12 +624,42 @@ export class OlRoutingHandler extends OlLayerHandler {
 		}
 	}
 
+	_addIntermediate(intermediateCoord3857, routeLayerCopy) {
+		// find the closest segment
+		const closestSegmentFeature = routeLayerCopy
+			.getSource()
+			.getFeatures()
+			.reduce((acc, curr) => {
+				const closestCurr = curr.getGeometry().getClosestPoint(intermediateCoord3857);
+				const closestAcc = acc.getGeometry().getClosestPoint(intermediateCoord3857);
+				// planar distance! -> must be adapted when changed to 3857
+				const dCurr = distance(closestCurr, intermediateCoord3857);
+				const dAcc = distance(closestAcc, intermediateCoord3857);
+				return dCurr < dAcc ? curr : acc;
+			});
+
+		const segmentIndex = closestSegmentFeature.get(ROUTING_SEGMENT_INDEX);
+
+		const coordinates3857 = this._getInteractionFeatures().map((feature) => {
+			return feature.getGeometry().getCoordinates();
+		});
+		coordinates3857.splice(segmentIndex + 1, 0, intermediateCoord3857);
+
+		return coordinates3857;
+	}
+
 	_register(store) {
 		const updateCategoryAndRequestRoute = (coordinates3857, catId, status) => {
 			// let's ensure each request is executed one after each other
 			this._promiseQueue.add(async () => {
 				this._catId = catId;
 				await this._requestRouteFromCoordinates([...coordinates3857.map((c) => [...c])], status);
+			});
+		};
+		const addIntermediatePointAndRequestRoute = (coordinate3857, status) => {
+			// let's ensure each request is executed one after each other
+			this._promiseQueue.add(async () => {
+				await this._requestRouteFromCoordinates([...this._addIntermediate(coordinate3857, this._routeLayerCopy).map((c) => [...c])], status);
 			});
 		};
 		return [
@@ -621,6 +678,11 @@ export class OlRoutingHandler extends OlLayerHandler {
 				store,
 				(state) => state.routing.highlightedSegments,
 				(highlightedSegments) => this._highlightSegments(highlightedSegments, this._highlightLayer, this._routeLayer)
+			),
+			observe(
+				store,
+				(state) => state.routing.intermediate,
+				(intermediate, state) => addIntermediatePointAndRequestRoute([...intermediate.payload], state.routing.status)
 			)
 		];
 	}
@@ -648,11 +710,11 @@ export class OlRoutingHandler extends OlLayerHandler {
 	}
 	_unsubscribe(observers) {
 		observers.forEach((unsubscribe) => unsubscribe());
-		observers.splice(0, observe.length);
+		observers.splice(0, observers.length);
 	}
 
 	_unregisterMapListener(listeners) {
 		listeners.forEach((listener) => unByKey(listener));
-		listeners.splice(0, observe.length);
+		listeners.splice(0, listeners.length);
 	}
 }

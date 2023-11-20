@@ -1,5 +1,4 @@
 import { $injector } from '../../../../../src/injection';
-import { AbstractContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/AbstractContentPanel';
 import { CatalogContentPanel } from '../../../../../src/modules/topics/components/menu/catalog/CatalogContentPanel';
 import { TopicsContentPanel, TopicsContentPanelIndex } from '../../../../../src/modules/topics/components/menu/TopicsContentPanel';
 import { Topic } from '../../../../../src/domain/topic';
@@ -8,6 +7,7 @@ import { topicsReducer } from '../../../../../src/store/topics/topics.reducer';
 import { topicsContentPanelReducer } from '../../../../../src/store/topicsContentPanel/topicsContentPanel.reducer';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 import { TestUtils } from '../../../../test-utils.js';
+import { AbstractMvuContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel.js';
 
 window.customElements.define(TopicsContentPanel.tag, TopicsContentPanel);
 
@@ -38,10 +38,24 @@ describe('TopicsContentPanel', () => {
 	};
 
 	describe('class', () => {
-		it('inherits from AbstractContentPanel', async () => {
+		it('inherits from AbstractMvuContentPanel', async () => {
 			const element = await setup();
 
-			expect(element instanceof AbstractContentPanel).toBeTrue();
+			expect(element instanceof AbstractMvuContentPanel).toBeTrue();
+		});
+	});
+
+	describe('when instantiated', () => {
+		it('has a model with default values', async () => {
+			await setup();
+			const model = new TopicsContentPanel().getModel();
+
+			expect(model).toEqual({
+				currentTopicId: null,
+				topicsReady: false,
+				contentIndex: null,
+				active: false // from parent class
+			});
 		});
 	});
 
