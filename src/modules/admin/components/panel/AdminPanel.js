@@ -13,7 +13,7 @@ import { Topic } from '../../../../domain/topic';
 // import { logOnce, onlyOnce } from '../layerTree/LayerTree';
 
 const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
-const Empty_Label = ' ';
+const Empty_Label = '   ';
 
 let _uniqueIdCounter = 0;
 const _generateUniqueId = () => {
@@ -53,6 +53,7 @@ export class AdminPanel extends MvuElement {
 	}
 
 	_addUniqueId(catalogFromService) {
+		console.log('🚀 ~ AdminPanel ~ _addUniqueId ~ catalogFromService:', catalogFromService);
 		const catalogWithUniqueId = catalogFromService.map((category) => {
 			const uid = _generateUniqueId();
 
@@ -86,7 +87,9 @@ export class AdminPanel extends MvuElement {
 				result.label = ' ';
 			}
 		}
+		// console.log('🚀 ~ AdminPanel ~ _enrichWithGeoResource ~ obj.label: <', obj.label, '>');
 		if (obj.label) {
+			// console.log('🚀 ~ AdminPanel ~ _enrichWithGeoResource ~ if (obj.label) is true ------------------');
 			result.label = obj.label;
 		}
 		if (obj.children && obj.children.length > 0) {
@@ -103,7 +106,9 @@ export class AdminPanel extends MvuElement {
 		const result = {};
 		if (obj.geoResourceId) {
 			result.geoResourceId = obj.geoResourceId;
+			// console.log('🚀 ~ AdminPanel ~ _extractOriginal ~ obj.label: <', obj.label, '>');
 		} else if (obj.label) {
+			// console.log('🚀 ~ AdminPanel ~ _enrichWithGeoResource ~ if (obj.label) is true ------------------');
 			result.label = obj.label;
 		}
 		if (obj.children && obj.children.length > 0) {
@@ -114,11 +119,14 @@ export class AdminPanel extends MvuElement {
 
 	// extract 'original data' recursively from the input object, but keep showChildren
 	_extractOriginalIncShowChildren(obj, extractFunction) {
+		console.log('🚀 ~ AdminPanel ~ _extractOriginalIncShowChildren ~ obj:', obj);
 		const result = {};
 		if (obj.geoResourceId) {
 			result.geoResourceId = obj.geoResourceId;
 		}
+		// console.log('🚀 ~ AdminPanel ~ _enrichWithGeoResource ~ obj.label: <', obj.label, '>');
 		if (obj.label) {
+			// console.log('🚀 ~ AdminPanel ~ _enrichWithGeoResource ~ if (obj.label) is true ------------------');
 			result.label = obj.label;
 		}
 		if (obj.children && obj.children.length > 0) {
@@ -135,7 +143,9 @@ export class AdminPanel extends MvuElement {
 		if (obj.geoResourceId) {
 			result.geoResourceId = obj.geoResourceId;
 		}
+		// console.log('🚀 ~ AdminPanel ~ _enrichWithGeoResource ~ obj.label: <', obj.label, '>');
 		if (obj.label) {
+			// console.log('🚀 ~ AdminPanel ~ _enrichWithGeoResource ~ if (obj.label) is true ------------------');
 			result.label = obj.label;
 		}
 		if (obj.children && obj.children.length > 0) {
