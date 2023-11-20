@@ -10,10 +10,14 @@ import { Waypoints } from '../modules/routing/components/waypoints/Waypoints';
 import { WaypointItem } from '../modules/routing/components/waypoints/WaypointItem';
 import '../modules/routing/components/routeDetails';
 
+import { provide as routingProvider } from '../modules/routing/i18n/routing.provider';
+import { $injector } from '../injection';
+const { TranslationService: translationService } = $injector.inject('TranslationService');
+translationService.register('routingProvider', routingProvider);
+
 if (!window.customElements.get(RoutingContainer.tag)) {
 	window.customElements.define(RoutingContainer.tag, RoutingContainer);
 }
-
 if (!window.customElements.get(CategoryBar.tag)) {
 	window.customElements.define(CategoryBar.tag, CategoryBar);
 }
