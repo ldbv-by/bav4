@@ -1,4 +1,7 @@
 /**
+ * @module utils/clone
+ */
+/**
  *
  * Deep clones an object or an array by converting to a JSON string. Does not work for arrays or objects containing a function or Symbol properties.
  * @param {Object|Array} value

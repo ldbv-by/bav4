@@ -1,3 +1,6 @@
+/**
+ * @module utils/hashCode
+ */
 import { isObject, isString } from './checks';
 
 /**
