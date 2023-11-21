@@ -7,7 +7,7 @@ import { setMoveStart } from '../../src/store/map/map.action.js';
 import { mapContextMenuReducer } from '../../src/store/mapContextMenu/mapContextMenu.reducer.js';
 import { isTemplateResult } from '../../src/utils/checks.js';
 import { $injector } from '../../src/injection/index.js';
-
+import { toolsReducer } from '../../src/store/tools/tools.reducer';
 import { highlightReducer } from '../../src/store/highlight/highlight.reducer.js';
 import { HighlightFeatureType } from '../../src/store/highlight/highlight.action.js';
 import { bottomSheetReducer } from '../../src/store/bottomSheet/bottomSheet.reducer.js';
@@ -23,7 +23,8 @@ describe('ContextClickPlugin', () => {
 			map: mapReducer,
 			mapContextMenu: mapContextMenuReducer,
 			bottomSheet: bottomSheetReducer,
-			highlight: highlightReducer
+			highlight: highlightReducer,
+			tools: toolsReducer
 		});
 
 		$injector.registerSingleton('EnvironmentService', environmentServiceMock);
@@ -143,11 +144,11 @@ describe('ContextClickPlugin', () => {
 
 				setContextClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 
-				expect(store.getState().mapContextMenu.coordinate).not.toBeNull();
+				expect(store.getState().mapContextMenu.active).toBeTrue();
 
 				setMoveStart();
 
-				expect(store.getState().mapContextMenu.coordinate).toBeNull();
+				expect(store.getState().mapContextMenu.active).toBeFalse();
 			});
 		});
 
@@ -158,11 +159,11 @@ describe('ContextClickPlugin', () => {
 
 				setContextClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 
-				expect(store.getState().mapContextMenu.coordinate).not.toBeNull();
+				expect(store.getState().mapContextMenu.active).toBeTrue();
 
 				setClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 
-				expect(store.getState().mapContextMenu.coordinate).toBeNull();
+				expect(store.getState().mapContextMenu.active).toBeFalse();
 			});
 		});
 	});
