@@ -11,6 +11,8 @@ import { toolsReducer } from '../../src/store/tools/tools.reducer';
 import { highlightReducer } from '../../src/store/highlight/highlight.reducer.js';
 import { HighlightFeatureType } from '../../src/store/highlight/highlight.action.js';
 import { bottomSheetReducer } from '../../src/store/bottomSheet/bottomSheet.reducer.js';
+import { setCurrentTool } from '../../src/store/tools/tools.action.js';
+import { Tools } from '../../src/domain/tools.js';
 
 describe('ContextClickPlugin', () => {
 	const environmentServiceMock = {
@@ -115,6 +117,20 @@ describe('ContextClickPlugin', () => {
 
 					expect(store.getState().bottomSheet.active).toBeTrue();
 				});
+			});
+		});
+
+		describe('when tool changes', () => {
+			it('removes an existing highlight feature', () => {
+				const store = setup({});
+				new ContextClickPlugin().register(store);
+
+				setContextClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
+
+				expect(store.getState().highlight.features).toHaveSize(1);
+				setCurrentTool(Tools.ROUTING);
+
+				expect(store.getState().highlight.features).toHaveSize(0);
 			});
 		});
 	});
