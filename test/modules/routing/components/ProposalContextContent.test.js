@@ -1,5 +1,4 @@
 import { $injector } from '../../../../src/injection';
-import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { ProposalContextContent } from '../../../../src/modules/routing/components/contextMenu/ProposalContextContent';
 import { initialState as initialRoutingState, routingReducer } from '../../../../src/store/routing/routing.reducer';
 import { TestUtils } from '../../../test-utils';
