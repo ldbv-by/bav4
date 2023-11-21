@@ -83,14 +83,6 @@ export class RoutingPlugin extends BaPlugin {
 			}
 		};
 
-		observe(store, (state) => state.routing.active, onChange);
-		observe(store, (state) => state.tools.current, onToolChanged, false);
-
-		// we also want to remove the highlight feature when the BottomSheet was closed
-		const onActiveStateChanged = () => {
-			removeHighlightFeaturesById(RoutingPlugin.HIGHLIGHT_FEATURE_ID);
-		};
-
 		const onProposalChange = ({ coord }) => {
 			closeContextMenu();
 			addHighlightFeatures({
@@ -100,23 +92,30 @@ export class RoutingPlugin extends BaPlugin {
 			});
 			const content = html`<ba-proposal-context-content></ba-proposal-context-content>`;
 			openBottomSheet(content);
-			observeOnce(store, (state) => state.bottomSheet.active, onActiveStateChanged);
+			// we also want to remove the highlight feature when the BottomSheet was closed
+			observeOnce(
+				store,
+				(state) => state.bottomSheet.active,
+				() => removeHighlightFeaturesById(RoutingPlugin.HIGHLIGHT_FEATURE_ID)
+			);
 		};
+		const onRoutingStatusChanged = async (status) => {
+			if ([RoutingStatusCodes.Start_Missing, RoutingStatusCodes.Destination_Missing].includes(status)) {
+				setCurrentTool(Tools.ROUTING);
+			}
+		};
+
+		observe(store, (state) => state.routing.active, onChange);
+		observe(store, (state) => state.tools.current, onToolChanged, false);
 		observe(
 			store,
 			(state) => state.routing.proposal,
 			(eventLike) => onProposalChange(eventLike.payload)
 		);
-
-		const activateRouting = async (status) => {
-			if ([RoutingStatusCodes.Start_Missing, RoutingStatusCodes.Destination_Missing].includes(status)) {
-				setCurrentTool(Tools.ROUTING);
-			}
-		};
 		observe(
 			store,
 			(state) => state.routing.status,
-			(status) => activateRouting(status)
+			(status) => onRoutingStatusChanged(status)
 		);
 	}
 
