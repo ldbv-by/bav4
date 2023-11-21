@@ -16,14 +16,10 @@ describe('ProposalContextContent', () => {
 	let store;
 	const setup = (state, properties = {}) => {
 		const initialState = {
-			media: {
-				portrait: false
-			},
 			...state
 		};
 
 		store = TestUtils.setupStoreAndDi(initialState, {
-			media: createNoInitialStateMediaReducer(),
 			routing: routingReducer,
 			bottomSheet: bottomSheetReducer,
 			mapContextMenu: mapContextMenuReducer
