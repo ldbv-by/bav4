@@ -306,15 +306,14 @@ const mergeRoadClassAndTrackTypeData = (roadClassDetails, trackTypeDetails) => {
  * @param {string} vehicle
  * @param {Array<RouteDetail>} roadClassDetails
  * @param {Array<RouteDetail>} surfaceDetails
+ * @param {string} language the i18n code for language of the warning message
  * @returns {Object.<string, module:domain/routing~RouteWarningAttribute>}
  */
-const createRouteWarnings = (vehicle, roadClassDetails, surfaceDetails) => {
-	const { ConfigService: configService } = $injector.inject('ConfigService');
-	const lang = configService.getValue('DEFAULT_LANG');
+const createRouteWarnings = (vehicle, roadClassDetails, surfaceDetails, language) => {
 	const vehicleType = vehicle.replace('bvv-', '').replace('bayernnetz-', '');
 
 	const insertWarning = (roadClassDetail, surfaceDetail) => {
-		const ruleOptions = { ...defaultRuleOptions, language: lang, vehicle: vehicleType, roadClass: roadClassDetail[2], surface: surfaceDetail[2] };
+		const ruleOptions = { ...defaultRuleOptions, language: language, vehicle: vehicleType, roadClass: roadClassDetail[2], surface: surfaceDetail[2] };
 		return RouteWarningRuleFunctions.map((ruleFunction) => ruleFunction(ruleOptions)).filter((warning) => warning !== null);
 	};
 
@@ -368,6 +367,9 @@ const polylineToGeometry = (polyline) => {
  * @type {module:services/RoutingService~routeStatsProvider}
  */
 export const bvvRouteStatsProvider = (ghRoute, profileStats) => {
+	const { ConfigService: configService } = $injector.inject('ConfigService');
+	const lang = configService.getValue('DEFAULT_LANG');
+
 	const speedOptions = Object.hasOwn(VehicleSpeedOptions, ghRoute.vehicle) ? VehicleSpeedOptions[ghRoute.vehicle] : null;
 	const time = speedOptions ? getETAFor(ghRoute.paths[0].distance, profileStats.sumUp, profileStats.sumDown, speedOptions) : ghRoute.paths[0].time;
 
@@ -379,7 +381,7 @@ export const bvvRouteStatsProvider = (ghRoute, profileStats) => {
 		surface: surfaceDetails,
 		road_class: roadClassTrackTypeDetails
 	};
-	const warnings = createRouteWarnings(ghRoute.vehicle, mergedRoadClassTrackTypeRawData, ghRoute.paths[0].details.surface);
+	const warnings = createRouteWarnings(ghRoute.vehicle, mergedRoadClassTrackTypeRawData, ghRoute.paths[0].details.surface, lang);
 
 	return {
 		time: time,
