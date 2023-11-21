@@ -1,17 +1,18 @@
 /**
  * @module plugins/RoutingPlugin
  */
-import { observe } from '../utils/storeUtils';
+import { observe, observeOnce } from '../utils/storeUtils';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { BaPlugin } from './BaPlugin';
-import { activate, deactivate } from '../store/routing/routing.action';
+import { activate, deactivate, setCategory } from '../store/routing/routing.action';
 import { Tools } from '../domain/tools';
 import { $injector } from '../injection/index';
 import { LevelTypes, emitNotification } from '../store/notifications/notifications.action';
-import { updateContextMenu } from '../store/mapContextMenu/mapContextMenu.action';
 import { openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
 import { html } from '../../node_modules/lit-html/lit-html';
-import { CoordinateProposalType } from '../domain/routing';
+import { RoutingStatusCodes } from '../domain/routing';
+import { HighlightFeatureType, addHighlightFeatures, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
+import { setCurrentTool } from '../store/tools/tools.action';
 
 /**
  * Id of the layer used for routing interaction.
@@ -42,13 +43,14 @@ export class RoutingPlugin extends BaPlugin {
 	 * @param {Store} store
 	 */
 	async register(store) {
-		const { RoutingService: routingService, EnvironmentService: environmentService } = $injector.inject('RoutingService', 'EnvironmentService');
+		const { RoutingService: routingService } = $injector.inject('RoutingService');
 
 		const lazyInitialize = async () => {
 			if (!this._initialized) {
 				// let's initial the routing service
 				try {
 					await routingService.init();
+					setCategory(routingService.getCategories()[0]?.id);
 					return (this._initialized = true);
 				} catch (ex) {
 					console.error('Routing service could not be initialized', ex);
@@ -83,16 +85,40 @@ export class RoutingPlugin extends BaPlugin {
 		observe(store, (state) => state.routing.active, onChange);
 		observe(store, (state) => state.tools.current, onToolChanged, false);
 
-		const openMenu = ({ type }) => {
-			if (type === CoordinateProposalType.START_OR_DESTINATION) {
-				const content = html`<ba-proposal-context-content></ba-proposal-context-content>`;
-				environmentService.isTouch() ? openBottomSheet(content) : updateContextMenu(content);
-			}
+		// we also want to remove the highlight feature when the BottomSheet was closed
+		const onActiveStateChanged = () => {
+			removeHighlightFeaturesById(RoutingPlugin.HIGHLIGHT_FEATURE_ID);
+		};
+
+		const onProposalChange = ({ coord }) => {
+			addHighlightFeatures({
+				id: RoutingPlugin.HIGHLIGHT_FEATURE_ID,
+				type: HighlightFeatureType.TEMPORARY,
+				data: { coordinate: [...coord] }
+			});
+			const content = html`<ba-proposal-context-content></ba-proposal-context-content>`;
+			openBottomSheet(content);
+			observeOnce(store, (state) => state.bottomSheet.active, onActiveStateChanged);
 		};
 		observe(
 			store,
 			(state) => state.routing.proposal,
-			(eventLike) => openMenu(eventLike.payload)
+			(eventLike) => onProposalChange(eventLike.payload)
 		);
+
+		const activateRouting = async (status) => {
+			if ([RoutingStatusCodes.Start_Missing, RoutingStatusCodes.Destination_Missing].includes(status)) {
+				setCurrentTool(Tools.ROUTING);
+			}
+		};
+		observe(
+			store,
+			(state) => state.routing.status,
+			(status) => activateRouting(status)
+		);
+	}
+
+	static get HIGHLIGHT_FEATURE_ID() {
+		return '#routingPluginHighlightFeatureId';
 	}
 }
