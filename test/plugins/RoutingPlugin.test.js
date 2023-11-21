@@ -16,6 +16,7 @@ import { ProposalContextContent } from '../../src/modules/routing/components/con
 import { highlightReducer } from '../../src/store/highlight/highlight.reducer.js';
 import { HighlightFeatureType } from '../../src/store/highlight/highlight.action.js';
 import { closeBottomSheet } from '../../src/store/bottomSheet/bottomSheet.action.js';
+import { mapContextMenuReducer } from '../../src/store/mapContextMenu/mapContextMenu.reducer.js';
 
 describe('RoutingPlugin', () => {
 	const routingService = {
@@ -34,7 +35,8 @@ describe('RoutingPlugin', () => {
 			tools: toolsReducer,
 			notifications: notificationReducer,
 			bottomSheet: bottomSheetReducer,
-			highlight: highlightReducer
+			highlight: highlightReducer,
+			mapContextMenu: mapContextMenuReducer
 		});
 		$injector.registerSingleton('RoutingService', routingService).registerSingleton('TranslationService', translationService);
 		return store;
@@ -137,8 +139,8 @@ describe('RoutingPlugin', () => {
 	});
 
 	describe('when routing "proposal" property changes', () => {
-		it('opens the BottomSheet, adds a highlight feature and removes the highlight feature after the BottomSheet is closed', async () => {
-			const store = setup();
+		it('closes the ContextMenu, adds a highlight feature, opens the BottomSheet, and removes the highlight feature after the BottomSheet is closed', async () => {
+			const store = setup({ mapContextMenu: { active: true } });
 			const instanceUnderTest = new RoutingPlugin();
 			instanceUnderTest._initialized = true;
 			const coordinate = [21, 42];
@@ -146,6 +148,7 @@ describe('RoutingPlugin', () => {
 
 			setProposal(coordinate, CoordinateProposalType.START_OR_DESTINATION);
 
+			expect(store.getState().mapContextMenu.active).toBeFalse();
 			const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data);
 			expect(wrapperElement.querySelectorAll(ProposalContextContent.tag)).toHaveSize(1);
 			expect(store.getState().bottomSheet.active).toBeTrue();

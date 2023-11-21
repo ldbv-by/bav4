@@ -13,6 +13,7 @@ import { html } from '../../node_modules/lit-html/lit-html';
 import { RoutingStatusCodes } from '../domain/routing';
 import { HighlightFeatureType, addHighlightFeatures, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
 import { setCurrentTool } from '../store/tools/tools.action';
+import { closeContextMenu } from '../store/mapContextMenu/mapContextMenu.action';
 
 /**
  * Id of the layer used for routing interaction.
@@ -91,6 +92,7 @@ export class RoutingPlugin extends BaPlugin {
 		};
 
 		const onProposalChange = ({ coord }) => {
+			closeContextMenu();
 			addHighlightFeatures({
 				id: RoutingPlugin.HIGHLIGHT_FEATURE_ID,
 				type: HighlightFeatureType.TEMPORARY,
