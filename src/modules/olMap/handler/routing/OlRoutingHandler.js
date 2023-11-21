@@ -156,11 +156,11 @@ export class OlRoutingHandler extends OlLayerHandler {
 				switch (feature.get(ROUTING_FEATURE_TYPE)) {
 					case RoutingFeatureTypes.START:
 					case RoutingFeatureTypes.DESTINATION: {
-						setProposal(coord, CoordinateProposalType.EXISTING_START_OR_DESTINATION);
+						setProposal(feature.getGeometry().getFirstCoordinate(), CoordinateProposalType.EXISTING_START_OR_DESTINATION);
 						break;
 					}
 					case RoutingFeatureTypes.INTERMEDIATE: {
-						setProposal(coord, CoordinateProposalType.EXISTING_INTERMEDIATE);
+						setProposal(feature.getGeometry().getFirstCoordinate(), CoordinateProposalType.EXISTING_INTERMEDIATE);
 						break;
 					}
 				}

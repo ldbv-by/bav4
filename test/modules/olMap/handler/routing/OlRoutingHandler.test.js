@@ -1329,7 +1329,7 @@ describe('OlRoutingHandler', () => {
 					.withArgs(instanceUnderTest._interactionLayer, instanceUnderTest._alternativeRouteLayer)
 					.and.returnValue(getFeaturesAtPixelOptionsForClickHandlerOptions);
 				spyOn(map, 'getEventPixel').withArgs(event.originalEvent).and.returnValue(pixel);
-				spyOn(map, 'getEventCoordinate').withArgs(event.originalEvent).and.returnValue(featureCoordinate);
+				spyOn(map, 'getEventCoordinate').withArgs(event.originalEvent).and.returnValue(eventCoordinate);
 				spyOn(map, 'getFeaturesAtPixel')
 					.withArgs(pixel, getFeaturesAtPixelOptionsForClickHandlerOptions)
 					.and.returnValue(hitFeature ? [hitFeature] : []);
@@ -1381,28 +1381,28 @@ describe('OlRoutingHandler', () => {
 			it('updates the "proposal" property of the routing s-o-s when a feature is NOT a hit', async () => {
 				let store = (await callClickHandler()).store;
 				expect(store.getState().routing.proposal.payload).toEqual({
-					coord: featureCoordinate,
+					coord: eventCoordinate,
 					type: CoordinateProposalType.START_OR_DESTINATION
 				});
 
 				feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.START);
 				store = (await callClickHandler(null, [feature])).store;
 				expect(store.getState().routing.proposal.payload).toEqual({
-					coord: featureCoordinate,
+					coord: eventCoordinate,
 					type: CoordinateProposalType.DESTINATION
 				});
 
 				feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.DESTINATION);
 				store = (await callClickHandler(null, [feature])).store;
 				expect(store.getState().routing.proposal.payload).toEqual({
-					coord: featureCoordinate,
+					coord: eventCoordinate,
 					type: CoordinateProposalType.START
 				});
 
 				feature.unset(ROUTING_FEATURE_TYPE);
 				store = (await callClickHandler(null, [feature])).store;
 				expect(store.getState().routing.proposal.payload).toEqual({
-					coord: featureCoordinate,
+					coord: eventCoordinate,
 					type: CoordinateProposalType.INTERMEDIATE
 				});
 			});
