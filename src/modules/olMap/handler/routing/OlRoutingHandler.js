@@ -656,11 +656,8 @@ export class OlRoutingHandler extends OlLayerHandler {
 				await this._requestRouteFromCoordinates([...coordinates3857.map((c) => [...c])], status);
 			});
 		};
-		const addIntermediatePointAndRequestRoute = (coordinate3857, status) => {
-			// let's ensure each request is executed one after each other
-			this._promiseQueue.add(async () => {
-				await this._requestRouteFromCoordinates([...this._addIntermediate(coordinate3857, this._routeLayerCopy).map((c) => [...c])], status);
-			});
+		const addIntermediatePointAndRequestRoute = (coordinate3857) => {
+			setWaypoints([...this._addIntermediate(coordinate3857, this._routeLayerCopy).map((c) => [...c])]);
 		};
 		return [
 			observe(
@@ -682,7 +679,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 			observe(
 				store,
 				(state) => state.routing.intermediate,
-				(intermediate, state) => addIntermediatePointAndRequestRoute([...intermediate.payload], state.routing.status)
+				(intermediate) => addIntermediatePointAndRequestRoute([...intermediate.payload])
 			)
 		];
 	}
