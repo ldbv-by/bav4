@@ -114,6 +114,9 @@ export class AdminPanel extends MvuElement {
 	// extract 'original data' recursively from the input object, but keep showChildren
 	_extractOriginalIncShowChildren(obj, extractFunction) {
 		const result = {};
+		if (obj.uid) {
+			result.uid = obj.uid;
+		}
 		if (obj.geoResourceId) {
 			result.geoResourceId = obj.geoResourceId;
 		}
@@ -436,9 +439,9 @@ export class AdminPanel extends MvuElement {
 		const addLayerGroup = () => {
 			const catalog = this._reduceData(catalogWithResourceData, this._extractOriginalIncShowChildren);
 
-			catalog.push({ label: ' ', children: [{ label: Empty_Label }] });
+			catalog.push({ uid: _generateUniqueId(), label: ' ', children: [{ label: Empty_Label }] });
 
-			this.#catalog = this._addUniqueId(catalog);
+			// this.#catalog = this._addUniqueId(catalog);
 			this._mergeCatalogWithResources();
 		};
 

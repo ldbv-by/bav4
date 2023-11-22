@@ -353,7 +353,11 @@ export class LayerTree extends MvuElement {
 						${topics.map((topic) => html` <option value="${topic._id}">${topic._label}</option> `)}
 					</select>
 					<ul>
-						${repeat(catalogWithResourceData, (catalogEntry, index) => html`<li>${renderEntry(catalogEntry)}</li>`)}
+						${repeat(
+							catalogWithResourceData,
+							(item) => item.uid + item.label,
+							(catalogEntry, index) => html`<li>${renderEntry(catalogEntry)}</li>`
+						)}
 					</ul>
 				</div>
 			`;
