@@ -53,7 +53,6 @@ export class AdminPanel extends MvuElement {
 	}
 
 	_addUniqueId(catalogFromService) {
-		console.log('🚀 ~ AdminPanel ~ _addUniqueId ~ catalogFromService:', catalogFromService);
 		const catalogWithUniqueId = catalogFromService.map((category) => {
 			const uid = _generateUniqueId();
 
@@ -87,9 +86,7 @@ export class AdminPanel extends MvuElement {
 				result.label = ' ';
 			}
 		}
-		// console.log('🚀 ~ AdminPanel ~ _enrichWithGeoResource ~ obj.label: <', obj.label, '>');
 		if (obj.label) {
-			// console.log('🚀 ~ AdminPanel ~ _enrichWithGeoResource ~ if (obj.label) is true ------------------');
 			result.label = obj.label;
 		}
 		if (obj.children && obj.children.length > 0) {
@@ -106,9 +103,7 @@ export class AdminPanel extends MvuElement {
 		const result = {};
 		if (obj.geoResourceId) {
 			result.geoResourceId = obj.geoResourceId;
-			// console.log('🚀 ~ AdminPanel ~ _extractOriginal ~ obj.label: <', obj.label, '>');
 		} else if (obj.label) {
-			// console.log('🚀 ~ AdminPanel ~ _enrichWithGeoResource ~ if (obj.label) is true ------------------');
 			result.label = obj.label;
 		}
 		if (obj.children && obj.children.length > 0) {
@@ -119,14 +114,11 @@ export class AdminPanel extends MvuElement {
 
 	// extract 'original data' recursively from the input object, but keep showChildren
 	_extractOriginalIncShowChildren(obj, extractFunction) {
-		console.log('🚀 ~ AdminPanel ~ _extractOriginalIncShowChildren ~ obj:', obj);
 		const result = {};
 		if (obj.geoResourceId) {
 			result.geoResourceId = obj.geoResourceId;
 		}
-		// console.log('🚀 ~ AdminPanel ~ _enrichWithGeoResource ~ obj.label: <', obj.label, '>');
 		if (obj.label) {
-			// console.log('🚀 ~ AdminPanel ~ _enrichWithGeoResource ~ if (obj.label) is true ------------------');
 			result.label = obj.label;
 		}
 		if (obj.children && obj.children.length > 0) {
@@ -143,9 +135,7 @@ export class AdminPanel extends MvuElement {
 		if (obj.geoResourceId) {
 			result.geoResourceId = obj.geoResourceId;
 		}
-		// console.log('🚀 ~ AdminPanel ~ _enrichWithGeoResource ~ obj.label: <', obj.label, '>');
 		if (obj.label) {
-			// console.log('🚀 ~ AdminPanel ~ _enrichWithGeoResource ~ if (obj.label) is true ------------------');
 			result.label = obj.label;
 		}
 		if (obj.children && obj.children.length > 0) {
@@ -182,10 +172,6 @@ export class AdminPanel extends MvuElement {
 	}
 
 	_mergeCatalogWithResources() {
-		if (this.#geoResources.length === 0 || this.#catalog.length === 0) {
-			return null;
-		}
-
 		const catalogWithResourceData = this._reduceData(this.#catalog, this._enrichWithGeoResource, this.#geoResources);
 		this.signal(Update_CatalogWithResourceData, catalogWithResourceData);
 	}
@@ -194,14 +180,14 @@ export class AdminPanel extends MvuElement {
 		// todo remove
 		if (currentTopicId === 'newEntry') {
 			this.#currentTopicId = currentTopicId;
-			this.#catalog = [{ uid: '123123123', label: ' ' }];
+			this.#catalog = [{ uid: '123123123', label: Empty_Label }];
 			const existingTopic = this.#topics.find((topic) => topic.id === currentTopicId);
 			if (!existingTopic) {
 				const topic = new Topic(currentTopicId, currentTopicId, currentTopicId);
 				this.#topics.unshift(topic);
 			}
 
-			this.signal(Update_CatalogWithResourceData, this.#catalog);
+			this._mergeCatalogWithResources();
 		} else {
 			try {
 				const catalogFromService = await this._catalogService.byId(currentTopicId);
@@ -219,8 +205,6 @@ export class AdminPanel extends MvuElement {
 
 		try {
 			this.#topics = await this._topicsService.all();
-
-			// console.log(JSON.stringify(this.#topics));
 		} catch (error) {
 			console.warn(error.message);
 		}
@@ -475,17 +459,27 @@ export class AdminPanel extends MvuElement {
 		// todo
 		const saveCatalog = async () => {
 			const catalogToSave = this._reduceData(catalogWithResourceData, this._extractOriginal);
-			// eslint-disable-next-line no-console
-			console.log('🚀 ~ AdminPanel ~ saveCatalog ~ catalogToSave:', catalogToSave);
-
-			const xxx = await this._catalogService.save(catalogToSave);
-			// eslint-disable-next-line no-console
-			console.log('🚀 ~ file: AdminPanel.js:458 ~ AdminPanel ~ saveCatalog ~ xxx:', xxx);
+			await this._catalogService.save(catalogToSave);
 		};
 
 		const resetCatalog = async () => {
 			const catalogWithResourceData = this._reduceData(this.#catalog, this._enrichWithGeoResource, this.#geoResources);
-			this.signal(Update_CatalogWithResourceData, catalogWithResourceData);
+			refreshCatalog(catalogWithResourceData);
+		};
+
+		const refreshCatalog = async (newCatalogWithResourceData) => {
+			newCatalogWithResourceData.forEach((entry) => {
+				const correspondingEntry = catalogWithResourceData.find((e) => e.uid === entry.uid);
+
+				if (!correspondingEntry) {
+					entry.label += ' - new';
+				}
+				if (correspondingEntry.label !== entry.label) {
+					entry.label += ' - different';
+				}
+			});
+
+			this.signal(Update_CatalogWithResourceData, newCatalogWithResourceData);
 		};
 
 		if (this.#currentTopicId) {
@@ -509,6 +503,7 @@ export class AdminPanel extends MvuElement {
 							.showChildren="${showChildren}"
 							.addGeoResourcePermanently="${addGeoResourcePermanently}"
 							.resetCatalog="${resetCatalog}"
+							.refreshCatalog="${refreshCatalog}"
 							.addLayerGroup="${addLayerGroup}"
 							.copyBranch="${copyBranch}"
 							.saveCatalog="${saveCatalog}"

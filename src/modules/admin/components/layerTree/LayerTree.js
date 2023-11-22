@@ -10,6 +10,9 @@ import { MvuElement } from '../../../MvuElement';
 import css from './layerTree.css';
 import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 
+// @ts-ignore
+import { repeat } from 'lit-html/directives/repeat.js';
+
 const Update_Topics = 'update_topics';
 const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
 const Update_Layers = 'update_layers';
@@ -97,6 +100,9 @@ export class LayerTree extends MvuElement {
 		this._addLayerGroup = () => {};
 		this._resetCatalog = () => {};
 
+		// eslint-disable-next-line no-unused-vars
+		this._refreshCatalog = (catalog) => {};
+
 		this.#currentGeoResourceId = null;
 		this.#overTarget = false;
 	}
@@ -115,7 +121,7 @@ export class LayerTree extends MvuElement {
 	}
 
 	createView(model) {
-		const { topics, catalogWithResourceData, currentGeoResourceId } = model;
+		const { topics, catalogWithResourceData, currentGeoResourceId, dummy } = model;
 
 		if (
 			catalogWithResourceData === null ||
@@ -235,7 +241,7 @@ export class LayerTree extends MvuElement {
 			}
 		};
 
-		const handleEditClick = (event) => {
+		const handleEditClick = (event, catalogEntry) => {
 			const button = event.target;
 			const li = button.parentNode;
 
@@ -244,7 +250,7 @@ export class LayerTree extends MvuElement {
 
 				const input = document.createElement('input');
 				input.type = 'text';
-				input.value = span.textContent;
+				input.value = catalogEntry.label;
 				li.insertBefore(input, span);
 				li.removeChild(span);
 				button.textContent = 'Save';
@@ -252,10 +258,21 @@ export class LayerTree extends MvuElement {
 			} else if (button.textContent === 'Save') {
 				const input = li.firstElementChild;
 				const span = document.createElement('span');
-				span.textContent = input.value;
+				span.textContent = input.value.trim();
 				li.insertBefore(span, input);
 				li.removeChild(input);
 				button.textContent = 'Edit';
+
+				// Make a deep copy of catalogWithResourceData
+				const catalogCopy = JSON.parse(JSON.stringify(catalogWithResourceData));
+
+				// Find the corresponding entry in the copy and update its label
+				const catalogEntryCopy = catalogCopy.find((e) => e.uid === catalogEntry.uid);
+				if (catalogEntryCopy) {
+					catalogEntryCopy.label = input.value.trim();
+				}
+
+				this._refreshCatalog(catalogCopy);
 			}
 
 			event.stopPropagation();
@@ -311,7 +328,7 @@ export class LayerTree extends MvuElement {
 					</span>
 					${entry.children
 						? html`
-								<button @click="${(event) => handleEditClick(event)}">Edit</button>
+								<button @click="${(event) => handleEditClick(event, entry)}">Edit</button>
 								<button @click="${(event) => handleCopyClick(event, entry)}">Copy</button>
 								<button @click="${(event) => handleDeleteClick(event, entry)}">X</button>
 								<ul>
@@ -340,7 +357,7 @@ export class LayerTree extends MvuElement {
 						${topics.map((topic) => html` <option value="${topic._id}">${topic._label}</option> `)}
 					</select>
 					<ul>
-						${catalogWithResourceData.map((catalogEntry) => html`<li>${renderEntry(catalogEntry)}</li>`)}
+						${repeat(catalogWithResourceData, (catalogEntry, index) => html`<li>${renderEntry(catalogEntry)}</li>`)}
 					</ul>
 				</div>
 			`;
@@ -393,7 +410,7 @@ export class LayerTree extends MvuElement {
 	}
 
 	/**
-	 * @property {function} addLayerGroup - Callback function
+	 * @property {function} resetCatalog - Callback function
 	 */
 	set resetCatalog(callback) {
 		this._resetCatalog = callback;
@@ -401,6 +418,17 @@ export class LayerTree extends MvuElement {
 
 	get resetCatalog() {
 		return this._resetCatalog;
+	}
+
+	/**
+	 * @property {function} refreshCatalog - Callback function
+	 */
+	set refreshCatalog(callback) {
+		this._refreshCatalog = callback;
+	}
+
+	get refreshCatalog() {
+		return this._refreshCatalog;
 	}
 
 	/**
