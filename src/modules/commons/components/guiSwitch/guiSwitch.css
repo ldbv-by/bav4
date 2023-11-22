@@ -21,6 +21,9 @@
 	--track-color-inactive: var(--track-inactive);
 	--track-color-active: var(--track-active);
 
+	--thumb-position: 0%;
+	--thumb-transition-duration: var(--animation-duration-small-open);
+
 	cursor: pointer;
 	user-select: none;
 	-webkit-tap-highlight-color: transparent;
@@ -60,8 +63,6 @@
 	display: grid;
 	align-items: center;
 	grid: [track] 1fr / [track] 1fr;
-	--thumb-position: 0%;
-	--thumb-transition-duration: var(--animation-duration-small-open);
 	touch-action: pan-y;
 	border: 0.2em solid transparent;
 	transition: box-shadow var(--animation-duration-small-open) ease;
