@@ -134,9 +134,15 @@ th {
 	background: transparent;
 	width: 100%;
 }
+
 a {
 	word-break: break-word;
+	color: var(--text4);
 }
+a:hover {
+	text-decoration: underline;
+}
+
 table {
 	margin-bottom: 1em;
 	position: relative;
