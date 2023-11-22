@@ -33,6 +33,13 @@ export const SEARCH_RESULT_HIGHLIGHT_FEATURE_ID = 'searchResultHighlightFeatureI
  */
 export const SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID = 'searchResultTemporaryHighlightFeatureId';
 /**
+ * This plugin currently
+ * - adds a layer for displaying all highlight features (needed for all kinds of highlight visualization), exclusive here
+ * - adds a highlight feature when the QueryParameter "CROSSHAIR" is available
+ * - does the highlight feature management for the feature info visualization
+ * - does the highlight feature management for the search result visualization
+ *
+ * Note: Plugins are allowed to manage their highlight feature management on their own.
  * @class
  * @author taulinger
  */
