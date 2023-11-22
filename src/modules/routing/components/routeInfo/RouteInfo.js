@@ -154,16 +154,6 @@ export class RouteInfo extends MvuElement {
 		return `${toTwoDigits(hours)}:${toTwoDigits(minutes)}`;
 	}
 
-	_estimateTimeFor(categoryId, stats) {
-		const unknownCategoryAction = (categoryId) => {
-			console.warn(`Unknown category, no estimate available for '${categoryId}'`);
-			return null;
-		};
-
-		const estimatedTime = this._routingService.getETAFor(categoryId, stats.dist, stats.twoDiff[0], stats.twoDiff[1]);
-		return estimatedTime ?? unknownCategoryAction(categoryId);
-	}
-
 	static get tag() {
 		return 'ba-routing-info';
 	}
