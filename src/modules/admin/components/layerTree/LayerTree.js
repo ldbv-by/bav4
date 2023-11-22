@@ -16,7 +16,6 @@ import { repeat } from 'lit-html/directives/repeat.js';
 const Update_Topics = 'update_topics';
 const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
 const Update_Layers = 'update_layers';
-const Update_Dummy = 'update_dummy';
 
 const hasChildrenClass = 'has-children';
 const showChildrenClass = 'show-children';
@@ -66,8 +65,7 @@ export class LayerTree extends MvuElement {
 			topics: [],
 			catalogWithResourceData: [],
 			layers: [],
-			currentGeoResourceId: null,
-			dummy: false
+			currentGeoResourceId: null
 		});
 
 		const {
@@ -115,13 +113,11 @@ export class LayerTree extends MvuElement {
 				return { ...model, catalogWithResourceData: data };
 			case Update_Layers:
 				return { ...model, layers: data };
-			case Update_Dummy:
-				return { ...model, dummy: data };
 		}
 	}
 
 	createView(model) {
-		const { topics, catalogWithResourceData, currentGeoResourceId, dummy } = model;
+		const { topics, catalogWithResourceData, currentGeoResourceId } = model;
 
 		if (
 			catalogWithResourceData === null ||
@@ -396,17 +392,6 @@ export class LayerTree extends MvuElement {
 
 	get layers() {
 		return this.getModel().layers;
-	}
-
-	/**
-	 * @property {bool} dummy
-	 */
-	set dummy(value) {
-		this.signal(Update_Dummy, value);
-	}
-
-	get dummy() {
-		return this.getModel().dummy;
 	}
 
 	/**

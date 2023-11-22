@@ -33,7 +33,6 @@ export class AdminPanel extends MvuElement {
 
 	constructor() {
 		super({
-			dummy: true,
 			catalogWithResourceData: null
 		});
 
@@ -224,7 +223,7 @@ export class AdminPanel extends MvuElement {
 	update(type, data, model) {
 		switch (type) {
 			case Update_CatalogWithResourceData:
-				return { ...model, catalogWithResourceData: [...data], dummy: !model.dummy };
+				return { ...model, catalogWithResourceData: [...data] };
 		}
 	}
 
@@ -238,7 +237,7 @@ export class AdminPanel extends MvuElement {
 	}
 
 	createView(model) {
-		const { catalogWithResourceData, dummy } = model;
+		const { catalogWithResourceData } = model;
 
 		const findElementRecursively = (uid, catalogEntry) => {
 			for (let n = 0; n < catalogEntry.children.length; n++) {
@@ -507,7 +506,6 @@ export class AdminPanel extends MvuElement {
 							.addLayerGroup="${addLayerGroup}"
 							.copyBranch="${copyBranch}"
 							.saveCatalog="${saveCatalog}"
-							.dummy="${dummy}"
 						></ba-layer-tree>
 					</div>
 
