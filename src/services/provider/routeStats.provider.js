@@ -114,8 +114,8 @@ const RouteWarningRuleFunctions = [
 	(ruleOptions) => {
 		// Kein Rennrad auf nicht asphaltierter Oberfläche
 		const dangerousSurface = ['compacted'];
-		const isDangerousSrufaceOrRoadClass = dangerousSurface.indexOf(ruleOptions.surface) > -1;
-		if (ruleOptions.vehicle === 'racingbike' && isDangerousSrufaceOrRoadClass) {
+		const isDangerousSurfaceOrRoadClass = dangerousSurface.indexOf(ruleOptions.surface) > -1;
+		if (ruleOptions.vehicle === 'racingbike' && isDangerousSurfaceOrRoadClass) {
 			return {
 				id: 300,
 				message:
@@ -263,16 +263,19 @@ const mergeRouteDetails = (thisDetail, otherDetails, propertyMergeFunction, prop
 		const property = propertyMergeFunction(thisDetail, otherDetail);
 		return [from, to, property];
 	});
-	const first = mergedDetails[0];
-	const last = mergedDetails[mergedDetails.length - 1];
-	const mid = mergedDetails.slice(1, -1);
+	const justifyStart = (primaryDetail, details, property) => {
+		const first = details[0];
+		return [first[0] > primaryDetail[0] ? [primaryDetail[0], first[1], property] : first, ...details.slice(1)];
+	};
+
+	const justifyLast = (primaryDetail, details, property) => {
+		const last = details[details.length - 1];
+		return [...details.slice(0, -1), last[1] < primaryDetail[1] ? [last, primaryDetail[1], property] : last];
+	};
+
 	const propertyDefault = propertyDefaultFunction ? propertyDefaultFunction(thisDetail) : thisDetail[2];
 
-	return [
-		first[0] > thisDetail[0] ? [thisDetail[0], first[0], propertyDefault] : first,
-		...mid,
-		last[1] < thisDetail[1] ? [last[1], thisDetail[1], propertyDefault] : last
-	];
+	return justifyLast(thisDetail, justifyStart(thisDetail, mergedDetails, propertyDefault), propertyDefault);
 };
 
 /**
@@ -336,7 +339,7 @@ const createRouteWarnings = (vehicle, roadClassDetails, surfaceDetails, language
 					const criticality = warning.criticality;
 
 					if (Object.hasOwn(accumulator, key)) {
-						accumulator[key].segments = [...warningDetails, segment];
+						accumulator[key].segments = [...accumulator[key].segments, segment];
 					} else {
 						accumulator[key] = {
 							message: message,
@@ -371,7 +374,11 @@ export const bvvRouteStatsProvider = (ghRoute, profileStats) => {
 	const lang = configService.getValue('DEFAULT_LANG');
 
 	const speedOptions = Object.hasOwn(VehicleSpeedOptions, ghRoute.vehicle) ? VehicleSpeedOptions[ghRoute.vehicle] : null;
-	const time = speedOptions ? getETAFor(ghRoute.paths[0].distance, profileStats.sumUp, profileStats.sumDown, speedOptions) : ghRoute.paths[0].time;
+	const validProfileStats = profileStats?.sumUp && profileStats?.sumDown;
+	const time =
+		speedOptions && validProfileStats
+			? getETAFor(ghRoute.paths[0].distance, profileStats?.sumUp, profileStats?.sumDown, speedOptions)
+			: ghRoute.paths[0].time;
 
 	const coordinates = polylineToGeometry(ghRoute.paths[0].points).getCoordinates();
 	const surfaceDetails = aggregateDetailData(ghRoute.paths[0].details.surface, coordinates);
@@ -386,7 +393,7 @@ export const bvvRouteStatsProvider = (ghRoute, profileStats) => {
 	return {
 		time: time,
 		dist: ghRoute.paths[0].distance,
-		twoDiff: profileStats.sumUp && profileStats.sumDown ? [profileStats.sumUp, profileStats.sumDown] : [],
+		twoDiff: profileStats?.sumUp && profileStats?.sumDown ? [profileStats.sumUp, profileStats.sumDown] : [],
 		details: details,
 		warnings: warnings
 	};
