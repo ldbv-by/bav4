@@ -4,7 +4,7 @@
 import { observe, observeOnce } from '../utils/storeUtils';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { BaPlugin } from './BaPlugin';
-import { activate, deactivate, setCategory } from '../store/routing/routing.action';
+import { activate, deactivate, reset, setCategory } from '../store/routing/routing.action';
 import { Tools } from '../domain/tools';
 import { $injector } from '../injection/index';
 import { LevelTypes, emitNotification } from '../store/notifications/notifications.action';
@@ -64,6 +64,7 @@ export class RoutingPlugin extends BaPlugin {
 
 		const onToolChanged = async (toolId) => {
 			if (toolId !== Tools.ROUTING) {
+				reset();
 				deactivate();
 			} else {
 				if (await lazyInitialize()) {

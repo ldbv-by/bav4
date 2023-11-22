@@ -88,7 +88,7 @@ describe('RoutingPlugin', () => {
 			});
 		});
 
-		it('updates the active property (I)', async () => {
+		it('updates the active property (activation)', async () => {
 			const store = setup();
 			const instanceUnderTest = new RoutingPlugin();
 			instanceUnderTest._initialized = true;
@@ -102,8 +102,9 @@ describe('RoutingPlugin', () => {
 			expect(store.getState().routing.active).toBeTrue();
 		});
 
-		it('updates the active property (II)', async () => {
+		it('updates the active property (deactivation)', async () => {
 			const store = setup({
+				routing: { ...initialRoutingState, waypoints: [[0, 1]] },
 				tools: {
 					current: Tools.ROUTING
 				}
@@ -115,6 +116,7 @@ describe('RoutingPlugin', () => {
 			setCurrentTool('foo');
 
 			expect(store.getState().routing.active).toBeFalse();
+			expect(store.getState().routing.waypoints).toHaveSize(0);
 		});
 	});
 
@@ -139,7 +141,7 @@ describe('RoutingPlugin', () => {
 	});
 
 	describe('when routing "proposal" property changes', () => {
-		fit('closes the ContextMenu, adds a highlight feature, opens the BottomSheet, and removes the highlight feature after the BottomSheet is closed', async () => {
+		it('closes the ContextMenu, adds a highlight feature, opens the BottomSheet, and removes the highlight feature after the BottomSheet is closed', async () => {
 			const store = setup({
 				mapContextMenu: { active: true },
 				highlight: {
