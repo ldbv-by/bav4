@@ -1,6 +1,6 @@
 import { provide } from '../../../../src/modules/routing/i18n/routing.provider';
 
-describe('i18n for feedback module', () => {
+describe('i18n for dynamically loaded parts of the routing module', () => {
 	it('provides translation for de', () => {
 		const map = provide('de');
 

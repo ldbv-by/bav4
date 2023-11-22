@@ -12,8 +12,8 @@ import { LevelTypes } from '../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../src/store/notifications/notifications.reducer';
 import { CoordinateProposalType } from '../../src/domain/routing';
 import { mapContextMenuReducer } from '../../src/store/mapContextMenu/mapContextMenu.reducer';
-import { Button } from '../../src/modules/commons/components/button/Button';
 import { bottomSheetReducer } from '../../src/store/bottomSheet/bottomSheet.reducer.js';
+import { ProposalContextContent } from '../../src/modules/routing/components/contextMenu/ProposalContextContent.js';
 
 describe('RoutingPlugin', () => {
 	const routingService = {
@@ -153,7 +153,7 @@ describe('RoutingPlugin', () => {
 				setProposal([21, 42], CoordinateProposalType.START_OR_DESTINATION);
 
 				const wrapperElement = TestUtils.renderTemplateResult(store.getState().contextMenu.content);
-				expect(wrapperElement.querySelectorAll(Button.tag)).toHaveSize(1);
+				expect(wrapperElement.querySelectorAll(ProposalContextContent.tag)).toHaveSize(1);
 			});
 		});
 		describe('and we have a touch environment', () => {
@@ -167,7 +167,7 @@ describe('RoutingPlugin', () => {
 				setProposal([21, 42], CoordinateProposalType.START_OR_DESTINATION);
 
 				const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data);
-				expect(wrapperElement.querySelectorAll(Button.tag)).toHaveSize(1);
+				expect(wrapperElement.querySelectorAll(ProposalContextContent.tag)).toHaveSize(1);
 			});
 		});
 	});
