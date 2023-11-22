@@ -84,6 +84,7 @@ export class RoutingPlugin extends BaPlugin {
 		};
 
 		const onProposalChange = ({ coord }) => {
+			removeHighlightFeaturesById(RoutingPlugin.HIGHLIGHT_FEATURE_ID);
 			closeContextMenu();
 			addHighlightFeatures({
 				id: RoutingPlugin.HIGHLIGHT_FEATURE_ID,
