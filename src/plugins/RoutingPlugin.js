@@ -85,7 +85,7 @@ export class RoutingPlugin extends BaPlugin {
 
 		const openMenu = ({ type }) => {
 			if (type === CoordinateProposalType.START_OR_DESTINATION) {
-				const content = html`<div>Some component showing further options <ba-button .label=${'Start'}></ba-button></div>`;
+				const content = html`<ba-proposal-context-content></ba-proposal-context-content>`;
 				environmentService.isTouch() ? openBottomSheet(content) : updateContextMenu(content);
 			}
 		};
