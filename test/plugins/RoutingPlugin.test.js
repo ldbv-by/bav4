@@ -62,7 +62,7 @@ describe('RoutingPlugin', () => {
 
 				// we have to wait for two async operations
 				await TestUtils.timeout();
-				await TestUtils.timeout();
+				await TestUtils.timeout(50 /** let's give safari some time */);
 				expect(routingServiceSpy).toHaveBeenCalled();
 				expect(store.getState().routing.active).toBeTrue();
 				expect(store.getState().routing.categoryId).toBe(categoryId);
