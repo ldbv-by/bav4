@@ -185,10 +185,12 @@ describe('BaseLayerContainer', () => {
 	describe('_scrollToActiveButton', () => {
 		it('selects the correct element', async () => {
 			const element = await setup();
-			const createdElement = document.createElement('button');
-			const spy = spyOn(createdElement, 'scrollIntoView');
-			createdElement.type = 'primary';
-			element.shadowRoot.append(createdElement);
+			const parentElement = document.createElement('div');
+			const spy = spyOn(parentElement, 'scrollIntoView');
+			const buttonElement = document.createElement('button');
+			parentElement.append(buttonElement);
+			buttonElement.type = 'primary';
+			element.shadowRoot.append(parentElement);
 
 			element._scrollToActiveButton();
 
