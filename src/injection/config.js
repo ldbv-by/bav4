@@ -70,7 +70,7 @@ $injector
 	.registerSingleton('StoreService', new StoreService())
 	.registerSingleton('GeoResourceService', new GeoResourceService())
 	.registerSingleton('TopicsService', new TopicsService())
-	.register('ElevationService', ElevationService)
+	.registerSingleton('ElevationService', new ElevationService())
 	.register('SearchResultService', SearchResultService)
 	.register('ShareService', ShareService)
 	.register('UnitsService', UnitsService)
