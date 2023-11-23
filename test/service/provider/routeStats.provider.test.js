@@ -129,18 +129,20 @@ const createSimpleGhRoute = (vehicle = null, surface = null, roadClass = null, t
 		vehicle: vehicle ?? 'bike',
 		paths: [
 			{
-				distance: 42000,
-				time: 4200000,
+				distance: 34200,
+				time: 42,
 				points_encoded: true,
 				points: polylinePoints,
 				details: {
 					surface: surface ?? [
 						[0, 1, 'ground'],
-						[2, 10, 'asphalt']
+						[2, 4, 'compacted'],
+						[5, 12, 'asphalt']
 					],
 					road_class: roadClass ?? [
 						[0, 1, 'track'],
-						[2, 10, 'secondary']
+						[2, 10, 'secondary'],
+						[11, 14, 'path']
 					],
 					track_type: trackType ?? [[0, 1, 'grade3']]
 				}
@@ -149,9 +151,9 @@ const createSimpleGhRoute = (vehicle = null, surface = null, roadClass = null, t
 	};
 };
 // profileStats objects reduced the used properties
-const defaultProfileStats = {
-	sumUp: 300,
-	sumDown: 300
+const evenProfileStats = {
+	sumUp: 50,
+	sumDown: 50
 };
 const downHillProfileStats = {
 	sumUp: 600,
@@ -174,16 +176,16 @@ describe('Route statistics provider', () => {
 
 		describe('when route and profile stats is given', () => {
 			it('calculates the statistics for a route', async () => {
-				expect(bvvRouteStatsProvider(ghRoute, defaultProfileStats)).toBeDefined();
+				expect(bvvRouteStatsProvider(ghRoute, evenProfileStats)).toBeDefined();
 			});
 			it('calculates the statistics for a bvv-hike route', async () => {
 				const hikeRoute = createSimpleGhRoute('bvv-hike');
 
-				const stats = bvvRouteStatsProvider(hikeRoute, defaultProfileStats);
+				const stats = bvvRouteStatsProvider(hikeRoute, evenProfileStats);
 
-				expect(stats.time).toBe(40680000);
-				expect(stats.dist).toBe(42000);
-				expect(stats.twoDiff).toEqual([300, 300]);
+				expect(stats.time).toBeCloseTo(31260000.0, 0);
+				expect(stats.dist).toBe(34200);
+				expect(stats.twoDiff).toEqual([50, 50]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
 			});
@@ -191,11 +193,11 @@ describe('Route statistics provider', () => {
 			it('calculates the statistics for a bvv-bike route', async () => {
 				const bikeRoute = createSimpleGhRoute('bvv-bike');
 
-				const stats = bvvRouteStatsProvider(bikeRoute, defaultProfileStats);
+				const stats = bvvRouteStatsProvider(bikeRoute, evenProfileStats);
 
-				expect(stats.time).toBe(11882160);
-				expect(stats.dist).toBe(42000);
-				expect(stats.twoDiff).toEqual([300, 300]);
+				expect(stats.time).toBe(8508360);
+				expect(stats.dist).toBe(34200);
+				expect(stats.twoDiff).toEqual([50, 50]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
 			});
@@ -203,11 +205,11 @@ describe('Route statistics provider', () => {
 			it('calculates the statistics for a bvv-mtb route', async () => {
 				const mtbRoute = createSimpleGhRoute('bvv-mtb');
 
-				const stats = bvvRouteStatsProvider(mtbRoute, defaultProfileStats);
+				const stats = bvvRouteStatsProvider(mtbRoute, evenProfileStats);
 
-				expect(stats.time).toBe(8912160);
-				expect(stats.dist).toBe(42000);
-				expect(stats.twoDiff).toEqual([300, 300]);
+				expect(stats.time).toBe(6381360);
+				expect(stats.dist).toBe(34200);
+				expect(stats.twoDiff).toEqual([50, 50]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
 			});
@@ -215,120 +217,321 @@ describe('Route statistics provider', () => {
 			it('calculates the statistics for a racingbike route', async () => {
 				const racingbikeRoute = createSimpleGhRoute('racingbike');
 
-				const stats = bvvRouteStatsProvider(racingbikeRoute, defaultProfileStats);
+				const stats = bvvRouteStatsProvider(racingbikeRoute, evenProfileStats);
 
-				expect(stats.time).toBeCloseTo(6951542.8, 0);
-				expect(stats.dist).toBe(42000);
-				expect(stats.twoDiff).toEqual([300, 300]);
+				expect(stats.time).toBeCloseTo(4785257.1, 0);
+				expect(stats.dist).toBe(34200);
+				expect(stats.twoDiff).toEqual([50, 50]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
 			});
 
-			it('calculates the statistics a route with uphill profile', async () => {
+			it('calculates the statistics of a route with uphill profile', async () => {
 				const racingbikeRoute = createSimpleGhRoute('racingbike');
 
 				const stats = bvvRouteStatsProvider(racingbikeRoute, upHillProfileStats);
 
-				expect(stats.time).toBeCloseTo(6953085.7, 0);
-				expect(stats.dist).toBe(42000);
+				expect(stats.time).toBeCloseTo(5913085.7, 0);
+				expect(stats.dist).toBe(34200);
 				expect(stats.twoDiff).toEqual([300, 600]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
 			});
 
-			it('calculates the statistics a route with downhill profile', async () => {
+			it('calculates the statistics of a route with downhill profile', async () => {
 				const mtbRoute = createSimpleGhRoute('bvv-mtb');
 
 				const stats = bvvRouteStatsProvider(mtbRoute, downHillProfileStats);
 
-				expect(stats.time).toBe(10262160);
-				expect(stats.dist).toBe(42000);
+				expect(stats.time).toBe(8858160);
+				expect(stats.dist).toBe(34200);
 				expect(stats.twoDiff).toEqual([600, 300]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
 			});
 
-			it('creates warnings', async () => {
-				const roadClass = [
+			it('ignores routedetails with missing property value', async () => {
+				const missingPropertySurfaces = [
+					[0, 1, null],
+					[2, 10, 'compacted']
+				];
+				const route = createSimpleGhRoute('bvv-hike', missingPropertySurfaces);
+				const stats = bvvRouteStatsProvider(route, evenProfileStats);
+				expect(stats.details).toEqual(jasmine.objectContaining({ surface: jasmine.objectContaining({ compacted: jasmine.any(Object) }) }));
+			});
+
+			describe('with dangerous roadClasses or surfaces', () => {
+				const dangerousRoadClass100 = [
 					[0, 1, 'path'],
 					[2, 10, 'foo']
 				];
-				const trackType_100 = [[0, 1, 'grade4']];
-				const trackType_200 = [[0, 1, 'grade5']];
+				const dangerousTrackType_100 = [[0, 1, 'grade4']];
+				const dangerousTrackType_200 = [[0, 1, 'grade5']];
 
-				const hikeRoute100 = createSimpleGhRoute('bvv-hike', null, roadClass, trackType_100);
-				const bikeRoute100 = createSimpleGhRoute('bvv-bike', null, roadClass, trackType_100);
-				const mtbRoute100 = createSimpleGhRoute('bvv-mtb', null, roadClass, trackType_100);
-				const racingbikeRoute100 = createSimpleGhRoute('racingbike', null, roadClass, trackType_100);
+				const hikeRoute100 = createSimpleGhRoute('bvv-hike', null, dangerousRoadClass100, dangerousTrackType_100);
+				const bikeRoute100 = createSimpleGhRoute('bvv-bike', null, dangerousRoadClass100, dangerousTrackType_100);
+				const mtbRoute100 = createSimpleGhRoute('bvv-mtb', null, dangerousRoadClass100, dangerousTrackType_100);
+				const racingbikeRoute100 = createSimpleGhRoute('racingbike', null, dangerousRoadClass100, dangerousTrackType_100);
 
-				const hikeStats100 = bvvRouteStatsProvider(hikeRoute100, downHillProfileStats);
-				const bikeStats100 = bvvRouteStatsProvider(bikeRoute100, downHillProfileStats);
-				const mtbStats100 = bvvRouteStatsProvider(mtbRoute100, downHillProfileStats);
-				const racingbikeStats100 = bvvRouteStatsProvider(racingbikeRoute100, downHillProfileStats);
+				const hikeRoute200 = createSimpleGhRoute('bvv-hike', null, dangerousRoadClass100, dangerousTrackType_200);
+				const bikeRoute200 = createSimpleGhRoute('bvv-bike', null, dangerousRoadClass100, dangerousTrackType_200);
 
-				expect(mtbStats100.warnings).toEqual(
-					jasmine.objectContaining({
-						101: {
-							message: '(schwieriger) Steig, Trittsicherheit erforderlich. MTB muss evtl. vorher abgestellt oder getragen werden.',
-							criticality: RouteWarningCriticality.HINT,
-							segments: [[0, 1]]
-						}
-					})
-				);
-				expect(hikeStats100.warnings).toEqual(
-					jasmine.objectContaining({
-						102: {
-							message: '(schwieriger) Steig, Trittsicherheit erforderlich.',
-							criticality: RouteWarningCriticality.HINT,
-							segments: [[0, 1]]
-						}
-					})
-				);
-				expect(bikeStats100.warnings).toEqual(
-					jasmine.objectContaining({
-						100: {
-							message: '(schwieriger) Steig, Trittsicherheit erforderlich. Fahrrad muss vorher abgestellt werden.',
-							criticality: RouteWarningCriticality.WARNING,
-							segments: [[0, 1]]
-						}
-					})
-				);
-				expect(racingbikeStats100.warnings).toEqual(
-					jasmine.objectContaining({
-						100: {
-							message: '(schwieriger) Steig, Trittsicherheit erforderlich. Fahrrad muss vorher abgestellt werden.',
-							criticality: RouteWarningCriticality.WARNING,
-							segments: [[0, 1]]
-						}
-					})
-				);
+				const dangerousRoadClass300 = [
+					[0, 1, 'other'],
+					[2, 10, 'foo']
+				];
+				const dangerousSurface300 = [
+					[0, 1, 'ground'],
+					[2, 10, 'compacted']
+				];
+				const trackType_300 = [[0, 1, 'foo']];
 
-				const hikeRoute200 = createSimpleGhRoute('bvv-hike', null, roadClass, trackType_200);
-				const bikeRoute200 = createSimpleGhRoute('bvv-bike', null, roadClass, trackType_200);
+				const racingbikeRoute300 = createSimpleGhRoute('racingbike', dangerousSurface300, dangerousRoadClass300, trackType_300);
 
-				const hikeStats200 = bvvRouteStatsProvider(hikeRoute200, downHillProfileStats);
-				const bikeStats200 = bvvRouteStatsProvider(bikeRoute200, downHillProfileStats);
+				const dangerousRoadClass400 = [
+					[0, 1, 'track'],
+					[2, 10, 'foo']
+				];
+				const dangerousSurface400 = [
+					[0, 1, 'ground'],
+					[2, 10, 'foo']
+				];
+				const dangerousTrackType_400 = [[0, 1, 'grade5']];
+				const bikeRoute400 = createSimpleGhRoute('bike', dangerousSurface400, dangerousRoadClass400, dangerousTrackType_400);
+				const racingbikeRoute400 = createSimpleGhRoute('racingbike', dangerousSurface400, dangerousRoadClass400, dangerousTrackType_400);
+				const dangerousRoadClass500 = [
+					[0, 1, 'foo'],
+					[2, 10, 'primary']
+				];
+				const route500 = createSimpleGhRoute('foo', null, dangerousRoadClass500, null);
 
-				expect(hikeStats200.warnings).toEqual(
-					jasmine.objectContaining({
-						201: {
-							message: 'schwieriger Steig mit Kletterpassagen; gute Trittsicherheit, ggf. spezielle Ausrüstung erforderlich',
-							criticality: RouteWarningCriticality.WARNING,
-							segments: [[0, 1]]
-						}
-					})
-				);
+				it("creates warnings in 'de' (i18n)", async () => {
+					const hikeStats100 = bvvRouteStatsProvider(hikeRoute100, downHillProfileStats);
+					const bikeStats100 = bvvRouteStatsProvider(bikeRoute100, downHillProfileStats);
+					const mtbStats100 = bvvRouteStatsProvider(mtbRoute100, downHillProfileStats);
+					const racingbikeStats100 = bvvRouteStatsProvider(racingbikeRoute100, downHillProfileStats);
+					const hikeStats200 = bvvRouteStatsProvider(hikeRoute200, downHillProfileStats);
+					const bikeStats200 = bvvRouteStatsProvider(bikeRoute200, downHillProfileStats);
+					const racingbikeStats300 = bvvRouteStatsProvider(racingbikeRoute300, downHillProfileStats);
+					const bikeStats400 = bvvRouteStatsProvider(racingbikeRoute400, downHillProfileStats);
+					const racingbikeStats400 = bvvRouteStatsProvider(bikeRoute400, downHillProfileStats);
+					const stats500 = bvvRouteStatsProvider(route500, downHillProfileStats);
 
-				expect(bikeStats200.warnings).toEqual(
-					jasmine.objectContaining({
-						200: {
-							message:
-								'schwieriger Steig mit Kletterpassagen; gute Trittsicherheit, ggf. spezielle Ausrüstung erforderlich; Fahrrad muss vorher abgestellt werden.',
-							criticality: RouteWarningCriticality.WARNING,
-							segments: [[0, 1]]
-						}
-					})
-				);
+					expect(mtbStats100.warnings).toEqual(
+						jasmine.objectContaining({
+							101: {
+								message: '(schwieriger) Steig, Trittsicherheit erforderlich. MTB muss evtl. vorher abgestellt oder getragen werden.',
+								criticality: RouteWarningCriticality.HINT,
+								segments: [[0, 1]]
+							}
+						})
+					);
+					expect(hikeStats100.warnings).toEqual(
+						jasmine.objectContaining({
+							102: {
+								message: '(schwieriger) Steig, Trittsicherheit erforderlich.',
+								criticality: RouteWarningCriticality.HINT,
+								segments: [[0, 1]]
+							}
+						})
+					);
+					expect(bikeStats100.warnings).toEqual(
+						jasmine.objectContaining({
+							100: {
+								message: '(schwieriger) Steig, Trittsicherheit erforderlich. Fahrrad muss vorher abgestellt werden.',
+								criticality: RouteWarningCriticality.WARNING,
+								segments: [[0, 1]]
+							}
+						})
+					);
+					expect(racingbikeStats100.warnings).toEqual(
+						jasmine.objectContaining({
+							100: {
+								message: '(schwieriger) Steig, Trittsicherheit erforderlich. Fahrrad muss vorher abgestellt werden.',
+								criticality: RouteWarningCriticality.WARNING,
+								segments: [[0, 1]]
+							}
+						})
+					);
+					expect(hikeStats200.warnings).toEqual(
+						jasmine.objectContaining({
+							201: {
+								message: 'schwieriger Steig mit Kletterpassagen; gute Trittsicherheit, ggf. spezielle Ausrüstung erforderlich',
+								criticality: RouteWarningCriticality.WARNING,
+								segments: [[0, 1]]
+							}
+						})
+					);
+					expect(bikeStats200.warnings).toEqual(
+						jasmine.objectContaining({
+							200: {
+								message:
+									'schwieriger Steig mit Kletterpassagen; gute Trittsicherheit, ggf. spezielle Ausrüstung erforderlich; Fahrrad muss vorher abgestellt werden.',
+								criticality: RouteWarningCriticality.WARNING,
+								segments: [[0, 1]]
+							}
+						})
+					);
+					expect(racingbikeStats300.warnings).toEqual(
+						jasmine.objectContaining({
+							300: {
+								message: 'Befestigter Weg/Pfad. Rennrad muss evtl. geschoben werden.',
+								criticality: RouteWarningCriticality.HINT,
+								segments: [[2, 10]]
+							},
+							301: {
+								message: 'Unbefestigter Weg/Pfad. Rennrad muss geschoben werden.',
+								criticality: RouteWarningCriticality.WARNING,
+								segments: [[0, 1]]
+							}
+						})
+					);
+					expect(bikeStats400.warnings).toEqual(
+						jasmine.objectContaining({
+							400: {
+								message: 'Unbefestigter Weg/Pfad. Fahrrad muss evtl. geschoben werden.',
+								criticality: RouteWarningCriticality.HINT,
+								segments: [[0, 1]]
+							}
+						})
+					);
+					expect(racingbikeStats400.warnings).toEqual(
+						jasmine.objectContaining({
+							400: {
+								message: 'Unbefestigter Weg/Pfad. Fahrrad muss evtl. geschoben werden.',
+								criticality: RouteWarningCriticality.HINT,
+								segments: [[0, 1]]
+							}
+						})
+					);
+					expect(stats500.warnings).toEqual(
+						jasmine.objectContaining({
+							500: {
+								message: 'Evtl. hohes Verkehrsaufkommen',
+								criticality: RouteWarningCriticality.HINT,
+								segments: [
+									[2, 4],
+									[5, 10]
+								]
+							}
+						})
+					);
+				});
+				it("creates warnings in 'en' (i18n)", async () => {
+					spyOn(configService, 'getValue').and.callFake(() => 'en');
+
+					const hikeStats100 = bvvRouteStatsProvider(hikeRoute100, downHillProfileStats);
+					const bikeStats100 = bvvRouteStatsProvider(bikeRoute100, downHillProfileStats);
+					const mtbStats100 = bvvRouteStatsProvider(mtbRoute100, downHillProfileStats);
+					const racingbikeStats100 = bvvRouteStatsProvider(racingbikeRoute100, downHillProfileStats);
+					const hikeStats200 = bvvRouteStatsProvider(hikeRoute200, downHillProfileStats);
+					const bikeStats200 = bvvRouteStatsProvider(bikeRoute200, downHillProfileStats);
+					const racingbikeStats300 = bvvRouteStatsProvider(racingbikeRoute300, downHillProfileStats);
+					const bikeStats400 = bvvRouteStatsProvider(racingbikeRoute400, downHillProfileStats);
+					const racingbikeStats400 = bvvRouteStatsProvider(bikeRoute400, downHillProfileStats);
+					const stats500 = bvvRouteStatsProvider(route500, downHillProfileStats);
+
+					expect(hikeStats100.warnings).toEqual(
+						jasmine.objectContaining({
+							102: {
+								message: '(Difficult) climb, surefootedness required.',
+								criticality: RouteWarningCriticality.HINT,
+								segments: [[0, 1]]
+							}
+						})
+					);
+					expect(mtbStats100.warnings).toEqual(
+						jasmine.objectContaining({
+							101: {
+								message: '(Difficult) climb, surefootedness required. MTB may have to be parked or carried beforehand.',
+								criticality: RouteWarningCriticality.HINT,
+								segments: [[0, 1]]
+							}
+						})
+					);
+
+					expect(bikeStats100.warnings).toEqual(
+						jasmine.objectContaining({
+							100: {
+								message: '(Difficult) climb, sure-footedness required. Bicycle must be parked beforehand.',
+								criticality: RouteWarningCriticality.WARNING,
+								segments: [[0, 1]]
+							}
+						})
+					);
+					expect(racingbikeStats100.warnings).toEqual(
+						jasmine.objectContaining({
+							100: {
+								message: '(Difficult) climb, sure-footedness required. Bicycle must be parked beforehand.',
+								criticality: RouteWarningCriticality.WARNING,
+								segments: [[0, 1]]
+							}
+						})
+					);
+					expect(hikeStats200.warnings).toEqual(
+						jasmine.objectContaining({
+							201: {
+								message: 'difficult climb with climbing passages; good surefootedness, special equipment may be required',
+								criticality: RouteWarningCriticality.WARNING,
+								segments: [[0, 1]]
+							}
+						})
+					);
+					expect(bikeStats200.warnings).toEqual(
+						jasmine.objectContaining({
+							200: {
+								message:
+									'difficult trail with climbing sections; good surefootedness, special equipment may be required; bikes must be parked beforehand.',
+								criticality: RouteWarningCriticality.WARNING,
+								segments: [[0, 1]]
+							}
+						})
+					);
+					expect(racingbikeStats300.warnings).toEqual(
+						jasmine.objectContaining({
+							300: {
+								message: 'Paved path/trail. Racing bike may have to be pushed.',
+								criticality: RouteWarningCriticality.HINT,
+								segments: [[2, 10]]
+							},
+							301: {
+								message: 'Unpaved path/trail. Road bike must be pushed.',
+								criticality: RouteWarningCriticality.WARNING,
+								segments: [[0, 1]]
+							}
+						})
+					);
+					expect(bikeStats400.warnings).toEqual(
+						jasmine.objectContaining({
+							400: {
+								message: 'Unpaved path/trail. Bicycle may have to be pushed.',
+								criticality: RouteWarningCriticality.HINT,
+								segments: [[0, 1]]
+							}
+						})
+					);
+					expect(racingbikeStats400.warnings).toEqual(
+						jasmine.objectContaining({
+							400: {
+								message: 'Unpaved path/trail. Bicycle may have to be pushed.',
+								criticality: RouteWarningCriticality.HINT,
+								segments: [[0, 1]]
+							}
+						})
+					);
+					expect(stats500.warnings).toEqual(
+						jasmine.objectContaining({
+							500: {
+								message: 'Possibly high traffic volume',
+								criticality: RouteWarningCriticality.HINT,
+								segments: [
+									[2, 4],
+									[5, 10]
+								]
+							}
+						})
+					);
+				});
 			});
 		});
 

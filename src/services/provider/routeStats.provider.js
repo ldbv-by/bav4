@@ -45,18 +45,17 @@ const VehicleSpeedOptions = {
  * @returns {RouteWarning} the warning
  */
 
-const defaultRuleOptions = { lang: 'de', vehicle: null, roadClass: null, surface: null };
+const defaultRuleOptions = { language: 'de', vehicle: null, roadClass: null, surface: null };
 
 const RouteWarningRuleFunctions = [
 	(ruleOptions) => {
 		// Kein Fahrrad auf schwieriger Steig im Gebirge
 		const vulnerableVehicles = ['bike', 'racingbike'];
-		const dangerousRoadClasses = ['path_grade4'];
-		if (vulnerableVehicles.includes(ruleOptions.vehicle) && dangerousRoadClasses.includes(ruleOptions.roadClass)) {
+		if (vulnerableVehicles.includes(ruleOptions.vehicle) && ruleOptions.roadClass === 'path_grade4') {
 			return {
 				id: 100,
 				message:
-					ruleOptions.lang === 'de'
+					ruleOptions.language === 'de'
 						? '(schwieriger) Steig, Trittsicherheit erforderlich. Fahrrad muss vorher abgestellt werden.'
 						: '(Difficult) climb, sure-footedness required. Bicycle must be parked beforehand.',
 				criticality: RouteWarningCriticality.WARNING
@@ -67,18 +66,18 @@ const RouteWarningRuleFunctions = [
 	(ruleOptions) => {
 		// Kein MTB auf schwieriger Steig im Gebirge
 		const vulnerableVehicles = ['hike', 'mtb'];
-		const dangerousRoadClasses = ['path_grade4'];
-		if (vulnerableVehicles.indexOf(ruleOptions.vehicle) > -1 && dangerousRoadClasses.indexOf(ruleOptions.roadClass) > -1) {
+		if (vulnerableVehicles.includes(ruleOptions.vehicle) && ruleOptions.roadClass === 'path_grade4') {
 			return ruleOptions.vehicle === 'hike'
 				? {
 						id: 102,
-						message: ruleOptions.lang === 'de' ? '(schwieriger) Steig, Trittsicherheit erforderlich.' : '(Difficult) climb, surefootedness required.',
+						message:
+							ruleOptions.language === 'de' ? '(schwieriger) Steig, Trittsicherheit erforderlich.' : '(Difficult) climb, surefootedness required.',
 						criticality: RouteWarningCriticality.HINT
 				  }
 				: {
 						id: 101,
 						message:
-							ruleOptions.lang === 'de'
+							ruleOptions.language === 'de'
 								? '(schwieriger) Steig, Trittsicherheit erforderlich. MTB muss evtl. vorher abgestellt oder getragen werden.'
 								: '(Difficult) climb, surefootedness required. MTB may have to be parked or carried beforehand.',
 						criticality: RouteWarningCriticality.HINT
@@ -89,13 +88,12 @@ const RouteWarningRuleFunctions = [
 	(ruleOptions) => {
 		// Kein Fahrrad auf Klettersteig
 		const vulnerableVehicles = ['hike', 'bike', 'mtb', 'racingbike'];
-		const dangerousRoadClasses = ['path_grade5'];
-		if (vulnerableVehicles.indexOf(ruleOptions.vehicle) > -1 && dangerousRoadClasses.indexOf(ruleOptions.roadClass) > -1) {
+		if (vulnerableVehicles.includes(ruleOptions.vehicle) && ruleOptions.roadClass === 'path_grade5') {
 			return ruleOptions.vehicle === 'hike'
 				? {
 						id: 201,
 						message:
-							ruleOptions.lang === 'de'
+							ruleOptions.language === 'de'
 								? 'schwieriger Steig mit Kletterpassagen; gute Trittsicherheit, ggf. spezielle Ausrüstung erforderlich'
 								: 'difficult climb with climbing passages; good surefootedness, special equipment may be required',
 						criticality: RouteWarningCriticality.WARNING
@@ -103,7 +101,7 @@ const RouteWarningRuleFunctions = [
 				: {
 						id: 200,
 						message:
-							ruleOptions.lang === 'de'
+							ruleOptions.language === 'de'
 								? 'schwieriger Steig mit Kletterpassagen; gute Trittsicherheit, ggf. spezielle Ausrüstung erforderlich; Fahrrad muss vorher abgestellt werden.'
 								: 'difficult trail with climbing sections; good surefootedness, special equipment may be required; bikes must be parked beforehand.',
 						criticality: RouteWarningCriticality.WARNING
@@ -113,14 +111,12 @@ const RouteWarningRuleFunctions = [
 	},
 	(ruleOptions) => {
 		// Kein Rennrad auf nicht asphaltierter Oberfläche
-		const dangerousSurface = ['compacted'];
-		const isDangerousSurfaceOrRoadClass = dangerousSurface.indexOf(ruleOptions.surface) > -1;
-		if (ruleOptions.vehicle === 'racingbike' && isDangerousSurfaceOrRoadClass) {
+		if (ruleOptions.vehicle === 'racingbike' && ruleOptions.surface === 'compacted') {
 			return {
 				id: 300,
 				message:
-					ruleOptions.lang === 'de'
-						? 'Befestigter Weg/Pfad. Rennrad evtl. muss geschoben werden.'
+					ruleOptions.language === 'de'
+						? 'Befestigter Weg/Pfad. Rennrad muss evtl. geschoben werden.'
 						: 'Paved path/trail. Racing bike may have to be pushed.',
 				criticality: RouteWarningCriticality.HINT
 			};
@@ -130,15 +126,12 @@ const RouteWarningRuleFunctions = [
 	(ruleOptions) => {
 		// Kein Rennrad auf losem Untergrund
 		const id = 301;
-		const dangerousSurface = ['ground'];
-		const dangerousRoadClass = ['path_grade3', 'track_grade5', 'other'];
-		const isDangerousSrufaceOrRoadClass =
-			dangerousSurface.indexOf(ruleOptions.surface) > -1 && dangerousRoadClass.indexOf(ruleOptions.roadClass) > -1;
-		if (ruleOptions.vehicle === 'racingbike' && isDangerousSrufaceOrRoadClass) {
+		const dangerousRoadClasses = ['path_grade3', 'track_grade5', 'other'];
+		if (ruleOptions.vehicle === 'racingbike' && ruleOptions.surface === 'ground' && dangerousRoadClasses.includes(ruleOptions.roadClass)) {
 			return {
 				id: id,
 				message:
-					ruleOptions.lang === 'de' ? 'Unbefestigter Weg/Pfad. Rennrad muss geschoben werden.' : 'Unpaved path/trail. Road bike must be pushed.',
+					ruleOptions.language === 'de' ? 'Unbefestigter Weg/Pfad. Rennrad muss geschoben werden.' : 'Unpaved path/trail. Road bike must be pushed.',
 				criticality: RouteWarningCriticality.WARNING
 			};
 		}
@@ -147,12 +140,12 @@ const RouteWarningRuleFunctions = [
 	(ruleOptions) => {
 		// Kein Fahrrad/Rennrad auf Fahrwegspur
 		const id = 400;
-		const vulnerableVehicles = ['bike'];
-		if (vulnerableVehicles.indexOf(ruleOptions.vehicle) > -1 && ruleOptions.surface === 'ground' && ruleOptions.roadClass === 'track_grade5') {
+		const vulnerableVehicles = ['bike', 'racingbike'];
+		if (vulnerableVehicles.includes(ruleOptions.vehicle) && ruleOptions.surface === 'ground' && ruleOptions.roadClass === 'track_grade5') {
 			return {
 				id: id,
 				message:
-					ruleOptions.lang === 'de'
+					ruleOptions.language === 'de'
 						? 'Unbefestigter Weg/Pfad. Fahrrad muss evtl. geschoben werden.'
 						: 'Unpaved path/trail. Bicycle may have to be pushed.',
 				criticality: RouteWarningCriticality.HINT
@@ -167,7 +160,7 @@ const RouteWarningRuleFunctions = [
 		return dangerousRoadClass.includes(ruleOptions.roadClass)
 			? {
 					id: id,
-					message: ruleOptions.lang === 'de' ? 'Evtl. hohes Verkehrsaufkommen' : 'Possibly high traffic volume',
+					message: ruleOptions.language === 'de' ? 'Evtl. hohes Verkehrsaufkommen' : 'Possibly high traffic volume',
 					criticality: RouteWarningCriticality.HINT
 			  }
 			: null;
@@ -213,17 +206,17 @@ const getGeodesicLength = (wgs84Coordinates) => {
  */
 const aggregateDetailData = (detailData, coordinates) => {
 	return detailData.reduce((accumulator, current) => {
-		const [from, to, category] = current;
+		const [from, to, property] = current;
 		const subset = coordinates.slice(from, to + 1);
 		const length = getGeodesicLength(subset);
 
-		if (category) {
+		if (property) {
 			const segment = [from, to];
-			if (accumulator[category]) {
-				accumulator[category].distance = accumulator[category].distance + length;
-				accumulator[category].segments = [...accumulator[category].segments, segment];
+			if (accumulator[property]) {
+				accumulator[property].distance = accumulator[property].distance + length;
+				accumulator[property].segments = [...accumulator[property].segments, segment];
 			} else {
-				accumulator[category] = { distance: length, segments: [segment] };
+				accumulator[property] = { distance: length, segments: [segment] };
 			}
 		}
 		return accumulator;
@@ -263,19 +256,14 @@ const mergeRouteDetails = (thisDetail, otherDetails, propertyMergeFunction, prop
 		const property = propertyMergeFunction(thisDetail, otherDetail);
 		return [from, to, property];
 	});
-	const justifyStart = (primaryDetail, details, property) => {
-		const first = details[0];
-		return [first[0] > primaryDetail[0] ? [primaryDetail[0], first[1], property] : first, ...details.slice(1)];
-	};
 
 	const justifyLast = (primaryDetail, details, property) => {
 		const last = details[details.length - 1];
-		return [...details.slice(0, -1), last[1] < primaryDetail[1] ? [last, primaryDetail[1], property] : last];
+		return [...details.slice(0, -1), last[1] < primaryDetail[1] ? [last[0], primaryDetail[1], property] : last];
 	};
 
 	const propertyDefault = propertyDefaultFunction ? propertyDefaultFunction(thisDetail) : thisDetail[2];
-
-	return justifyLast(thisDetail, justifyStart(thisDetail, mergedDetails, propertyDefault), propertyDefault);
+	return justifyLast(thisDetail, mergedDetails, propertyDefault);
 };
 
 /**
@@ -293,7 +281,7 @@ const mergeRoadClassAndTrackTypeData = (roadClassDetails, trackTypeDetails) => {
 		const concatNames = (thisDetail, otherDetail) => {
 			return thisDetail[2] + '_' + otherDetail[2];
 		};
-		return trackTypes.length > 0 ? mergeRouteDetails(roadClassDetail, trackTypes, concatNames) : roadClassDetail;
+		return trackTypes.length > 0 ? mergeRouteDetails(roadClassDetail, trackTypes, concatNames) : [roadClassDetail];
 	};
 	return roadClassDetails.reduce((merged, roadClassDetail) => {
 		// eslint-disable-next-line no-unused-vars
@@ -374,7 +362,7 @@ export const bvvRouteStatsProvider = (ghRoute, profileStats) => {
 	const lang = configService.getValue('DEFAULT_LANG');
 
 	const speedOptions = Object.hasOwn(VehicleSpeedOptions, ghRoute.vehicle) ? VehicleSpeedOptions[ghRoute.vehicle] : null;
-	const validProfileStats = profileStats?.sumUp && profileStats?.sumDown;
+	const validProfileStats = profileStats?.sumUp != null && profileStats?.sumDown != null;
 	const time =
 		speedOptions && validProfileStats
 			? getETAFor(ghRoute.paths[0].distance, profileStats?.sumUp, profileStats?.sumDown, speedOptions)
@@ -393,7 +381,7 @@ export const bvvRouteStatsProvider = (ghRoute, profileStats) => {
 	return {
 		time: time,
 		dist: ghRoute.paths[0].distance,
-		twoDiff: profileStats?.sumUp && profileStats?.sumDown ? [profileStats.sumUp, profileStats.sumDown] : [],
+		twoDiff: validProfileStats ? [profileStats.sumUp, profileStats.sumDown] : [],
 		details: details,
 		warnings: warnings
 	};
