@@ -105,6 +105,9 @@ export class ElevationService {
 			return deepClone(this.#lastProfileResult[hc]);
 		}
 
+		// clear the cache
+		Object.keys(this.#lastProfileResult).forEach((key) => delete this.#lastProfileResult[key]);
+
 		try {
 			const profile = await this._profileProvider(coordinates3857);
 			this.#lastProfileResult[hc] = profile;

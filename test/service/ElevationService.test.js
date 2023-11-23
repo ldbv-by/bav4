@@ -129,6 +129,28 @@ describe('ElevationService', () => {
 			expect(result0 === result1).toBeFalse();
 		});
 
+		it('clear the cache', async () => {
+			const mockProfile = { result: 42 };
+
+			const providerSpy = jasmine.createSpy().and.resolveTo(mockProfile);
+
+			const instanceUnderTest = setup(null, providerSpy);
+			const mockCoordinates = [
+				[0, 1],
+				[2, 3]
+			];
+			const otherMockCoordinates = [
+				[4, 5],
+				[6, 7]
+			];
+
+			await instanceUnderTest.getProfile(mockCoordinates);
+			await instanceUnderTest.getProfile(otherMockCoordinates);
+			await instanceUnderTest.getProfile(mockCoordinates);
+
+			expect(providerSpy).toHaveBeenCalledTimes(3);
+		});
+
 		it('rejects when backend is not available', async () => {
 			const providerError = new Error('Something got wrong');
 			const instanceUnderTest = setup(null, async () => {
