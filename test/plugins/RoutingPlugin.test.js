@@ -49,7 +49,6 @@ describe('RoutingPlugin', () => {
 	});
 
 	describe('when tools "current" property changes', () => {
-
 		const delay = 50;
 		describe('and not yet initialized ', () => {
 			it('initializes the routing service, sets the default routing category and updates the active property', async () => {
