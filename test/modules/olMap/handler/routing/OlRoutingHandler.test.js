@@ -1333,10 +1333,17 @@ describe('OlRoutingHandler', () => {
 			const feature = new Feature({
 				geometry: new Point(featureCoordinate)
 			});
-			const callClickHandler = async (hitFeature = null, interactionFeatures = []) => {
+			const segmentFeatureMock = {};
+			const callClickHandler = async (hitFeature = null, interactionFeatures = [], routeLayerCopyFeatures = []) => {
 				const { instanceUnderTest, map, store } = await newTestInstance();
+				spyOn(instanceUnderTest._routeLayerCopy, 'getSource').and.returnValue({ getFeatures: () => routeLayerCopyFeatures });
 
-				const handler = instanceUnderTest._newClickHandler(map, instanceUnderTest._interactionLayer, instanceUnderTest._alternativeRouteLayer);
+				const handler = instanceUnderTest._newClickHandler(
+					map,
+					instanceUnderTest._interactionLayer,
+					instanceUnderTest._alternativeRouteLayer,
+					instanceUnderTest._routeLayerCopy
+				);
 				const event = { originalEvent: {}, coordinate: eventCoordinate };
 				const getFeaturesAtPixelOptionsForClickHandlerOptions = {
 					layerFilter: () => true,
@@ -1417,11 +1424,16 @@ describe('OlRoutingHandler', () => {
 				});
 
 				feature.unset(ROUTING_FEATURE_TYPE);
-				store = (await callClickHandler(null, [feature])).store;
+				store = (await callClickHandler(null, [feature], [segmentFeatureMock])).store;
 				expect(store.getState().routing.proposal.payload).toEqual({
 					coord: eventCoordinate,
 					type: CoordinateProposalType.INTERMEDIATE
 				});
+			});
+
+			it('does NOT update the "proposal" property of type "INTERMEDIATE" when no segment is available', async () => {
+				const store = (await callClickHandler(null, [feature], [])).store;
+				expect(store.getState().routing.proposal.payload).toBeNull();
 			});
 		});
 

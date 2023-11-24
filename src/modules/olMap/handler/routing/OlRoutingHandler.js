@@ -132,7 +132,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 				MapBrowserEventType.POINTERMOVE,
 				this._newPointerMoveHandler(olMap, this._interactionLayer, this._alternativeRouteLayer, this._routeLayerCopy)
 			),
-			olMap.on(MapBrowserEventType.CLICK, this._newClickHandler(olMap, this._interactionLayer, this._alternativeRouteLayer))
+			olMap.on(MapBrowserEventType.CLICK, this._newClickHandler(olMap, this._interactionLayer, this._alternativeRouteLayer, this._routeLayerCopy))
 		);
 		return this._routingLayerGroup;
 	}
@@ -144,7 +144,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 		};
 	}
 
-	_newClickHandler(map, interactionLayer, alternativeRouteLayer) {
+	_newClickHandler(map, interactionLayer, alternativeRouteLayer, routeLayerCopy) {
 		return (event) => {
 			const coord = map.getEventCoordinate(event.originalEvent);
 			const pixel = map.getEventPixel(event.originalEvent);
@@ -177,7 +177,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 					this._getInteractionFeatures()[0].get(ROUTING_FEATURE_TYPE) === RoutingFeatureTypes.DESTINATION
 				) {
 					setProposal(coord, CoordinateProposalType.START);
-				} else {
+				} else if (routeLayerCopy.getSource().getFeatures().length > 0) {
 					setProposal(coord, CoordinateProposalType.INTERMEDIATE);
 				}
 			}
