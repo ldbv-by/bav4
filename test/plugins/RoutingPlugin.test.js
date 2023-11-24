@@ -153,11 +153,11 @@ describe('RoutingPlugin', () => {
 	});
 
 	describe('when routing "proposal" property changes', () => {
-		it('closes the ContextMenu, adds a highlight feature, opens the BottomSheet, and removes the highlight feature after the BottomSheet is closed', async () => {
+		it('closes an existing ContextMenu, removes existing highlight features, opens the BottomSheet, and removes the highlight feature after the BottomSheet is closed', async () => {
 			const store = setup({
 				mapContextMenu: { active: true },
 				highlight: {
-					features: [{ id: RoutingPlugin.HIGHLIGHT_FEATURE_ID, data: { coordinate: [11, 22] } }]
+					features: [{ id: 'foo', data: { coordinate: [11, 22] } }]
 				}
 			});
 			const instanceUnderTest = new RoutingPlugin();

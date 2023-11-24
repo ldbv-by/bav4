@@ -11,7 +11,7 @@ import { LevelTypes, emitNotification } from '../store/notifications/notificatio
 import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
 import { html } from '../../node_modules/lit-html/lit-html';
 import { CoordinateProposalType, RoutingStatusCodes } from '../domain/routing';
-import { HighlightFeatureType, addHighlightFeatures, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
+import { HighlightFeatureType, addHighlightFeatures, clearHighlightFeatures, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
 import { setCurrentTool } from '../store/tools/tools.action';
 import { closeContextMenu } from '../store/mapContextMenu/mapContextMenu.action';
 
@@ -87,7 +87,7 @@ export class RoutingPlugin extends BaPlugin {
 		};
 
 		const onProposalChange = ({ coord, type: proposalType }) => {
-			removeHighlightFeaturesById(RoutingPlugin.HIGHLIGHT_FEATURE_ID);
+			clearHighlightFeatures();
 			closeContextMenu();
 			addHighlightFeatures({
 				id: RoutingPlugin.HIGHLIGHT_FEATURE_ID,
