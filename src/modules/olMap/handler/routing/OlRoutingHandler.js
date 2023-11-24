@@ -625,11 +625,14 @@ export class OlRoutingHandler extends OlLayerHandler {
 	}
 
 	_addIntermediate(intermediateCoord3857, routeLayerCopy) {
-		// find the closest segment
-		const closestSegmentFeature = routeLayerCopy
-			.getSource()
-			.getFeatures()
-			.reduce((acc, curr) => {
+		const coordinates3857 = this._getInteractionFeatures().map((feature) => {
+			return feature.getGeometry().getCoordinates();
+		});
+
+		const routelayerCopyFeatures = routeLayerCopy.getSource().getFeatures();
+		if (routelayerCopyFeatures.length > 0) {
+			// find the closest segment
+			const closestSegmentFeature = routelayerCopyFeatures.reduce((acc, curr) => {
 				const closestCurr = curr.getGeometry().getClosestPoint(intermediateCoord3857);
 				const closestAcc = acc.getGeometry().getClosestPoint(intermediateCoord3857);
 				// planar distance! -> must be adapted when changed to 3857
@@ -638,13 +641,10 @@ export class OlRoutingHandler extends OlLayerHandler {
 				return dCurr < dAcc ? curr : acc;
 			});
 
-		const segmentIndex = closestSegmentFeature.get(ROUTING_SEGMENT_INDEX);
+			const segmentIndex = closestSegmentFeature.get(ROUTING_SEGMENT_INDEX);
 
-		const coordinates3857 = this._getInteractionFeatures().map((feature) => {
-			return feature.getGeometry().getCoordinates();
-		});
-		coordinates3857.splice(segmentIndex + 1, 0, intermediateCoord3857);
-
+			coordinates3857.splice(segmentIndex + 1, 0, intermediateCoord3857);
+		}
 		return coordinates3857;
 	}
 

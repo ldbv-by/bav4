@@ -1307,6 +1307,23 @@ describe('OlRoutingHandler', () => {
 
 				expect(result).toEqual([wpCoord0, wpCoord1, intermediateCoord, wpCoord2, wpCoord3]);
 			});
+
+			it('just returns the coordinates when no segments are available', async () => {
+				const intermediateCoord = [16, 16];
+				const wpCoord0 = [0, 0];
+				const wpCoord1 = [10, 10];
+				const wp0 = new Feature({ geometry: new Point(wpCoord0) });
+				wp0.set(ROUTING_FEATURE_INDEX, 0);
+				const wp1 = new Feature({ geometry: new Point(wpCoord1) });
+				wp1.set(ROUTING_FEATURE_INDEX, 1);
+				const { instanceUnderTest } = await newTestInstance();
+				const routeLayerCopy = instanceUnderTest._routeLayerCopy;
+				spyOn(instanceUnderTest, '_getInteractionFeatures').and.returnValue([wp0, wp1]);
+
+				const result = instanceUnderTest._addIntermediate(intermediateCoord, routeLayerCopy);
+
+				expect(result).toEqual([wpCoord0, wpCoord1]);
+			});
 		});
 
 		describe('_newClickHandler', () => {
