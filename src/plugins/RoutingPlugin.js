@@ -10,7 +10,7 @@ import { $injector } from '../injection/index';
 import { LevelTypes, emitNotification } from '../store/notifications/notifications.action';
 import { openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
 import { html } from '../../node_modules/lit-html/lit-html';
-import { RoutingStatusCodes } from '../domain/routing';
+import { CoordinateProposalType, RoutingStatusCodes } from '../domain/routing';
 import { HighlightFeatureType, addHighlightFeatures, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
 import { setCurrentTool } from '../store/tools/tools.action';
 import { closeContextMenu } from '../store/mapContextMenu/mapContextMenu.action';
@@ -84,12 +84,14 @@ export class RoutingPlugin extends BaPlugin {
 			}
 		};
 
-		const onProposalChange = ({ coord }) => {
+		const onProposalChange = ({ coord, type: proposalType }) => {
 			removeHighlightFeaturesById(RoutingPlugin.HIGHLIGHT_FEATURE_ID);
 			closeContextMenu();
 			addHighlightFeatures({
 				id: RoutingPlugin.HIGHLIGHT_FEATURE_ID,
-				type: HighlightFeatureType.MARKER_TMP,
+				type: [CoordinateProposalType.EXISTING_INTERMEDIATE, CoordinateProposalType.EXISTING_START_OR_DESTINATION].includes(proposalType)
+					? HighlightFeatureType.DEFAULT
+					: HighlightFeatureType.MARKER_TMP,
 				data: { coordinate: [...coord] }
 			});
 			const content = html`<ba-proposal-context-content></ba-proposal-context-content>`;

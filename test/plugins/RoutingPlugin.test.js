@@ -164,7 +164,6 @@ describe('RoutingPlugin', () => {
 			expect(wrapperElement.querySelectorAll(ProposalContextContent.tag)).toHaveSize(1);
 			expect(store.getState().bottomSheet.active).toBeTrue();
 			expect(store.getState().highlight.features).toHaveSize(1);
-			expect(store.getState().highlight.features).toHaveSize(1);
 			expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
 			expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER_TMP);
 			expect(store.getState().highlight.features[0].id).toBe(RoutingPlugin.HIGHLIGHT_FEATURE_ID);
@@ -172,6 +171,26 @@ describe('RoutingPlugin', () => {
 			closeBottomSheet();
 
 			expect(store.getState().highlight.features).toHaveSize(0);
+		});
+
+		it('adds a different highlight feature when waypoint already exists', async () => {
+			const store = setup({
+				mapContextMenu: { active: true },
+				highlight: {
+					features: [{ id: RoutingPlugin.HIGHLIGHT_FEATURE_ID, data: { coordinate: [11, 22] } }]
+				}
+			});
+			const instanceUnderTest = new RoutingPlugin();
+			instanceUnderTest._initialized = true;
+			const coordinate = [21, 42];
+			await instanceUnderTest.register(store);
+
+			setProposal(coordinate, CoordinateProposalType.EXISTING_START_OR_DESTINATION);
+
+			expect(store.getState().highlight.features).toHaveSize(1);
+			expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
+			expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.DEFAULT);
+			expect(store.getState().highlight.features[0].id).toBe(RoutingPlugin.HIGHLIGHT_FEATURE_ID);
 		});
 	});
 
