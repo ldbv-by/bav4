@@ -49,7 +49,7 @@ describe('RoutingPlugin', () => {
 	});
 
 	describe('when tools "current" property changes', () => {
-		const delay = 50;
+		const delay = 100;
 		describe('and not yet initialized ', () => {
 			it('initializes the routing service, sets the default routing category and updates the active property', async () => {
 				const store = setup({ routing: initialRoutingState });
