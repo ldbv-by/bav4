@@ -39,7 +39,7 @@ export const SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID = 'searchResultTempora
  * - does the highlight feature management for the feature info visualization
  * - does the highlight feature management for the search result visualization
  *
- * Note: Plugins are allowed to manage their highlight feature management on their own.
+ * Note: Other plugins are allowed to manage their highlight feature management on their own.
  * @class
  * @author taulinger
  */
