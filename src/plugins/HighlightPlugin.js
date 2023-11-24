@@ -54,7 +54,7 @@ export class HighlightPlugin extends BaPlugin {
 	 * @param {Store} store
 	 */
 	async register(store) {
-		const highlightFeatureId = createUniqueId();
+		const highlightFeatureId = `${createUniqueId()}`;
 		const translate = (key) => this._translationService.translate(key);
 
 		const onChange = (active) => {
@@ -106,10 +106,10 @@ export class HighlightPlugin extends BaPlugin {
 		if (crosshair) {
 			setTimeout(() => {
 				addHighlightFeatures({
-					id: createUniqueId(),
+					id: `${createUniqueId()}`,
 					label: translate('global_marker_symbol_label'),
 					data: { coordinate: store.getState().position.center },
-					type: HighlightFeatureType.DEFAULT
+					type: HighlightFeatureType.MARKER
 				});
 			});
 		}
