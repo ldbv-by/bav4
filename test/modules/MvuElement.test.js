@@ -501,6 +501,8 @@ describe('MvuElement', () => {
 				payload: 42
 			});
 
+			expect(onModelChangedSpy).toHaveBeenCalledTimes(1);
+
 			element.remove(); // Let's remove the element and force running the disconnect -lifecycle, so no more state changes are observed
 
 			store.dispatch({
