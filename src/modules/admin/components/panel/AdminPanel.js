@@ -475,7 +475,24 @@ export class AdminPanel extends MvuElement {
 
 		const resetCatalog = async () => {
 			const catalogWithResourceData = this._reduceData(this.#catalog, this._enrichWithGeoResource, this.#geoResources);
-			this.signal(Update_CatalogWithResourceData, catalogWithResourceData);
+			refreshCatalog(catalogWithResourceData);
+			console.log('🚀 ~ AdminPanel ~ resetCatalog ~ catalogWithResourceData:', catalogWithResourceData);
+		};
+
+		const refreshCatalog = async (newCatalogWithResourceData) => {
+			newCatalogWithResourceData.forEach((entry) => {
+				console.log('🚀 ~ AdminPanel ~ newCatalogWithResourceData.forEach ~ entry:', entry);
+				const correspondingEntry = catalogWithResourceData.find((e) => e.uid === entry.uid);
+
+				if (!correspondingEntry) {
+					entry.label += ' - new';
+				}
+				if (correspondingEntry.label !== entry.label) {
+					entry.label += ' - different';
+				}
+			});
+
+			this.signal(Update_CatalogWithResourceData, newCatalogWithResourceData);
 		};
 
 		if (this.#currentTopicId) {

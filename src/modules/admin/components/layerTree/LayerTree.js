@@ -10,6 +10,9 @@ import { MvuElement } from '../../../MvuElement';
 import css from './layerTree.css';
 import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 
+// @ts-ignore
+import { repeat } from 'lit-html/directives/repeat.js';
+
 const Update_Topics = 'update_topics';
 const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
 const Update_Layers = 'update_layers';
@@ -96,6 +99,9 @@ export class LayerTree extends MvuElement {
 		this._saveCatalog = (catalogId, catalog) => {};
 		this._addLayerGroup = () => {};
 		this._resetCatalog = () => {};
+
+		// eslint-disable-next-line no-unused-vars
+		this._refreshCatalog = (catalog) => {};
 
 		this.#currentGeoResourceId = null;
 		this.#overTarget = false;
@@ -340,7 +346,11 @@ export class LayerTree extends MvuElement {
 						${topics.map((topic) => html` <option value="${topic._id}">${topic._label}</option> `)}
 					</select>
 					<ul>
-						${catalogWithResourceData.map((catalogEntry) => html`<li>${renderEntry(catalogEntry)}</li>`)}
+						${repeat(
+							catalogWithResourceData,
+							(item) => item.uid + item.label,
+							(catalogEntry, index) => html`<li>${renderEntry(catalogEntry)}</li>`
+						)}
 					</ul>
 				</div>
 			`;
@@ -393,7 +403,7 @@ export class LayerTree extends MvuElement {
 	}
 
 	/**
-	 * @property {function} addLayerGroup - Callback function
+	 * @property {function} resetCatalog - Callback function
 	 */
 	set resetCatalog(callback) {
 		this._resetCatalog = callback;
@@ -401,6 +411,17 @@ export class LayerTree extends MvuElement {
 
 	get resetCatalog() {
 		return this._resetCatalog;
+	}
+
+	/**
+	 * @property {function} refreshCatalog - Callback function
+	 */
+	set refreshCatalog(callback) {
+		this._refreshCatalog = callback;
+	}
+
+	get refreshCatalog() {
+		return this._refreshCatalog;
 	}
 
 	/**
