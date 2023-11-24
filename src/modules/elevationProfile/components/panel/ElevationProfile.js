@@ -447,17 +447,38 @@ export class ElevationProfile extends MvuElement {
 		const { ctx, chartArea } = chart;
 		const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
 		const numberOfPoints = elevationData.elevations.length;
-		const xPointWidth = chartArea.width / numberOfPoints;
 
-		elevationData?.elevations.forEach((element, index) => {
-			if (element.slope) {
-				const xPoint = (xPointWidth / chartArea.width) * index;
-				const slopeValue = Math.abs(element.slope);
+		const xPointRatio = chartArea.width / numberOfPoints / chartArea.width;
+		const addColorChange = (index, stopColor, startColor) => {
+			const xPointStop = xPointRatio * (index - 1);
+			const xPointStart = xPointRatio * index;
+			return [
+				{ x: xPointStop, color: stopColor },
+				{ x: xPointStart, color: startColor }
+			];
+		};
+		const addColorStop = (index, color) => {
+			const xPoint = xPointRatio * index;
+			return { x: xPoint, color: color };
+		};
+
+		const colorStops = elevationData?.elevations.reduce((accumulator, currentElement, index) => {
+			if (currentElement.slope != null) {
+				const slopeValue = Math.abs(currentElement.slope);
 				const slopeClass = SoterSlopeClasses.find((c) => c.min <= slopeValue && c.max > slopeValue);
+				const [lastColorStop] = accumulator.slice(-1);
 
-				gradientBg.addColorStop(xPoint, slopeClass.color);
+				if (lastColorStop) {
+					if (lastColorStop.color !== slopeClass.color) {
+						return [...accumulator, ...addColorChange(index, lastColorStop.color, slopeClass.color)];
+					}
+					return accumulator;
+				}
+				return [addColorStop(index, slopeClass.color)];
 			}
-		});
+			return accumulator;
+		}, []);
+		colorStops.forEach((colorStop) => gradientBg.addColorStop(colorStop.x, colorStop.color));
 		return gradientBg;
 	}
 
@@ -479,6 +500,7 @@ export class ElevationProfile extends MvuElement {
 		if (Array.isArray(coordinates) && coordinates.length >= 2) {
 			try {
 				const profile = await this._elevationService.getProfile(coordinates);
+				console.log(profile);
 				if (!profile) {
 					this.signal(Update_Profile_Data, Empty_Profile_Data);
 				} else {
