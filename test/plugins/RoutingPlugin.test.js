@@ -166,7 +166,7 @@ describe('RoutingPlugin', () => {
 			expect(store.getState().highlight.features).toHaveSize(1);
 			expect(store.getState().highlight.features).toHaveSize(1);
 			expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
-			expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.TEMPORARY);
+			expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER_TMP);
 			expect(store.getState().highlight.features[0].id).toBe(RoutingPlugin.HIGHLIGHT_FEATURE_ID);
 
 			closeBottomSheet();

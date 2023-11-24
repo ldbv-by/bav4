@@ -89,7 +89,7 @@ export class RoutingPlugin extends BaPlugin {
 			closeContextMenu();
 			addHighlightFeatures({
 				id: RoutingPlugin.HIGHLIGHT_FEATURE_ID,
-				type: HighlightFeatureType.TEMPORARY,
+				type: HighlightFeatureType.MARKER_TMP,
 				data: { coordinate: [...coord] }
 			});
 			const content = html`<ba-proposal-context-content></ba-proposal-context-content>`;
