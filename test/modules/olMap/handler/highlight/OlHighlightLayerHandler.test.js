@@ -13,9 +13,9 @@ import { OlHighlightLayerHandler } from '../../../../../src/modules/olMap/handle
 import {
 	highlightAnimatedCoordinateFeatureStyleFunction,
 	highlightCoordinateFeatureStyleFunction,
-	highlightGeometryFeatureStyleFunction,
+	highlightGeometryOrCoordinateFeatureStyleFunction,
 	highlightTemporaryCoordinateFeatureStyleFunction,
-	highlightTemporaryGeometryFeatureStyleFunction
+	highlightTemporaryGeometryOrCoordinateFeatureStyleFunction
 } from '../../../../../src/modules/olMap/handler/highlight/styleUtils';
 import WKT from 'ol/format/WKT';
 import GeoJSON from 'ol/format/GeoJSON';
@@ -244,8 +244,8 @@ describe('OlHighlightLayerHandler', () => {
 			expect(styledFeature1.getStyle()()).toEqual(highlightTemporaryCoordinateFeatureStyleFunction());
 			expect(animatePointFeatureSyp).toHaveBeenCalledWith(animatedFeature);
 			expect(styledFeature3.getStyle()()).toEqual(highlightAnimatedCoordinateFeatureStyleFunction());
-			expect(styledFeature4.getStyle()()).toEqual(highlightGeometryFeatureStyleFunction());
-			expect(styledFeature5.getStyle()()).toEqual(highlightTemporaryGeometryFeatureStyleFunction());
+			expect(styledFeature4.getStyle()()).toEqual(highlightGeometryOrCoordinateFeatureStyleFunction());
+			expect(styledFeature5.getStyle()()).toEqual(highlightTemporaryGeometryOrCoordinateFeatureStyleFunction());
 		});
 
 		it('sets the correct style features containing a HighlightGeometry', () => {
@@ -264,8 +264,8 @@ describe('OlHighlightLayerHandler', () => {
 			const styledFeature0 = handler._appendStyle(highlightGeometryGeoJsonFeature0, new Feature(olPoint));
 			const styledFeature1 = handler._appendStyle(highlightGeometryGeoJsonFeature1, new Feature(olPoint));
 
-			expect(styledFeature0.getStyle()()).toEqual(highlightGeometryFeatureStyleFunction());
-			expect(styledFeature1.getStyle()()).toEqual(highlightTemporaryGeometryFeatureStyleFunction());
+			expect(styledFeature0.getStyle()()).toEqual(highlightGeometryOrCoordinateFeatureStyleFunction());
+			expect(styledFeature1.getStyle()()).toEqual(highlightTemporaryGeometryOrCoordinateFeatureStyleFunction());
 		});
 
 		it('sets NO style when feature type is missing', () => {

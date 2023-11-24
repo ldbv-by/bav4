@@ -10,9 +10,9 @@ import {
 	createAnimation,
 	highlightAnimatedCoordinateFeatureStyleFunction,
 	highlightCoordinateFeatureStyleFunction,
-	highlightGeometryFeatureStyleFunction,
+	highlightGeometryOrCoordinateFeatureStyleFunction,
 	highlightTemporaryCoordinateFeatureStyleFunction,
-	highlightTemporaryGeometryFeatureStyleFunction
+	highlightTemporaryGeometryOrCoordinateFeatureStyleFunction
 } from './styleUtils';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
@@ -114,19 +114,19 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 					olFeature.setStyle(highlightAnimatedCoordinateFeatureStyleFunction);
 					break;
 				case HighlightFeatureType.DEFAULT:
-					olFeature.setStyle(highlightGeometryFeatureStyleFunction);
+					olFeature.setStyle(highlightGeometryOrCoordinateFeatureStyleFunction);
 					break;
 				case HighlightFeatureType.DEFAULT_TMP:
-					olFeature.setStyle(highlightTemporaryGeometryFeatureStyleFunction);
+					olFeature.setStyle(highlightTemporaryGeometryOrCoordinateFeatureStyleFunction);
 					break;
 			}
 		} else {
 			switch (feature.type) {
 				case HighlightFeatureType.DEFAULT:
-					olFeature.setStyle(highlightGeometryFeatureStyleFunction);
+					olFeature.setStyle(highlightGeometryOrCoordinateFeatureStyleFunction);
 					break;
 				case HighlightFeatureType.DEFAULT_TMP:
-					olFeature.setStyle(highlightTemporaryGeometryFeatureStyleFunction);
+					olFeature.setStyle(highlightTemporaryGeometryOrCoordinateFeatureStyleFunction);
 					break;
 			}
 		}
