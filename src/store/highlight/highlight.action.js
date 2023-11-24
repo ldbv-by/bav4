@@ -7,7 +7,7 @@ import { $injector } from '../../injection';
 /**
  * Contains information for highlighting a position or an area in a map.
  * @typedef {Object} HighlightFeature
- * @property {HighlightFeatureTypes} type  The type of this feature.
+ * @property {HighlightFeatureType} type  The type of this feature.
  * @property {HighlightCoordinate|HighlightGeometry} data The data which can be a coordinate or a geometry
  * @property {string} [id] Optional id. If not present, the reducer will create one.
  * @property {string} [label] Optional text
@@ -23,7 +23,7 @@ import { $injector } from '../../injection';
  * Geometry data for a {@link HighlightFeature}
  * @typedef {Object} HighlightGeometry
  * @property {object|string} geometry Geometry (e.g. geoJson, WKT)
- * @property {HighlightFeatureGeometryTypes} geometryType the type of the geometry
+ * @property {HighlightGeometryType} geometryType the type of the geometry
  */
 
 /**
@@ -31,10 +31,11 @@ import { $injector } from '../../injection';
  * @enum {Number}
  */
 export const HighlightFeatureType = Object.freeze({
-	DEFAULT: 0,
-	TEMPORARY: 1,
+	MARKER: 0,
+	MARKER_TMP: 1,
 	QUERY_RUNNING: 2,
-	QUERY_SUCCESS: 3
+	QUERY_SUCCESS: 3,
+	DEFAULT: 4
 });
 
 /**
@@ -57,8 +58,8 @@ const getStore = () => {
  * @param {Array.<HighlightFeature>|HighlightFeature} features
  * @function
  */
-export const addHighlightFeatures = (feature) => {
-	const featureAsArray = Array.isArray(feature) ? [...feature] : [feature];
+export const addHighlightFeatures = (features) => {
+	const featureAsArray = Array.isArray(features) ? [...features] : [features];
 	getStore().dispatch({
 		type: FEATURE_ADD,
 		payload: featureAsArray
