@@ -35,7 +35,8 @@ export const HighlightFeatureType = Object.freeze({
 	MARKER_TMP: 1,
 	QUERY_RUNNING: 2,
 	QUERY_SUCCESS: 3,
-	DEFAULT: 4
+	DEFAULT: 4,
+	DEFAULT_TMP: 5
 });
 
 /**
