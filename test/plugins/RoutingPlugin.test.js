@@ -106,11 +106,16 @@ describe('RoutingPlugin', () => {
 			expect(store.getState().routing.active).toBeTrue();
 		});
 
-		it('updates the active property (deactivation)', async () => {
+		it('updates the active property, closes the BottomSheet and removes the highlight feature (deactivation)', async () => {
 			const store = setup({
 				routing: { ...initialRoutingState, waypoints: [[0, 1]] },
 				tools: {
 					current: Tools.ROUTING
+				},
+
+				bottomSheet: { active: true },
+				highlight: {
+					features: [{ id: RoutingPlugin.HIGHLIGHT_FEATURE_ID, data: { coordinate: [11, 22] } }]
 				}
 			});
 			const instanceUnderTest = new RoutingPlugin();
@@ -121,6 +126,9 @@ describe('RoutingPlugin', () => {
 
 			expect(store.getState().routing.active).toBeFalse();
 			expect(store.getState().routing.waypoints).toHaveSize(0);
+			expect(store.getState().bottomSheet.active).toBeFalse();
+			expect(store.getState().bottomSheet.active).toBeFalse();
+			expect(store.getState().highlight.features).toHaveSize(0);
 		});
 	});
 
@@ -160,6 +168,7 @@ describe('RoutingPlugin', () => {
 			setProposal(coordinate, CoordinateProposalType.START_OR_DESTINATION);
 
 			expect(store.getState().mapContextMenu.active).toBeFalse();
+			expect(store.getState().bottomSheet.active).toBeTrue();
 			const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data);
 			expect(wrapperElement.querySelectorAll(ProposalContextContent.tag)).toHaveSize(1);
 			expect(store.getState().bottomSheet.active).toBeTrue();
@@ -175,7 +184,7 @@ describe('RoutingPlugin', () => {
 
 		it('adds a different highlight feature when waypoint already exists', async () => {
 			const store = setup({
-				mapContextMenu: { active: true },
+				bottomSheet: { active: true },
 				highlight: {
 					features: [{ id: RoutingPlugin.HIGHLIGHT_FEATURE_ID, data: { coordinate: [11, 22] } }]
 				}

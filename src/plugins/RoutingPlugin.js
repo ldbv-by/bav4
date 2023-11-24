@@ -8,7 +8,7 @@ import { activate, deactivate, reset, setCategory } from '../store/routing/routi
 import { Tools } from '../domain/tools';
 import { $injector } from '../injection/index';
 import { LevelTypes, emitNotification } from '../store/notifications/notifications.action';
-import { openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
+import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
 import { html } from '../../node_modules/lit-html/lit-html';
 import { CoordinateProposalType, RoutingStatusCodes } from '../domain/routing';
 import { HighlightFeatureType, addHighlightFeatures, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
@@ -64,6 +64,8 @@ export class RoutingPlugin extends BaPlugin {
 
 		const onToolChanged = async (toolId) => {
 			if (toolId !== Tools.ROUTING) {
+				removeHighlightFeaturesById(RoutingPlugin.HIGHLIGHT_FEATURE_ID);
+				closeBottomSheet();
 				reset();
 				deactivate();
 			} else {
