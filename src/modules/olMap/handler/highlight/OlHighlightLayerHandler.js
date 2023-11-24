@@ -101,10 +101,10 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 		//we have a HighlightCoordinate
 		if (data.coordinate) {
 			switch (feature.type) {
-				case HighlightFeatureType.DEFAULT:
+				case HighlightFeatureType.MARKER:
 					olFeature.setStyle(highlightCoordinateFeatureStyleFunction);
 					break;
-				case HighlightFeatureType.TEMPORARY:
+				case HighlightFeatureType.MARKER_TMP:
 					olFeature.setStyle(highlightTemporaryCoordinateFeatureStyleFunction);
 					break;
 				case HighlightFeatureType.QUERY_RUNNING:
@@ -112,13 +112,20 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 					break;
 				case HighlightFeatureType.QUERY_SUCCESS:
 					olFeature.setStyle(highlightAnimatedCoordinateFeatureStyleFunction);
+					break;
+				case HighlightFeatureType.DEFAULT:
+					olFeature.setStyle(highlightGeometryFeatureStyleFunction);
+					break;
+				case HighlightFeatureType.DEFAULT_TMP:
+					olFeature.setStyle(highlightTemporaryGeometryFeatureStyleFunction);
+					break;
 			}
 		} else {
 			switch (feature.type) {
 				case HighlightFeatureType.DEFAULT:
 					olFeature.setStyle(highlightGeometryFeatureStyleFunction);
 					break;
-				case HighlightFeatureType.TEMPORARY:
+				case HighlightFeatureType.DEFAULT_TMP:
 					olFeature.setStyle(highlightTemporaryGeometryFeatureStyleFunction);
 					break;
 			}

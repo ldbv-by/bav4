@@ -226,20 +226,26 @@ describe('OlHighlightLayerHandler', () => {
 			const animatedFeature = new Feature(new Point([22, 44]));
 			const handler = new OlHighlightLayerHandler();
 			const animatePointFeatureSyp = spyOn(handler, '_animatePointFeature');
-			const highlightCoordinateFeature0 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.DEFAULT };
-			const highlightCoordinateFeature1 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.TEMPORARY };
+			const highlightCoordinateFeature0 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.MARKER };
+			const highlightCoordinateFeature1 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.MARKER_TMP };
 			const highlightCoordinateFeature2 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.QUERY_RUNNING };
 			const highlightCoordinateFeature3 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.QUERY_SUCCESS };
+			const highlightCoordinateFeature4 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.DEFAULT };
+			const highlightCoordinateFeature5 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.DEFAULT_TMP };
 
 			const styledFeature0 = handler._appendStyle(highlightCoordinateFeature0, new Feature(new Point([5, 10])));
 			const styledFeature1 = handler._appendStyle(highlightCoordinateFeature1, new Feature(new Point([5, 10])));
 			handler._appendStyle(highlightCoordinateFeature2, animatedFeature);
 			const styledFeature3 = handler._appendStyle(highlightCoordinateFeature3, new Feature(new Point([5, 10])));
+			const styledFeature4 = handler._appendStyle(highlightCoordinateFeature4, new Feature(new Point([5, 10])));
+			const styledFeature5 = handler._appendStyle(highlightCoordinateFeature5, new Feature(new Point([5, 10])));
 
 			expect(styledFeature0.getStyle()()).toEqual(highlightCoordinateFeatureStyleFunction());
 			expect(styledFeature1.getStyle()()).toEqual(highlightTemporaryCoordinateFeatureStyleFunction());
 			expect(animatePointFeatureSyp).toHaveBeenCalledWith(animatedFeature);
 			expect(styledFeature3.getStyle()()).toEqual(highlightAnimatedCoordinateFeatureStyleFunction());
+			expect(styledFeature4.getStyle()()).toEqual(highlightGeometryFeatureStyleFunction());
+			expect(styledFeature5.getStyle()()).toEqual(highlightTemporaryGeometryFeatureStyleFunction());
 		});
 
 		it('sets the correct style features containing a HighlightGeometry', () => {
@@ -252,7 +258,7 @@ describe('OlHighlightLayerHandler', () => {
 			};
 			const highlightGeometryGeoJsonFeature1 = {
 				data: { geometry: new GeoJSON().writeGeometry(olPoint), geometryType: HighlightGeometryType.GEOJSON },
-				type: HighlightFeatureType.TEMPORARY
+				type: HighlightFeatureType.DEFAULT_TMP
 			};
 
 			const styledFeature0 = handler._appendStyle(highlightGeometryGeoJsonFeature0, new Feature(olPoint));
