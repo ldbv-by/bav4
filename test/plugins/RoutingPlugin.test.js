@@ -65,6 +65,7 @@ describe('RoutingPlugin', () => {
 				await TestUtils.timeout();
 				await TestUtils.timeout(delay /** let's give safari some time */);
 				expect(routingServiceSpy).toHaveBeenCalled();
+				await TestUtils.timeout();
 				expect(store.getState().routing.active).toBeTrue();
 				expect(store.getState().routing.categoryId).toBe(categoryId);
 			});
@@ -82,6 +83,7 @@ describe('RoutingPlugin', () => {
 				// we have to wait for two async operations
 				await TestUtils.timeout();
 				await TestUtils.timeout(delay /** let's give safari some time */);
+				await TestUtils.timeout();
 				expect(store.getState().routing.active).toBeFalse();
 				expect(store.getState().notifications.latest.payload.content).toBe('global_routingService_init_exception');
 				expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
@@ -100,6 +102,7 @@ describe('RoutingPlugin', () => {
 			// we have to wait for two async operations
 			await TestUtils.timeout();
 			await TestUtils.timeout(delay /** let's give safari some time */);
+			await TestUtils.timeout();
 			expect(store.getState().routing.active).toBeTrue();
 		});
 
