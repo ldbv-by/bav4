@@ -66,7 +66,7 @@ export class BaseLayerContainer extends MvuElement {
 	}
 
 	_scrollToActiveButton() {
-		findAllBySelector(this, 'button[type="primary"]')[0]?.scrollIntoView();
+		findAllBySelector(this, 'button[type="primary"]')[0]?.parentElement?.scrollIntoView();
 	}
 
 	/**
