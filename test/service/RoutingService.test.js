@@ -3,7 +3,6 @@ import { BvvRoutingService, CHART_ITEM_ROAD_STYLE_UNKNOWN, CHART_ITEM_SURFACE_ST
 import { bvvChartItemStylesProvider } from '../../src/services/provider/chartItemStyles.provider';
 import { bvvOsmRoadTypeMappingProvider } from '../../src/services/provider/osmRoadTypeMapping.provider';
 import { bvvRouteProvider } from '../../src/services/provider/route.provider';
-import { bvvRouteStatsProvider } from '../../src/services/provider/routeStats.provider';
 import { bvvRoutingCategoriesProvider } from '../../src/services/provider/routingCategories.provider';
 
 describe('BvvRoutingService', () => {
@@ -18,11 +17,10 @@ describe('BvvRoutingService', () => {
 	const setup = (
 		routingCategoriesProvider = bvvRoutingCategoriesProvider,
 		routeProvider = bvvRouteProvider,
-		routeStatsProvider = bvvRouteStatsProvider,
 		chartItemStylesProvider = bvvChartItemStylesProvider,
 		osmRoadTypeMappingProvider = bvvOsmRoadTypeMappingProvider
 	) => {
-		return new BvvRoutingService(routingCategoriesProvider, routeProvider, routeStatsProvider, chartItemStylesProvider, osmRoadTypeMappingProvider);
+		return new BvvRoutingService(routingCategoriesProvider, routeProvider, chartItemStylesProvider, osmRoadTypeMappingProvider);
 	};
 
 	describe('constructor', () => {
@@ -30,7 +28,6 @@ describe('BvvRoutingService', () => {
 			const instanceUnderTest = new BvvRoutingService();
 			expect(instanceUnderTest._categoriesProvider).toEqual(bvvRoutingCategoriesProvider);
 			expect(instanceUnderTest._routeProvider).toEqual(bvvRouteProvider);
-			expect(instanceUnderTest._routeStatsProvider).toEqual(bvvRouteStatsProvider);
 			expect(instanceUnderTest._chartItemsStylesProvider).toEqual(bvvChartItemStylesProvider);
 			expect(instanceUnderTest._osmRoadTypeMapper).toEqual(bvvOsmRoadTypeMappingProvider);
 		});
@@ -38,19 +35,16 @@ describe('BvvRoutingService', () => {
 		it('initializes the service with custom provider', async () => {
 			const customRoutingCategoriesProvider = async () => {};
 			const customRouteProvider = async () => {};
-			const customRouteStatsProvider = () => {};
 			const customChartItemStylesProvider = () => {};
 			const customOsmRoadTypeMappingProvider = () => {};
 			const instanceUnderTest = setup(
 				customRoutingCategoriesProvider,
 				customRouteProvider,
-				customRouteStatsProvider,
 				customChartItemStylesProvider,
 				customOsmRoadTypeMappingProvider
 			);
 			expect(instanceUnderTest._categoriesProvider).toEqual(customRoutingCategoriesProvider);
 			expect(instanceUnderTest._routeProvider).toEqual(customRouteProvider);
-			expect(instanceUnderTest._routeStatsProvider).toEqual(customRouteStatsProvider);
 			expect(instanceUnderTest._chartItemsStylesProvider).toEqual(customChartItemStylesProvider);
 			expect(instanceUnderTest._osmRoadTypeMapper).toEqual(customOsmRoadTypeMappingProvider);
 		});
@@ -259,7 +253,7 @@ describe('BvvRoutingService', () => {
 			const mockChartItemStylesProvider = () => {
 				return { road: roadStylesMock };
 			};
-			const instanceUnderTest = setup(async () => {}, null, null, mockChartItemStylesProvider);
+			const instanceUnderTest = setup(async () => {}, null, mockChartItemStylesProvider);
 			await instanceUnderTest.init();
 
 			const styles = instanceUnderTest.getRoadTypeStyles();
@@ -281,7 +275,7 @@ describe('BvvRoutingService', () => {
 			const mockChartItemStylesProvider = () => {
 				return { some: {} };
 			};
-			const instanceUnderTest = setup(async () => {}, null, null, mockChartItemStylesProvider);
+			const instanceUnderTest = setup(async () => {}, null, mockChartItemStylesProvider);
 			await instanceUnderTest.init();
 
 			const styles = instanceUnderTest.getRoadTypeStyles();
@@ -302,7 +296,7 @@ describe('BvvRoutingService', () => {
 					}
 				};
 			};
-			const instanceUnderTest = setup(async () => {}, null, null, mockChartItemStylesProvider);
+			const instanceUnderTest = setup(async () => {}, null, mockChartItemStylesProvider);
 			await instanceUnderTest.init();
 
 			const styles = instanceUnderTest.getRoadTypeStyles();
@@ -326,7 +320,7 @@ describe('BvvRoutingService', () => {
 			const mockChartItemStylesProvider = () => {
 				return { surface: surfaceStylesMock };
 			};
-			const instanceUnderTest = setup(async () => {}, null, null, mockChartItemStylesProvider);
+			const instanceUnderTest = setup(async () => {}, null, mockChartItemStylesProvider);
 			await instanceUnderTest.init();
 
 			const styles = instanceUnderTest.getSurfaceTypeStyles();
@@ -348,7 +342,7 @@ describe('BvvRoutingService', () => {
 			const mockChartItemStylesProvider = () => {
 				return { some: {} };
 			};
-			const instanceUnderTest = setup(async () => {}, null, null, mockChartItemStylesProvider);
+			const instanceUnderTest = setup(async () => {}, null, mockChartItemStylesProvider);
 			await instanceUnderTest.init();
 
 			const styles = instanceUnderTest.getSurfaceTypeStyles();
@@ -369,7 +363,7 @@ describe('BvvRoutingService', () => {
 					}
 				};
 			};
-			const instanceUnderTest = setup(async () => {}, null, null, mockChartItemStylesProvider);
+			const instanceUnderTest = setup(async () => {}, null, mockChartItemStylesProvider);
 			await instanceUnderTest.init();
 
 			const styles = instanceUnderTest.getSurfaceTypeStyles();
@@ -395,7 +389,7 @@ describe('BvvRoutingService', () => {
 			};
 			const mockOsmRoadTypeMappingProvider = (osmRoadType) => (osmRoadType === 'foo' ? 'bar' : null);
 
-			const instanceUnderTest = setup(null, null, null, null, mockOsmRoadTypeMappingProvider);
+			const instanceUnderTest = setup(null, null, null, mockOsmRoadTypeMappingProvider);
 			const roadClasses = instanceUnderTest.mapRoadTypesToCatalogId(osmClasses);
 
 			expect(roadClasses.bar.absolute).toBe(4);
@@ -414,7 +408,7 @@ describe('BvvRoutingService', () => {
 			};
 			const mockOsmRoadTypeMappingProvider = (osmRoadType) => (osmRoadType === 'foo' || osmRoadType === 'other' ? 'other' : null);
 
-			const instanceUnderTest = setup(null, null, null, null, mockOsmRoadTypeMappingProvider);
+			const instanceUnderTest = setup(null, null, null, mockOsmRoadTypeMappingProvider);
 			const roadClasses = instanceUnderTest.mapRoadTypesToCatalogId(osmClasses);
 
 			expect(roadClasses.other.absolute).toBe(4);
@@ -424,66 +418,6 @@ describe('BvvRoutingService', () => {
 			expect(roadClasses.track_grade1.absolute).toBe(2);
 			expect(roadClasses.track_grade1.relative).toBe(100);
 			expect(roadClasses.track_grade1.segments).toEqual([4, 6]);
-		});
-	});
-
-	describe('calculateRouteStats', () => {
-		it('calculates the statistics of a route', async () => {
-			const mockGhRoute = { route: 'route' };
-			const mockStats = { stats: 'stats' };
-			const mockProfile = { stats: { linearDistance: 42 } };
-			const coordinates3857 = [
-				[1, 2],
-				[3, 4]
-			];
-			const mockRouteStatsProvider = jasmine.createSpy().withArgs(mockGhRoute, mockProfile.stats).and.returnValue(mockStats);
-			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates3857).and.resolveTo(mockProfile);
-			const instanceUnderTest = setup(null, null, mockRouteStatsProvider);
-
-			await expectAsync(instanceUnderTest.calculateRouteStats(mockGhRoute, coordinates3857)).toBeResolvedTo(mockStats);
-		});
-
-		it('calculates the statistics of a route', async () => {
-			const mockGhRoute = { route: 'route' };
-			const mockStats = { stats: 'stats' };
-			const mockProfile = { stats: { linearDistance: 42 } };
-			const coordinates3857 = [
-				[1, 2],
-				[3, 4]
-			];
-			const mockRouteStatsProvider = jasmine.createSpy().withArgs(mockGhRoute, mockProfile.stats).and.returnValue(mockStats);
-			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates3857).and.resolveTo(mockProfile);
-			const instanceUnderTest = setup(null, null, mockRouteStatsProvider);
-
-			await expectAsync(instanceUnderTest.calculateRouteStats(mockGhRoute, coordinates3857)).toBeResolvedTo(mockStats);
-		});
-
-		it('returns "null" when ElevationService returns no statistic data', async () => {
-			const mockGhRoute = { route: 'route' };
-			const mockProfile = { refSystem: '12345' };
-			const coordinates3857 = [
-				[1, 2],
-				[3, 4]
-			];
-			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates3857).and.resolveTo(mockProfile);
-			const instanceUnderTest = setup();
-
-			await expectAsync(instanceUnderTest.calculateRouteStats(mockGhRoute, coordinates3857)).toBeResolvedTo(null);
-		});
-
-		it('returns "null" when ElevationService fails', async () => {
-			const message = 'error message';
-			const mockGhRoute = { route: 'route' };
-			const coordinates3857 = [
-				[1, 2],
-				[3, 4]
-			];
-			const errorSpy = spyOn(console, 'error');
-			spyOn(elevationServiceMock, 'getProfile').and.rejectWith(new Error(message));
-			const instanceUnderTest = setup();
-
-			await expectAsync(instanceUnderTest.calculateRouteStats(mockGhRoute, coordinates3857)).toBeResolvedTo(null);
-			expect(errorSpy).toHaveBeenCalledWith(new Error(message));
 		});
 	});
 });
