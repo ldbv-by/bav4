@@ -1,28 +1,28 @@
+import { $injector } from '../../src/injection';
 import { BvvRoutingService, CHART_ITEM_ROAD_STYLE_UNKNOWN, CHART_ITEM_SURFACE_STYLE_UNKNOWN } from '../../src/services/RoutingService';
 import { bvvChartItemStylesProvider } from '../../src/services/provider/chartItemStyles.provider';
-import { bvvEtaCalculationProvider } from '../../src/services/provider/etaCalculation.provider';
 import { bvvOsmRoadTypeMappingProvider } from '../../src/services/provider/osmRoadTypeMapping.provider';
 import { bvvRouteProvider } from '../../src/services/provider/route.provider';
 import { bvvRouteStatsProvider } from '../../src/services/provider/routeStats.provider';
 import { bvvRoutingCategoriesProvider } from '../../src/services/provider/routingCategories.provider';
 
 describe('BvvRoutingService', () => {
+	const elevationServiceMock = {
+		async getProfile() {}
+	};
+
+	beforeAll(() => {
+		$injector.registerSingleton('ElevationService', elevationServiceMock);
+	});
+
 	const setup = (
 		routingCategoriesProvider = bvvRoutingCategoriesProvider,
 		routeProvider = bvvRouteProvider,
 		routeStatsProvider = bvvRouteStatsProvider,
 		chartItemStylesProvider = bvvChartItemStylesProvider,
-		osmRoadTypeMappingProvider = bvvOsmRoadTypeMappingProvider,
-		etaCalculatorProvider = bvvEtaCalculationProvider
+		osmRoadTypeMappingProvider = bvvOsmRoadTypeMappingProvider
 	) => {
-		return new BvvRoutingService(
-			routingCategoriesProvider,
-			routeProvider,
-			routeStatsProvider,
-			chartItemStylesProvider,
-			osmRoadTypeMappingProvider,
-			etaCalculatorProvider
-		);
+		return new BvvRoutingService(routingCategoriesProvider, routeProvider, routeStatsProvider, chartItemStylesProvider, osmRoadTypeMappingProvider);
 	};
 
 	describe('constructor', () => {
@@ -33,7 +33,6 @@ describe('BvvRoutingService', () => {
 			expect(instanceUnderTest._routeStatsProvider).toEqual(bvvRouteStatsProvider);
 			expect(instanceUnderTest._chartItemsStylesProvider).toEqual(bvvChartItemStylesProvider);
 			expect(instanceUnderTest._osmRoadTypeMapper).toEqual(bvvOsmRoadTypeMappingProvider);
-			expect(instanceUnderTest._etaCalculationProvider).toEqual(bvvEtaCalculationProvider);
 		});
 
 		it('initializes the service with custom provider', async () => {
@@ -42,21 +41,18 @@ describe('BvvRoutingService', () => {
 			const customRouteStatsProvider = () => {};
 			const customChartItemStylesProvider = () => {};
 			const customOsmRoadTypeMappingProvider = () => {};
-			const customEtaCalculationProvider = () => {};
 			const instanceUnderTest = setup(
 				customRoutingCategoriesProvider,
 				customRouteProvider,
 				customRouteStatsProvider,
 				customChartItemStylesProvider,
-				customOsmRoadTypeMappingProvider,
-				customEtaCalculationProvider
+				customOsmRoadTypeMappingProvider
 			);
 			expect(instanceUnderTest._categoriesProvider).toEqual(customRoutingCategoriesProvider);
 			expect(instanceUnderTest._routeProvider).toEqual(customRouteProvider);
 			expect(instanceUnderTest._routeStatsProvider).toEqual(customRouteStatsProvider);
 			expect(instanceUnderTest._chartItemsStylesProvider).toEqual(customChartItemStylesProvider);
 			expect(instanceUnderTest._osmRoadTypeMapper).toEqual(customOsmRoadTypeMappingProvider);
-			expect(instanceUnderTest._etaCalculationProvider).toEqual(customEtaCalculationProvider);
 		});
 	});
 
@@ -432,31 +428,62 @@ describe('BvvRoutingService', () => {
 	});
 
 	describe('calculateRouteStats', () => {
-		it('calculates the statistics of a route', () => {
-			const mockRoute = { route: 'route' };
+		it('calculates the statistics of a route', async () => {
+			const mockGhRoute = { route: 'route' };
 			const mockStats = { stats: 'stats' };
-			const mockRouteStatsProvider = jasmine.createSpy().withArgs(mockRoute).and.returnValue(mockStats);
+			const mockProfile = { stats: { linearDistance: 42 } };
+			const coordinates3857 = [
+				[1, 2],
+				[3, 4]
+			];
+			const mockRouteStatsProvider = jasmine.createSpy().withArgs(mockGhRoute, mockProfile.stats).and.returnValue(mockStats);
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates3857).and.resolveTo(mockProfile);
 			const instanceUnderTest = setup(null, null, mockRouteStatsProvider);
 
-			const result = instanceUnderTest.calculateRouteStats(mockRoute);
-
-			expect(result).toEqual(mockStats);
+			await expectAsync(instanceUnderTest.calculateRouteStats(mockGhRoute, coordinates3857)).toBeResolvedTo(mockStats);
 		});
-	});
 
-	describe('getETAFor', () => {
-		it('provides a ETA', () => {
-			const category = 'some';
-			const dist = 420000;
-			const up = 21;
-			const down = 4221;
-			const expectedETA = 4242;
-			const mockEtaCalculationProvider = jasmine.createSpy().withArgs(category, dist, up, down).and.returnValue(4242);
-			const instanceUnderTest = setup(null, null, null, null, null, mockEtaCalculationProvider);
+		it('calculates the statistics of a route', async () => {
+			const mockGhRoute = { route: 'route' };
+			const mockStats = { stats: 'stats' };
+			const mockProfile = { stats: { linearDistance: 42 } };
+			const coordinates3857 = [
+				[1, 2],
+				[3, 4]
+			];
+			const mockRouteStatsProvider = jasmine.createSpy().withArgs(mockGhRoute, mockProfile.stats).and.returnValue(mockStats);
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates3857).and.resolveTo(mockProfile);
+			const instanceUnderTest = setup(null, null, mockRouteStatsProvider);
 
-			const actualETA = instanceUnderTest.getETAFor(category, dist, up, down);
+			await expectAsync(instanceUnderTest.calculateRouteStats(mockGhRoute, coordinates3857)).toBeResolvedTo(mockStats);
+		});
 
-			expect(actualETA).toEqual(expectedETA);
+		it('returns "null" when ElevationService returns no statistic data', async () => {
+			const mockGhRoute = { route: 'route' };
+			const mockProfile = { refSystem: '12345' };
+			const coordinates3857 = [
+				[1, 2],
+				[3, 4]
+			];
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates3857).and.resolveTo(mockProfile);
+			const instanceUnderTest = setup();
+
+			await expectAsync(instanceUnderTest.calculateRouteStats(mockGhRoute, coordinates3857)).toBeResolvedTo(null);
+		});
+
+		it('returns "null" when ElevationService fails', async () => {
+			const message = 'error message';
+			const mockGhRoute = { route: 'route' };
+			const coordinates3857 = [
+				[1, 2],
+				[3, 4]
+			];
+			const errorSpy = spyOn(console, 'error');
+			spyOn(elevationServiceMock, 'getProfile').and.rejectWith(new Error(message));
+			const instanceUnderTest = setup();
+
+			await expectAsync(instanceUnderTest.calculateRouteStats(mockGhRoute, coordinates3857)).toBeResolvedTo(null);
+			expect(errorSpy).toHaveBeenCalledWith(new Error(message));
 		});
 	});
 });
