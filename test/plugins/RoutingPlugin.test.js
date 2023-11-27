@@ -49,7 +49,6 @@ describe('RoutingPlugin', () => {
 	});
 
 	describe('when tools "current" property changes', () => {
-		const delay = 100;
 		describe('and not yet initialized ', () => {
 			it('initializes the routing service, sets the default routing category and updates the active property', async () => {
 				const store = setup({ routing: initialRoutingState });
@@ -63,7 +62,6 @@ describe('RoutingPlugin', () => {
 
 				// we have to wait for two async operations
 				await TestUtils.timeout();
-				await TestUtils.timeout(delay /** let's give safari some time */);
 				expect(routingServiceSpy).toHaveBeenCalled();
 				await TestUtils.timeout();
 				expect(store.getState().routing.active).toBeTrue();
@@ -82,12 +80,11 @@ describe('RoutingPlugin', () => {
 
 				// we have to wait for two async operations
 				await TestUtils.timeout();
-				await TestUtils.timeout(delay /** let's give safari some time */);
-				await TestUtils.timeout();
-				expect(store.getState().routing.active).toBeFalse();
 				expect(store.getState().notifications.latest.payload.content).toBe('global_routingService_init_exception');
 				expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
-				expect(errorSpy).toHaveBeenCalledWith('Routing service could not be initialized', jasmine.anything());
+				expect(errorSpy).toHaveBeenCalledWith('Routing service could not be initialized', new Error(message));
+				await TestUtils.timeout();
+				expect(store.getState().routing.active).toBeFalse();
 			});
 		});
 
@@ -101,7 +98,6 @@ describe('RoutingPlugin', () => {
 
 			// we have to wait for two async operations
 			await TestUtils.timeout();
-			await TestUtils.timeout(delay /** let's give safari some time */);
 			await TestUtils.timeout();
 			expect(store.getState().routing.active).toBeTrue();
 		});
