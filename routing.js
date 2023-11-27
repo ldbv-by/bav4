@@ -23,16 +23,16 @@
 					${a(t,n)}
 					</button>`))}
 			</div>
-		`}static get tag(){return"ba-routing-category-bar"}}var b=e(1943),p=e(7608),y=e(6252),v=e.n(y);const h="update_status",M=[p.a.Http_Backend_400,p.a.Http_Backend_500,p.a.Start_Destination_Missing];class w extends a.T{constructor(){super({status:null});const{TranslationService:t}=d.U.inject("TranslationService");this._translationService=t}onInitialize(){this._unsubscribeFromStore=this.observe((t=>t.routing.status),(t=>this.signal(h,t)))}onDisconnect(){this._unsubscribeFromStore()}update(t,n,e){if(t===h)return{...e,status:n}}createView(t){const{status:n}=t,e=M.includes(n),a=e?`status-${n}`:"";return e?i.dy`<style>
+		`}static get tag(){return"ba-routing-category-bar"}}var b=e(1943),p=e(7608),y=e(6252),v=e.n(y);const h="update_status",M=[p.at.Http_Backend_400,p.at.Http_Backend_500,p.at.Start_Destination_Missing];class w extends a.T{constructor(){super({status:null});const{TranslationService:t}=d.U.inject("TranslationService");this._translationService=t}onInitialize(){this._unsubscribeFromStore=this.observe((t=>t.routing.status),(t=>this.signal(h,t)))}onDisconnect(){this._unsubscribeFromStore()}update(t,n,e){if(t===h)return{...e,status:n}}createView(t){const{status:n}=t,e=M.includes(n),a=e?`status-${n}`:"";return e?i.dy`<style>
 						${v()}
 					</style>
 					<div class="container">
 						<span class=${a}>${(0,b.A)((t=>this._translationService.translate(t))("routing_feedback_"+n))}</span>
-					</div>`:i.Ld}static get tag(){return"ba-routing-feedback"}}var I=e(2713),N=e.n(I);const j="update_status",_="update_route_stats",x="update_category";class S extends a.T{constructor(){super({status:null,stats:null,categoryId:null});const{TranslationService:t,RoutingService:n,UnitsService:e}=d.U.inject("TranslationService","RoutingService","UnitsService");this._translationService=t,this._routingService=n,this._unitsService=e,this._storeSubscriptions=[]}onInitialize(){this._storeSubscriptions=[this.observe((t=>t.routing.status),(t=>this.signal(j,t))),this.observe((t=>t.routing.stats),(t=>this.signal(_,t))),this.observe((t=>t.routing.categoryId),(t=>this.signal(x,t)))]}onDisconnect(){for(;this._storeSubscriptions.length>0;)this._storeSubscriptions.shift()()}update(t,n,e){switch(t){case j:return{...e,status:n};case _:return{...e,stats:n};case x:return{...e,categoryId:n}}}createView(t){const{status:n,stats:e,categoryId:a}=t,o=t=>this._translationService.translate(t),r=n===p.a.Ok,s=this._routingService.getCategoryById(this._routingService.getParent(a)),l=this._routingService.getCategoryById(a),g=l?.style.color??s?.style.color,d=l?.style.icon??s?.style.icon;return r?i.dy`<style>
+					</div>`:i.Ld}static get tag(){return"ba-routing-feedback"}}var I=e(2713),N=e.n(I);const j="update_status",_="update_route_stats",x="update_category";class S extends a.T{constructor(){super({status:null,stats:null,categoryId:null});const{TranslationService:t,RoutingService:n,UnitsService:e}=d.U.inject("TranslationService","RoutingService","UnitsService");this._translationService=t,this._routingService=n,this._unitsService=e,this._storeSubscriptions=[]}onInitialize(){this._storeSubscriptions=[this.observe((t=>t.routing.status),(t=>this.signal(j,t))),this.observe((t=>t.routing.stats),(t=>this.signal(_,t))),this.observe((t=>t.routing.categoryId),(t=>this.signal(x,t)))]}onDisconnect(){for(;this._storeSubscriptions.length>0;)this._storeSubscriptions.shift()()}update(t,n,e){switch(t){case j:return{...e,status:n};case _:return{...e,stats:n};case x:return{...e,categoryId:n}}}createView(t){const{status:n,stats:e,categoryId:a}=t,o=t=>this._translationService.translate(t),r=n===p.at.Ok,s=this._routingService.getCategoryById(this._routingService.getParent(a)),l=this._routingService.getCategoryById(a),g=l?.style.color??s?.style.color,d=l?.style.icon??s?.style.icon;return r?i.dy`<style>
 						${N()}
 					</style>
 					<div class="header">
-						<span class="routing-info-duration" title=${o("routing_info_duration")}>${e?(()=>{const t=(this._estimateTimeFor(a,e)??e.time)/1e3;return t<60?"< 1 min.":this._formatDuration(t)})():"-:-"}</span>
+						<span class="routing-info-duration" title=${o("routing_info_duration")}>${e?(()=>{const t=e.time/1e3;return t<60?"< 1 min.":this._formatDuration(t)})():"-:-"}</span>
 						<div class="badge routing-info-type" style=${`background:${g};`}>
 							<span class=${`icon icon-${a}`}>
 							${(t=>t?i.dy`
@@ -63,15 +63,15 @@
 								<span>${(()=>e?this._unitsService.formatDistance(e.twoDiff[1]):"0")()}</span>
 							</div>
 						</div>
-					</div>`:i.Ld}_formatDuration(t){const n=Math.floor(t/3600),e=Math.floor(t%3600/60),i=t=>t<10?`0${t}`:t;return`${i(n)}:${i(e)}`}_estimateTimeFor(t,n){return this._routingService.getETAFor(t,n.dist,n.twoDiff[0],n.twoDiff[1])??(t=>(console.warn(`Unknown category, no estimate available for '${t}'`),null))(t)}static get tag(){return"ba-routing-info"}}var z=e(1645),L=e(5380),D=e.n(L),T=e(8801),Z=e.n(T),A=e(8532),f=e(804),k=e(1753);const C="update_waypoint",W="update_category",Y=(t,n)=>({index:t,listIndex:n,point:null,isStart:!1,isDestination:!1}),O=t=>null===t.point;class E extends a.T{constructor(){super({waypoint:null,categoryId:null});const{TranslationService:t,RoutingService:n}=d.U.inject("TranslationService","RoutingService");this._translationService=t,this._routingService=n}onInitialize(){this._unsubscribeFromStore=this.observe((t=>t.routing.categoryId),(t=>this.signal(W,t)))}onDisconnect(){this._unsubscribeFromStore()}update(t,n,e){switch(t){case C:return{...e,waypoint:n};case W:return{...e,categoryId:n}}}createView(t){const{waypoint:n,categoryId:e}=t,a=t=>this._translationService.translate(t),o={start:n?.isStart,destination:n?.isDestination,intermediate:!n?.isDestination&&!n?.isStart},r=(t=>t?.isDestination?a("routing_waypoints_destination"):t?.isStart?a("routing_waypoints_start"):null)(n)??`${a("routing_waypoints_waypoint")} ${n?.index}`,c=n?(0,A.bU)(n.point):[0,0],l=t=>{this.dispatchEvent(new CustomEvent(t,{detail:{waypoint:n}}))};return n?i.dy`<style>
+					</div>`:i.Ld}_formatDuration(t){const n=Math.floor(t/3600),e=Math.floor(t%3600/60),i=t=>t<10?`0${t}`:t;return`${i(n)}:${i(e)}`}static get tag(){return"ba-routing-info"}}var z=e(1645),L=e(5380),D=e.n(L),T=e(8801),Z=e.n(T),A=e(8532),k=e(804),f=e(1753);const C="update_waypoint",W="update_category",Y=(t,n)=>({index:t,listIndex:n,point:null,isStart:!1,isDestination:!1}),O=t=>null===t.point;class E extends a.T{constructor(){super({waypoint:null,categoryId:null});const{TranslationService:t,RoutingService:n}=d.U.inject("TranslationService","RoutingService");this._translationService=t,this._routingService=n}onInitialize(){this._unsubscribeFromStore=this.observe((t=>t.routing.categoryId),(t=>this.signal(W,t)))}onDisconnect(){this._unsubscribeFromStore()}update(t,n,e){switch(t){case C:return{...e,waypoint:n};case W:return{...e,categoryId:n}}}createView(t){const{waypoint:n,categoryId:e}=t,a=t=>this._translationService.translate(t),o={start:n?.isStart,destination:n?.isDestination,intermediate:!n?.isDestination&&!n?.isStart},r=(t=>t?.isDestination?a("routing_waypoints_destination"):t?.isStart?a("routing_waypoints_start"):null)(n)??`${a("routing_waypoints_waypoint")} ${n?.index}`,c=n?(0,A.bU)(n.point):[0,0],l=t=>{this.dispatchEvent(new CustomEvent(t,{detail:{waypoint:n}}))};return n?i.dy`<style>
 						${Z()}
 					</style>
-					<div class="container" title="${r} [${(0,f.NM)(c[0],3)} ${(0,f.NM)(c[1],3)}]">
+					<div class="container" title="${r} [${(0,k.NM)(c[0],3)} ${(0,k.NM)(c[1],3)}]">
 						<div class="icon-bg ${(0,s.$)(o)}">
 							<div class="icon">${n?.isDestination||n?.isStart?"":i.dy`<div class="waypoint-index">${n?.index}</div>`}</div>
 						</div>
 						<div class="line" style=${`background:${(t=>{const n=this._routingService.getCategoryById(this._routingService.getParent(t)),e=this._routingService.getCategoryById(t);return e?.style.color??n?.style.color})(e)};`}></div>
-						<span class="text"><b>${r} - [${(0,f.NM)(c[0],3)} ${(0,f.NM)(c[1],3)}]</b></span>
+						<span class="text"><b>${r} - [${(0,k.NM)(c[0],3)} ${(0,k.NM)(c[1],3)}]</b></span>
 						<div class="waypoint__buttons">
 							<ba-icon
 								id="decrease"
@@ -95,7 +95,7 @@
 							></ba-icon>
 							<ba-icon
 								id="remove"
-								.icon="${k}"
+								.icon="${f}"
 								.color=${"var(--primary-color)"}
 								.color_hover=${"var(--text3)"}
 								.size=${2.6}
@@ -103,7 +103,7 @@
 								@click=${()=>l("remove")}
 							></ba-icon>
 						</div>
-					</div>`:i.Ld}set waypoint(t){this.signal(C,t)}static get tag(){return"ba-routing-waypoint-item"}}const G="update_status",$="update_waypoints",R="update_dragged_item";class H extends a.T{constructor(){super({status:null,waypoints:[],draggedItem:null});const{TranslationService:t,EnvironmentService:n}=d.U.inject("TranslationService","EnvironmentService");this._translationService=t,this._environmentService=n,this._storeSubscriptions=[]}onInitialize(){this._storeSubscriptions=[this.observe((t=>t.routing.status),(t=>this.signal(G,t))),this.observe((t=>t.routing.waypoints),(t=>this.signal($,t)))]}onDisconnect(){for(;this._storeSubscriptions.length>0;)this._storeSubscriptions.shift()()}update(t,n,e){switch(t){case G:return{...e,status:n};case $:return{...e,waypoints:[...n]};case R:return{...e,draggedItem:n}}}createView(t){const{status:n}=t,e=n===p.a.Ok,a=this._getButtons(t),o=this._getWaypoints(t);return e?i.dy`<style>
+					</div>`:i.Ld}set waypoint(t){this.signal(C,t)}static get tag(){return"ba-routing-waypoint-item"}}const G="update_status",$="update_waypoints",R="update_dragged_item";class H extends a.T{constructor(){super({status:null,waypoints:[],draggedItem:null});const{TranslationService:t,EnvironmentService:n}=d.U.inject("TranslationService","EnvironmentService");this._translationService=t,this._environmentService=n,this._storeSubscriptions=[]}onInitialize(){this._storeSubscriptions=[this.observe((t=>t.routing.status),(t=>this.signal(G,t))),this.observe((t=>t.routing.waypoints),(t=>this.signal($,t)))]}onDisconnect(){for(;this._storeSubscriptions.length>0;)this._storeSubscriptions.shift()()}update(t,n,e){switch(t){case G:return{...e,status:n};case $:return{...e,waypoints:[...n]};case R:return{...e,draggedItem:n}}}createView(t){const{status:n}=t,e=n===p.at.Ok,a=this._getButtons(t),o=this._getWaypoints(t);return e?i.dy`<style>
 						${D()}
 					</style>
 					<div class="container">
@@ -140,7 +140,7 @@
 			@remove=${t=>a(t.detail.waypoint)}
 			data-test-id
 		>
-		</ba-routing-waypoint-item> `}static get tag(){return"ba-routing-waypoints"}}var U=e(2839),X=e.n(U);const V="update_route_stats",P="update_status";class Q extends a.T{constructor(){super({status:null,warnings:null,chartData:null});const{RoutingService:t,TranslationService:n}=d.U.inject("RoutingService","TranslationService");this._translationService=n,this._routingService=t,this._storeSubscriptions=[]}onInitialize(){this._storeSubscriptions=[this.observe((t=>t.routing.status),(t=>this.signal(P,t))),this.observe((t=>t.routing.stats),(t=>this.signal(V,t)))]}onDisconnect(){for(;this._storeSubscriptions.length>0;)this._storeSubscriptions.shift()()}update(t,n,e){const i=t=>this._createChartData(t),a=t=>this._createWarnings(t);switch(t){case V:return{...e,warnings:a(n),chartData:i(n)};case P:return{...e,status:n}}}createView(t){const{status:n,warnings:e,chartData:a}=t,o=t=>this._translationService.translate(t),r=t=>Object.entries(t).map((([t,n])=>({...n,name:t})));return n===p.a.Ok?i.dy`<style>
+		</ba-routing-waypoint-item> `}static get tag(){return"ba-routing-waypoints"}}var U=e(2839),X=e.n(U);const V="update_route_stats",P="update_status";class Q extends a.T{constructor(){super({status:null,warnings:null,chartData:null});const{RoutingService:t,TranslationService:n}=d.U.inject("RoutingService","TranslationService");this._translationService=n,this._routingService=t,this._storeSubscriptions=[]}onInitialize(){this._storeSubscriptions=[this.observe((t=>t.routing.status),(t=>this.signal(P,t))),this.observe((t=>t.routing.stats),(t=>this.signal(V,t)))]}onDisconnect(){for(;this._storeSubscriptions.length>0;)this._storeSubscriptions.shift()()}update(t,n,e){const i=t=>this._createChartData(t),a=t=>this._createWarnings(t);switch(t){case V:return{...e,warnings:a(n),chartData:i(n)};case P:return{...e,status:n}}}createView(t){const{status:n,warnings:e,chartData:a}=t,o=t=>this._translationService.translate(t),r=t=>Object.entries(t).map((([t,n])=>({...n,name:t})));return n===p.at.Ok?i.dy`<style>
 						${X()}
 					</style>
 					<div class="container">
@@ -169,7 +169,7 @@
 						${(0,z.r)(n,(t=>t.name),(t=>this._getWarningElement(t)))}
 					</div>
 				</div>
-			</div>`}_getWarningElement(t){const n=n=>{(0,r.O6)({segments:t.segments,zoomToExtent:n})},e={hint_icon:"Hint"===t.criticality,warning_icon:"Hint"!==t.criticality};return i.dy`<div class="item">
+			</div>`}_getWarningElement(t){const n=n=>{(0,r.O6)({segments:t.segments,zoomToExtent:n})},e={hint_icon:t.criticality===p.xs.HINT,warning_icon:t.criticality!==p.xs.HINT};return i.dy`<div class="item">
 			<div class="highlight${(0,s.$)(e)}" @mouseover=${()=>n(!1)} @mouseout=${()=>(0,r.d0)()}>
 				<span class="noselect">${t.message}</span>
 			</div>
