@@ -4,8 +4,8 @@
 
 import Polyline from 'ol/format/Polyline.js';
 import { Geodesic, PolygonArea } from 'geographiclib-geodesic';
-import { $injector } from '../../injection/index';
-import { RouteWarningCriticality } from '../../domain/routing';
+import { $injector } from '../../../../injection/index';
+import { RouteWarningCriticality } from '../../../../domain/routing';
 
 /**
  * The predefined vehicle-specific SpeedOptions for Hike, Bike, MTB and Roadbike

@@ -31,7 +31,7 @@ import { updateCoordinates } from '../../../../store/elevationProfile/elevationP
 import { equals } from '../../../../../node_modules/ol/coordinate';
 import { GeoJSON as GeoJSONFormat } from 'ol/format';
 import { SourceType, SourceTypeName } from '../../../../domain/sourceType';
-import { bvvRouteStatsProvider } from '../../../../services/provider/routeStats.provider';
+import { bvvRouteStatsProvider } from './routeStats.provider';
 
 export const RoutingFeatureTypes = Object.freeze({
 	START: 'start',

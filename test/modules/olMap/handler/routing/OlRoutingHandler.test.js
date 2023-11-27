@@ -34,7 +34,7 @@ import { CoordinateProposalType, RoutingStatusCodes } from '../../../../../src/d
 import { positionReducer } from '../../../../../src/store/position/position.reducer';
 import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer';
 import { SourceTypeName } from '../../../../../src/domain/sourceType';
-import { bvvRouteStatsProvider } from '../../../../../src/services/provider/routeStats.provider';
+import { bvvRouteStatsProvider } from '../../../../../src/modules/olMap/handler/routing/routeStats.provider';
 
 describe('constants and enums', () => {
 	it('provides an enum of all valid RoutingFeatureTypes', () => {
