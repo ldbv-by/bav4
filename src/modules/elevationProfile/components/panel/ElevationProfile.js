@@ -450,7 +450,7 @@ export class ElevationProfile extends MvuElement {
 		const xPointWidth = chartArea.width / numberOfPoints;
 
 		elevationData?.elevations.forEach((element, index) => {
-			if (element.slope) {
+			if (element.slope != null) {
 				const xPoint = (xPointWidth / chartArea.width) * index;
 				const slopeValue = Math.abs(element.slope);
 				const slopeClass = SoterSlopeClasses.find((c) => c.min <= slopeValue && c.max > slopeValue);
