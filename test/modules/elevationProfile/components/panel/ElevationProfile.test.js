@@ -232,14 +232,6 @@ describe('ElevationProfile', () => {
 		}
 	};
 
-	const chart = {
-		ctx: {
-			createLinearGradient: () => {
-				return { addColorStop: () => {} };
-			}
-		},
-		chartArea: { left: 0, right: 100, width: 200 }
-	};
 	const elevationData = profileSlopeSteep();
 
 	let store;
