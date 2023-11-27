@@ -3,6 +3,7 @@
  */
 import { html } from 'lit-html';
 import { open as openMainMenu, setTab, toggle } from '../../../store/mainMenu/mainMenu.action';
+import { toggleNav } from '../../../store/navigationRail/navigationRail.action';
 import { TabIds } from '../../../domain/mainMenu';
 import { $injector } from '../../../injection';
 import css from './header.css';
@@ -18,6 +19,7 @@ const Update_Fetching = 'update_fetching';
 const Update_Layers = 'update_layers';
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
 const Update_SearchTerm = 'update_searchTerm';
+const Update_IsOpen_NavigationRail = 'update_isOpen_NavigationRail';
 
 /**
  * Container element for header stuff.
@@ -58,6 +60,8 @@ export class Header extends MvuElement {
 				return { ...model, ...data };
 			case Update_SearchTerm:
 				return { ...model, searchTerm: data };
+				case Update_IsOpen_NavigationRail:
+					return { ...model, ...data };
 		}
 	}
 
@@ -85,6 +89,10 @@ export class Header extends MvuElement {
 		this.observe(
 			(state) => state.search.query,
 			(query) => this.signal(Update_SearchTerm, query.payload)
+		);
+		this.observe(
+			(state) => state.navigationRail,
+			(navigationRail) => this.signal(Update_IsOpen_NavigationRail, { isOpenNav: navigationRail.openNav })
 		);
 	}
 
@@ -119,7 +127,7 @@ export class Header extends MvuElement {
 	}
 
 	createView(model) {
-		const { isOpen, tabIndex, isFetching, layers, isPortrait, hasMinWidth, searchTerm } = model;
+		const { isOpen, isOpenNav , tabIndex, isFetching, layers, isPortrait, hasMinWidth, searchTerm } = model;
 
 		const getOrientationClass = () => {
 			return isPortrait ? 'is-portrait' : 'is-landscape';
@@ -151,6 +159,14 @@ export class Header extends MvuElement {
 
 		const getBadgeText = () => {
 			return this._environmentService.isStandalone() ? translate('header_logo_badge_standalone') : translate('header_logo_badge');
+		};
+
+		const toggleNavigationRail = () => {
+			toggleNav();
+		};
+
+		const getOverlayTestClass = () => {
+			return isOpenNav ? 'is-open-mobile' : '';
 		};
 
 		const getEmblem = () => {
@@ -231,9 +247,9 @@ export class Header extends MvuElement {
 		return html`
 			<style>${css}</style>
 			<div class="preload">
-				<div class="${getOrientationClass()} ${getMinWidthClass()} ${getDemoClass()}">
+				<div class="${getOrientationClass()} ${getMinWidthClass()} ${getDemoClass()} ${getOverlayTestClass()}">
 					<div class='header__logo'>				
-						<div class="action-button">
+						<div class="action-button"  @click="${toggleNavigationRail}">
 							<div class="action-button__border animated-action-button__border ${getAnimatedBorderClass()}">
 							</div>
 							<div class="action-button__icon">

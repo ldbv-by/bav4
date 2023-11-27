@@ -11,6 +11,7 @@ import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
 const Update_Media_Related_Properties = 'update_isPortrait_hasMinWidth';
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_Chips = 'update_chips';
+const Update_IsOpen_NavigationRail = 'update_isOpen_NavigationRail';
 
 /**
  * @class
@@ -44,6 +45,8 @@ export class ChipsContainer extends MvuElement {
 				return { ...model, ...data };
 			case Update_Chips:
 				return { ...model, ...data };
+			case Update_IsOpen_NavigationRail:
+				return { ...model, ...data };
 		}
 	}
 
@@ -63,6 +66,10 @@ export class ChipsContainer extends MvuElement {
 		this.observe(
 			(state) => state.chips.current,
 			(current) => this.signal(Update_Chips, { currentChips: [...current] })
+		);
+		this.observe(
+			(state) => state.navigationRail,
+			(navigationRail) => this.signal(Update_IsOpen_NavigationRail, { openNav: navigationRail.openNav })
 		);
 	}
 
@@ -100,7 +107,7 @@ export class ChipsContainer extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { isDarkSchema, isPortrait, hasMinWidth, isOpen, currentChips } = model;
+		const { isDarkSchema, isPortrait, hasMinWidth, isOpen, openNav, currentChips } = model;
 
 		const getOrientationClass = () => {
 			return isPortrait ? 'is-portrait' : 'is-landscape';
@@ -177,11 +184,13 @@ export class ChipsContainer extends MvuElement {
 			return currentChips.map((chip) => (chip.target === 'modal' ? getButton(chip) : getLink(chip)));
 		};
 
+		const getOverlayNavClass = () => (openNav ? 'is-open-nav' : '');
+
 		return html`
 			<style>
 				${css}
 			</style>
-			<div id="chipscontainer" class="${getOrientationClass()} ${getMinWidthClass()} ${getOverlayClass()} chips__container">
+			<div id="chipscontainer" class="${getOrientationClass()} ${getMinWidthClass()} ${getOverlayClass()} ${getOverlayNavClass()} chips__container">
 				<button class="chips__scroll-button chips__scroll-button-left" @click="${scrollRight}">
 					<span class="icon"> </span>
 				</button>

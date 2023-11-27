@@ -20,6 +20,7 @@ import { isString } from '../../../../utils/checks';
 
 const Update_Main_Menu = 'update_main_menu';
 const Update_Media = 'update_media';
+const Update_IsOpen_NavigationRail = 'update_isOpen_NavigationRail';
 
 /**
  *
@@ -56,6 +57,10 @@ export class MainMenu extends MvuElement {
 			(data) => this.signal(Update_Media, data),
 			true
 		);
+		this.observe(
+			(state) => state.navigationRail,
+			(navigationRail) => this.signal(Update_IsOpen_NavigationRail, { openNav: navigationRail.openNav })
+		);
 	}
 
 	update(type, data, model) {
@@ -73,6 +78,8 @@ export class MainMenu extends MvuElement {
 					minWidth: data.minWidth,
 					observeResponsiveParameter: data.observeResponsiveParameter
 				};
+			case Update_IsOpen_NavigationRail:
+				return { ...model, ...data };
 		}
 	}
 
@@ -116,7 +123,7 @@ export class MainMenu extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { open, tab, portrait, minWidth, observeResponsiveParameter } = model;
+		const { open, openNav ,tab, portrait, minWidth, observeResponsiveParameter } = model;
 
 		const getOrientationClass = () => (portrait ? 'is-portrait' : 'is-landscape');
 
@@ -125,6 +132,8 @@ export class MainMenu extends MvuElement {
 		const getFullSizeClass = () => (tab === TabIds.FEATUREINFO || tab === TabIds.ROUTING ? 'is-full-size' : '');
 
 		const getOverlayClass = () => (open ? 'is-open' : '');
+
+		const getOverlayNavClass = () => (openNav ? 'is-open-nav' : '');
 
 		const getPreloadClass = () => (observeResponsiveParameter ? '' : 'prevent-transition');
 
@@ -169,7 +178,7 @@ export class MainMenu extends MvuElement {
 				${css}
 			</style>
 			<div class="${getOrientationClass()} ${getPreloadClass()}">
-				<div id="mainmenu" class="main-menu ${getOverlayClass()} ${getMinWidthClass()} ${getFullSizeClass()}">
+				<div id="mainmenu" class="main-menu ${getOverlayClass()} ${getOverlayNavClass()} ${getMinWidthClass()} ${getFullSizeClass()}">
 					<button id="toggle" @click="${toggle}" title=${translate('menu_main_open_button')} class="main-menu__close-button">
 						<span class="main-menu__close-button-text">${translate('menu_main_open_button')}</span>
 						<i class="resize-icon"></i>

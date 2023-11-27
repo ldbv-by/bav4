@@ -10,6 +10,7 @@ import closeIcon from '../assets/x-square.svg';
 const Update = 'update';
 const Update_Main_Menu = 'update_main_menu';
 const Update_Media = 'update_media';
+const Update_IsOpen_NavigationRail = 'update_isOpen_NavigationRail';
 
 /**
  * Element to display a bottom sheet
@@ -34,6 +35,10 @@ export class BottomSheet extends MvuElement {
 				(state) => state.media,
 				(data) => this.signal(Update_Media, data),
 				true
+			),
+			this.observe(
+				(state) => state.navigationRail,
+				(navigationRail) => this.signal(Update_IsOpen_NavigationRail, { openNav: navigationRail.openNav })
 			)
 		];
 	}
@@ -55,6 +60,8 @@ export class BottomSheet extends MvuElement {
 					...model,
 					portrait: data.portrait
 				};
+			case Update_IsOpen_NavigationRail:
+				return { ...model, ...data };
 		}
 	}
 
@@ -62,9 +69,11 @@ export class BottomSheet extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { content, open, portrait } = model;
+		const { content, open,  openNav,portrait } = model;
 
 		const getOverlayClass = () => (open && !portrait ? 'is-open' : '');
+
+		const getOverlayNavClass = () => (openNav ? 'is-open-nav' : '');
 
 		const onDismiss = () => {
 			const elementModal = this.shadowRoot.querySelector('.bottom-sheet');
@@ -77,7 +86,7 @@ export class BottomSheet extends MvuElement {
 		return content
 			? html`
 		<style>${css}</style>
-		<div class='bottom-sheet ${getOverlayClass()}' data-test-id>
+		<div class='bottom-sheet ${getOverlayClass()} ${getOverlayNavClass()}' data-test-id>
         	${content}
 			<ba-icon id="close-icon" class='tool-container__close-button' .icon='${closeIcon}' .size=${1.6} .color=${'var(--text2)'} .color_hover=${'var(--text2)'} @click=${onDismiss}>
 		</div>`

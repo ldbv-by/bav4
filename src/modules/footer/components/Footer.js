@@ -8,6 +8,7 @@ import { MvuElement } from '../../MvuElement';
 
 const Update_IsOpen = 'update_isOpen_tabIndex';
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
+const Update_IsOpen_NavigationRail = 'update_isOpen_NavigationRail';
 /**
  * Container element for footer stuff.
  * @class
@@ -37,6 +38,10 @@ export class Footer extends MvuElement {
 			(state) => state.media,
 			(media) => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait, hasMinWidth: media.minWidth })
 		);
+		this.observe(
+			(state) => state.navigationRail,
+			(navigationRail) => this.signal(Update_IsOpen_NavigationRail, { openNav: navigationRail.openNav })
+		);
 	}
 
 	/**
@@ -47,6 +52,8 @@ export class Footer extends MvuElement {
 			case Update_IsOpen:
 				return { ...model, ...data };
 			case Update_IsPortrait_HasMinWidth:
+				return { ...model, ...data };
+			case Update_IsOpen_NavigationRail:
 				return { ...model, ...data };
 		}
 	}
@@ -63,7 +70,7 @@ export class Footer extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { isOpen, isPortrait, hasMinWidth } = model;
+		const { isOpen, openNav, isPortrait, hasMinWidth } = model;
 
 		const getOverlayClass = () => {
 			return isOpen && !isPortrait && !this._environmentService.isEmbedded() ? 'is-open' : '';
@@ -76,6 +83,8 @@ export class Footer extends MvuElement {
 		const getMinWidthClass = () => {
 			return hasMinWidth ? 'is-desktop' : 'is-tablet';
 		};
+
+		const getOverlayNavClass = () => (openNav ? 'is-open-nav' : '');
 
 		const isEmbedded = () => {
 			return this._environmentService.isEmbedded() ? 'is-embedded' : '';
@@ -94,7 +103,7 @@ export class Footer extends MvuElement {
 			</style>
 			<div class="preload">
 				<div class="${getOrientationClass()} ${getMinWidthClass()} ${isEmbedded()}">
-					<div class="footer ${getOverlayClass()}">
+					<div class="footer ${getOverlayClass()} ${getOverlayNavClass()}">
 						<div class="scale"></div>
 						<ba-attribution-info></ba-attribution-info>
 						<div class="content">${createChildrenView()}</div>
