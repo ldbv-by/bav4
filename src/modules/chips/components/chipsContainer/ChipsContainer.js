@@ -24,6 +24,7 @@ export class ChipsContainer extends MvuElement {
 			hasMinWidth: false,
 			isDarkSchema: false,
 			isOpen: false,
+			isOpenNav: false,
 			currentChips: []
 		});
 
@@ -58,7 +59,7 @@ export class ChipsContainer extends MvuElement {
 		);
 		this.observe(
 			(state) => state.mainMenu,
-			(mainMenu) => this.signal(Update_IsOpen_TabIndex, { isOpen: mainMenu.open })
+			(mainMenu) => this.signal(Update_IsOpen_TabIndex, { isOpen: mainMenu.open, isOpenNav: mainMenu.openNav })
 		);
 		this.observe(
 			(state) => state.chips.current,
@@ -100,7 +101,7 @@ export class ChipsContainer extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { isDarkSchema, isPortrait, hasMinWidth, isOpen, currentChips } = model;
+		const { isDarkSchema, isPortrait, hasMinWidth, isOpen, isOpenNav, currentChips } = model;
 
 		const getOrientationClass = () => {
 			return isPortrait ? 'is-portrait' : 'is-landscape';
@@ -112,6 +113,10 @@ export class ChipsContainer extends MvuElement {
 
 		const getOverlayClass = () => {
 			return isOpen && !isPortrait ? 'is-open' : '';
+		};
+
+		const getOverlayTestClass = () => {
+			return isOpenNav ? 'is-open-nav' : '';
 		};
 
 		const scrollLeft = () => {
@@ -181,7 +186,7 @@ export class ChipsContainer extends MvuElement {
 			<style>
 				${css}
 			</style>
-			<div id="chipscontainer" class="${getOrientationClass()} ${getMinWidthClass()} ${getOverlayClass()} chips__container">
+			<div id="chipscontainer" class="${getOrientationClass()} ${getMinWidthClass()} ${getOverlayClass()} ${getOverlayTestClass()} chips__container">
 				<button class="chips__scroll-button chips__scroll-button-left" @click="${scrollRight}">
 					<span class="icon"> </span>
 				</button>

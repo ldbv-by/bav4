@@ -2,7 +2,7 @@
  * @module modules/header/components/Header
  */
 import { html } from 'lit-html';
-import { open as openMainMenu, setTab, toggle } from '../../../store/mainMenu/mainMenu.action';
+import { open as openMainMenu, setTab, toggle, toggleNav } from '../../../store/mainMenu/mainMenu.action';
 import { TabIds } from '../../../domain/mainMenu';
 import { $injector } from '../../../injection';
 import css from './header.css';
@@ -12,12 +12,14 @@ import { MvuElement } from '../../MvuElement';
 import VanillaSwipe from 'vanilla-swipe';
 import { setCurrentTool } from '../../../store/tools/tools.action';
 import { Tools } from '../../../domain/tools';
+import { toggleSchema } from '../../../store/media/media.action';
 
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_Fetching = 'update_fetching';
 const Update_Layers = 'update_layers';
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
 const Update_SearchTerm = 'update_searchTerm';
+const Update_Schema = 'update_schema';
 
 /**
  * Container element for header stuff.
@@ -29,12 +31,14 @@ export class Header extends MvuElement {
 	constructor() {
 		super({
 			isOpen: false,
+			isOpenNav: false,
 			tabIndex: null,
 			isFetching: false,
 			layers: [],
 			isPortrait: false,
 			hasMinWidth: false,
-			searchTerm: null
+			searchTerm: null,
+			darkSchema: false
 		});
 
 		const { EnvironmentService: environmentService, TranslationService: translationService } = $injector.inject(
@@ -44,6 +48,8 @@ export class Header extends MvuElement {
 
 		this._environmentService = environmentService;
 		this._translationService = translationService;
+
+		this._isOpen = false;
 	}
 
 	update(type, data, model) {
@@ -58,13 +64,15 @@ export class Header extends MvuElement {
 				return { ...model, ...data };
 			case Update_SearchTerm:
 				return { ...model, searchTerm: data };
+			case Update_Schema:
+				return { ...model, darkSchema: data };
 		}
 	}
 
 	onInitialize() {
 		this.observe(
 			(state) => state.mainMenu,
-			(mainMenu) => this.signal(Update_IsOpen_TabIndex, { isOpen: mainMenu.open, tabIndex: mainMenu.tab })
+			(mainMenu) => this.signal(Update_IsOpen_TabIndex, { isOpen: mainMenu.open, isOpenNav: mainMenu.openNav, tabIndex: mainMenu.tab })
 		);
 		this.observe(
 			(state) => state.network.fetching,
@@ -85,6 +93,10 @@ export class Header extends MvuElement {
 		this.observe(
 			(state) => state.search.query,
 			(query) => this.signal(Update_SearchTerm, query.payload)
+		);
+		this.observe(
+			(state) => state.media.darkSchema,
+			(darkSchema) => this.signal(Update_Schema, darkSchema)
 		);
 	}
 
@@ -119,7 +131,7 @@ export class Header extends MvuElement {
 	}
 
 	createView(model) {
-		const { isOpen, tabIndex, isFetching, layers, isPortrait, hasMinWidth, searchTerm } = model;
+		const { isOpen, isOpenNav, tabIndex, isFetching, layers, isPortrait, hasMinWidth, searchTerm, darkSchema } = model;
 
 		const getOrientationClass = () => {
 			return isPortrait ? 'is-portrait' : 'is-landscape';
@@ -143,6 +155,9 @@ export class Header extends MvuElement {
 
 		const getIsClearClass = () => {
 			return searchTerm ? 'is-clear-visible' : '';
+		};
+		const getSchemaClass = () => {
+			return darkSchema ? 'sun' : 'moon';
 		};
 
 		const getDemoClass = () => {
@@ -213,6 +228,10 @@ export class Header extends MvuElement {
 			setTab(TabIds.MISC);
 			openMainMenu();
 		};
+		const openFeatureInfo = () => {
+			setTab(TabIds.FEATUREINFO);
+			openMainMenu();
+		};
 
 		const openRoutingTab = () => {
 			setTab(TabIds.ROUTING);
@@ -227,13 +246,97 @@ export class Header extends MvuElement {
 			input.dispatchEvent(new Event('input'));
 		};
 
+		const onClick = () => {
+			toggleNav();
+		};
+
+		const getOverlayTestClass = () => {
+			return isOpenNav ? 'is-open-mobile' : '';
+		};
+
+		const getHideClass = () => {
+			return isOpenNav ? '' : 'open-sub-nav';
+		};
+
 		const translate = (key) => this._translationService.translate(key);
 		return html`
 			<style>${css}</style>
 			<div class="preload">
-				<div class="${getOrientationClass()} ${getMinWidthClass()} ${getDemoClass()}">
+				<div class="test ${getHideClass()} ${getOrientationClass()} ">
+					<button @click="${openMapLayerTab}"  >
+						<span class="icon home">
+						</span>
+						<span class="text">
+							Home
+						</span>					
+					</button>
+
+					<button @click="${openFeatureInfo}"  class="hide">
+						<span class="icon opendata">
+						</span>
+						<span class="text">
+							Open Data
+						</span>					
+					</button>
+					<button @click="${openFeatureInfo}"  class="hide">
+						<span class="icon mapconf">
+						</span>
+						<span class="text">
+							Basiskarten Konfigurator
+						</span>					
+					</button>
+					<button @click="${openFeatureInfo}"  class="hide">
+						<span class="icon gespeichert">
+						</span>
+						<span class="text">
+							gespeichert
+						</span>					
+					</button>
+					<button @click="${openRoutingTab}"  >
+						<span class="icon routing">
+						</span>
+						<span class="text">
+							Routing
+						</span>					
+					</button>
+					<button @click="${openFeatureInfo}"  >
+						<span class="icon objektinfo">
+						</span>
+						<span class="text">
+							Objekt-Info
+						</span>					
+					</button>
+
+					<button @click="${openFeatureInfo}"  >
+						<span class="icon legende">
+						</span>
+						<span class="text">
+							Legende
+						</span>					
+					</button>
+					<button @click="${openFeatureInfo}"  >
+						<span class="icon time">
+						</span>
+						<span class="text">
+							Zeitreise
+						</span>					
+					</button>
+					<button @click="${openFeatureInfo}"  >
+						<span class="icon br">
+						</span>
+						<span class="text">
+							BR-Radltour
+						</span>					
+					</button>
+					<button @click="${toggleSchema}" class="theme-toggle">
+					<span class="icon ${getSchemaClass()}  ">
+					</span>				
+				</button>
+
+				</div>
+				<div class="${getOrientationClass()} ${getMinWidthClass()} ${getDemoClass()}  ${getOverlayTestClass()}">
 					<div class='header__logo'>				
-						<div class="action-button">
+						<div class="action-button"  @click="${onClick}">
 							<div class="action-button__border animated-action-button__border ${getAnimatedBorderClass()}">
 							</div>
 							<div class="action-button__icon">
@@ -241,7 +344,7 @@ export class Header extends MvuElement {
 								</div>
 							</div>
 						</div>
-						<div id='header__text' class='${getOverlayClass()} header__text'>
+						<div id='header__text' class='${getOverlayClass()} header__text ${getOverlayTestClass()}'>
 						</div>
 						<div class='header__logo-badge'>										
 						${getBadgeText()}

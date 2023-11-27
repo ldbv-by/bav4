@@ -10,6 +10,7 @@
 	--font-family: 'Open Sans', sans-serif;
 
 	/* z-index */
+	--z-map: 0;
 	--z-footer: 100;
 	--z-mapbuttons: 200;
 	--z-toolbox: 300;
