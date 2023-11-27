@@ -83,10 +83,14 @@ export class BottomSheet extends MvuElement {
 			});
 		};
 
+		const getOrientationClass = () => {
+			return portrait ? 'is-portrait' : 'is-landscape';
+		};
+
 		return content
 			? html`
 		<style>${css}</style>
-		<div class='bottom-sheet ${getOverlayClass()} ${getOverlayNavClass()}' data-test-id>
+		<div class='bottom-sheet ${getOverlayClass()} ${getOverlayNavClass()} ${getOrientationClass()}' data-test-id>
         	${content}
 			<ba-icon id="close-icon" class='tool-container__close-button' .icon='${closeIcon}' .size=${1.6} .color=${'var(--text2)'} .color_hover=${'var(--text2)'} @click=${onDismiss}>
 		</div>`

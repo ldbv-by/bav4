@@ -20,7 +20,7 @@
 .is-open {
 	margin: 0 0 0 28em;
 }
-.is-open-nav {
+.is-landscape.is-open-nav {
 	margin: 0 0 0 5.5em;
 }
 .is-open.is-open-nav {
