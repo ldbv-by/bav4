@@ -210,7 +210,12 @@ describe('OlCoordinateService', () => {
 				expect(() => instanceUnderTest.simplify(1)).toThrowError('Cannot simplify coordinate, value is not a Coordinates type');
 				expect(() => instanceUnderTest.simplify('1')).toThrowError('Cannot simplify coordinate, value is not a Coordinates type');
 				expect(() => instanceUnderTest.simplify([1, 2])).toThrowError('Cannot simplify coordinate, value is not a Coordinates type');
-				expect(() => instanceUnderTest.simplify([[1, 2], [1, 2, 3]])).toThrowError('Cannot simplify coordinate, value is not a Coordinates type');
+				expect(() =>
+					instanceUnderTest.simplify([
+						[1, 2],
+						[1, 2, 3]
+					])
+				).toThrowError('Cannot simplify coordinate, value is not a Coordinates type');
 			});
 
 			it('throws an error when target type is not supported', () => {
@@ -247,14 +252,16 @@ describe('OlCoordinateService', () => {
 					[11, 22]
 				]);
 				expect(() => instanceUnderTest.toCoordinate(['1', 2, 3])).toThrowError(
-					"Cannot convert value to coordinate, value is not a CoordinateLike type"
+					'Cannot convert value to coordinate, value is not a CoordinateLike type'
 				);
-				expect(() => instanceUnderTest.toCoordinate({})).toThrowError("Cannot convert value to coordinate, value is not a CoordinateLike type");
-				expect(() => instanceUnderTest.toCoordinate('foo')).toThrowError("Cannot convert value to coordinate, value is not a CoordinateLike type");
-				expect(() => instanceUnderTest.toCoordinate([])).toThrowError("Cannot convert value to coordinate, value is not a CoordinateLike type");
-				expect(() => instanceUnderTest.toCoordinate(1)).toThrowError("Cannot convert value to coordinate, value is not a CoordinateLike type");
-				expect(() => instanceUnderTest.toCoordinate(undefined)).toThrowError("Cannot convert value to coordinate, value is not a CoordinateLike type");
-				expect(() => instanceUnderTest.toCoordinate(null)).toThrowError("Cannot convert value to coordinate, value is not a CoordinateLike type");
+				expect(() => instanceUnderTest.toCoordinate({})).toThrowError('Cannot convert value to coordinate, value is not a CoordinateLike type');
+				expect(() => instanceUnderTest.toCoordinate('foo')).toThrowError('Cannot convert value to coordinate, value is not a CoordinateLike type');
+				expect(() => instanceUnderTest.toCoordinate([])).toThrowError('Cannot convert value to coordinate, value is not a CoordinateLike type');
+				expect(() => instanceUnderTest.toCoordinate(1)).toThrowError('Cannot convert value to coordinate, value is not a CoordinateLike type');
+				expect(() => instanceUnderTest.toCoordinate(undefined)).toThrowError(
+					'Cannot convert value to coordinate, value is not a CoordinateLike type'
+				);
+				expect(() => instanceUnderTest.toCoordinate(null)).toThrowError('Cannot convert value to coordinate, value is not a CoordinateLike type');
 			});
 		});
 	});
