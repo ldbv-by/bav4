@@ -18,7 +18,7 @@ describe('injector configuration', () => {
 		expect($injector.getScope('StoreService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('GeoResourceService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('TopicsService')).toBe(Injector.SCOPE_SINGLETON);
-		expect($injector.getScope('ElevationService')).toBe(Injector.SCOPE_PERLOOKUP);
+		expect($injector.getScope('ElevationService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('SearchResultService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('ShareService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('UnitsService')).toBe(Injector.SCOPE_PERLOOKUP);
