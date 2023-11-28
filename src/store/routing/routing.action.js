@@ -164,7 +164,7 @@ export const setProposal = (coordinate, type) => {
 };
 
 /**
- * Sets a coordinate as a proposal for a new intermediate waypoint.
+ * Suggests a coordinate as a new intermediate waypoint.
  * @param {module:domain/coordinateTypeDef~Coordinate}  coordinate the coordinate (in the SRID of the map) which should be a new intermediate waypoint of the route
  * @function
  */

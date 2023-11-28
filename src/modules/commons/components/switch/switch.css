@@ -1,0 +1,128 @@
+.ba-switch {
+	display: flex;
+	align-items: center;
+	gap: 2ch;
+	justify-content: space-between;
+
+	--thumb-size: 1.4rem;
+	--thumb: var(--text2);
+	--thumb-highlight: hsl(var(--brand-hue) 0% 100% / 25%); /* todo:transform to/replace with a global defined color */
+
+	--thumb-color: var(--thumb);
+	--thumb-color-active: var(--primary-color);
+	--thumb-color-highlight: var(--thumb-highlight);
+
+	--track-size: calc(var(--thumb-size) * 2);
+	--track-padding: 0.25em;
+
+	--track-inactive: var(--secondary-bg-color);
+	--track-active: var(--primary-color-lighter);
+
+	--track-color-inactive: var(--track-inactive);
+	--track-color-active: var(--track-active);
+
+	--thumb-position: 0%;
+	--thumb-transition-duration: var(--animation-duration-small-open);
+
+	cursor: pointer;
+	user-select: none;
+	-webkit-tap-highlight-color: transparent;
+
+	--isLTR: 1;
+
+	&:dir(rtl) {
+		--isLTR: -1;
+	}
+}
+
+.ba-switch > label,
+.cursor-disabled {
+	cursor: not-allowed;
+	--thumb-color: transparent;
+}
+
+.ba-switch > label,
+.cursor-disabled::before {
+	cursor: not-allowed;
+	box-shadow: inset 0 0 0 2px hsl(var(--brand-hue) 0% 0% / 50%); /* todo:transform to/replace with a global defined color */
+}
+
+.ba-switch > input {
+	appearance: none;
+	pointer-events: none;
+	outline-offset: 5px;
+	box-sizing: content-box;
+
+	padding: var(--track-padding);
+	background: var(--track-color-inactive);
+	inline-size: var(--track-size);
+	block-size: var(--thumb-size);
+	border-radius: var(--track-size);
+
+	flex-shrink: 0;
+	display: grid;
+	align-items: center;
+	grid: [track] 1fr / [track] 1fr;
+	touch-action: pan-y;
+	border: 0.2em solid transparent;
+	transition: box-shadow var(--animation-duration-small-open) ease;
+}
+.ba-switch > input:focus-visible {
+	border: 0.2em solid var(--tertiary-bg-color);
+	box-shadow: 0 0 0 0.2em var(--primary-color-lighter);
+}
+
+.ba-switch > input::before {
+	transform: translateX(var(--thumb-position));
+	--highlight-size: 0;
+
+	content: '';
+	cursor: pointer;
+	pointer-events: auto;
+	grid-area: track;
+	inline-size: var(--thumb-size);
+	block-size: var(--thumb-size);
+
+	background: var(--thumb-color);
+	box-shadow: 0 0 0 var(--highlight-size) var(--thumb-color-highlight);
+	border-radius: 50%;
+	transition:
+		transform var(--thumb-transition-duration) ease,
+		box-shadow 0.25s ease;
+}
+
+.ba-switch > input:disabled {
+	cursor: not-allowed;
+	--thumb-color: transparent !important;
+}
+
+.ba-switch > input:disabled::before {
+	cursor: not-allowed;
+	box-shadow: inset 0 0 0 2px hsl(var(--brand-hue) 0% 0% / 50%); /* todo:transform to/replace with a global defined color */
+}
+
+.ba-switch > input:focus::before,
+.ba-switch > input:not(:disabled):hover::before {
+	--highlight-size: 0.5rem;
+}
+
+/* positioned at the end of the track: track length - 100% (thumb width) */
+.ba-switch > input:checked {
+	background: var(--track-color-active);
+	--thumb-position: calc((var(--track-size) - 100%) * var(--isLTR));
+	--thumb-color: var(--thumb-color-active);
+}
+
+/* positioned in the center of the track: half the track - half the thumb */
+.ba-switch > input:indeterminate {
+	--thumb-position: calc(((var(--track-size) / 2) - (var(--thumb-size) / 2)) * var(--isLTR));
+}
+
+.ba-switch.-vertical {
+	min-block-size: calc(var(--track-size) + calc(var(--track-padding) * 2));
+
+	& > input {
+		transform: rotate(calc(90deg * var(--isLTR) * -1));
+		touch-action: pan-x;
+	}
+}

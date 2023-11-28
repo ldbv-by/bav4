@@ -17,6 +17,7 @@ import {
 	setWaypoints
 } from '../../../src/store/routing/routing.action';
 import { routingReducer } from '../../../src/store/routing/routing.reducer';
+import { EventLike } from '../../../src/utils/storeUtils.js';
 import { TestUtils } from '../../test-utils.js';
 
 describe('routingReducer', () => {
@@ -151,6 +152,22 @@ describe('routingReducer', () => {
 		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Destination_Missing);
 	});
 
+	it('sets the start waypoint when exactly one waypoint already exists', () => {
+		const store = setup({
+			routing: {
+				waypoints: [[11, 22]]
+			}
+		});
+
+		setStart([33, 44]);
+
+		expect(store.getState().routing.waypoints).toEqual([
+			[33, 44],
+			[11, 22]
+		]);
+		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Ok);
+	});
+
 	it('sets the destination waypoint', () => {
 		const store = setup();
 		const coordinate = [11, 22];
@@ -164,6 +181,22 @@ describe('routingReducer', () => {
 
 		expect(store.getState().routing.waypoints).toEqual([coordinate]);
 		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Start_Missing);
+	});
+
+	it('sets the destination waypoint when exactly one waypoint already exists', () => {
+		const store = setup({
+			routing: {
+				waypoints: [[11, 22]]
+			}
+		});
+
+		setDestination([33, 44]);
+
+		expect(store.getState().routing.waypoints).toEqual([
+			[11, 22],
+			[33, 44]
+		]);
+		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Ok);
 	});
 
 	it('removes a waypoint', () => {
@@ -224,6 +257,28 @@ describe('routingReducer', () => {
 
 		expect(store.getState().routing.proposal.payload.coord).toEqual(coordinate);
 		expect(store.getState().routing.proposal.payload.type).toEqual(CoordinateProposalType.INTERMEDIATE);
+	});
+
+	it('sets a intermediate coordinate', () => {
+		const store = setup({
+			routing: {
+				waypoints: [[11, 22]],
+				intermediate: new EventLike()
+			}
+		});
+		const coordinate = [33, 44];
+
+		setIntermediate([11, 22]); // already exists, no update
+
+		expect(store.getState().routing.intermediate.payload).toBeNull();
+
+		setIntermediate([11, 22, 'foo']); // invalid coordinate, no update
+
+		expect(store.getState().routing.intermediate.payload).toBeNull();
+
+		setIntermediate(coordinate);
+
+		expect(store.getState().routing.intermediate.payload).toEqual(coordinate);
 	});
 
 	it('sets a intermediate coordinate', () => {
