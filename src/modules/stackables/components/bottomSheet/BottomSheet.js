@@ -22,6 +22,7 @@ export class BottomSheet extends MvuElement {
 		super({
 			content: null,
 			open: false,
+			openNav: false,
 			portrait: false
 		});
 
@@ -69,7 +70,7 @@ export class BottomSheet extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { content, open,  openNav,portrait } = model;
+		const { content, open, openNav, portrait } = model;
 
 		const getOverlayClass = () => (open && !portrait ? 'is-open' : '');
 

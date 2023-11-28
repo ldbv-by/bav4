@@ -1,5 +1,5 @@
 /**
- * @module modules/header/components/Header
+ * @module modules/menu/components/navigationRail/NavigationRail
  */
 import { html } from 'lit-html';
 import css from './navigationRail.css';
@@ -30,7 +30,8 @@ export class NavigationRail extends MvuElement {
 		super({
 			isOpenNav: false,
 			tabIndex: null,
-			isPortrait: false
+			isPortrait: false,
+			hasBeenActive: new Set([])
 		});
 
 		const {
@@ -44,6 +45,7 @@ export class NavigationRail extends MvuElement {
 		this._mapService = mapService;
 
 		this._isOpen = false;
+		this._hasBeenActive = new Set([]);
 	}
 
 	update(type, data, model) {
@@ -89,7 +91,9 @@ export class NavigationRail extends MvuElement {
 	}
 
 	createView(model) {
-		const { isOpenNav, darkSchema, isPortrait, tabIndex, isOpen, featureInfoData } = model;
+		const { isOpenNav, darkSchema, isPortrait, tabIndex, isOpen } = model;
+
+		this._hasBeenActive.add(tabIndex);
 
 		const getOrientationClass = () => {
 			return isPortrait ? 'is-portrait' : 'is-landscape';
@@ -99,9 +103,9 @@ export class NavigationRail extends MvuElement {
 			return darkSchema ? 'sun' : 'moon';
 		};
 
-		const openTab = (index) => {
-			setTab(index);
-			if (isPortrait) {
+		const openTab = (tabId) => {
+			setTab(tabId);
+			if (tabIndex === tabId) {
 				toggle();
 			} else {
 				open();
@@ -120,8 +124,8 @@ export class NavigationRail extends MvuElement {
 		const getIsActivelass = (tabId) => {
 			return tabIndex === tabId && isOpen ? 'is-active' : '';
 		};
-		const getIsVisible = () => {
-			return featureInfoData.length === 0 ? 'hide' : '';
+		const getIsVisible = (tabId) => {
+			return this._hasBeenActive.has(tabId) ? '' : 'hide';
 		};
 
 		const getDefaultMapExtent = () => this._mapService.getDefaultMapExtent();
@@ -130,7 +134,7 @@ export class NavigationRail extends MvuElement {
 			fit(getDefaultMapExtent(), { useVisibleViewport: false });
 		};
 
-		// const translate = (key) => this._translationService.translate(key);
+		const translate = (key) => this._translationService.translate(key);
 		return html`
 			<style>
 				${css}
@@ -139,42 +143,39 @@ export class NavigationRail extends MvuElement {
 				<div class="navigation-rail__container ${getHideClass()} ${getOrientationClass()} ">
 					<button class=" ${getIsActivelass(TabIds.MAPS)}" @click="${() => openTab(TabIds.MAPS)}">
 						<span class="icon home"> </span>
-						<span class="text"> Home </span>
+						<span class="text"> ${translate('menu_navigation_rail_home')} </span>
 					</button>
 					<span class="seperator"> </span>
-					<button class=" ${getIsActivelass(TabIds.ROUTING)}" @click="${() => openRoutingTab()}">
+					<button class=" ${getIsVisible(TabIds.ROUTING)} ${getIsActivelass(TabIds.ROUTING)}" @click="${() => openRoutingTab()}">
 						<span class="icon routing"> </span>
-						<span class="text"> Routing </span>
+						<span class="text"> ${translate('menu_navigation_rail_routing')} </span>
 					</button>
-					<button class="${getIsVisible()} ${getIsActivelass(TabIds.FEATUREINFO)}" @click="${() => openTab(TabIds.FEATUREINFO)}">				
+					<button class="${getIsVisible(TabIds.FEATUREINFO)} ${getIsActivelass(TabIds.FEATUREINFO)}" @click="${() => openTab(TabIds.FEATUREINFO)}">				
 						<span class="icon objektinfo"> </span>
-						<span class="text"> Objekt-Info </span>
+						<span class="text"> ${translate('menu_navigation_rail_object_info')}  </span>
 					</button>
 					<button @click="${toggleSchema}" class="theme-toggle">
 						<span class="icon ${getSchemaClass()}  "> </span>
 					</button>
-
 					<button <button class="touch ${getIsActivelass(TabIds.SEARCH)}" @click="${() => openTab(TabIds.SEARCH)}">
 						<span class="icon search-icon "> </span>
-						<span class="text"> Suchen </span>
+						<span class="text"> ${translate('menu_navigation_rail_search')}  </span>
 					</button>
-
 					<button @click="${increaseZoom}" class="touch">
 						<span class="icon zoom-in "> </span>
-						<span class="text"> zoom out </span>
+						<span class="text"> ${translate('menu_navigation_rail_zoom_out')}   </span>
 					</button>
-
 					<button @click="${decreaseZoom}" class="touch">
 						<span class="icon zoom-out  "> </span>
-						<span class="text">zoom in </span>
+						<span class="text"> ${translate('menu_navigation_rail_zoom_in')}  </span>
 					</button>
 					<button @click="${zoomToExtent}" class="touch">
 						<span class="icon zoom-to-extent-icon "> </span>
-						<span class="text"> auf Bayern zoomen </span>
+						<span class="text"> ${translate('menu_navigation_rail_zoom_to_extend')} </span>
 					</button>
 					<button @click="${closeNav}" class="touch">
 						<span class="icon close-icon "> </span>
-						<span class="text"> schließen </span>
+						<span class="text"> ${translate('menu_navigation_rail_close')} </span>
 					</button>
 				</div>
 			</div>

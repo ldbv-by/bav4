@@ -23,7 +23,16 @@ export const provide = (lang) => {
 				menu_misc_content_panel_ea_header: 'Energie-Atlas Bayern',
 				menu_misc_content_panel_ea_text: 'Central portal for saving energy, energy efficiency, and renewable energies.',
 				menu_misc_content_panel_feedback_title: 'Feedback',
-				menu_misc_content_panel_routing_title: 'Routing'
+				menu_misc_content_panel_routing_title: 'Routing',
+
+				menu_navigation_rail_home: 'Home',
+				menu_navigation_rail_routing: 'Routine',
+				menu_navigation_rail_close: 'close',
+				menu_navigation_rail_zoom_to_extend: 'zoom to Bavaria',
+				menu_navigation_rail_object_info: 'Object-Info',
+				menu_navigation_rail_zoom_in: 'zoom in',
+				menu_navigation_rail_zoom_out: 'zoom out',
+				menu_navigation_rail_search: 'Search'
 			};
 
 		case 'de':
@@ -49,7 +58,16 @@ export const provide = (lang) => {
 				menu_misc_content_panel_ea_header: 'Energie-Atlas Bayern',
 				menu_misc_content_panel_ea_text: 'Das zentrale Internet-Portal zum Energiesparen, zur Energieeffizienz und zu erneuerbaren Energien.',
 				menu_misc_content_panel_feedback_title: 'Feedback',
-				menu_misc_content_panel_routing_title: 'Routing'
+				menu_misc_content_panel_routing_title: 'Routing',
+
+				menu_navigation_rail_home: 'Home',
+				menu_navigation_rail_routing: 'Routine',
+				menu_navigation_rail_close: 'schließen',
+				menu_navigation_rail_zoom_to_extend: 'auf Bayern Zoomen',
+				menu_navigation_rail_object_info: 'Object-Info',
+				menu_navigation_rail_zoom_in: 'zoom in',
+				menu_navigation_rail_zoom_out: 'zoom out',
+				menu_navigation_rail_search: 'Suchen'
 			};
 
 		default:

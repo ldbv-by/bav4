@@ -28,10 +28,8 @@ export class NavigationRailPlugin extends BaPlugin {
 		this._openNav = store.getState().navigationRail.openNav;
 
 		const onTabChanged = (tab, state) => {
-			console.log('changeTAb');
 			if (tab === TabIds.FEATUREINFO || tab === TabIds.ROUTING) {
 				this._open = state.mainMenu.open;
-				console.log('openNav');
 				openNav();
 			}
 		};
