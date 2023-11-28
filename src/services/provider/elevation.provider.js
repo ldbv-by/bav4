@@ -8,12 +8,12 @@ import { $injector } from '../../injection';
  * @function
  * @type {module:services/ElevationService~elevationProvider}
  */
-export const loadBvvElevation = async (coordinate3857) => {
+export const loadBvvElevation = async (coordinateLike3857) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 
 	const url = configService.getValueAsPath('BACKEND_URL') + 'dem/elevation';
 
-	const result = await httpService.get(`${url}/${coordinate3857[0]}/${coordinate3857[1]}`);
+	const result = await httpService.get(`${url}/${coordinateLike3857[0]}/${coordinateLike3857[1]}`);
 
 	switch (result.status) {
 		case 200:
