@@ -6,10 +6,14 @@ import { routingReducer } from '../../src/store/routing/routing.reducer';
 import { toolsReducer } from '../../src/store/tools/tools.reducer';
 import { setCurrentTool } from '../../src/store/tools/tools.action';
 import { Tools } from '../../src/domain/tools';
-import { deactivate, activate } from '../../src/store/routing/routing.action';
+import { deactivate, activate, setProposal } from '../../src/store/routing/routing.action';
 import { $injector } from '../../src/injection';
 import { LevelTypes } from '../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../src/store/notifications/notifications.reducer';
+import { CoordinateProposalType } from '../../src/domain/routing';
+import { mapContextMenuReducer } from '../../src/store/mapContextMenu/mapContextMenu.reducer';
+import { bottomSheetReducer } from '../../src/store/bottomSheet/bottomSheet.reducer.js';
+import { ProposalContextContent } from '../../src/modules/routing/components/contextMenu/ProposalContextContent.js';
 
 describe('RoutingPlugin', () => {
 	const routingService = {
@@ -20,14 +24,23 @@ describe('RoutingPlugin', () => {
 		translate: (key) => key
 	};
 
+	const environmentServiceMock = {
+		isTouch: () => false
+	};
+
 	const setup = (state) => {
 		const store = TestUtils.setupStoreAndDi(state, {
 			routing: routingReducer,
 			layers: layersReducer,
 			tools: toolsReducer,
-			notifications: notificationReducer
+			notifications: notificationReducer,
+			contextMenu: mapContextMenuReducer,
+			bottomSheet: bottomSheetReducer
 		});
-		$injector.registerSingleton('RoutingService', routingService).registerSingleton('TranslationService', translationService);
+		$injector
+			.registerSingleton('RoutingService', routingService)
+			.registerSingleton('TranslationService', translationService)
+			.registerSingleton('EnvironmentService', environmentServiceMock);
 		return store;
 	};
 
@@ -115,6 +128,47 @@ describe('RoutingPlugin', () => {
 			deactivate();
 
 			expect(store.getState().layers.active.length).toBe(0);
+		});
+	});
+
+	describe('when coordinate proposal changes', () => {
+		it('does nothing when wrong proposal type', async () => {
+			const store = setup();
+			const instanceUnderTest = new RoutingPlugin();
+			instanceUnderTest._initialized = true;
+			await instanceUnderTest.register(store);
+
+			setProposal([21, 42], CoordinateProposalType.EXISTING_INTERMEDIATE);
+
+			expect(store.getState().contextMenu.content).toBeNull();
+			expect(store.getState().bottomSheet.active).toBeFalse();
+		});
+		describe('and we have a non-touch environment', () => {
+			it('opens the ContextMenu', async () => {
+				const store = setup();
+				const instanceUnderTest = new RoutingPlugin();
+				instanceUnderTest._initialized = true;
+				await instanceUnderTest.register(store);
+
+				setProposal([21, 42], CoordinateProposalType.START_OR_DESTINATION);
+
+				const wrapperElement = TestUtils.renderTemplateResult(store.getState().contextMenu.content);
+				expect(wrapperElement.querySelectorAll(ProposalContextContent.tag)).toHaveSize(1);
+			});
+		});
+		describe('and we have a touch environment', () => {
+			it('opens the BottomSheet', async () => {
+				const store = setup();
+				spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
+				const instanceUnderTest = new RoutingPlugin();
+				instanceUnderTest._initialized = true;
+				await instanceUnderTest.register(store);
+
+				setProposal([21, 42], CoordinateProposalType.START_OR_DESTINATION);
+
+				const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data);
+				expect(wrapperElement.querySelectorAll(ProposalContextContent.tag)).toHaveSize(1);
+			});
 		});
 	});
 });

@@ -23,12 +23,14 @@ import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { unByKey } from 'ol/Observable';
 import { HelpTooltip } from '../../tooltip/HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
-import { setProposal, setRoute, setWaypoints } from '../../../../store/routing/routing.action';
+import { setProposal, setRoute, setRouteStats, setWaypoints } from '../../../../store/routing/routing.action';
 import { CoordinateProposalType, RoutingStatusCodes } from '../../../../domain/routing';
 import { fit } from '../../../../store/position/position.action';
 import { getCoordinatesForElevationProfile } from '../../utils/olGeometryUtils';
 import { updateCoordinates } from '../../../../store/elevationProfile/elevationProfile.action';
 import { equals } from '../../../../../node_modules/ol/coordinate';
+import { GeoJSON as GeoJSONFormat } from 'ol/format';
+import { SourceType, SourceTypeName } from '../../../../domain/sourceType';
 
 export const RoutingFeatureTypes = Object.freeze({
 	START: 'start',
@@ -413,14 +415,14 @@ export class OlRoutingHandler extends OlLayerHandler {
 		return segments;
 	}
 
-	_displayCurrentRoutingGeometry(categoryResponse) {
-		const polyline = categoryResponse.paths[0].points;
+	_displayCurrentRoutingGeometry(ghRoute) {
+		const polyline = ghRoute.paths[0].points;
 		const geometry = this._polylineToGeometry(polyline);
 		const routeFeature = new Feature({
 			geometry: geometry
 		});
 		routeFeature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.ROUTE);
-		routeFeature.set(ROUTING_CATEGORY, this._routingService.getCategoryById(categoryResponse.vehicle));
+		routeFeature.set(ROUTING_CATEGORY, this._routingService.getCategoryById(ghRoute.vehicle));
 		routeFeature.setStyle(getRoutingStyleFunction());
 		this._routeLayer.getSource().addFeature(routeFeature);
 
@@ -433,23 +435,23 @@ export class OlRoutingHandler extends OlLayerHandler {
 			});
 
 			segmentFeature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.ROUTE_SEGMENT);
-			segmentFeature.set(ROUTING_CATEGORY, this._routingService.getCategoryById(categoryResponse.vehicle));
+			segmentFeature.set(ROUTING_CATEGORY, this._routingService.getCategoryById(ghRoute.vehicle));
 			segmentFeature.set(ROUTING_SEGMENT_INDEX, i);
 			segmentFeature.setStyle(getRoutingStyleFunction());
 			this._routeLayerCopy.getSource().addFeature(segmentFeature);
 		}
 
-		updateCoordinates(getCoordinatesForElevationProfile(geometry));
+		this._updateStore(ghRoute);
 	}
 
-	_displayAlternativeRoutingGeometry(categoryResponse) {
-		const polyline = categoryResponse.paths[0].points;
+	_displayAlternativeRoutingGeometry(ghRoute) {
+		const polyline = ghRoute.paths[0].points;
 		const geometry = this._polylineToGeometry(polyline);
 		const routeFeature = new Feature({
 			geometry: geometry
 		});
 		routeFeature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.ROUTE_ALTERNATIVE);
-		routeFeature.set(ROUTING_CATEGORY, this._routingService.getCategoryById(categoryResponse.vehicle));
+		routeFeature.set(ROUTING_CATEGORY, this._routingService.getCategoryById(ghRoute.vehicle));
 		routeFeature.setStyle(getRoutingStyleFunction());
 		this._alternativeRouteLayer.getSource().addFeature(routeFeature);
 	}
@@ -534,8 +536,6 @@ export class OlRoutingHandler extends OlLayerHandler {
 				const alternativeCategoryIds = this._routingService.getAlternativeCategoryIds(this._catId);
 				try {
 					this._currentRoutingResponse = await this._requestAndDisplayRoute(this._catId, alternativeCategoryIds, coordinates3857);
-					// update store
-					setRoute(this._currentRoutingResponse[this._catId]);
 				} catch (error) {
 					console.error(error);
 					emitNotification(`${this._translationService.translate('global_routingService_exception')}`, LevelTypes.ERROR);
@@ -544,6 +544,19 @@ export class OlRoutingHandler extends OlLayerHandler {
 			// enable interaction also if request failed
 			this._setInteractionsActive(true);
 		}
+	}
+
+	async _updateStore(ghRoute) {
+		const geom = this._polylineToGeometry(ghRoute.paths[0].points);
+		const profileCoordinates = getCoordinatesForElevationProfile(geom);
+
+		// update stats
+		const routeStats = await this._routingService.calculateRouteStats(ghRoute, profileCoordinates);
+		setRouteStats(routeStats);
+		// update elevation profile coordinate
+		updateCoordinates(profileCoordinates);
+		// update route
+		setRoute({ data: new GeoJSONFormat().writeGeometry(geom), type: new SourceType(SourceTypeName.GEOJSON) });
 	}
 
 	_requestRouteFromInteractionLayer() {

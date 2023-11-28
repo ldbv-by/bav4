@@ -8,6 +8,10 @@ import { activate, deactivate } from '../store/routing/routing.action';
 import { Tools } from '../domain/tools';
 import { $injector } from '../injection/index';
 import { LevelTypes, emitNotification } from '../store/notifications/notifications.action';
+import { updateContextMenu } from '../store/mapContextMenu/mapContextMenu.action';
+import { openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
+import { html } from '../../node_modules/lit-html/lit-html';
+import { CoordinateProposalType } from '../domain/routing';
 
 /**
  * Id of the layer used for routing interaction.
@@ -38,7 +42,7 @@ export class RoutingPlugin extends BaPlugin {
 	 * @param {Store} store
 	 */
 	async register(store) {
-		const { RoutingService: routingService } = $injector.inject('RoutingService');
+		const { RoutingService: routingService, EnvironmentService: environmentService } = $injector.inject('RoutingService', 'EnvironmentService');
 
 		const lazyInitialize = async () => {
 			if (!this._initialized) {
@@ -78,5 +82,17 @@ export class RoutingPlugin extends BaPlugin {
 
 		observe(store, (state) => state.routing.active, onChange);
 		observe(store, (state) => state.tools.current, onToolChanged, false);
+
+		const openMenu = ({ type }) => {
+			if (type === CoordinateProposalType.START_OR_DESTINATION) {
+				const content = html`<ba-proposal-context-content></ba-proposal-context-content>`;
+				environmentService.isTouch() ? openBottomSheet(content) : updateContextMenu(content);
+			}
+		};
+		observe(
+			store,
+			(state) => state.routing.proposal,
+			(eventLike) => openMenu(eventLike.payload)
+		);
 	}
 }

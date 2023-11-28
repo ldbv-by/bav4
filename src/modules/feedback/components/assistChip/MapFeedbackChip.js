@@ -14,6 +14,7 @@ const Update = 'update';
 /**
  * AssistChip to open the MapFeedback directly with a predefined center coordinate
  * @class
+ * @extends {AbstractAssistChip}
  * @property {module:domain/coordinateTypeDef~Coordinate} center The center coordinate of the map feedback
  * @author thiloSchlemmer
  */

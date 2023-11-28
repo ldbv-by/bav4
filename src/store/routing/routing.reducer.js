@@ -30,11 +30,11 @@ export const initialState = {
 	 */
 	stats: null,
 	/**
-	 * @property {Route}
+	 * @property {module:domain/routing~RouteGeometry}
 	 */
 	route: null,
 	/**
-	 * @property {domain/coordinateTypeDef~Coordinate[]}
+	 * @property {module:domain/coordinateTypeDef~Coordinate[]}
 	 */
 	waypoints: [],
 	/**
@@ -46,7 +46,7 @@ export const initialState = {
 	 */
 	active: false,
 	/**
-	 *@property {EventLike<store/routing/routing_action~CoordinateProposal>}
+	 *@property {EventLike<module:domain/routing~CoordinateProposal>}
 	 */
 	proposal: new EventLike(),
 	/**

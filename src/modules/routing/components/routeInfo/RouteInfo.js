@@ -9,7 +9,7 @@ import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
 import css from './routeInfo.css';
 
 const Update_Status = 'update_status';
-const Update_Route = 'update_route';
+const Update_Route_Stats = 'update_route_stats';
 const Update_Category = 'update_category';
 
 const Minute_In_Seconds = 60;
@@ -38,8 +38,8 @@ export class RouteInfo extends MvuElement {
 			),
 
 			this.observe(
-				(store) => store.routing.route,
-				(route) => this.signal(Update_Route, route)
+				(store) => store.routing.stats,
+				(stats) => this.signal(Update_Route_Stats, stats)
 			),
 			this.observe(
 				(state) => state.routing.categoryId,
@@ -55,12 +55,11 @@ export class RouteInfo extends MvuElement {
 	}
 
 	update(type, data, model) {
-		const createStatistics = (route) => this._routingService.calculateRouteStats(route);
 		switch (type) {
 			case Update_Status:
 				return { ...model, status: data };
-			case Update_Route:
-				return { ...model, stats: createStatistics(data) };
+			case Update_Route_Stats:
+				return { ...model, stats: data };
 			case Update_Category:
 				return { ...model, categoryId: data };
 		}
@@ -76,7 +75,7 @@ export class RouteInfo extends MvuElement {
 		const iconSource = category?.style.icon ?? parent?.style.icon;
 
 		const getDuration = () => {
-			const estimate = this._estimateTimeFor(categoryId, stats) ?? stats.time;
+			const estimate = stats.time;
 			const seconds = estimate / 1000;
 			if (seconds < Minute_In_Seconds) {
 				return '< 1 min.';
@@ -153,16 +152,6 @@ export class RouteInfo extends MvuElement {
 		};
 
 		return `${toTwoDigits(hours)}:${toTwoDigits(minutes)}`;
-	}
-
-	_estimateTimeFor(categoryId, stats) {
-		const unknownCategoryAction = (categoryId) => {
-			console.warn(`Unknown category, no estimate available for '${categoryId}'`);
-			return null;
-		};
-
-		const estimatedTime = this._routingService.getETAFor(categoryId, stats.dist, stats.twoDiff[0], stats.twoDiff[1]);
-		return estimatedTime ?? unknownCategoryAction(categoryId);
 	}
 
 	static get tag() {

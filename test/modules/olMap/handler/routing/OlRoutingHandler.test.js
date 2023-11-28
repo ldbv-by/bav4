@@ -33,6 +33,7 @@ import { SelectEvent } from 'ol/interaction/Select';
 import { CoordinateProposalType, RoutingStatusCodes } from '../../../../../src/domain/routing';
 import { positionReducer } from '../../../../../src/store/position/position.reducer';
 import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer';
+import { SourceTypeName } from '../../../../../src/domain/sourceType';
 
 describe('constants and enums', () => {
 	it('provides an enum of all valid RoutingFeatureTypes', () => {
@@ -72,7 +73,8 @@ describe('OlRoutingHandler', () => {
 	const routingServiceMock = {
 		async calculateRoute() {},
 		getAlternativeCategoryIds() {},
-		getCategoryById() {}
+		getCategoryById() {},
+		calculateRouteStats() {}
 	};
 	const mapServiceMock = {
 		getSrid() {}
@@ -662,6 +664,30 @@ describe('OlRoutingHandler', () => {
 			});
 		});
 
+		describe('_updateStore', () => {
+			it('updates different slices-of-state', async () => {
+				const { instanceUnderTest, store } = await newTestInstance();
+				const ghRoute = {
+					vehicle: 'foo',
+					paths: [
+						{
+							points:
+								'gxfiHu~fgAYRaBvBMH[J{ATq@R_@T}BlBwAr@}@t@[LU?wMeBsBm@e@Ua@Yc@VgAb@wBn@iBR_C?eLYiC?{_@VeMBkCTiBDsIK_A@i@Jq@Xk@`@]Zi@p@g@~@[`AWjAg@lEi@pC]tA{A`Fa@|As@jD]l@WXc@Ve@JAsBAe@W}@SrAa@lBk@Am@zBg@z@sAxC'
+						}
+					]
+				};
+				const statsMock = { time: 12345 };
+				spyOn(routingServiceMock, 'calculateRouteStats').withArgs(ghRoute, jasmine.any(Array)).and.returnValue(statsMock);
+
+				await instanceUnderTest._updateStore(ghRoute);
+
+				expect(store.getState().routing.stats).toEqual(statsMock);
+				expect(store.getState().elevationProfile.coordinates.length).toBe(57);
+				expect(store.getState().routing.route.type.name).toBe(SourceTypeName.GEOJSON);
+				expect(store.getState().routing.route.data).toContain('LineString');
+			});
+		});
+
 		describe('_requestRouteFromCoordinates', () => {
 			describe('no coordinate is available', () => {
 				it('does nothing', async () => {
@@ -690,7 +716,7 @@ describe('OlRoutingHandler', () => {
 			describe('more than one coordinate is available', () => {
 				it('call _requestRoute with with correct arguments', async () => {
 					const catId = 'catId';
-					const { instanceUnderTest, store } = await newTestInstance({
+					const { instanceUnderTest } = await newTestInstance({
 						categoryId: catId
 					});
 					const coordinate0 = [0, 0];
@@ -715,7 +741,6 @@ describe('OlRoutingHandler', () => {
 					expect(addIntermediateInteractionFeatureSpy).toHaveBeenCalledWith(coordinate1, 1);
 					expect(addDestinationInteractionFeatureSpy).toHaveBeenCalledWith(coordinate2, 2);
 					expect(instanceUnderTest._currentRoutingResponse).toEqual(mockResponse);
-					expect(store.getState().routing.route).toEqual(mockResponse.catId);
 				});
 			});
 
@@ -896,14 +921,14 @@ describe('OlRoutingHandler', () => {
 				const catId = 'catId';
 				const alternativeCatId = 'alternativeCatId';
 				instanceUnderTest._catId = catId;
-				const mockRouteResponse = { catId: { route: 'route0' }, alternativeCatId: { route: 'route1' } };
+				const mockGhRoutingResult = { catId: { route: 'route0' }, alternativeCatId: { route: 'route1' } };
 				spyOn(routingServiceMock, 'getAlternativeCategoryIds').withArgs(catId).and.returnValue([alternativeCatId]);
 
-				instanceUnderTest._switchToAlternativeRoute(mockRouteResponse);
+				instanceUnderTest._switchToAlternativeRoute(mockGhRoutingResult);
 
 				expect(clearRouteFeaturesSpy).toHaveBeenCalled();
-				expect(displayCurrentRoutingGeometrySpy).toHaveBeenCalledWith(mockRouteResponse.catId);
-				expect(displayAlternativeRoutingGeometry).toHaveBeenCalledOnceWith(mockRouteResponse.alternativeCatId);
+				expect(displayCurrentRoutingGeometrySpy).toHaveBeenCalledWith(mockGhRoutingResult.catId);
+				expect(displayAlternativeRoutingGeometry).toHaveBeenCalledOnceWith(mockGhRoutingResult.alternativeCatId);
 			});
 		});
 
@@ -963,7 +988,7 @@ describe('OlRoutingHandler', () => {
 			it('adds a correctly configured feature', async () => {
 				const { instanceUnderTest } = await newTestInstance();
 				const category = { id: 'hike', style: {} };
-				const categoryResponse = {
+				const ghRoute = {
 					vehicle: 'foo',
 					paths: [
 						{
@@ -977,10 +1002,10 @@ describe('OlRoutingHandler', () => {
 					[5, 55]
 				];
 				const geometry = new LineString(coordinates);
-				spyOn(instanceUnderTest, '_polylineToGeometry').withArgs(categoryResponse.paths[0].points).and.returnValue(geometry);
-				spyOn(routingServiceMock, 'getCategoryById').withArgs(categoryResponse.vehicle).and.returnValue(category);
+				spyOn(instanceUnderTest, '_polylineToGeometry').withArgs(ghRoute.paths[0].points).and.returnValue(geometry);
+				spyOn(routingServiceMock, 'getCategoryById').withArgs(ghRoute.vehicle).and.returnValue(category);
 
-				instanceUnderTest._displayAlternativeRoutingGeometry(categoryResponse);
+				instanceUnderTest._displayAlternativeRoutingGeometry(ghRoute);
 
 				const feature = instanceUnderTest._alternativeRouteLayer.getSource().getFeatures()[0];
 				expect(feature.get(ROUTING_FEATURE_TYPE)).toBe(RoutingFeatureTypes.ROUTE_ALTERNATIVE);
@@ -995,7 +1020,7 @@ describe('OlRoutingHandler', () => {
 			it('adds a correctly configured feature', async () => {
 				const { instanceUnderTest } = await newTestInstance();
 				const category = { id: 'hike', style: {} };
-				const categoryResponse = {
+				const ghRoute = {
 					vehicle: 'foo',
 					paths: [
 						{
@@ -1009,12 +1034,13 @@ describe('OlRoutingHandler', () => {
 					[5, 55]
 				];
 				const geometry = new LineString(coordinates);
-				spyOn(instanceUnderTest, '_polylineToGeometry').withArgs(categoryResponse.paths[0].points).and.returnValue(geometry);
+				spyOn(instanceUnderTest, '_polylineToGeometry').withArgs(ghRoute.paths[0].points).and.returnValue(geometry);
 				const segmentGeometries = [new LineString(coordinates), new LineString(coordinates)];
 				spyOn(instanceUnderTest, '_splitRouteByIntermediatePoints').withArgs(geometry).and.returnValue(segmentGeometries);
-				spyOn(routingServiceMock, 'getCategoryById').withArgs(categoryResponse.vehicle).and.returnValue(category);
+				spyOn(routingServiceMock, 'getCategoryById').withArgs(ghRoute.vehicle).and.returnValue(category);
+				const updateStoreSpy = spyOn(instanceUnderTest, '_updateStore');
 
-				instanceUnderTest._displayCurrentRoutingGeometry(categoryResponse);
+				instanceUnderTest._displayCurrentRoutingGeometry(ghRoute);
 
 				const feature = instanceUnderTest._routeLayer.getSource().getFeatures()[0];
 				expect(feature.get(ROUTING_FEATURE_TYPE)).toBe(RoutingFeatureTypes.ROUTE);
@@ -1038,33 +1064,8 @@ describe('OlRoutingHandler', () => {
 				expect(segmentFeature1.getGeometry()).toBeInstanceOf(LineString);
 				expect(segmentFeature1.getGeometry().getCoordinates()).toEqual(coordinates);
 				expect(segmentFeature1.getStyle()(feature)).toEqual(getRoutingStyleFunction()(feature));
-			});
 
-			it('updates the elevationProfile s-o-s', async () => {
-				const { instanceUnderTest, store } = await newTestInstance();
-				const category = { id: 'hike' };
-				const categoryResponse = {
-					vehicle: 'foo',
-					paths: [
-						{
-							points:
-								'gxfiHu~fgAYRaBvBMH[J{ATq@R_@T}BlBwAr@}@t@[LU?wMeBsBm@e@Ua@Yc@VgAb@wBn@iBR_C?eLYiC?{_@VeMBkCTiBDsIK_A@i@Jq@Xk@`@]Zi@p@g@~@[`AWjAg@lEi@pC]tA{A`Fa@|As@jD]l@WXc@Ve@JAsBAe@W}@SrAa@lBk@Am@zBg@z@sAxC'
-						}
-					]
-				};
-				const coordinates = [
-					[21, 42],
-					[5, 55]
-				];
-				const geometry = new LineString(coordinates);
-				spyOn(instanceUnderTest, '_polylineToGeometry').withArgs(categoryResponse.paths[0].points).and.returnValue(geometry);
-				const segmentGeometries = [new LineString(coordinates), new LineString(coordinates)];
-				spyOn(instanceUnderTest, '_splitRouteByIntermediatePoints').withArgs(geometry).and.returnValue(segmentGeometries);
-				spyOn(routingServiceMock, 'getCategoryById').withArgs(categoryResponse.vehicle).and.returnValue(category);
-
-				instanceUnderTest._displayCurrentRoutingGeometry(categoryResponse);
-
-				expect(store.getState().elevationProfile.coordinates.length).toBeGreaterThan(0);
+				expect(updateStoreSpy).toHaveBeenCalledWith(ghRoute);
 			});
 		});
 
