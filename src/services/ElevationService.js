@@ -20,6 +20,7 @@ import { $injector } from '../injection';
  * @property {number} z the elevation (in meter)
  * @property {number} e easting
  * @property {number} n northing
+ * @property {number} [slope] the slope (percentage value)
  */
 
 /**
