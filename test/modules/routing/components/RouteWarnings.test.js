@@ -1,3 +1,4 @@
+import { RouteWarningCriticality } from '../../../../src/domain/routing';
 import { $injector } from '../../../../src/injection';
 import { MvuElement } from '../../../../src/modules/MvuElement';
 import { RouteWarnings } from '../../../../src/modules/routing/components/routeDetails/RouteWarnings';
@@ -63,7 +64,7 @@ describe('RouteWarnings', () => {
 					{
 						name: 42,
 						message: 'foo bar',
-						criticality: 'Hint',
+						criticality: RouteWarningCriticality.HINT,
 						segments: [
 							[0, 1],
 							[3, 5]
@@ -72,7 +73,7 @@ describe('RouteWarnings', () => {
 					{
 						name: 21,
 						message: 'bar baz',
-						criticality: 'Warn',
+						criticality: RouteWarningCriticality.WARNING,
 						segments: [
 							[0, 1],
 							[3, 5]
@@ -129,7 +130,7 @@ describe('RouteWarnings', () => {
 				{
 					name: 42,
 					message: 'foo bar',
-					criticality: 'Hint',
+					criticality: RouteWarningCriticality.HINT,
 					segments: [
 						[0, 1],
 						[3, 5]
@@ -138,7 +139,7 @@ describe('RouteWarnings', () => {
 				{
 					name: 21,
 					message: 'bar baz',
-					criticality: 'Warn',
+					criticality: RouteWarningCriticality.WARNING,
 					segments: [
 						[0, 1],
 						[3, 5]
@@ -158,7 +159,7 @@ describe('RouteWarnings', () => {
 				{
 					name: 42,
 					message: 'foo bar',
-					criticality: 'Hint',
+					criticality: RouteWarningCriticality.HINT,
 					segments: [
 						[0, 1],
 						[3, 5]
@@ -167,7 +168,7 @@ describe('RouteWarnings', () => {
 				{
 					name: 21,
 					message: 'bar baz',
-					criticality: 'Warn',
+					criticality: RouteWarningCriticality.WARNING,
 					segments: [
 						[0, 1],
 						[3, 5]
@@ -229,7 +230,7 @@ describe('RouteWarnings', () => {
 				{
 					name: 42,
 					message: 'foo bar',
-					criticality: 'Hint',
+					criticality: RouteWarningCriticality.HINT,
 					segments: [
 						[0, 1],
 						[3, 5]
@@ -238,7 +239,7 @@ describe('RouteWarnings', () => {
 				{
 					name: 21,
 					message: 'bar baz',
-					criticality: 'Warn',
+					criticality: RouteWarningCriticality.WARNING,
 					segments: [
 						[0, 1],
 						[3, 5]

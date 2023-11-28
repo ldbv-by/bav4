@@ -667,7 +667,7 @@ describe('OlRoutingHandler', () => {
 		describe('_updateStore', () => {
 			it('updates different slices-of-state', async () => {
 				const { instanceUnderTest, store } = await newTestInstance();
-				const categoryResponse = {
+				const ghRoute = {
 					vehicle: 'foo',
 					paths: [
 						{
@@ -677,9 +677,9 @@ describe('OlRoutingHandler', () => {
 					]
 				};
 				const statsMock = { time: 12345 };
-				spyOn(routingServiceMock, 'calculateRouteStats').withArgs(categoryResponse).and.returnValue(statsMock);
+				spyOn(routingServiceMock, 'calculateRouteStats').withArgs(ghRoute, jasmine.any(Array)).and.returnValue(statsMock);
 
-				instanceUnderTest._updateStore(categoryResponse);
+				await instanceUnderTest._updateStore(ghRoute);
 
 				expect(store.getState().routing.stats).toEqual(statsMock);
 				expect(store.getState().elevationProfile.coordinates.length).toBe(57);
@@ -921,14 +921,14 @@ describe('OlRoutingHandler', () => {
 				const catId = 'catId';
 				const alternativeCatId = 'alternativeCatId';
 				instanceUnderTest._catId = catId;
-				const mockRouteResponse = { catId: { route: 'route0' }, alternativeCatId: { route: 'route1' } };
+				const mockGhRoutingResult = { catId: { route: 'route0' }, alternativeCatId: { route: 'route1' } };
 				spyOn(routingServiceMock, 'getAlternativeCategoryIds').withArgs(catId).and.returnValue([alternativeCatId]);
 
-				instanceUnderTest._switchToAlternativeRoute(mockRouteResponse);
+				instanceUnderTest._switchToAlternativeRoute(mockGhRoutingResult);
 
 				expect(clearRouteFeaturesSpy).toHaveBeenCalled();
-				expect(displayCurrentRoutingGeometrySpy).toHaveBeenCalledWith(mockRouteResponse.catId);
-				expect(displayAlternativeRoutingGeometry).toHaveBeenCalledOnceWith(mockRouteResponse.alternativeCatId);
+				expect(displayCurrentRoutingGeometrySpy).toHaveBeenCalledWith(mockGhRoutingResult.catId);
+				expect(displayAlternativeRoutingGeometry).toHaveBeenCalledOnceWith(mockGhRoutingResult.alternativeCatId);
 			});
 		});
 
@@ -988,7 +988,7 @@ describe('OlRoutingHandler', () => {
 			it('adds a correctly configured feature', async () => {
 				const { instanceUnderTest } = await newTestInstance();
 				const category = { id: 'hike', style: {} };
-				const categoryResponse = {
+				const ghRoute = {
 					vehicle: 'foo',
 					paths: [
 						{
@@ -1002,10 +1002,10 @@ describe('OlRoutingHandler', () => {
 					[5, 55]
 				];
 				const geometry = new LineString(coordinates);
-				spyOn(instanceUnderTest, '_polylineToGeometry').withArgs(categoryResponse.paths[0].points).and.returnValue(geometry);
-				spyOn(routingServiceMock, 'getCategoryById').withArgs(categoryResponse.vehicle).and.returnValue(category);
+				spyOn(instanceUnderTest, '_polylineToGeometry').withArgs(ghRoute.paths[0].points).and.returnValue(geometry);
+				spyOn(routingServiceMock, 'getCategoryById').withArgs(ghRoute.vehicle).and.returnValue(category);
 
-				instanceUnderTest._displayAlternativeRoutingGeometry(categoryResponse);
+				instanceUnderTest._displayAlternativeRoutingGeometry(ghRoute);
 
 				const feature = instanceUnderTest._alternativeRouteLayer.getSource().getFeatures()[0];
 				expect(feature.get(ROUTING_FEATURE_TYPE)).toBe(RoutingFeatureTypes.ROUTE_ALTERNATIVE);
@@ -1020,7 +1020,7 @@ describe('OlRoutingHandler', () => {
 			it('adds a correctly configured feature', async () => {
 				const { instanceUnderTest } = await newTestInstance();
 				const category = { id: 'hike', style: {} };
-				const categoryResponse = {
+				const ghRoute = {
 					vehicle: 'foo',
 					paths: [
 						{
@@ -1034,13 +1034,13 @@ describe('OlRoutingHandler', () => {
 					[5, 55]
 				];
 				const geometry = new LineString(coordinates);
-				spyOn(instanceUnderTest, '_polylineToGeometry').withArgs(categoryResponse.paths[0].points).and.returnValue(geometry);
+				spyOn(instanceUnderTest, '_polylineToGeometry').withArgs(ghRoute.paths[0].points).and.returnValue(geometry);
 				const segmentGeometries = [new LineString(coordinates), new LineString(coordinates)];
 				spyOn(instanceUnderTest, '_splitRouteByIntermediatePoints').withArgs(geometry).and.returnValue(segmentGeometries);
-				spyOn(routingServiceMock, 'getCategoryById').withArgs(categoryResponse.vehicle).and.returnValue(category);
+				spyOn(routingServiceMock, 'getCategoryById').withArgs(ghRoute.vehicle).and.returnValue(category);
 				const updateStoreSpy = spyOn(instanceUnderTest, '_updateStore');
 
-				instanceUnderTest._displayCurrentRoutingGeometry(categoryResponse);
+				instanceUnderTest._displayCurrentRoutingGeometry(ghRoute);
 
 				const feature = instanceUnderTest._routeLayer.getSource().getFeatures()[0];
 				expect(feature.get(ROUTING_FEATURE_TYPE)).toBe(RoutingFeatureTypes.ROUTE);
@@ -1065,7 +1065,7 @@ describe('OlRoutingHandler', () => {
 				expect(segmentFeature1.getGeometry().getCoordinates()).toEqual(coordinates);
 				expect(segmentFeature1.getStyle()(feature)).toEqual(getRoutingStyleFunction()(feature));
 
-				expect(updateStoreSpy).toHaveBeenCalledWith(categoryResponse);
+				expect(updateStoreSpy).toHaveBeenCalledWith(ghRoute);
 			});
 		});
 

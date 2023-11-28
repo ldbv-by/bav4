@@ -58,9 +58,8 @@ export const bvvChartItemStylesProvider = () => {
 		other: {
 			id: 201,
 			color: 'rgb(238,213,183)',
-			// FIXME: Workaround for graphhopper version 0.13 due to incomplete mapping for BasisDLM-Values for surface types
-			// this Workaround musst be reverted if graphhopper version >= 1.0
-			// label: "verschieden",
+			// FIXME: Workaround for Graphhopper version 0.13 due to incomplete mapping for BasisDLM-Values for surface types
+			// this Workaround must be reverted if Graphhopper version >= 1.0
 			label: lang === 'de' ? 'befestigt' : 'compacted'
 		},
 		asphalt: {
