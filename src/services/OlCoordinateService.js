@@ -7,6 +7,7 @@ import { buffer, containsCoordinate } from 'ol/extent';
 import { $injector } from '../injection';
 import { getCoordinatesForElevationProfile } from '../modules/olMap/utils/olGeometryUtils';
 import { LineString } from '../../node_modules/ol/geom';
+import { isCoordinate, isCoordinateLike } from '../utils/checks';
 
 /**
  * A function that returns a string representation of a coordinate.
@@ -159,13 +160,52 @@ export class OlCoordinateService {
 	 * @param {Array<module:domain/coordinateTypeDef~Coordinate>} coordinates input coordinate
 	 * @param {CoordinateSimplificationTarget} type the use case (type) of simplification
 	 * @returns {Array<module:domain/coordinateTypeDef~Coordinate>} simplified coordinates
+	 * @throws {Error} `Unsupported simplification type` or `Cannot simplify coordinate`
 	 */
 	simplify(coordinates, type) {
+		const throwError = () => {
+			throw new Error(`Cannot simplify coordinate, value is not a Coordinates type`);
+		};
+
+		if (!Array.isArray(coordinates)) {
+			throwError();
+		}
+		coordinates.forEach((c) => {
+			if (!isCoordinate(c)) {
+				throwError();
+			}
+		});
 		switch (type) {
 			case CoordinateSimplificationTarget.ELEVATION_PROFILE:
 				return getCoordinatesForElevationProfile(new LineString(coordinates));
 		}
 
 		throw new Error(`Unsupported simplification type: ${type}`);
+	}
+
+	/**
+	 * Converts a single or array of {@link module:domain/coordinateTypeDef~CoordinateLike} to a single or array of {@link module:domain/coordinateTypeDef~Coordinate}.
+	 * @param {Array<module:domain/coordinateTypeDef~CoordinateLike>|module:domain/coordinateTypeDef~CoordinateLike} coordinateLike single or array of `CoordinateLike`
+	 * @returns {Array<module:domain/coordinateTypeDef~CoordinateLike>|module:domain/coordinateTypeDef~CoordinateLike} coordinates single  or array of  `Coordinate`
+	 * @throws {Error} `Cannot convert value to coordinate`
+	 */
+	toCoordinate(coordinateLike) {
+		const throwError = () => {
+			throw new Error(`Cannot convert value to coordinate, value is not a CoordinateLike type`);
+		};
+
+		if (coordinateLike) {
+			const singleValue = !Array.isArray(coordinateLike[0]);
+			const coordinateLikeAsArray = singleValue ? [coordinateLike] : coordinateLike;
+
+			coordinateLikeAsArray.forEach((c) => {
+				if (!isCoordinateLike(c)) {
+					throwError();
+				}
+			});
+			const coordinates = coordinateLikeAsArray.map((c) => c.slice(0, 2));
+			return singleValue ? coordinates[0] : coordinates;
+		}
+		throwError();
 	}
 }
