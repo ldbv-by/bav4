@@ -1132,6 +1132,19 @@ describe('getBoundingBoxFrom', () => {
 
 	describe('getCoordinatesForElevationProfile', () => {
 		it('creates a simplified version of a geometry', () => {
+			const coordinatesMaxCountExceeded = [];
+
+			for (let index = 0; index <= PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES; index++) {
+				coordinatesMaxCountExceeded.push([0, index]);
+			}
+
+			expect(getCoordinatesForElevationProfile(new LineString(coordinatesMaxCountExceeded))).toEqual([
+				[0, 0],
+				[0, 1000]
+			]);
+		});
+
+		it('creates an array of 2D coordinates', () => {
 			expect(
 				getCoordinatesForElevationProfile(
 					new LineString([
