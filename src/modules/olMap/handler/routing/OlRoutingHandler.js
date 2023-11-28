@@ -26,7 +26,6 @@ import { provide as messageProvide } from './tooltipMessage.provider';
 import { setProposal, setRoute, setRouteStats, setWaypoints } from '../../../../store/routing/routing.action';
 import { CoordinateProposalType, RoutingStatusCodes } from '../../../../domain/routing';
 import { fit } from '../../../../store/position/position.action';
-import { getCoordinatesForElevationProfile } from '../../utils/olGeometryUtils';
 import { updateCoordinates } from '../../../../store/elevationProfile/elevationProfile.action';
 import { equals } from '../../../../../node_modules/ol/coordinate';
 import { GeoJSON as GeoJSONFormat } from 'ol/format';
@@ -552,15 +551,15 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 	async _updateStore(ghRoute) {
 		const geom = this._polylineToGeometry(ghRoute.paths[0].points);
-		const profileCoordinates = getCoordinatesForElevationProfile(geom);
+		const coordinates = geom.getCoordinates();
 
 		try {
-			const { stats: profileStats } = await this._elevationService.getProfile(profileCoordinates);
+			const { stats: profileStats } = await this._elevationService.getProfile(coordinates);
 			const routeStats = this._routeStatsProvider(ghRoute, profileStats);
 
-			setRouteStats(routeStats);
-			updateCoordinates(profileCoordinates);
 			setRoute({ data: new GeoJSONFormat().writeGeometry(geom), type: new SourceType(SourceTypeName.GEOJSON) });
+			setRouteStats(routeStats);
+			updateCoordinates(coordinates);
 		} catch (e) {
 			console.error(e);
 			emitNotification(`${this._translationService.translate('global_routingService_exception')}`, LevelTypes.ERROR);
