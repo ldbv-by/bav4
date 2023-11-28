@@ -10,6 +10,7 @@ import { bottomSheetReducer } from '../../../../src/store/bottomSheet/bottomShee
 import { BottomSheet } from '../../../../src/modules/stackables/components/bottomSheet/BottomSheet';
 import { createNoInitialStateMainMenuReducer } from '../../../../src/store/mainMenu/mainMenu.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
+import { navigationRailReducer } from '../../../../src/store/navigationRail/navigationRail.reducer';
 
 window.customElements.define(StackableContentPanel.tag, StackableContentPanel);
 window.customElements.define(NotificationItem.tag, NotificationItem);
@@ -34,7 +35,11 @@ describe('StackableContentPanel', () => {
 		it('renders nothing when no data available', async () => {
 			TestUtils.setupStoreAndDi(
 				{ notifications: { notification: null }, bottomSheet: { data: null } },
-				{ notifications: notificationReducer, bottomSheet: bottomSheetReducer }
+				{
+					notifications: notificationReducer,
+					bottomSheet: bottomSheetReducer,
+					navigationRail: navigationRailReducer
+				}
 			);
 			const element = await TestUtils.render(StackableContentPanel.tag);
 
@@ -51,7 +56,8 @@ describe('StackableContentPanel', () => {
 				pointer: pointerReducer,
 				bottomSheet: bottomSheetReducer,
 				mainMenu: createNoInitialStateMainMenuReducer(),
-				media: createNoInitialStateMediaReducer()
+				media: createNoInitialStateMediaReducer(),
+				navigationRail: navigationRailReducer
 			});
 			$injector.registerSingleton('TranslationService', { translate: (key) => key });
 			const element = await TestUtils.render(StackableContentPanel.tag);

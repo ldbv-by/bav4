@@ -7,6 +7,7 @@ import { toggle } from '../../../../src/store/mainMenu/mainMenu.action';
 import { createNoInitialStateMainMenuReducer } from '../../../../src/store/mainMenu/mainMenu.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { bottomSheetReducer } from '../../../../src/store/bottomSheet/bottomSheet.reducer';
+import { navigationRailReducer } from '../../../../src/store/navigationRail/navigationRail.reducer';
 import { openBottomSheet } from '../../../../src/store/bottomSheet/bottomSheet.action';
 
 window.customElements.define(BottomSheet.tag, BottomSheet);
@@ -28,7 +29,8 @@ describe('BottomSheet', () => {
 		store = TestUtils.setupStoreAndDi(initialState, {
 			mainMenu: createNoInitialStateMainMenuReducer(),
 			media: createNoInitialStateMediaReducer(),
-			bottomSheet: bottomSheetReducer
+			bottomSheet: bottomSheetReducer,
+			navigationRail: navigationRailReducer
 		});
 
 		const element = await TestUtils.renderAndLogLifecycle(BottomSheet.tag);
@@ -39,20 +41,21 @@ describe('BottomSheet', () => {
 	describe('constructor', () => {
 		it('sets a initial model', async () => {
 			TestUtils.setupStoreAndDi(defaultState);
-			const element = new BottomSheet();
+			const element = await setup();
 
 			expect(element.getModel()).toEqual({
 				content: null,
 				open: false,
+				openNav: false,
 				portrait: false
 			});
 		});
 
 		it('subscribes to the store', async () => {
 			TestUtils.setupStoreAndDi(defaultState);
-			const element = new BottomSheet();
+			const element = await setup();
 
-			expect(element._subscriptions).toHaveSize(2);
+			expect(element._subscriptions).toHaveSize(3);
 			expect(element._subscriptions.every((subscription) => typeof subscription === 'function')).toBeTrue();
 		});
 	});

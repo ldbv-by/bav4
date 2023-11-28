@@ -5,6 +5,7 @@ import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
 import { createNoInitialStateMainMenuReducer } from '../../../../src/store/mainMenu/mainMenu.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
+import { navigationRailReducer } from '../../../../src/store/navigationRail/navigationRail.reducer';
 
 window.customElements.define(Footer.tag, Footer);
 
@@ -23,7 +24,11 @@ describe('Footer', () => {
 			...state
 		};
 
-		TestUtils.setupStoreAndDi(initialState, { mainMenu: createNoInitialStateMainMenuReducer(), media: createNoInitialStateMediaReducer() });
+		TestUtils.setupStoreAndDi(initialState, {
+			mainMenu: createNoInitialStateMainMenuReducer(),
+			media: createNoInitialStateMediaReducer(),
+			navigationRail: navigationRailReducer
+		});
 		$injector.registerSingleton('EnvironmentService', {
 			isEmbedded: () => embed
 		});

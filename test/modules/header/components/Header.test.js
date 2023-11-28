@@ -5,6 +5,7 @@ import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
 import { layersReducer, createDefaultLayer } from '../../../../src/store/layers/layers.reducer';
 import { networkReducer } from '../../../../src/store/network/network.reducer';
+import { navigationRailReducer } from '../../../../src/store/navigationRail/navigationRail.reducer';
 import { setFetching } from '../../../../src/store/network/network.action';
 import { searchReducer } from '../../../../src/store/search/search.reducer';
 import { EventLike } from '../../../../src/utils/storeUtils';
@@ -54,7 +55,8 @@ describe('Header', () => {
 			layers: layersReducer,
 			search: searchReducer,
 			tools: toolsReducer,
-			media: createNoInitialStateMediaReducer()
+			media: createNoInitialStateMediaReducer(),
+			navigationRail: navigationRailReducer
 		});
 		$injector
 			.registerSingleton('EnvironmentService', { isEmbedded: () => embed, isStandalone: () => standalone })

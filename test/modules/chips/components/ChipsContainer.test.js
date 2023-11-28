@@ -5,6 +5,7 @@ import { $injector } from '../../../../src/injection';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { createNoInitialStateMainMenuReducer } from '../../../../src/store/mainMenu/mainMenu.reducer';
 import { chipsReducer } from '../../../../src/store/chips/chips.reducer';
+import { navigationRailReducer } from '../../../../src/store/navigationRail/navigationRail.reducer';
 import { setCurrent } from '../../../../src/store/chips/chips.action';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 import { isTemplateResult } from '../../../../src/utils/checks';
@@ -141,6 +142,7 @@ describe('ChipsContainer', () => {
 			modal: modalReducer,
 			media: createNoInitialStateMediaReducer(),
 			chips: chipsReducer,
+			navigationRail: navigationRailReducer,
 			mainMenu: createNoInitialStateMainMenuReducer()
 		});
 		$injector.registerSingleton('EnvironmentService', {
