@@ -1,5 +1,5 @@
 /**
- * @module services/provider/routeStats_provider
+ * @module modules/olMap/handler/routing/routeStats_provider
  */
 
 import Polyline from 'ol/format/Polyline.js';
