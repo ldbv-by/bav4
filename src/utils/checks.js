@@ -56,6 +56,16 @@ export const isCoordinate = (val) => {
 };
 
 /**
+ * Checks if a value is a {@link Coordinate}.
+ * @function
+ * @param {*} val
+ * @returns {boolean} true if it is a coordinate
+ */
+export const isCoordinateLike = (val) => {
+	return Array.isArray(val) && isNumber(val[0]) && isNumber(val[1]);
+};
+
+/**
  * Checks if a value is a Promise.
  * @function
  * @param {*} val
