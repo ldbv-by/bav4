@@ -5,6 +5,8 @@ import { fromLonLat, toLonLat, transformExtent, transform } from 'ol/proj';
 import { bvvStringifyFunction } from './provider/stringifyCoords.provider';
 import { buffer, containsCoordinate } from 'ol/extent';
 import { $injector } from '../injection';
+import { getCoordinatesForElevationProfile } from '../modules/olMap/utils/olGeometryUtils';
+import { LineString } from '../../node_modules/ol/geom';
 
 /**
  * A function that returns a string representation of a coordinate.
@@ -150,5 +152,20 @@ export class OlCoordinateService {
 	 */
 	containsCoordinate(extent, coordinate) {
 		return containsCoordinate(extent, coordinate);
+	}
+
+	/**
+	 * Simplifies (reduces) an array of coordinates for a specified use case when needed.
+	 * @param {Array<module:domain/coordinateTypeDef~Coordinate>} coordinates input coordinate
+	 * @param {CoordinateSimplificationTarget} type the use case (type) of simplification
+	 * @returns {Array<module:domain/coordinateTypeDef~Coordinate>} simplified coordinates
+	 */
+	simplify(coordinates, type) {
+		switch (type) {
+			case CoordinateSimplificationTarget.ELEVATION_PROFILE:
+				return getCoordinatesForElevationProfile(new LineString(coordinates));
+		}
+
+		throw new Error(`Unsupported simplification type: ${type}`);
 	}
 }

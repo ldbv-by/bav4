@@ -1,11 +1,20 @@
 /* eslint-disable no-undef */
-import { OlCoordinateService } from '../../src/services/OlCoordinateService';
+import { CoordinateSimplificationTarget, OlCoordinateService } from '../../src/services/OlCoordinateService';
 import { fromLonLat, toLonLat, transformExtent } from 'ol/proj';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { bvvStringifyFunction } from '../../src/services/provider/stringifyCoords.provider';
 import { $injector } from '../../src/injection';
 import { GlobalCoordinateRepresentations } from '../../src/domain/coordinateRepresentation';
+import { PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES } from '../../src/modules/olMap/utils/olGeometryUtils';
+
+describe('CoordinateSimplificationTarget', () => {
+	it('provides an enum of all available target types', () => {
+		expect(Object.keys(CoordinateSimplificationTarget).length).toBe(1);
+		expect(Object.isFrozen(CoordinateSimplificationTarget)).toBeTrue();
+		expect(CoordinateSimplificationTarget.ELEVATION_PROFILE).toBe('elevationProfile');
+	});
+});
 
 describe('OlCoordinateService', () => {
 	const projectionServiceMock = {
@@ -176,5 +185,66 @@ describe('OlCoordinateService', () => {
 				expect(instanceUnderTest.containsCoordinate(extent, [9, 9])).toBeFalse();
 			});
 		});
+
+		describe('simplify', () => {
+			it('simplifies an array of coordinate', () => {
+				setup();
+				const coordinatesMaxCountExceeded = [];
+				const coordinatesMaxCount = [];
+
+				for (let index = 0; index <= PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES; index++) {
+					1;
+					coordinatesMaxCountExceeded.push([0, index]);
+				}
+				for (let index = 0; index < PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES; index++) {
+					coordinatesMaxCount.push([0, index]);
+				}
+
+				expect(instanceUnderTest.simplify(coordinatesMaxCountExceeded, CoordinateSimplificationTarget.ELEVATION_PROFILE).length).toBe(2);
+				expect(instanceUnderTest.simplify(coordinatesMaxCount, CoordinateSimplificationTarget.ELEVATION_PROFILE).length).toBe(
+					PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES
+				);
+			});
+
+			it('throws an error when target type is not supported', () => {
+				setup();
+
+				expect(() => {
+					instanceUnderTest.simplify([], 'any unknown type');
+				}).toThrowError(/Unsupported simplification type: any unknown type/);
+			});
+		});
 	});
 });
+
+// it('creates a simplified version of a geometry', () => {
+// 	const simplifiedGeom = simplify(
+// 		new LineString([
+// 			[0, 0],
+// 			[420, 420],
+// 			[421, 421],
+// 			[3, 5]
+// 		]),
+// 		3,
+// 		1
+// 	);
+
+// 	expect(simplifiedGeom.getCoordinates()).toEqual([
+// 		[0, 0],
+// 		[421, 421],
+// 		[3, 5]
+// 	]);
+// });
+
+// it('does nothing when coordinates length <= maxCount ', () => {
+// 	const coordinates = [
+// 		[0, 0],
+// 		[420, 420],
+// 		[421, 421],
+// 		[3, 5]
+// 	];
+
+// 	const simplifiedGeom = simplify(new LineString(coordinates), coordinates.length, 1);
+
+// 	expect(simplifiedGeom.getCoordinates()).toEqual(coordinates);
+// });
