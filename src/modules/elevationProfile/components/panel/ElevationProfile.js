@@ -11,6 +11,7 @@ import { SurfaceType } from '../../utils/elevationProfileAttributeTypes';
 import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { toLocaleString } from '../../../../utils/numberUtils';
+import { isNumber } from '../../../../utils/checks';
 
 const Update_Schema = 'update_schema';
 const Update_Selected_Attribute = 'update_selected_attribute';
@@ -463,7 +464,7 @@ export class ElevationProfile extends MvuElement {
 		};
 
 		const colorStops = elevationData?.elevations.reduce((accumulator, currentElement, index) => {
-			if (currentElement.slope != null) {
+			if (isNumber(currentElement.slope)) {
 				const slopeValue = Math.abs(currentElement.slope);
 				const slopeClass = SoterSlopeClasses.find((c) => c.min <= slopeValue && c.max > slopeValue);
 				const [lastColorStop] = accumulator.slice(-1);
