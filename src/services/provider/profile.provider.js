@@ -10,12 +10,14 @@ import { CoordinateSimplificationTarget } from '../OlCoordinateService';
  * @function
  * @type {module:services/ElevationService~profileProvider}
  */
-export const getBvvProfile = async (coordinates3857) => {
+export const getBvvProfile = async (coordinateLikes3857) => {
 	const {
 		HttpService: httpService,
 		ConfigService: configService,
 		CoordinateService: coordinateService
 	} = $injector.inject('HttpService', 'ConfigService', 'CoordinateService');
+
+	const coordinates3857 = coordinateService.toCoordinate(coordinateLikes3857);
 	const simplifiedCoordinates = coordinateService.simplify(coordinates3857, CoordinateSimplificationTarget.ELEVATION_PROFILE);
 	const url = configService.getValueAsPath('BACKEND_URL') + 'dem/profile';
 	const requestPayload = { coords: simplifiedCoordinates.map((c) => ({ e: c[0], n: c[1] })) };

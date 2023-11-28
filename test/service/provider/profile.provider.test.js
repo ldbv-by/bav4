@@ -68,7 +68,8 @@ describe('profile provider', () => {
 			async post() {}
 		};
 		const coordinateService = {
-			simplify() {}
+			simplify() {},
+			toCoordinate() {}
 		};
 
 		beforeEach(() => {
@@ -94,7 +95,8 @@ describe('profile provider', () => {
 				]
 			});
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
-			const coordinateServiceSpy = spyOn(coordinateService, 'simplify')
+			const coordinateServiceSpy1 = spyOn(coordinateService, 'toCoordinate').withArgs(coords).and.returnValue(coords);
+			const coordinateServiceSpy0 = spyOn(coordinateService, 'simplify')
 				.withArgs(coords, CoordinateSimplificationTarget.ELEVATION_PROFILE)
 				.and.returnValue(coords);
 			const httpServiceSpy = spyOn(httpService, 'post')
@@ -106,7 +108,8 @@ describe('profile provider', () => {
 			const profile = await getBvvProfile(coords);
 
 			expect(configServiceSpy).toHaveBeenCalled();
-			expect(coordinateServiceSpy).toHaveBeenCalled();
+			expect(coordinateServiceSpy0).toHaveBeenCalled();
+			expect(coordinateServiceSpy1).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
 			expect(profile).toEqual(mockProfileResponse);
 		});
@@ -124,7 +127,8 @@ describe('profile provider', () => {
 				]
 			});
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
-			const coordinateServiceSpy = spyOn(coordinateService, 'simplify')
+			const coordinateServiceSpy1 = spyOn(coordinateService, 'toCoordinate').withArgs(coords).and.returnValue(coords);
+			const coordinateServiceSpy0 = spyOn(coordinateService, 'simplify')
 				.withArgs(coords, CoordinateSimplificationTarget.ELEVATION_PROFILE)
 				.and.returnValue(coords);
 			const httpServiceSpy = spyOn(httpService, 'post')
@@ -135,7 +139,8 @@ describe('profile provider', () => {
 
 			await expectAsync(getBvvProfile(coords)).toBeRejectedWithError('Profile could not be fetched: Http-Status 500');
 			expect(configServiceSpy).toHaveBeenCalled();
-			expect(coordinateServiceSpy).toHaveBeenCalled();
+			expect(coordinateServiceSpy0).toHaveBeenCalled();
+			expect(coordinateServiceSpy1).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
 		});
 	});
