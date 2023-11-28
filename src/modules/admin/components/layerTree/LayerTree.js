@@ -22,34 +22,34 @@ const hasChildrenClass = 'has-children';
 const showChildrenClass = 'show-children';
 const droppableClass = 'droppable';
 
-// const logOnceDictionary = {};
-// export const logOnce = (key, objectToShow = 'nix') => {
-// 	if (!logOnceDictionary[key]) {
-// 		if (objectToShow === 'nix') {
-// 			// eslint-disable-next-line no-console
-// 			console.log(key);
-// 		} else {
-// 			if (typeof objectToShow === 'string') {
-// 				// eslint-disable-next-line no-console
-// 				console.log(objectToShow);
-// 			} else {
-// 				// eslint-disable-next-line no-console
-// 				console.log(JSON.stringify(objectToShow));
-// 			}
-// 		}
-// 		logOnceDictionary[key] = objectToShow;
-// 		return true;
-// 	}
-// 	return false;
-// };
+const logOnceDictionary = {};
+export const logOnce = (key, objectToShow = 'nix') => {
+	if (!logOnceDictionary[key]) {
+		if (objectToShow === 'nix') {
+			// eslint-disable-next-line no-console
+			console.log(key);
+		} else {
+			if (typeof objectToShow === 'string') {
+				// eslint-disable-next-line no-console
+				console.log(objectToShow);
+			} else {
+				// eslint-disable-next-line no-console
+				console.log(JSON.stringify(objectToShow));
+			}
+		}
+		logOnceDictionary[key] = objectToShow;
+		return true;
+	}
+	return false;
+};
 
-// export const onlyOnce = (key) => {
-// 	if (logOnceDictionary[key]) {
-// 		return false;
-// 	}
-// 	logOnceDictionary[key] = key;
-// 	return true;
-// };
+export const onlyOnce = (key) => {
+	if (logOnceDictionary[key]) {
+		return false;
+	}
+	logOnceDictionary[key] = key;
+	return true;
+};
 
 /**
  * Contains
@@ -60,6 +60,8 @@ export class LayerTree extends MvuElement {
 	#currentGeoResourceId;
 	#currentUId;
 	#overTarget;
+
+	// #working;
 
 	constructor() {
 		super({
@@ -123,6 +125,10 @@ export class LayerTree extends MvuElement {
 	createView(model) {
 		const { topics, catalogWithResourceData, currentGeoResourceId } = model;
 
+		// if (this.#working) {
+		// 	return;
+		// }
+
 		if (
 			catalogWithResourceData === null ||
 			(catalogWithResourceData && catalogWithResourceData.length === 0) ||
@@ -133,13 +139,17 @@ export class LayerTree extends MvuElement {
 		}
 
 		const insertDraggedGeoResource = (currentCatalogEntryUid, newGeoResourceIdFromList) => {
+			// this.#working = true;
 			if (newGeoResourceIdFromList === currentGeoResourceId && this.#currentUId === currentCatalogEntryUid) {
 				return;
 			}
 
 			const newElementUid = this._addGeoResource(currentCatalogEntryUid, newGeoResourceIdFromList, [...catalogWithResourceData]);
+			// console.log('🚀 ~ LayerTree ~ insertDraggedGeoResource ~ newElementUid:', newElementUid);
 
 			this.#currentUId = newElementUid;
+			// console.log('🚀 ~ LayerTree ~ insertDraggedGeoResource ~ this.#currentUId:', this.#currentUId);
+			// this.#working = false;
 		};
 
 		const onDragStart = (event, draggedEntry) => {
@@ -167,14 +177,21 @@ export class LayerTree extends MvuElement {
 		};
 
 		const onDragOver = (event, currentCatalogEntry) => {
+			logOnce('🚀 ~ 🚀 ~ 🚀 ~ currentCatalogEntry.geoResourceId ' + currentCatalogEntry.geoResourceId);
 			const types = event.dataTransfer.types;
 			const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
 			const newGeoResourceIdFromList = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
 			if (newGeoResourceIdFromList) {
+				logOnce('🚀 ~ LayerTree ~ onDragOver ~ newGeoResourceIdFromList:' + newGeoResourceIdFromList);
+				logOnce(
+					'newGeoResourceIdFromList: ' + newGeoResourceIdFromList + ' - currentCatalogEntry.geoResourceId: ' + currentCatalogEntry.geoResourceId
+				);
 				if (newGeoResourceIdFromList === currentCatalogEntry.geoResourceId) {
+					// console.log('newGeoResourceIdFromList === currentCatalogEntry.geoResourceId');
 					event.preventDefault();
 					return;
 				}
+				// console.log('newGeoResourceIdFromList !== currentCatalogEntry.geoResourceId');
 
 				this.#overTarget = true;
 				this.#currentGeoResourceId = newGeoResourceIdFromList;
@@ -297,7 +314,10 @@ export class LayerTree extends MvuElement {
 			this._updateTopic(event.target.value);
 		};
 
-		const renderEntry = (entry) => {
+		const renderEntry = (entry, index, level) => {
+			// if (level === 1) {
+			// 	console.log('🚀 ~ LayerTree ~ renderEntry ~ entry: ', index, entry);
+			// }
 			return html`
 				<li
 					@click="${(event) => handleCategoryClick(event, entry)}"
@@ -349,7 +369,7 @@ export class LayerTree extends MvuElement {
 						${repeat(
 							catalogWithResourceData,
 							(item) => item.uid + item.label,
-							(catalogEntry, index) => html`<li>${renderEntry(catalogEntry)}</li>`
+							(catalogEntry, index) => html`<li>${renderEntry(catalogEntry, index, 1)}</li>`
 						)}
 					</ul>
 				</div>

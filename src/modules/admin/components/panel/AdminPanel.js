@@ -230,6 +230,9 @@ export class AdminPanel extends MvuElement {
 	update(type, data, model) {
 		switch (type) {
 			case Update_CatalogWithResourceData:
+				if (data.length === 10) {
+					console.log('🚀 ~ AdminPanel ~ update ~ data:', data);
+				}
 				return { ...model, catalogWithResourceData: [...data], dummy: !model.dummy };
 		}
 	}
@@ -245,6 +248,7 @@ export class AdminPanel extends MvuElement {
 
 	createView(model) {
 		const { catalogWithResourceData, dummy } = model;
+		console.log('🚀 ~ AdminPanel ~ createView ~ catalogWithResourceData:', catalogWithResourceData);
 
 		const findElementRecursively = (uid, catalogEntry) => {
 			for (let n = 0; n < catalogEntry.children.length; n++) {
@@ -345,6 +349,7 @@ export class AdminPanel extends MvuElement {
 		const addGeoResource = (currentCatalogEntryUid, newGeoresourceId, catalogWithResourceDataFromTree) => {
 			// find georesource to add
 			const { newEntry, newUid } = createNewGeoResourceEntry(newGeoresourceId);
+			// console.log('🚀 ~ AdminPanel ~ addGeoResource ~ newEntry:', newEntry);
 
 			addEntry(catalogWithResourceDataFromTree, currentCatalogEntryUid, newEntry);
 			this.signal(Update_CatalogWithResourceData, catalogWithResourceDataFromTree);
