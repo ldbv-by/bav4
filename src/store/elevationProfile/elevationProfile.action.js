@@ -2,7 +2,7 @@
  * @module store/elevationProfile/elevationProfile_action
  */
 import { $injector } from '../../injection';
-import { isCoordinate, isCoordinateLike } from '../../utils/checks';
+import { isCoordinateLike } from '../../utils/checks';
 import { ELEVATION_PROFILE_ACTIVE_CHANGED, ELEVATION_PROFILE_COORDINATES_CHANGED } from './elevationProfile.reducer';
 
 const getStore = () => {
