@@ -151,9 +151,8 @@ export const RoutingStatusCodes = Object.freeze({
 /**
  * Contains a coordinate and its intention.
  * @typedef {Object} CoordinateProposal
- * @property {module:domain/coordinateTypeDef~Coordinate}  coordinate The coordinate (in the SRID of the map)
+ * @property {module:domain/coordinateTypeDef~Coordinate}  coord The coordinate (in the SRID of the map)
  * @property {CoordinateProposalType} type Intention of the coordinate
- * @property {Object} [data] optional data
  */
 
 /**

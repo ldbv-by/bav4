@@ -661,7 +661,7 @@ export class ElevationProfile extends MvuElement {
 		removeHighlightFeaturesById(ElevationProfile.HIGHLIGHT_FEATURE_ID);
 		addHighlightFeatures({
 			id: ElevationProfile.HIGHLIGHT_FEATURE_ID,
-			type: HighlightFeatureType.TEMPORARY,
+			type: HighlightFeatureType.MARKER_TMP,
 			data: { coordinate: [...coordinates] }
 		});
 	}

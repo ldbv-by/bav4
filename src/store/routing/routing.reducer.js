@@ -121,6 +121,13 @@ export const routingReducer = (state = initialState, action) => {
 			};
 		}
 		case ROUTING_START_SET: {
+			if (state.waypoints.length === 1) {
+				return {
+					...state,
+					waypoints: [[...payload], ...state.waypoints],
+					status: RoutingStatusCodes.Ok
+				};
+			}
 			return {
 				...state,
 				waypoints: [[...payload]],
@@ -128,6 +135,13 @@ export const routingReducer = (state = initialState, action) => {
 			};
 		}
 		case ROUTING_DESTINATION_SET: {
+			if (state.waypoints.length === 1) {
+				return {
+					...state,
+					waypoints: [...state.waypoints, [...payload]],
+					status: RoutingStatusCodes.Ok
+				};
+			}
 			return {
 				...state,
 				waypoints: [[...payload]],
@@ -141,7 +155,7 @@ export const routingReducer = (state = initialState, action) => {
 			};
 		}
 		case ROUTING_INTERMEDIATE_SET: {
-			const index = state.waypoints.findIndex((c) => equals(c, payload));
+			const index = state.waypoints.findIndex((c) => equals(c, payload.payload));
 			if (index === -1) {
 				return {
 					...state,

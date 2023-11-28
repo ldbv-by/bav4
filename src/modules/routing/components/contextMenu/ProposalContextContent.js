@@ -86,7 +86,7 @@ export class ProposalContextContent extends MvuElement {
 		const onClick = (proposalAction) => {
 			const closeAfterAction = !preventClose;
 
-			proposalAction(proposal.coordinate);
+			proposalAction(proposal.coord);
 			if (closeAfterAction) {
 				closeBottomSheet();
 				closeContextMenu();
