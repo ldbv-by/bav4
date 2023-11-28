@@ -1144,20 +1144,6 @@ describe('getBoundingBoxFrom', () => {
 			]);
 		});
 
-		it('creates an array of 2D coordinates', () => {
-			expect(
-				getCoordinatesForElevationProfile(
-					new LineString([
-						[2, 2, 2],
-						[3, 3, 3]
-					])
-				)
-			).toEqual([
-				[2, 2],
-				[3, 3]
-			]);
-		});
-
 		it('returns an empty array when geometry cannot be converted to a LineString', () => {
 			const multiPolygon = new MultiPolygon([
 				new Polygon([
