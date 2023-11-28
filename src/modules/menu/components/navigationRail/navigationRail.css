@@ -2,14 +2,12 @@
 	position: fixed;
 	height: 100%;
 	width: 5.5em;
-	background: var(--tertiary-bg-color);
 	background: var(--header-background-color);
 	z-index: 600;
 	display: flex;
 	flex-direction: column;
 	transition: all var(--animation-duration-large-open) var(--animation-easing-linear);
 	box-shadow: 0 2px 4px rgb(0 0 0 / 50%);
-
 }
 .is-portrait.navigation-rail__container {
 	height: auto;
@@ -24,10 +22,6 @@
 	font-size: 1.7rem;
 	min-width: 4em;
 }
-.is-portrait .theme-toggle {
-	display: none;
-}
-
 .navigation-rail__container button {
 	height: 6em;
 	width: 100%;
@@ -37,31 +31,21 @@
 	flex-direction: column;
 	transition: all var(--animation-duration-small-open) var(--animation-easing-open);
 }
-
-.navigation-rail__container button:hover .icon {
-	background: linear-gradient(to top, var(--text4) 0%, var(--primary-color) 50%);
+.is-active .text {
+	font-weight: bold;
 }
+
 .navigation-rail__container button .text {
 	text-align: center;
 	margin: auto;
 	font-size: 0.8em;
 	margin-top: 0.5em;
-	color: var(--text3);
-}
-.navigation-rail__container button:hover {
-    background: var(--primary-bg-color);
-}
-.navigation-rail__container button:hover .text {
 	color: var(--text1);
 }
 
-/* .navigation-rail__container button:first-child {
-	border-bottom: 1px dotted var(--secondary-color);
-} */
-
 .seperator {
 	border-bottom: 1px dotted var(--secondary-color) !important;
-	margin: 0 .5em;
+	margin: 0 0.5em;
 }
 
 .navigation-rail__container button .icon {
@@ -72,17 +56,17 @@
 	margin: auto;
 	margin-bottom: 0;
 }
-.navigation-rail__container button .text {
-	text-align: center;
-	margin: auto;
-	font-size: 0.8em;
-	margin-top: 0.5em;
-	color: var(--text1);
-}
+
 .navigation-rail__container button:hover {
 	background: var(--primary-bg-color);
 }
 
+.navigation-rail__container button:hover .text {
+	color: var(--text1);
+}
+.navigation-rail__container button:hover .icon {
+	background: linear-gradient(to top, var(--text4) 0%, var(--primary-color) 50%);
+}
 .home {
 	mask: url('assets/home.svg');
 	-webkit-mask: url('assets/home.svg');
@@ -172,13 +156,8 @@
 	margin: 1em;
 	padding-bottom: 0.5em;
 }
-
-.is-active {
-    /* background: var(--primary-bg-color) !important;
-    border-radius: 3em; */
-}
-.is-active .text {
-	font-weight: bold;
+.is-portrait .theme-toggle {
+	display: none;
 }
 
 .zoom-in {
