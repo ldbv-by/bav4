@@ -216,35 +216,3 @@ describe('OlCoordinateService', () => {
 		});
 	});
 });
-
-// it('creates a simplified version of a geometry', () => {
-// 	const simplifiedGeom = simplify(
-// 		new LineString([
-// 			[0, 0],
-// 			[420, 420],
-// 			[421, 421],
-// 			[3, 5]
-// 		]),
-// 		3,
-// 		1
-// 	);
-
-// 	expect(simplifiedGeom.getCoordinates()).toEqual([
-// 		[0, 0],
-// 		[421, 421],
-// 		[3, 5]
-// 	]);
-// });
-
-// it('does nothing when coordinates length <= maxCount ', () => {
-// 	const coordinates = [
-// 		[0, 0],
-// 		[420, 420],
-// 		[421, 421],
-// 		[3, 5]
-// 	];
-
-// 	const simplifiedGeom = simplify(new LineString(coordinates), coordinates.length, 1);
-
-// 	expect(simplifiedGeom.getCoordinates()).toEqual(coordinates);
-// });
