@@ -1,6 +1,7 @@
 import { $injector } from '../../../src/injection';
 import { MediaType } from '../../../src/domain/mediaTypes';
 import { getBvvProfile } from '../../../src/services/provider/profile.provider';
+import { CoordinateSimplificationTarget } from '../../../src/services/OlCoordinateService';
 
 describe('profile provider', () => {
 	const mockProfileResponse = {
@@ -66,9 +67,15 @@ describe('profile provider', () => {
 		const httpService = {
 			async post() {}
 		};
+		const coordinateService = {
+			simplify() {}
+		};
 
 		beforeEach(() => {
-			$injector.registerSingleton('ConfigService', configService).registerSingleton('HttpService', httpService);
+			$injector
+				.registerSingleton('ConfigService', configService)
+				.registerSingleton('HttpService', httpService)
+				.registerSingleton('CoordinateService', coordinateService);
 		});
 		afterEach(() => {
 			$injector.reset();
@@ -87,6 +94,9 @@ describe('profile provider', () => {
 				]
 			});
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
+			const coordinateServiceSpy = spyOn(coordinateService, 'simplify')
+				.withArgs(coords, CoordinateSimplificationTarget.ELEVATION_PROFILE)
+				.and.returnValue(coords);
 			const httpServiceSpy = spyOn(httpService, 'post')
 				.withArgs(`${backendUrl}/dem/profile`, expectedPayload, MediaType.JSON, {
 					timeout: 2000
@@ -96,6 +106,7 @@ describe('profile provider', () => {
 			const profile = await getBvvProfile(coords);
 
 			expect(configServiceSpy).toHaveBeenCalled();
+			expect(coordinateServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
 			expect(profile).toEqual(mockProfileResponse);
 		});
@@ -113,6 +124,9 @@ describe('profile provider', () => {
 				]
 			});
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
+			const coordinateServiceSpy = spyOn(coordinateService, 'simplify')
+				.withArgs(coords, CoordinateSimplificationTarget.ELEVATION_PROFILE)
+				.and.returnValue(coords);
 			const httpServiceSpy = spyOn(httpService, 'post')
 				.withArgs(`${backendUrl}/dem/profile`, expectedPayload, MediaType.JSON, {
 					timeout: 2000
@@ -121,6 +135,7 @@ describe('profile provider', () => {
 
 			await expectAsync(getBvvProfile(coords)).toBeRejectedWithError('Profile could not be fetched: Http-Status 500');
 			expect(configServiceSpy).toHaveBeenCalled();
+			expect(coordinateServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
 		});
 	});
