@@ -123,7 +123,7 @@ export class MainMenu extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { open, openNav ,tab, portrait, minWidth, observeResponsiveParameter } = model;
+		const { open, openNav, tab, portrait, minWidth, observeResponsiveParameter } = model;
 
 		const getOrientationClass = () => (portrait ? 'is-portrait' : 'is-landscape');
 

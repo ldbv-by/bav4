@@ -60,8 +60,8 @@ export class Header extends MvuElement {
 				return { ...model, ...data };
 			case Update_SearchTerm:
 				return { ...model, searchTerm: data };
-				case Update_IsOpen_NavigationRail:
-					return { ...model, ...data };
+			case Update_IsOpen_NavigationRail:
+				return { ...model, ...data };
 		}
 	}
 
@@ -127,7 +127,7 @@ export class Header extends MvuElement {
 	}
 
 	createView(model) {
-		const { isOpen, isOpenNav , tabIndex, isFetching, layers, isPortrait, hasMinWidth, searchTerm } = model;
+		const { isOpen, isOpenNav, tabIndex, isFetching, layers, isPortrait, hasMinWidth, searchTerm } = model;
 
 		const getOrientationClass = () => {
 			return isPortrait ? 'is-portrait' : 'is-landscape';
