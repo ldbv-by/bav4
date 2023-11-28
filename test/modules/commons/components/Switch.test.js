@@ -1,9 +1,9 @@
-import { GuiSwitch, PAD_RELEASE_TIMEOUT } from '../../../../src/modules/commons/components/guiSwitch/GuiSwitch';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
+import { Switch, PAD_RELEASE_TIMEOUT } from '../../../../src/modules/commons/components/switch/Switch';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup.js';
 import { TestUtils } from '../../../test-utils.js';
-window.customElements.define(GuiSwitch.tag, GuiSwitch);
+window.customElements.define(Switch.tag, Switch);
 
-describe('GuiSwitch', () => {
+describe('Switch', () => {
 	beforeEach(async () => {
 		TestUtils.setupStoreAndDi({});
 	});
@@ -18,7 +18,7 @@ describe('GuiSwitch', () => {
 
 	describe('when initialized', () => {
 		it('contains default values in the model', async () => {
-			const element = await TestUtils.render(GuiSwitch.tag);
+			const element = await TestUtils.render(Switch.tag);
 
 			//model
 			expect(element.disabled).toBeFalse();
@@ -28,7 +28,7 @@ describe('GuiSwitch', () => {
 		});
 
 		it('renders the view', async () => {
-			const element = await TestUtils.render(GuiSwitch.tag);
+			const element = await TestUtils.render(Switch.tag);
 
 			//view
 			expect(element).toBeTruthy();
@@ -47,14 +47,14 @@ describe('GuiSwitch', () => {
 		});
 
 		it('automatically appends the "data-test-id" attribute', async () => {
-			expect((await TestUtils.render(GuiSwitch.tag)).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('');
+			expect((await TestUtils.render(Switch.tag)).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('');
 		});
 	});
 
 	describe('properties', () => {
 		describe("when property 'disabled' changes", () => {
 			it('updates the view', async () => {
-				const element = await TestUtils.render(GuiSwitch.tag);
+				const element = await TestUtils.render(Switch.tag);
 				const input = element.shadowRoot.querySelector('input');
 
 				expect(input.disabled).toBeFalse();
@@ -67,7 +67,7 @@ describe('GuiSwitch', () => {
 
 		describe("when property 'indeterminate' changes", () => {
 			it('updates the view', async () => {
-				const element = await TestUtils.render(GuiSwitch.tag);
+				const element = await TestUtils.render(Switch.tag);
 				const input = element.shadowRoot.querySelector('input');
 
 				expect(input.indeterminate).toBeFalse();
@@ -80,7 +80,7 @@ describe('GuiSwitch', () => {
 
 		describe("when property 'checked' changes", () => {
 			it('updates the view', async () => {
-				const element = await TestUtils.render(GuiSwitch.tag);
+				const element = await TestUtils.render(Switch.tag);
 				const input = element.shadowRoot.querySelector('input');
 
 				expect(input.checked).toBeFalse();
@@ -93,7 +93,7 @@ describe('GuiSwitch', () => {
 
 		describe("when property 'title' changes", () => {
 			it('updates the view', async () => {
-				const element = await TestUtils.render(GuiSwitch.tag);
+				const element = await TestUtils.render(Switch.tag);
 
 				expect(element.title).toBe('');
 				element.title = 'foo';
@@ -103,7 +103,7 @@ describe('GuiSwitch', () => {
 
 		describe("when callback property 'onToggle' changes", () => {
 			it('sets the callback', async () => {
-				const element = await TestUtils.render(GuiSwitch.tag);
+				const element = await TestUtils.render(Switch.tag);
 				const callbackFunction = () => {};
 
 				element.onToggle = callbackFunction;
@@ -111,7 +111,7 @@ describe('GuiSwitch', () => {
 			});
 
 			it('does NOT sets the callback with a invalid value', async () => {
-				const element = await TestUtils.render(GuiSwitch.tag);
+				const element = await TestUtils.render(Switch.tag);
 				const initialCallback = element.onToggle;
 
 				element.onToggle = 42;
@@ -140,16 +140,16 @@ describe('GuiSwitch', () => {
 	describe('event handling', () => {
 		describe('on click', () => {
 			it('fires a "toggle" event', async () => {
-				const element = await TestUtils.render(GuiSwitch.tag);
+				const element = await TestUtils.render(Switch.tag);
 				const spy = jasmine.createSpy();
 				element.addEventListener('toggle', spy);
 
-				element.shadowRoot.querySelector('#guiSwitch').click();
+				element.shadowRoot.querySelector('#baSwitch').click();
 
 				expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: { checked: true } }));
 				expect(element.checked).toBeTrue();
 
-				element.shadowRoot.querySelector('#guiSwitch').click();
+				element.shadowRoot.querySelector('#baSwitch').click();
 
 				expect(element.checked).toBeFalse();
 
@@ -159,21 +159,21 @@ describe('GuiSwitch', () => {
 			});
 
 			it('calls the onToggle callback via property callback', async () => {
-				const element = await TestUtils.render(GuiSwitch.tag);
+				const element = await TestUtils.render(Switch.tag);
 				const onToggleSpy = spyOn(element, 'onToggle').and.callThrough();
 
-				element.shadowRoot.querySelector('#guiSwitch').click();
+				element.shadowRoot.querySelector('#baSwitch').click();
 
 				expect(onToggleSpy).toHaveBeenCalledTimes(1);
 				expect(element.checked).toBeTrue();
 			});
 
 			it('does nothing when disabled', async () => {
-				const element = await TestUtils.render(GuiSwitch.tag);
+				const element = await TestUtils.render(Switch.tag);
 				element.disabled = true;
 				const onToggleSpy = spyOn(element, 'onToggle').and.callThrough();
 
-				element.shadowRoot.querySelector('#guiSwitch').click();
+				element.shadowRoot.querySelector('#baSwitch').click();
 
 				expect(onToggleSpy).not.toHaveBeenCalled();
 				expect(element.checked).toBeFalse();
@@ -188,40 +188,40 @@ describe('GuiSwitch', () => {
 		describe('"drag" events', () => {
 			describe('when dragging starts', () => {
 				it('sets the "--thumb-position" CSS variable on the checkbox element', async () => {
-					const element = await TestUtils.render(GuiSwitch.tag);
+					const element = await TestUtils.render(Switch.tag);
 
-					const guiSwitch = element.shadowRoot.querySelector('#guiSwitch');
+					const baSwitch = element.shadowRoot.querySelector('#baSwitch');
 					const pointerdown = new Event('pointerdown');
 					pointerdown.offsetX = 0;
-					guiSwitch.dispatchEvent(pointerdown);
+					baSwitch.dispatchEvent(pointerdown);
 
-					const afterPointerDown = getThumbStyleProperties(guiSwitch);
+					const afterPointerDown = getThumbStyleProperties(baSwitch);
 					expect(afterPointerDown.thumbPosition).toBe('0px');
 				});
 
 				it('inits the thumb style ', async () => {
-					const element = await TestUtils.render(GuiSwitch.tag);
+					const element = await TestUtils.render(Switch.tag);
 
-					const guiSwitch = element.shadowRoot.querySelector('#guiSwitch');
+					const baSwitch = element.shadowRoot.querySelector('#baSwitch');
 					const pointerdown = new Event('pointerdown');
-					guiSwitch.dispatchEvent(pointerdown);
+					baSwitch.dispatchEvent(pointerdown);
 
-					const afterPointerDown = getThumbStyleProperties(guiSwitch);
-					// property values should NOT be the same as the predefined in guiSwitch.css
+					const afterPointerDown = getThumbStyleProperties(baSwitch);
+					// property values should NOT be the same as the predefined in switch.css
 					expect(afterPointerDown.thumbPosition).not.toBe('0%');
 					expect(afterPointerDown.thumbTransitionDuration).toBe('0s');
 				});
 
 				it('does nothing when disabled', async () => {
-					const element = await TestUtils.render(GuiSwitch.tag);
+					const element = await TestUtils.render(Switch.tag);
 					element.disabled = true;
 
-					const guiSwitch = element.shadowRoot.querySelector('#guiSwitch');
+					const baSwitch = element.shadowRoot.querySelector('#baSwitch');
 					const pointerdown = new Event('pointerdown');
-					guiSwitch.dispatchEvent(pointerdown);
+					baSwitch.dispatchEvent(pointerdown);
 
-					const afterPointerDown = getThumbStyleProperties(guiSwitch);
-					// property values should be the same as defined in guiSwitch.css
+					const afterPointerDown = getThumbStyleProperties(baSwitch);
+					// property values should be the same as defined in switch.css
 					expect(afterPointerDown.thumbPosition).toBe('0%');
 				});
 			});
@@ -229,27 +229,27 @@ describe('GuiSwitch', () => {
 
 		describe('all pointer events at once', () => {
 			it('handles all pointer - events and calls the onToggle callback', async () => {
-				const element = await TestUtils.render(GuiSwitch.tag);
+				const element = await TestUtils.render(Switch.tag);
 				const onToggleSpy = spyOn(element, 'onToggle').and.callThrough();
 
-				const guiSwitch = element.shadowRoot.querySelector('#guiSwitch');
+				const baSwitch = element.shadowRoot.querySelector('#baSwitch');
 				const pointerdown = new Event('pointerdown');
-				guiSwitch.dispatchEvent(pointerdown);
+				baSwitch.dispatchEvent(pointerdown);
 
-				const afterPointerDown = getThumbStyleProperties(guiSwitch);
+				const afterPointerDown = getThumbStyleProperties(baSwitch);
 				expect(afterPointerDown.thumbTransitionDuration).toBe('0s');
 
 				const pointermove = new PointerEvent('pointermove', { bubbles: true, clientX: 100, clientY: 0 });
-				guiSwitch.dispatchEvent(pointermove);
-				const afterPointerMove = getThumbStyleProperties(guiSwitch);
+				baSwitch.dispatchEvent(pointermove);
+				const afterPointerMove = getThumbStyleProperties(baSwitch);
 
 				expect(afterPointerMove.thumbPosition).toBe('23px');
 				expect(afterPointerMove.thumbTransitionDuration).toBe('0s');
 
 				const pointerup = new Event('pointerup');
-				guiSwitch.dispatchEvent(pointerup);
+				baSwitch.dispatchEvent(pointerup);
 
-				const afterPointerUp = getThumbStyleProperties(guiSwitch);
+				const afterPointerUp = getThumbStyleProperties(baSwitch);
 
 				expect(afterPointerUp.thumbPosition).toBe('calc((calc(1.4rem * 2) - 100%) * 1)');
 
@@ -258,20 +258,20 @@ describe('GuiSwitch', () => {
 			});
 
 			it('handles pointer down/up - events and calls the onToggle callback', async () => {
-				const element = await TestUtils.render(GuiSwitch.tag);
+				const element = await TestUtils.render(Switch.tag);
 				const onToggleSpy = spyOn(element, 'onToggle').and.callThrough();
 
-				const guiSwitch = element.shadowRoot.querySelector('#guiSwitch');
+				const baSwitch = element.shadowRoot.querySelector('#baSwitch');
 				const pointerdown = new Event('pointerdown');
-				guiSwitch.dispatchEvent(pointerdown);
+				baSwitch.dispatchEvent(pointerdown);
 
-				const afterPointerDown = getThumbStyleProperties(guiSwitch);
+				const afterPointerDown = getThumbStyleProperties(baSwitch);
 				expect(afterPointerDown.thumbTransitionDuration).toBe('0s');
 
 				const pointerup = new Event('pointerup');
-				guiSwitch.dispatchEvent(pointerup);
+				baSwitch.dispatchEvent(pointerup);
 
-				const afterPointerUp = getThumbStyleProperties(guiSwitch);
+				const afterPointerUp = getThumbStyleProperties(baSwitch);
 
 				expect(afterPointerUp.thumbPosition).toBe('calc((calc(1.4rem * 2) - 100%) * 1)');
 
@@ -280,16 +280,16 @@ describe('GuiSwitch', () => {
 			});
 
 			it('handles window.pointerup ONCE', async () => {
-				const element = await TestUtils.render(GuiSwitch.tag);
+				const element = await TestUtils.render(Switch.tag);
 				const spyUpdateChecked = spyOn(element, 'signal').withArgs('update_checked', jasmine.any(Boolean)).and.callThrough();
 
-				const guiSwitch = element.shadowRoot.querySelector('#guiSwitch');
+				const baSwitch = element.shadowRoot.querySelector('#baSwitch');
 				const pointerdown = new Event('pointerdown');
 				const pointermove = new PointerEvent('pointermove', { bubbles: true, clientX: 100, clientY: 0 });
 				const pointerup = new Event('pointerup');
 
-				guiSwitch.dispatchEvent(pointerdown);
-				guiSwitch.dispatchEvent(pointermove);
+				baSwitch.dispatchEvent(pointerdown);
+				baSwitch.dispatchEvent(pointermove);
 
 				window.dispatchEvent(pointerup);
 				window.dispatchEvent(pointerup);
@@ -300,39 +300,39 @@ describe('GuiSwitch', () => {
 			});
 
 			it('respects the direction-attribute', async () => {
-				const element = await TestUtils.render(GuiSwitch.tag, {}, { dir: 'rtl' });
+				const element = await TestUtils.render(Switch.tag, {}, { dir: 'rtl' });
 
-				const guiSwitch = element.shadowRoot.querySelector('#guiSwitch');
+				const baSwitch = element.shadowRoot.querySelector('#baSwitch');
 				const pointerdown = new Event('pointerdown');
 				const pointermove = new PointerEvent('pointermove', { bubbles: true, clientX: 100, clientY: 0 });
 				const pointerup = new Event('pointerup');
 
-				guiSwitch.dispatchEvent(pointerdown);
-				guiSwitch.dispatchEvent(pointermove);
-				guiSwitch.dispatchEvent(pointerup);
+				baSwitch.dispatchEvent(pointerdown);
+				baSwitch.dispatchEvent(pointermove);
+				baSwitch.dispatchEvent(pointerup);
 
 				expect(element.checked).toBeFalse();
 			});
 
 			it('prevents bubbles after drag', async () => {
-				const element = await TestUtils.render(GuiSwitch.tag, {}, { dir: 'rtl' });
+				const element = await TestUtils.render(Switch.tag, {}, { dir: 'rtl' });
 
-				const guiSwitch = element.shadowRoot.querySelector('#guiSwitch');
+				const baSwitch = element.shadowRoot.querySelector('#baSwitch');
 				const pointerdown = new Event('pointerdown');
 				const pointermove = new PointerEvent('pointermove', { bubbles: true, clientX: 100, clientY: 0 });
 				const pointerup = new Event('pointerup');
 
-				guiSwitch.dispatchEvent(pointerdown);
-				guiSwitch.dispatchEvent(pointermove);
-				guiSwitch.dispatchEvent(pointerup);
+				baSwitch.dispatchEvent(pointerdown);
+				baSwitch.dispatchEvent(pointermove);
+				baSwitch.dispatchEvent(pointerup);
 
 				const onToggleSpy = spyOn(element, 'onToggle').and.callThrough();
-				guiSwitch.click();
+				baSwitch.click();
 
 				expect(onToggleSpy).not.toHaveBeenCalled();
 
 				await TestUtils.timeout(PAD_RELEASE_TIMEOUT + 50);
-				guiSwitch.click();
+				baSwitch.click();
 
 				expect(onToggleSpy).toHaveBeenCalled();
 			});
@@ -340,7 +340,7 @@ describe('GuiSwitch', () => {
 
 		describe('on keyboard SPACE', () => {
 			it('fires a "toggle" event', async () => {
-				const element = await TestUtils.render(GuiSwitch.tag);
+				const element = await TestUtils.render(Switch.tag);
 				const spy = jasmine.createSpy();
 
 				const keydownEvent = new KeyboardEvent('keydown', {
@@ -356,7 +356,7 @@ describe('GuiSwitch', () => {
 			});
 
 			it('does nothing when disabled', async () => {
-				const element = await TestUtils.render(GuiSwitch.tag);
+				const element = await TestUtils.render(Switch.tag);
 				element.disabled = true;
 
 				const keydownEvent = new KeyboardEvent('keydown', {
@@ -373,7 +373,7 @@ describe('GuiSwitch', () => {
 			});
 
 			it('does nothing when hitting other keys', async () => {
-				const element = await TestUtils.render(GuiSwitch.tag);
+				const element = await TestUtils.render(Switch.tag);
 
 				const keydownEvent = new KeyboardEvent('keydown', {
 					key: 'f'
@@ -391,7 +391,7 @@ describe('GuiSwitch', () => {
 	});
 
 	describe('when in indeterminate state', () => {
-		const renderIndeterminateElement = async () => TestUtils.render(GuiSwitch.tag, { indeterminate: true });
+		const renderIndeterminateElement = async () => TestUtils.render(Switch.tag, { indeterminate: true });
 		it('toggles on click', async () => {
 			const element = await renderIndeterminateElement();
 			const spy = jasmine.createSpy();
@@ -399,7 +399,7 @@ describe('GuiSwitch', () => {
 
 			expect(element.indeterminate).toBeTrue();
 
-			element.shadowRoot.querySelector('#guiSwitch').click();
+			element.shadowRoot.querySelector('#baSwitch').click();
 
 			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: { checked: true } }));
 			expect(element.checked).toBeTrue();
@@ -424,16 +424,16 @@ describe('GuiSwitch', () => {
 
 		it('toggles on drag', async () => {
 			const element = await renderIndeterminateElement();
-			const guiSwitch = element.shadowRoot.querySelector('#guiSwitch');
+			const baSwitch = element.shadowRoot.querySelector('#baSwitch');
 			const pointerdown = new Event('pointerdown');
 			const pointermove = new PointerEvent('pointermove', { bubbles: true, clientX: 100, clientY: 0 });
 
 			expect(element.indeterminate).toBeTrue();
 
 			const pointerup = new Event('pointerup');
-			guiSwitch.dispatchEvent(pointerdown);
-			guiSwitch.dispatchEvent(pointermove);
-			guiSwitch.dispatchEvent(pointerup);
+			baSwitch.dispatchEvent(pointerdown);
+			baSwitch.dispatchEvent(pointermove);
+			baSwitch.dispatchEvent(pointerup);
 
 			expect(element.checked).toBeTrue();
 			expect(element.indeterminate).toBeFalse();
@@ -444,7 +444,7 @@ describe('GuiSwitch', () => {
 		it('renders content in the  before slot', async () => {
 			const beforeSlotContent = '<div>Before Slot Content</div>';
 
-			const element = await TestUtils.render(GuiSwitch.tag, {}, {}, `<span slot="before">${beforeSlotContent}</span>`);
+			const element = await TestUtils.render(Switch.tag, {}, {}, `<span slot="before">${beforeSlotContent}</span>`);
 
 			const beforeSlot = element.querySelector('[slot="before"]');
 
@@ -461,7 +461,7 @@ describe('GuiSwitch', () => {
 		it('renders content in the after slot', async () => {
 			const afterSlotContent = '<div>After Slot Content</div>';
 
-			const element = await TestUtils.render(GuiSwitch.tag, {}, {}, `<span slot="after">${afterSlotContent}</span>`);
+			const element = await TestUtils.render(Switch.tag, {}, {}, `<span slot="after">${afterSlotContent}</span>`);
 
 			const afterSlot = element.querySelector('[slot="after"]');
 
@@ -478,7 +478,7 @@ describe('GuiSwitch', () => {
 		it('renders content in the default slot', async () => {
 			const defaultSlotContent = '<div>Default Slot Content</div>';
 
-			const element = await TestUtils.render(GuiSwitch.tag, {}, {}, `<span>${defaultSlotContent}</span>`);
+			const element = await TestUtils.render(Switch.tag, {}, {}, `<span>${defaultSlotContent}</span>`);
 
 			const defaultSlot = element.querySelector(':not([slot])');
 

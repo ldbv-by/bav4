@@ -1,7 +1,7 @@
 /**
- * @module modules/commons/components/guiSwitch/GuiSwitch
+ * @module modules/commons/components/switch/Switch
  */
-import css from './guiSwitch.css';
+import css from './switch.css';
 import { html } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
 import { getPseudoStyle, getStyle } from '../../../../utils/style-utils';
@@ -28,10 +28,10 @@ export const PAD_RELEASE_TIMEOUT = 300;
  * @property {boolean} indeterminate=false - The checkbox has an indeterminate state.
  * @property {string} title='' - The title of the button.
  * @property {boolean} disabled=false - The checkbox react on user interactions or not.
- * @property {function(checked)} onToggle - The toggle callback function when the checked state of a GuiSwitch element is toggled.
- * @fires onToggle The toggle event fires when the checked state of a GuiSwitch element is toggled
+ * @property {function(checked)} onToggle - The toggle callback function when the checked state of a Switch element is toggled.
+ * @fires onToggle The toggle event fires when the checked state of a Switch element is toggled
  */
-export class GuiSwitch extends MvuElement {
+export class Switch extends MvuElement {
 	#switch = {};
 	#onToggle = Toggle_No_Op;
 	#recentlyDragged = false;
@@ -171,7 +171,7 @@ export class GuiSwitch extends MvuElement {
 				${css}
 			</style>
 
-			<label title="${title}" for="guiSwitch" @click=${onLabelClick} class="ba-switch  ${disabled ? 'cursor-disabled' : ''}">
+			<label title="${title}" for="baSwitch" @click=${onLabelClick} class="ba-switch  ${disabled ? 'cursor-disabled' : ''}">
 				<slot name="before"></slot>
 				<input
 					@change=${onChange}
@@ -179,7 +179,7 @@ export class GuiSwitch extends MvuElement {
 					@pointerup=${onPointerup}
 					@click=${onClick}
 					@keydown=${onKeydown}
-					id="guiSwitch"
+					id="baSwitch"
 					type="checkbox"
 					role="switch"
 					.checked=${checked}
