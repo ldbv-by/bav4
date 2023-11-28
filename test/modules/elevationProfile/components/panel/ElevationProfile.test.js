@@ -126,7 +126,60 @@ describe('ElevationProfile', () => {
 				z: 10,
 				e: 41,
 				n: 51,
-				slope: 0
+				slope: 1
+			},
+			{
+				dist: 2,
+				z: 20,
+				e: 42,
+				n: 52,
+				slope: 3
+			},
+			{
+				dist: 3,
+				z: 30,
+				e: 43,
+				n: 53,
+				slope: 20
+			}
+		],
+		stats: {
+			sumUp: sumUp,
+			sumDown: sumDown,
+			verticalHeight: verticalHeight,
+			highestPoint: highestPoint,
+			lowestPoint: lowestPoint,
+			linearDistance: linearDistance
+		},
+		attrs: [
+			{
+				id: 'slope',
+				prefix: '~',
+				unit: '%',
+				values: [
+					[0, 0, 1],
+					[1, 3, 20]
+				]
+			}
+		],
+		refSystem: 'DGM 25 / DHHN2016'
+	};
+
+	const _profileSlopeFlat = {
+		elevations: [
+			{
+				dist: 0,
+				z: 0,
+				e: 40,
+				n: 50,
+				slope: 1
+			},
+			{
+				dist: 1,
+				z: 10,
+				e: 41,
+				n: 51,
+				slope: 1
 			},
 			{
 				dist: 2,
@@ -158,7 +211,7 @@ describe('ElevationProfile', () => {
 				unit: '%',
 				values: [
 					[0, 0, 1],
-					[1, 3, 20]
+					[1, 3, 1]
 				]
 			}
 		],
@@ -205,6 +258,11 @@ describe('ElevationProfile', () => {
 
 	const profileSlopeSteep = () => {
 		const newLocalProfile = JSON.parse(JSON.stringify(_profileSlopeSteep));
+		return newLocalProfile;
+	};
+
+	const profileSlopeFlat = () => {
+		const newLocalProfile = JSON.parse(JSON.stringify(_profileSlopeFlat));
 		return newLocalProfile;
 	};
 
@@ -762,6 +820,20 @@ describe('ElevationProfile', () => {
 
 			// assert
 			expect(colorStopSpy).toHaveBeenCalledTimes(elevationData.elevations.length);
+		});
+
+		it('does NOT adds colorStops for consecutive identical slope value', async () => {
+			// arrange
+			await setup();
+			const colorStopSpy = spyOn(gradientMock, 'addColorStop').and.callThrough();
+			const elevationData = profileSlopeFlat();
+
+			// act
+			const elevationProfile = new ElevationProfile();
+			elevationProfile._getSlopeGradient(chart, elevationData);
+
+			// assert
+			expect(colorStopSpy).toHaveBeenCalledTimes(1);
 		});
 
 		it('skips colorStops for missing slope values', async () => {

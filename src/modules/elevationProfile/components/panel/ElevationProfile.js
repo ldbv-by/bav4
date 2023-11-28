@@ -450,7 +450,7 @@ export class ElevationProfile extends MvuElement {
 		const numberOfPoints = elevationData.elevations.length;
 
 		const xPointRatio = chartArea.width / numberOfPoints / chartArea.width;
-		const addColorChange = (index, stopColor, startColor) => {
+		const getColorChange = (index, stopColor, startColor) => {
 			const xPointStop = xPointRatio * (index - 1);
 			const xPointStart = xPointRatio * index;
 			return [
@@ -458,12 +458,12 @@ export class ElevationProfile extends MvuElement {
 				{ x: xPointStart, color: startColor }
 			];
 		};
-		const addColorStop = (index, color) => {
+		const getColorStop = (index, color) => {
 			const xPoint = xPointRatio * index;
 			return { x: xPoint, color: color };
 		};
 
-		const colorStops = elevationData?.elevations.reduce((accumulator, currentElement, index) => {
+		const colorStops = elevationData?.elevations.reduce((accumulator, currentElement, index, elements) => {
 			if (isNumber(currentElement.slope)) {
 				const slopeValue = Math.abs(currentElement.slope);
 				const slopeClass = SoterSlopeClasses.find((c) => c.min <= slopeValue && c.max > slopeValue);
@@ -471,11 +471,15 @@ export class ElevationProfile extends MvuElement {
 
 				if (lastColorStop) {
 					if (lastColorStop.color !== slopeClass.color) {
-						return [...accumulator, ...addColorChange(index, lastColorStop.color, slopeClass.color)];
+						const isPreviousColorStop = lastColorStop.x === xPointRatio * (index - 1);
+
+						return isPreviousColorStop
+							? [...accumulator, getColorStop(index, slopeClass.color)]
+							: [...accumulator, ...getColorChange(index, lastColorStop.color, slopeClass.color)];
 					}
 					return accumulator;
 				}
-				return [addColorStop(index, slopeClass.color)];
+				return [getColorStop(index, slopeClass.color)];
 			}
 			return accumulator;
 		}, []);
@@ -501,7 +505,6 @@ export class ElevationProfile extends MvuElement {
 		if (Array.isArray(coordinates) && coordinates.length >= 2) {
 			try {
 				const profile = await this._elevationService.getProfile(coordinates);
-				console.log(profile);
 				if (!profile) {
 					this.signal(Update_Profile_Data, Empty_Profile_Data);
 				} else {
