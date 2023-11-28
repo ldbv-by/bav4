@@ -4,7 +4,6 @@
 import css from './switch.css';
 import { html } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
-import { getPseudoStyle, getStyle } from '../../../../utils/style-utils';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';
 import { isFunction } from '../../../../utils/checks';
 
@@ -12,6 +11,24 @@ const Update_Disabled = 'update_disabled';
 const Update_Checked = 'update_checked';
 const Update_Indeterminate = 'update_indeterminate';
 const Update_Title = 'update_title';
+
+/**
+ * Returns a number representing the integer value of the specified CSS property
+ * @param {Element} element
+ * @param {string} property
+ * @returns {number} the number value
+ */
+const getStyleProperty = (element, property) => parseInt(window.getComputedStyle(element).getPropertyValue(property));
+
+/**
+ * Returns a number representing the integer value of the specified CSS property of the pseudo-element
+ * @param {Element} element
+ * @param {string} pseudoElement
+ * @param {string} property
+ * @returns {number} the number value
+ */
+const getPseudoStyleProperty = (element, pseudoElement, property) =>
+	parseInt(window.getComputedStyle(element, pseudoElement).getPropertyValue(property));
 // eslint-disable-next-line no-unused-vars
 const Toggle_No_Op = (checked) => {};
 
@@ -78,8 +95,8 @@ export class Switch extends MvuElement {
 	onAfterRender(firstTime) {
 		if (firstTime) {
 			const checkbox = this.shadowRoot.querySelector('input');
-			const thumbSize = getPseudoStyle(checkbox, 'width');
-			const padding = getStyle(checkbox, 'padding-left') + getStyle(checkbox, 'padding-right');
+			const thumbSize = getPseudoStyleProperty(checkbox, '::before', 'width');
+			const padding = getStyleProperty(checkbox, 'padding-left') + getStyleProperty(checkbox, 'padding-right');
 
 			this.#switch = {
 				thumbSize: thumbSize,
@@ -201,7 +218,7 @@ export class Switch extends MvuElement {
 		};
 
 		const { thumbSize, bounds, padding } = this.#switch;
-		const directionality = getStyle(event.target, '--isLTR');
+		const directionality = getStyleProperty(event.target, '--isLTR');
 		const track = directionality === -1 ? event.target.clientWidth * -1 + thumbSize + padding : 0;
 
 		const position = getHarmonizedPosition(event.offsetX, thumbSize, bounds);
