@@ -4,6 +4,7 @@
 /**
  * An array of numbers representing an XY coordinate. Ordering is [easting, northing] or [lon, lat]. Example: `[16, 48]`.
  * @typedef {Array<number>} Coordinate
+ * @implements {module:domain/coordinateTypeDef~CoordinateLike}
  */
 
 /**
@@ -14,4 +15,5 @@
 /**
  * An array of numbers representing an XYZ coordinate. Ordering is [easting, northing, z] or [lon, lat, z]. Example: `[16, 48, 1000]`.
  * @typedef {Array<number>} CoordinateXYZ
+ * @implements {module:domain/coordinateTypeDef~CoordinateLike}
  */
