@@ -1,17 +1,19 @@
 /**
  * @module plugins/RoutingPlugin
  */
-import { observe } from '../utils/storeUtils';
+import { observe, observeOnce } from '../utils/storeUtils';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { BaPlugin } from './BaPlugin';
-import { activate, deactivate } from '../store/routing/routing.action';
+import { activate, deactivate, reset, setCategory } from '../store/routing/routing.action';
 import { Tools } from '../domain/tools';
 import { $injector } from '../injection/index';
 import { LevelTypes, emitNotification } from '../store/notifications/notifications.action';
-import { updateContextMenu } from '../store/mapContextMenu/mapContextMenu.action';
-import { openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
+import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
 import { html } from '../../node_modules/lit-html/lit-html';
-import { CoordinateProposalType } from '../domain/routing';
+import { CoordinateProposalType, RoutingStatusCodes } from '../domain/routing';
+import { HighlightFeatureType, addHighlightFeatures, clearHighlightFeatures, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
+import { setCurrentTool } from '../store/tools/tools.action';
+import { closeContextMenu } from '../store/mapContextMenu/mapContextMenu.action';
 
 /**
  * Id of the layer used for routing interaction.
@@ -42,13 +44,14 @@ export class RoutingPlugin extends BaPlugin {
 	 * @param {Store} store
 	 */
 	async register(store) {
-		const { RoutingService: routingService, EnvironmentService: environmentService } = $injector.inject('RoutingService', 'EnvironmentService');
+		const { RoutingService: routingService } = $injector.inject('RoutingService');
 
 		const lazyInitialize = async () => {
 			if (!this._initialized) {
 				// let's initial the routing service
 				try {
 					await routingService.init();
+					setCategory(routingService.getCategories()[0]?.id);
 					return (this._initialized = true);
 				} catch (ex) {
 					console.error('Routing service could not be initialized', ex);
@@ -61,6 +64,9 @@ export class RoutingPlugin extends BaPlugin {
 
 		const onToolChanged = async (toolId) => {
 			if (toolId !== Tools.ROUTING) {
+				removeHighlightFeaturesById(RoutingPlugin.HIGHLIGHT_FEATURE_ID);
+				closeBottomSheet();
+				reset();
 				deactivate();
 			} else {
 				if (await lazyInitialize()) {
@@ -80,19 +86,46 @@ export class RoutingPlugin extends BaPlugin {
 			}
 		};
 
-		observe(store, (state) => state.routing.active, onChange);
-		observe(store, (state) => state.tools.current, onToolChanged, false);
-
-		const openMenu = ({ type }) => {
-			if (type === CoordinateProposalType.START_OR_DESTINATION) {
-				const content = html`<ba-proposal-context-content></ba-proposal-context-content>`;
-				environmentService.isTouch() ? openBottomSheet(content) : updateContextMenu(content);
+		const onProposalChange = ({ coord, type: proposalType }) => {
+			clearHighlightFeatures();
+			closeContextMenu();
+			addHighlightFeatures({
+				id: RoutingPlugin.HIGHLIGHT_FEATURE_ID,
+				type: [CoordinateProposalType.EXISTING_INTERMEDIATE, CoordinateProposalType.EXISTING_START_OR_DESTINATION].includes(proposalType)
+					? HighlightFeatureType.DEFAULT
+					: HighlightFeatureType.MARKER_TMP,
+				data: { coordinate: [...coord] }
+			});
+			const content = html`<ba-proposal-context-content></ba-proposal-context-content>`;
+			openBottomSheet(content);
+			// we also want to remove the highlight feature when the BottomSheet was closed
+			observeOnce(
+				store,
+				(state) => state.bottomSheet.active,
+				() => removeHighlightFeaturesById(RoutingPlugin.HIGHLIGHT_FEATURE_ID)
+			);
+		};
+		const onRoutingStatusChanged = async (status) => {
+			if ([RoutingStatusCodes.Start_Missing, RoutingStatusCodes.Destination_Missing].includes(status)) {
+				setCurrentTool(Tools.ROUTING);
 			}
 		};
+
+		observe(store, (state) => state.routing.active, onChange);
+		observe(store, (state) => state.tools.current, onToolChanged, false);
 		observe(
 			store,
 			(state) => state.routing.proposal,
-			(eventLike) => openMenu(eventLike.payload)
+			(eventLike) => onProposalChange(eventLike.payload)
 		);
+		observe(
+			store,
+			(state) => state.routing.status,
+			(status) => onRoutingStatusChanged(status)
+		);
+	}
+
+	static get HIGHLIGHT_FEATURE_ID() {
+		return '#routingPluginHighlightFeatureId';
 	}
 }

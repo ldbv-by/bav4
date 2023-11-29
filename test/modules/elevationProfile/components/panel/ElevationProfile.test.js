@@ -118,25 +118,29 @@ describe('ElevationProfile', () => {
 				dist: 0,
 				z: 0,
 				e: 40,
-				n: 50
+				n: 50,
+				slope: 0
 			},
 			{
 				dist: 1,
 				z: 10,
 				e: 41,
-				n: 51
+				n: 51,
+				slope: 0
 			},
 			{
 				dist: 2,
 				z: 20,
 				e: 42,
-				n: 52
+				n: 52,
+				slope: 1
 			},
 			{
 				dist: 3,
 				z: 30,
 				e: 43,
-				n: 53
+				n: 53,
+				slope: 1
 			}
 		],
 		stats: {
@@ -228,14 +232,6 @@ describe('ElevationProfile', () => {
 		}
 	};
 
-	const chart = {
-		ctx: {
-			createLinearGradient: () => {
-				return { addColorStop: () => {} };
-			}
-		},
-		chartArea: { left: 0, right: 100, width: 200 }
-	};
 	const elevationData = profileSlopeSteep();
 
 	let store;
@@ -744,17 +740,43 @@ describe('ElevationProfile', () => {
 	});
 
 	describe('when _getSlopeGradient() is called', () => {
-		it('for coverage - slope ends in steep - _getSlopeGradient', async () => {
+		const gradientMock = {
+			addColorStop: () => {}
+		};
+		const chart = {
+			ctx: {
+				createLinearGradient: () => gradientMock
+			},
+			colorStops: 0,
+			chartArea: { left: 0, right: 100, width: 200 }
+		};
+
+		it('adds colorStops for each slope value', async () => {
 			// arrange
 			await setup();
-			const elevationProfile = new ElevationProfile();
-			const getSlopeGradientSpy = spyOn(elevationProfile, '_getSlopeGradient').and.callThrough();
+			const colorStopSpy = spyOn(gradientMock, 'addColorStop').and.callThrough();
 
 			// act
+			const elevationProfile = new ElevationProfile();
 			elevationProfile._getSlopeGradient(chart, elevationData);
 
 			// assert
-			expect(getSlopeGradientSpy).toHaveBeenCalled();
+			expect(colorStopSpy).toHaveBeenCalledTimes(elevationData.elevations.length);
+		});
+
+		it('skips colorStops for missing slope values', async () => {
+			// arrange
+			await setup();
+			const elevationData = profileSlopeSteep();
+			elevationData.elevations[0].slope = undefined;
+			const colorStopSpy = spyOn(gradientMock, 'addColorStop').and.callThrough();
+
+			// act
+			const elevationProfile = new ElevationProfile();
+			elevationProfile._getSlopeGradient(chart, elevationData);
+
+			// assert
+			expect(colorStopSpy).toHaveBeenCalledTimes(elevationData.elevations.length - 1);
 		});
 	});
 
@@ -1139,7 +1161,7 @@ describe('ElevationProfile', () => {
 				expect(store.getState().highlight.features).toHaveSize(1);
 				expect(store.getState().highlight.features[0].id).toBe(ElevationProfile.HIGHLIGHT_FEATURE_ID);
 				expect(store.getState().highlight.features[0].data.coordinate).toHaveSize(2);
-				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.TEMPORARY);
+				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER_TMP);
 			});
 		});
 

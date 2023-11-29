@@ -30,7 +30,7 @@ export const highlightTemporaryCoordinateFeatureStyleFunction = () => [
 	})
 ];
 
-export const highlightGeometryFeatureStyleFunction = () => {
+export const highlightGeometryOrCoordinateFeatureStyleFunction = () => {
 	const selectStroke = new Stroke({
 		color: [255, 128, 0, 1],
 		width: 3
@@ -53,7 +53,7 @@ export const highlightGeometryFeatureStyleFunction = () => {
 	return [selectStyle];
 };
 
-export const highlightTemporaryGeometryFeatureStyleFunction = () => {
+export const highlightTemporaryGeometryOrCoordinateFeatureStyleFunction = () => {
 	const hlStroke = new Stroke({
 		color: [255, 128, 0, 1],
 		width: 6

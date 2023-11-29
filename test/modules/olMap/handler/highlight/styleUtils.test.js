@@ -2,9 +2,9 @@ import {
 	createAnimation,
 	highlightAnimatedCoordinateFeatureStyleFunction,
 	highlightCoordinateFeatureStyleFunction,
-	highlightGeometryFeatureStyleFunction,
+	highlightGeometryOrCoordinateFeatureStyleFunction,
 	highlightTemporaryCoordinateFeatureStyleFunction,
-	highlightTemporaryGeometryFeatureStyleFunction
+	highlightTemporaryGeometryOrCoordinateFeatureStyleFunction
 } from '../../../../../src/modules/olMap/handler/highlight/styleUtils';
 import { Fill, Icon, Stroke, Style } from 'ol/style';
 import CircleStyle from 'ol/style/Circle';
@@ -52,7 +52,7 @@ describe('styleUtils', () => {
 		});
 	});
 
-	describe('highlightGeometryFeatureStyleFunction', () => {
+	describe('highlightGeometryOrCoordinateFeatureStyleFunction', () => {
 		it('should return a style function', () => {
 			const selectStroke = new Stroke({
 				color: [255, 128, 0, 1],
@@ -72,13 +72,13 @@ describe('styleUtils', () => {
 				})
 			});
 
-			const styles = highlightGeometryFeatureStyleFunction();
+			const styles = highlightGeometryOrCoordinateFeatureStyleFunction();
 
 			expect(styles).toEqual([selectStyle]);
 		});
 	});
 
-	describe('highlightTemporaryGeometryFeatureStyleFunction', () => {
+	describe('highlightTemporaryGeometryOrCoordinateFeatureStyleFunction', () => {
 		it('should return a style function', () => {
 			const hlStroke = new Stroke({
 				color: [255, 128, 0, 1],
@@ -99,7 +99,7 @@ describe('styleUtils', () => {
 				})
 			});
 
-			const styles = highlightTemporaryGeometryFeatureStyleFunction();
+			const styles = highlightTemporaryGeometryOrCoordinateFeatureStyleFunction();
 
 			expect(styles).toEqual([hlStyle]);
 		});
