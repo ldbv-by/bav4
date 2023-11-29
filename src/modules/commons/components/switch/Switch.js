@@ -97,14 +97,15 @@ export class Switch extends MvuElement {
 			const checkbox = this.shadowRoot.querySelector('input');
 			const thumbSize = getPseudoStyleProperty(checkbox, '::before', 'width');
 			const padding = getStyleProperty(checkbox, 'padding-left') + getStyleProperty(checkbox, 'padding-right');
+			const width = getStyleProperty(checkbox, 'width');
 
 			this.#switch = {
 				thumbSize: thumbSize,
 				padding: padding,
 				bounds: {
 					lower: 0,
-					middle: (checkbox.clientWidth - padding) / 4,
-					upper: checkbox.clientWidth - thumbSize - padding
+					middle: (width - padding) / 4,
+					upper: width - thumbSize - padding
 				}
 			};
 		}
