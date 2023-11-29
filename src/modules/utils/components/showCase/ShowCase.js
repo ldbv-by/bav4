@@ -254,24 +254,14 @@ export class ShowCase extends BaElement {
 						<input type="range" />
 					</div>
 
-					<h3>Toggle-Button</h3>
+					<h3>Toggle-Button (Switch)</h3>
 					<div class="example row">
-						<div>Toggle me (old)!</div>
-						<ba-toggle id="toggle" .title=${'Toggle'} @toggle=${onToggle}></ba-toggle>
-					</div>
-					<div class="example row">
-						<div>Toggle new!</div>
 						<ba-switch .title=${'Toggle me'} @toggle=${onToggle}><span slot="before">Toggle</span></ba-switch>
 						<ba-switch .title=${'Toggle me'} @toggle=${onToggle}><slot slot="after">Toggle</slot></ba-switch>
 						<ba-switch .title=${'Toggle me.checked'} .checked=${true} @toggle=${onToggle}>checked</ba-switch>
 						<ba-switch .title=${'Toggle me.indeterminate'} .indeterminate=${true} @toggle=${onToggle}>indeterminate</ba-switch>
 						<ba-switch .title=${'Toggle me.disabled'} .disabled=${true}>disabled</ba-switch>
 						<ba-switch .title=${'Toggle me.disabled'} .disabled=${true} .checked=${true}>disabled.checked</ba-switch>
-					</div>
-
-					<h3>Theme-Toggle</h3>
-					<div class="example">
-						<div class="theme-toggle" style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>
 					</div>
 
 					<h3>Profile</h3>
