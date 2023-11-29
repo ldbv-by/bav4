@@ -6,13 +6,20 @@ import { ToggleFeedbackPanel } from '../../../../../../../src/modules/feedback/c
 import { modalReducer } from '../../../../../../../src/store/modal/modal.reducer';
 import { closeModal } from '../../../../../../../src/store/modal/modal.action';
 import { Switch } from '../../../../../../../src/modules/commons/components/switch/Switch';
+import { createNoInitialStateMediaReducer } from '../../../../../../../src/store/media/media.reducer';
 
 window.customElements.define(BvvMiscContentPanel.tag, BvvMiscContentPanel);
+window.customElements.define(Switch.tag, Switch);
 
 describe('MiscContentPanel', () => {
 	let store;
 	const setup = () => {
-		store = TestUtils.setupStoreAndDi({}, { modal: modalReducer });
+		const state = {
+			media: {
+				darkSchema: true
+			}
+		};
+		store = TestUtils.setupStoreAndDi(state, { media: createNoInitialStateMediaReducer(), modal: modalReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(BvvMiscContentPanel.tag);
 	};
@@ -104,6 +111,15 @@ describe('MiscContentPanel', () => {
 			const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 			expect(wrapperElement.querySelectorAll(ToggleFeedbackPanel.tag)).toHaveSize(1);
 			expect(wrapperElement.querySelector(ToggleFeedbackPanel.tag).onSubmit).toEqual(closeModal);
+		});
+
+		it('changes the theme with the theme-switch', async () => {
+			const element = await setup();
+			const themeSwitch = element.shadowRoot.querySelector('#themeToggle');
+
+			themeSwitch.dispatchEvent(new Event('toggle'));
+
+			expect(store.getState().media.darkSchema).toBeFalse();
 		});
 	});
 });

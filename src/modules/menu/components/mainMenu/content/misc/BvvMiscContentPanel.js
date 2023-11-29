@@ -42,7 +42,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 				</div>
 				<div class="ba-list-item divider">
 					<span class="ba-list-item__after">
-						<ba-switch @toggle=${toggleSchema}>
+						<ba-switch id="themeToggle" @toggle=${toggleSchema}>
 							<span slot="before" class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_dark_mode')}</span>
 						</ba-switch>
 					</span>
