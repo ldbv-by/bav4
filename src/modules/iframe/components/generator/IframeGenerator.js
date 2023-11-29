@@ -157,8 +157,11 @@ export class IframeGenerator extends MvuElement {
 								${translate('iframe_generator_toggle_text')}
 							</div>							-->
 						</div>
-						<!--<ba-toggle id='toggleAutoWidth' .title=${translate('iframe_generator_toggle_title')} @toggle=${onToggleAutoWidth}></ba-toggle>-->
-						<ba-switch id='toggleAutoWidth'  class='iframe__toggle_sub-text' .title=${translate('iframe_generator_toggle_title')}  @toggle=${onToggleAutoWidth}>
+						<ba-switch 
+							id='toggleAutoWidth'  
+							class='iframe__toggle_sub-text' 
+							.title=${translate('iframe_generator_toggle_title')}  
+							@toggle=${onToggleAutoWidth}>
 							<span slot="before">${translate('iframe_generator_toggle_text')}</span>
 						</ba-switch>
 					</div>					
