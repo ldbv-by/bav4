@@ -1,11 +1,11 @@
 import { AbstractMvuContentPanel } from '../../../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { BvvMiscContentPanel } from '../../../../../../../src/modules/menu/components/mainMenu/content/misc/BvvMiscContentPanel';
-import { ThemeToggle } from '../../../../../../../src/modules/uiTheme/components/toggle/ThemeToggle';
 import { TestUtils } from '../../../../../../test-utils';
 import { $injector } from '../../../../../../../src/injection';
 import { ToggleFeedbackPanel } from '../../../../../../../src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
 import { modalReducer } from '../../../../../../../src/store/modal/modal.reducer';
 import { closeModal } from '../../../../../../../src/store/modal/modal.action';
+import { Switch } from '../../../../../../../src/modules/commons/components/switch/Switch';
 
 window.customElements.define(BvvMiscContentPanel.tag, BvvMiscContentPanel);
 
@@ -28,7 +28,7 @@ describe('MiscContentPanel', () => {
 	describe('when initialized', () => {
 		it('renders the view', async () => {
 			const element = await setup();
-			expect(element.shadowRoot.querySelectorAll(ThemeToggle.tag)).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll(Switch.tag)).toHaveSize(1);
 		});
 
 		it('checks the list ', async () => {

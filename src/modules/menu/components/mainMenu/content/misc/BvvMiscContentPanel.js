@@ -6,6 +6,7 @@ import { AbstractMvuContentPanel } from '../AbstractMvuContentPanel';
 import css from './bvvMiscContentPanel.css';
 import { $injector } from '../../../../../../injection';
 import { closeModal, openModal } from '../../../../../../store/modal/modal.action';
+import { toggleSchema } from '../../../../../../store/media/media.action';
 
 /**
  * Container for more contents.
@@ -40,9 +41,10 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 					</span>
 				</div>
 				<div class="ba-list-item divider">
-					<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_dark_mode')}</span>
 					<span class="ba-list-item__after">
-						<ba-theme-toggle></ba-theme-toggle>
+						<ba-switch @toggle=${toggleSchema}>
+							<span slot="before" class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_dark_mode')}</span>
+						</ba-switch>
 					</span>
 				</div>
 				<div class="ba-list-item  ba-list-item__header">
