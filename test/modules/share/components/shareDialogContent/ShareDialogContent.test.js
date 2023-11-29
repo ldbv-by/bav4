@@ -3,7 +3,6 @@ import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
-import { Toggle } from '../../../../../src/modules/commons/components/toggle/Toggle';
 import { Switch } from '../../../../../src/modules/commons/components/switch/Switch';
 
 window.customElements.define(ShareDialogContent.tag, ShareDialogContent);
