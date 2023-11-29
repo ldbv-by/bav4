@@ -388,6 +388,52 @@ describe('Switch', () => {
 				expect(element.checked).toBeFalse();
 			});
 		});
+
+		describe('on click', () => {
+			it('fires a "toggle" event', async () => {
+				const element = await TestUtils.render(Switch.tag);
+				const spy = jasmine.createSpy();
+				element.addEventListener('toggle', spy);
+
+				element.click();
+
+				expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: { checked: true } }));
+				expect(element.checked).toBeTrue();
+			});
+
+			it('calls the onToggle callback via property callback', async () => {
+				const element = await TestUtils.render(Switch.tag);
+				element.onToggle = jasmine.createSpy();
+
+				element.click();
+
+				expect(element.onToggle).toHaveBeenCalledTimes(1);
+				expect(element.checked).toBeTrue();
+			});
+
+			it('calls the onToggle callback via attribute callback', async () => {
+				spyOn(window, 'alert');
+				const element = await TestUtils.render(Switch.tag, {}, { onToggle: "alert('called')" });
+
+				element.click();
+
+				expect(window.alert).toHaveBeenCalledOnceWith('called');
+				expect(element.checked).toBeTrue();
+			});
+
+			it('does nothing when disabled', async () => {
+				spyOn(window, 'alert');
+				const element = await TestUtils.render(Switch.tag, {}, { onToggle: "alert('called')" });
+				element.disabled = true;
+				element.onClick = jasmine.createSpy();
+
+				element.click();
+
+				expect(element.onClick).not.toHaveBeenCalled();
+				expect(window.alert).not.toHaveBeenCalled();
+				expect(element.checked).toBeFalse();
+			});
+		});
 	});
 
 	describe('when in indeterminate state', () => {

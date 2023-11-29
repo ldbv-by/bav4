@@ -117,7 +117,7 @@ describe('MiscContentPanel', () => {
 			const element = await setup();
 			const themeSwitch = element.shadowRoot.querySelector('#themeToggle');
 
-			themeSwitch.dispatchEvent(new Event('toggle'));
+			themeSwitch.click();
 
 			expect(store.getState().media.darkSchema).toBeFalse();
 		});

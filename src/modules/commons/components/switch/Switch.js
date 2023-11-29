@@ -282,4 +282,8 @@ export class Switch extends MvuElement {
 	static get tag() {
 		return 'ba-switch';
 	}
+
+	click() {
+		this._root.querySelector('.ba-switch').click();
+	}
 }
