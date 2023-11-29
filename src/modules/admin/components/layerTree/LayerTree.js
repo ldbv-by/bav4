@@ -61,6 +61,8 @@ export class LayerTree extends MvuElement {
 	#currentUId;
 	#overTarget;
 
+	#ignoreLevelOneFirstOnLeave;
+
 	// #working;
 
 	constructor() {
@@ -107,6 +109,7 @@ export class LayerTree extends MvuElement {
 
 		this.#currentGeoResourceId = null;
 		this.#overTarget = false;
+		this.#ignoreLevelOneFirstOnLeave = false;
 	}
 
 	update(type, data, model) {
@@ -176,7 +179,7 @@ export class LayerTree extends MvuElement {
 			}
 		};
 
-		const onDragOver = (event, currentCatalogEntry) => {
+		const onDragOver = (event, currentCatalogEntry, level) => {
 			logOnce('🚀 ~ 🚀 ~ 🚀 ~ currentCatalogEntry.geoResourceId ' + currentCatalogEntry.geoResourceId);
 			const types = event.dataTransfer.types;
 			const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
@@ -194,6 +197,9 @@ export class LayerTree extends MvuElement {
 				// console.log('newGeoResourceIdFromList !== currentCatalogEntry.geoResourceId');
 
 				this.#overTarget = true;
+				if (level === 1) {
+					this.#ignoreLevelOneFirstOnLeave = true;
+				}
 				this.#currentGeoResourceId = newGeoResourceIdFromList;
 				insertDraggedGeoResource(currentCatalogEntry.uid, newGeoResourceIdFromList);
 			}
@@ -229,6 +235,11 @@ export class LayerTree extends MvuElement {
 		};
 
 		const onDragLeave = (event) => {
+			if (this.#ignoreLevelOneFirstOnLeave) {
+				this.#ignoreLevelOneFirstOnLeave = false;
+				return;
+			}
+
 			this.#overTarget = false;
 			event.target.classList.add('isdragged');
 			event.target.classList.remove('drag-over');
@@ -327,7 +338,7 @@ export class LayerTree extends MvuElement {
 						id="${entry.geoResourceId}"
 						class="draggable ${(entry.children ? hasChildrenClass + ' ' : '') + droppableClass}"
 						draggable="true"
-						@dragover=${(event) => onDragOver(event, entry)}
+						@dragover=${(event) => onDragOver(event, entry, level)}
 						@dragleave=${onDragLeave}
 						@drop=${onDrop}
 						@dragstart=${(event) => onDragStart(event, entry)}
