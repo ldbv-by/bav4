@@ -6,7 +6,7 @@ import { initialState as initialRoutingState, routingReducer } from '../../src/s
 import { initialState as initialToolsState, toolsReducer } from '../../src/store/tools/tools.reducer';
 import { setCurrentTool } from '../../src/store/tools/tools.action';
 import { Tools } from '../../src/domain/tools';
-import { deactivate, activate, setProposal, setStatus } from '../../src/store/routing/routing.action';
+import { deactivate, activate, setProposal, setStatus, setWaypoints } from '../../src/store/routing/routing.action';
 import { $injector } from '../../src/injection';
 import { LevelTypes } from '../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../src/store/notifications/notifications.reducer';
@@ -219,6 +219,31 @@ describe('RoutingPlugin', () => {
 			setStatus(RoutingStatusCodes.Start_Missing);
 
 			expect(store.getState().tools.current).toBe(Tools.ROUTING);
+		});
+	});
+
+	describe('when routing "waypoint" property changes', () => {
+		it('resets the UI', async () => {
+			const store = setup({
+				bottomSheet: { active: true },
+				mapContextMenu: { active: true },
+				highlight: {
+					features: [{ id: RoutingPlugin.HIGHLIGHT_FEATURE_ID, data: { coordinate: [11, 22] } }],
+					active: true
+				}
+			});
+			const instanceUnderTest = new RoutingPlugin();
+			instanceUnderTest._initialized = true;
+			await instanceUnderTest.register(store);
+
+			setWaypoints([
+				[1, 2],
+				[3, 4]
+			]);
+
+			expect(store.getState().bottomSheet.active).toBeFalse();
+			expect(store.getState().mapContextMenu.active).toBeFalse();
+			expect(store.getState().highlight.active).toBeFalse();
 		});
 	});
 });

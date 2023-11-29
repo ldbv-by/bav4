@@ -110,6 +110,11 @@ export class RoutingPlugin extends BaPlugin {
 				setCurrentTool(Tools.ROUTING);
 			}
 		};
+		const resetUI = () => {
+			clearHighlightFeatures();
+			closeContextMenu();
+			closeBottomSheet();
+		};
 
 		observe(store, (state) => state.routing.active, onChange);
 		observe(store, (state) => state.tools.current, onToolChanged, false);
@@ -122,6 +127,11 @@ export class RoutingPlugin extends BaPlugin {
 			store,
 			(state) => state.routing.status,
 			(status) => onRoutingStatusChanged(status)
+		);
+		observe(
+			store,
+			(state) => state.routing.waypoints,
+			() => resetUI()
 		);
 	}
 
