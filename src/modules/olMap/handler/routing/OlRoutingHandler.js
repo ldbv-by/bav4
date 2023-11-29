@@ -569,7 +569,6 @@ export class OlRoutingHandler extends OlLayerHandler {
 	_requestRouteFromInteractionLayer() {
 		const features = this._interactionLayer.getSource().getFeatures();
 		if (features.length > 1) {
-			this._setInteractionsActive(false);
 			this._clearRouteFeatures();
 
 			const coordinates3857 = this._getInteractionFeatures().map((feature) => {

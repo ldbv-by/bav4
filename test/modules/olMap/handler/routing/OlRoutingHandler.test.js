@@ -642,14 +642,12 @@ describe('OlRoutingHandler', () => {
 						geometry: new Point([5, 5])
 					});
 					instanceUnderTest._interactionLayer.getSource().addFeatures([feature0, feature1]);
-					const setInteractionsActiveSpy = spyOn(instanceUnderTest, '_setInteractionsActive');
 					const clearRouteFeatureSpy = spyOn(instanceUnderTest, '_clearRouteFeatures');
 					spyOn(instanceUnderTest, '_requestRouteFromCoordinates'); //prevent call of real method due to state change
 					spyOn(instanceUnderTest, '_getInteractionFeatures').and.returnValue([feature0, feature1]);
 
 					instanceUnderTest._requestRouteFromInteractionLayer();
 
-					expect(setInteractionsActiveSpy).toHaveBeenCalledWith(false);
 					expect(clearRouteFeatureSpy).toHaveBeenCalled();
 					expect(store.getState().routing.waypoints).toEqual([
 						[0, 0],
