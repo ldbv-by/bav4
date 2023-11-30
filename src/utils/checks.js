@@ -49,10 +49,20 @@ export const isNumber = (val, strict = true) => {
  * Checks if a value is a {@link Coordinate}.
  * @function
  * @param {*} val
- * @returns {boolean} true if it is a coordinate
+ * @returns {boolean} true if it is a `Coordinate` type
  */
 export const isCoordinate = (val) => {
 	return Array.isArray(val) && val.length === 2 && isNumber(val[0]) && isNumber(val[1]);
+};
+
+/**
+ * Checks if a value is a {@link CoordinateLike}.
+ * @function
+ * @param {*} val
+ * @returns {boolean} true if it is a `CoordinateLike` type
+ */
+export const isCoordinateLike = (val) => {
+	return Array.isArray(val) && isNumber(val[0]) && isNumber(val[1]);
 };
 
 /**

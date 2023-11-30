@@ -1,11 +1,20 @@
 /* eslint-disable no-undef */
-import { OlCoordinateService } from '../../src/services/OlCoordinateService';
+import { CoordinateSimplificationTarget, OlCoordinateService } from '../../src/services/OlCoordinateService';
 import { fromLonLat, toLonLat, transformExtent } from 'ol/proj';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { bvvStringifyFunction } from '../../src/services/provider/stringifyCoords.provider';
 import { $injector } from '../../src/injection';
 import { GlobalCoordinateRepresentations } from '../../src/domain/coordinateRepresentation';
+import { PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES } from '../../src/modules/olMap/utils/olGeometryUtils';
+
+describe('CoordinateSimplificationTarget', () => {
+	it('provides an enum of all available target types', () => {
+		expect(Object.keys(CoordinateSimplificationTarget).length).toBe(1);
+		expect(Object.isFrozen(CoordinateSimplificationTarget)).toBeTrue();
+		expect(CoordinateSimplificationTarget.ELEVATION_PROFILE).toBe('elevationProfile');
+	});
+});
 
 describe('OlCoordinateService', () => {
 	const projectionServiceMock = {
@@ -174,6 +183,85 @@ describe('OlCoordinateService', () => {
 				expect(instanceUnderTest.containsCoordinate(extent, [10, 10])).toBeTrue();
 				expect(instanceUnderTest.containsCoordinate(extent, [15, 15])).toBeTrue();
 				expect(instanceUnderTest.containsCoordinate(extent, [9, 9])).toBeFalse();
+			});
+		});
+
+		describe('simplify', () => {
+			it('simplifies an array of coordinate', () => {
+				setup();
+				const coordinatesMaxCountExceeded = [];
+				const coordinatesMaxCount = [];
+
+				for (let index = 0; index <= PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES; index++) {
+					1;
+					coordinatesMaxCountExceeded.push([0, index]);
+				}
+				for (let index = 0; index < PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES; index++) {
+					coordinatesMaxCount.push([0, index]);
+				}
+
+				expect(instanceUnderTest.simplify(coordinatesMaxCountExceeded, CoordinateSimplificationTarget.ELEVATION_PROFILE).length).toBe(2);
+				expect(instanceUnderTest.simplify(coordinatesMaxCount, CoordinateSimplificationTarget.ELEVATION_PROFILE).length).toBe(
+					PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES
+				);
+				expect(() => instanceUnderTest.simplify({})).toThrowError('Cannot simplify coordinate, value is not a Coordinates type');
+				expect(() => instanceUnderTest.simplify(undefined)).toThrowError('Cannot simplify coordinate, value is not a Coordinates type');
+				expect(() => instanceUnderTest.simplify(null)).toThrowError('Cannot simplify coordinate, value is not a Coordinates type');
+				expect(() => instanceUnderTest.simplify(1)).toThrowError('Cannot simplify coordinate, value is not a Coordinates type');
+				expect(() => instanceUnderTest.simplify('1')).toThrowError('Cannot simplify coordinate, value is not a Coordinates type');
+				expect(() => instanceUnderTest.simplify([1, 2])).toThrowError('Cannot simplify coordinate, value is not a Coordinates type');
+				expect(() =>
+					instanceUnderTest.simplify([
+						[1, 2],
+						[1, 2, 3]
+					])
+				).toThrowError('Cannot simplify coordinate, value is not a Coordinates type');
+			});
+
+			it('throws an error when target type is not supported', () => {
+				setup();
+
+				expect(() => {
+					instanceUnderTest.simplify([], 'any unknown type');
+				}).toThrowError(/Unsupported simplification type: any unknown type/);
+			});
+		});
+
+		describe('toCoordinate', () => {
+			it('converts a CoordinateLike to a Coordinate', () => {
+				setup();
+
+				expect(instanceUnderTest.toCoordinate([1, 2, 3])).toEqual([1, 2]);
+				expect(instanceUnderTest.toCoordinate([1, 2])).toEqual([1, 2]);
+				expect(
+					instanceUnderTest.toCoordinate([
+						[1, 2],
+						[11, 22]
+					])
+				).toEqual([
+					[1, 2],
+					[11, 22]
+				]);
+				expect(
+					instanceUnderTest.toCoordinate([
+						[1, 2, 3],
+						[11, 22, 33]
+					])
+				).toEqual([
+					[1, 2],
+					[11, 22]
+				]);
+				expect(() => instanceUnderTest.toCoordinate(['1', 2, 3])).toThrowError(
+					'Cannot convert value to coordinate, value is not a CoordinateLike type'
+				);
+				expect(() => instanceUnderTest.toCoordinate({})).toThrowError('Cannot convert value to coordinate, value is not a CoordinateLike type');
+				expect(() => instanceUnderTest.toCoordinate('foo')).toThrowError('Cannot convert value to coordinate, value is not a CoordinateLike type');
+				expect(() => instanceUnderTest.toCoordinate([])).toThrowError('Cannot convert value to coordinate, value is not a CoordinateLike type');
+				expect(() => instanceUnderTest.toCoordinate(1)).toThrowError('Cannot convert value to coordinate, value is not a CoordinateLike type');
+				expect(() => instanceUnderTest.toCoordinate(undefined)).toThrowError(
+					'Cannot convert value to coordinate, value is not a CoordinateLike type'
+				);
+				expect(() => instanceUnderTest.toCoordinate(null)).toThrowError('Cannot convert value to coordinate, value is not a CoordinateLike type');
 			});
 		});
 	});

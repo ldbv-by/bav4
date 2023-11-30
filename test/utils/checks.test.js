@@ -8,7 +8,8 @@ import {
 	isPromise,
 	isString,
 	isTemplateResult,
-	isFunction
+	isFunction,
+	isCoordinateLike
 } from '../../src/utils/checks';
 
 describe('provides checks for commons types', () => {
@@ -81,6 +82,17 @@ describe('provides checks for commons types', () => {
 		expect(isCoordinate([1, 2, 3])).toBeFalse();
 
 		expect(isCoordinate([21, 42])).toBeTrue();
+	});
+
+	it('checks for a coordinate like', () => {
+		expect(isCoordinateLike()).toBeFalse();
+		expect(isCoordinateLike(null)).toBeFalse();
+		expect(isCoordinateLike([21])).toBeFalse();
+		expect(isCoordinateLike({})).toBeFalse();
+		expect(isCoordinateLike(['21', 42])).toBeFalse();
+		expect(isCoordinateLike(['21', '42'])).toBeFalse();
+		expect(isCoordinateLike([1, 2, 3])).toBeTrue();
+		expect(isCoordinateLike([21, 42])).toBeTrue();
 	});
 
 	it('checks for a promise', () => {
