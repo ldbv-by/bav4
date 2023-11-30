@@ -8,8 +8,10 @@ import { $injector } from '../../../../../../injection';
 import svg from './assets/arrowLeftShort.svg';
 import { nothing } from '../../../../../../../node_modules/lit-html/lit-html';
 import { setCurrentTool } from '../../../../../../store/tools/tools.action';
+import { SourceType, SourceTypeName } from '../../../../../../domain/sourceType';
 
 const Update_Route = 'update_route';
+const Update_Active = 'update_disabled';
 
 /**
  * Container for routing contents.
@@ -20,7 +22,9 @@ const Update_Route = 'update_route';
 export class RoutingPanel extends AbstractMvuContentPanel {
 	constructor() {
 		super({ route: null });
-		const { TranslationService } = $injector.inject('TranslationService');
+		const { TranslationService, ExportVectorDataService } = $injector.inject('TranslationService', 'ExportVectorDataService');
+
+		this._exportVectorDataService = ExportVectorDataService;
 		this._translationService = TranslationService;
 	}
 
@@ -35,11 +39,13 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 		switch (type) {
 			case Update_Route:
 				return { ...model, route: data };
+			case Update_Active:
+				return { ...model, active: data };
 		}
 	}
 
 	createView(model) {
-		const { active, route } = model;
+		const { route, active } = model;
 		const translate = (key) => this._translationService.translate(key);
 		const close = () => {
 			setCurrentTool(null);
@@ -50,6 +56,12 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 			const chunkName = 'routing';
 
 			return active ? html`<ba-lazy-load .chunkName=${chunkName} .content=${content}></ba-lazy-load>` : nothing;
+		};
+		const getChips = (route) => {
+			const exportData = route ? this._exportVectorDataService.forData(route?.data, new SourceType(SourceTypeName.KML, null, 4326)) : null;
+			return route
+				? html`<ba-profile-chip></ba-profile-chip> <ba-export-vector-data-chip .exportData=${exportData}></ba-export-vector-data-chip>`
+				: nothing;
 		};
 
 		return html`
@@ -68,12 +80,9 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 					</li>
 				</ul>
 				<div>${getRoutingContent(active)}</div>
-				<div class="chips__container">
-					<ba-profile-chip></ba-profile-chip>
-					<ba-export-vector-data-chip .exportData=${route}></ba-export-vector-data-chip>
-				</div>
+				<div class="chips__container">${getChips(route)}</div>
 			</div>
-		`;
+		`; //<!--<ba-export-vector-data-chip .exportData=${route?.data}></ba-export-vector-data-chip> -->
 	}
 
 	static get tag() {
