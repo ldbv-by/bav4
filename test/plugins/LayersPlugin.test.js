@@ -364,7 +364,7 @@ describe('LayersPlugin', () => {
 			});
 
 			describe('handle query parameter ZOOM_TO_EXTENT', () => {
-				it('calls #fitLayer() for the correct layer', async () => {
+				it('calls action fitLayer() for the correct layer', async () => {
 					const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.ZOOM_TO_EXTENT}=1`);
 					const store = setup({
 						position: initialPositionState
@@ -389,7 +389,7 @@ describe('LayersPlugin', () => {
 					expect(store.getState().position.fitLayerRequest.payload.id).toContain('some1_');
 				});
 
-				it('does nothing when parameter values is not an integer', async () => {
+				it('does nothing when parameter value is not an integer', async () => {
 					const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.ZOOM_TO_EXTENT}=foo`);
 					const store = setup({
 						position: initialPositionState
