@@ -35,6 +35,8 @@ import { positionReducer } from '../../../../../src/store/position/position.redu
 import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer';
 import { SourceTypeName } from '../../../../../src/domain/sourceType';
 import { bvvRouteStatsProvider } from '../../../../../src/modules/olMap/handler/routing/routeStats.provider';
+import { bottomSheetReducer } from '../../../../../src/store/bottomSheet/bottomSheet.reducer';
+import { highlightReducer } from '../../../../../src/store/highlight/highlight.reducer';
 
 describe('constants and enums', () => {
 	it('provides an enum of all valid RoutingFeatureTypes', () => {
@@ -97,7 +99,9 @@ describe('OlRoutingHandler', () => {
 			routing: routingReducer,
 			notifications: notificationReducer,
 			position: positionReducer,
-			elevationProfile: elevationProfileReducer
+			elevationProfile: elevationProfileReducer,
+			bottomSheet: bottomSheetReducer,
+			highlight: highlightReducer
 		});
 
 		$injector
@@ -420,6 +424,29 @@ describe('OlRoutingHandler', () => {
 					new TranslateEvent('translateend', new Collection([feature]), [21, 42], [0, 0], new Event(MapBrowserEventType.POINTERUP))
 				);
 				expect(requestRouteFromInteractionLayerSpy).toHaveBeenCalledTimes(1);
+			});
+
+			it('updates the store', async () => {
+				const { instanceUnderTest, map, layer, store } = await newTestInstance({
+					bottomSheet: { active: true },
+					highlight: {
+						features: [{ id: 'foo', data: { coordinate: [11, 22] } }]
+					}
+				});
+
+				spyOn(instanceUnderTest, '_requestRouteFromInteractionLayer');
+				map.addLayer(layer);
+
+				const feature = new Feature({
+					geometry: new Point([0, 0])
+				});
+
+				instanceUnderTest._translateInteraction.dispatchEvent(
+					new TranslateEvent('translatestart', new Collection([feature]), [0, 0], [0, 0], new Event(MapBrowserEventType.POINTERDOWN))
+				);
+
+				expect(store.getState().bottomSheet.active).toBeFalse();
+				expect(store.getState().highlight.features).toHaveSize(0);
 			});
 
 			it('does nothing when feature was not translated', async () => {

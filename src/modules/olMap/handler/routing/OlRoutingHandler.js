@@ -31,6 +31,8 @@ import { equals } from '../../../../../node_modules/ol/coordinate';
 import { GeoJSON as GeoJSONFormat } from 'ol/format';
 import { SourceType, SourceTypeName } from '../../../../domain/sourceType';
 import { bvvRouteStatsProvider } from './routeStats.provider';
+import { clearHighlightFeatures } from '../../../../store/highlight/highlight.action';
+import { closeBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
 
 export const RoutingFeatureTypes = Object.freeze({
 	START: 'start',
@@ -255,6 +257,8 @@ export class OlRoutingHandler extends OlLayerHandler {
 		});
 		translate.on('translatestart', (evt) => {
 			startCoordinate = evt.coordinate;
+			clearHighlightFeatures();
+			closeBottomSheet();
 		});
 		translate.on('translateend', (evt) => {
 			if (!equals(startCoordinate, evt.coordinate)) {
