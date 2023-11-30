@@ -18,17 +18,9 @@ const Update_Title = 'update_title';
  * @param {string} property
  * @returns {number} the number value
  */
-const getStyleProperty = (element, property) => parseInt(window.getComputedStyle(element).getPropertyValue(property));
-
-/**
- * Returns a number representing the integer value of the specified CSS property of the pseudo-element
- * @param {Element} element
- * @param {string} pseudoElement
- * @param {string} property
- * @returns {number} the number value
- */
-const getPseudoStyleProperty = (element, pseudoElement, property) =>
+const getComputedStyleProperty = (element, property, pseudoElement = null) =>
 	parseInt(window.getComputedStyle(element, pseudoElement).getPropertyValue(property));
+
 // eslint-disable-next-line no-unused-vars
 const Toggle_No_Op = (checked) => {};
 
@@ -95,9 +87,9 @@ export class Switch extends MvuElement {
 	onAfterRender(firstTime) {
 		if (firstTime) {
 			const checkbox = this.shadowRoot.querySelector('input');
-			const thumbSize = getPseudoStyleProperty(checkbox, '::before', 'width');
-			const padding = getStyleProperty(checkbox, 'padding-left') + getStyleProperty(checkbox, 'padding-right');
-			const width = getStyleProperty(checkbox, 'width');
+			const thumbSize = getComputedStyleProperty(checkbox, 'width', '::before');
+			const padding = getComputedStyleProperty(checkbox, 'padding-left') + getComputedStyleProperty(checkbox, 'padding-right');
+			const width = getComputedStyleProperty(checkbox, 'width');
 
 			this.#switch = {
 				thumbSize: thumbSize,
@@ -219,7 +211,7 @@ export class Switch extends MvuElement {
 		};
 
 		const { thumbSize, bounds, padding } = this.#switch;
-		const directionality = getStyleProperty(event.target, '--isLTR');
+		const directionality = getComputedStyleProperty(event.target, '--isLTR');
 		const track = directionality === -1 ? event.target.clientWidth * -1 + thumbSize + padding : 0;
 
 		const position = getHarmonizedPosition(event.offsetX, thumbSize, bounds);
