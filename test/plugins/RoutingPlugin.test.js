@@ -123,7 +123,6 @@ describe('RoutingPlugin', () => {
 			expect(store.getState().routing.active).toBeFalse();
 			expect(store.getState().routing.waypoints).toHaveSize(0);
 			expect(store.getState().bottomSheet.active).toBeFalse();
-			expect(store.getState().bottomSheet.active).toBeFalse();
 			expect(store.getState().highlight.features).toHaveSize(0);
 		});
 	});
