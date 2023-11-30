@@ -13,7 +13,7 @@
  */
 
 /**
- * An array of numbers representing an XYZ coordinate. Ordering is [easting, northing, z] or [lon, lat, z]. Example: `[16, 48, 1000]`.
+ * An array of numbers representing an XYZ coordinate. Ordering is [easting, northing, elevation] or [lon, lat, elevation]. Example: `[16, 48, 1000]`.
  * @typedef {Array<number>} CoordinateXYZ
  * @implements {module:domain/coordinateTypeDef~CoordinateLike}
  */
