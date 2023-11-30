@@ -9,6 +9,8 @@ import svg from './assets/arrowLeftShort.svg';
 import { nothing } from '../../../../../../../node_modules/lit-html/lit-html';
 import { setCurrentTool } from '../../../../../../store/tools/tools.action';
 
+const Update_Route = 'update_route';
+
 /**
  * Container for routing contents.
  * @class
@@ -17,13 +19,27 @@ import { setCurrentTool } from '../../../../../../store/tools/tools.action';
  */
 export class RoutingPanel extends AbstractMvuContentPanel {
 	constructor() {
-		super({});
+		super({ route: null });
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
 	}
 
+	onInitialize() {
+		this.observe(
+			(state) => state.routing.route,
+			(route) => this.signal(Update_Route, route)
+		);
+	}
+
+	update(type, data, model) {
+		switch (type) {
+			case Update_Route:
+				return { ...model, route: data };
+		}
+	}
+
 	createView(model) {
-		const { active } = model;
+		const { active, route } = model;
 		const translate = (key) => this._translationService.translate(key);
 		const close = () => {
 			setCurrentTool(null);
@@ -54,6 +70,7 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 				<div>${getRoutingContent(active)}</div>
 				<div class="chips__container">
 					<ba-profile-chip></ba-profile-chip>
+					<ba-export-vector-data-chip .exportData=${route}></ba-export-vector-data-chip>
 				</div>
 			</div>
 		`;
