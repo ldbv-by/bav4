@@ -93,6 +93,8 @@ export class RoutingPlugin extends BaPlugin {
 				return;
 			}
 
+			setCurrentTool(Tools.ROUTING);
+
 			clearHighlightFeatures();
 			closeContextMenu();
 
@@ -117,7 +119,7 @@ export class RoutingPlugin extends BaPlugin {
 				setCurrentTool(Tools.ROUTING);
 			}
 		};
-		const resetUI = () => {
+		const onWaypointsChanged = () => {
 			clearHighlightFeatures();
 			closeContextMenu();
 			closeBottomSheet();
@@ -138,7 +140,7 @@ export class RoutingPlugin extends BaPlugin {
 		observe(
 			store,
 			(state) => state.routing.waypoints,
-			() => resetUI()
+			() => onWaypointsChanged()
 		);
 	}
 

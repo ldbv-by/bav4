@@ -149,6 +149,20 @@ describe('RoutingPlugin', () => {
 	});
 
 	describe('when routing "proposal" property changes', () => {
+		it('sets "ROUTING" as the current active tool', async () => {
+			const store = setup();
+			const instanceUnderTest = new RoutingPlugin();
+			instanceUnderTest._initialized = true;
+			await instanceUnderTest.register(store);
+			const coordinate = [21, 42];
+
+			expect(store.getState().tools.current).toBeNull();
+
+			setProposal(coordinate, CoordinateProposalType.START_OR_DESTINATION);
+
+			setStatus(RoutingStatusCodes.Destination_Missing);
+		});
+
 		it('closes an existing ContextMenu, removes existing highlight features, opens the BottomSheet, and removes the highlight feature after the BottomSheet is closed', async () => {
 			const store = setup({
 				mapContextMenu: { active: true },
