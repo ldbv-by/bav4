@@ -86,9 +86,16 @@ export class RoutingPlugin extends BaPlugin {
 			}
 		};
 
-		const onProposalChange = ({ coord, type: proposalType }) => {
+		const onProposalChange = (proposal, state) => {
+			const { coord, type: proposalType } = proposal;
+
+			if (proposalType === CoordinateProposalType.EXISTING_START_OR_DESTINATION && state.routing.waypoints.length < 2) {
+				return;
+			}
+
 			clearHighlightFeatures();
 			closeContextMenu();
+
 			addHighlightFeatures({
 				id: RoutingPlugin.HIGHLIGHT_FEATURE_ID,
 				type: [CoordinateProposalType.EXISTING_INTERMEDIATE, CoordinateProposalType.EXISTING_START_OR_DESTINATION].includes(proposalType)
@@ -121,7 +128,7 @@ export class RoutingPlugin extends BaPlugin {
 		observe(
 			store,
 			(state) => state.routing.proposal,
-			(eventLike) => onProposalChange(eventLike.payload)
+			(eventLike, state) => onProposalChange(eventLike.payload, state)
 		);
 		observe(
 			store,

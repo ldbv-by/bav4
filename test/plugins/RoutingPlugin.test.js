@@ -180,9 +180,16 @@ describe('RoutingPlugin', () => {
 
 		it('adds a different highlight feature when waypoint already exists', async () => {
 			const store = setup({
-				bottomSheet: { active: true },
-				highlight: {
-					features: [{ id: RoutingPlugin.HIGHLIGHT_FEATURE_ID, data: { coordinate: [11, 22] } }]
+				routing: {
+					...initialRoutingState,
+					waypoints: [
+						// some waypoints (more than one needed)
+						[1, 2],
+						[3, 4]
+					]
+				},
+				tools: {
+					current: Tools.ROUTING
 				}
 			});
 			const instanceUnderTest = new RoutingPlugin();
@@ -196,6 +203,26 @@ describe('RoutingPlugin', () => {
 			expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
 			expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.DEFAULT);
 			expect(store.getState().highlight.features[0].id).toBe(RoutingPlugin.HIGHLIGHT_FEATURE_ID);
+		});
+
+		it('prevents selecting a waypoint for removal when it is the only one', async () => {
+			const store = setup({
+				routing: {
+					...initialRoutingState,
+					waypoints: [[21, 42]]
+				},
+				tools: {
+					current: Tools.ROUTING
+				}
+			});
+			const instanceUnderTest = new RoutingPlugin();
+			instanceUnderTest._initialized = true;
+			const coordinate = [21, 42];
+			await instanceUnderTest.register(store);
+
+			setProposal(coordinate, CoordinateProposalType.EXISTING_START_OR_DESTINATION);
+
+			expect(store.getState().highlight.features).toHaveSize(0);
 		});
 	});
 
