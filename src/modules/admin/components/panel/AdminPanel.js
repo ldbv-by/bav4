@@ -230,9 +230,6 @@ export class AdminPanel extends MvuElement {
 	update(type, data, model) {
 		switch (type) {
 			case Update_CatalogWithResourceData:
-				if (data.length === 10) {
-					console.log('🚀 ~ AdminPanel ~ update ~ data:', data);
-				}
 				return { ...model, catalogWithResourceData: [...data], dummy: !model.dummy };
 		}
 	}
@@ -248,7 +245,7 @@ export class AdminPanel extends MvuElement {
 
 	createView(model) {
 		const { catalogWithResourceData, dummy } = model;
-		console.log('🚀 ~ AdminPanel ~ createView ~ catalogWithResourceData:', catalogWithResourceData);
+		// console.log('🚀 ~ AdminPanel ~ createView ~ catalogWithResourceData:', catalogWithResourceData);
 
 		const findElementRecursively = (uid, catalogEntry) => {
 			for (let n = 0; n < catalogEntry.children.length; n++) {
@@ -486,16 +483,19 @@ export class AdminPanel extends MvuElement {
 
 		const refreshCatalog = async (newCatalogWithResourceData) => {
 			newCatalogWithResourceData.forEach((entry) => {
-				console.log('🚀 ~ AdminPanel ~ newCatalogWithResourceData.forEach ~ entry:', entry);
+				// console.log('🚀 ~ AdminPanel ~ newCatalogWithResourceData.forEach ~ entry:', entry);
 				const correspondingEntry = catalogWithResourceData.find((e) => e.uid === entry.uid);
 
-				if (!correspondingEntry) {
-					entry.label += ' - new';
-				}
-				if (correspondingEntry.label !== entry.label) {
-					entry.label += ' - different';
-				}
+				// if (!correspondingEntry) {
+				// 	entry.label += ' - new';
+				// }
+				// if (correspondingEntry.label !== entry.label) {
+				// 	entry.label += ' - different';
+				// }
 			});
+
+			const catalog = this._reduceData(newCatalogWithResourceData, this._copyEverything);
+			this.#catalog = catalog;
 
 			this.signal(Update_CatalogWithResourceData, newCatalogWithResourceData);
 		};
@@ -521,6 +521,7 @@ export class AdminPanel extends MvuElement {
 							.showChildren="${showChildren}"
 							.addGeoResourcePermanently="${addGeoResourcePermanently}"
 							.resetCatalog="${resetCatalog}"
+							.refreshCatalog="${refreshCatalog}"
 							.addLayerGroup="${addLayerGroup}"
 							.copyBranch="${copyBranch}"
 							.saveCatalog="${saveCatalog}"

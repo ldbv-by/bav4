@@ -180,15 +180,16 @@ export class LayerTree extends MvuElement {
 		};
 
 		const onDragOver = (event, currentCatalogEntry, level) => {
-			logOnce('🚀 ~ 🚀 ~ 🚀 ~ currentCatalogEntry.geoResourceId ' + currentCatalogEntry.geoResourceId);
+			// logOnce('🚀 ~ 🚀 ~ 🚀 ~ currentCatalogEntry.geoResourceId ' + currentCatalogEntry.geoResourceId);
+
 			const types = event.dataTransfer.types;
 			const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
 			const newGeoResourceIdFromList = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
 			if (newGeoResourceIdFromList) {
-				logOnce('🚀 ~ LayerTree ~ onDragOver ~ newGeoResourceIdFromList:' + newGeoResourceIdFromList);
-				logOnce(
-					'newGeoResourceIdFromList: ' + newGeoResourceIdFromList + ' - currentCatalogEntry.geoResourceId: ' + currentCatalogEntry.geoResourceId
-				);
+				// logOnce('🚀 ~ LayerTree ~ onDragOver ~ newGeoResourceIdFromList:' + newGeoResourceIdFromList);
+				// logOnce(
+				// 	'newGeoResourceIdFromList: ' + newGeoResourceIdFromList + ' - currentCatalogEntry.geoResourceId: ' + currentCatalogEntry.geoResourceId
+				// );
 				if (newGeoResourceIdFromList === currentCatalogEntry.geoResourceId) {
 					// console.log('newGeoResourceIdFromList === currentCatalogEntry.geoResourceId');
 					event.preventDefault();
@@ -224,14 +225,45 @@ export class LayerTree extends MvuElement {
 			spanElement.classList.add('drag-over');
 		};
 
-		const onDrop = () => {
+		const onDrop = (event, entry) => {
+			// console.log('🚀 ~ LayerTree ~ onDrop ~ event:', event);
+			// console.log('🚀 ~ LayerTree ~ onDrop ~ entry:', entry);
 			this.#currentGeoResourceId = null;
-			if (this.#overTarget) {
+			// console.log('🚀 ~ LayerTree ~ onDrop ~ this.#overTarget:', this.#overTarget);
+
+			const dropUid = event.dataTransfer.types[0].replace('uid', '');
+			// const types = event.dataTransfer.types;
+			// console.log('🚀 ~ LayerTree ~ onDrop ~ types:', types);
+
+			// const data = event.dataTransfer.getData('text/plain');
+			// console.log('🚀 ~ LayerTree ~ onDrop ~ data:', data);
+
+			// const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
+			// const newGeoResourceIdFromList = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
+			// console.log('🚀 ~ LayerTree ~ onDrop ~ newGeoResourceIdFromList:', newGeoResourceIdFromList);
+
+			// const types = e.dataTransfer.types || [];
+			// types.forEach((type) => {
+			// 	switch (type) {
+			// 		case DragAndDropTypesMimeTypeFiles:
+			// 			this._importFile(e.dataTransfer);
+			// 			break;
+			// 		case MediaType.TEXT_PLAIN:
+			// 			this._importText(e.dataTransfer);
+			// 			break;
+			// 	}
+			// });
+
+			console.log('🚀 ~ LayerTree ~ onDrop ~ dropUid:', dropUid);
+			console.log('🚀 ~ LayerTree ~ onDrop ~ entry.uid:', entry.uid);
+
+			if (this.#overTarget || dropUid === entry.uid) {
 				this.#overTarget = false;
 				this._addGeoResourcePermanently();
 			} else {
 				this._resetCatalog();
 			}
+			event.preventDefault();
 		};
 
 		const onDragLeave = (event) => {
@@ -269,7 +301,7 @@ export class LayerTree extends MvuElement {
 			}
 		};
 
-		const handleEditClick = (event) => {
+		const handleEditClick = (event, catalogEntry) => {
 			const button = event.target;
 			const li = button.parentNode;
 
@@ -278,7 +310,7 @@ export class LayerTree extends MvuElement {
 
 				const input = document.createElement('input');
 				input.type = 'text';
-				input.value = span.textContent;
+				input.value = catalogEntry.label;
 				li.insertBefore(input, span);
 				li.removeChild(span);
 				button.textContent = 'Save';
@@ -286,10 +318,24 @@ export class LayerTree extends MvuElement {
 			} else if (button.textContent === 'Save') {
 				const input = li.firstElementChild;
 				const span = document.createElement('span');
-				span.textContent = input.value;
+				span.textContent = input.value.trim();
 				li.insertBefore(span, input);
 				li.removeChild(input);
 				button.textContent = 'Edit';
+
+				// Make a deep copy of catalogWithResourceData
+				const catalogCopy = JSON.parse(JSON.stringify(catalogWithResourceData));
+
+				// Find the corresponding entry in the copy and update its label
+				const catalogEntryCopy = catalogCopy.find((e) => e.uid === catalogEntry.uid);
+				if (catalogEntryCopy) {
+					catalogEntryCopy.label = input.value.trim();
+				}
+
+				// console.log('🚀 ~ LayerTree ~ handleEditClick ~ catalogCopy:', catalogCopy);
+				this.signal(Update_CatalogWithResourceData, []);
+
+				this._refreshCatalog(catalogCopy);
 			}
 
 			event.stopPropagation();
@@ -340,7 +386,7 @@ export class LayerTree extends MvuElement {
 						draggable="true"
 						@dragover=${(event) => onDragOver(event, entry, level)}
 						@dragleave=${onDragLeave}
-						@drop=${onDrop}
+						@drop=${(event) => onDrop(event, entry)}
 						@dragstart=${(event) => onDragStart(event, entry)}
 						@dragend=${onDragEnd}
 					>
@@ -348,7 +394,7 @@ export class LayerTree extends MvuElement {
 					</span>
 					${entry.children
 						? html`
-								<button @click="${(event) => handleEditClick(event)}">Edit</button>
+								<button @click="${(event) => handleEditClick(event, entry)}">Edit</button>
 								<button @click="${(event) => handleCopyClick(event, entry)}">Copy</button>
 								<button @click="${(event) => handleDeleteClick(event, entry)}">X</button>
 								<ul>
