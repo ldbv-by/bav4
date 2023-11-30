@@ -9,6 +9,7 @@ import { isFunction } from '../../../../utils/checks';
 
 const Update_Disabled = 'update_disabled';
 const Update_Checked = 'update_checked';
+const Update_Checked_Propagate = 'update_checked_propagate';
 const Update_Indeterminate = 'update_indeterminate';
 const Update_Title = 'update_title';
 
@@ -73,8 +74,10 @@ export class Switch extends MvuElement {
 		};
 
 		switch (type) {
-			case Update_Checked:
+			case Update_Checked_Propagate:
 				return { ...model, checked: returnAndPropagate(data), indeterminate: false };
+			case Update_Checked:
+				return { ...model, checked: data, indeterminate: false };
 			case Update_Indeterminate:
 				return { ...model, indeterminate: data };
 			case Update_Disabled:
@@ -114,13 +117,13 @@ export class Switch extends MvuElement {
 				return;
 			}
 
-			this.signal(Update_Checked, !checkbox.checked);
+			this.signal(Update_Checked_Propagate, !checkbox.checked);
 			event.preventDefault();
 		};
 
 		const onChange = (event) => {
 			const checked = event.target.checked;
-			this.signal(Update_Checked, checked);
+			this.signal(Update_Checked_Propagate, checked);
 		};
 
 		const onPointerup = () => {
@@ -128,7 +131,7 @@ export class Switch extends MvuElement {
 
 			const checkbox = this.shadowRoot.querySelector('input');
 			checkbox.checked = this.#dragging ? this._determineChecked(checkbox) : !this._determineChecked(checkbox);
-			this.signal(Update_Checked, checkbox.checked);
+			this.signal(Update_Checked_Propagate, checkbox.checked);
 
 			checkbox.style.removeProperty('--thumb-transition-duration');
 			checkbox.style.removeProperty('--thumb-position');
@@ -169,7 +172,7 @@ export class Switch extends MvuElement {
 			}
 
 			if (event.key === ' ') {
-				this.signal(Update_Checked, !target.checked);
+				this.signal(Update_Checked_Propagate, !target.checked);
 
 				event.preventDefault();
 				event.stopPropagation();

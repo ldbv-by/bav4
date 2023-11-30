@@ -32,10 +32,23 @@ describe('MiscContentPanel', () => {
 		});
 	});
 
+	describe('when instantiated', () => {
+		it('has a model containing default values', async () => {
+			await setup();
+			const model = new BvvMiscContentPanel().getModel();
+
+			expect(model).toEqual({
+				darkSchema: false,
+				active: false
+			});
+		});
+	});
+
 	describe('when initialized', () => {
 		it('renders the view', async () => {
 			const element = await setup();
 			expect(element.shadowRoot.querySelectorAll(Switch.tag)).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll(Switch.tag)[0].checked).toBeTrue();
 		});
 
 		it('checks the list ', async () => {
@@ -116,6 +129,8 @@ describe('MiscContentPanel', () => {
 		it('changes the theme with the theme-switch', async () => {
 			const element = await setup();
 			const themeSwitch = element.shadowRoot.querySelector('#themeToggle');
+
+			expect(store.getState().media.darkSchema).toBeTrue();
 
 			themeSwitch.click();
 

@@ -8,20 +8,38 @@ import { $injector } from '../../../../../../injection';
 import { closeModal, openModal } from '../../../../../../store/modal/modal.action';
 import { toggleSchema } from '../../../../../../store/media/media.action';
 
+const Update_Schema = 'update_schema';
+
 /**
  * Container for more contents.
  * @class
  * @author costa_gi
  * @author alsturm
+ * @author thiloSchlemmer
  */
 export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 	constructor() {
-		super({});
+		super({ darkSchema: false });
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
 	}
 
-	createView() {
+	onInitialize() {
+		this.observe(
+			(state) => state.media.darkSchema,
+			(darkSchema) => this.signal(Update_Schema, darkSchema)
+		);
+	}
+
+	update(type, data, model) {
+		switch (type) {
+			case Update_Schema:
+				return { ...model, darkSchema: data };
+		}
+	}
+
+	createView(model) {
+		const { darkSchema } = model;
 		const translate = (key) => this._translationService.translate(key);
 
 		const openFeedbackDialog = () => {
@@ -41,11 +59,9 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 					</span>
 				</div>
 				<div class="ba-list-item divider">
-					<span class="ba-list-item__after">
-						<ba-switch id="themeToggle" @toggle=${toggleSchema}>
-							<span slot="before" class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_dark_mode')}</span>
-						</ba-switch>
-					</span>
+					<ba-switch class="themeToggle" id="themeToggle" .checked=${darkSchema} @toggle=${toggleSchema}>
+						<span slot="before" class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_dark_mode')}</span>
+					</ba-switch>
 				</div>
 				<div class="ba-list-item  ba-list-item__header">
 					<span class="ba-list-item__text ">

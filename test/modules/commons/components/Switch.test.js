@@ -281,7 +281,7 @@ describe('Switch', () => {
 
 			it('handles window.pointerup ONCE', async () => {
 				const element = await TestUtils.render(Switch.tag);
-				const spyUpdateChecked = spyOn(element, 'signal').withArgs('update_checked', jasmine.any(Boolean)).and.callThrough();
+				const spyUpdateChecked = spyOn(element, 'signal').withArgs('update_checked_propagate', jasmine.any(Boolean)).and.callThrough();
 
 				const baSwitch = element.shadowRoot.querySelector('#baSwitch');
 				const pointerdown = new Event('pointerdown');
