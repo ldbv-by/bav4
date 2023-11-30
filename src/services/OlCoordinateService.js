@@ -15,7 +15,7 @@ import { isCoordinate, isCoordinateLike } from '../utils/checks';
  * @param {module:domain/coordinateTypeDef~Coordinate} coordinate
  * @param {module:domain/coordinateRepresentation~CoordinateRepresentation} coordinateRepresentation
  * @param {function} transformFn
- * @param {object} [options] optional options
+ * @param {object} [options] optional parameter
  * @returns {String} the String representation
  */
 
