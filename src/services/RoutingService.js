@@ -11,7 +11,6 @@ import { bvvChartItemStylesProvider } from './provider/chartItemStyles.provider'
 import { isCoordinate } from '../utils/checks';
 import { bvvRouteProvider } from './provider/route.provider';
 import { bvvRoutingCategoriesProvider } from './provider/routingCategories.provider';
-import { bvvRouteStatsProvider } from './provider/routeStats.provider';
 import { $injector } from '../injection/index';
 
 /**
@@ -169,7 +168,6 @@ export class BvvRoutingService {
 	 *
 	 * @param {module:services/RoutingService~routingCategoriesProvider} [categoriesProvider]
 	 * @param {module:services/RoutingService~routeProvider} [routeProvider]
-	 * @param {module:services/RoutingService~routeStatsProvider} [routeStatsProvider]
 	 * @param {module:services/RoutingService~chartItemStylesProvider} [chartItemStylesProvider]
 	 * @param {module:services/RoutingService~osmRoadTypeMappingProvider} [osmRoadTypeMappingProvider]
 	 *
@@ -177,7 +175,6 @@ export class BvvRoutingService {
 	constructor(
 		categoriesProvider = bvvRoutingCategoriesProvider,
 		routeProvider = bvvRouteProvider,
-		routeStatsProvider = bvvRouteStatsProvider,
 		chartItemStylesProvider = bvvChartItemStylesProvider,
 		osmRoadTypeMappingProvider = bvvOsmRoadTypeMappingProvider
 	) {
@@ -185,7 +182,6 @@ export class BvvRoutingService {
 		this._chartItemsStylesProvider = chartItemStylesProvider;
 		this._osmRoadTypeMapper = osmRoadTypeMappingProvider;
 		this._routeProvider = routeProvider;
-		this._routeStatsProvider = routeStatsProvider;
 		const { ElevationService } = $injector.inject('ElevationService');
 		this._elevationService = ElevationService;
 		this._categories = null;
@@ -323,23 +319,5 @@ export class BvvRoutingService {
 		} catch (e) {
 			throw new Error('Could not retrieve a routing result from the provider', { cause: e });
 		}
-	}
-
-	/**
-	 *
-	 * @param {module:domain/routing~GhRoute} route the route
-	 * @param {module:domain/coordinateTypeDef~Coordinate[]} coordinates3857 the coordinates suitable for calculating a {@link module:domain/elevationProfile~Profile} for that route
-	 * @returns {module:domain/routing~RouteStats|null}
-	 */
-	async calculateRouteStats(route, coordinates3857) {
-		try {
-			const { stats: profileStats } = await this._elevationService.getProfile(coordinates3857);
-			if (profileStats) {
-				return this._routeStatsProvider(route, profileStats);
-			}
-		} catch (e) {
-			console.error(e);
-		}
-		return null;
 	}
 }

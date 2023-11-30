@@ -26,11 +26,11 @@ import { provide as messageProvide } from './tooltipMessage.provider';
 import { setProposal, setRoute, setRouteStats, setWaypoints } from '../../../../store/routing/routing.action';
 import { CoordinateProposalType, RoutingStatusCodes } from '../../../../domain/routing';
 import { fit } from '../../../../store/position/position.action';
-import { getCoordinatesForElevationProfile } from '../../utils/olGeometryUtils';
 import { updateCoordinates } from '../../../../store/elevationProfile/elevationProfile.action';
 import { equals } from '../../../../../node_modules/ol/coordinate';
 import { GeoJSON as GeoJSONFormat } from 'ol/format';
 import { SourceType, SourceTypeName } from '../../../../domain/sourceType';
+import { bvvRouteStatsProvider } from './routeStats.provider';
 
 export const RoutingFeatureTypes = Object.freeze({
 	START: 'start',
@@ -61,20 +61,22 @@ export const REMOVE_HIGHLIGHTED_SEGMENTS_TIMEOUT_MS = 2500;
  * @author taulinger
  */
 export class OlRoutingHandler extends OlLayerHandler {
-	constructor() {
+	constructor(routeStatsProvider = bvvRouteStatsProvider) {
 		super(ROUTING_LAYER_ID);
-		const { StoreService, RoutingService, MapService, EnvironmentService, TranslationService } = $injector.inject(
+		const { StoreService, RoutingService, MapService, EnvironmentService, TranslationService, ElevationService } = $injector.inject(
 			'StoreService',
 			'RoutingService',
 			'MapService',
 			'EnvironmentService',
-			'TranslationService'
+			'TranslationService',
+			'ElevationService'
 		);
 		this._storeService = StoreService;
 		this._routingService = RoutingService;
 		this._mapService = MapService;
 		this._environmentService = EnvironmentService;
 		this._translationService = TranslationService;
+		this._elevationService = ElevationService;
 		// map
 		this._map = null;
 		//layer
@@ -97,6 +99,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 		this._mapListeners = [];
 		this._helpTooltip = new HelpTooltip();
 		this._helpTooltip.messageProvideFunction = messageProvide;
+		this._routeStatsProvider = routeStatsProvider;
 	}
 
 	/**
@@ -548,15 +551,19 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 	async _updateStore(ghRoute) {
 		const geom = this._polylineToGeometry(ghRoute.paths[0].points);
-		const profileCoordinates = getCoordinatesForElevationProfile(geom);
+		const coordinates = geom.getCoordinates();
 
-		// update stats
-		const routeStats = await this._routingService.calculateRouteStats(ghRoute, profileCoordinates);
-		setRouteStats(routeStats);
-		// update elevation profile coordinate
-		updateCoordinates(profileCoordinates);
-		// update route
-		setRoute({ data: new GeoJSONFormat().writeGeometry(geom), type: new SourceType(SourceTypeName.GEOJSON) });
+		try {
+			const { stats: profileStats } = await this._elevationService.getProfile(coordinates);
+			const routeStats = this._routeStatsProvider(ghRoute, profileStats);
+
+			setRoute({ data: new GeoJSONFormat().writeGeometry(geom), type: new SourceType(SourceTypeName.GEOJSON) });
+			setRouteStats(routeStats);
+			updateCoordinates(coordinates);
+		} catch (e) {
+			console.error(e);
+			emitNotification(`${this._translationService.translate('global_routingService_exception')}`, LevelTypes.ERROR);
+		}
 	}
 
 	_requestRouteFromInteractionLayer() {

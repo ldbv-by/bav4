@@ -3,7 +3,7 @@ export const ELEVATION_PROFILE_COORDINATES_CHANGED = 'elevationProfile/coordinat
 
 export const initialState = {
 	/**
-	 * @property {Array<Coordinate>}
+	 * @property {Array<CoordinateLike>}
 	 */
 	coordinates: [],
 
