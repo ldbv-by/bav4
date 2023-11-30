@@ -28,6 +28,11 @@ describe('elevationProfileReducer', () => {
 		expect(store.getState().elevationProfile.active).toBeFalse();
 		expect(store.getState().elevationProfile.coordinates).toEqual([]);
 
+		openProfile([[21]]); //invalid coordinate
+
+		expect(store.getState().elevationProfile.active).toBeFalse();
+		expect(store.getState().elevationProfile.coordinates).toEqual([]);
+
 		openProfile([[21, 42]]);
 
 		expect(store.getState().elevationProfile.active).toBeTrue();
@@ -41,6 +46,11 @@ describe('elevationProfileReducer', () => {
 
 	it("updates the 'coordinates' property", () => {
 		const store = setup();
+
+		updateCoordinates([[21]]); // invalid coordinate
+
+		expect(store.getState().elevationProfile.active).toBeFalse();
+		expect(store.getState().elevationProfile.coordinates).toEqual([]);
 
 		updateCoordinates([[21, 42]]);
 

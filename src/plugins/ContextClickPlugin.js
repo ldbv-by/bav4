@@ -57,5 +57,10 @@ export class ContextClickPlugin extends BaPlugin {
 		observe(store, (state) => state.pointer.click, onMoveOrClick);
 		observe(store, (state) => state.map.moveStart, onMoveOrClick);
 		observe(store, (state) => state.bottomSheet.active, onBottomSheetChanged);
+		observe(
+			store,
+			(state) => state.tools.current,
+			() => removeHighlightFeaturesById(highlightFeatureId)
+		);
 	}
 }

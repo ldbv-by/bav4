@@ -72,7 +72,7 @@ describe('ElevationService', () => {
 
 			await expectAsync(instanceUnderTest.getElevation('invalid input')).toBeRejectedWithError(
 				TypeError,
-				"Parameter 'coordinate3857' must be a coordinate"
+				"Parameter 'coordinate3857' must be a CoordinateLike type"
 			);
 		});
 

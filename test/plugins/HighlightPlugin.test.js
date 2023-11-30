@@ -279,7 +279,7 @@ describe('HighlightPlugin', () => {
 			expect(store.getState().highlight.features).toHaveSize(1);
 			expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
 			expect(store.getState().highlight.features[0].label).toBe('global_marker_symbol_label');
-			expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureType.DEFAULT);
+			expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureType.MARKER);
 		});
 	});
 
