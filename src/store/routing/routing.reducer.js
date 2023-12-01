@@ -40,7 +40,7 @@ export const initialState = {
 	/**
 	 * @property {module:store/routing/routing_action~HighlightSegments}
 	 */
-	highlightedSegments: null,
+	highlightedSegments: new EventLike(),
 	/**
 	 * @property {boolean}
 	 */
@@ -167,13 +167,13 @@ export const routingReducer = (state = initialState, action) => {
 		case ROUTING_HIGHLIGHT_SEGMENTS_SET: {
 			return {
 				...state,
-				highlightedSegments: { ...payload, segments: [...payload.segments.map((c) => [...c])] /**deep clone segments */ }
+				highlightedSegments: new EventLike({ ...payload, segments: [...payload.segments.map((c) => [...c])] /**deep clone segments */ })
 			};
 		}
 		case ROUTING_HIGHLIGHT_SEGMENTS_REMOVED: {
 			return {
 				...state,
-				highlightedSegments: null
+				highlightedSegments: new EventLike()
 			};
 		}
 		case ROUTING_ACTIVE_CHANGED: {
