@@ -113,12 +113,13 @@ export class CatalogService {
 		const { ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 
 		const url = `${configService.getValueAsPath('BACKEND_URL')}adminui/catalog/ba`;
+		const adminToken = configService.getValue('ADMIN_TOKEN_KEY');
 
 		fetch(url, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				'X-AUTH-ADMIN-TOKEN': 'adminToken123'
+				'X-AUTH-ADMIN-TOKEN': adminToken
 			},
 			body: JSON.stringify(catalog)
 			// body: JSON.stringify(catalog)

@@ -29,6 +29,8 @@ export class ProcessEnvConfigService {
 		);
 		// eslint-disable-next-line no-undef
 		this._properties.set('SHORTENING_SERVICE_URL', window?.ba_externalConfigProperties?.SHORTENING_SERVICE_URL ?? process.env.SHORTENING_SERVICE_URL);
+		// eslint-disable-next-line no-undef
+		this._properties.set('ADMIN_TOKEN_KEY', window?.ba_externalConfigProperties?.ADMIN_TOKEN_KEY ?? process.env.ADMIN_TOKEN_KEY);
 
 		this._properties.forEach((value, key) => {
 			if (value === undefined) {
