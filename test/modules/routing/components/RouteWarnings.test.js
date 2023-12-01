@@ -187,7 +187,7 @@ describe('RouteWarnings', () => {
 			const warningItemElement = containerElement.querySelector('.highlight');
 
 			warningItemElement.dispatchEvent(new Event('mouseover'));
-			expect(store.getState().routing.highlightedSegments).toEqual(
+			expect(store.getState().routing.highlightedSegments.payload).toEqual(
 				jasmine.objectContaining({
 					segments: [
 						[0, 1],
@@ -208,7 +208,7 @@ describe('RouteWarnings', () => {
 			const warningItemElements = containerElement.querySelectorAll('.highlight');
 
 			warningItemElements[0].dispatchEvent(new Event('mouseover'));
-			expect(store.getState().routing.highlightedSegments).toEqual(
+			expect(store.getState().routing.highlightedSegments.payload).toEqual(
 				jasmine.objectContaining({
 					segments: [
 						[0, 1],
@@ -220,7 +220,7 @@ describe('RouteWarnings', () => {
 
 			warningItemElements[0].dispatchEvent(new Event('mouseout'));
 
-			expect(store.getState().routing.highlightedSegments).toBeNull();
+			expect(store.getState().routing.highlightedSegments.payload).toBeNull();
 		});
 	});
 
@@ -259,7 +259,7 @@ describe('RouteWarnings', () => {
 
 			geolocationIconElements[0].click();
 
-			expect(store.getState().routing.highlightedSegments).toEqual(
+			expect(store.getState().routing.highlightedSegments.payload).toEqual(
 				jasmine.objectContaining({
 					segments: [
 						[0, 1],
