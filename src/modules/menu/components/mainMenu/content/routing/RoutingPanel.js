@@ -21,9 +21,7 @@ const Update_Active = 'update_disabled';
 export class RoutingPanel extends AbstractMvuContentPanel {
 	constructor() {
 		super({ route: null });
-		const { TranslationService, ExportVectorDataService } = $injector.inject('TranslationService', 'ExportVectorDataService');
-
-		this._exportVectorDataService = ExportVectorDataService;
+		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
 	}
 
