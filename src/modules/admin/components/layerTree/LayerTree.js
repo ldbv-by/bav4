@@ -22,34 +22,34 @@ const hasChildrenClass = 'has-children';
 const showChildrenClass = 'show-children';
 const droppableClass = 'droppable';
 
-const logOnceDictionary = {};
-export const logOnce = (key, objectToShow = 'nix') => {
-	if (!logOnceDictionary[key]) {
-		if (objectToShow === 'nix') {
-			// eslint-disable-next-line no-console
-			console.log(key);
-		} else {
-			if (typeof objectToShow === 'string') {
-				// eslint-disable-next-line no-console
-				console.log(objectToShow);
-			} else {
-				// eslint-disable-next-line no-console
-				console.log(JSON.stringify(objectToShow));
-			}
-		}
-		logOnceDictionary[key] = objectToShow;
-		return true;
-	}
-	return false;
-};
+// const logOnceDictionary = {};
+// export const logOnce = (key, objectToShow = 'nix') => {
+// 	if (!logOnceDictionary[key]) {
+// 		if (objectToShow === 'nix') {
+// 			// eslint-disable-next-line no-console
+// 			console.log(key);
+// 		} else {
+// 			if (typeof objectToShow === 'string') {
+// 				// eslint-disable-next-line no-console
+// 				console.log(objectToShow);
+// 			} else {
+// 				// eslint-disable-next-line no-console
+// 				console.log(JSON.stringify(objectToShow));
+// 			}
+// 		}
+// 		logOnceDictionary[key] = objectToShow;
+// 		return true;
+// 	}
+// 	return false;
+// };
 
-export const onlyOnce = (key) => {
-	if (logOnceDictionary[key]) {
-		return false;
-	}
-	logOnceDictionary[key] = key;
-	return true;
-};
+// export const onlyOnce = (key) => {
+// 	if (logOnceDictionary[key]) {
+// 		return false;
+// 	}
+// 	logOnceDictionary[key] = key;
+// 	return true;
+// };
 
 /**
  * Contains
@@ -128,10 +128,6 @@ export class LayerTree extends MvuElement {
 	createView(model) {
 		const { topics, catalogWithResourceData, currentGeoResourceId } = model;
 
-		// if (this.#working) {
-		// 	return;
-		// }
-
 		if (
 			catalogWithResourceData === null ||
 			(catalogWithResourceData && catalogWithResourceData.length === 0) ||
@@ -142,17 +138,11 @@ export class LayerTree extends MvuElement {
 		}
 
 		const insertDraggedGeoResource = (currentCatalogEntryUid, newGeoResourceIdFromList) => {
-			// this.#working = true;
 			if (newGeoResourceIdFromList === currentGeoResourceId && this.#currentUId === currentCatalogEntryUid) {
 				return;
 			}
-
 			const newElementUid = this._addGeoResource(currentCatalogEntryUid, newGeoResourceIdFromList, [...catalogWithResourceData]);
-			// console.log('🚀 ~ LayerTree ~ insertDraggedGeoResource ~ newElementUid:', newElementUid);
-
 			this.#currentUId = newElementUid;
-			// console.log('🚀 ~ LayerTree ~ insertDraggedGeoResource ~ this.#currentUId:', this.#currentUId);
-			// this.#working = false;
 		};
 
 		const onDragStart = (event, draggedEntry) => {
@@ -180,22 +170,14 @@ export class LayerTree extends MvuElement {
 		};
 
 		const onDragOver = (event, currentCatalogEntry, level) => {
-			// logOnce('🚀 ~ 🚀 ~ 🚀 ~ currentCatalogEntry.geoResourceId ' + currentCatalogEntry.geoResourceId);
-
 			const types = event.dataTransfer.types;
 			const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
 			const newGeoResourceIdFromList = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
 			if (newGeoResourceIdFromList) {
-				// logOnce('🚀 ~ LayerTree ~ onDragOver ~ newGeoResourceIdFromList:' + newGeoResourceIdFromList);
-				// logOnce(
-				// 	'newGeoResourceIdFromList: ' + newGeoResourceIdFromList + ' - currentCatalogEntry.geoResourceId: ' + currentCatalogEntry.geoResourceId
-				// );
 				if (newGeoResourceIdFromList === currentCatalogEntry.geoResourceId) {
-					// console.log('newGeoResourceIdFromList === currentCatalogEntry.geoResourceId');
 					event.preventDefault();
 					return;
 				}
-				// console.log('newGeoResourceIdFromList !== currentCatalogEntry.geoResourceId');
 
 				this.#overTarget = true;
 				if (level === 1) {
@@ -226,37 +208,8 @@ export class LayerTree extends MvuElement {
 		};
 
 		const onDrop = (event, entry) => {
-			// console.log('🚀 ~ LayerTree ~ onDrop ~ event:', event);
-			// console.log('🚀 ~ LayerTree ~ onDrop ~ entry:', entry);
 			this.#currentGeoResourceId = null;
-			// console.log('🚀 ~ LayerTree ~ onDrop ~ this.#overTarget:', this.#overTarget);
-
 			const dropUid = event.dataTransfer.types[0].replace('uid', '');
-			// const types = event.dataTransfer.types;
-			// console.log('🚀 ~ LayerTree ~ onDrop ~ types:', types);
-
-			// const data = event.dataTransfer.getData('text/plain');
-			// console.log('🚀 ~ LayerTree ~ onDrop ~ data:', data);
-
-			// const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
-			// const newGeoResourceIdFromList = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
-			// console.log('🚀 ~ LayerTree ~ onDrop ~ newGeoResourceIdFromList:', newGeoResourceIdFromList);
-
-			// const types = e.dataTransfer.types || [];
-			// types.forEach((type) => {
-			// 	switch (type) {
-			// 		case DragAndDropTypesMimeTypeFiles:
-			// 			this._importFile(e.dataTransfer);
-			// 			break;
-			// 		case MediaType.TEXT_PLAIN:
-			// 			this._importText(e.dataTransfer);
-			// 			break;
-			// 	}
-			// });
-
-			console.log('🚀 ~ LayerTree ~ onDrop ~ dropUid:', dropUid);
-			console.log('🚀 ~ LayerTree ~ onDrop ~ entry.uid:', entry.uid);
-
 			if (this.#overTarget || dropUid === entry.uid) {
 				this.#overTarget = false;
 				this._addGeoResourcePermanently();
@@ -372,9 +325,6 @@ export class LayerTree extends MvuElement {
 		};
 
 		const renderEntry = (entry, index, level) => {
-			// if (level === 1) {
-			// 	console.log('🚀 ~ LayerTree ~ renderEntry ~ entry: ', index, entry);
-			// }
 			return html`
 				<li
 					@click="${(event) => handleCategoryClick(event, entry)}"
