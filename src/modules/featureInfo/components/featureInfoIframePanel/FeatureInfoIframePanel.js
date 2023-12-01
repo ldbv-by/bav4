@@ -69,7 +69,7 @@ export class FeatureInfoIframePanel extends MvuElement {
 			if (featureInfoGeometry) {
 				addHighlightFeatures({
 					id: TEMPORARY_FEATURE_HIGHLIGHT_ID,
-					type: HighlightFeatureType.TEMPORARY,
+					type: HighlightFeatureType.MARKER_TMP,
 					data: { geometry: featureInfoGeometry.data, geometryType: HighlightGeometryType.GEOJSON }
 				});
 			}

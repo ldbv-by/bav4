@@ -21,18 +21,27 @@ export class Waypoints extends MvuElement {
 		const { TranslationService, EnvironmentService } = $injector.inject('TranslationService', 'EnvironmentService');
 		this._translationService = TranslationService;
 		this._environmentService = EnvironmentService;
+		this._storeSubscriptions = [];
 	}
 
 	onInitialize() {
-		this.observe(
-			(store) => store.routing.status,
-			(status) => this.signal(Update_Status, status)
-		);
+		this._storeSubscriptions = [
+			this.observe(
+				(store) => store.routing.status,
+				(status) => this.signal(Update_Status, status)
+			),
 
-		this.observe(
-			(store) => store.routing.waypoints,
-			(waypoints) => this.signal(Update_Waypoints, waypoints)
-		);
+			this.observe(
+				(store) => store.routing.waypoints,
+				(waypoints) => this.signal(Update_Waypoints, waypoints)
+			)
+		];
+	}
+
+	onDisconnect() {
+		while (this._storeSubscriptions.length > 0) {
+			this._storeSubscriptions.shift()();
+		}
 	}
 
 	update(type, data, model) {
@@ -117,8 +126,8 @@ export class Waypoints extends MvuElement {
 			return listIndex === 0
 				? ` - ${translate('routing_waypoints_as_start')}`
 				: listIndex / 2 === waypoints.length
-				? ` - ${translate('routing_waypoints_as_destination')}`
-				: '';
+				  ? ` - ${translate('routing_waypoints_as_destination')}`
+				  : '';
 		};
 
 		const onDragStart = (e, waypoint) => {

@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { observe, equals, EventLike } from '../../src/utils/storeUtils.js';
+import { observe, equals, EventLike, observeOnce } from '../../src/utils/storeUtils.js';
 import { createStore } from 'redux';
 
 // onChangeSpy.calls.reset();
@@ -103,6 +103,95 @@ describe('store utils', () => {
 			expect(onChangeSpy).toHaveBeenCalledOnceWith({ active: true }, { some: { active: true } });
 		});
 	});
+
+	describe('observeOnce', () => {
+		it('observes a property', () => {
+			//arrange
+			const reducer = (state = { active: false }, action) => {
+				switch (action.type) {
+					case 'SOMETHING':
+						return { ...state, active: action.payload };
+					default:
+						return state;
+				}
+			};
+			const store = createStore(reducer);
+			const extract = (state) => {
+				return state.active;
+			};
+			const onChangeSpy = jasmine.createSpy();
+
+			//act
+			observeOnce(store, extract, onChangeSpy);
+			//no initial call after observer registration
+			expect(onChangeSpy).not.toHaveBeenCalled();
+
+			//act
+			store.dispatch({
+				type: 'SOMETHING',
+				payload: false
+			});
+			//no call cause state was not changed
+			expect(onChangeSpy).not.toHaveBeenCalled();
+
+			//act
+			store.dispatch({
+				type: 'SOMETHING',
+				payload: true
+			});
+			//mutate again
+			store.dispatch({
+				type: 'SOMETHING',
+				payload: false
+			});
+			expect(onChangeSpy).toHaveBeenCalledOnceWith(true, { active: true });
+		});
+
+		it('observes an object', () => {
+			//arrange
+			const reducer = (state = { some: { active: false } }, action) => {
+				switch (action.type) {
+					case 'SOMETHING':
+						return { ...state, some: action.payload };
+
+					default:
+						return state;
+				}
+			};
+			const store = createStore(reducer);
+			const extract = (state) => {
+				return state.some;
+			};
+			const onChangeSpy = jasmine.createSpy();
+
+			//act
+			observeOnce(store, extract, onChangeSpy);
+
+			//no initial call after observer registration
+			expect(onChangeSpy).not.toHaveBeenCalled();
+
+			//act
+			store.dispatch({
+				type: 'SOMETHING',
+				payload: { active: false }
+			});
+			//no call cause state was not changed
+			expect(onChangeSpy).not.toHaveBeenCalled();
+
+			//act
+			store.dispatch({
+				type: 'SOMETHING',
+				payload: { active: true }
+			});
+			//mutate again
+			store.dispatch({
+				type: 'SOMETHING',
+				payload: { active: false }
+			});
+			expect(onChangeSpy).toHaveBeenCalledOnceWith({ active: true }, { some: { active: true } });
+		});
+	});
+
 	describe('equals', () => {
 		it('compares values shallowly', () => {
 			expect(equals(1, 1)).toBeTrue();
@@ -165,6 +254,7 @@ describe('store utils', () => {
 			expect(eventLike.payload).toBe('payload');
 			expect(eventLike.id).toBeDefined();
 			expect(equals(new EventLike('some'), new EventLike('some'))).toBeFalse();
+			expect(new EventLike().payload).toBeNull();
 		});
 	});
 });

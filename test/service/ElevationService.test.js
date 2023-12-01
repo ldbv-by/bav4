@@ -40,7 +40,7 @@ describe('ElevationService', () => {
 	});
 
 	describe('getElevation', () => {
-		it('provides a elevation', async () => {
+		it('provides an elevation', async () => {
 			const mockElevation = 42;
 			const instanceUnderTest = setup(async () => {
 				return mockElevation;
@@ -72,7 +72,7 @@ describe('ElevationService', () => {
 
 			await expectAsync(instanceUnderTest.getElevation('invalid input')).toBeRejectedWithError(
 				TypeError,
-				"Parameter 'coordinate3857' must be a coordinate"
+				"Parameter 'coordinate3857' must be a CoordinateLike type"
 			);
 		});
 
@@ -104,6 +104,51 @@ describe('ElevationService', () => {
 			const result = await instanceUnderTest.getProfile(mockCoordinates);
 
 			expect(result).toEqual(mockProfile);
+			// results should be always a deep copy
+			expect(result === mockProfile).toBeFalse();
+		});
+
+		it('provides a profile from cache', async () => {
+			const mockProfile = { result: 42 };
+
+			const providerSpy = jasmine.createSpy().and.resolveTo(mockProfile);
+
+			const instanceUnderTest = setup(null, providerSpy);
+			const mockCoordinates = [
+				[0, 1],
+				[2, 3]
+			];
+
+			const result0 = await instanceUnderTest.getProfile(mockCoordinates);
+			const result1 = await instanceUnderTest.getProfile(mockCoordinates);
+
+			expect(result0).toEqual(mockProfile);
+			expect(result1).toEqual(mockProfile);
+			expect(providerSpy).toHaveBeenCalledTimes(1);
+			// results should be always a deep copy
+			expect(result0 === result1).toBeFalse();
+		});
+
+		it('clear the cache', async () => {
+			const mockProfile = { result: 42 };
+
+			const providerSpy = jasmine.createSpy().and.resolveTo(mockProfile);
+
+			const instanceUnderTest = setup(null, providerSpy);
+			const mockCoordinates = [
+				[0, 1],
+				[2, 3]
+			];
+			const otherMockCoordinates = [
+				[4, 5],
+				[6, 7]
+			];
+
+			await instanceUnderTest.getProfile(mockCoordinates);
+			await instanceUnderTest.getProfile(otherMockCoordinates);
+			await instanceUnderTest.getProfile(mockCoordinates);
+
+			expect(providerSpy).toHaveBeenCalledTimes(3);
 		});
 
 		it('rejects when backend is not available', async () => {

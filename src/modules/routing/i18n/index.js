@@ -1,4 +1,4 @@
-import { provide as routingProvider } from './routing.provider';
+import { provide as routingContextProvider } from './routingContext.provider';
 import { $injector } from '../../../injection';
 const { TranslationService: translationService } = $injector.inject('TranslationService');
-translationService.register('routingProvider', routingProvider);
+translationService.register('routingContextProvider', routingContextProvider);

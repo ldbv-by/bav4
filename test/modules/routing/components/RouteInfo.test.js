@@ -9,8 +9,8 @@ import { TestUtils } from '../../../test-utils';
 
 window.customElements.define(RouteInfo.tag, RouteInfo);
 
-const mockedRouteStatistic = {
-	time: 3600000,
+const defaultRouteStatistic = {
+	time: 4200000,
 	details: {
 		surface: {
 			other: {
@@ -231,13 +231,11 @@ const mockedRouteStatistic = {
 	dist: 333,
 	slopeDist: 102055.31270225867
 };
-describe('RoutingInfo', () => {
-	const category = { color: 'gray' };
+describe('RouteInfo', () => {
+	const category = { style: { color: 'red', icon: 'icon_category' } };
 	const routingServiceMock = {
 		getCategoryById: () => category,
-		getParent: () => 'foo',
-		calculateRouteStats: () => mockedRouteStatistic,
-		getETAFor: () => {}
+		getParent: () => 'foo'
 	};
 
 	const unitsServiceMock = {
@@ -280,8 +278,8 @@ describe('RoutingInfo', () => {
 			const model = new RouteInfo().getModel();
 
 			expect(model).toEqual({
-				status: 900,
-				stats: jasmine.objectContaining({ time: 3600000, dist: 333, twoDiff: [111, 222] }),
+				status: null,
+				stats: null,
 				categoryId: null
 			});
 		});
@@ -304,13 +302,18 @@ describe('RoutingInfo', () => {
 			};
 
 			it('renders minimum estimate', async () => {
-				const routeStatistics = {
-					dist: '333',
-					twoDiff: [111, 222],
-					time: 42
+				const state = {
+					routing: {
+						status: RoutingStatusCodes.Ok,
+						categoryId: 'bike',
+						stats: {
+							dist: '333',
+							twoDiff: [111, 222],
+							time: 42
+						}
+					}
 				};
-				spyOn(routingServiceMock, 'calculateRouteStats').and.returnValue(routeStatistics);
-				const element = await setup(defaultRoutingState);
+				const element = await setup(state);
 
 				setRoute(defaultRoute);
 
@@ -328,36 +331,33 @@ describe('RoutingInfo', () => {
 				const state = {
 					routing: {
 						status: RoutingStatusCodes.Ok,
-						categoryId: 'some'
+						categoryId: 'some',
+						stats: defaultRouteStatistic
 					}
 				};
-				spyOn(routingServiceMock, 'getETAFor').and.returnValue(null);
-				const warnSpy = spyOn(console, 'warn');
+
 				const element = await setup(state);
 				setRoute(defaultRoute);
 
 				const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
-				expect(routingDuration[0].innerText).toBe('01:00');
+				expect(routingDuration[0].innerText).toBe('01:10');
 
 				const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
 				expect(routingElements).toHaveSize(3);
 				expect(routingElements[0].innerText).toBe('0.33 km');
 				expect(routingElements[1].innerText).toBe('0.11 km');
 				expect(routingElements[2].innerText).toBe('0.22 km');
-
-				expect(warnSpy).toHaveBeenCalledOnceWith("Unknown category, no estimate available for 'some'");
 			});
 
 			it('renders missing stats', async () => {
 				const state = {
 					routing: {
 						status: RoutingStatusCodes.Ok,
-						categoryId: 'some'
+						categoryId: 'some',
+						stats: null
 					}
 				};
 
-				spyOn(routingServiceMock, 'getETAFor').and.returnValue(42000000);
-				spyOn(routingServiceMock, 'calculateRouteStats').and.returnValue(null);
 				const element = await setup(state);
 				setRoute(defaultRoute);
 
@@ -371,141 +371,47 @@ describe('RoutingInfo', () => {
 				expect(routingElements[2].innerText).toBe('0');
 			});
 
-			describe('when rendering estimate for specific vehicle', () => {
-				it('calculates the estimate for hike', async () => {
-					const state = {
-						routing: {
-							status: RoutingStatusCodes.Ok,
-							categoryId: 'bvv-hike'
-						}
-					};
-					const calculatorSpy = spyOn(routingServiceMock, 'getETAFor')
-						.withArgs('bvv-hike', jasmine.any(Number), jasmine.any(Number), jasmine.any(Number))
-						.and.returnValue(42000000);
-					const element = await setup(state);
+			it('renders category icon', async () => {
+				const element = await setup(defaultRoutingState);
 
-					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
-					expect(routingDuration[0].innerText).toBe('11:40');
+				setRoute(defaultRoute);
 
-					const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
-					expect(routingElements).toHaveSize(3);
-					expect(routingElements[0].innerText).toBe('0.33 km');
-					expect(routingElements[1].innerText).toBe('0.11 km');
-					expect(routingElements[2].innerText).toBe('0.22 km');
-
-					expect(calculatorSpy).toHaveBeenCalled();
-				});
-
-				it('calculates the estimate for bvv-hike', async () => {
-					const state = {
-						routing: {
-							status: RoutingStatusCodes.Ok,
-							categoryId: 'bvv-hike'
-						}
-					};
-					const calculatorSpy = spyOn(routingServiceMock, 'getETAFor')
-						.withArgs('bvv-hike', jasmine.any(Number), jasmine.any(Number), jasmine.any(Number))
-						.and.returnValue(42000000);
-					const element = await setup(state);
-
-					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
-					expect(routingDuration[0].innerText).toBe('11:40');
-
-					expect(calculatorSpy).toHaveBeenCalled();
-				});
-
-				it('calculates the estimate for bike', async () => {
-					const state = {
-						routing: {
-							status: RoutingStatusCodes.Ok,
-							categoryId: 'bvv-bike'
-						}
-					};
-					const calculatorSpy = spyOn(routingServiceMock, 'getETAFor')
-						.withArgs('bvv-bike', jasmine.any(Number), jasmine.any(Number), jasmine.any(Number))
-						.and.returnValue(42000000);
-					const element = await setup(state);
-
-					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
-					expect(routingDuration[0].innerText).toBe('11:40');
-					expect(calculatorSpy).toHaveBeenCalled();
-				});
-
-				it('calculates the estimate for bvv-bike', async () => {
-					const state = {
-						routing: {
-							status: RoutingStatusCodes.Ok,
-							stats: {
-								twoDiff: [111, 222],
-								dist: 333,
-								time: 3600000
-							},
-							categoryId: 'bvv-bike'
-						}
-					};
-					const calculatorSpy = spyOn(routingServiceMock, 'getETAFor')
-						.withArgs('bvv-bike', jasmine.any(Number), jasmine.any(Number), jasmine.any(Number))
-						.and.returnValue(42000000);
-					const element = await setup(state);
-
-					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
-
-					expect(routingDuration[0].innerText).toBe('11:40');
-					expect(calculatorSpy).toHaveBeenCalled();
-				});
-
-				it('calculates the estimate for mtb', async () => {
-					const state = {
-						routing: {
-							status: RoutingStatusCodes.Ok,
-							categoryId: 'bvv-mtb'
-						}
-					};
-					const calculatorSpy = spyOn(routingServiceMock, 'getETAFor')
-						.withArgs('bvv-mtb', jasmine.any(Number), jasmine.any(Number), jasmine.any(Number))
-						.and.returnValue(42000000);
-					const element = await setup(state);
-
-					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
-
-					expect(routingDuration[0].innerText).toBe('11:40');
-					expect(calculatorSpy).toHaveBeenCalled();
-				});
-
-				it('calculates the estimate for bvv-mtb', async () => {
-					const state = {
-						routing: {
-							status: RoutingStatusCodes.Ok,
-							categoryId: 'bvv-mtb'
-						}
-					};
-					const calculatorSpy = spyOn(routingServiceMock, 'getETAFor')
-						.withArgs('bvv-mtb', jasmine.any(Number), jasmine.any(Number), jasmine.any(Number))
-						.and.returnValue(42000000);
-					const element = await setup(state);
-
-					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
-					expect(routingDuration[0].innerText).toBe('11:40');
-					expect(calculatorSpy).toHaveBeenCalled();
-				});
-
-				it('calculates the estimate for racingbike', async () => {
-					const state = {
-						routing: {
-							status: RoutingStatusCodes.Ok,
-							categoryId: 'racingbike'
-						}
-					};
-					const calculatorSpy = spyOn(routingServiceMock, 'getETAFor')
-						.withArgs('racingbike', jasmine.any(Number), jasmine.any(Number), jasmine.any(Number))
-						.and.returnValue(42000000);
-					const element = await setup(state);
-
-					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
-					expect(routingDuration[0].innerText).toBe('11:40');
-					expect(calculatorSpy).toHaveBeenCalled();
-				});
+				expect(element.shadowRoot.querySelector('.category-icon').innerHTML).toContain('icon_category');
 			});
+
+			it('renders NOTHING, if category.style.icon is missing', async () => {
+				const missingIconCategory = { style: { color: 'red', icon: null } };
+				spyOn(routingServiceMock, 'getCategoryById').and.returnValue(missingIconCategory);
+				const element = await setup(defaultRoutingState);
+
+				setRoute(defaultRoute);
+
+				expect(element.shadowRoot.querySelector('.category-icon')).toBeNull();
+			});
+
+			it('renders parent category style, if category.style is missing', async () => {
+				const missingIconCategory = { style: { color: null, icon: null } };
+				const parentCategory = { style: { color: 'blue', icon: 'icon_parent_category' } };
+				spyOn(routingServiceMock, 'getCategoryById').and.callFake((category) => {
+					return category === 'bike' ? missingIconCategory : parentCategory;
+				});
+				const element = await setup(defaultRoutingState);
+
+				setRoute(defaultRoute);
+
+				expect(element.shadowRoot.querySelector('.category-icon').innerHTML).toContain('icon_parent_category');
+				expect(getComputedStyle(element.shadowRoot.querySelector('.routing-info-type')).background).toContain('rgb(0, 0, 255)');
+			});
+		});
+	});
+
+	describe('when disconnected', () => {
+		it('removes all observers', async () => {
+			const element = await setup();
+
+			element.onDisconnect(); // we call onDisconnect manually
+
+			expect(element._storeSubscriptions).toHaveSize(0);
 		});
 	});
 });

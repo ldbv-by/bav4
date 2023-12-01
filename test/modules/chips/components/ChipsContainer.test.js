@@ -339,8 +339,23 @@ describe('ChipsContainer', () => {
 			expect(window.getComputedStyle(scrollButton[1]).display).toBe('none');
 		});
 
-		it('shows two scroll buttons on shortage of space', async () => {
-			const element = await setup({ chips: { current: chipsConfiguration1 } });
+		it('does not show scroll buttons in portrait layout', async () => {
+			const element = await setup({ media: { portrait: true }, chips: { current: chipsConfiguration1 } });
+			const container = element.shadowRoot.querySelectorAll('#chipscontainer')[0];
+
+			// let's make the scroll buttons visible by minimizing the containers width
+			container.style.width = '1px';
+			await TestUtils.timeout(animationTimeout /** give the browser some time */);
+
+			expect(container.classList.contains('show')).toBeTrue();
+			const scrollButton = element.shadowRoot.querySelectorAll('.chips__scroll-button');
+			expect(scrollButton).toHaveSize(2);
+			expect(window.getComputedStyle(scrollButton[0]).display).toBe('none');
+			expect(window.getComputedStyle(scrollButton[1]).display).toBe('none');
+		});
+
+		it('shows tow scroll buttons on shortage of space in desktop layout', async () => {
+			const element = await setup({ media: { portrait: false }, chips: { current: chipsConfiguration1 } });
 			const container = element.shadowRoot.querySelectorAll('#chipscontainer')[0];
 
 			// let's make the scroll buttons visible by minimizing the containers width

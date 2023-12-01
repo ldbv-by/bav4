@@ -33,6 +33,25 @@ export const observe = (store, extract, onChange, ignoreInitialState = true) => 
 };
 
 /**
+ * Registers an one-time observer for state changes of the store. The observer will be unsubscribed after the first call of the onChange function.
+ * @function
+ * @param {object} store The redux store
+ * @param {function(state)} extract A function that extract a portion (single value or a object) from the current state which will be observed for comparison
+ * @param {function(observedPartOfState, state)} onChange A function that will be called when the observed state has changed
+ */
+export const observeOnce = (store, extract, onChange) => {
+	const unsubscribeFn = observe(
+		store,
+		extract,
+		(param0, param1) => {
+			onChange(param0, param1);
+			unsubscribeFn();
+		},
+		true
+	);
+};
+
+/**
  * Returns the result of a comparison between two values. If both values are objects,
  * a deep comparison is done, otherwise a shallow one.
  * @function
@@ -76,7 +95,7 @@ export const equals = (value0, value1) => {
  * Wrapper for payloads of actions which dispatch event-like changes of state.
  */
 export class EventLike {
-	constructor(payload) {
+	constructor(payload = null) {
 		this._payload = payload;
 		this._id = createUniqueId();
 	}

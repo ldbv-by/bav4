@@ -18,9 +18,9 @@ const transformGeometry = (geometry, fromProjection, toProjection) => {
 /**
  * Coerce the provided geometry to a LineString or null,
  * if the geometry is not a LineString,LinearRing or Polygon
- *
+ * @function
  * @param {Geometry} geometry the geometry to coerce to LineString
- * @return {Geometry | null} the coerced LineString or null
+ * @returns {Geometry | null} the coerced LineString or null
  */
 export const getLineString = (geometry) => {
 	if (geometry instanceof LineString) {
@@ -35,6 +35,11 @@ export const getLineString = (geometry) => {
 	return null;
 };
 
+/**
+ * @function
+ * @param {MultiLineString} multiLineString
+ * @returns {LineString} ol LineString
+ */
 export const multiLineStringToLineString = (multiLineString) => {
 	if (!(multiLineString instanceof MultiLineString)) {
 		return multiLineString;
@@ -65,8 +70,9 @@ export const multiLineStringToLineString = (multiLineString) => {
 
 /**
  * Creates a polygon from an extent
+ * @function
  * @param {Extent} extent the extent, which should be converted to a Polygon
- * @return {Geometry|null} the polygon representing the extent or null
+ * @returns {Geometry|null} the polygon representing the extent or `null`
  */
 export const getPolygonFrom = (extent) => {
 	if (!Array.isArray(extent) || extent.length !== 4) {
@@ -88,6 +94,7 @@ export const getPolygonFrom = (extent) => {
 /**
  * Creates a bounding box from a coordinate and size object
  * (with height- and width-property)
+ * @function
  * @param {Coordinate} centerCoordinate
  * @param {Object} size the size object with a height- and a width-property
  * @returns {Array<Number>} the bounding box array in the form of [minX, minY, maxX, maxY]
@@ -110,8 +117,8 @@ export const getBoundingBoxFrom = (centerCoordinate, size) => {
 };
 
 /**
- * Contains informations for transformation-methods
- * @typedef {Object} CalculationHints
+ * Contains information for transformation-methods
+ * @typedef CalculationHints
  * @property {string} fromProjection the 'source' ProjectionLike-object for usage in ol/geometry.transform() as String like 'EPSG:3875'
  * @property {string} toProjection the 'destination' ProjectionLike-object for usage in ol/geometry.transform() as String like 'EPSG:3875'
  * @property {Extent} [toProjectionExtent] an extent in WGS84, which defines whether or not a geometry with coordinates outside this extent should be handled
@@ -119,8 +126,9 @@ export const getBoundingBoxFrom = (centerCoordinate, size) => {
 
 /**
  * Calculates the area of the geometry.
+ * @function
  * @param {Geometry} geometry the area-like geometry, to calculate with
- * @param {CalculationHints} calculationHints calculationHints for a optional transformation
+ * @param {module:modules/olMap/utils/olGeometryUtils~CalculationHints} calculationHints calculationHints for a optional transformation
  * @returns {number} the calculated length or 0 if the geometry-object is not area-like
  */
 export const getArea = (geometry, calculationHints = {}) => {
@@ -146,8 +154,9 @@ export const getArea = (geometry, calculationHints = {}) => {
  * Calculates the length of the geometry.
  * If the calculationHints provides a toProjectionExtent, any provided geometry with coordinates outside this extent
  * results in a calculation of a geodesic length, instead of a length in the provided toProjection.
+ * @function
  * @param {Geometry} geometry the geometry, to calculate with
- * @param {CalculationHints} calculationHints calculationHints for a optional transformation
+ * @param {module:modules/olMap/utils/olGeometryUtils~CalculationHints} calculationHints calculationHints for a optional transformation
  * @returns {number} the calculated length or 0 if the geometry-object is not a LineString/LinearRing/Polygon
  */
 export const getGeometryLength = (geometry, calculationHints = {}) => {
@@ -173,6 +182,7 @@ export const getGeometryLength = (geometry, calculationHints = {}) => {
 
 /**
  * Calculates the geodesic length of a geometry
+ * @function
  * @param {LineString} wgs84LineString the LineString (in WGS84), to calculate with
  * @returns {number} the calculated length or 0 if the geometry-object is not a LineString/LinearRing/Polygon
  */
@@ -187,6 +197,7 @@ const getGeodesicLength = (wgs84LineString) => {
 
 /**
  * Calculates the geodesic area of a geometry
+ * @function
  * @param {Polygon} wgs84Polygon the Polygon (in WGS84), to calculate with
  * @returns {number} the calculated area or 0 if the geometry-object is not a Polygon
  */
@@ -207,6 +218,7 @@ const getGeodesicArea = (wgs84Polygon) => {
  * A wrapper method for ol/LineString.getCoordinateAt().
  * Return the coordinate at the provided fraction along the linear geometry or along the boundary of a area-like geometry.
  * The fraction is a number between 0 and 1, where 0 is the start (first coordinate) of the geometry and 1 is the end (last coordinate). *
+ * @function
  * @param {Geometry} geometry
  * @param {number} fraction
  * @returns {Array.<number>} the calculated coordinate or null if the geometry is not linear or area-like
@@ -222,6 +234,7 @@ export const getCoordinateAt = (geometry, fraction) => {
 
 /**
  * Determines whether or not the geometry has the property of a azimuth-angle
+ * @function
  * @param {Geometry} geometry the geometry
  * @returns {boolean}
  */
@@ -237,6 +250,7 @@ export const canShowAzimuthCircle = (geometry) => {
 
 /**
  * Calculates the azimuth-angle between the start(first coordinate) and end(last coordinate) of the geometry
+ * @function
  * @param {Geometry} geometry
  * @returns {number} the azimuth-angle as degree of arc with a value between 0 and 360
  */
@@ -265,6 +279,7 @@ export const getAzimuth = (geometry) => {
  * Calculates the median azimuth-angle of a convex quadrilateral (polygon).
  * The first and the third segment are defined as the top- and bottom-segment,
  * which are used to calculate the azimuth-angle
+ * @function
  * @param {Polygon} polygon the polygon, with shape-properties of a convex quadrilateral
  * @returns {number} the azimuth-angle in radian
  */
@@ -285,9 +300,10 @@ export const getAzimuthFrom = (polygon) => {
  * Calculates delta-value as a factor of the length of a provided geometry,
  * to get equal-distanced partition points related to the start of the geometry.
  * The count of the points is based on the resolution of the MapView.
+ * @function
  * @param {Geometry} geometry the linear/area-like geometry
  * @param {number} resolution the resolution of the MapView, e. g. map.getView().getResolution()
- * @param {CalculationHints} calculationHints calculationHints for a optional transformation
+ * @param {module:modules/olMap/utils/olGeometryUtils~CalculationHints} calculationHints calculationHints for a optional transformation
  * @returns {number} the delta, a value between 0 and 1
  */
 export const getPartitionDelta = (geometry, resolution = 1, calculationHints = {}) => {
@@ -322,9 +338,10 @@ export const getPartitionDelta = (geometry, resolution = 1, calculationHints = {
 
 /**
  * Tests whether the vertex candidate is part of the geometry vertices
+ * @function
  * @param {Geometry} geometry the geometry
- * @param {Point} vertexCandidate the candidate point to test against the geometryn if candidate is other than
- * {Point}, it returns immediately false
+ * @param {Point} vertexCandidate the candidate point to test against the geometry. If candidate is other than
+ * `Point`, it returns immediately false
  * @returns {boolean}
  */
 export const isVertexOfGeometry = (geometry, vertexCandidate) => {
@@ -350,9 +367,10 @@ export const isVertexOfGeometry = (geometry, vertexCandidate) => {
 
 /**
  * Creates a LineString, which is parallel to the two given points with the given distance.
- * @param {Coordinate} fromPoint the first coordinate of a hypotetic source-line
- * @param {Coordinate} toPoint the last coordinate of a hypotetic source-line
- * @param {number} distance the distance for which the destination line is moved parallel from the hypotetic source-line
+ * @function
+ * @param {Coordinate} fromPoint the first coordinate of a hypothetic source-line
+ * @param {Coordinate} toPoint the last coordinate of a hypothetic source-line
+ * @param {number} distance the distance for which the destination line is moved parallel from the hypothetic source-line
  * @returns {LineString} the resulting line
  */
 export const moveParallel = (fromPoint, toPoint, distance) => {
@@ -364,6 +382,7 @@ export const moveParallel = (fromPoint, toPoint, distance) => {
 
 /**
  * Calculates the residuals that occurs when the partitions are distributed over the individual segments of the geometry
+ * @function
  * @param {Geometry} geometry the source geometry
  * @param {number} partition the partition-value
  * @returns {Array<number>} the residuals for all segments of the geometry
@@ -387,6 +406,7 @@ export const calculatePartitionResidualOfSegments = (geometry, partition) => {
 };
 /**
  * Checks whether or not the geometry is valid for mapping purposes
+ * @function
  * @param {Geometry|null} geometry the geometry supported GeometryTypes are Point, LineString, Polygon
  * @returns {boolean}
  */
@@ -409,6 +429,21 @@ export const isValidGeometry = (geometry) => {
 	return false;
 };
 
+/**
+ * Contains information for transformation-methods
+ * @typedef GeometryStats
+ * @property {module:domain/coordinateTypeDef~Coordinate|null} coordinate
+ * @property {number|null} azimuth
+ * @property {number|null} length
+ * @property {number|null} area
+ */
+
+/**
+ * @function
+ * @param {Geometry} geometry ol geometry
+ * @param {module:modules/olMap/utils/olGeometryUtils~CalculationHints} calculationHints
+ * @returns {module:modules/olMap/utils/olGeometryUtils~GeometryStats}
+ */
 export const getStats = (geometry, calculationHints) => {
 	const stats = {
 		coordinate: null,
@@ -440,16 +475,37 @@ export const PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES = 1000; /**Adopted 
 
 /**
  * Creates a simplified version of this geometry.
- * For linestrings it uses the Douglas-Peucker algorithm.
- * For polygons, a quantization-based simplification is used to preserve topology.
- * @param {Geometry} geometry
+ * For LineStrings it uses the Douglas-Peucker algorithm.
+ * For Polygons, a quantization-based simplification is used to preserve topology.
+ * @function
+ * @param {Geometry} geometry ol geometry
  * @param {number} maxCount max. count of coordinates on which the geometry won't be simplified
  * @param {number} tolerance the tolerance distance for simplification (in map units)
- * @returns A new, simplified version of the original geometry
+ * @returns {Geometry} A new, simplified version of the original geometry
  */
 export const simplify = (geometry, maxCount, tolerance) => {
 	if (geometry instanceof Geometry && maxCount && tolerance && geometry?.getCoordinates().length > maxCount) {
 		return geometry.simplify(tolerance);
 	}
 	return geometry;
+};
+
+/**
+ * Returns an array of coordinates suitable for calculating an elevation profile.
+ * @function
+ * @param {Geometry} geometry ol geometry
+ * @returns {Array<module:domain/coordinateTypeDef~Coordinate>} the coordinates
+ */
+export const getCoordinatesForElevationProfile = (geometry) => {
+	if (geometry instanceof Geometry) {
+		const simplifiedLineString = simplify(
+			getLineString(geometry),
+			PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES,
+			PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857
+		);
+		if (simplifiedLineString) {
+			return simplifiedLineString.getCoordinates();
+		}
+	}
+	return [];
 };

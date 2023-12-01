@@ -1,0 +1,67 @@
+.container {
+	display: flex;
+	align-items: center;
+
+	position: relative;
+}
+
+button {
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	padding: 0.8em 1em;
+	background: transparent;
+	border: none;
+	background-color: var(--primary-color);
+	opacity: 0.8;
+	font-weight: bold;
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
+	color: var(--primary-color);
+	width: 100%;
+}
+
+button:focus {
+	opacity: 1;
+}
+
+button:hover {
+	opacity: 1;
+}
+
+.icon {
+	height: 2.5em;
+	width: 2.5em;
+	margin-right: 0;
+	padding: 0;
+	position: relative;
+	left: -0.7em;
+	top: 0.3em;
+}
+
+.start {
+	background-image: url('../assets/start.svg');
+	background-size: cover;
+}
+
+.destination {
+	background-image: url('../assets/destination.svg');
+	background-size: cover;
+}
+
+.intermediate {
+	background-image: url('../assets/intermediate.svg');
+	background-size: cover;
+	height: 2em;
+	width: 2em;
+	left: -0.4em;
+}
+
+.remove {
+	background-image: url('../assets/trash.svg');
+	background-size: cover;
+}
+
+.text {
+	color: var(--text3);
+	white-space: nowrap;
+}

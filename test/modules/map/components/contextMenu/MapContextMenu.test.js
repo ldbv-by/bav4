@@ -4,7 +4,7 @@ import { TestUtils } from '../../../../test-utils.js';
 import { $injector } from '../../../../../src/injection';
 import { html } from 'lit-html';
 import { mapContextMenuReducer } from '../../../../../src/store/mapContextMenu/mapContextMenu.reducer';
-import { close, open } from '../../../../../src/store/mapContextMenu/mapContextMenu.action';
+import { closeContextMenu, openContextMenu } from '../../../../../src/store/mapContextMenu/mapContextMenu.action';
 import { initialState, modalReducer } from '../../../../../src/store/modal/modal.reducer';
 window.customElements.define(MapContextMenu.tag, MapContextMenu);
 
@@ -39,14 +39,14 @@ describe('MapContextMenu', () => {
 		it('shows/hides the context menu and its content', async () => {
 			const element = await setup();
 
-			open([10, 10], html`<span class="foo">bar</span>`);
+			openContextMenu([10, 10], html`<span class="foo">bar</span>`);
 
 			const container = element.shadowRoot.querySelector('.context-menu');
 			const content = element.shadowRoot.querySelector('.foo');
 			expect(window.getComputedStyle(container).display).toBe('block');
 			expect(content.innerText).toBe('bar');
 
-			close();
+			closeContextMenu();
 
 			expect(element.shadowRoot.querySelector('.context-menu')).toBeFalsy();
 		});
@@ -74,7 +74,7 @@ describe('MapContextMenu', () => {
 			const clickEvent = [10, 20];
 			const spy = spyOn(element, '_calculateSector').and.callThrough();
 
-			open(clickEvent, 'someId');
+			openContextMenu(clickEvent, 'someId');
 
 			expect(spy).toHaveBeenCalledWith(clickEvent);
 		});
@@ -85,7 +85,7 @@ describe('MapContextMenu', () => {
 			const element = await setup();
 			const clickEvent = [300, 150];
 
-			open(clickEvent, 'someId');
+			openContextMenu(clickEvent, 'someId');
 
 			const container = element.shadowRoot.querySelector('.context-menu');
 			expect(container.style.getPropertyValue('--mouse-x')).toBe('300px');
@@ -102,7 +102,7 @@ describe('MapContextMenu', () => {
 			const element = await setup();
 			const clickEvent = [700, 150];
 
-			open(clickEvent, 'someId');
+			openContextMenu(clickEvent, 'someId');
 
 			const container = element.shadowRoot.querySelector('.context-menu');
 			expect(container.style.getPropertyValue('--mouse-x')).toBe('700px');
@@ -119,7 +119,7 @@ describe('MapContextMenu', () => {
 			const element = await setup();
 			const clickEvent = [700, 350];
 
-			open(clickEvent, 'someId');
+			openContextMenu(clickEvent, 'someId');
 
 			const container = element.shadowRoot.querySelector('.context-menu');
 			expect(container.style.getPropertyValue('--mouse-x')).toBe('700px');
@@ -136,7 +136,7 @@ describe('MapContextMenu', () => {
 			const element = await setup();
 			const clickEvent = [300, 350];
 
-			open(clickEvent, 'someId');
+			openContextMenu(clickEvent, 'someId');
 
 			const container = element.shadowRoot.querySelector('.context-menu');
 			expect(container.style.getPropertyValue('--mouse-x')).toBe('300px');
@@ -165,7 +165,7 @@ describe('MapContextMenu', () => {
 			const preventDefaultSpy = spyOn(escEvent, 'preventDefault');
 			const element = await setup();
 
-			open([300, 350], 'someId');
+			openContextMenu([300, 350], 'someId');
 
 			expect(element.shadowRoot.children.length).not.toBe(0);
 
@@ -184,7 +184,7 @@ describe('MapContextMenu', () => {
 			const escEvent = new KeyboardEvent('keydown', { key: 'Escape' });
 			const preventDefaultSpy = spyOn(escEvent, 'preventDefault');
 
-			open([300, 350], 'someId');
+			openContextMenu([300, 350], 'someId');
 
 			expect(element.shadowRoot.children.length).not.toBe(0);
 

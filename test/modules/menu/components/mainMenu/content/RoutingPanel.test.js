@@ -1,13 +1,10 @@
-import { TabIds } from '../../../../../../src/domain/mainMenu';
-import { RoutingStatusCodes } from '../../../../../../src/domain/routing';
 import { $injector } from '../../../../../../src/injection';
 import { AbstractMvuContentPanel } from '../../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { RoutingPanel } from '../../../../../../src/modules/menu/components/mainMenu/content/routing/RoutingPanel';
-import { createNoInitialStateMainMenuReducer } from '../../../../../../src/store/mainMenu/mainMenu.reducer';
-import { createNoInitialStateMediaReducer } from '../../../../../../src/store/media/media.reducer';
 import { routingReducer } from '../../../../../../src/store/routing/routing.reducer';
-import { isTemplateResult } from '../../../../../../src/utils/checks';
+import { toolsReducer } from '../../../../../../src/store/tools/tools.reducer';
 import { TestUtils } from '../../../../../test-utils';
+import { Tools } from '../../../../../../src/domain/tools.js';
 
 window.customElements.define(RoutingPanel.tag, RoutingPanel);
 
@@ -15,19 +12,11 @@ describe('RoutingPanel', () => {
 	let store;
 	const setup = (state) => {
 		const initialState = {
-			mainMenu: {
-				open: true,
-				tab: null
-			},
-			media: {
-				portrait: false
-			},
 			...state
 		};
 
 		store = TestUtils.setupStoreAndDi(initialState, {
-			mainMenu: createNoInitialStateMainMenuReducer(),
-			media: createNoInitialStateMediaReducer(),
+			tools: toolsReducer,
 			routing: routingReducer
 		});
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
@@ -47,67 +36,48 @@ describe('RoutingPanel', () => {
 			await setup();
 			const model = new RoutingPanel().getModel();
 
-			expect(model).toEqual({});
+			expect(model).toEqual({ active: false });
 		});
 	});
 
 	describe('when initialized', () => {
-		it('renders the routing components', async () => {
+		it('does NOT renders the routing components', async () => {
 			const element = await setup();
 
-			const container = element.shadowRoot.querySelectorAll('.container');
+			expect(element.shadowRoot.querySelectorAll('.container')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-routing-container')).toHaveSize(0);
+		});
 
-			expect(container).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-routing-waypoints')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-routing-category-bar')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-routing-info')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-routing-details')).toHaveSize(1);
+		describe('when component is activated as AbstractMvuContentPanel', () => {
+			it('renders the routing components', async () => {
+				const element = await setup();
+				element.setActive(true);
+				const container = element.shadowRoot.querySelectorAll('.container');
 
-			expect(element.shadowRoot.querySelectorAll('ba-profile-chip')).toHaveSize(1);
+				expect(container).toHaveSize(1);
 
-			expect(element.shadowRoot.querySelectorAll('.demo')).toHaveSize(1);
+				// lazy loading component with the routing content
+				const lazyLoadElement = element.shadowRoot.querySelector('ba-lazy-load');
+				expect(lazyLoadElement).toBeTruthy();
+				expect(lazyLoadElement.content.strings[0].includes('<ba-routing-container')).toBeTrue();
+				expect(element.shadowRoot.querySelectorAll('ba-profile-chip')).toHaveSize(1);
+			});
 		});
 	});
 
 	describe('when close icon is clicked', () => {
-		it('updates the store', async () => {
-			const warnSpy = spyOn(console, 'warn').and.callThrough();
-			const element = await setup();
+		it('updates the "tools" s-o-s', async () => {
+			const element = await setup({
+				tools: {
+					current: Tools.ROUTING
+				}
+			});
 
 			const closeIcon = element.shadowRoot.querySelector('ba-icon');
 
 			closeIcon.click();
 
-			// due to the temporary development solution, we test for a console warning
-			// todo: rework after full implementation
-			expect(warnSpy).toHaveBeenCalledWith("Closing RoutingPanel is temporary implemented by setTab('maps').");
-			expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
-		});
-	});
-
-	describe('when demo content needed', () => {
-		it('renders demo content', async () => {
-			const element = await setup();
-			expect(isTemplateResult(element._getDemoContent())).toBeTrue();
-		});
-	});
-
-	describe('when demo buttons pressed', () => {
-		it('loads demo content', async () => {
-			const element = await setup();
-
-			const button1 = element.shadowRoot.querySelector('#button1');
-			const button2 = element.shadowRoot.querySelector('#button2');
-
-			button1.click();
-
-			expect(store.getState().routing.status).toBe(RoutingStatusCodes.Start_Destination_Missing);
-			expect(store.getState().routing.waypoints).toEqual([]);
-
-			button2.click();
-
-			expect(store.getState().routing.status).toBe(RoutingStatusCodes.Ok);
-			expect(store.getState().routing.waypoints).toHaveSize(3);
+			expect(store.getState().tools.current).toBeNull();
 		});
 	});
 });

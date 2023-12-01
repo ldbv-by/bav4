@@ -9,7 +9,6 @@ import { fromLonLat } from 'ol/proj';
 import VectorSource from 'ol/source/Vector';
 import { OlElevationProfileHandler } from '../../../../../src/modules/olMap/handler/elevationProfile/OlElevationProfileHandler';
 import { InteractionStateType } from '../../../../../src/modules/olMap/utils/olInteractionUtils';
-import { closeProfile, openProfile } from '../../../../../src/store/elevationProfile/elevationProfile.action';
 import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer';
 import { TestUtils } from '../../../../test-utils';
 
@@ -391,30 +390,6 @@ describe('OlElevationProfileHandler', () => {
 			expect(store.getState().elevationProfile.coordinates).toEqual([]);
 		});
 
-		it('changes the elevationProfile store for selected 3D LineString geometry', () => {
-			store = setup({ ...defaultState, coordinates: [[0, 0][(1, 1)]] });
-			const lineString = new LineString([
-				[2, 2, 2],
-				[3, 3, 3]
-			]);
-			const feature = new Feature({ geometry: lineString });
-			const map = getSelectableMapWith([feature]);
-			const select = new Select({ condition: click });
-			const handler = new OlElevationProfileHandler();
-			const updateCoordinatesSpy = spyOn(handler, '_updateSelectCoordinates').and.callThrough();
-
-			handler.register(map);
-			map.addInteraction(select);
-
-			select.getFeatures().push(feature);
-
-			expect(updateCoordinatesSpy).toHaveBeenCalled();
-			expect(store.getState().elevationProfile.coordinates).toEqual([
-				[2, 2],
-				[3, 3]
-			]);
-		});
-
 		it('changes the elevationProfile store for deselect', () => {
 			store = setup({ ...defaultState, coordinates: [[0, 0][(1, 1)]] });
 			const lineString = new LineString([
@@ -540,67 +515,6 @@ describe('OlElevationProfileHandler', () => {
 				[1, 0],
 				[0, 0]
 			]);
-		});
-	});
-
-	describe('when slice of state elevationProfile changes', () => {
-		it('updates the elevationProfile store with selected feature', () => {
-			store = setup({
-				...defaultState,
-				coordinates: [
-					[0, 0],
-					[1, 1]
-				]
-			});
-			const lineString = new LineString([
-				[2, 2],
-				[3, 3]
-			]);
-			const feature = new Feature({ geometry: lineString });
-			const map = getSelectableMapWith([feature]);
-			const select = new Select({ condition: click });
-			const handler = new OlElevationProfileHandler();
-			handler.register(map);
-
-			map.addInteraction(select);
-			select.getFeatures().push(feature);
-			const coordinates = store.getState().elevationProfile.coordinates;
-			openProfile(coordinates);
-			closeProfile();
-
-			expect(store.getState().elevationProfile.coordinates).toEqual([
-				[2, 2],
-				[3, 3]
-			]);
-		});
-
-		it('does NOT updates the elevationProfile store, due to no selected feature', () => {
-			store = setup({
-				...defaultState,
-				coordinates: [
-					[0, 0],
-					[1, 1]
-				]
-			});
-			const lineString = new LineString([
-				[2, 2],
-				[3, 3]
-			]);
-			const feature = new Feature({ geometry: lineString });
-			const map = getSelectableMapWith([feature]);
-			const select = new Select({ condition: click });
-			const handler = new OlElevationProfileHandler();
-			handler.register(map);
-
-			map.addInteraction(select);
-			select.getFeatures().push(feature);
-			const coordinates = store.getState().elevationProfile.coordinates;
-			openProfile(coordinates);
-
-			select.getFeatures().clear();
-			closeProfile();
-
-			expect(store.getState().elevationProfile.coordinates).toEqual([]);
 		});
 	});
 });

@@ -5,13 +5,7 @@ import { Modify, Select } from 'ol/interaction';
 import { unByKey } from 'ol/Observable';
 import { $injector } from '../../../../injection';
 import { updateCoordinates } from '../../../../store/elevationProfile/elevationProfile.action';
-import { observe } from '../../../../utils/storeUtils';
-import {
-	getLineString,
-	PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES,
-	PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857,
-	simplify
-} from '../../utils/olGeometryUtils';
+import { getLineString } from '../../utils/olGeometryUtils';
 import { InteractionStateType } from '../../utils/olInteractionUtils';
 import { OlMapHandler } from '../OlMapHandler';
 
@@ -50,38 +44,12 @@ export class OlElevationProfileHandler extends OlMapHandler {
 				this._updateListener(InteractionStateType.MODIFY, null);
 			}
 		});
-		observe(
-			this._storeService.getStore(),
-			(state) => state.elevationProfile.active,
-			(active) => this._updateSelectCoordinatesOnClose(active)
-		);
-	}
-
-	_updateSelectCoordinatesOnClose(active) {
-		const isClosed = !active;
-		const select = this._map
-			.getInteractions()
-			.getArray()
-			.find((interaction) => interaction instanceof Select);
-		const coordinates = select ? this._getCoordinates(select.getFeatures()) : Empty_Elevation_Profile_Coordinates;
-
-		if (isClosed) {
-			updateCoordinates(coordinates);
-		}
 	}
 
 	_getCoordinates(features) {
-		const featureCount = features.getLength();
-		const force2D = (coordinates) => coordinates.map((c) => c.slice(0, 2));
-
-		if (featureCount === 1) {
+		if (features.getLength() === 1) {
 			const feature = features.getArray()[0];
-			const geometry = simplify(
-				getLineString(feature.getGeometry()),
-				PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES,
-				PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857
-			);
-			return geometry ? force2D(geometry.getCoordinates()) : Empty_Elevation_Profile_Coordinates;
+			return getLineString(feature.getGeometry())?.getCoordinates() ?? Empty_Elevation_Profile_Coordinates;
 		}
 		return Empty_Elevation_Profile_Coordinates;
 	}

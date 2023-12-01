@@ -1,43 +1,63 @@
 /**
  * @module domain/routing
  */
+
+/**
+ * @typedef  RouteGeometry
+ * @property {String} data the data
+ * @property {SourceType} sourceType the {@link SourceType} of the data
+ */
+
 /**
  * @typedef  RoutingCategory
  * @property {string} id The id of this category
  * @property {string} label The label of this category
  * @property {string} description The description of this category
  * @property {string[]} subcategories Ids of possible subordinated categories
- * @property {string} color Style: the fill color
- * @property {string} borderColor Style: the border color
+ * @property {module:domain/routing~RoutingCategoryStyle} style Style configuration for this category
  */
 
 /**
- * Route for a particular category (vehicle)
- * @typedef  Route
- * @property {object} categoryId
- * @property {string} categoryId.vehicle
- * @property {object} categoryId.hints
- * @property {string} categoryId.hints.visited_nodes.average
- * @property {string} categoryId.hints.visited_nodes.sum
- * @property {object} categoryId.info
- * @property {string[]} categoryId.info.copyrights
- * @property {number} categoryId.info.took
- * @property {object[]} categoryId.paths
- * @property {number} categoryId.paths.distance
- * @property {number} categoryId.paths.weight
- * @property {number} categoryId.paths.time
- * @property {number} categoryId.paths.transfers
- * @property {boolean} categoryId.paths.points_encoded
- * @property {number[]} categoryId.paths.bbox
- * @property {string} categoryId.paths.points
- * @property {object} categoryId.paths.legs
- * @property {object} categoryId.paths.details
- * @property {array[]|number[]|string[]} categoryId.paths.details.surface
- * @property {array[]|number[]|string[]} categoryId.paths.details.road_class
- * @property {array[]|number[]|string[]} categoryId.paths.details.track_type
- * @property {number} categoryId.paths.ascend
- * @property {number} categoryId.paths.descend
- * @property {string} categoryId.paths.snapped_waypoints
+ * Defines style properties for a {@link module:domain/routing~RoutingCategory}
+ * @typedef {Object} RoutingCategoryStyle
+ * @property {string} routeColor The fill color of the displayed route
+ * @property {string} routeBorderColor The border color of the displayed route
+ * @property {number} [routeZindex] Optional zIndex of the displayed route
+ * @property {string} [icon] Optional SVG path of the icon (at least the parent category should have one)
+ * @property {string} [color] Optional color of this category (at least the parent category should have one)
+ */
+
+/**
+ * Route result containing a multiple routes (one for each requested category/vehicle) (see also {@link module:domain/routing~GhRoute})
+ * @typedef {Object.<string, module:domain/routing~GhRoute>} GhRoutingResult
+ */
+
+/**
+ * GH-Route for a particular RoutingCategory id
+ * @typedef  GhRoute
+ * @property {string} vehicle the id, same as the id of a {@link module:domain/routing~RoutingCategory}
+ * @property {object} hints
+ * @property {string} hints.visited_nodes.average
+ * @property {string} hints.visited_nodes.sum
+ * @property {object} info
+ * @property {string[]} info.copyrights
+ * @property {number} info.took
+ * @property {object[]} paths
+ * @property {number} paths.distance
+ * @property {number} paths.weight
+ * @property {number} paths.time
+ * @property {number} paths.transfers
+ * @property {boolean} paths.points_encoded
+ * @property {number[]} paths.bbox
+ * @property {string} paths.points
+ * @property {object} paths.legs
+ * @property {object} paths.details
+ * @property {array[]|number[]|string[]} paths.details.surface
+ * @property {array[]|number[]|string[]} paths.details.road_class
+ * @property {array[]|number[]|string[]} paths.details.track_type
+ * @property {number} paths.ascend
+ * @property {number} paths.descend
+ * @property {string} paths.snapped_waypoints
  */
 
 /**
@@ -46,7 +66,20 @@
  * @property {number} dist The distance in meters
  * @property {number[]} twoDiff the cumulated amount of up and down in meter
  * @property {module:domain/routing~RouteDetailTypes} details Contains detail information about different types
- * @property {object} warnings Contains warning hints
+ * @property {module:domain/routing~RouteWarning} warnings Contains the warning hints
+ */
+
+/**
+ * Contains detail information concerning the surface of the route.
+ * @typedef {Object.<string, module:domain/routing~RouteWarningAttribute>} RouteWarning
+ */
+
+/**
+ * Specific attribute of a route warning.
+ * @typedef {Object} RouteWarningAttribute
+ * @property {string} message The message
+ * @property {RouteWarningCriticality} criticality The criticality of this hint
+ * @property {Array<Array<number>>} segments Reference segments (from-to, both included)
  */
 
 /**
@@ -62,7 +95,6 @@
  */
 /**
  * Contains detail information concerning the tracks of the route.
- * Route result containing a multiple routes (one for each requested category/vehicle) (see also {@link module:domain/routing~Route})
  * @typedef {Object.<string, module:domain/routing~RouteDetailTypeAttribute>} TrackDetails
  */
 
@@ -114,4 +146,33 @@ export const RoutingStatusCodes = Object.freeze({
 	Start_Destination_Missing: 900,
 	Destination_Missing: 901,
 	Start_Missing: 902
+});
+
+/**
+ * Contains a coordinate and its intention.
+ * @typedef {Object} CoordinateProposal
+ * @property {module:domain/coordinateTypeDef~Coordinate}  coord The coordinate (in the SRID of the map)
+ * @property {CoordinateProposalType} type Intention of the coordinate
+ */
+
+/**
+ * @readonly
+ * @enum {Number}
+ */
+export const CoordinateProposalType = Object.freeze({
+	START_OR_DESTINATION: 0,
+	START: 1,
+	DESTINATION: 2,
+	INTERMEDIATE: 3,
+	EXISTING_START_OR_DESTINATION: 4,
+	EXISTING_INTERMEDIATE: 5
+});
+
+/**
+ * @readonly
+ * @enum {Number}
+ */
+export const RouteWarningCriticality = Object.freeze({
+	HINT: 0,
+	WARNING: 1
 });

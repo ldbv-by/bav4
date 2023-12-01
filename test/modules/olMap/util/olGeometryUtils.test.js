@@ -17,9 +17,10 @@ import {
 	PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857,
 	PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES,
 	getLineString,
-	multiLineStringToLineString
+	multiLineStringToLineString,
+	getCoordinatesForElevationProfile
 } from '../../../../src/modules/olMap/utils/olGeometryUtils';
-import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing, MultiLineString } from 'ol/geom';
+import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing, MultiLineString, MultiPolygon } from 'ol/geom';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { fromLonLat } from 'ol/proj';
@@ -1126,6 +1127,50 @@ describe('getBoundingBoxFrom', () => {
 				[12, 12],
 				[7, 1]
 			]);
+		});
+	});
+
+	describe('getCoordinatesForElevationProfile', () => {
+		it('creates a simplified version of a geometry', () => {
+			const coordinatesMaxCountExceeded = [];
+
+			for (let index = 0; index <= PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES; index++) {
+				coordinatesMaxCountExceeded.push([0, index]);
+			}
+
+			expect(getCoordinatesForElevationProfile(new LineString(coordinatesMaxCountExceeded))).toEqual([
+				[0, 0],
+				[0, 1000]
+			]);
+		});
+
+		it('returns an empty array when geometry cannot be converted to a LineString', () => {
+			const multiPolygon = new MultiPolygon([
+				new Polygon([
+					[
+						[3, 3],
+						[4, 4],
+						[4, 3],
+						[3, 3]
+					]
+				]),
+				new Polygon([
+					[
+						[5, 5],
+						[6, 6],
+						[5, 6],
+						[5, 5]
+					]
+				])
+			]);
+
+			expect(getCoordinatesForElevationProfile(multiPolygon)).toEqual([]);
+		});
+
+		it('returns an empty array when a geometry is not a ol geometry', () => {
+			const geometry = {};
+
+			expect(getCoordinatesForElevationProfile(geometry)).toEqual([]);
 		});
 	});
 });

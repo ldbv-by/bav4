@@ -24,17 +24,20 @@ describe('AbstractMvuContentPanel', () => {
 		setupStoreAndDi();
 	});
 
-	it('calls the parent constructor with model', () => {
-		const model = { foo: 'bar' };
-		class MyContentPanel extends AbstractMvuContentPanel {
-			constructor() {
-				super(model);
+	describe('constructor', () => {
+		it('contains a model combined from the child model and its own model', () => {
+			const model = { foo: 'bar' };
+			class MyContentPanel extends AbstractMvuContentPanel {
+				constructor() {
+					super(model);
+				}
 			}
-		}
-		window.customElements.define('ba-mycontent-panel', MyContentPanel);
+			window.customElements.define('ba-mycontent-panel', MyContentPanel);
 
-		const instance = new MyContentPanel();
-		expect(instance.getModel()).toEqual(model);
+			const instance = new MyContentPanel();
+
+			expect(instance.getModel()).toEqual({ foo: 'bar', active: false });
+		});
 	});
 
 	describe('expected errors', () => {
@@ -50,6 +53,19 @@ describe('AbstractMvuContentPanel', () => {
 			const element = await TestUtils.render(AbstractMvuContentPanelImpl.tag);
 
 			expect(element.shadowRoot.querySelectorAll('style')).toHaveSize(2);
+		});
+	});
+
+	describe('when property "active" is set', () => {
+		it('updates the model', async () => {
+			const element = await TestUtils.render(AbstractMvuContentPanelImpl.tag);
+
+			expect(element.isActive()).toBeFalse();
+
+			element.setActive(true);
+
+			expect(element.isActive()).toBeTrue();
+			expect(element.getModel().active).toBeTrue();
 		});
 	});
 });

@@ -7,7 +7,7 @@ import { $injector } from '../../../../injection/index';
 import { MvuElement } from '../../../MvuElement';
 import css from './routeDetails.css';
 
-const Update_Route = 'update_route';
+const Update_Route_Stats = 'update_route_stats';
 const Update_Status = 'update_status';
 
 /**
@@ -21,25 +21,32 @@ export class RouteDetails extends MvuElement {
 		const { RoutingService, TranslationService } = $injector.inject('RoutingService', 'TranslationService');
 		this._translationService = TranslationService;
 		this._routingService = RoutingService;
+		this._storeSubscriptions = [];
 	}
 
 	onInitialize() {
-		this.observe(
-			(store) => store.routing.status,
-			(status) => this.signal(Update_Status, status)
-		);
-
-		this.observe(
-			(store) => store.routing.route,
-			(route) => this.signal(Update_Route, route)
-		);
+		this._storeSubscriptions = [
+			this.observe(
+				(store) => store.routing.status,
+				(status) => this.signal(Update_Status, status)
+			),
+			this.observe(
+				(store) => store.routing.stats,
+				(stats) => this.signal(Update_Route_Stats, stats)
+			)
+		];
+	}
+	onDisconnect() {
+		while (this._storeSubscriptions.length > 0) {
+			this._storeSubscriptions.shift()();
+		}
 	}
 
 	update(type, data, model) {
-		const createChartData = (route) => this._createChartData(this._routingService.calculateRouteStats(route));
-		const createWarnings = (route) => this._createWarnings(this._routingService.calculateRouteStats(route));
+		const createChartData = (stats) => this._createChartData(stats);
+		const createWarnings = (stats) => this._createWarnings(stats);
 		switch (type) {
-			case Update_Route:
+			case Update_Route_Stats:
 				return { ...model, warnings: createWarnings(data), chartData: createChartData(data) };
 			case Update_Status:
 				return { ...model, status: data };
