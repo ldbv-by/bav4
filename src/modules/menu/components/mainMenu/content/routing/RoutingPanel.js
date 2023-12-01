@@ -8,7 +8,6 @@ import { $injector } from '../../../../../../injection';
 import svg from './assets/arrowLeftShort.svg';
 import { nothing } from '../../../../../../../node_modules/lit-html/lit-html';
 import { setCurrentTool } from '../../../../../../store/tools/tools.action';
-import { SourceType, SourceTypeName } from '../../../../../../domain/sourceType';
 
 const Update_Route = 'update_route';
 const Update_Active = 'update_disabled';
@@ -58,14 +57,14 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 			return active ? html`<ba-lazy-load .chunkName=${chunkName} .content=${content}></ba-lazy-load>` : nothing;
 		};
 		const getChips = (route) => {
-			const exportData = route ? this._exportVectorDataService.forData(route?.data, new SourceType(SourceTypeName.KML, null, 4326)) : null;
+			const exportData = route?.data;
 			return route
-				? html`<ba-profile-chip></ba-profile-chip> <ba-export-vector-data-chip .exportData=${exportData}></ba-export-vector-data-chip>`
+				? html` <ba-profile-chip></ba-profile-chip>
+						<ba-export-vector-data-chip .exportData=${exportData}></ba-export-vector-data-chip>`
 				: nothing;
 		};
 
-		return html`
-			<style>
+		return html` <style>
 				${css}
 			</style>
 			<div class="container">
@@ -81,8 +80,7 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 				</ul>
 				<div>${getRoutingContent(active)}</div>
 				<div class="chips__container">${getChips(route)}</div>
-			</div>
-		`; //<!--<ba-export-vector-data-chip .exportData=${route?.data}></ba-export-vector-data-chip> -->
+			</div>`;
 	}
 
 	static get tag() {
