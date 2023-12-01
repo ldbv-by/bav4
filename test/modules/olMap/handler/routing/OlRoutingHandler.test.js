@@ -723,7 +723,7 @@ describe('OlRoutingHandler', () => {
 				};
 				const mockRouteStatsProvider = jasmine.createSpy().withArgs(mockGhRoute, mockProfile.stats).and.returnValue(mockStats);
 				const { instanceUnderTest, store } = await newTestInstance({}, mockRouteStatsProvider);
-
+				const mapServiceSpy = spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
 				spyOn(elevationServiceMock, 'getProfile').withArgs(jasmine.any(Array)).and.resolveTo(mockProfile);
 
 				await instanceUnderTest._updateStore(mockGhRoute);
@@ -732,6 +732,7 @@ describe('OlRoutingHandler', () => {
 				expect(store.getState().elevationProfile.coordinates.length).toBe(57);
 				expect(store.getState().routing.route.type.name).toBe(SourceTypeName.GEOJSON);
 				expect(store.getState().routing.route.data).toContain('LineString');
+				expect(mapServiceSpy).toHaveBeenCalled();
 			});
 
 			describe('and the ElevationService throws an error', () => {
