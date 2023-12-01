@@ -72,7 +72,7 @@
 }
 
 .category-icon {
-	fill: var(--text1);
+	fill: #fff;
 	height: 2em;
 	width: 2em;
 	position: relative;
