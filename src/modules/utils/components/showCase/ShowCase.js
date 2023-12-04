@@ -254,7 +254,7 @@ export class ShowCase extends BaElement {
 						<input type="range" />
 					</div>
 
-					<h3>Toggle-Button (Switch)</h3>
+					<h3>Switch</h3>
 					<div class="example row">
 						<ba-switch .title=${'Toggle me'} @toggle=${onToggle}><span slot="before">Toggle</span></ba-switch>
 						<ba-switch .title=${'Toggle me'} @toggle=${onToggle}><slot slot="after">Toggle</slot></ba-switch>
