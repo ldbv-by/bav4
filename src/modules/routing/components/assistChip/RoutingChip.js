@@ -63,9 +63,7 @@ export class RoutingChip extends AbstractAssistChip {
 
 	onClick() {
 		const { coordinate } = this.getModel();
-		const force2D = (coordinate) => coordinate.slice(0, 2);
-
-		setProposal(force2D(coordinate), CoordinateProposalType.START_OR_DESTINATION);
+		setProposal(coordinate, CoordinateProposalType.START_OR_DESTINATION);
 	}
 
 	static get tag() {
