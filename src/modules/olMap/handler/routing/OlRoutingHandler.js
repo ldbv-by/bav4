@@ -373,7 +373,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 	_polylineToGeometry(polyline) {
 		const polylineFormat = new Polyline();
-		return polylineFormat.readGeometry(polyline, { featureProjection: 'EPSG:' + this._mapService.getSrid() });
+		return polylineFormat.readGeometry(polyline, { featureProjection: `EPSG:${this._mapService.getSrid()}` });
 	}
 
 	/**
@@ -561,7 +561,10 @@ export class OlRoutingHandler extends OlLayerHandler {
 			const { stats: profileStats } = await this._elevationService.getProfile(coordinates);
 			const routeStats = this._routeStatsProvider(ghRoute, profileStats);
 
-			setRoute({ data: new GeoJSONFormat().writeGeometry(geom), type: new SourceType(SourceTypeName.GEOJSON) });
+			setRoute({
+				data: new GeoJSONFormat().writeGeometry(geom.clone().transform(`EPSG:${this._mapService.getSrid()}`, 'EPSG:4326')),
+				type: new SourceType(SourceTypeName.GEOJSON)
+			});
 			setRouteStats(routeStats);
 			updateCoordinates(coordinates);
 		} catch (e) {
