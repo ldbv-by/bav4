@@ -64,6 +64,8 @@ export class LayerTree extends MvuElement {
 
 	#ignoreLevelOneFirstOnLeave;
 
+	#keyListener;
+
 	// #working;
 
 	constructor() {
@@ -112,6 +114,8 @@ export class LayerTree extends MvuElement {
 		this.#currentGeoResourceId = null;
 		this.#overTarget = false;
 		this.#ignoreLevelOneFirstOnLeave = false;
+
+		this.#keyListener = null;
 	}
 
 	update(type, data, model) {
@@ -258,13 +262,33 @@ export class LayerTree extends MvuElement {
 			}
 		};
 
+		const handleEnterKeyPress = (event, button, catalogEntry) => {
+			if (event.key === 'Enter') {
+				const focusedElement = document.activeElement;
+				if (focusedElement.tagName === 'BA-ADMINPANEL' || focusedElement.tagName === 'TEXTAREA') {
+					if (button) {
+						button.click(event, catalogEntry);
+					}
+				}
+			}
+		};
+
 		const handleEditClick = (event, catalogEntry) => {
 			const button = event.target;
 			const li = button.parentNode;
 
+			const keyPressHandler = (event) => {
+				handleEnterKeyPress(event, button, catalogEntry);
+			};
+
 			if (button.textContent === 'Edit') {
 				this.signal(Update_Edit_Mode, true);
 				const span = li.firstElementChild;
+
+				if (this.#keyListener === null) {
+					this.#keyListener = keyPressHandler;
+					document.addEventListener('keydown', keyPressHandler);
+				}
 
 				const input = document.createElement('input');
 				input.type = 'text';
@@ -277,6 +301,12 @@ export class LayerTree extends MvuElement {
 				this.signal(Update_Edit_Mode, false);
 				const input = li.firstElementChild;
 				const span = document.createElement('span');
+
+				if (this.#keyListener !== null) {
+					document.removeEventListener('keydown', this.#keyListener);
+					this.#keyListener = null;
+				}
+
 				span.textContent = input.value.trim();
 				li.insertBefore(span, input);
 				li.removeChild(input);
@@ -291,9 +321,8 @@ export class LayerTree extends MvuElement {
 					catalogEntryCopy.label = input.value.trim();
 				}
 
-				// console.log('🚀 ~ LayerTree ~ handleEditClick ~ catalogCopy:', catalogCopy);
+				// Update_CatalogWithResourceData with [], to force refresh
 				this.signal(Update_CatalogWithResourceData, []);
-
 				this._refreshCatalog(catalogCopy);
 			}
 
