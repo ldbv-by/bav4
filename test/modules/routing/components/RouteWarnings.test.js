@@ -258,7 +258,7 @@ describe('RouteWarnings', () => {
 			const warningItemElement = containerElement.querySelector('.highlight');
 
 			warningItemElement.dispatchEvent(new PointerEvent('pointerdown'));
-			expect(store.getState().routing.highlightedSegments).toEqual(
+			expect(store.getState().routing.highlightedSegments.payload).toEqual(
 				jasmine.objectContaining({
 					segments: [
 						[0, 1],
