@@ -217,7 +217,6 @@ export const setHighlightedSegments = (highlightSegments) => {
  */
 export const resetHighlightedSegments = () => {
 	getStore().dispatch({
-		type: ROUTING_HIGHLIGHT_SEGMENTS_REMOVED,
-		payload: null
+		type: ROUTING_HIGHLIGHT_SEGMENTS_REMOVED
 	});
 };

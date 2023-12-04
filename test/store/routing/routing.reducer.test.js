@@ -35,7 +35,7 @@ describe('routingReducer', () => {
 			stats: null,
 			route: null,
 			waypoints: [],
-			highlightedSegments: null,
+			highlightedSegments: jasmine.objectContaining({ payload: null }),
 			active: false,
 			proposal: jasmine.objectContaining({ payload: null }),
 			intermediate: jasmine.objectContaining({ payload: null })
@@ -305,17 +305,17 @@ describe('routingReducer', () => {
 			segments
 		});
 
-		expect(store.getState().routing.highlightedSegments).toEqual({ zoomToExtent: false, segments });
+		expect(store.getState().routing.highlightedSegments.payload).toEqual({ zoomToExtent: false, segments });
 
 		setHighlightedSegments({
 			segments,
 			zoomToExtent: true
 		});
-		expect(store.getState().routing.highlightedSegments).toEqual({ zoomToExtent: true, segments });
+		expect(store.getState().routing.highlightedSegments.payload).toEqual({ zoomToExtent: true, segments });
 
 		resetHighlightedSegments();
 
-		expect(store.getState().routing.highlightedSegments).toBeNull();
+		expect(store.getState().routing.highlightedSegments.payload).toBeNull();
 	});
 
 	it("changes the 'active' property", () => {
