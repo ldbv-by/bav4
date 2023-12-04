@@ -170,7 +170,12 @@
 					</div>
 				</div>
 			</div>`}_getWarningElement(t){const n=n=>{(0,r.O6)({segments:t.segments,zoomToExtent:n})},e={hint_icon:t.criticality===p.xs.HINT,warning_icon:t.criticality!==p.xs.HINT};return i.dy`<div class="item">
-			<div class="highlight${(0,s.$)(e)}" @mouseover=${()=>n(!1)} @mouseout=${()=>(0,r.d0)()}>
+			<div
+				class="highlight${(0,s.$)(e)}"
+				@pointerdown=${()=>n(!1)}
+				@mouseover=${()=>n(!1)}
+				@mouseout=${()=>(0,r.d0)()}
+			>
 				<span class="noselect">${t.message}</span>
 			</div>
 			<button class="geolocation-icon" title=${(t=>this._translationService.translate("routing_warnings_zoom"))()} @click=${()=>n(!0)}></button>
