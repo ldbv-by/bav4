@@ -145,5 +145,5 @@ input[type='number'] {
 	min-height: 4.6em;
 }
 #toggleAutoWidth {
-	display: flex;
+	width: 100%;
 }

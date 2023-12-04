@@ -9,6 +9,7 @@ import { isFunction } from '../../../../utils/checks';
 
 const Update_Disabled = 'update_disabled';
 const Update_Checked = 'update_checked';
+const Update_Checked_Propagate = 'update_checked_propagate';
 const Update_Indeterminate = 'update_indeterminate';
 const Update_Title = 'update_title';
 
@@ -18,17 +19,9 @@ const Update_Title = 'update_title';
  * @param {string} property
  * @returns {number} the number value
  */
-const getStyleProperty = (element, property) => parseInt(window.getComputedStyle(element).getPropertyValue(property));
-
-/**
- * Returns a number representing the integer value of the specified CSS property of the pseudo-element
- * @param {Element} element
- * @param {string} pseudoElement
- * @param {string} property
- * @returns {number} the number value
- */
-const getPseudoStyleProperty = (element, pseudoElement, property) =>
+const getComputedStyleProperty = (element, property, pseudoElement = null) =>
 	parseInt(window.getComputedStyle(element, pseudoElement).getPropertyValue(property));
+
 // eslint-disable-next-line no-unused-vars
 const Toggle_No_Op = (checked) => {};
 
@@ -81,8 +74,10 @@ export class Switch extends MvuElement {
 		};
 
 		switch (type) {
-			case Update_Checked:
+			case Update_Checked_Propagate:
 				return { ...model, checked: returnAndPropagate(data), indeterminate: false };
+			case Update_Checked:
+				return { ...model, checked: data, indeterminate: false };
 			case Update_Indeterminate:
 				return { ...model, indeterminate: data };
 			case Update_Disabled:
@@ -95,16 +90,17 @@ export class Switch extends MvuElement {
 	onAfterRender(firstTime) {
 		if (firstTime) {
 			const checkbox = this.shadowRoot.querySelector('input');
-			const thumbSize = getPseudoStyleProperty(checkbox, '::before', 'width');
-			const padding = getStyleProperty(checkbox, 'padding-left') + getStyleProperty(checkbox, 'padding-right');
+			const thumbSize = getComputedStyleProperty(checkbox, 'width', '::before');
+			const padding = getComputedStyleProperty(checkbox, 'padding-left') + getComputedStyleProperty(checkbox, 'padding-right');
+			const width = getComputedStyleProperty(checkbox, 'width');
 
 			this.#switch = {
 				thumbSize: thumbSize,
 				padding: padding,
 				bounds: {
 					lower: 0,
-					middle: (checkbox.clientWidth - padding) / 4,
-					upper: checkbox.clientWidth - thumbSize - padding
+					middle: (width - padding) / 4,
+					upper: width - thumbSize - padding
 				}
 			};
 		}
@@ -121,13 +117,13 @@ export class Switch extends MvuElement {
 				return;
 			}
 
-			this.signal(Update_Checked, !checkbox.checked);
+			this.signal(Update_Checked_Propagate, !checkbox.checked);
 			event.preventDefault();
 		};
 
 		const onChange = (event) => {
 			const checked = event.target.checked;
-			this.signal(Update_Checked, checked);
+			this.signal(Update_Checked_Propagate, checked);
 		};
 
 		const onPointerup = () => {
@@ -135,7 +131,7 @@ export class Switch extends MvuElement {
 
 			const checkbox = this.shadowRoot.querySelector('input');
 			checkbox.checked = this.#dragging ? this._determineChecked(checkbox) : !this._determineChecked(checkbox);
-			this.signal(Update_Checked, checkbox.checked);
+			this.signal(Update_Checked_Propagate, checkbox.checked);
 
 			checkbox.style.removeProperty('--thumb-transition-duration');
 			checkbox.style.removeProperty('--thumb-position');
@@ -176,7 +172,7 @@ export class Switch extends MvuElement {
 			}
 
 			if (event.key === ' ') {
-				this.signal(Update_Checked, !target.checked);
+				this.signal(Update_Checked_Propagate, !target.checked);
 
 				event.preventDefault();
 				event.stopPropagation();
@@ -218,7 +214,7 @@ export class Switch extends MvuElement {
 		};
 
 		const { thumbSize, bounds, padding } = this.#switch;
-		const directionality = getStyleProperty(event.target, '--isLTR');
+		const directionality = getComputedStyleProperty(event.target, '--isLTR');
 		const track = directionality === -1 ? event.target.clientWidth * -1 + thumbSize + padding : 0;
 
 		const position = getHarmonizedPosition(event.offsetX, thumbSize, bounds);
@@ -280,5 +276,9 @@ export class Switch extends MvuElement {
 
 	static get tag() {
 		return 'ba-switch';
+	}
+
+	click() {
+		this._root.querySelector('.ba-switch').click();
 	}
 }
