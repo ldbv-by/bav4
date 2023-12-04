@@ -17,6 +17,7 @@ const Update_Topics = 'update_topics';
 const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
 const Update_Layers = 'update_layers';
 const Update_Dummy = 'update_dummy';
+const Update_Edit_Mode = 'update_edit_mode';
 
 const hasChildrenClass = 'has-children';
 const showChildrenClass = 'show-children';
@@ -71,7 +72,8 @@ export class LayerTree extends MvuElement {
 			catalogWithResourceData: [],
 			layers: [],
 			currentGeoResourceId: null,
-			dummy: false
+			dummy: false,
+			editMode: false
 		});
 
 		const {
@@ -122,11 +124,13 @@ export class LayerTree extends MvuElement {
 				return { ...model, layers: data };
 			case Update_Dummy:
 				return { ...model, dummy: data };
+			case Update_Edit_Mode:
+				return { ...model, editMode: data };
 		}
 	}
 
 	createView(model) {
-		const { topics, catalogWithResourceData, currentGeoResourceId } = model;
+		const { topics, catalogWithResourceData, currentGeoResourceId, editMode } = model;
 
 		if (
 			catalogWithResourceData === null ||
@@ -259,6 +263,7 @@ export class LayerTree extends MvuElement {
 			const li = button.parentNode;
 
 			if (button.textContent === 'Edit') {
+				this.signal(Update_Edit_Mode, true);
 				const span = li.firstElementChild;
 
 				const input = document.createElement('input');
@@ -269,6 +274,7 @@ export class LayerTree extends MvuElement {
 				button.textContent = 'Save';
 				input.focus();
 			} else if (button.textContent === 'Save') {
+				this.signal(Update_Edit_Mode, false);
 				const input = li.firstElementChild;
 				const span = document.createElement('span');
 				span.textContent = input.value.trim();
@@ -345,13 +351,13 @@ export class LayerTree extends MvuElement {
 					${entry.children
 						? html`
 								<button @click="${(event) => handleEditClick(event, entry)}">Edit</button>
-								<button @click="${(event) => handleCopyClick(event, entry)}">Copy</button>
-								<button @click="${(event) => handleDeleteClick(event, entry)}">X</button>
+								<button .disabled=${editMode} @click="${(event) => handleCopyClick(event, entry)}">Copy</button>
+								<button .disabled=${editMode} @click="${(event) => handleDeleteClick(event, entry)}">X</button>
 								<ul>
 									${entry.children.map((child) => html`<li>${renderEntry(child)}</li>`)}
 								</ul>
 						  `
-						: html`<button @click="${(event) => handleDeleteClick(event, entry)}">X</button>`}
+						: html`<button .disabled=${editMode} @click="${(event) => handleDeleteClick(event, entry)}">X</button>`}
 					<i class="uil uil-draggabledots"></i>
 				</li>
 			`;
