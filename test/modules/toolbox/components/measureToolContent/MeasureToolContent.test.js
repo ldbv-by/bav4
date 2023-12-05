@@ -8,7 +8,7 @@ import { AbstractToolContent } from '../../../../../src/modules/toolbox/componen
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 import { measurementReducer } from '../../../../../src/store/measurement/measurement.reducer';
 import { ElevationProfileChip } from '../../../../../src/modules/chips/components/assistChips/ElevationProfileChip';
-import { ExportVectorDataChip } from '../../../../../src/modules/export/components/assistChip/ExportVectorDataChip';
+import { ExportVectorDataChip } from '../../../../../src/modules/chips/components/assistChips/ExportVectorDataChip';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 import { isString } from '../../../../../src/utils/checks';

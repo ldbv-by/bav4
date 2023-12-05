@@ -1,9 +1,9 @@
-import { $injector } from '../../../../../src/injection';
-import { ExportVectorDataChip } from '../../../../../src/modules/export/components/assistChip/ExportVectorDataChip';
-import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
-import { TestUtils } from '../../../../test-utils';
-import downloadSvg from '../../../../../src/modules/export/components/assistChip/assets/download.svg';
-import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
+import { $injector } from '../../../../src/injection';
+import { ExportVectorDataChip } from '../../../../src/modules/chips/components/assistChips/ExportVectorDataChip';
+import { modalReducer } from '../../../../src/store/modal/modal.reducer';
+import { TestUtils } from '../../../test-utils';
+import downloadSvg from '../../../../src/modules/chips/components/assistChips/assets/download.svg';
+import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 
 window.customElements.define(ExportVectorDataChip.tag, ExportVectorDataChip);
 
