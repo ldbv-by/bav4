@@ -1,5 +1,5 @@
 /**
- * @module modules/elevationProfile/components/assistChip/ElevationProfileChip
+ * @module modules/chips/components/assistChips/ElevationProfileChip
  */
 import { $injector } from '../../../../injection';
 import { openProfile } from '../../../../store/elevationProfile/elevationProfile.action';

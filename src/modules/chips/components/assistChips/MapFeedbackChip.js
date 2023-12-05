@@ -1,5 +1,5 @@
 /**
- * @module modules/feedback/components/assistChip/MapFeedbackChip
+ * @module modules/chips/components/assistChips/MapFeedbackChip
  */
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection/index';

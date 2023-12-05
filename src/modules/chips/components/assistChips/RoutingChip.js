@@ -1,5 +1,5 @@
 /**
- * @module modules/routing/components/assistChip/RoutingChip
+ * @module modules/chips/components/assistChips/RoutingChip
  */
 import { CoordinateProposalType, RoutingStatusCodes } from '../../../../domain/routing';
 import { $injector } from '../../../../injection/index';

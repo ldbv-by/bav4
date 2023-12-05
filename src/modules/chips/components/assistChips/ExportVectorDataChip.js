@@ -1,5 +1,5 @@
 /**
- * @module modules/export/components/assistChip/ExportVectorDataChip
+ * @module modules/chips/components/assistChips/ExportVectorDataChip
  */
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
