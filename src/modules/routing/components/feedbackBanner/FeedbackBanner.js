@@ -52,6 +52,8 @@ export class FeedbackBanner extends MvuElement {
 						${css}
 					</style>
 					<div class="container">
+						<div class="icon"></div>
+
 						<span class=${className}>${unsafeHTML(translate('routing_feedback_' + status))}</span>
 					</div>`
 			: nothing;

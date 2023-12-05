@@ -95,6 +95,9 @@ export class RouteInfo extends MvuElement {
 		const getDownhill = () => {
 			return stats ? this._unitsService.formatDistance(stats.twoDiff[1]) : '0';
 		};
+		const getColor = () => {
+			return html`*{--primary-color: ${color}`;
+		};
 
 		const renderCategoryIcon = (iconSource) => {
 			if (iconSource) {
@@ -108,35 +111,72 @@ export class RouteInfo extends MvuElement {
 		return isVisible
 			? html`<style>
 						${css}
+						
+						${getColor()};
 					</style>
-					<div class="header">
-						<span class="routing-info-duration" title=${translate('routing_info_duration')}>${stats ? getDuration() : '-:-'}</span>
-						<div class="badge routing-info-type" style=${`background:${color};`}>
-							<span class=${`icon icon-${categoryId}`}>
-							${renderCategoryIcon(iconSource)}
+					<div class="container" }>
+					<div class="container-top">
+					
+						<div class="main-icon-background">
+							<span class=${`main-icon icon-${categoryId}`}>
+								${renderCategoryIcon(iconSource)}
 							</span>
-							<span class="text">${category.label}<span>
+							</div>
+						<div class="header">
+							<div class="item-header">
+							${translate('routing_info_duration')}
+							</div>
+							<span class="routing-info-duration" title=${translate('routing_info_duration')}>
+								${stats ? getDuration() : '-:-'}
+							</span>
+							<div class=" routing-info-type">					
+								<span class="text">${category.label}<span>
+							</div>
 						</div>
-					</div>
-					<div class="container">
-						<div class="row">
-							<div class="col" title=${translate('routing_info_distance')}>
-								<div class="routing-info-icon distance"></div>
-							</div>
-							<div class="routing-info-text">
-								<span>${getDistance()}</span>
-							</div>
-							<div class="col" title=${translate('routing_info_uphill')}>
-								<div class="routing-info-icon uphill"></div>
-							</div>
-							<div class="routing-info-text">
-								<span>${getUphill()}</span>
-							</div>
-							<div class="col" title=${translate('routing_info_downhill')}>
-								<div class="routing-info-icon downhill"></div>
-							</div>
-							<div class="routing-info-text">
-								<span>${getDownhill()}</span>
+						</div>
+						<div class="detail">
+							<div class="row">
+								<div class="item">
+									<div class="item-header">
+									${translate('routing_info_distance')}
+									</div>
+									<div class="item-content">
+										<div class="col" title=${translate('routing_info_distance')}>
+											<div class="routing-info-icon distance"></div>
+										</div>
+										<div class="routing-info-text">
+											${getDistance()}
+										</div>
+									</div>
+								</div>
+
+								<div class="item">
+								<div class="item-header">
+								${translate('routing_info_uphill')}
+								</div>
+								<div class="item-content">
+
+									<div class="col" title=${translate('routing_info_uphill')}>
+									<div class="routing-info-icon uphill"></div>
+									</div>
+									<div class="routing-info-text">
+										<span>${getUphill()}</span>
+									</div>
+									</div>
+								</div>
+								<div class="item">
+								<div class="item-header">
+								${translate('routing_info_downhill')}
+								</div>
+								<div class="item-content">
+									<div class="col" title=${translate('routing_info_downhill')}>
+										<div class="routing-info-icon downhill"></div>
+									</div>
+									<div class="routing-info-text">
+										<span>${getDownhill()}</span>
+									</div>
+								</div>
+								</div>
 							</div>
 						</div>
 					</div>`

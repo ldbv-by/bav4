@@ -93,12 +93,10 @@ describe('Waypoints', () => {
 		it('renders action-button', async () => {
 			const element = await setup(defaultRoutingState);
 
-			const reverseIcon = element.shadowRoot.querySelector('#button_reverse');
-
-			expect(reverseIcon).toBeDefined();
-			expect(reverseIcon.title).toBe('routing_waypoints_reverse');
+			const reverseButton = element.shadowRoot.querySelector('#button_reverse');
+			expect(reverseButton).toBeDefined();
+			expect(reverseButton.label).toBe('routing_waypoints_reverse');
 		});
-
 		it('renders draggable elements', async () => {
 			// HINT: the existence of the behavior (user can drag an element) is additionally driven by css-classes specified in main.css and baElement.css.
 			// All elements are not draggable by default, but can be activated with the 'draggable' class.

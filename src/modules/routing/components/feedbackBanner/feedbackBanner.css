@@ -1,15 +1,25 @@
-.container {
+.container span {
+	font-size: 1.4em;
+	margin: 1em;
 	display: block;
+	padding: 1em;
+	text-align: center;
 }
-
 .status-400 {
 	background-color: var(--warning-color);
+	color: var(--text3);
 }
-
 .status-500 {
 	background-color: var(--error-color);
+	color: var(--text3);
 }
-
 .status-900 {
-	background-color: inherit;
+	color: var(--text1);
+}
+.icon {
+	background-image: url('../assets/RoutingZeichnung.svg');
+	height: 13em;
+	width: 13em;
+	background-size: contain;
+	margin: 3em auto 1em;
 }
