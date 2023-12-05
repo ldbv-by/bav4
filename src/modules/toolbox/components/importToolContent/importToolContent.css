@@ -92,10 +92,10 @@
 	background-color: var(--modal-background-color);
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 }
+
 .text-to-search {
 	display: inline-block;
 	font-weight: bold;
-	color: var(--primary-color);
 	cursor: default;
 }
 .text-to-search-icon {
@@ -106,7 +106,7 @@
 	-webkit-mask-image: url('assets/search.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
-	background: var(--primary-color);
+	background: var(--text1);
 }
 .ba-tool-container__content {
 	display: flex;

@@ -34,6 +34,9 @@ import { CoordinateProposalType, RoutingStatusCodes } from '../../../../../src/d
 import { positionReducer } from '../../../../../src/store/position/position.reducer';
 import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer';
 import { SourceTypeName } from '../../../../../src/domain/sourceType';
+import { bvvRouteStatsProvider } from '../../../../../src/modules/olMap/handler/routing/routeStats.provider';
+import { bottomSheetReducer } from '../../../../../src/store/bottomSheet/bottomSheet.reducer';
+import { highlightReducer } from '../../../../../src/store/highlight/highlight.reducer';
 
 describe('constants and enums', () => {
 	it('provides an enum of all valid RoutingFeatureTypes', () => {
@@ -73,14 +76,16 @@ describe('OlRoutingHandler', () => {
 	const routingServiceMock = {
 		async calculateRoute() {},
 		getAlternativeCategoryIds() {},
-		getCategoryById() {},
-		calculateRouteStats() {}
+		getCategoryById() {}
 	};
 	const mapServiceMock = {
 		getSrid() {}
 	};
 	const environmentServiceMock = {
 		isTouch() {}
+	};
+	const elevationServiceMock = {
+		getProfile() {}
 	};
 
 	const setup = (state = {}) => {
@@ -94,13 +99,16 @@ describe('OlRoutingHandler', () => {
 			routing: routingReducer,
 			notifications: notificationReducer,
 			position: positionReducer,
-			elevationProfile: elevationProfileReducer
+			elevationProfile: elevationProfileReducer,
+			bottomSheet: bottomSheetReducer,
+			highlight: highlightReducer
 		});
 
 		$injector
 			.registerSingleton('RoutingService', routingServiceMock)
 			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('EnvironmentService', environmentServiceMock)
+			.registerSingleton('ElevationService', elevationServiceMock)
 			.registerSingleton('TranslationService', { translate: (key) => key });
 
 		return store;
@@ -132,16 +140,31 @@ describe('OlRoutingHandler', () => {
 		return map;
 	};
 
-	const newTestInstance = async (state) => {
+	const newTestInstance = async (state, routeStatsProvider = bvvRouteStatsProvider) => {
 		const store = setup(state);
 		const map = setupMap();
-		const instanceUnderTest = new OlRoutingHandler();
+		const instanceUnderTest = new OlRoutingHandler(routeStatsProvider);
 		const getSelectOptionsSpy = spyOn(instanceUnderTest, '_getSelectOptions').and.callThrough();
 		const getModifyOptionsSpy = spyOn(instanceUnderTest, '_getModifyOptions').and.callThrough();
 		const layer = instanceUnderTest.activate(map);
 		await TestUtils.timeout();
 		return { map, instanceUnderTest, store, layer, getSelectOptionsSpy, getModifyOptionsSpy };
 	};
+
+	describe('constructor', () => {
+		it('initializes the service with custom provider', async () => {
+			setup();
+			const customProvider = async () => {};
+			const instanceUnderTest = new OlRoutingHandler(customProvider);
+			expect(instanceUnderTest._routeStatsProvider).toEqual(customProvider);
+		});
+
+		it('initializes the service with default provider', async () => {
+			setup();
+			const instanceUnderTest = new OlRoutingHandler();
+			expect(instanceUnderTest._routeStatsProvider).toEqual(bvvRouteStatsProvider);
+		});
+	});
 
 	it('instantiates the handler', () => {
 		setup();
@@ -403,6 +426,29 @@ describe('OlRoutingHandler', () => {
 				expect(requestRouteFromInteractionLayerSpy).toHaveBeenCalledTimes(1);
 			});
 
+			it('updates the store', async () => {
+				const { instanceUnderTest, map, layer, store } = await newTestInstance({
+					bottomSheet: { active: true },
+					highlight: {
+						features: [{ id: 'foo', data: { coordinate: [11, 22] } }]
+					}
+				});
+
+				spyOn(instanceUnderTest, '_requestRouteFromInteractionLayer');
+				map.addLayer(layer);
+
+				const feature = new Feature({
+					geometry: new Point([0, 0])
+				});
+
+				instanceUnderTest._translateInteraction.dispatchEvent(
+					new TranslateEvent('translatestart', new Collection([feature]), [0, 0], [0, 0], new Event(MapBrowserEventType.POINTERDOWN))
+				);
+
+				expect(store.getState().bottomSheet.active).toBeFalse();
+				expect(store.getState().highlight.features).toHaveSize(0);
+			});
+
 			it('does nothing when feature was not translated', async () => {
 				const { instanceUnderTest, map, layer } = await newTestInstance();
 				const requestRouteFromInteractionLayerSpy = spyOn(instanceUnderTest, '_requestRouteFromInteractionLayer');
@@ -623,14 +669,12 @@ describe('OlRoutingHandler', () => {
 						geometry: new Point([5, 5])
 					});
 					instanceUnderTest._interactionLayer.getSource().addFeatures([feature0, feature1]);
-					const setInteractionsActiveSpy = spyOn(instanceUnderTest, '_setInteractionsActive');
 					const clearRouteFeatureSpy = spyOn(instanceUnderTest, '_clearRouteFeatures');
 					spyOn(instanceUnderTest, '_requestRouteFromCoordinates'); //prevent call of real method due to state change
 					spyOn(instanceUnderTest, '_getInteractionFeatures').and.returnValue([feature0, feature1]);
 
 					instanceUnderTest._requestRouteFromInteractionLayer();
 
-					expect(setInteractionsActiveSpy).toHaveBeenCalledWith(false);
 					expect(clearRouteFeatureSpy).toHaveBeenCalled();
 					expect(store.getState().routing.waypoints).toEqual([
 						[0, 0],
@@ -666,8 +710,9 @@ describe('OlRoutingHandler', () => {
 
 		describe('_updateStore', () => {
 			it('updates different slices-of-state', async () => {
-				const { instanceUnderTest, store } = await newTestInstance();
-				const ghRoute = {
+				const mockProfile = { stats: { linearDistance: 42 } };
+				const mockStats = { stats: 'stats' };
+				const mockGhRoute = {
 					vehicle: 'foo',
 					paths: [
 						{
@@ -676,15 +721,45 @@ describe('OlRoutingHandler', () => {
 						}
 					]
 				};
-				const statsMock = { time: 12345 };
-				spyOn(routingServiceMock, 'calculateRouteStats').withArgs(ghRoute, jasmine.any(Array)).and.returnValue(statsMock);
+				const mockRouteStatsProvider = jasmine.createSpy().withArgs(mockGhRoute, mockProfile.stats).and.returnValue(mockStats);
+				const { instanceUnderTest, store } = await newTestInstance({}, mockRouteStatsProvider);
+				const mapServiceSpy = spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
+				spyOn(elevationServiceMock, 'getProfile').withArgs(jasmine.any(Array)).and.resolveTo(mockProfile);
 
-				await instanceUnderTest._updateStore(ghRoute);
+				await instanceUnderTest._updateStore(mockGhRoute);
 
-				expect(store.getState().routing.stats).toEqual(statsMock);
+				expect(store.getState().routing.stats).toEqual(mockStats);
 				expect(store.getState().elevationProfile.coordinates.length).toBe(57);
 				expect(store.getState().routing.route.type.name).toBe(SourceTypeName.GEOJSON);
 				expect(store.getState().routing.route.data).toContain('LineString');
+				expect(mapServiceSpy).toHaveBeenCalled();
+			});
+
+			describe('and the ElevationService throws an error', () => {
+				it('informs the user and logs the error', async () => {
+					const message = 'something got wrong';
+					const mockStats = { stats: 'stats' };
+					const mockGhRoute = {
+						vehicle: 'foo',
+						paths: [
+							{
+								points:
+									'gxfiHu~fgAYRaBvBMH[J{ATq@R_@T}BlBwAr@}@t@[LU?wMeBsBm@e@Ua@Yc@VgAb@wBn@iBR_C?eLYiC?{_@VeMBkCTiBDsIK_A@i@Jq@Xk@`@]Zi@p@g@~@[`AWjAg@lEi@pC]tA{A`Fa@|As@jD]l@WXc@Ve@JAsBAe@W}@SrAa@lBk@Am@zBg@z@sAxC'
+							}
+						]
+					};
+					const mockRouteStatsProvider = jasmine.createSpy().and.returnValue(mockStats);
+					const { instanceUnderTest, store } = await newTestInstance({}, mockRouteStatsProvider);
+
+					spyOn(elevationServiceMock, 'getProfile').withArgs(jasmine.any(Array)).and.rejectWith(message);
+					const errorSpy = spyOn(console, 'error');
+
+					await instanceUnderTest._updateStore(mockGhRoute);
+
+					expect(errorSpy).toHaveBeenCalledWith(message);
+					expect(store.getState().notifications.latest.payload.content).toBe('global_routingService_exception');
+					expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
+				});
 			});
 		});
 

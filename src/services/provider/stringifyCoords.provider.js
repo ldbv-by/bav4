@@ -5,18 +5,9 @@ import { LLtoUTM, forward } from '../../utils/mgrs';
 import { GlobalCoordinateRepresentations } from '../../domain/coordinateRepresentation';
 
 /**
- * A function that returns a string representation of a coordinate.
- * @param {module:domain/coordinateTypeDef~Coordinate} coordinate
- * @param {module:domain/coordinateRepresentation~CoordinateRepresentation} coordinateRepresentation
- * @param {function} transformFn
- * @param {object} [options]
- * @typedef {Function} stringifyCoordProvider
- */
-
-/**
- * Bvv specific implementation of {@link module:services/provider/stringifyCoords_provider~stringifyCoordProvider}
- * @async
- * @implements {module:services/provider/stringifyCoords_provider~stringifyCoordProvider}
+ * Bvv specific implementation of {@link module:services/OlCoordinateService~stringifyCoordProvider}
+ * @function
+ * @type {module:services/OlCoordinateService~stringifyCoordProvider}
  */
 export const bvvStringifyFunction = (coordinate, coordinateRepresentation, transformFn, options = {}) => {
 	const { global, code, digits, label } = coordinateRepresentation;
