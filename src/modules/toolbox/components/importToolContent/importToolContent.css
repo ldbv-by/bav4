@@ -92,6 +92,12 @@
 	background-color: var(--modal-background-color);
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 }
+.text-to-drag {
+	display: inline-block;
+	font-weight: bold;
+	cursor: default;
+}
+
 .text-to-search {
 	display: inline-block;
 	font-weight: bold;
