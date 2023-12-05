@@ -1,12 +1,12 @@
-import { QueryParameters } from '../../../../../src/domain/queryParameters';
-import { $injector } from '../../../../../src/injection';
-import { SharePositionChip } from '../../../../../src/modules/share/components/assistChip/SharePositionChip';
-import shareSvg from '../../../../../src/modules/share/components/assistChip/assets/share.svg';
-import { ShareDialogContent } from '../../../../../src/modules/share/components/dialog/ShareDialogContent';
-import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
-import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
-import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
-import { TestUtils } from '../../../../test-utils';
+import { QueryParameters } from '../../../../src/domain/queryParameters';
+import { $injector } from '../../../../src/injection';
+import { SharePositionChip } from '../../../../src/modules/chips/components/assistChips/SharePositionChip';
+import shareSvg from '../../../../src/modules/chips/components/assistChips/assets/share.svg';
+import { ShareDialogContent } from '../../../../src/modules/share/components/dialog/ShareDialogContent';
+import { modalReducer } from '../../../../src/store/modal/modal.reducer';
+import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
+import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
+import { TestUtils } from '../../../test-utils';
 
 window.customElements.define(ShareDialogContent.tag, ShareDialogContent);
 window.customElements.define(SharePositionChip.tag, SharePositionChip);

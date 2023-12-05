@@ -7,7 +7,7 @@ import { $injector } from '../../../../injection/index';
 import { openModal } from '../../../../store/modal/modal.action';
 import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
 import { isCoordinate } from '../../../../utils/checks';
-import { AbstractAssistChip } from '../../../chips/components/assistChips/AbstractAssistChip';
+import { AbstractAssistChip } from './AbstractAssistChip';
 import shareIcon from './assets/share.svg';
 
 const Update = 'update';

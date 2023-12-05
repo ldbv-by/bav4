@@ -1,10 +1,10 @@
-import { $injector } from '../../../../../src/injection';
-import { ShareDataChip } from '../../../../../src/modules/share/components/assistChip/ShareDataChip';
-import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
-import { TestUtils } from '../../../../test-utils';
-import shareSvg from '../../../../../src/modules/share/components/assistChip/assets/share.svg';
-import { sharedReducer } from '../../../../../src/store/shared/shared.reducer';
-import { ShareDialogContent } from '../../../../../src/modules/share/components/dialog/ShareDialogContent';
+import { $injector } from '../../../../src/injection';
+import { ShareDataChip } from '../../../../src/modules/chips/components/assistChips/ShareDataChip';
+import { modalReducer } from '../../../../src/store/modal/modal.reducer';
+import { TestUtils } from '../../../test-utils';
+import shareSvg from '../../../../src/modules/chips/components/assistChips/assets/share.svg';
+import { sharedReducer } from '../../../../src/store/shared/shared.reducer';
+import { ShareDialogContent } from '../../../../src/modules/share/components/dialog/ShareDialogContent';
 
 window.customElements.define(ShareDialogContent.tag, ShareDialogContent);
 window.customElements.define(ShareDataChip.tag, ShareDataChip);
