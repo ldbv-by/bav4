@@ -307,6 +307,8 @@ describe('OlMeasurementHandler', () => {
 				await TestUtils.timeout();
 				expect(classUnderTest._vectorLayer.getSource().getFeatures().length).toBe(1);
 				expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
+
+				await TestUtils.timeout();
 				expect(store.getState().measurement.fileSaveResult.payload.content).toContain('<kml');
 				expect(store.getState().measurement.fileSaveResult.payload.fileSaveResult).toEqual(fileSaveResultMock);
 			});
@@ -682,6 +684,8 @@ describe('OlMeasurementHandler', () => {
 			await TestUtils.timeout();
 			expect(classUnderTest._vectorLayer.getSource().getFeatures().length).toBe(1);
 			expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
+
+			await TestUtils.timeout();
 			expect(store.getState().measurement.fileSaveResult.payload.content).toContain('<kml');
 			expect(store.getState().measurement.fileSaveResult.payload.fileSaveResult).toEqual(fileSaveResultMock);
 		});

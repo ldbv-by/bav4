@@ -1183,6 +1183,8 @@ describe('OlDrawHandler', () => {
 
 			await TestUtils.timeout();
 			expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
+
+			await TestUtils.timeout();
 			expect(store.getState().draw.fileSaveResult.payload.content).toContain('<kml');
 			expect(store.getState().draw.fileSaveResult.payload.fileSaveResult).toEqual(fileSaveResultMock);
 		});
