@@ -4,8 +4,8 @@
 import { CoordinateProposalType, RoutingStatusCodes } from '../../../../domain/routing';
 import { $injector } from '../../../../injection/index';
 import { setProposal } from '../../../../store/routing/routing.action';
-import { AbstractAssistChip } from '../../../chips/components/assistChips/AbstractAssistChip';
-import routingSvg from '../assets/direction.svg';
+import { AbstractAssistChip } from './AbstractAssistChip';
+import routingSvg from './assets/direction.svg';
 
 const Update_Coordinate = 'update_coordinate';
 const Update_Status = 'update_status';

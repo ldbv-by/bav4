@@ -1,6 +1,7 @@
 import { ElevationProfileChip } from './ElevationProfileChip';
 import { ExportVectorDataChip } from './ExportVectorDataChip';
 import { MapFeedbackChip } from './MapFeedbackChip';
+import { RoutingChip } from './RoutingChip';
 
 if (!window.customElements.get(ElevationProfileChip.tag)) {
 	window.customElements.define(ElevationProfileChip.tag, ElevationProfileChip);
@@ -12,4 +13,8 @@ if (!window.customElements.get(ExportVectorDataChip.tag)) {
 
 if (!window.customElements.get(MapFeedbackChip.tag)) {
 	window.customElements.define(MapFeedbackChip.tag, MapFeedbackChip);
+}
+
+if (!window.customElements.get(RoutingChip.tag)) {
+	window.customElements.define(RoutingChip.tag, RoutingChip);
 }
