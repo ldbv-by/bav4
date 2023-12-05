@@ -86,10 +86,6 @@ export class Waypoints extends MvuElement {
 			setWaypoints([...waypoints].reverse());
 		};
 
-		const removeAll = () => {
-			setWaypoints([]);
-		};
-
 		return waypoints.length > 0
 			? html`<div class="waypoints__actions">
 					<ba-button id="button_reverse" .label=${translate('routing_waypoints_reverse')} @click=${reverse}></ba-button>
