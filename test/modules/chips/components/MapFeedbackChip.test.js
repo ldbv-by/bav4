@@ -1,10 +1,10 @@
-import { $injector } from '../../../../../src/injection';
-import { FeedbackType, ToggleFeedbackPanel } from '../../../../../src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
-import { MapFeedbackChip } from '../../../../../src/modules/feedback/components/assistChip/MapFeedbackChip';
-import mapSvg from '../../../../../src/modules/feedback/components/assistChip/assets/map.svg';
-import { closeModal } from '../../../../../src/store/modal/modal.action';
-import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
-import { TestUtils } from '../../../../test-utils';
+import { $injector } from '../../../../src/injection';
+import { FeedbackType, ToggleFeedbackPanel } from '../../../../src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
+import { MapFeedbackChip } from '../../../../src/modules/chips/components/assistChips/MapFeedbackChip';
+import mapSvg from '../../../../src/modules/chips/components/assistChips/assets/map.svg';
+import { closeModal } from '../../../../src/store/modal/modal.action';
+import { modalReducer } from '../../../../src/store/modal/modal.reducer';
+import { TestUtils } from '../../../test-utils';
 
 window.customElements.define(MapFeedbackChip.tag, MapFeedbackChip);
 describe('MapFeedbackChip', () => {

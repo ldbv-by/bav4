@@ -5,8 +5,8 @@ import { html } from 'lit-html';
 import { $injector } from '../../../../injection/index';
 import { closeModal, openModal } from '../../../../store/modal/modal.action';
 import { isCoordinate } from '../../../../utils/checks';
-import { AbstractAssistChip } from '../../../chips/components/assistChips/AbstractAssistChip';
-import { FeedbackType } from '../toggleFeedback/ToggleFeedbackPanel';
+import { AbstractAssistChip } from './AbstractAssistChip';
+import { FeedbackType } from '../../../feedback/components/toggleFeedback/ToggleFeedbackPanel';
 import mapFeedbackIcon from './assets/map.svg';
 
 const Update = 'update';
