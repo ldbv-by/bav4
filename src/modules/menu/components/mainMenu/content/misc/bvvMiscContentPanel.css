@@ -13,6 +13,10 @@
 	height: 4em;
 	border-radius: 0;
 }
+.themeToggle {
+	width: 100%;
+}
+
 .help {
 	mask-image: url('assets/help.svg');
 	-webkit-mask-image: url('assets/help.svg');
