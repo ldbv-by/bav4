@@ -36,7 +36,7 @@ describe('RoutingPanel', () => {
 			await setup();
 			const model = new RoutingPanel().getModel();
 
-			expect(model).toEqual({ active: false });
+			expect(model).toEqual({ active: false, route: null });
 		});
 	});
 
@@ -49,7 +49,7 @@ describe('RoutingPanel', () => {
 		});
 
 		describe('when component is activated as AbstractMvuContentPanel', () => {
-			it('renders the routing components', async () => {
+			it('renders only the routing components', async () => {
 				const element = await setup();
 				element.setActive(true);
 				const container = element.shadowRoot.querySelectorAll('.container');
@@ -60,7 +60,26 @@ describe('RoutingPanel', () => {
 				const lazyLoadElement = element.shadowRoot.querySelector('ba-lazy-load');
 				expect(lazyLoadElement).toBeTruthy();
 				expect(lazyLoadElement.content.strings[0].includes('<ba-routing-container')).toBeTrue();
-				expect(element.shadowRoot.querySelectorAll('ba-profile-chip')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('ba-profile-chip')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('ba-export-vector-data-chip')).toHaveSize(0);
+			});
+
+			describe('and a route exists', () => {
+				it('renders the routing components with assist-chips', async () => {
+					const state = { routing: { route: { data: 'foo', type: {} } } };
+					const element = await setup(state);
+					element.setActive(true);
+					const container = element.shadowRoot.querySelectorAll('.container');
+
+					expect(container).toHaveSize(1);
+
+					// lazy loading component with the routing content
+					const lazyLoadElement = element.shadowRoot.querySelector('ba-lazy-load');
+					expect(lazyLoadElement).toBeTruthy();
+					expect(lazyLoadElement.content.strings[0].includes('<ba-routing-container')).toBeTrue();
+					expect(element.shadowRoot.querySelectorAll('ba-profile-chip')).toHaveSize(1);
+					expect(element.shadowRoot.querySelectorAll('ba-export-vector-data-chip')).toHaveSize(1);
+				});
 			});
 		});
 	});
