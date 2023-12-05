@@ -88,7 +88,7 @@ export class ImportToolContent extends AbstractToolContent {
 						</label>
 					</div>
 					<div  class='drag-drop-preview ${getIsTouchHide()}'>
-						<div class='text-to-drag'>
+						<div class='text-to-search'>
 							${translate('toolbox_import_data_draganddrop')}								
 						</div>
 						<div>
