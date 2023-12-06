@@ -283,7 +283,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 			if (category) {
 				// change to alternative route
 				this._catId = category.id;
-				setCategory(category.id)
+				setCategory(category.id);
 				this._switchToAlternativeRoute(this._currentRoutingResponse);
 			}
 			this._helpTooltip.deactivate();
