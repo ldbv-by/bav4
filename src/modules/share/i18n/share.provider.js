@@ -11,8 +11,7 @@ export const provide = (lang) => {
 				share_dialog_copy_icon: 'Copy to clipboard',
 				share_clipboard_link_notification_text: 'The link',
 				share_clipboard_success: 'was copied to clipboard',
-				share_clipboard_error: '"Copy to clipboard" is not available',
-				share_assistChip_share_stored_data: 'Share data'
+				share_clipboard_error: '"Copy to clipboard" is not available'
 			};
 
 		case 'de':
@@ -26,8 +25,7 @@ export const provide = (lang) => {
 				share_dialog_copy_icon: 'In die Zwischenablage kopieren',
 				share_clipboard_link_notification_text: 'Der Link',
 				share_clipboard_success: 'wurde in die Zwischenablage kopiert',
-				share_clipboard_error: '"In die Zwischenablage kopieren" steht nicht zur Verfügung',
-				share_assistChip_share_stored_data: 'Daten teilen'
+				share_clipboard_error: '"In die Zwischenablage kopieren" steht nicht zur Verfügung'
 			};
 
 		default:

@@ -1,9 +1,9 @@
-import { RoutingChip } from '../../../../src/modules/routing/components/assistChip/RoutingChip';
+import { RoutingChip } from '../../../../src/modules/chips/components/assistChips/RoutingChip';
 import { CoordinateProposalType, RoutingStatusCodes } from '../../../../src/domain/routing';
 import { $injector } from '../../../../src/injection';
 import { setStatus } from '../../../../src/store/routing/routing.action';
 import { routingReducer } from '../../../../src/store/routing/routing.reducer';
-import routingSvg from '../../../../src/modules/routing/components/assets/direction.svg';
+import routingSvg from '../../../../src/modules/chips/components/assistChips/assets/direction.svg';
 import { TestUtils } from '../../../test-utils';
 
 window.customElements.define(RoutingChip.tag, RoutingChip);

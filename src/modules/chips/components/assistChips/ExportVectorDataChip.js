@@ -1,10 +1,10 @@
 /**
- * @module modules/export/components/assistChip/ExportVectorDataChip
+ * @module modules/chips/components/assistChips/ExportVectorDataChip
  */
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { openModal } from '../../../../store/modal/modal.action';
-import { AbstractAssistChip } from '../../../chips/components/assistChips/AbstractAssistChip';
+import { AbstractAssistChip } from './AbstractAssistChip';
 import exportSvg from './assets/download.svg';
 
 const Update_Data = 'update_data';
