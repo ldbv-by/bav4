@@ -4,7 +4,7 @@
 import { observe, observeOnce } from '../utils/storeUtils';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { BaPlugin } from './BaPlugin';
-import { activate, deactivate, setCategory, setWaypoints } from '../store/routing/routing.action';
+import { activate, deactivate, setCategory, setDestination, setWaypoints } from '../store/routing/routing.action';
 import { Tools } from '../domain/tools';
 import { $injector } from '../injection/index';
 import { LevelTypes, emitNotification } from '../store/notifications/notifications.action';
@@ -179,11 +179,12 @@ export class RoutingPlugin extends BaPlugin {
 			if (waypoints.length > 0) {
 				if (queryParams.has(QueryParameters.ROUTE_CATEGORY)) {
 					const catId = queryParams.get(QueryParameters.ROUTE_CATEGORY);
+					// update the category only if catId is a known id
 					if (this.#routingService.getCategoryById(catId)) {
 						setCategory(catId);
 					}
 				}
-				setWaypoints(waypoints);
+				waypoints.length === 1 ? setDestination(waypoints[0]) : setWaypoints(waypoints);
 			}
 		}
 	}

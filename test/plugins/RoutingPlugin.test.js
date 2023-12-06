@@ -345,6 +345,21 @@ describe('RoutingPlugin', () => {
 			});
 		});
 
+		describe('one waypoint and a categoryId are available', () => {
+			it('updates the "waypoint" and "categoryId" properties of the routing s-o-s', async () => {
+				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1.1,2.2&${QueryParameters.ROUTE_CATEGORY}=catId`);
+				const store = setup();
+				spyOn(routingService, 'getCategoryById').and.returnValue({});
+				const instanceUnderTest = new RoutingPlugin();
+
+				instanceUnderTest._parseRouteFromQueryParams(queryParams);
+
+				expect(store.getState().routing.waypoints).toEqual([[1.1, 2.2]]);
+				expect(store.getState().routing.categoryId).toBe('catId');
+				expect(store.getState().routing.status).toBe(RoutingStatusCodes.Start_Missing);
+			});
+		});
+
 		describe('categoryId is unknown', () => {
 			it('updates just the "waypoint" property of the routing s-o-s', async () => {
 				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1.1,2.2,3.3,4.4&${QueryParameters.ROUTE_CATEGORY}=catId`);
