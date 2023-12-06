@@ -84,7 +84,7 @@ export class RoutingPlugin extends BaPlugin {
 				closeBottomSheet();
 				deactivate();
 			} else {
-				const queryParameters = this.#environmentService.getQueryParams(); // Note: we have to fetch the query params before they are update elsewhere
+				const queryParameters = this.#environmentService.getQueryParams(); // Note: we have to fetch the query params before they are updated elsewhere
 				if (await lazyInitialize()) {
 					// we activate the tool after another possible active tool was deactivated
 					setTimeout(() => {
