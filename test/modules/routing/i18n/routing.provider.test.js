@@ -7,6 +7,8 @@ describe('i18n for dynamically loaded parts of the routing module', () => {
 		expect(map.routing_feedback_400).toBe('Anhand der angegebenen Punkte konnte keine Route erstellt werden');
 		expect(map.routing_feedback_500).toBe('Aufgrund eines technischen Fehlers konnte keine Route erstellt werden');
 		expect(map.routing_feedback_900).toBe('<b>Start</b> bzw. <b>Ziel</b> durch Klicken in die Karte angeben');
+		expect(map.routing_feedback_901).toBe('<b>Ziel</b> durch Klicken in die Karte angeben');
+		expect(map.routing_feedback_902).toBe('<b>Start</b> durch Klicken in die Karte angeben');
 		expect(map.routing_info_duration).toBe('Dauer');
 		expect(map.routing_info_distance).toBe('Distanz');
 		expect(map.routing_info_uphill).toBe('Bergauf');
@@ -34,6 +36,8 @@ describe('i18n for dynamically loaded parts of the routing module', () => {
 		expect(map.routing_feedback_400).toBe('No route could be created based on the given points');
 		expect(map.routing_feedback_500).toBe('Due to a technical error no route could be created');
 		expect(map.routing_feedback_900).toBe('Specify <b>start</b> or <b>destination</b> by clicking in the map');
+		expect(map.routing_feedback_901).toBe('Specify <b>destination</b> by clicking in the map');
+		expect(map.routing_feedback_902).toBe('Specify <b>start</b> by clicking in the map');
 		expect(map.routing_info_duration).toBe('Duration');
 		expect(map.routing_info_distance).toBe('Distance');
 		expect(map.routing_info_uphill).toBe('Uphill');
@@ -57,7 +61,7 @@ describe('i18n for dynamically loaded parts of the routing module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 28;
+		const expectedSize = 30;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
