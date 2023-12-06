@@ -41,7 +41,7 @@ export class MapFeedbackChip extends AbstractAssistChip {
 
 	getLabel() {
 		const translate = (key) => this._translationService.translate(key);
-		return translate('map_assistChips_map_feedback_label');
+		return translate('chips_assist_chip_map_feedback_label');
 	}
 
 	isVisible() {
@@ -52,7 +52,7 @@ export class MapFeedbackChip extends AbstractAssistChip {
 	async onClick() {
 		const { center } = this.getModel();
 		const translate = (key) => this._translationService.translate(key);
-		const title = translate('map_assistChips_map_feedback_title');
+		const title = translate('chips_assist_chip_map_feedback_title');
 		const content = html`<ba-mvu-togglefeedbackpanel
 			.onSubmit=${closeModal}
 			.type=${FeedbackType.MAP}

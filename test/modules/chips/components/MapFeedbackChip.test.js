@@ -27,7 +27,7 @@ describe('MapFeedbackChip', () => {
 		it('properly implements abstract methods', async () => {
 			const element = await setup();
 
-			expect(element.getLabel()).toBe('map_assistChips_map_feedback_label');
+			expect(element.getLabel()).toBe('chips_assist_chip_map_feedback_label');
 			expect(element.getIcon()).toBe(mapSvg);
 		});
 	});
@@ -58,7 +58,7 @@ describe('MapFeedbackChip', () => {
 
 			await TestUtils.timeout();
 
-			expect(store.getState().modal.data.title).toBe('map_assistChips_map_feedback_title');
+			expect(store.getState().modal.data.title).toBe('chips_assist_chip_map_feedback_title');
 			const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 			expect(wrapperElement.querySelectorAll(ToggleFeedbackPanel.tag)).toHaveSize(1);
 			expect(wrapperElement.querySelector(ToggleFeedbackPanel.tag).onSubmit).toEqual(closeModal);

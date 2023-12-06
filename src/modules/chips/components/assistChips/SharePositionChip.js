@@ -51,7 +51,7 @@ export class SharePositionChip extends AbstractAssistChip {
 
 	getLabel() {
 		const translate = (key) => this._translationService.translate(key);
-		return translate('map_assistChips_share_position_label');
+		return translate('chips_assist_chip_share_position_label');
 	}
 
 	isVisible() {
@@ -88,14 +88,14 @@ export class SharePositionChip extends AbstractAssistChip {
 			};
 			await this._environmentService.getWindow().navigator.share(content);
 		} catch (error) {
-			emitNotification(this._translationService.translate('map_assistChips_share_position_api_failed'), LevelTypes.WARN);
+			emitNotification(this._translationService.translate('chips_assist_chip_share_position_api_failed'), LevelTypes.WARN);
 		}
 	}
 
 	async _shareUrlDialog(url) {
 		const content = html`<ba-share-content .urls=${url}></ba-share-content>`;
 
-		openModal(this._translationService.translate('map_assistChips_share_position_label'), content);
+		openModal(this._translationService.translate('chips_assist_chip_share_position_label'), content);
 	}
 
 	set center(value) {

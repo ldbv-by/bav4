@@ -56,7 +56,7 @@ describe('ShareDataChip', () => {
 		it('properly implements abstract methods', async () => {
 			const element = await setup();
 
-			expect(element.getLabel()).toBe('share_assistChip_share_stored_data');
+			expect(element.getLabel()).toBe('chips_assist_chip_share_stored_data');
 			expect(element.getIcon()).toBe(shareSvg);
 		});
 	});
@@ -96,7 +96,7 @@ describe('ShareDataChip', () => {
 
 			await TestUtils.timeout();
 			expect(shortenerSpy).toHaveBeenCalledTimes(2);
-			expect(store.getState().modal.data.title).toBe('share_assistChip_share_stored_data');
+			expect(store.getState().modal.data.title).toBe('chips_assist_chip_share_stored_data');
 
 			const contentElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 			const shareDialogContentElement = contentElement.querySelector('ba-share-content');
