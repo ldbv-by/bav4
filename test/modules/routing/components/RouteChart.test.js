@@ -350,7 +350,7 @@ describe('RoutingChart', () => {
 			const progressBarElement = containerElement.querySelector('.highlight');
 
 			progressBarElement.dispatchEvent(new Event('mouseover'));
-			expect(store.getState().routing.highlightedSegments).toEqual(
+			expect(store.getState().routing.highlightedSegments.payload).toEqual(
 				jasmine.objectContaining({
 					segments: [
 						[0, 1],
@@ -371,7 +371,7 @@ describe('RoutingChart', () => {
 			const progressBarElements = containerElement.querySelectorAll('.highlight');
 
 			progressBarElements[0].dispatchEvent(new Event('mouseover'));
-			expect(store.getState().routing.highlightedSegments).toEqual(
+			expect(store.getState().routing.highlightedSegments.payload).toEqual(
 				jasmine.objectContaining({
 					segments: [
 						[0, 1],
@@ -383,7 +383,7 @@ describe('RoutingChart', () => {
 
 			progressBarElements[0].dispatchEvent(new Event('mouseout'));
 
-			expect(store.getState().routing.highlightedSegments).toBeNull();
+			expect(store.getState().routing.highlightedSegments.payload).toBeNull();
 		});
 	});
 
@@ -446,7 +446,7 @@ describe('RoutingChart', () => {
 				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 0 })).toBe('8 km');
 				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 1 })).toBe('4.20 km');
 				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 2 })).toBe('21 m');
-				expect(store.getState().routing.highlightedSegments.segments).toEqual([[4, 5]]);
+				expect(store.getState().routing.highlightedSegments.payload.segments).toEqual([[4, 5]]);
 			});
 
 			it('creates a chartConfig with a onHover function', async () => {
@@ -455,13 +455,13 @@ describe('RoutingChart', () => {
 				const actualChartConfig = element._getChartConfig(routingChartItems, title);
 
 				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 2 })).toBe('21 m');
-				expect(store.getState().routing.highlightedSegments.segments).toEqual([[4, 5]]);
+				expect(store.getState().routing.highlightedSegments.payload.segments).toEqual([[4, 5]]);
 
 				actualChartConfig.options.onHover(new Event('foo'), ['something']);
-				expect(store.getState().routing.highlightedSegments.segments).toEqual([[4, 5]]);
+				expect(store.getState().routing.highlightedSegments.payload.segments).toEqual([[4, 5]]);
 
 				actualChartConfig.options.onHover(new Event('foo'), []);
-				expect(store.getState().routing.highlightedSegments).toBeNull();
+				expect(store.getState().routing.highlightedSegments.payload).toBeNull();
 			});
 		});
 	});

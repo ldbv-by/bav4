@@ -1,11 +1,11 @@
 /**
- * @module modules/share/components/assistChip/ShareDataChip
+ * @module modules/chips/components/assistChips/ShareDataChip
  */
 import { html } from 'lit-html';
 import { QueryParameters } from '../../../../domain/queryParameters';
 import { $injector } from '../../../../injection/index';
 import { openModal } from '../../../../store/modal/modal.action';
-import { AbstractAssistChip } from '../../../chips/components/assistChips/AbstractAssistChip';
+import { AbstractAssistChip } from './AbstractAssistChip';
 import shareIcon from './assets/share.svg';
 
 const Update = 'update';
@@ -51,7 +51,7 @@ export class ShareDataChip extends AbstractAssistChip {
 
 	getLabel() {
 		const translate = (key) => this._translationService.translate(key);
-		return translate('share_assistChip_share_stored_data');
+		return translate('chips_assist_chip_share_stored_data');
 	}
 
 	isVisible() {
@@ -63,7 +63,7 @@ export class ShareDataChip extends AbstractAssistChip {
 	async onClick() {
 		const { fileSaveResult } = this.getModel();
 		const translate = (key) => this._translationService.translate(key);
-		const title = translate('share_assistChip_share_stored_data');
+		const title = translate('chips_assist_chip_share_stored_data');
 		const buildShareUrl = async (id) => {
 			const extraParams = { [QueryParameters.LAYER]: id };
 			const url = this._shareService.encodeState(extraParams);

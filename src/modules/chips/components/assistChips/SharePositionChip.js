@@ -1,5 +1,5 @@
 /**
- * @module modules/share/components/assistChip/SharePositionChip
+ * @module modules/chips/components/assistChips/SharePositionChip
  */
 import { html } from 'lit-html';
 import { QueryParameters } from '../../../../domain/queryParameters';
@@ -7,7 +7,7 @@ import { $injector } from '../../../../injection/index';
 import { openModal } from '../../../../store/modal/modal.action';
 import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
 import { isCoordinate } from '../../../../utils/checks';
-import { AbstractAssistChip } from '../../../chips/components/assistChips/AbstractAssistChip';
+import { AbstractAssistChip } from './AbstractAssistChip';
 import shareIcon from './assets/share.svg';
 
 const Update = 'update';
@@ -51,7 +51,7 @@ export class SharePositionChip extends AbstractAssistChip {
 
 	getLabel() {
 		const translate = (key) => this._translationService.translate(key);
-		return translate('map_assistChips_share_position_label');
+		return translate('chips_assist_chip_share_position_label');
 	}
 
 	isVisible() {
@@ -88,14 +88,14 @@ export class SharePositionChip extends AbstractAssistChip {
 			};
 			await this._environmentService.getWindow().navigator.share(content);
 		} catch (error) {
-			emitNotification(this._translationService.translate('map_assistChips_share_position_api_failed'), LevelTypes.WARN);
+			emitNotification(this._translationService.translate('chips_assist_chip_share_position_api_failed'), LevelTypes.WARN);
 		}
 	}
 
 	async _shareUrlDialog(url) {
 		const content = html`<ba-share-content .urls=${url}></ba-share-content>`;
 
-		openModal(this._translationService.translate('map_assistChips_share_position_label'), content);
+		openModal(this._translationService.translate('chips_assist_chip_share_position_label'), content);
 	}
 
 	set center(value) {

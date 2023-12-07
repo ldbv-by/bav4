@@ -9,6 +9,9 @@ import svg from './assets/arrowLeftShort.svg';
 import { nothing } from '../../../../../../../node_modules/lit-html/lit-html';
 import { setCurrentTool } from '../../../../../../store/tools/tools.action';
 
+const Update_Route = 'update_route';
+const Update_Active = 'update_disabled';
+
 /**
  * Container for routing contents.
  * @class
@@ -17,13 +20,29 @@ import { setCurrentTool } from '../../../../../../store/tools/tools.action';
  */
 export class RoutingPanel extends AbstractMvuContentPanel {
 	constructor() {
-		super({});
+		super({ route: null });
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
 	}
 
+	onInitialize() {
+		this.observe(
+			(state) => state.routing.route,
+			(route) => this.signal(Update_Route, route)
+		);
+	}
+
+	update(type, data, model) {
+		switch (type) {
+			case Update_Route:
+				return { ...model, route: data };
+			case Update_Active:
+				return { ...model, active: data };
+		}
+	}
+
 	createView(model) {
-		const { active } = model;
+		const { route, active } = model;
 		const translate = (key) => this._translationService.translate(key);
 		const close = () => {
 			setCurrentTool(null);
@@ -35,9 +54,15 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 
 			return active ? html`<ba-lazy-load .chunkName=${chunkName} .content=${content}></ba-lazy-load>` : nothing;
 		};
+		const getChips = (route) => {
+			const exportData = route?.data;
+			return route
+				? html` <ba-profile-chip></ba-profile-chip>
+						<ba-export-vector-data-chip .exportData=${exportData}></ba-export-vector-data-chip>`
+				: nothing;
+		};
 
-		return html`
-			<style>
+		return html` <style>
 				${css}
 			</style>
 			<div class="container">
@@ -52,11 +77,8 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 					</li>
 				</ul>
 				<div>${getRoutingContent(active)}</div>
-				<div class="chips__container">
-					<ba-profile-chip></ba-profile-chip>
-				</div>
-			</div>
-		`;
+				<div class="chips__container">${getChips(route)}</div>
+			</div>`;
 	}
 
 	static get tag() {

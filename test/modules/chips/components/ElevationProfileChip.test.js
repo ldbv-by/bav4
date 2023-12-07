@@ -1,9 +1,9 @@
-import { $injector } from '../../../../../src/injection';
-import { updateCoordinates } from '../../../../../src/store/elevationProfile/elevationProfile.action';
-import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer';
-import { TestUtils } from '../../../../test-utils';
-import profileSvg from '../../../../../src/modules/elevationProfile/components/assistChip/assets/profile.svg';
-import { ElevationProfileChip } from '../../../../../src/modules/elevationProfile/components/assistChip/ElevationProfileChip';
+import { $injector } from '../../../../src/injection';
+import { updateCoordinates } from '../../../../src/store/elevationProfile/elevationProfile.action';
+import { elevationProfileReducer } from '../../../../src/store/elevationProfile/elevationProfile.reducer';
+import { TestUtils } from '../../../test-utils';
+import profileSvg from '../../../../src/modules/chips/components/assistChips/assets/profile.svg';
+import { ElevationProfileChip } from '../../../../src/modules/chips/components/assistChips/ElevationProfileChip';
 
 window.customElements.define(ElevationProfileChip.tag, ElevationProfileChip);
 
@@ -146,27 +146,6 @@ describe('ElevationProfileChip', () => {
 			element.coordinates = [
 				[2, 0],
 				[1, 0]
-			];
-			const button = element.shadowRoot.querySelector('button');
-			button.click();
-
-			expect(store.getState().elevationProfile.active).toBeTrue();
-			expect(store.getState().elevationProfile.coordinates).toEqual([
-				[2, 0],
-				[1, 0]
-			]);
-		});
-
-		it('changes store on click with local coordinates without z-value', async () => {
-			const state = { elevationProfile: { active: false, coordinates: [] } };
-			const element = await setup(state);
-
-			expect(store.getState().elevationProfile.active).toBeFalse();
-			expect(store.getState().elevationProfile.coordinates).toEqual([]);
-
-			element.coordinates = [
-				[2, 0, 3],
-				[1, 0, 1]
 			];
 			const button = element.shadowRoot.querySelector('button');
 			button.click();

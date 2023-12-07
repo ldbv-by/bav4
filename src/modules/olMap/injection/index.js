@@ -11,6 +11,7 @@ import { OlFeatureInfoHandler } from '../handler/featureInfo/OlFeatureInfoHandle
 import { OlMfpHandler } from '../handler/mfp/OlMfpHandler';
 import { OlElevationProfileHandler } from '../handler/elevationProfile/OlElevationProfileHandler';
 import { OlRoutingHandler } from '../handler/routing/OlRoutingHandler';
+import { OlSelectableFeatureHandler } from '../handler/selectableFeature/OlSelectableFeatureHandler';
 
 export const mapModule = ($injector) => {
 	$injector
@@ -26,5 +27,6 @@ export const mapModule = ($injector) => {
 		.register('OlFeatureInfoHandler', OlFeatureInfoHandler)
 		.register('OlElevationProfileHandler', OlElevationProfileHandler)
 		.register('OlMfpHandler', OlMfpHandler)
-		.register('OlRoutingHandler', OlRoutingHandler);
+		.register('OlRoutingHandler', OlRoutingHandler)
+		.register('OlSelectableFeatureHandler', OlSelectableFeatureHandler);
 };

@@ -164,7 +164,7 @@ describe('RoutingPlugin', () => {
 
 		it('closes an existing ContextMenu, removes existing highlight features, opens the BottomSheet, and removes the highlight feature after the BottomSheet is closed', async () => {
 			const store = setup({
-				mapContextMenu: { active: true },
+				mapContextMenu: { data: 'foo' },
 				highlight: {
 					features: [{ id: 'foo', data: { coordinate: [11, 22] } }]
 				}
