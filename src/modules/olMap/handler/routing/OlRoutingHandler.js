@@ -23,7 +23,7 @@ import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { unByKey } from 'ol/Observable';
 import { HelpTooltip } from '../../tooltip/HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
-import { setProposal, setRoute, setRouteStats, setWaypoints } from '../../../../store/routing/routing.action';
+import { setCategory, setProposal, setRoute, setRouteStats, setWaypoints } from '../../../../store/routing/routing.action';
 import { CoordinateProposalType, RoutingStatusCodes } from '../../../../domain/routing';
 import { fit } from '../../../../store/position/position.action';
 import { updateCoordinates } from '../../../../store/elevationProfile/elevationProfile.action';
@@ -283,6 +283,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 			if (category) {
 				// change to alternative route
 				this._catId = category.id;
+				setCategory(category.id);
 				this._switchToAlternativeRoute(this._currentRoutingResponse);
 			}
 			this._helpTooltip.deactivate();
