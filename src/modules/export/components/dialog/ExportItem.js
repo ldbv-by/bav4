@@ -8,7 +8,10 @@ import { MvuElement } from '../../../MvuElement';
 import css from './exportItem.css';
 // @ts-ignore
 import downloadSvg from './assets/download.svg';
+// @ts-ignore
+import clipboardSvg from './assets/clipboard.svg';
 import { SourceType } from '../../../../domain/sourceType';
+import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
 
 const Update_Type = 'update_type';
 const Update_Data = 'update_data';
@@ -31,14 +34,16 @@ const Update_Selected_Srid = 'update_selected_srid';
 export class ExportItem extends MvuElement {
 	constructor() {
 		super({ exportType: null, selectedSrid: null, exportData: null });
-		const { TranslationService, ExportVectorDataService, FileSaveService } = $injector.inject(
+		const { TranslationService, ExportVectorDataService, FileSaveService, ShareService } = $injector.inject(
 			'TranslationService',
 			'ExportVectorDataService',
-			'FileSaveService'
+			'FileSaveService',
+			'ShareService'
 		);
 		this._translationService = TranslationService;
 		this._exportVectorDataService = ExportVectorDataService;
 		this._fileSaveService = FileSaveService;
+		this._shareService = ShareService;
 	}
 
 	update(type, data, model) {
@@ -61,7 +66,7 @@ export class ExportItem extends MvuElement {
 
 	createView(model) {
 		const { exportType, selectedSrid, exportData } = model;
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key, params = []) => this._translationService.translate(key, params);
 		const onSridChange = (e) => {
 			const srid = parseInt(e.target.value);
 			this.signal(Update_Selected_Srid, srid);
@@ -70,6 +75,17 @@ export class ExportItem extends MvuElement {
 			const targetSourceType = new SourceType(exportType.sourceTypeName, null, selectedSrid);
 
 			this._fileSaveService.saveAs(this._exportVectorDataService.forData(exportData, targetSourceType), exportType.mediaType);
+		};
+		const onClickCopyToClipboard = async () => {
+			const targetSourceType = new SourceType(exportType.sourceTypeName, null, selectedSrid);
+
+			try {
+				await this._shareService.copyToClipboard(this._exportVectorDataService.forData(exportData, targetSourceType));
+				emitNotification(`${this._translationService.translate('export_item_clipboard_success')}`, LevelTypes.INFO);
+			} catch (error) {
+				console.warn('Clipboard API not available');
+				emitNotification(`${this._translationService.translate('export_item_clipboard_error')}`, LevelTypes.WARN);
+			}
 		};
 		const isDisabled = () => {
 			return exportType.srids.length > 1 ? '' : 'disabled';
@@ -99,6 +115,14 @@ export class ExportItem extends MvuElement {
 							.type=${'primary'}
 							.disabled=${!selectedSrid || !exportData}
 							@click=${onClickDownload}
+						></ba-button>
+						<ba-button
+							id="copy-button"
+							.label=${translate('export_item_copy_to_clipboard', [translate(`export_item_label_${exportType.sourceTypeName}`)])}
+							.icon=${clipboardSvg}
+							.type=${'primary'}
+							.disabled=${!selectedSrid || !exportData}
+							@click=${onClickCopyToClipboard}
 						></ba-button>
 					</div>`
 			: html.nothing;
