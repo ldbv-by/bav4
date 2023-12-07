@@ -89,7 +89,8 @@ export class OlMap extends MvuElement {
 		this._mapHandler = new Map([
 			[olFeatureInfoHandler.id, olFeatureInfoHandler],
 			[olElevationProfileHandler.id, olElevationProfileHandler],
-			[olOverlayMapHandler.id, olOverlayMapHandler][(olSelectableFeatureHandler.id, olSelectableFeatureHandler)]
+			[olOverlayMapHandler.id, olOverlayMapHandler],
+			[olSelectableFeatureHandler.id, olSelectableFeatureHandler]
 		]);
 		this._unsubscribers = [];
 	}
