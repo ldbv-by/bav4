@@ -249,9 +249,19 @@ export class ShowCase extends BaElement {
 				<h2>Specific components</h2>
 
 				<div class="section">
-					<h3>Theme-Toggle</h3>
-					<div class="example">
-						<div class="theme-toggle" style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>
+					<h3>slider</h3>
+					<div class="example row">
+						<input type="range" />
+					</div>
+
+					<h3>Switch</h3>
+					<div class="example row">
+						<ba-switch .title=${'Toggle me'} @toggle=${onToggle}><span slot="before">Toggle</span></ba-switch>
+						<ba-switch .title=${'Toggle me'} @toggle=${onToggle}><slot slot="after">Toggle</slot></ba-switch>
+						<ba-switch .title=${'Toggle me.checked'} .checked=${true} @toggle=${onToggle}>checked</ba-switch>
+						<ba-switch .title=${'Toggle me.indeterminate'} .indeterminate=${true} @toggle=${onToggle}>indeterminate</ba-switch>
+						<ba-switch .title=${'Toggle me.disabled'} .disabled=${true}>disabled</ba-switch>
+						<ba-switch .title=${'Toggle me.disabled'} .disabled=${true} .checked=${true}>disabled.checked</ba-switch>
 					</div>
 
 					<h3>Profile</h3>
@@ -416,17 +426,6 @@ export class ShowCase extends BaElement {
 								<label for="select" class="control-label">with label</label><i class="bar"></i>
 							</div>
 						</div>
-					</div>
-
-					<h3>slider</h3>
-					<div class="example row">
-						<input type="range" />
-					</div>
-
-					<h3>Toggle-Button</h3>
-					<div class="example row">
-						<div>Toggle me!</div>
-						<ba-toggle id="toggle" .title=${'Toggle'} @toggle=${onToggle}></ba-toggle>
 					</div>
 
 					<h3>Loading hint</h3>

@@ -8,7 +8,7 @@ import GeoJSON from 'ol/format/GeoJSON';
 import { FeatureInfoGeometryTypes } from '../../../../../src/store/featureInfo/featureInfo.action';
 import { $injector } from '../../../../../src/injection';
 import { GeometryInfo } from '../../../../../src/modules/featureInfo/components/geometryInfo/GeometryInfo';
-import { ExportVectorDataChip } from '../../../../../src/modules/export/components/assistChip/ExportVectorDataChip';
+import { ExportVectorDataChip } from '../../../../../src/modules/chips/components/assistChips/ExportVectorDataChip';
 import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(GeometryInfo.tag, GeometryInfo);

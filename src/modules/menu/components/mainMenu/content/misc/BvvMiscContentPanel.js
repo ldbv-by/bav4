@@ -6,21 +6,40 @@ import { AbstractMvuContentPanel } from '../AbstractMvuContentPanel';
 import css from './bvvMiscContentPanel.css';
 import { $injector } from '../../../../../../injection';
 import { closeModal, openModal } from '../../../../../../store/modal/modal.action';
+import { toggleSchema } from '../../../../../../store/media/media.action';
+
+const Update_Schema = 'update_schema';
 
 /**
  * Container for more contents.
  * @class
  * @author costa_gi
  * @author alsturm
+ * @author thiloSchlemmer
  */
 export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 	constructor() {
-		super({});
+		super({ darkSchema: false });
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
 	}
 
-	createView() {
+	onInitialize() {
+		this.observe(
+			(state) => state.media.darkSchema,
+			(darkSchema) => this.signal(Update_Schema, darkSchema)
+		);
+	}
+
+	update(type, data, model) {
+		switch (type) {
+			case Update_Schema:
+				return { ...model, darkSchema: data };
+		}
+	}
+
+	createView(model) {
+		const { darkSchema } = model;
 		const translate = (key) => this._translationService.translate(key);
 
 		const openFeedbackDialog = () => {
@@ -40,10 +59,9 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 					</span>
 				</div>
 				<div class="ba-list-item divider">
-					<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_dark_mode')}</span>
-					<span class="ba-list-item__after">
-						<ba-theme-toggle></ba-theme-toggle>
-					</span>
+					<ba-switch class="themeToggle" id="themeToggle" .checked=${darkSchema} @toggle=${toggleSchema}>
+						<span slot="before" class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_dark_mode')}</span>
+					</ba-switch>
 				</div>
 				<div class="ba-list-item  ba-list-item__header">
 					<span class="ba-list-item__text ">
@@ -68,11 +86,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 					</span>
 					<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_Contact')}</span>
 				</a>
-				<a
-					class="ba-list-item"
-					href="https://www.geodaten.bayern.de/bayernatlas-info/grundsteuer-nutzungsbedingungen/Nutzungsbedingungen-BayernAtlas-Grundsteuer.pdf"
-					target="_blank"
-				>
+				<a class="ba-list-item" href="https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen" target="_blank">
 					<span class="ba-list-item__pre">
 						<span class="ba-list-item__icon icon checklist"> </span>
 					</span>

@@ -15,43 +15,26 @@
 	width: 3em;
 	margin: 0.8rem 0.8rem 0.3rem 0.8rem;
 	padding: 0;
-	background: var(--primary-color);
-	/* background: var(--text3); */
-	mask-size: cover;
-	-webkit-mask-size: cover;
-	border-right: 1px dotted var(--header-background-color);
+	background: var(--header-background-color);
+	border: none;
 }
 
 .category-button:focus-visible {
 	box-shadow: none;
 }
 
-.category-button__text {
-	color: var(--text1);
-	font-size: 0.8rem;
-	margin: 5.5em 0.3em 0.5em 0.3em;
-	user-select: none;
-	text-align: center;
-	min-width: 5em;
-}
-
 .is-active {
-	background: var(--text4);
+	fill: var(--text4) !important;
 }
 
-.icon-bvv_hike {
-	mask-image: url('../assets/bvv-hike.svg');
-	-webkit-mask-image: url('../assets/bvv-hike.svg');
+.category-icon {
+	fill: var(--primary-color);
+	height: 2em;
+	width: 2em;
+	position: relative;
+	top: -0.1em;
 }
-.icon-bvv_bike {
-	mask-image: url('../assets/bvv-bike.svg');
-	-webkit-mask-image: url('../assets/bvv-bike.svg');
-}
-.icon-bvv_mtb {
-	mask-image: url('../assets/bvv-mtb.svg');
-	-webkit-mask-image: url('../assets/bvv-mtb.svg');
-}
-.icon-racingbike {
-	mask-image: url('../assets/racingbike.svg');
-	-webkit-mask-image: url('../assets/racingbike.svg');
+
+.category-icon:hover {
+	fill: var(--secondary-color);
 }

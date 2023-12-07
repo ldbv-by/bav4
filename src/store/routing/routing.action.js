@@ -71,7 +71,7 @@ export const setRouteStats = (routeStats) => {
 
 /**
  * Updates the `route` property.
- * @param {module:domain/routing~Route|null}  route the new Route or `null`
+ * @param {module:domain/routing~RouteGeometry|null}  route the new RouteGeometry or `null`
  * @function
  */
 export const setRoute = (route) => {
@@ -164,7 +164,7 @@ export const setProposal = (coordinate, type) => {
 };
 
 /**
- * Sets a coordinate as a proposal for a new intermediate waypoint.
+ * Suggests a coordinate as a new intermediate waypoint.
  * @param {module:domain/coordinateTypeDef~Coordinate}  coordinate the coordinate (in the SRID of the map) which should be a new intermediate waypoint of the route
  * @function
  */
@@ -217,7 +217,6 @@ export const setHighlightedSegments = (highlightSegments) => {
  */
 export const resetHighlightedSegments = () => {
 	getStore().dispatch({
-		type: ROUTING_HIGHLIGHT_SEGMENTS_REMOVED,
-		payload: null
+		type: ROUTING_HIGHLIGHT_SEGMENTS_REMOVED
 	});
 };

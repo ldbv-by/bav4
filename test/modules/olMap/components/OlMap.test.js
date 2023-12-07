@@ -134,6 +134,12 @@ describe('OlMap', () => {
 			return 'olElevationProfileHandlerMockId';
 		}
 	};
+	const olSelectableFeatureHandlerMock = {
+		register() {},
+		get id() {
+			return 'olSelectableFeatureHandlerMockId';
+		}
+	};
 
 	const olOverlayMapHandlerMock = {
 		register() {},
@@ -207,6 +213,7 @@ describe('OlMap', () => {
 			.registerSingleton('OlHighlightLayerHandler', highlightLayerHandlerMock)
 			.registerSingleton('OlFeatureInfoHandler', featureInfoHandlerMock)
 			.registerSingleton('OlElevationProfileHandler', olElevationProfileHandlerMock)
+			.registerSingleton('OlSelectableFeatureHandler', olSelectableFeatureHandlerMock)
 			.registerSingleton('OlOverlayMapHandler', olOverlayMapHandlerMock)
 			.registerSingleton('OlMfpHandler', mfpHandlerMock)
 			.registerSingleton('OlRoutingHandler', routingHandlerMock)
@@ -1472,6 +1479,14 @@ describe('OlMap', () => {
 			const element = await setup();
 
 			expect(element._mapHandler.get('olElevationProfileHandlerMockId')).toEqual(olElevationProfileHandlerMock);
+		});
+	});
+
+	describe('elevationProfile handler', () => {
+		it('registers the handler', async () => {
+			const element = await setup();
+
+			expect(element._mapHandler.get('olSelectableFeatureHandlerMockId')).toEqual(olSelectableFeatureHandlerMock);
 		});
 	});
 });

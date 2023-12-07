@@ -30,23 +30,23 @@ export const initialState = {
 	 */
 	stats: null,
 	/**
-	 * @property {Route}
+	 * @property {module:domain/routing~RouteGeometry}
 	 */
 	route: null,
 	/**
-	 * @property {domain/coordinateTypeDef~Coordinate[]}
+	 * @property {module:domain/coordinateTypeDef~Coordinate[]}
 	 */
 	waypoints: [],
 	/**
 	 * @property {module:store/routing/routing_action~HighlightSegments}
 	 */
-	highlightedSegments: null,
+	highlightedSegments: new EventLike(),
 	/**
 	 * @property {boolean}
 	 */
 	active: false,
 	/**
-	 *@property {EventLike<store/routing/routing_action~CoordinateProposal>}
+	 *@property {EventLike<module:domain/routing~CoordinateProposal>}
 	 */
 	proposal: new EventLike(),
 	/**
@@ -121,6 +121,13 @@ export const routingReducer = (state = initialState, action) => {
 			};
 		}
 		case ROUTING_START_SET: {
+			if (state.waypoints.length === 1) {
+				return {
+					...state,
+					waypoints: [[...payload], ...state.waypoints],
+					status: RoutingStatusCodes.Ok
+				};
+			}
 			return {
 				...state,
 				waypoints: [[...payload]],
@@ -128,6 +135,13 @@ export const routingReducer = (state = initialState, action) => {
 			};
 		}
 		case ROUTING_DESTINATION_SET: {
+			if (state.waypoints.length === 1) {
+				return {
+					...state,
+					waypoints: [...state.waypoints, [...payload]],
+					status: RoutingStatusCodes.Ok
+				};
+			}
 			return {
 				...state,
 				waypoints: [[...payload]],
@@ -141,7 +155,7 @@ export const routingReducer = (state = initialState, action) => {
 			};
 		}
 		case ROUTING_INTERMEDIATE_SET: {
-			const index = state.waypoints.findIndex((c) => equals(c, payload));
+			const index = state.waypoints.findIndex((c) => equals(c, payload.payload));
 			if (index === -1) {
 				return {
 					...state,
@@ -153,13 +167,13 @@ export const routingReducer = (state = initialState, action) => {
 		case ROUTING_HIGHLIGHT_SEGMENTS_SET: {
 			return {
 				...state,
-				highlightedSegments: { ...payload, segments: [...payload.segments.map((c) => [...c])] /**deep clone segments */ }
+				highlightedSegments: new EventLike({ ...payload, segments: [...payload.segments.map((c) => [...c])] /**deep clone segments */ })
 			};
 		}
 		case ROUTING_HIGHLIGHT_SEGMENTS_REMOVED: {
 			return {
 				...state,
-				highlightedSegments: null
+				highlightedSegments: new EventLike()
 			};
 		}
 		case ROUTING_ACTIVE_CHANGED: {

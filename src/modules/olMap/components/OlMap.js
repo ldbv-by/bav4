@@ -52,7 +52,8 @@ export class OlMap extends MvuElement {
 			OlElevationProfileHandler: olElevationProfileHandler,
 			OlOverlayMapHandler: olOverlayMapHandler,
 			OlMfpHandler: olMfpHandler,
-			OlRoutingHandler: olRoutingHandler
+			OlRoutingHandler: olRoutingHandler,
+			OlSelectableFeatureHandler: olSelectableFeatureHandler
 		} = $injector.inject(
 			'MapService',
 			'GeoResourceService',
@@ -67,7 +68,8 @@ export class OlMap extends MvuElement {
 			'OlElevationProfileHandler',
 			'OlOverlayMapHandler',
 			'OlMfpHandler',
-			'OlRoutingHandler'
+			'OlRoutingHandler',
+			'OlSelectableFeatureHandler'
 		);
 
 		this._mapService = mapService;
@@ -87,7 +89,7 @@ export class OlMap extends MvuElement {
 		this._mapHandler = new Map([
 			[olFeatureInfoHandler.id, olFeatureInfoHandler],
 			[olElevationProfileHandler.id, olElevationProfileHandler],
-			[olOverlayMapHandler.id, olOverlayMapHandler]
+			[olOverlayMapHandler.id, olOverlayMapHandler][(olSelectableFeatureHandler.id, olSelectableFeatureHandler)]
 		]);
 		this._unsubscribers = [];
 	}
@@ -329,8 +331,8 @@ export class OlMap extends MvuElement {
 				const olLayer = geoResource
 					? this._layerService.toOlLayer(id, geoResource, this._map)
 					: this._layerHandler.has(id)
-					? toOlLayerFromHandler(id, this._layerHandler.get(id), this._map)
-					: null;
+					  ? toOlLayerFromHandler(id, this._layerHandler.get(id), this._map)
+					  : null;
 				if (olLayer) {
 					const layer = layers.find((layer) => layer.id === id);
 					updateOlLayer(olLayer, layer);

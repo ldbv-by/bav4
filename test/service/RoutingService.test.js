@@ -1,28 +1,26 @@
+import { $injector } from '../../src/injection';
 import { BvvRoutingService, CHART_ITEM_ROAD_STYLE_UNKNOWN, CHART_ITEM_SURFACE_STYLE_UNKNOWN } from '../../src/services/RoutingService';
 import { bvvChartItemStylesProvider } from '../../src/services/provider/chartItemStyles.provider';
-import { bvvEtaCalculationProvider } from '../../src/services/provider/etaCalculation.provider';
 import { bvvOsmRoadTypeMappingProvider } from '../../src/services/provider/osmRoadTypeMapping.provider';
 import { bvvRouteProvider } from '../../src/services/provider/route.provider';
-import { bvvRouteStatsProvider } from '../../src/services/provider/routeStats.provider';
 import { bvvRoutingCategoriesProvider } from '../../src/services/provider/routingCategories.provider';
 
 describe('BvvRoutingService', () => {
+	const elevationServiceMock = {
+		async getProfile() {}
+	};
+
+	beforeAll(() => {
+		$injector.registerSingleton('ElevationService', elevationServiceMock);
+	});
+
 	const setup = (
 		routingCategoriesProvider = bvvRoutingCategoriesProvider,
 		routeProvider = bvvRouteProvider,
-		routeStatsProvider = bvvRouteStatsProvider,
 		chartItemStylesProvider = bvvChartItemStylesProvider,
-		osmRoadTypeMappingProvider = bvvOsmRoadTypeMappingProvider,
-		etaCalculatorProvider = bvvEtaCalculationProvider
+		osmRoadTypeMappingProvider = bvvOsmRoadTypeMappingProvider
 	) => {
-		return new BvvRoutingService(
-			routingCategoriesProvider,
-			routeProvider,
-			routeStatsProvider,
-			chartItemStylesProvider,
-			osmRoadTypeMappingProvider,
-			etaCalculatorProvider
-		);
+		return new BvvRoutingService(routingCategoriesProvider, routeProvider, chartItemStylesProvider, osmRoadTypeMappingProvider);
 	};
 
 	describe('constructor', () => {
@@ -30,33 +28,25 @@ describe('BvvRoutingService', () => {
 			const instanceUnderTest = new BvvRoutingService();
 			expect(instanceUnderTest._categoriesProvider).toEqual(bvvRoutingCategoriesProvider);
 			expect(instanceUnderTest._routeProvider).toEqual(bvvRouteProvider);
-			expect(instanceUnderTest._routeStatsProvider).toEqual(bvvRouteStatsProvider);
 			expect(instanceUnderTest._chartItemsStylesProvider).toEqual(bvvChartItemStylesProvider);
 			expect(instanceUnderTest._osmRoadTypeMapper).toEqual(bvvOsmRoadTypeMappingProvider);
-			expect(instanceUnderTest._etaCalculationProvider).toEqual(bvvEtaCalculationProvider);
 		});
 
 		it('initializes the service with custom provider', async () => {
 			const customRoutingCategoriesProvider = async () => {};
 			const customRouteProvider = async () => {};
-			const customRouteStatsProvider = () => {};
 			const customChartItemStylesProvider = () => {};
 			const customOsmRoadTypeMappingProvider = () => {};
-			const customEtaCalculationProvider = () => {};
 			const instanceUnderTest = setup(
 				customRoutingCategoriesProvider,
 				customRouteProvider,
-				customRouteStatsProvider,
 				customChartItemStylesProvider,
-				customOsmRoadTypeMappingProvider,
-				customEtaCalculationProvider
+				customOsmRoadTypeMappingProvider
 			);
 			expect(instanceUnderTest._categoriesProvider).toEqual(customRoutingCategoriesProvider);
 			expect(instanceUnderTest._routeProvider).toEqual(customRouteProvider);
-			expect(instanceUnderTest._routeStatsProvider).toEqual(customRouteStatsProvider);
 			expect(instanceUnderTest._chartItemsStylesProvider).toEqual(customChartItemStylesProvider);
 			expect(instanceUnderTest._osmRoadTypeMapper).toEqual(customOsmRoadTypeMappingProvider);
-			expect(instanceUnderTest._etaCalculationProvider).toEqual(customEtaCalculationProvider);
 		});
 	});
 
@@ -263,7 +253,7 @@ describe('BvvRoutingService', () => {
 			const mockChartItemStylesProvider = () => {
 				return { road: roadStylesMock };
 			};
-			const instanceUnderTest = setup(async () => {}, null, null, mockChartItemStylesProvider);
+			const instanceUnderTest = setup(async () => {}, null, mockChartItemStylesProvider);
 			await instanceUnderTest.init();
 
 			const styles = instanceUnderTest.getRoadTypeStyles();
@@ -285,7 +275,7 @@ describe('BvvRoutingService', () => {
 			const mockChartItemStylesProvider = () => {
 				return { some: {} };
 			};
-			const instanceUnderTest = setup(async () => {}, null, null, mockChartItemStylesProvider);
+			const instanceUnderTest = setup(async () => {}, null, mockChartItemStylesProvider);
 			await instanceUnderTest.init();
 
 			const styles = instanceUnderTest.getRoadTypeStyles();
@@ -306,7 +296,7 @@ describe('BvvRoutingService', () => {
 					}
 				};
 			};
-			const instanceUnderTest = setup(async () => {}, null, null, mockChartItemStylesProvider);
+			const instanceUnderTest = setup(async () => {}, null, mockChartItemStylesProvider);
 			await instanceUnderTest.init();
 
 			const styles = instanceUnderTest.getRoadTypeStyles();
@@ -330,7 +320,7 @@ describe('BvvRoutingService', () => {
 			const mockChartItemStylesProvider = () => {
 				return { surface: surfaceStylesMock };
 			};
-			const instanceUnderTest = setup(async () => {}, null, null, mockChartItemStylesProvider);
+			const instanceUnderTest = setup(async () => {}, null, mockChartItemStylesProvider);
 			await instanceUnderTest.init();
 
 			const styles = instanceUnderTest.getSurfaceTypeStyles();
@@ -352,7 +342,7 @@ describe('BvvRoutingService', () => {
 			const mockChartItemStylesProvider = () => {
 				return { some: {} };
 			};
-			const instanceUnderTest = setup(async () => {}, null, null, mockChartItemStylesProvider);
+			const instanceUnderTest = setup(async () => {}, null, mockChartItemStylesProvider);
 			await instanceUnderTest.init();
 
 			const styles = instanceUnderTest.getSurfaceTypeStyles();
@@ -373,7 +363,7 @@ describe('BvvRoutingService', () => {
 					}
 				};
 			};
-			const instanceUnderTest = setup(async () => {}, null, null, mockChartItemStylesProvider);
+			const instanceUnderTest = setup(async () => {}, null, mockChartItemStylesProvider);
 			await instanceUnderTest.init();
 
 			const styles = instanceUnderTest.getSurfaceTypeStyles();
@@ -399,7 +389,7 @@ describe('BvvRoutingService', () => {
 			};
 			const mockOsmRoadTypeMappingProvider = (osmRoadType) => (osmRoadType === 'foo' ? 'bar' : null);
 
-			const instanceUnderTest = setup(null, null, null, null, mockOsmRoadTypeMappingProvider);
+			const instanceUnderTest = setup(null, null, null, mockOsmRoadTypeMappingProvider);
 			const roadClasses = instanceUnderTest.mapRoadTypesToCatalogId(osmClasses);
 
 			expect(roadClasses.bar.absolute).toBe(4);
@@ -418,7 +408,7 @@ describe('BvvRoutingService', () => {
 			};
 			const mockOsmRoadTypeMappingProvider = (osmRoadType) => (osmRoadType === 'foo' || osmRoadType === 'other' ? 'other' : null);
 
-			const instanceUnderTest = setup(null, null, null, null, mockOsmRoadTypeMappingProvider);
+			const instanceUnderTest = setup(null, null, null, mockOsmRoadTypeMappingProvider);
 			const roadClasses = instanceUnderTest.mapRoadTypesToCatalogId(osmClasses);
 
 			expect(roadClasses.other.absolute).toBe(4);
@@ -428,35 +418,6 @@ describe('BvvRoutingService', () => {
 			expect(roadClasses.track_grade1.absolute).toBe(2);
 			expect(roadClasses.track_grade1.relative).toBe(100);
 			expect(roadClasses.track_grade1.segments).toEqual([4, 6]);
-		});
-	});
-
-	describe('calculateRouteStats', () => {
-		it('calculates the statistics of a route', () => {
-			const mockRoute = { route: 'route' };
-			const mockStats = { stats: 'stats' };
-			const mockRouteStatsProvider = jasmine.createSpy().withArgs(mockRoute).and.returnValue(mockStats);
-			const instanceUnderTest = setup(null, null, mockRouteStatsProvider);
-
-			const result = instanceUnderTest.calculateRouteStats(mockRoute);
-
-			expect(result).toEqual(mockStats);
-		});
-	});
-
-	describe('getETAFor', () => {
-		it('provides a ETA', () => {
-			const category = 'some';
-			const dist = 420000;
-			const up = 21;
-			const down = 4221;
-			const expectedETA = 4242;
-			const mockEtaCalculationProvider = jasmine.createSpy().withArgs(category, dist, up, down).and.returnValue(4242);
-			const instanceUnderTest = setup(null, null, null, null, null, mockEtaCalculationProvider);
-
-			const actualETA = instanceUnderTest.getETAFor(category, dist, up, down);
-
-			expect(actualETA).toEqual(expectedETA);
 		});
 	});
 });

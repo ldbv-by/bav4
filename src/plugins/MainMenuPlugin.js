@@ -61,11 +61,13 @@ export class MainMenuPlugin extends BaPlugin {
 			}
 		};
 
-		const onFeatureInfoAbortedChanged = () => {
-			if (!this._open) {
-				close();
+		const onFeatureInfoAbortedChanged = (_, state) => {
+			if (state.mainMenu.tab === TabIds.FEATUREINFO) {
+				if (!this._open) {
+					close();
+				}
+				setTab(this._previousTab);
 			}
-			setTab(this._previousTab);
 		};
 
 		const onQueryChanged = ({ payload }) => {
@@ -86,8 +88,8 @@ export class MainMenuPlugin extends BaPlugin {
 		const onToolIdChanged = (toolId) => {
 			switch (toolId) {
 				case Tools.ROUTING:
-					open();
 					setTab(TabIds.ROUTING);
+					open();
 					break;
 				case null:
 					setTab(this._previousTab);

@@ -63,7 +63,7 @@ export class CpResultItem extends MvuElement {
 		const onMouseEnter = (result) => {
 			addHighlightFeatures({
 				id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID,
-				type: HighlightFeatureType.TEMPORARY,
+				type: HighlightFeatureType.MARKER_TMP,
 				data: { coordinate: [...result.center] }
 			});
 		};
@@ -77,7 +77,7 @@ export class CpResultItem extends MvuElement {
 			if (!result.extent) {
 				addHighlightFeatures({
 					id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
-					type: HighlightFeatureType.DEFAULT,
+					type: HighlightFeatureType.MARKER,
 					data: { coordinate: [...result.center] }
 				});
 			} else {
