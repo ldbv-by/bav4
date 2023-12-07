@@ -1,9 +1,9 @@
-import { $injector } from '../../../../../src/injection';
-import { updateCoordinates } from '../../../../../src/store/elevationProfile/elevationProfile.action';
-import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer';
-import { TestUtils } from '../../../../test-utils';
-import profileSvg from '../../../../../src/modules/elevationProfile/components/assistChip/assets/profile.svg';
-import { ElevationProfileChip } from '../../../../../src/modules/elevationProfile/components/assistChip/ElevationProfileChip';
+import { $injector } from '../../../../src/injection';
+import { updateCoordinates } from '../../../../src/store/elevationProfile/elevationProfile.action';
+import { elevationProfileReducer } from '../../../../src/store/elevationProfile/elevationProfile.reducer';
+import { TestUtils } from '../../../test-utils';
+import profileSvg from '../../../../src/modules/chips/components/assistChips/assets/profile.svg';
+import { ElevationProfileChip } from '../../../../src/modules/chips/components/assistChips/ElevationProfileChip';
 
 window.customElements.define(ElevationProfileChip.tag, ElevationProfileChip);
 
