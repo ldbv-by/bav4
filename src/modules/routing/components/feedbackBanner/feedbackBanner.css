@@ -17,9 +17,24 @@
 	color: var(--text1);
 }
 .icon {
-	background-image: url('../assets/RoutingZeichnung.svg');
 	height: 13em;
 	width: 13em;
 	background-size: contain;
 	margin: 3em auto 1em;
+}
+.icon-status-900 {
+	background-image: url('../assets/status-900.svg');
+}
+.icon-status-901 {
+	background-image: url('../assets/status-901.svg');
+}
+.icon-status-902 {
+	background-image: url('../assets/status-902.svg');
+}
+
+.icon-status-400 {
+	background-image: url('../assets/status-400.svg');
+}
+.icon-status-500 {
+	background-image: url('../assets/status-500.svg');
 }
