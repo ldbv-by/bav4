@@ -51,9 +51,10 @@ describe('ExportItem', () => {
 			expect(element.shadowRoot.querySelector('.export-item__description').innerText).toBe('export_item_description_foo');
 			expect(element.shadowRoot.querySelector('label').innerText).toBe('export_item_srid_selection');
 			expect(element.shadowRoot.querySelectorAll('select option')).toHaveSize(3);
-			expect(element.shadowRoot.querySelectorAll('ba-button')).toHaveSize(2);
+			expect(element.shadowRoot.querySelectorAll('ba-button')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('ba-button')[0].label).toBe('export_item_download_foo');
-			expect(element.shadowRoot.querySelectorAll('ba-button')[1].label).toBe('export_item_copy_to_clipboard__export_item_label_foo');
+			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-icon')[0].title).toBe('export_item_copy_to_clipboard__export_item_label_foo');
 		});
 
 		describe('with srids', () => {

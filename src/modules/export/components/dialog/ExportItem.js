@@ -108,22 +108,24 @@ export class ExportItem extends MvuElement {
 								>${exportType.srids.length === 1 ? translate('export_item_srid_selection_disabled') : translate('export_item_srid_selection')}</label
 							><i class="bar"></i>
 						</div>
-						<ba-button
-							id="download-button"
-							.label=${translate(`export_item_download_${exportType.sourceTypeName}`)}
-							.icon=${downloadSvg}
-							.type=${'primary'}
-							.disabled=${!selectedSrid || !exportData}
-							@click=${onClickDownload}
-						></ba-button>
-						<ba-button
-							id="copy-button"
-							.label=${translate('export_item_copy_to_clipboard', [translate(`export_item_label_${exportType.sourceTypeName}`)])}
-							.icon=${clipboardSvg}
-							.type=${'primary'}
-							.disabled=${!selectedSrid || !exportData}
-							@click=${onClickCopyToClipboard}
-						></ba-button>
+						<div class="export-item__actions">
+							<ba-button
+								id="download-button"
+								.label=${translate(`export_item_download_${exportType.sourceTypeName}`)}
+								.icon=${downloadSvg}
+								.type=${'primary'}
+								.disabled=${!selectedSrid || !exportData}
+								@click=${onClickDownload}
+							></ba-button>
+							<ba-icon
+								id="copy-button"
+								.title=${translate('export_item_copy_to_clipboard', [translate(`export_item_label_${exportType.sourceTypeName}`)])}
+								.icon=${clipboardSvg}
+								.type=${'primary'}
+								.disabled=${!selectedSrid || !exportData}
+								@click=${onClickCopyToClipboard}
+							></ba-icon>
+						</div>
 					</div>`
 			: html.nothing;
 	}

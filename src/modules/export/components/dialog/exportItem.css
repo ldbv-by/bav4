@@ -22,10 +22,22 @@
 	width: 100%;
 	align-self: center;
 }
+
+.export-item__actions {
+	display: flex;
+	align-items: center;
+
+	margin-top: 1em;
+}
+
+ba-icon {
+	align-self: center;
+	margin-left: 0.3em;
+}
+
 ba-button {
 	align-self: center;
 	width: 100%;
-	margin-top: 1em;
 }
 .ba-form-element.disabled {
 	background: var(--secondary-bg-color);
