@@ -39,7 +39,8 @@ describe('ExportDialogContent', () => {
 			})
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('ProjectionService', projectionServiceMock)
-			.registerSingleton('FileSaveService', { saveAs: () => {} });
+			.registerSingleton('FileSaveService', { saveAs: () => {} })
+			.registerSingleton('ShareService', { copyToClipboard: () => {} });
 
 		return TestUtils.render(ExportDialogContent.tag);
 	};
