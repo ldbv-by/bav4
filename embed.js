@@ -287,7 +287,7 @@
 				<div class="menuitem__text">${r}</div>
 			</button>`};return Gu.dy`<style>
 				${WE()}</style
-			>${e.map(((t,e)=>i(t,e)))}`}set items(t){this.signal(qE,t)}set type(t){this.signal(YE,t)}static get tag(){return"ba-overflow-menu"}}window.customElements.get(JE.tag)||window.customElements.define(JE.tag,JE);const QE="update_loaded";class tT extends sM.T{#u;#d;constructor(){super({loaded:!1})}onInitialize(){this.#d&&r(6467)(`./${this.#d}`).then((()=>{this.signal(QE,!0)}))}update(t,e,i){if(t===QE)return{...i,loaded:e}}createView(t){const{loaded:e}=t;return e?Gu.dy`${this.#u}`:Gu.dy`<ba-spinner></ba-spinner>`}set content(t){this.#u=t}set chunkName(t){this.#d=t}static get tag(){return"ba-lazy-load"}}window.customElements.get(tT.tag)||window.customElements.define(tT.tag,tT);const eT="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktYXJyb3ctdXAtY2lyY2xlLWZpbGwiPjwhLS1NSVQgTGljZW5zZS0tPjxwYXRoIGQ9Ik0xNiA4QTggOCAwIDEgMCAwIDhhOCA4IDAgMCAwIDE2IDB6bS03LjUgMy41YS41LjUgMCAwIDEtMSAwVjUuNzA3TDUuMzU0IDcuODU0YS41LjUgMCAxIDEtLjcwOC0uNzA4bDMtM2EuNS41IDAgMCAxIC43MDggMGwzIDNhLjUuNSAwIDAgMS0uNzA4LjcwOEw4LjUgNS43MDdWMTEuNXoiLz48L3N2Zz4K";var iT=r(2987),nT=r.n(iT);class rT extends Vu.i{constructor(){super();const{CoordinateService:e,EnvironmentService:i,ShareService:n,UrlService:r,FileStorageService:s,ImportVectorDataService:o}=t.U.inject("CoordinateService","EnvironmentService","ShareService","UrlService","FileStorageService","ImportVectorDataService");this._coordinateService=e,this._environmentService=i,this._importVectorDataService=o,this._urlService=r,this._shareService=n,this._icons=[],this._url="",this._shortUrl="",this._fileStorageService=s}createView(){const t=async()=>{const t=this._importVectorDataService.forUrl("https://www.geodaten.bayern.de/ba-data/Themen/kml/huetten.kml");t.onReject((({id:t})=>console.warn(`Oops, something got wrong for ${t}`)));const{id:e}=t;ds(e)},e=()=>{(t=>{const{zoom:e,center:i}=t;$m().dispatch({type:g,payload:{center:Qm(i),zoom:Km(e)}})})({zoom:11,center:this._coordinateService.fromLonLat([11.081,49.449])})},i=t=>{console.log("toggled "+t.detail.checked)};let n=1;const r=[{label:"Apple",icon:eT,action:()=>(0,bm.z)("Apple",bm.T.INFO)},{label:"Lemon",icon:eT,action:()=>(0,bm.z)("Lemon",bm.T.INFO)},{label:"Orange",action:()=>(0,bm.z)("Orange",bm.T.INFO)},{label:"Banana",icon:eT,disabled:!0,action:()=>(0,bm.z)("Banana",bm.T.INFO)}];return Gu.dy`
+			>${e.map(((t,e)=>i(t,e)))}`}set items(t){this.signal(qE,t)}set type(t){this.signal(YE,t)}static get tag(){return"ba-overflow-menu"}}window.customElements.get(JE.tag)||window.customElements.define(JE.tag,JE);const QE="update_loaded";class tT extends sM.T{#u;#d;constructor(){super({loaded:!1})}onInitialize(){this.#d&&r(6467)(`./${this.#d}`).then((()=>{this.signal(QE,!0)}))}update(t,e,i){if(t===QE)return{...i,loaded:e}}createView(t){const{loaded:e}=t;return e?Gu.dy`${this.#u}`:Gu.dy`<ba-spinner></ba-spinner>`}set content(t){this.#u=t}set chunkName(t){this.#d=t}static get tag(){return"ba-lazy-load"}}window.customElements.get(tT.tag)||window.customElements.define(tT.tag,tT);const eT="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktYXJyb3ctdXAtY2lyY2xlLWZpbGwiPjwhLS1NSVQgTGljZW5zZS0tPjxwYXRoIGQ9Ik0xNiA4QTggOCAwIDEgMCAwIDhhOCA4IDAgMCAwIDE2IDB6bS03LjUgMy41YS41LjUgMCAwIDEtMSAwVjUuNzA3TDUuMzU0IDcuODU0YS41LjUgMCAxIDEtLjcwOC0uNzA4bDMtM2EuNS41IDAgMCAxIC43MDggMGwzIDNhLjUuNSAwIDAgMS0uNzA4LjcwOEw4LjUgNS43MDdWMTEuNXoiLz48L3N2Zz4K";var iT=r(2987),nT=r.n(iT);const rT="update_profile_active";class sT extends sM.T{constructor(){super({activeProfile:!1});const{CoordinateService:e,EnvironmentService:i,ShareService:n,UrlService:r,FileStorageService:s,ImportVectorDataService:o}=t.U.inject("CoordinateService","EnvironmentService","ShareService","UrlService","FileStorageService","ImportVectorDataService");this._coordinateService=e,this._environmentService=i,this._importVectorDataService=o,this._urlService=r,this._shareService=n,this._icons=[],this._url="",this._shortUrl="",this._fileStorageService=s}onInitialize(){this._unsubscribeFromStore=this.observe((t=>t.elevationProfile.active),(t=>this.signal(rT,t)))}onDisconnect(){this._unsubscribeFromStore()}update(t,e,i){if(t===rT)return{...i,activeProfile:e}}createView(t){const{profileActive:e}=t,i=async()=>{const t=this._importVectorDataService.forUrl("https://www.geodaten.bayern.de/ba-data/Themen/kml/huetten.kml");t.onReject((({id:t})=>console.warn(`Oops, something got wrong for ${t}`)));const{id:e}=t;ds(e)},n=()=>{(t=>{const{zoom:e,center:i}=t;$m().dispatch({type:g,payload:{center:Qm(i),zoom:Km(e)}})})({zoom:11,center:this._coordinateService.fromLonLat([11.081,49.449])})},r=t=>{console.log("toggled "+t.detail.checked)};let s=1;const o=[{label:"Apple",icon:eT,action:()=>(0,bm.z)("Apple",bm.T.INFO)},{label:"Lemon",icon:eT,action:()=>(0,bm.z)("Lemon",bm.T.INFO)},{label:"Orange",action:()=>(0,bm.z)("Orange",bm.T.INFO)},{label:"Banana",icon:eT,disabled:!0,action:()=>(0,bm.z)("Banana",bm.T.INFO)}];return Gu.dy`
 			<style>
 				${nT()}
 			</style>
@@ -310,17 +310,17 @@
 
 					<h3>Switch</h3>
 					<div class="example row">
-						<ba-switch .title=${"Toggle me"} @toggle=${i}><span slot="before">Toggle</span></ba-switch>
-						<ba-switch .title=${"Toggle me"} @toggle=${i}><slot slot="after">Toggle</slot></ba-switch>
-						<ba-switch .title=${"Toggle me.checked"} .checked=${!0} @toggle=${i}>checked</ba-switch>
-						<ba-switch .title=${"Toggle me.indeterminate"} .indeterminate=${!0} @toggle=${i}>indeterminate</ba-switch>
+						<ba-switch .title=${"Toggle me"} @toggle=${r}><span slot="before">Toggle</span></ba-switch>
+						<ba-switch .title=${"Toggle me"} @toggle=${r}><slot slot="after">Toggle</slot></ba-switch>
+						<ba-switch .title=${"Toggle me.checked"} .checked=${!0} @toggle=${r}>checked</ba-switch>
+						<ba-switch .title=${"Toggle me.indeterminate"} .indeterminate=${!0} @toggle=${r}>indeterminate</ba-switch>
 						<ba-switch .title=${"Toggle me.disabled"} .disabled=${!0}>disabled</ba-switch>
 						<ba-switch .title=${"Toggle me.disabled"} .disabled=${!0} .checked=${!0}>disabled.checked</ba-switch>
 					</div>
 
 					<h3>Profile</h3>
 					<div class="example row">
-						<ba-button id="button1" .label=${"Show/Hide elevation profile"} .type=${"primary"} @click=${()=>{this._storeService.getStore().getState().elevationProfile.active?cv():(yx(),((t=[])=>{0===t.filter((t=>!(0,ar.w7)(t))).length&&av().dispatch({type:ye,payload:{active:!0,coordinates:t}})})([[1328315.0062647895,6089975.78297438],[1310581.6157026286,6045336.558455837]]))}}></ba-button>
+						<ba-button id="button1" .label=${"Show/Hide elevation profile"} .type=${"primary"} @click=${()=>{e?cv():(yx(),((t=[])=>{0===t.filter((t=>!(0,ar.w7)(t))).length&&av().dispatch({type:ye,payload:{active:!0,coordinates:t}})})([[1328315.0062647895,6089975.78297438],[1310581.6157026286,6045336.558455837]]))}}></ba-button>
 					</div>
 
 					<h3>Measure Distance</h3>
@@ -361,11 +361,11 @@
 						<ba-button id="notification0" .label=${"Info Notification"} .type=${"primary"} @click=${()=>{(0,bm.z)("This is just a Info ("+new Date+")",bm.T.INFO)}}></ba-button>
 						<ba-button id="notification1" .label=${"Warn Notification"} .type=${"primary"} @click=${()=>{(0,bm.z)("This is a Warning! Prepare yourself! ("+new Date+")",bm.T.WARN)}}></ba-button>
 						<ba-button id="notification2" .label=${"Error Notification"} .type=${"primary"} @click=${()=>{(0,bm.z)("This is a Error! Oh no...something went wrong. ("+new Date+")",bm.T.ERROR)}}></ba-button>
-						<ba-button id="notification3" .label=${"Open Bottom Sheet"} .type=${"primary"} @click=${()=>{const t=()=>setTimeout((()=>mv()),2e3),e=()=>mv(),i=()=>{const t=(0,a.N7)(this._storeService.getStore(),(t=>t.pointer.beingDragged),(()=>{mv(),t()}));return Gu.dy`<div>
+						<ba-button id="notification3" .label=${"Open Bottom Sheet"} .type=${"primary"} @click=${()=>{const t=()=>setTimeout((()=>mv()),2e3),e=()=>mv(),i=()=>{const t=this.observe((t=>t.pointer.beingDragged),(()=>{mv(),t()}));return Gu.dy`<div>
 					<h3>Bottom Sheet autoclose with...</h3>
 					<div style="color: white;background-color: var(--warning-color);">observing store...</div>
 					<div style="color: white;background-color: var(--error-color);">i.e. dragging map</div>
-				</div>`};var r;gv((n=>{switch(n){case 1:return Gu.dy`<div>
+				</div>`};var n;gv((n=>{switch(n){case 1:return Gu.dy`<div>
 							<h3>Feature-Info</h3>
 							<div style="color: var(--text1);background-color: var(--secondary-color);"><b>ID:</b>Lorem ipsum dolor</div>
 							<div style="color: var(--text2);background-color: var(--secondary-bg-color);">
@@ -379,7 +379,7 @@
 							<h3>Bottom Sheet ...</h3>
 							<div style="color: white;background-color: var(--warning-color);">waiting forever...</div>
 							<div style="color: white;background-color: var(--error-color);">until a new content for the bottom sheet comes</div>
-						</div>`;case 3:return i()}})(n)),n=(r=n)===1?r+1:3===r?1:r+1}}></ba-button>
+						</div>`;case 3:return i()}})(s)),s=(n=s)===1?n+1:3===n?1:n+1}}></ba-button>
 					</div>
 				</div>
 
@@ -389,15 +389,15 @@
 					<h3>ba-buttons</h3>
 					<div class="example">
 						<div class="row">
-							<ba-button id="button0" .label=${"primary style"} .type=${"primary"} @click=${t}></ba-button>
-							<ba-button id="button1" .label=${"secondary style"} @click=${e}></ba-button>
+							<ba-button id="button0" .label=${"primary style"} .type=${"primary"} @click=${i}></ba-button>
+							<ba-button id="button1" .label=${"secondary style"} @click=${n}></ba-button>
 							<ba-button id="button2" .label=${"disabled"} .type=${"primary"} .disabled=${!0}></ba-button>
 							<ba-button id="button3" .label=${"disabled"} .disabled=${!0}></ba-button>
 							<ba-button id="button3" .label=${"loading style"} .type=${"loading"}></ba-button>
 						</div>
 						<div class="row" style="margin-top:2em">
-							<ba-button id="button0" .label=${"primary style"} .icon=${eT} .type=${"primary"} @click=${t}></ba-button>
-							<ba-button id="button1" .label=${"secondary style"} .icon=${eT} @click=${e}></ba-button>
+							<ba-button id="button0" .label=${"primary style"} .icon=${eT} .type=${"primary"} @click=${i}></ba-button>
+							<ba-button id="button1" .label=${"secondary style"} .icon=${eT} @click=${n}></ba-button>
 							<ba-button id="button2" .label=${"disabled"} .icon=${eT} .type=${"primary"} .disabled=${!0}></ba-button>
 							<ba-button id="button3" .label=${"disabled"} .icon=${eT} .disabled=${!0}></ba-button>
 							<ba-button id="button3" .label=${"loading style"} .icon=${eT} .type=${"loading"}></ba-button>
@@ -406,25 +406,25 @@
 
 					<h3>ba-icons</h3>
 					<div class="example icons">
-						<ba-icon .icon="${eT}" .title=${"some"} @click=${t}></ba-icon>
-						<ba-icon .icon="${eT}" .disabled=${!0} @click=${t}></ba-icon>
-						<ba-icon .icon="${eT}" .size=${1} @click=${t}></ba-icon>
-						<ba-icon .icon="${eT}" .size=${2.5} @click=${t}></ba-icon>
+						<ba-icon .icon="${eT}" .title=${"some"} @click=${i}></ba-icon>
+						<ba-icon .icon="${eT}" .disabled=${!0} @click=${i}></ba-icon>
+						<ba-icon .icon="${eT}" .size=${1} @click=${i}></ba-icon>
+						<ba-icon .icon="${eT}" .size=${2.5} @click=${i}></ba-icon>
 					</div>
 
 					<h3>Overflow-Menu</h3>
 					<div class="example menu">
-						<div><ba-overflow-menu .items=${r}></ba-overflow-menu>Type:(Default)</div>
-						<div><ba-overflow-menu .type=${KE.MEATBALL} .items=${r}></ba-overflow-menu>Type:Meatball</div>
-						<div><ba-overflow-menu .type=${KE.KEBAB} .items=${r}></ba-overflow-menu>Type:Kebab</div>
+						<div><ba-overflow-menu .items=${o}></ba-overflow-menu>Type:(Default)</div>
+						<div><ba-overflow-menu .type=${KE.MEATBALL} .items=${o}></ba-overflow-menu>Type:Meatball</div>
+						<div><ba-overflow-menu .type=${KE.KEBAB} .items=${o}></ba-overflow-menu>Type:Kebab</div>
 					</div>
 
 					<h3>Checkbox</h3>
 					<div class="example row">
-						<ba-checkbox .title=${"checkbox title"} @toggle=${i}><span>checkbox</span></ba-checkbox>
-						<ba-checkbox .checked=${!0} .title=${"checkbox title"} @toggle=${i}><span>checkbox checked</span></ba-checkbox>
-						<ba-checkbox .disabled=${!0} .title=${"checkbox title"} @toggle=${i}><span>checkbox disabled</span></ba-checkbox>
-						<ba-checkbox .checked=${!0} .disabled=${!0} .title=${"checkbox title"} @toggle=${i}
+						<ba-checkbox .title=${"checkbox title"} @toggle=${r}><span>checkbox</span></ba-checkbox>
+						<ba-checkbox .checked=${!0} .title=${"checkbox title"} @toggle=${r}><span>checkbox checked</span></ba-checkbox>
+						<ba-checkbox .disabled=${!0} .title=${"checkbox title"} @toggle=${r}><span>checkbox disabled</span></ba-checkbox>
+						<ba-checkbox .checked=${!0} .disabled=${!0} .title=${"checkbox title"} @toggle=${r}
 							><span>checkbox checked disabled</span></ba-checkbox
 						>
 					</div>
@@ -508,7 +508,7 @@
 
 					<h3>Credentials</h3>
 					<div class="example row">
-						<ba-button id="button0" .label=${"Authenticate by password"} .type=${"primary"} @click=${async()=>{yx(),await rm(1e3);const t="https://my.restricted.url/for/wms",e={},i=(0,a.N7)(this._storeService.getStore(),(t=>t.modal),(t=>(t=>{t.active||(i(),n(null))})(t))),n=(t,e)=>{i(),(t?()=>{(0,bm.z)(e.message,bm.T.INFO),yx()}:()=>{(0,bm.z)("Authentication aborted",bm.T.WARN)})()};_x("Connect to restricted WMS...",Gu.dy`<ba-auth-password-credential-panel
+						<ba-button id="button0" .label=${"Authenticate by password"} .type=${"primary"} @click=${async()=>{yx(),await rm(1e3);const t="https://my.restricted.url/for/wms",e={},i=this.observe((t=>t.modal),(t=>(t=>{t.active||(i(),n(null))})(t))),n=(t,e)=>{i(),(t?()=>{(0,bm.z)(e.message,bm.T.INFO),yx()}:()=>{(0,bm.z)("Authentication aborted",bm.T.WARN)})()};_x("Connect to restricted WMS...",Gu.dy`<ba-auth-password-credential-panel
 					.url=${t}
 					.authenticate=${async(i,n)=>(await rm(3e3),n===t&&"foo"===i?.username&&"bar"===i?.password?(e.username=i.username,e.password=i.password,{message:"Credential is valid"}):null)}
 					.onClose=${n}
@@ -517,19 +517,19 @@
 					</div>
 				</div>
 			</div>
-		`}static get tag(){return"ba-showcase"}}window.customElements.get(rT.tag)||window.customElements.define(rT.tag,rT);var sT=r(5977),oT=r.n(sT);class aT extends sM.T{constructor(){super();const{ConfigService:e}=t.U.inject("ConfigService");this._configService=e}isRenderingSkipped(){return!this._configService.getValue("SOFTWARE_INFO",!1)}createView(){const t=this._configService.getValue("SOFTWARE_INFO",!1);return Gu.dy`
-			<style>${oT()}</style>
+		`}static get tag(){return"ba-showcase"}}window.customElements.get(sT.tag)||window.customElements.define(sT.tag,sT);var oT=r(5977),aT=r.n(oT);class lT extends sM.T{constructor(){super();const{ConfigService:e}=t.U.inject("ConfigService");this._configService=e}isRenderingSkipped(){return!this._configService.getValue("SOFTWARE_INFO",!1)}createView(){const t=this._configService.getValue("SOFTWARE_INFO",!1);return Gu.dy`
+			<style>${aT()}</style>
 			<div class='container'><ba-button @click=${()=>{_x("Showcase",Gu.dy`<ba-showcase></ba-showcase>`)}} .size=${2} .label=${t} .type=${"secondary"}><ba-button></div>
-		`}static get tag(){return"ba-dev-info"}}window.customElements.get(aT.tag)||window.customElements.define(aT.tag,aT);const{TranslationService:lT}=t.U.inject("TranslationService");lT.register("iframeProvider",(t=>{switch(t){case"en":return{iframe_non_embedded_hint:"The BayernAtlas Iframe API must be used in an iframe.",iframe_generator_width:"Width",iframe_generator_height:"Height",iframe_generator_clipboard_success:"The HTML code was copied to the clipboard",iframe_generator_clipboard_error:'"Copy to clipboard" is not available',iframe_generator_toggle_label:"Responsive width",iframe_generator_toggle_text:"The map adjusts to the width of your container.",iframe_generator_toggle_title:"Embedded map will expand to fit the width of its container.",iframe_generator_copy_icon:"Copy to clipboard",iframe_activate_map_button:"Activate map",iframe_view_larger_map_chip:"View in BayernAtlas",iframe_drawTool_label:"Drawing",iframe_drawTool_enable:"Enable the drawing tool",iframe_drawTool_disable:"Disable the drawing tool",iframe_drawTool_symbol:"Point",iframe_drawTool_line:"Line",iframe_drawTool_cancel:"Cancel",iframe_drawTool_finish:"Finish",iframe_drawTool_delete_point:"Remove point",iframe_drawTool_delete_drawing:"Remove drawing"};case"de":return{iframe_non_embedded_hint:"Die BayernAtlas Iframe API muss über ein Inlineframe-Element eingebunden werden.",iframe_generator_width:"Breite",iframe_generator_height:"Höhe",iframe_generator_clipboard_success:"Der HTML Code wurde in die Zwischenablage kopiert",iframe_generator_clipboard_error:'"In die Zwischenablage kopieren" steht nicht zur Verfügung',iframe_generator_toggle_label:"Responsive Breite",iframe_generator_toggle_text:"Die Karte passt sich der Breite Ihres Containers an.",iframe_generator_toggle_title:"Eingebettete Karte wird sich erweitern, um sich der Breite Ihres Containers anzupassen.",iframe_generator_copy_icon:"In die Zwischenablage kopieren",iframe_activate_map_button:"Karte aktivieren",iframe_view_larger_map_chip:"Im BayernAtlas ansehen",iframe_drawTool_label:"Zeichnen",iframe_drawTool_enable:"Zeichnen aktivieren",iframe_drawTool_disable:"Zeichnen deaktivieren",iframe_drawTool_symbol:"Punkt",iframe_drawTool_line:"Linie",iframe_drawTool_cancel:"Abbrechen",iframe_drawTool_finish:"Fertig",iframe_drawTool_delete_point:"letzten Punk löschen",iframe_drawTool_delete_drawing:"Zeichnung löschen"};default:return{}}}));var cT=r(8803),hT=r.n(cT);const uT="update_size_width",dT="update_size_height",pT="update_auto_width",gT="update_preview_url",mT="100",fT=250,_T=2e3;class yT extends sM.T{constructor(){super({size:[800,600],autoWidth:!1,previewUrl:null});const{TranslationService:e,ShareService:i}=t.U.inject("TranslationService","ShareService");this._translationService=e,this._shareService=i,this._iframeObserver=null}update(t,e,i){switch(t){case uT:return{...i,size:[e,i.size[1]]};case dT:return{...i,size:[i.size[0],e]};case pT:return{...i,autoWidth:e};case gT:return{...i,previewUrl:e}}}onAfterRender(t){if(t){const t=this.shadowRoot.querySelector("iframe"),e={attributes:!0,childList:!1,subtree:!1};this._iframeObserver=new MutationObserver((t=>this._onIFrameChanged(t))),this._iframeObserver.observe(t,e)}}onDisconnect(){this._iframeObserver?.disconnect(),this._iframeObserver=null}createView(t){const e=t=>this._translationService.translate(t),{size:i,autoWidth:n,previewUrl:r}=t,[s,o]=i,a=t=>fT<=t&&t<=_T,l=n?mT:s;return Gu.dy`
-		<style>${hT()}</style>		
+		`}static get tag(){return"ba-dev-info"}}window.customElements.get(lT.tag)||window.customElements.define(lT.tag,lT);const{TranslationService:cT}=t.U.inject("TranslationService");cT.register("iframeProvider",(t=>{switch(t){case"en":return{iframe_non_embedded_hint:"The BayernAtlas Iframe API must be used in an iframe.",iframe_generator_width:"Width",iframe_generator_height:"Height",iframe_generator_clipboard_success:"The HTML code was copied to the clipboard",iframe_generator_clipboard_error:'"Copy to clipboard" is not available',iframe_generator_toggle_label:"Responsive width",iframe_generator_toggle_text:"The map adjusts to the width of your container.",iframe_generator_toggle_title:"Embedded map will expand to fit the width of its container.",iframe_generator_copy_icon:"Copy to clipboard",iframe_activate_map_button:"Activate map",iframe_view_larger_map_chip:"View in BayernAtlas",iframe_drawTool_label:"Drawing",iframe_drawTool_enable:"Enable the drawing tool",iframe_drawTool_disable:"Disable the drawing tool",iframe_drawTool_symbol:"Point",iframe_drawTool_line:"Line",iframe_drawTool_cancel:"Cancel",iframe_drawTool_finish:"Finish",iframe_drawTool_delete_point:"Remove point",iframe_drawTool_delete_drawing:"Remove drawing"};case"de":return{iframe_non_embedded_hint:"Die BayernAtlas Iframe API muss über ein Inlineframe-Element eingebunden werden.",iframe_generator_width:"Breite",iframe_generator_height:"Höhe",iframe_generator_clipboard_success:"Der HTML Code wurde in die Zwischenablage kopiert",iframe_generator_clipboard_error:'"In die Zwischenablage kopieren" steht nicht zur Verfügung',iframe_generator_toggle_label:"Responsive Breite",iframe_generator_toggle_text:"Die Karte passt sich der Breite Ihres Containers an.",iframe_generator_toggle_title:"Eingebettete Karte wird sich erweitern, um sich der Breite Ihres Containers anzupassen.",iframe_generator_copy_icon:"In die Zwischenablage kopieren",iframe_activate_map_button:"Karte aktivieren",iframe_view_larger_map_chip:"Im BayernAtlas ansehen",iframe_drawTool_label:"Zeichnen",iframe_drawTool_enable:"Zeichnen aktivieren",iframe_drawTool_disable:"Zeichnen deaktivieren",iframe_drawTool_symbol:"Punkt",iframe_drawTool_line:"Linie",iframe_drawTool_cancel:"Abbrechen",iframe_drawTool_finish:"Fertig",iframe_drawTool_delete_point:"letzten Punk löschen",iframe_drawTool_delete_drawing:"Zeichnung löschen"};default:return{}}}));var hT=r(8803),uT=r.n(hT);const dT="update_size_width",pT="update_size_height",gT="update_auto_width",mT="update_preview_url",fT="100",_T=250,yT=2e3;class vT extends sM.T{constructor(){super({size:[800,600],autoWidth:!1,previewUrl:null});const{TranslationService:e,ShareService:i}=t.U.inject("TranslationService","ShareService");this._translationService=e,this._shareService=i,this._iframeObserver=null}update(t,e,i){switch(t){case dT:return{...i,size:[e,i.size[1]]};case pT:return{...i,size:[i.size[0],e]};case gT:return{...i,autoWidth:e};case mT:return{...i,previewUrl:e}}}onAfterRender(t){if(t){const t=this.shadowRoot.querySelector("iframe"),e={attributes:!0,childList:!1,subtree:!1};this._iframeObserver=new MutationObserver((t=>this._onIFrameChanged(t))),this._iframeObserver.observe(t,e)}}onDisconnect(){this._iframeObserver?.disconnect(),this._iframeObserver=null}createView(t){const e=t=>this._translationService.translate(t),{size:i,autoWidth:n,previewUrl:r}=t,[s,o]=i,a=t=>_T<=t&&t<=yT,l=n?fT:s;return Gu.dy`
+		<style>${uT()}</style>		
         <div class='container'>
 			<div class='iframe__controls'>
 				<div class='iframe__controls-section'>					
 					<div class="iframe__container">							
 						<label for="iframe_height" class="control-label">${e("iframe_generator_height")}</label>			
-						<input type="range" id="iframe_slider_height" step=10 min=${fT} max=${_T} .value=${o} @input=${t=>{this.signal(dT,parseInt(t.target.value))}}>
+						<input type="range" id="iframe_slider_height" step=10 min=${_T} max=${yT} .value=${o} @input=${t=>{this.signal(pT,parseInt(t.target.value))}}>
 						<div class='iframe__input ba-form-element '>
-							<input type="number" id="iframe_height" min=${fT} max=${_T} .value=${o} @input=${t=>{const e=parseInt(t.target.value);a(e)&&this.signal(dT,e)}}></input>
+							<input type="number" id="iframe_height" min=${_T} max=${yT} .value=${o} @input=${t=>{const e=parseInt(t.target.value);a(e)&&this.signal(pT,e)}}></input>
 							<i class="bar"></i>
 							<span>
 								 px		
@@ -539,15 +539,15 @@
 					${n?Gu.dy` <div class="iframe__container iframe__container-width">
 						<label for="iframe_width" class="control-label">${e("iframe_generator_width")}</label>
 						<div class="iframe__input ">
-							<div class="iframe__input width_placeholder">${mT}</div>
+							<div class="iframe__input width_placeholder">${fT}</div>
 							<span class="width_placeholder-sub"> % </span>
 						</div>
 				  </div>`:Gu.dy`
 					<div class="iframe__container iframe__container-width">		
 						<label for="iframe_width" class="control-label">${e("iframe_generator_width")}</label>							
-						<input type="range" id="iframe_slider_width" step=10 min=${fT} max=${_T} .value=${s} @input=${t=>{this.signal(uT,parseInt(t.target.value))}}>
+						<input type="range" id="iframe_slider_width" step=10 min=${_T} max=${yT} .value=${s} @input=${t=>{this.signal(dT,parseInt(t.target.value))}}>
 						<div class='iframe__input ba-form-element'>
-							<input type="number" id="iframe_width" max=${_T} .value=${s} min=${fT} @input=${t=>{const e=parseInt(t.target.value);a(e)&&this.signal(uT,e)}}></input>
+							<input type="number" id="iframe_width" max=${yT} .value=${s} min=${_T} @input=${t=>{const e=parseInt(t.target.value);a(e)&&this.signal(dT,e)}}></input>
 							<i class="bar"></i>
 							<span>
 								px		
@@ -563,7 +563,7 @@
 							id='toggleAutoWidth'  
 							class='iframe__toggle_sub-text' 
 							.title=${e("iframe_generator_toggle_title")}  
-							@toggle=${t=>{this.signal(pT,t.detail.checked)}}>
+							@toggle=${t=>{this.signal(gT,t.detail.checked)}}>
 							<span slot="before">${e("iframe_generator_toggle_text")}</span>
 						</ba-switch>
 					</div>					
@@ -576,16 +576,16 @@
 			<div class='iframe__preview'>${this._getIFrameContent(l,o)}
 			</div>
 		</div>
-        `}_onIFrameChanged(t){for(const e of t)"attributes"===e.type&&e.attributeName===Cs.L$&&this.signal(gT,e.target.getAttribute(Cs.L$))}_getIFrameContent(t,e){const i=this._shareService.encodeState({},[NS.EMBED]);return Gu.dy` <div class="iframe__content">
+        `}_onIFrameChanged(t){for(const e of t)"attributes"===e.type&&e.attributeName===Cs.L$&&this.signal(mT,e.target.getAttribute(Cs.L$))}_getIFrameContent(t,e){const i=this._shareService.encodeState({},[NS.EMBED]);return Gu.dy` <div class="iframe__content">
 			<iframe
 				data-iframe-encoded-state
 				src=${i}
-				width=${t===mT?mT+"%":t+"px"}
+				width=${t===fT?fT+"%":t+"px"}
 				height=${e+"px"}
 				loading="lazy"
 				referrerpolicy="no-referrer-when-downgrade"
 			></iframe>
-		</div>`}_getEmbedContent(t,e,i){const n=()=>`<iframe src=${i||this._shareService.encodeState({},[NS.EMBED])} width='${t===mT?mT+"%":t+"px"}' height='${e+"px"}' loading='lazy' frameborder='0' style='border:0'></iframe>`;return Gu.dy`<textarea class="iframe__code_string" id="iframe_code" name="iframe_code" .value=${n()} readonly></textarea>
+		</div>`}_getEmbedContent(t,e,i){const n=()=>`<iframe src=${i||this._shareService.encodeState({},[NS.EMBED])} width='${t===fT?fT+"%":t+"px"}' height='${e+"px"}' loading='lazy' frameborder='0' style='border:0'></iframe>`;return Gu.dy`<textarea class="iframe__code_string" id="iframe_code" name="iframe_code" .value=${n()} readonly></textarea>
 			<ba-icon
 				class="iframe__copy_icon"
 				id="iframe_code_copy"
@@ -594,25 +594,25 @@
 				.size=${2}
 				@click=${async()=>this._copyValueToClipboard(n())}
 			>
-			</ba-icon>`}async _copyValueToClipboard(t){try{await this._shareService.copyToClipboard(t),(0,bm.z)(`${this._translationService.translate("iframe_generator_clipboard_success")}`,bm.T.INFO)}catch(t){console.warn("Clipboard API not available"),(0,bm.z)(`${this._translationService.translate("iframe_generator_clipboard_error")}`,bm.T.WARN)}}static get tag(){return"ba-iframe-generator"}}class vT extends sM.T{constructor(){super();const{EnvironmentService:e,TranslationService:i}=t.U.inject("EnvironmentService","TranslationService");this._environmentService=e,this._translationService=i}onWindowLoad(){this._environmentService.isEmbedded()&&this._environmentService.getWindow().location===this._environmentService.getWindow().parent.location&&(document.body.innerHTML=`<div style="text-align: center; color:#099dda; padding: 20px">${(t=>this._translationService.translate(t))("iframe_non_embedded_hint")}</div>`)}isRenderingSkipped(){return!0}static get tag(){return"ba-nonembedded-hint"}}const xT=Object.freeze({DRAW_TOOL:"draw-tool",ACTIVATE_MAP_BUTTON:"activate-map-button",VIEW_LARGER_MAP_CHIP:"view-larger-map-chip"});var bT=r(6100),wT=r.n(bT);class ST extends sM.T{constructor(){super();const{EnvironmentService:e,TranslationService:i}=t.U.inject("EnvironmentService","TranslationService");this._environmentService=e,this._translationService=i}onInitialize(){if(this._isVisible()){const t=()=>`\n\t\t\t\tbody *:not(\n\t\t\t\t${ST.tag},\n\t\t\t\t${rE.tag},\n\t\t\t\t${wM.tag}\n\n\t\t\t\t) {\n\t\t\t\t\tdisplay: none;\n\t\t\t\t}\t\t\t\t\t\n\t\t\t\tba-footer{\n\t\t\t\t\t--text3: transparent;\n\t\t\t\t\t--secondary-color: transparent;\t\t\n\t\t\t\t\t--z-mapbuttons: calc(var(--z-disableall) + 1);\t\t\t\n\t\t\t\t}\n\t\t\t\t\n\t\t\t\t`;if(!document.getElementById(ST.STYLE_ID)){const e=document.createElement("style");e.innerHTML=t(),e.id=ST.STYLE_ID,document.head.appendChild(e)}}}createView(){return Gu.dy`
+			</ba-icon>`}async _copyValueToClipboard(t){try{await this._shareService.copyToClipboard(t),(0,bm.z)(`${this._translationService.translate("iframe_generator_clipboard_success")}`,bm.T.INFO)}catch(t){console.warn("Clipboard API not available"),(0,bm.z)(`${this._translationService.translate("iframe_generator_clipboard_error")}`,bm.T.WARN)}}static get tag(){return"ba-iframe-generator"}}class xT extends sM.T{constructor(){super();const{EnvironmentService:e,TranslationService:i}=t.U.inject("EnvironmentService","TranslationService");this._environmentService=e,this._translationService=i}onWindowLoad(){this._environmentService.isEmbedded()&&this._environmentService.getWindow().location===this._environmentService.getWindow().parent.location&&(document.body.innerHTML=`<div style="text-align: center; color:#099dda; padding: 20px">${(t=>this._translationService.translate(t))("iframe_non_embedded_hint")}</div>`)}isRenderingSkipped(){return!0}static get tag(){return"ba-nonembedded-hint"}}const bT=Object.freeze({DRAW_TOOL:"draw-tool",ACTIVATE_MAP_BUTTON:"activate-map-button",VIEW_LARGER_MAP_CHIP:"view-larger-map-chip"});var wT=r(6100),ST=r.n(wT);class MT extends sM.T{constructor(){super();const{EnvironmentService:e,TranslationService:i}=t.U.inject("EnvironmentService","TranslationService");this._environmentService=e,this._translationService=i}onInitialize(){if(this._isVisible()){const t=()=>`\n\t\t\t\tbody *:not(\n\t\t\t\t${MT.tag},\n\t\t\t\t${rE.tag},\n\t\t\t\t${wM.tag}\n\n\t\t\t\t) {\n\t\t\t\t\tdisplay: none;\n\t\t\t\t}\t\t\t\t\t\n\t\t\t\tba-footer{\n\t\t\t\t\t--text3: transparent;\n\t\t\t\t\t--secondary-color: transparent;\t\t\n\t\t\t\t\t--z-mapbuttons: calc(var(--z-disableall) + 1);\t\t\t\n\t\t\t\t}\n\t\t\t\t\n\t\t\t\t`;if(!document.getElementById(MT.STYLE_ID)){const e=document.createElement("style");e.innerHTML=t(),e.id=MT.STYLE_ID,document.head.appendChild(e)}}}createView(){return Gu.dy`
 			<style>
-				${wT()}
+				${ST()}
 			</style>
 			<div id="background" class="active-map__background">
 				<div class="active-map__button">
-					<ba-button .type=${"primary"} .label=${(t=>this._translationService.translate("iframe_activate_map_button"))()} @click=${()=>{document.getElementById(ST.STYLE_ID).remove(),this.shadowRoot.getElementById("background").classList.add("hide")}}></ba-button>
+					<ba-button .type=${"primary"} .label=${(t=>this._translationService.translate("iframe_activate_map_button"))()} @click=${()=>{document.getElementById(MT.STYLE_ID).remove(),this.shadowRoot.getElementById("background").classList.add("hide")}}></ba-button>
 				</div>
 			</div>
-		`}isRenderingSkipped(){return!this._isVisible()}_isVisible(){const t=this._environmentService.getQueryParams();return this._environmentService.isEmbedded()&&(()=>{const e=t.get(Lr.IFRAME_COMPONENTS);return!e||e.split(",").includes(xT.ACTIVATE_MAP_BUTTON)})()}static get tag(){return"ba-activate-map-button"}static get STYLE_ID(){return"activate_map_commons_kkfjrutmfjhwwww"}}const MT="data:image/svg+xml;base64,PCEtLUdlbmVyYXRlZCBieSBJY29Nb29uLmlvLS0+PCEtLU1JVCBMaWNlbnNlLS0+PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiI+PHBhdGggZD0iTTQuMzQzLS4wMSAyLjMwNSAyLjM2NS43NSAyLjM4NmwuNDIgMi4xNjUuNzc4LS43OTkgMi4yMDcgMS4wOTMuMTg5IDEuODQ5Ljk2Ny45NDYuMTA1IDEuNTc2LTEuNzAyIDEuMzQ1LjM3OCAyLjkyMS0xLjQ1LjcxNSAxLjgyNyAxLjU0NC43NTgtMS41ODYgMS44MDcuODYyIDMuNzYyLTEuNTEzIDIuNDUxIDEuMTgyLTEuMDU1LTMuMDI0IDIuMjQtMS4zNDIuMDIxLS44MDkgMS4xMTQtLjAyMVY4LjMxM2wtMi43MzItMi4wNDktMS4zNDUtMi4wNy4xNjgtMS4xOTgtMS41NTUtMS44MDdIOC45ODlMOC4zNjkuMzkgNy43NyAxLjM5OWwtLjk2Ny0uMjk0LS44MTkuNzE1eiIvPjwvc3ZnPgo=";var IT=r(8818),ET=r.n(IT);const TT="update_state_for_encoding";class CT extends sM.T{constructor(){super({href:""});const{EnvironmentService:e,TranslationService:i,ShareService:n}=t.U.inject("EnvironmentService","TranslationService","ShareService");this._translationService=i,this._environmentService=e,this._shareService=n}onInitialize(){this.observe((t=>t.stateForEncoding.changed),(()=>{const t=this._shareService.encodeState();this.signal(TT,t)}))}update(t,e,i){if(t===TT)return{...i,href:e}}isRenderingSkipped(){const t=this._environmentService.getQueryParams().get(Lr.IFRAME_COMPONENTS);return!!t&&!t.split(",").includes(xT.VIEW_LARGER_MAP_CHIP)}createView(t){const{href:e}=t,i=`.chips__icon {\t\n\t\t\tmask-size:cover;\n\t\t\tmask : url("${MT}");\t\t\t\n\t\t\t-webkit-mask-image : url("${MT}");\t\t\t\n\t\t\t-webkit-mask-size:cover;\t\t\t\n\t\t}`;return this._environmentService.isEmbedded()?Gu.dy` <style>
+		`}isRenderingSkipped(){return!this._isVisible()}_isVisible(){const t=this._environmentService.getQueryParams();return this._environmentService.isEmbedded()&&(()=>{const e=t.get(Lr.IFRAME_COMPONENTS);return!e||e.split(",").includes(bT.ACTIVATE_MAP_BUTTON)})()}static get tag(){return"ba-activate-map-button"}static get STYLE_ID(){return"activate_map_commons_kkfjrutmfjhwwww"}}const IT="data:image/svg+xml;base64,PCEtLUdlbmVyYXRlZCBieSBJY29Nb29uLmlvLS0+PCEtLU1JVCBMaWNlbnNlLS0+PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiI+PHBhdGggZD0iTTQuMzQzLS4wMSAyLjMwNSAyLjM2NS43NSAyLjM4NmwuNDIgMi4xNjUuNzc4LS43OTkgMi4yMDcgMS4wOTMuMTg5IDEuODQ5Ljk2Ny45NDYuMTA1IDEuNTc2LTEuNzAyIDEuMzQ1LjM3OCAyLjkyMS0xLjQ1LjcxNSAxLjgyNyAxLjU0NC43NTgtMS41ODYgMS44MDcuODYyIDMuNzYyLTEuNTEzIDIuNDUxIDEuMTgyLTEuMDU1LTMuMDI0IDIuMjQtMS4zNDIuMDIxLS44MDkgMS4xMTQtLjAyMVY4LjMxM2wtMi43MzItMi4wNDktMS4zNDUtMi4wNy4xNjgtMS4xOTgtMS41NTUtMS44MDdIOC45ODlMOC4zNjkuMzkgNy43NyAxLjM5OWwtLjk2Ny0uMjk0LS44MTkuNzE1eiIvPjwvc3ZnPgo=";var ET=r(8818),TT=r.n(ET);const CT="update_state_for_encoding";class AT extends sM.T{constructor(){super({href:""});const{EnvironmentService:e,TranslationService:i,ShareService:n}=t.U.inject("EnvironmentService","TranslationService","ShareService");this._translationService=i,this._environmentService=e,this._shareService=n}onInitialize(){this.observe((t=>t.stateForEncoding.changed),(()=>{const t=this._shareService.encodeState();this.signal(CT,t)}))}update(t,e,i){if(t===CT)return{...i,href:e}}isRenderingSkipped(){const t=this._environmentService.getQueryParams().get(Lr.IFRAME_COMPONENTS);return!!t&&!t.split(",").includes(bT.VIEW_LARGER_MAP_CHIP)}createView(t){const{href:e}=t,i=`.chips__icon {\t\n\t\t\tmask-size:cover;\n\t\t\tmask : url("${IT}");\t\t\t\n\t\t\t-webkit-mask-image : url("${IT}");\t\t\t\n\t\t\t-webkit-mask-size:cover;\t\t\t\n\t\t}`;return this._environmentService.isEmbedded()?Gu.dy` <style>
 						${i}
-							${ET()}
+							${TT()}
 					</style>
 					<a class="chips__button" href=${e} target="_blank">
 						<span class="chips__icon"></span>
 						<span class="chips__button-text">${(t=>this._translationService.translate("iframe_view_larger_map_chip"))()}</span>
-					</a>`:Gu.Ld}static get tag(){return"ba-view-larger-map-chip"}}var AT=r(1645);const kT="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmkteC1sZyI+PHBhdGggZD0iTTEuMjkzIDEuMjkzYTEgMSAwIDAgMSAxLjQxNCAwTDggNi41ODZsNS4yOTMtNS4yOTNhMSAxIDAgMSAxIDEuNDE0IDEuNDE0TDkuNDE0IDhsNS4yOTMgNS4yOTNhMSAxIDAgMCAxLTEuNDE0IDEuNDE0TDggOS40MTRsLTUuMjkzIDUuMjkzYTEgMSAwIDAgMS0xLjQxNC0xLjQxNEw2LjU4NiA4IDEuMjkzIDIuNzA3YTEgMSAwIDAgMSAwLTEuNDE0eiIvPjwvc3ZnPgo=";var LT=r(4585),PT=r.n(LT);const DT="update",RT="update_tools";class zT extends sM.T{constructor(){super({active:!1,type:null,mode:null,validGeometry:null,tools:null});const{TranslationService:e,EnvironmentService:i}=t.U.inject("TranslationService","EnvironmentService");this._translationService=e,this._environmentService=i,this.signal(RT,this._buildTools())}onInitialize(){this.observe((t=>t.draw),(t=>this.signal(DT,t)))}update(t,e,i){const n=(t,e)=>t.map((t=>({...t,active:t.name===e})));switch(t){case DT:return{...i,active:!!e.active&&e.active,type:e.type?e.type:null,mode:e.mode?e.mode:null,validGeometry:e.validGeometry?e.validGeometry:null,tools:n(i.tools,e.type)};case RT:return{...i,tools:e}}}isRenderingSkipped(){const t=this._environmentService.getQueryParams().get(Lr.IFRAME_COMPONENTS);return!t||!t.split(",").includes(xT.DRAW_TOOL)}createView(t){const{active:e,tools:i}=t;this._showActive(i);const n=t=>this._translationService.translate(t),r=this._getIcons(t);return Gu.dy`
+					</a>`:Gu.Ld}static get tag(){return"ba-view-larger-map-chip"}}var kT=r(1645);const LT="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmkteC1sZyI+PHBhdGggZD0iTTEuMjkzIDEuMjkzYTEgMSAwIDAgMSAxLjQxNCAwTDggNi41ODZsNS4yOTMtNS4yOTNhMSAxIDAgMSAxIDEuNDE0IDEuNDE0TDkuNDE0IDhsNS4yOTMgNS4yOTNhMSAxIDAgMCAxLTEuNDE0IDEuNDE0TDggOS40MTRsLTUuMjkzIDUuMjkzYTEgMSAwIDAgMS0xLjQxNC0xLjQxNEw2LjU4NiA4IDEuMjkzIDIuNzA3YTEgMSAwIDAgMSAwLTEuNDE0eiIvPjwvc3ZnPgo=";var PT=r(4585),DT=r.n(PT);const RT="update",zT="update_tools";class NT extends sM.T{constructor(){super({active:!1,type:null,mode:null,validGeometry:null,tools:null});const{TranslationService:e,EnvironmentService:i}=t.U.inject("TranslationService","EnvironmentService");this._translationService=e,this._environmentService=i,this.signal(zT,this._buildTools())}onInitialize(){this.observe((t=>t.draw),(t=>this.signal(RT,t)))}update(t,e,i){const n=(t,e)=>t.map((t=>({...t,active:t.name===e})));switch(t){case RT:return{...i,active:!!e.active&&e.active,type:e.type?e.type:null,mode:e.mode?e.mode:null,validGeometry:e.validGeometry?e.validGeometry:null,tools:n(i.tools,e.type)};case zT:return{...i,tools:e}}}isRenderingSkipped(){const t=this._environmentService.getQueryParams().get(Lr.IFRAME_COMPONENTS);return!t||!t.split(",").includes(bT.DRAW_TOOL)}createView(t){const{active:e,tools:i}=t;this._showActive(i);const n=t=>this._translationService.translate(t),r=this._getIcons(t);return Gu.dy`
 			<style>
-				${PT()}
+				${DT()}
 			</style>
 			<div class="draw-tool">
 				<div class="draw-tool__content ${e?"draw-tool__enable":"draw-tool__disable"}">
@@ -624,12 +624,12 @@
 							.label=${n("iframe_drawTool_enable")}
 							@click=${Lm}
 						></ba-button>
-						<ba-icon id="close-icon" class='tool-container__close-button draw-tool__disable-button' .icon='${kT}' .size=${1.6} .color=${"var(--text2)"} .color_hover=${"var(--text2)"} @click=${Pm}>						
+						<ba-icon id="close-icon" class='tool-container__close-button draw-tool__disable-button' .icon='${LT}' .size=${1.6} .color=${"var(--text2)"} .color_hover=${"var(--text2)"} @click=${Pm}>						
 					</div>
 					<div class="draw-tool-container">
 						<div class="ba-tool-container__title">${n("iframe_drawTool_label")}</div>
 						<div class="draw-tool__buttons">
-							${(0,AT.r)(i,(t=>t.id),(t=>(t=>{const i={"is-active":t.active,"is-enabled":e};return Gu.dy`
+							${(0,kT.r)(i,(t=>t.id),(t=>(t=>{const i={"is-active":t.active,"is-enabled":e};return Gu.dy`
 				<button
 					id=${t.name+"-button"}
 					data-test-id
@@ -648,51 +648,51 @@
 					</div>
 				</div>
 			</div>
-		`}_buildTools(){const t=t=>this._translationService.translate(t);return[{id:1,name:"marker",active:!1,title:t("iframe_drawTool_symbol"),icon:"symbol",activate:()=>Dm("marker"),deactivate:()=>jm()},{id:2,name:"line",active:!1,title:t("iframe_drawTool_line"),icon:"line",activate:()=>Dm("line"),deactivate:()=>jm()}]}_getActiveTool(t){return t.tools.find((t=>t.active))}_showActive(t){t.forEach((t=>{const e=this._root.querySelector(`#${t.name}-button`);e&&(t.active?e.classList.add("is-active"):e.classList.remove("is-active"))}))}_getIcons(t){const e=t=>this._translationService.translate(t),{mode:i,validGeometry:n}=t,r=this._getActiveTool(t),s=r?r.name:"noTool",o=["draw","modify"].includes(i),l="draw"===i&&"line"===s&&n;return(()=>{const t={finish:{id:"finish",icon:"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktY2hlY2stbGciPjwhLS1NSVQgTGljZW5zZS0tPjxwYXRoIGQ9Ik0xMy40ODUgMS40MzFhMS40NzMgMS40NzMgMCAwIDEgMi4xMDQgMi4wNjJsLTcuODQgOS44MDFhMS40NzMgMS40NzMgMCAwIDEtMi4xMi4wNEwuNDMxIDguMTM4YTEuNDczIDEuNDczIDAgMCAxIDIuMDg0LTIuMDgzbDQuMTExIDQuMTEyIDYuODItOC42OWEuNDg2LjQ4NiAwIDAgMSAuMDQtLjA0NXoiLz48L3N2Zz4K",title:e("iframe_drawTool_finish"),onClick:()=>{km().dispatch({type:pt,payload:new a.Gs("finish")})},disabled:"draw"!==i},cancel:{id:"cancel",icon:kT,title:e("iframe_drawTool_cancel"),onClick:()=>jm(),disabled:"draw"!==i},undo:{id:"undo",icon:"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktYXJyb3ctY291bnRlcmNsb2Nrd2lzZSI+PCEtLU1JVCBMaWNlbnNlLS0+PHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNOCAzYTUgNSAwIDEgMS00LjU0NiAyLjkxNC41LjUgMCAwIDAtLjkwOC0uNDE3QTYgNiAwIDEgMCA4IDJ2MXoiLz48cGF0aCBkPSJNOCA0LjQ2NlYuNTM0YS4yNS4yNSAwIDAgMC0uNDEtLjE5Mkw1LjIzIDIuMzA4YS4yNS4yNSAwIDAgMCAwIC4zODRsMi4zNiAxLjk2NkEuMjUuMjUgMCAwIDAgOCA0LjQ2NnoiLz48L3N2Zz4K",title:e("iframe_drawTool_delete_point"),onClick:()=>Bm(),disabled:!o},remove:{id:"remove",icon:kT,title:e("iframe_drawTool_delete_drawing"),onClick:()=>Bm(),disabled:!o}};return[n?t.finish:t.cancel,l?t.undo:t.remove]})().map((t=>((t,e,i,n)=>{const r={"is-disabled":n};return Gu.dy`<ba-button
+		`}_buildTools(){const t=t=>this._translationService.translate(t);return[{id:1,name:"marker",active:!1,title:t("iframe_drawTool_symbol"),icon:"symbol",activate:()=>Dm("marker"),deactivate:()=>jm()},{id:2,name:"line",active:!1,title:t("iframe_drawTool_line"),icon:"line",activate:()=>Dm("line"),deactivate:()=>jm()}]}_getActiveTool(t){return t.tools.find((t=>t.active))}_showActive(t){t.forEach((t=>{const e=this._root.querySelector(`#${t.name}-button`);e&&(t.active?e.classList.add("is-active"):e.classList.remove("is-active"))}))}_getIcons(t){const e=t=>this._translationService.translate(t),{mode:i,validGeometry:n}=t,r=this._getActiveTool(t),s=r?r.name:"noTool",o=["draw","modify"].includes(i),l="draw"===i&&"line"===s&&n;return(()=>{const t={finish:{id:"finish",icon:"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktY2hlY2stbGciPjwhLS1NSVQgTGljZW5zZS0tPjxwYXRoIGQ9Ik0xMy40ODUgMS40MzFhMS40NzMgMS40NzMgMCAwIDEgMi4xMDQgMi4wNjJsLTcuODQgOS44MDFhMS40NzMgMS40NzMgMCAwIDEtMi4xMi4wNEwuNDMxIDguMTM4YTEuNDczIDEuNDczIDAgMCAxIDIuMDg0LTIuMDgzbDQuMTExIDQuMTEyIDYuODItOC42OWEuNDg2LjQ4NiAwIDAgMSAuMDQtLjA0NXoiLz48L3N2Zz4K",title:e("iframe_drawTool_finish"),onClick:()=>{km().dispatch({type:pt,payload:new a.Gs("finish")})},disabled:"draw"!==i},cancel:{id:"cancel",icon:LT,title:e("iframe_drawTool_cancel"),onClick:()=>jm(),disabled:"draw"!==i},undo:{id:"undo",icon:"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktYXJyb3ctY291bnRlcmNsb2Nrd2lzZSI+PCEtLU1JVCBMaWNlbnNlLS0+PHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNOCAzYTUgNSAwIDEgMS00LjU0NiAyLjkxNC41LjUgMCAwIDAtLjkwOC0uNDE3QTYgNiAwIDEgMCA4IDJ2MXoiLz48cGF0aCBkPSJNOCA0LjQ2NlYuNTM0YS4yNS4yNSAwIDAgMC0uNDEtLjE5Mkw1LjIzIDIuMzA4YS4yNS4yNSAwIDAgMCAwIC4zODRsMi4zNiAxLjk2NkEuMjUuMjUgMCAwIDAgOCA0LjQ2NnoiLz48L3N2Zz4K",title:e("iframe_drawTool_delete_point"),onClick:()=>Bm(),disabled:!o},remove:{id:"remove",icon:LT,title:e("iframe_drawTool_delete_drawing"),onClick:()=>Bm(),disabled:!o}};return[n?t.finish:t.cancel,l?t.undo:t.remove]})().map((t=>((t,e,i,n)=>{const r={"is-disabled":n};return Gu.dy`<ba-button
 				id=${t+"_icon"}
 				class=${(0,Hu.$)(r)}
 				.title=${e}
 				.label=${e}
 				.disabled=${n}
 				@click=${i}
-			></ba-button>`})(t.id,t.title,t.onClick,t.disabled)))}static get tag(){return"ba-draw-tool"}}var NT=r(5098),FT=r.n(NT);const OT="update_modal_data";class jT extends sM.T{constructor(){super({content:null,active:!1});const{EnvironmentService:e}=t.U.inject("EnvironmentService");this._environmentService=e}onInitialize(){this.observe((t=>t.iframeContainer),(t=>this.signal(OT,t)))}update(t,e,i){if(t===OT)return{...i,content:e.content,active:e.active}}createView(t){const{active:e,content:i}=t;return e?Gu.dy`
+			></ba-button>`})(t.id,t.title,t.onClick,t.disabled)))}static get tag(){return"ba-draw-tool"}}var FT=r(5098),OT=r.n(FT);const jT="update_modal_data";class BT extends sM.T{constructor(){super({content:null,active:!1});const{EnvironmentService:e}=t.U.inject("EnvironmentService");this._environmentService=e}onInitialize(){this.observe((t=>t.iframeContainer),(t=>this.signal(jT,t)))}update(t,e,i){if(t===jT)return{...i,content:e.content,active:e.active}}createView(t){const{active:e,content:i}=t;return e?Gu.dy`
 				<style>
-					${FT()}
+					${OT()}
 				</style>
 				<div class="container">${i}</div>
-			`:Gu.Ld}isRenderingSkipped(){return!this._environmentService.isEmbedded()}static get tag(){return"ba-iframe-container"}}window.customElements.get(yT.tag)||window.customElements.define(yT.tag,yT),window.customElements.get(vT.tag)||window.customElements.define(vT.tag,vT),window.customElements.get(ST.tag)||window.customElements.define(ST.tag,ST),window.customElements.get(CT.tag)||window.customElements.define(CT.tag,CT),window.customElements.get(zT.tag)||window.customElements.define(zT.tag,zT),window.customElements.get(jT.tag)||window.customElements.define(jT.tag,jT);const{TranslationService:BT}=t.U.inject("TranslationService");BT.register("uiThemeProvider",(t=>{switch(t){case"en":return{uiTheme_toggle_tooltip_dark:"Disable contrast mode",uiTheme_toggle_tooltip_light:"Enable contrast mode"};case"de":return{uiTheme_toggle_tooltip_dark:"Kontrastmodus deaktivieren",uiTheme_toggle_tooltip_light:"Kontrastmodus aktivieren"};default:return{}}}));class GT extends Vu.i{constructor(){super();const{EnvironmentService:e}=t.U.inject("EnvironmentService");this._environmentService=e}initialize(){this._updateCss(this.getState())}_updateCss(t){const{darkSchema:e}=t,i=e?"dark-theme":"light-theme",n=e?"light-theme":"dark-theme";this._environmentService.getWindow().document.body.classList.add(i),this._environmentService.getWindow().document.body.classList.remove(n)}isRenderingSkipped(){return!0}onStateChanged(t){this._updateCss(t)}extractState(t){const{media:{darkSchema:e}}=t;return{darkSchema:e}}static get tag(){return"ba-theme-provider"}}window.customElements.get(GT.tag)||window.customElements.define(GT.tag,GT);const{TranslationService:UT}=t.U.inject("TranslationService");UT.register("notificationsProvider",(t=>{switch(t){case"en":return{notifications_item_info:"Info",notifications_item_warn:"Warning",notifications_item_error:"Error"};case"de":return{notifications_item_info:"Info",notifications_item_warn:"Warnung",notifications_item_error:"Fehler"};default:return{}}}));var VT=r(503),ZT=r.n(VT);const WT="update_notifications",HT="update_bottom_sheet",YT="update_remove_notification";class qT extends sM.T{constructor(){super({notifications:[],bottomSheet:null,autocloseTime:5e3,lastNotification:null})}onInitialize(){this.observe((t=>t.notifications.latest),(t=>{t&&this.signal(WT,t)})),this.observe((t=>t.bottomSheet),(t=>{this.signal(HT,t)}))}update(t,e,i){switch(t){case WT:return{...i,notifications:[{...e.payload,id:e.id}].concat(i.notifications),lastNotification:e};case HT:return{...i,bottomSheet:e.data};case YT:return{...i,notifications:i.notifications.filter((t=>t.id!==e.id))};case"update_autoclose_time":return{...i,autocloseTime:e}}}createView(t){const{notifications:e,bottomSheet:i,autocloseTime:n}=t;return 0===e.length&&null==i?Gu.Ld:Gu.dy` <style>
-						${ZT()}
+			`:Gu.Ld}isRenderingSkipped(){return!this._environmentService.isEmbedded()}static get tag(){return"ba-iframe-container"}}window.customElements.get(vT.tag)||window.customElements.define(vT.tag,vT),window.customElements.get(xT.tag)||window.customElements.define(xT.tag,xT),window.customElements.get(MT.tag)||window.customElements.define(MT.tag,MT),window.customElements.get(AT.tag)||window.customElements.define(AT.tag,AT),window.customElements.get(NT.tag)||window.customElements.define(NT.tag,NT),window.customElements.get(BT.tag)||window.customElements.define(BT.tag,BT);const{TranslationService:GT}=t.U.inject("TranslationService");GT.register("uiThemeProvider",(t=>{switch(t){case"en":return{uiTheme_toggle_tooltip_dark:"Disable contrast mode",uiTheme_toggle_tooltip_light:"Enable contrast mode"};case"de":return{uiTheme_toggle_tooltip_dark:"Kontrastmodus deaktivieren",uiTheme_toggle_tooltip_light:"Kontrastmodus aktivieren"};default:return{}}}));class UT extends Vu.i{constructor(){super();const{EnvironmentService:e}=t.U.inject("EnvironmentService");this._environmentService=e}initialize(){this._updateCss(this.getState())}_updateCss(t){const{darkSchema:e}=t,i=e?"dark-theme":"light-theme",n=e?"light-theme":"dark-theme";this._environmentService.getWindow().document.body.classList.add(i),this._environmentService.getWindow().document.body.classList.remove(n)}isRenderingSkipped(){return!0}onStateChanged(t){this._updateCss(t)}extractState(t){const{media:{darkSchema:e}}=t;return{darkSchema:e}}static get tag(){return"ba-theme-provider"}}window.customElements.get(UT.tag)||window.customElements.define(UT.tag,UT);const{TranslationService:VT}=t.U.inject("TranslationService");VT.register("notificationsProvider",(t=>{switch(t){case"en":return{notifications_item_info:"Info",notifications_item_warn:"Warning",notifications_item_error:"Error"};case"de":return{notifications_item_info:"Info",notifications_item_warn:"Warnung",notifications_item_error:"Fehler"};default:return{}}}));var ZT=r(503),WT=r.n(ZT);const HT="update_notifications",YT="update_bottom_sheet",qT="update_remove_notification";class $T extends sM.T{constructor(){super({notifications:[],bottomSheet:null,autocloseTime:5e3,lastNotification:null})}onInitialize(){this.observe((t=>t.notifications.latest),(t=>{t&&this.signal(HT,t)})),this.observe((t=>t.bottomSheet),(t=>{this.signal(YT,t)}))}update(t,e,i){switch(t){case HT:return{...i,notifications:[{...e.payload,id:e.id}].concat(i.notifications),lastNotification:e};case YT:return{...i,bottomSheet:e.data};case qT:return{...i,notifications:i.notifications.filter((t=>t.id!==e.id))};case"update_autoclose_time":return{...i,autocloseTime:e}}}createView(t){const{notifications:e,bottomSheet:i,autocloseTime:n}=t;return 0===e.length&&null==i?Gu.Ld:Gu.dy` <style>
+						${WT()}
 					</style>
-					<div class="stackable-content-notification-panel">${(0,AT.r)(e,(t=>t.id),((t,e)=>{const i={...t,index:e,autocloseTime:n};return Gu.dy`<ba-notification-item
+					<div class="stackable-content-notification-panel">${(0,kT.r)(e,(t=>t.id),((t,e)=>{const i={...t,index:e,autocloseTime:n};return Gu.dy`<ba-notification-item
 				.content=${i}
-				.onClose=${t=>this.signal(YT,t)}
+				.onClose=${t=>this.signal(qT,t)}
 			></ba-notification-item>`}))}</div>
-					<div class="stackable-content-sheet-panel">${r=i,r?Gu.dy`<ba-bottom-sheet .content=${i}></ba-bottom-sheet>`:Gu.Ld}</div>`;var r}static get tag(){return"ba-notification-panel"}}var $T=r(249),XT=r.n($T);const KT="update",JT="update_main_menu",QT="update_media";class tC extends sM.T{constructor(){super({content:null,open:!1,portrait:!1}),this._subscriptions=[this.observe((t=>t.mainMenu),(t=>this.signal(JT,t)),!0),this.observe((t=>t.media),(t=>this.signal(QT,t)),!0)]}update(t,e,i){switch(t){case JT:return{...i,open:e.open};case KT:return{...i,content:e};case QT:return{...i,portrait:e.portrait}}}createView(t){const{content:e,open:i,portrait:n}=t;return e?Gu.dy`
-		<style>${XT()}</style>
+					<div class="stackable-content-sheet-panel">${r=i,r?Gu.dy`<ba-bottom-sheet .content=${i}></ba-bottom-sheet>`:Gu.Ld}</div>`;var r}static get tag(){return"ba-notification-panel"}}var XT=r(249),KT=r.n(XT);const JT="update",QT="update_main_menu",tC="update_media";class eC extends sM.T{constructor(){super({content:null,open:!1,portrait:!1}),this._subscriptions=[this.observe((t=>t.mainMenu),(t=>this.signal(QT,t)),!0),this.observe((t=>t.media),(t=>this.signal(tC,t)),!0)]}update(t,e,i){switch(t){case QT:return{...i,open:e.open};case JT:return{...i,content:e};case tC:return{...i,portrait:e.portrait}}}createView(t){const{content:e,open:i,portrait:n}=t;return e?Gu.dy`
+		<style>${KT()}</style>
 		<div class='bottom-sheet ${i&&!n?"is-open":""}' data-test-id>
         	${e}
 			<ba-icon id="close-icon" class='tool-container__close-button' .icon='${"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmkteC1sZyI+PCEtLU1JVCBMaWNlbnNlLS0+PHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTMuODU0IDIuMTQ2YS41LjUgMCAwIDEgMCAuNzA4bC0xMSAxMWEuNS41IDAgMCAxLS43MDgtLjcwOGwxMS0xMWEuNS41IDAgMCAxIC43MDggMFoiLz48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yLjE0NiAyLjE0NmEuNS41IDAgMCAwIDAgLjcwOGwxMSAxMWEuNS41IDAgMCAwIC43MDgtLjcwOGwtMTEtMTFhLjUuNSAwIDAgMC0uNzA4IDBaIi8+PC9zdmc+Cg=="}' .size=${1.6} .color=${"var(--text2)"} .color_hover=${"var(--text2)"} @click=${()=>{const t=this.shadowRoot.querySelector(".bottom-sheet");t.classList.add("fade-out"),t.addEventListener("animationend",(()=>{mv()}))}}>
-		</div>`:Gu.Ld}onDisconnect(){this._subscriptions.forEach((t=>t()))}static get tag(){return"ba-bottom-sheet"}set content(t){this.signal(KT,t)}}var eC=r(5442),iC=r.n(eC);const nC={content:null,level:null,autocloseTime:0},rC="update_notification";class sC extends sM.T{constructor(){super({notification:nC,autocloseTimeoutId:null});const{TranslationService:e}=t.U.inject("TranslationService");this._translationService=e,this._onClose=()=>{}}update(t,e,i){if(t===rC)return{...i,notification:e,autocloseTimeoutId:e.autocloseTime>0?(()=>setTimeout((()=>this._hide()),e.autocloseTime))():null}}createView(t){const{notification:e}=t,i=t=>this._translationService.translate(t),n={notification_info:e.level===bm.T.INFO,notification_warn:e.level===bm.T.WARN,notification_error:e.level===bm.T.ERROR};return e.content?Gu.dy` <style>
-						${iC()}
+		</div>`:Gu.Ld}onDisconnect(){this._subscriptions.forEach((t=>t()))}static get tag(){return"ba-bottom-sheet"}set content(t){this.signal(JT,t)}}var iC=r(5442),nC=r.n(iC);const rC={content:null,level:null,autocloseTime:0},sC="update_notification";class oC extends sM.T{constructor(){super({notification:rC,autocloseTimeoutId:null});const{TranslationService:e}=t.U.inject("TranslationService");this._translationService=e,this._onClose=()=>{}}update(t,e,i){if(t===sC)return{...i,notification:e,autocloseTimeoutId:e.autocloseTime>0?(()=>setTimeout((()=>this._hide()),e.autocloseTime))():null}}createView(t){const{notification:e}=t,i=t=>this._translationService.translate(t),n={notification_info:e.level===bm.T.INFO,notification_warn:e.level===bm.T.WARN,notification_error:e.level===bm.T.ERROR};return e.content?Gu.dy` <style>
+						${nC()}
 					</style>
 					<div class="notification_item ${(0,Hu.$)(n)}">
 						${(t=>{switch(t){case bm.T.INFO:return Gu.dy`<div id="notification-info" data-test-id class="notification_level">${i("notifications_item_info")}</div>`;case bm.T.WARN:return Gu.dy`<div class="notification_level">${i("notifications_item_warn")}</div>`;case bm.T.ERROR:return Gu.dy`<div class="notification_level">${i("notifications_item_error")}</div>`;default:return Gu.dy.nothing}})(e.level)}
 						<div class="notification_content">${e.content}</div>
-					</div>`:Gu.Ld}_hide(){const{notification:t,autocloseTimeoutId:e}=this.getModel(),i=this.shadowRoot.querySelector(".notification_item");i.classList.add("notification_item_hide"),i.addEventListener("animationend",(()=>{this.onClose(t),clearTimeout(e)}))}static get tag(){return"ba-notification-item"}set content(t){const e={...nC,...t};this.signal(rC,e)}set onClose(t){this._onClose=t}get onClose(){return this._onClose}}window.customElements.get(qT.tag)||window.customElements.define(qT.tag,qT),window.customElements.get(tC.tag)||window.customElements.define(tC.tag,tC),window.customElements.get(sC.tag)||window.customElements.define(sC.tag,sC);const{TranslationService:oC}=t.U.inject("TranslationService");oC.register("featureInfoProvider",(t=>{switch(t){case"en":return{featureInfo_close_button:"Close",featureInfo_header:"Object Information",geometryInfo_title_coordinate:"Coordinate",geometryInfo_title_azimuth:"Azimuth-angle",geometryInfo_title_line_length:"Distance",geometryInfo_title_polygon_length:"Perimeter",geometryInfo_title_polygon_area:"Area"};case"de":return{featureInfo_close_button:"Schließen",featureInfo_header:"Objekt-Info",geometryInfo_title_coordinate:"Koordinate",geometryInfo_title_azimuth:"Azimuth-Winkel",geometryInfo_title_line_length:"Länge",geometryInfo_title_polygon_length:"Umfang",geometryInfo_title_polygon_area:"Fläche"};default:return{}}}));var aC=r(4728),lC=r.n(aC);const cC="update_disabled";class hC extends sM.T{constructor(t={}){if(super({...t,active:!1}),this.constructor===hC)throw new TypeError("Can not construct abstract class.")}update(t,e,i){if(t===cC)return{...i,active:e}}defaultCss(){return Gu.dy`
+					</div>`:Gu.Ld}_hide(){const{notification:t,autocloseTimeoutId:e}=this.getModel(),i=this.shadowRoot.querySelector(".notification_item");i.classList.add("notification_item_hide"),i.addEventListener("animationend",(()=>{this.onClose(t),clearTimeout(e)}))}static get tag(){return"ba-notification-item"}set content(t){const e={...rC,...t};this.signal(sC,e)}set onClose(t){this._onClose=t}get onClose(){return this._onClose}}window.customElements.get($T.tag)||window.customElements.define($T.tag,$T),window.customElements.get(eC.tag)||window.customElements.define(eC.tag,eC),window.customElements.get(oC.tag)||window.customElements.define(oC.tag,oC);const{TranslationService:aC}=t.U.inject("TranslationService");aC.register("featureInfoProvider",(t=>{switch(t){case"en":return{featureInfo_close_button:"Close",featureInfo_header:"Object Information",geometryInfo_title_coordinate:"Coordinate",geometryInfo_title_azimuth:"Azimuth-angle",geometryInfo_title_line_length:"Distance",geometryInfo_title_polygon_length:"Perimeter",geometryInfo_title_polygon_area:"Area"};case"de":return{featureInfo_close_button:"Schließen",featureInfo_header:"Objekt-Info",geometryInfo_title_coordinate:"Koordinate",geometryInfo_title_azimuth:"Azimuth-Winkel",geometryInfo_title_line_length:"Länge",geometryInfo_title_polygon_length:"Umfang",geometryInfo_title_polygon_area:"Fläche"};default:return{}}}));var lC=r(4728),cC=r.n(lC);const hC="update_disabled";class uC extends sM.T{constructor(t={}){if(super({...t,active:!1}),this.constructor===uC)throw new TypeError("Can not construct abstract class.")}update(t,e,i){if(t===hC)return{...i,active:e}}defaultCss(){return Gu.dy`
 			${super.defaultCss()}
 			<style>
-				${lC()}
+				${cC()}
 			</style>
-		`}setActive(t){this.signal(cC,t)}isActive(){return this.getModel().active}}var uC=r(518),dC=r.n(uC);const pC="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktYXJyb3ctbGVmdC1zaG9ydCI+PCEtLU1JVCBMaWNlbnNlLS0+PHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTIgOGEuNS41IDAgMCAxLS41LjVINS43MDdsMi4xNDcgMi4xNDZhLjUuNSAwIDAgMS0uNzA4LjcwOGwtMy0zYS41LjUgMCAwIDEgMC0uNzA4bDMtM2EuNS41IDAgMSAxIC43MDguNzA4TDUuNzA3IDcuNUgxMS41YS41LjUgMCAwIDEgLjUuNXoiLz48L3N2Zz4K",gC="update_featureInfo_data",mC="update_isPortrait_hasMinWidth",fC=`highlightedFeatureInfoGeometry_${(0,kr.g4)()}`;class _C extends hC{constructor(){super({featureInfoData:[],isPortrait:!1});const{TranslationService:e}=t.U.inject("TranslationService");this._translationService=e,this.observe((t=>t.featureInfo.current),(t=>this.signal(gC,[...t]))),this.observe((t=>t.media),(t=>this.signal(mC,t.portrait)))}update(t,e,i){switch(t){case gC:return{...i,featureInfoData:[...e]};case mC:return{...i,isPortrait:e}}}createView(t){const{featureInfoData:e,isPortrait:i}=t,n=t=>this._translationService.translate(t);return Gu.dy`
+		`}setActive(t){this.signal(hC,t)}isActive(){return this.getModel().active}}var dC=r(518),pC=r.n(dC);const gC="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktYXJyb3ctbGVmdC1zaG9ydCI+PCEtLU1JVCBMaWNlbnNlLS0+PHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTIgOGEuNS41IDAgMCAxLS41LjVINS43MDdsMi4xNDcgMi4xNDZhLjUuNSAwIDAgMS0uNzA4LjcwOGwtMy0zYS41LjUgMCAwIDEgMC0uNzA4bDMtM2EuNS41IDAgMSAxIC43MDguNzA4TDUuNzA3IDcuNUgxMS41YS41LjUgMCAwIDEgLjUuNXoiLz48L3N2Zz4K",mC="update_featureInfo_data",fC="update_isPortrait_hasMinWidth",_C=`highlightedFeatureInfoGeometry_${(0,kr.g4)()}`;class yC extends uC{constructor(){super({featureInfoData:[],isPortrait:!1});const{TranslationService:e}=t.U.inject("TranslationService");this._translationService=e,this.observe((t=>t.featureInfo.current),(t=>this.signal(mC,[...t]))),this.observe((t=>t.media),(t=>this.signal(fC,t.portrait)))}update(t,e,i){switch(t){case mC:return{...i,featureInfoData:[...e]};case fC:return{...i,isPortrait:e}}}createView(t){const{featureInfoData:e,isPortrait:i}=t,n=t=>this._translationService.translate(t);return Gu.dy`
 			<style>
-				${dC()}
+				${pC()}
 			</style>
 			<div>
 				<div class="container  ${i?"is-portrait":"is-landscape"}">
 					<ul class="ba-list">
 						<li class="ba-list-item  ba-list-inline ba-list-item__header featureinfo-header">
 							<span class="ba-list-item__pre" style="position:relative;left:-1em;">
-								<ba-icon .icon="${pC}" .size=${4} .title=${n("featureInfo_close_button")} @click=${Zy}></ba-icon>
+								<ba-icon .icon="${gC}" .size=${4} .title=${n("featureInfo_close_button")} @click=${Zy}></ba-icon>
 							</span>
 							<span class="ba-list-item__text vertical-center">
 								<span class="ba-list-item__main-text" style="position:relative;left:-1em;"> ${n("featureInfo_header")} </span>
@@ -708,8 +708,8 @@
 								<li class="ba-section selectable">
 									<button
 										class="ba-list-item ba-list-item__header ${i=t.geometry,i?"is-geometry":""}"
-										@mouseenter=${()=>(t=>{t&&(0,cf.Lq)({id:fC,type:cf.c1.MARKER_TMP,data:{geometry:t.data,geometryType:cf.z2.GEOJSON}})})(t.geometry)}
-										@mouseleave=${()=>(t.geometry,void(0,cf.g)(fC))}
+										@mouseenter=${()=>(t=>{t&&(0,cf.Lq)({id:_C,type:cf.c1.MARKER_TMP,data:{geometry:t.data,geometryType:cf.z2.GEOJSON}})})(t.geometry)}
+										@mouseleave=${()=>(t.geometry,void(0,cf.g)(_C))}
 									>
 										<span class="ba-list-item__text  ba-list-item__primary-text">${t.title}</span>
 										<span class="ba-list-item__after">
@@ -723,7 +723,7 @@
 					<div></div>
 				</div>
 			</div>
-		`}static get tag(){return"ba-feature-info-panel"}}var yC=r(4694),vC=r.n(yC);const xC="update_statistics",bC={coordinate:null,azimuth:null,length:null,area:null};class wC extends sM.T{constructor(){super({statistics:bC});const{CoordinateService:e,UnitsService:i,TranslationService:n}=t.U.inject("CoordinateService","UnitsService","TranslationService");this._translationService=n,this._coordinateService=e,this._unitsService=i}update(t,e,i){if(t===xC)return{...i,statistics:e}}createView(t){const e=t=>this._translationService.translate(t),i=(t=>{if(null!=t.coordinate){const t=e("geometryInfo_title_coordinate");return Gu.dy`<div class="stats-point stats-content" title=${t}></div>`}if(null!=t.length&&null!=t.azimuth){const i=e("geometryInfo_title_azimuth"),n=e("geometryInfo_title_line_length");return Gu.dy`<div class="stats-line-azimuth stats-content" title=${i}>
+		`}static get tag(){return"ba-feature-info-panel"}}var vC=r(4694),xC=r.n(vC);const bC="update_statistics",wC={coordinate:null,azimuth:null,length:null,area:null};class SC extends sM.T{constructor(){super({statistics:wC});const{CoordinateService:e,UnitsService:i,TranslationService:n}=t.U.inject("CoordinateService","UnitsService","TranslationService");this._translationService=n,this._coordinateService=e,this._unitsService=i}update(t,e,i){if(t===bC)return{...i,statistics:e}}createView(t){const e=t=>this._translationService.translate(t),i=(t=>{if(null!=t.coordinate){const t=e("geometryInfo_title_coordinate");return Gu.dy`<div class="stats-point stats-content" title=${t}></div>`}if(null!=t.length&&null!=t.azimuth){const i=e("geometryInfo_title_azimuth"),n=e("geometryInfo_title_line_length");return Gu.dy`<div class="stats-line-azimuth stats-content" title=${i}>
 						<span>${i}:</span>${t.azimuth.toFixed(2)}°
 					</div>
 					<div class="stats-line-length stats-content" title=${n}>
@@ -736,23 +736,23 @@
 					</div>`}if(null!=t.length){const i=e("geometryInfo_title_line_length");return Gu.dy`<div class="stats-line-length stats-content" title=${i}>
 					<span>${i}:</span>${this._unitsService.formatDistance(t.length,2)}
 				</div>`}return null})(t.statistics);return i?Gu.dy` <style>
-						${vC()}
+						${xC()}
 					</style>
 					<div>
 						<div class="stats-container">
 							${i}
 							<div></div>
 						</div>
-					</div>`:Gu.Ld}static get tag(){return"ba-geometry-info"}set statistics(t){this.signal(xC,t)}}var SC=r(9648),MC=r.n(SC);const IC="update_featureInfo_data",EC=`highlightedFeatureInfoGeometry_${(0,kr.g4)()}`;class TC extends sM.T{constructor(){super({featureInfoData:[]});const{TranslationService:e}=t.U.inject("TranslationService");this._translationService=e,this.observe((t=>t.featureInfo.current),(t=>this.signal(IC,[...t])))}update(t,e,i){if(t===IC)return{...i,featureInfoData:[...e]}}createView(t){const{featureInfoData:e}=t,i=t=>this._translationService.translate(t);return Gu.dy`
+					</div>`:Gu.Ld}static get tag(){return"ba-geometry-info"}set statistics(t){this.signal(bC,t)}}var MC=r(9648),IC=r.n(MC);const EC="update_featureInfo_data",TC=`highlightedFeatureInfoGeometry_${(0,kr.g4)()}`;class CC extends sM.T{constructor(){super({featureInfoData:[]});const{TranslationService:e}=t.U.inject("TranslationService");this._translationService=e,this.observe((t=>t.featureInfo.current),(t=>this.signal(EC,[...t])))}update(t,e,i){if(t===EC)return{...i,featureInfoData:[...e]}}createView(t){const{featureInfoData:e}=t,i=t=>this._translationService.translate(t);return Gu.dy`
 			<style>
-				${MC()}
+				${IC()}
 			</style>
 			<div>
 				<div class="container">
 					<ul class="ba-list">
 						<li class="ba-list-item  ba-list-inline ba-list-item__header featureinfo-header">
 							<span class="ba-list-item__pre" style="position:relative;left:-1em;">
-								<ba-icon .icon="${pC}" .size=${4} .title=${i("featureInfo_close_button")} @click=${Zy}></ba-icon>
+								<ba-icon .icon="${gC}" .size=${4} .title=${i("featureInfo_close_button")} @click=${Zy}></ba-icon>
 							</span>
 							<span class="ba-list-item__text vertical-center">
 								<span class="ba-list-item__main-text" style="position:relative;left:-1em;"> ${i("featureInfo_header")} </span>
@@ -762,8 +762,8 @@
 								<li class="ba-section">
 									<button
 										class="ba-list-item ba-list-item__header ${i=t.geometry,i?"is-geometry":""}"
-										@mouseenter=${()=>(t=>{t&&(0,cf.Lq)({id:EC,type:cf.c1.MARKER_TMP,data:{geometry:t.data,geometryType:cf.z2.GEOJSON}})})(t.geometry)}
-										@mouseleave=${()=>(t.geometry,void(0,cf.g)(EC))}
+										@mouseenter=${()=>(t=>{t&&(0,cf.Lq)({id:TC,type:cf.c1.MARKER_TMP,data:{geometry:t.data,geometryType:cf.z2.GEOJSON}})})(t.geometry)}
+										@mouseleave=${()=>(t.geometry,void(0,cf.g)(TC))}
 									>
 										<span class="ba-list-item__text  ba-list-item__primary-text">${t.title}</span>
 										<span class="ba-list-item__after">
@@ -777,4 +777,4 @@
 					<div></div>
 				</div>
 			</div>
-		`}static get tag(){return"ba-feature-info-iframe-panel"}}window.customElements.get(_C.tag)||window.customElements.define(_C.tag,_C),window.customElements.get(TC.tag)||window.customElements.define(TC.tag,TC),window.customElements.get(wC.tag)||window.customElements.define(wC.tag,wC)})()})();
+		`}static get tag(){return"ba-feature-info-iframe-panel"}}window.customElements.get(yC.tag)||window.customElements.define(yC.tag,yC),window.customElements.get(CC.tag)||window.customElements.define(CC.tag,CC),window.customElements.get(SC.tag)||window.customElements.define(SC.tag,SC)})()})();
