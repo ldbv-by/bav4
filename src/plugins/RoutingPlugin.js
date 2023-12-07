@@ -110,7 +110,7 @@ export class RoutingPlugin extends BaPlugin {
 			// we also want to remove the highlight feature when the BottomSheet was closed
 			observeOnce(
 				store,
-				(state) => state.bottomSheet.active,
+				(state) => state.bottomSheet.data,
 				() => removeHighlightFeaturesById(RoutingPlugin.HIGHLIGHT_FEATURE_ID)
 			);
 		};

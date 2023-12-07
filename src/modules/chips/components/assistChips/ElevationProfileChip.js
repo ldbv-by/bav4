@@ -1,9 +1,9 @@
 /**
- * @module modules/elevationProfile/components/assistChip/ElevationProfileChip
+ * @module modules/chips/components/assistChips/ElevationProfileChip
  */
 import { $injector } from '../../../../injection';
 import { openProfile } from '../../../../store/elevationProfile/elevationProfile.action';
-import { AbstractAssistChip } from '../../../chips/components/assistChips/AbstractAssistChip';
+import { AbstractAssistChip } from './AbstractAssistChip';
 import profileSvg from './assets/profile.svg';
 
 const Update_Profile_Coordinates = 'update_profile_coordinates';
@@ -51,9 +51,7 @@ export class ElevationProfileChip extends AbstractAssistChip {
 
 	onClick() {
 		const { profileCoordinates } = this.getModel();
-		const force2D = (coordinates) => coordinates.map((c) => c.slice(0, 2));
-
-		openProfile(force2D(profileCoordinates));
+		openProfile(profileCoordinates);
 	}
 
 	onDisconnect() {

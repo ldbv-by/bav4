@@ -604,11 +604,14 @@ export class OlRoutingHandler extends OlLayerHandler {
 	}
 
 	_highlightSegments(highlightedSegments, highlightLayer, routeLayer) {
+		clearTimeout(this._highlightSegmentsTimeoutId);
+		highlightLayer.getSource().clear();
+
 		if (highlightedSegments) {
 			const { segments, zoomToExtent } = highlightedSegments;
 
 			const clearHighlightLayerWithDelay = () => {
-				setTimeout(() => {
+				this._highlightSegmentsTimeoutId = setTimeout(() => {
 					highlightLayer.getSource().clear();
 				}, REMOVE_HIGHLIGHTED_SEGMENTS_TIMEOUT_MS);
 			};
@@ -634,8 +637,6 @@ export class OlRoutingHandler extends OlLayerHandler {
 			} else if (this._environmentService.isTouch()) {
 				clearHighlightLayerWithDelay();
 			}
-		} else {
-			highlightLayer.getSource().clear();
 		}
 	}
 
@@ -689,7 +690,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 			observe(
 				store,
 				(state) => state.routing.highlightedSegments,
-				(highlightedSegments) => this._highlightSegments(highlightedSegments, this._highlightLayer, this._routeLayer)
+				(highlightedSegments) => this._highlightSegments(highlightedSegments.payload, this._highlightLayer, this._routeLayer)
 			),
 			observe(
 				store,

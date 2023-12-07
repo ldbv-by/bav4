@@ -91,7 +91,12 @@ export class RouteWarnings extends MvuElement {
 			warning_icon: warningItem.criticality !== RouteWarningCriticality.HINT
 		};
 		return html`<div class="item">
-			<div class="highlight${classMap(warningClasses)}" @mouseover=${() => highlightSegments(false)} @mouseout=${() => resetHighlightedSegments()}>
+			<div
+				class="highlight${classMap(warningClasses)}"
+				@pointerdown=${() => highlightSegments(false)}
+				@mouseover=${() => highlightSegments(false)}
+				@mouseout=${() => resetHighlightedSegments()}
+			>
 				<span class="noselect">${warningItem.message}</span>
 			</div>
 			<button class="geolocation-icon" title=${translate('routing_warnings_zoom')} @click=${() => highlightSegments(true)}></button>

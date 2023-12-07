@@ -3,10 +3,10 @@ import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
-import { Toggle } from '../../../../../src/modules/commons/components/toggle/Toggle';
+import { Switch } from '../../../../../src/modules/commons/components/switch/Switch';
 
 window.customElements.define(ShareDialogContent.tag, ShareDialogContent);
-window.customElements.define(Toggle.tag, Toggle);
+window.customElements.define(Switch.tag, Switch);
 
 describe('ShareDialogContent', () => {
 	let store;
@@ -60,7 +60,7 @@ describe('ShareDialogContent', () => {
 			const element = await setup();
 			element.urls = shareUrls;
 
-			expect(element.shadowRoot.querySelectorAll('ba-toggle')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-switch')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('input')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
 		});
@@ -86,7 +86,7 @@ describe('ShareDialogContent', () => {
 			const element = await setup({}, { share: true });
 			element.urls = shareUrls;
 
-			const toggleElement = element.shadowRoot.querySelector('ba-toggle');
+			const toggleElement = element.shadowRoot.querySelector('ba-switch');
 
 			expect(toggleElement.checked).toBe(false);
 		});
@@ -97,7 +97,7 @@ describe('ShareDialogContent', () => {
 			const element = await setup();
 			element.urls = shareUrls;
 
-			const toggleElement = element.shadowRoot.querySelector('ba-toggle');
+			const toggleElement = element.shadowRoot.querySelector('#toggle');
 
 			// toggle default value is not checked => false => url = fieldId
 			expect(element.shadowRoot.querySelector('.share_url').value).toBe(shareUrls.fileId);
@@ -131,7 +131,7 @@ describe('ShareDialogContent', () => {
 			const element = await setup();
 			element.urls = shareUrls;
 
-			const toggleElement = element.shadowRoot.querySelector('ba-toggle');
+			const toggleElement = element.shadowRoot.querySelector('ba-switch');
 			toggleElement.click();
 
 			const copyButton = element.shadowRoot.querySelector('.share_item .share_copy_icon');
@@ -226,7 +226,7 @@ describe('ShareDialogContent', () => {
 			const url = 'https://v.bayern.de/foobar';
 			element.urls = url;
 
-			expect(element.shadowRoot.querySelectorAll('ba-toggle')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('ba-switch')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('input')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('input')[0].value).toBe(url);
 			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
