@@ -81,7 +81,7 @@ export const provide = (lang) => {
 				olMap_handler_mfp_id_a3_landscape: 'DIN A3 Querformat',
 				olMap_handler_mfp_id_a3_portrait: 'DIN A3 Hochformat',
 				olMap_handler_mfp_encoder_layer_not_exportable: 'Die folgenden Ebenen können nicht exportiert werden:',
-				olMap_handler_routing_choose_alternative_route: (params) => `Klicken, um alternative Route <b>'${params[0]}'</b> zu wählen`,
+				olMap_handler_routing_choose_alternative_route: (params) => `${params[0]}`,
 				olMap_handler_routing_modify_segment: 'Zum Ändern der Route ziehen',
 				olMap_handler_routing_modify_start: 'Zum Ändern des Startpunktes ziehen',
 				olMap_handler_routing_modify_destination: 'Zum Ändern des Zielpunktes ziehen',
