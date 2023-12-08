@@ -35,7 +35,7 @@ export const provide = (lang) => {
 				olMap_handler_mfp_id_a3_landscape: 'DIN A3 landscape',
 				olMap_handler_mfp_id_a3_portrait: 'DIN A3 portrait',
 				olMap_handler_mfp_encoder_layer_not_exportable: 'The following layers cannot be exported:',
-				olMap_handler_routing_choose_alternative_route: (params) => `Click for choosing the alterative route <b>'${params[0]}'</b>`,
+				olMap_handler_routing_choose_alternative_route: (params) => `${params[0]}`,
 				olMap_handler_routing_modify_segment: 'Pull to modify the route',
 				olMap_handler_routing_modify_start: 'Pull to modify the start point',
 				olMap_handler_routing_modify_destination: 'Pull to modify the destination point',
