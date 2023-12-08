@@ -33,6 +33,9 @@ import { SourceType, SourceTypeName } from '../../../../domain/sourceType';
 import { bvvRouteStatsProvider } from './routeStats.provider';
 import { clearHighlightFeatures } from '../../../../store/highlight/highlight.action';
 import { closeBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
+import { addLayer } from '../../../../store/layers/layers.action';
+import { VectorGeoResource, VectorSourceType } from '../../../../domain/geoResources';
+import { create as createKML } from '../../formats/kml';
 
 export const RoutingFeatureTypes = Object.freeze({
 	START: 'start',
@@ -65,20 +68,23 @@ export const REMOVE_HIGHLIGHTED_SEGMENTS_TIMEOUT_MS = 2500;
 export class OlRoutingHandler extends OlLayerHandler {
 	constructor(routeStatsProvider = bvvRouteStatsProvider) {
 		super(ROUTING_LAYER_ID);
-		const { StoreService, RoutingService, MapService, EnvironmentService, TranslationService, ElevationService } = $injector.inject(
-			'StoreService',
-			'RoutingService',
-			'MapService',
-			'EnvironmentService',
-			'TranslationService',
-			'ElevationService'
-		);
+		const { StoreService, RoutingService, MapService, EnvironmentService, TranslationService, ElevationService, GeoResourceService } =
+			$injector.inject(
+				'StoreService',
+				'RoutingService',
+				'MapService',
+				'EnvironmentService',
+				'TranslationService',
+				'ElevationService',
+				'GeoResourceService'
+			);
 		this._storeService = StoreService;
 		this._routingService = RoutingService;
 		this._mapService = MapService;
 		this._environmentService = EnvironmentService;
 		this._translationService = TranslationService;
 		this._elevationService = ElevationService;
+		this._geoResourceService = GeoResourceService;
 		// map
 		this._map = null;
 		//layer
@@ -705,6 +711,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 	 *  @override
 	 */
 	onDeactivate() {
+		this._convertToPermanentLayer();
 		this._map = null;
 		this._routingLayerGroup = null;
 		this._alternativeRouteLayer = null;
@@ -730,5 +737,32 @@ export class OlRoutingHandler extends OlLayerHandler {
 	_unregisterMapListener(listeners) {
 		listeners.forEach((listener) => unByKey(listener));
 		listeners.splice(0, listeners.length);
+	}
+
+	_convertToPermanentLayer() {
+		if (this._routeLayer.getSource().getFeatures().length > 0) {
+			const idRtLayer = 'idRtLayer';
+			const labelRtLayer = this._translationService.translate('olMap_handler_routing_rt_layer_label');
+			const idWpLayer = 'idWpLayer';
+			const labelWpLayer = this._translationService.translate('olMap_handler_routing_wp_layer_label');
+
+			const routeKML = createKML(this._routeLayer, 'EPSG:3857');
+			const interactionKML = createKML(this._interactionLayer, 'EPSG:3857');
+
+			const getOrCreateVectorGeoResource = (id, label) => {
+				const fromService = this._geoResourceService.byId(id);
+				return fromService ? fromService : new VectorGeoResource(id, label, VectorSourceType.KML);
+				//TODO
+				// .setAttributionProvider(getDefaultAttribution);
+			};
+			const vgrRoute = getOrCreateVectorGeoResource(idRtLayer, labelRtLayer).setSource(routeKML, 4326);
+			const vgrInteraction = getOrCreateVectorGeoResource(idWpLayer, labelWpLayer).setSource(interactionKML, 4326);
+
+			// register the stored data as new GeoResource
+			this._geoResourceService.addOrReplace(vgrRoute, labelRtLayer);
+			this._geoResourceService.addOrReplace(vgrInteraction, labelWpLayer);
+			addLayer(idRtLayer, { constraints: { metaData: false, temporary: true } });
+			addLayer(idWpLayer, { constraints: { metaData: false, temporary: true } });
+		}
 	}
 }

@@ -87,6 +87,7 @@ describe('OlRoutingHandler', () => {
 	const elevationServiceMock = {
 		getProfile() {}
 	};
+	const geoResourceServiceMock = {};
 
 	const setup = (state = {}) => {
 		const initialState = {
@@ -109,7 +110,8 @@ describe('OlRoutingHandler', () => {
 			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('ElevationService', elevationServiceMock)
-			.registerSingleton('TranslationService', { translate: (key) => key });
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('GeoResourceService', geoResourceServiceMock);
 
 		return store;
 	};
@@ -302,9 +304,11 @@ describe('OlRoutingHandler', () => {
 			it('updates olLayer and olMap fields', async () => {
 				const { instanceUnderTest, map } = await newTestInstance();
 				const helpTooltipSpy = spyOn(instanceUnderTest._helpTooltip, 'deactivate');
+				const convertToPermanentLayerSpy = spyOn(instanceUnderTest, '_convertToPermanentLayer');
 
 				instanceUnderTest.deactivate(map);
 
+				expect(convertToPermanentLayerSpy).toHaveBeenCalled();
 				expect(instanceUnderTest._map).toBeNull();
 
 				expect(instanceUnderTest._routingLayerGroup).toBeNull();
