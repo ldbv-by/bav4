@@ -79,7 +79,8 @@ export class ShareService {
 			{
 				...this._extractPosition(center, zoom, rotation),
 				...this._extractLayers(),
-				...this._extractTopic()
+				...this._extractTopic(),
+				...this._extractRoute()
 			},
 			extraParams
 		);
@@ -187,6 +188,27 @@ export class ShareService {
 		} = state;
 
 		extractedState[QueryParameters.TOPIC] = current;
+		return extractedState;
+	}
+
+	/**
+	 * @private
+	 * @returns {object} extractedState
+	 */
+	_extractRoute() {
+		const { StoreService: storeService } = $injector.inject('StoreService');
+
+		const state = storeService.getStore().getState();
+		const extractedState = {};
+
+		const {
+			routing: { waypoints, categoryId }
+		} = state;
+
+		if (waypoints.length > 0) {
+			extractedState[QueryParameters.ROUTE_WAYPOINTS] = waypoints;
+			extractedState[QueryParameters.ROUTE_CATEGORY] = categoryId;
+		}
 		return extractedState;
 	}
 
