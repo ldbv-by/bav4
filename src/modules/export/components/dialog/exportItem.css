@@ -26,13 +26,14 @@
 .export-item__actions {
 	display: flex;
 	align-items: center;
-
 	margin-top: 1em;
+	background: var(--header-background-color);
 }
 
 ba-icon {
 	align-self: center;
 	margin-left: 0.3em;
+	margin-right: 0.3em;
 }
 
 ba-button {
