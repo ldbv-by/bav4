@@ -40,6 +40,8 @@ export const provide = (lang) => {
 				olMap_handler_routing_modify_start: 'Pull to modify the start point',
 				olMap_handler_routing_modify_destination: 'Pull to modify the destination point',
 				olMap_handler_routing_modify_intermediate: 'Pull to modify the waypoint',
+				olMap_handler_routing_rt_layer_label: 'Route (Track)',
+				olMap_handler_routing_wp_layer_label: 'Route (Waypoints)',
 				olMap_vectorLayerService_default_layer_name_vector: 'Data'
 			};
 
@@ -86,6 +88,8 @@ export const provide = (lang) => {
 				olMap_handler_routing_modify_start: 'Zum Ändern des Startpunktes ziehen',
 				olMap_handler_routing_modify_destination: 'Zum Ändern des Zielpunktes ziehen',
 				olMap_handler_routing_modify_intermediate: 'Zum Ändern des Zwischenpunktes ziehen',
+				olMap_handler_routing_rt_layer_label: 'Route (Track)',
+				olMap_handler_routing_wp_layer_label: 'Route (Wegpunkte)',
 				olMap_vectorLayerService_default_layer_name_vector: 'Daten'
 			};
 
