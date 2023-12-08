@@ -23,6 +23,9 @@ const replaceIcon = (old) => {
 	const svgScale = old.getScale();
 	const { IconService: iconService } = $injector.inject('IconService');
 	const iconResult = iconService.getIconResult(svgSrc);
+
+	// A nullish IconResult/IconUrl leads to a invalid KML (according to the specification).
+	// Nevertheless some applications/frameworks can handle such a kml (icons with base64 image sources).
 	const iconUrl = iconResult?.getUrl(old.getColor());
 
 	const iconOptions = {
