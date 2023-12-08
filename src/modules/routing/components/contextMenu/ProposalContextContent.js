@@ -55,7 +55,6 @@ export class ProposalContextContent extends MvuElement {
 
 		const { TranslationService: translationService } = $injector.inject('TranslationService');
 		this._translationService = translationService;
-		this._unsubscribe = null;
 	}
 
 	onInitialize() {

@@ -65,6 +65,14 @@ export const QueryParameters = Object.freeze({
 	 *The index (`number`) of the layer (see `LAYER` parameter) which extent should be used to fit on the map size.
 	 */
 	ZOOM_TO_EXTENT: 'zte',
+	/**
+	 * The waypoints of a route (two or more `numbers` (always a pair, mod 2 must be 0), comma-separated)
+	 */
+	ROUTE_WAYPOINTS: 'rtwp',
+	/**
+	 * The category (vehicle) of a route (`string`)
+	 */
+	ROUTE_CATEGORY: 'rtc',
 	// technical parameters
 	/**
 	 * Render test ids (`boolean`)

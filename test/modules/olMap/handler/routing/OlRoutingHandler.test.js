@@ -488,14 +488,14 @@ describe('OlRoutingHandler', () => {
 			});
 
 			it('switches to an alternative route', async () => {
-				const { instanceUnderTest, map, layer, getSelectOptionsSpy } = await newTestInstance();
+				const { instanceUnderTest, map, layer, getSelectOptionsSpy, store } = await newTestInstance();
 				const switchToAlternativeRouteSpy = spyOn(instanceUnderTest, '_switchToAlternativeRoute');
 
 				map.addLayer(layer);
 				const feature = new Feature({
 					geometry: new Point([0, 0])
 				});
-				const category = { id: 'catId' };
+				const category = { id: 'someCatId' };
 				feature.set(ROUTING_CATEGORY, category);
 				const mockRoutingResponse = { route: 'foo' };
 				instanceUnderTest._currentRoutingResponse = mockRoutingResponse;
@@ -505,6 +505,7 @@ describe('OlRoutingHandler', () => {
 
 				expect(switchToAlternativeRouteSpy).toHaveBeenCalledWith(mockRoutingResponse);
 				expect(instanceUnderTest._catId).toBe(category.id);
+				expect(store.getState().routing.categoryId).toBe(category.id);
 				expect(getSelectOptionsSpy).toHaveBeenCalledWith(instanceUnderTest._interactionLayer, instanceUnderTest._alternativeRouteLayer);
 				expect(helpTooltipDeactivateSpy).toHaveBeenCalled();
 			});
