@@ -1,5 +1,6 @@
 import { $injector } from '../../src/injection';
 import { addLayer } from '../../src/store/layers/layers.action';
+import { setCategory, setWaypoints } from '../../src/store/routing/routing.action';
 import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { changeRotation, changeZoomAndCenter } from '../../src/store/position/position.action';
 import { positionReducer } from '../../src/store/position/position.reducer';
@@ -10,6 +11,7 @@ import { ShareService } from '../../src/services/ShareService';
 import { TestUtils } from '../test-utils';
 import { round } from '../../src/utils/numberUtils';
 import { BvvCoordinateRepresentations, GlobalCoordinateRepresentations } from '../../src/domain/coordinateRepresentation';
+import { routingReducer } from '../../src/store/routing/routing.reducer';
 
 describe('ShareService', () => {
 	const coordinateService = {
@@ -36,7 +38,8 @@ describe('ShareService', () => {
 		const store = TestUtils.setupStoreAndDi(state, {
 			layers: layersReducer,
 			position: positionReducer,
-			topics: topicsReducer
+			topics: topicsReducer,
+			routing: routingReducer
 		});
 		$injector
 			.registerSingleton('CoordinateService', coordinateService)
@@ -332,6 +335,40 @@ describe('ShareService', () => {
 			});
 		});
 
+		describe('_extractRoute', () => {
+			it('extracts the current route', () => {
+				setup();
+				const categoryId = 'catId';
+				const waypoints = [
+					[1, 2],
+					[3, 4]
+				];
+				const instanceUnderTest = new ShareService();
+
+				setCategory(categoryId);
+				setWaypoints(waypoints);
+
+				const extract = instanceUnderTest._extractRoute();
+
+				expect(extract[QueryParameters.ROUTE_CATEGORY]).toBe(categoryId);
+				expect(extract[QueryParameters.ROUTE_WAYPOINTS]).toEqual(waypoints);
+			});
+
+			it('does nothing when no waypoints are available', () => {
+				setup();
+				const categoryId = 'catId';
+				const instanceUnderTest = new ShareService();
+
+				setCategory(categoryId);
+				setWaypoints([]);
+
+				const extract = instanceUnderTest._extractRoute();
+
+				expect(extract[QueryParameters.ROUTE_CATEGORY]).toBeUndefined();
+				expect(extract[QueryParameters.ROUTE_WAYPOINTS]).toBeUndefined();
+			});
+		});
+
 		describe('_mergeExtraParams', () => {
 			it('merges an array when key already present', () => {
 				setup();
@@ -420,6 +457,7 @@ describe('ShareService', () => {
 						.and.returnValue({ c: [44.123, 88.123], z: 5, r: 0.5 });
 					spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
 					spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
+					spyOn(instanceUnderTest, '_extractRoute').and.returnValue({ rtwp: '1,2', rtc: 'rtCatId' });
 					const _mergeExtraParamsSpy = spyOn(instanceUnderTest, '_mergeExtraParams').withArgs(jasmine.anything(), {}).and.callThrough();
 
 					const encoded = instanceUnderTest.encodeStateForPosition({ zoom: 5, center: [44.123, 88.123], rotation: 0.5 });
@@ -431,6 +469,8 @@ describe('ShareService', () => {
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
 					expect(queryParams.get(QueryParameters.ROTATION)).toBe('0.5');
 					expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
+					expect(queryParams.get(QueryParameters.ROUTE_WAYPOINTS)).toBe('1,2');
+					expect(queryParams.get(QueryParameters.ROUTE_CATEGORY)).toBe('rtCatId');
 					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
 				});
 

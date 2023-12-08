@@ -23,14 +23,16 @@ import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { unByKey } from 'ol/Observable';
 import { HelpTooltip } from '../../tooltip/HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
-import { setProposal, setRoute, setRouteStats, setWaypoints } from '../../../../store/routing/routing.action';
+import { setCategory, setProposal, setRoute, setRouteStats, setWaypoints } from '../../../../store/routing/routing.action';
 import { CoordinateProposalType, RoutingStatusCodes } from '../../../../domain/routing';
 import { fit } from '../../../../store/position/position.action';
-import { getCoordinatesForElevationProfile } from '../../utils/olGeometryUtils';
 import { updateCoordinates } from '../../../../store/elevationProfile/elevationProfile.action';
 import { equals } from '../../../../../node_modules/ol/coordinate';
 import { GeoJSON as GeoJSONFormat } from 'ol/format';
 import { SourceType, SourceTypeName } from '../../../../domain/sourceType';
+import { bvvRouteStatsProvider } from './routeStats.provider';
+import { clearHighlightFeatures } from '../../../../store/highlight/highlight.action';
+import { closeBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
 
 export const RoutingFeatureTypes = Object.freeze({
 	START: 'start',
@@ -61,20 +63,22 @@ export const REMOVE_HIGHLIGHTED_SEGMENTS_TIMEOUT_MS = 2500;
  * @author taulinger
  */
 export class OlRoutingHandler extends OlLayerHandler {
-	constructor() {
+	constructor(routeStatsProvider = bvvRouteStatsProvider) {
 		super(ROUTING_LAYER_ID);
-		const { StoreService, RoutingService, MapService, EnvironmentService, TranslationService } = $injector.inject(
+		const { StoreService, RoutingService, MapService, EnvironmentService, TranslationService, ElevationService } = $injector.inject(
 			'StoreService',
 			'RoutingService',
 			'MapService',
 			'EnvironmentService',
-			'TranslationService'
+			'TranslationService',
+			'ElevationService'
 		);
 		this._storeService = StoreService;
 		this._routingService = RoutingService;
 		this._mapService = MapService;
 		this._environmentService = EnvironmentService;
 		this._translationService = TranslationService;
+		this._elevationService = ElevationService;
 		// map
 		this._map = null;
 		//layer
@@ -97,6 +101,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 		this._mapListeners = [];
 		this._helpTooltip = new HelpTooltip();
 		this._helpTooltip.messageProvideFunction = messageProvide;
+		this._routeStatsProvider = routeStatsProvider;
 	}
 
 	/**
@@ -252,6 +257,8 @@ export class OlRoutingHandler extends OlLayerHandler {
 		});
 		translate.on('translatestart', (evt) => {
 			startCoordinate = evt.coordinate;
+			clearHighlightFeatures();
+			closeBottomSheet();
 		});
 		translate.on('translateend', (evt) => {
 			if (!equals(startCoordinate, evt.coordinate)) {
@@ -276,6 +283,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 			if (category) {
 				// change to alternative route
 				this._catId = category.id;
+				setCategory(category.id);
 				this._switchToAlternativeRoute(this._currentRoutingResponse);
 			}
 			this._helpTooltip.deactivate();
@@ -366,7 +374,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 	_polylineToGeometry(polyline) {
 		const polylineFormat = new Polyline();
-		return polylineFormat.readGeometry(polyline, { featureProjection: 'EPSG:' + this._mapService.getSrid() });
+		return polylineFormat.readGeometry(polyline, { featureProjection: `EPSG:${this._mapService.getSrid()}` });
 	}
 
 	/**
@@ -548,21 +556,27 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 	async _updateStore(ghRoute) {
 		const geom = this._polylineToGeometry(ghRoute.paths[0].points);
-		const profileCoordinates = getCoordinatesForElevationProfile(geom);
+		const coordinates = geom.getCoordinates();
 
-		// update stats
-		const routeStats = await this._routingService.calculateRouteStats(ghRoute, profileCoordinates);
-		setRouteStats(routeStats);
-		// update elevation profile coordinate
-		updateCoordinates(profileCoordinates);
-		// update route
-		setRoute({ data: new GeoJSONFormat().writeGeometry(geom), type: new SourceType(SourceTypeName.GEOJSON) });
+		try {
+			const { stats: profileStats } = await this._elevationService.getProfile(coordinates);
+			const routeStats = this._routeStatsProvider(ghRoute, profileStats);
+
+			setRoute({
+				data: new GeoJSONFormat().writeGeometry(geom.clone().transform(`EPSG:${this._mapService.getSrid()}`, 'EPSG:4326')),
+				type: new SourceType(SourceTypeName.GEOJSON)
+			});
+			setRouteStats(routeStats);
+			updateCoordinates(coordinates);
+		} catch (e) {
+			console.error(e);
+			emitNotification(`${this._translationService.translate('global_routingService_exception')}`, LevelTypes.ERROR);
+		}
 	}
 
 	_requestRouteFromInteractionLayer() {
 		const features = this._interactionLayer.getSource().getFeatures();
 		if (features.length > 1) {
-			this._setInteractionsActive(false);
 			this._clearRouteFeatures();
 
 			const coordinates3857 = this._getInteractionFeatures().map((feature) => {
@@ -591,11 +605,14 @@ export class OlRoutingHandler extends OlLayerHandler {
 	}
 
 	_highlightSegments(highlightedSegments, highlightLayer, routeLayer) {
+		clearTimeout(this._highlightSegmentsTimeoutId);
+		highlightLayer.getSource().clear();
+
 		if (highlightedSegments) {
 			const { segments, zoomToExtent } = highlightedSegments;
 
 			const clearHighlightLayerWithDelay = () => {
-				setTimeout(() => {
+				this._highlightSegmentsTimeoutId = setTimeout(() => {
 					highlightLayer.getSource().clear();
 				}, REMOVE_HIGHLIGHTED_SEGMENTS_TIMEOUT_MS);
 			};
@@ -621,8 +638,6 @@ export class OlRoutingHandler extends OlLayerHandler {
 			} else if (this._environmentService.isTouch()) {
 				clearHighlightLayerWithDelay();
 			}
-		} else {
-			highlightLayer.getSource().clear();
 		}
 	}
 
@@ -676,7 +691,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 			observe(
 				store,
 				(state) => state.routing.highlightedSegments,
-				(highlightedSegments) => this._highlightSegments(highlightedSegments, this._highlightLayer, this._routeLayer)
+				(highlightedSegments) => this._highlightSegments(highlightedSegments.payload, this._highlightLayer, this._routeLayer)
 			),
 			observe(
 				store,

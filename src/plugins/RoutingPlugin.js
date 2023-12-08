@@ -4,7 +4,7 @@
 import { observe, observeOnce } from '../utils/storeUtils';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { BaPlugin } from './BaPlugin';
-import { activate, deactivate, reset, setCategory } from '../store/routing/routing.action';
+import { activate, deactivate, setCategory, setDestination, setWaypoints } from '../store/routing/routing.action';
 import { Tools } from '../domain/tools';
 import { $injector } from '../injection/index';
 import { LevelTypes, emitNotification } from '../store/notifications/notifications.action';
@@ -14,6 +14,10 @@ import { CoordinateProposalType, RoutingStatusCodes } from '../domain/routing';
 import { HighlightFeatureType, addHighlightFeatures, clearHighlightFeatures, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
 import { setCurrentTool } from '../store/tools/tools.action';
 import { closeContextMenu } from '../store/mapContextMenu/mapContextMenu.action';
+import { QueryParameters } from '../domain/queryParameters';
+import { setTab } from '../store/mainMenu/mainMenu.action';
+import { TabIds } from '../domain/mainMenu';
+import { isCoordinate } from '../utils/checks';
 
 /**
  * Id of the layer used for routing interaction.
@@ -33,46 +37,60 @@ export const ROUTING_LAYER_ID = 'routing_layer';
  * @author taulinger
  */
 export class RoutingPlugin extends BaPlugin {
+	#translationService;
+	#environmentService;
+	#routingService;
+
 	constructor() {
 		super();
 		this._initialized = false;
-		const { TranslationService: translationService } = $injector.inject('TranslationService');
-		this._translationService = translationService;
+		const {
+			TranslationService: translationService,
+			EnvironmentService: environmentService,
+			RoutingService: routingService
+		} = $injector.inject('TranslationService', 'EnvironmentService', 'RoutingService');
+		this.#translationService = translationService;
+		this.#environmentService = environmentService;
+		this.#routingService = routingService;
 	}
 	/**
 	 * @override
 	 * @param {Store} store
 	 */
 	async register(store) {
-		const { RoutingService: routingService } = $injector.inject('RoutingService');
-
 		const lazyInitialize = async () => {
 			if (!this._initialized) {
 				// let's initial the routing service
 				try {
-					await routingService.init();
-					setCategory(routingService.getCategories()[0]?.id);
+					await this.#routingService.init();
+					setCategory(this.#routingService.getCategories()[0]?.id);
 					return (this._initialized = true);
 				} catch (ex) {
 					console.error('Routing service could not be initialized', ex);
-					emitNotification(`${this._translationService.translate('global_routingService_init_exception')}`, LevelTypes.ERROR);
+					emitNotification(`${this.#translationService.translate('global_routingService_init_exception')}`, LevelTypes.ERROR);
 				}
 				return false;
 			}
 			return true;
 		};
 
+		if (this.#environmentService.getQueryParams().has(QueryParameters.ROUTE_WAYPOINTS)) {
+			setCurrentTool(Tools.ROUTING); // implicitly calls onToolChanged()
+		}
+
 		const onToolChanged = async (toolId) => {
 			if (toolId !== Tools.ROUTING) {
 				removeHighlightFeaturesById(RoutingPlugin.HIGHLIGHT_FEATURE_ID);
 				closeBottomSheet();
-				reset();
 				deactivate();
 			} else {
+				const queryParameters = this.#environmentService.getQueryParams(); // Note: we have to fetch the query params before they are updated elsewhere
 				if (await lazyInitialize()) {
 					// we activate the tool after another possible active tool was deactivated
 					setTimeout(() => {
 						activate();
+						this._parseRouteFromQueryParams(queryParameters);
+						setTab(TabIds.ROUTING);
 					});
 				}
 			}
@@ -86,9 +104,18 @@ export class RoutingPlugin extends BaPlugin {
 			}
 		};
 
-		const onProposalChange = ({ coord, type: proposalType }) => {
+		const onProposalChange = (proposal, state) => {
+			const { coord, type: proposalType } = proposal;
+
+			if (proposalType === CoordinateProposalType.EXISTING_START_OR_DESTINATION && state.routing.waypoints.length < 2) {
+				return;
+			}
+
+			setCurrentTool(Tools.ROUTING);
+
 			clearHighlightFeatures();
 			closeContextMenu();
+
 			addHighlightFeatures({
 				id: RoutingPlugin.HIGHLIGHT_FEATURE_ID,
 				type: [CoordinateProposalType.EXISTING_INTERMEDIATE, CoordinateProposalType.EXISTING_START_OR_DESTINATION].includes(proposalType)
@@ -101,7 +128,7 @@ export class RoutingPlugin extends BaPlugin {
 			// we also want to remove the highlight feature when the BottomSheet was closed
 			observeOnce(
 				store,
-				(state) => state.bottomSheet.active,
+				(state) => state.bottomSheet.data,
 				() => removeHighlightFeaturesById(RoutingPlugin.HIGHLIGHT_FEATURE_ID)
 			);
 		};
@@ -110,19 +137,56 @@ export class RoutingPlugin extends BaPlugin {
 				setCurrentTool(Tools.ROUTING);
 			}
 		};
+		const onWaypointsChanged = () => {
+			clearHighlightFeatures();
+			closeContextMenu();
+			closeBottomSheet();
+		};
 
 		observe(store, (state) => state.routing.active, onChange);
 		observe(store, (state) => state.tools.current, onToolChanged, false);
 		observe(
 			store,
 			(state) => state.routing.proposal,
-			(eventLike) => onProposalChange(eventLike.payload)
+			(eventLike, state) => onProposalChange(eventLike.payload, state)
 		);
 		observe(
 			store,
 			(state) => state.routing.status,
 			(status) => onRoutingStatusChanged(status)
 		);
+		observe(
+			store,
+			(state) => state.routing.waypoints,
+			() => onWaypointsChanged()
+		);
+	}
+
+	_parseRouteFromQueryParams(queryParams) {
+		if (queryParams.has(QueryParameters.ROUTE_WAYPOINTS)) {
+			const parseWaypoints = (waypointsAsString) => {
+				const waypoints = [];
+				const routeValues = waypointsAsString.split(',');
+				if (routeValues.length > 1 && routeValues.length % 2 === 0) {
+					for (let index = 0; index < routeValues.length - 1; index = index + 2) {
+						waypoints.push([parseFloat(routeValues[index]), parseFloat(routeValues[index + 1])]);
+					}
+				}
+				return waypoints.filter((c) => isCoordinate(c));
+			};
+
+			const waypoints = parseWaypoints(queryParams.get(QueryParameters.ROUTE_WAYPOINTS));
+			if (waypoints.length > 0) {
+				if (queryParams.has(QueryParameters.ROUTE_CATEGORY)) {
+					const catId = queryParams.get(QueryParameters.ROUTE_CATEGORY);
+					// update the category only if catId is a known id
+					if (this.#routingService.getCategoryById(catId)) {
+						setCategory(catId);
+					}
+				}
+				waypoints.length === 1 ? setDestination(waypoints[0]) : setWaypoints(waypoints);
+			}
+		}
 	}
 
 	static get HIGHLIGHT_FEATURE_ID() {

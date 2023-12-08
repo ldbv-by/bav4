@@ -6,6 +6,8 @@ import { QueryParameters } from '../domain/queryParameters';
 import { BaPlugin } from './BaPlugin';
 import { addLayer, setReady } from '../store/layers/layers.action';
 import { createUniqueId } from '../utils/numberUtils';
+import { fitLayer } from '../store/position/position.action';
+import { isNumber } from '../utils/checks';
 
 /**
  * @class
@@ -58,7 +60,15 @@ export class LayersPlugin extends BaPlugin {
 			queryParams.get(QueryParameters.LAYER_VISIBILITY),
 			queryParams.get(QueryParameters.LAYER_OPACITY)
 		);
-		parsedLayers.forEach((l) => {
+		const zteIndex = parseInt(queryParams.get(QueryParameters.ZOOM_TO_EXTENT));
+		const zoomToExtentLayerIndex = isNumber(zteIndex) ? zteIndex : -1;
+
+		parsedLayers.forEach((l, index) => {
+			if (index === zoomToExtentLayerIndex) {
+				setTimeout(() => {
+					fitLayer(l.id);
+				});
+			}
 			addLayer(l.id, l.layerProperties);
 		});
 	}

@@ -1,12 +1,12 @@
-import { QueryParameters } from '../../../../../src/domain/queryParameters';
-import { $injector } from '../../../../../src/injection';
-import { SharePositionChip } from '../../../../../src/modules/share/components/assistChip/SharePositionChip';
-import shareSvg from '../../../../../src/modules/share/components/assistChip/assets/share.svg';
-import { ShareDialogContent } from '../../../../../src/modules/share/components/dialog/ShareDialogContent';
-import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
-import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
-import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
-import { TestUtils } from '../../../../test-utils';
+import { QueryParameters } from '../../../../src/domain/queryParameters';
+import { $injector } from '../../../../src/injection';
+import { SharePositionChip } from '../../../../src/modules/chips/components/assistChips/SharePositionChip';
+import shareSvg from '../../../../src/modules/chips/components/assistChips/assets/share.svg';
+import { ShareDialogContent } from '../../../../src/modules/share/components/dialog/ShareDialogContent';
+import { modalReducer } from '../../../../src/store/modal/modal.reducer';
+import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
+import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
+import { TestUtils } from '../../../test-utils';
 
 window.customElements.define(ShareDialogContent.tag, ShareDialogContent);
 window.customElements.define(SharePositionChip.tag, SharePositionChip);
@@ -64,7 +64,7 @@ describe('SharePositionChip', () => {
 		it('properly implements abstract methods', async () => {
 			const element = await setup();
 
-			expect(element.getLabel()).toBe('map_assistChips_share_position_label');
+			expect(element.getLabel()).toBe('chips_assist_chip_share_position_label');
 			expect(element.getIcon()).toBe(shareSvg);
 		});
 	});
@@ -128,7 +128,7 @@ describe('SharePositionChip', () => {
 
 				expect(shareSpy).toHaveBeenCalledWith({ url: 'http://shorten.foo' });
 
-				expect(store.getState().notifications.latest.payload.content).toBe('map_assistChips_share_position_api_failed');
+				expect(store.getState().notifications.latest.payload.content).toBe('chips_assist_chip_share_position_api_failed');
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 			});
 		});
@@ -144,7 +144,7 @@ describe('SharePositionChip', () => {
 
 				await TestUtils.timeout();
 				expect(shortenerSpy).toHaveBeenCalledTimes(1);
-				expect(store.getState().modal.data.title).toBe('map_assistChips_share_position_label');
+				expect(store.getState().modal.data.title).toBe('chips_assist_chip_share_position_label');
 
 				const contentElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 				const shareDialogContentElement = contentElement.querySelector('ba-share-content');
