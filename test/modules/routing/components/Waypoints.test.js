@@ -96,6 +96,10 @@ describe('Waypoints', () => {
 			const reverseButton = element.shadowRoot.querySelector('#button_reverse');
 			expect(reverseButton).toBeDefined();
 			expect(reverseButton.label).toBe('routing_waypoints_reverse');
+
+			const clearButton = element.shadowRoot.querySelector('#button_clear');
+			expect(clearButton).toBeDefined();
+			expect(clearButton.label).toBe('routing_waypoints_remove_all');
 		});
 		it('renders draggable elements', async () => {
 			// HINT: the existence of the behavior (user can drag an element) is additionally driven by css-classes specified in main.css and baElement.css.

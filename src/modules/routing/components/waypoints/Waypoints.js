@@ -7,7 +7,7 @@ import { RoutingStatusCodes } from '../../../../domain/routing';
 import { $injector } from '../../../../injection/index';
 import { MvuElement } from '../../../MvuElement';
 import css from './waypoints.css';
-import { setDestination, setStart, setWaypoints } from '../../../../store/routing/routing.action';
+import { setDestination, setStart, setWaypoints, reset } from '../../../../store/routing/routing.action';
 import { getPlaceholder, isDraggable, isPlaceholder } from './WaypointItem';
 
 const Update_Status = 'update_status';
@@ -89,6 +89,7 @@ export class Waypoints extends MvuElement {
 		return waypoints.length > 0
 			? html`<div class="waypoints__actions">
 					<ba-button id="button_reverse" .label=${translate('routing_waypoints_reverse')} @click=${reverse}></ba-button>
+					<ba-button id="button_clear" .label=${translate('routing_waypoints_remove_all')} @click=${reset}></ba-button>
 			  </div>`
 			: nothing;
 	}
