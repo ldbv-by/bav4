@@ -15,24 +15,20 @@
 	align-content: center;
 	justify-content: center;
 }
-
 .icon-bg {
 	z-index: 1;
 	width: 3em;
 }
-
 .start .icon {
 	background-image: url('../assets/start.svg');
 	background-size: cover;
 	top: 0.4em;
 }
-
 .destination .icon {
 	background-image: url('../assets/destination.svg');
 	background-size: cover;
 	top: 0.4em;
 }
-
 .intermediate .icon {
 	background-image: url('../assets/intermediate.svg');
 	background-size: cover;
@@ -40,7 +36,6 @@
 	width: 2em;
 	left: -0.4em;
 }
-
 .line {
 	position: absolute;
 	height: 100%;
@@ -51,35 +46,24 @@
 	border-right: 0.1em solid #fff;
 	border-left: 0.1em solid #fff;
 }
-
 .start + .line {
 	top: 50%;
 	height: 50%;
 }
-
 .destination + .line {
 	top: 0;
 	height: 50%;
 }
-
-. {
-	display: flex;
-	justify-content: right;
-	/* width: 100%; */
-}
-
 .waypoint-index {
 	font-weight: bold;
 	font-size: 0.9em;
 	color: black;
 }
-
 .text {
 	flex-grow: 1;
 	display: grid;
 	grid-template-columns: 4em 9em;
 }
-
 .text-name {
 	font-weight: bold;
 }
@@ -89,7 +73,6 @@ ba-icon {
 	height: 2.6em;
 	display: inline-block;
 }
-
 ba-icon:hover {
 	background: var(--primary-color);
 }

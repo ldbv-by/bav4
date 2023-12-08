@@ -111,71 +111,53 @@ export class RouteInfo extends MvuElement {
 		return isVisible
 			? html`<style>
 						${css}
-						
+
 						${getColor()};
 					</style>
-					<div class="container" }>
-					<div class="container-top">
-					
-						<div class="main-icon-background">
-							<span class=${`main-icon icon-${categoryId}`}>
-								${renderCategoryIcon(iconSource)}
-							</span>
-							</div>
+					<div class="container">
 						<div class="header">
-							<div class="item-header">
-							${translate('routing_info_duration')}
+							<div class="header-icon-background">
+								<span class=${`header-icon icon-${categoryId}`}> ${renderCategoryIcon(iconSource)} </span>
 							</div>
-							<span class="routing-info-duration" title=${translate('routing_info_duration')}>
-								${stats ? getDuration() : '-:-'}
-							</span>
-							<div class=" routing-info-type">					
-								<span class="text">${category.label}<span>
+							<div class="header-text">
+								<div class="routing-info-duration-text">${translate('routing_info_duration')}</div>
+								<span class="routing-info-duration" title=${translate('routing_info_duration')}> ${stats ? getDuration() : '-:-'} </span>
+								<div>${category.label}</div>
 							</div>
-						</div>
 						</div>
 						<div class="detail">
 							<div class="row">
 								<div class="item">
-									<div class="item-header">
-									${translate('routing_info_distance')}
-									</div>
+									<div class="item-header">${translate('routing_info_distance')}</div>
 									<div class="item-content">
 										<div class="col" title=${translate('routing_info_distance')}>
 											<div class="routing-info-icon distance"></div>
 										</div>
+										<div class="routing-info-text">${getDistance()}</div>
+									</div>
+								</div>
+
+								<div class="item">
+									<div class="item-header">${translate('routing_info_uphill')}</div>
+									<div class="item-content">
+										<div class="col" title=${translate('routing_info_uphill')}>
+											<div class="routing-info-icon uphill"></div>
+										</div>
 										<div class="routing-info-text">
-											${getDistance()}
+											<span>${getUphill()}</span>
 										</div>
 									</div>
 								</div>
-
 								<div class="item">
-								<div class="item-header">
-								${translate('routing_info_uphill')}
-								</div>
-								<div class="item-content">
-
-									<div class="col" title=${translate('routing_info_uphill')}>
-									<div class="routing-info-icon uphill"></div>
+									<div class="item-header">${translate('routing_info_downhill')}</div>
+									<div class="item-content">
+										<div class="col" title=${translate('routing_info_downhill')}>
+											<div class="routing-info-icon downhill"></div>
+										</div>
+										<div class="routing-info-text">
+											<span>${getDownhill()}</span>
+										</div>
 									</div>
-									<div class="routing-info-text">
-										<span>${getUphill()}</span>
-									</div>
-									</div>
-								</div>
-								<div class="item">
-								<div class="item-header">
-								${translate('routing_info_downhill')}
-								</div>
-								<div class="item-content">
-									<div class="col" title=${translate('routing_info_downhill')}>
-										<div class="routing-info-icon downhill"></div>
-									</div>
-									<div class="routing-info-text">
-										<span>${getDownhill()}</span>
-									</div>
-								</div>
 								</div>
 							</div>
 						</div>

@@ -3,18 +3,15 @@
 	flex-direction: column;
 	flex-wrap: wrap;
 }
-
 .iscollapsed {
 	display: none;
 }
-
 .chevron {
 	position: relative;
 	mask: url('../assets/chevron-right.svg');
 	-webkit-mask-image: url('../assets/chevron-right.svg');
 	mask-image: url('../assets/chevron-right.svg');
 }
-
 .icon {
 	background: var(--primary-color);
 	mask-size: cover;
@@ -29,13 +26,11 @@
 
 	margin-right: 1em;
 }
-
 .iconexpand {
 	-moz-transform: rotate(270deg);
 	-webkit-transform: rotate(270deg);
 	transform: rotate(270deg);
 }
-
 .geolocation-icon {
 	mask: url('../assets/geolocation.svg');
 	-webkit-mask-image: url('../assets/geolocation.svg');
@@ -50,7 +45,6 @@
 	margin: 0 0.5em;
 	border: none;
 }
-
 .warnings__logo-badge {
 	border-radius: 2em;
 	background: var(--secondary-color);
@@ -61,7 +55,6 @@
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 	opacity: 1;
 }
-
 .warnings-selector {
 	display: flex;
 	justify-content: space-between;
@@ -73,17 +66,14 @@
 .warnings-selector:hover .icon {
 	filter: brightness(0.8);
 }
-
 .item {
 	display: flex;
 	align-content: space-between;
 }
-
 button {
 	width: 1rem;
 	height: 1rem;
 }
-
 .warning_icon::before {
 	content: '';
 	mask: url('../assets/warning.svg');
@@ -98,7 +88,6 @@ button {
 	min-width: 1.5em;
 	margin-right: 0.8em;
 }
-
 .hint_icon::before {
 	content: '';
 	mask: url('../assets/warning.svg');
@@ -113,18 +102,15 @@ button {
 	min-width: 1.5em;
 	margin-right: 0.8em;
 }
-
 .highlight {
 	display: flex;
 	flex-grow: 1;
 	padding: 1em 1.5em;
 	align-items: center;
 }
-
 .highlight:hover {
 	background-color: var(--header-background-color);
 }
-
 .overflow-container {
 	padding: 0;
 }

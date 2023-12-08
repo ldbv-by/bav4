@@ -9,33 +9,27 @@
 	border-radius: 2em;
 	border: 1px solid var(--header-background-color);
 }
-
 .categories-container > button:last-child {
 	border-right: none;
 }
-
 .category-button {
 	padding: 0.4em 0.6em;
 	background: transparent;
 	border: none;
 	border-right: 1px solid var(--header-background-color);
 }
-
 .category-button:focus-visible {
 	box-shadow: none;
 }
-
 .category-icon {
 	fill: var(--text2);
 	height: 1.7em;
 	width: 2em;
 	position: relative;
 }
-
 .category-icon:hover {
 	fill: var(--secondary-color);
 }
-
 .is-active {
 	fill: var(--primary-color) !important;
 }
