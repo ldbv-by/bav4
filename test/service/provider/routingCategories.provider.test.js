@@ -20,7 +20,7 @@ describe('bvvRoutingCategoriesProvider', () => {
 		const hike = {
 			id: 'hike',
 			label: 'Wandern',
-			description: 'Wandern auf der gewöhnlich schnellsten Route',
+			description: 'schnellste Route',
 			style: {
 				routeColor: 'red',
 				routeBorderColor: 'white'
@@ -30,7 +30,7 @@ describe('bvvRoutingCategoriesProvider', () => {
 		const bvv_hike = {
 			id: 'bvv-hike',
 			label: 'Wandern (Freizeitwege)',
-			description: 'Wandern möglichst auf offiziellen Wanderwegen',
+			description: 'möglichst auf offiziellen Wanderwegen',
 			style: {
 				routeColor: 'red',
 				routeBorderColor: 'white',
@@ -42,29 +42,31 @@ describe('bvvRoutingCategoriesProvider', () => {
 		const bayernnetzBike = {
 			id: 'bayernnetz-bike',
 			label: 'Fahrrad (Bayernnetz)',
-			description: 'Fahrradfahren möglichst auf Wegen des Bayernnetzes',
+			description: 'möglichst auf Bayernnetz',
 			style: {
 				routeColor: 'blue',
 				routeBorderColor: 'white',
-				routeZindex: 0
+				routeZindex: 0,
+				color: 'blue'
 			},
 			subcategories: []
 		};
 		const bike = {
 			id: 'bike',
 			label: 'Fahrrad',
-			description: 'Fahrradfahren auf der gewöhnlich schnellsten Route',
+			description: 'schnellste Route',
 			style: {
 				routeColor: 'green',
 				routeBorderColor: 'white',
-				routeZindex: 1
+				routeZindex: 1,
+				color: 'green'
 			},
 			subcategories: []
 		};
 		const bvv_bike = {
 			id: 'bvv-bike',
 			label: 'Fahrrad (Freizeitwege)',
-			description: 'Fahrradfahren möglichst auf offiziellen Freizeitwegen',
+			description: 'möglichst auf offiziellen Freizeitwegen',
 			style: {
 				routeColor: 'green',
 				routeBorderColor: 'white',
@@ -77,7 +79,7 @@ describe('bvvRoutingCategoriesProvider', () => {
 		const mtb = {
 			id: 'mtb',
 			label: 'Mountainbike',
-			description: 'Mountainbiken auf der gewöhnlich schnellsten Route',
+			description: 'schnellste Route',
 			style: {
 				routeColor: 'SpringGreen',
 				routeBorderColor: 'white'
@@ -87,7 +89,7 @@ describe('bvvRoutingCategoriesProvider', () => {
 		const bvv_mtb = {
 			id: 'bvv-mtb',
 			label: 'Mountainbike (Freizeitwege)',
-			description: 'Mountainbiken möglichst auf offiziellen Freizeitwegen',
+			description: 'möglichst auf offiziellen Freizeitwegen',
 			style: {
 				routeColor: 'SpringGreen',
 				routeBorderColor: 'white',
@@ -99,7 +101,7 @@ describe('bvvRoutingCategoriesProvider', () => {
 		const race = {
 			id: 'racingbike',
 			label: 'Rennrad',
-			description: 'Rennradfahren auf der gewöhnlich schnellsten Route',
+			description: 'schnellste Route',
 			style: {
 				routeColor: 'fuchsia',
 				routeBorderColor: 'white',
@@ -120,7 +122,7 @@ describe('bvvRoutingCategoriesProvider', () => {
 		const hike = {
 			id: 'hike',
 			label: 'Hiking',
-			description: 'Hike on the usually fastest route',
+			description: 'fastest route',
 			style: {
 				routeColor: 'red',
 				routeBorderColor: 'white'
@@ -130,7 +132,7 @@ describe('bvvRoutingCategoriesProvider', () => {
 		const bvv_hike = {
 			id: 'bvv-hike',
 			label: 'Hiking (BVV Freizeitwege)',
-			description: 'Hike on "BVV Freizeitwege" tracks where possible',
+			description: 'use "BVV Freizeitwege" tracks where possible',
 			style: {
 				routeColor: 'red',
 				routeBorderColor: 'white',
@@ -142,29 +144,31 @@ describe('bvvRoutingCategoriesProvider', () => {
 		const bayernnetzBike = {
 			id: 'bayernnetz-bike',
 			label: 'Bicycle (Bayernnetz)',
-			description: 'Ride a bicycle on "Bayernnetz" tracks where possible',
+			description: 'use "Bayernnetz" tracks where possible',
 			style: {
 				routeColor: 'blue',
 				routeBorderColor: 'white',
-				routeZindex: 0
+				routeZindex: 0,
+				color: 'blue'
 			},
 			subcategories: []
 		};
 		const bike = {
 			id: 'bike',
 			label: 'Bicycle',
-			description: 'Ride a bicycle on the usually fastest route',
+			description: 'fastest route',
 			style: {
 				routeColor: 'green',
 				routeBorderColor: 'white',
-				routeZindex: 1
+				routeZindex: 1,
+				color: 'green'
 			},
 			subcategories: []
 		};
 		const bvv_bike = {
 			id: 'bvv-bike',
 			label: 'Bicycle (BVV Freizeitwege)',
-			description: 'Ride a bicycle on "BVV Freizeitwege" tracks where possible',
+			description: 'use "BVV Freizeitwege" tracks where possible',
 			style: {
 				routeColor: 'green',
 				routeBorderColor: 'white',
@@ -177,7 +181,7 @@ describe('bvvRoutingCategoriesProvider', () => {
 		const mtb = {
 			id: 'mtb',
 			label: 'Mountain bike',
-			description: 'Ride a mountain bike on the usually fastest route',
+			description: 'fastest route',
 			style: {
 				routeColor: 'SpringGreen',
 				routeBorderColor: 'white'
@@ -187,7 +191,7 @@ describe('bvvRoutingCategoriesProvider', () => {
 		const bvv_mtb = {
 			id: 'bvv-mtb',
 			label: 'Mountain bike (Freizeitwege)',
-			description: 'Ride a mountain bike on "BVV Freizeitwege" tracks where possible',
+			description: 'use "BVV Freizeitwege" tracks where possible',
 			style: {
 				routeColor: 'SpringGreen',
 				routeBorderColor: 'white',
@@ -199,7 +203,7 @@ describe('bvvRoutingCategoriesProvider', () => {
 		const race = {
 			id: 'racingbike',
 			label: 'Racing bike',
-			description: 'Ride a racing bike on the usually fastest route',
+			description: 'fastest route',
 			style: {
 				routeColor: 'fuchsia',
 				routeBorderColor: 'white',

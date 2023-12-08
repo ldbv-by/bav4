@@ -14,7 +14,7 @@ export const bvvRoutingCategoriesProvider = async () => {
 	const hike = {
 		id: 'hike',
 		label: lang === 'de' ? 'Wandern' : 'Hiking',
-		description: lang === 'de' ? 'schnellsten Route' : 'fastest route',
+		description: lang === 'de' ? 'schnellste Route' : 'fastest route',
 		style: {
 			routeColor: 'red',
 			routeBorderColor: 'white'
@@ -40,7 +40,8 @@ export const bvvRoutingCategoriesProvider = async () => {
 		style: {
 			routeColor: 'blue',
 			routeBorderColor: 'white',
-			routeZindex: 0
+			routeZindex: 0,
+			color: 'blue'
 		},
 		subcategories: []
 	};
@@ -51,7 +52,8 @@ export const bvvRoutingCategoriesProvider = async () => {
 		style: {
 			routeColor: 'green',
 			routeBorderColor: 'white',
-			routeZindex: 1
+			routeZindex: 1,
+			color: 'green'
 		},
 		subcategories: []
 	};
@@ -71,7 +73,7 @@ export const bvvRoutingCategoriesProvider = async () => {
 	const mtb = {
 		id: 'mtb',
 		label: lang === 'de' ? 'Mountainbike' : 'Mountain bike',
-		description: lang === 'de' ? 'schnellsten Route' : 'fastest route',
+		description: lang === 'de' ? 'schnellste Route' : 'fastest route',
 		style: {
 			routeColor: 'SpringGreen',
 			routeBorderColor: 'white'
@@ -93,7 +95,7 @@ export const bvvRoutingCategoriesProvider = async () => {
 	const race = {
 		id: 'racingbike',
 		label: lang === 'de' ? 'Rennrad' : 'Racing bike',
-		description: lang === 'de' ? 'schnellsten Route' : 'fastest route',
+		description: lang === 'de' ? 'schnellste Route' : 'fastest route',
 		style: {
 			routeColor: 'fuchsia',
 			routeBorderColor: 'white',
