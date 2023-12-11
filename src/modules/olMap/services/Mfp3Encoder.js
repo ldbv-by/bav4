@@ -374,7 +374,7 @@ export class BvvMfp3Encoder {
 			return result
 				? {
 						features: [...encoded.features, ...result.features]
-				  }
+					}
 				: encoded;
 		};
 
@@ -413,7 +413,7 @@ export class BvvMfp3Encoder {
 					name: olVectorLayer.get('id'),
 					style: styleObjectFrom(Array.from(styleCache.values())),
 					opacity: olVectorLayer.getOpacity()
-			  };
+				};
 	}
 
 	_encodeFeature(olFeature, olLayer, styleCache, groupOpacity, presetStyles = []) {
@@ -556,7 +556,7 @@ export class BvvMfp3Encoder {
 						}
 					}
 					return styleFeatures;
-			  }, defaultResult)
+				}, defaultResult)
 			: { features: [] };
 
 		const encodedFeature = this._geometryEncodingFormat.writeFeatureObject(olFeatureToEncode);
@@ -849,7 +849,7 @@ export class BvvMfp3Encoder {
 							]
 						}
 					}
-			  };
+				};
 	}
 
 	_encodeGridLayer(scale) {

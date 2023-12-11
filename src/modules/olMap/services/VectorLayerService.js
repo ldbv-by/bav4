@@ -185,7 +185,7 @@ export class VectorLayerService {
 					source: vectorSource,
 					distance: geoResource.clusterParams.distance,
 					minDistance: geoResource.clusterParams.minDistance
-			  })
+				})
 			: vectorSource;
 	}
 }

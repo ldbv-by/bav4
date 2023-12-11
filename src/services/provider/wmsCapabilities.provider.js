@@ -58,7 +58,7 @@ export const bvvCapabilitiesProvider = async (url, options) => {
 					`${capabilities.onlineResourceGetMap}`,
 					`${layer.name}`,
 					format[0]
-			  )
+				)
 					.setAuthenticationType(getAuthenticationType(options.isAuthenticated))
 					.setQueryable(layer.queryable)
 					.setExtraParams(getExtraParams(capabilities))
