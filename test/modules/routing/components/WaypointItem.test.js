@@ -59,7 +59,6 @@ describe('WaypointItem', () => {
 			expect(waypointElement.shadowRoot.querySelector('.icon').classList).toHaveSize(1);
 			expect(getComputedStyle(waypointElement.shadowRoot.querySelector('.line')).background).toContain('rgb(128, 128, 128)');
 
-			// expect(waypointElement.shadowRoot.querySelector('span').innerText).toBe('routing_waypoints_waypoint 42 11.932 47.898');
 			expect(waypointElement.shadowRoot.querySelector('.text-name').innerText).toBe('routing_waypoints_waypoint 42');
 			expect(waypointElement.shadowRoot.querySelector('.text-coordinate').innerText).toBe('11.932 47.898');
 
