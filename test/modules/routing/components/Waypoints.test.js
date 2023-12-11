@@ -101,6 +101,16 @@ describe('Waypoints', () => {
 			expect(clearButton).toBeDefined();
 			expect(clearButton.label).toBe('routing_waypoints_remove_all');
 		});
+
+		it('when clear button is clicked', async () => {
+			const element = await setup(defaultRoutingState);
+
+			const clearButton = element.shadowRoot.querySelector('#button_clear');
+			expect(store.getState().routing.waypoints.length).toEqual(3);
+			clearButton.click();
+			expect(store.getState().routing.waypoints.length).toEqual(0);
+		});
+
 		it('renders draggable elements', async () => {
 			// HINT: the existence of the behavior (user can drag an element) is additionally driven by css-classes specified in main.css and baElement.css.
 			// All elements are not draggable by default, but can be activated with the 'draggable' class.
