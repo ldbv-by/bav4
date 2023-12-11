@@ -71,6 +71,18 @@ export const getAttributionForLocallyImportedOrCreatedGeoResource = (georesource
 };
 
 /**
+ * BVV provider function for a routing result.
+ * @function
+ * @type {module:domain/geoResources~attributionProvider}
+ */
+export const getBvvAttributionForRoutingResult = (georesource) => {
+	return {
+		description: georesource.label,
+		copyright: [{ label: 'Bayerische Vermessungsverwaltung' }, { label: 'Powered by Graphhopper', url: 'https://www.graphhopper.com/' }]
+	};
+};
+
+/**
  * Returns a `function` returning the actual {@link module:domain/geoResources~attributionProvider} for an URL based GeoResource imported by the user.
  * @function
  * @param {String} url the URL as `string`
