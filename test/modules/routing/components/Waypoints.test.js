@@ -104,11 +104,13 @@ describe('Waypoints', () => {
 
 		it('when clear button is clicked', async () => {
 			const element = await setup(defaultRoutingState);
-
 			const clearButton = element.shadowRoot.querySelector('#button_clear');
-			expect(store.getState().routing.waypoints.length).toEqual(3);
+
+			expect(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).toHaveSize(3);
+
 			clearButton.click();
-			expect(store.getState().routing.waypoints.length).toEqual(0);
+
+			expect(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).toHaveSize(0);
 		});
 
 		it('renders draggable elements', async () => {
