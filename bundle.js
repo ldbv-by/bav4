@@ -44,7 +44,7 @@
 			</style>
 			${n?nh.dy`<style>
 						${a}
-				  </style>`:nh.Ld}
+					</style>`:nh.Ld}
 			<button class="button ${(0,uh.$)(s)}" ?disabled=${e} @click=${()=>{this._onClick()}}>${n?nh.dy`<span class="icon"></span>`:nh.Ld} ${i}</button>
 		`}static get tag(){return"ba-button"}set disabled(t){this.signal(CI,t)}get disabled(){return this.getModel().disabled}set type(t){this.signal(OI,t)}get type(){return this.getModel().type}set label(t){this.signal(UI,t)}get label(){return this.getModel().label}set icon(t){this.signal(kI,t)}get icon(){return this.getModel().icon}set onClick(t){this._onClick=t}get onClick(){return this._onClick}}window.customElements.get(QI.tag)||window.customElements.define(QI.tag,QI);var YI=r(3326),RI=r.n(YI);const FI="update_disabled",VI="update_checked",PI="update_checked_propagate",BI="update_indeterminate",ZI="update_title",WI=(t,e,i=null)=>parseInt(window.getComputedStyle(t,i).getPropertyValue(e)),GI=t=>{};class HI extends vI.T{#s={};#a=GI;#o=!1;#u=!1;#l=null;constructor(){super({checked:!1,indeterminate:!1,disabled:!1,title:""})}onInitialize(){this.setAttribute(Ps.Os,"")}update(t,e,i){const n=t=>(this.dispatchEvent(new CustomEvent("toggle",{detail:{checked:t}})),this.#a(t),t);switch(t){case PI:return{...i,checked:n(e),indeterminate:!1};case VI:return{...i,checked:e,indeterminate:!1};case BI:return{...i,indeterminate:e};case FI:return{...i,disabled:e};case ZI:return{...i,title:e}}}onAfterRender(t){if(t){const t=this.shadowRoot.querySelector("input"),e=WI(t,"width","::before"),i=WI(t,"padding-left")+WI(t,"padding-right"),n=WI(t,"width");this.#s={thumbSize:e,padding:i,bounds:{lower:0,middle:(n-i)/4,upper:n-e-i}}}}createView(t){const{checked:e,indeterminate:i,disabled:n,title:r}=t,s=()=>{if(!this.#l)return;const t=this.shadowRoot.querySelector("input");t.checked=this.#u?this._determineChecked(t):!this._determineChecked(t),this.signal(PI,t.checked),t.style.removeProperty("--thumb-transition-duration"),t.style.removeProperty("--thumb-position"),this.#l.abort(),this.#l=null,this.#u=!1,this._padRelease()},a=t=>{t.target.style.setProperty("--thumb-position",this._calculateThumbPosition(t)),this.#u=!0};return nh.dy`
 			<style>
@@ -153,7 +153,7 @@
 						title="${M("header_emblem_title_standalone")}"
 						class="header__emblem"
 						target="_blank"
-				  ></a>`:nh.dy`<div class="header__emblem"></div>`)()}					
+					></a>`:nh.dy`<div class="header__emblem"></div>`)()}					
 					<div class="header ${u()}" ?data-register-for-viewport-calc=${s}>  
 						<button id='header_toggle' class="close-menu" title=${M("header_close_button_title")}  @click="${WA}"">
 							<i class="resize-icon "></i>
@@ -331,7 +331,7 @@
 				</div>
 			`}return nh.Ld}static get tag(){return"ba-map-context-menu-content"}}window.customElements.get(fT.tag)||window.customElements.define(fT.tag,fT),window.customElements.get(vT.tag)||window.customElements.define(vT.tag,vT);var CT=r(3057),UT=r.n(CT);const OT="update_open_property",kT="update_activeLayers_property",QT="update_zoomLevel_property";class YT extends vI.T{constructor(){super({open:!1,activeLayers:null,zoomLevel:null});const{TranslationService:e,GeoResourceService:i,EnvironmentService:n}=t.U.inject("TranslationService","GeoResourceService","EnvironmentService");this._translationService=e,this._georesourceService=i,this._environmentService=n}onInitialize(){this.observe((t=>t.layers.active),(t=>this.signal(kT,t))),this.observe((t=>t.position.zoom),(t=>this.signal(QT,t)))}update(t,e,i){switch(t){case OT:return{...i,open:e};case kT:return{...i,activeLayers:e};case QT:return{...i,zoomLevel:e}}}_getCopyrights(t,e){const i=t.filter((({visible:t})=>t)).filter((({constraints:{hidden:t}})=>!t)).map((t=>this._georesourceService.byId(t.geoResourceId)));return TA(i,e)}createView(t){const e=t=>this._translationService.translate(t),{activeLayers:i,zoomLevel:n,open:r}=t,s=this._getCopyrights(i,n).map(((t,e,i)=>{const n=e===i.length-1?"":",";return t.url?nh.dy`<a class="attribution attribution-link" target="_blank" title="${t.label}" href=${t.url}
 						>${t.label}${n}</a
-				  >`:nh.dy`<span class="attribution">${t.label}${n}</span>`})),a={isopen:r,selectable:r,isembedded:this._environmentService.isEmbedded()};return nh.dy` <style>
+					>`:nh.dy`<span class="attribution">${t.label}${n}</span>`})),a={isopen:r,selectable:r,isembedded:this._environmentService.isEmbedded()};return nh.dy` <style>
 				${UT()}
 			</style>
 			<div class="attribution-container ${(0,uh.$)(a)}">
@@ -1554,7 +1554,7 @@
 							<div class="iframe__input width_placeholder">${_z}</div>
 							<span class="width_placeholder-sub"> % </span>
 						</div>
-				  </div>`:nh.dy`
+					</div>`:nh.dy`
 					<div class="iframe__container iframe__container-width">		
 						<label for="iframe_width" class="control-label">${e("iframe_generator_width")}</label>							
 						<input type="range" id="iframe_slider_width" step=10 min=${bz} max=${vz} .value=${s} @input=${t=>{this.signal(fz,parseInt(t.target.value))}}>
@@ -1707,7 +1707,7 @@
 			<div class="title">${r("baseLayer_switcher_header")}</div>
 			${Object.keys(e).length<2?nh.Ld:nh.dy`<div class="button-group">
 						${Object.entries(e).map((([t])=>nh.dy`<button @click=${()=>s(t)} class="title ${a(t)}">${r(`baseLayer_container_category_${t}`)}</button>`))}
-				  </div>`}
+					</div>`}
 			<div id="section" class="section scroll-snap-x">
 				${Object.entries(e).map((([t,e])=>nh.dy`<div id="${t}" class="container ${a(t)}">
 							<div>
@@ -1749,7 +1749,7 @@
 					></ba-button>
 					<ba-button id="button_remove_all" .label=${e("layerManager_remove_all")} .type=${"secondary"} @click=${()=>{i.filter((t=>!t.isPlaceholder)).forEach((t=>ws(t.id)))}}></ba-button>
 					<div></div>
-			  </div>`:nh.Ld}static get tag(){return"ba-layer-manager"}}var w_=r(6657),E_=r.n(w_);const z_="update_layer",__="update_layer_collapsed",b_={collapsed:!0,opacity:1,loading:!1};class v_ extends rw{constructor(){super({layer:null});const{TranslationService:e,GeoResourceService:i}=t.U.inject("TranslationService","GeoResourceService");this._translationService=e,this._geoResourceService=i,this._onCollapse=()=>{}}update(t,e,i){switch(t){case z_:return{...i,layer:{...e,visible:e.visible,collapsed:e.collapsed,opacity:e.opacity,loading:e.loading}};case __:return{...i,layer:{...i.layer,collapsed:e}}}}onAfterRender(t){if(t){const t=this._root.querySelectorAll('input[type="range"]'),e=t=>{const e=t.getAttribute("max")||100,i=t.value/e*100;return`${parseInt(i)}%`};t.forEach((t=>{t.style.setProperty("--track-fill",e(t)),t.addEventListener("input",(t=>{t.target.style.setProperty("--track-fill",e(t.target))}))}))}}createView(t){const e=t=>this._translationService.translate(t),{layer:i}=t;if(!i)return nh.Ld;const n=this._geoResourceService.byId(i.geoResourceId),r=i.label,s={iconexpand:!i.collapsed},a={iscollapse:i.collapsed};return nh.dy` <style>
+				</div>`:nh.Ld}static get tag(){return"ba-layer-manager"}}var w_=r(6657),E_=r.n(w_);const z_="update_layer",__="update_layer_collapsed",b_={collapsed:!0,opacity:1,loading:!1};class v_ extends rw{constructor(){super({layer:null});const{TranslationService:e,GeoResourceService:i}=t.U.inject("TranslationService","GeoResourceService");this._translationService=e,this._geoResourceService=i,this._onCollapse=()=>{}}update(t,e,i){switch(t){case z_:return{...i,layer:{...e,visible:e.visible,collapsed:e.collapsed,opacity:e.opacity,loading:e.loading}};case __:return{...i,layer:{...i.layer,collapsed:e}}}}onAfterRender(t){if(t){const t=this._root.querySelectorAll('input[type="range"]'),e=t=>{const e=t.getAttribute("max")||100,i=t.value/e*100;return`${parseInt(i)}%`};t.forEach((t=>{t.style.setProperty("--track-fill",e(t)),t.addEventListener("input",(t=>{t.target.style.setProperty("--track-fill",e(t.target))}))}))}}createView(t){const e=t=>this._translationService.translate(t),{layer:i}=t;if(!i)return nh.Ld;const n=this._geoResourceService.byId(i.geoResourceId),r=i.label,s={iconexpand:!i.collapsed},a={iscollapse:i.collapsed};return nh.dy` <style>
 				${E_()}
 			</style>
 			<div class="ba-section divider">
@@ -2005,17 +2005,17 @@
 								</span>
 							</button>
 						</div>
-				  `:nh.Ld}
+					`:nh.Ld}
 			${e===Hb.MAP?nh.dy`
 						<div>
 							<ba-mvu-mapfeedbackpanel .onSubmit=${this._onSubmit} .center=${i}></ba-mvu-mapfeedbackpanel>
 						</div>
-				  `:nh.Ld}
+					`:nh.Ld}
 			${e===Hb.GENERAL?nh.dy`
 						<div class="toggleGeneral">
 							<ba-mvu-generalfeedbackpanel .onSubmit=${this._onSubmit}></ba-mvu-generalfeedbackpanel>
 						</div>
-				  `:nh.Ld}
+					`:nh.Ld}
 		`}set onSubmit(t){this._onSubmit=t}set type(t){this.signal(Jb,t)}set center(t){this.signal(Xb,t)}static get tag(){return"ba-mvu-togglefeedbackpanel"}}const qb="update";class $b extends Fb{constructor(){super({center:null});const{TranslationService:e}=t.U.inject("TranslationService");this._translationService=e}update(t,e,i){if(t===qb)return{...i,center:e}}getIcon(){return"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktbWFwIj48IS0tTUlUIExpY2Vuc2UtLT48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNS44MTcuMTEzQS41LjUgMCAwIDEgMTYgLjV2MTRhLjUuNSAwIDAgMS0uNDAyLjQ5bC01IDFhLjUwMi41MDIgMCAwIDEtLjE5NiAwTDUuNSAxNS4wMWwtNC45MDIuOThBLjUuNSAwIDAgMSAwIDE1LjV2LTE0YS41LjUgMCAwIDEgLjQwMi0uNDlsNS0xYS41LjUgMCAwIDEgLjE5NiAwTDEwLjUuOTlsNC45MDItLjk4YS41LjUgMCAwIDEgLjQxNS4xMDN6TTEwIDEuOTFsLTQtLjh2MTIuOThsNCAuOFYxLjkxem0xIDEyLjk4IDQtLjhWMS4xMWwtNCAuOHYxMi45OHptLTYtLjhWMS4xMWwtNCAuOHYxMi45OGw0LS44eiIvPjwvc3ZnPgo="}getLabel(){return(t=>this._translationService.translate("chips_assist_chip_map_feedback_label"))()}isVisible(){const{center:t}=this.getModel();return(0,mr.Mn)(t)}async onClick(){const{center:t}=this.getModel(),e=(t=>this._translationService.translate("chips_assist_chip_map_feedback_title"))(),i=nh.dy`<ba-mvu-togglefeedbackpanel
 			.onSubmit=${BN}
 			.type=${Hb.MAP}
@@ -2105,7 +2105,7 @@
 							<span class="share_copy" slot="before">${e("share_dialog_link")}</span>
 						</ba-switch>
 					</div>
-			  </div>`:nh.dy.nothing}_buildShareItem(t){const e=!!this._environmentService.getWindow().navigator.share,i=t=>this._translationService.translate(t),n=async()=>this._copyValueToClipboard(t),r=(e=>{if(e){const e=async()=>{try{const e={url:t};await this._environmentService.getWindow().navigator.share(e)}catch(t){(0,QL.z)(i("share_dialog_api_failed"),QL.T.WARN)}};return nh.dy`<ba-icon class="share_api" .icon="${"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktc2hhcmUtZmlsbCI+PHBhdGggZD0iTTExIDIuNWEyLjUgMi41IDAgMSAxIC42MDMgMS42MjhsLTYuNzE4IDMuMTJhMi40OTkgMi40OTkgMCAwIDEgMCAxLjUwNGw2LjcxOCAzLjEyYTIuNSAyLjUgMCAxIDEtLjQ4OC44NzZsLTYuNzE4LTMuMTJhMi41IDIuNSAwIDEgMSAwLTMuMjU2bDYuNzE4LTMuMTJBMi41IDIuNSAwIDAgMSAxMSAyLjV6Ii8+PC9zdmc+Cg=="}" .title=${i("share_dialog_api")} .size=${2} @click=${e}>
+				</div>`:nh.dy.nothing}_buildShareItem(t){const e=!!this._environmentService.getWindow().navigator.share,i=t=>this._translationService.translate(t),n=async()=>this._copyValueToClipboard(t),r=(e=>{if(e){const e=async()=>{try{const e={url:t};await this._environmentService.getWindow().navigator.share(e)}catch(t){(0,QL.z)(i("share_dialog_api_failed"),QL.T.WARN)}};return nh.dy`<ba-icon class="share_api" .icon="${"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktc2hhcmUtZmlsbCI+PHBhdGggZD0iTTExIDIuNWEyLjUgMi41IDAgMSAxIC42MDMgMS42MjhsLTYuNzE4IDMuMTJhMi40OTkgMi40OTkgMCAwIDEgMCAxLjUwNGw2LjcxOCAzLjEyYTIuNSAyLjUgMCAxIDEtLjQ4OC44NzZsLTYuNzE4LTMuMTJhMi41IDIuNSAwIDEgMSAwLTMuMjU2bDYuNzE4LTMuMTJBMi41IDIuNSAwIDAgMSAxMSAyLjV6Ii8+PC9zdmc+Cg=="}" .title=${i("share_dialog_api")} .size=${2} @click=${e}>
 				</ba-icon>`}return nh.dy`<ba-icon
 				class="share_copy_icon"
 				.icon="${"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktY2xpcGJvYXJkIj48IS0tTUlUIExpY2Vuc2UtLT48cGF0aCBkPSJNNCAxLjVIM2EyIDIgMCAwIDAtMiAyVjE0YTIgMiAwIDAgMCAyIDJoMTBhMiAyIDAgMCAwIDItMlYzLjVhMiAyIDAgMCAwLTItMmgtMXYxaDFhMSAxIDAgMCAxIDEgMVYxNGExIDEgMCAwIDEtMSAxSDNhMSAxIDAgMCAxLTEtMVYzLjVhMSAxIDAgMCAxIDEtMWgxdi0xeiIvPjxwYXRoIGQ9Ik05LjUgMWEuNS41IDAgMCAxIC41LjV2MWEuNS41IDAgMCAxLS41LjVoLTNhLjUuNSAwIDAgMS0uNS0uNXYtMWEuNS41IDAgMCAxIC41LS41aDN6bS0zLTFBMS41IDEuNSAwIDAgMCA1IDEuNXYxQTEuNSAxLjUgMCAwIDAgNi41IDRoM0ExLjUgMS41IDAgMCAwIDExIDIuNXYtMUExLjUgMS41IDAgMCAwIDkuNSAwaC0zeiIvPjwvc3ZnPgo="}"
@@ -2304,7 +2304,7 @@
 						></ba-button>
 					</div>`:nh.dy.nothing}set exportType(t){this.signal(AC,t)}set exportData(t){this.signal(NC,t)}static get tag(){return"ba-export-item"}}window.customElements.get(yC.tag)||window.customElements.define(yC.tag,yC),window.customElements.get(SC.tag)||window.customElements.define(SC.tag,SC),r(8998);var xC=r(7726),IC=r.n(xC);const DC="update_proposal",TC="update_prevent_close",fC=[{id:"start",matcher:t=>t===RA.xO.START||t===RA.xO.START_OR_DESTINATION,label:"routing_contextContent_start",action:t=>(0,OA.ke)(t)},{id:"destination",matcher:t=>t===RA.xO.DESTINATION||t===RA.xO.START_OR_DESTINATION,label:"routing_contextContent_destination",action:t=>(0,OA.M)(t)},{id:"intermediate",matcher:t=>t===RA.xO.INTERMEDIATE,label:"routing_contextContent_intermediate",action:t=>(0,OA.x0)(t)},{id:"remove",matcher:t=>t===RA.xO.EXISTING_INTERMEDIATE||t===RA.xO.EXISTING_START_OR_DESTINATION,label:"routing_contextContent_remove_waypoint",action:t=>(0,OA.C7)(t)}];class wC extends vI.T{constructor(){super({proposal:null,preventClose:!1});const{TranslationService:e}=t.U.inject("TranslationService");this._translationService=e}onInitialize(){this._unsubscribeFromStore=this.observe((t=>t.routing.proposal),(t=>this.signal(DC,t)))}onDisconnect(){this._unsubscribeFromStore()}update(t,e,i){switch(t){case DC:return{...i,proposal:e?.payload};case TC:return{...i,preventClose:e}}}createView(t){const{proposal:e,preventClose:i}=t,n=t=>this._translationService.translate(t),r=t=>{const n=!i;t(e.coord),n&&(YA(),VA())},s=e?[...fC.map((t=>((t,e)=>t.matcher(e.type)?nh.dy`<button id=${t.id} @click=${()=>r(t.action)}>
 						<span class="icon ${t.id}"></span><span class="text">${n(t.label)}</span>
-				  </button>`:null)(t,e)))]:[];return nh.dy`<style>
+					</button>`:null)(t,e)))]:[];return nh.dy`<style>
 				${IC()}
 			</style>
 			<div class="container">${s}</div>`}set preventClose(t){this.signal(TC,t)}static get tag(){return"ba-proposal-context-content"}}window.customElements.get(wC.tag)||window.customElements.define(wC.tag,wC)})()})();

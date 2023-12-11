@@ -176,7 +176,7 @@
 				</div>
 			`}return Gu.Ld}static get tag(){return"ba-map-context-menu-content"}}window.customElements.get(HM.tag)||window.customElements.define(HM.tag,HM),window.customElements.get(JM.tag)||window.customElements.define(JM.tag,JM);var QM=r(3057),tI=r.n(QM);const eI="update_open_property",iI="update_activeLayers_property",nI="update_zoomLevel_property";class rI extends sM.T{constructor(){super({open:!1,activeLayers:null,zoomLevel:null});const{TranslationService:e,GeoResourceService:i,EnvironmentService:n}=t.U.inject("TranslationService","GeoResourceService","EnvironmentService");this._translationService=e,this._georesourceService=i,this._environmentService=n}onInitialize(){this.observe((t=>t.layers.active),(t=>this.signal(iI,t))),this.observe((t=>t.position.zoom),(t=>this.signal(nI,t)))}update(t,e,i){switch(t){case eI:return{...i,open:e};case iI:return{...i,activeLayers:e};case nI:return{...i,zoomLevel:e}}}_getCopyrights(t,e){const i=t.filter((({visible:t})=>t)).filter((({constraints:{hidden:t}})=>!t)).map((t=>this._georesourceService.byId(t.geoResourceId)));return nv(i,e)}createView(t){const e=t=>this._translationService.translate(t),{activeLayers:i,zoomLevel:n,open:r}=t,s=this._getCopyrights(i,n).map(((t,e,i)=>{const n=e===i.length-1?"":",";return t.url?Gu.dy`<a class="attribution attribution-link" target="_blank" title="${t.label}" href=${t.url}
 						>${t.label}${n}</a
-				  >`:Gu.dy`<span class="attribution">${t.label}${n}</span>`})),o={isopen:r,selectable:r,isembedded:this._environmentService.isEmbedded()};return Gu.dy` <style>
+					>`:Gu.dy`<span class="attribution">${t.label}${n}</span>`})),o={isopen:r,selectable:r,isembedded:this._environmentService.isEmbedded()};return Gu.dy` <style>
 				${tI()}
 			</style>
 			<div class="attribution-container ${(0,Hu.$)(o)}">
@@ -204,7 +204,7 @@
 			</style>
 			${n?Gu.dy`<style>
 						${o}
-				  </style>`:Gu.Ld}
+					</style>`:Gu.Ld}
 			<button class="button ${(0,Hu.$)(s)}" ?disabled=${e} @click=${()=>{this._onClick()}}>${n?Gu.dy`<span class="icon"></span>`:Gu.Ld} ${i}</button>
 		`}static get tag(){return"ba-button"}set disabled(t){this.signal(hE,t)}get disabled(){return this.getModel().disabled}set type(t){this.signal(dE,t)}get type(){return this.getModel().type}set label(t){this.signal(uE,t)}get label(){return this.getModel().label}set icon(t){this.signal(pE,t)}get icon(){return this.getModel().icon}set onClick(t){this._onClick=t}get onClick(){return this._onClick}}window.customElements.get(gE.tag)||window.customElements.define(gE.tag,gE);var mE=r(3326),fE=r.n(mE);const _E="update_disabled",yE="update_checked",vE="update_checked_propagate",xE="update_indeterminate",bE="update_title",wE=(t,e,i=null)=>parseInt(window.getComputedStyle(t,i).getPropertyValue(e)),SE=t=>{};class ME extends sM.T{#a={};#l=SE;#c=!1;#h=!1;#u=null;constructor(){super({checked:!1,indeterminate:!1,disabled:!1,title:""})}onInitialize(){this.setAttribute(Cs.Os,"")}update(t,e,i){const n=t=>(this.dispatchEvent(new CustomEvent("toggle",{detail:{checked:t}})),this.#l(t),t);switch(t){case vE:return{...i,checked:n(e),indeterminate:!1};case yE:return{...i,checked:e,indeterminate:!1};case xE:return{...i,indeterminate:e};case _E:return{...i,disabled:e};case bE:return{...i,title:e}}}onAfterRender(t){if(t){const t=this.shadowRoot.querySelector("input"),e=wE(t,"width","::before"),i=wE(t,"padding-left")+wE(t,"padding-right"),n=wE(t,"width");this.#a={thumbSize:e,padding:i,bounds:{lower:0,middle:(n-i)/4,upper:n-e-i}}}}createView(t){const{checked:e,indeterminate:i,disabled:n,title:r}=t,s=()=>{if(!this.#u)return;const t=this.shadowRoot.querySelector("input");t.checked=this.#h?this._determineChecked(t):!this._determineChecked(t),this.signal(vE,t.checked),t.style.removeProperty("--thumb-transition-duration"),t.style.removeProperty("--thumb-position"),this.#u.abort(),this.#u=null,this.#h=!1,this._padRelease()},o=t=>{t.target.style.setProperty("--thumb-position",this._calculateThumbPosition(t)),this.#h=!0};return Gu.dy`
 			<style>
@@ -542,7 +542,7 @@
 							<div class="iframe__input width_placeholder">${yT}</div>
 							<span class="width_placeholder-sub"> % </span>
 						</div>
-				  </div>`:Gu.dy`
+					</div>`:Gu.dy`
 					<div class="iframe__container iframe__container-width">		
 						<label for="iframe_width" class="control-label">${e("iframe_generator_width")}</label>							
 						<input type="range" id="iframe_slider_width" step=10 min=${vT} max=${xT} .value=${s} @input=${t=>{this.signal(gT,parseInt(t.target.value))}}>
