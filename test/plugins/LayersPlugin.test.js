@@ -7,6 +7,7 @@ import { QueryParameters } from '../../src/domain/queryParameters';
 import { Topic } from '../../src/domain/topic';
 import { setCurrent } from '../../src/store/topics/topics.action';
 import { topicsReducer } from '../../src/store/topics/topics.reducer';
+import { initialState as initialPositionState, positionReducer } from '../../src/store/position/position.reducer.js';
 
 describe('LayersPlugin', () => {
 	const geoResourceServiceMock = {
@@ -33,7 +34,8 @@ describe('LayersPlugin', () => {
 	const setup = (state) => {
 		const store = TestUtils.setupStoreAndDi(state, {
 			layers: layersReducer,
-			topics: topicsReducer
+			topics: topicsReducer,
+			position: positionReducer
 		});
 		$injector
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
@@ -359,6 +361,58 @@ describe('LayersPlugin', () => {
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
 				expect(store.getState().layers.active.length).toBe(0);
+			});
+
+			describe('handle query parameter ZOOM_TO_EXTENT', () => {
+				it('calls action fitLayer() for the correct layer', async () => {
+					const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.ZOOM_TO_EXTENT}=1`);
+					const store = setup({
+						position: initialPositionState
+					});
+					const instanceUnderTest = new LayersPlugin();
+					spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+					spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+						switch (id) {
+							case 'some0':
+								return new XyzGeoResource('some0', 'someLabel0', 'someUrl0');
+							case 'some1':
+								return new XyzGeoResource('some1', 'someLabel1', 'someUrl1');
+						}
+					});
+
+					expect(store.getState().position.fitLayerRequest.payload).toBeNull();
+
+					instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
+
+					await TestUtils.timeout();
+
+					expect(store.getState().position.fitLayerRequest.payload.id).toContain('some1_');
+				});
+
+				it('does nothing when parameter value is not an integer', async () => {
+					const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.ZOOM_TO_EXTENT}=foo`);
+					const store = setup({
+						position: initialPositionState
+					});
+					const instanceUnderTest = new LayersPlugin();
+					spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+					spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+						switch (id) {
+							case 'some0':
+								return new XyzGeoResource('some0', 'someLabel0', 'someUrl0');
+							case 'some1':
+								return new XyzGeoResource('some1', 'someLabel1', 'someUrl1');
+						}
+					});
+
+					expect(store.getState().position.fitLayerRequest.payload).toBeNull();
+
+					instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
+
+					await TestUtils.timeout();
+
+					expect(store.getState().position.fitLayerRequest.payload).toBeNull();
+				});
 			});
 		});
 	});
