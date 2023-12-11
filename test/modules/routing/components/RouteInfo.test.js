@@ -400,7 +400,6 @@ describe('RouteInfo', () => {
 				setRoute(defaultRoute);
 
 				expect(element.shadowRoot.querySelector('.category-icon').innerHTML).toContain('icon_parent_category');
-				// expect(getComputedStyle(element.shadowRoot.querySelector('.routing-info-type')).background).toContain('rgb(0, 0, 0)');
 			});
 		});
 	});
