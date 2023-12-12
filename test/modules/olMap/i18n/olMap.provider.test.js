@@ -45,7 +45,7 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_mfp_id_a3_landscape).toBe('DIN A3 Querformat');
 		expect(map.olMap_handler_mfp_id_a3_portrait).toBe('DIN A3 Hochformat');
 		expect(map.olMap_handler_mfp_encoder_layer_not_exportable).toBe('Die folgenden Ebenen können nicht exportiert werden:');
-		expect(map.olMap_handler_routing_choose_alternative_route(['label'])).toBe("Klicken, um alternative Route <b>'label'</b> zu wählen");
+		expect(map.olMap_handler_routing_choose_alternative_route(['label'])).toBe('label');
 		expect(map.olMap_handler_routing_modify_segment).toBe('Zum Ändern der Route ziehen');
 		expect(map.olMap_handler_routing_modify_start).toBe('Zum Ändern des Startpunktes ziehen');
 		expect(map.olMap_handler_routing_modify_destination).toBe('Zum Ändern des Zielpunktes ziehen');
@@ -95,7 +95,7 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_mfp_id_a3_landscape).toBe('DIN A3 landscape');
 		expect(map.olMap_handler_mfp_id_a3_portrait).toBe('DIN A3 portrait');
 		expect(map.olMap_handler_mfp_encoder_layer_not_exportable).toBe('The following layers cannot be exported:');
-		expect(map.olMap_handler_routing_choose_alternative_route(['label'])).toBe("Click for choosing the alterative route <b>'label'</b>");
+		expect(map.olMap_handler_routing_choose_alternative_route(['label'])).toBe('label');
 		expect(map.olMap_handler_routing_modify_segment).toBe('Pull to modify the route');
 		expect(map.olMap_handler_routing_modify_start).toBe('Pull to modify the start point');
 		expect(map.olMap_handler_routing_modify_destination).toBe('Pull to modify the destination point');

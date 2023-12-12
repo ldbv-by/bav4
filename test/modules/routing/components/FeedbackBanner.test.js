@@ -56,12 +56,35 @@ describe('FeedbackBanner', () => {
 		it('renders status', async () => {
 			const element = await setup();
 
-			setStatus(400);
+			setStatus(400); // RoutingStatusCodes.Http_Backend_400
 
-			const spans = element.shadowRoot.querySelectorAll('span');
+			expect(element.shadowRoot.querySelector('.icon').classList.contains('icon-status-400')).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll('span')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('span')[0].innerText).toBe('routing_feedback_400');
 
-			expect(spans).toHaveSize(1);
-			expect(spans[0].innerText).toBe('routing_feedback_400');
+			setStatus(500); // RoutingStatusCodes.Http_Backend_500
+
+			expect(element.shadowRoot.querySelector('.icon').classList.contains('icon-status-500')).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll('span')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('span')[0].innerText).toBe('routing_feedback_500');
+
+			setStatus(900); // RoutingStatusCodes.Start_Destination_Missing
+
+			expect(element.shadowRoot.querySelector('.icon').classList.contains('icon-status-900')).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll('span')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('span')[0].innerText).toBe('routing_feedback_900');
+
+			setStatus(901); // RoutingStatusCodes.Destination_Missing
+
+			expect(element.shadowRoot.querySelector('.icon').classList.contains('icon-status-901')).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll('span')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('span')[0].innerText).toBe('routing_feedback_901');
+
+			setStatus(902); // RoutingStatusCodes.Start_Missing
+
+			expect(element.shadowRoot.querySelector('.icon').classList.contains('icon-status-902')).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll('span')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('span')[0].innerText).toBe('routing_feedback_902');
 		});
 	});
 
