@@ -234,7 +234,6 @@ export class Switch extends MvuElement {
 	_determineChecked(checkbox) {
 		const { bounds } = this.#switch;
 		const currentPosition = parseInt(checkbox.style.getPropertyValue('--thumb-position'));
-		console.log(bounds, currentPosition);
 		return currentPosition >= bounds.middle;
 	}
 
