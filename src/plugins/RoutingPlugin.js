@@ -20,10 +20,18 @@ import { TabIds } from '../domain/mainMenu';
 import { isCoordinate } from '../utils/checks';
 
 /**
- * Id of the layer used for routing interaction.
+ * Id of the temporary layer used for routing interaction when the tool is activated
  * LayerHandler of a map implementation will also use this id as their key.
  */
 export const ROUTING_LAYER_ID = 'routing_layer';
+/**
+ * Id of a permanent layer used for displaying a route.
+ */
+export const PERMANENT_ROUTE_LAYER_ID = 'perm_rt_layer';
+/**
+ * Id of a permanent layer used for displaying the waypoints of a route.
+ */
+export const PERMANENT_WP_LAYER_ID = 'perm_wp_layer';
 
 /**
  * This plugin observes the 'active' property of the routing store.
@@ -99,6 +107,8 @@ export class RoutingPlugin extends BaPlugin {
 		const onChange = (changedState) => {
 			if (changedState) {
 				addLayer(ROUTING_LAYER_ID, { constraints: { hidden: true, alwaysTop: true } });
+				removeLayer(PERMANENT_ROUTE_LAYER_ID);
+				removeLayer(PERMANENT_WP_LAYER_ID);
 			} else {
 				removeLayer(ROUTING_LAYER_ID);
 			}

@@ -1,7 +1,7 @@
-import { RoutingPlugin, ROUTING_LAYER_ID } from '../../src/plugins/RoutingPlugin';
+import { RoutingPlugin, ROUTING_LAYER_ID, PERMANENT_ROUTE_LAYER_ID, PERMANENT_WP_LAYER_ID } from '../../src/plugins/RoutingPlugin';
 
 import { TestUtils } from '../test-utils.js';
-import { layersReducer } from '../../src/store/layers/layers.reducer';
+import { createDefaultLayer, layersReducer } from '../../src/store/layers/layers.reducer';
 import { initialState as initialRoutingState, routingReducer } from '../../src/store/routing/routing.reducer';
 import { initialState as initialToolsState, toolsReducer } from '../../src/store/tools/tools.reducer';
 import { setCurrentTool } from '../../src/store/tools/tools.action';
@@ -184,6 +184,20 @@ describe('RoutingPlugin', () => {
 			deactivate();
 
 			expect(store.getState().layers.active.length).toBe(0);
+		});
+
+		it('removes the permanent layers', async () => {
+			const store = setup({
+				layers: { active: [createDefaultLayer(PERMANENT_ROUTE_LAYER_ID), createDefaultLayer(PERMANENT_WP_LAYER_ID)] }
+			});
+			const instanceUnderTest = new RoutingPlugin();
+			instanceUnderTest._initialized = true;
+			await instanceUnderTest.register(store);
+
+			activate();
+
+			expect(store.getState().layers.active.length).toBe(1);
+			expect(store.getState().layers.active[0].id).toBe(ROUTING_LAYER_ID);
 		});
 	});
 
