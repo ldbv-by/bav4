@@ -102,7 +102,7 @@ export class Switch extends MvuElement {
 				bounds: {
 					lower: 0,
 					middle: (width - padding) / 4,
-					upper: width - thumbSize - padding
+					upper: width - thumbSize / 2 - padding
 				}
 			};
 		}

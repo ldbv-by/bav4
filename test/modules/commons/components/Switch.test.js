@@ -243,7 +243,7 @@ describe('Switch', () => {
 				baSwitch.dispatchEvent(pointermove);
 				const afterPointerMove = getThumbStyleProperties(baSwitch);
 
-				expect(afterPointerMove.thumbPosition).toBe('14px');
+				expect(afterPointerMove.thumbPosition).toBe('25px');
 				expect(afterPointerMove.thumbTransitionDuration).toBe('0s');
 
 				const pointerup = new Event('pointerup');
