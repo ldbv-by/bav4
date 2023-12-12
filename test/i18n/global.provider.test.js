@@ -20,13 +20,13 @@ describe('global i18n', () => {
 		expect(map.global_privacy_policy_url).toBe('https://geoportal.bayern.de/geoportalbayern/seiten/datenschutz.html');
 		expect(map.global_marker_symbol_label).toBe('Marker');
 		expect(map.global_featureInfo_not_available).toBe('FeatureInfo is not available');
-		expect(map.global_routing_init_exception).toBe('Routing currently not available');
+		expect(map.global_routingService_init_exception).toBe('Routing currently not available');
 	});
 
 	it('provides translation for de', () => {
 		const map = provide('de');
 
-		expect(map.global_mfpService_init_exception).toBe('PDF Export derzeit leider nicht möglich.');
+		expect(map.global_mfpService_init_exception).toBe('PDF Export derzeit leider nicht möglich');
 		expect(map.global_mfpService_createJob_exception).toBe('PDF konnte nicht erstellt werden');
 		expect(map.global_featureInfoService_exception).toBe('FeatureInfo Abfrage schlug fehl');
 		expect(map.global_geolocation_denied).toBe(
@@ -42,7 +42,7 @@ describe('global i18n', () => {
 		expect(map.global_privacy_policy_url).toBe('https://geoportal.bayern.de/geoportalbayern/seiten/datenschutz.html');
 		expect(map.global_marker_symbol_label).toBe('Markierung');
 		expect(map.global_featureInfo_not_available).toBe('FeatureInfo ist nicht verfügbar');
-		expect(map.global_routing_init_exception).toBe('Die Routing-Funktion steht derzeit leider nicht zur Verfügung');
+		expect(map.global_routingService_init_exception).toBe('Die Routing-Funktion steht derzeit leider nicht zur Verfügung');
 	});
 
 	it('have the expected amount of translations', () => {

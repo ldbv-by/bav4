@@ -18,7 +18,7 @@ export const provide = (lang) => {
 				global_privacy_policy_url: 'https://geoportal.bayern.de/geoportalbayern/seiten/datenschutz.html',
 				global_marker_symbol_label: 'Marker',
 				global_featureInfo_not_available: 'FeatureInfo is not available',
-				global_routing_init_exception: 'Routing currently not available'
+				global_routingService_init_exception: 'Routing currently not available'
 			};
 
 		case 'de':
@@ -39,7 +39,7 @@ export const provide = (lang) => {
 				global_privacy_policy_url: 'https://geoportal.bayern.de/geoportalbayern/seiten/datenschutz.html',
 				global_marker_symbol_label: 'Markierung',
 				global_featureInfo_not_available: 'FeatureInfo ist nicht verfügbar',
-				global_routing_init_exception: 'Die Routing-Funktion steht derzeit leider nicht zur Verfügung'
+				global_routingService_init_exception: 'Die Routing-Funktion steht derzeit leider nicht zur Verfügung'
 			};
 
 		default:
