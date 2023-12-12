@@ -72,6 +72,8 @@ export class RoutingPlugin extends BaPlugin {
 				try {
 					await this.#routingService.init();
 					setCategory(this.#routingService.getCategories()[0]?.id);
+					// parse query parameters if available
+					this._parseRouteFromQueryParams(this.#environmentService.getQueryParams());
 					return (this._initialized = true);
 				} catch (ex) {
 					console.error('Routing service could not be initialized', ex);
@@ -92,12 +94,10 @@ export class RoutingPlugin extends BaPlugin {
 				closeBottomSheet();
 				deactivate();
 			} else {
-				const queryParameters = this.#environmentService.getQueryParams(); // Note: we have to fetch the query params before they are updated elsewhere
 				if (await lazyInitialize()) {
 					// we activate the tool after another possible active tool was deactivated
 					setTimeout(() => {
 						activate();
-						this._parseRouteFromQueryParams(queryParameters);
 						setTab(TabIds.ROUTING);
 					});
 				}

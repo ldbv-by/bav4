@@ -92,6 +92,24 @@ describe('RoutingPlugin', () => {
 				expect(store.getState().routing.categoryId).toBe(categoryId);
 			});
 
+			it('parses the query parameters', async () => {
+				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2`);
+				const store = setup({ routing: initialRoutingState });
+				const instanceUnderTest = new RoutingPlugin();
+				const parseRouteFromQueryParamsSpy = spyOn(instanceUnderTest, '_parseRouteFromQueryParams');
+				await instanceUnderTest.register(store);
+				spyOn(routingService, 'init').and.resolveTo([]);
+				spyOn(routingService, 'getCategories').and.returnValue([{ id: 'catId' }]);
+				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParams);
+
+				setCurrentTool(Tools.ROUTING);
+
+				// we have to wait for two async operations
+				await TestUtils.timeout();
+				await TestUtils.timeout();
+				expect(parseRouteFromQueryParamsSpy).toHaveBeenCalledOnceWith(queryParams);
+			});
+
 			it('emits a notification when RoutingService#init throws an error', async () => {
 				const message = 'something got wrong';
 				const store = setup();
@@ -127,7 +145,7 @@ describe('RoutingPlugin', () => {
 				expect(store.getState().routing.active).toBeTrue();
 			});
 
-			it('parses query parameters', async () => {
+			xit('parses query parameters', async () => {
 				const store = setup();
 				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2`);
 				const instanceUnderTest = new RoutingPlugin();
