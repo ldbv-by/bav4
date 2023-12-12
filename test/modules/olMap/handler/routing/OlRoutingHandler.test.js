@@ -776,7 +776,7 @@ describe('OlRoutingHandler', () => {
 					await instanceUnderTest._updateStore(mockGhRoute);
 
 					expect(errorSpy).toHaveBeenCalledWith(message);
-					expect(store.getState().notifications.latest.payload.content).toBe('global_routingService_exception');
+					expect(store.getState().notifications.latest.payload.content).toBe('olMap_handler_routing_routingService_exception');
 					expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
 				});
 			});
@@ -912,7 +912,7 @@ describe('OlRoutingHandler', () => {
 					await instanceUnderTest._requestRouteFromCoordinates([coordinate0, coordinate1], RoutingStatusCodes.Destination_Missing);
 
 					expect(errorSpy).toHaveBeenCalledWith(message);
-					expect(store.getState().notifications.latest.payload.content).toBe('global_routingService_exception');
+					expect(store.getState().notifications.latest.payload.content).toBe('olMap_handler_routing_routingService_exception');
 					expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
 				});
 			});

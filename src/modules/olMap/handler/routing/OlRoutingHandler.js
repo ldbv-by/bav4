@@ -557,7 +557,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 					this._currentRoutingResponse = await this._requestAndDisplayRoute(this._catId, alternativeCategoryIds, coordinates3857);
 				} catch (error) {
 					console.error(error);
-					emitNotification(`${this._translationService.translate('global_routingService_exception')}`, LevelTypes.ERROR);
+					emitNotification(`${this._translationService.translate('olMap_handler_routing_routingService_exception')}`, LevelTypes.ERROR);
 				}
 			}
 			// enable interaction also if request failed
@@ -581,7 +581,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 			updateCoordinates(coordinates);
 		} catch (e) {
 			console.error(e);
-			emitNotification(`${this._translationService.translate('global_routingService_exception')}`, LevelTypes.ERROR);
+			emitNotification(`${this._translationService.translate('olMap_handler_routing_routingService_exception')}`, LevelTypes.ERROR);
 		}
 	}
 
