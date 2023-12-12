@@ -20,7 +20,6 @@ describe('global i18n', () => {
 		expect(map.global_privacy_policy_url).toBe('https://geoportal.bayern.de/geoportalbayern/seiten/datenschutz.html');
 		expect(map.global_marker_symbol_label).toBe('Marker');
 		expect(map.global_featureInfo_not_available).toBe('FeatureInfo is not available');
-		expect(map.global_routingService_exception).toBe('A route could not be created');
 	});
 
 	it('provides translation for de', () => {
@@ -42,11 +41,10 @@ describe('global i18n', () => {
 		expect(map.global_privacy_policy_url).toBe('https://geoportal.bayern.de/geoportalbayern/seiten/datenschutz.html');
 		expect(map.global_marker_symbol_label).toBe('Markierung');
 		expect(map.global_featureInfo_not_available).toBe('FeatureInfo ist nicht verfügbar');
-		expect(map.global_routingService_exception).toBe('Eine Route konnte nicht erstellt werden');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 15;
+		const expectedSize = 14;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

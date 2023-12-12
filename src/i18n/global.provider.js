@@ -17,8 +17,7 @@ export const provide = (lang) => {
 				global_share_unsupported_geoResource_warning: "The following layers won't be shared:",
 				global_privacy_policy_url: 'https://geoportal.bayern.de/geoportalbayern/seiten/datenschutz.html',
 				global_marker_symbol_label: 'Marker',
-				global_featureInfo_not_available: 'FeatureInfo is not available',
-				global_routingService_exception: 'A route could not be created'
+				global_featureInfo_not_available: 'FeatureInfo is not available'
 			};
 
 		case 'de':
@@ -38,8 +37,7 @@ export const provide = (lang) => {
 				global_share_unsupported_geoResource_warning: 'Folgende Ebenen werden nicht geteilt:',
 				global_privacy_policy_url: 'https://geoportal.bayern.de/geoportalbayern/seiten/datenschutz.html',
 				global_marker_symbol_label: 'Markierung',
-				global_featureInfo_not_available: 'FeatureInfo ist nicht verfügbar',
-				global_routingService_exception: 'Eine Route konnte nicht erstellt werden'
+				global_featureInfo_not_available: 'FeatureInfo ist nicht verfügbar'
 			};
 
 		default:
