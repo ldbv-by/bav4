@@ -1660,6 +1660,7 @@ describe('OlRoutingHandler', () => {
 				instanceUnderTest._interactionLayer.getSource().addFeature(featureWaypoint);
 				spyOn(geoResourceServiceMock, 'byId').and.returnValue(null);
 				spyOn(geoResourceServiceMock, 'addOrReplace').and.callFake((gr) => geoResources.push(gr));
+				const mapServiceSpy = spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
 
 				instanceUnderTest._convertToPermanentLayer();
 
@@ -1684,6 +1685,7 @@ describe('OlRoutingHandler', () => {
 				expect(geoResources[1].data).toContain('<Document><Placemark><Style/><Point><coordinates>');
 
 				expect(geoResources[0].data).not.toBe(geoResources[1].data);
+				expect(mapServiceSpy).toHaveBeenCalledTimes(2)
 			});
 
 			it('updates both existing GeoResources and adds two layers', async () => {
@@ -1702,6 +1704,7 @@ describe('OlRoutingHandler', () => {
 					return new VectorGeoResource(id, 'any', VectorSourceType.KML);
 				});
 				spyOn(geoResourceServiceMock, 'addOrReplace').and.callFake((gr) => geoResources.push(gr));
+				const mapServiceSpy = spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
 
 				instanceUnderTest._convertToPermanentLayer();
 
@@ -1716,6 +1719,7 @@ describe('OlRoutingHandler', () => {
 				expect(geoResources[0].data).toContain('<Document><Placemark><Style/><Point><coordinates>');
 
 				expect(geoResources[0].data).not.toBe(geoResources[1].data);
+				expect(mapServiceSpy).toHaveBeenCalledTimes(2)
 			});
 
 			it('does nothing when no route is available', async () => {

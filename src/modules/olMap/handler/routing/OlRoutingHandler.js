@@ -751,8 +751,8 @@ export class OlRoutingHandler extends OlLayerHandler {
 			const idWpLayer = 'OlRoutingHandler_idWpLayer';
 			const labelWpLayer = this._translationService.translate('olMap_handler_routing_wp_layer_label');
 
-			const routeKML = createKML(this._routeLayerCopy, 'EPSG:3857');
-			const interactionKML = createKML(this._interactionLayer, 'EPSG:3857');
+			const routeKML = createKML(this._routeLayerCopy, `EPSG:${this._mapService.getSrid()}`);
+			const interactionKML = createKML(this._interactionLayer, `EPSG:${this._mapService.getSrid()}`);
 
 			const getOrCreateVectorGeoResource = (id, label) => {
 				const fromService = this._geoResourceService.byId(id);
