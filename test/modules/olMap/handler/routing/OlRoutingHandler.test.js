@@ -43,6 +43,7 @@ import {
 } from '../../../../../src/services/provider/attribution.provider';
 import { layersReducer } from '../../../../../src/store/layers/layers.reducer';
 import { VectorGeoResource, VectorSourceType } from '../../../../../src/domain/geoResources';
+import { PERMANENT_ROUTE_LAYER_ID, PERMANENT_WP_LAYER_ID } from '../../../../../src/plugins/RoutingPlugin';
 
 describe('constants and enums', () => {
 	it('provides an enum of all valid RoutingFeatureTypes', () => {
@@ -1668,7 +1669,7 @@ describe('OlRoutingHandler', () => {
 				expect(geoResources).toHaveSize(2);
 
 				//first vgr and layer
-				expect(store.getState().layers.active[0].id).toBe('OlRoutingHandler_rtLayer');
+				expect(store.getState().layers.active[0].id).toBe(PERMANENT_ROUTE_LAYER_ID);
 				expect(geoResources[0].label).toBe('olMap_handler_routing_rt_layer_label');
 				expect(geoResources[0].hidden).toBeTrue();
 				expect(geoResources[0].attributionProvider).toEqual(getBvvAttributionForRoutingResult);
@@ -1676,7 +1677,7 @@ describe('OlRoutingHandler', () => {
 				expect(geoResources[0].srid).toEqual(4326);
 				expect(geoResources[1].data).toContain('<Document><Placemark><Style/><Point><coordinates>');
 				//second vgr and layer
-				expect(store.getState().layers.active[1].id).toBe('OlRoutingHandler_idWpLayer');
+				expect(store.getState().layers.active[1].id).toBe(PERMANENT_WP_LAYER_ID);
 				expect(geoResources[1].label).toBe('olMap_handler_routing_wp_layer_label');
 				expect(geoResources[1].hidden).toBeTrue();
 				expect(geoResources[1].attributionProvider).toEqual(getAttributionForLocallyImportedOrCreatedGeoResource);
@@ -1712,10 +1713,10 @@ describe('OlRoutingHandler', () => {
 				expect(geoResources).toHaveSize(2);
 
 				//first vgr and layer
-				expect(store.getState().layers.active[0].id).toBe('OlRoutingHandler_rtLayer');
+				expect(store.getState().layers.active[0].id).toBe(PERMANENT_ROUTE_LAYER_ID);
 				expect(geoResources[1].data).toContain('<Document><Placemark><Style/><Point><coordinates>');
 				//second vgr and layer
-				expect(store.getState().layers.active[1].id).toBe('OlRoutingHandler_idWpLayer');
+				expect(store.getState().layers.active[1].id).toBe(PERMANENT_WP_LAYER_ID);
 				expect(geoResources[0].data).toContain('<Document><Placemark><Style/><Point><coordinates>');
 
 				expect(geoResources[0].data).not.toBe(geoResources[1].data);
