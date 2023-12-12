@@ -1646,7 +1646,7 @@ describe('OlRoutingHandler', () => {
 		});
 
 		describe('_convertToPermanentLayer', () => {
-			it('creates two GeoResources and add two layers', async () => {
+			it('creates two GeoResources and adds two layers', async () => {
 				const geoResources = [];
 				const featureRoute = new Feature({
 					geometry: new Point([21, 21])
@@ -1656,7 +1656,7 @@ describe('OlRoutingHandler', () => {
 				});
 				const { instanceUnderTest, map, store } = await newTestInstance();
 				instanceUnderTest.activate(map);
-				instanceUnderTest._routeLayer.getSource().addFeature(featureRoute);
+				instanceUnderTest._routeLayerCopy.getSource().addFeature(featureRoute);
 				instanceUnderTest._interactionLayer.getSource().addFeature(featureWaypoint);
 				spyOn(geoResourceServiceMock, 'byId').and.returnValue(null);
 				spyOn(geoResourceServiceMock, 'addOrReplace').and.callFake((gr) => geoResources.push(gr));
@@ -1686,7 +1686,7 @@ describe('OlRoutingHandler', () => {
 				expect(geoResources[0].data).not.toBe(geoResources[1].data);
 			});
 
-			it('updates both existing GeoResources and add two layers', async () => {
+			it('updates both existing GeoResources and adds two layers', async () => {
 				const geoResources = [];
 				const featureRoute = new Feature({
 					geometry: new Point([21, 21])
@@ -1696,7 +1696,7 @@ describe('OlRoutingHandler', () => {
 				});
 				const { instanceUnderTest, map, store } = await newTestInstance();
 				instanceUnderTest.activate(map);
-				instanceUnderTest._routeLayer.getSource().addFeature(featureRoute);
+				instanceUnderTest._routeLayerCopy.getSource().addFeature(featureRoute);
 				instanceUnderTest._interactionLayer.getSource().addFeature(featureWaypoint);
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					return new VectorGeoResource(id, 'any', VectorSourceType.KML);

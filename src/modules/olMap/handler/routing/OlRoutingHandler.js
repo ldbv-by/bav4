@@ -745,13 +745,13 @@ export class OlRoutingHandler extends OlLayerHandler {
 	}
 
 	_convertToPermanentLayer() {
-		if (this._routeLayer.getSource().getFeatures().length > 0) {
+		if (this._routeLayerCopy.getSource().getFeatures().length > 0) {
 			const idRtLayer = 'OlRoutingHandler_rtLayer';
 			const labelRtLayer = this._translationService.translate('olMap_handler_routing_rt_layer_label');
 			const idWpLayer = 'OlRoutingHandler_idWpLayer';
 			const labelWpLayer = this._translationService.translate('olMap_handler_routing_wp_layer_label');
 
-			const routeKML = createKML(this._routeLayer, 'EPSG:3857');
+			const routeKML = createKML(this._routeLayerCopy, 'EPSG:3857');
 			const interactionKML = createKML(this._interactionLayer, 'EPSG:3857');
 
 			const getOrCreateVectorGeoResource = (id, label) => {
