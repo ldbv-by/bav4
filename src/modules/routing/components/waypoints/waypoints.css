@@ -1,23 +1,19 @@
 .container {
 	display: flex;
 	flex-direction: row;
-	background: var(--header-background-color);
 	justify-content: center;
 	align-items: center;
 }
-
 ul {
 	display: flex;
 	flex-direction: column;
 	list-style: none;
 }
-
 li {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
 }
-
 .placeholder {
 	height: 0;
 	overflow: hidden;
@@ -26,45 +22,45 @@ li {
 	color: rgba(0, 0, 0, 0.3);
 	font-size: 2rem;
 	opacity: 0.5;
-	padding: 0 0.5em;
+	padding: 0 0.8em;
+	align-items: center;
+	display: flex;
 	width: 100%;
 }
-
 .placeholder-active {
-	height: 1.2em;
+	height: 1.8em;
 	box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.5);
 	transition: all 0.5s ease;
 }
-
 .over {
 	background-color: var(--primary-color);
 }
-
 .isdragged {
 	background: var(--header-background-color);
 }
-
 .waypoints__actions {
-	justify-content: center;
+	border-top: 1px solid var(--header-background-color);
 	display: flex;
-	margin-right: 1em;
+	justify-content: flex-start;
+	margin: 0 0.3em 0.5em;
 }
-
+.waypoints__actions ba-button {
+	border-right: 1px solid var(--header-background-color);
+}
+.waypoints__actions ba-button:last-child {
+	border-right: none;
+}
 .overflow-container {
-	margin: 0.5em 1em;
-	border-radius: 1.5em;
+	width: 100%;
 	background: var(--primary-bg-color);
-	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 	overflow: hidden;
 }
-
 ba-routing-waypoint-item {
 	flex-grow: 1;
 }
 .waypoint[draggable='true'] {
 	border-bottom: 1px dotted var(--secondary-bg-color);
 }
-
 .waypoints .waypoint:nth-last-child(-n + 2) {
 	border-bottom: 0;
 }

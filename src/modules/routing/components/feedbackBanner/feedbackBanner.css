@@ -1,15 +1,39 @@
-.container {
+.container span {
+	font-size: 1.4em;
+	margin: 1em;
 	display: block;
+	padding: 1em;
+	text-align: center;
 }
-
 .status-400 {
 	background-color: var(--warning-color);
+	color: var(--text3);
 }
-
 .status-500 {
 	background-color: var(--error-color);
+	color: var(--text3);
 }
-
 .status-900 {
-	background-color: inherit;
+	color: var(--text1);
+}
+.icon {
+	height: 13em;
+	width: 13em;
+	background-size: contain;
+	margin: 3em auto 1em;
+}
+.icon-status-900 {
+	background-image: url('../assets/status-900.svg');
+}
+.icon-status-901 {
+	background-image: url('../assets/status-901.svg');
+}
+.icon-status-902 {
+	background-image: url('../assets/status-902.svg');
+}
+.icon-status-400 {
+	background-image: url('../assets/status-400.svg');
+}
+.icon-status-500 {
+	background-image: url('../assets/status-500.svg');
 }
