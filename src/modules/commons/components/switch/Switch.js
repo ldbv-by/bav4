@@ -63,12 +63,14 @@ export class Switch extends MvuElement {
 
 	update(type, data, model) {
 		const returnAndPropagate = (data) => {
-			this.dispatchEvent(
-				new CustomEvent('toggle', {
-					detail: { checked: data }
-				})
-			);
-			this.#onToggle(data);
+			if (data !== model.checked) {
+				this.dispatchEvent(
+					new CustomEvent('toggle', {
+						detail: { checked: data }
+					})
+				);
+				this.#onToggle(data);
+			}
 
 			return data;
 		};
@@ -130,7 +132,8 @@ export class Switch extends MvuElement {
 			if (!this.#draggingListener) return;
 
 			const checkbox = this.shadowRoot.querySelector('input');
-			checkbox.checked = this.#dragging ? this._determineChecked(checkbox) : !this._determineChecked(checkbox);
+			checkbox.checked = this.#dragging ? this._determineChecked(checkbox) : !checkbox.checked;
+
 			this.signal(Update_Checked_Propagate, checkbox.checked);
 
 			checkbox.style.removeProperty('--thumb-transition-duration');
@@ -209,7 +212,6 @@ export class Switch extends MvuElement {
 	_calculateThumbPosition(event) {
 		const getHarmonizedPosition = (offsetX, thumbSize, bounds) => {
 			const rawPosition = Math.round(offsetX - thumbSize / 2);
-
 			return rawPosition < bounds.lower ? 0 : rawPosition > bounds.upper ? bounds.upper : rawPosition;
 		};
 
@@ -232,6 +234,7 @@ export class Switch extends MvuElement {
 	_determineChecked(checkbox) {
 		const { bounds } = this.#switch;
 		const currentPosition = parseInt(checkbox.style.getPropertyValue('--thumb-position'));
+		console.log(bounds, currentPosition);
 		return currentPosition >= bounds.middle;
 	}
 

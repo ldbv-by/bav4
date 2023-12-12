@@ -228,7 +228,7 @@ describe('Switch', () => {
 		});
 
 		describe('all pointer events at once', () => {
-			it('handles all pointer - events and calls the onToggle callback', async () => {
+			it('handles all pointer-events and calls the onToggle callback', async () => {
 				const element = await TestUtils.render(Switch.tag);
 				const onToggleSpy = spyOn(element, 'onToggle').and.callThrough();
 
@@ -257,12 +257,36 @@ describe('Switch', () => {
 				expect(element.checked).toBeTrue();
 			});
 
+			it('handles all pointer-events and does NOT call the onToggle callback, due to no changes in checked state', async () => {
+				const element = await TestUtils.render(Switch.tag);
+				const onToggleSpy = spyOn(element, 'onToggle').and.callThrough();
+
+				expect(element.checked).toBeFalse();
+
+				const baSwitch = element.shadowRoot.querySelector('#baSwitch');
+				const pointerdown = new Event('pointerdown');
+				pointerdown.offsetX = 25;
+				baSwitch.dispatchEvent(pointerdown);
+
+				const pointermove = new PointerEvent('pointermove');
+				baSwitch.dispatchEvent(pointermove);
+
+				const pointerup = new Event('pointerup');
+				baSwitch.dispatchEvent(pointerup);
+
+				expect(onToggleSpy).toHaveBeenCalledTimes(0);
+				expect(element.checked).toBeFalse();
+			});
+
 			it('handles pointer down/up - events and calls the onToggle callback', async () => {
 				const element = await TestUtils.render(Switch.tag);
 				const onToggleSpy = spyOn(element, 'onToggle').and.callThrough();
 
+				expect(element.checked).toBeFalse();
+
 				const baSwitch = element.shadowRoot.querySelector('#baSwitch');
 				const pointerdown = new Event('pointerdown');
+				pointerdown.offsetX = 25;
 				baSwitch.dispatchEvent(pointerdown);
 
 				const afterPointerDown = getThumbStyleProperties(baSwitch);
