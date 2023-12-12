@@ -61,9 +61,9 @@ export class RoutingPlugin extends BaPlugin {
 		this.#environmentService = environmentService;
 		this.#routingService = routingService;
 	}
+
 	/**
 	 * @override
-	 * @param {Store} store
 	 */
 	async register(store) {
 		const lazyInitialize = async () => {
