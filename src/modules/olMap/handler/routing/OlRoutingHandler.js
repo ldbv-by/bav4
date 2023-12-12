@@ -528,9 +528,9 @@ export class OlRoutingHandler extends OlLayerHandler {
 	}
 
 	async _requestRouteFromCoordinates(coordinates3857, status) {
+		this._clearAllFeatures();
 		if (coordinates3857.length > 0) {
 			this._setInteractionsActive(false);
-			this._clearAllFeatures();
 			const coords = [...coordinates3857];
 			if (coordinates3857.length === 1) {
 				switch (status) {

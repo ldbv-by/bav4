@@ -783,7 +783,7 @@ describe('OlRoutingHandler', () => {
 
 		describe('_requestRouteFromCoordinates', () => {
 			describe('no coordinate is available', () => {
-				it('does nothing', async () => {
+				it('removes all features', async () => {
 					const catId = 'catId';
 					const { instanceUnderTest } = await newTestInstance({
 						categoryId: catId
@@ -798,7 +798,7 @@ describe('OlRoutingHandler', () => {
 					await instanceUnderTest._requestRouteFromCoordinates([], RoutingStatusCodes.Start_Destination_Missing);
 
 					expect(setInteractionsActiveSpy).not.toHaveBeenCalled();
-					expect(clearAllFeaturesSpy).not.toHaveBeenCalled();
+					expect(clearAllFeaturesSpy).toHaveBeenCalled();
 					expect(requestRouteSpy).not.toHaveBeenCalled();
 					expect(addStartInteractionFeatureSpy).not.toHaveBeenCalled();
 					expect(addIntermediateInteractionFeatureSpy).not.toHaveBeenCalled();
@@ -1685,7 +1685,7 @@ describe('OlRoutingHandler', () => {
 				expect(geoResources[1].data).toContain('<Document><Placemark><Style/><Point><coordinates>');
 
 				expect(geoResources[0].data).not.toBe(geoResources[1].data);
-				expect(mapServiceSpy).toHaveBeenCalledTimes(2)
+				expect(mapServiceSpy).toHaveBeenCalledTimes(2);
 			});
 
 			it('updates both existing GeoResources and adds two layers', async () => {
@@ -1719,7 +1719,7 @@ describe('OlRoutingHandler', () => {
 				expect(geoResources[0].data).toContain('<Document><Placemark><Style/><Point><coordinates>');
 
 				expect(geoResources[0].data).not.toBe(geoResources[1].data);
-				expect(mapServiceSpy).toHaveBeenCalledTimes(2)
+				expect(mapServiceSpy).toHaveBeenCalledTimes(2);
 			});
 
 			it('does nothing when no route is available', async () => {
