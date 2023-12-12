@@ -11,8 +11,8 @@ import css from './layerList.css';
 // @ts-ignore
 import { nothing } from 'lit-html';
 
-const Update_GeoResources = 'lpdate_geoResources';
-const Update_FilterText = 'lpdate_filterText';
+const Update_GeoResources = 'update_geoResources';
+const Update_FilterText = 'update_filterText';
 
 /**
  * Contains
@@ -94,7 +94,7 @@ export class LayerList extends MvuElement {
 
 				<button id="refreshButton" @click="${() => this._refreshLayers()}">refresh</button>
 
-				<ul>
+				<ul class="no-bullets">
 					${filteredGeoResources.map(
 						(geoResource) =>
 							html`<li id="${geoResource.id}" class="draggable" draggable="true" @dragstart=${onDragStart} @dragend=${onDragEnd}>

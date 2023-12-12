@@ -59,6 +59,7 @@ const droppableClass = 'droppable';
  */
 export class LayerTree extends MvuElement {
 	#currentGeoResourceId;
+	#currentTopic;
 	#currentUId;
 	#overTarget;
 
@@ -121,8 +122,13 @@ export class LayerTree extends MvuElement {
 	update(type, data, model) {
 		switch (type) {
 			case Update_Topics:
+				if (!this.#currentTopic && data.length > 0) {
+					this.#currentTopic = data[0]._label;
+				}
+				console.log('🚀 ~ LayerTree ~ update ~ Update_Topics ~ data:', data);
 				return { ...model, topics: data };
 			case Update_CatalogWithResourceData:
+				console.log('🚀 ~ LayerTree ~ update ~ Update_CatalogWithResourceData ~ data:', data);
 				return { ...model, catalogWithResourceData: data };
 			case Update_Layers:
 				return { ...model, layers: data };
@@ -356,6 +362,12 @@ export class LayerTree extends MvuElement {
 		};
 
 		const handleTopicChange = (event) => {
+			const foundTopic = topics.find((topic) => topic._id === event.target.value);
+
+			if (foundTopic) {
+				this.#currentTopic = foundTopic._label;
+			}
+
 			this._updateTopic(event.target.value);
 		};
 
@@ -387,7 +399,6 @@ export class LayerTree extends MvuElement {
 								</ul>
 						  `
 						: html`<button .disabled=${editMode} @click="${(event) => handleDeleteClick(event, entry)}">X</button>`}
-					<i class="uil uil-draggabledots"></i>
 				</li>
 			`;
 		};
@@ -399,10 +410,12 @@ export class LayerTree extends MvuElement {
 				</style>
 
 				<div>
-					<h2>Layer Tree - Ebenenbaum für Thema</h2>
+					<h2>Layer Tree - Ebenenbaum für Thema "${this.#currentTopic}"</h2>
 					<button @click="${handleNewTopicClick}">New Topic</button>
 					<button @click="${handleNewLayerGroupClick}">neue Ebenengruppe</button>
 					<button @click="${handleSaveClick}">sichern</button>
+					<button @click="${handleSaveClick}">Ebenenbaum sperren</button>
+					<button @click="${handleSaveClick}">Ebenenbaum löschen</button>
 
 					<select @change="${handleTopicChange}">
 						${topics.map((topic) => html` <option value="${topic._id}">${topic._label}</option> `)}

@@ -164,7 +164,15 @@ export class AdminPanel extends MvuElement {
 		return result;
 	}
 
-	// reduce / enrich the JSON data to the desired format
+	/**
+	 * reduce / enrich the JSON data to the desired format
+	 *
+	 * @param {*} obj
+	 * @param {*} extractFunction
+	 * @param {*} geoResources
+	 * @return {*}
+	 * @memberof AdminPanel
+	 */
 	_reduceData(obj, extractFunction, geoResources) {
 		return obj.map((item) => {
 			return extractFunction(item, extractFunction, geoResources);
