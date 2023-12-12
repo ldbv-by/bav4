@@ -38,7 +38,7 @@ export const getRoutingStyleFunction = () => {
 				const textStyle = new TextStyle({
 					text: text,
 					offsetY: 2,
-					font: 'bold 14px Helvetica',
+					font: 'bold 14px Open Sans',
 					// fill: fill,
 					stroke: new Stroke({
 						color: [255, 255, 255, 1],
@@ -63,7 +63,7 @@ export const getRoutingStyleFunction = () => {
 					new Style({
 						stroke: new Stroke({
 							color: feature.get(ROUTING_CATEGORY).style.routeBorderColor,
-							width: 6
+							width: 8
 						})
 					})
 				];
@@ -91,7 +91,7 @@ export const getRoutingStyleFunction = () => {
 					new Style({
 						stroke: new Stroke({
 							color: feature.get(ROUTING_CATEGORY).style.routeColor,
-							width: 2
+							width: 5
 						})
 					})
 				];

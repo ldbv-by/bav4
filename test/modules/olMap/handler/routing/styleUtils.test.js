@@ -69,7 +69,7 @@ describe('styleUtils', () => {
 					text: new Text({
 						text: '42',
 						offsetY: 2,
-						font: 'bold 14px Helvetica',
+						font: 'bold 14px Open Sans',
 						// fill: fill,
 						stroke: new Stroke({
 							color: [255, 255, 255, 1],
@@ -89,7 +89,7 @@ describe('styleUtils', () => {
 					text: new Text({
 						text: '',
 						offsetY: 2,
-						font: 'bold 14px Helvetica',
+						font: 'bold 14px Open Sans',
 						// fill: fill,
 						stroke: new Stroke({
 							color: [255, 255, 255, 1],
@@ -123,7 +123,7 @@ describe('styleUtils', () => {
 				new Style({
 					stroke: new Stroke({
 						color: 'green',
-						width: 6
+						width: 8
 					})
 				})
 			];
@@ -221,7 +221,7 @@ describe('styleUtils', () => {
 				new Style({
 					stroke: new Stroke({
 						color: 'gray',
-						width: 2
+						width: 5
 					})
 				})
 			];
