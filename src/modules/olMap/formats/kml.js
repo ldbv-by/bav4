@@ -76,11 +76,11 @@ const sanitizeStyle = (styles) => {
  * Creates a string containing the features of the specified layer in KML format.
  * This string includes the styles of the encoded features.
  *
- * Point-Features with a base64 ImageSource will be replaced by a defined static
- * remote resource (url). If this remote resource is not defined in the list of
+ * Point-Features with a base64-ImageSource will be replaced by a defined static
+ * remote resource (URL). If this remote resource is not defined in the list of
  * fallback icons in the IconService, the base64 ImageSource is used.
  *
- * A base64 ImageSource is not permitted according to the KML specification, but is
+ * A base64-ImageSource is not permitted according to the KML specification but is
  * sometimes supported by various applications.
  *
  * @param {ol.layer.Layer} layer the layer
