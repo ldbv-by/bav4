@@ -4,6 +4,7 @@ import { TestUtils } from '../test-utils.js';
 import { createDefaultLayer, layersReducer } from '../../src/store/layers/layers.reducer';
 import { initialState as initialRoutingState, routingReducer } from '../../src/store/routing/routing.reducer';
 import { initialState as initialToolsState, toolsReducer } from '../../src/store/tools/tools.reducer';
+import { initialState as initialLayersState } from '../../src/store/layers/layers.reducer';
 import { setCurrentTool } from '../../src/store/tools/tools.action';
 import { Tools } from '../../src/domain/tools';
 import { deactivate, activate, setProposal, setStatus, setWaypoints } from '../../src/store/routing/routing.action';
@@ -18,6 +19,7 @@ import { HighlightFeatureType } from '../../src/store/highlight/highlight.action
 import { closeBottomSheet } from '../../src/store/bottomSheet/bottomSheet.action.js';
 import { mapContextMenuReducer } from '../../src/store/mapContextMenu/mapContextMenu.reducer.js';
 import { QueryParameters } from '../../src/domain/queryParameters.js';
+import { removeLayer } from '../../src/store/layers/layers.action.js';
 
 describe('RoutingPlugin', () => {
 	const routingService = {
@@ -338,6 +340,55 @@ describe('RoutingPlugin', () => {
 			expect(store.getState().bottomSheet.active).toBeFalse();
 			expect(store.getState().mapContextMenu.active).toBeFalse();
 			expect(store.getState().highlight.active).toBeFalse();
+		});
+	});
+
+	describe('when layers "removed" property changes', () => {
+		describe('and routing is currently not active', () => {
+			it('resets the waypoint s-o-s when PERMANENT_ROUTE_LAYER_ID layer was removed', async () => {
+				const store = setup({
+					routing: { ...initialRoutingState, waypoints: [[0, 1]] },
+					layers: { ...initialLayersState, active: [createDefaultLayer(PERMANENT_ROUTE_LAYER_ID)] }
+				});
+				const instanceUnderTest = new RoutingPlugin();
+				instanceUnderTest._initialized = true;
+				await instanceUnderTest.register(store);
+				deactivate();
+
+				removeLayer(PERMANENT_ROUTE_LAYER_ID);
+
+				expect(store.getState().routing.waypoints).toHaveSize(0);
+			});
+
+			it('resets the waypoint s-o-s when PERMANENT_WP_LAYER_ID layer was removed', async () => {
+				const store = setup({
+					routing: { ...initialRoutingState, waypoints: [[0, 1]] },
+					layers: { ...initialLayersState, active: [createDefaultLayer(PERMANENT_WP_LAYER_ID)] }
+				});
+				const instanceUnderTest = new RoutingPlugin();
+				instanceUnderTest._initialized = true;
+				await instanceUnderTest.register(store);
+				deactivate();
+
+				removeLayer(PERMANENT_WP_LAYER_ID);
+
+				expect(store.getState().routing.waypoints).toHaveSize(0);
+			});
+		});
+
+		it('does noting when routing is currently active', async () => {
+			const store = setup({
+				routing: { ...initialRoutingState, waypoints: [[0, 1]] },
+				layers: { ...initialLayersState, active: [createDefaultLayer(PERMANENT_ROUTE_LAYER_ID)] }
+			});
+			const instanceUnderTest = new RoutingPlugin();
+			instanceUnderTest._initialized = true;
+			await instanceUnderTest.register(store);
+			activate();
+
+			removeLayer(PERMANENT_ROUTE_LAYER_ID);
+
+			expect(store.getState().routing.waypoints).toHaveSize(1);
 		});
 	});
 

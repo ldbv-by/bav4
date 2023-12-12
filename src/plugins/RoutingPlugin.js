@@ -4,7 +4,7 @@
 import { observe, observeOnce } from '../utils/storeUtils';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { BaPlugin } from './BaPlugin';
-import { activate, deactivate, setCategory, setDestination, setWaypoints } from '../store/routing/routing.action';
+import { activate, deactivate, reset, setCategory, setDestination, setWaypoints } from '../store/routing/routing.action';
 import { Tools } from '../domain/tools';
 import { $injector } from '../injection/index';
 import { LevelTypes, emitNotification } from '../store/notifications/notifications.action';
@@ -152,6 +152,11 @@ export class RoutingPlugin extends BaPlugin {
 			closeContextMenu();
 			closeBottomSheet();
 		};
+		const onLayerRemoved = (eventLike, state) => {
+			if (!state.routing.active && [PERMANENT_ROUTE_LAYER_ID, PERMANENT_WP_LAYER_ID].includes(eventLike.payload)) {
+				reset();
+			}
+		};
 
 		observe(store, (state) => state.routing.active, onChange);
 		observe(store, (state) => state.tools.current, onToolChanged, false);
@@ -169,6 +174,11 @@ export class RoutingPlugin extends BaPlugin {
 			store,
 			(state) => state.routing.waypoints,
 			() => onWaypointsChanged()
+		);
+		observe(
+			store,
+			(state) => state.layers.removed,
+			(eventLike, state) => onLayerRemoved(eventLike, state)
 		);
 	}
 
