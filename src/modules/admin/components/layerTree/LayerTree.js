@@ -62,11 +62,9 @@ export class LayerTree extends MvuElement {
 	#currentTopic;
 	#currentUId;
 	#overTarget;
-
 	#ignoreLevelOneFirstOnLeave;
-
 	#keyListener;
-
+	#spanElement;
 	// #working;
 
 	constructor() {
@@ -125,10 +123,8 @@ export class LayerTree extends MvuElement {
 				if (!this.#currentTopic && data.length > 0) {
 					this.#currentTopic = data[0]._label;
 				}
-				console.log('🚀 ~ LayerTree ~ update ~ Update_Topics ~ data:', data);
 				return { ...model, topics: data };
 			case Update_CatalogWithResourceData:
-				console.log('🚀 ~ LayerTree ~ update ~ Update_CatalogWithResourceData ~ data:', data);
 				return { ...model, catalogWithResourceData: data };
 			case Update_Layers:
 				return { ...model, layers: data };
@@ -159,6 +155,13 @@ export class LayerTree extends MvuElement {
 			this.#currentUId = newElementUid;
 		};
 
+		const removeDragOverClass = () => {
+			if (this.#spanElement) {
+				this.#spanElement.classList.remove('drag-over');
+				this.#spanElement = null;
+			}
+		};
+
 		const onDragStart = (event, draggedEntry) => {
 			if (draggedEntry.showChildren) {
 				this._showChildren(draggedEntry.uid);
@@ -177,6 +180,7 @@ export class LayerTree extends MvuElement {
 
 		const onDragEnd = (event) => {
 			event.target.classList.remove('isdragged');
+			removeDragOverClass();
 
 			if (!this.#overTarget) {
 				this._resetCatalog();
@@ -217,12 +221,13 @@ export class LayerTree extends MvuElement {
 				this._moveElement(currentCatalogEntry.uid, uidFromDrag);
 			}
 
-			const spanElement = event.target;
-			spanElement.classList.add('drag-over');
+			this.#spanElement = event.target;
+			this.#spanElement.classList.add('drag-over');
 		};
 
 		const onDrop = (event, entry) => {
 			this.#currentGeoResourceId = null;
+			removeDragOverClass();
 			const dropUid = event.dataTransfer.types[0].replace('uid', '');
 			if (this.#overTarget || dropUid === entry.uid) {
 				this.#overTarget = false;
@@ -238,6 +243,8 @@ export class LayerTree extends MvuElement {
 				this.#ignoreLevelOneFirstOnLeave = false;
 				return;
 			}
+
+			removeDragOverClass();
 
 			this.#overTarget = false;
 			event.target.classList.add('isdragged');
@@ -397,7 +404,7 @@ export class LayerTree extends MvuElement {
 								<ul>
 									${entry.children.map((child) => html`<li>${renderEntry(child)}</li>`)}
 								</ul>
-						  `
+							`
 						: html`<button .disabled=${editMode} @click="${(event) => handleDeleteClick(event, entry)}">X</button>`}
 				</li>
 			`;
