@@ -32,7 +32,7 @@ export class NavigationRailPlugin extends BaPlugin {
 			if (tab === TabIds.FEATUREINFO || tab === TabIds.ROUTING) {
 				addTabId(tab);
 				//TEMP
-				// closeNav();
+				closeNav();
 				openNav();
 			}
 		};

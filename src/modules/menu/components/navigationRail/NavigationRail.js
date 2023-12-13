@@ -93,6 +93,9 @@ export class NavigationRail extends MvuElement {
 	createView(model) {
 		const { isOpenNav, darkSchema, isPortrait, tabIndex, isOpen, visitedTabIdsSet } = model;
 
+		const allTabIds = Array.from(visitedTabIdsSet).reverse();
+		console.log(allTabIds);
+
 		const getOrientationClass = () => {
 			return isPortrait ? 'is-portrait' : 'is-landscape';
 		};
@@ -119,7 +122,6 @@ export class NavigationRail extends MvuElement {
 			return tabIndex === tabId && isOpen ? 'is-active' : '';
 		};
 		const getIsVisible = (tabId) => {
-			console.log(visitedTabIdsSet);
 			return visitedTabIdsSet.has(tabId) ? '' : 'hide';
 		};
 
@@ -127,6 +129,10 @@ export class NavigationRail extends MvuElement {
 
 		const zoomToExtent = () => {
 			fit(getDefaultMapExtent(), { useVisibleViewport: false });
+		};
+
+		const getFlexOrder = (tabId) => {
+			return allTabIds.indexOf(tabId) + 2;
 		};
 
 		const translate = (key) => this._translationService.translate(key);
@@ -140,12 +146,15 @@ export class NavigationRail extends MvuElement {
 						<span class="icon home"> </span>
 						<span class="text"> ${translate('menu_navigation_rail_home')} </span>
 					</button>
-					<span class="seperator"> </span>
-					<button class=" ${getIsVisible(TabIds.ROUTING)} ${getIsActivelass(TabIds.ROUTING)}" @click="${() => openRoutingTab()}" style="order:1">
+					<span class="seperator" style="order:1"> </span>
+					<button class=" ${getIsVisible(TabIds.ROUTING)} ${getIsActivelass(TabIds.ROUTING)}" @click="${() => openRoutingTab()}" style="order:${getFlexOrder(
+						TabIds.ROUTING
+					)}">		
 						<span class="icon routing"> </span>
 						<span class="text"> ${translate('menu_navigation_rail_routing')} </span>
 					</button>
-					<button class="${getIsVisible(TabIds.FEATUREINFO)} ${getIsActivelass(TabIds.FEATUREINFO)}" @click="${() => openTab(TabIds.FEATUREINFO)}">				
+					<button class="${getIsVisible(TabIds.FEATUREINFO)} ${getIsActivelass(TabIds.FEATUREINFO)}" @click="${() =>
+						openTab(TabIds.FEATUREINFO)}" style="order:${getFlexOrder(TabIds.FEATUREINFO)}">				
 						<span class="icon objektinfo"> </span>
 						<span class="text"> ${translate('menu_navigation_rail_object_info')}  </span>
 					</button>
@@ -172,6 +181,32 @@ export class NavigationRail extends MvuElement {
 						<span class="icon close-icon "> </span>
 						<span class="text"> ${translate('menu_navigation_rail_close')} </span>
 					</button>
+					<div class="" style="order:99">
+						<button>
+							<span class="icon mapconf"> </span>
+							<span class="text"> Basiskarten Konfigurator </span>
+						</button>
+						<button>
+							<span class="icon gespeichert"> </span>
+							<span class="text"> gespeichert </span>
+						</button>
+						<button>
+							<span class="icon legende"> </span>
+							<span class="text"> Legende </span>
+						</button>
+						<button>
+							<span class="icon time"> </span>
+							<span class="text"> Zeitreise </span>
+						</button>
+						<button>
+							<span class="icon br"> </span>
+							<span class="text"> BR-Radltour </span>
+						</button>
+						<button>
+							<span class="icon opendata"> </span>
+							<span class="text"> Open Data </span>
+						</button>
+					</div>
 				</div>
 			</div>
 		`;
