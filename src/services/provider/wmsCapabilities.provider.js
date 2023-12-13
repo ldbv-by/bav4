@@ -90,7 +90,7 @@ export const bvvCapabilitiesProvider = async (url, options) => {
 	};
 
 	const data = isAuthenticated ? { url: url, ...getCredentialOrFail(url) } : { url: url };
-	const result = await httpService.post(endpoint, JSON.stringify(data), MediaType.JSON);
+	const result = await httpService.post(endpoint, JSON.stringify(data), MediaType.JSON, { timeout: 3000 });
 	switch (result.status) {
 		case 200:
 			return readCapabilities(await result.json()) ?? [];
