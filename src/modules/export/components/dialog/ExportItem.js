@@ -97,7 +97,18 @@ export class ExportItem extends MvuElement {
 					</style>
 					<div class="export-item__content">
 						<div class="export-item__head">
-							<div class="export-item__label">${translate(`export_item_label_${exportType.sourceTypeName}`)}</div>
+							<div class="export-item__label">
+								${translate(`export_item_label_${exportType.sourceTypeName}`)}
+								<ba-icon
+									id="copy-button"
+									.size=${2.5}
+									.title=${translate('export_item_copy_to_clipboard', [translate(`export_item_label_${exportType.sourceTypeName}`)])}
+									.icon=${clipboardSvg}
+									.type=${'primary'}
+									.disabled=${!selectedSrid || !exportData}
+									@click=${onClickCopyToClipboard}
+								></ba-icon>
+							</div>
 							<div class="export-item__description">${translate(`export_item_description_${exportType.sourceTypeName}`)}</div>
 						</div>
 						<div class="export-item__select ba-form-element ${isDisabled()}">
@@ -117,14 +128,6 @@ export class ExportItem extends MvuElement {
 								.disabled=${!selectedSrid || !exportData}
 								@click=${onClickDownload}
 							></ba-button>
-							<ba-icon
-								id="copy-button"
-								.title=${translate('export_item_copy_to_clipboard', [translate(`export_item_label_${exportType.sourceTypeName}`)])}
-								.icon=${clipboardSvg}
-								.type=${'primary'}
-								.disabled=${!selectedSrid || !exportData}
-								@click=${onClickCopyToClipboard}
-							></ba-icon>
 						</div>
 					</div>`
 			: html.nothing;
