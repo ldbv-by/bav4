@@ -12,6 +12,16 @@ export const initialState = {
 	 */
 	active: [],
 	/**
+	 * Contains the id of the latest removed layer
+	 * @property {EventLike<String>}
+	 */
+	removed: new EventLike(null),
+	/**
+	 * Contains the id of the latest added layer
+	 * @property {EventLike<String>}
+	 */
+	added: new EventLike(null),
+	/**
 	 * Flag that indicates if the layer store is ready. "Ready" means all required resources are available.
 	 */
 	ready: false
@@ -103,14 +113,17 @@ const addLayer = (state, payload) => {
 	active.splice(insertIndex, 0, layer);
 	return {
 		...state,
-		active: sort(index(active))
+		active: sort(index(active)),
+		added: new EventLike(id)
 	};
 };
 
 const removeLayer = (state, payload) => {
+	const active = index(state.active.filter((layer) => layer.id !== payload));
 	return {
 		...state,
-		active: index(state.active.filter((layer) => layer.id !== payload))
+		active,
+		removed: state.active.length !== active.length ? new EventLike(payload) : state.removed
 	};
 };
 

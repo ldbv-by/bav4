@@ -22,6 +22,14 @@ import { isExternalGeoResourceId } from '../utils/checks';
  */
 
 /**
+ * A function that returns an {@link Attribution} (or an array of them).
+ * @typedef {Function} attributionProvider
+ * @param {GeoResource} geoResource the GeoResource
+ * @param {number} [level] level (index-like value, can be a zoom level of a map)
+ * @returns {Attribution|Array<Attribution>}
+ */
+
+/**
  * @readonly
  * @enum {Symbol}
  */

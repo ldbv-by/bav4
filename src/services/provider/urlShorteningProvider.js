@@ -4,9 +4,9 @@
 import { $injector } from '../../injection';
 
 /**
- * Uses the BVV service to return a short url.
+ *  Bvv specific implementation of {@link module:services/UrlService~shortUrlProvider}
  * @async
- * @implements {module:services/UrlService~shortUrlProvider}
+ * @type {module:services/UrlService~shortUrlProvider}
  */
 export const shortenBvvUrls = async (url) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
