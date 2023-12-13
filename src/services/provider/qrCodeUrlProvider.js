@@ -6,7 +6,7 @@ import { $injector } from '../../injection';
 /**
  * Uses the BVV service to return a qrCode URL.
  * @async
- * @implements {module:services/UrlService~qrCodeUrlProvider}
+ * @type {module:services/UrlService~qrCodeUrlProvider}
  */
 export const bvvQrCodeProvider = (url) => {
 	const { ConfigService: configService } = $injector.inject('ConfigService');
