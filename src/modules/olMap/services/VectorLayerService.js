@@ -161,7 +161,6 @@ export class VectorLayerService {
 			.filter((f) => !!f.getGeometry()) // filter out features without a geometry. Todo: let's inform the user
 			.map((f) => {
 				f.getGeometry().transform('EPSG:' + geoResource.srid, 'EPSG:' + destinationSrid); //Todo: check for unsupported destinationSrid
-				f.set('srid', destinationSrid, true);
 				return f;
 			});
 		vectorSource.addFeatures(features);
