@@ -5,7 +5,7 @@ import { html } from 'lit-html';
 import css from './navigationRail.css';
 import { $injector } from '../../../../injection';
 import { TabIds } from '../../../../domain/mainMenu';
-import { toggle, open, setTab } from '../../../../store/mainMenu/mainMenu.action';
+import { open, setTab } from '../../../../store/mainMenu/mainMenu.action';
 import { MvuElement } from '../../../MvuElement';
 import { Tools } from '../../../../domain/tools';
 import { toggleSchema } from '../../../../store/media/media.action';
@@ -31,7 +31,7 @@ export class NavigationRail extends MvuElement {
 			isOpenNav: false,
 			tabIndex: null,
 			isPortrait: false,
-			hasBeenActive: new Set([])
+			visitedTabIdsSet: null
 		});
 
 		const {
@@ -45,7 +45,6 @@ export class NavigationRail extends MvuElement {
 		this._mapService = mapService;
 
 		this._isOpen = false;
-		this._hasBeenActive = new Set([]);
 	}
 
 	update(type, data, model) {
@@ -70,7 +69,8 @@ export class NavigationRail extends MvuElement {
 		);
 		this.observe(
 			(state) => state.navigationRail,
-			(navigationRail) => this.signal(Update_IsOpen_NavigationRail, { isOpenNav: navigationRail.openNav })
+			(navigationRail) =>
+				this.signal(Update_IsOpen_NavigationRail, { isOpenNav: navigationRail.openNav, visitedTabIdsSet: navigationRail.visitedTabIdsSet })
 		);
 		this.observe(
 			(state) => state.media.darkSchema,
@@ -91,9 +91,7 @@ export class NavigationRail extends MvuElement {
 	}
 
 	createView(model) {
-		const { isOpenNav, darkSchema, isPortrait, tabIndex, isOpen } = model;
-
-		this._hasBeenActive.add(tabIndex);
+		const { isOpenNav, darkSchema, isPortrait, tabIndex, isOpen, visitedTabIdsSet } = model;
 
 		const getOrientationClass = () => {
 			return isPortrait ? 'is-portrait' : 'is-landscape';
@@ -105,11 +103,7 @@ export class NavigationRail extends MvuElement {
 
 		const openTab = (tabId) => {
 			setTab(tabId);
-			if (tabIndex === tabId) {
-				toggle();
-			} else {
-				open();
-			}
+			open();
 		};
 
 		const openRoutingTab = () => {
@@ -125,7 +119,8 @@ export class NavigationRail extends MvuElement {
 			return tabIndex === tabId && isOpen ? 'is-active' : '';
 		};
 		const getIsVisible = (tabId) => {
-			return this._hasBeenActive.has(tabId) ? '' : 'hide';
+			console.log(visitedTabIdsSet);
+			return visitedTabIdsSet.has(tabId) ? '' : 'hide';
 		};
 
 		const getDefaultMapExtent = () => this._mapService.getDefaultMapExtent();
@@ -141,12 +136,12 @@ export class NavigationRail extends MvuElement {
 			</style>
 			<div class="preload">
 				<div class="navigation-rail__container ${getHideClass()} ${getOrientationClass()} ">
-					<button class=" ${getIsActivelass(TabIds.MAPS)}" @click="${() => openTab(TabIds.MAPS)}">
+					<button class=" ${getIsActivelass(TabIds.MAPS)}" @click="${() => openTab(TabIds.MAPS)}" style="order:0">
 						<span class="icon home"> </span>
 						<span class="text"> ${translate('menu_navigation_rail_home')} </span>
 					</button>
 					<span class="seperator"> </span>
-					<button class=" ${getIsVisible(TabIds.ROUTING)} ${getIsActivelass(TabIds.ROUTING)}" @click="${() => openRoutingTab()}">
+					<button class=" ${getIsVisible(TabIds.ROUTING)} ${getIsActivelass(TabIds.ROUTING)}" @click="${() => openRoutingTab()}" style="order:1">
 						<span class="icon routing"> </span>
 						<span class="text"> ${translate('menu_navigation_rail_routing')} </span>
 					</button>

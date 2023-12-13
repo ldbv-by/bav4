@@ -3,7 +3,7 @@
  */
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from '../plugins/BaPlugin';
-import { openNav } from '../store/navigationRail/navigationRail.action';
+import { openNav, addTabId, closeNav } from '../store/navigationRail/navigationRail.action';
 import { TabIds } from '../domain/mainMenu';
 
 /**
@@ -28,8 +28,11 @@ export class NavigationRailPlugin extends BaPlugin {
 		this._openNav = store.getState().navigationRail.openNav;
 
 		const onTabChanged = (tab, state) => {
+			this._open = state.mainMenu.open;
 			if (tab === TabIds.FEATUREINFO || tab === TabIds.ROUTING) {
-				this._open = state.mainMenu.open;
+				addTabId(tab);
+				//TEMP
+				// closeNav();
 				openNav();
 			}
 		};

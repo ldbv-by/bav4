@@ -1,7 +1,9 @@
 export const OPENNAV_CLOSEDNAV_CHANGED = 'navigationRail/openNav';
+export const ACTIVE_TAB_ID_CHANGED = 'navigationRail/visitedTabIdsSet';
 
 export const initialState = {
-	openNav: false
+	openNav: false,
+	visitedTabIdsSet: new Set([])
 };
 
 export const navigationRailReducer = (state = initialState, action) => {
@@ -11,6 +13,13 @@ export const navigationRailReducer = (state = initialState, action) => {
 			return {
 				...state,
 				openNav: payload
+			};
+		}
+		case ACTIVE_TAB_ID_CHANGED: {
+			console.log('ACTIVE_TAB_ID_CHANGED');
+			return {
+				...state,
+				visitedTabIdsSet: new Set(state.visitedTabIdsSet.add(payload))
 			};
 		}
 	}
