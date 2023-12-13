@@ -45,7 +45,7 @@ describe('VectorLayerService', () => {
 			it('provides a function that proxifies an url', () => {
 				const iconUrl = 'https://some.url';
 				spyOn(urlService, 'proxifyInstant')
-					.withArgs(iconUrl)
+					.withArgs(iconUrl, false)
 					.and.returnValue('https://proxy.url?url=' + iconUrl);
 
 				expect(iconUrlFunction(iconUrl)).toBe('https://proxy.url?url=' + iconUrl);
