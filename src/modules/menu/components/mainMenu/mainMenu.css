@@ -176,7 +176,6 @@
 	display: block;
 }
 .is-active ba-feature-info-panel {
-	animation-name: slideInUp;
 	animation-duration: var(--animation-duration-medium-open);
 	animation-fill-mode: both;
 	position: absolute;
@@ -289,14 +288,6 @@ input[type='range']:focus {
 	}
 	100% {
 		opacity: 1;
-	}
-}
-@keyframes slideInUp {
-	0% {
-		transform: translateY(5em);
-	}
-	100% {
-		transform: translateY(0);
 	}
 }
 
