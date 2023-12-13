@@ -20,7 +20,7 @@ import { TabIds } from '../domain/mainMenu';
 import { isCoordinate } from '../utils/checks';
 
 /**
- * Id of the temporary layer used for routing interaction when the tool is activated
+ * Id of the temporary layer used for routing interaction when the tool is activated.
  * LayerHandler of a map implementation will also use this id as their key.
  */
 export const ROUTING_LAYER_ID = 'routing_layer';

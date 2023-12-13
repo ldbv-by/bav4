@@ -54,7 +54,7 @@ export class UrlService {
 	/**
 	 * Proxies an URL.
 	 * @param {string} url URL
-	 * @param {boolean} [strict=true] if `true` throws an `Error` when the parameter `url` is not an URL. If set to `false` it returns the the `url` untouched in that case
+	 * @param {boolean} [strict=true] if `true` throws an `Error` when the parameter `url` is not an URL. If set to `false` it returns the `url` untouched in that case
 	 * @returns {string} proxied URL
 	 */
 	proxifyInstant(url, strict = true) {
@@ -70,7 +70,7 @@ export class UrlService {
 	/**
 	 * Proxies an URL when needed.
 	 * @param {string} url URL
-	 * @param {boolean} [strict=true] if `true` throws an `Error` when the parameter `url` is not an URL. If set to `false` it returns the the `url` untouched in that case
+	 * @param {boolean} [strict=true] if `true` throws an `Error` when the parameter `url` is not an URL. If set to `false` it returns the `url` untouched in that case
 	 * @returns {Promise<string>} proxied URL
 	 */
 	async proxify(url, strict = true) {
