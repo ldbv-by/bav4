@@ -14,7 +14,7 @@ const getUrlService = () => {
 	return urlService;
 };
 
-export const iconUrlFunction = (url) => getUrlService().proxifyInstant(url);
+export const iconUrlFunction = (url) => getUrlService().proxifyInstant(url, false);
 
 export const mapVectorSourceTypeToFormat = (sourceType) => {
 	switch (sourceType) {
@@ -185,7 +185,7 @@ export class VectorLayerService {
 					source: vectorSource,
 					distance: geoResource.clusterParams.distance,
 					minDistance: geoResource.clusterParams.minDistance
-			  })
+				})
 			: vectorSource;
 	}
 }

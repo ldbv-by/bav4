@@ -4,6 +4,7 @@ import {
 	getAttributionForLocallyImportedOrCreatedGeoResource,
 	getAttributionProviderForGeoResourceImportedByUrl,
 	getBvvAttribution,
+	getBvvAttributionForRoutingResult,
 	getDefaultAttribution,
 	getMinimalAttribution
 } from '../../../src/services/provider/attribution.provider';
@@ -100,6 +101,17 @@ describe('Attribution provider', () => {
 			expect(getAttributionForLocallyImportedOrCreatedGeoResource(new GeoResourceImpl(undefined, 'id', label))).toEqual({
 				description: label,
 				copyright: { label: 'global_locally_imported_dataset_copyright_label' }
+			});
+		});
+	});
+
+	describe('getBvvAttributionForRoutingResult', () => {
+		it('provides an BVV specific attribution for a routing result', () => {
+			const label = 'label';
+
+			expect(getBvvAttributionForRoutingResult(new GeoResourceImpl(undefined, 'id', label))).toEqual({
+				description: label,
+				copyright: [{ label: 'Bayerische Vermessungsverwaltung' }, { label: 'Powered by Graphhopper', url: 'https://www.graphhopper.com/' }]
 			});
 		});
 	});

@@ -1,13 +1,6 @@
 /**
  * @module services/provider/attribution_provider
  */
-/**
- * A function that returns an attribution (or an array of them).
- * @typedef {Function} attributionProvider
- * @param {GeoResource} geoResource
- * @param {number} [level] level (index-like value, can be a zoom level of a map)
- * @returns {Attribution|Array<Attribution>}
- */
 
 import { $injector } from '../../injection';
 import { isString } from '../../utils/checks';
@@ -16,7 +9,7 @@ import { GeoResourceTypes } from '../../domain/geoResources';
 /**
  * Provides BVV specific determined attributions.
  * @function
- * @returns {Attribution}
+ * @type {module:domain/geoResources~attributionProvider}
  */
 export const getBvvAttribution = (georesource, level = 0) => {
 	const { GeoResourceService: georesourceService } = $injector.inject('GeoResourceService');
@@ -54,7 +47,7 @@ export const getBvvAttribution = (georesource, level = 0) => {
 /**
  * Default provider function for attributions.
  * @function
- * @returns {Attribution}
+ * @type {module:domain/geoResources~attributionProvider}
  */
 export const getDefaultAttribution = (georesource) => {
 	return georesource.attribution
@@ -65,9 +58,9 @@ export const getDefaultAttribution = (georesource) => {
 };
 
 /**
- * Provider function for a locally imported or created GeoResouce.
+ * Provider function for a locally imported or created GeoResource.
  * @function
- * @returns {Attribution}
+ * @type {module:domain/geoResources~attributionProvider}
  */
 export const getAttributionForLocallyImportedOrCreatedGeoResource = (georesource) => {
 	const { TranslationService: translationService } = $injector.inject('TranslationService');
@@ -78,10 +71,22 @@ export const getAttributionForLocallyImportedOrCreatedGeoResource = (georesource
 };
 
 /**
- * Returns a `function` returning the actual provider for an URL based GeoResource imported by the user.
+ * BVV provider function for a routing result.
+ * @function
+ * @type {module:domain/geoResources~attributionProvider}
+ */
+export const getBvvAttributionForRoutingResult = (georesource) => {
+	return {
+		description: georesource.label,
+		copyright: [{ label: 'Bayerische Vermessungsverwaltung' }, { label: 'Powered by Graphhopper', url: 'https://www.graphhopper.com/' }]
+	};
+};
+
+/**
+ * Returns a `function` returning the actual {@link module:domain/geoResources~attributionProvider} for an URL based GeoResource imported by the user.
  * @function
  * @param {String} url the URL as `string`
- * @returns a `function` which returns an attribution provider
+ * @returns a `function` which returns an {@link module:domain/geoResources~attributionProvider}
  */
 export const getAttributionProviderForGeoResourceImportedByUrl = (url) => {
 	return (georesource) => {

@@ -73,7 +73,7 @@ const RouteWarningRuleFunctions = [
 						message:
 							ruleOptions.language === 'de' ? '(schwieriger) Steig, Trittsicherheit erforderlich.' : '(Difficult) climb, surefootedness required.',
 						criticality: RouteWarningCriticality.HINT
-				  }
+					}
 				: {
 						id: 101,
 						message:
@@ -81,7 +81,7 @@ const RouteWarningRuleFunctions = [
 								? '(schwieriger) Steig, Trittsicherheit erforderlich. MTB muss evtl. vorher abgestellt oder getragen werden.'
 								: '(Difficult) climb, surefootedness required. MTB may have to be parked or carried beforehand.',
 						criticality: RouteWarningCriticality.HINT
-				  };
+					};
 		}
 		return null;
 	},
@@ -97,7 +97,7 @@ const RouteWarningRuleFunctions = [
 								? 'schwieriger Steig mit Kletterpassagen; gute Trittsicherheit, ggf. spezielle Ausrüstung erforderlich'
 								: 'difficult climb with climbing passages; good surefootedness, special equipment may be required',
 						criticality: RouteWarningCriticality.WARNING
-				  }
+					}
 				: {
 						id: 200,
 						message:
@@ -105,7 +105,7 @@ const RouteWarningRuleFunctions = [
 								? 'schwieriger Steig mit Kletterpassagen; gute Trittsicherheit, ggf. spezielle Ausrüstung erforderlich; Fahrrad muss vorher abgestellt werden.'
 								: 'difficult trail with climbing sections; good surefootedness, special equipment may be required; bikes must be parked beforehand.',
 						criticality: RouteWarningCriticality.WARNING
-				  };
+					};
 		}
 		return null;
 	},
@@ -162,7 +162,7 @@ const RouteWarningRuleFunctions = [
 					id: id,
 					message: ruleOptions.language === 'de' ? 'Evtl. hohes Verkehrsaufkommen' : 'Possibly high traffic volume',
 					criticality: RouteWarningCriticality.HINT
-			  }
+				}
 			: null;
 	}
 ];

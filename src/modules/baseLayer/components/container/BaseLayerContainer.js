@@ -112,7 +112,7 @@ export class BaseLayerContainer extends MvuElement {
 							([key]) =>
 								html`<button @click=${() => onClick(key)} class="title ${isActive(key)}">${translate(`baseLayer_container_category_${key}`)}</button>`
 						)}
-				  </div>`}
+					</div>`}
 			<div id="section" class="section scroll-snap-x">
 				${Object.entries(categories).map(
 					([key, value]) =>
