@@ -129,22 +129,12 @@ export class Switch extends MvuElement {
 		};
 
 		const onPointerup = () => {
-			if (!this.#draggingListener) return;
-
-			const checkbox = this.shadowRoot.querySelector('input');
-			checkbox.checked = this.#dragging ? this._determineChecked(checkbox) : !checkbox.checked;
-
-			this.signal(Update_Checked_Propagate, checkbox.checked);
-
-			checkbox.style.removeProperty('--thumb-transition-duration');
-			checkbox.style.removeProperty('--thumb-position');
-			this.#draggingListener.abort();
-			this.#draggingListener = null;
-			this.#dragging = false;
-
-			this._padRelease();
+			this._finishPointerAction();
 		};
 
+		const onPointercancel = () => {
+			this._finishPointerAction();
+		};
 		const dragging = (event) => {
 			event.target.style.setProperty('--thumb-position', this._calculateThumbPosition(event));
 			this.#dragging = true;
@@ -193,6 +183,7 @@ export class Switch extends MvuElement {
 					@change=${onChange}
 					@pointerdown=${onPointerdown}
 					@pointerup=${onPointerup}
+					@pointercancel=${onPointercancel}
 					@click=${onClick}
 					@keydown=${onKeydown}
 					id="baSwitch"
@@ -207,6 +198,22 @@ export class Switch extends MvuElement {
 				<slot></slot>
 			</label>
 		`;
+	}
+
+	_finishPointerAction() {
+		if (!this.#draggingListener) return;
+
+		const checkbox = this.shadowRoot.querySelector('input');
+		checkbox.checked = this.#dragging ? this._determineChecked(checkbox) : !checkbox.checked;
+		checkbox.style.removeProperty('--thumb-transition-duration');
+		checkbox.style.removeProperty('--thumb-position');
+		this.#draggingListener.abort();
+		this.#draggingListener = null;
+		this.#dragging = false;
+
+		this.signal(Update_Checked_Propagate, checkbox.checked);
+
+		this._padRelease();
 	}
 
 	_calculateThumbPosition(event) {

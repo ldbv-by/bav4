@@ -303,6 +303,34 @@ describe('Switch', () => {
 				expect(element.checked).toBeTrue();
 			});
 
+			it('handles pointercancel-events instead of pointerup and calls the onToggle callback', async () => {
+				const element = await TestUtils.render(Switch.tag);
+				const onToggleSpy = spyOn(element, 'onToggle').and.callThrough();
+
+				expect(element.checked).toBeFalse();
+
+				const baSwitch = element.shadowRoot.querySelector('#baSwitch');
+				const pointerdown = new Event('pointerdown');
+				pointerdown.offsetX = 25;
+				baSwitch.dispatchEvent(pointerdown);
+
+				const afterPointerDown = getThumbStyleProperties(baSwitch);
+				expect(afterPointerDown.thumbTransitionDuration).toBe('0s');
+
+				const pointermove = new PointerEvent('pointermove', { bubbles: true, clientX: 100, clientY: 0 });
+				baSwitch.dispatchEvent(pointermove);
+
+				const pointercancel = new Event('pointercancel');
+				baSwitch.dispatchEvent(pointercancel);
+
+				const afterPointerCancel = getThumbStyleProperties(baSwitch);
+
+				expect(afterPointerCancel.thumbPosition).toBe('calc((calc(1.4rem * 2) - 100%) * 1)');
+
+				expect(onToggleSpy).toHaveBeenCalledTimes(1);
+				expect(element.checked).toBeTrue();
+			});
+
 			it('handles window.pointerup ONCE', async () => {
 				const element = await TestUtils.render(Switch.tag);
 				const spyUpdateChecked = spyOn(element, 'signal').withArgs('update_checked_propagate', jasmine.any(Boolean)).and.callThrough();
