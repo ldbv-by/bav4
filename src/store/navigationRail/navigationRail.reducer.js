@@ -16,10 +16,9 @@ export const navigationRailReducer = (state = initialState, action) => {
 			};
 		}
 		case ACTIVE_TAB_ID_CHANGED: {
-			console.log('ACTIVE_TAB_ID_CHANGED');
 			return {
 				...state,
-				visitedTabIdsSet: new Set(state.visitedTabIdsSet.add(payload))
+				visitedTabIdsSet: state.visitedTabIdsSet.add(payload)
 			};
 		}
 	}
