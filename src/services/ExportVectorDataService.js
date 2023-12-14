@@ -157,10 +157,7 @@ export class OlExportVectorDataService {
 			const ewkt = parse(data);
 			const wktFormat = new WKT();
 			if (ewkt) {
-				return wktFormat.readFeatures(ewkt.wkt).map((f) => {
-					f.set('srid', ewkt.srid, true);
-					return f;
-				});
+				return wktFormat.readFeatures(ewkt.wkt);
 			}
 			throw Error('Cannot parse data as EWKT');
 		};

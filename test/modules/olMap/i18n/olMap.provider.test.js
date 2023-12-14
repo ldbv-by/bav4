@@ -50,6 +50,9 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_routing_modify_start).toBe('Zum Ändern des Startpunktes ziehen');
 		expect(map.olMap_handler_routing_modify_destination).toBe('Zum Ändern des Zielpunktes ziehen');
 		expect(map.olMap_handler_routing_modify_intermediate).toBe('Zum Ändern des Zwischenpunktes ziehen');
+		expect(map.olMap_handler_routing_rt_layer_label).toBe('Route (Track)');
+		expect(map.olMap_handler_routing_wp_layer_label).toBe('Route (Wegpunkte)');
+		expect(map.olMap_handler_routing_routingService_exception).toBe('Eine Route konnte nicht erstellt werden');
 		expect(map.olMap_vectorLayerService_default_layer_name_vector).toBe('Daten');
 	});
 
@@ -98,11 +101,14 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_routing_modify_start).toBe('Pull to modify the start point');
 		expect(map.olMap_handler_routing_modify_destination).toBe('Pull to modify the destination point');
 		expect(map.olMap_handler_routing_modify_intermediate).toBe('Pull to modify the waypoint');
+		expect(map.olMap_handler_routing_rt_layer_label).toBe('Route (Track)');
+		expect(map.olMap_handler_routing_wp_layer_label).toBe('Route (Waypoints)');
+		expect(map.olMap_handler_routing_routingService_exception).toBe('A route could not be created');
 		expect(map.olMap_vectorLayerService_default_layer_name_vector).toBe('Data');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 37;
+		const expectedSize = 40;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

@@ -84,10 +84,10 @@ const sanitizeStyle = (styles) => {
  * sometimes supported by various applications.
  *
  * @param {ol.layer.Layer} layer the layer
- * @param {ol.proj.ProjectionLike} projection
+ * @param {ol.proj.ProjectionLike} sourceProjection the projection of the features of the given layer
  * @returns {string} the kml content
  */
-export const create = (layer, projection) => {
+export const create = (layer, sourceProjection) => {
 	let kmlString;
 	const kmlFeatures = [];
 	layer
@@ -98,7 +98,7 @@ export const create = (layer, projection) => {
 			const clone = f.clone();
 			clone.setId(f.getId());
 			clone.getGeometry().setProperties(f.getGeometry().getProperties());
-			clone.getGeometry().transform(projection, KML_PROJECTION_LIKE);
+			clone.getGeometry().transform(sourceProjection, KML_PROJECTION_LIKE);
 
 			if (clone.getGeometry().getType() === 'Polygon') {
 				clone.setGeometry(tryRectifyingLineString(clone.getGeometry()));
