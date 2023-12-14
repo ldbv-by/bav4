@@ -106,6 +106,10 @@ export class LayerTree extends MvuElement {
 		this._saveCatalog = (catalogId, catalog) => {};
 		this._addLayerGroup = () => {};
 		this._resetCatalog = () => {};
+		// eslint-disable-next-line no-unused-vars
+		this._disableTopicLevelTree = (topicId) => {};
+		// eslint-disable-next-line no-unused-vars
+		this._deleteTopicLevelTree = (topicId) => {};
 
 		// eslint-disable-next-line no-unused-vars
 		this._refreshCatalog = (catalog) => {};
@@ -121,7 +125,7 @@ export class LayerTree extends MvuElement {
 		switch (type) {
 			case Update_Topics:
 				if (!this.#currentTopic && data.length > 0) {
-					this.#currentTopic = data[0]._label;
+					this.#currentTopic = data[0];
 				}
 				return { ...model, topics: data };
 			case Update_CatalogWithResourceData:
@@ -368,11 +372,20 @@ export class LayerTree extends MvuElement {
 			this._saveCatalog();
 		};
 
+		const handleDisableTopicLevelTreeClick = () => {
+			this._disableTopicLevelTree(this.#currentTopic);
+		};
+
+		const handleDeleteTopicLevelTreeClick = () => {
+			this._deleteTopicLevelTree(this.#currentTopic);
+			this.#currentTopic = null;
+		};
+
 		const handleTopicChange = (event) => {
 			const foundTopic = topics.find((topic) => topic._id === event.target.value);
 
 			if (foundTopic) {
-				this.#currentTopic = foundTopic._label;
+				this.#currentTopic = foundTopic;
 			}
 
 			this._updateTopic(event.target.value);
@@ -411,21 +424,22 @@ export class LayerTree extends MvuElement {
 		};
 
 		if (topics) {
+			const sperrText = this.#currentTopic._disabled ? ' -- deaktiviert -- ' : '';
 			return html`
 				<style>
 					${css}
 				</style>
 
 				<div>
-					<h2>Layer Tree - Ebenenbaum für Thema "${this.#currentTopic}"</h2>
+					<h2>Layer Tree - Ebenenbaum für Thema "${this.#currentTopic._label}"${sperrText}</h2>
 					<button @click="${handleNewTopicClick}">New Topic</button>
 					<button @click="${handleNewLayerGroupClick}">neue Ebenengruppe</button>
 					<button @click="${handleSaveClick}">sichern</button>
-					<button @click="${handleSaveClick}">Ebenenbaum sperren</button>
-					<button @click="${handleSaveClick}">Ebenenbaum löschen</button>
+					<button @click="${handleDisableTopicLevelTreeClick}">Ebenenbaum sperren</button>
+					<button @click="${handleDeleteTopicLevelTreeClick}">Ebenenbaum löschen</button>
 
 					<select @change="${handleTopicChange}">
-						${topics.map((topic) => html` <option value="${topic._id}">${topic._label}</option> `)}
+						${topics.map((topic) => html` <option value="${topic._id}">${topic._label} ${topic._disabled ? ' -- deaktiviert -- ' : ''}</option> `)}
 					</select>
 					<ul>
 						${repeat(
@@ -526,6 +540,28 @@ export class LayerTree extends MvuElement {
 
 	get updateTopic() {
 		return this._updateTopic;
+	}
+
+	/**
+	 * @property {function} disableTopicLevelTree - Callback function
+	 */
+	set disableTopicLevelTree(callback) {
+		this._disableTopicLevelTree = callback;
+	}
+
+	get disableTopicLevelTree() {
+		return this._disableTopicLevelTree;
+	}
+
+	/**
+	 * @property {function} deleteTopicLevelTree - Callback function
+	 */
+	set deleteTopicLevelTree(callback) {
+		this._deleteTopicLevelTree = callback;
+	}
+
+	get deleteTopicLevelTree() {
+		return this._deleteTopicLevelTree;
 	}
 
 	/**

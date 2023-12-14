@@ -13,6 +13,7 @@ import { Topic } from '../../../../domain/topic';
 // import { logOnce, onlyOnce } from '../layerTree/LayerTree';
 
 const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
+const Update_Topics = 'update_topics';
 const Empty_Label = ' ';
 
 let _uniqueIdCounter = 0;
@@ -28,13 +29,14 @@ const _generateUniqueId = () => {
 export class AdminPanel extends MvuElement {
 	#catalog = [];
 	#geoResources = [];
-	#topics = [];
+	#topics = []; // todo remove
 	#currentTopicId = null;
 
 	constructor() {
 		super({
 			dummy: true,
-			catalogWithResourceData: null
+			catalogWithResourceData: null,
+			topics: []
 		});
 
 		const {
@@ -217,6 +219,7 @@ export class AdminPanel extends MvuElement {
 
 		try {
 			this.#topics = await this._topicsService.all();
+			console.log('🚀 ~ AdminPanel ~ onInitialize ~ this.#topics:', this.#topics);
 
 			// console.log(JSON.stringify(this.#topics));
 		} catch (error) {
@@ -239,6 +242,8 @@ export class AdminPanel extends MvuElement {
 		switch (type) {
 			case Update_CatalogWithResourceData:
 				return { ...model, catalogWithResourceData: [...data], dummy: !model.dummy };
+			case Update_Topics:
+				return { ...model, topics: [...data], dummy: !model.dummy };
 		}
 	}
 
@@ -464,6 +469,27 @@ export class AdminPanel extends MvuElement {
 			this._updateCatalog(this.#currentTopicId);
 		};
 
+		const deleteTopicLevelTree = (topic) => {
+			console.log('🚀 ~ AdminPanel ~ deleteTopicLevelTree ~ topic:', topic);
+
+			this.#topics = this.#topics.filter((oneTopic) => oneTopic._id !== topic._id);
+			this.signal(Update_Topics, this.#topics);
+		};
+
+		const disableTopicLevelTree = (topic) => {
+			// console.log('🚀 ~ AdminPanel ~ disableTopicLevelTree ~ topic:', topic);
+			// console.log('🚀 ~ AdminPanel ~ disableTopicLevelTree ~ topic._id:', topic._id);
+
+			const foundTopic = this.#topics.find((oneTopic) => oneTopic._id === topic._id);
+
+			if (foundTopic) {
+				// console.log('🚀 ~ AdminPanel ~ disableTopicLevelTree ~ foundTopic:', foundTopic);
+				foundTopic._disabled = true;
+
+				this.signal(Update_Topics, this.#topics);
+			}
+		};
+
 		const copyBranch = (catalogWithResourceData, catalogEntry) => {
 			const newBranch = this._reduceData(catalogEntry.children, this._copyBranch);
 			this.signal(Update_CatalogWithResourceData, [
@@ -532,6 +558,8 @@ export class AdminPanel extends MvuElement {
 							.addLayerGroup="${addLayerGroup}"
 							.copyBranch="${copyBranch}"
 							.saveCatalog="${saveCatalog}"
+							.deleteTopicLevelTree="${deleteTopicLevelTree}"
+							.disableTopicLevelTree="${disableTopicLevelTree}"
 							.dummy="${dummy}"
 						></ba-layer-tree>
 					</div>
