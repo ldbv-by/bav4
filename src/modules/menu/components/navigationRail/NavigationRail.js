@@ -106,6 +106,7 @@ export class NavigationRail extends MvuElement {
 
 		const openTab = (tabId) => {
 			setTab(tabId);
+			setCurrentTool(null);
 			open();
 		};
 
@@ -181,7 +182,7 @@ export class NavigationRail extends MvuElement {
 						<span class="icon close-icon "> </span>
 						<span class="text"> ${translate('menu_navigation_rail_close')} </span>
 					</button>
-					<div class="" style="order:99">
+					<div class="hide" style="order:99">
 						<button>
 							<span class="icon mapconf"> </span>
 							<span class="text"> Basiskarten Konfigurator </span>
