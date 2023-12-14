@@ -1,4 +1,4 @@
-import { RoutingChip } from '../../../../src/modules/chips/components/assistChips/RoutingChip';
+import { RoutingChip, RoutingStartStates } from '../../../../src/modules/chips/components/assistChips/RoutingChip';
 import { CoordinateProposalType, RoutingStatusCodes } from '../../../../src/domain/routing';
 import { $injector } from '../../../../src/injection';
 import { setStatus } from '../../../../src/store/routing/routing.action';
@@ -48,8 +48,9 @@ describe('RoutingChip', () => {
 		it('contains default values in the model', async () => {
 			const element = await setup();
 
-			const { coordinate } = element.getModel();
+			const { status, coordinate } = element.getModel();
 
+			expect(status).toEqual(RoutingStartStates.INIT_NEW_ROUTING);
 			expect(coordinate).toEqual([]);
 		});
 
@@ -96,7 +97,7 @@ describe('RoutingChip', () => {
 
 			setStatus(RoutingStatusCodes.Ok);
 
-			expect(element.isVisible()).toBeFalse();
+			expect(element.isVisible()).toBeTrue();
 			setStatus(RoutingStatusCodes.Http_Backend_400);
 
 			expect(element.isVisible()).toBeFalse();
@@ -107,7 +108,7 @@ describe('RoutingChip', () => {
 	});
 
 	describe('when chip is clicked', () => {
-		it('changes proposal coordinate on click', async () => {
+		it('changes to START_OR_DESTINATION proposal coordinate on click', async () => {
 			const state = { routing: { status: RoutingStatusCodes.Start_Destination_Missing } };
 
 			const properties = { coordinate: coordinate };
@@ -119,6 +120,30 @@ describe('RoutingChip', () => {
 			expect(store.getState().routing.proposal.payload).toEqual({
 				coord: coordinate,
 				type: CoordinateProposalType.START_OR_DESTINATION
+			});
+		});
+
+		it('changes to INTERMEDIATE proposal coordinate on click', async () => {
+			const state = {
+				routing: {
+					waypoints: [
+						[0, 0],
+						[1, 1]
+					],
+					status: RoutingStatusCodes.Ok
+				}
+			};
+
+			const properties = { coordinate: coordinate };
+			const element = await setup(state, properties);
+
+			const button = element.shadowRoot.querySelector('button');
+
+			button.click();
+
+			expect(store.getState().routing.proposal.payload).toEqual({
+				coord: coordinate,
+				type: CoordinateProposalType.INTERMEDIATE
 			});
 		});
 	});

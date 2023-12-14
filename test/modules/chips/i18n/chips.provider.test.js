@@ -7,6 +7,7 @@ describe('i18n for chips module', () => {
 		expect(map.chips_assist_chip_elevation_profile).toBe('Geländeprofil');
 		expect(map.chips_assist_chip_export).toBe('Export');
 		expect(map.chips_assist_chip_start_routing_here).toBe('Route planen');
+		expect(map.chips_assist_chip_edit_existing_route).toBe('Route bearbeiten');
 		expect(map.chips_assist_chip_share_stored_data).toBe('Daten teilen');
 		expect(map.chips_assist_chip_share_position_label).toBe('Position teilen');
 		expect(map.chips_assist_chip_share_position_api_failed).toBe('Teilen der Position ist fehlgeschlagen');
@@ -20,6 +21,7 @@ describe('i18n for chips module', () => {
 		expect(map.chips_assist_chip_elevation_profile).toBe('Elevation Profile');
 		expect(map.chips_assist_chip_export).toBe('Export');
 		expect(map.chips_assist_chip_start_routing_here).toBe('Plan a route');
+		expect(map.chips_assist_chip_edit_existing_route).toBe('Edit route');
 		expect(map.chips_assist_chip_share_stored_data).toBe('Share data');
 		expect(map.chips_assist_chip_share_position_label).toBe('Share position');
 		expect(map.chips_assist_chip_share_position_api_failed).toBe('Sharing the position has failed');
@@ -28,7 +30,7 @@ describe('i18n for chips module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 8;
+		const expectedSize = 9;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
