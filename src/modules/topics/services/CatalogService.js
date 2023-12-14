@@ -9,6 +9,7 @@ import {
 	FALLBACK_GEORESOURCE_ID_3
 } from '../../../services/GeoResourceService';
 import { FALLBACK_TOPICS_IDS } from '../../../services/TopicsService';
+import { LevelTypes, emitNotification } from '../../../store/notifications/notifications.action';
 import { loadBvvCatalog } from './provider/catalog.provider';
 
 /**
@@ -126,12 +127,16 @@ export class CatalogService {
 		})
 			// eslint-disable-next-line promise/prefer-await-to-then
 			.then(() => {
+				const message = 'Catalog successfully posted.';
 				// eslint-disable-next-line no-console
-				console.log('Catalog successfully posted.'); // handle success, if needed
+				console.log(message); // handle success, if needed
+				emitNotification(message, LevelTypes.INFO);
 			})
 			// eslint-disable-next-line promise/prefer-await-to-then
 			.catch((error) => {
-				console.error('There has been a problem with your fetch operation:', error);
+				const message = 'There has been a problem with your fetch operation:';
+				console.error(message, error);
+				emitNotification(message, LevelTypes.ERROR);
 			});
 
 		return true;
