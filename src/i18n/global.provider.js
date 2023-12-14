@@ -18,13 +18,13 @@ export const provide = (lang) => {
 				global_privacy_policy_url: 'https://geoportal.bayern.de/geoportalbayern/seiten/datenschutz.html',
 				global_marker_symbol_label: 'Marker',
 				global_featureInfo_not_available: 'FeatureInfo is not available',
-				global_routingService_exception: 'A route could not be created'
+				global_routingService_init_exception: 'Routing currently not available'
 			};
 
 		case 'de':
 			return {
 				//the first part of the snake_case key should be the name of the related module
-				global_mfpService_init_exception: 'PDF Export derzeit leider nicht möglich.',
+				global_mfpService_init_exception: 'PDF Export derzeit leider nicht möglich',
 				global_mfpService_createJob_exception: 'PDF konnte nicht erstellt werden',
 				global_featureInfoService_exception: 'FeatureInfo Abfrage schlug fehl',
 				global_geolocation_denied:
@@ -39,7 +39,7 @@ export const provide = (lang) => {
 				global_privacy_policy_url: 'https://geoportal.bayern.de/geoportalbayern/seiten/datenschutz.html',
 				global_marker_symbol_label: 'Markierung',
 				global_featureInfo_not_available: 'FeatureInfo ist nicht verfügbar',
-				global_routingService_exception: 'Eine Route konnte nicht erstellt werden'
+				global_routingService_init_exception: 'Die Routing-Funktion steht derzeit leider nicht zur Verfügung'
 			};
 
 		default:

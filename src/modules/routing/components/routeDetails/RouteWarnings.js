@@ -98,8 +98,8 @@ export class RouteWarnings extends MvuElement {
 				@mouseout=${() => resetHighlightedSegments()}
 			>
 				<span class="noselect">${warningItem.message}</span>
+				<button class="geolocation-icon" title=${translate('routing_warnings_zoom')} @click=${() => highlightSegments(true)}></button>
 			</div>
-			<button class="geolocation-icon" title=${translate('routing_warnings_zoom')} @click=${() => highlightSegments(true)}></button>
 		</div>`;
 	}
 

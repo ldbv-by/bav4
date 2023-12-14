@@ -99,7 +99,7 @@ export class ShareDialogContent extends MvuElement {
 							<span class="share_copy" slot="before">${translate('share_dialog_link')}</span>
 						</ba-switch>
 					</div>
-			  </div>`
+				</div>`
 			: html.nothing;
 	}
 

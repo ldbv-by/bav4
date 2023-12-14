@@ -4,7 +4,7 @@
 import { observe, observeOnce } from '../utils/storeUtils';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { BaPlugin } from './BaPlugin';
-import { activate, deactivate, setCategory, setDestination, setWaypoints } from '../store/routing/routing.action';
+import { activate, deactivate, reset, setCategory, setDestination, setWaypoints } from '../store/routing/routing.action';
 import { Tools } from '../domain/tools';
 import { $injector } from '../injection/index';
 import { LevelTypes, emitNotification } from '../store/notifications/notifications.action';
@@ -20,10 +20,18 @@ import { TabIds } from '../domain/mainMenu';
 import { isCoordinate } from '../utils/checks';
 
 /**
- * Id of the layer used for routing interaction.
+ * Id of the temporary layer used for routing interaction when the tool is activated.
  * LayerHandler of a map implementation will also use this id as their key.
  */
 export const ROUTING_LAYER_ID = 'routing_layer';
+/**
+ * Id of a permanent layer used for displaying a route.
+ */
+export const PERMANENT_ROUTE_LAYER_ID = 'perm_rt_layer';
+/**
+ * Id of a permanent layer used for displaying the waypoints of a route.
+ */
+export const PERMANENT_WP_LAYER_ID = 'perm_wp_layer';
 
 /**
  * This plugin observes the 'active' property of the routing store.
@@ -53,9 +61,9 @@ export class RoutingPlugin extends BaPlugin {
 		this.#environmentService = environmentService;
 		this.#routingService = routingService;
 	}
+
 	/**
 	 * @override
-	 * @param {Store} store
 	 */
 	async register(store) {
 		const lazyInitialize = async () => {
@@ -64,6 +72,8 @@ export class RoutingPlugin extends BaPlugin {
 				try {
 					await this.#routingService.init();
 					setCategory(this.#routingService.getCategories()[0]?.id);
+					// parse query parameters if available
+					this._parseRouteFromQueryParams(this.#environmentService.getQueryParams());
 					return (this._initialized = true);
 				} catch (ex) {
 					console.error('Routing service could not be initialized', ex);
@@ -84,12 +94,10 @@ export class RoutingPlugin extends BaPlugin {
 				closeBottomSheet();
 				deactivate();
 			} else {
-				const queryParameters = this.#environmentService.getQueryParams(); // Note: we have to fetch the query params before they are updated elsewhere
 				if (await lazyInitialize()) {
 					// we activate the tool after another possible active tool was deactivated
 					setTimeout(() => {
 						activate();
-						this._parseRouteFromQueryParams(queryParameters);
 						setTab(TabIds.ROUTING);
 					});
 				}
@@ -99,6 +107,8 @@ export class RoutingPlugin extends BaPlugin {
 		const onChange = (changedState) => {
 			if (changedState) {
 				addLayer(ROUTING_LAYER_ID, { constraints: { hidden: true, alwaysTop: true } });
+				removeLayer(PERMANENT_ROUTE_LAYER_ID);
+				removeLayer(PERMANENT_WP_LAYER_ID);
 			} else {
 				removeLayer(ROUTING_LAYER_ID);
 			}
@@ -142,6 +152,11 @@ export class RoutingPlugin extends BaPlugin {
 			closeContextMenu();
 			closeBottomSheet();
 		};
+		const onLayerRemoved = (eventLike, state) => {
+			if (!state.routing.active && [PERMANENT_ROUTE_LAYER_ID, PERMANENT_WP_LAYER_ID].includes(eventLike.payload)) {
+				reset();
+			}
+		};
 
 		observe(store, (state) => state.routing.active, onChange);
 		observe(store, (state) => state.tools.current, onToolChanged, false);
@@ -159,6 +174,11 @@ export class RoutingPlugin extends BaPlugin {
 			store,
 			(state) => state.routing.waypoints,
 			() => onWaypointsChanged()
+		);
+		observe(
+			store,
+			(state) => state.layers.removed,
+			(eventLike, state) => onLayerRemoved(eventLike, state)
 		);
 	}
 

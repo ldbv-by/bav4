@@ -1,5 +1,6 @@
 import { TestUtils } from '../../../../test-utils.js';
 import { $injector } from '../../../../../src/injection';
+import { MvuElement } from '../../../../../src/modules/MvuElement';
 import { GeolocationButton } from '../../../../../src/modules/map/components/geolocationButton/GeolocationButton';
 import { geolocationReducer } from '../../../../../src/store/geolocation/geolocation.reducer.js';
 window.customElements.define(GeolocationButton.tag, GeolocationButton);
@@ -24,6 +25,22 @@ describe('GeolocationButton', () => {
 
 		return await TestUtils.render(GeolocationButton.tag);
 	};
+
+	describe('class', () => {
+		it('inherits from AbstractMvuContentPanel', async () => {
+			const element = await setup();
+
+			expect(element instanceof MvuElement).toBeTrue();
+		});
+	});
+
+	describe('when instantiated', () => {
+		it('has a model containing default values', async () => {
+			const element = await setup();
+
+			expect(element.getModel()).toEqual({ active: false, denied: false });
+		});
+	});
 
 	describe('when initialized', () => {
 		it('shows geolocation button in inactive state', async () => {

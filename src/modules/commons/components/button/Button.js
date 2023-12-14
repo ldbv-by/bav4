@@ -83,7 +83,7 @@ export class Button extends MvuElement {
 			return icon
 				? html`<style>
 						${iconClass}
-				  </style>`
+					</style>`
 				: nothing;
 		};
 
