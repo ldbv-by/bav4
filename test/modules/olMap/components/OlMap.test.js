@@ -390,6 +390,25 @@ describe('OlMap', () => {
 				expect(store.getState().position.rotation).toBe(0.5);
 			});
 		});
+
+		describe('movestart/moveend', () => {
+			it('does not trigger an ol.View animation', async () => {
+				const element = await setup();
+				const view = element._view;
+				const viewSpy = spyOn(view, 'animate');
+				spyOn(view, 'getZoom').and.returnValue(5);
+				spyOn(view, 'getCenter').and.returnValue([21, 42]);
+				spyOn(view, 'getRotation').and.returnValue(0.5);
+
+				simulateMapEvent(element._map, MapEventType.MOVESTART);
+				simulateMapEvent(element._map, MapEventType.MOVEEND);
+
+				expect(store.getState().position.zoom).toBe(5);
+				expect(store.getState().position.center).toEqual([21, 42]);
+				expect(store.getState().position.rotation).toBe(0.5);
+				expect(viewSpy).not.toHaveBeenCalled();
+			});
+		});
 	});
 
 	describe('pointer events', () => {
