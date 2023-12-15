@@ -95,8 +95,9 @@ export class ProposalContextContent extends MvuElement {
 		const getButton = (buttonConfig, proposal) => {
 			return buttonConfig.matcher(proposal.type)
 				? html`<button id=${buttonConfig.id} @click=${() => onClick(buttonConfig.action)}>
-						<span class="icon ${buttonConfig.id}"></span><span class="text">${translate(buttonConfig.label)}</span>
-					</button>`
+						<span class="icon ${buttonConfig.id}"></span>
+						<span class="text">${translate(buttonConfig.label)}</span>
+				  </button>`
 				: null;
 		};
 
