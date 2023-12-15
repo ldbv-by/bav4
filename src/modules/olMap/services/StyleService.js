@@ -265,7 +265,7 @@ export class StyleService {
 				const color = styleColor ? styleColor : iconService.decodeColor(symbolSrc);
 				const scale = markerScaleToKeyword(style.getImage().getScale());
 				const text = style.getText().getText();
-				return { symbolSrc: symbolSrc, color: rgbToHex(color), scale: scale, text: text };
+				return { symbolSrc: symbolSrc, color: rgbToHex(color ? color : style.getText().getFill().getColor()), scale: scale, text: text };
 			};
 
 			const fromAttribute = (feature) => {
