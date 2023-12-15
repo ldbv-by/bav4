@@ -182,7 +182,7 @@ describe('bvvCapabilitiesProvider', () => {
 		const sourceType = new SourceType(SourceTypeName.WMS, '42');
 		const configSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
 		const httpSpy = spyOn(httpService, 'post')
-			.withArgs('BACKEND_URL/wms/getCapabilities', JSON.stringify({ url: url }), MediaType.JSON)
+			.withArgs('BACKEND_URL/wms/getCapabilities', JSON.stringify({ url: url }), MediaType.JSON, { timeout: 3000 })
 			.and.resolveTo(responseMock);
 
 		bvvCapabilitiesProvider(url, { sourceType: sourceType, isAuthenticated: false, ids: [], layers: [] });
@@ -206,7 +206,9 @@ describe('bvvCapabilitiesProvider', () => {
 
 		const configSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
 		const httpSpy = spyOn(httpService, 'post')
-			.withArgs('BACKEND_URL/wms/getCapabilities', JSON.stringify({ url: url, username: username, password: password }), MediaType.JSON)
+			.withArgs('BACKEND_URL/wms/getCapabilities', JSON.stringify({ url: url, username: username, password: password }), MediaType.JSON, {
+				timeout: 3000
+			})
 			.and.resolveTo(responseMock);
 		const baaCredentialSpy = spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue({ username: username, password: password });
 
@@ -231,7 +233,9 @@ describe('bvvCapabilitiesProvider', () => {
 		};
 		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
 		spyOn(httpService, 'post')
-			.withArgs('BACKEND_URL/wms/getCapabilities', JSON.stringify({ url: url, username: username, password: password }), MediaType.JSON)
+			.withArgs('BACKEND_URL/wms/getCapabilities', JSON.stringify({ url: url, username: username, password: password }), MediaType.JSON, {
+				timeout: 3000
+			})
 			.and.resolveTo(responseMock);
 		spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue({ username: username, password: password });
 
@@ -259,7 +263,7 @@ describe('bvvCapabilitiesProvider', () => {
 		};
 		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
 		spyOn(httpService, 'post')
-			.withArgs('BACKEND_URL/wms/getCapabilities', JSON.stringify({ url: url }), MediaType.JSON)
+			.withArgs('BACKEND_URL/wms/getCapabilities', JSON.stringify({ url: url }), MediaType.JSON, { timeout: 3000 })
 			.and.resolveTo(responseMock);
 
 		const wmsGeoResources = await bvvCapabilitiesProvider(url, { sourceType: sourceType, isAuthenticated: false, ids: [], layers: [] });
@@ -302,7 +306,7 @@ describe('bvvCapabilitiesProvider', () => {
 		};
 		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
 		spyOn(httpService, 'post')
-			.withArgs('BACKEND_URL/wms/getCapabilities', JSON.stringify({ url: url }), MediaType.JSON)
+			.withArgs('BACKEND_URL/wms/getCapabilities', JSON.stringify({ url: url }), MediaType.JSON, { timeout: 3000 })
 			.and.resolveTo(responseMock);
 
 		const wmsGeoResources = await bvvCapabilitiesProvider(url, { sourceType: sourceType, isAuthenticated: false, ids: [], layers: [layerName] });
@@ -336,7 +340,7 @@ describe('bvvCapabilitiesProvider', () => {
 		};
 		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
 		spyOn(httpService, 'post')
-			.withArgs('BACKEND_URL/wms/getCapabilities', JSON.stringify({ url: url }), MediaType.JSON)
+			.withArgs('BACKEND_URL/wms/getCapabilities', JSON.stringify({ url: url }), MediaType.JSON, { timeout: 3000 })
 			.and.resolveTo(responseMock);
 
 		const wmsGeoResources = await bvvCapabilitiesProvider(url, {
@@ -385,7 +389,9 @@ describe('bvvCapabilitiesProvider', () => {
 		};
 		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
 		spyOn(httpService, 'post')
-			.withArgs('BACKEND_URL/wms/getCapabilities', JSON.stringify({ url: url, username: username, password: password }), MediaType.JSON)
+			.withArgs('BACKEND_URL/wms/getCapabilities', JSON.stringify({ url: url, username: username, password: password }), MediaType.JSON, {
+				timeout: 3000
+			})
 			.and.resolveTo(responseMock);
 		spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue({ username: username, password: password });
 
@@ -408,7 +414,9 @@ describe('bvvCapabilitiesProvider', () => {
 		const failedResponseMock = { ok: false, status: 420 };
 		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
 		spyOn(httpService, 'post')
-			.withArgs('BACKEND_URL/wms/getCapabilities', JSON.stringify({ url: url, username: username, password: password }), MediaType.JSON)
+			.withArgs('BACKEND_URL/wms/getCapabilities', JSON.stringify({ url: url, username: username, password: password }), MediaType.JSON, {
+				timeout: 3000
+			})
 			.and.resolveTo(failedResponseMock);
 		spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
 
@@ -425,7 +433,9 @@ describe('bvvCapabilitiesProvider', () => {
 		const failedResponseMock = { ok: false, status: 420 };
 		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
 		spyOn(httpService, 'post')
-			.withArgs('BACKEND_URL/wms/getCapabilities', JSON.stringify({ url: url, username: username, password: password }), MediaType.JSON)
+			.withArgs('BACKEND_URL/wms/getCapabilities', JSON.stringify({ url: url, username: username, password: password }), MediaType.JSON, {
+				timeout: 3000
+			})
 			.and.resolveTo(failedResponseMock);
 		spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue({ username: username, password: password });
 
@@ -442,7 +452,9 @@ describe('bvvCapabilitiesProvider', () => {
 		const emptyResponseMock = { ok: false, status: 404 };
 		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
 		spyOn(httpService, 'post')
-			.withArgs('BACKEND_URL/wms/getCapabilities', JSON.stringify({ url: url, username: username, password: password }), MediaType.JSON)
+			.withArgs('BACKEND_URL/wms/getCapabilities', JSON.stringify({ url: url, username: username, password: password }), MediaType.JSON, {
+				timeout: 3000
+			})
 			.and.resolveTo(emptyResponseMock);
 		spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue({ username: username, password: password });
 
@@ -464,7 +476,7 @@ describe('bvvCapabilitiesProvider', () => {
 		spyOn(mapService, 'getSrid').and.returnValue(42);
 		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
 		spyOn(httpService, 'post')
-			.withArgs('BACKEND_URL/wms/getCapabilities', JSON.stringify({ url: url }), MediaType.JSON)
+			.withArgs('BACKEND_URL/wms/getCapabilities', JSON.stringify({ url: url }), MediaType.JSON, { timeout: 3000 })
 			.and.resolveTo(responseMock);
 
 		const wmsGeoResources = await bvvCapabilitiesProvider(url, { sourceType: sourceType, isAuthenticated: false, ids: [], layers: [] });
@@ -484,7 +496,7 @@ describe('bvvCapabilitiesProvider', () => {
 		};
 		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
 		spyOn(httpService, 'post')
-			.withArgs('BACKEND_URL/wms/getCapabilities', JSON.stringify({ url: url }), MediaType.JSON)
+			.withArgs('BACKEND_URL/wms/getCapabilities', JSON.stringify({ url: url }), MediaType.JSON, { timeout: 3000 })
 			.and.resolveTo(responseMock);
 
 		const wmsGeoResources = await bvvCapabilitiesProvider(url, { sourceType: sourceType, isAuthenticated: false, ids: [], layers: [] });
