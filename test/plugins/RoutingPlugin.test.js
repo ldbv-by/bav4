@@ -144,23 +144,6 @@ describe('RoutingPlugin', () => {
 				await TestUtils.timeout();
 				expect(store.getState().routing.active).toBeTrue();
 			});
-
-			xit('parses query parameters', async () => {
-				const store = setup();
-				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2`);
-				const instanceUnderTest = new RoutingPlugin();
-				const parseRouteFromQueryParamsSpy = spyOn(instanceUnderTest, '_parseRouteFromQueryParams');
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParams);
-				instanceUnderTest._initialized = true;
-				await instanceUnderTest.register(store);
-
-				setCurrentTool(Tools.ROUTING);
-
-				// we have to wait for two async operations
-				await TestUtils.timeout();
-				await TestUtils.timeout();
-				expect(parseRouteFromQueryParamsSpy).toHaveBeenCalledOnceWith(queryParams);
-			});
 		});
 
 		it('updates the active property, closes the BottomSheet and removes the highlight feature (deactivation)', async () => {
