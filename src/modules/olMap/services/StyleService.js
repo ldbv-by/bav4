@@ -33,6 +33,7 @@ export const StyleTypes = Object.freeze({
 	DRAW: 'draw',
 	MARKER: 'marker',
 	TEXT: 'text',
+	ANNOTATION: 'annotation',
 	LINE: 'line',
 	POLYGON: 'polygon',
 	GEOJSON: 'geojson'
@@ -87,6 +88,7 @@ export class StyleService {
 			case StyleTypes.MEASURE:
 				this._addMeasureStyle(olFeature, olMap);
 				break;
+			case StyleTypes.ANNOTATION:
 			case StyleTypes.TEXT:
 				this._addTextStyle(olFeature);
 				break;
@@ -322,10 +324,16 @@ export class StyleService {
 			return null;
 		};
 
+		const getStyleTypeFromTypeAttribute = (olFeature) => {
+			const typeAttribute = olFeature.get('type');
+			const styleType = Object.values(StyleTypes).find((typeValue) => typeValue === typeAttribute);
+			return styleType ?? null;
+		};
+
 		const defaultOrNull = (olFeature) => (olFeature.getStyle() === null ? StyleTypes.DEFAULT : null);
 
 		if (olFeature) {
-			for (const styleTypeFunction of [getStyleTypeFromId, getStyleTypeFromProperties, defaultOrNull]) {
+			for (const styleTypeFunction of [getStyleTypeFromId, getStyleTypeFromProperties, getStyleTypeFromTypeAttribute, defaultOrNull]) {
 				const styleType = styleTypeFunction(olFeature);
 				if (styleType) {
 					return styleType;
