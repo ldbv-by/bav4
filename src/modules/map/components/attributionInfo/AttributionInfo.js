@@ -79,7 +79,7 @@ export class AttributionInfo extends MvuElement {
 			return copyright.url
 				? html`<a class="attribution attribution-link" target="_blank" title="${copyright.label}" href=${copyright.url}
 						>${copyright.label}${separator}</a
-				  >`
+					>`
 				: html`<span class="attribution">${copyright.label}${separator}</span>`;
 		});
 
