@@ -205,7 +205,7 @@ export class GeoResourceService {
 						}
 					},
 					GeoResourceService.proxyIdentifier
-			  );
+				);
 	}
 
 	static get proxyIdentifier() {
