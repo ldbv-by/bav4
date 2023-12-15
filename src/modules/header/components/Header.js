@@ -163,7 +163,7 @@ export class Header extends MvuElement {
 						title="${translate('header_emblem_title_standalone')}"
 						class="header__emblem"
 						target="_blank"
-				  ></a>`
+					></a>`
 				: html`<div class="header__emblem"></div>`;
 		};
 

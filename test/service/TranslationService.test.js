@@ -41,10 +41,10 @@ describe('TranslationService', () => {
 			return lang === 'de'
 				? {
 						key0: 'value0_de'
-				  }
+					}
 				: {
 						key0: 'value0_en'
-				  };
+					};
 		});
 
 		expect(instanceUnderTest.translate('key0')).toBe('value0_en');

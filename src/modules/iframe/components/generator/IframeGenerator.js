@@ -116,7 +116,7 @@ export class IframeGenerator extends MvuElement {
 							<div class="iframe__input width_placeholder">${Auto_Width}</div>
 							<span class="width_placeholder-sub"> % </span>
 						</div>
-				  </div>`
+					</div>`
 				: html`
 					<div class="iframe__container iframe__container-width">		
 						<label for="iframe_width" class="control-label">${translate('iframe_generator_width')}</label>							
