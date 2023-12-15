@@ -63,12 +63,14 @@ export class Switch extends MvuElement {
 
 	update(type, data, model) {
 		const returnAndPropagate = (data) => {
-			this.dispatchEvent(
-				new CustomEvent('toggle', {
-					detail: { checked: data }
-				})
-			);
-			this.#onToggle(data);
+			if (data !== model.checked) {
+				this.dispatchEvent(
+					new CustomEvent('toggle', {
+						detail: { checked: data }
+					})
+				);
+				this.#onToggle(data);
+			}
 
 			return data;
 		};
@@ -100,7 +102,7 @@ export class Switch extends MvuElement {
 				bounds: {
 					lower: 0,
 					middle: (width - padding) / 4,
-					upper: width - thumbSize - padding
+					upper: width - thumbSize / 2 - padding
 				}
 			};
 		}
@@ -127,21 +129,12 @@ export class Switch extends MvuElement {
 		};
 
 		const onPointerup = () => {
-			if (!this.#draggingListener) return;
-
-			const checkbox = this.shadowRoot.querySelector('input');
-			checkbox.checked = this.#dragging ? this._determineChecked(checkbox) : !this._determineChecked(checkbox);
-			this.signal(Update_Checked_Propagate, checkbox.checked);
-
-			checkbox.style.removeProperty('--thumb-transition-duration');
-			checkbox.style.removeProperty('--thumb-position');
-			this.#draggingListener.abort();
-			this.#draggingListener = null;
-			this.#dragging = false;
-
-			this._padRelease();
+			this._finishPointerAction();
 		};
 
+		const onPointercancel = () => {
+			this._finishPointerAction();
+		};
 		const dragging = (event) => {
 			event.target.style.setProperty('--thumb-position', this._calculateThumbPosition(event));
 			this.#dragging = true;
@@ -190,6 +183,7 @@ export class Switch extends MvuElement {
 					@change=${onChange}
 					@pointerdown=${onPointerdown}
 					@pointerup=${onPointerup}
+					@pointercancel=${onPointercancel}
 					@click=${onClick}
 					@keydown=${onKeydown}
 					id="baSwitch"
@@ -206,10 +200,25 @@ export class Switch extends MvuElement {
 		`;
 	}
 
+	_finishPointerAction() {
+		if (!this.#draggingListener) return;
+
+		const checkbox = this.shadowRoot.querySelector('input');
+		checkbox.checked = this.#dragging ? this._determineChecked(checkbox) : !checkbox.checked;
+		checkbox.style.removeProperty('--thumb-transition-duration');
+		checkbox.style.removeProperty('--thumb-position');
+		this.#draggingListener.abort();
+		this.#draggingListener = null;
+		this.#dragging = false;
+
+		this.signal(Update_Checked_Propagate, checkbox.checked);
+
+		this._padRelease();
+	}
+
 	_calculateThumbPosition(event) {
 		const getHarmonizedPosition = (offsetX, thumbSize, bounds) => {
 			const rawPosition = Math.round(offsetX - thumbSize / 2);
-
 			return rawPosition < bounds.lower ? 0 : rawPosition > bounds.upper ? bounds.upper : rawPosition;
 		};
 
