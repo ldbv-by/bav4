@@ -29,6 +29,8 @@ const Update_Layers = 'update_layers';
  * @author taulinger
  */
 export class OlMap extends MvuElement {
+	#viewSyncBlocked;
+
 	constructor() {
 		super({
 			zoom: null,
@@ -174,6 +176,7 @@ export class OlMap extends MvuElement {
 		});
 
 		this._map.on('movestart', () => {
+			this.#viewSyncBlocked = true;
 			setMoveStart();
 			setBeingMoved(true);
 		});
@@ -185,6 +188,7 @@ export class OlMap extends MvuElement {
 			setBeingDragged(false);
 			setMoveEnd();
 			setBeingMoved(false);
+			this.#viewSyncBlocked = false;
 		});
 
 		const singleClickOrShortPressHandler = (evt) => {
@@ -271,12 +275,14 @@ export class OlMap extends MvuElement {
 	_syncView() {
 		const { zoom, center, rotation } = this.getModel();
 
-		this._view.animate({
-			zoom: zoom,
-			center: center,
-			rotation: rotation,
-			duration: 200
-		});
+		if (!this.#viewSyncBlocked) {
+			this._view.animate({
+				zoom: zoom,
+				center: center,
+				rotation: rotation,
+				duration: 200
+			});
+		}
 	}
 
 	_syncLayers() {
