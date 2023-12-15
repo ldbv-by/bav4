@@ -219,6 +219,23 @@ describe('RoutingPlugin', () => {
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.active[0].id).toBe(ROUTING_LAYER_ID);
 		});
+
+		it('closes an existing ContextMenu and removes existing highlight features', async () => {
+			const store = setup({
+				mapContextMenu: { data: 'foo' },
+				highlight: {
+					features: [{ id: 'foo', data: { coordinate: [11, 22] } }]
+				}
+			});
+			const instanceUnderTest = new RoutingPlugin();
+			instanceUnderTest._initialized = true;
+			await instanceUnderTest.register(store);
+
+			activate();
+
+			expect(store.getState().mapContextMenu.active).toBeFalse();
+			expect(store.getState().highlight.features).toHaveSize(0);
+		});
 	});
 
 	describe('when routing "proposal" property changes', () => {
