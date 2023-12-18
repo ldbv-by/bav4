@@ -106,6 +106,8 @@ export class RoutingPlugin extends BaPlugin {
 
 		const onChange = (changedState) => {
 			if (changedState) {
+				clearHighlightFeatures();
+				closeContextMenu();
 				addLayer(ROUTING_LAYER_ID, { constraints: { hidden: true, alwaysTop: true } });
 				removeLayer(PERMANENT_ROUTE_LAYER_ID);
 				removeLayer(PERMANENT_WP_LAYER_ID);
