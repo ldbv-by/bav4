@@ -94,7 +94,6 @@ export class NavigationRail extends MvuElement {
 		const { isOpenNav, darkSchema, isPortrait, tabIndex, isOpen, visitedTabIdsSet } = model;
 
 		const allTabIds = Array.from(visitedTabIdsSet).reverse();
-		console.log(allTabIds);
 
 		const getOrientationClass = () => {
 			return isPortrait ? 'is-portrait' : 'is-landscape';
