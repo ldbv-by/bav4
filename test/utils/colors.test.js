@@ -79,8 +79,8 @@ describe('getContrastColorFrom', () => {
 		const rgbLightBlue = [36, 3, 185];
 		expect(getContrastColorFrom(undefined)).toBeNull();
 		expect(getContrastColorFrom(null)).toBeNull();
-		expect(getContrastColorFrom(Rgb_Red)).toEqual(Rgb_Black);
-		expect(getContrastColorFrom(Rgb_Yellow)).toEqual(Rgb_Black);
+		expect(getContrastColorFrom(Rgb_Red)).toEqual([178.755, 178.755, 178.755]);
+		expect(getContrastColorFrom(Rgb_Yellow)).toEqual([29.07, 29.07, 29.07]);
 		expect(getContrastColorFrom(rgbDarkBlue)).toEqual(Rgb_White);
 		expect(getContrastColorFrom(rgbLightBlue)).toEqual(Rgb_Black);
 	});

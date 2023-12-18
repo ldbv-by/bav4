@@ -15,7 +15,7 @@ register(proj4);
 
 describe('StyleTypes', () => {
 	it('provides an enum of all valid StyleTypes', () => {
-		expect(Object.keys(StyleTypes).length).toBe(11);
+		expect(Object.keys(StyleTypes).length).toBe(12);
 
 		expect(StyleTypes.NULL).toBe('null');
 		expect(StyleTypes.DEFAULT).toBe('default');
@@ -25,6 +25,7 @@ describe('StyleTypes', () => {
 		expect(StyleTypes.DRAW).toBe('draw');
 		expect(StyleTypes.MARKER).toBe('marker');
 		expect(StyleTypes.TEXT).toBe('text');
+		expect(StyleTypes.ANNOTATION).toBe('annotation');
 		expect(StyleTypes.LINE).toBe('line');
 		expect(StyleTypes.POLYGON).toBe('polygon');
 		expect(StyleTypes.GEOJSON).toBe('geojson');
@@ -110,17 +111,33 @@ describe('StyleService', () => {
 			expect(instanceUnderTest._detectStyleType(feature4)).toEqual(StyleTypes.GEOJSON);
 		});
 
+		it('detects type attribute as type from olFeature', () => {
+			const getFeature = (typeName) => {
+				return {
+					getId: () => 'some',
+					getStyle: () => null,
+					getKeys: () => [],
+					get: (attributeName) => (attributeName === 'type' ? typeName : null)
+				};
+			};
+
+			expect(instanceUnderTest._detectStyleType(getFeature('marker'))).toEqual(StyleTypes.MARKER);
+			expect(instanceUnderTest._detectStyleType(getFeature(StyleTypes.ANNOTATION))).toEqual(StyleTypes.ANNOTATION);
+			expect(instanceUnderTest._detectStyleType(getFeature(StyleTypes.LINE))).toEqual(StyleTypes.LINE);
+			expect(instanceUnderTest._detectStyleType(getFeature(StyleTypes.POLYGON))).toEqual(StyleTypes.POLYGON);
+		});
+
 		it('detects default as type from olFeature', () => {
-			const feature = { getId: () => 'some', getStyle: () => null, getKeys: () => [] };
+			const feature = { getId: () => 'some', getStyle: () => null, getKeys: () => [], get: () => {} };
 
 			expect(instanceUnderTest._detectStyleType(feature)).toEqual(StyleTypes.DEFAULT);
 		});
 
 		it('detects not the type from olFeature', () => {
-			const feature1 = { getId: () => 'mea_sure_123', getStyle: () => {}, getKeys: () => [] };
-			const feature2 = { getId: () => '123_measure_123', getStyle: () => {}, getKeys: () => [] };
-			const feature3 = { getId: () => ' measure_123', getStyle: () => {}, getKeys: () => [] };
-			const feature4 = { getId: () => '123measure_123', getStyle: () => {}, getKeys: () => [] };
+			const feature1 = { getId: () => 'mea_sure_123', getStyle: () => {}, getKeys: () => [], get: () => {} };
+			const feature2 = { getId: () => '123_measure_123', getStyle: () => {}, getKeys: () => [], get: () => {} };
+			const feature3 = { getId: () => ' measure_123', getStyle: () => {}, getKeys: () => [], get: () => {} };
+			const feature4 = { getId: () => '123measure_123', getStyle: () => {}, getKeys: () => [], get: () => {} };
 
 			expect(instanceUnderTest._detectStyleType(undefined)).toBeNull();
 			expect(instanceUnderTest._detectStyleType(null)).toBeNull();

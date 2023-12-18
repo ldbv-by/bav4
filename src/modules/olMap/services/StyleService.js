@@ -264,8 +264,16 @@ export class StyleService {
 				const styleColor = style.getImage().getColor();
 				const color = styleColor ? styleColor : iconService.decodeColor(symbolSrc);
 				const scale = markerScaleToKeyword(style.getImage().getScale());
+				const size = style.getImage()?.getSize();
+				const pixelAnchor = style.getImage()?.getAnchor();
 				const text = style.getText().getText();
-				return { symbolSrc: symbolSrc, color: rgbToHex(color ? color : style.getText().getFill().getColor()), scale: scale, text: text };
+				return {
+					symbolSrc: symbolSrc,
+					color: rgbToHex(color ? color : style.getText().getFill().getColor()),
+					scale: scale,
+					text: text,
+					anchor: size && pixelAnchor ? [pixelAnchor[0] / size[0], pixelAnchor[1] / size[1]] : null
+				};
 			};
 
 			const fromAttribute = (feature) => {
