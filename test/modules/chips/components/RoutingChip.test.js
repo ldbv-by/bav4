@@ -1,10 +1,12 @@
-import { RoutingChip, RoutingStartStates } from '../../../../src/modules/chips/components/assistChips/RoutingChip';
+import { RoutingChip } from '../../../../src/modules/chips/components/assistChips/RoutingChip';
 import { CoordinateProposalType, RoutingStatusCodes } from '../../../../src/domain/routing';
 import { $injector } from '../../../../src/injection';
 import { setStatus } from '../../../../src/store/routing/routing.action';
 import { routingReducer } from '../../../../src/store/routing/routing.reducer';
 import routingSvg from '../../../../src/modules/chips/components/assistChips/assets/direction.svg';
 import { TestUtils } from '../../../test-utils';
+import { Tools } from '../../../../src/domain/tools';
+import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
 
 window.customElements.define(RoutingChip.tag, RoutingChip);
 
@@ -18,7 +20,7 @@ describe('RoutingChip', () => {
 	};
 
 	const setup = async (state = defaultRoutingState, properties = {}, attributes = {}) => {
-		store = TestUtils.setupStoreAndDi(state, { routing: routingReducer });
+		store = TestUtils.setupStoreAndDi(state, { routing: routingReducer, tools: toolsReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 
 		const element = await TestUtils.render(RoutingChip.tag, properties, attributes);
@@ -50,7 +52,7 @@ describe('RoutingChip', () => {
 
 			const { status, coordinate } = element.getModel();
 
-			expect(status).toEqual(RoutingStartStates.INIT_NEW_ROUTING);
+			expect(status).toEqual(RoutingStatusCodes.Start_Destination_Missing);
 			expect(coordinate).toEqual([]);
 		});
 
@@ -141,10 +143,7 @@ describe('RoutingChip', () => {
 
 			button.click();
 
-			expect(store.getState().routing.proposal.payload).toEqual({
-				coord: coordinate,
-				type: CoordinateProposalType.INTERMEDIATE
-			});
+			expect(store.getState().tools.current).toBe(Tools.ROUTING);
 		});
 	});
 
