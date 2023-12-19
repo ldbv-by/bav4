@@ -446,7 +446,7 @@ describe('markerStyleFunction', () => {
 
 		expect(styles).toBeDefined();
 		expect(styles[0].getText().getText()).toBe('foo');
-		expect(styles[0].getText().getOffsetY()).toBe(6);
+		expect(styles[0].getText().getOffsetY()).toBe(2);
 	});
 
 	it('should return a style WITHOUT a Text', () => {
@@ -530,7 +530,7 @@ describe('textStyleFunction', () => {
 		const textStyle = styles[0].getText();
 		expect(textStyle.getText()).toBe('Foo');
 		expect(textStyle.getScale()).toBe(2);
-		expect(textStyle.getStroke().getColor()).toEqual(Rgb_Black.concat([0.4]));
+		expect(textStyle.getStroke().getColor()).toEqual(Rgb_Black.concat([1]));
 	});
 
 	it('should return a style specified by styleOption; medium text', () => {
@@ -541,7 +541,7 @@ describe('textStyleFunction', () => {
 		const textStyle = styles[0].getText();
 		expect(textStyle.getText()).toBe('Bar');
 		expect(textStyle.getScale()).toBe(1.5);
-		expect(textStyle.getStroke().getColor()).toEqual(Rgb_Black.concat([0.4]));
+		expect(textStyle.getStroke().getColor()).toEqual(Rgb_Black.concat([1]));
 	});
 
 	it('should return a style specified by styleOption; small text', () => {
@@ -552,7 +552,7 @@ describe('textStyleFunction', () => {
 		const textStyle = styles[0].getText();
 		expect(textStyle.getText()).toBe('Bar');
 		expect(textStyle.getScale()).toBe(1);
-		expect(textStyle.getStroke().getColor()).toEqual(Rgb_Black.concat([0.4]));
+		expect(textStyle.getStroke().getColor()).toEqual(Rgb_Black.concat([1]));
 	});
 
 	it('should return a style specified by styleOption; text scale as number ', () => {
@@ -563,7 +563,7 @@ describe('textStyleFunction', () => {
 		const textStyle = styles[0].getText();
 		expect(textStyle.getText()).toBe('Foo');
 		expect(textStyle.getScale()).toBe(2);
-		expect(textStyle.getStroke().getColor()).toEqual(Rgb_Black.concat([0.4]));
+		expect(textStyle.getStroke().getColor()).toEqual(Rgb_Black.concat([1]));
 	});
 });
 
