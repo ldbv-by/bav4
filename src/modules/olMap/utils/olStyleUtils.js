@@ -30,13 +30,13 @@ export const DEFAULT_TEXT = 'new text';
 export const DEFAULT_STYLE_OPTION = { symbolSrc: null, color: null, scale: null, text: null };
 
 const getTextStyle = (text, color, scale, offsetY = -5) => {
-	const strokeWidth = 1;
+	const strokeWidth = 2;
 	const createStyle = (text, color, scale) => {
 		return new TextStyle({
 			text: text,
 			font: 'normal 16px sans-serif',
 			stroke: new Stroke({
-				color: getContrastColorFrom(hexToRgb(color)).concat(0.4),
+				color: getContrastColorFrom(hexToRgb(color)).concat(1),
 				width: strokeWidth
 			}),
 			fill: new Fill({
@@ -102,8 +102,9 @@ export const markerScaleToKeyword = (scaleCandidate) => {
 		case 0.75:
 			return 'medium';
 		case 0.5:
-		default:
 			return 'small';
+		default:
+			return scale;
 	}
 };
 
@@ -285,7 +286,7 @@ export const markerStyleFunction = (styleOption = DEFAULT_STYLE_OPTION) => {
 	const markerColor = styleOption.color ? styleOption.color : '#ff0000';
 
 	const rasterIconOptions = {
-		anchor: [0.5, 1],
+		anchor: [0.5, 0.5],
 		anchorXUnits: 'fraction',
 		anchorYUnits: 'fraction',
 		src: styleOption.symbolSrc,
@@ -310,7 +311,7 @@ export const markerStyleFunction = (styleOption = DEFAULT_STYLE_OPTION) => {
 	return [
 		new Style({
 			image: new Icon(iconOptions),
-			text: styleOption.text ? getTextStyle(styleOption.text, markerColor, getTextScale(styleOption.scale), 6) : null
+			text: styleOption.text ? getTextStyle(styleOption.text, markerColor, getTextScale(styleOption.scale), 2) : null
 		})
 	];
 };
