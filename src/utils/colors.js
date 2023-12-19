@@ -120,7 +120,7 @@ export const hsvToRgb = (hsv) => {
 
 /**
  * Creates a lighter or darker version of the specified base color.
- * @param {Array<Number>} rgbColor the baseColor as rgb-color-array
+ * @param {Array<Number>} baseColor the baseColor as rgb-color-array
  * @returns {Array<Number>} the rgb-color-array, which is lighter or darker as contrast to the basecolor
  */
 export const getContrastColorFrom = (baseColor) => {
@@ -131,11 +131,20 @@ export const getContrastColorFrom = (baseColor) => {
 		return null;
 	}
 
+	const hsv = rgbToHsv(baseColor);
+
+	if (hsv[1] === 1 && hsv[2] === 1) {
+		const complementaryHsv = [(hsv[0] + 180) % 360, hsv[1], hsv[2]];
+		const complementaryRgb = hsvToRgb(complementaryHsv);
+		const grayValue = 0.299 * complementaryRgb[0] + 0.587 * complementaryRgb[1] + 0.114 * complementaryRgb[2];
+
+		return [grayValue, grayValue, grayValue];
+	}
+
 	// only Black & White
 	const lighter = (hsv) => [hsv[0], 0, 1];
 	const darker = (hsv) => [hsv[0], 0, 0];
 
-	const hsv = rgbToHsv(baseColor);
 	const contrastHsv = isDark(hsv) ? lighter(hsv) : darker(hsv);
 
 	return hsvToRgb(contrastHsv);
