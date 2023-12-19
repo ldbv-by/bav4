@@ -1,13 +1,12 @@
 import { SourceTypeName } from '../../../../../src/domain/sourceType';
 import { $injector } from '../../../../../src/injection';
 import { ExportDialogContent } from '../../../../../src/modules/export/components/dialog/ExportDialogContent';
-import { ExportItem } from '../../../../../src/modules/export/components/dialog/ExportItem';
+//import { ExportItem } from '../../../../../src/modules/export/components/dialog/ExportItem';
 import { MediaType } from '../../../../../src/domain/mediaTypes';
 import { TestUtils } from '../../../../test-utils';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 
 window.customElements.define(ExportDialogContent.tag, ExportDialogContent);
-window.customElements.define(ExportItem.tag, ExportItem);
 
 describe('ExportDialogContent', () => {
 	const projectionServiceMock = {
@@ -38,9 +37,7 @@ describe('ExportDialogContent', () => {
 				forData: () => 'foo/bar'
 			})
 			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('ProjectionService', projectionServiceMock)
-			.registerSingleton('FileSaveService', { saveAs: () => {} })
-			.registerSingleton('ShareService', { copyToClipboard: () => {} });
+			.registerSingleton('ProjectionService', projectionServiceMock);
 
 		return TestUtils.render(ExportDialogContent.tag);
 	};
