@@ -113,15 +113,10 @@ describe('StyleService', () => {
 
 		it('detects type attribute as type from olFeature', () => {
 			const getFeature = (typeName) => {
-				return {
-					getId: () => 'some',
-					getStyle: () => null,
-					getKeys: () => [],
-					get: (attributeName) => (attributeName === 'type' ? typeName : null)
-				};
+				return { getId: () => 'some', getStyle: () => null, getKeys: () => [], get: (key) => (key === 'type' ? typeName : null) };
 			};
 
-			expect(instanceUnderTest._detectStyleType(getFeature('marker'))).toEqual(StyleTypes.MARKER);
+			expect(instanceUnderTest._detectStyleType(getFeature(StyleTypes.MARKER))).toEqual(StyleTypes.MARKER);
 			expect(instanceUnderTest._detectStyleType(getFeature(StyleTypes.ANNOTATION))).toEqual(StyleTypes.ANNOTATION);
 			expect(instanceUnderTest._detectStyleType(getFeature(StyleTypes.LINE))).toEqual(StyleTypes.LINE);
 			expect(instanceUnderTest._detectStyleType(getFeature(StyleTypes.POLYGON))).toEqual(StyleTypes.POLYGON);
