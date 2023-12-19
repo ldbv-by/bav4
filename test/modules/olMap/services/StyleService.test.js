@@ -231,6 +231,35 @@ describe('StyleService', () => {
 			expect(textStyle).toContain(jasmine.any(Style));
 		});
 
+		it('adds text-style to annotation feature (type attribute)', () => {
+			const feature = new Feature({ geometry: new Point([0, 0]), type: 'annotation' });
+			const style = new Style({ text: new Text({ text: 'foo' }) });
+			feature.setStyle(() => style);
+
+			const viewMock = {
+				getResolution() {
+					return 50;
+				},
+				once() {}
+			};
+
+			const mapMock = {
+				getView: () => viewMock,
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+			const layerMock = {};
+
+			let textStyle = null;
+			const styleSetterFunctionSpy = spyOn(feature, 'setStyle').and.callFake((f) => (textStyle = f()));
+			const addTextStyleSpy = spyOn(instanceUnderTest, '_addTextStyle').and.callThrough();
+			instanceUnderTest.addStyle(feature, mapMock, layerMock);
+			expect(addTextStyleSpy).toHaveBeenCalledWith(feature);
+			expect(styleSetterFunctionSpy).toHaveBeenCalledWith(jasmine.any(Function));
+			expect(textStyle).toContain(jasmine.any(Style));
+		});
+
 		it('adds text-style to feature without style but attribute', () => {
 			const featureWithoutStyle = new Feature({ geometry: new Point([0, 0]) });
 			featureWithoutStyle.set('name', 'foo-name');
