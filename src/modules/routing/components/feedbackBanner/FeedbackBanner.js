@@ -10,13 +10,7 @@ import css from './feedbackBanner.css';
 
 const Update_Status = 'update_status';
 
-const Status_Visibility = [
-	RoutingStatusCodes.Http_Backend_400,
-	RoutingStatusCodes.Http_Backend_500,
-	RoutingStatusCodes.Start_Destination_Missing,
-	RoutingStatusCodes.Start_Missing,
-	RoutingStatusCodes.Destination_Missing
-];
+const Status_Visibility = [RoutingStatusCodes.Start_Destination_Missing, RoutingStatusCodes.Start_Missing, RoutingStatusCodes.Destination_Missing];
 
 /**
  * Gives the user feedback about the routing status.

@@ -56,18 +56,6 @@ describe('FeedbackBanner', () => {
 		it('renders status', async () => {
 			const element = await setup();
 
-			setStatus(400); // RoutingStatusCodes.Http_Backend_400
-
-			expect(element.shadowRoot.querySelector('.icon').classList.contains('icon-status-400')).toBeTrue();
-			expect(element.shadowRoot.querySelectorAll('span')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('span')[0].innerText).toBe('routing_feedback_400');
-
-			setStatus(500); // RoutingStatusCodes.Http_Backend_500
-
-			expect(element.shadowRoot.querySelector('.icon').classList.contains('icon-status-500')).toBeTrue();
-			expect(element.shadowRoot.querySelectorAll('span')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('span')[0].innerText).toBe('routing_feedback_500');
-
 			setStatus(900); // RoutingStatusCodes.Start_Destination_Missing
 
 			expect(element.shadowRoot.querySelector('.icon').classList.contains('icon-status-900')).toBeTrue();
