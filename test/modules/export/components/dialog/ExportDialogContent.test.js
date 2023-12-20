@@ -1,7 +1,6 @@
 import { SourceTypeName } from '../../../../../src/domain/sourceType';
 import { $injector } from '../../../../../src/injection';
 import { ExportDialogContent } from '../../../../../src/modules/export/components/dialog/ExportDialogContent';
-//import { ExportItem } from '../../../../../src/modules/export/components/dialog/ExportItem';
 import { MediaType } from '../../../../../src/domain/mediaTypes';
 import { TestUtils } from '../../../../test-utils';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
@@ -30,13 +29,6 @@ describe('ExportDialogContent', () => {
 			.registerSingleton('ExportVectorDataService', {
 				forData: () => '<foo-bar></foo-bar>'
 			})
-			.registerSingleton('SourceTypeService', {
-				forData: () => 'foo/bar'
-			})
-			.registerSingleton('ConfigService', {
-				forData: () => 'foo/bar'
-			})
-			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('ProjectionService', projectionServiceMock);
 
 		return TestUtils.render(ExportDialogContent.tag);
