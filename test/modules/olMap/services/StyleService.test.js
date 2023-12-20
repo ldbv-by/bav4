@@ -6,7 +6,7 @@ import { OverlayService } from '../../../../src/modules/olMap/services/OverlaySe
 import { Polygon, Point } from 'ol/geom';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
-import { Icon, Style, Text } from 'ol/style';
+import { Fill, Icon, Style, Text } from 'ol/style';
 import { measurementReducer } from '../../../../src/store/measurement/measurement.reducer';
 import VectorLayer from 'ol/layer/Vector';
 
@@ -231,6 +231,35 @@ describe('StyleService', () => {
 			expect(textStyle).toContain(jasmine.any(Style));
 		});
 
+		it('adds text-style to annotation feature (type attribute)', () => {
+			const feature = new Feature({ geometry: new Point([0, 0]), type: 'annotation' });
+			const style = new Style({ text: new Text({ text: 'foo' }) });
+			feature.setStyle(() => style);
+
+			const viewMock = {
+				getResolution() {
+					return 50;
+				},
+				once() {}
+			};
+
+			const mapMock = {
+				getView: () => viewMock,
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+			const layerMock = {};
+
+			let textStyle = null;
+			const styleSetterFunctionSpy = spyOn(feature, 'setStyle').and.callFake((f) => (textStyle = f()));
+			const addTextStyleSpy = spyOn(instanceUnderTest, '_addTextStyle').and.callThrough();
+			instanceUnderTest.addStyle(feature, mapMock, layerMock);
+			expect(addTextStyleSpy).toHaveBeenCalledWith(feature);
+			expect(styleSetterFunctionSpy).toHaveBeenCalledWith(jasmine.any(Function));
+			expect(textStyle).toContain(jasmine.any(Style));
+		});
+
 		it('adds text-style to feature without style but attribute', () => {
 			const featureWithoutStyle = new Feature({ geometry: new Point([0, 0]) });
 			featureWithoutStyle.set('name', 'foo-name');
@@ -305,6 +334,44 @@ describe('StyleService', () => {
 			instanceUnderTest.addStyle(featureWithoutStyle, mapMock, layerMock);
 			expect(styleSetterNoStyleSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(markerStyle).toContain(jasmine.any(Style));
+		});
+
+		it('adds marker-style with color from existing label-style to feature', () => {
+			const featureWithStyleFunction = new Feature({ geometry: new Point([0, 0]) });
+			const style = new Style({
+				image: new Icon({ src: 'http://foo.bar/icon.png', anchor: [0.5, 1], anchorXUnits: 'fraction', anchorYUnits: 'fraction' }),
+				text: new Text({
+					text: 'foo',
+					fill: new Fill({
+						color: [42, 21, 0, 1]
+					})
+				})
+			});
+			featureWithStyleFunction.setId('draw_marker_9876543');
+			featureWithStyleFunction.setStyle(() => [style]);
+
+			const viewMock = {
+				getResolution() {
+					return 50;
+				},
+				once() {}
+			};
+
+			const mapMock = {
+				getView: () => viewMock,
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+			const layerMock = {};
+			spyOn(iconServiceMock, 'decodeColor').and.returnValue(null); //we simulate a local IconResult, which have no url property
+
+			let markerStyle = null;
+			const styleSetterFunctionSpy = spyOn(featureWithStyleFunction, 'setStyle').and.callFake((f) => (markerStyle = f()));
+			instanceUnderTest.addStyle(featureWithStyleFunction, mapMock, layerMock);
+			expect(styleSetterFunctionSpy).toHaveBeenCalledWith(jasmine.any(Function));
+			expect(markerStyle).toContain(jasmine.any(Style));
+			expect(markerStyle[0].getText().getFill().getColor()).toEqual([42, 21, 0, 1]);
 		});
 
 		it('adds marker-style to feature without style but attribute', () => {
