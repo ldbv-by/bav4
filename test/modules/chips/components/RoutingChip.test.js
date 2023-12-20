@@ -64,48 +64,20 @@ describe('RoutingChip', () => {
 			expect(element.isVisible()).toBeTrue();
 		});
 
-		it('does NOT renders the view without coordinate', async () => {
+		it('renders the view without coordinate', async () => {
 			const state = { routing: { status: RoutingStatusCodes.Start_Destination_Missing } };
 			const properties = {};
 			const element = await setup(state, properties);
 
-			expect(element.isVisible()).toBeFalse();
+			expect(element.isVisible()).toBeTrue();
 		});
 
-		it('does NOT renders the view without status', async () => {
+		it('renders the view without status', async () => {
 			const state = { routing: { status: RoutingStatusCodes.Destination_Missing } };
 			const properties = { coordinate: coordinate };
 			const element = await setup(state, properties);
 
-			expect(element.isVisible()).toBeFalse();
-		});
-	});
-
-	describe('when observed slice-of-state changes', () => {
-		it('changes visibility according to changes in store', async () => {
-			const state = { routing: { status: RoutingStatusCodes.Start_Destination_Missing } };
-			const properties = { coordinate: coordinate };
-			const element = await setup(state, properties);
-
 			expect(element.isVisible()).toBeTrue();
-
-			setStatus(RoutingStatusCodes.Destination_Missing);
-
-			expect(element.isVisible()).toBeFalse();
-
-			setStatus(RoutingStatusCodes.Start_Missing);
-
-			expect(element.isVisible()).toBeFalse();
-
-			setStatus(RoutingStatusCodes.Ok);
-
-			expect(element.isVisible()).toBeTrue();
-			setStatus(RoutingStatusCodes.Http_Backend_400);
-
-			expect(element.isVisible()).toBeFalse();
-			setStatus(RoutingStatusCodes.Http_Backend_500);
-
-			expect(element.isVisible()).toBeFalse();
 		});
 	});
 

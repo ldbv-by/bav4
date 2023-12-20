@@ -62,8 +62,7 @@ export class RoutingChip extends AbstractAssistChip {
 	}
 
 	isVisible() {
-		const { status, coordinate } = this.getModel();
-		return (status === RoutingStatusCodes.Start_Destination_Missing || status === RoutingStatusCodes.Ok) && coordinate.length === 2;
+		return true;
 	}
 
 	onClick() {
