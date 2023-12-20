@@ -296,9 +296,7 @@ export class DrawToolContent extends AbstractToolContent {
 
 			const selectTemplate = (sizes, selectedSize) => {
 				return sizes.map(
-					(size) =>
-						html`<option value=${size} ?selected=${size === selectedSize}>${translate('toolbox_drawTool_style_size_' + size)}</option>
-							)}`
+					(size) => html`<option value=${size} ?selected=${size === selectedSize}>${translate('toolbox_drawTool_style_size_' + size)}</option>`
 				);
 			};
 
