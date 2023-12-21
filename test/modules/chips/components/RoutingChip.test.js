@@ -16,8 +16,8 @@ describe('RoutingChip', () => {
 		}
 	};
 
-	const setup = async (properties = {}, attributes = {}) => {
-		store = TestUtils.setupStoreAndDi(defaultRoutingState, { routing: routingReducer });
+	const setup = async (state = defaultRoutingState, properties = {}, attributes = {}) => {
+		store = TestUtils.setupStoreAndDi(state, { routing: routingReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 
 		const element = await TestUtils.render(RoutingChip.tag, properties, attributes);
@@ -54,7 +54,7 @@ describe('RoutingChip', () => {
 
 		it('renders the view', async () => {
 			const properties = { coordinate: coordinate };
-			const element = await setup(properties);
+			const element = await setup(defaultRoutingState, properties);
 
 			expect(element.isVisible()).toBeTrue();
 		});
@@ -67,9 +67,29 @@ describe('RoutingChip', () => {
 	});
 
 	describe('when chip is clicked', () => {
+		it('resets s-o-s routing', async () => {
+			const properties = { coordinate: coordinate };
+			const state = {
+				routing: {
+					status: RoutingStatusCodes.Start_Missing,
+					categoryId: 'bike',
+					route: {},
+					waypoints: [[]]
+				}
+			};
+			const element = await setup(state, properties);
+			const button = element.shadowRoot.querySelector('button');
+
+			button.click();
+
+			expect(store.getState().routing).toEqual(
+				jasmine.objectContaining({ waypoints: [], route: null, status: RoutingStatusCodes.Start_Destination_Missing })
+			);
+		});
+
 		it('changes to START_OR_DESTINATION proposal coordinate on click', async () => {
 			const properties = { coordinate: coordinate };
-			const element = await setup(properties);
+			const element = await setup(defaultRoutingState, properties);
 			const button = element.shadowRoot.querySelector('button');
 
 			button.click();
