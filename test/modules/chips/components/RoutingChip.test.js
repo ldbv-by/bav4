@@ -1,7 +1,6 @@
 import { RoutingChip } from '../../../../src/modules/chips/components/assistChips/RoutingChip';
 import { CoordinateProposalType, RoutingStatusCodes } from '../../../../src/domain/routing';
 import { $injector } from '../../../../src/injection';
-import { setStatus } from '../../../../src/store/routing/routing.action';
 import { routingReducer } from '../../../../src/store/routing/routing.reducer';
 import routingSvg from '../../../../src/modules/chips/components/assistChips/assets/direction.svg';
 import { TestUtils } from '../../../test-utils';
@@ -33,7 +32,7 @@ describe('RoutingChip', () => {
 			await setup();
 			const model = new RoutingChip().getModel();
 
-			expect(model).toEqual({ status: null, coordinate: [] });
+			expect(model).toEqual({ coordinate: [] });
 		});
 
 		it('properly implements abstract methods', async () => {
@@ -54,64 +53,43 @@ describe('RoutingChip', () => {
 		});
 
 		it('renders the view', async () => {
-			const state = { routing: { status: RoutingStatusCodes.Start_Destination_Missing } };
 			const properties = { coordinate: coordinate };
-			const element = await setup(state, properties);
+			const element = await setup(defaultRoutingState, properties);
 
 			expect(element.isVisible()).toBeTrue();
 		});
 
-		it('does NOT renders the view without coordinate', async () => {
-			const state = { routing: { status: RoutingStatusCodes.Start_Destination_Missing } };
-			const properties = {};
-			const element = await setup(state, properties);
-
-			expect(element.isVisible()).toBeFalse();
-		});
-
-		it('does NOT renders the view without status', async () => {
-			const state = { routing: { status: RoutingStatusCodes.Destination_Missing } };
-			const properties = { coordinate: coordinate };
-			const element = await setup(state, properties);
-
-			expect(element.isVisible()).toBeFalse();
-		});
-	});
-
-	describe('when observed slice-of-state changes', () => {
-		it('changes visibility according to changes in store', async () => {
-			const state = { routing: { status: RoutingStatusCodes.Start_Destination_Missing } };
-			const properties = { coordinate: coordinate };
-			const element = await setup(state, properties);
+		it('renders the view without coordinate', async () => {
+			const element = await setup();
 
 			expect(element.isVisible()).toBeTrue();
-
-			setStatus(RoutingStatusCodes.Destination_Missing);
-
-			expect(element.isVisible()).toBeFalse();
-
-			setStatus(RoutingStatusCodes.Start_Missing);
-
-			expect(element.isVisible()).toBeFalse();
-
-			setStatus(RoutingStatusCodes.Ok);
-
-			expect(element.isVisible()).toBeFalse();
-			setStatus(RoutingStatusCodes.Http_Backend_400);
-
-			expect(element.isVisible()).toBeFalse();
-			setStatus(RoutingStatusCodes.Http_Backend_500);
-
-			expect(element.isVisible()).toBeFalse();
 		});
 	});
 
 	describe('when chip is clicked', () => {
-		it('changes proposal coordinate on click', async () => {
-			const state = { routing: { status: RoutingStatusCodes.Start_Destination_Missing } };
-
+		it('resets s-o-s routing', async () => {
 			const properties = { coordinate: coordinate };
+			const state = {
+				routing: {
+					status: RoutingStatusCodes.Start_Missing,
+					categoryId: 'bike',
+					route: {},
+					waypoints: [[]]
+				}
+			};
 			const element = await setup(state, properties);
+			const button = element.shadowRoot.querySelector('button');
+
+			button.click();
+
+			expect(store.getState().routing).toEqual(
+				jasmine.objectContaining({ waypoints: [], route: null, status: RoutingStatusCodes.Start_Destination_Missing })
+			);
+		});
+
+		it('changes to START_OR_DESTINATION proposal coordinate on click', async () => {
+			const properties = { coordinate: coordinate };
+			const element = await setup(defaultRoutingState, properties);
 			const button = element.shadowRoot.querySelector('button');
 
 			button.click();
@@ -120,17 +98,6 @@ describe('RoutingChip', () => {
 				coord: coordinate,
 				type: CoordinateProposalType.START_OR_DESTINATION
 			});
-		});
-	});
-
-	describe('when disconnected', () => {
-		it('removes all observers', async () => {
-			const element = await setup();
-			const unsubscribeSpy = spyOn(element, '_unsubscribeFromStore').and.callThrough();
-
-			element.onDisconnect(); // we call onDisconnect manually
-
-			expect(unsubscribeSpy).toHaveBeenCalled();
 		});
 	});
 });
