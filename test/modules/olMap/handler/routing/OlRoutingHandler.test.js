@@ -30,7 +30,7 @@ import { LevelTypes } from '../../../../../src/store/notifications/notifications
 import { getModifyInteractionStyle, getRoutingStyleFunction } from '../../../../../src/modules/olMap/handler/routing/styleUtils';
 import { HelpTooltip } from '../../../../../src/modules/olMap/tooltip/HelpTooltip';
 import { SelectEvent } from 'ol/interaction/Select';
-import { CoordinateProposalType, RoutingStatusCodes } from '../../../../../src/domain/routing';
+import { CoordinateProposalType, RouteCalculationErrors, RoutingStatusCodes } from '../../../../../src/domain/routing';
 import { positionReducer } from '../../../../../src/store/position/position.reducer';
 import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer';
 import { SourceTypeName } from '../../../../../src/domain/sourceType';
@@ -897,23 +897,46 @@ describe('OlRoutingHandler', () => {
 			});
 
 			describe('and "_requestRoute()" throws', () => {
-				it('informs the user and logs the error', async () => {
-					const catId = 'catId';
-					const { instanceUnderTest, store } = await newTestInstance({
-						categoryId: catId,
-						route: {}
+				describe('due to improper waypoints', () => {
+					it('informs the user', async () => {
+						const catId = 'catId';
+						const { instanceUnderTest, store } = await newTestInstance({
+							categoryId: catId,
+							route: {}
+						});
+						const coordinate0 = [0, 0];
+						const coordinate1 = [5, 5];
+						const error = new Error('something got wrong', { cause: RouteCalculationErrors.Improper_Waypoints });
+						spyOn(instanceUnderTest, '_requestAndDisplayRoute').and.rejectWith(error);
+						const errorSpy = spyOn(console, 'error');
+
+						await instanceUnderTest._requestRouteFromCoordinates([coordinate0, coordinate1], RoutingStatusCodes.Destination_Missing);
+
+						expect(errorSpy).not.toHaveBeenCalled();
+						expect(store.getState().notifications.latest.payload.content).toBe('olMap_handler_routing_routingService_improper_waypoints');
+						expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.WARN);
 					});
-					const coordinate0 = [0, 0];
-					const coordinate1 = [5, 5];
-					const message = 'something got wrong';
-					spyOn(instanceUnderTest, '_requestAndDisplayRoute').and.rejectWith(message);
-					const errorSpy = spyOn(console, 'error');
+				});
 
-					await instanceUnderTest._requestRouteFromCoordinates([coordinate0, coordinate1], RoutingStatusCodes.Destination_Missing);
+				describe('due to any other reason', () => {
+					it('informs the user and logs the error', async () => {
+						const catId = 'catId';
+						const { instanceUnderTest, store } = await newTestInstance({
+							categoryId: catId,
+							route: {}
+						});
+						const coordinate0 = [0, 0];
+						const coordinate1 = [5, 5];
+						const message = 'something got wrong';
+						spyOn(instanceUnderTest, '_requestAndDisplayRoute').and.rejectWith(message);
+						const errorSpy = spyOn(console, 'error');
 
-					expect(errorSpy).toHaveBeenCalledWith(message);
-					expect(store.getState().notifications.latest.payload.content).toBe('olMap_handler_routing_routingService_exception');
-					expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
+						await instanceUnderTest._requestRouteFromCoordinates([coordinate0, coordinate1], RoutingStatusCodes.Destination_Missing);
+
+						expect(errorSpy).toHaveBeenCalledWith(message);
+						expect(store.getState().notifications.latest.payload.content).toBe('olMap_handler_routing_routingService_exception');
+						expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
+					});
 				});
 			});
 		});

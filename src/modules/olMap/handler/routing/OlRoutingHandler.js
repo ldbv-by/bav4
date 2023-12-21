@@ -24,7 +24,7 @@ import { unByKey } from 'ol/Observable';
 import { HelpTooltip } from '../../tooltip/HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
 import { setCategory, setProposal, setRoute, setRouteStats, setWaypoints } from '../../../../store/routing/routing.action';
-import { CoordinateProposalType, RoutingStatusCodes } from '../../../../domain/routing';
+import { CoordinateProposalType, RouteCalculationErrors, RoutingStatusCodes } from '../../../../domain/routing';
 import { fit } from '../../../../store/position/position.action';
 import { updateCoordinates } from '../../../../store/elevationProfile/elevationProfile.action';
 import { equals } from '../../../../../node_modules/ol/coordinate';
@@ -558,8 +558,15 @@ export class OlRoutingHandler extends OlLayerHandler {
 				try {
 					this._currentRoutingResponse = await this._requestAndDisplayRoute(this._catId, alternativeCategoryIds, coordinates3857);
 				} catch (error) {
-					console.error(error);
-					emitNotification(`${this._translationService.translate('olMap_handler_routing_routingService_exception')}`, LevelTypes.ERROR);
+					switch (error.cause) {
+						case RouteCalculationErrors.Improper_Waypoints:
+							emitNotification(`${this._translationService.translate('olMap_handler_routing_routingService_improper_waypoints')}`, LevelTypes.WARN);
+							break;
+						default: {
+							console.error(error);
+							emitNotification(`${this._translationService.translate('olMap_handler_routing_routingService_exception')}`, LevelTypes.ERROR);
+						}
+					}
 				}
 			}
 			// enable interaction also if request failed
