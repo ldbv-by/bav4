@@ -4,8 +4,6 @@ import { $injector } from '../../../../src/injection';
 import { routingReducer } from '../../../../src/store/routing/routing.reducer';
 import routingSvg from '../../../../src/modules/chips/components/assistChips/assets/direction.svg';
 import { TestUtils } from '../../../test-utils';
-import { Tools } from '../../../../src/domain/tools';
-import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
 
 window.customElements.define(RoutingChip.tag, RoutingChip);
 
