@@ -42,7 +42,9 @@ export const provide = (lang) => {
 				olMap_handler_routing_modify_intermediate: 'Pull to modify the waypoint',
 				olMap_handler_routing_rt_layer_label: 'Route (Track)',
 				olMap_handler_routing_wp_layer_label: 'Route (Waypoints)',
-				olMap_handler_routing_routingService_exception: 'A route could not be created',
+				olMap_handler_routing_routingService_exception: 'Due to a technical error no route could be created',
+				olMap_handler_routing_routingService_improper_waypoints:
+					'No route could be created based on the given points. Please adjust one ore more points.',
 				olMap_vectorLayerService_default_layer_name_vector: 'Data'
 			};
 
@@ -91,7 +93,9 @@ export const provide = (lang) => {
 				olMap_handler_routing_modify_intermediate: 'Zum Ändern des Zwischenpunktes ziehen',
 				olMap_handler_routing_rt_layer_label: 'Route (Track)',
 				olMap_handler_routing_wp_layer_label: 'Route (Wegpunkte)',
-				olMap_handler_routing_routingService_exception: 'Eine Route konnte nicht erstellt werden',
+				olMap_handler_routing_routingService_exception: 'Aufgrund eines technischen Fehlers konnte keine Route erstellt werden',
+				olMap_handler_routing_routingService_improper_waypoints:
+					'Anhand der angegebenen Punkte konnte keine Route erstellt werden. Bitte passen Sie einen oder mehrere Punkte an.',
 				olMap_vectorLayerService_default_layer_name_vector: 'Daten'
 			};
 
