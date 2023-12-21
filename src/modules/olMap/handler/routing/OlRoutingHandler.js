@@ -589,7 +589,10 @@ export class OlRoutingHandler extends OlLayerHandler {
 			setRouteStats(routeStats);
 			updateCoordinates(coordinates);
 		} catch (e) {
-			// In that case we remove all route feature and reset the s-o-s, cause without the profile we can't give the user correct stats values
+			/**
+			 * In that case we remove all route features and reset the s-o-s,
+			 * because we can't give the user correct statistics without a profile result
+			 */
 			this._clearRouteFeatures();
 			setRoute(null);
 			console.error(e);
