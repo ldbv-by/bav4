@@ -147,6 +147,16 @@ export const RoutingStatusCodes = Object.freeze({
 });
 
 /**
+ * Possible errors when requesting a route.
+ * @readonly
+ * @enum {number}
+ */
+export const RouteCalculationErrors = Object.freeze({
+	Technical_Error: 0,
+	Improper_Waypoints: 1
+});
+
+/**
  * Contains a coordinate and its intention.
  * @typedef {Object} CoordinateProposal
  * @property {module:domain/coordinateTypeDef~Coordinate}  coord The coordinate (in the SRID of the map)
