@@ -18,8 +18,8 @@ describe('RoutingChip', () => {
 		}
 	};
 
-	const setup = async (state = defaultRoutingState, properties = {}, attributes = {}) => {
-		store = TestUtils.setupStoreAndDi(state, { routing: routingReducer, tools: toolsReducer });
+	const setup = async (properties = {}, attributes = {}) => {
+		store = TestUtils.setupStoreAndDi(defaultRoutingState, { routing: routingReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 
 		const element = await TestUtils.render(RoutingChip.tag, properties, attributes);
@@ -34,7 +34,7 @@ describe('RoutingChip', () => {
 			await setup();
 			const model = new RoutingChip().getModel();
 
-			expect(model).toEqual({ status: null, coordinate: [] });
+			expect(model).toEqual({ coordinate: [] });
 		});
 
 		it('properly implements abstract methods', async () => {
@@ -49,32 +49,20 @@ describe('RoutingChip', () => {
 		it('contains default values in the model', async () => {
 			const element = await setup();
 
-			const { status, coordinate } = element.getModel();
+			const { coordinate } = element.getModel();
 
-			expect(status).toEqual(RoutingStatusCodes.Start_Destination_Missing);
 			expect(coordinate).toEqual([]);
 		});
 
 		it('renders the view', async () => {
-			const state = { routing: { status: RoutingStatusCodes.Start_Destination_Missing } };
 			const properties = { coordinate: coordinate };
-			const element = await setup(state, properties);
+			const element = await setup(properties);
 
 			expect(element.isVisible()).toBeTrue();
 		});
 
 		it('renders the view without coordinate', async () => {
-			const state = { routing: { status: RoutingStatusCodes.Start_Destination_Missing } };
-			const properties = {};
-			const element = await setup(state, properties);
-
-			expect(element.isVisible()).toBeTrue();
-		});
-
-		it('renders the view without status', async () => {
-			const state = { routing: { status: RoutingStatusCodes.Destination_Missing } };
-			const properties = { coordinate: coordinate };
-			const element = await setup(state, properties);
+			const element = await setup();
 
 			expect(element.isVisible()).toBeTrue();
 		});
@@ -82,10 +70,8 @@ describe('RoutingChip', () => {
 
 	describe('when chip is clicked', () => {
 		it('changes to START_OR_DESTINATION proposal coordinate on click', async () => {
-			const state = { routing: { status: RoutingStatusCodes.Start_Destination_Missing } };
-
 			const properties = { coordinate: coordinate };
-			const element = await setup(state, properties);
+			const element = await setup(properties);
 			const button = element.shadowRoot.querySelector('button');
 
 			button.click();
@@ -94,38 +80,6 @@ describe('RoutingChip', () => {
 				coord: coordinate,
 				type: CoordinateProposalType.START_OR_DESTINATION
 			});
-		});
-
-		it('changes to INTERMEDIATE proposal coordinate on click', async () => {
-			const state = {
-				routing: {
-					waypoints: [
-						[0, 0],
-						[1, 1]
-					],
-					status: RoutingStatusCodes.Ok
-				}
-			};
-
-			const properties = { coordinate: coordinate };
-			const element = await setup(state, properties);
-
-			const button = element.shadowRoot.querySelector('button');
-
-			button.click();
-
-			expect(store.getState().tools.current).toBe(Tools.ROUTING);
-		});
-	});
-
-	describe('when disconnected', () => {
-		it('removes all observers', async () => {
-			const element = await setup();
-			const unsubscribeSpy = spyOn(element, '_unsubscribeFromStore').and.callThrough();
-
-			element.onDisconnect(); // we call onDisconnect manually
-
-			expect(unsubscribeSpy).toHaveBeenCalled();
 		});
 	});
 });

@@ -1,16 +1,13 @@
 /**
  * @module modules/chips/components/assistChips/RoutingChip
  */
-import { CoordinateProposalType, RoutingStatusCodes } from '../../../../domain/routing';
-import { Tools } from '../../../../domain/tools';
+import { CoordinateProposalType } from '../../../../domain/routing';
 import { $injector } from '../../../../injection/index';
-import { setProposal } from '../../../../store/routing/routing.action';
-import { setCurrentTool } from '../../../../store/tools/tools.action';
+import { reset, setProposal } from '../../../../store/routing/routing.action';
 import { AbstractAssistChip } from './AbstractAssistChip';
 import routingSvg from './assets/direction.svg';
 
 const Update_Coordinate = 'update_coordinate';
-const Update_Status = 'update_status';
 
 /**
  * An AssistChip to start a routing with a proposal {@link module:domain/coordinateTypeDef~Coordinate}
@@ -22,30 +19,16 @@ const Update_Status = 'update_status';
 export class RoutingChip extends AbstractAssistChip {
 	constructor() {
 		super({
-			coordinate: [],
-			status: null
+			coordinate: []
 		});
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
-	}
-
-	onInitialize() {
-		this._unsubscribeFromStore = this.observe(
-			(state) => state.routing.status,
-			(status) => this.signal(Update_Status, status)
-		);
-	}
-
-	onDisconnect() {
-		this._unsubscribeFromStore();
 	}
 
 	update(type, data, model) {
 		switch (type) {
 			case Update_Coordinate:
 				return { ...model, coordinate: [...data] };
-			case Update_Status:
-				return { ...model, status: data };
 		}
 	}
 
@@ -54,11 +37,8 @@ export class RoutingChip extends AbstractAssistChip {
 	}
 
 	getLabel() {
-		const { status } = this.getModel();
 		const translate = (key) => this._translationService.translate(key);
-		return status === RoutingStatusCodes.Start_Destination_Missing
-			? translate('chips_assist_chip_start_routing_here')
-			: translate('chips_assist_chip_edit_existing_route');
+		return translate('chips_assist_chip_start_routing_here');
 	}
 
 	isVisible() {
@@ -66,12 +46,9 @@ export class RoutingChip extends AbstractAssistChip {
 	}
 
 	onClick() {
-		const { status, coordinate } = this.getModel();
-		if (status === RoutingStatusCodes.Start_Destination_Missing) {
-			setProposal(coordinate, CoordinateProposalType.START_OR_DESTINATION);
-		} else {
-			setCurrentTool(Tools.ROUTING);
-		}
+		const { coordinate } = this.getModel();
+		reset();
+		setProposal(coordinate, CoordinateProposalType.START_OR_DESTINATION);
 	}
 
 	static get tag() {
