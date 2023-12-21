@@ -589,6 +589,9 @@ export class OlRoutingHandler extends OlLayerHandler {
 			setRouteStats(routeStats);
 			updateCoordinates(coordinates);
 		} catch (e) {
+			// In that case we remove all route feature and reset the s-o-s, cause without the profile we can't give the user correct stats values
+			this._clearRouteFeatures();
+			setRoute(null);
 			console.error(e);
 			emitNotification(`${this._translationService.translate('olMap_handler_routing_routingService_exception')}`, LevelTypes.ERROR);
 		}

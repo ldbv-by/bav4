@@ -755,7 +755,7 @@ describe('OlRoutingHandler', () => {
 			});
 
 			describe('and the ElevationService throws an error', () => {
-				it('informs the user and logs the error', async () => {
+				it('informs the user, logs the error, removes the route and updates the s-o-s', async () => {
 					const message = 'something got wrong';
 					const mockStats = { stats: 'stats' };
 					const mockGhRoute = {
@@ -768,16 +768,24 @@ describe('OlRoutingHandler', () => {
 						]
 					};
 					const mockRouteStatsProvider = jasmine.createSpy().and.returnValue(mockStats);
-					const { instanceUnderTest, store } = await newTestInstance({}, mockRouteStatsProvider);
+					const { instanceUnderTest, store } = await newTestInstance(
+						{
+							route: {}
+						},
+						mockRouteStatsProvider
+					);
 
+					const clearRouteFeaturesSpy = spyOn(instanceUnderTest, '_clearRouteFeatures');
 					spyOn(elevationServiceMock, 'getProfile').withArgs(jasmine.any(Array)).and.rejectWith(message);
 					const errorSpy = spyOn(console, 'error');
 
 					await instanceUnderTest._updateStore(mockGhRoute);
 
 					expect(errorSpy).toHaveBeenCalledWith(message);
+					expect(clearRouteFeaturesSpy).toHaveBeenCalled();
 					expect(store.getState().notifications.latest.payload.content).toBe('olMap_handler_routing_routingService_exception');
 					expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
+					expect(store.getState().routing.route).toBeNull();
 				});
 			});
 		});
