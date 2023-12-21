@@ -316,6 +316,6 @@ export class BvvRoutingService {
 			throw new TypeError("Parameter 'categories' must be an array containing at least one category");
 		}
 
-		return await this._routeProvider(categories, coordinates3857);
+		return this._routeProvider(categories, coordinates3857);
 	}
 }
