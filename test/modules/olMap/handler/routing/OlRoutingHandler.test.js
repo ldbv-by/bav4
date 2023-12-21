@@ -1072,6 +1072,7 @@ describe('OlRoutingHandler', () => {
 				const feature = instanceUnderTest._interactionLayer.getSource().getFeatures()[0];
 				expect(feature.get(ROUTING_FEATURE_TYPE)).toBe(RoutingFeatureTypes.INTERMEDIATE);
 				expect(feature.get(ROUTING_FEATURE_INDEX)).toBe(42);
+				expect(feature.getId()).toBe('routing_42');
 				expect(feature.getGeometry()).toBeInstanceOf(Point);
 				expect(feature.getGeometry().getFirstCoordinate()).toEqual(coordinate);
 				expect(feature.getStyle()(feature)).toEqual(getRoutingStyleFunction()(feature));
