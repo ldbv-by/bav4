@@ -106,19 +106,27 @@ describe('ToolContainer', () => {
 
 				switch (value) {
 					case Tools.MEASURE:
+						expect(element.shadowRoot.querySelectorAll('.hide')).toHaveSize(0);
 						expect(content.innerHTML.toString().includes(MeasureToolContent.tag)).toBeTrue();
 						break;
 					case Tools.DRAW:
+						expect(element.shadowRoot.querySelectorAll('.hide')).toHaveSize(0);
 						expect(content.innerHTML.toString().includes(DrawToolContent.tag)).toBeTrue();
 						break;
 					case Tools.SHARE:
+						expect(element.shadowRoot.querySelectorAll('.hide')).toHaveSize(0);
 						expect(content.innerHTML.toString().includes(ShareToolContent.tag)).toBeTrue();
 						break;
 					case Tools.IMPORT:
+						expect(element.shadowRoot.querySelectorAll('.hide')).toHaveSize(0);
 						expect(content.innerHTML.toString().includes(ImportToolContent.tag)).toBeTrue();
 						break;
 					case Tools.EXPORT:
+						expect(element.shadowRoot.querySelectorAll('.hide')).toHaveSize(0);
 						expect(content.innerHTML.toString().includes(ExportMfpToolContent.tag)).toBeTrue();
+						break;
+					case Tools.ROUTING:
+						expect(element.shadowRoot.querySelectorAll('.hide')).toHaveSize(1);
 						break;
 				}
 			});
