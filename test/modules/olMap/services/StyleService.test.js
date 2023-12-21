@@ -15,7 +15,7 @@ register(proj4);
 
 describe('StyleTypes', () => {
 	it('provides an enum of all valid StyleTypes', () => {
-		expect(Object.keys(StyleTypes).length).toBe(12);
+		expect(Object.keys(StyleTypes).length).toBe(13);
 
 		expect(StyleTypes.NULL).toBe('null');
 		expect(StyleTypes.DEFAULT).toBe('default');
@@ -29,6 +29,7 @@ describe('StyleTypes', () => {
 		expect(StyleTypes.LINE).toBe('line');
 		expect(StyleTypes.POLYGON).toBe('polygon');
 		expect(StyleTypes.GEOJSON).toBe('geojson');
+		expect(StyleTypes.ROUTING).toBe('routing');
 	});
 });
 
@@ -111,6 +112,12 @@ describe('StyleService', () => {
 			expect(instanceUnderTest._detectStyleType(feature4)).toEqual(StyleTypes.GEOJSON);
 		});
 
+		it('detects routing as type from olFeature', () => {
+			const feature = { getId: () => 'routing_123' };
+
+			expect(instanceUnderTest._detectStyleType(feature)).toEqual(StyleTypes.ROUTING);
+		});
+
 		it('detects type attribute as type from olFeature', () => {
 			const getFeature = (typeName) => {
 				return { getId: () => 'some', getStyle: () => null, getKeys: () => [], get: (key) => (key === 'type' ? typeName : null) };
@@ -190,7 +197,7 @@ describe('StyleService', () => {
 			const featureWithStyleArray = new Feature({ geometry: new Point([0, 0]) });
 			const featureWithStyleFunction = new Feature({ geometry: new Point([0, 0]) });
 			const featureWithoutStyle = new Feature({ geometry: new Point([0, 0]) });
-			const style = new Style({ text: new Text({ text: 'foo' }) });
+			const style = new Style({ text: new Text({ text: 'foo', fill: new Fill({ color: [42, 21, 0] }) }) });
 			featureWithStyleArray.setId('draw_text_12345678');
 			featureWithStyleFunction.setId('draw_text_9876543');
 			featureWithoutStyle.setId('draw_text_noStyle');
@@ -483,6 +490,35 @@ describe('StyleService', () => {
 			instanceUnderTest.addStyle(feature, mapMock);
 
 			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
+		});
+
+		it('adds routing-style to feature routing intermediate id', () => {
+			const routingFeature = new Feature({ geometry: new Point([0, 0]) });
+			routingFeature.set('Routing_Feature_Type', 'intermediate');
+			routingFeature.set('Routing_Feature_Index', 42);
+			routingFeature.setId('routing_42');
+
+			const viewMock = {
+				getResolution() {
+					return 50;
+				},
+				once() {}
+			};
+
+			const mapMock = {
+				getView: () => viewMock,
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+			const layerMock = {};
+
+			const styleSetterNoStyleSpy = spyOn(routingFeature, 'setStyle').and.callThrough();
+			const addRoutingStyleSpy = spyOn(instanceUnderTest, '_addRoutingStyle').withArgs(routingFeature).and.callThrough();
+			instanceUnderTest.addStyle(routingFeature, mapMock, layerMock);
+
+			expect(addRoutingStyleSpy).toHaveBeenCalled();
+			expect(styleSetterNoStyleSpy).toHaveBeenCalledWith(jasmine.any(Function));
 		});
 
 		it('adds default-style to feature without initial style', () => {
