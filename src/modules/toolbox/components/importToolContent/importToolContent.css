@@ -49,11 +49,9 @@
 	mask-image: url('assets/data.svg');
 	-webkit-mask-image: url('assets/data.svg');
 }
-
 .tool-container__button:hover:not(.disabled-tool__button) .tool-container__icon {
 	background: var(--text3);
 }
-
 .tool-container__button-text {
 	color: var(--text1);
 	font-size: 0.8rem;
@@ -78,7 +76,6 @@
 .divider {
 	border-bottom: 1px solid var(--header-background-color);
 }
-
 .search-bg {
 	display: none;
 	position: fixed;
@@ -92,11 +89,16 @@
 	background-color: var(--modal-background-color);
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 }
-
 .text-to-search {
 	display: inline-block;
 	font-weight: bold;
-	cursor: default;
+	border: none;
+	background: transparent;
+	color: var(--primary-color);
+	opacity: 0.8;
+}
+.text-to-search:hover {
+	opacity: 1;
 }
 .text-to-search-icon {
 	display: inline-block;
@@ -150,7 +152,6 @@
 	width: 3.4em;
 	background-color: var(--secondary-color);
 }
-
 .tool-container__button:focus:not(.disabled-tool__button) .tool-container__icon {
 	background: var(--text3);
 }

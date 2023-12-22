@@ -361,3 +361,22 @@ input:-webkit-autofill:focus {
 .draggable {
 	-webkit-user-drag: element;
 }
+
+.attention {
+	animation-name: attention;
+	animation-delay: var(--animation-duration-large-open);
+	animation-duration: 500ms;
+	animation-iteration-count: 3;
+}
+
+@keyframes attention {
+	0% {
+		background-color: var(--primary-bg-color);
+	}
+	55% {
+		background-color: var(--header-background-color);
+	}
+	100% {
+		background-color: var(--primary-bg-color);
+	}
+}

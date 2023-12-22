@@ -2,12 +2,14 @@
  * @module modules/toolbox/components/importToolContent/ImportToolContent
  */
 import { html } from 'lit-html';
-import css from './importToolContent.css';
-import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
-import { $injector } from '../../../../injection';
-import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
-import { setData } from '../../../../store/import/import.action';
 import { SourceTypeResultStatus } from '../../../../domain/sourceType';
+import { $injector } from '../../../../injection';
+import { setData } from '../../../../store/import/import.action';
+import { open } from '../../../../store/mainMenu/mainMenu.action';
+import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
+import css from './importToolContent.css';
+import { Header } from '../../../header/components/Header';
 
 /**
  * @class
@@ -64,6 +66,20 @@ export class ImportToolContent extends AbstractToolContent {
 			return this._environmentService.isTouch() ? 'hide' : '';
 		};
 
+		const onClick = () => {
+			const popupElement = document.querySelector(Header.tag);
+			const searchInput = popupElement.shadowRoot.querySelector('#input');
+			const header = popupElement.shadowRoot.querySelector('.header');
+			if (searchInput) {
+				open();
+				searchInput.focus();
+				header.classList.add('attention');
+				header.addEventListener('animationend', () => {
+					header.classList.remove('attention');
+				});
+			}
+		};
+
 		return html`
         <style>${css}</style>
             <div class="ba-tool-container">
@@ -105,9 +121,9 @@ export class ImportToolContent extends AbstractToolContent {
 				<div class="ba-tool-container__content ba-tool-container__url-import">      	
 					${translate('toolbox_import_url_search_before')}				                  																			
 				<span  class='text-to-search-icon'></span> 
-				<span class='text-to-search' ">
+				<button class='text-to-search' " @click=${() => onClick()}>
 					${translate('toolbox_import_url_search')}
-				</span> 
+				</button> 
 					${translate('toolbox_import_url_search_after')}
 				</div>
             </div>
