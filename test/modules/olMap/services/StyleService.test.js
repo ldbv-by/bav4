@@ -343,10 +343,23 @@ describe('StyleService', () => {
 			expect(markerStyle).toContain(jasmine.any(Style));
 		});
 
-		it('adds marker-style with color from existing label-style to feature', () => {
+		it('adds marker-style with color, anchor and size from existing label-style to feature', () => {
 			const featureWithStyleFunction = new Feature({ geometry: new Point([0, 0]) });
+			const icon = new Icon({
+				src: 'http://foo.bar/icon.png',
+				anchor: [0.5, 1],
+				anchorXUnits: 'fraction',
+				anchorYUnits: 'fraction'
+			});
+
+			const anchorSpy = spyOn(icon, 'getAnchor').and.callFake(() => {
+				return [24, 48];
+			});
+			const sizeSpy = spyOn(icon, 'getSize').and.callFake(() => {
+				return [48, 48];
+			});
 			const style = new Style({
-				image: new Icon({ src: 'http://foo.bar/icon.png', anchor: [0.5, 1], anchorXUnits: 'fraction', anchorYUnits: 'fraction' }),
+				image: icon,
 				text: new Text({
 					text: 'foo',
 					fill: new Fill({
@@ -378,7 +391,12 @@ describe('StyleService', () => {
 			instanceUnderTest.addStyle(featureWithStyleFunction, mapMock, layerMock);
 			expect(styleSetterFunctionSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(markerStyle).toContain(jasmine.any(Style));
+			// uses the existing color
 			expect(markerStyle[0].getText().getFill().getColor()).toEqual([42, 21, 0, 1]);
+
+			//...and the existing anchor/size
+			expect(anchorSpy).toHaveBeenCalled();
+			expect(sizeSpy).toHaveBeenCalled();
 		});
 
 		it('adds marker-style to feature without style but attribute', () => {
