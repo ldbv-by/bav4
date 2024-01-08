@@ -40,6 +40,7 @@ import {
 	getBvvAttributionForRoutingResult,
 	getAttributionForLocallyImportedOrCreatedGeoResource
 } from '../../../../services/provider/attribution.provider';
+import { StyleTypes } from '../../services/StyleService';
 
 export const RoutingFeatureTypes = Object.freeze({
 	START: 'start',
@@ -357,6 +358,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 		iconFeature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.INTERMEDIATE);
 
 		iconFeature.set(ROUTING_FEATURE_INDEX, index);
+		iconFeature.setId(`${StyleTypes.ROUTING}_${index}`);
 		iconFeature.setStyle(getRoutingStyleFunction());
 
 		this._interactionLayer.getSource().addFeature(iconFeature);

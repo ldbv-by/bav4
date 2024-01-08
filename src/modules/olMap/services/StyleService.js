@@ -18,6 +18,7 @@ import {
 	markerStyleFunction
 } from '../utils/olStyleUtils';
 import { isFunction } from '../../../utils/checks';
+import { getRoutingStyleFunction } from '../handler/routing/styleUtils';
 
 /**
  * Enumeration of predefined types of style
@@ -36,7 +37,8 @@ export const StyleTypes = Object.freeze({
 	ANNOTATION: 'annotation',
 	LINE: 'line',
 	POLYGON: 'polygon',
-	GEOJSON: 'geojson'
+	GEOJSON: 'geojson',
+	ROUTING: 'routing'
 });
 
 const Default_Colors = [
@@ -104,6 +106,9 @@ export class StyleService {
 				break;
 			case StyleTypes.DEFAULT:
 				this._addDefaultStyle(olFeature, olLayer);
+				break;
+			case StyleTypes.ROUTING:
+				this._addRoutingStyle(olFeature);
 				break;
 			default:
 				console.warn('Could not provide a style for unknown style-type');
@@ -287,6 +292,11 @@ export class StyleService {
 		const newStyle = markerStyleFunction(getStyleOption(olFeature));
 
 		olFeature.setStyle(() => newStyle);
+	}
+
+	_addRoutingStyle(olFeature) {
+		const styleFunction = getRoutingStyleFunction();
+		olFeature.setStyle(styleFunction);
 	}
 
 	_addDefaultStyle(olFeature, olLayer = null) {
