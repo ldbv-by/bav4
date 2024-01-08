@@ -211,6 +211,14 @@ describe('IconsService', () => {
 			expect(iconResult.getUrl()).toBeNull();
 		});
 
+		it('provides a defined anchor', () => {
+			expect(new IconResult('marker', 'bar').anchor).toEqual([0.5, 1]);
+			expect(new IconResult('anyOther', 'bar').anchor).toEqual([0.5, 0.5]);
+			expect(new IconResult('some', 'bar').anchor).toEqual([0.5, 0.5]);
+			expect(new IconResult('', 'bar').anchor).toEqual([0.5, 0.5]);
+			expect(new IconResult(null, 'bar').anchor).toEqual([0.5, 0.5]);
+		});
+
 		it('creates a base64-encoded string and back', () => {
 			const svg =
 				'<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="rgb(255,255,255)" class="bi bi-geo-alt-fill" viewBox="0 0 16 16"><!-- MIT License --><path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg>';
