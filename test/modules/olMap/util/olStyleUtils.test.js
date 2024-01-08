@@ -92,6 +92,7 @@ describe('markerScaleToKeyword', () => {
 		expect(markerScaleToKeyword(1)).toBe('large');
 		expect(markerScaleToKeyword(0.75)).toBe('medium');
 		expect(markerScaleToKeyword(0.5)).toBe('small');
+		expect(markerScaleToKeyword(2)).toBe(2);
 		expect(markerScaleToKeyword(null)).toBe('small');
 		expect(markerScaleToKeyword('something')).toBe('small');
 		expect(markerScaleToKeyword(true)).toBe('small');
