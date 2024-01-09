@@ -56,7 +56,7 @@
 										<div class="col" title=${c("routing_info_distance")}>
 											<div class="routing-info-icon distance"></div>
 										</div>
-										<div class="routing-info-text">${(()=>n?.dist?this._unitsService.formatDistance(n.dist):"0")()}</div>
+										<div class="routing-info-text">${(()=>n?.dist?this._unitsService.formatDistance(n.dist):"-")()}</div>
 									</div>
 								</div>
 
@@ -67,7 +67,7 @@
 											<div class="routing-info-icon uphill"></div>
 										</div>
 										<div class="routing-info-text">
-											<span>${(()=>n?this._unitsService.formatDistance(n.twoDiff[0]):"0")()}</span>
+											<span>${(()=>n?this._unitsService.formatDistance(n.twoDiff[0]):"-")()}</span>
 										</div>
 									</div>
 								</div>
@@ -78,7 +78,7 @@
 											<div class="routing-info-icon downhill"></div>
 										</div>
 										<div class="routing-info-text">
-											<span>${(()=>n?this._unitsService.formatDistance(n.twoDiff[1]):"0")()}</span>
+											<span>${(()=>n?this._unitsService.formatDistance(n.twoDiff[1]):"-")()}</span>
 										</div>
 									</div>
 								</div>
