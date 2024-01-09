@@ -1,3 +1,4 @@
+import { RouteCalculationErrors } from '../../src/domain/routing';
 import { $injector } from '../../src/injection';
 import { BvvRoutingService, CHART_ITEM_ROAD_STYLE_UNKNOWN, CHART_ITEM_SURFACE_STYLE_UNKNOWN } from '../../src/services/RoutingService';
 import { bvvChartItemStylesProvider } from '../../src/services/provider/chartItemStyles.provider';
@@ -149,7 +150,7 @@ describe('BvvRoutingService', () => {
 		});
 
 		it('rejects when provider fails', async () => {
-			const providerError = new Error('Something got wrong');
+			const providerError = new Error('Something got wrong', { cause: RouteCalculationErrors.Improper_Waypoints });
 			const mockCoordinates = [
 				[0, 1],
 				[2, 3]
@@ -157,12 +158,7 @@ describe('BvvRoutingService', () => {
 			const mockRouteProvider = jasmine.createSpy().withArgs(['foo'], mockCoordinates).and.rejectWith(providerError);
 			const instanceUnderTest = setup(null, mockRouteProvider);
 
-			await expectAsync(instanceUnderTest.calculateRoute(['foo'], mockCoordinates)).toBeRejectedWith(
-				jasmine.objectContaining({
-					message: 'Could not retrieve a routing result from the provider',
-					cause: providerError
-				})
-			);
+			await expectAsync(instanceUnderTest.calculateRoute(['foo'], mockCoordinates)).toBeRejectedWith(providerError);
 		});
 
 		it('rejects when argument "coordinates3857" is not an Array or does not contain at least two coordinates', async () => {
