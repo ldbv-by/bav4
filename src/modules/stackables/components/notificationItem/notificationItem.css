@@ -11,10 +11,10 @@
 	padding: 0.8em 1.5em;
 	width: min-content;
 	min-width: 25em;
+	pointer-events: all;
 }
 
 .notification_content {
-	pointer-events: all;
 	color: var(--text3);
 }
 
