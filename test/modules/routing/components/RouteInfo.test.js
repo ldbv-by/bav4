@@ -366,9 +366,9 @@ describe('RouteInfo', () => {
 
 				const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
 				expect(routingElements).toHaveSize(3);
-				expect(routingElements[0].innerText).toBe('0');
-				expect(routingElements[1].innerText).toBe('0');
-				expect(routingElements[2].innerText).toBe('0');
+				expect(routingElements[0].innerText).toBe('-');
+				expect(routingElements[1].innerText).toBe('-');
+				expect(routingElements[2].innerText).toBe('-');
 			});
 
 			it('renders category icon', async () => {
