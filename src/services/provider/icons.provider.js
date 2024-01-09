@@ -26,8 +26,8 @@ export const loadBvvIcons = async () => {
 		};
 
 		payload.forEach((bvvIcon) => {
-			const { id, svg } = bvvIcon;
-			icons.push(new IconResult(id, svg, matcher(id), urlFactoryFunction(id)));
+			const { id, svg, staticIcon } = bvvIcon;
+			icons.push(new IconResult(id, svg, matcher(id), staticIcon ? () => staticIcon : urlFactoryFunction(id)));
 		});
 
 		if (icons.length === 0) {
