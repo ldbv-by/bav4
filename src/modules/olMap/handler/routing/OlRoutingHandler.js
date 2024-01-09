@@ -595,6 +595,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 			 */
 			this._clearRouteFeatures();
 			setRoute(null);
+			setRouteStats(null);
 			console.error(e);
 			emitNotification(`${this._translationService.translate('olMap_handler_routing_routingService_exception')}`, LevelTypes.ERROR);
 		}

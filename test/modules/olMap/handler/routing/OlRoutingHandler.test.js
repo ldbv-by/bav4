@@ -770,7 +770,8 @@ describe('OlRoutingHandler', () => {
 					const mockRouteStatsProvider = jasmine.createSpy().and.returnValue(mockStats);
 					const { instanceUnderTest, store } = await newTestInstance(
 						{
-							route: {}
+							route: {},
+							stats: {}
 						},
 						mockRouteStatsProvider
 					);
@@ -786,6 +787,7 @@ describe('OlRoutingHandler', () => {
 					expect(store.getState().notifications.latest.payload.content).toBe('olMap_handler_routing_routingService_exception');
 					expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
 					expect(store.getState().routing.route).toBeNull();
+					expect(store.getState().routing.stats).toBeNull();
 				});
 			});
 		});
