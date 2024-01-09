@@ -411,6 +411,7 @@ describe('defaultStyleFunction', () => {
 });
 
 describe('markerStyleFunction', () => {
+	const imageLoadDelayTime = 50;
 	it('should return a style', () => {
 		const styles = markerStyleFunction();
 
@@ -452,7 +453,7 @@ describe('markerStyleFunction', () => {
 		// we must preload the IconImage and wait until the image-resource is loaded, to get valid
 		// a normalized anchor
 		iconStyle.load();
-		await TestUtils.timeout(20);
+		await TestUtils.timeout(imageLoadDelayTime);
 
 		expect(iconStyle.getAnchor()).toEqual([16, 16]); // the default markerIcon have a size of 32x32 px
 	});
@@ -469,7 +470,7 @@ describe('markerStyleFunction', () => {
 		// we must preload the IconImage and wait until the image-resource is loaded, to get valid
 		// a normalized anchor
 		iconStyle.load();
-		await TestUtils.timeout(20);
+		await TestUtils.timeout(imageLoadDelayTime);
 
 		expect(iconStyle.getAnchor()).toEqual([32, 32]); // the default markerIcon have a size of 32x32 px
 	});
