@@ -10,6 +10,7 @@ import { emitNotification, LevelTypes } from '../../../../store/notifications/no
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import css from './importToolContent.css';
 import { Header } from '../../../header/components/Header';
+import { findAllBySelector } from '../../../../utils/markup';
 
 /**
  * @class
@@ -67,15 +68,13 @@ export class ImportToolContent extends AbstractToolContent {
 		};
 
 		const onClick = () => {
-			const popupElement = document.querySelector(Header.tag);
-			const searchInput = popupElement.shadowRoot.querySelector('#input');
-			const header = popupElement.shadowRoot.querySelector('.header');
-			if (searchInput) {
+			const searchInput = findAllBySelector(document.querySelector(Header.tag), '#input');
+			if (searchInput[0]) {
 				open();
-				searchInput.focus();
-				header.classList.add('attention');
-				header.addEventListener('animationend', () => {
-					header.classList.remove('attention');
+				searchInput[0].focus();
+				searchInput[0].classList.add('attention');
+				searchInput[0].addEventListener('animationend', () => {
+					searchInput[0].classList.remove('attention');
 				});
 			}
 		};
@@ -121,7 +120,7 @@ export class ImportToolContent extends AbstractToolContent {
 				<div class="ba-tool-container__content ba-tool-container__url-import">      	
 					${translate('toolbox_import_url_search_before')}				                  																			
 				<span  class='text-to-search-icon'></span> 
-				<button class='text-to-search' " @click=${() => onClick()}>
+				<button id='highlight-search-button' class='text-to-search' " @click=${() => onClick()}>
 					${translate('toolbox_import_url_search')}
 				</button> 
 					${translate('toolbox_import_url_search_after')}
