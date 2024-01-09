@@ -364,19 +364,30 @@ input:-webkit-autofill:focus {
 
 .attention {
 	animation-name: attention;
-	animation-delay: var(--animation-duration-large-open);
-	animation-duration: 500ms;
-	animation-iteration-count: 3;
+	animation-duration: 1600ms;
+	animation-iteration-count: 1;
+	z-index: calc(var(--z-disableall) + 100);
 }
 
 @keyframes attention {
 	0% {
-		background-color: var(--primary-bg-color);
+		outline: 0.5em ridge #fff;
+		outline-offset: max(100vh, 100vw);
+		box-shadow: 0 0 0 calc(100vh + 100vw) rgba(0, 0, 0, 0);
 	}
-	55% {
-		background-color: var(--header-background-color);
+	5% {
+		outline: 0.5em ridge #fff;
+		outline-offset: max(100vh, 100vw);
+		box-shadow: 0 0 0 calc(100vh + 100vw) rgba(0, 0, 0, 0.5);
+	}
+	95% {
+		outline: 0.5em ridge #fff;
+		outline-offset: 0;
+		box-shadow: 0 0 0 calc(100vh + 100vw) rgba(0, 0, 0, 0.5);
 	}
 	100% {
-		background-color: var(--primary-bg-color);
+		outline: 0 ridge #fff;
+		outline-offset: 0;
+		box-shadow: 0 0 0 calc(100vh + 100vw) rgba(0, 0, 0, 0);
 	}
 }
