@@ -74,7 +74,7 @@ export const routingReducer = (state = initialState, action) => {
 		case ROUTING_STATS_CHANGED: {
 			return {
 				...state,
-				stats: { ...payload }
+				stats: payload
 			};
 		}
 		case ROUTING_ROUTE_CHANGED: {

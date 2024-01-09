@@ -65,6 +65,10 @@ describe('routingReducer', () => {
 		setRouteStats(mockStats);
 
 		expect(store.getState().routing.stats).toEqual(mockStats);
+
+		setRouteStats(null);
+
+		expect(store.getState().routing.stats).toBeNull();
 	});
 
 	it("changes the 'route' property", () => {

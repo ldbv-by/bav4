@@ -65,7 +65,7 @@ export const setStatus = (statusCode) => {
 export const setRouteStats = (routeStats) => {
 	getStore().dispatch({
 		type: ROUTING_STATS_CHANGED,
-		payload: { ...routeStats }
+		payload: routeStats ? { ...routeStats } : null
 	});
 };
 
