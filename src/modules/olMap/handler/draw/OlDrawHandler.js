@@ -642,7 +642,12 @@ export class OlDrawHandler extends OlLayerHandler {
 		if (equals(style, INITIAL_STYLE)) {
 			const defaultSymbolUrl = this._iconService.getDefault().getUrl(hexToRgb(defaultStyleOption.color));
 			const defaultSymbolSrc = defaultSymbolUrl ? defaultSymbolUrl : this._iconService.getDefault().base64;
-			setStyle({ ...defaultStyleOption, symbolSrc: defaultSymbolSrc, text: getDefaultTextByType(type) });
+			setStyle({
+				...defaultStyleOption,
+				symbolSrc: defaultSymbolSrc,
+				text: getDefaultTextByType(type),
+				anchor: this._iconService.getDefault().anchor
+			});
 		} else if (type === StyleTypes.TEXT && !isString(style.text)) {
 			setStyle({ ...style, text: getDefaultText() });
 		} else if (type === StyleTypes.MARKER && !isString(style.text)) {
