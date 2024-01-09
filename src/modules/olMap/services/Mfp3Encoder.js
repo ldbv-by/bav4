@@ -588,10 +588,14 @@ export class BvvMfp3Encoder {
 			const scale = imageStyle.getScale();
 			encoded.rotation = ((imageStyle.getRotation() ?? 0) * 180.0) / Math.PI;
 			const getPropertiesFromIconStyle = (iconStyle) => {
+				const iconSrc = iconStyle.getSrc();
+				const { IconService: iconService } = $injector.inject('IconService');
+				const iconResult = iconService.getIconResult(iconSrc);
+				const color = iconService.decodeColor(iconSrc);
 				return {
 					size: iconStyle.getSize(),
 					anchor: iconStyle.getAnchor(),
-					imageSrc: iconStyle.getSrc().replace(/\.svg/, '.png')
+					imageSrc: iconResult ? iconResult.getUrl(color) : iconStyle.getSrc().replace(/\.svg/, '.png')
 				};
 			};
 			const getPropertiesFromShapeStyle = (shapeStyle) => {
