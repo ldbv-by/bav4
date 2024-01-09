@@ -23,7 +23,7 @@ import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { unByKey } from 'ol/Observable';
 import { HelpTooltip } from '../../tooltip/HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
-import { setCategory, setProposal, setRoute, setRouteStats, setWaypoints } from '../../../../store/routing/routing.action';
+import { setCategory, setProposal, setRouteAndStats, setWaypoints } from '../../../../store/routing/routing.action';
 import { CoordinateProposalType, RouteCalculationErrors, RoutingStatusCodes } from '../../../../domain/routing';
 import { fit } from '../../../../store/position/position.action';
 import { updateCoordinates } from '../../../../store/elevationProfile/elevationProfile.action';
@@ -340,8 +340,6 @@ export class OlRoutingHandler extends OlLayerHandler {
 		this._routingService.getAlternativeCategoryIds(this._catId).forEach((catId) => {
 			this._displayAlternativeRoutingGeometry(currentRoutingResponse[catId]);
 		});
-		// update store
-		setRoute(currentRoutingResponse[this._catId]);
 	}
 
 	_incrementIndex(startIndex) {
@@ -530,6 +528,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 	}
 
 	async _requestRouteFromCoordinates(coordinates3857, status) {
+		this._resetStore();
 		this._clearAllFeatures();
 		if (coordinates3857.length > 0) {
 			this._setInteractionsActive(false);
@@ -543,8 +542,6 @@ export class OlRoutingHandler extends OlLayerHandler {
 						this._addDestinationInteractionFeature(coords[0], 0);
 						break;
 				}
-				// update store
-				setRoute(null);
 			} else {
 				// add interaction features
 				this._addStartInteractionFeature(coords.shift());
@@ -582,11 +579,11 @@ export class OlRoutingHandler extends OlLayerHandler {
 			const { stats: profileStats } = await this._elevationService.getProfile(coordinates);
 			const routeStats = this._routeStatsProvider(ghRoute, profileStats);
 
-			setRoute({
+			const route = {
 				data: new GeoJSONFormat().writeGeometry(geom.clone().transform(`EPSG:${this._mapService.getSrid()}`, 'EPSG:4326')),
 				type: new SourceType(SourceTypeName.GEOJSON)
-			});
-			setRouteStats(routeStats);
+			};
+			setRouteAndStats(route, routeStats);
 			updateCoordinates(coordinates);
 		} catch (e) {
 			/**
@@ -594,11 +591,14 @@ export class OlRoutingHandler extends OlLayerHandler {
 			 * because we can't give the user correct statistics without a profile result
 			 */
 			this._clearRouteFeatures();
-			setRoute(null);
-			setRouteStats(null);
+			this._resetStore();
 			console.error(e);
 			emitNotification(`${this._translationService.translate('olMap_handler_routing_routingService_exception')}`, LevelTypes.ERROR);
 		}
+	}
+
+	_resetStore() {
+		setRouteAndStats(null, null);
 	}
 
 	_requestRouteFromInteractionLayer() {
