@@ -1,4 +1,3 @@
-import { html } from 'lit-html';
 import { MediaType } from '../../../../../src/domain/mediaTypes';
 import { SourceType, SourceTypeMaxFileSize, SourceTypeName, SourceTypeResultStatus } from '../../../../../src/domain/sourceType';
 import { $injector } from '../../../../../src/injection';
