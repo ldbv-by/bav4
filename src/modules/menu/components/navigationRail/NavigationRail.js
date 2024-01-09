@@ -15,7 +15,7 @@ import { fit } from '../../../../store/position/position.action';
 import { closeNav } from '../../../../store/navigationRail/navigationRail.action';
 
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
-const Update_IsOpen_NavigationRail = 'update_isOpen_NavigationRail';
+const Update_IsOpen_NavigationRail = 'update_NavigationRail';
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
 const Update_Schema = 'update_schema';
 const Update_FeatureInfo_Data = 'update_featureInfo_data';
@@ -105,7 +105,6 @@ export class NavigationRail extends MvuElement {
 
 		const openTab = (tabId) => {
 			setTab(tabId);
-			setCurrentTool(null);
 			open();
 		};
 
