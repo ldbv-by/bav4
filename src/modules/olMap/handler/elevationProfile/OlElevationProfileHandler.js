@@ -13,7 +13,7 @@ import { Tools } from '../../../../domain/tools';
 
 const Empty_Elevation_Profile_Coordinates = [];
 /**
- * `MapHandler` that updates the profile s-o-s when a feature is selected or modified and a supported tool is active (e.g. `DRAWING`).
+ * {@link OlMapHandler} that updates the profile s-o-s when a feature is selected or modified and a supported tool is active (e.g. `DRAWING`).
  * The handler does nothing when no tool is active or a tool other then the configured one is active.
  */
 export class OlElevationProfileHandler extends OlMapHandler {
