@@ -1,8 +1,7 @@
 /**
  * @module store/navigationRail/navigationRail_action
  */
-import { OPENNAV_CLOSEDNAV_CHANGED } from './navigationRail.reducer';
-import { ACTIVE_TAB_ID_CHANGED } from './navigationRail.reducer';
+import { OPENNAV_CLOSEDNAV_CHANGED, ACTIVE_TAB_ID_CHANGED } from './navigationRail.reducer';
 import { $injector } from '../../injection';
 
 const getStore = () => {
