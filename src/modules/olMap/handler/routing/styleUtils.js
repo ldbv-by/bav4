@@ -19,7 +19,7 @@ export const getRoutingStyleFunction = () => {
 							anchor: [0.5, 1],
 							anchorXUnits: 'fraction',
 							anchorYUnits: 'fraction',
-							src: iconService.getIconResult('rt_mocked_start').base64
+							src: iconService.getIconResult('rt_start').base64
 						})
 					})
 				];
@@ -30,7 +30,7 @@ export const getRoutingStyleFunction = () => {
 							anchor: [0.5, 1],
 							anchorXUnits: 'fraction',
 							anchorYUnits: 'fraction',
-							src: iconService.getIconResult('rt_mocked_destination').base64
+							src: iconService.getIconResult('rt_destination').base64
 						})
 					})
 				];
@@ -54,7 +54,7 @@ export const getRoutingStyleFunction = () => {
 							anchor: [0.5, 0.5],
 							anchorXUnits: 'fraction',
 							anchorYUnits: 'fraction',
-							src: iconService.getIconResult('rt_mocked_intermediate').base64
+							src: iconService.getIconResult('rt_intermediate').base64
 						}),
 						text: textStyle
 					})
