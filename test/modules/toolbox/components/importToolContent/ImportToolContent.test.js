@@ -132,6 +132,21 @@ describe('ImportToolContent', () => {
 			expect(attention2).toHaveSize(0);
 			expect(findAllBySelector(element.parentElement, '#input')[0]?.matches(':focus')).toBeTrue();
 		});
+
+		it(' without search input', async () => {
+			const element = await setup();
+			const button = element.shadowRoot.querySelector('#highlightSearchButton');
+			const input = findAllBySelector(element.parentElement, '#input');
+			const attention = findAllBySelector(element.parentElement, '.attention');
+
+			expect(input).toHaveSize(0);
+			expect(attention).toHaveSize(0);
+
+			button.click();
+
+			const attention1 = findAllBySelector(element.parentElement, '.attention');
+			expect(attention1).toHaveSize(0);
+		});
 	});
 
 	describe('when uploading a file', () => {
