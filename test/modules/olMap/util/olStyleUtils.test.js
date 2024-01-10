@@ -92,6 +92,7 @@ describe('markerScaleToKeyword', () => {
 		expect(markerScaleToKeyword(1)).toBe('large');
 		expect(markerScaleToKeyword(0.75)).toBe('medium');
 		expect(markerScaleToKeyword(0.5)).toBe('small');
+		expect(markerScaleToKeyword(2)).toBe(2);
 		expect(markerScaleToKeyword(null)).toBe('small');
 		expect(markerScaleToKeyword('something')).toBe('small');
 		expect(markerScaleToKeyword(true)).toBe('small');
@@ -410,6 +411,7 @@ describe('defaultStyleFunction', () => {
 });
 
 describe('markerStyleFunction', () => {
+	const imageLoadDelayTime = 50;
 	it('should return a style', () => {
 		const styles = markerStyleFunction();
 
@@ -437,6 +439,40 @@ describe('markerStyleFunction', () => {
 		expect(image.getColor()).toEqual([190, 218, 85, 1]);
 		expect(image.getScale()).toBe(0.5);
 		expect(styles[0].getImage().getSrc()).toBe(markerIcon);
+	});
+
+	it('should return a style with a default anchor', async () => {
+		const styleOption = { color: '#BEDA55', scale: 'small', anchor: null };
+		spyOn(environmentService, 'isStandalone').and.returnValue(() => true);
+		const styles = markerStyleFunction(styleOption);
+
+		expect(styles).toBeDefined();
+		const iconStyle = styles[0].getImage();
+		expect(iconStyle).toBeTruthy();
+
+		// we must preload the IconImage and wait until the image-resource is loaded, to get valid
+		// a normalized anchor
+		iconStyle.load();
+		await TestUtils.timeout(imageLoadDelayTime);
+
+		expect(iconStyle.getAnchor()).toEqual([16, 16]); // the default markerIcon have a size of 32x32 px
+	});
+
+	it('should return a style with a specific anchor', async () => {
+		const styleOption = { color: '#BEDA55', scale: 'large', anchor: [1, 1] };
+		spyOn(environmentService, 'isStandalone').and.returnValue(() => true);
+		const styles = markerStyleFunction(styleOption);
+
+		expect(styles).toBeDefined();
+		const iconStyle = styles[0].getImage();
+		expect(iconStyle).toBeTruthy();
+
+		// we must preload the IconImage and wait until the image-resource is loaded, to get valid
+		// a normalized anchor
+		iconStyle.load();
+		await TestUtils.timeout(imageLoadDelayTime);
+
+		expect(iconStyle.getAnchor()).toEqual([32, 32]); // the default markerIcon have a size of 32x32 px
 	});
 
 	it('should return a style with a Text', () => {

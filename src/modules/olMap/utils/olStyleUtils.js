@@ -24,10 +24,11 @@ const Default_Symbol = 'marker';
  * @property {string} [color] the color as hexadecimal rgb value
  * @property {number} [scale] the scale; used to scale text or marker symbols
  * @property {string} [text] the displayed text
+ * @property {Array<number>} [anchor] the anchor coordinates of the marker symbol in fractions of 0 to 1
  */
 
 export const DEFAULT_TEXT = 'new text';
-export const DEFAULT_STYLE_OPTION = { symbolSrc: null, color: null, scale: null, text: null };
+export const DEFAULT_STYLE_OPTION = { symbolSrc: null, color: null, scale: null, text: null, anchor: [0.5, 0.5] };
 
 const getTextStyle = (text, color, scale, offsetY = -5) => {
 	const strokeWidth = 2;
@@ -284,9 +285,10 @@ export const defaultClusterStyleFunction = () => {
  */
 export const markerStyleFunction = (styleOption = DEFAULT_STYLE_OPTION) => {
 	const markerColor = styleOption.color ? styleOption.color : '#ff0000';
+	const markerAnchor = styleOption.anchor ? styleOption.anchor : [0.5, 0.5];
 
 	const rasterIconOptions = {
-		anchor: [0.5, 0.5],
+		anchor: markerAnchor,
 		anchorXUnits: 'fraction',
 		anchorYUnits: 'fraction',
 		src: styleOption.symbolSrc,
@@ -294,7 +296,7 @@ export const markerStyleFunction = (styleOption = DEFAULT_STYLE_OPTION) => {
 	};
 
 	const svgIconOptions = {
-		anchor: [0.5, 1],
+		anchor: markerAnchor,
 		anchorXUnits: 'fraction',
 		anchorYUnits: 'fraction',
 		src: styleOption.symbolSrc ? styleOption.symbolSrc : markerIcon,

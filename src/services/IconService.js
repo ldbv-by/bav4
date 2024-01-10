@@ -182,6 +182,10 @@ export class IconResult {
 	get base64() {
 		return this._base64;
 	}
+
+	get anchor() {
+		return this._id === Svg_Marker_Name ? [0.5, 1] : [0.5, 0.5];
+	}
 }
 
 /**

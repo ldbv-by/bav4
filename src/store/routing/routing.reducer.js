@@ -4,6 +4,7 @@ import { EventLike, equals } from '../../utils/storeUtils';
 export const ROUTING_CATEGORY_CHANGED = 'routing/categoryChanged';
 export const ROUTING_STATUS_CHANGED = 'routing/statusChanged';
 export const ROUTING_ROUTE_CHANGED = 'routing/routeChanged';
+export const ROUTING_ROUTE_AND_STATS_CHANGED = 'routing/routeStatsChanged';
 export const ROUTING_STATS_CHANGED = 'routing/statsChanged';
 export const ROUTING_ACTIVE_CHANGED = 'routing/activeChanged';
 export const ROUTING_WAYPOINTS_CHANGED = 'routing/waypointsChanged';
@@ -74,13 +75,20 @@ export const routingReducer = (state = initialState, action) => {
 		case ROUTING_STATS_CHANGED: {
 			return {
 				...state,
-				stats: { ...payload }
+				stats: payload
 			};
 		}
 		case ROUTING_ROUTE_CHANGED: {
 			return {
 				...state,
 				route: payload ? { ...payload } : null
+			};
+		}
+		case ROUTING_ROUTE_AND_STATS_CHANGED: {
+			return {
+				...state,
+				route: payload.route ? { ...payload.route } : null,
+				stats: payload.stats ? { ...payload.stats } : null
 			};
 		}
 		case ROUTING_WAYPOINTS_CHANGED: {

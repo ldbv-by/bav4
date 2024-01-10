@@ -770,7 +770,8 @@ describe('OlRoutingHandler', () => {
 					const mockRouteStatsProvider = jasmine.createSpy().and.returnValue(mockStats);
 					const { instanceUnderTest, store } = await newTestInstance(
 						{
-							route: {}
+							route: {},
+							stats: {}
 						},
 						mockRouteStatsProvider
 					);
@@ -786,16 +787,19 @@ describe('OlRoutingHandler', () => {
 					expect(store.getState().notifications.latest.payload.content).toBe('olMap_handler_routing_routingService_exception');
 					expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
 					expect(store.getState().routing.route).toBeNull();
+					expect(store.getState().routing.stats).toBeNull();
 				});
 			});
 		});
 
 		describe('_requestRouteFromCoordinates', () => {
 			describe('no coordinate is available', () => {
-				it('removes all features', async () => {
+				it('removes all features and updates (resets) the store', async () => {
 					const catId = 'catId';
-					const { instanceUnderTest } = await newTestInstance({
-						categoryId: catId
+					const { instanceUnderTest, store } = await newTestInstance({
+						categoryId: catId,
+						route: {},
+						stats: {}
 					});
 					const setInteractionsActiveSpy = spyOn(instanceUnderTest, '_setInteractionsActive');
 					const clearAllFeaturesSpy = spyOn(instanceUnderTest, '_clearAllFeatures');
@@ -812,6 +816,8 @@ describe('OlRoutingHandler', () => {
 					expect(addStartInteractionFeatureSpy).not.toHaveBeenCalled();
 					expect(addIntermediateInteractionFeatureSpy).not.toHaveBeenCalled();
 					expect(addDestinationInteractionFeatureSpy).not.toHaveBeenCalled();
+					expect(store.getState().routing.route).toBeNull();
+					expect(store.getState().routing.stats).toBeNull();
 				});
 			});
 
@@ -850,9 +856,8 @@ describe('OlRoutingHandler', () => {
 				describe('which is the start waypoint', () => {
 					it('call _requestRoute with with correct arguments', async () => {
 						const catId = 'catId';
-						const { instanceUnderTest, store } = await newTestInstance({
-							categoryId: catId,
-							route: {}
+						const { instanceUnderTest } = await newTestInstance({
+							categoryId: catId
 						});
 						const coordinate0 = [0, 0];
 						const setInteractionsActiveSpy = spyOn(instanceUnderTest, '_setInteractionsActive');
@@ -871,16 +876,14 @@ describe('OlRoutingHandler', () => {
 						expect(addIntermediateInteractionFeatureSpy).not.toHaveBeenCalled();
 						expect(addDestinationInteractionFeatureSpy).not.toHaveBeenCalled();
 						expect(instanceUnderTest._currentRoutingResponse).toBeNull();
-						expect(store.getState().routing.route).toBeNull();
 					});
 				});
 
 				describe('which is the destination waypoint', () => {
 					it('call _requestRoute with with correct arguments', async () => {
 						const catId = 'catId';
-						const { instanceUnderTest, store } = await newTestInstance({
-							categoryId: catId,
-							route: {}
+						const { instanceUnderTest } = await newTestInstance({
+							categoryId: catId
 						});
 						const coordinate0 = [0, 0];
 						const setInteractionsActiveSpy = spyOn(instanceUnderTest, '_setInteractionsActive');
@@ -899,7 +902,6 @@ describe('OlRoutingHandler', () => {
 						expect(addIntermediateInteractionFeatureSpy).not.toHaveBeenCalled();
 						expect(addDestinationInteractionFeatureSpy).toHaveBeenCalledWith(coordinate0, 0);
 						expect(instanceUnderTest._currentRoutingResponse).toBeNull();
-						expect(store.getState().routing.route).toBeNull();
 					});
 				});
 			});
