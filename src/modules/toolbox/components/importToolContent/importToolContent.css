@@ -94,9 +94,13 @@
 	font-weight: bold;
 	border: none;
 	background: transparent;
-	color: var(--primary-color);
-	opacity: 0.8;
+	color: var(--text2);
 }
+#highlightSearchButton {
+	opacity: 0.8;
+	color: var(--primary-color);
+}
+
 .text-to-search:hover {
 	opacity: 1;
 }
