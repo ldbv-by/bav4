@@ -625,8 +625,8 @@ export class BvvMfp3Encoder {
 			}
 
 			if (styleProperties.anchor) {
-				encoded.graphicXOffset = BvvMfp3Encoder.adjustDistance(-styleProperties.anchor[0] * scale, dpi);
-				encoded.graphicYOffset = BvvMfp3Encoder.adjustDistance(-styleProperties.anchor[1] * scale, dpi);
+				encoded.graphicXOffset = (styleProperties.size[0] / 2 - styleProperties.anchor[0]) * scale; //BvvMfp3Encoder.adjustDistance((styleProperties.size[0] / 2 - styleProperties.anchor[0]) * scale, dpi);
+				encoded.graphicYOffset = (styleProperties.size[1] / 2 - styleProperties.anchor[1]) * scale; //BvvMfp3Encoder.adjustDistance((styleProperties.size[1] / 2 - styleProperties.anchor[1]) * scale, dpi);
 			}
 
 			if (styleProperties.imageSrc) {
