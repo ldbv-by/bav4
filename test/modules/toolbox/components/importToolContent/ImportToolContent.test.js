@@ -103,7 +103,7 @@ describe('ImportToolContent', () => {
 		});
 	});
 
-	describe('when buttons clicked', () => {
+	describe('when button clicked', () => {
 		it(' highlight search input', async () => {
 			const element = await setup();
 
@@ -112,7 +112,7 @@ describe('ImportToolContent', () => {
 			const header = document.createElement('ba-header');
 			header.append(inputElement);
 			element.parentElement.append(header);
-			const button = element.shadowRoot.querySelector('#highlight-search-button');
+			const button = element.shadowRoot.querySelector('#highlightSearchButton');
 			const input = findAllBySelector(element.parentElement, '#input');
 			const attention = findAllBySelector(element.parentElement, '.attention');
 
