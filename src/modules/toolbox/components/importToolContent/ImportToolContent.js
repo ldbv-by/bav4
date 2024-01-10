@@ -68,8 +68,8 @@ export class ImportToolContent extends AbstractToolContent {
 		};
 
 		const onClick = () => {
-			const searchInput = findAllBySelector(document.querySelector(Header.tag), '#input');
-			if (searchInput.length === 1) {
+			const searchInput = findAllBySelector(document.querySelector(Header.tag) ?? this, '#input');
+			if (searchInput[0]) {
 				open();
 				searchInput[0].focus();
 				searchInput[0].classList.add('attention');
