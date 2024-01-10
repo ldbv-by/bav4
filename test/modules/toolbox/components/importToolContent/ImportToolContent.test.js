@@ -103,8 +103,8 @@ describe('ImportToolContent', () => {
 		});
 	});
 
-	describe('when button clicked', () => {
-		it(' highlight search input', async () => {
+	describe('when highlight-search-button is clicked', () => {
+		it('highlights the search input element of the ba-header component', async () => {
 			const element = await setup();
 
 			const inputElement = document.createElement('input');
@@ -133,7 +133,7 @@ describe('ImportToolContent', () => {
 			expect(findAllBySelector(element.parentElement, '#input')[0]?.matches(':focus')).toBeTrue();
 		});
 
-		it(' without search input', async () => {
+		it('does nothing when input element is not available', async () => {
 			const element = await setup();
 			const button = element.shadowRoot.querySelector('#highlightSearchButton');
 			const input = findAllBySelector(element.parentElement, '#input');
