@@ -69,7 +69,7 @@ export class ImportToolContent extends AbstractToolContent {
 
 		const onClick = () => {
 			const searchInput = findAllBySelector(document.querySelector(Header.tag), '#input');
-			if (searchInput[0]) {
+			if (searchInput.length === 1) {
 				open();
 				searchInput[0].focus();
 				searchInput[0].classList.add('attention');
@@ -120,7 +120,7 @@ export class ImportToolContent extends AbstractToolContent {
 				<div class="ba-tool-container__content ba-tool-container__url-import">      	
 					${translate('toolbox_import_url_search_before')}				                  																			
 				<span  class='text-to-search-icon'></span> 
-				<button id='highlight-search-button' class='text-to-search' " @click=${() => onClick()}>
+				<button id='highlightSearchButton' class='text-to-search' " @click=${() => onClick()}>
 					${translate('toolbox_import_url_search')}
 				</button> 
 					${translate('toolbox_import_url_search_after')}
