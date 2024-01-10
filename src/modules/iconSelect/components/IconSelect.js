@@ -53,8 +53,13 @@ export class IconSelect extends MvuElement {
 
 	async _loadIcons() {
 		const icons = await this._iconService.all();
+		// We want to colorize the hole symbol with the selected color.
+		// All other (possible multicolor icons) then except monochrome icons are filtered.
 		if (icons.length) {
-			this.signal(Update_Icons, icons);
+			this.signal(
+				Update_Icons,
+				icons.filter((icon) => icon.isMonochrome)
+			);
 		}
 	}
 
