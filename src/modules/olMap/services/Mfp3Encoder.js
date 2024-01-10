@@ -625,8 +625,18 @@ export class BvvMfp3Encoder {
 			}
 
 			if (styleProperties.anchor) {
-				encoded.graphicXOffset = (styleProperties.size[0] / 2 - styleProperties.anchor[0]) * scale; //BvvMfp3Encoder.adjustDistance((styleProperties.size[0] / 2 - styleProperties.anchor[0]) * scale, dpi);
-				encoded.graphicYOffset = (styleProperties.size[1] / 2 - styleProperties.anchor[1]) * scale; //BvvMfp3Encoder.adjustDistance((styleProperties.size[1] / 2 - styleProperties.anchor[1]) * scale, dpi);
+				// The graphic[X/Y]Offset property is not documented in MFP.
+				// It seems to calculate the final position of the symbol in relation
+				// to the width and height of the original graphic resource and the defined
+				// graphicWidth/graphicHeight property.
+				// Example:
+				// RasterImage with size of 48x48 Pixel and defined
+				// properties of graphicWidth:30 and graphicHeight:30
+				//
+				// To translate the normalized anchor-value of [24,48] (-> center, bottom)
+				// the offset should be relate to the image center (width/2,height/2)
+				encoded.graphicXOffset = (styleProperties.size[0] / 2 - styleProperties.anchor[0]) * scale;
+				encoded.graphicYOffset = (styleProperties.size[1] / 2 - styleProperties.anchor[1]) * scale;
 			}
 
 			if (styleProperties.imageSrc) {
