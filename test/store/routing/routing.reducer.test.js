@@ -11,6 +11,7 @@ import {
 	setIntermediate,
 	setProposal,
 	setRoute,
+	setRouteAndStats,
 	setRouteStats,
 	setStart,
 	setStatus,
@@ -65,6 +66,10 @@ describe('routingReducer', () => {
 		setRouteStats(mockStats);
 
 		expect(store.getState().routing.stats).toEqual(mockStats);
+
+		setRouteStats(null);
+
+		expect(store.getState().routing.stats).toBeNull();
 	});
 
 	it("changes the 'route' property", () => {
@@ -78,6 +83,22 @@ describe('routingReducer', () => {
 		setRoute(null);
 
 		expect(store.getState().routing.route).toBeNull();
+	});
+
+	it("changes the 'route' and 'stats' property", () => {
+		const store = setup();
+		const mockRoute = { route: 'route' };
+		const mockStats = { stats: 'stats' };
+
+		setRouteAndStats(mockRoute, mockStats);
+
+		expect(store.getState().routing.route).toEqual(mockRoute);
+		expect(store.getState().routing.stats).toEqual(mockStats);
+
+		setRouteAndStats(null, null);
+
+		expect(store.getState().routing.route).toBeNull();
+		expect(store.getState().routing.stats).toBeNull();
 	});
 
 	it("changes the 'waypoint' property", () => {

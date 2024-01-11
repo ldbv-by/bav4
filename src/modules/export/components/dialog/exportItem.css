@@ -5,13 +5,14 @@
 .export-item__head {
 	width: 17em;
 	text-align: center;
-	min-height: 9.5em;
+	min-height: 10em;
 	margin-bottom: 1.5em;
 }
 .export-item__label {
 	font-size: 2rem;
 	text-align: center;
 	margin-bottom: 1em;
+	position: relative;
 }
 .export-item__description {
 	font-style: italic;
@@ -22,10 +23,23 @@
 	width: 100%;
 	align-self: center;
 }
+
+.export-item__actions {
+	display: flex;
+	align-items: center;
+	margin-top: 1em;
+	background: var(--header-background-color);
+}
+
+ba-icon {
+	align-self: center;
+	margin-left: 0.3em;
+	margin-right: 0.3em;
+}
+
 ba-button {
 	align-self: center;
 	width: 100%;
-	margin-top: 1em;
 }
 .ba-form-element.disabled {
 	background: var(--secondary-bg-color);
@@ -36,4 +50,8 @@ ba-button {
 }
 .ba-form-element.disabled .bar {
 	opacity: 0;
+}
+#copy-button {
+	position: relative;
+	top: 0.3em;
 }

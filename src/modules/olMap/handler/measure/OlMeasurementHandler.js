@@ -163,7 +163,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					};
 					oldFeatures.forEach((f) => {
 						f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
-						f.set('srid', this._mapService.getSrid(), true);
 						layer.getSource().addFeature(f);
 						if (f.getId().startsWith(Tools.MEASURE)) {
 							f.geodesic = new GeodesicGeometry(f, () => false);

@@ -60,6 +60,7 @@ import { $injector } from '../injection/index';
  * @param {string[]} categories ids of the requested categories/vehicles
  * @param {module:domain/coordinateTypeDef~Coordinate[]} coordinates3857
  * @returns {Promise<module:domain/routing~GhRoutingResult|null>} the category of `null`
+ * @throws {module:domain/routing~RouteCalculationErrors} the cause of the error
  */
 
 /**
@@ -123,12 +124,13 @@ export const CHART_ITEM_ROAD_STYLE_UNKNOWN = {
  */
 
 /**
- * A function that returns a list of categories/vehicles for routing
+ * A function that returns a routing result..
  * @async
  * @typedef {Function} routeProvider
  * @param {string[]} categories ids of the requested categories/vehicles
  * @param {module:domain/coordinateTypeDef~Coordinate[]} coordinates3857
- * @returns {Promise<module:domain/routing~GhRoutingResult>} available categories
+ * @returns {Promise<module:domain/routing~GhRoutingResult>} the routing result
+ * @throws {module:domain/routing~RouteCalculationErrors} the cause of the error
  */
 
 /**
@@ -314,10 +316,6 @@ export class BvvRoutingService {
 			throw new TypeError("Parameter 'categories' must be an array containing at least one category");
 		}
 
-		try {
-			return await this._routeProvider(categories, coordinates3857);
-		} catch (e) {
-			throw new Error('Could not retrieve a routing result from the provider', { cause: e });
-		}
+		return this._routeProvider(categories, coordinates3857);
 	}
 }

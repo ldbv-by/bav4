@@ -366,9 +366,9 @@ describe('RouteInfo', () => {
 
 				const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
 				expect(routingElements).toHaveSize(3);
-				expect(routingElements[0].innerText).toBe('0');
-				expect(routingElements[1].innerText).toBe('0');
-				expect(routingElements[2].innerText).toBe('0');
+				expect(routingElements[0].innerText).toBe('-');
+				expect(routingElements[1].innerText).toBe('-');
+				expect(routingElements[2].innerText).toBe('-');
 			});
 
 			it('renders category icon', async () => {
@@ -400,7 +400,6 @@ describe('RouteInfo', () => {
 				setRoute(defaultRoute);
 
 				expect(element.shadowRoot.querySelector('.category-icon').innerHTML).toContain('icon_parent_category');
-				expect(getComputedStyle(element.shadowRoot.querySelector('.routing-info-type')).background).toContain('rgb(0, 0, 255)');
 			});
 		});
 	});

@@ -45,11 +45,17 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_mfp_id_a3_landscape).toBe('DIN A3 Querformat');
 		expect(map.olMap_handler_mfp_id_a3_portrait).toBe('DIN A3 Hochformat');
 		expect(map.olMap_handler_mfp_encoder_layer_not_exportable).toBe('Die folgenden Ebenen können nicht exportiert werden:');
-		expect(map.olMap_handler_routing_choose_alternative_route(['label'])).toBe("Klicken, um alternative Route <b>'label'</b> zu wählen");
+		expect(map.olMap_handler_routing_choose_alternative_route(['label'])).toBe('label');
 		expect(map.olMap_handler_routing_modify_segment).toBe('Zum Ändern der Route ziehen');
 		expect(map.olMap_handler_routing_modify_start).toBe('Zum Ändern des Startpunktes ziehen');
 		expect(map.olMap_handler_routing_modify_destination).toBe('Zum Ändern des Zielpunktes ziehen');
 		expect(map.olMap_handler_routing_modify_intermediate).toBe('Zum Ändern des Zwischenpunktes ziehen');
+		expect(map.olMap_handler_routing_rt_layer_label).toBe('Route (Track)');
+		expect(map.olMap_handler_routing_wp_layer_label).toBe('Route (Wegpunkte)');
+		expect(map.olMap_handler_routing_routingService_exception).toBe('Aufgrund eines technischen Fehlers konnte keine Route erstellt werden');
+		expect(map.olMap_handler_routing_routingService_improper_waypoints).toBe(
+			'Anhand der angegebenen Punkte konnte keine Route erstellt werden. Bitte passen Sie einen oder mehrere Punkte an.'
+		);
 		expect(map.olMap_vectorLayerService_default_layer_name_vector).toBe('Daten');
 	});
 
@@ -93,16 +99,22 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_mfp_id_a3_landscape).toBe('DIN A3 landscape');
 		expect(map.olMap_handler_mfp_id_a3_portrait).toBe('DIN A3 portrait');
 		expect(map.olMap_handler_mfp_encoder_layer_not_exportable).toBe('The following layers cannot be exported:');
-		expect(map.olMap_handler_routing_choose_alternative_route(['label'])).toBe("Click for choosing the alterative route <b>'label'</b>");
+		expect(map.olMap_handler_routing_choose_alternative_route(['label'])).toBe('label');
 		expect(map.olMap_handler_routing_modify_segment).toBe('Pull to modify the route');
 		expect(map.olMap_handler_routing_modify_start).toBe('Pull to modify the start point');
 		expect(map.olMap_handler_routing_modify_destination).toBe('Pull to modify the destination point');
 		expect(map.olMap_handler_routing_modify_intermediate).toBe('Pull to modify the waypoint');
+		expect(map.olMap_handler_routing_rt_layer_label).toBe('Route (Track)');
+		expect(map.olMap_handler_routing_wp_layer_label).toBe('Route (Waypoints)');
+		expect(map.olMap_handler_routing_routingService_exception).toBe('Due to a technical error no route could be created');
+		expect(map.olMap_handler_routing_routingService_improper_waypoints).toBe(
+			'No route could be created based on the given points. Please adjust one ore more points.'
+		);
 		expect(map.olMap_vectorLayerService_default_layer_name_vector).toBe('Data');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 37;
+		const expectedSize = 41;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

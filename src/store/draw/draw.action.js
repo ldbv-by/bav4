@@ -31,9 +31,10 @@ import { EventLike } from '../../utils/storeUtils';
  * The Options of a Style-Request
  * @typedef {Object} DrawingStyleOption
  * @property {string} symbolSrc the source of a vector graphic, used by a symbol-drawing
- * @property {small|medium|large} scale the scale-factor of a drawing; used by symbol- and text-drawing
+ * @property {'small'|'medium'|'large'} scale the scale-factor of a drawing; used by symbol- and text-drawing
  * @property {string} color the hex-string representation of a RGB-Color; used by Symbol-, Text-, Line- and Polygon-drawing
  * @property {string} text the text-content of a Text-drawing
+ * @property {Array<number>} anchor the anchor of a symbol in fraction of 0 to 1
  */
 
 /**

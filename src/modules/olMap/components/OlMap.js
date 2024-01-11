@@ -19,6 +19,8 @@ import { Group as LayerGroup } from 'ol/layer';
 import { GeoResourceFuture, GeoResourceTypes } from '../../../domain/geoResources';
 import { setFetching } from '../../../store/network/network.action';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
+import { equals } from '../../../utils/storeUtils';
+import { roundCenter, roundRotation, roundZoomLevel } from '../../../utils/mapUtils';
 
 const Update_Position = 'update_position';
 const Update_Layers = 'update_layers';
@@ -40,7 +42,7 @@ export class OlMap extends MvuElement {
 		});
 		const {
 			MapService: mapService,
-			GeoResourceService: georesourceService,
+			GeoResourceService: geoResourceService,
 			LayerService: layerService,
 			EnvironmentService: environmentService,
 			TranslationService: translationService,
@@ -73,11 +75,10 @@ export class OlMap extends MvuElement {
 		);
 
 		this._mapService = mapService;
-		this._geoResourceService = georesourceService;
 		this._layerService = layerService;
 		this._environmentService = environmentService;
 		this._translationService = translationService;
-		this._geoResourceService = georesourceService;
+		this._geoResourceService = geoResourceService;
 		this._layerHandler = new Map([
 			[measurementHandler.id, measurementHandler],
 			[geolocationHandler.id, geolocationHandler],
@@ -279,13 +280,23 @@ export class OlMap extends MvuElement {
 
 	_syncView() {
 		const { zoom, center, rotation } = this.getModel();
-
-		this._view.animate({
-			zoom: zoom,
-			center: center,
-			rotation: rotation,
-			duration: 200
-		});
+		const view = this._map.getView();
+		/**
+		 * Update the view only if the parameters are not virtually the same as the current one.
+		 * Note: Triggering an animation on the ol.View causes an WMS source always to be loaded, even if nothing has changed effectively.
+		 */
+		if (
+			!equals(zoom, roundZoomLevel(view.getZoom())) ||
+			!equals(center, roundCenter(view.getCenter())) ||
+			!equals(rotation, roundRotation(view.getRotation()))
+		) {
+			this._view.animate({
+				zoom: zoom,
+				center: center,
+				rotation: rotation,
+				duration: 200
+			});
+		}
 	}
 
 	_syncLayers() {
@@ -332,8 +343,8 @@ export class OlMap extends MvuElement {
 				const olLayer = geoResource
 					? this._layerService.toOlLayer(id, geoResource, this._map)
 					: this._layerHandler.has(id)
-					  ? toOlLayerFromHandler(id, this._layerHandler.get(id), this._map)
-					  : null;
+						? toOlLayerFromHandler(id, this._layerHandler.get(id), this._map)
+						: null;
 				if (olLayer) {
 					const layer = layers.find((layer) => layer.id === id);
 					updateOlLayer(olLayer, layer);
@@ -396,7 +407,7 @@ export class OlMap extends MvuElement {
 							viewportPadding.right + OlMap.DEFAULT_PADDING_PX[1],
 							viewportPadding.bottom + OlMap.DEFAULT_PADDING_PX[2],
 							viewportPadding.left + OlMap.DEFAULT_PADDING_PX[3]
-					  ]
+						]
 					: OlMap.DEFAULT_PADDING_PX;
 				this._view.fit(extent, { maxZoom: maxZoom, callback: onAfterFit, padding: padding });
 			}

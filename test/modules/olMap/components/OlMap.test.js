@@ -9,7 +9,14 @@ import { $injector } from '../../../../src/injection';
 import { layersReducer } from '../../../../src/store/layers/layers.reducer';
 import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../../src/domain/geoResources';
 import { addLayer, modifyLayer, removeLayer } from '../../../../src/store/layers/layers.action';
-import { changeRotation, changeZoomAndCenter, fit as fitMap, fitLayer } from '../../../../src/store/position/position.action';
+import {
+	changeRotation,
+	changeZoomAndCenter,
+	fit as fitMap,
+	fitLayer,
+	changeCenter,
+	changeZoom
+} from '../../../../src/store/position/position.action';
 import { simulateMapEvent, simulateMapBrowserEvent } from '../mapTestUtils';
 import VectorLayer from 'ol/layer/Vector';
 import { pointerReducer } from '../../../../src/store/pointer/pointer.reducer';
@@ -730,33 +737,47 @@ describe('OlMap', () => {
 	});
 
 	describe('olView management', () => {
-		it('updates zoom and center', async () => {
-			const element = await setup();
-			const view = element._map.getView();
-			const viewSpy = spyOn(view, 'animate');
+		describe('position', () => {
+			it('updates zoom and center', async () => {
+				const element = await setup();
+				const view = element._map.getView();
+				const viewSpy = spyOn(view, 'animate');
 
-			changeZoomAndCenter({ zoom: 5, center: [21, 42] });
+				changeZoomAndCenter({ zoom: 5, center: [21, 42] });
 
-			expect(viewSpy).toHaveBeenCalledWith({
-				zoom: 5,
-				center: [21, 42],
-				rotation: initialRotationValue,
-				duration: 200
+				expect(viewSpy).toHaveBeenCalledWith({
+					zoom: 5,
+					center: [21, 42],
+					rotation: initialRotationValue,
+					duration: 200
+				});
 			});
-		});
 
-		it('updates rotation', async () => {
-			const element = await setup();
-			const view = element._map.getView();
-			const viewSpy = spyOn(view, 'animate');
+			it('updates rotation', async () => {
+				const element = await setup();
+				const view = element._map.getView();
+				const viewSpy = spyOn(view, 'animate');
 
-			changeRotation(1);
+				changeRotation(1);
 
-			expect(viewSpy).toHaveBeenCalledWith({
-				zoom: initialZoomLevel,
-				center: initialCenter,
-				rotation: 1,
-				duration: 200
+				expect(viewSpy).toHaveBeenCalledWith({
+					zoom: initialZoomLevel,
+					center: initialCenter,
+					rotation: 1,
+					duration: 200
+				});
+			});
+
+			it('does nothing when view already in place', async () => {
+				const element = await setup();
+				const view = element._map.getView();
+				const viewSpy = spyOn(view, 'animate');
+
+				changeCenter(initialCenter);
+				changeZoom(initialZoomLevel);
+				changeRotation(initialRotationValue);
+
+				expect(viewSpy).not.toHaveBeenCalled();
 			});
 		});
 

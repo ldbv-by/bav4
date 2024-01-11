@@ -17,7 +17,7 @@ import {
 } from './position.reducer';
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
-import { round } from '../../utils/numberUtils';
+import { roundCenter, roundRotation, roundZoomLevel } from '../../utils/mapUtils';
 
 /**
  * Request for fitting a map to a geographic extent
@@ -78,16 +78,9 @@ const getValidZoomLevelValue = (zoom) => {
 	if (zoom < getMapService().getMinZoomLevel()) {
 		return getMapService().getMinZoomLevel();
 	}
-	return round(zoom, 3);
+	return roundZoomLevel(zoom);
 };
 
-const getValidRotationValue = (rotation) => {
-	return round(rotation, 5);
-};
-
-const getValidCenterValues = (center) => {
-	return center.map((v) => round(v, 7));
-};
 /**
  * Changes the zoom level and the position.
  * @param {ZoomCenter} zoomCenter zoom and center
@@ -97,7 +90,7 @@ export const changeZoomAndCenter = (zoomCenter) => {
 	const { zoom, center } = zoomCenter;
 	getStore().dispatch({
 		type: ZOOM_CENTER_CHANGED,
-		payload: { center: getValidCenterValues(center), zoom: getValidZoomLevelValue(zoom) }
+		payload: { center: roundCenter(center), zoom: getValidZoomLevelValue(zoom) }
 	});
 };
 
@@ -110,7 +103,7 @@ export const changeZoomAndRotation = (zoomRotation) => {
 	const { zoom, rotation } = zoomRotation;
 	getStore().dispatch({
 		type: ZOOM_ROTATION_CHANGED,
-		payload: { rotation: getValidRotationValue(rotation), zoom: getValidZoomLevelValue(zoom) }
+		payload: { rotation: roundRotation(rotation), zoom: getValidZoomLevelValue(zoom) }
 	});
 };
 
@@ -123,7 +116,7 @@ export const changeCenterAndRotation = (centerRotation) => {
 	const { center, rotation } = centerRotation;
 	getStore().dispatch({
 		type: CENTER_ROTATION_CHANGED,
-		payload: { center: getValidCenterValues(center), rotation: getValidRotationValue(rotation) }
+		payload: { center: roundCenter(center), rotation: roundRotation(rotation) }
 	});
 };
 
@@ -136,7 +129,7 @@ export const changeZoomCenterAndRotation = (zoomCenterRotation) => {
 	const { zoom, center, rotation } = zoomCenterRotation;
 	getStore().dispatch({
 		type: ZOOM_CENTER_ROTATION_CHANGED,
-		payload: { zoom: getValidZoomLevelValue(zoom), center: getValidCenterValues(center), rotation: getValidRotationValue(rotation) }
+		payload: { zoom: getValidZoomLevelValue(zoom), center: roundCenter(center), rotation: roundRotation(rotation) }
 	});
 };
 
@@ -172,7 +165,7 @@ export const changeLiveZoom = (zoom) => {
 export const changeRotation = (rotation) => {
 	getStore().dispatch({
 		type: ROTATION_CHANGED,
-		payload: getValidRotationValue(rotation)
+		payload: roundRotation(rotation)
 	});
 };
 
@@ -185,7 +178,7 @@ export const changeRotation = (rotation) => {
 export const changeLiveRotation = (liveRotation) => {
 	getStore().dispatch({
 		type: LIVE_ROTATION_CHANGED,
-		payload: getValidRotationValue(liveRotation)
+		payload: roundRotation(liveRotation)
 	});
 };
 
@@ -225,7 +218,7 @@ export const decreaseZoom = () => {
 export const changeCenter = (center) => {
 	getStore().dispatch({
 		type: CENTER_CHANGED,
-		payload: getValidCenterValues(center)
+		payload: roundCenter(center)
 	});
 };
 
@@ -237,7 +230,7 @@ export const changeCenter = (center) => {
 export const changeLiveCenter = (center) => {
 	getStore().dispatch({
 		type: LIVE_CENTER_CHANGED,
-		payload: getValidCenterValues(center)
+		payload: roundCenter(center)
 	});
 };
 

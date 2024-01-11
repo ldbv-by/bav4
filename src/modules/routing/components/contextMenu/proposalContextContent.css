@@ -1,67 +1,62 @@
 .container {
 	display: flex;
-	align-items: center;
-
+	justify-content: center;
 	position: relative;
+	margin: 0.5em 2em;
 }
-
 button {
 	cursor: pointer;
 	display: flex;
+	flex-direction: column;
 	align-items: center;
 	padding: 0.8em 1em;
 	background: transparent;
 	border: none;
-	background-color: var(--primary-color);
+	background-color: var(--primary-bg-color);
 	opacity: 0.8;
-	font-weight: bold;
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 	color: var(--primary-color);
 	width: 100%;
+	max-width: 30em;
 }
-
+button:hover {
+	background-color: var(--header-background-color);
+}
 button:focus {
 	opacity: 1;
 }
-
-button:hover {
-	opacity: 1;
+.container button:first-child:not(:only-child) {
+	border-right: 1px dotted;
 }
-
 .icon {
-	height: 2.5em;
-	width: 2.5em;
-	margin-right: 0;
-	padding: 0;
-	position: relative;
-	left: -0.7em;
-	top: 0.3em;
+	height: 6em;
+	width: 6em;
 }
-
 .start {
-	background-image: url('../assets/start.svg');
+	background-image: url('../assets/start-marker.svg');
 	background-size: cover;
 }
-
 .destination {
-	background-image: url('../assets/destination.svg');
+	background-image: url('../assets/destination-marker.svg');
 	background-size: cover;
 }
-
 .intermediate {
 	background-image: url('../assets/intermediate.svg');
 	background-size: cover;
-	height: 2em;
-	width: 2em;
-	left: -0.4em;
+	height: 5em;
+	width: 5em;
+	margin-bottom: 0.5em;
 }
-
 .remove {
-	background-image: url('../assets/trash.svg');
+	background-image: url('../assets/trash-marker.svg');
 	background-size: cover;
+	height: 5em;
+	width: 5em;
+	margin-bottom: 0.5em;
 }
-
 .text {
-	color: var(--text3);
 	white-space: nowrap;
+	font-size: 1.6rem;
+	margin: 0.2em 0;
+	color: var(--text4);
 }
