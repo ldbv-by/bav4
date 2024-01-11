@@ -10,10 +10,19 @@ import { Circle, Fill, Icon, Stroke, Style, Text } from 'ol/style';
 import baRoutingStartIcon from '../../../../../src/modules/olMap/handler/routing/assets/ba-routing-start.svg';
 import baRoutingDestinationIcon from '../../../../../src/modules/olMap/handler/routing/assets/ba-routing-destination.svg';
 import baRoutingIntermediateIcon from '../../../../../src/modules/olMap/handler/routing/assets/ba-routing-intermediate.svg';
+import { TestUtils } from '../../../../test-utils';
+import { $injector } from '../../../../../src/injection';
+
+const iconServiceMock = { getIconResult: () => {} };
+beforeAll(() => {
+	TestUtils.setupStoreAndDi();
+	$injector.registerSingleton('IconService', iconServiceMock);
+});
 
 describe('styleUtils', () => {
 	describe('routingStyleFunction', () => {
 		it('returns a style function for feature type "START"', () => {
+			spyOn(iconServiceMock, 'getIconResult').withArgs('rt_start').and.returnValue({ base64: baRoutingStartIcon });
 			const feature = new Feature();
 			feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.START);
 			const expected = [
@@ -33,6 +42,7 @@ describe('styleUtils', () => {
 		});
 
 		it('returns a style function for feature type "DESTINATION"', () => {
+			spyOn(iconServiceMock, 'getIconResult').withArgs('rt_destination').and.returnValue({ base64: baRoutingDestinationIcon });
 			const feature = new Feature();
 			feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.DESTINATION);
 			const expected = [
@@ -52,6 +62,7 @@ describe('styleUtils', () => {
 		});
 
 		it('returns a style function for feature type "INTERMEDIATE"', () => {
+			spyOn(iconServiceMock, 'getIconResult').withArgs('rt_intermediate').and.returnValue({ base64: baRoutingIntermediateIcon });
 			const feature0 = new Feature();
 			feature0.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.INTERMEDIATE);
 			feature0.set(ROUTING_FEATURE_INDEX, 42);

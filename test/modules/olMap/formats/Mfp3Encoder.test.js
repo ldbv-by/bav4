@@ -73,6 +73,11 @@ describe('BvvMfp3Encoder', () => {
 		}
 	};
 
+	const iconServiceMock = {
+		decodeColor: () => [0, 0, 0],
+		getIconResult: () => null
+	};
+
 	const defaultProperties = {
 		layoutId: 'foo',
 		scale: 1,
@@ -86,7 +91,8 @@ describe('BvvMfp3Encoder', () => {
 		.registerSingleton('UrlService', urlServiceMock)
 		.registerSingleton('ShareService', shareServiceMock)
 		.registerSingleton('MfpService', mfpServiceMock)
-		.registerSingleton('LayerService', layerServiceMock);
+		.registerSingleton('LayerService', layerServiceMock)
+		.registerSingleton('IconService', iconServiceMock);
 	proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 	register(proj4);
 	const setup = (initProperties) => {
@@ -940,6 +946,7 @@ describe('BvvMfp3Encoder', () => {
 				const styles = [
 					new Style({
 						image: new IconStyle({
+							size: [42, 42],
 							anchor: [42, 42],
 							anchorXUnits: 'pixels',
 							anchorYUnits: 'pixels',
@@ -957,6 +964,7 @@ describe('BvvMfp3Encoder', () => {
 				const styles = [
 					new Style({
 						image: new IconStyle({
+							size: [42, 42],
 							anchor: [42, 42],
 							anchorXUnits: 'pixels',
 							anchorYUnits: 'pixels',
@@ -1275,6 +1283,8 @@ describe('BvvMfp3Encoder', () => {
 									rotation: 0,
 									fillOpacity: 1,
 									strokeOpacity: 0,
+									graphicWidth: jasmine.any(Number),
+									graphicHeight: jasmine.any(Number),
 									graphicXOffset: jasmine.any(Number),
 									graphicYOffset: jasmine.any(Number),
 									externalGraphic: 'https://some.url/to/image/foo.png'
