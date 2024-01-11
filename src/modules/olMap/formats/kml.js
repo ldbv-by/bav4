@@ -26,8 +26,8 @@ const replaceIcon = (old) => {
 
 	// A nullish IconResult/IconUrl leads to a invalid KML (according to the specification).
 	// Nevertheless some applications/frameworks can handle such a kml (icons with base64 image sources).
-	// added workaround prevent routing icons to be replaced by the raster version
-	const iconUrl = iconResult && !iconResult.id.startsWith('rt_') ? iconResult?.getUrl(old.getColor()) : null;
+	// The application uses multicolored and multilayered svg icons, which we prevent to be replaced by the raster version
+	const iconUrl = iconResult && iconResult.isMonochrome ? iconResult?.getUrl(old.getColor()) : null;
 
 	const iconOptions = {
 		anchor: [0.5, 1],

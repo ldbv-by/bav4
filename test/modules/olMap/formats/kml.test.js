@@ -30,7 +30,7 @@ describe('kml', () => {
 
 	const iconServiceMock = {
 		getIconResult: (idOrBase64) => {
-			return { id: idOrBase64, getUrl: (color) => `backend.url/icon/${color}/${idOrBase64.substr(idOrBase64.length - 5)}` };
+			return { id: idOrBase64, getUrl: (color) => `backend.url/icon/${color}/${idOrBase64.substr(idOrBase64.length - 5)}`, isMonochrome: true };
 		}
 	};
 	$injector.registerSingleton('IconService', iconServiceMock);
