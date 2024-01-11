@@ -18,9 +18,9 @@ const Update_IsPortrait_Value = 'update_isportrait_value';
  * Component to select a Icon from a List of available Icons
  *
  * @property {module:services/IconService~IconResult} value the selected icon
- * @property {string} title the title
+ * @property {string} title='' - The title of the button
  * @property {Array<number>} color the color as rgb color array
- * @property {function(selectedIconResult)} onSelect The select callback function when the select state of the element is changed.
+ * @property {function(module:services/IconService~IconResult)} onSelect The select callback function when the select state of the element is changed.
  * @fires onSelect The select event fires when the select state of the element is changed
  *
  * @class
@@ -81,10 +81,6 @@ export class IconSelect extends MvuElement {
 		}
 	}
 
-	/**
-	 *
-	 * @override
-	 */
 	createView(model) {
 		const { portrait } = model;
 		const translate = (key) => this._translationService.translate(key);
@@ -167,9 +163,6 @@ export class IconSelect extends MvuElement {
 		return 'ba-iconselect';
 	}
 
-	/**
-	 * @property {string} title='' - The title of the button
-	 */
 	set title(value) {
 		this.signal(Update_Title, value);
 	}
