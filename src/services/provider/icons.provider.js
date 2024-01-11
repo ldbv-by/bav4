@@ -72,7 +72,7 @@ export const loadBvvIcons = async () => {
 				if (candidate) {
 					icons.push(candidate);
 				} else {
-					console.warn(`Could not add a svg resource for icon ${id}`);
+					console.warn(`Could not find or replace a svg resource for icon '${id}'`);
 				}
 			}
 		});
