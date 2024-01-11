@@ -77,7 +77,7 @@ describe('IconsService', () => {
 				const icons = await instanceUnderTest.all();
 				const defaultIcon = instanceUnderTest.getDefault();
 
-				expect(icons.length).toBe(5);
+				expect(icons.length).toBe(8);
 				expect(icons[0]).toEqual(defaultIcon);
 				expect(icons).toEqual(
 					jasmine.arrayContaining([
@@ -85,7 +85,10 @@ describe('IconsService', () => {
 						jasmine.objectContaining({ id: 'triangle-stroked' }),
 						jasmine.objectContaining({ id: 'triangle' }),
 						jasmine.objectContaining({ id: 'square-stroked' }),
-						jasmine.objectContaining({ id: 'square' })
+						jasmine.objectContaining({ id: 'square' }),
+						jasmine.objectContaining({ id: 'rt_start' }),
+						jasmine.objectContaining({ id: 'rt_destination' }),
+						jasmine.objectContaining({ id: 'rt_intermediate' })
 					])
 				);
 				expect(warnSpy).toHaveBeenCalledWith('Icons could not be fetched from backend. Using fallback icons ...');
