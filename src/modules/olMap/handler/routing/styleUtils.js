@@ -2,9 +2,6 @@
  * @module modules/olMap/handler/routing/styleUtils
  */
 import { Style, Icon, Stroke, Text as TextStyle, Circle, Fill } from 'ol/style';
-// import baRoutingStartIcon from './assets/ba-routing-start.svg';
-// import baRoutingIntermediateIcon from './assets/ba-routing-intermediate.svg';
-// import baRoutingDestinationIcon from './assets/ba-routing-destination.svg';
 import { ROUTING_CATEGORY, ROUTING_FEATURE_TYPE, RoutingFeatureTypes, ROUTING_FEATURE_INDEX } from './OlRoutingHandler';
 import { $injector } from '../../../../injection/index';
 
