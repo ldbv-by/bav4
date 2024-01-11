@@ -138,6 +138,7 @@ export class IconResult {
 	 * @param {string} svg the content of this Icon as SVG
 	 * @param {function(string):(boolean)} urlMatcher a function to check, when a url is matching as remote-location for this icon
 	 * @param {function(Array<number>): (string)} urlProvider a function, which provides a url as remote-location for this icon with a specified rgb-color as Array<number>
+	 * @param {boolean} [isMonochrome=true] whether the svg content of the icon use only one single color
 	 */
 	constructor(id, svg, urlMatcher = null, urlProvider = null, isMonochrome = true) {
 		this._id = id;

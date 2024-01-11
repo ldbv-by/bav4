@@ -204,11 +204,12 @@ describe('IconsService', () => {
 			return null;
 		};
 
-		it('uses default urlProvider, when not given', () => {
+		it('uses default values, when not given', () => {
 			const iconResult = new IconResult('foo', 'bar');
 
 			expect(iconResult.matches('somethingWithfoo')).toBeFalse();
 			expect(iconResult.getUrl()).toBeNull();
+			expect(iconResult.isMonochrome).toBeTrue();
 		});
 
 		it('provides a defined anchor', () => {
