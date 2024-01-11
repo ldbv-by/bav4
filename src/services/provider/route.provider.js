@@ -2,6 +2,7 @@
  * @module services/provider/route_provider
  */
 import { MediaType } from '../../domain/mediaTypes';
+import { RouteCalculationErrors } from '../../domain/routing';
 import { $injector } from '../../injection';
 
 /**
@@ -28,9 +29,12 @@ export const bvvRouteProvider = async (categories, coordinates3857) => {
 	});
 
 	switch (result.status) {
-		case 200: {
+		case 200:
 			return await result.json();
-		}
+		case 400:
+			throw new Error(`A route could not be retrieved: Http-Status ${result.status}`, { cause: RouteCalculationErrors.Improper_Waypoints });
+		case 500:
+			throw new Error(`A route could not be retrieved: Http-Status ${result.status}`, { cause: RouteCalculationErrors.Technical_Error });
 		default:
 			throw new Error(`A route could not be retrieved: Http-Status ${result.status}`);
 	}

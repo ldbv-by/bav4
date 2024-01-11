@@ -48,7 +48,7 @@ export class ExportVectorDataChip extends AbstractAssistChip {
 	onClick() {
 		const { data } = this.getModel();
 		const translate = (key) => this._translationService.translate(key);
-		openModal(translate('export_assistChip_export_vector_data'), html`<ba-export-content .exportData=${data}></ba-export-content>`);
+		openModal(translate('chips_assist_chip_export'), html`<ba-export-content .exportData=${data}></ba-export-content>`);
 	}
 
 	set exportData(value) {

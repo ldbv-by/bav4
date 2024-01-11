@@ -44,81 +44,105 @@ describe('EnvironmentService', () => {
 		});
 	});
 
-	describe('touch ability', () => {
-		it('detects touch ability', () => {
+	describe('detects input device capabilities', () => {
+		it('is a touch only device', () => {
 			const mockWindow = {
-				navigator: {}
-			};
-			const instanceUnderTest = new EnvironmentService(mockWindow);
-			expect(instanceUnderTest.isTouch()).toBeFalse();
-		});
-
-		it('detects touch ability by touchPoints', () => {
-			let mockWindow = {
-				navigator: {
-					maxTouchPoints: 0
-				}
-			};
-			let instanceUnderTest = new EnvironmentService(mockWindow);
-			expect(instanceUnderTest.isTouch()).toBeFalse();
-
-			mockWindow = {
-				navigator: {
-					maxTouchPoints: 1
-				}
-			};
-			instanceUnderTest = new EnvironmentService(mockWindow);
-			expect(instanceUnderTest.isTouch()).toBeTrue();
-		});
-
-		it('detects touch ability by mediaQuery', () => {
-			let mockWindow = {
 				navigator: {},
-				matchMedia: () => {
-					return undefined;
-				}
+				matchMedia: () => {}
 			};
-			let instanceUnderTest = new EnvironmentService(mockWindow);
-			expect(instanceUnderTest.isTouch()).toBeFalse();
-
-			mockWindow = {
-				navigator: {},
-				matchMedia: (mediaQuery) => {
+			spyOn(mockWindow, 'matchMedia').and.callFake((mediaQuery) => {
+				if (mediaQuery === '(pointer:coarse)' || mediaQuery === '(hover:none)') {
 					return {
 						media: mediaQuery,
 						matches: true
 					};
 				}
-			};
-			instanceUnderTest = new EnvironmentService(mockWindow);
+				return {
+					media: mediaQuery,
+					matches: false
+				};
+			});
+			const instanceUnderTest = new EnvironmentService(mockWindow);
+
 			expect(instanceUnderTest.isTouch()).toBeTrue();
+			expect(instanceUnderTest.isMouse()).toBeFalse();
+			expect(instanceUnderTest.isMouseWithTouchSupport()).toBeFalse();
+			expect(instanceUnderTest.isTouchWithMouseSupport()).toBeFalse();
 		});
 
-		it('detects touch ability by deprecated orientation object in window', () => {
+		it('is a mouse only device', () => {
 			const mockWindow = {
 				navigator: {},
-				orientation: 'something'
+				matchMedia: () => {}
 			};
+			spyOn(mockWindow, 'matchMedia').and.callFake((mediaQuery) => {
+				if (mediaQuery === '(pointer:fine)' || mediaQuery === '(hover:hover)') {
+					return {
+						media: mediaQuery,
+						matches: true
+					};
+				}
+				return {
+					media: mediaQuery,
+					matches: false
+				};
+			});
 			const instanceUnderTest = new EnvironmentService(mockWindow);
-			expect(instanceUnderTest.isTouch()).toBeTrue();
+
+			expect(instanceUnderTest.isTouch()).toBeFalse();
+			expect(instanceUnderTest.isMouse()).toBeTrue();
+			expect(instanceUnderTest.isMouseWithTouchSupport()).toBeFalse();
+			expect(instanceUnderTest.isTouchWithMouseSupport()).toBeFalse();
 		});
 
-		it('detects touch ability by user agent', () => {
-			let mockWindow = {
-				navigator: {
-					userAgent: 'noop'
-				}
+		it('is a touch device with mouse support', () => {
+			const mockWindow = {
+				navigator: {},
+				matchMedia: () => {}
 			};
-			let instanceUnderTest = new EnvironmentService(mockWindow);
-			expect(instanceUnderTest.isTouch()).toBeFalse();
+			spyOn(mockWindow, 'matchMedia').and.callFake((mediaQuery) => {
+				if (mediaQuery === '(any-pointer:fine)' || mediaQuery === '(pointer:coarse)') {
+					return {
+						media: mediaQuery,
+						matches: true
+					};
+				}
+				return {
+					media: mediaQuery,
+					matches: false
+				};
+			});
+			const instanceUnderTest = new EnvironmentService(mockWindow);
 
-			mockWindow = {
-				navigator: {
-					userAgent: 'Android'
-				}
+			expect(instanceUnderTest.isTouch()).toBeFalse();
+			expect(instanceUnderTest.isMouse()).toBeFalse();
+			expect(instanceUnderTest.isMouseWithTouchSupport()).toBeFalse();
+			expect(instanceUnderTest.isTouchWithMouseSupport()).toBeTrue();
+		});
+
+		it('is a mouse device with touch support', () => {
+			const mockWindow = {
+				navigator: {},
+				matchMedia: () => {}
 			};
-			instanceUnderTest = new EnvironmentService(mockWindow);
-			expect(instanceUnderTest.isTouch()).toBeTrue();
+			spyOn(mockWindow, 'matchMedia').and.callFake((mediaQuery) => {
+				if (mediaQuery === '(any-pointer:coarse)' || mediaQuery === '(pointer:fine)') {
+					return {
+						media: mediaQuery,
+						matches: true
+					};
+				}
+				return {
+					media: mediaQuery,
+					matches: false
+				};
+			});
+			const instanceUnderTest = new EnvironmentService(mockWindow);
+
+			expect(instanceUnderTest.isTouch()).toBeFalse();
+			expect(instanceUnderTest.isMouse()).toBeFalse();
+			expect(instanceUnderTest.isMouseWithTouchSupport()).toBeTrue();
+			expect(instanceUnderTest.isTouchWithMouseSupport()).toBeFalse();
 		});
 	});
 

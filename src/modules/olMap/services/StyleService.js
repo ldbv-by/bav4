@@ -18,6 +18,7 @@ import {
 	markerStyleFunction
 } from '../utils/olStyleUtils';
 import { isFunction } from '../../../utils/checks';
+import { getRoutingStyleFunction } from '../handler/routing/styleUtils';
 
 /**
  * Enumeration of predefined types of style
@@ -33,9 +34,11 @@ export const StyleTypes = Object.freeze({
 	DRAW: 'draw',
 	MARKER: 'marker',
 	TEXT: 'text',
+	ANNOTATION: 'annotation',
 	LINE: 'line',
 	POLYGON: 'polygon',
-	GEOJSON: 'geojson'
+	GEOJSON: 'geojson',
+	ROUTING: 'routing'
 });
 
 const Default_Colors = [
@@ -87,6 +90,7 @@ export class StyleService {
 			case StyleTypes.MEASURE:
 				this._addMeasureStyle(olFeature, olMap);
 				break;
+			case StyleTypes.ANNOTATION:
 			case StyleTypes.TEXT:
 				this._addTextStyle(olFeature);
 				break;
@@ -102,6 +106,9 @@ export class StyleService {
 				break;
 			case StyleTypes.DEFAULT:
 				this._addDefaultStyle(olFeature, olLayer);
+				break;
+			case StyleTypes.ROUTING:
+				this._addRoutingStyle(olFeature);
 				break;
 			default:
 				console.warn('Could not provide a style for unknown style-type');
@@ -262,8 +269,16 @@ export class StyleService {
 				const styleColor = style.getImage().getColor();
 				const color = styleColor ? styleColor : iconService.decodeColor(symbolSrc);
 				const scale = markerScaleToKeyword(style.getImage().getScale());
+				const size = style.getImage()?.getSize();
+				const pixelAnchor = style.getImage()?.getAnchor();
 				const text = style.getText().getText();
-				return { symbolSrc: symbolSrc, color: rgbToHex(color), scale: scale, text: text };
+				return {
+					symbolSrc: symbolSrc,
+					color: rgbToHex(color ? color : style.getText().getFill().getColor()),
+					scale: scale,
+					text: text,
+					anchor: size && pixelAnchor ? [pixelAnchor[0] / size[0], pixelAnchor[1] / size[1]] : null
+				};
 			};
 
 			const fromAttribute = (feature) => {
@@ -277,6 +292,11 @@ export class StyleService {
 		const newStyle = markerStyleFunction(getStyleOption(olFeature));
 
 		olFeature.setStyle(() => newStyle);
+	}
+
+	_addRoutingStyle(olFeature) {
+		const styleFunction = getRoutingStyleFunction();
+		olFeature.setStyle(styleFunction);
 	}
 
 	_addDefaultStyle(olFeature, olLayer = null) {
@@ -322,10 +342,16 @@ export class StyleService {
 			return null;
 		};
 
+		const getStyleTypeFromTypeAttribute = (olFeature) => {
+			const typeAttribute = olFeature.get('type');
+			const styleType = Object.values(StyleTypes).find((typeValue) => typeValue === typeAttribute);
+			return styleType ?? null;
+		};
+
 		const defaultOrNull = (olFeature) => (olFeature.getStyle() === null ? StyleTypes.DEFAULT : null);
 
 		if (olFeature) {
-			for (const styleTypeFunction of [getStyleTypeFromId, getStyleTypeFromProperties, defaultOrNull]) {
+			for (const styleTypeFunction of [getStyleTypeFromId, getStyleTypeFromProperties, getStyleTypeFromTypeAttribute, defaultOrNull]) {
 				const styleType = styleTypeFunction(olFeature);
 				if (styleType) {
 					return styleType;

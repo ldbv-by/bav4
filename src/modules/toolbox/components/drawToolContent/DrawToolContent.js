@@ -287,17 +287,16 @@ export class DrawToolContent extends AbstractToolContent {
 
 			const onChangeSymbol = (e) => {
 				const hexColor = style.color;
-				const url = e.detail.selected.getUrl(hexToRgb(hexColor));
-				const symbolSrc = url ? url : e.detail.selected.base64;
-				const changedStyle = { ...style, symbolSrc: symbolSrc };
+				const iconResult = e.detail.selected;
+				const url = iconResult.getUrl(hexToRgb(hexColor));
+				const symbolSrc = url ? url : iconResult.base64;
+				const changedStyle = { ...style, symbolSrc: symbolSrc, anchor: iconResult.anchor };
 				setStyle(changedStyle);
 			};
 
 			const selectTemplate = (sizes, selectedSize) => {
 				return sizes.map(
-					(size) =>
-						html`<option value=${size} ?selected=${size === selectedSize}>${translate('toolbox_drawTool_style_size_' + size)}</option>
-							)}`
+					(size) => html`<option value=${size} ?selected=${size === selectedSize}>${translate('toolbox_drawTool_style_size_' + size)}</option>`
 				);
 			};
 
