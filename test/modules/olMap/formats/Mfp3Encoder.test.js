@@ -852,6 +852,7 @@ describe('BvvMfp3Encoder', () => {
 				customParams: { transparent: true }
 			});
 		});
+
 		it("resolves wms layer with groupOpacity to a mfp 'wms' spec", () => {
 			const sourceMock = {
 				getUrl: () => 'https://some.url/to/wms',
@@ -951,6 +952,21 @@ describe('BvvMfp3Encoder', () => {
 							anchorXUnits: 'pixels',
 							anchorYUnits: 'pixels',
 							src: 'https://some.url/to/image/foo.png'
+						})
+					})
+				];
+				return styles;
+			};
+
+			const getSvgImageStyle = () => {
+				const styles = [
+					new Style({
+						image: new IconStyle({
+							size: [42, 42],
+							anchor: [21, 42],
+							anchorXUnits: 'pixels',
+							anchorYUnits: 'pixels',
+							src: 'data:image/svg+xml;base64,foo'
 						})
 					})
 				];
@@ -1287,6 +1303,64 @@ describe('BvvMfp3Encoder', () => {
 									graphicHeight: jasmine.any(Number),
 									graphicXOffset: jasmine.any(Number),
 									graphicYOffset: jasmine.any(Number),
+									externalGraphic: 'https://some.url/to/image/foo.png'
+								}
+							]
+						}
+					}
+				});
+			});
+
+			it('writes a point feature with feature style and replaces svg image with raster image', () => {
+				const iconServiceSpy = spyOn(iconServiceMock, 'getIconResult')
+					.withArgs('data:image/svg+xml;base64,foo')
+					.and.returnValue({ id: 'foo', getUrl: () => 'https://some.url/to/image/foo.png' });
+				const featureWithStyle = new Feature({ geometry: new Point([30, 30]) });
+				featureWithStyle.setStyle(getSvgImageStyle());
+				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithStyle] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
+				const groupOpacity = 1;
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+				const geoResourceMock = getGeoResourceMock();
+				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
+				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
+				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+
+				expect(iconServiceSpy).toHaveBeenCalled();
+				expect(actualSpec).toEqual({
+					opacity: 1,
+					type: 'geojson',
+					name: 'foo',
+					geoJson: {
+						features: [
+							{
+								type: 'Feature',
+								geometry: {
+									type: 'Point',
+									coordinates: jasmine.any(Array)
+								},
+								properties: {
+									_gx_style: 0
+								}
+							}
+						],
+						type: 'FeatureCollection'
+					},
+					style: {
+						version: '2',
+						'[_gx_style = 0]': {
+							symbolizers: [
+								{
+									type: 'point',
+									zIndex: 0,
+									rotation: 0,
+									fillOpacity: 1,
+									strokeOpacity: 0,
+									graphicWidth: jasmine.any(Number),
+									graphicHeight: jasmine.any(Number),
+									graphicXOffset: 0,
+									graphicYOffset: -21,
 									externalGraphic: 'https://some.url/to/image/foo.png'
 								}
 							]
