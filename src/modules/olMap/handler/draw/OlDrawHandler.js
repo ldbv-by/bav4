@@ -515,8 +515,8 @@ export class OlDrawHandler extends OlLayerHandler {
 			setSelection([]);
 
 			this._helpTooltip.deactivate();
-			const currenType = this._storeService.getStore().getState().draw.type;
-			this._init(currenType);
+			const currentType = this._storeService.getStore().getState().draw.type;
+			this._init(currentType);
 			this._helpTooltip.activate(this._map);
 		}
 		this._updateDrawState();
@@ -717,16 +717,16 @@ export class OlDrawHandler extends OlLayerHandler {
 
 	_updateStyle() {
 		if (this._drawState.type === InteractionStateType.ACTIVE || this._drawState.type === InteractionStateType.SELECT) {
-			const currenType = this._storeService.getStore().getState().draw.type;
+			const currentType = this._storeService.getStore().getState().draw.type;
 			if (this._draw && !this._draw.active) {
 				// Prevent a second initialization, while the draw-interaction is building up.
 				// This can happen, when a draw-interaction for a TEXT- or MARKER-Draw is selected,
 				// where the DefaultText must be set as style-property in the store
-				this._init(currenType);
+				this._init(currentType);
 			}
 		}
 
-		if (this._drawState.type === InteractionStateType.MODIFY) {
+		if (this._drawState.type === InteractionStateType.MODIFY && this._select.getFeatures().getLength() > 0) {
 			const feature = this._select.getFeatures().item(0);
 
 			const styleFunction = this._getStyleFunctionFrom(feature);
@@ -786,6 +786,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		const style = { ...currentStyleOption, color: color, symbolSrc: symbolSrc, text: text, scale: scale };
 		const selectedStyle = { type: getDrawingTypeFrom(feature), style: style };
 		setSelectedStyle(selectedStyle);
+		setStyle(style);
 	}
 
 	_setSelectedDescription(feature) {
@@ -822,9 +823,9 @@ export class OlDrawHandler extends OlLayerHandler {
 
 	_setSelected(feature) {
 		const setSelected = (f) => {
-			this._select.getFeatures().push(f);
 			this._setSelectedStyle(f);
 			this._setSelectedDescription(f);
+			this._select.getFeatures().push(f);
 			return true;
 		};
 		const deselect = () => {
