@@ -136,6 +136,7 @@ export class UrlService {
 	 * Extracts the origin of a URL following by its pathname.
 	 * If the URL has no pathname the result is the same like it would be calling {@link UrlService#origin}
 	 * @param {string} url
+	 * @returns {string} origin and pathname
 	 * @throws TypeError
 	 */
 	originAndPathname(url) {
@@ -146,10 +147,22 @@ export class UrlService {
 	/**
 	 * Extracts the origin of a URL.
 	 * @param {string} url
+	 * @returns {string} origin
 	 * @throws TypeError
 	 */
 	origin(url) {
 		const urlInstance = new URL(url);
 		return `${urlInstance.origin}`;
+	}
+
+	/**
+	 * Extracts the path parameters of a URL.
+	 * @param {string} url
+	 * @returns {string[]} path parameters
+	 * @throws TypeError
+	 */
+	pathParams(url) {
+		const urlInstance = new URL(url);
+		return urlInstance.pathname.split('/').filter((pp) => pp.length > 0);
 	}
 }
