@@ -823,9 +823,13 @@ export class OlDrawHandler extends OlLayerHandler {
 
 	_setSelected(feature) {
 		const setSelected = (f) => {
+			const hasFeature = this._select.getFeatures().getArray().includes(feature);
 			this._setSelectedStyle(f);
 			this._setSelectedDescription(f);
-			this._select.getFeatures().push(f);
+			if (!hasFeature) {
+				this._select.getFeatures().push(f);
+			}
+
 			return true;
 		};
 		const deselect = () => {
