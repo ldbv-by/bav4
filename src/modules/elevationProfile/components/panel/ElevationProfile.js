@@ -210,16 +210,16 @@ export class ElevationProfile extends MvuElement {
 				${css}
 			</style>
 			<div class="profile ${getOrientationClass()} ${getMinWidthClass()}">
-				<span class="profile__options">
-					<select id="attrs" @change=${onChange}>
-						${attrs.map(
-							(attr) => html`
-								<option value="${attr.id}" ?selected=${model.selectedAttribute === attr.id}>${translate('elevationProfile_' + attr.id)}</option>
-							`
-						)}
-					</select>
-				</span>
-				<div class="chart-container" style="">
+				<div class="chart-container">
+					<span class="profile__options">
+						<select id="attrs" @change=${onChange}>
+							${attrs.map(
+								(attr) => html`
+									<option value="${attr.id}" ?selected=${model.selectedAttribute === attr.id}>${translate('elevationProfile_' + attr.id)}</option>
+								`
+							)}
+						</select>
+					</span>
 					<canvas class="elevationprofile" id="route-elevation-chart"></canvas>
 				</div>
 				<div class="profile__data" id="route-elevation-chart-footer">
