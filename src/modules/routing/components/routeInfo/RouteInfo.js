@@ -85,15 +85,15 @@ export class RouteInfo extends MvuElement {
 		};
 
 		const getDistance = () => {
-			return stats?.dist ? this._unitsService.formatDistance(stats.dist) : '0';
+			return stats?.dist ? this._unitsService.formatDistance(stats.dist) : '-';
 		};
 
 		const getUphill = () => {
-			return stats ? this._unitsService.formatDistance(stats.twoDiff[0]) : '0';
+			return stats ? this._unitsService.formatDistance(stats.twoDiff[0]) : '-';
 		};
 
 		const getDownhill = () => {
-			return stats ? this._unitsService.formatDistance(stats.twoDiff[1]) : '0';
+			return stats ? this._unitsService.formatDistance(stats.twoDiff[1]) : '-';
 		};
 		const getColor = () => {
 			return html`*{--primary-color: ${color}`;

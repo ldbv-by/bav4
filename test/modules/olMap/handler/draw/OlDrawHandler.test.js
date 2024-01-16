@@ -80,6 +80,8 @@ describe('OlDrawHandler', () => {
 
 	const translationServiceMock = { translate: (key) => key };
 	const environmentServiceMock = { isTouch: () => false, isStandalone: () => false };
+	const iconServiceMock = { getDefault: () => new IconResult('foo', 'bar') };
+
 	const initialState = {
 		active: false,
 		createPermanentLayer: true,
@@ -143,7 +145,7 @@ describe('OlDrawHandler', () => {
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('InteractionStorageService', interactionStorageServiceMock)
-			.registerSingleton('IconService', { getDefault: () => new IconResult('foo', 'bar') })
+			.registerSingleton('IconService', iconServiceMock)
 			.registerSingleton('UnitsService', {
 				// eslint-disable-next-line no-unused-vars
 				formatDistance: (distance, decimals) => {
@@ -265,6 +267,7 @@ describe('OlDrawHandler', () => {
 				expect(store.getState().notifications.latest.payload.content.values[0]).toBe('olMap_handler_termsOfUse');
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 			});
+
 			describe('when termsOfUse are empty', () => {
 				it('emits not a notification', async () => {
 					const store = setup();
@@ -779,8 +782,11 @@ describe('OlDrawHandler', () => {
 				expect(store.getState().draw.style.text).toBeNull();
 			});
 
-			it('inits the drawing and sets the store with defaultText for marker', () => {
+			it('inits the drawing and sets the store with defaultText, defaultSymbol for marker', () => {
 				const store = setup();
+				const defaultIconResult = new IconResult('marker', 'some_svg_stuff');
+				spyOn(iconServiceMock, 'getDefault').and.returnValue(defaultIconResult);
+				spyOnProperty(defaultIconResult, 'base64', 'get').and.returnValue('some_base64_stuff');
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
 				const drawStateFake = {
@@ -792,6 +798,8 @@ describe('OlDrawHandler', () => {
 				setType('marker');
 
 				expect(store.getState().draw.style.text).toBe('');
+				expect(store.getState().draw.style.symbolSrc).toBe('some_base64_stuff');
+				expect(store.getState().draw.style.anchor).toEqual([0.5, 1]);
 			});
 
 			it('inits the drawing and sets the store with defaultText for marker', () => {
@@ -2004,6 +2012,31 @@ describe('OlDrawHandler', () => {
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
 		});
 
+		it('prevents multiselect, when style of selected features changes frequently', () => {
+			const feature = new Feature({ geometry: new Point([0, 0]) });
+			feature.setId('draw_marker_1');
+			setup({ ...initialState });
+
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap(null, 1);
+
+			classUnderTest.activate(map);
+			setStyle({ symbolSrc: 'something' });
+			setType('marker');
+
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+			classUnderTest._select.getFeatures().push(feature);
+			classUnderTest._drawState.type = InteractionStateType.MODIFY;
+			const selectionSpy = spyOn(classUnderTest, '_setSelected').withArgs(feature).and.callThrough();
+
+			setStyle({ symbolSrc: 'something', text: 'a' });
+			setStyle({ symbolSrc: 'something', text: 'aa' });
+			setStyle({ symbolSrc: 'something', text: 'aaa' });
+
+			expect(selectionSpy).toHaveBeenCalledTimes(6);
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
+		});
+
 		it('updates the drawState, while pointerclick drawing', () => {
 			setup();
 			const feature = new Feature({
@@ -2056,6 +2089,25 @@ describe('OlDrawHandler', () => {
 			classUnderTest._setDrawState(newDrawState);
 
 			expect(drawStateSpy).toHaveBeenCalledTimes(1);
+		});
+	});
+
+	describe('_updateStyle', () => {
+		it('prevents style update, when selected feature is missing', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const styleFunctionSpy = spyOn(classUnderTest, '_getStyleFunctionFrom').withArgs(null).and.callThrough();
+			const updateSpy = spyOn(classUnderTest, '_updateStyle').and.callThrough();
+			const map = setupMap();
+
+			classUnderTest.activate(map);
+
+			classUnderTest._drawState.type = InteractionStateType.MODIFY;
+
+			setStyle({ symbolSrc: 'something' });
+
+			expect(updateSpy).toHaveBeenCalled();
+			expect(styleFunctionSpy).not.toHaveBeenCalled();
 		});
 	});
 });

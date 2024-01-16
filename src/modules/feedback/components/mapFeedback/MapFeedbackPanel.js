@@ -206,6 +206,14 @@ export class MapFeedbackPanel extends MvuElement {
 				: this._shareService.encodeState(getExtraParameters(), [PathParameters.EMBED])
 		);
 
+		const onClick = () => {
+			const iframe = this.shadowRoot.querySelector('iframe');
+			iframe.classList.add('attention');
+			iframe.addEventListener('animationend', () => {
+				iframe.classList.remove('attention');
+			});
+		};
+
 		return html`
 			<style>
 				${css}
@@ -221,14 +229,13 @@ export class MapFeedbackPanel extends MvuElement {
 						loading="lazy"
 						referrerpolicy="no-referrer-when-downgrade"
 					></iframe>
-
 					${mapFeedback.fileId ? nothing : html`<span class="map-feedback__iframe-hint">${translate('feedback_mapFeedback_geometry_missing')}</span>`}
 				</div>
 				<div class="map-feedback__form">
 					<span id="feedbackPanelTitle" class="ba-list-item__main-text">${translate('feedback_mapFeedback')}</span>
 					<div class="map-feedback__form-hint">
 						${translate('feedback_mapFeedback_text_before')}
-						<span class="map-feedback__highlight">${translate('feedback_mapFeedback_text_map')}</span>
+						<button class="map-feedback__highlight" @click=${() => onClick()}>${translate('feedback_mapFeedback_text_map')}</button>
 						${translate('feedback_mapFeedback_text_after')}
 					</div>
 					<div class="ba-form-element" id="category-form-element">

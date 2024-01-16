@@ -75,7 +75,7 @@ describe('sourceType provider', () => {
 			const sourceTypeResultPayload = { name: 'KML', version: 'version', srid: srid };
 			const baaCredentialServiceSpy = spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
 			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(backendUrl + 'sourceType', payload, MediaType.JSON, { timeout: 2000 })
+				.withArgs(backendUrl + 'sourceType', payload, MediaType.JSON, { timeout: 3000 })
 				.and.returnValue(Promise.resolve(new Response(JSON.stringify(sourceTypeResultPayload))));
 
 			const { status, sourceType } = await bvvUrlSourceTypeProvider(url);
@@ -101,7 +101,7 @@ describe('sourceType provider', () => {
 			const sourceTypeResultPayload = { name: 'GPX', version: 'version', srid: srid };
 			const baaCredentialServiceSpy = spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
 			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(backendUrl + 'sourceType', payload, MediaType.JSON, { timeout: 2000 })
+				.withArgs(backendUrl + 'sourceType', payload, MediaType.JSON, { timeout: 3000 })
 				.and.returnValue(Promise.resolve(new Response(JSON.stringify(sourceTypeResultPayload))));
 
 			const { status, sourceType } = await bvvUrlSourceTypeProvider(url);
@@ -127,7 +127,7 @@ describe('sourceType provider', () => {
 			const sourceTypeResultPayload = { name: 'GeoJSON', version: 'version', srid: srid };
 			const baaCredentialServiceSpy = spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
 			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(backendUrl + 'sourceType', payload, MediaType.JSON, { timeout: 2000 })
+				.withArgs(backendUrl + 'sourceType', payload, MediaType.JSON, { timeout: 3000 })
 				.and.returnValue(Promise.resolve(new Response(JSON.stringify(sourceTypeResultPayload))));
 
 			const { status, sourceType } = await bvvUrlSourceTypeProvider(url);
@@ -153,7 +153,7 @@ describe('sourceType provider', () => {
 			const sourceTypeResultPayload = { name: 'EWKT', version: 'version', srid: srid };
 			const baaCredentialServiceSpy = spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
 			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(backendUrl + 'sourceType', payload, MediaType.JSON, { timeout: 2000 })
+				.withArgs(backendUrl + 'sourceType', payload, MediaType.JSON, { timeout: 3000 })
 				.and.returnValue(Promise.resolve(new Response(JSON.stringify(sourceTypeResultPayload))));
 
 			const { status, sourceType } = await bvvUrlSourceTypeProvider(url);
@@ -177,7 +177,7 @@ describe('sourceType provider', () => {
 			const sourceTypeResultPayload = { name: 'EWKT', version: 'version', srid: 5555 };
 			spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
 			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(backendUrl + 'sourceType', payload, MediaType.JSON, { timeout: 2000 })
+				.withArgs(backendUrl + 'sourceType', payload, MediaType.JSON, { timeout: 3000 })
 				.and.returnValue(Promise.resolve(new Response(JSON.stringify(sourceTypeResultPayload))));
 
 			const { status, sourceType } = await bvvUrlSourceTypeProvider(url);
@@ -197,7 +197,7 @@ describe('sourceType provider', () => {
 			const sourceTypeResultPayload = { name: 'OTHER', version: 'version', srid: 4326 };
 			spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
 			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(backendUrl + 'sourceType', payload, MediaType.JSON, { timeout: 2000 })
+				.withArgs(backendUrl + 'sourceType', payload, MediaType.JSON, { timeout: 3000 })
 				.and.returnValue(Promise.resolve(new Response(JSON.stringify(sourceTypeResultPayload))));
 
 			const { status, sourceType } = await bvvUrlSourceTypeProvider(url);
@@ -218,7 +218,7 @@ describe('sourceType provider', () => {
 			const sourceTypeResultPayload = { name: 'WMS', version: 'version' };
 			const baaCredentialServiceSpy = spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
 			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(backendUrl + 'sourceType', payload, MediaType.JSON, { timeout: 2000 })
+				.withArgs(backendUrl + 'sourceType', payload, MediaType.JSON, { timeout: 3000 })
 				.and.returnValue(Promise.resolve(new Response(JSON.stringify(sourceTypeResultPayload))));
 
 			const { status, sourceType } = await bvvUrlSourceTypeProvider(url);
@@ -240,7 +240,7 @@ describe('sourceType provider', () => {
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const payload = JSON.stringify({ url: url });
 			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(backendUrl + 'sourceType', payload, MediaType.JSON, { timeout: 2000 })
+				.withArgs(backendUrl + 'sourceType', payload, MediaType.JSON, { timeout: 3000 })
 				.and.returnValue(Promise.resolve(new Response(null, { status: 204 })));
 
 			const { status, sourceType } = await bvvUrlSourceTypeProvider(url);
@@ -258,7 +258,7 @@ describe('sourceType provider', () => {
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const payload = JSON.stringify({ url: url });
 			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(backendUrl + 'sourceType', payload, MediaType.JSON, { timeout: 2000 })
+				.withArgs(backendUrl + 'sourceType', payload, MediaType.JSON, { timeout: 3000 })
 				.and.returnValue(Promise.resolve(new Response(null, { status: 500 })));
 
 			const { status, sourceType } = await bvvUrlSourceTypeProvider(url);
@@ -295,7 +295,7 @@ describe('sourceType provider', () => {
 					const baaCredentialServiceSpy = spyOn(baaCredentialService, 'addOrReplace');
 					spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 					spyOn(httpService, 'post')
-						.withArgs(backendUrl + 'sourceType', jasmine.anything(), MediaType.JSON, { timeout: 2000 })
+						.withArgs(backendUrl + 'sourceType', jasmine.anything(), MediaType.JSON, { timeout: 3000 })
 						.and.callFake((_, payloadAsJson) => {
 							const { username, password } = JSON.parse(payloadAsJson);
 							if (username && password) {
@@ -326,7 +326,7 @@ describe('sourceType provider', () => {
 					const baaCredentialServiceSpy = spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(mockCredential);
 					spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 					spyOn(httpService, 'post')
-						.withArgs(backendUrl + 'sourceType', JSON.stringify({ url: url, ...mockCredential }), MediaType.JSON, { timeout: 2000 })
+						.withArgs(backendUrl + 'sourceType', JSON.stringify({ url: url, ...mockCredential }), MediaType.JSON, { timeout: 3000 })
 						.and.resolveTo(response200);
 
 					const { status, sourceType } = await bvvUrlSourceTypeProvider(url, true);
@@ -360,7 +360,7 @@ describe('sourceType provider', () => {
 					const url = 'http://foo.bar';
 					spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 					spyOn(httpService, 'post')
-						.withArgs(backendUrl + 'sourceType', jasmine.anything(), MediaType.JSON, { timeout: 2000 })
+						.withArgs(backendUrl + 'sourceType', jasmine.anything(), MediaType.JSON, { timeout: 3000 })
 						.and.callFake(() => {
 							return Promise.resolve(response401);
 						});
@@ -390,7 +390,7 @@ describe('sourceType provider', () => {
 					const url = 'http://foo.bar';
 					spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 					spyOn(httpService, 'post')
-						.withArgs(backendUrl + 'sourceType', jasmine.anything(), MediaType.JSON, { timeout: 2000 })
+						.withArgs(backendUrl + 'sourceType', jasmine.anything(), MediaType.JSON, { timeout: 3000 })
 						.and.callFake(() => {
 							return Promise.resolve(response401);
 						});

@@ -17,7 +17,9 @@ export const provide = (lang) => {
 				export_item_download_ewkt: 'Download TXT',
 				export_item_srid_selection: 'Select SRID',
 				export_item_srid_selection_disabled: 'SRID is predefined',
-				export_assistChip_export_vector_data: 'Export'
+				export_item_copy_to_clipboard: (params) => `Copy ${params[0]} to clipboard`,
+				export_item_clipboard_success: 'The data was copied to the clipboard',
+				export_item_clipboard_error: '"Copy to clipboard" is not available'
 			};
 
 		case 'de':
@@ -37,7 +39,9 @@ export const provide = (lang) => {
 				export_item_download_ewkt: 'Download TXT',
 				export_item_srid_selection: 'SRID auswählen',
 				export_item_srid_selection_disabled: 'SRID ist vordefiniert',
-				export_assistChip_export_vector_data: 'Export'
+				export_item_copy_to_clipboard: (params) => `${params[0]} in die Zwischenablage kopieren`,
+				export_item_clipboard_success: 'Die Daten wurden in die Zwischenablage kopiert',
+				export_item_clipboard_error: '"In die Zwischenablage kopieren" steht nicht zur Verfügung'
 			};
 
 		default:

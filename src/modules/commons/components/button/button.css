@@ -17,10 +17,10 @@
 	background-color: var(--primary-bg-color);
 	color: var(--primary-color);
 }
-.primary.button:focus {
+.primary.button:focus-visible {
 	opacity: 1;
 }
-.secondary.button:focus {
+.secondary.button:focus-visible {
 	background: var(--primary-color);
 	color: var(--text3);
 }
@@ -55,9 +55,9 @@
 	background: repeating-linear-gradient(60deg, transparent, transparent 0.75rem, rgba(255, 255, 255, 0.15) 0.75rem, rgba(255, 255, 255, 0.15) 1.5rem);
 	animation: load 0.8s infinite linear;
 }
-.secondary.button:focus,
-.primary.button:focus,
-.loading.button:focus {
+.secondary.button:focus-visible,
+.primary.button:focus-visible,
+.loading.button:focus-visible {
 	box-shadow: 0 0 0 0.2em var(--primary-color-lighter);
 }
 .primary.button:hover:enabled {
@@ -105,6 +105,6 @@
 	position: relative;
 }
 .secondary:hover .icon,
-.secondary:focus .icon {
+.secondary:focus-visible .icon {
 	background: var(--text3);
 }

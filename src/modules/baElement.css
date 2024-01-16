@@ -84,7 +84,7 @@ select {
 	background-position: calc(100% - 0.5em) center;
 	background-size: 0.7em;
 }
-select:focus {
+select:focus-visible {
 	border-bottom: 1px solid var(--primary-color);
 }
 select option {
@@ -150,7 +150,7 @@ input[type='range']::-moz-range-thumb {
 	box-shadow: 0 0 0 var(--thumb-highlight-size) var(--primary-color-lighter);
 	transition: box-shadow 0.1s ease;
 }
-input[type='range']:focus {
+input[type='range']:focus-visible {
 	--thumb-highlight-size: 0.3em;
 }
 
@@ -242,7 +242,7 @@ input[type='range']:focus {
 	background-position: calc(100% - 1em) center;
 	background-size: 1em;
 }
-.ba-form-element select:focus {
+.ba-form-element select:focus-visible {
 	background-image: url('./assets/caret-up-fill.svg');
 }
 
@@ -255,21 +255,21 @@ input[type='range']:focus {
 	color: var(--text2);
 }
 
-.ba-form-element input:focus ~ .control-label,
-.ba-form-element textarea:focus ~ .control-label {
+.ba-form-element input:focus-visible ~ .control-label,
+.ba-form-element textarea:focus-visible ~ .control-label {
 	font-size: 0.8rem;
 	color: var(--text2);
 	top: 0.4em;
 	left: 1.2em;
 }
-.ba-form-element select:focus ~ .control-label,
-.ba-form-element input:focus ~ .control-label,
-.ba-form-element textarea:focus ~ .control-label {
+.ba-form-element select:focus-visible ~ .control-label,
+.ba-form-element input:focus-visible ~ .control-label,
+.ba-form-element textarea:focus-visible ~ .control-label {
 	color: var(--text4);
 }
-.ba-form-element select:focus ~ .bar::before,
-.ba-form-element input:focus ~ .bar::before,
-.ba-form-element textarea:focus ~ .bar::before {
+.ba-form-element select:focus-visible ~ .bar::before,
+.ba-form-element input:focus-visible ~ .bar::before,
+.ba-form-element textarea:focus-visible ~ .bar::before {
 	width: 100%;
 	left: 0;
 }
@@ -318,7 +318,7 @@ input[type='range']:focus {
 	background-position: center;
 	background-image: url('./assets/checkcircle.svg');
 }
-.ba-form-element .icon:focus {
+.ba-form-element .icon:focus-visible {
 	opacity: 1;
 }
 .ba-form-element .clear {
@@ -343,7 +343,7 @@ input[type='range']:focus {
 
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
-input:-webkit-autofill:focus {
+input:-webkit-autofill:focus-visible {
 	-webkit-text-fill-color: var(--text1);
 	-webkit-box-shadow: 0 0 0px 40rem var(--header-background-color) inset;
 }
@@ -360,4 +360,34 @@ input:-webkit-autofill:focus {
 }
 .draggable {
 	-webkit-user-drag: element;
+}
+
+.attention {
+	animation-name: attention;
+	animation-duration: 1600ms;
+	animation-iteration-count: 1;
+	z-index: calc(var(--z-disableall) + 100);
+}
+
+@keyframes attention {
+	0% {
+		outline: 0.5em ridge #fff;
+		outline-offset: max(100vh, 100vw);
+		box-shadow: 0 0 0 calc(100vh + 100vw) rgba(0, 0, 0, 0);
+	}
+	5% {
+		outline: 0.5em ridge #fff;
+		outline-offset: max(100vh, 100vw);
+		box-shadow: 0 0 0 calc(100vh + 100vw) rgba(0, 0, 0, 0.5);
+	}
+	95% {
+		outline: 0.5em ridge #fff;
+		outline-offset: 0;
+		box-shadow: 0 0 0 calc(100vh + 100vw) rgba(0, 0, 0, 0.5);
+	}
+	100% {
+		outline: 0 ridge #fff;
+		outline-offset: 0;
+		box-shadow: 0 0 0 calc(100vh + 100vw) rgba(0, 0, 0, 0);
+	}
 }

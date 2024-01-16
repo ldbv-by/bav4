@@ -69,7 +69,7 @@ describe('ExportVectorDataChip', () => {
 
 			await TestUtils.timeout();
 
-			expect(store.getState().modal.data.title).toBe('export_assistChip_export_vector_data');
+			expect(store.getState().modal.data.title).toBe('chips_assist_chip_export');
 
 			const contentElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 			expect(contentElement.querySelectorAll('ba-export-content')).toHaveSize(1);
