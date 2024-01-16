@@ -470,21 +470,19 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const deleteTopicLevelTree = (topic) => {
-			console.log('🚀 ~ AdminPanel ~ deleteTopicLevelTree ~ topic:', topic);
-
 			this.#topics = this.#topics.filter((oneTopic) => oneTopic._id !== topic._id);
 			this.signal(Update_Topics, this.#topics);
 		};
 
-		const disableTopicLevelTree = (topic) => {
-			// console.log('🚀 ~ AdminPanel ~ disableTopicLevelTree ~ topic:', topic);
-			// console.log('🚀 ~ AdminPanel ~ disableTopicLevelTree ~ topic._id:', topic._id);
+		const toggleTopicLevelTreeDisabled = (topic) => {
+			// console.log('🚀 ~ AdminPanel ~ toggleTopicLevelTreeDisabled ~ topic:', topic);
+			// console.log('🚀 ~ AdminPanel ~ toggleTopicLevelTreeDisabled ~ topic._id:', topic._id);
 
 			const foundTopic = this.#topics.find((oneTopic) => oneTopic._id === topic._id);
 
 			if (foundTopic) {
-				// console.log('🚀 ~ AdminPanel ~ disableTopicLevelTree ~ foundTopic:', foundTopic);
-				foundTopic._disabled = true;
+				// console.log('🚀 ~ AdminPanel ~ toggleTopicLevelTreeDisabled ~ foundTopic:', foundTopic);
+				foundTopic._disabled = !foundTopic._disabled;
 
 				this.signal(Update_Topics, this.#topics);
 			}
@@ -559,7 +557,7 @@ export class AdminPanel extends MvuElement {
 							.copyBranch="${copyBranch}"
 							.saveCatalog="${saveCatalog}"
 							.deleteTopicLevelTree="${deleteTopicLevelTree}"
-							.disableTopicLevelTree="${disableTopicLevelTree}"
+							.disableTopicLevelTree="${toggleTopicLevelTreeDisabled}"
 							.dummy="${dummy}"
 						></ba-layer-tree>
 					</div>

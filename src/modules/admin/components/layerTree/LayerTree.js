@@ -167,6 +167,12 @@ export class LayerTree extends MvuElement {
 		};
 
 		const onDragStart = (event, draggedEntry) => {
+			console.log('🚀 ~ LayerTree ~ onDragStart ~ draggedEntry:', draggedEntry);
+			const element = event.target;
+			console.log('🚀 ~ LayerTree ~ onDragStart ~ element:', element);
+
+			element.style.backgroundColor = '';
+
 			if (draggedEntry.showChildren) {
 				this._showChildren(draggedEntry.uid);
 			}
@@ -391,6 +397,21 @@ export class LayerTree extends MvuElement {
 			this._updateTopic(event.target.value);
 		};
 
+		// const handleMouseEnter = (event, catalogEntry) => {
+		// 	const element = event.target;
+
+		// 	element.style.backgroundColor = 'lightblue';
+		// };
+
+		// const handleMouseLeave = (event, catalogEntry) => {
+		// 	const element = event.target;
+
+		// 	element.style.backgroundColor = '';
+		// };
+
+		// @mouseover=${(event) => handleMouseEnter(event, entry)}
+		// @mouseout=${(event) => handleMouseLeave(event, entry)}
+
 		const renderEntry = (entry, index, level) => {
 			return html`
 				<li
@@ -398,6 +419,7 @@ export class LayerTree extends MvuElement {
 					class="${(entry.children ? hasChildrenClass + ' ' : '') + (entry.showChildren ? showChildrenClass : '')}"
 				>
 					<span
+						class="ba-list-item__pre"
 						id="${entry.geoResourceId}"
 						class="draggable ${(entry.children ? hasChildrenClass + ' ' : '') + droppableClass}"
 						draggable="true"
@@ -425,6 +447,7 @@ export class LayerTree extends MvuElement {
 
 		if (topics) {
 			const sperrText = this.#currentTopic._disabled ? ' -- deaktiviert -- ' : '';
+			const deactivateButtonText = this.#currentTopic._disabled ? 'Ebenenbaum aktivieren' : 'Ebenenbaum deaktivieren';
 			return html`
 				<style>
 					${css}
@@ -435,17 +458,22 @@ export class LayerTree extends MvuElement {
 					<button @click="${handleNewTopicClick}">New Topic</button>
 					<button @click="${handleNewLayerGroupClick}">neue Ebenengruppe</button>
 					<button @click="${handleSaveClick}">sichern</button>
-					<button @click="${handleDisableTopicLevelTreeClick}">Ebenenbaum sperren</button>
+					<button @click="${handleDisableTopicLevelTreeClick}">${deactivateButtonText}</button>
 					<button @click="${handleDeleteTopicLevelTreeClick}">Ebenenbaum löschen</button>
 
 					<select @change="${handleTopicChange}">
 						${topics.map((topic) => html` <option value="${topic._id}">${topic._label} ${topic._disabled ? ' -- deaktiviert -- ' : ''}</option> `)}
 					</select>
-					<ul>
+
+
+
+
+
+
 						${repeat(
 							catalogWithResourceData,
 							(item) => item.uid + item.label,
-							(catalogEntry, index) => html`<li>${renderEntry(catalogEntry, index, 1)}</li>`
+							(catalogEntry, index) => html`<li class="ba-list-item">${renderEntry(catalogEntry, index, 1)}</li>`
 						)}
 					</ul>
 				</div>
