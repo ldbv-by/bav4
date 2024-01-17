@@ -19,7 +19,7 @@ describe('bvvRoutingCategoriesProvider', () => {
 
 		const hike = {
 			id: 'hike',
-			label: 'Wandern',
+			label: 'Wandern (schnellste Route)',
 			description: 'schnellste Route',
 			style: {
 				routeColor: 'red',
@@ -53,7 +53,7 @@ describe('bvvRoutingCategoriesProvider', () => {
 		};
 		const bike = {
 			id: 'bike',
-			label: 'Fahrrad',
+			label: 'Fahrrad (schnellste Route)',
 			description: 'schnellste Route',
 			style: {
 				routeColor: 'green',
@@ -121,7 +121,7 @@ describe('bvvRoutingCategoriesProvider', () => {
 
 		const hike = {
 			id: 'hike',
-			label: 'Hiking',
+			label: 'Hiking (fastest route)',
 			description: 'fastest route',
 			style: {
 				routeColor: 'red',
@@ -155,7 +155,7 @@ describe('bvvRoutingCategoriesProvider', () => {
 		};
 		const bike = {
 			id: 'bike',
-			label: 'Bicycle',
+			label: 'Bicycle (fastest route)',
 			description: 'fastest route',
 			style: {
 				routeColor: 'green',
