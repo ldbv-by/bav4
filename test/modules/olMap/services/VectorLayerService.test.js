@@ -1,6 +1,11 @@
 import { $injector } from '../../../../src/injection';
 import { VectorGeoResource, VectorSourceType } from '../../../../src/domain/geoResources';
-import { iconUrlFunction, mapVectorSourceTypeToFormat, VectorLayerService } from '../../../../src/modules/olMap/services/VectorLayerService';
+import {
+	bvvIconUrlFunction,
+	iconUrlFunction,
+	mapVectorSourceTypeToFormat,
+	VectorLayerService
+} from '../../../../src/modules/olMap/services/VectorLayerService';
 import VectorSource, { VectorSourceEvent } from 'ol/source/Vector';
 import { Feature, Map } from 'ol';
 import { CollectionEvent } from 'ol/Collection';
@@ -10,7 +15,13 @@ import { createDefaultLayer, layersReducer } from '../../../../src/store/layers/
 
 describe('VectorLayerService', () => {
 	const urlService = {
-		proxifyInstant: () => {}
+		proxifyInstant: () => {},
+		pathParams: () => {},
+		originAndPathname: () => {}
+	};
+
+	const configService = {
+		getValueAsPath: () => {}
 	};
 
 	const mapService = {
@@ -25,8 +36,16 @@ describe('VectorLayerService', () => {
 		addClusterStyle: () => {}
 	};
 
-	beforeAll(() => {
-		$injector.registerSingleton('UrlService', urlService).registerSingleton('MapService', mapService).registerSingleton('StyleService', styleService);
+	beforeEach(() => {
+		$injector
+			.registerSingleton('UrlService', urlService)
+			.registerSingleton('MapService', mapService)
+			.registerSingleton('StyleService', styleService)
+			.registerSingleton('ConfigService', configService);
+	});
+
+	afterEach(() => {
+		$injector.reset();
 	});
 
 	describe('utils', () => {
@@ -49,6 +68,47 @@ describe('VectorLayerService', () => {
 					.and.returnValue('https://proxy.url?url=' + iconUrl);
 
 				expect(iconUrlFunction(iconUrl)).toBe('https://proxy.url?url=' + iconUrl);
+			});
+		});
+
+		describe('bvvIconUrlFunction', () => {
+			it('provides a function that just proxifies a URL', () => {
+				const iconUrl = 'https://some.url';
+				spyOn(urlService, 'proxifyInstant')
+					.withArgs(iconUrl, false)
+					.and.returnValue('https://proxy.url?url=' + iconUrl);
+				spyOn(urlService, 'originAndPathname').withArgs(iconUrl).and.returnValue(iconUrl);
+
+				expect(bvvIconUrlFunction(iconUrl)).toBe('https://proxy.url?url=' + iconUrl);
+			});
+
+			it('provides a function that maps a legacy BVV icon URL', () => {
+				const backendUrl = 'https://backend.url/';
+				const iconUrl = 'https://geoportal.bayern.de/ba-backend/icons/255,0,0/marker';
+				spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+				spyOn(urlService, 'pathParams').withArgs(iconUrl).and.returnValue(['ba-backend', 'icons', '255,0,0', 'marker']);
+				spyOn(urlService, 'originAndPathname').withArgs(iconUrl).and.returnValue(iconUrl);
+
+				expect(bvvIconUrlFunction(iconUrl)).toBe(`${backendUrl}icons/255,0,0/marker.png`);
+			});
+
+			it('provides a function that leaves any other legacy BVV icon URL untouched', () => {
+				const backendUrl = 'https://backend.url/';
+				const anyOtherLegacyUrl = 'https://geoportal.bayern.de/ba-backend/other';
+				spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+				spyOn(urlService, 'pathParams').withArgs(anyOtherLegacyUrl).and.returnValue(['ba-backend', 'other']);
+				spyOn(urlService, 'originAndPathname').withArgs(anyOtherLegacyUrl).and.returnValue(anyOtherLegacyUrl);
+
+				expect(bvvIconUrlFunction(anyOtherLegacyUrl)).toBe(anyOtherLegacyUrl);
+			});
+
+			it('provides a function that leaves a BVV icon URL untouched', () => {
+				const backendUrl = 'https://backend.url/';
+				const iconUrl = `${backendUrl}icons/255,0,0/marker`;
+				spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+				spyOn(urlService, 'originAndPathname').withArgs(iconUrl).and.returnValue(iconUrl);
+
+				expect(bvvIconUrlFunction(iconUrl)).toBe(iconUrl);
 			});
 		});
 	});

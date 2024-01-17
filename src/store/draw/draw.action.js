@@ -120,10 +120,10 @@ export const setStyle = (style) => {
  * @function
  * @param {SelectedDrawingStyleOption} selectedStyle the styleOptions of the selected drawing
  */
-export const setSelectedStyle = (selectedSyle) => {
+export const setSelectedStyle = (selectedStyle) => {
 	getStore().dispatch({
 		type: SELECTED_STYLE_CHANGED,
-		payload: selectedSyle
+		payload: selectedStyle
 	});
 };
 
