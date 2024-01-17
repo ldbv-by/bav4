@@ -23,48 +23,44 @@ const hasChildrenClass = 'has-children';
 const showChildrenClass = 'show-children';
 const droppableClass = 'droppable';
 
-const logOnceDictionary = {};
-export const logOnce = (key, objectToShow = 'nix') => {
-	if (!logOnceDictionary[key]) {
-		if (objectToShow === 'nix') {
-			// eslint-disable-next-line no-console
-			console.log(key);
-		} else {
-			if (typeof objectToShow === 'string') {
-				// eslint-disable-next-line no-console
-				console.log(objectToShow);
-			} else {
-				// eslint-disable-next-line no-console
-				console.log(JSON.stringify(objectToShow));
-			}
-		}
-		logOnceDictionary[key] = objectToShow;
-		return true;
-	}
-	return false;
-};
+// const logOnceDictionary = {};
+// export const logOnce = (key, objectToShow = 'nix') => {
+// 	if (!logOnceDictionary[key]) {
+// 		if (objectToShow === 'nix') {
+// 			// eslint-disable-next-line no-console
+// 			console.log(key);
+// 		} else {
+// 			if (typeof objectToShow === 'string') {
+// 				// eslint-disable-next-line no-console
+// 				console.log(objectToShow);
+// 			} else {
+// 				// eslint-disable-next-line no-console
+// 				console.log(JSON.stringify(objectToShow));
+// 			}
+// 		}
+// 		logOnceDictionary[key] = objectToShow;
+// 		return true;
+// 	}
+// 	return false;
+// };
 
-export const onlyOnce = (key) => {
-	if (logOnceDictionary[key]) {
-		return false;
-	}
-	logOnceDictionary[key] = key;
-	return true;
-};
+// export const onlyOnce = (key) => {
+// 	if (logOnceDictionary[key]) {
+// 		return false;
+// 	}
+// 	logOnceDictionary[key] = key;
+// 	return true;
+// };
 
-export const getRandomColor = () => {
-	const red = Math.floor(Math.random() * 256);
-	const green = Math.floor(Math.random() * 256);
-	const blue = Math.floor(Math.random() * 256);
+// export const getRandomColor = () => {
+// 	const red = Math.floor(Math.random() * 256);
+// 	const green = Math.floor(Math.random() * 256);
+// 	const blue = Math.floor(Math.random() * 256);
 
-	const color = `rgb(${red}, ${green}, ${blue})`;
+// 	const color = `rgb(${red}, ${green}, ${blue})`;
 
-	return color;
-};
-
-// // Example usage:
-// const randomColor = getRandomColor();
-// console.log(randomColor);
+// 	return color;
+// };
 
 /**
  * Contains
@@ -79,8 +75,6 @@ export class LayerTree extends MvuElement {
 	#ignoreLevelOneFirstOnLeave;
 	#keyListener;
 	#spanElement;
-	// #working;
-	#randomColor;
 
 	constructor() {
 		super({
@@ -134,8 +128,6 @@ export class LayerTree extends MvuElement {
 		this.#ignoreLevelOneFirstOnLeave = false;
 
 		this.#keyListener = null;
-
-		this.#randomColor = getRandomColor();
 	}
 
 	update(type, data, model) {
@@ -433,7 +425,6 @@ export class LayerTree extends MvuElement {
 				<li
 					@click="${(event) => handleCategoryClick(event, entry)}"
 					class="${(entry.children ? hasChildrenClass + ' ' : '') + (entry.showChildren ? showChildrenClass : '')}"
-					style="background-color: ${this.#randomColor};"
 				>
 					<span
 						class="ba-list-item__pre"
@@ -462,7 +453,6 @@ export class LayerTree extends MvuElement {
 			`;
 		};
 
-		this.#randomColor = getRandomColor();
 		if (topics) {
 			const sperrText = this.#currentTopic._disabled ? ' -- deaktiviert -- ' : '';
 			const deactivateButtonText = this.#currentTopic._disabled ? 'Ebenenbaum aktivieren' : 'Ebenenbaum deaktivieren';
@@ -685,17 +675,6 @@ export class LayerTree extends MvuElement {
 
 	get saveCatalog() {
 		return this._saveCatalog;
-	}
-
-	/**
-	 * @property {string} randomColor = []
-	 */
-	set randomColor(value) {
-		this.#randomColor = value;
-	}
-
-	get randomColor() {
-		return this.#randomColor;
 	}
 
 	static get tag() {
