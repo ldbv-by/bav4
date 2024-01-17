@@ -219,9 +219,6 @@ export class AdminPanel extends MvuElement {
 
 		try {
 			this.#topics = await this._topicsService.all();
-			console.log('🚀 ~ AdminPanel ~ onInitialize ~ this.#topics:', this.#topics);
-
-			// console.log(JSON.stringify(this.#topics));
 		} catch (error) {
 			console.warn(error.message);
 		}
