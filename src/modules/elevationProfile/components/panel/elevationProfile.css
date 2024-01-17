@@ -1,6 +1,6 @@
 .profile {
 	display: grid;
-	grid-template-columns: min(10rem, 1fr) 14em;
+	grid-template-columns: minmax(10em, 1fr) 14em;
 	grid-column-gap: 1em;
 	overscroll-behavior-inline: contain;
 	padding-inline: 0.6em;
