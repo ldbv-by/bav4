@@ -130,7 +130,6 @@
 .close-menu {
 	position: absolute;
 	right: 0;
-	z-index: 99999;
 	top: 0;
 	background: var(--primary-bg-color);
 	height: 2.7em;

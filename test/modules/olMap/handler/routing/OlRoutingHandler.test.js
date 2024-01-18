@@ -30,7 +30,7 @@ import { LevelTypes } from '../../../../../src/store/notifications/notifications
 import { getModifyInteractionStyle, getRoutingStyleFunction } from '../../../../../src/modules/olMap/handler/routing/styleUtils';
 import { HelpTooltip } from '../../../../../src/modules/olMap/tooltip/HelpTooltip';
 import { SelectEvent } from 'ol/interaction/Select';
-import { CoordinateProposalType, RoutingStatusCodes } from '../../../../../src/domain/routing';
+import { CoordinateProposalType, RouteCalculationErrors, RoutingStatusCodes } from '../../../../../src/domain/routing';
 import { positionReducer } from '../../../../../src/store/position/position.reducer';
 import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer';
 import { SourceTypeName } from '../../../../../src/domain/sourceType';
@@ -44,6 +44,7 @@ import {
 import { layersReducer } from '../../../../../src/store/layers/layers.reducer';
 import { VectorGeoResource, VectorSourceType } from '../../../../../src/domain/geoResources';
 import { PERMANENT_ROUTE_LAYER_ID, PERMANENT_WP_LAYER_ID } from '../../../../../src/plugins/RoutingPlugin';
+import { StyleTypes } from '../../../../../src/modules/olMap/services/StyleService';
 
 describe('constants and enums', () => {
 	it('provides an enum of all valid RoutingFeatureTypes', () => {
@@ -755,7 +756,7 @@ describe('OlRoutingHandler', () => {
 			});
 
 			describe('and the ElevationService throws an error', () => {
-				it('informs the user and logs the error', async () => {
+				it('informs the user, logs the error, removes the route and updates the s-o-s', async () => {
 					const message = 'something got wrong';
 					const mockStats = { stats: 'stats' };
 					const mockGhRoute = {
@@ -768,26 +769,38 @@ describe('OlRoutingHandler', () => {
 						]
 					};
 					const mockRouteStatsProvider = jasmine.createSpy().and.returnValue(mockStats);
-					const { instanceUnderTest, store } = await newTestInstance({}, mockRouteStatsProvider);
+					const { instanceUnderTest, store } = await newTestInstance(
+						{
+							route: {},
+							stats: {}
+						},
+						mockRouteStatsProvider
+					);
 
+					const clearRouteFeaturesSpy = spyOn(instanceUnderTest, '_clearRouteFeatures');
 					spyOn(elevationServiceMock, 'getProfile').withArgs(jasmine.any(Array)).and.rejectWith(message);
 					const errorSpy = spyOn(console, 'error');
 
 					await instanceUnderTest._updateStore(mockGhRoute);
 
 					expect(errorSpy).toHaveBeenCalledWith(message);
+					expect(clearRouteFeaturesSpy).toHaveBeenCalled();
 					expect(store.getState().notifications.latest.payload.content).toBe('olMap_handler_routing_routingService_exception');
 					expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
+					expect(store.getState().routing.route).toBeNull();
+					expect(store.getState().routing.stats).toBeNull();
 				});
 			});
 		});
 
 		describe('_requestRouteFromCoordinates', () => {
 			describe('no coordinate is available', () => {
-				it('removes all features', async () => {
+				it('removes all features and updates (resets) the store', async () => {
 					const catId = 'catId';
-					const { instanceUnderTest } = await newTestInstance({
-						categoryId: catId
+					const { instanceUnderTest, store } = await newTestInstance({
+						categoryId: catId,
+						route: {},
+						stats: {}
 					});
 					const setInteractionsActiveSpy = spyOn(instanceUnderTest, '_setInteractionsActive');
 					const clearAllFeaturesSpy = spyOn(instanceUnderTest, '_clearAllFeatures');
@@ -804,6 +817,8 @@ describe('OlRoutingHandler', () => {
 					expect(addStartInteractionFeatureSpy).not.toHaveBeenCalled();
 					expect(addIntermediateInteractionFeatureSpy).not.toHaveBeenCalled();
 					expect(addDestinationInteractionFeatureSpy).not.toHaveBeenCalled();
+					expect(store.getState().routing.route).toBeNull();
+					expect(store.getState().routing.stats).toBeNull();
 				});
 			});
 
@@ -842,9 +857,8 @@ describe('OlRoutingHandler', () => {
 				describe('which is the start waypoint', () => {
 					it('call _requestRoute with with correct arguments', async () => {
 						const catId = 'catId';
-						const { instanceUnderTest, store } = await newTestInstance({
-							categoryId: catId,
-							route: {}
+						const { instanceUnderTest } = await newTestInstance({
+							categoryId: catId
 						});
 						const coordinate0 = [0, 0];
 						const setInteractionsActiveSpy = spyOn(instanceUnderTest, '_setInteractionsActive');
@@ -863,16 +877,14 @@ describe('OlRoutingHandler', () => {
 						expect(addIntermediateInteractionFeatureSpy).not.toHaveBeenCalled();
 						expect(addDestinationInteractionFeatureSpy).not.toHaveBeenCalled();
 						expect(instanceUnderTest._currentRoutingResponse).toBeNull();
-						expect(store.getState().routing.route).toBeNull();
 					});
 				});
 
 				describe('which is the destination waypoint', () => {
 					it('call _requestRoute with with correct arguments', async () => {
 						const catId = 'catId';
-						const { instanceUnderTest, store } = await newTestInstance({
-							categoryId: catId,
-							route: {}
+						const { instanceUnderTest } = await newTestInstance({
+							categoryId: catId
 						});
 						const coordinate0 = [0, 0];
 						const setInteractionsActiveSpy = spyOn(instanceUnderTest, '_setInteractionsActive');
@@ -891,29 +903,51 @@ describe('OlRoutingHandler', () => {
 						expect(addIntermediateInteractionFeatureSpy).not.toHaveBeenCalled();
 						expect(addDestinationInteractionFeatureSpy).toHaveBeenCalledWith(coordinate0, 0);
 						expect(instanceUnderTest._currentRoutingResponse).toBeNull();
-						expect(store.getState().routing.route).toBeNull();
 					});
 				});
 			});
 
 			describe('and "_requestRoute()" throws', () => {
-				it('informs the user and logs the error', async () => {
-					const catId = 'catId';
-					const { instanceUnderTest, store } = await newTestInstance({
-						categoryId: catId,
-						route: {}
+				describe('due to improper waypoints', () => {
+					it('informs the user', async () => {
+						const catId = 'catId';
+						const { instanceUnderTest, store } = await newTestInstance({
+							categoryId: catId,
+							route: {}
+						});
+						const coordinate0 = [0, 0];
+						const coordinate1 = [5, 5];
+						const error = new Error('something got wrong', { cause: RouteCalculationErrors.Improper_Waypoints });
+						spyOn(instanceUnderTest, '_requestAndDisplayRoute').and.rejectWith(error);
+						const errorSpy = spyOn(console, 'error');
+
+						await instanceUnderTest._requestRouteFromCoordinates([coordinate0, coordinate1], RoutingStatusCodes.Destination_Missing);
+
+						expect(errorSpy).not.toHaveBeenCalled();
+						expect(store.getState().notifications.latest.payload.content).toBe('olMap_handler_routing_routingService_improper_waypoints');
+						expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.WARN);
 					});
-					const coordinate0 = [0, 0];
-					const coordinate1 = [5, 5];
-					const message = 'something got wrong';
-					spyOn(instanceUnderTest, '_requestAndDisplayRoute').and.rejectWith(message);
-					const errorSpy = spyOn(console, 'error');
+				});
 
-					await instanceUnderTest._requestRouteFromCoordinates([coordinate0, coordinate1], RoutingStatusCodes.Destination_Missing);
+				describe('due to any other reason', () => {
+					it('informs the user and logs the error', async () => {
+						const catId = 'catId';
+						const { instanceUnderTest, store } = await newTestInstance({
+							categoryId: catId,
+							route: {}
+						});
+						const coordinate0 = [0, 0];
+						const coordinate1 = [5, 5];
+						const message = 'something got wrong';
+						spyOn(instanceUnderTest, '_requestAndDisplayRoute').and.rejectWith(message);
+						const errorSpy = spyOn(console, 'error');
 
-					expect(errorSpy).toHaveBeenCalledWith(message);
-					expect(store.getState().notifications.latest.payload.content).toBe('olMap_handler_routing_routingService_exception');
-					expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
+						await instanceUnderTest._requestRouteFromCoordinates([coordinate0, coordinate1], RoutingStatusCodes.Destination_Missing);
+
+						expect(errorSpy).toHaveBeenCalledWith(message);
+						expect(store.getState().notifications.latest.payload.content).toBe('olMap_handler_routing_routingService_exception');
+						expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
+					});
 				});
 			});
 		});
@@ -1072,6 +1106,7 @@ describe('OlRoutingHandler', () => {
 				const feature = instanceUnderTest._interactionLayer.getSource().getFeatures()[0];
 				expect(feature.get(ROUTING_FEATURE_TYPE)).toBe(RoutingFeatureTypes.INTERMEDIATE);
 				expect(feature.get(ROUTING_FEATURE_INDEX)).toBe(42);
+				expect(feature.getId().startsWith(`${StyleTypes.ROUTING}_`)).toBeTrue();
 				expect(feature.getGeometry()).toBeInstanceOf(Point);
 				expect(feature.getGeometry().getFirstCoordinate()).toEqual(coordinate);
 				expect(feature.getStyle()(feature)).toEqual(getRoutingStyleFunction()(feature));

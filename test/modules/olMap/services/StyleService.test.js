@@ -6,7 +6,7 @@ import { OverlayService } from '../../../../src/modules/olMap/services/OverlaySe
 import { Polygon, Point } from 'ol/geom';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
-import { Icon, Style, Text } from 'ol/style';
+import { Fill, Icon, Style, Text } from 'ol/style';
 import { measurementReducer } from '../../../../src/store/measurement/measurement.reducer';
 import VectorLayer from 'ol/layer/Vector';
 
@@ -15,7 +15,7 @@ register(proj4);
 
 describe('StyleTypes', () => {
 	it('provides an enum of all valid StyleTypes', () => {
-		expect(Object.keys(StyleTypes).length).toBe(11);
+		expect(Object.keys(StyleTypes).length).toBe(13);
 
 		expect(StyleTypes.NULL).toBe('null');
 		expect(StyleTypes.DEFAULT).toBe('default');
@@ -25,9 +25,11 @@ describe('StyleTypes', () => {
 		expect(StyleTypes.DRAW).toBe('draw');
 		expect(StyleTypes.MARKER).toBe('marker');
 		expect(StyleTypes.TEXT).toBe('text');
+		expect(StyleTypes.ANNOTATION).toBe('annotation');
 		expect(StyleTypes.LINE).toBe('line');
 		expect(StyleTypes.POLYGON).toBe('polygon');
 		expect(StyleTypes.GEOJSON).toBe('geojson');
+		expect(StyleTypes.ROUTING).toBe('routing');
 	});
 });
 
@@ -110,17 +112,34 @@ describe('StyleService', () => {
 			expect(instanceUnderTest._detectStyleType(feature4)).toEqual(StyleTypes.GEOJSON);
 		});
 
+		it('detects routing as type from olFeature', () => {
+			const feature = { getId: () => 'routing_123' };
+
+			expect(instanceUnderTest._detectStyleType(feature)).toEqual(StyleTypes.ROUTING);
+		});
+
+		it('detects type attribute as type from olFeature', () => {
+			const getFeature = (typeName) => {
+				return { getId: () => 'some', getStyle: () => null, getKeys: () => [], get: (key) => (key === 'type' ? typeName : null) };
+			};
+
+			expect(instanceUnderTest._detectStyleType(getFeature(StyleTypes.MARKER))).toEqual(StyleTypes.MARKER);
+			expect(instanceUnderTest._detectStyleType(getFeature(StyleTypes.ANNOTATION))).toEqual(StyleTypes.ANNOTATION);
+			expect(instanceUnderTest._detectStyleType(getFeature(StyleTypes.LINE))).toEqual(StyleTypes.LINE);
+			expect(instanceUnderTest._detectStyleType(getFeature(StyleTypes.POLYGON))).toEqual(StyleTypes.POLYGON);
+		});
+
 		it('detects default as type from olFeature', () => {
-			const feature = { getId: () => 'some', getStyle: () => null, getKeys: () => [] };
+			const feature = { getId: () => 'some', getStyle: () => null, getKeys: () => [], get: () => {} };
 
 			expect(instanceUnderTest._detectStyleType(feature)).toEqual(StyleTypes.DEFAULT);
 		});
 
 		it('detects not the type from olFeature', () => {
-			const feature1 = { getId: () => 'mea_sure_123', getStyle: () => {}, getKeys: () => [] };
-			const feature2 = { getId: () => '123_measure_123', getStyle: () => {}, getKeys: () => [] };
-			const feature3 = { getId: () => ' measure_123', getStyle: () => {}, getKeys: () => [] };
-			const feature4 = { getId: () => '123measure_123', getStyle: () => {}, getKeys: () => [] };
+			const feature1 = { getId: () => 'mea_sure_123', getStyle: () => {}, getKeys: () => [], get: () => {} };
+			const feature2 = { getId: () => '123_measure_123', getStyle: () => {}, getKeys: () => [], get: () => {} };
+			const feature3 = { getId: () => ' measure_123', getStyle: () => {}, getKeys: () => [], get: () => {} };
+			const feature4 = { getId: () => '123measure_123', getStyle: () => {}, getKeys: () => [], get: () => {} };
 
 			expect(instanceUnderTest._detectStyleType(undefined)).toBeNull();
 			expect(instanceUnderTest._detectStyleType(null)).toBeNull();
@@ -178,7 +197,7 @@ describe('StyleService', () => {
 			const featureWithStyleArray = new Feature({ geometry: new Point([0, 0]) });
 			const featureWithStyleFunction = new Feature({ geometry: new Point([0, 0]) });
 			const featureWithoutStyle = new Feature({ geometry: new Point([0, 0]) });
-			const style = new Style({ text: new Text({ text: 'foo' }) });
+			const style = new Style({ text: new Text({ text: 'foo', fill: new Fill({ color: [42, 21, 0] }) }) });
 			featureWithStyleArray.setId('draw_text_12345678');
 			featureWithStyleFunction.setId('draw_text_9876543');
 			featureWithoutStyle.setId('draw_text_noStyle');
@@ -216,6 +235,35 @@ describe('StyleService', () => {
 			const styleSetterNoStyleSpy = spyOn(featureWithoutStyle, 'setStyle').and.callFake((f) => (textStyle = f()));
 			instanceUnderTest.addStyle(featureWithoutStyle, mapMock, layerMock);
 			expect(styleSetterNoStyleSpy).toHaveBeenCalledWith(jasmine.any(Function));
+			expect(textStyle).toContain(jasmine.any(Style));
+		});
+
+		it('adds text-style to annotation feature (type attribute)', () => {
+			const feature = new Feature({ geometry: new Point([0, 0]), type: 'annotation' });
+			const style = new Style({ text: new Text({ text: 'foo' }) });
+			feature.setStyle(() => style);
+
+			const viewMock = {
+				getResolution() {
+					return 50;
+				},
+				once() {}
+			};
+
+			const mapMock = {
+				getView: () => viewMock,
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+			const layerMock = {};
+
+			let textStyle = null;
+			const styleSetterFunctionSpy = spyOn(feature, 'setStyle').and.callFake((f) => (textStyle = f()));
+			const addTextStyleSpy = spyOn(instanceUnderTest, '_addTextStyle').and.callThrough();
+			instanceUnderTest.addStyle(feature, mapMock, layerMock);
+			expect(addTextStyleSpy).toHaveBeenCalledWith(feature);
+			expect(styleSetterFunctionSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(textStyle).toContain(jasmine.any(Style));
 		});
 
@@ -293,6 +341,62 @@ describe('StyleService', () => {
 			instanceUnderTest.addStyle(featureWithoutStyle, mapMock, layerMock);
 			expect(styleSetterNoStyleSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(markerStyle).toContain(jasmine.any(Style));
+		});
+
+		it('adds marker-style with color, anchor and size from existing label-style to feature', () => {
+			const featureWithStyleFunction = new Feature({ geometry: new Point([0, 0]) });
+			const icon = new Icon({
+				src: 'http://foo.bar/icon.png',
+				anchor: [0.5, 1],
+				anchorXUnits: 'fraction',
+				anchorYUnits: 'fraction'
+			});
+
+			const anchorSpy = spyOn(icon, 'getAnchor').and.callFake(() => {
+				return [24, 48];
+			});
+			const sizeSpy = spyOn(icon, 'getSize').and.callFake(() => {
+				return [48, 48];
+			});
+			const style = new Style({
+				image: icon,
+				text: new Text({
+					text: 'foo',
+					fill: new Fill({
+						color: [42, 21, 0, 1]
+					})
+				})
+			});
+			featureWithStyleFunction.setId('draw_marker_9876543');
+			featureWithStyleFunction.setStyle(() => [style]);
+
+			const viewMock = {
+				getResolution() {
+					return 50;
+				},
+				once() {}
+			};
+
+			const mapMock = {
+				getView: () => viewMock,
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+			const layerMock = {};
+			spyOn(iconServiceMock, 'decodeColor').and.returnValue(null); //we simulate a local IconResult, which have no url property
+
+			let markerStyle = null;
+			const styleSetterFunctionSpy = spyOn(featureWithStyleFunction, 'setStyle').and.callFake((f) => (markerStyle = f()));
+			instanceUnderTest.addStyle(featureWithStyleFunction, mapMock, layerMock);
+			expect(styleSetterFunctionSpy).toHaveBeenCalledWith(jasmine.any(Function));
+			expect(markerStyle).toContain(jasmine.any(Style));
+			// uses the existing color
+			expect(markerStyle[0].getText().getFill().getColor()).toEqual([42, 21, 0, 1]);
+
+			//...and the existing anchor/size
+			expect(anchorSpy).toHaveBeenCalled();
+			expect(sizeSpy).toHaveBeenCalled();
 		});
 
 		it('adds marker-style to feature without style but attribute', () => {
@@ -404,6 +508,35 @@ describe('StyleService', () => {
 			instanceUnderTest.addStyle(feature, mapMock);
 
 			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
+		});
+
+		it('adds routing-style to feature routing intermediate id', () => {
+			const routingFeature = new Feature({ geometry: new Point([0, 0]) });
+			routingFeature.set('Routing_Feature_Type', 'intermediate');
+			routingFeature.set('Routing_Feature_Index', 42);
+			routingFeature.setId('routing_42');
+
+			const viewMock = {
+				getResolution() {
+					return 50;
+				},
+				once() {}
+			};
+
+			const mapMock = {
+				getView: () => viewMock,
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+			const layerMock = {};
+
+			const styleSetterNoStyleSpy = spyOn(routingFeature, 'setStyle').and.callThrough();
+			const addRoutingStyleSpy = spyOn(instanceUnderTest, '_addRoutingStyle').withArgs(routingFeature).and.callThrough();
+			instanceUnderTest.addStyle(routingFeature, mapMock, layerMock);
+
+			expect(addRoutingStyleSpy).toHaveBeenCalled();
+			expect(styleSetterNoStyleSpy).toHaveBeenCalledWith(jasmine.any(Function));
 		});
 
 		it('adds default-style to feature without initial style', () => {

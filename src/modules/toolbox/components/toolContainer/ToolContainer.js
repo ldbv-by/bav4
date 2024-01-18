@@ -88,6 +88,10 @@ export class ToolContainer extends MvuElement {
 			}
 		};
 
+		const gitHideClass = (toolId) => {
+			return getContentPanel(toolId) === nothing ? 'hide' : '';
+		};
+
 		const close = () => {
 			setCurrentTool(null);
 		};
@@ -103,7 +107,7 @@ export class ToolContainer extends MvuElement {
 		return toolId
 			? html`
 			<style>${css}</style>		
-			<div class=" ${getOrientationClass()} ${getMinWidthClass()}">  	
+			<div class=" ${getOrientationClass()} ${getMinWidthClass()} ${gitHideClass(toolId)}">  	
 			<div class="tool-container"> 			
 				<div class="tool-container__content is-open">    
 					<div class="tool-container__tools-nav">                         

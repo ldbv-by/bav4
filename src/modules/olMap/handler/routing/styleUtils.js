@@ -5,7 +5,7 @@ import { Style, Icon, Stroke, Text as TextStyle, Circle, Fill } from 'ol/style';
 import baRoutingStartIcon from './assets/ba-routing-start.svg';
 import baRoutingIntermediateIcon from './assets/ba-routing-intermediate.svg';
 import baRoutingDestinationIcon from './assets/ba-routing-destination.svg';
-import { ROUTING_CATEGORY, ROUTING_FEATURE_TYPE, RoutingFeatureTypes } from './OlRoutingHandler';
+import { ROUTING_CATEGORY, ROUTING_FEATURE_TYPE, RoutingFeatureTypes, ROUTING_FEATURE_INDEX } from './OlRoutingHandler';
 
 export const getRoutingStyleFunction = () => {
 	return (feature) => {
@@ -33,7 +33,7 @@ export const getRoutingStyleFunction = () => {
 					})
 				];
 			case RoutingFeatureTypes.INTERMEDIATE: {
-				const text = feature.get('Routing_Feature_Index') ? feature.get('Routing_Feature_Index').toString() : '';
+				const text = feature.get(ROUTING_FEATURE_INDEX) ? feature.get(ROUTING_FEATURE_INDEX).toString() : '';
 
 				const textStyle = new TextStyle({
 					text: text,
