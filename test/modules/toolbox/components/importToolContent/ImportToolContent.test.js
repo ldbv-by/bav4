@@ -1,15 +1,16 @@
+import { MediaType } from '../../../../../src/domain/mediaTypes';
+import { SourceType, SourceTypeMaxFileSize, SourceTypeName, SourceTypeResultStatus } from '../../../../../src/domain/sourceType';
 import { $injector } from '../../../../../src/injection';
 import { ImportToolContent } from '../../../../../src/modules/toolbox/components/importToolContent/ImportToolContent';
 import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
-import { SourceType, SourceTypeMaxFileSize, SourceTypeName, SourceTypeResultStatus } from '../../../../../src/domain/sourceType';
-import { MediaType } from '../../../../../src/domain/mediaTypes';
 import { importReducer } from '../../../../../src/store/import/import.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
-import { TestUtils } from '../../../../test-utils';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
+import { TestUtils } from '../../../../test-utils';
+import { findAllBySelector } from '../../../../../src/utils/markup';
 
 window.customElements.define(ImportToolContent.tag, ImportToolContent);
 
@@ -99,6 +100,52 @@ describe('ImportToolContent', () => {
 			expect(model).toEqual({
 				mode: null
 			});
+		});
+	});
+
+	describe('when highlight-search-button is clicked', () => {
+		it('highlights the search input element of the ba-header component', async () => {
+			const element = await setup();
+
+			const inputElement = document.createElement('input');
+			inputElement.id = 'input';
+			const header = document.createElement('ba-header');
+			header.append(inputElement);
+			element.parentElement.append(header);
+			const button = element.shadowRoot.querySelector('#highlightSearchButton');
+			const input = findAllBySelector(element.parentElement, '#input');
+			const attention = findAllBySelector(element.parentElement, '.attention');
+
+			expect(input).toHaveSize(1);
+			expect(attention).toHaveSize(0);
+			expect(findAllBySelector(element.parentElement, '#input')[0]?.matches(':focus')).toBeFalse();
+
+			button.click();
+
+			const attention1 = findAllBySelector(element.parentElement, '.attention');
+			expect(attention1).toHaveSize(1);
+			expect(findAllBySelector(element.parentElement, '#input')[0]?.matches(':focus')).toBeTrue();
+
+			input[0].dispatchEvent(new Event('animationend'));
+
+			const attention2 = findAllBySelector(element.parentElement, '.attention');
+			expect(attention2).toHaveSize(0);
+			expect(findAllBySelector(element.parentElement, '#input')[0]?.matches(':focus')).toBeTrue();
+		});
+
+		it('does nothing when input element is not available', async () => {
+			const element = await setup();
+			const button = element.shadowRoot.querySelector('#highlightSearchButton');
+			const input = findAllBySelector(element.parentElement, '#input');
+			const attention = findAllBySelector(element.parentElement, '.attention');
+
+			expect(input).toHaveSize(0);
+			expect(attention).toHaveSize(0);
+
+			button.click();
+
+			const attention1 = findAllBySelector(element.parentElement, '.attention');
+			expect(attention1).toHaveSize(0);
 		});
 	});
 

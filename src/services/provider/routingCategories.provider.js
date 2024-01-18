@@ -13,7 +13,7 @@ export const bvvRoutingCategoriesProvider = async () => {
 	const lang = configService.getValue('DEFAULT_LANG');
 	const hike = {
 		id: 'hike',
-		label: lang === 'de' ? 'Wandern' : 'Hiking',
+		label: lang === 'de' ? 'Wandern (schnellste Route)' : 'Hiking (fastest route)',
 		description: lang === 'de' ? 'schnellste Route' : 'fastest route',
 		style: {
 			routeColor: 'red',
@@ -47,7 +47,7 @@ export const bvvRoutingCategoriesProvider = async () => {
 	};
 	const bike = {
 		id: 'bike',
-		label: lang === 'de' ? 'Fahrrad' : 'Bicycle',
+		label: lang === 'de' ? 'Fahrrad (schnellste Route)' : 'Bicycle (fastest route)',
 		description: lang === 'de' ? 'schnellste Route' : 'fastest route',
 		style: {
 			routeColor: 'green',
