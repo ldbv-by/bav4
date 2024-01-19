@@ -905,7 +905,7 @@ export class BvvMfp3Encoder {
 	}
 
 	static adjustDistance(distance, dpi) {
-		return distance != null ? (distance * 90) / dpi : null;
+		return distance != null ? (distance * 70) / dpi : null;
 	}
 
 	/**
