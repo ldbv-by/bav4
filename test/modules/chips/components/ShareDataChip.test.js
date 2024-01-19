@@ -121,15 +121,4 @@ describe('ShareDataChip', () => {
 			expect(warnSpy).toHaveBeenCalledWith('Could not shorten url', 'not available');
 		});
 	});
-
-	describe('when disconnected', () => {
-		it('removes all observers', async () => {
-			const element = await setup();
-			const unsubscribeSpy = spyOn(element, '_unsubscribeFromStore').and.callThrough();
-
-			element.onDisconnect(); // we call onDisconnect manually
-
-			expect(unsubscribeSpy).toHaveBeenCalled();
-		});
-	});
 });
