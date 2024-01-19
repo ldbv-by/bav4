@@ -23,7 +23,7 @@ describe('NavigationRail', () => {
 		const initialState = {
 			navigationRail: {
 				openNav: false,
-				visitedTabIdsSet: null
+				visitedTabIdsSet: new Set([])
 			},
 			media: {
 				portrait: false,
@@ -57,7 +57,6 @@ describe('NavigationRail', () => {
 		it('has a model with default values', async () => {
 			await setup();
 			const model = new NavigationRail().getModel();
-
 			expect(model).toEqual({
 				isOpenNav: false,
 				tabIndex: null,
@@ -76,43 +75,30 @@ describe('NavigationRail', () => {
 				}
 			};
 			const element = await setup(state);
-
-			// expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(0);
-			// expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
 		});
-
-		// 	it('layouts with open main menu for portrait mode', async () => {
-		// 		const state = {
-		// 			media: {
-		// 				portrait: true,
-		// 				minWidth: false
-		// 			}
-		// 		};
-
-		// 		const element = await setup(state);
-
-		// 		// expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
-		// 		// expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(0);
-		// 		expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
-		// 		expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(0);
-		// 	});
-
-		// 	it('layouts with open main menu for tablet mode', async () => {
-		// 		const state = {
-		// 			media: {
-		// 				portrait: false,
-		// 				minWidth: false
-		// 			}
-		// 		};
-
-		// 		const element = await setup(state);
-
-		// 		// expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
-		// 		// expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(0);
-		// 		expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(0);
-		// 		expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
-		// 	});
+		it('layouts with open main menu for portrait mode', async () => {
+			const state = {
+				media: {
+					portrait: true,
+					minWidth: false
+				}
+			};
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(0);
+		});
+		it('layouts with open main menu for tablet mode', async () => {
+			const state = {
+				media: {
+					portrait: false,
+					minWidth: false
+				}
+			};
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
+		});
 	});
 });
