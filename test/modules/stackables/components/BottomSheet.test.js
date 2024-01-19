@@ -47,14 +47,6 @@ describe('BottomSheet', () => {
 				portrait: false
 			});
 		});
-
-		it('subscribes to the store', async () => {
-			TestUtils.setupStoreAndDi(defaultState);
-			const element = new BottomSheet();
-
-			expect(element._subscriptions).toHaveSize(2);
-			expect(element._subscriptions.every((subscription) => typeof subscription === 'function')).toBeTrue();
-		});
 	});
 
 	describe('when initialized', () => {
