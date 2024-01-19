@@ -707,9 +707,10 @@ export class BvvMfp3Encoder {
 
 			if (textStyle.getFont()) {
 				const fontValues = textStyle.getFont().split(' ');
-				encoded.fontFamily = fontValues[2].toUpperCase();
-				encoded.fontSize = parseInt(fontValues[1]);
-				encoded.fontWeight = fontValues[0];
+				const [weight, size, ...fontFamilyValues] = fontValues;
+				encoded.fontFamily = fontFamilyValues.join(' ');
+				encoded.fontSize = BvvMfp3Encoder.adjustDistance(parseInt(size), dpi);
+				encoded.fontWeight = weight;
 			}
 
 			if (this._mfpProperties.rotation) {
