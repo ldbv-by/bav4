@@ -26,18 +26,29 @@ import { GeoResource } from '../../domain/geoResources';
 /**
  * Constraints of a {@link Layer}.
  * @typedef {Object} Constraints
- * @property {boolean} [hidden=false] Layer is not displayed in UI
+ * @property {boolean} [hidden=false] Layer is not displayed in UI and is not referenced as query parameter
  * @property {boolean} [alwaysTop=false] Layer always on top
  * @property {boolean} [cloneable=true] Layer is allowed to be cloned
  * @property {boolean} [metaData=true] Layer references meta data that can be viewed
  */
 
 /**
- * Modifiable properties of a {@link Layer}.
- * @typedef {Object} ModifiableLayerProperties
+ * Modifiable options of a {@link Layer}.
+ * @typedef {Object} ModifyLayerOptions
  * @property {number} [opacity] Opacity (0, 1).
  * @property {boolean} [visible] Visibility.
  * @property {number} [zIndex] Desired index of this layer within the list of active layers
+ */
+
+/**
+ * Options for adding a {@link Layer}.
+ * @typedef {Object} LayerOptions
+ * @property {string} [geoResourceId]  Id of the linked GeoResource. If not set, it will take the Id of this layer as value
+ * @property {number} [opacity=1] Opacity (0, 1)
+ * @property {boolean} [visible=true] Visibility
+ * @property {number} [zIndex]  Index of this layer within the list of active layers. When not set, the layer will be appended at the end
+ * @property {Constraints} [constraints] Constraints of the layer
+ * @property {module:utils/storeUtils.EventLike<String|null>} [grChangedFlag] Flag that indicates a change of the linked GeoResource
  */
 
 const getStore = () => {
@@ -49,12 +60,12 @@ const getStore = () => {
  * Updates the properties of a {@link Layer}.
  * @function
  * @param {string} id Id of the layer
- * @param {ModifiableLayerProperties} properties New properties
+ * @param {ModifyLayerOptions} options options
  */
-export const modifyLayer = (id, properties = {}) => {
+export const modifyLayer = (id, options = {}) => {
 	getStore().dispatch({
 		type: LAYER_MODIFIED,
-		payload: { id: id, properties: properties }
+		payload: { id: id, properties: options }
 	});
 };
 
@@ -62,7 +73,7 @@ export const modifyLayer = (id, properties = {}) => {
  * Adds a {@link Layer} to the list of active layers.
  * @function
  * @param {string} id Id of the layer
- * @param {LayerProperties} properties layer properties
+ * @param {LayerOptions} properties layer properties
  */
 export const addLayer = (id, properties = {}) => {
 	getStore().dispatch({

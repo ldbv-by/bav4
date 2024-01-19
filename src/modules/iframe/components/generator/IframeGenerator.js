@@ -116,7 +116,7 @@ export class IframeGenerator extends MvuElement {
 							<div class="iframe__input width_placeholder">${Auto_Width}</div>
 							<span class="width_placeholder-sub"> % </span>
 						</div>
-				  </div>`
+					</div>`
 				: html`
 					<div class="iframe__container iframe__container-width">		
 						<label for="iframe_width" class="control-label">${translate('iframe_generator_width')}</label>							
@@ -153,11 +153,14 @@ export class IframeGenerator extends MvuElement {
 						<div class='iframe__toggle'>
 							<div class='iframe__toggle_text'>${translate('iframe_generator_toggle_label')}
 							</div>
-							<div class='iframe__toggle_sub-text'>							
-								${translate('iframe_generator_toggle_text')}
-							</div>							
 						</div>
-						<ba-toggle id='toggleAutoWidth' .title=${translate('iframe_generator_toggle_title')} @toggle=${onToggleAutoWidth}></ba-toggle>
+						<ba-switch 
+							id='toggleAutoWidth'  
+							class='iframe__toggle_sub-text' 
+							.title=${translate('iframe_generator_toggle_title')}  
+							@toggle=${onToggleAutoWidth}>
+							<span slot="before">${translate('iframe_generator_toggle_text')}</span>
+						</ba-switch>
 					</div>					
 					<div class='iframe__controls-section'>
 						<div class='iframe__code'>${this._getEmbedContent(currentWidth, height, previewUrl)}

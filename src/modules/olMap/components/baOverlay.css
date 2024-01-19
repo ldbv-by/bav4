@@ -2,15 +2,16 @@
 .help,
 .static,
 .floating {
-	background-color: rgba(140, 140, 140, 0.9);
-	border-radius: 0.25em;
-	color: var(--text3);
-	padding: 0.125em 0.5em;
-	font-size: 0.75rem;
 	cursor: default;
 	-webkit-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+	background-color: var(--primary-bg-color);
+	border: 1px solid var(--text2);
+	border-radius: 0;
+	color: var(--text1);
+	padding: 0.3em 0.5em;
+	font-size: 1rem;
 }
 
 .ba-overlay:after,

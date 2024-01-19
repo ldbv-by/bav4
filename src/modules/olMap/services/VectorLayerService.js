@@ -14,12 +14,31 @@ const getUrlService = () => {
 	return urlService;
 };
 
-export const iconUrlFunction = (url) => getUrlService().proxifyInstant(url);
+export const iconUrlFunction = (url) => getUrlService().proxifyInstant(url, false);
+
+export const bvvIconUrlFunction = (url) => {
+	const { UrlService: urlService, ConfigService: configService } = $injector.inject('UrlService', 'ConfigService');
+
+	// legacy v3 backend icons should be mapped to v4
+	if (urlService.originAndPathname(url).startsWith('https://geoportal.bayern.de/ba-backend')) {
+		const pathParams = urlService.pathParams(url);
+		// the legacy icon endpoint contains four path parameters
+		if (pathParams.length === 4 && pathParams[1] === 'icons') {
+			return `${configService.getValueAsPath('BACKEND_URL')}icons/${pathParams[pathParams.length - 2]}/${pathParams[pathParams.length - 1]}.png`;
+		}
+		// leave untouched for that case
+		return url;
+	} // icons from our backend do not need to be proxified
+	else if (urlService.originAndPathname(url).startsWith(configService.getValueAsPath('BACKEND_URL'))) {
+		return url;
+	}
+	return urlService.proxifyInstant(url, false);
+};
 
 export const mapVectorSourceTypeToFormat = (sourceType) => {
 	switch (sourceType) {
 		case VectorSourceType.KML:
-			return new KML({ iconUrlFunction: iconUrlFunction });
+			return new KML({ iconUrlFunction: bvvIconUrlFunction });
 
 		case VectorSourceType.GPX:
 			return new GPX();
@@ -161,7 +180,6 @@ export class VectorLayerService {
 			.filter((f) => !!f.getGeometry()) // filter out features without a geometry. Todo: let's inform the user
 			.map((f) => {
 				f.getGeometry().transform('EPSG:' + geoResource.srid, 'EPSG:' + destinationSrid); //Todo: check for unsupported destinationSrid
-				f.set('srid', destinationSrid, true);
 				return f;
 			});
 		vectorSource.addFeatures(features);
@@ -185,7 +203,7 @@ export class VectorLayerService {
 					source: vectorSource,
 					distance: geoResource.clusterParams.distance,
 					minDistance: geoResource.clusterParams.minDistance
-			  })
+				})
 			: vectorSource;
 	}
 }

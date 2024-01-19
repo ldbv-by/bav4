@@ -35,11 +35,16 @@ export const provide = (lang) => {
 				olMap_handler_mfp_id_a3_landscape: 'DIN A3 landscape',
 				olMap_handler_mfp_id_a3_portrait: 'DIN A3 portrait',
 				olMap_handler_mfp_encoder_layer_not_exportable: 'The following layers cannot be exported:',
-				olMap_handler_routing_choose_alternative_route: (params) => `Click for choosing the alterative route <b>'${params[0]}'</b>`,
+				olMap_handler_routing_choose_alternative_route: (params) => `${params[0]}`,
 				olMap_handler_routing_modify_segment: 'Pull to modify the route',
 				olMap_handler_routing_modify_start: 'Pull to modify the start point',
 				olMap_handler_routing_modify_destination: 'Pull to modify the destination point',
 				olMap_handler_routing_modify_intermediate: 'Pull to modify the waypoint',
+				olMap_handler_routing_rt_layer_label: 'Route (Track)',
+				olMap_handler_routing_wp_layer_label: 'Route (Waypoints)',
+				olMap_handler_routing_routingService_exception: 'Due to a technical error no route could be created',
+				olMap_handler_routing_routingService_improper_waypoints:
+					'No route could be created based on the given points. Please adjust one ore more points.',
 				olMap_vectorLayerService_default_layer_name_vector: 'Data'
 			};
 
@@ -81,11 +86,16 @@ export const provide = (lang) => {
 				olMap_handler_mfp_id_a3_landscape: 'DIN A3 Querformat',
 				olMap_handler_mfp_id_a3_portrait: 'DIN A3 Hochformat',
 				olMap_handler_mfp_encoder_layer_not_exportable: 'Die folgenden Ebenen können nicht exportiert werden:',
-				olMap_handler_routing_choose_alternative_route: (params) => `Klicken, um alternative Route <b>'${params[0]}'</b> zu wählen`,
+				olMap_handler_routing_choose_alternative_route: (params) => `${params[0]}`,
 				olMap_handler_routing_modify_segment: 'Zum Ändern der Route ziehen',
 				olMap_handler_routing_modify_start: 'Zum Ändern des Startpunktes ziehen',
 				olMap_handler_routing_modify_destination: 'Zum Ändern des Zielpunktes ziehen',
 				olMap_handler_routing_modify_intermediate: 'Zum Ändern des Zwischenpunktes ziehen',
+				olMap_handler_routing_rt_layer_label: 'Route (Track)',
+				olMap_handler_routing_wp_layer_label: 'Route (Wegpunkte)',
+				olMap_handler_routing_routingService_exception: 'Aufgrund eines technischen Fehlers konnte keine Route erstellt werden',
+				olMap_handler_routing_routingService_improper_waypoints:
+					'Anhand der angegebenen Punkte konnte keine Route erstellt werden. Bitte passen Sie einen oder mehrere Punkte an.',
 				olMap_vectorLayerService_default_layer_name_vector: 'Daten'
 			};
 

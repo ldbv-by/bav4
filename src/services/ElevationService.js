@@ -2,7 +2,7 @@
  * @module services/ElevationService
  */
 import { loadBvvElevation } from './provider/elevation.provider';
-import { isCoordinate } from '../utils/checks';
+import { isCoordinateLike } from '../utils/checks';
 import { getBvvProfile } from './provider/profile.provider';
 import { $injector } from '../injection';
 import { hashCode } from '../utils/hashCode';
@@ -22,6 +22,7 @@ import { deepClone } from '../utils/clone';
  * @property {number} z the elevation (in meter)
  * @property {number} e easting
  * @property {number} n northing
+ * @property {number} [slope] the slope (percentage value)
  */
 
 /**
@@ -43,15 +44,30 @@ import { deepClone } from '../utils/clone';
  */
 
 /**
+ * A function that takes an array of coordinates (in 3857) and returns a promise resolving to  a {@link Profile}.
+ * @typedef {Function}  profileProvider
+ * @param {Array<module:domain/coordinateTypeDef~CoordinateLike>} coordinates3857
+ * @returns {Promise<module:services/ElevationService~Profile>} available categories
+ */
+
+/**
+ * A function that takes a coordinate (in 3857) and returns a promise with a number.
+ * @typedef {Function}  elevationProvider
+ * @param {module:domain/coordinateTypeDef~CoordinateLike} coordinate3857
+ * @returns {Promise<Number>} the elevation value
+ */
+
+/**
  * @class
  */
 export class ElevationService {
 	#lastProfileResult = {};
 	#environmentService;
+
 	/**
 	 *
-	 * @param {elevationProvider} [elevationProvider=loadBvvElevation]
-	 * @param {profileProvider} [profileProvider=getBvvProfile]
+	 * @param {module:services/ElevationService~elevationProvider}  [elevationProvider=loadBvvElevation]
+	 * @param {module:services/ElevationService~profileProvider} [profileProvider=getBvvProfile]
 	 */
 	constructor(elevationProvider = loadBvvElevation, profileProvider = getBvvProfile) {
 		this._elevationProvider = elevationProvider;
@@ -62,14 +78,14 @@ export class ElevationService {
 
 	/**
 	 * Returns an elevation for a coordinate.
-	 * @param {module:domain/coordinateTypeDef~Coordinate} coordinate3857
+	 * @param {module:domain/coordinateTypeDef~CoordinateLike} coordinate3857
 	 * @returns {Promise<Number>} elevation
 	 * @throws {Error} Error of the underlying provider
 	 * @throws {TypeError} Parameter must be a valid {@link module:domain/coordinateTypeDef~Coordinate}
 	 */
 	async getElevation(coordinate3857) {
-		if (!isCoordinate(coordinate3857)) {
-			throw new TypeError("Parameter 'coordinate3857' must be a coordinate");
+		if (!isCoordinateLike(coordinate3857)) {
+			throw new TypeError("Parameter 'coordinate3857' must be a CoordinateLike type");
 		}
 
 		try {
@@ -85,7 +101,7 @@ export class ElevationService {
 
 	/**
 	 * Returns a profile for an array of two or more coordinates
-	 * @param {Array<module:domain/coordinateTypeDef~Coordinate>} coordinates3857
+	 * @param {Array<module:domain/coordinateTypeDef~CoordinateLike>} coordinates3857
 	 * @returns {Promise<Profile>} the profile
 	 * @throws {Error} Error of the underlying provider
 	 * @throws {TypeError} Parameter must be a valid Array of {@link module:domain/coordinateTypeDef~Coordinate}
@@ -95,7 +111,7 @@ export class ElevationService {
 			throw new TypeError("Parameter 'coordinates3857' must be an array containing at least two coordinates");
 		}
 		coordinates3857.forEach((c) => {
-			if (!isCoordinate(c)) {
+			if (!isCoordinateLike(c)) {
 				throw new TypeError("Parameter 'coordinates3857' contains invalid coordinates");
 			}
 		});
@@ -143,7 +159,8 @@ export class ElevationService {
 		return {
 			elevations,
 			stats: profileStats,
-			attrs: []
+			attrs: [],
+			refSystem: 'refSystem'
 		};
 	}
 }

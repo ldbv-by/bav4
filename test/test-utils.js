@@ -149,7 +149,7 @@ export class TestUtils {
 		const store = reducer
 			? createStore(combineReducers(reducer), state)
 			: //noop reducer
-			  createStore((state) => state, state);
+				createStore((state) => state, state);
 
 		$injector.reset().registerSingleton('StoreService', {
 			getStore: () => store

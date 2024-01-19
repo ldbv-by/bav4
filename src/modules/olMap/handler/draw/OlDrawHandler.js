@@ -195,7 +195,6 @@ export class OlDrawHandler extends OlLayerHandler {
 
 					oldFeatures.forEach((f) => {
 						f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
-						f.set('srid', this._mapService.getSrid(), true);
 						this._styleService.removeStyle(f, olMap);
 						this._styleService.addStyle(f, olMap, layer);
 						layer.getSource().addFeature(f);
@@ -516,8 +515,8 @@ export class OlDrawHandler extends OlLayerHandler {
 			setSelection([]);
 
 			this._helpTooltip.deactivate();
-			const currenType = this._storeService.getStore().getState().draw.type;
-			this._init(currenType);
+			const currentType = this._storeService.getStore().getState().draw.type;
+			this._init(currentType);
 			this._helpTooltip.activate(this._map);
 		}
 		this._updateDrawState();
@@ -643,7 +642,12 @@ export class OlDrawHandler extends OlLayerHandler {
 		if (equals(style, INITIAL_STYLE)) {
 			const defaultSymbolUrl = this._iconService.getDefault().getUrl(hexToRgb(defaultStyleOption.color));
 			const defaultSymbolSrc = defaultSymbolUrl ? defaultSymbolUrl : this._iconService.getDefault().base64;
-			setStyle({ ...defaultStyleOption, symbolSrc: defaultSymbolSrc, text: getDefaultTextByType(type) });
+			setStyle({
+				...defaultStyleOption,
+				symbolSrc: defaultSymbolSrc,
+				text: getDefaultTextByType(type),
+				anchor: this._iconService.getDefault().anchor
+			});
 		} else if (type === StyleTypes.TEXT && !isString(style.text)) {
 			setStyle({ ...style, text: getDefaultText() });
 		} else if (type === StyleTypes.MARKER && !isString(style.text)) {
@@ -713,16 +717,16 @@ export class OlDrawHandler extends OlLayerHandler {
 
 	_updateStyle() {
 		if (this._drawState.type === InteractionStateType.ACTIVE || this._drawState.type === InteractionStateType.SELECT) {
-			const currenType = this._storeService.getStore().getState().draw.type;
+			const currentType = this._storeService.getStore().getState().draw.type;
 			if (this._draw && !this._draw.active) {
 				// Prevent a second initialization, while the draw-interaction is building up.
 				// This can happen, when a draw-interaction for a TEXT- or MARKER-Draw is selected,
 				// where the DefaultText must be set as style-property in the store
-				this._init(currenType);
+				this._init(currentType);
 			}
 		}
 
-		if (this._drawState.type === InteractionStateType.MODIFY) {
+		if (this._drawState.type === InteractionStateType.MODIFY && this._select.getFeatures().getLength() > 0) {
 			const feature = this._select.getFeatures().item(0);
 
 			const styleFunction = this._getStyleFunctionFrom(feature);
@@ -782,6 +786,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		const style = { ...currentStyleOption, color: color, symbolSrc: symbolSrc, text: text, scale: scale };
 		const selectedStyle = { type: getDrawingTypeFrom(feature), style: style };
 		setSelectedStyle(selectedStyle);
+		setStyle(style);
 	}
 
 	_setSelectedDescription(feature) {
@@ -818,9 +823,13 @@ export class OlDrawHandler extends OlLayerHandler {
 
 	_setSelected(feature) {
 		const setSelected = (f) => {
-			this._select.getFeatures().push(f);
+			const hasFeature = this._select.getFeatures().getArray().includes(feature);
 			this._setSelectedStyle(f);
 			this._setSelectedDescription(f);
+			if (!hasFeature) {
+				this._select.getFeatures().push(f);
+			}
+
 			return true;
 		};
 		const deselect = () => {

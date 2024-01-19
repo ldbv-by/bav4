@@ -4,23 +4,16 @@
 import { $injector } from '../../injection';
 
 /**
- * A function that takes a coordinate and returns a promise with a number.
- *
- * @typedef {function(coordinate) : (Promise<number>)} elevationProvider
- */
-
-/**
- * Uses the BVV service to load an elevation.
+ * Bvv specific implementation of {@link module:services/ElevationService~elevationProvider}
  * @function
- * @param {coordinate} coordinate3857
- * @returns {number} elevation loaded from backend
+ * @type {module:services/ElevationService~elevationProvider}
  */
-export const loadBvvElevation = async (coordinate3857) => {
+export const loadBvvElevation = async (coordinateLike3857) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 
 	const url = configService.getValueAsPath('BACKEND_URL') + 'dem/elevation';
 
-	const result = await httpService.get(`${url}/${coordinate3857[0]}/${coordinate3857[1]}`);
+	const result = await httpService.get(`${url}/${coordinateLike3857[0]}/${coordinateLike3857[1]}`);
 
 	switch (result.status) {
 		case 200:

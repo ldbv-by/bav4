@@ -1,7 +1,6 @@
 import { $injector } from '../../../../src/injection';
-import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { ProposalContextContent } from '../../../../src/modules/routing/components/contextMenu/ProposalContextContent';
-import { routingReducer } from '../../../../src/store/routing/routing.reducer';
+import { initialState as initialRoutingState, routingReducer } from '../../../../src/store/routing/routing.reducer';
 import { TestUtils } from '../../../test-utils';
 import { MvuElement } from '../../../../src/modules/MvuElement';
 import { EventLike } from '../../../../src/utils/storeUtils';
@@ -16,14 +15,10 @@ describe('ProposalContextContent', () => {
 	let store;
 	const setup = (state, properties = {}) => {
 		const initialState = {
-			media: {
-				portrait: false
-			},
 			...state
 		};
 
 		store = TestUtils.setupStoreAndDi(initialState, {
-			media: createNoInitialStateMediaReducer(),
 			routing: routingReducer,
 			bottomSheet: bottomSheetReducer,
 			mapContextMenu: mapContextMenuReducer
@@ -65,7 +60,10 @@ describe('ProposalContextContent', () => {
 		describe('and store.routing.proposal s-o-s has a CoordinateProposal', () => {
 			it('renders action-buttons for START_OR_DESTINATION', async () => {
 				const element = await setup({
-					routing: { proposal: new EventLike({ coordinate: [42, 21], type: CoordinateProposalType.START_OR_DESTINATION }) }
+					routing: {
+						...initialRoutingState,
+						...{ proposal: new EventLike({ coord: [42, 21], type: CoordinateProposalType.START_OR_DESTINATION }) }
+					}
 				});
 
 				const buttons = element.shadowRoot.querySelectorAll('button');
@@ -76,7 +74,7 @@ describe('ProposalContextContent', () => {
 
 			it('renders action-buttons for START', async () => {
 				const element = await setup({
-					routing: { proposal: new EventLike({ coordinate: [42, 21], type: CoordinateProposalType.START }) }
+					routing: { ...initialRoutingState, ...{ proposal: new EventLike({ coord: [42, 21], type: CoordinateProposalType.START }) } }
 				});
 
 				const buttons = element.shadowRoot.querySelectorAll('button');
@@ -86,7 +84,7 @@ describe('ProposalContextContent', () => {
 
 			it('renders action-buttons for DESTINATION', async () => {
 				const element = await setup({
-					routing: { proposal: new EventLike({ coordinate: [42, 21], type: CoordinateProposalType.DESTINATION }) }
+					routing: { ...initialRoutingState, ...{ proposal: new EventLike({ coord: [42, 21], type: CoordinateProposalType.DESTINATION }) } }
 				});
 
 				const buttons = element.shadowRoot.querySelectorAll('button');
@@ -96,7 +94,7 @@ describe('ProposalContextContent', () => {
 
 			it('renders action-buttons for INTERMEDIATE', async () => {
 				const element = await setup({
-					routing: { proposal: new EventLike({ coordinate: [42, 21], type: CoordinateProposalType.INTERMEDIATE }) }
+					routing: { ...initialRoutingState, ...{ proposal: new EventLike({ coord: [42, 21], type: CoordinateProposalType.INTERMEDIATE }) } }
 				});
 
 				const buttons = element.shadowRoot.querySelectorAll('button');
@@ -106,7 +104,10 @@ describe('ProposalContextContent', () => {
 
 			it('renders action-buttons for EXISTING_INTERMEDIATE', async () => {
 				const element = await setup({
-					routing: { proposal: new EventLike({ coordinate: [42, 21], type: CoordinateProposalType.EXISTING_INTERMEDIATE }) }
+					routing: {
+						...initialRoutingState,
+						...{ proposal: new EventLike({ coord: [42, 21], type: CoordinateProposalType.EXISTING_INTERMEDIATE }) }
+					}
 				});
 
 				const buttons = element.shadowRoot.querySelectorAll('button');
@@ -116,7 +117,10 @@ describe('ProposalContextContent', () => {
 
 			it('renders action-buttons for EXISTING_START_OR_DESTINATION', async () => {
 				const element = await setup({
-					routing: { proposal: new EventLike({ coordinate: [42, 21], type: CoordinateProposalType.EXISTING_START_OR_DESTINATION }) }
+					routing: {
+						...initialRoutingState,
+						...{ proposal: new EventLike({ coord: [42, 21], type: CoordinateProposalType.EXISTING_START_OR_DESTINATION }) }
+					}
 				});
 
 				const buttons = element.shadowRoot.querySelectorAll('button');
@@ -127,7 +131,7 @@ describe('ProposalContextContent', () => {
 			describe('and the button is clicked', () => {
 				it('stores the coordinate as starting coordinate', async () => {
 					const element = await setup({
-						routing: { proposal: new EventLike({ coordinate: [42, 21], type: CoordinateProposalType.START }) }
+						routing: { ...initialRoutingState, ...{ proposal: new EventLike({ coord: [42, 21], type: CoordinateProposalType.START }) } }
 					});
 
 					element.shadowRoot.querySelector('#start').click();
@@ -137,17 +141,17 @@ describe('ProposalContextContent', () => {
 
 					reset();
 
-					setProposal({ coordinate: [42, 21], type: CoordinateProposalType.START_OR_DESTINATION });
+					setProposal([5, 55], CoordinateProposalType.START_OR_DESTINATION);
 
 					element.shadowRoot.querySelector('#start').click();
 
 					expect(store.getState().routing.status).toBe(RoutingStatusCodes.Destination_Missing);
-					expect(store.getState().routing.waypoints).toEqual([[42, 21]]);
+					expect(store.getState().routing.waypoints).toEqual([[5, 55]]);
 				});
 
 				it('stores the coordinate as destination coordinate', async () => {
 					const element = await setup({
-						routing: { proposal: new EventLike({ coordinate: [42, 21], type: CoordinateProposalType.DESTINATION }) }
+						routing: { ...initialRoutingState, ...{ proposal: new EventLike({ coord: [42, 21], type: CoordinateProposalType.DESTINATION }) } }
 					});
 
 					element.shadowRoot.querySelector('#destination').click();
@@ -157,23 +161,26 @@ describe('ProposalContextContent', () => {
 
 					reset();
 
-					setProposal({ coordinate: [42, 21], type: CoordinateProposalType.START_OR_DESTINATION });
+					setProposal([5, 55], CoordinateProposalType.START_OR_DESTINATION);
 
 					element.shadowRoot.querySelector('#destination').click();
 
 					expect(store.getState().routing.status).toBe(RoutingStatusCodes.Start_Missing);
-					expect(store.getState().routing.waypoints).toEqual([[42, 21]]);
+					expect(store.getState().routing.waypoints).toEqual([[5, 55]]);
 				});
 
 				it('stores the coordinate as intermediate coordinate', async () => {
 					const element = await setup({
 						routing: {
-							waypoints: [
-								[0, 0],
-								[1, 1]
-							],
-							status: RoutingStatusCodes.Ok,
-							proposal: new EventLike({ coordinate: [42, 21], type: CoordinateProposalType.INTERMEDIATE })
+							...initialRoutingState,
+							...{
+								waypoints: [
+									[0, 0],
+									[1, 1]
+								],
+								status: RoutingStatusCodes.Ok,
+								proposal: new EventLike({ coord: [42, 21], type: CoordinateProposalType.INTERMEDIATE })
+							}
 						}
 					});
 
@@ -185,13 +192,14 @@ describe('ProposalContextContent', () => {
 				it('removes the coordinate as existing intermediate', async () => {
 					const element = await setup({
 						routing: {
+							...initialRoutingState,
 							waypoints: [
 								[0, 0],
 								[42, 21],
 								[1, 1]
 							],
 							status: RoutingStatusCodes.Ok,
-							proposal: new EventLike({ coordinate: [42, 21], type: CoordinateProposalType.EXISTING_INTERMEDIATE })
+							proposal: new EventLike({ coord: [42, 21], type: CoordinateProposalType.EXISTING_INTERMEDIATE })
 						}
 					});
 
@@ -207,12 +215,15 @@ describe('ProposalContextContent', () => {
 				it('removes the coordinate as existing intermediate', async () => {
 					const element = await setup({
 						routing: {
-							waypoints: [
-								[42, 21],
-								[1, 1]
-							],
-							status: RoutingStatusCodes.Ok,
-							proposal: new EventLike({ coordinate: [42, 21], type: CoordinateProposalType.EXISTING_START_OR_DESTINATION })
+							...initialRoutingState,
+							...{
+								waypoints: [
+									[42, 21],
+									[1, 1]
+								],
+								status: RoutingStatusCodes.Ok,
+								proposal: new EventLike({ coord: [42, 21], type: CoordinateProposalType.EXISTING_START_OR_DESTINATION })
+							}
 						}
 					});
 
@@ -226,7 +237,7 @@ describe('ProposalContextContent', () => {
 
 		it('requests the closing of bottomSheet and ContextMenu', async () => {
 			const element = await setup({
-				routing: { proposal: new EventLike({ coordinate: [42, 21], type: CoordinateProposalType.START }) },
+				routing: { ...initialRoutingState, ...{ proposal: new EventLike({ coord: [42, 21], type: CoordinateProposalType.START }) } },
 				bottomSheet: { active: true },
 				mapContextMenu: { active: true }
 			});
@@ -241,7 +252,7 @@ describe('ProposalContextContent', () => {
 			it('does NOT request the closing of bottomSheet and ContextMenu', async () => {
 				const element = await setup(
 					{
-						routing: { proposal: new EventLike({ coordinate: [42, 21], type: CoordinateProposalType.START }) },
+						routing: { ...initialRoutingState, ...{ proposal: new EventLike({ coord: [42, 21], type: CoordinateProposalType.START }) } },
 						bottomSheet: { active: true },
 						mapContextMenu: { active: true }
 					},

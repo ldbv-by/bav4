@@ -19,7 +19,7 @@ import { shortenBvvUrls } from './provider/urlShorteningProvider';
  * Takes a URL and returns a proxified url.
  * @param {string} url the URL which should be proxified
  * @typedef {Function} proxifyUrlProvider
- * @returns {string} proxified url
+ * @returns {string} proxied url
  */
 
 /**
@@ -39,7 +39,7 @@ import { shortenBvvUrls } from './provider/urlShorteningProvider';
  */
 export class UrlService {
 	/**
-	 * @param {module:services/UrlService~shortUrlProvider} [shortUrlProvider=shortenBvvUrls]
+	 * @param {module:services/UrlService~shortUrlProvider} [urlShorteningProvider=shortenBvvUrls]
 	 * @param {module:services/UrlService~proxifyUrlProvider} [proxifyUrlProvider=bvvProxifyUrlProvider]
 	 * @param {module:services/UrlService~qrCodeUrlProvider} [proxifyUrlProvider=bvvQrCodeProvider]
 	 */
@@ -52,26 +52,33 @@ export class UrlService {
 	}
 
 	/**
-	 * Proxifies a URL.
+	 * Proxies an URL.
 	 * @param {string} url URL
-	 * @returns {string} proxified URL
+	 * @param {boolean} [strict=true] if `true` throws an `Error` when the parameter `url` is not an URL. If set to `false` it returns the `url` untouched in that case
+	 * @returns {string} proxied URL
 	 */
-	proxifyInstant(url) {
+	proxifyInstant(url, strict = true) {
 		if (!isHttpUrl(url)) {
-			throw new TypeError("Parameter 'url' must represent a URL");
+			if (strict) {
+				throw new TypeError("Parameter 'url' must represent an URL");
+			}
+			return url;
 		}
 		return this._proxifyUrlProvider(url);
 	}
 
 	/**
-	 * Proxifies a URL when needed.
+	 * Proxies an URL when needed.
 	 * @param {string} url URL
-	 * @public
-	 * @returns {Promise<string>|Promise.reject} proxified URL
+	 * @param {boolean} [strict=true] if `true` throws an `Error` when the parameter `url` is not an URL. If set to `false` it returns the `url` untouched in that case
+	 * @returns {Promise<string>} proxied URL
 	 */
-	async proxify(url) {
+	async proxify(url, strict = true) {
 		if (!isHttpUrl(url)) {
-			throw new TypeError("Parameter 'url' must represent a URL");
+			if (strict) {
+				throw new TypeError("Parameter 'url' must represent an URL");
+			}
+			return url;
 		}
 		const corsEnabled = await this.isCorsEnabled(url);
 		if (corsEnabled) {
@@ -84,11 +91,11 @@ export class UrlService {
 	 * Tests if the remote resource enables CORS by using a head request
 	 * @param {string} url URL
 	 * @public
-	 * @returns {Promise<boolean>|Promise.reject} `true`, if cors is enabled
+	 * @returns {Promise<boolean>} `true`, if cors is enabled
 	 */
 	async isCorsEnabled(url) {
 		if (!isHttpUrl(url)) {
-			throw new TypeError("Parameter 'url' must represent a URL");
+			throw new TypeError("Parameter 'url' must represent an URL");
 		}
 
 		const result = await this._httpService.head(url, {
@@ -102,12 +109,12 @@ export class UrlService {
 	 * Possible errors of the configured shortUrlProvider will be passed.
 	 * @param {string} url URL
 	 * @public
-	 * @returns {Promise<string>|Promise.reject} shortened URL
+	 * @returns {Promise<string>} shortened URL
 	 * @throws Error of the underlying provider
 	 */
 	async shorten(url) {
 		if (!isHttpUrl(url)) {
-			throw new TypeError("Parameter 'url' must represent a URL");
+			throw new TypeError("Parameter 'url' must represent an URL");
 		}
 		return this._urlShorteningProvider(url);
 	}
@@ -120,7 +127,7 @@ export class UrlService {
 	 */
 	qrCode(url) {
 		if (!isHttpUrl(url)) {
-			throw new TypeError("Parameter 'url' must represent a URL");
+			throw new TypeError("Parameter 'url' must represent an URL");
 		}
 		return this._qrCodeUrlProvider(url);
 	}
@@ -129,6 +136,7 @@ export class UrlService {
 	 * Extracts the origin of a URL following by its pathname.
 	 * If the URL has no pathname the result is the same like it would be calling {@link UrlService#origin}
 	 * @param {string} url
+	 * @returns {string} origin and pathname
 	 * @throws TypeError
 	 */
 	originAndPathname(url) {
@@ -139,10 +147,22 @@ export class UrlService {
 	/**
 	 * Extracts the origin of a URL.
 	 * @param {string} url
+	 * @returns {string} origin
 	 * @throws TypeError
 	 */
 	origin(url) {
 		const urlInstance = new URL(url);
 		return `${urlInstance.origin}`;
+	}
+
+	/**
+	 * Extracts the path parameters of a URL.
+	 * @param {string} url
+	 * @returns {string[]} path parameters
+	 * @throws TypeError
+	 */
+	pathParams(url) {
+		const urlInstance = new URL(url);
+		return urlInstance.pathname.split('/').filter((pp) => pp.length > 0);
 	}
 }

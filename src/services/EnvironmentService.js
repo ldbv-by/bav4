@@ -32,30 +32,32 @@ export class EnvironmentService {
 	}
 
 	/**
-	 *
-	 * @returns `true` if the current device has touch support
+	 * @returns `true` if the primary pointing device is a touch device
 	 */
 	isTouch() {
-		const navigator = this._window.navigator;
-		const window = this._window;
-		let hasTouchScreen = false;
-		if ('maxTouchPoints' in navigator) {
-			hasTouchScreen = navigator.maxTouchPoints > 0;
-		} else {
-			const mQ = window.matchMedia && window.matchMedia('(pointer:coarse)');
-			if (mQ && mQ.media === '(pointer:coarse)') {
-				hasTouchScreen = !!mQ.matches;
-			} else if ('orientation' in window) {
-				hasTouchScreen = true; // deprecated, but good fallback
-			} else {
-				// Only as a last resort, fall back to user agent sniffing
-				const UA = navigator.userAgent;
-				hasTouchScreen = /\b(BlackBerry|webOS|iPhone|IEMobile)\b/i.test(UA) || /\b(Android|Windows Phone|iPad|iPod)\b/i.test(UA);
-			}
-		}
-		return hasTouchScreen;
+		return this._window.matchMedia('(pointer:coarse)').matches && this._window.matchMedia('(hover:none)').matches;
 	}
 
+	/**
+	 * @returns `true` if the primary pointing device is a mouse / touch pad device
+	 */
+	isMouse() {
+		return this._window.matchMedia('(pointer:fine)').matches && this._window.matchMedia('(hover:hover)').matches;
+	}
+
+	/**
+	 * @returns `true` if the primary pointing device is a touch device but it has also a mouse or pencil as a secondary device
+	 */
+	isTouchWithMouseSupport() {
+		return this._window.matchMedia('(any-pointer:fine)').matches && this._window.matchMedia('(pointer:coarse)').matches;
+	}
+
+	/**
+	 * @returns if the primary pointing device is a mouse device but it has also a touch device as a secondary device
+	 */
+	isMouseWithTouchSupport() {
+		return this._window.matchMedia('(any-pointer:coarse)').matches && this._window.matchMedia('(pointer:fine)').matches;
+	}
 	/**
 	 *
 	 * @returns `true` if the current device has a retina display

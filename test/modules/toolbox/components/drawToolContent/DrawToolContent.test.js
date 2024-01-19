@@ -11,8 +11,8 @@ import { IconSelect } from '../../../../../src/modules/iconSelect/components/Ico
 import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
-import { ElevationProfileChip } from '../../../../../src/modules/elevationProfile/components/assistChip/ElevationProfileChip';
-import { ExportVectorDataChip } from '../../../../../src/modules/export/components/assistChip/ExportVectorDataChip';
+import { ElevationProfileChip } from '../../../../../src/modules/chips/components/assistChips/ElevationProfileChip';
+import { ExportVectorDataChip } from '../../../../../src/modules/chips/components/assistChips/ExportVectorDataChip';
 import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer';
 
 window.customElements.define(Icon.tag, Icon);
@@ -126,7 +126,7 @@ describe('DrawToolContent', () => {
 			expect(element.shadowRoot.querySelector('.tool-container__buttons').childElementCount).toBe(4);
 		});
 
-		it('activates the Line draw tool', async () => {
+		it('activates the line draw tool', async () => {
 			const element = await setup();
 			const toolButton = element.shadowRoot.querySelector('#line-button');
 
@@ -156,7 +156,7 @@ describe('DrawToolContent', () => {
 			expect(element.shadowRoot.querySelector('#marker-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
 
-		it('activates the Text draw tool', async () => {
+		it('activates the text draw tool', async () => {
 			const element = await setup();
 			const toolButton = element.shadowRoot.querySelector('#text-button');
 
@@ -171,7 +171,7 @@ describe('DrawToolContent', () => {
 			expect(element.shadowRoot.querySelector('#text-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
 
-		it('activates the Polygon draw tool', async () => {
+		it('activates the polygon draw tool', async () => {
 			const element = await setup();
 			const toolButton = element.shadowRoot.querySelector('#polygon-button');
 
@@ -517,6 +517,31 @@ describe('DrawToolContent', () => {
 			selectableIcon.click();
 
 			expect(store.getState().draw.style.symbolSrc).toBeTruthy();
+		});
+
+		it('sets the style, after symbol changes to symbol in iconSelect and requests url with current color', async () => {
+			const iconResult1 = new IconResult('foo', '42');
+			const iconResult2 = new IconResult('bar', '42');
+			const getUrlSpy1 = spyOn(iconResult1, 'getUrl').and.returnValue('http://some.foo.url');
+
+			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([iconResult1, iconResult2]));
+			const style = { ...StyleOptionTemplate, text: 'foo', symbolSrc: null };
+			const element = await setup({ ...drawDefaultState, style });
+
+			setType('marker');
+			const iconSelect = element.shadowRoot.querySelector('ba-iconselect');
+			expect(iconSelect).toBeTruthy();
+			// wait to get icons loaded....
+			await TestUtils.timeout();
+			// ..then perform ui-actions
+			const iconButton = iconSelect.shadowRoot.querySelector('.iconselect__toggle-button');
+			iconButton.click();
+
+			const selectableIcon = iconSelect.shadowRoot.querySelector('#svg_foo');
+			selectableIcon.click();
+
+			expect(store.getState().draw.style.symbolSrc).toBeTruthy();
+			expect(getUrlSpy1).toHaveBeenCalledWith(jasmine.arrayContaining([255, 218, 255]));
 		});
 
 		it('sets the sanitized description, after description changes in textarea', async () => {

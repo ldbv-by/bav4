@@ -2,7 +2,6 @@
  * @module modules/utils/components/showCase/ShowCase
  */
 import { html } from 'lit-html';
-import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import { changeZoomAndCenter } from '../../../../store/position/position.action';
 import arrowUpSvg from './assets/arrow-up.svg';
@@ -11,11 +10,13 @@ import { addLayer } from '../../../../store/layers/layers.action';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { closeModal, openModal } from '../../../../store/modal/modal.action';
 import css from './showCase.css';
-import { observe } from '../../../../utils/storeUtils';
 import { MenuTypes } from '../../../commons/components/overflowMenu/OverflowMenu';
 import { closeBottomSheet, openBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
 import { closeProfile, openProfile } from '../../../../store/elevationProfile/elevationProfile.action';
 import { sleep } from '../../../../utils/timer';
+import { MvuElement } from '../../../MvuElement';
+
+const Update_Profile_Active = 'update_profile_active';
 
 /**
  * Displays a showcase of common and reusable components or
@@ -23,10 +24,9 @@ import { sleep } from '../../../../utils/timer';
  * @class
  * @author thiloSchlemmer
  */
-export class ShowCase extends BaElement {
+export class ShowCase extends MvuElement {
 	constructor() {
-		super();
-
+		super({ activeProfile: false });
 		const { CoordinateService, EnvironmentService, ShareService, UrlService, FileStorageService, ImportVectorDataService } = $injector.inject(
 			'CoordinateService',
 			'EnvironmentService',
@@ -46,10 +46,29 @@ export class ShowCase extends BaElement {
 		this._fileStorageService = FileStorageService;
 	}
 
+	onInitialize() {
+		this._unsubscribeFromStore = this.observe(
+			(state) => state.elevationProfile.active,
+			(active) => this.signal(Update_Profile_Active, active)
+		);
+	}
+
+	onDisconnect() {
+		this._unsubscribeFromStore();
+	}
+
+	update(type, data, model) {
+		switch (type) {
+			case Update_Profile_Active:
+				return { ...model, activeProfile: data };
+		}
+	}
+
 	/**
 	 * @override
 	 */
-	createView() {
+	createView(model) {
+		const { profileActive } = model;
 		const onClick0 = async () => {
 			//create a GeoResource
 			const geoResourceFuture = this._importVectorDataService.forUrl('https://www.geodaten.bayern.de/ba-data/Themen/kml/huetten.kml');
@@ -94,8 +113,7 @@ export class ShowCase extends BaElement {
 				}
 			};
 
-			const unsubscribe = observe(
-				this._storeService.getStore(),
+			const unsubscribe = this.observe(
 				(state) => state.modal,
 				(modal) => resolveBeforeClosing(modal)
 			);
@@ -166,7 +184,7 @@ export class ShowCase extends BaElement {
 		};
 
 		const onClickOpenProfile = () => {
-			if (this._storeService.getStore().getState().elevationProfile.active) {
+			if (profileActive) {
 				closeProfile();
 			} else {
 				closeModal();
@@ -185,8 +203,7 @@ export class ShowCase extends BaElement {
 				return before === min ? before + 1 : before === max ? min : before + 1;
 			};
 			const getVersionForDragging = () => {
-				const unsubscribe = observe(
-					this._storeService.getStore(),
+				const unsubscribe = this.observe(
 					(state) => state.pointer.beingDragged,
 					() => {
 						closeBottomSheet();
@@ -249,9 +266,19 @@ export class ShowCase extends BaElement {
 				<h2>Specific components</h2>
 
 				<div class="section">
-					<h3>Theme-Toggle</h3>
-					<div class="example">
-						<div class="theme-toggle" style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>
+					<h3>slider</h3>
+					<div class="example row">
+						<input type="range" />
+					</div>
+
+					<h3>Switch</h3>
+					<div class="example row">
+						<ba-switch .title=${'Toggle me'} @toggle=${onToggle}><span slot="before">Toggle</span></ba-switch>
+						<ba-switch .title=${'Toggle me'} @toggle=${onToggle}><slot slot="after">Toggle</slot></ba-switch>
+						<ba-switch .title=${'Toggle me.checked'} .checked=${true} @toggle=${onToggle}>checked</ba-switch>
+						<ba-switch .title=${'Toggle me.indeterminate'} .indeterminate=${true} @toggle=${onToggle}>indeterminate</ba-switch>
+						<ba-switch .title=${'Toggle me.disabled'} .disabled=${true}>disabled</ba-switch>
+						<ba-switch .title=${'Toggle me.disabled'} .disabled=${true} .checked=${true}>disabled.checked</ba-switch>
 					</div>
 
 					<h3>Profile</h3>
@@ -416,17 +443,6 @@ export class ShowCase extends BaElement {
 								<label for="select" class="control-label">with label</label><i class="bar"></i>
 							</div>
 						</div>
-					</div>
-
-					<h3>slider</h3>
-					<div class="example row">
-						<input type="range" />
-					</div>
-
-					<h3>Toggle-Button</h3>
-					<div class="example row">
-						<div>Toggle me!</div>
-						<ba-toggle id="toggle" .title=${'Toggle'} @toggle=${onToggle}></ba-toggle>
 					</div>
 
 					<h3>Loading hint</h3>

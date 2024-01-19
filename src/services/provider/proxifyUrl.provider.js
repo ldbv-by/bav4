@@ -10,7 +10,7 @@ import { $injector } from '../../injection';
  * If the URL is already proxified, nothing is done.
  * If the URL is a backend URL, nothing is done.
  * @function
- * @implements {module:services/UrlService~proxifyUrlProvider}
+ * @type {module:services/UrlService~proxifyUrlProvider}
  */
 export const bvvProxifyUrlProvider = (url) => {
 	const { ConfigService: configService } = $injector.inject('ConfigService');

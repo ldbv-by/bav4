@@ -1,7 +1,7 @@
 .container {
 	display: flex;
 	align-items: center;
-	padding: 1.5em 1em;
+	padding: 0.3em 1.5em 0.4em;
 	position: relative;
 }
 .icon {
@@ -15,21 +15,20 @@
 	align-content: center;
 	justify-content: center;
 }
-
 .icon-bg {
 	z-index: 1;
+	width: 3em;
 }
-
 .start .icon {
 	background-image: url('../assets/start.svg');
 	background-size: cover;
+	top: 0.4em;
 }
-
 .destination .icon {
 	background-image: url('../assets/destination.svg');
 	background-size: cover;
+	top: 0.4em;
 }
-
 .intermediate .icon {
 	background-image: url('../assets/intermediate.svg');
 	background-size: cover;
@@ -37,38 +36,47 @@
 	width: 2em;
 	left: -0.4em;
 }
-
 .line {
 	position: absolute;
 	height: 100%;
-	width: 0.3em;
-	left: 1.45em;
-	background: cadetblue;
+	width: 0.5em;
+	left: 1.8em;
+	background: var(--primary-color);
 	z-index: 0;
+	border-right: 0.1em solid #fff;
+	border-left: 0.1em solid #fff;
 }
-
 .start + .line {
 	top: 50%;
 	height: 50%;
 }
-
 .destination + .line {
 	top: 0;
 	height: 50%;
 }
-
-.text {
-	margin-left: 2.5em;
-}
-
-.waypoint__buttons {
-	display: flex;
-	justify-content: right;
-	margin: auto;
-}
-
 .waypoint-index {
 	font-weight: bold;
 	font-size: 0.9em;
 	color: black;
+}
+.text {
+	flex-grow: 1;
+	display: grid;
+	grid-template-columns: 4em 9em;
+}
+.text-name {
+	font-weight: bold;
+}
+ba-icon {
+	border-radius: 2.5em;
+	width: 2.6em;
+	height: 2.6em;
+	display: inline-block;
+}
+ba-icon:hover {
+	background: var(--primary-color);
+}
+
+ba-icon:focus {
+	box-shadow: 0 0 0 0.2em var(--primary-color-lighter);
 }

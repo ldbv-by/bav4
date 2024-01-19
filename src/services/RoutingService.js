@@ -11,13 +11,7 @@ import { bvvChartItemStylesProvider } from './provider/chartItemStyles.provider'
 import { isCoordinate } from '../utils/checks';
 import { bvvRouteProvider } from './provider/route.provider';
 import { bvvRoutingCategoriesProvider } from './provider/routingCategories.provider';
-import { bvvRouteStatsProvider } from './provider/routeStats.provider';
-import { bvvEtaCalculationProvider } from './provider/etaCalculation.provider';
-
-/**
- * Route result containing a multiple routes (one for each requested category/vehicle) (see also {@link module:domain/routing~Route})
- * @typedef {Object.<string, module:domain/routing~Route>} RoutingResult
- */
+import { $injector } from '../injection/index';
 
 /**
  * Initializes this service, which means all RoutingCategory objects are loaded and can be served in the future from an internal cache.
@@ -65,22 +59,18 @@ import { bvvEtaCalculationProvider } from './provider/etaCalculation.provider';
  * @name module:services/RoutingService~RoutingService#calculateRoute
  * @param {string[]} categories ids of the requested categories/vehicles
  * @param {module:domain/coordinateTypeDef~Coordinate[]} coordinates3857
- * @returns {Promise<module:services/RoutingService~RoutingResult|null>} the category of `null`
+ * @returns {Promise<module:domain/routing~GhRoutingResult|null>} the category of `null`
+ * @throws {module:domain/routing~RouteCalculationErrors} the cause of the error
  */
 
 /**
  * Calculates the statistics for a given route.
  * @function
- * @name module:services/RoutingService~RoutingService#calculateRouteStats
- * @param {module:domain/routing~Route} route the route
- * @returns {module:domain/routing~RouteStats} the statistics of the route
- */
-
-/**
- * A function that returns a list of categories/vehicles for routing
  * @async
- * @typedef {Function} routingCategoriesProvider
- * @returns {Promise<Array<module:domain/routing~RoutingCategory>>} available categories
+ * @name module:services/RoutingService~RoutingService#calculateRouteStats
+ * @param {module:domain/routing~GhRoute} route the route
+ * @param {module:domain/coordinateTypeDef~Coordinate[]} coordinates3857 the coordinates suitable for calculating a {@link module:domain/elevationProfile~Profile} for that route
+ * @returns {module:domain/routing~RouteStats|null} the statistics of the route or `null` of stats could not be calculated
  */
 
 /**
@@ -98,25 +88,6 @@ import { bvvEtaCalculationProvider } from './provider/etaCalculation.provider';
  */
 
 /**
- * A function that provides a ETA calculation for a defined categoryId (vehicle type).
- * @function
- * @name module:services/RoutingService~RoutingService#getETAFor
- * @param {string} categoryId
- * @param {Number} distance distance in meter
- * @param {Number} elevationUp elevation upwards in meter
- * @param {Number} elevationDown  elevation downwards in meter
- * @returns {number|null} the ETA in milliseconds or null if no ETA for the given category is available.
- */
-
-/**
- * A function that returns a list of available ChartItems to display statistical
- * data (road type, surface type) for routing
- * @function
- * @typedef {Function} chartItemStylesProvider
- * @returns {module:domain/routing~ChartItemStyleCatalogs} available chartItems
- */
-
-/**
  * A default {@link module:domain/routing~ChartItemStyle} object for chart items of road-classes
  * if the {@link module:services/RoutingService~chartItemStylesProvider} cannot
  * provide a specific style
@@ -127,6 +98,56 @@ export const CHART_ITEM_ROAD_STYLE_UNKNOWN = {
 	image: 'repeating-linear-gradient(45deg,#eee 0px,#eee 7px, #999 8px, #999 10px, #eee 11px)',
 	label: 'Unknown'
 };
+
+/**
+ * A function that maps and reduces {@link module:domain/routing~ChartData}
+ * with OSM road type names to the catalogId of defined {@link module:domain/routing~ChartItemStyle}
+ * @function
+ * @name module:services/RoutingService~RoutingService#mapRoadTypesToCatalogId
+ * @param {Object.<string, module:domain/routing~ChartData>} routeChartData
+ * @returns {Object.<string, module:domain/routing~ChartData>} the mapped chartData
+ */
+
+/**
+ * A function that returns a list of categories/vehicles for routing
+ * @async
+ * @typedef {Function} routingCategoriesProvider
+ * @returns {Promise<Array<module:domain/routing~RoutingCategory>>} available categories
+ */
+
+/**
+ * A function that maps the name of a OSM road type
+ * to the catalogId a of defined {@link module:domain/routing~ChartItemStyle}
+ * @typedef {Function} osmRoadTypeMappingProvider
+ * @param {string} osmRoadTypeName the name of a OSM road type
+ * @returns {string} the mapped catalogId
+ */
+
+/**
+ * A function that returns a routing result..
+ * @async
+ * @typedef {Function} routeProvider
+ * @param {string[]} categories ids of the requested categories/vehicles
+ * @param {module:domain/coordinateTypeDef~Coordinate[]} coordinates3857
+ * @returns {Promise<module:domain/routing~GhRoutingResult>} the routing result
+ * @throws {module:domain/routing~RouteCalculationErrors} the cause of the error
+ */
+
+/**
+ * A function that takes a `GhRoute` and a corresponding `ProfileStats` object and returns statistics data for that route
+ * @typedef {Function} routeStatsProvider
+ * @param {module:domain/routing~GhRoute} route the route
+ * @param {module:services/ElevationService~ProfileStats} profileStats statistic data of a profile of the route
+ * @returns {module:domain/routing~RouteStats} the statistics of the route
+ */
+
+/**
+ * A function that returns a list of available ChartItems to display statistical
+ * data (road type, surface type) for routing
+ * @function
+ * @typedef {Function} chartItemStylesProvider
+ * @returns {module:domain/routing~ChartItemStyleCatalogs} available chartItems
+ */
 
 /**
  * A default {@link module:domain/routing~ChartItemStyle} object for chart items of surface-classes
@@ -141,49 +162,6 @@ export const CHART_ITEM_SURFACE_STYLE_UNKNOWN = {
 };
 
 /**
- * A function that maps and reduces {@link module:domain/routing~ChartData}
- * with OSM road type names to the catalogId of defined {@link module:domain/routing~ChartItemStyle}
- * @function
- * @name module:services/RoutingService~RoutingService#mapRoadTypesToCatalogId
- * @param {Object.<string, module:domain/routing~ChartData>} routeChartData
- * @returns {Object.<string, module:domain/routing~ChartData>} the mapped chartData
- */
-
-/**
- * A function that maps the name of a OSM road type
- * to the catalogId a of defined {@link module:domain/routing~ChartItemStyle}
- * @typedef {Function} osmRoadTypeMappingProvider
- * @param {string} osmRoadTypeName the name of a OSM road type
- * @returns {string} the mapped catalogId
- */
-
-/**
- * A function that returns a list of categories/vehicles for routing
- * @async
- * @typedef {Function} routeProvider
- * @param {string[]} categories ids of the requested categories/vehicles
- * @param {module:domain/coordinateTypeDef~Coordinate[]} coordinates3857
- * @returns {Promise<module:services/RoutingService~RoutingResult>} available categories
- */
-
-/**
- * A function that takes a route object and returns its corresponding statistics
- * @typedef {Function} routeStatsProvider
- * @param {module:domain/routing~Route} route the route
- * @returns {module:domain/routing~RouteStats} the statistics of the route
- */
-
-/**
- * A function that provides a ETA calculation for a defined categoryId (vehicle type).
- * @typedef {Function} etaCalculationProvider
- * @param {string} categoryId id of the requested category
- * @param {Number} distance distance in meter
- * @param {Number} elevationUp elevation upwards in meter
- * @param {Number} elevationDown  elevation downwards in meter
- * @returns {number|null} the ETA in milliseconds or null if no ETA for the given category is available.
- */
-
-/**
  * @class
  * @implements {module:services/RoutingService~RoutingService}
  */
@@ -192,26 +170,22 @@ export class BvvRoutingService {
 	 *
 	 * @param {module:services/RoutingService~routingCategoriesProvider} [categoriesProvider]
 	 * @param {module:services/RoutingService~routeProvider} [routeProvider]
-	 * @param {module:services/RoutingService~routeStatsProvider} [routeStatsProvider]
 	 * @param {module:services/RoutingService~chartItemStylesProvider} [chartItemStylesProvider]
 	 * @param {module:services/RoutingService~osmRoadTypeMappingProvider} [osmRoadTypeMappingProvider]
-	 * @param {module:services/RoutingService~etaCalculationProvider} [etaCalculationProvider]
 	 *
 	 */
 	constructor(
 		categoriesProvider = bvvRoutingCategoriesProvider,
 		routeProvider = bvvRouteProvider,
-		routeStatsProvider = bvvRouteStatsProvider,
 		chartItemStylesProvider = bvvChartItemStylesProvider,
-		osmRoadTypeMappingProvider = bvvOsmRoadTypeMappingProvider,
-		etaCalculationProvider = bvvEtaCalculationProvider
+		osmRoadTypeMappingProvider = bvvOsmRoadTypeMappingProvider
 	) {
 		this._categoriesProvider = categoriesProvider;
 		this._chartItemsStylesProvider = chartItemStylesProvider;
 		this._osmRoadTypeMapper = osmRoadTypeMappingProvider;
 		this._routeProvider = routeProvider;
-		this._routeStatsProvider = routeStatsProvider;
-		this._etaCalculationProvider = etaCalculationProvider;
+		const { ElevationService } = $injector.inject('ElevationService');
+		this._elevationService = ElevationService;
 		this._categories = null;
 	}
 
@@ -327,7 +301,7 @@ export class BvvRoutingService {
 	 * @param {string[]} categories
 	 * @param {module:domain/coordinateTypeDef~Coordinate[]} coordinates3857
 	 * @throws {Error} Error of the underlying provider
-	 * @returns {Promise<module:services/RoutingService~RoutingResult|null>}
+	 * @returns {Promise<module:domain/routing~GhRoutingResult|null>}
 	 */
 	async calculateRoute(categories, coordinates3857) {
 		if (!Array.isArray(coordinates3857) || coordinates3857.length < 2) {
@@ -342,23 +316,6 @@ export class BvvRoutingService {
 			throw new TypeError("Parameter 'categories' must be an array containing at least one category");
 		}
 
-		try {
-			return await this._routeProvider(categories, coordinates3857);
-		} catch (e) {
-			throw new Error('Could not retrieve a routing result from the provider', { cause: e });
-		}
-	}
-
-	/**
-	 *
-	 * @param {module:domain/routing~Route} route the route
-	 * @returns {module:domain/routing~RouteStats}
-	 */
-	calculateRouteStats(route) {
-		return this._routeStatsProvider(route);
-	}
-
-	getETAFor(categoryId, distance, elevationUp, elevationDown) {
-		return this._etaCalculationProvider(categoryId, distance, elevationUp, elevationDown);
+		return this._routeProvider(categories, coordinates3857);
 	}
 }

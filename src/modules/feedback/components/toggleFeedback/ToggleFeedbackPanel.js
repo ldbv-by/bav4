@@ -105,21 +105,21 @@ export class ToggleFeedbackPanel extends MvuElement {
 								</span>
 							</button>
 						</div>
-				  `
+					`
 				: nothing}
 			${selectedFeedbackPanel === FeedbackType.MAP
 				? html`
 						<div>
 							<ba-mvu-mapfeedbackpanel .onSubmit=${this._onSubmit} .center=${center}></ba-mvu-mapfeedbackpanel>
 						</div>
-				  `
+					`
 				: nothing}
 			${selectedFeedbackPanel === FeedbackType.GENERAL
 				? html`
 						<div class="toggleGeneral">
 							<ba-mvu-generalfeedbackpanel .onSubmit=${this._onSubmit}></ba-mvu-generalfeedbackpanel>
 						</div>
-				  `
+					`
 				: nothing}
 		`;
 	}

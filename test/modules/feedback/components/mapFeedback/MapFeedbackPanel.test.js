@@ -640,6 +640,27 @@ describe('MapFeedbackPanel', () => {
 		});
 	});
 
+	describe('when map-feedback__highlight is clicked', () => {
+		it('highlights the iframe element', async () => {
+			const element = await setup();
+			const button = element.shadowRoot.querySelector('.map-feedback__highlight');
+			const iframe = element.shadowRoot.querySelector('iframe');
+			const attention = element.shadowRoot.querySelectorAll('.attention');
+
+			expect(attention).toHaveSize(0);
+
+			button.click();
+
+			const attention1 = element.shadowRoot.querySelectorAll('.attention');
+			expect(attention1).toHaveSize(1);
+
+			iframe.dispatchEvent(new Event('animationend'));
+
+			const attention2 = element.shadowRoot.querySelectorAll('.attention');
+			expect(attention2).toHaveSize(0);
+		});
+	});
+
 	describe('responsive layout', () => {
 		it('layouts for landscape', async () => {
 			const state = {

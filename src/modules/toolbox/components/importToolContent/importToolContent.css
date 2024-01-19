@@ -49,11 +49,9 @@
 	mask-image: url('assets/data.svg');
 	-webkit-mask-image: url('assets/data.svg');
 }
-
 .tool-container__button:hover:not(.disabled-tool__button) .tool-container__icon {
 	background: var(--text3);
 }
-
 .tool-container__button-text {
 	color: var(--text1);
 	font-size: 0.8rem;
@@ -78,7 +76,6 @@
 .divider {
 	border-bottom: 1px solid var(--header-background-color);
 }
-
 .search-bg {
 	display: none;
 	position: fixed;
@@ -95,8 +92,17 @@
 .text-to-search {
 	display: inline-block;
 	font-weight: bold;
+	border: none;
+	background: transparent;
+	color: var(--text2);
+}
+#highlightSearchButton {
+	opacity: 0.8;
 	color: var(--primary-color);
-	cursor: default;
+}
+
+.text-to-search:hover {
+	opacity: 1;
 }
 .text-to-search-icon {
 	display: inline-block;
@@ -106,7 +112,7 @@
 	-webkit-mask-image: url('assets/search.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
-	background: var(--primary-color);
+	background: var(--text1);
 }
 .ba-tool-container__content {
 	display: flex;
@@ -150,7 +156,6 @@
 	width: 3.4em;
 	background-color: var(--secondary-color);
 }
-
 .tool-container__button:focus:not(.disabled-tool__button) .tool-container__icon {
 	background: var(--text3);
 }

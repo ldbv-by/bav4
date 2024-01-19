@@ -118,25 +118,29 @@ describe('ElevationProfile', () => {
 				dist: 0,
 				z: 0,
 				e: 40,
-				n: 50
+				n: 50,
+				slope: 0
 			},
 			{
 				dist: 1,
 				z: 10,
 				e: 41,
-				n: 51
+				n: 51,
+				slope: 0
 			},
 			{
 				dist: 2,
 				z: 20,
 				e: 42,
-				n: 52
+				n: 52,
+				slope: 1
 			},
 			{
 				dist: 3,
 				z: 30,
 				e: 43,
-				n: 53
+				n: 53,
+				slope: 1
 			}
 		],
 		stats: {
@@ -228,14 +232,6 @@ describe('ElevationProfile', () => {
 		}
 	};
 
-	const chart = {
-		ctx: {
-			createLinearGradient: () => {
-				return { addColorStop: () => {} };
-			}
-		},
-		chartArea: { left: 0, right: 100, width: 200 }
-	};
 	const elevationData = profileSlopeSteep();
 
 	let store;
@@ -398,22 +394,22 @@ describe('ElevationProfile', () => {
 			const profile__box = element.shadowRoot.querySelectorAll('.profile__box');
 			const attrs = element.shadowRoot.getElementById('attrs');
 			expect(attrs.value).toBe('alt');
-			expect(profile__box[0].title).toBe('elevationProfile_sumUp');
+			expect(profile__box[0].querySelector('.profile__header').innerText).toBe('elevationProfile_sumUp');
 			const sumUpElement = element.shadowRoot.getElementById('route-elevation-chart-footer-sumUp');
 			expect(sumUpElement.innerText).toBe(sumUpAfterToLocaleStringEn);
-			expect(profile__box[1].title).toBe('elevationProfile_sumDown');
+			expect(profile__box[1].querySelector('.profile__header').innerText).toBe('elevationProfile_sumDown');
 			const sumDownElement = element.shadowRoot.getElementById('route-elevation-chart-footer-sumDown');
 			expect(sumDownElement.innerText).toBe(sumDownAfterToLocaleStringEn);
-			expect(profile__box[2].title).toBe('elevationProfile_highestPoint');
+			expect(profile__box[2].querySelector('.profile__header').innerText).toBe('elevationProfile_highestPoint');
 			const verticalHeightElement = element.shadowRoot.getElementById('route-elevation-chart-footer-verticalHeight');
 			expect(verticalHeightElement.innerText).toBe(verticalHeight + ' m');
-			expect(profile__box[3].title).toBe('elevationProfile_lowestPoint');
+			expect(profile__box[3].querySelector('.profile__header').innerText).toBe('elevationProfile_lowestPoint');
 			const highestPointElement = element.shadowRoot.getElementById('route-elevation-chart-footer-highestPoint');
 			expect(highestPointElement.innerText).toBe(highestPoint + ' m');
-			expect(profile__box[4].title).toBe('elevationProfile_verticalHeight');
+			expect(profile__box[4].querySelector('.profile__header').innerText).toBe('elevationProfile_verticalHeight');
 			const lowestPointElement = element.shadowRoot.getElementById('route-elevation-chart-footer-lowestPoint');
 			expect(lowestPointElement.innerText).toBe(lowestPoint + ' m');
-			expect(profile__box[5].title).toBe('elevationProfile_linearDistance');
+			expect(profile__box[5].querySelector('.profile__header').innerText).toBe('elevationProfile_linearDistance');
 			const linearDistanceElement = element.shadowRoot.getElementById('route-elevation-chart-footer-linearDistance');
 			expect(linearDistanceElement.innerText).toBe(linearDistanceAfterUnitsServiceEn);
 		});
@@ -744,17 +740,43 @@ describe('ElevationProfile', () => {
 	});
 
 	describe('when _getSlopeGradient() is called', () => {
-		it('for coverage - slope ends in steep - _getSlopeGradient', async () => {
+		const gradientMock = {
+			addColorStop: () => {}
+		};
+		const chart = {
+			ctx: {
+				createLinearGradient: () => gradientMock
+			},
+			colorStops: 0,
+			chartArea: { left: 0, right: 100, width: 200 }
+		};
+
+		it('adds colorStops for each slope value', async () => {
 			// arrange
 			await setup();
-			const elevationProfile = new ElevationProfile();
-			const getSlopeGradientSpy = spyOn(elevationProfile, '_getSlopeGradient').and.callThrough();
+			const colorStopSpy = spyOn(gradientMock, 'addColorStop').and.callThrough();
 
 			// act
+			const elevationProfile = new ElevationProfile();
 			elevationProfile._getSlopeGradient(chart, elevationData);
 
 			// assert
-			expect(getSlopeGradientSpy).toHaveBeenCalled();
+			expect(colorStopSpy).toHaveBeenCalledTimes(elevationData.elevations.length);
+		});
+
+		it('skips colorStops for missing slope values', async () => {
+			// arrange
+			await setup();
+			const elevationData = profileSlopeSteep();
+			elevationData.elevations[0].slope = undefined;
+			const colorStopSpy = spyOn(gradientMock, 'addColorStop').and.callThrough();
+
+			// act
+			const elevationProfile = new ElevationProfile();
+			elevationProfile._getSlopeGradient(chart, elevationData);
+
+			// assert
+			expect(colorStopSpy).toHaveBeenCalledTimes(elevationData.elevations.length - 1);
 		});
 	});
 
@@ -1139,7 +1161,7 @@ describe('ElevationProfile', () => {
 				expect(store.getState().highlight.features).toHaveSize(1);
 				expect(store.getState().highlight.features[0].id).toBe(ElevationProfile.HIGHLIGHT_FEATURE_ID);
 				expect(store.getState().highlight.features[0].data.coordinate).toHaveSize(2);
-				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.TEMPORARY);
+				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER_TMP);
 			});
 		});
 

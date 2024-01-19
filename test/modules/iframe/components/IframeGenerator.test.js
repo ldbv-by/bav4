@@ -1,6 +1,6 @@
 import { PathParameters } from '../../../../src/domain/pathParameters';
 import { $injector } from '../../../../src/injection';
-import { Toggle } from '../../../../src/modules/commons/components/toggle/Toggle';
+import { Switch } from '../../../../src/modules/commons/components/switch/Switch';
 import { IframeGenerator } from '../../../../src/modules/iframe/components/generator/IframeGenerator';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
@@ -8,7 +8,7 @@ import { IFRAME_ENCODED_STATE } from '../../../../src/utils/markup';
 import { TestUtils } from '../../../test-utils';
 
 window.customElements.define(IframeGenerator.tag, IframeGenerator);
-window.customElements.define(Toggle.tag, Toggle);
+window.customElements.define(Switch.tag, Switch);
 
 describe('IframeGenerator', () => {
 	let store;
