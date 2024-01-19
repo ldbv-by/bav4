@@ -195,15 +195,6 @@
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
-.touch {
-	display: none !important;
-	background: var(--primary-bg-color) !important;
-}
-
-.is-portrait .touch,
-.is-tablet .touch {
-	display: flex !important;
-}
 .open-sub-nav {
 	transform: translate(-5.5em, 0);
 }
@@ -211,4 +202,11 @@
 .is-portrait.open-sub-nav,
 .is-tablet.open-sub-nav {
 	transform: translate(0, 10em) !important;
+}
+
+.is-landscape .portrait {
+	display: none;
+}
+.is-portrait .landscape {
+	display: none;
 }

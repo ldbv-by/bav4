@@ -3,10 +3,10 @@
  */
 import { html } from 'lit-html';
 import css from './navigationRail.css';
+import { MvuElement } from '../../../MvuElement';
 import { $injector } from '../../../../injection';
 import { TabIds } from '../../../../domain/mainMenu';
 import { open, setTab } from '../../../../store/mainMenu/mainMenu.action';
-import { MvuElement } from '../../../MvuElement';
 import { Tools } from '../../../../domain/tools';
 import { toggleSchema } from '../../../../store/media/media.action';
 import { setCurrentTool } from '../../../../store/tools/tools.action';
@@ -140,72 +140,47 @@ export class NavigationRail extends MvuElement {
 				${css}
 			</style>
 			<div class="preload">
-				<div class="navigation-rail__container ${getHideClass()} ${getOrientationClass()} ">
-					<button class=" ${getIsActivelass(TabIds.MAPS)}" @click="${() => openTab(TabIds.MAPS)}" style="order:0">
+				<div class="navigation-rail__container ${getHideClass()} ${getOrientationClass()}">
+					<button class="${getIsActivelass(TabIds.MAPS)} landscape" @click="${() => openTab(TabIds.MAPS)}" style="order:0">
 						<span class="icon home"> </span>
 						<span class="text"> ${translate('menu_navigation_rail_home')} </span>
 					</button>
-					<span class="seperator" style="order:1"> </span>
-					<button class=" ${getIsVisible(TabIds.ROUTING)} ${getIsActivelass(TabIds.ROUTING)}" @click="${() => openRoutingTab()}" style="order:${getFlexOrder(
-						TabIds.ROUTING
-					)}">		
+					<span class="seperator" style="order:1" class="landscape"> </span>
+					<button
+						class=" ${getIsVisible(TabIds.ROUTING)} ${getIsActivelass(TabIds.ROUTING)} landscape"
+						@click="${() => openRoutingTab()}"
+						style="order:${getFlexOrder(TabIds.ROUTING)}"
+					>
 						<span class="icon routing"> </span>
 						<span class="text"> ${translate('menu_navigation_rail_routing')} </span>
 					</button>
-					<button class="${getIsVisible(TabIds.FEATUREINFO)} ${getIsActivelass(TabIds.FEATUREINFO)}" @click="${() =>
-						openTab(TabIds.FEATUREINFO)}" style="order:${getFlexOrder(TabIds.FEATUREINFO)}">				
+					<button
+						class="${getIsVisible(TabIds.FEATUREINFO)} ${getIsActivelass(TabIds.FEATUREINFO)} landscape"
+						@click="${() => openTab(TabIds.FEATUREINFO)}"
+						style="order:${getFlexOrder(TabIds.FEATUREINFO)}"
+					>
 						<span class="icon objektinfo"> </span>
-						<span class="text"> ${translate('menu_navigation_rail_object_info')}  </span>
+						<span class="text"> ${translate('menu_navigation_rail_object_info')} </span>
 					</button>
-					<button @click="${toggleSchema}" class="theme-toggle">
+					<button @click="${toggleSchema}" class="theme-toggle pointer">
 						<span class="icon ${getSchemaClass()}  "> </span>
 					</button>
-					<button <button class="touch ${getIsActivelass(TabIds.SEARCH)}" @click="${() => openTab(TabIds.SEARCH)}">
-						<span class="icon search-icon "> </span>
-						<span class="text"> ${translate('menu_navigation_rail_search')}  </span>
-					</button>
-					<button @click="${increaseZoom}" class="touch">
+					<button @click="${increaseZoom}" class="portrait">
 						<span class="icon zoom-in "> </span>
-						<span class="text"> ${translate('menu_navigation_rail_zoom_out')}   </span>
+						<span class="text"> ${translate('menu_navigation_rail_zoom_out')} </span>
 					</button>
-					<button @click="${decreaseZoom}" class="touch">
+					<button @click="${decreaseZoom}" class="portrait">
 						<span class="icon zoom-out  "> </span>
-						<span class="text"> ${translate('menu_navigation_rail_zoom_in')}  </span>
+						<span class="text"> ${translate('menu_navigation_rail_zoom_in')} </span>
 					</button>
-					<button @click="${zoomToExtent}" class="touch">
+					<button @click="${zoomToExtent}" class="portrait">
 						<span class="icon zoom-to-extent-icon "> </span>
 						<span class="text"> ${translate('menu_navigation_rail_zoom_to_extend')} </span>
 					</button>
-					<button @click="${closeNav}" class="touch">
+					<button @click="${closeNav}" class="portrait">
 						<span class="icon close-icon "> </span>
 						<span class="text"> ${translate('menu_navigation_rail_close')} </span>
 					</button>
-					<div class="hide" style="order:99">
-						<button>
-							<span class="icon mapconf"> </span>
-							<span class="text"> Basiskarten Konfigurator </span>
-						</button>
-						<button>
-							<span class="icon gespeichert"> </span>
-							<span class="text"> gespeichert </span>
-						</button>
-						<button>
-							<span class="icon legende"> </span>
-							<span class="text"> Legende </span>
-						</button>
-						<button>
-							<span class="icon time"> </span>
-							<span class="text"> Zeitreise </span>
-						</button>
-						<button>
-							<span class="icon br"> </span>
-							<span class="text"> BR-Radltour </span>
-						</button>
-						<button>
-							<span class="icon opendata"> </span>
-							<span class="text"> Open Data </span>
-						</button>
-					</div>
 				</div>
 			</div>
 		`;
