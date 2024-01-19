@@ -27,16 +27,13 @@ export class RouteInfo extends MvuElement {
 		this._translationService = TranslationService;
 		this._routingService = RoutingService;
 		this._unitsService = UnitsService;
-		this._storeSubscriptions = [];
 	}
 
 	onInitialize() {
-		this._storeSubscriptions = [
-			this.observe(
-				(store) => store.routing.status,
-				(status) => this.signal(Update_Status, status)
-			),
-
+		this.observe(
+			(store) => store.routing.status,
+			(status) => this.signal(Update_Status, status)
+		),
 			this.observe(
 				(store) => store.routing.stats,
 				(stats) => this.signal(Update_Route_Stats, stats)
@@ -44,14 +41,7 @@ export class RouteInfo extends MvuElement {
 			this.observe(
 				(state) => state.routing.categoryId,
 				(categoryId) => this.signal(Update_Category, categoryId)
-			)
-		];
-	}
-
-	onDisconnect() {
-		while (this._storeSubscriptions.length > 0) {
-			this._storeSubscriptions.shift()();
-		}
+			);
 	}
 
 	update(type, data, model) {
