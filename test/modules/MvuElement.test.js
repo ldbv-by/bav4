@@ -490,4 +490,27 @@ describe('MvuElement', () => {
 			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: element, bubbles: true }));
 		});
 	});
+
+	describe('when disconnected', () => {
+		it('unsubscribes all store observers', async () => {
+			const element = await TestUtils.render(MvuElementImpl.tag);
+			const onModelChangedSpy = spyOn(element, 'onModelChanged').and.callThrough();
+
+			store.dispatch({
+				type: INDEX_CHANGED,
+				payload: 42
+			});
+
+			expect(onModelChangedSpy).toHaveBeenCalledTimes(1);
+
+			element.remove(); // Let's remove the element and force running the disconnect -lifecycle, so no more state changes are observed
+
+			store.dispatch({
+				type: INDEX_CHANGED,
+				payload: 43
+			});
+
+			expect(onModelChangedSpy).toHaveBeenCalledTimes(1);
+		});
+	});
 });

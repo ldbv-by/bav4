@@ -21,25 +21,17 @@ export class RouteDetails extends MvuElement {
 		const { RoutingService, TranslationService } = $injector.inject('RoutingService', 'TranslationService');
 		this._translationService = TranslationService;
 		this._routingService = RoutingService;
-		this._storeSubscriptions = [];
 	}
 
 	onInitialize() {
-		this._storeSubscriptions = [
-			this.observe(
-				(store) => store.routing.status,
-				(status) => this.signal(Update_Status, status)
-			),
+		this.observe(
+			(store) => store.routing.status,
+			(status) => this.signal(Update_Status, status)
+		),
 			this.observe(
 				(store) => store.routing.stats,
 				(stats) => this.signal(Update_Route_Stats, stats)
-			)
-		];
-	}
-	onDisconnect() {
-		while (this._storeSubscriptions.length > 0) {
-			this._storeSubscriptions.shift()();
-		}
+			);
 	}
 
 	update(type, data, model) {

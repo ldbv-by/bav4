@@ -26,22 +26,14 @@ export class GeolocationButton extends MvuElement {
 	}
 
 	onInitialize() {
-		this._storeSubscriptions = [
-			this.observe(
-				(store) => store.geolocation.active,
-				(active) => this.signal(Update_Active, active)
-			),
+		this.observe(
+			(store) => store.geolocation.active,
+			(active) => this.signal(Update_Active, active)
+		),
 			this.observe(
 				(store) => store.geolocation.denied,
 				(denied) => this.signal(Update_Denied, denied)
-			)
-		];
-	}
-
-	onDisconnect() {
-		while (this._storeSubscriptions.length > 0) {
-			this._storeSubscriptions.shift()();
-		}
+			);
 	}
 
 	update(type, data, model) {

@@ -149,16 +149,6 @@ describe('WaypointItem', () => {
 		});
 	});
 
-	describe('when disconnected', () => {
-		it('removes all observers', async () => {
-			const element = await setup();
-			const spy = spyOn(element, '_unsubscribeFromStore').and.callThrough();
-			element.onDisconnect(); // we call onDisconnect manually
-
-			expect(spy).toHaveBeenCalled();
-		});
-	});
-
 	describe('getPlaceholder', () => {
 		it('creates a WaypointOption as placeholder', () => {
 			expect(getPlaceholder(1, 2)).toEqual({ index: 1, listIndex: 2, point: null, isStart: false, isDestination: false });

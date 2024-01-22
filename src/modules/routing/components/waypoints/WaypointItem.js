@@ -67,14 +67,10 @@ export class WaypointItem extends MvuElement {
 	}
 
 	onInitialize() {
-		this._unsubscribeFromStore = this.observe(
+		this.observe(
 			(state) => state.routing.categoryId,
 			(categoryId) => this.signal(Update_Category, categoryId)
 		);
-	}
-
-	onDisconnect() {
-		this._unsubscribeFromStore();
 	}
 
 	update(type, data, model) {
