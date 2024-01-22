@@ -21,7 +21,7 @@
 .is-open {
 	transform: translate(28em, 0);
 }
-.is-open-nav {
+.is-landscape .is-open-nav {
 	transform: translate(5.5em, 0);
 }
 .is-open.is-open-nav {
