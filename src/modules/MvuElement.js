@@ -52,8 +52,8 @@ import css from './baElement.css';
  * @author taulinger
  */
 export class MvuElement extends HTMLElement {
-	#observer = [];
-	#storeObserver = [];
+	#observers = [];
+	#storeObservers = [];
 	/**
 	 *
 	 * @param {object} model initial Model of this component
@@ -96,7 +96,7 @@ export class MvuElement extends HTMLElement {
 		const newModel = this.update(type, data, this.getModel());
 		if (newModel && !equals(newModel, this._model)) {
 			this._model = newModel;
-			this.#observer.forEach((o) => o());
+			this.#observers.forEach((o) => o());
 			this._logLifeCycle(`📌 ${this.constructor.name}#onModelChanged`, this.getModel());
 			this.onModelChanged(this.getModel());
 		}
@@ -149,8 +149,8 @@ export class MvuElement extends HTMLElement {
 		this._logLifeCycle(`📌 ${this.constructor.name}#onDisconnect`);
 
 		// unsubscribe all store observer
-		while (this.#storeObserver.length > 0) {
-			this.#storeObserver.shift()();
+		while (this.#storeObservers.length > 0) {
+			this.#storeObservers.shift()();
 		}
 
 		this.onDisconnect();
@@ -326,7 +326,7 @@ export class MvuElement extends HTMLElement {
 	observe(extract, onChange, immediately = true) {
 		//calls observe from storeUtils.js
 		const unsubscribeFn = observe(this._storeService.getStore(), extract, onChange, !immediately);
-		this.#storeObserver.push(unsubscribeFn);
+		this.#storeObservers.push(unsubscribeFn);
 		return unsubscribeFn;
 	}
 
@@ -364,7 +364,7 @@ export class MvuElement extends HTMLElement {
 			.map((key) => {
 				if (this._model[key] !== undefined) {
 					const observerFn = createObserver(key, onChange);
-					this.#observer.push(observerFn);
+					this.#observers.push(observerFn);
 
 					if (immediately) {
 						onChange(this._model[key]);
@@ -378,7 +378,7 @@ export class MvuElement extends HTMLElement {
 
 		return () => {
 			createdObservers.forEach((o) => {
-				this.#observer.splice(this.#observer.indexOf(o), 1);
+				this.#observers.splice(this.#observers.indexOf(o), 1);
 			});
 		};
 	}
