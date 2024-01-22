@@ -705,10 +705,16 @@ export class BvvMfp3Encoder {
 				encoded.fontColor = rgbToHex(fillColor);
 			}
 
+			// Workaround for a font misfit on mfp-infrastructure as long as custom font
+			// 'Open Sans' is not installed server sided
+			const Font_Open_Sans = 'Open Sans';
+			const Font_Open_Sans_Replacement = 'sans-serif';
+
 			if (textStyle.getFont()) {
 				const fontValues = textStyle.getFont().split(' ');
 				const [weight, size, ...fontFamilyValues] = fontValues;
-				encoded.fontFamily = fontFamilyValues.join(' ');
+				const fontFamily = fontFamilyValues.join(' ');
+				encoded.fontFamily = fontFamily === Font_Open_Sans ? Font_Open_Sans_Replacement : fontFamily;
 				encoded.fontSize = BvvMfp3Encoder.adjustDistance(parseInt(size), dpi);
 				encoded.fontWeight = weight;
 			}
