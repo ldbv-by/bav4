@@ -93,6 +93,20 @@ describe('IconsService', () => {
 				);
 				expect(warnSpy).toHaveBeenCalledWith('Icons could not be fetched from backend. Using fallback icons ...');
 			});
+
+			it('provides fallback routing-icons with a specific url-matcher function', async () => {
+				const instanceUnderTest = setup(async () => {
+					throw new Error('Icons could not be loaded');
+				});
+
+				const icons = await instanceUnderTest.all();
+
+				expect(icons.length).toBe(8);
+
+				expect(instanceUnderTest.getIconResult('rt_start').matches('rt_start')).toBeTrue();
+				expect(instanceUnderTest.getIconResult('rt_destination').matches('rt_destination')).toBeTrue();
+				expect(instanceUnderTest.getIconResult('rt_intermediate').matches('rt_intermediate')).toBeTrue();
+			});
 		});
 	});
 
