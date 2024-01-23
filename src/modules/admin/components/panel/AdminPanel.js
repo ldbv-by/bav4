@@ -14,7 +14,9 @@ import { Topic } from '../../../../domain/topic';
 
 const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
 const Update_Topics = 'update_topics';
+
 const Empty_Label = ' ';
+const End_Label = '  ';
 
 let _uniqueIdCounter = 0;
 const _generateUniqueId = () => {
@@ -339,6 +341,7 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const removePossibleEmptyEntry = (children) => {
+			console.log('🚀 ~ AdminPanel ~ removePossibleEmptyEntry');
 			for (let entryNumber = 0; entryNumber < children.length; entryNumber++) {
 				const catalogEntry = children[entryNumber];
 				// look for empty label
@@ -504,12 +507,28 @@ export class AdminPanel extends MvuElement {
 			console.log('🚀 ~ file: AdminPanel.js:458 ~ AdminPanel ~ saveCatalog ~ xxx:', xxx);
 		};
 
+		// todo recursive
+		const removePossibleEndEntry = (children) => {
+			console.log('🚀 ~ AdminPanel ~ removePossibleEndEntry ~ children:', children);
+			for (let entryNumber = 0; entryNumber < children.length; entryNumber++) {
+				const catalogEntry = children[entryNumber];
+				// look for empty label
+				if (catalogEntry.label === End_Label) {
+					console.log('🚀 ~ AdminPanel ~ removePossibleEndEntry ~ catalogEntry:', catalogEntry);
+					children.splice(entryNumber, 1);
+					console.log('🚀 ~ AdminPanel ~ removePossibleEndEntry ~ children:', children);
+					return children;
+				}
+			}
+		};
+
 		const resetCatalog = async () => {
 			const catalogWithResourceData = this._reduceData(this.#catalog, this._enrichWithGeoResource, this.#geoResources);
 			refreshCatalog(catalogWithResourceData);
 		};
 
 		const refreshCatalog = async (newCatalogWithResourceData) => {
+			console.log('🚀 ~ AdminPanel ~ refreshCatalog ~ newCatalogWithResourceData:', newCatalogWithResourceData);
 			// newCatalogWithResourceData.forEach((entry) => {
 			// 	// console.log('🚀 ~ AdminPanel ~ newCatalogWithResourceData.forEach ~ entry:', entry);
 			// 	const correspondingEntry = catalogWithResourceData.find((e) => e.uid === entry.uid);
@@ -522,10 +541,11 @@ export class AdminPanel extends MvuElement {
 			// 	// }
 			// });
 
-			const catalog = this._reduceData(newCatalogWithResourceData, this._copyEverything);
+			const catalog = removePossibleEndEntry(this._reduceData(newCatalogWithResourceData, this._copyEverything));
+			console.log('🚀 ~ AdminPanel ~ refreshCatalog ~ catalog:', catalog);
 			this.#catalog = catalog;
 
-			this.signal(Update_CatalogWithResourceData, newCatalogWithResourceData);
+			this.signal(Update_CatalogWithResourceData, catalog);
 		};
 
 		if (this.#currentTopicId) {
