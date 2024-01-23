@@ -129,6 +129,7 @@ describe('OlRoutingHandler', () => {
 			.registerSingleton('ElevationService', elevationServiceMock)
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
+			// implicitly required by getRoutingStyleFunction()
 			.registerSingleton('IconService', iconServiceMock);
 
 		return store;
