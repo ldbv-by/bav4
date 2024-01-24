@@ -38,7 +38,7 @@ describe('NavigationRail', () => {
 			...state
 		};
 
-		store =TestUtils.setupStoreAndDi(initialState, {
+		store = TestUtils.setupStoreAndDi(initialState, {
 			navigationRail: navigationRailReducer,
 			mainMenu: createNoInitialStateMainMenuReducer(),
 			media: createNoInitialStateMediaReducer(),
@@ -145,7 +145,7 @@ describe('NavigationRail', () => {
 
 		it('adds open navigationRail for landscape mode width active routing', async () => {
 			const state = {
-				media: { portrait: false, minWidth: false },			
+				media: { portrait: false, minWidth: false },
 				mainMenu: {
 					open: true,
 					tab: TabIds.ROUTING
@@ -153,7 +153,7 @@ describe('NavigationRail', () => {
 				navigationRail: {
 					openNav: true,
 					visitedTabIdsSet: new Set([TabIds.ROUTING])
-				},
+				}
 			};
 			const element = await setup(state);
 			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(1);
@@ -168,7 +168,7 @@ describe('NavigationRail', () => {
 
 		it('adds open navigationRail for landscape mode width active objectinfo', async () => {
 			const state = {
-				media: { portrait: false, minWidth: false },			
+				media: { portrait: false, minWidth: false },
 				mainMenu: {
 					open: true,
 					tab: TabIds.FEATUREINFO
@@ -176,7 +176,7 @@ describe('NavigationRail', () => {
 				navigationRail: {
 					openNav: true,
 					visitedTabIdsSet: new Set([TabIds.ROUTING, TabIds.FEATUREINFO])
-				},
+				}
 			};
 			const element = await setup(state);
 			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(1);
@@ -192,7 +192,7 @@ describe('NavigationRail', () => {
 
 		it('change active button on click', async () => {
 			const state = {
-				media: { portrait: false, minWidth: false },			
+				media: { portrait: false, minWidth: false },
 				mainMenu: {
 					open: true,
 					tab: TabIds.FEATUREINFO
@@ -200,7 +200,7 @@ describe('NavigationRail', () => {
 				navigationRail: {
 					openNav: true,
 					visitedTabIdsSet: new Set([TabIds.ROUTING, TabIds.FEATUREINFO])
-				},
+				}
 			};
 			const element = await setup(state);
 
@@ -214,7 +214,6 @@ describe('NavigationRail', () => {
 			expect(element.shadowRoot.querySelectorAll('.routing.is-active')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.objectinfo.is-active')).toHaveSize(0);
 			expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
-
 		});
 	});
 
