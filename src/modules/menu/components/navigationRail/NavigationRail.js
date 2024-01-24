@@ -115,7 +115,7 @@ export class NavigationRail extends MvuElement {
 		};
 
 		const getHideClass = () => {
-			return isOpenNav ? '' : 'open-sub-nav';
+			return isOpenNav ? 'is-open' : '';
 		};
 		const getIsActivelass = (tabId) => {
 			return tabIndex === tabId && isOpen ? 'is-active' : '';
@@ -131,6 +131,7 @@ export class NavigationRail extends MvuElement {
 		};
 
 		const getFlexOrder = (tabId) => {
+			//first tow are always home button and separator
 			return allTabIds.indexOf(tabId) + 2;
 		};
 
@@ -139,49 +140,49 @@ export class NavigationRail extends MvuElement {
 			<style>
 				${css}
 			</style>
-			<div class="preload">
-				<div class="navigation-rail__container ${getHideClass()} ${getOrientationClass()}">
-					<button class="${getIsActivelass(TabIds.MAPS)} landscape" @click="${() => openTab(TabIds.MAPS)}" style="order:0">
-						<span class="icon home"> </span>
-						<span class="text"> ${translate('menu_navigation_rail_home')} </span>
-					</button>
-					<span class="seperator" style="order:1" class="landscape"> </span>
-					<button
-						class=" ${getIsVisible(TabIds.ROUTING)} ${getIsActivelass(TabIds.ROUTING)} landscape"
-						@click="${() => openRoutingTab()}"
-						style="order:${getFlexOrder(TabIds.ROUTING)}"
-					>
-						<span class="icon routing"> </span>
-						<span class="text"> ${translate('menu_navigation_rail_routing')} </span>
-					</button>
-					<button
-						class="${getIsVisible(TabIds.FEATUREINFO)} ${getIsActivelass(TabIds.FEATUREINFO)} landscape"
-						@click="${() => openTab(TabIds.FEATUREINFO)}"
-						style="order:${getFlexOrder(TabIds.FEATUREINFO)}"
-					>
-						<span class="icon objektinfo"> </span>
-						<span class="text"> ${translate('menu_navigation_rail_object_info')} </span>
-					</button>
-					<button @click="${toggleSchema}" class="theme-toggle pointer">
-						<span class="icon ${getSchemaClass()}  "> </span>
-					</button>
-					<button @click="${increaseZoom}" class="portrait">
-						<span class="icon zoom-in "> </span>
-						<span class="text"> ${translate('menu_navigation_rail_zoom_out')} </span>
-					</button>
-					<button @click="${decreaseZoom}" class="portrait">
-						<span class="icon zoom-out  "> </span>
-						<span class="text"> ${translate('menu_navigation_rail_zoom_in')} </span>
-					</button>
-					<button @click="${zoomToExtent}" class="portrait">
-						<span class="icon zoom-to-extent-icon "> </span>
-						<span class="text"> ${translate('menu_navigation_rail_zoom_to_extend')} </span>
-					</button>
-					<button @click="${closeNav}" class="portrait">
-						<span class="icon close-icon "> </span>
-						<span class="text"> ${translate('menu_navigation_rail_close')} </span>
-					</button>
-				</div>
+			<div class="navigation-rail__container ${getHideClass()} ${getOrientationClass()}">
+				<button class="home ${getIsActivelass(TabIds.MAPS)} landscape" @click="${() => openTab(TabIds.MAPS)}">
+					<span class="icon "> </span>
+					<span class="text"> ${translate('menu_navigation_rail_home')} </span>
+				</button>
+				<span class="separator landscape"> </span>
+				<button
+					class="routing ${getIsVisible(TabIds.ROUTING)} ${getIsActivelass(TabIds.ROUTING)} landscape"
+					@click="${() => openRoutingTab()}"
+					style="order:${getFlexOrder(TabIds.ROUTING)}"
+				>
+					<span class="icon"> </span>
+					<span class="text"> ${translate('menu_navigation_rail_routing')} </span>
+				</button>
+				<button
+					class=" objectinfo ${getIsVisible(TabIds.FEATUREINFO)} ${getIsActivelass(TabIds.FEATUREINFO)} landscape"
+					@click="${() => openTab(TabIds.FEATUREINFO)}"
+					style="order:${getFlexOrder(TabIds.FEATUREINFO)}"
+				>
+					<span class="icon "> </span>
+					<span class="text"> ${translate('menu_navigation_rail_object_info')} </span>
+				</button>
+
+				<button @click="${increaseZoom}" class="zoom-in portrait">
+					<span class="icon  "> </span>
+					<span class="text"> ${translate('menu_navigation_rail_zoom_in')} </span>
+				</button>
+				<button @click="${decreaseZoom}" class="zoom-out portrait">
+					<span class="icon   "> </span>
+					<span class="text"> ${translate('menu_navigation_rail_zoom_out')} </span>
+				</button>
+				<button @click="${zoomToExtent}" class="zoom-to-extent portrait">
+					<span class="icon  "> </span>
+					<span class="text"> ${translate('menu_navigation_rail_zoom_to_extend')} </span>
+				</button>
+				<button @click="${closeNav}" class="close portrait">
+					<span class="icon "> </span>
+					<span class="text"> ${translate('menu_navigation_rail_close')} </span>
+				</button>
+
+				<button @click="${toggleSchema}" class=" ${getSchemaClass()} theme-toggle pointer">
+					<span class="icon "> </span>
+				</button>
 			</div>
 		`;
 	}

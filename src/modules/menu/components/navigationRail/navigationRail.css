@@ -1,4 +1,5 @@
 .navigation-rail__container {
+	left: -5.5em;
 	position: fixed;
 	height: 100%;
 	width: 5.5em;
@@ -11,7 +12,7 @@
 }
 .is-portrait.navigation-rail__container {
 	height: auto;
-	bottom: 0;
+	bottom: -10em;
 	left: 0;
 	min-width: 100%;
 	flex-direction: row;
@@ -43,7 +44,8 @@
 	color: var(--text1);
 }
 
-.seperator {
+.separator {
+	order: 1;
 	border-bottom: 1px dotted var(--secondary-color) !important;
 	margin: 0 0.5em;
 }
@@ -67,67 +69,72 @@
 .navigation-rail__container button:hover .icon {
 	background: linear-gradient(to top, var(--text4) 0%, var(--primary-color) 50%);
 }
+
 .home {
+	order: 0;
+}
+
+.home .icon {
 	mask: url('assets/home.svg');
 	-webkit-mask: url('assets/home.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
-.routing {
+.routing .icon {
 	mask: url('assets/routing.svg');
 	-webkit-mask: url('assets/routing.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
-.objektinfo {
+.objectinfo .icon {
 	mask: url('assets/objektinfo.svg');
 	-webkit-mask: url('assets/objektinfo.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
-.time {
+.time .icon {
 	mask: url('assets/time.svg');
 	-webkit-mask: url('assets/time.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
-.br {
+.br .icon {
 	mask: url('assets/br.svg');
 	-webkit-mask: url('assets/br.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
-.mapconf {
+.mapconf .icon {
 	mask: url('assets/mapconf.svg');
 	-webkit-mask: url('assets/mapconf.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
-.gespeichert {
+.gespeichert .icon {
 	mask: url('assets/gespeichert.svg');
 	-webkit-mask: url('assets/gespeichert.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
-.legende {
+.legende .icon {
 	mask: url('assets/legende.svg');
 	-webkit-mask: url('assets/legende.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
-.opendata {
+.opendata .icon {
 	mask: url('assets/opendata.svg');
 	-webkit-mask: url('assets/opendata.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
-.stars {
+.stars .icon {
 	mask: url('assets/stars.svg');
 	-webkit-mask: url('assets/stars.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
-.moon {
+.moon .icon {
 	background: var(--text4) !important;
 	mask: url('assets/moon.svg');
 	-webkit-mask-image: url('assets/moon.svg');
@@ -137,7 +144,7 @@
 	height: 2.5em;
 	width: 2.5em;
 }
-.sun {
+.sun .icon {
 	background: var(--text4) !important;
 	mask: url('assets/sun.svg');
 	-webkit-mask-image: url('assets/sun.svg');
@@ -147,6 +154,43 @@
 	height: 2.5em;
 	width: 2.5em;
 }
+
+.zoom-in .icon {
+	mask: url('assets/plus.svg');
+	-webkit-mask-image: url('assets/plus.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+
+.zoom-out .icon {
+	mask: url('assets/minus.svg');
+	-webkit-mask-image: url('assets/minus.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+
+.zoom-to-extent .icon {
+	mask: url('./assets/ba-icon.svg');
+	-webkit-mask-image: url('./assets/ba-icon.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+
+.search-icon .icon {
+	mask: url('./assets/search.svg');
+	-webkit-mask-image: url('./assets/search.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	transform: scale(0.7);
+}
+
+.close .icon {
+	mask: url('./assets/close.svg');
+	-webkit-mask-image: url('./assets/close.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+
 .theme-toggle {
 	position: absolute;
 	bottom: 1em;
@@ -156,52 +200,18 @@
 	margin: 1em;
 	padding-bottom: 0.5em;
 }
+
 .is-portrait .theme-toggle {
 	display: none;
 }
 
-.zoom-in {
-	mask: url('assets/plus.svg');
-	-webkit-mask-image: url('assets/plus.svg');
-	mask-size: cover;
-	-webkit-mask-size: cover;
+.is-open {
+	transform: translate(5.5em, 0);
 }
 
-.zoom-out {
-	mask: url('assets/minus.svg');
-	-webkit-mask-image: url('assets/minus.svg');
-	mask-size: cover;
-	-webkit-mask-size: cover;
-}
-
-.zoom-to-extent-icon {
-	mask: url('./assets/ba-icon.svg');
-	-webkit-mask-image: url('./assets/ba-icon.svg');
-	mask-size: cover;
-	-webkit-mask-size: cover;
-}
-
-.search-icon {
-	mask: url('./assets/search.svg');
-	-webkit-mask-image: url('./assets/search.svg');
-	mask-size: cover;
-	-webkit-mask-size: cover;
-	transform: scale(0.7);
-}
-
-.close-icon {
-	mask: url('./assets/close.svg');
-	-webkit-mask-image: url('./assets/close.svg');
-	mask-size: cover;
-	-webkit-mask-size: cover;
-}
-.open-sub-nav {
-	transform: translate(-5.5em, 0);
-}
-
-.is-portrait.open-sub-nav,
-.is-tablet.open-sub-nav {
-	transform: translate(0, 10em) !important;
+.is-portrait.is-open,
+.is-tablet.is-open {
+	transform: translate(0, -10em);
 }
 
 .is-landscape .portrait {
