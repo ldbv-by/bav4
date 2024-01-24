@@ -49,27 +49,6 @@
 	border-bottom: 1px dotted var(--secondary-color) !important;
 	margin: 0 0.5em;
 }
-
-.navigation-rail__container button .icon {
-	height: 2.1em;
-	width: 2.1em;
-	background: var(--text2);
-	background: linear-gradient(to top, var(--text4) 0%, var(--primary-color) 50%);
-	margin: auto;
-	margin-bottom: 0;
-}
-
-.navigation-rail__container button:hover {
-	background: var(--primary-bg-color);
-}
-
-.navigation-rail__container button:hover .text {
-	color: var(--text1);
-}
-.navigation-rail__container button:hover .icon {
-	background: linear-gradient(to top, var(--text4) 0%, var(--primary-color) 50%);
-}
-
 .home {
 	order: 0;
 }
@@ -189,6 +168,26 @@
 	-webkit-mask-image: url('./assets/close.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
+}
+
+.navigation-rail__container button .icon {
+	height: 2.1em;
+	width: 2.1em;
+	background: var(--text2);
+	background: linear-gradient(to top, var(--text4) 0%, var(--primary-color) 50%);
+	margin: auto;
+	margin-bottom: 0;
+}
+
+.navigation-rail__container button:hover {
+	background: var(--primary-bg-color);
+}
+
+.navigation-rail__container button:hover .text {
+	color: var(--text1);
+}
+.navigation-rail__container button:hover .icon {
+	background: linear-gradient(to top, var(--text4) 0%, var(--primary-color) 50%);
 }
 
 .theme-toggle {
