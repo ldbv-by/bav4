@@ -15,6 +15,7 @@ export class NavigationRailPlugin extends BaPlugin {
 		super();
 		this._open = null;
 		this._openNav = null;
+		this._isPortrait = null;
 	}
 
 	_init() {}
@@ -26,10 +27,11 @@ export class NavigationRailPlugin extends BaPlugin {
 	async register(store) {
 		this._init();
 		this._openNav = store.getState().navigationRail.openNav;
+		this._isPortrait = store.getState().media.portrait;
 
 		const onTabChanged = (tab, state) => {
 			this._open = state.mainMenu.open;
-			if (tab === TabIds.FEATUREINFO || tab === TabIds.ROUTING) {
+			if (tab === TabIds.FEATUREINFO || (tab === TabIds.ROUTING && !this._isPortrait)) {
 				addTabId(tab);
 				//TEMP
 				closeNav();
