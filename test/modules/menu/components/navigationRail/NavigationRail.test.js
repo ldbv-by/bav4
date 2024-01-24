@@ -215,6 +215,29 @@ describe('NavigationRail', () => {
 			expect(element.shadowRoot.querySelectorAll('.objectinfo.is-active')).toHaveSize(0);
 			expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
 		});
+
+		it('change darkSchema on click', async () => {
+			const state = {
+				media: { portrait: false, minWidth: false, darkSchema: false },
+				navigationRail: {
+					openNav: true,
+					visitedTabIdsSet: new Set([TabIds.ROUTING, TabIds.FEATUREINFO])
+				}
+			};
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelectorAll('.theme-toggle.pointer')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.sun')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.moon')).toHaveSize(1);
+			expect(store.getState().media.darkSchema).toBeFalse();
+
+			const button = element.shadowRoot.querySelector('.theme-toggle');
+			button.click();
+
+			expect(element.shadowRoot.querySelectorAll('.sun')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.moon')).toHaveSize(0);
+			expect(store.getState().media.darkSchema).toBeTrue();
+		});
 	});
 
 	it('renders nothing when embedded', async () => {
