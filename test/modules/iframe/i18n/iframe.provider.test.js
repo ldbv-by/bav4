@@ -20,6 +20,7 @@ describe('i18n for iframe module', () => {
 		expect(map.iframe_drawTool_disable).toBe('Zeichnen deaktivieren');
 		expect(map.iframe_drawTool_symbol).toBe('Punkt');
 		expect(map.iframe_drawTool_line).toBe('Linie');
+		expect(map.iframe_drawTool_polygon).toBe('Polygon');
 		expect(map.iframe_drawTool_cancel).toBe('Abbrechen');
 		expect(map.iframe_drawTool_finish).toBe('Fertig');
 		expect(map.iframe_drawTool_delete_point).toBe('letzten Punk löschen');
@@ -45,6 +46,7 @@ describe('i18n for iframe module', () => {
 		expect(map.iframe_drawTool_disable).toBe('Disable the drawing tool');
 		expect(map.iframe_drawTool_symbol).toBe('Point');
 		expect(map.iframe_drawTool_line).toBe('Line');
+		expect(map.iframe_drawTool_polygon).toBe('Polygon');
 		expect(map.iframe_drawTool_cancel).toBe('Cancel');
 		expect(map.iframe_drawTool_finish).toBe('Finish');
 		expect(map.iframe_drawTool_delete_point).toBe('Remove point');
@@ -52,7 +54,7 @@ describe('i18n for iframe module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 20;
+		const expectedSize = 21;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
