@@ -705,16 +705,14 @@ export class BvvMfp3Encoder {
 				encoded.fontColor = rgbToHex(fillColor);
 			}
 
-			// Workaround for a font misfit on mfp-infrastructure as long as custom font
-			// 'Open Sans' is not installed server sided
-			const Font_Open_Sans = 'Open Sans';
-			const Font_Open_Sans_Replacement = 'sans-serif';
-
 			if (textStyle.getFont()) {
 				const fontValues = textStyle.getFont().split(' ');
 				const [weight, size, ...fontFamilyValues] = fontValues;
-				const fontFamily = fontFamilyValues.join(' ');
-				encoded.fontFamily = fontFamily === Font_Open_Sans ? Font_Open_Sans_Replacement : fontFamily;
+				// hint: the fontFamily value relates to all installed font on the server.
+				// If the application use any custom fonts over css-styles which are used
+				// for labels on the map, these fonts must be available as TrueTypeFonts
+				// on the MapFishPrint server
+				encoded.fontFamily = fontFamilyValues.join(' ');
 				encoded.fontSize = BvvMfp3Encoder.adjustDistance(parseInt(size), dpi);
 				encoded.fontWeight = weight;
 			}
