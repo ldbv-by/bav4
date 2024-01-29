@@ -59,7 +59,9 @@ describe('DrawTool', () => {
 			const element = await setup();
 
 			expect(element._model.tools).toBeTruthy();
-			expect(element._model.tools.length).toBe(2);
+			expect(element._model.tools.length).toBe(3);
+
+			expect(element._model.tools.map((t) => t.name)).toEqual(jasmine.arrayWithExactContents(['marker', 'line', 'polygon']));
 		});
 
 		describe('when queryParam for drawTool is set', () => {
@@ -74,12 +76,12 @@ describe('DrawTool', () => {
 				const element = await setup();
 
 				expect(element._model.tools).toBeTruthy();
-				expect(element._model.tools.length).toBe(2);
+				expect(element._model.tools.length).toBe(3);
 
 				expect(element.shadowRoot.querySelectorAll('.draw-tool__enable-button')).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll('#close-icon')).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll('.draw-tool__buttons')).toHaveSize(1);
-				expect(element.shadowRoot.querySelector('.draw-tool__buttons').childElementCount).toBe(2);
+				expect(element.shadowRoot.querySelector('.draw-tool__buttons').childElementCount).toBe(3);
 			});
 
 			it('activates and deactivate  the draw tool', async () => {
@@ -120,6 +122,17 @@ describe('DrawTool', () => {
 				expect(store.getState().draw.type).toBe('marker');
 			});
 
+			it('activates the Polygon draw tool', async () => {
+				const element = await setup();
+				const toolButton = element.shadowRoot.querySelector('#polygon-button');
+				activate();
+
+				toolButton.click();
+
+				expect(toolButton.classList.contains('is-active')).toBeTrue();
+				expect(store.getState().draw.type).toBe('polygon');
+			});
+
 			it('deactivates last tool, when activate another', async () => {
 				const element = await setup();
 				const lastButton = element.shadowRoot.querySelector('#marker-button');
@@ -158,6 +171,21 @@ describe('DrawTool', () => {
 
 				expect(store.getState().draw.active).toBeTrue();
 				expect(store.getState().draw.type).toBe('line');
+
+				toolButton.click();
+
+				expect(store.getState().draw.reset).toEqual(jasmine.any(EventLike));
+			});
+
+			it('toggles the polygon tool', async () => {
+				const element = await setup();
+				const toolButton = element.shadowRoot.querySelector('#polygon-button');
+				activate();
+
+				toolButton.click();
+
+				expect(store.getState().draw.active).toBeTrue();
+				expect(store.getState().draw.type).toBe('polygon');
 
 				toolButton.click();
 
