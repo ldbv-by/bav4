@@ -35,6 +35,10 @@ export class BottomSheet extends MvuElement {
 				(state) => state.media,
 				(data) => this.signal(Update_Media, data),
 				true
+			),
+			this.observe(
+				(state) => state.navigationRail,
+				(navigationRail) => this.signal(Update_IsOpen_NavigationRail, { openNav: navigationRail.openNav })
 			);
 	}
 
