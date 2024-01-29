@@ -12,7 +12,7 @@ import { toggleSchema } from '../../../../store/media/media.action';
 import { setCurrentTool } from '../../../../store/tools/tools.action';
 import { increaseZoom, decreaseZoom } from '../../../../store/position/position.action';
 import { fit } from '../../../../store/position/position.action';
-import { closeNav } from '../../../../store/navigationRail/navigationRail.action';
+import { close } from '../../../../store/navigationRail/navigationRail.action';
 
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_IsOpen_NavigationRail = 'update_NavigationRail';
@@ -28,7 +28,8 @@ const Update_FeatureInfo_Data = 'update_featureInfo_data';
 export class NavigationRail extends MvuElement {
 	constructor() {
 		super({
-			isOpenNav: false,
+			open: false,
+			isOpenNavigationRail: false,
 			tabIndex: null,
 			isPortrait: false,
 			visitedTabIdsSet: null
@@ -43,8 +44,6 @@ export class NavigationRail extends MvuElement {
 		this._environmentService = environmentService;
 		this._translationService = translationService;
 		this._mapService = mapService;
-
-		this._isOpen = false;
 	}
 
 	update(type, data, model) {
@@ -70,7 +69,7 @@ export class NavigationRail extends MvuElement {
 		this.observe(
 			(state) => state.navigationRail,
 			(navigationRail) =>
-				this.signal(Update_IsOpen_NavigationRail, { isOpenNav: navigationRail.openNav, visitedTabIdsSet: navigationRail.visitedTabIdsSet })
+				this.signal(Update_IsOpen_NavigationRail, { isOpenNavigationRail: navigationRail.open, visitedTabIdsSet: navigationRail.visitedTabIdsSet })
 		);
 		this.observe(
 			(state) => state.media.darkSchema,
@@ -91,7 +90,7 @@ export class NavigationRail extends MvuElement {
 	}
 
 	createView(model) {
-		const { isOpenNav, darkSchema, isPortrait, tabIndex, isOpen, visitedTabIdsSet } = model;
+		const { isOpenNavigationRail, darkSchema, isPortrait, tabIndex, isOpen, visitedTabIdsSet } = model;
 
 		const allTabIds = Array.from(visitedTabIdsSet).reverse();
 
@@ -115,7 +114,7 @@ export class NavigationRail extends MvuElement {
 		};
 
 		const getHideClass = () => {
-			return isOpenNav ? 'is-open' : '';
+			return isOpenNavigationRail ? 'is-open' : '';
 		};
 		const getIsActivelass = (tabId) => {
 			return tabIndex === tabId && isOpen ? 'is-active' : '';
@@ -175,7 +174,7 @@ export class NavigationRail extends MvuElement {
 					<span class="icon  "> </span>
 					<span class="text"> ${translate('menu_navigation_rail_zoom_to_extend')} </span>
 				</button>
-				<button @click="${closeNav}" class="close portrait">
+				<button @click="${close}" class="close portrait">
 					<span class="icon "> </span>
 					<span class="text"> ${translate('menu_navigation_rail_close')} </span>
 				</button>

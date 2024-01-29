@@ -60,7 +60,8 @@ describe('NavigationRail', () => {
 			await setup();
 			const model = new NavigationRail().getModel();
 			expect(model).toEqual({
-				isOpenNav: false,
+				open: false,
+				isOpenNavigationRail: false,
 				tabIndex: null,
 				isPortrait: false,
 				visitedTabIdsSet: null
@@ -151,7 +152,7 @@ describe('NavigationRail', () => {
 					tab: TabIds.ROUTING
 				},
 				navigationRail: {
-					openNav: true,
+					open: true,
 					visitedTabIdsSet: new Set([TabIds.ROUTING])
 				}
 			};
@@ -174,7 +175,7 @@ describe('NavigationRail', () => {
 					tab: TabIds.FEATUREINFO
 				},
 				navigationRail: {
-					openNav: true,
+					open: true,
 					visitedTabIdsSet: new Set([TabIds.ROUTING, TabIds.FEATUREINFO])
 				}
 			};

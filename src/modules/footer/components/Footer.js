@@ -19,7 +19,8 @@ export class Footer extends MvuElement {
 		super({
 			isOpen: false,
 			isPortrait: false,
-			hasMinWidth: false
+			hasMinWidth: false,
+			isOpenNavigationRail: false
 		});
 
 		const { EnvironmentService } = $injector.inject('EnvironmentService');
@@ -40,7 +41,7 @@ export class Footer extends MvuElement {
 		);
 		this.observe(
 			(state) => state.navigationRail,
-			(navigationRail) => this.signal(Update_IsOpen_NavigationRail, { openNav: navigationRail.openNav })
+			(navigationRail) => this.signal(Update_IsOpen_NavigationRail, { isOpenNavigationRail: navigationRail.open })
 		);
 	}
 
@@ -70,7 +71,7 @@ export class Footer extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { isOpen, openNav, isPortrait, hasMinWidth } = model;
+		const { isOpen, isOpenNavigationRail, isPortrait, hasMinWidth } = model;
 
 		const getOverlayClass = () => {
 			return isOpen && !isPortrait && !this._environmentService.isEmbedded() ? 'is-open' : '';
@@ -84,7 +85,7 @@ export class Footer extends MvuElement {
 			return hasMinWidth ? 'is-desktop' : 'is-tablet';
 		};
 
-		const getOverlayNavClass = () => (openNav ? 'is-open-nav' : '');
+		const getOverlayNavClass = () => (isOpenNavigationRail ? 'is-open-nav' : '');
 
 		const isEmbedded = () => {
 			return this._environmentService.isEmbedded() ? 'is-embedded' : '';

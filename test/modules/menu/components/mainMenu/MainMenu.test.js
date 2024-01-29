@@ -91,7 +91,8 @@ describe('MainMenu', () => {
 				open: false,
 				portrait: false,
 				minWidth: false,
-				observeResponsiveParameter: false
+				observeResponsiveParameter: false,
+				isOpenNavigationRail: false
 			});
 		});
 

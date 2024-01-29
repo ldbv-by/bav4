@@ -163,6 +163,7 @@ describe('ChipsContainer', () => {
 				hasMinWidth: false,
 				isDarkSchema: false,
 				isOpen: false,
+				isOpenNavigationRail: false,
 				currentChips: []
 			});
 		});

@@ -44,7 +44,8 @@ describe('Footer', () => {
 			expect(model).toEqual({
 				isOpen: false,
 				isPortrait: false,
-				hasMinWidth: false
+				hasMinWidth: false,
+				isOpenNavigationRail: false
 			});
 		});
 	});

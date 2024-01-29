@@ -25,7 +25,8 @@ export class ChipsContainer extends MvuElement {
 			hasMinWidth: false,
 			isDarkSchema: false,
 			isOpen: false,
-			currentChips: []
+			currentChips: [],
+			isOpenNavigationRail: false
 		});
 
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
@@ -69,7 +70,7 @@ export class ChipsContainer extends MvuElement {
 		);
 		this.observe(
 			(state) => state.navigationRail,
-			(navigationRail) => this.signal(Update_IsOpen_NavigationRail, { openNav: navigationRail.openNav })
+			(navigationRail) => this.signal(Update_IsOpen_NavigationRail, { isOpenNavigationRail: navigationRail.open })
 		);
 	}
 
@@ -107,7 +108,7 @@ export class ChipsContainer extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { isDarkSchema, isPortrait, hasMinWidth, isOpen, openNav, currentChips } = model;
+		const { isDarkSchema, isPortrait, hasMinWidth, isOpen, isOpenNavigationRail, currentChips } = model;
 
 		const getOrientationClass = () => {
 			return isPortrait ? 'is-portrait' : 'is-landscape';
@@ -184,7 +185,7 @@ export class ChipsContainer extends MvuElement {
 			return currentChips.map((chip) => (chip.target === 'modal' ? getButton(chip) : getLink(chip)));
 		};
 
-		const getOverlayNavClass = () => (openNav ? 'is-open-nav' : '');
+		const getOverlayNavClass = () => (isOpenNavigationRail ? 'is-open-nav' : '');
 
 		return html`
 			<style>

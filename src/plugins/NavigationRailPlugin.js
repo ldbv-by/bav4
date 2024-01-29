@@ -3,7 +3,7 @@
  */
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from '../plugins/BaPlugin';
-import { openNav, addTabId, closeNav } from '../store/navigationRail/navigationRail.action';
+import { open, addTabId, close } from '../store/navigationRail/navigationRail.action';
 import { TabIds } from '../domain/mainMenu';
 
 /**
@@ -13,8 +13,8 @@ import { TabIds } from '../domain/mainMenu';
 export class NavigationRailPlugin extends BaPlugin {
 	constructor() {
 		super();
-		this._open = null;
-		this._openNav = null;
+		this._openMainMenu = null;
+		this._openNavigationRail = null;
 		this._isPortrait = null;
 	}
 
@@ -26,16 +26,16 @@ export class NavigationRailPlugin extends BaPlugin {
 	 */
 	async register(store) {
 		this._init();
-		this._openNav = store.getState().navigationRail.openNav;
+		this._openNavigationRail = store.getState().navigationRail.open;
 		this._isPortrait = store.getState().media.portrait;
 
 		const onTabChanged = (tab, state) => {
-			this._open = state.mainMenu.open;
+			this._openMainMenu = state.mainMenu.open;
 			if (tab === TabIds.FEATUREINFO || (tab === TabIds.ROUTING && !this._isPortrait)) {
 				addTabId(tab);
 				//TEMP
-				closeNav();
-				openNav();
+				close();
+				open();
 			}
 		};
 

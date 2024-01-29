@@ -22,7 +22,7 @@ export class BottomSheet extends MvuElement {
 		super({
 			content: null,
 			open: false,
-			openNav: false,
+			isOpenNavigationRail: false,
 			portrait: false
 		});
 
@@ -38,7 +38,7 @@ export class BottomSheet extends MvuElement {
 			),
 			this.observe(
 				(state) => state.navigationRail,
-				(navigationRail) => this.signal(Update_IsOpen_NavigationRail, { openNav: navigationRail.openNav })
+				(navigationRail) => this.signal(Update_IsOpen_NavigationRail, { isOpenNavigationRail: navigationRail.open })
 			);
 	}
 
@@ -68,11 +68,11 @@ export class BottomSheet extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { content, open, openNav, portrait } = model;
+		const { content, open, isOpenNavigationRail, portrait } = model;
 
 		const getOverlayClass = () => (open && !portrait ? 'is-open' : '');
 
-		const getOverlayNavClass = () => (openNav ? 'is-open-nav' : '');
+		const getOverlayNavClass = () => (isOpenNavigationRail ? 'is-open-nav' : '');
 
 		const onDismiss = () => {
 			const elementModal = this.shadowRoot.querySelector('.bottom-sheet');

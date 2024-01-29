@@ -77,7 +77,8 @@ describe('Header', () => {
 				layers: [],
 				isPortrait: false,
 				hasMinWidth: false,
-				searchTerm: null
+				searchTerm: null,
+				isOpenNavigationRail: false
 			});
 		});
 

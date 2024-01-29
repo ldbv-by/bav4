@@ -13,7 +13,7 @@ const getStore = () => {
  * Opens the main menu.
  * @function
  */
-export const openNav = () => {
+export const open = () => {
 	getStore().dispatch({
 		type: OPENNAV_CLOSEDNAV_CHANGED,
 		payload: true
@@ -24,7 +24,7 @@ export const openNav = () => {
  * Closes the main menu.
  * @function
  */
-export const closeNav = () => {
+export const close = () => {
 	getStore().dispatch({
 		type: OPENNAV_CLOSEDNAV_CHANGED,
 		payload: false
@@ -35,13 +35,13 @@ export const closeNav = () => {
  * Toggles the visibility of the main menu.
  * @function
  */
-export const toggleNav = () => {
+export const toggle = () => {
 	const {
-		navigationRail: { openNav }
+		navigationRail: { open }
 	} = getStore().getState();
 	getStore().dispatch({
 		type: OPENNAV_CLOSEDNAV_CHANGED,
-		payload: !openNav
+		payload: !open
 	});
 };
 

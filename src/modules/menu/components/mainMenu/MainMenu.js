@@ -36,7 +36,8 @@ export class MainMenu extends MvuElement {
 			open: false,
 			portrait: false,
 			minWidth: false,
-			observeResponsiveParameter: false
+			observeResponsiveParameter: false,
+			isOpenNavigationRail: false
 		});
 		const { EnvironmentService: environmentService, TranslationService: translationService } = $injector.inject(
 			'EnvironmentService',
@@ -59,7 +60,7 @@ export class MainMenu extends MvuElement {
 		);
 		this.observe(
 			(state) => state.navigationRail,
-			(navigationRail) => this.signal(Update_IsOpen_NavigationRail, { openNav: navigationRail.openNav })
+			(navigationRail) => this.signal(Update_IsOpen_NavigationRail, { isOpenNavigationRail: navigationRail.open })
 		);
 	}
 
@@ -123,7 +124,7 @@ export class MainMenu extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { open, openNav, tab, portrait, minWidth, observeResponsiveParameter } = model;
+		const { open, isOpenNavigationRail, tab, portrait, minWidth, observeResponsiveParameter } = model;
 
 		const getOrientationClass = () => (portrait ? 'is-portrait' : 'is-landscape');
 
@@ -133,7 +134,7 @@ export class MainMenu extends MvuElement {
 
 		const getOverlayClass = () => (open ? 'is-open' : '');
 
-		const getOverlayNavClass = () => (openNav ? 'is-open-nav' : '');
+		const getOverlayNavClass = () => (isOpenNavigationRail ? 'is-open-nav' : '');
 
 		const getPreloadClass = () => (observeResponsiveParameter ? '' : 'prevent-transition');
 

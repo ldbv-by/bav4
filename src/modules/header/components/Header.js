@@ -2,8 +2,8 @@
  * @module modules/header/components/Header
  */
 import { html } from 'lit-html';
-import { open as openMainMenu, setTab, toggle } from '../../../store/mainMenu/mainMenu.action';
-import { toggleNav } from '../../../store/navigationRail/navigationRail.action';
+import { open as openMainMenu, setTab, toggle as toggleMainMenu } from '../../../store/mainMenu/mainMenu.action';
+import { toggle as toggleNavigationRail } from '../../../store/navigationRail/navigationRail.action';
 import { TabIds } from '../../../domain/mainMenu';
 import { $injector } from '../../../injection';
 import css from './header.css';
@@ -36,7 +36,8 @@ export class Header extends MvuElement {
 			layers: [],
 			isPortrait: false,
 			hasMinWidth: false,
-			searchTerm: null
+			searchTerm: null,
+			isOpenNavigationRail: false
 		});
 
 		const { EnvironmentService: environmentService, TranslationService: translationService } = $injector.inject(
@@ -92,7 +93,7 @@ export class Header extends MvuElement {
 		);
 		this.observe(
 			(state) => state.navigationRail,
-			(navigationRail) => this.signal(Update_IsOpen_NavigationRail, { isOpenNav: navigationRail.openNav })
+			(navigationRail) => this.signal(Update_IsOpen_NavigationRail, { isOpenNavigationRail: navigationRail.open })
 		);
 	}
 
@@ -101,7 +102,7 @@ export class Header extends MvuElement {
 			const handler = (event, data) => {
 				if (['touchmove', 'mousemove'].includes(event.type) && data.directionX === 'LEFT' && data.absX > Header.SWIPE_DELTA_PX) {
 					swipeElement.focus();
-					toggle();
+					toggleMainMenu();
 				}
 			};
 			const swipeElement = this.shadowRoot.getElementById('header_toggle');
@@ -127,7 +128,7 @@ export class Header extends MvuElement {
 	}
 
 	createView(model) {
-		const { isOpen, isOpenNav, tabIndex, isFetching, layers, isPortrait, hasMinWidth, searchTerm } = model;
+		const { isOpen, isOpenNavigationRail, tabIndex, isFetching, layers, isPortrait, hasMinWidth, searchTerm } = model;
 
 		const getOrientationClass = () => {
 			return isPortrait ? 'is-portrait' : 'is-landscape';
@@ -161,12 +162,8 @@ export class Header extends MvuElement {
 			return this._environmentService.isStandalone() ? translate('header_logo_badge_standalone') : translate('header_logo_badge');
 		};
 
-		const toggleNavigationRail = () => {
-			toggleNav();
-		};
-
 		const getOverlayTestClass = () => {
-			return isOpenNav ? 'is-open-mobile' : '';
+			return isOpenNavigationRail ? 'is-open-mobile' : '';
 		};
 
 		const getEmblem = () => {
@@ -267,7 +264,7 @@ export class Header extends MvuElement {
 					</div>
 					${getEmblem()}					
 					<div class="header ${getOverlayClass()}" ?data-register-for-viewport-calc=${isPortrait}>  
-						<button id='header_toggle' class="close-menu" title=${translate('header_close_button_title')}  @click="${toggle}"">
+						<button id='header_toggle' class="close-menu" title=${translate('header_close_button_title')}  @click="${toggleMainMenu}"">
 							<i class="resize-icon "></i>
 						</button> 
 						<div class="header__background">

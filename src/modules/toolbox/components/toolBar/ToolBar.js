@@ -7,7 +7,7 @@ import { $injector } from '../../../../injection';
 import { setCurrentTool } from '../../../../store/tools/tools.action';
 import { MvuElement } from '../../../MvuElement';
 import { Tools } from '../../../../domain/tools';
-import { toggleNav } from '../../../../store/navigationRail/navigationRail.action';
+import { toggle as toggleNavigationRail } from '../../../../store/navigationRail/navigationRail.action';
 
 const Update_IsOpen = 'update_isOpen';
 const Update_Fetching = 'update_fetching';
@@ -131,7 +131,7 @@ export class ToolBar extends MvuElement {
 				>
 					<div class="wrench"></div>
 				</button>
-				<button id="action-button" data-test-id class="action-button" @click="${toggleNav}">
+				<button id="action-button" data-test-id class="action-button" @click="${toggleNavigationRail}">
 					<div class="action-button__border animated-action-button__border ${getAnimatedBorderClass()}"></div>
 					<div class="action-button__icon">
 						<div class="ba"></div>
