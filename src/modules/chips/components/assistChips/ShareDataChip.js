@@ -29,7 +29,7 @@ export class ShareDataChip extends AbstractAssistChip {
 		this._environmentService = environmentService;
 		this._shareService = shareService;
 		this._urlService = urlService;
-		this._unsubscribeFromStore = this.observe(
+		this.observe(
 			(state) => state.shared,
 			(data) => this.signal(Update, data)
 		);
@@ -83,10 +83,6 @@ export class ShareDataChip extends AbstractAssistChip {
 
 		const urls = await generateShareUrls();
 		openModal(title, html`<ba-share-content .urls=${urls}></ba-share-content>`);
-	}
-
-	onDisconnect() {
-		this._unsubscribeFromStore();
 	}
 
 	static get tag() {

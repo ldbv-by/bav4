@@ -20,27 +20,17 @@ export class Waypoints extends MvuElement {
 		const { TranslationService, EnvironmentService } = $injector.inject('TranslationService', 'EnvironmentService');
 		this._translationService = TranslationService;
 		this._environmentService = EnvironmentService;
-		this._storeSubscriptions = [];
 	}
 
 	onInitialize() {
-		this._storeSubscriptions = [
-			this.observe(
-				(store) => store.routing.status,
-				(status) => this.signal(Update_Status, status)
-			),
-
+		this.observe(
+			(store) => store.routing.status,
+			(status) => this.signal(Update_Status, status)
+		),
 			this.observe(
 				(store) => store.routing.waypoints,
 				(waypoints) => this.signal(Update_Waypoints, waypoints)
-			)
-		];
-	}
-
-	onDisconnect() {
-		while (this._storeSubscriptions.length > 0) {
-			this._storeSubscriptions.shift()();
-		}
+			);
 	}
 
 	update(type, data, model) {

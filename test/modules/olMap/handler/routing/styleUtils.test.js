@@ -7,13 +7,20 @@ import {
 } from '../../../../../src/modules/olMap/handler/routing/OlRoutingHandler';
 import { Feature } from 'ol';
 import { Circle, Fill, Icon, Stroke, Style, Text } from 'ol/style';
-import baRoutingStartIcon from '../../../../../src/modules/olMap/handler/routing/assets/ba-routing-start.svg';
-import baRoutingDestinationIcon from '../../../../../src/modules/olMap/handler/routing/assets/ba-routing-destination.svg';
-import baRoutingIntermediateIcon from '../../../../../src/modules/olMap/handler/routing/assets/ba-routing-intermediate.svg';
+import { TestUtils } from '../../../../test-utils';
+import { $injector } from '../../../../../src/injection';
+
+const baRoutingIconMock = 'data:image/svg+xml;base64,foo';
+const iconServiceMock = { getIconResult: () => {} };
+beforeAll(() => {
+	TestUtils.setupStoreAndDi();
+	$injector.registerSingleton('IconService', iconServiceMock);
+});
 
 describe('styleUtils', () => {
 	describe('routingStyleFunction', () => {
 		it('returns a style function for feature type "START"', () => {
+			const iconSpy = spyOn(iconServiceMock, 'getIconResult').withArgs('rt_start').and.returnValue({ base64: baRoutingIconMock });
 			const feature = new Feature();
 			feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.START);
 			const expected = [
@@ -22,7 +29,7 @@ describe('styleUtils', () => {
 						anchor: [0.5, 1],
 						anchorXUnits: 'fraction',
 						anchorYUnits: 'fraction',
-						src: baRoutingStartIcon
+						src: baRoutingIconMock
 					})
 				})
 			];
@@ -30,9 +37,11 @@ describe('styleUtils', () => {
 			const result = getRoutingStyleFunction()(feature);
 
 			expect(result).toEqual(expected);
+			expect(iconSpy).toHaveBeenCalled();
 		});
 
 		it('returns a style function for feature type "DESTINATION"', () => {
+			const iconSpy = spyOn(iconServiceMock, 'getIconResult').withArgs('rt_destination').and.returnValue({ base64: baRoutingIconMock });
 			const feature = new Feature();
 			feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.DESTINATION);
 			const expected = [
@@ -41,7 +50,7 @@ describe('styleUtils', () => {
 						anchor: [0.5, 1],
 						anchorXUnits: 'fraction',
 						anchorYUnits: 'fraction',
-						src: baRoutingDestinationIcon
+						src: baRoutingIconMock
 					})
 				})
 			];
@@ -49,9 +58,11 @@ describe('styleUtils', () => {
 			const result = getRoutingStyleFunction()(feature);
 
 			expect(result).toEqual(expected);
+			expect(iconSpy).toHaveBeenCalled();
 		});
 
 		it('returns a style function for feature type "INTERMEDIATE"', () => {
+			const iconSpy = spyOn(iconServiceMock, 'getIconResult').withArgs('rt_intermediate').and.returnValue({ base64: baRoutingIconMock });
 			const feature0 = new Feature();
 			feature0.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.INTERMEDIATE);
 			feature0.set(ROUTING_FEATURE_INDEX, 42);
@@ -64,7 +75,7 @@ describe('styleUtils', () => {
 						anchor: [0.5, 0.5],
 						anchorXUnits: 'fraction',
 						anchorYUnits: 'fraction',
-						src: baRoutingIntermediateIcon
+						src: baRoutingIconMock
 					}),
 					text: new Text({
 						text: '42',
@@ -84,7 +95,7 @@ describe('styleUtils', () => {
 						anchor: [0.5, 0.5],
 						anchorXUnits: 'fraction',
 						anchorYUnits: 'fraction',
-						src: baRoutingIntermediateIcon
+						src: baRoutingIconMock
 					}),
 					text: new Text({
 						text: '',
@@ -104,6 +115,7 @@ describe('styleUtils', () => {
 
 			expect(result0).toEqual(expected);
 			expect(result1).toEqual(expectedWithDefaultText);
+			expect(iconSpy).toHaveBeenCalledTimes(2);
 		});
 
 		it('returns a style function for feature type "ROUTE"', () => {

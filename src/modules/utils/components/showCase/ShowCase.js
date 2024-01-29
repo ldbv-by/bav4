@@ -47,14 +47,10 @@ export class ShowCase extends MvuElement {
 	}
 
 	onInitialize() {
-		this._unsubscribeFromStore = this.observe(
+		this.observe(
 			(state) => state.elevationProfile.active,
 			(active) => this.signal(Update_Profile_Active, active)
 		);
-	}
-
-	onDisconnect() {
-		this._unsubscribeFromStore();
 	}
 
 	update(type, data, model) {

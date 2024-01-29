@@ -50,14 +50,6 @@ describe('BottomSheet', () => {
 				portrait: false
 			});
 		});
-
-		it('subscribes to the store', async () => {
-			TestUtils.setupStoreAndDi(defaultState);
-			const element = await setup();
-
-			expect(element._subscriptions).toHaveSize(3);
-			expect(element._subscriptions.every((subscription) => typeof subscription === 'function')).toBeTrue();
-		});
 	});
 
 	describe('when initialized', () => {
@@ -175,20 +167,6 @@ describe('BottomSheet', () => {
 			expect(element.shadowRoot.querySelectorAll('.fade-out')).toHaveSize(1);
 			contentElement.dispatchEvent(new Event('animationend'));
 			expect(store.getState().bottomSheet.data).toBeNull();
-		});
-	});
-
-	describe('when disconnected', () => {
-		it('removes all observers', async () => {
-			const element = await setup();
-			const spy1 = jasmine.createSpy();
-			const spy2 = jasmine.createSpy();
-			element._subscriptions = [spy1, spy2];
-
-			element.onDisconnect(); // we call onDisconnect manually
-
-			expect(spy1).toHaveBeenCalled();
-			expect(spy2).toHaveBeenCalled();
 		});
 	});
 });
