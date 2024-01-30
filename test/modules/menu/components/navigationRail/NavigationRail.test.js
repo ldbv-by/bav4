@@ -5,6 +5,7 @@ import { TestUtils } from '../../../../test-utils.js';
 import { $injector } from '../../../../../src/injection';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { navigationRailReducer } from '../../../../../src/store/navigationRail/navigationRail.reducer';
+import { positionReducer } from '../../../../../src/store/position/position.reducer';
 import { createNoInitialStateMainMenuReducer } from '../../../../../src/store/mainMenu/mainMenu.reducer';
 import { featureInfoReducer } from '../../../../../src/store/featureInfo/featureInfo.reducer';
 import { routingReducer } from '../../../../../src/store/routing/routing.reducer';
@@ -13,9 +14,13 @@ import { TabIds } from '../../../../../src/domain/mainMenu';
 window.customElements.define(NavigationRail.tag, NavigationRail);
 
 describe('NavigationRail', () => {
+	const extent = [995772.9694449581, 5982715.763684852, 1548341.2904285304, 6544564.28740462];
 	const mapServiceMock = {
 		getMinZoomLevel: () => {},
-		getMaxZoomLevel: () => {}
+		getMaxZoomLevel: () => {},
+		getDefaultMapExtent: () => {
+			return extent;
+		}
 	};
 
 	let store;
@@ -24,7 +29,7 @@ describe('NavigationRail', () => {
 
 		const initialState = {
 			navigationRail: {
-				openNav: false,
+				open: false,
 				visitedTabIdsSet: new Set([])
 			},
 			media: {
@@ -43,7 +48,8 @@ describe('NavigationRail', () => {
 			mainMenu: createNoInitialStateMainMenuReducer(),
 			media: createNoInitialStateMediaReducer(),
 			featureInfo: featureInfoReducer,
-			routing: routingReducer
+			routing: routingReducer,
+			position: positionReducer
 		});
 		$injector
 			.registerSingleton('EnvironmentService', {
@@ -82,6 +88,7 @@ describe('NavigationRail', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.home')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.home')).display).toBe('flex');
+			expect(element.shadowRoot.querySelector('.home .text').innerText).toBe('menu_navigation_rail_home');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.home')).order).toBe('0');
 
 			expect(element.shadowRoot.querySelectorAll('.separator')).toHaveSize(1);
@@ -89,21 +96,27 @@ describe('NavigationRail', () => {
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.separator')).order).toBe('1');
 
 			expect(element.shadowRoot.querySelectorAll('.routing')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.routing .text').innerText).toBe('menu_navigation_rail_routing');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.routing')).display).toBe('none');
 
 			expect(element.shadowRoot.querySelectorAll('.objectinfo')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.objectinfo .text').innerText).toBe('menu_navigation_rail_object_info');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.objectinfo')).display).toBe('none');
 
 			expect(element.shadowRoot.querySelectorAll('.zoom-in')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.zoom-in .text').innerText).toBe('menu_navigation_rail_zoom_in');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.zoom-in')).display).toBe('none');
 
 			expect(element.shadowRoot.querySelectorAll('.zoom-out')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.zoom-out .text').innerText).toBe('menu_navigation_rail_zoom_out');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.zoom-out')).display).toBe('none');
 
 			expect(element.shadowRoot.querySelectorAll('.zoom-to-extent')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.zoom-to-extent .text').innerText).toBe('menu_navigation_rail_zoom_to_extend');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.zoom-to-extent')).display).toBe('none');
 
 			expect(element.shadowRoot.querySelectorAll('.close')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.close .text').innerText).toBe('menu_navigation_rail_close');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.close')).display).toBe('none');
 		});
 
@@ -160,10 +173,13 @@ describe('NavigationRail', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(1);
 
 			expect(element.shadowRoot.querySelectorAll('.routing.is-active')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.routing.hide')).toHaveSize(0);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.routing')).display).toBe('flex');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.routing')).order).toBe('2');
 
 			expect(element.shadowRoot.querySelectorAll('.objectinfo')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.objectinfo.is-active')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.objectinfo.hide')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.objectinfo')).display).toBe('none');
 		});
 
@@ -187,11 +203,14 @@ describe('NavigationRail', () => {
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.objectinfo')).order).toBe('2');
 
 			expect(element.shadowRoot.querySelectorAll('.routing')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.routing.is-active')).toHaveSize(0);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.routing')).display).toBe('flex');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.routing')).order).toBe('3');
 		});
+	});
 
-		it('change active button on click', async () => {
+	describe('when clicked', () => {
+		it('change active button', async () => {
 			const state = {
 				media: { portrait: false, minWidth: false },
 				mainMenu: {
@@ -199,7 +218,7 @@ describe('NavigationRail', () => {
 					tab: TabIds.FEATUREINFO
 				},
 				navigationRail: {
-					openNav: true,
+					open: true,
 					visitedTabIdsSet: new Set([TabIds.ROUTING, TabIds.FEATUREINFO])
 				}
 			};
@@ -217,11 +236,11 @@ describe('NavigationRail', () => {
 			expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
 		});
 
-		it('change darkSchema on click', async () => {
+		it('change darkSchema', async () => {
 			const state = {
 				media: { portrait: false, minWidth: false, darkSchema: false },
 				navigationRail: {
-					openNav: true,
+					open: true,
 					visitedTabIdsSet: new Set([TabIds.ROUTING, TabIds.FEATUREINFO])
 				}
 			};
@@ -238,6 +257,74 @@ describe('NavigationRail', () => {
 			expect(element.shadowRoot.querySelectorAll('.sun')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.moon')).toHaveSize(0);
 			expect(store.getState().media.darkSchema).toBeTrue();
+		});
+
+		it('close NavigationRail', async () => {
+			const state = {
+				media: {
+					portrait: true,
+					minWidth: true
+				},
+				navigationRail: {
+					open: true,
+					visitedTabIdsSet: new Set([])
+				}
+			};
+			const element = await setup(state);
+
+			expect(store.getState().navigationRail.open).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(1);
+
+			element.shadowRoot.querySelector('.close').click();
+
+			expect(store.getState().navigationRail.open).toBeFalse();
+			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(0);
+		});
+
+		it('decreases the current zoom level by one', async () => {
+			const state = {
+				position: {
+					zoom: 10
+				},
+				media: {
+					portrait: true,
+					minWidth: true
+				}
+			};
+			const element = await setup(state);
+			element.shadowRoot.querySelector('.zoom-out').click();
+			expect(store.getState().position.zoom).toBe(9);
+		});
+
+		it('increases the current zoom level by one', async () => {
+			const state = {
+				position: {
+					zoom: 10
+				},
+				media: {
+					portrait: true,
+					minWidth: true
+				}
+			};
+			const element = await setup(state);
+			element.shadowRoot.querySelector('.zoom-in').click();
+			expect(store.getState().position.zoom).toBe(11);
+		});
+
+		it('zooms to extent', async () => {
+			const state = {
+				position: {
+					zoom: 10
+				},
+				media: {
+					portrait: true,
+					minWidth: true
+				}
+			};
+			const element = await setup(state);
+			element.shadowRoot.querySelector('.zoom-to-extent').click();
+			expect(store.getState().position.fitRequest.payload.extent).toEqual(extent);
+			expect(store.getState().position.fitRequest.payload.options).toEqual({ useVisibleViewport: false });
 		});
 	});
 
