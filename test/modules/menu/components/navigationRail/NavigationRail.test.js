@@ -30,7 +30,7 @@ describe('NavigationRail', () => {
 		const initialState = {
 			navigationRail: {
 				open: false,
-				visitedTabIdsSet: new Set([])
+				visitedTabIds: []
 			},
 			media: {
 				portrait: false,
@@ -70,7 +70,7 @@ describe('NavigationRail', () => {
 				isOpenNavigationRail: false,
 				tabIndex: null,
 				isPortrait: false,
-				visitedTabIdsSet: null
+				visitedTabIds: null
 			});
 		});
 	});
@@ -166,7 +166,7 @@ describe('NavigationRail', () => {
 				},
 				navigationRail: {
 					open: true,
-					visitedTabIdsSet: new Set([TabIds.ROUTING])
+					visitedTabIds: [TabIds.ROUTING]
 				}
 			};
 			const element = await setup(state);
@@ -192,7 +192,7 @@ describe('NavigationRail', () => {
 				},
 				navigationRail: {
 					open: true,
-					visitedTabIdsSet: new Set([TabIds.ROUTING, TabIds.FEATUREINFO])
+					visitedTabIds: [TabIds.ROUTING, TabIds.FEATUREINFO]
 				}
 			};
 			const element = await setup(state);
@@ -219,7 +219,7 @@ describe('NavigationRail', () => {
 				},
 				navigationRail: {
 					open: true,
-					visitedTabIdsSet: new Set([TabIds.ROUTING, TabIds.FEATUREINFO])
+					visitedTabIds: [TabIds.ROUTING, TabIds.FEATUREINFO]
 				}
 			};
 			const element = await setup(state);
@@ -241,7 +241,7 @@ describe('NavigationRail', () => {
 				media: { portrait: false, minWidth: false, darkSchema: false },
 				navigationRail: {
 					open: true,
-					visitedTabIdsSet: new Set([TabIds.ROUTING, TabIds.FEATUREINFO])
+					visitedTabIds: [TabIds.ROUTING, TabIds.FEATUREINFO]
 				}
 			};
 			const element = await setup(state);
@@ -267,7 +267,7 @@ describe('NavigationRail', () => {
 				},
 				navigationRail: {
 					open: true,
-					visitedTabIdsSet: new Set([])
+					visitedTabIds: []
 				}
 			};
 			const element = await setup(state);

@@ -1,7 +1,7 @@
 /**
  * @module store/navigationRail/navigationRail_action
  */
-import { OPENNAV_CLOSEDNAV_CHANGED, ACTIVE_TAB_ID_CHANGED } from './navigationRail.reducer';
+import { OPENNAV_CLOSEDNAV_CHANGED, ADD_TAB_ID } from './navigationRail.reducer';
 import { $injector } from '../../injection';
 
 const getStore = () => {
@@ -47,7 +47,7 @@ export const toggle = () => {
 
 export const addTabId = (tabId) => {
 	getStore().dispatch({
-		type: ACTIVE_TAB_ID_CHANGED,
+		type: ADD_TAB_ID,
 		payload: tabId
 	});
 };

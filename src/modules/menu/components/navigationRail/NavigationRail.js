@@ -32,7 +32,7 @@ export class NavigationRail extends MvuElement {
 			isOpenNavigationRail: false,
 			tabIndex: null,
 			isPortrait: false,
-			visitedTabIdsSet: null
+			visitedTabIds: null
 		});
 
 		const {
@@ -69,7 +69,7 @@ export class NavigationRail extends MvuElement {
 		this.observe(
 			(state) => state.navigationRail,
 			(navigationRail) =>
-				this.signal(Update_IsOpen_NavigationRail, { isOpenNavigationRail: navigationRail.open, visitedTabIdsSet: navigationRail.visitedTabIdsSet })
+				this.signal(Update_IsOpen_NavigationRail, { isOpenNavigationRail: navigationRail.open, visitedTabIds: navigationRail.visitedTabIds })
 		);
 		this.observe(
 			(state) => state.media.darkSchema,
@@ -90,9 +90,9 @@ export class NavigationRail extends MvuElement {
 	}
 
 	createView(model) {
-		const { isOpenNavigationRail, darkSchema, isPortrait, tabIndex, isOpen, visitedTabIdsSet } = model;
+		const { isOpenNavigationRail, darkSchema, isPortrait, tabIndex, isOpen, visitedTabIds } = model;
 
-		const allTabIds = Array.from(visitedTabIdsSet).reverse();
+		const reverseTabIds = [...visitedTabIds].reverse();
 
 		const getOrientationClass = () => {
 			return isPortrait ? 'is-portrait' : 'is-landscape';
@@ -122,7 +122,7 @@ export class NavigationRail extends MvuElement {
 		};
 
 		const getIsVisible = (tabId) => {
-			return visitedTabIdsSet.has(tabId) ? '' : 'hide';
+			return visitedTabIds.includes(tabId) ? '' : 'hide';
 		};
 
 		const getDefaultMapExtent = () => this._mapService.getDefaultMapExtent();
@@ -133,7 +133,7 @@ export class NavigationRail extends MvuElement {
 
 		const getFlexOrder = (tabId) => {
 			//first tow are always home-button and separator
-			return allTabIds.indexOf(tabId) + 2;
+			return reverseTabIds.indexOf(tabId) + 2;
 		};
 
 		const translate = (key) => this._translationService.translate(key);

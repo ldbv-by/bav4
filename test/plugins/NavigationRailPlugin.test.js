@@ -11,7 +11,7 @@ describe('NavigationRailPlugin', () => {
 		const initialState = {
 			navigationRail: {
 				open: false,
-				visitedTabIdsSet: new Set([])
+				visitedTabIds: []
 			},
 			media: {
 				portrait: false,
