@@ -31,7 +31,7 @@ export class NavigationRailPlugin extends BaPlugin {
 
 		const onTabChanged = (tab, state) => {
 			this._openMainMenu = state.mainMenu.open;
-			if (tab === TabIds.FEATUREINFO || (tab === TabIds.ROUTING && !this._isPortrait)) {
+			if ((tab === TabIds.FEATUREINFO || tab === TabIds.ROUTING) && !this._isPortrait) {
 				addTabId(tab);
 				//TEMP
 				close();
