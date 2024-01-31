@@ -163,7 +163,7 @@ export class Header extends MvuElement {
 		};
 
 		const getOverlayTestClass = () => {
-			return isOpenNavigationRail ? 'is-open-mobile' : '';
+			return isOpenNavigationRail ? 'is-open-navigationRail' : '';
 		};
 
 		const getEmblem = () => {
@@ -304,7 +304,7 @@ export class Header extends MvuElement {
 							</button>
 						</div>
 					</div>				
-				</div>
+				</div>				
             </div>
 		`;
 	}

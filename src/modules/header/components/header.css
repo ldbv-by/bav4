@@ -459,10 +459,10 @@ input[type='search']::-webkit-search-results-decoration {
 .is-demo.is-portrait .header__emblem {
 	top: 6em;
 }
-.is-open-mobile .header.is-open {
+.is-open-navigationRail .header.is-open {
 	transform: translate(33.5em, 0);
 }
 
-.is-open-mobile .header__logo {
+.is-open-navigationRail .header__logo {
 	transform: translate(6em, 0);
 }

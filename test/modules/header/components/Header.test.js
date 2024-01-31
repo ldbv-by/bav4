@@ -260,6 +260,45 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelector('.header__emblem').getAttribute('title')).toBe('header_emblem_title_standalone');
 			expect(element.shadowRoot.querySelector('.header__emblem').getAttribute('href')).toBe('header_emblem_link_standalone');
 		});
+
+		it('layouts with open navigation rail', async () => {
+			const state = {
+				navigationRail: {
+					open: true
+				}
+			};
+
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(1);
+		});
+
+		it('layouts with closed navigation rail ', async () => {
+			const state = {
+				navigationRail: {
+					open: false
+				}
+			};
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
+		});
+	});
+
+	describe('when action-button clicked', () => {
+		it('toggle navigation rail', async () => {
+			const element = await setup();
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
+			expect(store.getState().navigationRail.open).toBe(false);
+
+			element.shadowRoot.querySelector('.action-button').click();
+
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(1);
+			expect(store.getState().navigationRail.open).toBe(true);
+
+			element.shadowRoot.querySelector('.action-button').click();
+
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
+			expect(store.getState().navigationRail.open).toBe(false);
+		});
 	});
 
 	describe('when menu button is Tab.MAPS', () => {
