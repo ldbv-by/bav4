@@ -32,9 +32,7 @@ export class NavigationRailPlugin extends BaPlugin {
 		const onTabChanged = (tab, state) => {
 			this._openMainMenu = state.mainMenu.open;
 
-			const hasTab = !state.navigationRail.visitedTabIds.includes(tab);
-
-			if ((tab === TabIds.FEATUREINFO || tab === TabIds.ROUTING) && hasTab && !this._isPortrait) {
+			if ((tab === TabIds.FEATUREINFO || tab === TabIds.ROUTING) && !this._isPortrait) {
 				addTabId(tab);
 				open();
 			}
