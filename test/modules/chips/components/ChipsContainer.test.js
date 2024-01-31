@@ -181,6 +181,7 @@ describe('ChipsContainer', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.chips__button')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
 		});
 
 		it('adds css class reflecting a closed menu', async () => {
@@ -188,6 +189,7 @@ describe('ChipsContainer', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.chips__button')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
 		});
 
 		it('adds css classes reflecting the light schema', async () => {
@@ -377,6 +379,35 @@ describe('ChipsContainer', () => {
 			const chips = element.shadowRoot.querySelectorAll('.chips__button');
 
 			expect([...chips].every((e) => e.draggable === false)).toBeTrue();
+		});
+
+		it('layouts with open navigation rail for portrait mode', async () => {
+			const state = {
+				media: {
+					portrait: true,
+					minWidth: false
+				},
+				navigationRail: {
+					open: true
+				}
+			};
+
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
+		});
+
+		it('layouts open navigation rail for landscape mode', async () => {
+			const state = {
+				media: {
+					portrait: false,
+					minWidth: true
+				},
+				navigationRail: {
+					open: true
+				}
+			};
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(1);
 		});
 	});
 

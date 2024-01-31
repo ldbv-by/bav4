@@ -185,7 +185,7 @@ export class ChipsContainer extends MvuElement {
 			return currentChips.map((chip) => (chip.target === 'modal' ? getButton(chip) : getLink(chip)));
 		};
 
-		const getOverlayNavClass = () => (isOpenNavigationRail ? 'is-open-nav' : '');
+		const getOverlayNavClass = () => (isOpenNavigationRail && !isPortrait ? 'is-open-navigationRail' : '');
 
 		return html`
 			<style>

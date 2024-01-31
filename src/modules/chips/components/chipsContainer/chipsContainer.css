@@ -131,9 +131,9 @@ iframe {
 ::-webkit-scrollbar {
 	height: 0;
 }
-.is-desktop.is-open.is-open-nav.chips__container {
+.is-open.is-open-navigationRail.chips__container {
 	transform: translate(33.5em, 0);
 }
-.is-desktop.is-open-nav.chips__container {
+.is-open-navigationRail.chips__container {
 	transform: translate(6em, 0);
 }
