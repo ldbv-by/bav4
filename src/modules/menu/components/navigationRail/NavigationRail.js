@@ -113,11 +113,11 @@ export class NavigationRail extends MvuElement {
 			open();
 		};
 
-		const getHideClass = () => {
+		const getOverlayClass = () => {
 			return isOpenNavigationRail ? 'is-open' : '';
 		};
 
-		const getIsActivelass = (tabId) => {
+		const getIsActive = (tabId) => {
 			return tabIndex === tabId && isOpen ? 'is-active' : '';
 		};
 
@@ -141,14 +141,14 @@ export class NavigationRail extends MvuElement {
 			<style>
 				${css}
 			</style>
-			<div class="navigation-rail__container ${getHideClass()} ${getOrientationClass()}">
-				<button class="home ${getIsActivelass(TabIds.MAPS)} landscape" @click="${() => openTab(TabIds.MAPS)}">
+			<div class="navigation-rail__container ${getOverlayClass()} ${getOrientationClass()}">
+				<button class="home ${getIsActive(TabIds.MAPS)}" @click="${() => openTab(TabIds.MAPS)}">
 					<span class="icon "> </span>
 					<span class="text"> ${translate('menu_navigation_rail_home')} </span>
 				</button>
 				<span class="separator landscape"> </span>
 				<button
-					class="routing ${getIsVisible(TabIds.ROUTING)} ${getIsActivelass(TabIds.ROUTING)} landscape"
+					class="routing ${getIsVisible(TabIds.ROUTING)} ${getIsActive(TabIds.ROUTING)}"
 					@click="${() => openRoutingTab()}"
 					style="order:${getFlexOrder(TabIds.ROUTING)}"
 				>
@@ -156,26 +156,26 @@ export class NavigationRail extends MvuElement {
 					<span class="text">${translate('menu_navigation_rail_routing')}</span>
 				</button>
 				<button
-					class=" objectinfo ${getIsVisible(TabIds.FEATUREINFO)} ${getIsActivelass(TabIds.FEATUREINFO)} landscape"
+					class=" objectinfo ${getIsVisible(TabIds.FEATUREINFO)} ${getIsActive(TabIds.FEATUREINFO)}"
 					@click="${() => openTab(TabIds.FEATUREINFO)}"
 					style="order:${getFlexOrder(TabIds.FEATUREINFO)}"
 				>
 					<span class="icon "> </span>
 					<span class="text">${translate('menu_navigation_rail_object_info')}</span>
 				</button>
-				<button @click="${increaseZoom}" class="zoom-in portrait">
+				<button @click="${increaseZoom}" class="zoom-in">
 					<span class="icon  "> </span>
 					<span class="text">${translate('menu_navigation_rail_zoom_in')}</span>
 				</button>
-				<button @click="${decreaseZoom}" class="zoom-out portrait">
+				<button @click="${decreaseZoom}" class="zoom-out">
 					<span class="icon   "> </span>
 					<span class="text">${translate('menu_navigation_rail_zoom_out')}</span>
 				</button>
-				<button @click="${zoomToExtent}" class="zoom-to-extent portrait">
+				<button @click="${zoomToExtent}" class="zoom-to-extent">
 					<span class="icon  "> </span>
 					<span class="text">${translate('menu_navigation_rail_zoom_to_extend')}</span>
 				</button>
-				<button @click="${close}" class="close portrait">
+				<button @click="${close}" class="close">
 					<span class="icon "> </span>
 					<span class="text">${translate('menu_navigation_rail_close')}</span>
 				</button>

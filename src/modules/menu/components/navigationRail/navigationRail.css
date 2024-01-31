@@ -71,48 +71,6 @@
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
-.time .icon {
-	mask: url('assets/time.svg');
-	-webkit-mask: url('assets/time.svg');
-	mask-size: cover;
-	-webkit-mask-size: cover;
-}
-.br .icon {
-	mask: url('assets/br.svg');
-	-webkit-mask: url('assets/br.svg');
-	mask-size: cover;
-	-webkit-mask-size: cover;
-}
-.mapconf .icon {
-	mask: url('assets/mapconf.svg');
-	-webkit-mask: url('assets/mapconf.svg');
-	mask-size: cover;
-	-webkit-mask-size: cover;
-}
-.gespeichert .icon {
-	mask: url('assets/gespeichert.svg');
-	-webkit-mask: url('assets/gespeichert.svg');
-	mask-size: cover;
-	-webkit-mask-size: cover;
-}
-.legende .icon {
-	mask: url('assets/legende.svg');
-	-webkit-mask: url('assets/legende.svg');
-	mask-size: cover;
-	-webkit-mask-size: cover;
-}
-.opendata .icon {
-	mask: url('assets/opendata.svg');
-	-webkit-mask: url('assets/opendata.svg');
-	mask-size: cover;
-	-webkit-mask-size: cover;
-}
-.stars .icon {
-	mask: url('assets/stars.svg');
-	-webkit-mask: url('assets/stars.svg');
-	mask-size: cover;
-	-webkit-mask-size: cover;
-}
 .moon .icon {
 	background: var(--text4) !important;
 	mask: url('assets/moon.svg');
@@ -133,7 +91,6 @@
 	height: 2.5em;
 	width: 2.5em;
 }
-
 .zoom-in .icon {
 	mask: url('assets/plus.svg');
 	-webkit-mask-image: url('assets/plus.svg');
@@ -154,22 +111,12 @@
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
-
-.search-icon .icon {
-	mask: url('./assets/search.svg');
-	-webkit-mask-image: url('./assets/search.svg');
-	mask-size: cover;
-	-webkit-mask-size: cover;
-	transform: scale(0.7);
-}
-
 .close .icon {
 	mask: url('./assets/close.svg');
 	-webkit-mask-image: url('./assets/close.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
-
 .navigation-rail__container button .icon {
 	height: 2.1em;
 	width: 2.1em;
@@ -178,18 +125,15 @@
 	margin: auto;
 	margin-bottom: 0;
 }
-
 .navigation-rail__container button:hover {
 	background: var(--primary-bg-color);
 }
-
 .navigation-rail__container button:hover .text {
 	color: var(--text1);
 }
 .navigation-rail__container button:hover .icon {
 	background: linear-gradient(to top, var(--text4) 0%, var(--primary-color) 50%);
 }
-
 .theme-toggle {
 	position: absolute;
 	bottom: 1em;
@@ -199,23 +143,22 @@
 	margin: 1em;
 	padding-bottom: 0.5em;
 }
-
-.is-portrait .theme-toggle {
-	display: none;
-}
-
 .is-open {
 	transform: translate(5.5em, 0);
 }
-
 .is-portrait.is-open,
 .is-tablet.is-open {
 	transform: translate(0, -10em);
 }
-
-.is-landscape .portrait {
+.is-portrait .home,
+.is-portrait .separator,
+.is-portrait .routing,
+.is-portrait .theme-toggle {
 	display: none;
 }
-.is-portrait .landscape {
+.is-landscape .zoom-in,
+.is-landscape .zoom-out,
+.is-landscape .zoom-to-extent,
+.is-landscape .close {
 	display: none;
 }
