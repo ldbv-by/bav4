@@ -1541,6 +1541,7 @@ describe('OlDrawHandler', () => {
 				snap: null,
 				coordinate: [20, 0],
 				pointCount: 1,
+				geometryType: 'Point',
 				dragging: jasmine.any(Boolean)
 			});
 		});
@@ -1588,6 +1589,7 @@ describe('OlDrawHandler', () => {
 				snap: InteractionSnapType.FIRSTPOINT,
 				coordinate: [0, 0],
 				pointCount: 5,
+				geometryType: 'LineString',
 				dragging: jasmine.any(Boolean)
 			});
 		});
@@ -1634,6 +1636,7 @@ describe('OlDrawHandler', () => {
 				snap: InteractionSnapType.LASTPOINT,
 				coordinate: [0, 500],
 				pointCount: 6,
+				geometryType: 'LineString',
 				dragging: jasmine.any(Boolean)
 			});
 		});

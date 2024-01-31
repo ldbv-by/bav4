@@ -687,7 +687,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			drawState.type = InteractionStateType.ACTIVE;
 			if (this._sketchHandler.isActive) {
 				drawState.type = InteractionStateType.DRAW;
-
+				drawState.geometryType = this._sketchHandler.active.getGeometry().getType();
 				if (this._sketchHandler.isFinishOnFirstPoint) {
 					drawState.snap = InteractionSnapType.FIRSTPOINT;
 				} else if (this._sketchHandler.isSnapOnLastPoint) {
