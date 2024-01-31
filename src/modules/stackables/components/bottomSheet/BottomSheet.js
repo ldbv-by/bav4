@@ -72,7 +72,7 @@ export class BottomSheet extends MvuElement {
 
 		const getOverlayClass = () => (open && !portrait ? 'is-open' : '');
 
-		const getOverlayNavClass = () => (isOpenNavigationRail ? 'is-open-nav' : '');
+		const getOverlayNavClass = () => (isOpenNavigationRail && !portrait ? 'is-open-navigationRail' : '');
 
 		const onDismiss = () => {
 			const elementModal = this.shadowRoot.querySelector('.bottom-sheet');

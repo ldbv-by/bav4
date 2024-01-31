@@ -20,10 +20,10 @@
 .is-open {
 	margin: 0 0 0 28em;
 }
-.is-landscape.is-open-nav {
+.is-open-navigationRail {
 	margin: 0 0 0 5.5em;
 }
-.is-open.is-open-nav {
+.is-open.is-open-navigationRail {
 	margin: 0 0 0 33.5em;
 }
 .tool-container__close-button {
