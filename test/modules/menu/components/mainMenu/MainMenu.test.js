@@ -286,6 +286,35 @@ describe('MainMenu', () => {
 
 			expect(element.shadowRoot.querySelector('.main-menu').parentElement.classList.contains('prevent-transition')).toBeFalse();
 		});
+
+		it('layouts with open navigation rail for portrait mode', async () => {
+			const state = {
+				media: {
+					portrait: true,
+					minWidth: false
+				},
+				navigationRail: {
+					open: true
+				}
+			};
+
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
+		});
+
+		it('layouts open navigation rail for landscape mode', async () => {
+			const state = {
+				media: {
+					portrait: false,
+					minWidth: true
+				},
+				navigationRail: {
+					open: true
+				}
+			};
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(1);
+		});
 	});
 
 	describe('when orientation changes', () => {

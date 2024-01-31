@@ -134,7 +134,7 @@ export class MainMenu extends MvuElement {
 
 		const getOverlayClass = () => (open ? 'is-open' : '');
 
-		const getOverlayNavClass = () => (isOpenNavigationRail ? 'is-open-nav' : '');
+		const getOverlayNavClass = () => (isOpenNavigationRail && !portrait ? 'is-open-navigationRail' : '');
 
 		const getPreloadClass = () => (observeResponsiveParameter ? '' : 'prevent-transition');
 
