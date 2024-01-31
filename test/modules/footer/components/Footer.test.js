@@ -17,6 +17,9 @@ describe('Footer', () => {
 			mainMenu: {
 				open: true
 			},
+			navigationRail: {
+				open: false
+			},
 			media: {
 				portrait: false,
 				minWidth: false
@@ -128,6 +131,35 @@ describe('Footer', () => {
 			expect(element.shadowRoot.querySelectorAll('.content')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content')).display).toBe('none');
 			expect(element.shadowRoot.querySelectorAll('ba-map-info')).toHaveSize(1);
+		});
+
+		it('layouts with open navigation rail for portrait mode', async () => {
+			const state = {
+				media: {
+					portrait: true,
+					minWidth: false
+				},
+				navigationRail: {
+					open: true
+				}
+			};
+
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
+		});
+
+		it('layouts open navigation rail for landscape mode', async () => {
+			const state = {
+				media: {
+					portrait: false,
+					minWidth: true
+				},
+				navigationRail: {
+					open: true
+				}
+			};
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(1);
 		});
 	});
 

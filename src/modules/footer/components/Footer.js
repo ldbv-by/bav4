@@ -85,7 +85,7 @@ export class Footer extends MvuElement {
 			return hasMinWidth ? 'is-desktop' : 'is-tablet';
 		};
 
-		const getOverlayNavClass = () => (isOpenNavigationRail ? 'is-open-nav' : '');
+		const getOverlayNavClass = () => (isOpenNavigationRail && !isPortrait ? 'is-open-navigationRail' : '');
 
 		const isEmbedded = () => {
 			return this._environmentService.isEmbedded() ? 'is-embedded' : '';
