@@ -3,7 +3,7 @@
  */
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from '../plugins/BaPlugin';
-import { open, addTabId, close } from '../store/navigationRail/navigationRail.action';
+import { open, addTabId } from '../store/navigationRail/navigationRail.action';
 import { TabIds } from '../domain/mainMenu';
 
 /**
