@@ -34,6 +34,24 @@ describe('HttpService', () => {
 			expect(result.text()).toBe(42);
 		});
 
+		it('provides a result by calling a response interceptor', async () => {
+			const httpService = new HttpService();
+			const spy = spyOn(window, 'fetch').and.returnValue(
+				Promise.resolve({
+					text: () => {
+						return 42;
+					}
+				})
+			);
+			const interceptorSpy = jasmine.createSpy().and.callFake(async (response) => response);
+
+			const result = await httpService.fetch('something', undefined, undefined, { response: interceptorSpy });
+
+			expect(spy).toHaveBeenCalled();
+			expect(interceptorSpy).toHaveBeenCalled();
+			expect(result.text()).toBe(42);
+		});
+
 		it('provides a result with customized timeout ', async () => {
 			const httpService = new HttpService();
 
@@ -84,7 +102,24 @@ describe('HttpService', () => {
 
 			const result = await httpService.get('something');
 
-			expect(spy).toHaveBeenCalledWith('something', { mode: HttpService.DEFAULT_REQUEST_MODE });
+			expect(spy).toHaveBeenCalledWith('something', { mode: HttpService.DEFAULT_REQUEST_MODE }, undefined, {});
+			expect(result.text()).toBe(42);
+		});
+
+		it('provides a result by calling a response interceptor', async () => {
+			const httpService = new HttpService();
+			const spy = spyOn(httpService, 'fetch').and.returnValue(
+				Promise.resolve({
+					text: () => {
+						return 42;
+					}
+				})
+			);
+			const interceptors = { response: jasmine.createSpy().and.callFake(async (response) => response) };
+
+			const result = await httpService.get('something', {}, interceptors);
+
+			expect(spy).toHaveBeenCalledWith('something', { mode: HttpService.DEFAULT_REQUEST_MODE }, undefined, interceptors);
 			expect(result.text()).toBe(42);
 		});
 
@@ -100,7 +135,7 @@ describe('HttpService', () => {
 
 			const result = await httpService.get('something', { timeout: 2000 });
 
-			expect(spy).toHaveBeenCalledWith('something', { mode: HttpService.DEFAULT_REQUEST_MODE, timeout: 2000 });
+			expect(spy).toHaveBeenCalledWith('something', { mode: HttpService.DEFAULT_REQUEST_MODE, timeout: 2000 }, undefined, {});
 			expect(result.text()).toBe(42);
 		});
 	});
@@ -199,11 +234,33 @@ describe('HttpService', () => {
 
 			const result = await httpService.head('something');
 
-			expect(spy).toHaveBeenCalledWith('something', {
-				method: 'HEAD',
-				mode: HttpService.DEFAULT_REQUEST_MODE
-			});
+			expect(spy).toHaveBeenCalledWith(
+				'something',
+				{
+					method: 'HEAD',
+					mode: HttpService.DEFAULT_REQUEST_MODE
+				},
+				undefined,
+				{}
+			);
 			expect(result.ok).toBeTrue();
+		});
+
+		it('provides a result by calling a response interceptor', async () => {
+			const httpService = new HttpService();
+			const spy = spyOn(httpService, 'fetch').and.returnValue(
+				Promise.resolve({
+					text: () => {
+						return 42;
+					}
+				})
+			);
+			const interceptors = { response: jasmine.createSpy().and.callFake(async (response) => response) };
+
+			const result = await httpService.head('something', {}, interceptors);
+
+			expect(spy).toHaveBeenCalledWith('something', { method: 'HEAD', mode: HttpService.DEFAULT_REQUEST_MODE }, undefined, interceptors);
+			expect(result.text()).toBe(42);
 		});
 
 		it('provides a result with custom options', async () => {
@@ -216,11 +273,16 @@ describe('HttpService', () => {
 
 			const result = await httpService.head('something', { timeout: 2000 });
 
-			expect(spy).toHaveBeenCalledWith('something', {
-				method: 'HEAD',
-				mode: HttpService.DEFAULT_REQUEST_MODE,
-				timeout: 2000
-			});
+			expect(spy).toHaveBeenCalledWith(
+				'something',
+				{
+					method: 'HEAD',
+					mode: HttpService.DEFAULT_REQUEST_MODE,
+					timeout: 2000
+				},
+				undefined,
+				{}
+			);
 			expect(result.ok).toBeTrue();
 		});
 	});
