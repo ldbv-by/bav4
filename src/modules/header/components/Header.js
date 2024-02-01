@@ -13,6 +13,7 @@ import { MvuElement } from '../../MvuElement';
 import VanillaSwipe from 'vanilla-swipe';
 import { setCurrentTool } from '../../../store/tools/tools.action';
 import { Tools } from '../../../domain/tools';
+import { classMap } from 'lit-html/directives/class-map.js';
 
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_Fetching = 'update_fetching';
@@ -130,18 +131,6 @@ export class Header extends MvuElement {
 	createView(model) {
 		const { isOpen, isOpenNavigationRail, tabIndex, isFetching, layers, isPortrait, hasMinWidth, searchTerm } = model;
 
-		const getOrientationClass = () => {
-			return isPortrait ? 'is-portrait' : 'is-landscape';
-		};
-
-		const getMinWidthClass = () => {
-			return hasMinWidth ? 'is-desktop' : 'is-tablet';
-		};
-
-		const getOverlayClass = () => {
-			return isOpen && !isPortrait ? 'is-open' : '';
-		};
-
 		const getAnimatedBorderClass = () => {
 			return isFetching ? 'animated-action-button__border__running' : '';
 		};
@@ -154,16 +143,8 @@ export class Header extends MvuElement {
 			return searchTerm ? 'is-clear-visible' : '';
 		};
 
-		const getDemoClass = () => {
-			return this._environmentService.isStandalone() ? 'is-demo' : '';
-		};
-
 		const getBadgeText = () => {
 			return this._environmentService.isStandalone() ? translate('header_logo_badge_standalone') : translate('header_logo_badge');
-		};
-
-		const getOverlayTestClass = () => {
-			return isOpenNavigationRail ? 'is-open-navigationRail' : '';
 		};
 
 		const getEmblem = () => {
@@ -240,11 +221,21 @@ export class Header extends MvuElement {
 			input.dispatchEvent(new Event('input'));
 		};
 
+		const classes = {
+			'is-open': isOpen && !isPortrait,
+			'is-open-navigationRail': isOpenNavigationRail && !isPortrait,
+			'is-desktop': hasMinWidth,
+			'is-tablet': !hasMinWidth,
+			'is-portrait': isPortrait,
+			'is-landscape': !isPortrait,
+			'is-demo': this._environmentService.isStandalone()
+		};
+
 		const translate = (key) => this._translationService.translate(key);
 		return html`
 			<style>${css}</style>
 			<div class="preload">
-				<div class="${getOrientationClass()} ${getMinWidthClass()} ${getDemoClass()} ${getOverlayTestClass()}">
+				<div class="${classMap(classes)}">
 					<div class='header__logo'>				
 						<div class="action-button"  @click="${toggleNavigationRail}">
 							<div class="action-button__border animated-action-button__border ${getAnimatedBorderClass()}">
@@ -254,16 +245,16 @@ export class Header extends MvuElement {
 								</div>
 							</div>
 						</div>
-						<div id='header__text' class='${getOverlayClass()} header__text'>
+						<div id='header__text' class='header__text'>
 						</div>
 						<div class='header__logo-badge'>										
 						${getBadgeText()}
 						</div>	
 					</div>		
-					<div id='headerMobile' class='${getOverlayClass()} header__text-mobile'>	
+					<div id='headerMobile' class='header__text-mobile'>	
 					</div>
 					${getEmblem()}					
-					<div class="header ${getOverlayClass()}" ?data-register-for-viewport-calc=${isPortrait}>  
+					<div class="header" ?data-register-for-viewport-calc=${isPortrait}>  
 						<button id='header_toggle' class="close-menu" title=${translate('header_close_button_title')}  @click="${toggleMainMenu}"">
 							<i class="resize-icon "></i>
 						</button> 

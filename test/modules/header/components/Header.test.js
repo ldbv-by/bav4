@@ -367,7 +367,7 @@ describe('Header', () => {
 			TestUtils.simulateTouchEvent('touchmove', closeButton, center.x, center.y + 55, 2);
 			TestUtils.simulateTouchEvent('touchend', closeButton, center.x, center.y + 200);
 
-			expect(element.shadowRoot.querySelectorAll('.header.is-open')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-open .header')).toHaveSize(1);
 		});
 
 		it('focused menu-button loses the focus after swipe', async () => {
