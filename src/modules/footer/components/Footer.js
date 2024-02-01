@@ -5,6 +5,7 @@ import { html } from 'lit-html';
 import { $injector } from '../../../injection';
 import css from './footer.css';
 import { MvuElement } from '../../MvuElement';
+import { classMap } from 'lit-html/directives/class-map.js';
 
 const Update_IsOpen = 'update_isOpen_tabIndex';
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
@@ -73,24 +74,6 @@ export class Footer extends MvuElement {
 	createView(model) {
 		const { isOpen, isOpenNavigationRail, isPortrait, hasMinWidth } = model;
 
-		const getOverlayClass = () => {
-			return isOpen && !isPortrait && !this._environmentService.isEmbedded() ? 'is-open' : '';
-		};
-
-		const getOrientationClass = () => {
-			return isPortrait ? 'is-portrait' : 'is-landscape';
-		};
-
-		const getMinWidthClass = () => {
-			return hasMinWidth ? 'is-desktop' : 'is-tablet';
-		};
-
-		const getOverlayNavClass = () => (isOpenNavigationRail && !isPortrait ? 'is-open-navigationRail' : '');
-
-		const isEmbedded = () => {
-			return this._environmentService.isEmbedded() ? 'is-embedded' : '';
-		};
-
 		const createChildrenView = () => {
 			return html`
 				<ba-privacy-policy></ba-privacy-policy>
@@ -98,13 +81,23 @@ export class Footer extends MvuElement {
 			`;
 		};
 
+		const classes = {
+			'is-open': isOpen && !isPortrait && !this._environmentService.isEmbedded(),
+			'is-open-navigationRail': isOpenNavigationRail && !isPortrait,
+			'is-desktop': hasMinWidth,
+			'is-tablet': !hasMinWidth,
+			'is-portrait': isPortrait,
+			'is-landscape': !isPortrait,
+			'is-embedded': this._environmentService.isEmbedded()
+		};
+
 		return html`
 			<style>
 				${css}
 			</style>
 			<div class="preload">
-				<div class="${getOrientationClass()} ${getMinWidthClass()} ${isEmbedded()}">
-					<div class="footer ${getOverlayClass()} ${getOverlayNavClass()}">
+				<div class="${classMap(classes)}">
+					<div class="footer">
 						<div class="scale"></div>
 						<ba-attribution-info></ba-attribution-info>
 						<div class="content">${createChildrenView()}</div>

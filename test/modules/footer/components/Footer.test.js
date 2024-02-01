@@ -85,7 +85,7 @@ describe('Footer', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
 
-			expect(element.shadowRoot.querySelectorAll('.footer.is-open')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.content')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content')).display).toBe('flex');
 			expect(element.shadowRoot.querySelectorAll('ba-map-info')).toHaveSize(1);
@@ -106,7 +106,7 @@ describe('Footer', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(0);
 
-			expect(element.shadowRoot.querySelectorAll('.footer.is-open')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.content')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content')).display).toBe('none');
 			expect(element.shadowRoot.querySelectorAll('ba-map-info')).toHaveSize(1);
@@ -127,7 +127,7 @@ describe('Footer', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
 
-			expect(element.shadowRoot.querySelectorAll('.footer.is-open')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.content')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content')).display).toBe('none');
 			expect(element.shadowRoot.querySelectorAll('ba-map-info')).toHaveSize(1);
