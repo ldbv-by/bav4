@@ -7,6 +7,8 @@ import { open, addTabId } from '../store/navigationRail/navigationRail.action';
 import { TabIds } from '../domain/mainMenu';
 
 /**
+ * This plugin observes the 'tab' property of the mainMenu slice-of-state and shows
+ * the NavigationRail component and saves the tab id.
  * @class
  * @author alsturm
  */
