@@ -7,9 +7,8 @@ import { $injector } from '../../../injection';
  * Returns a BVV specific image load function loading restricted images via basic access authentication.
  * The requested maximum width and height of the image is limited to a configurable size (default is 2000x2000).
  * If width and/or height exceed the configured maximum size, the image will be scaled.
- * @param {Credential} credential
- * @param {number[]} maxSize maximum width and height of the requested image in px. Default is 2000*2000.
- * @returns ol.image.LoadFunction
+ * @function
+ * @type {module:modules/olMap/services/LayerService~baaImageLoadFunctionProvider}
  */
 export const getBvvBaaImageLoadFunction = (credential, maxSize = [2000, 2000]) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
