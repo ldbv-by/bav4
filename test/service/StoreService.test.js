@@ -160,6 +160,7 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('stateForEncoding')).toBeTrue();
 			expect(reducerKeys.includes('iframeContainer')).toBeTrue();
 			expect(reducerKeys.includes('routing')).toBeTrue();
+			expect(reducerKeys.includes('navigationRail')).toBeTrue();
 		});
 
 		it('registers all plugins', async () => {
