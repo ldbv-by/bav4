@@ -436,7 +436,7 @@ describe('MainMenu', () => {
 			TestUtils.simulateTouchEvent('touchmove', closeButton, center.x, center.y - 55, 2);
 			TestUtils.simulateTouchEvent('touchend', closeButton, center.x, center.y - 200);
 
-			expect(element.shadowRoot.querySelector('.main-menu .is-open')).toBeNull();
+			expect(element.shadowRoot.querySelector('.is-open .main-menu')).toBeNull();
 		});
 
 		it('does NOT closes the main menu on swipe downwards, left or right', async () => {
