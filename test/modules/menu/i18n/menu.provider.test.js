@@ -32,7 +32,7 @@ describe('i18n for menu module', () => {
 		expect(map.menu_navigation_rail_home).toBe('Home');
 		expect(map.menu_navigation_rail_routing).toBe('Routine');
 		expect(map.menu_navigation_rail_close).toBe('schließen');
-		expect(map.menu_navigation_rail_zoom_to_extend).toBe('auf Bayern Zoomen');
+		expect(map.menu_navigation_rail_zoom_to_extend).toBe('auf Bayern zoomen');
 		expect(map.menu_navigation_rail_object_info).toBe('Object-Info');
 		expect(map.menu_navigation_rail_zoom_out).toBe('zoom out');
 		expect(map.menu_navigation_rail_zoom_in).toBe('zoom in');

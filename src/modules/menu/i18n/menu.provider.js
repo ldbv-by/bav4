@@ -65,7 +65,7 @@ export const provide = (lang) => {
 				menu_navigation_rail_home: 'Home',
 				menu_navigation_rail_routing: 'Routine',
 				menu_navigation_rail_close: 'schließen',
-				menu_navigation_rail_zoom_to_extend: 'auf Bayern Zoomen',
+				menu_navigation_rail_zoom_to_extend: 'auf Bayern zoomen',
 				menu_navigation_rail_object_info: 'Object-Info',
 				menu_navigation_rail_zoom_in: 'zoom in',
 				menu_navigation_rail_zoom_out: 'zoom out',
