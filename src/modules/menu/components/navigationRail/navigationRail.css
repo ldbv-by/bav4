@@ -10,7 +10,7 @@
 	transition: all var(--animation-duration-large-open) var(--animation-easing-linear);
 	box-shadow: 0 2px 4px rgb(0 0 0 / 50%);
 }
-.is-portrait.navigation-rail__container {
+.is-portrait .navigation-rail__container {
 	height: auto;
 	bottom: -10em;
 	left: 0;
@@ -35,7 +35,6 @@
 .is-active .text {
 	font-weight: bold;
 }
-
 .navigation-rail__container button .text {
 	text-align: center;
 	margin: auto;
@@ -43,7 +42,6 @@
 	margin-top: 0.5em;
 	color: var(--text1);
 }
-
 .separator {
 	order: 1;
 	border-bottom: 1px dotted var(--secondary-color) !important;
@@ -52,7 +50,6 @@
 .home {
 	order: 0;
 }
-
 .home .icon {
 	mask: url('assets/home.svg');
 	-webkit-mask: url('assets/home.svg');
@@ -97,14 +94,12 @@
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
-
 .zoom-out .icon {
 	mask: url('assets/minus.svg');
 	-webkit-mask-image: url('assets/minus.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
-
 .zoom-to-extent .icon {
 	mask: url('./assets/ba-icon.svg');
 	-webkit-mask-image: url('./assets/ba-icon.svg');
@@ -143,11 +138,11 @@
 	margin: 1em;
 	padding-bottom: 0.5em;
 }
-.is-open {
+.is-open .navigation-rail__container {
 	transform: translate(5.5em, 0);
 }
-.is-portrait.is-open,
-.is-tablet.is-open {
+.is-portrait.is-open .navigation-rail__container,
+.is-tablet.is-open .navigation-rail__container {
 	transform: translate(0, -10em);
 }
 .is-portrait .home,

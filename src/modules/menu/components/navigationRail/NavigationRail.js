@@ -13,6 +13,7 @@ import { setCurrentTool } from '../../../../store/tools/tools.action';
 import { increaseZoom, decreaseZoom } from '../../../../store/position/position.action';
 import { fit } from '../../../../store/position/position.action';
 import { close } from '../../../../store/navigationRail/navigationRail.action';
+import { classMap } from 'lit-html/directives/class-map.js';
 
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_IsOpen_NavigationRail = 'update_NavigationRail';
@@ -94,10 +95,6 @@ export class NavigationRail extends MvuElement {
 
 		const reverseTabIds = [...visitedTabIds].reverse();
 
-		const getOrientationClass = () => {
-			return isPortrait ? 'is-portrait' : 'is-landscape';
-		};
-
 		const getSchemaClass = () => {
 			return darkSchema ? 'sun' : 'moon';
 		};
@@ -111,10 +108,6 @@ export class NavigationRail extends MvuElement {
 			setTab(TabIds.ROUTING);
 			setCurrentTool(Tools.ROUTING);
 			open();
-		};
-
-		const getOverlayClass = () => {
-			return isOpenNavigationRail ? 'is-open' : '';
 		};
 
 		const getIsActive = (tabId) => {
@@ -136,53 +129,61 @@ export class NavigationRail extends MvuElement {
 			return reverseTabIds.indexOf(tabId) + 2;
 		};
 
+		const classes = {
+			'is-open': isOpenNavigationRail,
+			'is-portrait': isPortrait,
+			'is-landscape': !isPortrait
+		};
+
 		const translate = (key) => this._translationService.translate(key);
 		return html`
 			<style>
 				${css}
 			</style>
-			<div class="navigation-rail__container ${getOverlayClass()} ${getOrientationClass()}">
-				<button class="home ${getIsActive(TabIds.MAPS)}" @click="${() => openTab(TabIds.MAPS)}">
-					<span class="icon "> </span>
-					<span class="text"> ${translate('menu_navigation_rail_home')} </span>
-				</button>
-				<span class="separator landscape"> </span>
-				<button
-					class="routing ${getIsVisible(TabIds.ROUTING)} ${getIsActive(TabIds.ROUTING)}"
-					@click="${() => openRoutingTab()}"
-					style="order:${getFlexOrder(TabIds.ROUTING)}"
-				>
-					<span class="icon"></span>
-					<span class="text">${translate('menu_navigation_rail_routing')}</span>
-				</button>
-				<button
-					class=" objectinfo ${getIsVisible(TabIds.FEATUREINFO)} ${getIsActive(TabIds.FEATUREINFO)}"
-					@click="${() => openTab(TabIds.FEATUREINFO)}"
-					style="order:${getFlexOrder(TabIds.FEATUREINFO)}"
-				>
-					<span class="icon "> </span>
-					<span class="text">${translate('menu_navigation_rail_object_info')}</span>
-				</button>
-				<button @click="${increaseZoom}" class="zoom-in">
-					<span class="icon  "> </span>
-					<span class="text">${translate('menu_navigation_rail_zoom_in')}</span>
-				</button>
-				<button @click="${decreaseZoom}" class="zoom-out">
-					<span class="icon   "> </span>
-					<span class="text">${translate('menu_navigation_rail_zoom_out')}</span>
-				</button>
-				<button @click="${zoomToExtent}" class="zoom-to-extent">
-					<span class="icon  "> </span>
-					<span class="text">${translate('menu_navigation_rail_zoom_to_extend')}</span>
-				</button>
-				<button @click="${close}" class="close">
-					<span class="icon "> </span>
-					<span class="text">${translate('menu_navigation_rail_close')}</span>
-				</button>
+			<div class="${classMap(classes)}">
+				<div class="navigation-rail__container">
+					<button class="home ${getIsActive(TabIds.MAPS)}" @click="${() => openTab(TabIds.MAPS)}">
+						<span class="icon "> </span>
+						<span class="text"> ${translate('menu_navigation_rail_home')} </span>
+					</button>
+					<span class="separator landscape"> </span>
+					<button
+						class="routing ${getIsVisible(TabIds.ROUTING)} ${getIsActive(TabIds.ROUTING)}"
+						@click="${() => openRoutingTab()}"
+						style="order:${getFlexOrder(TabIds.ROUTING)}"
+					>
+						<span class="icon"></span>
+						<span class="text">${translate('menu_navigation_rail_routing')}</span>
+					</button>
+					<button
+						class=" objectinfo ${getIsVisible(TabIds.FEATUREINFO)} ${getIsActive(TabIds.FEATUREINFO)}"
+						@click="${() => openTab(TabIds.FEATUREINFO)}"
+						style="order:${getFlexOrder(TabIds.FEATUREINFO)}"
+					>
+						<span class="icon "> </span>
+						<span class="text">${translate('menu_navigation_rail_object_info')}</span>
+					</button>
+					<button @click="${increaseZoom}" class="zoom-in">
+						<span class="icon  "> </span>
+						<span class="text">${translate('menu_navigation_rail_zoom_in')}</span>
+					</button>
+					<button @click="${decreaseZoom}" class="zoom-out">
+						<span class="icon   "> </span>
+						<span class="text">${translate('menu_navigation_rail_zoom_out')}</span>
+					</button>
+					<button @click="${zoomToExtent}" class="zoom-to-extent">
+						<span class="icon  "> </span>
+						<span class="text">${translate('menu_navigation_rail_zoom_to_extend')}</span>
+					</button>
+					<button @click="${close}" class="close">
+						<span class="icon "> </span>
+						<span class="text">${translate('menu_navigation_rail_close')}</span>
+					</button>
 
-				<button @click="${toggleSchema}" class=" ${getSchemaClass()} theme-toggle pointer">
-					<span class="icon "> </span>
-				</button>
+					<button @click="${toggleSchema}" class=" ${getSchemaClass()} theme-toggle pointer">
+						<span class="icon "> </span>
+					</button>
+				</div>
 			</div>
 		`;
 	}
