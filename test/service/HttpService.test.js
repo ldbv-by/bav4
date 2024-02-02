@@ -310,7 +310,6 @@ describe('NetworkStateSyncHttpService', () => {
 		it("calls parent's fetch and updates the store", async () => {
 			const store = setup();
 			const instanceUnderTest = new NetworkStateSyncHttpService();
-
 			spyOn(window, 'fetch').and.callFake(() => {
 				expect(store.getState().network.fetching).toBeTrue();
 				return Promise.resolve({
@@ -319,10 +318,13 @@ describe('NetworkStateSyncHttpService', () => {
 					}
 				});
 			});
+			const parentFetchSpy = spyOn(HttpService.prototype, 'fetch').and.callThrough();
 
 			const result = await instanceUnderTest.fetch('something');
+
 			expect(store.getState().network.fetching).toBeFalse();
 			expect(result.text()).toBe(42);
+			expect(parentFetchSpy).toHaveBeenCalledWith('something', {}, jasmine.any(AbortController), {});
 		});
 
 		it('regards pending responses', async () => {

@@ -139,10 +139,10 @@ export class NetworkStateSyncHttpService extends HttpService {
 	/**
 	 * @see {@link HttpService#fetch}
 	 */
-	async fetch(resource, options = {}, controller = new AbortController()) {
+	async fetch(resource, options = {}, controller = new AbortController(), interceptors = {}) {
 		setFetching(true);
 		try {
-			return await super.fetch(resource, options, controller);
+			return await super.fetch(resource, options, controller, interceptors);
 		} finally {
 			setFetching(false);
 		}
