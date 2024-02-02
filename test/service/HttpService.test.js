@@ -48,7 +48,7 @@ describe('HttpService', () => {
 			const result = await httpService.fetch('something', undefined, undefined, { response: interceptorSpy });
 
 			expect(spy).toHaveBeenCalled();
-			expect(interceptorSpy).toHaveBeenCalled();
+			expect(interceptorSpy).toHaveBeenCalledWith(jasmine.objectContaining({ text: jasmine.any(Function) }), jasmine.any(Function), 'something');
 			expect(result.text()).toBe(42);
 		});
 
