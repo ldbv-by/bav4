@@ -48,9 +48,9 @@ describe('BottomSheet', () => {
 
 			expect(element.getModel()).toEqual({
 				content: null,
-				open: false,
+				isOpen: false,
 				isOpenNavigationRail: false,
-				portrait: false
+				isPortrait: false
 			});
 		});
 	});

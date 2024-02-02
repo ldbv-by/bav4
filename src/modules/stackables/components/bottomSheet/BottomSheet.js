@@ -6,6 +6,7 @@ import css from './bottomSheet.css';
 import { MvuElement } from '../../../MvuElement';
 import { closeBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
 import closeIcon from '../assets/x-square.svg';
+import { classMap } from 'lit-html/directives/class-map.js';
 
 const Update = 'update';
 const Update_Main_Menu = 'update_main_menu';
@@ -21,9 +22,9 @@ export class BottomSheet extends MvuElement {
 	constructor() {
 		super({
 			content: null,
-			open: false,
+			isOpen: false,
 			isOpenNavigationRail: false,
-			portrait: false
+			isPortrait: false
 		});
 
 		this.observe(
@@ -47,7 +48,7 @@ export class BottomSheet extends MvuElement {
 			case Update_Main_Menu:
 				return {
 					...model,
-					open: data.open
+					isOpen: data.open
 				};
 			case Update:
 				return {
@@ -57,7 +58,7 @@ export class BottomSheet extends MvuElement {
 			case Update_Media:
 				return {
 					...model,
-					portrait: data.portrait
+					isPortrait: data.portrait
 				};
 			case Update_IsOpen_NavigationRail:
 				return { ...model, ...data };
@@ -68,11 +69,7 @@ export class BottomSheet extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { content, open, isOpenNavigationRail, portrait } = model;
-
-		const getOverlayClass = () => (open && !portrait ? 'is-open' : '');
-
-		const getOverlayNavClass = () => (isOpenNavigationRail && !portrait ? 'is-open-navigationRail' : '');
+		const { content, isOpen, isOpenNavigationRail, isPortrait } = model;
 
 		const onDismiss = () => {
 			const elementModal = this.shadowRoot.querySelector('.bottom-sheet');
@@ -82,14 +79,17 @@ export class BottomSheet extends MvuElement {
 			});
 		};
 
-		const getOrientationClass = () => {
-			return portrait ? 'is-portrait' : 'is-landscape';
+		const classes = {
+			'is-open': isOpen && !isPortrait,
+			'is-open-navigationRail': isOpenNavigationRail && !isPortrait,
+			'is-portrait': isPortrait,
+			'is-landscape': !isPortrait
 		};
 
 		return content
 			? html`
 		<style>${css}</style>
-		<div class='bottom-sheet ${getOverlayClass()} ${getOverlayNavClass()} ${getOrientationClass()}' data-test-id>
+		<div class='bottom-sheet ${classMap(classes)}' data-test-id>
         	${content}
 			<ba-icon id="close-icon" class='tool-container__close-button' .icon='${closeIcon}' .size=${1.6} .color=${'var(--text2)'} .color_hover=${'var(--text2)'} @click=${onDismiss}>
 		</div>`
