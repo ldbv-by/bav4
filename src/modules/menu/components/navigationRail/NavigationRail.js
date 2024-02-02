@@ -22,7 +22,7 @@ const Update_Schema = 'update_schema';
 const Update_FeatureInfo_Data = 'update_featureInfo_data';
 
 /**
- *
+ * Side navigation component in large window sizes and a map navigation component in compact window sizes.
  * @class
  * @author alsturm
  */
