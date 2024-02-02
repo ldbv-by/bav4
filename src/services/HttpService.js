@@ -8,7 +8,7 @@ import { setFetching } from '../store/network/network.action';
  * @async
  * @typedef {Function} responseInterceptor
  * @param {Response} response Fetch API response
- * @param {function} fetchCall A function which can be used to repeat the original fetch call
+ * @param {function} fetchCall A function which can be used to retry the original fetch call
  * @param {String} resource the URL (resource) of the original fetch call
  * @returns {Promise<Response>} Fetch API response
  */
