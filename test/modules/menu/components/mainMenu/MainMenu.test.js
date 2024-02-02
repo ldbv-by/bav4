@@ -88,9 +88,9 @@ describe('MainMenu', () => {
 			const model = new MainMenu().getModel();
 			expect(model).toEqual({
 				tab: null,
-				open: false,
-				portrait: false,
-				minWidth: false,
+				isOpen: false,
+				isPortrait: false,
+				hasMinWidth: false,
 				observeResponsiveParameter: false,
 				isOpenNavigationRail: false
 			});
@@ -169,7 +169,7 @@ describe('MainMenu', () => {
 	describe('when initialized', () => {
 		it('adds a div which holds the main menu and a close button', async () => {
 			const element = await setup();
-			expect(element.shadowRoot.querySelector('.main-menu.is-open')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.is-open .main-menu')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.main-menu__close-button')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.main-menu__close-button').id).toBe('toggle');
 			expect(element.shadowRoot.querySelector('.main-menu__close-button').title).toBe('menu_main_open_button');
@@ -381,23 +381,23 @@ describe('MainMenu', () => {
 
 			setTab(TabIds.MAPS);
 
-			expect(element.shadowRoot.querySelectorAll('.main-menu.is-full-size')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-full-size .main-menu')).toHaveSize(0);
 
 			setTab(TabIds.FEATUREINFO);
 
-			expect(element.shadowRoot.querySelectorAll('.main-menu.is-full-size')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-full-size .main-menu')).toHaveSize(1);
 
 			setTab(TabIds.MAPS);
 
-			expect(element.shadowRoot.querySelectorAll('.main-menu.is-full-size')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-full-size .main-menu')).toHaveSize(0);
 
 			setTab(TabIds.ROUTING);
 
-			expect(element.shadowRoot.querySelectorAll('.main-menu.is-full-size')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-full-size .main-menu')).toHaveSize(1);
 
 			setTab(TabIds.MAPS);
 
-			expect(element.shadowRoot.querySelectorAll('.main-menu.is-full-size')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-full-size .main-menu')).toHaveSize(0);
 		});
 	});
 
@@ -436,7 +436,7 @@ describe('MainMenu', () => {
 			TestUtils.simulateTouchEvent('touchmove', closeButton, center.x, center.y - 55, 2);
 			TestUtils.simulateTouchEvent('touchend', closeButton, center.x, center.y - 200);
 
-			expect(element.shadowRoot.querySelector('.main-menu.is-open')).toBeNull();
+			expect(element.shadowRoot.querySelector('.main-menu .is-open')).toBeNull();
 		});
 
 		it('does NOT closes the main menu on swipe downwards, left or right', async () => {
@@ -467,7 +467,7 @@ describe('MainMenu', () => {
 			TestUtils.simulateTouchEvent('touchmove', closeButton, center.x + 55, center.y, 2);
 			TestUtils.simulateTouchEvent('touchend', closeButton, center.x + 200, center.y);
 
-			expect(element.shadowRoot.querySelector('.main-menu.is-open')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.is-open .main-menu')).toBeTruthy();
 		});
 
 		it('close-button get the focus after swipe', async () => {

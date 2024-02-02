@@ -17,6 +17,7 @@ import { RoutingPanel } from './content/routing/RoutingPanel';
 import { MvuElement } from '../../../MvuElement';
 import VanillaSwipe from 'vanilla-swipe';
 import { isString } from '../../../../utils/checks';
+import { classMap } from 'lit-html/directives/class-map.js';
 
 const Update_Main_Menu = 'update_main_menu';
 const Update_Media = 'update_media';
@@ -33,9 +34,9 @@ export class MainMenu extends MvuElement {
 	constructor() {
 		super({
 			tab: null,
-			open: false,
-			portrait: false,
-			minWidth: false,
+			isOpen: false,
+			isPortrait: false,
+			hasMinWidth: false,
 			observeResponsiveParameter: false,
 			isOpenNavigationRail: false
 		});
@@ -50,13 +51,16 @@ export class MainMenu extends MvuElement {
 	onInitialize() {
 		this.observe(
 			(state) => state.mainMenu,
-			(data) => this.signal(Update_Main_Menu, data),
-			true
+			(mainMenu) => this.signal(Update_Main_Menu, { isOpen: mainMenu.open, tab: mainMenu.tab })
 		);
 		this.observe(
 			(state) => state.media,
-			(data) => this.signal(Update_Media, data),
-			true
+			(media) =>
+				this.signal(Update_Media, {
+					isPortrait: media.portrait,
+					hasMinWidth: media.minWidth,
+					observeResponsiveParameter: media.observeResponsiveParameter
+				})
 		);
 		this.observe(
 			(state) => state.navigationRail,
@@ -67,18 +71,9 @@ export class MainMenu extends MvuElement {
 	update(type, data, model) {
 		switch (type) {
 			case Update_Main_Menu:
-				return {
-					...model,
-					open: data.open,
-					tab: data.tab
-				};
+				return { ...model, ...data };
 			case Update_Media:
-				return {
-					...model,
-					portrait: data.portrait,
-					minWidth: data.minWidth,
-					observeResponsiveParameter: data.observeResponsiveParameter
-				};
+				return { ...model, ...data };
 			case Update_IsOpen_NavigationRail:
 				return { ...model, ...data };
 		}
@@ -94,9 +89,6 @@ export class MainMenu extends MvuElement {
 		});
 	}
 
-	/**
-	 * @override
-	 */
 	onAfterRender(firsttime) {
 		const { tab } = this.getModel();
 		this._activateTab(tab);
@@ -120,23 +112,8 @@ export class MainMenu extends MvuElement {
 		}
 	}
 
-	/**
-	 * @override
-	 */
 	createView(model) {
-		const { open, isOpenNavigationRail, tab, portrait, minWidth, observeResponsiveParameter } = model;
-
-		const getOrientationClass = () => (portrait ? 'is-portrait' : 'is-landscape');
-
-		const getMinWidthClass = () => (minWidth ? 'is-desktop' : 'is-tablet');
-
-		const getFullSizeClass = () => (tab === TabIds.FEATUREINFO || tab === TabIds.ROUTING ? 'is-full-size' : '');
-
-		const getOverlayClass = () => (open ? 'is-open' : '');
-
-		const getOverlayNavClass = () => (isOpenNavigationRail && !portrait ? 'is-open-navigationRail' : '');
-
-		const getPreloadClass = () => (observeResponsiveParameter ? '' : 'prevent-transition');
+		const { isOpen, isOpenNavigationRail, tab, isPortrait, hasMinWidth, observeResponsiveParameter } = model;
 
 		const contentPanels = Object.values(TabIds)
 			.filter((v) => isString(v))
@@ -152,6 +129,17 @@ export class MainMenu extends MvuElement {
 		const getValue = () => {
 			const container = this.shadowRoot.getElementById('mainmenu');
 			return container && container.style.width !== '' ? parseInt(container.style.width) : MainMenu.INITIAL_WIDTH_EM;
+		};
+
+		const classes = {
+			'is-open': isOpen,
+			'is-open-navigationRail': isOpenNavigationRail && !isPortrait,
+			'is-desktop': hasMinWidth,
+			'is-tablet': !hasMinWidth,
+			'is-full-size': tab === TabIds.FEATUREINFO || tab === TabIds.ROUTING,
+			'prevent-transition': !observeResponsiveParameter,
+			'is-portrait': isPortrait,
+			'is-landscape': !isPortrait
 		};
 
 		const getSlider = () => {
@@ -178,14 +166,14 @@ export class MainMenu extends MvuElement {
 			<style>
 				${css}
 			</style>
-			<div class="${getOrientationClass()} ${getPreloadClass()}">
-				<div id="mainmenu" class="main-menu ${getOverlayClass()} ${getOverlayNavClass()} ${getMinWidthClass()} ${getFullSizeClass()}">
+			<div class="${classMap(classes)}">
+				<div id="mainmenu" class="main-menu">
 					<button id="toggle" @click="${toggle}" title=${translate('menu_main_open_button')} class="main-menu__close-button">
 						<span class="main-menu__close-button-text">${translate('menu_main_open_button')}</span>
 						<i class="resize-icon"></i>
 					</button>
 					${getSlider()}
-					<div id="mainMenuContainer" class="main-menu__container" ?data-register-for-viewport-calc=${!portrait}>
+					<div id="mainMenuContainer" class="main-menu__container" ?data-register-for-viewport-calc=${!isPortrait}>
 						<div class="overlay-content">${contentPanels.map((item) => html` <div class="tabcontent">${item}</div> `)}</div>
 					</div>
 					<div>${this._getDevInfo()}</div>
