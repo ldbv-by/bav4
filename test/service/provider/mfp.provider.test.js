@@ -1,7 +1,7 @@
-import { $injector } from '../../src/injection';
-import { HttpService } from '../../src/services/HttpService';
-import { MediaType } from '../../src/domain/mediaTypes';
-import { getMfpCapabilities, postMfpSpec } from '../../src/services/provider/mfp.provider';
+import { $injector } from '../../../src/injection';
+import { HttpService } from '../../../src/services/HttpService';
+import { MediaType } from '../../../src/domain/mediaTypes';
+import { getMfpCapabilities, postMfpSpec } from '../../../src/services/provider/mfp.provider';
 describe('mfp provider', () => {
 	describe('getMfpCapabilities', () => {
 		const configService = {
