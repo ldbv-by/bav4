@@ -100,7 +100,7 @@ export class BottomSheet extends MvuElement {
 							.color=${'var(--text2)'}
 							.color_hover=${'var(--text2)'}
 							@click=${onDismiss}
-						/>
+						></ba-icon>
 					</div>`
 			: nothing;
 	}
