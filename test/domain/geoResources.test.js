@@ -50,7 +50,6 @@ describe('GeoResource', () => {
 	describe('GeoResourceAuthenticationType', () => {
 		it('provides an enum of all available types', () => {
 			expect(GeoResourceAuthenticationType.BAA).toBe('baa');
-			expect(GeoResourceAuthenticationType.PLUS).toBe('plus');
 		});
 	});
 
@@ -179,7 +178,8 @@ describe('GeoResource', () => {
 					.setAttributionProvider(attributionProvider)
 					.setAuthenticationType(GeoResourceAuthenticationType.BAA)
 					.setQueryable(false)
-					.setExportable(false);
+					.setExportable(false)
+					.setAuthRoles(['TEST']);
 				const geoResource1 = new GeoResourceNoImpl('id1');
 
 				geoResource1.copyPropertiesFrom(geoResource0);
@@ -194,6 +194,7 @@ describe('GeoResource', () => {
 				expect(geoResource1.attributionProvider).toEqual(attributionProvider);
 				expect(geoResource1.queryable).toBeFalse();
 				expect(geoResource1.exportable).toBeFalse();
+				expect(geoResource1.authRoles).toEqual(['TEST']);
 			});
 		});
 
@@ -212,6 +213,8 @@ describe('GeoResource', () => {
 				expect(georesource.attributionProvider).toBe(getDefaultAttribution);
 				expect(georesource.queryable).toBeTrue();
 				expect(georesource.exportable).toBeTrue();
+				expect(georesource.authRoles).toEqual([]);
+				expect(georesource.restricted).toBeFalse();
 			});
 
 			it('provides set methods and getters', () => {
@@ -227,7 +230,8 @@ describe('GeoResource', () => {
 					.setAttribution('some attribution')
 					.setAuthenticationType(GeoResourceAuthenticationType.BAA)
 					.setQueryable(false)
-					.setExportable(false);
+					.setExportable(false)
+					.setAuthRoles(['TEST']);
 
 				expect(georesource.hidden).toBeTrue();
 				expect(georesource.opacity).toBe(0.5);
@@ -238,6 +242,8 @@ describe('GeoResource', () => {
 				expect(georesource.authenticationType).toEqual(GeoResourceAuthenticationType.BAA);
 				expect(georesource.queryable).toBeFalse();
 				expect(georesource.exportable).toBeFalse();
+				expect(georesource.authRoles).toEqual(['TEST']);
+				expect(georesource.restricted).toBeTrue();
 			});
 		});
 	});

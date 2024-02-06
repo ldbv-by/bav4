@@ -48,8 +48,7 @@ export const GeoResourceTypes = Object.freeze({
  * @enum {String}
  */
 export const GeoResourceAuthenticationType = Object.freeze({
-	BAA: 'baa',
-	PLUS: 'plus'
+	BAA: 'baa'
 });
 
 /**
@@ -83,6 +82,7 @@ export class GeoResource {
 		this._authenticationType = null;
 		this._queryable = true;
 		this._exportable = true;
+		this._authRoles = [];
 	}
 
 	checkDefined(value, name) {
@@ -170,6 +170,23 @@ export class GeoResource {
 		return this._exportable;
 	}
 
+	/**
+	 * Returns a list of roles which are allowed to access this GeoResource.
+	 * An empty array means any user can access this GeoResource.
+	 *  @type {Array<String>}
+	 */
+	get authRoles() {
+		return this._authRoles;
+	}
+
+	/**
+	 * `true` if this GeoResource needs authorization to access.
+	 *  @type {boolean}
+	 */
+	get restricted() {
+		return this.authRoles.length > 0;
+	}
+
 	get attributionProvider() {
 		return this._attributionProvider;
 	}
@@ -234,6 +251,11 @@ export class GeoResource {
 		return this;
 	}
 
+	setAuthRoles(roles) {
+		this._authRoles = [...roles];
+		return this;
+	}
+
 	/**
 	 * Checks if this GeoResource contains a non-default value as label
 	 * @returns `true` if the label is a non-default value
@@ -291,7 +313,8 @@ export class GeoResource {
 			.setAttributionProvider(geoResource.attributionProvider)
 			.setQueryable(geoResource.queryable)
 			.setExportable(geoResource.exportable)
-			.setAuthenticationType(geoResource.authenticationType);
+			.setAuthenticationType(geoResource.authenticationType)
+			.setAuthRoles(geoResource.authRoles);
 	}
 }
 
