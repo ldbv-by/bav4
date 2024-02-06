@@ -9,8 +9,8 @@ describe('injector configuration', () => {
 		expect($injector.count()).toBe(72);
 
 		expect($injector.getScope('ProjectionService')).toBe(Injector.SCOPE_SINGLETON);
-		expect($injector.getScope('HttpService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('ConfigService')).toBe(Injector.SCOPE_SINGLETON);
+		expect($injector.getScope('HttpService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('EnvironmentService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('TranslationService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('CoordinateService')).toBe(Injector.SCOPE_PERLOOKUP);

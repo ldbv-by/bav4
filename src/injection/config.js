@@ -61,8 +61,8 @@ import { RoutingPlugin } from '../plugins/RoutingPlugin';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
-	.register('HttpService', NetworkStateSyncHttpService)
 	.registerSingleton('ConfigService', new ProcessEnvConfigService())
+	.register('HttpService', NetworkStateSyncHttpService)
 	.register('EnvironmentService', EnvironmentService)
 	.registerSingleton('TranslationService', new TranslationService())
 	.register('CoordinateService', OlCoordinateService)
