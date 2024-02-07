@@ -1,7 +1,7 @@
 /**
  * @module store/navigationRail/navigationRail_action
  */
-import { OPENNAV_CLOSEDNAV_CHANGED, ADD_TAB_ID } from './navigationRail.reducer';
+import { OPEN_CLOSED_CHANGED, ADD_TAB_ID } from './navigationRail.reducer';
 import { $injector } from '../../injection';
 
 const getStore = () => {
@@ -10,29 +10,29 @@ const getStore = () => {
 };
 
 /**
- * Opens the main menu.
+ * Opens the NavigationRail component
  * @function
  */
 export const open = () => {
 	getStore().dispatch({
-		type: OPENNAV_CLOSEDNAV_CHANGED,
+		type: OPEN_CLOSED_CHANGED,
 		payload: true
 	});
 };
 
 /**
- * Closes the main menu.
+ * Closes the NavigationRail component
  * @function
  */
 export const close = () => {
 	getStore().dispatch({
-		type: OPENNAV_CLOSEDNAV_CHANGED,
+		type: OPEN_CLOSED_CHANGED,
 		payload: false
 	});
 };
 
 /**
- * Toggles the visibility of the main menu.
+ * Toggles the visibility the NavigationRail component
  * @function
  */
 export const toggle = () => {
@@ -40,11 +40,15 @@ export const toggle = () => {
 		navigationRail: { open }
 	} = getStore().getState();
 	getStore().dispatch({
-		type: OPENNAV_CLOSEDNAV_CHANGED,
+		type: OPEN_CLOSED_CHANGED,
 		payload: !open
 	});
 };
 
+/**
+ * Registers a tab for the the NavigationRail component
+ * @param {string} tabId
+ */
 export const addTabId = (tabId) => {
 	getStore().dispatch({
 		type: ADD_TAB_ID,
