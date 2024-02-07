@@ -27,7 +27,7 @@ export const provide = (lang) => {
 				menu_misc_content_panel_routing_title: 'Routing',
 
 				menu_navigation_rail_home: 'Home',
-				menu_navigation_rail_routing: 'Routine',
+				menu_navigation_rail_routing: 'Routing',
 				menu_navigation_rail_close: 'close',
 				menu_navigation_rail_zoom_to_extend: 'zoom to Bavaria',
 				menu_navigation_rail_object_info: 'Object-Info',
@@ -63,7 +63,7 @@ export const provide = (lang) => {
 				menu_misc_content_panel_routing_title: 'Routing',
 
 				menu_navigation_rail_home: 'Home',
-				menu_navigation_rail_routing: 'Routine',
+				menu_navigation_rail_routing: 'Routing',
 				menu_navigation_rail_close: 'schließen',
 				menu_navigation_rail_zoom_to_extend: 'auf Bayern zoomen',
 				menu_navigation_rail_object_info: 'Object-Info',
