@@ -210,7 +210,7 @@ describe('NavigationRail', () => {
 	});
 
 	describe('when clicked', () => {
-		it('change active button', async () => {
+		it('changes the active button', async () => {
 			const state = {
 				media: { portrait: false, minWidth: false },
 				mainMenu: {
@@ -236,7 +236,7 @@ describe('NavigationRail', () => {
 			expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
 		});
 
-		it('change darkSchema', async () => {
+		it('changes the schema', async () => {
 			const state = {
 				media: { portrait: false, minWidth: false, darkSchema: false },
 				navigationRail: {
@@ -259,7 +259,7 @@ describe('NavigationRail', () => {
 			expect(store.getState().media.darkSchema).toBeTrue();
 		});
 
-		it('close NavigationRail', async () => {
+		it('closes the component', async () => {
 			const state = {
 				media: {
 					portrait: true,
