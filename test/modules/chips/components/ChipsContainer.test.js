@@ -359,7 +359,7 @@ describe('ChipsContainer', () => {
 			expect(window.getComputedStyle(scrollButton[1]).display).toBe('none');
 		});
 
-		it('shows tow scroll buttons on shortage of space in desktop layout', async () => {
+		it('shows two scroll buttons on shortage of space in desktop layout', async () => {
 			const element = await setup({ media: { portrait: false }, chips: { current: chipsConfiguration1 } });
 			const container = element.shadowRoot.querySelectorAll('#chipscontainer')[0];
 
