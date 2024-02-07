@@ -13,10 +13,7 @@ describe('NavigationRailPlugin', () => {
 				open: false,
 				visitedTabIds: []
 			},
-			media: {
-				portrait: false,
-				minWidth: false
-			},
+			media: {},
 			mainMenu: {
 				open: true,
 				tab: null
@@ -33,7 +30,7 @@ describe('NavigationRailPlugin', () => {
 	};
 
 	describe('when tabId changes', () => {
-		it('open FeatureInfoTab in landscape orientation', async () => {
+		it('opens the FeatureInfoTab in landscape orientation', async () => {
 			const store = setup();
 			const instanceUnderTest = new NavigationRailPlugin();
 			await instanceUnderTest.register(store);
@@ -44,40 +41,41 @@ describe('NavigationRailPlugin', () => {
 			expect(store.getState().navigationRail.open).toBeTrue();
 		});
 
-		it('open FeatureInfoTab in portrait orientation', async () => {
+		it('opens the RoutingTab in landscape orientation', async () => {
+			const store = setup();
+			const instanceUnderTest = new NavigationRailPlugin();
+			await instanceUnderTest.register(store);
+			expect(store.getState().navigationRail.open).toBeFalse();
+
+			setTab(TabIds.ROUTING);
+
+			expect(store.getState().navigationRail.open).toBeTrue();
+		});
+
+		it('does not opens a supported tab in portrait orientation', async () => {
 			const state = {
 				media: {
-					portrait: true,
-					minWidth: true
+					portrait: true
 				}
 			};
 
 			const store = setup(state);
 			const instanceUnderTest = new NavigationRailPlugin();
 			await instanceUnderTest.register(store);
-
 			expect(store.getState().navigationRail.open).toBeFalse();
 
-			setTab(TabIds.FEATUREINFO);
+			setTab(TabIds.SEARCH);
 
 			expect(store.getState().navigationRail.open).toBeFalse();
 		});
 
-		it('open SEARCHTab in landscape orientation', async () => {
-			const state = {
-				media: {
-					portrait: true,
-					minWidth: true
-				}
-			};
-
-			const store = setup(state);
+		it('does nothing when a tab is not supported', async () => {
+			const store = setup();
 			const instanceUnderTest = new NavigationRailPlugin();
 			await instanceUnderTest.register(store);
-
 			expect(store.getState().navigationRail.open).toBeFalse();
 
-			setTab(TabIds.SEARCH);
+			setTab(TabIds.MAPS);
 
 			expect(store.getState().navigationRail.open).toBeFalse();
 		});
