@@ -13,28 +13,13 @@ import { TabIds } from '../domain/mainMenu';
  * @author alsturm
  */
 export class NavigationRailPlugin extends BaPlugin {
-	constructor() {
-		super();
-		this._openMainMenu = null;
-		this._openNavigationRail = null;
-		this._isPortrait = null;
-	}
-
-	_init() {}
-
 	/**
 	 * @override
 	 * @param {Store} store
 	 */
 	async register(store) {
-		this._init();
-		this._openNavigationRail = store.getState().navigationRail.open;
-		this._isPortrait = store.getState().media.portrait;
-
-		const onTabChanged = (tab, state) => {
-			this._openMainMenu = state.mainMenu.open;
-
-			if ((tab === TabIds.FEATUREINFO || tab === TabIds.ROUTING) && !this._isPortrait) {
+		const onTabChanged = (tab) => {
+			if ((tab === TabIds.FEATUREINFO || tab === TabIds.ROUTING) && !store.getState().media.portrait) {
 				addTabId(tab);
 				open();
 			}
