@@ -1,5 +1,6 @@
 import { $injector } from '../../../../src/injection';
 import { getBvvBaaImageLoadFunction } from '../../../../src/modules/olMap/utils/baaImageLoadFunction.provider';
+import { bvvAuthResponseInterceptor } from '../../../../src/services/provider/auth.provider.js';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action.js';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer.js';
 import { TestUtils } from '../../../test-utils.js';
@@ -187,7 +188,7 @@ describe('imageLoadFunction.provider', () => {
 			});
 
 			describe('when NO scaling is needed', () => {
-				it('provides a image load function that loads a image', async () => {
+				fit('provides a image load function that loads a image', async () => {
 					const geoResourceId = 'geoResourceId';
 					const base64ImageData =
 						'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAApJREFUCNdjYAAAAAIAAeIhvDMAAAAASUVORK5CYII=';
@@ -199,7 +200,7 @@ describe('imageLoadFunction.provider', () => {
 							{
 								timeout: 10000
 							},
-							{ response: jasmine.any(Function) }
+							{ response: bvvAuthResponseInterceptor }
 						)
 						.and.resolveTo(new Response(base64ImageData));
 					const imageLoadFunction = getBvvBaaImageLoadFunction(geoResourceId);
@@ -226,7 +227,7 @@ describe('imageLoadFunction.provider', () => {
 							{
 								timeout: 10000
 							},
-							{ response: jasmine.any(Function) }
+							{ response: bvvAuthResponseInterceptor }
 						)
 						.and.resolveTo(new Response(base64ImageData));
 					const mockTempImage = {};

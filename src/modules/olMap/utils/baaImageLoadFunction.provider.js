@@ -2,7 +2,7 @@
  * @module modules/olMap/utils/baaImageLoadFunction_provider
  */
 import { $injector } from '../../../injection';
-import { getBvvAuthResponseInterceptor } from '../../../services/provider/auth.provider';
+import { bvvAuthResponseInterceptor } from '../../../services/provider/auth.provider';
 import { LevelTypes, emitNotification } from '../../../store/notifications/notifications.action';
 
 /**
@@ -63,7 +63,7 @@ export const getBvvBaaImageLoadFunction = (geoResourceId, credential = null, max
 					{
 						timeout
 					},
-					{ response: getBvvAuthResponseInterceptor() }
+					{ response: bvvAuthResponseInterceptor }
 				);
 
 				if (response.status !== 200) {
