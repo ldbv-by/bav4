@@ -112,7 +112,7 @@ describe('LayerService', () => {
 				expect(wmsSource.getParams().LAYERS).toBe('layer');
 				expect(wmsSource.getParams().FORMAT).toBe('image/png');
 				expect(wmsSource.getParams().VERSION).toBe('1.1.1');
-				expect(providerSpy).toHaveBeenCalledWith();
+				expect(providerSpy).toHaveBeenCalledWith(geoResourceId);
 				expect(wmsOlLayer.getSource().getImageLoadFunction()).toBe(mockImageLoadFunction);
 			});
 
@@ -143,7 +143,7 @@ describe('LayerService', () => {
 				expect(wmsSource.getParams().FORMAT).toBe('image/png');
 				expect(wmsSource.getParams().VERSION).toBe('1.1.1');
 				expect(wmsSource.getParams().STYLES).toBe('some');
-				expect(providerSpy).toHaveBeenCalledWith();
+				expect(providerSpy).toHaveBeenCalledWith(geoResourceId);
 				expect(wmsOlLayer.getSource().getImageLoadFunction()).toBe(mockImageLoadFunction);
 			});
 
@@ -152,18 +152,18 @@ describe('LayerService', () => {
 					const url = 'https://some.url';
 					const credential = { username: 'u', password: 'p' };
 					const mockImageLoadFunction = () => {};
-					const providerSpy = jasmine.createSpy().withArgs(credential).and.returnValue(mockImageLoadFunction);
+					const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
 					spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(credential);
-
 					const instanceUnderTest = setup(providerSpy);
 					const id = 'id';
-					const wmsGeoresource = new WmsGeoResource('geoResourceId', 'label', url, 'layer', 'image/png').setAuthenticationType(
+					const geoResourceId = 'geoResourceId';
+					const wmsGeoresource = new WmsGeoResource(geoResourceId, 'label', url, 'layer', 'image/png').setAuthenticationType(
 						GeoResourceAuthenticationType.BAA
 					);
 
 					const wmsOlLayer = instanceUnderTest.toOlLayer(id, wmsGeoresource);
 
-					expect(providerSpy).toHaveBeenCalledWith(credential);
+					expect(providerSpy).toHaveBeenCalledWith(geoResourceId, credential);
 					expect(wmsOlLayer.getSource().getImageLoadFunction()).toBe(mockImageLoadFunction);
 				});
 
@@ -171,16 +171,16 @@ describe('LayerService', () => {
 					const url = 'https://some.url';
 					const credential = null;
 					const mockImageLoadFunction = () => {};
-					const providerSpy = jasmine.createSpy().withArgs(credential).and.returnValue(mockImageLoadFunction);
+					const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
 					spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(credential);
-
 					const instanceUnderTest = setup(providerSpy);
 					const id = 'id';
-					const wmsGeoresource = new WmsGeoResource('geoResourceId', 'label', url, 'layer', 'image/png').setAuthenticationType(
+					const geoResourceId = 'geoResourceId';
+					const wmsGeoresource = new WmsGeoResource(geoResourceId, 'label', url, 'layer', 'image/png').setAuthenticationType(
 						GeoResourceAuthenticationType.BAA
 					);
 
-					expect(providerSpy).not.toHaveBeenCalledWith(credential);
+					expect(providerSpy).not.toHaveBeenCalledWith(geoResourceId, credential);
 					expect(() => {
 						instanceUnderTest.toOlLayer(id, wmsGeoresource);
 					}).toThrowError(`No credential available for GeoResource with id '${wmsGeoresource.id}' and url '${wmsGeoresource.url}'`);
