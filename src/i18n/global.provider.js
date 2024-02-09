@@ -18,7 +18,10 @@ export const provide = (lang) => {
 				global_privacy_policy_url: 'https://geoportal.bayern.de/geoportalbayern/seiten/datenschutz.html',
 				global_marker_symbol_label: 'Marker',
 				global_featureInfo_not_available: 'FeatureInfo is not available',
-				global_routingService_init_exception: 'Routing currently not available'
+				global_routingService_init_exception: 'Routing currently not available',
+				global_geoResource_not_available: (params) =>
+					`Failed to add a layer for the GeoResource with ID "${params[0]}"${params[1] ? `. ${params[1]}` : ``}`,
+				global_geoResource_forbidden: 'Forbidden (403)'
 			};
 
 		case 'de':
@@ -39,7 +42,10 @@ export const provide = (lang) => {
 				global_privacy_policy_url: 'https://geoportal.bayern.de/geoportalbayern/seiten/datenschutz.html',
 				global_marker_symbol_label: 'Markierung',
 				global_featureInfo_not_available: 'FeatureInfo ist nicht verfügbar',
-				global_routingService_init_exception: 'Die Routing-Funktion steht derzeit leider nicht zur Verfügung'
+				global_routingService_init_exception: 'Die Routing-Funktion steht derzeit leider nicht zur Verfügung',
+				global_geoResource_not_available: (params) =>
+					`Es konnte keine Ebene für die GeoRessource mit der ID "${params[0]}" geladen werden${params[1] ? `. ${params[1]}` : ``}`,
+				global_geoResource_forbidden: 'Fehlende Berechtigung (403)'
 			};
 
 		default:
