@@ -1,5 +1,5 @@
 /**
- * @module modules/commons/components/icon/Icon
+ * @module modules/commons/components/badge/Badge
  */
 import { html, nothing } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
