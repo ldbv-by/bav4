@@ -37,7 +37,7 @@ export const getBvvBaaImageLoadFunction = (geoResourceId, credential = null, max
 			throw new Error(`Unexpected network status ${response.status}`);
 		};
 
-		const getObjectUrl = async (url) => {
+		const getObjectUrlForBaa = async (url) => {
 			const { username, password } = credential;
 			try {
 				const response = await httpService.get(url, {
@@ -82,7 +82,7 @@ export const getBvvBaaImageLoadFunction = (geoResourceId, credential = null, max
 		const scalingHeight = maxSize[1] / height;
 		if (scalingWidth >= 1 && scalingHeight >= 1) {
 			const url = `${configService.getValueAsPath('BACKEND_URL')}proxy/basicAuth/wms/map/?url=${encodeURIComponent(src)}`;
-			image.getImage().src = credential ? await getObjectUrl(url) : await getObjectUrlWithAuthInterceptor(src);
+			image.getImage().src = credential ? await getObjectUrlForBaa(url) : await getObjectUrlWithAuthInterceptor(src);
 		} else {
 			params.set('WIDTH', `${scalingWidth >= 1 ? width : Math.round(width * scalingWidth)}`);
 			params.set('HEIGHT', `${scalingHeight >= 1 ? height : Math.round(height * scalingHeight)}`);
@@ -99,7 +99,7 @@ export const getBvvBaaImageLoadFunction = (geoResourceId, credential = null, max
 			};
 			tempImage.crossOrigin = 'anonymous';
 			tempImage.src = credential
-				? await getObjectUrl(`${configService.getValueAsPath('BACKEND_URL')}proxy/basicAuth/wms/map/?url=${encodeURIComponent(adjustedWmsUrl)}`)
+				? await getObjectUrlForBaa(`${configService.getValueAsPath('BACKEND_URL')}proxy/basicAuth/wms/map/?url=${encodeURIComponent(adjustedWmsUrl)}`)
 				: await getObjectUrlWithAuthInterceptor(adjustedWmsUrl);
 		}
 	};
