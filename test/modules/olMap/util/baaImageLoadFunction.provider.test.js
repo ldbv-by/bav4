@@ -188,7 +188,7 @@ describe('imageLoadFunction.provider', () => {
 			});
 
 			describe('when NO scaling is needed', () => {
-				fit('provides a image load function that loads a image', async () => {
+				it('provides a image load function that loads a image', async () => {
 					const geoResourceId = 'geoResourceId';
 					const base64ImageData =
 						'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAApJREFUCNdjYAAAAAIAAeIhvDMAAAAASUVORK5CYII=';
