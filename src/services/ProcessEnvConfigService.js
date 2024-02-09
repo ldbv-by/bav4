@@ -29,7 +29,7 @@ export class ProcessEnvConfigService {
 		);
 		// eslint-disable-next-line no-undef
 		this._properties.set('SHORTENING_SERVICE_URL', window?.ba_externalConfigProperties?.SHORTENING_SERVICE_URL ?? process.env.SHORTENING_SERVICE_URL);
-		// primarily used for development, so not included in ba_externalConfigProperties
+		// primarily needed for local development, so not included in ba_externalConfigProperties
 		this._properties.set('FETCH_API_CREDENTIALS', process.env.FETCH_API_CREDENTIALS);
 
 		this._properties.forEach((value, key) => {
