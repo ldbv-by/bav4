@@ -27,6 +27,10 @@ const Update_FeatureInfo_Data = 'update_featureInfo_data';
  * @author alsturm
  */
 export class NavigationRail extends MvuElement {
+	#environmentService;
+	#translationService;
+	#mapService;
+
 	constructor() {
 		super({
 			open: false,
@@ -42,9 +46,9 @@ export class NavigationRail extends MvuElement {
 			MapService: mapService
 		} = $injector.inject('EnvironmentService', 'MapService', 'TranslationService');
 
-		this._environmentService = environmentService;
-		this._translationService = translationService;
-		this._mapService = mapService;
+		this.#environmentService = environmentService;
+		this.#translationService = translationService;
+		this.#mapService = mapService;
 	}
 
 	update(type, data, model) {
@@ -87,7 +91,7 @@ export class NavigationRail extends MvuElement {
 	}
 
 	isRenderingSkipped() {
-		return this._environmentService.isEmbedded();
+		return this.#environmentService.isEmbedded();
 	}
 
 	createView(model) {
@@ -118,7 +122,7 @@ export class NavigationRail extends MvuElement {
 			return visitedTabIds.includes(tabId) ? '' : 'hide';
 		};
 
-		const getDefaultMapExtent = () => this._mapService.getDefaultMapExtent();
+		const getDefaultMapExtent = () => this.#mapService.getDefaultMapExtent();
 
 		const zoomToExtent = () => {
 			fit(getDefaultMapExtent(), { useVisibleViewport: false });
@@ -135,7 +139,7 @@ export class NavigationRail extends MvuElement {
 			'is-landscape': !isPortrait
 		};
 
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key) => this.#translationService.translate(key);
 		return html`
 			<style>
 				${css}
