@@ -26,73 +26,71 @@ export const bvvSignInProvider = async (credential) => {
 	}
 };
 
+const createCredentialPanel = (url, authenticateFunction, onCloseFunction) => {
+	return html`<ba-auth-password-credential-panel
+		.url=${url}
+		.authenticate=${authenticateFunction}
+		.onClose=${onCloseFunction}
+	></ba-auth-password-credential-panel>`;
+};
+
 /**
  * Bvv specific implementation of {@link module:services/HttpService~responseInterceptor}.
  * @function
  * @type {module:services/HttpService~responseInterceptor}
  *
  */
-export const getBvvAuthResponseInterceptor = () => {
-	const createCredentialPanel = (url, authenticateFunction, onCloseFunction) => {
-		return html`<ba-auth-password-credential-panel
-			.url=${url}
-			.authenticate=${authenticateFunction}
-			.onClose=${onCloseFunction}
-		></ba-auth-password-credential-panel>`;
-	};
+export const bvvAuthResponseInterceptor = async (response, doFetch, url) => {
+	// in that case we open the credential ui as modal window
+	switch (response.status) {
+		case 401:
+			return new Promise((resolve) => {
+				const {
+					StoreService: storeService,
+					TranslationService: translationService,
+					AuthService: authService
+				} = $injector.inject('StoreService', 'TranslationService', 'AuthService');
+				const translate = (key) => translationService.translate(key);
 
-	return async (response, doFetch, url) => {
-		// in that case we open the credential ui as modal window
-		switch (response.status) {
-			case 401:
-				return new Promise((resolve) => {
-					const {
-						StoreService: storeService,
-						TranslationService: translationService,
-						AuthService: authService
-					} = $injector.inject('StoreService', 'TranslationService', 'AuthService');
-					const translate = (key) => translationService.translate(key);
+				const authenticate = async (credential) => {
+					const authenticated = await authService.signIn(credential);
+					if (authenticated) {
+						return true;
+					}
 
-					const authenticate = async (credential) => {
-						const authenticated = await authService.signIn(credential);
-						if (authenticated) {
-							return true;
-						}
+					return false;
+				};
 
-						return false;
-					};
+				// in case of aborting the authentication-process by closing the modal we call the onClose callback
+				const resolveBeforeClosing = ({ active }) => {
+					if (!active) {
+						onClose(null);
+					}
+				};
 
-					// in case of aborting the authentication-process by closing the modal we call the onClose callback
-					const resolveBeforeClosing = ({ active }) => {
-						if (!active) {
-							onClose(null);
-						}
-					};
+				const unsubscribe = observe(
+					storeService.getStore(),
+					(state) => state.modal,
+					(modal) => resolveBeforeClosing(modal)
+				);
 
-					const unsubscribe = observe(
-						storeService.getStore(),
-						(state) => state.modal,
-						(modal) => resolveBeforeClosing(modal)
-					);
+				// onClose-callback is called with a verified credential object and the result object or simply null
+				const onClose = async (credential, currentResponse) => {
+					unsubscribe();
+					closeModal();
+					if (credential && currentResponse) {
+						// re-try the original fetch call
+						const reTryResponse = await doFetch();
 
-					// onClose-callback is called with a verified credential object and the result object or simply null
-					const onClose = async (credential, currentResponse) => {
-						unsubscribe();
-						closeModal();
-						if (credential && currentResponse) {
-							// re-try the original fetch call
-							const reTryResponse = await doFetch();
+						resolve(reTryResponse);
+					} else {
+						// resolve with the original response
+						resolve(response);
+					}
+				};
 
-							resolve(reTryResponse);
-						} else {
-							// resolve with the original response
-							resolve(response);
-						}
-					};
-
-					openModal(translate('global_import_authenticationModal_title'), createCredentialPanel(url, authenticate, onClose));
-				});
-		}
-		return response;
-	};
+				openModal(translate('global_import_authenticationModal_title'), createCredentialPanel(url, authenticate, onClose));
+			});
+	}
+	return response;
 };

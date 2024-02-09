@@ -1,6 +1,6 @@
 import { $injector } from '../../../src/injection';
 import { MediaType } from '../../../src/domain/mediaTypes';
-import { bvvSignInProvider, getBvvAuthResponseInterceptor } from '../../../src/services/provider/auth.provider';
+import { bvvSignInProvider, bvvAuthResponseInterceptor } from '../../../src/services/provider/auth.provider';
 import { TestUtils } from '../../test-utils';
 import { modalReducer } from '../../../src/store/modal/modal.reducer';
 import { PasswordCredentialPanel } from '../../../src/modules/auth/components/PasswordCredentialPanel';
@@ -98,23 +98,21 @@ describe('getBvvAuthResponseInterceptor', () => {
 
 	describe('response status code other than 401', () => {
 		it('returns the original response', async () => {
-			const responseInterceptor = getBvvAuthResponseInterceptor();
 			const retTryFetchFn = jasmine.createSpy();
 			const mockResponse = { status: 200 };
 			const url = 'http://foo.bar';
 
-			await expectAsync(responseInterceptor(mockResponse, retTryFetchFn, url)).toBeResolvedTo(mockResponse);
+			await expectAsync(bvvAuthResponseInterceptor(mockResponse, retTryFetchFn, url)).toBeResolvedTo(mockResponse);
 		});
 	});
 
 	describe('response status code is 401', () => {
 		it('opens an authentication UI', async () => {
-			const responseInterceptor = getBvvAuthResponseInterceptor();
 			const retTryFetchFn = jasmine.createSpy();
 			const mockResponse = { status: 401 };
 			const url = 'http://foo.bar';
 
-			responseInterceptor(mockResponse, retTryFetchFn, url);
+			bvvAuthResponseInterceptor(mockResponse, retTryFetchFn, url);
 
 			expect(store.getState().modal.active).toBeTrue();
 			expect(store.getState().modal.data.title).toBe('global_import_authenticationModal_title');
@@ -127,12 +125,11 @@ describe('getBvvAuthResponseInterceptor', () => {
 		describe('call of the authenticate callback', () => {
 			describe('successful', () => {
 				it('calls the AuthService and resolves to true', async () => {
-					const responseInterceptor = getBvvAuthResponseInterceptor();
 					const retTryFetchFn = jasmine.createSpy();
 					const mockResponse = { status: 401 };
 					const url = 'http://foo.bar';
 					const credential = { username: 'u', password: 'p' };
-					responseInterceptor(mockResponse, retTryFetchFn, url);
+					bvvAuthResponseInterceptor(mockResponse, retTryFetchFn, url);
 					const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 					// we take the authFn from the component
 					const authFunc = wrapperElement.querySelector(PasswordCredentialPanel.tag).authenticate;
@@ -145,12 +142,11 @@ describe('getBvvAuthResponseInterceptor', () => {
 
 			describe('NOT successful', () => {
 				it('calls the AuthService and resolves to false', async () => {
-					const responseInterceptor = getBvvAuthResponseInterceptor();
 					const retTryFetchFn = jasmine.createSpy();
 					const mockResponse = { status: 401 };
 					const url = 'http://foo.bar';
 					const credential = { username: 'u', password: 'p' };
-					responseInterceptor(mockResponse, retTryFetchFn, url);
+					bvvAuthResponseInterceptor(mockResponse, retTryFetchFn, url);
 					const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 					// we take the authFn from the component
 					const authFunc = wrapperElement.querySelector(PasswordCredentialPanel.tag).authenticate;
@@ -165,13 +161,12 @@ describe('getBvvAuthResponseInterceptor', () => {
 		describe('call of the onClose callback', () => {
 			describe('after successful authentication', () => {
 				it('closes the modal and resolves with the retry response', async () => {
-					const responseInterceptor = getBvvAuthResponseInterceptor();
 					const mockResponse = { status: 401 };
 					const retryResponse = { status: 200 };
 					const url = 'http://foo.bar';
 					const credential = { username: 'u', password: 'p' };
 					const retTryFetchFn = jasmine.createSpy().and.resolveTo(retryResponse);
-					const responsePromise = responseInterceptor(mockResponse, retTryFetchFn, url);
+					const responsePromise = bvvAuthResponseInterceptor(mockResponse, retTryFetchFn, url);
 					const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 					// we take the onCloseCallbackFn from the component
 					const onCloseCallbackFunc = wrapperElement.querySelector(PasswordCredentialPanel.tag).onClose;
@@ -186,11 +181,10 @@ describe('getBvvAuthResponseInterceptor', () => {
 
 			describe('after unsuccessful authentication', () => {
 				it('closes the modal and resolves with the original response', async () => {
-					const responseInterceptor = getBvvAuthResponseInterceptor();
 					const mockResponse = { status: 401 };
 					const url = 'http://foo.bar';
 					const retTryFetchFn = jasmine.createSpy();
-					const responsePromise = responseInterceptor(mockResponse, retTryFetchFn, url);
+					const responsePromise = bvvAuthResponseInterceptor(mockResponse, retTryFetchFn, url);
 					const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 					// we take the onCloseCallbackFn from the component
 					const onCloseCallbackFunc = wrapperElement.querySelector(PasswordCredentialPanel.tag).onClose;
@@ -205,11 +199,10 @@ describe('getBvvAuthResponseInterceptor', () => {
 
 			describe('the user closes the modal', () => {
 				it('resolves with the original response', async () => {
-					const responseInterceptor = getBvvAuthResponseInterceptor();
 					const mockResponse = { status: 401 };
 					const url = 'http://foo.bar';
 					const retTryFetchFn = jasmine.createSpy();
-					const responsePromise = responseInterceptor(mockResponse, retTryFetchFn, url);
+					const responsePromise = bvvAuthResponseInterceptor(mockResponse, retTryFetchFn, url);
 
 					closeModal();
 
