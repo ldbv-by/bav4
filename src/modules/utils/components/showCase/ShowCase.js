@@ -344,6 +344,17 @@ export class ShowCase extends MvuElement {
 							<ba-button id="button3" .label=${'loading style'} .icon=${arrowUpSvg} .type=${'loading'}></ba-button>
 						</div>
 					</div>
+					<h3>ba-badges</h3>
+					<div class="example">
+						<div class="row">
+							<ba-badge></ba-badge>
+
+							<ba-badge .color=${'var(--text3)'} .background=${'var(--primary-color)'} .label=${'Plus'}></ba-badge>
+
+							<ba-badge .background=${'var(--secondary-bg-color)'} .label=${'Wald'} .color=${'var(--text2)'}></ba-badge>
+							<ba-badge .icon=${arrowUpSvg} .background=${'var(--secondary-bg-color)'} .label=${'Wald'} .color=${'var(--text2)'}></ba-badge>
+						</div>
+					</div>
 
 					<h3>ba-icons</h3>
 					<div class="example icons">

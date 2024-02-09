@@ -18,6 +18,7 @@ import { createUniqueId } from '../../../utils/numberUtils';
 import { fitLayer } from '../../../store/position/position.action';
 import { GeoResourceFuture, VectorGeoResource } from '../../../domain/geoResources';
 import { MenuTypes } from '../../commons/components/overflowMenu/OverflowMenu';
+import { PERMANENT_ROUTE_LAYER_ID, PERMANENT_WP_LAYER_ID } from '../../../plugins/RoutingPlugin';
 
 const Update_Layer = 'update_layer';
 const Update_Layer_Collapsed = 'update_layer_collapsed';
@@ -189,6 +190,25 @@ export class LayerItem extends AbstractMvuContentPanel {
 			return layer.label + ' - ' + translate('layerManager_change_visibility');
 		};
 
+		const getBadge = () => {
+			const geoResource = this._geoResourceService.byId(layer.geoResourceId);
+
+			//just WMS import
+			if (geoResource.isExternal()) {
+				return html`<ba-badge .color=${'var(--text1)'} .background=${'var(--secondary-bg-color)'} .label=${'Import'}></ba-badge>`;
+			}
+
+			switch (layer.id) {
+				case PERMANENT_ROUTE_LAYER_ID:
+					return html`<ba-badge .color=${'var(--text1)'} .background=${'var(--secondary-bg-color)'} .label=${'Routing'}></ba-badge>`;
+				case PERMANENT_WP_LAYER_ID:
+					return html`<ba-badge .color=${'var(--text1)'} .background=${'var(--secondary-bg-color)'} .label=${'Routing'}></ba-badge>`;
+				case 'f_168c97e0-c5b1-11ee-9700-a3b39a6895a8_924d91c3-c3d8-42a0-9112-99568ffdf31b':
+					return html`<ba-badge .color=${'var(--text1)'} .background=${'var(--secondary-bg-color)'} .label=${'Messen | Zeichnen'}></ba-badge>`;
+			}
+			return nothing;
+		};
+
 		const iconCollapseClass = {
 			iconexpand: !layer.collapsed
 		};
@@ -224,9 +244,8 @@ export class LayerItem extends AbstractMvuContentPanel {
 			<div class="ba-section divider">
 				<div class="ba-list-item">
 					<ba-checkbox .title="${getVisibilityTitle()}" class="ba-list-item__text" tabindex="0" .checked=${layer.visible} @toggle=${toggleVisibility}
-						>${layer.loading ? html`<ba-spinner .label=${currentLabel}></ba-spinner>` : html`${currentLabel}`}</ba-checkbox
-					>
-
+						>${layer.loading ? html`<ba-spinner .label=${currentLabel}></ba-spinner>` : html`${currentLabel} ${getBadge()}`}
+					</ba-checkbox>
 					<button id="button-detail" data-test-id class="ba-list-item__after" title="${getCollapseTitle()}" @click="${toggleCollapse}">
 						<i class="icon chevron icon-rotate-90 ${classMap(iconCollapseClass)}"></i>
 					</button>
