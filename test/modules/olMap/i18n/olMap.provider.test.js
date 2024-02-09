@@ -4,7 +4,6 @@ describe('i18n for map module', () => {
 	it('provides translation for de', () => {
 		const map = provide('de');
 
-		expect(map.olMap_layer_not_available).toBe('Ebene konnte nicht geladen werden:');
 		expect(map.olMap_handler_measure_start).toBe('Klicken, um die Messung zu beginnen');
 		expect(map.olMap_handler_measure_continue_line).toBe('Klicken, um die Messlinie zu zeichnen (Doppelklick zum Beenden)');
 		expect(map.olMap_handler_measure_continue_polygon).toBe('Klicken, um die Fläche zu zeichnen (Doppelklick zum Beenden)');
@@ -62,7 +61,6 @@ describe('i18n for map module', () => {
 	it('provides translation for en', () => {
 		const map = provide('en');
 
-		expect(map.olMap_layer_not_available).toBe('Failed to add a layer for id');
 		expect(map.olMap_handler_measure_start).toBe('Click to start measurement');
 		expect(map.olMap_handler_measure_continue_line).toBe('Click to continue drawing the line (double-click to finish)');
 		expect(map.olMap_handler_measure_continue_polygon).toBe('Click to continue drawing the polygon (double-click to finish)');
@@ -114,7 +112,7 @@ describe('i18n for map module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 41;
+		const expectedSize = 40;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
