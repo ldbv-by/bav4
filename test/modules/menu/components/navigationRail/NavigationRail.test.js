@@ -236,6 +236,36 @@ describe('NavigationRail', () => {
 			expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
 		});
 
+		it('changes the tab and opens the mainMenu', async () => {
+			const state = {
+				media: { portrait: false, minWidth: false },
+				mainMenu: {
+					open: false,
+					tab: TabIds.MAPS
+				},
+				navigationRail: {
+					open: true,
+					visitedTabIds: [TabIds.FEATUREINFO]
+				}
+			};
+			const element = await setup(state);
+
+			expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
+			expect(store.getState().mainMenu.open).toBeFalse();
+
+			const objectinfoButton = element.shadowRoot.querySelector('.objectinfo');
+			objectinfoButton.click();
+
+			expect(store.getState().mainMenu.tab).toBe(TabIds.FEATUREINFO);
+			expect(store.getState().mainMenu.open).toBeTrue();
+
+			const homeButton = element.shadowRoot.querySelector('.home');
+			homeButton.click();
+
+			expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
+			expect(store.getState().mainMenu.open).toBeTrue();
+		});
+
 		it('changes the schema', async () => {
 			const state = {
 				media: { portrait: false, minWidth: false, darkSchema: false },
