@@ -29,10 +29,10 @@ export const provide = (lang) => {
 				menu_navigation_rail_home: 'Home',
 				menu_navigation_rail_routing: 'Routing',
 				menu_navigation_rail_close: 'close',
-				menu_navigation_rail_zoom_to_extend: 'zoom to Bavaria',
+				menu_navigation_rail_zoom_to_extend: 'Zoom to full extent',
 				menu_navigation_rail_object_info: 'Object-Info',
-				menu_navigation_rail_zoom_in: 'zoom in',
-				menu_navigation_rail_zoom_out: 'zoom out',
+				menu_navigation_rail_zoom_in: 'Zoom in',
+				menu_navigation_rail_zoom_out: 'Zoom out',
 				menu_navigation_rail_search: 'Search'
 			};
 
@@ -64,11 +64,11 @@ export const provide = (lang) => {
 
 				menu_navigation_rail_home: 'Home',
 				menu_navigation_rail_routing: 'Routing',
-				menu_navigation_rail_close: 'schließen',
-				menu_navigation_rail_zoom_to_extend: 'auf Bayern zoomen',
+				menu_navigation_rail_close: 'Schließen',
+				menu_navigation_rail_zoom_to_extend: 'Ganz Bayern anzeigen',
 				menu_navigation_rail_object_info: 'Object-Info',
-				menu_navigation_rail_zoom_in: 'zoom in',
-				menu_navigation_rail_zoom_out: 'zoom out',
+				menu_navigation_rail_zoom_in: 'Vergrößere Kartenausschnitt',
+				menu_navigation_rail_zoom_out: 'Verkleinere Kartenausschnitt',
 				menu_navigation_rail_search: 'Suchen'
 			};
 

@@ -31,11 +31,11 @@ describe('i18n for menu module', () => {
 
 		expect(map.menu_navigation_rail_home).toBe('Home');
 		expect(map.menu_navigation_rail_routing).toBe('Routing');
-		expect(map.menu_navigation_rail_close).toBe('schließen');
-		expect(map.menu_navigation_rail_zoom_to_extend).toBe('auf Bayern zoomen');
+		expect(map.menu_navigation_rail_close).toBe('Schließen');
+		expect(map.menu_navigation_rail_zoom_to_extend).toBe('Ganz Bayern anzeigen');
 		expect(map.menu_navigation_rail_object_info).toBe('Object-Info');
-		expect(map.menu_navigation_rail_zoom_out).toBe('zoom out');
-		expect(map.menu_navigation_rail_zoom_in).toBe('zoom in');
+		expect(map.menu_navigation_rail_zoom_out).toBe('Verkleinere Kartenausschnitt');
+		expect(map.menu_navigation_rail_zoom_in).toBe('Vergrößere Kartenausschnitt');
 		expect(map.menu_navigation_rail_search).toBe('Suchen');
 	});
 
@@ -67,10 +67,10 @@ describe('i18n for menu module', () => {
 		expect(map.menu_navigation_rail_home).toBe('Home');
 		expect(map.menu_navigation_rail_routing).toBe('Routing');
 		expect(map.menu_navigation_rail_close).toBe('close');
-		expect(map.menu_navigation_rail_zoom_to_extend).toBe('zoom to Bavaria');
+		expect(map.menu_navigation_rail_zoom_to_extend).toBe('Zoom to full extent');
 		expect(map.menu_navigation_rail_object_info).toBe('Object-Info');
-		expect(map.menu_navigation_rail_zoom_out).toBe('zoom out');
-		expect(map.menu_navigation_rail_zoom_in).toBe('zoom in');
+		expect(map.menu_navigation_rail_zoom_out).toBe('Zoom out');
+		expect(map.menu_navigation_rail_zoom_in).toBe('Zoom in');
 		expect(map.menu_navigation_rail_search).toBe('Search');
 	});
 
