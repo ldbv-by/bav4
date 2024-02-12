@@ -77,7 +77,8 @@ describe('bvvSignInProvider', () => {
 
 describe('getBvvAuthResponseInterceptor', () => {
 	const authService = {
-		signIn: async () => {}
+		signIn: async () => {},
+		isSignedIn: () => false
 	};
 
 	let store;
@@ -107,12 +108,29 @@ describe('getBvvAuthResponseInterceptor', () => {
 	});
 
 	describe('response status code is 401', () => {
+		describe('we are already signed in', () => {
+			it('resolves with the retry response', async () => {
+				spyOn(authService, 'isSignedIn').and.returnValue(true);
+				const mockResponse = { status: 401 };
+				const retryResponse = { status: 200 };
+				const url = 'http://foo.bar';
+				const retTryFetchFn = jasmine.createSpy().and.resolveTo(retryResponse);
+				const responsePromise = bvvAuthResponseInterceptor(mockResponse, retTryFetchFn, url);
+				await TestUtils.timeout(); /**promise queue execution */
+
+				await expectAsync(responsePromise).toBeResolvedTo(retryResponse);
+				expect(retTryFetchFn).toHaveBeenCalled();
+				expect(store.getState().modal.active).toBeFalse();
+			});
+		});
+
 		it('opens an authentication UI', async () => {
 			const retTryFetchFn = jasmine.createSpy();
 			const mockResponse = { status: 401 };
 			const url = 'http://foo.bar';
 
-			bvvAuthResponseInterceptor(mockResponse, retTryFetchFn, url);
+			const responsePromise = bvvAuthResponseInterceptor(mockResponse, retTryFetchFn, url);
+			await TestUtils.timeout(); /**promise queue execution */
 
 			expect(store.getState().modal.active).toBeTrue();
 			expect(store.getState().modal.data.title).toBe('global_import_authenticationModal_title');
@@ -120,6 +138,8 @@ describe('getBvvAuthResponseInterceptor', () => {
 			expect(wrapperElement.querySelectorAll(PasswordCredentialPanel.tag)).toHaveSize(1);
 			expect(wrapperElement.querySelector(PasswordCredentialPanel.tag).authenticate).toEqual(jasmine.any(Function));
 			expect(wrapperElement.querySelector(PasswordCredentialPanel.tag).onClose).toEqual(jasmine.any(Function));
+			closeModal(); /** we close the modal in order to resolve the promise */
+			await expectAsync(responsePromise).toBeResolved();
 		});
 
 		describe('call of the authenticate callback', () => {
@@ -129,7 +149,8 @@ describe('getBvvAuthResponseInterceptor', () => {
 					const mockResponse = { status: 401 };
 					const url = 'http://foo.bar';
 					const credential = { username: 'u', password: 'p' };
-					bvvAuthResponseInterceptor(mockResponse, retTryFetchFn, url);
+					const responsePromise = bvvAuthResponseInterceptor(mockResponse, retTryFetchFn, url);
+					await TestUtils.timeout(); /**promise queue execution */
 					const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 					// we take the authFn from the component
 					const authFunc = wrapperElement.querySelector(PasswordCredentialPanel.tag).authenticate;
@@ -137,6 +158,8 @@ describe('getBvvAuthResponseInterceptor', () => {
 
 					await expectAsync(authFunc(credential, url)).toBeResolvedTo(true);
 					expect(authServiceSpy).toHaveBeenCalled();
+					closeModal(); /** we close the modal in order to resolve the promise */
+					await expectAsync(responsePromise).toBeResolved();
 				});
 			});
 
@@ -146,7 +169,8 @@ describe('getBvvAuthResponseInterceptor', () => {
 					const mockResponse = { status: 401 };
 					const url = 'http://foo.bar';
 					const credential = { username: 'u', password: 'p' };
-					bvvAuthResponseInterceptor(mockResponse, retTryFetchFn, url);
+					const responsePromise = bvvAuthResponseInterceptor(mockResponse, retTryFetchFn, url);
+					await TestUtils.timeout(); /**promise queue execution */
 					const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 					// we take the authFn from the component
 					const authFunc = wrapperElement.querySelector(PasswordCredentialPanel.tag).authenticate;
@@ -154,6 +178,8 @@ describe('getBvvAuthResponseInterceptor', () => {
 
 					await expectAsync(authFunc(credential, url)).toBeResolvedTo(false);
 					expect(authServiceSpy).toHaveBeenCalled();
+					closeModal(); /** we close the modal in order to resolve the promise */
+					await expectAsync(responsePromise).toBeResolved();
 				});
 			});
 		});
@@ -167,6 +193,7 @@ describe('getBvvAuthResponseInterceptor', () => {
 					const credential = { username: 'u', password: 'p' };
 					const retTryFetchFn = jasmine.createSpy().and.resolveTo(retryResponse);
 					const responsePromise = bvvAuthResponseInterceptor(mockResponse, retTryFetchFn, url);
+					await TestUtils.timeout(); /**promise queue execution */
 					const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 					// we take the onCloseCallbackFn from the component
 					const onCloseCallbackFunc = wrapperElement.querySelector(PasswordCredentialPanel.tag).onClose;
@@ -185,6 +212,7 @@ describe('getBvvAuthResponseInterceptor', () => {
 					const url = 'http://foo.bar';
 					const retTryFetchFn = jasmine.createSpy();
 					const responsePromise = bvvAuthResponseInterceptor(mockResponse, retTryFetchFn, url);
+					await TestUtils.timeout(); /**promise queue execution */
 					const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 					// we take the onCloseCallbackFn from the component
 					const onCloseCallbackFunc = wrapperElement.querySelector(PasswordCredentialPanel.tag).onClose;
@@ -203,12 +231,14 @@ describe('getBvvAuthResponseInterceptor', () => {
 					const url = 'http://foo.bar';
 					const retTryFetchFn = jasmine.createSpy();
 					const responsePromise = bvvAuthResponseInterceptor(mockResponse, retTryFetchFn, url);
+					await TestUtils.timeout(); /**promise queue execution */
 
 					closeModal();
 
 					await expectAsync(responsePromise).toBeResolvedTo(mockResponse);
 					expect(retTryFetchFn).not.toHaveBeenCalled();
 					expect(store.getState().modal.active).toBeFalse();
+					await expectAsync(responsePromise).toBeResolved();
 				});
 			});
 		});
