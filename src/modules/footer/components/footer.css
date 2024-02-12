@@ -18,7 +18,7 @@
 	font-size: 0.8rem;
 	background-color: var(--primary-bg-color-05);
 }
-.is-open {
+.is-open .footer {
 	transform: translate(28em, 0);
 }
 .is-portrait .footer,
@@ -29,6 +29,12 @@
 }
 .is-embedded .footer {
 	z-index: calc(var(--z-mapbuttons) + 1);
+}
+.is-landscape.is-open-navigationRail .footer {
+	transform: translate(5.5em, 0);
+}
+.is-open.is-open-navigationRail .footer {
+	transform: translate(33.5em, 0);
 }
 .is-portrait:not(.is-embedded) .content,
 .is-tablet:not(.is-embedded) .content {

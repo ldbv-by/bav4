@@ -5,6 +5,7 @@ import { $injector } from '../../../../src/injection';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { createNoInitialStateMainMenuReducer } from '../../../../src/store/mainMenu/mainMenu.reducer';
 import { chipsReducer } from '../../../../src/store/chips/chips.reducer';
+import { navigationRailReducer } from '../../../../src/store/navigationRail/navigationRail.reducer';
 import { setCurrent } from '../../../../src/store/chips/chips.action';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 import { isTemplateResult } from '../../../../src/utils/checks';
@@ -141,6 +142,7 @@ describe('ChipsContainer', () => {
 			modal: modalReducer,
 			media: createNoInitialStateMediaReducer(),
 			chips: chipsReducer,
+			navigationRail: navigationRailReducer,
 			mainMenu: createNoInitialStateMainMenuReducer()
 		});
 		$injector.registerSingleton('EnvironmentService', {
@@ -161,6 +163,7 @@ describe('ChipsContainer', () => {
 				hasMinWidth: false,
 				isDarkSchema: false,
 				isOpen: false,
+				isOpenNavigationRail: false,
 				currentChips: []
 			});
 		});
@@ -178,6 +181,7 @@ describe('ChipsContainer', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.chips__button')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
 		});
 
 		it('adds css class reflecting a closed menu', async () => {
@@ -185,6 +189,7 @@ describe('ChipsContainer', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.chips__button')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
 		});
 
 		it('adds css classes reflecting the light schema', async () => {
@@ -354,7 +359,7 @@ describe('ChipsContainer', () => {
 			expect(window.getComputedStyle(scrollButton[1]).display).toBe('none');
 		});
 
-		it('shows tow scroll buttons on shortage of space in desktop layout', async () => {
+		it('shows two scroll buttons on shortage of space in desktop layout', async () => {
 			const element = await setup({ media: { portrait: false }, chips: { current: chipsConfiguration1 } });
 			const container = element.shadowRoot.querySelectorAll('#chipscontainer')[0];
 
@@ -374,6 +379,35 @@ describe('ChipsContainer', () => {
 			const chips = element.shadowRoot.querySelectorAll('.chips__button');
 
 			expect([...chips].every((e) => e.draggable === false)).toBeTrue();
+		});
+
+		it('layouts with open navigation rail for portrait mode', async () => {
+			const state = {
+				media: {
+					portrait: true,
+					minWidth: false
+				},
+				navigationRail: {
+					open: true
+				}
+			};
+
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
+		});
+
+		it('layouts open navigation rail for landscape mode', async () => {
+			const state = {
+				media: {
+					portrait: false,
+					minWidth: true
+				},
+				navigationRail: {
+					open: true
+				}
+			};
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(1);
 		});
 	});
 

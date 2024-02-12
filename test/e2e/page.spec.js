@@ -62,8 +62,8 @@ test.describe('page', () => {
 			expect(description).toBe(templateParameters.description);
 		});
 
-		test('should contain 14 top level ba-components', async ({ page }) => {
-			expect(await page.locator('body > *').count()).toBe(14);
+		test('should contain 15 top level ba-components', async ({ page }) => {
+			expect(await page.locator('body > *').count()).toBe(15);
 
 			expect(await page.locator('ba-header').count()).toBe(1);
 			expect(await page.locator('ba-main-menu').count()).toBe(1);
@@ -79,6 +79,7 @@ test.describe('page', () => {
 			expect(await page.locator('ba-notification-panel').count()).toBe(1);
 			expect(await page.locator('ba-modal').count()).toBe(1);
 			expect(await page.locator('ba-map-context-menu').count()).toBe(1);
+			expect(await page.locator('ba-navigation-rail').count()).toBe(1);
 		});
 	});
 });
