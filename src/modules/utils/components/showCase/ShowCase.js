@@ -358,7 +358,7 @@ export class ShowCase extends MvuElement {
 								.color=${'var(--text3)'}
 								.background=${'var(--primary-color)'}
 								.label=${'Badge'}
-								.label=${'Badge Title'}
+								.title=${'Badge title'}
 							></ba-badge>
 						</div>
 					</div>
