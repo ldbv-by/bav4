@@ -18,7 +18,6 @@ import { createUniqueId } from '../../../utils/numberUtils';
 import { fitLayer } from '../../../store/position/position.action';
 import { GeoResourceFuture, VectorGeoResource } from '../../../domain/geoResources';
 import { MenuTypes } from '../../commons/components/overflowMenu/OverflowMenu';
-import { PERMANENT_ROUTE_LAYER_ID, PERMANENT_WP_LAYER_ID } from '../../../plugins/RoutingPlugin';
 
 const Update_Layer = 'update_layer';
 const Update_Layer_Collapsed = 'update_layer_collapsed';
