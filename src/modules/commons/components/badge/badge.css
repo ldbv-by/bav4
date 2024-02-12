@@ -1,18 +1,16 @@
+.badge {
+	display: inline-flex;
+	align-items: center;
+	border-radius: 2em;
+	padding: 0.2em 0.5em;
+}
 .icon {
 	mask-size: cover;
 	-webkit-mask-size: cover;
 	cursor: pointer;
 	display: inline-block;
-	height: 1em;
-	width: 1em;
+	margin-right: 0.2em;
 }
-
-.badge {
-	display: inline-block;
-	border: none;
-	border-radius: 2em;
-	padding: 0.2em 0.5em;
-	font-size: 0.8rem;
+.text {
 	font-weight: bold;
-	margin: auto;
 }

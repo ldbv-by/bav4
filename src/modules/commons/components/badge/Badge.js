@@ -5,9 +5,11 @@ import { html, nothing } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
 import css from './badge.css';
 
-const Update_Icon = 'update_icon';
-const Update_Color = 'update_color';
 const Update_Label = 'update_label';
+const Update_Title = 'update_title';
+const Update_Icon = 'update_icon';
+const Update_Size = 'update_size';
+const Update_Color = 'update_color';
 const Update_Background = 'update_background';
 
 /**
@@ -15,32 +17,38 @@ const Update_Background = 'update_background';
  *
  *
  * Properties:
+ * - `label`
+ * - `title`
  * - `icon`
+ * - `size`
  * - `color`
  * - `background`
- * - `label`
  *
  * @class
  * @author alsturm
- *
- *
  */
 export class Badge extends MvuElement {
 	constructor() {
 		super({
+			label: '',
+			title: '',
 			icon: null,
-			label: 'label',
-			color: 'var(--text3)',
-			background: 'var(--secondary-color)'
+			size: 0.8,
+			color: 'var(--text1)',
+			background: 'var(--secondary-bg-color)'
 		});
 	}
 
 	update(type, data, model) {
 		switch (type) {
-			case Update_Icon:
-				return { ...model, icon: data };
 			case Update_Label:
 				return { ...model, label: data };
+			case Update_Title:
+				return { ...model, title: data };
+			case Update_Icon:
+				return { ...model, icon: data };
+			case Update_Size:
+				return { ...model, size: data };
 			case Update_Color:
 				return { ...model, color: data };
 			case Update_Background:
@@ -53,11 +61,13 @@ export class Badge extends MvuElement {
 	 * @protected
 	 */
 	createView(model) {
-		const { color, background, icon, label } = model;
+		const { color, background, icon, label, size, title } = model;
 
 		const badgeClass = `.badge {
+			--size: ${size}rem; 
 			background: ${background}; 
 			color: ${color}; 
+			font-size: var(--size);
 		}`;
 
 		const customIconClass = icon
@@ -65,6 +75,9 @@ export class Badge extends MvuElement {
 			mask : url("${icon}");
 			-webkit-mask-image : url("${icon}");
 			background: ${color}; 
+			height:var(--size);
+			width:var(--size);
+			mask-size: cover;
 		}`
 			: '';
 
@@ -74,11 +87,11 @@ export class Badge extends MvuElement {
 
 		return html`
 			<style>
+				${css}
 				${badgeClass}
 				${customIconClass}
-				${css}
 			</style>
-			<span class="badge">
+			<span class="badge" title=${title}>
 				${getIcon()}
 				<span class="text">${label}</span>
 			</span>
@@ -90,7 +103,29 @@ export class Badge extends MvuElement {
 	}
 
 	/**
-	 * @property {string} icon='default_svg_icon' - Data-URI of Base64 encoded SVG
+	 * @property {string} label='' - Label of the Badge
+	 */
+	set label(value) {
+		this.signal(Update_Label, value);
+	}
+
+	get label() {
+		return this.getModel().label;
+	}
+
+	/**
+	 * @property {string} title='' - Title of the Badge
+	 */
+	set title(value) {
+		this.signal(Update_Title, value);
+	}
+
+	get title() {
+		return this.getModel().title;
+	}
+
+	/**
+	 * @property {string} icon='' - Data-URI of Base64 encoded SVG
 	 */
 	set icon(value) {
 		this.signal(Update_Icon, value);
@@ -101,7 +136,7 @@ export class Badge extends MvuElement {
 	}
 
 	/**
-	 * @property {string} color=var(--primary-color) - Color as Css variable
+	 * @property {string} color=var(--text1) - Color as Css variable
 	 */
 	set color(value) {
 		this.signal(Update_Color, value);
@@ -110,8 +145,9 @@ export class Badge extends MvuElement {
 	get color() {
 		return this.getModel().color;
 	}
+
 	/**
-	 * @property {string} color=var(--primary-color) - Background as Css variable
+	 * @property {string} color=var(--secondary-bg-color) - Background as Css variable
 	 */
 	set background(value) {
 		this.signal(Update_Background, value);
@@ -122,13 +158,13 @@ export class Badge extends MvuElement {
 	}
 
 	/**
-	 * @property {string} label='' - Label of the Badge
+	 * @property {number} size=.8 - Size of the Badge in rem
 	 */
-	set label(value) {
-		this.signal(Update_Label, value);
+	set size(value) {
+		this.signal(Update_Size, value);
 	}
 
-	get label() {
-		return this.getModel().label;
+	get size() {
+		return this.getModel().size;
 	}
 }
