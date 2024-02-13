@@ -5,6 +5,7 @@ import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
 import { layersReducer, createDefaultLayer } from '../../../../src/store/layers/layers.reducer';
 import { networkReducer } from '../../../../src/store/network/network.reducer';
+import { navigationRailReducer } from '../../../../src/store/navigationRail/navigationRail.reducer';
 import { setFetching } from '../../../../src/store/network/network.action';
 import { searchReducer } from '../../../../src/store/search/search.reducer';
 import { EventLike } from '../../../../src/utils/storeUtils';
@@ -54,7 +55,8 @@ describe('Header', () => {
 			layers: layersReducer,
 			search: searchReducer,
 			tools: toolsReducer,
-			media: createNoInitialStateMediaReducer()
+			media: createNoInitialStateMediaReducer(),
+			navigationRail: navigationRailReducer
 		});
 		$injector
 			.registerSingleton('EnvironmentService', { isEmbedded: () => embed, isStandalone: () => standalone })
@@ -75,7 +77,8 @@ describe('Header', () => {
 				layers: [],
 				isPortrait: false,
 				hasMinWidth: false,
-				searchTerm: null
+				searchTerm: null,
+				isOpenNavigationRail: false
 			});
 		});
 
@@ -257,6 +260,45 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelector('.header__emblem').getAttribute('title')).toBe('header_emblem_title_standalone');
 			expect(element.shadowRoot.querySelector('.header__emblem').getAttribute('href')).toBe('header_emblem_link_standalone');
 		});
+
+		it('layouts with open navigation rail', async () => {
+			const state = {
+				navigationRail: {
+					open: true
+				}
+			};
+
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(1);
+		});
+
+		it('layouts with closed navigation rail ', async () => {
+			const state = {
+				navigationRail: {
+					open: false
+				}
+			};
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
+		});
+	});
+
+	describe('when action-button clicked', () => {
+		it('toggle navigation rail', async () => {
+			const element = await setup();
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
+			expect(store.getState().navigationRail.open).toBe(false);
+
+			element.shadowRoot.querySelector('.action-button').click();
+
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(1);
+			expect(store.getState().navigationRail.open).toBe(true);
+
+			element.shadowRoot.querySelector('.action-button').click();
+
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
+			expect(store.getState().navigationRail.open).toBe(false);
+		});
 	});
 
 	describe('when menu button is Tab.MAPS', () => {
@@ -325,7 +367,7 @@ describe('Header', () => {
 			TestUtils.simulateTouchEvent('touchmove', closeButton, center.x, center.y + 55, 2);
 			TestUtils.simulateTouchEvent('touchend', closeButton, center.x, center.y + 200);
 
-			expect(element.shadowRoot.querySelectorAll('.header.is-open')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-open .header')).toHaveSize(1);
 		});
 
 		it('focused menu-button loses the focus after swipe', async () => {
