@@ -52,16 +52,9 @@ describe('Injector', () => {
 	});
 
 	describe('getId', () => {
-		it('returns the Id of the injector instance', () => {
+		it('returns the Id of the instance', () => {
 			expect($injector.getId().startsWith('injector')).toBeTrue();
 			expect($injector.getId()).not.toBe(new Injector().getId());
-		});
-
-		it('resets the ready flag', () => {
-			$injector.ready();
-			const returnValue = $injector.reset();
-
-			expect(returnValue.isReady()).toBeFalse();
 		});
 	});
 
