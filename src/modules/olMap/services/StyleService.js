@@ -3,7 +3,7 @@
  */
 import { getUid } from 'ol';
 import { $injector } from '../../../injection';
-import { rgbToHex } from '../../../utils/colors';
+import { getContrastColorFrom, rgbToHex } from '../../../utils/colors';
 import {
 	measureStyleFunction,
 	nullStyleFunction,
@@ -19,6 +19,10 @@ import {
 } from '../utils/olStyleUtils';
 import { isFunction } from '../../../utils/checks';
 import { getRoutingStyleFunction } from '../handler/routing/styleUtils';
+import Feature from '../../../../node_modules/ol/Feature';
+import { OlFeatureInfoHandler } from '../handler/featureInfo/OlFeatureInfoHandler';
+import { MultiPoint, Point } from '../../../../node_modules/ol/geom';
+import { Circle as CircleStyle, Fill, Stroke, Style, Text } from '../../../../node_modules/ol/style';
 
 /**
  * Enumeration of predefined types of style
@@ -210,7 +214,110 @@ export class StyleService {
 	 * @returns {Boolean} whether or not the specified feature requires a style
 	 */
 	isStyleRequired(olFeature) {
+		this.sanitizeFeature(olFeature);
 		return this._detectStyleType(olFeature) !== null;
+	}
+
+	/**
+	 * Sanitize the feature.
+	 * (refactored code from BA3 -> KmlService.sanitizeFeature)
+	 * @param {ol.Feature} feature
+	 * @returns
+	 */
+	sanitizeFeature(feature) {
+		const geometry = feature.getGeometry();
+
+		const getStyles = (feature) => {
+			const stylesCandidate = feature.getStyleFunction()(feature);
+			if (Array.isArray(stylesCandidate)) {
+				return stylesCandidate;
+			}
+			if (stylesCandidate instanceof Style) {
+				return [stylesCandidate];
+			}
+			return null;
+		};
+		const styles = getStyles(feature);
+
+		// The use of clone is part of the scale fix line 156
+		const style = styles[0].clone();
+
+		// ------------ includings based on refactoring --------------
+		const transparent = [0, 0, 0, 0];
+		const transparentCircleStyle = new CircleStyle({
+			radius: 1,
+			fill: new Fill({
+				color: transparent
+			}),
+			stroke: new Stroke({
+				color: transparent
+			})
+		});
+
+		// ------------ includings based on refactoring --------------
+		const getStroke = (style) => {
+			const stroke = style.getStroke ? style.getStroke() : null;
+			return stroke && stroke.getWidth() === 0 ? null : stroke;
+		};
+
+		// The canvas draws a stroke width=1 by default if width=0, so we
+		// remove the stroke style in that case.
+		// See https://github.com/geoadmin/mf-geoadmin3/issues/3421
+		const stroke = getStroke(style);
+
+		// if the feature is a Point and we are offline, we use default vector
+		// style.
+		// if the feature is a Point and has a name with a text style, we
+		// create a correct text style.
+		// TODO Handle GeometryCollection displaying name on the first Point
+		// geometry.
+		if (style && (geometry instanceof Point || geometry instanceof MultiPoint)) {
+			let image = style.getImage ? style.getImage() : null;
+			let text = null;
+
+			// if (gaNetworkStatus.offline) {
+			// 	image = this.getStyle().getImage();
+			// }
+			const name = feature.get('name');
+			console.log(name, style.getText(), style.getImage(), stroke, style);
+			// If the feature has name we display it on the map as Google does
+			if (feature.get('name') && style.getText && style.getText().getScale() !== 0) {
+				if (image && image.getScale() === 0) {
+					// transparentCircle is used to allow selection
+					image = transparentCircleStyle;
+				}
+				text = new Text({
+					font: 'normal 16px sans-serif', // refactored: to default font
+					text: feature.get('name'),
+					fill: style.getText().getFill(),
+					stroke: new Stroke({
+						color: getContrastColorFrom(style.getText().getFill().getColor()),
+						width: 1
+					}), // refactored: to a default color
+					scale: style.getText().getScale()
+				});
+			}
+
+			const sanitizedStyles = [
+				new Style({
+					fill: null,
+					stroke: null,
+					image: image,
+					text: text,
+					zIndex: style.getZIndex ? style.getZIndex() : null
+				})
+			];
+			feature.setStyle(sanitizedStyles);
+		}
+
+		// Get the type of the feature (creates by drawing tools)
+		if (feature.getId()) {
+			const split = feature.getId().split('_');
+			if (split.length === 2) {
+				feature.set('type', split[0]);
+			}
+		}
+		return feature;
 	}
 
 	_addMeasureStyle(olFeature, olMap) {
