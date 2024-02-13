@@ -151,7 +151,7 @@ export class Injector {
 	 * const _regExParenthesesAndSpaces = /[()\s]/g;
 	 * const _getArgumentNames = functionString => _regExInsideParentheses.exec(functionString)[0].replace(_regExParenthesesAndSpaces, "").split(',');
 	 */
-	#register = (keyOrPOJO, object, isSingleton = false) => {
+	#register(keyOrPOJO, object, isSingleton = false) {
 		// Called as one registration with key and object.
 		if (typeof keyOrPOJO === 'string') {
 			const key = keyOrPOJO;
@@ -169,5 +169,5 @@ export class Injector {
 		}
 
 		return this;
-	};
+	}
 }
