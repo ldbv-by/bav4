@@ -11,10 +11,6 @@ describe('AuthService', () => {
 		$injector.registerSingleton('GeoResourceService', geoResourceService);
 	});
 
-	afterAll(() => {
-		$injector.reset();
-	});
-
 	const setup = (signInProvider = bvvSignInProvider) => {
 		return new AuthService(signInProvider);
 	};
