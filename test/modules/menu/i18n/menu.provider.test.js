@@ -28,6 +28,15 @@ describe('i18n for menu module', () => {
 		);
 		expect(map.menu_misc_content_panel_feedback_title).toBe('Feedback');
 		expect(map.menu_misc_content_panel_routing_title).toBe('Routing');
+
+		expect(map.menu_navigation_rail_home).toBe('Home');
+		expect(map.menu_navigation_rail_routing).toBe('Routing');
+		expect(map.menu_navigation_rail_close).toBe('Schließen');
+		expect(map.menu_navigation_rail_zoom_to_extend).toBe('Ganz Bayern anzeigen');
+		expect(map.menu_navigation_rail_object_info).toBe('Object-Info');
+		expect(map.menu_navigation_rail_zoom_out).toBe('Verkleinere Kartenausschnitt');
+		expect(map.menu_navigation_rail_zoom_in).toBe('Vergrößere Kartenausschnitt');
+		expect(map.menu_navigation_rail_search).toBe('Suchen');
 	});
 
 	it('provides translation for en', () => {
@@ -54,10 +63,19 @@ describe('i18n for menu module', () => {
 		expect(map.menu_misc_content_panel_ea_header).toBe('Energie-Atlas Bayern');
 		expect(map.menu_misc_content_panel_ea_text).toBe('Central portal for saving energy, energy efficiency, and renewable energies.');
 		expect(map.menu_misc_content_panel_routing_title).toBe('Routing');
+
+		expect(map.menu_navigation_rail_home).toBe('Home');
+		expect(map.menu_navigation_rail_routing).toBe('Routing');
+		expect(map.menu_navigation_rail_close).toBe('close');
+		expect(map.menu_navigation_rail_zoom_to_extend).toBe('Zoom to full extent');
+		expect(map.menu_navigation_rail_object_info).toBe('Object-Info');
+		expect(map.menu_navigation_rail_zoom_out).toBe('Zoom out');
+		expect(map.menu_navigation_rail_zoom_in).toBe('Zoom in');
+		expect(map.menu_navigation_rail_search).toBe('Search');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 22;
+		const expectedSize = 30;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

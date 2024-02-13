@@ -55,6 +55,7 @@ describe('injector configuration', () => {
 		expect($injector.getScope('ContextClickPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('FeatureInfoPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('MainMenuPlugin')).toBe(Injector.SCOPE_SINGLETON);
+		expect($injector.getScope('NavigationRailPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('ImportPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('SearchPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('ExportMfpPlugin')).toBe(Injector.SCOPE_SINGLETON);
