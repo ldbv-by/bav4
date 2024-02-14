@@ -48,7 +48,14 @@ export const GeoResourceTypes = Object.freeze({
  * @enum {String}
  */
 export const GeoResourceAuthenticationType = Object.freeze({
-	BAA: 'baa'
+	/**
+	 * Basic access authentication
+	 */
+	BAA: 'baa',
+	/**
+	 * Internal application based authentication
+	 */
+	APPLICATION: 'application'
 });
 
 /**

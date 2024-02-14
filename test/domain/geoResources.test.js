@@ -38,6 +38,8 @@ describe('GeoResource', () => {
 
 	describe('GeoResourceTypes', () => {
 		it('provides an enum of all available types', () => {
+			expect(Object.entries(GeoResourceTypes).length).toBe(6);
+			expect(Object.isFrozen(GeoResourceTypes)).toBeTrue();
 			expect(GeoResourceTypes.WMS.description).toBe('wms');
 			expect(GeoResourceTypes.XYZ.description).toBe('xyz');
 			expect(GeoResourceTypes.VECTOR.description).toBe('vector');
@@ -49,6 +51,9 @@ describe('GeoResource', () => {
 
 	describe('GeoResourceAuthenticationType', () => {
 		it('provides an enum of all available types', () => {
+			expect(Object.entries(GeoResourceAuthenticationType).length).toBe(2);
+			expect(Object.isFrozen(GeoResourceAuthenticationType)).toBeTrue();
+			expect(GeoResourceAuthenticationType.BAA).toBe('baa');
 			expect(GeoResourceAuthenticationType.BAA).toBe('baa');
 		});
 	});
