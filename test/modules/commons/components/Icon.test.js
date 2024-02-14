@@ -46,7 +46,7 @@ describe('Icon', () => {
 		});
 	});
 
-	describe("when property'icon' changes", () => {
+	describe("when property 'icon' changes", () => {
 		it('updates the view', async () => {
 			const fakeBase64Svg = 'data:image/svg+xml;base64,foo';
 			const element = await TestUtils.render(Icon.tag);
@@ -57,7 +57,7 @@ describe('Icon', () => {
 		});
 	});
 
-	describe("when property'size' changes", () => {
+	describe("when property 'title' changes", () => {
 		it('updates the view', async () => {
 			const element = await TestUtils.render(Icon.tag);
 			const anchor = element.shadowRoot.querySelector('.anchor');
@@ -68,7 +68,7 @@ describe('Icon', () => {
 		});
 	});
 
-	describe("when property'color' changes", () => {
+	describe("when property 'color' changes", () => {
 		it('updates the view', async () => {
 			const element = await TestUtils.render(Icon.tag);
 
@@ -78,7 +78,7 @@ describe('Icon', () => {
 		});
 	});
 
-	describe("when property'color_hover' changes", () => {
+	describe("when property 'color_hover' changes", () => {
 		it('updates the view', async () => {
 			const element = await TestUtils.render(Icon.tag);
 
@@ -93,7 +93,7 @@ describe('Icon', () => {
 		});
 	});
 
-	describe("when property'title' changes", () => {
+	describe("when property 'disable' changes", () => {
 		it('updates the view', async () => {
 			const element = await TestUtils.render(Icon.tag);
 			const span = element.shadowRoot.querySelector('.icon.icon-custom');
@@ -108,7 +108,7 @@ describe('Icon', () => {
 		});
 	});
 
-	describe("when property'disabled' changes", () => {
+	describe("when property 'size' changes", () => {
 		it('updates the view', async () => {
 			const element = await TestUtils.render(Icon.tag);
 
