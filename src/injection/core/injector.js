@@ -8,25 +8,22 @@ import { forEachPropertyDoAction } from './utils';
  * @class
  */
 export class Injector {
+	#dependencies = {};
+	#listeners = [];
+	#id = 'injector_' + Math.random().toString(36).substr(2, 9);
+	#ready = false;
 	/**
 	 * Create a new instance of the Injector.
-	 * @return {Injector} The new instance, to be chained if needed.
 	 */
-	constructor() {
-		this._dependencies = [];
-		this._listeners = [];
-		this.id = 'injector_' + Math.random().toString(36).substr(2, 9);
-		this._ready = false;
-		return this;
-	}
+	constructor() {}
 
 	/**
 	 * Removes the registered dependencies.
 	 * @return {Injector} The instance, to be chained if needed.
 	 */
 	reset() {
-		this._dependencies = [];
-		this._ready = false;
+		this.#dependencies = {};
+		this.#ready = false;
 		return this;
 	}
 
@@ -37,7 +34,7 @@ export class Injector {
 	 * @return {Injector} 			The Injector instance.
 	 */
 	register(keyOrPOJO, object) {
-		return _register(this, keyOrPOJO, object, false);
+		return this.#register(keyOrPOJO, object, false);
 	}
 
 	/**
@@ -50,7 +47,7 @@ export class Injector {
 	 * @memberOf Injector
 	 */
 	registerSingleton(keyOrPOJO, object) {
-		return _register(this, keyOrPOJO, object, true);
+		return this.#register(keyOrPOJO, object, true);
 	}
 
 	/**
@@ -68,14 +65,13 @@ export class Injector {
 	 * Details: The function is converted to it's string (code), parsed with regex to find
 	 * 	the argument names, and then those names are used to fetch the respective objects
 	 * 	that were registered with the Injector.
-	 * @param  {function} funct Function to get dependencies for.
-	 * @return {object}       	Object holding the dependencies.
+	 * @param  {...string} names Registered names to get dependencies for.
+	 * @return {object} Object holding the dependencies.
 	 */
 	inject(...names) {
 		const dependenciesToInject = {};
-		// _getArgumentNames(funct.toString())
 		names.map((argName) => {
-			const registered = this._dependencies[argName];
+			const registered = this.#dependencies[argName];
 			if (!registered) {
 				throw new Error('No registered instance found for ' + argName);
 			}
@@ -91,7 +87,7 @@ export class Injector {
 	 * @param {function} listener
 	 */
 	onReady(listener) {
-		this._listeners.push(listener);
+		this.#listeners.push(listener);
 	}
 
 	/**
@@ -99,9 +95,9 @@ export class Injector {
 	 * This means all dependencies are registered and resolvable.
 	 */
 	ready() {
-		if (!this._ready) {
-			this._listeners.forEach((listener) => listener());
-			this._ready = true;
+		if (!this.#ready) {
+			this.#listeners.forEach((listener) => listener());
+			this.#ready = true;
 		} else {
 			console.warn('Injector already marked as ready!');
 		}
@@ -111,7 +107,15 @@ export class Injector {
 	 * @returns `true` if the Injector is marked as ready
 	 */
 	isReady() {
-		return this._ready;
+		return this.#ready;
+	}
+
+	/**
+	 *
+	 * @returns the ID of this injector instance
+	 */
+	getId() {
+		return this.#id;
 	}
 
 	/**
@@ -120,8 +124,8 @@ export class Injector {
 	 * @returns `Singleton` or `PerLookup` or `null`
 	 */
 	getScope(key) {
-		if (this._dependencies[key]) {
-			return this._dependencies[key].singleton ? Injector.SCOPE_SINGLETON : Injector.SCOPE_PERLOOKUP;
+		if (this.#dependencies[key]) {
+			return this.#dependencies[key].singleton ? Injector.SCOPE_SINGLETON : Injector.SCOPE_PERLOOKUP;
 		}
 		return null;
 	}
@@ -131,7 +135,7 @@ export class Injector {
 	 * @returns the number of registered dependencies.
 	 */
 	count() {
-		return Object.keys(this._dependencies).length;
+		return Object.keys(this.#dependencies).length;
 	}
 
 	static get SCOPE_SINGLETON() {
@@ -141,29 +145,29 @@ export class Injector {
 	static get SCOPE_PERLOOKUP() {
 		return 'PerLookup';
 	}
-}
 
-/*
- * const  _regExInsideParentheses = /[(][^)]*[)]/;
- * const _regExParenthesesAndSpaces = /[()\s]/g;
- * const _getArgumentNames = functionString => _regExInsideParentheses.exec(functionString)[0].replace(_regExParenthesesAndSpaces, "").split(',');
- */
-const _register = (injector, keyOrPOJO, object, isSingleton = false) => {
-	// Called as one registration with key and object.
-	if (typeof keyOrPOJO === 'string') {
-		const key = keyOrPOJO;
-		if (injector._dependencies[key]) {
-			throw new Error('Instance already registered for ' + key);
+	/*
+	 * const  _regExInsideParentheses = /[(][^)]*[)]/;
+	 * const _regExParenthesesAndSpaces = /[()\s]/g;
+	 * const _getArgumentNames = functionString => _regExInsideParentheses.exec(functionString)[0].replace(_regExParenthesesAndSpaces, "").split(',');
+	 */
+	#register(keyOrPOJO, object, isSingleton) {
+		// Called as one registration with key and object.
+		if (typeof keyOrPOJO === 'string') {
+			const key = keyOrPOJO;
+			if (this.#dependencies[key]) {
+				throw new Error('Instance already registered for ' + key);
+			}
+			this.#dependencies[key] = { dependency: object, singleton: isSingleton };
 		}
-		injector._dependencies[key] = { dependency: object, singleton: isSingleton };
-	}
-	// Called with multiple objects to register.
-	else {
-		const configObject = keyOrPOJO;
-		forEachPropertyDoAction(configObject, (key, property) => {
-			injector._dependencies[key] = { dependency: property, singleton: isSingleton };
-		});
-	}
+		// Called with multiple objects to register.
+		else {
+			const configObject = keyOrPOJO;
+			forEachPropertyDoAction(configObject, (key, property) => {
+				this.#dependencies[key] = { dependency: property, singleton: isSingleton };
+			});
+		}
 
-	return injector;
-};
+		return this;
+	}
+}
