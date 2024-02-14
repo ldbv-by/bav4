@@ -53,6 +53,14 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 				${css}
 			</style>
 			<div class="ba-list">
+				<a class="ba-list-item divider" href="https://www.energieatlas.bayern.de/" target="_blank">
+					<span class="ba-list-item__pre ">
+						<span class="ba-list-item__image image person"> </span>
+					</span>
+					<span class="ba-list-item__text ">
+						<h3>Sign in / Register</h3>
+					</span>
+				</a>
 				<div class="ba-list-item  ba-list-item__header">
 					<span class="ba-list-item__text ">
 						<span class="ba-list-item__primary-text">${translate('menu_misc_content_panel_settings')}</span>

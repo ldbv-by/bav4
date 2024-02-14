@@ -68,3 +68,9 @@
 	-webkit-mask-image: url('assets/gdo.svg');
 	background: linear-gradient(90deg, rgba(8, 131, 181, 1) 0%, rgba(43, 91, 148, 1) 100%);
 }
+.person {
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	mask-image: url('assets/person.svg');
+	-webkit-mask-image: url('assets/person.svg');
+}
