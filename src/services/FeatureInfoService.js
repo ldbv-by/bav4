@@ -6,13 +6,25 @@ import { WmsGeoResource } from '../domain/geoResources';
 import { loadBvvFeatureInfo } from './provider/featureInfo.provider';
 
 /**
+ * An async function that returns a {@link GeoResourceInfoResult} for a `coordinate`.
+ * @async
+ * @typedef {Function} featureInfoProvider
+ * @function
+ * @param {string} geoResourceId The id of the corresponding GeoResource
+ * @param {module:domain/coordinateTypeDef~Coordinate} coordinate3857 The coordinate in 3857
+ * @param {number} mapResolution The current resolution of the map in meters
+ * @throws `Error`
+ * @returns {Promise<FeatureInfoResult>}
+ */
+
+/**
  * Provides a FeatureInfo query for Raster Data -based GeoResources.
  * @class
  * @author taulinger
  */
 export class FeatureInfoService {
 	/**
-	 * @param {featureInfoProvider} [featureInfoProvider=loadBvvFeatureInfo]
+	 * @param {module:services/FeatureInfoService~featureInfoProvider} [featureInfoProvider=loadBvvFeatureInfo]
 	 */
 	constructor(featureInfoProvider = loadBvvFeatureInfo) {
 		this._featureInfoProvider = featureInfoProvider;
@@ -26,7 +38,7 @@ export class FeatureInfoService {
 	 * @param {string} geoResourceId The id of a GeoResource
 	 * @param {Coordinate} coordinate The coordinate for the FeatureInfo request
 	 * @param {number} mapResolution Current map resolution in meters
-	 * @returns {FeatureInfoResult|null} The result or `null`
+	 * @returns {Promise<FeatureInfoResult|null>} The result or `null`
 	 */
 	async get(geoResourceId, coordinate, mapResolution) {
 		if (this.isQueryable(geoResourceId)) {
@@ -54,6 +66,10 @@ export class FeatureInfoService {
  * @class
  */
 export class FeatureInfoResult {
+	/**
+	 * @param {string} content The content of this FeatureInfoResult
+	 * @param {string} [title=null] The title of this FeatureInfoResult
+	 */
 	constructor(content, title = null) {
 		this._content = content;
 		this._title = title;
