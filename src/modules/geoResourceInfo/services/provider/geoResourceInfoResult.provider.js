@@ -5,13 +5,12 @@ import { $injector } from '../../../../injection';
 import { GeoResourceInfoResult } from '../GeoResourceInfoService';
 import { MediaType } from '../../../../domain/mediaTypes';
 import { GeoResourceAuthenticationType, WmsGeoResource } from '../../../../domain/geoResources';
+import { bvvAuthResponseInterceptor } from '../../../../services/provider/auth.provider';
 
 /**
- * Uses the BVV endpoint to load GeoResourceInfoResult.
- * @implements geoResourceInfoProvider
- * @async
+ * Bvv specific implementation of {@link module:modules/geoResourceInfo/services/GeoResourceInfoService~geoResourceInfoProvider}.
  * @function
- * @returns {Promise<GeoResourceInfoResult>}
+ * @type {module:modules/geoResourceInfo/services/GeoResourceInfoService~geoResourceInfoProvider}
  */
 export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 	const {
@@ -46,7 +45,13 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 			return JSON.stringify(payload);
 		};
 
-		return httpService.post(url, getPayload(geoResource), MediaType.JSON, { timeout: 5000 });
+		return httpService.post(
+			url,
+			getPayload(geoResource),
+			MediaType.JSON,
+			{ timeout: 5000 },
+			{ response: geoResource.authenticationType === GeoResourceAuthenticationType.BAA ? null : bvvAuthResponseInterceptor }
+		);
 	};
 
 	const geoResource = geoResourceService.byId(geoResourceId);
@@ -67,5 +72,5 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 		}
 	}
 
-	throw new Error(`GeoResourceInfoResult for '${geoResourceId}' could not be loaded`);
+	throw new Error(`GeoResourceInfoResult for '${geoResourceId}' could not be loaded: Http-Status ${result.status}`);
 };

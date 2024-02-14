@@ -2,6 +2,7 @@ import { $injector } from '../../../../../src/injection';
 import { loadBvvGeoResourceInfo } from '../../../../../src/modules/geoResourceInfo/services/provider/geoResourceInfoResult.provider';
 import { GeoResourceAuthenticationType, VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../../../src/domain/geoResources';
 import { MediaType } from '../../../../../src/domain/mediaTypes';
+import { bvvAuthResponseInterceptor } from '../../../../../src/services/provider/auth.provider';
 
 describe('GeoResourceInfo provider', () => {
 	const configService = {
@@ -60,7 +61,7 @@ describe('GeoResourceInfo provider', () => {
 		const expectedPayLoad = '{"url":"http://some.url","layers":["layer"]}';
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const httpServiceSpy = spyOn(httpService, 'post')
-			.withArgs(expectedArgs0, expectedPayLoad, MediaType.JSON, { timeout: 5000 })
+			.withArgs(expectedArgs0, expectedPayLoad, MediaType.JSON, { timeout: 5000 }, { response: bvvAuthResponseInterceptor })
 			.and.returnValue(Promise.resolve(new Response('<b>hello</b>', { status: 200 })));
 
 		const result = await loadBvvGeoResourceInfo(geoResourceId);
@@ -85,7 +86,7 @@ describe('GeoResourceInfo provider', () => {
 		const expectedPayLoad = '{"url":"http://some.url","layers":["layer"],"username":"username","password":"password"}';
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const httpServiceSpy = spyOn(httpService, 'post')
-			.withArgs(expectedArgs0, expectedPayLoad, MediaType.JSON, { timeout: 5000 })
+			.withArgs(expectedArgs0, expectedPayLoad, MediaType.JSON, { timeout: 5000 }, { response: null })
 			.and.returnValue(Promise.resolve(new Response('<b>hello</b>', { status: 200 })));
 
 		const result = await loadBvvGeoResourceInfo(geoResourceId);
@@ -144,7 +145,7 @@ describe('GeoResourceInfo provider', () => {
 			.withArgs(expectedArgs0, { timeout: 5000 })
 			.and.returnValue(Promise.resolve(new Response(null, { status: 500 })));
 
-		const errorMessage = "GeoResourceInfoResult for '914c9263-5312-453e-b3eb-5104db1bf788' could not be loaded";
+		const errorMessage = "GeoResourceInfoResult for '914c9263-5312-453e-b3eb-5104db1bf788' could not be loaded: Http-Status 500";
 
 		try {
 			await loadBvvGeoResourceInfo('914c9263-5312-453e-b3eb-5104db1bf788');
