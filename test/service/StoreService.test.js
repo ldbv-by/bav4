@@ -52,9 +52,6 @@ describe('StoreService', () => {
 		const mainMenuPluginMock = {
 			register() {}
 		};
-		const navigationRailPluginMock = {
-			register() {}
-		};
 		const mediaPluginMock = {
 			register() {}
 		};
@@ -105,7 +102,6 @@ describe('StoreService', () => {
 				.registerSingleton('HighlightPlugin', highlightPluginMock)
 				.registerSingleton('FeatureInfoPlugin', featureInfoPluginMock)
 				.registerSingleton('MainMenuPlugin', mainMenuPluginMock)
-				.registerSingleton('NavigationRailPlugin', navigationRailPluginMock)
 				.registerSingleton('MediaPlugin', mediaPluginMock)
 				.registerSingleton('ImportPlugin', importPluginMock)
 				.registerSingleton('SearchPlugin', searchPluginMock)
@@ -131,7 +127,7 @@ describe('StoreService', () => {
 			expect(store).toBeDefined();
 
 			const reducerKeys = Object.keys(store.getState());
-			expect(reducerKeys.length).toBe(29);
+			expect(reducerKeys.length).toBe(28);
 			expect(reducerKeys.includes('map')).toBeTrue();
 			expect(reducerKeys.includes('pointer')).toBeTrue();
 			expect(reducerKeys.includes('position')).toBeTrue();
@@ -160,7 +156,6 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('stateForEncoding')).toBeTrue();
 			expect(reducerKeys.includes('iframeContainer')).toBeTrue();
 			expect(reducerKeys.includes('routing')).toBeTrue();
-			expect(reducerKeys.includes('navigationRail')).toBeTrue();
 		});
 
 		it('registers all plugins', async () => {
@@ -175,7 +170,6 @@ describe('StoreService', () => {
 			const highlightPluginSpy = spyOn(highlightPluginMock, 'register');
 			const featureInfoPluginSpy = spyOn(featureInfoPluginMock, 'register');
 			const mainMenuPluginSpy = spyOn(mainMenuPluginMock, 'register');
-			const navigationRailPluginSpy = spyOn(navigationRailPluginMock, 'register');
 			const mediaPluginSpy = spyOn(mediaPluginMock, 'register');
 			const importPluginSpy = spyOn(importPluginMock, 'register');
 			const searchPluginSpy = spyOn(searchPluginMock, 'register');
@@ -209,7 +203,6 @@ describe('StoreService', () => {
 			expect(highlightPluginSpy).toHaveBeenCalledWith(store);
 			expect(featureInfoPluginSpy).toHaveBeenCalledWith(store);
 			expect(mainMenuPluginSpy).toHaveBeenCalledWith(store);
-			expect(navigationRailPluginSpy).toHaveBeenCalledWith(store);
 			expect(mediaPluginSpy).toHaveBeenCalledWith(store);
 			expect(importPluginSpy).toHaveBeenCalledWith(store);
 			expect(searchPluginSpy).toHaveBeenCalledWith(store);

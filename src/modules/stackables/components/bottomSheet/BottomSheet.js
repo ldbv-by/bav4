@@ -6,12 +6,10 @@ import css from './bottomSheet.css';
 import { MvuElement } from '../../../MvuElement';
 import { closeBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
 import closeIcon from '../assets/x-square.svg';
-import { classMap } from 'lit-html/directives/class-map.js';
 
 const Update = 'update';
 const Update_Main_Menu = 'update_main_menu';
 const Update_Media = 'update_media';
-const Update_IsOpen_NavigationRail = 'update_isOpen_NavigationRail';
 
 /**
  * Element to display a bottom sheet
@@ -22,9 +20,8 @@ export class BottomSheet extends MvuElement {
 	constructor() {
 		super({
 			content: null,
-			isOpen: false,
-			isOpenNavigationRail: false,
-			isPortrait: false
+			open: false,
+			portrait: false
 		});
 
 		this.observe(
@@ -36,10 +33,6 @@ export class BottomSheet extends MvuElement {
 				(state) => state.media,
 				(data) => this.signal(Update_Media, data),
 				true
-			),
-			this.observe(
-				(state) => state.navigationRail,
-				(navigationRail) => this.signal(Update_IsOpen_NavigationRail, { isOpenNavigationRail: navigationRail.open })
 			);
 	}
 
@@ -48,7 +41,7 @@ export class BottomSheet extends MvuElement {
 			case Update_Main_Menu:
 				return {
 					...model,
-					isOpen: data.open
+					open: data.open
 				};
 			case Update:
 				return {
@@ -58,10 +51,8 @@ export class BottomSheet extends MvuElement {
 			case Update_Media:
 				return {
 					...model,
-					isPortrait: data.portrait
+					portrait: data.portrait
 				};
-			case Update_IsOpen_NavigationRail:
-				return { ...model, ...data };
 		}
 	}
 
@@ -69,7 +60,9 @@ export class BottomSheet extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { content, isOpen, isOpenNavigationRail, isPortrait } = model;
+		const { content, open, portrait } = model;
+
+		const getOverlayClass = () => (open && !portrait ? 'is-open' : '');
 
 		const onDismiss = () => {
 			const elementModal = this.shadowRoot.querySelector('.bottom-sheet');
@@ -79,29 +72,13 @@ export class BottomSheet extends MvuElement {
 			});
 		};
 
-		const classes = {
-			'is-open': isOpen && !isPortrait,
-			'is-open-navigationRail': isOpenNavigationRail && !isPortrait,
-			'is-portrait': isPortrait,
-			'is-landscape': !isPortrait
-		};
-
 		return content
-			? html` <style>
-						${css}
-					</style>
-					<div class="bottom-sheet ${classMap(classes)}" data-test-id>
-						${content}
-						<ba-icon
-							id="close-icon"
-							class="tool-container__close-button"
-							.icon="${closeIcon}"
-							.size=${1.6}
-							.color=${'var(--text2)'}
-							.color_hover=${'var(--text2)'}
-							@click=${onDismiss}
-						></ba-icon>
-					</div>`
+			? html`
+		<style>${css}</style>
+		<div class='bottom-sheet ${getOverlayClass()}' data-test-id>
+        	${content}
+			<ba-icon id="close-icon" class='tool-container__close-button' .icon='${closeIcon}' .size=${1.6} .color=${'var(--text2)'} .color_hover=${'var(--text2)'} @click=${onDismiss}>
+		</div>`
 			: nothing;
 	}
 

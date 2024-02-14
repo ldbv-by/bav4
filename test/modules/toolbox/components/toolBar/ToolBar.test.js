@@ -5,7 +5,6 @@ import { networkReducer } from '../../../../../src/store/network/network.reducer
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
-import { navigationRailReducer } from '../../../../../src/store/navigationRail/navigationRail.reducer';
 import { setFetching } from '../../../../../src/store/network/network.action';
 import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
@@ -36,8 +35,7 @@ describe('ToolBarElement', () => {
 		store = TestUtils.setupStoreAndDi(initialState, {
 			tools: toolsReducer,
 			network: networkReducer,
-			media: createNoInitialStateMediaReducer(),
-			navigationRail: navigationRailReducer
+			media: createNoInitialStateMediaReducer()
 		});
 
 		$injector
@@ -156,22 +154,6 @@ describe('ToolBarElement', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.tool-bar.is-open')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.hide-button')).toHaveSize(1);
-		});
-	});
-
-	describe('when action-button clicked', () => {
-		it('toggle navigation rail', async () => {
-			const element = await setup();
-
-			expect(store.getState().navigationRail.open).toBe(false);
-
-			element.shadowRoot.querySelector('.action-button').click();
-
-			expect(store.getState().navigationRail.open).toBe(true);
-
-			element.shadowRoot.querySelector('.action-button').click();
-
-			expect(store.getState().navigationRail.open).toBe(false);
 		});
 	});
 

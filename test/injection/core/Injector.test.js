@@ -47,14 +47,7 @@ describe('Injector', () => {
 			$injector.ready();
 			const returnValue = $injector.reset();
 
-			expect(returnValue.isReady()).toBeFalse();
-		});
-	});
-
-	describe('getId', () => {
-		it('returns the Id of the instance', () => {
-			expect($injector.getId().startsWith('injector')).toBeTrue();
-			expect($injector.getId()).not.toBe(new Injector().getId());
+			expect(returnValue._ready).toBeFalse();
 		});
 	});
 

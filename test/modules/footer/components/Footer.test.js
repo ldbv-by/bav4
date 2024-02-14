@@ -5,7 +5,6 @@ import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
 import { createNoInitialStateMainMenuReducer } from '../../../../src/store/mainMenu/mainMenu.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { navigationRailReducer } from '../../../../src/store/navigationRail/navigationRail.reducer';
 
 window.customElements.define(Footer.tag, Footer);
 
@@ -17,9 +16,6 @@ describe('Footer', () => {
 			mainMenu: {
 				open: true
 			},
-			navigationRail: {
-				open: false
-			},
 			media: {
 				portrait: false,
 				minWidth: false
@@ -27,11 +23,7 @@ describe('Footer', () => {
 			...state
 		};
 
-		TestUtils.setupStoreAndDi(initialState, {
-			mainMenu: createNoInitialStateMainMenuReducer(),
-			media: createNoInitialStateMediaReducer(),
-			navigationRail: navigationRailReducer
-		});
+		TestUtils.setupStoreAndDi(initialState, { mainMenu: createNoInitialStateMainMenuReducer(), media: createNoInitialStateMediaReducer() });
 		$injector.registerSingleton('EnvironmentService', {
 			isEmbedded: () => embed
 		});
@@ -47,8 +39,7 @@ describe('Footer', () => {
 			expect(model).toEqual({
 				isOpen: false,
 				isPortrait: false,
-				hasMinWidth: false,
-				isOpenNavigationRail: false
+				hasMinWidth: false
 			});
 		});
 	});
@@ -85,7 +76,7 @@ describe('Footer', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
 
-			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.footer.is-open')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.content')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content')).display).toBe('flex');
 			expect(element.shadowRoot.querySelectorAll('ba-map-info')).toHaveSize(1);
@@ -106,7 +97,7 @@ describe('Footer', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(0);
 
-			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.footer.is-open')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.content')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content')).display).toBe('none');
 			expect(element.shadowRoot.querySelectorAll('ba-map-info')).toHaveSize(1);
@@ -127,39 +118,10 @@ describe('Footer', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
 
-			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.footer.is-open')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.content')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content')).display).toBe('none');
 			expect(element.shadowRoot.querySelectorAll('ba-map-info')).toHaveSize(1);
-		});
-
-		it('layouts with open navigation rail for portrait mode', async () => {
-			const state = {
-				media: {
-					portrait: true,
-					minWidth: false
-				},
-				navigationRail: {
-					open: true
-				}
-			};
-
-			const element = await setup(state);
-			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
-		});
-
-		it('layouts open navigation rail for landscape mode', async () => {
-			const state = {
-				media: {
-					portrait: false,
-					minWidth: true
-				},
-				navigationRail: {
-					open: true
-				}
-			};
-			const element = await setup(state);
-			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(1);
 		});
 	});
 

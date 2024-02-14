@@ -7,12 +7,13 @@ import { $injector } from '../../../../src/injection';
 import { pointerReducer } from '../../../../src/store/pointer/pointer.reducer';
 import { openBottomSheet } from '../../../../src/store/bottomSheet/bottomSheet.action';
 import { bottomSheetReducer } from '../../../../src/store/bottomSheet/bottomSheet.reducer';
+import { BottomSheet } from '../../../../src/modules/stackables/components/bottomSheet/BottomSheet';
 import { createNoInitialStateMainMenuReducer } from '../../../../src/store/mainMenu/mainMenu.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { navigationRailReducer } from '../../../../src/store/navigationRail/navigationRail.reducer';
 
 window.customElements.define(StackableContentPanel.tag, StackableContentPanel);
 window.customElements.define(NotificationItem.tag, NotificationItem);
+window.customElements.define(BottomSheet.tag, BottomSheet);
 
 describe('StackableContentPanel', () => {
 	describe('constructor', () => {
@@ -33,10 +34,7 @@ describe('StackableContentPanel', () => {
 		it('renders nothing when no data available', async () => {
 			TestUtils.setupStoreAndDi(
 				{ notifications: { notification: null }, bottomSheet: { data: null } },
-				{
-					notifications: notificationReducer,
-					bottomSheet: bottomSheetReducer
-				}
+				{ notifications: notificationReducer, bottomSheet: bottomSheetReducer }
 			);
 			const element = await TestUtils.render(StackableContentPanel.tag);
 
@@ -53,8 +51,7 @@ describe('StackableContentPanel', () => {
 				pointer: pointerReducer,
 				bottomSheet: bottomSheetReducer,
 				mainMenu: createNoInitialStateMainMenuReducer(),
-				media: createNoInitialStateMediaReducer(),
-				navigationRail: navigationRailReducer
+				media: createNoInitialStateMediaReducer()
 			});
 			$injector.registerSingleton('TranslationService', { translate: (key) => key });
 			const element = await TestUtils.render(StackableContentPanel.tag);
@@ -124,15 +121,15 @@ describe('StackableContentPanel', () => {
 
 			const bottomSheetElements1 = element.shadowRoot.querySelectorAll('ba-bottom-sheet');
 			expect(bottomSheetElements1).toHaveSize(1);
-			expect(bottomSheetElements1[0].content).toBe('fooBar');
-			expect(element.getModel().bottomSheet).toBe('fooBar');
+			expect(bottomSheetElements1[0].getModel().content).toBe('fooBar');
+			expect(element._model.bottomSheet).toBe('fooBar');
 
 			openBottomSheet('fooBarBaz');
 
 			const bottomSheetElements2 = element.shadowRoot.querySelectorAll('ba-bottom-sheet');
 			expect(bottomSheetElements2).toHaveSize(1);
-			expect(bottomSheetElements2[0].content).toBe('fooBarBaz');
-			expect(element.getModel().bottomSheet).toBe('fooBarBaz');
+			expect(bottomSheetElements2[0].getModel().content).toBe('fooBarBaz');
+			expect(element._model.bottomSheet).toBe('fooBarBaz');
 		});
 
 		it('adds a NotificationItem only once, when panel is rerendered', async () => {

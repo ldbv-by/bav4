@@ -22,7 +22,6 @@ import { measurementReducer } from '../store/measurement/measurement.reducer';
 import { pointerReducer } from '../store/pointer/pointer.reducer';
 import { mapContextMenuReducer } from '../store/mapContextMenu/mapContextMenu.reducer';
 import { createMainMenuReducer } from '../store/mainMenu/mainMenu.reducer';
-import { navigationRailReducer } from '../store/navigationRail/navigationRail.reducer';
 import { featureInfoReducer } from '../store/featureInfo/featureInfo.reducer';
 import { importReducer } from '../store/import/import.reducer';
 import { mfpReducer } from '../store/mfp/mfp.reducer';
@@ -49,7 +48,6 @@ export class StoreService {
 			pointer: pointerReducer,
 			position: positionReducer,
 			mainMenu: createMainMenuReducer(),
-			navigationRail: navigationRailReducer,
 			tools: toolsReducer,
 			modal: modalReducer,
 			layers: layersReducer,
@@ -93,7 +91,6 @@ export class StoreService {
 				MediaPlugin: mediaPlugin,
 				FeatureInfoPlugin: featureInfoPlugin,
 				MainMenuPlugin: mainMenuPlugin,
-				NavigationRailPlugin: navigationRailPlugin,
 				ImportPlugin: importPlugin,
 				SearchPlugin: searchPlugin,
 				ExportMfpPlugin: exportMfpPlugin,
@@ -120,7 +117,6 @@ export class StoreService {
 				'MediaPlugin',
 				'FeatureInfoPlugin',
 				'MainMenuPlugin',
-				'NavigationRailPlugin',
 				'ImportPlugin',
 				'SearchPlugin',
 				'ExportMfpPlugin',
@@ -150,7 +146,6 @@ export class StoreService {
 				await highlightPlugin.register(this._store);
 				await featureInfoPlugin.register(this._store);
 				await mainMenuPlugin.register(this._store);
-				await navigationRailPlugin.register(this._store);
 				await importPlugin.register(this._store);
 				await searchPlugin.register(this._store);
 				await exportMfpPlugin.register(this._store);

@@ -7,12 +7,10 @@ import css from './chipsContainer.css';
 import { MvuElement } from '../../../MvuElement';
 import { openModal } from '../../../../store/modal/modal.action';
 import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
-import { classMap } from 'lit-html/directives/class-map.js';
 
 const Update_Media_Related_Properties = 'update_isPortrait_hasMinWidth';
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_Chips = 'update_chips';
-const Update_IsOpen_NavigationRail = 'update_isOpen_NavigationRail';
 
 /**
  * @class
@@ -26,8 +24,7 @@ export class ChipsContainer extends MvuElement {
 			hasMinWidth: false,
 			isDarkSchema: false,
 			isOpen: false,
-			currentChips: [],
-			isOpenNavigationRail: false
+			currentChips: []
 		});
 
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
@@ -46,8 +43,6 @@ export class ChipsContainer extends MvuElement {
 			case Update_IsOpen_TabIndex:
 				return { ...model, ...data };
 			case Update_Chips:
-				return { ...model, ...data };
-			case Update_IsOpen_NavigationRail:
 				return { ...model, ...data };
 		}
 	}
@@ -68,10 +63,6 @@ export class ChipsContainer extends MvuElement {
 		this.observe(
 			(state) => state.chips.current,
 			(current) => this.signal(Update_Chips, { currentChips: [...current] })
-		);
-		this.observe(
-			(state) => state.navigationRail,
-			(navigationRail) => this.signal(Update_IsOpen_NavigationRail, { isOpenNavigationRail: navigationRail.open })
 		);
 	}
 
@@ -109,7 +100,19 @@ export class ChipsContainer extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { isDarkSchema, isPortrait, hasMinWidth, isOpen, isOpenNavigationRail, currentChips } = model;
+		const { isDarkSchema, isPortrait, hasMinWidth, isOpen, currentChips } = model;
+
+		const getOrientationClass = () => {
+			return isPortrait ? 'is-portrait' : 'is-landscape';
+		};
+
+		const getMinWidthClass = () => {
+			return hasMinWidth ? 'is-desktop' : 'is-tablet';
+		};
+
+		const getOverlayClass = () => {
+			return isOpen && !isPortrait ? 'is-open' : '';
+		};
 
 		const scrollLeft = () => {
 			const container = this.shadowRoot.getElementById('chipscontainer');
@@ -174,20 +177,11 @@ export class ChipsContainer extends MvuElement {
 			return currentChips.map((chip) => (chip.target === 'modal' ? getButton(chip) : getLink(chip)));
 		};
 
-		const classes = {
-			'is-open': isOpen && !isPortrait,
-			'is-open-navigationRail': isOpenNavigationRail && !isPortrait,
-			'is-desktop': hasMinWidth,
-			'is-tablet': !hasMinWidth,
-			'is-portrait': isPortrait,
-			'is-landscape': !isPortrait
-		};
-
 		return html`
 			<style>
 				${css}
 			</style>
-			<div id="chipscontainer" class="${classMap(classes)} chips__container">
+			<div id="chipscontainer" class="${getOrientationClass()} ${getMinWidthClass()} ${getOverlayClass()} chips__container">
 				<button class="chips__scroll-button chips__scroll-button-left" @click="${scrollRight}">
 					<span class="icon"> </span>
 				</button>

@@ -30,7 +30,6 @@ import { ContextClickPlugin } from '../plugins/ContextClickPlugin';
 import { GeolocationPlugin } from '../plugins/GeolocationPlugin';
 import { FeatureInfoPlugin } from '../plugins/FeatureInfoPlugin';
 import { MainMenuPlugin } from '../plugins/MainMenuPlugin';
-import { NavigationRailPlugin } from '../plugins/NavigationRailPlugin';
 import { FeatureInfoService } from '../services/FeatureInfoService';
 import { GeoResourceInfoService } from '../modules/geoResourceInfo/services/GeoResourceInfoService';
 import { ImportVectorDataService } from '../services/ImportVectorDataService';
@@ -107,7 +106,6 @@ $injector
 	.registerSingleton('ContextClickPlugin', new ContextClickPlugin())
 	.registerSingleton('FeatureInfoPlugin', new FeatureInfoPlugin())
 	.registerSingleton('MainMenuPlugin', new MainMenuPlugin())
-	.registerSingleton('NavigationRailPlugin', new NavigationRailPlugin())
 	.registerSingleton('ImportPlugin', new ImportPlugin())
 	.registerSingleton('SearchPlugin', new SearchPlugin())
 	.registerSingleton('ExportMfpPlugin', new ExportMfpPlugin())
