@@ -151,7 +151,7 @@ describe('FeatureInfoResult provider', () => {
 			spyOn(baaCredentialService, 'get').withArgs(geoResourceUrl).and.returnValue(null);
 
 			await expectAsync(loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution)).toBeRejectedWithError(
-				'FeatureInfoResult could not be retrieved: No credentials available'
+				`FeatureInfoResult for '${geoResourceId}' could not be loaded: No credentials available`
 			);
 		});
 
@@ -183,7 +183,7 @@ describe('FeatureInfoResult provider', () => {
 			const httpServiceSpy = spyOn(httpService, 'post').and.resolveTo(new Response(null, { status: 500 }));
 
 			await expectAsync(loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution)).toBeRejectedWithError(
-				'FeatureInfoResult could not be retrieved: Http-Status 500'
+				`FeatureInfoResult for '${geoResourceId}' could not be loaded: Http-Status 500`
 			);
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
@@ -196,7 +196,7 @@ describe('FeatureInfoResult provider', () => {
 			spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(null);
 
 			await expectAsync(loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution)).toBeRejectedWithError(
-				'FeatureInfoResult could not be retrieved: No GeoResource found with id "geoResourceId"'
+				`FeatureInfoResult for '${geoResourceId}' could not be loaded: No GeoResource found with id "geoResourceId"`
 			);
 		});
 	});

@@ -24,7 +24,7 @@ export const loadBvvFeatureInfo = async (geoResourceId, coordinate3857, mapResol
 	const geoResource = geoResourceService.byId(geoResourceId);
 
 	const throwError = (reason) => {
-		throw new Error(`FeatureInfoResult could not be retrieved: ${reason}`);
+		throw new Error(`FeatureInfoResult for '${geoResourceId}' could not be loaded: ${reason}`);
 	};
 
 	if (geoResource) {
