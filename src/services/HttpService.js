@@ -15,9 +15,8 @@ import { $injector } from '../injection';
 
 /**
  * Configuration for a response interceptor. A request interceptor may be available in the future.
- * @async
  * @typedef {Object} HttpServiceInterceptors
- * @property {module:services/HttpService~responseInterceptor} responseInterceptor
+ * @property {module:services/HttpService~responseInterceptor|null} [response] responseInterceptor
  */
 
 /**
