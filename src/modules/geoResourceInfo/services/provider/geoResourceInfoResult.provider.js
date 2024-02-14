@@ -20,6 +20,10 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 		BaaCredentialService: baaCredentialService
 	} = $injector.inject('HttpService', 'ConfigService', 'GeoResourceService', 'BaaCredentialService');
 
+	const throwError = (reason) => {
+		throw new Error(`GeoResourceInfoResult for '${geoResourceId}' could not be loaded: ${reason}`);
+	};
+
 	const loadInternal = async (geoResource) => {
 		const url = `${configService.getValueAsPath('BACKEND_URL')}georesource/info/${geoResource.id}`;
 		return httpService.get(url, { timeout: 5000 });
@@ -36,7 +40,7 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 			const extendWithCredential = (payload) => {
 				const credential = baaCredentialService.get(geoResource.url);
 				if (!credential) {
-					throw new Error(`No credential available for GeoResource with id '${geoResource.id}' and url '${geoResource.url}'`);
+					throwError(`No credential available`);
 				}
 				return { ...payload, ...credential };
 			};
@@ -72,5 +76,5 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 		}
 	}
 
-	throw new Error(`GeoResourceInfoResult for '${geoResourceId}' could not be loaded: Http-Status ${result.status}`);
+	throwError(`Http-Status ${result.status}`);
 };

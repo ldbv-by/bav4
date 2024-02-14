@@ -110,7 +110,7 @@ describe('GeoResourceInfo provider', () => {
 		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 
 		await expectAsync(loadBvvGeoResourceInfo(geoResourceId)).toBeRejectedWithError(
-			`No credential available for GeoResource with id '${geoResourceId}' and url '${url}'`
+			`GeoResourceInfoResult for '${geoResourceId}' could not be loaded: No credential available`
 		);
 	});
 
@@ -147,14 +147,9 @@ describe('GeoResourceInfo provider', () => {
 
 		const errorMessage = "GeoResourceInfoResult for '914c9263-5312-453e-b3eb-5104db1bf788' could not be loaded: Http-Status 500";
 
-		try {
-			await loadBvvGeoResourceInfo('914c9263-5312-453e-b3eb-5104db1bf788');
-			throw new Error('Promise should not be resolved');
-		} catch (err) {
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
-			expect(err.message).toBe(errorMessage);
-		}
+		await expectAsync(loadBvvGeoResourceInfo('914c9263-5312-453e-b3eb-5104db1bf788')).toBeRejectedWithError(errorMessage);
+		expect(configServiceSpy).toHaveBeenCalled();
+		expect(httpServiceSpy).toHaveBeenCalled();
 	});
 
 	it('should return NULL for an unsupported imported GeoResource', async () => {
