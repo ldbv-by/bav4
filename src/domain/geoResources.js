@@ -183,7 +183,7 @@ export class GeoResource {
 	 *  @type {Array<String>}
 	 */
 	get authRoles() {
-		return this._authRoles;
+		return [...this._authRoles];
 	}
 
 	/**

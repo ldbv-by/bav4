@@ -172,6 +172,7 @@ describe('GeoResource', () => {
 
 			it('copies the properties from another GeoResource', () => {
 				const attributionProvider = () => {};
+				const roles = ['TEST'];
 				const geoResource0 = new GeoResourceNoImpl('id0');
 				geoResource0
 					.setOpacity(0.5)
@@ -184,7 +185,7 @@ describe('GeoResource', () => {
 					.setAuthenticationType(GeoResourceAuthenticationType.BAA)
 					.setQueryable(false)
 					.setExportable(false)
-					.setAuthRoles(['TEST']);
+					.setAuthRoles(roles);
 				const geoResource1 = new GeoResourceNoImpl('id1');
 
 				geoResource1.copyPropertiesFrom(geoResource0);
@@ -199,7 +200,8 @@ describe('GeoResource', () => {
 				expect(geoResource1.attributionProvider).toEqual(attributionProvider);
 				expect(geoResource1.queryable).toBeFalse();
 				expect(geoResource1.exportable).toBeFalse();
-				expect(geoResource1.authRoles).toEqual(['TEST']);
+				expect(geoResource1.authRoles).toEqual(roles);
+				expect(geoResource1.authRoles === roles).toBeFalse(); //must be a shallow copy
 			});
 		});
 
