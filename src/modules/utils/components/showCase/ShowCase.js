@@ -101,18 +101,10 @@ export class ShowCase extends MvuElement {
 				return null;
 			};
 
-			// in case of aborting the authentification-process by closing the modal,
-			// call the onCloseCallback directly
-			const resolveBeforeClosing = (modal) => {
-				if (!modal.active) {
-					unsubscribe();
-					onClose(null);
-				}
-			};
-
 			const unsubscribe = this.observe(
 				(state) => state.modal,
-				(modal) => resolveBeforeClosing(modal)
+				(modal) => resolveBeforeClosing(modal),
+				false
 			);
 
 			// onClose-callback is called with a valid credential or NULL
@@ -130,6 +122,15 @@ export class ShowCase extends MvuElement {
 
 				const resolveAction = credential ? succeed : abort;
 				resolveAction();
+			};
+
+			// in case of aborting the authentification-process by closing the modal,
+			// call the onCloseCallback directly
+			const resolveBeforeClosing = (modal) => {
+				if (!modal.active) {
+					unsubscribe();
+					onClose(null);
+				}
 			};
 
 			// creates a PasswordCredentialPanel-element within a templateResult
