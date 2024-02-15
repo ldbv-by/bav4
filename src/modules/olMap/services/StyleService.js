@@ -19,8 +19,6 @@ import {
 } from '../utils/olStyleUtils';
 import { isFunction } from '../../../utils/checks';
 import { getRoutingStyleFunction } from '../handler/routing/styleUtils';
-import Feature from '../../../../node_modules/ol/Feature';
-import { OlFeatureInfoHandler } from '../handler/featureInfo/OlFeatureInfoHandler';
 import { MultiPoint, Point } from '../../../../node_modules/ol/geom';
 import { Circle as CircleStyle, Fill, Stroke, Style, Text } from '../../../../node_modules/ol/style';
 
@@ -278,8 +276,7 @@ export class StyleService {
 			// if (gaNetworkStatus.offline) {
 			// 	image = this.getStyle().getImage();
 			// }
-			const name = feature.get('name');
-			console.log(name, style.getText(), style.getImage(), stroke, style);
+
 			// If the feature has name we display it on the map as Google does
 			if (feature.get('name') && style.getText && style.getText().getScale() !== 0) {
 				if (image && image.getScale() === 0) {
@@ -292,7 +289,7 @@ export class StyleService {
 					fill: style.getText().getFill(),
 					stroke: new Stroke({
 						color: getContrastColorFrom(style.getText().getFill().getColor()),
-						width: 1
+						width: 2
 					}), // refactored: to a default color
 					scale: style.getText().getScale()
 				});
