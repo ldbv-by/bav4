@@ -56,6 +56,21 @@ describe('PasswordCredentialPanel', () => {
 	});
 
 	describe('when panel is rendered', () => {
+		const fillCredentialFormElements = (element, username = null, password = null) => {
+			const inputUsername = element.shadowRoot.querySelector('#credential_username');
+			const inputPassword = element.shadowRoot.querySelector('#credential_password');
+			const inputChangedEvent = new CustomEvent('input');
+
+			if (username && inputUsername) {
+				inputUsername.value = username;
+				inputUsername.dispatchEvent(inputChangedEvent);
+			}
+			if (password && inputPassword) {
+				inputPassword.value = password;
+				inputPassword.dispatchEvent(inputChangedEvent);
+			}
+		};
+
 		it('shows two properly configured input fields', async () => {
 			const element = await setup();
 
@@ -109,11 +124,10 @@ describe('PasswordCredentialPanel', () => {
 			const element = await setup();
 			element.url = 'someUrl';
 			element.authenticate = authenticateCallback;
+
+			fillCredentialFormElements(element, 'foo', 'bar');
 			const inputUsername = element.shadowRoot.querySelector('#credential_username');
 			const inputPassword = element.shadowRoot.querySelector('#credential_password');
-
-			element.signal('update_username', 'foo');
-			element.signal('update_password', 'bar');
 
 			inputUsername.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 			inputPassword.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
@@ -143,11 +157,10 @@ describe('PasswordCredentialPanel', () => {
 		it('does NOT resolves credential with default authenticate-callback', async () => {
 			const element = await setup();
 			element.url = 'someUrl';
-			element.signal('update_username', 'someUser');
-			element.signal('update_password', '42');
 			const authenticateSpy = spyOn(element, '_authenticate').and.resolveTo(null);
 			const onCloseSpy = spyOn(element, '_onClose').and.callThrough();
 			const submitButton = element.shadowRoot.querySelector('#authenticate-credential-button');
+			fillCredentialFormElements(element, 'someUser', '42');
 
 			submitButton.click();
 			await TestUtils.timeout();
@@ -162,8 +175,7 @@ describe('PasswordCredentialPanel', () => {
 			element.url = 'someUrl';
 			element.authenticate = authenticateCallback;
 			element.onClose = onCloseCallback;
-			element.signal('update_username', 'someUser');
-			element.signal('update_password', '42');
+			fillCredentialFormElements(element, 'someUser', '42');
 			const spy = spyOn(element, '_onClose').and.callThrough();
 			const submitButton = element.shadowRoot.querySelector('#authenticate-credential-button');
 
@@ -178,7 +190,7 @@ describe('PasswordCredentialPanel', () => {
 			const element = await setup();
 			element.url = 'someUrl';
 			element.authenticate = authenticateCallback;
-
+			fillCredentialFormElements(element, 'foo', 'bar');
 			const submitButton = element.shadowRoot.querySelector('#authenticate-credential-button');
 			submitButton.click();
 
@@ -193,7 +205,7 @@ describe('PasswordCredentialPanel', () => {
 			element.url = 'someUrl';
 			element.authenticate = authenticateCallback;
 			const errorSpy = spyOn(console, 'error');
-
+			fillCredentialFormElements(element, 'foo', 'bar');
 			const submitButton = element.shadowRoot.querySelector('#authenticate-credential-button');
 			submitButton.click();
 
@@ -214,6 +226,7 @@ describe('PasswordCredentialPanel', () => {
 			element.url = 'someUrl';
 			element.authenticate = authenticateCallback;
 			element.onClose = onCloseCallback;
+			fillCredentialFormElements(element, 'foo', 'bar');
 
 			const submitButton = element.shadowRoot.querySelector('#authenticate-credential-button');
 			submitButton.click();
