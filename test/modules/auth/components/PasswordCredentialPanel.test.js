@@ -4,6 +4,7 @@ import { createNoInitialStateMediaReducer } from '../../../../src/store/media/me
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
+import { BA_FORM_ELEMENT_VISITED_CLASS } from '../../../../src/utils/markup';
 import { TestUtils } from '../../../test-utils';
 
 window.customElements.define(PasswordCredentialPanel.tag, PasswordCredentialPanel);
@@ -135,6 +136,32 @@ describe('PasswordCredentialPanel', () => {
 			expect(authenticateCallback).toHaveBeenCalledTimes(2);
 		});
 
+		it('does NOT calls authenticate-callback after username input fails validation', async () => {
+			const authenticateCallback = jasmine.createSpy().withArgs({ username: 'foo', password: 'bar' }, 'someUrl').and.callThrough();
+			const element = await setup();
+			element.url = 'someUrl';
+			element.authenticate = authenticateCallback;
+			const submitButton = element.shadowRoot.querySelector('#authenticate-credential-button');
+			fillCredentialFormElements(element, null, 'bar');
+
+			submitButton.click();
+
+			expect(authenticateCallback).not.toHaveBeenCalled();
+		});
+
+		it('does NOT calls authenticate-callback after password input fails validation', async () => {
+			const authenticateCallback = jasmine.createSpy().withArgs({ username: 'foo', password: 'bar' }, 'someUrl').and.callThrough();
+			const element = await setup();
+			element.url = 'someUrl';
+			element.authenticate = authenticateCallback;
+			const submitButton = element.shadowRoot.querySelector('#authenticate-credential-button');
+			fillCredentialFormElements(element, 'foo', null);
+
+			submitButton.click();
+
+			expect(authenticateCallback).not.toHaveBeenCalled();
+		});
+
 		it('does NOT calls authenticate-callback after other than Enter-key is pressed on input-element', async () => {
 			const authenticateCallback = jasmine.createSpy().withArgs({ username: 'foo', password: 'bar' }, 'someUrl').and.callThrough();
 			const element = await setup();
@@ -253,6 +280,23 @@ describe('PasswordCredentialPanel', () => {
 			expect(inputPassword.getAttribute('type')).toBe('password');
 			expect(togglePassword).toHaveClass('eye-slash');
 			expect(togglePassword).not.toHaveClass('eye');
+		});
+
+		it('all "ba-form-element" elements receive the "userVisited" class', async () => {
+			const authenticateCallback = jasmine.createSpy().withArgs({ username: 'foo', password: 'bar' }, 'someUrl').and.callThrough();
+			const element = await setup();
+			const allBaFormElements = element.shadowRoot.querySelectorAll('.ba-form-element');
+			element.url = 'someUrl';
+			element.authenticate = authenticateCallback;
+			const submitButton = element.shadowRoot.querySelector('#authenticate-credential-button');
+			fillCredentialFormElements(element, null, null);
+
+			submitButton.click();
+
+			expect(allBaFormElements).toHaveSize(2);
+			allBaFormElements.forEach((element) => {
+				expect(element.classList.contains(BA_FORM_ELEMENT_VISITED_CLASS)).toBeTrue();
+			});
 		});
 	});
 
