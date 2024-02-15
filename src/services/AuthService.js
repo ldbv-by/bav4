@@ -9,10 +9,16 @@
  * @returns {Array<string>}  An array of roles or an empty array when signIn was not successful
  */
 
+/**
+ * A function that returns an response interceptor for authentication tasks
+ * @async
+ * @typedef {Function} authResponseInterceptorProvider
+ * @param {string[]} [roles] One or more roles the interceptor should show an auth UI for
+ * @returns {module:services/HttpService~responseInterceptor} the response interceptor
+ */
+
 import { $injector } from '../injection/index';
-import { bvvSignInProvider } from './provider/auth.provider';
-// eslint-disable-next-line no-unused-vars
-import { GeoResourceService } from './GeoResourceService';
+import { bvvAuthResponseInterceptorProvider, bvvSignInProvider } from './provider/auth.provider';
 
 /**
  * Service for authentication and authorization tasks.
@@ -21,18 +27,17 @@ import { GeoResourceService } from './GeoResourceService';
  * @author taulinger
  */
 export class AuthService {
-	/**
-	 * @type {GeoResourceService}
-	 */
 	#geoResourceService;
 	/**
 	 *
 	 * @param {module:services/AuthService~signInProvider} [signInProvider=bvvSignInProvider]
+	 * @param {module:services/AuthService~authResponseInterceptorProvider} [authResponseInterceptorProvider=bvvAuthResponseInterceptorProvider]
 	 */
-	constructor(signInProvider = bvvSignInProvider) {
+	constructor(signInProvider = bvvSignInProvider, authResponseInterceptorProvider = bvvAuthResponseInterceptorProvider) {
 		const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
 		this.#geoResourceService = geoResourceService;
 		this._singInProvider = signInProvider;
+		this._authResponseInterceptorProvider = authResponseInterceptorProvider;
 		this._roles = [];
 	}
 
@@ -76,5 +81,15 @@ export class AuthService {
 		const roles = await this._singInProvider(credential);
 		this._roles = [...roles];
 		return this._roles.length > 0;
+	}
+
+	/**
+	 * Returns a {@link module:services/HttpService~responseInterceptor} suitable authenticating for a given GeoResource.
+	 * @param {string} geoResourceId The id of a GeoResource
+	 * @returns {module:services/HttpService~responseInterceptor}
+	 */
+	getAuthResponseInterceptorForGeoResource(geoResourceId) {
+		const roles = this.#geoResourceService.byId(geoResourceId)?.authRoles ?? [];
+		return this._authResponseInterceptorProvider(roles);
 	}
 }

@@ -1,6 +1,6 @@
 import { $injector } from '../../src/injection';
 import { AuthService } from '../../src/services/AuthService';
-import { bvvSignInProvider } from '../../src/services/provider/auth.provider';
+import { bvvAuthResponseInterceptorProvider, bvvSignInProvider } from '../../src/services/provider/auth.provider';
 
 describe('AuthService', () => {
 	const geoResourceService = {
@@ -11,20 +11,23 @@ describe('AuthService', () => {
 		$injector.registerSingleton('GeoResourceService', geoResourceService);
 	});
 
-	const setup = (signInProvider = bvvSignInProvider) => {
-		return new AuthService(signInProvider);
+	const setup = (signInProvider = bvvSignInProvider, authResponseInterceptorProvider = bvvAuthResponseInterceptorProvider) => {
+		return new AuthService(signInProvider, authResponseInterceptorProvider);
 	};
 
 	describe('constructor', () => {
 		it('initializes the service with default providers', async () => {
 			const instanceUnderTest = new AuthService();
 			expect(instanceUnderTest._singInProvider).toEqual(bvvSignInProvider);
+			expect(instanceUnderTest._authResponseInterceptorProvider).toEqual(bvvAuthResponseInterceptorProvider);
 		});
 
 		it('initializes the service with custom provider', async () => {
 			const customSignInProvider = async () => {};
-			const instanceUnderTest = setup(customSignInProvider);
+			const customAuthResponseInterceptorProvider = () => {};
+			const instanceUnderTest = setup(customSignInProvider, customAuthResponseInterceptorProvider);
 			expect(instanceUnderTest._singInProvider).toEqual(customSignInProvider);
+			expect(instanceUnderTest._authResponseInterceptorProvider).toEqual(customAuthResponseInterceptorProvider);
 		});
 	});
 
@@ -73,6 +76,7 @@ describe('AuthService', () => {
 			});
 		});
 	});
+
 	describe('isAuthorizedFor', () => {
 		describe('and user is NOT signed in', () => {
 			it('returns `false`', async () => {
@@ -135,6 +139,36 @@ describe('AuthService', () => {
 					instanceUnderTest._roles = ['TEST'];
 
 					expect(instanceUnderTest.isAuthorizedFor(geoResourceId)).toBeFalse();
+				});
+			});
+		});
+	});
+
+	describe('getAuthResponseInterceptorForGeoResource', () => {
+		describe('and GeoResource is known', () => {
+			it('returns a response interceptor for that GeoResource', async () => {
+				const geoResourceId = 'id';
+				const geoResource = { authRoles: ['TEST'] };
+				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+				const responseInterceptor = () => {};
+				const authResponseInterceptorProvider = jasmine.createSpy().withArgs(['TEST']).and.returnValue(responseInterceptor);
+				const instanceUnderTest = setup(null, authResponseInterceptorProvider);
+
+				const result = instanceUnderTest.getAuthResponseInterceptorForGeoResource(geoResourceId);
+
+				expect(result).toEqual(responseInterceptor);
+			});
+			describe('and GeoResource is unknown', () => {
+				it('returns `false`', async () => {
+					const geoResourceId = 'id';
+					spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(null);
+					const responseInterceptor = () => {};
+					const authResponseInterceptorProvider = jasmine.createSpy().withArgs([]).and.returnValue(responseInterceptor);
+					const instanceUnderTest = setup(null, authResponseInterceptorProvider);
+
+					const result = instanceUnderTest.getAuthResponseInterceptorForGeoResource(geoResourceId);
+
+					expect(result).toEqual(responseInterceptor);
 				});
 			});
 		});
