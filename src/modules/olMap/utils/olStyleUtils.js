@@ -313,7 +313,7 @@ export const markerStyleFunction = (styleOption = DEFAULT_STYLE_OPTION) => {
 	return [
 		new Style({
 			image: new Icon(iconOptions),
-			text: styleOption.text ? getTextStyle(styleOption.text, markerColor, getTextScale(styleOption.scale), 2) : null
+			text: styleOption.text ? getTextStyle(styleOption.text, markerColor, getTextScale(styleOption.scale), 20) : null
 		})
 	];
 };
