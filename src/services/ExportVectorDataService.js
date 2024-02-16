@@ -8,6 +8,7 @@ import { parse } from '../utils/ewkt';
 import { $injector } from '../injection';
 import { LineString, MultiLineString, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
+import { MultiPolygon } from '../../node_modules/ol/geom';
 
 /**
  * Service for exporting vector data
@@ -176,6 +177,13 @@ export class OlExportVectorDataService {
 		return (features) => {
 			const eventuallyToMultiLineString = (feature) => {
 				const geometry = feature.getGeometry();
+				if (geometry instanceof MultiPolygon) {
+					// Naive approach of connecting all outer rings together,
+					// assuming that the multipolygon does not consists of disjoined polygons.
+					// All other cases are not compatible with gpx spec
+					const coordinates = geometry.getPolygons().map((p) => p.getLinearRing(0)?.getCoordinates());
+					return new Feature(coordinates ? new MultiLineString(coordinates) : {});
+				}
 				if (geometry instanceof Polygon) {
 					const coordinates = geometry.getLinearRing(0)?.getCoordinates();
 					return new Feature(coordinates ? new MultiLineString([coordinates]) : {});

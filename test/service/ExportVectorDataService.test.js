@@ -13,6 +13,8 @@ describe('ExportVectorDataService', () => {
 	const EWKT_Point = 'SRID=4326;POINT(10 10)';
 	const EWKT_LineString = 'SRID=4326;LINESTRING(10 10,20 20,30 40)';
 	const EWKT_Polygon = 'SRID=4326;POLYGON((10 10,10 20,20 20,20 15,10 10))';
+	const EWKT_MultiPolygon =
+		'SRID=4326;MULTIPOLYGON (((40 40, 20 45, 45 30, 40 40)),((20 35, 10 30, 10 10, 30 5, 45 20, 20 35),	(30 20, 20 15, 20 25, 30 20)))';
 	const EWKT_GeometryCollection = 'SRID=4326;GEOMETRYCOLLECTION(POLYGON((10 10,10 20,20 20,20 15,10 10)),POLYGON((10 10,10 20,20 20,20 15,10 10)))';
 	const KML_Data =
 		'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document>	<name>Zeichnung</name>	<Placemark id="polygon_1645077612885">	<ExtendedData>		<Data name="type">			<value>polygon</value>		</Data>	</ExtendedData>	<description>	</description>	<Style>		<LineStyle>			<color>ff0000ff</color>			<width>3</width>		</LineStyle>		<PolyStyle>			<color>660000ff</color>		</PolyStyle>	</Style>	<Polygon>		<outerBoundaryIs>			<LinearRing>				<coordinates>					11.248395432833206,48.599861238104666 					11.414296346422136,48.66067918795375 					11.484919041751134,48.55051466922948 					11.30524992459611,48.503527784132004 					11.248395432833206,48.599861238104666				</coordinates>			</LinearRing>		</outerBoundaryIs>	</Polygon></Placemark></Document></kml>';
@@ -33,6 +35,10 @@ describe('ExportVectorDataService', () => {
 		TestUtils.setupStoreAndDi({});
 		$injector.registerSingleton('ProjectionService', projectionServiceMock).registerSingleton('SourceTypeService', sourceTypeServiceMock);
 		return new OlExportVectorDataService();
+	};
+
+	const countTerm = (contentWithTerm, term) => {
+		return contentWithTerm.split(term).length - 1;
 	};
 
 	beforeAll(() => {
@@ -112,7 +118,7 @@ describe('ExportVectorDataService', () => {
 
 		describe('GPX', () => {
 			const FORMAT_GPX_START = '<gpx ';
-
+			const FORMAT_GPX_TRACK_POINT = '<trkpt ';
 			it('requests the gpx format reader', () => {
 				const instance = setup();
 				const formatSpy = spyOn(instance, '_getFormat').and.callThrough();
@@ -146,12 +152,24 @@ describe('ExportVectorDataService', () => {
 					.and.returnValues({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.KML) })
 					.withArgs(EWKT_Polygon)
 					.and.returnValues({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.EWKT) })
+					.withArgs(EWKT_MultiPolygon)
+					.and.returnValues({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.EWKT) })
 					.withArgs(GEOJSON_Data)
 					.and.returnValues({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.GEOJSON) });
 
-				expect(instance.forData(KML_Data, new SourceType(SourceTypeName.GPX)).startsWith(FORMAT_GPX_START)).toBeTrue();
-				expect(instance.forData(EWKT_Polygon, new SourceType(SourceTypeName.GPX)).startsWith(FORMAT_GPX_START)).toBeTrue();
-				expect(instance.forData(GEOJSON_Data, new SourceType(SourceTypeName.GPX)).startsWith(FORMAT_GPX_START)).toBeTrue();
+				const dataFromKml = instance.forData(KML_Data, new SourceType(SourceTypeName.GPX));
+				const fromEwktPolygon = instance.forData(EWKT_Polygon, new SourceType(SourceTypeName.GPX));
+				const fromEwktMultiPolygon = instance.forData(EWKT_MultiPolygon, new SourceType(SourceTypeName.GPX));
+				const fromGeoJson = instance.forData(GEOJSON_Data, new SourceType(SourceTypeName.GPX));
+
+				expect(dataFromKml.startsWith(FORMAT_GPX_START)).toBeTrue();
+				expect(countTerm(dataFromKml, FORMAT_GPX_TRACK_POINT)).toBe(5);
+				expect(fromEwktPolygon.startsWith(FORMAT_GPX_START)).toBeTrue();
+				expect(countTerm(fromEwktPolygon, FORMAT_GPX_TRACK_POINT)).toBe(5);
+				expect(fromEwktMultiPolygon.startsWith(FORMAT_GPX_START)).toBeTrue();
+				expect(countTerm(fromEwktMultiPolygon, FORMAT_GPX_TRACK_POINT)).toBe(10);
+				expect(fromGeoJson.startsWith(FORMAT_GPX_START)).toBeTrue();
+				expect(countTerm(fromGeoJson, FORMAT_GPX_TRACK_POINT)).toBe(10);
 			});
 		});
 
