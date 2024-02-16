@@ -250,8 +250,17 @@ export class GeoResource {
 		return this;
 	}
 
+	/**
+	 * Set the roles for authentication/authorization of this GeoResource
+	 * and updates its authentication type.
+	 * @param {Array<string>} roles Roles of this GeoResource
+	 * @returns `this` for chaining
+	 */
 	setAuthRoles(roles) {
 		this._authRoles = [...roles];
+		if (roles.length > 0) {
+			this.setAuthenticationType(GeoResourceAuthenticationType.APPLICATION);
+		}
 		return this;
 	}
 
@@ -312,8 +321,8 @@ export class GeoResource {
 			.setAttributionProvider(geoResource.attributionProvider)
 			.setQueryable(geoResource.queryable)
 			.setExportable(geoResource.exportable)
-			.setAuthenticationType(geoResource.authenticationType)
-			.setAuthRoles(geoResource.authRoles);
+			.setAuthRoles(geoResource.authRoles)
+			.setAuthenticationType(geoResource.authenticationType);
 	}
 }
 

@@ -182,10 +182,10 @@ describe('GeoResource', () => {
 					.setLabel('some label')
 					.setAttribution('some attribution')
 					.setAttributionProvider(attributionProvider)
-					.setAuthenticationType(GeoResourceAuthenticationType.BAA)
 					.setQueryable(false)
 					.setExportable(false)
-					.setAuthRoles(roles);
+					.setAuthRoles(roles)
+					.setAuthenticationType(GeoResourceAuthenticationType.BAA);
 				const geoResource1 = new GeoResourceNoImpl('id1');
 
 				geoResource1.copyPropertiesFrom(geoResource0);
@@ -203,52 +203,74 @@ describe('GeoResource', () => {
 				expect(geoResource1.authRoles).toEqual(roles);
 				expect(geoResource1.authRoles === roles).toBeFalse(); //must be a shallow copy
 			});
+
+			describe('setAuthRoles', () => {
+				it('updates also the authentication type', () => {
+					const roles = ['TEST'];
+					const geoResource = new GeoResourceNoImpl('id0');
+
+					geoResource.setAuthRoles(roles);
+
+					expect(geoResource.authenticationType).toEqual(GeoResourceAuthenticationType.APPLICATION);
+					expect(geoResource.authRoles).toEqual(roles);
+				});
+
+				it('does NOT update the authentication type when roles are empty', () => {
+					const geoResource = new GeoResourceNoImpl('id0');
+
+					geoResource.setAuthRoles([]);
+
+					expect(geoResource.authenticationType).toBeNull();
+				});
+			});
 		});
 
 		describe('properties', () => {
 			it('provides default properties', () => {
 				setup();
-				const georesource = new GeoResourceNoImpl('id');
+				const geoResource = new GeoResourceNoImpl('id');
 
-				expect(georesource.label).toBeNull();
-				expect(georesource.opacity).toBe(1);
-				expect(georesource.minZoom).toBeNull();
-				expect(georesource.maxZoom).toBeNull();
-				expect(georesource.hidden).toBeFalse();
-				expect(georesource.attribution).toBeNull();
-				expect(georesource.authenticationType).toBeNull();
-				expect(georesource.attributionProvider).toBe(getDefaultAttribution);
-				expect(georesource.queryable).toBeTrue();
-				expect(georesource.exportable).toBeTrue();
-				expect(georesource.authRoles).toEqual([]);
+				expect(geoResource.label).toBeNull();
+				expect(geoResource.opacity).toBe(1);
+				expect(geoResource.minZoom).toBeNull();
+				expect(geoResource.maxZoom).toBeNull();
+				expect(geoResource.hidden).toBeFalse();
+				expect(geoResource.attribution).toBeNull();
+				expect(geoResource.authenticationType).toBeNull();
+				expect(geoResource.attributionProvider).toBe(getDefaultAttribution);
+				expect(geoResource.queryable).toBeTrue();
+				expect(geoResource.exportable).toBeTrue();
+				expect(geoResource.authRoles).toEqual([]);
 			});
 
 			it('provides set methods and getters', () => {
 				setup();
-				const georesource = new GeoResourceNoImpl('id');
+				const roles = ['TEST'];
+				const geoResource = new GeoResourceNoImpl('id');
 
-				georesource
+				geoResource
 					.setOpacity(0.5)
 					.setMinZoom(5)
 					.setMaxZoom(19)
 					.setHidden(true)
 					.setLabel('some label')
 					.setAttribution('some attribution')
-					.setAuthenticationType(GeoResourceAuthenticationType.BAA)
 					.setQueryable(false)
 					.setExportable(false)
-					.setAuthRoles(['TEST']);
+					.setAuthRoles(roles)
+					.setAuthenticationType(GeoResourceAuthenticationType.BAA);
 
-				expect(georesource.hidden).toBeTrue();
-				expect(georesource.opacity).toBe(0.5);
-				expect(georesource.minZoom).toBe(5);
-				expect(georesource.maxZoom).toBe(19);
-				expect(georesource.label).toBe('some label');
-				expect(georesource.attribution).toBe('some attribution');
-				expect(georesource.authenticationType).toEqual(GeoResourceAuthenticationType.BAA);
-				expect(georesource.queryable).toBeFalse();
-				expect(georesource.exportable).toBeFalse();
-				expect(georesource.authRoles).toEqual(['TEST']);
+				expect(geoResource.hidden).toBeTrue();
+				expect(geoResource.opacity).toBe(0.5);
+				expect(geoResource.minZoom).toBe(5);
+				expect(geoResource.maxZoom).toBe(19);
+				expect(geoResource.label).toBe('some label');
+				expect(geoResource.attribution).toBe('some attribution');
+				expect(geoResource.authenticationType).toEqual(GeoResourceAuthenticationType.BAA);
+				expect(geoResource.queryable).toBeFalse();
+				expect(geoResource.exportable).toBeFalse();
+				expect(geoResource.authRoles).toEqual(roles);
+				expect(geoResource.authRoles === roles).toBeFalse(); //must be a shallow copy
 			});
 		});
 	});
