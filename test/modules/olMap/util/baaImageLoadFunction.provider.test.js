@@ -13,6 +13,7 @@ describe('imageLoadFunction.provider', () => {
 		const httpService = {
 			get: async () => {}
 		};
+
 		const responseInterceptor = () => {};
 		const authService = {
 			getAuthResponseInterceptorForGeoResource: () => responseInterceptor
