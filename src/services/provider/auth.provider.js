@@ -40,7 +40,6 @@ const promiseQueue = new PromiseQueue();
  * @function
  * @type {module:services/AuthService~authResponseInterceptorProvider}
  * @param {string[]} roles
- * @returns
  */
 export const bvvAuthResponseInterceptorProvider = (roles = []) => {
 	const bvvAuthResponseInterceptor = async (response, doFetch) => {
