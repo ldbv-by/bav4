@@ -208,6 +208,85 @@ export class ShowCase extends MvuElement {
 			// using the panel as content for the modal
 			openModal(title, getCredentialPanel());
 		};
+
+		const onClickAuthenticateFooter = async () => {
+			closeModal();
+
+			await sleep(1000);
+			const restrictedRole = GeoResourceAuthenticationType.PLUS;
+			const receivedCredential = {};
+
+			// the authenticate-callback provides the implementation of the authentication of credential and url
+			const authenticate = async (credential, authenticationTarget) => {
+				await sleep(3000);
+				if (authenticationTarget === restrictedRole && credential?.username === 'foo' && credential?.password === 'bar') {
+					receivedCredential.username = credential.username;
+					receivedCredential.password = credential.password;
+					return { message: 'Credential is valid' };
+				}
+				return null;
+			};
+
+			const unsubscribe = this.observe(
+				(state) => state.modal,
+				(modal) => resolveBeforeClosing(modal),
+				false
+			);
+
+			// onClose-callback is called with a valid credential or NULL
+			const onClose = (credential, result) => {
+				unsubscribe();
+
+				const succeed = () => {
+					emitNotification(result.message, LevelTypes.INFO);
+					closeModal();
+				};
+
+				const abort = () => {
+					emitNotification('Authentication aborted', LevelTypes.WARN);
+				};
+
+				const resolveAction = credential ? succeed : abort;
+				resolveAction();
+			};
+
+			// in case of aborting the authentification-process by closing the modal,
+			// call the onCloseCallback directly
+			const resolveBeforeClosing = (modal) => {
+				if (!modal.active) {
+					unsubscribe();
+					onClose(null);
+				}
+			};
+
+			const footer = html`<style>
+					${css}
+				</style>
+				<div>
+					Not yet a registered <ba-badge .color=${'var(--text3)'} .background=${'var(--primary-color)'} .label=${'Role'}></ba-badge> customer? You can
+					find more information
+					<b><a href="https://www.ldbv.bayern.de/produkte/dienste/bayernatlas.html">here.</a></b>
+				</div>
+				<div>
+					Forgotten your login details? <b><a href="https://www.ldbv.bayern.de/produkte/dienste/bayernatlas.html">Help</a></b>
+				</div>`;
+
+			// creates a PasswordCredentialPanel-element within a templateResult
+			const getCredentialPanel = () => {
+				return html`<ba-auth-password-credential-panel
+					.authenticate=${authenticate}
+					.footer=${footer}
+					.onClose=${onClose}
+				></ba-auth-password-credential-panel>`;
+			};
+
+			const title = html`Sign in
+				<ba-badge .size=${'1.5'} .color=${'var(--text3)'} .background=${'var(--primary-color)'} .label=${'Role'}></ba-badge>`;
+
+			// using the panel as content for the modal
+			openModal(title, getCredentialPanel());
+		};
+
 		const onToggle = (event) => {
 			// eslint-disable-next-line no-console
 			console.log('toggled ' + event.detail.checked);
@@ -537,6 +616,16 @@ export class ShowCase extends MvuElement {
 
 					<div class="example row">
 						<ba-button id="button0" .label=${'Authenticate by password for Role'} .type=${'primary'} @click=${onClickAuthenticateRole}></ba-button>
+						<div>Hint: Demo Credentials are foo/bar</div>
+					</div>
+
+					<div class="example row">
+						<ba-button
+							id="button0"
+							.label=${'Authenticate by password with custom footer content'}
+							.type=${'primary'}
+							@click=${onClickAuthenticateFooter}
+						></ba-button>
 						<div>Hint: Demo Credentials are foo/bar</div>
 					</div>
 				</div>
