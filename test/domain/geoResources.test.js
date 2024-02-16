@@ -221,7 +221,6 @@ describe('GeoResource', () => {
 				expect(georesource.queryable).toBeTrue();
 				expect(georesource.exportable).toBeTrue();
 				expect(georesource.authRoles).toEqual([]);
-				expect(georesource.restricted).toBeFalse();
 			});
 
 			it('provides set methods and getters', () => {
@@ -250,7 +249,6 @@ describe('GeoResource', () => {
 				expect(georesource.queryable).toBeFalse();
 				expect(georesource.exportable).toBeFalse();
 				expect(georesource.authRoles).toEqual(['TEST']);
-				expect(georesource.restricted).toBeTrue();
 			});
 		});
 	});

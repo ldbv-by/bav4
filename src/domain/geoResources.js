@@ -186,14 +186,6 @@ export class GeoResource {
 		return [...this._authRoles];
 	}
 
-	/**
-	 * `true` if this GeoResource needs authorization to access.
-	 *  @type {boolean}
-	 */
-	get restricted() {
-		return this.authRoles.length > 0;
-	}
-
 	get attributionProvider() {
 		return this._attributionProvider;
 	}
