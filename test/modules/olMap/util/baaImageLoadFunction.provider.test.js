@@ -62,6 +62,24 @@ describe('imageLoadFunction.provider', () => {
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 			});
 
+			it('throws an exception when http status is 401 and emits a notification', async () => {
+				const geoResourceId = 'geoResourceId';
+				const fakeImageWrapper = getFakeImageWrapperInstance();
+				const src = 'http://foo.var?WIDTH=2000&HEIGHT=2000';
+				const credential = { username: 'username', password: 'password' };
+				spyOn(httpService, 'get').and.resolveTo(new Response(null, { status: 401 }));
+				const errorSpy = spyOn(console, 'error');
+				const imageLoadFunction = getBvvBaaImageLoadFunction(geoResourceId, credential);
+
+				await imageLoadFunction(fakeImageWrapper, src);
+
+				expect(errorSpy).toHaveBeenCalledWith('Image could not be fetched', new Error('Unexpected network status 401'));
+				expect(store.getState().notifications.latest.payload.content).toBe(
+					'global_geoResource_not_available [geoResourceId,global_geoResource_unauthorized]'
+				);
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+			});
+
 			it('throws an exception when http status is 403 and emits a notification', async () => {
 				const geoResourceId = 'geoResourceId';
 				const fakeImageWrapper = getFakeImageWrapperInstance();

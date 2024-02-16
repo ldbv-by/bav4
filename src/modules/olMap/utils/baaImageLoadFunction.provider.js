@@ -24,6 +24,12 @@ export const getBvvBaaImageLoadFunction = (geoResourceId, credential = null, max
 		const timeout = 10_000;
 		const handleUnexpectedStatusCode = (response) => {
 			switch (response.status) {
+				case 401:
+					emitNotification(
+						`${translate('global_geoResource_not_available', [geoResourceId, translate('global_geoResource_unauthorized')])}`,
+						LevelTypes.WARN
+					);
+					break;
 				case 403:
 					emitNotification(
 						`${translate('global_geoResource_not_available', [geoResourceId, translate('global_geoResource_forbidden')])}`,
