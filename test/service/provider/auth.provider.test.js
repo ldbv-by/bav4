@@ -137,7 +137,7 @@ describe('bvvAuthResponseInterceptorProvider', () => {
 
 				expect(store.getState().modal.active).toBeTrue();
 				const wrapperElementTitle = TestUtils.renderTemplateResult(store.getState().modal.data.title);
-				expect(wrapperElementTitle.textContent).toContain('global_import_authenticationModal_title');
+				expect(wrapperElementTitle.innerHTML).toContain('global_import_authenticationModal_title&nbsp');
 				expect(wrapperElementTitle.querySelectorAll(Badge.tag)).toHaveSize(2);
 				expect(wrapperElementTitle.querySelectorAll(Badge.tag)[0].label).toBe('FOO');
 				expect(wrapperElementTitle.querySelectorAll(Badge.tag)[0].size).toBe('1.5');

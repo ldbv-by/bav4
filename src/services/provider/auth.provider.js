@@ -99,7 +99,7 @@ export const bvvAuthResponseInterceptorProvider = (roles = []) => {
 						}
 						// let's open the credential panel in that case
 						else {
-							const title = html`${translate('global_import_authenticationModal_title')}
+							const title = html`${translate('global_import_authenticationModal_title')}&nbsp;
 							${roles.map(
 								(role) => html`<ba-badge .size=${'1.5'} .color=${'var(--text3)'} .background=${'var(--primary-color)'} .label=${role}></ba-badge>`
 							)} `;
