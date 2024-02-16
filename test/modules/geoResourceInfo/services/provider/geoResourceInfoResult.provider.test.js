@@ -2,7 +2,6 @@ import { $injector } from '../../../../../src/injection';
 import { loadBvvGeoResourceInfo } from '../../../../../src/modules/geoResourceInfo/services/provider/geoResourceInfoResult.provider';
 import { GeoResourceAuthenticationType, VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../../../src/domain/geoResources';
 import { MediaType } from '../../../../../src/domain/mediaTypes';
-import { bvvAuthResponseInterceptor } from '../../../../../src/services/provider/auth.provider';
 
 describe('GeoResourceInfo provider', () => {
 	const configService = {
@@ -22,11 +21,17 @@ describe('GeoResourceInfo provider', () => {
 		get: () => {}
 	};
 
+	const responseInterceptor = () => {};
+	const authService = {
+		getAuthResponseInterceptorForGeoResource: () => responseInterceptor
+	};
+
 	beforeAll(() => {
 		$injector
 			.registerSingleton('ConfigService', configService)
 			.registerSingleton('HttpService', httpService)
 			.registerSingleton('GeoResourceService', geoResourceService)
+			.registerSingleton('AuthService', authService)
 			.registerSingleton('BaaCredentialService', baaCredentialService);
 	});
 
@@ -60,14 +65,16 @@ describe('GeoResourceInfo provider', () => {
 		const expectedArgs0 = backendUrl + 'georesource/info/external/wms';
 		const expectedPayLoad = '{"url":"http://some.url","layers":["layer"]}';
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+		const authServiceSpy = spyOn(authService, 'getAuthResponseInterceptorForGeoResource').and.returnValue(responseInterceptor);
 		const httpServiceSpy = spyOn(httpService, 'post')
-			.withArgs(expectedArgs0, expectedPayLoad, MediaType.JSON, { timeout: 5000 }, { response: bvvAuthResponseInterceptor })
+			.withArgs(expectedArgs0, expectedPayLoad, MediaType.JSON, { timeout: 5000 }, { response: responseInterceptor })
 			.and.returnValue(Promise.resolve(new Response('<b>hello</b>', { status: 200 })));
 
 		const result = await loadBvvGeoResourceInfo(geoResourceId);
 
 		expect(configServiceSpy).toHaveBeenCalled();
 		expect(httpServiceSpy).toHaveBeenCalled();
+		expect(authServiceSpy).toHaveBeenCalledOnceWith(geoResourceId);
 		expect(result).toBeTruthy();
 		expect(result.content).toBe('<b>hello</b>');
 	});
