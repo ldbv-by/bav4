@@ -185,11 +185,11 @@ export class OlExportVectorDataService {
 					// assuming that the multipolygon does not consists of disjoined polygons.
 					// All other cases are not compatible with gpx spec
 					const coordinates = geometry.getPolygons().map((p) => p.getLinearRing(0)?.getCoordinates());
-					return new Feature(coordinates ? new MultiLineString(coordinates) : {});
+					return new Feature(new MultiLineString(coordinates));
 				}
 				if (geometry instanceof Polygon) {
 					const coordinates = geometry.getLinearRing(0)?.getCoordinates();
-					return new Feature(coordinates ? new MultiLineString([coordinates]) : {});
+					return new Feature(new MultiLineString([coordinates]));
 				}
 				if (geometry instanceof LineString) {
 					const coordinates = geometry.getCoordinates();
