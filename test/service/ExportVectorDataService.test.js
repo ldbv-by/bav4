@@ -3,7 +3,7 @@ import { VectorGeoResource } from '../../src/domain/geoResources';
 import { SourceType, SourceTypeName, SourceTypeResultStatus } from '../../src/domain/sourceType';
 import { OlExportVectorDataService } from '../../src/services/ExportVectorDataService';
 import { TestUtils } from '../test-utils';
-import { Point, LineString, Polygon } from 'ol/geom';
+import { Point, LineString, Polygon, MultiPolygon } from 'ol/geom';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { $injector } from '../../src/injection';
@@ -430,11 +430,18 @@ describe('ExportVectorDataService', () => {
 		it('does NOT writes gpx track segments for empty geometries', () => {
 			const instance = setup();
 			const writer = instance._getGpxWriter();
-			const emptyPolygon = new Polygon([[[]]]);
-			spyOn(emptyPolygon, 'getLinearRing').and.returnValue(undefined);
+			const emptyLineString = new LineString([]);
+			const emptyPolygon = new Polygon([[]]);
+			const emptyMultiPolygon = new MultiPolygon([[[]]]);
 
+			expect(writer([new Feature({ geometry: emptyLineString })])).toBe(
+				'<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="OpenLayers"><trk><trkseg/></trk></gpx>'
+			);
 			expect(writer([new Feature({ geometry: emptyPolygon })])).toBe(
-				'<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="OpenLayers"/>'
+				'<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="OpenLayers"><trk><trkseg/></trk></gpx>'
+			);
+			expect(writer([new Feature({ geometry: emptyMultiPolygon })])).toBe(
+				'<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="OpenLayers"><trk><trkseg/></trk></gpx>'
 			);
 		});
 	});
