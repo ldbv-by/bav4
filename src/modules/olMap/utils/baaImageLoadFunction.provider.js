@@ -2,7 +2,6 @@
  * @module modules/olMap/utils/baaImageLoadFunction_provider
  */
 import { $injector } from '../../../injection';
-import { bvvAuthResponseInterceptor } from '../../../services/provider/auth.provider';
 import { LevelTypes, emitNotification } from '../../../store/notifications/notifications.action';
 
 /**
@@ -16,8 +15,9 @@ export const getBvvBaaImageLoadFunction = (geoResourceId, credential = null, max
 	const {
 		HttpService: httpService,
 		ConfigService: configService,
-		TranslationService: translationService
-	} = $injector.inject('HttpService', 'ConfigService', 'TranslationService');
+		TranslationService: translationService,
+		AuthService: authService
+	} = $injector.inject('HttpService', 'ConfigService', 'TranslationService', 'AuthService');
 	const translate = (key, params = []) => translationService.translate(key, params);
 
 	return async (image, src) => {
@@ -63,7 +63,7 @@ export const getBvvBaaImageLoadFunction = (geoResourceId, credential = null, max
 					{
 						timeout
 					},
-					{ response: bvvAuthResponseInterceptor }
+					{ response: authService.getAuthResponseInterceptorForGeoResource(geoResourceId) }
 				);
 
 				if (response.status !== 200) {

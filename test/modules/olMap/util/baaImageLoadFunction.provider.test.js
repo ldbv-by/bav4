@@ -1,6 +1,5 @@
 import { $injector } from '../../../../src/injection';
 import { getBvvBaaImageLoadFunction } from '../../../../src/modules/olMap/utils/baaImageLoadFunction.provider';
-import { bvvAuthResponseInterceptor } from '../../../../src/services/provider/auth.provider.js';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action.js';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer.js';
 import { TestUtils } from '../../../test-utils.js';
@@ -14,6 +13,10 @@ describe('imageLoadFunction.provider', () => {
 		const httpService = {
 			get: async () => {}
 		};
+		const responseInterceptor = () => {};
+		const authService = {
+			getAuthResponseInterceptorForGeoResource: () => responseInterceptor
+		};
 
 		let store;
 		beforeAll(() => {
@@ -26,6 +29,7 @@ describe('imageLoadFunction.provider', () => {
 			$injector
 				.registerSingleton('ConfigService', configService)
 				.registerSingleton('HttpService', httpService)
+				.registerSingleton('AuthService', authService)
 				.registerSingleton('TranslationService', { translate: (key, params = []) => `${key}${params.length ? ` [${params.join(',')}]` : ''}` });
 		});
 
@@ -194,13 +198,14 @@ describe('imageLoadFunction.provider', () => {
 						'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAApJREFUCNdjYAAAAAIAAeIhvDMAAAAASUVORK5CYII=';
 					const fakeImageWrapper = getFakeImageWrapperInstance();
 					const src = 'http://foo.var?WIDTH=2000&HEIGHT=2000';
+					const authServiceSpy = spyOn(authService, 'getAuthResponseInterceptorForGeoResource').and.returnValue(responseInterceptor);
 					spyOn(httpService, 'get')
 						.withArgs(
 							src,
 							{
 								timeout: 10000
 							},
-							{ response: bvvAuthResponseInterceptor }
+							{ response: responseInterceptor }
 						)
 						.and.resolveTo(new Response(base64ImageData));
 					const imageLoadFunction = getBvvBaaImageLoadFunction(geoResourceId);
@@ -208,6 +213,7 @@ describe('imageLoadFunction.provider', () => {
 					await imageLoadFunction(fakeImageWrapper, src);
 
 					expect(fakeImageWrapper.getImage().src).toMatch('blob:http://');
+					expect(authServiceSpy).toHaveBeenCalledOnceWith(geoResourceId);
 				});
 			});
 
@@ -227,7 +233,7 @@ describe('imageLoadFunction.provider', () => {
 							{
 								timeout: 10000
 							},
-							{ response: bvvAuthResponseInterceptor }
+							{ response: responseInterceptor }
 						)
 						.and.resolveTo(new Response(base64ImageData));
 					const mockTempImage = {};
