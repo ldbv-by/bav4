@@ -2,7 +2,6 @@ import { $injector } from '../../../src/injection';
 import { GeoResourceAuthenticationType, WmsGeoResource } from '../../../src/domain/geoResources';
 import { MediaType } from '../../../src/domain/mediaTypes';
 import { loadBvvFeatureInfo } from '../../../src/services/provider/featureInfo.provider';
-import { bvvAuthResponseInterceptor } from '../../../src/services/provider/auth.provider';
 
 describe('FeatureInfoResult provider', () => {
 	describe('Bvv FeatureInfoResult provider', () => {
@@ -22,11 +21,17 @@ describe('FeatureInfoResult provider', () => {
 			get: () => {}
 		};
 
+		const responseInterceptor = () => {};
+		const authService = {
+			getAuthResponseInterceptorForGeoResource: () => responseInterceptor
+		};
+
 		beforeAll(() => {
 			$injector
 				.registerSingleton('ConfigService', configService)
 				.registerSingleton('HttpService', httpService)
 				.registerSingleton('GeoResourceService', geoResourceService)
+				.registerSingleton('AuthService', authService)
 				.registerSingleton('BaaCredentialService', baaCredentialService);
 		});
 
@@ -48,13 +53,14 @@ describe('FeatureInfoResult provider', () => {
 				resolution: mapResolution
 			});
 			const featureInfoResultPayload = { title: title, content: 'content' };
+			const authServiceSpy = spyOn(authService, 'getAuthResponseInterceptorForGeoResource').and.returnValue(responseInterceptor);
 			const httpServiceSpy = spyOn(httpService, 'post')
 				.withArgs(
 					`${backendUrl}getFeature/${geoResourceId}`,
 					expectedRequestPayload,
 					MediaType.JSON,
 					{ timeout: 10000 },
-					{ response: bvvAuthResponseInterceptor }
+					{ response: responseInterceptor }
 				)
 				.and.resolveTo(new Response(JSON.stringify(featureInfoResultPayload)));
 
@@ -64,6 +70,7 @@ describe('FeatureInfoResult provider', () => {
 			expect(httpServiceSpy).toHaveBeenCalled();
 			expect(featureInfoResult.content).toBe(content);
 			expect(featureInfoResult.title).toBe(title);
+			expect(authServiceSpy).toHaveBeenCalledOnceWith(geoResourceId);
 		});
 
 		it('loads a FeatureInfoResult for an external WmsGeoResource', async () => {

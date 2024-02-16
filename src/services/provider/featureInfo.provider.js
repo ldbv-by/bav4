@@ -6,7 +6,6 @@ import { GeoResourceAuthenticationType } from '../../domain/geoResources';
 import { FeatureInfoResult } from '../FeatureInfoService';
 import { MediaType } from '../../domain/mediaTypes';
 import { isHttpUrl } from '../../utils/checks';
-import { bvvAuthResponseInterceptor } from './auth.provider';
 
 /**
  * Bvv specific implementation of {@link module:services/FeatureInfoService~featureInfoProvider}.
@@ -18,8 +17,9 @@ export const loadBvvFeatureInfo = async (geoResourceId, coordinate3857, mapResol
 		HttpService: httpService,
 		ConfigService: configService,
 		GeoResourceService: geoResourceService,
-		BaaCredentialService: baaCredentialService
-	} = $injector.inject('HttpService', 'ConfigService', 'GeoResourceService', 'BaaCredentialService');
+		BaaCredentialService: baaCredentialService,
+		AuthService: authService
+	} = $injector.inject('HttpService', 'ConfigService', 'GeoResourceService', 'BaaCredentialService', 'AuthService');
 
 	const geoResource = geoResourceService.byId(geoResourceId);
 
@@ -57,7 +57,10 @@ export const loadBvvFeatureInfo = async (geoResourceId, coordinate3857, mapResol
 				timeout: 10000
 			},
 			{
-				response: geoResource.authenticationType === GeoResourceAuthenticationType.BAA || isHttpUrl(geoResourceId) ? null : bvvAuthResponseInterceptor
+				response:
+					geoResource.authenticationType === GeoResourceAuthenticationType.BAA || isHttpUrl(geoResourceId)
+						? null
+						: authService.getAuthResponseInterceptorForGeoResource(geoResourceId)
 			}
 		);
 
