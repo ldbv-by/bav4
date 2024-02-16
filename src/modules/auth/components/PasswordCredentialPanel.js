@@ -10,6 +10,7 @@ import css from './passwordcredentialpanel.css';
 import { BA_FORM_ELEMENT_VISITED_CLASS } from '../../../utils/markup';
 
 const Update_URL = 'update_url';
+const Update_Footer = 'update_footer';
 const Update_Username = 'update_username';
 const Update_Password = 'update_password';
 const Update_Show_Password = 'update_show_password';
@@ -92,6 +93,7 @@ const Update_Authenticating = 'update_authenticating';
  * </pre>
  * @class
  * @property {string} [url] the url, which needs authentication by a password credential
+ * @property {string| templateResult} [footer] the footer, which will be rendered below the username and password fields
  * @property {PasswordCredentialPanel~authenticateCallback} [authenticate] the authenticate callback
  * @property {PasswordCredentialPanel~onCloseCallback} [onClose] the onClose callback
  * @author thiloSchlemmer
@@ -101,6 +103,7 @@ export class PasswordCredentialPanel extends MvuElement {
 		super({
 			url: null,
 			credential: null,
+			footer: null,
 			authenticating: false,
 			showPassword: false
 		});
@@ -123,6 +126,8 @@ export class PasswordCredentialPanel extends MvuElement {
 		switch (type) {
 			case Update_URL:
 				return { ...model, url: data };
+			case Update_Footer:
+				return { ...model, footer: data };
 			case Update_Username:
 				return { ...model, credential: { ...model.credential, username: data } };
 			case Update_Password:
@@ -140,7 +145,7 @@ export class PasswordCredentialPanel extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { portrait, url, credential, showPassword } = model;
+		const { portrait, url, footer, credential, showPassword } = model;
 		const translate = (key) => this._translationService.translate(key);
 		const getOrientationClass = () => {
 			return portrait ? 'is-portrait' : 'is-landscape';
@@ -181,13 +186,17 @@ export class PasswordCredentialPanel extends MvuElement {
 			this.signal(Update_Show_Password, !showPassword);
 		};
 
+		const getCustomContent = () => {
+			return footer ? footer : nothing;
+		};
+
 		return html`
 			<style>
 				${css}
 			</style>
 			<div class="credential_container ${getOrientationClass()}">
 				<div class="credential_form">
-					<div class="credential_header">${getHeaderContent(url)}</div>
+					<div class="credential_header ${url ? 'visible' : ''}">${getHeaderContent(url)}</div>
 					<div class="ba-form-element" title="${translate('auth_passwordCredentialPanel_credential_username')}">
 						<input
 							autofocus
@@ -215,6 +224,7 @@ export class PasswordCredentialPanel extends MvuElement {
 						<i class="eye-slash ${classMap(passwordClasses)}" id="toggle_password" @click=${togglePassword}></i>
 					</div>
 				</div>
+				<div class="credential_custom_content ${footer ? 'visible' : ''}">${getCustomContent()}</div>
 				<div class="credential_footer">${this._getSubmitOrSpinner(model)}</div>
 			</div>
 		`;
@@ -289,6 +299,10 @@ export class PasswordCredentialPanel extends MvuElement {
 
 	get url() {
 		return this.getModel().url;
+	}
+
+	set footer(value) {
+		this.signal(Update_Footer, value);
 	}
 
 	set authenticate(callback) {

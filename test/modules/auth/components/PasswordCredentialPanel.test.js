@@ -39,6 +39,7 @@ describe('PasswordCredentialPanel', () => {
 
 			expect(model).toEqual({
 				url: null,
+				footer: null,
 				credential: null,
 				authenticating: false,
 				showPassword: false
@@ -88,18 +89,36 @@ describe('PasswordCredentialPanel', () => {
 			const element = await setup();
 			element.url = 'foo';
 
+			expect(element.shadowRoot.querySelector('.credential_header').classList.contains('visible')).toBeTrue();
 			expect(element.shadowRoot.querySelector('.title_url').textContent).toBe('auth_passwordCredentialPanel_title');
 			expect(element.shadowRoot.querySelector('.value_url').textContent).toBe('foo');
 			expect(element.shadowRoot.querySelector('.value_url').title).toBe('foo');
 		});
 
-		it('hides optimal but empty url', async () => {
+		it('hides optional but empty url', async () => {
 			const element = await setup();
 
 			expect(element.url).toBeNull();
 
+			expect(element.shadowRoot.querySelector('.credential_header').classList.contains('visible')).toBeFalse();
+			expect(element.shadowRoot.querySelector('.credential_header').textContent).toBe('');
 			expect(element.shadowRoot.querySelector('.title_url')).toBeFalsy();
 			expect(element.shadowRoot.querySelector('.value_url')).toBeFalsy();
+		});
+
+		it('displays the optional footer', async () => {
+			const element = await setup();
+			element.footer = 'foo footer';
+
+			expect(element.shadowRoot.querySelector('.credential_custom_content').classList.contains('visible')).toBeTrue();
+			expect(element.shadowRoot.querySelector('.credential_custom_content').textContent).toBe('foo footer');
+		});
+
+		it('hides optional but empty footer', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('.credential_custom_content').classList.contains('visible')).toBeFalse();
+			expect(element.shadowRoot.querySelector('.credential_custom_content').textContent).toBe('');
 		});
 
 		it('receives entered username and password', async () => {
