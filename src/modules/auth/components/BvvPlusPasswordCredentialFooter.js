@@ -1,8 +1,16 @@
+/**
+ * @module modules/auth/components/BvvPlusPasswordCredentialFooter
+ */
 import { $injector } from '../../../injection/index';
 import { MvuElement } from '../../MvuElement';
 import css from './bvvpluspasswordcredentialfooter.css';
 import { html } from 'lit-html';
 
+/**
+ * BVV specific footer component to provide information for login and registration
+ * @class
+ * @author thiloSchlemmer
+ */
 export class BvvPlusPasswordCredentialFooter extends MvuElement {
 	constructor() {
 		super();
