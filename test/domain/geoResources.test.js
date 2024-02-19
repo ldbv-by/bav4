@@ -54,7 +54,7 @@ describe('GeoResource', () => {
 			expect(Object.entries(GeoResourceAuthenticationType).length).toBe(2);
 			expect(Object.isFrozen(GeoResourceAuthenticationType)).toBeTrue();
 			expect(GeoResourceAuthenticationType.BAA).toBe('baa');
-			expect(GeoResourceAuthenticationType.BAA).toBe('baa');
+			expect(GeoResourceAuthenticationType.APPLICATION).toBe('application');
 		});
 	});
 
