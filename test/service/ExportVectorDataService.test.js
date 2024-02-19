@@ -167,7 +167,7 @@ describe('ExportVectorDataService', () => {
 				expect(fromEwktPolygon.startsWith(FORMAT_GPX_START)).toBeTrue();
 				expect(countTerm(fromEwktPolygon, FORMAT_GPX_TRACK_POINT)).toBe(5);
 				expect(fromEwktMultiPolygon.startsWith(FORMAT_GPX_START)).toBeTrue();
-				expect(countTerm(fromEwktMultiPolygon, FORMAT_GPX_TRACK_POINT)).toBe(10);
+				expect(countTerm(fromEwktMultiPolygon, FORMAT_GPX_TRACK_POINT)).toBe(12);
 				expect(fromGeoJson.startsWith(FORMAT_GPX_START)).toBeTrue();
 				expect(countTerm(fromGeoJson, FORMAT_GPX_TRACK_POINT)).toBe(10);
 			});
@@ -412,6 +412,23 @@ describe('ExportVectorDataService', () => {
 			]
 		]);
 
+		const multiPolygon = new Polygon([
+			[
+				[10, 10],
+				[10, 20],
+				[20, 20],
+				[20, 15],
+				[10, 10]
+			],
+			[
+				[30, 30],
+				[40, 50],
+				[50, 50],
+				[50, 45],
+				[30, 30]
+			]
+		]);
+
 		it('writes GPX tracks', () => {
 			const instance = setup();
 			const writer = instance._getGpxWriter();
@@ -424,6 +441,9 @@ describe('ExportVectorDataService', () => {
 			);
 			expect(writer([new Feature({ geometry: polygon })])).toBe(
 				'<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="OpenLayers"><trk><trkseg><trkpt lat="10" lon="10"/><trkpt lat="20" lon="10"/><trkpt lat="20" lon="20"/><trkpt lat="15" lon="20"/><trkpt lat="10" lon="10"/></trkseg></trk></gpx>'
+			);
+			expect(writer([new Feature({ geometry: multiPolygon })])).toBe(
+				'<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="OpenLayers"><trk><trkseg><trkpt lat="10" lon="10"/><trkpt lat="20" lon="10"/><trkpt lat="20" lon="20"/><trkpt lat="15" lon="20"/><trkpt lat="10" lon="10"/></trkseg><trkseg><trkpt lat="30" lon="30"/><trkpt lat="50" lon="40"/><trkpt lat="50" lon="50"/><trkpt lat="45" lon="50"/><trkpt lat="30" lon="30"/></trkseg></trk></gpx>'
 			);
 		});
 
