@@ -54,10 +54,6 @@ export class ElevationProfileChip extends AbstractAssistChip {
 		openProfile(profileCoordinates);
 	}
 
-	onDisconnect() {
-		this._unsubscribeFromStore();
-	}
-
 	static get tag() {
 		return 'ba-profile-chip';
 	}

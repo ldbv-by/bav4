@@ -99,6 +99,11 @@ describe('OlRoutingHandler', () => {
 		byId() {},
 		addOrReplace() {}
 	};
+	const iconServiceMock = {
+		getIconResult: (idOrBase64) => {
+			return { id: idOrBase64, base64: 'data:image/svg+xml;base64,foo' };
+		}
+	};
 
 	const setup = (state = {}) => {
 		const initialState = {
@@ -123,7 +128,9 @@ describe('OlRoutingHandler', () => {
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('ElevationService', elevationServiceMock)
 			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('GeoResourceService', geoResourceServiceMock);
+			.registerSingleton('GeoResourceService', geoResourceServiceMock)
+			// implicitly required by getRoutingStyleFunction()
+			.registerSingleton('IconService', iconServiceMock);
 
 		return store;
 	};

@@ -58,14 +58,10 @@ export class ProposalContextContent extends MvuElement {
 	}
 
 	onInitialize() {
-		this._unsubscribeFromStore = this.observe(
+		this.observe(
 			(state) => state.routing.proposal,
 			(proposal) => this.signal(Update_Proposal, proposal)
 		);
-	}
-
-	onDisconnect() {
-		this._unsubscribeFromStore();
 	}
 
 	update(type, data, model) {

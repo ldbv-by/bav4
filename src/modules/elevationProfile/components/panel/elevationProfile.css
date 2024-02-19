@@ -1,70 +1,61 @@
-.profile.is-portrait {
-	height: 20em;
-}
-.profile.is-landscape {
+.profile {
+	display: grid;
+	grid-template-columns: minmax(10em, 1fr) 14em;
+	grid-column-gap: 1em;
+	overscroll-behavior-inline: contain;
+	padding-inline: 0.6em;
+	scroll-padding-inline: 0.6em;
+	padding-block: calc(0.3em / 2);
+	scroll-snap-type: inline mandatory;
 	height: 15em;
 }
-.is-portrait .chart-container {
-	position: relative;
+.is-portrait.profile {
+	grid-template-columns: 100% 100%;
+	overflow-x: auto;
+	height: 16em;
+}
+.chart-container {
 	height: 14em;
 	width: 100%;
-	display: inline-block;
+	scroll-snap-align: start;
+	overflow: hidden;
 }
-.is-landscape .chart-container {
-	position: relative;
-	height: 14em;
-	width: 89%;
-	display: inline-block;
-}
-.is-portrait .profile__data {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	width: 100%;
-	position: relative;
+.profile__data {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	grid-template-rows: repeat(3, 1fr);
+	grid-column-gap: 0.5em;
+	scroll-snap-align: start;
+	overflow: hidden;
 }
 .is-landscape .profile__data {
-	align-items: center;
-	justify-content: space-between;
-	display: inline-block;
-	width: 11%;
-	position: relative;
-	float: right;
+	margin: 2.3em 0em 1em;
 }
 .profile__options {
 	width: 7em;
 	display: block;
 }
-.profile__box:first-child {
-	border-left: 0;
-}
-.is-portrait .profile__box {
-	height: 4em;
+.profile__box {
 	display: flex;
 	flex-direction: column;
-	border-left: 1px dotted var(--header-background-color);
-	width: 100%;
 }
-.is-landscape .profile__box {
-	height: 4em;
+.is-portrai .profile__box {
+	padding-left: 1em;
+}
+.profile__header {
+	font-size: 0.8rem;
+	min-height: 1.7em;
+}
+.profile__content {
 	display: flex;
-	flex-direction: column;
-	border-left: 1px dotted var(--header-background-color);
-	width: 50%;
-	float: left;
 }
-.profile__text {
-	font-weight: bold;
-	text-align: center;
-	margin: 0;
-	font-size: 0.9rem;
+.is-landscape .profile__text {
+	font-size: 1.1rem;
 	color: var(--text1);
 }
-.is-tablet .profile__text {
-	font-size: 0.8rem;
-}
-.is-portrait.is-tablet .profile__text {
-	font-size: 1rem;
+.is-portrait .profile__text {
+	font-size: 1.5rem;
+	color: var(--text1);
 }
 .highest {
 	mask: url('assets/chevron-up.svg');
@@ -90,20 +81,19 @@
 	mask: url('assets/arrow-left-right.svg');
 	-webkit-mask: url('assets/arrow-left-right.svg');
 }
-.profile__icon {
-	height: 2em;
-	min-width: 2em;
-	background: var(--primary-color);
-	display: block;
-	margin: auto;
+.is-landscape .profile__icon {
+	background: var(--text4);
+	height: 1.2em;
+	width: 1.2em;
 	mask-size: cover;
 	-webkit-mask-size: cover;
+	margin-right: 0.2em;
 }
-.is-tablet .profile__icon {
-	height: 1.5em;
-	min-width: 1.5em;
-}
-.is-portrait.is-tablet .profile__icon {
-	height: 2em;
-	min-width: 2em;
+.is-portrait .profile__icon {
+	background: var(--text4);
+	height: 1.6em;
+	width: 1.6em;
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	margin-right: 0.2em;
 }

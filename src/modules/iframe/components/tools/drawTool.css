@@ -125,6 +125,11 @@
 	-webkit-mask-image: url('assets/line.svg');
 }
 
+.polygon {
+	mask-image: url('assets/polygon.svg');
+	-webkit-mask-image: url('assets/polygon.svg');
+}
+
 .symbol {
 	mask-image: url('assets/symbol.svg');
 	-webkit-mask-image: url('assets/symbol.svg');

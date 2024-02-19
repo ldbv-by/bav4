@@ -11,8 +11,15 @@
 	flex: 1;
 	position: relative;
 }
+.is-landscape .map-feedback__iframe {
+	height: 700px;
+	width: 900px;
+}
 .map-feedback__iframe iframe {
 	border: 0;
+}
+.is-landscape .map-feedback__iframe iframe.attention {
+	position: fixed;
 }
 .map-feedback__iframe.userVisited iframe {
 	border-bottom: 5px solid var(--error-color);
@@ -67,7 +74,13 @@
 	display: inline-block;
 	font-weight: bold;
 	color: var(--primary-color);
-	cursor: default;
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	opacity: 0.8;
+}
+.map-feedback__highlight:hover {
+	opacity: 1;
 }
 .ba-list-item__main-text {
 	font-size: 1.7rem;

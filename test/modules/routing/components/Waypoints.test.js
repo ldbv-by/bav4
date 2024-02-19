@@ -663,14 +663,4 @@ describe('Waypoints', () => {
 			});
 		});
 	});
-
-	describe('when disconnected', () => {
-		it('removes all observers', async () => {
-			const element = await setup();
-
-			element.onDisconnect(); // we call onDisconnect manually
-
-			expect(element._storeSubscriptions).toHaveSize(0);
-		});
-	});
 });

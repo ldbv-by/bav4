@@ -17,13 +17,12 @@ const Update_IsPortrait_Value = 'update_isportrait_value';
 /**
  * Component to select a Icon from a List of available Icons
  *
- * Events:
- * - onSelect()
+ * @property {module:services/IconService~IconResult} value the selected icon
+ * @property {string} title='' - The title of the button
+ * @property {Array<number>} color the color as rgb color array
+ * @property {function(module:services/IconService~IconResult)} onSelect The select callback function when the select state of the element is changed.
+ * @fires onSelect The select event fires when the select state of the element is changed
  *
- * Properties:
- * - `value`
- * - `title`
- * - `color`
  * @class
  * @author thiloSchlemmer
  * @author alsturm
@@ -41,7 +40,8 @@ export class IconSelect extends MvuElement {
 		const { IconService: iconService, TranslationService: translationService } = $injector.inject('IconService', 'TranslationService');
 		this._iconService = iconService;
 		this._translationService = translationService;
-		this._onSelect = () => {};
+		// eslint-disable-next-line no-unused-vars
+		this._onSelect = (selectedIconResult) => {};
 	}
 
 	onInitialize() {
@@ -53,8 +53,14 @@ export class IconSelect extends MvuElement {
 
 	async _loadIcons() {
 		const icons = await this._iconService.all();
+		// We use the icon as mask and want to colorize the whole symbol with the selected color.
+		// The icons list can contain multicolored and multilayered icons,
+		// so we have to filter the monochrome icons.
 		if (icons.length) {
-			this.signal(Update_Icons, icons);
+			this.signal(
+				Update_Icons,
+				icons.filter((icon) => icon.isMonochrome)
+			);
 		}
 	}
 
@@ -75,10 +81,6 @@ export class IconSelect extends MvuElement {
 		}
 	}
 
-	/**
-	 *
-	 * @override
-	 */
 	createView(model) {
 		const { portrait } = model;
 		const translate = (key) => this._translationService.translate(key);
@@ -161,9 +163,6 @@ export class IconSelect extends MvuElement {
 		return 'ba-iconselect';
 	}
 
-	/**
-	 * @property {string} title='' - The title of the button
-	 */
 	set title(value) {
 		this.signal(Update_Title, value);
 	}

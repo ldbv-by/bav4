@@ -165,6 +165,15 @@ export class DrawTool extends MvuElement {
 				icon: 'line',
 				activate: () => setType('line'),
 				deactivate: () => reset()
+			},
+			{
+				id: 3,
+				name: 'polygon',
+				active: false,
+				title: translate('iframe_drawTool_polygon'),
+				icon: 'polygon',
+				activate: () => setType('polygon'),
+				deactivate: () => reset()
 			}
 		];
 	}

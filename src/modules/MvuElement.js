@@ -52,6 +52,8 @@ import css from './baElement.css';
  * @author taulinger
  */
 export class MvuElement extends HTMLElement {
+	#observers = [];
+	#storeObservers = [];
 	/**
 	 *
 	 * @param {object} model initial Model of this component
@@ -80,8 +82,6 @@ export class MvuElement extends HTMLElement {
 		this._model = { ...model };
 
 		this._rendered = false;
-
-		this._observers = [];
 	}
 
 	/**
@@ -96,7 +96,7 @@ export class MvuElement extends HTMLElement {
 		const newModel = this.update(type, data, this.getModel());
 		if (newModel && !equals(newModel, this._model)) {
 			this._model = newModel;
-			this._observers.forEach((o) => o());
+			this.#observers.forEach((o) => o());
 			this._logLifeCycle(`📌 ${this.constructor.name}#onModelChanged`, this.getModel());
 			this.onModelChanged(this.getModel());
 		}
@@ -147,6 +147,12 @@ export class MvuElement extends HTMLElement {
 	 */
 	disconnectedCallback() {
 		this._logLifeCycle(`📌 ${this.constructor.name}#onDisconnect`);
+
+		// unsubscribe all store observer
+		while (this.#storeObservers.length > 0) {
+			this.#storeObservers.shift()();
+		}
+
 		this.onDisconnect();
 	}
 
@@ -310,15 +316,18 @@ export class MvuElement extends HTMLElement {
 
 	/**
 	 * Registers an observer on state changes of the global store.
+	 * The observer is automatically unsubscribed when the element is disconnected from the DOM but can be unsubscribed manually at an earlier point in time when needed.
 	 * @param {module:modules/MvuElement~extractStateFn} extract A function that extract a portion (single value or a object) from the current state which will be observed for comparison
 	 * @param {module:modules/MvuElement~onObservedStateChange} onChange A function that will be called when the observed state has changed
-	 * @param {boolean|true} immediately A boolean that indicates, if the callback should be called immediately after the observer has been registered
+	 * @param {boolean|true} immediately A boolean that indicates, if the callback should be called immediately after the observer has been registered. Default is `true`
 	 * @returns  A function that unsubscribes the observer
 	 * @see observe
 	 */
 	observe(extract, onChange, immediately = true) {
 		//calls observe from storeUtils.js
-		return observe(this._storeService.getStore(), extract, onChange, !immediately);
+		const unsubscribeFn = observe(this._storeService.getStore(), extract, onChange, !immediately);
+		this.#storeObservers.push(unsubscribeFn);
+		return unsubscribeFn;
 	}
 
 	/**
@@ -355,7 +364,7 @@ export class MvuElement extends HTMLElement {
 			.map((key) => {
 				if (this._model[key] !== undefined) {
 					const observerFn = createObserver(key, onChange);
-					this._observers.push(observerFn);
+					this.#observers.push(observerFn);
 
 					if (immediately) {
 						onChange(this._model[key]);
@@ -369,7 +378,7 @@ export class MvuElement extends HTMLElement {
 
 		return () => {
 			createdObservers.forEach((o) => {
-				this._observers.splice(this._observers.indexOf(o), 1);
+				this.#observers.splice(this.#observers.indexOf(o), 1);
 			});
 		};
 	}

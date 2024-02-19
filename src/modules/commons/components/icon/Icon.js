@@ -112,13 +112,13 @@ export class Icon extends MvuElement {
 		}`;
 		const anchorClassFocus =
 			color_hover !== color
-				? `.anchor:focus .icon{
+				? `.anchor:focus-visible  .icon{
 			transform: scale(1.1);
 			background: ${color_hover};
 		}
-		.anchor:focus {
-			  background: ${color};
-			  box-shadow: 0 0 0 .2em var(--primary-color-lighter);
+		.anchor:focus-visible {
+			background: ${color};			
+			box-shadow: 0 0 0 .2em var(--primary-color-lighter);
 		}
 		`
 				: '';

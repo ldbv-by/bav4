@@ -10,7 +10,7 @@ window.customElements.define(IconSelect.tag, IconSelect);
 describe('IconSelect', () => {
 	const iconServiceMock = { default: () => new IconResult('marker', 'foo'), all: () => [] };
 
-	const setup = (state = {}, attributes = {}) => {
+	const setup = (state = {}, attributes = {}, properties = {}) => {
 		const initialState = {
 			media: {
 				portrait: false
@@ -22,7 +22,7 @@ describe('IconSelect', () => {
 			media: createNoInitialStateMediaReducer()
 		});
 		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('IconService', iconServiceMock);
-		return TestUtils.render(IconSelect.tag, {}, attributes);
+		return TestUtils.render(IconSelect.tag, properties, attributes);
 	};
 
 	describe('when initialized', () => {
@@ -124,7 +124,7 @@ describe('IconSelect', () => {
 		});
 	});
 
-	describe("when property'icons' changes", () => {
+	describe("when property 'icons' changes", () => {
 		it('updates the view', async () => {
 			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'), new IconResult('bar', '42')]));
 			const state = {
@@ -136,6 +136,21 @@ describe('IconSelect', () => {
 
 			await TestUtils.timeout();
 			expect(element.icons.length).toBe(2);
+		});
+
+		it('uses only monochrome icons from iconService', async () => {
+			spyOn(iconServiceMock, 'all').and.returnValue(
+				Promise.resolve([new IconResult('multiColor_foo', '42', null, null, false), new IconResult('bar', '42')])
+			);
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+			const element = await setup(state, {});
+
+			await TestUtils.timeout();
+			expect(element.icons.length).toBe(1);
 		});
 	});
 
@@ -198,6 +213,20 @@ describe('IconSelect', () => {
 			selectableIcon.click();
 
 			expect(selectSpy).toHaveBeenCalledWith(jasmine.any(IconResult));
+		});
+
+		it('sets a preselected icon', async () => {
+			const preselectedIconResult = new IconResult('foo', '42');
+			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([preselectedIconResult, new IconResult('bar', '42')]));
+
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+			const element = await setup(state, {}, { value: preselectedIconResult });
+
+			expect(element.value).toBe(preselectedIconResult);
 		});
 
 		it('calls the onSelect callback via attribute callback', async () => {

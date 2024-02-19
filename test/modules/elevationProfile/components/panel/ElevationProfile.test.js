@@ -394,22 +394,22 @@ describe('ElevationProfile', () => {
 			const profile__box = element.shadowRoot.querySelectorAll('.profile__box');
 			const attrs = element.shadowRoot.getElementById('attrs');
 			expect(attrs.value).toBe('alt');
-			expect(profile__box[0].title).toBe('elevationProfile_sumUp');
+			expect(profile__box[0].querySelector('.profile__header').innerText).toBe('elevationProfile_sumUp');
 			const sumUpElement = element.shadowRoot.getElementById('route-elevation-chart-footer-sumUp');
 			expect(sumUpElement.innerText).toBe(sumUpAfterToLocaleStringEn);
-			expect(profile__box[1].title).toBe('elevationProfile_sumDown');
+			expect(profile__box[1].querySelector('.profile__header').innerText).toBe('elevationProfile_sumDown');
 			const sumDownElement = element.shadowRoot.getElementById('route-elevation-chart-footer-sumDown');
 			expect(sumDownElement.innerText).toBe(sumDownAfterToLocaleStringEn);
-			expect(profile__box[2].title).toBe('elevationProfile_highestPoint');
+			expect(profile__box[2].querySelector('.profile__header').innerText).toBe('elevationProfile_highestPoint');
 			const verticalHeightElement = element.shadowRoot.getElementById('route-elevation-chart-footer-verticalHeight');
 			expect(verticalHeightElement.innerText).toBe(verticalHeight + ' m');
-			expect(profile__box[3].title).toBe('elevationProfile_lowestPoint');
+			expect(profile__box[3].querySelector('.profile__header').innerText).toBe('elevationProfile_lowestPoint');
 			const highestPointElement = element.shadowRoot.getElementById('route-elevation-chart-footer-highestPoint');
 			expect(highestPointElement.innerText).toBe(highestPoint + ' m');
-			expect(profile__box[4].title).toBe('elevationProfile_verticalHeight');
+			expect(profile__box[4].querySelector('.profile__header').innerText).toBe('elevationProfile_verticalHeight');
 			const lowestPointElement = element.shadowRoot.getElementById('route-elevation-chart-footer-lowestPoint');
 			expect(lowestPointElement.innerText).toBe(lowestPoint + ' m');
-			expect(profile__box[5].title).toBe('elevationProfile_linearDistance');
+			expect(profile__box[5].querySelector('.profile__header').innerText).toBe('elevationProfile_linearDistance');
 			const linearDistanceElement = element.shadowRoot.getElementById('route-elevation-chart-footer-linearDistance');
 			expect(linearDistanceElement.innerText).toBe(linearDistanceAfterUnitsServiceEn);
 		});
@@ -1299,26 +1299,6 @@ describe('ElevationProfile', () => {
 	});
 
 	describe('when disconnected', () => {
-		it('removes all observers', async () => {
-			// arrange
-			const coordinates = [
-				[0, 1],
-				[2, 3]
-			];
-			const element = await setup({
-				elevationProfile: {
-					active: true,
-					coordinates: coordinates
-				}
-			});
-
-			//act
-			element.onDisconnect(); // we have to call onDisconnect manually
-
-			// assert
-			expect(element._unsubscribers).toHaveSize(0);
-		});
-
 		it('removes an existing highlight feature', async () => {
 			// arrange
 			const coordinates = fromLonLat([11, 48]);
