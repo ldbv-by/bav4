@@ -185,7 +185,7 @@ export class OlExportVectorDataService {
 					return new Feature(new MultiLineString(coordinates));
 				}
 				if (geometry instanceof Polygon) {
-					const coordinates = geometry.getLinearRings((r) => r.getCoordinates());
+					const coordinates = geometry.getLinearRings().map((r) => r.getCoordinates());
 					return new Feature(new MultiLineString(coordinates));
 				}
 				if (geometry instanceof LineString) {
