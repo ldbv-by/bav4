@@ -1541,7 +1541,7 @@ describe('OlDrawHandler', () => {
 				snap: null,
 				coordinate: [20, 0],
 				pointCount: 1,
-				geometryType: 'Point',
+				geometryType: 'LineString',
 				dragging: jasmine.any(Boolean)
 			});
 		});
