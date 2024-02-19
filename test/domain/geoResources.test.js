@@ -123,6 +123,19 @@ describe('GeoResource', () => {
 				expect(result).toEqual([minimalAttribution]);
 			});
 
+			it('returns an attribution for the default zoomLevel provided by the provider', () => {
+				const minimalAttribution = getMinimalAttribution();
+				const spy = jasmine.createSpy().and.returnValue(minimalAttribution);
+				const grs = new GeoResourceImpl('id');
+				grs.setAttribution('foo');
+				grs.setAttributionProvider(spy);
+
+				const result = grs.getAttribution();
+
+				expect(spy).toHaveBeenCalledWith(grs, 0);
+				expect(result).toEqual([minimalAttribution]);
+			});
+
 			it('returns an attribution when provider returns an array', () => {
 				const minimalAttribution = getMinimalAttribution();
 				const spy = jasmine.createSpy().and.returnValue([minimalAttribution]);
