@@ -105,8 +105,6 @@ export class ElevationProfile extends MvuElement {
 		this._bottom = 0;
 		this._noAnimationValue = false;
 
-		this._unsubscribers = [];
-
 		this._initSurfaceTypes();
 	}
 
@@ -116,11 +114,10 @@ export class ElevationProfile extends MvuElement {
 	onInitialize() {
 		this.style.width = '100%';
 
-		this._unsubscribers = [
-			this.observe(
-				(state) => state.media.darkSchema,
-				(darkSchema) => this.signal(Update_Schema, darkSchema)
-			),
+		this.observe(
+			(state) => state.media.darkSchema,
+			(darkSchema) => this.signal(Update_Schema, darkSchema)
+		),
 			this.observe(
 				(state) => state.elevationProfile.coordinates,
 				(coordinates) => this._getElevationProfile(coordinates)
@@ -129,8 +126,7 @@ export class ElevationProfile extends MvuElement {
 				(state) => state.media,
 				(data) => this.signal(Update_Media, data),
 				true
-			)
-		];
+			);
 	}
 
 	/**
@@ -169,9 +165,6 @@ export class ElevationProfile extends MvuElement {
 	onDisconnect() {
 		this._destroyChart();
 		removeHighlightFeaturesById(ElevationProfile.HIGHLIGHT_FEATURE_ID);
-		while (this._unsubscribers.length > 0) {
-			this._unsubscribers.shift()();
-		}
 	}
 
 	/**
@@ -210,42 +203,60 @@ export class ElevationProfile extends MvuElement {
 				${css}
 			</style>
 			<div class="profile ${getOrientationClass()} ${getMinWidthClass()}">
-				<span class="profile__options">
-					<select id="attrs" @change=${onChange}>
-						${attrs.map(
-							(attr) => html`
-								<option value="${attr.id}" ?selected=${model.selectedAttribute === attr.id}>${translate('elevationProfile_' + attr.id)}</option>
-							`
-						)}
-					</select>
-				</span>
-				<div class="chart-container" style="">
+				<div class="chart-container">
+					<span class="profile__options">
+						<select id="attrs" @change=${onChange}>
+							${attrs.map(
+								(attr) => html`
+									<option value="${attr.id}" ?selected=${model.selectedAttribute === attr.id}>${translate('elevationProfile_' + attr.id)}</option>
+								`
+							)}
+						</select>
+					</span>
 					<canvas class="elevationprofile" id="route-elevation-chart"></canvas>
 				</div>
 				<div class="profile__data" id="route-elevation-chart-footer">
-					<div class="profile__box" title="${translate('elevationProfile_sumUp')}">
-						<div class="profile__icon up"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-sumUp">${this._getFooterText(sumUp)}</div>
+					<div class="profile__box">
+						<div class="profile__header">${translate('elevationProfile_sumUp')}</div>
+						<div class="profile__content">
+							<div class="profile__icon up"></div>
+							<div class="profile__text" id="route-elevation-chart-footer-sumUp">${this._getFooterText(sumUp)}</div>
+						</div>
 					</div>
-					<div class="profile__box" title="${translate('elevationProfile_sumDown')}">
-						<div class="profile__icon down"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-sumDown">${this._getFooterText(sumDown)}</div>
+					<div class="profile__box">
+						<div class="profile__header">${translate('elevationProfile_sumDown')}</div>
+						<div class="profile__content">
+							<div class="profile__icon down"></div>
+							<div class="profile__text" id="route-elevation-chart-footer-sumDown">${this._getFooterText(sumDown)}</div>
+						</div>
 					</div>
-					<div class="profile__box" title="${translate('elevationProfile_highestPoint')}">
-						<div class="profile__icon highest"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-highestPoint">${this._getFooterText(highestPoint)}</div>
+					<div class="profile__box">
+						<div class="profile__header">${translate('elevationProfile_highestPoint')}</div>
+						<div class="profile__content">
+							<div class="profile__icon highest"></div>
+							<div class="profile__text" id="route-elevation-chart-footer-highestPoint">${this._getFooterText(highestPoint)}</div>
+						</div>
 					</div>
-					<div class="profile__box" title="${translate('elevationProfile_lowestPoint')}">
-						<div class="profile__icon lowest"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-lowestPoint">${this._getFooterText(lowestPoint)}</div>
+					<div class="profile__box">
+						<div class="profile__header">${translate('elevationProfile_lowestPoint')}</div>
+						<div class="profile__content">
+							<div class="profile__icon lowest"></div>
+							<div class="profile__text" id="route-elevation-chart-footer-lowestPoint">${this._getFooterText(lowestPoint)}</div>
+						</div>
 					</div>
-					<div class="profile__box" title="${translate('elevationProfile_verticalHeight')}">
-						<div class="profile__icon height"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-verticalHeight">${toLocaleString(verticalHeight)} m</div>
+					<div class="profile__box">
+						<div class="profile__header">${translate('elevationProfile_verticalHeight')}</div>
+						<div class="profile__content">
+							<div class="profile__icon height"></div>
+							<div class="profile__text" id="route-elevation-chart-footer-verticalHeight">${toLocaleString(verticalHeight)} m</div>
+						</div>
 					</div>
-					<div class="profile__box" title="${translate('elevationProfile_linearDistance')}">
-						<div class="profile__icon distance"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-linearDistance">${this._unitsService.formatDistance(linearDistance)}</div>
+					<div class="profile__box">
+						<div class="profile__header">${translate('elevationProfile_linearDistance')}</div>
+						<div class="profile__content">
+							<div class="profile__icon distance"></div>
+							<div class="profile__text" id="route-elevation-chart-footer-linearDistance">${this._unitsService.formatDistance(linearDistance)}</div>
+						</div>
 					</div>
 				</div>
 			</div>

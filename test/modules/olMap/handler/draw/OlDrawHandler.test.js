@@ -1541,6 +1541,7 @@ describe('OlDrawHandler', () => {
 				snap: null,
 				coordinate: [20, 0],
 				pointCount: 1,
+				geometryType: 'Point',
 				dragging: jasmine.any(Boolean)
 			});
 		});
@@ -1588,6 +1589,7 @@ describe('OlDrawHandler', () => {
 				snap: InteractionSnapType.FIRSTPOINT,
 				coordinate: [0, 0],
 				pointCount: 5,
+				geometryType: 'LineString',
 				dragging: jasmine.any(Boolean)
 			});
 		});
@@ -1634,6 +1636,7 @@ describe('OlDrawHandler', () => {
 				snap: InteractionSnapType.LASTPOINT,
 				coordinate: [0, 500],
 				pointCount: 6,
+				geometryType: 'LineString',
 				dragging: jasmine.any(Boolean)
 			});
 		});
@@ -2012,6 +2015,31 @@ describe('OlDrawHandler', () => {
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
 		});
 
+		it('prevents multiselect, when style of selected features changes frequently', () => {
+			const feature = new Feature({ geometry: new Point([0, 0]) });
+			feature.setId('draw_marker_1');
+			setup({ ...initialState });
+
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap(null, 1);
+
+			classUnderTest.activate(map);
+			setStyle({ symbolSrc: 'something' });
+			setType('marker');
+
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+			classUnderTest._select.getFeatures().push(feature);
+			classUnderTest._drawState.type = InteractionStateType.MODIFY;
+			const selectionSpy = spyOn(classUnderTest, '_setSelected').withArgs(feature).and.callThrough();
+
+			setStyle({ symbolSrc: 'something', text: 'a' });
+			setStyle({ symbolSrc: 'something', text: 'aa' });
+			setStyle({ symbolSrc: 'something', text: 'aaa' });
+
+			expect(selectionSpy).toHaveBeenCalledTimes(6);
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
+		});
+
 		it('updates the drawState, while pointerclick drawing', () => {
 			setup();
 			const feature = new Feature({
@@ -2064,6 +2092,25 @@ describe('OlDrawHandler', () => {
 			classUnderTest._setDrawState(newDrawState);
 
 			expect(drawStateSpy).toHaveBeenCalledTimes(1);
+		});
+	});
+
+	describe('_updateStyle', () => {
+		it('prevents style update, when selected feature is missing', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const styleFunctionSpy = spyOn(classUnderTest, '_getStyleFunctionFrom').withArgs(null).and.callThrough();
+			const updateSpy = spyOn(classUnderTest, '_updateStyle').and.callThrough();
+			const map = setupMap();
+
+			classUnderTest.activate(map);
+
+			classUnderTest._drawState.type = InteractionStateType.MODIFY;
+
+			setStyle({ symbolSrc: 'something' });
+
+			expect(updateSpy).toHaveBeenCalled();
+			expect(styleFunctionSpy).not.toHaveBeenCalled();
 		});
 	});
 });

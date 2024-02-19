@@ -13,13 +13,21 @@ import { Projection } from 'ol/proj';
 import ImageWMS from 'ol/source/ImageWMS.js';
 
 /**
+ * A function that returns a `ol.image.LoadFunction` for loading restricted images via basic access authentication
+ * @typedef {Function} baaImageLoadFunctionProvider
+ * @param {module:domain/credentialDef~Credential} credential The credential for basic access authentication
+ * @param {number[]} maxSize Maximum width and height of the requested image in px
+ * @returns {Function} ol.image.LoadFunction
+ */
+
+/**
  * Converts a GeoResource to a ol layer instance.
  * @class
  * @author taulinger
  */
 export class LayerService {
 	/**
-	 * @param {baaImageLoadFunctionProvider} [baaImageLoadFunctionProvider=getBvvBaaImageLoadFunction]
+	 * @param {module:modules/olMap/services/LayerService~baaImageLoadFunctionProvider} [baaImageLoadFunctionProvider=getBvvBaaImageLoadFunction]
 	 */
 	constructor(baaImageLoadFunctionProvider = getBvvBaaImageLoadFunction) {
 		this._baaImageLoadFunctionProvider = baaImageLoadFunctionProvider;

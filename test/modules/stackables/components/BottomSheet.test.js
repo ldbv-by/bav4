@@ -7,6 +7,7 @@ import { toggle } from '../../../../src/store/mainMenu/mainMenu.action';
 import { createNoInitialStateMainMenuReducer } from '../../../../src/store/mainMenu/mainMenu.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { bottomSheetReducer } from '../../../../src/store/bottomSheet/bottomSheet.reducer';
+import { navigationRailReducer } from '../../../../src/store/navigationRail/navigationRail.reducer';
 import { openBottomSheet } from '../../../../src/store/bottomSheet/bottomSheet.action';
 
 window.customElements.define(BottomSheet.tag, BottomSheet);
@@ -19,6 +20,9 @@ describe('BottomSheet', () => {
 		},
 		media: {
 			portrait: false
+		},
+		navigationRail: {
+			open: false
 		}
 	};
 
@@ -28,7 +32,8 @@ describe('BottomSheet', () => {
 		store = TestUtils.setupStoreAndDi(initialState, {
 			mainMenu: createNoInitialStateMainMenuReducer(),
 			media: createNoInitialStateMediaReducer(),
-			bottomSheet: bottomSheetReducer
+			bottomSheet: bottomSheetReducer,
+			navigationRail: navigationRailReducer
 		});
 
 		const element = await TestUtils.renderAndLogLifecycle(BottomSheet.tag);
@@ -39,21 +44,14 @@ describe('BottomSheet', () => {
 	describe('constructor', () => {
 		it('sets a initial model', async () => {
 			TestUtils.setupStoreAndDi(defaultState);
-			const element = new BottomSheet();
+			const element = await setup();
 
 			expect(element.getModel()).toEqual({
 				content: null,
-				open: false,
-				portrait: false
+				isOpen: false,
+				isOpenNavigationRail: false,
+				isPortrait: false
 			});
-		});
-
-		it('subscribes to the store', async () => {
-			TestUtils.setupStoreAndDi(defaultState);
-			const element = new BottomSheet();
-
-			expect(element._subscriptions).toHaveSize(2);
-			expect(element._subscriptions.every((subscription) => typeof subscription === 'function')).toBeTrue();
 		});
 	});
 
@@ -94,6 +92,7 @@ describe('BottomSheet', () => {
 			expect(contentElement.innerText).toContain('FooBar');
 			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.bottom-sheet.is-open')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
 		});
 
 		it('layouts for landscape and closed Menu', async () => {
@@ -103,6 +102,7 @@ describe('BottomSheet', () => {
 			expect(contentElement.innerText).toContain('FooBar');
 			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.bottom-sheet.is-open')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
 		});
 
 		it('layouts for portrait and open Menu', async () => {
@@ -112,6 +112,7 @@ describe('BottomSheet', () => {
 			expect(contentElement.innerText).toContain('FooBar');
 			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.bottom-sheet.is-open')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
 		});
 
 		it('layouts for portrait and closed Menu', async () => {
@@ -121,6 +122,30 @@ describe('BottomSheet', () => {
 			expect(contentElement.innerText).toContain('FooBar');
 			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.bottom-sheet.is-open')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
+		});
+
+		it('layouts with open navigation rail for portrait mode', async () => {
+			const element = await setup('FooBar', {
+				mainMenu: { open: true },
+				media: { portrait: true },
+				navigationRail: {
+					open: true
+				}
+			});
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
+		});
+
+		it('layouts open navigation rail for landscape mode', async () => {
+			const element = await setup('FooBar', {
+				mainMenu: { open: true },
+				media: { portrait: false },
+				navigationRail: {
+					open: true
+				}
+			});
+
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(1);
 		});
 	});
 
@@ -172,20 +197,6 @@ describe('BottomSheet', () => {
 			expect(element.shadowRoot.querySelectorAll('.fade-out')).toHaveSize(1);
 			contentElement.dispatchEvent(new Event('animationend'));
 			expect(store.getState().bottomSheet.data).toBeNull();
-		});
-	});
-
-	describe('when disconnected', () => {
-		it('removes all observers', async () => {
-			const element = await setup();
-			const spy1 = jasmine.createSpy();
-			const spy2 = jasmine.createSpy();
-			element._subscriptions = [spy1, spy2];
-
-			element.onDisconnect(); // we call onDisconnect manually
-
-			expect(spy1).toHaveBeenCalled();
-			expect(spy2).toHaveBeenCalled();
 		});
 	});
 });

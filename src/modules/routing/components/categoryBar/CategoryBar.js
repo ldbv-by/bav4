@@ -30,14 +30,10 @@ export class CategoryBar extends MvuElement {
 	}
 
 	onInitialize() {
-		this._unsubscribeFromStore = this.observe(
+		this.observe(
 			(state) => state.routing.categoryId,
 			(categoryId) => this.signal(Update_Selected_Category, categoryId)
 		);
-	}
-
-	onDisconnect() {
-		this._unsubscribeFromStore();
 	}
 
 	createView(model) {

@@ -72,6 +72,7 @@ export class IconService {
 			const isMarkerIcon = (iconResult) => iconResult.id === Svg_Marker_Name;
 			const providerIcons = await this._iconProvider();
 			const indexOfMarkerIcon = providerIcons.findIndex(isMarkerIcon);
+
 			this._icons =
 				indexOfMarkerIcon < 0
 					? [this._default, ...providerIcons]
@@ -103,10 +104,8 @@ export class IconService {
 		if (idOrUrlOrBase64 === this._default.base64) {
 			return this._icons.find((iconResult) => iconResult.matches(Svg_Marker_Name));
 		}
-
 		const findLocal = (base64) => this._icons.find((iconResult) => iconResult.base64 === base64) ?? null;
 		const findRemote = (idOrUrl) => this._icons.find((iconResult) => iconResult.matches(idOrUrl)) ?? null;
-
 		return this.isLocal(idOrUrlOrBase64) ? findLocal(idOrUrlOrBase64) : findRemote(idOrUrlOrBase64);
 	}
 
@@ -138,10 +137,12 @@ export class IconResult {
 	 * @param {string} svg the content of this Icon as SVG
 	 * @param {function(string):(boolean)} urlMatcher a function to check, when a url is matching as remote-location for this icon
 	 * @param {function(Array<number>): (string)} urlProvider a function, which provides a url as remote-location for this icon with a specified rgb-color as Array<number>
+	 * @param {boolean} [isMonochrome=true] whether the svg content of the icon use only one single color
 	 */
-	constructor(id, svg, urlMatcher = null, urlProvider = null) {
+	constructor(id, svg, urlMatcher = null, urlProvider = null, isMonochrome = true) {
 		this._id = id;
 		this._svg = svg;
+		this._isMonochrome = isMonochrome;
 		this._base64 = this._toBase64();
 		this._urlMatcher = urlMatcher ? urlMatcher : () => false;
 		this._urlProvider = urlProvider ? urlProvider : () => null;
@@ -184,6 +185,10 @@ export class IconResult {
 	get anchor() {
 		return this._id === Svg_Marker_Name ? [0.5, 1] : [0.5, 0.5];
 	}
+
+	get isMonochrome() {
+		return this._isMonochrome;
+	}
 }
 
 /**
@@ -206,6 +211,9 @@ const loadFallbackIcons = () => {
 		new IconResult(
 			'square',
 			'<svg id="square" xmlns="http://www.w3.org/2000/svg" width="34.0" height="34.0" viewBox="0.0 0.0 48.0 48.0" fill="rgb(255,255,255)"><!-- SIL OFL 1.1 --><path d="M9.0,7.0L39.015625,7.0Q39.875,7.0,40.4375,7.5625Q41.0,8.125,41.0,8.984375L41.0,39.0Q41.0,39.875,40.4375,40.4375Q39.875,41.0,39.015625,41.0L9.0,41.0Q8.125,41.0,7.5625,40.4375Q7.0,39.875,7.0,39.0L7.0,8.984375Q7.0,8.125,7.5625,7.5625Q8.125,7.0,9.0,7.0Z" /></svg>'
-		)
+		),
+		new IconResult('rt_start', Svg_Marker_Content, (id) => id === 'rt_start', null, false),
+		new IconResult('rt_destination', Svg_Marker_Content, (id) => id === 'rt_destination', null, false),
+		new IconResult('rt_intermediate', Svg_Marker_Content, (id) => id === 'rt_intermediate', null, false)
 	];
 };

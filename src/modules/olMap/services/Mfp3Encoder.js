@@ -589,10 +589,14 @@ export class BvvMfp3Encoder {
 			const scale = imageStyle.getScale();
 			encoded.rotation = ((imageStyle.getRotation() ?? 0) * 180.0) / Math.PI;
 			const getPropertiesFromIconStyle = (iconStyle) => {
+				const iconSrc = iconStyle.getSrc();
+				const { IconService: iconService } = $injector.inject('IconService');
+				const iconResult = iconService.getIconResult(iconSrc);
+				const color = iconService.decodeColor(iconSrc);
 				return {
 					size: iconStyle.getSize(),
 					anchor: iconStyle.getAnchor(),
-					imageSrc: iconStyle.getSrc().replace(/\.svg/, '.png')
+					imageSrc: iconResult ? iconResult.getUrl(color) : iconStyle.getSrc().replace(/\.svg/, '.png')
 				};
 			};
 			const getPropertiesFromShapeStyle = (shapeStyle) => {
@@ -622,8 +626,18 @@ export class BvvMfp3Encoder {
 			}
 
 			if (styleProperties.anchor) {
-				encoded.graphicXOffset = BvvMfp3Encoder.adjustDistance(-styleProperties.anchor[0] * scale, dpi);
-				encoded.graphicYOffset = BvvMfp3Encoder.adjustDistance(-styleProperties.anchor[1] * scale, dpi);
+				// The graphic[X/Y]Offset property is not documented in MFP.
+				// It seems to calculate the final position of the symbol in relation
+				// to the width and height of the original graphic resource and the defined
+				// graphicWidth/graphicHeight property.
+				// Example:
+				// RasterImage with size of 48x48 Pixel and defined
+				// properties of graphicWidth:30 and graphicHeight:30
+				//
+				// To translate the normalized anchor-value of [24,48] (-> center, bottom)
+				// the offset should be relate to the image center (width/2,height/2)
+				encoded.graphicXOffset = (styleProperties.size[0] / 2 - styleProperties.anchor[0]) * scale;
+				encoded.graphicYOffset = (styleProperties.size[1] / 2 - styleProperties.anchor[1]) * scale;
 			}
 
 			if (styleProperties.imageSrc) {
@@ -694,9 +708,14 @@ export class BvvMfp3Encoder {
 
 			if (textStyle.getFont()) {
 				const fontValues = textStyle.getFont().split(' ');
-				encoded.fontFamily = fontValues[2].toUpperCase();
-				encoded.fontSize = parseInt(fontValues[1]);
-				encoded.fontWeight = fontValues[0];
+				const [weight, size, ...fontFamilyValues] = fontValues;
+				// hint: the fontFamily value relates to all installed font on the server.
+				// If the application use any custom fonts over css-styles which are used
+				// for labels on the map, these fonts must be available as TrueTypeFonts
+				// on the MapFishPrint server
+				encoded.fontFamily = fontFamilyValues.join(' ');
+				encoded.fontSize = BvvMfp3Encoder.adjustDistance(parseInt(size), dpi);
+				encoded.fontWeight = weight;
 			}
 
 			if (this._mfpProperties.rotation) {
@@ -892,7 +911,7 @@ export class BvvMfp3Encoder {
 	}
 
 	static adjustDistance(distance, dpi) {
-		return distance != null ? (distance * 90) / dpi : null;
+		return distance != null ? (distance * 70) / dpi : null;
 	}
 
 	/**

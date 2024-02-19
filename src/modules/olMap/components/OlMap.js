@@ -93,7 +93,6 @@ export class OlMap extends MvuElement {
 			[olOverlayMapHandler.id, olOverlayMapHandler],
 			[olSelectableFeatureHandler.id, olSelectableFeatureHandler]
 		]);
-		this._unsubscribers = [];
 	}
 
 	/**
@@ -125,11 +124,10 @@ export class OlMap extends MvuElement {
 	 */
 	onInitialize() {
 		//observe global state (position, active layers, orientation)
-		this._unsubscribers = [
-			this.observe(
-				(state) => state.position,
-				(data) => this.signal(Update_Position, data)
-			),
+		this.observe(
+			(state) => state.position,
+			(data) => this.signal(Update_Position, data)
+		),
 			this.observe(
 				(state) => state.layers.active,
 				(data) => this.signal(Update_Layers, data)
@@ -138,8 +136,7 @@ export class OlMap extends MvuElement {
 				(state) => state.media.portrait,
 				() => this._map.updateSize(),
 				false
-			)
-		];
+			);
 
 		const { zoom, center, rotation } = this.getModel();
 
@@ -255,9 +252,6 @@ export class OlMap extends MvuElement {
 	 * @override
 	 */
 	onDisconnect() {
-		while (this._unsubscribers.length > 0) {
-			this._unsubscribers.shift()();
-		}
 		this._map?.setTarget(null);
 		this._map = null;
 		this._view = null;

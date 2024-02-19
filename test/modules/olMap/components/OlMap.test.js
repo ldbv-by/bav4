@@ -300,7 +300,6 @@ describe('OlMap', () => {
 
 			element.onDisconnect(); // we call onDisconnect manually
 
-			expect(element._unsubscribers).toHaveSize(0);
 			expect(element._map).toBeNull();
 			expect(element._view).toBeNull();
 			expect(spy).toHaveBeenCalledWith(null);
