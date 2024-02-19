@@ -259,17 +259,7 @@ export class ShowCase extends MvuElement {
 				}
 			};
 
-			const footer = html`<style>
-					${css}
-				</style>
-				<div>
-					Not yet a registered <ba-badge .color=${'var(--text3)'} .background=${'var(--primary-color)'} .label=${'Role'}></ba-badge> customer? You can
-					find more information
-					<b><a href="https://www.ldbv.bayern.de/produkte/dienste/bayernatlas.html">here.</a></b>
-				</div>
-				<div>
-					Forgotten your login details? <b><a href="https://www.ldbv.bayern.de/produkte/dienste/bayernatlas.html">Help</a></b>
-				</div>`;
+			const footer = html`<ba-auth-password-credential-bvv-footer></ba-auth-password-credential-bvv-footer>`;
 
 			// creates a PasswordCredentialPanel-element within a templateResult
 			const getCredentialPanel = () => {
