@@ -181,12 +181,12 @@ export class OlExportVectorDataService {
 					// Naive approach of connecting all outer rings together,
 					// assuming that the multipolygon does not consists of disjoined polygons.
 					// All other cases are not compatible with gpx spec
-					const coordinates = geometry.getPolygons().map((p) => p.getLinearRing(0)?.getCoordinates());
+					const coordinates = geometry.getPolygons().map((p) => p.getLinearRings().map((r) => r.getCoordinates()));
 					return new Feature(new MultiLineString(coordinates));
 				}
 				if (geometry instanceof Polygon) {
-					const coordinates = geometry.getLinearRing(0)?.getCoordinates();
-					return new Feature(new MultiLineString([coordinates]));
+					const coordinates = geometry.getLinearRings((r) => r.getCoordinates());
+					return new Feature(new MultiLineString(coordinates));
 				}
 				if (geometry instanceof LineString) {
 					const coordinates = geometry.getCoordinates();
