@@ -36,7 +36,7 @@ const getTextStyle = (text, color, scale, offsetY = -5) => {
 	const createStyle = (text, color, scale) => {
 		return new TextStyle({
 			text: text,
-			font: 'normal 16px sans-serif',
+			font: 'normal 16px OpenSans',
 			stroke: new Stroke({
 				color: getContrastColorFrom(hexToRgb(color)).concat(1),
 				width: strokeWidth
