@@ -17,6 +17,7 @@ export class BvvPlusPasswordCredentialFooter extends MvuElement {
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
 	}
+
 	createView() {
 		const translate = (key, params = []) => this._translationService.translate(key, params);
 		const badgeForRoles = html`<ba-badge .color=${'var(--text3)'} .background=${'var(--primary-color)'} .label=${'Plus'}></ba-badge>`;
