@@ -33,7 +33,8 @@ describe('VectorLayerService', () => {
 		removeStyle: () => {},
 		updateStyle: () => {},
 		isStyleRequired: () => {},
-		addClusterStyle: () => {}
+		addClusterStyle: () => {},
+		sanitizeStyle: () => {}
 	};
 
 	beforeEach(() => {
