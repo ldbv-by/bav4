@@ -155,7 +155,7 @@ describe('PasswordCredentialPanel', () => {
 			expect(authenticateCallback).toHaveBeenCalledTimes(2);
 		});
 
-		it('does NOT calls authenticate-callback after username input fails validation', async () => {
+		it('does NOT call authenticate-callback after username input fails validation', async () => {
 			const authenticateCallback = jasmine.createSpy().withArgs({ username: 'foo', password: 'bar' }, 'someUrl').and.callThrough();
 			const element = await setup();
 			element.url = 'someUrl';
@@ -168,7 +168,7 @@ describe('PasswordCredentialPanel', () => {
 			expect(authenticateCallback).not.toHaveBeenCalled();
 		});
 
-		it('does NOT calls authenticate-callback after password input fails validation', async () => {
+		it('does NOT call authenticate-callback after password input fails validation', async () => {
 			const authenticateCallback = jasmine.createSpy().withArgs({ username: 'foo', password: 'bar' }, 'someUrl').and.callThrough();
 			const element = await setup();
 			element.url = 'someUrl';
@@ -181,7 +181,7 @@ describe('PasswordCredentialPanel', () => {
 			expect(authenticateCallback).not.toHaveBeenCalled();
 		});
 
-		it('does NOT calls authenticate-callback after other than Enter-key is pressed on input-element', async () => {
+		it('does NOT call authenticate-callback after other than Enter-key is pressed on input-element', async () => {
 			const authenticateCallback = jasmine.createSpy().withArgs({ username: 'foo', password: 'bar' }, 'someUrl').and.callThrough();
 			const element = await setup();
 			element.url = 'someUrl';
@@ -200,7 +200,7 @@ describe('PasswordCredentialPanel', () => {
 			expect(authenticateCallback).not.toHaveBeenCalled();
 		});
 
-		it('does NOT resolves credential with default authenticate-callback', async () => {
+		it('does NOT resolve credential with default authenticate-callback', async () => {
 			const element = await setup();
 			element.url = 'someUrl';
 			const authenticateSpy = spyOn(element, '_authenticate').and.resolveTo(null);
