@@ -15,12 +15,13 @@ import {
 	geojsonStyleFunction,
 	defaultStyleFunction,
 	defaultClusterStyleFunction,
-	markerStyleFunction
+	markerStyleFunction,
+	getTransparentImageStyle
 } from '../utils/olStyleUtils';
 import { isFunction } from '../../../utils/checks';
 import { getRoutingStyleFunction } from '../handler/routing/styleUtils';
-import { MultiPoint, Point } from '../../../../node_modules/ol/geom';
-import { Circle as CircleStyle, Fill, Stroke, Style, Text } from '../../../../node_modules/ol/style';
+import { GeometryCollection, MultiPoint, Point } from '../../../../node_modules/ol/geom';
+import { Stroke, Style, Text } from '../../../../node_modules/ol/style';
 
 /**
  * Enumeration of predefined types of style
@@ -212,19 +213,19 @@ export class StyleService {
 	 * @returns {Boolean} whether or not the specified feature requires a style
 	 */
 	isStyleRequired(olFeature) {
-		this.sanitizeFeature(olFeature);
 		return this._detectStyleType(olFeature) !== null;
 	}
 
 	/**
-	 * Sanitize the feature.
-	 * (refactored code from BA3 -> KmlService.sanitizeFeature)
-	 * @param {ol.Feature} feature
-	 * @returns
+	 * Sanitize the style of a feature, to prevent unwanted renderings
+	 * and to enable display behavior of point features as interactive label,
+	 * similar to Google Earth (Desktop Application), to support user-created
+	 * content from extern sources.
+	 * TODO: handling of GeometryCollection
+	 * @param {ol.Feature} olFeature
 	 */
-	sanitizeFeature(feature) {
-		const geometry = feature.getGeometry();
-
+	sanitizeStyle(olFeature) {
+		console.log(olFeature);
 		const getStyles = (feature) => {
 			const stylesCandidate = feature.getStyleFunction()(feature);
 			if (Array.isArray(stylesCandidate)) {
@@ -235,86 +236,74 @@ export class StyleService {
 			}
 			return null;
 		};
-		const styles = getStyles(feature);
-
-		// The use of clone is part of the scale fix line 156
-		const style = styles[0].clone();
-
-		// ------------ includings based on refactoring --------------
-		const transparent = [0, 0, 0, 0];
-		const transparentCircleStyle = new CircleStyle({
-			radius: 1,
-			fill: new Fill({
-				color: transparent
-			}),
-			stroke: new Stroke({
-				color: transparent
-			})
-		});
-
-		// ------------ includings based on refactoring --------------
 		const getStroke = (style) => {
+			// The canvas draws a stroke width=1 by default if width=0, so we
+			// remove the stroke style in that case.
 			const stroke = style.getStroke ? style.getStroke() : null;
 			return stroke && stroke.getWidth() === 0 ? null : stroke;
 		};
-
-		// The canvas draws a stroke width=1 by default if width=0, so we
-		// remove the stroke style in that case.
-		// See https://github.com/geoadmin/mf-geoadmin3/issues/3421
-		const stroke = getStroke(style);
-
-		// if the feature is a Point and we are offline, we use default vector
-		// style.
-		// if the feature is a Point and has a name with a text style, we
-		// create a correct text style.
-		// TODO Handle GeometryCollection displaying name on the first Point
-		// geometry.
-		if (style && (geometry instanceof Point || geometry instanceof MultiPoint)) {
-			let image = style.getImage ? style.getImage() : null;
-			let text = null;
-
-			// if (gaNetworkStatus.offline) {
-			// 	image = this.getStyle().getImage();
-			// }
-
-			// If the feature has name we display it on the map as Google does
-			if (feature.get('name') && style.getText && style.getText().getScale() !== 0) {
-				if (image && image.getScale() === 0) {
-					// transparentCircle is used to allow selection
-					image = transparentCircleStyle;
-				}
-				text = new Text({
-					font: 'normal 16px sans-serif', // refactored: to default font
-					text: feature.get('name'),
+		const getImageStyle = (image) => {
+			// transparentCircle is used to allow selection
+			return image && image.getScale() === 0 ? getTransparentImageStyle() : image;
+		};
+		const getTextStyle = (name, style) => {
+			// If the feature has a name, we display it on the map.
+			// -> Mimicking the behavior of Google Earth
+			if (name && style.getText && style.getText().getScale() !== 0) {
+				return new Text({
+					font: 'normal 24px Open Sans',
+					text: name,
 					fill: style.getText().getFill(),
 					stroke: new Stroke({
 						color: getContrastColorFrom(style.getText().getFill().getColor()),
-						width: 2
-					}), // refactored: to a default color
+						width: 3
+					}),
 					scale: style.getText().getScale()
 				});
 			}
+			return null;
+		};
+		const isPointLike = (geometry) => {
+			return geometry instanceof Point || geometry instanceof MultiPoint;
+		};
 
+		const geometry = olFeature.getGeometry();
+		const styles = getStyles(olFeature);
+		const style = styles ? styles[0].clone() : null;
+		const sanitizedStroke = getStroke(style);
+
+		// if the feature is a Point and has a name with a text style, we
+		// create a correct text style.
+		if (style && isPointLike(geometry)) {
+			const image = style.getImage ? style.getImage() : null;
+
+			const sanitizedImage = getImageStyle(image);
+			const sanitizedText = getTextStyle(olFeature.get('name'), style);
 			const sanitizedStyles = [
 				new Style({
-					fill: null,
-					stroke: null,
-					image: image,
-					text: text,
+					fill: sanitizedText ? null : style.getFill(),
+					stroke: sanitizedText ? null : sanitizedStroke,
+					image: sanitizedText ? sanitizedImage : image,
+					text: sanitizedText,
 					zIndex: style.getZIndex ? style.getZIndex() : null
 				})
 			];
-			feature.setStyle(sanitizedStyles);
+			olFeature.setStyle(sanitizedStyles);
 		}
 
-		// Get the type of the feature (creates by drawing tools)
-		if (feature.getId()) {
-			const split = feature.getId().split('_');
-			if (split.length === 2) {
-				feature.set('type', split[0]);
-			}
+		// Remove image and text styles for polygons and lines
+		if (style && !(isPointLike(geometry) || geometry instanceof GeometryCollection)) {
+			const sanitizedStyles = [
+				new Style({
+					fill: style.getFill(),
+					stroke: sanitizedStroke,
+					image: null,
+					text: null,
+					zIndex: style.getZIndex ? style.getZIndex() : null
+				})
+			];
+			olFeature.setStyle(sanitizedStyles);
 		}
-		return feature;
 	}
 
 	_addMeasureStyle(olFeature, olMap) {
