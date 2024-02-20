@@ -7,19 +7,22 @@ import { MediaType } from '../../../../domain/mediaTypes';
 import { GeoResourceAuthenticationType, WmsGeoResource } from '../../../../domain/geoResources';
 
 /**
- * Uses the BVV endpoint to load GeoResourceInfoResult.
- * @implements geoResourceInfoProvider
- * @async
+ * Bvv specific implementation of {@link module:modules/geoResourceInfo/services/GeoResourceInfoService~geoResourceInfoProvider}.
  * @function
- * @returns {Promise<GeoResourceInfoResult>}
+ * @type {module:modules/geoResourceInfo/services/GeoResourceInfoService~geoResourceInfoProvider}
  */
 export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 	const {
 		HttpService: httpService,
 		ConfigService: configService,
 		GeoResourceService: geoResourceService,
-		BaaCredentialService: baaCredentialService
-	} = $injector.inject('HttpService', 'ConfigService', 'GeoResourceService', 'BaaCredentialService');
+		BaaCredentialService: baaCredentialService,
+		AuthService: authService
+	} = $injector.inject('HttpService', 'ConfigService', 'GeoResourceService', 'BaaCredentialService', 'AuthService');
+
+	const throwError = (reason) => {
+		throw new Error(`GeoResourceInfoResult for '${geoResourceId}' could not be loaded: ${reason}`);
+	};
 
 	const loadInternal = async (geoResource) => {
 		const url = `${configService.getValueAsPath('BACKEND_URL')}georesource/info/${geoResource.id}`;
@@ -37,7 +40,7 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 			const extendWithCredential = (payload) => {
 				const credential = baaCredentialService.get(geoResource.url);
 				if (!credential) {
-					throw new Error(`No credential available for GeoResource with id '${geoResource.id}' and url '${geoResource.url}'`);
+					throwError(`No credential available`);
 				}
 				return { ...payload, ...credential };
 			};
@@ -46,7 +49,18 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 			return JSON.stringify(payload);
 		};
 
-		return httpService.post(url, getPayload(geoResource), MediaType.JSON, { timeout: 5000 });
+		return httpService.post(
+			url,
+			getPayload(geoResource),
+			MediaType.JSON,
+			{ timeout: 5000 },
+			{
+				response:
+					geoResource.authenticationType === GeoResourceAuthenticationType.BAA
+						? null
+						: authService.getAuthResponseInterceptorForGeoResource(geoResourceId)
+			}
+		);
 	};
 
 	const geoResource = geoResourceService.byId(geoResourceId);
@@ -67,5 +81,5 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 		}
 	}
 
-	throw new Error(`GeoResourceInfoResult for '${geoResourceId}' could not be loaded`);
+	throwError(`Http-Status ${result.status}`);
 };

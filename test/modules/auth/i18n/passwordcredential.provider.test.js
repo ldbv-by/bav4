@@ -5,15 +5,13 @@ describe('i18n for header module', () => {
 	it('provides translation for de', () => {
 		const map = provide('de');
 
-		expect(map.auth_passwordCredentialPanel_title).toBe('Authentifizierung für:');
+		expect(map.auth_passwordCredentialPanel_title).toBe('Anmelden für:');
 		expect(map.auth_passwordCredentialPanel_credential_username).toBe('Name');
 		expect(map.auth_passwordCredentialPanel_credential_password).toBe('Passwort');
 		expect(map.auth_passwordCredentialPanel_submit).toBe('Senden');
-		expect(map.auth_passwordCredentialPanel_credential_failed).toBe('Authentifizierung fehlgeschlagen. Name oder Passwort ungültig!');
-		expect(map.auth_passwordCredentialPanel_credential_rejected).toBe(
-			'Authentifizierung fehlgeschlagen. Es ist ein technisches Problem aufgetreten!'
-		);
-		expect(map.auth_passwordCredentialPanel_authenticate).toBe('Authentifiziere');
+		expect(map.auth_passwordCredentialPanel_credential_failed).toBe('Anmeldung fehlgeschlagen. Name oder Passwort ungültig!');
+		expect(map.auth_passwordCredentialPanel_credential_rejected).toBe('Anmeldung fehlgeschlagen. Es ist ein technisches Problem aufgetreten!');
+		expect(map.auth_passwordCredentialPanel_authenticate).toBe('Anmeldung läuft...');
 		expect(TestUtils.renderTemplateResult(map.auth_passwordCredentialPanel_footer_register_for_role(['foo'])).textContent).toBe(
 			'Noch kein registrierter fooKunde?'
 		);
@@ -36,7 +34,7 @@ describe('i18n for header module', () => {
 		expect(map.auth_passwordCredentialPanel_submit).toBe('Submit');
 		expect(map.auth_passwordCredentialPanel_credential_failed).toBe('Authentication failed. Invalid username or password!');
 		expect(map.auth_passwordCredentialPanel_credential_rejected).toBe('Authentication failed. Something got wrong!');
-		expect(map.auth_passwordCredentialPanel_authenticate).toBe('Authenticating');
+		expect(map.auth_passwordCredentialPanel_authenticate).toBe('Authenticating...');
 		expect(TestUtils.renderTemplateResult(map.auth_passwordCredentialPanel_footer_register_for_role(['foo'])).textContent).toBe(
 			'Not yet a registered foocustomer?'
 		);
