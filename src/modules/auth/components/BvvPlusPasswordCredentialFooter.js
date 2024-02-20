@@ -40,7 +40,6 @@ export class BvvPlusPasswordCredentialFooter extends MvuElement {
 				</div>
 			</div>`;
 	}
-	// <a href=${url}>information</a>
 
 	static get tag() {
 		return 'ba-auth-password-credential-bvv-footer';
