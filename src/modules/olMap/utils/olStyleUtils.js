@@ -16,6 +16,7 @@ const Red_Color = [255, 0, 0];
 const White_Color = [255, 255, 255];
 // eslint-disable-next-line no-unused-vars
 const Black_Color = [0, 0, 0];
+const Transparent_Color = [0, 0, 0, 0];
 const Default_Symbol = 'marker';
 
 /**
@@ -653,6 +654,24 @@ export const defaultStyleFunction = (color) => {
 				];
 		}
 	};
+};
+
+/**
+ * Creates a transparent circle style. Useful for point features
+ * that should only display a text, but should still be clickable
+ * by the user.
+ * @returns {ol.style.circle} the circle style
+ */
+export const getTransparentImageStyle = () => {
+	return new CircleStyle({
+		radius: 1,
+		fill: new Fill({
+			color: Transparent_Color
+		}),
+		stroke: new Stroke({
+			color: Transparent_Color
+		})
+	});
 };
 
 export const createSketchStyleFunction = (styleFunction) => {
