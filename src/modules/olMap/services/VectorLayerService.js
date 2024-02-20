@@ -113,6 +113,7 @@ export class VectorLayerService {
 		 */
 		const { StyleService: styleService } = $injector.inject('StyleService');
 		const olVectorSource = olVectorLayer.getSource();
+		olVectorSource.getFeatures().forEach((feature) => styleService.sanitizeStyle(feature));
 		if (olVectorSource.getFeatures().some((feature) => styleService.isStyleRequired(feature))) {
 			// if we have at least one style requiring feature, we register the styleEvent listener once
 			// and apply the style for all currently present features
