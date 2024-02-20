@@ -914,6 +914,46 @@ describe('StyleService', () => {
 		});
 	});
 
+	describe('sanitize style', () => {
+		it('does nothing on a feature without a style', () => {
+			const featureWithoutStyle = new Feature({ geometry: new Point([0, 0]) });
+			const spy = spyOn(featureWithoutStyle, 'setStyle').and.callThrough(() => {});
+
+			instanceUnderTest.sanitizeStyle(featureWithoutStyle);
+
+			expect(spy).not.toHaveBeenCalledTimes(1);
+		});
+		it('sanitizes the text style', () => {
+			const featureWithStyleArray = new Feature({ geometry: new Point([0, 0]) });
+			const featureWithStyleFunction = new Feature({ geometry: new Point([0, 0]) });
+			const style = new Style({
+				image: new Icon({
+					size: [42, 42],
+					anchor: [42, 42],
+					anchorXUnits: 'pixels',
+					anchorYUnits: 'pixels',
+					src: 'https://some.url/to/image/foo.png',
+					scale: 0
+				}),
+				text: new Text({ text: 'foo', fill: new Fill({ color: [42, 21, 0] }), scale: 1.2 })
+			});
+			featureWithStyleArray.set('name', 'bar');
+			featureWithStyleFunction.set('name', 'bar');
+			featureWithStyleArray.setStyle([style]);
+			featureWithStyleFunction.setStyle(() => [style]);
+			const spyStyleArray = spyOn(featureWithStyleArray, 'setStyle').and.callThrough();
+			const spyStyleFunction = spyOn(featureWithStyleFunction, 'setStyle').and.callThrough();
+			instanceUnderTest.sanitizeStyle(featureWithStyleArray);
+			instanceUnderTest.sanitizeStyle(featureWithStyleFunction);
+
+			expect(spyStyleArray).toHaveBeenCalledWith(jasmine.arrayContaining([jasmine.any(Style)]));
+			expect(spyStyleFunction).toHaveBeenCalledWith(jasmine.arrayContaining([jasmine.any(Style)]));
+
+			expect(featureWithStyleArray.getStyle()[0].getText().getText()).toBe('bar');
+			expect(featureWithStyleFunction.getStyle()[0].getText().getText()).toBe('bar');
+		});
+	});
+
 	describe('getStyleFunction', () => {
 		it('returns a StyleFunction for a valid StyleType', () => {
 			expect(instanceUnderTest.getStyleFunction(StyleTypes.NULL)).toEqual(jasmine.any(Function));

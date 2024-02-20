@@ -225,9 +225,9 @@ export class StyleService {
 	 * @param {ol.Feature} olFeature
 	 */
 	sanitizeStyle(olFeature) {
-		console.log(olFeature);
 		const getStyles = (feature) => {
-			const stylesCandidate = feature.getStyleFunction()(feature);
+			const styleFunction = feature.getStyleFunction();
+			const stylesCandidate = !styleFunction || !styleFunction(feature) ? null : styleFunction(feature);
 			if (Array.isArray(stylesCandidate)) {
 				return stylesCandidate;
 			}
@@ -239,7 +239,7 @@ export class StyleService {
 		const getStroke = (style) => {
 			// The canvas draws a stroke width=1 by default if width=0, so we
 			// remove the stroke style in that case.
-			const stroke = style.getStroke ? style.getStroke() : null;
+			const stroke = style?.getStroke ? style.getStroke() : null;
 			return stroke && stroke.getWidth() === 0 ? null : stroke;
 		};
 		const getImageStyle = (image) => {
@@ -249,7 +249,7 @@ export class StyleService {
 		const getTextStyle = (name, style) => {
 			// If the feature has a name, we display it on the map.
 			// -> Mimicking the behavior of Google Earth
-			if (name && style.getText && style.getText().getScale() !== 0) {
+			if (name && style?.getText && style?.getText().getScale() !== 0) {
 				return new Text({
 					font: 'normal 24px Open Sans',
 					text: name,
@@ -270,6 +270,7 @@ export class StyleService {
 		const geometry = olFeature.getGeometry();
 		const styles = getStyles(olFeature);
 		const style = styles ? styles[0].clone() : null;
+
 		const sanitizedStroke = getStroke(style);
 
 		// if the feature is a Point and has a name with a text style, we
