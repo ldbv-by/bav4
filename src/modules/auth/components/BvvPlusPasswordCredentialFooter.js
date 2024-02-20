@@ -18,19 +18,14 @@ export class BvvPlusPasswordCredentialFooter extends MvuElement {
 		this._translationService = TranslationService;
 	}
 	createView() {
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key, params = []) => this._translationService.translate(key, params);
+		const badgeForRoles = html`<ba-badge .color=${'var(--text3)'} .background=${'var(--primary-color)'} .label=${'Plus'}></ba-badge>`;
 		return html`<style>
 				${css}
 			</style>
 			<div class="footer_register">
-				${translate('auth_passwordCredentialPanel_footer_register_for_role_prefix')}
-				<ba-badge .color=${'var(--text3)'} .background=${'var(--primary-color)'} .label=${'Plus'}></ba-badge>
-				${translate('auth_passwordCredentialPanel_footer_register_for_role_suffix')}
-				${translate('auth_passwordCredentialPanel_footer_register_information_prefix')}
-				<a href="https://www.ldbv.bayern.de/produkte/dienste/bayernatlas.html"
-					>${translate('auth_passwordCredentialPanel_footer_register_information')}</a
-				>
-				${translate('auth_passwordCredentialPanel_footer_register_information_suffix')}
+				${translate('auth_passwordCredentialPanel_footer_register_for_role', [badgeForRoles])}
+				${translate('auth_passwordCredentialPanel_footer_register_information', ['https://www.ldbv.bayern.de/produkte/dienste/bayernatlas.html'])}
 			</div>
 			<div class="footer_forgot_login">
 				<div>
@@ -45,6 +40,7 @@ export class BvvPlusPasswordCredentialFooter extends MvuElement {
 				</div>
 			</div>`;
 	}
+	// <a href=${url}>information</a>
 
 	static get tag() {
 		return 'ba-auth-password-credential-bvv-footer';

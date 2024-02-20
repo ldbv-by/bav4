@@ -1,4 +1,5 @@
 import { provide } from '../../../../src/modules/auth/i18n/passwordcredential.provider';
+import { TestUtils } from '../../../test-utils';
 
 describe('i18n for header module', () => {
 	it('provides translation for de', () => {
@@ -13,11 +14,15 @@ describe('i18n for header module', () => {
 			'Authentifizierung fehlgeschlagen. Es ist ein technisches Problem aufgetreten!'
 		);
 		expect(map.auth_passwordCredentialPanel_authenticate).toBe('Authentifiziere');
-		expect(map.auth_passwordCredentialPanel_footer_register_for_role_prefix).toBe('Noch kein registrierter ');
-		expect(map.auth_passwordCredentialPanel_footer_register_for_role_suffix).toBe('Kunde?');
-		expect(map.auth_passwordCredentialPanel_footer_register_information_prefix).toBe('Hier finden Sie weitere');
-		expect(map.auth_passwordCredentialPanel_footer_register_information).toBe('Informationen');
-		expect(map.auth_passwordCredentialPanel_footer_register_information_suffix).toBe('.');
+		expect(TestUtils.renderTemplateResult(map.auth_passwordCredentialPanel_footer_register_for_role(['foo'])).textContent).toBe(
+			'Noch kein registrierter fooKunde?'
+		);
+		expect(TestUtils.renderTemplateResult(map.auth_passwordCredentialPanel_footer_register_information(['bar'])).textContent).toBe(
+			'Hier finden Sie weitere Informationen.'
+		);
+		expect(TestUtils.renderTemplateResult(map.auth_passwordCredentialPanel_footer_register_information(['bar'])).querySelector('a').href).toContain(
+			'bar'
+		);
 		expect(map.auth_passwordCredentialPanel_footer_forgot_login).toBe('Kennung vergessen?');
 		expect(map.auth_passwordCredentialPanel_footer_forgot_password).toBe('Password vergessen?');
 	});
@@ -32,17 +37,21 @@ describe('i18n for header module', () => {
 		expect(map.auth_passwordCredentialPanel_credential_failed).toBe('Authentication failed. Invalid username or password!');
 		expect(map.auth_passwordCredentialPanel_credential_rejected).toBe('Authentication failed. Something got wrong!');
 		expect(map.auth_passwordCredentialPanel_authenticate).toBe('Authenticating');
-		expect(map.auth_passwordCredentialPanel_footer_register_for_role_prefix).toBe('Not yet a registered ');
-		expect(map.auth_passwordCredentialPanel_footer_register_for_role_suffix).toBe('customer?');
-		expect(map.auth_passwordCredentialPanel_footer_register_information_prefix).toBe('You can find more');
-		expect(map.auth_passwordCredentialPanel_footer_register_information).toBe('information');
-		expect(map.auth_passwordCredentialPanel_footer_register_information_suffix).toBe(' here.');
+		expect(TestUtils.renderTemplateResult(map.auth_passwordCredentialPanel_footer_register_for_role(['foo'])).textContent).toBe(
+			'Not yet a registered foocustomer?'
+		);
+		expect(TestUtils.renderTemplateResult(map.auth_passwordCredentialPanel_footer_register_information(['bar'])).textContent).toBe(
+			'You can find more information here.'
+		);
+		expect(TestUtils.renderTemplateResult(map.auth_passwordCredentialPanel_footer_register_information(['bar'])).querySelector('a').href).toContain(
+			'bar'
+		);
 		expect(map.auth_passwordCredentialPanel_footer_forgot_login).toBe('Forgot username?');
 		expect(map.auth_passwordCredentialPanel_footer_forgot_password).toBe('Forgot password?');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 14;
+		const expectedSize = 11;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
