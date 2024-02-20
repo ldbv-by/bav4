@@ -291,7 +291,7 @@ export class OlMap extends MvuElement {
 	}
 
 	_syncLayers() {
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key, params = []) => this._translationService.translate(key, params);
 		const { layers } = this.getModel();
 
 		const updatedIds = layers.map((layer) => layer.id);
@@ -342,7 +342,7 @@ export class OlMap extends MvuElement {
 					this._map.getLayers().insertAt(layer.zIndex, olLayer);
 				} else {
 					console.warn(`Could not add an olLayer for id '${id}'`);
-					emitNotification(`${translate('olMap_layer_not_available')} '${id}'`, LevelTypes.WARN);
+					emitNotification(`${translate('global_geoResource_not_available', [geoResource?.id ?? id])}`, LevelTypes.WARN);
 					removeLayer(id);
 				}
 			};
@@ -365,7 +365,7 @@ export class OlMap extends MvuElement {
 					// eslint-disable-next-line promise/prefer-await-to-then
 					.catch((error) => {
 						console.warn(error);
-						emitNotification(`${translate('olMap_layer_not_available')} '${geoResource.id}'`, LevelTypes.WARN);
+						emitNotification(`${translate('global_geoResource_not_available', [geoResource.id])}`, LevelTypes.WARN);
 						removeLayer(id);
 					});
 			}
