@@ -4,6 +4,7 @@ import { createNoInitialStateMediaReducer } from '../../../../src/store/media/me
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
+import { BA_FORM_ELEMENT_VISITED_CLASS } from '../../../../src/utils/markup';
 import { TestUtils } from '../../../test-utils';
 
 window.customElements.define(PasswordCredentialPanel.tag, PasswordCredentialPanel);
@@ -38,6 +39,7 @@ describe('PasswordCredentialPanel', () => {
 
 			expect(model).toEqual({
 				url: null,
+				footer: null,
 				credential: null,
 				authenticating: false,
 				showPassword: false
@@ -56,6 +58,21 @@ describe('PasswordCredentialPanel', () => {
 	});
 
 	describe('when panel is rendered', () => {
+		const fillCredentialFormElements = (element, username = null, password = null) => {
+			const inputUsername = element.shadowRoot.querySelector('#credential_username');
+			const inputPassword = element.shadowRoot.querySelector('#credential_password');
+			const inputChangedEvent = new CustomEvent('input');
+
+			if (username && inputUsername) {
+				inputUsername.value = username;
+				inputUsername.dispatchEvent(inputChangedEvent);
+			}
+			if (password && inputPassword) {
+				inputPassword.value = password;
+				inputPassword.dispatchEvent(inputChangedEvent);
+			}
+		};
+
 		it('shows two properly configured input fields', async () => {
 			const element = await setup();
 
@@ -72,18 +89,36 @@ describe('PasswordCredentialPanel', () => {
 			const element = await setup();
 			element.url = 'foo';
 
+			expect(element.shadowRoot.querySelector('.credential_header').classList.contains('visible')).toBeTrue();
 			expect(element.shadowRoot.querySelector('.title_url').textContent).toBe('auth_passwordCredentialPanel_title');
 			expect(element.shadowRoot.querySelector('.value_url').textContent).toBe('foo');
 			expect(element.shadowRoot.querySelector('.value_url').title).toBe('foo');
 		});
 
-		it('hides optimal but empty url', async () => {
+		it('hides optional but empty url', async () => {
 			const element = await setup();
 
 			expect(element.url).toBeNull();
 
+			expect(element.shadowRoot.querySelector('.credential_header').classList.contains('visible')).toBeFalse();
+			expect(element.shadowRoot.querySelector('.credential_header').textContent).toBe('');
 			expect(element.shadowRoot.querySelector('.title_url')).toBeFalsy();
 			expect(element.shadowRoot.querySelector('.value_url')).toBeFalsy();
+		});
+
+		it('displays the optional footer', async () => {
+			const element = await setup();
+			element.footer = 'foo footer';
+
+			expect(element.shadowRoot.querySelector('.credential_custom_content').classList.contains('visible')).toBeTrue();
+			expect(element.shadowRoot.querySelector('.credential_custom_content').textContent).toBe('foo footer');
+		});
+
+		it('hides optional but empty footer', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('.credential_custom_content').classList.contains('visible')).toBeFalse();
+			expect(element.shadowRoot.querySelector('.credential_custom_content').textContent).toBe('');
 		});
 
 		it('receives entered username and password', async () => {
@@ -109,11 +144,10 @@ describe('PasswordCredentialPanel', () => {
 			const element = await setup();
 			element.url = 'someUrl';
 			element.authenticate = authenticateCallback;
+
+			fillCredentialFormElements(element, 'foo', 'bar');
 			const inputUsername = element.shadowRoot.querySelector('#credential_username');
 			const inputPassword = element.shadowRoot.querySelector('#credential_password');
-
-			element.signal('update_username', 'foo');
-			element.signal('update_password', 'bar');
 
 			inputUsername.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 			inputPassword.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
@@ -121,7 +155,33 @@ describe('PasswordCredentialPanel', () => {
 			expect(authenticateCallback).toHaveBeenCalledTimes(2);
 		});
 
-		it('does NOT calls authenticate-callback after other than Enter-key is pressed on input-element', async () => {
+		it('does NOT call authenticate-callback after username input fails validation', async () => {
+			const authenticateCallback = jasmine.createSpy().withArgs({ username: 'foo', password: 'bar' }, 'someUrl').and.callThrough();
+			const element = await setup();
+			element.url = 'someUrl';
+			element.authenticate = authenticateCallback;
+			const submitButton = element.shadowRoot.querySelector('#authenticate-credential-button');
+			fillCredentialFormElements(element, null, 'bar');
+
+			submitButton.click();
+
+			expect(authenticateCallback).not.toHaveBeenCalled();
+		});
+
+		it('does NOT call authenticate-callback after password input fails validation', async () => {
+			const authenticateCallback = jasmine.createSpy().withArgs({ username: 'foo', password: 'bar' }, 'someUrl').and.callThrough();
+			const element = await setup();
+			element.url = 'someUrl';
+			element.authenticate = authenticateCallback;
+			const submitButton = element.shadowRoot.querySelector('#authenticate-credential-button');
+			fillCredentialFormElements(element, 'foo', null);
+
+			submitButton.click();
+
+			expect(authenticateCallback).not.toHaveBeenCalled();
+		});
+
+		it('does NOT call authenticate-callback after other than Enter-key is pressed on input-element', async () => {
 			const authenticateCallback = jasmine.createSpy().withArgs({ username: 'foo', password: 'bar' }, 'someUrl').and.callThrough();
 			const element = await setup();
 			element.url = 'someUrl';
@@ -140,14 +200,13 @@ describe('PasswordCredentialPanel', () => {
 			expect(authenticateCallback).not.toHaveBeenCalled();
 		});
 
-		it('does NOT resolves credential with default authenticate-callback', async () => {
+		it('does NOT resolve credential with default authenticate-callback', async () => {
 			const element = await setup();
 			element.url = 'someUrl';
-			element.signal('update_username', 'someUser');
-			element.signal('update_password', '42');
 			const authenticateSpy = spyOn(element, '_authenticate').and.resolveTo(null);
 			const onCloseSpy = spyOn(element, '_onClose').and.callThrough();
 			const submitButton = element.shadowRoot.querySelector('#authenticate-credential-button');
+			fillCredentialFormElements(element, 'someUser', '42');
 
 			submitButton.click();
 			await TestUtils.timeout();
@@ -162,8 +221,7 @@ describe('PasswordCredentialPanel', () => {
 			element.url = 'someUrl';
 			element.authenticate = authenticateCallback;
 			element.onClose = onCloseCallback;
-			element.signal('update_username', 'someUser');
-			element.signal('update_password', '42');
+			fillCredentialFormElements(element, 'someUser', '42');
 			const spy = spyOn(element, '_onClose').and.callThrough();
 			const submitButton = element.shadowRoot.querySelector('#authenticate-credential-button');
 
@@ -178,7 +236,7 @@ describe('PasswordCredentialPanel', () => {
 			const element = await setup();
 			element.url = 'someUrl';
 			element.authenticate = authenticateCallback;
-
+			fillCredentialFormElements(element, 'foo', 'bar');
 			const submitButton = element.shadowRoot.querySelector('#authenticate-credential-button');
 			submitButton.click();
 
@@ -193,7 +251,7 @@ describe('PasswordCredentialPanel', () => {
 			element.url = 'someUrl';
 			element.authenticate = authenticateCallback;
 			const errorSpy = spyOn(console, 'error');
-
+			fillCredentialFormElements(element, 'foo', 'bar');
 			const submitButton = element.shadowRoot.querySelector('#authenticate-credential-button');
 			submitButton.click();
 
@@ -214,6 +272,7 @@ describe('PasswordCredentialPanel', () => {
 			element.url = 'someUrl';
 			element.authenticate = authenticateCallback;
 			element.onClose = onCloseCallback;
+			fillCredentialFormElements(element, 'foo', 'bar');
 
 			const submitButton = element.shadowRoot.querySelector('#authenticate-credential-button');
 			submitButton.click();
@@ -240,6 +299,23 @@ describe('PasswordCredentialPanel', () => {
 			expect(inputPassword.getAttribute('type')).toBe('password');
 			expect(togglePassword).toHaveClass('eye-slash');
 			expect(togglePassword).not.toHaveClass('eye');
+		});
+
+		it('all "ba-form-element" elements receive the "userVisited" class', async () => {
+			const authenticateCallback = jasmine.createSpy().withArgs({ username: 'foo', password: 'bar' }, 'someUrl').and.callThrough();
+			const element = await setup();
+			const allBaFormElements = element.shadowRoot.querySelectorAll('.ba-form-element');
+			element.url = 'someUrl';
+			element.authenticate = authenticateCallback;
+			const submitButton = element.shadowRoot.querySelector('#authenticate-credential-button');
+			fillCredentialFormElements(element, null, null);
+
+			submitButton.click();
+
+			expect(allBaFormElements).toHaveSize(2);
+			allBaFormElements.forEach((element) => {
+				expect(element.classList.contains(BA_FORM_ELEMENT_VISITED_CLASS)).toBeTrue();
+			});
 		});
 	});
 
