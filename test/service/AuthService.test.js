@@ -1,6 +1,6 @@
 import { $injector } from '../../src/injection';
 import { AuthService } from '../../src/services/AuthService';
-import { bvvAuthResponseInterceptorProvider, bvvSignInProvider } from '../../src/services/provider/auth.provider';
+import { bvvAuthResponseInterceptorProvider, bvvSignInProvider, bvvSignOutProvider } from '../../src/services/provider/auth.provider';
 import { authReducer } from '../../src/store/auth/auth.reducer';
 import { TestUtils } from '../test-utils';
 
@@ -11,26 +11,35 @@ describe('AuthService', () => {
 
 	let store;
 
-	const setup = (signInProvider = bvvSignInProvider, authResponseInterceptorProvider = bvvAuthResponseInterceptorProvider, state = {}) => {
+	const setup = (
+		signInProvider = bvvSignInProvider,
+		signOutProvider = bvvSignOutProvider,
+		authResponseInterceptorProvider = bvvAuthResponseInterceptorProvider,
+		state = {}
+	) => {
 		store = TestUtils.setupStoreAndDi(state, {
 			auth: authReducer
 		});
 		$injector.registerSingleton('GeoResourceService', geoResourceService);
-		return new AuthService(signInProvider, authResponseInterceptorProvider);
+		return new AuthService(signInProvider, signOutProvider, authResponseInterceptorProvider);
 	};
 
 	describe('constructor', () => {
 		it('initializes the service with default providers', async () => {
+			setup();
 			const instanceUnderTest = new AuthService();
 			expect(instanceUnderTest._singInProvider).toEqual(bvvSignInProvider);
+			expect(instanceUnderTest._singOutProvider).toEqual(bvvSignOutProvider);
 			expect(instanceUnderTest._authResponseInterceptorProvider).toEqual(bvvAuthResponseInterceptorProvider);
 		});
 
 		it('initializes the service with custom provider', async () => {
 			const customSignInProvider = async () => {};
+			const customSignOutProvider = async () => {};
 			const customAuthResponseInterceptorProvider = () => {};
-			const instanceUnderTest = setup(customSignInProvider, customAuthResponseInterceptorProvider);
+			const instanceUnderTest = setup(customSignInProvider, customSignOutProvider, customAuthResponseInterceptorProvider);
 			expect(instanceUnderTest._singInProvider).toEqual(customSignInProvider);
+			expect(instanceUnderTest._singOutProvider).toEqual(customSignOutProvider);
 			expect(instanceUnderTest._authResponseInterceptorProvider).toEqual(customAuthResponseInterceptorProvider);
 		});
 	});
@@ -56,30 +65,103 @@ describe('AuthService', () => {
 	});
 
 	describe('signIn', () => {
-		describe('is successful', () => {
-			it('returns `true`, updates the internal state and the auth s-o.s', async () => {
-				const roles = ['TEST'];
-				const credential = { username: 'u', password: 'p' };
-				const signInProvider = jasmine.createSpy().withArgs(credential).and.resolveTo(roles);
-				const instanceUnderTest = setup(signInProvider);
+		describe('the user is NOT signed in', () => {
+			describe('is successful', () => {
+				it('returns `true`, updates the internal state and the auth s-o.s', async () => {
+					const roles = ['TEST'];
+					const credential = { username: 'u', password: 'p' };
+					const signInProvider = jasmine.createSpy().withArgs(credential).and.resolveTo(roles);
+					const instanceUnderTest = setup(signInProvider);
 
-				await expectAsync(instanceUnderTest.signIn(credential)).toBeResolvedTo(true);
-				expect(instanceUnderTest.getRoles()).toEqual(roles);
-				expect(instanceUnderTest.isSignedIn()).toBeTrue();
-				expect(store.getState().auth.signedIn).toBeTrue();
+					await expectAsync(instanceUnderTest.signIn(credential)).toBeResolvedTo(true);
+					expect(instanceUnderTest.getRoles()).toEqual(roles);
+					expect(instanceUnderTest.isSignedIn()).toBeTrue();
+					expect(store.getState().auth.signedIn).toBeTrue();
+				});
+			});
+			describe('is NOT successful', () => {
+				it('returns `false`', async () => {
+					const credential = { username: 'u', password: 'p' };
+					const signInProvider = jasmine.createSpy().withArgs(credential).and.resolveTo([]);
+					const instanceUnderTest = setup(signInProvider);
+
+					await expectAsync(instanceUnderTest.signIn(credential)).toBeResolvedTo(false);
+					expect(instanceUnderTest.getRoles()).toEqual([]);
+					expect(instanceUnderTest.isSignedIn()).toBeFalse();
+					expect(store.getState().auth.signedIn).toBeFalse();
+				});
 			});
 		});
-		describe('is NOT successful', () => {
-			it('returns `false`', async () => {
+		describe('the user is signed in', () => {
+			it('returns `true`', async () => {
 				const credential = { username: 'u', password: 'p' };
-				const signInProvider = jasmine.createSpy().withArgs(credential).and.resolveTo([]);
-				const instanceUnderTest = setup(signInProvider);
+				const instanceUnderTest = setup();
+				spyOn(instanceUnderTest, 'isSignedIn').and.returnValue(true);
 
-				await expectAsync(instanceUnderTest.signIn(credential)).toBeResolvedTo(false);
-				expect(instanceUnderTest.getRoles()).toEqual([]);
-				expect(instanceUnderTest.isSignedIn()).toBeFalse();
-				expect(store.getState().auth.signedIn).toBeFalse();
+				await expectAsync(instanceUnderTest.signIn(credential)).toBeResolvedTo(true);
 			});
+		});
+
+		it('passes the error of the underlying provider', async () => {
+			const msg = 'Something got wrong';
+			const credential = { username: 'u', password: 'p' };
+			const signInProvider = jasmine.createSpy().and.throwError(msg);
+			const instanceUnderTest = setup(signInProvider);
+			spyOn(instanceUnderTest, 'isSignedIn').and.returnValue(false);
+
+			await expectAsync(instanceUnderTest.signIn(credential)).toBeRejectedWithError(Error, msg);
+		});
+	});
+
+	describe('signOut', () => {
+		describe('the user is signed in', () => {
+			describe('is successful', () => {
+				it('returns `true`, updates the internal state and the auth s-o.s', async () => {
+					const signOutProvider = jasmine.createSpy().and.resolveTo(true);
+					const instanceUnderTest = setup(null, signOutProvider, null, { auth: { signedIn: true } });
+					instanceUnderTest._roles = ['TEST'];
+					spyOn(instanceUnderTest, 'isSignedIn').and.returnValue(true);
+
+					expect(store.getState().auth.signedIn).toBeTrue();
+
+					await expectAsync(instanceUnderTest.signOut()).toBeResolvedTo(true);
+					expect(instanceUnderTest.getRoles()).toEqual([]);
+					expect(store.getState().auth.signedIn).toBeFalse();
+				});
+			});
+
+			describe('is NOT successful', () => {
+				it('returns `false`', async () => {
+					const signOutProvider = jasmine.createSpy().and.resolveTo(false);
+					const instanceUnderTest = setup(null, signOutProvider, null, { auth: { signedIn: true } });
+					instanceUnderTest._roles = ['TEST'];
+					spyOn(instanceUnderTest, 'isSignedIn').and.returnValue(true);
+
+					expect(store.getState().auth.signedIn).toBeTrue();
+
+					await expectAsync(instanceUnderTest.signOut()).toBeResolvedTo(false);
+					expect(instanceUnderTest.getRoles()).not.toEqual([]);
+					expect(store.getState().auth.signedIn).toBeTrue();
+				});
+			});
+		});
+
+		describe('the user is NOT signed in', () => {
+			it('returns `true`', async () => {
+				const instanceUnderTest = setup(null, null, null);
+				spyOn(instanceUnderTest, 'isSignedIn').and.returnValue(false);
+
+				await expectAsync(instanceUnderTest.signOut()).toBeResolvedTo(true);
+			});
+		});
+
+		it('passes the error of the underlying provider', async () => {
+			const msg = 'Something got wrong';
+			const signOutProvider = jasmine.createSpy().and.throwError(msg);
+			const instanceUnderTest = setup(null, signOutProvider, null);
+			spyOn(instanceUnderTest, 'isSignedIn').and.returnValue(true);
+
+			await expectAsync(instanceUnderTest.signOut()).toBeRejectedWithError(Error, msg);
 		});
 	});
 
@@ -158,7 +240,7 @@ describe('AuthService', () => {
 				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
 				const responseInterceptor = () => {};
 				const authResponseInterceptorProvider = jasmine.createSpy().withArgs(['TEST']).and.returnValue(responseInterceptor);
-				const instanceUnderTest = setup(null, authResponseInterceptorProvider);
+				const instanceUnderTest = setup(null, null, authResponseInterceptorProvider);
 
 				const result = instanceUnderTest.getAuthResponseInterceptorForGeoResource(geoResourceId);
 
@@ -170,7 +252,7 @@ describe('AuthService', () => {
 					spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(null);
 					const responseInterceptor = () => {};
 					const authResponseInterceptorProvider = jasmine.createSpy().withArgs([]).and.returnValue(responseInterceptor);
-					const instanceUnderTest = setup(null, authResponseInterceptorProvider);
+					const instanceUnderTest = setup(null, null, authResponseInterceptorProvider);
 
 					const result = instanceUnderTest.getAuthResponseInterceptorForGeoResource(geoResourceId);
 
