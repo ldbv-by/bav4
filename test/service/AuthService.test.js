@@ -1,17 +1,21 @@
 import { $injector } from '../../src/injection';
 import { AuthService } from '../../src/services/AuthService';
 import { bvvAuthResponseInterceptorProvider, bvvSignInProvider } from '../../src/services/provider/auth.provider';
+import { authReducer } from '../../src/store/auth/auth.reducer';
+import { TestUtils } from '../test-utils';
 
 describe('AuthService', () => {
 	const geoResourceService = {
 		byId() {}
 	};
 
-	beforeAll(() => {
-		$injector.registerSingleton('GeoResourceService', geoResourceService);
-	});
+	let store;
 
-	const setup = (signInProvider = bvvSignInProvider, authResponseInterceptorProvider = bvvAuthResponseInterceptorProvider) => {
+	const setup = (signInProvider = bvvSignInProvider, authResponseInterceptorProvider = bvvAuthResponseInterceptorProvider, state = {}) => {
+		store = TestUtils.setupStoreAndDi(state, {
+			auth: authReducer
+		});
+		$injector.registerSingleton('GeoResourceService', geoResourceService);
 		return new AuthService(signInProvider, authResponseInterceptorProvider);
 	};
 
@@ -53,7 +57,7 @@ describe('AuthService', () => {
 
 	describe('signIn', () => {
 		describe('is successful', () => {
-			it('returns `true` and updates the internal state', async () => {
+			it('returns `true`, updates the internal state and the auth s-o.s', async () => {
 				const roles = ['TEST'];
 				const credential = { username: 'u', password: 'p' };
 				const signInProvider = jasmine.createSpy().withArgs(credential).and.resolveTo(roles);
@@ -62,6 +66,7 @@ describe('AuthService', () => {
 				await expectAsync(instanceUnderTest.signIn(credential)).toBeResolvedTo(true);
 				expect(instanceUnderTest.getRoles()).toEqual(roles);
 				expect(instanceUnderTest.isSignedIn()).toBeTrue();
+				expect(store.getState().auth.signedIn).toBeTrue();
 			});
 		});
 		describe('is NOT successful', () => {
@@ -73,6 +78,7 @@ describe('AuthService', () => {
 				await expectAsync(instanceUnderTest.signIn(credential)).toBeResolvedTo(false);
 				expect(instanceUnderTest.getRoles()).toEqual([]);
 				expect(instanceUnderTest.isSignedIn()).toBeFalse();
+				expect(store.getState().auth.signedIn).toBeFalse();
 			});
 		});
 	});
@@ -110,7 +116,7 @@ describe('AuthService', () => {
 				});
 			});
 			describe('and user has a suitable role', () => {
-				it('returns `true`', async () => {
+				it('returns `true` and updates', async () => {
 					const geoResourceId = 'id';
 					const geoResource = { restricted: true, authRoles: ['FOO', 'BAR'] };
 					spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);

@@ -18,6 +18,7 @@
  */
 
 import { $injector } from '../injection/index';
+import { setSignedIn } from '../store/auth/auth.action';
 import { bvvAuthResponseInterceptorProvider, bvvSignInProvider } from './provider/auth.provider';
 
 /**
@@ -80,7 +81,11 @@ export class AuthService {
 	async signIn(credential) {
 		const roles = await this._singInProvider(credential);
 		this._roles = [...roles];
-		return this._roles.length > 0;
+		if (this._roles.length > 0) {
+			setSignedIn();
+			return true;
+		}
+		return false;
 	}
 
 	/**
