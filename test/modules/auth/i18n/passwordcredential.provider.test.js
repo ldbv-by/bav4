@@ -13,7 +13,7 @@ describe('i18n for header module', () => {
 		expect(map.auth_passwordCredentialPanel_credential_rejected).toBe('Anmeldung fehlgeschlagen. Es ist ein technisches Problem aufgetreten!');
 		expect(map.auth_passwordCredentialPanel_authenticate).toBe('Anmeldung läuft...');
 		expect(TestUtils.renderTemplateResult(map.auth_passwordCredentialPanel_footer_register_for_role(['foo'])).textContent).toBe(
-			'Noch kein registrierter fooKunde?'
+			'Noch kein registrierter foo Kunde?'
 		);
 		expect(TestUtils.renderTemplateResult(map.auth_passwordCredentialPanel_footer_register_information(['bar'])).textContent).toBe(
 			'Hier finden Sie weitere Informationen.'
@@ -36,7 +36,7 @@ describe('i18n for header module', () => {
 		expect(map.auth_passwordCredentialPanel_credential_rejected).toBe('Authentication failed. Something got wrong!');
 		expect(map.auth_passwordCredentialPanel_authenticate).toBe('Authenticating...');
 		expect(TestUtils.renderTemplateResult(map.auth_passwordCredentialPanel_footer_register_for_role(['foo'])).textContent).toBe(
-			'Not yet a registered foocustomer?'
+			'Not yet a registered foo customer?'
 		);
 		expect(TestUtils.renderTemplateResult(map.auth_passwordCredentialPanel_footer_register_information(['bar'])).textContent).toBe(
 			'You can find more information here.'
