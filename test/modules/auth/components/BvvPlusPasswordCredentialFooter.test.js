@@ -38,9 +38,9 @@ describe('BvvPlusPasswordCredentialFooter', () => {
 			expect(section.textContent).toContain('auth_passwordCredentialPanel_footer_register_information');
 			expect(section.textContent).toContain('https://www.ldbv.bayern.de/produkte/dienste/bayernatlas.html');
 
-			expect(element.shadowRoot.querySelector('ba-badge').label).toBe('Plus');
-			expect(element.shadowRoot.querySelector('ba-badge').color).toBe('var(--text3)');
-			expect(element.shadowRoot.querySelector('ba-badge').background).toBe('var(--primary-color)');
+			expect(section.querySelector('ba-badge').label).toBe('Plus');
+			expect(section.querySelector('ba-badge').color).toBe('var(--text3)');
+			expect(section.querySelector('ba-badge').background).toBe('var(--primary-color)');
 		});
 
 		it('displays the anchors', async () => {
