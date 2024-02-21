@@ -1,3 +1,4 @@
+import { html } from 'lit-html';
 import { $injector } from '../../../../src/injection';
 import { BvvPlusPasswordCredentialFooter } from '../../../../src/modules/auth/components/BvvPlusPasswordCredentialFooter';
 import { TestUtils } from '../../../test-utils';
@@ -16,7 +17,7 @@ describe('BvvPlusPasswordCredentialFooter', () => {
 		};
 		TestUtils.setupStoreAndDi(initialState, {});
 
-		$injector.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('TranslationService', { translate: (key, params) => html`${key}${params[0]}` });
 
 		return TestUtils.render(BvvPlusPasswordCredentialFooter.tag);
 	};
@@ -34,6 +35,10 @@ describe('BvvPlusPasswordCredentialFooter', () => {
 			const element = await setup();
 			expect(element.shadowRoot.textContent).toContain('auth_passwordCredentialPanel_footer_register_for_role');
 			expect(element.shadowRoot.textContent).toContain('auth_passwordCredentialPanel_footer_register_information');
+			expect(element.shadowRoot.textContent).toContain('https://www.ldbv.bayern.de/produkte/dienste/bayernatlas.html');
+
+			expect(element.shadowRoot.querySelector('ba-badge').label).toBe('Plus');
+			expect(element.shadowRoot.querySelector('ba-badge').color).toBe('var(--text3)');
 		});
 
 		it('displays the anchors', async () => {
