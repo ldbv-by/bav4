@@ -2878,7 +2878,7 @@ describe('BvvMfp3Encoder', () => {
 	describe('_encodeGridLayer', () => {
 		it('uses the appropriate spacing for defined scale', () => {
 			const validScales = [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500];
-			const expectedSpacings = [100000, 100000, 50000, 20000, 5000, 1000, 1000, 1000, 500, 200, 100, 100, 50];
+			const expectedSpacings = [100000, 100000, 50000, 10000, 5000, 1000, 1000, 1000, 500, 200, 100, 100, 50];
 			const classUnderTest = setup();
 
 			// act & assert
@@ -2887,6 +2887,33 @@ describe('BvvMfp3Encoder', () => {
 				const expectedSpacing = expectedSpacings[index];
 				expect(actualGridLayerSpec.spacing).toEqual([expectedSpacing, expectedSpacing]);
 			});
+		});
+
+		it('uses defined properties', () => {
+			const scale = 10000;
+			const classUnderTest = setup();
+
+			// act & assert
+			const actualGridLayerSpec = classUnderTest._encodeGridLayer(scale);
+			expect(actualGridLayerSpec).toEqual(
+				jasmine.objectContaining({
+					type: 'grid',
+					gridType: 'lines',
+					origin: [600000, 4800000],
+					renderAsSvg: true,
+					haloColor: '#f5f5f5',
+					labelColor: 'black',
+					valueFormat: '##,#####.#',
+					formatGroupingSeparator: ' ',
+					indent: 10,
+					haloRadius: 2,
+					font: {
+						name: ['Liberation Sans', 'Helvetica', 'Nimbus Sans L', 'Liberation Sans', 'FreeSans', 'Sans-serif'],
+						size: 8,
+						style: 'BOLD'
+					}
+				})
+			);
 		});
 
 		it('uses the default spacing for a unknown scale', () => {
