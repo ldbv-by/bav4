@@ -33,12 +33,14 @@ describe('BvvPlusPasswordCredentialFooter', () => {
 	describe('when footer is rendered', () => {
 		it('displays the information text', async () => {
 			const element = await setup();
-			expect(element.shadowRoot.textContent).toContain('auth_passwordCredentialPanel_footer_register_for_role');
-			expect(element.shadowRoot.textContent).toContain('auth_passwordCredentialPanel_footer_register_information');
-			expect(element.shadowRoot.textContent).toContain('https://www.ldbv.bayern.de/produkte/dienste/bayernatlas.html');
+			const section = element.shadowRoot.querySelector('.footer_register');
+			expect(section.textContent).toContain('auth_passwordCredentialPanel_footer_register_for_role');
+			expect(section.textContent).toContain('auth_passwordCredentialPanel_footer_register_information');
+			expect(section.textContent).toContain('https://www.ldbv.bayern.de/produkte/dienste/bayernatlas.html');
 
 			expect(element.shadowRoot.querySelector('ba-badge').label).toBe('Plus');
 			expect(element.shadowRoot.querySelector('ba-badge').color).toBe('var(--text3)');
+			expect(element.shadowRoot.querySelector('ba-badge').background).toBe('var(--primary-color)');
 		});
 
 		it('displays the anchors', async () => {
