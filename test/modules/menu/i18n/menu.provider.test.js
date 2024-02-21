@@ -34,8 +34,8 @@ describe('i18n for menu module', () => {
 		expect(map.menu_navigation_rail_close).toBe('Schließen');
 		expect(map.menu_navigation_rail_zoom_to_extend).toBe('Ganz Bayern anzeigen');
 		expect(map.menu_navigation_rail_object_info).toBe('Object-Info');
-		expect(map.menu_navigation_rail_zoom_out).toBe('Verkleinere Kartenausschnitt');
-		expect(map.menu_navigation_rail_zoom_in).toBe('Vergrößere Kartenausschnitt');
+		expect(map.menu_navigation_rail_zoom_out).toBe('Karte verkleinern');
+		expect(map.menu_navigation_rail_zoom_in).toBe('Karte vergrößern ');
 		expect(map.menu_navigation_rail_search).toBe('Suchen');
 	});
 
