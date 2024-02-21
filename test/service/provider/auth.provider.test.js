@@ -1,6 +1,6 @@
 import { $injector } from '../../../src/injection';
 import { MediaType } from '../../../src/domain/mediaTypes';
-import { bvvSignInProvider, bvvAuthResponseInterceptorProvider } from '../../../src/services/provider/auth.provider';
+import { bvvSignInProvider, bvvAuthResponseInterceptorProvider, bvvSignOutProvider } from '../../../src/services/provider/auth.provider';
 import { TestUtils } from '../../test-utils';
 import { modalReducer } from '../../../src/store/modal/modal.reducer';
 import { PasswordCredentialPanel } from '../../../src/modules/auth/components/PasswordCredentialPanel';
@@ -59,7 +59,7 @@ describe('bvvSignInProvider', () => {
 		});
 	});
 
-	describe('backend return any other status code', () => {
+	describe('backend returns any other status code', () => {
 		it('throws an Error', async () => {
 			const statusCode = 500;
 			const backendUrl = 'https://backend.url/';
@@ -70,6 +70,55 @@ describe('bvvSignInProvider', () => {
 				.and.resolveTo(new Response(null, { status: statusCode }));
 
 			await expectAsync(bvvSignInProvider(credential)).toBeRejectedWithError(`Sign in not possible: Http-Status ${statusCode}`);
+			expect(configServiceSpy).toHaveBeenCalled();
+			expect(httpServiceSpy).toHaveBeenCalled();
+		});
+	});
+});
+
+describe('bvvSignOutProvider', () => {
+	const configService = {
+		getValueAsPath: () => {}
+	};
+
+	const httpService = {
+		get: async () => {}
+	};
+
+	beforeEach(() => {
+		$injector.registerSingleton('ConfigService', configService).registerSingleton('HttpService', httpService);
+	});
+
+	afterEach(() => {
+		$injector.reset();
+	});
+
+	describe('backend returns status code 200', () => {
+		it('returns "true"', async () => {
+			const backendUrl = 'https://backend.url/';
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const httpServiceSpy = spyOn(httpService, 'get')
+				.withArgs(backendUrl + 'auth/signout')
+				.and.resolveTo(new Response());
+
+			const result = await bvvSignOutProvider();
+
+			expect(result).toBeTrue();
+			expect(configServiceSpy).toHaveBeenCalled();
+			expect(httpServiceSpy).toHaveBeenCalled();
+		});
+	});
+
+	describe('backend returns any other status code', () => {
+		it('throws an Error', async () => {
+			const statusCode = 500;
+			const backendUrl = 'https://backend.url/';
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const httpServiceSpy = spyOn(httpService, 'get')
+				.withArgs(backendUrl + 'auth/signout')
+				.and.resolveTo(new Response(null, { status: statusCode }));
+
+			await expectAsync(bvvSignOutProvider()).toBeRejectedWithError(`Sign out not possible: Http-Status ${statusCode}`);
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
 		});

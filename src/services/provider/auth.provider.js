@@ -27,6 +27,23 @@ export const bvvSignInProvider = async (credential) => {
 	}
 };
 
+/**
+ * Bvv specific implementation of {@link module:services/AuthService~signOutProvider}.
+ * @function
+ * @type {module:services/AuthService~signOutProvider}
+ */
+export const bvvSignOutProvider = async () => {
+	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
+	const result = await httpService.get(`${configService.getValueAsPath('BACKEND_URL')}auth/signout`);
+
+	switch (result.status) {
+		case 200:
+			return true;
+		default:
+			throw new Error(`Sign out not possible: Http-Status ${result.status}`);
+	}
+};
+
 const createCredentialPanel = (authenticateFunction, onCloseFunction) => {
 	return html`<ba-auth-password-credential-panel
 		.authenticate=${authenticateFunction}
