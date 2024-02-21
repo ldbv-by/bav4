@@ -203,6 +203,11 @@
 	border-radius: 3.5em;
 	background-color: var(--primary-bg-color);
 	border: none;
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
+}
+.action-button:hover{
+	box-shadow:  0 0 4px rgba(0, 0, 0, 0.5);
+
 }
 .action-button__border {
 	position: absolute;
