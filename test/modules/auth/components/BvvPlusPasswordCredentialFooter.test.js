@@ -17,7 +17,7 @@ describe('BvvPlusPasswordCredentialFooter', () => {
 		};
 		TestUtils.setupStoreAndDi(initialState, {});
 
-		$injector.registerSingleton('TranslationService', { translate: (key, params) => html`${key}${params[0]}` });
+		$injector.registerSingleton('TranslationService', { translate: (key, params) => html`${key}${params[0] ?? ''}` });
 
 		return TestUtils.render(BvvPlusPasswordCredentialFooter.tag);
 	};
