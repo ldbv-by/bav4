@@ -540,11 +540,32 @@
 
 					<h3>Credentials</h3>
 					<div class="example row">
-						<ba-button id="button0" .label=${"Authenticate by password"} .type=${"primary"} @click=${async()=>{Ix(),await cm(1e3);const t="https://my.restricted.url/for/wms",e={},i=this.observe((t=>t.modal),(t=>(t=>{t.active||(i(),n(null))})(t))),n=(t,e)=>{i(),(t?()=>{(0,Im.L)(e.message,Im.A.INFO),Ix()}:()=>{(0,Im.L)("Authentication aborted",Im.A.WARN)})()};Mx("Connect to restricted WMS...",qu.qy`<ba-auth-password-credential-panel
+						<ba-button id="button0" .label=${"Authenticate by password for URL"} .type=${"primary"} @click=${async()=>{Ix(),await cm(1e3);const t="https://my.restricted.url/for/wms",e={},i=this.observe((t=>t.modal),(t=>r(t)),!1),n=(t,e)=>{i(),(t?()=>{(0,Im.L)(e.message,Im.A.INFO),Ix()}:()=>{(0,Im.L)("Authentication aborted",Im.A.WARN)})()},r=t=>{t.active||(i(),n(null))};Mx("Connect to restricted WMS...",qu.qy`<ba-auth-password-credential-panel
 					.url=${t}
 					.authenticate=${async(i,n)=>(await cm(3e3),n===t&&"foo"===i?.username&&"bar"===i?.password?(e.username=i.username,e.password=i.password,{message:"Credential is valid"}):null)}
 					.onClose=${n}
 				></ba-auth-password-credential-panel>`)}}></ba-button>
+						<div>Hint: Demo Credentials are foo/bar</div>
+					</div>
+
+					<div class="example row">
+						<ba-button id="button0" .label=${"Authenticate by password for Role"} .type=${"primary"} @click=${async()=>{Ix(),await cm(1e3);const t=is.PLUS,e={},i=this.observe((t=>t.modal),(t=>r(t)),!1),n=(t,e)=>{i(),(t?()=>{(0,Im.L)(e.message,Im.A.INFO),Ix()}:()=>{(0,Im.L)("Authentication aborted",Im.A.WARN)})()},r=t=>{t.active||(i(),n(null))},s=qu.qy`Sign in
+				<ba-badge .size=${"1.5"} .color=${"var(--text3)"} .background=${"var(--primary-color)"} .label=${"Role"}></ba-badge>`;Mx(s,qu.qy`<ba-auth-password-credential-panel .authenticate=${async(i,n)=>(await cm(3e3),n===t&&"foo"===i?.username&&"bar"===i?.password?(e.username=i.username,e.password=i.password,{message:"Credential is valid"}):null)} .onClose=${n}></ba-auth-password-credential-panel>`)}}></ba-button>
+						<div>Hint: Demo Credentials are foo/bar</div>
+					</div>
+
+					<div class="example row">
+						<ba-button
+							id="button0"
+							.label=${"Authenticate by password with custom footer content"}
+							.type=${"primary"}
+							@click=${async()=>{Ix(),await cm(1e3);const t=is.PLUS,e={},i=this.observe((t=>t.modal),(t=>r(t)),!1),n=(t,e)=>{i(),(t?()=>{(0,Im.L)(e.message,Im.A.INFO),Ix()}:()=>{(0,Im.L)("Authentication aborted",Im.A.WARN)})()},r=t=>{t.active||(i(),n(null))},s=qu.qy`<ba-auth-password-credential-bvv-footer></ba-auth-password-credential-bvv-footer>`,o=qu.qy`Sign in
+				<ba-badge .size=${"1.5"} .color=${"var(--text3)"} .background=${"var(--primary-color)"} .label=${"Role"}></ba-badge>`;Mx(o,qu.qy`<ba-auth-password-credential-panel
+					.authenticate=${async(i,n)=>(await cm(3e3),n===t&&"foo"===i?.username&&"bar"===i?.password?(e.username=i.username,e.password=i.password,{message:"Credential is valid"}):null)}
+					.footer=${s}
+					.onClose=${n}
+				></ba-auth-password-credential-panel>`)}}
+						></ba-button>
 						<div>Hint: Demo Credentials are foo/bar</div>
 					</div>
 				</div>
