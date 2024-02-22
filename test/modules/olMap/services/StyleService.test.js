@@ -961,8 +961,14 @@ describe('StyleService', () => {
 			expect(featureWithStyleFunction.getStyle()[0].getText().getScale()).toBe(1.2);
 
 			// replaces the icon
-			expect(featureWithStyleArray.getStyle()[0].getImage()).toEqual(jasmine.any(CircleStyle));
-			expect(featureWithStyleFunction.getStyle()[0].getImage()).toEqual(jasmine.any(CircleStyle));
+			const actualImageStyles = [featureWithStyleArray.getStyle()[0].getImage(), featureWithStyleFunction.getStyle()[0].getImage()];
+			actualImageStyles.forEach((actualImageStyle) => {
+				const expectedAlphaValue = 0; // 0 -> full transparency; 255 -> full opacity
+				const getAlphaValue = (rgbaColorArray) => rgbaColorArray[3];
+				expect(actualImageStyle).toEqual(jasmine.any(CircleStyle));
+				expect(getAlphaValue(actualImageStyle.getFill().getColor())).toEqual(expectedAlphaValue);
+				expect(getAlphaValue(actualImageStyle.getStroke().getColor())).toEqual(expectedAlphaValue);
+			});
 		});
 
 		it('sanitizes the stroke style', () => {

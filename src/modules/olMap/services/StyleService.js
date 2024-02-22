@@ -248,7 +248,8 @@ export class StyleService {
 		};
 		const getTextStyle = (name, style) => {
 			// If the feature has a name, we display it on the map.
-			// -> Mimicking the behavior of Google Earth
+			// -> Mimicking the behavior of Google Earth in combination with the
+			//    transparentCircle, if image.getScale() === 0
 			if (name && style?.getText && style?.getText().getScale() !== 0) {
 				return new Text({
 					font: 'normal 24px Open Sans',
