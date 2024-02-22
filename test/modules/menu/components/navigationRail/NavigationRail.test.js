@@ -10,6 +10,7 @@ import { createNoInitialStateMainMenuReducer } from '../../../../../src/store/ma
 import { featureInfoReducer } from '../../../../../src/store/featureInfo/featureInfo.reducer';
 import { routingReducer } from '../../../../../src/store/routing/routing.reducer';
 import { TabIds } from '../../../../../src/domain/mainMenu';
+import { setTab } from '../../../../../src/store/mainMenu/mainMenu.action';
 
 window.customElements.define(NavigationRail.tag, NavigationRail);
 
@@ -355,6 +356,38 @@ describe('NavigationRail', () => {
 			element.shadowRoot.querySelector('.zoom-to-extent').click();
 			expect(store.getState().position.fitRequest.payload.extent).toEqual(extent);
 			expect(store.getState().position.fitRequest.payload.options).toEqual({ useVisibleViewport: false });
+		});
+
+		it('toggles routing tab', async () => {
+			const state = {
+				mainMenu: {
+					open: false,
+					tab: TabIds.TOPICS
+				},
+				media: {
+					portrait: true,
+					minWidth: true
+				},
+				navigationRail: {
+					open: true,
+					visitedTabIds: []
+				}
+			};
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelectorAll('.routing.is-active')).toHaveSize(0);
+			setTab(TabIds.ROUTING);
+			expect(element.shadowRoot.querySelectorAll('.routing.is-active')).toHaveSize(1);
+
+			expect(store.getState().mainMenu.open).toBeFalse();
+
+			element.shadowRoot.querySelector('.routing').click();
+
+			expect(store.getState().mainMenu.open).toBeTrue();
+
+			element.shadowRoot.querySelector('.routing').click();
+
+			expect(store.getState().mainMenu.open).toBeFalse();
 		});
 	});
 

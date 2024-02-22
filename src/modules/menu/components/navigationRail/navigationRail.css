@@ -21,10 +21,10 @@
 }
 .is-portrait button {
 	font-size: 1.7rem;
-	min-width: 4em;
+	min-width: 2em;
 }
 .navigation-rail__container button {
-	height: 6em;
+	height: 5.8em;
 	width: 100%;
 	background: transparent;
 	border: none;
@@ -38,9 +38,13 @@
 .navigation-rail__container button .text {
 	text-align: center;
 	margin: auto;
-	font-size: 0.8em;
+	font-size: 0.8rem;
 	margin-top: 0.5em;
 	color: var(--text1);
+}
+.is-portrait .navigation-rail__container button .text {
+	margin-top: 1em;
+	padding: 0 0.2em;
 }
 .separator {
 	order: 1;
@@ -148,6 +152,7 @@
 .is-portrait .home,
 .is-portrait .separator,
 .is-portrait .routing,
+.is-portrait .objectinfo,
 .is-portrait .theme-toggle {
 	display: none;
 }
@@ -156,4 +161,11 @@
 .is-landscape .zoom-to-extent,
 .is-landscape .close {
 	display: none;
+}
+
+.is-portrait .routing.is-active,
+.is-portrait .objectinfo.is-active {
+	border-right: 1px dotted var(--secondary-color) !important;
+	order: 0 !important;
+	display: flex !important;
 }
