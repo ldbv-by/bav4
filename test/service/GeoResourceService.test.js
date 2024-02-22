@@ -23,6 +23,7 @@ import { $injector } from '../../src/injection';
 import { loadBvvFileStorageResourceById } from '../../src/services/provider/fileStorage.provider';
 import { TestUtils } from '../test-utils';
 import { createDefaultLayerProperties, layersReducer } from '../../src/store/layers/layers.reducer';
+import { bvvAuthResponseInterceptorProvider } from '../../src/services/provider/auth.provider';
 
 describe('GeoResourceService', () => {
 	const loadExampleGeoResources = async () => {
@@ -50,15 +51,19 @@ describe('GeoResourceService', () => {
 	const environmentService = {
 		isStandalone: () => {}
 	};
+	const authService = {
+		isSignedIn: () => {},
+		getRoles: () => {}
+	};
 
 	let store;
 
-	const setup = (provider = loadExampleGeoResources, byIdProviders, state = {}) => {
+	const setup = (provider = loadExampleGeoResources, byIdProviders, authResponseInterceptorProvider, state = {}) => {
 		store = TestUtils.setupStoreAndDi(state, {
 			layers: layersReducer
 		});
-		$injector.registerSingleton('EnvironmentService', environmentService);
-		return new GeoResourceService(provider, byIdProviders);
+		$injector.registerSingleton('EnvironmentService', environmentService).registerSingleton('AuthService', authService);
+		return new GeoResourceService(provider, byIdProviders, authResponseInterceptorProvider);
 	};
 	const xyzGeoResource = new XyzGeoResource('xyzId', 'xyzLabel', 'xyzUrl');
 
@@ -91,15 +96,18 @@ describe('GeoResourceService', () => {
 			const instanceUnderTest = new GeoResourceService();
 			expect(instanceUnderTest._provider).toEqual(loadBvvGeoResources);
 			expect(instanceUnderTest._byIdProvider).toEqual([loadExternalGeoResource, loadBvvFileStorageResourceById, loadBvvGeoResourceById]);
+			expect(instanceUnderTest._authResponseInterceptorProvider).toEqual(bvvAuthResponseInterceptorProvider);
 		});
 
-		it('initializes the service with custom provider', async () => {
+		it('initializes the service with custom providers', async () => {
 			const customProvider = async () => {};
 			const customByIdProvider0 = async () => {};
 			const customByIdProvider1 = async () => {};
-			const instanceUnderTest = setup(customProvider, [customByIdProvider0, customByIdProvider1]);
+			const customAuthResponseInterceptorProvider = () => {};
+			const instanceUnderTest = setup(customProvider, [customByIdProvider0, customByIdProvider1], customAuthResponseInterceptorProvider);
 			expect(instanceUnderTest._provider).toEqual(customProvider);
 			expect(instanceUnderTest._byIdProvider).toEqual([customByIdProvider0, customByIdProvider1]);
+			expect(instanceUnderTest._authResponseInterceptorProvider).toEqual(customAuthResponseInterceptorProvider);
 		});
 
 		it('just provides GeoResources when already initialized', async () => {
@@ -246,7 +254,7 @@ describe('GeoResourceService', () => {
 			const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: geoResourceId0 };
 			const layerProperties1 = { ...createDefaultLayerProperties(), id: 'id1', geoResourceId: geoResourceId1 };
 			const geoResource0 = new WmsGeoResource(geoResourceId0, 'Wms', 'https://some.url', 'someLayer', 'image/png');
-			const instanceUnderTest = setup(null, null, {
+			const instanceUnderTest = setup(null, null, null, {
 				layers: {
 					active: [layerProperties0, layerProperties1]
 				}
@@ -288,6 +296,97 @@ describe('GeoResourceService', () => {
 		});
 	});
 
+	describe('isAllowed', () => {
+		describe('User is NOT signed in', () => {
+			it('returns `false`', async () => {
+				spyOn(authService, 'isSignedIn').and.returnValue(false);
+				const geoResourceId = 'id';
+				const instanceUnderTest = setup();
+
+				expect(instanceUnderTest.isAllowed(geoResourceId)).toBeFalse();
+			});
+			describe('and GeoResource is unknown', () => {
+				it('returns `false`', async () => {
+					spyOn(authService, 'isSignedIn').and.returnValue(true);
+					const geoResourceId = 'id';
+					const instanceUnderTest = setup();
+					spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(null);
+
+					expect(instanceUnderTest.isAllowed(geoResourceId)).toBeFalse();
+				});
+			});
+		});
+		describe('and user is signed in', () => {
+			describe('and User has the wrong role', () => {
+				it('returns `false`', async () => {
+					spyOn(authService, 'isSignedIn').and.returnValue(true);
+					spyOn(authService, 'getRoles').and.returnValue(['TEST']);
+					const geoResourceId = 'id';
+					const geoResource = { restricted: true, authRoles: ['FOO', 'BAR'] };
+					const instanceUnderTest = setup();
+					spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+
+					expect(instanceUnderTest.isAllowed(geoResourceId)).toBeFalse();
+				});
+			});
+			describe('and User has a suitable role', () => {
+				it('returns `true`', async () => {
+					spyOn(authService, 'isSignedIn').and.returnValue(true);
+					spyOn(authService, 'getRoles').and.returnValue(['BAR']);
+					const geoResourceId = 'id';
+					const geoResource = { restricted: true, authRoles: ['FOO', 'BAR'] };
+					const instanceUnderTest = setup();
+					spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+
+					expect(instanceUnderTest.isAllowed(geoResourceId)).toBeTrue();
+				});
+			});
+			describe('and GeoResource is NOT restricted', () => {
+				it('returns `true`', async () => {
+					spyOn(authService, 'isSignedIn').and.returnValue(true);
+					spyOn(authService, 'getRoles').and.returnValue(['BAR']);
+					const geoResourceId = 'id';
+					const geoResource = { restricted: false, authRoles: [] };
+					const instanceUnderTest = setup();
+					spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+
+					expect(instanceUnderTest.isAllowed(geoResourceId)).toBeTrue();
+				});
+			});
+		});
+	});
+
+	describe('getAuthResponseInterceptorForGeoResource', () => {
+		describe('and GeoResource is known', () => {
+			it('returns a response interceptor for that GeoResource', async () => {
+				const geoResourceId = 'id';
+				const geoResource = { authRoles: ['TEST'] };
+				const responseInterceptor = () => {};
+				const authResponseInterceptorProvider = jasmine.createSpy().withArgs(['TEST']).and.returnValue(responseInterceptor);
+				const instanceUnderTest = setup(null, null, authResponseInterceptorProvider);
+				spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+
+				const result = instanceUnderTest.getAuthResponseInterceptorForGeoResource(geoResourceId);
+
+				expect(result).toEqual(responseInterceptor);
+			});
+
+			describe('and GeoResource is unknown', () => {
+				it('returns `false`', async () => {
+					const geoResourceId = 'id';
+					const responseInterceptor = () => {};
+					const authResponseInterceptorProvider = jasmine.createSpy().withArgs([]).and.returnValue(responseInterceptor);
+					const instanceUnderTest = setup(null, null, authResponseInterceptorProvider);
+					spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(null);
+
+					const result = instanceUnderTest.getAuthResponseInterceptorForGeoResource(geoResourceId);
+
+					expect(result).toEqual(responseInterceptor);
+				});
+			});
+		});
+	});
+
 	describe('_proxify', () => {
 		it('returns an observable GeoResource', () => {
 			const instanceUnderTest = setup();
@@ -309,7 +408,7 @@ describe('GeoResourceService', () => {
 				const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: geoResourceId0 };
 				const layerProperties1 = { ...createDefaultLayerProperties(), id: 'id1', geoResourceId: geoResourceId1 };
 				const geoResource0 = new WmsGeoResource(geoResourceId0, 'Wms', 'https://some.url', 'someLayer', 'image/png');
-				const instanceUnderTest = setup(null, null, {
+				const instanceUnderTest = setup(null, null, null, {
 					layers: {
 						active: [layerProperties0, layerProperties1]
 					}
@@ -328,7 +427,7 @@ describe('GeoResourceService', () => {
 				const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: geoResourceId0 };
 				const layerProperties1 = { ...createDefaultLayerProperties(), id: 'id1', geoResourceId: geoResourceId1 };
 				const geoResource0 = new WmsGeoResource(geoResourceId0, 'Wms', 'https://some.url', 'someLayer', 'image/png');
-				const instanceUnderTest = setup(null, null, {
+				const instanceUnderTest = setup(null, null, null, {
 					layers: {
 						active: [layerProperties0, layerProperties1]
 					}
