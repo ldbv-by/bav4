@@ -231,6 +231,9 @@ export class StyleService {
 			if (Array.isArray(stylesCandidate) && stylesCandidate.length > 0) {
 				return stylesCandidate;
 			}
+			if (stylesCandidate instanceof Style) {
+				return [stylesCandidate];
+			}
 			return null;
 		};
 		const getStroke = (style) => {
@@ -274,7 +277,7 @@ export class StyleService {
 		// if the feature is a Point and has a name with a text style, we
 		// create a correct text style.
 		if (style && isPointLike(geometry)) {
-			const image = style.getImage() ?? null;
+			const image = style.getImage ? style.getImage() : null;
 
 			const sanitizedImage = getImageStyle(image);
 			const sanitizedText = getTextStyle(olFeature.get('name'), style);
@@ -284,7 +287,7 @@ export class StyleService {
 					stroke: sanitizedText ? null : sanitizedStroke,
 					image: sanitizedText ? sanitizedImage : image,
 					text: sanitizedText,
-					zIndex: style.getZIndex() ?? null
+					zIndex: style.getZIndex()
 				})
 			];
 			olFeature.setStyle(sanitizedStyles);
@@ -298,7 +301,7 @@ export class StyleService {
 					stroke: sanitizedStroke,
 					image: null,
 					text: null,
-					zIndex: style.getZIndex() ?? null
+					zIndex: style.getZIndex()
 				})
 			];
 			olFeature.setStyle(sanitizedStyles);
