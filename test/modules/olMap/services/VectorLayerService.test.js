@@ -138,11 +138,17 @@ describe('VectorLayerService', () => {
 				const olSource = new VectorSource();
 				const vectorGeoresource = new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326);
 				spyOn(instanceUnderTest, '_vectorSourceForData').withArgs(vectorGeoresource).and.returnValue(olSource);
+				const sanitizeSpy = spyOn(instanceUnderTest, '_sanitizeStyles')
+					.withArgs(jasmine.any(VectorLayer))
+					.and.callFake(() => {});
+
 				spyOn(instanceUnderTest, '_applyStyles')
 					.withArgs(jasmine.anything(), olMap)
 					.and.callFake((layer) => layer);
 
 				const olVectorLayer = instanceUnderTest.createVectorLayer(id, vectorGeoresource, olMap);
+
+				expect(sanitizeSpy).toHaveBeenCalledWith(olVectorLayer);
 
 				expect(olVectorLayer.get('id')).toBe(id);
 				expect(olVectorLayer.get('geoResourceId')).toBe(geoResourceId);
@@ -493,6 +499,23 @@ describe('VectorLayerService', () => {
 			});
 		});
 
+		describe('_sanitizeStyles', () => {
+			it('calls the StyleService to sanitize each present feature ', () => {
+				setup();
+				const olFeature0 = new Feature();
+				const olFeature1 = new Feature();
+				const olSource = new VectorSource({ features: [olFeature0, olFeature1] });
+				const olLayer = new VectorLayer({ source: olSource });
+				const spy = spyOn(styleService, 'sanitizeStyle')
+					.withArgs(jasmine.any(Feature))
+					.and.callFake(() => {});
+
+				instanceUnderTest._sanitizeStyles(olLayer);
+
+				expect(spy).toHaveBeenCalledTimes(2);
+			});
+		});
+
 		describe('_applyStyles', () => {
 			it('returns the olLayer ', () => {
 				setup();
@@ -535,15 +558,12 @@ describe('VectorLayerService', () => {
 					spyOn(styleService, 'isStyleRequired').and.returnValue(true);
 					const registerStyleEventListenersSpy = spyOn(instanceUnderTest, '_registerStyleEventListeners');
 					const styleServiceAddSpy = spyOn(styleService, 'addStyle');
-					const styleServiceSanitizeSpy = spyOn(styleService, 'sanitizeStyle').and.callFake(() => {});
 					const updateStyleSpy = spyOn(instanceUnderTest, '_updateStyle');
 
 					instanceUnderTest._applyStyles(olLayer, olMap);
 
 					expect(styleServiceAddSpy).toHaveBeenCalledWith(olFeature0, olMap, olLayer);
 					expect(styleServiceAddSpy).toHaveBeenCalledWith(olFeature1, olMap, olLayer);
-					expect(styleServiceSanitizeSpy).toHaveBeenCalledWith(olFeature0);
-					expect(styleServiceSanitizeSpy).toHaveBeenCalledWith(olFeature1);
 					expect(updateStyleSpy).toHaveBeenCalledWith(olFeature0, olLayer, olMap);
 					expect(updateStyleSpy).toHaveBeenCalledWith(olFeature1, olLayer, olMap);
 					expect(registerStyleEventListenersSpy).toHaveBeenCalledOnceWith(olSource, olLayer, olMap);
@@ -559,14 +579,11 @@ describe('VectorLayerService', () => {
 					spyOn(styleService, 'isStyleRequired').and.returnValue(false);
 					const registerStyleEventListenersSpy = spyOn(instanceUnderTest, '_registerStyleEventListeners');
 					const styleServiceAddSpy = spyOn(styleService, 'addStyle');
-					const styleServiceSanitizeSpy = spyOn(styleService, 'sanitizeStyle').and.callFake(() => {});
 					const updateStyleSpy = spyOn(instanceUnderTest, '_updateStyle');
 
 					instanceUnderTest._applyStyles(olLayer, olMap);
 
 					expect(styleServiceAddSpy).not.toHaveBeenCalled();
-					expect(styleServiceSanitizeSpy).toHaveBeenCalledWith(olFeature0);
-					expect(styleServiceSanitizeSpy).toHaveBeenCalledWith(olFeature1);
 					expect(updateStyleSpy).not.toHaveBeenCalled();
 					expect(registerStyleEventListenersSpy).not.toHaveBeenCalled();
 				});
@@ -588,14 +605,11 @@ describe('VectorLayerService', () => {
 					});
 					const registerStyleEventListenersSpy = spyOn(instanceUnderTest, '_registerStyleEventListeners');
 					const styleServiceAddSpy = spyOn(styleService, 'addStyle');
-					const styleServiceSanitizeSpy = spyOn(styleService, 'sanitizeStyle').and.callFake(() => {});
 					const updateStyleSpy = spyOn(instanceUnderTest, '_updateStyle');
 
 					instanceUnderTest._applyStyles(olLayer, olMap);
 
 					expect(styleServiceAddSpy).not.toHaveBeenCalled();
-					expect(styleServiceSanitizeSpy).toHaveBeenCalledWith(olFeature0);
-					expect(styleServiceSanitizeSpy).toHaveBeenCalledWith(olFeature1);
 					expect(updateStyleSpy).not.toHaveBeenCalled();
 					expect(registerStyleEventListenersSpy).toHaveBeenCalledOnceWith(olSource, olLayer, olMap);
 				});
