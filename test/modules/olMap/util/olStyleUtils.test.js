@@ -40,6 +40,7 @@ import CircleStyle from 'ol/style/Circle';
 import { hexToRgb } from '../../../../src/utils/colors';
 
 const Rgb_Black = [0, 0, 0];
+const Expected_Text_Font = 'normal 16px OpenSans';
 
 const configService = {
 	getValue: () => {},
@@ -484,6 +485,7 @@ describe('markerStyleFunction', () => {
 		expect(styles).toBeDefined();
 		expect(styles[0].getText().getText()).toBe('foo');
 		expect(styles[0].getText().getOffsetY()).toBe(2);
+		expect(styles[0].getText().getFont()).toBe(Expected_Text_Font);
 	});
 
 	it('should return a style WITHOUT a Text', () => {
@@ -557,6 +559,7 @@ describe('textStyleFunction', () => {
 
 		expect(styles).toBeDefined();
 		expect(styles[0].getText().getText()).toBe(DEFAULT_TEXT);
+		expect(styles[0].getText().getFont()).toBe(Expected_Text_Font);
 	});
 
 	it('should return a style specified by styleOption; large text', () => {
@@ -568,6 +571,7 @@ describe('textStyleFunction', () => {
 		expect(textStyle.getText()).toBe('Foo');
 		expect(textStyle.getScale()).toBe(2);
 		expect(textStyle.getStroke().getColor()).toEqual(Rgb_Black.concat([1]));
+		expect(textStyle.getFont()).toBe(Expected_Text_Font);
 	});
 
 	it('should return a style specified by styleOption; medium text', () => {
@@ -579,6 +583,7 @@ describe('textStyleFunction', () => {
 		expect(textStyle.getText()).toBe('Bar');
 		expect(textStyle.getScale()).toBe(1.5);
 		expect(textStyle.getStroke().getColor()).toEqual(Rgb_Black.concat([1]));
+		expect(textStyle.getFont()).toBe(Expected_Text_Font);
 	});
 
 	it('should return a style specified by styleOption; small text', () => {
@@ -590,6 +595,7 @@ describe('textStyleFunction', () => {
 		expect(textStyle.getText()).toBe('Bar');
 		expect(textStyle.getScale()).toBe(1);
 		expect(textStyle.getStroke().getColor()).toEqual(Rgb_Black.concat([1]));
+		expect(textStyle.getFont()).toBe(Expected_Text_Font);
 	});
 
 	it('should return a style specified by styleOption; text scale as number ', () => {
@@ -601,6 +607,7 @@ describe('textStyleFunction', () => {
 		expect(textStyle.getText()).toBe('Foo');
 		expect(textStyle.getScale()).toBe(2);
 		expect(textStyle.getStroke().getColor()).toEqual(Rgb_Black.concat([1]));
+		expect(textStyle.getFont()).toBe(Expected_Text_Font);
 	});
 });
 
