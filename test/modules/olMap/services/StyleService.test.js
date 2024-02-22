@@ -3,7 +3,7 @@ import { $injector } from '../../../../src/injection';
 import { TestUtils } from '../../../test-utils.js';
 import { StyleService, StyleTypes } from '../../../../src/modules/olMap/services/StyleService';
 import { OverlayService } from '../../../../src/modules/olMap/services/OverlayService';
-import { Polygon, Point } from 'ol/geom';
+import { Polygon, Point, LineString } from 'ol/geom';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { Fill, Icon, Stroke, Style, Text } from 'ol/style';
@@ -924,9 +924,57 @@ describe('StyleService', () => {
 
 			expect(spy).not.toHaveBeenCalled();
 		});
-		it('sanitizes the text style', () => {
+
+		it('removes the text style on a point feature without a name', () => {
+			const feature = new Feature({ geometry: new Point([0, 0]) });
+			const style = new Style({
+				image: new Icon({
+					size: [42, 42],
+					anchor: [42, 42],
+					anchorXUnits: 'pixels',
+					anchorYUnits: 'pixels',
+					src: 'https://some.url/to/image/foo.png'
+				}),
+				text: new Text({ text: 'foo', fill: new Fill({ color: [42, 21, 0] }), scale: 1.2 })
+			});
+			feature.setStyle([style]);
+			const spy = spyOn(feature, 'setStyle').and.callThrough(() => {});
+
+			instanceUnderTest.sanitizeStyle(feature);
+
+			expect(spy).toHaveBeenCalledWith(jasmine.arrayContaining([jasmine.any(Style)]));
+			expect(feature.getStyle()[0].getText()).toBeNull();
+		});
+
+		it('sanitizes the style for point feature ', () => {
+			const featureWithStyle = new Feature({ geometry: new Point([0, 0]) });
 			const featureWithStyleArray = new Feature({ geometry: new Point([0, 0]) });
 			const featureWithStyleFunction = new Feature({ geometry: new Point([0, 0]) });
+			const style = new Style({
+				text: new Text({ text: 'foo', fill: new Fill({ color: [42, 21, 0] }), scale: 1.2 })
+			});
+			featureWithStyle.set('name', 'bar');
+			featureWithStyleArray.set('name', 'bar');
+			featureWithStyleFunction.set('name', 'bar');
+			featureWithStyle.setStyle(style);
+			featureWithStyleArray.setStyle([style]);
+			featureWithStyleFunction.setStyle(() => [style]);
+			const spyStyle = spyOn(featureWithStyle, 'setStyle').and.callThrough();
+			const spyStyleArray = spyOn(featureWithStyleArray, 'setStyle').and.callThrough();
+			const spyStyleFunction = spyOn(featureWithStyleFunction, 'setStyle').and.callThrough();
+
+			instanceUnderTest.sanitizeStyle(featureWithStyle);
+			instanceUnderTest.sanitizeStyle(featureWithStyleArray);
+			instanceUnderTest.sanitizeStyle(featureWithStyleFunction);
+
+			// set the new style
+			expect(spyStyle).toHaveBeenCalledWith(jasmine.arrayContaining([jasmine.any(Style)]));
+			expect(spyStyleArray).toHaveBeenCalledWith(jasmine.arrayContaining([jasmine.any(Style)]));
+			expect(spyStyleFunction).toHaveBeenCalledWith(jasmine.arrayContaining([jasmine.any(Style)]));
+		});
+
+		it('sanitizes the text & image style for point feature', () => {
+			const feature = new Feature({ geometry: new Point([0, 0]) });
 			const style = new Style({
 				image: new Icon({
 					size: [42, 42],
@@ -938,40 +986,31 @@ describe('StyleService', () => {
 				}),
 				text: new Text({ text: 'foo', fill: new Fill({ color: [42, 21, 0] }), scale: 1.2 })
 			});
-			featureWithStyleArray.set('name', 'bar');
-			featureWithStyleFunction.set('name', 'bar');
-			featureWithStyleArray.setStyle([style]);
-			featureWithStyleFunction.setStyle(() => [style]);
-			const spyStyleArray = spyOn(featureWithStyleArray, 'setStyle').and.callThrough();
-			const spyStyleFunction = spyOn(featureWithStyleFunction, 'setStyle').and.callThrough();
+			feature.set('name', 'bar');
+			feature.setStyle([style]);
+			const spyStyle = spyOn(feature, 'setStyle').and.callThrough();
 
-			instanceUnderTest.sanitizeStyle(featureWithStyleArray);
-			instanceUnderTest.sanitizeStyle(featureWithStyleFunction);
+			instanceUnderTest.sanitizeStyle(feature);
 
 			// set the new style
-			expect(spyStyleArray).toHaveBeenCalledWith(jasmine.arrayContaining([jasmine.any(Style)]));
-			expect(spyStyleFunction).toHaveBeenCalledWith(jasmine.arrayContaining([jasmine.any(Style)]));
+			expect(spyStyle).toHaveBeenCalledWith(jasmine.arrayContaining([jasmine.any(Style)]));
 
 			// uses the feature name
-			expect(featureWithStyleArray.getStyle()[0].getText().getText()).toBe('bar');
-			expect(featureWithStyleFunction.getStyle()[0].getText().getText()).toBe('bar');
+			expect(feature.getStyle()[0].getText().getText()).toBe('bar');
 
 			// uses the scale
-			expect(featureWithStyleArray.getStyle()[0].getText().getScale()).toBe(1.2);
-			expect(featureWithStyleFunction.getStyle()[0].getText().getScale()).toBe(1.2);
+			expect(feature.getStyle()[0].getText().getScale()).toBe(1.2);
 
 			// replaces the icon
-			const actualImageStyles = [featureWithStyleArray.getStyle()[0].getImage(), featureWithStyleFunction.getStyle()[0].getImage()];
-			actualImageStyles.forEach((actualImageStyle) => {
-				const expectedAlphaValue = 0; // 0 -> full transparency; 255 -> full opacity
-				const getAlphaValue = (rgbaColorArray) => rgbaColorArray[3];
-				expect(actualImageStyle).toEqual(jasmine.any(CircleStyle));
-				expect(getAlphaValue(actualImageStyle.getFill().getColor())).toEqual(expectedAlphaValue);
-				expect(getAlphaValue(actualImageStyle.getStroke().getColor())).toEqual(expectedAlphaValue);
-			});
+			const actualImageStyle = feature.getStyle()[0].getImage();
+			const expectedAlphaValue = 0; // 0 -> full transparency; 255 -> full opacity
+			const getAlphaValue = (rgbaColorArray) => rgbaColorArray[3];
+			expect(actualImageStyle).toEqual(jasmine.any(CircleStyle));
+			expect(getAlphaValue(actualImageStyle.getFill().getColor())).toEqual(expectedAlphaValue);
+			expect(getAlphaValue(actualImageStyle.getStroke().getColor())).toEqual(expectedAlphaValue);
 		});
 
-		it('sanitizes the stroke style', () => {
+		it('sanitizes the stroke style for point feature', () => {
 			const feature = new Feature({ geometry: new Point([0, 0]) });
 			const style = new Style({
 				image: new Icon({
@@ -998,6 +1037,47 @@ describe('StyleService', () => {
 			expect(spyStyle).toHaveBeenCalledWith(jasmine.arrayContaining([jasmine.any(Style)]));
 
 			expect(feature.getStyle()[0].getStroke()).toBeNull();
+		});
+
+		it('sanitizes the stroke style for line & polygon feature', () => {
+			const lineStringFeature = new Feature({
+				geometry: new LineString([
+					[0, 0],
+					[10, 0]
+				])
+			});
+			const polygonFeature = new Feature({
+				geometry: new Polygon([
+					[
+						[0, 0],
+						[1, 0],
+						[1, 1],
+						[0, 1],
+						[0, 0]
+					]
+				])
+			});
+			const style = new Style({
+				fill: new Fill({ color: [42, 21, 0] }),
+				stroke: new Stroke({
+					color: [255, 0, 0, 0.9],
+					width: 0
+				})
+			});
+
+			lineStringFeature.setStyle(() => [style]);
+			polygonFeature.setStyle(() => [style]);
+			const spyLineStringStyle = spyOn(lineStringFeature, 'setStyle').and.callThrough();
+			const spyPolygonStyle = spyOn(polygonFeature, 'setStyle').and.callThrough();
+
+			instanceUnderTest.sanitizeStyle(lineStringFeature);
+			instanceUnderTest.sanitizeStyle(polygonFeature);
+
+			expect(spyLineStringStyle).toHaveBeenCalledWith(jasmine.arrayContaining([jasmine.any(Style)]));
+			expect(spyPolygonStyle).toHaveBeenCalledWith(jasmine.arrayContaining([jasmine.any(Style)]));
+
+			expect(lineStringFeature.getStyle()[0].getStroke()).toBeNull();
+			expect(polygonFeature.getStyle()[0].getStroke()).toBeNull();
 		});
 	});
 

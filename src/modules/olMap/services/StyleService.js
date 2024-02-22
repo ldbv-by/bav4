@@ -228,11 +228,8 @@ export class StyleService {
 		const getStyles = (feature) => {
 			const styleFunction = feature.getStyleFunction();
 			const stylesCandidate = !styleFunction || !styleFunction(feature) ? null : styleFunction(feature);
-			if (Array.isArray(stylesCandidate)) {
+			if (Array.isArray(stylesCandidate) && stylesCandidate.length > 0) {
 				return stylesCandidate;
-			}
-			if (stylesCandidate instanceof Style) {
-				return [stylesCandidate];
 			}
 			return null;
 		};
@@ -287,7 +284,7 @@ export class StyleService {
 					stroke: sanitizedText ? null : sanitizedStroke,
 					image: sanitizedText ? sanitizedImage : image,
 					text: sanitizedText,
-					zIndex: style.getZIndex ? style.getZIndex() : null
+					zIndex: style.getZIndex() ?? null
 				})
 			];
 			olFeature.setStyle(sanitizedStyles);
@@ -301,7 +298,7 @@ export class StyleService {
 					stroke: sanitizedStroke,
 					image: null,
 					text: null,
-					zIndex: style.getZIndex ? style.getZIndex() : null
+					zIndex: style.getZIndex() ?? null
 				})
 			];
 			olFeature.setStyle(sanitizedStyles);
