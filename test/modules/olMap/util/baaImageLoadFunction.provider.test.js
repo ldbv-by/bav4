@@ -15,7 +15,7 @@ describe('imageLoadFunction.provider', () => {
 		};
 
 		const responseInterceptor = () => {};
-		const authService = {
+		const geoResourceService = {
 			getAuthResponseInterceptorForGeoResource: () => responseInterceptor
 		};
 
@@ -30,7 +30,7 @@ describe('imageLoadFunction.provider', () => {
 			$injector
 				.registerSingleton('ConfigService', configService)
 				.registerSingleton('HttpService', httpService)
-				.registerSingleton('AuthService', authService)
+				.registerSingleton('GeoResourceService', geoResourceService)
 				.registerSingleton('TranslationService', { translate: (key, params = []) => `${key}${params.length ? ` [${params.join(',')}]` : ''}` });
 		});
 
@@ -217,7 +217,7 @@ describe('imageLoadFunction.provider', () => {
 						'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAApJREFUCNdjYAAAAAIAAeIhvDMAAAAASUVORK5CYII=';
 					const fakeImageWrapper = getFakeImageWrapperInstance();
 					const src = 'http://foo.var?WIDTH=2000&HEIGHT=2000';
-					const authServiceSpy = spyOn(authService, 'getAuthResponseInterceptorForGeoResource').and.returnValue(responseInterceptor);
+					const authServiceSpy = spyOn(geoResourceService, 'getAuthResponseInterceptorForGeoResource').and.returnValue(responseInterceptor);
 					spyOn(httpService, 'get')
 						.withArgs(
 							src,
