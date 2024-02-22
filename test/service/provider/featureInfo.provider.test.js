@@ -13,17 +13,14 @@ describe('FeatureInfoResult provider', () => {
 			post: async () => {}
 		};
 
+		const responseInterceptor = () => {};
 		const geoResourceService = {
-			byId: () => {}
+			byId: () => {},
+			getAuthResponseInterceptorForGeoResource: () => responseInterceptor
 		};
 
 		const baaCredentialService = {
 			get: () => {}
-		};
-
-		const responseInterceptor = () => {};
-		const authService = {
-			getAuthResponseInterceptorForGeoResource: () => responseInterceptor
 		};
 
 		beforeAll(() => {
@@ -31,7 +28,6 @@ describe('FeatureInfoResult provider', () => {
 				.registerSingleton('ConfigService', configService)
 				.registerSingleton('HttpService', httpService)
 				.registerSingleton('GeoResourceService', geoResourceService)
-				.registerSingleton('AuthService', authService)
 				.registerSingleton('BaaCredentialService', baaCredentialService);
 		});
 
@@ -53,7 +49,7 @@ describe('FeatureInfoResult provider', () => {
 				resolution: mapResolution
 			});
 			const featureInfoResultPayload = { title: title, content: 'content' };
-			const authServiceSpy = spyOn(authService, 'getAuthResponseInterceptorForGeoResource').and.returnValue(responseInterceptor);
+			const authServiceSpy = spyOn(geoResourceService, 'getAuthResponseInterceptorForGeoResource').and.returnValue(responseInterceptor);
 			const httpServiceSpy = spyOn(httpService, 'post')
 				.withArgs(
 					`${backendUrl}getFeature/${geoResourceId}`,

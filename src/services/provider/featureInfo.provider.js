@@ -17,9 +17,8 @@ export const loadBvvFeatureInfo = async (geoResourceId, coordinate3857, mapResol
 		HttpService: httpService,
 		ConfigService: configService,
 		GeoResourceService: geoResourceService,
-		BaaCredentialService: baaCredentialService,
-		AuthService: authService
-	} = $injector.inject('HttpService', 'ConfigService', 'GeoResourceService', 'BaaCredentialService', 'AuthService');
+		BaaCredentialService: baaCredentialService
+	} = $injector.inject('HttpService', 'ConfigService', 'GeoResourceService', 'BaaCredentialService');
 
 	const geoResource = geoResourceService.byId(geoResourceId);
 
@@ -60,7 +59,7 @@ export const loadBvvFeatureInfo = async (geoResourceId, coordinate3857, mapResol
 				response:
 					geoResource.authenticationType === GeoResourceAuthenticationType.BAA || isHttpUrl(geoResourceId)
 						? null
-						: authService.getAuthResponseInterceptorForGeoResource(geoResourceId)
+						: geoResourceService.getAuthResponseInterceptorForGeoResource(geoResourceId)
 			}
 		);
 
