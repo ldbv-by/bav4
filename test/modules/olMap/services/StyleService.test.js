@@ -956,7 +956,7 @@ describe('StyleService', () => {
 			featureWithStyle.set('name', 'bar');
 			featureWithStyleArray.set('name', 'bar');
 			featureWithStyleFunction.set('name', 'bar');
-			featureWithStyle.setStyle(style);
+			featureWithStyle.setStyle(() => style);
 			featureWithStyleArray.setStyle([style]);
 			featureWithStyleFunction.setStyle(() => [style]);
 			const spyStyle = spyOn(featureWithStyle, 'setStyle').and.callThrough();
