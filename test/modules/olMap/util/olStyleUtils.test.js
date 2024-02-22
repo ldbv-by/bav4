@@ -22,7 +22,8 @@ import {
 	geojsonStyleFunction,
 	DEFAULT_TEXT,
 	getSizeFrom,
-	textScaleToKeyword
+	textScaleToKeyword,
+	getTransparentImageStyle
 } from '../../../../src/modules/olMap/utils/olStyleUtils';
 import { Point, LineString, Polygon, Geometry } from 'ol/geom';
 import { Feature } from 'ol';
@@ -1240,5 +1241,27 @@ describe('getStyleArray', () => {
 
 	it('provides a empty array for a no style', () => {
 		expect(getStyleArray(getStyledFeature()).length).toBe(0);
+	});
+});
+
+describe('getTransparentImageStyle', () => {
+	const Expected_Transparent_Color = [0, 0, 0, 0];
+	const Expected_Radius = 1;
+	it('creates a circle style with transparent fill', () => {
+		const actual = getTransparentImageStyle();
+
+		expect(actual.getFill().getColor()).toEqual(Expected_Transparent_Color);
+	});
+
+	it('creates a circle style with transparent stroke', () => {
+		const actual = getTransparentImageStyle();
+
+		expect(actual.getStroke().getColor()).toEqual(Expected_Transparent_Color);
+	});
+
+	it('creates a circle style with defined radius', () => {
+		const actual = getTransparentImageStyle();
+
+		expect(actual.getRadius()).toBe(Expected_Radius);
 	});
 });
