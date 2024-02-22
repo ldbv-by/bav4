@@ -13,6 +13,8 @@ import { setQuery } from '../../src/store/search/search.action.js';
 import { setCurrentTool } from '../../src/store/tools/tools.action.js';
 import { toolsReducer } from '../../src/store/tools/tools.reducer.js';
 import { Tools } from '../../src/domain/tools.js';
+import { createNoInitialStateMediaReducer } from '../../src/store/media/media.reducer';
+import { setIsPortrait } from '../../src/store/media/media.action';
 
 describe('MainMenuPlugin', () => {
 	const environmentServiceMock = {
@@ -29,11 +31,17 @@ describe('MainMenuPlugin', () => {
 			search: {
 				query: new EventLike(null)
 			},
+			media: {
+				portrait: false,
+				minWidth: true,
+				observeResponsiveParameter: true
+			},
 			...state
 		};
 
 		const store = TestUtils.setupStoreAndDi(initialState, {
 			mainMenu: createNoInitialStateMainMenuReducer(),
+			media: createNoInitialStateMediaReducer(),
 			featureInfo: featureInfoReducer,
 			search: searchReducer,
 			tools: toolsReducer
@@ -323,10 +331,13 @@ describe('MainMenuPlugin', () => {
 	});
 
 	describe('when toolId changes', () => {
-		it('opens and closes the routing panel and restores the previous panel', async () => {
+		it('opens and closes the routing panel and restores the previous panel on landscape layout', async () => {
 			const store = setup({
 				mainMenu: {
 					open: false
+				},
+				media: {
+					portrait: false
 				}
 			});
 			const instanceUnderTest = new MainMenuPlugin();
@@ -340,6 +351,75 @@ describe('MainMenuPlugin', () => {
 			setCurrentTool(null);
 
 			expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
+			expect(store.getState().mainMenu.open).toBeTrue();
+		});
+
+		it('opens and closes the routing panel and restores the previous panel on portrait layout', async () => {
+			const store = setup({
+				mainMenu: {
+					open: false
+				},
+				media: {
+					portrait: true
+				}
+			});
+			const instanceUnderTest = new MainMenuPlugin();
+			await instanceUnderTest.register(store);
+
+			setCurrentTool(Tools.ROUTING);
+
+			expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
+			expect(store.getState().mainMenu.open).toBeTrue();
+
+			setCurrentTool(null);
+
+			expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
+			expect(store.getState().mainMenu.open).toBeFalse();
+		});
+	});
+
+	describe('when orientation changes', () => {
+		it('opens the mainMenu width routing tab', async () => {
+			const store = setup({
+				mainMenu: {
+					open: false
+				},
+				media: {
+					portrait: true,
+					observeResponsiveParameter: true
+				}
+			});
+			const instanceUnderTest = new MainMenuPlugin();
+			await instanceUnderTest.register(store);
+
+			setTab(TabIds.ROUTING);
+
+			expect(store.getState().mainMenu.open).toBeFalse();
+
+			setIsPortrait(false);
+
+			expect(store.getState().mainMenu.open).toBeTrue();
+		});
+
+		it('opens the mainMenu width featureInfo tab', async () => {
+			const store = setup({
+				mainMenu: {
+					open: false
+				},
+				media: {
+					portrait: true,
+					observeResponsiveParameter: true
+				}
+			});
+			const instanceUnderTest = new MainMenuPlugin();
+			await instanceUnderTest.register(store);
+
+			setTab(TabIds.FEATUREINFO);
+
+			expect(store.getState().mainMenu.open).toBeFalse();
+
+			setIsPortrait(false);
+
 			expect(store.getState().mainMenu.open).toBeTrue();
 		});
 	});
