@@ -23,9 +23,8 @@
  * @returns {module:services/HttpService~responseInterceptor} the response interceptor
  */
 
-import { $injector } from '../injection/index';
 import { setSignedIn, setSignedOut } from '../store/auth/auth.action';
-import { bvvAuthResponseInterceptorProvider, bvvSignInProvider, bvvSignOutProvider } from './provider/auth.provider';
+import { bvvSignInProvider, bvvSignOutProvider } from './provider/auth.provider';
 
 /**
  * Service for authentication and authorization tasks.
@@ -34,23 +33,14 @@ import { bvvAuthResponseInterceptorProvider, bvvSignInProvider, bvvSignOutProvid
  * @author taulinger
  */
 export class AuthService {
-	#geoResourceService;
 	/**
 	 *
 	 * @param {module:services/AuthService~signInProvider} [signInProvider=bvvSignInProvider]
 	 * @param {module:services/AuthService~signOutProvider} [signOutProvider=bvvSignInProvider]
-	 * @param {module:services/AuthService~authResponseInterceptorProvider} [authResponseInterceptorProvider=bvvAuthResponseInterceptorProvider]
 	 */
-	constructor(
-		signInProvider = bvvSignInProvider,
-		signOutProvider = bvvSignOutProvider,
-		authResponseInterceptorProvider = bvvAuthResponseInterceptorProvider
-	) {
-		const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
-		this.#geoResourceService = geoResourceService;
+	constructor(signInProvider = bvvSignInProvider, signOutProvider = bvvSignOutProvider) {
 		this._singInProvider = signInProvider;
 		this._singOutProvider = signOutProvider;
-		this._authResponseInterceptorProvider = authResponseInterceptorProvider;
 		this._roles = [];
 	}
 
@@ -68,20 +58,6 @@ export class AuthService {
 	 */
 	isSignedIn() {
 		return this._roles.length > 0;
-	}
-
-	/**
-	 * Checks if the current roles allow to access a certain GeoResource.
-	 * Returns `false` if the GeoResource does not exist or the user is not signed in.
-	 * @param {string} geoResourceId The id of a GeoResource
-	 * @returns {boolean} `true` if a GeoResource is allowed to access
-	 */
-	isAuthorizedFor(geoResourceId) {
-		const gr = this.#geoResourceService.byId(geoResourceId);
-		if (gr && this.isSignedIn()) {
-			return gr.authRoles.length === 0 ? true : gr.authRoles.filter((role) => this._roles.includes(role)).length > 0;
-		}
-		return false;
 	}
 
 	/**
@@ -118,15 +94,5 @@ export class AuthService {
 			return result;
 		}
 		return true;
-	}
-
-	/**
-	 * Returns a {@link module:services/HttpService~responseInterceptor} suitable authenticating for a given GeoResource.
-	 * @param {string} geoResourceId The id of a GeoResource
-	 * @returns {module:services/HttpService~responseInterceptor}
-	 */
-	getAuthResponseInterceptorForGeoResource(geoResourceId) {
-		const roles = this.#geoResourceService.byId(geoResourceId)?.authRoles ?? [];
-		return this._authResponseInterceptorProvider(roles);
 	}
 }
