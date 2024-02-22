@@ -13,17 +13,14 @@ describe('GeoResourceInfo provider', () => {
 		post: async () => {}
 	};
 
+	const responseInterceptor = () => {};
 	const geoResourceService = {
-		byId: () => {}
+		byId: () => {},
+		getAuthResponseInterceptorForGeoResource: () => {}
 	};
 
 	const baaCredentialService = {
 		get: () => {}
-	};
-
-	const responseInterceptor = () => {};
-	const authService = {
-		getAuthResponseInterceptorForGeoResource: () => responseInterceptor
 	};
 
 	beforeAll(() => {
@@ -31,7 +28,6 @@ describe('GeoResourceInfo provider', () => {
 			.registerSingleton('ConfigService', configService)
 			.registerSingleton('HttpService', httpService)
 			.registerSingleton('GeoResourceService', geoResourceService)
-			.registerSingleton('AuthService', authService)
 			.registerSingleton('BaaCredentialService', baaCredentialService);
 	});
 
@@ -65,7 +61,7 @@ describe('GeoResourceInfo provider', () => {
 		const expectedArgs0 = backendUrl + 'georesource/info/external/wms';
 		const expectedPayLoad = '{"url":"http://some.url","layers":["layer"]}';
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-		const authServiceSpy = spyOn(authService, 'getAuthResponseInterceptorForGeoResource').and.returnValue(responseInterceptor);
+		const authServiceSpy = spyOn(geoResourceService, 'getAuthResponseInterceptorForGeoResource').and.returnValue(responseInterceptor);
 		const httpServiceSpy = spyOn(httpService, 'post')
 			.withArgs(expectedArgs0, expectedPayLoad, MediaType.JSON, { timeout: 5000 }, { response: responseInterceptor })
 			.and.returnValue(Promise.resolve(new Response('<b>hello</b>', { status: 200 })));
