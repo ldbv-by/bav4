@@ -274,7 +274,7 @@ export class StyleService {
 		// if the feature is a Point and has a name with a text style, we
 		// create a correct text style.
 		if (style && isPointLike(geometry)) {
-			const image = style.getImage ? style.getImage() : null;
+			const image = style.getImage() ?? null;
 
 			const sanitizedImage = getImageStyle(image);
 			const sanitizedText = getTextStyle(olFeature.get('name'), style);
