@@ -322,6 +322,10 @@ describe('bvvHttpServiceIgnore401PathProvider', () => {
 		$injector.registerSingleton('ConfigService', configService);
 	});
 
+	afterEach(() => {
+		$injector.reset();
+	});
+
 	it('returns an array of paths', async () => {
 		const backendUrl = 'https://backend.url/';
 		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
