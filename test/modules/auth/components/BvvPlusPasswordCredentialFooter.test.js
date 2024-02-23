@@ -50,8 +50,10 @@ describe('BvvPlusPasswordCredentialFooter', () => {
 			expect(anchors).toHaveSize(2);
 			expect(anchors[0].href).toBe('https://geodatenonline.bayern.de/geodatenonline/anwendungen4/kontakt');
 			expect(anchors[0].textContent).toBe('auth_passwordCredentialPanel_footer_forgot_login');
+			expect(anchors[0].target).toBe('_blank');
 			expect(anchors[1].href).toBe('https://geodatenonline.bayern.de/geodatenonline/anwendungen4/passwortvergessen');
 			expect(anchors[1].textContent).toBe('auth_passwordCredentialPanel_footer_forgot_password');
+			expect(anchors[1].target).toBe('_blank');
 		});
 	});
 });

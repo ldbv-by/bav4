@@ -30,12 +30,12 @@ export class BvvPlusPasswordCredentialFooter extends MvuElement {
 			</div>
 			<div class="footer_forgot_login">
 				<div>
-					<a href="https://geodatenonline.bayern.de/geodatenonline/anwendungen4/kontakt"
+					<a target="_blank" href="https://geodatenonline.bayern.de/geodatenonline/anwendungen4/kontakt"
 						>${translate('auth_passwordCredentialPanel_footer_forgot_login')}</a
 					>
 				</div>
 				<div>
-					<a href="https://geodatenonline.bayern.de/geodatenonline/anwendungen4/passwortvergessen"
+					<a target="_blank" href="https://geodatenonline.bayern.de/geodatenonline/anwendungen4/passwortvergessen"
 						>${translate('auth_passwordCredentialPanel_footer_forgot_password')}</a
 					>
 				</div>
