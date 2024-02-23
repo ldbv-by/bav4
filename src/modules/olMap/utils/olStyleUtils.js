@@ -18,6 +18,7 @@ const White_Color = [255, 255, 255];
 const Black_Color = [0, 0, 0];
 const Transparent_Color = [0, 0, 0, 0];
 const Default_Symbol = 'marker';
+const Default_Font = 'normal 16px OpenSans';
 
 /**
  * @typedef StyleOption
@@ -36,7 +37,7 @@ const getTextStyle = (text, color, scale, offsetY = -5) => {
 	const createStyle = (text, color, scale) => {
 		return new TextStyle({
 			text: text,
-			font: 'normal 16px OpenSans',
+			font: Default_Font,
 			stroke: new Stroke({
 				color: getContrastColorFrom(hexToRgb(color)).concat(1),
 				width: strokeWidth
@@ -258,7 +259,8 @@ export const defaultClusterStyleFunction = () => {
 							scale: 1.5,
 							fill: new Fill({
 								color: White_Color
-							})
+							}),
+							font: Default_Font
 						})
 					})
 				];

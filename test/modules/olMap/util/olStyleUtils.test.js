@@ -60,6 +60,26 @@ beforeAll(() => {
 		.registerSingleton('IconService', iconServiceMock);
 });
 
+const getFeatureWithProperties = (properties, geometry = null) => {
+	const defaultGeometry = new LineString([
+		[0, 0],
+		[1, 0]
+	]);
+	const feature = new Feature({ geometry: geometry ?? defaultGeometry });
+
+	for (const [key, value] of Object.entries(properties)) {
+		feature.set(key, value);
+	}
+
+	return feature;
+};
+
+const getClusterFeature = () => {
+	const feature1 = new Feature({ geometry: new Point([0, 0]) });
+	const feature2 = new Feature({ geometry: new Point([0, 0]) });
+	return new Feature({ geometry: new Point([0, 0]), features: [feature1, feature2] });
+};
+
 describe('getMarkerSrc', () => {
 	it('returns a default marker source', () => {
 		expect(getMarkerSrc()).toBe('http://backend.url/icons/255,255,255/marker');
@@ -298,20 +318,6 @@ describe('nullStyleFunction', () => {
 });
 
 describe('geojsonStyleFunction', () => {
-	const getFeatureWithProperties = (properties) => {
-		const geometry = new LineString([
-			[0, 0],
-			[1, 0]
-		]);
-		const feature = new Feature({ geometry: geometry });
-
-		for (const [key, value] of Object.entries(properties)) {
-			feature.set(key, value);
-		}
-
-		return feature;
-	};
-
 	it('should return a default style', () => {
 		const styles = geojsonStyleFunction();
 
@@ -821,12 +827,6 @@ describe('selectStyleFunction', () => {
 });
 
 describe('defaultClusterStyleFunction', () => {
-	const getClusterFeature = () => {
-		const feature1 = new Feature({ geometry: new Point([0, 0]) });
-		const feature2 = new Feature({ geometry: new Point([0, 0]) });
-		return new Feature({ geometry: new Point([0, 0]), features: [feature1, feature2] });
-	};
-
 	const expectedShadowStyle = new Style({
 		image: new CircleStyle({
 			radius: 17,
@@ -852,7 +852,8 @@ describe('defaultClusterStyleFunction', () => {
 			scale: 1.5,
 			fill: new Fill({
 				color: [255, 255, 255]
-			})
+			}),
+			font: 'normal 16px OpenSans'
 		})
 	});
 
@@ -1270,5 +1271,94 @@ describe('getTransparentImageStyle', () => {
 		const actual = getTransparentImageStyle();
 
 		expect(actual.getRadius()).toBe(Expected_Radius);
+	});
+});
+
+describe('util functions creating a text style', () => {
+	const lineStringFeature = new Feature({
+		geometry: new LineString([
+			[0, 0],
+			[1, 0]
+		])
+	});
+	const geojsonLineStringFeature = getFeatureWithProperties(
+		{
+			'fill-opacity': 0.21,
+			fill: '#00ff00',
+			'stroke-opacity': 0.42,
+			stroke: '#ffff00',
+			'stroke-width': 4,
+			'marker-size': 'small',
+			'marker-color': '#ffff00'
+		},
+		new LineString([
+			[0, 0],
+			[1, 0]
+		])
+	);
+	const resolution = 1;
+
+	const hasTextStyle = (style) => {
+		if (!style) {
+			return false;
+		}
+
+		if (!(style.getText() instanceof TextStyle)) {
+			return false;
+		}
+
+		if (style.getText().getFont() !== Expected_Text_Font) {
+			return false;
+		}
+		return true;
+	};
+
+	it('creates a text style', () => {
+		const markerStyleOption = { color: '#BEDA55', scale: 'small', text: 'foo' };
+		const textStyleOption = { color: '#BEDA55', scale: 'large', text: 'Foo' };
+		const clusterFeature = getClusterFeature();
+
+		const markerStyles = markerStyleFunction(markerStyleOption);
+		const defaultTextStyles = textStyleFunction();
+		const customTextStyles = textStyleFunction(textStyleOption);
+		const clusterStyles = defaultClusterStyleFunction()(clusterFeature, null);
+
+		expect(markerStyles.some((style) => hasTextStyle(style))).toBeTrue();
+		expect(defaultTextStyles.some((style) => hasTextStyle(style))).toBeTrue();
+		expect(customTextStyles.some((style) => hasTextStyle(style))).toBeTrue();
+		expect(clusterStyles.some((style) => hasTextStyle(style))).toBeTrue();
+	});
+
+	it('does NOT creates a text style', () => {
+		const rgbaColor = [0, 0, 0, 0];
+		const lineStyleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 0.5 };
+		const polygonStyleOption = { symbolSrc: markerIcon, color: '#BEDA55' };
+		const modifyFeatureMock = { get: () => [lineStringFeature] };
+
+		const measureStyles = measureStyleFunction(lineStringFeature, resolution);
+		const nullStyles = nullStyleFunction();
+		const defaultStyles = defaultStyleFunction(rgbaColor)(lineStringFeature);
+		const defaultGeoJsonStyles = geojsonStyleFunction();
+		const customGeoJsonStyles = geojsonStyleFunction(geojsonLineStringFeature);
+		const defaultLineStyles = lineStyleFunction();
+		const customLineStyles = lineStyleFunction(lineStyleOption);
+		const defaultPolygonStyles = polygonStyleFunction();
+		const customPolygonStyles = polygonStyleFunction(polygonStyleOption);
+		const modifyStyles = modifyStyleFunction(modifyFeatureMock);
+		const selectStyles = selectStyleFunction()(lineStringFeature);
+		const sketchStyles = createSketchStyleFunction(measureStyleFunction)(lineStringFeature, null);
+
+		expect(measureStyles.some((style) => hasTextStyle(style))).toBeFalse();
+		expect(nullStyles.some((style) => hasTextStyle(style))).toBeFalse();
+		expect(defaultStyles.some((style) => hasTextStyle(style))).toBeFalse();
+		expect(defaultGeoJsonStyles.some((style) => hasTextStyle(style))).toBeFalse();
+		expect(customGeoJsonStyles.some((style) => hasTextStyle(style))).toBeFalse();
+		expect(defaultLineStyles.some((style) => hasTextStyle(style))).toBeFalse();
+		expect(customLineStyles.some((style) => hasTextStyle(style))).toBeFalse();
+		expect(defaultPolygonStyles.some((style) => hasTextStyle(style))).toBeFalse();
+		expect(customPolygonStyles.some((style) => hasTextStyle(style))).toBeFalse();
+		expect(modifyStyles.some((style) => hasTextStyle(style))).toBeFalse();
+		expect(selectStyles.some((style) => hasTextStyle(style))).toBeFalse();
+		expect(sketchStyles.some((style) => hasTextStyle(style))).toBeFalse();
 	});
 });
