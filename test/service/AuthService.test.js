@@ -156,4 +156,32 @@ describe('AuthService', () => {
 			await expectAsync(instanceUnderTest.signOut()).toBeRejectedWithError(Error, msg);
 		});
 	});
+
+	describe('invalidate', () => {
+		describe('the user is signed in', () => {
+			it('updates the internal state, the auth s-o.s and returns `true`', () => {
+				const instanceUnderTest = setup(null, null, { auth: { signedIn: true } });
+				instanceUnderTest._roles = ['TEST'];
+				spyOn(instanceUnderTest, 'isSignedIn').and.returnValue(true);
+
+				expect(store.getState().auth.signedIn).toBeTrue();
+
+				const result = instanceUnderTest.invalidate();
+
+				expect(result).toBeTrue();
+				expect(instanceUnderTest.getRoles()).toEqual([]);
+				expect(store.getState().auth.signedIn).toBeFalse();
+			});
+		});
+		describe('the user is NOT signed in', () => {
+			it('returns `false`', () => {
+				const instanceUnderTest = setup();
+				spyOn(instanceUnderTest, 'isSignedIn').and.returnValue(false);
+
+				const result = instanceUnderTest.invalidate();
+
+				expect(result).toBeFalse();
+			});
+		});
+	});
 });

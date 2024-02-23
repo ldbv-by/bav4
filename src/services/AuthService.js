@@ -95,4 +95,17 @@ export class AuthService {
 		}
 		return true;
 	}
+
+	/**
+	 * Invalidates the current "session"
+	 * @returns {boolean} `true` if the user was signed in and the "session" was invalidated
+	 */
+	invalidate() {
+		if (this.isSignedIn()) {
+			this._roles = [];
+			setSignedOut();
+			return true;
+		}
+		return false;
+	}
 }
