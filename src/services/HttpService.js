@@ -3,6 +3,7 @@
  */
 import { setFetching } from '../store/network/network.action';
 import { $injector } from '../injection';
+import { bvvHttpServiceIgnore401PathProvider } from './provider/auth.provider';
 /**
  * A function that takes and returns a Fetch API `Response`.
  * @async
@@ -170,5 +171,40 @@ export class NetworkStateSyncHttpService extends HttpService {
 		} finally {
 			setFetching(false);
 		}
+	}
+}
+
+/**
+ * A function returning an array of paths (fragments) which should be ignored when matching endpoint returns a 401 HTTP status code.
+ * @typedef {Function} httpServiceIgnore401PathProvider
+ * @returns {Array<string>} path
+ */
+
+/**
+ * {@link HttpService} that invalidates the current authentication when a status code 401 occurs.
+ * @class
+ * @author taulinger
+ */
+export class AuthInvalidatingAfter401HttpService extends NetworkStateSyncHttpService {
+	#authService;
+
+	constructor(httpServiceIgnore401PathProvider = bvvHttpServiceIgnore401PathProvider) {
+		super();
+		const { AuthService: authService } = $injector.inject('AuthService');
+		this.#authService = authService;
+		this._ignorePathProvider = httpServiceIgnore401PathProvider;
+	}
+	/**
+	 * @see {@link HttpService#fetch}
+	 */
+	async fetch(resource, options = {}, controller = new AbortController(), interceptors = defaultInterceptors) {
+		const invalidateAfter401Interceptor = async (originalResponse) => {
+			if (originalResponse.status === 401 && !this._ignorePathProvider().find((path) => resource.includes(path))) {
+				this.#authService.invalidate();
+			}
+			return originalResponse;
+		};
+
+		return super.fetch(resource, options, controller, { response: [invalidateAfter401Interceptor, ...interceptors.response] });
 	}
 }

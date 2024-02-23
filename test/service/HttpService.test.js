@@ -1,5 +1,6 @@
 import { $injector } from '../../src/injection';
-import { HttpService, NetworkStateSyncHttpService } from '../../src/services/HttpService';
+import { HttpService, AuthInvalidatingAfter401HttpService, NetworkStateSyncHttpService } from '../../src/services/HttpService';
+import { bvvHttpServiceIgnore401PathProvider } from '../../src/services/provider/auth.provider';
 import { networkReducer } from '../../src/store/network/network.reducer';
 import { TestUtils } from '../test-utils';
 
@@ -457,6 +458,92 @@ describe('NetworkStateSyncHttpService', () => {
 			} catch {
 				expect(store.getState().network.fetching).toBeFalse();
 			}
+		});
+	});
+});
+
+describe('AuthInvalidatingAfter401HttpService', () => {
+	const configService = {
+		getValue: () => {}
+	};
+	const authService = {
+		invalidate: () => {}
+	};
+
+	afterEach(() => {
+		$injector.reset();
+	});
+
+	const setup = (httpServiceIgnore401PathProvider = bvvHttpServiceIgnore401PathProvider) => {
+		TestUtils.setupStoreAndDi({}, {});
+		$injector.registerSingleton('ConfigService', configService).registerSingleton('AuthService', authService);
+		return new AuthInvalidatingAfter401HttpService(httpServiceIgnore401PathProvider);
+	};
+
+	describe('constructor', () => {
+		it('initializes the service with default providers', async () => {
+			setup();
+			const instanceUnderTest = new AuthInvalidatingAfter401HttpService();
+			expect(instanceUnderTest._ignorePathProvider).toEqual(bvvHttpServiceIgnore401PathProvider);
+		});
+
+		it('initializes the service with custom providers', async () => {
+			const customHttpServiceIgnore401PathProvider = () => [];
+			const instanceUnderTest = setup(customHttpServiceIgnore401PathProvider);
+			expect(instanceUnderTest._ignorePathProvider).toEqual(customHttpServiceIgnore401PathProvider);
+		});
+	});
+
+	describe('fetch', () => {
+		describe('endpoint returns 401', () => {
+			it("calls parent's fetch and invalidates existing authentication", async () => {
+				const url = 'http://foo.bar';
+				const mockHttpServiceIgnore401PathProvider = () => [];
+				const instanceUnderTest = setup(mockHttpServiceIgnore401PathProvider);
+				spyOn(window, 'fetch').and.resolveTo(new Response(null, { status: 401 }));
+				const parentFetchSpy = spyOn(HttpService.prototype, 'fetch').and.callThrough();
+				const authSpy = spyOn(authService, 'invalidate');
+
+				const result = await instanceUnderTest.fetch(url);
+
+				expect(authSpy).toHaveBeenCalled();
+				expect(result.status).toBe(401);
+				expect(parentFetchSpy).toHaveBeenCalledWith(url, {}, jasmine.any(AbortController), { response: [jasmine.any(Function)] });
+			});
+
+			describe('endpoint is excluded', () => {
+				it("calls only parent's fetch", async () => {
+					const url = 'http://foo.bar';
+					const mockHttpServiceIgnore401PathProvider = () => ['foo.bar'];
+					const instanceUnderTest = setup(mockHttpServiceIgnore401PathProvider);
+					spyOn(window, 'fetch').and.resolveTo(new Response(null, { status: 401 }));
+					const parentFetchSpy = spyOn(HttpService.prototype, 'fetch').and.callThrough();
+					const authSpy = spyOn(authService, 'invalidate');
+
+					const result = await instanceUnderTest.fetch(url);
+
+					expect(authSpy).not.toHaveBeenCalled();
+					expect(result.status).toBe(401);
+					expect(parentFetchSpy).toHaveBeenCalledWith(url, {}, jasmine.any(AbortController), { response: [jasmine.any(Function)] });
+				});
+			});
+		});
+
+		describe('endpoint returns other than 401', () => {
+			it("calls only parent's fetch", async () => {
+				const url = 'http://foo.bar';
+				const mockHttpServiceIgnore401PathProvider = () => [];
+				const instanceUnderTest = setup(mockHttpServiceIgnore401PathProvider);
+				spyOn(window, 'fetch').and.resolveTo(new Response(null, { status: 400 }));
+				const parentFetchSpy = spyOn(HttpService.prototype, 'fetch').and.callThrough();
+				const authSpy = spyOn(authService, 'invalidate');
+
+				const result = await instanceUnderTest.fetch(url);
+
+				expect(authSpy).not.toHaveBeenCalled();
+				expect(result.status).toBe(400);
+				expect(parentFetchSpy).toHaveBeenCalledWith(url, {}, jasmine.any(AbortController), { response: [jasmine.any(Function)] });
+			});
 		});
 	});
 });
