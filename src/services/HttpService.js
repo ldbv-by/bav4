@@ -14,11 +14,14 @@ import { $injector } from '../injection';
  */
 
 /**
- * Configuration for a response interceptor. A request interceptor may be available in the future.
+ * Configuration for a `response` interceptor. A `request` interceptor may be available in the future.
+ *
+ * When more than one response interceptors are registered, they will be executed one after each other passing their `Response` object to the subsequent interceptor.
+ * The `Response` object of the last interceptor of the list will be returned as the final result of the fetch call.
  * @typedef {Object} HttpServiceInterceptors
- * @property {module:services/HttpService~responseInterceptor|null} [response] responseInterceptor
+ * @property {Array<module:services/HttpService~responseInterceptor>} [response] A list of response interceptors.
  */
-
+const defaultInterceptors = { response: [] };
 /**
  * @class
  * @author taulinger
@@ -44,11 +47,11 @@ export class HttpService {
 	 * @param {String} resource url
 	 * @param {Object} [options={}] fetch api options, set timeout via timeout property, default is 1000ms
 	 * @param {AbortController} [controller=AbortController] controller which can be used to cancel the request
-	 * @param {module:services/HttpService~HttpServiceInterceptors} [interceptors={}] interceptors for this fetch call
+	 * @param {module:services/HttpService~HttpServiceInterceptors} [interceptors={ response: [] }] interceptors for this fetch call
 	 * @returns Fetch API response
 	 * @see credits: https://dmitripavlutin.com/timeout-fetch-request/
 	 */
-	async fetch(resource, options = {}, controller = new AbortController(), interceptors = {}) {
+	async fetch(resource, options = {}, controller = new AbortController(), interceptors = defaultInterceptors) {
 		const doFetch = async () => {
 			const { timeout = 1000 } = options;
 
@@ -63,7 +66,15 @@ export class HttpService {
 			return response;
 		};
 
-		return interceptors.response ? interceptors.response(await doFetch(), doFetch, resource) : doFetch();
+		const callResponseInterceptors = async (responseInterceptors, originalResponse, doFetch, resource) => {
+			let response;
+			for (const ric of responseInterceptors) {
+				response = await ric(response ?? originalResponse, doFetch, resource);
+			}
+			return response;
+		};
+
+		return interceptors.response.length > 0 ? await callResponseInterceptors(interceptors.response, await doFetch(), doFetch, resource) : doFetch();
 	}
 
 	/**
@@ -71,11 +82,11 @@ export class HttpService {
 	 * Uses {@link HttpService#fetch}.
 	 * Mode 'cors' ist set by default.
 	 * @param {string} resource URL
-	 * @param {object} options fetch options
-	 * @param {module:services/HttpService~HttpServiceInterceptors} [interceptors={}] interceptors for this GET call
+	 * @param {object} [options={}] fetch options
+	 * @param {module:services/HttpService~HttpServiceInterceptors} [interceptors={ response: [] }] interceptors for this GET call
 	 * @returns Fetch API Response
 	 */
-	async get(resource, options = {}, interceptors = {}) {
+	async get(resource, options = {}, interceptors = defaultInterceptors) {
 		const fetchOptions = {
 			mode: HttpService.DEFAULT_REQUEST_MODE,
 			...options
@@ -88,7 +99,7 @@ export class HttpService {
 	 * Uses {@link HttpService#fetch}.
 	 * Mode 'cors' ist set by default.
 	 * @param {string} resource URL
-	 * @param {object} options fetch options
+	 * @param {object} [options={}] fetch options
 	 * @returns Fetch API Response
 	 */
 	async delete(resource, options = {}) {
@@ -107,10 +118,11 @@ export class HttpService {
 	 * @param {string} resource URL
 	 * @param {object} data POST body
 	 * @param {string} contentType contentType
-	 * @param {object} options fetch options
+	 * @param {object} [options={}] fetch options
+	 * @param {module:services/HttpService~HttpServiceInterceptors} [interceptors={ response: [] }] interceptors for this POST call
 	 * @returns Fetch API Response
 	 */
-	async post(resource, data, contentType, options = {}) {
+	async post(resource, data, contentType, options = {}, interceptors = defaultInterceptors) {
 		const fetchOptions = {
 			mode: HttpService.DEFAULT_REQUEST_MODE,
 			method: 'POST',
@@ -120,7 +132,7 @@ export class HttpService {
 			},
 			...options
 		};
-		return this.fetch(resource, fetchOptions);
+		return this.fetch(resource, fetchOptions, undefined, interceptors);
 	}
 
 	/**
@@ -128,11 +140,11 @@ export class HttpService {
 	 * Uses {@link HttpService#fetch}.
 	 * Mode 'cors' ist set by default.
 	 * @param {string} resource URL
-	 * @param {object} options fetch options
-	 * @param {module:services/HttpService~HttpServiceInterceptors} [interceptors={}] interceptors for this HEAD call
+	 * @param {object} [options={}] fetch options
+	 * @param {module:services/HttpService~HttpServiceInterceptors} [interceptors={ response: [] }] interceptors for this HEAD call
 	 * @returns Fetch API Response
 	 */
-	async head(resource, options = {}, interceptors = {}) {
+	async head(resource, options = {}, interceptors = defaultInterceptors) {
 		const fetchOptions = {
 			mode: HttpService.DEFAULT_REQUEST_MODE,
 			method: 'HEAD',
@@ -151,7 +163,7 @@ export class NetworkStateSyncHttpService extends HttpService {
 	/**
 	 * @see {@link HttpService#fetch}
 	 */
-	async fetch(resource, options = {}, controller = new AbortController(), interceptors = {}) {
+	async fetch(resource, options = {}, controller = new AbortController(), interceptors = defaultInterceptors) {
 		setFetching(true);
 		try {
 			return await super.fetch(resource, options, controller, interceptors);
