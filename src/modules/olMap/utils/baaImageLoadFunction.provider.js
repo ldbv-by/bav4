@@ -69,7 +69,7 @@ export const getBvvBaaImageLoadFunction = (geoResourceId, credential = null, max
 					{
 						timeout
 					},
-					{ response: geoResourceService.getAuthResponseInterceptorForGeoResource(geoResourceId) }
+					{ response: [geoResourceService.getAuthResponseInterceptorForGeoResource(geoResourceId)] }
 				);
 
 				if (response.status !== 200) {

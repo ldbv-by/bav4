@@ -224,7 +224,7 @@ describe('imageLoadFunction.provider', () => {
 							{
 								timeout: 10000
 							},
-							{ response: responseInterceptor }
+							{ response: [responseInterceptor] }
 						)
 						.and.resolveTo(new Response(base64ImageData));
 					const imageLoadFunction = getBvvBaaImageLoadFunction(geoResourceId);
@@ -252,7 +252,7 @@ describe('imageLoadFunction.provider', () => {
 							{
 								timeout: 10000
 							},
-							{ response: responseInterceptor }
+							{ response: [responseInterceptor] }
 						)
 						.and.resolveTo(new Response(base64ImageData));
 					const mockTempImage = {};
