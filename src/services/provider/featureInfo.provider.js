@@ -58,8 +58,8 @@ export const loadBvvFeatureInfo = async (geoResourceId, coordinate3857, mapResol
 			{
 				response:
 					geoResource.authenticationType === GeoResourceAuthenticationType.BAA || isHttpUrl(geoResourceId)
-						? null
-						: geoResourceService.getAuthResponseInterceptorForGeoResource(geoResourceId)
+						? []
+						: [geoResourceService.getAuthResponseInterceptorForGeoResource(geoResourceId)]
 			}
 		);
 
