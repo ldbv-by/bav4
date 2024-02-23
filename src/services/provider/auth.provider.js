@@ -122,7 +122,6 @@ export const bvvAuthResponseInterceptorProvider = (roles = []) => {
 							${roles.map(
 								(role) => html`<ba-badge .size=${'1.5'} .color=${'var(--text3)'} .background=${'var(--primary-color)'} .label=${role}></ba-badge>`
 							)} `;
-							console.log(roles);
 							openModal(title, createCredentialPanel(authenticate, onClose, roles));
 						}
 					});
