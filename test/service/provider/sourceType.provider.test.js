@@ -270,7 +270,7 @@ describe('sourceType provider', () => {
 		});
 
 		describe('authentication is required', () => {
-			describe('credential succesfully provided', () => {
+			describe('credential successfully provided', () => {
 				it('opens a credential UI and returns a SourceTypeServiceResult', async () => {
 					spyOn(projectionService, 'getProjections').and.returnValue([4326]);
 					const sourceTypeResultPayload = { name: 'GPX', version: 'version', srid: 4326 };
@@ -339,7 +339,7 @@ describe('sourceType provider', () => {
 				});
 			});
 
-			describe('credential NOT succesfully provided', () => {
+			describe('credential NOT successfully provided', () => {
 				it('opens a credential UI and returns a SourceTypeServiceResult with status RESTRICTED', async () => {
 					spyOn(projectionService, 'getProjections').and.returnValue([4326]);
 					const mockCredential = { username: 'username', password: 'password' };
@@ -446,8 +446,8 @@ describe('sourceType provider', () => {
 			expect(defaultDataSourceTypeProvider('SRID=55;POINT(21, 42)')).toEqual(new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_SRID));
 		});
 		it('returns UNSUPPORTED_TYPE when data are not parseable', () => {
-			const errornousJsonString = '({ some: [] )';
-			expect(defaultDataSourceTypeProvider(errornousJsonString)).toEqual(new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE));
+			const erroneousJsonString = '({ some: [] )';
+			expect(defaultDataSourceTypeProvider(erroneousJsonString)).toEqual(new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE));
 		});
 
 		it('returns MAX_SIZE_EXCEEDED when data-size is too large', () => {

@@ -56,6 +56,7 @@ export const _definitionToGeoResource = (definition) => {
 					.setMaxZoom(definition.maxZoom ?? null)
 					.setQueryable(definition.queryable ?? true)
 					.setExportable(definition.exportable ?? true)
+					.setAuthRoles(definition.authRoles ?? [])
 			: null;
 	};
 	return setPropertiesAndProviders(toGeoResource(definition));

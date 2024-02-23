@@ -7,8 +7,11 @@ import { $injector } from '../../../injection';
 /**
  * An async function that returns a {@link GeoResourceInfoResult}.
  * @async
+ * @typedef {Function} geoResourceInfoProvider
+ * @function
  * @param {string} id Id of the requested GeoResource
- * @typedef {function(id) : (GeoResourceInfoResult|null)} geoResourceInfoProvider
+ * @throws `Error`
+ * @returns {Promise<Array<GeoResourceInfoResult>>}
  */
 
 /**
@@ -19,10 +22,10 @@ import { $injector } from '../../../injection';
  */
 export class GeoResourceInfoService {
 	/**
-	 * @param {provider} [providers=loadBvvGeoResources]
+	 * @param {Array<module:modules/geoResourceInfo/services/GeoResourceInfoService~geoResourceInfoProvider>} [geoResourceInfoProviders=[loadBvvGeoResources]]
 	 */
-	constructor(providers = [loadBvvGeoResourceInfo]) {
-		this._providers = providers;
+	constructor(geoResourceInfoProviders = [loadBvvGeoResourceInfo]) {
+		this._providers = geoResourceInfoProviders;
 		this._geoResourceInfoResults = new Map();
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 		this._environmentService = environmentService;
@@ -30,9 +33,8 @@ export class GeoResourceInfoService {
 
 	/**
 	 * Returns the corresponding  {@link GeoResourceInfoResult} for an id if present in the internal cache, otherwise retrieved from backend.
-	 * @public
-	 * @param {string} geoResourceId Id of the desired {@link GeoResourceInfoResult}
-	 * @returns {GeoResourceInfoResult | null}
+	 * @param {string} geoResourceId Id of the `GeoResource`
+	 * @returns {Promise<GeoResourceInfoResult | null>}
 	 * @throws Will throw an error if the provider result is wrong and pass it to the view.
 	 */
 	async byId(geoResourceId) {
@@ -70,8 +72,8 @@ export class GeoResourceInfoService {
 export class GeoResourceInfoResult {
 	/**
 	 *
-	 * @param {string} content of this GeoResourceInfoResult
-	 * @param {string} [title=null] optional title of this GeoResourceInfoResult
+	 * @param {string} content The content of this GeoResourceInfoResult
+	 * @param {string} [title=null] The title of this GeoResourceInfoResult
 	 */
 	constructor(content, title = null) {
 		this._content = content;

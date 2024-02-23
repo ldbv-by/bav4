@@ -213,7 +213,7 @@ describe('OlMap', () => {
 			.registerSingleton('MapService', mapServiceStub)
 			.registerSingleton('GeoResourceService', geoResourceServiceStub)
 			.registerSingleton('EnvironmentService', environmentServiceMock)
-			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('TranslationService', { translate: (key, params = []) => `${key}${params.length ? ` [${params.join(',')}]` : ''}` })
 			.registerSingleton('OlMeasurementHandler', measurementLayerHandlerMock)
 			.registerSingleton('OlDrawHandler', drawLayerHandlerMock)
 			.registerSingleton('OlGeolocationHandler', geolocationLayerHandlerMock)
@@ -1233,7 +1233,7 @@ describe('OlMap', () => {
 			await TestUtils.timeout();
 			expect(map.getLayers().getLength()).toBe(0);
 			expect(warnSpy).toHaveBeenCalledWith(message);
-			expect(store.getState().notifications.latest.payload.content).toBe(`olMap_layer_not_available '${geoResourceId0}'`);
+			expect(store.getState().notifications.latest.payload.content).toBe('global_geoResource_not_available [geoResourceId0]');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 		});
 
@@ -1254,7 +1254,7 @@ describe('OlMap', () => {
 			expect(map.getLayers().getLength()).toBe(1);
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(warnSpy).toHaveBeenCalledWith("Could not add an olLayer for id 'unknown'");
-			expect(store.getState().notifications.latest.payload.content).toBe("olMap_layer_not_available 'unknown'");
+			expect(store.getState().notifications.latest.payload.content).toBe('global_geoResource_not_available [unknown]');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 		});
 

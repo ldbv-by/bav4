@@ -59,11 +59,12 @@ import { IframeGeometryIdPlugin } from '../plugins/IframeGeometryIdPlugin';
 import { BeforeUnloadPlugin } from '../plugins/BeforeUnloadPlugin';
 import { BvvRoutingService } from '../services/RoutingService';
 import { RoutingPlugin } from '../plugins/RoutingPlugin';
+import { AuthService } from '../services/AuthService';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
-	.register('HttpService', NetworkStateSyncHttpService)
 	.registerSingleton('ConfigService', new ProcessEnvConfigService())
+	.register('HttpService', NetworkStateSyncHttpService)
 	.register('EnvironmentService', EnvironmentService)
 	.registerSingleton('TranslationService', new TranslationService())
 	.register('CoordinateService', OlCoordinateService)
@@ -93,6 +94,7 @@ $injector
 	.registerSingleton('ChipsConfigurationService', new ChipsConfigurationService())
 	.registerSingleton('FeedbackService', new FeedbackService())
 	.registerSingleton('RoutingService', new BvvRoutingService())
+	.registerSingleton('AuthService', new AuthService())
 
 	.registerSingleton('DrawPlugin', new DrawPlugin())
 	.registerSingleton('RoutingPlugin', new RoutingPlugin())

@@ -129,6 +129,18 @@ export class VectorLayerService {
 	}
 
 	/**
+	 * Sanitizes the style of the present features of the vector layer.
+	 * The sanitizing prepares features with incompatible styling for the rendering in the
+	 * ol context.
+	 * @param {ol.layer.Vector} olVectorLayer
+	 */
+	_sanitizeStyles(olVectorLayer) {
+		const { StyleService: styleService } = $injector.inject('StyleService');
+		const olVectorSource = olVectorLayer.getSource();
+		olVectorSource.getFeatures().forEach((feature) => styleService.sanitizeStyle(feature));
+	}
+
+	/**
 	 * Adds a specific or a default cluster styling for this vector layer
 	 * @param {ol.layer.Vector} olVectorLayer
 	 * @returns olVectorLayer
@@ -158,6 +170,9 @@ export class VectorLayerService {
 		});
 		const vectorSource = this._vectorSourceForData(vectorGeoResource);
 		vectorLayer.setSource(vectorSource);
+
+		this._sanitizeStyles(vectorLayer);
+
 		return vectorGeoResource.isClustered() ? this._applyClusterStyle(vectorLayer) : this._applyStyles(vectorLayer, olMap);
 	}
 

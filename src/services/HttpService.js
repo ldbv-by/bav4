@@ -2,7 +2,7 @@
  * @module services/HttpService
  */
 import { setFetching } from '../store/network/network.action';
-
+import { $injector } from '../injection';
 /**
  * A function that takes and returns a Fetch API `Response`.
  * @async
@@ -15,9 +15,8 @@ import { setFetching } from '../store/network/network.action';
 
 /**
  * Configuration for a response interceptor. A request interceptor may be available in the future.
- * @async
  * @typedef {Object} HttpServiceInterceptors
- * @property {module:services/HttpService~responseInterceptor} responseInterceptor
+ * @property {module:services/HttpService~responseInterceptor|null} [response] responseInterceptor
  */
 
 /**
@@ -27,6 +26,13 @@ import { setFetching } from '../store/network/network.action';
 export class HttpService {
 	static get DEFAULT_REQUEST_MODE() {
 		return 'cors';
+	}
+
+	#configService;
+
+	constructor() {
+		const { ConfigService: configService } = $injector.inject('ConfigService');
+		this.#configService = configService;
 	}
 
 	/**
@@ -49,6 +55,7 @@ export class HttpService {
 			const id = setTimeout(() => controller.abort(), timeout);
 
 			const response = await fetch(resource, {
+				credentials: this.#configService.getValue('FETCH_API_CREDENTIALS', 'same-origin' /** Fetch API default value */),
 				...options,
 				signal: controller.signal
 			});

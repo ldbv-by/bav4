@@ -9,8 +9,8 @@ describe('injector configuration', () => {
 		expect($injector.count()).toBe(74);
 
 		expect($injector.getScope('ProjectionService')).toBe(Injector.SCOPE_SINGLETON);
-		expect($injector.getScope('HttpService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('ConfigService')).toBe(Injector.SCOPE_SINGLETON);
+		expect($injector.getScope('HttpService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('EnvironmentService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('TranslationService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('CoordinateService')).toBe(Injector.SCOPE_PERLOOKUP);
@@ -40,6 +40,7 @@ describe('injector configuration', () => {
 		expect($injector.getScope('ChipsConfigurationService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('FeedbackService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('RoutingService')).toBe(Injector.SCOPE_SINGLETON);
+		expect($injector.getScope('AuthService')).toBe(Injector.SCOPE_SINGLETON);
 
 		expect($injector.getScope('DrawPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('RoutingPlugin')).toBe(Injector.SCOPE_SINGLETON);
