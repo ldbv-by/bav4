@@ -9,8 +9,10 @@ import {
 import { TestUtils } from '../../test-utils';
 import { modalReducer } from '../../../src/store/modal/modal.reducer';
 import { PasswordCredentialPanel } from '../../../src/modules/auth/components/PasswordCredentialPanel';
+import { BvvPlusPasswordCredentialFooter } from '../../../src/modules/auth/components/BvvPlusPasswordCredentialFooter';
 import { Badge } from '../../../src/modules/commons/components/badge/Badge';
 import { closeModal } from '../../../src/store/modal/modal.action';
+import { BvvRoles } from '../../../src/domain/roles';
 
 describe('bvvSignInProvider', () => {
 	const configService = {
@@ -205,6 +207,26 @@ describe('bvvAuthResponseInterceptorProvider', () => {
 				expect(wrapperElementContent.querySelectorAll(PasswordCredentialPanel.tag)).toHaveSize(1);
 				expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).authenticate).toEqual(jasmine.any(Function));
 				expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).onClose).toEqual(jasmine.any(Function));
+				expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).footer).toBeNull();
+				closeModal(); /** we close the modal in order to resolve the promise */
+				await expectAsync(responsePromise).toBeResolved();
+			});
+
+			it('opens an authentication UI for role "Plus" containing a special footer', async () => {
+				const retTryFetchFn = jasmine.createSpy();
+				const mockResponse = { status: 401 };
+				const url = 'http://foo.bar';
+				const roles = ['FOO', BvvRoles.PLUS];
+
+				const responsePromise = bvvAuthResponseInterceptorProvider(roles)(mockResponse, retTryFetchFn, url);
+				await TestUtils.timeout(); /**promise queue execution */
+
+				const wrapperElementContent = TestUtils.renderTemplateResult(store.getState().modal.data.content);
+				expect(wrapperElementContent.querySelectorAll(PasswordCredentialPanel.tag)).toHaveSize(1);
+				expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).authenticate).toEqual(jasmine.any(Function));
+				expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).onClose).toEqual(jasmine.any(Function));
+				const wrapperElementFooter = TestUtils.renderTemplateResult(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).footer);
+				expect(wrapperElementFooter.querySelectorAll(BvvPlusPasswordCredentialFooter.tag)).toHaveSize(1);
 				closeModal(); /** we close the modal in order to resolve the promise */
 				await expectAsync(responsePromise).toBeResolved();
 			});
