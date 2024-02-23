@@ -13,7 +13,7 @@ describe('GeoResourceInfo provider', () => {
 		post: async () => {}
 	};
 
-	const responseInterceptor = () => {};
+	const responseInterceptor = [() => {}];
 	const geoResourceService = {
 		byId: () => {},
 		getAuthResponseInterceptorForGeoResource: () => {}
@@ -63,7 +63,7 @@ describe('GeoResourceInfo provider', () => {
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const authServiceSpy = spyOn(geoResourceService, 'getAuthResponseInterceptorForGeoResource').and.returnValue(responseInterceptor);
 		const httpServiceSpy = spyOn(httpService, 'post')
-			.withArgs(expectedArgs0, expectedPayLoad, MediaType.JSON, { timeout: 5000 }, { response: responseInterceptor })
+			.withArgs(expectedArgs0, expectedPayLoad, MediaType.JSON, { timeout: 5000 }, { response: [responseInterceptor] })
 			.and.returnValue(Promise.resolve(new Response('<b>hello</b>', { status: 200 })));
 
 		const result = await loadBvvGeoResourceInfo(geoResourceId);
@@ -89,7 +89,7 @@ describe('GeoResourceInfo provider', () => {
 		const expectedPayLoad = '{"url":"http://some.url","layers":["layer"],"username":"username","password":"password"}';
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const httpServiceSpy = spyOn(httpService, 'post')
-			.withArgs(expectedArgs0, expectedPayLoad, MediaType.JSON, { timeout: 5000 }, { response: null })
+			.withArgs(expectedArgs0, expectedPayLoad, MediaType.JSON, { timeout: 5000 }, { response: [] })
 			.and.returnValue(Promise.resolve(new Response('<b>hello</b>', { status: 200 })));
 
 		const result = await loadBvvGeoResourceInfo(geoResourceId);

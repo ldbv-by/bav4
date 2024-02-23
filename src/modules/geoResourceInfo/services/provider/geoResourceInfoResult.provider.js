@@ -16,7 +16,7 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 		HttpService: httpService,
 		ConfigService: configService,
 		GeoResourceService: geoResourceService,
-		BaaCredentialService: baaCredentialService,
+		BaaCredentialService: baaCredentialService
 	} = $injector.inject('HttpService', 'ConfigService', 'GeoResourceService', 'BaaCredentialService');
 
 	const throwError = (reason) => {
@@ -56,8 +56,8 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 			{
 				response:
 					geoResource.authenticationType === GeoResourceAuthenticationType.BAA
-						? null
-						: geoResourceService.getAuthResponseInterceptorForGeoResource(geoResourceId)
+						? []
+						: [geoResourceService.getAuthResponseInterceptorForGeoResource(geoResourceId)]
 			}
 		);
 	};
