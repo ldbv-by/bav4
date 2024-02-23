@@ -132,3 +132,13 @@ export const bvvAuthResponseInterceptorProvider = (roles = []) => {
 
 	return bvvAuthResponseInterceptor;
 };
+
+/**
+ * Bvv specific implementation of {@link module:services/HttpService~httpServiceIgnore401PathProvidern}.
+ * @function
+ * @type {module:services/HttpService~httpServiceIgnore401PathProvider}
+ */
+export const bvvHttpServiceIgnore401PathProvider = () => {
+	const { ConfigService: configService } = $injector.inject('ConfigService');
+	return [`${configService.getValueAsPath('BACKEND_URL')}sourceType`];
+};

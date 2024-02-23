@@ -1,6 +1,11 @@
 import { $injector } from '../../../src/injection';
 import { MediaType } from '../../../src/domain/mediaTypes';
-import { bvvSignInProvider, bvvAuthResponseInterceptorProvider, bvvSignOutProvider } from '../../../src/services/provider/auth.provider';
+import {
+	bvvSignInProvider,
+	bvvAuthResponseInterceptorProvider,
+	bvvSignOutProvider,
+	bvvHttpServiceIgnore401PathProvider
+} from '../../../src/services/provider/auth.provider';
 import { TestUtils } from '../../test-utils';
 import { modalReducer } from '../../../src/store/modal/modal.reducer';
 import { PasswordCredentialPanel } from '../../../src/modules/auth/components/PasswordCredentialPanel';
@@ -305,5 +310,24 @@ describe('bvvAuthResponseInterceptorProvider', () => {
 				});
 			});
 		});
+	});
+});
+
+describe('bvvHttpServiceIgnore401PathProvider', () => {
+	const configService = {
+		getValueAsPath: () => {}
+	};
+
+	beforeEach(() => {
+		$injector.registerSingleton('ConfigService', configService);
+	});
+
+	it('returns an array of paths', async () => {
+		const backendUrl = 'https://backend.url/';
+		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+
+		const result = bvvHttpServiceIgnore401PathProvider();
+
+		expect(result).toEqual([`${backendUrl}sourceType`]);
 	});
 });
