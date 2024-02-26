@@ -178,12 +178,48 @@ describe('Route statistics provider', () => {
 			it('calculates the statistics for a route', async () => {
 				expect(bvvRouteStatsProvider(ghRoute, evenProfileStats)).toBeDefined();
 			});
+
+			it('calculates the statistics for a hike route', async () => {
+				const hikeRoute = createSimpleGhRoute('hike');
+
+				const stats = bvvRouteStatsProvider(hikeRoute, evenProfileStats);
+
+				expect(stats.time).toBeCloseTo(31260000.0, 0);
+				expect(stats.dist).toBe(34200);
+				expect(stats.twoDiff).toEqual([50, 50]);
+				expect(stats.details).toEqual(jasmine.any(Object));
+				expect(stats.warnings).toEqual(jasmine.any(Object));
+			});
 			it('calculates the statistics for a bvv-hike route', async () => {
 				const hikeRoute = createSimpleGhRoute('bvv-hike');
 
 				const stats = bvvRouteStatsProvider(hikeRoute, evenProfileStats);
 
 				expect(stats.time).toBeCloseTo(31260000.0, 0);
+				expect(stats.dist).toBe(34200);
+				expect(stats.twoDiff).toEqual([50, 50]);
+				expect(stats.details).toEqual(jasmine.any(Object));
+				expect(stats.warnings).toEqual(jasmine.any(Object));
+			});
+
+			it('calculates the statistics for a bayernnetz-hike route', async () => {
+				const hikeRoute = createSimpleGhRoute('bvv-hike');
+
+				const stats = bvvRouteStatsProvider(hikeRoute, evenProfileStats);
+
+				expect(stats.time).toBeCloseTo(31260000.0, 0);
+				expect(stats.dist).toBe(34200);
+				expect(stats.twoDiff).toEqual([50, 50]);
+				expect(stats.details).toEqual(jasmine.any(Object));
+				expect(stats.warnings).toEqual(jasmine.any(Object));
+			});
+
+			it('calculates the statistics for a bike route', async () => {
+				const bikeRoute = createSimpleGhRoute('bike');
+
+				const stats = bvvRouteStatsProvider(bikeRoute, evenProfileStats);
+
+				expect(stats.time).toBe(8508360);
 				expect(stats.dist).toBe(34200);
 				expect(stats.twoDiff).toEqual([50, 50]);
 				expect(stats.details).toEqual(jasmine.any(Object));
@@ -202,6 +238,30 @@ describe('Route statistics provider', () => {
 				expect(stats.warnings).toEqual(jasmine.any(Object));
 			});
 
+			it('calculates the statistics for a bayernnetz-bike route', async () => {
+				const bikeRoute = createSimpleGhRoute('bayernnetz-bike');
+
+				const stats = bvvRouteStatsProvider(bikeRoute, evenProfileStats);
+
+				expect(stats.time).toBe(8508360);
+				expect(stats.dist).toBe(34200);
+				expect(stats.twoDiff).toEqual([50, 50]);
+				expect(stats.details).toEqual(jasmine.any(Object));
+				expect(stats.warnings).toEqual(jasmine.any(Object));
+			});
+
+			it('calculates the statistics for a mtb route', async () => {
+				const mtbRoute = createSimpleGhRoute('mtb');
+
+				const stats = bvvRouteStatsProvider(mtbRoute, evenProfileStats);
+
+				expect(stats.time).toBe(6381360);
+				expect(stats.dist).toBe(34200);
+				expect(stats.twoDiff).toEqual([50, 50]);
+				expect(stats.details).toEqual(jasmine.any(Object));
+				expect(stats.warnings).toEqual(jasmine.any(Object));
+			});
+
 			it('calculates the statistics for a bvv-mtb route', async () => {
 				const mtbRoute = createSimpleGhRoute('bvv-mtb');
 
@@ -214,8 +274,44 @@ describe('Route statistics provider', () => {
 				expect(stats.warnings).toEqual(jasmine.any(Object));
 			});
 
+			it('calculates the statistics for a bayernnetz-mtb route', async () => {
+				const mtbRoute = createSimpleGhRoute('bayernnetz-mtb');
+
+				const stats = bvvRouteStatsProvider(mtbRoute, evenProfileStats);
+
+				expect(stats.time).toBe(6381360);
+				expect(stats.dist).toBe(34200);
+				expect(stats.twoDiff).toEqual([50, 50]);
+				expect(stats.details).toEqual(jasmine.any(Object));
+				expect(stats.warnings).toEqual(jasmine.any(Object));
+			});
+
 			it('calculates the statistics for a racingbike route', async () => {
 				const racingbikeRoute = createSimpleGhRoute('racingbike');
+
+				const stats = bvvRouteStatsProvider(racingbikeRoute, evenProfileStats);
+
+				expect(stats.time).toBeCloseTo(4785257.1, 0);
+				expect(stats.dist).toBe(34200);
+				expect(stats.twoDiff).toEqual([50, 50]);
+				expect(stats.details).toEqual(jasmine.any(Object));
+				expect(stats.warnings).toEqual(jasmine.any(Object));
+			});
+
+			it('calculates the statistics for a bvv-racingbike route', async () => {
+				const racingbikeRoute = createSimpleGhRoute('bvv-racingbike');
+
+				const stats = bvvRouteStatsProvider(racingbikeRoute, evenProfileStats);
+
+				expect(stats.time).toBeCloseTo(4785257.1, 0);
+				expect(stats.dist).toBe(34200);
+				expect(stats.twoDiff).toEqual([50, 50]);
+				expect(stats.details).toEqual(jasmine.any(Object));
+				expect(stats.warnings).toEqual(jasmine.any(Object));
+			});
+
+			it('calculates the statistics for a bayernnetz-racingbike route', async () => {
+				const racingbikeRoute = createSimpleGhRoute('bayernnetz-racingbike');
 
 				const stats = bvvRouteStatsProvider(racingbikeRoute, evenProfileStats);
 
