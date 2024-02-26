@@ -7,6 +7,7 @@ import { observe } from '../../utils/storeUtils';
 import { html } from 'lit-html';
 import { MediaType } from '../../domain/mediaTypes';
 import { PromiseQueue } from '../../utils/PromiseQueue';
+import { BvvRoles } from '../../domain/roles';
 
 /**
  * Bvv specific implementation of {@link module:services/AuthService~signInProvider}.
@@ -27,10 +28,29 @@ export const bvvSignInProvider = async (credential) => {
 	}
 };
 
-const createCredentialPanel = (authenticateFunction, onCloseFunction) => {
+/**
+ * Bvv specific implementation of {@link module:services/AuthService~signOutProvider}.
+ * @function
+ * @type {module:services/AuthService~signOutProvider}
+ */
+export const bvvSignOutProvider = async () => {
+	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
+	const result = await httpService.get(`${configService.getValueAsPath('BACKEND_URL')}auth/signout`);
+
+	switch (result.status) {
+		case 200:
+			return true;
+		default:
+			throw new Error(`Sign out not possible: Http-Status ${result.status}`);
+	}
+};
+
+const createCredentialPanel = (authenticateFunction, onCloseFunction, roles) => {
+	const footer = roles.includes(BvvRoles.PLUS) ? html`<ba-auth-password-credential-bvv-footer></ba-auth-password-credential-bvv-footer>` : null;
 	return html`<ba-auth-password-credential-panel
 		.authenticate=${authenticateFunction}
 		.onClose=${onCloseFunction}
+		.footer=${footer}
 	></ba-auth-password-credential-panel>`;
 };
 
@@ -102,7 +122,7 @@ export const bvvAuthResponseInterceptorProvider = (roles = []) => {
 							${roles.map(
 								(role) => html`<ba-badge .size=${'1.5'} .color=${'var(--text3)'} .background=${'var(--primary-color)'} .label=${role}></ba-badge>`
 							)} `;
-							openModal(title, createCredentialPanel(authenticate, onClose));
+							openModal(title, createCredentialPanel(authenticate, onClose, roles));
 						}
 					});
 				};
@@ -114,4 +134,14 @@ export const bvvAuthResponseInterceptorProvider = (roles = []) => {
 	};
 
 	return bvvAuthResponseInterceptor;
+};
+
+/**
+ * Bvv specific implementation of {@link module:services/HttpService~httpServiceIgnore401PathProvidern}.
+ * @function
+ * @type {module:services/HttpService~httpServiceIgnore401PathProvider}
+ */
+export const bvvHttpServiceIgnore401PathProvider = () => {
+	const { ConfigService: configService } = $injector.inject('ConfigService');
+	return [`${configService.getValueAsPath('BACKEND_URL')}sourceType`];
 };

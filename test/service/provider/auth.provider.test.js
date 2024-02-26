@@ -1,11 +1,18 @@
 import { $injector } from '../../../src/injection';
 import { MediaType } from '../../../src/domain/mediaTypes';
-import { bvvSignInProvider, bvvAuthResponseInterceptorProvider } from '../../../src/services/provider/auth.provider';
+import {
+	bvvSignInProvider,
+	bvvAuthResponseInterceptorProvider,
+	bvvSignOutProvider,
+	bvvHttpServiceIgnore401PathProvider
+} from '../../../src/services/provider/auth.provider';
 import { TestUtils } from '../../test-utils';
 import { modalReducer } from '../../../src/store/modal/modal.reducer';
 import { PasswordCredentialPanel } from '../../../src/modules/auth/components/PasswordCredentialPanel';
+import { BvvPlusPasswordCredentialFooter } from '../../../src/modules/auth/components/BvvPlusPasswordCredentialFooter';
 import { Badge } from '../../../src/modules/commons/components/badge/Badge';
 import { closeModal } from '../../../src/store/modal/modal.action';
+import { BvvRoles } from '../../../src/domain/roles';
 
 describe('bvvSignInProvider', () => {
 	const configService = {
@@ -59,7 +66,7 @@ describe('bvvSignInProvider', () => {
 		});
 	});
 
-	describe('backend return any other status code', () => {
+	describe('backend returns any other status code', () => {
 		it('throws an Error', async () => {
 			const statusCode = 500;
 			const backendUrl = 'https://backend.url/';
@@ -70,6 +77,55 @@ describe('bvvSignInProvider', () => {
 				.and.resolveTo(new Response(null, { status: statusCode }));
 
 			await expectAsync(bvvSignInProvider(credential)).toBeRejectedWithError(`Sign in not possible: Http-Status ${statusCode}`);
+			expect(configServiceSpy).toHaveBeenCalled();
+			expect(httpServiceSpy).toHaveBeenCalled();
+		});
+	});
+});
+
+describe('bvvSignOutProvider', () => {
+	const configService = {
+		getValueAsPath: () => {}
+	};
+
+	const httpService = {
+		get: async () => {}
+	};
+
+	beforeEach(() => {
+		$injector.registerSingleton('ConfigService', configService).registerSingleton('HttpService', httpService);
+	});
+
+	afterEach(() => {
+		$injector.reset();
+	});
+
+	describe('backend returns status code 200', () => {
+		it('returns "true"', async () => {
+			const backendUrl = 'https://backend.url/';
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const httpServiceSpy = spyOn(httpService, 'get')
+				.withArgs(backendUrl + 'auth/signout')
+				.and.resolveTo(new Response());
+
+			const result = await bvvSignOutProvider();
+
+			expect(result).toBeTrue();
+			expect(configServiceSpy).toHaveBeenCalled();
+			expect(httpServiceSpy).toHaveBeenCalled();
+		});
+	});
+
+	describe('backend returns any other status code', () => {
+		it('throws an Error', async () => {
+			const statusCode = 500;
+			const backendUrl = 'https://backend.url/';
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const httpServiceSpy = spyOn(httpService, 'get')
+				.withArgs(backendUrl + 'auth/signout')
+				.and.resolveTo(new Response(null, { status: statusCode }));
+
+			await expectAsync(bvvSignOutProvider()).toBeRejectedWithError(`Sign out not possible: Http-Status ${statusCode}`);
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
 		});
@@ -151,6 +207,26 @@ describe('bvvAuthResponseInterceptorProvider', () => {
 				expect(wrapperElementContent.querySelectorAll(PasswordCredentialPanel.tag)).toHaveSize(1);
 				expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).authenticate).toEqual(jasmine.any(Function));
 				expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).onClose).toEqual(jasmine.any(Function));
+				expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).footer).toBeNull();
+				closeModal(); /** we close the modal in order to resolve the promise */
+				await expectAsync(responsePromise).toBeResolved();
+			});
+
+			it('opens an authentication UI for role "Plus" containing a special footer', async () => {
+				const retTryFetchFn = jasmine.createSpy();
+				const mockResponse = { status: 401 };
+				const url = 'http://foo.bar';
+				const roles = ['FOO', BvvRoles.PLUS];
+
+				const responsePromise = bvvAuthResponseInterceptorProvider(roles)(mockResponse, retTryFetchFn, url);
+				await TestUtils.timeout(); /**promise queue execution */
+
+				const wrapperElementContent = TestUtils.renderTemplateResult(store.getState().modal.data.content);
+				expect(wrapperElementContent.querySelectorAll(PasswordCredentialPanel.tag)).toHaveSize(1);
+				expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).authenticate).toEqual(jasmine.any(Function));
+				expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).onClose).toEqual(jasmine.any(Function));
+				const wrapperElementFooter = TestUtils.renderTemplateResult(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).footer);
+				expect(wrapperElementFooter.querySelectorAll(BvvPlusPasswordCredentialFooter.tag)).toHaveSize(1);
 				closeModal(); /** we close the modal in order to resolve the promise */
 				await expectAsync(responsePromise).toBeResolved();
 			});
@@ -256,5 +332,28 @@ describe('bvvAuthResponseInterceptorProvider', () => {
 				});
 			});
 		});
+	});
+});
+
+describe('bvvHttpServiceIgnore401PathProvider', () => {
+	const configService = {
+		getValueAsPath: () => {}
+	};
+
+	beforeEach(() => {
+		$injector.registerSingleton('ConfigService', configService);
+	});
+
+	afterEach(() => {
+		$injector.reset();
+	});
+
+	it('returns an array of paths', async () => {
+		const backendUrl = 'https://backend.url/';
+		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+
+		const result = bvvHttpServiceIgnore401PathProvider();
+
+		expect(result).toEqual([`${backendUrl}sourceType`]);
 	});
 });

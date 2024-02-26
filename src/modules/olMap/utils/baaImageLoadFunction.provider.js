@@ -16,8 +16,8 @@ export const getBvvBaaImageLoadFunction = (geoResourceId, credential = null, max
 		HttpService: httpService,
 		ConfigService: configService,
 		TranslationService: translationService,
-		AuthService: authService
-	} = $injector.inject('HttpService', 'ConfigService', 'TranslationService', 'AuthService');
+		GeoResourceService: geoResourceService
+	} = $injector.inject('HttpService', 'ConfigService', 'TranslationService', 'GeoResourceService');
 	const translate = (key, params = []) => translationService.translate(key, params);
 
 	return async (image, src) => {
@@ -69,7 +69,7 @@ export const getBvvBaaImageLoadFunction = (geoResourceId, credential = null, max
 					{
 						timeout
 					},
-					{ response: authService.getAuthResponseInterceptorForGeoResource(geoResourceId) }
+					{ response: [geoResourceService.getAuthResponseInterceptorForGeoResource(geoResourceId)] }
 				);
 
 				if (response.status !== 200) {
