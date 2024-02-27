@@ -7,8 +7,10 @@ import { $injector } from '../../../injection';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 import { MvuElement } from '../../MvuElement';
 import css from './passwordcredentialpanel.css';
+import { BA_FORM_ELEMENT_VISITED_CLASS } from '../../../utils/markup';
 
 const Update_URL = 'update_url';
+const Update_Footer = 'update_footer';
 const Update_Username = 'update_username';
 const Update_Password = 'update_password';
 const Update_Show_Password = 'update_show_password';
@@ -91,6 +93,7 @@ const Update_Authenticating = 'update_authenticating';
  * </pre>
  * @class
  * @property {string} [url] the url, which needs authentication by a password credential
+ * @property {string| templateResult} [footer] the footer, which will be rendered below the username and password fields
  * @property {PasswordCredentialPanel~authenticateCallback} [authenticate] the authenticate callback
  * @property {PasswordCredentialPanel~onCloseCallback} [onClose] the onClose callback
  * @author thiloSchlemmer
@@ -100,13 +103,15 @@ export class PasswordCredentialPanel extends MvuElement {
 		super({
 			url: null,
 			credential: null,
+			footer: null,
 			authenticating: false,
 			showPassword: false
 		});
 
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
-		this._authenticate = () => false;
+		// eslint-disable-next-line no-unused-vars
+		this._authenticate = (credential, url) => false;
 		this._onClose = () => {};
 	}
 
@@ -121,6 +126,8 @@ export class PasswordCredentialPanel extends MvuElement {
 		switch (type) {
 			case Update_URL:
 				return { ...model, url: data };
+			case Update_Footer:
+				return { ...model, footer: data };
 			case Update_Username:
 				return { ...model, credential: { ...model.credential, username: data } };
 			case Update_Password:
@@ -138,7 +145,7 @@ export class PasswordCredentialPanel extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { portrait, url, credential, showPassword } = model;
+		const { portrait, url, footer, credential, showPassword } = model;
 		const translate = (key) => this._translationService.translate(key);
 		const getOrientationClass = () => {
 			return portrait ? 'is-portrait' : 'is-landscape';
@@ -149,19 +156,23 @@ export class PasswordCredentialPanel extends MvuElement {
 		};
 
 		const onChangeUserName = (e) => {
-			this.signal(Update_Username, e.target.value);
+			const { value, parentNode } = e.target;
+			this._addVisitedClass(parentNode);
+
+			this.signal(Update_Username, value);
 		};
 
 		const onChangePassword = (e) => {
-			this.signal(Update_Password, e.target.value);
+			const { value, parentNode } = e.target;
+			this._addVisitedClass(parentNode);
+
+			this.signal(Update_Password, value);
 		};
 
 		const onEnterAuthenticate = (e) => {
 			const no_op = () => {};
-			const authenticate = () => {
-				this._tryAuthenticate(credential, url);
-			};
-			const keyAction = e.key === 'Enter' ? authenticate : no_op;
+
+			const keyAction = e.key === 'Enter' ? () => this._submit(credential, url) : no_op;
 			keyAction();
 		};
 
@@ -175,40 +186,56 @@ export class PasswordCredentialPanel extends MvuElement {
 			this.signal(Update_Show_Password, !showPassword);
 		};
 
+		const getCustomContent = () => {
+			return footer ? footer : nothing;
+		};
+
 		return html`
-		<style>${css}</style>
-		<div class='credential_container ${getOrientationClass()}'>
-		<div class='credential_form'>
-				<div class='credential_header'>
-					${getHeaderContent(url)}
+			<style>
+				${css}
+			</style>
+			<div class="credential_container ${getOrientationClass()}">
+				<div class="credential_form">
+					<div class="credential_header ${url ? 'visible' : ''}">${getHeaderContent(url)}</div>
+					<div class="ba-form-element" title="${translate('auth_passwordCredentialPanel_credential_username')}">
+						<input
+							autofocus
+							placeholder="${translate('auth_passwordCredentialPanel_credential_username')}"
+							type="text"
+							id="credential_username"
+							@input=${onChangeUserName}
+							required
+							@keydown=${onEnterAuthenticate}
+						/>
+						<label for="credential_username" class="control-label">${translate('auth_passwordCredentialPanel_credential_username')}</label
+						><i class="bar"></i>
+					</div>
+					<div class="ba-form-element" title="${translate('auth_passwordCredentialPanel_credential_password')}">
+						<input
+							placeholder="${translate('auth_passwordCredentialPanel_credential_password')}"
+							type=${showPassword ? 'text' : 'password'}
+							id="credential_password"
+							@input=${onChangePassword}
+							required
+							@keydown=${onEnterAuthenticate}
+						/>
+						<label for="credential_password" class="control-label">${translate('auth_passwordCredentialPanel_credential_password')}</label
+						><i class="bar"></i>
+						<i class="eye-slash ${classMap(passwordClasses)}" id="toggle_password" @click=${togglePassword}></i>
+					</div>
 				</div>
-				<div class="ba-form-element" title="${translate('auth_passwordCredentialPanel_credential_username')}">								
-					<input autofocus  placeholder='${translate(
-						'auth_passwordCredentialPanel_credential_username'
-					)}' type="text" id="credential_username"  @input=${onChangeUserName} @keydown=${onEnterAuthenticate} >
-					<label for="credential_username" class="control-label">${translate('auth_passwordCredentialPanel_credential_username')}</label><i class="bar"></i>
-				</div>
-				<div class="ba-form-element" title="${translate('auth_passwordCredentialPanel_credential_password')}"">								
-					<input placeholder='${translate('auth_passwordCredentialPanel_credential_password')}'  type=${
-						showPassword ? 'text' : 'password'
-					} id="credential_password"  @input=${onChangePassword} @keydown=${onEnterAuthenticate} >
-					<label for="credential_password" class="control-label">${translate('auth_passwordCredentialPanel_credential_password')}</label><i class="bar"></i>
-					<i class="eye-slash ${classMap(passwordClasses)}" id="toggle_password" @click=${togglePassword} ></i>
-				</div>
+				<div class="credential_custom_content ${footer ? 'visible' : ''}">${getCustomContent()}</div>
+				<div class="credential_footer">${this._getSubmitOrSpinner(model)}</div>
 			</div>
-			<div class='credential_footer'>
-			${this._getSubmitOrSpinner(model)}
-            </div>
-		</div>
 		`;
 	}
 
 	_getSubmitOrSpinner(model) {
 		const { url, credential, authenticating } = model;
 		const translate = (key) => this._translationService.translate(key);
+		const authenticate = () => this._submit(credential, url);
 
 		const getSubmitButton = () => {
-			const authenticate = () => this._tryAuthenticate(credential, url);
 			return html`<ba-button
 				id="authenticate-credential-button"
 				class="credential_footer__button"
@@ -228,6 +255,21 @@ export class PasswordCredentialPanel extends MvuElement {
 			></ba-button>`;
 		};
 		return authenticating ? getSpinnerButton() : getSubmitButton();
+	}
+
+	_addVisitedClass(element) {
+		element.classList.add(BA_FORM_ELEMENT_VISITED_CLASS);
+	}
+
+	_submit(credential, url) {
+		this.shadowRoot.querySelectorAll('.ba-form-element').forEach((el) => el.classList.add(BA_FORM_ELEMENT_VISITED_CLASS));
+
+		const userNameElement = this.shadowRoot.getElementById('credential_username');
+		const passwordElement = this.shadowRoot.getElementById('credential_password');
+
+		if (userNameElement.reportValidity() && passwordElement.reportValidity()) {
+			this._tryAuthenticate(credential, url);
+		}
 	}
 
 	async _tryAuthenticate(credential, url) {
@@ -257,6 +299,10 @@ export class PasswordCredentialPanel extends MvuElement {
 
 	get url() {
 		return this.getModel().url;
+	}
+
+	set footer(value) {
+		this.signal(Update_Footer, value);
 	}
 
 	set authenticate(callback) {

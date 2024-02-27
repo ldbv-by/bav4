@@ -33,7 +33,8 @@ describe('VectorLayerService', () => {
 		removeStyle: () => {},
 		updateStyle: () => {},
 		isStyleRequired: () => {},
-		addClusterStyle: () => {}
+		addClusterStyle: () => {},
+		sanitizeStyle: () => {}
 	};
 
 	beforeEach(() => {
@@ -137,11 +138,17 @@ describe('VectorLayerService', () => {
 				const olSource = new VectorSource();
 				const vectorGeoresource = new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326);
 				spyOn(instanceUnderTest, '_vectorSourceForData').withArgs(vectorGeoresource).and.returnValue(olSource);
+				const sanitizeSpy = spyOn(instanceUnderTest, '_sanitizeStyles')
+					.withArgs(jasmine.any(VectorLayer))
+					.and.callFake(() => {});
+
 				spyOn(instanceUnderTest, '_applyStyles')
 					.withArgs(jasmine.anything(), olMap)
 					.and.callFake((layer) => layer);
 
 				const olVectorLayer = instanceUnderTest.createVectorLayer(id, vectorGeoresource, olMap);
+
+				expect(sanitizeSpy).toHaveBeenCalledWith(olVectorLayer);
 
 				expect(olVectorLayer.get('id')).toBe(id);
 				expect(olVectorLayer.get('geoResourceId')).toBe(geoResourceId);
@@ -489,6 +496,23 @@ describe('VectorLayerService', () => {
 				instanceUnderTest._updateStyle(olFeature, olLayer, olMap);
 
 				expect(styleServiceSpy).toHaveBeenCalledWith(olFeature, olMap, updateProperties);
+			});
+		});
+
+		describe('_sanitizeStyles', () => {
+			it('calls the StyleService to sanitize each present feature ', () => {
+				setup();
+				const olFeature0 = new Feature();
+				const olFeature1 = new Feature();
+				const olSource = new VectorSource({ features: [olFeature0, olFeature1] });
+				const olLayer = new VectorLayer({ source: olSource });
+				const spy = spyOn(styleService, 'sanitizeStyle')
+					.withArgs(jasmine.any(Feature))
+					.and.callFake(() => {});
+
+				instanceUnderTest._sanitizeStyles(olLayer);
+
+				expect(spy).toHaveBeenCalledTimes(2);
 			});
 		});
 

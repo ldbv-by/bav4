@@ -2,6 +2,7 @@
  * @module modules/olMap/utils/baaImageLoadFunction_provider
  */
 import { $injector } from '../../../injection';
+import { LevelTypes, emitNotification } from '../../../store/notifications/notifications.action';
 
 /**
  * Returns a BVV specific image load function loading restricted images via basic access authentication.
@@ -10,22 +11,69 @@ import { $injector } from '../../../injection';
  * @function
  * @type {module:modules/olMap/services/LayerService~baaImageLoadFunctionProvider}
  */
-export const getBvvBaaImageLoadFunction = (credential, maxSize = [2000, 2000]) => {
-	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
+export const getBvvBaaImageLoadFunction = (geoResourceId, credential = null, maxSize = [2000, 2000]) => {
+	const {
+		HttpService: httpService,
+		ConfigService: configService,
+		TranslationService: translationService,
+		GeoResourceService: geoResourceService
+	} = $injector.inject('HttpService', 'ConfigService', 'TranslationService', 'GeoResourceService');
+	const translate = (key, params = []) => translationService.translate(key, params);
 
 	return async (image, src) => {
-		const getObjectUrl = async (url) => {
+		const timeout = 10_000;
+		const handleUnexpectedStatusCode = (response) => {
+			switch (response.status) {
+				case 401:
+					emitNotification(
+						`${translate('global_geoResource_not_available', [geoResourceId, translate('global_geoResource_unauthorized')])}`,
+						LevelTypes.WARN
+					);
+					break;
+				case 403:
+					emitNotification(
+						`${translate('global_geoResource_not_available', [geoResourceId, translate('global_geoResource_forbidden')])}`,
+						LevelTypes.WARN
+					);
+					break;
+				default:
+					emitNotification(`${translate('global_geoResource_not_available', [geoResourceId])}`, LevelTypes.WARN);
+					break;
+			}
+			throw new Error(`Unexpected network status ${response.status}`);
+		};
+
+		const getObjectUrlForBaa = async (url) => {
 			const { username, password } = credential;
 			try {
 				const response = await httpService.get(url, {
-					timeout: 10000,
+					timeout,
 					headers: new Headers({
 						Authorization: `Basic ${btoa(`${username}:${password}`)}`
 					})
 				});
 
 				if (response.status !== 200) {
-					throw new Error(`Unexpected network status ${response.status}`);
+					handleUnexpectedStatusCode(response);
+				}
+				return URL.createObjectURL(await response.blob());
+			} catch (error) {
+				console.error('Image could not be fetched', error);
+			}
+		};
+
+		const getObjectUrlWithAuthInterceptor = async (url) => {
+			try {
+				const response = await httpService.get(
+					url,
+					{
+						timeout
+					},
+					{ response: [geoResourceService.getAuthResponseInterceptorForGeoResource(geoResourceId)] }
+				);
+
+				if (response.status !== 200) {
+					handleUnexpectedStatusCode(response);
 				}
 				return URL.createObjectURL(await response.blob());
 			} catch (error) {
@@ -40,7 +88,7 @@ export const getBvvBaaImageLoadFunction = (credential, maxSize = [2000, 2000]) =
 		const scalingHeight = maxSize[1] / height;
 		if (scalingWidth >= 1 && scalingHeight >= 1) {
 			const url = `${configService.getValueAsPath('BACKEND_URL')}proxy/basicAuth/wms/map/?url=${encodeURIComponent(src)}`;
-			image.getImage().src = credential ? await getObjectUrl(url) : src;
+			image.getImage().src = credential ? await getObjectUrlForBaa(url) : await getObjectUrlWithAuthInterceptor(src);
 		} else {
 			params.set('WIDTH', `${scalingWidth >= 1 ? width : Math.round(width * scalingWidth)}`);
 			params.set('HEIGHT', `${scalingHeight >= 1 ? height : Math.round(height * scalingHeight)}`);
@@ -57,8 +105,8 @@ export const getBvvBaaImageLoadFunction = (credential, maxSize = [2000, 2000]) =
 			};
 			tempImage.crossOrigin = 'anonymous';
 			tempImage.src = credential
-				? await getObjectUrl(`${configService.getValueAsPath('BACKEND_URL')}proxy/basicAuth/wms/map/?url=${encodeURIComponent(adjustedWmsUrl)}`)
-				: adjustedWmsUrl;
+				? await getObjectUrlForBaa(`${configService.getValueAsPath('BACKEND_URL')}proxy/basicAuth/wms/map/?url=${encodeURIComponent(adjustedWmsUrl)}`)
+				: await getObjectUrlWithAuthInterceptor(adjustedWmsUrl);
 		}
 	};
 };

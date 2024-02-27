@@ -21,6 +21,7 @@ import { observable, VTGeoResource, XyzGeoResource } from '../domain/geoResource
 import { loadBvvFileStorageResourceById } from './provider/fileStorage.provider';
 import { loadBvvGeoResourceById, loadBvvGeoResources, loadExternalGeoResource } from './provider/geoResource.provider';
 import { geoResourceChanged } from '../store/layers/layers.action';
+import { bvvAuthResponseInterceptorProvider } from './provider/auth.provider';
 
 export const FALLBACK_GEORESOURCE_ID_0 = 'tpo';
 export const FALLBACK_GEORESOURCE_ID_1 = 'tpo_mono';
@@ -42,17 +43,26 @@ export const FALLBACK_GEORESOURCE_LABEL_3 = 'Web Vektor Relief';
  * @author taulinger
  */
 export class GeoResourceService {
+	#authService;
+	#environmentService;
 	/**
 	 *
 	 * @param {module:services/GeoResourceService~geoResourceProvider} [provider=loadBvvGeoResources]
 	 * @param {module:services/GeoResourceService~geoResourceByIdProvider[]} [byIdProvider=[loadBvvFileStorageResourceById, loadBvvGeoResourceById]]
+	 * @param {module:services/AuthService~authResponseInterceptorProvider} [authResponseInterceptorProvider=bvvAuthResponseInterceptorProvider]
 	 */
-	constructor(provider = loadBvvGeoResources, byIdProvider = [loadExternalGeoResource, loadBvvFileStorageResourceById, loadBvvGeoResourceById]) {
+	constructor(
+		provider = loadBvvGeoResources,
+		byIdProvider = [loadExternalGeoResource, loadBvvFileStorageResourceById, loadBvvGeoResourceById],
+		authResponseInterceptorProvider = bvvAuthResponseInterceptorProvider
+	) {
 		this._provider = provider;
 		this._byIdProvider = byIdProvider;
+		this._authResponseInterceptorProvider = authResponseInterceptorProvider;
 		this._geoResources = null;
-		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
-		this._environmentService = environmentService;
+		const { EnvironmentService: environmentService, AuthService: authService } = $injector.inject('EnvironmentService', 'AuthService');
+		this.#authService = authService;
+		this.#environmentService = environmentService;
 	}
 
 	/**
@@ -67,7 +77,7 @@ export class GeoResourceService {
 				this._geoResources = (await this._provider()).map((gr) => this._proxify(gr));
 			} catch (e) {
 				this._geoResources = [];
-				if (this._environmentService.isStandalone()) {
+				if (this.#environmentService.isStandalone()) {
 					console.warn('GeoResources could not be fetched from backend. Using fallback geoResources ...');
 					this._geoResources.push(...this._newFallbackGeoResources());
 				} else {
@@ -149,6 +159,30 @@ export class GeoResourceService {
 		// update  slice-of-state 'layers'
 		geoResourceChanged(observedGeoResource);
 		return observedGeoResource;
+	}
+
+	/**
+	 * Checks if the current auth roles allow to access a certain GeoResource.
+	 * Returns `false` if the GeoResource does not exist or the user is not signed in.
+	 * @param {string} id The id of a GeoResource
+	 * @returns {boolean} `true` if a GeoResource is allowed to access
+	 */
+	isAllowed(id) {
+		const gr = this.byId(id);
+		if (gr && this.#authService.isSignedIn()) {
+			return gr.authRoles.length === 0 ? true : gr.authRoles.filter((role) => this.#authService.getRoles().includes(role)).length > 0;
+		}
+		return false;
+	}
+
+	/**
+	 * Returns a {@link module:services/HttpService~responseInterceptor} suitable authenticating for a given GeoResource.
+	 * @param {string} geoResourceId The id of a GeoResource
+	 * @returns {module:services/HttpService~responseInterceptor}
+	 */
+	getAuthResponseInterceptorForGeoResource(geoResourceId) {
+		const roles = this.byId(geoResourceId)?.authRoles ?? [];
+		return this._authResponseInterceptorProvider(roles);
 	}
 
 	_newFallbackGeoResources() {
