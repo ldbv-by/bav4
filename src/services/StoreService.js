@@ -32,6 +32,7 @@ import { chipsReducer } from '../store/chips/chips.reducer';
 import { stateForEncodingReducer } from '../store/stateForEncoding/stateForEncoding.reducer';
 import { iframeContainerReducer } from '../store/iframeContainer/iframeContainer.reducer';
 import { routingReducer } from '../store/routing/routing.reducer';
+import { authReducer } from '../store/auth/auth.reducer';
 
 /**
  * Service which configures, initializes and holds the redux store.
@@ -73,7 +74,8 @@ export class StoreService {
 			chips: chipsReducer,
 			stateForEncoding: stateForEncodingReducer,
 			iframeContainer: iframeContainerReducer,
-			routing: routingReducer
+			routing: routingReducer,
+			auth: authReducer
 		});
 
 		this._store = createStore(rootReducer);

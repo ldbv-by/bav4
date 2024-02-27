@@ -10,6 +10,7 @@ import { activate as activateMeasurement, deactivate as deactivateMeasurement } 
 import { addLayer } from '../../../../store/layers/layers.action';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { closeModal, openModal } from '../../../../store/modal/modal.action';
+import { GeoResourceAuthenticationType } from '../../../../domain/geoResources';
 import css from './showCase.css';
 import { MenuTypes } from '../../../commons/components/overflowMenu/OverflowMenu';
 import { closeBottomSheet, openBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
@@ -83,7 +84,7 @@ export class ShowCase extends MvuElement {
 			});
 		};
 
-		const onClickAuthenticate = async () => {
+		const onClickAuthenticateUrl = async () => {
 			closeModal();
 
 			await sleep(1000);
@@ -101,18 +102,10 @@ export class ShowCase extends MvuElement {
 				return null;
 			};
 
-			// in case of aborting the authentification-process by closing the modal,
-			// call the onCloseCallback directly
-			const resolveBeforeClosing = (modal) => {
-				if (!modal.active) {
-					unsubscribe();
-					onClose(null);
-				}
-			};
-
 			const unsubscribe = this.observe(
 				(state) => state.modal,
-				(modal) => resolveBeforeClosing(modal)
+				(modal) => resolveBeforeClosing(modal),
+				false
 			);
 
 			// onClose-callback is called with a valid credential or NULL
@@ -132,6 +125,15 @@ export class ShowCase extends MvuElement {
 				resolveAction();
 			};
 
+			// in case of aborting the authentification-process by closing the modal,
+			// call the onCloseCallback directly
+			const resolveBeforeClosing = (modal) => {
+				if (!modal.active) {
+					unsubscribe();
+					onClose(null);
+				}
+			};
+
 			// creates a PasswordCredentialPanel-element within a templateResult
 			const getCredentialPanel = () => {
 				return html`<ba-auth-password-credential-panel
@@ -144,6 +146,137 @@ export class ShowCase extends MvuElement {
 			// using the panel as content for the modal
 			openModal('Connect to restricted WMS...', getCredentialPanel());
 		};
+
+		const onClickAuthenticateRole = async () => {
+			closeModal();
+
+			await sleep(1000);
+			const restrictedRole = GeoResourceAuthenticationType.PLUS;
+			const receivedCredential = {};
+
+			// the authenticate-callback provides the implementation of the authentication of credential and url
+			const authenticate = async (credential, authenticationTarget) => {
+				await sleep(3000);
+				if (authenticationTarget === restrictedRole && credential?.username === 'foo' && credential?.password === 'bar') {
+					receivedCredential.username = credential.username;
+					receivedCredential.password = credential.password;
+					return { message: 'Credential is valid' };
+				}
+				return null;
+			};
+
+			const unsubscribe = this.observe(
+				(state) => state.modal,
+				(modal) => resolveBeforeClosing(modal),
+				false
+			);
+
+			// onClose-callback is called with a valid credential or NULL
+			const onClose = (credential, result) => {
+				unsubscribe();
+
+				const succeed = () => {
+					emitNotification(result.message, LevelTypes.INFO);
+					closeModal();
+				};
+
+				const abort = () => {
+					emitNotification('Authentication aborted', LevelTypes.WARN);
+				};
+
+				const resolveAction = credential ? succeed : abort;
+				resolveAction();
+			};
+
+			// in case of aborting the authentification-process by closing the modal,
+			// call the onCloseCallback directly
+			const resolveBeforeClosing = (modal) => {
+				if (!modal.active) {
+					unsubscribe();
+					onClose(null);
+				}
+			};
+
+			// creates a PasswordCredentialPanel-element within a templateResult
+			const getCredentialPanel = () => {
+				return html`<ba-auth-password-credential-panel .authenticate=${authenticate} .onClose=${onClose}></ba-auth-password-credential-panel>`;
+			};
+
+			const title = html`Sign in
+				<ba-badge .size=${'1.5'} .color=${'var(--text3)'} .background=${'var(--primary-color)'} .label=${'Role'}></ba-badge>`;
+
+			// using the panel as content for the modal
+			openModal(title, getCredentialPanel());
+		};
+
+		const onClickAuthenticateFooter = async () => {
+			closeModal();
+
+			await sleep(1000);
+			const restrictedRole = GeoResourceAuthenticationType.PLUS;
+			const receivedCredential = {};
+
+			// the authenticate-callback provides the implementation of the authentication of credential and url
+			const authenticate = async (credential, authenticationTarget) => {
+				await sleep(3000);
+				if (authenticationTarget === restrictedRole && credential?.username === 'foo' && credential?.password === 'bar') {
+					receivedCredential.username = credential.username;
+					receivedCredential.password = credential.password;
+					return { message: 'Credential is valid' };
+				}
+				return null;
+			};
+
+			const unsubscribe = this.observe(
+				(state) => state.modal,
+				(modal) => resolveBeforeClosing(modal),
+				false
+			);
+
+			// onClose-callback is called with a valid credential or NULL
+			const onClose = (credential, result) => {
+				unsubscribe();
+
+				const succeed = () => {
+					emitNotification(result.message, LevelTypes.INFO);
+					closeModal();
+				};
+
+				const abort = () => {
+					emitNotification('Authentication aborted', LevelTypes.WARN);
+				};
+
+				const resolveAction = credential ? succeed : abort;
+				resolveAction();
+			};
+
+			// in case of aborting the authentification-process by closing the modal,
+			// call the onCloseCallback directly
+			const resolveBeforeClosing = (modal) => {
+				if (!modal.active) {
+					unsubscribe();
+					onClose(null);
+				}
+			};
+
+			const footer = html`<ba-auth-password-credential-bvv-footer></ba-auth-password-credential-bvv-footer>`;
+
+			// creates a PasswordCredentialPanel-element within a templateResult
+			const getCredentialPanel = () => {
+				return html`<ba-auth-password-credential-panel
+					.authenticate=${authenticate}
+					.footer=${footer}
+					.onClose=${onClose}
+				></ba-auth-password-credential-panel>`;
+			};
+
+			const title = html`Sign in
+				<ba-badge .size=${'1.5'} .color=${'var(--text3)'} .background=${'var(--primary-color)'} .label=${'Role'}></ba-badge>`;
+
+			// using the panel as content for the modal
+			openModal(title, getCredentialPanel());
+		};
+
 		const onToggle = (event) => {
 			// eslint-disable-next-line no-console
 			console.log('toggled ' + event.detail.checked);
@@ -467,7 +600,22 @@ export class ShowCase extends MvuElement {
 
 					<h3>Credentials</h3>
 					<div class="example row">
-						<ba-button id="button0" .label=${'Authenticate by password'} .type=${'primary'} @click=${onClickAuthenticate}></ba-button>
+						<ba-button id="button0" .label=${'Authenticate by password for URL'} .type=${'primary'} @click=${onClickAuthenticateUrl}></ba-button>
+						<div>Hint: Demo Credentials are foo/bar</div>
+					</div>
+
+					<div class="example row">
+						<ba-button id="button0" .label=${'Authenticate by password for Role'} .type=${'primary'} @click=${onClickAuthenticateRole}></ba-button>
+						<div>Hint: Demo Credentials are foo/bar</div>
+					</div>
+
+					<div class="example row">
+						<ba-button
+							id="button0"
+							.label=${'Authenticate by password with custom footer content'}
+							.type=${'primary'}
+							@click=${onClickAuthenticateFooter}
+						></ba-button>
 						<div>Hint: Demo Credentials are foo/bar</div>
 					</div>
 				</div>

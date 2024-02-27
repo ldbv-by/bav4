@@ -13,8 +13,10 @@ describe('GeoResourceInfo provider', () => {
 		post: async () => {}
 	};
 
+	const responseInterceptor = [() => {}];
 	const geoResourceService = {
-		byId: () => {}
+		byId: () => {},
+		getAuthResponseInterceptorForGeoResource: () => {}
 	};
 
 	const baaCredentialService = {
@@ -59,14 +61,16 @@ describe('GeoResourceInfo provider', () => {
 		const expectedArgs0 = backendUrl + 'georesource/info/external/wms';
 		const expectedPayLoad = '{"url":"http://some.url","layers":["layer"]}';
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+		const authServiceSpy = spyOn(geoResourceService, 'getAuthResponseInterceptorForGeoResource').and.returnValue(responseInterceptor);
 		const httpServiceSpy = spyOn(httpService, 'post')
-			.withArgs(expectedArgs0, expectedPayLoad, MediaType.JSON, { timeout: 5000 })
+			.withArgs(expectedArgs0, expectedPayLoad, MediaType.JSON, { timeout: 5000 }, { response: [responseInterceptor] })
 			.and.returnValue(Promise.resolve(new Response('<b>hello</b>', { status: 200 })));
 
 		const result = await loadBvvGeoResourceInfo(geoResourceId);
 
 		expect(configServiceSpy).toHaveBeenCalled();
 		expect(httpServiceSpy).toHaveBeenCalled();
+		expect(authServiceSpy).toHaveBeenCalledOnceWith(geoResourceId);
 		expect(result).toBeTruthy();
 		expect(result.content).toBe('<b>hello</b>');
 	});
@@ -85,7 +89,7 @@ describe('GeoResourceInfo provider', () => {
 		const expectedPayLoad = '{"url":"http://some.url","layers":["layer"],"username":"username","password":"password"}';
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const httpServiceSpy = spyOn(httpService, 'post')
-			.withArgs(expectedArgs0, expectedPayLoad, MediaType.JSON, { timeout: 5000 })
+			.withArgs(expectedArgs0, expectedPayLoad, MediaType.JSON, { timeout: 5000 }, { response: [] })
 			.and.returnValue(Promise.resolve(new Response('<b>hello</b>', { status: 200 })));
 
 		const result = await loadBvvGeoResourceInfo(geoResourceId);
@@ -109,7 +113,7 @@ describe('GeoResourceInfo provider', () => {
 		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 
 		await expectAsync(loadBvvGeoResourceInfo(geoResourceId)).toBeRejectedWithError(
-			`No credential available for GeoResource with id '${geoResourceId}' and url '${url}'`
+			`GeoResourceInfoResult for '${geoResourceId}' could not be loaded: No credential available`
 		);
 	});
 
@@ -144,16 +148,11 @@ describe('GeoResourceInfo provider', () => {
 			.withArgs(expectedArgs0, { timeout: 5000 })
 			.and.returnValue(Promise.resolve(new Response(null, { status: 500 })));
 
-		const errorMessage = "GeoResourceInfoResult for '914c9263-5312-453e-b3eb-5104db1bf788' could not be loaded";
+		const errorMessage = "GeoResourceInfoResult for '914c9263-5312-453e-b3eb-5104db1bf788' could not be loaded: Http-Status 500";
 
-		try {
-			await loadBvvGeoResourceInfo('914c9263-5312-453e-b3eb-5104db1bf788');
-			throw new Error('Promise should not be resolved');
-		} catch (err) {
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
-			expect(err.message).toBe(errorMessage);
-		}
+		await expectAsync(loadBvvGeoResourceInfo('914c9263-5312-453e-b3eb-5104db1bf788')).toBeRejectedWithError(errorMessage);
+		expect(configServiceSpy).toHaveBeenCalled();
+		expect(httpServiceSpy).toHaveBeenCalled();
 	});
 
 	it('should return NULL for an unsupported imported GeoResource', async () => {

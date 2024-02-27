@@ -13,10 +13,11 @@ import { Projection } from 'ol/proj';
 import ImageWMS from 'ol/source/ImageWMS.js';
 
 /**
- * A function that returns a `ol.image.LoadFunction` for loading restricted images via basic access authentication
+ * A function that returns a `ol.image.LoadFunction` for loading also restricted images via basic access authentication
  * @typedef {Function} baaImageLoadFunctionProvider
- * @param {module:domain/credentialDef~Credential} credential The credential for basic access authentication
- * @param {number[]} maxSize Maximum width and height of the requested image in px
+ * @param {string} geoResourceId The id of the corresponding GeoResource
+ * @param {module:domain/credentialDef~Credential} [credential] The credential for basic access authentication (when BAA is requested)
+ * @param {number[]} [maxSize] Maximum width and height of the requested image in px
  * @returns {Function} ol.image.LoadFunction
  */
 
@@ -36,7 +37,7 @@ export class LayerService {
 	/**
 	 *
 	 * @param {string} id layerId
-	 * @param {GeoResourceTypes} geoResource
+	 * @param {GeoResource} geoResource
 	 * @param {Map} olMap
 	 * @returns ol layer
 	 */
@@ -74,11 +75,11 @@ export class LayerService {
 						if (!credential) {
 							throw new Error(`No credential available for GeoResource with id '${geoResource.id}' and url '${geoResource.url}'`);
 						}
-						imageWmsSource.setImageLoadFunction(this._baaImageLoadFunctionProvider(credential));
+						imageWmsSource.setImageLoadFunction(this._baaImageLoadFunctionProvider(geoResource.id, credential));
 						break;
 					}
 					default: {
-						imageWmsSource.setImageLoadFunction(this._baaImageLoadFunctionProvider());
+						imageWmsSource.setImageLoadFunction(this._baaImageLoadFunctionProvider(geoResource.id));
 					}
 				}
 

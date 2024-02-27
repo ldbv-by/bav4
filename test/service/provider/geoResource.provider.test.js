@@ -69,6 +69,7 @@ describe('GeoResource provider', () => {
 		extraParams: { foo: 'bar' },
 		queryable: false,
 		exportable: false,
+		authRoles: ['TEST'],
 		...wmsDefinition
 	};
 	const xyzDefinition = { id: 'xyzId', label: 'xyzLabel', urls: 'xyzUrl', type: 'xyz', attribution: basicAttribution };
@@ -81,6 +82,7 @@ describe('GeoResource provider', () => {
 		queryable: false,
 		exportable: false,
 		tileGridId: 'tileGridId',
+		authRoles: ['TEST'],
 		...xyzDefinition
 	};
 	const vtDefinition = { id: 'vtId', label: 'vtLabel', url: 'vtStyleUrl', type: 'vt', attribution: basicAttribution };
@@ -92,6 +94,7 @@ describe('GeoResource provider', () => {
 		maxZoom: 19,
 		queryable: false,
 		exportable: false,
+		authRoles: ['TEST'],
 		...vtDefinition
 	};
 	const vectorDefinition = {
@@ -111,6 +114,7 @@ describe('GeoResource provider', () => {
 		maxZoom: 19,
 		queryable: false,
 		exportable: false,
+		authRoles: ['TEST'],
 		...vectorDefinition
 	};
 	const aggregateDefinition = {
@@ -170,6 +174,7 @@ describe('GeoResource provider', () => {
 			expect(wmsGeoResource.extraParams).toEqual({ foo: 'bar' });
 			expect(wmsGeoResource.queryable).toBeFalse();
 			expect(wmsGeoResource.exportable).toBeFalse();
+			expect(wmsGeoResource.authRoles).toEqual(['TEST']);
 		});
 
 		it('maps a XYZ BVV definition to a corresponding GeoResource instance', () => {
@@ -191,6 +196,7 @@ describe('GeoResource provider', () => {
 			expect(xyzGeoResource.queryable).toBeFalse();
 			expect(xyzGeoResource.exportable).toBeFalse();
 			expect(xyzGeoResource.tileGridId).toBe('tileGridId');
+			expect(xyzGeoResource.authRoles).toEqual(['TEST']);
 		});
 
 		it('maps a VT BVV definition to a corresponding GeoResource instance', () => {
@@ -211,6 +217,7 @@ describe('GeoResource provider', () => {
 			expect(vtGeoResource.maxZoom).toBe(19);
 			expect(vtGeoResource.queryable).toBeFalse();
 			expect(vtGeoResource.exportable).toBeFalse();
+			expect(vtGeoResource.authRoles).toEqual(['TEST']);
 		});
 
 		it('maps a VectorFile BVV definition to a corresponding GeoResource instance', async () => {
@@ -247,6 +254,7 @@ describe('GeoResource provider', () => {
 			expect(vectorGeoResource.clusterParams).toEqual({ foo: 'bar' });
 			expect(vectorGeoResource.queryable).toBeFalse();
 			expect(vectorGeoResource.exportable).toBeFalse();
+			expect(vectorGeoResource.authRoles).toEqual(['TEST']);
 		});
 
 		it('throws an Error when GeoResourceFuture for a VectorGeoResource cannot be resolved', async () => {
