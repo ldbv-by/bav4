@@ -7,6 +7,9 @@ import css from './bvvMiscContentPanel.css';
 import { $injector } from '../../../../../../injection';
 import { closeModal, openModal } from '../../../../../../store/modal/modal.action';
 import { toggleSchema } from '../../../../../../store/media/media.action';
+import { emitNotification, LevelTypes } from '../../../../../../store/notifications/notifications.action';
+import { sleep } from '../../../../../../utils/timer';
+import { GeoResourceAuthenticationType } from '../../../../../../domain/geoResources';
 
 const Update_Schema = 'update_schema';
 
@@ -48,19 +51,83 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 			openModal(title, content, { steps: 2 });
 		};
 
+		const onClickAuthenticateRole = async () => {
+			closeModal();
+
+			await sleep(1000);
+			const restrictedRole = GeoResourceAuthenticationType.PLUS;
+			const receivedCredential = {};
+
+			// the authenticate-callback provides the implementation of the authentication of credential and url
+			const authenticate = async (credential, authenticationTarget) => {
+				await sleep(3000);
+				if (authenticationTarget === restrictedRole && credential?.username === 'foo' && credential?.password === 'bar') {
+					receivedCredential.username = credential.username;
+					receivedCredential.password = credential.password;
+					return { message: 'Credential is valid' };
+				}
+				return null;
+			};
+
+			const unsubscribe = this.observe(
+				(state) => state.modal,
+				(modal) => resolveBeforeClosing(modal),
+				false
+			);
+
+			// onClose-callback is called with a valid credential or NULL
+			const onClose = (credential, result) => {
+				unsubscribe();
+
+				const succeed = () => {
+					emitNotification(result.message, LevelTypes.INFO);
+					closeModal();
+				};
+
+				const abort = () => {
+					emitNotification('Authentication aborted', LevelTypes.WARN);
+				};
+
+				const resolveAction = credential ? succeed : abort;
+				resolveAction();
+			};
+
+			// in case of aborting the authentification-process by closing the modal,
+			// call the onCloseCallback directly
+			const resolveBeforeClosing = (modal) => {
+				if (!modal.active) {
+					unsubscribe();
+					onClose(null);
+				}
+			};
+
+			// creates a PasswordCredentialPanel-element within a templateResult
+			const getCredentialPanel = () => {
+				return html`<ba-auth-password-credential-panel .authenticate=${authenticate} .onClose=${onClose}></ba-auth-password-credential-panel>`;
+			};
+
+			const title = html`Sign in
+				<ba-badge .size=${'1.5'} .color=${'var(--text3)'} .background=${'var(--primary-color)'} .label=${'Plus'}></ba-badge>`;
+
+			// using the panel as content for the modal
+			openModal(title, getCredentialPanel());
+		};
+
 		return html`
 			<style>
 				${css}
 			</style>
 			<div class="ba-list">
-				<a class="ba-list-item divider" href="https://www.energieatlas.bayern.de/" target="_blank">
+				<button @click=${onClickAuthenticateRole} class="ba-list-item divider">
 					<span class="ba-list-item__pre ">
 						<span class="ba-list-item__image image person"> </span>
 					</span>
 					<span class="ba-list-item__text ">
-						<h3>Sign in / Register</h3>
+						<h3>Anmeldung</h3>
+						<span class="ba-list-item__secondary-text">${translate('Noch kein BayernAtlas-plus Kunde? Hier finden Sie weitere')} </span
+						><a href="https://www.ldbv.bayern.de/produkte/dienste/bayernatlas.html" target="_blank" class="link">Informationen</a>
 					</span>
-				</a>
+				</button>
 				<div class="ba-list-item  ba-list-item__header">
 					<span class="ba-list-item__text ">
 						<span class="ba-list-item__primary-text">${translate('menu_misc_content_panel_settings')}</span>
