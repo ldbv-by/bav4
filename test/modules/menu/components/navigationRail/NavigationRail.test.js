@@ -389,6 +389,38 @@ describe('NavigationRail', () => {
 
 			expect(store.getState().mainMenu.open).toBeFalse();
 		});
+
+		it('toggles featureInfo tab', async () => {
+			const state = {
+				mainMenu: {
+					open: false,
+					tab: TabIds.TOPICS
+				},
+				media: {
+					portrait: true,
+					minWidth: true
+				},
+				navigationRail: {
+					open: true,
+					visitedTabIds: []
+				}
+			};
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelectorAll('.objectinfo.is-active')).toHaveSize(0);
+			setTab(TabIds.FEATUREINFO);
+			expect(element.shadowRoot.querySelectorAll('.objectinfo.is-active')).toHaveSize(1);
+
+			expect(store.getState().mainMenu.open).toBeFalse();
+
+			element.shadowRoot.querySelector('.objectinfo').click();
+
+			expect(store.getState().mainMenu.open).toBeTrue();
+
+			element.shadowRoot.querySelector('.objectinfo').click();
+
+			expect(store.getState().mainMenu.open).toBeFalse();
+		});
 	});
 
 	it('renders nothing when embedded', async () => {
