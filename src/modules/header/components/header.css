@@ -187,6 +187,27 @@
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 	opacity: 1;
 }
+
+.badges-person {
+	border-radius: 2em;
+	background: var(--primary-bg-color);
+	padding: 0em;
+	font-size: 0.8rem;
+	position: absolute;
+	top: -0.7em;
+	right: 0;
+}
+
+.badges-icon {
+	height: 1.5em;
+	width: 1.6em;
+	background: var(--text1);
+	mask: url('assets/person.svg');
+	-webkit-mask: url('assets/person.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+
 .header__button-container .is-active .badges {
 	transform: scale(1);
 }

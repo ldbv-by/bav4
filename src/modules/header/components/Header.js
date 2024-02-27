@@ -292,6 +292,10 @@ export class Header extends MvuElement {
 								<span>
 									${translate('header_tab_misc_button')}
 								</span>
+								<div class="badges-person">
+									<div class="badges-icon">
+									</div>
+								</div>
 							</button>
 						</div>
 					</div>				
