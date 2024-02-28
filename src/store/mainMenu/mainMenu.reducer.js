@@ -1,6 +1,6 @@
 export const OPEN_CLOSED_CHANGED = 'components/menu/mainMenu/open';
 export const TAB_CHANGED = 'components/menu/mainMenu/tabChanged';
-const ORIENTATION_MEDIA_QUERY = '(orientation: portrait)';
+const ORIENTATION_MEDIA_QUERY = '(max-width: 80em) or (orientation: portrait)';
 
 const mainMenuReducer = (state, action) => {
 	const { type, payload } = action;

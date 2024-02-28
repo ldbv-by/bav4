@@ -95,7 +95,9 @@
 	top: 8.5em;
 }
 .is-tablet .main-menu__close-button {
-	top: 0.8em;
+	top: 5.5em;
+	transform: scale(0.9);
+	margin-left: -0.2em;
 }
 /*portrait */
 .is-portrait .main-menu {
