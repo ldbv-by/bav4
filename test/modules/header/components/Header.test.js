@@ -140,8 +140,8 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.header')).toHaveSize(1);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__logo')).display).toBe('none');
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__logo')).display).toBe('block');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header_search_icon')).opacity).toBe('0');
 		});
 
@@ -606,17 +606,17 @@ describe('Header', () => {
 					const element = await setup(state);
 					const input = element.shadowRoot.querySelector('#input');
 
-					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
+					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerLogo')).display).toBe('block');
 
 					input.focus();
 
-					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('none');
+					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerLogo')).display).toBe('none');
 
 					input.blur();
 
 					jasmine.clock().tick(300 + 100);
 
-					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
+					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerLogo')).display).toBe('block');
 				});
 			});
 
@@ -693,7 +693,7 @@ describe('Header', () => {
 
 					const element = await setup(state);
 
-					const container = element.shadowRoot.querySelector('#headerMobile');
+					const container = element.shadowRoot.querySelector('#headerLogo');
 					expect(window.getComputedStyle(container).display).toBe('block');
 					expect(window.getComputedStyle(container).opacity).toBe('1');
 					element.shadowRoot.querySelector('#input').focus();
