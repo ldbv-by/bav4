@@ -393,12 +393,12 @@ describe('NavigationRail', () => {
 		it('toggles featureInfo tab', async () => {
 			const state = {
 				mainMenu: {
-					open: false,
+					open: true,
 					tab: TabIds.TOPICS
 				},
 				media: {
-					portrait: true,
-					minWidth: true
+					portrait: false,
+					minWidth: false
 				},
 				navigationRail: {
 					open: true,
@@ -408,18 +408,21 @@ describe('NavigationRail', () => {
 			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelectorAll('.objectinfo.is-active')).toHaveSize(0);
-			setTab(TabIds.FEATUREINFO);
-			expect(element.shadowRoot.querySelectorAll('.objectinfo.is-active')).toHaveSize(1);
-
-			expect(store.getState().mainMenu.open).toBeFalse();
-
-			element.shadowRoot.querySelector('.objectinfo').click();
+			setTab(TabIds.ROUTING);
 
 			expect(store.getState().mainMenu.open).toBeTrue();
 
 			element.shadowRoot.querySelector('.objectinfo').click();
+			expect(element.shadowRoot.querySelectorAll('.objectinfo.is-active')).toHaveSize(1);
+			expect(store.getState().mainMenu.open).toBeTrue();
 
+			element.shadowRoot.querySelector('.objectinfo').click();
+			expect(element.shadowRoot.querySelectorAll('.objectinfo.is-active')).toHaveSize(0);
 			expect(store.getState().mainMenu.open).toBeFalse();
+
+			element.shadowRoot.querySelector('.objectinfo').click();
+			expect(store.getState().mainMenu.open).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll('.objectinfo.is-active')).toHaveSize(1);
 		});
 	});
 

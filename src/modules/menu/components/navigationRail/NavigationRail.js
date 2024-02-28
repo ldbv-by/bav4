@@ -97,15 +97,13 @@ export class NavigationRail extends MvuElement {
 		};
 
 		const openTab = (tabId) => {
-			setCurrentTool(null);
+			if (tabId === TabIds.ROUTING) {
+				setCurrentTool(Tools.ROUTING);
+			} else {
+				setCurrentTool(null);
+			}
+			isPortrait || tabId === tabIndex ? toggle() : open();
 			setTab(tabId);
-			isPortrait ? toggle() : open();
-		};
-
-		const openRoutingTab = () => {
-			setTab(TabIds.ROUTING);
-			setCurrentTool(Tools.ROUTING);
-			isPortrait ? toggle() : open();
 		};
 
 		const getIsActive = (tabId) => {
@@ -147,7 +145,7 @@ export class NavigationRail extends MvuElement {
 					<span class="separator landscape"> </span>
 					<button
 						class="routing ${getIsVisible(TabIds.ROUTING)} ${getIsActive(TabIds.ROUTING)}"
-						@click="${() => openRoutingTab()}"
+						@click="${() => openTab(TabIds.ROUTING)}"
 						style="order:${getFlexOrder(TabIds.ROUTING)}"
 					>
 						<span class="icon"></span>
