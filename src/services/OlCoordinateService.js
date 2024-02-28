@@ -6,8 +6,9 @@ import { bvvStringifyFunction } from './provider/stringifyCoords.provider';
 import { buffer, containsCoordinate } from 'ol/extent';
 import { $injector } from '../injection';
 import { getCoordinatesForElevationProfile } from '../modules/olMap/utils/olGeometryUtils';
-import { LineString } from '../../node_modules/ol/geom';
+import { LineString, Polygon } from '../../node_modules/ol/geom';
 import { isCoordinate, isCoordinateLike } from '../utils/checks';
+import { Geodesic, PolygonArea } from 'geographiclib-geodesic';
 
 /**
  * A function that returns a string representation of a coordinate.
@@ -207,5 +208,83 @@ export class OlCoordinateService {
 			return singleValue ? coordinates[0] : coordinates;
 		}
 		throwError();
+	}
+
+	/**
+	 * Calculates the length of an array of coordinates.
+	 *
+	 * If the coordinates are in a local projection, then the extent specifies the valid
+	 * frame for a planar length calculation. Otherwise the geodetic length will be calculated.
+	 *
+	 * Coordinates in a global projection will be always result in geodetic distances (spherical).
+	 * @param {Array<module:domain/coordinateTypeDef~Coordinate>} coordinates input coordinates
+	 * @param {number} [srid=3857] the srid number for the projection of the coordinates, default is SMERC (3857)
+	 * @param {Extent} [extent] an extent in WGS84, which defines whether or not the coordinates (partially)
+	 * outside this extent should be handled with geodesic(spherical) length calculation or
+	 * with the planar calculation of the local projection
+	 */
+	getLength(coordinates, srid = 3857, extent = null) {
+		const getGeodesicLength = (coordinates) => {
+			const wgs84 = Geodesic.WGS84;
+			return coordinates.reduce((sum, current, index, coordinates) => {
+				if (index === coordinates.length - 1) {
+					return sum;
+				}
+				const next = coordinates[index + 1];
+				const r = wgs84.Inverse(current[1], current[0], next[1], next[0]);
+
+				return sum + r.s12;
+			}, 0);
+		};
+		const wgs84Coordinates =
+			srid !== 4326 ? coordinates.map((c) => transform(c, OlCoordinateService._toEpsgCodeString(srid), 'EPSG:4326')) : coordinates;
+
+		const isWithinProjectionExtent = extent
+			? !wgs84Coordinates.some((coordinate) => {
+					return !containsCoordinate(extent, coordinate);
+				})
+			: true;
+
+		const isLocalProjection = ![4326, 3857].includes(srid);
+		return isWithinProjectionExtent && isLocalProjection ? new LineString(coordinates).getLength() : getGeodesicLength(wgs84Coordinates);
+	}
+
+	/**
+	 * Calculates the area for an array of polygon coordinates.
+	 *
+	 * If the coordinates are in a local projection, then the extent specifies the valid
+	 * frame for a planar length calculation. Otherwise the geodetic area will be calculated.
+	 *
+	 * Coordinates in a global projection will be always result in geodetic calculation (spherical).
+	 * @param {Array<Array<module:domain/coordinateTypeDef~Coordinate>>} coordinates polygon coordinates
+	 * @param {number} [srid=3857] the srid number for the projection of the coordinates, default is SMERC (3857)
+	 * @param {Extent} [extent=null] an extent in WGS84, which defines whether or not the coordinates should be handled
+	 * with geodesic(spherical) length calculation (the coordinates are (partially) outside this extent)
+	 * or with the planar calculation of the projection (the coordinates are (completely) inside this extent)
+	 */
+	getArea(coordinates, srid = 3857, extent = null) {
+		const getGeodesicArea = (coordinates) => {
+			const geodesicPolygon = new PolygonArea.PolygonArea(Geodesic.WGS84);
+			return coordinates.reduce((aggregatedArea, linearRingCoordinates, index) => {
+				geodesicPolygon.Clear();
+				linearRingCoordinates.forEach(([lon, lat]) => geodesicPolygon.AddPoint(lat, lon));
+				const res = geodesicPolygon.Compute(false, true);
+				const isExteriorRing = index === 0;
+				return isExteriorRing ? aggregatedArea + Math.abs(res.area) : aggregatedArea - Math.abs(res.area);
+			}, 0);
+		};
+
+		const wgs84Coordinates =
+			srid !== 4326
+				? coordinates.map((linearRingCoordinates) =>
+						linearRingCoordinates.map((c) => transform(c, OlCoordinateService._toEpsgCodeString(srid), 'EPSG:4326'))
+					)
+				: coordinates;
+
+		// simplification: using only the outer ring to test against the extent;
+		// If the outer ring is fully inside the extent, then all inner rings are as well.
+		const isOuterRingWithinProjectionExtent = extent ? !wgs84Coordinates[0].some((coordinate) => !containsCoordinate(extent, coordinate)) : true;
+		const isLocalProjection = ![4326, 3857].includes(srid);
+		return isOuterRingWithinProjectionExtent && isLocalProjection ? new Polygon(coordinates).getArea() : getGeodesicArea(wgs84Coordinates);
 	}
 }

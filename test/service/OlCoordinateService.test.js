@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import { CoordinateSimplificationTarget, OlCoordinateService } from '../../src/services/OlCoordinateService';
-import { fromLonLat, toLonLat, transformExtent } from 'ol/proj';
+import { fromLonLat, toLonLat, transformExtent, transform } from 'ol/proj';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { bvvStringifyFunction } from '../../src/services/provider/stringifyCoords.provider';
@@ -146,7 +146,7 @@ describe('OlCoordinateService', () => {
 			});
 		});
 
-		describe('stringifiy', () => {
+		describe('stringify', () => {
 			it('stringifies a coordinate', () => {
 				const stringifyCoordProvider = jasmine.createSpy().and.callFake((coordinate, coordinateRepresentation, transformFn) => {
 					transformFn(); /**Fake call of the transformFn */
@@ -262,6 +262,244 @@ describe('OlCoordinateService', () => {
 					'Cannot convert value to coordinate, value is not a CoordinateLike type'
 				);
 				expect(() => instanceUnderTest.toCoordinate(null)).toThrowError('Cannot convert value to coordinate, value is not a CoordinateLike type');
+			});
+		});
+
+		describe('getLength', () => {
+			it('calculates the length of an empty array', () => {
+				setup();
+				const coordinates = [];
+
+				const length = instanceUnderTest.getLength(coordinates);
+
+				expect(length).toBe(0);
+			});
+
+			describe('with a defined local srid(25832)', () => {
+				const localSrid = 25832;
+
+				it('calculates the length of a lineString array', () => {
+					setup();
+					const coordinates = [
+						[0, 0],
+						[1, 0]
+					];
+					const length = instanceUnderTest.getLength(coordinates, localSrid);
+
+					expect(length).toBe(1);
+				});
+
+				it('calculates the length of a linearRing array', () => {
+					setup();
+					const coordinates = [
+						[0, 0],
+						[1, 0],
+						[1, 1],
+						[0, 1],
+						[0, 0]
+					];
+
+					const length = instanceUnderTest.getLength(coordinates, localSrid);
+
+					expect(length).toBe(4);
+				});
+
+				it('calculates the length of a polygon array', () => {
+					setup();
+					const coordinates = [
+						[0, 0],
+						[1, 0],
+						[1, 1],
+						[0, 1],
+						[0, 0]
+					];
+
+					const length = instanceUnderTest.getLength(coordinates, localSrid);
+
+					expect(length).toBe(4);
+				});
+
+				describe('with a defined extent', () => {
+					const utm32Distance = 149200.428;
+					const geodesicDistance = 149246.522;
+
+					const toLocal = (wgs84Coordinate) => {
+						return transform(wgs84Coordinate, 'EPSG:4326', 'EPSG:25832');
+					};
+
+					it('calculates the length of a inner lineString array', () => {
+						setup();
+						const innerExtent = [9, -60, 11, 60];
+						const coordinates = [toLocal([9, 48]), toLocal([11, 48])];
+
+						const length = instanceUnderTest.getLength(coordinates, localSrid, innerExtent);
+
+						expect(length).toBeCloseTo(utm32Distance, 0.01);
+					});
+
+					it('calculates the length of a partially outer lineString array', () => {
+						setup();
+						const partiallyInnerExtent = [10, -60, 12, 60];
+						const coordinates = [toLocal([9, 48]), toLocal([11, 48])];
+
+						const length = instanceUnderTest.getLength(coordinates, localSrid, partiallyInnerExtent);
+
+						expect(length).toBeCloseTo(geodesicDistance, 0.01);
+					});
+
+					it('calculates the length of a outer lineString array', () => {
+						setup();
+						const outerExtent = [12, -60, 13, 60];
+						const coordinates = [toLocal([9, 48]), toLocal([11, 48])];
+
+						const length = instanceUnderTest.getLength(coordinates, localSrid, outerExtent);
+
+						expect(length).toBeCloseTo(geodesicDistance, 0.01);
+					});
+				});
+			});
+
+			describe('with a defined spherical srid (4326)', () => {
+				const sphericalSrid = 4326;
+				const geodesicDistance = 149246.522;
+
+				it('calculates the length of a lineString array', () => {
+					setup();
+					const coordinates = [
+						[9, 48],
+						[11, 48]
+					];
+					const length = instanceUnderTest.getLength(coordinates, sphericalSrid);
+
+					expect(length).toBeCloseTo(geodesicDistance, 0.01);
+				});
+			});
+
+			describe('with a defined spherical srid (3857)', () => {
+				const sphericalSrid = 3857;
+				const geodesicDistance = 149246.522;
+
+				it('calculates the length of a lineString array', () => {
+					setup();
+					const coordinates = [fromLonLat([9, 48]), fromLonLat([11, 48])];
+					const length = instanceUnderTest.getLength(coordinates, sphericalSrid);
+
+					expect(length).toBeCloseTo(geodesicDistance, 0.01);
+				});
+			});
+		});
+
+		describe('getArea', () => {
+			it('calculates the area of an empty array', () => {
+				setup();
+				const coordinates = [[]];
+
+				const area = instanceUnderTest.getArea(coordinates);
+
+				expect(area).toBe(0);
+			});
+
+			describe('with a defined local srid(25832)', () => {
+				const localSrid = 25832;
+
+				it('calculates the area of a polygon array', () => {
+					setup();
+					const coordinates = [
+						[0, 0],
+						[1, 0],
+						[1, 1],
+						[0, 1],
+						[0, 0]
+					];
+
+					const area = instanceUnderTest.getLength(coordinates, localSrid);
+
+					expect(area).toBe(4);
+				});
+
+				describe('with a defined extent', () => {
+					const utm32Area = 8327453871.901;
+					const geodesicArea = 8333081687.76;
+
+					const toLocal = (wgs84Coordinate) => {
+						return transform(wgs84Coordinate, 'EPSG:4326', 'EPSG:25832');
+					};
+
+					it('calculates the area of a inner polygon array', () => {
+						setup();
+						const innerExtent = [9, -60, 11, 60];
+						const coordinates = [[toLocal([9, 48]), toLocal([11, 48]), toLocal([10, 47])]];
+
+						const area = instanceUnderTest.getArea(coordinates, localSrid, innerExtent);
+
+						expect(area).toBeCloseTo(utm32Area, 0.01);
+					});
+
+					it('calculates the length of a partially outer polygon array', () => {
+						setup();
+						const partiallyInnerExtent = [10, -60, 12, 60];
+						const coordinates = [[toLocal([9, 48]), toLocal([11, 48]), toLocal([10, 47])]];
+
+						const area = instanceUnderTest.getArea(coordinates, localSrid, partiallyInnerExtent);
+
+						expect(area).toBeCloseTo(geodesicArea, 0.01);
+					});
+
+					it('calculates the area of a outer polygon array', () => {
+						setup();
+						const outerExtent = [12, -60, 13, 60];
+						const coordinates = [[toLocal([9, 48]), toLocal([11, 48]), toLocal([10, 47])]];
+
+						const area = instanceUnderTest.getArea(coordinates, localSrid, outerExtent);
+
+						expect(area).toBeCloseTo(geodesicArea, 0.01);
+					});
+				});
+			});
+
+			describe('with a defined spherical srid (4326)', () => {
+				const sphericalSrid = 4326;
+				const geodesicArea = 8333081687.76;
+
+				it('calculates the area of a polygon array', () => {
+					setup();
+					const coordinates = [
+						[
+							[9, 48],
+							[11, 48],
+							[10, 47]
+						]
+					];
+					const area = instanceUnderTest.getArea(coordinates, sphericalSrid);
+
+					expect(area).toBeCloseTo(geodesicArea, 0.01);
+				});
+			});
+
+			describe('with a defined spherical srid (3857)', () => {
+				const sphericalSrid = 3857;
+
+				it('calculates the area of a polygon array', () => {
+					setup();
+					const geodesicArea = 8333081687.76;
+					const coordinates = [[fromLonLat([9, 48]), fromLonLat([11, 48]), fromLonLat([10, 47])]];
+					const area = instanceUnderTest.getArea(coordinates, sphericalSrid);
+
+					expect(area).toBeCloseTo(geodesicArea, 0.01);
+				});
+
+				it('calculates the area of a polygon array with hole', () => {
+					setup();
+					const geodesicArea = 8328516236.574;
+					const coordinates = [
+						[fromLonLat([9, 48]), fromLonLat([11, 48]), fromLonLat([10, 47])],
+						[fromLonLat([9.5, 47.5]), fromLonLat([10.5, 47.5]), fromLonLat([10, 47.5])]
+					];
+
+					const area = instanceUnderTest.getArea(coordinates, sphericalSrid);
+
+					expect(area).toBeCloseTo(geodesicArea, 0.01);
+				});
 			});
 		});
 	});
