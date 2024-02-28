@@ -198,7 +198,7 @@
 	height: 100%;
 	pointer-events: none;
 }
-.is-landscape.is-full-size .slider-container {
+.is-landscape.is-full-size.is-open .slider-container {
 	display: block;
 }
 .slider-container input {
