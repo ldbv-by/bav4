@@ -300,7 +300,7 @@ describe('ToolBarElement', () => {
 			expect(element.shadowRoot.querySelector('.tool-bar')).toBeTruthy();
 			expect(element.shadowRoot.querySelectorAll('.tool-bar.is-open')).toHaveSize(0);
 
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.action-button')).display).toBe('block');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.action-button')).display).toBe('none');
 		});
 
 		it('layouts for portrait desktop', async () => {
@@ -318,7 +318,7 @@ describe('ToolBarElement', () => {
 			expect(element.shadowRoot.querySelector('.tool-bar')).toBeTruthy();
 			expect(element.shadowRoot.querySelectorAll('.tool-bar.is-open')).toHaveSize(0);
 
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.action-button')).display).toBe('none');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.action-button')).display).toBe('block');
 		});
 
 		it('layouts for portrait tablet', async () => {
