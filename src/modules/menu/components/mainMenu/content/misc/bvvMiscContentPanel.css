@@ -75,3 +75,27 @@
 	mask-image: url('assets/person.svg');
 	-webkit-mask-image: url('assets/person.svg');
 }
+
+.settings {
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	mask-image: url('assets/settings.svg');
+	-webkit-mask-image: url('assets/settings.svg');
+	transform: scale(0.9);
+}
+
+.legend {
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	mask-image: url('assets/legend.svg');
+	-webkit-mask-image: url('assets/legend.svg');
+	transform: scale(0.9);
+}
+
+.feedback {
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	mask-image: url('assets/feedback.svg');
+	-webkit-mask-image: url('assets/feedback.svg');
+	transform: scale(0.9);
+}

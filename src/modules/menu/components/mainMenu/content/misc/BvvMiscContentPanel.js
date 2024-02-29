@@ -118,22 +118,37 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 				${css}
 			</style>
 			<div class="ba-list">
-				<button @click=${onClickAuthenticateRole} class="ba-list-item divider">
-					<span class="ba-list-item__pre ">
-						<span class="ba-list-item__image image person"> </span>
+				<button id="feedback" class="ba-list-item" @click=${onClickAuthenticateRole}>
+					<span class="ba-list-item__pre">
+						<span class="ba-list-item__icon icon person"> </span>
 					</span>
-					<span class="ba-list-item__text ">
-						<h3>Anmeldung</h3>
-						<span class="ba-list-item__secondary-text">${translate('Noch kein BayernAtlas-plus Kunde? Hier finden Sie weitere')} </span
-						><a href="https://www.ldbv.bayern.de/produkte/dienste/bayernatlas.html" target="_blank" class="link">Informationen</a>
-					</span>
+					<span class="ba-list-item__text vertical-center">${translate('Login')}</span>
 				</button>
-				<div class="ba-list-item  ba-list-item__header">
+				<button id="feedback" class="ba-list-item" @click=${openFeedbackDialog}>
+					<span class="ba-list-item__pre">
+						<span class="ba-list-item__icon icon feedback"> </span>
+					</span>
+					<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_feedback_title')}</span>
+				</button>
+				<a class="ba-list-item divider" href="https://www.ldbv.bayern.de/hilfe-v4.html" target="_blank">
+					<span class="ba-list-item__pre">
+						<span class="ba-list-item__icon icon legend"> </span>
+					</span>
+					<span class="ba-list-item__text vertical-center">Legende</span>
+				</a>
+				<a class="ba-list-item divider hide" href="https://www.ldbv.bayern.de/hilfe-v4.html" target="_blank">
+					<span class="ba-list-item__pre">
+						<span class="ba-list-item__icon icon settings"> </span>
+					</span>
+					<span class="ba-list-item__text vertical-center">Einstellungen</span>
+				</a>
+
+				<div class="ba-list-item  ba-list-item__header hide">
 					<span class="ba-list-item__text ">
 						<span class="ba-list-item__primary-text">${translate('menu_misc_content_panel_settings')}</span>
 					</span>
 				</div>
-				<div class="ba-list-item divider">
+				<div class="ba-list-item divider hide">
 					<ba-switch class="themeToggle" id="themeToggle" .checked=${darkSchema} @toggle=${toggleSchema}>
 						<span slot="before" class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_dark_mode')}</span>
 					</ba-switch>
@@ -149,7 +164,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 					</span>
 					<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_help')}</span>
 				</a>
-				<button id="feedback" class="ba-list-item" @click=${openFeedbackDialog}>
+				<button id="feedback" class="ba-list-item hide" @click=${openFeedbackDialog}>
 					<span class="ba-list-item__pre">
 						<span class="ba-list-item__icon icon feedback"> </span>
 					</span>
