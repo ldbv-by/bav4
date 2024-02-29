@@ -190,7 +190,7 @@
 
 .badges-person {
 	border-radius: 2em;
-	background: var(--primary-bg-color);
+	background: var(--secondary-color);
 	padding: 0em;
 	font-size: 0.8rem;
 	position: absolute;
@@ -201,7 +201,9 @@
 .badges-icon {
 	height: 1.5em;
 	width: 1.6em;
-	background: var(--text1);
+	background: var(--text3);
+	border-radius: 2em;
+	border: 0.2em solid var(--secondary-color);
 	mask: url('assets/person.svg');
 	-webkit-mask: url('assets/person.svg');
 	mask-size: cover;
