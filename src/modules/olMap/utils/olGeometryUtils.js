@@ -5,7 +5,6 @@ import { Geodesic, PolygonArea } from 'geographiclib-geodesic';
 import { containsCoordinate } from 'ol/extent';
 import { Point, LineString, Polygon, LinearRing, Circle, MultiLineString, Geometry } from 'ol/geom';
 import { isNumber } from '../../../utils/checks';
-import { $injector } from '../../../injection/index';
 
 const EPSG_WGS84 = 'EPSG:4326';
 

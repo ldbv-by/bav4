@@ -7,7 +7,6 @@ import { bvvStringifyFunction } from '../../src/services/provider/stringifyCoord
 import { $injector } from '../../src/injection';
 import { GlobalCoordinateRepresentations } from '../../src/domain/coordinateRepresentation';
 import { PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES } from '../../src/modules/olMap/utils/olGeometryUtils';
-import { LineString } from 'ol/geom';
 
 describe('CoordinateSimplificationTarget', () => {
 	it('provides an enum of all available target types', () => {
