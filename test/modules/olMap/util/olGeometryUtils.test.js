@@ -93,13 +93,13 @@ describe('getGeometryLength', () => {
 			]);
 			const cloneMock = { transform: () => {} };
 			spyOn(geometry, 'clone').and.callFake(() => cloneMock);
-			const calculationHints = { fromProjection: 'foo', toProjection: 'bar' };
+			const calculationHints = { sourceSrid: 'foo', destinationSrid: 'bar' };
 
 			const transformSpy = spyOn(cloneMock, 'transform').and.callFake(() => geometry);
 			getGeometryLength(geometry, calculationHints);
 
-			expect(transformSpy).toHaveBeenCalledWith('foo', 'EPSG:4326');
-			expect(transformSpy).toHaveBeenCalledWith('foo', 'bar');
+			expect(transformSpy).toHaveBeenCalledWith('EPSG:foo', 'EPSG:4326');
+			expect(transformSpy).toHaveBeenCalledWith('EPSG:foo', 'EPSG:bar');
 		});
 	});
 
@@ -108,14 +108,14 @@ describe('getGeometryLength', () => {
 			const utm32Distance = 149200.428;
 			const geodesicDistance = 149246.522;
 			const lineString = new LineString([fromLonLat([9, 48]), fromLonLat([11, 48])]);
-			const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' };
+			const calculationHints = { sourceSrid: 3857, destinationSrid: 25832 };
 
 			// within
-			expect(getGeometryLength(lineString, { ...calculationHints, toProjectionExtent: [9, -60, 11, 60] })).toBeCloseTo(utm32Distance);
+			expect(getGeometryLength(lineString, { ...calculationHints, projectionExtent: [9, -60, 11, 60] })).toBeCloseTo(utm32Distance);
 			// partially within
-			expect(getGeometryLength(lineString, { ...calculationHints, toProjectionExtent: [10, -60, 12, 60] })).toBeCloseTo(geodesicDistance);
+			expect(getGeometryLength(lineString, { ...calculationHints, projectionExtent: [10, -60, 12, 60] })).toBeCloseTo(geodesicDistance);
 			// outside
-			expect(getGeometryLength(lineString, { ...calculationHints, toProjectionExtent: [12, -60, 13, 60] })).toBeCloseTo(geodesicDistance);
+			expect(getGeometryLength(lineString, { ...calculationHints, projectionExtent: [12, -60, 13, 60] })).toBeCloseTo(geodesicDistance);
 		});
 	});
 });
@@ -393,7 +393,7 @@ describe('getArea', () => {
 				[0, 0]
 			]
 		]);
-		const calculationHints = { fromProjection: 'EPSG:4326', toProjection: 'EPSG:25832' };
+		const calculationHints = { sourceSrid: 4326, destinationSrid: 25832 };
 		const area = getArea(polygon, calculationHints);
 
 		expect(area).toBeCloseTo(12575513411.866, 2);
@@ -424,14 +424,14 @@ describe('getArea', () => {
 			const utm32Area = 8327453871.901;
 			const geodesicArea = 8333081687.76;
 			const lineString = new Polygon([[fromLonLat([9, 48]), fromLonLat([11, 48]), fromLonLat([10, 47])]]);
-			const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' };
+			const calculationHints = { sourceSrid: 3857, destinationSrid: 25832 };
 
 			// within
-			expect(getArea(lineString, { ...calculationHints, toProjectionExtent: [9, -60, 11, 60] })).toBeCloseTo(utm32Area);
+			expect(getArea(lineString, { ...calculationHints, projectionExtent: [9, -60, 11, 60] })).toBeCloseTo(utm32Area);
 			// partially within
-			expect(getArea(lineString, { ...calculationHints, toProjectionExtent: [10, -60, 12, 60] })).toBeCloseTo(geodesicArea);
+			expect(getArea(lineString, { ...calculationHints, projectionExtent: [10, -60, 12, 60] })).toBeCloseTo(geodesicArea);
 			// outside
-			expect(getArea(lineString, { ...calculationHints, toProjectionExtent: [12, -60, 13, 60] })).toBeCloseTo(geodesicArea);
+			expect(getArea(lineString, { ...calculationHints, projectionExtent: [12, -60, 13, 60] })).toBeCloseTo(geodesicArea);
 		});
 
 		it('calculates the geodesic area of a transformed polygon with hole', () => {
@@ -441,14 +441,14 @@ describe('getArea', () => {
 				[fromLonLat([9, 48]), fromLonLat([11, 48]), fromLonLat([10, 47])],
 				[fromLonLat([9.5, 47.5]), fromLonLat([10.5, 47.5]), fromLonLat([10, 47.5])]
 			]);
-			const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' };
+			const calculationHints = { sourceSrid: 3857, destinationSrid: 25832 };
 
 			// within
-			expect(getArea(lineString, { ...calculationHints, toProjectionExtent: [9, -60, 11, 60] })).toBeCloseTo(utm32Area);
+			expect(getArea(lineString, { ...calculationHints, projectionExtent: [9, -60, 11, 60] })).toBeCloseTo(utm32Area);
 			// partially within
-			expect(getArea(lineString, { ...calculationHints, toProjectionExtent: [10, -60, 12, 60] })).toBeCloseTo(geodesicArea);
+			expect(getArea(lineString, { ...calculationHints, projectionExtent: [10, -60, 12, 60] })).toBeCloseTo(geodesicArea);
 			// outside
-			expect(getArea(lineString, { ...calculationHints, toProjectionExtent: [12, -60, 13, 60] })).toBeCloseTo(geodesicArea);
+			expect(getArea(lineString, { ...calculationHints, projectionExtent: [12, -60, 13, 60] })).toBeCloseTo(geodesicArea);
 		});
 	});
 });

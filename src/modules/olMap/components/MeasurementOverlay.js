@@ -52,9 +52,9 @@ export class MeasurementOverlay extends BaOverlay {
 		this._static = false;
 		this._type = MeasurementOverlayTypes.TEXT;
 		this._projectionHints = {
-			fromProjection: 'EPSG:' + this._mapService.getSrid(),
-			toProjection: 'EPSG:' + this._mapService.getLocalProjectedSrid(),
-			toProjectionExtent: this._mapService.getLocalProjectedSridExtent()
+			sourceSrid: this._mapService.getSrid(),
+			destinationSrid: this._mapService.getLocalProjectedSrid(),
+			projectionExtent: this._mapService.getLocalProjectedSridExtent()
 		};
 		this._isDraggable = false;
 		this._placement = { sector: 'init', positioning: 'top-center', offset: [0, -25] };
@@ -115,7 +115,7 @@ export class MeasurementOverlay extends BaOverlay {
 				if (canShowAzimuthCircle(this.geometry)) {
 					const azimuthValue = getAzimuth(this.geometry);
 					const azimuth = azimuthValue ? azimuthValue.toFixed(2) : '-';
-
+					// TODO: refactor usage of getGeometryLength -> preprocess geometry (mapprojection -> localprojection)
 					return azimuth + '°/' + this._unitsService.formatDistance(getGeometryLength(this._geometry, this._projectionHints), 2);
 				}
 				return this._unitsService.formatDistance(getGeometryLength(this._geometry, this._projectionHints), 2);

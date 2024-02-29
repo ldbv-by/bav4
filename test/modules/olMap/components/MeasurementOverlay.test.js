@@ -40,6 +40,9 @@ describe('MeasurementOverlay', () => {
 		}
 		return element;
 	};
+	const getLocalProjectionHints = () => {
+		return { sourceSrid: 3857, destinationSrid: 25832 };
+	};
 
 	describe('when initialized with type property', () => {
 		it('renders the text view', async () => {
@@ -73,7 +76,7 @@ describe('MeasurementOverlay', () => {
 			const properties = {
 				type: MeasurementOverlayTypes.DISTANCE,
 				geometry: geodeticGeometry,
-				projectionHints: { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' }
+				projectionHints: getLocalProjectionHints()
 			};
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
@@ -98,7 +101,7 @@ describe('MeasurementOverlay', () => {
 			const properties = {
 				type: MeasurementOverlayTypes.AREA,
 				geometry: geodeticGeometry,
-				projectionHints: { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' }
+				projectionHints: getLocalProjectionHints()
 			};
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
@@ -119,7 +122,7 @@ describe('MeasurementOverlay', () => {
 				type: MeasurementOverlayTypes.DISTANCE_PARTITION,
 				geometry: geodeticGeometry,
 				value: 0.1,
-				projectionHints: { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' }
+				projectionHints: getLocalProjectionHints()
 			};
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
@@ -140,7 +143,7 @@ describe('MeasurementOverlay', () => {
 				type: MeasurementOverlayTypes.DISTANCE_PARTITION,
 				geometry: geodeticGeometry,
 				value: 0.099,
-				projectionHints: { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' }
+				projectionHints: getLocalProjectionHints()
 			};
 			const spy = spyOn(unitServiceMock, 'formatDistance').and.callThrough();
 			const element = await setup(properties);
@@ -158,7 +161,7 @@ describe('MeasurementOverlay', () => {
 				type: MeasurementOverlayTypes.DISTANCE_PARTITION,
 				geometry: geodeticGeometry,
 				value: 0.1001,
-				projectionHints: { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' }
+				projectionHints: getLocalProjectionHints()
 			};
 			const spy = spyOn(unitServiceMock, 'formatDistance').and.callThrough();
 			const element = await setup(properties);
@@ -176,7 +179,7 @@ describe('MeasurementOverlay', () => {
 				type: MeasurementOverlayTypes.DISTANCE,
 				geometry: geodeticGeometry,
 				static: true,
-				projectionHints: { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' }
+				projectionHints: getLocalProjectionHints()
 			};
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
@@ -196,7 +199,7 @@ describe('MeasurementOverlay', () => {
 			const properties = {
 				type: MeasurementOverlayTypes.DISTANCE,
 				geometry: geodeticGeometry,
-				projectionHints: { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' }
+				projectionHints: getLocalProjectionHints()
 			};
 			const element = await setup(properties);
 
@@ -216,7 +219,7 @@ describe('MeasurementOverlay', () => {
 			const properties = {
 				type: MeasurementOverlayTypes.AREA,
 				geometry: geodeticGeometry,
-				projectionHints: { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' }
+				projectionHints: getLocalProjectionHints()
 			};
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');

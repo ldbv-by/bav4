@@ -94,9 +94,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._keyActionMapper = new KeyActionMapper(document).addForKeyUp('Delete', () => this._remove()).addForKeyUp('Escape', () => this._startNew());
 
 		this._projectionHints = {
-			fromProjection: 'EPSG:' + this._mapService.getSrid(),
-			toProjection: 'EPSG:' + this._mapService.getLocalProjectedSrid(),
-			toProjectionExtent: this._mapService.getLocalProjectedSridExtent()
+			sourceSrid: this._mapService.getSrid(),
+			destinationSrid: this._mapService.getLocalProjectedSrid(),
+			projectionExtent: this._mapService.getLocalProjectedSridExtent()
 		};
 		this._lastPointerMoveEvent = null;
 		this._lastInteractionStateType = null;

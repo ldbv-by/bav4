@@ -42,8 +42,8 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		this._environmentService = EnvironmentService;
 		this._storeService = StoreService;
 		this._projectionHints = {
-			fromProjection: 'EPSG:' + this._mapService.getSrid(),
-			toProjection: 'EPSG:' + this._mapService.getLocalProjectedSrid()
+			sourceSrid: this._mapService.getSrid(),
+			destinationSrid: this._mapService.getLocalProjectedSrid()
 		};
 	}
 

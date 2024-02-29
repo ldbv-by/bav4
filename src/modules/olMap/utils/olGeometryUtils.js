@@ -5,6 +5,7 @@ import { Geodesic, PolygonArea } from 'geographiclib-geodesic';
 import { containsCoordinate } from 'ol/extent';
 import { Point, LineString, Polygon, LinearRing, Circle, MultiLineString, Geometry } from 'ol/geom';
 import { isNumber } from '../../../utils/checks';
+import { $injector } from '../../../injection/index';
 
 const EPSG_WGS84 = 'EPSG:4326';
 
@@ -115,13 +116,12 @@ export const getBoundingBoxFrom = (centerCoordinate, size) => {
 		centerCoordinate[1] + size.height / 2 // maxY
 	];
 };
-
 /**
  * Contains information for transformation-methods
  * @typedef CalculationHints
- * @property {string} fromProjection the 'source' ProjectionLike-object for usage in ol/geometry.transform() as String like 'EPSG:3875'
- * @property {string} toProjection the 'destination' ProjectionLike-object for usage in ol/geometry.transform() as String like 'EPSG:3875'
- * @property {Extent} [toProjectionExtent] an extent in WGS84, which defines whether or not a geometry with coordinates outside this extent should be handled
+ * @property {number} sourceSrid the 'source' SRID for usage in ol/geometry.transform() as ProjectionLike like 'EPSG:3875'
+ * @property {number} destinationSrid the 'destination' SRID for usage in ol/geometry.transform() as ProjectionLike like 'EPSG:3875'
+ * @property {Extent} [projectionExtent] an extent in WGS84, which defines whether or not a geometry with coordinates outside this extent should be handled as spheric (4326)
  */
 
 /**
@@ -135,19 +135,26 @@ export const getArea = (geometry, calculationHints = {}) => {
 	if (!(geometry instanceof Polygon) && !(geometry instanceof Circle) && !(geometry instanceof LinearRing)) {
 		return 0;
 	}
+	const toEpsgCodeString = (srid) => {
+		return srid ? `EPSG:${srid}` : null;
+	};
 
-	const wgs84Geometry = transformGeometry(geometry, calculationHints.fromProjection, EPSG_WGS84);
+	const wgs84Geometry = transformGeometry(geometry, toEpsgCodeString(calculationHints.sourceSrid), EPSG_WGS84);
 	const wgs84LineString = getLineString(wgs84Geometry);
 
-	const getLength = (geometry, calculationHints) => {
-		const calculationGeometry = transformGeometry(geometry, calculationHints.fromProjection, calculationHints.toProjection);
+	const getLocalArea = (geometry, calculationHints) => {
+		const calculationGeometry = transformGeometry(
+			geometry,
+			toEpsgCodeString(calculationHints.sourceSrid),
+			toEpsgCodeString(calculationHints.destinationSrid)
+		);
 		return calculationGeometry.getArea();
 	};
 
-	const isWithinProjectionExtent = calculationHints.toProjectionExtent
-		? !wgs84LineString.getCoordinates().some((coordinate) => !containsCoordinate(calculationHints.toProjectionExtent, coordinate))
+	const isWithinProjectionExtent = calculationHints.projectionExtent
+		? !wgs84LineString.getCoordinates().some((coordinate) => !containsCoordinate(calculationHints.projectionExtent, coordinate))
 		: true;
-	return isWithinProjectionExtent ? getLength(geometry, calculationHints) : getGeodesicArea(wgs84Geometry);
+	return isWithinProjectionExtent ? getLocalArea(geometry, calculationHints) : getGeodesicArea(wgs84Geometry);
 };
 
 /**
@@ -161,18 +168,25 @@ export const getArea = (geometry, calculationHints = {}) => {
  */
 export const getGeometryLength = (geometry, calculationHints = {}) => {
 	if (geometry) {
-		const wgs84Geometry = transformGeometry(geometry, calculationHints.fromProjection, EPSG_WGS84);
+		const toEpsgCodeString = (srid) => {
+			return srid ? `EPSG:${srid}` : null;
+		};
+		const wgs84Geometry = transformGeometry(geometry, toEpsgCodeString(calculationHints.sourceSrid), EPSG_WGS84);
 		const wgs84LineString = getLineString(wgs84Geometry);
 
 		const getLength = (geometry, calculationHints) => {
-			const calculationGeometry = transformGeometry(geometry, calculationHints.fromProjection, calculationHints.toProjection);
+			const calculationGeometry = transformGeometry(
+				geometry,
+				toEpsgCodeString(calculationHints.sourceSrid),
+				toEpsgCodeString(calculationHints.destinationSrid)
+			);
 			const lineString = getLineString(calculationGeometry);
 			return lineString.getLength();
 		};
 
 		if (wgs84LineString) {
-			const isWithinProjectionExtent = calculationHints.toProjectionExtent
-				? !wgs84LineString.getCoordinates().some((coordinate) => !containsCoordinate(calculationHints.toProjectionExtent, coordinate))
+			const isWithinProjectionExtent = calculationHints.projectionExtent
+				? !wgs84LineString.getCoordinates().some((coordinate) => !containsCoordinate(calculationHints.projectionExtent, coordinate))
 				: true;
 			return isWithinProjectionExtent ? getLength(geometry, calculationHints) : getGeodesicLength(wgs84LineString);
 		}
@@ -307,6 +321,7 @@ export const getAzimuthFrom = (polygon) => {
  * @returns {number} the delta, a value between 0 and 1
  */
 export const getPartitionDelta = (geometry, resolution = 1, calculationHints = {}) => {
+	// TODO: refactor usage of getGeometryLength -> preprocess geometry (mapprojection -> localprojection)
 	const length = getGeometryLength(geometry, calculationHints);
 
 	const minLengthResolution = 40;

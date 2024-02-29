@@ -407,7 +407,11 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 	const geometry = state.geometry.clone();
 	const resolution = state.resolution;
 	const pixelRatio = state.pixelRatio;
-	const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832', toProjectionExtent: [5, -80, 14, 80] };
+	const calculationHints = {
+		sourceSrid: 3857,
+		destinationSrid: 25832,
+		projectionExtent: [5, -80, 14, 80]
+	};
 
 	const partition = getPartitionDelta(geometry, resolution, calculationHints);
 	const partitionLength = partition * getGeometryLength(geometry);
@@ -516,6 +520,7 @@ export const measureStyleFunction = (feature, resolution) => {
 			geometry: (feature) => {
 				if (canShowAzimuthCircle(feature.getGeometry())) {
 					const coords = feature.getGeometry().getCoordinates();
+					// TODO: refactor usage of getGeometryLength -> use feature.getGeometry().getLength()
 					const radius = getGeometryLength(feature.getGeometry());
 					const circle = new Circle(coords[0], radius);
 					return circle;

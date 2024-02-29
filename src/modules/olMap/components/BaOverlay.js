@@ -147,7 +147,7 @@ export class BaOverlay extends BaElement {
 	}
 
 	set projectionHints(value) {
-		if (value.toProjection !== this.projectionHints.toProjection || value.fromProjection !== this.projectionHints.fromProjection) {
+		if (value.destinationSrid !== this.projectionHints.destinationSrid || value.sourceSrid !== this.projectionHints.sourceSrid) {
 			this._projectionHints = value;
 			this.render();
 		}
