@@ -24,36 +24,50 @@ import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing, MultiLineSt
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { fromLonLat } from 'ol/proj';
+import { $injector } from '../../../../src/injection';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
+const coordinateServiceMock = {
+	getLength() {}
+};
+
+$injector.registerSingleton('CoordinateService', coordinateServiceMock);
 
 describe('getGeometryLength', () => {
 	it('calculates the length of a LineString', () => {
-		const lineString = new LineString([
+		const coordinates = [
 			[0, 0],
 			[1, 0]
-		]);
+		];
+		const lineString = new LineString(coordinates);
+
+		const spy = spyOn(coordinateServiceMock, 'getLength').withArgs(jasmine.any(Array), undefined, undefined).and.returnValue(42);
 		const length = getGeometryLength(lineString);
 
-		expect(length).toBe(1);
+		expect(length).toBe(42);
+		expect(spy).toHaveBeenCalledWith(jasmine.arrayWithExactContents(coordinates), undefined, undefined);
 	});
 
 	it('calculates the length of a LinearRing', () => {
-		const linearRing = new LinearRing([
+		const coordinates = [
 			[0, 0],
 			[1, 0],
 			[1, 1],
 			[0, 1],
 			[0, 0]
-		]);
+		];
+		const linearRing = new LinearRing(coordinates);
+		const spy = spyOn(coordinateServiceMock, 'getLength').withArgs(jasmine.any(Array), undefined, undefined).and.returnValue(42);
+
 		const length = getGeometryLength(linearRing);
 
-		expect(length).toBe(4);
+		expect(length).toBe(42);
+		expect(spy).toHaveBeenCalledWith(jasmine.arrayWithExactContents(coordinates), undefined, undefined);
 	});
 
 	it('calculates the length of a Polygon', () => {
-		const polygon = new Polygon([
+		const coordinates = [
 			[
 				[0, 0],
 				[1, 0],
@@ -61,17 +75,24 @@ describe('getGeometryLength', () => {
 				[0, 1],
 				[0, 0]
 			]
-		]);
+		];
+		const polygon = new Polygon(coordinates);
+		const spy = spyOn(coordinateServiceMock, 'getLength').withArgs(jasmine.any(Array), undefined, undefined).and.returnValue(42);
+
 		const length = getGeometryLength(polygon);
 
-		expect(length).toBe(4);
+		expect(length).toBe(42);
+		expect(spy).toHaveBeenCalledWith(jasmine.arrayWithExactContents(coordinates), undefined, undefined);
 	});
 
 	it('does NOT calculates the length of Circle', () => {
 		const circle = new Circle([0, 0], 1);
+		const spy = spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
+
 		const length = getGeometryLength(circle);
 
 		expect(length).toBe(0);
+		expect(spy).not.toHaveBeenCalled();
 	});
 
 	it('does NOT calculates the length of null', () => {
@@ -93,29 +114,28 @@ describe('getGeometryLength', () => {
 			]);
 			const cloneMock = { transform: () => {} };
 			spyOn(geometry, 'clone').and.callFake(() => cloneMock);
+			const spy = spyOn(coordinateServiceMock, 'getLength').withArgs(jasmine.any(Array), 'bar', undefined).and.returnValue(42);
 			const calculationHints = { sourceSrid: 'foo', destinationSrid: 'bar' };
 
 			const transformSpy = spyOn(cloneMock, 'transform').and.callFake(() => geometry);
 			getGeometryLength(geometry, calculationHints);
 
-			expect(transformSpy).toHaveBeenCalledWith('EPSG:foo', 'EPSG:4326');
 			expect(transformSpy).toHaveBeenCalledWith('EPSG:foo', 'EPSG:bar');
+			expect(spy).toHaveBeenCalled();
 		});
 	});
 
 	describe('when calculationHints with extent are provided', () => {
-		it('calculates the geodesic length of a transformed geometry', () => {
-			const utm32Distance = 149200.428;
-			const geodesicDistance = 149246.522;
+		it('calculates with the extent', () => {
 			const lineString = new LineString([fromLonLat([9, 48]), fromLonLat([11, 48])]);
-			const calculationHints = { sourceSrid: 3857, destinationSrid: 25832 };
+			const extent = [9, -60, 11, 60];
+			const calculationHints = { sourceSrid: 3857, destinationSrid: 25832, projectionExtent: extent };
+			const spy = spyOn(coordinateServiceMock, 'getLength').withArgs(jasmine.any(Array), 25832, extent).and.returnValue(42);
 
-			// within
-			expect(getGeometryLength(lineString, { ...calculationHints, projectionExtent: [9, -60, 11, 60] })).toBeCloseTo(utm32Distance);
-			// partially within
-			expect(getGeometryLength(lineString, { ...calculationHints, projectionExtent: [10, -60, 12, 60] })).toBeCloseTo(geodesicDistance);
-			// outside
-			expect(getGeometryLength(lineString, { ...calculationHints, projectionExtent: [12, -60, 13, 60] })).toBeCloseTo(geodesicDistance);
+			const length = getGeometryLength(lineString, calculationHints);
+
+			expect(length).toBe(42);
+			expect(spy).toHaveBeenCalled();
 		});
 	});
 });

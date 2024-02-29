@@ -5,6 +5,7 @@ import { Geodesic, PolygonArea } from 'geographiclib-geodesic';
 import { containsCoordinate } from 'ol/extent';
 import { Point, LineString, Polygon, LinearRing, Circle, MultiLineString, Geometry } from 'ol/geom';
 import { isNumber } from '../../../utils/checks';
+import { $injector } from '../../../injection/index';
 
 const EPSG_WGS84 = 'EPSG:4326';
 
@@ -166,46 +167,26 @@ export const getArea = (geometry, calculationHints = {}) => {
  * @returns {number} the calculated length or 0 if the geometry-object is not a LineString/LinearRing/Polygon
  */
 export const getGeometryLength = (geometry, calculationHints = {}) => {
+	const { CoordinateService: coordinateService } = $injector.inject('CoordinateService');
+
 	if (geometry) {
 		const toEpsgCodeString = (srid) => {
 			return srid ? `EPSG:${srid}` : null;
 		};
-		const wgs84Geometry = transformGeometry(geometry, toEpsgCodeString(calculationHints.sourceSrid), EPSG_WGS84);
-		const wgs84LineString = getLineString(wgs84Geometry);
 
-		const getLength = (geometry, calculationHints) => {
-			const calculationGeometry = transformGeometry(
-				geometry,
-				toEpsgCodeString(calculationHints.sourceSrid),
-				toEpsgCodeString(calculationHints.destinationSrid)
-			);
-			const lineString = getLineString(calculationGeometry);
-			return lineString.getLength();
-		};
+		const lineString = calculationHints.destinationSrid
+			? getLineString(transformGeometry(geometry, toEpsgCodeString(calculationHints.sourceSrid), toEpsgCodeString(calculationHints.destinationSrid)))
+			: getLineString(geometry);
 
-		if (wgs84LineString) {
-			const isWithinProjectionExtent = calculationHints.projectionExtent
-				? !wgs84LineString.getCoordinates().some((coordinate) => !containsCoordinate(calculationHints.projectionExtent, coordinate))
-				: true;
-			return isWithinProjectionExtent ? getLength(geometry, calculationHints) : getGeodesicLength(wgs84LineString);
-		}
+		return lineString
+			? coordinateService.getLength(
+					lineString.getCoordinates(),
+					calculationHints.destinationSrid ?? calculationHints.sourceSrid,
+					calculationHints.projectionExtent
+				)
+			: 0;
 	}
 	return 0;
-};
-
-/**
- * Calculates the geodesic length of a geometry
- * @function
- * @param {LineString} wgs84LineString the LineString (in WGS84), to calculate with
- * @returns {number} the calculated length or 0 if the geometry-object is not a LineString/LinearRing/Polygon
- */
-const getGeodesicLength = (wgs84LineString) => {
-	const geodesicPolygon = new PolygonArea.PolygonArea(Geodesic.WGS84, true);
-	for (const [lon, lat] of wgs84LineString.getCoordinates()) {
-		geodesicPolygon.AddPoint(lat, lon);
-	}
-	const res = geodesicPolygon.Compute(false, true);
-	return res.perimeter;
 };
 
 /**
