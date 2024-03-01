@@ -85,15 +85,27 @@ export class MainMenuPlugin extends BaPlugin {
 			}
 		};
 
-		const onToolIdChanged = (toolId) => {
-			switch (toolId) {
-				case Tools.ROUTING:
-					setTab(TabIds.ROUTING);
-					open();
-					break;
-				case null:
-					setTab(this._previousTab);
-					break;
+		const onToolIdChanged = (toolId, state) => {
+			// close routing Tab
+			if (toolId !== Tools.ROUTING && state.mainMenu.tab === TabIds.ROUTING) {
+				setTab(this._previousTab);
+
+				if (state.media.portrait) {
+					close();
+				}
+			}
+
+			// open routing Tab
+			if (toolId === Tools.ROUTING) {
+				setTab(TabIds.ROUTING);
+				open();
+			}
+		};
+
+		const onOrientationChanged = (portrait, state) => {
+			// no closed full-size panel on landscape mode
+			if (!portrait && (state.mainMenu.tab === TabIds.ROUTING || state.mainMenu.tab === TabIds.FEATUREINFO)) {
+				open();
 			}
 		};
 
@@ -101,6 +113,7 @@ export class MainMenuPlugin extends BaPlugin {
 		observe(store, (state) => state.featureInfo.aborted, onFeatureInfoAbortedChanged);
 		observe(store, (state) => state.search.query, onQueryChanged, false);
 		observe(store, (store) => store.mainMenu.tab, onTabChanged, false);
-		observe(store, (state) => state.tools.current, onToolIdChanged);
+		observe(store, (state) => state.tools.current, onToolIdChanged, false);
+		observe(store, (state) => state.media.portrait, onOrientationChanged, false);
 	}
 }
