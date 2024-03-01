@@ -2,12 +2,7 @@ export const OPEN_CLOSED_CHANGED = 'navigationRail/open';
 export const ADD_TAB_ID = 'navigationRail/visitedTabIds';
 export const MEDIA_QUERY = '(orientation: landscape) and (max-width: 80em)';
 
-export const initialState = {
-	open: false,
-	visitedTabIds: []
-};
-
-export const navigationRailReducer = (state = initialState, action) => {
+export const navigationRailReducer = (state, action) => {
 	const { type, payload } = action;
 	switch (type) {
 		case OPEN_CLOSED_CHANGED: {

@@ -4,7 +4,7 @@ import { NavigationRail } from '../../../../../src/modules/menu/components/navig
 import { TestUtils } from '../../../../test-utils.js';
 import { $injector } from '../../../../../src/injection';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
-import { navigationRailReducer } from '../../../../../src/store/navigationRail/navigationRail.reducer';
+import { createNoInitialStateNavigationRailReducer } from '../../../../../src/store/navigationRail/navigationRail.reducer';
 import { positionReducer } from '../../../../../src/store/position/position.reducer';
 import { createNoInitialStateMainMenuReducer } from '../../../../../src/store/mainMenu/mainMenu.reducer';
 import { featureInfoReducer } from '../../../../../src/store/featureInfo/featureInfo.reducer';
@@ -45,7 +45,7 @@ describe('NavigationRail', () => {
 		};
 
 		store = TestUtils.setupStoreAndDi(initialState, {
-			navigationRail: navigationRailReducer,
+			navigationRail: createNoInitialStateNavigationRailReducer(),
 			mainMenu: createNoInitialStateMainMenuReducer(),
 			media: createNoInitialStateMediaReducer(),
 			featureInfo: featureInfoReducer,

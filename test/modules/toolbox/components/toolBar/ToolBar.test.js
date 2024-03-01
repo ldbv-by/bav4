@@ -5,7 +5,7 @@ import { networkReducer } from '../../../../../src/store/network/network.reducer
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
-import { navigationRailReducer } from '../../../../../src/store/navigationRail/navigationRail.reducer';
+import { createNoInitialStateNavigationRailReducer } from '../../../../../src/store/navigationRail/navigationRail.reducer';
 import { setFetching } from '../../../../../src/store/network/network.action';
 import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
@@ -30,6 +30,9 @@ describe('ToolBarElement', () => {
 				portrait: false,
 				minWidth: true
 			},
+			navigationRail: {
+				open: false
+			},
 			...state
 		};
 
@@ -37,7 +40,7 @@ describe('ToolBarElement', () => {
 			tools: toolsReducer,
 			network: networkReducer,
 			media: createNoInitialStateMediaReducer(),
-			navigationRail: navigationRailReducer
+			navigationRail: createNoInitialStateNavigationRailReducer()
 		});
 
 		$injector

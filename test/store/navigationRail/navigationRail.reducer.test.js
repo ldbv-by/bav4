@@ -1,13 +1,14 @@
-import {
-	createNoInitialStateNavigationRailReducer,
-	createNavigationRailReducer,
-	initialState
-} from '../../../src/store/navigationRail/navigationRail.reducer.js';
+import { createNoInitialStateNavigationRailReducer, createNavigationRailReducer } from '../../../src/store/navigationRail/navigationRail.reducer.js';
 import { open, close, toggle, addTabId } from '../../../src/store/navigationRail/navigationRail.action';
 import { TestUtils } from '../../test-utils.js';
 import { TabIds } from '../../../src/domain/mainMenu';
 
 describe('navigationRailReducer', () => {
+	const initialState = {
+		open: false,
+		visitedTabIds: []
+	};
+
 	const windowMock = {
 		matchMedia() {}
 	};
@@ -26,14 +27,14 @@ describe('navigationRailReducer', () => {
 
 	describe('createNavigationRailReducer', () => {
 		describe('returns a reducer function', () => {
-			it("initiales the store by media query for ORIENTATION 'landscape' and 'max-width: 80em'", () => {
+			it("initializes the store by media query for ORIENTATION 'landscape' and 'max-width: 80em'", () => {
 				spyOn(windowMock, 'matchMedia').withArgs('(orientation: landscape) and (max-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
 				const store = setup(createNavigationRailReducer(windowMock));
 
 				expect(store.getState().navigationRail.open).toBeTrue();
 			});
 
-			it("initiales the store by media query for ORIENTATION 'landscape' and 'max-width: 80em'", () => {
+			it("initializes the store by media query for ORIENTATION 'landscape' and 'max-width: 80em'", () => {
 				spyOn(windowMock, 'matchMedia')
 					.withArgs('(orientation: landscape) and (max-width: 80em)')
 					.and.returnValue(TestUtils.newMediaQueryList(false));

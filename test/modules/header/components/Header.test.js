@@ -5,7 +5,7 @@ import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
 import { layersReducer, createDefaultLayer } from '../../../../src/store/layers/layers.reducer';
 import { networkReducer } from '../../../../src/store/network/network.reducer';
-import { navigationRailReducer } from '../../../../src/store/navigationRail/navigationRail.reducer';
+import { createNoInitialStateNavigationRailReducer } from '../../../../src/store/navigationRail/navigationRail.reducer';
 import { setFetching } from '../../../../src/store/network/network.action';
 import { searchReducer } from '../../../../src/store/search/search.reducer';
 import { EventLike } from '../../../../src/utils/storeUtils';
@@ -46,6 +46,9 @@ describe('Header', () => {
 				minWidth: true,
 				observeResponsiveParameter: true
 			},
+			navigationRail: {
+				open: false
+			},
 			...state
 		};
 		store = TestUtils.setupStoreAndDi(initialState, {
@@ -56,7 +59,7 @@ describe('Header', () => {
 			search: searchReducer,
 			tools: toolsReducer,
 			media: createNoInitialStateMediaReducer(),
-			navigationRail: navigationRailReducer
+			navigationRail: createNoInitialStateNavigationRailReducer()
 		});
 		$injector
 			.registerSingleton('EnvironmentService', { isEmbedded: () => embed, isStandalone: () => standalone })
