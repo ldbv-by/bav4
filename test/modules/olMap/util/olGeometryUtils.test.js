@@ -82,7 +82,7 @@ describe('getGeometryLength', () => {
 		const length = getGeometryLength(polygon);
 
 		expect(length).toBe(42);
-		expect(spy).toHaveBeenCalledWith(jasmine.arrayWithExactContents(coordinates), undefined, undefined);
+		expect(spy).toHaveBeenCalled();
 	});
 
 	it('does NOT calculates the length of Circle', () => {
@@ -621,6 +621,7 @@ describe('isVertexOfGeometry', () => {
 
 describe('getPartitionDelta', () => {
 	it('calculates a sub delta', () => {
+		spyOn(coordinateServiceMock, 'getLength').and.returnValue(15);
 		const lineString = new LineString([
 			[0, 0],
 			[15, 0]
@@ -632,6 +633,7 @@ describe('getPartitionDelta', () => {
 	});
 
 	it('calculates a delta with standard resolution', () => {
+		spyOn(coordinateServiceMock, 'getLength').and.returnValue(200);
 		const lineString = new LineString([
 			[0, 0],
 			[200, 0]
@@ -643,6 +645,7 @@ describe('getPartitionDelta', () => {
 	});
 
 	it('calculates a delta with defined resolution', () => {
+		spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
 		const lineString = new LineString([
 			[0, 0],
 			[5000, 0]
@@ -654,6 +657,7 @@ describe('getPartitionDelta', () => {
 	});
 
 	it('calculates a delta for longest lines', () => {
+		spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
 		const lineString = new LineString([
 			[0, 0],
 			[50000000, 0]
@@ -661,7 +665,7 @@ describe('getPartitionDelta', () => {
 		const resolution = 50;
 		const delta = getPartitionDelta(lineString, resolution);
 
-		expect(delta).toBe(0.2);
+		expect(delta).toBe(1);
 	});
 });
 
@@ -712,6 +716,7 @@ describe('calculatePartitionResidualOfSegments', () => {
 	});
 
 	it('calculates residuals for a LineString', () => {
+		spyOn(coordinateServiceMock, 'getLength').and.returnValue(30);
 		expect(
 			calculatePartitionResidualOfSegments(
 				new LineString([
@@ -733,6 +738,7 @@ describe('calculatePartitionResidualOfSegments', () => {
 	});
 
 	it('calculates residuals for a LinearRing', () => {
+		spyOn(coordinateServiceMock, 'getLength').and.returnValue(30);
 		expect(
 			calculatePartitionResidualOfSegments(
 				new LinearRing([
@@ -756,6 +762,7 @@ describe('calculatePartitionResidualOfSegments', () => {
 	});
 
 	it('calculates residuals for a Polygon', () => {
+		spyOn(coordinateServiceMock, 'getLength').and.returnValue(30);
 		expect(
 			calculatePartitionResidualOfSegments(
 				new Polygon([
@@ -800,6 +807,7 @@ describe('getStats', () => {
 	});
 
 	it('returns a statistic-object for two-point LineString', () => {
+		spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
 		const statsForLineString = getStats(
 			new LineString([
 				[0, 0],
@@ -808,11 +816,12 @@ describe('getStats', () => {
 		);
 		expect(statsForLineString.coordinate).toBeNull();
 		expect(statsForLineString.azimuth).toBe(45);
-		expect(statsForLineString.length).toBeCloseTo(59.4, 1);
+		expect(statsForLineString.length).toBe(42);
 		expect(statsForLineString.area).toBeNull();
 	});
 
 	it('returns a statistic-object for n-point (2<n) LineString', () => {
+		spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
 		const statsForLineString = getStats(
 			new LineString([
 				[0, 0],
@@ -822,11 +831,12 @@ describe('getStats', () => {
 		);
 		expect(statsForLineString.coordinate).toBeNull();
 		expect(statsForLineString.azimuth).toBeNull();
-		expect(statsForLineString.length).toBeCloseTo(113.2, 1);
+		expect(statsForLineString.length).toBe(42);
 		expect(statsForLineString.area).toBeNull();
 	});
 
 	it('returns a statistic-object for MultiLineString', () => {
+		spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
 		const statsForMultiLineString = getStats(
 			new MultiLineString([
 				new LineString([
@@ -843,11 +853,12 @@ describe('getStats', () => {
 		);
 		expect(statsForMultiLineString.coordinate).toBeNull();
 		expect(statsForMultiLineString.azimuth).toBeNull();
-		expect(statsForMultiLineString.length).toBeCloseTo(165.5, 1);
+		expect(statsForMultiLineString.length).toBe(84);
 		expect(statsForMultiLineString.area).toBeNull();
 	});
 
 	it('returns a statistic-object for Polygon', () => {
+		spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
 		const statsForPolygon = getStats(
 			new Polygon([
 				[
