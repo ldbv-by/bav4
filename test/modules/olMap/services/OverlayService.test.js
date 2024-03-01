@@ -28,6 +28,12 @@ describe('OverlayService', () => {
 		isTouch() {}
 	};
 
+	const coordinateServiceMock = {
+		getLength() {
+			return 1;
+		}
+	};
+
 	const unitsServiceMock = {
 		// eslint-disable-next-line no-unused-vars
 		formatDistance: (distance, decimals) => {
@@ -47,7 +53,8 @@ describe('OverlayService', () => {
 			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('UnitsService', unitsServiceMock)
-			.register('OverlayService', OverlayService);
+			.register('OverlayService', OverlayService)
+			.registerSingleton('CoordinateService', coordinateServiceMock);
 	});
 
 	let instanceUnderTest;

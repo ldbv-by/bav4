@@ -70,6 +70,12 @@ describe('OlMeasurementHandler', () => {
 		}
 	};
 
+	const coordinateServiceMock = {
+		getLength() {
+			return 1;
+		}
+	};
+
 	const interactionStorageServiceMock = {
 		async store() {},
 		isValid() {
@@ -162,7 +168,8 @@ describe('OlMeasurementHandler', () => {
 				}
 			})
 			.register('OverlayService', OverlayService)
-			.register('StyleService', MockClass);
+			.register('StyleService', MockClass)
+			.registerSingleton('CoordinateService', coordinateServiceMock);
 		return store;
 	};
 
@@ -794,6 +801,7 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest.activate(map);
 			classUnderTest._sketchHandler.activate(feature);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			spyOn(coordinateServiceMock, 'getLength').and.returnValue(1234);
 			feature.getGeometry().dispatchEvent('change');
 
 			expect(feature.get('partitions').length).toBe(12);
@@ -1373,6 +1381,7 @@ describe('OlMeasurementHandler', () => {
 
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			spyOn(coordinateServiceMock, 'getLength').and.returnValue(500);
 			firstPointGeometry.setCoordinates([
 				[
 					[0, 0],
@@ -1919,6 +1928,7 @@ describe('OlMeasurementHandler', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const layer = classUnderTest.activate(map);
 			layer.getSource().addFeature(feature);
+			spyOn(coordinateServiceMock, 'getLength').and.returnValue(3);
 			finish();
 
 			map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
@@ -1928,7 +1938,7 @@ describe('OlMeasurementHandler', () => {
 			// select
 			classUnderTest._measureState.type = InteractionStateType.SELECT;
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
-			expect(store.getState().measurement.statistic.length).toBeCloseTo(3, 1);
+			expect(store.getState().measurement.statistic.length).toBe(3);
 			expect(store.getState().measurement.statistic.area).toBeCloseTo(1, 1);
 		});
 
@@ -1965,7 +1975,7 @@ describe('OlMeasurementHandler', () => {
 			// first select
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 1, 0);
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
-			expect(store.getState().measurement.statistic.length).toBeCloseTo(3, 1);
+			expect(store.getState().measurement.statistic.length).toBeCloseTo(1, 1);
 			expect(store.getState().measurement.statistic.area).toBeCloseTo(1, 1);
 
 			map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
@@ -1974,7 +1984,7 @@ describe('OlMeasurementHandler', () => {
 
 			// second select
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 5, 0);
-			expect(store.getState().measurement.statistic.length).toBeCloseTo(8, 0);
+			expect(store.getState().measurement.statistic.length).toBeCloseTo(2, 0);
 			expect(store.getState().measurement.statistic.area).toBeCloseTo(1, 1);
 		});
 
