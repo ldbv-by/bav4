@@ -186,7 +186,7 @@ export class OlCoordinateService {
 	/**
 	 * Converts a single or array of {@link module:domain/coordinateTypeDef~CoordinateLike} to a single or array of {@link module:domain/coordinateTypeDef~Coordinate}.
 	 * @param {Array<module:domain/coordinateTypeDef~CoordinateLike>|module:domain/coordinateTypeDef~CoordinateLike} coordinateLike single or array of `CoordinateLike`
-	 * @returns {Array<module:domain/coordinateTypeDef~CoordinateLike>|module:domain/coordinateTypeDef~CoordinateLike} coordinates single  or array of  `Coordinate`
+	 * @returns {Array<module:domain/coordinateTypeDef~Coordinate>|module:domain/coordinateTypeDef~Coordinate} coordinates single  or array of  `Coordinate`
 	 * @throws {Error} `Cannot convert value to coordinate`
 	 */
 	toCoordinate(coordinateLike) {
