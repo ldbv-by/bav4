@@ -8,10 +8,22 @@ import { calculateVisibleViewport } from '../utils/viewport';
 import { getBvvMapDefinitions } from './provider/mapDefinitions.provider';
 
 /**
- * A function that provides map releated meta data
- * {@link MapDefinitions}
- *
- * @typedef {function():(MapDefinitions)} mapDefinitionProvider
+ * Map related meta data.
+ * @typedef {Object} MapDefinitions
+ * @property {module:domain/extentTypeDef~Extent} defaultExtent default extent of the map
+ * @property {number} minZoomLevel the minimal zoom level the map should support
+ * @property {number} maxZoomLevel the maximal zoom level the map should support
+ * @property {number} srid the internal SRID of the map
+ * @property {number} localProjectedSrid the SRID of the supported local projected system
+ * @property {module:domain/extentTypeDef~Extent} localProjectedSridExtent the extent of the local supported projected system
+ * @property {function(module:domain/coordinateTypeDef~Coordinate):(Array<module:domain/coordinateRepresentation~CoordinateRepresentation>)} localProjectedSridDefinitionsForView function which can take a coordinate and returns an array of CoordinateRepresentations
+ * @property {Array<module:domain/coordinateRepresentation~CoordinateRepresentation>} globalSridDefinitionsForView array of global CoordinateRepresentations
+ */
+
+/**
+ * A function that provides map related meta data.
+ * @typedef {Function} mapDefinitionProvider
+ * @returns {module:services/MapService~MapDefinitions} available categories
  */
 
 /**
@@ -21,8 +33,7 @@ import { getBvvMapDefinitions } from './provider/mapDefinitions.provider';
  */
 export class MapService {
 	/**
-	 *
-	 * @param {mapDefinitionProvider} [provider=getBvvMapDefinitions]
+	 * @param {module:services/MapService~mapDefinitionProvider} [mapDefinitionProvider=getBvvMapDefinitions]
 	 */
 	constructor(mapDefinitionProvider = getBvvMapDefinitions) {
 		const { CoordinateService } = $injector.inject('CoordinateService');
@@ -44,14 +55,14 @@ export class MapService {
 	 * When a coordinate is given the list contains
 	 * suitable CoordinateRepresentation regarding this coordinate,
 	 * which means the returned list is dependent on whether this coordinate is inside or outside the extent
-	 * of the supported local projected system (if definded).
+	 * of the supported local projected system (if defined).
 	 *
 	 * If no coordinate is provided the list contains all globally available CoordinateRepresentations.
 	 *
 	 * Note: The first entry of the list should be considered as the current "default" CoordinateRepresentation.
 	 *
-	 * @param {Coordinate} [coordinateInMapProjection] - coordinate in map projection
-	 * @returns {Array<CoordinateRepresentation>} srids
+	 * @param {module:domain/coordinateTypeDef~Coordinate} [coordinateInMapProjection] - coordinate in map projection
+	 * @returns {Array<module:domain/coordinateRepresentation~CoordinateRepresentation>} srids
 	 */
 	getCoordinateRepresentations(coordinateInMapProjection) {
 		// we have no projected extent defined or no coordinate is provided
@@ -79,7 +90,7 @@ export class MapService {
 	 * Returns the extent of the supported local projected system.
 	 * For the corresponding SRID call {@link MapService#getLocalProjectedSrid}.
 	 * Within this extent all calculations can be done in the euclidean space.
-	 * Outside of this extent all calculations should be done geodesically.
+	 * Outside of this extent all calculations should be done in a geodesic manner.
 	 * Can be `null` when no extent is defined.
 	 * @param {number} srid the desired SRID of the returned extent
 	 * @returns {Extent|null} extent
@@ -98,7 +109,7 @@ export class MapService {
 	/**
 	 * Returns the default extent of the map.
 	 * @param {number} srid the desired SRID of the returned extent
-	 * @returns {Extent} extent
+	 * @returns {module:domain/extentTypeDef~Extent} extent
 	 * @throws Unsupported SRID error
 	 */
 	getDefaultMapExtent(srid = this.getSrid()) {
@@ -138,7 +149,7 @@ export class MapService {
 	/**
 	 * Calculates the resolution at a specific degree of latitude in meters per pixel.
 	 * @param {number} zoom  Zoom level to calculate resolution at
-	 * @param {Coordinate} [coordinate] Coordinate to calculate a resolution (required for global map projections like `3857`)
+	 * @param {module:domain/coordinateTypeDef~Coordinate} [coordinateInMapProjection] Coordinate to calculate a resolution (required for global map projections like `3857`)
 	 * @param {number} [srid] Spatial Reference Id. Default is `3857`
 	 * @param {number} [tileSize] tileSize The size of the tiles in the tile pyramid. Default is `256`
 	 */
