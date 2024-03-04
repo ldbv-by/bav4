@@ -7,12 +7,7 @@ import { TestUtils } from '../test-utils';
 const defaultInterceptors = { response: [] };
 
 describe('HttpService', () => {
-	const configService = {
-		getValue: () => {}
-	};
-
 	beforeEach(function () {
-		$injector.registerSingleton('ConfigService', configService);
 		jasmine.clock().install();
 	});
 
@@ -48,17 +43,16 @@ describe('HttpService', () => {
 		it('provides a result setting the credentials options', async () => {
 			const url = 'http://foo.bar';
 			const httpService = new HttpService();
-			const spy = spyOn(window, 'fetch').and.returnValue(
+			spyOn(window, 'fetch').and.returnValue(
 				Promise.resolve({
 					text: () => {
 						return 42;
 					}
 				})
 			);
-			spyOn(configService, 'getValue').withArgs('FETCH_API_CREDENTIALS', 'same-origin').and.returnValue('include');
 
 			const result = await httpService.fetch(url);
-			expect(spy).toHaveBeenCalledOnceWith(url, jasmine.objectContaining({ credentials: 'include' }));
+
 			expect(result.text()).toBe(42);
 		});
 

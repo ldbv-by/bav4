@@ -32,13 +32,6 @@ export class HttpService {
 		return 'cors';
 	}
 
-	#configService;
-
-	constructor() {
-		const { ConfigService: configService } = $injector.inject('ConfigService');
-		this.#configService = configService;
-	}
-
 	/**
 	 * Wraps a Fetch API fetch call, so that a custom timeout can be set. Default is 1000ms.<br>
 	 * If a timeout occurs, the request is cancelled by an <code>AbortController</code>.<br>
@@ -59,7 +52,6 @@ export class HttpService {
 			const id = setTimeout(() => controller.abort(), timeout);
 
 			const response = await fetch(resource, {
-				credentials: this.#configService.getValue('FETCH_API_CREDENTIALS', 'same-origin' /** Fetch API default value */),
 				...options,
 				signal: controller.signal
 			});
