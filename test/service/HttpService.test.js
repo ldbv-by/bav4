@@ -458,7 +458,7 @@ describe('NetworkStateSyncHttpService', () => {
 
 describe('AuthInvalidatingAfter401HttpService', () => {
 	const configService = {
-		getValue: () => {}
+		getValueAsPath: () => {}
 	};
 	const authService = {
 		invalidate: () => {}
@@ -495,6 +495,7 @@ describe('AuthInvalidatingAfter401HttpService', () => {
 				const mockHttpServiceIgnore401PathProvider = () => [];
 				const instanceUnderTest = setup(mockHttpServiceIgnore401PathProvider);
 				spyOn(window, 'fetch').and.resolveTo(new Response(null, { status: 401 }));
+				spyOn(configService, 'getValueAsPath').and.returnValue(url);
 				const parentFetchSpy = spyOn(HttpService.prototype, 'fetch').and.callThrough();
 				const authSpy = spyOn(authService, 'invalidate');
 
@@ -511,6 +512,25 @@ describe('AuthInvalidatingAfter401HttpService', () => {
 					const mockHttpServiceIgnore401PathProvider = () => ['foo.bar'];
 					const instanceUnderTest = setup(mockHttpServiceIgnore401PathProvider);
 					spyOn(window, 'fetch').and.resolveTo(new Response(null, { status: 401 }));
+					spyOn(configService, 'getValueAsPath').and.returnValue(url);
+					const parentFetchSpy = spyOn(HttpService.prototype, 'fetch').and.callThrough();
+					const authSpy = spyOn(authService, 'invalidate');
+
+					const result = await instanceUnderTest.fetch(url);
+
+					expect(authSpy).not.toHaveBeenCalled();
+					expect(result.status).toBe(401);
+					expect(parentFetchSpy).toHaveBeenCalledWith(url, {}, jasmine.any(AbortController), { response: [jasmine.any(Function)] });
+				});
+			});
+
+			describe('endpoint is is not a backend endpoint', () => {
+				it("calls only parent's fetch", async () => {
+					const url = 'http://foo.bar';
+					const mockHttpServiceIgnore401PathProvider = () => [];
+					const instanceUnderTest = setup(mockHttpServiceIgnore401PathProvider);
+					spyOn(window, 'fetch').and.resolveTo(new Response(null, { status: 401 }));
+					spyOn(configService, 'getValueAsPath').and.returnValue('http://backend.url');
 					const parentFetchSpy = spyOn(HttpService.prototype, 'fetch').and.callThrough();
 					const authSpy = spyOn(authService, 'invalidate');
 

@@ -176,14 +176,15 @@ export class NetworkStateSyncHttpService extends HttpService {
  * {@link HttpService} that invalidates the current authentication when a status code 401 occurs.
  * @class
  * @author taulinger
- */
-export class AuthInvalidatingAfter401HttpService extends NetworkStateSyncHttpService {
+ */ export class AuthInvalidatingAfter401HttpService extends NetworkStateSyncHttpService {
 	#authService;
+	#configService;
 
 	constructor(httpServiceIgnore401PathProvider = bvvHttpServiceIgnore401PathProvider) {
 		super();
-		const { AuthService: authService } = $injector.inject('AuthService');
+		const { AuthService: authService, ConfigService: configService } = $injector.inject('AuthService', 'ConfigService');
 		this.#authService = authService;
+		this.#configService = configService;
 		this._ignorePathProvider = httpServiceIgnore401PathProvider;
 	}
 	/**
@@ -191,7 +192,11 @@ export class AuthInvalidatingAfter401HttpService extends NetworkStateSyncHttpSer
 	 */
 	async fetch(resource, options = {}, controller = new AbortController(), interceptors = defaultInterceptors) {
 		const invalidateAfter401Interceptor = async (originalResponse) => {
-			if (originalResponse.status === 401 && !this._ignorePathProvider().find((path) => resource.includes(path))) {
+			if (
+				originalResponse.status === 401 &&
+				resource.startsWith(this.#configService.getValueAsPath('BACKEND_URL')) &&
+				!this._ignorePathProvider().find((path) => resource.includes(path))
+			) {
 				this.#authService.invalidate();
 			}
 			return originalResponse;
