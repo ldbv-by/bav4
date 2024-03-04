@@ -2,6 +2,7 @@
  * @module services/MapService
  */
 import { $injector } from '../injection';
+import { isCoordinateLike } from '../utils/checks';
 import { calc3857MapResolution } from '../utils/mapUtils';
 import { findAllBySelector, REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME } from '../utils/markup';
 import { calculateVisibleViewport } from '../utils/viewport';
@@ -42,8 +43,8 @@ export class MapService {
 	}
 
 	/**
-	 * Returns the internal srid of the map (typically 3857)
-	 * @returns {number} srid
+	 * Returns the internal SRID of the map (typically 3857)
+	 * @returns {number} SRID
 	 */
 	getSrid() {
 		return this._definitions.srid;
@@ -52,28 +53,30 @@ export class MapService {
 	/**
 	 * Returns a list with all available CoordinateRepresentation.
 	 *
-	 * When a coordinate is given the list contains
-	 * suitable CoordinateRepresentation regarding this coordinate,
-	 * which means the returned list is dependent on whether this coordinate is inside or outside the extent
+	 * When a coordinate or a list of coordinates is given the list contains all
+	 * suitable CoordinateRepresentation regarding this coordinate.
+	 * The returned list is dependent on whether this coordinate is inside or outside the extent
 	 * of the supported local projected system (if defined).
 	 *
 	 * If no coordinate is provided the list contains all available global CoordinateRepresentations.
 	 *
 	 * Note: The first entry of the list should be considered as the current "default" CoordinateRepresentation.
 	 *
-	 * @param {module:domain/coordinateTypeDef~CoordinateLike} [coordinateLikeInMapProjection] - coordinate in map projection
-	 * @returns {Array<module:domain/coordinateRepresentation~CoordinateRepresentation>} `CoordinateRepresentation`
+	 * @param {Array<module:domain/coordinateTypeDef~CoordinateLike>|module:domain/coordinateTypeDef~CoordinateLike|null} [coordinateLikeInMapProjection] - coordinate like in map projection
+	 * @returns {Array<module:domain/coordinateRepresentation~CoordinateRepresentation>} Array of `CoordinateRepresentation`
 	 */
-	getCoordinateRepresentations(coordinateLikeInMapProjection) {
-		const coordinateInMapProjection = coordinateLikeInMapProjection
-			? this._coordinateService.toCoordinate(coordinateLikeInMapProjection)
-			: coordinateLikeInMapProjection;
+	getCoordinateRepresentations(coordinateLikeInMapProjection = []) {
+		const coordinateInMapProjection = this._coordinateService.toCoordinate(
+			isCoordinateLike(coordinateLikeInMapProjection) ? [coordinateLikeInMapProjection] : [...coordinateLikeInMapProjection]
+		);
+
 		// we have no projected extent defined or no coordinate is provided
-		if (!this.getLocalProjectedSridExtent() || !coordinateInMapProjection) {
+		if (!this.getLocalProjectedSridExtent() || coordinateInMapProjection.length === 0) {
 			return this._definitions.globalCoordinateRepresentations;
 		}
-		// we are outside the projected extent
-		else if (!this._coordinateService.containsCoordinate(this.getLocalProjectedSridExtent(), coordinateInMapProjection)) {
+
+		// one or more coordinates are outside the projected extent
+		if (coordinateInMapProjection.find((c) => !this._coordinateService.containsCoordinate(this.getLocalProjectedSridExtent(), c))) {
 			return this._definitions.globalCoordinateRepresentations;
 		}
 
