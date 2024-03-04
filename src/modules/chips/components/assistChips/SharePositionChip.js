@@ -13,11 +13,12 @@ import shareIcon from './assets/share.svg';
 const Update = 'update';
 
 /**
- * A chip to share a specified position with a link. The link refers
- * to the webapp itself with highlight-feature on the specified position.
+ * A chip to share the current state and optionally with a specified position with a link. If the center
+ * is given, the link refers  * to the webapp itself with highlight-feature on the specified position.
+ * Without a given center, the link refers to the webapp with the current state.
  * @class
  * @extends {AbstractAssistChip}
- * @property {module:domain/coordinateTypeDef~Coordinate} center The center coordinate of the shared position
+ * @property {module:domain/coordinateTypeDef~Coordinate} [center] The center coordinate of the shared position
  * @author thiloSchlemmer
  */
 export class SharePositionChip extends AbstractAssistChip {
@@ -50,27 +51,36 @@ export class SharePositionChip extends AbstractAssistChip {
 	}
 
 	getLabel() {
+		const { center } = this.getModel();
 		const translate = (key) => this._translationService.translate(key);
-		return translate('chips_assist_chip_share_position_label');
+		return center ? translate('chips_assist_chip_share_position_label') : translate('chips_assist_chip_share_state_label');
 	}
 
 	isVisible() {
-		const { center } = this.getModel();
-		return isCoordinate(center);
+		return true;
 	}
 
 	async onClick() {
 		const { center } = this.getModel();
 		const useShareApi = this._environmentService.getWindow().navigator.share ? true : false;
-
+		const translate = (key) => this._translationService.translate(key);
+		const title = center ? translate('chips_assist_chip_share_position_label') : translate('chips_assist_chip_share_state_label');
 		const url = await this._buildShareUrl(center);
-		const shareAction = useShareApi ? (url) => this._shareUrlWithApi(url) : (url) => this._shareUrlDialog(url);
+		const shareAction = useShareApi ? (url) => this._shareUrlWithApi(url) : (url) => this._shareUrlDialog(url, title);
 		shareAction(url);
 	}
 
 	async _buildShareUrl(center) {
-		const extraParams = { [QueryParameters.CROSSHAIR]: true };
-		const url = new URL(this._shareService.encodeStateForPosition({ center: center }, extraParams));
+		const getStateAndOverridePosition = () => {
+			const extraParams = { [QueryParameters.CROSSHAIR]: true };
+			return new URL(this._shareService.encodeStateForPosition({ center: center }, extraParams));
+		};
+
+		const getState = () => {
+			return new URL(this._shareService.encodeState());
+		};
+
+		const url = center ? getStateAndOverridePosition : getState();
 		try {
 			const shortUrl = await this._urlService.shorten(url.toString());
 			return shortUrl;
@@ -92,10 +102,10 @@ export class SharePositionChip extends AbstractAssistChip {
 		}
 	}
 
-	async _shareUrlDialog(url) {
+	async _shareUrlDialog(url, title) {
 		const content = html`<ba-share-content .urls=${url}></ba-share-content>`;
 
-		openModal(this._translationService.translate('chips_assist_chip_share_position_label'), content);
+		openModal(title, content);
 	}
 
 	set center(value) {
@@ -105,6 +115,6 @@ export class SharePositionChip extends AbstractAssistChip {
 	}
 
 	static get tag() {
-		return 'ba-share-position-chip';
+		return 'ba-share-chip';
 	}
 }
