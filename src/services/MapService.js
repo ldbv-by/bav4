@@ -57,14 +57,17 @@ export class MapService {
 	 * which means the returned list is dependent on whether this coordinate is inside or outside the extent
 	 * of the supported local projected system (if defined).
 	 *
-	 * If no coordinate is provided the list contains all globally available CoordinateRepresentations.
+	 * If no coordinate is provided the list contains all available global CoordinateRepresentations.
 	 *
 	 * Note: The first entry of the list should be considered as the current "default" CoordinateRepresentation.
 	 *
-	 * @param {module:domain/coordinateTypeDef~Coordinate} [coordinateInMapProjection] - coordinate in map projection
-	 * @returns {Array<module:domain/coordinateRepresentation~CoordinateRepresentation>} srids
+	 * @param {module:domain/coordinateTypeDef~CoordinateLike} [coordinateLikeInMapProjection] - coordinate in map projection
+	 * @returns {Array<module:domain/coordinateRepresentation~CoordinateRepresentation>} `CoordinateRepresentation`
 	 */
-	getCoordinateRepresentations(coordinateInMapProjection) {
+	getCoordinateRepresentations(coordinateLikeInMapProjection) {
+		const coordinateInMapProjection = coordinateLikeInMapProjection
+			? this._coordinateService.toCoordinate(coordinateLikeInMapProjection)
+			: coordinateLikeInMapProjection;
 		// we have no projected extent defined or no coordinate is provided
 		if (!this.getLocalProjectedSridExtent() || !coordinateInMapProjection) {
 			return this._definitions.globalCoordinateRepresentations;

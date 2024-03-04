@@ -7,7 +7,10 @@ describe('MapService', () => {
 		fromLonLatExtent() {},
 		toLonLatExtent() {},
 		toLonLat() {},
-		containsCoordinate() {}
+		containsCoordinate() {},
+		toCoordinate(c) {
+			return c;
+		}
 	};
 
 	beforeAll(() => {
