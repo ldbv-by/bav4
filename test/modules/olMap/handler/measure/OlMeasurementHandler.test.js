@@ -73,6 +73,9 @@ describe('OlMeasurementHandler', () => {
 	const coordinateServiceMock = {
 		getLength() {
 			return 1;
+		},
+		getArea() {
+			return 1;
 		}
 	};
 
@@ -1382,6 +1385,7 @@ describe('OlMeasurementHandler', () => {
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			spyOn(coordinateServiceMock, 'getLength').and.returnValue(500);
+			spyOn(coordinateServiceMock, 'getArea').and.returnValue(0);
 			firstPointGeometry.setCoordinates([
 				[
 					[0, 0],
@@ -1390,8 +1394,8 @@ describe('OlMeasurementHandler', () => {
 				]
 			]);
 			feature.getGeometry().dispatchEvent('change');
-			expect(store.getState().measurement.statistic.length).toBeCloseTo(500, 0);
-			expect(store.getState().measurement.statistic.area).toBeCloseTo(0, 1);
+			expect(store.getState().measurement.statistic.length).toBe(500);
+			expect(store.getState().measurement.statistic.area).toBe(0);
 		});
 
 		it('change measureState, when mouse enters draggable overlay', () => {

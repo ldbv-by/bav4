@@ -132,29 +132,30 @@ export const getBoundingBoxFrom = (centerCoordinate, size) => {
  * @returns {number} the calculated length or 0 if the geometry-object is not area-like
  */
 export const getArea = (geometry, calculationHints = {}) => {
-	if (!(geometry instanceof Polygon) && !(geometry instanceof Circle) && !(geometry instanceof LinearRing)) {
-		return 0;
-	}
+	const { CoordinateService: coordinateService } = $injector.inject('CoordinateService');
+
 	const toEpsgCodeString = (srid) => {
 		return srid ? `EPSG:${srid}` : null;
 	};
 
-	const wgs84Geometry = transformGeometry(geometry, toEpsgCodeString(calculationHints.sourceSrid), EPSG_WGS84);
-	const wgs84LineString = getLineString(wgs84Geometry);
+	const getLineStrings = (geometry) => {
+		if (!(geometry instanceof Polygon) && !(geometry instanceof Circle) && !(geometry instanceof LinearRing)) {
+			return [];
+		}
 
-	const getLocalArea = (geometry, calculationHints) => {
-		const calculationGeometry = transformGeometry(
-			geometry,
-			toEpsgCodeString(calculationHints.sourceSrid),
-			toEpsgCodeString(calculationHints.destinationSrid)
-		);
-		return calculationGeometry.getArea();
+		if (geometry instanceof LinearRing) {
+			return [geometry.getCoordinates()];
+		}
+		return geometry.getLinearRings().map((r) => r.getCoordinates());
 	};
 
-	const isWithinProjectionExtent = calculationHints.projectionExtent
-		? !wgs84LineString.getCoordinates().some((coordinate) => !containsCoordinate(calculationHints.projectionExtent, coordinate))
-		: true;
-	return isWithinProjectionExtent ? getLocalArea(geometry, calculationHints) : getGeodesicArea(wgs84Geometry);
+	const srid = calculationHints.destinationSrid ?? calculationHints.sourceSrid;
+
+	const polygonCoordinates = calculationHints.destinationSrid
+		? getLineStrings(transformGeometry(geometry, toEpsgCodeString(calculationHints.sourceSrid), toEpsgCodeString(calculationHints.destinationSrid)))
+		: getLineStrings(geometry);
+	console.log(polygonCoordinates);
+	return polygonCoordinates ? coordinateService.getArea(polygonCoordinates, srid, calculationHints.projectionExtent) : null;
 };
 
 /**

@@ -29,7 +29,8 @@ import { $injector } from '../../../../src/injection';
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
 const coordinateServiceMock = {
-	getLength() {}
+	getLength() {},
+	getArea() {}
 };
 
 $injector.registerSingleton('CoordinateService', coordinateServiceMock);
@@ -398,9 +399,24 @@ describe('getArea', () => {
 				[0, 0]
 			]
 		]);
+		const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getArea').and.returnValue(42);
+
 		const area = getArea(polygon);
 
-		expect(area).toBe(1);
+		expect(area).toBe(42);
+		expect(coordinateServiceSpy).toHaveBeenCalledWith(
+			jasmine.arrayContaining([
+				[
+					[0, 0],
+					[1, 0],
+					[1, 1],
+					[0, 1],
+					[0, 0]
+				]
+			]),
+			undefined,
+			undefined
+		);
 	});
 
 	it('calculates the area for a projected Polygon', () => {
@@ -414,9 +430,12 @@ describe('getArea', () => {
 			]
 		]);
 		const calculationHints = { sourceSrid: 4326, destinationSrid: 25832 };
+		const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getArea').and.returnValue(42);
+
 		const area = getArea(polygon, calculationHints);
 
-		expect(area).toBeCloseTo(12575513411.866, 2);
+		expect(area).toBe(42);
+		expect(coordinateServiceSpy).toHaveBeenCalledWith(jasmine.any(Array), 25832, undefined);
 	});
 
 	it('returns 0 for a non-area-like geometry', () => {
@@ -429,6 +448,20 @@ describe('getArea', () => {
 			[0, 0],
 			[2, 0]
 		]);
+		const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getArea')
+			.withArgs(jasmine.arrayWithExactContents([]), undefined, undefined)
+			.and.returnValue(0)
+			.withArgs(
+				jasmine.arrayWithExactContents([
+					[
+						[0, 0],
+						[2, 0]
+					]
+				]),
+				undefined,
+				undefined
+			)
+			.and.returnValue(0);
 
 		const pointArea = getArea(point);
 		const lineStringArea = getArea(lineString);
@@ -437,38 +470,19 @@ describe('getArea', () => {
 		expect(pointArea).toBe(0);
 		expect(lineStringArea).toBe(0);
 		expect(linearRingArea).toBe(0);
+
+		expect(coordinateServiceSpy).toHaveBeenCalledTimes(3);
 	});
 
 	describe('when calculationHints with extent are provided', () => {
 		it('calculates the geodesic area of a transformed polygon', () => {
-			const utm32Area = 8327453871.901;
-			const geodesicArea = 8333081687.76;
-			const lineString = new Polygon([[fromLonLat([9, 48]), fromLonLat([11, 48]), fromLonLat([10, 47])]]);
+			const polygon = new Polygon([[fromLonLat([9, 48]), fromLonLat([11, 48]), fromLonLat([10, 47])]]);
+
 			const calculationHints = { sourceSrid: 3857, destinationSrid: 25832 };
+			const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getArea').and.returnValue(42);
 
-			// within
-			expect(getArea(lineString, { ...calculationHints, projectionExtent: [9, -60, 11, 60] })).toBeCloseTo(utm32Area);
-			// partially within
-			expect(getArea(lineString, { ...calculationHints, projectionExtent: [10, -60, 12, 60] })).toBeCloseTo(geodesicArea);
-			// outside
-			expect(getArea(lineString, { ...calculationHints, projectionExtent: [12, -60, 13, 60] })).toBeCloseTo(geodesicArea);
-		});
-
-		it('calculates the geodesic area of a transformed polygon with hole', () => {
-			const utm32Area = 8322890782.498;
-			const geodesicArea = 8328516236.574;
-			const lineString = new Polygon([
-				[fromLonLat([9, 48]), fromLonLat([11, 48]), fromLonLat([10, 47])],
-				[fromLonLat([9.5, 47.5]), fromLonLat([10.5, 47.5]), fromLonLat([10, 47.5])]
-			]);
-			const calculationHints = { sourceSrid: 3857, destinationSrid: 25832 };
-
-			// within
-			expect(getArea(lineString, { ...calculationHints, projectionExtent: [9, -60, 11, 60] })).toBeCloseTo(utm32Area);
-			// partially within
-			expect(getArea(lineString, { ...calculationHints, projectionExtent: [10, -60, 12, 60] })).toBeCloseTo(geodesicArea);
-			// outside
-			expect(getArea(lineString, { ...calculationHints, projectionExtent: [12, -60, 13, 60] })).toBeCloseTo(geodesicArea);
+			expect(getArea(polygon, { ...calculationHints, projectionExtent: [9, -60, 11, 60] })).toBe(42);
+			expect(coordinateServiceSpy).toHaveBeenCalledWith(jasmine.any(Array), 25832, [9, -60, 11, 60]);
 		});
 	});
 });
@@ -859,6 +873,8 @@ describe('getStats', () => {
 
 	it('returns a statistic-object for Polygon', () => {
 		spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
+		spyOn(coordinateServiceMock, 'getArea').and.returnValue(21);
+
 		const statsForPolygon = getStats(
 			new Polygon([
 				[
