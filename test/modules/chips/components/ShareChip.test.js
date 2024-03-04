@@ -1,6 +1,6 @@
 import { QueryParameters } from '../../../../src/domain/queryParameters';
 import { $injector } from '../../../../src/injection';
-import { SharePositionChip } from '../../../../src/modules/chips/components/assistChips/SharePositionChip';
+import { ShareChip } from '../../../../src/modules/chips/components/assistChips/ShareChip';
 import shareSvg from '../../../../src/modules/chips/components/assistChips/assets/share.svg';
 import { ShareDialogContent } from '../../../../src/modules/share/components/dialog/ShareDialogContent';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
@@ -9,9 +9,9 @@ import { notificationReducer } from '../../../../src/store/notifications/notific
 import { TestUtils } from '../../../test-utils';
 
 window.customElements.define(ShareDialogContent.tag, ShareDialogContent);
-window.customElements.define(SharePositionChip.tag, SharePositionChip);
+window.customElements.define(ShareChip.tag, ShareChip);
 
-describe('SharePositionChip', () => {
+describe('ShareChip', () => {
 	let store;
 	const shareServiceMock = {
 		copyToClipboard() {
@@ -54,7 +54,7 @@ describe('SharePositionChip', () => {
 			.registerSingleton('ShareService', shareServiceMock)
 			.registerSingleton('UrlService', urlServiceMock);
 
-		return TestUtils.render(SharePositionChip.tag, properties);
+		return TestUtils.render(ShareChip.tag, properties);
 	};
 
 	describe('when instantiated', () => {

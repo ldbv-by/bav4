@@ -1,5 +1,5 @@
 /**
- * @module modules/chips/components/assistChips/SharePositionChip
+ * @module modules/chips/components/assistChips/ShareChip
  */
 import { html } from 'lit-html';
 import { QueryParameters } from '../../../../domain/queryParameters';
@@ -21,7 +21,7 @@ const Update = 'update';
  * @property {module:domain/coordinateTypeDef~Coordinate} [center] The center coordinate of the shared position
  * @author thiloSchlemmer
  */
-export class SharePositionChip extends AbstractAssistChip {
+export class ShareChip extends AbstractAssistChip {
 	constructor() {
 		super({ center: null });
 		const {
