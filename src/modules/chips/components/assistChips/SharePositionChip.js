@@ -80,7 +80,7 @@ export class SharePositionChip extends AbstractAssistChip {
 			return new URL(this._shareService.encodeState());
 		};
 
-		const url = center ? getStateAndOverridePosition : getState();
+		const url = center ? getStateAndOverridePosition() : getState();
 		try {
 			const shortUrl = await this._urlService.shorten(url.toString());
 			return shortUrl;
