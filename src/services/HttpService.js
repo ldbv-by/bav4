@@ -150,6 +150,7 @@ export class HttpService {
 /**
  * {@link HttpService} that updates the 'fetching' property of the network state.
  * @class
+ * @extends HttpService
  * @author taulinger
  */
 export class NetworkStateSyncHttpService extends HttpService {
@@ -175,8 +176,10 @@ export class NetworkStateSyncHttpService extends HttpService {
 /**
  * {@link HttpService} that invalidates the current authentication when a status code 401 occurs.
  * @class
+ * @extends NetworkStateSyncHttpService
  * @author taulinger
- */ export class AuthInvalidatingAfter401HttpService extends NetworkStateSyncHttpService {
+ */
+export class AuthInvalidatingAfter401HttpService extends NetworkStateSyncHttpService {
 	#authService;
 	#configService;
 
@@ -203,5 +206,22 @@ export class NetworkStateSyncHttpService extends HttpService {
 		};
 
 		return super.fetch(resource, options, controller, { response: [invalidateAfter401Interceptor, ...interceptors.response] });
+	}
+}
+
+/**
+ * BVV specific {@link HttpService} that set the Fetch API `credentials` option to `include`.
+ * Reason: Frontend and Backend may run on different origins
+ * @class
+ * @extends AuthInvalidatingAfter401HttpService
+ * @author taulinger
+ */
+export class BvvHttpService extends AuthInvalidatingAfter401HttpService {
+	/**
+	 * @see {@link HttpService#fetch}
+	 */
+	async fetch(resource, options = {}, controller = new AbortController(), interceptors = defaultInterceptors) {
+		// return await super.fetch(resource, options, controller, interceptors);
+		return super.fetch(resource, { credentials: 'include', ...options }, controller, interceptors);
 	}
 }

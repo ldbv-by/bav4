@@ -1,5 +1,5 @@
 import { $injector } from '../../src/injection';
-import { HttpService, AuthInvalidatingAfter401HttpService, NetworkStateSyncHttpService } from '../../src/services/HttpService';
+import { HttpService, AuthInvalidatingAfter401HttpService, NetworkStateSyncHttpService, BvvHttpService } from '../../src/services/HttpService';
 import { bvvHttpServiceIgnore401PathProvider } from '../../src/services/provider/auth.provider';
 import { networkReducer } from '../../src/store/network/network.reducer';
 import { TestUtils } from '../test-utils';
@@ -496,7 +496,7 @@ describe('AuthInvalidatingAfter401HttpService', () => {
 				const instanceUnderTest = setup(mockHttpServiceIgnore401PathProvider);
 				spyOn(window, 'fetch').and.resolveTo(new Response(null, { status: 401 }));
 				spyOn(configService, 'getValueAsPath').and.returnValue(url);
-				const parentFetchSpy = spyOn(HttpService.prototype, 'fetch').and.callThrough();
+				const parentFetchSpy = spyOn(NetworkStateSyncHttpService.prototype, 'fetch').and.callThrough();
 				const authSpy = spyOn(authService, 'invalidate');
 
 				const result = await instanceUnderTest.fetch(url);
@@ -513,7 +513,7 @@ describe('AuthInvalidatingAfter401HttpService', () => {
 					const instanceUnderTest = setup(mockHttpServiceIgnore401PathProvider);
 					spyOn(window, 'fetch').and.resolveTo(new Response(null, { status: 401 }));
 					spyOn(configService, 'getValueAsPath').and.returnValue(url);
-					const parentFetchSpy = spyOn(HttpService.prototype, 'fetch').and.callThrough();
+					const parentFetchSpy = spyOn(NetworkStateSyncHttpService.prototype, 'fetch').and.callThrough();
 					const authSpy = spyOn(authService, 'invalidate');
 
 					const result = await instanceUnderTest.fetch(url);
@@ -531,7 +531,7 @@ describe('AuthInvalidatingAfter401HttpService', () => {
 					const instanceUnderTest = setup(mockHttpServiceIgnore401PathProvider);
 					spyOn(window, 'fetch').and.resolveTo(new Response(null, { status: 401 }));
 					spyOn(configService, 'getValueAsPath').and.returnValue('http://backend.url');
-					const parentFetchSpy = spyOn(HttpService.prototype, 'fetch').and.callThrough();
+					const parentFetchSpy = spyOn(NetworkStateSyncHttpService.prototype, 'fetch').and.callThrough();
 					const authSpy = spyOn(authService, 'invalidate');
 
 					const result = await instanceUnderTest.fetch(url);
@@ -549,7 +549,7 @@ describe('AuthInvalidatingAfter401HttpService', () => {
 				const mockHttpServiceIgnore401PathProvider = () => [];
 				const instanceUnderTest = setup(mockHttpServiceIgnore401PathProvider);
 				spyOn(window, 'fetch').and.resolveTo(new Response(null, { status: 400 }));
-				const parentFetchSpy = spyOn(HttpService.prototype, 'fetch').and.callThrough();
+				const parentFetchSpy = spyOn(NetworkStateSyncHttpService.prototype, 'fetch').and.callThrough();
 				const authSpy = spyOn(authService, 'invalidate');
 
 				const result = await instanceUnderTest.fetch(url);
@@ -558,6 +558,67 @@ describe('AuthInvalidatingAfter401HttpService', () => {
 				expect(result.status).toBe(400);
 				expect(parentFetchSpy).toHaveBeenCalledWith(url, {}, jasmine.any(AbortController), { response: [jasmine.any(Function)] });
 			});
+		});
+	});
+});
+
+describe('BvvHttpService', () => {
+	const configService = {
+		getValueAsPath: () => {}
+	};
+	const authService = {
+		invalidate: () => {}
+	};
+
+	afterEach(() => {
+		$injector.reset();
+	});
+
+	afterEach(() => {
+		$injector.reset();
+	});
+
+	const setup = () => {
+		TestUtils.setupStoreAndDi({}, {});
+		$injector.registerSingleton('ConfigService', configService).registerSingleton('AuthService', authService);
+		return new BvvHttpService();
+	};
+
+	describe('fetch', () => {
+		it("calls parent's fetch and adds the 'credentials' option", async () => {
+			const url = 'http://foo.bar';
+			const instanceUnderTest = setup();
+			spyOn(window, 'fetch').and.callFake(() => {
+				return Promise.resolve({
+					text: () => {
+						return 42;
+					}
+				});
+			});
+			const parentFetchSpy = spyOn(AuthInvalidatingAfter401HttpService.prototype, 'fetch').and.callThrough();
+
+			const result = await instanceUnderTest.fetch(url);
+
+			expect(result.text()).toBe(42);
+			expect(parentFetchSpy).toHaveBeenCalledWith(url, { credentials: 'include' }, jasmine.any(AbortController), defaultInterceptors);
+		});
+
+		it("calls parent's fetch and uses a custom 'credentials' option", async () => {
+			const url = 'http://foo.bar';
+			const instanceUnderTest = setup();
+			spyOn(window, 'fetch').and.callFake(() => {
+				return Promise.resolve({
+					text: () => {
+						return 42;
+					}
+				});
+			});
+			const parentFetchSpy = spyOn(AuthInvalidatingAfter401HttpService.prototype, 'fetch').and.callThrough();
+
+			const result = await instanceUnderTest.fetch(url, { credentials: 'omit' });
+
+			expect(result.text()).toBe(42);
+			expect(parentFetchSpy).toHaveBeenCalledWith(url, { credentials: 'omit' }, jasmine.any(AbortController), defaultInterceptors);
 		});
 	});
 });
