@@ -231,6 +231,7 @@ describe('OlCoordinateService', () => {
 			it('converts a CoordinateLike to a Coordinate', () => {
 				setup();
 
+				expect(instanceUnderTest.toCoordinate([])).toEqual([]);
 				expect(instanceUnderTest.toCoordinate([1, 2, 3])).toEqual([1, 2]);
 				expect(instanceUnderTest.toCoordinate([1, 2])).toEqual([1, 2]);
 				expect(
@@ -256,7 +257,6 @@ describe('OlCoordinateService', () => {
 				);
 				expect(() => instanceUnderTest.toCoordinate({})).toThrowError('Cannot convert value to coordinate, value is not a CoordinateLike type');
 				expect(() => instanceUnderTest.toCoordinate('foo')).toThrowError('Cannot convert value to coordinate, value is not a CoordinateLike type');
-				expect(() => instanceUnderTest.toCoordinate([])).toThrowError('Cannot convert value to coordinate, value is not a CoordinateLike type');
 				expect(() => instanceUnderTest.toCoordinate(1)).toThrowError('Cannot convert value to coordinate, value is not a CoordinateLike type');
 				expect(() => instanceUnderTest.toCoordinate(undefined)).toThrowError(
 					'Cannot convert value to coordinate, value is not a CoordinateLike type'

@@ -11,7 +11,7 @@ import { DevInfo } from '../../../../../src/modules/utils/components/devInfo/Dev
 import { SearchResultsPanel } from '../../../../../src/modules/search/components/menu/SearchResultsPanel';
 import { TopicsContentPanel } from '../../../../../src/modules/topics/components/menu/TopicsContentPanel';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
-import { navigationRailReducer } from '../../../../../src/store/navigationRail/navigationRail.reducer';
+import { createNoInitialStateNavigationRailReducer } from '../../../../../src/store/navigationRail/navigationRail.reducer';
 import {
 	disableResponsiveParameterObservation,
 	enableResponsiveParameterObservation,
@@ -66,12 +66,15 @@ describe('MainMenu', () => {
 				minWidth: true,
 				observeResponsiveParameter: true
 			},
+			navigationRail: {
+				open: false
+			},
 			...state
 		};
 		TestUtils.setupStoreAndDi(initialState, {
 			mainMenu: createNoInitialStateMainMenuReducer(),
 			media: createNoInitialStateMediaReducer(),
-			navigationRail: navigationRailReducer
+			navigationRail: createNoInitialStateNavigationRailReducer()
 		});
 		$injector
 			.registerSingleton('EnvironmentService', {

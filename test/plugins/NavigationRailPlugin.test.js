@@ -1,6 +1,6 @@
 import { NavigationRailPlugin } from '../../src/plugins/NavigationRailPlugin.js';
 import { TestUtils } from '../test-utils.js';
-import { navigationRailReducer } from '../../src/store/navigationRail/navigationRail.reducer';
+import { createNoInitialStateNavigationRailReducer } from '../../src/store/navigationRail/navigationRail.reducer';
 import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer';
 import { createNoInitialStateMediaReducer } from '../../src/store/media/media.reducer';
 import { setTab } from '../../src/store/mainMenu/mainMenu.action';
@@ -22,7 +22,7 @@ describe('NavigationRailPlugin', () => {
 		};
 
 		const store = TestUtils.setupStoreAndDi(initialState, {
-			navigationRail: navigationRailReducer,
+			navigationRail: createNoInitialStateNavigationRailReducer(),
 			mainMenu: createNoInitialStateMainMenuReducer(),
 			media: createNoInitialStateMediaReducer()
 		});

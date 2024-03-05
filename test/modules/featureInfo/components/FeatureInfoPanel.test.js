@@ -63,6 +63,11 @@ describe('FeatureInfoPanel', () => {
 				expect(button.title).toBe('featureInfo_close_button');
 				expect(container).toHaveSize(1);
 				expect(items).toHaveSize(0);
+
+				expect(element.shadowRoot.querySelectorAll('.info-container')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.info-text')).toHaveSize(1);
+				expect(element.shadowRoot.querySelector('.info-text').innerText).toBe('geometryInfo_info');
+				expect(element.shadowRoot.querySelectorAll('.info-icon')).toHaveSize(1);
 			});
 		});
 
@@ -94,6 +99,10 @@ describe('FeatureInfoPanel', () => {
 				expect([...items].every((item) => item.classList.contains('selectable'))).toBeTrue();
 
 				expect(header.innerText).toBe('featureInfo_header');
+
+				expect(element.shadowRoot.querySelectorAll('.info-container')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.info-text')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.info-icon')).toHaveSize(0);
 			});
 
 			it('have only item with selectable content', async () => {
@@ -114,6 +123,10 @@ describe('FeatureInfoPanel', () => {
 
 				expect(items).toHaveSize(3);
 				expect([...items].every((item) => item.classList.contains(cssClass))).toBeTrue();
+
+				expect(element.shadowRoot.querySelectorAll('.info-container')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.info-text')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.info-icon')).toHaveSize(0);
 			});
 		});
 	});
