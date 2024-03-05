@@ -137,7 +137,7 @@ export const bvvAuthResponseInterceptorProvider = (roles = []) => {
 };
 
 /**
- * BVV specific implementation of {@link module:services/HttpService~httpServiceIgnore401PathProvidern}.
+ * BVV specific implementation of {@link module:services/HttpService~httpServiceIgnore401PathProvider}.
  * @function
  * @type {module:services/HttpService~httpServiceIgnore401PathProvider}
  */
