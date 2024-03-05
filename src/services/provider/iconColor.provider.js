@@ -3,7 +3,7 @@
  */
 
 /**
- * Bvv specific implementation of {@link module:services/IconService~iconColorProvider}
+ * BVV specific implementation of {@link module:services/IconService~iconColorProvider}
  * @function
  * @type {module:services/IconService~iconColorProvider}
  */

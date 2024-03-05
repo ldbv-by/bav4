@@ -7,7 +7,7 @@ import { MediaType } from '../../../../domain/mediaTypes';
 import { GeoResourceAuthenticationType, WmsGeoResource } from '../../../../domain/geoResources';
 
 /**
- * Bvv specific implementation of {@link module:modules/geoResourceInfo/services/GeoResourceInfoService~geoResourceInfoProvider}.
+ * BVV specific implementation of {@link module:modules/geoResourceInfo/services/GeoResourceInfoService~geoResourceInfoProvider}.
  * @function
  * @type {module:modules/geoResourceInfo/services/GeoResourceInfoService~geoResourceInfoProvider}
  */
