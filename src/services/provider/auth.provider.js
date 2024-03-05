@@ -10,7 +10,7 @@ import { PromiseQueue } from '../../utils/PromiseQueue';
 import { BvvRoles } from '../../domain/roles';
 
 /**
- * Bvv specific implementation of {@link module:services/AuthService~signInProvider}.
+ * BVV specific implementation of {@link module:services/AuthService~signInProvider}.
  * @function
  * @type {module:services/AuthService~signInProvider}
  */
@@ -29,7 +29,7 @@ export const bvvSignInProvider = async (credential) => {
 };
 
 /**
- * Bvv specific implementation of {@link module:services/AuthService~signOutProvider}.
+ * BVV specific implementation of {@link module:services/AuthService~signOutProvider}.
  * @function
  * @type {module:services/AuthService~signOutProvider}
  */
@@ -56,7 +56,7 @@ const createCredentialPanel = (authenticateFunction, onCloseFunction, roles) => 
 
 const promiseQueue = new PromiseQueue();
 /**
- * Bvv specific implementation of {@link module:services/AuthService~authResponseInterceptorProvider}.
+ * BVV specific implementation of {@link module:services/AuthService~authResponseInterceptorProvider}.
  * @function
  * @type {module:services/AuthService~authResponseInterceptorProvider}
  * @param {string[]} roles
@@ -137,7 +137,7 @@ export const bvvAuthResponseInterceptorProvider = (roles = []) => {
 };
 
 /**
- * Bvv specific implementation of {@link module:services/HttpService~httpServiceIgnore401PathProvidern}.
+ * BVV specific implementation of {@link module:services/HttpService~httpServiceIgnore401PathProvidern}.
  * @function
  * @type {module:services/HttpService~httpServiceIgnore401PathProvider}
  */

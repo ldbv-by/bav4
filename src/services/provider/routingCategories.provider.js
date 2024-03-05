@@ -4,7 +4,7 @@
 import { $injector } from '../../injection/index';
 
 /**
- * Bvv specific implementation of {@link module:services/RoutingService~routingCategoriesProvider}
+ * BVV specific implementation of {@link module:services/RoutingService~routingCategoriesProvider}
  * @function
  * @type {module:services/RoutingService~routingCategoriesProvider}
  */
