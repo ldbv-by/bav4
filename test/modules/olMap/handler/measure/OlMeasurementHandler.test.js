@@ -74,9 +74,18 @@ describe('OlMeasurementHandler', () => {
 		getLength() {
 			return 1;
 		},
+		getLength2() {
+			return 1;
+		},
 		getArea() {
 			return 1;
 		}
+	};
+	const mapServiceMock = {
+		getSrid: () => 3857,
+		getLocalProjectedSrid: () => 25832,
+		getLocalProjectedSridExtent: () => [5, -80, 14, 80],
+		getCoordinateRepresentations: () => [{ global: false, code: 25832 }]
 	};
 
 	const interactionStorageServiceMock = {
@@ -151,11 +160,7 @@ describe('OlMeasurementHandler', () => {
 		});
 		$injector
 			.registerSingleton('TranslationService', translationServiceMock)
-			.registerSingleton('MapService', {
-				getSrid: () => 3857,
-				getLocalProjectedSrid: () => 25832,
-				getLocalProjectedSridExtent: () => [5, -80, 14, 80]
-			})
+			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('InteractionStorageService', interactionStorageServiceMock)
@@ -804,7 +809,7 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest.activate(map);
 			classUnderTest._sketchHandler.activate(feature);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			spyOn(coordinateServiceMock, 'getLength').and.returnValue(1234);
+			spyOn(coordinateServiceMock, 'getLength2').and.returnValue(1234);
 			feature.getGeometry().dispatchEvent('change');
 
 			expect(feature.get('partitions').length).toBe(12);

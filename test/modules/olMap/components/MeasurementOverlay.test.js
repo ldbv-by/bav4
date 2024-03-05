@@ -20,7 +20,7 @@ describe('MeasurementOverlay', () => {
 	};
 
 	const coordinateServiceMock = {
-		getLength() {},
+		getLength2() {},
 		getArea() {}
 	};
 
@@ -29,7 +29,12 @@ describe('MeasurementOverlay', () => {
 		$injector
 			.registerSingleton('UnitsService', unitServiceMock)
 			.registerSingleton('CoordinateService', coordinateServiceMock)
-			.registerSingleton('MapService', { getSrid: () => 3857, getLocalProjectedSrid: () => 25832, getLocalProjectedSridExtent: () => null });
+			.registerSingleton('MapService', {
+				getSrid: () => 3857,
+				getLocalProjectedSrid: () => 25832,
+				getLocalProjectedSridExtent: () => null,
+				getCoordinateRepresentations: () => [{ code: 25832, global: false }]
+			});
 		proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 		register(proj4);
 	});
@@ -151,7 +156,7 @@ describe('MeasurementOverlay', () => {
 				value: 0.099,
 				projectionHints: getLocalProjectionHints()
 			};
-			spyOn(coordinateServiceMock, 'getLength').and.returnValue(1000);
+			spyOn(coordinateServiceMock, 'getLength2').and.returnValue(1000);
 			const spy = spyOn(unitServiceMock, 'formatDistance').and.callThrough();
 			const element = await setup(properties);
 
@@ -170,7 +175,7 @@ describe('MeasurementOverlay', () => {
 				value: 0.1001,
 				projectionHints: getLocalProjectionHints()
 			};
-			spyOn(coordinateServiceMock, 'getLength').and.returnValue(1000);
+			spyOn(coordinateServiceMock, 'getLength2').and.returnValue(1000);
 			const spy = spyOn(unitServiceMock, 'formatDistance').and.callThrough();
 			const element = await setup(properties);
 

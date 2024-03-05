@@ -4,7 +4,7 @@
 import { $injector } from '../../../injection';
 import { OverlayStyle } from './OverlayStyle';
 import { MeasurementOverlayTypes } from '../components/MeasurementOverlay';
-import { getAzimuth, getGeometryLength, getLineString, getPartitionDelta } from '../utils/olGeometryUtils';
+import { getAzimuth, getGeometryLength2, getLineString, getPartitionDelta } from '../utils/olGeometryUtils';
 import Overlay from 'ol/Overlay';
 import { LineString, Polygon } from 'ol/geom';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
@@ -192,7 +192,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		}
 
 		const resolution = olMap.getView().getResolution();
-		const measuredLength = getGeometryLength(simplifiedGeometry, this._projectionHints);
+		const measuredLength = getGeometryLength2(simplifiedGeometry);
 		const delta = getPartitionDelta(measuredLength, resolution);
 
 		let partitionIndex = 0;

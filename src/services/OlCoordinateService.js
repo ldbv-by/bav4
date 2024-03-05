@@ -226,6 +226,7 @@ export class OlCoordinateService {
 	 * @param {Extent} [extent] an extent in WGS84, which defines whether or not the coordinates (partially)
 	 * outside this extent should be handled with geodesic(spherical) length calculation or
 	 * with the planar calculation of the local projection
+	 * @returns {number} the length
 	 */
 	getLength(coordinates, srid = 3857, extent = null) {
 		const getGeodesicLength = (coordinates) => {
@@ -251,6 +252,39 @@ export class OlCoordinateService {
 
 		const isLocalProjection = ![4326, 3857].includes(srid);
 		return isWithinProjectionExtent && isLocalProjection ? new LineString(coordinates).getLength() : getGeodesicLength(wgs84Coordinates);
+	}
+
+	/**
+	 * Calculates the length of an array of coordinates.
+	 *
+	 * If the coordinates are in a local projection, then the extent specifies the valid
+	 * frame for a planar length calculation. Otherwise the geodetic length will be calculated.
+	 *
+	 * Coordinates in a global projection will be always result in geodetic distances (spherical).
+	 * @param {Array<module:domain/coordinateTypeDef~Coordinate>} coordinates input coordinates
+	 * @param {module:domain/coordinateRepresentation~CoordinateRepresentation} coordinateRepresentation the coordinateRepresentation of geometry
+	 * outside this extent should be handled with geodesic(spherical) length calculation or
+	 * with the planar calculation of the local projection
+	 */
+	getLength2(coordinates, coordinateRepresentation) {
+		const getGeodesicLength = (coordinates) => {
+			const wgs84 = Geodesic.WGS84;
+			return coordinates.reduce((sum, current, index, coordinates) => {
+				if (index === coordinates.length - 1) {
+					return sum;
+				}
+				const next = coordinates[index + 1];
+				const r = wgs84.Inverse(current[1], current[0], next[1], next[0]);
+
+				return sum + r.s12;
+			}, 0);
+		};
+		const wgs84Coordinates =
+			coordinateRepresentation.code !== 4326
+				? coordinates.map((c) => transform(c, OlCoordinateService._toEpsgCodeString(coordinateRepresentation.code), 'EPSG:4326'))
+				: coordinates;
+
+		return coordinateRepresentation.global ? getGeodesicLength(wgs84Coordinates) : new LineString(coordinates).getLength();
 	}
 
 	/**

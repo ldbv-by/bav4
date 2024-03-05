@@ -6,7 +6,7 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { $injector } from '../../../injection';
 import css from './measurementOverlay.css';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { getAzimuth, getCoordinateAt, canShowAzimuthCircle, getGeometryLength, getArea } from '../utils/olGeometryUtils';
+import { getAzimuth, getCoordinateAt, canShowAzimuthCircle, getArea, getLineString, getGeometryLength2 } from '../utils/olGeometryUtils';
 import { Polygon } from 'ol/geom';
 import { BaOverlay } from './BaOverlay';
 import { round } from '../../../utils/numberUtils';
@@ -115,12 +115,14 @@ export class MeasurementOverlay extends BaOverlay {
 				if (canShowAzimuthCircle(this.geometry)) {
 					const azimuthValue = getAzimuth(this.geometry);
 					const azimuth = azimuthValue ? azimuthValue.toFixed(2) : '-';
-					// TODO: refactor usage of getGeometryLength -> preprocess geometry (mapprojection -> localprojection)
-					return azimuth + '°/' + this._unitsService.formatDistance(getGeometryLength(this._geometry, this._projectionHints), 2);
+					// TODO: refactor to pretransform to local projection and usage of CoordinateRepresentation
+					return azimuth + '°/' + this._unitsService.formatDistance(getGeometryLength2(this._geometry), 2);
 				}
-				return this._unitsService.formatDistance(getGeometryLength(this._geometry, this._projectionHints), 2);
+				// TODO: refactor to pretransform to local projection and usage of CoordinateRepresentation
+				return this._unitsService.formatDistance(getGeometryLength2(this._geometry), 2);
 			case MeasurementOverlayTypes.DISTANCE_PARTITION:
-				return this._unitsService.formatDistance(round(Math.round(getGeometryLength(this._geometry, this.projectionHints) * this._value), -1), 0);
+				// TODO: refactor to pretransform to local projection and usage of CoordinateRepresentation
+				return this._unitsService.formatDistance(round(Math.round(getGeometryLength2(this._geometry) * this._value), -1), 0);
 			case MeasurementOverlayTypes.HELP:
 			case MeasurementOverlayTypes.TEXT:
 				return this._value;
