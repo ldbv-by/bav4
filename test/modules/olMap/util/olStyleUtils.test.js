@@ -185,8 +185,9 @@ describe('measureStyleFunction', () => {
 	});
 
 	it('should have a ruler-style with renderer-function, which uses customContextRenderFunction', () => {
+		spyOn(coordinateServiceMock, 'getLength').and.returnValue(1);
 		const styles = measureStyleFunction(feature, resolution);
-		const stateMock = { context: null, geometry: new Point([0, 0]), pixelRatio: 1, resolution: 1, customContextRenderFunction: () => {} };
+		const stateMock = { context: null, geometry: geometry, pixelRatio: 1, resolution: 1, customContextRenderFunction: () => {} };
 		const spy = spyOn(stateMock, 'customContextRenderFunction');
 		const rulerStyle = styles.find((style) => style.getRenderer != null && typeof style.getRenderer() == 'function');
 		rulerStyle.getRenderer()(

@@ -268,23 +268,20 @@ export const getAzimuthFrom = (polygon) => {
 };
 
 /**
- * Calculates delta-value as a factor of the length of a provided geometry,
+ * Calculates delta-value as a factor of the provided geometry length,
  * to get equal-distanced partition points related to the start of the geometry.
  * The count of the points is based on the resolution of the MapView.
  * @function
- * @param {Geometry} geometry the linear/area-like geometry
+ * @param {number} geometryLength the measured length of the geometry
  * @param {number} resolution the resolution of the MapView, e. g. map.getView().getResolution()
- * @param {module:modules/olMap/utils/olGeometryUtils~CalculationHints} calculationHints calculationHints for a optional transformation
+ * param {module:modules/olMap/utils/olGeometryUtils~CalculationHints} calculationHints calculationHints for a optional transformation
  * @returns {number} the delta, a value between 0 and 1
  */
-export const getPartitionDelta = (geometry, resolution = 1, calculationHints = {}) => {
-	// TODO: refactor usage of getGeometryLength -> preprocess geometry (mapprojection -> localprojection)
-	const length = getGeometryLength(geometry, calculationHints);
-
+export const getPartitionDelta = (geometryLength, resolution = 1) => {
 	const minLengthResolution = 40;
 	const isValidForResolution = (partition) => {
 		const partitionResolution = partition / resolution;
-		return partitionResolution > minLengthResolution && length > partition;
+		return partitionResolution > minLengthResolution && geometryLength > partition;
 	};
 
 	const stepFactor = 10;
@@ -292,7 +289,7 @@ export const getPartitionDelta = (geometry, resolution = 1, calculationHints = {
 	const maxDelta = 1;
 	const minPartitionLength = 10;
 	const findBestFittingDelta = (partitionLength) => {
-		const delta = partitionLength / length;
+		const delta = partitionLength / geometryLength;
 		if (maxDelta < delta) {
 			return maxDelta;
 		}
@@ -356,14 +353,14 @@ export const moveParallel = (fromPoint, toPoint, distance) => {
  * Calculates the residuals that occurs when the partitions are distributed over the individual segments of the geometry
  * @function
  * @param {Geometry} geometry the source geometry
- * @param {number} partition the partition-value
+ * @param {number} partitionDelta the delta-value of the partition
  * @returns {Array<number>} the residuals for all segments of the geometry
  */
-export const calculatePartitionResidualOfSegments = (geometry, partition) => {
+export const calculatePartitionResidualOfSegments = (geometry, partitionDelta) => {
 	const residuals = [];
 	const lineString = getLineString(geometry);
 	if (lineString) {
-		const partitionLength = getGeometryLength(lineString) * partition;
+		const partitionLength = lineString.getLength() * partitionDelta;
 		let currentLength = 0;
 		let lastResidual = 0;
 		lineString.forEachSegment((from, to) => {

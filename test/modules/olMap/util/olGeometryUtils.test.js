@@ -635,51 +635,37 @@ describe('isVertexOfGeometry', () => {
 
 describe('getPartitionDelta', () => {
 	it('calculates a sub delta', () => {
-		spyOn(coordinateServiceMock, 'getLength').and.returnValue(15);
-		const lineString = new LineString([
-			[0, 0],
-			[15, 0]
-		]);
+		const geometryLength = 15;
 
-		const delta = getPartitionDelta(lineString);
+		const delta = getPartitionDelta(geometryLength);
 
 		expect(delta).toBe(1);
 	});
 
 	it('calculates a delta with standard resolution', () => {
-		spyOn(coordinateServiceMock, 'getLength').and.returnValue(200);
-		const lineString = new LineString([
-			[0, 0],
-			[200, 0]
-		]);
+		const geometryLength = 200;
 
-		const delta = getPartitionDelta(lineString);
+		const delta = getPartitionDelta(geometryLength);
 
 		expect(delta).toBe(0.5);
 	});
 
 	it('calculates a delta with defined resolution', () => {
-		spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
-		const lineString = new LineString([
-			[0, 0],
-			[5000, 0]
-		]);
+		const geometryLength = 5000;
 		const resolution = 50;
-		const delta = getPartitionDelta(lineString, resolution);
+
+		const delta = getPartitionDelta(geometryLength, resolution);
 
 		expect(delta).toBe(1);
 	});
 
 	it('calculates a delta for longest lines', () => {
-		spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
-		const lineString = new LineString([
-			[0, 0],
-			[50000000, 0]
-		]);
+		const geometryLength = 50000000;
 		const resolution = 50;
-		const delta = getPartitionDelta(lineString, resolution);
 
-		expect(delta).toBe(1);
+		const delta = getPartitionDelta(geometryLength, resolution);
+
+		expect(delta).toBe(0.2);
 	});
 });
 

@@ -1,7 +1,14 @@
 /**
  * @module modules/olMap/utils/olStyleUtils
  */
-import { getGeometryLength, canShowAzimuthCircle, calculatePartitionResidualOfSegments, getPartitionDelta, moveParallel } from './olGeometryUtils';
+import {
+	getGeometryLength,
+	canShowAzimuthCircle,
+	calculatePartitionResidualOfSegments,
+	getPartitionDelta,
+	moveParallel,
+	getLineString
+} from './olGeometryUtils';
 import { toContext as toCanvasContext } from 'ol/render';
 import { Fill, Stroke, Style, Circle as CircleStyle, Icon, Text as TextStyle } from 'ol/style';
 import { Polygon, LineString, Circle, MultiPoint } from 'ol/geom';
@@ -413,10 +420,12 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 		projectionExtent: [5, -80, 14, 80]
 	};
 
-	const partition = getPartitionDelta(geometry, resolution, calculationHints);
-	const partitionLength = partition * getGeometryLength(geometry);
+	const projectedGeometryLength = getGeometryLength(geometry, calculationHints);
+	const delta = getPartitionDelta(projectedGeometryLength, resolution);
+	const lineString = getLineString(geometry);
+	const partitionLength = delta * lineString.getLength();
 	const partitionTickDistance = partitionLength / resolution;
-	const residuals = calculatePartitionResidualOfSegments(geometry, partition);
+	const residuals = calculatePartitionResidualOfSegments(geometry, delta);
 
 	const fill = new Fill({ color: Red_Color.concat([0.4]) });
 	const baseStroke = new Stroke({
@@ -520,8 +529,7 @@ export const measureStyleFunction = (feature, resolution) => {
 			geometry: (feature) => {
 				if (canShowAzimuthCircle(feature.getGeometry())) {
 					const coords = feature.getGeometry().getCoordinates();
-					// TODO: refactor usage of getGeometryLength -> use feature.getGeometry().getLength()
-					const radius = getGeometryLength(feature.getGeometry());
+					const radius = feature.getGeometry().getLength();
 					const circle = new Circle(coords[0], radius);
 					return circle;
 				}
