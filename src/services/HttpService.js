@@ -221,7 +221,6 @@ export class BvvHttpService extends AuthInvalidatingAfter401HttpService {
 	 * @see {@link HttpService#fetch}
 	 */
 	async fetch(resource, options = {}, controller = new AbortController(), interceptors = defaultInterceptors) {
-		// return await super.fetch(resource, options, controller, interceptors);
 		return super.fetch(resource, { credentials: 'include', ...options }, controller, interceptors);
 	}
 }
