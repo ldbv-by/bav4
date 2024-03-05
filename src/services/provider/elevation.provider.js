@@ -4,7 +4,7 @@
 import { $injector } from '../../injection';
 
 /**
- * Bvv specific implementation of {@link module:services/ElevationService~elevationProvider}
+ * BVV specific implementation of {@link module:services/ElevationService~elevationProvider}
  * @function
  * @type {module:services/ElevationService~elevationProvider}
  */

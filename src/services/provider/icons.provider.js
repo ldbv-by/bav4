@@ -41,7 +41,7 @@ const loadRoutingIcons = () => {
 };
 
 /**
- * Bvv specific implementation of {@link module:services/IconService~iconProvider}
+ * BVV specific implementation of {@link module:services/IconService~iconProvider}
  * @function
  * @type {module:services/IconService~iconProvider}
  */
