@@ -5,7 +5,8 @@ import { $injector } from '../../../injection';
 import { LevelTypes, emitNotification } from '../../../store/notifications/notifications.action';
 
 /**
- * Returns a BVV specific image load function loading restricted images via basic access authentication.
+ * Returns a BVV specific image load function loading either unrestricted images, restricted images via basic access authentication or application restricted images (via backend).
+ * <br>
  * The requested maximum width and height of the image is limited to a configurable size (default is 2000x2000).
  * If width and/or height exceed the configured maximum size, the image will be scaled.
  * @function
