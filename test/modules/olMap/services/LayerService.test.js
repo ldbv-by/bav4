@@ -13,7 +13,7 @@ import { LayerService } from '../../../../src/modules/olMap/services/LayerServic
 import { Map } from 'ol';
 import VectorLayer from 'ol/layer/Vector';
 import { TestUtils } from '../../../test-utils';
-import { getBvvBaaImageLoadFunction } from '../../../../src/modules/olMap/utils/baaImageLoadFunction.provider';
+import { getBvvBaaImageLoadFunction } from '../../../../src/modules/olMap/utils/olLoadFunction.provider';
 import MapLibreLayer from '@geoblocks/ol-maplibre-layer';
 import { createXYZ } from 'ol/tilegrid';
 import { AdvWmtsTileGrid } from '../../../../src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid';

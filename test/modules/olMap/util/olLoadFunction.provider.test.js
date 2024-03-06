@@ -1,5 +1,5 @@
-import { $injector } from '../../../../src/injection';
-import { getBvvBaaImageLoadFunction } from '../../../../src/modules/olMap/utils/baaImageLoadFunction.provider';
+import { $injector } from '../../../../src/injection/index.js';
+import { getBvvBaaImageLoadFunction } from '../../../../src/modules/olMap/utils/olLoadFunction.provider';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action.js';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer.js';
 import { TestUtils } from '../../../test-utils.js';

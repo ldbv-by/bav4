@@ -1,5 +1,5 @@
 /**
- * @module modules/olMap/utils/baaImageLoadFunction_provider
+ * @module modules/olMap/utils/olLoadFunction_provider
  */
 import { $injector } from '../../../injection';
 import { LevelTypes, emitNotification } from '../../../store/notifications/notifications.action';

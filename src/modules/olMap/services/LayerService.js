@@ -6,7 +6,7 @@ import { GeoResourceAuthenticationType, GeoResourceTypes } from '../../../domain
 import { Image as ImageLayer, Group as LayerGroup, Layer } from 'ol/layer';
 import TileLayer from 'ol/layer/Tile';
 import { XYZ as XYZSource } from 'ol/source';
-import { getBvvBaaImageLoadFunction } from '../utils/baaImageLoadFunction.provider';
+import { getBvvBaaImageLoadFunction } from '../utils/olLoadFunction.provider';
 import MapLibreLayer from '@geoblocks/ol-maplibre-layer';
 import { AdvWmtsTileGrid } from '../ol/tileGrid/AdvWmtsTileGrid';
 import { Projection } from 'ol/proj';
