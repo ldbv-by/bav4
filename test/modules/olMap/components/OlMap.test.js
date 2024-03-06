@@ -521,11 +521,11 @@ describe('OlMap', () => {
 		});
 
 		describe('on touch device', () => {
-			beforeEach(async () => {
+			beforeEach(() => {
 				jasmine.clock().install();
 			});
 
-			afterEach(function () {
+			afterEach(() => {
 				jasmine.clock().uninstall();
 			});
 
@@ -653,11 +653,11 @@ describe('OlMap', () => {
 			});
 
 			describe('on touch device', () => {
-				beforeEach(async () => {
+				beforeEach(() => {
 					jasmine.clock().install();
 				});
 
-				afterEach(function () {
+				afterEach(() => {
 					jasmine.clock().uninstall();
 				});
 
