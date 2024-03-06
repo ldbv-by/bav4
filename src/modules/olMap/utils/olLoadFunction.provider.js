@@ -3,6 +3,35 @@
  */
 import { $injector } from '../../../injection';
 import { LevelTypes, emitNotification } from '../../../store/notifications/notifications.action';
+import TileState from 'ol/TileState.js';
+import { throttled } from '../../../utils/timer';
+
+const handleUnexpectedStatusCode = (response, geoResourceId) => {
+	const { TranslationService: translationService } = $injector.inject('TranslationService');
+
+	const translate = (key, params = []) => translationService.translate(key, params);
+
+	switch (response.status) {
+		case 401:
+			emitNotification(
+				`${translate('global_geoResource_not_available', [geoResourceId, translate('global_geoResource_unauthorized')])}`,
+				LevelTypes.WARN
+			);
+			break;
+		case 403:
+			emitNotification(
+				`${translate('global_geoResource_not_available', [geoResourceId, translate('global_geoResource_forbidden')])}`,
+				LevelTypes.WARN
+			);
+			break;
+		default:
+			emitNotification(`${translate('global_geoResource_not_available', [geoResourceId])}`, LevelTypes.WARN);
+			break;
+	}
+	throw new Error(`Unexpected network status ${response.status}`);
+};
+
+const handleUnexpectedStatusCodeThrottled = throttled(3000, (response, geoResourceId) => handleUnexpectedStatusCode(response, geoResourceId));
 
 /**
  * Returns a BVV specific image load function loading either unrestricted images, restricted images via basic access authentication or application restricted images (via backend).
@@ -16,33 +45,11 @@ export const getBvvBaaImageLoadFunction = (geoResourceId, credential = null, max
 	const {
 		HttpService: httpService,
 		ConfigService: configService,
-		TranslationService: translationService,
 		GeoResourceService: geoResourceService
-	} = $injector.inject('HttpService', 'ConfigService', 'TranslationService', 'GeoResourceService');
-	const translate = (key, params = []) => translationService.translate(key, params);
+	} = $injector.inject('HttpService', 'ConfigService', 'GeoResourceService');
 
 	return async (image, src) => {
 		const timeout = 10_000;
-		const handleUnexpectedStatusCode = (response) => {
-			switch (response.status) {
-				case 401:
-					emitNotification(
-						`${translate('global_geoResource_not_available', [geoResourceId, translate('global_geoResource_unauthorized')])}`,
-						LevelTypes.WARN
-					);
-					break;
-				case 403:
-					emitNotification(
-						`${translate('global_geoResource_not_available', [geoResourceId, translate('global_geoResource_forbidden')])}`,
-						LevelTypes.WARN
-					);
-					break;
-				default:
-					emitNotification(`${translate('global_geoResource_not_available', [geoResourceId])}`, LevelTypes.WARN);
-					break;
-			}
-			throw new Error(`Unexpected network status ${response.status}`);
-		};
 
 		const getObjectUrlForBaa = async (url) => {
 			const { username, password } = credential;
@@ -55,7 +62,7 @@ export const getBvvBaaImageLoadFunction = (geoResourceId, credential = null, max
 				});
 
 				if (response.status !== 200) {
-					handleUnexpectedStatusCode(response);
+					handleUnexpectedStatusCode(response, geoResourceId);
 				}
 				return URL.createObjectURL(await response.blob());
 			} catch (error) {
@@ -74,7 +81,7 @@ export const getBvvBaaImageLoadFunction = (geoResourceId, credential = null, max
 				);
 
 				if (response.status !== 200) {
-					handleUnexpectedStatusCode(response);
+					handleUnexpectedStatusCode(response, geoResourceId);
 				}
 				return URL.createObjectURL(await response.blob());
 			} catch (error) {
@@ -109,5 +116,33 @@ export const getBvvBaaImageLoadFunction = (geoResourceId, credential = null, max
 				? await getObjectUrlForBaa(`${configService.getValueAsPath('BACKEND_URL')}proxy/basicAuth/wms/map/?url=${encodeURIComponent(adjustedWmsUrl)}`)
 				: await getObjectUrlWithAuthInterceptor(adjustedWmsUrl);
 		}
+	};
+};
+
+export const getBvvTileLoadFunction = (geoResourceId) => {
+	const { HttpService: httpService, GeoResourceService: geoResourceService } = $injector.inject('HttpService', 'GeoResourceService');
+
+	return async (tile, src) => {
+		const timeout = 3_000;
+		const getObjectUrlWithAuthInterceptor = async (url) => {
+			try {
+				const response = await httpService.get(
+					url,
+					{
+						timeout
+					},
+					{ response: [geoResourceService.getAuthResponseInterceptorForGeoResource(geoResourceId)] }
+				);
+
+				if (response.status !== 200) {
+					handleUnexpectedStatusCodeThrottled(response, geoResourceId);
+				}
+				return URL.createObjectURL(await response.blob());
+			} catch (error) {
+				tile.setState(TileState.ERROR);
+				console.error('Tile could not be fetched', error);
+			}
+		};
+		tile.getImage().src = await getObjectUrlWithAuthInterceptor(src);
 	};
 };
