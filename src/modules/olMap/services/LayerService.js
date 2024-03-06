@@ -6,7 +6,7 @@ import { GeoResourceAuthenticationType, GeoResourceTypes } from '../../../domain
 import { Image as ImageLayer, Group as LayerGroup, Layer } from 'ol/layer';
 import TileLayer from 'ol/layer/Tile';
 import { XYZ as XYZSource } from 'ol/source';
-import { getBvvBaaImageLoadFunction } from '../utils/olLoadFunction.provider';
+import { getBvvBaaImageLoadFunction, getBvvTileLoadFunction } from '../utils/olLoadFunction.provider';
 import MapLibreLayer from '@geoblocks/ol-maplibre-layer';
 import { AdvWmtsTileGrid } from '../ol/tileGrid/AdvWmtsTileGrid';
 import { Projection } from 'ol/proj';
@@ -14,7 +14,7 @@ import ImageWMS from 'ol/source/ImageWMS.js';
 
 /**
  * A function that returns a `ol.image.LoadFunction` for loading also restricted images via basic access authentication
- * @typedef {Function} baaImageLoadFunctionProvider
+ * @typedef {Function} imageLoadFunctionProvider
  * @param {string} geoResourceId The id of the corresponding GeoResource
  * @param {module:domain/credentialDef~Credential} [credential] The credential for basic access authentication (when BAA is requested)
  * @param {number[]} [maxSize] Maximum width and height of the requested image in px
@@ -28,10 +28,10 @@ import ImageWMS from 'ol/source/ImageWMS.js';
  */
 export class LayerService {
 	/**
-	 * @param {module:modules/olMap/services/LayerService~baaImageLoadFunctionProvider} [baaImageLoadFunctionProvider=getBvvBaaImageLoadFunction]
+	 * @param {module:modules/olMap/services/LayerService~imageLoadFunctionProvider} [imageLoadFunctionProvider=getBvvBaaImageLoadFunction]
 	 */
-	constructor(baaImageLoadFunctionProvider = getBvvBaaImageLoadFunction) {
-		this._baaImageLoadFunctionProvider = baaImageLoadFunctionProvider;
+	constructor(imageLoadFunctionProvider = getBvvBaaImageLoadFunction) {
+		this._imageLoadFunctionProvider = imageLoadFunctionProvider;
 	}
 
 	/**
@@ -75,11 +75,11 @@ export class LayerService {
 						if (!credential) {
 							throw new Error(`No credential available for GeoResource with id '${geoResource.id}' and url '${geoResource.url}'`);
 						}
-						imageWmsSource.setImageLoadFunction(this._baaImageLoadFunctionProvider(geoResource.id, credential));
+						imageWmsSource.setImageLoadFunction(this._imageLoadFunctionProvider(geoResource.id, credential));
 						break;
 					}
 					default: {
-						imageWmsSource.setImageLoadFunction(this._baaImageLoadFunctionProvider(geoResource.id));
+						imageWmsSource.setImageLoadFunction(this._imageLoadFunctionProvider(geoResource.id));
 					}
 				}
 

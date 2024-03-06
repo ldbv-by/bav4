@@ -45,13 +45,13 @@ describe('LayerService', () => {
 	describe('constructor', () => {
 		it('initializes the service with default providers', () => {
 			const instanceUnderTest = new LayerService();
-			expect(instanceUnderTest._baaImageLoadFunctionProvider).toEqual(getBvvBaaImageLoadFunction);
+			expect(instanceUnderTest._imageLoadFunctionProvider).toEqual(getBvvBaaImageLoadFunction);
 		});
 
 		it('initializes the service with custom provider', () => {
 			const getBvvBaaImageLoadFunctionCustomProvider = () => {};
 			const instanceUnderTest = setup(getBvvBaaImageLoadFunctionCustomProvider);
-			expect(instanceUnderTest._baaImageLoadFunctionProvider).toEqual(getBvvBaaImageLoadFunctionCustomProvider);
+			expect(instanceUnderTest._imageLoadFunctionProvider).toEqual(getBvvBaaImageLoadFunctionCustomProvider);
 		});
 	});
 

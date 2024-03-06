@@ -39,7 +39,7 @@ const handleUnexpectedStatusCodeThrottled = throttled(3000, (response, geoResour
  * The requested maximum width and height of the image is limited to a configurable size (default is 2000x2000).
  * If width and/or height exceed the configured maximum size, the image will be scaled.
  * @function
- * @type {module:modules/olMap/services/LayerService~baaImageLoadFunctionProvider}
+ * @type {module:modules/olMap/services/LayerService~imageLoadFunctionProvider}
  */
 export const getBvvBaaImageLoadFunction = (geoResourceId, credential = null, maxSize = [2000, 2000]) => {
 	const {
