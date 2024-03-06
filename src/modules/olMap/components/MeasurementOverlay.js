@@ -6,7 +6,14 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { $injector } from '../../../injection';
 import css from './measurementOverlay.css';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { getAzimuth, getCoordinateAt, canShowAzimuthCircle, getArea, getLineString, getGeometryLength2 } from '../utils/olGeometryUtils';
+import {
+	getAzimuth,
+	getCoordinateAt,
+	canShowAzimuthCircle,
+	getArea,
+	PROJECTED_LENGTH_GEOMETRY_PROPERTY,
+	getProjectedLength
+} from '../utils/olGeometryUtils';
 import { Polygon } from 'ol/geom';
 import { BaOverlay } from './BaOverlay';
 import { round } from '../../../utils/numberUtils';
@@ -30,7 +37,6 @@ export const MeasurementOverlayTypes = {
  * - `value`
  * - `static`
  * - `geometry`
- * - `projectionHints`
  *
  *
  * Observed Properties:
@@ -39,7 +45,6 @@ export const MeasurementOverlayTypes = {
  * - `geometry`
  * - `position`
  * - `placement`
- * - `projectionHints`
  * @class
  * @author thiloSchlemmer
  */
@@ -51,11 +56,6 @@ export class MeasurementOverlay extends BaOverlay {
 		this._mapService = MapService;
 		this._static = false;
 		this._type = MeasurementOverlayTypes.TEXT;
-		this._projectionHints = {
-			sourceSrid: this._mapService.getSrid(),
-			destinationSrid: this._mapService.getLocalProjectedSrid(),
-			projectionExtent: this._mapService.getLocalProjectedSridExtent()
-		};
 		this._isDraggable = false;
 		this._placement = { sector: 'init', positioning: 'top-center', offset: [0, -25] };
 	}
@@ -105,27 +105,28 @@ export class MeasurementOverlay extends BaOverlay {
 	}
 
 	_getContent(type) {
+		const getMeasuredLength = () => {
+			const alreadyMeasuredLength = this.geometry ? this.geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY) : null;
+			return alreadyMeasuredLength ?? getProjectedLength(this.geometry);
+		};
 		switch (type) {
 			case MeasurementOverlayTypes.AREA:
 				if (this.geometry instanceof Polygon) {
-					return this._unitsService.formatArea(getArea(this._geometry, this._projectionHints), 2);
+					return this._unitsService.formatArea(getArea(this.geometry, this._projectionHints), 2);
 				}
 				return '';
 			case MeasurementOverlayTypes.DISTANCE:
 				if (canShowAzimuthCircle(this.geometry)) {
 					const azimuthValue = getAzimuth(this.geometry);
 					const azimuth = azimuthValue ? azimuthValue.toFixed(2) : '-';
-					// TODO: refactor to pretransform to local projection and usage of CoordinateRepresentation
-					return azimuth + '°/' + this._unitsService.formatDistance(getGeometryLength2(this._geometry), 2);
+					return azimuth + '°/' + this._unitsService.formatDistance(getMeasuredLength(), 2);
 				}
-				// TODO: refactor to pretransform to local projection and usage of CoordinateRepresentation
-				return this._unitsService.formatDistance(getGeometryLength2(this._geometry), 2);
+				return this._unitsService.formatDistance(getMeasuredLength(), 2);
 			case MeasurementOverlayTypes.DISTANCE_PARTITION:
-				// TODO: refactor to pretransform to local projection and usage of CoordinateRepresentation
-				return this._unitsService.formatDistance(round(Math.round(getGeometryLength2(this._geometry) * this._value), -1), 0);
+				return this._unitsService.formatDistance(round(Math.round(getMeasuredLength() * this._value), -1), 0);
 			case MeasurementOverlayTypes.HELP:
 			case MeasurementOverlayTypes.TEXT:
-				return this._value;
+				return this.value;
 		}
 	}
 

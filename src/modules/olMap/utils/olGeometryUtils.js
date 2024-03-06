@@ -12,6 +12,8 @@ const transformGeometry = (geometry, fromProjection, toProjection) => {
 	return geometry;
 };
 
+export const PROJECTED_LENGTH_GEOMETRY_PROPERTY = 'projectedLength';
+
 /**
  * Coerce the provided geometry to a LineString or null,
  * if the geometry is not a LineString,LinearRing or Polygon
@@ -186,13 +188,14 @@ export const getGeometryLength = (geometry, calculationHints = {}) => {
 };
 
 /**
- * Calculates the length of the geometry.
+ * Calculates the length of the geometry in the best suited CoordinateRepresentation and map projection.
+ * If the map projection has a global scope, the length is calculated as geodetic length.
  *
  * @function
  * @param {Geometry} geometry the geometry, to calculate with
  * @returns {number} the calculated length or 0 if the geometry-object is not a LineString/LinearRing/Polygon
  */
-export const getGeometryLength2 = (geometry) => {
+export const getProjectedLength = (geometry) => {
 	const { CoordinateService: coordinateService, MapService: mapService } = $injector.inject('CoordinateService', 'MapService');
 	const transform = (geometry, srid) => {
 		return geometry.clone().transform(`EPSG:${mapService.getSrid()}`, `EPSG:${srid}`);
@@ -499,7 +502,7 @@ export const getStats2 = (geometry) => {
 		};
 	}
 	if (geometry instanceof Polygon) {
-		return { ...stats, length: getGeometryLength2(geometry), area: getArea(geometry, calculationHints) };
+		return { ...stats, length: getProjectedLength(geometry), area: getArea(geometry, calculationHints) };
 	}
 	return stats;
 };

@@ -7,7 +7,8 @@ import {
 	getPartitionDelta,
 	moveParallel,
 	getLineString,
-	getGeometryLength2
+	PROJECTED_LENGTH_GEOMETRY_PROPERTY,
+	getProjectedLength
 } from './olGeometryUtils';
 import { toContext as toCanvasContext } from 'ol/render';
 import { Fill, Stroke, Style, Circle as CircleStyle, Icon, Text as TextStyle } from 'ol/style';
@@ -415,13 +416,18 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 	const resolution = state.resolution;
 	const pixelRatio = state.pixelRatio;
 
+	const getMeasuredLength = () => {
+		const alreadyMeasuredLength = state.geometry ? state.geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY) : null;
+		return alreadyMeasuredLength ?? getProjectedLength(state.geometry);
+	};
+
 	const lineString = getLineString(geometry);
-	const projectedGeometryLength = getGeometryLength2(lineString);
+	const projectedGeometryLength = getMeasuredLength();
 	const delta = getPartitionDelta(projectedGeometryLength, resolution);
 
 	const partitionLength = delta * lineString.getLength();
 	const partitionTickDistance = partitionLength / resolution;
-	const residuals = calculatePartitionResidualOfSegments(geometry, delta);
+	const residuals = calculatePartitionResidualOfSegments(lineString, delta);
 
 	const fill = new Fill({ color: Red_Color.concat([0.4]) });
 	const baseStroke = new Stroke({
