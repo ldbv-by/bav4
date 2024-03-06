@@ -119,6 +119,11 @@ export const getBvvBaaImageLoadFunction = (geoResourceId, credential = null, max
 	};
 };
 
+/**
+ * BVV specific implementation of {@link module:modules/olMap/services/LayerService~tileLoadFunctionProvider}.
+ * @function
+ * @type {module:modules/olMap/services/LayerService~tileLoadFunctionProvider}
+ */
 export const getBvvTileLoadFunction = (geoResourceId) => {
 	const { HttpService: httpService, GeoResourceService: geoResourceService } = $injector.inject('HttpService', 'GeoResourceService');
 
