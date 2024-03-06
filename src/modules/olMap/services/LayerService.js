@@ -22,6 +22,13 @@ import ImageWMS from 'ol/source/ImageWMS.js';
  */
 
 /**
+ * A function that returns a `ol.tile.LoadFunction`.
+ * @typedef {Function} tileLoadFunctionProvider
+ * @param {string} geoResourceId The id of the corresponding GeoResource
+ * @returns {Function} ol.tile.LoadFunction
+ */
+
+/**
  * Converts a GeoResource to a ol layer instance.
  * @class
  * @author taulinger
@@ -30,8 +37,9 @@ export class LayerService {
 	/**
 	 * @param {module:modules/olMap/services/LayerService~imageLoadFunctionProvider} [imageLoadFunctionProvider=getBvvBaaImageLoadFunction]
 	 */
-	constructor(imageLoadFunctionProvider = getBvvBaaImageLoadFunction) {
+	constructor(imageLoadFunctionProvider = getBvvBaaImageLoadFunction, tileLoadFunctionProvider = getBvvTileLoadFunction) {
 		this._imageLoadFunctionProvider = imageLoadFunctionProvider;
+		this._tileLoadFunctionProvider = tileLoadFunctionProvider;
 	}
 
 	/**
@@ -43,7 +51,7 @@ export class LayerService {
 	 */
 	toOlLayer(id, geoResource, olMap) {
 		const {
-			GeoResourceService: georesourceService,
+			GeoResourceService: geoResourceService,
 			VectorLayerService: vectorLayerService,
 			BaaCredentialService: baaCredentialService
 		} = $injector.inject('GeoResourceService', 'VectorLayerService', 'BaaCredentialService');
@@ -98,7 +106,8 @@ export class LayerService {
 				const xyzSource = () => {
 					const config = {
 						url: Array.isArray(geoResource.urls) ? undefined : geoResource.urls,
-						urls: Array.isArray(geoResource.urls) ? geoResource.urls : undefined
+						urls: Array.isArray(geoResource.urls) ? geoResource.urls : undefined,
+						tileLoadFunction: this._tileLoadFunctionProvider(geoResource.id)
 					};
 					switch (geoResource.tileGridId) {
 						case 'adv_wmts':
@@ -146,7 +155,7 @@ export class LayerService {
 				const layerGroup = new LayerGroup({
 					id: id,
 					opacity: opacity,
-					layers: geoResource.geoResourceIds.map((id) => this.toOlLayer(id, georesourceService.byId(id))),
+					layers: geoResource.geoResourceIds.map((id) => this.toOlLayer(id, geoResourceService.byId(id))),
 					minZoom: minZoom ?? undefined,
 					maxZoom: maxZoom ?? undefined
 				});
