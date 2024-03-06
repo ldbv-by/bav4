@@ -585,22 +585,46 @@ describe('BvvHttpService', () => {
 	};
 
 	describe('fetch', () => {
-		it("calls parent's fetch and adds the 'credentials' option", async () => {
-			const url = 'http://foo.bar';
-			const instanceUnderTest = setup();
-			spyOn(window, 'fetch').and.callFake(() => {
-				return Promise.resolve({
-					text: () => {
-						return 42;
-					}
+		describe('backend resource', () => {
+			it("calls the parent's fetch and adds the 'credentials' option", async () => {
+				const url = 'http://backend.url/foo';
+				const instanceUnderTest = setup();
+				spyOn(window, 'fetch').and.callFake(() => {
+					return Promise.resolve({
+						text: () => {
+							return 42;
+						}
+					});
 				});
+				const parentFetchSpy = spyOn(AuthInvalidatingAfter401HttpService.prototype, 'fetch').and.callThrough();
+				spyOn(configService, 'getValueAsPath').and.returnValue('http://backend.url');
+
+				const result = await instanceUnderTest.fetch(url);
+
+				expect(result.text()).toBe(42);
+				expect(parentFetchSpy).toHaveBeenCalledWith(url, { credentials: 'include' }, jasmine.any(AbortController), defaultInterceptors);
 			});
-			const parentFetchSpy = spyOn(AuthInvalidatingAfter401HttpService.prototype, 'fetch').and.callThrough();
+		});
 
-			const result = await instanceUnderTest.fetch(url);
+		describe('any other resource', () => {
+			it("calls the parent's fetch and does not set the 'credentials' option", async () => {
+				const url = 'http://some.url/foo';
+				const instanceUnderTest = setup();
+				spyOn(window, 'fetch').and.callFake(() => {
+					return Promise.resolve({
+						text: () => {
+							return 42;
+						}
+					});
+				});
+				const parentFetchSpy = spyOn(AuthInvalidatingAfter401HttpService.prototype, 'fetch').and.callThrough();
+				spyOn(configService, 'getValueAsPath').and.returnValue('http://backend.url');
 
-			expect(result.text()).toBe(42);
-			expect(parentFetchSpy).toHaveBeenCalledWith(url, { credentials: 'include' }, jasmine.any(AbortController), defaultInterceptors);
+				const result = await instanceUnderTest.fetch(url);
+
+				expect(result.text()).toBe(42);
+				expect(parentFetchSpy).toHaveBeenCalledWith(url, {}, jasmine.any(AbortController), defaultInterceptors);
+			});
 		});
 
 		it("calls parent's fetch and uses a custom 'credentials' option", async () => {

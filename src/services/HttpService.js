@@ -210,17 +210,29 @@ export class AuthInvalidatingAfter401HttpService extends NetworkStateSyncHttpSer
 }
 
 /**
- * BVV specific {@link HttpService} that set the Fetch API `credentials` option to `include`.
- * Reason: Frontend and Backend may run on different origins
+ * BVV specific {@link HttpService} that sets the Fetch API `credentials` option to `include` when a backend resource is called
+ * cause Frontend and Backend may run on different origins.
+ * Otherwise the `credentials` option stays untouched.
+ * A given `credentials` option won't be overridden.
+ *
  * @class
  * @extends AuthInvalidatingAfter401HttpService
  * @author taulinger
  */
 export class BvvHttpService extends AuthInvalidatingAfter401HttpService {
+	#configService;
+	constructor() {
+		super();
+		const { ConfigService: configService } = $injector.inject('ConfigService');
+		this.#configService = configService;
+	}
 	/**
 	 * @see {@link HttpService#fetch}
 	 */
 	async fetch(resource, options = {}, controller = new AbortController(), interceptors = defaultInterceptors) {
-		return super.fetch(resource, { credentials: 'include', ...options }, controller, interceptors);
+		const fetchOptions = resource.startsWith(this.#configService.getValueAsPath('BACKEND_URL'))
+			? { credentials: 'include', ...options }
+			: { ...options };
+		return super.fetch(resource, fetchOptions, controller, interceptors);
 	}
 }
