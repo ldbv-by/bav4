@@ -54,6 +54,20 @@ describe('getProjectedLength', () => {
 		expect(spy).toHaveBeenCalledWith(jasmine.any(Array), jasmine.objectContaining({ global: false, code: 25832 }));
 	});
 
+	it('calculates the length of a LineString in 3857', () => {
+		const coordinates = [
+			[0, 0],
+			[1, 0]
+		];
+		const lineString = new LineString(coordinates);
+		spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([{ global: true, code: 3857 }]);
+		const spy = spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
+		const length = getProjectedLength(lineString);
+
+		expect(length).toBe(42);
+		expect(spy).toHaveBeenCalledWith(jasmine.any(Array), jasmine.objectContaining({ global: true, code: 3857 }));
+	});
+
 	it('calculates the length of a LinearRing', () => {
 		const coordinates = [
 			[0, 0],
@@ -190,7 +204,7 @@ describe('getAzimuth', () => {
 			expect(getAzimuth(polygonClockwise)).toBe(0);
 		});
 
-		it('calculates NO angle for a imcomplete LineString', () => {
+		it('calculates NO angle for a incomplete LineString', () => {
 			const onePointLineString = new LineString([[0, 0]]);
 
 			expect(getAzimuth(onePointLineString)).toBeNull();
@@ -373,7 +387,7 @@ describe('getArea', () => {
 		expect(coordinateServiceSpy).toHaveBeenCalledWith(jasmine.any(Array), jasmine.objectContaining({ global: false, code: 25832 }));
 	});
 
-	it('calculates the area for a projected Polygon', () => {
+	it('calculates the area for a Polygon in 3857', () => {
 		const polygon = new Polygon([
 			[
 				[0, 0],
@@ -383,12 +397,13 @@ describe('getArea', () => {
 				[0, 0]
 			]
 		]);
+		spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([{ global: true, code: 3857 }]);
 		const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getArea').and.returnValue(42);
 
 		const area = getProjectedArea(polygon);
 
 		expect(area).toBe(42);
-		expect(coordinateServiceSpy).toHaveBeenCalledWith(jasmine.any(Array), jasmine.objectContaining({ global: false, code: 25832 }));
+		expect(coordinateServiceSpy).toHaveBeenCalledWith(jasmine.any(Array), jasmine.objectContaining({ global: true, code: 3857 }));
 	});
 
 	it('returns 0 for a non-area-like geometry', () => {
