@@ -405,13 +405,10 @@ describe('getArea', () => {
 			.withArgs(jasmine.any(Array), jasmine.objectContaining({ global: false, code: 25832 }))
 			.and.returnValue(0);
 
-		const pointArea = getProjectedArea(point);
-		const lineStringArea = getProjectedArea(lineString);
-		const linearRingArea = getProjectedArea(linearRing);
-
-		expect(pointArea).toBe(0);
-		expect(lineStringArea).toBe(0);
-		expect(linearRingArea).toBe(0);
+		expect(getProjectedArea(null)).toBe(0);
+		expect(getProjectedArea(point)).toBe(0);
+		expect(getProjectedArea(lineString)).toBe(0);
+		expect(getProjectedArea(linearRing)).toBe(0);
 
 		expect(coordinateServiceSpy).toHaveBeenCalledTimes(1);
 	});

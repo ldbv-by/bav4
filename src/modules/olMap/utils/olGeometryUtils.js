@@ -152,10 +152,8 @@ export const getProjectedArea = (geometry) => {
 		};
 	};
 
-	if (geometry) {
-		const { coordinates, coordinateRepresentation } = getAreaRepresentation(getLineStrings(geometry));
-		return coordinates ? coordinateService.getArea(coordinates, coordinateRepresentation) : 0;
-	}
+	const { coordinates, coordinateRepresentation } = getAreaRepresentation(getLineStrings(geometry));
+	return coordinates ? coordinateService.getArea(coordinates, coordinateRepresentation) : 0;
 };
 
 /**
