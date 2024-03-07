@@ -342,7 +342,7 @@ describe('olLoadFunction.provider', () => {
 			};
 		};
 
-		it('throws an exception when http status is not 200 and emits a notification', async () => {
+		it('throws an exception when http status is other than 200 and 400 and emits a notification', async () => {
 			const geoResourceId = 'geoResourceId';
 			const fakeTileWrapper = getFakeTileWrapperInstance();
 			const src = 'http://foo.var/some/11/1089/710';
@@ -362,25 +362,16 @@ describe('olLoadFunction.provider', () => {
 			expect(fakeTileWrapper.state).toBe(TileState.ERROR);
 		});
 
-		it('throws an exception when http status is 403 and emits a notification', async () => {
+		it('throws an exception when http status is 400', async () => {
 			const geoResourceId = 'geoResourceId';
 			const fakeTileWrapper = getFakeTileWrapperInstance();
 			const src = 'http://foo.var/some/11/1089/710';
-			spyOn(httpService, 'get').and.resolveTo(new Response(null, { status: 403 }));
-			const errorSpy = spyOn(console, 'error');
+			spyOn(httpService, 'get').and.resolveTo(new Response(null, { status: 400 }));
 			const tileLoadFunction = getBvvTileLoadFunction(geoResourceId);
-			jasmine.clock().tick(throttleDelay);
 
-			// tile loading causes multiple simultaneously requests, therefore we check the use of the throttle function to keep the notification at a count of 1
-			await tileLoadFunction(fakeTileWrapper, src);
-			await tileLoadFunction(fakeTileWrapper, src);
 			await tileLoadFunction(fakeTileWrapper, src);
 
-			expect(errorSpy).toHaveBeenCalledOnceWith('Tile could not be fetched', new Error('Unexpected network status 403'));
-			expect(store.getState().notifications.latest.payload.content).toBe(
-				'global_geoResource_not_available [geoResourceId,global_geoResource_forbidden]'
-			);
-			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+			expect(store.getState().notifications.latest).toBeNull();
 			expect(fakeTileWrapper.state).toBe(TileState.ERROR);
 		});
 

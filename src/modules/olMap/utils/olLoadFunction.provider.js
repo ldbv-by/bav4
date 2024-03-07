@@ -138,11 +138,15 @@ export const getBvvTileLoadFunction = (geoResourceId) => {
 					},
 					{ response: [geoResourceService.getAuthResponseInterceptorForGeoResource(geoResourceId)] }
 				);
-
-				if (response.status !== 200) {
-					handleUnexpectedStatusCodeThrottled(response, geoResourceId);
+				switch (response.status) {
+					case 200:
+						return URL.createObjectURL(await response.blob());
+					case 400 /** expected status code when zoom-level is not supported > client-side zooming*/:
+						tile.setState(TileState.ERROR);
+						break;
+					default:
+						handleUnexpectedStatusCodeThrottled(response, geoResourceId);
 				}
-				return URL.createObjectURL(await response.blob());
 			} catch (error) {
 				tile.setState(TileState.ERROR);
 				console.error('Tile could not be fetched', error);
