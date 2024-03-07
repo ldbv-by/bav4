@@ -30,7 +30,7 @@ describe('OverlayService', () => {
 	};
 
 	const coordinateServiceMock = {
-		getLength2() {
+		getLength() {
 			return 1;
 		}
 	};

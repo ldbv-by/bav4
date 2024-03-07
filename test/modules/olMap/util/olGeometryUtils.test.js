@@ -29,9 +29,9 @@ proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0
 register(proj4);
 const coordinateServiceMock = {
 	getLength() {},
-	getLength2() {},
+	getLength() {},
 	getArea() {},
-	getArea2() {}
+	getArea() {}
 };
 
 const mapServiceMock = {
@@ -49,7 +49,7 @@ describe('getProjectedLength', () => {
 		];
 		const lineString = new LineString(coordinates);
 
-		const spy = spyOn(coordinateServiceMock, 'getLength2').and.returnValue(42);
+		const spy = spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
 		const length = getProjectedLength(lineString);
 
 		expect(length).toBe(42);
@@ -65,7 +65,7 @@ describe('getProjectedLength', () => {
 			[0, 0]
 		];
 		const linearRing = new LinearRing(coordinates);
-		const spy = spyOn(coordinateServiceMock, 'getLength2').and.returnValue(42);
+		const spy = spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
 
 		const length = getProjectedLength(linearRing);
 
@@ -84,7 +84,7 @@ describe('getProjectedLength', () => {
 			]
 		];
 		const polygon = new Polygon(coordinates);
-		const spy = spyOn(coordinateServiceMock, 'getLength2').and.returnValue(42);
+		const spy = spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
 
 		const length = getProjectedLength(polygon);
 
@@ -94,7 +94,7 @@ describe('getProjectedLength', () => {
 
 	it('does NOT calculates the length of Circle', () => {
 		const circle = new Circle([0, 0], 1);
-		const spy = spyOn(coordinateServiceMock, 'getLength2').and.returnValue(42);
+		const spy = spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
 
 		const length = getProjectedLength(circle);
 
@@ -367,7 +367,7 @@ describe('getArea', () => {
 				[0, 0]
 			]
 		]);
-		const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getArea2').and.returnValue(42);
+		const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getArea').and.returnValue(42);
 
 		const area = getProjectedArea(polygon);
 
@@ -385,7 +385,7 @@ describe('getArea', () => {
 				[0, 0]
 			]
 		]);
-		const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getArea2').and.returnValue(42);
+		const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getArea').and.returnValue(42);
 
 		const area = getProjectedArea(polygon);
 
@@ -403,7 +403,7 @@ describe('getArea', () => {
 			[0, 0],
 			[2, 0]
 		]);
-		const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getArea2')
+		const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getArea')
 			.withArgs(jasmine.any(Array), jasmine.objectContaining({ global: false, code: 25832 }))
 			.and.returnValue(0);
 
@@ -739,7 +739,7 @@ describe('getStats', () => {
 	});
 
 	it('returns a statistic-object for two-point LineString', () => {
-		spyOn(coordinateServiceMock, 'getLength2').and.returnValue(42);
+		spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
 		const statsForLineString = getStats(
 			new LineString([
 				[0, 0],
@@ -753,7 +753,7 @@ describe('getStats', () => {
 	});
 
 	it('returns a statistic-object for n-point (2<n) LineString', () => {
-		spyOn(coordinateServiceMock, 'getLength2').and.returnValue(42);
+		spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
 		const statsForLineString = getStats(
 			new LineString([
 				[0, 0],
@@ -768,7 +768,7 @@ describe('getStats', () => {
 	});
 
 	it('returns a statistic-object for MultiLineString', () => {
-		spyOn(coordinateServiceMock, 'getLength2').and.returnValue(42);
+		spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
 		const statsForMultiLineString = getStats(
 			new MultiLineString([
 				new LineString([
@@ -790,8 +790,8 @@ describe('getStats', () => {
 	});
 
 	it('returns a statistic-object for Polygon', () => {
-		spyOn(coordinateServiceMock, 'getLength2').and.returnValue(42);
-		spyOn(coordinateServiceMock, 'getArea2').and.returnValue(21);
+		spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
+		spyOn(coordinateServiceMock, 'getArea').and.returnValue(21);
 
 		const statsForPolygon = getStats(
 			new Polygon([

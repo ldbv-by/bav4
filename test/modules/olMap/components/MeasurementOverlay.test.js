@@ -20,8 +20,8 @@ describe('MeasurementOverlay', () => {
 	};
 
 	const coordinateServiceMock = {
-		getLength2() {},
-		getArea2() {}
+		getLength() {},
+		getArea() {}
 	};
 
 	beforeEach(async () => {
@@ -156,7 +156,7 @@ describe('MeasurementOverlay', () => {
 				value: 0.099,
 				projectionHints: getLocalProjectionHints()
 			};
-			spyOn(coordinateServiceMock, 'getLength2').and.returnValue(1000);
+			spyOn(coordinateServiceMock, 'getLength').and.returnValue(1000);
 			const spy = spyOn(unitServiceMock, 'formatDistance').and.callThrough();
 			const element = await setup(properties);
 
@@ -175,7 +175,7 @@ describe('MeasurementOverlay', () => {
 				value: 0.1001,
 				projectionHints: getLocalProjectionHints()
 			};
-			spyOn(coordinateServiceMock, 'getLength2').and.returnValue(1000);
+			spyOn(coordinateServiceMock, 'getLength').and.returnValue(1000);
 			const spy = spyOn(unitServiceMock, 'formatDistance').and.callThrough();
 			const element = await setup(properties);
 

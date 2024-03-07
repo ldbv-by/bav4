@@ -161,7 +161,7 @@ export const getProjectedArea = (geometry) => {
 
 	if (geometry) {
 		const { coordinates, coordinateRepresentation } = getAreaRepresentation(getLineStrings(geometry));
-		return coordinates ? coordinateService.getArea2(coordinates, coordinateRepresentation) : 0;
+		return coordinates ? coordinateService.getArea(coordinates, coordinateRepresentation) : 0;
 	}
 };
 
@@ -200,7 +200,7 @@ export const getProjectedLength = (geometry) => {
 
 	if (geometry) {
 		const { coordinates, coordinateRepresentation } = getLengthRepresentation(getLineString(geometry));
-		return coordinates ? coordinateService.getLength2(coordinates, coordinateRepresentation) : 0;
+		return coordinates ? coordinateService.getLength(coordinates, coordinateRepresentation) : 0;
 	}
 	return 0;
 };

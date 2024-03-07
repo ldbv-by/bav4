@@ -60,7 +60,7 @@ const mapServiceMock = {
 
 const coordinateServiceMock = {
 	getLength() {},
-	getLength2() {}
+	getLength() {}
 };
 
 beforeAll(() => {
@@ -192,7 +192,7 @@ describe('measureStyleFunction', () => {
 	});
 
 	it('should have a ruler-style with renderer-function, which uses customContextRenderFunction', () => {
-		spyOn(coordinateServiceMock, 'getLength2').and.returnValue(1);
+		spyOn(coordinateServiceMock, 'getLength').and.returnValue(1);
 		const styles = measureStyleFunction(feature, resolution);
 		const stateMock = { context: null, geometry: geometry, pixelRatio: 1, resolution: 1, customContextRenderFunction: () => {} };
 		const spy = spyOn(stateMock, 'customContextRenderFunction');
@@ -221,7 +221,7 @@ describe('measureStyleFunction', () => {
 			lineTo: () => {},
 			setLineDash: () => {}
 		};
-		spyOn(coordinateServiceMock, 'getLength2').and.returnValue(1);
+		spyOn(coordinateServiceMock, 'getLength').and.returnValue(1);
 		const stateMock = { context: contextMock, geometry: feature.getGeometry() };
 		const styles = measureStyleFunction(feature, resolution);
 		const rulerStyle = styles.find((style) => style.getRenderer());
@@ -248,7 +248,7 @@ describe('renderRulerSegments', () => {
 			[0, 0],
 			[0, 1]
 		];
-		spyOn(coordinateServiceMock, 'getLength2').and.returnValue(1);
+		spyOn(coordinateServiceMock, 'getLength').and.returnValue(1);
 
 		renderRulerSegments(pixelCoordinates, stateMock, contextRenderer);
 		expect(contextRenderer).toHaveBeenCalledTimes(1 + 1 + 1); //baseStroke + mainStroke + subStroke
@@ -267,7 +267,7 @@ describe('renderRulerSegments', () => {
 		const contextRendererStub = (geometry, fill, stroke) => {
 			actualStrokes.push(stroke);
 		};
-		spyOn(coordinateServiceMock, 'getLength2').and.returnValue(1);
+		spyOn(coordinateServiceMock, 'getLength').and.returnValue(1);
 		const stateMock = { geometry: feature.getGeometry(), resolution: resolution, pixelRatio: 1 };
 		const pixelCoordinates = [
 			[0, 0],
@@ -290,7 +290,7 @@ describe('renderRulerSegments', () => {
 		const contextRendererStub = (geometry, fill, stroke) => {
 			actualStrokes.push(stroke);
 		};
-		spyOn(coordinateServiceMock, 'getLength2').and.returnValue(1);
+		spyOn(coordinateServiceMock, 'getLength').and.returnValue(1);
 		const stateMock = { geometry: feature.getGeometry(), resolution: resolution, pixelRatio: 1 };
 		const pixelCoordinates = [
 			[0, 0],
@@ -306,7 +306,7 @@ describe('renderRulerSegments', () => {
 		const contextRendererStub = (geometry, fill, stroke) => {
 			actualStrokes.push(stroke);
 		};
-		spyOn(coordinateServiceMock, 'getLength2').and.returnValue(1);
+		spyOn(coordinateServiceMock, 'getLength').and.returnValue(1);
 		const stateMock = {
 			geometry: new Polygon([
 				[
