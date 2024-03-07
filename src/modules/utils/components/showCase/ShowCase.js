@@ -2,21 +2,22 @@
  * @module modules/utils/components/showCase/ShowCase
  */
 import { html } from 'lit-html';
-import { $injector } from '../../../../injection';
-import { changeZoomAndCenter } from '../../../../store/position/position.action';
-import rocketSvg from './assets/rocket.svg';
-import rocketRoundSvg from './assets/rocketRound.svg';
-import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../../store/measurement/measurement.action';
-import { addLayer } from '../../../../store/layers/layers.action';
-import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
-import { closeModal, openModal } from '../../../../store/modal/modal.action';
 import { GeoResourceAuthenticationType } from '../../../../domain/geoResources';
-import css from './showCase.css';
-import { MenuTypes } from '../../../commons/components/overflowMenu/OverflowMenu';
+import { $injector } from '../../../../injection';
 import { closeBottomSheet, openBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
 import { closeProfile, openProfile } from '../../../../store/elevationProfile/elevationProfile.action';
+import { addLayer } from '../../../../store/layers/layers.action';
+import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../../store/measurement/measurement.action';
+import { closeModal, openModal } from '../../../../store/modal/modal.action';
+import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
+import { changeZoomAndCenter } from '../../../../store/position/position.action';
 import { sleep } from '../../../../utils/timer';
 import { MvuElement } from '../../../MvuElement';
+import { MenuTypes } from '../../../commons/components/overflowMenu/OverflowMenu';
+import rocketSvg from './assets/rocket.svg';
+import rocketRoundSvg from './assets/rocketRound.svg';
+import css from './showCase.css';
+import { close as closeMainMenu } from '../../../../store/mainMenu/mainMenu.action';
 
 const Update_Profile_Active = 'update_profile_active';
 
@@ -325,6 +326,19 @@ export class ShowCase extends MvuElement {
 			}
 		};
 
+		const openTimeTravel = () => {
+			const getContent = () => {
+				return html`
+				</div>
+					<ba-time-travel></ba-time-travel>
+				<div>
+				`;
+			};
+
+			openBottomSheet(getContent());
+			closeMainMenu();
+		};
+
 		let version = 1;
 		const onClickOpenBottomSheet = () => {
 			const onCloseAfterWait = () => setTimeout(() => closeBottomSheet(), 2000);
@@ -435,6 +449,10 @@ export class ShowCase extends MvuElement {
 					<h3>BaseLayer Switcher</h3>
 					<div class="example">
 						<ba-base-layer-switcher></ba-base-layer-switcher>
+					</div>
+					<h3>TimeTravel</h3>
+					<div class="example">
+						<ba-button id="buttonTimeTravel" .label=${'Time travel open BottomSheet'} .type=${'primary'} @click=${openTimeTravel}></ba-button>
 					</div>
 
 					<h3>Url of State</h3>
