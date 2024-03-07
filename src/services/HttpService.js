@@ -197,8 +197,8 @@ export class AuthInvalidatingAfter401HttpService extends NetworkStateSyncHttpSer
 		const invalidateAfter401Interceptor = async (originalResponse) => {
 			if (
 				originalResponse.status === 401 &&
-				resource.startsWith(this.#configService.getValueAsPath('BACKEND_URL')) &&
-				!this._ignorePathProvider().find((path) => resource.includes(path))
+				resource.trim().startsWith(this.#configService.getValueAsPath('BACKEND_URL')) &&
+				!this._ignorePathProvider().find((path) => resource.trim().includes(path))
 			) {
 				this.#authService.invalidate();
 			}
@@ -230,7 +230,7 @@ export class BvvHttpService extends AuthInvalidatingAfter401HttpService {
 	 * @see {@link HttpService#fetch}
 	 */
 	async fetch(resource, options = {}, controller = new AbortController(), interceptors = defaultInterceptors) {
-		const fetchOptions = resource.startsWith(this.#configService.getValueAsPath('BACKEND_URL'))
+		const fetchOptions = resource.trim().startsWith(this.#configService.getValueAsPath('BACKEND_URL'))
 			? { credentials: 'include', ...options }
 			: { ...options };
 		return super.fetch(resource, fetchOptions, controller, interceptors);
