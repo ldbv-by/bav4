@@ -30,7 +30,11 @@ describe('MeasurementOverlayStyle', () => {
 		TestUtils.setupStoreAndDi(measurementState, { measurement: measurementReducer });
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('MapService', { getSrid: () => 3857, getLocalProjectedSrid: () => 25832 })
+			.registerSingleton('MapService', {
+				getSrid: () => 3857,
+				getLocalProjectedSrid: () => 25832,
+				getCoordinateRepresentations: () => [{ global: false, code: 25832 }]
+			})
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('CoordinateService', coordinateServiceMock)
 			.registerSingleton('UnitsService', {

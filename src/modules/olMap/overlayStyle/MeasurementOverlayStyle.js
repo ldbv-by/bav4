@@ -4,7 +4,7 @@
 import { $injector } from '../../../injection';
 import { OverlayStyle } from './OverlayStyle';
 import { MeasurementOverlayTypes } from '../components/MeasurementOverlay';
-import { getAzimuth, getGeometryLength, getLineString, getPartitionDelta } from '../utils/olGeometryUtils';
+import { getAzimuth, getProjectedLength, PROJECTED_LENGTH_GEOMETRY_PROPERTY, getLineString, getPartitionDelta } from '../utils/olGeometryUtils';
 import Overlay from 'ol/Overlay';
 import { LineString, Polygon } from 'ol/geom';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
@@ -41,10 +41,6 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		this._mapService = MapService;
 		this._environmentService = EnvironmentService;
 		this._storeService = StoreService;
-		this._projectionHints = {
-			sourceSrid: this._mapService.getSrid(),
-			destinationSrid: this._mapService.getLocalProjectedSrid()
-		};
 	}
 
 	/**
@@ -131,13 +127,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	_createDistanceOverlay(olFeature, olMap) {
 		const createNew = () => {
 			const isDraggable = !this._environmentService.isTouch() && this._isActiveMeasurement();
-			const overlay = this._createOlOverlay(
-				olMap,
-				{ offset: [0, -15], positioning: 'bottom-center' },
-				MeasurementOverlayTypes.DISTANCE,
-				this._projectionHints,
-				isDraggable
-			);
+			const overlay = this._createOlOverlay(olMap, { offset: [0, -15], positioning: 'bottom-center' }, MeasurementOverlayTypes.DISTANCE, isDraggable);
 			olFeature.set('measurement', overlay);
 			this._add(overlay, olFeature, olMap);
 			return overlay;
@@ -155,7 +145,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 				const isDraggable = !this._environmentService.isTouch() && this._isActiveMeasurement();
 
 				if (!areaOverlay) {
-					areaOverlay = this._createOlOverlay(olMap, { positioning: 'top-center' }, MeasurementOverlayTypes.AREA, this._projectionHints, isDraggable);
+					areaOverlay = this._createOlOverlay(olMap, { positioning: 'top-center' }, MeasurementOverlayTypes.AREA, isDraggable);
 					this._add(areaOverlay, olFeature, olMap);
 				}
 				this._updateOlOverlay(areaOverlay, olFeature.getGeometry());
@@ -192,19 +182,15 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		}
 
 		const resolution = olMap.getView().getResolution();
-		const measuredLength = getGeometryLength(simplifiedGeometry, this._projectionHints);
-		const delta = getPartitionDelta(measuredLength, resolution);
 
+		const projectedLength = getProjectedLength(simplifiedGeometry);
+		simplifiedGeometry.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
+		const delta = getPartitionDelta(projectedLength, resolution);
 		let partitionIndex = 0;
 		for (let i = delta; i < 1; i += delta, partitionIndex++) {
 			let partition = partitions[partitionIndex] || false;
 			if (partition === false) {
-				partition = this._createOlOverlay(
-					olMap,
-					{ offset: [0, -25], positioning: 'top-center' },
-					MeasurementOverlayTypes.DISTANCE_PARTITION,
-					this._projectionHints
-				);
+				partition = this._createOlOverlay(olMap, { offset: [0, -25], positioning: 'top-center' }, MeasurementOverlayTypes.DISTANCE_PARTITION);
 				this._add(partition, olFeature, olMap);
 				partitions.push(partition);
 			}
@@ -267,11 +253,10 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		});
 	}
 
-	_createOlOverlay(olMap, overlayOptions = {}, type, projectionHints, isDraggable = false) {
+	_createOlOverlay(olMap, overlayOptions = {}, type, isDraggable = false) {
 		const measurementOverlay = document.createElement(MeasurementOverlay.tag);
 		measurementOverlay.type = type;
 		measurementOverlay.isDraggable = isDraggable;
-		measurementOverlay.projectionHints = projectionHints;
 		const overlay = new Overlay({ ...overlayOptions, element: measurementOverlay, stopEvent: isDraggable });
 		if (isDraggable) {
 			this._createDragOn(overlay, olMap);

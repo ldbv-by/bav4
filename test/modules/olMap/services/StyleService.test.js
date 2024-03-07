@@ -42,7 +42,11 @@ describe('StyleService', () => {
 		reset: null,
 		fileSaveResult: { adminId: 'init', fileId: 'init' }
 	};
-	const mapServiceMock = { getSrid: () => 3857, getLocalProjectedSrid: () => 25832 };
+	const mapServiceMock = {
+		getSrid: () => 3857,
+		getLocalProjectedSrid: () => 25832,
+		getCoordinateRepresentations: () => [{ code: 25832, global: false }]
+	};
 
 	const environmentServiceMock = {
 		isTouch() {},

@@ -2,12 +2,13 @@
  * @module modules/olMap/utils/olStyleUtils
  */
 import {
-	getGeometryLength,
 	canShowAzimuthCircle,
 	calculatePartitionResidualOfSegments,
 	getPartitionDelta,
 	moveParallel,
-	getLineString
+	getLineString,
+	PROJECTED_LENGTH_GEOMETRY_PROPERTY,
+	getProjectedLength
 } from './olGeometryUtils';
 import { toContext as toCanvasContext } from 'ol/render';
 import { Fill, Stroke, Style, Circle as CircleStyle, Icon, Text as TextStyle } from 'ol/style';
@@ -414,18 +415,19 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 	const geometry = state.geometry.clone();
 	const resolution = state.resolution;
 	const pixelRatio = state.pixelRatio;
-	const calculationHints = {
-		sourceSrid: 3857,
-		destinationSrid: 25832,
-		projectionExtent: [5, -80, 14, 80]
+
+	const getMeasuredLength = () => {
+		const alreadyMeasuredLength = state.geometry ? state.geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY) : null;
+		return alreadyMeasuredLength ?? getProjectedLength(state.geometry);
 	};
 
-	const projectedGeometryLength = getGeometryLength(geometry, calculationHints);
-	const delta = getPartitionDelta(projectedGeometryLength, resolution);
 	const lineString = getLineString(geometry);
+	const projectedGeometryLength = getMeasuredLength();
+	const delta = getPartitionDelta(projectedGeometryLength, resolution);
+	console.log(projectedGeometryLength, delta);
 	const partitionLength = delta * lineString.getLength();
 	const partitionTickDistance = partitionLength / resolution;
-	const residuals = calculatePartitionResidualOfSegments(geometry, delta);
+	const residuals = calculatePartitionResidualOfSegments(lineString, delta);
 
 	const fill = new Fill({ color: Red_Color.concat([0.4]) });
 	const baseStroke = new Stroke({

@@ -29,7 +29,12 @@ describe('MeasurementOverlay', () => {
 		$injector
 			.registerSingleton('UnitsService', unitServiceMock)
 			.registerSingleton('CoordinateService', coordinateServiceMock)
-			.registerSingleton('MapService', { getSrid: () => 3857, getLocalProjectedSrid: () => 25832, getLocalProjectedSridExtent: () => null });
+			.registerSingleton('MapService', {
+				getSrid: () => 3857,
+				getLocalProjectedSrid: () => 25832,
+				getLocalProjectedSridExtent: () => null,
+				getCoordinateRepresentations: () => [{ code: 25832, global: false }]
+			});
 		proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 		register(proj4);
 	});

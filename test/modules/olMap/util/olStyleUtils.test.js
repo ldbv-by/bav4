@@ -53,7 +53,13 @@ const environmentService = {
 
 const iconServiceMock = { decodeColor: () => [0, 0, 0] };
 
+const mapServiceMock = {
+	getSrid: () => 3857,
+	getCoordinateRepresentations: () => [{ global: false, code: 25832 }]
+};
+
 const coordinateServiceMock = {
+	getLength() {},
 	getLength() {}
 };
 
@@ -63,6 +69,7 @@ beforeAll(() => {
 		.registerSingleton('EnvironmentService', environmentService)
 		.registerSingleton('ConfigService', configService)
 		.registerSingleton('IconService', iconServiceMock)
+		.registerSingleton('MapService', mapServiceMock)
 		.registerSingleton('CoordinateService', coordinateServiceMock);
 });
 

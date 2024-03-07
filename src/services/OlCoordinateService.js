@@ -222,12 +222,11 @@ export class OlCoordinateService {
 	 *
 	 * Coordinates in a global projection will be always result in geodetic distances (spherical).
 	 * @param {Array<module:domain/coordinateTypeDef~Coordinate>} coordinates input coordinates
-	 * @param {number} [srid=3857] the srid number for the projection of the coordinates, default is SMERC (3857)
-	 * @param {Extent} [extent] an extent in WGS84, which defines whether or not the coordinates (partially)
+	 * @param {module:domain/coordinateRepresentation~CoordinateRepresentation} coordinateRepresentation the coordinateRepresentation of geometry
 	 * outside this extent should be handled with geodesic(spherical) length calculation or
 	 * with the planar calculation of the local projection
 	 */
-	getLength(coordinates, srid = 3857, extent = null) {
+	getLength(coordinates, coordinateRepresentation) {
 		const getGeodesicLength = (coordinates) => {
 			const wgs84 = Geodesic.WGS84;
 			return coordinates.reduce((sum, current, index, coordinates) => {
@@ -241,16 +240,13 @@ export class OlCoordinateService {
 			}, 0);
 		};
 		const wgs84Coordinates =
-			srid !== 4326 ? coordinates.map((c) => transform(c, OlCoordinateService._toEpsgCodeString(srid), 'EPSG:4326')) : coordinates;
+			coordinateRepresentation && coordinateRepresentation.code !== 4326
+				? coordinates.map((c) => transform(c, OlCoordinateService._toEpsgCodeString(coordinateRepresentation.code), 'EPSG:4326'))
+				: coordinates;
 
-		const isWithinProjectionExtent = extent
-			? !wgs84Coordinates.some((coordinate) => {
-					return !containsCoordinate(extent, coordinate);
-				})
-			: true;
-
-		const isLocalProjection = ![4326, 3857].includes(srid);
-		return isWithinProjectionExtent && isLocalProjection ? new LineString(coordinates).getLength() : getGeodesicLength(wgs84Coordinates);
+		return coordinateRepresentation && coordinateRepresentation.global
+			? getGeodesicLength(wgs84Coordinates)
+			: new LineString(coordinates).getLength();
 	}
 
 	/**
@@ -261,12 +257,11 @@ export class OlCoordinateService {
 	 *
 	 * Coordinates in a global projection will be always result in geodetic calculation (spherical).
 	 * @param {Array<Array<module:domain/coordinateTypeDef~Coordinate>>} coordinates polygon coordinates
-	 * @param {number} [srid=3857] the srid number for the projection of the coordinates, default is SMERC (3857)
-	 * @param {Extent} [extent=null] an extent in WGS84, which defines whether or not the coordinates should be handled
-	 * with geodesic(spherical) length calculation (the coordinates are (partially) outside this extent)
-	 * or with the planar calculation of the projection (the coordinates are (completely) inside this extent)
+	 * @param {module:domain/coordinateRepresentation~CoordinateRepresentation} coordinateRepresentation the coordinateRepresentation of geometry
+	 * outside this extent should be handled with geodesic(spherical) length calculation or
+	 * with the planar calculation of the local projection
 	 */
-	getArea(coordinates, srid = 3857, extent = null) {
+	getArea(coordinates, coordinateRepresentation) {
 		const getGeodesicArea = (coordinates) => {
 			const geodesicPolygon = new PolygonArea.PolygonArea(Geodesic.WGS84);
 			return coordinates.reduce((aggregatedArea, linearRingCoordinates, index) => {
@@ -279,16 +274,12 @@ export class OlCoordinateService {
 		};
 
 		const wgs84Coordinates =
-			srid !== 4326
+			coordinateRepresentation && coordinateRepresentation.code !== 4326
 				? coordinates.map((linearRingCoordinates) =>
-						linearRingCoordinates.map((c) => transform(c, OlCoordinateService._toEpsgCodeString(srid), 'EPSG:4326'))
+						linearRingCoordinates.map((c) => transform(c, OlCoordinateService._toEpsgCodeString(coordinateRepresentation.code), 'EPSG:4326'))
 					)
 				: coordinates;
 
-		// simplification: using only the outer ring to test against the extent;
-		// If the outer ring is fully inside the extent, then all inner rings are as well.
-		const isOuterRingWithinProjectionExtent = extent ? !wgs84Coordinates[0].some((coordinate) => !containsCoordinate(extent, coordinate)) : true;
-		const isLocalProjection = ![4326, 3857].includes(srid);
-		return isOuterRingWithinProjectionExtent && isLocalProjection ? new Polygon(coordinates).getArea() : getGeodesicArea(wgs84Coordinates);
+		return coordinateRepresentation && coordinateRepresentation.global ? getGeodesicArea(wgs84Coordinates) : new Polygon(coordinates).getArea();
 	}
 }

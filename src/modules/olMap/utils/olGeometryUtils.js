@@ -12,6 +12,8 @@ const transformGeometry = (geometry, fromProjection, toProjection) => {
 	return geometry;
 };
 
+export const PROJECTED_LENGTH_GEOMETRY_PROPERTY = 'projectedLength';
+
 /**
  * Coerce the provided geometry to a LineString or null,
  * if the geometry is not a LineString,LinearRing or Polygon
@@ -112,26 +114,18 @@ export const getBoundingBoxFrom = (centerCoordinate, size) => {
 		centerCoordinate[1] + size.height / 2 // maxY
 	];
 };
-/**
- * Contains information for transformation-methods
- * @typedef CalculationHints
- * @property {number} sourceSrid the 'source' SRID for usage in ol/geometry.transform() as ProjectionLike like 'EPSG:3875'
- * @property {number} destinationSrid the 'destination' SRID for usage in ol/geometry.transform() as ProjectionLike like 'EPSG:3875'
- * @property {Extent} [projectionExtent] an extent in WGS84, which defines whether or not a geometry with coordinates outside this extent should be handled as spheric (4326)
- */
 
 /**
- * Calculates the area of the geometry.
+ * Calculates the area of the geometry in the best suited CoordinateRepresentation and map projection.
+ * If the map projection has a global scope, the area is calculated as geodetic area.
  * @function
  * @param {Geometry} geometry the area-like geometry, to calculate with
- * @param {module:modules/olMap/utils/olGeometryUtils~CalculationHints} calculationHints calculationHints for a optional transformation
  * @returns {number} the calculated length or 0 if the geometry-object is not area-like
  */
-export const getArea = (geometry, calculationHints = {}) => {
-	const { CoordinateService: coordinateService } = $injector.inject('CoordinateService');
-
-	const toEpsgCodeString = (srid) => {
-		return srid ? `EPSG:${srid}` : null;
+export const getProjectedArea = (geometry) => {
+	const { CoordinateService: coordinateService, MapService: mapService } = $injector.inject('CoordinateService', 'MapService');
+	const transform = (geometry, srid) => {
+		return geometry.clone().transform(`EPSG:${mapService.getSrid()}`, `EPSG:${srid}`);
 	};
 
 	const getLineStrings = (geometry) => {
@@ -140,47 +134,73 @@ export const getArea = (geometry, calculationHints = {}) => {
 		}
 
 		if (geometry instanceof LinearRing) {
-			return [geometry.getCoordinates()];
+			return [geometry];
 		}
-		return geometry.getLinearRings().map((r) => r.getCoordinates());
+		return geometry.getLinearRings();
 	};
 
-	const srid = calculationHints.destinationSrid ?? calculationHints.sourceSrid;
+	const getAreaRepresentation = (lineStrings) => {
+		if (Array.isArray(lineStrings) && lineStrings.length > 0) {
+			const coordinateRepresentation = mapService.getCoordinateRepresentations(lineStrings[0].getCoordinates())[0];
 
-	const polygonCoordinates = calculationHints.destinationSrid
-		? getLineStrings(transformGeometry(geometry, toEpsgCodeString(calculationHints.sourceSrid), toEpsgCodeString(calculationHints.destinationSrid)))
-		: getLineStrings(geometry);
-	return polygonCoordinates ? coordinateService.getArea(polygonCoordinates, srid, calculationHints.projectionExtent) : null;
+			return coordinateRepresentation.global
+				? {
+						coordinates: lineStrings.map((l) => l.getCoordinates()),
+						coordinateRepresentation: mapService.getCoordinateRepresentations().find((cr) => cr.code === mapService.getSrid())
+					}
+				: {
+						coordinates: lineStrings.map((l) => transform(l, coordinateRepresentation.code).getCoordinates()),
+						coordinateRepresentation: coordinateRepresentation
+					};
+		}
+		return {
+			coordinates: null,
+			coordinateRepresentation: null
+		};
+	};
+
+	if (geometry) {
+		const { coordinates, coordinateRepresentation } = getAreaRepresentation(getLineStrings(geometry));
+		return coordinates ? coordinateService.getArea(coordinates, coordinateRepresentation) : 0;
+	}
 };
 
 /**
- * Calculates the length of the geometry.
- * If the calculationHints provides a toProjectionExtent, any provided geometry with coordinates outside this extent
- * results in a calculation of a geodesic length, instead of a length in the provided toProjection.
+ * Calculates the length of the geometry in the best suited CoordinateRepresentation and map projection.
+ * If the map projection has a global scope, the length is calculated as geodetic length.
+ *
  * @function
  * @param {Geometry} geometry the geometry, to calculate with
- * @param {module:modules/olMap/utils/olGeometryUtils~CalculationHints} calculationHints calculationHints for a optional transformation
  * @returns {number} the calculated length or 0 if the geometry-object is not a LineString/LinearRing/Polygon
  */
-export const getGeometryLength = (geometry, calculationHints = {}) => {
-	const { CoordinateService: coordinateService } = $injector.inject('CoordinateService');
+export const getProjectedLength = (geometry) => {
+	const { CoordinateService: coordinateService, MapService: mapService } = $injector.inject('CoordinateService', 'MapService');
+	const transform = (geometry, srid) => {
+		return geometry.clone().transform(`EPSG:${mapService.getSrid()}`, `EPSG:${srid}`);
+	};
+	const getLengthRepresentation = (lineString) => {
+		if (lineString) {
+			const coordinateRepresentation = mapService.getCoordinateRepresentations(lineString.getCoordinates())[0];
+
+			return coordinateRepresentation.global
+				? {
+						coordinates: lineString.getCoordinates(),
+						coordinateRepresentation: mapService.getCoordinateRepresentations().find((cr) => cr.code === mapService.getSrid())
+					}
+				: {
+						coordinates: transform(lineString, coordinateRepresentation.code).getCoordinates(),
+						coordinateRepresentation: coordinateRepresentation
+					};
+		}
+		return {
+			coordinates: null,
+			coordinateRepresentation: null
+		};
+	};
 
 	if (geometry) {
-		const toEpsgCodeString = (srid) => {
-			return srid ? `EPSG:${srid}` : null;
-		};
-
-		const lineString = calculationHints.destinationSrid
-			? getLineString(transformGeometry(geometry, toEpsgCodeString(calculationHints.sourceSrid), toEpsgCodeString(calculationHints.destinationSrid)))
-			: getLineString(geometry);
-
-		return lineString
-			? coordinateService.getLength(
-					lineString.getCoordinates(),
-					calculationHints.destinationSrid ?? calculationHints.sourceSrid,
-					calculationHints.projectionExtent
-				)
-			: 0;
+		const { coordinates, coordinateRepresentation } = getLengthRepresentation(getLineString(geometry));
+		return coordinates ? coordinateService.getLength(coordinates, coordinateRepresentation) : 0;
 	}
 	return 0;
 };
@@ -274,7 +294,6 @@ export const getAzimuthFrom = (polygon) => {
  * @function
  * @param {number} geometryLength the measured length of the geometry
  * @param {number} resolution the resolution of the MapView, e. g. map.getView().getResolution()
- * param {module:modules/olMap/utils/olGeometryUtils~CalculationHints} calculationHints calculationHints for a optional transformation
  * @returns {number} the delta, a value between 0 and 1
  */
 export const getPartitionDelta = (geometryLength, resolution = 1) => {
@@ -410,10 +429,9 @@ export const isValidGeometry = (geometry) => {
 /**
  * @function
  * @param {Geometry} geometry ol geometry
- * @param {module:modules/olMap/utils/olGeometryUtils~CalculationHints} calculationHints
  * @returns {module:modules/olMap/utils/olGeometryUtils~GeometryStats}
  */
-export const getStats = (geometry, calculationHints) => {
+export const getStats = (geometry) => {
 	const stats = {
 		coordinate: null,
 		azimuth: null,
@@ -425,16 +443,16 @@ export const getStats = (geometry, calculationHints) => {
 		return { ...stats, coordinate: geometry.getCoordinates() };
 	}
 	if (geometry instanceof LineString) {
-		return { ...stats, azimuth: canShowAzimuthCircle(geometry) ? getAzimuth(geometry) : null, length: getGeometryLength(geometry, calculationHints) };
+		return { ...stats, azimuth: canShowAzimuthCircle(geometry) ? getAzimuth(geometry) : null, length: getProjectedLength(geometry) };
 	}
 	if (geometry instanceof MultiLineString) {
 		return {
 			...stats,
-			length: geometry.getLineStrings().reduce((partialLength, lineString) => partialLength + getGeometryLength(lineString, calculationHints), 0)
+			length: geometry.getLineStrings().reduce((partialLength, lineString) => partialLength + getProjectedLength(lineString), 0)
 		};
 	}
 	if (geometry instanceof Polygon) {
-		return { ...stats, length: getGeometryLength(geometry, calculationHints), area: getArea(geometry, calculationHints) };
+		return { ...stats, length: getProjectedLength(geometry), area: getProjectedArea(geometry) };
 	}
 	return stats;
 };
