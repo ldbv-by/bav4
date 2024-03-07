@@ -9,6 +9,7 @@ import { getCoordinatesForElevationProfile } from '../modules/olMap/utils/olGeom
 import { LineString, Polygon } from '../../node_modules/ol/geom';
 import { isCoordinate, isCoordinateLike } from '../utils/checks';
 import { Geodesic, PolygonArea } from 'geographiclib-geodesic';
+import { GlobalCoordinateRepresentations } from '../domain/coordinateRepresentation';
 
 /**
  * A function that returns a string representation of a coordinate.
@@ -217,16 +218,11 @@ export class OlCoordinateService {
 	/**
 	 * Calculates the length of an array of coordinates.
 	 *
-	 * If the coordinates are in a local projection, then the extent specifies the valid
-	 * frame for a planar length calculation. Otherwise the geodetic length will be calculated.
-	 *
-	 * Coordinates in a global projection will be always result in geodetic distances (spherical).
+	 * Coordinates with a global coordinateRepresentation will be always result in geodetic distances (spherical).
 	 * @param {Array<module:domain/coordinateTypeDef~Coordinate>} coordinates input coordinates
-	 * @param {module:domain/coordinateRepresentation~CoordinateRepresentation} coordinateRepresentation the coordinateRepresentation of geometry
-	 * outside this extent should be handled with geodesic(spherical) length calculation or
-	 * with the planar calculation of the local projection
+	 * @param {module:domain/coordinateRepresentation~CoordinateRepresentation}  [coordinateRepresentation=GlobalCoordinateRepresentations.WGS84] the coordinateRepresentation of the coordinates
 	 */
-	getLength(coordinates, coordinateRepresentation) {
+	getLength(coordinates, coordinateRepresentation = GlobalCoordinateRepresentations.WGS84) {
 		const getGeodesicLength = (coordinates) => {
 			const wgs84 = Geodesic.WGS84;
 			return coordinates.reduce((sum, current, index, coordinates) => {
@@ -240,28 +236,21 @@ export class OlCoordinateService {
 			}, 0);
 		};
 		const wgs84Coordinates =
-			coordinateRepresentation && coordinateRepresentation.code !== 4326
+			coordinateRepresentation?.code !== 4326
 				? coordinates.map((c) => transform(c, OlCoordinateService._toEpsgCodeString(coordinateRepresentation.code), 'EPSG:4326'))
 				: coordinates;
 
-		return coordinateRepresentation && coordinateRepresentation.global
-			? getGeodesicLength(wgs84Coordinates)
-			: new LineString(coordinates).getLength();
+		return coordinateRepresentation.global ? getGeodesicLength(wgs84Coordinates) : new LineString(coordinates).getLength();
 	}
 
 	/**
 	 * Calculates the area for an array of polygon coordinates.
 	 *
-	 * If the coordinates are in a local projection, then the extent specifies the valid
-	 * frame for a planar length calculation. Otherwise the geodetic area will be calculated.
-	 *
-	 * Coordinates in a global projection will be always result in geodetic calculation (spherical).
+	 * Coordinates with a global coordinateRepresentation will be always result in geodetic calculation (spherical).
 	 * @param {Array<Array<module:domain/coordinateTypeDef~Coordinate>>} coordinates polygon coordinates
-	 * @param {module:domain/coordinateRepresentation~CoordinateRepresentation} coordinateRepresentation the coordinateRepresentation of geometry
-	 * outside this extent should be handled with geodesic(spherical) length calculation or
-	 * with the planar calculation of the local projection
+	 * @param {module:domain/coordinateRepresentation~CoordinateRepresentation} [coordinateRepresentation=GlobalCoordinateRepresentations.WGS84] the coordinateRepresentation of the coordinates
 	 */
-	getArea(coordinates, coordinateRepresentation) {
+	getArea(coordinates, coordinateRepresentation = GlobalCoordinateRepresentations.WGS84) {
 		const getGeodesicArea = (coordinates) => {
 			const geodesicPolygon = new PolygonArea.PolygonArea(Geodesic.WGS84);
 			return coordinates.reduce((aggregatedArea, linearRingCoordinates, index) => {
@@ -274,12 +263,12 @@ export class OlCoordinateService {
 		};
 
 		const wgs84Coordinates =
-			coordinateRepresentation && coordinateRepresentation.code !== 4326
+			coordinateRepresentation?.code !== 4326
 				? coordinates.map((linearRingCoordinates) =>
 						linearRingCoordinates.map((c) => transform(c, OlCoordinateService._toEpsgCodeString(coordinateRepresentation.code), 'EPSG:4326'))
 					)
 				: coordinates;
 
-		return coordinateRepresentation && coordinateRepresentation.global ? getGeodesicArea(wgs84Coordinates) : new Polygon(coordinates).getArea();
+		return coordinateRepresentation.global ? getGeodesicArea(wgs84Coordinates) : new Polygon(coordinates).getArea();
 	}
 }
