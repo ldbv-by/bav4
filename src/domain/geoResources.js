@@ -3,7 +3,7 @@
  */
 import { $injector } from '../injection';
 import { getDefaultAttribution } from '../services/provider/attribution.provider';
-import { defaultVectorGeoResourceLoaderForUrl } from '../services/provider/geoResource.provider';
+import { getDefaultVectorGeoResourceLoaderForUrl } from '../services/provider/geoResource.provider';
 import { isExternalGeoResourceId } from '../utils/checks';
 
 /**
@@ -332,6 +332,7 @@ export class GeoResource {
  * @typedef {Function} asyncGeoResourceLoader
  * @param {string} id Id of the requested GeoResource
  * @returns {GeoResource} the loaded GeoResource
+ * @throws when resource cannot be loaded
  */
 
 /**
@@ -593,7 +594,7 @@ export class VectorGeoResource extends GeoResource {
 	 * @returns {GeoResourceFuture}
 	 */
 	static forUrl(id, url, sourceType, label = null) {
-		return new GeoResourceFuture(id, defaultVectorGeoResourceLoaderForUrl(url, sourceType, id, label))
+		return new GeoResourceFuture(id, getDefaultVectorGeoResourceLoaderForUrl(url, sourceType, id, label))
 			.setLabel(label)
 			.onResolve((resolved, future) => {
 				resolved.copyPropertiesFrom(future);

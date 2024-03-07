@@ -202,9 +202,8 @@ export const loadExternalGeoResource = (urlBasedAsId) => {
  * @param {string | null} [id]
  * @param {string | null} [label]
  * @returns {module:domain/geoResources~asyncGeoResourceLoader}
- * @throws when resource cannot be loaded
  */
-export const defaultVectorGeoResourceLoaderForUrl = (url, sourceType, id = createUniqueId().toString(), label = null) => {
+export const getDefaultVectorGeoResourceLoaderForUrl = (url, sourceType, id = createUniqueId().toString(), label = null) => {
 	return async () => {
 		const { HttpService: httpService } = $injector.inject('HttpService');
 		const result = await httpService.get(url, { timeout: 5000 });

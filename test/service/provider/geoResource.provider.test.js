@@ -8,7 +8,7 @@ import {
 	loadExternalGeoResource,
 	_definitionToGeoResource,
 	_parseBvvAttributionDefinition,
-	defaultVectorGeoResourceLoaderForUrl,
+	getDefaultVectorGeoResourceLoaderForUrl,
 	getBvvVectorGeoResourceLoaderForUrl
 } from '../../../src/services/provider/geoResource.provider';
 import { TestUtils } from '../../test-utils';
@@ -807,15 +807,13 @@ describe('GeoResource provider', () => {
 		});
 	});
 
-	describe('defaultVectorGeoResourceLoaderForUrl', () => {
+	describe('getDefaultVectorGeoResourceLoaderForUrl', () => {
 		it('returns an GeoResourceLoader resolving to a VectorGeoResource', async () => {
 			const data = 'data';
-			spyOn(httpService, 'get')
-				.withArgs(vectorDefinition.url, { timeout: 5000 })
-				.and.resolveTo(new Response(data));
+			spyOn(httpService, 'get').withArgs(vectorDefinition.url, { timeout: 5000 }).and.resolveTo(new Response(data));
 			spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
 
-			const vectorGeoResource = await defaultVectorGeoResourceLoaderForUrl(
+			const vectorGeoResource = await getDefaultVectorGeoResourceLoaderForUrl(
 				vectorDefinition.url,
 				Symbol.for(vectorDefinition.sourceType),
 				vectorDefinition.id,
@@ -831,12 +829,10 @@ describe('GeoResource provider', () => {
 
 		it('returns an GeoResourceLoader resolving to a VectorGeoResource', async () => {
 			const data = 'data';
-			spyOn(httpService, 'get')
-				.withArgs(vectorDefinition.url, { timeout: 5000 })
-				.and.resolveTo(new Response(data));
+			spyOn(httpService, 'get').withArgs(vectorDefinition.url, { timeout: 5000 }).and.resolveTo(new Response(data));
 			spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
 
-			const vectorGeoResource = await defaultVectorGeoResourceLoaderForUrl(vectorDefinition.url, Symbol.for(vectorDefinition.sourceType))();
+			const vectorGeoResource = await getDefaultVectorGeoResourceLoaderForUrl(vectorDefinition.url, Symbol.for(vectorDefinition.sourceType))();
 
 			expect(vectorGeoResource.id).not.toBeNull();
 			expect(vectorGeoResource.label).not.toBeNull();
@@ -850,7 +846,7 @@ describe('GeoResource provider', () => {
 				.withArgs(vectorDefinition.url, { timeout: 5000 })
 				.and.resolveTo(new Response(null, { status: 404 }));
 
-			await expectAsync(defaultVectorGeoResourceLoaderForUrl(vectorDefinition.url, vectorDefinition.sourceType)()).toBeRejectedWithError(
+			await expectAsync(getDefaultVectorGeoResourceLoaderForUrl(vectorDefinition.url, vectorDefinition.sourceType)()).toBeRejectedWithError(
 				`GeoResource for '${vectorDefinition.url}' could not be loaded: Http-Status 404`
 			);
 		});
