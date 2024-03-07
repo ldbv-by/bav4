@@ -79,6 +79,9 @@ describe('OlMeasurementHandler', () => {
 		},
 		getArea() {
 			return 1;
+		},
+		getArea2() {
+			return 1;
 		}
 	};
 	const mapServiceMock = {
@@ -1389,8 +1392,8 @@ describe('OlMeasurementHandler', () => {
 
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			spyOn(coordinateServiceMock, 'getLength').and.returnValue(500);
-			spyOn(coordinateServiceMock, 'getArea').and.returnValue(0);
+			spyOn(coordinateServiceMock, 'getLength2').and.returnValue(500);
+			spyOn(coordinateServiceMock, 'getArea2').and.returnValue(0);
 			firstPointGeometry.setCoordinates([
 				[
 					[0, 0],
@@ -1937,7 +1940,7 @@ describe('OlMeasurementHandler', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const layer = classUnderTest.activate(map);
 			layer.getSource().addFeature(feature);
-			spyOn(coordinateServiceMock, 'getLength').and.returnValue(3);
+			spyOn(coordinateServiceMock, 'getLength2').and.returnValue(3);
 			finish();
 
 			map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {

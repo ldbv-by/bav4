@@ -325,4 +325,38 @@ export class OlCoordinateService {
 		const isLocalProjection = ![4326, 3857].includes(srid);
 		return isOuterRingWithinProjectionExtent && isLocalProjection ? new Polygon(coordinates).getArea() : getGeodesicArea(wgs84Coordinates);
 	}
+
+	/**
+	 * Calculates the area for an array of polygon coordinates.
+	 *
+	 * If the coordinates are in a local projection, then the extent specifies the valid
+	 * frame for a planar length calculation. Otherwise the geodetic area will be calculated.
+	 *
+	 * Coordinates in a global projection will be always result in geodetic calculation (spherical).
+	 * @param {Array<Array<module:domain/coordinateTypeDef~Coordinate>>} coordinates polygon coordinates
+	 * @param {module:domain/coordinateRepresentation~CoordinateRepresentation} coordinateRepresentation the coordinateRepresentation of geometry
+	 * outside this extent should be handled with geodesic(spherical) length calculation or
+	 * with the planar calculation of the local projection
+	 */
+	getArea2(coordinates, coordinateRepresentation) {
+		const getGeodesicArea = (coordinates) => {
+			const geodesicPolygon = new PolygonArea.PolygonArea(Geodesic.WGS84);
+			return coordinates.reduce((aggregatedArea, linearRingCoordinates, index) => {
+				geodesicPolygon.Clear();
+				linearRingCoordinates.forEach(([lon, lat]) => geodesicPolygon.AddPoint(lat, lon));
+				const res = geodesicPolygon.Compute(false, true);
+				const isExteriorRing = index === 0;
+				return isExteriorRing ? aggregatedArea + Math.abs(res.area) : aggregatedArea - Math.abs(res.area);
+			}, 0);
+		};
+
+		const wgs84Coordinates =
+			coordinateRepresentation.code !== 4326
+				? coordinates.map((linearRingCoordinates) =>
+						linearRingCoordinates.map((c) => transform(c, OlCoordinateService._toEpsgCodeString(coordinateRepresentation.code), 'EPSG:4326'))
+					)
+				: coordinates;
+
+		return coordinateRepresentation.global ? new Polygon(coordinates).getArea() : getGeodesicArea(wgs84Coordinates);
+	}
 }

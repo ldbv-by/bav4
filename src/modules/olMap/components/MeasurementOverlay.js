@@ -10,9 +10,9 @@ import {
 	getAzimuth,
 	getCoordinateAt,
 	canShowAzimuthCircle,
-	getArea,
 	PROJECTED_LENGTH_GEOMETRY_PROPERTY,
-	getProjectedLength
+	getProjectedLength,
+	getProjectedArea
 } from '../utils/olGeometryUtils';
 import { Polygon } from 'ol/geom';
 import { BaOverlay } from './BaOverlay';
@@ -112,7 +112,7 @@ export class MeasurementOverlay extends BaOverlay {
 		switch (type) {
 			case MeasurementOverlayTypes.AREA:
 				if (this.geometry instanceof Polygon) {
-					return this._unitsService.formatArea(getArea(this.geometry, this._projectionHints), 2);
+					return this._unitsService.formatArea(getProjectedArea(this.geometry), 2);
 				}
 				return '';
 			case MeasurementOverlayTypes.DISTANCE:

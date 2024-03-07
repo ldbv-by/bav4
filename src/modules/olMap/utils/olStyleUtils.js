@@ -424,7 +424,7 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 	const lineString = getLineString(geometry);
 	const projectedGeometryLength = getMeasuredLength();
 	const delta = getPartitionDelta(projectedGeometryLength, resolution);
-
+	console.log(projectedGeometryLength, delta);
 	const partitionLength = delta * lineString.getLength();
 	const partitionTickDistance = partitionLength / resolution;
 	const residuals = calculatePartitionResidualOfSegments(lineString, delta);

@@ -21,7 +21,7 @@ describe('MeasurementOverlay', () => {
 
 	const coordinateServiceMock = {
 		getLength2() {},
-		getArea() {}
+		getArea2() {}
 	};
 
 	beforeEach(async () => {

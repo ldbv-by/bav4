@@ -1,6 +1,4 @@
 import {
-	getGeometryLength,
-	getArea,
 	canShowAzimuthCircle,
 	getCoordinateAt,
 	getAzimuth,
@@ -18,24 +16,32 @@ import {
 	PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES,
 	getLineString,
 	multiLineStringToLineString,
-	getCoordinatesForElevationProfile
+	getCoordinatesForElevationProfile,
+	getProjectedLength,
+	getProjectedArea
 } from '../../../../src/modules/olMap/utils/olGeometryUtils';
 import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing, MultiLineString, MultiPolygon } from 'ol/geom';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
-import { fromLonLat } from 'ol/proj';
 import { $injector } from '../../../../src/injection';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
 const coordinateServiceMock = {
 	getLength() {},
-	getArea() {}
+	getLength2() {},
+	getArea() {},
+	getArea2() {}
 };
 
-$injector.registerSingleton('CoordinateService', coordinateServiceMock);
+const mapServiceMock = {
+	getSrid: () => 3857,
+	getCoordinateRepresentations: () => [{ global: false, code: 25832 }]
+};
 
-describe('getGeometryLength', () => {
+$injector.registerSingleton('MapService', mapServiceMock).registerSingleton('CoordinateService', coordinateServiceMock);
+
+describe('getProjectedLength', () => {
 	it('calculates the length of a LineString', () => {
 		const coordinates = [
 			[0, 0],
@@ -43,11 +49,11 @@ describe('getGeometryLength', () => {
 		];
 		const lineString = new LineString(coordinates);
 
-		const spy = spyOn(coordinateServiceMock, 'getLength').withArgs(jasmine.any(Array), undefined, undefined).and.returnValue(42);
-		const length = getGeometryLength(lineString);
+		const spy = spyOn(coordinateServiceMock, 'getLength2').and.returnValue(42);
+		const length = getProjectedLength(lineString);
 
 		expect(length).toBe(42);
-		expect(spy).toHaveBeenCalledWith(jasmine.arrayWithExactContents(coordinates), undefined, undefined);
+		expect(spy).toHaveBeenCalledWith(jasmine.any(Array), jasmine.objectContaining({ global: false, code: 25832 }));
 	});
 
 	it('calculates the length of a LinearRing', () => {
@@ -59,12 +65,12 @@ describe('getGeometryLength', () => {
 			[0, 0]
 		];
 		const linearRing = new LinearRing(coordinates);
-		const spy = spyOn(coordinateServiceMock, 'getLength').withArgs(jasmine.any(Array), undefined, undefined).and.returnValue(42);
+		const spy = spyOn(coordinateServiceMock, 'getLength2').and.returnValue(42);
 
-		const length = getGeometryLength(linearRing);
+		const length = getProjectedLength(linearRing);
 
 		expect(length).toBe(42);
-		expect(spy).toHaveBeenCalledWith(jasmine.arrayWithExactContents(coordinates), undefined, undefined);
+		expect(spy).toHaveBeenCalledWith(jasmine.any(Array), jasmine.objectContaining({ global: false, code: 25832 }));
 	});
 
 	it('calculates the length of a Polygon', () => {
@@ -78,66 +84,28 @@ describe('getGeometryLength', () => {
 			]
 		];
 		const polygon = new Polygon(coordinates);
-		const spy = spyOn(coordinateServiceMock, 'getLength').withArgs(jasmine.any(Array), undefined, undefined).and.returnValue(42);
+		const spy = spyOn(coordinateServiceMock, 'getLength2').and.returnValue(42);
 
-		const length = getGeometryLength(polygon);
+		const length = getProjectedLength(polygon);
 
 		expect(length).toBe(42);
-		expect(spy).toHaveBeenCalled();
+		expect(spy).toHaveBeenCalledWith(jasmine.any(Array), jasmine.objectContaining({ global: false, code: 25832 }));
 	});
 
 	it('does NOT calculates the length of Circle', () => {
 		const circle = new Circle([0, 0], 1);
-		const spy = spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
+		const spy = spyOn(coordinateServiceMock, 'getLength2').and.returnValue(42);
 
-		const length = getGeometryLength(circle);
+		const length = getProjectedLength(circle);
 
 		expect(length).toBe(0);
 		expect(spy).not.toHaveBeenCalled();
 	});
 
 	it('does NOT calculates the length of null', () => {
-		const length = getGeometryLength(null);
+		const length = getProjectedLength(null);
 
 		expect(length).toBe(0);
-	});
-
-	describe('when calculationHints are provided', () => {
-		it('calculates the length of a transformed geometry', () => {
-			const geometry = new Polygon([
-				[
-					[0, 0],
-					[1, 0],
-					[1, 1],
-					[0, 1],
-					[0, 0]
-				]
-			]);
-			const cloneMock = { transform: () => {} };
-			spyOn(geometry, 'clone').and.callFake(() => cloneMock);
-			const spy = spyOn(coordinateServiceMock, 'getLength').withArgs(jasmine.any(Array), 'bar', undefined).and.returnValue(42);
-			const calculationHints = { sourceSrid: 'foo', destinationSrid: 'bar' };
-
-			const transformSpy = spyOn(cloneMock, 'transform').and.callFake(() => geometry);
-			getGeometryLength(geometry, calculationHints);
-
-			expect(transformSpy).toHaveBeenCalledWith('EPSG:foo', 'EPSG:bar');
-			expect(spy).toHaveBeenCalled();
-		});
-	});
-
-	describe('when calculationHints with extent are provided', () => {
-		it('calculates with the extent', () => {
-			const lineString = new LineString([fromLonLat([9, 48]), fromLonLat([11, 48])]);
-			const extent = [9, -60, 11, 60];
-			const calculationHints = { sourceSrid: 3857, destinationSrid: 25832, projectionExtent: extent };
-			const spy = spyOn(coordinateServiceMock, 'getLength').withArgs(jasmine.any(Array), 25832, extent).and.returnValue(42);
-
-			const length = getGeometryLength(lineString, calculationHints);
-
-			expect(length).toBe(42);
-			expect(spy).toHaveBeenCalled();
-		});
 	});
 });
 
@@ -399,24 +367,12 @@ describe('getArea', () => {
 				[0, 0]
 			]
 		]);
-		const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getArea').and.returnValue(42);
+		const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getArea2').and.returnValue(42);
 
-		const area = getArea(polygon);
+		const area = getProjectedArea(polygon);
 
 		expect(area).toBe(42);
-		expect(coordinateServiceSpy).toHaveBeenCalledWith(
-			jasmine.arrayContaining([
-				[
-					[0, 0],
-					[1, 0],
-					[1, 1],
-					[0, 1],
-					[0, 0]
-				]
-			]),
-			undefined,
-			undefined
-		);
+		expect(coordinateServiceSpy).toHaveBeenCalledWith(jasmine.any(Array), jasmine.objectContaining({ global: false, code: 25832 }));
 	});
 
 	it('calculates the area for a projected Polygon', () => {
@@ -429,13 +385,12 @@ describe('getArea', () => {
 				[0, 0]
 			]
 		]);
-		const calculationHints = { sourceSrid: 4326, destinationSrid: 25832 };
-		const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getArea').and.returnValue(42);
+		const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getArea2').and.returnValue(42);
 
-		const area = getArea(polygon, calculationHints);
+		const area = getProjectedArea(polygon);
 
 		expect(area).toBe(42);
-		expect(coordinateServiceSpy).toHaveBeenCalledWith(jasmine.any(Array), 25832, undefined);
+		expect(coordinateServiceSpy).toHaveBeenCalledWith(jasmine.any(Array), jasmine.objectContaining({ global: false, code: 25832 }));
 	});
 
 	it('returns 0 for a non-area-like geometry', () => {
@@ -448,42 +403,19 @@ describe('getArea', () => {
 			[0, 0],
 			[2, 0]
 		]);
-		const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getArea')
-			.withArgs(jasmine.arrayWithExactContents([]), undefined, undefined)
-			.and.returnValue(0)
-			.withArgs(
-				jasmine.arrayWithExactContents([
-					[
-						[0, 0],
-						[2, 0]
-					]
-				]),
-				undefined,
-				undefined
-			)
+		const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getArea2')
+			.withArgs(jasmine.any(Array), jasmine.objectContaining({ global: false, code: 25832 }))
 			.and.returnValue(0);
 
-		const pointArea = getArea(point);
-		const lineStringArea = getArea(lineString);
-		const linearRingArea = getArea(linearRing);
+		const pointArea = getProjectedArea(point);
+		const lineStringArea = getProjectedArea(lineString);
+		const linearRingArea = getProjectedArea(linearRing);
 
 		expect(pointArea).toBe(0);
 		expect(lineStringArea).toBe(0);
 		expect(linearRingArea).toBe(0);
 
-		expect(coordinateServiceSpy).toHaveBeenCalledTimes(3);
-	});
-
-	describe('when calculationHints with extent are provided', () => {
-		it('calculates the geodesic area of a transformed polygon', () => {
-			const polygon = new Polygon([[fromLonLat([9, 48]), fromLonLat([11, 48]), fromLonLat([10, 47])]]);
-
-			const calculationHints = { sourceSrid: 3857, destinationSrid: 25832 };
-			const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getArea').and.returnValue(42);
-
-			expect(getArea(polygon, { ...calculationHints, projectionExtent: [9, -60, 11, 60] })).toBe(42);
-			expect(coordinateServiceSpy).toHaveBeenCalledWith(jasmine.any(Array), 25832, [9, -60, 11, 60]);
-		});
+		expect(coordinateServiceSpy).toHaveBeenCalledTimes(1);
 	});
 });
 
@@ -807,7 +739,7 @@ describe('getStats', () => {
 	});
 
 	it('returns a statistic-object for two-point LineString', () => {
-		spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
+		spyOn(coordinateServiceMock, 'getLength2').and.returnValue(42);
 		const statsForLineString = getStats(
 			new LineString([
 				[0, 0],
@@ -821,7 +753,7 @@ describe('getStats', () => {
 	});
 
 	it('returns a statistic-object for n-point (2<n) LineString', () => {
-		spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
+		spyOn(coordinateServiceMock, 'getLength2').and.returnValue(42);
 		const statsForLineString = getStats(
 			new LineString([
 				[0, 0],
@@ -836,7 +768,7 @@ describe('getStats', () => {
 	});
 
 	it('returns a statistic-object for MultiLineString', () => {
-		spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
+		spyOn(coordinateServiceMock, 'getLength2').and.returnValue(42);
 		const statsForMultiLineString = getStats(
 			new MultiLineString([
 				new LineString([
@@ -858,8 +790,8 @@ describe('getStats', () => {
 	});
 
 	it('returns a statistic-object for Polygon', () => {
-		spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
-		spyOn(coordinateServiceMock, 'getArea').and.returnValue(21);
+		spyOn(coordinateServiceMock, 'getLength2').and.returnValue(42);
+		spyOn(coordinateServiceMock, 'getArea2').and.returnValue(21);
 
 		const statsForPolygon = getStats(
 			new Polygon([
