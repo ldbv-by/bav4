@@ -351,7 +351,7 @@ const polylineToGeometry = (polyline) => {
 };
 
 /**
- * Bvv specific implementation of {@link module:services/RoutingService~routeStatsProvider}
+ * BVV specific implementation of {@link module:services/RoutingService~routeStatsProvider}
  * @function
  * @type {module:services/RoutingService~routeStatsProvider}
  */

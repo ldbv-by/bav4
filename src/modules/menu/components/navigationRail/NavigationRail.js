@@ -6,7 +6,7 @@ import css from './navigationRail.css';
 import { MvuElement } from '../../../MvuElement';
 import { $injector } from '../../../../injection';
 import { TabIds } from '../../../../domain/mainMenu';
-import { open, setTab } from '../../../../store/mainMenu/mainMenu.action';
+import { open, toggle, setTab } from '../../../../store/mainMenu/mainMenu.action';
 import { Tools } from '../../../../domain/tools';
 import { toggleSchema } from '../../../../store/media/media.action';
 import { setCurrentTool } from '../../../../store/tools/tools.action';
@@ -19,7 +19,6 @@ const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_IsOpen_NavigationRail = 'update_NavigationRail';
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
 const Update_Schema = 'update_schema';
-const Update_FeatureInfo_Data = 'update_featureInfo_data';
 
 /**
  * Side navigation component in large window sizes and a map navigation component in compact window sizes.
@@ -61,8 +60,6 @@ export class NavigationRail extends MvuElement {
 				return { ...model, ...data };
 			case Update_Schema:
 				return { ...model, darkSchema: data };
-			case Update_FeatureInfo_Data:
-				return { ...model, featureInfoData: [...data] };
 		}
 	}
 
@@ -79,10 +76,6 @@ export class NavigationRail extends MvuElement {
 		this.observe(
 			(state) => state.media.darkSchema,
 			(darkSchema) => this.signal(Update_Schema, darkSchema)
-		);
-		this.observe(
-			(store) => store.featureInfo.current,
-			(current) => this.signal(Update_FeatureInfo_Data, [...current])
 		);
 		this.observe(
 			(state) => state.media,
@@ -104,18 +97,17 @@ export class NavigationRail extends MvuElement {
 		};
 
 		const openTab = (tabId) => {
+			if (tabId === TabIds.ROUTING) {
+				setCurrentTool(Tools.ROUTING);
+			} else {
+				setCurrentTool(null);
+			}
+			isPortrait || tabId === tabIndex ? toggle() : open();
 			setTab(tabId);
-			open();
-		};
-
-		const openRoutingTab = () => {
-			setTab(TabIds.ROUTING);
-			setCurrentTool(Tools.ROUTING);
-			open();
 		};
 
 		const getIsActive = (tabId) => {
-			return tabIndex === tabId && isOpen ? 'is-active' : '';
+			return tabIndex === tabId && (isOpen || isPortrait) ? 'is-active' : '';
 		};
 
 		const getIsVisible = (tabId) => {
@@ -153,7 +145,7 @@ export class NavigationRail extends MvuElement {
 					<span class="separator landscape"> </span>
 					<button
 						class="routing ${getIsVisible(TabIds.ROUTING)} ${getIsActive(TabIds.ROUTING)}"
-						@click="${() => openRoutingTab()}"
+						@click="${() => openTab(TabIds.ROUTING)}"
 						style="order:${getFlexOrder(TabIds.ROUTING)}"
 					>
 						<span class="icon"></span>

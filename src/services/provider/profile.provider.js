@@ -6,7 +6,7 @@ import { MediaType } from '../../domain/mediaTypes';
 import { CoordinateSimplificationTarget } from '../OlCoordinateService';
 
 /**
- * Bvv specific implementation of {@link module:services/ElevationService~profileProvider}
+ * BVV specific implementation of {@link module:services/ElevationService~profileProvider}
  * @function
  * @type {module:services/ElevationService~profileProvider}
  */

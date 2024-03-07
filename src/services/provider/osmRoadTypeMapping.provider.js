@@ -12,7 +12,7 @@ const bvvMapping = {
 };
 
 /**
- * Bvv specific implementation of {@link module:services/RoutingService~osmRoadTypeMappingProvider}
+ * BVV specific implementation of {@link module:services/RoutingService~osmRoadTypeMappingProvider}
  * @function
  * @type {module:services/RoutingService~osmRoadTypeMappingProvider}
  */
