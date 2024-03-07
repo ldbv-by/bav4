@@ -64,6 +64,31 @@ describe('MeasurementOverlayStyle', () => {
 		return overlay.getElement();
 	};
 
+	it('adds overlays', () => {
+		const featureMock = {};
+		const mapMock = {};
+		const classUnderTest = new MeasurementOverlayStyle();
+		const createDistanceOverlaySpy = spyOn(classUnderTest, '_createDistanceOverlay')
+			.withArgs(featureMock, mapMock)
+			.and.callFake(() => {});
+		const createOrRemoveAreaOverlaySpy = spyOn(classUnderTest, '_createOrRemoveAreaOverlay')
+			.withArgs(featureMock, mapMock)
+			.and.callFake(() => {});
+		const createOrRemovePartitionOverlaysSpy = spyOn(classUnderTest, '_createOrRemovePartitionOverlays')
+			.withArgs(featureMock, mapMock)
+			.and.callFake(() => {});
+		const restoreManualOverlayPositionSpy = spyOn(classUnderTest, '_restoreManualOverlayPosition')
+			.withArgs(featureMock, mapMock)
+			.and.callFake(() => {});
+
+		classUnderTest.add(featureMock, mapMock);
+
+		expect(createDistanceOverlaySpy).toHaveBeenCalled();
+		expect(createOrRemoveAreaOverlaySpy).toHaveBeenCalled();
+		expect(createOrRemovePartitionOverlaysSpy).toHaveBeenCalled();
+		expect(restoreManualOverlayPositionSpy).toHaveBeenCalled();
+	});
+
 	it('removes all overlays from feature', () => {
 		setup();
 		const removeSpy = jasmine.createSpy();
@@ -592,12 +617,7 @@ describe('MeasurementOverlayStyle', () => {
 				return false;
 			}
 		};
-		const staticOverlayMock = {
-			getPosition: () => [],
-			get() {
-				return false;
-			}
-		};
+		const fooOverlayMock = {};
 
 		const geometry = new LineString([
 			[0, 0],
@@ -606,17 +626,14 @@ describe('MeasurementOverlayStyle', () => {
 		const feature = new Feature({ geometry: geometry });
 
 		feature.set('measurement', draggedOverlayMock);
-		feature.set('area', draggedOverlayMock);
-		feature.set('static', staticOverlayMock);
+		feature.set('foo', fooOverlayMock);
 
 		saveManualOverlayPosition(feature);
 
 		expect(feature.get('measurement_position_x')).toBeUndefined();
 		expect(feature.get('measurement_position_y')).toBeUndefined();
-		expect(feature.get('area_position_x')).toBeUndefined();
-		expect(feature.get('area_position_y')).toBeUndefined();
-		expect(feature.get('static_position_x')).toBeUndefined();
-		expect(feature.get('static_position_y')).toBeUndefined();
+		expect(feature.get('foo_position_x')).toBeUndefined();
+		expect(feature.get('foo_position_y')).toBeUndefined();
 	});
 
 	it('restore manual overlay-position from the related feature', () => {
