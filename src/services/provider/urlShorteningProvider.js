@@ -4,7 +4,7 @@
 import { $injector } from '../../injection';
 
 /**
- *  Bvv specific implementation of {@link module:services/UrlService~shortUrlProvider}
+ *  BVV specific implementation of {@link module:services/UrlService~shortUrlProvider}
  * @async
  * @type {module:services/UrlService~shortUrlProvider}
  */

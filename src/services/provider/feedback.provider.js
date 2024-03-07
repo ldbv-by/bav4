@@ -6,7 +6,7 @@ import { GeneralFeedback, MapFeedback } from '../FeedbackService';
 import { MediaType } from '../../domain/mediaTypes';
 
 /**
- * Bvv specific implementation of {@link module:services/FeedbackService~feedbackStorageProvider}
+ * BVV specific implementation of {@link module:services/FeedbackService~feedbackStorageProvider}
  * @function
  * @type {module:services/FeedbackService~feedbackStorageProvider}
  */
@@ -46,7 +46,7 @@ export const bvvFeedbackStorageProvider = async (mapFeedback) => {
 };
 
 /**
- * Bvv specific implementation of {@link module:services/FeedbackService~mapFeedbackCategoriesProvider}
+ * BVV specific implementation of {@link module:services/FeedbackService~mapFeedbackCategoriesProvider}
  * @function
  * @type {module:services/FeedbackService~mapFeedbackCategoriesProvider}
  */
@@ -64,7 +64,7 @@ export const bvvMapFeedbackCategoriesProvider = async () => {
 };
 
 /**
- * Bvv specific implementation of {@link module:services/FeedbackService~generalFeedbackCategoriesProvider}
+ * BVV specific implementation of {@link module:services/FeedbackService~generalFeedbackCategoriesProvider}
  * @function
  * @type {module:services/FeedbackService~generalFeedbackCategoriesProvider}
  */
@@ -82,7 +82,7 @@ export const bvvGeneralFeedbackCategoriesProvider = async () => {
 };
 
 /**
- * Bvv specific implementation of {@link module:services/FeedbackService~mapFeedbackOverlayGeoResourceProvider}
+ * BVV specific implementation of {@link module:services/FeedbackService~mapFeedbackOverlayGeoResourceProvider}
  * @function
  * @type {module:services/FeedbackService~mapFeedbackOverlayGeoResourceProvider}
  */

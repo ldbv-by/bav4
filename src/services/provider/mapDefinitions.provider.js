@@ -5,7 +5,7 @@ import { BvvCoordinateRepresentations, GlobalCoordinateRepresentations } from '.
 import { $injector } from '../../injection';
 
 /**
- * Bvv specific implementation of {@link module:services/MapService~mapDefinitionProvider}
+ * BVV specific implementation of {@link module:services/MapService~mapDefinitionProvider}
  * @function
  * @type {module:services/MapService~mapDefinitionProvider}
  */
