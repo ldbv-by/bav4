@@ -5,13 +5,6 @@ import { Point, LineString, Polygon, LinearRing, Circle, MultiLineString, Geomet
 import { isNumber } from '../../../utils/checks';
 import { $injector } from '../../../injection/index';
 
-const transformGeometry = (geometry, fromProjection, toProjection) => {
-	if (fromProjection && toProjection) {
-		return geometry.clone().transform(fromProjection, toProjection);
-	}
-	return geometry;
-};
-
 export const PROJECTED_LENGTH_GEOMETRY_PROPERTY = 'projectedLength';
 
 /**

@@ -59,7 +59,6 @@ const mapServiceMock = {
 };
 
 const coordinateServiceMock = {
-	getLength() {},
 	getLength() {}
 };
 

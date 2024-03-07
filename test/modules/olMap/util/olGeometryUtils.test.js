@@ -29,8 +29,6 @@ proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0
 register(proj4);
 const coordinateServiceMock = {
 	getLength() {},
-	getLength() {},
-	getArea() {},
 	getArea() {}
 };
 

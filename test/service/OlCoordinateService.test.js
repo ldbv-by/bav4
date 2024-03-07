@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import { CoordinateSimplificationTarget, OlCoordinateService } from '../../src/services/OlCoordinateService';
-import { fromLonLat, toLonLat, transformExtent, transform } from 'ol/proj';
+import { fromLonLat, toLonLat, transformExtent } from 'ol/proj';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { bvvStringifyFunction } from '../../src/services/provider/stringifyCoords.provider';
