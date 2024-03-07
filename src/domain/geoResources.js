@@ -329,9 +329,9 @@ export class GeoResource {
 /**
  * An async function that loads a {@link GeoResource}.
  * @async
- * @callback asyncGeoResourceLoader
+ * @typedef {Function} asyncGeoResourceLoader
  * @param {string} id Id of the requested GeoResource
- * @returns {GeoResource}
+ * @returns {GeoResource} the loaded GeoResource
  */
 
 /**
