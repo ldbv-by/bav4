@@ -182,7 +182,7 @@ describe('olLoadFunction.provider', () => {
 			it('throws an exception when http status is not 200 and emits a notification', async () => {
 				const geoResourceId = 'geoResourceId';
 				const fakeImageWrapper = getFakeImageWrapperInstance();
-				const src = 'http://foo.var/some/11/1089/710';
+				const src = 'http://foo.var?WIDTH=2000&HEIGHT=2000';
 				spyOn(httpService, 'get').and.resolveTo(new Response(null, { status: 404 }));
 				const errorSpy = spyOn(console, 'error');
 				const imageLoadFunction = getBvvBaaImageLoadFunction(geoResourceId);
