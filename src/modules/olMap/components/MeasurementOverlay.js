@@ -117,9 +117,10 @@ export class MeasurementOverlay extends BaOverlay {
 				return '';
 			case MeasurementOverlayTypes.DISTANCE:
 				if (canShowAzimuthCircle(this.geometry)) {
-					const azimuthValue = getAzimuth(this.geometry);
-					const azimuth = azimuthValue ? azimuthValue.toFixed(2) : '-';
-					return azimuth + '°/' + this._unitsService.formatDistance(getMeasuredLength(), 2);
+					// canShowAzimuthCircle() secures that getAzimuth() always returns a valid value except NULL
+					const azimuthValue = getAzimuth(this.geometry).toFixed(2);
+					const distanceValue = this._unitsService.formatDistance(getMeasuredLength(), 2);
+					return `${azimuthValue}°/${distanceValue}`;
 				}
 				return this._unitsService.formatDistance(getMeasuredLength(), 2);
 			case MeasurementOverlayTypes.DISTANCE_PARTITION:
