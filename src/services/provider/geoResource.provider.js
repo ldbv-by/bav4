@@ -26,17 +26,13 @@ export const _definitionToGeoResource = (definition) => {
 			case 'vt':
 				return new VTGeoResource(def.id, def.label, def.url);
 			case 'vector': {
-				const loader = async () => {
-					const { UrlService: urlService } = $injector.inject('UrlService');
-					const vectorGeoResource = await defaultVectorGeoResourceLoaderForUrl(
-						urlService.proxifyInstant(def.url),
-						Symbol.for(def.sourceType),
-						def.id,
-						def.label
-					)();
-					return setPropertiesAndProviders(vectorGeoResource.setClusterParams(def.clusterParams ?? {}));
-				};
-				return new GeoResourceFuture(def.id, loader, def.label);
+				return new GeoResourceFuture(
+					def.id,
+					getBvvVectorGeoResourceLoaderForUrl(def.url, Symbol.for(def.sourceType), def.id, def.label),
+					def.label
+				).onResolve((resolved) => {
+					setPropertiesAndProviders(resolved.setClusterParams(def.clusterParams ?? {}));
+				});
 			}
 			case 'aggregate':
 				return new AggregateGeoResource(def.id, def.label, def.geoResourceIds);
@@ -78,8 +74,8 @@ export const loadBvvGeoResources = async () => {
 
 	if (result.ok) {
 		const geoResources = [];
-		const georesourceDefinitions = await result.json();
-		georesourceDefinitions.forEach((definition) => {
+		const geoResourceDefinitions = await result.json();
+		geoResourceDefinitions.forEach((definition) => {
 			const geoResource = _definitionToGeoResource(definition);
 			if (geoResource) {
 				geoResources.push(geoResource);
@@ -219,5 +215,36 @@ export const defaultVectorGeoResourceLoaderForUrl = (url, sourceType, id = creat
 			return new VectorGeoResource(id, label, sourceType).setSource(data, 4326 /**valid for kml, gpx and geoJson**/);
 		}
 		throw new Error(`GeoResource for '${url}' could not be loaded: Http-Status ${result.status}`);
+	};
+};
+
+/**
+ * Returns an {@link module:domain/geoResources~asyncGeoResourceLoader} for an URL-based BVV VectorGeoResource.
+ * @function
+ * @param {string} url
+ * @param {VectorSourceType} sourceType
+ * @param {string | null} [id]
+ * @param {string | null} [label]
+ * @returns {module:domain/geoResources~asyncGeoResourceLoader}
+ */
+export const getBvvVectorGeoResourceLoaderForUrl = (url, sourceType, id, label) => {
+	return async () => {
+		const {
+			HttpService: httpService,
+			UrlService: urlService,
+			GeoResourceService: geoResourceService
+		} = $injector.inject('HttpService', 'UrlService', 'GeoResourceService');
+		const result = await httpService.get(
+			urlService.proxifyInstant(url),
+			{ timeout: 5000 },
+			{ response: [geoResourceService.getAuthResponseInterceptorForGeoResource(id)] }
+		);
+
+		if (result.ok) {
+			const data = await result.text();
+
+			return new VectorGeoResource(id, label, sourceType).setSource(data, 4326 /**valid for kml, gpx and geoJson**/);
+		}
+		throw new Error(`VectorGeoResource for '${url}' could not be loaded: Http-Status ${result.status}`);
 	};
 };
