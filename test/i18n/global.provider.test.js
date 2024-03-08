@@ -4,6 +4,7 @@ describe('global i18n', () => {
 	it('provides translation for en', () => {
 		const map = provide('en');
 
+		expect(map.global_generic_exception).toBe('Something got wrong. See the console output for more information...');
 		expect(map.global_mfpService_init_exception).toBe('PDF export currently not available');
 		expect(map.global_mfpService_createJob_exception).toBe('PDF generation was not successful');
 		expect(map.global_featureInfoService_exception).toBe('FeatureInfo could not be retrieved');
@@ -30,6 +31,7 @@ describe('global i18n', () => {
 	it('provides translation for de', () => {
 		const map = provide('de');
 
+		expect(map.global_generic_exception).toBe('Leider ist etwas schiefgegangen. Weitere Informationen sind in der Konsole des Browsers zu finden...');
 		expect(map.global_mfpService_init_exception).toBe('PDF Export derzeit leider nicht möglich');
 		expect(map.global_mfpService_createJob_exception).toBe('PDF konnte nicht erstellt werden');
 		expect(map.global_featureInfoService_exception).toBe('FeatureInfo Abfrage schlug fehl');
@@ -56,7 +58,7 @@ describe('global i18n', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 18;
+		const expectedSize = 19;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
