@@ -51,8 +51,5 @@ export class GlobalErrorPlugin extends BaPlugin {
 		window.addEventListener('unhandledrejection', (event) => {
 			handleError(event.reason);
 		});
-
-		// Promise.reject(new UnavailableGeoResourceError('foo', 'geoId', 403));
-		// throw new Error('foo');
 	}
 }
