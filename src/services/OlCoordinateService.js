@@ -236,7 +236,7 @@ export class OlCoordinateService {
 			}, 0);
 		};
 		const wgs84Coordinates =
-			coordinateRepresentation?.code !== 4326
+			coordinateRepresentation?.code && coordinateRepresentation?.code !== 4326
 				? coordinates.map((c) => transform(c, OlCoordinateService._toEpsgCodeString(coordinateRepresentation.code), 'EPSG:4326'))
 				: coordinates;
 

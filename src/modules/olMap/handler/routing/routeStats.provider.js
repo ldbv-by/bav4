@@ -371,7 +371,6 @@ export const bvvRouteStatsProvider = (ghRoute, profileStats) => {
 			: ghRoute.paths[0].time;
 	const coordinates = polylineToGeometry(ghRoute.paths[0].points).getCoordinates();
 	const coordinateRepresentation = mapService.getCoordinateRepresentations(coordinates)[0];
-	console.log(coordinates, coordinateRepresentation);
 	const projectedDistance = coordinateService.getLength(coordinates, coordinateRepresentation);
 	// todo: usage of mapservice.coordinateRepresentations() + coordinateService.getLength() for a synchronized distance-value
 	const surfaceDetails = aggregateDetailData(ghRoute.paths[0].details.surface, coordinates);

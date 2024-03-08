@@ -2,6 +2,7 @@ import { $injector } from '../../../src/injection';
 import { MediaType } from '../../../src/domain/mediaTypes';
 import { getBvvProfile } from '../../../src/services/provider/profile.provider';
 import { CoordinateSimplificationTarget } from '../../../src/services/OlCoordinateService';
+import { GlobalCoordinateRepresentations } from '../../../src/domain/coordinateRepresentation';
 
 describe('profile provider', () => {
 	const mockProfileResponse = {
@@ -39,7 +40,64 @@ describe('profile provider', () => {
 		],
 		stats: {
 			sumUp: 1480.8,
-			sumDown: 1668.6
+			sumDown: 1668.6,
+			linearDistance: 1234.5
+		},
+		attrs: [
+			{
+				id: 'slope',
+				values: [
+					[0, 2, 0.1],
+					[3, 4, 0.21]
+				]
+			},
+			{
+				id: 'surface',
+				values: [
+					[0, 2, 'asphalt'],
+					[3, 4, 'missing']
+				]
+			}
+		]
+	};
+
+	const mockUpdatedProfileResponse = {
+		alts: [
+			{
+				dist: 0.0,
+				alt: 566.2,
+				e: 4473088.0,
+				n: 5477632.0
+			},
+			{
+				dist: 923.5351,
+				alt: 569.0,
+				e: 4472871.5,
+				n: 5476734.0
+			},
+			{
+				dist: 1847.0936,
+				alt: 568.7,
+				e: 4472655.0,
+				n: 5475836.5
+			},
+			{
+				dist: 2770.6287,
+				alt: 553.2,
+				e: 4472438.5,
+				n: 5474938.5
+			},
+			{
+				dist: 3694.1638,
+				alt: 547.6,
+				e: 4472222.0,
+				n: 5474041.0
+			}
+		],
+		stats: {
+			sumUp: 1480.8,
+			sumDown: 1668.6,
+			linearDistance: 42 // changed/updated by profile provider
 		},
 		attrs: [
 			{
@@ -69,6 +127,7 @@ describe('profile provider', () => {
 		};
 		const coordinateService = {
 			simplify() {},
+			getLength() {},
 			toCoordinate() {}
 		};
 
@@ -99,6 +158,9 @@ describe('profile provider', () => {
 			const coordinateServiceSpy0 = spyOn(coordinateService, 'simplify')
 				.withArgs(coords, CoordinateSimplificationTarget.ELEVATION_PROFILE)
 				.and.returnValue(coords);
+			const coordinateServiceSpy2 = spyOn(coordinateService, 'getLength')
+				.withArgs(coords, GlobalCoordinateRepresentations.SphericalMercator)
+				.and.returnValue(42);
 			const httpServiceSpy = spyOn(httpService, 'post')
 				.withArgs(`${backendUrl}/dem/profile`, expectedPayload, MediaType.JSON, {
 					timeout: 2000
@@ -110,8 +172,9 @@ describe('profile provider', () => {
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(coordinateServiceSpy0).toHaveBeenCalled();
 			expect(coordinateServiceSpy1).toHaveBeenCalled();
+			expect(coordinateServiceSpy2).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
-			expect(profile).toEqual(mockProfileResponse);
+			expect(profile).toEqual(mockUpdatedProfileResponse);
 		});
 
 		it('throws an error when backend request cannot be fulfilled', async () => {
