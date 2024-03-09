@@ -78,7 +78,7 @@ module.exports = {
 		port: port,
 		client: {
 			overlay: {
-				runtimeErrors: false /** runtime errors are caught by the app itself */
+				runtimeErrors: true /** set to `false` if errors should be caught by the app instead */
 			}
 		}
 	},
