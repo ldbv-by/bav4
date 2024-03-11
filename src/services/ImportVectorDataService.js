@@ -9,6 +9,7 @@ import {
 	getAttributionForLocallyImportedOrCreatedGeoResource,
 	getAttributionProviderForGeoResourceImportedByUrl
 } from './provider/attribution.provider';
+import { UnavailableGeoResourceError } from '../domain/errors';
 
 /**
  *
@@ -83,9 +84,9 @@ export class ImportVectorDataService {
 						.setAttributionProvider(getAttributionProviderForGeoResourceImportedByUrl(url));
 					return vgr;
 				}
-				throw new Error(`GeoResource for '${url}' could not be loaded: SourceType could not be detected`);
+				throw new UnavailableGeoResourceError(`GeoResource for '${url}' could not be loaded: SourceType could not be detected`, id);
 			}
-			throw new Error(`GeoResource for '${url}' could not be loaded: Http-Status ${result.status}`);
+			throw new UnavailableGeoResourceError(`GeoResource for '${url}' could not be loaded`, id, result.status);
 		};
 
 		const geoResource = new GeoResourceFuture(id, loader);
