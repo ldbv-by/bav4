@@ -1,6 +1,6 @@
 export const OPEN_CLOSED_CHANGED = 'components/menu/mainMenu/open';
 export const TAB_CHANGED = 'components/menu/mainMenu/tabChanged';
-const ORIENTATION_MEDIA_QUERY = '(orientation: portrait)';
+const ORIENTATION_MEDIA_QUERY = '(max-width: 80em) or (orientation: portrait)';
 
 const mainMenuReducer = (state, action) => {
 	const { type, payload } = action;
@@ -24,7 +24,6 @@ const mainMenuReducer = (state, action) => {
 
 /**
  * Provides a media reducer which has no initial state
- * @param {object} initialState
  * @returns media reducer
  */
 export const createNoInitialStateMainMenuReducer = () => {
@@ -32,7 +31,7 @@ export const createNoInitialStateMainMenuReducer = () => {
 };
 
 /**
- * Provides a media reducer which initial state is beeing obtained from the window object.
+ * Provides a media reducer which initial state is obtained from the window object.
  * @param {Window} _window
  * @returns media reducer
  */

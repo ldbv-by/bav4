@@ -13,17 +13,14 @@ describe('FeatureInfoResult provider', () => {
 			post: async () => {}
 		};
 
+		const responseInterceptor = () => {};
 		const geoResourceService = {
-			byId: () => {}
+			byId: () => {},
+			getAuthResponseInterceptorForGeoResource: () => responseInterceptor
 		};
 
 		const baaCredentialService = {
 			get: () => {}
-		};
-
-		const responseInterceptor = () => {};
-		const authService = {
-			getAuthResponseInterceptorForGeoResource: () => responseInterceptor
 		};
 
 		beforeAll(() => {
@@ -31,7 +28,6 @@ describe('FeatureInfoResult provider', () => {
 				.registerSingleton('ConfigService', configService)
 				.registerSingleton('HttpService', httpService)
 				.registerSingleton('GeoResourceService', geoResourceService)
-				.registerSingleton('AuthService', authService)
 				.registerSingleton('BaaCredentialService', baaCredentialService);
 		});
 
@@ -53,14 +49,14 @@ describe('FeatureInfoResult provider', () => {
 				resolution: mapResolution
 			});
 			const featureInfoResultPayload = { title: title, content: 'content' };
-			const authServiceSpy = spyOn(authService, 'getAuthResponseInterceptorForGeoResource').and.returnValue(responseInterceptor);
+			const authServiceSpy = spyOn(geoResourceService, 'getAuthResponseInterceptorForGeoResource').and.returnValue(responseInterceptor);
 			const httpServiceSpy = spyOn(httpService, 'post')
 				.withArgs(
 					`${backendUrl}getFeature/${geoResourceId}`,
 					expectedRequestPayload,
 					MediaType.JSON,
 					{ timeout: 10000 },
-					{ response: responseInterceptor }
+					{ response: [responseInterceptor] }
 				)
 				.and.resolveTo(new Response(JSON.stringify(featureInfoResultPayload)));
 
@@ -92,7 +88,7 @@ describe('FeatureInfoResult provider', () => {
 			});
 			const featureInfoResultPayload = { title: title, content: 'content' };
 			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(`${backendUrl}getFeature/url`, expectedRequestPayload, MediaType.JSON, { timeout: 10000 }, { response: null })
+				.withArgs(`${backendUrl}getFeature/url`, expectedRequestPayload, MediaType.JSON, { timeout: 10000 }, { response: [] })
 				.and.resolveTo(new Response(JSON.stringify(featureInfoResultPayload)));
 
 			const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution);
@@ -133,7 +129,7 @@ describe('FeatureInfoResult provider', () => {
 			});
 			const featureInfoResultPayload = { title: title, content: 'content' };
 			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(`${backendUrl}getFeature/url`, expectedRequestPayload, MediaType.JSON, { timeout: 10000 }, { response: null })
+				.withArgs(`${backendUrl}getFeature/url`, expectedRequestPayload, MediaType.JSON, { timeout: 10000 }, { response: [] })
 				.and.resolveTo(new Response(JSON.stringify(featureInfoResultPayload)));
 
 			const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution);

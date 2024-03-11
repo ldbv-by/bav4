@@ -8,7 +8,7 @@ import { MediaType } from '../../domain/mediaTypes';
 import { isHttpUrl } from '../../utils/checks';
 
 /**
- * Bvv specific implementation of {@link module:services/FeatureInfoService~featureInfoProvider}.
+ * BVV specific implementation of {@link module:services/FeatureInfoService~featureInfoProvider}.
  * @function
  * @type {module:services/FeatureInfoService~featureInfoProvider}
  */
@@ -17,9 +17,8 @@ export const loadBvvFeatureInfo = async (geoResourceId, coordinate3857, mapResol
 		HttpService: httpService,
 		ConfigService: configService,
 		GeoResourceService: geoResourceService,
-		BaaCredentialService: baaCredentialService,
-		AuthService: authService
-	} = $injector.inject('HttpService', 'ConfigService', 'GeoResourceService', 'BaaCredentialService', 'AuthService');
+		BaaCredentialService: baaCredentialService
+	} = $injector.inject('HttpService', 'ConfigService', 'GeoResourceService', 'BaaCredentialService');
 
 	const geoResource = geoResourceService.byId(geoResourceId);
 
@@ -59,8 +58,8 @@ export const loadBvvFeatureInfo = async (geoResourceId, coordinate3857, mapResol
 			{
 				response:
 					geoResource.authenticationType === GeoResourceAuthenticationType.BAA || isHttpUrl(geoResourceId)
-						? null
-						: authService.getAuthResponseInterceptorForGeoResource(geoResourceId)
+						? []
+						: [geoResourceService.getAuthResponseInterceptorForGeoResource(geoResourceId)]
 			}
 		);
 

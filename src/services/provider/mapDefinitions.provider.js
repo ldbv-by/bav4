@@ -5,22 +5,9 @@ import { BvvCoordinateRepresentations, GlobalCoordinateRepresentations } from '.
 import { $injector } from '../../injection';
 
 /**
- * Map related meta data
- * @typedef {Object} MapDefinitions
- * @property {Extent} defaultExtent default extent of the map
- * @property {number} minZoomLevel the minimal zoom level the map should support
- * @property {number} maxZoomLevel the maximal zoom level the map should support
- * @property {number} srid the internal SRID of the map
- * @property {number} localProjectedSrid the SRID of the supported local projected system
- * @property {Extent} localProjectedSridExtent the extent of the local supported projected system
- * @property {function(Coordinate):(Array<CoordinateRepresentation>)} localProjectedSridDefinitionsForView function which can take a coordinate and returns an array of CoordinateRepresentations
- * @property {Array<CoordinateRepresentation>} globalSridDefinitionsForView array of global CoordinateRepresentations
- */
-
-/**
- * Provider for map releated meta data
+ * BVV specific implementation of {@link module:services/MapService~mapDefinitionProvider}
  * @function
- * @returns {MapDefinitions} BVV specific MapDefinitions
+ * @type {module:services/MapService~mapDefinitionProvider}
  */
 export const getBvvMapDefinitions = () => {
 	return {

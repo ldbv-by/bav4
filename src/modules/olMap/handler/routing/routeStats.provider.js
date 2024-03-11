@@ -8,12 +8,12 @@ import { $injector } from '../../../../injection/index';
 import { RouteWarningCriticality } from '../../../../domain/routing';
 
 /**
- * The predefined vehicle-specific SpeedOptions for Hike, Bike, MTB and Roadbike
+ * The predefined vehicle-specific SpeedOptions for Hike, Bike, MTB and Roadbike/Racingbike
  */
 const VehicleSpeedOptions = {
-	'bvv-hike': { up: 300, down: 500, horizontal: 4000 }, // Base from DIN 33466/DAV
-	'bvv-bike': { up: 300, down: 250000, horizontal: 15000 }, // average cyclist with comfortable pace
-	'bvv-mtb': { up: 400, down: 250000, horizontal: 20000 }, // sportive cyclist on paved roads and rough terrain with higher pace
+	hike: { up: 300, down: 500, horizontal: 4000 }, // Base from DIN 33466/DAV
+	bike: { up: 300, down: 250000, horizontal: 15000 }, // average cyclist with comfortable pace
+	mtb: { up: 400, down: 250000, horizontal: 20000 }, // sportive cyclist on paved roads and rough terrain with higher pace
 	racingbike: { up: 400, down: 350000, horizontal: 27000 } // sportive/racing cyclist on only paved roads (asphalt,tarmac,concrete) with higher pace
 };
 
@@ -294,15 +294,13 @@ const mergeRoadClassAndTrackTypeData = (roadClassDetails, trackTypeDetails) => {
 
 /**
  * Creates warnings for the specified RouteDetails (roadClass and surface)
- * @param {string} vehicle
+ * @param {string} vehicleType the vehicleType
  * @param {Array<RouteDetail>} roadClassDetails
  * @param {Array<RouteDetail>} surfaceDetails
  * @param {string} language the i18n code for language of the warning message
  * @returns {Object.<string, module:domain/routing~RouteWarningAttribute>}
  */
-const createRouteWarnings = (vehicle, roadClassDetails, surfaceDetails, language) => {
-	const vehicleType = vehicle.replace('bvv-', '').replace('bayernnetz-', '');
-
+const createRouteWarnings = (vehicleType, roadClassDetails, surfaceDetails, language) => {
 	const insertWarning = (roadClassDetail, surfaceDetail) => {
 		const ruleOptions = { ...defaultRuleOptions, language: language, vehicle: vehicleType, roadClass: roadClassDetail[2], surface: surfaceDetail[2] };
 		return RouteWarningRuleFunctions.map((ruleFunction) => ruleFunction(ruleOptions)).filter((warning) => warning !== null);
@@ -353,21 +351,20 @@ const polylineToGeometry = (polyline) => {
 };
 
 /**
- * Bvv specific implementation of {@link module:services/RoutingService~routeStatsProvider}
+ * BVV specific implementation of {@link module:services/RoutingService~routeStatsProvider}
  * @function
  * @type {module:services/RoutingService~routeStatsProvider}
  */
 export const bvvRouteStatsProvider = (ghRoute, profileStats) => {
 	const { ConfigService: configService } = $injector.inject('ConfigService');
 	const lang = configService.getValue('DEFAULT_LANG');
-
-	const speedOptions = Object.hasOwn(VehicleSpeedOptions, ghRoute.vehicle) ? VehicleSpeedOptions[ghRoute.vehicle] : null;
+	const vehicleType = ghRoute.vehicle.replace('bvv-', '').replace('bayernnetz-', '');
+	const speedOptions = Object.hasOwn(VehicleSpeedOptions, vehicleType) ? VehicleSpeedOptions[vehicleType] : null;
 	const validProfileStats = profileStats?.sumUp != null && profileStats?.sumDown != null;
 	const time =
 		speedOptions && validProfileStats
 			? getETAFor(ghRoute.paths[0].distance, profileStats?.sumUp, profileStats?.sumDown, speedOptions)
 			: ghRoute.paths[0].time;
-
 	const coordinates = polylineToGeometry(ghRoute.paths[0].points).getCoordinates();
 	const surfaceDetails = aggregateDetailData(ghRoute.paths[0].details.surface, coordinates);
 	const mergedRoadClassTrackTypeRawData = mergeRoadClassAndTrackTypeData(ghRoute.paths[0].details.road_class, ghRoute.paths[0].details.track_type);
@@ -376,7 +373,7 @@ export const bvvRouteStatsProvider = (ghRoute, profileStats) => {
 		surface: surfaceDetails,
 		road_class: roadClassTrackTypeDetails
 	};
-	const warnings = createRouteWarnings(ghRoute.vehicle, mergedRoadClassTrackTypeRawData, ghRoute.paths[0].details.surface, lang);
+	const warnings = createRouteWarnings(vehicleType, mergedRoadClassTrackTypeRawData, ghRoute.paths[0].details.surface, lang);
 
 	return {
 		time: time,

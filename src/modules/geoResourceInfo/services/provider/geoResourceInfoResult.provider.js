@@ -7,7 +7,7 @@ import { MediaType } from '../../../../domain/mediaTypes';
 import { GeoResourceAuthenticationType, WmsGeoResource } from '../../../../domain/geoResources';
 
 /**
- * Bvv specific implementation of {@link module:modules/geoResourceInfo/services/GeoResourceInfoService~geoResourceInfoProvider}.
+ * BVV specific implementation of {@link module:modules/geoResourceInfo/services/GeoResourceInfoService~geoResourceInfoProvider}.
  * @function
  * @type {module:modules/geoResourceInfo/services/GeoResourceInfoService~geoResourceInfoProvider}
  */
@@ -16,9 +16,8 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 		HttpService: httpService,
 		ConfigService: configService,
 		GeoResourceService: geoResourceService,
-		BaaCredentialService: baaCredentialService,
-		AuthService: authService
-	} = $injector.inject('HttpService', 'ConfigService', 'GeoResourceService', 'BaaCredentialService', 'AuthService');
+		BaaCredentialService: baaCredentialService
+	} = $injector.inject('HttpService', 'ConfigService', 'GeoResourceService', 'BaaCredentialService');
 
 	const throwError = (reason) => {
 		throw new Error(`GeoResourceInfoResult for '${geoResourceId}' could not be loaded: ${reason}`);
@@ -57,8 +56,8 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 			{
 				response:
 					geoResource.authenticationType === GeoResourceAuthenticationType.BAA
-						? null
-						: authService.getAuthResponseInterceptorForGeoResource(geoResourceId)
+						? []
+						: [geoResourceService.getAuthResponseInterceptorForGeoResource(geoResourceId)]
 			}
 		);
 	};

@@ -21,6 +21,9 @@ describe('i18n for header module', () => {
 		expect(TestUtils.renderTemplateResult(map.auth_passwordCredentialPanel_footer_register_information(['bar'])).querySelector('a').href).toContain(
 			'bar'
 		);
+		expect(TestUtils.renderTemplateResult(map.auth_passwordCredentialPanel_footer_register_information(['bar'])).querySelector('a').target).toBe(
+			'_blank'
+		);
 		expect(map.auth_passwordCredentialPanel_footer_forgot_login).toBe('Kennung vergessen?');
 		expect(map.auth_passwordCredentialPanel_footer_forgot_password).toBe('Password vergessen?');
 	});
@@ -43,6 +46,9 @@ describe('i18n for header module', () => {
 		);
 		expect(TestUtils.renderTemplateResult(map.auth_passwordCredentialPanel_footer_register_information(['bar'])).querySelector('a').href).toContain(
 			'bar'
+		);
+		expect(TestUtils.renderTemplateResult(map.auth_passwordCredentialPanel_footer_register_information(['bar'])).querySelector('a').target).toBe(
+			'_blank'
 		);
 		expect(map.auth_passwordCredentialPanel_footer_forgot_login).toBe('Forgot username?');
 		expect(map.auth_passwordCredentialPanel_footer_forgot_password).toBe('Forgot password?');

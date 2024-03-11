@@ -11,6 +11,7 @@ describe('i18n for featureInfo module', () => {
 		expect(map.geometryInfo_title_line_length).toBe('Länge');
 		expect(map.geometryInfo_title_polygon_length).toBe('Umfang');
 		expect(map.geometryInfo_title_polygon_area).toBe('Fläche');
+		expect(map.geometryInfo_info).toBe('Bitte in die <b>Karte</b> klicken');
 	});
 
 	it('provides translation for en', () => {
@@ -23,10 +24,11 @@ describe('i18n for featureInfo module', () => {
 		expect(map.geometryInfo_title_line_length).toBe('Distance');
 		expect(map.geometryInfo_title_polygon_length).toBe('Perimeter');
 		expect(map.geometryInfo_title_polygon_area).toBe('Area');
+		expect(map.geometryInfo_info).toBe('Please click into the <b>map</b>');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 7;
+		const expectedSize = 8;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

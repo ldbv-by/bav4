@@ -5,7 +5,7 @@ import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
 import { layersReducer, createDefaultLayer } from '../../../../src/store/layers/layers.reducer';
 import { networkReducer } from '../../../../src/store/network/network.reducer';
-import { navigationRailReducer } from '../../../../src/store/navigationRail/navigationRail.reducer';
+import { createNoInitialStateNavigationRailReducer } from '../../../../src/store/navigationRail/navigationRail.reducer';
 import { setFetching } from '../../../../src/store/network/network.action';
 import { searchReducer } from '../../../../src/store/search/search.reducer';
 import { EventLike } from '../../../../src/utils/storeUtils';
@@ -46,6 +46,9 @@ describe('Header', () => {
 				minWidth: true,
 				observeResponsiveParameter: true
 			},
+			navigationRail: {
+				open: false
+			},
 			...state
 		};
 		store = TestUtils.setupStoreAndDi(initialState, {
@@ -56,7 +59,7 @@ describe('Header', () => {
 			search: searchReducer,
 			tools: toolsReducer,
 			media: createNoInitialStateMediaReducer(),
-			navigationRail: navigationRailReducer
+			navigationRail: createNoInitialStateNavigationRailReducer()
 		});
 		$injector
 			.registerSingleton('EnvironmentService', { isEmbedded: () => embed, isStandalone: () => standalone })
@@ -140,8 +143,8 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.header')).toHaveSize(1);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__logo')).display).toBe('none');
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__logo')).display).toBe('block');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header_search_icon')).opacity).toBe('0');
 		});
 
@@ -606,17 +609,17 @@ describe('Header', () => {
 					const element = await setup(state);
 					const input = element.shadowRoot.querySelector('#input');
 
-					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
+					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerLogo')).display).toBe('block');
 
 					input.focus();
 
-					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('none');
+					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerLogo')).display).toBe('none');
 
 					input.blur();
 
 					jasmine.clock().tick(300 + 100);
 
-					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
+					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerLogo')).display).toBe('block');
 				});
 			});
 
@@ -693,7 +696,7 @@ describe('Header', () => {
 
 					const element = await setup(state);
 
-					const container = element.shadowRoot.querySelector('#headerMobile');
+					const container = element.shadowRoot.querySelector('#headerLogo');
 					expect(window.getComputedStyle(container).display).toBe('block');
 					expect(window.getComputedStyle(container).opacity).toBe('1');
 					element.shadowRoot.querySelector('#input').focus();
