@@ -58,6 +58,7 @@ export class MeasurementOverlay extends BaOverlay {
 		this._type = MeasurementOverlayTypes.TEXT;
 		this._isDraggable = false;
 		this._placement = { sector: 'init', positioning: 'top-center', offset: [0, -25] };
+		this._content = null;
 	}
 
 	/**
@@ -89,14 +90,41 @@ export class MeasurementOverlay extends BaOverlay {
 	}
 
 	_updatePosition() {
+		const getStaticDistance = () => {
+			const distance = this._getMeasuredLength(this.geometry) * this.value;
+			return this._content ?? this._unitsService.formatDistance(round(Math.round(distance), -1), 0);
+		};
+
+		const getDistance = () => {
+			if (canShowAzimuthCircle(this.geometry)) {
+				// canShowAzimuthCircle() secures that getAzimuth() always returns a valid value except NULL
+				const azimuthValue = getAzimuth(this.geometry).toFixed(2);
+				const distanceValue = this._unitsService.formatDistance(this._getMeasuredLength(this.geometry), 2);
+				return `${azimuthValue}°/${distanceValue}`;
+			}
+			return this._unitsService.formatDistance(this._getMeasuredLength(this.geometry), 2);
+		};
+
+		const getArea = () => {
+			if (this.geometry instanceof Polygon) {
+				return this._unitsService.formatArea(getProjectedArea(this.geometry), 2);
+			}
+			return '';
+		};
+
 		switch (this._type) {
 			case MeasurementOverlayTypes.AREA:
 				this._position = this.geometry.getInteriorPoint().getCoordinates().slice(0, -1);
+				this._content = getArea();
 				break;
 			case MeasurementOverlayTypes.DISTANCE_PARTITION:
 				this._position = getCoordinateAt(this.geometry, this._value);
+				this._content = getStaticDistance();
 				break;
 			case MeasurementOverlayTypes.DISTANCE:
+				this._content = getDistance();
+				this._position = this.geometry.getLastCoordinate();
+				break;
 			case MeasurementOverlayTypes.HELP:
 			case MeasurementOverlayTypes.TEXT:
 			default:
@@ -105,31 +133,21 @@ export class MeasurementOverlay extends BaOverlay {
 	}
 
 	_getContent(type) {
-		const getMeasuredLength = () => {
-			const alreadyMeasuredLength = this.geometry ? this.geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY) : null;
-			return alreadyMeasuredLength ?? getProjectedLength(this.geometry);
-		};
 		switch (type) {
 			case MeasurementOverlayTypes.AREA:
-				if (this.geometry instanceof Polygon) {
-					return this._unitsService.formatArea(getProjectedArea(this.geometry), 2);
-				}
-				return '';
 			case MeasurementOverlayTypes.DISTANCE:
-				if (canShowAzimuthCircle(this.geometry)) {
-					// canShowAzimuthCircle() secures that getAzimuth() always returns a valid value except NULL
-					const azimuthValue = getAzimuth(this.geometry).toFixed(2);
-					const distanceValue = this._unitsService.formatDistance(getMeasuredLength(), 2);
-					return `${azimuthValue}°/${distanceValue}`;
-				}
-				return this._unitsService.formatDistance(getMeasuredLength(), 2);
 			case MeasurementOverlayTypes.DISTANCE_PARTITION:
-				return this._unitsService.formatDistance(round(Math.round(getMeasuredLength() * this._value), -1), 0);
+				return this._content;
 			case MeasurementOverlayTypes.HELP:
 			case MeasurementOverlayTypes.TEXT:
 				return this.value;
 		}
 	}
+
+	_getMeasuredLength = (geometry) => {
+		const alreadyMeasuredLength = geometry ? geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY) : null;
+		return alreadyMeasuredLength ?? getProjectedLength(this.geometry);
+	};
 
 	set placement(value) {
 		if (value !== this.placement) {

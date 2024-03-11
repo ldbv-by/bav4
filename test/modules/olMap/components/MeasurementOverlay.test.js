@@ -51,9 +51,6 @@ describe('MeasurementOverlay', () => {
 		}
 		return element;
 	};
-	const getLocalProjectionHints = () => {
-		return { sourceSrid: 3857, destinationSrid: 25832 };
-	};
 
 	describe('when initialized with type property', () => {
 		it('renders the text view', async () => {
@@ -86,8 +83,7 @@ describe('MeasurementOverlay', () => {
 			]);
 			const properties = {
 				type: MeasurementOverlayTypes.DISTANCE,
-				geometry: geodeticGeometry,
-				projectionHints: getLocalProjectionHints()
+				geometry: geodeticGeometry
 			};
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
@@ -111,8 +107,7 @@ describe('MeasurementOverlay', () => {
 			]);
 			const properties = {
 				type: MeasurementOverlayTypes.AREA,
-				geometry: geodeticGeometry,
-				projectionHints: getLocalProjectionHints()
+				geometry: geodeticGeometry
 			};
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
@@ -132,8 +127,7 @@ describe('MeasurementOverlay', () => {
 			const properties = {
 				type: MeasurementOverlayTypes.DISTANCE_PARTITION,
 				geometry: geodeticGeometry,
-				value: 0.1,
-				projectionHints: getLocalProjectionHints()
+				value: 0.1
 			};
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
@@ -152,13 +146,13 @@ describe('MeasurementOverlay', () => {
 			]);
 			const properties = {
 				type: MeasurementOverlayTypes.DISTANCE_PARTITION,
-				geometry: geodeticGeometry,
 				value: 0.099,
-				projectionHints: getLocalProjectionHints()
+				geometry: geodeticGeometry
 			};
 			spyOn(coordinateServiceMock, 'getLength').and.returnValue(1000);
 			const spy = spyOn(unitServiceMock, 'formatDistance').and.callThrough();
 			const element = await setup(properties);
+			element.value = 0.099;
 
 			expect(element.innerText).toBe('THE DISTANCE IN m');
 			expect(spy).toHaveBeenCalledWith(100, 0);
@@ -171,9 +165,8 @@ describe('MeasurementOverlay', () => {
 			]);
 			const properties = {
 				type: MeasurementOverlayTypes.DISTANCE_PARTITION,
-				geometry: geodeticGeometry,
 				value: 0.1001,
-				projectionHints: getLocalProjectionHints()
+				geometry: geodeticGeometry
 			};
 			spyOn(coordinateServiceMock, 'getLength').and.returnValue(1000);
 			const spy = spyOn(unitServiceMock, 'formatDistance').and.callThrough();
@@ -191,8 +184,7 @@ describe('MeasurementOverlay', () => {
 			const properties = {
 				type: MeasurementOverlayTypes.DISTANCE,
 				geometry: geodeticGeometry,
-				static: true,
-				projectionHints: getLocalProjectionHints()
+				static: true
 			};
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
@@ -211,8 +203,7 @@ describe('MeasurementOverlay', () => {
 			]);
 			const properties = {
 				type: MeasurementOverlayTypes.DISTANCE,
-				geometry: geodeticGeometry,
-				projectionHints: getLocalProjectionHints()
+				geometry: geodeticGeometry
 			};
 			const element = await setup(properties);
 
@@ -231,8 +222,7 @@ describe('MeasurementOverlay', () => {
 			]);
 			const properties = {
 				type: MeasurementOverlayTypes.AREA,
-				geometry: geodeticGeometry,
-				projectionHints: getLocalProjectionHints()
+				geometry: geodeticGeometry
 			};
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
