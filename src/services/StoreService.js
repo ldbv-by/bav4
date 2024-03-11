@@ -82,6 +82,7 @@ export class StoreService {
 
 		$injector.onReady(async () => {
 			const {
+				GlobalErrorPlugin: globalErrorPlugin,
 				LayersPlugin: layersPlugin,
 				TopicsPlugin: topicsPlugin,
 				ChipsPlugin: chipsPlugin,
@@ -109,6 +110,7 @@ export class StoreService {
 				HistoryStatePlugin: historyStatePlugin,
 				ObserveStateForEncodingPlugin: observeStateForEncodingPlugin
 			} = $injector.inject(
+				'GlobalErrorPlugin',
 				'TopicsPlugin',
 				'ChipsPlugin',
 				'LayersPlugin',
@@ -139,6 +141,7 @@ export class StoreService {
 
 			setTimeout(async () => {
 				//register plugins
+				await globalErrorPlugin.register(this._store);
 				await mediaPlugin.register(this._store);
 				await topicsPlugin.register(this._store);
 				await chipsPlugin.register(this._store);
