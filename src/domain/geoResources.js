@@ -332,7 +332,7 @@ export class GeoResource {
  * @typedef {Function} asyncGeoResourceLoader
  * @param {string} id Id of the requested GeoResource
  * @returns {GeoResource} the loaded GeoResource
- * @throws when resource cannot be loaded
+ * @throws {UnavailableGeoResourceError}
  */
 
 /**
@@ -384,6 +384,7 @@ export class GeoResourceFuture extends GeoResource {
 	 *
 	 * Note: It's up to the loader implementation which properties of the GeoResourceFuture instance are copied to the resolved GeoResource.
 	 * @returns GeoResource
+	 * @throws {UnavailableGeoResourceError} Error of the underlying loader
 	 */
 	async get() {
 		try {
