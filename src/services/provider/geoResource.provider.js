@@ -1,6 +1,7 @@
 /**
  * @module services/provider/geoResource_provider
  */
+import { UnavailableGeoResourceError } from '../../domain/errors';
 import { AggregateGeoResource, VectorGeoResource, WmsGeoResource, XyzGeoResource, GeoResourceFuture, VTGeoResource } from '../../domain/geoResources';
 import { SourceTypeName, SourceTypeResultStatus } from '../../domain/sourceType';
 import { $injector } from '../../injection';
@@ -119,7 +120,7 @@ export const loadBvvGeoResourceById = (id) => {
 				return geoResource;
 			}
 		}
-		throw new Error(`GeoResource for id '${id}' could not be loaded`);
+		throw new UnavailableGeoResourceError(`GeoResource for id '${id}' could not be loaded`, id, result.status);
 	};
 
 	return new GeoResourceFuture(id, loader);
@@ -185,8 +186,9 @@ export const loadExternalGeoResource = (urlBasedAsId) => {
 				};
 				return getGeoResource(sourceType);
 			}
-			throw new Error(
-				`SourceTypeService returns status=${Object.keys(SourceTypeResultStatus).find((key) => SourceTypeResultStatus[key] === status)} for ${url}`
+			throw new UnavailableGeoResourceError(
+				`SourceTypeService returns status=${Object.keys(SourceTypeResultStatus).find((key) => SourceTypeResultStatus[key] === status)} for ${url}`,
+				urlBasedAsId
 			);
 		};
 		return new GeoResourceFuture(urlBasedAsId, loader);
@@ -213,7 +215,7 @@ export const getDefaultVectorGeoResourceLoaderForUrl = (url, sourceType, id = cr
 
 			return new VectorGeoResource(id, label, sourceType).setSource(data, 4326 /**valid for kml, gpx and geoJson**/);
 		}
-		throw new Error(`GeoResource for '${url}' could not be loaded: Http-Status ${result.status}`);
+		throw new UnavailableGeoResourceError(`VectorGeoResource for '${url}' could not be loaded`, id, result.status);
 	};
 };
 
@@ -244,6 +246,6 @@ export const getBvvVectorGeoResourceLoaderForUrl = (url, sourceType, id, label) 
 
 			return new VectorGeoResource(id, label, sourceType).setSource(data, 4326 /**valid for kml, gpx and geoJson**/);
 		}
-		throw new Error(`VectorGeoResource for '${url}' could not be loaded: Http-Status ${result.status}`);
+		throw new UnavailableGeoResourceError(`VectorGeoResource for '${url}' could not be loaded`, id, result.status);
 	};
 };

@@ -1,3 +1,4 @@
+import { UnavailableGeoResourceError } from '../../../src/domain/errors';
 import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../src/domain/geoResources';
 import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../../src/domain/sourceType';
 import { $injector } from '../../../src/injection';
@@ -267,8 +268,8 @@ describe('GeoResource provider', () => {
 				.and.resolveTo(new Response(null, { status: 404 }));
 			spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
 
-			await expectAsync(_definitionToGeoResource(vectorDefinition).get()).toBeRejectedWithError(
-				`VectorGeoResource for '${vectorDefinition.url}' could not be loaded: Http-Status 404`
+			await expectAsync(_definitionToGeoResource(vectorDefinition).get()).toBeRejectedWith(
+				new UnavailableGeoResourceError(`VectorGeoResource for '${vectorDefinition.url}' could not be loaded`, vectorDefinition.id, 404)
 			);
 		});
 
@@ -846,8 +847,8 @@ describe('GeoResource provider', () => {
 				.withArgs(vectorDefinition.url, { timeout: 5000 })
 				.and.resolveTo(new Response(null, { status: 404 }));
 
-			await expectAsync(getDefaultVectorGeoResourceLoaderForUrl(vectorDefinition.url, vectorDefinition.sourceType)()).toBeRejectedWithError(
-				`GeoResource for '${vectorDefinition.url}' could not be loaded: Http-Status 404`
+			await expectAsync(getDefaultVectorGeoResourceLoaderForUrl(vectorDefinition.url, vectorDefinition.sourceType)()).toBeRejectedWith(
+				new UnavailableGeoResourceError(`VectorGeoResource for '${vectorDefinition.url}' could not be loaded`, vectorDefinition.id, 404)
 			);
 		});
 	});
@@ -882,8 +883,8 @@ describe('GeoResource provider', () => {
 				.and.resolveTo(new Response(null, { status: 404 }));
 			spyOn(urlService, 'proxifyInstant').withArgs(vectorDefinition.url).and.returnValue(vectorDefinition.url);
 
-			await expectAsync(getBvvVectorGeoResourceLoaderForUrl(vectorDefinition.url, vectorDefinition.sourceType)()).toBeRejectedWithError(
-				`VectorGeoResource for '${vectorDefinition.url}' could not be loaded: Http-Status 404`
+			await expectAsync(getBvvVectorGeoResourceLoaderForUrl(vectorDefinition.url, vectorDefinition.sourceType)()).toBeRejectedWith(
+				new UnavailableGeoResourceError(`VectorGeoResource for '${vectorDefinition.url}' could not be loaded`, vectorDefinition.id, 404)
 			);
 		});
 	});
