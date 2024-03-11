@@ -65,6 +65,7 @@ describe('WaypointItem', () => {
 			expect(waypointElement.shadowRoot.querySelectorAll('.waypoint-index')).toHaveSize(1);
 
 			// waypoint action buttons
+			expect(waypointElement.shadowRoot.querySelector('.waypoint__buttons').childElementCount).toBe(3);
 			expect(waypointElement.shadowRoot.querySelectorAll('#increase')).toHaveSize(1);
 			expect(waypointElement.shadowRoot.querySelectorAll('#decrease')).toHaveSize(1);
 			expect(waypointElement.shadowRoot.querySelectorAll('#remove')).toHaveSize(1);
