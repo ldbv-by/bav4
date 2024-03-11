@@ -60,6 +60,7 @@ import { BeforeUnloadPlugin } from '../plugins/BeforeUnloadPlugin';
 import { BvvRoutingService } from '../services/RoutingService';
 import { RoutingPlugin } from '../plugins/RoutingPlugin';
 import { AuthService } from '../services/AuthService';
+import { GlobalErrorPlugin } from '../plugins/GlobalErrorPlugin';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
@@ -96,6 +97,7 @@ $injector
 	.registerSingleton('FeedbackService', new FeedbackService())
 	.registerSingleton('RoutingService', new BvvRoutingService())
 
+	.registerSingleton('GlobalErrorPlugin', new GlobalErrorPlugin())
 	.registerSingleton('DrawPlugin', new DrawPlugin())
 	.registerSingleton('RoutingPlugin', new RoutingPlugin())
 	.registerSingleton('TopicsPlugin', new TopicsPlugin())
