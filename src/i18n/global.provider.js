@@ -3,6 +3,7 @@ export const provide = (lang) => {
 		case 'en':
 			return {
 				//the first part of the snake_case key should be the name of the related module
+				global_generic_exception: 'Something got wrong. See the console output for more information...',
 				global_mfpService_init_exception: 'PDF export currently not available',
 				global_mfpService_createJob_exception: 'PDF generation was not successful',
 				global_featureInfoService_exception: 'FeatureInfo could not be retrieved',
@@ -28,6 +29,7 @@ export const provide = (lang) => {
 		case 'de':
 			return {
 				//the first part of the snake_case key should be the name of the related module
+				global_generic_exception: 'Leider ist etwas schiefgegangen. Weitere Informationen sind in der Konsole des Browsers zu finden...',
 				global_mfpService_init_exception: 'PDF Export derzeit leider nicht möglich',
 				global_mfpService_createJob_exception: 'PDF konnte nicht erstellt werden',
 				global_featureInfoService_exception: 'FeatureInfo Abfrage schlug fehl',
