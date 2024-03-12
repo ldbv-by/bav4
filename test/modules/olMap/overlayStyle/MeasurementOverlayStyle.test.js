@@ -67,6 +67,7 @@ describe('MeasurementOverlayStyle', () => {
 	it('adds overlays', () => {
 		const featureMock = {};
 		const mapMock = {};
+		setup();
 		const classUnderTest = new MeasurementOverlayStyle();
 		const createDistanceOverlaySpy = spyOn(classUnderTest, '_createDistanceOverlay')
 			.withArgs(featureMock, mapMock)

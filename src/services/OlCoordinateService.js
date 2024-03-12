@@ -220,9 +220,9 @@ export class OlCoordinateService {
 	 *
 	 * Coordinates with a global coordinateRepresentation will be always result in geodetic distances (spherical).
 	 * @param {Array<module:domain/coordinateTypeDef~Coordinate>} coordinates input coordinates
-	 * @param {module:domain/coordinateRepresentation~CoordinateRepresentation}  [coordinateRepresentation=GlobalCoordinateRepresentations.WGS84] the coordinateRepresentation of the coordinates
+	 * @param {module:domain/coordinateRepresentation~CoordinateRepresentation}  coordinateRepresentation the coordinateRepresentation of the coordinates
 	 */
-	getLength(coordinates, coordinateRepresentation = GlobalCoordinateRepresentations.WGS84) {
+	getLength(coordinates, coordinateRepresentation) {
 		const getGeodesicLength = (coordinates) => {
 			const wgs84 = Geodesic.WGS84;
 			return coordinates.reduce((sum, current, index, coordinates) => {
@@ -235,12 +235,14 @@ export class OlCoordinateService {
 				return sum + r.s12;
 			}, 0);
 		};
-		const wgs84Coordinates =
-			coordinateRepresentation?.code && coordinateRepresentation?.code !== 4326
-				? coordinates.map((c) => transform(c, OlCoordinateService._toEpsgCodeString(coordinateRepresentation.code), 'EPSG:4326'))
-				: coordinates;
 
-		return coordinateRepresentation.global ? getGeodesicLength(wgs84Coordinates) : new LineString(coordinates).getLength();
+		if (coordinateRepresentation.code) {
+			const wgs84Coordinates = coordinates.map((c) =>
+				transform(c, OlCoordinateService._toEpsgCodeString(coordinateRepresentation.code), 'EPSG:4326')
+			);
+			return coordinateRepresentation.global ? getGeodesicLength(wgs84Coordinates) : new LineString(coordinates).getLength();
+		}
+		throw new Error('The coordinates must have a reprojectable CoordinateRepresentation (code !== null).');
 	}
 
 	/**
@@ -248,9 +250,9 @@ export class OlCoordinateService {
 	 *
 	 * Coordinates with a global coordinateRepresentation will be always result in geodetic calculation (spherical).
 	 * @param {Array<Array<module:domain/coordinateTypeDef~Coordinate>>} coordinates polygon coordinates
-	 * @param {module:domain/coordinateRepresentation~CoordinateRepresentation} [coordinateRepresentation=GlobalCoordinateRepresentations.WGS84] the coordinateRepresentation of the coordinates
+	 * @param {module:domain/coordinateRepresentation~CoordinateRepresentation} coordinateRepresentation the coordinateRepresentation of the coordinates
 	 */
-	getArea(coordinates, coordinateRepresentation = GlobalCoordinateRepresentations.WGS84) {
+	getArea(coordinates, coordinateRepresentation) {
 		const getGeodesicArea = (coordinates) => {
 			const geodesicPolygon = new PolygonArea.PolygonArea(Geodesic.WGS84);
 			return coordinates.reduce((aggregatedArea, linearRingCoordinates, index) => {
@@ -262,13 +264,13 @@ export class OlCoordinateService {
 			}, 0);
 		};
 
-		const wgs84Coordinates =
-			coordinateRepresentation?.code !== 4326
-				? coordinates.map((linearRingCoordinates) =>
-						linearRingCoordinates.map((c) => transform(c, OlCoordinateService._toEpsgCodeString(coordinateRepresentation.code), 'EPSG:4326'))
-					)
-				: coordinates;
+		if (coordinateRepresentation.code) {
+			const wgs84Coordinates = coordinates.map((linearRingCoordinates) =>
+				linearRingCoordinates.map((c) => transform(c, OlCoordinateService._toEpsgCodeString(coordinateRepresentation.code), 'EPSG:4326'))
+			);
 
-		return coordinateRepresentation.global ? getGeodesicArea(wgs84Coordinates) : new Polygon(coordinates).getArea();
+			return coordinateRepresentation.global ? getGeodesicArea(wgs84Coordinates) : new Polygon(coordinates).getArea();
+		}
+		throw new Error('The coordinates must have a reprojectable CoordinateRepresentation (code !== null).');
 	}
 }

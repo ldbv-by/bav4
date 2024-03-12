@@ -270,7 +270,7 @@ describe('OlCoordinateService', () => {
 				setup();
 				const coordinates = [];
 
-				const length = instanceUnderTest.getLength(coordinates);
+				const length = instanceUnderTest.getLength(coordinates, GlobalCoordinateRepresentations.WGS84);
 
 				expect(length).toBe(0);
 			});
@@ -353,7 +353,7 @@ describe('OlCoordinateService', () => {
 				setup();
 				const coordinates = [[]];
 
-				const area = instanceUnderTest.getArea(coordinates);
+				const area = instanceUnderTest.getArea(coordinates, GlobalCoordinateRepresentations.WGS84);
 
 				expect(area).toBe(0);
 			});
