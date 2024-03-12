@@ -174,7 +174,7 @@
 						</li>
 					</ul>
 					<div class="chips">
-						<ba-share-position-chip .center=${e}></ba-share-position-chip>
+						<ba-share-chip .center=${e}></ba-share-chip>
 						<ba-map-feedback-chip .center=${e}></ba-map-feedback-chip>
 						<ba-routing-chip .coordinate=${e}></ba-routing-chip>
 					</div>
