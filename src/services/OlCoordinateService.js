@@ -9,7 +9,6 @@ import { getCoordinatesForElevationProfile } from '../modules/olMap/utils/olGeom
 import { LineString, Polygon } from '../../node_modules/ol/geom';
 import { isCoordinate, isCoordinateLike } from '../utils/checks';
 import { Geodesic, PolygonArea } from 'geographiclib-geodesic';
-import { GlobalCoordinateRepresentations } from '../domain/coordinateRepresentation';
 
 /**
  * A function that returns a string representation of a coordinate.
