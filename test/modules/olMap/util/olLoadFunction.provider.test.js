@@ -1,7 +1,6 @@
+import { UnavailableGeoResourceError } from '../../../../src/domain/errors.js';
 import { $injector } from '../../../../src/injection/index.js';
 import { getBvvBaaImageLoadFunction, getBvvTileLoadFunction } from '../../../../src/modules/olMap/utils/olLoadFunction.provider';
-import { LevelTypes } from '../../../../src/store/notifications/notifications.action.js';
-import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer.js';
 import { TestUtils } from '../../../test-utils.js';
 import TileState from 'ol/TileState.js';
 
@@ -20,14 +19,8 @@ describe('olLoadFunction.provider', () => {
 			getAuthResponseInterceptorForGeoResource: () => responseInterceptor
 		};
 
-		let store;
 		beforeAll(() => {
-			store = TestUtils.setupStoreAndDi(
-				{},
-				{
-					notifications: notificationReducer
-				}
-			);
+			TestUtils.setupStoreAndDi();
 			$injector
 				.registerSingleton('ConfigService', configService)
 				.registerSingleton('HttpService', httpService)
@@ -47,56 +40,17 @@ describe('olLoadFunction.provider', () => {
 		};
 
 		describe('BAA is required', () => {
-			it('throws an exception when http status is not 200 and emits a notification', async () => {
+			it('rejects with an UnavailableGeoResourceError when http status is not 200', async () => {
 				const geoResourceId = 'geoResourceId';
 				const fakeImageWrapper = getFakeImageWrapperInstance();
 				const src = 'http://foo.var?WIDTH=2000&HEIGHT=2000';
 				const credential = { username: 'username', password: 'password' };
 				spyOn(httpService, 'get').and.resolveTo(new Response(null, { status: 404 }));
-				const errorSpy = spyOn(console, 'error');
 				const imageLoadFunction = getBvvBaaImageLoadFunction(geoResourceId, credential);
 
-				await imageLoadFunction(fakeImageWrapper, src);
-
-				expect(errorSpy).toHaveBeenCalledWith('Image could not be fetched', new Error('Unexpected network status 404'));
-				expect(store.getState().notifications.latest.payload.content).toBe('global_geoResource_not_available [geoResourceId]');
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
-			});
-
-			it('throws an exception when http status is 401 and emits a notification', async () => {
-				const geoResourceId = 'geoResourceId';
-				const fakeImageWrapper = getFakeImageWrapperInstance();
-				const src = 'http://foo.var?WIDTH=2000&HEIGHT=2000';
-				const credential = { username: 'username', password: 'password' };
-				spyOn(httpService, 'get').and.resolveTo(new Response(null, { status: 401 }));
-				const errorSpy = spyOn(console, 'error');
-				const imageLoadFunction = getBvvBaaImageLoadFunction(geoResourceId, credential);
-
-				await imageLoadFunction(fakeImageWrapper, src);
-
-				expect(errorSpy).toHaveBeenCalledWith('Image could not be fetched', new Error('Unexpected network status 401'));
-				expect(store.getState().notifications.latest.payload.content).toBe(
-					'global_geoResource_not_available [geoResourceId,global_geoResource_unauthorized]'
+				await expectAsync(imageLoadFunction(fakeImageWrapper, src)).toBeRejectedWith(
+					new UnavailableGeoResourceError(`Unexpected network status`, geoResourceId, 404)
 				);
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
-			});
-
-			it('throws an exception when http status is 403 and emits a notification', async () => {
-				const geoResourceId = 'geoResourceId';
-				const fakeImageWrapper = getFakeImageWrapperInstance();
-				const src = 'http://foo.var?WIDTH=2000&HEIGHT=2000';
-				const credential = { username: 'username', password: 'password' };
-				spyOn(httpService, 'get').and.resolveTo(new Response(null, { status: 403 }));
-				const errorSpy = spyOn(console, 'error');
-				const imageLoadFunction = getBvvBaaImageLoadFunction(geoResourceId, credential);
-
-				await imageLoadFunction(fakeImageWrapper, src);
-
-				expect(errorSpy).toHaveBeenCalledWith('Image could not be fetched', new Error('Unexpected network status 403'));
-				expect(store.getState().notifications.latest.payload.content).toBe(
-					'global_geoResource_not_available [geoResourceId,global_geoResource_forbidden]'
-				);
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 			});
 
 			describe('when NO scaling is needed', () => {
@@ -179,36 +133,16 @@ describe('olLoadFunction.provider', () => {
 		});
 
 		describe('BAA is NOT required', () => {
-			it('throws an exception when http status is not 200 and emits a notification', async () => {
+			it('rejects with an UnavailableGeoResourceError when http status is not 200', async () => {
 				const geoResourceId = 'geoResourceId';
 				const fakeImageWrapper = getFakeImageWrapperInstance();
 				const src = 'http://foo.var?WIDTH=2000&HEIGHT=2000';
 				spyOn(httpService, 'get').and.resolveTo(new Response(null, { status: 404 }));
-				const errorSpy = spyOn(console, 'error');
 				const imageLoadFunction = getBvvBaaImageLoadFunction(geoResourceId);
 
-				await imageLoadFunction(fakeImageWrapper, src);
-
-				expect(errorSpy).toHaveBeenCalledWith('Image could not be fetched', new Error('Unexpected network status 404'));
-				expect(store.getState().notifications.latest.payload.content).toBe('global_geoResource_not_available [geoResourceId]');
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
-			});
-
-			it('throws an exception when http status is 403 and emits a notification', async () => {
-				const geoResourceId = 'geoResourceId';
-				const fakeImageWrapper = getFakeImageWrapperInstance();
-				const src = 'http://foo.var?WIDTH=2000&HEIGHT=2000';
-				spyOn(httpService, 'get').and.resolveTo(new Response(null, { status: 403 }));
-				const errorSpy = spyOn(console, 'error');
-				const imageLoadFunction = getBvvBaaImageLoadFunction(geoResourceId);
-
-				await imageLoadFunction(fakeImageWrapper, src);
-
-				expect(errorSpy).toHaveBeenCalledWith('Image could not be fetched', new Error('Unexpected network status 403'));
-				expect(store.getState().notifications.latest.payload.content).toBe(
-					'global_geoResource_not_available [geoResourceId,global_geoResource_forbidden]'
+				await expectAsync(imageLoadFunction(fakeImageWrapper, src)).toBeRejectedWith(
+					new UnavailableGeoResourceError(`Unexpected network status`, geoResourceId, 404)
 				);
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 			});
 
 			describe('when NO scaling is needed', () => {
@@ -288,7 +222,6 @@ describe('olLoadFunction.provider', () => {
 	});
 
 	describe('getBvvTileLoadFunction', () => {
-		const throttleDelay = 3000 + 100;
 		const configService = {
 			getValueAsPath: () => {}
 		};
@@ -301,23 +234,9 @@ describe('olLoadFunction.provider', () => {
 		const geoResourceService = {
 			getAuthResponseInterceptorForGeoResource: () => responseInterceptor
 		};
-		let store;
 
-		beforeAll(() => {
-			jasmine.clock().install();
-			//throttle is based on Date
-			jasmine.clock().mockDate();
-		});
-		afterAll(() => {
-			jasmine.clock().uninstall();
-		});
 		beforeEach(() => {
-			store = TestUtils.setupStoreAndDi(
-				{},
-				{
-					notifications: notificationReducer
-				}
-			);
+			TestUtils.setupStoreAndDi();
 			$injector
 				.registerSingleton('ConfigService', configService)
 				.registerSingleton('HttpService', httpService)
@@ -342,27 +261,23 @@ describe('olLoadFunction.provider', () => {
 			};
 		};
 
-		it('throws an exception when http status is other than 200 and 400 and emits a notification', async () => {
+		it('rejects with an UnavailableGeoResourceError when http status is other than 200 and 400', async () => {
 			const geoResourceId = 'geoResourceId';
 			const fakeTileWrapper = getFakeTileWrapperInstance();
 			const src = 'http://foo.var/some/11/1089/710';
 			spyOn(httpService, 'get').and.resolveTo(new Response(null, { status: 404 }));
-			const errorSpy = spyOn(console, 'error');
 			const tileLoadFunction = getBvvTileLoadFunction(geoResourceId);
-			jasmine.clock().tick(throttleDelay);
 
 			// tile loading causes multiple simultaneously requests, therefore we check the use of the throttle function to keep the notification at a count of 1
-			await tileLoadFunction(fakeTileWrapper, src);
-			await tileLoadFunction(fakeTileWrapper, src);
-			await tileLoadFunction(fakeTileWrapper, src);
-
-			expect(errorSpy).toHaveBeenCalledOnceWith('Tile could not be fetched', new Error('Unexpected network status 404'));
-			expect(store.getState().notifications.latest.payload.content).toBe('global_geoResource_not_available [geoResourceId]');
-			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+			await expectAsync(tileLoadFunction(fakeTileWrapper, src)).toBeRejectedWith(
+				new UnavailableGeoResourceError(`Unexpected network status`, geoResourceId, 404)
+			);
+			await expectAsync(tileLoadFunction(fakeTileWrapper, src)).toBeResolved(); // throttles calls are resolved to undefined
+			await expectAsync(tileLoadFunction(fakeTileWrapper, src)).toBeResolved();
 			expect(fakeTileWrapper.state).toBe(TileState.ERROR);
 		});
 
-		it('throws an exception when http status is 400', async () => {
+		it('sets the TileState when http status is 400', async () => {
 			const geoResourceId = 'geoResourceId';
 			const fakeTileWrapper = getFakeTileWrapperInstance();
 			const src = 'http://foo.var/some/11/1089/710';
@@ -371,7 +286,6 @@ describe('olLoadFunction.provider', () => {
 
 			await tileLoadFunction(fakeTileWrapper, src);
 
-			expect(store.getState().notifications.latest).toBeNull();
 			expect(fakeTileWrapper.state).toBe(TileState.ERROR);
 		});
 
