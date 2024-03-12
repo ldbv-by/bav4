@@ -13,9 +13,9 @@ import shareIcon from './assets/share.svg';
 const Update = 'update';
 
 /**
- * A chip to share the current state and optionally with a specified position with a link. If the center
- * is given, the link refers  * to the webapp itself with highlight-feature on the specified position.
- * Without a given center, the link refers to the webapp with the current state.
+ * A chip to share the current state by a generated URL, optionally centered at a specified position.
+ * If the center is given, the link refers to the webapp containing the current state but centered and showing a highlight-feature at the specified position.
+ * Without a given center, the link refers to the webapp containing the current state at the current position.
  * @class
  * @extends {AbstractAssistChip}
  * @property {module:domain/coordinateTypeDef~Coordinate} [center] The center coordinate of the shared position
