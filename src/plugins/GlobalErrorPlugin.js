@@ -17,26 +17,30 @@ export class GlobalErrorPlugin extends BaPlugin {
 	 * @override
 	 */
 	async register() {
-		const { TranslationService: translationService } = $injector.inject('TranslationService');
+		const { TranslationService: translationService, GeoResourceService: geoResourceService } = $injector.inject(
+			'TranslationService',
+			'GeoResourceService'
+		);
 		const translate = (key, params = []) => translationService.translate(key, params);
 
 		const handleError = (error) => {
 			if (error instanceof UnavailableGeoResourceError) {
+				const geoResourceName = geoResourceService.byId(error.geoResourceId)?.label ?? error.geoResourceId;
 				switch (error.httpStatus) {
 					case 401:
 						emitNotification(
-							`${translate('global_geoResource_not_available', [error.geoResourceId, translate('global_geoResource_unauthorized')])}`,
+							`${translate('global_geoResource_not_available', [geoResourceName, translate('global_geoResource_unauthorized')])}`,
 							LevelTypes.WARN
 						);
 						break;
 					case 403:
 						emitNotification(
-							`${translate('global_geoResource_not_available', [error.geoResourceId, translate('global_geoResource_forbidden')])}`,
+							`${translate('global_geoResource_not_available', [geoResourceName, translate('global_geoResource_forbidden')])}`,
 							LevelTypes.WARN
 						);
 						break;
 					default:
-						emitNotification(`${translate('global_geoResource_not_available', [error.geoResourceId])}`, LevelTypes.WARN);
+						emitNotification(`${translate('global_geoResource_not_available', [geoResourceName])}`, LevelTypes.WARN);
 						break;
 				}
 			} else {
