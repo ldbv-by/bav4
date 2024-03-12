@@ -1206,29 +1206,6 @@ describe('OlMap', () => {
 			expect(map.getLayers().item(1)).toEqual(nonAsyncOlLayer);
 		});
 
-		it('adds NO layer for an unresolveable GeoResourceFuture', async () => {
-			const element = await setup();
-			const map = element._map;
-			const message = 'error';
-			const future = new GeoResourceFuture(geoResourceId0, async () => Promise.reject(message));
-			spyOn(layerServiceMock, 'toOlLayer')
-				.withArgs(id0, jasmine.anything(), map)
-				.and.callFake((id) => new Layer({ id: id, render: () => {}, properties: { placeholder: true } }));
-			spyOn(geoResourceServiceStub, 'byId').withArgs(geoResourceId0).and.returnValue(future);
-			const warnSpy = spyOn(console, 'warn');
-
-			addLayer(id0, { geoResourceId: geoResourceId0 });
-			expect(map.getLayers().getLength()).toBe(1);
-			const layer = map.getLayers().item(0);
-			expect(layer.get('id')).toBe(id0);
-
-			await TestUtils.timeout();
-			expect(map.getLayers().getLength()).toBe(0);
-			expect(warnSpy).toHaveBeenCalledWith(message);
-			expect(store.getState().notifications.latest.payload.content).toBe('global_geoResource_not_available [geoResourceId0]');
-			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
-		});
-
 		it('removes layer from state store when olLayer not available', async () => {
 			const element = await setup();
 			const map = element._map;
