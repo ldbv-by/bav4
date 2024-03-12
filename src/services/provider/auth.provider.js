@@ -55,13 +55,19 @@ const createCredentialPanel = (authenticateFunction, onCloseFunction, roles) => 
 };
 
 const promiseQueue = new PromiseQueue();
+const resourcesInQueue = new Set();
+/**
+ * Amount of time the credential panel should not be shown for the same identifier.
+ */
+export const BvvCredentialPanelIntervalMs = 10_000;
 /**
  * BVV specific implementation of {@link module:services/AuthService~authResponseInterceptorProvider}.
  * @function
  * @type {module:services/AuthService~authResponseInterceptorProvider}
  * @param {string[]} roles
+ * @param {string} [identifier=null]
  */
-export const bvvAuthResponseInterceptorProvider = (roles = []) => {
+export const bvvAuthResponseInterceptorProvider = (roles = [], identifier = null, credentialPanelInterval = BvvCredentialPanelIntervalMs) => {
 	const bvvAuthResponseInterceptor = async (response, doFetch) => {
 		// in that case we open the credential ui as modal window
 		switch (response.status) {
@@ -116,17 +122,34 @@ export const bvvAuthResponseInterceptorProvider = (roles = []) => {
 							// re-try the original fetch call
 							resolve(doFetch());
 						}
-						// let's open the credential panel in that case
-						else {
+						// let's open the credential panel for that case
+						else if (!resourcesInQueue.has(identifier)) {
+							/**
+							 * Needed for resources which trigger multiple requests at once (e.g. XyZGeoResources).
+							 * To avoid showing the credential panel for the same resource in quick succession we synchronize by a Set.
+							 * The resource is represented by its identifier.
+							 * After the given amount of time the identifier will be removed from the Set.
+							 */
+							if (identifier) {
+								resourcesInQueue.add(identifier);
+								setTimeout(() => {
+									resourcesInQueue.delete(identifier);
+								}, credentialPanelInterval);
+							}
+
+							// prepare the modal
 							const title = html`${translate('global_import_authenticationModal_title')}&nbsp;
 							${roles.map(
 								(role) => html`<ba-badge .size=${'1.5'} .color=${'var(--text3)'} .background=${'var(--primary-color)'} .label=${role}></ba-badge>`
 							)} `;
 							openModal(title, createCredentialPanel(authenticate, onClose, roles));
 						}
+						// return the original response
+						else {
+							resolve(response);
+						}
 					});
 				};
-				// in case of 401 we want the handler function to be executed one after each other
 				return await promiseQueue.add(handler401);
 			}
 		}
