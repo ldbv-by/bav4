@@ -563,6 +563,9 @@ describe('AuthInvalidatingAfter401HttpService', () => {
 });
 
 describe('BvvHttpService', () => {
+	const environmentService = {
+		isStandalone: () => false
+	};
 	const configService = {
 		getValueAsPath: () => {}
 	};
@@ -580,11 +583,35 @@ describe('BvvHttpService', () => {
 
 	const setup = () => {
 		TestUtils.setupStoreAndDi({}, {});
-		$injector.registerSingleton('ConfigService', configService).registerSingleton('AuthService', authService);
+		$injector
+			.registerSingleton('ConfigService', configService)
+			.registerSingleton('AuthService', authService)
+			.registerSingleton('EnvironmentService', environmentService);
 		return new BvvHttpService();
 	};
 
 	describe('fetch', () => {
+		describe('in standalone mode', () => {
+			it("always calls the parent's fetch and does not set the 'credentials' option", async () => {
+				const url = 'http://backend.url/foo';
+				const instanceUnderTest = setup();
+				spyOn(window, 'fetch').and.callFake(() => {
+					return Promise.resolve({
+						text: () => {
+							return 42;
+						}
+					});
+				});
+				spyOn(environmentService, 'isStandalone').and.returnValue(true);
+				const parentFetchSpy = spyOn(AuthInvalidatingAfter401HttpService.prototype, 'fetch').and.callThrough();
+				spyOn(configService, 'getValueAsPath').and.returnValue('http://backend.url');
+
+				const result = await instanceUnderTest.fetch(url);
+
+				expect(result.text()).toBe(42);
+				expect(parentFetchSpy).toHaveBeenCalledWith(url, {}, jasmine.any(AbortController), defaultInterceptors);
+			});
+		});
 		describe('backend resource', () => {
 			it("calls the parent's fetch and adds the 'credentials' option", async () => {
 				const url = 'http://backend.url/foo';

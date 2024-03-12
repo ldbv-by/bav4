@@ -221,15 +221,21 @@ export class AuthInvalidatingAfter401HttpService extends NetworkStateSyncHttpSer
  */
 export class BvvHttpService extends AuthInvalidatingAfter401HttpService {
 	#configService;
+	#environmentService;
 	constructor() {
 		super();
-		const { ConfigService: configService } = $injector.inject('ConfigService');
+		const { ConfigService: configService, EnvironmentService: environmentService } = $injector.inject('ConfigService', 'EnvironmentService');
 		this.#configService = configService;
+		this.#environmentService = environmentService;
 	}
 	/**
 	 * @see {@link HttpService#fetch}
 	 */
 	async fetch(resource, options = {}, controller = new AbortController(), interceptors = defaultInterceptors) {
+		if (this.#environmentService.isStandalone()) {
+			return super.fetch(resource, options, controller, interceptors);
+		}
+
 		const fetchOptions = resource.trim().startsWith(this.#configService.getValueAsPath('BACKEND_URL'))
 			? { credentials: 'include', ...options }
 			: { ...options };
