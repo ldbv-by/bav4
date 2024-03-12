@@ -10,6 +10,7 @@ import { LineString, Polygon } from 'ol/geom';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { DragPan } from 'ol/interaction';
 import { MeasurementOverlay } from '../components/MeasurementOverlay';
+import { BaOverlay } from '../components/BaOverlay';
 
 export const saveManualOverlayPosition = (feature) => {
 	const draggableOverlayTypes = ['area', 'measurement'];
@@ -254,7 +255,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	}
 
 	_createOlOverlay(olMap, overlayOptions = {}, type, isDraggable = false) {
-		const measurementOverlay = document.createElement(MeasurementOverlay.tag);
+		const measurementOverlay = document.createElement(BaOverlay.tag);
 		measurementOverlay.type = type;
 		measurementOverlay.isDraggable = isDraggable;
 		const overlay = new Overlay({ ...overlayOptions, element: measurementOverlay, stopEvent: isDraggable });
