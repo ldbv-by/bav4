@@ -63,10 +63,13 @@ test.describe('page', () => {
 		});
 
 		test('should contain 15 top level ba-components', async ({ page }) => {
-			// for (const el of await page.locator('body > *').all()) {
-			// 	// eslint-disable-next-line no-console
-			// 	console.log(await el.evaluate((el) => el.outerHTML));
-			// }
+			/**
+			 * Print current top level element with:
+			 * for (const el of await page.locator('body > *').all()) {
+			 * 	console.log(await el.evaluate((el) => el.outerHTML));
+			 * }
+			 */
+
 			expect(await page.locator('body > *').count()).toBe(15);
 
 			expect(await page.locator('ba-header').count()).toBe(1);
