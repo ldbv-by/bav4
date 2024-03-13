@@ -5,6 +5,7 @@ import { $injector } from '../../injection';
 import { GeoResourceFuture, VectorGeoResource, VectorSourceType } from '../../domain/geoResources';
 import { FileStorageServiceDataTypes } from '../FileStorageService';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from './attribution.provider';
+import { UnavailableGeoResourceError } from '../../domain/errors';
 
 export const _newLoader = (id) => {
 	return async () => {
@@ -20,9 +21,12 @@ export const _newLoader = (id) => {
 					.setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource);
 				return vgr;
 			}
-			throw new Error(`Unsupported FileStorageServiceDataType '${type}'`);
+			throw new UnavailableGeoResourceError(`Unsupported FileStorageServiceDataType '${type}'`, id);
 		} catch (e) {
-			throw new Error(`Could not load vector data for id '${id}'`, { cause: e });
+			if (e instanceof UnavailableGeoResourceError) {
+				throw e;
+			}
+			throw new UnavailableGeoResourceError(`Could not load vector data for id '${id}'`, id, null, { cause: e });
 		}
 	};
 };

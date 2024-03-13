@@ -4,7 +4,8 @@ import {
 	bvvSignInProvider,
 	bvvAuthResponseInterceptorProvider,
 	bvvSignOutProvider,
-	bvvHttpServiceIgnore401PathProvider
+	bvvHttpServiceIgnore401PathProvider,
+	BvvCredentialPanelIntervalMs
 } from '../../../src/services/provider/auth.provider';
 import { TestUtils } from '../../test-utils';
 import { modalReducer } from '../../../src/store/modal/modal.reducer';
@@ -13,6 +14,7 @@ import { BvvPlusPasswordCredentialFooter } from '../../../src/modules/auth/compo
 import { Badge } from '../../../src/modules/commons/components/badge/Badge';
 import { closeModal } from '../../../src/store/modal/modal.action';
 import { BvvRoles } from '../../../src/domain/roles';
+import { createUniqueId } from '../../../src/utils/numberUtils';
 
 describe('bvvSignInProvider', () => {
 	const configService = {
@@ -217,7 +219,6 @@ describe('bvvAuthResponseInterceptorProvider', () => {
 				const mockResponse = { status: 401 };
 				const url = 'http://foo.bar';
 				const roles = ['FOO', BvvRoles.PLUS];
-
 				const responsePromise = bvvAuthResponseInterceptorProvider(roles)(mockResponse, retTryFetchFn, url);
 				await TestUtils.timeout(); /**promise queue execution */
 
@@ -322,16 +323,52 @@ describe('bvvAuthResponseInterceptorProvider', () => {
 						const responsePromise = bvvAuthResponseInterceptorProvider()(mockResponse, retTryFetchFn, url);
 						await TestUtils.timeout(); /**promise queue execution */
 
-						closeModal();
+						closeModal(); /** we close the modal in order to resolve the promise */
 
 						await expectAsync(responsePromise).toBeResolvedTo(mockResponse);
 						expect(retTryFetchFn).not.toHaveBeenCalled();
 						expect(store.getState().modal.active).toBeFalse();
-						await expectAsync(responsePromise).toBeResolved();
 					});
 				});
 			});
 		});
+
+		it('opens the modal only once per identifier during an configured interval and resolves further calls with the original response', async () => {
+			const credentialPanelInterval = 400;
+			const mockResponse = { status: 401 };
+			const url = 'http://foo.bar';
+			const reTryFetchFn = jasmine.createSpy();
+			const identifier = createUniqueId();
+			const responsePromise = bvvAuthResponseInterceptorProvider([], identifier, credentialPanelInterval)(mockResponse, reTryFetchFn, url);
+			await TestUtils.timeout(); /**promise queue execution */
+			expect(store.getState().modal.active).toBeTrue();
+
+			closeModal(); /** we close the modal in order to resolve the promise */
+
+			await expectAsync(responsePromise).toBeResolvedTo(mockResponse);
+			expect(reTryFetchFn).not.toHaveBeenCalled();
+			expect(store.getState().modal.active).toBeFalse();
+
+			// this time the no modal should be shown and the original response returned
+			const secondResponsePromise = bvvAuthResponseInterceptorProvider([], identifier, credentialPanelInterval)(mockResponse, reTryFetchFn, url);
+			await TestUtils.timeout(); /**promise queue execution */
+			expect(store.getState().modal.active).toBeFalse();
+			await expectAsync(secondResponsePromise).toBeResolvedTo(mockResponse);
+
+			//when the interval time is elapsed the modal should be shown again
+			await TestUtils.timeout(credentialPanelInterval + 100);
+			const thirdResponsePromise = bvvAuthResponseInterceptorProvider([], identifier, credentialPanelInterval)(mockResponse, reTryFetchFn, url);
+			await TestUtils.timeout(); /**promise queue execution */
+			expect(store.getState().modal.active).toBeTrue();
+			closeModal(); /** we close the modal in order to resolve the promise */
+			await expectAsync(thirdResponsePromise).toBeResolvedTo(mockResponse);
+		});
+	});
+});
+
+describe('BvvCredentialPanelIntervalMs', () => {
+	it('returns a constant value', async () => {
+		expect(BvvCredentialPanelIntervalMs).toBe(10_000);
 	});
 });
 

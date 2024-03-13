@@ -19,7 +19,8 @@
  * A function that returns an response interceptor for authentication tasks
  * @async
  * @typedef {Function} authResponseInterceptorProvider
- * @param {string[]} [roles] One or more roles the interceptor should show an auth UI for
+ * @param {string[]} roles One or more roles the interceptor should show an auth UI for
+ * @param {string} [identifier] Possible identifier to give the interceptor the chance to detect requests for the same resource
  * @returns {module:services/HttpService~responseInterceptor} the response interceptor
  */
 

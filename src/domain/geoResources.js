@@ -3,7 +3,7 @@
  */
 import { $injector } from '../injection';
 import { getDefaultAttribution } from '../services/provider/attribution.provider';
-import { defaultVectorGeoResourceLoaderForUrl } from '../services/provider/geoResource.provider';
+import { getDefaultVectorGeoResourceLoaderForUrl } from '../services/provider/geoResource.provider';
 import { isExternalGeoResourceId } from '../utils/checks';
 
 /**
@@ -329,9 +329,10 @@ export class GeoResource {
 /**
  * An async function that loads a {@link GeoResource}.
  * @async
- * @callback asyncGeoResourceLoader
+ * @typedef {Function} asyncGeoResourceLoader
  * @param {string} id Id of the requested GeoResource
- * @returns {GeoResource}
+ * @returns {GeoResource} the loaded GeoResource
+ * @throws {UnavailableGeoResourceError}
  */
 
 /**
@@ -383,6 +384,7 @@ export class GeoResourceFuture extends GeoResource {
 	 *
 	 * Note: It's up to the loader implementation which properties of the GeoResourceFuture instance are copied to the resolved GeoResource.
 	 * @returns GeoResource
+	 * @throws {UnavailableGeoResourceError} Error of the underlying loader
 	 */
 	async get() {
 		try {
@@ -593,7 +595,7 @@ export class VectorGeoResource extends GeoResource {
 	 * @returns {GeoResourceFuture}
 	 */
 	static forUrl(id, url, sourceType, label = null) {
-		return new GeoResourceFuture(id, defaultVectorGeoResourceLoaderForUrl(url, sourceType, id, label))
+		return new GeoResourceFuture(id, getDefaultVectorGeoResourceLoaderForUrl(url, sourceType, id, label))
 			.setLabel(label)
 			.onResolve((resolved, future) => {
 				resolved.copyPropertiesFrom(future);

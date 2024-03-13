@@ -383,7 +383,7 @@ describe('GeoResourceService', () => {
 				const geoResourceId = 'id';
 				const geoResource = { authRoles: ['TEST'] };
 				const responseInterceptor = () => {};
-				const authResponseInterceptorProvider = jasmine.createSpy().withArgs(['TEST']).and.returnValue(responseInterceptor);
+				const authResponseInterceptorProvider = jasmine.createSpy().withArgs(['TEST'], geoResourceId).and.returnValue(responseInterceptor);
 				const instanceUnderTest = setup(null, null, authResponseInterceptorProvider);
 				spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
 
@@ -396,7 +396,7 @@ describe('GeoResourceService', () => {
 				it('returns `false`', async () => {
 					const geoResourceId = 'id';
 					const responseInterceptor = () => {};
-					const authResponseInterceptorProvider = jasmine.createSpy().withArgs([]).and.returnValue(responseInterceptor);
+					const authResponseInterceptorProvider = jasmine.createSpy().withArgs([], geoResourceId).and.returnValue(responseInterceptor);
 					const instanceUnderTest = setup(null, null, authResponseInterceptorProvider);
 					spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(null);
 

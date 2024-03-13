@@ -194,7 +194,7 @@ export class GeoResourceService {
 	 */
 	getAuthResponseInterceptorForGeoResource(geoResourceId) {
 		const roles = this.byId(geoResourceId)?.authRoles ?? [];
-		return this._authResponseInterceptorProvider(roles);
+		return this._authResponseInterceptorProvider(roles, geoResourceId);
 	}
 
 	_newFallbackGeoResources() {
