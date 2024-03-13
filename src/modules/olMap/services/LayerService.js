@@ -155,7 +155,7 @@ export class LayerService {
 				const layerGroup = new LayerGroup({
 					id: id,
 					opacity: opacity,
-					layers: geoResource.geoResourceIds.map((id) => this.toOlLayer(id, geoResourceService.byId(id))),
+					layers: geoResource.geoResourceIds.map((id) => this.toOlLayer(id, geoResourceService.byId(id), olMap)),
 					minZoom: minZoom ?? undefined,
 					maxZoom: maxZoom ?? undefined
 				});
