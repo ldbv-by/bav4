@@ -69,8 +69,8 @@ export const BvvCredentialPanelIntervalMs = 10_000;
  */
 export const bvvAuthResponseInterceptorProvider = (roles = [], identifier = null, credentialPanelInterval = BvvCredentialPanelIntervalMs) => {
 	const bvvAuthResponseInterceptor = async (response, doFetch) => {
-		// in that case we open the credential ui as modal window
 		switch (response.status) {
+			// in that case we open the credential ui as modal window
 			case 401: {
 				const handler401 = () => {
 					return new Promise((resolve) => {
