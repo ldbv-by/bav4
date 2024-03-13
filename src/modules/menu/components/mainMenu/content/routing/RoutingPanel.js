@@ -57,7 +57,8 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 		const getChips = (route) => {
 			const exportData = route?.data;
 			return route
-				? html` <ba-profile-chip></ba-profile-chip>
+				? html` <ba-share-chip></ba-share-chip>
+						<ba-profile-chip></ba-profile-chip>
 						<ba-export-vector-data-chip .exportData=${exportData}></ba-export-vector-data-chip>`
 				: nothing;
 		};

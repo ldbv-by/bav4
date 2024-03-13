@@ -3,7 +3,7 @@ import { ExportVectorDataChip } from './ExportVectorDataChip';
 import { MapFeedbackChip } from './MapFeedbackChip';
 import { RoutingChip } from './RoutingChip';
 import { ShareDataChip } from './ShareDataChip';
-import { SharePositionChip } from './SharePositionChip';
+import { ShareChip } from './ShareChip';
 
 if (!window.customElements.get(ElevationProfileChip.tag)) {
 	window.customElements.define(ElevationProfileChip.tag, ElevationProfileChip);
@@ -25,6 +25,6 @@ if (!window.customElements.get(ShareDataChip.tag)) {
 	window.customElements.define(ShareDataChip.tag, ShareDataChip);
 }
 
-if (!window.customElements.get(SharePositionChip.tag)) {
-	window.customElements.define(SharePositionChip.tag, SharePositionChip);
+if (!window.customElements.get(ShareChip.tag)) {
+	window.customElements.define(ShareChip.tag, ShareChip);
 }

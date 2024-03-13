@@ -176,6 +176,18 @@ export class GeoResourceService {
 	}
 
 	/**
+	 * Returns keywords for a GeoResource.
+	 * Returns an empty array if the GeoResource does not exist.
+	 * @param {string} id The id of a GeoResource
+	 * @returns {Array<String>} the keywords for a GeoResource
+	 */
+	getKeywords(id) {
+		// Todo: use a provider fn for keyword detection
+		const gr = this.byId(id);
+		return gr ? [...gr.authRoles] : [];
+	}
+
+	/**
 	 * Returns a {@link module:services/HttpService~responseInterceptor} suitable authenticating for a given GeoResource.
 	 * @param {string} geoResourceId The id of a GeoResource
 	 * @returns {module:services/HttpService~responseInterceptor}

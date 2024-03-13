@@ -10,6 +10,8 @@ describe('i18n for chips module', () => {
 		expect(map.chips_assist_chip_share_stored_data).toBe('Daten teilen');
 		expect(map.chips_assist_chip_share_position_label).toBe('Position teilen');
 		expect(map.chips_assist_chip_share_position_api_failed).toBe('Teilen der Position ist fehlgeschlagen');
+		expect(map.chips_assist_chip_share_state_label).toBe('Teilen');
+		expect(map.chips_assist_chip_share_state_api_failed).toBe('Teilen der Seite ist fehlgeschlagen');
 		expect(map.chips_assist_chip_map_feedback_label).toBe('Karte verbessern');
 		expect(map.chips_assist_chip_map_feedback_title).toBe('Feedback');
 	});
@@ -23,12 +25,14 @@ describe('i18n for chips module', () => {
 		expect(map.chips_assist_chip_share_stored_data).toBe('Share data');
 		expect(map.chips_assist_chip_share_position_label).toBe('Share position');
 		expect(map.chips_assist_chip_share_position_api_failed).toBe('Sharing the position has failed');
+		expect(map.chips_assist_chip_share_state_label).toBe('Share');
+		expect(map.chips_assist_chip_share_state_api_failed).toBe('Sharing the website has failed');
 		expect(map.chips_assist_chip_map_feedback_label).toBe('Improve map');
 		expect(map.chips_assist_chip_map_feedback_title).toBe('Feedback');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 8;
+		const expectedSize = 10;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
