@@ -5,7 +5,7 @@ import { LLtoUTM, forward } from '../../utils/mgrs';
 import { GlobalCoordinateRepresentations } from '../../domain/coordinateRepresentation';
 
 /**
- * Bvv specific implementation of {@link module:services/OlCoordinateService~stringifyCoordProvider}
+ * BVV specific implementation of {@link module:services/OlCoordinateService~stringifyCoordProvider}
  * @function
  * @type {module:services/OlCoordinateService~stringifyCoordProvider}
  */

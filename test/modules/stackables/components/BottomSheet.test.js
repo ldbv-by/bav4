@@ -7,7 +7,7 @@ import { toggle } from '../../../../src/store/mainMenu/mainMenu.action';
 import { createNoInitialStateMainMenuReducer } from '../../../../src/store/mainMenu/mainMenu.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { bottomSheetReducer } from '../../../../src/store/bottomSheet/bottomSheet.reducer';
-import { navigationRailReducer } from '../../../../src/store/navigationRail/navigationRail.reducer';
+import { createNoInitialStateNavigationRailReducer } from '../../../../src/store/navigationRail/navigationRail.reducer';
 import { openBottomSheet } from '../../../../src/store/bottomSheet/bottomSheet.action';
 
 window.customElements.define(BottomSheet.tag, BottomSheet);
@@ -33,7 +33,7 @@ describe('BottomSheet', () => {
 			mainMenu: createNoInitialStateMainMenuReducer(),
 			media: createNoInitialStateMediaReducer(),
 			bottomSheet: bottomSheetReducer,
-			navigationRail: navigationRailReducer
+			navigationRail: createNoInitialStateNavigationRailReducer()
 		});
 
 		const element = await TestUtils.renderAndLogLifecycle(BottomSheet.tag);

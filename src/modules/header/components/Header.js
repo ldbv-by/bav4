@@ -163,8 +163,13 @@ export class Header extends MvuElement {
 		const onInputFocus = () => {
 			disableResponsiveParameterObservation();
 			setTab(TabIds.SEARCH);
-			if (isPortrait || !hasMinWidth) {
+			if (isPortrait) {
 				const popup = this.shadowRoot.getElementById('headerMobile');
+				popup.style.display = 'none';
+				popup.style.opacity = 0;
+			}
+			if (!hasMinWidth) {
+				const popup = this.shadowRoot.getElementById('headerLogo');
 				popup.style.display = 'none';
 				popup.style.opacity = 0;
 			}
@@ -186,8 +191,13 @@ export class Header extends MvuElement {
 
 		const onInputBlur = () => {
 			enableResponsiveParameterObservation();
-			if (isPortrait || !hasMinWidth) {
+			if (isPortrait) {
 				const popup = this.shadowRoot.getElementById('headerMobile');
+				popup.style.display = '';
+				window.setTimeout(() => (popup.style.opacity = 1), 300);
+			}
+			if (!hasMinWidth) {
+				const popup = this.shadowRoot.getElementById('headerLogo');
 				popup.style.display = '';
 				window.setTimeout(() => (popup.style.opacity = 1), 300);
 			}
@@ -236,7 +246,7 @@ export class Header extends MvuElement {
 			<style>${css}</style>
 			<div class="preload">
 				<div class="${classMap(classes)}">
-					<div class='header__logo'>				
+					<div class='header__logo' id="headerLogo">				
 						<div class="action-button"  @click="${toggleNavigationRail}">
 							<div class="action-button__border animated-action-button__border ${getAnimatedBorderClass()}">
 							</div>

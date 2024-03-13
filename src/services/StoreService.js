@@ -22,7 +22,7 @@ import { measurementReducer } from '../store/measurement/measurement.reducer';
 import { pointerReducer } from '../store/pointer/pointer.reducer';
 import { mapContextMenuReducer } from '../store/mapContextMenu/mapContextMenu.reducer';
 import { createMainMenuReducer } from '../store/mainMenu/mainMenu.reducer';
-import { navigationRailReducer } from '../store/navigationRail/navigationRail.reducer';
+import { createNavigationRailReducer } from '../store/navigationRail/navigationRail.reducer';
 import { featureInfoReducer } from '../store/featureInfo/featureInfo.reducer';
 import { importReducer } from '../store/import/import.reducer';
 import { mfpReducer } from '../store/mfp/mfp.reducer';
@@ -50,7 +50,7 @@ export class StoreService {
 			pointer: pointerReducer,
 			position: positionReducer,
 			mainMenu: createMainMenuReducer(),
-			navigationRail: navigationRailReducer,
+			navigationRail: createNavigationRailReducer(),
 			tools: toolsReducer,
 			modal: modalReducer,
 			layers: layersReducer,
@@ -82,6 +82,7 @@ export class StoreService {
 
 		$injector.onReady(async () => {
 			const {
+				GlobalErrorPlugin: globalErrorPlugin,
 				LayersPlugin: layersPlugin,
 				TopicsPlugin: topicsPlugin,
 				ChipsPlugin: chipsPlugin,
@@ -109,6 +110,7 @@ export class StoreService {
 				HistoryStatePlugin: historyStatePlugin,
 				ObserveStateForEncodingPlugin: observeStateForEncodingPlugin
 			} = $injector.inject(
+				'GlobalErrorPlugin',
 				'TopicsPlugin',
 				'ChipsPlugin',
 				'LayersPlugin',
@@ -139,6 +141,7 @@ export class StoreService {
 
 			setTimeout(async () => {
 				//register plugins
+				await globalErrorPlugin.register(this._store);
 				await mediaPlugin.register(this._store);
 				await topicsPlugin.register(this._store);
 				await chipsPlugin.register(this._store);

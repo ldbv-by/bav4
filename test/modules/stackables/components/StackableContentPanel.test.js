@@ -9,7 +9,7 @@ import { openBottomSheet } from '../../../../src/store/bottomSheet/bottomSheet.a
 import { bottomSheetReducer } from '../../../../src/store/bottomSheet/bottomSheet.reducer';
 import { createNoInitialStateMainMenuReducer } from '../../../../src/store/mainMenu/mainMenu.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { navigationRailReducer } from '../../../../src/store/navigationRail/navigationRail.reducer';
+import { createNoInitialStateNavigationRailReducer } from '../../../../src/store/navigationRail/navigationRail.reducer';
 
 window.customElements.define(StackableContentPanel.tag, StackableContentPanel);
 window.customElements.define(NotificationItem.tag, NotificationItem);
@@ -54,7 +54,7 @@ describe('StackableContentPanel', () => {
 				bottomSheet: bottomSheetReducer,
 				mainMenu: createNoInitialStateMainMenuReducer(),
 				media: createNoInitialStateMediaReducer(),
-				navigationRail: navigationRailReducer
+				navigationRail: createNoInitialStateNavigationRailReducer()
 			});
 			$injector.registerSingleton('TranslationService', { translate: (key) => key });
 			const element = await TestUtils.render(StackableContentPanel.tag);

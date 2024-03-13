@@ -59,6 +59,12 @@
 	padding-bottom: 0.5em;
 	white-space: nowrap;
 }
+.is-tablet.chips__container {
+	margin-left: 6em;
+}
+.is-tablet .chips__button {
+	font-size: 0.8rem;
+}
 .is-portrait.chips__container {
 	top: 8em;
 	margin: 0;

@@ -186,7 +186,7 @@ export class OlCoordinateService {
 	/**
 	 * Converts a single or array of {@link module:domain/coordinateTypeDef~CoordinateLike} to a single or array of {@link module:domain/coordinateTypeDef~Coordinate}.
 	 * @param {Array<module:domain/coordinateTypeDef~CoordinateLike>|module:domain/coordinateTypeDef~CoordinateLike} coordinateLike single or array of `CoordinateLike`
-	 * @returns {Array<module:domain/coordinateTypeDef~CoordinateLike>|module:domain/coordinateTypeDef~CoordinateLike} coordinates single  or array of  `Coordinate`
+	 * @returns {Array<module:domain/coordinateTypeDef~Coordinate>|module:domain/coordinateTypeDef~Coordinate} coordinates single  or array of `Coordinate`
 	 * @throws {Error} `Cannot convert value to coordinate`
 	 */
 	toCoordinate(coordinateLike) {
@@ -194,18 +194,22 @@ export class OlCoordinateService {
 			throw new Error(`Cannot convert value to coordinate, value is not a CoordinateLike type`);
 		};
 
-		if (coordinateLike) {
-			const singleValue = !Array.isArray(coordinateLike[0]);
-			const coordinateLikeAsArray = singleValue ? [coordinateLike] : coordinateLike;
-
-			coordinateLikeAsArray.forEach((c) => {
-				if (!isCoordinateLike(c)) {
-					throwError();
-				}
-			});
-			const coordinates = coordinateLikeAsArray.map((c) => c.slice(0, 2));
-			return singleValue ? coordinates[0] : coordinates;
+		if (!coordinateLike) {
+			throwError();
 		}
-		throwError();
+		// return empty array unchecked
+		else if (Array.isArray(coordinateLike) && coordinateLike.length === 0) {
+			return coordinateLike;
+		}
+		const singleValue = !Array.isArray(coordinateLike[0]);
+		const coordinateLikeAsArray = singleValue ? [coordinateLike] : coordinateLike;
+
+		coordinateLikeAsArray.forEach((c) => {
+			if (!isCoordinateLike(c)) {
+				throwError();
+			}
+		});
+		const coordinates = coordinateLikeAsArray.map((c) => c.slice(0, 2));
+		return singleValue ? coordinates[0] : coordinates;
 	}
 }

@@ -8,7 +8,7 @@ import { MediaType } from '../../domain/mediaTypes';
 import { isHttpUrl } from '../../utils/checks';
 
 /**
- * Bvv specific implementation of {@link module:services/FeatureInfoService~featureInfoProvider}.
+ * BVV specific implementation of {@link module:services/FeatureInfoService~featureInfoProvider}.
  * @function
  * @type {module:services/FeatureInfoService~featureInfoProvider}
  */
