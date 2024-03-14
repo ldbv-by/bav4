@@ -67,7 +67,8 @@ export class LayerItem extends AbstractMvuContentPanel {
 						visible: data.visible,
 						collapsed: data.collapsed,
 						opacity: data.opacity,
-						loading: data.loading
+						loading: data.loading,
+						keywords: data.keywords
 					}
 				};
 			case Update_Layer_Collapsed:
@@ -114,8 +115,17 @@ export class LayerItem extends AbstractMvuContentPanel {
 		}
 		const geoResource = this._geoResourceService.byId(layer.geoResourceId);
 		const currentLabel = layer.label;
+
 		const getCollapseTitle = () => {
 			return layer.collapsed ? translate('layerManager_expand') : translate('layerManager_collapse');
+		};
+
+		const getBadges = (keywords) => {
+			console.log(keywords);
+			const toBadges = (keywords) =>
+				keywords.map((keyword) => html`<ba-badge .color=${'var(--text3)'} .background=${'var(--primary-color)'} .label=${keyword}></ba-badge>`);
+
+			return keywords.length === 0 ? nothing : toBadges(keywords);
 		};
 
 		const changeOpacity = (event) => {
@@ -224,7 +234,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 			<div class="ba-section divider">
 				<div class="ba-list-item">
 					<ba-checkbox .title="${getVisibilityTitle()}" class="ba-list-item__text" tabindex="0" .checked=${layer.visible} @toggle=${toggleVisibility}
-						>${layer.loading ? html`<ba-spinner .label=${currentLabel}></ba-spinner>` : html`${currentLabel}`}
+						>${layer.loading ? html`<ba-spinner .label=${currentLabel}></ba-spinner>` : html`${currentLabel} ${getBadges(layer.keywords)}`}
 					</ba-checkbox>
 					<button id="button-detail" data-test-id class="ba-list-item__after" title="${getCollapseTitle()}" @click="${toggleCollapse}">
 						<i class="icon chevron icon-rotate-90 ${classMap(iconCollapseClass)}"></i>
@@ -275,12 +285,14 @@ export class LayerItem extends AbstractMvuContentPanel {
 	set layer(value) {
 		const translate = (key) => this._translationService.translate(key);
 		const geoResource = this._geoResourceService.byId(value.geoResourceId);
+		const keywords = [...this._geoResourceService.getKeywords(value.geoResourceId)];
 
 		this.signal(Update_Layer, {
 			Default_Extra_Property_Values,
 			...value,
 			label: geoResource instanceof GeoResourceFuture ? translate('layerManager_loading_hint') : geoResource.label,
-			loading: geoResource instanceof GeoResourceFuture
+			loading: geoResource instanceof GeoResourceFuture,
+			keywords: keywords
 		});
 	}
 
