@@ -8,6 +8,7 @@ import {
 	getAttributionForLocallyImportedOrCreatedGeoResource,
 	getAttributionProviderForGeoResourceImportedByUrl
 } from '../../src/services/provider/attribution.provider';
+import { UnavailableGeoResourceError } from '../../src/domain/errors';
 
 describe('ImportVectorDataService', () => {
 	const httpService = {
@@ -182,9 +183,10 @@ describe('ImportVectorDataService', () => {
 			it('throws an error when response is not ok', async () => {
 				const instanceUnderTest = setup();
 				const url = 'http://my.url';
+				const id = 'id';
 				const status = 404;
 				const options = {
-					id: 'id',
+					id,
 					label: 'label',
 					sourceType: VectorSourceType.KML
 				};
@@ -195,15 +197,18 @@ describe('ImportVectorDataService', () => {
 				spyOn(geoResourceService, 'addOrReplace').and.callFake(addOrReplaceMethodMock);
 				const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 
-				await expectAsync(geoResourceFuture.get()).toBeRejectedWithError(`GeoResource for '${url}' could not be loaded: Http-Status ${status}`);
+				await expectAsync(geoResourceFuture.get()).toBeRejectedWith(
+					new UnavailableGeoResourceError(`GeoResource for '${url}' could not be loaded`, id, status)
+				);
 			});
 
 			it('throws an error when sourceType is not available', async () => {
 				const instanceUnderTest = setup();
 				const url = 'http://my.url';
 				const data = 'data';
+				const id = 'id';
 				const options = {
-					id: 'id',
+					id,
 					label: 'label'
 				};
 				spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE));
@@ -214,8 +219,8 @@ describe('ImportVectorDataService', () => {
 				spyOn(geoResourceService, 'addOrReplace').and.callFake(addOrReplaceMethodMock);
 				const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 
-				await expectAsync(geoResourceFuture.get()).toBeRejectedWithError(
-					`GeoResource for '${url}' could not be loaded: SourceType could not be detected`
+				await expectAsync(geoResourceFuture.get()).toBeRejectedWith(
+					new UnavailableGeoResourceError(`GeoResource for '${url}' could not be loaded: SourceType could not be detected`, id)
 				);
 			});
 

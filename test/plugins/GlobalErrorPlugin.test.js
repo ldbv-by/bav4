@@ -6,6 +6,11 @@ import { UnavailableGeoResourceError } from '../../src/domain/errors.js';
 import { LevelTypes } from '../../src/store/notifications/notifications.action.js';
 
 describe('GlobalErrorPlugin', () => {
+	const geoResourceService = {
+		byId() {
+			return null;
+		}
+	};
 	const setup = () => {
 		const store = TestUtils.setupStoreAndDi(
 			{},
@@ -13,7 +18,9 @@ describe('GlobalErrorPlugin', () => {
 				notifications: notificationReducer
 			}
 		);
-		$injector.registerSingleton('TranslationService', { translate: (key, params = []) => `${key}${params.length ? ` [${params.join(',')}]` : ''}` });
+		$injector
+			.registerSingleton('TranslationService', { translate: (key, params = []) => `${key}${params.length ? ` [${params.join(',')}]` : ''}` })
+			.registerSingleton('GeoResourceService', geoResourceService);
 		return store;
 	};
 
@@ -49,52 +56,110 @@ describe('GlobalErrorPlugin', () => {
 		});
 
 		describe('UnavailableGeoResourceError', () => {
-			it('handles an UnavailableGeoResourceError with code 401', async () => {
-				const store = setup();
-				const message = 'message';
-				const geoResourceId = 'geoResourceId';
-				const httpStatus = 401;
-				const instanceUnderTest = new GlobalErrorPlugin();
-				await instanceUnderTest.register(store);
-				const event = new ErrorEvent('error', { error: new UnavailableGeoResourceError(message, geoResourceId, httpStatus) });
+			describe('and the GeoResource is known', () => {
+				it('handles an UnavailableGeoResourceError with code 401', async () => {
+					const store = setup();
+					const message = 'message';
+					const geoResourceId = 'geoResourceId';
+					const geoResourceLabel = 'geoResourceLabel';
+					const httpStatus = 401;
+					const instanceUnderTest = new GlobalErrorPlugin();
+					spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue({ label: geoResourceLabel });
+					await instanceUnderTest.register(store);
+					const event = new ErrorEvent('error', { error: new UnavailableGeoResourceError(message, geoResourceId, httpStatus) });
 
-				window.dispatchEvent(event);
+					window.dispatchEvent(event);
 
-				expect(store.getState().notifications.latest.payload.content).toBe(
-					'global_geoResource_not_available [geoResourceId,global_geoResource_unauthorized]'
-				);
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+					expect(store.getState().notifications.latest.payload.content).toBe(
+						'global_geoResource_not_available [geoResourceLabel,global_geoResource_unauthorized]'
+					);
+					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				});
+
+				it('handles an UnavailableGeoResourceError with code 403', async () => {
+					const store = setup();
+					const message = 'message';
+					const geoResourceId = 'geoResourceId';
+					const geoResourceLabel = 'geoResourceLabel';
+					const httpStatus = 403;
+					const instanceUnderTest = new GlobalErrorPlugin();
+					spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue({ label: geoResourceLabel });
+					await instanceUnderTest.register(store);
+					const event = new ErrorEvent('error', { error: new UnavailableGeoResourceError(message, geoResourceId, httpStatus) });
+
+					window.dispatchEvent(event);
+
+					expect(store.getState().notifications.latest.payload.content).toBe(
+						'global_geoResource_not_available [geoResourceLabel,global_geoResource_forbidden]'
+					);
+					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				});
+
+				it('handles an UnavailableGeoResourceError without code', async () => {
+					const store = setup();
+					const message = 'message';
+					const geoResourceId = 'geoResourceId';
+					const geoResourceLabel = 'geoResourceLabel';
+					const instanceUnderTest = new GlobalErrorPlugin();
+					spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue({ label: geoResourceLabel });
+					await instanceUnderTest.register(store);
+					const event = new ErrorEvent('error', { error: new UnavailableGeoResourceError(message, geoResourceId) });
+
+					window.dispatchEvent(event);
+
+					expect(store.getState().notifications.latest.payload.content).toBe('global_geoResource_not_available [geoResourceLabel]');
+					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				});
 			});
 
-			it('handles an UnavailableGeoResourceError with code 403', async () => {
-				const store = setup();
-				const message = 'message';
-				const geoResourceId = 'geoResourceId';
-				const httpStatus = 403;
-				const instanceUnderTest = new GlobalErrorPlugin();
-				await instanceUnderTest.register(store);
-				const event = new ErrorEvent('error', { error: new UnavailableGeoResourceError(message, geoResourceId, httpStatus) });
+			describe('and the GeoResource is unknown', () => {
+				it('handles an UnavailableGeoResourceError with code 401', async () => {
+					const store = setup();
+					const message = 'message';
+					const geoResourceId = 'geoResourceId';
+					const httpStatus = 401;
+					const instanceUnderTest = new GlobalErrorPlugin();
+					await instanceUnderTest.register(store);
+					const event = new ErrorEvent('error', { error: new UnavailableGeoResourceError(message, geoResourceId, httpStatus) });
 
-				window.dispatchEvent(event);
+					window.dispatchEvent(event);
 
-				expect(store.getState().notifications.latest.payload.content).toBe(
-					'global_geoResource_not_available [geoResourceId,global_geoResource_forbidden]'
-				);
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
-			});
+					expect(store.getState().notifications.latest.payload.content).toBe(
+						'global_geoResource_not_available [geoResourceId,global_geoResource_unauthorized]'
+					);
+					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				});
 
-			it('handles an UnavailableGeoResourceError without code', async () => {
-				const store = setup();
-				const message = 'message';
-				const geoResourceId = 'geoResourceId';
-				const instanceUnderTest = new GlobalErrorPlugin();
-				await instanceUnderTest.register(store);
-				const event = new ErrorEvent('error', { error: new UnavailableGeoResourceError(message, geoResourceId) });
+				it('handles an UnavailableGeoResourceError with code 403', async () => {
+					const store = setup();
+					const message = 'message';
+					const geoResourceId = 'geoResourceId';
+					const httpStatus = 403;
+					const instanceUnderTest = new GlobalErrorPlugin();
+					await instanceUnderTest.register(store);
+					const event = new ErrorEvent('error', { error: new UnavailableGeoResourceError(message, geoResourceId, httpStatus) });
 
-				window.dispatchEvent(event);
+					window.dispatchEvent(event);
 
-				expect(store.getState().notifications.latest.payload.content).toBe('global_geoResource_not_available [geoResourceId]');
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+					expect(store.getState().notifications.latest.payload.content).toBe(
+						'global_geoResource_not_available [geoResourceId,global_geoResource_forbidden]'
+					);
+					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				});
+
+				it('handles an UnavailableGeoResourceError without code', async () => {
+					const store = setup();
+					const message = 'message';
+					const geoResourceId = 'geoResourceId';
+					const instanceUnderTest = new GlobalErrorPlugin();
+					await instanceUnderTest.register(store);
+					const event = new ErrorEvent('error', { error: new UnavailableGeoResourceError(message, geoResourceId) });
+
+					window.dispatchEvent(event);
+
+					expect(store.getState().notifications.latest.payload.content).toBe('global_geoResource_not_available [geoResourceId]');
+					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				});
 			});
 		});
 
