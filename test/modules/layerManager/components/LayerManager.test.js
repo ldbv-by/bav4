@@ -21,7 +21,10 @@ describe('LayerManager', () => {
 
 	const geoResourceId = 'geoResourceId0';
 	const geoResourceLabel = 'label0';
-	const geoResourceServiceMock = { byId: () => new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML) };
+	const geoResourceServiceMock = {
+		byId: () => new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML),
+		getKeywords: () => []
+	};
 	const setup = async (state) => {
 		store = TestUtils.setupStoreAndDi(state, { layers: layersReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
