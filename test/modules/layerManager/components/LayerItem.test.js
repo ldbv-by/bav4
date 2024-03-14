@@ -91,6 +91,27 @@ describe('LayerItem', () => {
 			expect(label.innerText).toBe('label0');
 		});
 
+		it('displays GeoResource keywords as badge', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			spyOn(geoResourceService, 'getKeywords').withArgs('geoResourceId0').and.returnValue(['keyword0']);
+
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				collapsed: true
+			};
+			const element = await setup(layer);
+			const badge = element.shadowRoot.querySelector('ba-badge');
+
+			expect(badge.label).toBe('keyword0');
+		});
+
 		it('use layer.label property in checkbox-title ', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
