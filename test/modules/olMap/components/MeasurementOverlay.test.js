@@ -90,6 +90,26 @@ describe('MeasurementOverlay', () => {
 			expect(element.innerText).toBe('90.00°/THE DISTANCE IN m');
 		});
 
+		it('renders the distance view without azimuth angle', async () => {
+			const geodeticGeometry = new LineString([
+				[0, 0],
+				[1, 0],
+				[1, 1]
+			]);
+			const properties = {
+				type: MeasurementOverlayTypes.DISTANCE,
+				geometry: geodeticGeometry
+			};
+			const element = await setup(properties);
+			const div = element.shadowRoot.querySelector('div');
+
+			expect(div.classList.contains('distance')).toBeTrue();
+			expect(div.classList.contains('floating')).toBeTrue();
+			expect(element.type).toBe(MeasurementOverlayTypes.DISTANCE);
+			expect(element.static).toBeFalse();
+			expect(element.innerText).toBe('THE DISTANCE IN m');
+		});
+
 		it('renders the area view', async () => {
 			const geodeticGeometry = new Polygon([
 				[
@@ -112,6 +132,27 @@ describe('MeasurementOverlay', () => {
 			expect(element.type).toBe(MeasurementOverlayTypes.AREA);
 			expect(element.static).toBeFalse();
 			expect(element.innerText).toBe('THE AREA IN m²');
+		});
+
+		it('does NOT renders the area view', async () => {
+			const geodeticGeometry = new LineString([
+				[0, 0],
+				[10, 0],
+				[10, 10],
+				[0, 10]
+			]);
+			const properties = {
+				type: MeasurementOverlayTypes.AREA,
+				geometry: geodeticGeometry
+			};
+			const element = await setup(properties);
+			const div = element.shadowRoot.querySelector('div');
+
+			expect(div.classList.contains('area')).toBeTrue();
+			expect(div.classList.contains('floating')).toBeTrue();
+			expect(element.type).toBe(MeasurementOverlayTypes.AREA);
+			expect(element.static).toBeFalse();
+			expect(element.innerText).toBe('');
 		});
 
 		it('renders the distance-partition view', async () => {

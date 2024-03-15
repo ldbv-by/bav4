@@ -107,7 +107,8 @@ export class MeasurementOverlay extends BaOverlay {
 
 		switch (this._type) {
 			case MeasurementOverlayTypes.AREA:
-				this._position = this.geometry.getInteriorPoint().getCoordinates().slice(0, -1);
+				this._position =
+					this.geometry instanceof Polygon ? this.geometry.getInteriorPoint().getCoordinates().slice(0, -1) : this.geometry.getLastCoordinate();
 				this._content = getArea();
 				break;
 			case MeasurementOverlayTypes.DISTANCE_PARTITION:
