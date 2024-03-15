@@ -1,7 +1,7 @@
 /**
  * @module modules/olMap/utils/olGeometryUtils
  */
-import { Point, LineString, Polygon, LinearRing, Circle, MultiLineString, Geometry } from 'ol/geom';
+import { Point, LineString, Polygon, LinearRing, MultiLineString, Geometry } from 'ol/geom';
 import { isNumber } from '../../../utils/checks';
 import { $injector } from '../../../injection/index';
 
