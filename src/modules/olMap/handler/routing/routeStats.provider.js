@@ -356,11 +356,7 @@ const polylineToGeometry = (polyline) => {
  * @type {module:services/RoutingService~routeStatsProvider}
  */
 export const bvvRouteStatsProvider = (ghRoute, profileStats) => {
-	const {
-		ConfigService: configService,
-		MapService: mapService,
-		CoordinateService: coordinateService
-	} = $injector.inject('ConfigService', 'MapService', 'CoordinateService');
+	const { ConfigService: configService, MapService: mapService } = $injector.inject('ConfigService', 'MapService');
 	const lang = configService.getValue('DEFAULT_LANG');
 	const vehicleType = ghRoute.vehicle.replace('bvv-', '').replace('bayernnetz-', '');
 	const speedOptions = Object.hasOwn(VehicleSpeedOptions, vehicleType) ? VehicleSpeedOptions[vehicleType] : null;
@@ -370,8 +366,7 @@ export const bvvRouteStatsProvider = (ghRoute, profileStats) => {
 			? getETAFor(ghRoute.paths[0].distance, profileStats?.sumUp, profileStats?.sumDown, speedOptions)
 			: ghRoute.paths[0].time;
 	const coordinates = polylineToGeometry(ghRoute.paths[0].points).getCoordinates();
-	const coordinateRepresentation = mapService.getCoordinateRepresentations(coordinates)[0];
-	const projectedDistance = coordinateService.getLength(coordinates, coordinateRepresentation);
+	const projectedDistance = mapService.calcLength(coordinates);
 	const surfaceDetails = aggregateDetailData(ghRoute.paths[0].details.surface, coordinates);
 	const mergedRoadClassTrackTypeRawData = mergeRoadClassAndTrackTypeData(ghRoute.paths[0].details.road_class, ghRoute.paths[0].details.track_type);
 	const roadClassTrackTypeDetails = aggregateDetailData(mergedRoadClassTrackTypeRawData, coordinates);

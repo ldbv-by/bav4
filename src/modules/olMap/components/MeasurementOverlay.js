@@ -11,8 +11,8 @@ import {
 	getCoordinateAt,
 	canShowAzimuthCircle,
 	PROJECTED_LENGTH_GEOMETRY_PROPERTY,
-	getProjectedLength,
-	getProjectedArea
+	getProjectedArea,
+	getLineString
 } from '../utils/olGeometryUtils';
 import { Polygon } from 'ol/geom';
 import { BaOverlay } from './BaOverlay';
@@ -146,7 +146,8 @@ export class MeasurementOverlay extends BaOverlay {
 
 	_getMeasuredLength = (geometry) => {
 		const alreadyMeasuredLength = geometry ? geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY) : null;
-		return alreadyMeasuredLength ?? getProjectedLength(this.geometry);
+		const lineString = getLineString(this.geometry);
+		return alreadyMeasuredLength ?? lineString ? this._mapService.calcLength(lineString.getCoordinates()) : 0;
 	};
 
 	set placement(value) {

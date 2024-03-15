@@ -18,9 +18,14 @@ describe('MeasurementOverlay', () => {
 			return 'THE AREA IN m²';
 		}
 	};
-
+	const mapServiceMock = {
+		getSrid: () => 3857,
+		getLocalProjectedSrid: () => 25832,
+		getLocalProjectedSridExtent: () => null,
+		getCoordinateRepresentations: () => [{ code: 25832, global: false }],
+		calcLength: () => {}
+	};
 	const coordinateServiceMock = {
-		getLength() {},
 		getArea() {}
 	};
 
@@ -29,12 +34,7 @@ describe('MeasurementOverlay', () => {
 		$injector
 			.registerSingleton('UnitsService', unitServiceMock)
 			.registerSingleton('CoordinateService', coordinateServiceMock)
-			.registerSingleton('MapService', {
-				getSrid: () => 3857,
-				getLocalProjectedSrid: () => 25832,
-				getLocalProjectedSridExtent: () => null,
-				getCoordinateRepresentations: () => [{ code: 25832, global: false }]
-			});
+			.registerSingleton('MapService', mapServiceMock);
 		proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 		register(proj4);
 	});
@@ -149,7 +149,7 @@ describe('MeasurementOverlay', () => {
 				value: 0.099,
 				geometry: geodeticGeometry
 			};
-			spyOn(coordinateServiceMock, 'getLength').and.returnValue(1000);
+			spyOn(mapServiceMock, 'calcLength').and.returnValue(1000);
 			const spy = spyOn(unitServiceMock, 'formatDistance').and.callThrough();
 			const element = await setup(properties);
 			element.value = 0.099;
@@ -168,7 +168,7 @@ describe('MeasurementOverlay', () => {
 				value: 0.1001,
 				geometry: geodeticGeometry
 			};
-			spyOn(coordinateServiceMock, 'getLength').and.returnValue(1000);
+			spyOn(mapServiceMock, 'calcLength').and.returnValue(1000);
 			const spy = spyOn(unitServiceMock, 'formatDistance').and.callThrough();
 			const element = await setup(properties);
 

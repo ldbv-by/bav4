@@ -2,7 +2,6 @@ import { $injector } from '../../../src/injection';
 import { MediaType } from '../../../src/domain/mediaTypes';
 import { getBvvProfile } from '../../../src/services/provider/profile.provider';
 import { CoordinateSimplificationTarget } from '../../../src/services/OlCoordinateService';
-import { GlobalCoordinateRepresentations } from '../../../src/domain/coordinateRepresentation';
 
 describe('profile provider', () => {
 	const mockProfileResponse = {
@@ -127,14 +126,18 @@ describe('profile provider', () => {
 		};
 		const coordinateService = {
 			simplify() {},
-			getLength() {},
 			toCoordinate() {}
+		};
+
+		const mapService = {
+			calcLength() {}
 		};
 
 		beforeEach(() => {
 			$injector
 				.registerSingleton('ConfigService', configService)
 				.registerSingleton('HttpService', httpService)
+				.registerSingleton('MapService', mapService)
 				.registerSingleton('CoordinateService', coordinateService);
 		});
 		afterEach(() => {
@@ -158,9 +161,7 @@ describe('profile provider', () => {
 			const coordinateServiceSpy0 = spyOn(coordinateService, 'simplify')
 				.withArgs(coords, CoordinateSimplificationTarget.ELEVATION_PROFILE)
 				.and.returnValue(coords);
-			const coordinateServiceSpy2 = spyOn(coordinateService, 'getLength')
-				.withArgs(coords, GlobalCoordinateRepresentations.SphericalMercator)
-				.and.returnValue(42);
+			const mapServiceSpy = spyOn(mapService, 'calcLength').withArgs(coords).and.returnValue(42);
 			const httpServiceSpy = spyOn(httpService, 'post')
 				.withArgs(`${backendUrl}/dem/profile`, expectedPayload, MediaType.JSON, {
 					timeout: 2000
@@ -172,7 +173,7 @@ describe('profile provider', () => {
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(coordinateServiceSpy0).toHaveBeenCalled();
 			expect(coordinateServiceSpy1).toHaveBeenCalled();
-			expect(coordinateServiceSpy2).toHaveBeenCalled();
+			expect(mapServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
 			expect(profile).toEqual(mockUpdatedProfileResponse);
 		});

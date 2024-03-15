@@ -217,11 +217,16 @@ export class OlCoordinateService {
 	/**
 	 * Calculates the length of an array of coordinates.
 	 *
-	 * Coordinates with a global coordinateRepresentation will be always result in geodetic distances (spherical).
+	 * The kind of calculations depends on the  `geodesic` parameter:
+	 * When `geodesic` is set to `true`, the coordinates must be either in 4326 or 3857 and calculation is done in a geodesic manner.
+	 * When `geodesic` is set to `false`, the coordinates must be transformed in a projected SRID before and calculation is done on a projected plane.
+	 *
+	 *
 	 * @param {Array<module:domain/coordinateTypeDef~Coordinate>} coordinates input coordinates
-	 * @param {module:domain/coordinateRepresentation~CoordinateRepresentation}  coordinateRepresentation the coordinateRepresentation of the coordinates
+	 * @param {boolean} [geodesic=true] `true` if calculation should be done in geodesic manner
+	 * @returns {Number} the length
 	 */
-	getLength(coordinates, coordinateRepresentation) {
+	getLength(coordinates, geodesic = true) {
 		const getGeodesicLength = (coordinates) => {
 			const wgs84 = Geodesic.WGS84;
 			return coordinates.reduce((sum, current, index, coordinates) => {
@@ -234,24 +239,22 @@ export class OlCoordinateService {
 				return sum + r.s12;
 			}, 0);
 		};
-
-		if (coordinateRepresentation.code) {
-			const wgs84Coordinates = coordinates.map((c) =>
-				transform(c, OlCoordinateService._toEpsgCodeString(coordinateRepresentation.code), 'EPSG:4326')
-			);
-			return coordinateRepresentation.global ? getGeodesicLength(wgs84Coordinates) : new LineString(coordinates).getLength();
-		}
-		throw new Error('The coordinates must have a reprojectable CoordinateRepresentation (code !== null).');
+		return geodesic ? getGeodesicLength(coordinates) : new LineString(coordinates).getLength();
 	}
 
 	/**
 	 * Calculates the area for an array of polygon coordinates.
 	 *
-	 * Coordinates with a global coordinateRepresentation will be always result in geodetic calculation (spherical).
+	 * The kind of calculations depends on the  `geodesic` parameter:
+	 * When `geodesic` is set to `true`, the coordinates must be either in 4326 or 3857 and calculation is done in a geodesic manner.
+	 * When `geodesic` is set to `false`, the coordinates must be transformed in a projected SRID before and calculation is done on a projected plane.
+	 *
 	 * @param {Array<Array<module:domain/coordinateTypeDef~Coordinate>>} coordinates polygon coordinates
-	 * @param {module:domain/coordinateRepresentation~CoordinateRepresentation} coordinateRepresentation the coordinateRepresentation of the coordinates
+	 * @param {boolean} [geodesic=true] `true` if calculation should be done in geodesic manner
+	 * @returns {Number} the area
+	 *
 	 */
-	getArea(coordinates, coordinateRepresentation) {
+	getArea(coordinates, geodesic = true) {
 		const getGeodesicArea = (coordinates) => {
 			const geodesicPolygon = new PolygonArea.PolygonArea(Geodesic.WGS84);
 			return coordinates.reduce((aggregatedArea, linearRingCoordinates, index) => {
@@ -263,13 +266,6 @@ export class OlCoordinateService {
 			}, 0);
 		};
 
-		if (coordinateRepresentation.code) {
-			const wgs84Coordinates = coordinates.map((linearRingCoordinates) =>
-				linearRingCoordinates.map((c) => transform(c, OlCoordinateService._toEpsgCodeString(coordinateRepresentation.code), 'EPSG:4326'))
-			);
-
-			return coordinateRepresentation.global ? getGeodesicArea(wgs84Coordinates) : new Polygon(coordinates).getArea();
-		}
-		throw new Error('The coordinates must have a reprojectable CoordinateRepresentation (code !== null).');
+		return geodesic ? getGeodesicArea(coordinates) : new Polygon(coordinates).getArea();
 	}
 }

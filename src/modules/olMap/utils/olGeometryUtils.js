@@ -157,46 +157,6 @@ export const getProjectedArea = (geometry) => {
 };
 
 /**
- * Calculates the length of the geometry in the best suited CoordinateRepresentation and map projection.
- * If the map projection has a global scope, the length is calculated as geodetic length.
- *
- * @function
- * @param {Geometry} geometry the geometry, to calculate with
- * @returns {number} the calculated length or 0 if the geometry-object is not a LineString/LinearRing/Polygon
- */
-export const getProjectedLength = (geometry) => {
-	const { CoordinateService: coordinateService, MapService: mapService } = $injector.inject('CoordinateService', 'MapService');
-	const transform = (geometry, srid) => {
-		return geometry.clone().transform(`EPSG:${mapService.getSrid()}`, `EPSG:${srid}`);
-	};
-	const getLengthRepresentation = (lineString) => {
-		if (lineString) {
-			const coordinateRepresentation = mapService.getCoordinateRepresentations(lineString.getCoordinates())[0];
-
-			return coordinateRepresentation.global
-				? {
-						coordinates: lineString.getCoordinates(),
-						coordinateRepresentation: mapService.getCoordinateRepresentations().find((cr) => cr.code === mapService.getSrid())
-					}
-				: {
-						coordinates: transform(lineString, coordinateRepresentation.code).getCoordinates(),
-						coordinateRepresentation: coordinateRepresentation
-					};
-		}
-		return {
-			coordinates: null,
-			coordinateRepresentation: null
-		};
-	};
-
-	if (geometry) {
-		const { coordinates, coordinateRepresentation } = getLengthRepresentation(getLineString(geometry));
-		return coordinates ? coordinateService.getLength(coordinates, coordinateRepresentation) : 0;
-	}
-	return 0;
-};
-
-/**
  * A wrapper method for ol/LineString.getCoordinateAt().
  * Return the coordinate at the provided fraction along the linear geometry or along the boundary of a area-like geometry.
  * The fraction is a number between 0 and 1, where 0 is the start (first coordinate) of the geometry and 1 is the end (last coordinate). *
@@ -423,6 +383,7 @@ export const isValidGeometry = (geometry) => {
  * @returns {module:modules/olMap/utils/olGeometryUtils~GeometryStats}
  */
 export const getStats = (geometry) => {
+	const { MapService: mapService } = $injector.inject('MapService');
 	const stats = {
 		coordinate: null,
 		azimuth: null,
@@ -434,16 +395,20 @@ export const getStats = (geometry) => {
 		return { ...stats, coordinate: geometry.getCoordinates() };
 	}
 	if (geometry instanceof LineString) {
-		return { ...stats, azimuth: canShowAzimuthCircle(geometry) ? getAzimuth(geometry) : null, length: getProjectedLength(geometry) };
+		return {
+			...stats,
+			azimuth: canShowAzimuthCircle(geometry) ? getAzimuth(geometry) : null,
+			length: mapService.calcLength(geometry.getCoordinates())
+		};
 	}
 	if (geometry instanceof MultiLineString) {
 		return {
 			...stats,
-			length: geometry.getLineStrings().reduce((partialLength, lineString) => partialLength + getProjectedLength(lineString), 0)
+			length: geometry.getLineStrings().reduce((partialLength, lineString) => partialLength + mapService.calcLength(lineString.getCoordinates()), 0)
 		};
 	}
 	if (geometry instanceof Polygon) {
-		return { ...stats, length: getProjectedLength(geometry), area: getProjectedArea(geometry) };
+		return { ...stats, length: mapService.calcLength(getLineString(geometry).getCoordinates()), area: getProjectedArea(geometry) };
 	}
 	return stats;
 };

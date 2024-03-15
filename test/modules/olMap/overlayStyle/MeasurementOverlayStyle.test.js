@@ -12,10 +12,13 @@ proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0
 register(proj4);
 
 describe('MeasurementOverlayStyle', () => {
-	const environmentServiceMock = { isTouch: () => false };
-	const coordinateServiceMock = {
-		getLength() {}
+	const mapServiceMock = {
+		getSrid: () => 3857,
+		getLocalProjectedSrid: () => 25832,
+		getCoordinateRepresentations: () => [{ global: false, code: 25832 }],
+		calcLength: () => {}
 	};
+	const environmentServiceMock = { isTouch: () => false };
 	const initialState = {
 		active: false,
 		statistic: { length: 0, area: 0 },
@@ -30,13 +33,8 @@ describe('MeasurementOverlayStyle', () => {
 		TestUtils.setupStoreAndDi(measurementState, { measurement: measurementReducer });
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('MapService', {
-				getSrid: () => 3857,
-				getLocalProjectedSrid: () => 25832,
-				getCoordinateRepresentations: () => [{ global: false, code: 25832 }]
-			})
+			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('EnvironmentService', environmentServiceMock)
-			.registerSingleton('CoordinateService', coordinateServiceMock)
 			.registerSingleton('UnitsService', {
 				// eslint-disable-next-line no-unused-vars
 				formatDistance: (distance, decimals) => {
@@ -333,7 +331,7 @@ describe('MeasurementOverlayStyle', () => {
 			[12345, 0]
 		]);
 		const feature = new Feature({ geometry: geometry });
-		spyOn(coordinateServiceMock, 'getLength').and.returnValue(12345);
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(12345);
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 
 		expect(feature.get('partitions').length).toBe(1);
@@ -358,7 +356,7 @@ describe('MeasurementOverlayStyle', () => {
 			[12345, 0]
 		]);
 		const feature = new Feature({ geometry: geometry });
-		spyOn(coordinateServiceMock, 'getLength').and.returnValue(12345);
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(12345);
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 		const partition = getPartition(feature);
 
@@ -384,7 +382,7 @@ describe('MeasurementOverlayStyle', () => {
 			[0, 0]
 		]);
 		const feature = new Feature({ geometry: geometry });
-		spyOn(coordinateServiceMock, 'getLength').and.returnValue(12345);
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(12345);
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 
 		const partition = getPartition(feature);
@@ -411,7 +409,7 @@ describe('MeasurementOverlayStyle', () => {
 			[0, 0]
 		]);
 		const feature = new Feature({ geometry: geometry });
-		spyOn(coordinateServiceMock, 'getLength').and.returnValue(12345);
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(12345);
 
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 		const partition = getPartition(feature);
@@ -438,7 +436,7 @@ describe('MeasurementOverlayStyle', () => {
 			[0, 12345]
 		]);
 		const feature = new Feature({ geometry: geometry });
-		spyOn(coordinateServiceMock, 'getLength').and.returnValue(12345);
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(12345);
 
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 		const partition = getPartition(feature);
@@ -465,7 +463,7 @@ describe('MeasurementOverlayStyle', () => {
 			[12345, 0]
 		]);
 		const feature = new Feature({ geometry: geometry });
-		spyOn(coordinateServiceMock, 'getLength').and.returnValue(12345);
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(12345);
 
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 
@@ -495,7 +493,7 @@ describe('MeasurementOverlayStyle', () => {
 			]
 		]);
 		const feature = new Feature({ geometry: geometry });
-		spyOn(coordinateServiceMock, 'getLength').and.returnValue(16000);
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(16000);
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 
 		expect(feature.get('partitions').length).toBe(1);
@@ -522,7 +520,7 @@ describe('MeasurementOverlayStyle', () => {
 			[123456, 0]
 		]);
 		const feature = new Feature({ geometry: geometry });
-		spyOn(coordinateServiceMock, 'getLength').and.returnValues(123456, 12345);
+		spyOn(mapServiceMock, 'calcLength').and.returnValues(123456, 12345);
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 		expect(feature.get('partitions').length).toBe(12);
 

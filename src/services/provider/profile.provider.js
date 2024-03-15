@@ -4,7 +4,6 @@
 import { $injector } from '../../injection';
 import { MediaType } from '../../domain/mediaTypes';
 import { CoordinateSimplificationTarget } from '../OlCoordinateService';
-import { GlobalCoordinateRepresentations } from '../../domain/coordinateRepresentation';
 
 /**
  * BVV specific implementation of {@link module:services/ElevationService~profileProvider}
@@ -15,14 +14,12 @@ export const getBvvProfile = async (coordinateLikes3857) => {
 	const {
 		HttpService: httpService,
 		ConfigService: configService,
-		CoordinateService: coordinateService
-	} = $injector.inject('HttpService', 'ConfigService', 'CoordinateService');
+		CoordinateService: coordinateService,
+		MapService: mapService
+	} = $injector.inject('HttpService', 'ConfigService', 'CoordinateService', 'MapService');
 
 	const coordinates3857 = coordinateService.toCoordinate(coordinateLikes3857);
-
-	const projectedDistance = coordinateService.getLength(coordinates3857, GlobalCoordinateRepresentations.SphericalMercator);
-
-	// todo: usage of mapservice.coordinateRepresentations() + coordinateService.getLength()
+	const projectedDistance = mapService.calcLength(coordinates3857);
 	const simplifiedCoordinates = coordinateService.simplify(coordinates3857, CoordinateSimplificationTarget.ELEVATION_PROFILE);
 	const url = configService.getValueAsPath('BACKEND_URL') + 'dem/profile';
 	const requestPayload = { coords: simplifiedCoordinates.map((c) => ({ e: c[0], n: c[1] })) };

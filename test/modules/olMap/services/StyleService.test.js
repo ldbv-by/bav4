@@ -45,7 +45,8 @@ describe('StyleService', () => {
 	const mapServiceMock = {
 		getSrid: () => 3857,
 		getLocalProjectedSrid: () => 25832,
-		getCoordinateRepresentations: () => [{ code: 25832, global: false }]
+		getCoordinateRepresentations: () => [{ code: 25832, global: false }],
+		calcLength: () => {}
 	};
 
 	const environmentServiceMock = {
@@ -64,9 +65,6 @@ describe('StyleService', () => {
 		}
 	};
 
-	const coordinateServiceMock = {
-		getLength() {}
-	};
 	const iconServiceMock = { decodeColor: () => [0, 0, 0] };
 	let instanceUnderTest;
 
@@ -80,8 +78,7 @@ describe('StyleService', () => {
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('UnitsService', unitsServiceMock)
 			.registerSingleton('IconService', iconServiceMock)
-			.register('OverlayService', OverlayService)
-			.registerSingleton('CoordinateService', coordinateServiceMock);
+			.register('OverlayService', OverlayService);
 	});
 
 	beforeEach(() => {
@@ -194,7 +191,7 @@ describe('StyleService', () => {
 				}
 			};
 			const layerMock = {};
-			spyOn(coordinateServiceMock, 'getLength').and.returnValue(1);
+			spyOn(mapServiceMock, 'calcLength').and.returnValue(1);
 
 			instanceUnderTest.addStyle(feature, mapMock, layerMock);
 
@@ -738,7 +735,7 @@ describe('StyleService', () => {
 			const layerMock = {};
 			const eventMock = { map: mapMock };
 			const onceOnMapSpy = spyOn(mapMock, 'once').and.callFake((eventName, callback) => callback(eventMock));
-			spyOn(coordinateServiceMock, 'getLength').and.returnValue(1);
+			spyOn(mapServiceMock, 'calcLength').and.returnValue(1);
 
 			instanceUnderTest.addStyle(feature, mapMock, layerMock);
 
@@ -785,7 +782,7 @@ describe('StyleService', () => {
 				}
 			};
 			const layerMock = {};
-			spyOn(coordinateServiceMock, 'getLength').and.returnValue(1);
+			spyOn(mapServiceMock, 'calcLength').and.returnValue(1);
 
 			instanceUnderTest.addStyle(feature, mapMock, layerMock);
 

@@ -71,9 +71,6 @@ describe('OlMeasurementHandler', () => {
 	};
 
 	const coordinateServiceMock = {
-		getLength() {
-			return 1;
-		},
 		getArea() {
 			return 1;
 		}
@@ -82,7 +79,8 @@ describe('OlMeasurementHandler', () => {
 		getSrid: () => 3857,
 		getLocalProjectedSrid: () => 25832,
 		getLocalProjectedSridExtent: () => [5, -80, 14, 80],
-		getCoordinateRepresentations: () => [{ global: false, code: 25832 }]
+		getCoordinateRepresentations: () => [{ global: false, code: 25832 }],
+		calcLength: () => 1
 	};
 
 	const interactionStorageServiceMock = {
@@ -806,7 +804,7 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest.activate(map);
 			classUnderTest._sketchHandler.activate(feature);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			spyOn(coordinateServiceMock, 'getLength').and.returnValue(1234);
+			spyOn(mapServiceMock, 'calcLength').and.returnValue(1234);
 			feature.getGeometry().dispatchEvent('change');
 
 			expect(feature.get('partitions').length).toBe(12);
@@ -1386,7 +1384,7 @@ describe('OlMeasurementHandler', () => {
 
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			spyOn(coordinateServiceMock, 'getLength').and.returnValue(500);
+			spyOn(mapServiceMock, 'calcLength').and.returnValue(500);
 			spyOn(coordinateServiceMock, 'getArea').and.returnValue(0);
 			firstPointGeometry.setCoordinates([
 				[
@@ -1934,7 +1932,7 @@ describe('OlMeasurementHandler', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const layer = classUnderTest.activate(map);
 			layer.getSource().addFeature(feature);
-			spyOn(coordinateServiceMock, 'getLength').and.returnValue(3);
+			spyOn(mapServiceMock, 'calcLength').and.returnValue(3);
 			finish();
 
 			map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
