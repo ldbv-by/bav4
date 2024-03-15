@@ -6,14 +6,7 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { $injector } from '../../../injection';
 import css from './measurementOverlay.css';
 import { classMap } from 'lit-html/directives/class-map.js';
-import {
-	getAzimuth,
-	getCoordinateAt,
-	canShowAzimuthCircle,
-	PROJECTED_LENGTH_GEOMETRY_PROPERTY,
-	getProjectedArea,
-	getLineString
-} from '../utils/olGeometryUtils';
+import { getAzimuth, getCoordinateAt, canShowAzimuthCircle, PROJECTED_LENGTH_GEOMETRY_PROPERTY, getLineString } from '../utils/olGeometryUtils';
 import { Polygon } from 'ol/geom';
 import { BaOverlay } from './BaOverlay';
 import { round } from '../../../utils/numberUtils';
@@ -107,7 +100,7 @@ export class MeasurementOverlay extends BaOverlay {
 
 		const getArea = () => {
 			if (this.geometry instanceof Polygon) {
-				return this._unitsService.formatArea(getProjectedArea(this.geometry), 2);
+				return this._unitsService.formatArea(this._mapService.calcArea(this.geometry.getCoordinates()), 2);
 			}
 			return '';
 		};

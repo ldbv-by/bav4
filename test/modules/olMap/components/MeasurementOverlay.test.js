@@ -23,18 +23,13 @@ describe('MeasurementOverlay', () => {
 		getLocalProjectedSrid: () => 25832,
 		getLocalProjectedSridExtent: () => null,
 		getCoordinateRepresentations: () => [{ code: 25832, global: false }],
-		calcLength: () => {}
-	};
-	const coordinateServiceMock = {
-		getArea() {}
+		calcLength: () => {},
+		calcArea: () => {}
 	};
 
 	beforeEach(async () => {
 		TestUtils.setupStoreAndDi({});
-		$injector
-			.registerSingleton('UnitsService', unitServiceMock)
-			.registerSingleton('CoordinateService', coordinateServiceMock)
-			.registerSingleton('MapService', mapServiceMock);
+		$injector.registerSingleton('UnitsService', unitServiceMock).registerSingleton('MapService', mapServiceMock);
 		proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 		register(proj4);
 	});

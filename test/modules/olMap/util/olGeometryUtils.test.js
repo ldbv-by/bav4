@@ -16,8 +16,7 @@ import {
 	PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES,
 	getLineString,
 	multiLineStringToLineString,
-	getCoordinatesForElevationProfile,
-	getProjectedArea
+	getCoordinatesForElevationProfile
 } from '../../../../src/modules/olMap/utils/olGeometryUtils';
 import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing, MultiLineString, MultiPolygon } from 'ol/geom';
 import proj4 from 'proj4';
@@ -26,18 +25,15 @@ import { $injector } from '../../../../src/injection';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
-const coordinateServiceMock = {
-	getLength() {},
-	getArea() {}
-};
 
 const mapServiceMock = {
 	getSrid: () => 3857,
 	getCoordinateRepresentations: () => [{ global: false, code: 25832 }],
-	calcLength: () => {}
+	calcLength: () => {},
+	calcArea: () => {}
 };
 
-$injector.registerSingleton('MapService', mapServiceMock).registerSingleton('CoordinateService', coordinateServiceMock);
+$injector.registerSingleton('MapService', mapServiceMock);
 
 describe('canShowAzimuthCircle', () => {
 	it('can show for a 2-point-line', () => {
@@ -286,67 +282,6 @@ describe('getCoordinateAt', () => {
 	});
 });
 
-describe('getArea', () => {
-	it('calculates the area for a Polygon', () => {
-		const polygon = new Polygon([
-			[
-				[0, 0],
-				[1, 0],
-				[1, 1],
-				[0, 1],
-				[0, 0]
-			]
-		]);
-		const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getArea').and.returnValue(42);
-
-		const area = getProjectedArea(polygon);
-
-		expect(area).toBe(42);
-		expect(coordinateServiceSpy).toHaveBeenCalledWith(jasmine.any(Array), jasmine.objectContaining({ global: false, code: 25832 }));
-	});
-
-	it('calculates the area for a Polygon in 3857', () => {
-		const polygon = new Polygon([
-			[
-				[0, 0],
-				[1, 0],
-				[1, 1],
-				[0, 1],
-				[0, 0]
-			]
-		]);
-		spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([{ global: true, code: 3857 }]);
-		const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getArea').and.returnValue(42);
-
-		const area = getProjectedArea(polygon);
-
-		expect(area).toBe(42);
-		expect(coordinateServiceSpy).toHaveBeenCalledWith(jasmine.any(Array), jasmine.objectContaining({ global: true, code: 3857 }));
-	});
-
-	it('returns 0 for a non-area-like geometry', () => {
-		const point = new Point([0, 0]);
-		const lineString = new LineString([
-			[0, 0],
-			[2, 0]
-		]);
-		const linearRing = new LinearRing([
-			[0, 0],
-			[2, 0]
-		]);
-		const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getArea')
-			.withArgs(jasmine.any(Array), jasmine.objectContaining({ global: false, code: 25832 }))
-			.and.returnValue(0);
-
-		expect(getProjectedArea(null)).toBe(0);
-		expect(getProjectedArea(point)).toBe(0);
-		expect(getProjectedArea(lineString)).toBe(0);
-		expect(getProjectedArea(linearRing)).toBe(0);
-
-		expect(coordinateServiceSpy).toHaveBeenCalledTimes(1);
-	});
-});
-
 describe('isVertexOfGeometry', () => {
 	it('resolves a Point as Vertex of a Point', () => {
 		const geometry = new Point([0, 0]);
@@ -576,7 +511,7 @@ describe('calculatePartitionResidualOfSegments', () => {
 	});
 
 	it('calculates residuals for a LineString', () => {
-		spyOn(coordinateServiceMock, 'getLength').and.returnValue(30);
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(30);
 		expect(
 			calculatePartitionResidualOfSegments(
 				new LineString([
@@ -598,7 +533,7 @@ describe('calculatePartitionResidualOfSegments', () => {
 	});
 
 	it('calculates residuals for a LinearRing', () => {
-		spyOn(coordinateServiceMock, 'getLength').and.returnValue(30);
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(30);
 		expect(
 			calculatePartitionResidualOfSegments(
 				new LinearRing([
@@ -622,7 +557,7 @@ describe('calculatePartitionResidualOfSegments', () => {
 	});
 
 	it('calculates residuals for a Polygon', () => {
-		spyOn(coordinateServiceMock, 'getLength').and.returnValue(30);
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(30);
 		expect(
 			calculatePartitionResidualOfSegments(
 				new Polygon([
@@ -719,7 +654,7 @@ describe('getStats', () => {
 
 	it('returns a statistic-object for Polygon', () => {
 		spyOn(mapServiceMock, 'calcLength').and.returnValue(42);
-		spyOn(coordinateServiceMock, 'getArea').and.returnValue(21);
+		spyOn(mapServiceMock, 'calcArea').and.returnValue(21);
 
 		const statsForPolygon = getStats(
 			new Polygon([

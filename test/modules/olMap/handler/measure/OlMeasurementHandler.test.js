@@ -70,17 +70,13 @@ describe('OlMeasurementHandler', () => {
 		}
 	};
 
-	const coordinateServiceMock = {
-		getArea() {
-			return 1;
-		}
-	};
 	const mapServiceMock = {
 		getSrid: () => 3857,
 		getLocalProjectedSrid: () => 25832,
 		getLocalProjectedSridExtent: () => [5, -80, 14, 80],
 		getCoordinateRepresentations: () => [{ global: false, code: 25832 }],
-		calcLength: () => 1
+		calcLength: () => 1,
+		calcArea: () => 1
 	};
 
 	const interactionStorageServiceMock = {
@@ -171,8 +167,7 @@ describe('OlMeasurementHandler', () => {
 				}
 			})
 			.register('OverlayService', OverlayService)
-			.register('StyleService', MockClass)
-			.registerSingleton('CoordinateService', coordinateServiceMock);
+			.register('StyleService', MockClass);
 		return store;
 	};
 
@@ -1385,7 +1380,7 @@ describe('OlMeasurementHandler', () => {
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			spyOn(mapServiceMock, 'calcLength').and.returnValue(500);
-			spyOn(coordinateServiceMock, 'getArea').and.returnValue(0);
+			spyOn(mapServiceMock, 'calcArea').and.returnValue(0);
 			firstPointGeometry.setCoordinates([
 				[
 					[0, 0],

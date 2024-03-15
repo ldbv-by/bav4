@@ -109,54 +109,6 @@ export const getBoundingBoxFrom = (centerCoordinate, size) => {
 };
 
 /**
- * Calculates the area of the geometry in the best suited CoordinateRepresentation and map projection.
- * If the map projection has a global scope, the area is calculated as geodetic area.
- * @function
- * @param {Geometry} geometry the area-like geometry, to calculate with
- * @returns {number} the calculated length or 0 if the geometry-object is not area-like
- */
-export const getProjectedArea = (geometry) => {
-	const { CoordinateService: coordinateService, MapService: mapService } = $injector.inject('CoordinateService', 'MapService');
-	const transform = (geometry, srid) => {
-		return geometry.clone().transform(`EPSG:${mapService.getSrid()}`, `EPSG:${srid}`);
-	};
-
-	const getLineStrings = (geometry) => {
-		if (!(geometry instanceof Polygon) && !(geometry instanceof Circle) && !(geometry instanceof LinearRing)) {
-			return [];
-		}
-
-		if (geometry instanceof LinearRing) {
-			return [geometry];
-		}
-		return geometry.getLinearRings();
-	};
-
-	const getAreaRepresentation = (lineStrings) => {
-		if (Array.isArray(lineStrings) && lineStrings.length > 0) {
-			const coordinateRepresentation = mapService.getCoordinateRepresentations(lineStrings[0].getCoordinates())[0];
-
-			return coordinateRepresentation.global
-				? {
-						coordinates: lineStrings.map((l) => l.getCoordinates()),
-						coordinateRepresentation: mapService.getCoordinateRepresentations().find((cr) => cr.code === mapService.getSrid())
-					}
-				: {
-						coordinates: lineStrings.map((l) => transform(l, coordinateRepresentation.code).getCoordinates()),
-						coordinateRepresentation: coordinateRepresentation
-					};
-		}
-		return {
-			coordinates: null,
-			coordinateRepresentation: null
-		};
-	};
-
-	const { coordinates, coordinateRepresentation } = getAreaRepresentation(getLineStrings(geometry));
-	return coordinates ? coordinateService.getArea(coordinates, coordinateRepresentation) : 0;
-};
-
-/**
  * A wrapper method for ol/LineString.getCoordinateAt().
  * Return the coordinate at the provided fraction along the linear geometry or along the boundary of a area-like geometry.
  * The fraction is a number between 0 and 1, where 0 is the start (first coordinate) of the geometry and 1 is the end (last coordinate). *
@@ -408,7 +360,11 @@ export const getStats = (geometry) => {
 		};
 	}
 	if (geometry instanceof Polygon) {
-		return { ...stats, length: mapService.calcLength(getLineString(geometry).getCoordinates()), area: getProjectedArea(geometry) };
+		return {
+			...stats,
+			length: mapService.calcLength(getLineString(geometry).getCoordinates()),
+			area: mapService.calcArea(geometry.getCoordinates())
+		};
 	}
 	return stats;
 };
