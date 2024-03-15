@@ -272,6 +272,7 @@ describe('OlCoordinateService', () => {
 
 				expect(instanceUnderTest.getLength(coordinates, false)).toBe(0);
 				expect(instanceUnderTest.getLength(coordinates, true)).toBe(0);
+				expect(instanceUnderTest.getLength(coordinates)).toBe(0);
 			});
 
 			describe('with a (local) non-geodetic projection', () => {
@@ -326,9 +327,9 @@ describe('OlCoordinateService', () => {
 						[9, 48],
 						[11, 48]
 					];
-					const length = instanceUnderTest.getLength(coordinates, true);
 
-					expect(length).toBeCloseTo(geodesicDistance, 0.01);
+					expect(instanceUnderTest.getLength(coordinates, true)).toBeCloseTo(geodesicDistance, 0.01);
+					expect(instanceUnderTest.getLength(coordinates)).toBeCloseTo(geodesicDistance, 0.01);
 				});
 			});
 		});
@@ -338,6 +339,7 @@ describe('OlCoordinateService', () => {
 				setup();
 				const coordinates = [[]];
 
+				expect(instanceUnderTest.getArea(coordinates)).toBe(0);
 				expect(instanceUnderTest.getArea(coordinates, true)).toBe(0);
 				expect(instanceUnderTest.getArea(coordinates, false)).toBe(0);
 			});
@@ -357,6 +359,27 @@ describe('OlCoordinateService', () => {
 
 					expect(instanceUnderTest.getArea(coordinates, false)).toBeCloseTo(1, 0.1);
 				});
+
+				it('calculates the area of a polygon with hole array', () => {
+					setup();
+					const coordinates = [
+						[
+							[35, 10],
+							[45, 45],
+							[15, 40],
+							[10, 20],
+							[35, 10]
+						],
+						[
+							[20, 30],
+							[35, 35],
+							[30, 20],
+							[20, 30]
+						]
+					];
+
+					expect(instanceUnderTest.getArea(coordinates, false)).toBeCloseTo(675, 0.1);
+				});
 			});
 
 			describe('with a defined spherical srid (4326)', () => {
@@ -373,6 +396,24 @@ describe('OlCoordinateService', () => {
 					];
 
 					expect(instanceUnderTest.getArea(coordinates, true)).toBeCloseTo(geodesicArea, 0.01);
+				});
+
+				it('calculates the area of a polygon with hole array', () => {
+					setup();
+					const coordinates = [
+						[
+							[9, 48],
+							[11, 48],
+							[10, 47]
+						],
+						[
+							[9.5, 47.5],
+							[10.5, 47.8],
+							[10, 47.2]
+						]
+					];
+
+					expect(instanceUnderTest.getArea(coordinates)).toBeCloseTo(6447363094.0, 0.01);
 				});
 			});
 		});
