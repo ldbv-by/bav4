@@ -74,7 +74,6 @@ describe('OlMeasurementHandler', () => {
 		getSrid: () => 3857,
 		getLocalProjectedSrid: () => 25832,
 		getLocalProjectedSridExtent: () => [5, -80, 14, 80],
-		getCoordinateRepresentations: () => [{ global: false, code: 25832 }],
 		calcLength: () => 1,
 		calcArea: () => 1
 	};

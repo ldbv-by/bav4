@@ -5,6 +5,11 @@ import { Point, LineString, Polygon, LinearRing, MultiLineString, Geometry } fro
 import { isNumber } from '../../../utils/checks';
 import { $injector } from '../../../injection/index';
 
+/**
+ * property field for the geometry length in a local projection
+ * @constant
+ * @type {string}
+ */
 export const PROJECTED_LENGTH_GEOMETRY_PROPERTY = 'projectedLength';
 
 /**
@@ -369,8 +374,18 @@ export const getStats = (geometry) => {
 	return stats;
 };
 
-export const PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857 = 17.5; /**In map units, adopted from v3 and adjusted to 3857 */
-export const PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES = 1000; /**Adopted from v3  */
+/**
+ * In map units, adopted from v3 and adjusted to 3857
+ * @constant
+ * @type {number}
+ */
+export const PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857 = 17.5;
+
+/** Adopted from v3
+ * @constant
+ * @type {number}
+ */
+export const PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES = 1000;
 
 /**
  * Creates a simplified version of this geometry.

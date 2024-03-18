@@ -28,7 +28,6 @@ register(proj4);
 
 const mapServiceMock = {
 	getSrid: () => 3857,
-	getCoordinateRepresentations: () => [{ global: false, code: 25832 }],
 	calcLength: () => {},
 	calcArea: () => {}
 };

@@ -356,7 +356,7 @@ const polylineToGeometry = (polyline) => {
  * @type {module:services/RoutingService~routeStatsProvider}
  */
 export const bvvRouteStatsProvider = (ghRoute, profileStats) => {
-	const { ConfigService: configService, MapService: mapService } = $injector.inject('ConfigService', 'MapService');
+	const { ConfigService: configService, CoordinateService: coordinateService } = $injector.inject('ConfigService', 'CoordinateService');
 	const lang = configService.getValue('DEFAULT_LANG');
 	const vehicleType = ghRoute.vehicle.replace('bvv-', '').replace('bayernnetz-', '');
 	const speedOptions = Object.hasOwn(VehicleSpeedOptions, vehicleType) ? VehicleSpeedOptions[vehicleType] : null;
@@ -365,11 +365,11 @@ export const bvvRouteStatsProvider = (ghRoute, profileStats) => {
 		speedOptions && validProfileStats
 			? getETAFor(ghRoute.paths[0].distance, profileStats?.sumUp, profileStats?.sumDown, speedOptions)
 			: ghRoute.paths[0].time;
-	const coordinates = polylineToGeometry(ghRoute.paths[0].points).getCoordinates();
-	const projectedDistance = mapService.calcLength(coordinates);
-	const surfaceDetails = aggregateDetailData(ghRoute.paths[0].details.surface, coordinates);
+	const coordinates4326 = polylineToGeometry(ghRoute.paths[0].points).getCoordinates();
+	const distance4326 = coordinateService.getLength(coordinates4326, true);
+	const surfaceDetails = aggregateDetailData(ghRoute.paths[0].details.surface, coordinates4326);
 	const mergedRoadClassTrackTypeRawData = mergeRoadClassAndTrackTypeData(ghRoute.paths[0].details.road_class, ghRoute.paths[0].details.track_type);
-	const roadClassTrackTypeDetails = aggregateDetailData(mergedRoadClassTrackTypeRawData, coordinates);
+	const roadClassTrackTypeDetails = aggregateDetailData(mergedRoadClassTrackTypeRawData, coordinates4326);
 	const details = {
 		surface: surfaceDetails,
 		road_class: roadClassTrackTypeDetails
@@ -378,7 +378,7 @@ export const bvvRouteStatsProvider = (ghRoute, profileStats) => {
 
 	return {
 		time: time,
-		dist: projectedDistance,
+		dist: distance4326,
 		twoDiff: validProfileStats ? [profileStats.sumUp, profileStats.sumDown] : [],
 		details: details,
 		warnings: warnings
