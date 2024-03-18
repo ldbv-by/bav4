@@ -73,12 +73,14 @@ module.exports = {
 		}),
 		new Dotenv()
 	],
-
-	// OPTIONAL
-	// Reload On File Change
 	devServer: {
 		static: './dist',
-		port: port
+		port: port,
+		client: {
+			overlay: {
+				runtimeErrors: true /** set to `false` if errors should be caught by the app instead */
+			}
+		}
 	},
 	resolve: {
 		alias: {

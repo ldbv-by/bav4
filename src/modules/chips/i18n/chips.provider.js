@@ -9,6 +9,8 @@ export const provide = (lang) => {
 				chips_assist_chip_share_stored_data: 'Share data',
 				chips_assist_chip_share_position_label: 'Share position',
 				chips_assist_chip_share_position_api_failed: 'Sharing the position has failed',
+				chips_assist_chip_share_state_label: 'Share',
+				chips_assist_chip_share_state_api_failed: 'Sharing the website has failed',
 				chips_assist_chip_map_feedback_label: 'Improve map',
 				chips_assist_chip_map_feedback_title: 'Feedback'
 			};
@@ -22,6 +24,8 @@ export const provide = (lang) => {
 				chips_assist_chip_share_stored_data: 'Daten teilen',
 				chips_assist_chip_share_position_label: 'Position teilen',
 				chips_assist_chip_share_position_api_failed: 'Teilen der Position ist fehlgeschlagen',
+				chips_assist_chip_share_state_label: 'Teilen',
+				chips_assist_chip_share_state_api_failed: 'Teilen der Seite ist fehlgeschlagen',
 				chips_assist_chip_map_feedback_label: 'Karte verbessern',
 				chips_assist_chip_map_feedback_title: 'Feedback'
 			};

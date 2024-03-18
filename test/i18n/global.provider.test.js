@@ -4,6 +4,7 @@ describe('global i18n', () => {
 	it('provides translation for en', () => {
 		const map = provide('en');
 
+		expect(map.global_generic_exception).toBe('Something got wrong. See the console output for more information...');
 		expect(map.global_mfpService_init_exception).toBe('PDF export currently not available');
 		expect(map.global_mfpService_createJob_exception).toBe('PDF generation was not successful');
 		expect(map.global_featureInfoService_exception).toBe('FeatureInfo could not be retrieved');
@@ -21,8 +22,8 @@ describe('global i18n', () => {
 		expect(map.global_marker_symbol_label).toBe('Marker');
 		expect(map.global_featureInfo_not_available).toBe('FeatureInfo is not available');
 		expect(map.global_routingService_init_exception).toBe('Routing currently not available');
-		expect(map.global_geoResource_not_available(['id'])).toBe('Failed to add a layer for the GeoResource with ID "id"');
-		expect(map.global_geoResource_not_available(['id', 'Reason...'])).toBe('Failed to add a layer for the GeoResource with ID "id" (Reason...)');
+		expect(map.global_geoResource_not_available(['id'])).toBe('Failed to add a layer for the GeoResource "id"');
+		expect(map.global_geoResource_not_available(['id', 'Reason...'])).toBe('Failed to add a layer for the GeoResource "id" (Reason...)');
 		expect(map.global_geoResource_unauthorized).toBe('401 - Unauthorized');
 		expect(map.global_geoResource_forbidden).toBe('403 - Forbidden');
 	});
@@ -30,6 +31,7 @@ describe('global i18n', () => {
 	it('provides translation for de', () => {
 		const map = provide('de');
 
+		expect(map.global_generic_exception).toBe('Leider ist etwas schiefgegangen. Weitere Informationen sind in der Konsole des Browsers zu finden...');
 		expect(map.global_mfpService_init_exception).toBe('PDF Export derzeit leider nicht möglich');
 		expect(map.global_mfpService_createJob_exception).toBe('PDF konnte nicht erstellt werden');
 		expect(map.global_featureInfoService_exception).toBe('FeatureInfo Abfrage schlug fehl');
@@ -47,16 +49,16 @@ describe('global i18n', () => {
 		expect(map.global_marker_symbol_label).toBe('Markierung');
 		expect(map.global_featureInfo_not_available).toBe('FeatureInfo ist nicht verfügbar');
 		expect(map.global_routingService_init_exception).toBe('Die Routing-Funktion steht derzeit leider nicht zur Verfügung');
-		expect(map.global_geoResource_not_available(['id'])).toBe('Es konnte keine Ebene für die GeoRessource mit der ID "id" geladen werden');
+		expect(map.global_geoResource_not_available(['id'])).toBe('Es konnte keine Ebene für die GeoRessource "id" geladen werden');
 		expect(map.global_geoResource_not_available(['id', 'Grund...'])).toBe(
-			'Es konnte keine Ebene für die GeoRessource mit der ID "id" geladen werden (Grund...)'
+			'Es konnte keine Ebene für die GeoRessource "id" geladen werden (Grund...)'
 		);
 		expect(map.global_geoResource_unauthorized).toBe('401 - Fehlende Berechtigung');
 		expect(map.global_geoResource_forbidden).toBe('403 - Zugriff nicht erlaubt');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 18;
+		const expectedSize = 19;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

@@ -361,12 +361,6 @@ export class OlMap extends MvuElement {
 						updateOlLayer(realOlLayer, layer);
 						this._map.getLayers().remove(getLayerById(this._map, id));
 						this._map.getLayers().insertAt(layer.zIndex, realOlLayer);
-					})
-					// eslint-disable-next-line promise/prefer-await-to-then
-					.catch((error) => {
-						console.warn(error);
-						emitNotification(`${translate('global_geoResource_not_available', [geoResource.id])}`, LevelTypes.WARN);
-						removeLayer(id);
 					});
 			}
 			toOlLayer(id, geoResource);
