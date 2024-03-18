@@ -14,6 +14,7 @@ import VanillaSwipe from 'vanilla-swipe';
 import { setCurrentTool } from '../../../store/tools/tools.action';
 import { Tools } from '../../../domain/tools';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { nothing } from '../../../../node_modules/ol/pixel';
 
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_Fetching = 'update_fetching';
@@ -21,6 +22,7 @@ const Update_Layers = 'update_layers';
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
 const Update_SearchTerm = 'update_searchTerm';
 const Update_IsOpen_NavigationRail = 'update_isOpen_NavigationRail';
+const Update_Auth = 'update_auth';
 
 /**
  * Container element for header stuff.
@@ -64,6 +66,8 @@ export class Header extends MvuElement {
 				return { ...model, searchTerm: data };
 			case Update_IsOpen_NavigationRail:
 				return { ...model, ...data };
+			case Update_Auth:
+				return { ...model, signedIn: data };
 		}
 	}
 
@@ -95,6 +99,10 @@ export class Header extends MvuElement {
 		this.observe(
 			(state) => state.navigationRail,
 			(navigationRail) => this.signal(Update_IsOpen_NavigationRail, { isOpenNavigationRail: navigationRail.open })
+		);
+		this.observe(
+			(state) => state.auth.signedIn,
+			(signedIn) => this.signal(Update_Auth, signedIn)
 		);
 	}
 
@@ -129,7 +137,7 @@ export class Header extends MvuElement {
 	}
 
 	createView(model) {
-		const { isOpen, isOpenNavigationRail, tabIndex, isFetching, layers, isPortrait, hasMinWidth, searchTerm } = model;
+		const { isOpen, isOpenNavigationRail, tabIndex, isFetching, layers, isPortrait, hasMinWidth, searchTerm, signedIn } = model;
 
 		const getAnimatedBorderClass = () => {
 			return isFetching ? 'animated-action-button__border__running' : '';
@@ -144,7 +152,15 @@ export class Header extends MvuElement {
 		};
 
 		const getBadgeText = () => {
-			return this._environmentService.isStandalone() ? translate('header_logo_badge_standalone') : translate('header_logo_badge');
+			return this._environmentService.isStandalone()
+				? translate('header_logo_badge_standalone')
+				: signedIn
+					? translate('header_logo_badge_signed_in')
+					: translate('header_logo_badge');
+		};
+
+		const getBadgeClass = () => {
+			return signedIn ? 'badge-signed-in' : 'badge-default';
 		};
 
 		const getEmblem = () => {
@@ -231,6 +247,16 @@ export class Header extends MvuElement {
 			input.dispatchEvent(new Event('input'));
 		};
 
+		const getIsSignedInBadge = () => {
+			return signedIn
+				? html`
+						<div class="badges-signed-in">
+							<div class="badges-signed-in-icon"></div>
+						</div>
+					`
+				: nothing;
+		};
+
 		const classes = {
 			'is-open': isOpen && !isPortrait,
 			'is-open-navigationRail': isOpenNavigationRail && !isPortrait,
@@ -257,7 +283,7 @@ export class Header extends MvuElement {
 						</div>
 						<div id='header__text' class='header__text'>
 						</div>
-						<div class='header__logo-badge'>										
+						<div class='header__logo-badge  ${getBadgeClass()}'>										
 						${getBadgeText()}
 						</div>	
 					</div>		
@@ -302,10 +328,7 @@ export class Header extends MvuElement {
 								<span>
 									${translate('header_tab_misc_button')}
 								</span>
-								<div class="badges-person">
-									<div class="badges-icon">
-									</div>
-								</div>
+								${getIsSignedInBadge()}								
 							</button>
 						</div>
 					</div>				

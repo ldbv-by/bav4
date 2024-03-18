@@ -33,9 +33,6 @@
 	transition: transform var(--animation-duration-large-open) var(--animation-easing-linear);
 }
 .header__logo-badge {
-	background: var(--error-color);
-	font-weight: bold;
-	color: #fff;
 	border-radius: 2em;
 	padding: 0.2em 0.5em;
 	z-index: calc(var(--z-header) + 10);
@@ -45,6 +42,19 @@
 	left: 5.3em;
 	box-shadow: 0 1px 2px rgb(0 0 0 / 50%);
 }
+
+.badge-default {
+	background: var(--error-color);
+	font-weight: bold;
+	color: #fff;
+}
+
+.badge-signed-in {
+	background: var(--primary-color);
+	font-weight: bold;
+	color: #fff;
+}
+
 .is-tablet .header__logo-badge {
 	font-size: 0.5rem;
 	left: 5.6em;
@@ -191,7 +201,7 @@
 	opacity: 1;
 }
 
-.badges-person {
+.badges-signed-in {
 	border-radius: 2em;
 	background: var(--secondary-color);
 	padding: 0em;
@@ -201,12 +211,11 @@
 	right: 0;
 }
 
-.badges-icon {
-	height: 1.5em;
+.badges-signed-in-icon {
+	height: 1.6em;
 	width: 1.6em;
 	background: var(--text3);
 	border-radius: 2em;
-	border: 0.2em solid var(--secondary-color);
 	mask: url('assets/person.svg');
 	-webkit-mask: url('assets/person.svg');
 	mask-size: cover;
