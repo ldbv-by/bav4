@@ -15,8 +15,10 @@ import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 import { REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME, TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { setQuery } from '../../../../src/store/search/search.action';
 import { setIsPortrait } from '../../../../src/store/media/media.action';
+import { authReducer } from '../../../../src/store/auth/auth.reducer';
 import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
 import { Tools } from '../../../../src/domain/tools';
+import { setSignedIn, setSignedOut } from '../../../../src/store/auth/auth.action';
 
 window.customElements.define(Header.tag, Header);
 
@@ -49,6 +51,9 @@ describe('Header', () => {
 			navigationRail: {
 				open: false
 			},
+			auth: {
+				signedIn: false
+			},
 			...state
 		};
 		store = TestUtils.setupStoreAndDi(initialState, {
@@ -58,6 +63,7 @@ describe('Header', () => {
 			layers: layersReducer,
 			search: searchReducer,
 			tools: toolsReducer,
+			auth: authReducer,
 			media: createNoInitialStateMediaReducer(),
 			navigationRail: createNoInitialStateNavigationRailReducer()
 		});
@@ -262,6 +268,16 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelector('.header__logo-badge').innerText).toBe('header_logo_badge_standalone');
 			expect(element.shadowRoot.querySelector('.header__emblem').getAttribute('title')).toBe('header_emblem_title_standalone');
 			expect(element.shadowRoot.querySelector('.header__emblem').getAttribute('href')).toBe('header_emblem_link_standalone');
+		});
+
+		it('renders for signIn state', async () => {
+			const element = await setup({ auth: { signedIn: true } });
+
+			expect(element.shadowRoot.querySelectorAll('.badge-signed-in')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.header__logo-badge').innerText).toBe('header_logo_badge_signed_in');
+
+			expect(element.shadowRoot.querySelectorAll('.badges-signed-in')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.badges-signed-in-icon')).toHaveSize(1);
 		});
 
 		it('layouts with open navigation rail', async () => {
@@ -749,6 +765,31 @@ describe('Header', () => {
 			setQuery('foo');
 
 			expect(element.shadowRoot.querySelector('#input').getAttribute('value')).toBe('foo');
+		});
+	});
+
+	describe('when auth state change', () => {
+		it('updates the authButton Button', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelectorAll('.badge-signed-in')).toHaveSize(0);
+			expect(element.shadowRoot.querySelector('.header__logo-badge').innerText).toBe('header_logo_badge');
+			expect(element.shadowRoot.querySelectorAll('.badges-signed-in')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.badges-signed-in-icon')).toHaveSize(0);
+
+			setSignedIn();
+
+			expect(element.shadowRoot.querySelectorAll('.badge-signed-in')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.header__logo-badge').innerText).toBe('header_logo_badge_signed_in');
+			expect(element.shadowRoot.querySelectorAll('.badges-signed-in')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.badges-signed-in-icon')).toHaveSize(1);
+
+			setSignedOut();
+
+			expect(element.shadowRoot.querySelectorAll('.badge-signed-in')).toHaveSize(0);
+			expect(element.shadowRoot.querySelector('.header__logo-badge').innerText).toBe('header_logo_badge');
+			expect(element.shadowRoot.querySelectorAll('.badges-signed-in')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.badges-signed-in-icon')).toHaveSize(0);
 		});
 	});
 

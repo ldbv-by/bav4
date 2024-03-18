@@ -243,9 +243,6 @@
 }
 
 .toolbar__logo-badge {
-	background: var(--error-color);
-	font-weight: bold;
-	color: #fff;
 	border-radius: 2em;
 	padding: 0.2em 0.5em;
 	z-index: 999999999;
@@ -255,7 +252,17 @@
 	box-shadow: 0 1px 2px rgb(0 0 0 / 50%);
 	font-size: 0.6rem;
 }
+.badge-default {
+	background: var(--error-color);
+	font-weight: bold;
+	color: #fff;
+}
 
+.badge-signed-in {
+	background: var(--primary-color);
+	font-weight: bold;
+	color: #fff;
+}
 .arrowright {
 	display: block;
 	height: 2em;
