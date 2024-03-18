@@ -167,11 +167,11 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	_createOrRemovePartitionOverlays(olFeature, olMap, simplifiedGeometry = null) {
 		const getPartitions = () => {
 			const partitions = olFeature.get('partitions') || [];
-			if (simplifiedGeometry) {
-				return partitions;
-			}
-			partitions.forEach((p) => this._remove(p, olFeature, olMap));
-			return [];
+			const cleanPartitions = (partitions) => {
+				partitions.forEach((p) => this._remove(p, olFeature, olMap));
+				return [];
+			};
+			return simplifiedGeometry ? partitions : cleanPartitions(partitions);
 		};
 		const partitions = getPartitions();
 		if (!simplifiedGeometry) {
