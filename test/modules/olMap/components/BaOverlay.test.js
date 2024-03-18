@@ -71,7 +71,7 @@ describe('BaOverlay', () => {
 			expect(spy).toHaveBeenCalledTimes(1);
 		});
 
-		it('renders NOT the view, when value is unchanged', async () => {
+		it('does NOT render the view, when value is unchanged', async () => {
 			const element = await setup();
 			const spy = spyOn(element, 'render').and.callThrough();
 
@@ -100,7 +100,7 @@ describe('BaOverlay', () => {
 			expect(element.static).toBeFalse();
 		});
 
-		it('renders NOT the view, when type value is unchanged', async () => {
+		it('does NOT render the view, when type value is unchanged', async () => {
 			const element = await setup();
 			const spy = spyOn(element, 'render').and.callThrough();
 
@@ -135,7 +135,7 @@ describe('BaOverlay', () => {
 			expect(spy).toHaveBeenCalled();
 		});
 
-		it('renders NOT the view, when draggable-value is unchanged', async () => {
+		it('does NOT render the view, when draggable-value is unchanged', async () => {
 			const element = await setup();
 			const spy = spyOn(element, 'render').and.callThrough();
 
@@ -158,7 +158,7 @@ describe('BaOverlay', () => {
 			expect(spy).toHaveBeenCalledTimes(1);
 		});
 
-		it('renders NOT the view, when type value is unchanged', async () => {
+		it('does NOT render the view, when type value is unchanged', async () => {
 			const element = await setup();
 			const spy = spyOn(element, 'render').and.callThrough();
 
