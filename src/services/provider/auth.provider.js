@@ -14,18 +14,55 @@ import { BvvRoles } from '../../domain/roles';
  * @function
  * @type {module:services/AuthService~signInProvider}
  */
-export const bvvSignInProvider = async (credential) => {
-	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
-	const result = await httpService.post(`${configService.getValueAsPath('BACKEND_URL')}auth/signin`, JSON.stringify(credential), MediaType.JSON);
+export const bvvSignInProvider = async () => {
+	const roles = [BvvRoles.PLUS];
 
-	switch (result.status) {
-		case 200:
-			return await result.json();
-		case 400:
-			return [];
-		default:
-			throw new Error(`Sign in not possible: Http-Status ${result.status}`);
-	}
+	return new Promise((resolve) => {
+		const {
+			StoreService: storeService,
+			HttpService: httpService,
+			ConfigService: configService
+		} = $injector.inject('StoreService', 'HttpService', 'ConfigService');
+
+		// in case of aborting the authentication-process by closing the modal we call the onClose callback
+		const resolveBeforeClosing = ({ active }) => {
+			if (!active) {
+				onClose(null);
+			}
+		};
+		const unsubscribe = observe(
+			storeService.getStore(),
+			(state) => state.modal,
+			(modal) => resolveBeforeClosing(modal)
+		);
+
+		const authenticate = async (credential) => {
+			const result = await httpService.post(`${configService.getValueAsPath('BACKEND_URL')}auth/signin`, JSON.stringify(credential), MediaType.JSON);
+
+			switch (result.status) {
+				case 200:
+					return await result.json();
+				case 400:
+					return false;
+				default:
+					throw new Error(`Sign in not possible: Http-Status ${result.status}`);
+			}
+		};
+
+		// onClose-callback is called with a verified credential object and the result object or simply null
+		const onClose = async (credential, roles) => {
+			unsubscribe();
+			closeModal();
+			if (credential && roles) {
+				resolve(roles);
+			} else {
+				// resolve with empty roles
+				resolve([]);
+			}
+		};
+
+		openModal(createCredentialModalTitle(roles), createCredentialPanel(authenticate, onClose, roles));
+	});
 };
 
 /**
@@ -43,6 +80,14 @@ export const bvvSignOutProvider = async () => {
 		default:
 			throw new Error(`Sign out not possible: Http-Status ${result.status}`);
 	}
+};
+
+const createCredentialModalTitle = (roles) => {
+	const { TranslationService: translationService } = $injector.inject('TranslationService');
+	const translate = (key) => translationService.translate(key);
+	const title = html`${translate('global_import_authenticationModal_title')}&nbsp;
+	${roles.map((role) => html`<ba-badge .size=${'1.5'} .color=${'var(--text3)'} .background=${'var(--primary-color)'} .label=${role}></ba-badge>`)} `;
+	return title;
 };
 
 const createCredentialPanel = (authenticateFunction, onCloseFunction, roles) => {
@@ -76,10 +121,8 @@ export const bvvAuthResponseInterceptorProvider = (roles = [], identifier = null
 					return new Promise((resolve) => {
 						const {
 							StoreService: storeService,
-							TranslationService: translationService,
 							AuthService: authService
-						} = $injector.inject('StoreService', 'TranslationService', 'AuthService');
-						const translate = (key) => translationService.translate(key);
+						} = $injector.inject('StoreService', 'AuthService');
 
 						const authenticate = async (credential) => {
 							const authenticated = await authService.signIn(credential);
@@ -138,11 +181,7 @@ export const bvvAuthResponseInterceptorProvider = (roles = [], identifier = null
 							}
 
 							// prepare the modal
-							const title = html`${translate('global_import_authenticationModal_title')}&nbsp;
-							${roles.map(
-								(role) => html`<ba-badge .size=${'1.5'} .color=${'var(--text3)'} .background=${'var(--primary-color)'} .label=${role}></ba-badge>`
-							)} `;
-							openModal(title, createCredentialPanel(authenticate, onClose, roles));
+							openModal(createCredentialModalTitle(roles), createCredentialPanel(authenticate, onClose, roles));
 						}
 						// return the original response
 						else {
