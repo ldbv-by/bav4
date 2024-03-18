@@ -134,7 +134,7 @@ describe('MeasurementOverlay', () => {
 			expect(element.innerText).toBe('THE AREA IN m²');
 		});
 
-		it('does NOT renders the area view', async () => {
+		it('does NOT render the area view', async () => {
 			const geodeticGeometry = new LineString([
 				[0, 0],
 				[10, 0],
@@ -303,7 +303,7 @@ describe('MeasurementOverlay', () => {
 			expect(div.classList.contains('top')).toBeTrue();
 		});
 
-		it('does NOT renders the view, while value is not changed', async () => {
+		it('does NOT render the view, while value is not changed', async () => {
 			const element = await setup();
 			const renderSpy = spyOn(element, 'render').and.callThrough();
 			const div = element.shadowRoot.querySelector('div');
