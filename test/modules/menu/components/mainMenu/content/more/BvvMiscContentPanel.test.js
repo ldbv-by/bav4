@@ -15,7 +15,9 @@ window.customElements.define(Switch.tag, Switch);
 
 const authService = {
 	isSignedIn: () => {},
-	getRoles: () => {}
+	getRoles: () => {},
+	signIn: () => {},
+	signOut: () => {}
 };
 
 describe('MiscContentPanel', () => {
@@ -124,7 +126,7 @@ describe('MiscContentPanel', () => {
 			expect(feedbackButton.querySelectorAll('.ba-list-item__icon.icon.feedback')).toHaveSize(1);
 		});
 
-		it('have a signIn button', async () => {
+		it('has a signIn button', async () => {
 			const element = await setup();
 
 			const signedInButton = element.shadowRoot.querySelector('#authButton');
@@ -133,7 +135,7 @@ describe('MiscContentPanel', () => {
 			expect(signedInButton.querySelectorAll('.ba-list-item__icon.icon.person')).toHaveSize(1);
 		});
 
-		it('have a signOut button', async () => {
+		it('has a signOut button', async () => {
 			const element = await setup({ auth: { signedIn: true } });
 
 			const signedInButton = element.shadowRoot.querySelector('#authButton');
@@ -168,7 +170,7 @@ describe('MiscContentPanel', () => {
 	});
 
 	describe('when auth state change', () => {
-		it('updates the authButton Button', async () => {
+		it('updates the auth button', async () => {
 			const element = await setup();
 			const signedInButton = element.shadowRoot.querySelector('#authButton');
 
@@ -184,6 +186,30 @@ describe('MiscContentPanel', () => {
 
 			expect(signedInButton.querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_login');
 			expect(signedInButton.classList.contains('logout')).toBeFalse();
+		});
+	});
+
+	describe('when signIn button is clicked', () => {
+		it('calls the AuthService', async () => {
+			const authServiceSpy = spyOn(authService, 'signIn');
+			const element = await setup();
+			const signedInButton = element.shadowRoot.querySelector('#authButton');
+
+			signedInButton.click();
+
+			expect(authServiceSpy).toHaveBeenCalled();
+		});
+	});
+
+	describe('when signOut button is clicked', () => {
+		it('calls the AuthService', async () => {
+			const authServiceSpy = spyOn(authService, 'signOut');
+			const element = await setup({ auth: { signedIn: true } });
+			const signedInButton = element.shadowRoot.querySelector('#authButton');
+
+			signedInButton.click();
+
+			expect(authServiceSpy).toHaveBeenCalled();
 		});
 	});
 });
