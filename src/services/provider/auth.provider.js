@@ -119,10 +119,7 @@ export const bvvAuthResponseInterceptorProvider = (roles = [], identifier = null
 			case 401: {
 				const handler401 = () => {
 					return new Promise((resolve) => {
-						const {
-							StoreService: storeService,
-							AuthService: authService
-						} = $injector.inject('StoreService', 'AuthService');
+						const { StoreService: storeService, AuthService: authService } = $injector.inject('StoreService', 'AuthService');
 
 						const authenticate = async (credential) => {
 							const authenticated = await authService.signIn(credential);
