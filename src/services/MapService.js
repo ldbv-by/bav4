@@ -206,4 +206,62 @@ export class MapService {
 			left: visibleRectangle.left - baseRectangle.left
 		};
 	}
+
+	/**
+	 * Calculates the length of an array of coordinates.
+	 *
+	 * The kind of calculations depends on whether the coordinates are inside or outside of the extent
+	 * of the supported local projected system (if defined).
+	 *
+	 * This is basically a convenience method for {@link module:services/OlCoordinateService#getLength}.
+	 *
+	 * @param {Array<module:domain/coordinateTypeDef~Coordinate>} coordinatesInMapProjection coordinates in map projection
+	 * @returns {Number} the length
+	 */
+	calcLength(coordinatesInMapProjection) {
+		if (
+			// no local projected extend defined or one or more coordinates are outside the projected extent > global calculation wanted
+			!this.getLocalProjectedSridExtent() ||
+			coordinatesInMapProjection.find((c) => !this._coordinateService.containsCoordinate(this.getLocalProjectedSridExtent(), c))
+		) {
+			const wgs84Coordinates = coordinatesInMapProjection.map((c) => this._coordinateService.toLonLat(c));
+			return this._coordinateService.getLength(wgs84Coordinates, true);
+		}
+		const projectedCoordinates = coordinatesInMapProjection.map((c) =>
+			this._coordinateService.transform(c, this.getSrid(), this.getLocalProjectedSrid())
+		);
+		return this._coordinateService.getLength(projectedCoordinates, false);
+	}
+
+	/**
+	 * Calculates the area for an array of polygon coordinates.
+	 *
+	 * Array of linear rings that define the polygon. The first linear ring of the array defines the outer-boundary or surface of the polygon. Each subsequent linear ring defines a hole in the surface of the polygon.
+	 * A linear ring is an array of vertices' coordinates where the first coordinate and the last are equivalent.
+	 *
+	 * The kind of calculations depends on whether the coordinates are inside or outside of the extent
+	 * of the supported local projected system (if defined).
+	 *
+	 * This is basically a convenience method for {@link module:services/OlCoordinateService#getArea}.
+	 *
+	 * @param {Array<Array<module:domain/coordinateTypeDef~Coordinate>>} coordinatesInMapProjection polygon coordinates map projection
+	 * @returns {Number} the area
+	 */
+	calcArea(coordinatesInMapProjection) {
+		if (
+			// no local projected extend defined or one or more coordinates are outside the projected extent > global calculation wanted
+			!this.getLocalProjectedSridExtent() ||
+			coordinatesInMapProjection[0] /** the first linear ring defines the surface of the polygon */
+				.find((c) => !this._coordinateService.containsCoordinate(this.getLocalProjectedSridExtent(), c))
+		) {
+			const wgs84Coordinates = coordinatesInMapProjection.map((linearRing) => {
+				return linearRing.map((c) => this._coordinateService.toLonLat(c));
+			});
+			return this._coordinateService.getArea(wgs84Coordinates, true);
+		}
+		const projectedCoordinates = coordinatesInMapProjection.map((linearRing) => {
+			return linearRing.map((c) => this._coordinateService.transform(c, this.getSrid(), this.getLocalProjectedSrid()));
+		});
+		return this._coordinateService.getArea(projectedCoordinates, false);
+	}
 }

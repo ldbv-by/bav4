@@ -356,13 +356,34 @@ describe('GeoResourceService', () => {
 		});
 	});
 
+	describe('getKeywords', () => {
+		it('returns the auth roles as keywords', async () => {
+			const geoResourceId = 'id';
+			const geoResource = { restricted: true, authRoles: ['Foo', 'Bar'] };
+			const instanceUnderTest = setup();
+			spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+
+			expect(instanceUnderTest.getKeywords(geoResourceId)).toEqual(['Foo', 'Bar']);
+		});
+		describe('and GeoResource is unknown', () => {
+			it('returns an empty list', async () => {
+				spyOn(authService, 'isSignedIn').and.returnValue(true);
+				const geoResourceId = 'id';
+				const instanceUnderTest = setup();
+				spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(null);
+
+				expect(instanceUnderTest.getKeywords(geoResourceId)).toEqual([]);
+			});
+		});
+	});
+
 	describe('getAuthResponseInterceptorForGeoResource', () => {
 		describe('and GeoResource is known', () => {
 			it('returns a response interceptor for that GeoResource', async () => {
 				const geoResourceId = 'id';
 				const geoResource = { authRoles: ['TEST'] };
 				const responseInterceptor = () => {};
-				const authResponseInterceptorProvider = jasmine.createSpy().withArgs(['TEST']).and.returnValue(responseInterceptor);
+				const authResponseInterceptorProvider = jasmine.createSpy().withArgs(['TEST'], geoResourceId).and.returnValue(responseInterceptor);
 				const instanceUnderTest = setup(null, null, authResponseInterceptorProvider);
 				spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
 
@@ -375,7 +396,7 @@ describe('GeoResourceService', () => {
 				it('returns `false`', async () => {
 					const geoResourceId = 'id';
 					const responseInterceptor = () => {};
-					const authResponseInterceptorProvider = jasmine.createSpy().withArgs([]).and.returnValue(responseInterceptor);
+					const authResponseInterceptorProvider = jasmine.createSpy().withArgs([], geoResourceId).and.returnValue(responseInterceptor);
 					const instanceUnderTest = setup(null, null, authResponseInterceptorProvider);
 					spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(null);
 

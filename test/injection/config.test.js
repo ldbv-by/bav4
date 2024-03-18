@@ -42,6 +42,7 @@ describe('injector configuration', () => {
 		expect($injector.getScope('RoutingService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('AuthService')).toBe(Injector.SCOPE_SINGLETON);
 
+		expect($injector.getScope('GlobalErrorPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('DrawPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('RoutingPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('TopicsPlugin')).toBe(Injector.SCOPE_SINGLETON);

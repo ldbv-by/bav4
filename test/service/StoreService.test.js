@@ -88,12 +88,16 @@ describe('StoreService', () => {
 		const observeStateForEncodingPluginMock = {
 			register: () => {}
 		};
+		const globalErrorPluginMock = {
+			register: () => {}
+		};
 
 		const setupInjector = () => {
 			$injector
 				.reset()
 				.registerSingleton('TopicsService', topicsServiceMock)
 				.registerSingleton('GeoResourceService', geoResourceServiceMock)
+				.registerSingleton('GlobalErrorPlugin', globalErrorPluginMock)
 				.registerSingleton('MeasurementPlugin', measurementPluginMock)
 				.registerSingleton('DrawPlugin', drawPluginMock)
 				.registerSingleton('RoutingPlugin', routingPluginMock)
@@ -165,6 +169,7 @@ describe('StoreService', () => {
 		});
 
 		it('registers all plugins', async () => {
+			const globalErrorPluginSpy = spyOn(globalErrorPluginMock, 'register');
 			const measurementPluginSpy = spyOn(measurementPluginMock, 'register');
 			const drawPluginSpy = spyOn(drawPluginMock, 'register');
 			const routingPluginSpy = spyOn(routingPluginMock, 'register');
@@ -199,6 +204,7 @@ describe('StoreService', () => {
 			await TestUtils.timeout();
 			await TestUtils.timeout();
 
+			expect(globalErrorPluginSpy).toHaveBeenCalledWith(store);
 			expect(measurementPluginSpy).toHaveBeenCalledWith(store);
 			expect(drawPluginSpy).toHaveBeenCalledWith(store);
 			expect(routingPluginSpy).toHaveBeenCalledWith(store);

@@ -11,7 +11,10 @@ describe('MapService', () => {
 		containsCoordinate() {},
 		toCoordinate(c) {
 			return c;
-		}
+		},
+		transform() {},
+		getLength() {},
+		getArea() {}
 	};
 
 	beforeAll(() => {
@@ -340,6 +343,221 @@ describe('MapService', () => {
 				const visibleViewPort = instanceUnderTest.getVisibleViewport(mapElementMock);
 
 				expect(visibleViewPort).toEqual({ top: 50, right: 50, bottom: 0, left: 0 });
+			});
+		});
+	});
+
+	describe('calcArea', () => {
+		describe('no projected extent available', () => {
+			it('calculates the area by calling the OlCoordinateService', () => {
+				const instanceUnderTest = setup();
+				const coordinateInMapProjection = [
+					[
+						[8, 8],
+						[64, 64],
+						[256, 256],
+						[8, 8]
+					]
+				];
+				const area = 42.42;
+				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(null);
+				spyOn(coordinateServiceMock, 'toLonLat').and.callFake((c) => c.map((v) => v * 2));
+				const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getArea').and.returnValue(area);
+
+				const result = instanceUnderTest.calcArea(coordinateInMapProjection);
+
+				expect(result).toBe(area);
+				expect(coordinateServiceSpy).toHaveBeenCalledWith(
+					[
+						[
+							[16, 16],
+							[128, 128],
+							[512, 512],
+							[16, 16]
+						]
+					],
+					true
+				);
+			});
+		});
+
+		describe('one or more coordinates are outside the projected extent', () => {
+			it('calculates the area by calling the OlCoordinateService', () => {
+				const instanceUnderTest = setup();
+				const coordinateInMapProjection = [
+					[
+						[8, 8],
+						[64, 64],
+						[256, 256],
+						[8, 8]
+					]
+				];
+				const localProjectedSridExtent = [5, -80, 14, 80];
+				const area = 42.42;
+				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(localProjectedSridExtent);
+				spyOn(coordinateServiceMock, 'containsCoordinate')
+					.withArgs(localProjectedSridExtent, jasmine.anything())
+					.and.callFake((_, c) => {
+						if (equals(c, [64, 64])) {
+							return false;
+						}
+						return true;
+					});
+				spyOn(coordinateServiceMock, 'toLonLat').and.callFake((c) => c.map((v) => v * 2));
+				const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getArea').and.returnValue(area);
+
+				const result = instanceUnderTest.calcArea(coordinateInMapProjection);
+
+				expect(result).toBe(area);
+				expect(coordinateServiceSpy).toHaveBeenCalledWith(
+					[
+						[
+							[16, 16],
+							[128, 128],
+							[512, 512],
+							[16, 16]
+						]
+					],
+					true
+				);
+			});
+		});
+
+		describe('all coordinates are inside the projected extent', () => {
+			it('calculates the area by calling the OlCoordinateService', () => {
+				const instanceUnderTest = setup();
+				const srid = 3857;
+				const localProjectedSrid = 25832;
+				const coordinateInMapProjection = [
+					[
+						[8, 8],
+						[64, 64],
+						[256, 256],
+						[8, 8]
+					]
+				];
+				const localProjectedSridExtent = [5, -80, 14, 80];
+				const area = 42.42;
+				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(localProjectedSridExtent);
+				spyOn(instanceUnderTest, 'getSrid').and.returnValue(srid);
+				spyOn(instanceUnderTest, 'getLocalProjectedSrid').and.returnValue(localProjectedSrid);
+				spyOn(coordinateServiceMock, 'containsCoordinate')
+					.withArgs(localProjectedSridExtent, jasmine.anything())
+					.and.callFake(() => true);
+				spyOn(coordinateServiceMock, 'transform')
+					.withArgs(jasmine.any(Array), srid, localProjectedSrid)
+					.and.callFake((c) => c.map((v) => v * 2));
+				const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getArea').and.returnValue(area);
+
+				const result = instanceUnderTest.calcArea(coordinateInMapProjection);
+
+				expect(result).toBe(area);
+				expect(coordinateServiceSpy).toHaveBeenCalledWith(
+					[
+						[
+							[16, 16],
+							[128, 128],
+							[512, 512],
+							[16, 16]
+						]
+					],
+					false
+				);
+			});
+		});
+	});
+	describe('calcLength', () => {
+		describe('no projected extent available', () => {
+			it('calculates the length by calling the OlCoordinateService', () => {
+				const instanceUnderTest = setup();
+				const coordinateInMapProjection = [
+					[1, 1],
+					[100, 100]
+				];
+				const length = 42.42;
+				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(null);
+				spyOn(coordinateServiceMock, 'toLonLat').and.callFake((c) => c.map((v) => v * 2));
+				const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getLength').and.returnValue(length);
+
+				const result = instanceUnderTest.calcLength(coordinateInMapProjection);
+
+				expect(result).toBe(length);
+				expect(coordinateServiceSpy).toHaveBeenCalledWith(
+					[
+						[2, 2],
+						[200, 200]
+					],
+					true
+				);
+			});
+		});
+
+		describe('one or more coordinates are outside the projected extent', () => {
+			it('calculates the length by calling the OlCoordinateService', () => {
+				const instanceUnderTest = setup();
+				const coordinateInMapProjection = [
+					[1, 1],
+					[100, 100]
+				];
+				const localProjectedSridExtent = [5, -80, 14, 80];
+				const length = 42.42;
+				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(localProjectedSridExtent);
+				spyOn(coordinateServiceMock, 'containsCoordinate')
+					.withArgs(localProjectedSridExtent, jasmine.anything())
+					.and.callFake((_, c) => {
+						if (equals(c, [100, 100])) {
+							return false;
+						}
+						return true;
+					});
+				spyOn(coordinateServiceMock, 'toLonLat').and.callFake((c) => c.map((v) => v * 2));
+				const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getLength').and.returnValue(length);
+
+				const result = instanceUnderTest.calcLength(coordinateInMapProjection);
+
+				expect(result).toBe(length);
+				expect(coordinateServiceSpy).toHaveBeenCalledWith(
+					[
+						[2, 2],
+						[200, 200]
+					],
+					true
+				);
+			});
+		});
+
+		describe('all coordinates are inside the projected extent', () => {
+			it('calculates the length by calling the OlCoordinateService', () => {
+				const instanceUnderTest = setup();
+				const srid = 3857;
+				const localProjectedSrid = 25832;
+				const coordinateInMapProjection = [
+					[1, 1],
+					[100, 100]
+				];
+				const localProjectedSridExtent = [5, -80, 14, 80];
+				const length = 42.42;
+				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(localProjectedSridExtent);
+				spyOn(instanceUnderTest, 'getSrid').and.returnValue(srid);
+				spyOn(instanceUnderTest, 'getLocalProjectedSrid').and.returnValue(localProjectedSrid);
+				spyOn(coordinateServiceMock, 'containsCoordinate')
+					.withArgs(localProjectedSridExtent, jasmine.anything())
+					.and.callFake(() => true);
+				spyOn(coordinateServiceMock, 'transform')
+					.withArgs(jasmine.any(Array), srid, localProjectedSrid)
+					.and.callFake((c) => c.map((v) => v * 2));
+				const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getLength').and.returnValue(length);
+
+				const result = instanceUnderTest.calcLength(coordinateInMapProjection);
+
+				expect(result).toBe(length);
+				expect(coordinateServiceSpy).toHaveBeenCalledWith(
+					[
+						[2, 2],
+						[200, 200]
+					],
+					false
+				);
 			});
 		});
 	});
