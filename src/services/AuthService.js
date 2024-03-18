@@ -4,7 +4,6 @@
 /**
  * @async
  * @typedef {Function} signInProvider
- * @param {module:domain/credentialDef~Credential} credential
  * @throws `Error` when sign in was not possible due to a technical error
  * @returns {Array<string>}  An array of roles or an empty array when sign in was not successful
  */
