@@ -21,6 +21,7 @@ window.customElements.define(Checkbox.tag, Checkbox);
 window.customElements.define(Icon.tag, Icon);
 
 describe('LayerItem', () => {
+	const geoResourceService = { byId: () => {}, addOrReplace: () => {}, getKeywords: () => [] };
 	const createNewDataTransfer = () => {
 		let data = {};
 		return {
@@ -49,8 +50,6 @@ describe('LayerItem', () => {
 	let store;
 
 	describe('when layer item is rendered', () => {
-		const geoResourceService = { byId: () => {}, addOrReplace: () => {} };
-
 		const setup = async (layer) => {
 			store = TestUtils.setupStoreAndDi(
 				{},
@@ -90,6 +89,27 @@ describe('LayerItem', () => {
 			const label = element.shadowRoot.querySelector('.ba-list-item__text');
 
 			expect(label.innerText).toBe('label0');
+		});
+
+		it('displays GeoResource keywords as badge', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			spyOn(geoResourceService, 'getKeywords').withArgs('geoResourceId0').and.returnValue(['keyword0']);
+
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				collapsed: true
+			};
+			const element = await setup(layer);
+			const badge = element.shadowRoot.querySelector('ba-badge');
+
+			expect(badge.label).toBe('keyword0');
 		});
 
 		it('use layer.label property in checkbox-title ', async () => {
@@ -433,7 +453,6 @@ describe('LayerItem', () => {
 	});
 
 	describe('when user interacts with layer item', () => {
-		const geoResourceService = { byId: () => {} };
 		const layer = {
 			...createDefaultLayerProperties(),
 			id: 'id0',
@@ -579,7 +598,6 @@ describe('LayerItem', () => {
 	});
 
 	describe('when user change order of layer in group', () => {
-		const geoResourceService = { byId: () => {} };
 		let store;
 		const setup = (state) => {
 			store = TestUtils.setupStoreAndDi(state, { layers: layersReducer });
@@ -827,7 +845,6 @@ describe('LayerItem', () => {
 			opacity: 1,
 			collapsed: true
 		};
-		const geoResourceService = { byId: () => {} };
 
 		const setup = () => {
 			const store = TestUtils.setupStoreAndDi({}, { layers: layersReducer, modal: modalReducer });
