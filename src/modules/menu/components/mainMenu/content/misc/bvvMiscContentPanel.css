@@ -24,7 +24,7 @@
 .feedback {
 	mask-image: url('assets/feedback.svg');
 	-webkit-mask-image: url('assets/feedback.svg');
-	transform: scale(0.7);
+	transform: scale(0.9);
 }
 .contact {
 	mask-image: url('assets/contact.svg');
@@ -92,10 +92,10 @@
 	transform: scale(0.9);
 }
 
-.feedback {
-	mask-size: cover;
-	-webkit-mask-size: cover;
-	mask-image: url('assets/feedback.svg');
-	-webkit-mask-image: url('assets/feedback.svg');
-	transform: scale(0.9);
+.logout {
+	color: var(--error-color);
+}
+
+.logout .person {
+	background: var(--error-color);
 }

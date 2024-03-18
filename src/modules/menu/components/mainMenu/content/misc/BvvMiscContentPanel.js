@@ -7,11 +7,8 @@ import css from './bvvMiscContentPanel.css';
 import { $injector } from '../../../../../../injection';
 import { closeModal, openModal } from '../../../../../../store/modal/modal.action';
 import { toggleSchema } from '../../../../../../store/media/media.action';
-import { emitNotification, LevelTypes } from '../../../../../../store/notifications/notifications.action';
-import { sleep } from '../../../../../../utils/timer';
-import { GeoResourceAuthenticationType } from '../../../../../../domain/geoResources';
-
 const Update_Schema = 'update_schema';
+const Update_Auth = 'update_auth';
 
 /**
  * Container for more contents.
@@ -21,10 +18,15 @@ const Update_Schema = 'update_schema';
  * @author thiloSchlemmer
  */
 export class BvvMiscContentPanel extends AbstractMvuContentPanel {
+	#translationService;
+	#authService;
+
 	constructor() {
-		super({ darkSchema: false });
-		const { TranslationService } = $injector.inject('TranslationService');
-		this._translationService = TranslationService;
+		super({ darkSchema: false, signedIn: false });
+
+		const { TranslationService: translationService, AuthService: authService } = $injector.inject('TranslationService', 'AuthService');
+		this.#translationService = translationService;
+		this.#authService = authService;
 	}
 
 	onInitialize() {
@@ -32,18 +34,24 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 			(state) => state.media.darkSchema,
 			(darkSchema) => this.signal(Update_Schema, darkSchema)
 		);
+		this.observe(
+			(state) => state.auth.signedIn,
+			(signedIn) => this.signal(Update_Auth, signedIn)
+		);
 	}
 
 	update(type, data, model) {
 		switch (type) {
 			case Update_Schema:
 				return { ...model, darkSchema: data };
+			case Update_Auth:
+				return { ...model, signedIn: data };
 		}
 	}
 
 	createView(model) {
-		const { darkSchema } = model;
-		const translate = (key) => this._translationService.translate(key);
+		const { darkSchema, signedIn } = model;
+		const translate = (key) => this.#translationService.translate(key);
 
 		const openFeedbackDialog = () => {
 			const title = translate('menu_misc_content_panel_feedback_title');
@@ -51,66 +59,12 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 			openModal(title, content, { steps: 2 });
 		};
 
-		const onClickAuthenticateRole = async () => {
-			closeModal();
+		const onClickSignIn = async () => {
+			this.#authService.signIn();
+		};
 
-			await sleep(1000);
-			const restrictedRole = GeoResourceAuthenticationType.PLUS;
-			const receivedCredential = {};
-
-			// the authenticate-callback provides the implementation of the authentication of credential and url
-			const authenticate = async (credential, authenticationTarget) => {
-				await sleep(3000);
-				if (authenticationTarget === restrictedRole && credential?.username === 'foo' && credential?.password === 'bar') {
-					receivedCredential.username = credential.username;
-					receivedCredential.password = credential.password;
-					return { message: 'Credential is valid' };
-				}
-				return null;
-			};
-
-			const unsubscribe = this.observe(
-				(state) => state.modal,
-				(modal) => resolveBeforeClosing(modal),
-				false
-			);
-
-			// onClose-callback is called with a valid credential or NULL
-			const onClose = (credential, result) => {
-				unsubscribe();
-
-				const succeed = () => {
-					emitNotification(result.message, LevelTypes.INFO);
-					closeModal();
-				};
-
-				const abort = () => {
-					emitNotification('Authentication aborted', LevelTypes.WARN);
-				};
-
-				const resolveAction = credential ? succeed : abort;
-				resolveAction();
-			};
-
-			// in case of aborting the authentification-process by closing the modal,
-			// call the onCloseCallback directly
-			const resolveBeforeClosing = (modal) => {
-				if (!modal.active) {
-					unsubscribe();
-					onClose(null);
-				}
-			};
-
-			// creates a PasswordCredentialPanel-element within a templateResult
-			const getCredentialPanel = () => {
-				return html`<ba-auth-password-credential-panel .authenticate=${authenticate} .onClose=${onClose}></ba-auth-password-credential-panel>`;
-			};
-
-			const title = html`Sign in
-				<ba-badge .size=${'1.5'} .color=${'var(--text3)'} .background=${'var(--primary-color)'} .label=${'Plus'}></ba-badge>`;
-
-			// using the panel as content for the modal
-			openModal(title, getCredentialPanel());
+		const onClickSignOut = () => {
+			this.#authService.signOut();
 		};
 
 		return html`
@@ -118,37 +72,26 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 				${css}
 			</style>
 			<div class="ba-list">
-				<button id="feedback" class="ba-list-item" @click=${onClickAuthenticateRole}>
+				<button id="authButton" class="ba-list-item ${signedIn ? 'logout' : ''}" @click=${signedIn ? onClickSignOut : onClickSignIn}>
 					<span class="ba-list-item__pre">
 						<span class="ba-list-item__icon icon person"> </span>
 					</span>
-					<span class="ba-list-item__text vertical-center">${translate('Login')}</span>
+					<span class="ba-list-item__text vertical-center"
+						>${translate(signedIn ? 'menu_misc_content_panel_logout' : 'menu_misc_content_panel_login')}</span
+					>
 				</button>
-				<button id="feedback" class="ba-list-item" @click=${openFeedbackDialog}>
+				<button id="feedback" class="ba-list-item divider" @click=${openFeedbackDialog}>
 					<span class="ba-list-item__pre">
 						<span class="ba-list-item__icon icon feedback"> </span>
 					</span>
 					<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_feedback_title')}</span>
 				</button>
-				<a class="ba-list-item divider" href="https://www.ldbv.bayern.de/hilfe-v4.html" target="_blank">
-					<span class="ba-list-item__pre">
-						<span class="ba-list-item__icon icon legend"> </span>
-					</span>
-					<span class="ba-list-item__text vertical-center">Legende</span>
-				</a>
-				<a class="ba-list-item divider hide" href="https://www.ldbv.bayern.de/hilfe-v4.html" target="_blank">
-					<span class="ba-list-item__pre">
-						<span class="ba-list-item__icon icon settings"> </span>
-					</span>
-					<span class="ba-list-item__text vertical-center">Einstellungen</span>
-				</a>
-
-				<div class="ba-list-item  ba-list-item__header hide">
+				<div class="ba-list-item  ba-list-item__header ">
 					<span class="ba-list-item__text ">
 						<span class="ba-list-item__primary-text">${translate('menu_misc_content_panel_settings')}</span>
 					</span>
 				</div>
-				<div class="ba-list-item divider hide">
+				<div class="ba-list-item divider ">
 					<ba-switch class="themeToggle" id="themeToggle" .checked=${darkSchema} @toggle=${toggleSchema}>
 						<span slot="before" class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_dark_mode')}</span>
 					</ba-switch>
