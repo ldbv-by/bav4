@@ -13,6 +13,7 @@ const Update_IsOpen = 'update_isOpen';
 const Update_Fetching = 'update_fetching';
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
 const Update_ToolId = 'update_toolid';
+const Update_Auth = 'update_auth';
 
 /**
  *
@@ -50,6 +51,8 @@ export class ToolBar extends MvuElement {
 				return { ...model, ...data };
 			case Update_ToolId:
 				return { ...model, toolId: data };
+			case Update_Auth:
+				return { ...model, signedIn: data };
 		}
 	}
 
@@ -66,6 +69,10 @@ export class ToolBar extends MvuElement {
 			(state) => state.tools.current,
 			(current) => this.signal(Update_ToolId, current)
 		);
+		this.observe(
+			(state) => state.auth.signedIn,
+			(signedIn) => this.signal(Update_Auth, signedIn)
+		);
 
 		if (this.getModel().isPortrait || !this.getModel().hasMinWidth) {
 			this.signal(Update_IsOpen, false);
@@ -76,7 +83,7 @@ export class ToolBar extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { isFetching, isPortrait, hasMinWidth, isOpen, toolId } = model;
+		const { isFetching, isPortrait, hasMinWidth, isOpen, toolId, signedIn } = model;
 
 		const getOrientationClass = () => {
 			return isPortrait ? 'is-portrait' : 'is-landscape';
@@ -98,12 +105,20 @@ export class ToolBar extends MvuElement {
 			return toolId === id ? 'is-active' : '';
 		};
 
-		const getDemoClass = () => {
-			return this._environmentService.isStandalone() ? 'is-demo' : '';
+		const getBadgeText = () => {
+			return this._environmentService.isStandalone()
+				? translate('header_logo_badge_standalone')
+				: signedIn
+					? translate('header_logo_badge_signed_in')
+					: translate('header_logo_badge');
 		};
 
-		const getBadgeText = () => {
-			return this._environmentService.isStandalone() ? translate('header_logo_badge_standalone') : translate('header_logo_badge');
+		const getBadgeClass = () => {
+			return signedIn ? 'badge-signed-in' : 'badge-default';
+		};
+
+		const getDemoClass = () => {
+			return this._environmentService.isStandalone() ? 'is-demo' : '';
 		};
 
 		const toggleTool = (id) => {
@@ -136,7 +151,7 @@ export class ToolBar extends MvuElement {
 					<div class="action-button__icon">
 						<div class="ba"></div>
 					</div>
-					<div class="toolbar__logo-badge">${getBadgeText()}</div>
+					<div class="toolbar__logo-badge ${getBadgeClass()}">${getBadgeText()}</div>
 				</button>
 				<div class="tool-bar ${getOverlayClass()}">
 					<button
