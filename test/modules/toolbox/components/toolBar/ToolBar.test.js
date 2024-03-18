@@ -283,7 +283,7 @@ describe('ToolBarElement', () => {
 	});
 
 	describe('when auth state change', () => {
-		it('updates the authButton Button', async () => {
+		it('updates the auth badge', async () => {
 			const element = await setup();
 
 			expect(element.shadowRoot.querySelectorAll('.badge-signed-in')).toHaveSize(0);
