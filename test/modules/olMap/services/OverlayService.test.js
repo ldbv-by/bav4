@@ -22,7 +22,6 @@ describe('OverlayService', () => {
 	const mapServiceMock = {
 		getSrid: () => 3857,
 		getLocalProjectedSrid: () => 25832,
-		getCoordinateRepresentations: () => [{ global: false, code: 25832 }],
 		calcLength: () => 1
 	};
 

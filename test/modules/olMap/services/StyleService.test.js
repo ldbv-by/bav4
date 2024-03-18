@@ -45,7 +45,6 @@ describe('StyleService', () => {
 	const mapServiceMock = {
 		getSrid: () => 3857,
 		getLocalProjectedSrid: () => 25832,
-		getCoordinateRepresentations: () => [{ code: 25832, global: false }],
 		calcLength: () => {}
 	};
 
