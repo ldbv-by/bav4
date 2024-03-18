@@ -5,6 +5,8 @@ import { Point, LineString, Polygon, LinearRing, MultiLineString, Geometry } fro
 import { isNumber } from '../../../utils/checks';
 import { $injector } from '../../../injection/index';
 
+/**
+ * @constant {string} geometry property field for the geometry length in a local projection*/
 export const PROJECTED_LENGTH_GEOMETRY_PROPERTY = 'projectedLength';
 
 /**
