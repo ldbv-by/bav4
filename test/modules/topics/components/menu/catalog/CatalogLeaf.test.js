@@ -87,32 +87,6 @@ describe('CatalogLeaf', () => {
 				expect(element.shadowRoot.querySelector('#info').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 			});
 
-			it('renders a leaf with a single keyword badge', async () => {
-				const geoResourceLabel = 'someLabel';
-				spyOn(geoResourceServiceMock, 'byId')
-					.withArgs(layer.geoResourceId)
-					.and.returnValue(new XyzGeoResource(layer.id, geoResourceLabel, 'someUrl'));
-				spyOn(geoResourceServiceMock, 'getKeywords').withArgs(layer.geoResourceId).and.returnValue(['Foo']);
-				//load leaf data
-				const leaf = getLeaf();
-				const element = await setup();
-
-				//assign data
-				element.data = leaf;
-
-				const checkbox = element.shadowRoot.querySelector('ba-checkbox');
-				expect(checkbox).toBeTruthy();
-				expect(checkbox.title).toBe(geoResourceLabel);
-				expect(element.shadowRoot.querySelectorAll('.ba-icon-button')).toHaveSize(1);
-				expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe(geoResourceLabel);
-				expect(element.shadowRoot.querySelectorAll('.ba-icon-button')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
-
-				expect(element.shadowRoot.querySelector('#info').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
-				const badge = element.shadowRoot.querySelector('ba-badge');
-				expect(badge.label).toBe('Foo');
-			});
-
 			it('renders a leaf with keyword badges', async () => {
 				const geoResourceLabel = 'someLabel';
 				spyOn(geoResourceServiceMock, 'byId')
@@ -134,6 +108,8 @@ describe('CatalogLeaf', () => {
 				expect(element.shadowRoot.querySelectorAll('.ba-icon-button')).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(2);
+				expect(element.shadowRoot.querySelectorAll('ba-badge')[0].label).toBe('Foo');
+				expect(element.shadowRoot.querySelectorAll('ba-badge')[1].label).toBe('Bar');
 
 				expect(element.shadowRoot.querySelector('#info').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 			});
