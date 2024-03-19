@@ -148,7 +148,7 @@ describe('MeasurementOverlayStyle', () => {
 			expect(createOrRemovePartitionOverlaysSpy).not.toHaveBeenCalled();
 		});
 
-		it('WITHOUT overlays et al', () => {
+		it('WITHOUT overlays at all', () => {
 			const featureMock = {
 				get: () => null,
 				getGeometry: () =>
