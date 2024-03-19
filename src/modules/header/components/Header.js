@@ -31,6 +31,10 @@ const Update_Auth = 'update_auth';
  * @author alsturm
  */
 export class Header extends MvuElement {
+	#authService;
+	#environmentService;
+	#translationService;
+
 	constructor() {
 		super({
 			isOpen: false,
@@ -43,13 +47,15 @@ export class Header extends MvuElement {
 			isOpenNavigationRail: false
 		});
 
-		const { EnvironmentService: environmentService, TranslationService: translationService } = $injector.inject(
-			'EnvironmentService',
-			'TranslationService'
-		);
+		const {
+			EnvironmentService: environmentService,
+			TranslationService: translationService,
+			AuthService: authService
+		} = $injector.inject('EnvironmentService', 'TranslationService', 'AuthService');
 
-		this._environmentService = environmentService;
-		this._translationService = translationService;
+		this.#environmentService = environmentService;
+		this.#translationService = translationService;
+		this.#authService = authService;
 	}
 
 	update(type, data, model) {
@@ -133,7 +139,7 @@ export class Header extends MvuElement {
 	}
 
 	isRenderingSkipped() {
-		return this._environmentService.isEmbedded();
+		return this.#environmentService.isEmbedded();
 	}
 
 	createView(model) {
@@ -152,10 +158,10 @@ export class Header extends MvuElement {
 		};
 
 		const getBadgeText = () => {
-			return this._environmentService.isStandalone()
+			return this.#environmentService.isStandalone()
 				? translate('header_logo_badge_standalone')
 				: signedIn
-					? translate('header_logo_badge_signed_in')
+					? this.#authService.getRoles()
 					: translate('header_logo_badge');
 		};
 
@@ -164,7 +170,7 @@ export class Header extends MvuElement {
 		};
 
 		const getEmblem = () => {
-			return this._environmentService.isStandalone()
+			return this.#environmentService.isStandalone()
 				? html`<a
 						href="${translate('header_emblem_link_standalone')}"
 						title="${translate('header_emblem_title_standalone')}"
@@ -264,10 +270,10 @@ export class Header extends MvuElement {
 			'is-tablet': !hasMinWidth,
 			'is-portrait': isPortrait,
 			'is-landscape': !isPortrait,
-			'is-demo': this._environmentService.isStandalone()
+			'is-demo': this.#environmentService.isStandalone()
 		};
 
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key) => this.#translationService.translate(key);
 		return html`
 			<style>${css}</style>
 			<div class="preload">

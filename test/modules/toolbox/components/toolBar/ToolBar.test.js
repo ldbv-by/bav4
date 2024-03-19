@@ -15,6 +15,15 @@ import { authReducer } from '../../../../../src/store/auth/auth.reducer';
 
 window.customElements.define(ToolBar.tag, ToolBar);
 
+const authService = {
+	isSignedIn: () => {},
+	getRoles: () => {
+		return 'Plus';
+	},
+	signIn: () => {},
+	signOut: () => {}
+};
+
 describe('ToolBarElement', () => {
 	let store;
 	const setup = async (state = {}, config = {}) => {
@@ -54,7 +63,8 @@ describe('ToolBarElement', () => {
 				isEmbedded: () => embed,
 				isStandalone: () => standalone
 			})
-			.registerSingleton('TranslationService', { translate: (key) => key });
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('AuthService', authService);
 		return TestUtils.render(ToolBar.tag);
 	};
 
@@ -119,7 +129,7 @@ describe('ToolBarElement', () => {
 			const element = await setup({ auth: { signedIn: true } });
 
 			expect(element.shadowRoot.querySelectorAll('.badge-signed-in')).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('.toolbar__logo-badge').innerText).toBe('header_logo_badge_signed_in');
+			expect(element.shadowRoot.querySelector('.toolbar__logo-badge').innerText).toBe(authService.getRoles());
 		});
 	});
 
@@ -292,7 +302,7 @@ describe('ToolBarElement', () => {
 			setSignedIn();
 
 			expect(element.shadowRoot.querySelectorAll('.badge-signed-in')).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('.toolbar__logo-badge').innerText).toBe('header_logo_badge_signed_in');
+			expect(element.shadowRoot.querySelector('.toolbar__logo-badge').innerText).toBe(authService.getRoles());
 
 			setSignedOut();
 

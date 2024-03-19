@@ -23,6 +23,10 @@ const Update_Auth = 'update_auth';
  * @author taulinger
  */
 export class ToolBar extends MvuElement {
+	#authService;
+	#environmentService;
+	#translationService;
+
 	constructor() {
 		super({
 			isOpen: true,
@@ -32,13 +36,15 @@ export class ToolBar extends MvuElement {
 			toolId: null
 		});
 
-		const { EnvironmentService: environmentService, TranslationService: translationService } = $injector.inject(
-			'EnvironmentService',
-			'TranslationService'
-		);
+		const {
+			EnvironmentService: environmentService,
+			TranslationService: translationService,
+			AuthService: authService
+		} = $injector.inject('EnvironmentService', 'TranslationService', 'AuthService');
 
-		this._environmentService = environmentService;
-		this._translationService = translationService;
+		this.#environmentService = environmentService;
+		this.#translationService = translationService;
+		this.#authService = authService;
 	}
 
 	update(type, data, model) {
@@ -106,10 +112,10 @@ export class ToolBar extends MvuElement {
 		};
 
 		const getBadgeText = () => {
-			return this._environmentService.isStandalone()
+			return this.#environmentService.isStandalone()
 				? translate('header_logo_badge_standalone')
 				: signedIn
-					? translate('header_logo_badge_signed_in')
+					? this.#authService.getRoles()
 					: translate('header_logo_badge');
 		};
 
@@ -118,7 +124,7 @@ export class ToolBar extends MvuElement {
 		};
 
 		const getDemoClass = () => {
-			return this._environmentService.isStandalone() ? 'is-demo' : '';
+			return this.#environmentService.isStandalone() ? 'is-demo' : '';
 		};
 
 		const toggleTool = (id) => {
@@ -131,7 +137,7 @@ export class ToolBar extends MvuElement {
 			return isFetching ? 'animated-action-button__border__running' : '';
 		};
 
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key) => this.#translationService.translate(key);
 
 		return html`
 			<style>
@@ -188,7 +194,7 @@ export class ToolBar extends MvuElement {
 	}
 
 	isRenderingSkipped() {
-		return this._environmentService.isEmbedded();
+		return this.#environmentService.isEmbedded();
 	}
 
 	static get tag() {
