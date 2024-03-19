@@ -27,7 +27,7 @@ let store;
 const authService = {
 	isSignedIn: () => {},
 	getRoles: () => {
-		return 'Plus';
+		return ['Plus', 'Admin'];
 	},
 	signIn: () => {},
 	signOut: () => {}
@@ -284,7 +284,7 @@ describe('Header', () => {
 			const element = await setup({ auth: { signedIn: true } });
 
 			expect(element.shadowRoot.querySelectorAll('.badge-signed-in')).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('.header__logo-badge').innerText).toBe(authService.getRoles());
+			expect(element.shadowRoot.querySelector('.header__logo-badge').innerText).toBe(authService.getRoles().join(' '));
 
 			expect(element.shadowRoot.querySelectorAll('.badges-signed-in')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.badges-signed-in-icon')).toHaveSize(1);
@@ -790,7 +790,7 @@ describe('Header', () => {
 			setSignedIn();
 
 			expect(element.shadowRoot.querySelectorAll('.badge-signed-in')).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('.header__logo-badge').innerText).toBe(authService.getRoles());
+			expect(element.shadowRoot.querySelector('.header__logo-badge').innerText).toBe(authService.getRoles().join(' '));
 			expect(element.shadowRoot.querySelectorAll('.badges-signed-in')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.badges-signed-in-icon')).toHaveSize(1);
 

@@ -18,7 +18,7 @@ window.customElements.define(ToolBar.tag, ToolBar);
 const authService = {
 	isSignedIn: () => {},
 	getRoles: () => {
-		return 'Plus';
+		return ['Plus', 'Admin'];
 	},
 	signIn: () => {},
 	signOut: () => {}
@@ -129,7 +129,7 @@ describe('ToolBarElement', () => {
 			const element = await setup({ auth: { signedIn: true } });
 
 			expect(element.shadowRoot.querySelectorAll('.badge-signed-in')).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('.toolbar__logo-badge').innerText).toBe(authService.getRoles());
+			expect(element.shadowRoot.querySelector('.toolbar__logo-badge').innerText).toBe(authService.getRoles().join(' '));
 		});
 	});
 
@@ -302,7 +302,7 @@ describe('ToolBarElement', () => {
 			setSignedIn();
 
 			expect(element.shadowRoot.querySelectorAll('.badge-signed-in')).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('.toolbar__logo-badge').innerText).toBe(authService.getRoles());
+			expect(element.shadowRoot.querySelector('.toolbar__logo-badge').innerText).toBe(authService.getRoles().join(' '));
 
 			setSignedOut();
 

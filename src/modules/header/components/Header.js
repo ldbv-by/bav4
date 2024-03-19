@@ -161,7 +161,7 @@ export class Header extends MvuElement {
 			return this.#environmentService.isStandalone()
 				? translate('header_logo_badge_standalone')
 				: signedIn
-					? this.#authService.getRoles()
+					? this.#authService.getRoles().join(' ')
 					: translate('header_logo_badge');
 		};
 
