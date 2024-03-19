@@ -82,6 +82,23 @@ export const bvvSignOutProvider = async () => {
 	}
 };
 
+/**
+ * BVV specific implementation of {@link module:services/AuthService~initialAuthStatusProvider}.
+ * @function
+ * @type {module:services/AuthService~initialAuthStatusProvider}
+ */
+export const bvvInitialAuthStatusProvider = async () => {
+	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
+	const result = await httpService.get(`${configService.getValueAsPath('BACKEND_URL')}auth/roles`);
+
+	switch (result.status) {
+		case 200:
+			return await result.json();
+		default:
+			throw new Error(`Could not fetch current roles: Http-Status ${result.status}`);
+	}
+};
+
 const createCredentialModalTitle = (roles) => {
 	const { TranslationService: translationService } = $injector.inject('TranslationService');
 	const translate = (key) => translationService.translate(key);
