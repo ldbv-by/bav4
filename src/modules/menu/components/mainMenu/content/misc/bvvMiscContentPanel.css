@@ -24,7 +24,7 @@
 .feedback {
 	mask-image: url('assets/feedback.svg');
 	-webkit-mask-image: url('assets/feedback.svg');
-	transform: scale(0.7);
+	transform: scale(0.9);
 }
 .contact {
 	mask-image: url('assets/contact.svg');
@@ -67,4 +67,35 @@
 	mask-image: url('assets/gdo.svg');
 	-webkit-mask-image: url('assets/gdo.svg');
 	background: linear-gradient(90deg, rgba(8, 131, 181, 1) 0%, rgba(43, 91, 148, 1) 100%);
+}
+.person {
+	background: var(--text2);
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	mask-image: url('assets/person.svg');
+	-webkit-mask-image: url('assets/person.svg');
+}
+
+.settings {
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	mask-image: url('assets/settings.svg');
+	-webkit-mask-image: url('assets/settings.svg');
+	transform: scale(0.9);
+}
+
+.legend {
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	mask-image: url('assets/legend.svg');
+	-webkit-mask-image: url('assets/legend.svg');
+	transform: scale(0.9);
+}
+
+.logout {
+	color: var(--error-color);
+}
+
+.logout .person {
+	background: var(--error-color);
 }

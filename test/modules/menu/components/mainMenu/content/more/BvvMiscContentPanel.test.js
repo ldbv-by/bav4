@@ -4,6 +4,8 @@ import { TestUtils } from '../../../../../../test-utils';
 import { $injector } from '../../../../../../../src/injection';
 import { ToggleFeedbackPanel } from '../../../../../../../src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
 import { modalReducer } from '../../../../../../../src/store/modal/modal.reducer';
+import { authReducer } from '../../../../../../../src/store/auth/auth.reducer';
+import { setSignedIn, setSignedOut } from '../../../../../../../src/store/auth/auth.action';
 import { closeModal } from '../../../../../../../src/store/modal/modal.action';
 import { Switch } from '../../../../../../../src/modules/commons/components/switch/Switch';
 import { createNoInitialStateMediaReducer } from '../../../../../../../src/store/media/media.reducer';
@@ -11,16 +13,28 @@ import { createNoInitialStateMediaReducer } from '../../../../../../../src/store
 window.customElements.define(BvvMiscContentPanel.tag, BvvMiscContentPanel);
 window.customElements.define(Switch.tag, Switch);
 
+const authService = {
+	isSignedIn: () => {},
+	getRoles: () => {},
+	signIn: () => {},
+	signOut: () => {}
+};
+
 describe('MiscContentPanel', () => {
 	let store;
-	const setup = () => {
-		const state = {
+	const setup = (state = {}) => {
+		const initialState = {
 			media: {
 				darkSchema: true
-			}
+			},
+			auth: {
+				signedIn: false
+			},
+			...state
 		};
-		store = TestUtils.setupStoreAndDi(state, { media: createNoInitialStateMediaReducer(), modal: modalReducer });
-		$injector.registerSingleton('TranslationService', { translate: (key) => key });
+		store = TestUtils.setupStoreAndDi(initialState, { media: createNoInitialStateMediaReducer(), modal: modalReducer, auth: authReducer });
+		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('AuthService', authService);
+
 		return TestUtils.render(BvvMiscContentPanel.tag);
 	};
 
@@ -39,7 +53,8 @@ describe('MiscContentPanel', () => {
 
 			expect(model).toEqual({
 				darkSchema: false,
-				active: false
+				active: false,
+				signedIn: false
 			});
 		});
 	});
@@ -111,6 +126,24 @@ describe('MiscContentPanel', () => {
 			expect(feedbackButton.querySelectorAll('.ba-list-item__icon.icon.feedback')).toHaveSize(1);
 		});
 
+		it('has a signIn button', async () => {
+			const element = await setup();
+
+			const signedInButton = element.shadowRoot.querySelector('#authButton');
+			expect(signedInButton.querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_login');
+			expect(signedInButton.classList.contains('logout')).toBeFalse();
+			expect(signedInButton.querySelectorAll('.ba-list-item__icon.icon.person')).toHaveSize(1);
+		});
+
+		it('has a signOut button', async () => {
+			const element = await setup({ auth: { signedIn: true } });
+
+			const signedInButton = element.shadowRoot.querySelector('#authButton');
+			expect(signedInButton.querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_logout');
+			expect(signedInButton.classList.contains('logout')).toBeTrue();
+			expect(signedInButton.querySelectorAll('.ba-list-item__icon.icon.person')).toHaveSize(1);
+		});
+
 		it('opens the modal with the toggle-feedback component', async () => {
 			const element = await setup();
 
@@ -133,6 +166,50 @@ describe('MiscContentPanel', () => {
 			themeSwitch.click();
 
 			expect(store.getState().media.darkSchema).toBeFalse();
+		});
+	});
+
+	describe('when auth state change', () => {
+		it('updates the auth button', async () => {
+			const element = await setup();
+			const signedInButton = element.shadowRoot.querySelector('#authButton');
+
+			expect(signedInButton.querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_login');
+			expect(signedInButton.classList.contains('logout')).toBeFalse();
+
+			setSignedIn();
+
+			expect(signedInButton.querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_logout');
+			expect(signedInButton.classList.contains('logout')).toBeTrue();
+
+			setSignedOut();
+
+			expect(signedInButton.querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_login');
+			expect(signedInButton.classList.contains('logout')).toBeFalse();
+		});
+	});
+
+	describe('when signIn button is clicked', () => {
+		it('calls the AuthService', async () => {
+			const authServiceSpy = spyOn(authService, 'signIn');
+			const element = await setup();
+			const signedInButton = element.shadowRoot.querySelector('#authButton');
+
+			signedInButton.click();
+
+			expect(authServiceSpy).toHaveBeenCalled();
+		});
+	});
+
+	describe('when signOut button is clicked', () => {
+		it('calls the AuthService', async () => {
+			const authServiceSpy = spyOn(authService, 'signOut');
+			const element = await setup({ auth: { signedIn: true } });
+			const signedInButton = element.shadowRoot.querySelector('#authButton');
+
+			signedInButton.click();
+
+			expect(authServiceSpy).toHaveBeenCalled();
 		});
 	});
 });

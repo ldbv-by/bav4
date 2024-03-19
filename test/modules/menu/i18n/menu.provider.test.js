@@ -28,6 +28,8 @@ describe('i18n for menu module', () => {
 		);
 		expect(map.menu_misc_content_panel_feedback_title).toBe('Feedback');
 		expect(map.menu_misc_content_panel_routing_title).toBe('Routing');
+		expect(map.menu_misc_content_panel_login).toBe('Login BayernAtlas-plus');
+		expect(map.menu_misc_content_panel_logout).toBe('Logout');
 
 		expect(map.menu_navigation_rail_home).toBe('Home');
 		expect(map.menu_navigation_rail_routing).toBe('Routing');
@@ -63,6 +65,8 @@ describe('i18n for menu module', () => {
 		expect(map.menu_misc_content_panel_ea_header).toBe('Energie-Atlas Bayern');
 		expect(map.menu_misc_content_panel_ea_text).toBe('Central portal for saving energy, energy efficiency, and renewable energies.');
 		expect(map.menu_misc_content_panel_routing_title).toBe('Routing');
+		expect(map.menu_misc_content_panel_login).toBe('Login BayernAtlas-plus');
+		expect(map.menu_misc_content_panel_logout).toBe('Logout');
 
 		expect(map.menu_navigation_rail_home).toBe('Home');
 		expect(map.menu_navigation_rail_routing).toBe('Routing');
@@ -75,7 +79,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 30;
+		const expectedSize = 32;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

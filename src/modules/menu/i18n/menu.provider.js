@@ -25,6 +25,8 @@ export const provide = (lang) => {
 				menu_misc_content_panel_ea_text: 'Central portal for saving energy, energy efficiency, and renewable energies.',
 				menu_misc_content_panel_feedback_title: 'Feedback',
 				menu_misc_content_panel_routing_title: 'Routing',
+				menu_misc_content_panel_login: 'Login BayernAtlas-plus',
+				menu_misc_content_panel_logout: 'Logout',
 
 				menu_navigation_rail_home: 'Home',
 				menu_navigation_rail_routing: 'Routing',
@@ -61,6 +63,8 @@ export const provide = (lang) => {
 				menu_misc_content_panel_ea_text: 'Das zentrale Internet-Portal zum Energiesparen, zur Energieeffizienz und zu erneuerbaren Energien.',
 				menu_misc_content_panel_feedback_title: 'Feedback',
 				menu_misc_content_panel_routing_title: 'Routing',
+				menu_misc_content_panel_login: 'Login BayernAtlas-plus',
+				menu_misc_content_panel_logout: 'Logout',
 
 				menu_navigation_rail_home: 'Home',
 				menu_navigation_rail_routing: 'Routing',

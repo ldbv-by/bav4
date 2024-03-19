@@ -10,6 +10,8 @@ import { setFetching } from '../../../../../src/store/network/network.action';
 import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 import { Tools } from '../../../../../src/domain/tools';
+import { setSignedIn, setSignedOut } from '../../../../../src/store/auth/auth.action';
+import { authReducer } from '../../../../../src/store/auth/auth.reducer';
 
 window.customElements.define(ToolBar.tag, ToolBar);
 
@@ -33,6 +35,9 @@ describe('ToolBarElement', () => {
 			navigationRail: {
 				open: false
 			},
+			auth: {
+				signedIn: false
+			},
 			...state
 		};
 
@@ -40,6 +45,7 @@ describe('ToolBarElement', () => {
 			tools: toolsReducer,
 			network: networkReducer,
 			media: createNoInitialStateMediaReducer(),
+			auth: authReducer,
 			navigationRail: createNoInitialStateNavigationRailReducer()
 		});
 
@@ -107,6 +113,13 @@ describe('ToolBarElement', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.is-demo')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.toolbar__logo-badge').innerText).toBe('header_logo_badge_standalone');
+		});
+
+		it('renders for signIn state', async () => {
+			const element = await setup({ auth: { signedIn: true } });
+
+			expect(element.shadowRoot.querySelectorAll('.badge-signed-in')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.toolbar__logo-badge').innerText).toBe('header_logo_badge_signed_in');
 		});
 	});
 
@@ -269,6 +282,24 @@ describe('ToolBarElement', () => {
 		});
 	});
 
+	describe('when auth state change', () => {
+		it('updates the auth badge', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelectorAll('.badge-signed-in')).toHaveSize(0);
+			expect(element.shadowRoot.querySelector('.toolbar__logo-badge').innerText).toBe('header_logo_badge');
+
+			setSignedIn();
+
+			expect(element.shadowRoot.querySelectorAll('.badge-signed-in')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.toolbar__logo-badge').innerText).toBe('header_logo_badge_signed_in');
+
+			setSignedOut();
+
+			expect(element.shadowRoot.querySelectorAll('.badge-signed-in')).toHaveSize(0);
+			expect(element.shadowRoot.querySelector('.toolbar__logo-badge').innerText).toBe('header_logo_badge');
+		});
+	});
 	describe('responsive layout ', () => {
 		it('layouts for landscape desktop', async () => {
 			const state = {
