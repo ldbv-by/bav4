@@ -6,7 +6,7 @@ import { isNumber } from '../../../utils/checks';
 import { $injector } from '../../../injection/index';
 
 /**
- * property field for the geometry length in a local projection
+ * Key indicating that its value is a unit of length calculated in a local projection.
  * @constant
  * @type {string}
  */
