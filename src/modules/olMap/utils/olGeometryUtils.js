@@ -1,19 +1,16 @@
 /**
  * @module modules/olMap/utils/olGeometryUtils
  */
-import { Geodesic, PolygonArea } from 'geographiclib-geodesic';
-import { containsCoordinate } from 'ol/extent';
-import { Point, LineString, Polygon, LinearRing, Circle, MultiLineString, Geometry } from 'ol/geom';
+import { Point, LineString, Polygon, LinearRing, MultiLineString, Geometry } from 'ol/geom';
 import { isNumber } from '../../../utils/checks';
+import { $injector } from '../../../injection/index';
 
-const EPSG_WGS84 = 'EPSG:4326';
-
-const transformGeometry = (geometry, fromProjection, toProjection) => {
-	if (fromProjection && toProjection) {
-		return geometry.clone().transform(fromProjection, toProjection);
-	}
-	return geometry;
-};
+/**
+ * Key indicating that its value is a unit of length calculated in a local projection.
+ * @constant
+ * @type {string}
+ */
+export const PROJECTED_LENGTH_GEOMETRY_PROPERTY = 'projectedLength';
 
 /**
  * Coerce the provided geometry to a LineString or null,
@@ -117,104 +114,6 @@ export const getBoundingBoxFrom = (centerCoordinate, size) => {
 };
 
 /**
- * Contains information for transformation-methods
- * @typedef CalculationHints
- * @property {string} fromProjection the 'source' ProjectionLike-object for usage in ol/geometry.transform() as String like 'EPSG:3875'
- * @property {string} toProjection the 'destination' ProjectionLike-object for usage in ol/geometry.transform() as String like 'EPSG:3875'
- * @property {Extent} [toProjectionExtent] an extent in WGS84, which defines whether or not a geometry with coordinates outside this extent should be handled
- */
-
-/**
- * Calculates the area of the geometry.
- * @function
- * @param {Geometry} geometry the area-like geometry, to calculate with
- * @param {module:modules/olMap/utils/olGeometryUtils~CalculationHints} calculationHints calculationHints for a optional transformation
- * @returns {number} the calculated length or 0 if the geometry-object is not area-like
- */
-export const getArea = (geometry, calculationHints = {}) => {
-	if (!(geometry instanceof Polygon) && !(geometry instanceof Circle) && !(geometry instanceof LinearRing)) {
-		return 0;
-	}
-
-	const wgs84Geometry = transformGeometry(geometry, calculationHints.fromProjection, EPSG_WGS84);
-	const wgs84LineString = getLineString(wgs84Geometry);
-
-	const getLength = (geometry, calculationHints) => {
-		const calculationGeometry = transformGeometry(geometry, calculationHints.fromProjection, calculationHints.toProjection);
-		return calculationGeometry.getArea();
-	};
-
-	const isWithinProjectionExtent = calculationHints.toProjectionExtent
-		? !wgs84LineString.getCoordinates().some((coordinate) => !containsCoordinate(calculationHints.toProjectionExtent, coordinate))
-		: true;
-	return isWithinProjectionExtent ? getLength(geometry, calculationHints) : getGeodesicArea(wgs84Geometry);
-};
-
-/**
- * Calculates the length of the geometry.
- * If the calculationHints provides a toProjectionExtent, any provided geometry with coordinates outside this extent
- * results in a calculation of a geodesic length, instead of a length in the provided toProjection.
- * @function
- * @param {Geometry} geometry the geometry, to calculate with
- * @param {module:modules/olMap/utils/olGeometryUtils~CalculationHints} calculationHints calculationHints for a optional transformation
- * @returns {number} the calculated length or 0 if the geometry-object is not a LineString/LinearRing/Polygon
- */
-export const getGeometryLength = (geometry, calculationHints = {}) => {
-	if (geometry) {
-		const wgs84Geometry = transformGeometry(geometry, calculationHints.fromProjection, EPSG_WGS84);
-		const wgs84LineString = getLineString(wgs84Geometry);
-
-		const getLength = (geometry, calculationHints) => {
-			const calculationGeometry = transformGeometry(geometry, calculationHints.fromProjection, calculationHints.toProjection);
-			const lineString = getLineString(calculationGeometry);
-			return lineString.getLength();
-		};
-
-		if (wgs84LineString) {
-			const isWithinProjectionExtent = calculationHints.toProjectionExtent
-				? !wgs84LineString.getCoordinates().some((coordinate) => !containsCoordinate(calculationHints.toProjectionExtent, coordinate))
-				: true;
-			return isWithinProjectionExtent ? getLength(geometry, calculationHints) : getGeodesicLength(wgs84LineString);
-		}
-	}
-	return 0;
-};
-
-/**
- * Calculates the geodesic length of a geometry
- * @function
- * @param {LineString} wgs84LineString the LineString (in WGS84), to calculate with
- * @returns {number} the calculated length or 0 if the geometry-object is not a LineString/LinearRing/Polygon
- */
-const getGeodesicLength = (wgs84LineString) => {
-	const geodesicPolygon = new PolygonArea.PolygonArea(Geodesic.WGS84, true);
-	for (const [lon, lat] of wgs84LineString.getCoordinates()) {
-		geodesicPolygon.AddPoint(lat, lon);
-	}
-	const res = geodesicPolygon.Compute(false, true);
-	return res.perimeter;
-};
-
-/**
- * Calculates the geodesic area of a geometry
- * @function
- * @param {Polygon} wgs84Polygon the Polygon (in WGS84), to calculate with
- * @returns {number} the calculated area or 0 if the geometry-object is not a Polygon
- */
-const getGeodesicArea = (wgs84Polygon) => {
-	const geodesicPolygon = new PolygonArea.PolygonArea(Geodesic.WGS84);
-	return wgs84Polygon.getLinearRings().reduce((aggregatedArea, linearRing, index) => {
-		geodesicPolygon.Clear();
-		for (const [lon, lat] of linearRing.getCoordinates()) {
-			geodesicPolygon.AddPoint(lat, lon);
-		}
-		const res = geodesicPolygon.Compute(false, true);
-		const isExteriorRing = index === 0;
-		return isExteriorRing ? aggregatedArea + Math.abs(res.area) : aggregatedArea - Math.abs(res.area);
-	}, 0);
-};
-
-/**
  * A wrapper method for ol/LineString.getCoordinateAt().
  * Return the coordinate at the provided fraction along the linear geometry or along the boundary of a area-like geometry.
  * The fraction is a number between 0 and 1, where 0 is the start (first coordinate) of the geometry and 1 is the end (last coordinate). *
@@ -297,22 +196,19 @@ export const getAzimuthFrom = (polygon) => {
 };
 
 /**
- * Calculates delta-value as a factor of the length of a provided geometry,
+ * Calculates delta-value as a factor of the provided geometry length,
  * to get equal-distanced partition points related to the start of the geometry.
  * The count of the points is based on the resolution of the MapView.
  * @function
- * @param {Geometry} geometry the linear/area-like geometry
+ * @param {number} geometryLength the measured length of the geometry
  * @param {number} resolution the resolution of the MapView, e. g. map.getView().getResolution()
- * @param {module:modules/olMap/utils/olGeometryUtils~CalculationHints} calculationHints calculationHints for a optional transformation
  * @returns {number} the delta, a value between 0 and 1
  */
-export const getPartitionDelta = (geometry, resolution = 1, calculationHints = {}) => {
-	const length = getGeometryLength(geometry, calculationHints);
-
+export const getPartitionDelta = (geometryLength, resolution = 1) => {
 	const minLengthResolution = 40;
 	const isValidForResolution = (partition) => {
 		const partitionResolution = partition / resolution;
-		return partitionResolution > minLengthResolution && length > partition;
+		return partitionResolution > minLengthResolution && geometryLength > partition;
 	};
 
 	const stepFactor = 10;
@@ -320,7 +216,7 @@ export const getPartitionDelta = (geometry, resolution = 1, calculationHints = {
 	const maxDelta = 1;
 	const minPartitionLength = 10;
 	const findBestFittingDelta = (partitionLength) => {
-		const delta = partitionLength / length;
+		const delta = partitionLength / geometryLength;
 		if (maxDelta < delta) {
 			return maxDelta;
 		}
@@ -384,14 +280,14 @@ export const moveParallel = (fromPoint, toPoint, distance) => {
  * Calculates the residuals that occurs when the partitions are distributed over the individual segments of the geometry
  * @function
  * @param {Geometry} geometry the source geometry
- * @param {number} partition the partition-value
+ * @param {number} partitionDelta the delta-value of the partition
  * @returns {Array<number>} the residuals for all segments of the geometry
  */
-export const calculatePartitionResidualOfSegments = (geometry, partition) => {
+export const calculatePartitionResidualOfSegments = (geometry, partitionDelta) => {
 	const residuals = [];
 	const lineString = getLineString(geometry);
 	if (lineString) {
-		const partitionLength = getGeometryLength(lineString) * partition;
+		const partitionLength = lineString.getLength() * partitionDelta;
 		let currentLength = 0;
 		let lastResidual = 0;
 		lineString.forEachSegment((from, to) => {
@@ -441,10 +337,10 @@ export const isValidGeometry = (geometry) => {
 /**
  * @function
  * @param {Geometry} geometry ol geometry
- * @param {module:modules/olMap/utils/olGeometryUtils~CalculationHints} calculationHints
  * @returns {module:modules/olMap/utils/olGeometryUtils~GeometryStats}
  */
-export const getStats = (geometry, calculationHints) => {
+export const getStats = (geometry) => {
+	const { MapService: mapService } = $injector.inject('MapService');
 	const stats = {
 		coordinate: null,
 		azimuth: null,
@@ -456,22 +352,40 @@ export const getStats = (geometry, calculationHints) => {
 		return { ...stats, coordinate: geometry.getCoordinates() };
 	}
 	if (geometry instanceof LineString) {
-		return { ...stats, azimuth: canShowAzimuthCircle(geometry) ? getAzimuth(geometry) : null, length: getGeometryLength(geometry, calculationHints) };
+		return {
+			...stats,
+			azimuth: canShowAzimuthCircle(geometry) ? getAzimuth(geometry) : null,
+			length: mapService.calcLength(geometry.getCoordinates())
+		};
 	}
 	if (geometry instanceof MultiLineString) {
 		return {
 			...stats,
-			length: geometry.getLineStrings().reduce((partialLength, lineString) => partialLength + getGeometryLength(lineString, calculationHints), 0)
+			length: geometry.getLineStrings().reduce((partialLength, lineString) => partialLength + mapService.calcLength(lineString.getCoordinates()), 0)
 		};
 	}
 	if (geometry instanceof Polygon) {
-		return { ...stats, length: getGeometryLength(geometry, calculationHints), area: getArea(geometry, calculationHints) };
+		return {
+			...stats,
+			length: mapService.calcLength(getLineString(geometry).getCoordinates()),
+			area: mapService.calcArea(geometry.getCoordinates())
+		};
 	}
 	return stats;
 };
 
-export const PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857 = 17.5; /**In map units, adopted from v3 and adjusted to 3857 */
-export const PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES = 1000; /**Adopted from v3  */
+/**
+ * In map units, adopted from v3 and adjusted to 3857
+ * @constant
+ * @type {number}
+ */
+export const PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857 = 17.5;
+
+/** Adopted from v3
+ * @constant
+ * @type {number}
+ */
+export const PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES = 1000;
 
 /**
  * Creates a simplified version of this geometry.

@@ -23,7 +23,6 @@ export const BaOverlayTypes = {
  * - `value`
  * - `static`
  * - `geometry`
- * - `projectionHints`
  *
  *
  * Observed Properties:
@@ -31,7 +30,6 @@ export const BaOverlayTypes = {
  * - `static`
  * - `geometry`
  * - `position`
- * - `projectionHints`
  * @class
  * @author thiloSchlemmer
  */
@@ -41,7 +39,6 @@ export class BaOverlay extends BaElement {
 		this._value = null;
 		this._static = false;
 		this._type = BaOverlayTypes.TEXT;
-		this._projectionHints = false;
 		this._isDraggable = false;
 	}
 
@@ -144,16 +141,5 @@ export class BaOverlay extends BaElement {
 
 	get position() {
 		return this._position;
-	}
-
-	set projectionHints(value) {
-		if (value.toProjection !== this.projectionHints.toProjection || value.fromProjection !== this.projectionHints.fromProjection) {
-			this._projectionHints = value;
-			this.render();
-		}
-	}
-
-	get projectionHints() {
-		return this._projectionHints;
 	}
 }

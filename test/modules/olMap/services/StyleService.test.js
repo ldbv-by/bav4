@@ -42,7 +42,11 @@ describe('StyleService', () => {
 		reset: null,
 		fileSaveResult: { adminId: 'init', fileId: 'init' }
 	};
-	const mapServiceMock = { getSrid: () => 3857, getLocalProjectedSrid: () => 25832 };
+	const mapServiceMock = {
+		getSrid: () => 3857,
+		getLocalProjectedSrid: () => 25832,
+		calcLength: () => {}
+	};
 
 	const environmentServiceMock = {
 		isTouch() {},
@@ -186,6 +190,7 @@ describe('StyleService', () => {
 				}
 			};
 			const layerMock = {};
+			spyOn(mapServiceMock, 'calcLength').and.returnValue(1);
 
 			instanceUnderTest.addStyle(feature, mapMock, layerMock);
 
@@ -729,6 +734,7 @@ describe('StyleService', () => {
 			const layerMock = {};
 			const eventMock = { map: mapMock };
 			const onceOnMapSpy = spyOn(mapMock, 'once').and.callFake((eventName, callback) => callback(eventMock));
+			spyOn(mapServiceMock, 'calcLength').and.returnValue(1);
 
 			instanceUnderTest.addStyle(feature, mapMock, layerMock);
 
@@ -775,6 +781,7 @@ describe('StyleService', () => {
 				}
 			};
 			const layerMock = {};
+			spyOn(mapServiceMock, 'calcLength').and.returnValue(1);
 
 			instanceUnderTest.addStyle(feature, mapMock, layerMock);
 
