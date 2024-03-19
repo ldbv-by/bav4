@@ -1,7 +1,8 @@
 /**
  * @module modules/olMap/handler/measure/OlMeasurementHandler
  */
-import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
+import { DragPan, Draw, Select, Snap } from 'ol/interaction';
+import { Modify } from 'ol/interaction';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { unByKey } from 'ol/Observable';
@@ -44,6 +45,7 @@ import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../services/provider/attribution.provider';
 import { KML } from 'ol/format';
 import { Tools } from '../../../../domain/tools';
+import { GeodesicGeometry } from '../../ol/geodesic/geodesicGeometry';
 
 const Debounce_Delay = 1000;
 
@@ -134,7 +136,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		};
 
 		const createLayer = () => {
-			const source = new VectorSource({ wrapX: false });
+			const source = new VectorSource();
 			const layer = new VectorLayer({
 				source: source,
 				style: this._styleService.getStyleFunction(StyleTypes.MEASURE)
@@ -162,6 +164,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					oldFeatures.forEach((f) => {
 						f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
 						layer.getSource().addFeature(f);
+						if (f.getId().startsWith(Tools.MEASURE)) {
+							f.geodesic = new GeodesicGeometry(f, () => false);
+						}
 						this._styleService.removeStyle(f, olMap);
 						this._styleService.addStyle(f, olMap, layer);
 						f.on('change', onFeatureChange);
@@ -434,7 +439,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			type: 'Polygon',
 			minPoints: 2,
 			snapTolerance: getSnapTolerancePerDevice(),
-			style: createSketchStyleFunction(this._styleService.getStyleFunction(StyleTypes.MEASURE))
+			style: createSketchStyleFunction(this._styleService.getStyleFunction(StyleTypes.MEASURE)),
+			wrapX: true
 		});
 
 		const finishDistanceOverlay = (event) => {
@@ -451,13 +457,13 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		draw.on('drawstart', (event) => {
 			const onFeatureChange = (event) => {
-				const measureGeometry = this._createMeasureGeometry(event.target, true);
+				const measureGeometry = this._createMeasureGeometry(event.target);
 				this._overlayService.update(event.target, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
 				this._setStatistics(event.target);
 			};
 
 			const onResolutionChange = () => {
-				const measureGeometry = this._createMeasureGeometry(this._sketchHandler.active, true);
+				const measureGeometry = this._createMeasureGeometry(this._sketchHandler.active);
 				this._overlayService.update(this._sketchHandler.active, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
 			};
 
@@ -518,6 +524,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._modify.setActive(true);
 		this._modifyActivated = true;
 		if (feature) {
+			feature.geodesic = new GeodesicGeometry(feature, () => false); // refresh geodesic with the completed feature from the finished drawing
 			const onFeatureChange = (event) => {
 				const measureGeometry = this._createMeasureGeometry(event.target);
 				this._overlayService.update(event.target, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
@@ -532,7 +539,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		if (!this._sketchHandler.isFinishOnFirstPoint) {
 			// As long as the draw-interaction is active, the current geometry is a closed and maybe invalid Polygon
 			// (snapping from pointer-position to first point) and must be corrected into a valid LineString
-			const measureGeometry = this._createMeasureGeometry(feature, this._draw.getActive());
+			const measureGeometry = this._createMeasureGeometry(feature);
 			const nonAreaStats = getStats(measureGeometry, this._projectionHints);
 			setStatistic({ length: nonAreaStats.length, area: stats.area });
 		} else {
@@ -562,15 +569,15 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}
 	}
 
-	_createMeasureGeometry(feature, isDrawing = false) {
-		if (feature.getGeometry() instanceof Polygon) {
-			const lineCoordinates = isDrawing ? feature.getGeometry().getCoordinates()[0].slice(0, -1) : feature.getGeometry().getCoordinates(false)[0];
-
-			if (!this._sketchHandler.isFinishOnFirstPoint) {
-				return new LineString(lineCoordinates);
-			}
-		}
-		return feature.getGeometry();
+	_createMeasureGeometry(feature) {
+		const geometry = feature.geodesic ? feature.geodesic.getGeometry() : feature.getGeometry();
+		// if (feature.getGeometry() instanceof Polygon) {
+		// 	const lineCoordinates = isDrawing ? geometry.getCoordinates()[0].slice(0, -1) : geometry.getCoordinates(false)[0];
+		// 	if (!this._sketchHandler.isFinishOnFirstPoint) {
+		// 		return new LineString(lineCoordinates);
+		// 	}
+		// }
+		return geometry;
 	}
 
 	_updateMeasureState(coordinate, pixel, dragging) {

@@ -4,12 +4,14 @@
 import { $injector } from '../../../injection';
 import { OverlayStyle } from './OverlayStyle';
 import { MeasurementOverlayTypes } from '../components/MeasurementOverlay';
-import { getAzimuth, getLineString, getPartitionDelta } from '../utils/olGeometryUtils';
+import { getAzimuth, getGeometryLength, getLineString, getPartitionDeltaFrom } from '../utils/olGeometryUtils';
 import Overlay from 'ol/Overlay';
 import { LineString, Polygon } from 'ol/geom';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { DragPan } from 'ol/interaction';
 import { MeasurementOverlay } from '../components/MeasurementOverlay';
+import { containsCoordinate, getBottomLeft, getBottomRight, getTopLeft, getTopRight } from '../../../../node_modules/ol/extent';
+import { fromLonLat, toLonLat, transformExtent } from '../../../../node_modules/ol/proj';
 
 export const saveManualOverlayPosition = (feature) => {
 	const draggableOverlayTypes = ['area', 'measurement'];
@@ -43,7 +45,8 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		this._storeService = StoreService;
 		this._projectionHints = {
 			fromProjection: 'EPSG:' + this._mapService.getSrid(),
-			toProjection: 'EPSG:' + this._mapService.getLocalProjectedSrid()
+			toProjection: 'EPSG:' + this._mapService.getLocalProjectedSrid(),
+			toProjectionExtent: this._mapService.getLocalProjectedSridExtent()
 		};
 	}
 
@@ -81,7 +84,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		const distanceOverlay = olFeature.get('measurement');
 		const measureGeometry = properties.geometry ? properties.geometry : olFeature.getGeometry();
 		if (distanceOverlay) {
-			this._updateOlOverlay(distanceOverlay, measureGeometry, '');
+			this._updateOlOverlay(distanceOverlay, measureGeometry, olFeature.geodesic, '');
 			this._createOrRemoveAreaOverlay(olFeature, olMap);
 			this._createOrRemovePartitionOverlays(olFeature, olMap, measureGeometry);
 		}
@@ -99,12 +102,43 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 
 			const isVisibleStyle = isVisible(properties);
 			const opacity = 'opacity' in properties ? properties.opacity : 1;
+			const viewExtent = olMap.getView().calculateExtent(olMap.getSize());
+			const wgs84Extent = transformExtent(viewExtent, 'EPSG:3857', 'EPSG:4326');
+
+			const getOffset = (latitude) => {
+				return -180 > latitude ? (latitude - (latitude % 180)) / 180 : -180 < latitude && latitude < 180 ? 0 : (latitude - (latitude % 180)) / 180;
+			};
+			const worldOffset = [
+				getOffset(getBottomLeft(wgs84Extent)[0]),
+				getOffset(getBottomRight(wgs84Extent)[0]),
+				getOffset(getTopLeft(wgs84Extent)[0]),
+				getOffset(getTopRight(wgs84Extent)[0])
+			];
+
+			const offsetMinMax = [Math.min(...worldOffset), Math.max(...worldOffset)];
 
 			// setting both properties, to prevent an issue with webkit-based browsers
 			// where opacity is not applied as a single property
 			overlays.forEach((o) => {
 				o.getElement().style.display = isVisibleStyle;
 				o.getElement().style.opacity = opacity;
+				const overlayPosition = o.getPosition();
+
+				if (!containsCoordinate(viewExtent, overlayPosition)) {
+					const wgs84Position = toLonLat(overlayPosition, 'EPSG:3857');
+
+					const withOffset = (offset, wgs84Position) => {
+						const wgs84Coordinate = [offset * 360 + wgs84Position[0], wgs84Position[1]];
+						return fromLonLat(wgs84Coordinate, 'EPSG:3857');
+					};
+					const bestOffset = offsetMinMax.find((offset) => {
+						const candidate = withOffset(offset, wgs84Position);
+						return containsCoordinate(viewExtent, candidate);
+					});
+
+					const newPos = withOffset(bestOffset, wgs84Position);
+					o.setPosition(newPos);
+				}
 			});
 		}
 	}
@@ -144,7 +178,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		};
 
 		const distanceOverlay = olFeature.get('measurement') || createNew();
-		this._updateOlOverlay(distanceOverlay, olFeature.getGeometry());
+		this._updateOlOverlay(distanceOverlay, olFeature.getGeometry(), olFeature.geodesic);
 		return distanceOverlay;
 	}
 
@@ -185,29 +219,28 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		};
 		const partitions = getPartitions();
 		if (!simplifiedGeometry) {
-			simplifiedGeometry = olFeature.getGeometry();
-			if (olFeature.getGeometry() instanceof Polygon) {
-				simplifiedGeometry = new LineString(olFeature.getGeometry().getCoordinates(false)[0]);
-			}
+			simplifiedGeometry = olFeature.geodesic ? olFeature.geodesic.getGeometry() : olFeature.getGeometry();
 		}
 
 		const resolution = olMap.getView().getResolution();
-		const delta = getPartitionDelta(simplifiedGeometry, resolution, this._projectionHints);
 
+		const delta = getPartitionDeltaFrom(simplifiedGeometry, resolution, this._projectionHints);
 		let partitionIndex = 0;
 		for (let i = delta; i < 1; i += delta, partitionIndex++) {
-			let partition = partitions[partitionIndex] || false;
-			if (partition === false) {
-				partition = this._createOlOverlay(
+			const createAndAdd = () => {
+				const newPartition = this._createOlOverlay(
 					olMap,
 					{ offset: [0, -25], positioning: 'top-center' },
 					MeasurementOverlayTypes.DISTANCE_PARTITION,
 					this._projectionHints
 				);
-				this._add(partition, olFeature, olMap);
-				partitions.push(partition);
-			}
-			this._updateOlOverlay(partition, simplifiedGeometry, i);
+				this._add(newPartition, olFeature, olMap);
+				partitions.push(newPartition);
+				return newPartition;
+			};
+
+			const partition = partitions[partitionIndex] ?? createAndAdd();
+			this._updateOlOverlay(partition, simplifiedGeometry, olFeature.geodesic, i);
 		}
 		if (partitionIndex < partitions.length) {
 			for (let j = partitions.length - 1; j >= partitionIndex; j--) {
@@ -245,11 +278,25 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		const lineString = getLineString(geometry);
 		const collectedSegments = { minPartition: 0, length: 0 };
 
-		lineString.forEachSegment((from, to) => {
+		const lineStrings = lineString instanceof LineString ? [lineString] : lineString.getLineStrings();
+		const createSegments = (lineStrings) => {
+			const segments = [];
+			lineStrings.forEach((lineString) =>
+				lineString.getCoordinates().forEach((coordinate, index, coordinates) => {
+					const nextCoordinate = coordinates[index + 1];
+					if (nextCoordinate) {
+						segments.push([coordinate, nextCoordinate]);
+					}
+				})
+			);
+			return segments;
+		};
+		const segments = createSegments(lineStrings);
+		segments.forEach(([from, to]) => {
 			const segment = new LineString([from, to]);
 
 			const currentLength = collectedSegments.length + segment.getLength();
-			const currentMinPartition = currentLength / lineString.getLength();
+			const currentMinPartition = currentLength / getGeometryLength(lineString);
 			const azimuth = getAzimuth(segment);
 			partitions.forEach((overlay) => {
 				const element = overlay.getElement();
@@ -278,10 +325,11 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		return overlay;
 	}
 
-	_updateOlOverlay(overlay, geometry, value) {
+	_updateOlOverlay(overlay, geometry, geodesic = null, value) {
 		const element = overlay.getElement();
 		element.value = value;
 		element.geometry = geometry;
+		element.geodesic = geodesic;
 		if (!overlay.get('manualPositioning')) {
 			overlay.setPosition(element.position);
 		}

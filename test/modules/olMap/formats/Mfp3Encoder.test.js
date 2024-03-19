@@ -295,18 +295,6 @@ describe('BvvMfp3Encoder', () => {
 			expect(encodingSpy).toHaveBeenCalled();
 		});
 
-		it('encodes a WMTS layer with WMTS GeoResource', async () => {
-			spyOn(geoResourceServiceMock, 'byId').and.callFake(() => new TestGeoResource(GeoResourceTypes.WMTS, 'wmts'));
-			const encoder = new BvvMfp3Encoder();
-			const encodingSpy = spyOn(encoder, '_encodeWMTS').and.callFake(() => {
-				return {};
-			});
-
-			await encoder.encode(mapMock, getProperties());
-
-			expect(encodingSpy).toHaveBeenCalled();
-		});
-
 		it('encodes a WMTS layer with vectortile GeoResource', async () => {
 			spyOn(geoResourceServiceMock, 'byId').and.callFake(() => new TestGeoResource(GeoResourceTypes.VT, 'vectortile'));
 			const encoder = new BvvMfp3Encoder();
@@ -2236,7 +2224,7 @@ describe('BvvMfp3Encoder', () => {
 					measurement: {}
 				});
 				feature.setStyle(getGeometryStyleFunction());
-				const vectorSource = new VectorSource({ wrapX: false, features: [feature] });
+				const vectorSource = new VectorSource({ features: [feature] });
 				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
 				const groupOpacity = 1;
 				vectorLayer.setStyle(getGeometryStyleFunction());

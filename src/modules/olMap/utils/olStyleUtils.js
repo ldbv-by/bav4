@@ -1,7 +1,16 @@
 /**
  * @module modules/olMap/utils/olStyleUtils
  */
-import { getGeometryLength, canShowAzimuthCircle, calculatePartitionResidualOfSegments, getPartitionDelta, moveParallel } from './olGeometryUtils';
+import {
+	getGeometryLength,
+	canShowAzimuthCircle,
+	calculatePartitionResidualOfSegments,
+	moveParallel,
+	getPartitionDeltaFrom,
+	NO_CALCULATION_HINTS,
+	isPolygon,
+	isClockwise
+} from './olGeometryUtils';
 import { toContext as toCanvasContext } from 'ol/render';
 import { Fill, Stroke, Style, Circle as CircleStyle, Icon, Text as TextStyle } from 'ol/style';
 import { Polygon, LineString, Circle, MultiPoint } from 'ol/geom';
@@ -10,9 +19,14 @@ import markerIcon from '../assets/marker.svg';
 import { isString } from '../../../utils/checks';
 import { getContrastColorFrom, hexToRgb, rgbToHex } from '../../../utils/colors';
 import { AssetSourceType, getAssetSource } from '../../../utils/assets';
+import { GeodesicGeometry } from '../ol/geodesic/geodesicGeometry';
+
+import { MultiLineString } from '../../../../node_modules/ol/geom';
 
 const Z_Point = 30;
 const Red_Color = [255, 0, 0];
+// eslint-disable-next-line no-unused-vars
+const Green_Color = [0, 255, 0];
 const White_Color = [255, 255, 255];
 // eslint-disable-next-line no-unused-vars
 const Black_Color = [0, 0, 0];
@@ -386,7 +400,7 @@ export const polygonStyleFunction = (styleOption = DEFAULT_STYLE_OPTION) => {
 	];
 };
 
-const getRulerStyle = () => {
+const getRulerStyle = (feature) => {
 	const getCanvasContextRenderFunction = (state) => {
 		const renderContext = toCanvasContext(state.context, { pixelRatio: 1 });
 		return (geometry, fill, stroke) => {
@@ -395,6 +409,7 @@ const getRulerStyle = () => {
 		};
 	};
 	return new Style({
+		geometry: () => feature?.geodesic?.getGeometry(),
 		renderer: (pixelCoordinates, state) => {
 			const getContextRenderFunction = (state) =>
 				state.customContextRenderFunction ? state.customContextRenderFunction : getCanvasContextRenderFunction(state);
@@ -409,10 +424,10 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 	const pixelRatio = state.pixelRatio;
 	const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832', toProjectionExtent: [5, -80, 14, 80] };
 
-	const partition = getPartitionDelta(geometry, resolution, calculationHints);
-	const partitionLength = partition * getGeometryLength(geometry);
+	const partition = getPartitionDeltaFrom(geometry, resolution, calculationHints);
+	const length = getGeometryLength(geometry, NO_CALCULATION_HINTS, true);
+	const partitionLength = partition * length;
 	const partitionTickDistance = partitionLength / resolution;
-	const residuals = calculatePartitionResidualOfSegments(geometry, partition);
 
 	const fill = new Fill({ color: Red_Color.concat([0.4]) });
 	const baseStroke = new Stroke({
@@ -472,15 +487,38 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 		return segment[1] ? draw() : cancel();
 	};
 
-	// baseLine
 	geometry.setCoordinates(pixelCoordinates);
-	contextRenderFunction(geometry, fill, baseStroke);
+
+	const asCounterClockWise = (coordinates) => {
+		return isClockwise(coordinates) ? [...coordinates].reverse() : coordinates;
+	};
+
+	const pixelGeometry = isPolygon(pixelCoordinates[0]) ? new Polygon([asCounterClockWise(pixelCoordinates[0])]) : geometry;
+
+	// baseLine
+	contextRenderFunction(pixelGeometry, fill, baseStroke);
+
+	const residuals = calculatePartitionResidualOfSegments(pixelGeometry, partition);
 
 	// per segment
-	const segmentCoordinates = geometry instanceof Polygon ? pixelCoordinates[0] : pixelCoordinates;
+	const createSegments = (coordinatesArray) => {
+		const segments = [];
+		coordinatesArray.forEach((coordinates) =>
+			coordinates.forEach((coordinate, index, coordinates) => {
+				const nextCoordinate = coordinates[index + 1];
+				if (nextCoordinate) {
+					segments.push([coordinate, nextCoordinate]);
+				}
+			})
+		);
+		return segments;
+	};
 
-	segmentCoordinates.every((coordinate, index, coordinates) => {
-		return drawTicks(contextRenderFunction, [coordinate, coordinates[index + 1]], residuals[index], partitionTickDistance);
+	const segmentsArray =
+		pixelGeometry instanceof Polygon || pixelGeometry instanceof MultiLineString ? pixelGeometry.getCoordinates() : [pixelCoordinates];
+	const segments = createSegments(segmentsArray);
+	segments.forEach((segment, index) => {
+		return drawTicks(contextRenderFunction, segment, residuals[index], partitionTickDistance);
 	});
 };
 
@@ -488,7 +526,7 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
  * StyleFunction for measurement-feature
  *
  * Inspired by example from https://stackoverflow.com/questions/57421223/openlayers-3-offset-stroke-style
- * @param {Feature} feature the feature to be styled
+ * @param {import('ol').Feature} feature the feature to be styled
  * @param {number} resolution the resolution of the Map-View
  * @returns {Array<Style>} the measurement styles for the specified feature
  */
@@ -497,17 +535,19 @@ export const measureStyleFunction = (feature, resolution) => {
 		color: Red_Color.concat([1]),
 		width: 3
 	});
-
+	const fill = new Fill({
+		color: Red_Color.concat([0.4])
+	});
+	const geometry = feature?.geodesic ? feature?.geodesic.getGeometry() : feature.getGeometry();
 	const getFallbackStyle = () => {
 		return new Style({
+			geometry: geometry,
 			stroke: new Stroke({
 				color: Red_Color.concat([1]),
 				lineDash: [8],
 				width: 2
 			}),
-			fill: new Fill({
-				color: Red_Color.concat([0.4])
-			})
+			fill: fill
 		});
 	};
 	const styles = [
@@ -515,15 +555,18 @@ export const measureStyleFunction = (feature, resolution) => {
 			stroke: stroke,
 			geometry: (feature) => {
 				if (canShowAzimuthCircle(feature.getGeometry())) {
-					const coords = feature.getGeometry().getCoordinates();
-					const radius = getGeometryLength(feature.getGeometry());
-					const circle = new Circle(coords[0], radius);
-					return circle;
+					const getCircle = () => {
+						const coords = feature.getGeometry().getCoordinates();
+						const radius = getGeometryLength(feature.getGeometry());
+						return new Circle(coords[0], radius);
+					};
+
+					return feature.geodesic ? feature.geodesic.azimuthCircle : getCircle();
 				}
 			},
 			zIndex: 0
 		}),
-		resolution ? getRulerStyle() : getFallbackStyle()
+		resolution ? getRulerStyle(feature) : getFallbackStyle()
 	];
 	return styles;
 };
@@ -553,8 +596,21 @@ export const modifyStyleFunction = (feature) => {
 };
 
 export const selectStyleFunction = () => {
-	const getAppendableVertexStyle = (color) =>
-		new Style({
+	const constructionStroke = new Stroke({
+		color: Black_Color.concat([1]),
+		width: 1,
+		lineDash: [8]
+	});
+	const getSelectionStyles = (feature) => {
+		const colorFromFeature = getColorFrom(feature);
+		const color = colorFromFeature ? colorFromFeature : Red_Color;
+
+		const geodesicConstructionLineStyle = new Style({
+			stroke: constructionStroke,
+			geometry: (feature) => feature.getGeometry(),
+			zIndex: 0
+		});
+		const vertexStyle = new Style({
 			image: new CircleStyle({
 				radius: 5,
 				stroke: new Stroke({
@@ -586,15 +642,16 @@ export const selectStyleFunction = () => {
 			zIndex: Z_Point - 1
 		});
 
+		return feature.geodesic ? [geodesicConstructionLineStyle, vertexStyle] : [vertexStyle];
+	};
+
 	return (feature, resolution) => {
-		const colorFromFeature = getColorFrom(feature);
-		const color = colorFromFeature ? colorFromFeature : Red_Color;
 		const styleFunction = feature.getStyleFunction();
 		if (!styleFunction || !styleFunction(feature, resolution)) {
-			return [getAppendableVertexStyle(color)];
+			return getSelectionStyles(feature);
 		}
 		const styles = styleFunction(feature, resolution);
-		return styles[0] ? styles.concat([getAppendableVertexStyle(color)]) : [styles, getAppendableVertexStyle(color)];
+		return styles[0] ? styles.concat(getSelectionStyles(feature)) : [styles, ...getSelectionStyles(feature)];
 	};
 };
 
@@ -677,20 +734,22 @@ export const getTransparentImageStyle = () => {
 };
 
 export const createSketchStyleFunction = (styleFunction) => {
-	const sketchPolygon = new Style({
-		fill: new Fill({
-			color: White_Color.concat([0.4])
-		}),
-		stroke: new Stroke({
-			color: White_Color,
-			width: 0
-		})
-	});
+	const getSketchPolygon = (feature) =>
+		new Style({
+			geometry: feature?.geodesic?.getGeometry(),
+			fill: new Fill({
+				color: White_Color.concat([0.4])
+			}),
+			stroke: new Stroke({
+				color: White_Color,
+				width: 2
+			})
+		});
 
 	return (feature, resolution) => {
 		let styles;
 		if (feature.getGeometry().getType() === 'Polygon') {
-			styles = [sketchPolygon];
+			styles = [getSketchPolygon(feature)];
 		} else if (feature.getGeometry().getType() === 'Point') {
 			const fill = new Fill({
 				color: Red_Color.concat([0.4])
@@ -706,6 +765,9 @@ export const createSketchStyleFunction = (styleFunction) => {
 			});
 			styles = [sketchCircle];
 		} else {
+			if (!feature.geodesic) {
+				feature.geodesic = new GeodesicGeometry(feature, () => true);
+			}
 			styles = styleFunction(feature, resolution);
 		}
 

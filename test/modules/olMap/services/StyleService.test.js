@@ -42,7 +42,11 @@ describe('StyleService', () => {
 		reset: null,
 		fileSaveResult: { adminId: 'init', fileId: 'init' }
 	};
-	const mapServiceMock = { getSrid: () => 3857, getLocalProjectedSrid: () => 25832 };
+	const mapServiceMock = {
+		getSrid: () => 3857,
+		getLocalProjectedSrid: () => 25832,
+		getLocalProjectedSridExtent: () => [995772.9694449581, 5982715.763684852, 1548341.2904285304, 6544564.28740462]
+	};
 
 	const environmentServiceMock = {
 		isTouch() {},
@@ -802,7 +806,8 @@ describe('StyleService', () => {
 			const overlayMock = {
 				getElement() {
 					return measureOverlayMock;
-				}
+				},
+				getPosition: () => [0, 0]
 			};
 			const feature = new Feature({
 				geometry: new Polygon([
@@ -820,7 +825,8 @@ describe('StyleService', () => {
 			const viewMock = {
 				getResolution() {
 					return 50;
-				}
+				},
+				calculateExtent: () => feature.getGeometry().getExtent()
 			};
 
 			const mapMock = {
@@ -830,7 +836,8 @@ describe('StyleService', () => {
 				},
 				getInteractions() {
 					return { getArray: () => [] };
-				}
+				},
+				getSize: () => [100, 100]
 			};
 
 			instanceUnderTest.updateStyle(feature, mapMock, { visible: true, opacity: 0.5, top: true });
@@ -847,7 +854,8 @@ describe('StyleService', () => {
 			const overlayMock = {
 				getElement() {
 					return measureOverlayMock;
-				}
+				},
+				getPosition: () => [0, 0]
 			};
 			const feature = new Feature({
 				geometry: new Polygon([
@@ -864,7 +872,8 @@ describe('StyleService', () => {
 			const viewMock = {
 				getResolution() {
 					return 50;
-				}
+				},
+				calculateExtent: () => feature.getGeometry().getExtent()
 			};
 
 			const mapMock = {
@@ -874,7 +883,8 @@ describe('StyleService', () => {
 				},
 				getInteractions() {
 					return { getArray: () => [] };
-				}
+				},
+				getSize: () => [100, 100]
 			};
 
 			instanceUnderTest.updateStyle(feature, mapMock, { visible: true, opacity: 0.5, top: true }, 'measure');

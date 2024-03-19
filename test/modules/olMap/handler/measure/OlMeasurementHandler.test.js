@@ -785,11 +785,14 @@ describe('OlMeasurementHandler', () => {
 			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap(null, 16);
+			const view = map.getView();
+
 			const geometry = new LineString([
 				[0, 0],
 				[1234, 0]
 			]);
 			const feature = new Feature({ geometry: geometry });
+			spyOn(view, 'calculateExtent').and.returnValue(geometry.getExtent());
 
 			classUnderTest.activate(map);
 			classUnderTest._sketchHandler.activate(feature);
@@ -893,7 +896,7 @@ describe('OlMeasurementHandler', () => {
 			const overlay = feature.get('measurement');
 
 			expect(overlay.getPosition()[0]).toBe(0);
-			expect(overlay.getPosition()[1]).toBe(500);
+			expect(overlay.getPosition()[1]).toBeCloseTo(500, 1);
 		});
 
 		it('positions tooltip content on the end of a updated not closed Polygon', () => {
@@ -917,7 +920,7 @@ describe('OlMeasurementHandler', () => {
 
 			const overlay = feature.get('measurement');
 			expect(overlay.getPosition()[0]).toBe(0);
-			expect(overlay.getPosition()[1]).toBe(500);
+			expect(overlay.getPosition()[1]).toBeCloseTo(500, 1);
 			snappedGeometry.setCoordinates([
 				[
 					[0, 0],
@@ -932,7 +935,7 @@ describe('OlMeasurementHandler', () => {
 			simulateDrawEvent('drawend', classUnderTest._draw, feature);
 
 			expect(overlay.getPosition()[0]).toBe(0);
-			expect(overlay.getPosition()[1]).toBe(250);
+			expect(overlay.getPosition()[1]).toBeCloseTo(250, 1);
 		});
 
 		it('removes last point if keypressed', () => {

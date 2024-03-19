@@ -82,7 +82,8 @@ export const getModifyOptions = (modifyableFeatures) => {
 		deleteCondition: (event) => {
 			const isDeletable = noModifierKeys(event) && singleClick(event);
 			return isDeletable;
-		}
+		},
+		wrapX: true
 	};
 };
 

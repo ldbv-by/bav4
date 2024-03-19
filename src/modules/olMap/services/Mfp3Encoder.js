@@ -226,7 +226,6 @@ export class BvvMfp3Encoder {
 				return this._encodeVector(layer, groupOpacity);
 			case GeoResourceTypes.VT: // VectorTiles are currently not supported by MFP but can be replaced by a WMTS substitution
 			case GeoResourceTypes.XYZ:
-			case GeoResourceTypes.WMTS:
 				return this._encodeWMTS(layer, geoResource, groupOpacity);
 			case GeoResourceTypes.WMS:
 				return this._encodeWMS(layer, geoResource, groupOpacity);
@@ -545,18 +544,20 @@ export class BvvMfp3Encoder {
 
 		// handle advanced styles
 		const advancedStyleFeatures = Array.isArray(olStyles)
-			? olStyles.reduce((styleFeatures, style) => {
-					const isGeometryFunction = style.getGeometry && typeof style.getGeometry() === 'function';
+			? olStyles
+					.filter((s) => s !== null)
+					.reduce((styleFeatures, style) => {
+						const isGeometryFunction = style.getGeometry && typeof style.getGeometry() === 'function';
 
-					if (isGeometryFunction) {
-						const geometry = style.getGeometry()(olFeatureToEncode);
-						if (geometry) {
-							const result = this._encodeFeature(new Feature(geometry), olLayer, styleCache, groupOpacity, [style]);
-							return result ? { features: [...styleFeatures.features, ...result.features] } : defaultResult;
+						if (isGeometryFunction) {
+							const geometry = style.getGeometry()(olFeatureToEncode);
+							if (geometry) {
+								const result = this._encodeFeature(new Feature(geometry), olLayer, styleCache, groupOpacity, [style]);
+								return result ? { features: [...styleFeatures.features, ...result.features] } : defaultResult;
+							}
 						}
-					}
-					return styleFeatures;
-				}, defaultResult)
+						return styleFeatures;
+					}, defaultResult)
 			: { features: [] };
 
 		const encodedFeature = this._geometryEncodingFormat.writeFeatureObject(olFeatureToEncode);

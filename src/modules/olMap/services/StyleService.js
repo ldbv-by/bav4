@@ -426,6 +426,9 @@ export class StyleService {
 
 		const getStyleTypeFromId = (olFeature) => {
 			const id = olFeature.getId();
+			if (id?.startsWith('measure_')) {
+				return StyleTypes.MEASURE;
+			}
 			const drawingType = Object.keys(StyleTypes).find((key) => isDrawingStyleType(StyleTypes[key], id));
 			if (drawingType) {
 				return StyleTypes[drawingType];
