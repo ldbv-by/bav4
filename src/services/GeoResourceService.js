@@ -213,7 +213,7 @@ export class GeoResourceService {
 			return gr.setAttribution({
 				description: 'TopPlusOpen',
 				copyright: [
-					{ label: 'Bundesamt für Kartographie und Geodäsie (2022)', url: 'https://www.bkg.bund.de/' },
+					{ label: 'Bundesamt für Kartographie und Geodäsie (2024)', url: 'https://www.bkg.bund.de/' },
 					{ label: 'Datenquellen', url: 'https://sg.geodatenzentrum.de/web_public/Datenquellen_TopPlus_Open.pdf' }
 				]
 			});
