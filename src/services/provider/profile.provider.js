@@ -19,6 +19,12 @@ export const getBvvProfile = async (coordinateLikes3857) => {
 	} = $injector.inject('HttpService', 'ConfigService', 'CoordinateService', 'MapService');
 
 	const coordinates3857 = coordinateService.toCoordinate(coordinateLikes3857);
+	/** HINT: We calculating the linear distance seperately from the backend,
+	 * to get a value without falsification/divergence from:
+	 *
+	 * - simplifying of the geometry (Douglas-Peucker algorithm), due to backend limitations.
+	 * - transformation to other projection than the used projections in the app
+	 */
 	const projectedDistance = mapService.calcLength(coordinates3857);
 	const simplifiedCoordinates = coordinateService.simplify(coordinates3857, CoordinateSimplificationTarget.ELEVATION_PROFILE);
 	const url = configService.getValueAsPath('BACKEND_URL') + 'dem/profile';
