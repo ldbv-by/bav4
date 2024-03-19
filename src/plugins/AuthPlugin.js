@@ -1,3 +1,6 @@
+/**
+ * @module plugins/AuthPlugin
+ */
 import { $injector } from '../injection';
 import { BaPlugin } from './BaPlugin';
 
