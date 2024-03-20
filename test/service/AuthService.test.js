@@ -1,6 +1,6 @@
 import { $injector } from '../../src/injection';
 import { AuthService } from '../../src/services/AuthService';
-import { bvvSignInProvider, bvvSignOutProvider } from '../../src/services/provider/auth.provider';
+import { bvvInitialAuthStatusProvider, bvvSignInProvider, bvvSignOutProvider } from '../../src/services/provider/auth.provider';
 import { authReducer } from '../../src/store/auth/auth.reducer';
 import { TestUtils } from '../test-utils';
 
@@ -11,12 +11,17 @@ describe('AuthService', () => {
 
 	let store;
 
-	const setup = (signInProvider = bvvSignInProvider, signOutProvider = bvvSignOutProvider, state = {}) => {
+	const setup = (
+		signInProvider = bvvSignInProvider,
+		signOutProvider = bvvSignOutProvider,
+		initialAuthStatusProvider = bvvInitialAuthStatusProvider,
+		state = {}
+	) => {
 		store = TestUtils.setupStoreAndDi(state, {
 			auth: authReducer
 		});
 		$injector.registerSingleton('GeoResourceService', geoResourceService);
-		return new AuthService(signInProvider, signOutProvider);
+		return new AuthService(signInProvider, signOutProvider, initialAuthStatusProvider);
 	};
 
 	describe('constructor', () => {
@@ -25,14 +30,45 @@ describe('AuthService', () => {
 			const instanceUnderTest = new AuthService();
 			expect(instanceUnderTest._singInProvider).toEqual(bvvSignInProvider);
 			expect(instanceUnderTest._singOutProvider).toEqual(bvvSignOutProvider);
+			expect(instanceUnderTest._initialAuthStatusProvider).toEqual(bvvInitialAuthStatusProvider);
 		});
 
 		it('initializes the service with custom providers', async () => {
 			const customSignInProvider = async () => {};
 			const customSignOutProvider = async () => {};
-			const instanceUnderTest = setup(customSignInProvider, customSignOutProvider);
+			const customInitialAuthStatusProvider = async () => {};
+			const instanceUnderTest = setup(customSignInProvider, customSignOutProvider, customInitialAuthStatusProvider);
 			expect(instanceUnderTest._singInProvider).toEqual(customSignInProvider);
 			expect(instanceUnderTest._singOutProvider).toEqual(customSignOutProvider);
+			expect(instanceUnderTest._initialAuthStatusProvider).toEqual(customInitialAuthStatusProvider);
+		});
+	});
+
+	describe('init', () => {
+		describe('when roles are available', () => {
+			it('updates the internal state and the auth s-o-s', async () => {
+				const roles = ['TEST'];
+				const initialAuthStatusProvider = jasmine.createSpy().and.resolveTo(roles);
+				const instanceUnderTest = setup(null, null, initialAuthStatusProvider);
+
+				await instanceUnderTest.init();
+
+				expect(instanceUnderTest.getRoles()).toEqual(roles);
+				expect(instanceUnderTest.isSignedIn()).toBeTrue();
+				expect(store.getState().auth.signedIn).toBeTrue();
+			});
+		});
+		describe('when roles are NOT available', () => {
+			it('does nothing', async () => {
+				const initialAuthStatusProvider = jasmine.createSpy().and.resolveTo([]);
+				const instanceUnderTest = setup(null, null, initialAuthStatusProvider);
+
+				await instanceUnderTest.init();
+
+				expect(instanceUnderTest.getRoles()).toEqual([]);
+				expect(instanceUnderTest.isSignedIn()).toBeFalse();
+				expect(store.getState().auth.signedIn).toBeFalse();
+			});
 		});
 	});
 
@@ -59,7 +95,7 @@ describe('AuthService', () => {
 	describe('signIn', () => {
 		describe('the user is NOT signed in', () => {
 			describe('is successful', () => {
-				it('returns `true`, updates the internal state and the auth s-o.s', async () => {
+				it('returns `true`, updates the internal state and the auth s-o-s', async () => {
 					const roles = ['TEST'];
 					const credential = { username: 'u', password: 'p' };
 					const signInProvider = jasmine.createSpy().withArgs(credential).and.resolveTo(roles);
@@ -108,9 +144,9 @@ describe('AuthService', () => {
 	describe('signOut', () => {
 		describe('the user is signed in', () => {
 			describe('is successful', () => {
-				it('returns `true`, updates the internal state and the auth s-o.s', async () => {
+				it('returns `true`, updates the internal state and the auth s-o-s', async () => {
 					const signOutProvider = jasmine.createSpy().and.resolveTo(true);
-					const instanceUnderTest = setup(null, signOutProvider, { auth: { signedIn: true } });
+					const instanceUnderTest = setup(null, signOutProvider, null, { auth: { signedIn: true } });
 					instanceUnderTest._roles = ['TEST'];
 					spyOn(instanceUnderTest, 'isSignedIn').and.returnValue(true);
 
@@ -125,7 +161,7 @@ describe('AuthService', () => {
 			describe('is NOT successful', () => {
 				it('returns `false`', async () => {
 					const signOutProvider = jasmine.createSpy().and.resolveTo(false);
-					const instanceUnderTest = setup(null, signOutProvider, { auth: { signedIn: true } });
+					const instanceUnderTest = setup(null, signOutProvider, null, { auth: { signedIn: true } });
 					instanceUnderTest._roles = ['TEST'];
 					spyOn(instanceUnderTest, 'isSignedIn').and.returnValue(true);
 
@@ -159,8 +195,8 @@ describe('AuthService', () => {
 
 	describe('invalidate', () => {
 		describe('the user is signed in', () => {
-			it('updates the internal state, the auth s-o.s and returns `true`', () => {
-				const instanceUnderTest = setup(null, null, { auth: { signedIn: true } });
+			it('updates the internal state, the auth s-o-s and returns `true`', () => {
+				const instanceUnderTest = setup(null, null, null, { auth: { signedIn: true } });
 				instanceUnderTest._roles = ['TEST'];
 				spyOn(instanceUnderTest, 'isSignedIn').and.returnValue(true);
 
