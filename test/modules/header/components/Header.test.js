@@ -24,6 +24,15 @@ window.customElements.define(Header.tag, Header);
 
 let store;
 
+const authService = {
+	isSignedIn: () => {},
+	getRoles: () => {
+		return ['Plus', 'Admin'];
+	},
+	signIn: () => {},
+	signOut: () => {}
+};
+
 describe('Header', () => {
 	const setup = (state = {}, config = {}) => {
 		const { embed = false, standalone = false } = config;
@@ -69,7 +78,8 @@ describe('Header', () => {
 		});
 		$injector
 			.registerSingleton('EnvironmentService', { isEmbedded: () => embed, isStandalone: () => standalone })
-			.registerSingleton('TranslationService', { translate: (key) => key });
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('AuthService', authService);
 
 		return TestUtils.render(Header.tag);
 	};
@@ -274,7 +284,7 @@ describe('Header', () => {
 			const element = await setup({ auth: { signedIn: true } });
 
 			expect(element.shadowRoot.querySelectorAll('.badge-signed-in')).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('.header__logo-badge').innerText).toBe('header_logo_badge_signed_in');
+			expect(element.shadowRoot.querySelector('.header__logo-badge').innerText).toBe(authService.getRoles().join(' '));
 
 			expect(element.shadowRoot.querySelectorAll('.badges-signed-in')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.badges-signed-in-icon')).toHaveSize(1);
@@ -780,7 +790,7 @@ describe('Header', () => {
 			setSignedIn();
 
 			expect(element.shadowRoot.querySelectorAll('.badge-signed-in')).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('.header__logo-badge').innerText).toBe('header_logo_badge_signed_in');
+			expect(element.shadowRoot.querySelector('.header__logo-badge').innerText).toBe(authService.getRoles().join(' '));
 			expect(element.shadowRoot.querySelectorAll('.badges-signed-in')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.badges-signed-in-icon')).toHaveSize(1);
 
