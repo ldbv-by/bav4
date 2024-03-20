@@ -6,7 +6,7 @@ import { BaPlugin } from './BaPlugin';
 
 /**
  * Initializes the `AuthService`.
- * As it is the first plugin that calls the backend it throws an error when the backend is not available.
+ * As this is the first plugin that calls the backend it throws an error when the backend is not available.
  * @class
  * @author taulinger
  */
