@@ -13,12 +13,18 @@ import { BaPlugin } from './BaPlugin';
 export class AuthPlugin extends BaPlugin {
 	#environmentService;
 	#authService;
+	#configService;
 
 	constructor() {
 		super();
-		const { EnvironmentService: environmentService, AuthService: authService } = $injector.inject('EnvironmentService', 'AuthService');
+		const {
+			EnvironmentService: environmentService,
+			AuthService: authService,
+			ConfigService: configService
+		} = $injector.inject('EnvironmentService', 'AuthService', 'ConfigService');
 		this.#environmentService = environmentService;
 		this.#authService = authService;
+		this.#configService = configService;
 	}
 
 	/**
@@ -29,7 +35,12 @@ export class AuthPlugin extends BaPlugin {
 			try {
 				await this.#authService.init();
 			} catch (e) {
-				throw new Error('Backend is not available. Is the backend running and properly configured?', { cause: e });
+				throw new Error(
+					`A requested endpoint of the backend is not available. Is the backend running and properly configured (current BACKEND_URL=${this.#configService.getValue('BACKEND_URL')})?`,
+					{
+						cause: e
+					}
+				);
 			}
 		}
 	}

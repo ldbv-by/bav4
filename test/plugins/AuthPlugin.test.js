@@ -9,9 +9,15 @@ describe('AuthPlugin', () => {
 	const authService = {
 		async init() {}
 	};
+	const configService = {
+		getValue() {}
+	};
 	const setup = () => {
 		TestUtils.setupStoreAndDi();
-		$injector.registerSingleton('EnvironmentService', environmentService).registerSingleton('AuthService', authService);
+		$injector
+			.registerSingleton('EnvironmentService', environmentService)
+			.registerSingleton('AuthService', authService)
+			.registerSingleton('ConfigService', configService);
 	};
 
 	describe('register', () => {
@@ -29,10 +35,15 @@ describe('AuthPlugin', () => {
 			const store = setup();
 			const error = new Error('something got wrong');
 			spyOn(authService, 'init').and.rejectWith(error);
+			const backendUrl = 'https://foo.bar';
+			spyOn(configService, 'getValue').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const instanceUnderTest = new AuthPlugin();
 
 			await expectAsync(instanceUnderTest.register(store)).toBeRejectedWith(
-				new Error('Backend is not available. Is the backend running and properly configured?', { cause: error })
+				new Error(
+					`A requested endpoint of the backend is not available. Is the backend running and properly configured (current BACKEND_URL=${backendUrl})?`,
+					{ cause: error }
+				)
 			);
 		});
 
