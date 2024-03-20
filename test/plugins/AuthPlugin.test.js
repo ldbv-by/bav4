@@ -25,6 +25,17 @@ describe('AuthPlugin', () => {
 			expect(spy).toHaveBeenCalled();
 		});
 
+		it('catches the error onf the AuthService and throws an error regarding the backend availability', async () => {
+			const store = setup();
+			const error = new Error('something got wrong');
+			spyOn(authService, 'init').and.rejectWith(error);
+			const instanceUnderTest = new AuthPlugin();
+
+			await expectAsync(instanceUnderTest.register(store)).toBeRejectedWith(
+				new Error('Backend is not available. Is the backend running and properly configured?', { cause: error })
+			);
+		});
+
 		describe('when standalone mode', () => {
 			it('does nothing', async () => {
 				const store = setup();
