@@ -97,7 +97,7 @@ describe('ToolBarElement', () => {
 			expect(element.shadowRoot.querySelectorAll('.tool-bar__button_icon.export')).toBeTruthy();
 			expect(element.shadowRoot.querySelectorAll('.tool-bar__button_icon.close')).toBeTruthy();
 			expect(element.shadowRoot.querySelectorAll('.hide-button')).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('.toolbar__logo-badge').innerText).toBe('header_logo_badge');
+			expect(element.shadowRoot.querySelector('.toolbar__logo-badge').innerText).toBe('toolbox_toolbar_logo_badge');
 		});
 
 		it('contains test-id attributes', async () => {
@@ -122,7 +122,7 @@ describe('ToolBarElement', () => {
 			const element = await setup({}, { standalone: true });
 
 			expect(element.shadowRoot.querySelectorAll('.is-demo')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.toolbar__logo-badge').innerText).toBe('header_logo_badge_standalone');
+			expect(element.shadowRoot.querySelector('.toolbar__logo-badge').innerText).toBe('toolbox_toolbar_logo_badge_standalone');
 		});
 
 		it('renders for signIn state', async () => {
@@ -297,7 +297,7 @@ describe('ToolBarElement', () => {
 			const element = await setup();
 
 			expect(element.shadowRoot.querySelectorAll('.badge-signed-in')).toHaveSize(0);
-			expect(element.shadowRoot.querySelector('.toolbar__logo-badge').innerText).toBe('header_logo_badge');
+			expect(element.shadowRoot.querySelector('.toolbar__logo-badge').innerText).toBe('toolbox_toolbar_logo_badge');
 
 			setSignedIn();
 
@@ -307,7 +307,7 @@ describe('ToolBarElement', () => {
 			setSignedOut();
 
 			expect(element.shadowRoot.querySelectorAll('.badge-signed-in')).toHaveSize(0);
-			expect(element.shadowRoot.querySelector('.toolbar__logo-badge').innerText).toBe('header_logo_badge');
+			expect(element.shadowRoot.querySelector('.toolbar__logo-badge').innerText).toBe('toolbox_toolbar_logo_badge');
 		});
 	});
 	describe('responsive layout ', () => {

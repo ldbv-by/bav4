@@ -113,10 +113,10 @@ export class ToolBar extends MvuElement {
 
 		const getBadgeText = () => {
 			return this.#environmentService.isStandalone()
-				? translate('header_logo_badge_standalone')
+				? translate('toolbox_toolbar_logo_badge_standalone')
 				: signedIn
 					? this.#authService.getRoles().join(' ')
-					: translate('header_logo_badge');
+					: translate('toolbox_toolbar_logo_badge');
 		};
 
 		const getBadgeClass = () => {
