@@ -7,6 +7,7 @@ import { getBvvProfile } from './provider/profile.provider';
 import { $injector } from '../injection';
 import { hashCode } from '../utils/hashCode';
 import { deepClone } from '../utils/clone';
+import { indicateChange } from '../store/elevationProfile/elevationProfile.action';
 
 /**
  * @typedef {Object} Profile
@@ -100,13 +101,55 @@ export class ElevationService {
 	}
 
 	/**
-	 * Returns a profile for an array of two or more coordinates
+	 * @param {String} id identifier
 	 * @param {Array<module:domain/coordinateTypeDef~CoordinateLike>} coordinates3857
-	 * @returns {Promise<Profile>} the profile
+	 * @returns {module:services/ElevationService~Profile} The profile
 	 * @throws {Error} Error of the underlying provider
 	 * @throws {TypeError} Parameter must be a valid Array of {@link module:domain/coordinateTypeDef~Coordinate}
 	 */
-	async getProfile(coordinates3857) {
+	async _prepareProfile(id, coordinates3857) {
+		if (this.#lastProfileResult[id]) {
+			return deepClone(this.#lastProfileResult[id]);
+		}
+
+		// clear the cache
+		Object.keys(this.#lastProfileResult).forEach((key) => delete this.#lastProfileResult[key]);
+
+		try {
+			const profile = await this._profileProvider(coordinates3857);
+			this.#lastProfileResult[id] = profile;
+			return deepClone(profile);
+		} catch (e) {
+			if (this.#environmentService.isStandalone()) {
+				console.warn('Could not fetch an elevation profile from backend. Returning a mocked profile ...');
+				return this._createMockElevationProfile(coordinates3857);
+			}
+			throw new Error('Could not load an elevation profile from provider', { cause: e });
+		}
+	}
+
+	/**
+	 * Returns a profile for an identifier or `null` if none is found.
+	 * @param {String} id identifier
+	 * @returns {module:services/ElevationService~Profile|null} The profile or `null` if not available
+	 */
+	fetchProfile(id) {
+		if (this.#lastProfileResult[id]) {
+			return deepClone(this.#lastProfileResult[id]);
+		}
+		return null;
+	}
+
+	/**
+	 * Requests a profile for an array of two or more coordinates.
+	 *
+	 * Note: The corresponding identifier will be committed to the elevationProfile s-o-s after the profile is available.
+	 * @param {Array<module:domain/coordinateTypeDef~CoordinateLike>} coordinates3857
+	 * @returns {Promise<module:services/ElevationService~Profile>} the profile
+	 * @throws {Error} Error of the underlying provider
+	 * @throws {TypeError} Parameter must be a valid Array of {@link module:domain/coordinateTypeDef~Coordinate}
+	 */
+	async requestProfile(coordinates3857) {
 		if (!Array.isArray(coordinates3857) || coordinates3857.length < 2) {
 			throw new TypeError("Parameter 'coordinates3857' must be an array containing at least two coordinates");
 		}
@@ -116,25 +159,10 @@ export class ElevationService {
 			}
 		});
 
-		const hc = hashCode(coordinates3857);
-		if (this.#lastProfileResult[hc]) {
-			return deepClone(this.#lastProfileResult[hc]);
-		}
-
-		// clear the cache
-		Object.keys(this.#lastProfileResult).forEach((key) => delete this.#lastProfileResult[key]);
-
-		try {
-			const profile = await this._profileProvider(coordinates3857);
-			this.#lastProfileResult[hc] = profile;
-			return deepClone(profile);
-		} catch (e) {
-			if (this.#environmentService.isStandalone()) {
-				console.warn('Could not fetch an elevation profile from backend. Returning a mocked profile ...');
-				return this._createMockElevationProfile(coordinates3857);
-			}
-			throw new Error('Could not load an elevation profile from provider', { cause: e });
-		}
+		const id = `${hashCode(coordinates3857)}`;
+		const result = await this._prepareProfile(id, coordinates3857);
+		indicateChange(`${id}`);
+		return result;
 	}
 
 	_createMockElevation() {
