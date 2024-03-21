@@ -5,7 +5,8 @@ import {
 	bvvAuthResponseInterceptorProvider,
 	bvvSignOutProvider,
 	bvvHttpServiceIgnore401PathProvider,
-	BvvCredentialPanelIntervalMs
+	BvvCredentialPanelIntervalMs,
+	bvvInitialAuthStatusProvider
 } from '../../../src/services/provider/auth.provider';
 import { TestUtils } from '../../test-utils';
 import { modalReducer } from '../../../src/store/modal/modal.reducer';
@@ -227,6 +228,56 @@ describe('bvvSignOutProvider', () => {
 				.and.resolveTo(new Response(null, { status: statusCode }));
 
 			await expectAsync(bvvSignOutProvider()).toBeRejectedWithError(`Sign out not possible: Http-Status ${statusCode}`);
+			expect(configServiceSpy).toHaveBeenCalled();
+			expect(httpServiceSpy).toHaveBeenCalled();
+		});
+	});
+});
+
+describe('bvvInitialAuthStatusProvider', () => {
+	const configService = {
+		getValueAsPath: () => {}
+	};
+
+	const httpService = {
+		get: async () => {}
+	};
+
+	beforeEach(() => {
+		$injector.registerSingleton('ConfigService', configService).registerSingleton('HttpService', httpService);
+	});
+
+	afterEach(() => {
+		$injector.reset();
+	});
+
+	describe('backend returns status code 200', () => {
+		it('returns the current roles', async () => {
+			const backendUrl = 'https://backend.url/';
+			const roles = ['Test'];
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const httpServiceSpy = spyOn(httpService, 'get')
+				.withArgs(backendUrl + 'auth/roles')
+				.and.resolveTo(new Response(JSON.stringify(roles)));
+
+			const result = await bvvInitialAuthStatusProvider();
+
+			expect(result).toEqual(roles);
+			expect(configServiceSpy).toHaveBeenCalled();
+			expect(httpServiceSpy).toHaveBeenCalled();
+		});
+	});
+
+	describe('backend returns any other status code', () => {
+		it('throws an Error', async () => {
+			const statusCode = 500;
+			const backendUrl = 'https://backend.url/';
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const httpServiceSpy = spyOn(httpService, 'get')
+				.withArgs(backendUrl + 'auth/roles')
+				.and.resolveTo(new Response(null, { status: statusCode }));
+
+			await expectAsync(bvvInitialAuthStatusProvider()).toBeRejectedWithError(`Could not fetch current roles: Http-Status ${statusCode}`);
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
 		});

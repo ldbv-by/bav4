@@ -13,6 +13,12 @@
  * @throws `Error` when sign out was not possible due to a technical error
  * @returns {boolean}  `true` when sign out was successful
  */
+/**
+ * @async
+ * @typedef {Function} initialAuthStatusProvider
+ * @throws `Error` when sign in was not possible due to a technical error
+ * @returns {Array<string>}  An array of roles or an empty array when sign in was not successful
+ */
 
 /**
  * A function that returns an response interceptor for authentication tasks
@@ -24,7 +30,7 @@
  */
 
 import { setSignedIn, setSignedOut } from '../store/auth/auth.action';
-import { bvvSignInProvider, bvvSignOutProvider } from './provider/auth.provider';
+import { bvvInitialAuthStatusProvider, bvvSignInProvider, bvvSignOutProvider } from './provider/auth.provider';
 
 /**
  * Service for authentication and authorization tasks.
@@ -37,11 +43,25 @@ export class AuthService {
 	 *
 	 * @param {module:services/AuthService~signInProvider} [signInProvider=bvvSignInProvider]
 	 * @param {module:services/AuthService~signOutProvider} [signOutProvider=bvvSignInProvider]
+	 * @param {module:services/AuthService~initialAuthStatusProvider} [initialAuthStatusProvider=bvvInitialAuthStatusProvider]
 	 */
-	constructor(signInProvider = bvvSignInProvider, signOutProvider = bvvSignOutProvider) {
+	constructor(signInProvider = bvvSignInProvider, signOutProvider = bvvSignOutProvider, initialAuthStatusProvider = bvvInitialAuthStatusProvider) {
 		this._singInProvider = signInProvider;
 		this._singOutProvider = signOutProvider;
+		this._initialAuthStatusProvider = initialAuthStatusProvider;
 		this._roles = [];
+	}
+
+	/**
+	 * Initializes the service.
+	 * @async
+	 */
+	async init() {
+		const roles = await this._initialAuthStatusProvider();
+		if (roles.length > 0) {
+			this._roles = [...roles];
+			setSignedIn();
+		}
 	}
 
 	/**
