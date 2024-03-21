@@ -4,6 +4,7 @@
 /**
  * @async
  * @typedef {Function} signInProvider
+ * @param {module:domain/credentialDef~Credential} [credential] Optional credential
  * @throws `Error` when sign in was not possible due to a technical error
  * @returns {Array<string>}  An array of roles or an empty array when sign in was not successful
  */
@@ -81,16 +82,18 @@ export class AuthService {
 	}
 
 	/**
-	 * Sign in. Returns `true` if the user is already signed in.
-	 * @param {module:domain/credentialDef~Credential} credential
+	 * Sign in. Returns `true` id the authentication was successful or if the user is already signed in.
+	 *
+	 * When no credential is provided, the underlying provider will open a dialog for the user.
+	 * @param {module:domain/credentialDef~Credential} [credential=null] Optional credential
 	 * @returns {Promise<boolean>} `true` if sign in was successful
 	 * @throws Error of the underlying provider
 	 */
-	async signIn(credential) {
+	async signIn(credential = null) {
 		if (!this.isSignedIn()) {
 			const roles = await this._singInProvider(credential);
-			this._roles = [...roles];
-			if (this._roles.length > 0) {
+			if (roles.length > 0) {
+				this._roles = [...roles];
 				setSignedIn();
 				return true;
 			}
