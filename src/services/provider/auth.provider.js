@@ -14,55 +14,56 @@ import { BvvRoles } from '../../domain/roles';
  * @function
  * @type {module:services/AuthService~signInProvider}
  */
-export const bvvSignInProvider = async () => {
+export const bvvSignInProvider = async (credential = null) => {
 	const roles = [BvvRoles.PLUS];
+	const {
+		StoreService: storeService,
+		HttpService: httpService,
+		ConfigService: configService
+	} = $injector.inject('StoreService', 'HttpService', 'ConfigService');
 
-	return new Promise((resolve) => {
-		const {
-			StoreService: storeService,
-			HttpService: httpService,
-			ConfigService: configService
-		} = $injector.inject('StoreService', 'HttpService', 'ConfigService');
+	const authenticate = async (credential) => {
+		const result = await httpService.post(`${configService.getValueAsPath('BACKEND_URL')}auth/signin`, JSON.stringify(credential), MediaType.JSON);
 
-		// in case of aborting the authentication-process by closing the modal we call the onClose callback
-		const resolveBeforeClosing = ({ active }) => {
-			if (!active) {
-				onClose(null);
-			}
-		};
-		const unsubscribe = observe(
-			storeService.getStore(),
-			(state) => state.modal,
-			(modal) => resolveBeforeClosing(modal)
-		);
+		switch (result.status) {
+			case 200:
+				return await result.json();
+			case 400:
+				return [];
+			default:
+				throw new Error(`Sign in not possible: Http-Status ${result.status}`);
+		}
+	};
 
-		const authenticate = async (credential) => {
-			const result = await httpService.post(`${configService.getValueAsPath('BACKEND_URL')}auth/signin`, JSON.stringify(credential), MediaType.JSON);
+	return credential
+		?  authenticate(credential)
+		: new Promise((resolve) => {
+				// in case of aborting the authentication-process by closing the modal we call the onClose callback
+				const resolveBeforeClosing = ({ active }) => {
+					if (!active) {
+						onClose(null);
+					}
+				};
+				const unsubscribe = observe(
+					storeService.getStore(),
+					(state) => state.modal,
+					(modal) => resolveBeforeClosing(modal)
+				);
 
-			switch (result.status) {
-				case 200:
-					return await result.json();
-				case 400:
-					return false;
-				default:
-					throw new Error(`Sign in not possible: Http-Status ${result.status}`);
-			}
-		};
+				// onClose-callback is called with a verified credential object and the result object or simply null
+				const onClose = async (credential, roles) => {
+					unsubscribe();
+					closeModal();
+					if (credential && roles) {
+						resolve(roles);
+					} else {
+						// resolve with empty roles
+						resolve([]);
+					}
+				};
 
-		// onClose-callback is called with a verified credential object and the result object or simply null
-		const onClose = async (credential, roles) => {
-			unsubscribe();
-			closeModal();
-			if (credential && roles) {
-				resolve(roles);
-			} else {
-				// resolve with empty roles
-				resolve([]);
-			}
-		};
-
-		openModal(createCredentialModalTitle(roles), createCredentialPanel(authenticate, onClose, roles));
-	});
+				openModal(createCredentialModalTitle(roles), createCredentialPanel(authenticate, onClose, roles));
+			});
 };
 
 /**
