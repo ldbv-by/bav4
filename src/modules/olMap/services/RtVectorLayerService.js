@@ -145,7 +145,6 @@ export class RtVectorLayerService {
 	 * @param {MessageEvent} socketEvent
 	 * @param {ol.source.Vector} olVectorSource
 	 * @param {function (string): Array<ol.Feature>} featureReader
-	 * @returns
 	 */
 	_processMessage(socketEvent, olVectorSource, featureReader) {
 		const { data } = socketEvent;
