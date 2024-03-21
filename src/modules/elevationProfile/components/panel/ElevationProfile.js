@@ -9,7 +9,6 @@ import { $injector } from '../../../../injection';
 
 import { SurfaceType } from '../../utils/elevationProfileAttributeTypes';
 import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
-import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { toLocaleString } from '../../../../utils/numberUtils';
 import { isNumber } from '../../../../utils/checks';
 
@@ -119,8 +118,8 @@ export class ElevationProfile extends MvuElement {
 			(darkSchema) => this.signal(Update_Schema, darkSchema)
 		),
 			this.observe(
-				(state) => state.elevationProfile.coordinates,
-				(coordinates) => this._getElevationProfile(coordinates)
+				(state) => state.elevationProfile.id,
+				(id) => this._getElevationProfile(id)
 			),
 			this.observe(
 				(state) => state.media,
@@ -486,24 +485,15 @@ export class ElevationProfile extends MvuElement {
 	/**
 	 * @private
 	 */
-	async _getElevationProfile(coordinates) {
-		const translate = (key) => this._translationService.translate(key);
-		if (Array.isArray(coordinates) && coordinates.length >= 2) {
-			try {
-				const profile = await this._elevationService.getProfile(coordinates);
-				if (!profile) {
-					this.signal(Update_Profile_Data, Empty_Profile_Data);
-				} else {
-					this._enrichProfileData(profile);
-					this.signal(Update_Profile_Data, profile);
-				}
-			} catch (e) {
-				console.error(e);
-				emitNotification(translate('elevationProfile_could_not_load'), LevelTypes.ERROR);
+	async _getElevationProfile(id) {
+		if (id) {
+			const profile = await this._elevationService.fetchProfile(id);
+			if (!profile) {
 				this.signal(Update_Profile_Data, Empty_Profile_Data);
+			} else {
+				this._enrichProfileData(profile);
+				this.signal(Update_Profile_Data, profile);
 			}
-		} else {
-			this.signal(Update_Profile_Data, Empty_Profile_Data);
 		}
 	}
 
