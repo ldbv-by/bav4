@@ -1,8 +1,6 @@
-import { closeProfile, indicateChange, openProfile, updateCoordinates } from '../../../src/store/elevationProfile/elevationProfile.action.js';
+import { closeProfile, indicateChange, openProfile } from '../../../src/store/elevationProfile/elevationProfile.action.js';
 import { elevationProfileReducer } from '../../../src/store/elevationProfile/elevationProfile.reducer.js';
-import { EventLike } from '../../../src/utils/storeUtils.js';
 import { TestUtils } from '../../test-utils.js';
-import { hashCode } from '../../../src/utils/hashCode';
 
 describe('elevationProfileReducer', () => {
 	const setup = (state) => {
