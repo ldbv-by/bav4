@@ -13,23 +13,27 @@ import { elevationProfileReducer } from '../../../../../src/store/elevationProfi
 import { TestUtils } from '../../../../test-utils';
 import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
 import { Tools } from '../../../../../src/domain/tools';
+import { $injector } from '../../../../../src/injection';
 
 describe('OlElevationProfileHandler', () => {
 	const initCoordinate = fromLonLat([11, 48]);
 	const defaultState = {
 		elevationProfile: {
 			active: false,
-			coordinates: []
+			id: null
 		},
 		tools: {
 			current: OlElevationProfileHandler.SUPPORTED_TOOL_IDS[0]
 		}
 	};
+	const elevationService = {
+		requestProfile() {}
+	};
 
 	let store;
-
 	const setup = (state = defaultState) => {
-		return TestUtils.setupStoreAndDi(state, { elevationProfile: elevationProfileReducer, tools: toolsReducer });
+		store = TestUtils.setupStoreAndDi(state, { elevationProfile: elevationProfileReducer, tools: toolsReducer });
+		$injector.registerSingleton('ElevationService', elevationService);
 	};
 
 	const setupMap = () => {
@@ -86,7 +90,7 @@ describe('OlElevationProfileHandler', () => {
 	describe('when map interactions changes', () => {
 		describe('and a non-configured tool is active', () => {
 			it('does NOT add a listener for select events', () => {
-				store = setup({
+				setup({
 					...defaultState,
 					tools: {
 						current: 'anyUnsupportedToolId'
@@ -106,7 +110,7 @@ describe('OlElevationProfileHandler', () => {
 			});
 
 			it('does NOT add a listener for modify events', () => {
-				store = setup({
+				setup({
 					...defaultState,
 					tools: {
 						current: 'anyUnsupportedToolId'
@@ -130,7 +134,7 @@ describe('OlElevationProfileHandler', () => {
 			});
 
 			it('does NOT remove a listener for select events', () => {
-				store = setup({
+				setup({
 					...defaultState,
 					tools: {
 						current: 'anyUnsupportedToolId'
@@ -151,7 +155,7 @@ describe('OlElevationProfileHandler', () => {
 			});
 
 			it('does NOT remove a listener for modify events', () => {
-				store = setup({
+				setup({
 					...defaultState,
 					tools: {
 						current: 'anyUnsupportedToolId'
@@ -179,7 +183,7 @@ describe('OlElevationProfileHandler', () => {
 		describe('and a non-configured tool is active', () => {
 			it('adds listener for select events', () => {
 				const expectedListenerCount = 1 + 1; // ['add'listener] + ['remove'-listener]
-				store = setup({ ...defaultState });
+				setup({ ...defaultState });
 				const map = getSelectableMapWith([]);
 
 				const select = new Select({ condition: click });
@@ -195,7 +199,7 @@ describe('OlElevationProfileHandler', () => {
 
 			it('adds listener for modify events', () => {
 				const expectedListenerCount = 1; // ['modifyend'listener]
-				store = setup({ ...defaultState });
+				setup({ ...defaultState });
 				const map = setupMap();
 				const vectorSource = new VectorSource({ wrapX: false, features: [] });
 				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
@@ -214,7 +218,7 @@ describe('OlElevationProfileHandler', () => {
 			});
 
 			it('does NOT add listener for other interaction events', () => {
-				store = setup({ ...defaultState });
+				setup({ ...defaultState });
 				const map = setupMap();
 				const vectorSource = new VectorSource({ wrapX: false, features: [] });
 				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
@@ -233,7 +237,7 @@ describe('OlElevationProfileHandler', () => {
 
 			it('removes listener for select events', () => {
 				const expectedListenerCount = 1 + 1; // ['add'listener] + ['remove'-listener]
-				store = setup({ ...defaultState });
+				setup({ ...defaultState });
 				const map = getSelectableMapWith([]);
 
 				const select = new Select({ condition: click });
@@ -255,7 +259,7 @@ describe('OlElevationProfileHandler', () => {
 
 			it('removes listener for modify events', () => {
 				const expectedListenerCount = 1; // ['modifyend'listener]
-				store = setup({ ...defaultState });
+				setup({ ...defaultState });
 				const map = setupMap();
 				const vectorSource = new VectorSource({ wrapX: false, features: [] });
 				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
@@ -280,7 +284,7 @@ describe('OlElevationProfileHandler', () => {
 			});
 
 			it('resets store when select interaction is removed', () => {
-				store = setup({ ...defaultState });
+				setup({ ...defaultState, id: 'id' });
 				const lineString = new LineString([
 					[2, 2],
 					[3, 3]
@@ -295,11 +299,11 @@ describe('OlElevationProfileHandler', () => {
 				select.getFeatures().push(feature);
 				map.removeInteraction(select);
 
-				expect(store.getState().elevationProfile.coordinates).toEqual([]);
+				expect(store.getState().elevationProfile.id).toBeNull();
 			});
 
 			it('does NOT removes listener for non-select events', () => {
-				store = setup({ ...defaultState });
+				setup({ ...defaultState });
 				const expectedListenerCount = 1 + 1; // ['add'listener] + ['remove'-listener]
 				const map = setupMap();
 				const vectorSource = new VectorSource({ wrapX: false, features: [] });
@@ -329,8 +333,9 @@ describe('OlElevationProfileHandler', () => {
 	});
 
 	describe('when feature selections changes', () => {
-		it('changes the elevationProfile store for selected Point geometry', () => {
-			store = setup({ ...defaultState });
+		it('does NOT calls the ElevationService for selected Point geometry', () => {
+			const elevationServiceSpy = spyOn(elevationService, 'requestProfile');
+			setup({ ...defaultState });
 			const point = new Point(fromLonLat([11.59036, 48.14165]));
 			const feature = new Feature({ geometry: point });
 			const map = getSelectableMapWith([feature]);
@@ -344,11 +349,12 @@ describe('OlElevationProfileHandler', () => {
 			select.getFeatures().push(feature);
 
 			expect(updateCoordinatesSpy).toHaveBeenCalled();
-			expect(store.getState().elevationProfile.coordinates).toEqual([]);
+			expect(elevationServiceSpy).not.toHaveBeenCalled();
 		});
 
-		it('changes the elevationProfile store for selected LineString geometry', () => {
-			store = setup({ ...defaultState });
+		it('calls the ElevationService for selected LineString geometry', () => {
+			const elevationServiceSpy = spyOn(elevationService, 'requestProfile');
+			setup({ ...defaultState });
 			const lineString = new LineString([
 				[2, 2],
 				[3, 3]
@@ -365,14 +371,15 @@ describe('OlElevationProfileHandler', () => {
 			select.getFeatures().push(feature);
 
 			expect(updateCoordinatesSpy).toHaveBeenCalled();
-			expect(store.getState().elevationProfile.coordinates).toEqual([
+			expect(elevationServiceSpy).toHaveBeenCalledOnceWith([
 				[2, 2],
 				[3, 3]
 			]);
 		});
 
-		it('changes the elevationProfile store for selected LinearRing geometry', () => {
-			store = setup({ ...defaultState });
+		it('calls the ElevationService for selected LinearRing geometry', () => {
+			const elevationServiceSpy = spyOn(elevationService, 'requestProfile');
+			setup({ ...defaultState });
 			const linearRing = new LinearRing([
 				[0, 0],
 				[1, 0],
@@ -392,7 +399,7 @@ describe('OlElevationProfileHandler', () => {
 			select.getFeatures().push(feature);
 
 			expect(updateCoordinatesSpy).toHaveBeenCalled();
-			expect(store.getState().elevationProfile.coordinates).toEqual([
+			expect(elevationServiceSpy).toHaveBeenCalledOnceWith([
 				[0, 0],
 				[1, 0],
 				[1, 1],
@@ -401,8 +408,9 @@ describe('OlElevationProfileHandler', () => {
 			]);
 		});
 
-		it('changes the elevationProfile store for selected Polygon geometry', () => {
-			store = setup({ ...defaultState });
+		it('calls the ElevationService for selected Polygon geometry', () => {
+			const elevationServiceSpy = spyOn(elevationService, 'requestProfile');
+			setup({ ...defaultState });
 			const polygon = new Polygon([
 				[
 					[0, 0],
@@ -424,7 +432,7 @@ describe('OlElevationProfileHandler', () => {
 			select.getFeatures().push(feature);
 
 			expect(updateCoordinatesSpy).toHaveBeenCalled();
-			expect(store.getState().elevationProfile.coordinates).toEqual([
+			expect(elevationServiceSpy).toHaveBeenCalledOnceWith([
 				[0, 0],
 				[0, 1],
 				[1, 1],
@@ -433,8 +441,9 @@ describe('OlElevationProfileHandler', () => {
 			]);
 		});
 
-		it('changes the elevationProfile store for selected MultiPolygon geometry', () => {
-			store = setup({ ...defaultState });
+		it('does NOT call the ElevationService for selected MultiPolygon geometry', () => {
+			const elevationServiceSpy = spyOn(elevationService, 'requestProfile');
+			setup({ ...defaultState });
 			const multiPolygon = new MultiPolygon([
 				new Polygon([
 					[
@@ -465,11 +474,12 @@ describe('OlElevationProfileHandler', () => {
 			select.getFeatures().push(feature);
 
 			expect(updateCoordinatesSpy).toHaveBeenCalled();
-			expect(store.getState().elevationProfile.coordinates).toEqual([]);
+			expect(elevationServiceSpy).not.toHaveBeenCalled();
 		});
 
-		it('changes the elevationProfile store for multi select geometry', () => {
-			store = setup({ ...defaultState });
+		it('calls the ElevationService for multi select geometry for the first selected feature', () => {
+			const elevationServiceSpy = spyOn(elevationService, 'requestProfile');
+			setup({ ...defaultState });
 			const lineString1 = new LineString([
 				[2, 2],
 				[3, 3]
@@ -492,11 +502,14 @@ describe('OlElevationProfileHandler', () => {
 			select.getFeatures().push(feature2);
 
 			expect(updateCoordinatesSpy).toHaveBeenCalled();
-			expect(store.getState().elevationProfile.coordinates).toEqual([]);
+			expect(elevationServiceSpy).toHaveBeenCalledWith([
+				[2, 2],
+				[3, 3]
+			]);
 		});
 
-		it('changes the elevationProfile store for deselect', () => {
-			store = setup({ ...defaultState });
+		it('calls the ElevationService for deselect', () => {
+			setup({ ...defaultState });
 			const lineString = new LineString([
 				[2, 2],
 				[3, 3]
@@ -513,22 +526,18 @@ describe('OlElevationProfileHandler', () => {
 			select.getFeatures().push(feature);
 
 			expect(updateCoordinatesSpy).toHaveBeenCalled();
-			expect(store.getState().elevationProfile.coordinates).toEqual([
-				[2, 2],
-				[3, 3]
-			]);
 
 			updateCoordinatesSpy.calls.reset();
 			select.getFeatures().clear();
 
 			expect(updateCoordinatesSpy).toHaveBeenCalled();
-			expect(store.getState().elevationProfile.coordinates).toEqual([]);
 		});
 	});
 
 	describe('when feature modifications changes', () => {
-		it('changes the elevationProfile store for modified Point geometry', () => {
-			store = setup({ ...defaultState });
+		it('does NOT call the ElevationService for modified Point geometry', () => {
+			const elevationServiceSpy = spyOn(elevationService, 'requestProfile');
+			setup({ ...defaultState });
 			const point = new Point(fromLonLat([11.59036, 48.14165]));
 			const feature = new Feature({ geometry: point });
 			const features = new Collection([feature]);
@@ -549,11 +558,12 @@ describe('OlElevationProfileHandler', () => {
 			modify.dispatchEvent(modifyEvent);
 
 			expect(updateCoordinatesSpy).toHaveBeenCalled();
-			expect(store.getState().elevationProfile.coordinates).toEqual([]);
+			expect(elevationServiceSpy).not.toHaveBeenCalled();
 		});
 
-		it('changes the elevationProfile store for modified LineString geometry', () => {
-			store = setup({ ...defaultState });
+		it('calls the ElevationService for modified LineString geometry', () => {
+			const elevationServiceSpy = spyOn(elevationService, 'requestProfile');
+			setup({ ...defaultState });
 			const lineString = new LineString([
 				[2, 2],
 				[3, 3]
@@ -577,14 +587,15 @@ describe('OlElevationProfileHandler', () => {
 			modify.dispatchEvent(modifyEvent);
 
 			expect(updateCoordinatesSpy).toHaveBeenCalled();
-			expect(store.getState().elevationProfile.coordinates).toEqual([
+			expect(elevationServiceSpy).toHaveBeenCalledWith([
 				[2, 2],
 				[3, 3]
 			]);
 		});
 
-		it('changes the elevationProfile store for modified Polygon geometry', () => {
-			store = setup({ ...defaultState });
+		it('calls the ElevationService for modified Polygon geometry', () => {
+			const elevationServiceSpy = spyOn(elevationService, 'requestProfile');
+			setup({ ...defaultState });
 			const polygon = new Polygon([
 				[
 					[0, 0],
@@ -613,7 +624,7 @@ describe('OlElevationProfileHandler', () => {
 			modify.dispatchEvent(modifyEvent);
 
 			expect(updateCoordinatesSpy).toHaveBeenCalled();
-			expect(store.getState().elevationProfile.coordinates).toEqual([
+			expect(elevationServiceSpy).toHaveBeenCalledWith([
 				[0, 0],
 				[0, 1],
 				[1, 1],
