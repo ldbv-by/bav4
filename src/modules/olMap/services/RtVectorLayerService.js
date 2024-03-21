@@ -151,12 +151,10 @@ export class RtVectorLayerService {
 		if (data === WebSocket_Message_Keep_Alive) {
 			return;
 		}
-		try {
-			olVectorSource.clear();
-			olVectorSource.addFeatures(featureReader(data));
-		} catch (e) {
-			// do nothing
-		}
+
+		olVectorSource.clear();
+		const features = featureReader(data);
+		olVectorSource.addFeatures(features);
 	}
 
 	_startWebSocket(rtVectorGeoResource, olVectorLayer, olMap, port) {

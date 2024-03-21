@@ -6,7 +6,7 @@ import { VectorSourceType } from '../../../../src/domain/geoResources';
 import { Server as WebsocketMockServer } from 'mock-socket';
 describe('RtVectorLayerService', () => {
 	const mapService = {
-		getSrid: () => {}
+		getSrid: () => 3857
 	};
 
 	const styleService = {
@@ -60,26 +60,73 @@ describe('RtVectorLayerService', () => {
 			instanceUnderTest = new RtVectorLayerService();
 		};
 		describe('createVectorLayer', () => {
+			const wsUrl = 'ws:// localhost:8080';
+			const kmlData =
+				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="draw_line_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+
+			const vectorGeoresource = { id: 'geoResourceId', label: 'geoResourceLabel', sourceType: VectorSourceType.KML, url: wsUrl, srid: 4326 };
+
+			let mockServer;
+			beforeEach(() => {
+				mockServer = new WebsocketMockServer(wsUrl);
+			});
+			afterEach(() => {
+				mockServer.close();
+				mockServer = null;
+			});
+
 			it('returns an ol vector layer for a websocket based RtVectorGeoResource', () => {
 				setup();
-				const wsUrl = 'ws:// localhost:8080';
-				const mockServer = new WebsocketMockServer(wsUrl);
-
 				const id = 'id';
-				const geoResourceId = 'geoResourceId';
-				const geoResourceLabel = 'geoResourceLabel';
 				const olMap = new Map();
 
-				const vectorGeoresource = { id: geoResourceId, label: geoResourceLabel, sourceType: VectorSourceType.KML, url: wsUrl, srid: 4326 };
 				const olVectorLayer = instanceUnderTest.createVectorLayer(id, vectorGeoresource, olMap);
 
 				expect(olVectorLayer.get('id')).toBe(id);
-				expect(olVectorLayer.get('geoResourceId')).toBe(geoResourceId);
+				expect(olVectorLayer.get('geoResourceId')).toBe('geoResourceId');
 				expect(olVectorLayer.getMinZoom()).toBeNegativeInfinity();
 				expect(olVectorLayer.getMaxZoom()).toBePositiveInfinity();
-
 				expect(olVectorLayer.constructor.name).toBe('VectorLayer');
 				expect(mockServer.clients()).toHaveSize(1);
+			});
+
+			it('updates vector layer features, after server sends a message', () => {
+				setup();
+				const id = 'id';
+				const olMap = new Map();
+
+				const olVectorLayer = instanceUnderTest.createVectorLayer(id, vectorGeoresource, olMap);
+				const processSpy = spyOn(instanceUnderTest, '_processMessage').and.callThrough();
+				const sanitizeStyleSpy = spyOn(instanceUnderTest, '_sanitizeStyles').and.callThrough();
+				const applyStyleSpy = spyOn(instanceUnderTest, '_applyStyles').and.callThrough();
+				expect(olVectorLayer.getSource().getFeatures().length).toBe(0);
+
+				mockServer.emit('message', kmlData);
+
+				expect(olVectorLayer.getSource().getFeatures().length).toBe(1);
+				expect(processSpy).toHaveBeenCalled();
+				expect(sanitizeStyleSpy).toHaveBeenCalled();
+				expect(applyStyleSpy).toHaveBeenCalled();
+			});
+
+			it('does nothing, after server sends a keep-alive message', () => {
+				setup();
+				const id = 'id';
+				const olMap = new Map();
+
+				const olVectorLayer = instanceUnderTest.createVectorLayer(id, vectorGeoresource, olMap);
+				const vectorSource = olVectorLayer.getSource();
+				const vectorSourceSpy = spyOn(vectorSource, 'clear').and.callThrough();
+				const processSpy = spyOn(instanceUnderTest, '_processMessage').and.callThrough();
+				expect(vectorSource.getFeatures().length).toBe(0);
+
+				mockServer.emit('message', 'keep-alive');
+				mockServer.emit('message', 'keep-alive');
+				mockServer.emit('message', 'keep-alive');
+
+				expect(vectorSource.getFeatures().length).toBe(0);
+				expect(vectorSourceSpy).not.toHaveBeenCalled();
+				expect(processSpy).toHaveBeenCalledTimes(3);
 			});
 		});
 	});
