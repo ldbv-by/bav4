@@ -52,7 +52,8 @@
 		"webpack": "5.90.3",
 		"webpack-bundle-analyzer": "4.10.1",
 		"webpack-cli": "5.1.4",
-		"webpack-dev-server": "5.0.4"
+		"webpack-dev-server": "5.0.4",
+		"mock-socket": "9.3.1"
 	},
 	"scripts": {
 		"start": "webpack serve --open --mode=development --devtool=inline-source-map",
