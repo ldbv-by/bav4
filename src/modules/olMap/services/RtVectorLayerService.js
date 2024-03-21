@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/services/RtVectorLayerService
+ */
 import VectorLayer from '../../../../node_modules/ol/layer/Vector';
 import VectorSource from '../../../../node_modules/ol/source/Vector';
 import { UnavailableGeoResourceError } from '../../../domain/errors';
