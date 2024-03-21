@@ -31,7 +31,7 @@ describe('AuthPlugin', () => {
 			expect(spy).toHaveBeenCalled();
 		});
 
-		it('catches the error onf the AuthService and throws an error regarding the backend availability', async () => {
+		it('catches the error of the AuthService and throws an error regarding the backend availability', async () => {
 			const store = setup();
 			const error = new Error('something got wrong');
 			spyOn(authService, 'init').and.rejectWith(error);
