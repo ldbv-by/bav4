@@ -16,6 +16,8 @@ import { Badge } from '../../../src/modules/commons/components/badge/Badge';
 import { closeModal } from '../../../src/store/modal/modal.action';
 import { BvvRoles } from '../../../src/domain/roles';
 import { createUniqueId } from '../../../src/utils/numberUtils';
+import { notificationReducer } from '../../../src/store/notifications/notifications.reducer';
+import { LevelTypes } from '../../../src/store/notifications/notifications.action';
 
 describe('bvvSignInProvider', () => {
 	const configService = {
@@ -245,8 +247,18 @@ describe('bvvSignOutProvider', () => {
 		get: async () => {}
 	};
 
+	let store;
 	beforeEach(() => {
-		$injector.registerSingleton('ConfigService', configService).registerSingleton('HttpService', httpService);
+		store = TestUtils.setupStoreAndDi(
+			{},
+			{
+				notifications: notificationReducer
+			}
+		);
+		$injector
+			.registerSingleton('ConfigService', configService)
+			.registerSingleton('HttpService', httpService)
+			.registerSingleton('TranslationService', { translate: (key) => key });
 	});
 
 	afterEach(() => {
@@ -254,7 +266,7 @@ describe('bvvSignOutProvider', () => {
 	});
 
 	describe('backend returns status code 200', () => {
-		it('returns "true"', async () => {
+		it('returns "true" and informs the user', async () => {
 			const backendUrl = 'https://backend.url/';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const httpServiceSpy = spyOn(httpService, 'get')
@@ -266,6 +278,8 @@ describe('bvvSignOutProvider', () => {
 			expect(result).toBeTrue();
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(store.getState().notifications.latest.payload.content).toBe('global_signOut_success');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 		});
 	});
 

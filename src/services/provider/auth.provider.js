@@ -8,6 +8,7 @@ import { html } from 'lit-html';
 import { MediaType } from '../../domain/mediaTypes';
 import { PromiseQueue } from '../../utils/PromiseQueue';
 import { BvvRoles } from '../../domain/roles';
+import { LevelTypes, emitNotification } from '../../store/notifications/notifications.action';
 
 /**
  * BVV specific implementation of {@link module:services/AuthService~signInProvider}.
@@ -36,7 +37,7 @@ export const bvvSignInProvider = async (credential = null) => {
 	};
 
 	return credential
-		?  authenticate(credential)
+		? authenticate(credential)
 		: new Promise((resolve) => {
 				// in case of aborting the authentication-process by closing the modal we call the onClose callback
 				const resolveBeforeClosing = ({ active }) => {
@@ -72,11 +73,16 @@ export const bvvSignInProvider = async (credential = null) => {
  * @type {module:services/AuthService~signOutProvider}
  */
 export const bvvSignOutProvider = async () => {
-	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
+	const {
+		HttpService: httpService,
+		ConfigService: configService,
+		TranslationService: translationService
+	} = $injector.inject('HttpService', 'ConfigService', 'TranslationService');
 	const result = await httpService.get(`${configService.getValueAsPath('BACKEND_URL')}auth/signout`);
 
 	switch (result.status) {
 		case 200:
+			emitNotification(`${translationService.translate('global_signOut_success')}`, LevelTypes.INFO);
 			return true;
 		default:
 			throw new Error(`Sign out not possible: Http-Status ${result.status}`);
