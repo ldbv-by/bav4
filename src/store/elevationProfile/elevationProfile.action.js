@@ -36,7 +36,7 @@ export const closeProfile = () => {
 };
 
 /**
- * Indicates that the elevation profile changed.
+ * Indicates that the elevation profile has changed.
  * @param {string|null} id identifier of the new profile
  * @function
  */

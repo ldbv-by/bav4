@@ -316,7 +316,7 @@ describe('ElevationProfile', () => {
 			const config = chart.config;
 			const datasetZero = config.data.datasets[0];
 
-			// // assert
+			// assert
 			expect(element.shadowRoot.children.length).toBe(3);
 			expect(datasetZero.data).toEqual([]);
 			expect(config.data.labels).toEqual([]);
@@ -419,7 +419,6 @@ describe('ElevationProfile', () => {
 			const config = chart.config;
 
 			// assert
-			// config.options.plugins.title
 			expect(config.options.plugins.title.text).toBe('DGM 25 / DHHN2016');
 		});
 	});
