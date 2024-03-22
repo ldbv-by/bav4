@@ -1,0 +1,128 @@
+input[type='range']::-moz-range-thumb {
+	border: none;
+	border-radius: 0;
+	height: 2rem;
+	width: 1rem;
+}
+.container {
+	margin-top: 2em;
+	border-radius: 0em;
+	margin-bottom: 1em;
+}
+.title {
+	display: inline-block;
+	min-width: 28em;
+	font-size: 0.9rem;
+	transition: all var(--animation-duration-small-open) var(--animation-easing-open);
+}
+.container:hover .title {
+	color: var(--secondary-bg-color);
+}
+.item {
+	border-left: 1px solid var(--primary-bg-color);
+	border-top: 1px solid var(--primary-bg-color);
+	display: inline-block;
+	width: 1em;
+	background: var(--tertiary-bg-color);
+}
+.active {
+	background: var(--primary-color);
+}
+.active-item {
+	background: var(--header-background-color);
+}
+.active-item.active {
+	background: var(--text4) !important;
+}
+.row {
+	display: flex;
+	margin-right: 1em;
+}
+.row:hover .title {
+	color: var(--text1);
+}
+.slider-container {
+	display: flex;
+}
+.slider-pre {
+	min-width: 25em;
+	display: flex;
+	justify-content: flex-end;
+	padding: 0.5em;
+}
+.slider-pre * {
+	margin-left: 0.2em;
+}
+.slider-after {
+	min-width: 1em;
+	display: block;
+}
+.jear-container {
+	display: flex;
+	justify-content: center;
+	margin-left: 25em;
+	align-items: center;
+	max-height: 0;
+	margin-bottom: 1em;
+	position: absolute;
+	left: -22em;
+	top: 4em;
+}
+.jear-container ba-icon {
+	margin: 0 1em;
+}
+#select_jear {
+	width: 4em;
+	display: block;
+	font-size: 2rem;
+}
+#start,
+#stop,
+#reset {
+	transition: all var(--animation-duration-large-open) var(--animation-easing-linear);
+}
+.toggle {
+	position: absolute;
+	right: 3em;
+}
+.y1850,
+.y1900,
+.y1950,
+.y2000 {
+	border-left: 1px solid var(--text2);
+}
+.y1850::after,
+.y1900::after,
+.y1950::after,
+.y2000::after {
+	position: absolute;
+	content: attr(data-year);
+	top: 3em;
+	font-size: 0.9em;
+	font-weight: normal;
+	margin-left: -1em;
+	color: var(--text2);
+	background: var(--primary-bg-color);
+	z-index: 0;
+}
+.item:hover::after {
+	position: absolute;
+	content: attr(data-year);
+	top: 0.8em;
+	font-size: 1.9em;
+	font-weight: normal;
+	margin-left: -1em;
+	background: var(--primary-bg-color);
+	z-index: 2;
+}
+.active-item::after {
+	position: absolute;
+	content: attr(data-year);
+	top: 0.8em;
+	font-size: 1.9em;
+	font-weight: normal;
+	margin-left: -1em;
+	color: var(--text4);
+	background: var(--primary-bg-color);
+	z-index: 1;
+}
