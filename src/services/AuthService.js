@@ -82,7 +82,7 @@ export class AuthService {
 	}
 
 	/**
-	 * Sign in. Returns `true` id the authentication was successful or if the user is already signed in.
+	 * Sign in. Returns `true` if the authentication was successful or the user is already signed in.
 	 *
 	 * When no credential is provided, the underlying provider will open a dialog for the user.
 	 * @param {module:domain/credentialDef~Credential} [credential=null] Optional credential
