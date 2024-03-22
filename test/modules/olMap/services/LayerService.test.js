@@ -433,10 +433,10 @@ describe('LayerService', () => {
 			expect(() => {
 				instanceUnderTest.toOlLayer(id, {
 					getType() {
-						return 'Unknown';
+						return Symbol.for('Unknown');
 					}
 				});
-			}).toThrowError(/Unknown currently not supported/);
+			}).toThrowError('GeoResource type "Unknown" currently not supported');
 		});
 	});
 });

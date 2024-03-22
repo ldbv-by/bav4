@@ -171,6 +171,6 @@ export class LayerService {
 				return layerGroup;
 			}
 		}
-		throw new Error(geoResource.getType() + ' currently not supported');
+		throw new Error(`GeoResource type "${geoResource.getType().description}" currently not supported`);
 	}
 }
