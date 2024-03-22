@@ -303,8 +303,8 @@ describe('GeoResource provider', () => {
 			expect(rtVectorGeoResource._attribution).not.toBeNull();
 		});
 
-		it('maps a RTVectorFile BVV definition with optional properties to a corresponding GeoResource instance',  () => {
-			const rtVectorGeoResource = _definitionToGeoResource(rtVectorDefinitionOptionalProperties)
+		it('maps a RTVectorFile BVV definition with optional properties to a corresponding GeoResource instance', () => {
+			const rtVectorGeoResource = _definitionToGeoResource(rtVectorDefinitionOptionalProperties);
 
 			expect(rtVectorGeoResource.opacity).toBe(0.5);
 			expect(rtVectorGeoResource.hidden).toBeTrue();
