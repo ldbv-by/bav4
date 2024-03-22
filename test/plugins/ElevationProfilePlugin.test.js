@@ -2,8 +2,10 @@ import { ElevationProfilePlugin } from '../../src/plugins/ElevationProfilePlugin
 import { closeProfile, openProfile } from '../../src/store/elevationProfile/elevationProfile.action';
 import { elevationProfileReducer, initialState as elevationProfileInitialState } from '../../src/store/elevationProfile/elevationProfile.reducer';
 import { bottomSheetReducer, initialState as bottomSheetInitialState } from '../../src/store/bottomSheet/bottomSheet.reducer';
+import { featureInfoReducer, initialState as featureInfoInitialState } from '../../src/store/featureInfo/featureInfo.reducer';
 import { TestUtils } from '../test-utils';
 import { closeBottomSheet } from '../../src/store/bottomSheet/bottomSheet.action';
+import { addFeatureInfoItems } from '../../src/store/featureInfo/featureInfo.action';
 import { drawReducer, initialState as drawInitialState } from '../../src/store/draw/draw.reducer';
 import { measurementReducer, initialState as measurementInitialState } from '../../src/store/measurement/measurement.reducer';
 import { deactivate as deactivateDraw } from '../../src/store/draw/draw.action';
@@ -18,6 +20,7 @@ describe('ElevationProfilePlugin', () => {
 			bottomSheet: bottomSheetInitialState,
 			draw: drawInitialState,
 			measurement: measurementInitialState,
+			featureInfo: featureInfoInitialState,
 			...state
 		};
 
@@ -25,7 +28,8 @@ describe('ElevationProfilePlugin', () => {
 			elevationProfile: elevationProfileReducer,
 			bottomSheet: bottomSheetReducer,
 			draw: drawReducer,
-			measurement: measurementReducer
+			measurement: measurementReducer,
+			featureInfo: featureInfoReducer
 		});
 		return store;
 	};
@@ -133,6 +137,25 @@ describe('ElevationProfilePlugin', () => {
 
 			expect(store.getState().elevationProfile.active).toBeFalse();
 			expect(bottomSheetUnsubscribeFnSpy).toHaveBeenCalled();
+		});
+	});
+
+	describe('when property `current` of slice-of-state `featureInfo` changes', () => {
+		it('resets the profile id', async () => {
+			const store = setup({
+				elevationProfile: {
+					active: false,
+					id: 'profielId'
+				}
+			});
+			const instanceUnderTest = new ElevationProfilePlugin();
+			await instanceUnderTest.register(store);
+
+			expect(store.getState().elevationProfile.id).not.toBeNull();
+
+			addFeatureInfoItems({});
+
+			expect(store.getState().elevationProfile.id).toBeNull();
 		});
 	});
 });

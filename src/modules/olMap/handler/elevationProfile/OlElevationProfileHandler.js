@@ -4,12 +4,12 @@
 import { Modify, Select } from 'ol/interaction';
 import { unByKey } from 'ol/Observable';
 import { $injector } from '../../../../injection';
-import { updateCoordinates } from '../../../../store/elevationProfile/elevationProfile.action';
 import { getLineString } from '../../utils/olGeometryUtils';
 import { InteractionStateType } from '../../utils/olInteractionUtils';
 import { OlMapHandler } from '../OlMapHandler';
 import { observe } from '../../../../utils/storeUtils';
 import { Tools } from '../../../../domain/tools';
+import { indicateChange } from '../../../../store/elevationProfile/elevationProfile.action';
 
 const Empty_Elevation_Profile_Coordinates = [];
 /**
@@ -21,8 +21,9 @@ export class OlElevationProfileHandler extends OlMapHandler {
 	constructor() {
 		super('Elevation_Profile_Handler');
 
-		const { StoreService: storeService } = $injector.inject('StoreService');
+		const { StoreService: storeService, ElevationService: elevationService } = $injector.inject('StoreService', 'ElevationService');
 		this._storeService = storeService;
+		this._elevationService = elevationService;
 		this._mapListeners = { select: [], modify: [] };
 		this._map = null;
 	}
@@ -77,13 +78,17 @@ export class OlElevationProfileHandler extends OlMapHandler {
 	_updateSelectCoordinates(event) {
 		const selectedFeatures = event.target;
 		const coordinates = this._getCoordinates(selectedFeatures);
-		updateCoordinates(coordinates);
+		if (coordinates.length > 1) {
+			this._elevationService.requestProfile(coordinates);
+		}
 	}
 
 	_updateModifyCoordinates(event) {
 		const modifiedFeatures = event.features;
 		const coordinates = this._getCoordinates(modifiedFeatures);
-		updateCoordinates(coordinates);
+		if (coordinates.length > 1) {
+			this._elevationService.requestProfile(coordinates);
+		}
 	}
 
 	_updateListener(type, interaction) {
@@ -91,7 +96,7 @@ export class OlElevationProfileHandler extends OlMapHandler {
 		if (listeners.length > 0) {
 			listeners.forEach((listener) => unByKey(listener));
 			this._mapListeners[type] = [];
-			updateCoordinates(Empty_Elevation_Profile_Coordinates);
+			indicateChange(null);
 		}
 		if (interaction) {
 			switch (type) {

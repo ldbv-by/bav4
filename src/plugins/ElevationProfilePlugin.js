@@ -3,7 +3,7 @@
  */
 import { html } from 'lit-html';
 import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
-import { closeProfile } from '../store/elevationProfile/elevationProfile.action';
+import { closeProfile, indicateChange } from '../store/elevationProfile/elevationProfile.action';
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 
@@ -31,6 +31,11 @@ export class ElevationProfilePlugin extends BaPlugin {
 			}
 		};
 
+		// when feature info changes we reset the current profile id
+		const onFeatureInfoSelected = () => {
+			indicateChange(null);
+		};
+
 		const onProfileActiveStateChanged = (active) => {
 			this._bottomSheetUnsubscribeFn?.();
 			if (active) {
@@ -46,5 +51,6 @@ export class ElevationProfilePlugin extends BaPlugin {
 		observe(store, (state) => state.elevationProfile.active, onProfileActiveStateChanged, false);
 		observe(store, (state) => state.draw.active, onActiveStateChanged);
 		observe(store, (state) => state.measurement.active, onActiveStateChanged);
+		observe(store, (state) => state.featureInfo.current, onFeatureInfoSelected);
 	}
 }

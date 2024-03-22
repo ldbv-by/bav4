@@ -1,14 +1,10 @@
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { MeasureToolContent } from '../../../../../src/modules/toolbox/components/measureToolContent/MeasureToolContent';
-import { Checkbox } from '../../../../../src/modules/commons/components/checkbox/Checkbox';
 import { EventLike } from '../../../../../src/utils/storeUtils';
-import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
 import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 import { measurementReducer } from '../../../../../src/store/measurement/measurement.reducer';
-import { ElevationProfileChip } from '../../../../../src/modules/chips/components/assistChips/ElevationProfileChip';
-import { ExportVectorDataChip } from '../../../../../src/modules/chips/components/assistChips/ExportVectorDataChip';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 import { isString } from '../../../../../src/utils/checks';
@@ -16,10 +12,6 @@ import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer';
 
 window.customElements.define(MeasureToolContent.tag, MeasureToolContent);
-window.customElements.define(Checkbox.tag, Checkbox);
-window.customElements.define(ElevationProfileChip.tag, ElevationProfileChip);
-window.customElements.define(ExportVectorDataChip.tag, ExportVectorDataChip);
-window.customElements.define(Icon.tag, Icon);
 
 describe('MeasureToolContent', () => {
 	let store;
@@ -303,9 +295,8 @@ describe('MeasureToolContent', () => {
 			};
 			const element = await setup(state);
 			const chipElement = element.shadowRoot.querySelector('ba-export-vector-data-chip');
-			const chipModel = chipElement.getModel();
 
-			expect(chipModel.data).toBe(exportData);
+			expect(chipElement.exportData).toBe(exportData);
 		});
 
 		it('shows only the length measurement statistics', async () => {
