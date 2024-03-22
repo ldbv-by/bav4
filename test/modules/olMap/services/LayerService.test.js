@@ -22,7 +22,7 @@ import supported from 'mapbox-gl-supported';
 
 describe('LayerService', () => {
 	const vectorLayerService = {
-		createVectorLayer: () => {}
+		createLayer: () => {}
 	};
 	const rtVectorLayerService = {
 		createLayer: () => {}
@@ -89,7 +89,7 @@ describe('LayerService', () => {
 				const olMap = new Map();
 				const olLayer = new VectorLayer();
 				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'label', VectorSourceType.KML);
-				const vectorLayerServiceSpy = spyOn(vectorLayerService, 'createVectorLayer').and.returnValue(olLayer);
+				const vectorLayerServiceSpy = spyOn(vectorLayerService, 'createLayer').and.returnValue(olLayer);
 
 				instanceUnderTest.toOlLayer(id, vectorGeoResource, olMap);
 

@@ -136,7 +136,7 @@ export class LayerService {
 			}
 
 			case GeoResourceTypes.VECTOR: {
-				return vectorLayerService.createVectorLayer(id, geoResource, olMap);
+				return vectorLayerService.createLayer(id, geoResource, olMap);
 			}
 			case GeoResourceTypes.RT_VECTOR: {
 				return rtVectorLayerService.createLayer(id, geoResource, olMap);
