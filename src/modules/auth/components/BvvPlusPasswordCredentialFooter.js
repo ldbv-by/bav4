@@ -20,7 +20,7 @@ export class BvvPlusPasswordCredentialFooter extends MvuElement {
 
 	createView() {
 		const translate = (key, params = []) => this._translationService.translate(key, params);
-		const badgeForRoles = html`<ba-badge .color=${'var(--text3)'} .background=${'var(--primary-color)'} .label=${'Plus'}></ba-badge>`;
+		const badgeForRoles = html`<ba-badge .color=${'var(--text3)'} .background=${'var(--roles-color)'} .label=${'Plus'}></ba-badge>`;
 		return html`<style>
 				${css}
 			</style>
