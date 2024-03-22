@@ -9,8 +9,8 @@ export const provide = (lang) => {
 				auth_passwordCredentialPanel_credential_username: 'Username',
 				auth_passwordCredentialPanel_credential_password: 'Password',
 				auth_passwordCredentialPanel_submit: 'Submit',
-				auth_passwordCredentialPanel_credential_failed: 'Authentication failed. Invalid username or password!',
-				auth_passwordCredentialPanel_credential_rejected: 'Authentication failed. Something got wrong!',
+				auth_passwordCredentialPanel_credential_failed: 'Sign in failed. Invalid username or password!',
+				auth_passwordCredentialPanel_credential_rejected: 'Sign in failed. Something got wrong!',
 				auth_passwordCredentialPanel_authenticate: 'Authenticating...',
 				auth_passwordCredentialPanel_footer_register_for_role: (params) => html`Not yet a registered ${params[0]} customer?`,
 				auth_passwordCredentialPanel_footer_register_information: (params) =>

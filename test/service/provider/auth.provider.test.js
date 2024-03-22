@@ -16,6 +16,8 @@ import { Badge } from '../../../src/modules/commons/components/badge/Badge';
 import { closeModal } from '../../../src/store/modal/modal.action';
 import { BvvRoles } from '../../../src/domain/roles';
 import { createUniqueId } from '../../../src/utils/numberUtils';
+import { notificationReducer } from '../../../src/store/notifications/notifications.reducer';
+import { LevelTypes } from '../../../src/store/notifications/notifications.action';
 
 describe('bvvSignInProvider', () => {
 	const configService = {
@@ -44,94 +46,145 @@ describe('bvvSignInProvider', () => {
 		$injector.reset();
 	});
 
-	it('opens an authentication UI for requested roles', async () => {
-		const responsePromise = bvvSignInProvider();
-		await TestUtils.timeout(); /**promise queue execution */
+	describe('no credentials present', () => {
+		it('opens an authentication UI for requested roles', async () => {
+			const responsePromise = bvvSignInProvider();
+			await TestUtils.timeout(); /**promise queue execution */
 
-		expect(store.getState().modal.active).toBeTrue();
-		const wrapperElementTitle = TestUtils.renderTemplateResult(store.getState().modal.data.title);
-		expect(wrapperElementTitle.innerHTML).toContain('global_import_authenticationModal_title&nbsp');
-		expect(wrapperElementTitle.querySelectorAll(Badge.tag)).toHaveSize(1);
-		expect(wrapperElementTitle.querySelectorAll(Badge.tag)[0].label).toBe('Plus');
-		expect(wrapperElementTitle.querySelectorAll(Badge.tag)[0].size).toBe('1.5');
-		expect(wrapperElementTitle.querySelectorAll(Badge.tag)[0].color).toBe('var(--text3)');
-		expect(wrapperElementTitle.querySelectorAll(Badge.tag)[0].background).toBe('var(--primary-color)');
-		const wrapperElementContent = TestUtils.renderTemplateResult(store.getState().modal.data.content);
-		expect(wrapperElementContent.querySelectorAll(PasswordCredentialPanel.tag)).toHaveSize(1);
-		expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).authenticate).toEqual(jasmine.any(Function));
-		expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).onClose).toEqual(jasmine.any(Function));
-		const wrapperElementFooter = TestUtils.renderTemplateResult(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).footer);
-		expect(wrapperElementFooter.querySelectorAll(BvvPlusPasswordCredentialFooter.tag)).toHaveSize(1);
-		closeModal(); /** we close the modal in order to resolve the promise */
-		await expectAsync(responsePromise).toBeResolved();
-	});
+			expect(store.getState().modal.active).toBeTrue();
+			const wrapperElementTitle = TestUtils.renderTemplateResult(store.getState().modal.data.title);
+			expect(wrapperElementTitle.innerHTML).toContain('global_import_authenticationModal_title&nbsp');
+			expect(wrapperElementTitle.querySelectorAll(Badge.tag)).toHaveSize(1);
+			expect(wrapperElementTitle.querySelectorAll(Badge.tag)[0].label).toBe('Plus');
+			expect(wrapperElementTitle.querySelectorAll(Badge.tag)[0].size).toBe('1.5');
+			expect(wrapperElementTitle.querySelectorAll(Badge.tag)[0].color).toBe('var(--text3)');
+			expect(wrapperElementTitle.querySelectorAll(Badge.tag)[0].background).toBe('var(--primary-color)');
+			const wrapperElementContent = TestUtils.renderTemplateResult(store.getState().modal.data.content);
+			expect(wrapperElementContent.querySelectorAll(PasswordCredentialPanel.tag)).toHaveSize(1);
+			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).authenticate).toEqual(jasmine.any(Function));
+			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).onClose).toEqual(jasmine.any(Function));
+			const wrapperElementFooter = TestUtils.renderTemplateResult(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).footer);
+			expect(wrapperElementFooter.querySelectorAll(BvvPlusPasswordCredentialFooter.tag)).toHaveSize(1);
+			closeModal(); /** we close the modal in order to resolve the promise */
+			await expectAsync(responsePromise).toBeResolved();
+		});
 
-	describe('call of the authenticate callback', () => {
-		describe('credentials are valid', () => {
-			it('resolves with the correct role', async () => {
-				const backendUrl = 'https://backend.url/';
-				const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-				const roles = ['test'];
-				const credential = { username: 'u', password: 'p' };
-				const httpServiceSpy = spyOn(httpService, 'post')
-					.withArgs(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON)
-					.and.resolveTo(new Response(JSON.stringify(roles)));
-				const responsePromise = bvvSignInProvider();
-				await TestUtils.timeout(); /**promise queue execution */
-				const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
-				// we take the authFn from the component
-				const authFunc = wrapperElement.querySelector(PasswordCredentialPanel.tag).authenticate;
+		describe('call of the authenticate callback', () => {
+			describe('credentials are valid', () => {
+				it('resolves with the correct role', async () => {
+					const backendUrl = 'https://backend.url/';
+					const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+					const roles = ['test'];
+					const credential = { username: 'u', password: 'p' };
+					const httpServiceSpy = spyOn(httpService, 'post')
+						.withArgs(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON)
+						.and.resolveTo(new Response(JSON.stringify(roles)));
+					const responsePromise = bvvSignInProvider();
+					await TestUtils.timeout(); /**promise queue execution */
+					const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
+					// we take the authFn from the component
+					const authFunc = wrapperElement.querySelector(PasswordCredentialPanel.tag).authenticate;
 
-				await expectAsync(authFunc(credential)).toBeResolvedTo(roles);
-				closeModal(); /** we close the modal in order to resolve the promise */
-				await expectAsync(responsePromise).toBeResolved();
-				expect(configServiceSpy).toHaveBeenCalled();
-				expect(httpServiceSpy).toHaveBeenCalled();
+					await expectAsync(authFunc(credential)).toBeResolvedTo(roles);
+					closeModal(); /** we close the modal in order to resolve the promise */
+					await expectAsync(responsePromise).toBeResolved();
+					expect(configServiceSpy).toHaveBeenCalled();
+					expect(httpServiceSpy).toHaveBeenCalled();
+				});
+			});
+
+			describe('credentials are not valid', () => {
+				it('resolves to false', async () => {
+					const backendUrl = 'https://backend.url/';
+					const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+					const credential = { username: 'u', password: 'p' };
+					const httpServiceSpy = spyOn(httpService, 'post')
+						.withArgs(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON)
+						.and.resolveTo(new Response(null, { status: 400 }));
+					const responsePromise = bvvSignInProvider();
+					await TestUtils.timeout(); /**promise queue execution */
+					const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
+					// we take the authFn from the component
+					const authFunc = wrapperElement.querySelector(PasswordCredentialPanel.tag).authenticate;
+
+					await expectAsync(authFunc(credential)).toBeResolvedTo([]);
+					closeModal(); /** we close the modal in order to resolve the promise */
+					await expectAsync(responsePromise).toBeResolved();
+					expect(configServiceSpy).toHaveBeenCalled();
+					expect(httpServiceSpy).toHaveBeenCalled();
+				});
+			});
+
+			describe('backend returns any other status code', () => {
+				it('throws an error', async () => {
+					const statusCode = 500;
+					const backendUrl = 'https://backend.url/';
+					const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+					const credential = { username: 'u', password: 'p' };
+					const httpServiceSpy = spyOn(httpService, 'post')
+						.withArgs(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON)
+						.and.resolveTo(new Response(null, { status: statusCode }));
+					const responsePromise = bvvSignInProvider();
+					await TestUtils.timeout(); /**promise queue execution */
+					const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
+					// we take the authFn from the component
+					const authFunc = wrapperElement.querySelector(PasswordCredentialPanel.tag).authenticate;
+
+					await expectAsync(authFunc(credential)).toBeRejectedWithError(`Sign in not possible: Http-Status ${statusCode}`);
+					closeModal(); /** we close the modal in order to resolve the promise */
+					await expectAsync(responsePromise).toBeResolved();
+					expect(configServiceSpy).toHaveBeenCalled();
+					expect(httpServiceSpy).toHaveBeenCalled();
+				});
 			});
 		});
 
-		describe('credentials are not valid', () => {
-			it('resolves to false', async () => {
-				const backendUrl = 'https://backend.url/';
-				const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-				const credential = { username: 'u', password: 'p' };
-				const httpServiceSpy = spyOn(httpService, 'post')
-					.withArgs(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON)
-					.and.resolveTo(new Response(null, { status: 400 }));
-				const responsePromise = bvvSignInProvider();
-				await TestUtils.timeout(); /**promise queue execution */
-				const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
-				// we take the authFn from the component
-				const authFunc = wrapperElement.querySelector(PasswordCredentialPanel.tag).authenticate;
+		describe('credentials are present', () => {
+			describe('credentials are valid', () => {
+				it('resolves with the correct role', async () => {
+					const backendUrl = 'https://backend.url/';
+					const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+					const roles = ['test'];
+					const credential = { username: 'u', password: 'p' };
+					const httpServiceSpy = spyOn(httpService, 'post')
+						.withArgs(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON)
+						.and.resolveTo(new Response(JSON.stringify(roles)));
 
-				await expectAsync(authFunc(credential)).toBeResolvedTo(false);
-				closeModal(); /** we close the modal in order to resolve the promise */
-				await expectAsync(responsePromise).toBeResolved();
-				expect(configServiceSpy).toHaveBeenCalled();
-				expect(httpServiceSpy).toHaveBeenCalled();
+					await expectAsync(bvvSignInProvider(credential)).toBeResolvedTo(roles);
+					expect(configServiceSpy).toHaveBeenCalled();
+					expect(httpServiceSpy).toHaveBeenCalled();
+				});
 			});
-		});
 
-		describe('backend returns any other status code', () => {
-			it('throws an error', async () => {
-				const statusCode = 500;
-				const backendUrl = 'https://backend.url/';
-				const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-				const credential = { username: 'u', password: 'p' };
-				const httpServiceSpy = spyOn(httpService, 'post')
-					.withArgs(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON)
-					.and.resolveTo(new Response(null, { status: statusCode }));
-				const responsePromise = bvvSignInProvider();
-				await TestUtils.timeout(); /**promise queue execution */
-				const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
-				// we take the authFn from the component
-				const authFunc = wrapperElement.querySelector(PasswordCredentialPanel.tag).authenticate;
+			describe('credentials are not valid', () => {
+				it('resolves to false', async () => {
+					const backendUrl = 'https://backend.url/';
+					const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+					const credential = { username: 'u', password: 'p' };
+					const httpServiceSpy = spyOn(httpService, 'post')
+						.withArgs(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON)
+						.and.resolveTo(new Response(null, { status: 400 }));
 
-				await expectAsync(authFunc(credential)).toBeRejectedWithError(`Sign in not possible: Http-Status ${statusCode}`);
-				closeModal(); /** we close the modal in order to resolve the promise */
-				await expectAsync(responsePromise).toBeResolved();
-				expect(configServiceSpy).toHaveBeenCalled();
-				expect(httpServiceSpy).toHaveBeenCalled();
+					await expectAsync(bvvSignInProvider(credential)).toBeResolvedTo([]);
+					expect(configServiceSpy).toHaveBeenCalled();
+					expect(httpServiceSpy).toHaveBeenCalled();
+				});
+			});
+
+			describe('backend returns any other status code', () => {
+				it('throws an error', async () => {
+					const statusCode = 500;
+					const backendUrl = 'https://backend.url/';
+					const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+					const credential = { username: 'u', password: 'p' };
+					const httpServiceSpy = spyOn(httpService, 'post')
+						.withArgs(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON)
+						.and.resolveTo(new Response(null, { status: statusCode }));
+
+					await expectAsync(bvvSignInProvider(credential)).toBeRejectedWithError(`Sign in not possible: Http-Status ${statusCode}`);
+					expect(configServiceSpy).toHaveBeenCalled();
+					expect(httpServiceSpy).toHaveBeenCalled();
+				});
 			});
 		});
 	});
@@ -194,8 +247,18 @@ describe('bvvSignOutProvider', () => {
 		get: async () => {}
 	};
 
+	let store;
 	beforeEach(() => {
-		$injector.registerSingleton('ConfigService', configService).registerSingleton('HttpService', httpService);
+		store = TestUtils.setupStoreAndDi(
+			{},
+			{
+				notifications: notificationReducer
+			}
+		);
+		$injector
+			.registerSingleton('ConfigService', configService)
+			.registerSingleton('HttpService', httpService)
+			.registerSingleton('TranslationService', { translate: (key) => key });
 	});
 
 	afterEach(() => {
@@ -203,7 +266,7 @@ describe('bvvSignOutProvider', () => {
 	});
 
 	describe('backend returns status code 200', () => {
-		it('returns "true"', async () => {
+		it('returns "true" and informs the user', async () => {
 			const backendUrl = 'https://backend.url/';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const httpServiceSpy = spyOn(httpService, 'get')
@@ -215,6 +278,8 @@ describe('bvvSignOutProvider', () => {
 			expect(result).toBeTrue();
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(store.getState().notifications.latest.payload.content).toBe('global_signOut_success');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 		});
 	});
 
