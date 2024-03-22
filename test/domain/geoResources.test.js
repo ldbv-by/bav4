@@ -10,7 +10,8 @@ import {
 	GeoResourceFuture,
 	observable,
 	GeoResourceAuthenticationType,
-	VTGeoResource
+	VTGeoResource,
+	RtVectorGeoResource
 } from '../../src/domain/geoResources';
 import { $injector } from '../../src/injection';
 import { getDefaultAttribution, getMinimalAttribution } from '../../src/services/provider/attribution.provider';
@@ -38,11 +39,12 @@ describe('GeoResource', () => {
 
 	describe('GeoResourceTypes', () => {
 		it('provides an enum of all available types', () => {
-			expect(Object.entries(GeoResourceTypes).length).toBe(6);
+			expect(Object.entries(GeoResourceTypes).length).toBe(7);
 			expect(Object.isFrozen(GeoResourceTypes)).toBeTrue();
 			expect(GeoResourceTypes.WMS.description).toBe('wms');
 			expect(GeoResourceTypes.XYZ.description).toBe('xyz');
 			expect(GeoResourceTypes.VECTOR.description).toBe('vector');
+			expect(GeoResourceTypes.RT_VECTOR.description).toBe('rtvector');
 			expect(GeoResourceTypes.VT.description).toBe('vt');
 			expect(GeoResourceTypes.AGGREGATE.description).toBe('aggregate');
 			expect(GeoResourceTypes.FUTURE.description).toBe('future');
@@ -512,6 +514,31 @@ describe('GeoResource', () => {
 				expect(vectorGeoResource.id).toBe('id');
 				expect(vectorGeoResource.label).toBe(label);
 				expect(vectorGeoResource.data).toBe(data);
+			});
+		});
+	});
+
+	describe('RtVectorGeoResource', () => {
+		it('instantiates a RtVectorGeoResource', () => {
+			const rtVectorGeoResource = new RtVectorGeoResource('id', 'label', 'url', VectorSourceType.KML);
+
+			expect(rtVectorGeoResource.getType()).toEqual(GeoResourceTypes.RT_VECTOR);
+			expect(rtVectorGeoResource.id).toBe('id');
+			expect(rtVectorGeoResource.label).toBe('label');
+			expect(rtVectorGeoResource.url).toBe('url');
+			expect(rtVectorGeoResource.sourceType).toEqual(VectorSourceType.KML);
+		});
+
+		it('provides default properties', () => {
+			const rtVectorGeoResource = new RtVectorGeoResource('id', 'label', VectorSourceType.KML);
+
+			expect(rtVectorGeoResource.clusterParams).toEqual({});
+		});
+
+		describe('methods', () => {
+			it('provides a check for containing a non-default value as clusterParam', () => {
+				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).isClustered()).toBeFalse();
+				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).setClusterParams({ foo: 'bar' }).isClustered()).toBeTrue();
 			});
 		});
 	});
