@@ -53,8 +53,9 @@ export class LayerService {
 		const {
 			GeoResourceService: geoResourceService,
 			VectorLayerService: vectorLayerService,
+			RtVectorLayerService: rtVectorLayerService,
 			BaaCredentialService: baaCredentialService
-		} = $injector.inject('GeoResourceService', 'VectorLayerService', 'BaaCredentialService');
+		} = $injector.inject('GeoResourceService', 'VectorLayerService', 'BaaCredentialService', 'RtVectorLayerService');
 
 		const { minZoom, maxZoom, opacity } = geoResource;
 
@@ -136,6 +137,9 @@ export class LayerService {
 
 			case GeoResourceTypes.VECTOR: {
 				return vectorLayerService.createVectorLayer(id, geoResource, olMap);
+			}
+			case GeoResourceTypes.RT_VECTOR: {
+				return rtVectorLayerService.createLayer(id, geoResource, olMap);
 			}
 
 			case GeoResourceTypes.VT: {
