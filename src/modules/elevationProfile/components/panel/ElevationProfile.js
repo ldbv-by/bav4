@@ -659,11 +659,13 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	setCoordinates(coordinates) {
-		removeHighlightFeaturesById(ElevationProfile.HIGHLIGHT_FEATURE_ID);
-		addHighlightFeatures({
-			id: ElevationProfile.HIGHLIGHT_FEATURE_ID,
-			type: HighlightFeatureType.MARKER_TMP,
-			data: { coordinate: [...coordinates] }
+		setTimeout(() => {
+			removeHighlightFeaturesById(ElevationProfile.HIGHLIGHT_FEATURE_ID);
+			addHighlightFeatures({
+				id: ElevationProfile.HIGHLIGHT_FEATURE_ID,
+				type: HighlightFeatureType.MARKER_TMP,
+				data: { coordinate: [...coordinates] }
+			});
 		});
 	}
 
