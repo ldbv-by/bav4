@@ -159,7 +159,7 @@ export class VectorLayerService {
 	 * @param {OlMap} olMap
 	 * @returns olVectorLayer
 	 */
-	createVectorLayer(id, vectorGeoResource, olMap) {
+	createLayer(id, vectorGeoResource, olMap) {
 		const { minZoom, maxZoom, opacity } = vectorGeoResource;
 		const vectorLayer = new VectorLayer({
 			id: id,

@@ -7,24 +7,27 @@ import { AbstractAssistChip } from './AbstractAssistChip';
 import profileSvg from './assets/profile.svg';
 
 const Update_Profile_Coordinates = 'update_profile_coordinates';
+const Update_Profile_Id = 'update_profile_Id';
 
 /**
- * An AssistChip to show the elevation profile for an array of {@link module:domain/coordinateTypeDef~Coordinate}
+ * An AssistChip to open the elevation profile, optionally for an array of {@link module:domain/coordinateTypeDef~Coordinate}
  * @class
  * @extends {AbstractAssistChip}
- * @property {Array<module:domain/coordinateTypeDef~Coordinate>} coordinates the coordinates array, which defines the route of the requested elevation profile
+ * @property {Array<module:domain/coordinateTypeDef~CoordinateLike>} coordinates the coordinates array, which defines the route of the requested elevation profile
  * @author thiloSchlemmer
  */
 export class ElevationProfileChip extends AbstractAssistChip {
 	constructor() {
 		super({
-			profileCoordinates: []
+			profileCoordinates: [],
+			id: null
 		});
-		const { TranslationService } = $injector.inject('TranslationService');
+		const { TranslationService, ElevationService } = $injector.inject('TranslationService', 'ElevationService');
 		this._translationService = TranslationService;
+		this._elevationService = ElevationService;
 		this._unsubscribeFromStore = this.observe(
-			(state) => state.elevationProfile.coordinates,
-			(coordinates) => this.signal(Update_Profile_Coordinates, coordinates)
+			(state) => state.elevationProfile.id,
+			(id) => this.signal(Update_Profile_Id, id)
 		);
 	}
 
@@ -32,6 +35,8 @@ export class ElevationProfileChip extends AbstractAssistChip {
 		switch (type) {
 			case Update_Profile_Coordinates:
 				return { ...model, profileCoordinates: [...data] };
+			case Update_Profile_Id:
+				return { ...model, id: data };
 		}
 	}
 
@@ -45,21 +50,24 @@ export class ElevationProfileChip extends AbstractAssistChip {
 	}
 
 	isVisible() {
-		const { profileCoordinates } = this.getModel();
-		return profileCoordinates.length > 1;
+		const { profileCoordinates, id } = this.getModel();
+		return profileCoordinates.length > 1 || !!id;
 	}
 
 	onClick() {
 		const { profileCoordinates } = this.getModel();
-		openProfile(profileCoordinates);
+		if (profileCoordinates.length > 1) {
+			this._elevationService.requestProfile(profileCoordinates);
+		}
+		openProfile();
 	}
 
 	static get tag() {
 		return 'ba-profile-chip';
 	}
 
-	set coordinates(value) {
+	set coordinates(coordinates) {
 		this._unsubscribeFromStore();
-		this.signal(Update_Profile_Coordinates, value);
+		this.signal(Update_Profile_Coordinates, coordinates);
 	}
 }

@@ -202,18 +202,18 @@ export class GeoResourceService {
 			new XyzGeoResource(
 				FALLBACK_GEORESOURCE_ID_0,
 				FALLBACK_GEORESOURCE_LABEL_0,
-				'http://sgx.geodatenzentrum.de/wmts_topplus_open/tile/1.0.0/web/default/WEBMERCATOR/{z}/{y}/{x}.png'
+				'https://sgx.geodatenzentrum.de/wmts_topplus_open/tile/1.0.0/web/default/WEBMERCATOR/{z}/{y}/{x}.png'
 			),
 			new XyzGeoResource(
 				FALLBACK_GEORESOURCE_ID_1,
 				FALLBACK_GEORESOURCE_LABEL_1,
-				'http://sgx.geodatenzentrum.de/wmts_topplus_open/tile/1.0.0/web_grau/default/WEBMERCATOR/{z}/{y}/{x}.png'
+				'https://sgx.geodatenzentrum.de/wmts_topplus_open/tile/1.0.0/web_grau/default/WEBMERCATOR/{z}/{y}/{x}.png'
 			)
 		].map((gr) => {
 			return gr.setAttribution({
 				description: 'TopPlusOpen',
 				copyright: [
-					{ label: 'Bundesamt für Kartographie und Geodäsie (2022)', url: 'http://www.bkg.bund.de/' },
+					{ label: 'Bundesamt für Kartographie und Geodäsie (2024)', url: 'https://www.bkg.bund.de/' },
 					{ label: 'Datenquellen', url: 'https://sg.geodatenzentrum.de/web_public/Datenquellen_TopPlus_Open.pdf' }
 				]
 			});

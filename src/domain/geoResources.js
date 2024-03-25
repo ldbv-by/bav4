@@ -37,6 +37,7 @@ export const GeoResourceTypes = Object.freeze({
 	WMS: Symbol.for('wms'),
 	XYZ: Symbol.for('xyz'),
 	VECTOR: Symbol.for('vector'),
+	RT_VECTOR: Symbol.for('rtvector'),
 	VT: Symbol.for('vt'),
 	AGGREGATE: Symbol.for('aggregate'),
 	FUTURE: Symbol.for('future')
@@ -494,7 +495,6 @@ export const VectorSourceType = Object.freeze({
 
 /**
  * GeoResource for vector data.
- * Data could be either loaded externally by Url or internally from a string.
  * @class
  */
 export class VectorGeoResource extends GeoResource {
@@ -600,6 +600,56 @@ export class VectorGeoResource extends GeoResource {
 			.onResolve((resolved, future) => {
 				resolved.copyPropertiesFrom(future);
 			});
+	}
+}
+
+/**
+ * GeoResource for real-time vector data.
+ * @class
+ */
+export class RtVectorGeoResource extends GeoResource {
+	/**
+	 * @param {string} id
+	 * @param {String} label
+	 * @param {String} url
+	 * @param {VectorSourceType} sourceType
+	 */
+	constructor(id, label, url, sourceType) {
+		super(id, label);
+		this._url = url;
+		this._sourceType = sourceType;
+		this._clusterParams = {};
+	}
+
+	get url() {
+		return this._url;
+	}
+
+	get sourceType() {
+		return this._sourceType;
+	}
+
+	get clusterParams() {
+		return { ...this._clusterParams };
+	}
+
+	setClusterParams(clusterParams) {
+		this._clusterParams = { ...clusterParams };
+		return this;
+	}
+
+	/**
+	 * @returns `true` if this RtVectorGeoResource should be displayed clustered
+	 */
+	isClustered() {
+		return !!Object.keys(this._clusterParams).length;
+	}
+
+	/**
+	 * @override
+	 */
+	getType() {
+		return GeoResourceTypes.RT_VECTOR;
 	}
 }
 

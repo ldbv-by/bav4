@@ -127,7 +127,7 @@ describe('VectorLayerService', () => {
 			instanceUnderTest = new VectorLayerService();
 		};
 
-		describe('createVectorLayer', () => {
+		describe('createLayer', () => {
 			it('returns an ol vector layer for a data based VectorGeoResource', () => {
 				setup();
 				const id = 'id';
@@ -146,7 +146,7 @@ describe('VectorLayerService', () => {
 					.withArgs(jasmine.anything(), olMap)
 					.and.callFake((layer) => layer);
 
-				const olVectorLayer = instanceUnderTest.createVectorLayer(id, vectorGeoresource, olMap);
+				const olVectorLayer = instanceUnderTest.createLayer(id, vectorGeoresource, olMap);
 
 				expect(sanitizeSpy).toHaveBeenCalledWith(olVectorLayer);
 
@@ -175,7 +175,7 @@ describe('VectorLayerService', () => {
 					.withArgs(jasmine.anything())
 					.and.callFake((layer) => layer);
 
-				const olVectorLayer = instanceUnderTest.createVectorLayer(id, vectorGeoresource, olMap);
+				const olVectorLayer = instanceUnderTest.createLayer(id, vectorGeoresource, olMap);
 
 				expect(olVectorLayer.get('id')).toBe(id);
 				expect(olVectorLayer.get('geoResourceId')).toBe(geoResourceId);
@@ -204,7 +204,7 @@ describe('VectorLayerService', () => {
 					.withArgs(jasmine.anything(), olMap)
 					.and.callFake((layer) => layer);
 
-				const olVectorLayer = instanceUnderTest.createVectorLayer(id, vectorGeoResource, olMap);
+				const olVectorLayer = instanceUnderTest.createLayer(id, vectorGeoResource, olMap);
 
 				expect(olVectorLayer.get('id')).toBe(id);
 				expect(olVectorLayer.get('geoResourceId')).toBe(geoResourceId);
@@ -234,7 +234,7 @@ describe('VectorLayerService', () => {
 					.withArgs(jasmine.anything())
 					.and.callFake((layer) => layer);
 
-				const olVectorLayer = instanceUnderTest.createVectorLayer(id, vectorGeoResource, olMap);
+				const olVectorLayer = instanceUnderTest.createLayer(id, vectorGeoResource, olMap);
 
 				expect(olVectorLayer.get('id')).toBe(id);
 				expect(olVectorLayer.get('geoResourceId')).toBe(geoResourceId);

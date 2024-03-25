@@ -3,6 +3,7 @@ import {
 	AggregateGeoResource,
 	GeoResourceAuthenticationType,
 	GeoResourceFuture,
+	RtVectorGeoResource,
 	VectorGeoResource,
 	VectorSourceType,
 	VTGeoResource,
@@ -21,7 +22,10 @@ import supported from 'mapbox-gl-supported';
 
 describe('LayerService', () => {
 	const vectorLayerService = {
-		createVectorLayer: () => {}
+		createLayer: () => {}
+	};
+	const rtVectorLayerService = {
+		createLayer: () => {}
 	};
 	const geoResourceService = {
 		byId: () => {}
@@ -38,6 +42,7 @@ describe('LayerService', () => {
 		TestUtils.setupStoreAndDi({});
 		$injector
 			.registerSingleton('VectorLayerService', vectorLayerService)
+			.registerSingleton('RtVectorLayerService', rtVectorLayerService)
 			.registerSingleton('GeoResourceService', geoResourceService)
 			.registerSingleton('BaaCredentialService', baaCredentialService);
 	});
@@ -84,11 +89,26 @@ describe('LayerService', () => {
 				const olMap = new Map();
 				const olLayer = new VectorLayer();
 				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'label', VectorSourceType.KML);
-				const vectorSourceForUrlSpy = spyOn(vectorLayerService, 'createVectorLayer').and.returnValue(olLayer);
+				const vectorLayerServiceSpy = spyOn(vectorLayerService, 'createLayer').and.returnValue(olLayer);
 
 				instanceUnderTest.toOlLayer(id, vectorGeoResource, olMap);
 
-				expect(vectorSourceForUrlSpy).toHaveBeenCalledWith(id, vectorGeoResource, olMap);
+				expect(vectorLayerServiceSpy).toHaveBeenCalledWith(id, vectorGeoResource, olMap);
+			});
+		});
+
+		describe('RtVectorGeoResource', () => {
+			it('calls the RtVectorLayerService', () => {
+				const instanceUnderTest = setup();
+				const id = 'id';
+				const olMap = new Map();
+				const olLayer = new VectorLayer();
+				const rtVectorGeoResource = new RtVectorGeoResource('geoResourceId', 'label', 'url', VectorSourceType.KML);
+				const rtVectorLayerServiceSpy = spyOn(rtVectorLayerService, 'createLayer').and.returnValue(olLayer);
+
+				instanceUnderTest.toOlLayer(id, rtVectorGeoResource, olMap);
+
+				expect(rtVectorLayerServiceSpy).toHaveBeenCalledWith(id, rtVectorGeoResource, olMap);
 			});
 		});
 
@@ -433,10 +453,10 @@ describe('LayerService', () => {
 			expect(() => {
 				instanceUnderTest.toOlLayer(id, {
 					getType() {
-						return 'Unknown';
+						return Symbol.for('Unknown');
 					}
 				});
-			}).toThrowError(/Unknown currently not supported/);
+			}).toThrowError('GeoResource type "Unknown" currently not supported');
 		});
 	});
 });
