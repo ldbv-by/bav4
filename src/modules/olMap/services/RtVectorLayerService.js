@@ -10,13 +10,27 @@ import { mapVectorSourceTypeToFormat } from './VectorLayerService';
 export const WebSocket_Message_Keep_Alive = 'keep-alive';
 export const WebSocket_Ports = [80, 443];
 
-export const isNextPortAvailable = (port, ports) => (ports ? ports.indexOf(port) < ports.length - 1 : false);
+/**
+ * Checks, whether a successor port is in the specified array of unique ports available or not.
+ * @param {Array<number>} ports
+ * @param {number} predecessorPort
+ * @returns {boolean}
+ */
+export const isNextPortAvailable = (ports, predecessorPort) => (ports ? ports.indexOf(predecessorPort) < ports.length - 1 : false);
+
+/**
+ * Returns the next port from the specified array of unique ports.
+ * @param {Array<number>} ports
+ * @param {number} current
+ * @returns {number}
+ */
 export const getNextPort = (ports, current = 80) => {
 	const nextPort = ports[ports.indexOf(current) + 1];
 	return nextPort === 80 ? undefined : nextPort;
 };
+
 /**
- * Service that creates an ol VectorLayer from a RtVectorGeoResource (Websocket)
+ * Service that creates an ol layer from a RtVectorGeoResource (Websocket)
  * and applies specific stylings if required.
  * @class
  * @author thiloSchlemmer
@@ -38,95 +52,10 @@ export class RtVectorLayerService {
 		return pathArray.join('.');
 	}
 
-	/**
-	 * Sanitizes the style of the present features of the vector layer.
-	 * The sanitizing prepares features with incompatible styling for the rendering in the
-	 * ol context.
-	 *
-	 * TODO: resolve duplication from VectorLayerService
-	 * @param {ol.layer.Vector} olVectorLayer
-	 */
-	_sanitizeStyles(olVectorLayer) {
-		const { StyleService: styleService } = $injector.inject('StyleService');
-		const olVectorSource = olVectorLayer.getSource();
-		olVectorSource.getFeatures().forEach((feature) => styleService.sanitizeStyle(feature));
-	}
-
-	// TODO: resolve duplication from VectorLayerService
-	_updateStyle(olFeature, olLayer, olMap) {
-		const { StyleService: styleService, StoreService: storeService } = $injector.inject('StyleService', 'StoreService');
-		const {
-			layers: { active }
-		} = storeService.getStore().getState();
-		styleService.updateStyle(olFeature, olMap, {
-			visible: olLayer.getVisible(),
-			// we check if the layer representing this olLayer is the topmost layer of all unhidden layers
-			top: active.filter(({ constraints: { hidden } }) => !hidden).pop().id === olLayer.get('id'),
-			opacity: olLayer.getOpacity()
-		});
-	}
-
-	//TODO: resolve duplication from VectorLayerService
-	_registerStyleEventListeners(olVectorSource, olLayer, olMap) {
-		const { StyleService: styleService } = $injector.inject('StyleService');
-
-		const addFeatureListenerKey = olVectorSource.on('addfeature', (event) => {
-			styleService.addStyle(event.feature, olMap, olLayer);
-			this._updateStyle(event.feature, olLayer, olMap);
-		});
-		const removeFeatureListenerKey = olVectorSource.on('removefeature', (event) => {
-			styleService.removeStyle(event.feature, olMap);
-		});
-		const clearFeaturesListenerKey = olVectorSource.on('clear', () => {
-			olVectorSource.getFeatures().forEach((f) => styleService.removeStyle(f, olMap));
-		});
-
-		/**
-		 * Changes of visibility, opacity and index always go along with removing and re-adding the olLayer to the map
-		 * therefore it's sufficient to listen just to the 'add' event of the layers collection
-		 */
-		const addLayerListenerKey = olMap.getLayers().on('add', (event) => {
-			if (event.element === olLayer) {
-				olVectorSource.getFeatures().forEach((f) => this._updateStyle(f, olLayer, olMap));
-			}
-		});
-
-		return { addFeatureListenerKey, removeFeatureListenerKey, clearFeaturesListenerKey, addLayerListenerKey };
-	}
-
-	/**
-	 * If needed, adds specific stylings (and overlays) for this vector layer
-	 *
-	 * TODO: resolve duplication from VectorLayerService
-	 * @param {ol.layer.Vector} olVectorLayer
-	 * @param {ol.Map} olMap
-	 */
-	_applyStyles(olVectorLayer, olMap) {
-		/**
-		 * We check if an currently present and possible future features needs a specific styling.
-		 * If so, we apply the style and register an event listeners in order to keep the style (and overlays)
-		 * up-to-date with the layer.
-		 */
-		const { StyleService: styleService } = $injector.inject('StyleService');
-		const olVectorSource = olVectorLayer.getSource();
-		if (olVectorSource.getFeatures().some((feature) => styleService.isStyleRequired(feature))) {
-			// if we have at least one style requiring feature, we register the styleEvent listener once
-			// and apply the style for all currently present features
-			this._registerStyleEventListeners(olVectorSource, olVectorLayer, olMap);
-			olVectorSource.getFeatures().forEach((feature) => {
-				if (styleService.isStyleRequired(feature)) {
-					styleService.addStyle(feature, olMap, olVectorLayer);
-					this._updateStyle(feature, olVectorLayer, olMap);
-				}
-			});
-		}
-	}
-
 	_getFeatureReader(rtVectorGeoResource) {
 		const { MapService: mapService } = $injector.inject('MapService');
 		const destinationSrid = mapService.getSrid();
 
-		// TODO: resolve/ check usage of VectorLayerService.mapVectorSourceTypeToFormat
 		const format = mapVectorSourceTypeToFormat(rtVectorGeoResource.sourceType);
 		return (data) =>
 			format
@@ -158,32 +87,36 @@ export class RtVectorLayerService {
 	}
 
 	_startWebSocket(rtVectorGeoResource, olVectorLayer, olMap, port) {
+		const { VectorLayerService: vectorLayerService } = $injector.inject('VectorLayerService');
 		const featureReader = this._getFeatureReader(rtVectorGeoResource);
 		const olVectorSource = olVectorLayer.getSource();
 		const webSocket = new WebSocket(port ? this._addPortToUrl(rtVectorGeoResource.url) : rtVectorGeoResource.url);
 
 		webSocket.onmessage = (event) => {
 			this._processMessage(event, olVectorSource, featureReader);
-			this._sanitizeStyles(olVectorLayer);
-			this._applyStyles(olVectorLayer, olMap);
+			vectorLayerService.sanitizeStyles(olVectorLayer);
+			vectorLayerService.applyStyles(olVectorLayer, olMap);
 		};
 
-		const tryNextPort = (port = 80) => {
+		const tryNextPort = (port) => {
 			webSocket.onmessage = undefined;
-			this._startWebSocket(rtVectorGeoResource, olVectorLayer, olMap, getNextPort(WebSocket_Ports, port));
+			const nextPort = getNextPort(WebSocket_Ports, port);
+			this._startWebSocket(rtVectorGeoResource, olVectorLayer, olMap, nextPort);
 		};
 
 		const failure = () => {
 			throw new UnavailableGeoResourceError('Realtime-data cannot be displayed for technical reasons.', rtVectorGeoResource.id);
 		};
-
-		webSocket.onclose = (event) => {
-			if (event.code === 1006) {
-				// cascading ports in case of a connection failure
-				const eventAction = isNextPortAvailable(port ?? 80, WebSocket_Ports) ? () => tryNextPort(port) : failure;
-				eventAction();
-			}
+		const getOnCloseHandler = (port) => {
+			return (event) => {
+				if (event.code === 1006) {
+					// cascading ports in case of a connection failure
+					const eventAction = isNextPortAvailable(WebSocket_Ports, port ?? 80) ? () => tryNextPort(port) : () => failure();
+					eventAction();
+				}
+			};
 		};
+		webSocket.onclose = getOnCloseHandler(port);
 	}
 
 	/**
@@ -193,7 +126,7 @@ export class RtVectorLayerService {
 	 * @param {OlMap} olMap
 	 * @returns olVectorLayer
 	 */
-	createVectorLayer(id, rtVectorGeoResource, olMap) {
+	createLayer(id, rtVectorGeoResource, olMap) {
 		const { minZoom, maxZoom, opacity } = rtVectorGeoResource;
 
 		const vectorLayer = new VectorLayer({
