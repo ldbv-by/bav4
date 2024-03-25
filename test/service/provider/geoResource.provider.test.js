@@ -74,6 +74,7 @@ describe('GeoResource provider', () => {
 		queryable: false,
 		exportable: false,
 		authRoles: ['TEST'],
+		maxSize: [210, 420],
 		...wmsDefinition
 	};
 	const xyzDefinition = { id: 'xyzId', label: 'xyzLabel', urls: 'xyzUrl', type: 'xyz', attribution: basicAttribution };
@@ -186,6 +187,7 @@ describe('GeoResource provider', () => {
 			expect(wmsGeoResource.format).toBe(wmsDefinition.format);
 			expect(wmsGeoResource._attributionProvider).toBe(getBvvAttribution);
 			expect(wmsGeoResource._attribution).not.toBeNull();
+			expect(wmsGeoResource.maxSize).toBeNull();
 		});
 
 		it('maps a WMS BVV definition with optional properties to a corresponding GeoResource instance', () => {
@@ -198,6 +200,7 @@ describe('GeoResource provider', () => {
 			expect(wmsGeoResource.extraParams).toEqual({ foo: 'bar' });
 			expect(wmsGeoResource.queryable).toBeFalse();
 			expect(wmsGeoResource.exportable).toBeFalse();
+			expect(wmsGeoResource.maxSize).toEqual([210, 420]);
 			expect(wmsGeoResource.authRoles).toEqual(['TEST']);
 		});
 

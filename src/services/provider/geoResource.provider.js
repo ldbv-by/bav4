@@ -25,6 +25,7 @@ export const _definitionToGeoResource = (definition) => {
 					new WmsGeoResource(def.id, def.label, def.url, def.layers, def.format)
 						//set specific optional values
 						.setExtraParams(def.extraParams ?? {})
+						.setMaxSize(def.maxSize ?? null)
 				);
 			case 'xyz':
 				return (
