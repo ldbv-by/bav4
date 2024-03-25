@@ -24,7 +24,8 @@ describe('LAYER_ADDING_DELAY_MS', () => {
 describe('GeoResourceResultItem', () => {
 	const geoResourceService = {
 		byId: () => {},
-		addOrReplace: () => {}
+		addOrReplace: () => {},
+		getKeywords: () => []
 	};
 
 	let store;
@@ -68,6 +69,20 @@ describe('GeoResourceResultItem', () => {
 			element.data = data;
 
 			expect(element.shadowRoot.querySelector('li').innerText).toBe('labelFormatted');
+			expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(0); // no badge, due to empty keyword-array
+		});
+
+		it('renders the view containing keyword badges', async () => {
+			const data = new GeoResourceSearchResult('id', 'label', 'labelFormatted');
+			spyOn(geoResourceService, 'getKeywords').withArgs('id').and.returnValue(['Foo', 'Bar']);
+			const element = await setup();
+
+			element.data = data;
+
+			expect(element.shadowRoot.querySelector('li').innerText).toBe('labelFormatted');
+			expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(2);
+			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].label).toBe('Foo');
+			expect(element.shadowRoot.querySelectorAll('ba-badge')[1].label).toBe('Bar');
 		});
 	});
 

@@ -121,7 +121,14 @@ export class GeoResourceResultItem extends MvuElement {
 			return loadingPreview ? 'loading' : '';
 		};
 
+		const getBadges = (keywords) => {
+			const toBadges = (keywords) =>
+				keywords.map((keyword) => html`<ba-badge .color=${'var(--text3)'} .background=${'var(--roles-color)'} .label=${keyword}></ba-badge>`);
+			return keywords.length === 0 ? nothing : toBadges(keywords);
+		};
+
 		if (geoResourceSearchResult) {
+			const keywords = [...this._geoResourceService.getKeywords(geoResourceSearchResult.geoResourceId)];
 			return html`
 				<style>
 					${css}
@@ -139,7 +146,7 @@ export class GeoResourceResultItem extends MvuElement {
 					<span class="ba-list-item__text ">
 						${loadingPreview
 							? html`<ba-spinner .label=${geoResourceSearchResult.labelFormatted}></ba-spinner>`
-							: html`${unsafeHTML(geoResourceSearchResult.labelFormatted)}`}
+							: html`${unsafeHTML(geoResourceSearchResult.labelFormatted)} ${getBadges(keywords)}`}
 					</span>
 				</li>
 			`;
