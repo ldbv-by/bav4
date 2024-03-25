@@ -84,11 +84,11 @@ export class LayerService {
 						if (!credential) {
 							throw new Error(`No credential available for GeoResource with id '${geoResource.id}' and url '${geoResource.url}'`);
 						}
-						imageWmsSource.setImageLoadFunction(this._imageLoadFunctionProvider(geoResource.id, credential));
+						imageWmsSource.setImageLoadFunction(this._imageLoadFunctionProvider(geoResource.id, credential, geoResource.maxSize));
 						break;
 					}
 					default: {
-						imageWmsSource.setImageLoadFunction(this._imageLoadFunctionProvider(geoResource.id));
+						imageWmsSource.setImageLoadFunction(this._imageLoadFunctionProvider(geoResource.id, null, geoResource.maxSize));
 					}
 				}
 
