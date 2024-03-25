@@ -297,27 +297,18 @@ describe('GeoResourceService', () => {
 	});
 
 	describe('isAllowed', () => {
-		describe('User is NOT signed in', () => {
+		describe('GeoResource is unknown', () => {
 			it('returns `false`', async () => {
-				spyOn(authService, 'isSignedIn').and.returnValue(false);
+				spyOn(authService, 'isSignedIn').and.returnValue(true);
 				const geoResourceId = 'id';
 				const instanceUnderTest = setup();
+				spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(null);
 
 				expect(instanceUnderTest.isAllowed(geoResourceId)).toBeFalse();
 			});
-			describe('and GeoResource is unknown', () => {
-				it('returns `false`', async () => {
-					spyOn(authService, 'isSignedIn').and.returnValue(true);
-					const geoResourceId = 'id';
-					const instanceUnderTest = setup();
-					spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(null);
-
-					expect(instanceUnderTest.isAllowed(geoResourceId)).toBeFalse();
-				});
-			});
 		});
-		describe('and user is signed in', () => {
-			describe('and User has the wrong role', () => {
+		describe('User is signed in', () => {
+			describe('and has the wrong role', () => {
 				it('returns `false`', async () => {
 					spyOn(authService, 'isSignedIn').and.returnValue(true);
 					spyOn(authService, 'getRoles').and.returnValue(['TEST']);
@@ -329,7 +320,7 @@ describe('GeoResourceService', () => {
 					expect(instanceUnderTest.isAllowed(geoResourceId)).toBeFalse();
 				});
 			});
-			describe('and User has a suitable role', () => {
+			describe('and has a suitable role', () => {
 				it('returns `true`', async () => {
 					spyOn(authService, 'isSignedIn').and.returnValue(true);
 					spyOn(authService, 'getRoles').and.returnValue(['BAR']);

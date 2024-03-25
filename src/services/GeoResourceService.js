@@ -163,13 +163,13 @@ export class GeoResourceService {
 
 	/**
 	 * Checks if the current auth roles allow to access a certain GeoResource.
-	 * Returns `false` if the GeoResource does not exist or the user is not signed in.
+	 * Returns `false` if the GeoResource does not.
 	 * @param {string} id The id of a GeoResource
 	 * @returns {boolean} `true` if a GeoResource is allowed to access
 	 */
 	isAllowed(id) {
 		const gr = this.byId(id);
-		if (gr && this.#authService.isSignedIn()) {
+		if (gr) {
 			return gr.authRoles.length === 0 ? true : gr.authRoles.filter((role) => this.#authService.getRoles().includes(role)).length > 0;
 		}
 		return false;
