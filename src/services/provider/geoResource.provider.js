@@ -2,7 +2,15 @@
  * @module services/provider/geoResource_provider
  */
 import { UnavailableGeoResourceError } from '../../domain/errors';
-import { AggregateGeoResource, VectorGeoResource, WmsGeoResource, XyzGeoResource, GeoResourceFuture, VTGeoResource } from '../../domain/geoResources';
+import {
+	AggregateGeoResource,
+	VectorGeoResource,
+	WmsGeoResource,
+	XyzGeoResource,
+	GeoResourceFuture,
+	VTGeoResource,
+	RtVectorGeoResource
+} from '../../domain/geoResources';
 import { SourceTypeName, SourceTypeResultStatus } from '../../domain/sourceType';
 import { $injector } from '../../injection';
 import { isExternalGeoResourceId } from '../../utils/checks';
@@ -34,6 +42,13 @@ export const _definitionToGeoResource = (definition) => {
 				).onResolve((resolved) => {
 					setPropertiesAndProviders(resolved.setClusterParams(def.clusterParams ?? {}));
 				});
+			}
+			case 'rtvector': {
+				return (
+					new RtVectorGeoResource(def.id, def.label, def.url, Symbol.for(def.sourceType))
+						//set specific optional values
+						.setClusterParams(def.clusterParams ?? {})
+				);
 			}
 			case 'aggregate':
 				return new AggregateGeoResource(def.id, def.label, def.geoResourceIds);

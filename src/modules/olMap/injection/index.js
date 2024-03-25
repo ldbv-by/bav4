@@ -21,6 +21,7 @@ export const mapModule = ($injector) => {
 		.register('OlGeolocationHandler', OlGeolocationHandler)
 		.register('OlHighlightLayerHandler', OlHighlightLayerHandler)
 		.register('VectorLayerService', VectorLayerService)
+		.register('RtVectorLayerService', class {}) /**TODO: It's a mock, replace it by the real RtVectorLayerService*/
 		.register('LayerService', LayerService)
 		.register('InteractionStorageService', InteractionStorageService)
 		.register('OverlayService', OverlayService)
