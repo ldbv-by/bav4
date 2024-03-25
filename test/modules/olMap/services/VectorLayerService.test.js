@@ -171,7 +171,7 @@ describe('VectorLayerService', () => {
 					.setSource(sourceAsString, 4326)
 					.setClusterParams({ foo: 'bar' });
 				spyOn(instanceUnderTest, '_vectorSourceForData').withArgs(vectorGeoresource).and.returnValue(olSource);
-				spyOn(instanceUnderTest, '_applyClusterStyle')
+				spyOn(instanceUnderTest, 'applyClusterStyle')
 					.withArgs(jasmine.anything())
 					.and.callFake((layer) => layer);
 
@@ -230,7 +230,7 @@ describe('VectorLayerService', () => {
 					.setMaxZoom(19)
 					.setClusterParams({ foo: 'bar' });
 				spyOn(instanceUnderTest, '_vectorSourceForData').withArgs(vectorGeoResource).and.returnValue(olSource);
-				spyOn(instanceUnderTest, '_applyClusterStyle')
+				spyOn(instanceUnderTest, 'applyClusterStyle')
 					.withArgs(jasmine.anything())
 					.and.callFake((layer) => layer);
 
@@ -616,14 +616,14 @@ describe('VectorLayerService', () => {
 			});
 		});
 
-		describe('_applyClusterStyle', () => {
+		describe('applyClusterStyle', () => {
 			it('calls the StyleService and returns the olLayer ', () => {
 				setup();
 				const olSource = new VectorSource();
 				const olLayer = new VectorLayer({ source: olSource });
 				spyOn(styleService, 'addClusterStyle').and.returnValue(olLayer);
 
-				const result = instanceUnderTest._applyClusterStyle(olLayer);
+				const result = instanceUnderTest.applyClusterStyle(olLayer);
 
 				expect(result).toBe(olLayer);
 			});

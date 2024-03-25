@@ -10,27 +10,19 @@ describe('RtVectorLayerService', () => {
 		getSrid: () => 3857
 	};
 
-	const styleService = {
-		addStyle: () => {},
-		removeStyle: () => {},
-		updateStyle: () => {},
-		isStyleRequired: () => {},
-		addClusterStyle: () => {},
-		sanitizeStyle: () => {}
-	};
-
 	const vectorLayerService = {
 		applyStyles: () => {},
+		applyClusterStyle: () => {},
 		sanitizeStyles: () => {}
 	};
 
-	beforeEach(() => {
-		$injector.registerSingleton('MapService', mapService).registerSingleton('StyleService', styleService);
-	});
+	// beforeEach(() => {
+	// 	$injector.registerSingleton('MapService', mapService);
+	// });
 
-	afterEach(() => {
-		$injector.reset();
-	});
+	// afterEach(() => {
+	// 	$injector.reset();
+	// });
 
 	describe('utils', () => {
 		describe('isNextPortAvailable', () => {
@@ -62,10 +54,7 @@ describe('RtVectorLayerService', () => {
 			TestUtils.setupStoreAndDi(state, {
 				layers: layersReducer
 			});
-			$injector
-				.registerSingleton('MapService', mapService)
-				.registerSingleton('StyleService', styleService)
-				.registerSingleton('VectorLayerService', vectorLayerService);
+			$injector.registerSingleton('MapService', mapService).registerSingleton('VectorLayerService', vectorLayerService);
 			instanceUnderTest = new RtVectorLayerService();
 		};
 
@@ -82,7 +71,14 @@ describe('RtVectorLayerService', () => {
 			const kmlData =
 				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="draw_line_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
 
-			const vectorGeoresource = { id: 'geoResourceId', label: 'geoResourceLabel', sourceType: VectorSourceType.KML, url: wsUrl, srid: 4326 };
+			const rtVectorGeoResource = {
+				id: 'geoResourceId',
+				label: 'geoResourceLabel',
+				sourceType: VectorSourceType.KML,
+				url: wsUrl,
+				srid: 4326,
+				isClustered: () => false
+			};
 
 			let mockServer;
 			beforeEach(() => {
@@ -97,7 +93,7 @@ describe('RtVectorLayerService', () => {
 				const id = 'id';
 				const olMap = new Map();
 
-				const olVectorLayer = instanceUnderTest.createLayer(id, vectorGeoresource, olMap);
+				const olVectorLayer = instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
 
 				expect(olVectorLayer.get('id')).toBe(id);
 				expect(olVectorLayer.get('geoResourceId')).toBe('geoResourceId');
@@ -112,10 +108,34 @@ describe('RtVectorLayerService', () => {
 				const id = 'id';
 				const olMap = new Map();
 
-				const olVectorLayer = instanceUnderTest.createLayer(id, vectorGeoresource, olMap);
+				const olVectorLayer = instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
 				const processSpy = spyOn(instanceUnderTest, '_processMessage').and.callThrough();
 				const sanitizeStyleSpy = spyOn(vectorLayerService, 'sanitizeStyles').and.callFake(() => {});
-				const applyStyleSpy = spyOn(vectorLayerService, 'applyStyles').and.callFake(() => {});
+				const applyStyleSpy = spyOn(vectorLayerService, 'applyStyles')
+					.withArgs(olVectorLayer, olMap)
+					.and.callFake(() => {});
+				expect(olVectorLayer.getSource().getFeatures().length).toBe(0);
+
+				mockServer.emit('message', kmlData);
+
+				expect(olVectorLayer.getSource().getFeatures().length).toBe(1);
+				expect(processSpy).toHaveBeenCalled();
+				expect(sanitizeStyleSpy).toHaveBeenCalled();
+				expect(applyStyleSpy).toHaveBeenCalled();
+			});
+
+			it('updates clustered vector layer features, after server sends a message', () => {
+				setup();
+				const id = 'id';
+				const olMap = new Map();
+				const clusteredRtGeoResource = { ...rtVectorGeoResource, isClustered: () => true };
+
+				const olVectorLayer = instanceUnderTest.createLayer(id, clusteredRtGeoResource, olMap);
+				const processSpy = spyOn(instanceUnderTest, '_processMessage').and.callThrough();
+				const sanitizeStyleSpy = spyOn(vectorLayerService, 'sanitizeStyles').and.callFake(() => {});
+				const applyStyleSpy = spyOn(vectorLayerService, 'applyClusterStyle')
+					.withArgs(olVectorLayer)
+					.and.callFake(() => {});
 				expect(olVectorLayer.getSource().getFeatures().length).toBe(0);
 
 				mockServer.emit('message', kmlData);
@@ -131,7 +151,7 @@ describe('RtVectorLayerService', () => {
 				const id = 'id';
 				const olMap = new Map();
 
-				const olVectorLayer = instanceUnderTest.createLayer(id, vectorGeoresource, olMap);
+				const olVectorLayer = instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
 				const vectorSource = olVectorLayer.getSource();
 				const vectorSourceSpy = spyOn(vectorSource, 'clear').and.callThrough();
 				const processSpy = spyOn(instanceUnderTest, '_processMessage').and.callThrough();
@@ -157,7 +177,7 @@ describe('RtVectorLayerService', () => {
 						.and.callThrough()
 						.withArgs(jasmine.any(Object), jasmine.any(VectorLayer), olMap, 443)
 						.and.callThrough();
-					instanceUnderTest.createLayer(id, vectorGeoresource, olMap);
+					instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
 
 					mockServer.close({ code: 1006, reason: 'Foo', wasClean: false });
 					expect(startWebSocket).toHaveBeenCalledTimes(2);

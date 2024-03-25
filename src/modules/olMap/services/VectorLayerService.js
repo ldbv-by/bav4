@@ -145,7 +145,7 @@ export class VectorLayerService {
 	 * @param {ol.layer.Vector} olVectorLayer
 	 * @returns olVectorLayer
 	 */
-	_applyClusterStyle(olVectorLayer) {
+	applyClusterStyle(olVectorLayer) {
 		const { StyleService: styleService } = $injector.inject('StyleService');
 		styleService.addClusterStyle(olVectorLayer);
 
@@ -173,7 +173,7 @@ export class VectorLayerService {
 
 		this.sanitizeStyles(vectorLayer);
 
-		return vectorGeoResource.isClustered() ? this._applyClusterStyle(vectorLayer) : this.applyStyles(vectorLayer, olMap);
+		return vectorGeoResource.isClustered() ? this.applyClusterStyle(vectorLayer) : this.applyStyles(vectorLayer, olMap);
 	}
 
 	/**

@@ -95,7 +95,11 @@ export class RtVectorLayerService {
 		webSocket.onmessage = (event) => {
 			this._processMessage(event, olVectorSource, featureReader);
 			vectorLayerService.sanitizeStyles(olVectorLayer);
-			vectorLayerService.applyStyles(olVectorLayer, olMap);
+			if (rtVectorGeoResource.isClustered()) {
+				vectorLayerService.applyClusterStyle(olVectorLayer);
+			} else {
+				vectorLayerService.applyStyles(olVectorLayer, olMap);
+			}
 		};
 
 		const tryNextPort = (port) => {
