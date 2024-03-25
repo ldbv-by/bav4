@@ -16,8 +16,8 @@ import ImageWMS from 'ol/source/ImageWMS.js';
  * A function that returns a `ol.image.LoadFunction` for loading also restricted images via basic access authentication
  * @typedef {Function} imageLoadFunctionProvider
  * @param {string} geoResourceId The id of the corresponding GeoResource
- * @param {module:domain/credentialDef~Credential} [credential] The credential for basic access authentication (when BAA is requested)
- * @param {number[]} [maxSize] Maximum width and height of the requested image in px
+ * @param {module:domain/credentialDef~Credential|null} [credential] The credential for basic access authentication (when BAA is requested) or `null` or `undefined`
+ * @param {number[]|null} [maxSize] Maximum width and height of the requested image in px or `null` or `undefined`
  * @returns {Function} ol.image.LoadFunction
  */
 
