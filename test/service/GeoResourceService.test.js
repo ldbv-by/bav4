@@ -298,12 +298,12 @@ describe('GeoResourceService', () => {
 
 	describe('isAllowed', () => {
 		describe('GeoResource is unknown', () => {
-			it('returns `false`', async () => {
+			it('returns `true`', async () => {
 				const geoResourceId = 'id';
 				const instanceUnderTest = setup();
 				spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(null);
 
-				expect(instanceUnderTest.isAllowed(geoResourceId)).toBeFalse();
+				expect(instanceUnderTest.isAllowed(geoResourceId)).toBeTrue();
 			});
 		});
 

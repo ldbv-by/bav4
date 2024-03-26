@@ -164,7 +164,7 @@ export class GeoResourceService {
 	/**
 	 * Checks if the current auth roles allow to access a certain GeoResource.
 	 *
-	 * Returns `false` if the GeoResource does not exist.
+	 * Returns `true` if the GeoResource does not exist.
 	 * For AggregateGeoResources it checks its roles or if empty the roles of the referenced GeoResources.
 	 * @param {string} id The id of a GeoResource
 	 * @returns {boolean} `true` if a GeoResource is allowed to access
@@ -177,7 +177,7 @@ export class GeoResourceService {
 			}
 			return gr.authRoles.length === 0 ? true : gr.authRoles.filter((role) => this.#authService.getRoles().includes(role)).length > 0;
 		}
-		return false;
+		return true;
 	}
 
 	/**
