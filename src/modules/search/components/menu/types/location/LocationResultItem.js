@@ -9,6 +9,10 @@ import { fit } from '../../../../../../store/position/position.action';
 import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../../../../../../store/highlight/highlight.action';
 import { SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../plugins/HighlightPlugin';
 import { MvuElement } from '../../../../../MvuElement';
+import { setProposal, reset } from '../../../../../../store/routing/routing.action';
+import { CoordinateProposalType } from '../../../../../../domain/routing';
+import routingSvg from '../../assets/direction.svg';
+import { $injector } from '../../../../../../injection';
 
 const Update_IsPortrait = 'update_isPortrait';
 const Update_LocationSearchResult = 'update_locationSearchResult';
@@ -28,6 +32,8 @@ export class LocationResultItem extends MvuElement {
 			locationSearchResult: null,
 			isPortrait: false
 		});
+		const { TranslationService: translationService } = $injector.inject('TranslationService');
+		this._translationService = translationService;
 	}
 
 	static get _maxZoomLevel() {
@@ -56,6 +62,8 @@ export class LocationResultItem extends MvuElement {
 
 	createView(model) {
 		const { isPortrait, locationSearchResult } = model;
+		const translate = (key) => this._translationService.translate(key);
+
 		/**
 		 * Uses mouseenter and mouseleave events for adding/removing a temporary highlight feature.
 		 * These events are not fired on touch devices, so there's no extra handling needed.
@@ -90,6 +98,27 @@ export class LocationResultItem extends MvuElement {
 			}
 		};
 
+		const onClickRouting = (result) => {
+			const coordinate = [...result.center];
+			reset();
+			setProposal(coordinate, CoordinateProposalType.START_OR_DESTINATION);
+		};
+
+		const getRoutingButton = (result) => {
+			return !result.extent
+				? html` <div class="ba-icon-button ba-list-item__after separator">
+						<ba-icon
+							.icon="${routingSvg}"
+							.color=${'var(--primary-color)'}
+							.color_hover=${'var(--text3)'}
+							.size=${2}
+							.title="${translate('search_result_item_start_routing_here')}"
+							@click="${() => onClickRouting(locationSearchResult)}"
+						></ba-icon>
+					</div>`
+				: html` <div class="ba-icon-button ba-list-item__after"></div>`;
+		};
+
 		if (locationSearchResult) {
 			return html`
 				<style>
@@ -106,6 +135,7 @@ export class LocationResultItem extends MvuElement {
 						<span class="ba-list-item__icon"> </span>
 					</span>
 					<span class="ba-list-item__text "> ${unsafeHTML(locationSearchResult.labelFormatted)} </span>
+					${getRoutingButton(locationSearchResult)}
 				</li>
 			`;
 		}
