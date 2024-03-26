@@ -299,7 +299,6 @@ describe('GeoResourceService', () => {
 	describe('isAllowed', () => {
 		describe('GeoResource is unknown', () => {
 			it('returns `false`', async () => {
-				spyOn(authService, 'isSignedIn').and.returnValue(true);
 				const geoResourceId = 'id';
 				const instanceUnderTest = setup();
 				spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(null);
@@ -307,13 +306,13 @@ describe('GeoResourceService', () => {
 				expect(instanceUnderTest.isAllowed(geoResourceId)).toBeFalse();
 			});
 		});
+
 		describe('User is signed in', () => {
 			describe('and has the wrong role', () => {
 				it('returns `false`', async () => {
-					spyOn(authService, 'isSignedIn').and.returnValue(true);
 					spyOn(authService, 'getRoles').and.returnValue(['TEST']);
 					const geoResourceId = 'id';
-					const geoResource = { restricted: true, authRoles: ['FOO', 'BAR'] };
+					const geoResource = { authRoles: ['FOO', 'BAR'] };
 					const instanceUnderTest = setup();
 					spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
 
@@ -322,10 +321,9 @@ describe('GeoResourceService', () => {
 			});
 			describe('and has a suitable role', () => {
 				it('returns `true`', async () => {
-					spyOn(authService, 'isSignedIn').and.returnValue(true);
 					spyOn(authService, 'getRoles').and.returnValue(['BAR']);
 					const geoResourceId = 'id';
-					const geoResource = { restricted: true, authRoles: ['FOO', 'BAR'] };
+					const geoResource = { authRoles: ['FOO', 'BAR'] };
 					const instanceUnderTest = setup();
 					spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
 
@@ -334,14 +332,75 @@ describe('GeoResourceService', () => {
 			});
 			describe('and GeoResource is NOT restricted', () => {
 				it('returns `true`', async () => {
-					spyOn(authService, 'isSignedIn').and.returnValue(true);
 					spyOn(authService, 'getRoles').and.returnValue(['BAR']);
 					const geoResourceId = 'id';
-					const geoResource = { restricted: false, authRoles: [] };
+					const geoResource = { authRoles: [] };
 					const instanceUnderTest = setup();
 					spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
 
 					expect(instanceUnderTest.isAllowed(geoResourceId)).toBeTrue();
+				});
+			});
+		});
+
+		describe('AggregateGeoResource', () => {
+			describe('the AggregateGeoResource defines roles', () => {
+				it('returns `false`', async () => {
+					const aggGeoResourceId = 'aggGeoResourceId';
+					const instanceUnderTest = setup();
+					spyOn(authService, 'getRoles').and.returnValue(['TEST']);
+					spyOn(instanceUnderTest, 'byId').and.callFake((id) => {
+						switch (id) {
+							case aggGeoResourceId:
+								return new AggregateGeoResource(aggGeoResourceId, 'label', ['geoResourceId0', 'geoResourceId1']).setAuthRoles(['TEST']);
+						}
+					});
+
+					expect(instanceUnderTest.isAllowed(aggGeoResourceId)).toBeTrue();
+				});
+			});
+
+			describe('one or more referenced GeoResources are accessible', () => {
+				it('returns `false`', async () => {
+					const aggGeoResourceId = 'aggGeoResourceId';
+					const geoResourceId0 = 'geoResourceId0';
+					const geoResourceId1 = 'geoResourceId1';
+					const instanceUnderTest = setup();
+					spyOn(authService, 'getRoles').and.returnValue([]);
+					spyOn(instanceUnderTest, 'byId').and.callFake((id) => {
+						switch (id) {
+							case aggGeoResourceId:
+								return new AggregateGeoResource(aggGeoResourceId, 'label', [geoResourceId0, geoResourceId1]);
+							case geoResourceId0:
+								return { authRoles: [] };
+							case geoResourceId1:
+								return { authRoles: ['FOO'] };
+						}
+					});
+
+					expect(instanceUnderTest.isAllowed(aggGeoResourceId)).toBeFalse();
+				});
+			});
+
+			describe('all referenced GeoResources are accessible', () => {
+				it('returns `false`', async () => {
+					const aggGeoResourceId = 'aggGeoResourceId';
+					const geoResourceId0 = 'geoResourceId0';
+					const geoResourceId1 = 'geoResourceId1';
+					const instanceUnderTest = setup();
+					spyOn(authService, 'getRoles').and.returnValue([]);
+					spyOn(instanceUnderTest, 'byId').and.callFake((id) => {
+						switch (id) {
+							case aggGeoResourceId:
+								return new AggregateGeoResource(aggGeoResourceId, 'label', [geoResourceId0, geoResourceId1]);
+							case geoResourceId0:
+								return { authRoles: [] };
+							case geoResourceId1:
+								return { authRoles: [] };
+						}
+					});
+
+					expect(instanceUnderTest.isAllowed(aggGeoResourceId)).toBeTrue();
 				});
 			});
 		});
@@ -350,7 +409,7 @@ describe('GeoResourceService', () => {
 	describe('getKeywords', () => {
 		it('returns the auth roles as keywords', async () => {
 			const geoResourceId = 'id';
-			const geoResource = { restricted: true, authRoles: ['Foo', 'Bar'] };
+			const geoResource = { authRoles: ['Foo', 'Bar'] };
 			const instanceUnderTest = setup();
 			spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
 
@@ -364,6 +423,44 @@ describe('GeoResourceService', () => {
 				spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(null);
 
 				expect(instanceUnderTest.getKeywords(geoResourceId)).toEqual([]);
+			});
+		});
+
+		describe('AggregateGeoResource', () => {
+			describe('the AggregateGeoResource contains roles on its own', () => {
+				it('returns the auth roles as keywords', async () => {
+					const aggGeoResourceId = 'aggGeoResourceId';
+					const instanceUnderTest = setup();
+					spyOn(instanceUnderTest, 'byId').and.callFake((id) => {
+						switch (id) {
+							case aggGeoResourceId:
+								return new AggregateGeoResource(aggGeoResourceId, 'label', ['geoResourceId0', 'geoResourceId1']).setAuthRoles(['TEST']);
+						}
+					});
+
+					expect(instanceUnderTest.getKeywords(aggGeoResourceId)).toEqual(['TEST']);
+				});
+			});
+
+			describe('the AggregateGeoResource does not contain roles', () => {
+				it('returns a unique list of all keywords of the referenced GeoResources', async () => {
+					const aggGeoResourceId = 'aggGeoResourceId';
+					const geoResourceId0 = 'geoResourceId0';
+					const geoResourceId1 = 'geoResourceId1';
+					const instanceUnderTest = setup();
+					spyOn(instanceUnderTest, 'byId').and.callFake((id) => {
+						switch (id) {
+							case aggGeoResourceId:
+								return new AggregateGeoResource(aggGeoResourceId, 'label', [geoResourceId0, geoResourceId1]);
+							case geoResourceId0:
+								return { authRoles: ['FOO'] };
+							case geoResourceId1:
+								return { authRoles: ['FOO', 'BAR'] };
+						}
+					});
+
+					expect(instanceUnderTest.getKeywords(aggGeoResourceId)).toEqual(['FOO', 'BAR']);
+				});
 			});
 		});
 	});
