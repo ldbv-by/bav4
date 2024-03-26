@@ -163,7 +163,8 @@ export class GeoResourceService {
 
 	/**
 	 * Checks if the current auth roles allow to access a certain GeoResource.
-	 * Returns `false` if the GeoResource does not.
+	 *
+	 * Returns `false` if the GeoResource does not exist.
 	 * @param {string} id The id of a GeoResource
 	 * @returns {boolean} `true` if a GeoResource is allowed to access
 	 */
