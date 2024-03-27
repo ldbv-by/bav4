@@ -16,14 +16,6 @@ describe('RtVectorLayerService', () => {
 		sanitizeStyles: () => {}
 	};
 
-	// beforeEach(() => {
-	// 	$injector.registerSingleton('MapService', mapService);
-	// });
-
-	// afterEach(() => {
-	// 	$injector.reset();
-	// });
-
 	describe('utils', () => {
 		describe('isNextPortAvailable', () => {
 			it('checks the ports for availability', () => {

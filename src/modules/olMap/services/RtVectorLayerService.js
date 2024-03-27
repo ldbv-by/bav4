@@ -145,7 +145,6 @@ export class RtVectorLayerService {
 
 		this._startWebSocket(rtVectorGeoResource, vectorLayer, olMap);
 
-		// HINT: currently is no support for clustered realtime vector data needed or planned for future releases
 		return vectorLayer;
 	}
 }
