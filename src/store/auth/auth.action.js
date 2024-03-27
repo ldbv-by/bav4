@@ -15,17 +15,17 @@ const getStore = () => {
 export const setSignedIn = () => {
 	getStore().dispatch({
 		type: AUTH_STATUS_CHANGED,
-		payload: true
+		payload: { signedIn: true, byUser: true }
 	});
 };
 
 /**
- *
  * Changes the auth status to signed out
+ * @param {boolean} byUser `true` if the User requested a sign out
  */
-export const setSignedOut = () => {
+export const setSignedOut = (byUser) => {
 	getStore().dispatch({
 		type: AUTH_STATUS_CHANGED,
-		payload: false
+		payload: { signedIn: false, byUser }
 	});
 };
