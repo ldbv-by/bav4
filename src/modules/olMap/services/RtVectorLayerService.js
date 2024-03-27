@@ -68,7 +68,7 @@ export class RtVectorLayerService {
 	}
 
 	/**
-	 * processes the messages from a websocket and updates the specified olVectorSource
+	 * Processes the messages from a websocket and updates the specified olVectorSource
 	 *
 	 * TODO: check, if behavior for changed featureExtent is needed
 	 * @param {MessageEvent} socketEvent
