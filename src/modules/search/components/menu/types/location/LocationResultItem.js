@@ -114,7 +114,8 @@ export class LocationResultItem extends MvuElement {
 							.size=${2}
 							.title="${translate('search_result_item_start_routing_here')}"
 							@click="${() => onClickRouting(locationSearchResult)}"
-						></ba-icon>
+						>
+						</ba-icon>
 					</div>`
 				: html` <div class="ba-icon-button ba-list-item__after"></div>`;
 		};

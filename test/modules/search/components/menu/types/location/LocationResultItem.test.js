@@ -58,7 +58,7 @@ describe('LocationResultItem', () => {
 
 			element.data = data;
 
-			expect(element.shadowRoot.querySelector('li').innerText).toBe('labelFormatted');
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item__text')[0].innerText).toBe('labelFormatted');
 			expect(element.shadowRoot.querySelectorAll('ba-icon-button')).toHaveSize(0);
 		});
 
@@ -68,7 +68,7 @@ describe('LocationResultItem', () => {
 			const element = await setup();
 			element.data = data;
 
-			expect(element.shadowRoot.querySelector('li').innerText).toBe('labelFormatted');
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item__text')[0].innerText).toBe('labelFormatted');
 			expect(element.shadowRoot.querySelectorAll('.ba-icon-button')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.ba-list-item__after')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.separator')).toHaveSize(1);
@@ -87,7 +87,7 @@ describe('LocationResultItem', () => {
 			const element = await setup();
 			element.data = data;
 
-			expect(element.shadowRoot.querySelector('li').innerText).toBe('labelFormatted');
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item__text')[0].innerText).toBe('labelFormatted');
 			expect(element.shadowRoot.querySelectorAll('.ba-icon-button')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.ba-list-item__after')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.separator')).toHaveSize(0);
