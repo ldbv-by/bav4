@@ -134,7 +134,7 @@ export class LocationResultItem extends MvuElement {
 					<span class="ba-list-item__pre ">
 						<span class="ba-list-item__icon"> </span>
 					</span>
-					<span class="ba-list-item__text "> ${unsafeHTML(locationSearchResult.labelFormatted)} </span>
+					<span class="ba-list-item__text ">${unsafeHTML(locationSearchResult.labelFormatted)}</span>
 					${getRoutingButton(locationSearchResult)}
 				</li>
 			`;
