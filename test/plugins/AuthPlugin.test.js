@@ -98,7 +98,7 @@ describe('AuthPlugin', () => {
 				expect(store.getState().layers.active[0].id).toBe(layer0.id);
 			});
 		});
-		
+
 		describe('NOT triggered by the user', () => {
 			it('does nothing', async () => {
 				const layer0 = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0' };
