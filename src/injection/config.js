@@ -3,7 +3,7 @@ import { StoreService } from '../services/StoreService';
 import { OlCoordinateService } from '../services/OlCoordinateService';
 import { EnvironmentService } from '../services/EnvironmentService';
 import { ProcessEnvConfigService } from '../services/ProcessEnvConfigService';
-import { AuthInvalidatingAfter401HttpService } from '../services/HttpService';
+import { BvvHttpService } from '../services/HttpService';
 import { TranslationService } from '../services/TranslationService';
 import { ShareService } from '../services/ShareService';
 import { UnitsService } from '../services/UnitsService';
@@ -61,12 +61,13 @@ import { BvvRoutingService } from '../services/RoutingService';
 import { RoutingPlugin } from '../plugins/RoutingPlugin';
 import { AuthService } from '../services/AuthService';
 import { GlobalErrorPlugin } from '../plugins/GlobalErrorPlugin';
+import { AuthPlugin } from '../plugins/AuthPlugin';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
 	.registerSingleton('AuthService', new AuthService())
 	.registerSingleton('ConfigService', new ProcessEnvConfigService())
-	.register('HttpService', AuthInvalidatingAfter401HttpService)
+	.register('HttpService', BvvHttpService)
 	.register('EnvironmentService', EnvironmentService)
 	.registerSingleton('TranslationService', new TranslationService())
 	.register('CoordinateService', OlCoordinateService)
@@ -98,6 +99,7 @@ $injector
 	.registerSingleton('RoutingService', new BvvRoutingService())
 
 	.registerSingleton('GlobalErrorPlugin', new GlobalErrorPlugin())
+	.registerSingleton('AuthPlugin', new AuthPlugin())
 	.registerSingleton('DrawPlugin', new DrawPlugin())
 	.registerSingleton('RoutingPlugin', new RoutingPlugin())
 	.registerSingleton('TopicsPlugin', new TopicsPlugin())

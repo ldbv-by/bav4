@@ -6,14 +6,7 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { $injector } from '../../../injection';
 import css from './measurementOverlay.css';
 import { classMap } from 'lit-html/directives/class-map.js';
-import {
-	getAzimuth,
-	getCoordinateAt,
-	canShowAzimuthCircle,
-	PROJECTED_LENGTH_GEOMETRY_PROPERTY,
-	getProjectedLength,
-	getProjectedArea
-} from '../utils/olGeometryUtils';
+import { getAzimuth, getCoordinateAt, canShowAzimuthCircle, PROJECTED_LENGTH_GEOMETRY_PROPERTY, getLineString } from '../utils/olGeometryUtils';
 import { Polygon } from 'ol/geom';
 import { BaOverlay } from './BaOverlay';
 import { round } from '../../../utils/numberUtils';
@@ -107,14 +100,15 @@ export class MeasurementOverlay extends BaOverlay {
 
 		const getArea = () => {
 			if (this.geometry instanceof Polygon) {
-				return this._unitsService.formatArea(getProjectedArea(this.geometry), 2);
+				return this._unitsService.formatArea(this._mapService.calcArea(this.geometry.getCoordinates()), 2);
 			}
 			return '';
 		};
 
 		switch (this._type) {
 			case MeasurementOverlayTypes.AREA:
-				this._position = this.geometry.getInteriorPoint().getCoordinates().slice(0, -1);
+				this._position =
+					this.geometry instanceof Polygon ? this.geometry.getInteriorPoint().getCoordinates().slice(0, -1) : this.geometry.getLastCoordinate();
 				this._content = getArea();
 				break;
 			case MeasurementOverlayTypes.DISTANCE_PARTITION:
@@ -146,7 +140,8 @@ export class MeasurementOverlay extends BaOverlay {
 
 	_getMeasuredLength = (geometry) => {
 		const alreadyMeasuredLength = geometry ? geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY) : null;
-		return alreadyMeasuredLength ?? getProjectedLength(this.geometry);
+		const lineString = getLineString(this.geometry);
+		return alreadyMeasuredLength ?? lineString ? this._mapService.calcLength(lineString.getCoordinates()) : 0;
 	};
 
 	set placement(value) {

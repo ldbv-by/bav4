@@ -39,6 +39,7 @@ export class CatalogLeaf extends AbstractContentPanel {
 
 		if (geoResourceId && layersStoreReady) {
 			const geoR = this._geoResourceService.byId(geoResourceId);
+			const keywords = [...this._geoResourceService.getKeywords(geoResourceId)];
 			const label = geoR ? geoR.label : geoResourceId;
 			const title = geoR ? geoR.label : translate('topics_catalog_leaf_no_georesource_title');
 
@@ -54,14 +55,19 @@ export class CatalogLeaf extends AbstractContentPanel {
 				const content = html`<ba-georesourceinfo-panel .geoResourceId=${geoResourceId}></ba-georesourceinfo-panel>`;
 				openModal(label, content);
 			};
+			const getBadges = (keywords) => {
+				const toBadges = (keywords) =>
+					keywords.map((keyword) => html`<ba-badge .color=${'var(--text3)'} .background=${'var(--roles-color)'} .label=${keyword}></ba-badge>`);
 
+				return keywords.length === 0 ? nothing : toBadges(keywords);
+			};
 			return html`
 				<style>
 					${css}
 				</style>
 				<span class="ba-list-item">
 					<ba-checkbox class="ba-list-item__text" @toggle=${onToggle} .disabled=${!geoR} .checked=${checked} tabindex="0" .title=${title}
-						><span>${label}</span></ba-checkbox
+						><span>${label}</span> ${getBadges(keywords)}</ba-checkbox
 					>
 					<div class="ba-icon-button ba-list-item__after vertical-center separator">
 						<ba-icon

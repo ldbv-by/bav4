@@ -20,10 +20,10 @@ export const provide = (lang) => {
 				global_marker_symbol_label: 'Marker',
 				global_featureInfo_not_available: 'FeatureInfo is not available',
 				global_routingService_init_exception: 'Routing currently not available',
-				global_geoResource_not_available: (params) =>
-					`Failed to add a layer for the GeoResource with ID "${params[0]}"${params[1] ? ` (${params[1]})` : ``}`,
+				global_geoResource_not_available: (params) => `Failed to add a layer for the GeoResource "${params[0]}"${params[1] ? ` (${params[1]})` : ``}`,
 				global_geoResource_unauthorized: '401 - Unauthorized',
-				global_geoResource_forbidden: '403 - Forbidden'
+				global_geoResource_forbidden: '403 - Forbidden',
+				global_signOut_success: 'Signed out successfully'
 			};
 
 		case 'de':
@@ -47,9 +47,10 @@ export const provide = (lang) => {
 				global_featureInfo_not_available: 'FeatureInfo ist nicht verfügbar',
 				global_routingService_init_exception: 'Die Routing-Funktion steht derzeit leider nicht zur Verfügung',
 				global_geoResource_not_available: (params) =>
-					`Es konnte keine Ebene für die GeoRessource mit der ID "${params[0]}" geladen werden${params[1] ? ` (${params[1]})` : ``}`,
+					`Es konnte keine Ebene für die GeoRessource "${params[0]}" geladen werden${params[1] ? ` (${params[1]})` : ``}`,
 				global_geoResource_unauthorized: '401 - Fehlende Berechtigung',
-				global_geoResource_forbidden: '403 - Zugriff nicht erlaubt'
+				global_geoResource_forbidden: '403 - Zugriff nicht erlaubt',
+				global_signOut_success: 'Sie haben sich erfolgreich abgemeldet'
 			};
 
 		default:

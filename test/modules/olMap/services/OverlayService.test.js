@@ -22,17 +22,11 @@ describe('OverlayService', () => {
 	const mapServiceMock = {
 		getSrid: () => 3857,
 		getLocalProjectedSrid: () => 25832,
-		getCoordinateRepresentations: () => [{ global: false, code: 25832 }]
+		calcLength: () => 1
 	};
 
 	const environmentServiceMock = {
 		isTouch() {}
-	};
-
-	const coordinateServiceMock = {
-		getLength() {
-			return 1;
-		}
 	};
 
 	const unitsServiceMock = {
@@ -54,8 +48,7 @@ describe('OverlayService', () => {
 			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('UnitsService', unitsServiceMock)
-			.register('OverlayService', OverlayService)
-			.registerSingleton('CoordinateService', coordinateServiceMock);
+			.register('OverlayService', OverlayService);
 	});
 
 	let instanceUnderTest;

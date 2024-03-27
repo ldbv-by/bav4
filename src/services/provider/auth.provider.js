@@ -8,24 +8,63 @@ import { html } from 'lit-html';
 import { MediaType } from '../../domain/mediaTypes';
 import { PromiseQueue } from '../../utils/PromiseQueue';
 import { BvvRoles } from '../../domain/roles';
+import { LevelTypes, emitNotification } from '../../store/notifications/notifications.action';
 
 /**
  * BVV specific implementation of {@link module:services/AuthService~signInProvider}.
  * @function
  * @type {module:services/AuthService~signInProvider}
  */
-export const bvvSignInProvider = async (credential) => {
-	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
-	const result = await httpService.post(`${configService.getValueAsPath('BACKEND_URL')}auth/signin`, JSON.stringify(credential), MediaType.JSON);
+export const bvvSignInProvider = async (credential = null) => {
+	const roles = [BvvRoles.PLUS];
+	const {
+		StoreService: storeService,
+		HttpService: httpService,
+		ConfigService: configService
+	} = $injector.inject('StoreService', 'HttpService', 'ConfigService');
 
-	switch (result.status) {
-		case 200:
-			return await result.json();
-		case 400:
-			return [];
-		default:
-			throw new Error(`Sign in not possible: Http-Status ${result.status}`);
-	}
+	const authenticate = async (credential) => {
+		const result = await httpService.post(`${configService.getValueAsPath('BACKEND_URL')}auth/signin`, JSON.stringify(credential), MediaType.JSON);
+
+		switch (result.status) {
+			case 200:
+				return await result.json();
+			case 400:
+				return [];
+			default:
+				throw new Error(`Sign in not possible: Http-Status ${result.status}`);
+		}
+	};
+
+	return credential
+		? authenticate(credential)
+		: new Promise((resolve) => {
+				// in case of aborting the authentication-process by closing the modal we call the onClose callback
+				const resolveBeforeClosing = ({ active }) => {
+					if (!active) {
+						onClose(null);
+					}
+				};
+				const unsubscribe = observe(
+					storeService.getStore(),
+					(state) => state.modal,
+					(modal) => resolveBeforeClosing(modal)
+				);
+
+				// onClose-callback is called with a verified credential object and the result object or simply null
+				const onClose = async (credential, roles) => {
+					unsubscribe();
+					closeModal();
+					if (credential && roles) {
+						resolve(roles);
+					} else {
+						// resolve with empty roles
+						resolve([]);
+					}
+				};
+
+				openModal(createCredentialModalTitle(roles), createCredentialPanel(authenticate, onClose, roles));
+			});
 };
 
 /**
@@ -34,15 +73,45 @@ export const bvvSignInProvider = async (credential) => {
  * @type {module:services/AuthService~signOutProvider}
  */
 export const bvvSignOutProvider = async () => {
-	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
+	const {
+		HttpService: httpService,
+		ConfigService: configService,
+		TranslationService: translationService
+	} = $injector.inject('HttpService', 'ConfigService', 'TranslationService');
 	const result = await httpService.get(`${configService.getValueAsPath('BACKEND_URL')}auth/signout`);
 
 	switch (result.status) {
 		case 200:
+			emitNotification(`${translationService.translate('global_signOut_success')}`, LevelTypes.INFO);
 			return true;
 		default:
 			throw new Error(`Sign out not possible: Http-Status ${result.status}`);
 	}
+};
+
+/**
+ * BVV specific implementation of {@link module:services/AuthService~initialAuthStatusProvider}.
+ * @function
+ * @type {module:services/AuthService~initialAuthStatusProvider}
+ */
+export const bvvInitialAuthStatusProvider = async () => {
+	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
+	const result = await httpService.get(`${configService.getValueAsPath('BACKEND_URL')}auth/roles`);
+
+	switch (result.status) {
+		case 200:
+			return await result.json();
+		default:
+			throw new Error(`Could not fetch current roles: Http-Status ${result.status}`);
+	}
+};
+
+const createCredentialModalTitle = (roles) => {
+	const { TranslationService: translationService } = $injector.inject('TranslationService');
+	const translate = (key) => translationService.translate(key);
+	const title = html`${translate('global_import_authenticationModal_title')}&nbsp;
+	${roles.map((role) => html`<ba-badge .size=${'1.5'} .color=${'var(--text3)'} .background=${'var(--primary-color)'} .label=${role}></ba-badge>`)} `;
+	return title;
 };
 
 const createCredentialPanel = (authenticateFunction, onCloseFunction, roles) => {
@@ -55,25 +124,26 @@ const createCredentialPanel = (authenticateFunction, onCloseFunction, roles) => 
 };
 
 const promiseQueue = new PromiseQueue();
+const resourcesInQueue = new Set();
+/**
+ * Amount of time the credential panel should not be shown for the same identifier.
+ */
+export const BvvCredentialPanelIntervalMs = 10_000;
 /**
  * BVV specific implementation of {@link module:services/AuthService~authResponseInterceptorProvider}.
  * @function
  * @type {module:services/AuthService~authResponseInterceptorProvider}
  * @param {string[]} roles
+ * @param {string} [identifier=null]
  */
-export const bvvAuthResponseInterceptorProvider = (roles = []) => {
+export const bvvAuthResponseInterceptorProvider = (roles = [], identifier = null, credentialPanelInterval = BvvCredentialPanelIntervalMs) => {
 	const bvvAuthResponseInterceptor = async (response, doFetch) => {
-		// in that case we open the credential ui as modal window
 		switch (response.status) {
+			// in that case we open the credential ui as modal window
 			case 401: {
 				const handler401 = () => {
 					return new Promise((resolve) => {
-						const {
-							StoreService: storeService,
-							TranslationService: translationService,
-							AuthService: authService
-						} = $injector.inject('StoreService', 'TranslationService', 'AuthService');
-						const translate = (key) => translationService.translate(key);
+						const { StoreService: storeService, AuthService: authService } = $injector.inject('StoreService', 'AuthService');
 
 						const authenticate = async (credential) => {
 							const authenticated = await authService.signIn(credential);
@@ -116,17 +186,30 @@ export const bvvAuthResponseInterceptorProvider = (roles = []) => {
 							// re-try the original fetch call
 							resolve(doFetch());
 						}
-						// let's open the credential panel in that case
+						// let's open the credential panel for that case
+						else if (!resourcesInQueue.has(identifier)) {
+							/**
+							 * Needed for resources which trigger multiple requests at once (e.g. XyZGeoResources).
+							 * To avoid showing the credential panel for the same resource in quick succession we synchronize by a Set.
+							 * The resource is represented by its identifier.
+							 * After the given amount of time the identifier will be removed from the Set.
+							 */
+							if (identifier) {
+								resourcesInQueue.add(identifier);
+								setTimeout(() => {
+									resourcesInQueue.delete(identifier);
+								}, credentialPanelInterval);
+							}
+
+							// prepare the modal
+							openModal(createCredentialModalTitle(roles), createCredentialPanel(authenticate, onClose, roles));
+						}
+						// return the original response
 						else {
-							const title = html`${translate('global_import_authenticationModal_title')}&nbsp;
-							${roles.map(
-								(role) => html`<ba-badge .size=${'1.5'} .color=${'var(--text3)'} .background=${'var(--primary-color)'} .label=${role}></ba-badge>`
-							)} `;
-							openModal(title, createCredentialPanel(authenticate, onClose, roles));
+							resolve(response);
 						}
 					});
 				};
-				// in case of 401 we want the handler function to be executed one after each other
 				return await promiseQueue.add(handler401);
 			}
 		}

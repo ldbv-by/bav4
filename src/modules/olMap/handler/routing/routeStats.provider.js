@@ -356,11 +356,7 @@ const polylineToGeometry = (polyline) => {
  * @type {module:services/RoutingService~routeStatsProvider}
  */
 export const bvvRouteStatsProvider = (ghRoute, profileStats) => {
-	const {
-		ConfigService: configService,
-		MapService: mapService,
-		CoordinateService: coordinateService
-	} = $injector.inject('ConfigService', 'MapService', 'CoordinateService');
+	const { ConfigService: configService } = $injector.inject('ConfigService');
 	const lang = configService.getValue('DEFAULT_LANG');
 	const vehicleType = ghRoute.vehicle.replace('bvv-', '').replace('bayernnetz-', '');
 	const speedOptions = Object.hasOwn(VehicleSpeedOptions, vehicleType) ? VehicleSpeedOptions[vehicleType] : null;
@@ -369,12 +365,10 @@ export const bvvRouteStatsProvider = (ghRoute, profileStats) => {
 		speedOptions && validProfileStats
 			? getETAFor(ghRoute.paths[0].distance, profileStats?.sumUp, profileStats?.sumDown, speedOptions)
 			: ghRoute.paths[0].time;
-	const coordinates = polylineToGeometry(ghRoute.paths[0].points).getCoordinates();
-	const coordinateRepresentation = mapService.getCoordinateRepresentations(coordinates)[0];
-	const projectedDistance = coordinateService.getLength(coordinates, coordinateRepresentation);
-	const surfaceDetails = aggregateDetailData(ghRoute.paths[0].details.surface, coordinates);
+	const coordinates4326 = polylineToGeometry(ghRoute.paths[0].points).getCoordinates();
+	const surfaceDetails = aggregateDetailData(ghRoute.paths[0].details.surface, coordinates4326);
 	const mergedRoadClassTrackTypeRawData = mergeRoadClassAndTrackTypeData(ghRoute.paths[0].details.road_class, ghRoute.paths[0].details.track_type);
-	const roadClassTrackTypeDetails = aggregateDetailData(mergedRoadClassTrackTypeRawData, coordinates);
+	const roadClassTrackTypeDetails = aggregateDetailData(mergedRoadClassTrackTypeRawData, coordinates4326);
 	const details = {
 		surface: surfaceDetails,
 		road_class: roadClassTrackTypeDetails
@@ -383,7 +377,9 @@ export const bvvRouteStatsProvider = (ghRoute, profileStats) => {
 
 	return {
 		time: time,
-		dist: projectedDistance,
+		/** HINT: profileStats.linearDistance is a client-side calculated distance by profile.provider; 
+		The profile.provider should prefer the calculation in a local projection, except the geometry is (partially) outside the projection extent*/
+		dist: profileStats.linearDistance,
 		twoDiff: validProfileStats ? [profileStats.sumUp, profileStats.sumDown] : [],
 		details: details,
 		warnings: warnings

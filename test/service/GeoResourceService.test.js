@@ -134,14 +134,14 @@ describe('GeoResourceService', () => {
 				expect(georesources.length).toBe(4);
 				expect(georesources[0].id).toBe(FALLBACK_GEORESOURCE_ID_0);
 				expect(georesources[0].label).toBe(FALLBACK_GEORESOURCE_LABEL_0);
-				expect(georesources[0].getAttribution()[0].copyright[0].label).toBe('Bundesamt für Kartographie und Geodäsie (2022)');
-				expect(georesources[0].getAttribution()[0].copyright[0].url).toBe('http://www.bkg.bund.de/');
+				expect(georesources[0].getAttribution()[0].copyright[0].label).toBe('Bundesamt für Kartographie und Geodäsie (2024)');
+				expect(georesources[0].getAttribution()[0].copyright[0].url).toBe('https://www.bkg.bund.de/');
 				expect(georesources[0].getAttribution()[0].copyright[1].label).toBe('Datenquellen');
 				expect(georesources[0].getAttribution()[0].copyright[1].url).toBe('https://sg.geodatenzentrum.de/web_public/Datenquellen_TopPlus_Open.pdf');
 				expect(georesources[1].id).toBe(FALLBACK_GEORESOURCE_ID_1);
 				expect(georesources[1].label).toBe(FALLBACK_GEORESOURCE_LABEL_1);
-				expect(georesources[1].getAttribution()[0].copyright[0].label).toBe('Bundesamt für Kartographie und Geodäsie (2022)');
-				expect(georesources[1].getAttribution()[0].copyright[0].url).toBe('http://www.bkg.bund.de/');
+				expect(georesources[1].getAttribution()[0].copyright[0].label).toBe('Bundesamt für Kartographie und Geodäsie (2024)');
+				expect(georesources[1].getAttribution()[0].copyright[0].url).toBe('https://www.bkg.bund.de/');
 				expect(georesources[1].getAttribution()[0].copyright[1].label).toBe('Datenquellen');
 				expect(georesources[1].getAttribution()[0].copyright[1].url).toBe('https://sg.geodatenzentrum.de/web_public/Datenquellen_TopPlus_Open.pdf');
 				expect(warnSpy).toHaveBeenCalledWith('GeoResources could not be fetched from backend. Using fallback geoResources ...');
@@ -356,13 +356,34 @@ describe('GeoResourceService', () => {
 		});
 	});
 
+	describe('getKeywords', () => {
+		it('returns the auth roles as keywords', async () => {
+			const geoResourceId = 'id';
+			const geoResource = { restricted: true, authRoles: ['Foo', 'Bar'] };
+			const instanceUnderTest = setup();
+			spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+
+			expect(instanceUnderTest.getKeywords(geoResourceId)).toEqual(['Foo', 'Bar']);
+		});
+		describe('and GeoResource is unknown', () => {
+			it('returns an empty list', async () => {
+				spyOn(authService, 'isSignedIn').and.returnValue(true);
+				const geoResourceId = 'id';
+				const instanceUnderTest = setup();
+				spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(null);
+
+				expect(instanceUnderTest.getKeywords(geoResourceId)).toEqual([]);
+			});
+		});
+	});
+
 	describe('getAuthResponseInterceptorForGeoResource', () => {
 		describe('and GeoResource is known', () => {
 			it('returns a response interceptor for that GeoResource', async () => {
 				const geoResourceId = 'id';
 				const geoResource = { authRoles: ['TEST'] };
 				const responseInterceptor = () => {};
-				const authResponseInterceptorProvider = jasmine.createSpy().withArgs(['TEST']).and.returnValue(responseInterceptor);
+				const authResponseInterceptorProvider = jasmine.createSpy().withArgs(['TEST'], geoResourceId).and.returnValue(responseInterceptor);
 				const instanceUnderTest = setup(null, null, authResponseInterceptorProvider);
 				spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
 
@@ -375,7 +396,7 @@ describe('GeoResourceService', () => {
 				it('returns `false`', async () => {
 					const geoResourceId = 'id';
 					const responseInterceptor = () => {};
-					const authResponseInterceptorProvider = jasmine.createSpy().withArgs([]).and.returnValue(responseInterceptor);
+					const authResponseInterceptorProvider = jasmine.createSpy().withArgs([], geoResourceId).and.returnValue(responseInterceptor);
 					const instanceUnderTest = setup(null, null, authResponseInterceptorProvider);
 					spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(null);
 

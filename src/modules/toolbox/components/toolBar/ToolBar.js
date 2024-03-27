@@ -13,6 +13,7 @@ const Update_IsOpen = 'update_isOpen';
 const Update_Fetching = 'update_fetching';
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
 const Update_ToolId = 'update_toolid';
+const Update_Auth = 'update_auth';
 
 /**
  *
@@ -22,6 +23,10 @@ const Update_ToolId = 'update_toolid';
  * @author taulinger
  */
 export class ToolBar extends MvuElement {
+	#authService;
+	#environmentService;
+	#translationService;
+
 	constructor() {
 		super({
 			isOpen: true,
@@ -31,13 +36,15 @@ export class ToolBar extends MvuElement {
 			toolId: null
 		});
 
-		const { EnvironmentService: environmentService, TranslationService: translationService } = $injector.inject(
-			'EnvironmentService',
-			'TranslationService'
-		);
+		const {
+			EnvironmentService: environmentService,
+			TranslationService: translationService,
+			AuthService: authService
+		} = $injector.inject('EnvironmentService', 'TranslationService', 'AuthService');
 
-		this._environmentService = environmentService;
-		this._translationService = translationService;
+		this.#environmentService = environmentService;
+		this.#translationService = translationService;
+		this.#authService = authService;
 	}
 
 	update(type, data, model) {
@@ -50,6 +57,8 @@ export class ToolBar extends MvuElement {
 				return { ...model, ...data };
 			case Update_ToolId:
 				return { ...model, toolId: data };
+			case Update_Auth:
+				return { ...model, signedIn: data };
 		}
 	}
 
@@ -66,6 +75,10 @@ export class ToolBar extends MvuElement {
 			(state) => state.tools.current,
 			(current) => this.signal(Update_ToolId, current)
 		);
+		this.observe(
+			(state) => state.auth.signedIn,
+			(signedIn) => this.signal(Update_Auth, signedIn)
+		);
 
 		if (this.getModel().isPortrait || !this.getModel().hasMinWidth) {
 			this.signal(Update_IsOpen, false);
@@ -76,7 +89,7 @@ export class ToolBar extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { isFetching, isPortrait, hasMinWidth, isOpen, toolId } = model;
+		const { isFetching, isPortrait, hasMinWidth, isOpen, toolId, signedIn } = model;
 
 		const getOrientationClass = () => {
 			return isPortrait ? 'is-portrait' : 'is-landscape';
@@ -98,12 +111,20 @@ export class ToolBar extends MvuElement {
 			return toolId === id ? 'is-active' : '';
 		};
 
-		const getDemoClass = () => {
-			return this._environmentService.isStandalone() ? 'is-demo' : '';
+		const getBadgeText = () => {
+			return this.#environmentService.isStandalone()
+				? translate('toolbox_toolbar_logo_badge_standalone')
+				: signedIn
+					? this.#authService.getRoles().join(' ')
+					: translate('toolbox_toolbar_logo_badge');
 		};
 
-		const getBadgeText = () => {
-			return this._environmentService.isStandalone() ? translate('header_logo_badge_standalone') : translate('header_logo_badge');
+		const getBadgeClass = () => {
+			return signedIn ? 'badge-signed-in' : 'badge-default';
+		};
+
+		const getDemoClass = () => {
+			return this.#environmentService.isStandalone() ? 'is-demo' : '';
 		};
 
 		const toggleTool = (id) => {
@@ -116,7 +137,7 @@ export class ToolBar extends MvuElement {
 			return isFetching ? 'animated-action-button__border__running' : '';
 		};
 
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key) => this.#translationService.translate(key);
 
 		return html`
 			<style>
@@ -136,7 +157,7 @@ export class ToolBar extends MvuElement {
 					<div class="action-button__icon">
 						<div class="ba"></div>
 					</div>
-					<div class="toolbar__logo-badge">${getBadgeText()}</div>
+					<div class="toolbar__logo-badge ${getBadgeClass()}">${getBadgeText()}</div>
 				</button>
 				<div class="tool-bar ${getOverlayClass()}">
 					<button
@@ -173,7 +194,7 @@ export class ToolBar extends MvuElement {
 	}
 
 	isRenderingSkipped() {
-		return this._environmentService.isEmbedded();
+		return this.#environmentService.isEmbedded();
 	}
 
 	static get tag() {

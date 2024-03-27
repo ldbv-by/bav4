@@ -1,10 +1,15 @@
 /**
  * @module modules/olMap/utils/olGeometryUtils
  */
-import { Point, LineString, Polygon, LinearRing, Circle, MultiLineString, Geometry } from 'ol/geom';
+import { Point, LineString, Polygon, LinearRing, MultiLineString, Geometry } from 'ol/geom';
 import { isNumber } from '../../../utils/checks';
 import { $injector } from '../../../injection/index';
 
+/**
+ * Key indicating that its value is a unit of length calculated in a local projection.
+ * @constant
+ * @type {string}
+ */
 export const PROJECTED_LENGTH_GEOMETRY_PROPERTY = 'projectedLength';
 
 /**
@@ -106,94 +111,6 @@ export const getBoundingBoxFrom = (centerCoordinate, size) => {
 		centerCoordinate[0] + size.width / 2, // maxX
 		centerCoordinate[1] + size.height / 2 // maxY
 	];
-};
-
-/**
- * Calculates the area of the geometry in the best suited CoordinateRepresentation and map projection.
- * If the map projection has a global scope, the area is calculated as geodetic area.
- * @function
- * @param {Geometry} geometry the area-like geometry, to calculate with
- * @returns {number} the calculated length or 0 if the geometry-object is not area-like
- */
-export const getProjectedArea = (geometry) => {
-	const { CoordinateService: coordinateService, MapService: mapService } = $injector.inject('CoordinateService', 'MapService');
-	const transform = (geometry, srid) => {
-		return geometry.clone().transform(`EPSG:${mapService.getSrid()}`, `EPSG:${srid}`);
-	};
-
-	const getLineStrings = (geometry) => {
-		if (!(geometry instanceof Polygon) && !(geometry instanceof Circle) && !(geometry instanceof LinearRing)) {
-			return [];
-		}
-
-		if (geometry instanceof LinearRing) {
-			return [geometry];
-		}
-		return geometry.getLinearRings();
-	};
-
-	const getAreaRepresentation = (lineStrings) => {
-		if (Array.isArray(lineStrings) && lineStrings.length > 0) {
-			const coordinateRepresentation = mapService.getCoordinateRepresentations(lineStrings[0].getCoordinates())[0];
-
-			return coordinateRepresentation.global
-				? {
-						coordinates: lineStrings.map((l) => l.getCoordinates()),
-						coordinateRepresentation: mapService.getCoordinateRepresentations().find((cr) => cr.code === mapService.getSrid())
-					}
-				: {
-						coordinates: lineStrings.map((l) => transform(l, coordinateRepresentation.code).getCoordinates()),
-						coordinateRepresentation: coordinateRepresentation
-					};
-		}
-		return {
-			coordinates: null,
-			coordinateRepresentation: null
-		};
-	};
-
-	const { coordinates, coordinateRepresentation } = getAreaRepresentation(getLineStrings(geometry));
-	return coordinates ? coordinateService.getArea(coordinates, coordinateRepresentation) : 0;
-};
-
-/**
- * Calculates the length of the geometry in the best suited CoordinateRepresentation and map projection.
- * If the map projection has a global scope, the length is calculated as geodetic length.
- *
- * @function
- * @param {Geometry} geometry the geometry, to calculate with
- * @returns {number} the calculated length or 0 if the geometry-object is not a LineString/LinearRing/Polygon
- */
-export const getProjectedLength = (geometry) => {
-	const { CoordinateService: coordinateService, MapService: mapService } = $injector.inject('CoordinateService', 'MapService');
-	const transform = (geometry, srid) => {
-		return geometry.clone().transform(`EPSG:${mapService.getSrid()}`, `EPSG:${srid}`);
-	};
-	const getLengthRepresentation = (lineString) => {
-		if (lineString) {
-			const coordinateRepresentation = mapService.getCoordinateRepresentations(lineString.getCoordinates())[0];
-
-			return coordinateRepresentation.global
-				? {
-						coordinates: lineString.getCoordinates(),
-						coordinateRepresentation: mapService.getCoordinateRepresentations().find((cr) => cr.code === mapService.getSrid())
-					}
-				: {
-						coordinates: transform(lineString, coordinateRepresentation.code).getCoordinates(),
-						coordinateRepresentation: coordinateRepresentation
-					};
-		}
-		return {
-			coordinates: null,
-			coordinateRepresentation: null
-		};
-	};
-
-	if (geometry) {
-		const { coordinates, coordinateRepresentation } = getLengthRepresentation(getLineString(geometry));
-		return coordinates ? coordinateService.getLength(coordinates, coordinateRepresentation) : 0;
-	}
-	return 0;
 };
 
 /**
@@ -423,6 +340,7 @@ export const isValidGeometry = (geometry) => {
  * @returns {module:modules/olMap/utils/olGeometryUtils~GeometryStats}
  */
 export const getStats = (geometry) => {
+	const { MapService: mapService } = $injector.inject('MapService');
 	const stats = {
 		coordinate: null,
 		azimuth: null,
@@ -434,22 +352,40 @@ export const getStats = (geometry) => {
 		return { ...stats, coordinate: geometry.getCoordinates() };
 	}
 	if (geometry instanceof LineString) {
-		return { ...stats, azimuth: canShowAzimuthCircle(geometry) ? getAzimuth(geometry) : null, length: getProjectedLength(geometry) };
+		return {
+			...stats,
+			azimuth: canShowAzimuthCircle(geometry) ? getAzimuth(geometry) : null,
+			length: mapService.calcLength(geometry.getCoordinates())
+		};
 	}
 	if (geometry instanceof MultiLineString) {
 		return {
 			...stats,
-			length: geometry.getLineStrings().reduce((partialLength, lineString) => partialLength + getProjectedLength(lineString), 0)
+			length: geometry.getLineStrings().reduce((partialLength, lineString) => partialLength + mapService.calcLength(lineString.getCoordinates()), 0)
 		};
 	}
 	if (geometry instanceof Polygon) {
-		return { ...stats, length: getProjectedLength(geometry), area: getProjectedArea(geometry) };
+		return {
+			...stats,
+			length: mapService.calcLength(getLineString(geometry).getCoordinates()),
+			area: mapService.calcArea(geometry.getCoordinates())
+		};
 	}
 	return stats;
 };
 
-export const PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857 = 17.5; /**In map units, adopted from v3 and adjusted to 3857 */
-export const PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES = 1000; /**Adopted from v3  */
+/**
+ * In map units, adopted from v3 and adjusted to 3857
+ * @constant
+ * @type {number}
+ */
+export const PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857 = 17.5;
+
+/** Adopted from v3
+ * @constant
+ * @type {number}
+ */
+export const PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES = 1000;
 
 /**
  * Creates a simplified version of this geometry.

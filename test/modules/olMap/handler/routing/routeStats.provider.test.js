@@ -150,19 +150,22 @@ const createSimpleGhRoute = (vehicle = null, surface = null, roadClass = null, t
 		]
 	};
 };
-// profileStats objects reduced the used properties
+// profileStats objects reduced to the used properties
 const evenProfileStats = {
 	sumUp: 50,
-	sumDown: 50
+	sumDown: 50,
+	linearDistance: 42
 };
 const downHillProfileStats = {
 	sumUp: 600,
-	sumDown: 300
+	sumDown: 300,
+	linearDistance: 42
 };
 
 const upHillProfileStats = {
 	sumUp: 300,
-	sumDown: 600
+	sumDown: 600,
+	linearDistance: 42
 };
 describe('Route statistics provider', () => {
 	describe('Bvv route statistics provider', () => {
@@ -170,20 +173,8 @@ describe('Route statistics provider', () => {
 			getValue: (value) => (value === 'DEFAULT_LANG' ? 'de' : value)
 		};
 
-		const coordinateServiceMock = {
-			getLength() {}
-		};
-
-		const coordinateRepresentation = { global: false, code: 25832 };
-		const mapServiceMock = {
-			getCoordinateRepresentations: () => [coordinateRepresentation]
-		};
-
 		beforeAll(() => {
-			$injector
-				.registerSingleton('ConfigService', configService)
-				.registerSingleton('CoordinateService', coordinateServiceMock)
-				.registerSingleton('MapService', mapServiceMock);
+			$injector.registerSingleton('ConfigService', configService);
 		});
 
 		describe('when route and profile stats is given', () => {
@@ -192,8 +183,6 @@ describe('Route statistics provider', () => {
 			});
 
 			it('calculates the statistics for a hike route', async () => {
-				const coordinatesServiceSpy = spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
-				const mapServiceSpy = spyOn(mapServiceMock, 'getCoordinateRepresentations').and.callThrough();
 				const hikeRoute = createSimpleGhRoute('hike');
 
 				const stats = bvvRouteStatsProvider(hikeRoute, evenProfileStats);
@@ -203,14 +192,9 @@ describe('Route statistics provider', () => {
 				expect(stats.twoDiff).toEqual([50, 50]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
-
-				expect(coordinatesServiceSpy).toHaveBeenCalledWith(jasmine.any(Array), coordinateRepresentation);
-				expect(mapServiceSpy).toHaveBeenCalledWith(jasmine.any(Array));
 			});
 
 			it('calculates the statistics for a bvv-hike route', async () => {
-				const coordinatesServiceSpy = spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
-				const mapServiceSpy = spyOn(mapServiceMock, 'getCoordinateRepresentations').and.callThrough();
 				const hikeRoute = createSimpleGhRoute('bvv-hike');
 
 				const stats = bvvRouteStatsProvider(hikeRoute, evenProfileStats);
@@ -220,14 +204,9 @@ describe('Route statistics provider', () => {
 				expect(stats.twoDiff).toEqual([50, 50]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
-
-				expect(coordinatesServiceSpy).toHaveBeenCalledWith(jasmine.any(Array), coordinateRepresentation);
-				expect(mapServiceSpy).toHaveBeenCalledWith(jasmine.any(Array));
 			});
 
 			it('calculates the statistics for a bayernnetz-hike route', async () => {
-				const coordinatesServiceSpy = spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
-				const mapServiceSpy = spyOn(mapServiceMock, 'getCoordinateRepresentations').and.callThrough();
 				const hikeRoute = createSimpleGhRoute('bvv-hike');
 
 				const stats = bvvRouteStatsProvider(hikeRoute, evenProfileStats);
@@ -237,14 +216,9 @@ describe('Route statistics provider', () => {
 				expect(stats.twoDiff).toEqual([50, 50]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
-
-				expect(coordinatesServiceSpy).toHaveBeenCalledWith(jasmine.any(Array), coordinateRepresentation);
-				expect(mapServiceSpy).toHaveBeenCalledWith(jasmine.any(Array));
 			});
 
 			it('calculates the statistics for a bike route', async () => {
-				const coordinatesServiceSpy = spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
-				const mapServiceSpy = spyOn(mapServiceMock, 'getCoordinateRepresentations').and.callThrough();
 				const bikeRoute = createSimpleGhRoute('bike');
 
 				const stats = bvvRouteStatsProvider(bikeRoute, evenProfileStats);
@@ -254,14 +228,9 @@ describe('Route statistics provider', () => {
 				expect(stats.twoDiff).toEqual([50, 50]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
-
-				expect(coordinatesServiceSpy).toHaveBeenCalledWith(jasmine.any(Array), coordinateRepresentation);
-				expect(mapServiceSpy).toHaveBeenCalledWith(jasmine.any(Array));
 			});
 
 			it('calculates the statistics for a bvv-bike route', async () => {
-				const coordinatesServiceSpy = spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
-				const mapServiceSpy = spyOn(mapServiceMock, 'getCoordinateRepresentations').and.callThrough();
 				const bikeRoute = createSimpleGhRoute('bvv-bike');
 
 				const stats = bvvRouteStatsProvider(bikeRoute, evenProfileStats);
@@ -271,14 +240,9 @@ describe('Route statistics provider', () => {
 				expect(stats.twoDiff).toEqual([50, 50]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
-
-				expect(coordinatesServiceSpy).toHaveBeenCalledWith(jasmine.any(Array), coordinateRepresentation);
-				expect(mapServiceSpy).toHaveBeenCalledWith(jasmine.any(Array));
 			});
 
 			it('calculates the statistics for a bayernnetz-bike route', async () => {
-				const coordinatesServiceSpy = spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
-				const mapServiceSpy = spyOn(mapServiceMock, 'getCoordinateRepresentations').and.callThrough();
 				const bikeRoute = createSimpleGhRoute('bayernnetz-bike');
 
 				const stats = bvvRouteStatsProvider(bikeRoute, evenProfileStats);
@@ -288,14 +252,9 @@ describe('Route statistics provider', () => {
 				expect(stats.twoDiff).toEqual([50, 50]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
-
-				expect(coordinatesServiceSpy).toHaveBeenCalledWith(jasmine.any(Array), coordinateRepresentation);
-				expect(mapServiceSpy).toHaveBeenCalledWith(jasmine.any(Array));
 			});
 
 			it('calculates the statistics for a mtb route', async () => {
-				const coordinatesServiceSpy = spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
-				const mapServiceSpy = spyOn(mapServiceMock, 'getCoordinateRepresentations').and.callThrough();
 				const mtbRoute = createSimpleGhRoute('mtb');
 
 				const stats = bvvRouteStatsProvider(mtbRoute, evenProfileStats);
@@ -305,14 +264,9 @@ describe('Route statistics provider', () => {
 				expect(stats.twoDiff).toEqual([50, 50]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
-
-				expect(coordinatesServiceSpy).toHaveBeenCalledWith(jasmine.any(Array), coordinateRepresentation);
-				expect(mapServiceSpy).toHaveBeenCalledWith(jasmine.any(Array));
 			});
 
 			it('calculates the statistics for a bvv-mtb route', async () => {
-				const coordinatesServiceSpy = spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
-				const mapServiceSpy = spyOn(mapServiceMock, 'getCoordinateRepresentations').and.callThrough();
 				const mtbRoute = createSimpleGhRoute('bvv-mtb');
 
 				const stats = bvvRouteStatsProvider(mtbRoute, evenProfileStats);
@@ -322,14 +276,9 @@ describe('Route statistics provider', () => {
 				expect(stats.twoDiff).toEqual([50, 50]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
-
-				expect(coordinatesServiceSpy).toHaveBeenCalledWith(jasmine.any(Array), coordinateRepresentation);
-				expect(mapServiceSpy).toHaveBeenCalledWith(jasmine.any(Array));
 			});
 
 			it('calculates the statistics for a bayernnetz-mtb route', async () => {
-				const coordinatesServiceSpy = spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
-				const mapServiceSpy = spyOn(mapServiceMock, 'getCoordinateRepresentations').and.callThrough();
 				const mtbRoute = createSimpleGhRoute('bayernnetz-mtb');
 
 				const stats = bvvRouteStatsProvider(mtbRoute, evenProfileStats);
@@ -339,14 +288,9 @@ describe('Route statistics provider', () => {
 				expect(stats.twoDiff).toEqual([50, 50]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
-
-				expect(coordinatesServiceSpy).toHaveBeenCalledWith(jasmine.any(Array), coordinateRepresentation);
-				expect(mapServiceSpy).toHaveBeenCalledWith(jasmine.any(Array));
 			});
 
 			it('calculates the statistics for a racingbike route', async () => {
-				const coordinatesServiceSpy = spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
-				const mapServiceSpy = spyOn(mapServiceMock, 'getCoordinateRepresentations').and.callThrough();
 				const racingbikeRoute = createSimpleGhRoute('racingbike');
 
 				const stats = bvvRouteStatsProvider(racingbikeRoute, evenProfileStats);
@@ -356,14 +300,9 @@ describe('Route statistics provider', () => {
 				expect(stats.twoDiff).toEqual([50, 50]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
-
-				expect(coordinatesServiceSpy).toHaveBeenCalledWith(jasmine.any(Array), coordinateRepresentation);
-				expect(mapServiceSpy).toHaveBeenCalledWith(jasmine.any(Array));
 			});
 
 			it('calculates the statistics for a bvv-racingbike route', async () => {
-				const coordinatesServiceSpy = spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
-				const mapServiceSpy = spyOn(mapServiceMock, 'getCoordinateRepresentations').and.callThrough();
 				const racingbikeRoute = createSimpleGhRoute('bvv-racingbike');
 
 				const stats = bvvRouteStatsProvider(racingbikeRoute, evenProfileStats);
@@ -373,14 +312,9 @@ describe('Route statistics provider', () => {
 				expect(stats.twoDiff).toEqual([50, 50]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
-
-				expect(coordinatesServiceSpy).toHaveBeenCalledWith(jasmine.any(Array), coordinateRepresentation);
-				expect(mapServiceSpy).toHaveBeenCalledWith(jasmine.any(Array));
 			});
 
 			it('calculates the statistics for a bayernnetz-racingbike route', async () => {
-				const coordinatesServiceSpy = spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
-				const mapServiceSpy = spyOn(mapServiceMock, 'getCoordinateRepresentations').and.callThrough();
 				const racingbikeRoute = createSimpleGhRoute('bayernnetz-racingbike');
 
 				const stats = bvvRouteStatsProvider(racingbikeRoute, evenProfileStats);
@@ -390,14 +324,9 @@ describe('Route statistics provider', () => {
 				expect(stats.twoDiff).toEqual([50, 50]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
-
-				expect(coordinatesServiceSpy).toHaveBeenCalledWith(jasmine.any(Array), coordinateRepresentation);
-				expect(mapServiceSpy).toHaveBeenCalledWith(jasmine.any(Array));
 			});
 
 			it('calculates the statistics of a route with uphill profile', async () => {
-				const coordinatesServiceSpy = spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
-				const mapServiceSpy = spyOn(mapServiceMock, 'getCoordinateRepresentations').and.callThrough();
 				const racingbikeRoute = createSimpleGhRoute('racingbike');
 
 				const stats = bvvRouteStatsProvider(racingbikeRoute, upHillProfileStats);
@@ -407,14 +336,9 @@ describe('Route statistics provider', () => {
 				expect(stats.twoDiff).toEqual([300, 600]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
-
-				expect(coordinatesServiceSpy).toHaveBeenCalledWith(jasmine.any(Array), coordinateRepresentation);
-				expect(mapServiceSpy).toHaveBeenCalledWith(jasmine.any(Array));
 			});
 
 			it('calculates the statistics of a route with downhill profile', async () => {
-				const coordinatesServiceSpy = spyOn(coordinateServiceMock, 'getLength').and.returnValue(42);
-				const mapServiceSpy = spyOn(mapServiceMock, 'getCoordinateRepresentations').and.callThrough();
 				const mtbRoute = createSimpleGhRoute('bvv-mtb');
 
 				const stats = bvvRouteStatsProvider(mtbRoute, downHillProfileStats);
@@ -424,9 +348,6 @@ describe('Route statistics provider', () => {
 				expect(stats.twoDiff).toEqual([600, 300]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
-
-				expect(coordinatesServiceSpy).toHaveBeenCalledWith(jasmine.any(Array), coordinateRepresentation);
-				expect(mapServiceSpy).toHaveBeenCalledWith(jasmine.any(Array));
 			});
 
 			it('ignores routedetails with missing property value', async () => {
@@ -716,18 +637,13 @@ describe('Route statistics provider', () => {
 
 		describe('when route is given', () => {
 			it('calculates the statistics for a route', async () => {
-				const coordinatesServiceSpy = spyOn(coordinateServiceMock, 'getLength').and.returnValue(1234);
-				const mapServiceSpy = spyOn(mapServiceMock, 'getCoordinateRepresentations').and.callThrough();
-				const stats = bvvRouteStatsProvider(ghRoute, null);
+				const stats = bvvRouteStatsProvider(ghRoute, { linearDistance: 1234 });
 
 				expect(stats.time).toBe(4200000);
 				expect(stats.dist).toBe(1234);
 				expect(stats.twoDiff).toEqual([]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
-
-				expect(coordinatesServiceSpy).toHaveBeenCalledWith(jasmine.any(Array), coordinateRepresentation);
-				expect(mapServiceSpy).toHaveBeenCalledWith(jasmine.any(Array));
 			});
 		});
 	});

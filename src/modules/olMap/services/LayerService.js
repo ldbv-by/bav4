@@ -6,7 +6,7 @@ import { GeoResourceAuthenticationType, GeoResourceTypes } from '../../../domain
 import { Image as ImageLayer, Group as LayerGroup, Layer } from 'ol/layer';
 import TileLayer from 'ol/layer/Tile';
 import { XYZ as XYZSource } from 'ol/source';
-import { getBvvBaaImageLoadFunction } from '../utils/baaImageLoadFunction.provider';
+import { getBvvBaaImageLoadFunction, getBvvTileLoadFunction } from '../utils/olLoadFunction.provider';
 import MapLibreLayer from '@geoblocks/ol-maplibre-layer';
 import { AdvWmtsTileGrid } from '../ol/tileGrid/AdvWmtsTileGrid';
 import { Projection } from 'ol/proj';
@@ -14,11 +14,18 @@ import ImageWMS from 'ol/source/ImageWMS.js';
 
 /**
  * A function that returns a `ol.image.LoadFunction` for loading also restricted images via basic access authentication
- * @typedef {Function} baaImageLoadFunctionProvider
+ * @typedef {Function} imageLoadFunctionProvider
  * @param {string} geoResourceId The id of the corresponding GeoResource
- * @param {module:domain/credentialDef~Credential} [credential] The credential for basic access authentication (when BAA is requested)
- * @param {number[]} [maxSize] Maximum width and height of the requested image in px
+ * @param {module:domain/credentialDef~Credential|null} [credential] The credential for basic access authentication (when BAA is requested) or `null` or `undefined`
+ * @param {number[]|null} [maxSize] Maximum width and height of the requested image in px or `null` or `undefined`
  * @returns {Function} ol.image.LoadFunction
+ */
+
+/**
+ * A function that returns a `ol.tile.LoadFunction`.
+ * @typedef {Function} tileLoadFunctionProvider
+ * @param {string} geoResourceId The id of the corresponding GeoResource
+ * @returns {Function} ol.tile.LoadFunction
  */
 
 /**
@@ -28,10 +35,11 @@ import ImageWMS from 'ol/source/ImageWMS.js';
  */
 export class LayerService {
 	/**
-	 * @param {module:modules/olMap/services/LayerService~baaImageLoadFunctionProvider} [baaImageLoadFunctionProvider=getBvvBaaImageLoadFunction]
+	 * @param {module:modules/olMap/services/LayerService~imageLoadFunctionProvider} [imageLoadFunctionProvider=getBvvBaaImageLoadFunction]
 	 */
-	constructor(baaImageLoadFunctionProvider = getBvvBaaImageLoadFunction) {
-		this._baaImageLoadFunctionProvider = baaImageLoadFunctionProvider;
+	constructor(imageLoadFunctionProvider = getBvvBaaImageLoadFunction, tileLoadFunctionProvider = getBvvTileLoadFunction) {
+		this._imageLoadFunctionProvider = imageLoadFunctionProvider;
+		this._tileLoadFunctionProvider = tileLoadFunctionProvider;
 	}
 
 	/**
@@ -43,10 +51,11 @@ export class LayerService {
 	 */
 	toOlLayer(id, geoResource, olMap) {
 		const {
-			GeoResourceService: georesourceService,
+			GeoResourceService: geoResourceService,
 			VectorLayerService: vectorLayerService,
+			RtVectorLayerService: rtVectorLayerService,
 			BaaCredentialService: baaCredentialService
-		} = $injector.inject('GeoResourceService', 'VectorLayerService', 'BaaCredentialService');
+		} = $injector.inject('GeoResourceService', 'VectorLayerService', 'BaaCredentialService', 'RtVectorLayerService');
 
 		const { minZoom, maxZoom, opacity } = geoResource;
 
@@ -75,11 +84,11 @@ export class LayerService {
 						if (!credential) {
 							throw new Error(`No credential available for GeoResource with id '${geoResource.id}' and url '${geoResource.url}'`);
 						}
-						imageWmsSource.setImageLoadFunction(this._baaImageLoadFunctionProvider(geoResource.id, credential));
+						imageWmsSource.setImageLoadFunction(this._imageLoadFunctionProvider(geoResource.id, credential, geoResource.maxSize));
 						break;
 					}
 					default: {
-						imageWmsSource.setImageLoadFunction(this._baaImageLoadFunctionProvider(geoResource.id));
+						imageWmsSource.setImageLoadFunction(this._imageLoadFunctionProvider(geoResource.id, null, geoResource.maxSize));
 					}
 				}
 
@@ -98,7 +107,8 @@ export class LayerService {
 				const xyzSource = () => {
 					const config = {
 						url: Array.isArray(geoResource.urls) ? undefined : geoResource.urls,
-						urls: Array.isArray(geoResource.urls) ? geoResource.urls : undefined
+						urls: Array.isArray(geoResource.urls) ? geoResource.urls : undefined,
+						tileLoadFunction: this._tileLoadFunctionProvider(geoResource.id)
 					};
 					switch (geoResource.tileGridId) {
 						case 'adv_wmts':
@@ -126,7 +136,10 @@ export class LayerService {
 			}
 
 			case GeoResourceTypes.VECTOR: {
-				return vectorLayerService.createVectorLayer(id, geoResource, olMap);
+				return vectorLayerService.createLayer(id, geoResource, olMap);
+			}
+			case GeoResourceTypes.RT_VECTOR: {
+				return rtVectorLayerService.createLayer(id, geoResource, olMap);
 			}
 
 			case GeoResourceTypes.VT: {
@@ -146,7 +159,7 @@ export class LayerService {
 				const layerGroup = new LayerGroup({
 					id: id,
 					opacity: opacity,
-					layers: geoResource.geoResourceIds.map((id) => this.toOlLayer(id, georesourceService.byId(id))),
+					layers: geoResource.geoResourceIds.map((id) => this.toOlLayer(id, geoResourceService.byId(id), olMap)),
 					minZoom: minZoom ?? undefined,
 					maxZoom: maxZoom ?? undefined
 				});
@@ -162,6 +175,6 @@ export class LayerService {
 				return layerGroup;
 			}
 		}
-		throw new Error(geoResource.getType() + ' currently not supported');
+		throw new Error(`GeoResource type "${geoResource.getType().description}" currently not supported`);
 	}
 }

@@ -4,8 +4,14 @@ import { GlobalErrorPlugin } from '../../src/plugins/GlobalErrorPlugin.js';
 import { notificationReducer } from '../../src/store/notifications/notifications.reducer.js';
 import { UnavailableGeoResourceError } from '../../src/domain/errors.js';
 import { LevelTypes } from '../../src/store/notifications/notifications.action.js';
+import { observe } from '../../src/utils/storeUtils.js';
 
 describe('GlobalErrorPlugin', () => {
+	const geoResourceService = {
+		byId() {
+			return null;
+		}
+	};
 	const setup = () => {
 		const store = TestUtils.setupStoreAndDi(
 			{},
@@ -13,9 +19,17 @@ describe('GlobalErrorPlugin', () => {
 				notifications: notificationReducer
 			}
 		);
-		$injector.registerSingleton('TranslationService', { translate: (key, params = []) => `${key}${params.length ? ` [${params.join(',')}]` : ''}` });
+		$injector
+			.registerSingleton('TranslationService', { translate: (key, params = []) => `${key}${params.length ? ` [${params.join(',')}]` : ''}` })
+			.registerSingleton('GeoResourceService', geoResourceService);
 		return store;
 	};
+
+	describe('class', () => {
+		it('defines constant values', () => {
+			expect(GlobalErrorPlugin.THROTTLE_NOTIFICATION_DELAY_MS).toBe(3000);
+		});
+	});
 
 	describe('register', () => {
 		it('registers a `beforeunload` and a `unhandledrejection` event listener', async () => {
@@ -32,11 +46,15 @@ describe('GlobalErrorPlugin', () => {
 
 	describe('handles different error type', () => {
 		let errors;
+		let instanceUnderTest;
+		let store;
 		/**
 		 * We have to tweak jasmine's global error catching behavior to be able to test our global error handling.
 		 * See also: https://github.com/jasmine/jasmine/blob/main/spec/core/GlobalErrorsSpec.js
 		 */
 		beforeEach(() => {
+			store = setup();
+			instanceUnderTest = new GlobalErrorPlugin();
 			errors = new jasmine.GlobalErrors();
 			errors.setOverrideListener(
 				() => {},
@@ -46,88 +64,158 @@ describe('GlobalErrorPlugin', () => {
 		});
 		afterEach(() => {
 			errors.uninstall();
+			// we need to unregister all event listener, so they won't influence the next test
+			instanceUnderTest._unregisterListeners();
 		});
 
 		describe('UnavailableGeoResourceError', () => {
-			it('handles an UnavailableGeoResourceError with code 401', async () => {
-				const store = setup();
-				const message = 'message';
-				const geoResourceId = 'geoResourceId';
-				const httpStatus = 401;
-				const instanceUnderTest = new GlobalErrorPlugin();
-				await instanceUnderTest.register(store);
-				const event = new ErrorEvent('error', { error: new UnavailableGeoResourceError(message, geoResourceId, httpStatus) });
+			describe('and the GeoResource is known', () => {
+				it('handles an UnavailableGeoResourceError with code 401', async () => {
+					const message = 'message';
+					const geoResourceId = 'geoResourceId';
+					const geoResourceLabel = 'geoResourceLabel';
+					const httpStatus = 401;
+					spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue({ label: geoResourceLabel });
+					await instanceUnderTest.register(store);
+					const event = new ErrorEvent('error', { error: new UnavailableGeoResourceError(message, geoResourceId, httpStatus) });
 
-				window.dispatchEvent(event);
+					window.dispatchEvent(event);
 
-				expect(store.getState().notifications.latest.payload.content).toBe(
-					'global_geoResource_not_available [geoResourceId,global_geoResource_unauthorized]'
-				);
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+					expect(store.getState().notifications.latest.payload.content).toBe(
+						'global_geoResource_not_available [geoResourceLabel,global_geoResource_unauthorized]'
+					);
+					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				});
+
+				it('handles an UnavailableGeoResourceError with code 403', async () => {
+					const message = 'message';
+					const geoResourceId = 'geoResourceId';
+					const geoResourceLabel = 'geoResourceLabel';
+					const httpStatus = 403;
+					spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue({ label: geoResourceLabel });
+					await instanceUnderTest.register(store);
+					const event = new ErrorEvent('error', { error: new UnavailableGeoResourceError(message, geoResourceId, httpStatus) });
+
+					window.dispatchEvent(event);
+
+					expect(store.getState().notifications.latest.payload.content).toBe(
+						'global_geoResource_not_available [geoResourceLabel,global_geoResource_forbidden]'
+					);
+					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				});
+
+				it('handles an UnavailableGeoResourceError without code', async () => {
+					const message = 'message';
+					const geoResourceId = 'geoResourceId';
+					const geoResourceLabel = 'geoResourceLabel';
+					spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue({ label: geoResourceLabel });
+					await instanceUnderTest.register(store);
+					const event = new ErrorEvent('error', { error: new UnavailableGeoResourceError(message, geoResourceId) });
+
+					window.dispatchEvent(event);
+
+					expect(store.getState().notifications.latest.payload.content).toBe('global_geoResource_not_available [geoResourceLabel]');
+					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				});
 			});
 
-			it('handles an UnavailableGeoResourceError with code 403', async () => {
-				const store = setup();
-				const message = 'message';
-				const geoResourceId = 'geoResourceId';
-				const httpStatus = 403;
-				const instanceUnderTest = new GlobalErrorPlugin();
-				await instanceUnderTest.register(store);
-				const event = new ErrorEvent('error', { error: new UnavailableGeoResourceError(message, geoResourceId, httpStatus) });
+			describe('and the GeoResource is unknown', () => {
+				it('handles an UnavailableGeoResourceError with code 401', async () => {
+					const message = 'message';
+					const geoResourceId = 'geoResourceId';
+					const httpStatus = 401;
+					await instanceUnderTest.register(store);
+					const event = new ErrorEvent('error', { error: new UnavailableGeoResourceError(message, geoResourceId, httpStatus) });
 
-				window.dispatchEvent(event);
+					window.dispatchEvent(event);
 
-				expect(store.getState().notifications.latest.payload.content).toBe(
-					'global_geoResource_not_available [geoResourceId,global_geoResource_forbidden]'
-				);
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
-			});
+					expect(store.getState().notifications.latest.payload.content).toBe(
+						'global_geoResource_not_available [geoResourceId,global_geoResource_unauthorized]'
+					);
+					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				});
 
-			it('handles an UnavailableGeoResourceError without code', async () => {
-				const store = setup();
-				const message = 'message';
-				const geoResourceId = 'geoResourceId';
-				const instanceUnderTest = new GlobalErrorPlugin();
-				await instanceUnderTest.register(store);
-				const event = new ErrorEvent('error', { error: new UnavailableGeoResourceError(message, geoResourceId) });
+				it('handles an UnavailableGeoResourceError with code 403', async () => {
+					const message = 'message';
+					const geoResourceId = 'geoResourceId';
+					const httpStatus = 403;
+					await instanceUnderTest.register(store);
+					const event = new ErrorEvent('error', { error: new UnavailableGeoResourceError(message, geoResourceId, httpStatus) });
 
-				window.dispatchEvent(event);
+					window.dispatchEvent(event);
 
-				expect(store.getState().notifications.latest.payload.content).toBe('global_geoResource_not_available [geoResourceId]');
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+					expect(store.getState().notifications.latest.payload.content).toBe(
+						'global_geoResource_not_available [geoResourceId,global_geoResource_forbidden]'
+					);
+					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				});
+
+				it('handles an UnavailableGeoResourceError without code', async () => {
+					const message = 'message';
+					const geoResourceId = 'geoResourceId';
+					await instanceUnderTest.register(store);
+					const event = new ErrorEvent('error', { error: new UnavailableGeoResourceError(message, geoResourceId) });
+
+					window.dispatchEvent(event);
+
+					expect(store.getState().notifications.latest.payload.content).toBe('global_geoResource_not_available [geoResourceId]');
+					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				});
 			});
 		});
 
 		describe('any other Error', () => {
 			describe('synchronously thrown', () => {
 				it('emits an error notification', async () => {
-					const store = setup();
 					const message = 'message';
-					const instanceUnderTest = new GlobalErrorPlugin();
+
 					await instanceUnderTest.register(store);
-					const event = new ErrorEvent('error', { error: new Error(message) });
+					const emitGenericNotificationThrottledSpy = spyOn(instanceUnderTest, '_emitThrottledGenericNotification');
 
-					window.dispatchEvent(event);
-
-					expect(store.getState().notifications.latest.payload.content).toBe('global_generic_exception');
-					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+					window.dispatchEvent(new ErrorEvent('error', { error: new Error(message) }));
+					expect(emitGenericNotificationThrottledSpy).toHaveBeenCalledTimes(1);
 				});
 			});
+
 			describe('thrown by promise rejection', () => {
 				it('emits an error notification', async () => {
-					const store = setup();
 					const message = 'message';
-					const instanceUnderTest = new GlobalErrorPlugin();
 					await instanceUnderTest.register(store);
+					const emitGenericNotificationThrottledSpy = spyOn(instanceUnderTest, '_emitThrottledGenericNotification');
 
 					await expectAsync(Promise.reject(new Error(message)));
-					await TestUtils.timeout();
-					await TestUtils.timeout();
+					await TestUtils.timeout(100 /**give the plugin some iem to catch the error */);
 
-					expect(store.getState().notifications.latest.payload.content).toBe('global_generic_exception');
-					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+					expect(emitGenericNotificationThrottledSpy).toHaveBeenCalledTimes(1);
 				});
 			});
+		});
+	});
+
+	describe('_emitThrottledGenericNotification', () => {
+		let store;
+		let instanceUnderTest;
+
+		beforeEach(() => {
+			store = setup();
+			instanceUnderTest = new GlobalErrorPlugin();
+		});
+		afterEach(() => {
+			// we need to unregister all event listener, so they won't influence the next test
+			instanceUnderTest._unregisterListeners();
+		});
+		it('emits notifications throttled', async () => {
+			const onLatestChanged = jasmine.createSpy();
+			observe(store, (state) => state.notifications.latest, onLatestChanged);
+
+			// call multiple times to test throttling
+			instanceUnderTest._emitThrottledGenericNotification();
+			instanceUnderTest._emitThrottledGenericNotification();
+			instanceUnderTest._emitThrottledGenericNotification();
+
+			expect(onLatestChanged).toHaveBeenCalledTimes(1);
+			expect(store.getState().notifications.latest.payload.content).toBe('global_generic_exception');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
 		});
 	});
 });

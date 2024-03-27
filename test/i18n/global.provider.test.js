@@ -22,10 +22,11 @@ describe('global i18n', () => {
 		expect(map.global_marker_symbol_label).toBe('Marker');
 		expect(map.global_featureInfo_not_available).toBe('FeatureInfo is not available');
 		expect(map.global_routingService_init_exception).toBe('Routing currently not available');
-		expect(map.global_geoResource_not_available(['id'])).toBe('Failed to add a layer for the GeoResource with ID "id"');
-		expect(map.global_geoResource_not_available(['id', 'Reason...'])).toBe('Failed to add a layer for the GeoResource with ID "id" (Reason...)');
+		expect(map.global_geoResource_not_available(['id'])).toBe('Failed to add a layer for the GeoResource "id"');
+		expect(map.global_geoResource_not_available(['id', 'Reason...'])).toBe('Failed to add a layer for the GeoResource "id" (Reason...)');
 		expect(map.global_geoResource_unauthorized).toBe('401 - Unauthorized');
 		expect(map.global_geoResource_forbidden).toBe('403 - Forbidden');
+		expect(map.global_signOut_success).toBe('Signed out successfully');
 	});
 
 	it('provides translation for de', () => {
@@ -49,16 +50,17 @@ describe('global i18n', () => {
 		expect(map.global_marker_symbol_label).toBe('Markierung');
 		expect(map.global_featureInfo_not_available).toBe('FeatureInfo ist nicht verfügbar');
 		expect(map.global_routingService_init_exception).toBe('Die Routing-Funktion steht derzeit leider nicht zur Verfügung');
-		expect(map.global_geoResource_not_available(['id'])).toBe('Es konnte keine Ebene für die GeoRessource mit der ID "id" geladen werden');
+		expect(map.global_geoResource_not_available(['id'])).toBe('Es konnte keine Ebene für die GeoRessource "id" geladen werden');
 		expect(map.global_geoResource_not_available(['id', 'Grund...'])).toBe(
-			'Es konnte keine Ebene für die GeoRessource mit der ID "id" geladen werden (Grund...)'
+			'Es konnte keine Ebene für die GeoRessource "id" geladen werden (Grund...)'
 		);
 		expect(map.global_geoResource_unauthorized).toBe('401 - Fehlende Berechtigung');
 		expect(map.global_geoResource_forbidden).toBe('403 - Zugriff nicht erlaubt');
+		expect(map.global_signOut_success).toBe('Sie haben sich erfolgreich abgemeldet');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 19;
+		const expectedSize = 20;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

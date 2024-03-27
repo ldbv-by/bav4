@@ -61,16 +61,17 @@ export class ChipsPlugin extends BaPlugin {
 
 			// initial update
 			this._updateStore(chips, permanentChips, store.getState());
-			// register observer
+			// register observer for layers s-o-s
 			observe(
 				store,
-				(state) => state,
-				(state) => this._updateStore(chips, permanentChips, state)
+				(state) => state.layers,
+				(_, state) => this._updateStore(chips, permanentChips, state)
 			);
+			// register observer for topics s-o-s
 			observe(
 				store,
-				(state) => state,
-				(state) => this._updateStore(chips, permanentChips, state)
+				(state) => state.topics,
+				(_, state) => this._updateStore(chips, permanentChips, state)
 			);
 		} catch (e) {
 			console.error('Chips configuration is not available.', e);

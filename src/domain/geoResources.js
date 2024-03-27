@@ -3,7 +3,7 @@
  */
 import { $injector } from '../injection';
 import { getDefaultAttribution } from '../services/provider/attribution.provider';
-import { defaultVectorGeoResourceLoaderForUrl } from '../services/provider/geoResource.provider';
+import { getDefaultVectorGeoResourceLoaderForUrl } from '../services/provider/geoResource.provider';
 import { isExternalGeoResourceId } from '../utils/checks';
 
 /**
@@ -37,6 +37,7 @@ export const GeoResourceTypes = Object.freeze({
 	WMS: Symbol.for('wms'),
 	XYZ: Symbol.for('xyz'),
 	VECTOR: Symbol.for('vector'),
+	RT_VECTOR: Symbol.for('rtvector'),
 	VT: Symbol.for('vt'),
 	AGGREGATE: Symbol.for('aggregate'),
 	FUTURE: Symbol.for('future')
@@ -257,9 +258,11 @@ export class GeoResource {
 	 * @returns `this` for chaining
 	 */
 	setAuthRoles(roles) {
-		this._authRoles = [...roles];
-		if (roles.length > 0) {
-			this.setAuthenticationType(GeoResourceAuthenticationType.APPLICATION);
+		if (roles) {
+			this._authRoles = [...roles];
+			if (roles.length > 0) {
+				this.setAuthenticationType(GeoResourceAuthenticationType.APPLICATION);
+			}
 		}
 		return this;
 	}
@@ -329,9 +332,10 @@ export class GeoResource {
 /**
  * An async function that loads a {@link GeoResource}.
  * @async
- * @callback asyncGeoResourceLoader
+ * @typedef {Function} asyncGeoResourceLoader
  * @param {string} id Id of the requested GeoResource
- * @returns {GeoResource}
+ * @returns {GeoResource} the loaded GeoResource
+ * @throws {UnavailableGeoResourceError}
  */
 
 /**
@@ -383,6 +387,7 @@ export class GeoResourceFuture extends GeoResource {
 	 *
 	 * Note: It's up to the loader implementation which properties of the GeoResourceFuture instance are copied to the resolved GeoResource.
 	 * @returns GeoResource
+	 * @throws {UnavailableGeoResourceError} Error of the underlying loader
 	 */
 	async get() {
 		try {
@@ -409,6 +414,7 @@ export class WmsGeoResource extends GeoResource {
 		this._layers = layers;
 		this._format = format;
 		this._extraParams = {};
+		this._maxSize = null;
 	}
 
 	get url() {
@@ -427,8 +433,21 @@ export class WmsGeoResource extends GeoResource {
 		return { ...this._extraParams };
 	}
 
+	get maxSize() {
+		return this._maxSize ? [...this._maxSize] : null;
+	}
+
 	setExtraParams(extraParams) {
-		this._extraParams = { ...extraParams };
+		if (extraParams) {
+			this._extraParams = { ...extraParams };
+		}
+		return this;
+	}
+
+	setMaxSize(maxSize) {
+		if (maxSize) {
+			this._maxSize = [...maxSize];
+		}
 		return this;
 	}
 
@@ -492,7 +511,6 @@ export const VectorSourceType = Object.freeze({
 
 /**
  * GeoResource for vector data.
- * Data could be either loaded externally by Url or internally from a string.
  * @class
  */
 export class VectorGeoResource extends GeoResource {
@@ -571,7 +589,9 @@ export class VectorGeoResource extends GeoResource {
 	}
 
 	setClusterParams(clusterParams) {
-		this._clusterParams = { ...clusterParams };
+		if (clusterParams) {
+			this._clusterParams = { ...clusterParams };
+		}
 		return this;
 	}
 
@@ -593,11 +613,63 @@ export class VectorGeoResource extends GeoResource {
 	 * @returns {GeoResourceFuture}
 	 */
 	static forUrl(id, url, sourceType, label = null) {
-		return new GeoResourceFuture(id, defaultVectorGeoResourceLoaderForUrl(url, sourceType, id, label))
+		return new GeoResourceFuture(id, getDefaultVectorGeoResourceLoaderForUrl(url, sourceType, id, label))
 			.setLabel(label)
 			.onResolve((resolved, future) => {
 				resolved.copyPropertiesFrom(future);
 			});
+	}
+}
+
+/**
+ * GeoResource for real-time vector data.
+ * @class
+ */
+export class RtVectorGeoResource extends GeoResource {
+	/**
+	 * @param {string} id
+	 * @param {String} label
+	 * @param {String} url
+	 * @param {VectorSourceType} sourceType
+	 */
+	constructor(id, label, url, sourceType) {
+		super(id, label);
+		this._url = url;
+		this._sourceType = sourceType;
+		this._clusterParams = {};
+	}
+
+	get url() {
+		return this._url;
+	}
+
+	get sourceType() {
+		return this._sourceType;
+	}
+
+	get clusterParams() {
+		return { ...this._clusterParams };
+	}
+
+	setClusterParams(clusterParams) {
+		if (clusterParams) {
+			this._clusterParams = { ...clusterParams };
+		}
+		return this;
+	}
+
+	/**
+	 * @returns `true` if this RtVectorGeoResource should be displayed clustered
+	 */
+	isClustered() {
+		return !!Object.keys(this._clusterParams).length;
+	}
+
+	/**
+	 * @override
+	 */
+	getType() {
+		return GeoResourceTypes.RT_VECTOR;
 	}
 }
 

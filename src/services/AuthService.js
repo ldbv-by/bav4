@@ -4,7 +4,7 @@
 /**
  * @async
  * @typedef {Function} signInProvider
- * @param {module:domain/credentialDef~Credential} credential
+ * @param {module:domain/credentialDef~Credential} [credential] Optional credential
  * @throws `Error` when sign in was not possible due to a technical error
  * @returns {Array<string>}  An array of roles or an empty array when sign in was not successful
  */
@@ -14,17 +14,24 @@
  * @throws `Error` when sign out was not possible due to a technical error
  * @returns {boolean}  `true` when sign out was successful
  */
+/**
+ * @async
+ * @typedef {Function} initialAuthStatusProvider
+ * @throws `Error` when sign in was not possible due to a technical error
+ * @returns {Array<string>}  An array of roles or an empty array when sign in was not successful
+ */
 
 /**
  * A function that returns an response interceptor for authentication tasks
  * @async
  * @typedef {Function} authResponseInterceptorProvider
- * @param {string[]} [roles] One or more roles the interceptor should show an auth UI for
+ * @param {string[]} roles One or more roles the interceptor should show an auth UI for
+ * @param {string} [identifier] Possible identifier to give the interceptor the chance to detect requests for the same resource
  * @returns {module:services/HttpService~responseInterceptor} the response interceptor
  */
 
 import { setSignedIn, setSignedOut } from '../store/auth/auth.action';
-import { bvvSignInProvider, bvvSignOutProvider } from './provider/auth.provider';
+import { bvvInitialAuthStatusProvider, bvvSignInProvider, bvvSignOutProvider } from './provider/auth.provider';
 
 /**
  * Service for authentication and authorization tasks.
@@ -37,11 +44,25 @@ export class AuthService {
 	 *
 	 * @param {module:services/AuthService~signInProvider} [signInProvider=bvvSignInProvider]
 	 * @param {module:services/AuthService~signOutProvider} [signOutProvider=bvvSignInProvider]
+	 * @param {module:services/AuthService~initialAuthStatusProvider} [initialAuthStatusProvider=bvvInitialAuthStatusProvider]
 	 */
-	constructor(signInProvider = bvvSignInProvider, signOutProvider = bvvSignOutProvider) {
+	constructor(signInProvider = bvvSignInProvider, signOutProvider = bvvSignOutProvider, initialAuthStatusProvider = bvvInitialAuthStatusProvider) {
 		this._singInProvider = signInProvider;
 		this._singOutProvider = signOutProvider;
+		this._initialAuthStatusProvider = initialAuthStatusProvider;
 		this._roles = [];
+	}
+
+	/**
+	 * Initializes the service.
+	 * @async
+	 */
+	async init() {
+		const roles = await this._initialAuthStatusProvider();
+		if (roles.length > 0) {
+			this._roles = [...roles];
+			setSignedIn();
+		}
 	}
 
 	/**
@@ -61,16 +82,18 @@ export class AuthService {
 	}
 
 	/**
-	 * Sign in. Returns `true` if the user is already signed in.
-	 * @param {module:domain/credentialDef~Credential} credential
+	 * Sign in. Returns `true` if the authentication was successful or the user is already signed in.
+	 *
+	 * When no credential is provided, the underlying provider will open a dialog for the user.
+	 * @param {module:domain/credentialDef~Credential} [credential=null] Optional credential
 	 * @returns {Promise<boolean>} `true` if sign in was successful
 	 * @throws Error of the underlying provider
 	 */
-	async signIn(credential) {
+	async signIn(credential = null) {
 		if (!this.isSignedIn()) {
 			const roles = await this._singInProvider(credential);
-			this._roles = [...roles];
-			if (this._roles.length > 0) {
+			if (roles.length > 0) {
+				this._roles = [...roles];
 				setSignedIn();
 				return true;
 			}

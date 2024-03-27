@@ -7,8 +7,7 @@ import {
 	getPartitionDelta,
 	moveParallel,
 	getLineString,
-	PROJECTED_LENGTH_GEOMETRY_PROPERTY,
-	getProjectedLength
+	PROJECTED_LENGTH_GEOMETRY_PROPERTY
 } from './olGeometryUtils';
 import { toContext as toCanvasContext } from 'ol/render';
 import { Fill, Stroke, Style, Circle as CircleStyle, Icon, Text as TextStyle } from 'ol/style';
@@ -412,16 +411,18 @@ const getRulerStyle = () => {
 };
 
 export const renderRulerSegments = (pixelCoordinates, state, contextRenderFunction) => {
+	const { MapService: mapService } = $injector.inject('MapService');
+
 	const geometry = state.geometry.clone();
+	const lineString = getLineString(geometry);
 	const resolution = state.resolution;
 	const pixelRatio = state.pixelRatio;
 
 	const getMeasuredLength = () => {
 		const alreadyMeasuredLength = state.geometry ? state.geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY) : null;
-		return alreadyMeasuredLength ?? getProjectedLength(state.geometry);
+		return alreadyMeasuredLength ?? mapService.calcLength(lineString.getCoordinates());
 	};
 
-	const lineString = getLineString(geometry);
 	const projectedGeometryLength = getMeasuredLength();
 	const delta = getPartitionDelta(projectedGeometryLength, resolution);
 	const partitionLength = delta * lineString.getLength();
