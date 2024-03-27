@@ -74,28 +74,52 @@ describe('AuthPlugin', () => {
 	});
 
 	describe('when auth "signedIn" property changes', () => {
-		it('removes now non-accessible layers', async () => {
-			const layer0 = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0' };
-			const layer1 = { ...createDefaultLayerProperties(), id: 'id1', geoResourceId: 'geoResourceId1' };
-			const store = setup({
-				auth: {
-					signedIn: true
-				},
-				layers: {
-					active: [layer0, layer1]
-				}
-			});
-			spyOn(geoResourceService, 'isAllowed').and.callFake((geoResourceId) => {
-				return geoResourceId === layer1.geoResourceId ? false : true;
-			});
-			const instanceUnderTest = new AuthPlugin();
-			await instanceUnderTest.register(store);
+		describe('triggered by the user', () => {
+			it('removes now non-accessible layers', async () => {
+				const layer0 = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0' };
+				const layer1 = { ...createDefaultLayerProperties(), id: 'id1', geoResourceId: 'geoResourceId1' };
+				const store = setup({
+					auth: {
+						signedIn: true
+					},
+					layers: {
+						active: [layer0, layer1]
+					}
+				});
+				spyOn(geoResourceService, 'isAllowed').and.callFake((geoResourceId) => {
+					return geoResourceId === layer1.geoResourceId ? false : true;
+				});
+				const instanceUnderTest = new AuthPlugin();
+				await instanceUnderTest.register(store);
 
-			setSignedOut();
+				setSignedOut(true);
 
-			expect(store.getState().layers.active.length).toBe(1);
-			expect(store.getState().layers.active[0].id).toBe(layer0.id);
+				expect(store.getState().layers.active.length).toBe(1);
+				expect(store.getState().layers.active[0].id).toBe(layer0.id);
+			});
 		});
+		
+		describe('NOT triggered by the user', () => {
+			it('does nothing', async () => {
+				const layer0 = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0' };
+				const layer1 = { ...createDefaultLayerProperties(), id: 'id1', geoResourceId: 'geoResourceId1' };
+				const store = setup({
+					auth: {
+						signedIn: true
+					},
+					layers: {
+						active: [layer0, layer1]
+					}
+				});
+				const instanceUnderTest = new AuthPlugin();
+				await instanceUnderTest.register(store);
+
+				setSignedOut(false);
+
+				expect(store.getState().layers.active.length).toBe(2);
+			});
+		});
+
 		it('does nothing on sign-in', async () => {
 			const layer0 = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0' };
 			const layer1 = { ...createDefaultLayerProperties(), id: 'id1', geoResourceId: 'geoResourceId1' };
