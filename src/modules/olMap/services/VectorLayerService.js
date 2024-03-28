@@ -105,7 +105,7 @@ export class VectorLayerService {
 	 * @param {ol.Map} olMap
 	 * @returns olVectorLayer
 	 */
-	_applyStyles(olVectorLayer, olMap) {
+	applyStyles(olVectorLayer, olMap) {
 		/**
 		 * We check if an currently present and possible future features needs a specific styling.
 		 * If so, we apply the style and register an event listeners in order to keep the style (and overlays)
@@ -134,7 +134,7 @@ export class VectorLayerService {
 	 * ol context.
 	 * @param {ol.layer.Vector} olVectorLayer
 	 */
-	_sanitizeStyles(olVectorLayer) {
+	sanitizeStyles(olVectorLayer) {
 		const { StyleService: styleService } = $injector.inject('StyleService');
 		const olVectorSource = olVectorLayer.getSource();
 		olVectorSource.getFeatures().forEach((feature) => styleService.sanitizeStyle(feature));
@@ -145,7 +145,7 @@ export class VectorLayerService {
 	 * @param {ol.layer.Vector} olVectorLayer
 	 * @returns olVectorLayer
 	 */
-	_applyClusterStyle(olVectorLayer) {
+	applyClusterStyle(olVectorLayer) {
 		const { StyleService: styleService } = $injector.inject('StyleService');
 		styleService.addClusterStyle(olVectorLayer);
 
@@ -171,9 +171,9 @@ export class VectorLayerService {
 		const vectorSource = this._vectorSourceForData(vectorGeoResource);
 		vectorLayer.setSource(vectorSource);
 
-		this._sanitizeStyles(vectorLayer);
+		this.sanitizeStyles(vectorLayer);
 
-		return vectorGeoResource.isClustered() ? this._applyClusterStyle(vectorLayer) : this._applyStyles(vectorLayer, olMap);
+		return vectorGeoResource.isClustered() ? this.applyClusterStyle(vectorLayer) : this.applyStyles(vectorLayer, olMap);
 	}
 
 	/**
