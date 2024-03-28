@@ -95,7 +95,7 @@ export const removeLayer = (id) => {
 };
 
 /**
- * Removes all {@link Layer} from the list of active layers which references a certain GeoResource
+ * Removes all {@link Layer} which references a certain GeoResource from the list of active layers
  * @param {string} geoResourceId The id of a GeoResource
  */
 export const removeLayerOf = (geoResourceId) => {
