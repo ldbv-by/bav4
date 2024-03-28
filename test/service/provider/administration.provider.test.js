@@ -30,6 +30,16 @@ describe('Administration provider', () => {
 			expect(administration.community).toEqual(administrationMock.gemeinde);
 			expect(administration.district).toEqual(administrationMock.gemarkung);
 		});
+		it('return null when for status 404', async () => {
+			const backendUrl = 'https://backend.url';
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(null, { status: 404 })));
+
+			await expectAsync(loadBvvAdministration(coordinateMock)).toBeResolvedTo(null);
+
+			expect(configServiceSpy).toHaveBeenCalled();
+			expect(httpServiceSpy).toHaveBeenCalled();
+		});
 
 		it('throws error when backend request cannot be fulfilled', async () => {
 			const backendUrl = 'https://backend.url';

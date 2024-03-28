@@ -4,16 +4,9 @@
 import { $injector } from '../../injection';
 
 /**
- * A function that takes a coordinate and returns a promise with an administration object.
- *
- * @typedef {function(coordinate) : (Promise<administration>)} administrationProvider
- */
-
-/**
- * Uses the BVV service to load an administration object.
+ * BVV specific implementation of {@link module:services/AdministrationService~administrationProvider}
  * @function
- * @param {coordinate} coordinate3857
- * @returns {Promise<administration>} with community and district as string properties, loaded from backend
+ * @type {module:services/AdministrationService~administrationProvider}
  */
 export const loadBvvAdministration = async (coordinate3857) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
@@ -29,6 +22,9 @@ export const loadBvvAdministration = async (coordinate3857) => {
 				community,
 				district
 			};
+		}
+		case 404: {
+			return null;
 		}
 		default:
 			throw new Error(`Administration could not be retrieved: Http-Status ${result.status}`);
