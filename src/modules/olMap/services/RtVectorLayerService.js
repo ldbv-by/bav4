@@ -4,8 +4,11 @@
 import VectorLayer from '../../../../node_modules/ol/layer/Vector';
 import VectorSource from '../../../../node_modules/ol/source/Vector';
 import { UnavailableGeoResourceError } from '../../../domain/errors';
+import { VectorSourceType } from '../../../domain/geoResources';
+import { SourceTypeResultStatus } from '../../../domain/sourceType';
 import { $injector } from '../../../injection/index';
 import { mapVectorSourceTypeToFormat } from './VectorLayerService';
+import { parse } from '../../../utils/ewkt';
 
 export const WebSocket_Message_Keep_Alive = 'keep-alive';
 export const WebSocket_Ports = [80, 443];
@@ -57,14 +60,29 @@ export class RtVectorLayerService {
 		const destinationSrid = mapService.getSrid();
 
 		const format = mapVectorSourceTypeToFormat(rtVectorGeoResource.sourceType);
-		return (data) =>
-			format
-				.readFeatures(data)
-				.filter((f) => !!f.getGeometry())
-				.map((f) => {
-					f.getGeometry().transform('EPSG:' + rtVectorGeoResource.srid, 'EPSG:' + destinationSrid);
-					return f;
-				});
+
+		// only eWKT needs a 'per-data'-check for the srid. All other (currently) supported
+		// formats have 4326 as srid per definition
+		return rtVectorGeoResource.sourceType === VectorSourceType.EWKT
+			? (data) => {
+					const eWkt = parse(data);
+					return format
+						.readFeatures(eWkt.wkt)
+						.filter((f) => !!f.getGeometry())
+						.map((f) => {
+							f.getGeometry().transform('EPSG:' + eWkt.srid, 'EPSG:' + destinationSrid);
+							return f;
+						});
+				}
+			: (data) => {
+					return format
+						.readFeatures(data)
+						.filter((f) => !!f.getGeometry())
+						.map((f) => {
+							f.getGeometry().transform('EPSG:4326', 'EPSG:' + destinationSrid);
+							return f;
+						});
+				};
 	}
 
 	/**
@@ -102,25 +120,37 @@ export class RtVectorLayerService {
 			}
 		};
 
-		const tryNextPort = (port) => {
+		const nextPortCallback = (nextPort) => {
 			webSocket.onmessage = undefined;
-			const nextPort = getNextPort(WebSocket_Ports, port);
 			this._startWebSocket(rtVectorGeoResource, olVectorLayer, olMap, nextPort);
 		};
 
+		webSocket.onclose = (event) => {
+			if (event.code === 1006) {
+				this._cascadingPorts(port, nextPortCallback, rtVectorGeoResource.id);
+			}
+		};
+	}
+
+	/**
+	 * Cascading ports in case of a connection failure.
+	 * Whether a next port is available, the nextPortCallback is called, otherwise a
+	 * UnavailableGeoResourceError is thrown.
+	 * @param {*} failedPort
+	 * @param {*} nextPortCallback
+	 * @param {*} geoResourceId
+	 */
+	_cascadingPorts(failedPort, nextPortCallback, geoResourceId) {
+		const tryNextPort = () => {
+			nextPortCallback(getNextPort(WebSocket_Ports, failedPort));
+		};
+
 		const failure = () => {
-			throw new UnavailableGeoResourceError('Realtime-data cannot be displayed for technical reasons.', rtVectorGeoResource.id);
+			throw new UnavailableGeoResourceError('Realtime-data cannot be displayed for technical reasons.', geoResourceId);
 		};
-		const getOnCloseHandler = (port) => {
-			return (event) => {
-				if (event.code === 1006) {
-					// cascading ports in case of a connection failure
-					const eventAction = isNextPortAvailable(WebSocket_Ports, port ?? 80) ? () => tryNextPort(port) : () => failure();
-					eventAction();
-				}
-			};
-		};
-		webSocket.onclose = getOnCloseHandler(port);
+
+		const eventAction = isNextPortAvailable(WebSocket_Ports, failedPort ?? 80) ? tryNextPort : failure;
+		eventAction();
 	}
 
 	/**

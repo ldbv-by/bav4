@@ -5,6 +5,7 @@ import { TestUtils } from '../../../test-utils';
 import { VectorSourceType } from '../../../../src/domain/geoResources';
 import { Server as WebsocketMockServer } from 'mock-socket';
 import VectorLayer from 'ol/layer/Vector';
+import { UnavailableGeoResourceError } from '../../../../src/domain/errors';
 describe('RtVectorLayerService', () => {
 	const mapService = {
 		getSrid: () => 3857
@@ -41,6 +42,10 @@ describe('RtVectorLayerService', () => {
 	});
 
 	describe('service methods', () => {
+		const kmlData =
+			'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="draw_line_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+		const eWktData = 'SRID=4326;POINT(21 42)';
+
 		let instanceUnderTest;
 		const setup = (state = {}) => {
 			TestUtils.setupStoreAndDi(state, {
@@ -58,10 +63,66 @@ describe('RtVectorLayerService', () => {
 			});
 		});
 
+		describe('_getFeatureReader', () => {
+			it('reads features in supported kml format', () => {
+				setup();
+				const kmlFeatureReader = instanceUnderTest._getFeatureReader({ sourceType: VectorSourceType.KML });
+
+				expect(kmlFeatureReader(kmlData)).toHaveSize(1);
+			});
+
+			it('reads features in supported ewkt format', () => {
+				setup();
+				const eWktFeatureReader = instanceUnderTest._getFeatureReader({ sourceType: VectorSourceType.EWKT });
+
+				expect(eWktFeatureReader(eWktData)).toHaveSize(1);
+			});
+		});
+
+		describe('_cascadingPorts', () => {
+			it('cascades through the available ports with failed port 80', () => {
+				const failedPort = 80;
+				const geoResourceId = 'foo';
+				setup();
+
+				const nextPortCallback = jasmine.createSpy();
+
+				instanceUnderTest._cascadingPorts(failedPort, nextPortCallback, geoResourceId);
+
+				expect(nextPortCallback).toHaveBeenCalledWith(443);
+			});
+
+			it('cascades through the available ports with failed port undefined', () => {
+				const failedPort = undefined;
+				const geoResourceId = 'foo';
+				setup();
+
+				const nextPortCallback = jasmine.createSpy();
+
+				instanceUnderTest._cascadingPorts(failedPort, nextPortCallback, geoResourceId);
+
+				expect(nextPortCallback).toHaveBeenCalledWith(443);
+			});
+
+			it('throws an error while last failed port is 443', () => {
+				const failedPort = 443;
+				const geoResourceId = 'foo';
+				setup();
+
+				const nextPortCallback = jasmine.createSpy();
+
+				expect(() => instanceUnderTest._cascadingPorts(failedPort, nextPortCallback, geoResourceId)).toThrowMatching((t) => {
+					return (
+						t.message === 'Realtime-data cannot be displayed for technical reasons.' &&
+						t instanceof UnavailableGeoResourceError &&
+						t.geoResourceId === geoResourceId
+					);
+				});
+			});
+		});
+
 		describe('createVectorLayer', () => {
 			const wsUrl = 'ws://localhost';
-			const kmlData =
-				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="draw_line_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
 
 			const rtVectorGeoResource = {
 				id: 'geoResourceId',
@@ -164,34 +225,19 @@ describe('RtVectorLayerService', () => {
 					const id = 'id';
 					const olMap = new Map();
 
-					const startWebSocket = spyOn(instanceUnderTest, '_startWebSocket')
+					const startWebSocketSpy = spyOn(instanceUnderTest, '_startWebSocket')
 						.withArgs(jasmine.any(Object), jasmine.any(VectorLayer), olMap)
 						.and.callThrough()
 						.withArgs(jasmine.any(Object), jasmine.any(VectorLayer), olMap, 443)
 						.and.callThrough();
+
+					const cascadingPortsSpy = spyOn(instanceUnderTest, '_cascadingPorts').and.callThrough();
 					instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
 
 					mockServer.close({ code: 1006, reason: 'Foo', wasClean: false });
-					expect(startWebSocket).toHaveBeenCalledTimes(2);
+					expect(startWebSocketSpy).toHaveBeenCalledTimes(2);
+					expect(cascadingPortsSpy).toHaveBeenCalledTimes(1);
 				});
-
-				/* HINT: to throw an UnavailableGeoResourceError is currently not testable
-				it('throws an error', () => {
-					setup();
-					const vectorLayer = { getSource: () => {} };
-					const olMap = new Map();
-					const port = 443;
-
-					mockServer.on('connection', (socket) => {
-						socket.close({ code: 1006, reason: 'Foo1', wasClean: false });
-						socket.close({ code: 1006, reason: 'Foo2', wasClean: false });
-					});
-
-					instanceUnderTest._startWebSocket(vectorGeoresource, vectorLayer, olMap, port);
-					.
-					.
-					.
-				}); */
 			});
 		});
 	});
