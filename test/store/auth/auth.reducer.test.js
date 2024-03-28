@@ -12,6 +12,7 @@ describe('authReducer', () => {
 	it('initializes the store with default values', () => {
 		const store = setup();
 		expect(store.getState().auth.signedIn).toBeFalse();
+		expect(store.getState().auth.byUser).toBeFalse();
 	});
 
 	it('updates the stores properties', () => {
@@ -20,9 +21,18 @@ describe('authReducer', () => {
 		setSignedIn();
 
 		expect(store.getState().auth.signedIn).toBeTrue();
+		expect(store.getState().auth.byUser).toBeTrue();
 
-		setSignedOut();
+		setSignedOut(true);
 
 		expect(store.getState().auth.signedIn).toBeFalse();
+		expect(store.getState().auth.byUser).toBeTrue();
+
+		setSignedIn();
+
+		setSignedOut(false);
+
+		expect(store.getState().auth.signedIn).toBeFalse();
+		expect(store.getState().auth.byUser).toBeFalse();
 	});
 });
