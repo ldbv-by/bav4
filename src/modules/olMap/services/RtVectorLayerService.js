@@ -107,7 +107,7 @@ export class RtVectorLayerService {
 		const { VectorLayerService: vectorLayerService } = $injector.inject('VectorLayerService');
 		const featureReader = this._getFeatureReader(rtVectorGeoResource);
 		const olVectorSource = olVectorLayer.getSource();
-		const webSocket = new WebSocket(port ? this._addPortToUrl(rtVectorGeoResource.url) : rtVectorGeoResource.url);
+		const webSocket = new WebSocket(port ? this._addPortToUrl(rtVectorGeoResource.url, port) : rtVectorGeoResource.url);
 
 		webSocket.onmessage = (event) => {
 			this._processMessage(event, olVectorSource, featureReader);
