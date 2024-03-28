@@ -5,7 +5,6 @@ import VectorLayer from '../../../../node_modules/ol/layer/Vector';
 import VectorSource from '../../../../node_modules/ol/source/Vector';
 import { UnavailableGeoResourceError } from '../../../domain/errors';
 import { VectorSourceType } from '../../../domain/geoResources';
-import { SourceTypeResultStatus } from '../../../domain/sourceType';
 import { $injector } from '../../../injection/index';
 import { mapVectorSourceTypeToFormat } from './VectorLayerService';
 import { parse } from '../../../utils/ewkt';
