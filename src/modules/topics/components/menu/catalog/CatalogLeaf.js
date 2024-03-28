@@ -5,9 +5,10 @@ import { html, nothing } from 'lit-html';
 import { AbstractContentPanel } from '../../../../menu/components/mainMenu/content/AbstractContentPanel';
 import css from './catalogLeaf.css';
 import { $injector } from '../../../../../injection';
-import { addLayer, removeLayer } from '../../../../../store/layers/layers.action';
+import { addLayer, removeLayerOf } from '../../../../../store/layers/layers.action';
 import infoSvg from '../assets/info.svg';
 import { openModal } from '../../../../../store/modal/modal.action';
+import { createUniqueId } from '../../../../../utils/numberUtils';
 
 /**
  * @class
@@ -45,9 +46,9 @@ export class CatalogLeaf extends AbstractContentPanel {
 
 			const onToggle = (event) => {
 				if (event.detail.checked) {
-					addLayer(geoR.id);
+					addLayer(`${geoR.id}_${createUniqueId()}`, { geoResourceId: geoR.id });
 				} else {
-					removeLayer(geoR.id);
+					removeLayerOf(geoR.id);
 				}
 			};
 

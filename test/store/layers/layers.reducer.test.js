@@ -6,7 +6,7 @@ import {
 	createDefaultLayer,
 	createDefaultLayersConstraints
 } from '../../../src/store/layers/layers.reducer';
-import { addLayer, removeLayer, modifyLayer, setReady, geoResourceChanged } from '../../../src/store/layers/layers.action';
+import { addLayer, removeLayer, modifyLayer, setReady, geoResourceChanged, removeLayerOf } from '../../../src/store/layers/layers.action';
 import { TestUtils } from '../../test-utils.js';
 import { GeoResourceFuture } from '../../../src/domain/geoResources';
 import { EventLike } from '../../../src/utils/storeUtils.js';
@@ -289,6 +289,49 @@ describe('layersReducer', () => {
 		expect(store.getState().layers.removed).toEqual(initialRemovedValue);
 
 		removeLayer('id0');
+
+		expect(store.getState().layers.removed.payload).toBe('id0');
+	});
+
+	it('removes a layer by a GeoResource id', () => {
+		const layerProperties0 = { id: 'id0', geoResourceId: 'geoResourceId0' };
+		const layerProperties1 = { id: 'id1', geoResourceId: 'geoResourceId0' };
+		const layerProperties2 = { id: 'id2', geoResourceId: 'geoResourceId2' };
+		const store = setup({
+			layers: {
+				active: [layerProperties0, layerProperties1, layerProperties2]
+			}
+		});
+
+		expect(store.getState().layers.active.length).toBe(3);
+
+		removeLayerOf('geoResourceId0');
+
+		expect(store.getState().layers.active.length).toBe(1);
+		expect(store.getState().layers.active[0].id).toBe('id2');
+		expect(store.getState().layers.active[0].geoResourceId).toBe('geoResourceId2');
+		expect(store.getState().layers.active[0].zIndex).toBe(0);
+	});
+
+	it('updates the "remove" property when layers was removed by a GeoResource id', () => {
+		const initialRemovedValue = new EventLike();
+		const layerProperties0 = { id: 'id0', geoResourceId: 'geoResourceId0' };
+		const layerProperties1 = { id: 'id1', geoResourceId: 'geoResourceId1' };
+		const store = setup({
+			layers: {
+				active: [layerProperties0, layerProperties1],
+				removed: initialRemovedValue
+			}
+		});
+
+		expect(store.getState().layers.active.length).toBe(2);
+
+		removeLayerOf('unknown');
+
+		expect(store.getState().layers.removed.payload).toBeNull();
+		expect(store.getState().layers.removed).toEqual(initialRemovedValue);
+
+		removeLayerOf('geoResourceId0');
 
 		expect(store.getState().layers.removed.payload).toBe('id0');
 	});
