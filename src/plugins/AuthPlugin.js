@@ -2,6 +2,8 @@
  * @module plugins/AuthPlugin
  */
 import { $injector } from '../injection';
+import { removeLayer } from '../store/layers/layers.action';
+import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 
 /**
@@ -14,23 +16,26 @@ export class AuthPlugin extends BaPlugin {
 	#environmentService;
 	#authService;
 	#configService;
+	#geoResourceService;
 
 	constructor() {
 		super();
 		const {
 			EnvironmentService: environmentService,
 			AuthService: authService,
-			ConfigService: configService
-		} = $injector.inject('EnvironmentService', 'AuthService', 'ConfigService');
+			ConfigService: configService,
+			GeoResourceService: geoResourceService
+		} = $injector.inject('EnvironmentService', 'AuthService', 'ConfigService', 'GeoResourceService');
 		this.#environmentService = environmentService;
 		this.#authService = authService;
 		this.#configService = configService;
+		this.#geoResourceService = geoResourceService;
 	}
 
 	/**
 	 * @override
 	 */
-	async register() {
+	async register(store) {
 		if (!this.#environmentService.isStandalone()) {
 			try {
 				await this.#authService.init();
@@ -43,5 +48,16 @@ export class AuthPlugin extends BaPlugin {
 				);
 			}
 		}
+
+		const onSignOut = (signedIn, state) => {
+			if (!signedIn && state.auth.byUser) {
+				state.layers.active.forEach((l) => {
+					if (!this.#geoResourceService.isAllowed(l.geoResourceId)) {
+						removeLayer(l.id);
+					}
+				});
+			}
+		};
+		observe(store, (state) => state.auth.signedIn, onSignOut);
 	}
 }

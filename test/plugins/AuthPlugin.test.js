@@ -1,6 +1,9 @@
 import { TestUtils } from '../test-utils.js';
 import { $injector } from '../../src/injection/index.js';
 import { AuthPlugin } from '../../src/plugins/AuthPlugin.js';
+import { authReducer } from '../../src/store/auth/auth.reducer.js';
+import { setSignedIn, setSignedOut } from '../../src/store/auth/auth.action.js';
+import { layersReducer, createDefaultLayerProperties } from '../../src/store/layers/layers.reducer.js';
 
 describe('AuthPlugin', () => {
 	const environmentService = {
@@ -12,12 +15,21 @@ describe('AuthPlugin', () => {
 	const configService = {
 		getValue() {}
 	};
-	const setup = () => {
-		TestUtils.setupStoreAndDi();
+	const geoResourceService = {
+		isAllowed() {}
+	};
+	const setup = (initialState = {}) => {
+		const store = TestUtils.setupStoreAndDi(initialState, {
+			auth: authReducer,
+			layers: layersReducer
+		});
 		$injector
 			.registerSingleton('EnvironmentService', environmentService)
 			.registerSingleton('AuthService', authService)
-			.registerSingleton('ConfigService', configService);
+			.registerSingleton('ConfigService', configService)
+			.registerSingleton('GeoResourceService', geoResourceService);
+
+		return store;
 	};
 
 	describe('register', () => {
@@ -58,6 +70,70 @@ describe('AuthPlugin', () => {
 
 				expect(spy).not.toHaveBeenCalled();
 			});
+		});
+	});
+
+	describe('when auth "signedIn" property changes', () => {
+		describe('triggered by the user', () => {
+			it('removes now non-accessible layers', async () => {
+				const layer0 = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0' };
+				const layer1 = { ...createDefaultLayerProperties(), id: 'id1', geoResourceId: 'geoResourceId1' };
+				const store = setup({
+					auth: {
+						signedIn: true
+					},
+					layers: {
+						active: [layer0, layer1]
+					}
+				});
+				spyOn(geoResourceService, 'isAllowed').and.callFake((geoResourceId) => {
+					return geoResourceId === layer1.geoResourceId ? false : true;
+				});
+				const instanceUnderTest = new AuthPlugin();
+				await instanceUnderTest.register(store);
+
+				setSignedOut(true);
+
+				expect(store.getState().layers.active.length).toBe(1);
+				expect(store.getState().layers.active[0].id).toBe(layer0.id);
+			});
+		});
+
+		describe('NOT triggered by the user', () => {
+			it('does nothing', async () => {
+				const layer0 = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0' };
+				const layer1 = { ...createDefaultLayerProperties(), id: 'id1', geoResourceId: 'geoResourceId1' };
+				const store = setup({
+					auth: {
+						signedIn: true
+					},
+					layers: {
+						active: [layer0, layer1]
+					}
+				});
+				const instanceUnderTest = new AuthPlugin();
+				await instanceUnderTest.register(store);
+
+				setSignedOut(false);
+
+				expect(store.getState().layers.active.length).toBe(2);
+			});
+		});
+
+		it('does nothing on sign-in', async () => {
+			const layer0 = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0' };
+			const layer1 = { ...createDefaultLayerProperties(), id: 'id1', geoResourceId: 'geoResourceId1' };
+			const store = setup({
+				layers: {
+					active: [layer0, layer1]
+				}
+			});
+			const instanceUnderTest = new AuthPlugin();
+			await instanceUnderTest.register(store);
+
+			setSignedIn();
+
+			expect(store.getState().layers.active.length).toBe(2);
 		});
 	});
 });

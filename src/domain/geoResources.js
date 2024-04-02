@@ -258,9 +258,11 @@ export class GeoResource {
 	 * @returns `this` for chaining
 	 */
 	setAuthRoles(roles) {
-		this._authRoles = [...roles];
-		if (roles.length > 0) {
-			this.setAuthenticationType(GeoResourceAuthenticationType.APPLICATION);
+		if (roles) {
+			this._authRoles = [...roles];
+			if (roles.length > 0) {
+				this.setAuthenticationType(GeoResourceAuthenticationType.APPLICATION);
+			}
 		}
 		return this;
 	}
@@ -412,6 +414,7 @@ export class WmsGeoResource extends GeoResource {
 		this._layers = layers;
 		this._format = format;
 		this._extraParams = {};
+		this._maxSize = null;
 	}
 
 	get url() {
@@ -430,8 +433,21 @@ export class WmsGeoResource extends GeoResource {
 		return { ...this._extraParams };
 	}
 
+	get maxSize() {
+		return this._maxSize ? [...this._maxSize] : null;
+	}
+
 	setExtraParams(extraParams) {
-		this._extraParams = { ...extraParams };
+		if (extraParams) {
+			this._extraParams = { ...extraParams };
+		}
+		return this;
+	}
+
+	setMaxSize(maxSize) {
+		if (maxSize) {
+			this._maxSize = [...maxSize];
+		}
 		return this;
 	}
 
@@ -573,7 +589,9 @@ export class VectorGeoResource extends GeoResource {
 	}
 
 	setClusterParams(clusterParams) {
-		this._clusterParams = { ...clusterParams };
+		if (clusterParams) {
+			this._clusterParams = { ...clusterParams };
+		}
 		return this;
 	}
 
@@ -634,7 +652,9 @@ export class RtVectorGeoResource extends GeoResource {
 	}
 
 	setClusterParams(clusterParams) {
-		this._clusterParams = { ...clusterParams };
+		if (clusterParams) {
+			this._clusterParams = { ...clusterParams };
+		}
 		return this;
 	}
 

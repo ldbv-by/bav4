@@ -224,6 +224,11 @@ describe('GeoResource', () => {
 					const roles = ['TEST'];
 					const geoResource = new GeoResourceNoImpl('id0');
 
+					geoResource.setAuthRoles(null);
+
+					expect(geoResource.authenticationType).toBeNull();
+					expect(geoResource.authRoles).toEqual([]);
+
 					geoResource.setAuthRoles(roles);
 
 					expect(geoResource.authenticationType).toEqual(GeoResourceAuthenticationType.APPLICATION);
@@ -389,12 +394,19 @@ describe('GeoResource', () => {
 			const wmsGeoResource = new WmsGeoResource('id', 'label', 'url', 'layers', 'format');
 
 			expect(wmsGeoResource.extraParams).toEqual({});
+			expect(wmsGeoResource.maxSize).toBeNull();
 		});
 
 		it('provides set methods and getters', () => {
-			const wmsGeoResource = new WmsGeoResource('id', 'label', 'url', 'layers', 'format').setExtraParams({ foo: 'bar' });
+			const wmsGeoResource = new WmsGeoResource('id', 'label', 'url', 'layers', 'format').setExtraParams(null).setMaxSize(null);
+
+			expect(wmsGeoResource.extraParams).toEqual({});
+			expect(wmsGeoResource.maxSize).toBeNull();
+
+			wmsGeoResource.setExtraParams({ foo: 'bar' }).setMaxSize([21, 42]);
 
 			expect(wmsGeoResource.extraParams).toEqual({ foo: 'bar' });
+			expect(wmsGeoResource.maxSize).toEqual([21, 42]);
 		});
 	});
 
@@ -466,6 +478,7 @@ describe('GeoResource', () => {
 		describe('methods', () => {
 			it('provides a check for containing a non-default value as clusterParam', () => {
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).isClustered()).toBeFalse();
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setClusterParams(null).isClustered()).toBeFalse();
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setClusterParams({ foo: 'bar' }).isClustered()).toBeTrue();
 			});
 
@@ -538,6 +551,7 @@ describe('GeoResource', () => {
 		describe('methods', () => {
 			it('provides a check for containing a non-default value as clusterParam', () => {
 				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).isClustered()).toBeFalse();
+				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).setClusterParams(null).isClustered()).toBeFalse();
 				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).setClusterParams({ foo: 'bar' }).isClustered()).toBeTrue();
 			});
 		});

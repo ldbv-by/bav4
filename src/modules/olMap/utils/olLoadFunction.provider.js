@@ -21,7 +21,8 @@ const handleUnexpectedStatusCodeThrottled = throttled(3000, (response, geoResour
  * @function
  * @type {module:modules/olMap/services/LayerService~imageLoadFunctionProvider}
  */
-export const getBvvBaaImageLoadFunction = (geoResourceId, credential = null, maxSize = [2000, 2000]) => {
+export const getBvvBaaImageLoadFunction = (geoResourceId, credential = null, maxSize) => {
+	maxSize = maxSize ?? [2000, 2000];
 	const {
 		HttpService: httpService,
 		ConfigService: configService,
