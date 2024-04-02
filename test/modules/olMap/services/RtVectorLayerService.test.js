@@ -6,6 +6,7 @@ import { VectorSourceType } from '../../../../src/domain/geoResources';
 import { Server as WebsocketMockServer } from 'mock-socket';
 import VectorLayer from 'ol/layer/Vector';
 import { UnavailableGeoResourceError } from '../../../../src/domain/errors';
+import { positionReducer } from '../../../../src/store/position/position.reducer';
 describe('RtVectorLayerService', () => {
 	const mapService = {
 		getSrid: () => 3857
@@ -48,11 +49,13 @@ describe('RtVectorLayerService', () => {
 
 		let instanceUnderTest;
 		const setup = (state = {}) => {
-			TestUtils.setupStoreAndDi(state, {
-				layers: layersReducer
+			const store = TestUtils.setupStoreAndDi(state, {
+				layers: layersReducer,
+				position: positionReducer
 			});
 			$injector.registerSingleton('MapService', mapService).registerSingleton('VectorLayerService', vectorLayerService);
 			instanceUnderTest = new RtVectorLayerService();
+			return store;
 		};
 
 		describe('_addPortToUrl', () => {
@@ -157,7 +160,7 @@ describe('RtVectorLayerService', () => {
 			});
 
 			it('updates vector layer features, after server sends a message', () => {
-				setup();
+				const store = setup();
 				const id = 'id';
 				const olMap = new Map();
 
@@ -175,6 +178,7 @@ describe('RtVectorLayerService', () => {
 				expect(processSpy).toHaveBeenCalled();
 				expect(sanitizeStyleSpy).toHaveBeenCalled();
 				expect(applyStyleSpy).toHaveBeenCalled();
+				expect(store.getState().position.fitRequest.payload.extent).toEqual(olVectorLayer.getSource().getExtent());
 			});
 
 			it('updates clustered vector layer features, after server sends a message', () => {

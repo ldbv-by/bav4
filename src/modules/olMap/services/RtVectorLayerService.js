@@ -8,6 +8,7 @@ import { VectorSourceType } from '../../../domain/geoResources';
 import { $injector } from '../../../injection/index';
 import { mapVectorSourceTypeToFormat } from './VectorLayerService';
 import { parse } from '../../../utils/ewkt';
+import { fit } from '../../../store/position/position.action';
 
 export const WebSocket_Message_Keep_Alive = 'keep-alive';
 export const WebSocket_Ports = [80, 443];
@@ -101,6 +102,7 @@ export class RtVectorLayerService {
 		olVectorSource.clear();
 		const features = featureReader(data);
 		olVectorSource.addFeatures(features);
+		fit(olVectorSource.getExtent());
 	}
 
 	_startWebSocket(rtVectorGeoResource, olVectorLayer, olMap, port) {
