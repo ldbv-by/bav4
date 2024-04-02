@@ -2,7 +2,7 @@ import { html } from '../../../../node_modules/lit-html/lit-html';
 import { MvuElement } from '../../MvuElement';
 
 /**
- * Public Web Component, contains the same parts as the Iframe (see embed.html)
+ * Public Web Component, should contain always the same components as the Iframe (see embed.html)
  * @author taulinger
  * @class
  */
