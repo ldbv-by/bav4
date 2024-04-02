@@ -147,7 +147,7 @@ describe('RtVectorLayerService', () => {
 			it('returns an ol vector layer for a websocket based RtVectorGeoResource', () => {
 				setup();
 				const id = 'id';
-				const olMap = new Map();
+				const olMap = { getView: () => {} };
 
 				const olVectorLayer = instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
 
@@ -162,14 +162,16 @@ describe('RtVectorLayerService', () => {
 			it('updates vector layer features, after server sends a message', () => {
 				const store = setup();
 				const id = 'id';
-				const olMap = new Map();
+				const olMap = { getView: () => {} };
 
 				const olVectorLayer = instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
+				spyOn(olMap, 'getView').and.returnValue({ calculateExtent: () => [] });
 				const processSpy = spyOn(instanceUnderTest, '_processMessage').and.callThrough();
 				const sanitizeStyleSpy = spyOn(vectorLayerService, 'sanitizeStyles').and.callFake(() => {});
 				const applyStyleSpy = spyOn(vectorLayerService, 'applyStyles')
 					.withArgs(olVectorLayer, olMap)
 					.and.callFake(() => {});
+				const fitViewSpy = spyOn(instanceUnderTest, '_fitViewOptionally').and.callThrough();
 				expect(olVectorLayer.getSource().getFeatures().length).toBe(0);
 
 				mockServer.emit('message', kmlData);
@@ -178,21 +180,26 @@ describe('RtVectorLayerService', () => {
 				expect(processSpy).toHaveBeenCalled();
 				expect(sanitizeStyleSpy).toHaveBeenCalled();
 				expect(applyStyleSpy).toHaveBeenCalled();
+				expect(fitViewSpy).toHaveBeenCalled();
 				expect(store.getState().position.fitRequest.payload.extent).toEqual(olVectorLayer.getSource().getExtent());
 			});
 
 			it('updates clustered vector layer features, after server sends a message', () => {
-				setup();
+				const store = setup();
 				const id = 'id';
-				const olMap = new Map();
+				const olMap = { getView: () => {} };
+				const viewMock = { calculateExtent: () => [] };
 				const clusteredRtGeoResource = { ...rtVectorGeoResource, isClustered: () => true };
 
 				const olVectorLayer = instanceUnderTest.createLayer(id, clusteredRtGeoResource, olMap);
 				const processSpy = spyOn(instanceUnderTest, '_processMessage').and.callThrough();
+				spyOn(olMap, 'getView').and.callFake(() => viewMock);
 				const sanitizeStyleSpy = spyOn(vectorLayerService, 'sanitizeStyles').and.callFake(() => {});
+
 				const applyStyleSpy = spyOn(vectorLayerService, 'applyClusterStyle')
 					.withArgs(olVectorLayer)
 					.and.callFake(() => {});
+				const fitViewSpy = spyOn(instanceUnderTest, '_fitViewOptionally').and.callThrough();
 				expect(olVectorLayer.getSource().getFeatures().length).toBe(0);
 
 				mockServer.emit('message', kmlData);
@@ -201,12 +208,14 @@ describe('RtVectorLayerService', () => {
 				expect(processSpy).toHaveBeenCalled();
 				expect(sanitizeStyleSpy).toHaveBeenCalled();
 				expect(applyStyleSpy).toHaveBeenCalled();
+				expect(fitViewSpy).toHaveBeenCalled();
+				expect(store.getState().position.fitRequest.payload.extent).toEqual(olVectorLayer.getSource().getExtent());
 			});
 
 			it('does nothing, after server sends a keep-alive message', () => {
 				setup();
 				const id = 'id';
-				const olMap = new Map();
+				const olMap = { getView: () => {} };
 
 				const olVectorLayer = instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
 				const vectorSource = olVectorLayer.getSource();
@@ -220,14 +229,14 @@ describe('RtVectorLayerService', () => {
 
 				expect(vectorSource.getFeatures().length).toBe(0);
 				expect(vectorSourceSpy).not.toHaveBeenCalled();
-				expect(processSpy).toHaveBeenCalledTimes(3);
+				expect(processSpy).toHaveBeenCalledTimes(0);
 			});
 
 			describe('when the connection get lost (websocket.onclose)', () => {
 				it('cascades available ports', () => {
 					setup();
 					const id = 'id';
-					const olMap = new Map();
+					const olMap = { getView: () => {} };
 
 					const startWebSocketSpy = spyOn(instanceUnderTest, '_startWebSocket')
 						.withArgs(jasmine.any(Object), jasmine.any(VectorLayer), olMap)

@@ -9,6 +9,7 @@ import { $injector } from '../../../injection/index';
 import { mapVectorSourceTypeToFormat } from './VectorLayerService';
 import { parse } from '../../../utils/ewkt';
 import { fit } from '../../../store/position/position.action';
+import { containsExtent } from '../../../../node_modules/ol/extent';
 
 export const WebSocket_Message_Keep_Alive = 'keep-alive';
 export const WebSocket_Ports = [80, 443];
@@ -88,36 +89,47 @@ export class RtVectorLayerService {
 	/**
 	 * Processes the messages from a websocket and updates the specified olVectorSource
 	 *
-	 * TODO: check, if behavior for changed featureExtent is needed
-	 * @param {MessageEvent} socketEvent
-	 * @param {ol.source.Vector} olVectorSource
+	 * @param {string} messageData
+	 * @param {ol.layer} olVectorLayer
 	 * @param {function (string): Array<ol.Feature>} featureReader
 	 */
-	_processMessage(socketEvent, olVectorSource, featureReader) {
-		const { data } = socketEvent;
-		if (data === WebSocket_Message_Keep_Alive) {
-			return;
-		}
-
+	_processMessage(messageData, olVectorLayer, featureReader) {
+		const olVectorSource = olVectorLayer.getSource();
 		olVectorSource.clear();
-		const features = featureReader(data);
+		const features = featureReader(messageData);
 		olVectorSource.addFeatures(features);
-		fit(olVectorSource.getExtent());
+	}
+
+	_fitViewOptionally(olVectorLayer, olMap) {
+		const olVectorSource = olVectorLayer.getSource();
+		const mapExtent = olMap.getView().calculateExtent();
+		const vectorExtent = olVectorSource.getExtent();
+
+		if (!containsExtent(mapExtent, vectorExtent)) {
+			fit(vectorExtent);
+		}
 	}
 
 	_startWebSocket(rtVectorGeoResource, olVectorLayer, olMap, port) {
 		const { VectorLayerService: vectorLayerService } = $injector.inject('VectorLayerService');
 		const featureReader = this._getFeatureReader(rtVectorGeoResource);
-		const olVectorSource = olVectorLayer.getSource();
+
 		const webSocket = new WebSocket(port ? this._addPortToUrl(rtVectorGeoResource.url, port) : rtVectorGeoResource.url);
+		const isUpdateNeeded = (data) => data !== WebSocket_Message_Keep_Alive;
 
 		webSocket.onmessage = (event) => {
-			this._processMessage(event, olVectorSource, featureReader);
-			vectorLayerService.sanitizeStyles(olVectorLayer);
-			if (rtVectorGeoResource.isClustered()) {
-				vectorLayerService.applyClusterStyle(olVectorLayer);
-			} else {
-				vectorLayerService.applyStyles(olVectorLayer, olMap);
+			const { data: messageData } = event;
+			if (isUpdateNeeded(messageData)) {
+				this._processMessage(messageData, olVectorLayer, featureReader);
+
+				vectorLayerService.sanitizeStyles(olVectorLayer);
+				if (rtVectorGeoResource.isClustered()) {
+					vectorLayerService.applyClusterStyle(olVectorLayer);
+				} else {
+					vectorLayerService.applyStyles(olVectorLayer, olMap);
+				}
+
+				this._fitViewOptionally(olVectorLayer, olMap);
 			}
 		};
 
