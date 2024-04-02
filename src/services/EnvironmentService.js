@@ -2,6 +2,7 @@
  * @module services/EnvironmentService
  */
 import { $injector } from '../injection';
+import { BvvComponent } from '../modules/wc/components/BvvComponent';
 
 /**
  * @class
@@ -74,10 +75,26 @@ export class EnvironmentService {
 
 	/**
 	 *
-	 * @returns `true` if we are in embedded mode
+	 * @returns `true` if we are in embedded mode (as Iframe or Web Component)
 	 */
 	isEmbedded() {
+		return this.isEmbeddedAsIframe() || this.isEmbeddedAsWC();
+	}
+
+	/**
+	 *
+	 * @returns `true` if we are in embedded mode due to an Iframe
+	 */
+	isEmbeddedAsIframe() {
 		return /(\/embed[/]?(index.html)?|embed.html)$/.test(this._window.location.pathname);
+	}
+
+	/**
+	 *
+	 * @returns `true` if we are in embedded due to a Web Component
+	 */
+	isEmbeddedAsWC() {
+		return !!this._window.customElements.get(BvvComponent.tag);
 	}
 
 	/**
