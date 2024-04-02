@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en" translate="no">
+	<head>
+		<title>Bav4 WC Wrapper</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+		<meta charset="utf-8" />
+		<meta name="google" content="notranslate" />
+	</head>
+
+	<body>
+		<bayern-atlas style="width: 800px; height: 600px; display: block" data-l="atkis" data-c="11,48"></bayern-atlas>
+	</body>
+	<script src="../wc.js"></script>
+	<script>
+		document.querySelector('bayern-atlas').addEventListener('ba-geometry-created', (event) => console.log(event.detail));
+	</script>
+</html>

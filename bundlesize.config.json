@@ -9,6 +9,11 @@
 			"path": "./dist/embed.js",
 			"maxSize": "1.85 MB",
 			"compression": "none"
+		},
+		{
+			"path": "./dist/wc.js",
+			"maxSize": "1.85 MB",
+			"compression": "none"
 		}
 	]
 }
