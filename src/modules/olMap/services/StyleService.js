@@ -366,7 +366,7 @@ export class StyleService {
 				const scale = markerScaleToKeyword(style.getImage().getScale());
 				const size = style.getImage()?.getSize();
 				const pixelAnchor = style.getImage()?.getAnchor();
-				const text = style.getText().getText();
+				const text = style.getText()?.getText();
 				return {
 					symbolSrc: symbolSrc,
 					color: rgbToHex(color ? color : style.getText().getFill().getColor()),
