@@ -7,6 +7,7 @@ import { Server as WebsocketMockServer } from 'mock-socket';
 import VectorLayer from 'ol/layer/Vector';
 import { UnavailableGeoResourceError } from '../../../../src/domain/errors';
 import { positionReducer } from '../../../../src/store/position/position.reducer';
+import { getCenter } from 'ol/extent';
 describe('RtVectorLayerService', () => {
 	const mapService = {
 		getSrid: () => 3857
@@ -210,6 +211,41 @@ describe('RtVectorLayerService', () => {
 				expect(applyStyleSpy).toHaveBeenCalled();
 				expect(fitViewSpy).toHaveBeenCalled();
 				expect(store.getState().position.fitRequest.payload.extent).toEqual(olVectorLayer.getSource().getExtent());
+			});
+
+			it('makes a fitrequest for the first features only', () => {
+				const store = setup();
+				const id = 'id';
+				const olMap = { getView: () => {} };
+				const viewMock = { calculateExtent: () => [] };
+
+				const olVectorLayer = instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
+				spyOn(olMap, 'getView').and.returnValue(viewMock);
+				spyOn(instanceUnderTest, '_processMessage').and.callThrough();
+				spyOn(vectorLayerService, 'sanitizeStyles').and.callFake(() => {});
+				spyOn(vectorLayerService, 'applyStyles')
+					.withArgs(olVectorLayer, olMap)
+					.and.callFake(() => {});
+				const fitViewSpy = spyOn(instanceUnderTest, '_fitViewOptionally')
+					.withArgs(olVectorLayer, olMap, true)
+					.and.callThrough()
+					.withArgs(olVectorLayer, olMap, false)
+					.and.callThrough()
+					.withArgs(olVectorLayer, olMap, false)
+					.and.callThrough();
+				expect(olVectorLayer.getSource().getFeatures().length).toBe(0);
+				expect(store.getState().position.fitRequest.payload).toBeNull();
+				const olCenter = store.getState().position.center;
+
+				mockServer.emit('message', kmlData);
+				mockServer.emit('message', kmlData);
+				spyOn(viewMock, 'calculateExtent').and.returnValue(olVectorLayer.getSource().getExtent());
+				mockServer.emit('message', kmlData);
+
+				expect(olVectorLayer.getSource().getFeatures().length).toBe(1);
+				expect(fitViewSpy).toHaveBeenCalledTimes(3);
+				expect(store.getState().position.fitRequest.payload.extent).toEqual(olVectorLayer.getSource().getExtent());
+				expect(store.getState().position.center).not.toEqual(olCenter);
 			});
 
 			it('does nothing, after server sends a keep-alive message', () => {

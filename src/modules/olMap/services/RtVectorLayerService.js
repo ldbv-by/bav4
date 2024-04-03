@@ -8,8 +8,8 @@ import { VectorSourceType } from '../../../domain/geoResources';
 import { $injector } from '../../../injection/index';
 import { mapVectorSourceTypeToFormat } from './VectorLayerService';
 import { parse } from '../../../utils/ewkt';
-import { fit } from '../../../store/position/position.action';
-import { containsExtent } from '../../../../node_modules/ol/extent';
+import { changeCenter, fit } from '../../../store/position/position.action';
+import { containsExtent, getCenter } from '../../../../node_modules/ol/extent';
 
 export const WebSocket_Message_Keep_Alive = 'keep-alive';
 export const WebSocket_Ports = [80, 443];
@@ -100,13 +100,15 @@ export class RtVectorLayerService {
 		olVectorSource.addFeatures(features);
 	}
 
-	_fitViewOptionally(olVectorLayer, olMap) {
+	_fitViewOptionally(olVectorLayer, olMap, firstFit) {
 		const olVectorSource = olVectorLayer.getSource();
 		const mapExtent = olMap.getView().calculateExtent();
 		const vectorExtent = olVectorSource.getExtent();
 
+		const action = firstFit ? fit : (extent) => changeCenter(getCenter(extent));
+
 		if (!containsExtent(mapExtent, vectorExtent)) {
-			fit(vectorExtent);
+			action(vectorExtent);
 		}
 	}
 
@@ -117,6 +119,7 @@ export class RtVectorLayerService {
 		const webSocket = new WebSocket(port ? this._addPortToUrl(rtVectorGeoResource.url, port) : rtVectorGeoResource.url);
 		const isUpdateNeeded = (data) => data !== WebSocket_Message_Keep_Alive;
 
+		let firstFit = true;
 		webSocket.onmessage = (event) => {
 			const { data: messageData } = event;
 			if (isUpdateNeeded(messageData)) {
@@ -129,7 +132,8 @@ export class RtVectorLayerService {
 					vectorLayerService.applyStyles(olVectorLayer, olMap);
 				}
 
-				this._fitViewOptionally(olVectorLayer, olMap);
+				this._fitViewOptionally(olVectorLayer, olMap, firstFit);
+				firstFit = false;
 			}
 		};
 
