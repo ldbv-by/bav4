@@ -6,7 +6,8 @@ export const provide = (lang) => {
 				search_menu_locationResultsPanel_label: 'Places',
 				search_menu_geoResourceResultsPanel_label: 'Data',
 				search_menu_cpResultsPanel_label: 'Cadastral parcel',
-				search_menu_showAll_label: 'Show more...'
+				search_menu_showAll_label: 'Show more...',
+				search_result_item_zoom_to_extent: 'Zoom to extent'
 			};
 
 		case 'de':
@@ -15,7 +16,8 @@ export const provide = (lang) => {
 				search_menu_locationResultsPanel_label: 'Orte',
 				search_menu_geoResourceResultsPanel_label: 'Daten',
 				search_menu_cpResultsPanel_label: 'Flurstücke',
-				search_menu_showAll_label: 'Mehr...'
+				search_menu_showAll_label: 'Mehr...',
+				search_result_item_zoom_to_extent: 'Auf Inhalt zoomen'
 			};
 
 		default:

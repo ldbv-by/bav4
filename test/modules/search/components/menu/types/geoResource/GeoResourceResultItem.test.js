@@ -1,17 +1,17 @@
-import { createDefaultLayer, layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
-import { createNoInitialStateMainMenuReducer } from '../../../../../../../src/store/mainMenu/mainMenu.reducer';
+import { GeoResourceFuture, VectorGeoResource } from '../../../../../../../src/domain/geoResources';
+import { TabIds } from '../../../../../../../src/domain/mainMenu';
+import { $injector } from '../../../../../../../src/injection';
+import { Spinner } from '../../../../../../../src/modules/commons/components/spinner/Spinner';
 import {
 	GeoResourceResultItem,
 	LOADING_PREVIEW_DELAY_MS
 } from '../../../../../../../src/modules/search/components/menu/types/geoResource/GeoResourceResultItem';
 import { GeoResourceSearchResult } from '../../../../../../../src/modules/search/services/domain/searchResult';
-import { TestUtils } from '../../../../../../test-utils.js';
+import { createDefaultLayer, layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
+import { createNoInitialStateMainMenuReducer } from '../../../../../../../src/store/mainMenu/mainMenu.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../../../../src/store/media/media.reducer';
-import { TabIds } from '../../../../../../../src/domain/mainMenu';
-import { $injector } from '../../../../../../../src/injection';
 import { positionReducer } from '../../../../../../../src/store/position/position.reducer';
-import { Spinner } from '../../../../../../../src/modules/commons/components/spinner/Spinner';
-import { GeoResourceFuture } from '../../../../../../../src/domain/geoResources';
+import { TestUtils } from '../../../../../../test-utils.js';
 
 window.customElements.define(GeoResourceResultItem.tag, GeoResourceResultItem);
 
@@ -46,6 +46,7 @@ describe('GeoResourceResultItem', () => {
 		});
 
 		$injector.registerSingleton('GeoResourceService', geoResourceService);
+		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 
 		return TestUtils.render(GeoResourceResultItem.tag);
 	};
@@ -71,6 +72,8 @@ describe('GeoResourceResultItem', () => {
 
 			expect(element.shadowRoot.querySelector('li').innerText).toBe('labelFormatted');
 			expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(0); // no badge, due to empty keyword-array
+			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.ba-icon-button.ba-list-item__after')).toHaveSize(1); //placeholder
 		});
 
 		it('renders the view containing keyword badges', async () => {
@@ -84,6 +87,28 @@ describe('GeoResourceResultItem', () => {
 			expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(2);
 			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].label).toBe('Foo');
 			expect(element.shadowRoot.querySelectorAll('ba-badge')[1].label).toBe('Bar');
+			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.ba-icon-button.ba-list-item__after')).toHaveSize(1); //placeholder
+		});
+
+		it('renders a zoom to extent Button for a VectorGeoResource', async () => {
+			const geoResVector = new VectorGeoResource('geoResourceId0', async () => ({ label: 'updatedLabel' }));
+			const geoResourceId = 'geoResourceId';
+			const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
+			const element = await setup();
+			spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResVector);
+			element.data = data;
+
+			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.ba-icon-button')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item__after')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.separator')).toHaveSize(1);
+
+			const button = element.shadowRoot.querySelector('ba-icon');
+			expect(button.title).toBe('search_result_item_zoom_to_extent');
+			expect(button.size).toBe(2);
+			expect(button.color).toBe('var(--primary-color)');
+			expect(button.color_hover).toBe('var(--text3)');
 		});
 	});
 
@@ -114,7 +139,6 @@ describe('GeoResourceResultItem', () => {
 					expect(store.getState().layers.active[0].id).toBe(GeoResourceResultItem._tmpLayerId(geoResourceId));
 					expect(store.getState().layers.active[0].constraints.hidden).toBeTrue();
 					expect(store.getState().layers.active[0].geoResourceId).toBe(geoResourceId);
-					expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 					expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(0);
 					expect(target.classList.contains('loading')).toBeFalse();
 				});
@@ -153,7 +177,6 @@ describe('GeoResourceResultItem', () => {
 				expect(store.getState().layers.active.length).toBe(1);
 				expect(store.getState().layers.active[0].id).toBe(GeoResourceResultItem._tmpLayerId(geoResourceId));
 				expect(store.getState().layers.active[0].geoResourceId).toBe(geoResourceId);
-				expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 				expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(1);
 				expect(element.shadowRoot.querySelector(Spinner.tag).label).toBe('labelFormatted');
 				expect(target.classList.contains('loading')).toBeTrue();
@@ -253,6 +276,21 @@ describe('GeoResourceResultItem', () => {
 				target.click();
 
 				expect(store.getState().mainMenu.open).toBeFalse();
+			});
+		});
+
+		describe('on click icon button', () => {
+			it('zoom to extent', async () => {
+				const geoResVector = new VectorGeoResource('geoResourceId0', async () => ({ label: 'updatedLabel' }));
+				const geoResourceId = 'geoResourceId';
+				const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
+				const element = await setup();
+				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResVector);
+				element.data = data;
+
+				const button = element.shadowRoot.querySelector('ba-icon');
+				button.click();
+				expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 			});
 		});
 	});
