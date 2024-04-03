@@ -70,7 +70,7 @@ describe('GeoResourceResultItem', () => {
 
 			element.data = data;
 
-			expect(element.shadowRoot.querySelector('li').innerText).toBe('labelFormatted');
+			expect(element.shadowRoot.querySelector('li .ba-list-item__text').innerText).toBe('labelFormatted');
 			expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(0); // no badge, due to empty keyword-array
 			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.ba-icon-button.ba-list-item__after')).toHaveSize(1); //placeholder
@@ -83,7 +83,7 @@ describe('GeoResourceResultItem', () => {
 
 			element.data = data;
 
-			expect(element.shadowRoot.querySelector('li').innerText).toBe('labelFormatted');
+			expect(element.shadowRoot.querySelector('li .ba-list-item__text').innerText).toBe('labelFormatted');
 			expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(2);
 			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].label).toBe('Foo');
 			expect(element.shadowRoot.querySelectorAll('ba-badge')[1].label).toBe('Bar');
@@ -185,7 +185,7 @@ describe('GeoResourceResultItem', () => {
 
 				expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(0);
 				expect(target.classList.contains('loading')).toBeFalse();
-				expect(element.shadowRoot.querySelector('li').innerText).toBe('labelFormatted');
+				expect(element.shadowRoot.querySelector('li .ba-list-item__text').innerText).toBe('labelFormatted');
 			});
 		});
 
