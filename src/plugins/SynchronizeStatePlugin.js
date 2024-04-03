@@ -1,5 +1,5 @@
 /**
- * @module plugins/HistoryStatePlugin
+ * @module plugins/SynchronizeStatePlugin
  */
 import { $injector } from '../injection';
 import { BvvComponent } from '../modules/wc/components/BvvComponent';
