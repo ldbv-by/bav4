@@ -7,7 +7,7 @@ import { Server as WebsocketMockServer } from 'mock-socket';
 import VectorLayer from 'ol/layer/Vector';
 import { UnavailableGeoResourceError } from '../../../../src/domain/errors';
 import { positionReducer } from '../../../../src/store/position/position.reducer';
-import { getCenter } from 'ol/extent';
+
 describe('RtVectorLayerService', () => {
 	const mapService = {
 		getSrid: () => 3857
