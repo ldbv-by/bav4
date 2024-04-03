@@ -41,7 +41,7 @@ import { SecurityService } from '../services/SecurityService';
 import { ImportWmsService } from '../services/ImportWmsService';
 import { BaaCredentialService } from '../services/BaaCredentialService';
 import { SearchPlugin } from '../plugins/SearchPlugin';
-import { HistoryStatePlugin } from '../plugins/HistoryStatePlugin';
+import { SynchronizeStatePlugin } from '../plugins/SynchronizeStatePlugin';
 import { BvvMfpService } from '../services/MfpService';
 import { ChipsConfigurationService } from '../services/ChipsConfigurationService';
 import { ExportMfpPlugin } from '../plugins/ExportMfpPlugin';
@@ -124,7 +124,7 @@ $injector
 	.registerSingleton('ToolsPlugin', new ToolsPlugin())
 	.registerSingleton('BeforeUnloadPlugin', new BeforeUnloadPlugin())
 	.registerSingleton('IframeGeometryIdPlugin', new IframeGeometryIdPlugin())
-	.registerSingleton('HistoryStatePlugin', new HistoryStatePlugin())
+	.registerSingleton('SynchronizeStatePlugin', new SynchronizeStatePlugin())
 	.registerSingleton('ObserveStateForEncodingPlugin', new ObserveStateForEncodingPlugin())
 	.registerModule(mapModule)
 	.registerModule(topicsModule)

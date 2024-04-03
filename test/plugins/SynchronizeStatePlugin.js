@@ -1,11 +1,11 @@
 import { $injector } from '../../src/injection';
 import { BvvComponent } from '../../src/modules/wc/components/BvvComponent';
-import { HistoryStatePlugin } from '../../src/plugins/HistoryStatePlugin';
+import { SynchronizeStatePlugin } from '../../src/plugins/SynchronizeStatePlugin';
 import { indicateChange } from '../../src/store/stateForEncoding/stateForEncoding.action';
 import { stateForEncodingReducer } from '../../src/store/stateForEncoding/stateForEncoding.reducer';
 import { TestUtils } from '../test-utils';
 
-describe('HistoryState', () => {
+describe('SynchronizeStatePlugin', () => {
 	const shareService = {
 		encodeState() {}
 	};
@@ -35,7 +35,7 @@ describe('HistoryState', () => {
 		spyOn(environmentService, 'isEmbedded').and.returnValue(false);
 		spyOn(shareService, 'encodeState').and.returnValue(expectedEncodedState);
 		const store = setup();
-		const instanceUnderTest = new HistoryStatePlugin();
+		const instanceUnderTest = new SynchronizeStatePlugin();
 		await instanceUnderTest.register(store);
 
 		indicateChange();
@@ -55,7 +55,7 @@ describe('HistoryState', () => {
 		spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(true);
 		spyOn(shareService, 'encodeState').and.returnValue('http://some.thing?foo=bar');
 		const store = setup();
-		const instanceUnderTest = new HistoryStatePlugin();
+		const instanceUnderTest = new SynchronizeStatePlugin();
 		await instanceUnderTest.register(store);
 
 		indicateChange();
@@ -67,7 +67,7 @@ describe('HistoryState', () => {
 	it("does nothing when we are in 'embed' mode", async () => {
 		spyOn(environmentService, 'isEmbedded').and.returnValue(true);
 		const store = setup();
-		const instanceUnderTest = new HistoryStatePlugin();
+		const instanceUnderTest = new SynchronizeStatePlugin();
 		const updateHistorySpy = spyOn(instanceUnderTest, '_updateHistory');
 		await instanceUnderTest.register(store);
 

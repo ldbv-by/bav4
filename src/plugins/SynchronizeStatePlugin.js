@@ -7,10 +7,12 @@ import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 
 /**
+ * Synchronizes the current state of the app by updating the history of the window or, when embedded as a web component, its the attributes
+ *
  * @class
  * @author taulinger
  */
-export class HistoryStatePlugin extends BaPlugin {
+export class SynchronizeStatePlugin extends BaPlugin {
 	constructor() {
 		super();
 		const { EnvironmentService: environmentService, ShareService: shareService } = $injector.inject('EnvironmentService', 'ShareService');

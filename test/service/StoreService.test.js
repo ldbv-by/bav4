@@ -82,7 +82,7 @@ describe('StoreService', () => {
 		const iframeGeometryIdPluginMock = {
 			register: () => {}
 		};
-		const historyStatePluginMock = {
+		const synchronizeStatePluginMock = {
 			register: () => {}
 		};
 		const observeStateForEncodingPluginMock = {
@@ -126,7 +126,7 @@ describe('StoreService', () => {
 				.registerSingleton('ToolsPlugin', toolsPluginMock)
 				.registerSingleton('BeforeUnloadPlugin', beforeUnloadPluginMock)
 				.registerSingleton('IframeGeometryIdPlugin', iframeGeometryIdPluginMock)
-				.registerSingleton('HistoryStatePlugin', historyStatePluginMock)
+				.registerSingleton('SynchronizeStatePlugin', synchronizeStatePluginMock)
 				.registerSingleton('ObserveStateForEncodingPlugin', observeStateForEncodingPluginMock)
 
 				.ready();
@@ -198,7 +198,7 @@ describe('StoreService', () => {
 			const toolsPluginSpy = spyOn(toolsPluginMock, 'register');
 			const beforeUnloadPluginSpy = spyOn(beforeUnloadPluginMock, 'register');
 			const iframeGeometryIdPluginSpy = spyOn(iframeGeometryIdPluginMock, 'register');
-			const historyStatePluginSpy = spyOn(historyStatePluginMock, 'register');
+			const historyStatePluginSpy = spyOn(synchronizeStatePluginMock, 'register');
 			const observeStateForEncodingPluginSpy = spyOn(observeStateForEncodingPluginMock, 'register');
 			const instanceUnderTest = new StoreService();
 

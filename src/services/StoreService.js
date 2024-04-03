@@ -108,7 +108,7 @@ export class StoreService {
 				ToolsPlugin: toolsPlugin,
 				BeforeUnloadPlugin: beforeUnloadPlugin,
 				IframeGeometryIdPlugin: iframeGeometryIdPlugin,
-				HistoryStatePlugin: historyStatePlugin,
+				SynchronizeStatePlugin: synchronizeStatePlugin,
 				ObserveStateForEncodingPlugin: observeStateForEncodingPlugin
 			} = $injector.inject(
 				'GlobalErrorPlugin',
@@ -137,7 +137,7 @@ export class StoreService {
 				'ToolsPlugin',
 				'BeforeUnloadPlugin',
 				'IframeGeometryIdPlugin',
-				'HistoryStatePlugin',
+				'SynchronizeStatePlugin',
 				'ObserveStateForEncodingPlugin'
 			);
 
@@ -169,7 +169,7 @@ export class StoreService {
 				await toolsPlugin.register(this._store);
 				await beforeUnloadPlugin.register(this._store);
 				await iframeGeometryIdPlugin.register(this._store);
-				await historyStatePlugin.register(this._store);
+				await synchronizeStatePlugin.register(this._store);
 				await observeStateForEncodingPlugin.register(this._store); // should be registered as last plugin
 			});
 		});
