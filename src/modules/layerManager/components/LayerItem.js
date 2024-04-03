@@ -16,7 +16,7 @@ import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/
 import { openModal } from '../../../../src/store/modal/modal.action';
 import { createUniqueId } from '../../../utils/numberUtils';
 import { fitLayer } from '../../../store/position/position.action';
-import { GeoResourceFuture, VectorGeoResource } from '../../../domain/geoResources';
+import { GeoResourceFuture, RtVectorGeoResource, VectorGeoResource } from '../../../domain/geoResources';
 import { MenuTypes } from '../../commons/components/overflowMenu/OverflowMenu';
 
 const Update_Layer = 'update_layer';
@@ -221,7 +221,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 					label: translate('layerManager_zoom_to_extent'),
 					icon: zoomToExtentSvg,
 					action: zoomToExtent,
-					disabled: !(geoResource instanceof VectorGeoResource)
+					disabled: !(geoResource instanceof VectorGeoResource || geoResource instanceof RtVectorGeoResource)
 				},
 				{ id: 'info', label: 'Info', icon: infoSvg, action: openGeoResourceInfoPanel, disabled: !layer.constraints?.metaData }
 			];
