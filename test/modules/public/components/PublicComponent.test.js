@@ -1,24 +1,24 @@
-import { BvvComponent } from '../../../../src/modules/wc/components/BvvComponent';
+import { PublicComponent } from '../../../../src/modules/public/components/PublicComponent';
 import { TestUtils } from '../../../test-utils';
 
-window.customElements.define(BvvComponent.tag, BvvComponent);
+window.customElements.define(PublicComponent.tag, PublicComponent);
 
-describe('BaseLayerInfo', () => {
+describe('PublicComponent', () => {
 	const setup = (state) => {
 		TestUtils.setupStoreAndDi(state);
-		return TestUtils.render(BvvComponent.tag);
+		return TestUtils.render(PublicComponent.tag);
 	};
 
 	describe('tag', () => {
 		it('sets a default model', () => {
-			expect(BvvComponent.tag).toBe('bayern-atlas');
+			expect(PublicComponent.tag).toBe('bayern-atlas');
 		});
 	});
 
 	describe('constructor', () => {
 		it('sets a default model', () => {
 			setup();
-			const element = new BvvComponent();
+			const element = new PublicComponent();
 
 			expect(element.getModel()).toEqual({});
 		});

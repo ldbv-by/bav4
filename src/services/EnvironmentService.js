@@ -3,7 +3,7 @@
  */
 import { QueryParameters } from '../domain/queryParameters';
 import { $injector } from '../injection';
-import { BvvComponent } from '../modules/wc/components/BvvComponent';
+import { PublicComponent } from '../modules/public/components/PublicComponent';
 
 /**
  * @class
@@ -25,7 +25,7 @@ export class EnvironmentService {
 	 */
 	getQueryParams() {
 		if (this.isEmbeddedAsWC()) {
-			const element = this._window.document.querySelector(BvvComponent.tag);
+			const element = this._window.document.querySelector(PublicComponent.tag);
 			const attrNames = element.getAttributeNames();
 
 			const usp = new URLSearchParams();
@@ -109,7 +109,7 @@ export class EnvironmentService {
 	 * @returns `true` if we are in embedded due to a Web Component
 	 */
 	isEmbeddedAsWC() {
-		return !!this._window.customElements.get(BvvComponent.tag);
+		return !!this._window.customElements.get(PublicComponent.tag);
 	}
 
 	/**

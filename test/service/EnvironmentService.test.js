@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import { QueryParameters } from '../../src/domain/queryParameters';
 import { $injector } from '../../src/injection';
-import { BvvComponent } from '../../src/modules/wc/components/BvvComponent';
+import { PublicComponent } from '../../src/modules/public/components/PublicComponent';
 import { EnvironmentService } from '../../src/services/EnvironmentService';
 
 describe('EnvironmentService', () => {
@@ -52,7 +52,7 @@ describe('EnvironmentService', () => {
 			const mockWindow = { document: mockDocument };
 			const mockElement = { getAttributeNames: () => {}, getAttribute: () => {} };
 			const instanceUnderTest = new EnvironmentService(mockWindow);
-			spyOn(mockDocument, 'querySelector').withArgs(BvvComponent.tag).and.returnValue(mockElement);
+			spyOn(mockDocument, 'querySelector').withArgs(PublicComponent.tag).and.returnValue(mockElement);
 			spyOn(instanceUnderTest, 'isEmbeddedAsWC').and.returnValue(true);
 			spyOn(mockElement, 'getAttributeNames').and.returnValue([QueryParameters.CROSSHAIR, 'style']);
 			const getAttributeSpy = spyOn(mockElement, 'getAttribute').withArgs(QueryParameters.CROSSHAIR).and.returnValue('true');
@@ -228,7 +228,7 @@ describe('EnvironmentService', () => {
 
 			mockWindow = {
 				customElements: {
-					get: (tag) => (tag === BvvComponent.tag ? true : false)
+					get: (tag) => (tag === PublicComponent.tag ? true : false)
 				}
 			};
 			instanceUnderTest = new EnvironmentService(mockWindow);

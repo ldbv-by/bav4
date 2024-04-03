@@ -1,5 +1,5 @@
 import { $injector } from '../../src/injection';
-import { BvvComponent } from '../../src/modules/wc/components/BvvComponent';
+import { PublicComponent } from '../../src/modules/public/components/PublicComponent';
 import { SynchronizeStatePlugin } from '../../src/plugins/SynchronizeStatePlugin';
 import { indicateChange } from '../../src/store/stateForEncoding/stateForEncoding.action';
 import { stateForEncodingReducer } from '../../src/store/stateForEncoding/stateForEncoding.reducer';
@@ -50,7 +50,7 @@ describe('SynchronizeStatePlugin', () => {
 		const mockWindow = { document: mockDocument };
 		const setAttributeSpy = spyOn(mockElement, 'setAttribute');
 		spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
-		spyOn(mockDocument, 'querySelector').withArgs(BvvComponent.tag).and.returnValue(mockElement);
+		spyOn(mockDocument, 'querySelector').withArgs(PublicComponent.tag).and.returnValue(mockElement);
 		spyOn(environmentService, 'isEmbedded').and.returnValue(true);
 		spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(true);
 		spyOn(shareService, 'encodeState').and.returnValue('http://some.thing?foo=bar');

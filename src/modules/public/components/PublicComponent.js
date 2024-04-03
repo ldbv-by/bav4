@@ -1,4 +1,7 @@
-import { html } from '../../../../node_modules/lit-html/lit-html';
+/**
+ * @module modules/public/components/PublicComponent
+ */
+import { html } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
 
 /**
@@ -7,7 +10,7 @@ import { MvuElement } from '../../MvuElement';
  * @class
  */
 
-export class BvvComponent extends MvuElement {
+export class PublicComponent extends MvuElement {
 	createView() {
 		//same as in embed.html
 		return html`

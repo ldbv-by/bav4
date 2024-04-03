@@ -1,8 +1,8 @@
 // register required modules (same as for iframe)
 import './embed';
 
-import { BvvComponent } from './modules/wc/components/BvvComponent';
+import { PublicComponent } from './modules/public/components/PublicComponent';
 
-if (!customElements.get(BvvComponent.tag)) {
-	window.customElements.define(BvvComponent.tag, BvvComponent);
+if (!customElements.get(PublicComponent.tag)) {
+	window.customElements.define(PublicComponent.tag, PublicComponent);
 }

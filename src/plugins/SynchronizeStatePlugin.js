@@ -2,7 +2,7 @@
  * @module plugins/SynchronizeStatePlugin
  */
 import { $injector } from '../injection';
-import { BvvComponent } from '../modules/wc/components/BvvComponent';
+import { PublicComponent } from '../modules/public/components/PublicComponent';
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 
@@ -46,7 +46,7 @@ export class SynchronizeStatePlugin extends BaPlugin {
 	_updateWcAttributes() {
 		const params = new URLSearchParams(new URL(this._shareService.encodeState()).search);
 		for (const [key, value] of params) {
-			this._environmentService.getWindow().document.querySelector(BvvComponent.tag).setAttribute(key, value);
+			this._environmentService.getWindow().document.querySelector(PublicComponent.tag).setAttribute(key, value);
 		}
 	}
 }
