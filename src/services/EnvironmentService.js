@@ -1,6 +1,7 @@
 /**
  * @module services/EnvironmentService
  */
+import { QueryParameters } from '../domain/queryParameters';
 import { $injector } from '../injection';
 import { BvvComponent } from '../modules/wc/components/BvvComponent';
 
@@ -19,9 +20,23 @@ export class EnvironmentService {
 	}
 
 	/**
+	 * Returns the current query parameters. May retrieve the "query parameters" from the attributes of an embedded web component
 	 * @returns the current `URLSearchParams`
 	 */
 	getQueryParams() {
+		if (this.isEmbeddedAsWC()) {
+			const element = this._window.document.querySelector(BvvComponent.tag);
+			const attrNames = element.getAttributeNames();
+
+			const usp = new URLSearchParams();
+			attrNames
+				.filter((n) => Object.values(QueryParameters).includes(n))
+				.forEach((n) => {
+					usp.set(n, element.getAttribute(n));
+				});
+
+			return usp;
+		}
 		return new URLSearchParams(this._window.location.search);
 	}
 

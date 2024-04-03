@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+import { QueryParameters } from '../../src/domain/queryParameters';
 import { $injector } from '../../src/injection';
 import { BvvComponent } from '../../src/modules/wc/components/BvvComponent';
 import { EnvironmentService } from '../../src/services/EnvironmentService';
@@ -32,16 +33,34 @@ describe('EnvironmentService', () => {
 	});
 
 	describe('query parameter', () => {
-		it('provides current query parameter', () => {
+		it('provides current query parameter from the location search object', () => {
 			const mockWindow = {
 				location: {
 					search: '?foo=true'
 				}
 			};
 			const instanceUnderTest = new EnvironmentService(mockWindow);
+			spyOn(instanceUnderTest, 'isEmbeddedAsWC').and.returnValue(false);
 
+			expect(instanceUnderTest.getQueryParams().size).toBe(1);
 			expect(instanceUnderTest.getQueryParams().has('foo')).toBeTrue();
-			expect(instanceUnderTest.getQueryParams().has('bar')).toBeFalse();
+			expect(instanceUnderTest.getQueryParams().get('foo')).toBe('true');
+		});
+
+		it('provides current query parameter from the attributes of an embedded web component and filters attributes that do not match valid query parameters', () => {
+			const mockDocument = { querySelector: () => {} };
+			const mockWindow = { document: mockDocument };
+			const mockElement = { getAttributeNames: () => {}, getAttribute: () => {} };
+			const instanceUnderTest = new EnvironmentService(mockWindow);
+			spyOn(mockDocument, 'querySelector').withArgs(BvvComponent.tag).and.returnValue(mockElement);
+			spyOn(instanceUnderTest, 'isEmbeddedAsWC').and.returnValue(true);
+			spyOn(mockElement, 'getAttributeNames').and.returnValue([QueryParameters.CROSSHAIR, 'style']);
+			const getAttributeSpy = spyOn(mockElement, 'getAttribute').withArgs(QueryParameters.CROSSHAIR).and.returnValue('true');
+
+			expect(instanceUnderTest.getQueryParams().size).toBe(1);
+			expect(instanceUnderTest.getQueryParams().has(QueryParameters.CROSSHAIR)).toBeTrue();
+			expect(instanceUnderTest.getQueryParams().get(QueryParameters.CROSSHAIR)).toBe('true');
+			expect(getAttributeSpy).not.toHaveBeenCalledWith('style');
 		});
 	});
 
