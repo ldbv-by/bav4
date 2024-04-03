@@ -1,4 +1,5 @@
 import { $injector } from '../../src/injection';
+import { BvvComponent } from '../../src/modules/wc/components/BvvComponent';
 import { HistoryStatePlugin } from '../../src/plugins/HistoryStatePlugin';
 import { indicateChange } from '../../src/store/stateForEncoding/stateForEncoding.action';
 import { stateForEncodingReducer } from '../../src/store/stateForEncoding/stateForEncoding.reducer';
@@ -10,7 +11,8 @@ describe('HistoryState', () => {
 	};
 	const environmentService = {
 		getWindow: () => {},
-		isEmbedded: () => {}
+		isEmbedded: () => {},
+		isEmbeddedAsWC: () => {}
 	};
 
 	const setup = () => {
@@ -39,6 +41,26 @@ describe('HistoryState', () => {
 		indicateChange();
 
 		expect(historySpy).toHaveBeenCalledWith(null, '', expectedEncodedState);
+		await TestUtils.timeout(0);
+	});
+
+	it('registers stateForEncoding.changed listeners and updates the attributes of an embedded wc', async () => {
+		const mockElement = { setAttribute: () => {} };
+		const mockDocument = { querySelector: () => {} };
+		const mockWindow = { document: mockDocument };
+		const setAttributeSpy = spyOn(mockElement, 'setAttribute');
+		spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+		spyOn(mockDocument, 'querySelector').withArgs(BvvComponent.tag).and.returnValue(mockElement);
+		spyOn(environmentService, 'isEmbedded').and.returnValue(true);
+		spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(true);
+		spyOn(shareService, 'encodeState').and.returnValue('http://some.thing?foo=bar');
+		const store = setup();
+		const instanceUnderTest = new HistoryStatePlugin();
+		await instanceUnderTest.register(store);
+
+		indicateChange();
+
+		expect(setAttributeSpy).toHaveBeenCalledWith('foo', 'bar');
 		await TestUtils.timeout(0);
 	});
 
