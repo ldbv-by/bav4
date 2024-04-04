@@ -4,7 +4,7 @@
 import { $injector } from '../../../injection';
 import { OverlayStyle } from './OverlayStyle';
 import { MeasurementOverlayTypes } from '../components/MeasurementOverlay';
-import { getAzimuth, getGeometryLength, PROJECTED_LENGTH_GEOMETRY_PROPERTY, getLineString, getPartitionDeltaFrom } from '../utils/olGeometryUtils';
+import { getAzimuth, PROJECTED_LENGTH_GEOMETRY_PROPERTY, getLineString, getPartitionDeltaFrom, getPartitionDelta } from '../utils/olGeometryUtils';
 import Overlay from 'ol/Overlay';
 import { LineString, Polygon } from 'ol/geom';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
@@ -282,7 +282,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 			const segment = new LineString([from, to]);
 
 			const currentLength = collectedSegments.length + segment.getLength();
-			const currentMinPartition = currentLength / getGeometryLength(lineString);
+			const currentMinPartition = currentLength / this._mapService.calcLength(lineString.getCoordinates());
 			const azimuth = getAzimuth(segment);
 			partitions.forEach((overlay) => {
 				const element = overlay.getElement();

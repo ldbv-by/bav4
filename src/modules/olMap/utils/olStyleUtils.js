@@ -7,7 +7,9 @@ import {
 	getPartitionDelta,
 	moveParallel,
 	getLineString,
-	PROJECTED_LENGTH_GEOMETRY_PROPERTY
+	PROJECTED_LENGTH_GEOMETRY_PROPERTY,
+	isClockwise,
+	isPolygon
 } from './olGeometryUtils';
 import { toContext as toCanvasContext } from 'ol/render';
 import { Fill, Stroke, Style, Circle as CircleStyle, Icon, Text as TextStyle } from 'ol/style';
@@ -503,8 +505,6 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 
 	// baseLine
 	contextRenderFunction(pixelGeometry, fill, baseStroke);
-
-	const residuals = calculatePartitionResidualOfSegments(pixelGeometry, partition);
 
 	// per segment
 	const createSegments = (coordinatesArray) => {

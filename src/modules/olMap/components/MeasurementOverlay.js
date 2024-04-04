@@ -112,7 +112,7 @@ export class MeasurementOverlay extends BaOverlay {
 				this._content = getArea();
 				break;
 			case MeasurementOverlayTypes.DISTANCE_PARTITION:
-				this._position = getCoordinateAt(this.geometry, this._value);
+				this._position = getCoordinateAt(this._geodesic ?? this.geometry, this._value);
 				this._content = getStaticDistance();
 				break;
 			case MeasurementOverlayTypes.DISTANCE:
@@ -127,7 +127,6 @@ export class MeasurementOverlay extends BaOverlay {
 	}
 
 	_getContent(type) {
-		const length = this.geodesic ? this.geodesic.length : getGeometryLength(this._geometry, this._projectionHints);
 		switch (type) {
 			case MeasurementOverlayTypes.AREA:
 			case MeasurementOverlayTypes.DISTANCE:
