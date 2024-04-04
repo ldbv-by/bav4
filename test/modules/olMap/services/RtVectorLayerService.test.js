@@ -172,7 +172,7 @@ describe('RtVectorLayerService', () => {
 				const applyStyleSpy = spyOn(vectorLayerService, 'applyStyles')
 					.withArgs(olVectorLayer, olMap)
 					.and.callFake(() => {});
-				const fitViewSpy = spyOn(instanceUnderTest, '_fitViewOptionally').and.callThrough();
+				const fitViewSpy = spyOn(instanceUnderTest, '_centerViewOptionally').and.callThrough();
 				expect(olVectorLayer.getSource().getFeatures().length).toBe(0);
 
 				mockServer.emit('message', kmlData);
@@ -200,7 +200,7 @@ describe('RtVectorLayerService', () => {
 				const applyStyleSpy = spyOn(vectorLayerService, 'applyClusterStyle')
 					.withArgs(olVectorLayer)
 					.and.callFake(() => {});
-				const fitViewSpy = spyOn(instanceUnderTest, '_fitViewOptionally').and.callThrough();
+				const fitViewSpy = spyOn(instanceUnderTest, '_centerViewOptionally').and.callThrough();
 				expect(olVectorLayer.getSource().getFeatures().length).toBe(0);
 
 				mockServer.emit('message', kmlData);
@@ -227,7 +227,7 @@ describe('RtVectorLayerService', () => {
 				spyOn(vectorLayerService, 'applyStyles')
 					.withArgs(olVectorLayer, olMap)
 					.and.callFake(() => {});
-				const fitViewSpy = spyOn(instanceUnderTest, '_fitViewOptionally')
+				const fitViewSpy = spyOn(instanceUnderTest, '_centerViewOptionally')
 					.withArgs(olVectorLayer, olMap, true)
 					.and.callThrough()
 					.withArgs(olVectorLayer, olMap, false)
@@ -260,7 +260,7 @@ describe('RtVectorLayerService', () => {
 				spyOn(vectorLayerService, 'applyStyles')
 					.withArgs(olVectorLayer, olMap)
 					.and.callFake(() => {});
-				const fitViewSpy = spyOn(instanceUnderTest, '_fitViewOptionally').and.callThrough();
+				const fitViewSpy = spyOn(instanceUnderTest, '_centerViewOptionally').and.callThrough();
 				expect(olVectorLayer.getSource().getFeatures().length).toBe(0);
 				expect(store.getState().position.fitRequest.payload).toBeNull();
 

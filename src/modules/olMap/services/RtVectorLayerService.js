@@ -94,13 +94,16 @@ export class RtVectorLayerService {
 		olVectorSource.addFeatures(features);
 	}
 
-	_fitViewOptionally(olVectorLayer, olMap, firstFit) {
+	_centerViewOptionally(olVectorLayer, olMap, useFit) {
 		const olVectorSource = olVectorLayer.getSource();
 		const mapExtent = olMap.getView().calculateExtent();
 		const vectorExtent = olVectorSource.getExtent();
 
-		const action = firstFit ? fit : (extent) => changeCenter(getCenter(extent));
+		const action = useFit ? fit : (extent) => changeCenter(getCenter(extent));
 
+		// No need to do anything, when the content is visible inside the mapExtent.
+		// Because, we cannot decide, whether the current zoom level and centering is affordable
+		// for the specific use case of the user or not.
 		if (!containsExtent(mapExtent, vectorExtent)) {
 			action(vectorExtent);
 		}
@@ -113,7 +116,7 @@ export class RtVectorLayerService {
 		const webSocket = new WebSocket(port ? this._addPortToUrl(rtVectorGeoResource.url, port) : rtVectorGeoResource.url);
 		const isUpdateNeeded = (data) => data !== WebSocket_Message_Keep_Alive;
 
-		let firstFit = true;
+		let useFit = true;
 		webSocket.onmessage = (event) => {
 			const { data: messageData } = event;
 			if (isUpdateNeeded(messageData)) {
@@ -126,8 +129,10 @@ export class RtVectorLayerService {
 					vectorLayerService.applyStyles(olVectorLayer, olMap);
 				}
 
-				this._fitViewOptionally(olVectorLayer, olMap, firstFit);
-				firstFit = false;
+				// We use the fit only with the first call, to leave the control over the zoom level by the user
+				// and to help the user in the special case, that the data of the layer is outside the view, at the beginning.
+				this._centerViewOptionally(olVectorLayer, olMap, useFit);
+				useFit = false;
 			}
 		};
 
