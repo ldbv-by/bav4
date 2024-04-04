@@ -34,13 +34,14 @@ export const getNextPort = (ports, current = 80) => {
 };
 
 /**
- * Service that creates an ol layer from a RtVectorGeoResource (Websocket)
+ * Service that creates an ol layer from a {@link RtVectorGeoResource} (Websocket)
  * and applies specific stylings if required.
  * @class
  * @author thiloSchlemmer
  */
 export class RtVectorLayerService {
 	_addPortToUrl(url, port) {
+		// todo: possible refactoring to a general network util method (UrlService)
 		const pathArray = url.split('.');
 		const applyOnLastElement = (pathElements, port) => {
 			const lastElement = pathElements[pathElements.length - 1];
@@ -86,13 +87,6 @@ export class RtVectorLayerService {
 				};
 	}
 
-	/**
-	 * Processes the messages from a websocket and updates the specified olVectorSource
-	 *
-	 * @param {string} messageData
-	 * @param {ol.layer} olVectorLayer
-	 * @param {function (string): Array<ol.Feature>} featureReader
-	 */
 	_processMessage(messageData, olVectorLayer, featureReader) {
 		const olVectorSource = olVectorLayer.getSource();
 		olVectorSource.clear();
@@ -149,15 +143,12 @@ export class RtVectorLayerService {
 		};
 	}
 
-	/**
-	 * Cascading ports in case of a connection failure.
-	 * Whether a next port is available, the nextPortCallback is called, otherwise a
-	 * UnavailableGeoResourceError is thrown.
-	 * @param {*} failedPort
-	 * @param {*} nextPortCallback
-	 * @param {*} geoResourceId
-	 */
 	_cascadingPorts(failedPort, nextPortCallback, geoResourceId) {
+		/**
+		 * Cascading ports in case of a connection failure.
+		 * Whether a next port is available, the nextPortCallback is called, otherwise a
+		 * UnavailableGeoResourceError is thrown.
+		 */
 		const tryNextPort = () => {
 			nextPortCallback(getNextPort(WebSocket_Ports, failedPort));
 		};
@@ -171,11 +162,11 @@ export class RtVectorLayerService {
 	}
 
 	/**
-	 * Builds an ol VectorLayer from an VectorGeoResource
+	 * Builds an ol VectorLayer from a {@link RtVectorGeoResource}
 	 * @param {string} id layerId
-	 * @param {RtVectorGeoResource} rtVectorGeoResource
-	 * @param {OlMap} olMap
-	 * @returns olVectorLayer
+	 * @param {RtVectorGeoResource} rtVectorGeoResource the geoResource
+	 * @param {ol.map} olMap the map
+	 * @returns {ol.layer} the vectorLayer
 	 */
 	createLayer(id, rtVectorGeoResource, olMap) {
 		const { minZoom, maxZoom, opacity } = rtVectorGeoResource;
