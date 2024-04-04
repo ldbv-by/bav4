@@ -16,8 +16,8 @@ import ImageWMS from 'ol/source/ImageWMS.js';
  * A function that returns a `ol.image.LoadFunction` for loading also restricted images via basic access authentication
  * @typedef {Function} imageLoadFunctionProvider
  * @param {string} geoResourceId The id of the corresponding GeoResource
- * @param {module:domain/credentialDef~Credential} [credential] The credential for basic access authentication (when BAA is requested)
- * @param {number[]} [maxSize] Maximum width and height of the requested image in px
+ * @param {module:domain/credentialDef~Credential|null} [credential] The credential for basic access authentication (when BAA is requested) or `null` or `undefined`
+ * @param {number[]|null} [maxSize] Maximum width and height of the requested image in px or `null` or `undefined`
  * @returns {Function} ol.image.LoadFunction
  */
 
@@ -53,8 +53,9 @@ export class LayerService {
 		const {
 			GeoResourceService: geoResourceService,
 			VectorLayerService: vectorLayerService,
+			RtVectorLayerService: rtVectorLayerService,
 			BaaCredentialService: baaCredentialService
-		} = $injector.inject('GeoResourceService', 'VectorLayerService', 'BaaCredentialService');
+		} = $injector.inject('GeoResourceService', 'VectorLayerService', 'BaaCredentialService', 'RtVectorLayerService');
 
 		const { minZoom, maxZoom, opacity } = geoResource;
 
@@ -83,11 +84,11 @@ export class LayerService {
 						if (!credential) {
 							throw new Error(`No credential available for GeoResource with id '${geoResource.id}' and url '${geoResource.url}'`);
 						}
-						imageWmsSource.setImageLoadFunction(this._imageLoadFunctionProvider(geoResource.id, credential));
+						imageWmsSource.setImageLoadFunction(this._imageLoadFunctionProvider(geoResource.id, credential, geoResource.maxSize));
 						break;
 					}
 					default: {
-						imageWmsSource.setImageLoadFunction(this._imageLoadFunctionProvider(geoResource.id));
+						imageWmsSource.setImageLoadFunction(this._imageLoadFunctionProvider(geoResource.id, null, geoResource.maxSize));
 					}
 				}
 
@@ -135,7 +136,10 @@ export class LayerService {
 			}
 
 			case GeoResourceTypes.VECTOR: {
-				return vectorLayerService.createVectorLayer(id, geoResource, olMap);
+				return vectorLayerService.createLayer(id, geoResource, olMap);
+			}
+			case GeoResourceTypes.RT_VECTOR: {
+				return rtVectorLayerService.createLayer(id, geoResource, olMap);
 			}
 
 			case GeoResourceTypes.VT: {
@@ -171,6 +175,6 @@ export class LayerService {
 				return layerGroup;
 			}
 		}
-		throw new Error(geoResource.getType() + ' currently not supported');
+		throw new Error(`GeoResource type "${geoResource.getType().description}" currently not supported`);
 	}
 }

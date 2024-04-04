@@ -46,7 +46,7 @@ describe('olLoadFunction.provider', () => {
 				const src = 'http://foo.var?WIDTH=2000&HEIGHT=2000';
 				const credential = { username: 'username', password: 'password' };
 				spyOn(httpService, 'get').and.resolveTo(new Response(null, { status: 404 }));
-				const imageLoadFunction = getBvvBaaImageLoadFunction(geoResourceId, credential);
+				const imageLoadFunction = getBvvBaaImageLoadFunction(geoResourceId, credential, null);
 
 				await expectAsync(imageLoadFunction(fakeImageWrapper, src)).toBeRejectedWith(
 					new UnavailableGeoResourceError(`Unexpected network status`, geoResourceId, 404)
@@ -73,7 +73,7 @@ describe('olLoadFunction.provider', () => {
 							})
 						})
 						.and.resolveTo(new Response(base64ImageData));
-					const imageLoadFunction = getBvvBaaImageLoadFunction(geoResourceId, credential);
+					const imageLoadFunction = getBvvBaaImageLoadFunction(geoResourceId, credential, null);
 
 					await imageLoadFunction(fakeImageWrapper, src);
 

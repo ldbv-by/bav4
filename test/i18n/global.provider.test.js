@@ -26,6 +26,7 @@ describe('global i18n', () => {
 		expect(map.global_geoResource_not_available(['id', 'Reason...'])).toBe('Failed to add a layer for the GeoResource "id" (Reason...)');
 		expect(map.global_geoResource_unauthorized).toBe('401 - Unauthorized');
 		expect(map.global_geoResource_forbidden).toBe('403 - Forbidden');
+		expect(map.global_signOut_success).toBe('Signed out successfully');
 	});
 
 	it('provides translation for de', () => {
@@ -55,10 +56,11 @@ describe('global i18n', () => {
 		);
 		expect(map.global_geoResource_unauthorized).toBe('401 - Fehlende Berechtigung');
 		expect(map.global_geoResource_forbidden).toBe('403 - Zugriff nicht erlaubt');
+		expect(map.global_signOut_success).toBe('Sie haben sich erfolgreich abgemeldet');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 19;
+		const expectedSize = 20;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

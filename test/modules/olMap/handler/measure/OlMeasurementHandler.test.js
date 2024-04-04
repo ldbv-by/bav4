@@ -70,6 +70,14 @@ describe('OlMeasurementHandler', () => {
 		}
 	};
 
+	const mapServiceMock = {
+		getSrid: () => 3857,
+		getLocalProjectedSrid: () => 25832,
+		getLocalProjectedSridExtent: () => [5, -80, 14, 80],
+		calcLength: () => 1,
+		calcArea: () => 1
+	};
+
 	const interactionStorageServiceMock = {
 		async store() {},
 		isValid() {
@@ -142,11 +150,7 @@ describe('OlMeasurementHandler', () => {
 		});
 		$injector
 			.registerSingleton('TranslationService', translationServiceMock)
-			.registerSingleton('MapService', {
-				getSrid: () => 3857,
-				getLocalProjectedSrid: () => 25832,
-				getLocalProjectedSridExtent: () => [5, -80, 14, 80]
-			})
+			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('InteractionStorageService', interactionStorageServiceMock)
@@ -797,6 +801,7 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest.activate(map);
 			classUnderTest._sketchHandler.activate(feature);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			spyOn(mapServiceMock, 'calcLength').and.returnValue(1234);
 			feature.getGeometry().dispatchEvent('change');
 
 			expect(feature.get('partitions').length).toBe(12);
@@ -1376,6 +1381,8 @@ describe('OlMeasurementHandler', () => {
 
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			spyOn(mapServiceMock, 'calcLength').and.returnValue(500);
+			spyOn(mapServiceMock, 'calcArea').and.returnValue(0);
 			firstPointGeometry.setCoordinates([
 				[
 					[0, 0],
@@ -1384,8 +1391,8 @@ describe('OlMeasurementHandler', () => {
 				]
 			]);
 			feature.getGeometry().dispatchEvent('change');
-			expect(store.getState().measurement.statistic.length).toBeCloseTo(500, 0);
-			expect(store.getState().measurement.statistic.area).toBeCloseTo(0, 1);
+			expect(store.getState().measurement.statistic.length).toBe(500);
+			expect(store.getState().measurement.statistic.area).toBe(0);
 		});
 
 		it('change measureState, when mouse enters draggable overlay', () => {
@@ -1922,6 +1929,7 @@ describe('OlMeasurementHandler', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const layer = classUnderTest.activate(map);
 			layer.getSource().addFeature(feature);
+			spyOn(mapServiceMock, 'calcLength').and.returnValue(3);
 			finish();
 
 			map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
@@ -1931,7 +1939,7 @@ describe('OlMeasurementHandler', () => {
 			// select
 			classUnderTest._measureState.type = InteractionStateType.SELECT;
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
-			expect(store.getState().measurement.statistic.length).toBeCloseTo(3, 1);
+			expect(store.getState().measurement.statistic.length).toBe(3);
 			expect(store.getState().measurement.statistic.area).toBeCloseTo(1, 1);
 		});
 
@@ -1968,7 +1976,7 @@ describe('OlMeasurementHandler', () => {
 			// first select
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 1, 0);
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
-			expect(store.getState().measurement.statistic.length).toBeCloseTo(3, 1);
+			expect(store.getState().measurement.statistic.length).toBeCloseTo(1, 1);
 			expect(store.getState().measurement.statistic.area).toBeCloseTo(1, 1);
 
 			map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
@@ -1977,7 +1985,7 @@ describe('OlMeasurementHandler', () => {
 
 			// second select
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 5, 0);
-			expect(store.getState().measurement.statistic.length).toBeCloseTo(8, 0);
+			expect(store.getState().measurement.statistic.length).toBeCloseTo(2, 0);
 			expect(store.getState().measurement.statistic.area).toBeCloseTo(1, 1);
 		});
 

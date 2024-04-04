@@ -14,6 +14,7 @@ import VanillaSwipe from 'vanilla-swipe';
 import { setCurrentTool } from '../../../store/tools/tools.action';
 import { Tools } from '../../../domain/tools';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { nothing } from '../../../../node_modules/ol/pixel';
 
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_Fetching = 'update_fetching';
@@ -21,6 +22,7 @@ const Update_Layers = 'update_layers';
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
 const Update_SearchTerm = 'update_searchTerm';
 const Update_IsOpen_NavigationRail = 'update_isOpen_NavigationRail';
+const Update_Auth = 'update_auth';
 
 /**
  * Container element for header stuff.
@@ -29,6 +31,10 @@ const Update_IsOpen_NavigationRail = 'update_isOpen_NavigationRail';
  * @author alsturm
  */
 export class Header extends MvuElement {
+	#authService;
+	#environmentService;
+	#translationService;
+
 	constructor() {
 		super({
 			isOpen: false,
@@ -41,13 +47,15 @@ export class Header extends MvuElement {
 			isOpenNavigationRail: false
 		});
 
-		const { EnvironmentService: environmentService, TranslationService: translationService } = $injector.inject(
-			'EnvironmentService',
-			'TranslationService'
-		);
+		const {
+			EnvironmentService: environmentService,
+			TranslationService: translationService,
+			AuthService: authService
+		} = $injector.inject('EnvironmentService', 'TranslationService', 'AuthService');
 
-		this._environmentService = environmentService;
-		this._translationService = translationService;
+		this.#environmentService = environmentService;
+		this.#translationService = translationService;
+		this.#authService = authService;
 	}
 
 	update(type, data, model) {
@@ -64,6 +72,8 @@ export class Header extends MvuElement {
 				return { ...model, searchTerm: data };
 			case Update_IsOpen_NavigationRail:
 				return { ...model, ...data };
+			case Update_Auth:
+				return { ...model, signedIn: data };
 		}
 	}
 
@@ -96,6 +106,10 @@ export class Header extends MvuElement {
 			(state) => state.navigationRail,
 			(navigationRail) => this.signal(Update_IsOpen_NavigationRail, { isOpenNavigationRail: navigationRail.open })
 		);
+		this.observe(
+			(state) => state.auth.signedIn,
+			(signedIn) => this.signal(Update_Auth, signedIn)
+		);
 	}
 
 	onAfterRender(firsttime) {
@@ -125,11 +139,11 @@ export class Header extends MvuElement {
 	}
 
 	isRenderingSkipped() {
-		return this._environmentService.isEmbedded();
+		return this.#environmentService.isEmbedded();
 	}
 
 	createView(model) {
-		const { isOpen, isOpenNavigationRail, tabIndex, isFetching, layers, isPortrait, hasMinWidth, searchTerm } = model;
+		const { isOpen, isOpenNavigationRail, tabIndex, isFetching, layers, isPortrait, hasMinWidth, searchTerm, signedIn } = model;
 
 		const getAnimatedBorderClass = () => {
 			return isFetching ? 'animated-action-button__border__running' : '';
@@ -144,11 +158,19 @@ export class Header extends MvuElement {
 		};
 
 		const getBadgeText = () => {
-			return this._environmentService.isStandalone() ? translate('header_logo_badge_standalone') : translate('header_logo_badge');
+			return this.#environmentService.isStandalone()
+				? translate('header_logo_badge_standalone')
+				: signedIn
+					? this.#authService.getRoles().join(' ')
+					: translate('header_logo_badge');
+		};
+
+		const getBadgeClass = () => {
+			return signedIn ? 'badge-signed-in' : 'badge-default';
 		};
 
 		const getEmblem = () => {
-			return this._environmentService.isStandalone()
+			return this.#environmentService.isStandalone()
 				? html`<a
 						href="${translate('header_emblem_link_standalone')}"
 						title="${translate('header_emblem_title_standalone')}"
@@ -231,6 +253,16 @@ export class Header extends MvuElement {
 			input.dispatchEvent(new Event('input'));
 		};
 
+		const getIsSignedInBadge = () => {
+			return signedIn
+				? html`
+						<div class="badges-signed-in">
+							<div class="badges-signed-in-icon"></div>
+						</div>
+					`
+				: nothing;
+		};
+
 		const classes = {
 			'is-open': isOpen && !isPortrait,
 			'is-open-navigationRail': isOpenNavigationRail && !isPortrait,
@@ -238,10 +270,10 @@ export class Header extends MvuElement {
 			'is-tablet': !hasMinWidth,
 			'is-portrait': isPortrait,
 			'is-landscape': !isPortrait,
-			'is-demo': this._environmentService.isStandalone()
+			'is-demo': this.#environmentService.isStandalone()
 		};
 
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key) => this.#translationService.translate(key);
 		return html`
 			<style>${css}</style>
 			<div class="preload">
@@ -257,7 +289,7 @@ export class Header extends MvuElement {
 						</div>
 						<div id='header__text' class='header__text'>
 						</div>
-						<div class='header__logo-badge'>										
+						<div class='header__logo-badge  ${getBadgeClass()}'>										
 						${getBadgeText()}
 						</div>	
 					</div>		
@@ -302,6 +334,7 @@ export class Header extends MvuElement {
 								<span>
 									${translate('header_tab_misc_button')}
 								</span>
+								${getIsSignedInBadge()}								
 							</button>
 						</div>
 					</div>				

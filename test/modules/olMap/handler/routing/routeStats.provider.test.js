@@ -150,19 +150,22 @@ const createSimpleGhRoute = (vehicle = null, surface = null, roadClass = null, t
 		]
 	};
 };
-// profileStats objects reduced the used properties
+// profileStats objects reduced to the used properties
 const evenProfileStats = {
 	sumUp: 50,
-	sumDown: 50
+	sumDown: 50,
+	linearDistance: 42
 };
 const downHillProfileStats = {
 	sumUp: 600,
-	sumDown: 300
+	sumDown: 300,
+	linearDistance: 42
 };
 
 const upHillProfileStats = {
 	sumUp: 300,
-	sumDown: 600
+	sumDown: 600,
+	linearDistance: 42
 };
 describe('Route statistics provider', () => {
 	describe('Bvv route statistics provider', () => {
@@ -185,18 +188,19 @@ describe('Route statistics provider', () => {
 				const stats = bvvRouteStatsProvider(hikeRoute, evenProfileStats);
 
 				expect(stats.time).toBeCloseTo(31260000.0, 0);
-				expect(stats.dist).toBe(34200);
+				expect(stats.dist).toBe(42);
 				expect(stats.twoDiff).toEqual([50, 50]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
 			});
+
 			it('calculates the statistics for a bvv-hike route', async () => {
 				const hikeRoute = createSimpleGhRoute('bvv-hike');
 
 				const stats = bvvRouteStatsProvider(hikeRoute, evenProfileStats);
 
 				expect(stats.time).toBeCloseTo(31260000.0, 0);
-				expect(stats.dist).toBe(34200);
+				expect(stats.dist).toBe(42);
 				expect(stats.twoDiff).toEqual([50, 50]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
@@ -208,7 +212,7 @@ describe('Route statistics provider', () => {
 				const stats = bvvRouteStatsProvider(hikeRoute, evenProfileStats);
 
 				expect(stats.time).toBeCloseTo(31260000.0, 0);
-				expect(stats.dist).toBe(34200);
+				expect(stats.dist).toBe(42);
 				expect(stats.twoDiff).toEqual([50, 50]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
@@ -220,7 +224,7 @@ describe('Route statistics provider', () => {
 				const stats = bvvRouteStatsProvider(bikeRoute, evenProfileStats);
 
 				expect(stats.time).toBe(8508360);
-				expect(stats.dist).toBe(34200);
+				expect(stats.dist).toBe(42);
 				expect(stats.twoDiff).toEqual([50, 50]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
@@ -232,7 +236,7 @@ describe('Route statistics provider', () => {
 				const stats = bvvRouteStatsProvider(bikeRoute, evenProfileStats);
 
 				expect(stats.time).toBe(8508360);
-				expect(stats.dist).toBe(34200);
+				expect(stats.dist).toBe(42);
 				expect(stats.twoDiff).toEqual([50, 50]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
@@ -244,7 +248,7 @@ describe('Route statistics provider', () => {
 				const stats = bvvRouteStatsProvider(bikeRoute, evenProfileStats);
 
 				expect(stats.time).toBe(8508360);
-				expect(stats.dist).toBe(34200);
+				expect(stats.dist).toBe(42);
 				expect(stats.twoDiff).toEqual([50, 50]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
@@ -256,7 +260,7 @@ describe('Route statistics provider', () => {
 				const stats = bvvRouteStatsProvider(mtbRoute, evenProfileStats);
 
 				expect(stats.time).toBe(6381360);
-				expect(stats.dist).toBe(34200);
+				expect(stats.dist).toBe(42);
 				expect(stats.twoDiff).toEqual([50, 50]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
@@ -268,7 +272,7 @@ describe('Route statistics provider', () => {
 				const stats = bvvRouteStatsProvider(mtbRoute, evenProfileStats);
 
 				expect(stats.time).toBe(6381360);
-				expect(stats.dist).toBe(34200);
+				expect(stats.dist).toBe(42);
 				expect(stats.twoDiff).toEqual([50, 50]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
@@ -280,7 +284,7 @@ describe('Route statistics provider', () => {
 				const stats = bvvRouteStatsProvider(mtbRoute, evenProfileStats);
 
 				expect(stats.time).toBe(6381360);
-				expect(stats.dist).toBe(34200);
+				expect(stats.dist).toBe(42);
 				expect(stats.twoDiff).toEqual([50, 50]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
@@ -292,7 +296,7 @@ describe('Route statistics provider', () => {
 				const stats = bvvRouteStatsProvider(racingbikeRoute, evenProfileStats);
 
 				expect(stats.time).toBeCloseTo(4785257.1, 0);
-				expect(stats.dist).toBe(34200);
+				expect(stats.dist).toBe(42);
 				expect(stats.twoDiff).toEqual([50, 50]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
@@ -304,7 +308,7 @@ describe('Route statistics provider', () => {
 				const stats = bvvRouteStatsProvider(racingbikeRoute, evenProfileStats);
 
 				expect(stats.time).toBeCloseTo(4785257.1, 0);
-				expect(stats.dist).toBe(34200);
+				expect(stats.dist).toBe(42);
 				expect(stats.twoDiff).toEqual([50, 50]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
@@ -316,7 +320,7 @@ describe('Route statistics provider', () => {
 				const stats = bvvRouteStatsProvider(racingbikeRoute, evenProfileStats);
 
 				expect(stats.time).toBeCloseTo(4785257.1, 0);
-				expect(stats.dist).toBe(34200);
+				expect(stats.dist).toBe(42);
 				expect(stats.twoDiff).toEqual([50, 50]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
@@ -328,7 +332,7 @@ describe('Route statistics provider', () => {
 				const stats = bvvRouteStatsProvider(racingbikeRoute, upHillProfileStats);
 
 				expect(stats.time).toBeCloseTo(5913085.7, 0);
-				expect(stats.dist).toBe(34200);
+				expect(stats.dist).toBe(42);
 				expect(stats.twoDiff).toEqual([300, 600]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
@@ -340,7 +344,7 @@ describe('Route statistics provider', () => {
 				const stats = bvvRouteStatsProvider(mtbRoute, downHillProfileStats);
 
 				expect(stats.time).toBe(8858160);
-				expect(stats.dist).toBe(34200);
+				expect(stats.dist).toBe(42);
 				expect(stats.twoDiff).toEqual([600, 300]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));
@@ -633,10 +637,10 @@ describe('Route statistics provider', () => {
 
 		describe('when route is given', () => {
 			it('calculates the statistics for a route', async () => {
-				const stats = bvvRouteStatsProvider(ghRoute, null);
+				const stats = bvvRouteStatsProvider(ghRoute, { linearDistance: 1234 });
 
 				expect(stats.time).toBe(4200000);
-				expect(stats.dist).toBe(42000);
+				expect(stats.dist).toBe(1234);
 				expect(stats.twoDiff).toEqual([]);
 				expect(stats.details).toEqual(jasmine.any(Object));
 				expect(stats.warnings).toEqual(jasmine.any(Object));

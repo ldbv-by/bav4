@@ -95,11 +95,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._mapListeners = [];
 		this._keyActionMapper = new KeyActionMapper(document).addForKeyUp('Delete', () => this._remove()).addForKeyUp('Escape', () => this._startNew());
 
-		this._projectionHints = {
-			fromProjection: 'EPSG:' + this._mapService.getSrid(),
-			toProjection: 'EPSG:' + this._mapService.getLocalProjectedSrid(),
-			toProjectionExtent: this._mapService.getLocalProjectedSridExtent()
-		};
 		this._lastPointerMoveEvent = null;
 		this._lastInteractionStateType = null;
 		this._measureState = {
@@ -535,12 +530,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_setStatistics(feature) {
-		const stats = getStats(feature.getGeometry(), this._projectionHints);
+		const stats = getStats(feature.getGeometry());
 		if (!this._sketchHandler.isFinishOnFirstPoint) {
 			// As long as the draw-interaction is active, the current geometry is a closed and maybe invalid Polygon
 			// (snapping from pointer-position to first point) and must be corrected into a valid LineString
 			const measureGeometry = this._createMeasureGeometry(feature);
-			const nonAreaStats = getStats(measureGeometry, this._projectionHints);
+			const nonAreaStats = getStats(measureGeometry);
 			setStatistic({ length: nonAreaStats.length, area: stats.area });
 		} else {
 			setStatistic({ length: stats.length, area: stats.area });
@@ -550,7 +545,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	_updateStatistics() {
 		const startStatistic = { length: null, area: null };
 		const sumStatistic = (before, feature) => {
-			const stats = getStats(feature.getGeometry(), this._projectionHints);
+			const stats = getStats(feature.getGeometry());
 			return {
 				length: before.length + stats.length,
 				area: before.area + stats.area

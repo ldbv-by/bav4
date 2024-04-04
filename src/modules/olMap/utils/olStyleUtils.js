@@ -2,14 +2,12 @@
  * @module modules/olMap/utils/olStyleUtils
  */
 import {
-	getGeometryLength,
 	canShowAzimuthCircle,
 	calculatePartitionResidualOfSegments,
+	getPartitionDelta,
 	moveParallel,
-	getPartitionDeltaFrom,
-	NO_CALCULATION_HINTS,
-	isPolygon,
-	isClockwise
+	getLineString,
+	PROJECTED_LENGTH_GEOMETRY_PROPERTY
 } from './olGeometryUtils';
 import { toContext as toCanvasContext } from 'ol/render';
 import { Fill, Stroke, Style, Circle as CircleStyle, Icon, Text as TextStyle } from 'ol/style';
@@ -419,15 +417,23 @@ const getRulerStyle = (feature) => {
 };
 
 export const renderRulerSegments = (pixelCoordinates, state, contextRenderFunction) => {
+	const { MapService: mapService } = $injector.inject('MapService');
+
 	const geometry = state.geometry.clone();
+	const lineString = getLineString(geometry);
 	const resolution = state.resolution;
 	const pixelRatio = state.pixelRatio;
-	const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832', toProjectionExtent: [5, -80, 14, 80] };
 
-	const partition = getPartitionDeltaFrom(geometry, resolution, calculationHints);
-	const length = getGeometryLength(geometry, NO_CALCULATION_HINTS, true);
-	const partitionLength = partition * length;
+	const getMeasuredLength = () => {
+		const alreadyMeasuredLength = state.geometry ? state.geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY) : null;
+		return alreadyMeasuredLength ?? mapService.calcLength(lineString.getCoordinates());
+	};
+
+	const projectedGeometryLength = getMeasuredLength();
+	const delta = getPartitionDelta(projectedGeometryLength, resolution);
+	const partitionLength = delta * lineString.getLength();
 	const partitionTickDistance = partitionLength / resolution;
+	const residuals = calculatePartitionResidualOfSegments(lineString, delta);
 
 	const fill = new Fill({ color: Red_Color.concat([0.4]) });
 	const baseStroke = new Stroke({
@@ -557,7 +563,7 @@ export const measureStyleFunction = (feature, resolution) => {
 				if (canShowAzimuthCircle(feature.getGeometry())) {
 					const getCircle = () => {
 						const coords = feature.getGeometry().getCoordinates();
-						const radius = getGeometryLength(feature.getGeometry());
+						const radius = feature.getGeometry().getLength();
 						return new Circle(coords[0], radius);
 					};
 

@@ -45,6 +45,7 @@ describe('StyleService', () => {
 	const mapServiceMock = {
 		getSrid: () => 3857,
 		getLocalProjectedSrid: () => 25832,
+		calcLength: () => {},
 		getLocalProjectedSridExtent: () => [995772.9694449581, 5982715.763684852, 1548341.2904285304, 6544564.28740462]
 	};
 
@@ -190,6 +191,7 @@ describe('StyleService', () => {
 				}
 			};
 			const layerMock = {};
+			spyOn(mapServiceMock, 'calcLength').and.returnValue(1);
 
 			instanceUnderTest.addStyle(feature, mapMock, layerMock);
 
@@ -302,16 +304,22 @@ describe('StyleService', () => {
 
 		it('adds marker-style to feature', () => {
 			const featureWithStyleArray = new Feature({ geometry: new Point([0, 0]) });
+			const featureWithoutTextStyle = new Feature({ geometry: new Point([0, 0]) });
 			const featureWithStyleFunction = new Feature({ geometry: new Point([0, 0]) });
 			const featureWithoutStyle = new Feature({ geometry: new Point([0, 0]) });
 			const style = new Style({
 				image: new Icon({ src: 'http://foo.bar/icon.png', anchor: [0.5, 1], anchorXUnits: 'fraction', anchorYUnits: 'fraction', color: '#ff0000' }),
 				text: new Text({ text: 'foo' })
 			});
+			const styleWithoutTextStyle = new Style({
+				image: new Icon({ src: 'http://foo.bar/icon.png', anchor: [0.5, 1], anchorXUnits: 'fraction', anchorYUnits: 'fraction', color: '#ff0000' })
+			});
 			featureWithStyleArray.setId('draw_marker_12345678');
+			featureWithoutTextStyle.setId('draw_marker_12withoutText');
 			featureWithStyleFunction.setId('draw_marker_9876543');
 			featureWithoutStyle.setId('draw_marker_noStyle');
 			featureWithStyleArray.setStyle([style]);
+			featureWithoutTextStyle.setStyle([styleWithoutTextStyle]);
 			featureWithStyleFunction.setStyle(() => [style]);
 
 			const viewMock = {
@@ -333,6 +341,12 @@ describe('StyleService', () => {
 			const styleSetterArraySpy = spyOn(featureWithStyleArray, 'setStyle').and.callFake((f) => (markerStyle = f()));
 			instanceUnderTest.addStyle(featureWithStyleArray, mapMock, layerMock);
 			expect(styleSetterArraySpy).toHaveBeenCalledWith(jasmine.any(Function));
+			expect(markerStyle).toContain(jasmine.any(Style));
+
+			markerStyle = null;
+			const styleSetterWithoutTextStyleSpy = spyOn(featureWithoutTextStyle, 'setStyle').and.callFake((f) => (markerStyle = f()));
+			instanceUnderTest.addStyle(featureWithoutTextStyle, mapMock, layerMock);
+			expect(styleSetterWithoutTextStyleSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(markerStyle).toContain(jasmine.any(Style));
 
 			markerStyle = null;
@@ -733,6 +747,7 @@ describe('StyleService', () => {
 			const layerMock = {};
 			const eventMock = { map: mapMock };
 			const onceOnMapSpy = spyOn(mapMock, 'once').and.callFake((eventName, callback) => callback(eventMock));
+			spyOn(mapServiceMock, 'calcLength').and.returnValue(1);
 
 			instanceUnderTest.addStyle(feature, mapMock, layerMock);
 
@@ -779,6 +794,7 @@ describe('StyleService', () => {
 				}
 			};
 			const layerMock = {};
+			spyOn(mapServiceMock, 'calcLength').and.returnValue(1);
 
 			instanceUnderTest.addStyle(feature, mapMock, layerMock);
 

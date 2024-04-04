@@ -35,8 +35,8 @@ describe('i18n for header module', () => {
 		expect(map.auth_passwordCredentialPanel_credential_username).toBe('Username');
 		expect(map.auth_passwordCredentialPanel_credential_password).toBe('Password');
 		expect(map.auth_passwordCredentialPanel_submit).toBe('Submit');
-		expect(map.auth_passwordCredentialPanel_credential_failed).toBe('Authentication failed. Invalid username or password!');
-		expect(map.auth_passwordCredentialPanel_credential_rejected).toBe('Authentication failed. Something got wrong!');
+		expect(map.auth_passwordCredentialPanel_credential_failed).toBe('Sign in failed. Invalid username or password!');
+		expect(map.auth_passwordCredentialPanel_credential_rejected).toBe('Sign in failed. Something got wrong!');
 		expect(map.auth_passwordCredentialPanel_authenticate).toBe('Authenticating...');
 		expect(TestUtils.renderTemplateResult(map.auth_passwordCredentialPanel_footer_register_for_role(['foo'])).textContent).toBe(
 			'Not yet a registered foo customer?'

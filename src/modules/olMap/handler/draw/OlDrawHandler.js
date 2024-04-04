@@ -128,11 +128,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._drawingListeners = [];
 		this._keyActionMapper = new KeyActionMapper(document).addForKeyUp('Delete', () => this._remove()).addForKeyUp('Escape', () => this._reset());
 
-		this._projectionHints = {
-			fromProjection: 'EPSG:' + this._mapService.getSrid(),
-			toProjection: 'EPSG:' + this._mapService.getLocalProjectedSrid(),
-			toProjectionExtent: this._mapService.getLocalProjectedSridExtent()
-		};
 		this._lastPointerMoveEvent = null;
 		this._lastInteractionStateType = null;
 		this._drawState = {

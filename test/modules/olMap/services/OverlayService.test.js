@@ -22,6 +22,7 @@ describe('OverlayService', () => {
 	const mapServiceMock = {
 		getSrid: () => 3857,
 		getLocalProjectedSrid: () => 25832,
+		calcLength: () => 1,
 		getLocalProjectedSridExtent: () => [995772.9694449581, 5982715.763684852, 1548341.2904285304, 6544564.28740462]
 	};
 

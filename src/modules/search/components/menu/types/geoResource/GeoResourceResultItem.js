@@ -32,6 +32,7 @@ export const LOADING_PREVIEW_DELAY_MS = 500;
  * @author taulinger
  */
 export class GeoResourceResultItem extends MvuElement {
+	#geoResourceService;
 	constructor() {
 		super({
 			geoResourceSearchResult: null,
@@ -40,7 +41,7 @@ export class GeoResourceResultItem extends MvuElement {
 		});
 
 		const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
-		this._geoResourceService = geoResourceService;
+		this.#geoResourceService = geoResourceService;
 		this._timeoutId = null;
 	}
 
@@ -77,20 +78,22 @@ export class GeoResourceResultItem extends MvuElement {
 		 * These events are not fired on touch devices, so there's no extra handling needed.
 		 */
 		const onMouseEnter = (result) => {
-			const id = GeoResourceResultItem._tmpLayerId(result.geoResourceId);
-			//add a preview layer
-			this._timeoutId = setTimeout(() => {
-				addLayer(id, { geoResourceId: result.geoResourceId, constraints: { hidden: true } });
+			//add a preview layer if GeoResource is accessible
+			if (this.#geoResourceService.isAllowed(result.geoResourceId)) {
+				const id = GeoResourceResultItem._tmpLayerId(result.geoResourceId);
+				this._timeoutId = setTimeout(() => {
+					addLayer(id, { geoResourceId: result.geoResourceId, constraints: { hidden: true } });
 
-				const geoRes = this._geoResourceService.byId(result.geoResourceId);
+					const geoRes = this.#geoResourceService.byId(result.geoResourceId);
 
-				if (geoRes instanceof GeoResourceFuture) {
-					this.signal(Update_LoadingPreviewFlag, true);
-					geoRes.onResolve(() => this.signal(Update_LoadingPreviewFlag, false));
-				}
-				fitLayer(id);
-				this._timeoutId = null;
-			}, LOADING_PREVIEW_DELAY_MS);
+					if (geoRes instanceof GeoResourceFuture) {
+						this.signal(Update_LoadingPreviewFlag, true);
+						geoRes.onResolve(() => this.signal(Update_LoadingPreviewFlag, false));
+					}
+					fitLayer(id);
+					this._timeoutId = null;
+				}, LOADING_PREVIEW_DELAY_MS);
+			}
 		};
 		const onMouseLeave = (result) => {
 			//remove the preview layer
@@ -121,7 +124,14 @@ export class GeoResourceResultItem extends MvuElement {
 			return loadingPreview ? 'loading' : '';
 		};
 
+		const getBadges = (keywords) => {
+			const toBadges = (keywords) =>
+				keywords.map((keyword) => html`<ba-badge .color=${'var(--text3)'} .background=${'var(--roles-color)'} .label=${keyword}></ba-badge>`);
+			return keywords.length === 0 ? nothing : toBadges(keywords);
+		};
+
 		if (geoResourceSearchResult) {
+			const keywords = [...this.#geoResourceService.getKeywords(geoResourceSearchResult.geoResourceId)];
 			return html`
 				<style>
 					${css}
@@ -139,7 +149,7 @@ export class GeoResourceResultItem extends MvuElement {
 					<span class="ba-list-item__text ">
 						${loadingPreview
 							? html`<ba-spinner .label=${geoResourceSearchResult.labelFormatted}></ba-spinner>`
-							: html`${unsafeHTML(geoResourceSearchResult.labelFormatted)}`}
+							: html`${unsafeHTML(geoResourceSearchResult.labelFormatted)} ${getBadges(keywords)}`}
 					</span>
 				</li>
 			`;
