@@ -63,8 +63,10 @@ export class RtVectorLayerService {
 
 		const format = mapVectorSourceTypeToFormat(rtVectorGeoResource.sourceType);
 
-		// only eWKT needs a 'per-data'-check for the srid. All other (currently) supported
-		// formats have 4326 as srid per definition
+		/**
+		 * Only eWKT needs a 'per-data'-check for the srid. All other (currently) supported
+		 * formats have 4326 as srid per definition
+		 */
 		return rtVectorGeoResource.sourceType === VectorSourceType.EWKT
 			? (data) => {
 					const eWkt = parse(data);
@@ -101,9 +103,11 @@ export class RtVectorLayerService {
 
 		const action = useFit ? fit : (extent) => changeCenter(getCenter(extent));
 
-		// No need to do anything, when the content is visible inside the mapExtent.
-		// Because, we cannot decide, whether the current zoom level and centering is affordable
-		// for the specific use case of the user or not.
+		/**
+		 * No need to do anything, when the content is visible inside the mapExtent.
+		 * Because, we cannot decide, whether the current zoom level and centering is affordable
+		 * for the specific use case of the user or not.
+		 */
 		if (!containsExtent(mapExtent, vectorExtent)) {
 			action(vectorExtent);
 		}
@@ -129,8 +133,10 @@ export class RtVectorLayerService {
 					vectorLayerService.applyStyles(olVectorLayer, olMap);
 				}
 
-				// We use the fit only with the first call, to leave the control over the zoom level by the user
-				// and to help the user in the special case, that the data of the layer is outside the view, at the beginning.
+				/**
+				 * We use the fit only with the first call, to leave the control over the zoom level by the user
+				 * and to help the user in the special case, that the data of the layer is outside the view, at the beginning.
+				 */
 				this._centerViewOptionally(olVectorLayer, olMap, useFit);
 				useFit = false;
 			}
