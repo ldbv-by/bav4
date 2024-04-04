@@ -1,5 +1,5 @@
 /**
- * @module plugins/SynchronizeStatePlugin
+ * @module plugins/EncodeStatePlugin
  */
 import { $injector } from '../injection';
 import { PublicComponent } from '../modules/public/components/PublicComponent';
@@ -12,7 +12,7 @@ import { BaPlugin } from './BaPlugin';
  * @class
  * @author taulinger
  */
-export class SynchronizeStatePlugin extends BaPlugin {
+export class EncodeStatePlugin extends BaPlugin {
 	constructor() {
 		super();
 		const { EnvironmentService: environmentService, ShareService: shareService } = $injector.inject('EnvironmentService', 'ShareService');

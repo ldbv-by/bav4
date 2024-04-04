@@ -1,11 +1,11 @@
 import { $injector } from '../../src/injection';
 import { PublicComponent } from '../../src/modules/public/components/PublicComponent';
-import { SynchronizeStatePlugin } from '../../src/plugins/SynchronizeStatePlugin';
+import { EncodeStatePlugin } from '../../src/plugins/EncodeStatePlugin';
 import { indicateChange } from '../../src/store/stateForEncoding/stateForEncoding.action';
 import { stateForEncodingReducer } from '../../src/store/stateForEncoding/stateForEncoding.reducer';
 import { TestUtils } from '../test-utils';
 
-describe('SynchronizeStatePlugin', () => {
+describe('EncodeStatePlugin', () => {
 	const shareService = {
 		encodeState() {}
 	};
@@ -35,7 +35,7 @@ describe('SynchronizeStatePlugin', () => {
 		spyOn(environmentService, 'isEmbedded').and.returnValue(false);
 		spyOn(shareService, 'encodeState').and.returnValue(expectedEncodedState);
 		const store = setup();
-		const instanceUnderTest = new SynchronizeStatePlugin();
+		const instanceUnderTest = new EncodeStatePlugin();
 		await instanceUnderTest.register(store);
 
 		indicateChange();
@@ -55,7 +55,7 @@ describe('SynchronizeStatePlugin', () => {
 		spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(true);
 		spyOn(shareService, 'encodeState').and.returnValue('http://some.thing?foo=bar');
 		const store = setup();
-		const instanceUnderTest = new SynchronizeStatePlugin();
+		const instanceUnderTest = new EncodeStatePlugin();
 		await instanceUnderTest.register(store);
 
 		indicateChange();
@@ -67,7 +67,7 @@ describe('SynchronizeStatePlugin', () => {
 	it("does nothing when we are in 'embed' mode", async () => {
 		spyOn(environmentService, 'isEmbedded').and.returnValue(true);
 		const store = setup();
-		const instanceUnderTest = new SynchronizeStatePlugin();
+		const instanceUnderTest = new EncodeStatePlugin();
 		const updateHistorySpy = spyOn(instanceUnderTest, '_updateHistory');
 		await instanceUnderTest.register(store);
 
