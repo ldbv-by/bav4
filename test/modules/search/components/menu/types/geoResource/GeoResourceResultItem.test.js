@@ -110,6 +110,19 @@ describe('GeoResourceResultItem', () => {
 			expect(button.color).toBe('var(--primary-color)');
 			expect(button.color_hover).toBe('var(--text3)');
 		});
+
+		it('renders no zoom to extent Button for a NOT Allowed VectorGeoResource', async () => {
+			const geoResVector = new VectorGeoResource('geoResourceId0', async () => ({ label: 'updatedLabel' }));
+			const geoResourceId = 'geoResourceId';
+			const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
+			spyOn(geoResourceService, 'isAllowed').withArgs(geoResourceId).and.returnValue(false);
+			spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResVector);
+			const element = await setup();
+			element.data = data;
+
+			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.ba-icon-button.ba-list-item__after')).toHaveSize(1); //placeholder
+		});
 	});
 
 	describe('events', () => {

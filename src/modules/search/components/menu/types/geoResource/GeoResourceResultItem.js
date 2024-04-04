@@ -124,13 +124,13 @@ export class GeoResourceResultItem extends MvuElement {
 				setTab(TabIds.MAPS);
 			}
 		};
+
 		const onClickZoomToExtent = (e, result) => {
-			if (this.#geoResourceService.isAllowed(result.geoResourceId)) {
-				const id = GeoResourceResultItem._tmpLayerId(result.geoResourceId);
-				fitLayer(id);
-				e.stopPropagation();
-			}
+			const id = GeoResourceResultItem._tmpLayerId(result.geoResourceId);
+			fitLayer(id);
+			e.stopPropagation();
 		};
+
 		const getActiveClass = () => {
 			return loadingPreview ? 'loading' : '';
 		};
@@ -143,7 +143,7 @@ export class GeoResourceResultItem extends MvuElement {
 
 		const getZoomToExtentButton = (result) => {
 			const geoRes = this.#geoResourceService.byId(result.geoResourceId);
-			return geoRes instanceof VectorGeoResource
+			return geoRes instanceof VectorGeoResource && this.#geoResourceService.isAllowed(result.geoResourceId)
 				? html` <div class="ba-icon-button ba-list-item__after separator">
 						<ba-icon
 							.icon="${routingSvg}"
