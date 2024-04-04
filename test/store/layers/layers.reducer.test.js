@@ -4,9 +4,18 @@ import {
 	sort,
 	createDefaultLayerProperties,
 	createDefaultLayer,
-	createDefaultLayersConstraints
+	createDefaultLayersConstraints,
+	initialState
 } from '../../../src/store/layers/layers.reducer';
-import { addLayer, removeLayer, modifyLayer, setReady, geoResourceChanged, removeLayerOf } from '../../../src/store/layers/layers.action';
+import {
+	addLayer,
+	removeLayer,
+	modifyLayer,
+	setReady,
+	geoResourceChanged,
+	removeLayerOf,
+	removeAndSetLayers
+} from '../../../src/store/layers/layers.action';
 import { TestUtils } from '../../test-utils.js';
 import { GeoResourceFuture } from '../../../src/domain/geoResources';
 import { EventLike } from '../../../src/utils/storeUtils.js';
@@ -71,8 +80,8 @@ describe('layersReducer', () => {
 		expect(store.getState().layers).toEqual({
 			active: [],
 			ready: false,
-			added: jasmine.objectContaining({ payload: null }),
-			removed: jasmine.objectContaining({ payload: null })
+			added: jasmine.objectContaining({ payload: [] }),
+			removed: jasmine.objectContaining({ payload: [] })
 		});
 	});
 
@@ -248,7 +257,7 @@ describe('layersReducer', () => {
 		addLayer('id0', layerProperties0);
 
 		expect(store.getState().layers.active.length).toBe(1);
-		expect(store.getState().layers.added.payload).toBe('id0');
+		expect(store.getState().layers.added.payload).toEqual(['id0']);
 	});
 
 	it('removes a layer', () => {
@@ -271,7 +280,7 @@ describe('layersReducer', () => {
 	});
 
 	it('updates the "remove" property when layers was removed', () => {
-		const initialRemovedValue = new EventLike();
+		const initialRemovedValue = new EventLike([]);
 		const layerProperties0 = { id: 'id0' };
 		const layerProperties1 = { id: 'id1', geoResourceId: 'geoResourceId1' };
 		const store = setup({
@@ -285,12 +294,12 @@ describe('layersReducer', () => {
 
 		removeLayer('unknown');
 
-		expect(store.getState().layers.removed.payload).toBeNull();
+		expect(store.getState().layers.removed.payload).toEqual([]);
 		expect(store.getState().layers.removed).toEqual(initialRemovedValue);
 
 		removeLayer('id0');
 
-		expect(store.getState().layers.removed.payload).toBe('id0');
+		expect(store.getState().layers.removed.payload).toEqual(['id0']);
 	});
 
 	it('removes a layer by a GeoResource id', () => {
@@ -314,7 +323,7 @@ describe('layersReducer', () => {
 	});
 
 	it('updates the "remove" property when layers was removed by a GeoResource id', () => {
-		const initialRemovedValue = new EventLike();
+		const initialRemovedValue = new EventLike([]);
 		const layerProperties0 = { id: 'id0', geoResourceId: 'geoResourceId0' };
 		const layerProperties1 = { id: 'id1', geoResourceId: 'geoResourceId1' };
 		const store = setup({
@@ -328,12 +337,96 @@ describe('layersReducer', () => {
 
 		removeLayerOf('unknown');
 
-		expect(store.getState().layers.removed.payload).toBeNull();
+		expect(store.getState().layers.removed.payload).toEqual([]);
 		expect(store.getState().layers.removed).toEqual(initialRemovedValue);
 
 		removeLayerOf('geoResourceId0');
 
-		expect(store.getState().layers.removed.payload).toBe('id0');
+		expect(store.getState().layers.removed.payload).toEqual(['id0']);
+	});
+
+	it('removes and adds layers atomically', () => {
+		const layerProperties0 = { id: 'id0' };
+		const layerProperties1 = { id: 'id1' };
+		const atomicallyAddedLayer2 = { id: 'id2', geoResourceId: 'geoResourceId2' };
+		const atomicallyAddedLayer3 = { id: 'id3', visible: false };
+		const atomicallyAddedLayer4 = { id: 'id4', opacity: 0.5 };
+		const store = setup({
+			layers: {
+				...initialState,
+				active: [layerProperties0, layerProperties1]
+			}
+		});
+
+		expect(store.getState().layers.active.length).toBe(2);
+
+		removeAndSetLayers([atomicallyAddedLayer2, atomicallyAddedLayer3, atomicallyAddedLayer4]);
+
+		expect(store.getState().layers.active.length).toBe(3);
+		expect(store.getState().layers.active[0].id).toBe('id2');
+		expect(store.getState().layers.active[0].geoResourceId).toBe('geoResourceId2');
+		expect(store.getState().layers.active[0].visible).toBeTrue();
+		expect(store.getState().layers.active[0].opacity).toBe(1);
+		expect(store.getState().layers.active[0].zIndex).toBe(0);
+
+		expect(store.getState().layers.active[1].id).toBe('id3');
+		expect(store.getState().layers.active[1].geoResourceId).toBe('id3');
+		expect(store.getState().layers.active[1].visible).toBeFalse();
+		expect(store.getState().layers.active[1].opacity).toBe(1);
+		expect(store.getState().layers.active[1].zIndex).toBe(1);
+
+		expect(store.getState().layers.active[2].id).toBe('id4');
+		expect(store.getState().layers.active[2].geoResourceId).toBe('id4');
+		expect(store.getState().layers.active[2].visible).toBeTrue();
+		expect(store.getState().layers.active[2].opacity).toBe(0.5);
+		expect(store.getState().layers.active[2].zIndex).toBe(2);
+
+		expect(store.getState().layers.removed.payload).toEqual([layerProperties0.id, layerProperties1.id]);
+		expect(store.getState().layers.added.payload).toEqual([atomicallyAddedLayer2.id, atomicallyAddedLayer3.id, atomicallyAddedLayer4.id]);
+	});
+
+	it('just removes layers atomically', () => {
+		const layerProperties0 = { id: 'id0' };
+		const layerProperties1 = { id: 'id1' };
+		const store = setup({
+			layers: {
+				...initialState,
+				active: [layerProperties0, layerProperties1]
+			}
+		});
+
+		expect(store.getState().layers.active.length).toBe(2);
+
+		removeAndSetLayers();
+
+		expect(store.getState().layers.active.length).toBe(0);
+		expect(store.getState().layers.removed.payload).toEqual([layerProperties0.id, layerProperties1.id]);
+		expect(store.getState().layers.added.payload).toEqual([]);
+	});
+
+	it('just adds layers atomically', () => {
+		const atomicallyAddedLayer2 = { id: 'id2' };
+		const atomicallyAddedLayer3 = { id: 'id3' };
+		const atomicallyAddedLayer4 = { id: 'id4' };
+		const store = setup({
+			layers: {
+				...initialState
+			}
+		});
+
+		expect(store.getState().layers.active.length).toBe(0);
+
+		removeAndSetLayers([atomicallyAddedLayer2, atomicallyAddedLayer3, atomicallyAddedLayer4]);
+
+		expect(store.getState().layers.active.length).toBe(3);
+		expect(store.getState().layers.active[0].id).toBe('id2');
+		expect(store.getState().layers.active[0].zIndex).toBe(0);
+		expect(store.getState().layers.active[1].id).toBe('id3');
+		expect(store.getState().layers.active[1].zIndex).toBe(1);
+		expect(store.getState().layers.active[2].id).toBe('id4');
+		expect(store.getState().layers.active[2].zIndex).toBe(2);
+		expect(store.getState().layers.removed.payload).toEqual([]);
+		expect(store.getState().layers.added.payload).toEqual([atomicallyAddedLayer2.id, atomicallyAddedLayer3.id, atomicallyAddedLayer4.id]);
 	});
 
 	it("modifies the 'visible' property of a layer", () => {

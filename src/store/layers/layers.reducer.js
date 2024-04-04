@@ -2,6 +2,7 @@ import { EventLike } from '../../utils/storeUtils';
 
 export const LAYER_ADDED = 'layer/added';
 export const LAYER_REMOVED = 'layer/removed';
+export const LAYER_REMOVE_AND_SET = 'layer/removeAndSet';
 export const LAYER_MODIFIED = 'layer/modified';
 export const LAYER_RESOURCES_READY = 'layer/resources/ready';
 export const LAYER_GEORESOURCE_CHANGED = 'layer/geoResource/changed';
@@ -12,15 +13,15 @@ export const initialState = {
 	 */
 	active: [],
 	/**
-	 * Contains the id of the latest removed layer
+	 * Contains the ids of the latest removed layers
 	 * @property {EventLike<String>}
 	 */
-	removed: new EventLike(null),
+	removed: new EventLike([]),
 	/**
-	 * Contains the id of the latest added layer
+	 * Contains the ids of the latest added layers
 	 * @property {EventLike<String>}
 	 */
-	added: new EventLike(null),
+	added: new EventLike([]),
 	/**
 	 * Flag that indicates if the layer store is ready. "Ready" means all required resources are available.
 	 */
@@ -114,7 +115,7 @@ const addLayer = (state, payload) => {
 	return {
 		...state,
 		active: sort(index(active)),
-		added: new EventLike(id)
+		added: new EventLike([id])
 	};
 };
 
@@ -123,7 +124,22 @@ const removeLayer = (state, payload) => {
 	return {
 		...state,
 		active,
-		removed: state.active.length !== active.length ? new EventLike(payload) : state.removed
+		removed: state.active.length !== active.length ? new EventLike([payload]) : state.removed
+	};
+};
+
+const atomicallyRemoveAndSet = (state, payload) => {
+	const layers = payload.map((atomicallyAddedLayer, index) => ({
+		...createDefaultLayerProperties(),
+		geoResourceId: atomicallyAddedLayer.id,
+		...atomicallyAddedLayer,
+		zIndex: index
+	}));
+	return {
+		...state,
+		active: layers,
+		removed: state.active.length > 0 ? new EventLike([...state.active.map((l) => l.id)]) : state.removed,
+		added: payload.length > 0 ? new EventLike(payload.map((l) => l.id)) : state.added
 	};
 };
 
@@ -181,6 +197,9 @@ export const layersReducer = (state = initialState, action) => {
 		}
 		case LAYER_REMOVED: {
 			return removeLayer(state, payload);
+		}
+		case LAYER_REMOVE_AND_SET: {
+			return atomicallyRemoveAndSet(state, payload);
 		}
 		case LAYER_MODIFIED: {
 			return modifyLayer(state, payload);

@@ -4,7 +4,7 @@
 import { $injector } from '../injection';
 import { QueryParameters } from '../domain/queryParameters';
 import { BaPlugin } from './BaPlugin';
-import { addLayer, setReady } from '../store/layers/layers.action';
+import { addLayer, removeAndSetLayers, setReady } from '../store/layers/layers.action';
 import { createUniqueId } from '../utils/numberUtils';
 import { fitLayer } from '../store/position/position.action';
 import { isNumber } from '../utils/checks';
@@ -37,16 +37,16 @@ export class LayersPlugin extends BaPlugin {
 							const layerId = `${id}_${createUniqueId()}`;
 
 							if (geoResource) {
-								const layerProperties = { geoResourceId: geoResource.id };
+								const atomicallyAddedLayer = { id: layerId, geoResourceId: geoResource.id };
 
 								if (layerVisibility[index] === 'false') {
-									layerProperties.visible = false;
+									atomicallyAddedLayer.visible = false;
 								}
 								if (isFinite(layerOpacity[index]) && layerOpacity[index] >= 0 && layerOpacity[index] <= 1) {
-									layerProperties.opacity = parseFloat(layerOpacity[index]);
+									atomicallyAddedLayer.opacity = parseFloat(layerOpacity[index]);
 								}
 
-								return { id: layerId, layerProperties };
+								return atomicallyAddedLayer;
 							}
 						}
 					})
@@ -63,13 +63,14 @@ export class LayersPlugin extends BaPlugin {
 		const zteIndex = parseInt(queryParams.get(QueryParameters.ZOOM_TO_EXTENT));
 		const zoomToExtentLayerIndex = isNumber(zteIndex) ? zteIndex : -1;
 
+		removeAndSetLayers(parsedLayers);
+
 		parsedLayers.forEach((l, index) => {
 			if (index === zoomToExtentLayerIndex) {
 				setTimeout(() => {
 					fitLayer(l.id);
 				});
 			}
-			addLayer(l.id, l.layerProperties);
 		});
 	}
 
