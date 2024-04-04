@@ -213,8 +213,9 @@ describe('RtVectorLayerService', () => {
 				expect(store.getState().position.fitRequest.payload.extent).toEqual(olVectorLayer.getSource().getExtent());
 			});
 
-			it('makes a fitrequest for the first features only', () => {
+			it('makes a fit request for the first features only', () => {
 				const store = setup();
+				const initialCenter = store.getState().position.center;
 				const id = 'id';
 				const olMap = { getView: () => {} };
 				const viewMock = { calculateExtent: () => [] };
@@ -235,17 +236,41 @@ describe('RtVectorLayerService', () => {
 					.and.callThrough();
 				expect(olVectorLayer.getSource().getFeatures().length).toBe(0);
 				expect(store.getState().position.fitRequest.payload).toBeNull();
-				const olCenter = store.getState().position.center;
 
 				mockServer.emit('message', kmlData);
 				mockServer.emit('message', kmlData);
-				spyOn(viewMock, 'calculateExtent').and.returnValue(olVectorLayer.getSource().getExtent());
 				mockServer.emit('message', kmlData);
 
 				expect(olVectorLayer.getSource().getFeatures().length).toBe(1);
 				expect(fitViewSpy).toHaveBeenCalledTimes(3);
 				expect(store.getState().position.fitRequest.payload.extent).toEqual(olVectorLayer.getSource().getExtent());
-				expect(store.getState().position.center).not.toEqual(olCenter);
+				expect(store.getState().position.center).not.toEqual(initialCenter);
+			});
+
+			it('does NOT makes a fit request for already containing extent in the view', () => {
+				const store = setup();
+				const id = 'id';
+				const olMap = { getView: () => {} };
+				const olVectorLayer = instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
+				const viewMock = { calculateExtent: () => olVectorLayer.getSource().getExtent() };
+
+				spyOn(olMap, 'getView').and.returnValue(viewMock);
+				spyOn(instanceUnderTest, '_processMessage').and.callThrough();
+				spyOn(vectorLayerService, 'sanitizeStyles').and.callFake(() => {});
+				spyOn(vectorLayerService, 'applyStyles')
+					.withArgs(olVectorLayer, olMap)
+					.and.callFake(() => {});
+				const fitViewSpy = spyOn(instanceUnderTest, '_fitViewOptionally').and.callThrough();
+				expect(olVectorLayer.getSource().getFeatures().length).toBe(0);
+				expect(store.getState().position.fitRequest.payload).toBeNull();
+
+				mockServer.emit('message', kmlData);
+				mockServer.emit('message', kmlData);
+				mockServer.emit('message', kmlData);
+
+				expect(olVectorLayer.getSource().getFeatures().length).toBe(1);
+				expect(fitViewSpy).toHaveBeenCalledTimes(3);
+				expect(store.getState().position.fitRequest.payload).toBeNull();
 			});
 
 			it('does nothing, after server sends a keep-alive message', () => {
