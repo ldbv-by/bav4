@@ -124,10 +124,10 @@ export const getBoundingBoxFrom = (centerCoordinate, size) => {
  */
 export const getCoordinateAt = (geometry, fraction) => {
 	const lineString = getLineString(geometry);
-	const totalLength = lineString.getLength();
 	const lineStrings = lineString instanceof MultiLineString ? lineString.getLineStrings() : lineString ? [lineString] : null;
 
 	if (lineStrings) {
+		const totalLength = lineString.getLength();
 		let fractionResidual = fraction;
 		for (const lineString of lineStrings) {
 			const lineStringFraction = lineString.getLength() / totalLength;
@@ -214,11 +214,11 @@ export const getAzimuthFrom = (polygon) => {
  * @param {number} resolution the resolution of the MapView, e. g. map.getView().getResolution()
  * @returns {number} the delta, a value between 0 and 1
  */
-export const getPartitionDelta = (length, resolution) => {
+export const getPartitionDelta = (geometryLength, resolution = 1) => {
 	const minLengthResolution = 40;
 	const isValidForResolution = (partition) => {
 		const partitionResolution = partition / resolution;
-		return partitionResolution > minLengthResolution && length > partition;
+		return partitionResolution > minLengthResolution && geometryLength > partition;
 	};
 
 	const stepFactor = 10;
@@ -226,7 +226,7 @@ export const getPartitionDelta = (length, resolution) => {
 	const maxDelta = 1;
 	const minPartitionLength = 10;
 	const findBestFittingDelta = (partitionLength) => {
-		const delta = partitionLength / length;
+		const delta = partitionLength / geometryLength;
 		if (maxDelta < delta) {
 			return maxDelta;
 		}
@@ -238,7 +238,8 @@ export const getPartitionDelta = (length, resolution) => {
 		const nextPartitionLength = partitionLength * stepFactor;
 		return findBestFittingDelta(nextPartitionLength);
 	};
-	return isNaN(length) ? 1 : findBestFittingDelta(minPartitionLength);
+
+	return findBestFittingDelta(minPartitionLength);
 };
 
 /**
