@@ -238,10 +238,8 @@ describe('GeoResourceResultItem', () => {
 			});
 		});
 
-		describe('on click', () => {
+		describe('the user clicks the result item', () => {
 			const geoResourceId = 'geoResourceId';
-			// const layerId = 'layerId';
-
 			const setupOnClickTests = async (portraitOrientation) => {
 				const previewLayer = createDefaultLayer(GeoResourceResultItem._tmpLayerId(geoResourceId), geoResourceId);
 				const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
@@ -292,7 +290,7 @@ describe('GeoResourceResultItem', () => {
 			});
 		});
 
-		describe('on click icon button', () => {
+		describe('the user clicks the zoom-to-extent button', () => {
 			it('zoom to extent', async () => {
 				const geoResVector = new VectorGeoResource('geoResourceId0', async () => ({ label: 'updatedLabel' }));
 				const geoResourceId = 'geoResourceId';
