@@ -11,14 +11,8 @@ module.exports = function (config) {
 			dir: path.join(__dirname, 'coverage'),
 			reports: ['lcovonly']
 		},
-		customLaunchers: {
-			ChromeHeadlessNoSandbox: {
-				base: 'ChromeHeadless',
-				flags: ['--no-sandbox', '--disable-setuid-sandbox', '--single-process']
-			}
-		},
 		browserDisconnectTimeout: 90000,
 		browserNoActivityTimeout: 90000,
-		browserDisconnectTolerance: 1
+		browserDisconnectTolerance: 2
 	});
 };
