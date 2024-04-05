@@ -129,11 +129,16 @@ const removeLayer = (state, payload) => {
 };
 
 const atomicallyRemoveAndSet = (state, payload) => {
+	/**
+	 * Ensure that the `active` property does not change unless one ore more layers are really different (based on their properties).
+	 * Therefore we also have to copy the `grChangedFlag` event property of a layer if appropriate.
+	 */
 	const layers = payload.map((atomicallyAddedLayer, index) => ({
 		...createDefaultLayerProperties(),
 		geoResourceId: atomicallyAddedLayer.id,
 		...atomicallyAddedLayer,
-		zIndex: index
+		zIndex: index,
+		grChangedFlag: state.active[index]?.id === atomicallyAddedLayer.id ? state.active[index].grChangedFlag : null
 	}));
 	return {
 		...state,
