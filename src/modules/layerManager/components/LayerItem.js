@@ -122,7 +122,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 
 		const getBadges = (keywords) => {
 			const toBadges = (keywords) =>
-				keywords.map((keyword) => html`<ba-badge .color=${'var(--text3)'} .background=${'var(--primary-color)'} .label=${keyword}></ba-badge>`);
+				keywords.map((keyword) => html`<ba-badge .color=${'var(--text3)'} .background=${'var(--roles-color)'} .label=${keyword}></ba-badge>`);
 
 			return keywords.length === 0 ? nothing : toBadges(keywords);
 		};

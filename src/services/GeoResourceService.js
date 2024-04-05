@@ -17,7 +17,7 @@
  */
 
 import { $injector } from '../injection';
-import { observable, VTGeoResource, XyzGeoResource } from '../domain/geoResources';
+import { AggregateGeoResource, observable, VTGeoResource, XyzGeoResource } from '../domain/geoResources';
 import { loadBvvFileStorageResourceById } from './provider/fileStorage.provider';
 import { loadBvvGeoResourceById, loadBvvGeoResources, loadExternalGeoResource } from './provider/geoResource.provider';
 import { geoResourceChanged } from '../store/layers/layers.action';
@@ -163,28 +163,41 @@ export class GeoResourceService {
 
 	/**
 	 * Checks if the current auth roles allow to access a certain GeoResource.
-	 * Returns `false` if the GeoResource does not exist or the user is not signed in.
+	 *
+	 * Returns `true` if the GeoResource does not exist.
+	 * For AggregateGeoResources it checks its roles or if empty the roles of the referenced GeoResources.
 	 * @param {string} id The id of a GeoResource
 	 * @returns {boolean} `true` if a GeoResource is allowed to access
 	 */
 	isAllowed(id) {
 		const gr = this.byId(id);
-		if (gr && this.#authService.isSignedIn()) {
+		if (gr) {
+			if (gr instanceof AggregateGeoResource && gr.authRoles.length === 0) {
+				return !gr.geoResourceIds.some((id) => !this.isAllowed(id));
+			}
 			return gr.authRoles.length === 0 ? true : gr.authRoles.filter((role) => this.#authService.getRoles().includes(role)).length > 0;
 		}
-		return false;
+		return true;
 	}
 
 	/**
 	 * Returns keywords for a GeoResource.
+	 *
 	 * Returns an empty array if the GeoResource does not exist.
+	 * For AggregateGeoResources it takes its keywords or if not present it aggregates the keywords of the referenced GeoResources.
 	 * @param {string} id The id of a GeoResource
 	 * @returns {Array<String>} the keywords for a GeoResource
 	 */
 	getKeywords(id) {
 		// Todo: use a provider fn for keyword detection
 		const gr = this.byId(id);
-		return gr ? [...gr.authRoles] : [];
+		if (gr) {
+			if (gr instanceof AggregateGeoResource && gr.authRoles.length === 0) {
+				return [...new Set(gr.geoResourceIds.map((id) => this.getKeywords(id)).flat())];
+			}
+			return [...gr.authRoles];
+		}
+		return [];
 	}
 
 	/**
@@ -202,18 +215,18 @@ export class GeoResourceService {
 			new XyzGeoResource(
 				FALLBACK_GEORESOURCE_ID_0,
 				FALLBACK_GEORESOURCE_LABEL_0,
-				'http://sgx.geodatenzentrum.de/wmts_topplus_open/tile/1.0.0/web/default/WEBMERCATOR/{z}/{y}/{x}.png'
+				'https://sgx.geodatenzentrum.de/wmts_topplus_open/tile/1.0.0/web/default/WEBMERCATOR/{z}/{y}/{x}.png'
 			),
 			new XyzGeoResource(
 				FALLBACK_GEORESOURCE_ID_1,
 				FALLBACK_GEORESOURCE_LABEL_1,
-				'http://sgx.geodatenzentrum.de/wmts_topplus_open/tile/1.0.0/web_grau/default/WEBMERCATOR/{z}/{y}/{x}.png'
+				'https://sgx.geodatenzentrum.de/wmts_topplus_open/tile/1.0.0/web_grau/default/WEBMERCATOR/{z}/{y}/{x}.png'
 			)
 		].map((gr) => {
 			return gr.setAttribution({
 				description: 'TopPlusOpen',
 				copyright: [
-					{ label: 'Bundesamt für Kartographie und Geodäsie (2022)', url: 'http://www.bkg.bund.de/' },
+					{ label: 'Bundesamt für Kartographie und Geodäsie (2024)', url: 'https://www.bkg.bund.de/' },
 					{ label: 'Datenquellen', url: 'https://sg.geodatenzentrum.de/web_public/Datenquellen_TopPlus_Open.pdf' }
 				]
 			});

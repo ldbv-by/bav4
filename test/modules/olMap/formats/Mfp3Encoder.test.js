@@ -41,7 +41,9 @@ describe('BvvMfp3Encoder', () => {
 	const layerSpecMock = { specs: [], dataOwners: [] };
 
 	const geoResourceServiceMock = { byId: () => {} };
-
+	const coordinateServiceMock = {
+		getLength: () => 1
+	};
 	const mapServiceMock = {
 		getDefaultMapExtent() {},
 		getLocalProjectedSrid: () => 25832,
@@ -92,7 +94,8 @@ describe('BvvMfp3Encoder', () => {
 		.registerSingleton('ShareService', shareServiceMock)
 		.registerSingleton('MfpService', mfpServiceMock)
 		.registerSingleton('LayerService', layerServiceMock)
-		.registerSingleton('IconService', iconServiceMock);
+		.registerSingleton('IconService', iconServiceMock)
+		.registerSingleton('CoordinateService', coordinateServiceMock);
 	proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 	register(proj4);
 	const setup = (initProperties) => {

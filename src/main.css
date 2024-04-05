@@ -91,6 +91,8 @@
 	--text2: var(--text2-light);
 	--text3: var(--text3-light);
 	--text4: var(--brand-secondary-light);
+	/* otther */
+	--roles-color: var(--primary-color);
 }
 
 .dark-theme {
@@ -110,6 +112,8 @@
 	--text2: var(--text2-dark);
 	--text3: var(--text3-dark);
 	--text4: var(--brand-dark-lighter);
+	/* otther */
+	--roles-color: var(--primary-color);
 }
 
 @font-face {

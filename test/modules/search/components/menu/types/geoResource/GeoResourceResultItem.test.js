@@ -24,7 +24,9 @@ describe('LAYER_ADDING_DELAY_MS', () => {
 describe('GeoResourceResultItem', () => {
 	const geoResourceService = {
 		byId: () => {},
-		addOrReplace: () => {}
+		addOrReplace: () => {},
+		getKeywords: () => [],
+		isAllowed: () => true
 	};
 
 	let store;
@@ -68,6 +70,20 @@ describe('GeoResourceResultItem', () => {
 			element.data = data;
 
 			expect(element.shadowRoot.querySelector('li').innerText).toBe('labelFormatted');
+			expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(0); // no badge, due to empty keyword-array
+		});
+
+		it('renders the view containing keyword badges', async () => {
+			const data = new GeoResourceSearchResult('id', 'label', 'labelFormatted');
+			spyOn(geoResourceService, 'getKeywords').withArgs('id').and.returnValue(['Foo', 'Bar']);
+			const element = await setup();
+
+			element.data = data;
+
+			expect(element.shadowRoot.querySelector('li').innerText).toBe('labelFormatted');
+			expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(2);
+			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].label).toBe('Foo');
+			expect(element.shadowRoot.querySelectorAll('ba-badge')[1].label).toBe('Bar');
 		});
 	});
 
@@ -81,25 +97,45 @@ describe('GeoResourceResultItem', () => {
 		});
 
 		describe('on mouse enter', () => {
-			it('adds a preview layer', async () => {
-				const geoResourceId = 'geoResourceId';
-				const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
-				const element = await setup();
-				element.data = data;
+			describe('GeoResource is allowed to access', () => {
+				it('adds a preview layer', async () => {
+					const geoResourceId = 'geoResourceId';
+					const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
+					const element = await setup();
+					element.data = data;
 
-				const target = element.shadowRoot.querySelector('li');
-				target.dispatchEvent(new Event('mouseenter'));
-				expect(element._timeoutId).not.toBeNull();
-				jasmine.clock().tick(LOADING_PREVIEW_DELAY_MS + 100);
+					const target = element.shadowRoot.querySelector('li');
+					target.dispatchEvent(new Event('mouseenter'));
+					expect(element._timeoutId).not.toBeNull();
+					jasmine.clock().tick(LOADING_PREVIEW_DELAY_MS + 100);
 
-				expect(element._timeoutId).toBeNull();
-				expect(store.getState().layers.active.length).toBe(1);
-				expect(store.getState().layers.active[0].id).toBe(GeoResourceResultItem._tmpLayerId(geoResourceId));
-				expect(store.getState().layers.active[0].constraints.hidden).toBeTrue();
-				expect(store.getState().layers.active[0].geoResourceId).toBe(geoResourceId);
-				expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
-				expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(0);
-				expect(target.classList.contains('loading')).toBeFalse();
+					expect(element._timeoutId).toBeNull();
+					expect(store.getState().layers.active.length).toBe(1);
+					expect(store.getState().layers.active[0].id).toBe(GeoResourceResultItem._tmpLayerId(geoResourceId));
+					expect(store.getState().layers.active[0].constraints.hidden).toBeTrue();
+					expect(store.getState().layers.active[0].geoResourceId).toBe(geoResourceId);
+					expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
+					expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(0);
+					expect(target.classList.contains('loading')).toBeFalse();
+				});
+			});
+			describe('GeoResource is NOT allowed to access', () => {
+				it('does nothing', async () => {
+					const geoResourceId = 'geoResourceId';
+					const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
+					spyOn(geoResourceService, 'isAllowed').withArgs(geoResourceId).and.returnValue(false);
+					const element = await setup();
+					element.data = data;
+
+					const target = element.shadowRoot.querySelector('li');
+					target.dispatchEvent(new Event('mouseenter'));
+					expect(element._timeoutId).toBeNull();
+					jasmine.clock().tick(LOADING_PREVIEW_DELAY_MS + 100);
+
+					expect(element._timeoutId).toBeNull();
+					expect(store.getState().layers.active.length).toBe(0);
+					expect(store.getState().position.fitLayerRequest.payload).toBeNull();
+				});
 			});
 
 			it('shows and hides a loading hint for a GeoResourceFuture', async () => {

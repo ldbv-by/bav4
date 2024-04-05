@@ -1,6 +1,4 @@
 import {
-	getGeometryLength,
-	getArea,
 	canShowAzimuthCircle,
 	getCoordinateAt,
 	getAzimuth,
@@ -23,102 +21,18 @@ import {
 import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing, MultiLineString, MultiPolygon } from 'ol/geom';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
-import { fromLonLat } from 'ol/proj';
+import { $injector } from '../../../../src/injection';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
 
-describe('getGeometryLength', () => {
-	it('calculates the length of a LineString', () => {
-		const lineString = new LineString([
-			[0, 0],
-			[1, 0]
-		]);
-		const length = getGeometryLength(lineString);
+const mapServiceMock = {
+	getSrid: () => 3857,
+	calcLength: () => {},
+	calcArea: () => {}
+};
 
-		expect(length).toBe(1);
-	});
-
-	it('calculates the length of a LinearRing', () => {
-		const linearRing = new LinearRing([
-			[0, 0],
-			[1, 0],
-			[1, 1],
-			[0, 1],
-			[0, 0]
-		]);
-		const length = getGeometryLength(linearRing);
-
-		expect(length).toBe(4);
-	});
-
-	it('calculates the length of a Polygon', () => {
-		const polygon = new Polygon([
-			[
-				[0, 0],
-				[1, 0],
-				[1, 1],
-				[0, 1],
-				[0, 0]
-			]
-		]);
-		const length = getGeometryLength(polygon);
-
-		expect(length).toBe(4);
-	});
-
-	it('does NOT calculates the length of Circle', () => {
-		const circle = new Circle([0, 0], 1);
-		const length = getGeometryLength(circle);
-
-		expect(length).toBe(0);
-	});
-
-	it('does NOT calculates the length of null', () => {
-		const length = getGeometryLength(null);
-
-		expect(length).toBe(0);
-	});
-
-	describe('when calculationHints are provided', () => {
-		it('calculates the length of a transformed geometry', () => {
-			const geometry = new Polygon([
-				[
-					[0, 0],
-					[1, 0],
-					[1, 1],
-					[0, 1],
-					[0, 0]
-				]
-			]);
-			const cloneMock = { transform: () => {} };
-			spyOn(geometry, 'clone').and.callFake(() => cloneMock);
-			const calculationHints = { fromProjection: 'foo', toProjection: 'bar' };
-
-			const transformSpy = spyOn(cloneMock, 'transform').and.callFake(() => geometry);
-			getGeometryLength(geometry, calculationHints);
-
-			expect(transformSpy).toHaveBeenCalledWith('foo', 'EPSG:4326');
-			expect(transformSpy).toHaveBeenCalledWith('foo', 'bar');
-		});
-	});
-
-	describe('when calculationHints with extent are provided', () => {
-		it('calculates the geodesic length of a transformed geometry', () => {
-			const utm32Distance = 149200.428;
-			const geodesicDistance = 149246.522;
-			const lineString = new LineString([fromLonLat([9, 48]), fromLonLat([11, 48])]);
-			const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' };
-
-			// within
-			expect(getGeometryLength(lineString, { ...calculationHints, toProjectionExtent: [9, -60, 11, 60] })).toBeCloseTo(utm32Distance);
-			// partially within
-			expect(getGeometryLength(lineString, { ...calculationHints, toProjectionExtent: [10, -60, 12, 60] })).toBeCloseTo(geodesicDistance);
-			// outside
-			expect(getGeometryLength(lineString, { ...calculationHints, toProjectionExtent: [12, -60, 13, 60] })).toBeCloseTo(geodesicDistance);
-		});
-	});
-});
+$injector.registerSingleton('MapService', mapServiceMock);
 
 describe('canShowAzimuthCircle', () => {
 	it('can show for a 2-point-line', () => {
@@ -203,7 +117,7 @@ describe('getAzimuth', () => {
 			expect(getAzimuth(polygonClockwise)).toBe(0);
 		});
 
-		it('calculates NO angle for a imcomplete LineString', () => {
+		it('calculates NO angle for a incomplete LineString', () => {
 			const onePointLineString = new LineString([[0, 0]]);
 
 			expect(getAzimuth(onePointLineString)).toBeNull();
@@ -367,92 +281,6 @@ describe('getCoordinateAt', () => {
 	});
 });
 
-describe('getArea', () => {
-	it('calculates the area for a Polygon', () => {
-		const polygon = new Polygon([
-			[
-				[0, 0],
-				[1, 0],
-				[1, 1],
-				[0, 1],
-				[0, 0]
-			]
-		]);
-		const area = getArea(polygon);
-
-		expect(area).toBe(1);
-	});
-
-	it('calculates the area for a projected Polygon', () => {
-		const polygon = new Polygon([
-			[
-				[0, 0],
-				[1, 0],
-				[1, 1],
-				[0, 1],
-				[0, 0]
-			]
-		]);
-		const calculationHints = { fromProjection: 'EPSG:4326', toProjection: 'EPSG:25832' };
-		const area = getArea(polygon, calculationHints);
-
-		expect(area).toBeCloseTo(12575513411.866, 2);
-	});
-
-	it('returns 0 for a non-area-like geometry', () => {
-		const point = new Point([0, 0]);
-		const lineString = new LineString([
-			[0, 0],
-			[2, 0]
-		]);
-		const linearRing = new LinearRing([
-			[0, 0],
-			[2, 0]
-		]);
-
-		const pointArea = getArea(point);
-		const lineStringArea = getArea(lineString);
-		const linearRingArea = getArea(linearRing);
-
-		expect(pointArea).toBe(0);
-		expect(lineStringArea).toBe(0);
-		expect(linearRingArea).toBe(0);
-	});
-
-	describe('when calculationHints with extent are provided', () => {
-		it('calculates the geodesic area of a transformed polygon', () => {
-			const utm32Area = 8327453871.901;
-			const geodesicArea = 8333081687.76;
-			const lineString = new Polygon([[fromLonLat([9, 48]), fromLonLat([11, 48]), fromLonLat([10, 47])]]);
-			const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' };
-
-			// within
-			expect(getArea(lineString, { ...calculationHints, toProjectionExtent: [9, -60, 11, 60] })).toBeCloseTo(utm32Area);
-			// partially within
-			expect(getArea(lineString, { ...calculationHints, toProjectionExtent: [10, -60, 12, 60] })).toBeCloseTo(geodesicArea);
-			// outside
-			expect(getArea(lineString, { ...calculationHints, toProjectionExtent: [12, -60, 13, 60] })).toBeCloseTo(geodesicArea);
-		});
-
-		it('calculates the geodesic area of a transformed polygon with hole', () => {
-			const utm32Area = 8322890782.498;
-			const geodesicArea = 8328516236.574;
-			const lineString = new Polygon([
-				[fromLonLat([9, 48]), fromLonLat([11, 48]), fromLonLat([10, 47])],
-				[fromLonLat([9.5, 47.5]), fromLonLat([10.5, 47.5]), fromLonLat([10, 47.5])]
-			]);
-			const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' };
-
-			// within
-			expect(getArea(lineString, { ...calculationHints, toProjectionExtent: [9, -60, 11, 60] })).toBeCloseTo(utm32Area);
-			// partially within
-			expect(getArea(lineString, { ...calculationHints, toProjectionExtent: [10, -60, 12, 60] })).toBeCloseTo(geodesicArea);
-			// outside
-			expect(getArea(lineString, { ...calculationHints, toProjectionExtent: [12, -60, 13, 60] })).toBeCloseTo(geodesicArea);
-		});
-	});
-});
-
 describe('isVertexOfGeometry', () => {
 	it('resolves a Point as Vertex of a Point', () => {
 		const geometry = new Point([0, 0]);
@@ -601,45 +429,35 @@ describe('isVertexOfGeometry', () => {
 
 describe('getPartitionDelta', () => {
 	it('calculates a sub delta', () => {
-		const lineString = new LineString([
-			[0, 0],
-			[15, 0]
-		]);
+		const geometryLength = 15;
 
-		const delta = getPartitionDelta(lineString);
+		const delta = getPartitionDelta(geometryLength);
 
 		expect(delta).toBe(1);
 	});
 
 	it('calculates a delta with standard resolution', () => {
-		const lineString = new LineString([
-			[0, 0],
-			[200, 0]
-		]);
+		const geometryLength = 200;
 
-		const delta = getPartitionDelta(lineString);
+		const delta = getPartitionDelta(geometryLength);
 
 		expect(delta).toBe(0.5);
 	});
 
 	it('calculates a delta with defined resolution', () => {
-		const lineString = new LineString([
-			[0, 0],
-			[5000, 0]
-		]);
+		const geometryLength = 5000;
 		const resolution = 50;
-		const delta = getPartitionDelta(lineString, resolution);
+
+		const delta = getPartitionDelta(geometryLength, resolution);
 
 		expect(delta).toBe(1);
 	});
 
 	it('calculates a delta for longest lines', () => {
-		const lineString = new LineString([
-			[0, 0],
-			[50000000, 0]
-		]);
+		const geometryLength = 50000000;
 		const resolution = 50;
-		const delta = getPartitionDelta(lineString, resolution);
+
+		const delta = getPartitionDelta(geometryLength, resolution);
 
 		expect(delta).toBe(0.2);
 	});
@@ -692,6 +510,7 @@ describe('calculatePartitionResidualOfSegments', () => {
 	});
 
 	it('calculates residuals for a LineString', () => {
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(30);
 		expect(
 			calculatePartitionResidualOfSegments(
 				new LineString([
@@ -713,6 +532,7 @@ describe('calculatePartitionResidualOfSegments', () => {
 	});
 
 	it('calculates residuals for a LinearRing', () => {
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(30);
 		expect(
 			calculatePartitionResidualOfSegments(
 				new LinearRing([
@@ -736,6 +556,7 @@ describe('calculatePartitionResidualOfSegments', () => {
 	});
 
 	it('calculates residuals for a Polygon', () => {
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(30);
 		expect(
 			calculatePartitionResidualOfSegments(
 				new Polygon([
@@ -780,6 +601,7 @@ describe('getStats', () => {
 	});
 
 	it('returns a statistic-object for two-point LineString', () => {
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(42);
 		const statsForLineString = getStats(
 			new LineString([
 				[0, 0],
@@ -788,11 +610,12 @@ describe('getStats', () => {
 		);
 		expect(statsForLineString.coordinate).toBeNull();
 		expect(statsForLineString.azimuth).toBe(45);
-		expect(statsForLineString.length).toBeCloseTo(59.4, 1);
+		expect(statsForLineString.length).toBe(42);
 		expect(statsForLineString.area).toBeNull();
 	});
 
 	it('returns a statistic-object for n-point (2<n) LineString', () => {
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(42);
 		const statsForLineString = getStats(
 			new LineString([
 				[0, 0],
@@ -802,11 +625,12 @@ describe('getStats', () => {
 		);
 		expect(statsForLineString.coordinate).toBeNull();
 		expect(statsForLineString.azimuth).toBeNull();
-		expect(statsForLineString.length).toBeCloseTo(113.2, 1);
+		expect(statsForLineString.length).toBe(42);
 		expect(statsForLineString.area).toBeNull();
 	});
 
 	it('returns a statistic-object for MultiLineString', () => {
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(42);
 		const statsForMultiLineString = getStats(
 			new MultiLineString([
 				new LineString([
@@ -823,11 +647,14 @@ describe('getStats', () => {
 		);
 		expect(statsForMultiLineString.coordinate).toBeNull();
 		expect(statsForMultiLineString.azimuth).toBeNull();
-		expect(statsForMultiLineString.length).toBeCloseTo(165.5, 1);
+		expect(statsForMultiLineString.length).toBe(84);
 		expect(statsForMultiLineString.area).toBeNull();
 	});
 
 	it('returns a statistic-object for Polygon', () => {
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(42);
+		spyOn(mapServiceMock, 'calcArea').and.returnValue(21);
+
 		const statsForPolygon = getStats(
 			new Polygon([
 				[

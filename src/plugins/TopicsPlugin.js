@@ -33,11 +33,8 @@ export class TopicsPlugin extends BaPlugin {
 		const { TopicsService: topicsService, EnvironmentService: environmentService } = $injector.inject('TopicsService', 'EnvironmentService');
 		const queryParams = environmentService.getQueryParams();
 
-		try {
-			await topicsService.init();
-		} catch (e) {
-			throw new Error('No topics found. Is the backend running and properly configured?', { cause: e });
-		}
+		await topicsService.init();
+
 		//mark the topics state as ready
 		setReady();
 
@@ -53,7 +50,6 @@ export class TopicsPlugin extends BaPlugin {
 
 	/**
 	 * @override
-	 * @param {store} store
 	 */
 	async register() {
 		return await this._init();

@@ -69,13 +69,13 @@ describe('ShareDataChip', () => {
 			expect(element.isVisible()).toBeTrue();
 		});
 
-		it('does NOT renders the view with missing FileSaveResult', async () => {
+		it('does NOT render the view with missing FileSaveResult', async () => {
 			const element = await setup();
 
 			expect(element.isVisible()).toBeFalse();
 		});
 
-		it('does NOT renders the view with invalid FileSaveResult', async () => {
+		it('does NOT render the view with invalid FileSaveResult', async () => {
 			const invalidFileSaveResult = { adminId: 'a_fooBar', fileId: null };
 			const sharedState = { ...defaultSharedState, fileSaveResult: invalidFileSaveResult };
 			const element = await setup(sharedState);

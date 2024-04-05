@@ -40,7 +40,7 @@ describe('MapFeedbackChip', () => {
 			expect(element.isVisible()).toBeTrue();
 		});
 
-		it('does NOT renders the view with missing center', async () => {
+		it('does NOT render the view with missing center', async () => {
 			const element = await setup();
 
 			expect(element.isVisible()).toBeFalse();

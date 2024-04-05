@@ -74,6 +74,7 @@ describe('GeoResource provider', () => {
 		queryable: false,
 		exportable: false,
 		authRoles: ['TEST'],
+		maxSize: [210, 420],
 		...wmsDefinition
 	};
 	const xyzDefinition = { id: 'xyzId', label: 'xyzLabel', urls: 'xyzUrl', type: 'xyz', attribution: basicAttribution };
@@ -102,7 +103,7 @@ describe('GeoResource provider', () => {
 		...vtDefinition
 	};
 	const vectorDefinition = {
-		id: 'xyzId',
+		id: 'vectorId',
 		label: 'vectorLabel',
 		url: 'vectorUrl',
 		sourceType: 'kml',
@@ -120,6 +121,26 @@ describe('GeoResource provider', () => {
 		exportable: false,
 		authRoles: ['TEST'],
 		...vectorDefinition
+	};
+	const rtVectorDefinition = {
+		id: 'rtVectorId',
+		label: 'rtVectorLabel',
+		url: 'rtVectorUrl',
+		sourceType: 'kml',
+		type: 'rtvector',
+		attribution: basicAttribution
+	};
+	const rtVectorDefinitionOptionalProperties = {
+		clusterParams: { foo: 'bar' },
+		background: true,
+		opacity: 0.5,
+		hidden: true,
+		minZoom: 5,
+		maxZoom: 19,
+		queryable: false,
+		exportable: false,
+		authRoles: ['TEST'],
+		...rtVectorDefinition
 	};
 	const aggregateDefinition = {
 		id: 'xyzId',
@@ -166,6 +187,7 @@ describe('GeoResource provider', () => {
 			expect(wmsGeoResource.format).toBe(wmsDefinition.format);
 			expect(wmsGeoResource._attributionProvider).toBe(getBvvAttribution);
 			expect(wmsGeoResource._attribution).not.toBeNull();
+			expect(wmsGeoResource.maxSize).toBeNull();
 		});
 
 		it('maps a WMS BVV definition with optional properties to a corresponding GeoResource instance', () => {
@@ -178,6 +200,7 @@ describe('GeoResource provider', () => {
 			expect(wmsGeoResource.extraParams).toEqual({ foo: 'bar' });
 			expect(wmsGeoResource.queryable).toBeFalse();
 			expect(wmsGeoResource.exportable).toBeFalse();
+			expect(wmsGeoResource.maxSize).toEqual([210, 420]);
 			expect(wmsGeoResource.authRoles).toEqual(['TEST']);
 		});
 
@@ -271,6 +294,29 @@ describe('GeoResource provider', () => {
 			await expectAsync(_definitionToGeoResource(vectorDefinition).get()).toBeRejectedWith(
 				new UnavailableGeoResourceError(`VectorGeoResource for '${vectorDefinition.url}' could not be loaded`, vectorDefinition.id, 404)
 			);
+		});
+
+		it('maps a RTVectorFile BVV definition to a corresponding GeoResource instance', () => {
+			const rtVectorGeoResource = _definitionToGeoResource(rtVectorDefinition);
+
+			validateGeoResourceProperties(rtVectorGeoResource, rtVectorDefinition);
+			expect(rtVectorGeoResource.url).toBe(rtVectorDefinition.url);
+			expect(rtVectorGeoResource.sourceType).toBe(Symbol.for(vectorDefinition.sourceType));
+			expect(rtVectorGeoResource._attributionProvider).toBe(getBvvAttribution);
+			expect(rtVectorGeoResource._attribution).not.toBeNull();
+		});
+
+		it('maps a RTVectorFile BVV definition with optional properties to a corresponding GeoResource instance', () => {
+			const rtVectorGeoResource = _definitionToGeoResource(rtVectorDefinitionOptionalProperties);
+
+			expect(rtVectorGeoResource.opacity).toBe(0.5);
+			expect(rtVectorGeoResource.hidden).toBeTrue();
+			expect(rtVectorGeoResource.minZoom).toBe(5);
+			expect(rtVectorGeoResource.maxZoom).toBe(19);
+			expect(rtVectorGeoResource.clusterParams).toEqual({ foo: 'bar' });
+			expect(rtVectorGeoResource.queryable).toBeFalse();
+			expect(rtVectorGeoResource.exportable).toBeFalse();
+			expect(rtVectorGeoResource.authRoles).toEqual(['TEST']);
 		});
 
 		it('maps a aggregate BVV definition to a corresponding GeoResource instance', () => {
