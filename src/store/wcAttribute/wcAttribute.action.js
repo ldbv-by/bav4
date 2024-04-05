@@ -1,3 +1,6 @@
+/**
+ * @module store/wcAttribute/wcAttribute_action
+ */
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
 import { OBSERVED_ATTRIBUTE_CHANGED } from './wcAttribute.reducer';
