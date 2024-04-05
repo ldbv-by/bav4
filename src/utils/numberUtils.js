@@ -30,9 +30,9 @@ export const createUniqueId = () => {
 };
 
 /**
- * Formates a number accordingly to the current `DEFAULT_LANG` property.
+ * Formats a number accordingly to the current `DEFAULT_LANG` property.
  * @param {number} value
- * @returns the formated number as `string` or `undefined`
+ * @returns the formatted number as `string` or `undefined`
  */
 export const toLocaleString = (value) => {
 	/**
