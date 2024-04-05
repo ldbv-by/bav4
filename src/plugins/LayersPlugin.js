@@ -5,7 +5,6 @@ import { $injector } from '../injection';
 import { QueryParameters } from '../domain/queryParameters';
 import { BaPlugin } from './BaPlugin';
 import { addLayer, removeAndSetLayers, setReady } from '../store/layers/layers.action';
-import { createUniqueId } from '../utils/numberUtils';
 import { fitLayer } from '../store/position/position.action';
 import { isNumber } from '../utils/checks';
 
@@ -24,17 +23,21 @@ export class LayersPlugin extends BaPlugin {
 		const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
 
 		const parseLayer = (layerValue, layerVisibilityValue, layerOpacityValue) => {
-			//Todo: parse KML and WMS layer from query params like layerIdOrType||layerLabel||layerUrl||layerOptions
 			const layer = layerValue.split(',');
 			const layerVisibility = layerVisibilityValue ? layerVisibilityValue.split(',') : [];
 			const layerOpacity = layerOpacityValue ? layerOpacityValue.split(',') : [];
 
+			const geoResourceIds = [];
+			const getGrReferenceIndexNumber = (geoResourceId) => {
+				geoResourceIds.push(geoResourceId);
+				return geoResourceIds.filter((v) => v === geoResourceId).length - 1;
+			};
 			return (
 				layer
 					.map((id, index) => {
 						if (id) {
 							const geoResource = geoResourceService.byId(id) ?? geoResourceService.asyncById(id);
-							const layerId = `${id}_${createUniqueId()}`;
+							const layerId = `${id}_${getGrReferenceIndexNumber(id)}`;
 
 							if (geoResource) {
 								const atomicallyAddedLayer = { id: layerId, geoResourceId: geoResource.id };

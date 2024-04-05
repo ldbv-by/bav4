@@ -221,16 +221,16 @@ describe('LayersPlugin', () => {
 
 		describe('_addLayersFromQueryParams', () => {
 			it('adds layers loading existing and on-demand geoResources', () => {
-				const queryParam = new URLSearchParams(QueryParameters.LAYER + '=some0,some1,some2');
+				const queryParam = new URLSearchParams(QueryParameters.LAYER + '=some0,some1,some2,some0');
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
 				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					switch (id) {
 						case 'some0':
-							return new XyzGeoResource('some0', 'someLabel0', 'someUrl0');
+							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
 						case 'some2':
-							return new XyzGeoResource('some1', 'someLabel1', 'someUrl1');
+							return new XyzGeoResource(id, 'someLabel2', 'someUrl2');
 					}
 				});
 				spyOn(geoResourceServiceMock, 'asyncById').and.callFake((id) => {
@@ -242,10 +242,11 @@ describe('LayersPlugin', () => {
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
-				expect(store.getState().layers.active.length).toBe(3);
-				expect(store.getState().layers.active[0].id).toContain('some0_');
-				expect(store.getState().layers.active[1].id).toContain('some1_');
-				expect(store.getState().layers.active[2].id).toContain('some2_');
+				expect(store.getState().layers.active.length).toBe(4);
+				expect(store.getState().layers.active[0].id).toBe('some0_0');
+				expect(store.getState().layers.active[1].id).toBe('some1_0');
+				expect(store.getState().layers.active[2].id).toBe('some2_0');
+				expect(store.getState().layers.active[3].id).toBe('some0_1');
 			});
 
 			it('adds layers for existing geoResources considering visibility', () => {
@@ -256,18 +257,18 @@ describe('LayersPlugin', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					switch (id) {
 						case 'some0':
-							return new XyzGeoResource('some0', 'someLabel0', 'someUrl0');
+							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
 						case 'some1':
-							return new XyzGeoResource('some1', 'someLabel1', 'someUrl1');
+							return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
 					}
 				});
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
 				expect(store.getState().layers.active.length).toBe(2);
-				expect(store.getState().layers.active[0].id).toContain('some0_');
+				expect(store.getState().layers.active[0].id).toBe('some0_0');
 				expect(store.getState().layers.active[0].visible).toBeTrue();
-				expect(store.getState().layers.active[1].id).toContain('some1_');
+				expect(store.getState().layers.active[1].id).toBe('some1_0');
 				expect(store.getState().layers.active[1].visible).toBeFalse();
 			});
 
@@ -279,18 +280,18 @@ describe('LayersPlugin', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					switch (id) {
 						case 'some0':
-							return new XyzGeoResource('some0', 'someLabel0', 'someUrl0');
+							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
 						case 'some1':
-							return new XyzGeoResource('some1', 'someLabel1', 'someUrl1');
+							return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
 					}
 				});
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
 				expect(store.getState().layers.active.length).toBe(2);
-				expect(store.getState().layers.active[0].id).toContain('some0_');
+				expect(store.getState().layers.active[0].id).toBe('some0_0');
 				expect(store.getState().layers.active[0].visible).toBeTrue();
-				expect(store.getState().layers.active[1].id).toContain('some1_');
+				expect(store.getState().layers.active[1].id).toBe('some1_0');
 				expect(store.getState().layers.active[1].visible).toBeTrue();
 			});
 
@@ -302,18 +303,18 @@ describe('LayersPlugin', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					switch (id) {
 						case 'some0':
-							return new XyzGeoResource('some0', 'someLabel0', 'someUrl0');
+							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
 						case 'some1':
-							return new XyzGeoResource('some1', 'someLabel1', 'someUrl1');
+							return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
 					}
 				});
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
 				expect(store.getState().layers.active.length).toBe(2);
-				expect(store.getState().layers.active[0].id).toContain('some0_');
+				expect(store.getState().layers.active[0].id).toBe('some0_0');
 				expect(store.getState().layers.active[0].opacity).toBe(0.8);
-				expect(store.getState().layers.active[1].id).toContain('some1_');
+				expect(store.getState().layers.active[1].id).toBe('some1_0');
 				expect(store.getState().layers.active[1].opacity).toBe(0.6);
 			});
 
@@ -325,18 +326,18 @@ describe('LayersPlugin', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					switch (id) {
 						case 'some0':
-							return new XyzGeoResource('some0', 'someLabel0', 'someUrl0');
+							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
 						case 'some1':
-							return new XyzGeoResource('some1', 'someLabel1', 'someUrl1');
+							return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
 					}
 				});
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
 				expect(store.getState().layers.active.length).toBe(2);
-				expect(store.getState().layers.active[0].id).toContain('some0_');
+				expect(store.getState().layers.active[0].id).toBe('some0_0');
 				expect(store.getState().layers.active[0].opacity).toBe(1);
-				expect(store.getState().layers.active[1].id).toContain('some1_');
+				expect(store.getState().layers.active[1].id).toBe('some1_0');
 				expect(store.getState().layers.active[1].opacity).toBe(1);
 			});
 
@@ -374,9 +375,9 @@ describe('LayersPlugin', () => {
 					spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 						switch (id) {
 							case 'some0':
-								return new XyzGeoResource('some0', 'someLabel0', 'someUrl0');
+								return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
 							case 'some1':
-								return new XyzGeoResource('some1', 'someLabel1', 'someUrl1');
+								return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
 						}
 					});
 
@@ -386,7 +387,7 @@ describe('LayersPlugin', () => {
 
 					await TestUtils.timeout();
 
-					expect(store.getState().position.fitLayerRequest.payload.id).toContain('some1_');
+					expect(store.getState().position.fitLayerRequest.payload.id).toBe('some1_0');
 				});
 
 				it('does nothing when parameter value is not an integer', async () => {
@@ -399,9 +400,9 @@ describe('LayersPlugin', () => {
 					spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 						switch (id) {
 							case 'some0':
-								return new XyzGeoResource('some0', 'someLabel0', 'someUrl0');
+								return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
 							case 'some1':
-								return new XyzGeoResource('some1', 'someLabel1', 'someUrl1');
+								return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
 						}
 					});
 
