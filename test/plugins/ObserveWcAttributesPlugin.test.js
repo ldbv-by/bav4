@@ -16,11 +16,11 @@ describe('ObserveWcAttributesPlugin', () => {
 
 	const setup = () => {
 		const state = {
-			wcAttributes: initialState
+			wcAttribute: initialState
 		};
 
 		const store = TestUtils.setupStoreAndDi(state, {
-			wcAttributes: wcAttributeReducer
+			wcAttribute: wcAttributeReducer
 		});
 		$injector.registerSingleton('EnvironmentService', environmentService);
 		return store;
@@ -37,7 +37,7 @@ describe('ObserveWcAttributesPlugin', () => {
 		wc.setAttribute(QueryParameters.ZOOM, '5');
 		await TestUtils.timeout();
 
-		expect(store.getState().wcAttributes.changed.payload).toBe(QueryParameters.ZOOM);
+		expect(store.getState().wcAttribute.changed.payload).toBe(QueryParameters.ZOOM);
 	});
 
 	it('does nothing when no public web component is available', async () => {
@@ -52,7 +52,7 @@ describe('ObserveWcAttributesPlugin', () => {
 		wc.setAttribute(QueryParameters.ZOOM, '5');
 		await TestUtils.timeout();
 
-		expect(initialState.changed).toEqual(store.getState().wcAttributes.changed);
+		expect(initialState.changed).toEqual(store.getState().wcAttribute.changed);
 	});
 
 	it('ignores irrelevant changes of the public web component', async () => {
@@ -68,12 +68,12 @@ describe('ObserveWcAttributesPlugin', () => {
 		wc.setAttribute('something', '5');
 		await TestUtils.timeout();
 
-		expect(initialState.changed).toEqual(store.getState().wcAttributes.changed);
+		expect(initialState.changed).toEqual(store.getState().wcAttribute.changed);
 
 		//add child
 		wc.appendChild(document.createElement('div'));
 		await TestUtils.timeout();
 
-		expect(initialState.changed).toEqual(store.getState().wcAttributes.changed);
+		expect(initialState.changed).toEqual(store.getState().wcAttribute.changed);
 	});
 });
