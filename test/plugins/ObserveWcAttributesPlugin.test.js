@@ -5,7 +5,7 @@ import { ObserveWcAttributesPlugin } from '../../src/plugins/ObserveWcAttributes
 import { initialState, wcAttributeReducer } from '../../src/store/wcAttribute/wcAttribute.reducer';
 import { TestUtils } from '../test-utils';
 
-describe('ObserveWcAttributesPlugins', () => {
+describe('ObserveWcAttributesPlugin', () => {
 	const environmentService = {
 		isEmbeddedAsWC: () => true
 	};
