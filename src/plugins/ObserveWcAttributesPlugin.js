@@ -1,5 +1,5 @@
 /**
- * @module plugins/ObserveStateForEncodingPlugin
+ * @module plugins/ObserveWcAttributesPlugin
  */
 import { QueryParameters } from '../domain/queryParameters';
 import { $injector } from '../injection';
