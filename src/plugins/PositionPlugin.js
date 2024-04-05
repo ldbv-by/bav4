@@ -6,9 +6,17 @@ import { QueryParameters } from '../domain/queryParameters';
 import { BaPlugin } from './BaPlugin';
 import { changeCenterAndRotation, changeZoomAndRotation, changeZoomCenterAndRotation, fit } from '../store/position/position.action';
 import { isCoordinate, isNumber } from '../utils/checks';
+import { observe } from '../utils/storeUtils';
 
 /**
+ * This plugin does the following position-related things:
+ *
+ * - initially set the position from available query parameters or configuration
+ *
+ * - handle position-related attribute changes of the public web component
+ *
  * @class
+ * @extends BaPlugin
  * @author taulinger
  */
 export class PositionPlugin extends BaPlugin {
@@ -71,7 +79,7 @@ export class PositionPlugin extends BaPlugin {
 		});
 	}
 
-	_init() {
+	_init(store) {
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 		const queryParams = environmentService.getQueryParams();
 
@@ -83,12 +91,23 @@ export class PositionPlugin extends BaPlugin {
 		else {
 			this._setPositionFromConfig();
 		}
+
+		if (environmentService.isEmbeddedAsWC()) {
+			// handle WC attribute changes
+			observe(
+				store,
+				(state) => state.wcAttribute.changed,
+				() => {
+					this._setPositionFromQueryParams(environmentService.getQueryParams());
+				}
+			);
+		}
 	}
 
 	/**
 	 * @override
 	 */
-	async register() {
-		this._init();
+	async register(store) {
+		this._init(store);
 	}
 }
