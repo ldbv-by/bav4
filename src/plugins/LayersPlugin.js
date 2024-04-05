@@ -7,9 +7,17 @@ import { BaPlugin } from './BaPlugin';
 import { addLayer, removeAndSetLayers, setReady } from '../store/layers/layers.action';
 import { fitLayer } from '../store/position/position.action';
 import { isNumber } from '../utils/checks';
+import { observe } from '../utils/storeUtils';
 
 /**
+ * This plugin does the following layer-related things:
+ *
+ * - initially set the layers from available query parameters or configuration
+ *
+ * - handle layer-related attribute changes of the public web component
+ *
  * @class
+ * @extends BaPlugin
  * @author taulinger
  */
 export class LayersPlugin extends BaPlugin {
@@ -108,7 +116,7 @@ export class LayersPlugin extends BaPlugin {
 	/**
 	 * Initializes the GeoResourceService and adds layers to the list of layers in the store
 	 */
-	async _init() {
+	async _init(store) {
 		const { GeoResourceService: geoResourceService, EnvironmentService: environmentService } = $injector.inject(
 			'GeoResourceService',
 			'EnvironmentService'
@@ -128,6 +136,17 @@ export class LayersPlugin extends BaPlugin {
 		//from config
 		else {
 			this._addLayersFromConfig();
+		}
+
+		if (environmentService.isEmbeddedAsWC()) {
+			// handle WC attribute changes
+			observe(
+				store,
+				(state) => state.wcAttribute.changed,
+				() => {
+					this._addLayersFromQueryParams(environmentService.getQueryParams());
+				}
+			);
 		}
 	}
 
@@ -159,7 +178,7 @@ export class LayersPlugin extends BaPlugin {
 	/**
 	 * @override
 	 */
-	async register() {
-		return await this._init();
+	async register(store) {
+		return await this._init(store);
 	}
 }

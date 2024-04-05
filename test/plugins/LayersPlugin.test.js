@@ -7,6 +7,8 @@ import { QueryParameters } from '../../src/domain/queryParameters';
 import { Topic } from '../../src/domain/topic';
 import { setCurrent } from '../../src/store/topics/topics.action';
 import { topicsReducer } from '../../src/store/topics/topics.reducer';
+import { wcAttributeReducer } from '../../src/store/wcAttribute/wcAttribute.reducer';
+import { indicateAttributeChange } from '../../src/store/wcAttribute/wcAttribute.action';
 import { initialState as initialPositionState, positionReducer } from '../../src/store/position/position.reducer.js';
 
 describe('LayersPlugin', () => {
@@ -28,14 +30,16 @@ describe('LayersPlugin', () => {
 	};
 	const environmentService = {
 		getQueryParams: () => new URLSearchParams(),
-		isRetinaDisplay: () => false
+		isRetinaDisplay: () => false,
+		isEmbeddedAsWC: () => false
 	};
 
 	const setup = (state) => {
 		const store = TestUtils.setupStoreAndDi(state, {
 			layers: layersReducer,
 			topics: topicsReducer,
-			position: positionReducer
+			position: positionReducer,
+			wcAttribute: wcAttributeReducer
 		});
 		$injector
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
@@ -50,7 +54,7 @@ describe('LayersPlugin', () => {
 		it('calls #_init and awaits its completion', async () => {
 			const store = setup();
 			const instanceUnderTest = new LayersPlugin();
-			const spy = spyOn(instanceUnderTest, '_init').and.returnValue(Promise.resolve(true));
+			const spy = spyOn(instanceUnderTest, '_init').withArgs(store).and.resolveTo(true);
 
 			const result = await instanceUnderTest.register(store);
 
@@ -65,9 +69,9 @@ describe('LayersPlugin', () => {
 			const instanceUnderTest = new LayersPlugin();
 			const addLayersFromQueryParamsSpy = spyOn(instanceUnderTest, '_addLayersFromQueryParams');
 			const addLayersFromConfigSpy = spyOn(instanceUnderTest, '_addLayersFromConfig');
-			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'init').and.returnValue(Promise.resolve());
+			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'init').and.resolveTo();
 
-			await instanceUnderTest._init();
+			await instanceUnderTest._init(store);
 
 			expect(geoResourceServiceSpy).toHaveBeenCalledTimes(1);
 			expect(addLayersFromQueryParamsSpy).not.toHaveBeenCalled();
@@ -81,9 +85,9 @@ describe('LayersPlugin', () => {
 			const instanceUnderTest = new LayersPlugin();
 			const addLayersFromQueryParamsSpy = spyOn(instanceUnderTest, '_addLayersFromQueryParams');
 			const addLayersFromConfigSpy = spyOn(instanceUnderTest, '_addLayersFromConfig');
-			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'init').and.returnValue(Promise.resolve());
+			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'init').and.resolveTo();
 			spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-			await instanceUnderTest._init();
+			await instanceUnderTest._init(store);
 
 			expect(geoResourceServiceSpy).toHaveBeenCalled();
 			expect(addLayersFromQueryParamsSpy).toHaveBeenCalledOnceWith(new URLSearchParams(queryParam));
@@ -414,6 +418,26 @@ describe('LayersPlugin', () => {
 
 					expect(store.getState().position.fitLayerRequest.payload).toBeNull();
 				});
+			});
+		});
+
+		describe('attribute change of the public web component', () => {
+			it('initializes the GeoResourceService and calls #_addLayersFromQueryParams', async () => {
+				const store = setup();
+				const queryParam = new URLSearchParams(QueryParameters.LAYER + '=some');
+				const instanceUnderTest = new LayersPlugin();
+				const getQueryParamsSpy = spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+				const addLayersFromQueryParamsSpy = spyOn(instanceUnderTest, '_addLayersFromQueryParams').withArgs(queryParam).and.stub();
+				spyOn(geoResourceServiceMock, 'init').and.resolveTo();
+				spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(true);
+				await instanceUnderTest._init(store);
+				expect(addLayersFromQueryParamsSpy).toHaveBeenCalledTimes(1);
+				expect(getQueryParamsSpy).toHaveBeenCalledTimes(1);
+
+				indicateAttributeChange();
+
+				expect(addLayersFromQueryParamsSpy).toHaveBeenCalledTimes(2);
+				expect(getQueryParamsSpy).toHaveBeenCalledTimes(2);
 			});
 		});
 	});
