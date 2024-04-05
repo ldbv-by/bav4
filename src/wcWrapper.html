@@ -8,23 +8,17 @@
 	</head>
 
 	<body>
-		
-		<bayern-atlas
-		style="width: 800px; height: 600px; display: block"
-		l="luftbild_labels"
-		z="15"
-		c="671092,5299670"
-		></bayern-atlas>
-		<div style="position: absolute;">
+		<bayern-atlas style="width: 800px; height: 600px; display: block" l="luftbild_labels" z="15" c="671092,5299670"></bayern-atlas>
+		<div style="position: absolute">
 			<button id="zoomIn">Zoom in</button>
 			<button id="zoomOut">Zoom out</button>
 			<select id="layer-select">
 				<option value="luftbild_labels">Luftbild</option>
 				<option value="atkis">Webkarte</option>
 			</select>
-			<input type="range" id="layer-opacity"  min="0" max="100" value="100" step="1" />
-		</body>
-	</div>
+			<input type="range" id="layer-opacity" min="0" max="100" value="100" step="1" />
+		</div>
+	</body>
 	<script src="../wc.js"></script>
 	<script>
 		document.querySelector('#zoomIn').addEventListener('click', () => {
@@ -37,8 +31,7 @@
 			document.querySelector('bayern-atlas').setAttribute('l', event.target.value);
 		});
 		document.querySelector('#layer-opacity').addEventListener('input', (event) => {
-			console.log(event.target.value)
-			document.querySelector('bayern-atlas').setAttribute('l_o', event.target.value/100);
+			document.querySelector('bayern-atlas').setAttribute('l_o', event.target.value / 100);
 		});
 		document.querySelector('bayern-atlas').addEventListener('ba-geometry-created', (event) => console.log(event.detail));
 	</script>
