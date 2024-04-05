@@ -110,6 +110,7 @@ export class StoreService {
 				ToolsPlugin: toolsPlugin,
 				BeforeUnloadPlugin: beforeUnloadPlugin,
 				IframeGeometryIdPlugin: iframeGeometryIdPlugin,
+				ObserveWcAttributesPlugin: observeWcAttributesPlugin,
 				EncodeStatePlugin: encodeStatePlugin,
 				ObserveStateForEncodingPlugin: observeStateForEncodingPlugin
 			} = $injector.inject(
@@ -139,6 +140,7 @@ export class StoreService {
 				'ToolsPlugin',
 				'BeforeUnloadPlugin',
 				'IframeGeometryIdPlugin',
+				'ObserveWcAttributesPlugin',
 				'EncodeStatePlugin',
 				'ObserveStateForEncodingPlugin'
 			);
@@ -171,6 +173,7 @@ export class StoreService {
 				await toolsPlugin.register(this._store);
 				await beforeUnloadPlugin.register(this._store);
 				await iframeGeometryIdPlugin.register(this._store);
+				await observeWcAttributesPlugin.register(this._store);
 				await encodeStatePlugin.register(this._store);
 				await observeStateForEncodingPlugin.register(this._store); // should be registered as last plugin
 			});

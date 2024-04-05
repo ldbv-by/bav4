@@ -62,6 +62,7 @@ import { RoutingPlugin } from '../plugins/RoutingPlugin';
 import { AuthService } from '../services/AuthService';
 import { GlobalErrorPlugin } from '../plugins/GlobalErrorPlugin';
 import { AuthPlugin } from '../plugins/AuthPlugin';
+import { ObserveWcAttributesPlugin } from '../plugins/ObserveWcAttributesPlugin';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
@@ -124,6 +125,7 @@ $injector
 	.registerSingleton('ToolsPlugin', new ToolsPlugin())
 	.registerSingleton('BeforeUnloadPlugin', new BeforeUnloadPlugin())
 	.registerSingleton('IframeGeometryIdPlugin', new IframeGeometryIdPlugin())
+	.registerSingleton('ObserveWcAttributesPlugin', new ObserveWcAttributesPlugin())
 	.registerSingleton('EncodeStatePlugin', new EncodeStatePlugin())
 	.registerSingleton('ObserveStateForEncodingPlugin', new ObserveStateForEncodingPlugin())
 	.registerModule(mapModule)
