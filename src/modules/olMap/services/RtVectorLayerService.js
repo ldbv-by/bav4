@@ -11,7 +11,6 @@ import { parse } from '../../../utils/ewkt';
 import { changeCenter, fit } from '../../../store/position/position.action';
 import { containsExtent, getCenter } from '../../../../node_modules/ol/extent';
 import { observe } from '../../../utils/storeUtils';
-import { layersReducer } from '../../../store/layers/layers.reducer';
 
 export const WebSocket_Message_Keep_Alive = 'keep-alive';
 export const WebSocket_Ports = [80, 443];
