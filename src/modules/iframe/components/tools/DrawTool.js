@@ -12,9 +12,8 @@ import pencil from './assets/pencil.svg';
 import cancelSvg from './assets/close-lg.svg';
 import finishSvg from './assets/checked.svg';
 import { QueryParameters } from '../../../../domain/queryParameters';
-
 import css from './drawTool.css';
-import { IFrameComponents } from '../../../../domain/iframeComponents';
+import { nothing } from '../../../../../node_modules/ol/pixel';
 
 const Update = 'update';
 const Update_Tools = 'update_tools';
@@ -70,11 +69,7 @@ export class DrawTool extends MvuElement {
 	}
 
 	isRenderingSkipped() {
-		const queryParams = this._environmentService.getQueryParams();
-
-		// check if we have a query parameter defining the iframe drawTool
-		const iframeComponents = queryParams.get(QueryParameters.IFRAME_COMPONENTS);
-		return iframeComponents ? !iframeComponents.split(',').includes(IFrameComponents.DRAW_TOOL) : true;
+		return !this._environmentService.getQueryParams().get(QueryParameters.DRAW_TOOL);
 	}
 
 	createView(model) {
@@ -113,7 +108,8 @@ export class DrawTool extends MvuElement {
 			return active ? 'draw-tool__enable' : 'draw-tool__disable';
 		};
 
-		return html`
+		return this._environmentService.isEmbedded()
+			? html`
 			<style>
 				${css}
 			</style>
@@ -142,7 +138,8 @@ export class DrawTool extends MvuElement {
 					</div>
 				</div>
 			</div>
-		`;
+		`
+			: nothing;
 	}
 
 	_buildTools() {
