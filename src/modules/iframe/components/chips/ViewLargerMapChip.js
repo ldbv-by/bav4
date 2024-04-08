@@ -7,7 +7,6 @@ import baSvg from './assets/ba.svg';
 import { html, nothing } from 'lit-html';
 import css from './viewLargerMapChip.css';
 import { QueryParameters } from '../../../../domain/queryParameters';
-import { IFrameComponents } from '../../../../domain/iframeComponents';
 
 const Update_State_For_Encoding = 'update_state_for_encoding';
 
@@ -49,11 +48,15 @@ export class ViewLargerMapChip extends MvuElement {
 	}
 
 	isRenderingSkipped() {
-		const queryParams = this._environmentService.getQueryParams();
+		// const queryParams = this._environmentService.getQueryParams();
 
 		// check if we have a query parameter defining the iframe ViewLargerMapChip
-		const iframeComponents = queryParams.get(QueryParameters.IFRAME_COMPONENTS);
-		return iframeComponents ? !iframeComponents.split(',').includes(IFrameComponents.VIEW_LARGER_MAP_CHIP) : false;
+		// const iframeComponents = queryParams.get(QueryParameters.IFRAME_COMPONENTS);
+		// return iframeComponents ? !iframeComponents.split(',').includes(IFrameComponents.VIEW_LARGER_MAP_CHIP) : false;
+		return (
+			!this._environmentService.getQueryParams().get(QueryParameters.VIEW_LARGER_MAP_CHIP) ||
+			this._environmentService.getQueryParams().get(QueryParameters.VIEW_LARGER_MAP_CHIP) === 'false'
+		);
 	}
 
 	createView(model) {
