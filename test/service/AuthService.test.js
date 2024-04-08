@@ -155,6 +155,7 @@ describe('AuthService', () => {
 					await expectAsync(instanceUnderTest.signOut()).toBeResolvedTo(true);
 					expect(instanceUnderTest.getRoles()).toEqual([]);
 					expect(store.getState().auth.signedIn).toBeFalse();
+					expect(store.getState().auth.byUser).toBeTrue();
 				});
 			});
 
@@ -207,6 +208,7 @@ describe('AuthService', () => {
 				expect(result).toBeTrue();
 				expect(instanceUnderTest.getRoles()).toEqual([]);
 				expect(store.getState().auth.signedIn).toBeFalse();
+				expect(store.getState().auth.byUser).toBeFalse();
 			});
 		});
 		describe('the user is NOT signed in', () => {

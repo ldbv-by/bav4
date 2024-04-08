@@ -50,7 +50,7 @@ export class AuthPlugin extends BaPlugin {
 		}
 
 		const onSignOut = (signedIn, state) => {
-			if (!signedIn) {
+			if (!signedIn && state.auth.byUser) {
 				state.layers.active.forEach((l) => {
 					if (!this.#geoResourceService.isAllowed(l.geoResourceId)) {
 						removeLayer(l.id);

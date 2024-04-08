@@ -95,6 +95,20 @@ export const removeLayer = (id) => {
 };
 
 /**
+ * Removes all {@link Layer} which references a certain GeoResource from the list of active layers
+ * @param {string} geoResourceId The id of a GeoResource
+ */
+export const removeLayerOf = (geoResourceId) => {
+	getStore()
+		.getState()
+		.layers.active.forEach((l) => {
+			if (l.geoResourceId === geoResourceId) {
+				removeLayer(l.id);
+			}
+		});
+};
+
+/**
  * Marks the layers state as ready. That means all needed resources are available, for example the GeoResourceService has been initialized.
  * @function
  */

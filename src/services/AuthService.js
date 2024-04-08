@@ -112,7 +112,7 @@ export class AuthService {
 			const result = await this._singOutProvider();
 			if (result) {
 				this._roles = [];
-				setSignedOut();
+				setSignedOut(true);
 			}
 			return result;
 		}
@@ -126,7 +126,7 @@ export class AuthService {
 	invalidate() {
 		if (this.isSignedIn()) {
 			this._roles = [];
-			setSignedOut();
+			setSignedOut(false);
 			return true;
 		}
 		return false;
