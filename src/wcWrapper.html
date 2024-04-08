@@ -33,10 +33,11 @@
 			document.querySelector('bayern-atlas').setAttribute('l_o', event.target.value / 100);
 		});
 		document.querySelector('bayern-atlas').addEventListener('ba-geometry-created', (event) => console.log(event.detail));
-
+	</script>
+	<script>
 		/**
 		 * Needed for e2e test
-		 **/
+		 */
 		window.addEventListener('ba-load', () => {
 			window.ba_wcLoaded = true;
 		});
