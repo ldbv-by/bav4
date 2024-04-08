@@ -10,9 +10,13 @@ import { mapVectorSourceTypeToFormat } from './VectorLayerService';
 import { parse } from '../../../utils/ewkt';
 import { changeCenter, fit } from '../../../store/position/position.action';
 import { containsExtent, getCenter } from '../../../../node_modules/ol/extent';
+import { observe } from '../../../utils/storeUtils';
+import { layersReducer } from '../../../store/layers/layers.reducer';
 
 export const WebSocket_Message_Keep_Alive = 'keep-alive';
 export const WebSocket_Ports = [80, 443];
+
+export const WebSocket_Layer_Property = 'websocket';
 
 /**
  * Checks, whether a successor port is in the specified array of unique ports available or not.
@@ -115,9 +119,11 @@ export class RtVectorLayerService {
 
 	_startWebSocket(rtVectorGeoResource, olVectorLayer, olMap, port) {
 		const { VectorLayerService: vectorLayerService } = $injector.inject('VectorLayerService');
+
 		const featureReader = this._getFeatureReader(rtVectorGeoResource);
 
 		const webSocket = new WebSocket(port ? this._addPortToUrl(rtVectorGeoResource.url, port) : rtVectorGeoResource.url);
+		olVectorLayer.set(WebSocket_Layer_Property, webSocket);
 		const isUpdateNeeded = (data) => data !== WebSocket_Message_Keep_Alive;
 
 		let useFit = true;
@@ -144,6 +150,7 @@ export class RtVectorLayerService {
 
 		const nextPortCallback = (nextPort) => {
 			webSocket.onmessage = undefined;
+			olVectorLayer.unset(WebSocket_Layer_Property);
 			this._startWebSocket(rtVectorGeoResource, olVectorLayer, olMap, nextPort);
 		};
 
@@ -152,6 +159,15 @@ export class RtVectorLayerService {
 				this._cascadingPorts(port, nextPortCallback, rtVectorGeoResource.id);
 			}
 		};
+	}
+
+	_closeWebSocket(olVectorLayer) {
+		const websocket = olVectorLayer.get(WebSocket_Layer_Property);
+
+		const vectorSource = olVectorLayer.getSource();
+		vectorSource.clear();
+		websocket.close();
+		olVectorLayer.unset(WebSocket_Layer_Property);
 	}
 
 	_cascadingPorts(failedPort, nextPortCallback, geoResourceId) {
@@ -180,6 +196,7 @@ export class RtVectorLayerService {
 	 * @returns {ol.layer} the vectorLayer
 	 */
 	createLayer(id, rtVectorGeoResource, olMap) {
+		const { StoreService: storeService } = $injector.inject('StoreService');
 		const { minZoom, maxZoom, opacity } = rtVectorGeoResource;
 
 		const vectorLayer = new VectorLayer({
@@ -189,10 +206,46 @@ export class RtVectorLayerService {
 			minZoom: minZoom ?? undefined,
 			maxZoom: maxZoom ?? undefined
 		});
+
+		const getLayerStoreProperties = (activeLayers, layerId) => activeLayers.find((l) => l.id === layerId);
+
+		const onActiveChange = (active) => {
+			const layer = getLayerStoreProperties(active, id);
+
+			const getChangedVisibilityAction = (layer) => {
+				if (layer.visible && !vectorLayer.get(WebSocket_Layer_Property)) {
+					return () => this._startWebSocket(rtVectorGeoResource, vectorLayer, olMap);
+				}
+
+				if (!layer.visible && vectorLayer.get(WebSocket_Layer_Property)) {
+					return () => this._closeWebSocket(vectorLayer);
+				}
+
+				return () => {};
+			};
+
+			const removeAction = () => {
+				this._closeWebSocket(vectorLayer);
+				unsubscribeFn();
+			};
+
+			const getChangeAction = (layer) => {
+				return layer ? getChangedVisibilityAction(layer) : removeAction;
+			};
+
+			const changeAction = getChangeAction(layer);
+
+			changeAction();
+		};
+
+		const unsubscribeFn = observe(storeService.getStore(), (store) => store.layers.active, onActiveChange);
 		const vectorSource = new VectorSource();
 		vectorLayer.setSource(vectorSource);
 
-		this._startWebSocket(rtVectorGeoResource, vectorLayer, olMap);
+		const layerProperties = getLayerStoreProperties(storeService.getStore().getState().layers.active, id);
+		if (layerProperties?.visible) {
+			this._startWebSocket(rtVectorGeoResource, vectorLayer, olMap);
+		}
 
 		return vectorLayer;
 	}

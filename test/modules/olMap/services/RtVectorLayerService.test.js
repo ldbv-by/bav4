@@ -1,12 +1,13 @@
 import { $injector } from '../../../../src/injection';
 import { getNextPort, isNextPortAvailable, RtVectorLayerService } from '../../../../src/modules/olMap/services/RtVectorLayerService';
-import { layersReducer } from '../../../../src/store/layers/layers.reducer';
+import { createDefaultLayerProperties, layersReducer } from '../../../../src/store/layers/layers.reducer';
 import { TestUtils } from '../../../test-utils';
 import { VectorSourceType } from '../../../../src/domain/geoResources';
 import { Server as WebsocketMockServer } from 'mock-socket';
 import VectorLayer from 'ol/layer/Vector';
 import { UnavailableGeoResourceError } from '../../../../src/domain/errors';
 import { positionReducer } from '../../../../src/store/position/position.reducer';
+import { modifyLayer, removeLayer } from '../../../../src/store/layers/layers.action';
 
 describe('RtVectorLayerService', () => {
 	const mapService = {
@@ -146,8 +147,14 @@ describe('RtVectorLayerService', () => {
 			});
 
 			it('returns an ol vector layer for a websocket based RtVectorGeoResource', () => {
-				setup();
-				const id = 'id';
+				const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0' };
+				const state = {
+					layers: {
+						active: [layer]
+					}
+				};
+				setup(state);
+				const id = 'id0';
 				const olMap = { getView: () => {} };
 
 				const olVectorLayer = instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
@@ -161,8 +168,14 @@ describe('RtVectorLayerService', () => {
 			});
 
 			it('updates vector layer features, after server sends a message', () => {
-				const store = setup();
-				const id = 'id';
+				const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0' };
+				const state = {
+					layers: {
+						active: [layer]
+					}
+				};
+				const store = setup(state);
+				const id = 'id0';
 				const olMap = { getView: () => {} };
 
 				const olVectorLayer = instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
@@ -186,8 +199,15 @@ describe('RtVectorLayerService', () => {
 			});
 
 			it('updates clustered vector layer features, after server sends a message', () => {
-				const store = setup();
-				const id = 'id';
+				const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0' };
+				const state = {
+					layers: {
+						active: [layer]
+					}
+				};
+
+				const store = setup(state);
+				const id = 'id0';
 				const olMap = { getView: () => {} };
 				const viewMock = { calculateExtent: () => [] };
 				const clusteredRtGeoResource = { ...rtVectorGeoResource, isClustered: () => true };
@@ -214,9 +234,15 @@ describe('RtVectorLayerService', () => {
 			});
 
 			it('makes a fit request for the first features only', () => {
-				const store = setup();
+				const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0' };
+				const state = {
+					layers: {
+						active: [layer]
+					}
+				};
+				const store = setup(state);
+				const id = 'id0';
 				const initialCenter = store.getState().position.center;
-				const id = 'id';
 				const olMap = { getView: () => {} };
 				const viewMock = { calculateExtent: () => [] };
 
@@ -248,8 +274,14 @@ describe('RtVectorLayerService', () => {
 			});
 
 			it('does NOT makes a fit request for already containing extent in the view', () => {
-				const store = setup();
-				const id = 'id';
+				const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0' };
+				const state = {
+					layers: {
+						active: [layer]
+					}
+				};
+				const store = setup(state);
+				const id = 'id0';
 				const olMap = { getView: () => {} };
 				const olVectorLayer = instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
 				const viewMock = { calculateExtent: () => olVectorLayer.getSource().getExtent() };
@@ -274,8 +306,14 @@ describe('RtVectorLayerService', () => {
 			});
 
 			it('does nothing, after server sends a keep-alive message', () => {
-				setup();
-				const id = 'id';
+				const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0' };
+				const state = {
+					layers: {
+						active: [layer]
+					}
+				};
+				setup(state);
+				const id = 'id0';
 				const olMap = { getView: () => {} };
 
 				const olVectorLayer = instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
@@ -295,8 +333,14 @@ describe('RtVectorLayerService', () => {
 
 			describe('when the connection get lost (websocket.onclose)', () => {
 				it('cascades available ports', () => {
-					setup();
-					const id = 'id';
+					const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0' };
+					const state = {
+						layers: {
+							active: [layer]
+						}
+					};
+					setup(state);
+					const id = 'id0';
 					const olMap = { getView: () => {} };
 
 					const startWebSocketSpy = spyOn(instanceUnderTest, '_startWebSocket')
@@ -311,6 +355,117 @@ describe('RtVectorLayerService', () => {
 					mockServer.close({ code: 1006, reason: 'Foo', wasClean: false });
 					expect(startWebSocketSpy).toHaveBeenCalledTimes(2);
 					expect(cascadingPortsSpy).toHaveBeenCalledTimes(1);
+				});
+			});
+
+			describe('when layer visibility changes in layers s-o-s', () => {
+				it('closes websocket connection', () => {
+					const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0' };
+					const state = {
+						layers: {
+							active: [layer]
+						}
+					};
+					setup(state);
+					const id = 'id0';
+					const olMap = { getView: () => {} };
+
+					const startWebSocketSpy = spyOn(instanceUnderTest, '_startWebSocket').and.callThrough();
+					const closeWebSocketSpy = spyOn(instanceUnderTest, '_closeWebSocket').and.callThrough();
+					instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
+
+					expect(startWebSocketSpy).toHaveBeenCalledTimes(1);
+					expect(mockServer.clients().length).toBe(1);
+
+					const webSocket1 = mockServer.clients()[0];
+					const closeSpy1 = spyOn(webSocket1, 'close').and.callThrough();
+					modifyLayer('id0', { visible: false });
+
+					expect(closeWebSocketSpy).toHaveBeenCalledTimes(1);
+					expect(closeSpy1).toHaveBeenCalledTimes(1);
+
+					modifyLayer('id0', { visible: true });
+
+					expect(startWebSocketSpy).toHaveBeenCalledTimes(2);
+
+					const webSocket2 = mockServer.clients()[1];
+					const closeSpy2 = spyOn(webSocket2, 'close').and.callThrough();
+					removeLayer('id0');
+
+					expect(closeWebSocketSpy).toHaveBeenCalledTimes(2);
+					expect(closeSpy2).toHaveBeenCalledTimes(1);
+				});
+
+				it('does NOTHING, when visibility did not change', () => {
+					const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0' };
+					const state = {
+						layers: {
+							active: [layer]
+						}
+					};
+					setup(state);
+					const id = 'id0';
+					const olMap = { getView: () => {} };
+
+					const startWebSocketSpy = spyOn(instanceUnderTest, '_startWebSocket').and.callThrough();
+					const closeWebSocketSpy = spyOn(instanceUnderTest, '_closeWebSocket').and.callThrough();
+					instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
+
+					expect(startWebSocketSpy).toHaveBeenCalledTimes(1);
+					expect(mockServer.clients().length).toBe(1);
+
+					modifyLayer('id0', { foo: false });
+
+					expect(closeWebSocketSpy).toHaveBeenCalledTimes(0);
+					expect(startWebSocketSpy).toHaveBeenCalledTimes(1);
+				});
+
+				it('does NOTHING, when visibility did not change and no websocket exists', () => {
+					const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', visible: false };
+					const state = {
+						layers: {
+							active: [layer]
+						}
+					};
+					setup(state);
+					const id = 'id0';
+					const olMap = { getView: () => {} };
+
+					const startWebSocketSpy = spyOn(instanceUnderTest, '_startWebSocket').and.callThrough();
+					const closeWebSocketSpy = spyOn(instanceUnderTest, '_closeWebSocket').and.callThrough();
+					instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
+
+					expect(startWebSocketSpy).toHaveBeenCalledTimes(0);
+					expect(mockServer.clients().length).toBe(0);
+
+					modifyLayer('id0', { visible: false, foo: 'bar' });
+
+					expect(closeWebSocketSpy).toHaveBeenCalledTimes(0);
+					expect(startWebSocketSpy).toHaveBeenCalledTimes(0);
+				});
+
+				it('opens websocket, when visibility change afterwards', () => {
+					const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', visible: false };
+					const state = {
+						layers: {
+							active: [layer]
+						}
+					};
+					setup(state);
+					const id = 'id0';
+					const olMap = { getView: () => {} };
+
+					const startWebSocketSpy = spyOn(instanceUnderTest, '_startWebSocket').and.callThrough();
+					const closeWebSocketSpy = spyOn(instanceUnderTest, '_closeWebSocket').and.callThrough();
+					instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
+
+					expect(startWebSocketSpy).toHaveBeenCalledTimes(0);
+					expect(mockServer.clients().length).toBe(0);
+
+					modifyLayer('id0', { visible: true, foo: 'bar' });
+
+					expect(closeWebSocketSpy).toHaveBeenCalledTimes(0);
+					expect(startWebSocketSpy).toHaveBeenCalledTimes(1);
 				});
 			});
 		});
