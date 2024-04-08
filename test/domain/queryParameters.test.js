@@ -2,7 +2,7 @@ import { QueryParameters } from '../../src/domain/queryParameters';
 
 describe('QueryParameters', () => {
 	it('provides an enum of all valid query parameters', () => {
-		expect(Object.keys(QueryParameters).length).toBe(18);
+		expect(Object.keys(QueryParameters).length).toBe(21);
 
 		expect(QueryParameters.CENTER).toBe('c');
 		expect(QueryParameters.ZOOM).toBe('z');
@@ -20,6 +20,10 @@ describe('QueryParameters', () => {
 		expect(QueryParameters.ZOOM_TO_EXTENT).toBe('zte');
 		expect(QueryParameters.ROUTE_WAYPOINTS).toBe('rtwp');
 		expect(QueryParameters.ROUTE_CATEGORY).toBe('rtc');
+
+		expect(QueryParameters.DRAW_TOOL).toBe('draw_tool');
+		expect(QueryParameters.ACTIVATE_MAP_BUTTON).toBe('activate_map_button');
+		expect(QueryParameters.VIEW_LARGER_MAP_CHIP).toBe('view_larger_map-chip');
 
 		expect(QueryParameters.T_ENABLE_TEST_IDS).toBe('t_enable-test-ids');
 		expect(QueryParameters.T_DISABLE_INITIAL_UI_HINTS).toBe('t_disable-initial-ui-hints');

@@ -57,6 +57,7 @@ export const QueryParameters = Object.freeze({
 	 * Ids of components (`string`, comma-separated) which should be displayed within the iframe
 	 */
 	IFRAME_COMPONENTS: 'ifc',
+
 	/**
 	 * Id (`string`) of the type of marker which should be initially displayed in the center of the map
 	 */
@@ -73,7 +74,28 @@ export const QueryParameters = Object.freeze({
 	 * The category (vehicle) of a route (`string`)
 	 */
 	ROUTE_CATEGORY: 'rtc',
-	// technical parameters
+
+	/**
+	 * EMBED MODE CONFIGURATION PARAMETERS
+	 */
+
+	/**
+	 * The drawing tool (`point`, `line`,`polygon`, comma-separated)
+	 */
+	DRAW_TOOL: 'draw_tool',
+	/**
+	 * Show the map  insensitive for user interactions unless the user activates the map via a button (`boolean`)
+	 */
+	ACTIVATE_MAP_BUTTON: 'activate_map_button',
+	/**
+	 * Show a chip that opens the current view in the default application (`boolean`)
+	 */
+	VIEW_LARGER_MAP_CHIP: 'view_larger_map-chip',
+
+	/**
+	 * TECHNICAL PARAMETERS
+	 */
+
 	/**
 	 * Render test ids (`boolean`)
 	 */
