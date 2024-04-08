@@ -36,8 +36,6 @@ describe('RoutingPlugin', () => {
 		getQueryParams: () => new URLSearchParams()
 	};
 
-	const unitsServiceMock = { formatDistance: (value) => value + 'unit' };
-
 	const setup = (state) => {
 		const store = TestUtils.setupStoreAndDi(state, {
 			routing: routingReducer,
@@ -51,8 +49,7 @@ describe('RoutingPlugin', () => {
 		$injector
 			.registerSingleton('RoutingService', routingService)
 			.registerSingleton('TranslationService', translationService)
-			.registerSingleton('EnvironmentService', environmentService)
-			.registerSingleton('UnitsService', unitsServiceMock);
+			.registerSingleton('EnvironmentService', environmentService);
 		return store;
 	};
 
