@@ -1,4 +1,3 @@
-import { IFrameComponents } from '../../../../../src/domain/iframeComponents';
 import { PathParameters } from '../../../../../src/domain/pathParameters';
 import { $injector } from '../../../../../src/injection';
 import { MapFeedbackPanel } from '../../../../../src/modules/feedback/components/mapFeedback/MapFeedbackPanel';
@@ -169,7 +168,7 @@ describe('MapFeedbackPanel', () => {
 			const encodeSpy = spyOn(shareServiceMock, 'encodeState').and.callThrough();
 			await setup();
 
-			expect(encodeSpy).toHaveBeenCalledWith({ ifc: [IFrameComponents.DRAW_TOOL], l: jasmine.any(String) }, [PathParameters.EMBED]);
+			expect(encodeSpy).toHaveBeenCalledWith({ draw_tool: ['point', 'line', 'polygon'], l: jasmine.any(String) }, [PathParameters.EMBED]);
 		});
 
 		describe('and the center property is set', () => {
@@ -179,7 +178,7 @@ describe('MapFeedbackPanel', () => {
 				const encodeSpy = spyOn(shareServiceMock, 'encodeStateForPosition').and.callThrough();
 				element.center = expectedCenter;
 
-				expect(encodeSpy).toHaveBeenCalledWith({ center: expectedCenter }, { ifc: [IFrameComponents.DRAW_TOOL], l: jasmine.any(String) }, [
+				expect(encodeSpy).toHaveBeenCalledWith({ center: expectedCenter }, { draw_tool: ['point', 'line', 'polygon'], l: jasmine.any(String) }, [
 					PathParameters.EMBED
 				]);
 			});
@@ -192,7 +191,7 @@ describe('MapFeedbackPanel', () => {
 			const element = await setup();
 
 			const iframeElement = element.shadowRoot.querySelector('iframe');
-			expect(encodeSpy).toHaveBeenCalledWith({ ifc: [IFrameComponents.DRAW_TOOL], l: feedbackServiceMock.getOverlayGeoResourceId() }, [
+			expect(encodeSpy).toHaveBeenCalledWith({ draw_tool: ['point', 'line', 'polygon'], l: feedbackServiceMock.getOverlayGeoResourceId() }, [
 				PathParameters.EMBED
 			]);
 			expect(iframeElement.src).toBe(expectedEncodedState);
@@ -205,7 +204,7 @@ describe('MapFeedbackPanel', () => {
 			const element = await setup();
 
 			const iframeElement = element.shadowRoot.querySelector('iframe');
-			expect(encodeSpy).toHaveBeenCalledWith({ ifc: [IFrameComponents.DRAW_TOOL], l: feedbackServiceMock.getOverlayGeoResourceId() }, [
+			expect(encodeSpy).toHaveBeenCalledWith({ draw_tool: ['point', 'line', 'polygon'], l: feedbackServiceMock.getOverlayGeoResourceId() }, [
 				PathParameters.EMBED
 			]);
 			expect(iframeElement.src).toBe(expectedEncodedState);
