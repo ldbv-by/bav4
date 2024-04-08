@@ -53,7 +53,7 @@ describe('ActivateMapButton', () => {
 
 			describe('QueryParameters.ACTIVATE_MAP_BUTTON is present and has a value other then `false`', () => {
 				it('renders the button', async () => {
-					const queryParam = new URLSearchParams(`${QueryParameters.ACTIVATE_MAP_BUTTON}=true`);
+					const queryParam = new URLSearchParams(`${QueryParameters.ACTIVATE_MAP_BUTTON}=''`);
 					spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 					const element = await setup({ embed: true });
 
