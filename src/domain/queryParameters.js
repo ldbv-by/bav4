@@ -54,11 +54,6 @@ export const QueryParameters = Object.freeze({
 	 */
 	TOOL_ID: 'tid',
 	/**
-	 * Ids of components (`string`, comma-separated) which should be displayed within the iframe
-	 */
-	IFRAME_COMPONENTS: 'ifc',
-
-	/**
 	 * Id (`string`) of the type of marker which should be initially displayed in the center of the map
 	 */
 	CROSSHAIR: 'crh',

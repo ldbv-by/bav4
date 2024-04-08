@@ -2,7 +2,7 @@ import { QueryParameters } from '../../src/domain/queryParameters';
 
 describe('QueryParameters', () => {
 	it('provides an enum of all valid query parameters', () => {
-		expect(Object.keys(QueryParameters).length).toBe(21);
+		expect(Object.keys(QueryParameters).length).toBe(20);
 
 		expect(QueryParameters.CENTER).toBe('c');
 		expect(QueryParameters.ZOOM).toBe('z');
@@ -15,7 +15,6 @@ describe('QueryParameters', () => {
 		expect(QueryParameters.CHIP_ID).toBe('chid');
 		expect(QueryParameters.MENU_ID).toBe('mid');
 		expect(QueryParameters.TOOL_ID).toBe('tid');
-		expect(QueryParameters.IFRAME_COMPONENTS).toBe('ifc');
 		expect(QueryParameters.CROSSHAIR).toBe('crh');
 		expect(QueryParameters.ZOOM_TO_EXTENT).toBe('zte');
 		expect(QueryParameters.ROUTE_WAYPOINTS).toBe('rtwp');
