@@ -1,6 +1,5 @@
 /* eslint-disable no-undef */
 import { QueryParameters } from '../../../../src/domain/queryParameters';
-import { IFrameComponents } from '../../../../src/domain/iframeComponents';
 import { $injector } from '../../../../src/injection';
 import { ActivateMapButton } from '../../../../src/modules/iframe/components/activateMapButton/ActivateMapButton';
 import { OlMap } from '../../../../src/modules/olMap/components/OlMap';
@@ -33,11 +32,9 @@ describe('ActivateMapButton', () => {
 		});
 
 		describe("we're embedded", () => {
-			describe('QueryParameters.IFRAME_COMPONENTS includes IFrameComponents.ACTIVATE_MAP_BUTTON', () => {
+			describe('QueryParameters.ACTIVATE_MAP_BUTTON is present', () => {
 				it('renders the button', async () => {
-					const queryParam = new URLSearchParams(
-						`${QueryParameters.IFRAME_COMPONENTS}=${IFrameComponents.ACTIVATE_MAP_BUTTON},${IFrameComponents.DRAW_TOOL}`
-					);
+					const queryParam = new URLSearchParams(`${QueryParameters.ACTIVATE_MAP_BUTTON}=''`);
 					spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 					const element = await setup({ embed: true });
 
@@ -54,9 +51,37 @@ describe('ActivateMapButton', () => {
 				});
 			});
 
-			describe('QueryParameters.IFRAME_COMPONENTS does NOT include IFrameComponents.ACTIVATE_MAP_BUTTON', () => {
+			describe('QueryParameters.ACTIVATE_MAP_BUTTON is present and has a value other then `false`', () => {
+				it('renders the button', async () => {
+					const queryParam = new URLSearchParams(`${QueryParameters.ACTIVATE_MAP_BUTTON}=true`);
+					spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+					const element = await setup({ embed: true });
+
+					expect(element.shadowRoot.styleSheets.length).toBe(2);
+
+					expect(element.shadowRoot.querySelectorAll('.active-map__background')).toHaveSize(1);
+					expect(element.shadowRoot.querySelectorAll('.active-map__button')).toHaveSize(1);
+					expect(element.shadowRoot.querySelectorAll('ba-button')).toHaveSize(1);
+
+					expect(document.querySelectorAll(`#${ActivateMapButton.STYLE_ID}`)).toHaveSize(1);
+					expect(document.querySelectorAll(`#${ActivateMapButton.STYLE_ID}`)[0].innerText).toContain(ActivateMapButton.tag);
+					expect(document.querySelectorAll(`#${ActivateMapButton.STYLE_ID}`)[0].innerText).toContain(OlMap.tag);
+					expect(document.querySelectorAll(`#${ActivateMapButton.STYLE_ID}`)[0].innerText).toContain(Footer.tag);
+				});
+			});
+
+			describe('QueryParameters.ACTIVATE_MAP_BUTTON is not present', () => {
 				it('renders nothing', async () => {
-					const queryParam = new URLSearchParams(`${QueryParameters.IFRAME_COMPONENTS}=${IFrameComponents.DRAW_TOOL}`);
+					const queryParam = new URLSearchParams();
+					spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+					const element = await setup({ embed: true });
+
+					expect(element.shadowRoot.children.length).toBe(0);
+				});
+			});
+			describe('QueryParameters.ACTIVATE_MAP_BUTTON has a value of `false`', () => {
+				it('renders nothing', async () => {
+					const queryParam = new URLSearchParams(`${QueryParameters.ACTIVATE_MAP_BUTTON}=false`);
 					spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 					const element = await setup({ embed: true });
 
@@ -66,6 +91,8 @@ describe('ActivateMapButton', () => {
 		});
 
 		it('when activate map button clicked', async () => {
+			const queryParam = new URLSearchParams(`${QueryParameters.ACTIVATE_MAP_BUTTON}=true`);
+			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 			const element = await setup({ embed: true });
 
 			const button = element.shadowRoot.querySelectorAll('ba-button')[0];
