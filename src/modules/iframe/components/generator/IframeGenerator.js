@@ -9,6 +9,7 @@ import { PathParameters } from '../../../../domain/pathParameters';
 import clipboardIcon from './assets/clipboard.svg';
 import css from './iframegenerator.css';
 import { IFRAME_ENCODED_STATE } from '../../../../utils/markup';
+import { QueryParameters } from '../../../../domain/queryParameters';
 
 const Update_Size_Width = 'update_size_width';
 const Update_Size_Height = 'update_size_height';
@@ -26,16 +27,26 @@ const Range_Max = 2000;
  * @author alsturm
  */
 export class IframeGenerator extends MvuElement {
+	#translationService;
+	#shareService;
+	#urlService;
+	#iframeObserver;
+
 	constructor() {
 		super({
 			size: [800, 600],
 			autoWidth: false,
 			previewUrl: null
 		});
-		const { TranslationService: translationService, ShareService: shareService } = $injector.inject('TranslationService', 'ShareService');
-		this._translationService = translationService;
-		this._shareService = shareService;
-		this._iframeObserver = null;
+		const {
+			TranslationService: translationService,
+			ShareService: shareService,
+			UrlService: urlService
+		} = $injector.inject('TranslationService', 'ShareService', 'UrlService');
+		this.#translationService = translationService;
+		this.#shareService = shareService;
+		this.#urlService = urlService;
+		this.#iframeObserver = null;
 	}
 
 	update(type, data, model) {
@@ -64,21 +75,21 @@ export class IframeGenerator extends MvuElement {
 		if (firstTime) {
 			const iframeElement = this.shadowRoot.querySelector('iframe');
 			const config = { attributes: true, childList: false, subtree: false };
-			this._iframeObserver = new MutationObserver((mutationList) => this._onIFrameChanged(mutationList));
-			this._iframeObserver.observe(iframeElement, config);
+			this.#iframeObserver = new MutationObserver((mutationList) => this.#onIFrameChanged(mutationList));
+			this.#iframeObserver.observe(iframeElement, config);
 		}
 	}
 
 	onDisconnect() {
-		this._iframeObserver?.disconnect();
-		this._iframeObserver = null;
+		this.#iframeObserver?.disconnect();
+		this.#iframeObserver = null;
 	}
 
 	/**
 	 * @override
 	 */
 	createView(model) {
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key) => this.#translationService.translate(key);
 		const { size, autoWidth, previewUrl } = model;
 		const [width, height] = size;
 
@@ -163,27 +174,37 @@ export class IframeGenerator extends MvuElement {
 						</ba-switch>
 					</div>					
 					<div class='iframe__controls-section'>
-						<div class='iframe__code'>${this._getEmbedContent(currentWidth, height, previewUrl)}
+						<div class='iframe__code'>${this.#getEmbedContent(currentWidth, height, previewUrl)}
 						</div>
 					</div>
 				</div>
 			</div>
-			<div class='iframe__preview'>${this._getIFrameContent(currentWidth, height)}
+			<div class='iframe__preview'>${this.#getIFrameContent(currentWidth, height)}
 			</div>
 		</div>
         `;
 	}
 
-	_onIFrameChanged(mutationList) {
+	#onIFrameChanged(mutationList) {
 		for (const mutation of mutationList) {
 			if (mutation.type === 'attributes' && mutation.attributeName === IFRAME_ENCODED_STATE) {
-				this.signal(Update_Preview_Url, mutation.target.getAttribute(IFRAME_ENCODED_STATE));
+				this.signal(
+					Update_Preview_Url,
+					this.#urlService.setQueryParams(mutation.target.getAttribute(IFRAME_ENCODED_STATE), this.#getExtraParameters())
+				);
 			}
 		}
 	}
 
-	_getIFrameContent(width, height) {
-		const iframeSrc = this._shareService.encodeState({}, [PathParameters.EMBED]);
+	#getExtraParameters() {
+		const queryParameters = {};
+		queryParameters[QueryParameters.ACTIVATE_MAP_BUTTON] = true;
+		queryParameters[QueryParameters.VIEW_LARGER_MAP_CHIP] = true;
+		return queryParameters;
+	}
+
+	#getIFrameContent(width, height) {
+		const iframeSrc = this.#shareService.encodeState(this.#getExtraParameters(), [PathParameters.EMBED]);
 		return html` <div class="iframe__content">
 			<iframe
 				data-iframe-encoded-state
@@ -196,17 +217,17 @@ export class IframeGenerator extends MvuElement {
 		</div>`;
 	}
 
-	_getEmbedContent(width, height, previewUrl) {
-		const translate = (key) => this._translationService.translate(key);
+	#getEmbedContent(width, height, previewUrl) {
+		const translate = (key) => this.#translationService.translate(key);
 
 		const getEmbedCode = () => {
-			return `<iframe src=${previewUrl ? previewUrl : this._shareService.encodeState({}, [PathParameters.EMBED])} width='${
+			return `<iframe src=${previewUrl ? previewUrl : this.#shareService.encodeState(this.#getExtraParameters(), [PathParameters.EMBED])} width='${
 				width === Auto_Width ? Auto_Width + '%' : width + 'px'
 			}' height='${height + 'px'}' loading='lazy' frameborder='0' style='border:0'></iframe>`;
 		};
 
 		const onCopyHTMLToClipBoard = async () => {
-			return this._copyValueToClipboard(getEmbedCode());
+			return this.#copyValueToClipboard(getEmbedCode());
 		};
 
 		return html`<textarea class="iframe__code_string" id="iframe_code" name="iframe_code" .value=${getEmbedCode()} readonly></textarea>
@@ -221,13 +242,13 @@ export class IframeGenerator extends MvuElement {
 			</ba-icon>`;
 	}
 
-	async _copyValueToClipboard(value) {
+	async #copyValueToClipboard(value) {
 		try {
-			await this._shareService.copyToClipboard(value);
-			emitNotification(`${this._translationService.translate('iframe_generator_clipboard_success')}`, LevelTypes.INFO);
+			await this.#shareService.copyToClipboard(value);
+			emitNotification(`${this.#translationService.translate('iframe_generator_clipboard_success')}`, LevelTypes.INFO);
 		} catch (error) {
 			console.warn('Clipboard API not available');
-			emitNotification(`${this._translationService.translate('iframe_generator_clipboard_error')}`, LevelTypes.WARN);
+			emitNotification(`${this.#translationService.translate('iframe_generator_clipboard_error')}`, LevelTypes.WARN);
 		}
 	}
 
