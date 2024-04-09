@@ -25,20 +25,22 @@ describe('PublicComponent', () => {
 	});
 
 	describe('when initialized', () => {
-		it('renders 11 top level ba-components', async () => {
+		it('renders 11 top level ba-components within a closed shadow root', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelectorAll('ba-ol-map')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-view-larger-map-chip')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-draw-tool')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-map-button-container')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-footer')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-nonembedded-hint')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-theme-provider')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-notification-panel')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-map-context-menu')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-activate-map-button')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-iframe-container')).toHaveSize(1);
+			// null as the shadow root is closed
+			expect(element.shadowRoot).toBeNull();
+			expect(element._root.querySelectorAll('ba-ol-map')).toHaveSize(1);
+			expect(element._root.querySelectorAll('ba-view-larger-map-chip')).toHaveSize(1);
+			expect(element._root.querySelectorAll('ba-draw-tool')).toHaveSize(1);
+			expect(element._root.querySelectorAll('ba-map-button-container')).toHaveSize(1);
+			expect(element._root.querySelectorAll('ba-footer')).toHaveSize(1);
+			expect(element._root.querySelectorAll('ba-nonembedded-hint')).toHaveSize(1);
+			expect(element._root.querySelectorAll('ba-theme-provider')).toHaveSize(1);
+			expect(element._root.querySelectorAll('ba-notification-panel')).toHaveSize(1);
+			expect(element._root.querySelectorAll('ba-map-context-menu')).toHaveSize(1);
+			expect(element._root.querySelectorAll('ba-activate-map-button')).toHaveSize(1);
+			expect(element._root.querySelectorAll('ba-iframe-container')).toHaveSize(1);
 		});
 	});
 });

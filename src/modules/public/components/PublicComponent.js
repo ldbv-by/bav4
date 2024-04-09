@@ -11,6 +11,10 @@ import { MvuElement } from '../../MvuElement';
  */
 
 export class PublicComponent extends MvuElement {
+	isShadowRootOpen() {
+		return false;
+	}
+
 	createView() {
 		//same as in embed.html
 		return html`
