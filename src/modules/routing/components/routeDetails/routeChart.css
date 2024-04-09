@@ -96,6 +96,10 @@
 	margin-left: 0.5em;
 }
 
+.legend_item_value {
+	white-space: nowrap;
+}
+
 .highlight {
 	cursor: default;
 	display: flex;
