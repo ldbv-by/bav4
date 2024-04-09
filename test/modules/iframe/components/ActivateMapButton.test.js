@@ -90,7 +90,7 @@ describe('ActivateMapButton', () => {
 			});
 		});
 
-		fit('when activate map button clicked', async () => {
+		it('when activate map button clicked', async () => {
 			const queryParam = new URLSearchParams(`${QueryParameters.EC_MAP_ACTIVATION}=true`);
 			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 			const element = await setup({ embed: true });
