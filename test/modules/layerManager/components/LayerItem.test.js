@@ -9,7 +9,7 @@ import { isTemplateResult } from '../../../../src/utils/checks';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { EventLike } from '../../../../src/utils/storeUtils';
 import { positionReducer } from '../../../../src/store/position/position.reducer';
-import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../../src/domain/geoResources';
+import { GeoResourceFuture, RtVectorGeoResource, VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../../src/domain/geoResources';
 import { Spinner } from '../../../../src/modules/commons/components/spinner/Spinner';
 import { GeoResourceInfoPanel } from '../../../../src/modules/geoResourceInfo/components/GeoResourceInfoPanel';
 import cloneSvg from '../../../../src/modules/layerManager/components/assets/clone.svg';
@@ -318,10 +318,35 @@ describe('LayerItem', () => {
 			expect(copyMenuItem.icon).toEqual(cloneSvg);
 		});
 
-		it('contains a menu-item for zoomToExtent', async () => {
+		it('contains a menu-item for zoomToExtent to a VectorGeoResource', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
 				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				collapsed: true
+			};
+			const element = await setup(layer);
+
+			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
+			const zoomToExtentMenuItem = menu.items.find((item) => item.label === 'layerManager_zoom_to_extent');
+
+			expect(zoomToExtentMenuItem).not.toBeNull();
+			expect(zoomToExtentMenuItem.label).toEqual('layerManager_zoom_to_extent');
+			expect(zoomToExtentMenuItem.action).toEqual(jasmine.any(Function));
+			expect(zoomToExtentMenuItem.disabled).toBeFalse();
+			expect(zoomToExtentMenuItem.icon).toBe(zoomToExtentSvg);
+		});
+
+		it('contains a menu-item for zoomToExtent to a RtVectorGeoResource', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new RtVectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
 			const layer = {
 				...createDefaultLayerProperties(),
 				id: 'id0',
