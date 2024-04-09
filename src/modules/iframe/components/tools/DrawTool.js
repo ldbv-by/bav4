@@ -69,7 +69,7 @@ export class DrawTool extends MvuElement {
 	}
 
 	isRenderingSkipped() {
-		return !this._environmentService.getQueryParams().get(QueryParameters.DRAW_TOOL);
+		return !this._environmentService.getQueryParams().get(QueryParameters.E_DRAW_TOOL);
 	}
 
 	createView(model) {

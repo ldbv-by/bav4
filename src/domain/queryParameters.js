@@ -77,15 +77,15 @@ export const QueryParameters = Object.freeze({
 	/**
 	 * The drawing tool (`point`, `line`,`polygon`, comma-separated)
 	 */
-	DRAW_TOOL: 'draw_tool',
+	E_DRAW_TOOL: 'draw_tool',
 	/**
 	 * Show the map  insensitive for user interactions unless the user activates the map via a button (`boolean`)
 	 */
-	ACTIVATE_MAP_BUTTON: 'activate_map_button',
+	E_ACTIVATE_MAP_BUTTON: 'activate_map_button',
 	/**
 	 * Show a chip that opens the current view in the default application (`boolean`)
 	 */
-	VIEW_LARGER_MAP_CHIP: 'view_larger_map-chip',
+	E_VIEW_LARGER_MAP_CHIP: 'view_larger_map-chip',
 
 	/**
 	 * TECHNICAL PARAMETERS

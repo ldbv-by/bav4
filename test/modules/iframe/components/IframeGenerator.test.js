@@ -24,8 +24,8 @@ describe('IframeGenerator', () => {
 
 	const getExtraParameters = () => {
 		const queryParameters = {};
-		queryParameters[QueryParameters.ACTIVATE_MAP_BUTTON] = true;
-		queryParameters[QueryParameters.VIEW_LARGER_MAP_CHIP] = true;
+		queryParameters[QueryParameters.E_ACTIVATE_MAP_BUTTON] = true;
+		queryParameters[QueryParameters.E_VIEW_LARGER_MAP_CHIP] = true;
 		return queryParameters;
 	};
 

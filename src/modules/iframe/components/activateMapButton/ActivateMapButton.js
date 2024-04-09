@@ -88,8 +88,8 @@ export class ActivateMapButton extends MvuElement {
 
 	_isVisible() {
 		return (
-			!!this._environmentService.getQueryParams().get(QueryParameters.ACTIVATE_MAP_BUTTON) &&
-			this._environmentService.getQueryParams().get(QueryParameters.ACTIVATE_MAP_BUTTON) !== 'false'
+			!!this._environmentService.getQueryParams().get(QueryParameters.E_ACTIVATE_MAP_BUTTON) &&
+			this._environmentService.getQueryParams().get(QueryParameters.E_ACTIVATE_MAP_BUTTON) !== 'false'
 		);
 	}
 
