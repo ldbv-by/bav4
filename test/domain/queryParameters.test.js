@@ -20,9 +20,9 @@ describe('QueryParameters', () => {
 		expect(QueryParameters.ROUTE_WAYPOINTS).toBe('rtwp');
 		expect(QueryParameters.ROUTE_CATEGORY).toBe('rtc');
 
-		expect(QueryParameters.DRAW_TOOL).toBe('draw_tool');
-		expect(QueryParameters.ACTIVATE_MAP_BUTTON).toBe('activate_map_button');
-		expect(QueryParameters.VIEW_LARGER_MAP_CHIP).toBe('view_larger_map-chip');
+		expect(QueryParameters.EC_DRAW_TOOL).toBe('ec-draw-tool');
+		expect(QueryParameters.EC_MAP_ACTIVATION).toBe('ec-map-activation');
+		expect(QueryParameters.EC_LINK_TO_APP).toBe('ec-link-to-app');
 
 		expect(QueryParameters.T_ENABLE_TEST_IDS).toBe('t_enable-test-ids');
 		expect(QueryParameters.T_DISABLE_INITIAL_UI_HINTS).toBe('t_disable-initial-ui-hints');

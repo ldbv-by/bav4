@@ -198,8 +198,8 @@ export class IframeGenerator extends MvuElement {
 
 	#getExtraParameters() {
 		const queryParameters = {};
-		queryParameters[QueryParameters.E_ACTIVATE_MAP_BUTTON] = true;
-		queryParameters[QueryParameters.E_VIEW_LARGER_MAP_CHIP] = true;
+		queryParameters[QueryParameters.EC_MAP_ACTIVATION] = true;
+		queryParameters[QueryParameters.EC_LINK_TO_APP] = true;
 		return queryParameters;
 	}
 

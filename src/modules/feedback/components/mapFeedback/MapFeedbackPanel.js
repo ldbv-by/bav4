@@ -179,7 +179,7 @@ export class MapFeedbackPanel extends MvuElement {
 		const getExtraParameters = () => {
 			const queryParameters = {};
 			queryParameters[QueryParameters.LAYER] = this._feedbackService.getOverlayGeoResourceId();
-			queryParameters[QueryParameters.E_DRAW_TOOL] = ['point', 'line', 'polygon'];
+			queryParameters[QueryParameters.EC_DRAW_TOOL] = ['point', 'line', 'polygon'];
 			return queryParameters;
 		};
 

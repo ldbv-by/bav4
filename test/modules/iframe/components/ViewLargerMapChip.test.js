@@ -43,7 +43,7 @@ describe('ViewLargerMapChip', () => {
 
 	describe('when initialized', () => {
 		it('renders nothing when default mode', async () => {
-			const queryParam = new URLSearchParams(`${QueryParameters.VIEW_LARGER_MAP_CHIP}=true`);
+			const queryParam = new URLSearchParams(`${QueryParameters.EC_LINK_TO_APP}=true`);
 			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 			const element = await setup({}, { embed: false });
 
@@ -53,7 +53,7 @@ describe('ViewLargerMapChip', () => {
 		describe('QueryParameters.ACTIVATE_MAP_BUTTON is present and has a value other then `false`', () => {
 			it('renders the button', async () => {
 				const expectedUrl = 'http://this.is.a.url/?forTestCase';
-				const queryParam = new URLSearchParams(`${QueryParameters.VIEW_LARGER_MAP_CHIP}=''`);
+				const queryParam = new URLSearchParams(`${QueryParameters.EC_LINK_TO_APP}=''`);
 				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 				const shareServiceSpy = spyOn(shareServiceMock, 'encodeState').and.returnValue(expectedUrl);
 				const element = await setup({ embed: true });
@@ -72,7 +72,7 @@ describe('ViewLargerMapChip', () => {
 			});
 		});
 
-		describe('QueryParameters.VIEW_LARGER_MAP_CHIP is not present', () => {
+		describe('QueryParameters.EC_LINK_TO_APP is not present', () => {
 			it('renders nothing', async () => {
 				const queryParam = new URLSearchParams();
 				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
@@ -82,9 +82,9 @@ describe('ViewLargerMapChip', () => {
 			});
 		});
 
-		describe('QueryParameters.VIEW_LARGER_MAP_CHIP has a value of `false`', () => {
+		describe('QueryParameters.EC_LINK_TO_APP has a value of `false`', () => {
 			it('renders nothing', async () => {
-				const queryParam = new URLSearchParams(`${QueryParameters.VIEW_LARGER_MAP_CHIP}=false`);
+				const queryParam = new URLSearchParams(`${QueryParameters.EC_LINK_TO_APP}=false`);
 				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 				const element = await setup({ embed: true });
 
@@ -95,7 +95,7 @@ describe('ViewLargerMapChip', () => {
 
 	describe('when state changes', () => {
 		it('updates the view', async () => {
-			const queryParam = new URLSearchParams(`${QueryParameters.VIEW_LARGER_MAP_CHIP}=true`);
+			const queryParam = new URLSearchParams(`${QueryParameters.EC_LINK_TO_APP}=true`);
 			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 			let count = 0;
 			spyOn(shareServiceMock, 'encodeState').and.callFake(() => {

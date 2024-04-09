@@ -32,9 +32,9 @@ describe('ActivateMapButton', () => {
 		});
 
 		describe("we're embedded", () => {
-			describe('QueryParameters.ACTIVATE_MAP_BUTTON is present', () => {
+			describe('QueryParameters.EC_MAP_ACTIVATION is present', () => {
 				it('renders the button', async () => {
-					const queryParam = new URLSearchParams(`${QueryParameters.ACTIVATE_MAP_BUTTON}=''`);
+					const queryParam = new URLSearchParams(`${QueryParameters.EC_MAP_ACTIVATION}=''`);
 					spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 					const element = await setup({ embed: true });
 
@@ -51,9 +51,9 @@ describe('ActivateMapButton', () => {
 				});
 			});
 
-			describe('QueryParameters.ACTIVATE_MAP_BUTTON is present and has a value other then `false`', () => {
+			describe('QueryParameters.EC_MAP_ACTIVATION is present and has a value other then `false`', () => {
 				it('renders the button', async () => {
-					const queryParam = new URLSearchParams(`${QueryParameters.ACTIVATE_MAP_BUTTON}=''`);
+					const queryParam = new URLSearchParams(`${QueryParameters.EC_MAP_ACTIVATION}=''`);
 					spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 					const element = await setup({ embed: true });
 
@@ -70,7 +70,7 @@ describe('ActivateMapButton', () => {
 				});
 			});
 
-			describe('QueryParameters.ACTIVATE_MAP_BUTTON is not present', () => {
+			describe('QueryParameters.EC_MAP_ACTIVATION is not present', () => {
 				it('renders nothing', async () => {
 					const queryParam = new URLSearchParams();
 					spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
@@ -79,9 +79,9 @@ describe('ActivateMapButton', () => {
 					expect(element.shadowRoot.children.length).toBe(0);
 				});
 			});
-			describe('QueryParameters.ACTIVATE_MAP_BUTTON has a value of `false`', () => {
+			describe('QueryParameters.EC_MAP_ACTIVATION has a value of `false`', () => {
 				it('renders nothing', async () => {
-					const queryParam = new URLSearchParams(`${QueryParameters.ACTIVATE_MAP_BUTTON}=false`);
+					const queryParam = new URLSearchParams(`${QueryParameters.EC_MAP_ACTIVATION}=false`);
 					spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 					const element = await setup({ embed: true });
 
@@ -90,8 +90,8 @@ describe('ActivateMapButton', () => {
 			});
 		});
 
-		it('when activate map button clicked', async () => {
-			const queryParam = new URLSearchParams(`${QueryParameters.ACTIVATE_MAP_BUTTON}=true`);
+		fit('when activate map button clicked', async () => {
+			const queryParam = new URLSearchParams(`${QueryParameters.EC_MAP_ACTIVATION}=true`);
 			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 			const element = await setup({ embed: true });
 

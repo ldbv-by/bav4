@@ -49,8 +49,8 @@ export class ViewLargerMapChip extends MvuElement {
 
 	isRenderingSkipped() {
 		return (
-			!this._environmentService.getQueryParams().get(QueryParameters.E_VIEW_LARGER_MAP_CHIP) ||
-			this._environmentService.getQueryParams().get(QueryParameters.E_VIEW_LARGER_MAP_CHIP) === 'false'
+			!this._environmentService.getQueryParams().get(QueryParameters.EC_LINK_TO_APP) ||
+			this._environmentService.getQueryParams().get(QueryParameters.EC_LINK_TO_APP) === 'false'
 		);
 	}
 

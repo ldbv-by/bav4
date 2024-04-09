@@ -50,7 +50,7 @@ describe('DrawTool', () => {
 	});
 
 	describe('when initialized', () => {
-		const queryParam = new URLSearchParams(`${QueryParameters.DRAW_TOOL}=true`);
+		const queryParam = new URLSearchParams(`${QueryParameters.EC_DRAW_TOOL}=true`);
 
 		it('builds list of tools', async () => {
 			const element = await setup();
@@ -61,7 +61,7 @@ describe('DrawTool', () => {
 			expect(element._model.tools.map((t) => t.name)).toEqual(jasmine.arrayWithExactContents(['marker', 'line', 'polygon']));
 		});
 
-		describe('QueryParameters.DRAW_TOOL is NOT present', () => {
+		describe('QueryParameters.EC_DRAW_TOOL is NOT present', () => {
 			it('renders nothing', async () => {
 				const queryParam = new URLSearchParams();
 				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
@@ -71,7 +71,7 @@ describe('DrawTool', () => {
 			});
 		});
 
-		describe('QueryParameters.DRAW_TOOL is present', () => {
+		describe('QueryParameters.EC_DRAW_TOOL is present', () => {
 			beforeEach(() => {
 				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 			});
