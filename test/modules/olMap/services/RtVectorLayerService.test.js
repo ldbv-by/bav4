@@ -358,7 +358,7 @@ describe('RtVectorLayerService', () => {
 				});
 			});
 
-			describe('when layer visibility changes in layers s-o-s', () => {
+			describe('when layer visibility changes or layers is removed', () => {
 				it('closes websocket connection', () => {
 					const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0' };
 					const state = {
