@@ -70,6 +70,25 @@
 	opacity: 0.4;
 	animation: load 0.8s infinite linear;
 }
+ba-icon {
+	border-radius: 2em;
+	width: 2em;
+	height: 2em;
+	display: block;
+	font-size: 1rem;
+}
+ba-icon:hover {
+	background: var(--primary-color);
+}
+.ba-icon-button {
+	padding: 0 0.5em !important;
+	margin: auto;
+	min-width: 3.5em;
+}
+.separator {
+	border-left: 1px dotted var(--header-background-color);
+}
+
 @keyframes load {
 	0% {
 		transform: translateX(0);
