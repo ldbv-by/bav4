@@ -1,4 +1,3 @@
-import { IFrameComponents } from '../../../../../src/domain/iframeComponents';
 import { PathParameters } from '../../../../../src/domain/pathParameters';
 import { $injector } from '../../../../../src/injection';
 import { MapFeedbackPanel } from '../../../../../src/modules/feedback/components/mapFeedback/MapFeedbackPanel';
@@ -8,6 +7,7 @@ import { createNoInitialStateMediaReducer } from '../../../../../src/store/media
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { BA_FORM_ELEMENT_VISITED_CLASS, IFRAME_ENCODED_STATE, IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../../src/utils/markup';
 import { TestUtils } from '../../../../test-utils';
+import { QueryParameters } from '../../../../../src/domain/queryParameters';
 
 window.customElements.define(MapFeedbackPanel.tag, MapFeedbackPanel);
 
@@ -38,6 +38,12 @@ const fileStorageServiceMock = {
 
 const securityServiceMock = {
 	sanitizeHtml: () => {}
+};
+
+const get_EC_DRAW_TOOL_ExtraParameter = () => {
+	const queryParameters = {};
+	queryParameters[QueryParameters.EC_DRAW_TOOL] = ['point', 'line', 'polygon'];
+	return queryParameters;
 };
 
 let store;
@@ -169,7 +175,7 @@ describe('MapFeedbackPanel', () => {
 			const encodeSpy = spyOn(shareServiceMock, 'encodeState').and.callThrough();
 			await setup();
 
-			expect(encodeSpy).toHaveBeenCalledWith({ ifc: [IFrameComponents.DRAW_TOOL], l: jasmine.any(String) }, [PathParameters.EMBED]);
+			expect(encodeSpy).toHaveBeenCalledWith({ ...get_EC_DRAW_TOOL_ExtraParameter(), l: jasmine.any(String) }, [PathParameters.EMBED]);
 		});
 
 		describe('and the center property is set', () => {
@@ -179,7 +185,7 @@ describe('MapFeedbackPanel', () => {
 				const encodeSpy = spyOn(shareServiceMock, 'encodeStateForPosition').and.callThrough();
 				element.center = expectedCenter;
 
-				expect(encodeSpy).toHaveBeenCalledWith({ center: expectedCenter }, { ifc: [IFrameComponents.DRAW_TOOL], l: jasmine.any(String) }, [
+				expect(encodeSpy).toHaveBeenCalledWith({ center: expectedCenter }, { ...get_EC_DRAW_TOOL_ExtraParameter(), l: jasmine.any(String) }, [
 					PathParameters.EMBED
 				]);
 			});
@@ -192,7 +198,7 @@ describe('MapFeedbackPanel', () => {
 			const element = await setup();
 
 			const iframeElement = element.shadowRoot.querySelector('iframe');
-			expect(encodeSpy).toHaveBeenCalledWith({ ifc: [IFrameComponents.DRAW_TOOL], l: feedbackServiceMock.getOverlayGeoResourceId() }, [
+			expect(encodeSpy).toHaveBeenCalledWith({ ...get_EC_DRAW_TOOL_ExtraParameter(), l: feedbackServiceMock.getOverlayGeoResourceId() }, [
 				PathParameters.EMBED
 			]);
 			expect(iframeElement.src).toBe(expectedEncodedState);
@@ -205,7 +211,7 @@ describe('MapFeedbackPanel', () => {
 			const element = await setup();
 
 			const iframeElement = element.shadowRoot.querySelector('iframe');
-			expect(encodeSpy).toHaveBeenCalledWith({ ifc: [IFrameComponents.DRAW_TOOL], l: feedbackServiceMock.getOverlayGeoResourceId() }, [
+			expect(encodeSpy).toHaveBeenCalledWith({ ...get_EC_DRAW_TOOL_ExtraParameter(), l: feedbackServiceMock.getOverlayGeoResourceId() }, [
 				PathParameters.EMBED
 			]);
 			expect(iframeElement.src).toBe(expectedEncodedState);
