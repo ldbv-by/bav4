@@ -3,7 +3,7 @@ import { StoreService } from '../services/StoreService';
 import { OlCoordinateService } from '../services/OlCoordinateService';
 import { EnvironmentService } from '../services/EnvironmentService';
 import { ProcessEnvConfigService } from '../services/ProcessEnvConfigService';
-import { NetworkStateSyncHttpService } from '../services/HttpService';
+import { BvvHttpService } from '../services/HttpService';
 import { TranslationService } from '../services/TranslationService';
 import { ShareService } from '../services/ShareService';
 import { UnitsService } from '../services/UnitsService';
@@ -30,6 +30,7 @@ import { ContextClickPlugin } from '../plugins/ContextClickPlugin';
 import { GeolocationPlugin } from '../plugins/GeolocationPlugin';
 import { FeatureInfoPlugin } from '../plugins/FeatureInfoPlugin';
 import { MainMenuPlugin } from '../plugins/MainMenuPlugin';
+import { NavigationRailPlugin } from '../plugins/NavigationRailPlugin';
 import { FeatureInfoService } from '../services/FeatureInfoService';
 import { GeoResourceInfoService } from '../modules/geoResourceInfo/services/GeoResourceInfoService';
 import { ImportVectorDataService } from '../services/ImportVectorDataService';
@@ -58,11 +59,15 @@ import { IframeGeometryIdPlugin } from '../plugins/IframeGeometryIdPlugin';
 import { BeforeUnloadPlugin } from '../plugins/BeforeUnloadPlugin';
 import { BvvRoutingService } from '../services/RoutingService';
 import { RoutingPlugin } from '../plugins/RoutingPlugin';
+import { AuthService } from '../services/AuthService';
+import { GlobalErrorPlugin } from '../plugins/GlobalErrorPlugin';
+import { AuthPlugin } from '../plugins/AuthPlugin';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
-	.register('HttpService', NetworkStateSyncHttpService)
+	.registerSingleton('AuthService', new AuthService())
 	.registerSingleton('ConfigService', new ProcessEnvConfigService())
+	.register('HttpService', BvvHttpService)
 	.register('EnvironmentService', EnvironmentService)
 	.registerSingleton('TranslationService', new TranslationService())
 	.register('CoordinateService', OlCoordinateService)
@@ -93,6 +98,8 @@ $injector
 	.registerSingleton('FeedbackService', new FeedbackService())
 	.registerSingleton('RoutingService', new BvvRoutingService())
 
+	.registerSingleton('GlobalErrorPlugin', new GlobalErrorPlugin())
+	.registerSingleton('AuthPlugin', new AuthPlugin())
 	.registerSingleton('DrawPlugin', new DrawPlugin())
 	.registerSingleton('RoutingPlugin', new RoutingPlugin())
 	.registerSingleton('TopicsPlugin', new TopicsPlugin())
@@ -106,6 +113,7 @@ $injector
 	.registerSingleton('ContextClickPlugin', new ContextClickPlugin())
 	.registerSingleton('FeatureInfoPlugin', new FeatureInfoPlugin())
 	.registerSingleton('MainMenuPlugin', new MainMenuPlugin())
+	.registerSingleton('NavigationRailPlugin', new NavigationRailPlugin())
 	.registerSingleton('ImportPlugin', new ImportPlugin())
 	.registerSingleton('SearchPlugin', new SearchPlugin())
 	.registerSingleton('ExportMfpPlugin', new ExportMfpPlugin())

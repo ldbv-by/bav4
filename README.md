@@ -227,6 +227,8 @@ For example, they could be responsible for setting an initial state or reacting 
 
 - If an update of the global state has an event-like character, it's recommended to wrap the payload within another object. This makes it possible to track changes and avoids second dispatching in order to "reset" the state. For this purpose, you can use use `EventLike` in storeUtils.js
 
+- Avoid adding huge objects or arrays to the Redux store (e.g. large arrays of coordinates). Detecting changes can be expensive in that case. Instead, try to reference them by an identifier and push this identifier to the store.
+
 ## Links
 
 ### Various topics relating to Web Components

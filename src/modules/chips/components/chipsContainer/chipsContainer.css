@@ -59,6 +59,12 @@
 	padding-bottom: 0.5em;
 	white-space: nowrap;
 }
+.is-tablet.chips__container {
+	margin-left: 6em;
+}
+.is-tablet .chips__button {
+	font-size: 0.8rem;
+}
 .is-portrait.chips__container {
 	top: 8em;
 	margin: 0;
@@ -130,4 +136,10 @@ iframe {
 
 ::-webkit-scrollbar {
 	height: 0;
+}
+.is-open.is-open-navigationRail.chips__container {
+	transform: translate(33.5em, 0);
+}
+.is-open-navigationRail.chips__container {
+	transform: translate(6em, 0);
 }

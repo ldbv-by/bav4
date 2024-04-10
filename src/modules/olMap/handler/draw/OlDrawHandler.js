@@ -127,11 +127,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._drawingListeners = [];
 		this._keyActionMapper = new KeyActionMapper(document).addForKeyUp('Delete', () => this._remove()).addForKeyUp('Escape', () => this._reset());
 
-		this._projectionHints = {
-			fromProjection: 'EPSG:' + this._mapService.getSrid(),
-			toProjection: 'EPSG:' + this._mapService.getLocalProjectedSrid(),
-			toProjectionExtent: this._mapService.getLocalProjectedSridExtent()
-		};
 		this._lastPointerMoveEvent = null;
 		this._lastInteractionStateType = null;
 		this._drawState = {
@@ -687,7 +682,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			drawState.type = InteractionStateType.ACTIVE;
 			if (this._sketchHandler.isActive) {
 				drawState.type = InteractionStateType.DRAW;
-
+				drawState.geometryType = this._sketchHandler.active.getGeometry().getType();
 				if (this._sketchHandler.isFinishOnFirstPoint) {
 					drawState.snap = InteractionSnapType.FIRSTPOINT;
 				} else if (this._sketchHandler.isSnapOnLastPoint) {

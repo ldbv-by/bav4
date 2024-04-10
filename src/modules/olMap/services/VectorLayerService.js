@@ -105,7 +105,7 @@ export class VectorLayerService {
 	 * @param {ol.Map} olMap
 	 * @returns olVectorLayer
 	 */
-	_applyStyles(olVectorLayer, olMap) {
+	applyStyles(olVectorLayer, olMap) {
 		/**
 		 * We check if an currently present and possible future features needs a specific styling.
 		 * If so, we apply the style and register an event listeners in order to keep the style (and overlays)
@@ -129,11 +129,23 @@ export class VectorLayerService {
 	}
 
 	/**
+	 * Sanitizes the style of the present features of the vector layer.
+	 * The sanitizing prepares features with incompatible styling for the rendering in the
+	 * ol context.
+	 * @param {ol.layer.Vector} olVectorLayer
+	 */
+	sanitizeStyles(olVectorLayer) {
+		const { StyleService: styleService } = $injector.inject('StyleService');
+		const olVectorSource = olVectorLayer.getSource();
+		olVectorSource.getFeatures().forEach((feature) => styleService.sanitizeStyle(feature));
+	}
+
+	/**
 	 * Adds a specific or a default cluster styling for this vector layer
 	 * @param {ol.layer.Vector} olVectorLayer
 	 * @returns olVectorLayer
 	 */
-	_applyClusterStyle(olVectorLayer) {
+	applyClusterStyle(olVectorLayer) {
 		const { StyleService: styleService } = $injector.inject('StyleService');
 		styleService.addClusterStyle(olVectorLayer);
 
@@ -147,7 +159,7 @@ export class VectorLayerService {
 	 * @param {OlMap} olMap
 	 * @returns olVectorLayer
 	 */
-	createVectorLayer(id, vectorGeoResource, olMap) {
+	createLayer(id, vectorGeoResource, olMap) {
 		const { minZoom, maxZoom, opacity } = vectorGeoResource;
 		const vectorLayer = new VectorLayer({
 			id: id,
@@ -158,7 +170,10 @@ export class VectorLayerService {
 		});
 		const vectorSource = this._vectorSourceForData(vectorGeoResource);
 		vectorLayer.setSource(vectorSource);
-		return vectorGeoResource.isClustered() ? this._applyClusterStyle(vectorLayer) : this._applyStyles(vectorLayer, olMap);
+
+		this.sanitizeStyles(vectorLayer);
+
+		return vectorGeoResource.isClustered() ? this.applyClusterStyle(vectorLayer) : this.applyStyles(vectorLayer, olMap);
 	}
 
 	/**

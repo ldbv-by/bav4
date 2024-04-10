@@ -5,12 +5,24 @@ import { networkReducer } from '../../../../../src/store/network/network.reducer
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
+import { createNoInitialStateNavigationRailReducer } from '../../../../../src/store/navigationRail/navigationRail.reducer';
 import { setFetching } from '../../../../../src/store/network/network.action';
 import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 import { Tools } from '../../../../../src/domain/tools';
+import { setSignedIn, setSignedOut } from '../../../../../src/store/auth/auth.action';
+import { authReducer } from '../../../../../src/store/auth/auth.reducer';
 
 window.customElements.define(ToolBar.tag, ToolBar);
+
+const authService = {
+	isSignedIn: () => {},
+	getRoles: () => {
+		return ['Plus', 'Admin'];
+	},
+	signIn: () => {},
+	signOut: () => {}
+};
 
 describe('ToolBarElement', () => {
 	let store;
@@ -29,13 +41,21 @@ describe('ToolBarElement', () => {
 				portrait: false,
 				minWidth: true
 			},
+			navigationRail: {
+				open: false
+			},
+			auth: {
+				signedIn: false
+			},
 			...state
 		};
 
 		store = TestUtils.setupStoreAndDi(initialState, {
 			tools: toolsReducer,
 			network: networkReducer,
-			media: createNoInitialStateMediaReducer()
+			media: createNoInitialStateMediaReducer(),
+			auth: authReducer,
+			navigationRail: createNoInitialStateNavigationRailReducer()
 		});
 
 		$injector
@@ -43,7 +63,8 @@ describe('ToolBarElement', () => {
 				isEmbedded: () => embed,
 				isStandalone: () => standalone
 			})
-			.registerSingleton('TranslationService', { translate: (key) => key });
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('AuthService', authService);
 		return TestUtils.render(ToolBar.tag);
 	};
 
@@ -76,7 +97,7 @@ describe('ToolBarElement', () => {
 			expect(element.shadowRoot.querySelectorAll('.tool-bar__button_icon.export')).toBeTruthy();
 			expect(element.shadowRoot.querySelectorAll('.tool-bar__button_icon.close')).toBeTruthy();
 			expect(element.shadowRoot.querySelectorAll('.hide-button')).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('.toolbar__logo-badge').innerText).toBe('header_logo_badge');
+			expect(element.shadowRoot.querySelector('.toolbar__logo-badge').innerText).toBe('toolbox_toolbar_logo_badge');
 		});
 
 		it('contains test-id attributes', async () => {
@@ -101,7 +122,14 @@ describe('ToolBarElement', () => {
 			const element = await setup({}, { standalone: true });
 
 			expect(element.shadowRoot.querySelectorAll('.is-demo')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.toolbar__logo-badge').innerText).toBe('header_logo_badge_standalone');
+			expect(element.shadowRoot.querySelector('.toolbar__logo-badge').innerText).toBe('toolbox_toolbar_logo_badge_standalone');
+		});
+
+		it('renders for signIn state', async () => {
+			const element = await setup({ auth: { signedIn: true } });
+
+			expect(element.shadowRoot.querySelectorAll('.badge-signed-in')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.toolbar__logo-badge').innerText).toBe(authService.getRoles().join(' '));
 		});
 	});
 
@@ -154,6 +182,22 @@ describe('ToolBarElement', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.tool-bar.is-open')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.hide-button')).toHaveSize(1);
+		});
+	});
+
+	describe('when action-button clicked', () => {
+		it('toggle navigation rail', async () => {
+			const element = await setup();
+
+			expect(store.getState().navigationRail.open).toBe(false);
+
+			element.shadowRoot.querySelector('.action-button').click();
+
+			expect(store.getState().navigationRail.open).toBe(true);
+
+			element.shadowRoot.querySelector('.action-button').click();
+
+			expect(store.getState().navigationRail.open).toBe(false);
 		});
 	});
 
@@ -248,6 +292,24 @@ describe('ToolBarElement', () => {
 		});
 	});
 
+	describe('when auth state change', () => {
+		it('updates the auth badge', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelectorAll('.badge-signed-in')).toHaveSize(0);
+			expect(element.shadowRoot.querySelector('.toolbar__logo-badge').innerText).toBe('toolbox_toolbar_logo_badge');
+
+			setSignedIn();
+
+			expect(element.shadowRoot.querySelectorAll('.badge-signed-in')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.toolbar__logo-badge').innerText).toBe(authService.getRoles().join(' '));
+
+			setSignedOut();
+
+			expect(element.shadowRoot.querySelectorAll('.badge-signed-in')).toHaveSize(0);
+			expect(element.shadowRoot.querySelector('.toolbar__logo-badge').innerText).toBe('toolbox_toolbar_logo_badge');
+		});
+	});
 	describe('responsive layout ', () => {
 		it('layouts for landscape desktop', async () => {
 			const state = {
@@ -282,7 +344,7 @@ describe('ToolBarElement', () => {
 			expect(element.shadowRoot.querySelector('.tool-bar')).toBeTruthy();
 			expect(element.shadowRoot.querySelectorAll('.tool-bar.is-open')).toHaveSize(0);
 
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.action-button')).display).toBe('block');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.action-button')).display).toBe('none');
 		});
 
 		it('layouts for portrait desktop', async () => {
@@ -300,7 +362,7 @@ describe('ToolBarElement', () => {
 			expect(element.shadowRoot.querySelector('.tool-bar')).toBeTruthy();
 			expect(element.shadowRoot.querySelectorAll('.tool-bar.is-open')).toHaveSize(0);
 
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.action-button')).display).toBe('none');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.action-button')).display).toBe('block');
 		});
 
 		it('layouts for portrait tablet', async () => {

@@ -10,6 +10,8 @@ describe('RoutingChart', () => {
 	const environmentServiceMock = {
 		isTouch: () => false
 	};
+
+	const unitsServiceMock = { formatDistance: (value) => value + 'unit' };
 	let store;
 	const setup = (state, properties) => {
 		const initialState = {
@@ -23,7 +25,10 @@ describe('RoutingChart', () => {
 			media: createNoInitialStateMediaReducer(),
 			routing: routingReducer
 		});
-		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('EnvironmentService', environmentServiceMock);
+		$injector
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('EnvironmentService', environmentServiceMock)
+			.registerSingleton('UnitsService', unitsServiceMock);
 
 		return TestUtils.render(RouteChart.tag, properties);
 	};
@@ -111,8 +116,8 @@ describe('RoutingChart', () => {
 			expect(containerElement).toBeTruthy();
 			expect(containerElement.querySelectorAll('.chart_section')).toHaveSize(1);
 			expect(containerElement.querySelectorAll('.highlight')).toHaveSize(2);
-			expect(containerElement.querySelectorAll('.highlight')[0].innerText.replace(/\s/g, '')).toBe('baz:18m');
-			expect(containerElement.querySelectorAll('.highlight')[1].innerText.replace(/\s/g, '')).toBe('bar:57m');
+			expect(containerElement.querySelectorAll('.highlight')[0].innerText.replace(/\s/g, '')).toBe('baz:18unit');
+			expect(containerElement.querySelectorAll('.highlight')[1].innerText.replace(/\s/g, '')).toBe('bar:57unit');
 			expect(containerElement.querySelector('.title').innerText).toBe('foo');
 		});
 
@@ -197,14 +202,16 @@ describe('RoutingChart', () => {
 					}
 				]
 			};
+			const unitsServiceSpy = spyOn(unitsServiceMock, 'formatDistance').withArgs(jasmine.any(Number)).and.callThrough();
 			const element = await setup({}, properties);
 
 			const containerElement = element.shadowRoot.querySelector('.container');
 
 			expect(containerElement).toBeTruthy();
-			expect(containerElement.querySelectorAll('.highlight')[0].innerText.replace(/\s/g, '')).toBe('bar:18m');
-			expect(containerElement.querySelectorAll('.highlight')[1].innerText.replace(/\s/g, '')).toBe('foo:1.23km');
-			expect(containerElement.querySelectorAll('.highlight')[2].innerText.replace(/\s/g, '')).toBe('baz:6km');
+			expect(containerElement.querySelectorAll('.highlight')[0].innerText.replace(/\s/g, '')).toBe('bar:18unit');
+			expect(containerElement.querySelectorAll('.highlight')[1].innerText.replace(/\s/g, '')).toBe('foo:1234unit');
+			expect(containerElement.querySelectorAll('.highlight')[2].innerText.replace(/\s/g, '')).toBe('baz:5678unit');
+			expect(unitsServiceSpy).toHaveBeenCalledTimes(3);
 		});
 	});
 

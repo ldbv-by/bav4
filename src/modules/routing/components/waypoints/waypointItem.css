@@ -60,13 +60,21 @@
 	color: black;
 }
 .text {
-	flex-grow: 1;
+	flex-grow: 2;
 	display: grid;
-	grid-template-columns: 4em 9em;
+	grid-template-columns: 3em 7em;
 }
 .text-name {
 	font-weight: bold;
 }
+
+.waypoint__buttons {
+	display: flex;
+	flex-grow: 1;
+	flex-direction: row;
+	justify-content: flex-end;
+}
+
 ba-icon {
 	border-radius: 2.5em;
 	width: 2.6em;

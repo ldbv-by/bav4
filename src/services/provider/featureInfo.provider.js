@@ -8,18 +8,9 @@ import { MediaType } from '../../domain/mediaTypes';
 import { isHttpUrl } from '../../utils/checks';
 
 /**
- * A function that takes a coordinate and returns a promise with a FeatureInfoResult.
- *
- * @typedef {function(coordinate) : (Promise<FeatureInfoResult>)} featureInfoProvider
- */
-
-/**
- * Uses the BVV service to load a FeatureInfo.
+ * BVV specific implementation of {@link module:services/FeatureInfoService~featureInfoProvider}.
  * @function
- * @param {string} geoResourceId ID of the Georesource
- * @param {Coordinate} coordinate3857 coordinate in 3857
- * @param {number} mapResolution current resolution of the map in meters
- * @returns {FeatureInfoResult} FeatureInfoResult
+ * @type {module:services/FeatureInfoService~featureInfoProvider}
  */
 export const loadBvvFeatureInfo = async (geoResourceId, coordinate3857, mapResolution) => {
 	const {
@@ -31,13 +22,15 @@ export const loadBvvFeatureInfo = async (geoResourceId, coordinate3857, mapResol
 
 	const geoResource = geoResourceService.byId(geoResourceId);
 
-	const throwError = () => {
-		throw new Error('FeatureInfoResult could not be retrieved');
+	const throwError = (reason) => {
+		throw new Error(`FeatureInfoResult for '${geoResourceId}' could not be loaded: ${reason}`);
 	};
 
 	if (geoResource) {
 		const determineCredential = (geoResource) => {
-			return geoResource.authenticationType === GeoResourceAuthenticationType.BAA ? baaCredentialService.get(geoResource.url) ?? throwError() : {};
+			return geoResource.authenticationType === GeoResourceAuthenticationType.BAA
+				? baaCredentialService.get(geoResource.url) ?? throwError('No credentials available')
+				: {};
 		};
 
 		const requestPayload = {
@@ -55,9 +48,20 @@ export const loadBvvFeatureInfo = async (geoResourceId, coordinate3857, mapResol
 			configService.getValueAsPath('BACKEND_URL') +
 			`getFeature/${isHttpUrl(geoResourceId) ? 'url' /**just a placeholder in that case */ : geoResourceId}`;
 
-		const result = await httpService.post(url, JSON.stringify(requestPayload), MediaType.JSON, {
-			timeout: 10000
-		});
+		const result = await httpService.post(
+			url,
+			JSON.stringify(requestPayload),
+			MediaType.JSON,
+			{
+				timeout: 10000
+			},
+			{
+				response:
+					geoResource.authenticationType === GeoResourceAuthenticationType.BAA || isHttpUrl(geoResourceId)
+						? []
+						: [geoResourceService.getAuthResponseInterceptorForGeoResource(geoResourceId)]
+			}
+		);
 
 		switch (result.status) {
 			case 200: {
@@ -68,6 +72,7 @@ export const loadBvvFeatureInfo = async (geoResourceId, coordinate3857, mapResol
 				return null;
 			}
 		}
+		throwError(`Http-Status ${result.status}`);
 	}
-	throwError();
+	throwError(`No GeoResource found with id "${geoResourceId}"`);
 };

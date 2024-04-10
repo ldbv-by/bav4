@@ -33,7 +33,8 @@ describe('VectorLayerService', () => {
 		removeStyle: () => {},
 		updateStyle: () => {},
 		isStyleRequired: () => {},
-		addClusterStyle: () => {}
+		addClusterStyle: () => {},
+		sanitizeStyle: () => {}
 	};
 
 	beforeEach(() => {
@@ -126,7 +127,7 @@ describe('VectorLayerService', () => {
 			instanceUnderTest = new VectorLayerService();
 		};
 
-		describe('createVectorLayer', () => {
+		describe('createLayer', () => {
 			it('returns an ol vector layer for a data based VectorGeoResource', () => {
 				setup();
 				const id = 'id';
@@ -137,11 +138,17 @@ describe('VectorLayerService', () => {
 				const olSource = new VectorSource();
 				const vectorGeoresource = new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326);
 				spyOn(instanceUnderTest, '_vectorSourceForData').withArgs(vectorGeoresource).and.returnValue(olSource);
-				spyOn(instanceUnderTest, '_applyStyles')
+				const sanitizeSpy = spyOn(instanceUnderTest, 'sanitizeStyles')
+					.withArgs(jasmine.any(VectorLayer))
+					.and.callFake(() => {});
+
+				spyOn(instanceUnderTest, 'applyStyles')
 					.withArgs(jasmine.anything(), olMap)
 					.and.callFake((layer) => layer);
 
-				const olVectorLayer = instanceUnderTest.createVectorLayer(id, vectorGeoresource, olMap);
+				const olVectorLayer = instanceUnderTest.createLayer(id, vectorGeoresource, olMap);
+
+				expect(sanitizeSpy).toHaveBeenCalledWith(olVectorLayer);
 
 				expect(olVectorLayer.get('id')).toBe(id);
 				expect(olVectorLayer.get('geoResourceId')).toBe(geoResourceId);
@@ -164,11 +171,11 @@ describe('VectorLayerService', () => {
 					.setSource(sourceAsString, 4326)
 					.setClusterParams({ foo: 'bar' });
 				spyOn(instanceUnderTest, '_vectorSourceForData').withArgs(vectorGeoresource).and.returnValue(olSource);
-				spyOn(instanceUnderTest, '_applyClusterStyle')
+				spyOn(instanceUnderTest, 'applyClusterStyle')
 					.withArgs(jasmine.anything())
 					.and.callFake((layer) => layer);
 
-				const olVectorLayer = instanceUnderTest.createVectorLayer(id, vectorGeoresource, olMap);
+				const olVectorLayer = instanceUnderTest.createLayer(id, vectorGeoresource, olMap);
 
 				expect(olVectorLayer.get('id')).toBe(id);
 				expect(olVectorLayer.get('geoResourceId')).toBe(geoResourceId);
@@ -193,11 +200,11 @@ describe('VectorLayerService', () => {
 					.setMinZoom(5)
 					.setMaxZoom(19);
 				spyOn(instanceUnderTest, '_vectorSourceForData').withArgs(vectorGeoResource).and.returnValue(olSource);
-				spyOn(instanceUnderTest, '_applyStyles')
+				spyOn(instanceUnderTest, 'applyStyles')
 					.withArgs(jasmine.anything(), olMap)
 					.and.callFake((layer) => layer);
 
-				const olVectorLayer = instanceUnderTest.createVectorLayer(id, vectorGeoResource, olMap);
+				const olVectorLayer = instanceUnderTest.createLayer(id, vectorGeoResource, olMap);
 
 				expect(olVectorLayer.get('id')).toBe(id);
 				expect(olVectorLayer.get('geoResourceId')).toBe(geoResourceId);
@@ -223,11 +230,11 @@ describe('VectorLayerService', () => {
 					.setMaxZoom(19)
 					.setClusterParams({ foo: 'bar' });
 				spyOn(instanceUnderTest, '_vectorSourceForData').withArgs(vectorGeoResource).and.returnValue(olSource);
-				spyOn(instanceUnderTest, '_applyClusterStyle')
+				spyOn(instanceUnderTest, 'applyClusterStyle')
 					.withArgs(jasmine.anything())
 					.and.callFake((layer) => layer);
 
-				const olVectorLayer = instanceUnderTest.createVectorLayer(id, vectorGeoResource, olMap);
+				const olVectorLayer = instanceUnderTest.createLayer(id, vectorGeoResource, olMap);
 
 				expect(olVectorLayer.get('id')).toBe(id);
 				expect(olVectorLayer.get('geoResourceId')).toBe(geoResourceId);
@@ -492,14 +499,31 @@ describe('VectorLayerService', () => {
 			});
 		});
 
-		describe('_applyStyles', () => {
+		describe('sanitizeStyles', () => {
+			it('calls the StyleService to sanitize each present feature ', () => {
+				setup();
+				const olFeature0 = new Feature();
+				const olFeature1 = new Feature();
+				const olSource = new VectorSource({ features: [olFeature0, olFeature1] });
+				const olLayer = new VectorLayer({ source: olSource });
+				const spy = spyOn(styleService, 'sanitizeStyle')
+					.withArgs(jasmine.any(Feature))
+					.and.callFake(() => {});
+
+				instanceUnderTest.sanitizeStyles(olLayer);
+
+				expect(spy).toHaveBeenCalledTimes(2);
+			});
+		});
+
+		describe('applyStyles', () => {
 			it('returns the olLayer ', () => {
 				setup();
 				const olMap = new Map();
 				const olSource = new VectorSource();
 				const olLayer = new VectorLayer({ source: olSource });
 
-				const result = instanceUnderTest._applyStyles(olLayer, olMap);
+				const result = instanceUnderTest.applyStyles(olLayer, olMap);
 
 				expect(result).toBe(olLayer);
 			});
@@ -515,7 +539,7 @@ describe('VectorLayerService', () => {
 					const registerStyleEventListenersSpy = spyOn(instanceUnderTest, '_registerStyleEventListeners');
 					const styleServiceAddSpy = spyOn(styleService, 'addStyle');
 
-					instanceUnderTest._applyStyles(olLayer, olMap);
+					instanceUnderTest.applyStyles(olLayer, olMap);
 					olSource.dispatchEvent(new VectorSourceEvent('addfeature', olFeature));
 
 					expect(styleServiceAddSpy).not.toHaveBeenCalledWith(olFeature, olMap, olLayer);
@@ -536,7 +560,7 @@ describe('VectorLayerService', () => {
 					const styleServiceAddSpy = spyOn(styleService, 'addStyle');
 					const updateStyleSpy = spyOn(instanceUnderTest, '_updateStyle');
 
-					instanceUnderTest._applyStyles(olLayer, olMap);
+					instanceUnderTest.applyStyles(olLayer, olMap);
 
 					expect(styleServiceAddSpy).toHaveBeenCalledWith(olFeature0, olMap, olLayer);
 					expect(styleServiceAddSpy).toHaveBeenCalledWith(olFeature1, olMap, olLayer);
@@ -557,7 +581,7 @@ describe('VectorLayerService', () => {
 					const styleServiceAddSpy = spyOn(styleService, 'addStyle');
 					const updateStyleSpy = spyOn(instanceUnderTest, '_updateStyle');
 
-					instanceUnderTest._applyStyles(olLayer, olMap);
+					instanceUnderTest.applyStyles(olLayer, olMap);
 
 					expect(styleServiceAddSpy).not.toHaveBeenCalled();
 					expect(updateStyleSpy).not.toHaveBeenCalled();
@@ -583,7 +607,7 @@ describe('VectorLayerService', () => {
 					const styleServiceAddSpy = spyOn(styleService, 'addStyle');
 					const updateStyleSpy = spyOn(instanceUnderTest, '_updateStyle');
 
-					instanceUnderTest._applyStyles(olLayer, olMap);
+					instanceUnderTest.applyStyles(olLayer, olMap);
 
 					expect(styleServiceAddSpy).not.toHaveBeenCalled();
 					expect(updateStyleSpy).not.toHaveBeenCalled();
@@ -592,14 +616,14 @@ describe('VectorLayerService', () => {
 			});
 		});
 
-		describe('_applyClusterStyle', () => {
+		describe('applyClusterStyle', () => {
 			it('calls the StyleService and returns the olLayer ', () => {
 				setup();
 				const olSource = new VectorSource();
 				const olLayer = new VectorLayer({ source: olSource });
 				spyOn(styleService, 'addClusterStyle').and.returnValue(olLayer);
 
-				const result = instanceUnderTest._applyClusterStyle(olLayer);
+				const result = instanceUnderTest.applyClusterStyle(olLayer);
 
 				expect(result).toBe(olLayer);
 			});

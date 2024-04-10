@@ -52,7 +52,7 @@ describe('ExportVectorDataChip', () => {
 			expect(element.isVisible()).toBeTrue();
 		});
 
-		it('does NOT renders the view with missing exportData', async () => {
+		it('does NOT render the view with missing exportData', async () => {
 			const element = await setup();
 
 			expect(element.isVisible()).toBeFalse();

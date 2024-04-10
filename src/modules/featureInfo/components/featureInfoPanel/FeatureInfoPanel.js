@@ -1,7 +1,7 @@
 /**
  * @module modules/featureInfo/components/featureInfoPanel/FeatureInfoPanel
  */
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { $injector } from '../../../../injection';
 import { abortOrReset } from '../../../../store/featureInfo/featureInfo.action';
@@ -96,6 +96,15 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 			return featureInfoGeometry ? 'is-geometry' : '';
 		};
 
+		const getInfo = (featureInfoData) => {
+			return featureInfoData.length === 0
+				? html`<div class="info-container">
+						<div class="info-icon"></div>
+						<span class="info-text">${unsafeHTML(translate('geometryInfo_info'))} </span>
+					</div>`
+				: nothing;
+		};
+
 		return html`
 			<style>
 				${css}
@@ -117,6 +126,7 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 								<ba-icon .icon="${printerIcon}" .size=${1.5}></ba-icon>
 							</span>
 						</li>
+						${getInfo(featureInfoData)}
 						${featureInfoData.map(
 							(item) => html`
 								<li class="ba-section selectable">

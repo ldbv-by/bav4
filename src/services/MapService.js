@@ -2,16 +2,29 @@
  * @module services/MapService
  */
 import { $injector } from '../injection';
+import { isCoordinateLike } from '../utils/checks';
 import { calc3857MapResolution } from '../utils/mapUtils';
 import { findAllBySelector, REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME } from '../utils/markup';
 import { calculateVisibleViewport } from '../utils/viewport';
 import { getBvvMapDefinitions } from './provider/mapDefinitions.provider';
 
 /**
- * A function that provides map releated meta data
- * {@link MapDefinitions}
- *
- * @typedef {function():(MapDefinitions)} mapDefinitionProvider
+ * Map related meta data.
+ * @typedef {Object} MapDefinitions
+ * @property {module:domain/extentTypeDef~Extent} defaultExtent default extent of the map
+ * @property {number} minZoomLevel the minimal zoom level the map should support
+ * @property {number} maxZoomLevel the maximal zoom level the map should support
+ * @property {number} srid the internal SRID of the map
+ * @property {number} localProjectedSrid the SRID of the supported local projected system
+ * @property {module:domain/extentTypeDef~Extent} localProjectedSridExtent the extent of the local supported projected system
+ * @property {function(module:domain/coordinateTypeDef~Coordinate):(Array<module:domain/coordinateRepresentation~CoordinateRepresentation>)} localProjectedSridDefinitionsForView function which can take a coordinate and returns an array of CoordinateRepresentations
+ * @property {Array<module:domain/coordinateRepresentation~CoordinateRepresentation>} globalSridDefinitionsForView array of global CoordinateRepresentations
+ */
+
+/**
+ * A function that provides map related meta data.
+ * @typedef {Function} mapDefinitionProvider
+ * @returns {module:services/MapService~MapDefinitions} available categories
  */
 
 /**
@@ -21,8 +34,7 @@ import { getBvvMapDefinitions } from './provider/mapDefinitions.provider';
  */
 export class MapService {
 	/**
-	 *
-	 * @param {mapDefinitionProvider} [provider=getBvvMapDefinitions]
+	 * @param {module:services/MapService~mapDefinitionProvider} [mapDefinitionProvider=getBvvMapDefinitions]
 	 */
 	constructor(mapDefinitionProvider = getBvvMapDefinitions) {
 		const { CoordinateService } = $injector.inject('CoordinateService');
@@ -31,8 +43,8 @@ export class MapService {
 	}
 
 	/**
-	 * Returns the internal srid of the map (typically 3857)
-	 * @returns {number} srid
+	 * Returns the internal SRID of the map (typically 3857)
+	 * @returns {number} SRID
 	 */
 	getSrid() {
 		return this._definitions.srid;
@@ -41,25 +53,30 @@ export class MapService {
 	/**
 	 * Returns a list with all available CoordinateRepresentation.
 	 *
-	 * When a coordinate is given the list contains
-	 * suitable CoordinateRepresentation regarding this coordinate,
-	 * which means the returned list is dependent on whether this coordinate is inside or outside the extent
-	 * of the supported local projected system (if definded).
+	 * When a coordinate or a list of coordinates is given the list contains all
+	 * suitable CoordinateRepresentation regarding this coordinate.
+	 * The returned list is dependent on whether this coordinate is inside or outside the extent
+	 * of the supported local projected system (if defined).
 	 *
-	 * If no coordinate is provided the list contains all globally available CoordinateRepresentations.
+	 * If no coordinate is provided the list contains all available global CoordinateRepresentations.
 	 *
 	 * Note: The first entry of the list should be considered as the current "default" CoordinateRepresentation.
 	 *
-	 * @param {Coordinate} [coordinateInMapProjection] - coordinate in map projection
-	 * @returns {Array<CoordinateRepresentation>} srids
+	 * @param {Array<module:domain/coordinateTypeDef~CoordinateLike>|module:domain/coordinateTypeDef~CoordinateLike|null} [coordinateLikeInMapProjection] - coordinate like in map projection
+	 * @returns {Array<module:domain/coordinateRepresentation~CoordinateRepresentation>} Array of `CoordinateRepresentation`
 	 */
-	getCoordinateRepresentations(coordinateInMapProjection) {
+	getCoordinateRepresentations(coordinateLikeInMapProjection = []) {
+		const coordinateInMapProjection = this._coordinateService.toCoordinate(
+			isCoordinateLike(coordinateLikeInMapProjection) ? [coordinateLikeInMapProjection] : [...coordinateLikeInMapProjection]
+		);
+
 		// we have no projected extent defined or no coordinate is provided
-		if (!this.getLocalProjectedSridExtent() || !coordinateInMapProjection) {
+		if (!this.getLocalProjectedSridExtent() || coordinateInMapProjection.length === 0) {
 			return this._definitions.globalCoordinateRepresentations;
 		}
-		// we are outside the projected extent
-		else if (!this._coordinateService.containsCoordinate(this.getLocalProjectedSridExtent(), coordinateInMapProjection)) {
+
+		// one or more coordinates are outside the projected extent
+		if (coordinateInMapProjection.find((c) => !this._coordinateService.containsCoordinate(this.getLocalProjectedSridExtent(), c))) {
 			return this._definitions.globalCoordinateRepresentations;
 		}
 
@@ -79,7 +96,7 @@ export class MapService {
 	 * Returns the extent of the supported local projected system.
 	 * For the corresponding SRID call {@link MapService#getLocalProjectedSrid}.
 	 * Within this extent all calculations can be done in the euclidean space.
-	 * Outside of this extent all calculations should be done geodesically.
+	 * Outside of this extent all calculations should be done in a geodesic manner.
 	 * Can be `null` when no extent is defined.
 	 * @param {number} srid the desired SRID of the returned extent
 	 * @returns {Extent|null} extent
@@ -98,7 +115,7 @@ export class MapService {
 	/**
 	 * Returns the default extent of the map.
 	 * @param {number} srid the desired SRID of the returned extent
-	 * @returns {Extent} extent
+	 * @returns {module:domain/extentTypeDef~Extent} extent
 	 * @throws Unsupported SRID error
 	 */
 	getDefaultMapExtent(srid = this.getSrid()) {
@@ -138,7 +155,7 @@ export class MapService {
 	/**
 	 * Calculates the resolution at a specific degree of latitude in meters per pixel.
 	 * @param {number} zoom  Zoom level to calculate resolution at
-	 * @param {Coordinate} [coordinate] Coordinate to calculate a resolution (required for global map projections like `3857`)
+	 * @param {module:domain/coordinateTypeDef~Coordinate} [coordinateInMapProjection] Coordinate to calculate a resolution (required for global map projections like `3857`)
 	 * @param {number} [srid] Spatial Reference Id. Default is `3857`
 	 * @param {number} [tileSize] tileSize The size of the tiles in the tile pyramid. Default is `256`
 	 */
@@ -188,5 +205,63 @@ export class MapService {
 			bottom: baseRectangle.bottom - visibleRectangle.bottom,
 			left: visibleRectangle.left - baseRectangle.left
 		};
+	}
+
+	/**
+	 * Calculates the length of an array of coordinates.
+	 *
+	 * The kind of calculations depends on whether the coordinates are inside or outside of the extent
+	 * of the supported local projected system (if defined).
+	 *
+	 * This is basically a convenience method for {@link module:services/OlCoordinateService#getLength}.
+	 *
+	 * @param {Array<module:domain/coordinateTypeDef~Coordinate>} coordinatesInMapProjection coordinates in map projection
+	 * @returns {Number} the length
+	 */
+	calcLength(coordinatesInMapProjection) {
+		if (
+			// no local projected extend defined or one or more coordinates are outside the projected extent > global calculation wanted
+			!this.getLocalProjectedSridExtent() ||
+			coordinatesInMapProjection.find((c) => !this._coordinateService.containsCoordinate(this.getLocalProjectedSridExtent(), c))
+		) {
+			const wgs84Coordinates = coordinatesInMapProjection.map((c) => this._coordinateService.toLonLat(c));
+			return this._coordinateService.getLength(wgs84Coordinates, true);
+		}
+		const projectedCoordinates = coordinatesInMapProjection.map((c) =>
+			this._coordinateService.transform(c, this.getSrid(), this.getLocalProjectedSrid())
+		);
+		return this._coordinateService.getLength(projectedCoordinates, false);
+	}
+
+	/**
+	 * Calculates the area for an array of polygon coordinates.
+	 *
+	 * Array of linear rings that define the polygon. The first linear ring of the array defines the outer-boundary or surface of the polygon. Each subsequent linear ring defines a hole in the surface of the polygon.
+	 * A linear ring is an array of vertices' coordinates where the first coordinate and the last are equivalent.
+	 *
+	 * The kind of calculations depends on whether the coordinates are inside or outside of the extent
+	 * of the supported local projected system (if defined).
+	 *
+	 * This is basically a convenience method for {@link module:services/OlCoordinateService#getArea}.
+	 *
+	 * @param {Array<Array<module:domain/coordinateTypeDef~Coordinate>>} coordinatesInMapProjection polygon coordinates map projection
+	 * @returns {Number} the area
+	 */
+	calcArea(coordinatesInMapProjection) {
+		if (
+			// no local projected extend defined or one or more coordinates are outside the projected extent > global calculation wanted
+			!this.getLocalProjectedSridExtent() ||
+			coordinatesInMapProjection[0] /** the first linear ring defines the surface of the polygon */
+				.find((c) => !this._coordinateService.containsCoordinate(this.getLocalProjectedSridExtent(), c))
+		) {
+			const wgs84Coordinates = coordinatesInMapProjection.map((linearRing) => {
+				return linearRing.map((c) => this._coordinateService.toLonLat(c));
+			});
+			return this._coordinateService.getArea(wgs84Coordinates, true);
+		}
+		const projectedCoordinates = coordinatesInMapProjection.map((linearRing) => {
+			return linearRing.map((c) => this._coordinateService.transform(c, this.getSrid(), this.getLocalProjectedSrid()));
+		});
+		return this._coordinateService.getArea(projectedCoordinates, false);
 	}
 }

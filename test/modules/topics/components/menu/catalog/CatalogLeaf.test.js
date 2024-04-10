@@ -14,7 +14,8 @@ window.customElements.define(Checkbox.tag, Checkbox);
 
 describe('CatalogLeaf', () => {
 	const geoResourceServiceMock = {
-		byId() {}
+		byId() {},
+		getKeywords: () => []
 	};
 
 	let store;
@@ -81,6 +82,34 @@ describe('CatalogLeaf', () => {
 				expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe(geoResourceLabel);
 				expect(element.shadowRoot.querySelectorAll('.ba-icon-button')).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(0); // no badge, due to empty keyword-array
+
+				expect(element.shadowRoot.querySelector('#info').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			});
+
+			it('renders a leaf with keyword badges', async () => {
+				const geoResourceLabel = 'someLabel';
+				spyOn(geoResourceServiceMock, 'byId')
+					.withArgs(layer.geoResourceId)
+					.and.returnValue(new XyzGeoResource(layer.id, geoResourceLabel, 'someUrl'));
+				spyOn(geoResourceServiceMock, 'getKeywords').withArgs(layer.geoResourceId).and.returnValue(['Foo', 'Bar']);
+				//load leaf data
+				const leaf = getLeaf();
+				const element = await setup();
+
+				//assign data
+				element.data = leaf;
+
+				const checkbox = element.shadowRoot.querySelector('ba-checkbox');
+				expect(checkbox).toBeTruthy();
+				expect(checkbox.title).toBe(geoResourceLabel);
+				expect(element.shadowRoot.querySelectorAll('.ba-icon-button')).toHaveSize(1);
+				expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe(geoResourceLabel);
+				expect(element.shadowRoot.querySelectorAll('.ba-icon-button')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(2);
+				expect(element.shadowRoot.querySelectorAll('ba-badge')[0].label).toBe('Foo');
+				expect(element.shadowRoot.querySelectorAll('ba-badge')[1].label).toBe('Bar');
 
 				expect(element.shadowRoot.querySelector('#info').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 			});
@@ -149,7 +178,7 @@ describe('CatalogLeaf', () => {
 
 					checkbox.click();
 
-					expect(store.getState().layers.active[0].id).toBe(layer.id);
+					expect(store.getState().layers.active[0].id.startsWith(`${layer.id}_`)).toBeTrue();
 
 					checkbox.click();
 

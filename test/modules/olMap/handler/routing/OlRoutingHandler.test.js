@@ -93,11 +93,16 @@ describe('OlRoutingHandler', () => {
 		isTouch() {}
 	};
 	const elevationServiceMock = {
-		getProfile() {}
+		requestProfile() {}
 	};
 	const geoResourceServiceMock = {
 		byId() {},
 		addOrReplace() {}
+	};
+	const iconServiceMock = {
+		getIconResult: (idOrBase64) => {
+			return { id: idOrBase64, base64: 'data:image/svg+xml;base64,foo' };
+		}
 	};
 
 	const setup = (state = {}) => {
@@ -123,7 +128,9 @@ describe('OlRoutingHandler', () => {
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('ElevationService', elevationServiceMock)
 			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('GeoResourceService', geoResourceServiceMock);
+			.registerSingleton('GeoResourceService', geoResourceServiceMock)
+			// implicitly required by getRoutingStyleFunction()
+			.registerSingleton('IconService', iconServiceMock);
 
 		return store;
 	};
@@ -744,12 +751,11 @@ describe('OlRoutingHandler', () => {
 				const mockRouteStatsProvider = jasmine.createSpy().withArgs(mockGhRoute, mockProfile.stats).and.returnValue(mockStats);
 				const { instanceUnderTest, store } = await newTestInstance({}, mockRouteStatsProvider);
 				const mapServiceSpy = spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
-				spyOn(elevationServiceMock, 'getProfile').withArgs(jasmine.any(Array)).and.resolveTo(mockProfile);
+				spyOn(elevationServiceMock, 'requestProfile').withArgs(jasmine.any(Array)).and.resolveTo(mockProfile);
 
 				await instanceUnderTest._updateStore(mockGhRoute);
 
 				expect(store.getState().routing.stats).toEqual(mockStats);
-				expect(store.getState().elevationProfile.coordinates.length).toBe(57);
 				expect(store.getState().routing.route.type.name).toBe(SourceTypeName.GEOJSON);
 				expect(store.getState().routing.route.data).toContain('LineString');
 				expect(mapServiceSpy).toHaveBeenCalled();
@@ -778,7 +784,7 @@ describe('OlRoutingHandler', () => {
 					);
 
 					const clearRouteFeaturesSpy = spyOn(instanceUnderTest, '_clearRouteFeatures');
-					spyOn(elevationServiceMock, 'getProfile').withArgs(jasmine.any(Array)).and.rejectWith(message);
+					spyOn(elevationServiceMock, 'requestProfile').withArgs(jasmine.any(Array)).and.rejectWith(message);
 					const errorSpy = spyOn(console, 'error');
 
 					await instanceUnderTest._updateStore(mockGhRoute);

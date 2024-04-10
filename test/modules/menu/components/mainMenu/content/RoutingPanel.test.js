@@ -41,7 +41,7 @@ describe('RoutingPanel', () => {
 	});
 
 	describe('when initialized', () => {
-		it('does NOT renders the routing components', async () => {
+		it('does NOT render the routing components', async () => {
 			const element = await setup();
 
 			expect(element.shadowRoot.querySelectorAll('.container')).toHaveSize(1);

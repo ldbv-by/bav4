@@ -3,7 +3,7 @@
  */
 import { getUid } from 'ol';
 import { $injector } from '../../../injection';
-import { rgbToHex } from '../../../utils/colors';
+import { getContrastColorFrom, rgbToHex } from '../../../utils/colors';
 import {
 	measureStyleFunction,
 	nullStyleFunction,
@@ -15,10 +15,13 @@ import {
 	geojsonStyleFunction,
 	defaultStyleFunction,
 	defaultClusterStyleFunction,
-	markerStyleFunction
+	markerStyleFunction,
+	getTransparentImageStyle
 } from '../utils/olStyleUtils';
 import { isFunction } from '../../../utils/checks';
 import { getRoutingStyleFunction } from '../handler/routing/styleUtils';
+import { GeometryCollection, MultiPoint, Point } from '../../../../node_modules/ol/geom';
+import { Stroke, Style, Text } from '../../../../node_modules/ol/style';
 
 /**
  * Enumeration of predefined types of style
@@ -213,6 +216,98 @@ export class StyleService {
 		return this._detectStyleType(olFeature) !== null;
 	}
 
+	/**
+	 * Sanitize the style of a feature, to prevent unwanted renderings
+	 * and to enable display behavior of point features as interactive label,
+	 * similar to Google Earth (Desktop Application), to support user-created
+	 * content from extern sources.
+	 * TODO: handling of GeometryCollection
+	 * @param {ol.Feature} olFeature
+	 */
+	sanitizeStyle(olFeature) {
+		const getStyles = (feature) => {
+			const styleFunction = feature.getStyleFunction();
+			const stylesCandidate = !styleFunction || !styleFunction(feature) ? null : styleFunction(feature);
+			if (Array.isArray(stylesCandidate) && stylesCandidate.length > 0) {
+				return stylesCandidate;
+			}
+			if (stylesCandidate instanceof Style) {
+				return [stylesCandidate];
+			}
+			return null;
+		};
+		const getStroke = (style) => {
+			// The canvas draws a stroke width=1 by default if width=0, so we
+			// remove the stroke style in that case.
+			const stroke = style?.getStroke ? style.getStroke() : null;
+			return stroke && stroke.getWidth() === 0 ? null : stroke;
+		};
+		const getImageStyle = (image) => {
+			// transparentCircle is used to allow selection
+			return image && image.getScale() === 0 ? getTransparentImageStyle() : image;
+		};
+		const getTextStyle = (name, style) => {
+			// If the feature has a name, we display it on the map.
+			// -> Mimicking the behavior of Google Earth in combination with the
+			//    transparentCircle, if image.getScale() === 0
+			if (name && style?.getText && style?.getText().getScale() !== 0) {
+				return new Text({
+					font: 'normal 24px Open Sans',
+					text: name,
+					fill: style.getText().getFill(),
+					stroke: new Stroke({
+						color: getContrastColorFrom(style.getText().getFill().getColor()),
+						width: 3
+					}),
+					scale: style.getText().getScale()
+				});
+			}
+			return null;
+		};
+		const isPointLike = (geometry) => {
+			return geometry instanceof Point || geometry instanceof MultiPoint;
+		};
+
+		const geometry = olFeature.getGeometry();
+		const styles = getStyles(olFeature);
+		const style = styles ? styles[0].clone() : null;
+
+		const sanitizedStroke = getStroke(style);
+
+		// if the feature is a Point and has a name with a text style, we
+		// create a correct text style.
+		if (style && isPointLike(geometry)) {
+			const image = style.getImage() ?? null;
+
+			const sanitizedImage = getImageStyle(image);
+			const sanitizedText = getTextStyle(olFeature.get('name'), style);
+			const sanitizedStyles = [
+				new Style({
+					fill: sanitizedText ? null : style.getFill(),
+					stroke: sanitizedText ? null : sanitizedStroke,
+					image: sanitizedText ? sanitizedImage : image,
+					text: sanitizedText,
+					zIndex: style.getZIndex()
+				})
+			];
+			olFeature.setStyle(sanitizedStyles);
+		}
+
+		// Remove image and text styles for polygons and lines
+		if (style && !(isPointLike(geometry) || geometry instanceof GeometryCollection)) {
+			const sanitizedStyles = [
+				new Style({
+					fill: style.getFill(),
+					stroke: sanitizedStroke,
+					image: null,
+					text: null,
+					zIndex: style.getZIndex()
+				})
+			];
+			olFeature.setStyle(sanitizedStyles);
+		}
+	}
+
 	_addMeasureStyle(olFeature, olMap) {
 		const { OverlayService: overlayService } = $injector.inject('OverlayService');
 
@@ -271,7 +366,7 @@ export class StyleService {
 				const scale = markerScaleToKeyword(style.getImage().getScale());
 				const size = style.getImage()?.getSize();
 				const pixelAnchor = style.getImage()?.getAnchor();
-				const text = style.getText().getText();
+				const text = style.getText()?.getText();
 				return {
 					symbolSrc: symbolSrc,
 					color: rgbToHex(color ? color : style.getText().getFill().getColor()),

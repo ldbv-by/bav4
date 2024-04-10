@@ -24,14 +24,10 @@ export class FeedbackBanner extends MvuElement {
 	}
 
 	onInitialize() {
-		this._unsubscribeFromStore = this.observe(
+		this.observe(
 			(store) => store.routing.status,
 			(status) => this.signal(Update_Status, status)
 		);
-	}
-
-	onDisconnect() {
-		this._unsubscribeFromStore();
 	}
 
 	update(type, data, model) {

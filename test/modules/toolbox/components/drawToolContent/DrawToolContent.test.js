@@ -8,18 +8,12 @@ import { EventLike } from '../../../../../src/utils/storeUtils';
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 import { IconResult } from '../../../../../src/services/IconService';
 import { IconSelect } from '../../../../../src/modules/iconSelect/components/IconSelect';
-import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
-import { ElevationProfileChip } from '../../../../../src/modules/chips/components/assistChips/ElevationProfileChip';
-import { ExportVectorDataChip } from '../../../../../src/modules/chips/components/assistChips/ExportVectorDataChip';
 import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer';
 
-window.customElements.define(Icon.tag, Icon);
-window.customElements.define(IconSelect.tag, IconSelect);
 window.customElements.define(DrawToolContent.tag, DrawToolContent);
-window.customElements.define(ElevationProfileChip.tag, ElevationProfileChip);
-window.customElements.define(ExportVectorDataChip.tag, ExportVectorDataChip);
+window.customElements.define(IconSelect.tag, IconSelect);
 
 describe('DrawToolContent', () => {
 	let store;
@@ -34,12 +28,6 @@ describe('DrawToolContent', () => {
 	};
 
 	const iconServiceMock = { default: () => new IconResult('marker', 'foo'), all: () => [], getIconResult: () => {} };
-
-	const geoResourceServiceMock = {
-		async init() {},
-		all() {},
-		byId() {}
-	};
 
 	const drawDefaultState = {
 		active: false,
@@ -84,7 +72,6 @@ describe('DrawToolContent', () => {
 			})
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('IconService', iconServiceMock)
-			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('SecurityService', securityServiceMock);
 		return TestUtils.render(DrawToolContent.tag);
 	};
@@ -684,9 +671,8 @@ describe('DrawToolContent', () => {
 				fileSaveResult: new EventLike({ fileSaveResult: 'foo', content: exportData })
 			});
 			const chipElement = element.shadowRoot.querySelector('ba-export-vector-data-chip');
-			const chipModel = chipElement.getModel();
 
-			expect(chipModel.data).toBe(exportData);
+			expect(chipElement.exportData).toBe(exportData);
 		});
 
 		it('finishes the drawing', async () => {

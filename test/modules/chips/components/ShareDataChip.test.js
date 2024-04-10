@@ -69,13 +69,13 @@ describe('ShareDataChip', () => {
 			expect(element.isVisible()).toBeTrue();
 		});
 
-		it('does NOT renders the view with missing FileSaveResult', async () => {
+		it('does NOT render the view with missing FileSaveResult', async () => {
 			const element = await setup();
 
 			expect(element.isVisible()).toBeFalse();
 		});
 
-		it('does NOT renders the view with invalid FileSaveResult', async () => {
+		it('does NOT render the view with invalid FileSaveResult', async () => {
 			const invalidFileSaveResult = { adminId: 'a_fooBar', fileId: null };
 			const sharedState = { ...defaultSharedState, fileSaveResult: invalidFileSaveResult };
 			const element = await setup(sharedState);
@@ -119,17 +119,6 @@ describe('ShareDataChip', () => {
 			expect(shortenerSpy).toHaveBeenCalledTimes(2);
 			expect(warnSpy).toHaveBeenCalledTimes(2);
 			expect(warnSpy).toHaveBeenCalledWith('Could not shorten url', 'not available');
-		});
-	});
-
-	describe('when disconnected', () => {
-		it('removes all observers', async () => {
-			const element = await setup();
-			const unsubscribeSpy = spyOn(element, '_unsubscribeFromStore').and.callThrough();
-
-			element.onDisconnect(); // we call onDisconnect manually
-
-			expect(unsubscribeSpy).toHaveBeenCalled();
 		});
 	});
 });

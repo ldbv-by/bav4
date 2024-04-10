@@ -6,7 +6,7 @@ import { RouteCalculationErrors } from '../../domain/routing';
 import { $injector } from '../../injection';
 
 /**
- * Bvv specific implementation of {@link module:services/RoutingService~routeProvider}
+ * BVV specific implementation of {@link module:services/RoutingService~routeProvider}
  * @function
  * @type {module:services/RoutingService~routeProvider}
  */

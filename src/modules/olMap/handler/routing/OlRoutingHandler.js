@@ -26,7 +26,6 @@ import { provide as messageProvide } from './tooltipMessage.provider';
 import { setCategory, setProposal, setRouteAndStats, setWaypoints } from '../../../../store/routing/routing.action';
 import { CoordinateProposalType, RouteCalculationErrors, RoutingStatusCodes } from '../../../../domain/routing';
 import { fit } from '../../../../store/position/position.action';
-import { updateCoordinates } from '../../../../store/elevationProfile/elevationProfile.action';
 import { equals } from '../../../../../node_modules/ol/coordinate';
 import { GeoJSON as GeoJSONFormat } from 'ol/format';
 import { SourceType, SourceTypeName } from '../../../../domain/sourceType';
@@ -577,7 +576,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 		const coordinates = geom.getCoordinates();
 
 		try {
-			const { stats: profileStats } = await this._elevationService.getProfile(coordinates);
+			const { stats: profileStats } = await this._elevationService.requestProfile(coordinates);
 			const routeStats = this._routeStatsProvider(ghRoute, profileStats);
 
 			const route = {
@@ -585,7 +584,6 @@ export class OlRoutingHandler extends OlLayerHandler {
 				type: new SourceType(SourceTypeName.GEOJSON)
 			};
 			setRouteAndStats(route, routeStats);
-			updateCoordinates(coordinates);
 		} catch (e) {
 			/**
 			 * In that case we remove all route features and reset the s-o-s,

@@ -206,7 +206,7 @@ describe('OlMap', () => {
 			.registerSingleton('MapService', mapServiceStub)
 			.registerSingleton('GeoResourceService', geoResourceServiceStub)
 			.registerSingleton('EnvironmentService', environmentServiceMock)
-			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('TranslationService', { translate: (key, params = []) => `${key}${params.length ? ` [${params.join(',')}]` : ''}` })
 			.registerSingleton('OlMeasurementHandler', measurementLayerHandlerMock)
 			.registerSingleton('OlDrawHandler', drawLayerHandlerMock)
 			.registerSingleton('OlGeolocationHandler', geolocationLayerHandlerMock)
@@ -292,7 +292,6 @@ describe('OlMap', () => {
 
 			element.onDisconnect(); // we call onDisconnect manually
 
-			expect(element._unsubscribers).toHaveSize(0);
 			expect(element._map).toBeNull();
 			expect(element._view).toBeNull();
 			expect(spy).toHaveBeenCalledWith(null);
@@ -522,11 +521,11 @@ describe('OlMap', () => {
 		});
 
 		describe('on touch device', () => {
-			beforeEach(async () => {
+			beforeEach(() => {
 				jasmine.clock().install();
 			});
 
-			afterEach(function () {
+			afterEach(() => {
 				jasmine.clock().uninstall();
 			});
 
@@ -654,11 +653,11 @@ describe('OlMap', () => {
 			});
 
 			describe('on touch device', () => {
-				beforeEach(async () => {
+				beforeEach(() => {
 					jasmine.clock().install();
 				});
 
-				afterEach(function () {
+				afterEach(() => {
 					jasmine.clock().uninstall();
 				});
 
@@ -1207,29 +1206,6 @@ describe('OlMap', () => {
 			expect(map.getLayers().item(1)).toEqual(nonAsyncOlLayer);
 		});
 
-		it('adds NO layer for an unresolveable GeoResourceFuture', async () => {
-			const element = await setup();
-			const map = element._map;
-			const message = 'error';
-			const future = new GeoResourceFuture(geoResourceId0, async () => Promise.reject(message));
-			spyOn(layerServiceMock, 'toOlLayer')
-				.withArgs(id0, jasmine.anything(), map)
-				.and.callFake((id) => new Layer({ id: id, render: () => {}, properties: { placeholder: true } }));
-			spyOn(geoResourceServiceStub, 'byId').withArgs(geoResourceId0).and.returnValue(future);
-			const warnSpy = spyOn(console, 'warn');
-
-			addLayer(id0, { geoResourceId: geoResourceId0 });
-			expect(map.getLayers().getLength()).toBe(1);
-			const layer = map.getLayers().item(0);
-			expect(layer.get('id')).toBe(id0);
-
-			await TestUtils.timeout();
-			expect(map.getLayers().getLength()).toBe(0);
-			expect(warnSpy).toHaveBeenCalledWith(message);
-			expect(store.getState().notifications.latest.payload.content).toBe(`olMap_layer_not_available '${geoResourceId0}'`);
-			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
-		});
-
 		it('removes layer from state store when olLayer not available', async () => {
 			const element = await setup();
 			const map = element._map;
@@ -1247,7 +1223,7 @@ describe('OlMap', () => {
 			expect(map.getLayers().getLength()).toBe(1);
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(warnSpy).toHaveBeenCalledWith("Could not add an olLayer for id 'unknown'");
-			expect(store.getState().notifications.latest.payload.content).toBe("olMap_layer_not_available 'unknown'");
+			expect(store.getState().notifications.latest.payload.content).toBe('global_geoResource_not_available [unknown]');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 		});
 

@@ -52,6 +52,9 @@ describe('StoreService', () => {
 		const mainMenuPluginMock = {
 			register() {}
 		};
+		const navigationRailPluginMock = {
+			register() {}
+		};
 		const mediaPluginMock = {
 			register() {}
 		};
@@ -85,12 +88,20 @@ describe('StoreService', () => {
 		const observeStateForEncodingPluginMock = {
 			register: () => {}
 		};
+		const globalErrorPluginMock = {
+			register: () => {}
+		};
+		const authPluginMock = {
+			register: () => {}
+		};
 
 		const setupInjector = () => {
 			$injector
 				.reset()
 				.registerSingleton('TopicsService', topicsServiceMock)
 				.registerSingleton('GeoResourceService', geoResourceServiceMock)
+				.registerSingleton('GlobalErrorPlugin', globalErrorPluginMock)
+				.registerSingleton('AuthPlugin', authPluginMock)
 				.registerSingleton('MeasurementPlugin', measurementPluginMock)
 				.registerSingleton('DrawPlugin', drawPluginMock)
 				.registerSingleton('RoutingPlugin', routingPluginMock)
@@ -102,6 +113,7 @@ describe('StoreService', () => {
 				.registerSingleton('HighlightPlugin', highlightPluginMock)
 				.registerSingleton('FeatureInfoPlugin', featureInfoPluginMock)
 				.registerSingleton('MainMenuPlugin', mainMenuPluginMock)
+				.registerSingleton('NavigationRailPlugin', navigationRailPluginMock)
 				.registerSingleton('MediaPlugin', mediaPluginMock)
 				.registerSingleton('ImportPlugin', importPluginMock)
 				.registerSingleton('SearchPlugin', searchPluginMock)
@@ -127,7 +139,7 @@ describe('StoreService', () => {
 			expect(store).toBeDefined();
 
 			const reducerKeys = Object.keys(store.getState());
-			expect(reducerKeys.length).toBe(28);
+			expect(reducerKeys.length).toBe(30);
 			expect(reducerKeys.includes('map')).toBeTrue();
 			expect(reducerKeys.includes('pointer')).toBeTrue();
 			expect(reducerKeys.includes('position')).toBeTrue();
@@ -156,9 +168,13 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('stateForEncoding')).toBeTrue();
 			expect(reducerKeys.includes('iframeContainer')).toBeTrue();
 			expect(reducerKeys.includes('routing')).toBeTrue();
+			expect(reducerKeys.includes('navigationRail')).toBeTrue();
+			expect(reducerKeys.includes('auth')).toBeTrue();
 		});
 
 		it('registers all plugins', async () => {
+			const globalErrorPluginSpy = spyOn(globalErrorPluginMock, 'register');
+			const authPluginSpy = spyOn(authPluginMock, 'register');
 			const measurementPluginSpy = spyOn(measurementPluginMock, 'register');
 			const drawPluginSpy = spyOn(drawPluginMock, 'register');
 			const routingPluginSpy = spyOn(routingPluginMock, 'register');
@@ -170,6 +186,7 @@ describe('StoreService', () => {
 			const highlightPluginSpy = spyOn(highlightPluginMock, 'register');
 			const featureInfoPluginSpy = spyOn(featureInfoPluginMock, 'register');
 			const mainMenuPluginSpy = spyOn(mainMenuPluginMock, 'register');
+			const navigationRailPluginSpy = spyOn(navigationRailPluginMock, 'register');
 			const mediaPluginSpy = spyOn(mediaPluginMock, 'register');
 			const importPluginSpy = spyOn(importPluginMock, 'register');
 			const searchPluginSpy = spyOn(searchPluginMock, 'register');
@@ -192,6 +209,8 @@ describe('StoreService', () => {
 			await TestUtils.timeout();
 			await TestUtils.timeout();
 
+			expect(globalErrorPluginSpy).toHaveBeenCalledWith(store);
+			expect(authPluginSpy).toHaveBeenCalledWith(store);
 			expect(measurementPluginSpy).toHaveBeenCalledWith(store);
 			expect(drawPluginSpy).toHaveBeenCalledWith(store);
 			expect(routingPluginSpy).toHaveBeenCalledWith(store);
@@ -203,6 +222,7 @@ describe('StoreService', () => {
 			expect(highlightPluginSpy).toHaveBeenCalledWith(store);
 			expect(featureInfoPluginSpy).toHaveBeenCalledWith(store);
 			expect(mainMenuPluginSpy).toHaveBeenCalledWith(store);
+			expect(navigationRailPluginSpy).toHaveBeenCalledWith(store);
 			expect(mediaPluginSpy).toHaveBeenCalledWith(store);
 			expect(importPluginSpy).toHaveBeenCalledWith(store);
 			expect(searchPluginSpy).toHaveBeenCalledWith(store);

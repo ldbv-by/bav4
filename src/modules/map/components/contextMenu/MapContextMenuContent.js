@@ -81,15 +81,16 @@ export class MapContextMenuContent extends MvuElement {
 	 * @private
 	 */
 	async _getAdministration(coordinate) {
+		const emptyAdministration = {
+			community: null,
+			district: null
+		};
 		try {
 			const administration = await this._administrationService.getAdministration(coordinate);
-			this.signal(Update_Administration, administration);
+			this.signal(Update_Administration, administration ?? emitNotification);
 		} catch (e) {
 			console.error(e);
-			this.signal(Update_Administration, {
-				community: null,
-				district: null
-			});
+			this.signal(Update_Administration, emptyAdministration);
 		}
 	}
 
@@ -153,7 +154,7 @@ export class MapContextMenuContent extends MvuElement {
 						</li>
 					</ul>
 					<div class="chips">
-						<ba-share-position-chip .center=${coordinate}></ba-share-position-chip>
+						<ba-share-chip .center=${coordinate}></ba-share-chip>
 						<ba-map-feedback-chip .center=${coordinate}></ba-map-feedback-chip>
 						<ba-routing-chip .coordinate=${coordinate}></ba-routing-chip>
 					</div>

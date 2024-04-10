@@ -85,16 +85,6 @@ describe('RouteDetails', () => {
 		});
 	});
 
-	describe('when disconnected', () => {
-		it('removes all observers', async () => {
-			const element = await setup();
-
-			element.onDisconnect(); // we call onDisconnect manually
-
-			expect(element._storeSubscriptions).toHaveSize(0);
-		});
-	});
-
 	describe('when route changes', () => {
 		it('does NOT create chart data from missing statistics', async () => {
 			const element = await setup(defaultRoutingState);

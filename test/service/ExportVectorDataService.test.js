@@ -3,7 +3,7 @@ import { VectorGeoResource } from '../../src/domain/geoResources';
 import { SourceType, SourceTypeName, SourceTypeResultStatus } from '../../src/domain/sourceType';
 import { OlExportVectorDataService } from '../../src/services/ExportVectorDataService';
 import { TestUtils } from '../test-utils';
-import { Point, LineString, Polygon } from 'ol/geom';
+import { Point, LineString, Polygon, MultiPolygon } from 'ol/geom';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { $injector } from '../../src/injection';
@@ -13,6 +13,8 @@ describe('ExportVectorDataService', () => {
 	const EWKT_Point = 'SRID=4326;POINT(10 10)';
 	const EWKT_LineString = 'SRID=4326;LINESTRING(10 10,20 20,30 40)';
 	const EWKT_Polygon = 'SRID=4326;POLYGON((10 10,10 20,20 20,20 15,10 10))';
+	const EWKT_MultiPolygon =
+		'SRID=4326;MULTIPOLYGON (((40 40, 20 45, 45 30, 40 40)),((20 35, 10 30, 10 10, 30 5, 45 20, 20 35),	(30 20, 20 15, 20 25, 30 20)))';
 	const EWKT_GeometryCollection = 'SRID=4326;GEOMETRYCOLLECTION(POLYGON((10 10,10 20,20 20,20 15,10 10)),POLYGON((10 10,10 20,20 20,20 15,10 10)))';
 	const KML_Data =
 		'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document>	<name>Zeichnung</name>	<Placemark id="polygon_1645077612885">	<ExtendedData>		<Data name="type">			<value>polygon</value>		</Data>	</ExtendedData>	<description>	</description>	<Style>		<LineStyle>			<color>ff0000ff</color>			<width>3</width>		</LineStyle>		<PolyStyle>			<color>660000ff</color>		</PolyStyle>	</Style>	<Polygon>		<outerBoundaryIs>			<LinearRing>				<coordinates>					11.248395432833206,48.599861238104666 					11.414296346422136,48.66067918795375 					11.484919041751134,48.55051466922948 					11.30524992459611,48.503527784132004 					11.248395432833206,48.599861238104666				</coordinates>			</LinearRing>		</outerBoundaryIs>	</Polygon></Placemark></Document></kml>';
@@ -33,6 +35,10 @@ describe('ExportVectorDataService', () => {
 		TestUtils.setupStoreAndDi({});
 		$injector.registerSingleton('ProjectionService', projectionServiceMock).registerSingleton('SourceTypeService', sourceTypeServiceMock);
 		return new OlExportVectorDataService();
+	};
+
+	const countTerm = (contentWithTerm, term) => {
+		return contentWithTerm.split(term).length - 1;
 	};
 
 	beforeAll(() => {
@@ -112,7 +118,7 @@ describe('ExportVectorDataService', () => {
 
 		describe('GPX', () => {
 			const FORMAT_GPX_START = '<gpx ';
-
+			const FORMAT_GPX_TRACK_POINT = '<trkpt ';
 			it('requests the gpx format reader', () => {
 				const instance = setup();
 				const formatSpy = spyOn(instance, '_getFormat').and.callThrough();
@@ -146,12 +152,24 @@ describe('ExportVectorDataService', () => {
 					.and.returnValues({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.KML) })
 					.withArgs(EWKT_Polygon)
 					.and.returnValues({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.EWKT) })
+					.withArgs(EWKT_MultiPolygon)
+					.and.returnValues({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.EWKT) })
 					.withArgs(GEOJSON_Data)
 					.and.returnValues({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.GEOJSON) });
 
-				expect(instance.forData(KML_Data, new SourceType(SourceTypeName.GPX)).startsWith(FORMAT_GPX_START)).toBeTrue();
-				expect(instance.forData(EWKT_Polygon, new SourceType(SourceTypeName.GPX)).startsWith(FORMAT_GPX_START)).toBeTrue();
-				expect(instance.forData(GEOJSON_Data, new SourceType(SourceTypeName.GPX)).startsWith(FORMAT_GPX_START)).toBeTrue();
+				const dataFromKml = instance.forData(KML_Data, new SourceType(SourceTypeName.GPX));
+				const fromEwktPolygon = instance.forData(EWKT_Polygon, new SourceType(SourceTypeName.GPX));
+				const fromEwktMultiPolygon = instance.forData(EWKT_MultiPolygon, new SourceType(SourceTypeName.GPX));
+				const fromGeoJson = instance.forData(GEOJSON_Data, new SourceType(SourceTypeName.GPX));
+
+				expect(dataFromKml.startsWith(FORMAT_GPX_START)).toBeTrue();
+				expect(countTerm(dataFromKml, FORMAT_GPX_TRACK_POINT)).toBe(5);
+				expect(fromEwktPolygon.startsWith(FORMAT_GPX_START)).toBeTrue();
+				expect(countTerm(fromEwktPolygon, FORMAT_GPX_TRACK_POINT)).toBe(5);
+				expect(fromEwktMultiPolygon.startsWith(FORMAT_GPX_START)).toBeTrue();
+				expect(countTerm(fromEwktMultiPolygon, FORMAT_GPX_TRACK_POINT)).toBe(12);
+				expect(fromGeoJson.startsWith(FORMAT_GPX_START)).toBeTrue();
+				expect(countTerm(fromGeoJson, FORMAT_GPX_TRACK_POINT)).toBe(10);
 			});
 		});
 
@@ -394,6 +412,23 @@ describe('ExportVectorDataService', () => {
 			]
 		]);
 
+		const multiPolygon = new Polygon([
+			[
+				[10, 10],
+				[10, 20],
+				[20, 20],
+				[20, 15],
+				[10, 10]
+			],
+			[
+				[30, 30],
+				[40, 50],
+				[50, 50],
+				[50, 45],
+				[30, 30]
+			]
+		]);
+
 		it('writes GPX tracks', () => {
 			const instance = setup();
 			const writer = instance._getGpxWriter();
@@ -407,16 +442,26 @@ describe('ExportVectorDataService', () => {
 			expect(writer([new Feature({ geometry: polygon })])).toBe(
 				'<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="OpenLayers"><trk><trkseg><trkpt lat="10" lon="10"/><trkpt lat="20" lon="10"/><trkpt lat="20" lon="20"/><trkpt lat="15" lon="20"/><trkpt lat="10" lon="10"/></trkseg></trk></gpx>'
 			);
+			expect(writer([new Feature({ geometry: multiPolygon })])).toBe(
+				'<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="OpenLayers"><trk><trkseg><trkpt lat="10" lon="10"/><trkpt lat="20" lon="10"/><trkpt lat="20" lon="20"/><trkpt lat="15" lon="20"/><trkpt lat="10" lon="10"/></trkseg><trkseg><trkpt lat="30" lon="30"/><trkpt lat="50" lon="40"/><trkpt lat="50" lon="50"/><trkpt lat="45" lon="50"/><trkpt lat="30" lon="30"/></trkseg></trk></gpx>'
+			);
 		});
 
 		it('does NOT writes gpx track segments for empty geometries', () => {
 			const instance = setup();
 			const writer = instance._getGpxWriter();
-			const emptyPolygon = new Polygon([[[]]]);
-			spyOn(emptyPolygon, 'getLinearRing').and.returnValue(undefined);
+			const emptyLineString = new LineString([]);
+			const emptyPolygon = new Polygon([[]]);
+			const emptyMultiPolygon = new MultiPolygon([[[]]]);
 
+			expect(writer([new Feature({ geometry: emptyLineString })])).toBe(
+				'<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="OpenLayers"><trk><trkseg/></trk></gpx>'
+			);
 			expect(writer([new Feature({ geometry: emptyPolygon })])).toBe(
-				'<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="OpenLayers"/>'
+				'<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="OpenLayers"><trk><trkseg/></trk></gpx>'
+			);
+			expect(writer([new Feature({ geometry: emptyMultiPolygon })])).toBe(
+				'<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="OpenLayers"><trk><trkseg/></trk></gpx>'
 			);
 		});
 	});

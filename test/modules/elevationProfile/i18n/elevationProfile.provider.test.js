@@ -6,15 +6,15 @@ describe('i18n for elevationProfile module', () => {
 
 		expect(map.elevationProfile_distance).toBe('Entfernung');
 		expect(map.elevationProfile_slope).toBe('Steigung');
-		expect(map.elevationProfile_sumUp).toBe('Aufstieg');
-		expect(map.elevationProfile_sumDown).toBe('Abstieg');
+		expect(map.elevationProfile_sumUp).toBe('Bergauf');
+		expect(map.elevationProfile_sumDown).toBe('Bergab');
 		expect(map.elevationProfile_alt).toBe('Höhe');
 		expect(map.elevationProfile_surface).toBe('Untergrund');
 		expect(map.elevationProfile_elevation_profile).toBe('Höhenprofil');
 		expect(map.elevationProfile_verticalHeight).toBe('Höhendifferenz Start - Ende');
 		expect(map.elevationProfile_highestPoint).toBe('Höchster Punkt');
 		expect(map.elevationProfile_lowestPoint).toBe('Tiefster Punkt');
-		expect(map.elevationProfile_linearDistance).toBe('Luftlinie');
+		expect(map.elevationProfile_linearDistance).toBe('Distanz');
 		expect(map.elevationProfile_could_not_load).toBe('Das Höhenprofil konnte nicht geladen werden');
 		expect(map.elevationProfile_unknown).toBe('unbekannt');
 	});
@@ -24,15 +24,15 @@ describe('i18n for elevationProfile module', () => {
 
 		expect(map.elevationProfile_distance).toBe('Distance');
 		expect(map.elevationProfile_slope).toBe('Slope');
-		expect(map.elevationProfile_sumUp).toBe('Ascent');
-		expect(map.elevationProfile_sumDown).toBe('Descent');
+		expect(map.elevationProfile_sumUp).toBe('Uphill');
+		expect(map.elevationProfile_sumDown).toBe('Downhill');
 		expect(map.elevationProfile_alt).toBe('Elevation');
 		expect(map.elevationProfile_surface).toBe('Surface');
 		expect(map.elevationProfile_elevation_profile).toBe('Elevation Profile');
 		expect(map.elevationProfile_verticalHeight).toBe('Elevation difference start - end');
 		expect(map.elevationProfile_highestPoint).toBe('Highest point');
 		expect(map.elevationProfile_lowestPoint).toBe('Lowest point');
-		expect(map.elevationProfile_linearDistance).toBe('Linear distance');
+		expect(map.elevationProfile_linearDistance).toBe('Distance');
 		expect(map.elevationProfile_could_not_load).toBe('Elevation Profile could not be loaded');
 		expect(map.elevationProfile_unknown).toBe('unknown');
 	});

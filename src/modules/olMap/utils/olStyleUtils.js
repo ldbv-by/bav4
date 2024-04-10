@@ -1,7 +1,14 @@
 /**
  * @module modules/olMap/utils/olStyleUtils
  */
-import { getGeometryLength, canShowAzimuthCircle, calculatePartitionResidualOfSegments, getPartitionDelta, moveParallel } from './olGeometryUtils';
+import {
+	canShowAzimuthCircle,
+	calculatePartitionResidualOfSegments,
+	getPartitionDelta,
+	moveParallel,
+	getLineString,
+	PROJECTED_LENGTH_GEOMETRY_PROPERTY
+} from './olGeometryUtils';
 import { toContext as toCanvasContext } from 'ol/render';
 import { Fill, Stroke, Style, Circle as CircleStyle, Icon, Text as TextStyle } from 'ol/style';
 import { Polygon, LineString, Circle, MultiPoint } from 'ol/geom';
@@ -16,7 +23,9 @@ const Red_Color = [255, 0, 0];
 const White_Color = [255, 255, 255];
 // eslint-disable-next-line no-unused-vars
 const Black_Color = [0, 0, 0];
+const Transparent_Color = [0, 0, 0, 0];
 const Default_Symbol = 'marker';
+const Default_Font = 'normal 16px OpenSans';
 
 /**
  * @typedef StyleOption
@@ -35,7 +44,7 @@ const getTextStyle = (text, color, scale, offsetY = -5) => {
 	const createStyle = (text, color, scale) => {
 		return new TextStyle({
 			text: text,
-			font: 'normal 16px sans-serif',
+			font: Default_Font,
 			stroke: new Stroke({
 				color: getContrastColorFrom(hexToRgb(color)).concat(1),
 				width: strokeWidth
@@ -257,7 +266,8 @@ export const defaultClusterStyleFunction = () => {
 							scale: 1.5,
 							fill: new Fill({
 								color: White_Color
-							})
+							}),
+							font: Default_Font
 						})
 					})
 				];
@@ -401,15 +411,23 @@ const getRulerStyle = () => {
 };
 
 export const renderRulerSegments = (pixelCoordinates, state, contextRenderFunction) => {
+	const { MapService: mapService } = $injector.inject('MapService');
+
 	const geometry = state.geometry.clone();
+	const lineString = getLineString(geometry);
 	const resolution = state.resolution;
 	const pixelRatio = state.pixelRatio;
-	const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832', toProjectionExtent: [5, -80, 14, 80] };
 
-	const partition = getPartitionDelta(geometry, resolution, calculationHints);
-	const partitionLength = partition * getGeometryLength(geometry);
+	const getMeasuredLength = () => {
+		const alreadyMeasuredLength = state.geometry ? state.geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY) : null;
+		return alreadyMeasuredLength ?? mapService.calcLength(lineString.getCoordinates());
+	};
+
+	const projectedGeometryLength = getMeasuredLength();
+	const delta = getPartitionDelta(projectedGeometryLength, resolution);
+	const partitionLength = delta * lineString.getLength();
 	const partitionTickDistance = partitionLength / resolution;
-	const residuals = calculatePartitionResidualOfSegments(geometry, partition);
+	const residuals = calculatePartitionResidualOfSegments(lineString, delta);
 
 	const fill = new Fill({ color: Red_Color.concat([0.4]) });
 	const baseStroke = new Stroke({
@@ -513,7 +531,7 @@ export const measureStyleFunction = (feature, resolution) => {
 			geometry: (feature) => {
 				if (canShowAzimuthCircle(feature.getGeometry())) {
 					const coords = feature.getGeometry().getCoordinates();
-					const radius = getGeometryLength(feature.getGeometry());
+					const radius = feature.getGeometry().getLength();
 					const circle = new Circle(coords[0], radius);
 					return circle;
 				}
@@ -653,6 +671,24 @@ export const defaultStyleFunction = (color) => {
 				];
 		}
 	};
+};
+
+/**
+ * Creates a transparent circle style. Useful for point features
+ * that should only display a text, but should still be clickable
+ * by the user.
+ * @returns {ol.style.circle} the circle style
+ */
+export const getTransparentImageStyle = () => {
+	return new CircleStyle({
+		radius: 1,
+		fill: new Fill({
+			color: Transparent_Color
+		}),
+		stroke: new Stroke({
+			color: Transparent_Color
+		})
+	});
 };
 
 export const createSketchStyleFunction = (styleFunction) => {

@@ -1,5 +1,5 @@
 import { $injector } from '../../../../src/injection';
-import { updateCoordinates } from '../../../../src/store/elevationProfile/elevationProfile.action';
+import { indicateChange } from '../../../../src/store/elevationProfile/elevationProfile.action';
 import { elevationProfileReducer } from '../../../../src/store/elevationProfile/elevationProfile.reducer';
 import { TestUtils } from '../../../test-utils';
 import profileSvg from '../../../../src/modules/chips/components/assistChips/assets/profile.svg';
@@ -8,10 +8,14 @@ import { ElevationProfileChip } from '../../../../src/modules/chips/components/a
 window.customElements.define(ElevationProfileChip.tag, ElevationProfileChip);
 
 describe('ElevationProfileChip', () => {
+	const elevationService = {
+		requestProfile() {}
+	};
+
 	const defaultState = {
 		elevationProfile: {
 			active: false,
-			coordinates: []
+			id: null
 		}
 	};
 
@@ -19,24 +23,21 @@ describe('ElevationProfileChip', () => {
 
 	const setup = async (state = defaultState, attributes = {}) => {
 		store = TestUtils.setupStoreAndDi(state, { elevationProfile: elevationProfileReducer });
-		$injector.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('ElevationService', elevationService);
 
 		const element = await TestUtils.render(ElevationProfileChip.tag, attributes);
 
 		return element;
 	};
 
-	const coordinates = [
-		[42, 21],
-		[0, 0]
-	];
+	const id = 'profileReferenceId';
 
 	describe('when instantiated', () => {
 		it('has a model containing default values', async () => {
 			await setup();
 			const model = new ElevationProfileChip().getModel();
 
-			expect(model).toEqual({ profileCoordinates: [] });
+			expect(model).toEqual({ profileCoordinates: [], id: null });
 		});
 
 		it('properly implements abstract methods', async () => {
@@ -51,26 +52,28 @@ describe('ElevationProfileChip', () => {
 		it('contains default values in the model', async () => {
 			const element = await setup();
 
-			const { profileCoordinates } = element.getModel();
+			const { profileCoordinates, id } = element.getModel();
 
 			expect(profileCoordinates).toEqual([]);
+			expect(id).toBeNull();
 		});
 
-		it('renders the view', async () => {
-			const state = { elevationProfile: { active: false, coordinates: coordinates } };
+		it('renders the view for profile id', async () => {
+			const state = { elevationProfile: { active: false, id } };
 			const element = await setup(state);
 
 			expect(element.isVisible()).toBeTrue();
 		});
 
 		it('renders the view with local coordinates', async () => {
-			const element = await setup(defaultState);
-
-			const unsubscribeSpy = spyOn(element, '_unsubscribeFromStore').and.callThrough();
-			element.coordinates = [
+			const coordinates = [
 				[2, 0],
 				[1, 0]
 			];
+			const element = await setup(defaultState);
+			const unsubscribeSpy = spyOn(element, '_unsubscribeFromStore').and.callThrough();
+
+			element.coordinates = coordinates;
 
 			expect(element.isVisible()).toBeTrue();
 			expect(unsubscribeSpy).toHaveBeenCalled();
@@ -85,22 +88,19 @@ describe('ElevationProfileChip', () => {
 				[2, 0],
 				[1, 0]
 			];
-			updateCoordinates([]);
+			indicateChange(id);
 
 			expect(element.isVisible()).toBeTrue();
 			expect(unsubscribeSpy).toHaveBeenCalled();
 			unsubscribeSpy.calls.reset();
 
 			element.coordinates = [];
-			updateCoordinates([
-				[2, 0],
-				[1, 0]
-			]);
+			indicateChange(id);
 
 			expect(element.isVisible()).toBeFalse();
 		});
 
-		it('renders nothing when no coordinates for elevationProfile exists', async () => {
+		it('renders nothing when no coordinates for elevationProfile exists at all', async () => {
 			const element = await setup();
 
 			expect(element.isVisible()).toBeFalse();
@@ -113,19 +113,19 @@ describe('ElevationProfileChip', () => {
 
 			expect(element.isVisible()).toBeFalse();
 
-			updateCoordinates(coordinates);
+			indicateChange(id);
 
 			expect(element.isVisible()).toBeTrue();
 
-			updateCoordinates([]);
+			indicateChange(null);
 
 			expect(element.isVisible()).toBeFalse();
 		});
 	});
 
 	describe('when chip is clicked', () => {
-		it('changes store on click', async () => {
-			const state = { elevationProfile: { active: false, coordinates: coordinates } };
+		it('opens the elevation profile', async () => {
+			const state = { elevationProfile: { active: false, id } };
 			const element = await setup(state);
 			const button = element.shadowRoot.querySelector('button');
 
@@ -136,36 +136,25 @@ describe('ElevationProfileChip', () => {
 			expect(store.getState().elevationProfile.active).toBeTrue();
 		});
 
-		it('changes store on click with local coordinates', async () => {
-			const state = { elevationProfile: { active: false, coordinates: [] } };
-			const element = await setup(state);
+		describe('and it has own coordinates', () => {
+			it('requests a profile and opens the elevation profile', async () => {
+				const coordinates = [
+					[2, 0],
+					[1, 0]
+				];
+				const elevationServiceSpy = spyOn(elevationService, 'requestProfile').withArgs(coordinates).and.resolveTo();
+				const state = { elevationProfile: { active: false } };
+				const element = await setup(state);
 
-			expect(store.getState().elevationProfile.active).toBeFalse();
-			expect(store.getState().elevationProfile.coordinates).toEqual([]);
+				expect(store.getState().elevationProfile.active).toBeFalse();
 
-			element.coordinates = [
-				[2, 0],
-				[1, 0]
-			];
-			const button = element.shadowRoot.querySelector('button');
-			button.click();
+				element.coordinates = coordinates;
+				const button = element.shadowRoot.querySelector('button');
+				button.click();
 
-			expect(store.getState().elevationProfile.active).toBeTrue();
-			expect(store.getState().elevationProfile.coordinates).toEqual([
-				[2, 0],
-				[1, 0]
-			]);
-		});
-	});
-
-	describe('when disconnected', () => {
-		it('removes all observers', async () => {
-			const element = await setup();
-			const unsubscribeSpy = spyOn(element, '_unsubscribeFromStore').and.callThrough();
-
-			element.onDisconnect(); // we call onDisconnect manually
-
-			expect(unsubscribeSpy).toHaveBeenCalled();
+				expect(store.getState().elevationProfile.active).toBeTrue();
+				expect(elevationServiceSpy).toHaveBeenCalled();
+			});
 		});
 	});
 });

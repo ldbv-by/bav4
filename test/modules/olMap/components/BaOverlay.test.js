@@ -59,6 +59,30 @@ describe('BaOverlay', () => {
 		});
 	});
 
+	describe('when value changed', () => {
+		it('renders the changed view', async () => {
+			const element = await setup();
+			const spy = spyOn(element, 'render').and.callThrough();
+			expect(element.value).toBe(null);
+
+			element.value = 'Foo';
+
+			expect(element.value).toBe('Foo');
+			expect(spy).toHaveBeenCalledTimes(1);
+		});
+
+		it('does NOT render the view, when value is unchanged', async () => {
+			const element = await setup();
+			const spy = spyOn(element, 'render').and.callThrough();
+
+			element.value = 'Foo';
+			element.value = 'Foo';
+
+			expect(element.value).toBe('Foo');
+			expect(spy).toHaveBeenCalledTimes(1);
+		});
+	});
+
 	describe('when type changed', () => {
 		it('renders the changed view', async () => {
 			const element = await setup();
@@ -76,7 +100,7 @@ describe('BaOverlay', () => {
 			expect(element.static).toBeFalse();
 		});
 
-		it('renders NOT the view, when type value is unchanged', async () => {
+		it('does NOT render the view, when type value is unchanged', async () => {
 			const element = await setup();
 			const spy = spyOn(element, 'render').and.callThrough();
 
@@ -111,12 +135,35 @@ describe('BaOverlay', () => {
 			expect(spy).toHaveBeenCalled();
 		});
 
-		it('renders NOT the view, when draggable-value is unchanged', async () => {
+		it('does NOT render the view, when draggable-value is unchanged', async () => {
 			const element = await setup();
 			const spy = spyOn(element, 'render').and.callThrough();
 
 			element.isDraggable = true;
 			element.isDraggable = true;
+
+			expect(spy).toHaveBeenCalledTimes(1);
+		});
+	});
+
+	describe('when static changed', () => {
+		it('renders the changed view', async () => {
+			const element = await setup();
+			const spy = spyOn(element, 'render').and.callThrough();
+			expect(element.static).toBeFalse();
+
+			element.static = true;
+
+			expect(element.static).toBeTrue();
+			expect(spy).toHaveBeenCalledTimes(1);
+		});
+
+		it('does NOT render the view, when type value is unchanged', async () => {
+			const element = await setup();
+			const spy = spyOn(element, 'render').and.callThrough();
+
+			element.static = true;
+			element.static = true;
 
 			expect(spy).toHaveBeenCalledTimes(1);
 		});

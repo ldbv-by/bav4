@@ -1,4 +1,3 @@
-import { IFrameComponents } from '../../../../src/domain/iframeComponents';
 import { QueryParameters } from '../../../../src/domain/queryParameters';
 import { $injector } from '../../../../src/injection';
 import { DrawTool } from '../../../../src/modules/iframe/components/tools/DrawTool';
@@ -18,6 +17,7 @@ describe('DrawTool', () => {
 		reset: null
 	};
 	const environmentServiceMock = {
+		isEmbedded: () => true,
 		getQueryParams: () => new URLSearchParams()
 	};
 
@@ -50,19 +50,38 @@ describe('DrawTool', () => {
 	});
 
 	describe('when initialized', () => {
-		const drawToolQueryParams = new URLSearchParams(QueryParameters.IFRAME_COMPONENTS + '=' + IFrameComponents.DRAW_TOOL + ',foo,bar');
+		const queryParam = new URLSearchParams(`${QueryParameters.EC_DRAW_TOOL}=true`);
 
-		beforeEach(() => {
-			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(drawToolQueryParams);
-		});
 		it('builds list of tools', async () => {
 			const element = await setup();
 
 			expect(element._model.tools).toBeTruthy();
-			expect(element._model.tools.length).toBe(2);
+			expect(element._model.tools.length).toBe(3);
+
+			expect(element._model.tools.map((t) => t.name)).toEqual(jasmine.arrayWithExactContents(['marker', 'line', 'polygon']));
 		});
 
-		describe('when queryParam for drawTool is set', () => {
+		describe('QueryParameters.EC_DRAW_TOOL is NOT present', () => {
+			it('renders nothing', async () => {
+				const queryParam = new URLSearchParams();
+				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				const element = await setup();
+
+				expect(element.shadowRoot.children.length).toBe(0);
+			});
+		});
+
+		describe('QueryParameters.EC_DRAW_TOOL is present', () => {
+			beforeEach(() => {
+				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+			});
+
+			it('renders nothing when default mode', async () => {
+				spyOn(environmentServiceMock, 'isEmbedded').and.returnValue(false);
+				const element = await setup();
+
+				expect(element.shadowRoot.children.length).toBe(0);
+			});
 			it('shows a label', async () => {
 				const element = await setup();
 
@@ -74,12 +93,12 @@ describe('DrawTool', () => {
 				const element = await setup();
 
 				expect(element._model.tools).toBeTruthy();
-				expect(element._model.tools.length).toBe(2);
+				expect(element._model.tools.length).toBe(3);
 
 				expect(element.shadowRoot.querySelectorAll('.draw-tool__enable-button')).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll('#close-icon')).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll('.draw-tool__buttons')).toHaveSize(1);
-				expect(element.shadowRoot.querySelector('.draw-tool__buttons').childElementCount).toBe(2);
+				expect(element.shadowRoot.querySelector('.draw-tool__buttons').childElementCount).toBe(3);
 			});
 
 			it('activates and deactivate  the draw tool', async () => {
@@ -120,6 +139,17 @@ describe('DrawTool', () => {
 				expect(store.getState().draw.type).toBe('marker');
 			});
 
+			it('activates the Polygon draw tool', async () => {
+				const element = await setup();
+				const toolButton = element.shadowRoot.querySelector('#polygon-button');
+				activate();
+
+				toolButton.click();
+
+				expect(toolButton.classList.contains('is-active')).toBeTrue();
+				expect(store.getState().draw.type).toBe('polygon');
+			});
+
 			it('deactivates last tool, when activate another', async () => {
 				const element = await setup();
 				const lastButton = element.shadowRoot.querySelector('#marker-button');
@@ -158,6 +188,21 @@ describe('DrawTool', () => {
 
 				expect(store.getState().draw.active).toBeTrue();
 				expect(store.getState().draw.type).toBe('line');
+
+				toolButton.click();
+
+				expect(store.getState().draw.reset).toEqual(jasmine.any(EventLike));
+			});
+
+			it('toggles the polygon tool', async () => {
+				const element = await setup();
+				const toolButton = element.shadowRoot.querySelector('#polygon-button');
+				activate();
+
+				toolButton.click();
+
+				expect(store.getState().draw.active).toBeTrue();
+				expect(store.getState().draw.type).toBe('polygon');
 
 				toolButton.click();
 

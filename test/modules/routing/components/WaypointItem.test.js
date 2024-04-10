@@ -65,6 +65,7 @@ describe('WaypointItem', () => {
 			expect(waypointElement.shadowRoot.querySelectorAll('.waypoint-index')).toHaveSize(1);
 
 			// waypoint action buttons
+			expect(waypointElement.shadowRoot.querySelector('.waypoint__buttons').childElementCount).toBe(3);
 			expect(waypointElement.shadowRoot.querySelectorAll('#increase')).toHaveSize(1);
 			expect(waypointElement.shadowRoot.querySelectorAll('#decrease')).toHaveSize(1);
 			expect(waypointElement.shadowRoot.querySelectorAll('#remove')).toHaveSize(1);
@@ -146,16 +147,6 @@ describe('WaypointItem', () => {
 				expect(decreaseSpy).toHaveBeenCalledOnceWith(jasmine.any(CustomEvent));
 				expect(removeSpy).toHaveBeenCalledOnceWith(jasmine.any(CustomEvent));
 			});
-		});
-	});
-
-	describe('when disconnected', () => {
-		it('removes all observers', async () => {
-			const element = await setup();
-			const spy = spyOn(element, '_unsubscribeFromStore').and.callThrough();
-			element.onDisconnect(); // we call onDisconnect manually
-
-			expect(spy).toHaveBeenCalled();
 		});
 	});
 
