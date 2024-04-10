@@ -9,7 +9,6 @@ import { LevelTypes, emitNotification } from '../../../../store/notifications/no
 import { MapFeedback } from '../../../../services/FeedbackService';
 import { PathParameters } from '../../../../domain/pathParameters';
 import { BA_FORM_ELEMENT_VISITED_CLASS, IFRAME_ENCODED_STATE, IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../utils/markup';
-import { IFrameComponents } from '../../../../domain/iframeComponents';
 import { QueryParameters } from '../../../../domain/queryParameters';
 import { nothing } from 'lit-html';
 import { isExternalGeoResourceId } from '../../../../utils/checks';
@@ -180,7 +179,7 @@ export class MapFeedbackPanel extends MvuElement {
 		const getExtraParameters = () => {
 			const queryParameters = {};
 			queryParameters[QueryParameters.LAYER] = this._feedbackService.getOverlayGeoResourceId();
-			queryParameters[QueryParameters.IFRAME_COMPONENTS] = [IFrameComponents.DRAW_TOOL];
+			queryParameters[QueryParameters.EC_DRAW_TOOL] = ['point', 'line', 'polygon'];
 			return queryParameters;
 		};
 

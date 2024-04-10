@@ -1,4 +1,3 @@
-import { IFrameComponents } from '../../../../src/domain/iframeComponents';
 import { QueryParameters } from '../../../../src/domain/queryParameters';
 import { $injector } from '../../../../src/injection';
 import { DrawTool } from '../../../../src/modules/iframe/components/tools/DrawTool';
@@ -18,6 +17,7 @@ describe('DrawTool', () => {
 		reset: null
 	};
 	const environmentServiceMock = {
+		isEmbedded: () => true,
 		getQueryParams: () => new URLSearchParams()
 	};
 
@@ -50,11 +50,8 @@ describe('DrawTool', () => {
 	});
 
 	describe('when initialized', () => {
-		const drawToolQueryParams = new URLSearchParams(QueryParameters.IFRAME_COMPONENTS + '=' + IFrameComponents.DRAW_TOOL + ',foo,bar');
+		const queryParam = new URLSearchParams(`${QueryParameters.EC_DRAW_TOOL}=true`);
 
-		beforeEach(() => {
-			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(drawToolQueryParams);
-		});
 		it('builds list of tools', async () => {
 			const element = await setup();
 
@@ -64,7 +61,27 @@ describe('DrawTool', () => {
 			expect(element._model.tools.map((t) => t.name)).toEqual(jasmine.arrayWithExactContents(['marker', 'line', 'polygon']));
 		});
 
-		describe('when queryParam for drawTool is set', () => {
+		describe('QueryParameters.EC_DRAW_TOOL is NOT present', () => {
+			it('renders nothing', async () => {
+				const queryParam = new URLSearchParams();
+				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				const element = await setup();
+
+				expect(element.shadowRoot.children.length).toBe(0);
+			});
+		});
+
+		describe('QueryParameters.EC_DRAW_TOOL is present', () => {
+			beforeEach(() => {
+				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+			});
+
+			it('renders nothing when default mode', async () => {
+				spyOn(environmentServiceMock, 'isEmbedded').and.returnValue(false);
+				const element = await setup();
+
+				expect(element.shadowRoot.children.length).toBe(0);
+			});
 			it('shows a label', async () => {
 				const element = await setup();
 

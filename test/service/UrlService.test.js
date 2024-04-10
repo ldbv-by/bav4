@@ -219,4 +219,28 @@ describe('UrlService', () => {
 			expect(() => instanceUnderTest.pathParams('foo')).toThrowError(TypeError);
 		});
 	});
+
+	describe('appendQueryParams', () => {
+		it('appends query parameters to an existing url', () => {
+			expect(instanceUnderTest.appendQueryParams('http://foo.bar?some=thing')).toBe('http://foo.bar/?some=thing');
+			expect(instanceUnderTest.appendQueryParams('http://foo.bar?some=thing', { foo: 'bar' })).toBe('http://foo.bar/?some=thing&foo=bar');
+			expect(instanceUnderTest.appendQueryParams('http://foo.bar?some=thing', { some: 'thing' })).toBe('http://foo.bar/?some=thing&some=thing');
+		});
+
+		it('throws a TypeError when parameter is not valid', () => {
+			expect(() => instanceUnderTest.appendQueryParams('foo')).toThrowError(TypeError);
+		});
+	});
+
+	describe('setQueryParams', () => {
+		it('sets query parameters to an existing url', () => {
+			expect(instanceUnderTest.setQueryParams('http://foo.bar?some=thing')).toBe('http://foo.bar/?some=thing');
+			expect(instanceUnderTest.setQueryParams('http://foo.bar?some=thing', { foo: 'bar' })).toBe('http://foo.bar/?some=thing&foo=bar');
+			expect(instanceUnderTest.setQueryParams('http://foo.bar?some=thing', { some: 'thing' })).toBe('http://foo.bar/?some=thing');
+		});
+
+		it('throws a TypeError when parameter is not valid', () => {
+			expect(() => instanceUnderTest.setQueryParams('foo')).toThrowError(TypeError);
+		});
+	});
 });
