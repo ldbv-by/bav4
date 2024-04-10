@@ -3,6 +3,7 @@ import { TestUtils } from '../test-utils.js';
 import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { $injector } from '../../src/injection';
 import { GeoResourceFuture, XyzGeoResource } from '../../src/domain/geoResources';
+import { Tools } from '../../src/domain/tools';
 import { QueryParameters } from '../../src/domain/queryParameters';
 import { Topic } from '../../src/domain/topic';
 import { setCurrent } from '../../src/store/topics/topics.action';
@@ -10,6 +11,7 @@ import { topicsReducer } from '../../src/store/topics/topics.reducer';
 import { wcAttributeReducer } from '../../src/store/wcAttribute/wcAttribute.reducer';
 import { indicateAttributeChange } from '../../src/store/wcAttribute/wcAttribute.action';
 import { initialState as initialPositionState, positionReducer } from '../../src/store/position/position.reducer.js';
+import { toolsReducer } from '../../src/store/tools/tools.reducer.js';
 
 describe('LayersPlugin', () => {
 	const geoResourceServiceMock = {
@@ -39,7 +41,8 @@ describe('LayersPlugin', () => {
 			layers: layersReducer,
 			topics: topicsReducer,
 			position: positionReducer,
-			wcAttribute: wcAttributeReducer
+			wcAttribute: wcAttributeReducer,
+			tools: toolsReducer
 		});
 		$injector
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
@@ -438,6 +441,28 @@ describe('LayersPlugin', () => {
 
 				expect(addLayersFromQueryParamsSpy).toHaveBeenCalledTimes(2);
 				expect(getQueryParamsSpy).toHaveBeenCalledTimes(2);
+			});
+
+			it('does nothing when a tool is active', async () => {
+				const store = setup({
+					tools: {
+						current: Tools.DRAW
+					}
+				});
+				const queryParam = new URLSearchParams(QueryParameters.LAYER + '=some');
+				const instanceUnderTest = new LayersPlugin();
+				const getQueryParamsSpy = spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+				const addLayersFromQueryParamsSpy = spyOn(instanceUnderTest, '_addLayersFromQueryParams').withArgs(queryParam).and.stub();
+				spyOn(geoResourceServiceMock, 'init').and.resolveTo();
+				spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(true);
+				await instanceUnderTest._init(store);
+				expect(addLayersFromQueryParamsSpy).toHaveBeenCalledTimes(1);
+				expect(getQueryParamsSpy).toHaveBeenCalledTimes(1);
+
+				indicateAttributeChange();
+
+				expect(addLayersFromQueryParamsSpy).toHaveBeenCalledTimes(1);
+				expect(getQueryParamsSpy).toHaveBeenCalledTimes(1);
 			});
 		});
 	});

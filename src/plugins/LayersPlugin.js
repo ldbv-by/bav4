@@ -138,13 +138,19 @@ export class LayersPlugin extends BaPlugin {
 			this._addLayersFromConfig();
 		}
 
+		// handle WC attribute changes
 		if (environmentService.isEmbeddedAsWC()) {
-			// handle WC attribute changes
 			observe(
 				store,
 				(state) => state.wcAttribute.changed,
-				() => {
-					this._addLayersFromQueryParams(environmentService.getQueryParams());
+				(_, state) => {
+					/**
+					 * Cause layer modification is done atomically we cannot modify the list of layers when a tool that references a GeoResource (e.g. DrawTool, MeasurementTool) is active.
+					 * Otherwise we would confuse the corresponding OlLayerHandler.
+					 */
+					if (!state.tools.current) {
+						this._addLayersFromQueryParams(environmentService.getQueryParams());
+					}
 				}
 			);
 		}
