@@ -1,7 +1,7 @@
 /**
  * @module modules/iframe/components/tools/DrawTool
  */
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { $injector } from '../../../../injection';
@@ -13,7 +13,6 @@ import cancelSvg from './assets/close-lg.svg';
 import finishSvg from './assets/checked.svg';
 import { QueryParameters } from '../../../../domain/queryParameters';
 import css from './drawTool.css';
-import { nothing } from '../../../../../node_modules/ol/pixel';
 
 const Update = 'update';
 const Update_Tools = 'update_tools';
