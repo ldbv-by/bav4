@@ -93,7 +93,7 @@
 						</div>
 						<div class="line" style=${`background:${(t=>{const i=this._routingService.getCategoryById(this._routingService.getParent(t)),n=this._routingService.getCategoryById(t);return n?.style.color??i?.style.color})(n)};`}></div>
 						<span class="text">
-							<span class="text-name">${s}</span><label class="text-coordinate">${(0,W.LI)(M[0],3)} ${(0,W.LI)(M[1],3)}</label>
+							<span class="text-name">${s}</span>
 						</span>
 						<div class="waypoint__buttons">
 							<ba-icon
