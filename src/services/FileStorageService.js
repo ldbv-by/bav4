@@ -4,7 +4,7 @@
 import { $injector } from '../injection';
 
 /**
- * Service for persisting and loading ASCII based geodata.
+ * Service for persisting and loading ASCII based geo-data.
  * @author taulinger
  * @interface FileStorageService
  */
@@ -65,16 +65,16 @@ import { $injector } from '../injection';
 /**
  * MetaData of a successfully saved file.
  * @typedef {Object} FileSaveResult
- * @property {string} adminId The adminId of the succesfully saved file
- * @property {string} fileId The fileId of the succesfully saved file
+ * @property {string} adminId The adminId of the successfully saved file
+ * @property {string} fileId The fileId of the successfully saved file
  */
 
 /**
  * MetaData of a successfully retrieved file.
  * @typedef {Object} FileLoadResult
- * @property {string} data The data of the succesfully retrieved file
- * @property {FileStorageServiceDataTypes} type The type of the succesfully retrieved file
- * @property {number} srid The srid of the succesfully retrieved data
+ * @property {string} data The data of the successfully retrieved file
+ * @property {FileStorageServiceDataTypes} type The type of the successfully retrieved file
+ * @property {number} srid The srid of the successfully retrieved data
  */
 
 /**
@@ -86,7 +86,7 @@ export const FileStorageServiceDataTypes = Object.freeze({
 });
 
 /**
- * BVV service for persisting and loading ASCII based geodata using a RESTful endpoint.
+ * BVV service for persisting and loading ASCII based geo-data using a RESTful endpoint.
  * @class
  * @author taulinger
  * @implements {FileStorageService}
