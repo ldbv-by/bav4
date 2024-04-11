@@ -242,6 +242,7 @@ export class OlDrawHandler extends OlLayerHandler {
 				if (changeToMeasureTool(features)) {
 					const measurementIds = features.filter((f) => f.getId().startsWith(Tools.MEASURE + '_')).map((f) => f.getId());
 					setMeasurementSelection(measurementIds);
+					//setTimeout(() => this._save(), 0);
 					setCurrentTool(Tools.MEASURE);
 				}
 			};
@@ -839,10 +840,19 @@ export class OlDrawHandler extends OlLayerHandler {
 	 * todo: redundant with OlMeasurementHandler, possible responsibility of a stateful _storageHandler
 	 */
 	async _save() {
-		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
-		this._storedContent = newContent;
-		const fileSaveResult = await this._storageHandler.store(newContent, FileStorageServiceDataTypes.KML);
-		setFileSaveResult(fileSaveResult ? { fileSaveResult, content: newContent } : null);
+		const isSaveCallInterrupted = () => {
+			return this._vectorLayer === null;
+		};
+		const saveAction = isSaveCallInterrupted()
+			? async () => emitNotification('Saving was interrupted. Your last changes could not be saved.', LevelTypes.WARN)
+			: async () => {
+					const newContent = createKML(this._vectorLayer, 'EPSG:3857');
+					this._storedContent = newContent;
+					const fileSaveResult = await this._storageHandler.store(newContent, FileStorageServiceDataTypes.KML);
+					setFileSaveResult(fileSaveResult ? { fileSaveResult, content: newContent } : null);
+				};
+
+		await saveAction();
 	}
 
 	async _saveAndOptionallyConvertToPermanentLayer() {
