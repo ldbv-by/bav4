@@ -433,7 +433,7 @@ describe('defaultStyleFunction', () => {
 });
 
 describe('markerStyleFunction', () => {
-	const imageLoadDelayTime = 70;
+	const imageLoadDelayTime = 80;
 	it('should return a style', () => {
 		const styles = markerStyleFunction();
 
