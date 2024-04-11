@@ -135,6 +135,7 @@ export class AdminPanel extends MvuElement {
 	}
 
 	_copyEverything(obj, extractFunction) {
+		console.log('🚀 ~ AdminPanel ~ _copyEverything ~ obj:', obj);
 		const result = { uid: obj.uid };
 		if (obj.geoResourceId) {
 			result.geoResourceId = obj.geoResourceId;
@@ -148,6 +149,7 @@ export class AdminPanel extends MvuElement {
 			}
 			result.children = obj.children.map((child) => extractFunction(child, extractFunction));
 		}
+		console.log('🚀 ~ AdminPanel ~ _copyEverything ~ result:', result);
 		return result;
 	}
 

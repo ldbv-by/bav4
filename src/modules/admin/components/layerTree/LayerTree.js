@@ -196,6 +196,13 @@ export class LayerTree extends MvuElement {
 			setTimeout(addIsDragged, 0);
 
 			catalogWithResourceData.push({ label: End_Label });
+
+			catalogWithResourceData.array.forEach((element) => {
+				if (element.children) {
+					element.children.push({ label: End_Label });
+				}
+			});
+
 			this.render();
 			console.log('🚀 ~ LayerTree ~ onDragStart ~ catalogWithResourceData:', catalogWithResourceData);
 		};

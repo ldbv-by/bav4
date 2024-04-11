@@ -1,3 +1,5 @@
+
+
 @startuml startup LayerList to LayerTree
 !pragma teoz true
 
@@ -100,15 +102,8 @@ removeEntry -->o removeEntry: (removeEntry(uid))
 removeEntry  ->o  update_ap: catalogWithResourceData - (uid)
 
 == onDrop ==
-
-
-
 ' else #Pink followingDragOver
 ' end
-
-
-
-
 
 ' abc -> adc: DispatchAction
 ' activate ap #LightGoldenRodYellow
@@ -134,3 +129,75 @@ removeEntry  ->o  update_ap: catalogWithResourceData - (uid)
 
 
 @enduml
+
+
+
+@startuml
+participant User
+participant LayerList.js
+participant AdminPanel.js
+participant LayerTree.js
+
+User -> LayerList.js: Start drag and drop
+activate LayerList.js
+
+LayerList.js -> LayerList.js: Initiates drag operation
+LayerList.js -> AdminPanel.js: Notifies drag start with layer information
+activate AdminPanel.js
+
+AdminPanel.js -> LayerTree.js: Notifies drag start with layer information
+activate LayerTree.js
+
+LayerTree.js -> LayerList.js: Requests UI updates for drag operation
+LayerList.js -> LayerList.js: Updates UI for drag operation
+
+AdminPanel.js -> LayerTree.js: Requests UI updates for drag operation
+LayerTree.js -> LayerTree.js: Updates UI for drag operation
+
+User -> LayerTree.js: Drag over target
+LayerTree.js -> LayerTree.js: Updates UI for drag over target
+
+User -> LayerTree.js: Drop element onto target
+LayerTree.js -> LayerTree.js: Processes drop event
+LayerTree.js -> AdminPanel.js: Notifies drop event with target information
+AdminPanel.js -> LayerList.js: Notifies drop event with target information
+LayerList.js -> LayerList.js: Finalizes drop operation
+LayerList.js -> User: Displays updated layer position
+
+deactivate AdminPanel.js
+deactivate LayerTree.js
+deactivate LayerList.js
+@enduml
+
+
+@startuml
+participant User
+participant LayerList.js
+participant AdminPanel.js
+participant LayerTree.js
+
+User -> LayerTree.js: Start drag and drop
+activate LayerTree.js
+
+LayerTree.js -> LayerTree.js: Initiates drag operation
+LayerTree.js -> AdminPanel.js: Notifies drag start with layer information
+activate AdminPanel.js
+
+AdminPanel.js -> LayerTree.js: Notifies drag start with layer information
+LayerTree.js -> LayerTree.js: Requests UI updates for drag operation
+LayerTree.js -> LayerTree.js: Updates UI for drag operation
+
+User -> LayerTree.js: Drag over target
+LayerTree.js -> LayerTree.js: Updates UI for drag over target
+
+User -> LayerTree.js: Drop element onto target
+LayerTree.js -> LayerTree.js: Processes drop event
+LayerTree.js -> AdminPanel.js: Notifies drop event with target information
+AdminPanel.js -> LayerTree.js: Notifies drop event with target information
+LayerTree.js -> LayerTree.js: Finalizes drop operation
+LayerTree.js -> User: Displays updated layer position
+
+deactivate AdminPanel.js
+deactivate LayerTree.js
+@enduml
+
