@@ -129,22 +129,36 @@ const removeLayer = (state, payload) => {
 };
 
 const atomicallyRemoveAndSet = (state, payload) => {
+	const { layerOptions, restoreHiddenLayers } = payload;
 	/**
 	 * Ensure that the `active` property does not change unless one ore more layers are really different (based on their properties).
 	 * Therefore we also have to copy the `grChangedFlag` event property of a layer if appropriate.
 	 */
-	const layers = payload.map((atomicallyAddedLayer, index) => ({
+	const layers = layerOptions.map((atomicallyAddedLayer, index) => ({
 		...createDefaultLayerProperties(),
 		geoResourceId: atomicallyAddedLayer.id,
 		...atomicallyAddedLayer,
 		zIndex: index,
 		grChangedFlag: state.active[index]?.id === atomicallyAddedLayer.id ? state.active[index].grChangedFlag : null
 	}));
+
+	if (restoreHiddenLayers) {
+		const hiddenLayerIndices = state.active.map((l, index) => (l.constraints.hidden ? index : -1)).filter((i) => i > -1);
+		hiddenLayerIndices.forEach((i) => {
+			const hiddenLayer = state.active[i];
+			hiddenLayer.zIndex = layers.length;
+			layers.splice(layers.length, 0, hiddenLayer);
+		});
+	}
+
 	return {
 		...state,
 		active: layers,
-		removed: state.active.length > 0 ? new EventLike([...state.active.map((l) => l.id)]) : state.removed,
-		added: payload.length > 0 ? new EventLike(payload.map((l) => l.id)) : state.added
+		removed:
+			state.active.length > 0
+				? new EventLike([...state.active.filter((l) => (restoreHiddenLayers ? !l.constraints.hidden : true)).map((l) => l.id)])
+				: state.removed,
+		added: layerOptions.length > 0 ? new EventLike(layerOptions.map((l) => l.id)) : state.added
 	};
 };
 

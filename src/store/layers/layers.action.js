@@ -106,11 +106,12 @@ export const removeLayer = (id) => {
  * Atomically removes all current layers and (optionally) adds a list of layers.
  * @function
  * @param {Array<module:store/layers/layers_action~AtomicallyAddLayerOptions>} [options=[]] Options, one for each layer
+ * @param {boolean} [restoreHiddenLayers=false] `true` if existing hidden layers should be restored. The hidden layers will be appended to the given layers (see param `options`). Default is `false`
  */
-export const removeAndSetLayers = (options = []) => {
+export const removeAndSetLayers = (options = [], restoreHiddenLayers = false) => {
 	getStore().dispatch({
 		type: LAYER_REMOVE_AND_SET,
-		payload: [...options]
+		payload: { layerOptions: [...options], restoreHiddenLayers }
 	});
 };
 

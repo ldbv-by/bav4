@@ -392,6 +392,46 @@ describe('layersReducer', () => {
 			expect(store.getState().layers.added.payload).toEqual([atomicallyAddedLayer2.id, atomicallyAddedLayer3.id, atomicallyAddedLayer4.id]);
 		});
 
+		describe('property `restoreHiddenLayers` is `true`', () => {
+			it('removes and adds layers atomically and restores existing hidden layers', () => {
+				const layerProperties0 = { id: 'id0', constraints: { hidden: false } };
+				const layerProperties1 = { id: 'id1', constraints: { hidden: true } };
+				const layerProperties5 = { id: 'id5', constraints: { hidden: true } };
+				const atomicallyAddedLayer2 = { id: 'id2' };
+				const atomicallyAddedLayer3 = { id: 'id3' };
+				const atomicallyAddedLayer4 = { id: 'id4' };
+				const store = setup({
+					layers: {
+						...initialState,
+						active: [layerProperties0, layerProperties1, layerProperties5]
+					}
+				});
+
+				expect(store.getState().layers.active.length).toBe(3);
+
+				removeAndSetLayers([atomicallyAddedLayer2, atomicallyAddedLayer3, atomicallyAddedLayer4], true);
+
+				expect(store.getState().layers.active.length).toBe(5);
+				expect(store.getState().layers.active[0].id).toBe('id2');
+				expect(store.getState().layers.active[0].zIndex).toBe(0);
+
+				expect(store.getState().layers.active[1].id).toBe('id3');
+				expect(store.getState().layers.active[1].zIndex).toBe(1);
+
+				expect(store.getState().layers.active[2].id).toBe('id4');
+				expect(store.getState().layers.active[2].zIndex).toBe(2);
+
+				expect(store.getState().layers.active[3].id).toBe('id1');
+				expect(store.getState().layers.active[3].zIndex).toBe(3);
+
+				expect(store.getState().layers.active[4].id).toBe('id5');
+				expect(store.getState().layers.active[4].zIndex).toBe(4);
+
+				expect(store.getState().layers.removed.payload).toEqual([layerProperties0.id]);
+				expect(store.getState().layers.added.payload).toEqual([atomicallyAddedLayer2.id, atomicallyAddedLayer3.id, atomicallyAddedLayer4.id]);
+			});
+		});
+
 		it('just removes layers atomically', () => {
 			const layerProperties0 = { id: 'id0' };
 			const layerProperties1 = { id: 'id1' };
