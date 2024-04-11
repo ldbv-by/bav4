@@ -253,6 +253,35 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[3].id).toBe('some0_1');
 			});
 
+			it('restores existing hidden layers', () => {
+				const hiddenLayer = { id: 'hiddenLayer0', constraints: { hidden: true } };
+				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_VISIBILITY}=true,false`);
+				const store = setup({
+					layers: {
+						active: [hiddenLayer]
+					}
+				});
+				const instanceUnderTest = new LayersPlugin();
+				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+					switch (id) {
+						case 'some0':
+							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
+						case 'some1':
+							return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
+					}
+				});
+
+				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
+
+				expect(store.getState().layers.active.length).toBe(3);
+				expect(store.getState().layers.active[0].id).toBe('some0_0');
+				expect(store.getState().layers.active[0].visible).toBeTrue();
+				expect(store.getState().layers.active[1].id).toBe('some1_0');
+				expect(store.getState().layers.active[1].visible).toBeFalse();
+				expect(store.getState().layers.active[2].id).toBe(hiddenLayer.id);
+			});
+
 			it('adds layers for existing geoResources considering visibility', () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_VISIBILITY}=true,false`);
 				const store = setup();

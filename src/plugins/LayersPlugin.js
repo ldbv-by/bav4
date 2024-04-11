@@ -74,7 +74,7 @@ export class LayersPlugin extends BaPlugin {
 		const zteIndex = parseInt(queryParams.get(QueryParameters.ZOOM_TO_EXTENT));
 		const zoomToExtentLayerIndex = isNumber(zteIndex) ? zteIndex : -1;
 
-		removeAndSetLayers(parsedLayers);
+		removeAndSetLayers(parsedLayers, true);
 
 		parsedLayers.forEach((l, index) => {
 			if (index === zoomToExtentLayerIndex) {
