@@ -3,7 +3,7 @@
  */
 import { $injector } from '../injection';
 import { PublicComponent } from '../modules/public/components/PublicComponent';
-import { observe } from '../utils/storeUtils';
+import { equals, observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 
 /**
@@ -46,7 +46,10 @@ export class EncodeStatePlugin extends BaPlugin {
 	_updateWcAttributes() {
 		const params = new URLSearchParams(new URL(this._shareService.encodeState()).search);
 		for (const [key, value] of params) {
-			this._environmentService.getWindow().document.querySelector(PublicComponent.tag).setAttribute(key, value);
+			// a MutationsObserver on an attribute will also fire if an attribute was just re-set without any value change, so we detect changes here
+			if (!equals(this._environmentService.getWindow().document.querySelector(PublicComponent.tag).getAttribute(key), value)) {
+				this._environmentService.getWindow().document.querySelector(PublicComponent.tag).setAttribute(key, value);
+			}
 		}
 	}
 }

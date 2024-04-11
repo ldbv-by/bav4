@@ -44,11 +44,12 @@ describe('EncodeStatePlugin', () => {
 		await TestUtils.timeout(0);
 	});
 
-	it('registers stateForEncoding.changed listeners and updates the attributes of an embedded wc', async () => {
-		const mockElement = { setAttribute: () => {} };
+	it('registers a stateForEncoding.changed listeners and updates the attributes of an embedded wc', async () => {
+		const mockElement = { setAttribute: () => {}, getAttribute: () => {} };
 		const mockDocument = { querySelector: () => {} };
 		const mockWindow = { document: mockDocument };
 		const setAttributeSpy = spyOn(mockElement, 'setAttribute');
+		const getAttributeSpy = spyOn(mockElement, 'getAttribute').withArgs('foo').and.returnValue(undefined);
 		spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
 		spyOn(mockDocument, 'querySelector').withArgs(PublicComponent.tag).and.returnValue(mockElement);
 		spyOn(environmentService, 'isEmbedded').and.returnValue(true);
@@ -61,6 +62,30 @@ describe('EncodeStatePlugin', () => {
 		indicateChange();
 
 		expect(setAttributeSpy).toHaveBeenCalledWith('foo', 'bar');
+		expect(getAttributeSpy).toHaveBeenCalledTimes(1);
+		await TestUtils.timeout(0);
+	});
+
+	it('registers a stateForEncoding.changed listeners and DOES not updates the attributes of an embedded wc when value did not change', async () => {
+		const value = 'bar';
+		const mockElement = { setAttribute: () => {}, getAttribute: () => {} };
+		const mockDocument = { querySelector: () => {} };
+		const mockWindow = { document: mockDocument };
+		const setAttributeSpy = spyOn(mockElement, 'setAttribute');
+		const getAttributeSpy = spyOn(mockElement, 'getAttribute').withArgs('foo').and.returnValue(value);
+		spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+		spyOn(mockDocument, 'querySelector').withArgs(PublicComponent.tag).and.returnValue(mockElement);
+		spyOn(environmentService, 'isEmbedded').and.returnValue(true);
+		spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(true);
+		spyOn(shareService, 'encodeState').and.returnValue(`http://some.thing?foo=${value}`);
+		const store = setup();
+		const instanceUnderTest = new EncodeStatePlugin();
+		await instanceUnderTest.register(store);
+
+		indicateChange();
+
+		expect(setAttributeSpy).not.toHaveBeenCalled();
+		expect(getAttributeSpy).toHaveBeenCalledTimes(1);
 		await TestUtils.timeout(0);
 	});
 
