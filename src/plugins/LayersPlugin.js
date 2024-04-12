@@ -35,6 +35,11 @@ export class LayersPlugin extends BaPlugin {
 			const layerVisibility = layerVisibilityValue ? layerVisibilityValue.split(',') : [];
 			const layerOpacity = layerOpacityValue ? layerOpacityValue.split(',') : [];
 
+			/**
+			 * parseLayer() is called not only initially at application startup time but also dynamically during runtime.
+			 * So we have to ensure that a layer ID is created reproducible.
+			 * We do this by referencing its GeoResource: layerId = geoResourceId + nth-Reference
+			 */
 			const geoResourceIds = [];
 			const getGrReferenceIndexNumber = (geoResourceId) => {
 				geoResourceIds.push(geoResourceId);
