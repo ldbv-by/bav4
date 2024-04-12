@@ -36,8 +36,12 @@
 		document.querySelector('#layer-opacity').addEventListener('input', (event) => {
 			document.querySelector('bayern-atlas').setAttribute('l_o', event.target.value / 100);
 		});
-		window.addEventListener('ba-geometry-create', (event) => {
+		document.querySelector('bayern-atlas').addEventListener('ba-geometry-create', (event) => {
 			document.querySelector('#geometry').value = event.detail.data;
+		});
+		document.querySelector('bayern-atlas').addEventListener('ba-feature-select', (event) => {
+			console.log(event.detail.items[0]);
+			document.querySelector('#geometry').value = JSON.stringify(event.detail.items[0].data);
 		});
 
 		window.addEventListener('ba-load', () => {
