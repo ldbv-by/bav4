@@ -87,6 +87,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		this._vectorLayer = null;
 		this._draw = false;
+
 		this._storedContent = null;
 
 		this._sketchHandler = new OlSketchHandler();
@@ -183,16 +184,33 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const oldLayer = getOldLayer(this._map);
 			const layer = createLayer();
 			addOldFeatures(layer, oldLayer);
-			const saveDebounced = debounced(Debounce_Delay, () => this._save());
+			const saveContentDebounced = debounced(Debounce_Delay, () => this._save());
+			const updateContent = () => {
+				const features = layer.getSource().getFeatures();
+				features.forEach((f) => saveManualOverlayPosition(f));
+
+				this._storedContent = createKML(layer, 'EPSG:3857');
+				saveContentDebounced();
+			};
 			const setSelectedAndSave = (event) => {
 				if (this._measureState.type === InteractionStateType.DRAW) {
 					setSelection([event.feature.getId()]);
 				}
-				saveDebounced();
+
+				this._storedContent = createKML(layer, 'EPSG:3857');
+				this._save();
 			};
 			this._mapListeners.push(layer.getSource().on('addfeature', setSelectedAndSave));
-			this._mapListeners.push(layer.getSource().on('changefeature', () => saveDebounced()));
-			this._mapListeners.push(layer.getSource().on('removefeature', () => saveDebounced()));
+			this._mapListeners.push(
+				layer.getSource().on('changefeature', () => {
+					updateContent();
+				})
+			);
+			this._mapListeners.push(
+				layer.getSource().on('removefeature', () => {
+					updateContent();
+				})
+			);
 			this._mapListeners.push(this._map.getView().on('change:resolution', () => onResolutionChange(layer)));
 			return layer;
 		};
@@ -652,13 +670,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	 * todo: redundant with OlDrawHandler, possible responsibility of a stateful _storageHandler
 	 */
 	async _save() {
-		const features = this._vectorLayer.getSource().getFeatures();
-		features.forEach((f) => saveManualOverlayPosition(f));
-
-		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
-		this._storedContent = newContent;
-		const fileSaveResult = await this._storageHandler.store(newContent, FileStorageServiceDataTypes.KML);
-		setFileSaveResult(fileSaveResult ? { fileSaveResult, content: newContent } : null);
+		const fileSaveResult = await this._storageHandler.store(this._storedContent, FileStorageServiceDataTypes.KML);
+		setFileSaveResult(fileSaveResult ? { fileSaveResult, content: this._storedContent } : null);
 	}
 
 	async _convertToPermanentLayer() {

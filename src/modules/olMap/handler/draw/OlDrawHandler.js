@@ -122,6 +122,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._dragPan = null;
 
 		this._storedContent = null;
+
 		this._sketchHandler = new OlSketchHandler();
 		this._mapListeners = [];
 		this._drawingListeners = [];
@@ -209,16 +210,22 @@ export class OlDrawHandler extends OlLayerHandler {
 				addOldFeatures(layer, oldLayer);
 			}
 
-			const saveDebounced = debounced(Debounce_Delay, () => this._save());
+			const saveContentDebounced = debounced(Debounce_Delay, () => this._save());
+			const updateAndSaveContent = () => {
+				this._storedContent = createKML(layer, 'EPSG:3857');
+				saveContentDebounced();
+			};
 			const setSelectedAndSave = (event) => {
 				if (this._drawState.type === InteractionStateType.DRAW) {
 					setSelection([event.feature.getId()]);
 				}
+
+				this._storedContent = createKML(layer, 'EPSG:3857');
 				this._save();
 			};
 			this._mapListeners.push(layer.getSource().on('addfeature', setSelectedAndSave));
-			this._mapListeners.push(layer.getSource().on('changefeature', () => saveDebounced()));
-			this._mapListeners.push(layer.getSource().on('removefeature', () => saveDebounced()));
+			this._mapListeners.push(layer.getSource().on('changefeature', () => updateAndSaveContent()));
+			this._mapListeners.push(layer.getSource().on('removefeature', () => updateAndSaveContent()));
 			return layer;
 		};
 
@@ -840,19 +847,8 @@ export class OlDrawHandler extends OlLayerHandler {
 	 * todo: redundant with OlMeasurementHandler, possible responsibility of a stateful _storageHandler
 	 */
 	async _save() {
-		const isSaveCallInterrupted = () => {
-			return this._vectorLayer === null;
-		};
-		const saveAction = isSaveCallInterrupted()
-			? async () => emitNotification('Saving was interrupted. Your last changes could not be saved.', LevelTypes.WARN)
-			: async () => {
-					const newContent = createKML(this._vectorLayer, 'EPSG:3857');
-					this._storedContent = newContent;
-					const fileSaveResult = await this._storageHandler.store(newContent, FileStorageServiceDataTypes.KML);
-					setFileSaveResult(fileSaveResult ? { fileSaveResult, content: newContent } : null);
-				};
-
-		await saveAction();
+		const fileSaveResult = await this._storageHandler.store(this._storedContent, FileStorageServiceDataTypes.KML);
+		setFileSaveResult(fileSaveResult ? { fileSaveResult, content: this._storedContent } : null);
 	}
 
 	async _saveAndOptionallyConvertToPermanentLayer() {
