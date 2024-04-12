@@ -3,6 +3,8 @@
  */
 import { html } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
+import { WcEvents } from '../../../domain/wcEvents';
+import { MediaType } from '../../../domain/mediaTypes';
 
 /**
  * Public Web Component, should contain always the same components as the Iframe (see embed.html)
@@ -15,8 +17,50 @@ export class PublicComponent extends MvuElement {
 		return false;
 	}
 
+	onInitialize() {
+		/**
+		 * Publish public events
+		 */
+		this.observe(
+			(state) => state.draw.fileSaveResult,
+			(fileSaveResult) => {
+				const { payload } = fileSaveResult;
+				if (payload) {
+					this.dispatchEvent(
+						new CustomEvent(WcEvents.GEOMETRY_CREATE, {
+							detail: { data: payload.content, type: MediaType.KML },
+							bubbles: true,
+							composed: true
+						})
+					);
+				}
+			}
+		);
+		this.observe(
+			(state) => state.featureInfo.querying,
+			(querying, state) => {
+				if (!querying.payload && state.featureInfo.current.length > 0) {
+					const items = state.featureInfo.current
+						.filter((item) => item.geometry)
+						.map((item) => ({
+							title: item.title,
+							data: item.geometry,
+							type: MediaType.GeoJSON
+						}));
+					this.dispatchEvent(
+						new CustomEvent(WcEvents.FEATURE_SELECT, {
+							detail: { items, coordinate: state.featureInfo.coordinate.payload },
+							bubbles: true,
+							composed: true
+						})
+					);
+				}
+			}
+		);
+	}
+
 	createView() {
-		//same as in embed.html
+		//must be same as in embed.html
 		return html`
 			<ba-ol-map></ba-ol-map>
 			<ba-view-larger-map-chip></ba-view-larger-map-chip>
@@ -31,6 +75,7 @@ export class PublicComponent extends MvuElement {
 			<ba-iframe-container></ba-iframe-container>
 		`;
 	}
+
 	static get tag() {
 		return 'bayern-atlas';
 	}
