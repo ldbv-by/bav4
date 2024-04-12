@@ -51,7 +51,7 @@ describe('PublicComponent', () => {
 	});
 
 	describe('when a geometry is created', () => {
-		it('fires a GEOMETRY_CREATE event', async () => {
+		it('fires a GEOMETRY_CHANGE event', async () => {
 			const content = 'content';
 			const expectedEventDetailConfiguration = {
 				detail: { data: content, type: MediaType.KML }
@@ -60,8 +60,8 @@ describe('PublicComponent', () => {
 			const elementListener = jasmine.createSpy();
 			const windowListener = jasmine.createSpy();
 			const element = await setup();
-			element.addEventListener(WcEvents.GEOMETRY_CREATE, elementListener);
-			window.addEventListener(WcEvents.GEOMETRY_CREATE, windowListener);
+			element.addEventListener(WcEvents.GEOMETRY_CHANGE, elementListener);
+			window.addEventListener(WcEvents.GEOMETRY_CHANGE, windowListener);
 
 			setFileSaveResult({ content, fileSaveResult: { adminId: 'adminId', fileId: 'fileId' } });
 

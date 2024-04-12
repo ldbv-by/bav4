@@ -27,7 +27,7 @@ export class PublicComponent extends MvuElement {
 				const { payload } = fileSaveResult;
 				if (payload) {
 					this.dispatchEvent(
-						new CustomEvent(WcEvents.GEOMETRY_CREATE, {
+						new CustomEvent(WcEvents.GEOMETRY_CHANGE, {
 							detail: { data: payload.content, type: MediaType.KML },
 							bubbles: true,
 							composed: true

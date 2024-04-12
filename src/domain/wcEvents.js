@@ -14,7 +14,7 @@ export const WcEvents = Object.freeze({
 	/**
 	 * Geometry loaded.
 	 */
-	GEOMETRY_CREATE: 'ba-geometry-create',
+	GEOMETRY_CHANGE: 'ba-geometry-change',
 	/**
 	 * Feature loaded.
 	 */

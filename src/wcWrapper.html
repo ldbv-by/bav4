@@ -36,14 +36,15 @@
 		document.querySelector('#layer-opacity').addEventListener('input', (event) => {
 			document.querySelector('bayern-atlas').setAttribute('l_o', event.target.value / 100);
 		});
-		document.querySelector('bayern-atlas').addEventListener('ba-geometry-create', (event) => {
+		document.querySelector('bayern-atlas').addEventListener('ba-geometry-change', (event) => {
 			document.querySelector('#geometry').value = event.detail.data;
 		});
 		document.querySelector('bayern-atlas').addEventListener('ba-feature-select', (event) => {
 			document.querySelector('#geometry').value = JSON.stringify(event.detail.items[0].data);
 		});
 
-		window.addEventListener('ba-load', () => {
+		window.addEventListener('ba-load', (event) => {
+			const id = event.detail.id;
 			window.ba_wcLoaded = true;
 		});
 	</script>

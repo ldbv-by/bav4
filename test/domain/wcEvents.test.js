@@ -5,7 +5,7 @@ describe('WcEvents', () => {
 		expect(Object.keys(WcEvents).length).toBe(3);
 
 		expect(WcEvents.LOAD).toBe('ba-load');
-		expect(WcEvents.GEOMETRY_CREATE).toBe('ba-geometry-create');
+		expect(WcEvents.GEOMETRY_CHANGE).toBe('ba-geometry-change');
 		expect(WcEvents.FEATURE_SELECT).toBe('ba-feature-select');
 	});
 });
