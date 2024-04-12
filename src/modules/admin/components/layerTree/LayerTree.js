@@ -197,7 +197,7 @@ export class LayerTree extends MvuElement {
 
 			catalogWithResourceData.push({ label: End_Label });
 
-			catalogWithResourceData.array.forEach((element) => {
+			catalogWithResourceData.forEach((element) => {
 				if (element.children) {
 					element.children.push({ label: End_Label });
 				}
