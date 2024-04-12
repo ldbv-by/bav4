@@ -1099,12 +1099,13 @@ describe('OlMeasurementHandler', () => {
 				const feature = new Feature({ geometry: geometry });
 
 				classUnderTest.activate(map);
-				classUnderTest._vectorLayer.getSource().addFeature(feature); // -> first call of debounced _save, caused by vectorsource:addfeature-event
+				classUnderTest._vectorLayer.getSource().addFeature(feature); // -> first call of _save, caused by vectorsource:addfeature-event
+				feature.getGeometry().dispatchEvent('change'); // -> first call of debounced _save, caused by vectorsource:changefeature-event
 				feature.getGeometry().dispatchEvent('change'); // -> second call of debounced _save, caused by vectorsource:changefeature-event
 				jasmine.clock().tick(afterDebounceDelay);
 
-				expect(privateSaveSpy).toHaveBeenCalledTimes(1);
-				expect(storeSpy).toHaveBeenCalledTimes(1);
+				expect(privateSaveSpy).toHaveBeenCalledTimes(2);
+				expect(storeSpy).toHaveBeenCalledTimes(2);
 			});
 
 			it('stores once after a feature removed', async () => {
@@ -1125,8 +1126,8 @@ describe('OlMeasurementHandler', () => {
 				classUnderTest._vectorLayer.getSource().removeFeature(feature); // -> second call of debounced _save, caused by vectorsource:removefeature-event
 				jasmine.clock().tick(afterDebounceDelay);
 
-				expect(privateSaveSpy).toHaveBeenCalledTimes(1);
-				expect(storeSpy).toHaveBeenCalledTimes(1);
+				expect(privateSaveSpy).toHaveBeenCalledTimes(2);
+				expect(storeSpy).toHaveBeenCalledTimes(2);
 			});
 
 			it('stores only once after multiple changes of a feature', async () => {
@@ -1149,8 +1150,8 @@ describe('OlMeasurementHandler', () => {
 				feature.dispatchEvent('change');
 				jasmine.clock().tick(afterDebounceDelay);
 
-				expect(privateSaveSpy).toHaveBeenCalledTimes(1);
-				expect(storeSpy).toHaveBeenCalledTimes(1);
+				expect(privateSaveSpy).toHaveBeenCalledTimes(2);
+				expect(storeSpy).toHaveBeenCalledTimes(2);
 			});
 		});
 
