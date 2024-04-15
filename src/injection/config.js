@@ -16,7 +16,6 @@ import { mapModule } from '../modules/olMap/injection';
 import { AdministrationService } from '../services/AdministrationService';
 import { TopicsService } from '../services/TopicsService';
 import { topicsModule } from '../modules/topics/injection';
-import { BvvFileStorageService } from '../services/FileStorageService';
 import { LayersPlugin } from '../plugins/LayersPlugin';
 import { PositionPlugin } from '../plugins/PositionPlugin';
 import { TopicsPlugin } from '../plugins/TopicsPlugin';
@@ -63,6 +62,7 @@ import { AuthService } from '../services/AuthService';
 import { GlobalErrorPlugin } from '../plugins/GlobalErrorPlugin';
 import { AuthPlugin } from '../plugins/AuthPlugin';
 import { ObserveWcAttributesPlugin } from '../plugins/ObserveWcAttributesPlugin';
+import { fileStorageServiceFactory } from './factories';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
@@ -81,7 +81,7 @@ $injector
 	.register('ShareService', ShareService)
 	.register('UnitsService', UnitsService)
 	.register('FileSaveService', FileSaveService)
-	.register('FileStorageService', BvvFileStorageService)
+	.register('FileStorageService', fileStorageServiceFactory)
 	.register('UrlService', UrlService)
 	.registerSingleton('IconService', new IconService())
 	.register('AdministrationService', AdministrationService)
