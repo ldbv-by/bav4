@@ -150,7 +150,11 @@ export class OlDrawHandler extends OlLayerHandler {
 	 */
 	onActivate(olMap) {
 		const translate = (key) => this._translationService.translate(key);
-		if (!this._storeService.getStore().getState().shared.termsOfUseAcknowledged && !this._environmentService.isStandalone()) {
+		if (
+			!this._storeService.getStore().getState().shared.termsOfUseAcknowledged &&
+			!this._environmentService.isStandalone() &&
+			!this._environmentService.isEmbedded()
+		) {
 			const termsOfUse = translate('olMap_handler_termsOfUse');
 			if (termsOfUse) {
 				emitNotification(unsafeHTML(termsOfUse), LevelTypes.INFO);
@@ -272,6 +276,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._updateDrawState(coordinate, pixel, dragging);
 		};
 
+		this._storedContent = null; // reset last saved content for new changes
 		this._map = olMap;
 		if (!this._vectorLayer) {
 			this._vectorLayer = getOrCreateLayer();
@@ -855,16 +860,11 @@ export class OlDrawHandler extends OlLayerHandler {
 		const translate = (key) => this._translationService.translate(key);
 		const label = translate('olMap_handler_draw_layer_label');
 
-		const isEmpty = this._vectorLayer.getSource().getFeatures().length === 0;
-		if (isEmpty) {
-			return;
-		}
-
 		if (!this._storageHandler.isValid()) {
 			await this._save();
 		}
 
-		if (this._storeService.getStore().getState().draw.createPermanentLayer) {
+		if (this._storeService.getStore().getState().draw.createPermanentLayer && this._storedContent) {
 			const id = this._storageHandler.getStorageId();
 			const getOrCreateVectorGeoResource = () => {
 				const fromService = this._geoResourceService.byId(id);

@@ -79,7 +79,7 @@ describe('OlDrawHandler', () => {
 	};
 
 	const translationServiceMock = { translate: (key) => key };
-	const environmentServiceMock = { isTouch: () => false, isStandalone: () => false };
+	const environmentServiceMock = { isTouch: () => false, isStandalone: () => false, isEmbedded: () => false };
 	const iconServiceMock = { getDefault: () => new IconResult('foo', 'bar') };
 
 	const initialState = {
@@ -301,6 +301,21 @@ describe('OlDrawHandler', () => {
 			});
 		});
 
+		describe('when embedded ', () => {
+			it('emits NOT a notification', async () => {
+				const store = setup();
+				const map = setupMap();
+				const classUnderTest = new OlDrawHandler();
+				spyOn(environmentServiceMock, 'isEmbedded').and.returnValue(true);
+
+				classUnderTest.activate(map);
+
+				await TestUtils.timeout();
+				//check notification
+				expect(store.getState().notifications.latest).toBeFalsy();
+			});
+		});
+
 		describe('_save', () => {
 			it('calls the InteractionService and updates the draw slice-of-state with a fileSaveResult', async () => {
 				const fileSaveResultMock = { fileId: 'barId', adminId: null };
@@ -337,6 +352,34 @@ describe('OlDrawHandler', () => {
 
 				await TestUtils.timeout();
 
+				expect(store.getState().draw.fileSaveResult.payload).toBeNull();
+			});
+
+			it('calls the InteractionService and updates the draw slice-of-state with a fileSaveResult without features', async () => {
+				const fileSaveResultMock = { fileId: 'barId', adminId: null };
+				const state = { ...initialState, fileSaveResult: new EventLike(null) };
+				const store = await setup(state);
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const feature = createFeature();
+				const storageSpy = spyOn(interactionStorageServiceMock, 'store')
+					.withArgs(jasmine.any(String), FileStorageServiceDataTypes.KML)
+					.and.resolveTo(fileSaveResultMock)
+					.withArgs(undefined, FileStorageServiceDataTypes.KML)
+					.and.resolveTo(null);
+				const saveSpy = spyOn(classUnderTest, '_save').and.callThrough();
+
+				classUnderTest.activate(map);
+				classUnderTest._vectorLayer.getSource().addFeature(feature);
+				classUnderTest._vectorLayer.getSource().removeFeature(feature);
+				classUnderTest._saveAndOptionallyConvertToPermanentLayer();
+
+				await TestUtils.timeout();
+				expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
+
+				await TestUtils.timeout();
+				expect(saveSpy).toHaveBeenCalledTimes(2);
+				expect(storageSpy).toHaveBeenCalledTimes(2);
 				expect(store.getState().draw.fileSaveResult.payload).toBeNull();
 			});
 		});
