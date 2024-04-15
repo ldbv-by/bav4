@@ -93,7 +93,7 @@ describe('OlMeasurementHandler', () => {
 	};
 
 	const translationServiceMock = { translate: (key) => key };
-	const environmentServiceMock = { isTouch: () => false, isStandalone: () => false };
+	const environmentServiceMock = { isTouch: () => false, isStandalone: () => false, isEmbedded: () => false };
 	const initialState = {
 		active: false,
 		statistic: { length: 0, area: 0 },
@@ -286,6 +286,21 @@ describe('OlMeasurementHandler', () => {
 				const classUnderTest = new OlMeasurementHandler();
 				acknowledgeTermsOfUse();
 				expect(store.getState().shared.termsOfUseAcknowledged).toBeTrue();
+				classUnderTest.activate(map);
+
+				await TestUtils.timeout();
+				//check notification
+				expect(store.getState().notifications.latest).toBeFalsy();
+			});
+		});
+
+		describe('when embedded ', () => {
+			it('emits NOT a notification', async () => {
+				const store = setup();
+				const map = setupMap();
+				const classUnderTest = new OlMeasurementHandler();
+				spyOn(environmentServiceMock, 'isEmbedded').and.returnValue(true);
+
 				classUnderTest.activate(map);
 
 				await TestUtils.timeout();
@@ -1152,6 +1167,37 @@ describe('OlMeasurementHandler', () => {
 
 				expect(privateSaveSpy).toHaveBeenCalledTimes(2);
 				expect(storeSpy).toHaveBeenCalledTimes(2);
+			});
+
+			describe('when in embedded mode', () => {
+				const withinDebounceDelay = OlMeasurementHandler.Debounce_Delay / 10;
+				it('stores after each change of a feature', async () => {
+					setup();
+					spyOn(environmentServiceMock, 'isEmbedded').and.returnValue(true);
+					const classUnderTest = new OlMeasurementHandler();
+					const map = setupMap();
+					const storeSpy = spyOn(interactionStorageServiceMock, 'store');
+					const privateSaveSpy = spyOn(classUnderTest, '_save').and.callThrough();
+					const geometry = new LineString([
+						[0, 0],
+						[1, 0]
+					]);
+					const feature = new Feature({ geometry: geometry });
+
+					classUnderTest.activate(map);
+					classUnderTest._vectorLayer.getSource().addFeature(feature); // -> call of debounced _save, caused by vectorsource:addfeature-event
+					feature.dispatchEvent('change'); // -> second call of debounced _save, caused by vectorsource:changefeature-event
+					jasmine.clock().tick(0);
+					feature.dispatchEvent('change');
+					jasmine.clock().tick(0);
+					feature.dispatchEvent('change');
+					jasmine.clock().tick(0);
+					feature.dispatchEvent('change');
+					jasmine.clock().tick(withinDebounceDelay);
+
+					expect(privateSaveSpy).toHaveBeenCalledTimes(5);
+					expect(storeSpy).toHaveBeenCalledTimes(5);
+				});
 			});
 		});
 

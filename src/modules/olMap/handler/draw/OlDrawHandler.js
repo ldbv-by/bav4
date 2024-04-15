@@ -142,6 +142,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._helpTooltip.messageProvideFunction = messageProvide;
 		this._drawStateChangedListeners = [];
 		this._registeredObservers = [];
+		this._saveContentDebounced = debounced(this._environmentService.isEmbedded() ? 0 : Debounce_Delay, () => this._save());
 	}
 
 	/**
@@ -214,10 +215,9 @@ export class OlDrawHandler extends OlLayerHandler {
 				addOldFeatures(layer, oldLayer);
 			}
 
-			const saveContentDebounced = debounced(Debounce_Delay, () => this._save());
 			const updateAndSaveContent = () => {
 				this._storedContent = createKML(layer, 'EPSG:3857');
-				saveContentDebounced();
+				this._saveContentDebounced();
 			};
 			const setSelectedAndSave = (event) => {
 				if (this._drawState.type === InteractionStateType.DRAW) {
@@ -276,7 +276,6 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._updateDrawState(coordinate, pixel, dragging);
 		};
 
-		this._storedContent = null; // reset last saved content for new changes
 		this._map = olMap;
 		if (!this._vectorLayer) {
 			this._vectorLayer = getOrCreateLayer();
@@ -317,8 +316,9 @@ export class OlDrawHandler extends OlLayerHandler {
 		if (preselectDrawType) {
 			this._init(preselectDrawType);
 		}
-		this._updateDrawState();
 
+		this._storedContent = null; // reset last saved content for new changes
+		this._updateDrawState();
 		return this._vectorLayer;
 	}
 
