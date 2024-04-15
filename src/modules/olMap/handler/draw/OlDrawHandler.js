@@ -253,7 +253,6 @@ export class OlDrawHandler extends OlLayerHandler {
 				if (changeToMeasureTool(features)) {
 					const measurementIds = features.filter((f) => f.getId().startsWith(Tools.MEASURE + '_')).map((f) => f.getId());
 					setMeasurementSelection(measurementIds);
-					//setTimeout(() => this._save(), 0);
 					setCurrentTool(Tools.MEASURE);
 				}
 			};
@@ -848,10 +847,11 @@ export class OlDrawHandler extends OlLayerHandler {
 		return feature ? setSelected(feature) : deselect();
 	}
 
-	/**
-	 * todo: redundant with OlMeasurementHandler, possible responsibility of a stateful _storageHandler
-	 */
 	async _save() {
+		/**
+		 * The stored content will be created/updated after adding/changing and removing features,
+		 * while interacting with the layer.
+		 */
 		const fileSaveResult = await this._storageHandler.store(this._storedContent, FileStorageServiceDataTypes.KML);
 		setFileSaveResult(fileSaveResult ? { fileSaveResult, content: this._storedContent } : null);
 	}

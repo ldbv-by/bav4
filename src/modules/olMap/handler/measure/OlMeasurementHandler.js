@@ -671,10 +671,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		action(ids);
 	}
 
-	/**
-	 * todo: redundant with OlDrawHandler, possible responsibility of a stateful _storageHandler
-	 */
 	async _save() {
+		/**
+		 * The stored content will be created/updated after adding/changing and removing features,
+		 * while interacting with the layer.
+		 */
 		const fileSaveResult = await this._storageHandler.store(this._storedContent, FileStorageServiceDataTypes.KML);
 		setFileSaveResult(fileSaveResult ? { fileSaveResult, content: this._storedContent } : null);
 	}
