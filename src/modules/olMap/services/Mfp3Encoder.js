@@ -206,11 +206,38 @@ export class BvvMfp3Encoder {
 		return getUniqueCopyrights(geoResources, getZoomLevel(map));
 	}
 
+	_getSubstitutionLayerOptional(layer) {
+		const { LayerService: layerService } = $injector.inject('LayerService');
+		const { grSubstitutions } = this._mfpService.getCapabilities();
+		const geoResource = this._geoResourceService.byId(layer.get('geoResourceId'));
+		const createSubstitutionLayer = (substitutionGeoResource, originLayer) => {
+			const substitutionLayerId = originLayer.id ?? substitutionGeoResource.id;
+			const substitutionLayer = layerService.toOlLayer(`${substitutionLayerId}_substitution`, substitutionGeoResource, null);
+			substitutionLayer?.setOpacity(originLayer.getOpacity());
+			return substitutionLayer;
+		};
+		if (geoResource) {
+			const substitutionGeoResource = Object.hasOwn(grSubstitutions, geoResource.id)
+				? this._geoResourceService.byId(grSubstitutions[geoResource.id])
+				: null;
+			return substitutionGeoResource ? createSubstitutionLayer(substitutionGeoResource, layer) : layer;
+		}
+
+		return layer;
+	}
+
 	_encode(layer, encodingErrorCallback, groupOpacity = 1) {
 		if (layer instanceof LayerGroup) {
 			return this._encodeGroup(layer, encodingErrorCallback);
 		}
-		const geoResource = this._geoResourceService.byId(layer.get('geoResourceId'));
+
+		/** Some layers must be replaced by a substitution for technical reasons of the related geoResource type:
+		 * - VectorTiles are currently not supported by MFP but can be replaced by a WMTS substitution
+		 * - WMTS/XYZ layers are defined for a specific projection. If the application projection and the print projection differs, the layer must be replaced.
+		 */
+		const encodableLayer = this._getSubstitutionLayerOptional(layer);
+		const geoResource = this._geoResourceService.byId(encodableLayer.get('geoResourceId'));
+
 		if (!geoResource) {
 			encodingErrorCallback(`[${layer.get('id')}]`, MFP_ENCODING_ERROR_TYPE.MISSING_GEORESOURCE);
 			return false;
@@ -223,13 +250,14 @@ export class BvvMfp3Encoder {
 
 		switch (geoResource.getType()) {
 			case GeoResourceTypes.VECTOR:
-				return this._encodeVector(layer, groupOpacity);
-			case GeoResourceTypes.VT: // VectorTiles are currently not supported by MFP but can be replaced by a WMTS substitution
+				return this._encodeVector(encodableLayer, groupOpacity);
 			case GeoResourceTypes.XYZ:
-			case GeoResourceTypes.WMTS:
-				return this._encodeWMTS(layer, geoResource, groupOpacity);
+				return this._encodeWMTS(encodableLayer, groupOpacity);
 			case GeoResourceTypes.WMS:
-				return this._encodeWMS(layer, geoResource, groupOpacity);
+				return this._encodeWMS(encodableLayer, geoResource, groupOpacity);
+			case GeoResourceTypes.VT:
+				console.warn(`VectorTiles are currently not supported by MFP. Missing substitution for GeoResource '${geoResource.id}'.`);
+				return [];
 			default:
 				return false;
 		}
@@ -241,25 +269,7 @@ export class BvvMfp3Encoder {
 		return subLayers.map((l) => this._encode(l, encodingErrorCallback, groupOpacity));
 	}
 
-	_encodeWMTS(olLayer, wmtsGeoResource, groupOpacity) {
-		const getSubstitutionLayer = (layer, geoResource) => {
-			const { LayerService: layerService } = $injector.inject('LayerService');
-			const { grSubstitutions } = this._mfpService.getCapabilities();
-
-			const substitutionGeoResource = Object.hasOwn(grSubstitutions, geoResource.id)
-				? this._geoResourceService.byId(grSubstitutions[geoResource.id])
-				: null;
-
-			if (substitutionGeoResource) {
-				const substitutionLayerId = layer.id ?? substitutionGeoResource.id;
-				const substitutionLayer = layerService.toOlLayer(`${substitutionLayerId}_substitution`, substitutionGeoResource, null);
-				substitutionLayer?.setOpacity(layer.getOpacity());
-				return substitutionLayer;
-			}
-
-			return null;
-		};
-
+	_encodeWMTS(olLayer, groupOpacity) {
 		const fromWmtsSource = (wmtsSource) => {
 			return {
 				tileGrid: wmtsSource.getTileGrid(),
@@ -296,13 +306,7 @@ export class BvvMfp3Encoder {
 			};
 		};
 
-		const createEmptySpecsAndWarn = () => {
-			console.warn(`Missing substitution for GeoResource '${wmtsGeoResource.id}'.`);
-			return [];
-		};
-
-		const substitutionLayer = getSubstitutionLayer(olLayer, wmtsGeoResource);
-		return substitutionLayer ? createWmtsSpecs(substitutionLayer) : createEmptySpecsAndWarn();
+		return createWmtsSpecs(olLayer);
 	}
 
 	_encodeWMS(olLayer, wmsGeoResource, groupOpacity) {
