@@ -127,7 +127,7 @@ export class WaypointItem extends MvuElement {
 						</div>
 						<div class="line" style=${`background:${getCategoryColor(categoryId)};`}></div>
 						<span class="text">
-							<span class="text-name">${label}</span><label class="text-coordinate">${round(coordinate[0], 3)} ${round(coordinate[1], 3)}</label>
+							<span class="text-name">${label}</span>
 						</span>
 						<div class="waypoint__buttons">
 							<ba-icon
