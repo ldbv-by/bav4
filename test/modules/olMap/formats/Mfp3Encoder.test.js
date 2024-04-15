@@ -62,7 +62,6 @@ describe('BvvMfp3Encoder', () => {
 
 	const mfpServiceMock = {
 		getCapabilities() {
-			//return { grSubstitutions: { test_xyz: 'wmts_print', test_wmts: 'wmts_print', test_vt: 'wmts_vt_print' }, layouts: [] };
 			return { grSubstitutions: {}, layouts: [] };
 		},
 		getLayoutById() {
