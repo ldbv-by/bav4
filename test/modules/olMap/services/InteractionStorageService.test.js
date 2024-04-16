@@ -1,5 +1,5 @@
 import { $injector } from '../../../../src/injection';
-import { InteractionStorageService } from '../../../../src/modules/olMap/services/InteractionStorageService';
+import { InteractionStorageService, KML_EMPTY_CONTENT } from '../../../../src/modules/olMap/services/InteractionStorageService';
 import { FileStorageServiceDataTypes } from '../../../../src/services/FileStorageService';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
@@ -139,11 +139,16 @@ describe('InteractionStorageService', () => {
 
 	it('resets state store on empty content', async () => {
 		const store = setup({ ...initialState, fileSaveResult: { fileId: 'f_someId', adminId: 'a_someId' } });
+		const fileSaveResult = { fileId: 'fooBarId', adminId: 'barBazId' };
 		const emptyContent = null;
 
+		const saveSpy = spyOn(fileStorageServiceMock, 'save')
+			.withArgs('a_someId', KML_EMPTY_CONTENT, FileStorageServiceDataTypes.KML)
+			.and.resolveTo(fileSaveResult);
 		const classUnderTest = new InteractionStorageService();
 
 		await expectAsync(classUnderTest.store(emptyContent, FileStorageServiceDataTypes.KML)).toBeResolvedTo(null);
+		expect(saveSpy).toHaveBeenCalled();
 		expect(store.getState().shared.fileSaveResult).toBeNull();
 	});
 

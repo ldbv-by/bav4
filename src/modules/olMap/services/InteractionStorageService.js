@@ -6,7 +6,7 @@ import { emitNotification, LevelTypes } from '../../../store/notifications/notif
 import { setFileSaveResult as setSharedFileSaveResult } from '../../../store/shared/shared.action';
 
 const Temp_Session_Id = 'temp_session_id';
-const Empty_Kml_Content =
+export const KML_EMPTY_CONTENT =
 	'<?xml version="1.0" encoding="UTF-8"?><kml xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.opengis.net/kml/2.2"><Document></Document></kml>';
 /**
  * Facade for FileStorageService and StoreService,
@@ -92,22 +92,22 @@ export class InteractionStorageService {
 	 */
 	async store(content, type) {
 		const { StoreService: storeService, FileStorageService: fileStorageService } = $injector.inject('StoreService', 'FileStorageService');
-		const contentToStore = content ?? Empty_Kml_Content;
+		const contentToStore = content ?? KML_EMPTY_CONTENT;
 
 		const { shared } = storeService.getStore().getState();
 		if (shared.fileSaveResult) {
 			try {
 				const fileSaveResult = await fileStorageService.save(shared.fileSaveResult.adminId, contentToStore, type);
-				setSharedFileSaveResult(fileSaveResult);
-				return fileSaveResult;
+				setSharedFileSaveResult(content ? fileSaveResult : null);
+				return content ? fileSaveResult : null;
 			} catch (error) {
 				console.warn('Could not store content:', error);
 			}
 		} else {
 			try {
 				const fileSaveResult = await fileStorageService.save(null, contentToStore, type);
-				setSharedFileSaveResult(fileSaveResult);
-				return fileSaveResult;
+				setSharedFileSaveResult(content ? fileSaveResult : null);
+				return content ? fileSaveResult : null;
 			} catch (error) {
 				console.warn('Could not store content initially:', error);
 				setSharedFileSaveResult(null);
