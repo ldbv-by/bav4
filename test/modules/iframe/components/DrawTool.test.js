@@ -75,8 +75,9 @@ describe('DrawTool', () => {
 		});
 
 		describe('QueryParameters.EC_DRAW_TOOL is present', () => {
+			let environmentServiceSpy;
 			beforeEach(() => {
-				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				environmentServiceSpy = spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 			});
 
 			it('renders nothing when default mode', async () => {
@@ -84,12 +85,15 @@ describe('DrawTool', () => {
 				const element = await setup();
 
 				expect(element.shadowRoot.children.length).toBe(0);
+				expect(environmentServiceSpy).toHaveBeenCalledTimes(1);
 			});
+
 			it('shows a label', async () => {
 				const element = await setup();
 
 				expect(element.shadowRoot.querySelectorAll('.ba-tool-container__title')).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll('.ba-tool-container__title')[0].innerText).toBe('iframe_drawTool_label');
+				expect(environmentServiceSpy).toHaveBeenCalledTimes(1);
 			});
 
 			it('shows a list of tools', async () => {
@@ -102,6 +106,7 @@ describe('DrawTool', () => {
 				expect(element.shadowRoot.querySelectorAll('#close-icon')).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll('.draw-tool__buttons')).toHaveSize(1);
 				expect(element.shadowRoot.querySelector('.draw-tool__buttons').childElementCount).toBe(3);
+				expect(environmentServiceSpy).toHaveBeenCalledTimes(1);
 			});
 
 			describe('events', () => {

@@ -19,9 +19,11 @@ import { Tools } from '../../../../domain/tools';
 const Update = 'update';
 const Update_Tools = 'update_tools';
 /**
- *  IFrame component to draw simple geometries (Point, Line)
+ *  Embed-mode-only component to draw simple geometries (Point, Line, Polygon)
+ * @class
  */
 export class DrawTool extends MvuElement {
+	#renderingSkipped = true;
 	constructor() {
 		super({
 			active: false,
@@ -42,6 +44,11 @@ export class DrawTool extends MvuElement {
 	}
 
 	onInitialize() {
+		/**
+		 * Ensure detecting the visibility once just before the first rendering.
+		 * Afterwards the EC_DRAW_TOOL query parameter won't be available anymore.
+		 */
+		this.#renderingSkipped = !this._environmentService.getQueryParams().get(QueryParameters.EC_DRAW_TOOL);
 		this.observe(
 			(state) => state.draw,
 			(data) => this.signal(Update, data)
@@ -70,7 +77,7 @@ export class DrawTool extends MvuElement {
 	}
 
 	isRenderingSkipped() {
-		return !this._environmentService.getQueryParams().get(QueryParameters.EC_DRAW_TOOL);
+		return this.#renderingSkipped;
 	}
 
 	createView(model) {
