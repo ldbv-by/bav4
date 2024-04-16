@@ -70,7 +70,7 @@ describe('RoutingPlugin', () => {
 
 				expect(store.getState().tools.current).toBe(Tools.ROUTING);
 			});
-			
+
 			it('does nothing when embedded', async () => {
 				const store = setup();
 				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2`);
