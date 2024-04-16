@@ -81,7 +81,7 @@ $injector
 	.register('ShareService', ShareService)
 	.register('UnitsService', UnitsService)
 	.register('FileSaveService', FileSaveService)
-	.register('FileStorageService', fileStorageServiceFactory)
+	.registerFactory('FileStorageService', fileStorageServiceFactory)
 	.register('UrlService', UrlService)
 	.registerSingleton('IconService', new IconService())
 	.register('AdministrationService', AdministrationService)
