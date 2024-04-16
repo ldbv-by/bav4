@@ -188,7 +188,7 @@ describe('BvvFileStorageService', () => {
 		});
 	});
 
-	describe('iAdminId', () => {
+	describe('isAdminId', () => {
 		it('checks if a string represents an adminId', async () => {
 			const instanceUnderTest = new BvvFileStorageService();
 

@@ -7,7 +7,7 @@ import { equals, observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 
 /**
- * Synchronizes the current state of the app by updating the history of the window or, when embedded as a web component, its the attributes
+ * Synchronizes the current state of the app by updating the history of the window or, when embedded as a web component, its attributes
  *
  * @class
  * @author taulinger
