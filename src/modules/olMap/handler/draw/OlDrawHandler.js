@@ -122,6 +122,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._dragPan = null;
 
 		this._storedContent = null;
+
 		this._sketchHandler = new OlSketchHandler();
 		this._mapListeners = [];
 		this._drawingListeners = [];
@@ -141,6 +142,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._helpTooltip.messageProvideFunction = messageProvide;
 		this._drawStateChangedListeners = [];
 		this._registeredObservers = [];
+		this._saveContentDebounced = debounced(this._environmentService.isEmbedded() ? 0 : Debounce_Delay, () => this._save());
 	}
 
 	/**
@@ -149,7 +151,11 @@ export class OlDrawHandler extends OlLayerHandler {
 	 */
 	onActivate(olMap) {
 		const translate = (key) => this._translationService.translate(key);
-		if (!this._storeService.getStore().getState().shared.termsOfUseAcknowledged && !this._environmentService.isStandalone()) {
+		if (
+			!this._storeService.getStore().getState().shared.termsOfUseAcknowledged &&
+			!this._environmentService.isStandalone() &&
+			!this._environmentService.isEmbedded()
+		) {
 			const termsOfUse = translate('olMap_handler_termsOfUse');
 			if (termsOfUse) {
 				emitNotification(unsafeHTML(termsOfUse), LevelTypes.INFO);
@@ -209,16 +215,21 @@ export class OlDrawHandler extends OlLayerHandler {
 				addOldFeatures(layer, oldLayer);
 			}
 
-			const saveDebounced = debounced(Debounce_Delay, () => this._save());
+			const updateAndSaveContent = () => {
+				this._storedContent = createKML(layer, 'EPSG:3857');
+				this._saveContentDebounced();
+			};
 			const setSelectedAndSave = (event) => {
 				if (this._drawState.type === InteractionStateType.DRAW) {
 					setSelection([event.feature.getId()]);
 				}
+
+				this._storedContent = createKML(layer, 'EPSG:3857');
 				this._save();
 			};
 			this._mapListeners.push(layer.getSource().on('addfeature', setSelectedAndSave));
-			this._mapListeners.push(layer.getSource().on('changefeature', () => saveDebounced()));
-			this._mapListeners.push(layer.getSource().on('removefeature', () => saveDebounced()));
+			this._mapListeners.push(layer.getSource().on('changefeature', () => updateAndSaveContent()));
+			this._mapListeners.push(layer.getSource().on('removefeature', () => updateAndSaveContent()));
 			return layer;
 		};
 
@@ -304,8 +315,9 @@ export class OlDrawHandler extends OlLayerHandler {
 		if (preselectDrawType) {
 			this._init(preselectDrawType);
 		}
-		this._updateDrawState();
 
+		this._storedContent = null; // reset last saved content for new changes
+		this._updateDrawState();
 		return this._vectorLayer;
 	}
 
@@ -835,30 +847,24 @@ export class OlDrawHandler extends OlLayerHandler {
 		return feature ? setSelected(feature) : deselect();
 	}
 
-	/**
-	 * todo: redundant with OlMeasurementHandler, possible responsibility of a stateful _storageHandler
-	 */
 	async _save() {
-		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
-		this._storedContent = newContent;
-		const fileSaveResult = await this._storageHandler.store(newContent, FileStorageServiceDataTypes.KML);
-		setFileSaveResult(fileSaveResult ? { fileSaveResult, content: newContent } : null);
+		/**
+		 * The stored content will be created/updated after adding/changing and removing features,
+		 * while interacting with the layer.
+		 */
+		const fileSaveResult = await this._storageHandler.store(this._storedContent, FileStorageServiceDataTypes.KML);
+		setFileSaveResult(fileSaveResult ? { fileSaveResult, content: this._storedContent } : null);
 	}
 
 	async _saveAndOptionallyConvertToPermanentLayer() {
 		const translate = (key) => this._translationService.translate(key);
 		const label = translate('olMap_handler_draw_layer_label');
 
-		const isEmpty = this._vectorLayer.getSource().getFeatures().length === 0;
-		if (isEmpty) {
-			return;
-		}
-
 		if (!this._storageHandler.isValid()) {
 			await this._save();
 		}
 
-		if (this._storeService.getStore().getState().draw.createPermanentLayer) {
+		if (this._storeService.getStore().getState().draw.createPermanentLayer && this._storedContent) {
 			const id = this._storageHandler.getStorageId();
 			const getOrCreateVectorGeoResource = () => {
 				const fromService = this._geoResourceService.byId(id);
