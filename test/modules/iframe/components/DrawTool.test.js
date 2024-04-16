@@ -251,7 +251,7 @@ describe('DrawTool', () => {
 					expect(store.getState().draw.finish).toBeInstanceOf(EventLike);
 				});
 
-				it('resets the measurement', async () => {
+				it('resets the drawing', async () => {
 					const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'marker' });
 					const resetIcon = element.shadowRoot.querySelector('#cancel_icon');
 
