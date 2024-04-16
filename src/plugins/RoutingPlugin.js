@@ -84,7 +84,7 @@ export class RoutingPlugin extends BaPlugin {
 			return true;
 		};
 
-		if (this.#environmentService.getQueryParams().has(QueryParameters.ROUTE_WAYPOINTS)) {
+		if (!this.#environmentService.isEmbedded() && this.#environmentService.getQueryParams().has(QueryParameters.ROUTE_WAYPOINTS)) {
 			setCurrentTool(Tools.ROUTING); // implicitly calls onToolChanged()
 		}
 
