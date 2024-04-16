@@ -1,3 +1,4 @@
+import { QueryParameters } from '../../src/domain/queryParameters';
 import { $injector } from '../../src/injection';
 import { PublicComponent } from '../../src/modules/public/components/PublicComponent';
 import { EncodeStatePlugin } from '../../src/plugins/EncodeStatePlugin';
@@ -44,31 +45,43 @@ describe('EncodeStatePlugin', () => {
 		await TestUtils.timeout(0);
 	});
 
-	it('registers a stateForEncoding.changed listeners and updates the attributes of an embedded wc', async () => {
-		const mockElement = { setAttribute: () => {}, getAttribute: () => {} };
+	it('registers a stateForEncoding.changed listeners, updates the attributes of an embedded wc and removes initial-only attributes', async () => {
+		const mockElement = {
+			setAttribute: () => {},
+			getAttribute: () => {},
+			removeAttribute: () => {},
+			getAttributeNames: () => {}
+		};
 		const mockDocument = { querySelector: () => {} };
 		const mockWindow = { document: mockDocument };
 		const setAttributeSpy = spyOn(mockElement, 'setAttribute');
-		const getAttributeSpy = spyOn(mockElement, 'getAttribute').withArgs('foo').and.returnValue(undefined);
+		const getAttributeSpy = spyOn(mockElement, 'getAttribute').withArgs(QueryParameters.LAYER).and.returnValue(undefined);
+		spyOn(mockElement, 'getAttributeNames').and.returnValue([
+			QueryParameters.QUERY /** param won't be encoded by the ShareService, but is a known application parameter */,
+			QueryParameters.LAYER /** param will be encoded by the ShareService  and is a known application parameter*/,
+			'style' /** not a application parameter */
+		]);
+		const removeAttributeSpy = spyOn(mockElement, 'removeAttribute');
 		spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
 		spyOn(mockDocument, 'querySelector').withArgs(PublicComponent.tag).and.returnValue(mockElement);
 		spyOn(environmentService, 'isEmbedded').and.returnValue(true);
 		spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(true);
-		spyOn(shareService, 'encodeState').and.returnValue('http://some.thing?foo=bar');
+		spyOn(shareService, 'encodeState').and.returnValue(`http://some.thing?${QueryParameters.LAYER}=layer`);
 		const store = setup();
 		const instanceUnderTest = new EncodeStatePlugin();
 		await instanceUnderTest.register(store);
 
 		indicateChange();
 
-		expect(setAttributeSpy).toHaveBeenCalledWith('foo', 'bar');
+		expect(setAttributeSpy).toHaveBeenCalledWith(QueryParameters.LAYER, 'layer');
 		expect(getAttributeSpy).toHaveBeenCalledTimes(1);
+		expect(removeAttributeSpy).toHaveBeenCalledOnceWith(QueryParameters.QUERY);
 		await TestUtils.timeout(0);
 	});
 
 	it('registers a stateForEncoding.changed listeners and DOES not updates the attributes of an embedded wc when value did not change', async () => {
 		const value = 'bar';
-		const mockElement = { setAttribute: () => {}, getAttribute: () => {} };
+		const mockElement = { setAttribute: () => {}, getAttribute: () => {}, getAttributeNames: () => [] };
 		const mockDocument = { querySelector: () => {} };
 		const mockWindow = { document: mockDocument };
 		const setAttributeSpy = spyOn(mockElement, 'setAttribute');

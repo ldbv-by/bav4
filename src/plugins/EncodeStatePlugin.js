@@ -1,6 +1,7 @@
 /**
  * @module plugins/EncodeStatePlugin
  */
+import { QueryParameters } from '../domain/queryParameters';
 import { $injector } from '../injection';
 import { PublicComponent } from '../modules/public/components/PublicComponent';
 import { equals, observe } from '../utils/storeUtils';
@@ -45,6 +46,23 @@ export class EncodeStatePlugin extends BaPlugin {
 	}
 	_updateWcAttributes() {
 		const params = new URLSearchParams(new URL(this._shareService.encodeState()).search);
+
+		/**
+		 * Remove all attributes that are not included in the encoded state.
+		 * They are just initial parameters, which won't be updated and should be removed therefore.
+		 */
+		const paramsKeys = [...params.keys()];
+		this._environmentService
+			.getWindow()
+			.document.querySelector(PublicComponent.tag)
+			.getAttributeNames()
+			.filter((k) => Object.values(QueryParameters).includes(k))
+			.forEach((k) => {
+				if (!paramsKeys.includes(k)) {
+					this._environmentService.getWindow().document.querySelector(PublicComponent.tag).removeAttribute(k);
+				}
+			});
+
 		for (const [key, value] of params) {
 			// a MutationsObserver on an attribute will also fire if an attribute was just re-set without any value change, so we detect changes here
 			if (!equals(this._environmentService.getWindow().document.querySelector(PublicComponent.tag).getAttribute(key), value)) {
