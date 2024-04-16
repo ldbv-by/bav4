@@ -182,17 +182,6 @@ export class RoutingPlugin extends BaPlugin {
 			(state) => state.layers.removed,
 			(eventLike, state) => onLayerRemoved(eventLike, state)
 		);
-		/**
-		 * When we are in embed mode, we just want to display the route result.
-		 * So we deactivate the tool after the route was loaded.
-		 */
-		if (this.#environmentService.isEmbedded()) {
-			observe(
-				store,
-				(state) => state.routing.route,
-				() => setCurrentTool(null)
-			);
-		}
 	}
 
 	_parseRouteFromQueryParams(queryParams) {

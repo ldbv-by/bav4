@@ -7,7 +7,7 @@ import { initialState as initialToolsState, toolsReducer } from '../../src/store
 import { initialState as initialLayersState } from '../../src/store/layers/layers.reducer';
 import { setCurrentTool } from '../../src/store/tools/tools.action';
 import { Tools } from '../../src/domain/tools';
-import { deactivate, activate, setProposal, setStatus, setWaypoints, setRoute } from '../../src/store/routing/routing.action';
+import { deactivate, activate, setProposal, setStatus, setWaypoints } from '../../src/store/routing/routing.action';
 import { $injector } from '../../src/injection';
 import { LevelTypes } from '../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../src/store/notifications/notifications.reducer';
@@ -32,8 +32,7 @@ describe('RoutingPlugin', () => {
 		translate: (key) => key
 	};
 	const environmentService = {
-		getQueryParams: () => new URLSearchParams(),
-		isEmbedded: () => false
+		getQueryParams: () => new URLSearchParams()
 	};
 
 	const setup = (state) => {
@@ -69,20 +68,6 @@ describe('RoutingPlugin', () => {
 				await instanceUnderTest.register(store);
 
 				expect(store.getState().tools.current).toBe(Tools.ROUTING);
-			});
-		});
-
-		describe('in embed mode', () => {
-			it('deactivates the routing tool after route was loaded', async () => {
-				const store = setup();
-				spyOn(environmentService, 'isEmbedded').and.returnValue(true);
-				const instanceUnderTest = new RoutingPlugin();
-				await instanceUnderTest.register(store);
-				setCurrentTool(Tools.ROUTING);
-
-				setRoute({}); //simulate route result
-
-				expect(store.getState().tools.current).toBeNull();
 			});
 		});
 	});
