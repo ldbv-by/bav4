@@ -137,7 +137,7 @@ describe('InteractionStorageService', () => {
 		expect(saveSpy).toHaveBeenCalledWith('a_someId', content, FileStorageServiceDataTypes.KML);
 	});
 
-	it('resets state store on empty content', async () => {
+	it('stores empty kml in the fileStorage on empty content', async () => {
 		const store = setup({ ...initialState, fileSaveResult: { fileId: 'f_someId', adminId: 'a_someId' } });
 		const fileSaveResult = { fileId: 'fooBarId', adminId: 'barBazId' };
 		const emptyContent = null;
@@ -147,9 +147,9 @@ describe('InteractionStorageService', () => {
 			.and.resolveTo(fileSaveResult);
 		const classUnderTest = new InteractionStorageService();
 
-		await expectAsync(classUnderTest.store(emptyContent, FileStorageServiceDataTypes.KML)).toBeResolvedTo(null);
+		await expectAsync(classUnderTest.store(emptyContent, FileStorageServiceDataTypes.KML)).toBeResolvedTo(fileSaveResult);
 		expect(saveSpy).toHaveBeenCalled();
-		expect(store.getState().shared.fileSaveResult).toBeNull();
+		expect(store.getState().shared.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
 	});
 
 	it('logs a warning on initial store', async () => {

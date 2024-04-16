@@ -98,16 +98,16 @@ export class InteractionStorageService {
 		if (shared.fileSaveResult) {
 			try {
 				const fileSaveResult = await fileStorageService.save(shared.fileSaveResult.adminId, contentToStore, type);
-				setSharedFileSaveResult(content ? fileSaveResult : null);
-				return content ? fileSaveResult : null;
+				setSharedFileSaveResult(fileSaveResult);
+				return fileSaveResult;
 			} catch (error) {
 				console.warn('Could not store content:', error);
 			}
 		} else {
 			try {
 				const fileSaveResult = await fileStorageService.save(null, contentToStore, type);
-				setSharedFileSaveResult(content ? fileSaveResult : null);
-				return content ? fileSaveResult : null;
+				setSharedFileSaveResult(fileSaveResult);
+				return fileSaveResult;
 			} catch (error) {
 				console.warn('Could not store content initially:', error);
 				setSharedFileSaveResult(null);
