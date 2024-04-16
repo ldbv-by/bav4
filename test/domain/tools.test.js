@@ -1,8 +1,9 @@
-import { Tools } from '../../src/domain/tools';
+import { EmbedTools, Tools } from '../../src/domain/tools';
 
 describe('Tools', () => {
 	it('provides an enum of all valid path parameters', () => {
 		expect(Object.keys(Tools).length).toBe(6);
+		expect(Object.isFrozen(Tools)).toBeTrue();
 
 		expect(Tools.MEASURE).toBe('measure');
 		expect(Tools.DRAW).toBe('draw');
@@ -10,5 +11,13 @@ describe('Tools', () => {
 		expect(Tools.IMPORT).toBe('import');
 		expect(Tools.EXPORT).toBe('export');
 		expect(Tools.ROUTING).toBe('routing');
+	});
+});
+
+describe('EmbedTools', () => {
+	it('provides an enum of all valid path parameters', () => {
+		expect(EmbedTools.length).toBe(1);
+		expect(Object.isFrozen(EmbedTools)).toBeTrue();
+		expect(EmbedTools).toEqual([Tools.DRAW]);
 	});
 });
