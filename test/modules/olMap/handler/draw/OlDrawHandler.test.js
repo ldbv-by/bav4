@@ -269,7 +269,7 @@ describe('OlDrawHandler', () => {
 			});
 
 			describe('when termsOfUse are empty', () => {
-				it('emits not a notification', async () => {
+				it('does NOT emit a notification', async () => {
 					const store = setup();
 					const map = setupMap();
 					spyOn(translationServiceMock, 'translate').and.callFake(() => '');
@@ -287,7 +287,7 @@ describe('OlDrawHandler', () => {
 		});
 
 		describe('when TermsOfUse already acknowledged', () => {
-			it('emits NOT a notification', async () => {
+			it('does NOT emit a notification', async () => {
 				const store = setup();
 				const map = setupMap();
 				const classUnderTest = new OlDrawHandler();
@@ -302,7 +302,7 @@ describe('OlDrawHandler', () => {
 		});
 
 		describe('when embedded ', () => {
-			it('emits NOT a notification', async () => {
+			it('does NOT emit a notification', async () => {
 				const store = setup();
 				const map = setupMap();
 				const classUnderTest = new OlDrawHandler();

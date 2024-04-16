@@ -262,7 +262,7 @@ describe('OlMeasurementHandler', () => {
 			});
 
 			describe('when termsOfUse are empty', () => {
-				it('emits not a notification', async () => {
+				it('does NOT emit a notification', async () => {
 					const store = setup();
 					const map = setupMap();
 					spyOn(translationServiceMock, 'translate').and.callFake(() => '');
@@ -280,7 +280,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		describe('when TermsOfUse already acknowledged', () => {
-			it('emits NOT a notification', async () => {
+			it('does NOT emit a notification', async () => {
 				const store = setup();
 				const map = setupMap();
 				const classUnderTest = new OlMeasurementHandler();
@@ -295,7 +295,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		describe('when embedded ', () => {
-			it('emits NOT a notification', async () => {
+			it('does NOT emit a notification', async () => {
 				const store = setup();
 				const map = setupMap();
 				const classUnderTest = new OlMeasurementHandler();
