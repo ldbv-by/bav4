@@ -80,6 +80,9 @@ export class OlElevationProfileHandler extends OlMapHandler {
 		const coordinates = this._getCoordinates(selectedFeatures);
 		if (coordinates.length > 1) {
 			this._elevationService.requestProfile(coordinates);
+		} else {
+			// no valid coordinates for a new (changed) profile or a deselect
+			indicateChange(null);
 		}
 	}
 
