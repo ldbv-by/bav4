@@ -47,7 +47,7 @@
 			document.querySelector('#geometry').value = event.detail ? event.detail.data : '';
 		});
 		document.querySelector('bayern-atlas').addEventListener('ba-feature-select', (event) => {
-			document.querySelector('#geometry').value = event.detail.items.length > 0 ? JSON.stringify(event.detail.items[0].data) : '';
+			document.querySelector('#geometry').value = event.detail.items.map((i) => JSON.stringify(i.data));
 		});
 
 		window.addEventListener('ba-load', (event) => {
