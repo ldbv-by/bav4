@@ -12,10 +12,16 @@ import { GlobalCoordinateRepresentations } from '../domain/coordinateRepresentat
 export class ShareService {
 	#environmentService;
 	#configService;
+	#urlService;
 	constructor() {
-		const { EnvironmentService: environmentService, ConfigService: configService } = $injector.inject('EnvironmentService', 'ConfigService');
+		const {
+			EnvironmentService: environmentService,
+			ConfigService: configService,
+			UrlService: urlService
+		} = $injector.inject('EnvironmentService', 'ConfigService', 'UrlService');
 		this.#environmentService = environmentService;
 		this.#configService = configService;
+		this.#urlService = urlService;
 	}
 
 	/**
@@ -87,10 +93,13 @@ export class ShareService {
 			extraParams
 		);
 
-		const baseUrl = this.#configService.getValueAsPath('FRONTEND_URL').replace('/index.html', '');
+		const baseUrl = `${this.#urlService.origin(this.#configService.getValueAsPath('FRONTEND_URL'))}/${this.#urlService
+			.pathParams(this.#configService.getValueAsPath('FRONTEND_URL'))
+			.filter((p) => !p.endsWith('.html'))
+			.join('/')}`;
 		const searchParams = new URLSearchParams(extractedState);
 		const mergedPathParameters = pathParameters.length ? [...pathParameters] : [];
-		return `${baseUrl}${mergedPathParameters.join('/')}?${decodeURIComponent(searchParams.toString())}`;
+		return `${baseUrl}${baseUrl.endsWith('/') ? '' : '/'}${mergedPathParameters.join('/')}?${decodeURIComponent(searchParams.toString())}`;
 	}
 
 	/**

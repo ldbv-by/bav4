@@ -33,6 +33,10 @@ describe('ShareService', () => {
 	const configService = {
 		getValueAsPath: () => {}
 	};
+	const urlService = {
+		origin: () => {},
+		pathParams: () => {}
+	};
 
 	const setup = (state) => {
 		const store = TestUtils.setupStoreAndDi(state, {
@@ -46,7 +50,8 @@ describe('ShareService', () => {
 			.registerSingleton('MapService', mapService)
 			.registerSingleton('GeoResourceService', geoResourceService)
 			.registerSingleton('EnvironmentService', environmentService)
-			.registerSingleton('ConfigService', configService);
+			.registerSingleton('ConfigService', configService)
+			.registerSingleton('UrlService', urlService);
 
 		return store;
 	};
@@ -401,11 +406,15 @@ describe('ShareService', () => {
 
 		describe('encodeStateForPosition', () => {
 			const mockFrontendUrl = 'http://frontend.de/';
+			const mockFrontendUrlOrigin = 'http://frontend.de';
+			const mockFrontendUrlPathParams = [];
 
 			describe('for pathname "/"', () => {
 				it('encodes a state object to url', () => {
 					setup();
 					spyOn(configService, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(mockFrontendUrl);
+					spyOn(urlService, 'origin').withArgs(mockFrontendUrl).and.returnValue(mockFrontendUrlOrigin);
+					spyOn(urlService, 'pathParams').withArgs(mockFrontendUrl).and.returnValue(mockFrontendUrlPathParams);
 					const instanceUnderTest = new ShareService();
 					spyOn(instanceUnderTest, '_extractPosition')
 						.withArgs([44.123, 88.123], 5, 0.5)
@@ -432,6 +441,8 @@ describe('ShareService', () => {
 				it('encodes a state object to url removing `index.html` from path', () => {
 					setup();
 					spyOn(configService, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(`${mockFrontendUrl}index.html/`);
+					spyOn(urlService, 'origin').and.returnValue(mockFrontendUrlOrigin);
+					spyOn(urlService, 'pathParams').and.returnValue(['index.html']);
 					const instanceUnderTest = new ShareService();
 					spyOn(instanceUnderTest, '_extractPosition')
 						.withArgs([44.123, 88.123], 5, 0.5)
@@ -454,6 +465,8 @@ describe('ShareService', () => {
 				it('encodes a state object to url merging extra parameter', () => {
 					setup();
 					spyOn(configService, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(mockFrontendUrl);
+					spyOn(urlService, 'origin').withArgs(mockFrontendUrl).and.returnValue(mockFrontendUrlOrigin);
+					spyOn(urlService, 'pathParams').withArgs(mockFrontendUrl).and.returnValue(mockFrontendUrlPathParams);
 					const instanceUnderTest = new ShareService();
 					const extraParam = { foo: 'bar' };
 					spyOn(instanceUnderTest, '_extractPosition')
@@ -478,6 +491,8 @@ describe('ShareService', () => {
 				it('encodes a state object to url appending optional path parameters', () => {
 					setup();
 					spyOn(configService, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(mockFrontendUrl);
+					spyOn(urlService, 'origin').withArgs(mockFrontendUrl).and.returnValue(mockFrontendUrlOrigin);
+					spyOn(urlService, 'pathParams').withArgs(mockFrontendUrl).and.returnValue(mockFrontendUrlPathParams);
 					const instanceUnderTest = new ShareService();
 					const pathParameters = ['param0', 'param1'];
 					spyOn(instanceUnderTest, '_extractPosition')
@@ -499,10 +514,14 @@ describe('ShareService', () => {
 
 			describe('for existing pathname e.g. "/app"', () => {
 				const mockFrontendUrl = 'http://frontend.de/app/';
+				const mockFrontendUrlOrigin = 'http://frontend.de';
+				const mockFrontendUrlPathParams = ['app'];
 
 				it('encodes a state object to url', () => {
 					setup();
 					spyOn(configService, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(mockFrontendUrl);
+					spyOn(urlService, 'origin').withArgs(mockFrontendUrl).and.returnValue(mockFrontendUrlOrigin);
+					spyOn(urlService, 'pathParams').withArgs(mockFrontendUrl).and.returnValue(mockFrontendUrlPathParams);
 					const instanceUnderTest = new ShareService();
 					spyOn(instanceUnderTest, '_extractPosition')
 						.withArgs([44.123, 88.123], 5, 0.5)
@@ -524,7 +543,9 @@ describe('ShareService', () => {
 
 				it('encodes a state object to url removing `index.html` from path', () => {
 					setup();
-					spyOn(configService, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(`${mockFrontendUrl}index.html/`);
+					spyOn(configService, 'getValueAsPath').and.returnValue(`${mockFrontendUrl}index.html/`);
+					spyOn(urlService, 'origin').and.returnValue(mockFrontendUrlOrigin);
+					spyOn(urlService, 'pathParams').and.returnValue(['app', 'index.html']);
 					const instanceUnderTest = new ShareService();
 					spyOn(instanceUnderTest, '_extractPosition')
 						.withArgs([44.123, 88.123], 5, 0.5)
@@ -547,6 +568,8 @@ describe('ShareService', () => {
 				it('encodes a state object to url merging extra parameter', () => {
 					setup();
 					spyOn(configService, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(mockFrontendUrl);
+					spyOn(urlService, 'origin').withArgs(mockFrontendUrl).and.returnValue(mockFrontendUrlOrigin);
+					spyOn(urlService, 'pathParams').withArgs(mockFrontendUrl).and.returnValue(mockFrontendUrlPathParams);
 					const instanceUnderTest = new ShareService();
 					const extraParam = { foo: 'bar' };
 					spyOn(instanceUnderTest, '_extractPosition')
@@ -571,6 +594,8 @@ describe('ShareService', () => {
 				it('encodes a state object to url appending optional path parameters', () => {
 					setup();
 					spyOn(configService, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(mockFrontendUrl);
+					spyOn(urlService, 'origin').withArgs(mockFrontendUrl).and.returnValue(mockFrontendUrlOrigin);
+					spyOn(urlService, 'pathParams').withArgs(mockFrontendUrl).and.returnValue(mockFrontendUrlPathParams);
 					const instanceUnderTest = new ShareService();
 					const pathParameters = ['param0', 'param1'];
 					spyOn(instanceUnderTest, '_extractPosition')
