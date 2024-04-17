@@ -8,7 +8,14 @@
 	</head>
 
 	<body>
-		<bayern-atlas l="luftbild_labels" z="15" c="671092,5299670" ec-draw-tool="point" tid="draw"></bayern-atlas>
+		<bayern-atlas
+			l="luftbild_labels,803da236-15f1-4c97-91e0-73248154d381,c5859de2-5f50-428a-aa63-c14e7543463f"
+			z="15"
+			c="671092,5299670"
+			r="0.5"
+			ec-draw-tool="polygon"
+			tid=""
+		></bayern-atlas>
 		<div style="position: absolute">
 			<button id="zoomIn">Zoom in</button>
 			<button id="zoomOut">Zoom out</button>
@@ -37,10 +44,10 @@
 			document.querySelector('bayern-atlas').setAttribute('l_o', event.target.value / 100);
 		});
 		document.querySelector('bayern-atlas').addEventListener('ba-geometry-change', (event) => {
-			document.querySelector('#geometry').value = event.detail.data;
+			document.querySelector('#geometry').value = event.detail ? event.detail.data : '';
 		});
 		document.querySelector('bayern-atlas').addEventListener('ba-feature-select', (event) => {
-			document.querySelector('#geometry').value = JSON.stringify(event.detail.items[0].data);
+			document.querySelector('#geometry').value = event.detail.items.length > 0 ? JSON.stringify(event.detail.items[0].data) : '';
 		});
 
 		window.addEventListener('ba-load', (event) => {
