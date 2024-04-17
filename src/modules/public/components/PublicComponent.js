@@ -19,43 +19,55 @@ export class PublicComponent extends MvuElement {
 
 	onInitialize() {
 		/**
-		 * Publish public events
+		 * Publish public GEOMETRY_CHANGE event
 		 */
 		this.observe(
 			(state) => state.draw.fileSaveResult,
 			(fileSaveResult) => {
 				const { payload } = fileSaveResult;
-				if (payload) {
-					this.dispatchEvent(
-						new CustomEvent(WcEvents.GEOMETRY_CHANGE, {
-							detail: { data: payload.content, type: MediaType.KML },
-							bubbles: true,
-							composed: true
-						})
-					);
-				}
-			}
+				this.dispatchEvent(
+					new CustomEvent(WcEvents.GEOMETRY_CHANGE, {
+						detail: payload ? { data: payload.content, type: MediaType.KML } : null,
+						bubbles: true,
+						composed: true
+					})
+				);
+			},
+			false
 		);
+		/**
+		 * Publish public FEATURE_SELECT event
+		 */
 		this.observe(
-			(state) => state.featureInfo.querying,
-			(querying, state) => {
-				if (!querying.payload && state.featureInfo.current.length > 0) {
-					const items = state.featureInfo.current
-						.filter((item) => item.geometry)
-						.map((item) => ({
-							title: item.title,
-							data: item.geometry,
-							type: MediaType.GeoJSON
-						}));
-					this.dispatchEvent(
-						new CustomEvent(WcEvents.FEATURE_SELECT, {
-							detail: { items, coordinate: state.featureInfo.coordinate.payload },
-							bubbles: true,
-							composed: true
-						})
-					);
-				}
-			}
+			(state) => state.featureInfo.coordinate,
+			() => {
+				const unsubscribe = this.observe(
+					(state) => state.featureInfo.querying,
+					(querying, state) => {
+						//untestable else path cause function is self-removing
+						/* istanbul ignore else */
+						if (!querying) {
+							const items = [...state.featureInfo.current]
+								.filter((item) => item.geometry)
+								.map((item) => ({
+									title: item.title,
+									data: item.geometry,
+									type: MediaType.GeoJSON
+								}));
+							this.dispatchEvent(
+								new CustomEvent(WcEvents.FEATURE_SELECT, {
+									detail: { items, coordinate: state.featureInfo.coordinate.payload },
+									bubbles: true,
+									composed: true
+								})
+							);
+							unsubscribe();
+						}
+					},
+					false
+				);
+			},
+			false
 		);
 	}
 

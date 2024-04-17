@@ -70,6 +70,25 @@ describe('PublicComponent', () => {
 		});
 	});
 
+	describe('when a geometry is null', () => {
+		it('fires a GEOMETRY_CHANGE event', async () => {
+			const expectedEventDetailConfiguration = {
+				detail: null
+			};
+
+			const elementListener = jasmine.createSpy();
+			const windowListener = jasmine.createSpy();
+			const element = await setup();
+			element.addEventListener(WcEvents.GEOMETRY_CHANGE, elementListener);
+			window.addEventListener(WcEvents.GEOMETRY_CHANGE, windowListener);
+
+			setFileSaveResult(null);
+
+			expect(elementListener).toHaveBeenCalledOnceWith(jasmine.objectContaining(expectedEventDetailConfiguration));
+			expect(windowListener).toHaveBeenCalledOnceWith(jasmine.objectContaining(expectedEventDetailConfiguration));
+		});
+	});
+
 	describe('when a vector feature is selected', () => {
 		it('fires a FEATURE_SELECT event', async () => {
 			const coordinate = [21, 42];
