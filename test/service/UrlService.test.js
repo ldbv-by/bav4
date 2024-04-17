@@ -211,6 +211,7 @@ describe('UrlService', () => {
 			expect(instanceUnderTest.pathParams('http://foo.bar/?foo=bar')).toEqual([]);
 			expect(instanceUnderTest.pathParams('http://foo.bar:1234/?foo=bar')).toEqual([]);
 			expect(instanceUnderTest.pathParams('http://foo.bar/some')).toEqual(['some']);
+			expect(instanceUnderTest.pathParams('http://foo.bar/some/thing.html')).toEqual(['some', 'thing.html']);
 			expect(instanceUnderTest.pathParams('http://foo.bar/some/thing')).toEqual(['some', 'thing']);
 			expect(instanceUnderTest.pathParams('http://foo.bar/some//thing')).toEqual(['some', 'thing']);
 		});
