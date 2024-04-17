@@ -10,10 +10,12 @@ import { GlobalCoordinateRepresentations } from '../domain/coordinateRepresentat
  * @class
  */
 export class ShareService {
+	#environmentService;
+	#configService;
 	constructor() {
 		const { EnvironmentService: environmentService, ConfigService: configService } = $injector.inject('EnvironmentService', 'ConfigService');
-		this._environmentService = environmentService;
-		this._configService = configService;
+		this.#environmentService = environmentService;
+		this.#configService = configService;
 	}
 
 	/**
@@ -22,8 +24,8 @@ export class ShareService {
 	 * @returns {Promise<undefined>}
 	 */
 	async copyToClipboard(textToCopy) {
-		if (this._environmentService.getWindow().isSecureContext) {
-			return this._environmentService.getWindow().navigator.clipboard.writeText(textToCopy);
+		if (this.#environmentService.getWindow().isSecureContext) {
+			return this.#environmentService.getWindow().navigator.clipboard.writeText(textToCopy);
 		}
 		throw new Error('Clipboard API is not available');
 	}
@@ -85,7 +87,7 @@ export class ShareService {
 			extraParams
 		);
 
-		const baseUrl = this._configService.getValueAsPath('FRONTEND_URL').replace('/index.html', '');
+		const baseUrl = this.#configService.getValueAsPath('FRONTEND_URL').replace('/index.html', '');
 		const searchParams = new URLSearchParams(extractedState);
 		const mergedPathParameters = pathParameters.length ? [...pathParameters] : [];
 		return `${baseUrl}${mergedPathParameters.join('/')}?${decodeURIComponent(searchParams.toString())}`;
