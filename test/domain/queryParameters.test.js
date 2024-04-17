@@ -2,7 +2,7 @@ import { QueryParameters } from '../../src/domain/queryParameters';
 
 describe('QueryParameters', () => {
 	it('provides an enum of all valid query parameters', () => {
-		expect(Object.keys(QueryParameters).length).toBe(20);
+		expect(Object.keys(QueryParameters).length).toBe(19);
 
 		expect(QueryParameters.CENTER).toBe('c');
 		expect(QueryParameters.ZOOM).toBe('z');
@@ -25,6 +25,5 @@ describe('QueryParameters', () => {
 		expect(QueryParameters.EC_LINK_TO_APP).toBe('ec_link_to_app');
 
 		expect(QueryParameters.T_ENABLE_TEST_IDS).toBe('t_enable-test-ids');
-		expect(QueryParameters.T_DISABLE_INITIAL_UI_HINTS).toBe('t_disable-initial-ui-hints');
 	});
 });

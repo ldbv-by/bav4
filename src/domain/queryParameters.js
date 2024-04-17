@@ -94,9 +94,5 @@ export const QueryParameters = Object.freeze({
 	/**
 	 * Render test ids (`boolean`)
 	 */
-	T_ENABLE_TEST_IDS: 't_enable-test-ids',
-	/**
-	 * Currently not supported.
-	 */
-	T_DISABLE_INITIAL_UI_HINTS: 't_disable-initial-ui-hints'
+	T_ENABLE_TEST_IDS: 't_enable-test-ids'
 });
