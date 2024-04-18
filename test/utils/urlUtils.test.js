@@ -45,7 +45,7 @@ describe('urlUtils', () => {
 			expect(getPathParams('http://foo.bar/?foo=bar')).toEqual([]);
 			expect(getPathParams('http://foo.bar:1234/?foo=bar')).toEqual([]);
 			expect(getPathParams('http://foo.bar/some')).toEqual(['some']);
-			expect(getPathParams('http://foo.bar/some/thing')).toEqual(['some', 'thing']);
+			expect(getPathParams('http://foo.bar/some/thing.html')).toEqual(['some', 'thing.html']);
 			expect(getPathParams('http://foo.bar/some//thing')).toEqual(['some', 'thing']);
 		});
 
