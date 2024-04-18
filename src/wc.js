@@ -1,17 +1,19 @@
 import { WcEvents } from './domain/wcEvents';
-// register required modules (same as for iframe)
-import './embed';
 
-import { PublicComponent } from './modules/public/components/PublicComponent';
-
-// load the configuration script
+/**
+ * At first we have to load the configuration script
+ */
 const scriptEl = document.createElement('script');
 scriptEl.setAttribute('src', '../config.js');
 document.body.appendChild(scriptEl);
 
+/**
+ * After that we're able to import the web-component chunk, cause configuration (backend url, etc) is present now
+ */
 scriptEl.addEventListener('load', () => {
-	if (!customElements.get(PublicComponent.tag)) {
-		window.customElements.define(PublicComponent.tag, PublicComponent);
-	}
-	window.dispatchEvent(new CustomEvent(WcEvents.LOAD));
+	// see https://webpack.js.org/guides/code-splitting/#dynamic-imports
+	// eslint-disable-next-line promise/prefer-await-to-then, import/no-unresolved
+	import('@chunk/public-web-component').then(() => {
+		window.dispatchEvent(new CustomEvent(WcEvents.LOAD));
+	});
 });
