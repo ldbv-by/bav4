@@ -10,6 +10,7 @@ import clipboardIcon from './assets/clipboard.svg';
 import css from './iframegenerator.css';
 import { IFRAME_ENCODED_STATE } from '../../../../utils/markup';
 import { QueryParameters } from '../../../../domain/queryParameters';
+import { setQueryParams } from '../../../../utils/urlUtils';
 
 const Update_Size_Width = 'update_size_width';
 const Update_Size_Height = 'update_size_height';
@@ -29,7 +30,6 @@ const Range_Max = 2000;
 export class IframeGenerator extends MvuElement {
 	#translationService;
 	#shareService;
-	#urlService;
 	#iframeObserver;
 
 	constructor() {
@@ -38,14 +38,9 @@ export class IframeGenerator extends MvuElement {
 			autoWidth: false,
 			previewUrl: null
 		});
-		const {
-			TranslationService: translationService,
-			ShareService: shareService,
-			UrlService: urlService
-		} = $injector.inject('TranslationService', 'ShareService', 'UrlService');
+		const { TranslationService: translationService, ShareService: shareService } = $injector.inject('TranslationService', 'ShareService');
 		this.#translationService = translationService;
 		this.#shareService = shareService;
-		this.#urlService = urlService;
 		this.#iframeObserver = null;
 	}
 
@@ -190,7 +185,7 @@ export class IframeGenerator extends MvuElement {
 			if (mutation.type === 'attributes' && mutation.attributeName === IFRAME_ENCODED_STATE) {
 				this.signal(
 					Update_Preview_Url,
-					this.#urlService.setQueryParams(mutation.target.getAttribute(IFRAME_ENCODED_STATE), this.#getExtraParameters())
+					setQueryParams(mutation.target.getAttribute(IFRAME_ENCODED_STATE), this.#getExtraParameters())
 				);
 			}
 		}
