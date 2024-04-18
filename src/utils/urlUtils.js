@@ -1,4 +1,7 @@
 /**
+ * @module utils/urlUtils
+ */
+/**
  * Extracts the origin of a URL following by its pathname.
  * If the URL has no pathname the result is the same like it would be calling {@link UrlService#origin}
  * @param {string} url
