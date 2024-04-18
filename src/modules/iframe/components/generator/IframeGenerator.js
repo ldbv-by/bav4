@@ -183,10 +183,7 @@ export class IframeGenerator extends MvuElement {
 	#onIFrameChanged(mutationList) {
 		for (const mutation of mutationList) {
 			if (mutation.type === 'attributes' && mutation.attributeName === IFRAME_ENCODED_STATE) {
-				this.signal(
-					Update_Preview_Url,
-					setQueryParams(mutation.target.getAttribute(IFRAME_ENCODED_STATE), this.#getExtraParameters())
-				);
+				this.signal(Update_Preview_Url, setQueryParams(mutation.target.getAttribute(IFRAME_ENCODED_STATE), this.#getExtraParameters()));
 			}
 		}
 	}
