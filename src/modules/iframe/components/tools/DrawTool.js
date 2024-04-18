@@ -51,7 +51,7 @@ export class DrawTool extends MvuElement {
 		 */
 		const toolNames = this._environmentService.getQueryParams().get(QueryParameters.EC_DRAW_TOOL);
 		this.#renderingSkipped = !toolNames;
-		this.signal(Update_Visible_Tools, toolNames ? toolNames.split(',') : []);
+		this.signal(Update_Visible_Tools, toolNames ? toolNames.split(',').map((n) => n.toLowerCase()) : []);
 		this.observe(
 			(state) => state.draw,
 			(data) => this.signal(Update, data)

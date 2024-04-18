@@ -162,6 +162,17 @@ describe('DrawTool', () => {
 				expect(element.shadowRoot.querySelector('#line-button')).toBeFalsy();
 				expect(element.shadowRoot.querySelector('#polygon-button')).toBeTruthy();
 			});
+
+			it('builds the list of tools case-insensitive', async () => {
+				const queryParam = new URLSearchParams(`${QueryParameters.EC_DRAW_TOOL}=point,LINE,pOLygon`);
+				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				const element = await setup();
+
+				expect(element.shadowRoot.querySelectorAll('.draw-tool__button')).toHaveSize(3);
+				expect(element.shadowRoot.querySelector('#point-button')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('#line-button')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('#polygon-button')).toBeTruthy();
+			});
 		});
 
 		describe('QueryParameters.EC_DRAW_TOOL is present', () => {
