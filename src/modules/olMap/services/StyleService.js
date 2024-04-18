@@ -36,6 +36,7 @@ export const StyleTypes = Object.freeze({
 	HIGHLIGHT_TEMP: 'highlight_temp',
 	DRAW: 'draw',
 	MARKER: 'marker',
+	POINT: 'point',
 	TEXT: 'text',
 	ANNOTATION: 'annotation',
 	LINE: 'line',
