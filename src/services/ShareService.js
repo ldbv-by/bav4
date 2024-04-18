@@ -5,6 +5,7 @@ import { $injector } from '../injection';
 import { round } from '../utils/numberUtils';
 import { QueryParameters } from '../domain/queryParameters';
 import { GlobalCoordinateRepresentations } from '../domain/coordinateRepresentation';
+import { getOrigin, getPathParams } from '../utils/urlUtils';
 
 /**
  * @class
@@ -12,16 +13,10 @@ import { GlobalCoordinateRepresentations } from '../domain/coordinateRepresentat
 export class ShareService {
 	#environmentService;
 	#configService;
-	#urlService;
 	constructor() {
-		const {
-			EnvironmentService: environmentService,
-			ConfigService: configService,
-			UrlService: urlService
-		} = $injector.inject('EnvironmentService', 'ConfigService', 'UrlService');
+		const { EnvironmentService: environmentService, ConfigService: configService } = $injector.inject('EnvironmentService', 'ConfigService');
 		this.#environmentService = environmentService;
 		this.#configService = configService;
-		this.#urlService = urlService;
 	}
 
 	/**
@@ -93,8 +88,9 @@ export class ShareService {
 			extraParams
 		);
 
-		const baseUrl = `${this.#urlService.origin(this.#configService.getValueAsPath('FRONTEND_URL'))}/${this.#urlService
-			.pathParams(this.#configService.getValueAsPath('FRONTEND_URL'))
+		const baseUrl = `${getOrigin(this.#configService.getValueAsPath('FRONTEND_URL'))}/${getPathParams(
+			this.#configService.getValueAsPath('FRONTEND_URL')
+		)
 			.filter((p) => !p.endsWith('.html'))
 			.join('/')}`;
 		const searchParams = new URLSearchParams(extractedState);
