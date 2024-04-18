@@ -75,8 +75,19 @@ describe('DrawTool', () => {
 		});
 
 		describe('QueryParameters.EC_DRAW_TOOL is a comma-separated list of values', () => {
-			it('builds the full list of tools', async () => {
+			it('builds the full list of tools (from invalid toolName)', async () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.EC_DRAW_TOOL}=fooBar`);
+				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				const element = await setup();
+
+				expect(element.shadowRoot.querySelectorAll('.draw-tool__button')).toHaveSize(3);
+				expect(element.shadowRoot.querySelector('#point-button')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('#line-button')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('#polygon-button')).toBeTruthy();
+			});
+
+			it('builds the full list of tools (from list of invalid toolNames)', async () => {
+				const queryParam = new URLSearchParams(`${QueryParameters.EC_DRAW_TOOL}=foo,bar`);
 				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 				const element = await setup();
 
@@ -119,7 +130,7 @@ describe('DrawTool', () => {
 				expect(element.shadowRoot.querySelector('#polygon-button')).toBeFalsy();
 			});
 
-			it('builds the list of tools ONLY with line-tool', async () => {
+			it('builds the list of tools ONLY with point-tool', async () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.EC_DRAW_TOOL}=point`);
 				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 				const element = await setup();
