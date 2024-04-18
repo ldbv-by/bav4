@@ -82,7 +82,7 @@ describe('StoreService', () => {
 		const iframeGeometryIdPluginMock = {
 			register: () => {}
 		};
-		const historyStatePluginMock = {
+		const encodeStatePlugin = {
 			register: () => {}
 		};
 		const observeStateForEncodingPluginMock = {
@@ -92,6 +92,9 @@ describe('StoreService', () => {
 			register: () => {}
 		};
 		const authPluginMock = {
+			register: () => {}
+		};
+		const observeWcAttributesPluginMock = {
 			register: () => {}
 		};
 
@@ -126,7 +129,8 @@ describe('StoreService', () => {
 				.registerSingleton('ToolsPlugin', toolsPluginMock)
 				.registerSingleton('BeforeUnloadPlugin', beforeUnloadPluginMock)
 				.registerSingleton('IframeGeometryIdPlugin', iframeGeometryIdPluginMock)
-				.registerSingleton('HistoryStatePlugin', historyStatePluginMock)
+				.registerSingleton('ObserveWcAttributesPlugin', observeWcAttributesPluginMock)
+				.registerSingleton('EncodeStatePlugin', encodeStatePlugin)
 				.registerSingleton('ObserveStateForEncodingPlugin', observeStateForEncodingPluginMock)
 
 				.ready();
@@ -139,7 +143,7 @@ describe('StoreService', () => {
 			expect(store).toBeDefined();
 
 			const reducerKeys = Object.keys(store.getState());
-			expect(reducerKeys.length).toBe(30);
+			expect(reducerKeys.length).toBe(31);
 			expect(reducerKeys.includes('map')).toBeTrue();
 			expect(reducerKeys.includes('pointer')).toBeTrue();
 			expect(reducerKeys.includes('position')).toBeTrue();
@@ -170,6 +174,7 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('routing')).toBeTrue();
 			expect(reducerKeys.includes('navigationRail')).toBeTrue();
 			expect(reducerKeys.includes('auth')).toBeTrue();
+			expect(reducerKeys.includes('wcAttribute')).toBeTrue();
 		});
 
 		it('registers all plugins', async () => {
@@ -198,7 +203,8 @@ describe('StoreService', () => {
 			const toolsPluginSpy = spyOn(toolsPluginMock, 'register');
 			const beforeUnloadPluginSpy = spyOn(beforeUnloadPluginMock, 'register');
 			const iframeGeometryIdPluginSpy = spyOn(iframeGeometryIdPluginMock, 'register');
-			const historyStatePluginSpy = spyOn(historyStatePluginMock, 'register');
+			const observeWcAttributesPluginSpy = spyOn(observeWcAttributesPluginMock, 'register');
+			const historyStatePluginSpy = spyOn(encodeStatePlugin, 'register');
 			const observeStateForEncodingPluginSpy = spyOn(observeStateForEncodingPluginMock, 'register');
 			const instanceUnderTest = new StoreService();
 
@@ -234,6 +240,7 @@ describe('StoreService', () => {
 			expect(toolsPluginSpy).toHaveBeenCalledWith(store);
 			expect(beforeUnloadPluginSpy).toHaveBeenCalledWith(store);
 			expect(iframeGeometryIdPluginSpy).toHaveBeenCalledWith(store);
+			expect(observeWcAttributesPluginSpy).toHaveBeenCalledWith(store);
 			expect(historyStatePluginSpy).toHaveBeenCalledWith(store);
 			expect(observeStateForEncodingPluginSpy).toHaveBeenCalledWith(store);
 		});

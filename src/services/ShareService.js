@@ -123,9 +123,7 @@ export class ShareService {
 
 		extractedState[QueryParameters.CENTER] = transformedCenter;
 		extractedState[QueryParameters.ZOOM] = roundedZoom;
-		if (rotation !== 0) {
-			extractedState[QueryParameters.ROTATION] = roundedRotation;
-		}
+		extractedState[QueryParameters.ROTATION] = roundedRotation;
 		return extractedState;
 	}
 

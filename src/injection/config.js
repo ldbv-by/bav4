@@ -16,7 +16,6 @@ import { mapModule } from '../modules/olMap/injection';
 import { AdministrationService } from '../services/AdministrationService';
 import { TopicsService } from '../services/TopicsService';
 import { topicsModule } from '../modules/topics/injection';
-import { BvvFileStorageService } from '../services/FileStorageService';
 import { LayersPlugin } from '../plugins/LayersPlugin';
 import { PositionPlugin } from '../plugins/PositionPlugin';
 import { TopicsPlugin } from '../plugins/TopicsPlugin';
@@ -41,7 +40,7 @@ import { SecurityService } from '../services/SecurityService';
 import { ImportWmsService } from '../services/ImportWmsService';
 import { BaaCredentialService } from '../services/BaaCredentialService';
 import { SearchPlugin } from '../plugins/SearchPlugin';
-import { HistoryStatePlugin } from '../plugins/HistoryStatePlugin';
+import { EncodeStatePlugin } from '../plugins/EncodeStatePlugin';
 import { BvvMfpService } from '../services/MfpService';
 import { ChipsConfigurationService } from '../services/ChipsConfigurationService';
 import { ExportMfpPlugin } from '../plugins/ExportMfpPlugin';
@@ -62,6 +61,8 @@ import { RoutingPlugin } from '../plugins/RoutingPlugin';
 import { AuthService } from '../services/AuthService';
 import { GlobalErrorPlugin } from '../plugins/GlobalErrorPlugin';
 import { AuthPlugin } from '../plugins/AuthPlugin';
+import { ObserveWcAttributesPlugin } from '../plugins/ObserveWcAttributesPlugin';
+import { fileStorageServiceFactory } from './factories';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
@@ -80,7 +81,7 @@ $injector
 	.register('ShareService', ShareService)
 	.register('UnitsService', UnitsService)
 	.register('FileSaveService', FileSaveService)
-	.register('FileStorageService', BvvFileStorageService)
+	.registerFactory('FileStorageService', fileStorageServiceFactory)
 	.register('UrlService', UrlService)
 	.registerSingleton('IconService', new IconService())
 	.register('AdministrationService', AdministrationService)
@@ -124,7 +125,8 @@ $injector
 	.registerSingleton('ToolsPlugin', new ToolsPlugin())
 	.registerSingleton('BeforeUnloadPlugin', new BeforeUnloadPlugin())
 	.registerSingleton('IframeGeometryIdPlugin', new IframeGeometryIdPlugin())
-	.registerSingleton('HistoryStatePlugin', new HistoryStatePlugin())
+	.registerSingleton('ObserveWcAttributesPlugin', new ObserveWcAttributesPlugin())
+	.registerSingleton('EncodeStatePlugin', new EncodeStatePlugin())
 	.registerSingleton('ObserveStateForEncodingPlugin', new ObserveStateForEncodingPlugin())
 	.registerModule(mapModule)
 	.registerModule(topicsModule)

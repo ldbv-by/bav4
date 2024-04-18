@@ -5,7 +5,7 @@ import { html, nothing } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { $injector } from '../../../../injection';
-import { deactivate as deactivateDrawing, activate as activateDrawing, finish, remove, reset, setType } from '../../../../store/draw/draw.action';
+import { finish, remove, reset, setType } from '../../../../store/draw/draw.action';
 import { MvuElement } from '../../../MvuElement';
 import undoSvg from './assets/arrow-counterclockwise.svg';
 import pencil from './assets/pencil.svg';
@@ -13,13 +13,17 @@ import cancelSvg from './assets/close-lg.svg';
 import finishSvg from './assets/checked.svg';
 import { QueryParameters } from '../../../../domain/queryParameters';
 import css from './drawTool.css';
+import { setCurrentTool } from '../../../../store/tools/tools.action';
+import { Tools } from '../../../../domain/tools';
 
 const Update = 'update';
 const Update_Tools = 'update_tools';
 /**
- *  IFrame component to draw simple geometries (Point, Line)
+ *  Embed-mode-only component to draw simple geometries (Point, Line, Polygon)
+ * @class
  */
 export class DrawTool extends MvuElement {
+	#renderingSkipped = true;
 	constructor() {
 		super({
 			active: false,
@@ -40,6 +44,11 @@ export class DrawTool extends MvuElement {
 	}
 
 	onInitialize() {
+		/**
+		 * Ensure detecting the visibility once just before the first rendering.
+		 * Afterwards the EC_DRAW_TOOL query parameter won't be available anymore.
+		 */
+		this.#renderingSkipped = !this._environmentService.getQueryParams().get(QueryParameters.EC_DRAW_TOOL);
 		this.observe(
 			(state) => state.draw,
 			(data) => this.signal(Update, data)
@@ -68,7 +77,7 @@ export class DrawTool extends MvuElement {
 	}
 
 	isRenderingSkipped() {
-		return !this._environmentService.getQueryParams().get(QueryParameters.EC_DRAW_TOOL);
+		return this.#renderingSkipped;
 	}
 
 	createView(model) {
@@ -120,9 +129,9 @@ export class DrawTool extends MvuElement {
 							.type=${'primary'}
 							.icon=${pencil}
 							.label=${translate('iframe_drawTool_enable')}
-							@click=${activateDrawing}
+							@click=${() => setCurrentTool(Tools.DRAW)}
 						></ba-button>
-						<ba-icon id="close-icon" class='tool-container__close-button draw-tool__disable-button' .icon='${cancelSvg}' .size=${1.6} .color=${'var(--text2)'} .color_hover=${'var(--text2)'} @click=${deactivateDrawing}>						
+						<ba-icon id="close-icon" class='tool-container__close-button draw-tool__disable-button' .icon='${cancelSvg}' .size=${1.6} .color=${'var(--text2)'} .color_hover=${'var(--text2)'} @click=${() => setCurrentTool(null)}>						
 					</div>
 					<div class="draw-tool-container">
 						<div class="ba-tool-container__title">${translate('iframe_drawTool_label')}</div>
