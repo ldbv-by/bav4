@@ -15,9 +15,7 @@ import { createDefaultLayer, layersReducer } from '../../../../src/store/layers/
 
 describe('VectorLayerService', () => {
 	const urlService = {
-		proxifyInstant: () => {},
-		pathParams: () => {},
-		originAndPathname: () => {}
+		proxifyInstant: () => {}
 	};
 
 	const configService = {
@@ -78,7 +76,6 @@ describe('VectorLayerService', () => {
 				spyOn(urlService, 'proxifyInstant')
 					.withArgs(iconUrl, false)
 					.and.returnValue('https://proxy.url?url=' + iconUrl);
-				spyOn(urlService, 'originAndPathname').withArgs(iconUrl).and.returnValue(iconUrl);
 
 				expect(bvvIconUrlFunction(iconUrl)).toBe('https://proxy.url?url=' + iconUrl);
 			});
@@ -87,8 +84,6 @@ describe('VectorLayerService', () => {
 				const backendUrl = 'https://backend.url/';
 				const iconUrl = 'https://geoportal.bayern.de/ba-backend/icons/255,0,0/marker';
 				spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-				spyOn(urlService, 'pathParams').withArgs(iconUrl).and.returnValue(['ba-backend', 'icons', '255,0,0', 'marker']);
-				spyOn(urlService, 'originAndPathname').withArgs(iconUrl).and.returnValue(iconUrl);
 
 				expect(bvvIconUrlFunction(iconUrl)).toBe(`${backendUrl}icons/255,0,0/marker.png`);
 			});
@@ -97,8 +92,6 @@ describe('VectorLayerService', () => {
 				const backendUrl = 'https://backend.url/';
 				const anyOtherLegacyUrl = 'https://geoportal.bayern.de/ba-backend/other';
 				spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-				spyOn(urlService, 'pathParams').withArgs(anyOtherLegacyUrl).and.returnValue(['ba-backend', 'other']);
-				spyOn(urlService, 'originAndPathname').withArgs(anyOtherLegacyUrl).and.returnValue(anyOtherLegacyUrl);
 
 				expect(bvvIconUrlFunction(anyOtherLegacyUrl)).toBe(anyOtherLegacyUrl);
 			});
@@ -107,7 +100,6 @@ describe('VectorLayerService', () => {
 				const backendUrl = 'https://backend.url/';
 				const iconUrl = `${backendUrl}icons/255,0,0/marker`;
 				spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-				spyOn(urlService, 'originAndPathname').withArgs(iconUrl).and.returnValue(iconUrl);
 
 				expect(bvvIconUrlFunction(iconUrl)).toBe(iconUrl);
 			});

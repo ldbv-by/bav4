@@ -1,19 +1,9 @@
-import { $injector } from '../../src/injection';
 import { BaaCredentialService } from '../../src/services/BaaCredentialService';
 
-describe('BaaService', () => {
-	const urlService = {
-		originAndPathname() {}
-	};
-
-	beforeAll(() => {
-		$injector.registerSingleton('UrlService', urlService);
-	});
-
+describe('BaaCredentialService', () => {
 	describe('addOrReplace', () => {
 		it('adds a credential object base64-encoded', () => {
-			const url = 'http://foo.bar/';
-			const spy = spyOn(urlService, 'originAndPathname').withArgs(url).and.returnValue(url);
+			const url = 'http://foo.bar';
 			const credential = {
 				username: 'username',
 				password: 'password'
@@ -25,7 +15,6 @@ describe('BaaService', () => {
 
 			expect(instanceUnderTest._credentials.get(url)).toBe(credentialEncoded);
 			expect(result).toBeTrue();
-			expect(spy).toHaveBeenCalled();
 		});
 
 		it('accepts only valid urls', () => {
@@ -43,7 +32,7 @@ describe('BaaService', () => {
 
 		it('accepts only a complete credential', () => {
 			const instanceUnderTest = new BaaCredentialService();
-			const url = 'http://foo.bar/';
+			const url = 'http://foo.bar';
 
 			expect(instanceUnderTest.addOrReplace(url)).toBeFalse();
 			expect(instanceUnderTest.addOrReplace(url, { username: 'username' })).toBeFalse();
@@ -53,8 +42,7 @@ describe('BaaService', () => {
 
 	describe('addOrReplace', () => {
 		it('return a credential object decoded', () => {
-			const url = 'http://foo.bar/';
-			const spy = spyOn(urlService, 'originAndPathname').withArgs(url).and.returnValue(url);
+			const url = 'http://foo.bar';
 			const credential = {
 				username: 'username',
 				password: 'password'
@@ -65,12 +53,11 @@ describe('BaaService', () => {
 			const result = instanceUnderTest.get(url);
 
 			expect(result).toEqual(credential);
-			expect(spy).toHaveBeenCalled();
 		});
 
 		it('accepts only valid urls', () => {
 			const instanceUnderTest = new BaaCredentialService();
-			const url = 'http://foo.bar/';
+			const url = 'http://foo.bar';
 			const credential = {
 				username: 'username',
 				password: 'password'
@@ -84,14 +71,14 @@ describe('BaaService', () => {
 
 		it('returns NULL when url is unknown', () => {
 			const instanceUnderTest = new BaaCredentialService();
-			const url = 'http://foo.bar/';
+			const url = 'http://foo.bar';
 			const credential = {
 				username: 'username',
 				password: 'password'
 			};
 			instanceUnderTest._credentials.set(url, btoa(JSON.stringify({ ...credential })));
 
-			const result = instanceUnderTest.get('http://fo.bar/');
+			const result = instanceUnderTest.get('http://fo.bar');
 
 			expect(result).toBeNull();
 		});

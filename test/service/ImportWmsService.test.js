@@ -9,12 +9,9 @@ describe('ImportWmsService', () => {
 	const geoResourceService = {
 		addOrReplace() {}
 	};
-	const urlService = {
-		originAndPathname() {}
-	};
 
 	beforeAll(() => {
-		$injector.registerSingleton('GeoResourceService', geoResourceService).registerSingleton('UrlService', urlService);
+		$injector.registerSingleton('GeoResourceService', geoResourceService);
 	});
 
 	const handledByGeoResourceServiceMarker = 'marker';
@@ -54,7 +51,6 @@ describe('ImportWmsService', () => {
 			};
 			const resultMock = [];
 			const providerSpy = jasmine.createSpy('provider').withArgs(url, getCompleteOptions()).and.resolveTo(resultMock);
-			spyOn(urlService, 'originAndPathname').withArgs(url).and.returnValue(url);
 			const instanceUnderTest = new ImportWmsService(providerSpy);
 
 			const result = await instanceUnderTest.forUrl(url, subSetOfOptions);
@@ -68,7 +64,6 @@ describe('ImportWmsService', () => {
 			const options = getCompleteOptions();
 			const resultMock = [new WmsGeoResource('0', '', '', '', ''), new WmsGeoResource('1', '', '', '', ''), new WmsGeoResource('2', '', '', '', '')];
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(addOrReplaceMethodMock);
-			const urlServiceSpy = spyOn(urlService, 'originAndPathname').withArgs(url).and.returnValue(url);
 			const instanceUnderTest = new ImportWmsService(async () => {
 				return resultMock;
 			});
@@ -80,7 +75,6 @@ describe('ImportWmsService', () => {
 				expect(gr.marker).toBe(handledByGeoResourceServiceMarker);
 			});
 			expect(geoResourceServiceSpy).toHaveBeenCalledTimes(3);
-			expect(urlServiceSpy).toHaveBeenCalled();
 		});
 
 		it('uses defaultOptions', async () => {
@@ -97,7 +91,6 @@ describe('ImportWmsService', () => {
 					ids: []
 				})
 				.and.resolveTo(resultMock);
-			spyOn(urlService, 'originAndPathname').withArgs(url).and.returnValue(url);
 			const instanceUnderTest = new ImportWmsService(providerSpy);
 
 			const result = await instanceUnderTest.forUrl(url);

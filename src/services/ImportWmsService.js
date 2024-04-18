@@ -6,6 +6,7 @@ import { SourceType, SourceTypeName } from '../domain/sourceType';
 
 import { bvvCapabilitiesProvider } from './provider/wmsCapabilities.provider';
 import { getAttributionProviderForGeoResourceImportedByUrl } from './provider/attribution.provider';
+import { getOriginAndPathname } from '../utils/urlUtils';
 
 /**
  * An async function that provides an array of {@link WmsGeoResource}s.
@@ -33,9 +34,8 @@ export class ImportWmsService {
 	 * @param {wmsCapabilitiesProvider} [wmsCapabilitiesProvider = bvvCapabilitiesProvider]
 	 */
 	constructor(wmsCapabilitiesProvider = bvvCapabilitiesProvider) {
-		const { GeoResourceService: geoResourceService, UrlService: urlService } = $injector.inject('GeoResourceService', 'UrlService');
+		const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
 		this._geoResourceService = geoResourceService;
-		this._urlService = urlService;
 		this._geoResourceService = geoResourceService;
 		this._wmsCapabilitiesProvider = wmsCapabilitiesProvider;
 	}
@@ -62,7 +62,7 @@ export class ImportWmsService {
 	 */
 	async forUrl(url, options = {}) {
 		const completeOptions = { ...this._newDefaultImportWmsOptions(), ...options };
-		const geoResources = await this._wmsCapabilitiesProvider(this._urlService.originAndPathname(url), completeOptions);
+		const geoResources = await this._wmsCapabilitiesProvider(getOriginAndPathname(url), completeOptions);
 		return geoResources
 			.map((gr) => gr.setAttributionProvider(getAttributionProviderForGeoResourceImportedByUrl(url)))
 			.map((gr) => this._geoResourceService.addOrReplace(gr));
