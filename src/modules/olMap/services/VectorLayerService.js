@@ -8,6 +8,7 @@ import { KML, GPX, GeoJSON, WKT } from 'ol/format';
 import VectorLayer from 'ol/layer/Vector';
 import { parse } from '../../../utils/ewkt';
 import { Cluster } from 'ol/source';
+import { getOriginAndPathname, getPathParams } from '../../../utils/urlUtils';
 
 const getUrlService = () => {
 	const { UrlService: urlService } = $injector.inject('UrlService');
@@ -20,8 +21,8 @@ export const bvvIconUrlFunction = (url) => {
 	const { UrlService: urlService, ConfigService: configService } = $injector.inject('UrlService', 'ConfigService');
 
 	// legacy v3 backend icons should be mapped to v4
-	if (urlService.originAndPathname(url).startsWith('https://geoportal.bayern.de/ba-backend')) {
-		const pathParams = urlService.pathParams(url);
+	if (getOriginAndPathname(url).startsWith('https://geoportal.bayern.de/ba-backend')) {
+		const pathParams = getPathParams(url);
 		// the legacy icon endpoint contains four path parameters
 		if (pathParams.length === 4 && pathParams[1] === 'icons') {
 			return `${configService.getValueAsPath('BACKEND_URL')}icons/${pathParams[pathParams.length - 2]}/${pathParams[pathParams.length - 1]}.png`;
@@ -29,7 +30,7 @@ export const bvvIconUrlFunction = (url) => {
 		// leave untouched for that case
 		return url;
 	} // icons from our backend do not need to be proxified
-	else if (urlService.originAndPathname(url).startsWith(configService.getValueAsPath('BACKEND_URL'))) {
+	else if (getOriginAndPathname(url).startsWith(configService.getValueAsPath('BACKEND_URL'))) {
 		return url;
 	}
 	return urlService.proxifyInstant(url, false);

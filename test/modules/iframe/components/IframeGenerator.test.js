@@ -18,9 +18,6 @@ describe('IframeGenerator', () => {
 		encodeState: () => {},
 		copyToClipboard() {}
 	};
-	const urlServiceMock = {
-		setQueryParams: () => {}
-	};
 
 	const getExtraParameters = () => {
 		const queryParameters = {};
@@ -31,10 +28,7 @@ describe('IframeGenerator', () => {
 
 	const setup = () => {
 		store = TestUtils.setupStoreAndDi({ notifications: { latest: null } }, { notifications: notificationReducer });
-		$injector
-			.registerSingleton('ShareService', shareServiceMock)
-			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('UrlService', urlServiceMock);
+		$injector.registerSingleton('ShareService', shareServiceMock).registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(IframeGenerator.tag);
 	};
 
@@ -365,9 +359,8 @@ describe('IframeGenerator', () => {
 	describe('when iframe source changes by user interaction (drag&zoom)', () => {
 		it('renders iframe with the changed values', async () => {
 			const initialUrl = 'https://myhost/app/embed.html?param=foo';
-			const updatedUrl = 'https://myhost/app/embed.html?param=bar';
+			const updatedUrl = 'https://myhost/app/embed.html?param=bar&ec_map_activation=true&ec_link_to_app=true';
 			spyOn(shareServiceMock, 'encodeState').withArgs(getExtraParameters(), [PathParameters.EMBED]).and.returnValue(initialUrl);
-			spyOn(urlServiceMock, 'setQueryParams').withArgs(updatedUrl, getExtraParameters()).and.returnValue(updatedUrl);
 			const element = await setup();
 
 			const textElement = element.shadowRoot.querySelector('#iframe_code');
