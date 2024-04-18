@@ -61,7 +61,7 @@ describe('DrawTool', () => {
 			expect(element._model.tools).toBeTruthy();
 			expect(element._model.tools.length).toBe(3);
 
-			expect(element._model.tools.map((t) => t.name)).toEqual(jasmine.arrayWithExactContents(['marker', 'line', 'polygon']));
+			expect(element._model.tools.map((t) => t.name)).toEqual(jasmine.arrayWithExactContents(['point', 'line', 'polygon']));
 		});
 
 		describe('QueryParameters.EC_DRAW_TOOL is NOT present', () => {
@@ -71,6 +71,85 @@ describe('DrawTool', () => {
 				const element = await setup();
 
 				expect(element.shadowRoot.children.length).toBe(0);
+			});
+		});
+
+		describe('QueryParameters.EC_DRAW_TOOL is a comma-separated list of values', () => {
+			it('builds the full list of tools', async () => {
+				const queryParam = new URLSearchParams(`${QueryParameters.EC_DRAW_TOOL}=fooBar`);
+				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				const element = await setup();
+
+				expect(element.shadowRoot.querySelectorAll('.draw-tool__button')).toHaveSize(3);
+				expect(element.shadowRoot.querySelector('#point-button')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('#line-button')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('#polygon-button')).toBeTruthy();
+			});
+
+			it('builds the list of tools WITHOUT point-tool', async () => {
+				const queryParam = new URLSearchParams(`${QueryParameters.EC_DRAW_TOOL}=line,polygon`);
+				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				const element = await setup();
+
+				expect(element.shadowRoot.querySelectorAll('.draw-tool__button')).toHaveSize(2);
+				expect(element.shadowRoot.querySelector('#point-button')).toBeFalsy();
+				expect(element.shadowRoot.querySelector('#line-button')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('#polygon-button')).toBeTruthy();
+			});
+
+			it('builds the list of tools WITHOUT line-tool', async () => {
+				const queryParam = new URLSearchParams(`${QueryParameters.EC_DRAW_TOOL}=point,polygon`);
+				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				const element = await setup();
+
+				expect(element.shadowRoot.querySelectorAll('.draw-tool__button')).toHaveSize(2);
+				expect(element.shadowRoot.querySelector('#point-button')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('#line-button')).toBeFalsy();
+				expect(element.shadowRoot.querySelector('#polygon-button')).toBeTruthy();
+			});
+
+			it('builds the list of tools WITHOUT polygon-tool', async () => {
+				const queryParam = new URLSearchParams(`${QueryParameters.EC_DRAW_TOOL}=point,line`);
+				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				const element = await setup();
+
+				expect(element.shadowRoot.querySelectorAll('.draw-tool__button')).toHaveSize(2);
+				expect(element.shadowRoot.querySelector('#point-button')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('#line-button')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('#polygon-button')).toBeFalsy();
+			});
+
+			it('builds the list of tools ONLY with line-tool', async () => {
+				const queryParam = new URLSearchParams(`${QueryParameters.EC_DRAW_TOOL}=point`);
+				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				const element = await setup();
+
+				expect(element.shadowRoot.querySelectorAll('.draw-tool__button')).toHaveSize(1);
+				expect(element.shadowRoot.querySelector('#point-button')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('#line-button')).toBeFalsy();
+				expect(element.shadowRoot.querySelector('#polygon-button')).toBeFalsy();
+			});
+
+			it('builds the list of tools ONLY with line-tool', async () => {
+				const queryParam = new URLSearchParams(`${QueryParameters.EC_DRAW_TOOL}=line`);
+				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				const element = await setup();
+
+				expect(element.shadowRoot.querySelectorAll('.draw-tool__button')).toHaveSize(1);
+				expect(element.shadowRoot.querySelector('#point-button')).toBeFalsy();
+				expect(element.shadowRoot.querySelector('#line-button')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('#polygon-button')).toBeFalsy();
+			});
+
+			it('builds the list of tools ONLY with polygon-tool', async () => {
+				const queryParam = new URLSearchParams(`${QueryParameters.EC_DRAW_TOOL}=polygon`);
+				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				const element = await setup();
+
+				expect(element.shadowRoot.querySelectorAll('.draw-tool__button')).toHaveSize(1);
+				expect(element.shadowRoot.querySelector('#point-button')).toBeFalsy();
+				expect(element.shadowRoot.querySelector('#line-button')).toBeFalsy();
+				expect(element.shadowRoot.querySelector('#polygon-button')).toBeTruthy();
 			});
 		});
 
@@ -151,15 +230,15 @@ describe('DrawTool', () => {
 					expect(store.getState().draw.type).toBe('line');
 				});
 
-				it('activates the Marker draw tool', async () => {
+				it('activates the Point draw tool', async () => {
 					const element = await setup();
-					const toolButton = element.shadowRoot.querySelector('#marker-button');
+					const toolButton = element.shadowRoot.querySelector('#point-button');
 					activate();
 
 					toolButton.click();
 
 					expect(toolButton.classList.contains('is-active')).toBeTrue();
-					expect(store.getState().draw.type).toBe('marker');
+					expect(store.getState().draw.type).toBe('point');
 				});
 
 				it('activates the Polygon draw tool', async () => {
@@ -175,7 +254,7 @@ describe('DrawTool', () => {
 
 				it('deactivates last tool, when activate another', async () => {
 					const element = await setup();
-					const lastButton = element.shadowRoot.querySelector('#marker-button');
+					const lastButton = element.shadowRoot.querySelector('#point-button');
 					activate();
 
 					lastButton.click();
@@ -187,15 +266,15 @@ describe('DrawTool', () => {
 					expect(lastButton.classList.contains('is-active')).toBeFalse();
 				});
 
-				it('toggles the marker tool', async () => {
+				it('toggles the point tool', async () => {
 					const element = await setup();
-					const toolButton = element.shadowRoot.querySelector('#marker-button');
+					const toolButton = element.shadowRoot.querySelector('#point-button');
 					activate();
 
 					toolButton.click();
 
 					expect(store.getState().draw.active).toBeTrue();
-					expect(store.getState().draw.type).toBe('marker');
+					expect(store.getState().draw.type).toBe('point');
 
 					toolButton.click();
 

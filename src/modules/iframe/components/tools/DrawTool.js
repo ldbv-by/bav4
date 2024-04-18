@@ -172,12 +172,12 @@ export class DrawTool extends MvuElement {
 		return [
 			{
 				id: 1,
-				name: 'marker',
+				name: 'point',
 				active: false,
 				title: translate('iframe_drawTool_symbol'),
 				icon: 'symbol',
 				visible: true,
-				activate: () => setType('marker'),
+				activate: () => setType('point'),
 				deactivate: () => reset()
 			},
 			{
