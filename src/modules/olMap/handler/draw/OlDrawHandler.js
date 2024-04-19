@@ -556,6 +556,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		const source = this._vectorLayer.getSource();
 		const snapTolerance = getSnapTolerancePerDevice();
 		switch (type) {
+			case StyleTypes.POINT:
 			case StyleTypes.MARKER:
 			case StyleTypes.TEXT:
 				return new Draw({
