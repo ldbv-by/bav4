@@ -184,7 +184,7 @@ describe('GlobalErrorPlugin', () => {
 					const emitGenericNotificationThrottledSpy = spyOn(instanceUnderTest, '_emitThrottledGenericNotification');
 
 					await expectAsync(Promise.reject(new Error(message)));
-					await TestUtils.timeout(100 /**give the plugin some iem to catch the error */);
+					await TestUtils.timeout(100 /**give the plugin some time to catch the error */);
 
 					expect(emitGenericNotificationThrottledSpy).toHaveBeenCalledTimes(1);
 				});

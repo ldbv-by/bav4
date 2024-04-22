@@ -30,7 +30,7 @@ export const initialState = {
 	querying: false,
 
 	/**
-	 * Changes when current FeatureInfo request should be aborted and/or results should be reseted.
+	 * Changes when current FeatureInfo request should be aborted and/or results should be reset.
 	 * Contains no payload.
 	 * @property {EvenLike | null}
 	 */

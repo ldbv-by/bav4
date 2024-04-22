@@ -65,7 +65,7 @@ export class MvuElement extends HTMLElement {
 			// Abstract class can not be constructed.
 			throw new Error('Can not construct abstract class.');
 		}
-		this._root = this.attachShadow({ mode: 'open' });
+		this._root = this.attachShadow({ mode: this.isShadowRootOpen() ? 'open' : 'closed' });
 		const { StoreService } = $injector.inject('StoreService');
 		/**
 		 * Do not access the store in child classes. Always use {@link MvuElement#model}.
@@ -82,6 +82,16 @@ export class MvuElement extends HTMLElement {
 		this._model = { ...model };
 
 		this._rendered = false;
+	}
+
+	/**
+	 * Hook that defines whether or not the shadow root's internal features are accessible from JavaScript.
+	 * Default is `true`.
+	 * @protected
+	 * @returns {boolean}
+	 */
+	isShadowRootOpen() {
+		return true;
 	}
 
 	/**

@@ -11,8 +11,8 @@ import { MvuElement } from '../../../../../MvuElement';
 import { $injector } from '../../../../../../injection';
 import { createUniqueId } from '../../../../../../utils/numberUtils';
 import { fitLayer } from '../../../../../../store/position/position.action';
-import { GeoResourceFuture } from '../../../../../../domain/geoResources';
-
+import { GeoResourceFuture, VectorGeoResource } from '../../../../../../domain/geoResources';
+import routingSvg from '../../assets/zoomToExtent.svg';
 const Update_IsPortrait = 'update_isPortrait';
 const Update_GeoResourceSearchResult = 'update_geoResourceSearchResult';
 const Update_LoadingPreviewFlag = 'update_loadingPreviewFlag';
@@ -32,6 +32,7 @@ export const LOADING_PREVIEW_DELAY_MS = 500;
  * @author taulinger
  */
 export class GeoResourceResultItem extends MvuElement {
+	#geoResourceService;
 	constructor() {
 		super({
 			geoResourceSearchResult: null,
@@ -39,8 +40,12 @@ export class GeoResourceResultItem extends MvuElement {
 			loadingPreview: false
 		});
 
-		const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
-		this._geoResourceService = geoResourceService;
+		const { GeoResourceService: geoResourceService, TranslationService: translationService } = $injector.inject(
+			'GeoResourceService',
+			'TranslationService'
+		);
+		this.#geoResourceService = geoResourceService;
+		this._translationService = translationService;
 		this._timeoutId = null;
 	}
 
@@ -72,25 +77,27 @@ export class GeoResourceResultItem extends MvuElement {
 
 	createView(model) {
 		const { isPortrait, geoResourceSearchResult, loadingPreview } = model;
+		const translate = (key) => this._translationService.translate(key);
 		/**
 		 * Uses mouseenter and mouseleave events for adding/removing a preview layer.
 		 * These events are not fired on touch devices, so there's no extra handling needed.
 		 */
 		const onMouseEnter = (result) => {
-			const id = GeoResourceResultItem._tmpLayerId(result.geoResourceId);
-			//add a preview layer
-			this._timeoutId = setTimeout(() => {
-				addLayer(id, { geoResourceId: result.geoResourceId, constraints: { hidden: true } });
+			//add a preview layer if GeoResource is accessible
+			if (this.#geoResourceService.isAllowed(result.geoResourceId)) {
+				const id = GeoResourceResultItem._tmpLayerId(result.geoResourceId);
+				this._timeoutId = setTimeout(() => {
+					addLayer(id, { geoResourceId: result.geoResourceId, constraints: { hidden: true } });
 
-				const geoRes = this._geoResourceService.byId(result.geoResourceId);
+					const geoRes = this.#geoResourceService.byId(result.geoResourceId);
 
-				if (geoRes instanceof GeoResourceFuture) {
-					this.signal(Update_LoadingPreviewFlag, true);
-					geoRes.onResolve(() => this.signal(Update_LoadingPreviewFlag, false));
-				}
-				fitLayer(id);
-				this._timeoutId = null;
-			}, LOADING_PREVIEW_DELAY_MS);
+					if (geoRes instanceof GeoResourceFuture) {
+						this.signal(Update_LoadingPreviewFlag, true);
+						geoRes.onResolve(() => this.signal(Update_LoadingPreviewFlag, false));
+					}
+					this._timeoutId = null;
+				}, LOADING_PREVIEW_DELAY_MS);
+			}
 		};
 		const onMouseLeave = (result) => {
 			//remove the preview layer
@@ -117,11 +124,42 @@ export class GeoResourceResultItem extends MvuElement {
 				setTab(TabIds.MAPS);
 			}
 		};
+
+		const onClickZoomToExtent = (e, result) => {
+			const id = GeoResourceResultItem._tmpLayerId(result.geoResourceId);
+			fitLayer(id);
+			e.stopPropagation();
+		};
+
 		const getActiveClass = () => {
 			return loadingPreview ? 'loading' : '';
 		};
 
+		const getBadges = (keywords) => {
+			const toBadges = (keywords) =>
+				keywords.map((keyword) => html`<ba-badge .color=${'var(--text3)'} .background=${'var(--roles-color)'} .label=${keyword}></ba-badge>`);
+			return keywords.length === 0 ? nothing : toBadges(keywords);
+		};
+
+		const getZoomToExtentButton = (result) => {
+			const geoRes = this.#geoResourceService.byId(result.geoResourceId);
+			return geoRes instanceof VectorGeoResource && this.#geoResourceService.isAllowed(result.geoResourceId)
+				? html` <div class="ba-icon-button ba-list-item__after separator">
+						<ba-icon
+							.icon="${routingSvg}"
+							.color=${'var(--primary-color)'}
+							.color_hover=${'var(--text3)'}
+							.size=${2}
+							.title="${translate('search_result_item_zoom_to_extent')}"
+							@click="${(e) => onClickZoomToExtent(e, result)}"
+						>
+						</ba-icon>
+					</div>`
+				: html` <div class="ba-icon-button ba-list-item__after"></div>`;
+		};
+
 		if (geoResourceSearchResult) {
+			const keywords = [...this.#geoResourceService.getKeywords(geoResourceSearchResult.geoResourceId)];
 			return html`
 				<style>
 					${css}
@@ -139,8 +177,9 @@ export class GeoResourceResultItem extends MvuElement {
 					<span class="ba-list-item__text ">
 						${loadingPreview
 							? html`<ba-spinner .label=${geoResourceSearchResult.labelFormatted}></ba-spinner>`
-							: html`${unsafeHTML(geoResourceSearchResult.labelFormatted)}`}
+							: html`${unsafeHTML(geoResourceSearchResult.labelFormatted)} ${getBadges(keywords)}`}
 					</span>
+					${getZoomToExtentButton(geoResourceSearchResult)}
 				</li>
 			`;
 		}

@@ -11,7 +11,7 @@ const getStore = () => {
 };
 
 /**
- * Indicates that the for encoding observed slices-of-state changed.
+ * Indicates that the encoding-relevant slices-of-state changed.
  * @function
  */
 export const indicateChange = () => {

@@ -5,15 +5,18 @@ import { $injector } from '../injection';
 import { round } from '../utils/numberUtils';
 import { QueryParameters } from '../domain/queryParameters';
 import { GlobalCoordinateRepresentations } from '../domain/coordinateRepresentation';
+import { getOrigin, getPathParams } from '../utils/urlUtils';
 
 /**
  * @class
  */
 export class ShareService {
+	#environmentService;
+	#configService;
 	constructor() {
 		const { EnvironmentService: environmentService, ConfigService: configService } = $injector.inject('EnvironmentService', 'ConfigService');
-		this._environmentService = environmentService;
-		this._configService = configService;
+		this.#environmentService = environmentService;
+		this.#configService = configService;
 	}
 
 	/**
@@ -22,8 +25,8 @@ export class ShareService {
 	 * @returns {Promise<undefined>}
 	 */
 	async copyToClipboard(textToCopy) {
-		if (this._environmentService.getWindow().isSecureContext) {
-			return this._environmentService.getWindow().navigator.clipboard.writeText(textToCopy);
+		if (this.#environmentService.getWindow().isSecureContext) {
+			return this.#environmentService.getWindow().navigator.clipboard.writeText(textToCopy);
 		}
 		throw new Error('Clipboard API is not available');
 	}
@@ -85,10 +88,14 @@ export class ShareService {
 			extraParams
 		);
 
-		const baseUrl = this._configService.getValueAsPath('FRONTEND_URL').replace('/index.html', '');
+		const baseUrl = `${getOrigin(this.#configService.getValueAsPath('FRONTEND_URL'))}/${getPathParams(
+			this.#configService.getValueAsPath('FRONTEND_URL')
+		)
+			.filter((p) => !p.endsWith('.html'))
+			.join('/')}`;
 		const searchParams = new URLSearchParams(extractedState);
 		const mergedPathParameters = pathParameters.length ? [...pathParameters] : [];
-		return `${baseUrl}${mergedPathParameters.join('/')}?${decodeURIComponent(searchParams.toString())}`;
+		return `${baseUrl}${baseUrl.endsWith('/') ? '' : '/'}${mergedPathParameters.join('/')}?${decodeURIComponent(searchParams.toString())}`;
 	}
 
 	/**
@@ -123,9 +130,7 @@ export class ShareService {
 
 		extractedState[QueryParameters.CENTER] = transformedCenter;
 		extractedState[QueryParameters.ZOOM] = roundedZoom;
-		if (rotation !== 0) {
-			extractedState[QueryParameters.ROTATION] = roundedRotation;
-		}
+		extractedState[QueryParameters.ROTATION] = roundedRotation;
 		return extractedState;
 	}
 

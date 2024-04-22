@@ -178,7 +178,7 @@ describe('CatalogLeaf', () => {
 
 					checkbox.click();
 
-					expect(store.getState().layers.active[0].id).toBe(layer.id);
+					expect(store.getState().layers.active[0].id.startsWith(`${layer.id}_`)).toBeTrue();
 
 					checkbox.click();
 

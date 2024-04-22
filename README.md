@@ -46,8 +46,8 @@ Next-generation web-map viewer based on web standards ([`live example`](https://
 
 ### Prerequisites
 
-- Node.js 18
-- npm 9.5.x or higher
+- Node.js 20
+- npm 10.5.x or higher
 
 Having [nvm](https://github.com/nvm-sh/nvm) installed, just run `nvm install && nvm use`
 

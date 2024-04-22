@@ -87,6 +87,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		this._vectorLayer = null;
 		this._draw = false;
+
 		this._storedContent = null;
 
 		this._sketchHandler = new OlSketchHandler();
@@ -107,6 +108,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._measureStateChangedListeners = [];
 		this._drawingListeners = [];
 		this._registeredObservers = [];
+		this._saveContentDebounced = debounced(this._environmentService.isEmbedded() ? 0 : Debounce_Delay, () => this._save());
 	}
 
 	/**
@@ -115,7 +117,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	 */
 	onActivate(olMap) {
 		const translate = (key) => this._translationService.translate(key);
-		if (!this._storeService.getStore().getState().shared.termsOfUseAcknowledged && !this._environmentService.isStandalone()) {
+		if (
+			!this._storeService.getStore().getState().shared.termsOfUseAcknowledged &&
+			!this._environmentService.isStandalone() &&
+			!this._environmentService.isEmbedded()
+		) {
 			const termsOfUse = translate('olMap_handler_termsOfUse');
 			if (termsOfUse) {
 				emitNotification(unsafeHTML(termsOfUse), LevelTypes.INFO);
@@ -183,16 +189,33 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const oldLayer = getOldLayer(this._map);
 			const layer = createLayer();
 			addOldFeatures(layer, oldLayer);
-			const saveDebounced = debounced(Debounce_Delay, () => this._save());
+
+			const updateContent = () => {
+				const features = layer.getSource().getFeatures();
+				features.forEach((f) => saveManualOverlayPosition(f));
+
+				this._storedContent = createKML(layer, 'EPSG:3857');
+				this._saveContentDebounced();
+			};
 			const setSelectedAndSave = (event) => {
 				if (this._measureState.type === InteractionStateType.DRAW) {
 					setSelection([event.feature.getId()]);
 				}
-				saveDebounced();
+
+				this._storedContent = createKML(layer, 'EPSG:3857');
+				this._save();
 			};
 			this._mapListeners.push(layer.getSource().on('addfeature', setSelectedAndSave));
-			this._mapListeners.push(layer.getSource().on('changefeature', () => saveDebounced()));
-			this._mapListeners.push(layer.getSource().on('removefeature', () => saveDebounced()));
+			this._mapListeners.push(
+				layer.getSource().on('changefeature', () => {
+					updateContent();
+				})
+			);
+			this._mapListeners.push(
+				layer.getSource().on('removefeature', () => {
+					updateContent();
+				})
+			);
 			this._mapListeners.push(this._map.getView().on('change:resolution', () => onResolutionChange(layer)));
 			return layer;
 		};
@@ -648,45 +671,38 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		action(ids);
 	}
 
-	/**
-	 * todo: redundant with OlDrawHandler, possible responsibility of a stateful _storageHandler
-	 */
 	async _save() {
-		const features = this._vectorLayer.getSource().getFeatures();
-		features.forEach((f) => saveManualOverlayPosition(f));
-
-		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
-		this._storedContent = newContent;
-		const fileSaveResult = await this._storageHandler.store(newContent, FileStorageServiceDataTypes.KML);
-		setFileSaveResult(fileSaveResult ? { fileSaveResult, content: newContent } : null);
+		/**
+		 * The stored content will be created/updated after adding/changing and removing features,
+		 * while interacting with the layer.
+		 */
+		const fileSaveResult = await this._storageHandler.store(this._storedContent, FileStorageServiceDataTypes.KML);
+		setFileSaveResult(fileSaveResult ? { fileSaveResult, content: this._storedContent } : null);
 	}
 
 	async _convertToPermanentLayer() {
 		const translate = (key) => this._translationService.translate(key);
 		const label = translate('olMap_handler_draw_layer_label');
 
-		const isEmpty = this._vectorLayer.getSource().getFeatures().length === 0;
-		if (isEmpty) {
-			return;
-		}
-
 		if (!this._storageHandler.isValid()) {
 			await this._save();
 		}
 
-		const id = this._storageHandler.getStorageId();
-		const getOrCreateVectorGeoResource = () => {
-			const fromService = this._geoResourceService.byId(id);
-			return fromService
-				? fromService
-				: new VectorGeoResource(id, label, VectorSourceType.KML).setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource);
-		};
-		const vgr = getOrCreateVectorGeoResource();
-		vgr.setSource(this._storedContent, 4326);
+		if (this._storedContent) {
+			const id = this._storageHandler.getStorageId();
+			const getOrCreateVectorGeoResource = () => {
+				const fromService = this._geoResourceService.byId(id);
+				return fromService
+					? fromService
+					: new VectorGeoResource(id, label, VectorSourceType.KML).setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource);
+			};
+			const vgr = getOrCreateVectorGeoResource();
+			vgr.setSource(this._storedContent, 4326);
 
-		// register the stored data as new georesource
-		this._geoResourceService.addOrReplace(vgr);
-		addLayer(id, { constraints: { metaData: false } });
+			// register the stored data as new georesource
+			this._geoResourceService.addOrReplace(vgr);
+			addLayer(id, { constraints: { metaData: false } });
+		}
 	}
 
 	static get Debounce_Delay() {

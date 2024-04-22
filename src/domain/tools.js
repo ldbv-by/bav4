@@ -14,3 +14,9 @@ export const Tools = Object.freeze({
 	EXPORT: 'export',
 	ROUTING: 'routing'
 });
+
+/**
+ * List of tools that are available for the embed mode.
+ * @constant {Array<Tools>}
+ */
+export const EmbedTools = Object.freeze([Tools.DRAW]);

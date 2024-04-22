@@ -81,15 +81,16 @@ export class MapContextMenuContent extends MvuElement {
 	 * @private
 	 */
 	async _getAdministration(coordinate) {
+		const emptyAdministration = {
+			community: null,
+			district: null
+		};
 		try {
 			const administration = await this._administrationService.getAdministration(coordinate);
-			this.signal(Update_Administration, administration);
+			this.signal(Update_Administration, administration ?? emitNotification);
 		} catch (e) {
 			console.error(e);
-			this.signal(Update_Administration, {
-				community: null,
-				district: null
-			});
+			this.signal(Update_Administration, emptyAdministration);
 		}
 	}
 

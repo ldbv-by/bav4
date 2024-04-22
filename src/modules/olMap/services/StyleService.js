@@ -36,6 +36,7 @@ export const StyleTypes = Object.freeze({
 	HIGHLIGHT_TEMP: 'highlight_temp',
 	DRAW: 'draw',
 	MARKER: 'marker',
+	POINT: 'point',
 	TEXT: 'text',
 	ANNOTATION: 'annotation',
 	LINE: 'line',
@@ -366,7 +367,7 @@ export class StyleService {
 				const scale = markerScaleToKeyword(style.getImage().getScale());
 				const size = style.getImage()?.getSize();
 				const pixelAnchor = style.getImage()?.getAnchor();
-				const text = style.getText().getText();
+				const text = style.getText()?.getText();
 				return {
 					symbolSrc: symbolSrc,
 					color: rgbToHex(color ? color : style.getText().getFill().getColor()),
