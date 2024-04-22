@@ -10,6 +10,7 @@ import { $injector } from '../../../injection/index';
 import { PROJECTED_LENGTH_GEOMETRY_PROPERTY, canShowAzimuthCircle, getAzimuth, getCoordinateAt } from '../utils/olGeometryUtils';
 import { Polygon } from '../../../../node_modules/ol/geom';
 import { round } from '../../../utils/numberUtils';
+import { getCenter } from '../../../../node_modules/ol/extent';
 
 export const BaOverlayTypes = {
 	TEXT: 'text',
@@ -108,7 +109,8 @@ export class BaOverlay extends BaElement {
 
 		switch (this._type) {
 			case BaOverlayTypes.AREA:
-				this._position = this.geometry.getInteriorPoint().getCoordinates().slice(0, -1);
+				this._position =
+					this.geometry instanceof Polygon ? this.geometry.getInteriorPoint().getCoordinates().slice(0, -1) : getCenter(this.geometry.getExtent());
 				this._content = getArea();
 				break;
 			case BaOverlayTypes.DISTANCE_PARTITION:

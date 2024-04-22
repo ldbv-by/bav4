@@ -165,6 +165,26 @@ describe('BaOverlay', () => {
 			expect(element.static).toBeFalse();
 			expect(element.innerText).toBe('');
 		});
+
+		it('renders the distance-partition view', async () => {
+			const geodeticGeometry = new LineString([
+				[0, 0],
+				[100, 0]
+			]);
+			const properties = {
+				type: BaOverlayTypes.DISTANCE_PARTITION,
+				geometry: geodeticGeometry,
+				value: 0.1
+			};
+			const element = await setup(properties);
+			const div = element.shadowRoot.querySelector('div');
+
+			expect(div.classList.contains('partition')).toBeTrue();
+			expect(div.classList.contains('floating')).toBeTrue();
+			expect(element.type).toBe(BaOverlayTypes.DISTANCE_PARTITION);
+			expect(element.static).toBeFalse();
+			expect(element.innerText).toBe('THE DISTANCE IN m');
+		});
 	});
 
 	describe('when value changed', () => {
