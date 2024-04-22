@@ -161,6 +161,17 @@ describe('DndImportPanel', () => {
 				expect(element.getModel().dropzoneContent).toBeNull();
 				expect(element.getModel().isActive).toBeFalse();
 			});
+
+			it('does NOT updates the model for a dragged text, while modal is active', async () => {
+				const state = { modal: { active: true } };
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => 'foo' };
+				const element = await setup(state);
+
+				simulateDragDropEvent('dragenter', dataTransferMock);
+
+				expect(element.getModel().dropzoneContent).toBe(null);
+				expect(element.getModel().isActive).toBeFalse();
+			});
 		});
 
 		describe('on dragover', () => {
