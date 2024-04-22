@@ -12,7 +12,6 @@ import Style from 'ol/style/Style';
 
 import { Icon as IconStyle } from 'ol/style';
 import { Feature } from 'ol';
-import { MeasurementOverlay } from '../components/MeasurementOverlay';
 import { Circle, LineString, MultiLineString, MultiPoint, MultiPolygon, Polygon } from 'ol/geom';
 import LayerGroup from 'ol/layer/Group';
 import { WMTS } from 'ol/source';
