@@ -30,8 +30,8 @@ export class DndImportPanel extends MvuElement {
 	constructor() {
 		super({
 			dropzoneContent: null,
-			isActive: false,
-			isModalActive: false
+			active: false,
+			modalActive: false
 		});
 		const { TranslationService, SourceTypeService } = $injector.inject('TranslationService', 'SourceTypeService');
 		this.#translationService = TranslationService;
@@ -55,9 +55,9 @@ export class DndImportPanel extends MvuElement {
 	update(type, data, model) {
 		switch (type) {
 			case Update_DropZone_Content:
-				return { ...model, dropzoneContent: data, isActive: data !== null };
+				return { ...model, dropzoneContent: data, active: data !== null };
 			case Update_Modal_Changed:
-				return { ...model, isModalActive: data };
+				return { ...model, modalActive: data };
 		}
 	}
 
@@ -90,7 +90,7 @@ export class DndImportPanel extends MvuElement {
 		};
 
 		const activeClass = {
-			is_active: model.isActive
+			is_active: model.active
 		};
 
 		return html`<style>
@@ -106,7 +106,7 @@ export class DndImportPanel extends MvuElement {
 
 		// If a modal is active, the import must be suppressed using drag & drop
 		// so as not to disrupt the user process in the modal.
-		if (this.getModel().isModalActive) {
+		if (this.getModel().modalActive) {
 			return;
 		}
 

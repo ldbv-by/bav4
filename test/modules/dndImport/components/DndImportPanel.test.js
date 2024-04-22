@@ -56,8 +56,8 @@ describe('DndImportPanel', () => {
 
 			expect(model).toEqual({
 				dropzoneContent: null,
-				isActive: false,
-				isModalActive: false
+				active: false,
+				modalActive: false
 			});
 		});
 	});
@@ -119,7 +119,7 @@ describe('DndImportPanel', () => {
 				simulateDragDropEvent('dragenter', dataTransferMock);
 
 				expect(element.getModel().dropzoneContent).toBe('dndImport_import_textcontent');
-				expect(element.getModel().isActive).toBeTrue();
+				expect(element.getModel().active).toBeTrue();
 			});
 
 			it('updates the model for a dragged file', async () => {
@@ -129,7 +129,7 @@ describe('DndImportPanel', () => {
 				simulateDragDropEvent('dragenter', dataTransferMock);
 
 				expect(element.getModel().dropzoneContent).toBe('dndImport_import_filecontent');
-				expect(element.getModel().isActive).toBeTrue();
+				expect(element.getModel().active).toBeTrue();
 			});
 
 			it('updates the model for a unknown dragged type', async () => {
@@ -139,7 +139,7 @@ describe('DndImportPanel', () => {
 				simulateDragDropEvent('dragenter', dataTransferMock);
 
 				expect(element.getModel().dropzoneContent).toBe('dndImport_import_unknown');
-				expect(element.getModel().isActive).toBeTrue();
+				expect(element.getModel().active).toBeTrue();
 			});
 
 			it('does NOT update the model for a dragged but empty type', async () => {
@@ -149,7 +149,7 @@ describe('DndImportPanel', () => {
 				simulateDragDropEvent('dragenter', dataTransferMock);
 
 				expect(element.getModel().dropzoneContent).toBeNull();
-				expect(element.getModel().isActive).toBeFalse();
+				expect(element.getModel().active).toBeFalse();
 			});
 
 			it('does NOT update the model for a dragged but undefined types', async () => {
@@ -159,7 +159,7 @@ describe('DndImportPanel', () => {
 				simulateDragDropEvent('dragenter', dataTransferMock);
 
 				expect(element.getModel().dropzoneContent).toBeNull();
-				expect(element.getModel().isActive).toBeFalse();
+				expect(element.getModel().active).toBeFalse();
 			});
 
 			it('does NOT updates the model for a dragged text, while modal is active', async () => {
@@ -170,7 +170,7 @@ describe('DndImportPanel', () => {
 				simulateDragDropEvent('dragenter', dataTransferMock);
 
 				expect(element.getModel().dropzoneContent).toBe(null);
-				expect(element.getModel().isActive).toBeFalse();
+				expect(element.getModel().active).toBeFalse();
 			});
 		});
 
@@ -212,12 +212,12 @@ describe('DndImportPanel', () => {
 				simulateDragDropEvent('dragenter', dataTransferMock);
 
 				expect(element.getModel().dropzoneContent).toBe('dndImport_import_filecontent');
-				expect(element.getModel().isActive).toBeTrue();
+				expect(element.getModel().active).toBeTrue();
 
 				simulateDragDropEvent('dragleave', dataTransferMock, dropZone);
 
 				expect(element.getModel().dropzoneContent).toBeNull();
-				expect(element.getModel().isActive).toBeFalse();
+				expect(element.getModel().active).toBeFalse();
 			});
 		});
 
@@ -541,12 +541,12 @@ describe('DndImportPanel', () => {
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
 				simulateDragDropEvent('dragenter', dataTransferMock);
-				expect(element.getModel().isActive).toBeTrue();
+				expect(element.getModel().active).toBeTrue();
 
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 
 				expect(element.getModel().dropzoneContent).toBeNull();
-				expect(element.getModel().isActive).toBeFalse();
+				expect(element.getModel().active).toBeFalse();
 			});
 		});
 	});
