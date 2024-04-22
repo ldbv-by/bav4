@@ -14,6 +14,7 @@ import { SourceTypeName, SourceTypeResultStatus } from '../../../domain/sourceTy
 import { isHttpUrl } from '../../../utils/checks';
 
 const Update_DropZone_Content = 'update_dropzone_content';
+const Update_Modal_Changed = 'update_modal_changed';
 const DragAndDropTypesMimeTypeFiles = 'Files';
 const stopRedirectAndDefaultHandler = (e) => {
 	e.stopPropagation();
@@ -27,7 +28,8 @@ export class DndImportPanel extends MvuElement {
 	constructor() {
 		super({
 			dropzoneContent: null,
-			isActive: false
+			isActive: false,
+			isModalActive: false
 		});
 		const { TranslationService, SourceTypeService } = $injector.inject('TranslationService', 'SourceTypeService');
 		this._translationService = TranslationService;
@@ -39,6 +41,10 @@ export class DndImportPanel extends MvuElement {
 	 */
 	onInitialize() {
 		document.addEventListener('dragenter', (e) => this._onDragEnter(e));
+		this.observe(
+			(state) => state.modal.active,
+			(data) => this.signal(Update_Modal_Changed, data)
+		);
 	}
 
 	/**
@@ -48,6 +54,8 @@ export class DndImportPanel extends MvuElement {
 		switch (type) {
 			case Update_DropZone_Content:
 				return { ...model, dropzoneContent: data, isActive: data !== null };
+			case Update_Modal_Changed:
+				return { ...model, isModalActive: data };
 		}
 	}
 
@@ -93,6 +101,10 @@ export class DndImportPanel extends MvuElement {
 
 	_onDragEnter(e) {
 		const translate = (key) => this._translationService.translate(key);
+
+		if (this.getModel().isModalActive) {
+			return;
+		}
 
 		stopRedirectAndDefaultHandler(e);
 		const types = e.dataTransfer.types || [];

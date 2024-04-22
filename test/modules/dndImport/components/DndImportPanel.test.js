@@ -9,6 +9,7 @@ import { notificationReducer } from '../../../../src/store/notifications/notific
 import { searchReducer } from '../../../../src/store/search/search.reducer';
 import { EventLike } from '../../../../src/utils/storeUtils';
 import { TestUtils } from '../../../test-utils';
+import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 
 window.customElements.define(DndImportPanel.tag, DndImportPanel);
 
@@ -38,6 +39,7 @@ describe('DndImportPanel', () => {
 		};
 
 		store = TestUtils.setupStoreAndDi(initialState, {
+			modal: modalReducer,
 			import: importReducer,
 			notifications: notificationReducer,
 			media: createNoInitialStateMediaReducer(),
@@ -54,7 +56,8 @@ describe('DndImportPanel', () => {
 
 			expect(model).toEqual({
 				dropzoneContent: null,
-				isActive: false
+				isActive: false,
+				isModalActive: false
 			});
 		});
 	});
