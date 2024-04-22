@@ -2504,14 +2504,14 @@ describe('BvvMfp3Encoder', () => {
 		it("resolves overlay with element of 'ba-measure-overlay' to a mfp 'geojson' spec", () => {
 			const distanceOverlayMock = {
 				getElement: () => {
-					return { tagName: 'ba-measure-overlay', innerText: 'foo bar baz', placement: { offset: [0.4, 2], positioning: 'top-center' } };
+					return { tagName: 'ba-map-overlay', innerText: 'foo bar baz', placement: { offset: [0.4, 2], positioning: 'top-center' } };
 				},
 				getPosition: () => [42, 21]
 			};
 			const partitionDistanceOverlayMock = {
 				getElement: () => {
 					return {
-						tagName: 'ba-measure-overlay',
+						tagName: 'ba-map-overlay',
 						innerText: 'foo bar baz',
 						type: MeasurementOverlayTypes.DISTANCE_PARTITION,
 						placement: { offset: [0.4, 2], positioning: 'top-center' }

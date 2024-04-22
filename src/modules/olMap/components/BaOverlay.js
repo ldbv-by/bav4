@@ -7,14 +7,7 @@ import { BaElement } from '../../BaElement';
 import css from './baOverlay.css';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { $injector } from '../../../injection/index';
-import {
-	PROJECTED_LENGTH_GEOMETRY_PROPERTY,
-	canShowAzimuthCircle,
-	getAzimuth,
-	getCoordinateAt,
-	getProjectedArea,
-	getProjectedLength
-} from '../utils/olGeometryUtils';
+import { PROJECTED_LENGTH_GEOMETRY_PROPERTY, canShowAzimuthCircle, getAzimuth, getCoordinateAt } from '../utils/olGeometryUtils';
 import { Polygon } from '../../../../node_modules/ol/geom';
 import { round } from '../../../utils/numberUtils';
 
@@ -108,7 +101,7 @@ export class BaOverlay extends BaElement {
 
 		const getArea = () => {
 			if (this.geometry instanceof Polygon) {
-				return this._unitsService.formatArea(getProjectedArea(this.geometry), 2);
+				return this._unitsService.formatArea(this._mapService.calcArea(this.geometry), 2);
 			}
 			return '';
 		};
@@ -158,7 +151,7 @@ export class BaOverlay extends BaElement {
 
 	_getMeasuredLength = (geometry) => {
 		const alreadyMeasuredLength = geometry ? geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY) : null;
-		return alreadyMeasuredLength ?? getProjectedLength(this.geometry);
+		return alreadyMeasuredLength ?? this._mapService.calcLength(this.geometry);
 	};
 
 	set placement(value) {

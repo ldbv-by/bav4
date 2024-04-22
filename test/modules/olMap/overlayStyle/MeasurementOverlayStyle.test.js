@@ -349,7 +349,7 @@ describe('MeasurementOverlayStyle', () => {
 		classUnderTest._createDistanceOverlay(feature, mapMock);
 
 		const baOverlay = feature.get('measurement').getElement();
-		expect(baOverlay.outerHTML).toBe('<ba-measure-overlay></ba-measure-overlay>');
+		expect(baOverlay.outerHTML).toBe('<ba-map-overlay></ba-map-overlay>');
 	});
 
 	it('create draggable measurement tooltip ', () => {

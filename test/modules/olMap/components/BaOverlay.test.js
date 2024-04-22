@@ -1,13 +1,37 @@
-import { Point } from 'ol/geom';
+import { LineString, Point, Polygon } from 'ol/geom';
 import { BaOverlay, BaOverlayTypes } from '../../../../src/modules/olMap/components/BaOverlay';
 import { TestUtils } from '../../../test-utils.js';
+import { $injector } from '../../../../src/injection/index.js';
+import proj4 from 'proj4';
+import { register } from 'ol/proj/proj4.js';
 
 window.customElements.define(BaOverlay.tag, BaOverlay);
 
 describe('BaOverlay', () => {
+	const unitServiceMock = {
+		// eslint-disable-next-line no-unused-vars
+		formatDistance(distance, decimals) {
+			return 'THE DISTANCE IN m';
+		},
+		// eslint-disable-next-line no-unused-vars
+		formatArea(area, decimals) {
+			return 'THE AREA IN m²';
+		}
+	};
+	const mapServiceMock = {
+		getSrid: () => 3857,
+		getLocalProjectedSrid: () => 25832,
+		getLocalProjectedSridExtent: () => null,
+		calcLength: () => {},
+		calcArea: () => {}
+	};
+
 	beforeEach(async () => {
 		TestUtils.setupStoreAndDi({});
 		// eslint-disable-next-line no-unused-vars
+		$injector.registerSingleton('UnitsService', unitServiceMock).registerSingleton('MapService', mapServiceMock);
+		proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
+		register(proj4);
 	});
 
 	const setup = async (properties = {}) => {
@@ -56,6 +80,90 @@ describe('BaOverlay', () => {
 			expect(element.type).toBe(BaOverlayTypes.HELP);
 			expect(element.static).toBeTrue();
 			expect(element.value).toBe('foo');
+		});
+
+		it('renders the distance view', async () => {
+			const geodeticGeometry = new LineString([
+				[0, 0],
+				[1, 0]
+			]);
+			const properties = {
+				type: BaOverlayTypes.DISTANCE,
+				geometry: geodeticGeometry
+			};
+			const element = await setup(properties);
+			const div = element.shadowRoot.querySelector('div');
+
+			expect(div.classList.contains('distance')).toBeTrue();
+			expect(div.classList.contains('floating')).toBeTrue();
+			expect(element.type).toBe(BaOverlayTypes.DISTANCE);
+			expect(element.static).toBeFalse();
+			expect(element.innerText).toBe('90.00°/THE DISTANCE IN m');
+		});
+
+		it('renders the distance view without azimuth angle', async () => {
+			const geodeticGeometry = new LineString([
+				[0, 0],
+				[1, 0],
+				[1, 1]
+			]);
+			const properties = {
+				type: BaOverlayTypes.DISTANCE,
+				geometry: geodeticGeometry
+			};
+			const element = await setup(properties);
+			const div = element.shadowRoot.querySelector('div');
+
+			expect(div.classList.contains('distance')).toBeTrue();
+			expect(div.classList.contains('floating')).toBeTrue();
+			expect(element.type).toBe(BaOverlayTypes.DISTANCE);
+			expect(element.static).toBeFalse();
+			expect(element.innerText).toBe('THE DISTANCE IN m');
+		});
+
+		it('renders the area view', async () => {
+			const geodeticGeometry = new Polygon([
+				[
+					[0, 0],
+					[10, 0],
+					[10, 10],
+					[0, 10],
+					[0, 0]
+				]
+			]);
+			const properties = {
+				type: BaOverlayTypes.AREA,
+				geometry: geodeticGeometry
+			};
+			const element = await setup(properties);
+			const div = element.shadowRoot.querySelector('div');
+
+			expect(div.classList.contains('area')).toBeTrue();
+			expect(div.classList.contains('floating')).toBeTrue();
+			expect(element.type).toBe(BaOverlayTypes.AREA);
+			expect(element.static).toBeFalse();
+			expect(element.innerText).toBe('THE AREA IN m²');
+		});
+
+		it('does NOT render the area view', async () => {
+			const geodeticGeometry = new LineString([
+				[0, 0],
+				[10, 0],
+				[10, 10],
+				[0, 10]
+			]);
+			const properties = {
+				type: BaOverlayTypes.AREA,
+				geometry: geodeticGeometry
+			};
+			const element = await setup(properties);
+			const div = element.shadowRoot.querySelector('div');
+
+			expect(div.classList.contains('area')).toBeTrue();
+			expect(div.classList.contains('floating')).toBeTrue();
+			expect(element.type).toBe(BaOverlayTypes.AREA);
+			expect(element.static).toBeFalse();
+			expect(element.innerText).toBe('');
 		});
 	});
 
