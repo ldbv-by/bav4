@@ -7,7 +7,8 @@ export const provide = (lang) => {
 				search_menu_geoResourceResultsPanel_label: 'Data',
 				search_menu_cpResultsPanel_label: 'Cadastral parcel',
 				search_menu_showAll_label: 'Show more...',
-				search_result_item_zoom_to_extent: 'Zoom to extent'
+				search_result_item_zoom_to_extent: 'Zoom to extent',
+				search_result_item_info: 'Info'
 			};
 
 		case 'de':
@@ -17,7 +18,8 @@ export const provide = (lang) => {
 				search_menu_geoResourceResultsPanel_label: 'Daten',
 				search_menu_cpResultsPanel_label: 'Flurstücke',
 				search_menu_showAll_label: 'Mehr...',
-				search_result_item_zoom_to_extent: 'Auf Inhalt zoomen'
+				search_result_item_zoom_to_extent: 'Auf Inhalt zoomen',
+				search_result_item_info: 'Info'
 			};
 
 		default:

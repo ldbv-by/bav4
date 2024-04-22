@@ -13,6 +13,10 @@ import { createUniqueId } from '../../../../../../utils/numberUtils';
 import { fitLayer } from '../../../../../../store/position/position.action';
 import { GeoResourceFuture, VectorGeoResource } from '../../../../../../domain/geoResources';
 import routingSvg from '../../assets/zoomToExtent.svg';
+import infoSvg from '../../assets/info.svg';
+import { MenuTypes } from '../../../../../commons/components/overflowMenu/OverflowMenu';
+import { openModal } from '../../../../../../store/modal/modal.action';
+
 const Update_IsPortrait = 'update_isPortrait';
 const Update_GeoResourceSearchResult = 'update_geoResourceSearchResult';
 const Update_LoadingPreviewFlag = 'update_loadingPreviewFlag';
@@ -125,10 +129,28 @@ export class GeoResourceResultItem extends MvuElement {
 			}
 		};
 
-		const onClickZoomToExtent = (e, result) => {
+		const onClickZoomToExtent = (result) => {
 			const id = GeoResourceResultItem._tmpLayerId(result.geoResourceId);
 			fitLayer(id);
-			e.stopPropagation();
+			//remove the preview layer
+			removeLayer(GeoResourceResultItem._tmpLayerId(result.geoResourceId));
+			if (this._timeoutId) {
+				clearTimeout(this._timeoutId);
+				this._timeoutId = null;
+			}
+			this.signal(Update_LoadingPreviewFlag, false);
+		};
+
+		const onClickOpenGeoResourceInfoPanel = async (result) => {
+			const content = html`<ba-georesourceinfo-panel .geoResourceId=${result.geoResourceId}></ba-georesourceinfo-panel>`;
+			openModal('label', content);
+			//remove the preview layer
+			removeLayer(GeoResourceResultItem._tmpLayerId(result.geoResourceId));
+			if (this._timeoutId) {
+				clearTimeout(this._timeoutId);
+				this._timeoutId = null;
+			}
+			this.signal(Update_LoadingPreviewFlag, false);
 		};
 
 		const getActiveClass = () => {
@@ -143,19 +165,19 @@ export class GeoResourceResultItem extends MvuElement {
 
 		const getZoomToExtentButton = (result) => {
 			const geoRes = this.#geoResourceService.byId(result.geoResourceId);
-			return geoRes instanceof VectorGeoResource && this.#geoResourceService.isAllowed(result.geoResourceId)
-				? html` <div class="ba-icon-button ba-list-item__after separator">
-						<ba-icon
-							.icon="${routingSvg}"
-							.color=${'var(--primary-color)'}
-							.color_hover=${'var(--text3)'}
-							.size=${2}
-							.title="${translate('search_result_item_zoom_to_extent')}"
-							@click="${(e) => onClickZoomToExtent(e, result)}"
-						>
-						</ba-icon>
-					</div>`
-				: html` <div class="ba-icon-button ba-list-item__after"></div>`;
+			const menuitems = [
+				{ label: translate('search_result_item_info'), icon: infoSvg, action: () => onClickOpenGeoResourceInfoPanel(result) },
+				{
+					label: translate('search_result_item_zoom_to_extent'),
+					disabled: !(geoRes instanceof VectorGeoResource) && this.#geoResourceService.isAllowed(result.geoResourceId),
+					icon: routingSvg,
+					action: () => onClickZoomToExtent(result)
+				}
+			];
+
+			return html` <div class="ba-icon-button ba-list-item__after separator">
+				<ba-overflow-menu .type=${MenuTypes.KEBAB} .items=${menuitems}></ba-overflow-menu>
+			</div>`;
 		};
 
 		if (geoResourceSearchResult) {

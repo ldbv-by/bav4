@@ -82,7 +82,7 @@ ba-icon:hover {
 }
 .ba-icon-button {
 	padding: 0 0.5em !important;
-	margin: auto;
+	margin: 0;
 	min-width: 3.5em;
 }
 .separator {
