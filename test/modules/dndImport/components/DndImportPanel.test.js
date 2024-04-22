@@ -9,6 +9,7 @@ import { notificationReducer } from '../../../../src/store/notifications/notific
 import { searchReducer } from '../../../../src/store/search/search.reducer';
 import { EventLike } from '../../../../src/utils/storeUtils';
 import { TestUtils } from '../../../test-utils';
+import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 
 window.customElements.define(DndImportPanel.tag, DndImportPanel);
 
@@ -38,6 +39,7 @@ describe('DndImportPanel', () => {
 		};
 
 		store = TestUtils.setupStoreAndDi(initialState, {
+			modal: modalReducer,
 			import: importReducer,
 			notifications: notificationReducer,
 			media: createNoInitialStateMediaReducer(),
@@ -54,7 +56,8 @@ describe('DndImportPanel', () => {
 
 			expect(model).toEqual({
 				dropzoneContent: null,
-				isActive: false
+				active: false,
+				modalActive: false
 			});
 		});
 	});
@@ -116,7 +119,7 @@ describe('DndImportPanel', () => {
 				simulateDragDropEvent('dragenter', dataTransferMock);
 
 				expect(element.getModel().dropzoneContent).toBe('dndImport_import_textcontent');
-				expect(element.getModel().isActive).toBeTrue();
+				expect(element.getModel().active).toBeTrue();
 			});
 
 			it('updates the model for a dragged file', async () => {
@@ -126,7 +129,7 @@ describe('DndImportPanel', () => {
 				simulateDragDropEvent('dragenter', dataTransferMock);
 
 				expect(element.getModel().dropzoneContent).toBe('dndImport_import_filecontent');
-				expect(element.getModel().isActive).toBeTrue();
+				expect(element.getModel().active).toBeTrue();
 			});
 
 			it('updates the model for a unknown dragged type', async () => {
@@ -136,7 +139,7 @@ describe('DndImportPanel', () => {
 				simulateDragDropEvent('dragenter', dataTransferMock);
 
 				expect(element.getModel().dropzoneContent).toBe('dndImport_import_unknown');
-				expect(element.getModel().isActive).toBeTrue();
+				expect(element.getModel().active).toBeTrue();
 			});
 
 			it('does NOT update the model for a dragged but empty type', async () => {
@@ -146,7 +149,7 @@ describe('DndImportPanel', () => {
 				simulateDragDropEvent('dragenter', dataTransferMock);
 
 				expect(element.getModel().dropzoneContent).toBeNull();
-				expect(element.getModel().isActive).toBeFalse();
+				expect(element.getModel().active).toBeFalse();
 			});
 
 			it('does NOT update the model for a dragged but undefined types', async () => {
@@ -156,7 +159,18 @@ describe('DndImportPanel', () => {
 				simulateDragDropEvent('dragenter', dataTransferMock);
 
 				expect(element.getModel().dropzoneContent).toBeNull();
-				expect(element.getModel().isActive).toBeFalse();
+				expect(element.getModel().active).toBeFalse();
+			});
+
+			it('does NOT updates the model for a dragged text, while modal is active', async () => {
+				const state = { modal: { active: true } };
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => 'foo' };
+				const element = await setup(state);
+
+				simulateDragDropEvent('dragenter', dataTransferMock);
+
+				expect(element.getModel().dropzoneContent).toBe(null);
+				expect(element.getModel().active).toBeFalse();
 			});
 		});
 
@@ -198,12 +212,12 @@ describe('DndImportPanel', () => {
 				simulateDragDropEvent('dragenter', dataTransferMock);
 
 				expect(element.getModel().dropzoneContent).toBe('dndImport_import_filecontent');
-				expect(element.getModel().isActive).toBeTrue();
+				expect(element.getModel().active).toBeTrue();
 
 				simulateDragDropEvent('dragleave', dataTransferMock, dropZone);
 
 				expect(element.getModel().dropzoneContent).toBeNull();
-				expect(element.getModel().isActive).toBeFalse();
+				expect(element.getModel().active).toBeFalse();
 			});
 		});
 
@@ -527,12 +541,12 @@ describe('DndImportPanel', () => {
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
 				simulateDragDropEvent('dragenter', dataTransferMock);
-				expect(element.getModel().isActive).toBeTrue();
+				expect(element.getModel().active).toBeTrue();
 
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 
 				expect(element.getModel().dropzoneContent).toBeNull();
-				expect(element.getModel().isActive).toBeFalse();
+				expect(element.getModel().active).toBeFalse();
 			});
 		});
 	});

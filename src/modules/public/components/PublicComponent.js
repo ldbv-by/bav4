@@ -74,6 +74,7 @@ export class PublicComponent extends MvuElement {
 	createView() {
 		//must be the same as in embed.html
 		return html`
+			<ba-dnd-import-panel></ba-dnd-import-panel>
 			<ba-ol-map></ba-ol-map>
 			<ba-view-larger-map-chip></ba-view-larger-map-chip>
 			<ba-draw-tool></ba-draw-tool>
