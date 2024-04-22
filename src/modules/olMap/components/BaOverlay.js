@@ -102,7 +102,7 @@ export class BaOverlay extends BaElement {
 
 		const getArea = () => {
 			if (this.geometry instanceof Polygon) {
-				return this._unitsService.formatArea(this._mapService.calcArea(this.geometry), 2);
+				return this._unitsService.formatArea(this._mapService.calcArea(this.geometry.getCoordinates()), 2);
 			}
 			return '';
 		};
@@ -153,7 +153,7 @@ export class BaOverlay extends BaElement {
 
 	_getMeasuredLength = (geometry) => {
 		const alreadyMeasuredLength = geometry ? geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY) : null;
-		return alreadyMeasuredLength ?? this._mapService.calcLength(this.geometry);
+		return alreadyMeasuredLength ?? this._mapService.calcLength(this.geometry.getCoordinates());
 	};
 
 	set placement(value) {
