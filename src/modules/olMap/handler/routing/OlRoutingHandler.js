@@ -20,6 +20,7 @@ import { observe } from '../../../../utils/storeUtils';
 import { PromiseQueue } from '../../../../utils/PromiseQueue';
 import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
+import EventType from 'ol/events/EventType';
 import { unByKey } from 'ol/Observable';
 import { HelpTooltip } from '../../tooltip/HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
@@ -149,7 +150,10 @@ export class OlRoutingHandler extends OlLayerHandler {
 				MapBrowserEventType.POINTERMOVE,
 				this._newPointerMoveHandler(olMap, this._interactionLayer, this._alternativeRouteLayer, this._routeLayerCopy)
 			),
-			olMap.on(MapBrowserEventType.CLICK, this._newClickHandler(olMap, this._interactionLayer, this._alternativeRouteLayer, this._routeLayerCopy))
+			olMap.on(
+				[MapBrowserEventType.CLICK, EventType.CONTEXTMENU],
+				this._newClickHandler(olMap, this._interactionLayer, this._alternativeRouteLayer, this._routeLayerCopy)
+			)
 		);
 		return this._routingLayerGroup;
 	}
@@ -163,6 +167,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 	_newClickHandler(map, interactionLayer, alternativeRouteLayer, routeLayerCopy) {
 		return (event) => {
+			event.preventDefault();
 			const coord = map.getEventCoordinate(event.originalEvent);
 			const pixel = map.getEventPixel(event.originalEvent);
 			const hit = map.getFeaturesAtPixel(pixel, this._getFeaturesAtPixelOptionsForClickHandler(interactionLayer, alternativeRouteLayer));
