@@ -524,7 +524,7 @@ describe('ShareService', () => {
 
 				it('encodes a state object to url removing `index.html` from path', () => {
 					setup();
-					spyOn(configService, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(`${mockFrontendUrl}index.html/`);
+					spyOn(configService, 'getValueAsPath').and.returnValue(`${mockFrontendUrl}index.html/`);
 					const instanceUnderTest = new ShareService();
 					spyOn(instanceUnderTest, '_extractPosition')
 						.withArgs([44.123, 88.123], 5, 0.5)
