@@ -24,6 +24,14 @@ describe('Injector', () => {
 		});
 	});
 
+	describe('registerFactory', () => {
+		it('returns the injector instance', () => {
+			const returnValue = $injector.registerFactory('HttpService', () => ({ get: "I'm a router." }));
+
+			expect(returnValue).toEqual($injector);
+		});
+	});
+
 	describe('register', () => {
 		it('returns the injector instance', () => {
 			const instanceHttp = () => {
@@ -83,13 +91,14 @@ describe('Injector', () => {
 
 	describe('getScope', () => {
 		it('returns the scope of a dependency', () => {
-			const instanceHttp = () => {
-				this.get = "I'm a http service.";
-			};
-			$injector.register('HttpService', instanceHttp).registerSingleton('RouterService', { get: "I'm a router." });
+			const instance = () => {};
+			const singleton = {};
+			const factory = () => ({});
+			$injector.register('Instance', instance).registerSingleton('Singleton', singleton).registerFactory('Factory', factory);
 
-			expect($injector.getScope('HttpService')).toBe(Injector.SCOPE_PERLOOKUP);
-			expect($injector.getScope('RouterService')).toBe(Injector.SCOPE_SINGLETON);
+			expect($injector.getScope('Instance')).toBe(Injector.SCOPE_PERLOOKUP);
+			expect($injector.getScope('Singleton')).toBe(Injector.SCOPE_SINGLETON);
+			expect($injector.getScope('Factory')).toBe(Injector.SCOPE_PERLOOKUP);
 			expect($injector.getScope('Foo')).toBeNull();
 		});
 	});

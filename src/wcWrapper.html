@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en" translate="no">
+	<head>
+		<title>Bav4 WC Wrapper</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+		<meta charset="utf-8" />
+		<meta name="google" content="notranslate" />
+	</head>
+
+	<body>
+		<bayern-atlas
+			l="luftbild_labels,803da236-15f1-4c97-91e0-73248154d381,c5859de2-5f50-428a-aa63-c14e7543463f"
+			z="15"
+			c="671092,5299670"
+			r="0.5"
+			ec_draw_tool="polygon"
+			tid=""
+		></bayern-atlas>
+		<div style="position: absolute">
+			<button id="zoomIn">Zoom in</button>
+			<button id="zoomOut">Zoom out</button>
+			<select id="layer-select">
+				<option value="luftbild_labels">Luftbild</option>
+				<option value="atkis">Webkarte</option>
+			</select>
+			<input type="range" id="layer-opacity" min="0" max="100" value="100" step="1" />
+			<textarea id="geometry"></textarea>
+		</div>
+	</body>
+	<script>
+		document.querySelector('#zoomIn').addEventListener('click', () => {
+			document.querySelector('bayern-atlas').setAttribute('z', parseInt(document.querySelector('bayern-atlas').getAttribute('z')) + 1);
+		});
+		document.querySelector('#zoomOut').addEventListener('click', () => {
+			document.querySelector('bayern-atlas').setAttribute('z', parseInt(document.querySelector('bayern-atlas').getAttribute('z')) - 1);
+		});
+		document.querySelector('#layer-select').addEventListener('change', (event) => {
+			//replace the layer on index = 0
+			const layers = document.querySelector('bayern-atlas').getAttribute('l').split(',');
+			layers.splice(0, 1, event.target.value);
+			document.querySelector('bayern-atlas').setAttribute('l', layers.join(','));
+		});
+		document.querySelector('#layer-opacity').addEventListener('input', (event) => {
+			document.querySelector('bayern-atlas').setAttribute('l_o', event.target.value / 100);
+		});
+		document.querySelector('bayern-atlas').addEventListener('ba-geometry-change', (event) => {
+			document.querySelector('#geometry').value = event.detail ? event.detail.data : '';
+		});
+		document.querySelector('bayern-atlas').addEventListener('ba-feature-select', (event) => {
+			document.querySelector('#geometry').value = event.detail.items.map((i) => JSON.stringify(i.data));
+		});
+
+		window.addEventListener('ba-load', (event) => {
+			window.ba_wcLoaded = true;
+		});
+	</script>
+	<script>
+		/**
+		 * Needed for e2e test
+		 */
+		window.addEventListener('ba-load', () => {
+			window.ba_wcLoaded = true;
+		});
+	</script>
+	<script src="../wc.js" defer></script>
+</html>

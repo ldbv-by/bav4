@@ -32,7 +32,8 @@ describe('RoutingPlugin', () => {
 		translate: (key) => key
 	};
 	const environmentService = {
-		getQueryParams: () => new URLSearchParams()
+		getQueryParams: () => new URLSearchParams(),
+		isEmbedded: () => false
 	};
 
 	const setup = (state) => {
@@ -68,6 +69,17 @@ describe('RoutingPlugin', () => {
 				await instanceUnderTest.register(store);
 
 				expect(store.getState().tools.current).toBe(Tools.ROUTING);
+			});
+
+			it('does nothing when embedded', async () => {
+				const store = setup();
+				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2`);
+				const instanceUnderTest = new RoutingPlugin();
+				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParams);
+				spyOn(environmentService, 'isEmbedded').and.returnValue(true);
+				await instanceUnderTest.register(store);
+
+				expect(store.getState().tools.current).toBeNull();
 			});
 		});
 	});

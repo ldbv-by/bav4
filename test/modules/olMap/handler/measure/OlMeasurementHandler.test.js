@@ -93,7 +93,7 @@ describe('OlMeasurementHandler', () => {
 	};
 
 	const translationServiceMock = { translate: (key) => key };
-	const environmentServiceMock = { isTouch: () => false, isStandalone: () => false };
+	const environmentServiceMock = { isTouch: () => false, isStandalone: () => false, isEmbedded: () => false };
 	const initialState = {
 		active: false,
 		statistic: { length: 0, area: 0 },
@@ -262,7 +262,7 @@ describe('OlMeasurementHandler', () => {
 			});
 
 			describe('when termsOfUse are empty', () => {
-				it('emits not a notification', async () => {
+				it('does NOT emit a notification', async () => {
 					const store = setup();
 					const map = setupMap();
 					spyOn(translationServiceMock, 'translate').and.callFake(() => '');
@@ -280,12 +280,27 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		describe('when TermsOfUse already acknowledged', () => {
-			it('emits NOT a notification', async () => {
+			it('does NOT emit a notification', async () => {
 				const store = setup();
 				const map = setupMap();
 				const classUnderTest = new OlMeasurementHandler();
 				acknowledgeTermsOfUse();
 				expect(store.getState().shared.termsOfUseAcknowledged).toBeTrue();
+				classUnderTest.activate(map);
+
+				await TestUtils.timeout();
+				//check notification
+				expect(store.getState().notifications.latest).toBeFalsy();
+			});
+		});
+
+		describe('when embedded ', () => {
+			it('does NOT emit a notification', async () => {
+				const store = setup();
+				const map = setupMap();
+				const classUnderTest = new OlMeasurementHandler();
+				spyOn(environmentServiceMock, 'isEmbedded').and.returnValue(true);
+
 				classUnderTest.activate(map);
 
 				await TestUtils.timeout();
@@ -1099,12 +1114,13 @@ describe('OlMeasurementHandler', () => {
 				const feature = new Feature({ geometry: geometry });
 
 				classUnderTest.activate(map);
-				classUnderTest._vectorLayer.getSource().addFeature(feature); // -> first call of debounced _save, caused by vectorsource:addfeature-event
+				classUnderTest._vectorLayer.getSource().addFeature(feature); // -> first call of _save, caused by vectorsource:addfeature-event
+				feature.getGeometry().dispatchEvent('change'); // -> first call of debounced _save, caused by vectorsource:changefeature-event
 				feature.getGeometry().dispatchEvent('change'); // -> second call of debounced _save, caused by vectorsource:changefeature-event
 				jasmine.clock().tick(afterDebounceDelay);
 
-				expect(privateSaveSpy).toHaveBeenCalledTimes(1);
-				expect(storeSpy).toHaveBeenCalledTimes(1);
+				expect(privateSaveSpy).toHaveBeenCalledTimes(2);
+				expect(storeSpy).toHaveBeenCalledTimes(2);
 			});
 
 			it('stores once after a feature removed', async () => {
@@ -1125,8 +1141,8 @@ describe('OlMeasurementHandler', () => {
 				classUnderTest._vectorLayer.getSource().removeFeature(feature); // -> second call of debounced _save, caused by vectorsource:removefeature-event
 				jasmine.clock().tick(afterDebounceDelay);
 
-				expect(privateSaveSpy).toHaveBeenCalledTimes(1);
-				expect(storeSpy).toHaveBeenCalledTimes(1);
+				expect(privateSaveSpy).toHaveBeenCalledTimes(2);
+				expect(storeSpy).toHaveBeenCalledTimes(2);
 			});
 
 			it('stores only once after multiple changes of a feature', async () => {
@@ -1149,8 +1165,39 @@ describe('OlMeasurementHandler', () => {
 				feature.dispatchEvent('change');
 				jasmine.clock().tick(afterDebounceDelay);
 
-				expect(privateSaveSpy).toHaveBeenCalledTimes(1);
-				expect(storeSpy).toHaveBeenCalledTimes(1);
+				expect(privateSaveSpy).toHaveBeenCalledTimes(2);
+				expect(storeSpy).toHaveBeenCalledTimes(2);
+			});
+
+			describe('when in embedded mode', () => {
+				const withinDebounceDelay = OlMeasurementHandler.Debounce_Delay / 10;
+				it('stores after each change of a feature', async () => {
+					setup();
+					spyOn(environmentServiceMock, 'isEmbedded').and.returnValue(true);
+					const classUnderTest = new OlMeasurementHandler();
+					const map = setupMap();
+					const storeSpy = spyOn(interactionStorageServiceMock, 'store');
+					const privateSaveSpy = spyOn(classUnderTest, '_save').and.callThrough();
+					const geometry = new LineString([
+						[0, 0],
+						[1, 0]
+					]);
+					const feature = new Feature({ geometry: geometry });
+
+					classUnderTest.activate(map);
+					classUnderTest._vectorLayer.getSource().addFeature(feature); // -> call of debounced _save, caused by vectorsource:addfeature-event
+					feature.dispatchEvent('change'); // -> second call of debounced _save, caused by vectorsource:changefeature-event
+					jasmine.clock().tick(0);
+					feature.dispatchEvent('change');
+					jasmine.clock().tick(0);
+					feature.dispatchEvent('change');
+					jasmine.clock().tick(0);
+					feature.dispatchEvent('change');
+					jasmine.clock().tick(withinDebounceDelay);
+
+					expect(privateSaveSpy).toHaveBeenCalledTimes(5);
+					expect(storeSpy).toHaveBeenCalledTimes(5);
+				});
 			});
 		});
 

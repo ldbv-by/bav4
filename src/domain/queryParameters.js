@@ -77,15 +77,15 @@ export const QueryParameters = Object.freeze({
 	/**
 	 * The drawing tool (`point`, `line`,`polygon`, comma-separated)
 	 */
-	EC_DRAW_TOOL: 'ec-draw-tool',
+	EC_DRAW_TOOL: 'ec_draw_tool',
 	/**
 	 * Show the map insensitive for user interactions unless the user activates the map via a button (`boolean`)
 	 */
-	EC_MAP_ACTIVATION: 'ec-map-activation',
+	EC_MAP_ACTIVATION: 'ec_map_activation',
 	/**
 	 * Show a chip that opens the current view in the application (`boolean`)
 	 */
-	EC_LINK_TO_APP: 'ec-link-to-app',
+	EC_LINK_TO_APP: 'ec_link_to_app',
 
 	/**
 	 * TECHNICAL PARAMETERS
@@ -94,9 +94,5 @@ export const QueryParameters = Object.freeze({
 	/**
 	 * Render test ids (`boolean`)
 	 */
-	T_ENABLE_TEST_IDS: 't_enable-test-ids',
-	/**
-	 * Currently not supported.
-	 */
-	T_DISABLE_INITIAL_UI_HINTS: 't_disable-initial-ui-hints'
+	T_ENABLE_TEST_IDS: 't_enable-test-ids'
 });

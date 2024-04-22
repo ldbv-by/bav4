@@ -151,48 +151,25 @@ describe('ShareService', () => {
 
 		describe('_extractPosition', () => {
 			describe('from state', () => {
-				describe('and rotation = 0', () => {
-					it('extracts the position state', () => {
-						const zoomLevel = 5.35;
-						const viewSrid = 25832;
-						const mapSrid = 3857;
-						setup();
-						const instanceUnderTest = new ShareService();
-						spyOn(mapService, 'getCoordinateRepresentations').and.returnValue([{ code: viewSrid, digits: 3 }]);
-						spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
-						spyOn(mapService, 'getLocalProjectedSrid').and.returnValue(viewSrid);
-						spyOn(coordinateService, 'transform').withArgs([21, 42], mapSrid, viewSrid).and.returnValue([44.12345, 88.12345]);
-						changeZoomAndCenter({ zoom: zoomLevel, center: [21, 42] });
+				it('extracts the current position state', () => {
+					const zoomLevel = 5.35;
+					const rotationValue = 0.5347485;
+					const viewSrid = 25832;
+					const mapSrid = 3857;
+					setup();
+					const instanceUnderTest = new ShareService();
+					spyOn(mapService, 'getCoordinateRepresentations').and.returnValue([{ code: viewSrid, digits: 3 }]);
+					spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
+					spyOn(mapService, 'getLocalProjectedSrid').and.returnValue(viewSrid);
+					spyOn(coordinateService, 'transform').withArgs([21, 42], mapSrid, viewSrid).and.returnValue([44.12345, 88.12345]);
+					changeZoomAndCenter({ zoom: zoomLevel, center: [21, 42] });
+					changeRotation(rotationValue);
 
-						const extract = instanceUnderTest._extractPosition();
+					const extract = instanceUnderTest._extractPosition();
 
-						expect(extract[QueryParameters.ZOOM]).toBe(round(zoomLevel, ShareService.ZOOM_LEVEL_PRECISION));
-						expect(extract[QueryParameters.CENTER]).toEqual(['44.123', '88.123']);
-						expect(extract[QueryParameters.ROTATION]).toBeUndefined();
-					});
-				});
-
-				describe('and rotation != 0', () => {
-					it('extracts the current position state', () => {
-						const zoomLevel = 5.35;
-						const rotationValue = 0.5347485;
-						const viewSrid = 25832;
-						const mapSrid = 3857;
-						setup();
-						const instanceUnderTest = new ShareService();
-						spyOn(mapService, 'getCoordinateRepresentations').and.returnValue([{ code: viewSrid, digits: 3 }]);
-						spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
-						spyOn(mapService, 'getLocalProjectedSrid').and.returnValue(viewSrid);
-						spyOn(coordinateService, 'transform').withArgs([21, 42], mapSrid, viewSrid).and.returnValue([44.12345, 88.12345]);
-						changeZoomAndCenter({ zoom: zoomLevel, center: [21, 42] });
-						changeRotation(rotationValue);
-
-						const extract = instanceUnderTest._extractPosition();
-
-						expect(extract[QueryParameters.ZOOM]).toBe(round(zoomLevel, ShareService.ZOOM_LEVEL_PRECISION));
-						expect(extract[QueryParameters.CENTER]).toEqual(['44.123', '88.123']);
-						expect(extract[QueryParameters.ROTATION]).toBe(round(rotationValue, ShareService.ROTATION_VALUE_PRECISION));
-					});
+					expect(extract[QueryParameters.ZOOM]).toBe(round(zoomLevel, ShareService.ZOOM_LEVEL_PRECISION));
+					expect(extract[QueryParameters.CENTER]).toEqual(['44.123', '88.123']);
+					expect(extract[QueryParameters.ROTATION]).toBe(round(rotationValue, ShareService.ROTATION_VALUE_PRECISION));
 				});
 
 				describe('CoordinateRepresentation is global', () => {
@@ -213,7 +190,7 @@ describe('ShareService', () => {
 
 						expect(extract[QueryParameters.ZOOM]).toBe(round(zoomLevel, ShareService.ZOOM_LEVEL_PRECISION));
 						expect(extract[QueryParameters.CENTER]).toEqual(['11111.11111', '22222.22222']);
-						expect(extract[QueryParameters.ROTATION]).toBeUndefined();
+						expect(extract[QueryParameters.ROTATION]).toBe(0);
 					});
 				});
 				describe('CoordinateRepresentation is local', () => {
@@ -234,50 +211,28 @@ describe('ShareService', () => {
 
 						expect(extract[QueryParameters.ZOOM]).toBe(round(zoomLevel, ShareService.ZOOM_LEVEL_PRECISION));
 						expect(extract[QueryParameters.CENTER]).toEqual(['11111', '22222']);
-						expect(extract[QueryParameters.ROTATION]).toBeUndefined();
+						expect(extract[QueryParameters.ROTATION]).toBe(0);
 					});
 				});
 			});
 			describe('from method parameters', () => {
-				describe('and rotation = 0', () => {
-					it('extracts the position state', () => {
-						const zoomLevel = 5.35;
-						const viewSrid = 25832;
-						const mapSrid = 3857;
-						setup();
-						const instanceUnderTest = new ShareService();
-						spyOn(mapService, 'getCoordinateRepresentations').and.returnValue([{ code: viewSrid, digits: 3 }]);
-						spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
-						spyOn(mapService, 'getLocalProjectedSrid').and.returnValue(viewSrid);
-						spyOn(coordinateService, 'transform').withArgs([21, 42], mapSrid, viewSrid).and.returnValue([44.12345, 88.12345]);
+				it('extracts the current position state', () => {
+					const zoomLevel = 5.35;
+					const rotationValue = 0.5347485;
+					const viewSrid = 25832;
+					const mapSrid = 3857;
+					setup();
+					const instanceUnderTest = new ShareService();
+					spyOn(mapService, 'getCoordinateRepresentations').and.returnValue([{ code: viewSrid, digits: 3 }]);
+					spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
+					spyOn(mapService, 'getLocalProjectedSrid').and.returnValue(viewSrid);
+					spyOn(coordinateService, 'transform').withArgs([21, 42], mapSrid, viewSrid).and.returnValue([44.12345, 88.12345]);
 
-						const extract = instanceUnderTest._extractPosition([21, 42], zoomLevel);
+					const extract = instanceUnderTest._extractPosition([21, 42], zoomLevel, rotationValue);
 
-						expect(extract[QueryParameters.ZOOM]).toBe(round(zoomLevel, ShareService.ZOOM_LEVEL_PRECISION));
-						expect(extract[QueryParameters.CENTER]).toEqual(['44.123', '88.123']);
-						expect(extract[QueryParameters.ROTATION]).toBeUndefined();
-					});
-				});
-
-				describe('and rotation != 0', () => {
-					it('extracts the current position state', () => {
-						const zoomLevel = 5.35;
-						const rotationValue = 0.5347485;
-						const viewSrid = 25832;
-						const mapSrid = 3857;
-						setup();
-						const instanceUnderTest = new ShareService();
-						spyOn(mapService, 'getCoordinateRepresentations').and.returnValue([{ code: viewSrid, digits: 3 }]);
-						spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
-						spyOn(mapService, 'getLocalProjectedSrid').and.returnValue(viewSrid);
-						spyOn(coordinateService, 'transform').withArgs([21, 42], mapSrid, viewSrid).and.returnValue([44.12345, 88.12345]);
-
-						const extract = instanceUnderTest._extractPosition([21, 42], zoomLevel, rotationValue);
-
-						expect(extract[QueryParameters.ZOOM]).toBe(round(zoomLevel, ShareService.ZOOM_LEVEL_PRECISION));
-						expect(extract[QueryParameters.CENTER]).toEqual(['44.123', '88.123']);
-						expect(extract[QueryParameters.ROTATION]).toBe(round(rotationValue, ShareService.ROTATION_VALUE_PRECISION));
-					});
+					expect(extract[QueryParameters.ZOOM]).toBe(round(zoomLevel, ShareService.ZOOM_LEVEL_PRECISION));
+					expect(extract[QueryParameters.CENTER]).toEqual(['44.123', '88.123']);
+					expect(extract[QueryParameters.ROTATION]).toBe(round(rotationValue, ShareService.ROTATION_VALUE_PRECISION));
 				});
 
 				describe('CoordinateRepresentation is global', () => {
@@ -297,7 +252,7 @@ describe('ShareService', () => {
 
 						expect(extract[QueryParameters.ZOOM]).toBe(round(zoomLevel, ShareService.ZOOM_LEVEL_PRECISION));
 						expect(extract[QueryParameters.CENTER]).toEqual(['11111.11111', '22222.22222']);
-						expect(extract[QueryParameters.ROTATION]).toBeUndefined();
+						expect(extract[QueryParameters.ROTATION]).toBe(0);
 					});
 				});
 				describe('CoordinateRepresentation is local', () => {
@@ -317,7 +272,7 @@ describe('ShareService', () => {
 
 						expect(extract[QueryParameters.ZOOM]).toBe(round(zoomLevel, ShareService.ZOOM_LEVEL_PRECISION));
 						expect(extract[QueryParameters.CENTER]).toEqual(['11111', '22222']);
-						expect(extract[QueryParameters.ROTATION]).toBeUndefined();
+						expect(extract[QueryParameters.ROTATION]).toBe(0);
 					});
 				});
 			});

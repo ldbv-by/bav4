@@ -21,6 +21,6 @@ describe('Injection Name does not match with dependency', () => {
 	it('UnknownService throws Error on Injecting', () => {
 		expect(() => {
 			new RegistrationTest('FooService');
-		}).toThrowError('No registered instance found for FooService');
+		}).toThrowError('No registered instance or factory found for "FooService"');
 	});
 });

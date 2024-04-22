@@ -2,9 +2,10 @@
  * @module services/FileStorageService
  */
 import { $injector } from '../injection';
+import { createUniqueId } from '../utils/numberUtils';
 
 /**
- * Service for persisting and loading ASCII based geodata.
+ * Service for persisting and loading ASCII based geo-data.
  * @author taulinger
  * @interface FileStorageService
  */
@@ -65,16 +66,16 @@ import { $injector } from '../injection';
 /**
  * MetaData of a successfully saved file.
  * @typedef {Object} FileSaveResult
- * @property {string} adminId The adminId of the succesfully saved file
- * @property {string} fileId The fileId of the succesfully saved file
+ * @property {string} adminId The adminId of the successfully saved file
+ * @property {string} fileId The fileId of the successfully saved file
  */
 
 /**
  * MetaData of a successfully retrieved file.
  * @typedef {Object} FileLoadResult
- * @property {string} data The data of the succesfully retrieved file
- * @property {FileStorageServiceDataTypes} type The type of the succesfully retrieved file
- * @property {number} srid The srid of the succesfully retrieved data
+ * @property {string} data The data of the successfully retrieved file
+ * @property {FileStorageServiceDataTypes} type The type of the successfully retrieved file
+ * @property {number} srid The srid of the successfully retrieved data
  */
 
 /**
@@ -86,7 +87,7 @@ export const FileStorageServiceDataTypes = Object.freeze({
 });
 
 /**
- * BVV service for persisting and loading ASCII based geodata using a RESTful endpoint.
+ * BVV service for persisting and loading ASCII based geo-data using a RESTful endpoint.
  * @class
  * @author taulinger
  * @implements {FileStorageService}
@@ -161,6 +162,64 @@ export class BvvFileStorageService {
 			}
 
 			throw new Error('File could not be saved: ' + url);
+		}
+		throw new Error('Content-Type ' + type + ' currently not supported');
+	}
+}
+
+/**
+ * Service that persists data temporarily (for a "session")
+ * @class
+ * @author taulinger
+ * @implements {FileStorageService}
+ */
+export class TempStorageService {
+	#store = {};
+
+	isAdminId(id) {
+		return id.startsWith('a_');
+	}
+
+	isFileId(id) {
+		return id.startsWith('f_');
+	}
+
+	async getFileId(possibleAdminId) {
+		if (this.isFileId(possibleAdminId)) {
+			return possibleAdminId;
+		} else if (this.isAdminId(possibleAdminId)) {
+			return possibleAdminId.replace('a_', 'f_');
+		}
+
+		throw new Error('FileId could not be retrieved: ' + possibleAdminId);
+	}
+
+	async get(fileId) {
+		const fileName = fileId?.split('f_')[1];
+		if (this.#store[fileName]) {
+			return this.#store[fileName];
+		}
+		throw new Error('File could not be loaded: ' + fileId);
+	}
+
+	async save(id, content, type) {
+		if (id && this.isFileId(id)) {
+			throw new Error('Saving a file by its FileId is currently not supported');
+		}
+		if (type === FileStorageServiceDataTypes.KML) {
+			if (id) {
+				this.#store[id?.split('a_')[1]] = content;
+				return {
+					adminId: id,
+					fileId: id.replace('a_', 'f_')
+				};
+			}
+			const fileName = `tmp_${createUniqueId()}`;
+			this.#store[fileName] = content;
+			return {
+				adminId: `a_${fileName}`,
+				fileId: `f_${fileName}`
+			};
 		}
 		throw new Error('Content-Type ' + type + ' currently not supported');
 	}
