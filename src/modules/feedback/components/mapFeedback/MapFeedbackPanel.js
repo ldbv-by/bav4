@@ -183,27 +183,15 @@ export class MapFeedbackPanel extends MvuElement {
 			return queryParameters;
 		};
 
-		const filterUserGeneratedAndExternalLayers = (encodedState) => {
-			const [baseUrl, searchParamsString] = decodeURIComponent(encodedState).split('?');
-			const searchParams = new URLSearchParams(searchParamsString);
-			const layers = searchParams.has(QueryParameters.LAYER) ? searchParams.get(QueryParameters.LAYER).split(',') : [];
-
-			searchParams.set(
-				QueryParameters.LAYER,
-				layers
-					.filter((l) => !this._fileStorageService.isAdminId(l) && !this._fileStorageService.isFileId(l))
-					.filter((l) => !isExternalGeoResourceId(l))
-					.join(',')
-			);
-			return `${baseUrl}?${searchParams.toString()}`;
-		};
-
-		// Create an iframe source without any user-generated GeoResources that could be unintentionally affect the feedback or the GeoResources itself.
-		const iframeSrc = filterUserGeneratedAndExternalLayers(
-			center
-				? this._shareService.encodeStateForPosition({ center: center }, getExtraParameters(), [PathParameters.EMBED])
-				: this._shareService.encodeState(getExtraParameters(), [PathParameters.EMBED])
-		);
+		/**
+		 * Create an iframe source without the user-generated GeoResources, but external layers.
+		 * They could be needed to create aligned feedback geometries.
+		 *
+		 * Local GeoResources must be imported again,over drag&drop, to be displayed.
+		 */
+		const iframeSrc = center
+			? this._shareService.encodeStateForPosition({ center: center }, getExtraParameters(), [PathParameters.EMBED])
+			: this._shareService.encodeState(getExtraParameters(), [PathParameters.EMBED]);
 
 		const onClick = () => {
 			const iframe = this.shadowRoot.querySelector('iframe');
@@ -212,7 +200,6 @@ export class MapFeedbackPanel extends MvuElement {
 				iframe.classList.remove('attention');
 			});
 		};
-
 		return html`
 			<style>
 				${css}
