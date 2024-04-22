@@ -36,6 +36,7 @@ describe('PublicComponent', () => {
 
 			// null as the shadow root is closed
 			expect(element.shadowRoot).toBeNull();
+			expect(element._root.querySelectorAll('ba-dnd-import-panel')).toHaveSize(1);
 			expect(element._root.querySelectorAll('ba-ol-map')).toHaveSize(1);
 			expect(element._root.querySelectorAll('ba-view-larger-map-chip')).toHaveSize(1);
 			expect(element._root.querySelectorAll('ba-draw-tool')).toHaveSize(1);
