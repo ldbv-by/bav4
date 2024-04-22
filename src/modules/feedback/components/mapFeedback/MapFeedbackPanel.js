@@ -186,7 +186,7 @@ export class MapFeedbackPanel extends MvuElement {
 		 * Create an iframe source without the user-generated GeoResources, but external layers.
 		 * They could be needed to create aligned feedback geometries.
 		 *
-		 * Local GeoResources must be imported again,over drag&drop, to be displayed.
+		 * Local GeoResources must be imported via drag&drop to be displayed.
 		 */
 		const iframeSrc = center
 			? this._shareService.encodeStateForPosition({ center: center }, getExtraParameters(), [PathParameters.EMBED])
