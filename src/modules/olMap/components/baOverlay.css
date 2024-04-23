@@ -7,11 +7,14 @@
 	-ms-user-select: none;
 	user-select: none;
 	background-color: var(--primary-bg-color);
-	border: 1px solid var(--text2);
 	border-radius: 0;
 	color: var(--text1);
 	padding: 0.3em 0.5em;
 	font-size: 1rem;
+}
+
+.help {
+	border: 1px solid var(--text2);
 }
 
 .distance,
