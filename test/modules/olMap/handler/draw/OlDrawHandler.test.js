@@ -393,8 +393,8 @@ describe('OlDrawHandler', () => {
 
 				classUnderTest.activate(map);
 
-				// adds Interaction for select, modify,snap, dragPan
-				expect(map.addInteraction).toHaveBeenCalledTimes(4);
+				// adds Interaction for select, modify,snap
+				expect(map.addInteraction).toHaveBeenCalledTimes(3);
 			});
 
 			it('removes Interaction', () => {
@@ -406,8 +406,8 @@ describe('OlDrawHandler', () => {
 				classUnderTest.activate(map);
 				classUnderTest.deactivate(map, layerStub);
 
-				// removes Interaction for select, modify, snap, dragPan
-				expect(map.removeInteraction).toHaveBeenCalledTimes(4);
+				// removes Interaction for select, modify, snap
+				expect(map.removeInteraction).toHaveBeenCalledTimes(3);
 			});
 
 			it('removes Interaction, draw inclusive', () => {
@@ -421,12 +421,11 @@ describe('OlDrawHandler', () => {
 				map.removeInteraction = jasmine.createSpy();
 				classUnderTest.deactivate(map, layerStub);
 
-				// removes Interaction for select, draw,modify, snap, dragPan
+				// removes Interaction for select, draw,modify, snap
 				expect(map.removeInteraction).toHaveBeenCalledWith(jasmine.any(Draw));
 				expect(map.removeInteraction).toHaveBeenCalledWith(jasmine.any(Select));
 				expect(map.removeInteraction).toHaveBeenCalledWith(jasmine.any(Modify));
 				expect(map.removeInteraction).toHaveBeenCalledWith(jasmine.any(Snap));
-				expect(map.removeInteraction).toHaveBeenCalledWith(jasmine.any(DragPan));
 			});
 
 			it('adds a select interaction', () => {
@@ -463,18 +462,6 @@ describe('OlDrawHandler', () => {
 
 				expect(classUnderTest._snap).toBeInstanceOf(Snap);
 				expect(map.addInteraction).toHaveBeenCalledWith(classUnderTest._snap);
-			});
-
-			it('adds a dragPan interaction', () => {
-				setup();
-				const classUnderTest = new OlDrawHandler();
-				const map = setupMap();
-				map.addInteraction = jasmine.createSpy();
-
-				classUnderTest.activate(map);
-
-				expect(classUnderTest._dragPan).toBeInstanceOf(DragPan);
-				expect(map.addInteraction).toHaveBeenCalledWith(classUnderTest._dragPan);
 			});
 
 			it('register observer for type-changes', () => {

@@ -356,8 +356,8 @@ describe('OlMeasurementHandler', () => {
 
 				classUnderTest.activate(map);
 
-				// adds Interaction for select, draw, modify,snap, dragPan
-				expect(map.addInteraction).toHaveBeenCalledTimes(5);
+				// adds Interaction for select, draw, modify,snap
+				expect(map.addInteraction).toHaveBeenCalledTimes(4);
 			});
 
 			it('removes Interaction', () => {
@@ -369,8 +369,8 @@ describe('OlMeasurementHandler', () => {
 				classUnderTest.activate(map);
 				classUnderTest.deactivate(map, layerStub);
 
-				// removes Interaction for select, draw, modify, snap, dragPan
-				expect(map.removeInteraction).toHaveBeenCalledTimes(5);
+				// removes Interaction for select, draw, modify, snap
+				expect(map.removeInteraction).toHaveBeenCalledTimes(4);
 			});
 
 			it('adds a select interaction', () => {
@@ -419,18 +419,6 @@ describe('OlMeasurementHandler', () => {
 
 				expect(classUnderTest._snap).toBeInstanceOf(Snap);
 				expect(map.addInteraction).toHaveBeenCalledWith(classUnderTest._snap);
-			});
-
-			it('adds a dragPan interaction', () => {
-				setup();
-				const classUnderTest = new OlMeasurementHandler();
-				const map = setupMap();
-				map.addInteraction = jasmine.createSpy();
-
-				classUnderTest.activate(map);
-
-				expect(classUnderTest._dragPan).toBeInstanceOf(DragPan);
-				expect(map.addInteraction).toHaveBeenCalledWith(classUnderTest._dragPan);
 			});
 
 			it('initialize interactions and state objects only once on multiple activates', () => {
