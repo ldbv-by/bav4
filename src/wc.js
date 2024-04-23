@@ -1,5 +1,4 @@
 import { WcEvents } from './domain/wcEvents';
-console.log(document.currentScript.src);
 
 /**
  * At first we have to load the configuration script
