@@ -8,7 +8,7 @@ import { Icon, Style } from 'ol/style';
 import { OlDrawHandler } from '../../../../../src/modules/olMap/handler/draw/OlDrawHandler';
 import Map from 'ol/Map';
 import View from 'ol/View';
-import { DragPan, Modify, Select, Snap } from 'ol/interaction';
+import { Modify, Select, Snap } from 'ol/interaction';
 import { finish, reset, remove, setType, setStyle, setDescription } from '../../../../../src/store/draw/draw.action';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { ModifyEvent } from 'ol/interaction/Modify';
