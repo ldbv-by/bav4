@@ -916,7 +916,8 @@ describe('MeasurementOverlayStyle', () => {
 			return {
 				getInteractions: () => {
 					return { getArray: () => [interaction] };
-				}
+				},
+				once: () => {}
 			};
 		};
 
@@ -927,6 +928,7 @@ describe('MeasurementOverlayStyle', () => {
 			const dragPan = new DragPan();
 			const interactionSpy = spyOn(dragPan, 'setActive');
 			const mapMock = getMapMock(dragPan);
+			const onceSpy = spyOn(mapMock, 'once');
 			const element = overlay.getElement();
 			const classUnderTest = new MeasurementOverlayStyle();
 
@@ -935,6 +937,7 @@ describe('MeasurementOverlayStyle', () => {
 
 			expect(draggingSpy).toHaveBeenCalledWith('dragging', true);
 			expect(interactionSpy).toHaveBeenCalledWith(false);
+			expect(onceSpy).toHaveBeenCalledWith('pointerup', jasmine.any(Function));
 		});
 
 		it('change overlay-property on pointerup', () => {
