@@ -62,7 +62,14 @@ describe('PublicComponent', () => {
 		it('adds the correct stylesheets', async () => {
 			const element = await setup();
 
+			//element.shadowRoot.styleSheets[0] --> main.css
+			//element.shadowRoot.styleSheets[1] --> baElement.css
+			//element.shadowRoot.styleSheets[2] --> publicComponent.css
 			expect(element._root.styleSheets.length).toBe(3);
+			expect(element._root.styleSheets[2].cssRules.item(0).cssText).toContain('contain: layout;');
+			expect(element._root.styleSheets[2].cssRules.item(0).cssText).toContain('display: block;');
+			expect(element._root.styleSheets[2].cssRules.item(0).cssText).toContain('width: 100%');
+			expect(element._root.styleSheets[2].cssRules.item(0).cssText).toContain('height: 400px');
 		});
 
 		it('adds the correct CSS class', async () => {

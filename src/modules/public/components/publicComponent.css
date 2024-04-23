@@ -1,4 +1,7 @@
 :host {
 	contain: layout;
 	display: block;
+	/* give the public webcomponent a default size */
+	width: 100%;
+	height: 400px;
 }
