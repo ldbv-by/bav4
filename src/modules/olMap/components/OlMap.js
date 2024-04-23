@@ -212,7 +212,7 @@ export class OlMap extends MvuElement {
 		if (this._environmentService.isTouch()) {
 			registerLongPressListener(this._map, contextOrLongPressHandler, singleClickOrShortPressHandler);
 		} else {
-			this._map.addEventListener('contextmenu', contextOrLongPressHandler);
+			this._map.on('contextmenu', contextOrLongPressHandler);
 			this._map.on('singleclick', singleClickOrShortPressHandler);
 		}
 

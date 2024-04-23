@@ -45,6 +45,7 @@ import { layersReducer } from '../../../../../src/store/layers/layers.reducer';
 import { VectorGeoResource, VectorSourceType } from '../../../../../src/domain/geoResources';
 import { PERMANENT_ROUTE_LAYER_ID, PERMANENT_WP_LAYER_ID } from '../../../../../src/plugins/RoutingPlugin';
 import { StyleTypes } from '../../../../../src/modules/olMap/services/StyleService';
+import { simulateMapBrowserEvent } from '../../mapTestUtils';
 
 describe('constants and enums', () => {
 	it('provides an enum of all valid RoutingFeatureTypes', () => {
@@ -356,6 +357,48 @@ describe('OlRoutingHandler', () => {
 	});
 
 	describe('events', () => {
+		describe('"contextmenu" event', () => {
+			it('calls the click handler', async () => {
+				const clickHandlerSpy = jasmine.createSpy();
+				const screenCoordinate = [21, 42];
+				const { instanceUnderTest, map } = await newTestInstance();
+				spyOn(instanceUnderTest, '_newClickHandler').and.returnValue(clickHandlerSpy);
+				instanceUnderTest.activate(map);
+
+				simulateMapBrowserEvent(map, 'contextmenu', ...screenCoordinate);
+
+				expect(clickHandlerSpy).toHaveBeenCalled();
+			});
+		});
+
+		describe('"click" event', () => {
+			it('calls the click handler', async () => {
+				const clickHandlerSpy = jasmine.createSpy();
+				const screenCoordinate = [21, 42];
+				const { instanceUnderTest, map } = await newTestInstance();
+				spyOn(instanceUnderTest, '_newClickHandler').and.returnValue(clickHandlerSpy);
+				instanceUnderTest.activate(map);
+
+				simulateMapBrowserEvent(map, 'click', ...screenCoordinate);
+
+				expect(clickHandlerSpy).toHaveBeenCalled();
+			});
+		});
+
+		describe('"pointermove" event', () => {
+			it('calls the click handler', async () => {
+				const pointerMoveHandlerSpy = jasmine.createSpy();
+				const screenCoordinate = [21, 42];
+				const { instanceUnderTest, map } = await newTestInstance();
+				spyOn(instanceUnderTest, '_newPointerMoveHandler').and.returnValue(pointerMoveHandlerSpy);
+				instanceUnderTest.activate(map);
+
+				simulateMapBrowserEvent(map, 'pointermove', ...screenCoordinate);
+
+				expect(pointerMoveHandlerSpy).toHaveBeenCalled();
+			});
+		});
+
 		describe('when observed "waypoints" and "categoryId" changes', () => {
 			it('updates the category and calculates a route', async () => {
 				const coordinates = [
@@ -1479,7 +1522,8 @@ describe('OlRoutingHandler', () => {
 					instanceUnderTest._alternativeRouteLayer,
 					instanceUnderTest._routeLayerCopy
 				);
-				const event = { originalEvent: {}, coordinate: eventCoordinate };
+				const preventDefaultSpy = jasmine.createSpy();
+				const event = { originalEvent: {}, coordinate: eventCoordinate, preventDefault: preventDefaultSpy };
 				const getFeaturesAtPixelOptionsForClickHandlerOptions = {
 					layerFilter: () => true,
 					hitTolerance: 42
@@ -1495,7 +1539,10 @@ describe('OlRoutingHandler', () => {
 				spyOn(instanceUnderTest, '_getInteractionFeatures').and.returnValue(interactionFeatures);
 
 				handler(event);
-				return { map, store };
+
+				expect(preventDefaultSpy).toHaveBeenCalled();
+
+				return { map, store, preventDefaultSpy };
 			};
 
 			it('is properly configured', async () => {
