@@ -103,7 +103,7 @@ describe('FeatureInfoPanel', () => {
 		});
 
 		describe('and no featureInfo items are available and is querying', () => {
-			it('renders a spinner and one item', async () => {
+			it('renders just a spinner', async () => {
 				const element = await setup({
 					featureInfo: {
 						current: [],
