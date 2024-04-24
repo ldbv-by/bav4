@@ -1,7 +1,7 @@
 /**
  * @module modules/olMap/handler/measure/OlMeasurementHandler
  */
-import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
+import { Draw, Modify, Select, Snap } from 'ol/interaction';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { unByKey } from 'ol/Observable';
@@ -284,8 +284,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._modify.setActive(false);
 			this._draw = this._createDraw(source);
 			this._snap = new Snap({ source: source, pixelTolerance: getSnapTolerancePerDevice() });
-			this._dragPan = new DragPan();
-			this._dragPan.setActive(false);
 			this._onMeasureStateChanged((measureState) => this._updateMeasurementMode(measureState));
 			if (!this._environmentService.isTouch()) {
 				this._helpTooltip.activate(this._map);
@@ -310,7 +308,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			olMap.addInteraction(this._modify);
 			olMap.addInteraction(this._draw);
 			olMap.addInteraction(this._snap);
-			olMap.addInteraction(this._dragPan);
 
 			this._storedContent = null;
 		}
@@ -321,7 +318,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 	/**
 	 *  @override
-	 *  @param {Map} olMap
+	 *  @param {ol.Map} olMap
 	 */
 	onDeactivate(olMap) {
 		//use the map to unregister event listener, interactions, etc
@@ -330,7 +327,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		olMap.removeInteraction(this._modify);
 		olMap.removeInteraction(this._snap);
 		olMap.removeInteraction(this._select);
-		olMap.removeInteraction(this._dragPan);
 
 		this._helpTooltip.deactivate();
 
@@ -352,7 +348,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._modify = false;
 		this._select = false;
 		this._snap = false;
-		this._dragPan = false;
 		this._map = null;
 	}
 
@@ -626,17 +621,14 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		if (dragableOverlay) {
 			measureState.type = InteractionStateType.OVERLAY;
 		}
+		const draggingOverlay = getOverlays(this._vectorLayer).find((o) => o.get('dragging') === true);
+		if (draggingOverlay) {
+			draggingOverlay.setOffset([0, 0]);
+			draggingOverlay.set('manualPositioning', true);
+			draggingOverlay.setPosition(coordinate);
 
-		if (!this._dragPan.getActive()) {
-			const draggingOverlay = getOverlays(this._vectorLayer).find((o) => o.get('dragging') === true);
-			if (draggingOverlay) {
-				draggingOverlay.setOffset([0, 0]);
-				draggingOverlay.set('manualPositioning', true);
-				draggingOverlay.setPosition(coordinate);
-
-				const parentFeature = draggingOverlay.get('feature');
-				parentFeature.dispatchEvent('propertychange');
-			}
+			const parentFeature = draggingOverlay.get('feature');
+			parentFeature.dispatchEvent('propertychange');
 		}
 
 		measureState.dragging = dragging;
