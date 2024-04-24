@@ -365,15 +365,16 @@ describe('BaOverlay', () => {
 
 	describe('when geometry changed', () => {
 		it('updates the position', async () => {
-			const geometry = new Point(0, 0);
+			const geometry = new Point([0, 0]);
 			const element = await setup();
-			const positionSpy = spyOn(element, '_updatePosition').and.callThrough();
+
+			expect(element.geometry).toBeNull();
+			expect(element.position).toBeNull();
 
 			element.geometry = geometry;
 
-			expect(positionSpy).toHaveBeenCalled();
-			expect(element.geometry).toBeTruthy();
-			expect(element.position).toBeTruthy();
+			expect(element.geometry).toBe(geometry);
+			expect(element.position).toEqual([0, 0]);
 		});
 	});
 
