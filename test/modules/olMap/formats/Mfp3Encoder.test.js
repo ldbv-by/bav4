@@ -22,7 +22,7 @@ import WMTSTileGrid from 'ol/tilegrid/WMTS';
 import LayerGroup from 'ol/layer/Group';
 import TileGrid from 'ol/tilegrid/TileGrid';
 import { AdvWmtsTileGrid } from '../../../../src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid';
-import { MeasurementOverlayTypes } from '../../../../src/modules/olMap/components/MeasurementOverlay';
+import { BaOverlayTypes } from '../../../../src/modules/olMap/components/BaOverlay';
 
 describe('BvvMfp3Encoder', () => {
 	const viewMock = { getCenter: () => [50, 50], calculateExtent: () => [0, 0, 100, 100], getResolution: () => 10, getZoomForResolution: () => 21 };
@@ -2513,7 +2513,7 @@ describe('BvvMfp3Encoder', () => {
 					return {
 						tagName: 'ba-map-overlay',
 						innerText: 'foo bar baz',
-						type: MeasurementOverlayTypes.DISTANCE_PARTITION,
+						type: BaOverlayTypes.DISTANCE_PARTITION,
 						placement: { offset: [0.4, 2], positioning: 'top-center' }
 					};
 				},
