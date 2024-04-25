@@ -7,7 +7,7 @@ import css from './baOverlay.css';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { $injector } from '../../../injection/index';
 import { PROJECTED_LENGTH_GEOMETRY_PROPERTY, canShowAzimuthCircle, getAzimuth, getCoordinateAt } from '../utils/olGeometryUtils';
-import { Point, Polygon } from '../../../../node_modules/ol/geom';
+import { Polygon } from '../../../../node_modules/ol/geom';
 import { round } from '../../../utils/numberUtils';
 import { getCenter } from '../../../../node_modules/ol/extent';
 import { MvuElement } from '../../MvuElement';
