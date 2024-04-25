@@ -65,13 +65,13 @@ describe('EnvironmentService', () => {
 	});
 
 	describe('detects input device capabilities', () => {
-		it('is a touch only device', () => {
+		it('is a touch device', () => {
 			const mockWindow = {
 				navigator: {},
 				matchMedia: () => {}
 			};
 			spyOn(mockWindow, 'matchMedia').and.callFake((mediaQuery) => {
-				if (mediaQuery === '(pointer:coarse)' || mediaQuery === '(hover:none)') {
+				if (mediaQuery === '(pointer:coarse)') {
 					return {
 						media: mediaQuery,
 						matches: true
@@ -87,7 +87,6 @@ describe('EnvironmentService', () => {
 			expect(instanceUnderTest.isTouch()).toBeTrue();
 			expect(instanceUnderTest.isMouse()).toBeFalse();
 			expect(instanceUnderTest.isMouseWithTouchSupport()).toBeFalse();
-			expect(instanceUnderTest.isTouchWithMouseSupport()).toBeFalse();
 		});
 
 		it('is a mouse only device', () => {
@@ -112,32 +111,6 @@ describe('EnvironmentService', () => {
 			expect(instanceUnderTest.isTouch()).toBeFalse();
 			expect(instanceUnderTest.isMouse()).toBeTrue();
 			expect(instanceUnderTest.isMouseWithTouchSupport()).toBeFalse();
-			expect(instanceUnderTest.isTouchWithMouseSupport()).toBeFalse();
-		});
-
-		it('is a touch device with mouse support', () => {
-			const mockWindow = {
-				navigator: {},
-				matchMedia: () => {}
-			};
-			spyOn(mockWindow, 'matchMedia').and.callFake((mediaQuery) => {
-				if (mediaQuery === '(any-pointer:fine)' || mediaQuery === '(pointer:coarse)') {
-					return {
-						media: mediaQuery,
-						matches: true
-					};
-				}
-				return {
-					media: mediaQuery,
-					matches: false
-				};
-			});
-			const instanceUnderTest = new EnvironmentService(mockWindow);
-
-			expect(instanceUnderTest.isTouch()).toBeFalse();
-			expect(instanceUnderTest.isMouse()).toBeFalse();
-			expect(instanceUnderTest.isMouseWithTouchSupport()).toBeFalse();
-			expect(instanceUnderTest.isTouchWithMouseSupport()).toBeTrue();
 		});
 
 		it('is a mouse device with touch support', () => {
@@ -162,7 +135,6 @@ describe('EnvironmentService', () => {
 			expect(instanceUnderTest.isTouch()).toBeFalse();
 			expect(instanceUnderTest.isMouse()).toBeFalse();
 			expect(instanceUnderTest.isMouseWithTouchSupport()).toBeTrue();
-			expect(instanceUnderTest.isTouchWithMouseSupport()).toBeFalse();
 		});
 	});
 
