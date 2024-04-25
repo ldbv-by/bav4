@@ -6,7 +6,7 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import css from './baOverlay.css';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { $injector } from '../../../injection/index';
-import { PROJECTED_LENGTH_GEOMETRY_PROPERTY, canShowAzimuthCircle, getAzimuth, getCoordinateAt } from '../utils/olGeometryUtils';
+import { PROJECTED_LENGTH_GEOMETRY_PROPERTY, canShowAzimuthCircle, getAzimuth, getCoordinateAt, getLineString } from '../utils/olGeometryUtils';
 import { Polygon } from '../../../../node_modules/ol/geom';
 import { round } from '../../../utils/numberUtils';
 import { getCenter } from '../../../../node_modules/ol/extent';
@@ -159,7 +159,7 @@ export class BaOverlay extends MvuElement {
 
 	_getMeasuredLength = (geometry) => {
 		const alreadyMeasuredLength = geometry ? geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY) : null;
-		return alreadyMeasuredLength ?? this.#mapService.calcLength(geometry.getCoordinates());
+		return alreadyMeasuredLength ?? this.#mapService.calcLength(getLineString(geometry).getCoordinates());
 	};
 
 	set placement(value) {
