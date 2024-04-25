@@ -29,25 +29,16 @@ const Update_Placement = 'update_placement';
 
 const Default_Placement = { sector: 'init', positioning: 'top-center', offset: [0, -25] };
 /**
- * Internal overlay content for measurements on map-components
+ * Internal overlay content for measurements or context help on map-components
  *
- * Configurable Attributes:
- *
- * Observed Attributes:
- *
- * Configurable Properties:
- * - `type`
- * - `value`
- * - `static`
- * - `geometry`
- *
- *
- * Observed Properties:
- * - `value`
- * - `static`
- * - `geometry`
- * - `position`
  * @class
+ * @property {string| null} [value] The numeric value.
+ * @property {Geometry} geometry The ol geometry which relates to this overlay.
+ * @property {boolean} static Defines, whether the overlay is static or not.
+ * @property {boolean} isDraggable Defines, whether the overlay is draggable or not.
+ * @property {BaOverlayTypes} type='text' Defines the display properties of the overlay.
+ * @property {Object} [placement={ sector: 'init', positioning: 'top-center', offset: [0, -25] }] Defines the placement of the overlay relative to the geometry.
+ * @property {Coordinate} position The coordinate of the anchor, to positioning the overlay.
  * @author thiloSchlemmer
  */
 export class BaOverlay extends MvuElement {
@@ -222,8 +213,4 @@ export class BaOverlay extends MvuElement {
 	get position() {
 		return this.getModel().position;
 	}
-
-	// get innerText() {
-	// 	return this._getContent(this.getModel());
-	// }
 }
