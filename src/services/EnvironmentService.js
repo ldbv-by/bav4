@@ -51,7 +51,7 @@ export class EnvironmentService {
 	 * @returns `true` if the primary pointing device is a touch device
 	 */
 	isTouch() {
-		return this._window.matchMedia('(pointer:coarse)').matches && this._window.matchMedia('(hover:none)').matches;
+		return this._window.matchMedia('(pointer:coarse)').matches;
 	}
 
 	/**
@@ -62,14 +62,7 @@ export class EnvironmentService {
 	}
 
 	/**
-	 * @returns `true` if the primary pointing device is a touch device but it has also a mouse or pencil as a secondary device
-	 */
-	isTouchWithMouseSupport() {
-		return this._window.matchMedia('(any-pointer:fine)').matches && this._window.matchMedia('(pointer:coarse)').matches;
-	}
-
-	/**
-	 * @returns if the primary pointing device is a mouse device but it has also a touch device as a secondary device
+	 * @returns `true` if the primary pointing device is a mouse device but it has also a touch device as a secondary device
 	 */
 	isMouseWithTouchSupport() {
 		return this._window.matchMedia('(any-pointer:coarse)').matches && this._window.matchMedia('(pointer:fine)').matches;
