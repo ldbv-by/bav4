@@ -4,7 +4,7 @@
 
 :root,
 :host {
-	font-size: calc(0.75em + 0.15vw);
+	font-size: calc(0.75em + max(0.15vw, 0.2vh));
 
 	--border-radius-button: 2.5em;
 
