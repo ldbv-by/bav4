@@ -51,6 +51,8 @@ const Default_Placement = { sector: 'init', positioning: 'top-center', offset: [
  * @author thiloSchlemmer
  */
 export class BaOverlay extends MvuElement {
+	#unitsService;
+	#mapService;
 	constructor() {
 		super({
 			value: null,
@@ -62,8 +64,8 @@ export class BaOverlay extends MvuElement {
 			position: null
 		});
 		const { UnitsService, MapService } = $injector.inject('UnitsService', 'MapService');
-		this._unitsService = UnitsService;
-		this._mapService = MapService;
+		this.#unitsService = UnitsService;
+		this.#mapService = MapService;
 	}
 
 	update(type, data, model) {
@@ -127,22 +129,22 @@ export class BaOverlay extends MvuElement {
 		const { geometry, overlayType, value } = model;
 		const getStaticDistance = () => {
 			const distance = this._getMeasuredLength(geometry) * value;
-			return this._unitsService.formatDistance(round(Math.round(distance), -1), 0);
+			return this.#unitsService.formatDistance(round(Math.round(distance), -1), 0);
 		};
 
 		const getDistance = () => {
 			if (canShowAzimuthCircle(geometry)) {
 				// canShowAzimuthCircle() secures that getAzimuth() always returns a valid value except NULL
 				const azimuthValue = getAzimuth(geometry).toFixed(2);
-				const distanceValue = this._unitsService.formatDistance(this._getMeasuredLength(geometry), 2);
+				const distanceValue = this.#unitsService.formatDistance(this._getMeasuredLength(geometry), 2);
 				return `${azimuthValue}°/${distanceValue}`;
 			}
-			return geometry ? this._unitsService.formatDistance(this._getMeasuredLength(geometry), 2) : '';
+			return geometry ? this.#unitsService.formatDistance(this._getMeasuredLength(geometry), 2) : '';
 		};
 
 		const getArea = () => {
 			if (geometry instanceof Polygon) {
-				return this._unitsService.formatArea(this._mapService.calcArea(geometry.getCoordinates()), 2);
+				return this.#unitsService.formatArea(this.#mapService.calcArea(geometry.getCoordinates()), 2);
 			}
 			return '';
 		};
@@ -166,7 +168,7 @@ export class BaOverlay extends MvuElement {
 
 	_getMeasuredLength = (geometry) => {
 		const alreadyMeasuredLength = geometry ? geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY) : null;
-		return alreadyMeasuredLength ?? this._mapService.calcLength(geometry.getCoordinates());
+		return alreadyMeasuredLength ?? this.#mapService.calcLength(geometry.getCoordinates());
 	};
 
 	set placement(value) {
@@ -221,7 +223,7 @@ export class BaOverlay extends MvuElement {
 		return this.getModel().position;
 	}
 
-	get innerText() {
-		return this._getContent(this.getModel());
-	}
+	// get innerText() {
+	// 	return this._getContent(this.getModel());
+	// }
 }

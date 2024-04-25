@@ -96,9 +96,9 @@ describe('BaOverlay', () => {
 
 			expect(div.classList.contains('distance')).toBeTrue();
 			expect(div.classList.contains('floating')).toBeTrue();
+			expect(div.innerText).toBe('90.00°/THE DISTANCE IN m');
 			expect(element.type).toBe(BaOverlayTypes.DISTANCE);
 			expect(element.static).toBeFalse();
-			expect(element.innerText).toBe('90.00°/THE DISTANCE IN m');
 		});
 
 		it('renders the distance view without azimuth angle', async () => {
@@ -116,9 +116,9 @@ describe('BaOverlay', () => {
 
 			expect(div.classList.contains('distance')).toBeTrue();
 			expect(div.classList.contains('floating')).toBeTrue();
+			expect(div.innerText).toBe('THE DISTANCE IN m');
 			expect(element.type).toBe(BaOverlayTypes.DISTANCE);
 			expect(element.static).toBeFalse();
-			expect(element.innerText).toBe('THE DISTANCE IN m');
 		});
 
 		it('renders the area view', async () => {
@@ -140,9 +140,9 @@ describe('BaOverlay', () => {
 
 			expect(div.classList.contains('area')).toBeTrue();
 			expect(div.classList.contains('floating')).toBeTrue();
+			expect(div.innerText).toBe('THE AREA IN m²');
 			expect(element.type).toBe(BaOverlayTypes.AREA);
 			expect(element.static).toBeFalse();
-			expect(element.innerText).toBe('THE AREA IN m²');
 		});
 
 		it('does NOT render the area view', async () => {
@@ -161,9 +161,9 @@ describe('BaOverlay', () => {
 
 			expect(div.classList.contains('area')).toBeTrue();
 			expect(div.classList.contains('floating')).toBeTrue();
+			expect(div.innerText).toBe('');
 			expect(element.type).toBe(BaOverlayTypes.AREA);
 			expect(element.static).toBeFalse();
-			expect(element.innerText).toBe('');
 		});
 
 		it('renders the distance-partition view', async () => {
@@ -181,9 +181,9 @@ describe('BaOverlay', () => {
 
 			expect(div.classList.contains('partition')).toBeTrue();
 			expect(div.classList.contains('floating')).toBeTrue();
+			expect(div.innerText).toBe('THE DISTANCE IN m');
 			expect(element.type).toBe(BaOverlayTypes.DISTANCE_PARTITION);
 			expect(element.static).toBeFalse();
-			expect(element.innerText).toBe('THE DISTANCE IN m');
 		});
 
 		it('renders the distance-partition view with rounded values (up)', async () => {
@@ -201,7 +201,7 @@ describe('BaOverlay', () => {
 			const element = await setup(properties);
 			element.value = 0.099;
 
-			expect(element.innerText).toBe('THE DISTANCE IN m');
+			expect(element.shadowRoot.querySelector('div').innerText).toBe('THE DISTANCE IN m');
 			expect(spy).toHaveBeenCalledWith(100, 0);
 		});
 
@@ -219,7 +219,7 @@ describe('BaOverlay', () => {
 			const spy = spyOn(unitServiceMock, 'formatDistance').and.callThrough();
 			const element = await setup(properties);
 
-			expect(element.innerText).toBe('THE DISTANCE IN m');
+			expect(element.shadowRoot.querySelector('div').innerText).toBe('THE DISTANCE IN m');
 			expect(spy).toHaveBeenCalledWith(100, 0);
 		});
 
@@ -239,8 +239,8 @@ describe('BaOverlay', () => {
 			expect(div.classList.contains('distance')).toBeTrue();
 			expect(div.classList.contains('static')).toBeTrue();
 			expect(div.classList.contains('floating')).toBeFalse();
+			expect(div.innerText).toBe('90.00°/THE DISTANCE IN m');
 			expect(element.type).toBe(BaOverlayTypes.DISTANCE);
-			expect(element.innerText).toBe('90.00°/THE DISTANCE IN m');
 		});
 
 		it('renders formatted distance', async () => {
@@ -253,8 +253,9 @@ describe('BaOverlay', () => {
 				geometry: geodeticGeometry
 			};
 			const element = await setup(properties);
+			const div = element.shadowRoot.querySelector('div');
 
-			expect(element.innerText).toBe('90.00°/THE DISTANCE IN m');
+			expect(div.innerText).toBe('90.00°/THE DISTANCE IN m');
 		});
 
 		it('renders formatted area', async () => {
@@ -276,9 +277,9 @@ describe('BaOverlay', () => {
 
 			expect(div.classList.contains('area')).toBeTrue();
 			expect(div.classList.contains('floating')).toBeTrue();
+			expect(div.innerText).toBe('THE AREA IN m²');
 			expect(element.type).toBe(BaOverlayTypes.AREA);
 			expect(element.static).toBeFalse();
-			expect(element.innerText).toBe('THE AREA IN m²');
 		});
 	});
 
