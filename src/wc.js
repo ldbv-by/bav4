@@ -4,7 +4,7 @@ import { WcEvents } from './domain/wcEvents';
  * At first we have to load the configuration script
  */
 const scriptEl = document.createElement('script');
-scriptEl.setAttribute('src', '../config.js');
+scriptEl.setAttribute('src', document.currentScript.src.replace('wc.js', 'config.js'));
 document.body.appendChild(scriptEl);
 
 /**
