@@ -183,7 +183,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 
 		const resolution = olMap.getView().getResolution();
 
-		const projectedLength = this._mapService.calcLength(simplifiedGeometry.getCoordinates());
+		const projectedLength = this._mapService.calcLength(getLineString(simplifiedGeometry).getCoordinates());
 		if (projectedLength) {
 			simplifiedGeometry.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
 		}
