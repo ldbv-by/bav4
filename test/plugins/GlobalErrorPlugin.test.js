@@ -201,20 +201,20 @@ describe('GlobalErrorPlugin', () => {
 			describe('embedded as WC', () => {
 				describe('synchronously thrown', () => {
 					it('does nothing', async () => {
-						spyOn(environmentService, "isEmbeddedAsWC").and.returnValue(true);
+						spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(true);
 						const message = 'message';
-						
+
 						await instanceUnderTest.register(store);
 						const emitGenericNotificationThrottledSpy = spyOn(instanceUnderTest, '_emitThrottledGenericNotification');
-						
+
 						window.dispatchEvent(new ErrorEvent('error', { error: new Error(message) }));
 						expect(emitGenericNotificationThrottledSpy).not.toHaveBeenCalledTimes(1);
 					});
 				});
-				
+
 				describe('thrown by promise rejection', () => {
 					it('does nothing', async () => {
-						spyOn(environmentService, "isEmbeddedAsWC").and.returnValue(true);
+						spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(true);
 						const message = 'message';
 						await instanceUnderTest.register(store);
 						const emitGenericNotificationThrottledSpy = spyOn(instanceUnderTest, '_emitThrottledGenericNotification');
