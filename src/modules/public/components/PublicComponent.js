@@ -5,6 +5,9 @@ import { html } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
 import { WcEvents } from '../../../domain/wcEvents';
 import { MediaType } from '../../../domain/mediaTypes';
+import mainCss from '../../../main.css';
+import defaultCss from '../../../modules/baElement.css';
+import css from './publicComponent.css';
 
 /**
  * Public Web Component, should contain always the same components as the Iframe (see embed.html)
@@ -18,6 +21,18 @@ export class PublicComponent extends MvuElement {
 	}
 
 	onInitialize() {
+		/**
+		 * Add theme class
+		 */
+		this.observe(
+			(state) => state.media.darkSchema,
+			(darkSchema) => {
+				const cssClassToAdd = darkSchema ? 'dark-theme' : 'light-theme';
+				const cssClassToRemove = darkSchema ? 'light-theme' : 'dark-theme';
+				this.classList.add(cssClassToAdd);
+				this.classList.remove(cssClassToRemove);
+			}
+		);
 		/**
 		 * Publish public GEOMETRY_CHANGE event
 		 */
@@ -72,8 +87,12 @@ export class PublicComponent extends MvuElement {
 	}
 
 	createView() {
-		//must be the same as in embed.html
+		// must be the same as in embed.html, except for <ba-theme-provider>
 		return html`
+			<style>
+				${css}
+			</style>
+			<ba-dnd-import-panel></ba-dnd-import-panel>
 			<ba-ol-map></ba-ol-map>
 			<ba-view-larger-map-chip></ba-view-larger-map-chip>
 			<ba-draw-tool></ba-draw-tool>
@@ -85,6 +104,17 @@ export class PublicComponent extends MvuElement {
 			<ba-map-context-menu></ba-map-context-menu>
 			<ba-activate-map-button></ba-activate-map-button>
 			<ba-iframe-container></ba-iframe-container>
+		`;
+	}
+
+	defaultCss() {
+		return html`
+			<style>
+				${mainCss}
+			</style>
+			<style>
+				${defaultCss}
+			</style>
 		`;
 	}
 

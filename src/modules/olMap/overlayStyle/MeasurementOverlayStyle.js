@@ -286,6 +286,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 			const handleMouseDown = () => {
 				dragPanInteraction.setActive(false);
 				overlay.set('dragging', true);
+				olMap.once(MapBrowserEventType.POINTERUP, handleMouseUp);
 			};
 
 			const handleMouseUp = () => {
@@ -302,6 +303,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 			};
 			element.addEventListener(MapBrowserEventType.POINTERDOWN, handleMouseDown);
 			element.addEventListener(MapBrowserEventType.POINTERUP, handleMouseUp);
+
 			element.addEventListener('mouseenter', handleMouseEnter);
 			element.addEventListener('mouseleave', handleMouseLeave);
 		}

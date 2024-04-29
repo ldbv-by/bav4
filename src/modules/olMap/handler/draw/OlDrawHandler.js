@@ -6,7 +6,7 @@ import { OlLayerHandler } from '../OlLayerHandler';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { $injector } from '../../../../injection';
-import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
+import { Draw, Modify, Select, Snap } from 'ol/interaction';
 import {
 	createSketchStyleFunction,
 	getColorFrom,
@@ -119,7 +119,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._modify = null;
 		this._snap = null;
 		this._select = null;
-		this._dragPan = null;
 
 		this._storedContent = null;
 
@@ -285,8 +284,6 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._select.setActive(false);
 			this._modify.setActive(false);
 			this._snap = new Snap({ source: source, pixelTolerance: getSnapTolerancePerDevice() });
-			this._dragPan = new DragPan();
-			this._dragPan.setActive(false);
 			this._onDrawStateChanged((drawState) => this._updateDrawMode(drawState));
 			if (!this._environmentService.isTouch()) {
 				this._helpTooltip.activate(this._map);
@@ -309,7 +306,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._map.addInteraction(this._select);
 		this._map.addInteraction(this._modify);
 		this._map.addInteraction(this._snap);
-		this._map.addInteraction(this._dragPan);
 
 		const preselectDrawType = this._storeService.getStore().getState().draw.type;
 		if (preselectDrawType) {
@@ -342,7 +338,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		olMap.removeInteraction(this._modify);
 		olMap.removeInteraction(this._snap);
 		olMap.removeInteraction(this._select);
-		olMap.removeInteraction(this._dragPan);
 
 		removeAllDrawInteractions(olMap);
 		this._helpTooltip.deactivate();
@@ -363,7 +358,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._modify = false;
 		this._select = false;
 		this._snap = false;
-		this._dragPan = false;
 		this._vectorLayer = null;
 		this._map = null;
 	}
