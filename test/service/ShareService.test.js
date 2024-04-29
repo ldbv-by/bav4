@@ -28,7 +28,8 @@ describe('ShareService', () => {
 		byId: () => {}
 	};
 	const environmentService = {
-		getWindow: () => {}
+		getWindow: () => {},
+		isEmbeddedAsWC: () => false
 	};
 	const configService = {
 		getValueAsPath: () => {}
@@ -120,7 +121,7 @@ describe('ShareService', () => {
 				expect(extract[QueryParameters.LAYER_VISIBILITY]).not.toBeDefined();
 			});
 
-			it('extracts the current layers state ignoring hidden geoResources', () => {
+			it('extracts the current layers state ignoring hidden GeoResources', () => {
 				setup();
 				const instanceUnderTest = new ShareService();
 				spyOn(geoResourceService, 'byId').and.callFake((id) => {
@@ -133,6 +134,24 @@ describe('ShareService', () => {
 				expect(extract[QueryParameters.LAYER]).toEqual(['anotherLayer']);
 				expect(extract[QueryParameters.LAYER_OPACITY]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_VISIBILITY]).not.toBeDefined();
+			});
+
+			describe('embedded as WC', () => {
+				it('extracts the current layers state including hidden GeoResources', () => {
+					setup();
+					const instanceUnderTest = new ShareService();
+					spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(true);
+					spyOn(geoResourceService, 'byId').and.callFake((id) => {
+						return id === 'someLayer' ? { hidden: true } : {};
+					});
+					addLayer('someLayer');
+					addLayer('anotherLayer');
+
+					const extract = instanceUnderTest._extractLayers();
+					expect(extract[QueryParameters.LAYER]).toEqual(['someLayer', 'anotherLayer']);
+					expect(extract[QueryParameters.LAYER_OPACITY]).not.toBeDefined();
+					expect(extract[QueryParameters.LAYER_VISIBILITY]).not.toBeDefined();
+				});
 			});
 
 			it('extracts the current layers state considering non default values', () => {

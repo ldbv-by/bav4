@@ -153,7 +153,7 @@ export class ShareService {
 		let layer_opacity = [];
 		activeLayers
 			.filter((l) => !l.constraints.hidden)
-			.filter((l) => !geoResourceService.byId(l.geoResourceId).hidden)
+			.filter((l) => (this.#environmentService.isEmbeddedAsWC() ? true : !geoResourceService.byId(l.geoResourceId).hidden))
 			.forEach((l) => {
 				geoResourceIds.push(l.geoResourceId);
 				layer_visibility.push(l.visible);
