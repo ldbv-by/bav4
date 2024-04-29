@@ -43,7 +43,7 @@ export const getBvvBaaImageLoadFunction = (geoResourceId, credential = null, max
 				});
 
 				if (response.status !== 200) {
-					return handleUnexpectedStatusCode(response, geoResourceId);
+					return handleUnexpectedStatusCode(geoResourceId, response);
 				}
 				return URL.createObjectURL(await response.blob());
 			} catch (error) {
@@ -62,7 +62,7 @@ export const getBvvBaaImageLoadFunction = (geoResourceId, credential = null, max
 				);
 
 				if (response.status !== 200) {
-					return handleUnexpectedStatusCode(response, geoResourceId);
+					return handleUnexpectedStatusCode(geoResourceId, response);
 				}
 				return URL.createObjectURL(await response.blob());
 			} catch (error) {
