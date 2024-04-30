@@ -3,6 +3,7 @@
 import { AdminPanel } from './components/panel/AdminPanel';
 import { LayerTree } from './components/layerTree/LayerTree';
 import { LayerList } from './components/layerList/LayerList';
+import { NewTopicPanel } from './components/newTopic/newTopicPanel';
 
 if (!window.customElements.get(AdminPanel.tag)) {
 	window.customElements.define(AdminPanel.tag, AdminPanel);
@@ -14,4 +15,8 @@ if (!window.customElements.get(LayerTree.tag)) {
 
 if (!window.customElements.get(LayerList.tag)) {
 	window.customElements.define(LayerList.tag, LayerList);
+}
+
+if (!window.customElements.get(NewTopicPanel.tag)) {
+	window.customElements.define(NewTopicPanel.tag, NewTopicPanel);
 }

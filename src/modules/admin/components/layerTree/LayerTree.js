@@ -474,6 +474,8 @@ export class LayerTree extends MvuElement {
 					${css}
 				</style>
 
+                <ba-mvu-newtopicpanel></ba-mvu-newtopicpanel>
+
 				<div>
 					<h2>Layer Tree - Ebenenbaum für Thema "${this.#currentTopic._label}"${sperrText}</h2>
 					<button @click="${handleNewTopicClick}">New Topic</button>
@@ -485,11 +487,6 @@ export class LayerTree extends MvuElement {
 					<select @change="${handleTopicChange}">
 						${topics.map((topic) => html` <option value="${topic._id}">${topic._label} ${topic._disabled ? ' -- deaktiviert -- ' : ''}</option> `)}
 					</select>
-
-
-
-
-
 
 						${repeat(
 							catalogWithResourceData,

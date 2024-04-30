@@ -1,0 +1,28 @@
+.map-feedback__disclaimer {
+	font-size: 0.9rem;
+	margin-top: 4em;
+	padding: 1em 0;
+}
+.map-feedback__disclaimer a {
+	font-size: 0.9rem;
+	color: var(--text4);
+}
+.map-feedback__disclaimer a:hover {
+	text-decoration: underline;
+}
+.feedback-text-container {
+	display: flex;
+	justify-content: space-between;
+}
+.feedback-header {
+	font-weight: bold;
+	margin: 3em 0 2em;
+}
+
+.feedback-main-header {
+	font-size: 1.7rem;
+	margin: 1em 0 1em 0;
+}
+textarea {
+	min-height: 9em;
+}
