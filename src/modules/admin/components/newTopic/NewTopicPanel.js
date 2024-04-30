@@ -1,13 +1,11 @@
-/**
- * @module modules/feedback/components/generalFeedback/GeneralFeedbackPanel
- */
-
-import { html } from 'lit-html';
-import { $injector } from '../../../../injection';
+// import { html } from 'lit-html';
+import { html } from '../../../../../node_modules/lit-html/lit-html';
+// import { $injector } from '../../../../injection';
+import { $injector } from '../../../../injection/index';
 import { MvuElement } from '../../../MvuElement';
 // import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
-import css from './newTopicPanel.css';
-import { BA_FORM_ELEMENT_VISITED_CLASS } from '../../../../utils/markup';
+// @ts-ignore
+import css from './NewTopicPanel.css';
 // import { GeneralFeedback } from '../../../../services/FeedbackService';
 
 const Update_Id = 'update_id';
@@ -20,6 +18,7 @@ const Update_Label = 'update_label';
  */
 export class NewTopicPanel extends MvuElement {
 	constructor() {
+		console.log('🚀 ~ NewTopicPanel ~ constructor ');
 		super({
 			newTopic: {
 				id: null,
@@ -41,7 +40,9 @@ export class NewTopicPanel extends MvuElement {
 		this._onSubmit = () => {};
 	}
 
-	onInitialize() {}
+	onInitialize() {
+		console.log('🚀 ~ NewTopicPanel ~ onInitialize() ');
+	}
 
 	update(type, data, model) {
 		switch (type) {
@@ -54,36 +55,35 @@ export class NewTopicPanel extends MvuElement {
 
 	createView(model) {
 		const { newTopic } = model;
+		console.log('🚀 ~ NewTopicPanel ~ createView ~ model:', model);
 
 		// const translate = (key) => this._translationService.translate(key);
 
 		const onIdChange = (event) => {
-			const { value, parentNode } = event.target;
-			this._addVisitedClass(parentNode);
+			const { value } = event.target;
 
 			this.signal(Update_Id, this._securityService.sanitizeHtml(value));
 		};
 
 		const onLabelChange = (event) => {
-			const { value, parentNode } = event.target;
-			this._addVisitedClass(parentNode);
+			const { value } = event.target;
 
 			this.signal(Update_Label, this._securityService.sanitizeHtml(value));
 		};
 
-		const onSubmit = () => {
-			this.shadowRoot.querySelectorAll('.ba-form-element').forEach((el) => el.classList.add(BA_FORM_ELEMENT_VISITED_CLASS));
+		// const onSubmit = () => {
+		// 	this.shadowRoot.querySelectorAll('.ba-form-element').forEach((el) => el.classList.add(BA_FORM_ELEMENT_VISITED_CLASS));
 
-			const newTopicIdElement = this.shadowRoot.getElementById('newTopicId');
-			const newTopicLabelElement = this.shadowRoot.getElementById('newTopicLabel');
+		// 	const newTopicIdElement = this.shadowRoot.getElementById('newTopicId');
+		// 	const newTopicLabelElement = this.shadowRoot.getElementById('newTopicLabel');
 
-			if (newTopicIdElement.reportValidity() && descriptionElement.reportValidity() && emailElement.reportValidity()) {
-				this
-					._saveNewTopic
-					// new GeneralFeedback(generalFeedback.category, generalFeedback.description, generalFeedback.email, generalFeedback.rating)
-					();
-			}
-		};
+		// 	if (newTopicIdElement.reportValidity() && descriptionElement.reportValidity() && emailElement.reportValidity()) {
+		// 		this
+		// 			._saveNewTopic
+		// 			// new GeneralFeedback(generalFeedback.category, generalFeedback.description, generalFeedback.email, generalFeedback.rating)
+		// 			();
+		// 	}
+		// };
 
 		return html`
 			<style>
@@ -125,10 +125,6 @@ export class NewTopicPanel extends MvuElement {
 		// 	console.error(e);
 		// 	emitNotification(translate('feedback_generalFeedback_could_not_save'), LevelTypes.ERROR);
 		// }
-	}
-
-	_addVisitedClass(element) {
-		element.classList.add(BA_FORM_ELEMENT_VISITED_CLASS);
 	}
 
 	/**

@@ -3,7 +3,8 @@
 import { AdminPanel } from './components/panel/AdminPanel';
 import { LayerTree } from './components/layerTree/LayerTree';
 import { LayerList } from './components/layerList/LayerList';
-import { NewTopicPanel } from './components/newTopic/newTopicPanel';
+import { NewTopicPanel } from './components/newTopic/NewTopicPanel';
+// import { NewTopicPanel } from './components/newTopic/NewTopicPanel';
 
 if (!window.customElements.get(AdminPanel.tag)) {
 	window.customElements.define(AdminPanel.tag, AdminPanel);

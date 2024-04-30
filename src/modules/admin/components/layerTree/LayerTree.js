@@ -12,6 +12,7 @@ import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 
 // @ts-ignore
 import { repeat } from 'lit-html/directives/repeat.js';
+import { closeModal, openModal } from '../../../../store/modal/modal.action';
 
 const Update_Topics = 'update_topics';
 const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
@@ -161,6 +162,15 @@ export class LayerTree extends MvuElement {
 		) {
 			return nothing;
 		}
+
+		const openNewTopicDialog = () => {
+			console.log('🚀 ~ LayerTree ~ openNewTopicDialog ');
+			const title = 'new topic dialog';
+			// const title = translate('menu_misc_content_panel_feedback_title');
+			//
+			const content = html`<ba-mvu-newtopicpanel .onSubmit=${closeModal}></ba-mvu-newtopicpanel>`;
+			openModal(title, content);
+		};
 
 		const insertDraggedGeoResource = (currentCatalogEntryUid, newGeoResourceIdFromList) => {
 			if (newGeoResourceIdFromList === currentGeoResourceId && this.#currentUId === currentCatalogEntryUid) {
@@ -388,7 +398,10 @@ export class LayerTree extends MvuElement {
 		};
 
 		const handleNewTopicClick = () => {
-			this._updateTopic('newEntry');
+			console.log('🚀 ~ LayerTree ~ handleNewTopicClick ');
+			openNewTopicDialog();
+
+			// this._updateTopic('newEntry');
 		};
 
 		const handleNewLayerGroupClick = () => {
@@ -474,7 +487,6 @@ export class LayerTree extends MvuElement {
 					${css}
 				</style>
 
-                <ba-mvu-newtopicpanel></ba-mvu-newtopicpanel>
 
 				<div>
 					<h2>Layer Tree - Ebenenbaum für Thema "${this.#currentTopic._label}"${sperrText}</h2>
