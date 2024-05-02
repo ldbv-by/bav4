@@ -47,7 +47,7 @@ export class EncodeStatePlugin extends BaPlugin {
 		this.#environmentService.getWindow().history.replaceState(null, '', encodedState);
 	}
 	_updateWcAttributes() {
-		const params = new URLSearchParams(new URL(this.#shareService.encodeState()).search);
+		const params = this.#shareService.getParameters({ includeHiddenGeoResources: true });
 
 		/**
 		 * Remove all attributes that are not included in the encoded state.
@@ -65,7 +65,7 @@ export class EncodeStatePlugin extends BaPlugin {
 				}
 			});
 
-		for (const [key, value] of params) {
+		for (const [key, value] of params.entries()) {
 			// a MutationsObserver on an attribute will also fire if an attribute was just re-set without any value change, so we detect changes here
 			if (!equals(this.#environmentService.getWindow().document.querySelector(PublicComponent.tag).getAttribute(key), value)) {
 				this.#environmentService.getWindow().document.querySelector(PublicComponent.tag).setAttribute(key, value);

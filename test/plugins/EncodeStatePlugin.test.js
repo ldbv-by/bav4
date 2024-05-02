@@ -8,7 +8,8 @@ import { TestUtils } from '../test-utils';
 
 describe('EncodeStatePlugin', () => {
 	const shareService = {
-		encodeState() {}
+		encodeState() {},
+		getParameters() {}
 	};
 	const environmentService = {
 		getWindow: () => {},
@@ -66,7 +67,7 @@ describe('EncodeStatePlugin', () => {
 		spyOn(mockDocument, 'querySelector').withArgs(PublicComponent.tag).and.returnValue(mockElement);
 		spyOn(environmentService, 'isEmbedded').and.returnValue(true);
 		spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(true);
-		spyOn(shareService, 'encodeState').and.returnValue(`http://some.thing?${QueryParameters.LAYER}=layer`);
+		spyOn(shareService, 'getParameters').and.returnValue(new Map([[QueryParameters.LAYER, 'layer']]));
 		const store = setup();
 		const instanceUnderTest = new EncodeStatePlugin();
 		await instanceUnderTest.register(store);
@@ -90,7 +91,7 @@ describe('EncodeStatePlugin', () => {
 		spyOn(mockDocument, 'querySelector').withArgs(PublicComponent.tag).and.returnValue(mockElement);
 		spyOn(environmentService, 'isEmbedded').and.returnValue(true);
 		spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(true);
-		spyOn(shareService, 'encodeState').and.returnValue(`http://some.thing?foo=${value}`);
+		spyOn(shareService, 'getParameters').and.returnValue(new Map([['foo', `${value}`]]));
 		const store = setup();
 		const instanceUnderTest = new EncodeStatePlugin();
 		await instanceUnderTest.register(store);
