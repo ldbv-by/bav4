@@ -52,9 +52,15 @@ describe('olLoadFunction.provider', () => {
 				spyOn(httpService, 'get').and.resolveTo(new Response(null, { status: 404 }));
 				const imageLoadFunction = getBvvBaaImageLoadFunction(geoResourceId, credential, null);
 
-				await expectAsync(imageLoadFunction(fakeImageWrapper, src)).toBeRejectedWith(
-					new UnavailableGeoResourceError(`Unexpected network status`, geoResourceId, 404)
-				);
+				try {
+					await imageLoadFunction(fakeImageWrapper, src);
+					throw new Error('Promise should not be resolved');
+				} catch (error) {
+					expect(error).toBeInstanceOf(UnavailableGeoResourceError);
+					expect(error.message).toBe('Unexpected network status');
+					expect(error.geoResourceId).toBe(geoResourceId);
+					expect(error.httpStatus).toBe(404);
+				}
 			});
 
 			it('rejects with an UnavailableGeoResourceError when a request was aborted', async () => {
@@ -155,9 +161,15 @@ describe('olLoadFunction.provider', () => {
 				spyOn(httpService, 'get').and.resolveTo(new Response(null, { status: 404 }));
 				const imageLoadFunction = getBvvBaaImageLoadFunction(geoResourceId);
 
-				await expectAsync(imageLoadFunction(fakeImageWrapper, src)).toBeRejectedWith(
-					new UnavailableGeoResourceError(`Unexpected network status`, geoResourceId, 404)
-				);
+				try {
+					await imageLoadFunction(fakeImageWrapper, src);
+					throw new Error('Promise should not be resolved');
+				} catch (error) {
+					expect(error).toBeInstanceOf(UnavailableGeoResourceError);
+					expect(error.message).toBe('Unexpected network status');
+					expect(error.geoResourceId).toBe(geoResourceId);
+					expect(error.httpStatus).toBe(404);
+				}
 			});
 
 			it('rejects with an UnavailableGeoResourceError when a request was aborted', async () => {
@@ -251,9 +263,15 @@ describe('olLoadFunction.provider', () => {
 			const geoResourceId = 'geoResourceId';
 			const response = new Response(null, { status: 404 });
 
-			await expectAsync(handleUnexpectedStatusCodeThrottled(geoResourceId, response)).toBeRejectedWith(
-				new UnavailableGeoResourceError(`Unexpected network status`, geoResourceId, 404)
-			);
+			try {
+				await handleUnexpectedStatusCodeThrottled(geoResourceId, response);
+				throw new Error('Promise should not be resolved');
+			} catch (error) {
+				expect(error).toBeInstanceOf(UnavailableGeoResourceError);
+				expect(error.message).toBe('Unexpected network status');
+				expect(error.geoResourceId).toBe(geoResourceId);
+				expect(error.httpStatus).toBe(404);
+			}
 			expect(handleUnexpectedStatusCodeThrottled(geoResourceId, response)).toBeUndefined(); // throttled calls return undefined
 			expect(handleUnexpectedStatusCodeThrottled(geoResourceId, response)).toBeUndefined(); // throttled calls return undefined
 		});

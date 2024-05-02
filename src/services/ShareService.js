@@ -8,6 +8,13 @@ import { GlobalCoordinateRepresentations } from '../domain/coordinateRepresentat
 import { getOrigin, getPathParams } from '../utils/urlUtils';
 
 /**
+ * Options for retrieving parameters.
+ * @typedef ParameterOptions
+ * @property {boolean} includeHiddenGeoResources `true` if hidden GeoResources should be included. Default is `false`.
+ */
+
+/**
+ * A service providing methods to restore the current application e.g. through a URL.
  * @class
  */
 export class ShareService {
@@ -49,6 +56,23 @@ export class ShareService {
 	}
 
 	/**
+	 * Returns all parameters of the current application that are required to restore it.
+	 * For the keys of the returned object see {@link QueryParameters}.
+	 * @param {module:services/ShareService~ParameterOptions} [options]
+	 * @returns {Map<QueryParameters,?>} a map containing the parameters
+	 */
+	getParameters(options = { includeHiddenGeoResources: false }) {
+		const params = {
+			...this._extractPosition(),
+			...this._extractLayers(options),
+			...this._extractTopic(),
+			...this._extractRoute()
+		};
+
+		return new Map(Object.entries(params));
+	}
+
+	/**
 	 * Encodes the current state to a URL.
 	 * The generated URL is based on the `FRONTEND_URL` config parameter.
 	 * @param {object} [extraParams] Additional parameters. Non-existing entries will be added. Existing values will be ignored except for values that are an array.
@@ -81,7 +105,7 @@ export class ShareService {
 		const extractedState = this._mergeExtraParams(
 			{
 				...this._extractPosition(center, zoom, rotation),
-				...this._extractLayers(),
+				...this._extractLayers({ includeHiddenGeoResources: false }),
 				...this._extractTopic(),
 				...this._extractRoute()
 			},
@@ -138,7 +162,7 @@ export class ShareService {
 	 * @private
 	 * @returns {object} extractedState
 	 */
-	_extractLayers() {
+	_extractLayers(options = { includeHiddenGeoResources: false }) {
 		const { StoreService: storeService, GeoResourceService: geoResourceService } = $injector.inject('StoreService', 'GeoResourceService');
 
 		const state = storeService.getStore().getState();
@@ -153,7 +177,7 @@ export class ShareService {
 		let layer_opacity = [];
 		activeLayers
 			.filter((l) => !l.constraints.hidden)
-			.filter((l) => !geoResourceService.byId(l.geoResourceId).hidden)
+			.filter((l) => (options.includeHiddenGeoResources ? true : !geoResourceService.byId(l.geoResourceId).hidden))
 			.forEach((l) => {
 				geoResourceIds.push(l.geoResourceId);
 				layer_visibility.push(l.visible);
