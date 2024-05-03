@@ -5,6 +5,7 @@ import '../i18n';
 
 // register required modules (same as in embed.js)
 import '../modules/footer';
+import '../modules/dndImport';
 import '../modules/map';
 import '../modules/olMap';
 import '../modules/commons';

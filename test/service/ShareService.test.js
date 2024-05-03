@@ -135,6 +135,21 @@ describe('ShareService', () => {
 				expect(extract[QueryParameters.LAYER_VISIBILITY]).not.toBeDefined();
 			});
 
+			it('extracts the current layers state ignoring including geoResources', () => {
+				setup();
+				const instanceUnderTest = new ShareService();
+				spyOn(geoResourceService, 'byId').and.callFake((id) => {
+					return id === 'someLayer' ? { hidden: true } : {};
+				});
+				addLayer('someLayer');
+				addLayer('anotherLayer');
+
+				const extract = instanceUnderTest._extractLayers({ includeHiddenGeoResources: true });
+				expect(extract[QueryParameters.LAYER]).toEqual(['someLayer', 'anotherLayer']);
+				expect(extract[QueryParameters.LAYER_OPACITY]).not.toBeDefined();
+				expect(extract[QueryParameters.LAYER_VISIBILITY]).not.toBeDefined();
+			});
+
 			it('extracts the current layers state considering non default values', () => {
 				setup();
 				const instanceUnderTest = new ShareService();
@@ -419,6 +434,7 @@ describe('ShareService', () => {
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/?')).toBeTrue();
+					expect(queryParams.size).toBe(7);
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
@@ -444,9 +460,11 @@ describe('ShareService', () => {
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/?')).toBeTrue();
+					expect(queryParams.size).toBe(5);
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
+					expect(queryParams.get(QueryParameters.ROTATION)).toBe('0.5');
 					expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
 					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
 				});
@@ -467,9 +485,11 @@ describe('ShareService', () => {
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/?')).toBeTrue();
+					expect(queryParams.size).toBe(6);
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
+					expect(queryParams.get(QueryParameters.ROTATION)).toBe('0.5');
 					expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
 					expect(queryParams.get('foo')).toBe('bar');
 					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
@@ -490,9 +510,11 @@ describe('ShareService', () => {
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/param0/param1?')).toBeTrue();
+					expect(queryParams.size).toBe(5);
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
+					expect(queryParams.get(QueryParameters.ROTATION)).toBe('0.5');
 					expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
 				});
 			});
@@ -515,9 +537,11 @@ describe('ShareService', () => {
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/app/?')).toBeTrue();
+					expect(queryParams.size).toBe(5);
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
+					expect(queryParams.get(QueryParameters.ROTATION)).toBe('0.5');
 					expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
 					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
 				});
@@ -537,9 +561,11 @@ describe('ShareService', () => {
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/app/?')).toBeTrue();
+					expect(queryParams.size).toBe(5);
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
+					expect(queryParams.get(QueryParameters.ROTATION)).toBe('0.5');
 					expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
 					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
 				});
@@ -560,9 +586,11 @@ describe('ShareService', () => {
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/app/?')).toBeTrue();
+					expect(queryParams.size).toBe(6);
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
+					expect(queryParams.get(QueryParameters.ROTATION)).toBe('0.5');
 					expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
 					expect(queryParams.get('foo')).toBe('bar');
 					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
@@ -583,12 +611,38 @@ describe('ShareService', () => {
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/app/param0/param1?')).toBeTrue();
+					expect(queryParams.size).toBe(5);
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
+					expect(queryParams.get(QueryParameters.ROTATION)).toBe('0.5');
 					expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
 				});
 			});
+		});
+	});
+
+	describe('getParameters', () => {
+		it('returns all parameters of the current application that are required to restore it', () => {
+			setup();
+			const instanceUnderTest = new ShareService();
+			spyOn(instanceUnderTest, '_extractPosition').and.returnValue({ c: [44.123, 88.123], z: 5, r: 0.5 });
+			spyOn(instanceUnderTest, '_extractLayers')
+				.withArgs({ includeHiddenGeoResources: false })
+				.and.returnValue({ l: ['someLayer', 'anotherLayer'] });
+			spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
+			spyOn(instanceUnderTest, '_extractRoute').and.returnValue({ rtwp: '1,2', rtc: 'rtCatId' });
+
+			const params = instanceUnderTest.getParameters();
+
+			expect(params).toHaveSize(7);
+			expect(params.get(QueryParameters.LAYER)).toEqual(['someLayer', 'anotherLayer']);
+			expect(params.get(QueryParameters.ZOOM)).toBe(5);
+			expect(params.get(QueryParameters.CENTER)).toEqual([44.123, 88.123]);
+			expect(params.get(QueryParameters.ROTATION)).toBe(0.5);
+			expect(params.get(QueryParameters.TOPIC)).toBe('someTopic');
+			expect(params.get(QueryParameters.ROUTE_WAYPOINTS)).toBe('1,2');
+			expect(params.get(QueryParameters.ROUTE_CATEGORY)).toBe('rtCatId');
 		});
 	});
 });

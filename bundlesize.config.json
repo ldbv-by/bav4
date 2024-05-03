@@ -12,7 +12,7 @@
 		},
 		{
 			"path": "./dist/wc.js",
-			"maxSize": "3.2 KB",
+			"maxSize": "100 KB",
 			"compression": "none"
 		}
 	]
