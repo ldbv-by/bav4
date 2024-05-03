@@ -163,13 +163,24 @@ export class LayerTree extends MvuElement {
 			return nothing;
 		}
 
+		const returnNewTopic = (newTopic) => {
+			console.log('🚀 ~ LayerTree ~ returnNewTopic ~ newTopic:', newTopic);
+			// closeModal();
+			// this._updateTopic(newTopic);
+
+			this._updateTopic(newTopic.label);
+		};
+
 		const openNewTopicDialog = () => {
 			console.log('🚀 ~ LayerTree ~ openNewTopicDialog ');
-			const title = 'new topic dialog';
+			const title = 'Neue Themen-Konfiguration';
 			// const title = translate('menu_misc_content_panel_feedback_title');
 			//
-			const content = html`<ba-mvu-newtopicpanel .onSubmit=${closeModal}></ba-mvu-newtopicpanel>`;
+			const content = html`<ba-mvu-newtopicpanel .returnNewTopic="${returnNewTopic}" .onSubmit="${returnNewTopic}"></ba-mvu-newtopicpanel>`;
+			// const content = html`<ba-mvu-newtopicpanel .returnNewTopic="${returnNewTopic}" .onSubmit=${closeModal}></ba-mvu-newtopicpanel>`;
 			openModal(title, content);
+
+			// openModal('Showcase', html`<ba-showcase></ba-showcase>`);
 		};
 
 		const insertDraggedGeoResource = (currentCatalogEntryUid, newGeoResourceIdFromList) => {
@@ -399,6 +410,7 @@ export class LayerTree extends MvuElement {
 
 		const handleNewTopicClick = () => {
 			console.log('🚀 ~ LayerTree ~ handleNewTopicClick ');
+
 			openNewTopicDialog();
 
 			// this._updateTopic('newEntry');
@@ -489,7 +501,7 @@ export class LayerTree extends MvuElement {
 
 
 				<div>
-					<h2>Layer Tree - Ebenenbaum für Thema "${this.#currentTopic._label}"${sperrText}</h2>
+					<h2>Themen - Ebenenbaum für Thema "${this.#currentTopic._label}"${sperrText}</h2>
 					<button @click="${handleNewTopicClick}">New Topic</button>
 					<button @click="${handleNewLayerGroupClick}">neue Ebenengruppe</button>
 					<button @click="${handleSaveClick}">sichern</button>

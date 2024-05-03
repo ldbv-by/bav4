@@ -149,7 +149,7 @@ export class AdminPanel extends MvuElement {
 			}
 			result.children = obj.children.map((child) => extractFunction(child, extractFunction));
 		}
-		console.log('🚀 ~ AdminPanel ~ _copyEverything ~ result:', result);
+		// console.log('🚀 ~ AdminPanel ~ _copyEverything ~ result:', result);
 		return result;
 	}
 
@@ -355,6 +355,7 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const addEntry = (catalogWithResourceData, currentCatalogEntryUid, newEntry) => {
+			console.log('🚀 ~ AdminPanel ~ addEntry ~ newEntry:', newEntry);
 			addEntryToChildrenRecursively(catalogWithResourceData, currentCatalogEntryUid, catalogWithResourceData, newEntry);
 		};
 
@@ -525,6 +526,7 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const resetCatalog = async () => {
+			console.log('🚀 ~ AdminPanel ~ resetCatalog');
 			const catalogWithResourceData = this._reduceData(this.#catalog, this._enrichWithGeoResource, this.#geoResources);
 			refreshCatalog(catalogWithResourceData);
 		};
