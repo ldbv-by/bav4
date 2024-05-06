@@ -239,10 +239,11 @@ export class LayerTree extends MvuElement {
 			// }
 
 			// Remove entries with label 'End_Label'
-			const newCatalogWithResourceData = catalogWithResourceData.filter((element) => element.label !== 'End_Label');
+			const newCatalogWithResourceData = catalogWithResourceData.filter((element) => element.label !== End_Label);
+			console.log('🚀 ~ 🚀 ~ 🚀 ~ LayerTree ~ onDragEnd ~ newCatalogWithResourceData:', newCatalogWithResourceData);
 			newCatalogWithResourceData.forEach((element) => {
 				if (element.children) {
-					element.children = element.children.filter((child) => child.label !== 'End_Label');
+					element.children = element.children.filter((child) => child.label !== End_Label);
 				}
 			});
 
