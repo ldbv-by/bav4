@@ -20,7 +20,7 @@ const Update_Layers = 'update_layers';
 const Update_Dummy = 'update_dummy';
 const Update_Edit_Mode = 'update_edit_mode';
 
-const End_Label = '  ';
+const End_Label = ' X ';
 
 const hasChildrenClass = 'has-children';
 const showChildrenClass = 'show-children';
@@ -217,7 +217,6 @@ export class LayerTree extends MvuElement {
 			setTimeout(addIsDragged, 0);
 
 			catalogWithResourceData.push({ label: End_Label });
-
 			catalogWithResourceData.forEach((element) => {
 				if (element.children) {
 					element.children.push({ label: End_Label });
@@ -229,13 +228,25 @@ export class LayerTree extends MvuElement {
 		};
 
 		const onDragEnd = (event) => {
+			console.log('🚀 ~ LayerTree ~ onDragEnd ~ event:', event);
 			event.target.classList.remove('isdragged');
 
 			removeDragOverClass();
 
-			if (!this.#overTarget) {
-				this._resetCatalog();
-			}
+			// todo check if this is needed
+			// if (!this.#overTarget) {
+			// 	this._resetCatalog();
+			// }
+
+			// Remove entries with label 'End_Label'
+			const newCatalogWithResourceData = catalogWithResourceData.filter((element) => element.label !== 'End_Label');
+			newCatalogWithResourceData.forEach((element) => {
+				if (element.children) {
+					element.children = element.children.filter((child) => child.label !== 'End_Label');
+				}
+			});
+
+			this.signal(Update_CatalogWithResourceData, newCatalogWithResourceData);
 		};
 
 		const onDragOver = (event, currentCatalogEntry, level) => {
@@ -278,6 +289,7 @@ export class LayerTree extends MvuElement {
 		};
 
 		const onDrop = (event, entry) => {
+			console.log('🚀 ~ LayerTree ~ onDrop ~ event:', event);
 			this.#currentGeoResourceId = null;
 			removeDragOverClass();
 			const dropUid = event.dataTransfer.types[0].replace('uid', '');
@@ -385,6 +397,8 @@ export class LayerTree extends MvuElement {
 				if (catalogEntryCopy) {
 					catalogEntryCopy.label = input.value.trim();
 				}
+
+				// newCatalogWithResourceData
 
 				// Update_CatalogWithResourceData with [], to force refresh
 				this.signal(Update_CatalogWithResourceData, []);

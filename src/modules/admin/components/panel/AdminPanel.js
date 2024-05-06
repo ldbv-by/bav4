@@ -242,6 +242,7 @@ export class AdminPanel extends MvuElement {
 	update(type, data, model) {
 		switch (type) {
 			case Update_CatalogWithResourceData:
+				console.log('🚀 ~ AdminPanel ~ update Update_CatalogWithResourceData ~ data:', data);
 				return { ...model, catalogWithResourceData: [...data], dummy: !model.dummy };
 			case Update_Topics:
 				return { ...model, topics: [...data], dummy: !model.dummy };
@@ -327,7 +328,7 @@ export class AdminPanel extends MvuElement {
 
 				if (catalogEntryN.uid === currentCatalogEntryUid) {
 					catalogEntry.splice(n, 0, newEntry);
-					removePossibleEmptyEntry(catalogEntry);
+					// removePossibleEmptyEntry(catalogEntry);
 					return true;
 				}
 
@@ -355,6 +356,7 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const addEntry = (catalogWithResourceData, currentCatalogEntryUid, newEntry) => {
+			console.log('🚀 ~ AdminPanel ~ addEntry ~ currentCatalogEntryUid:', currentCatalogEntryUid);
 			console.log('🚀 ~ AdminPanel ~ addEntry ~ newEntry:', newEntry);
 			addEntryToChildrenRecursively(catalogWithResourceData, currentCatalogEntryUid, catalogWithResourceData, newEntry);
 		};
@@ -395,6 +397,7 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const removeEntry = (uid) => {
+			console.log('🚀 ~ AdminPanel ~ removeEntry ~ uid:', uid);
 			if (!uid) {
 				return;
 			}
