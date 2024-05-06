@@ -33,6 +33,7 @@ export class ObserveStateForEncodingPlugin extends BaPlugin {
 		observe(store, (state) => state.layers.active, updateStore);
 		observe(store, (state) => state.routing.waypoints, updateStore);
 		observe(store, (state) => state.routing.categoryId, updateStore);
+		observe(store, (state) => state.tools.current, updateStore);
 		setTimeout(updateStore, 0);
 	}
 
