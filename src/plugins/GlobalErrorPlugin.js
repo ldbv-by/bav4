@@ -18,15 +18,18 @@ export class GlobalErrorPlugin extends BaPlugin {
 	#geoResourceService;
 	#errorListener;
 	#unhandledrejectionListener;
+	#environmentService;
 
 	constructor() {
 		super();
-		const { TranslationService: translationService, GeoResourceService: geoResourceService } = $injector.inject(
-			'TranslationService',
-			'GeoResourceService'
-		);
+		const {
+			TranslationService: translationService,
+			GeoResourceService: geoResourceService,
+			EnvironmentService: environmentService
+		} = $injector.inject('TranslationService', 'GeoResourceService', 'EnvironmentService');
 		this.#translationService = translationService;
 		this.#geoResourceService = geoResourceService;
+		this.#environmentService = environmentService;
 	}
 	/**
 	 * @override
@@ -54,7 +57,7 @@ export class GlobalErrorPlugin extends BaPlugin {
 						emitNotification(`${translate('global_geoResource_not_available', [geoResourceName])}`, LevelTypes.WARN);
 						break;
 				}
-			} else {
+			} else if (!this.#environmentService.isEmbeddedAsWC()) {
 				this._emitThrottledGenericNotification();
 			}
 		};

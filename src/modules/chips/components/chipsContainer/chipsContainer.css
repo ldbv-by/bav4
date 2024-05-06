@@ -71,7 +71,7 @@
 	top: 8em;
 	margin: 0;
 	width: 100%;
-	z-index: calc(var(--z-header) + 20);
+	z-index: calc(var(--z-mainmenu) - 10);
 	padding: 0 1em;
 	overflow: scroll;
 }

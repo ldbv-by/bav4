@@ -8,7 +8,8 @@ const BASE_URL = process.env.URL || 'http://localhost:8080';
 test.describe('embed page', () => {
 	test.beforeEach(async ({ page }) => {
 		// Go to the starting url before each test.
-		await page.goto(`${BASE_URL}/embed/wrapper`);
+		// To avoid a redirect by our internal filters we append the corresponding query parameter
+		await page.goto(`${BASE_URL}/embed/wrapper?redirect=true`);
 	});
 
 	test.describe('when loaded', () => {

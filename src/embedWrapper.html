@@ -19,7 +19,7 @@
 		></iframe>
 	</body>
 	<script>
-		const baseUrl = '../embed.html';
+		const baseUrl = '../embed.html' + window.location.search;
 		const search = window.location.search;
 		const iframe = document.getElementById('wrapper');
 		iframe.src = `${baseUrl}${search}`;
