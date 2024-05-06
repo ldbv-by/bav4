@@ -16,6 +16,7 @@ const Update_State_For_Encoding = 'update_state_for_encoding';
  * @author alsturm
  */
 export class ViewLargerMapChip extends MvuElement {
+	#visible;
 	constructor() {
 		super({
 			href: ''
@@ -31,6 +32,12 @@ export class ViewLargerMapChip extends MvuElement {
 	}
 
 	onInitialize() {
+		/**
+		 * The visibility of this component is determined once at initialization time when EC_LINK_TO_APP param is available
+		 */
+		this.#visible =
+			this._environmentService.getQueryParams().get(QueryParameters.EC_LINK_TO_APP) &&
+			this._environmentService.getQueryParams().get(QueryParameters.EC_LINK_TO_APP) !== 'false';
 		this.observe(
 			(state) => state.stateForEncoding.changed,
 			() => {
@@ -47,35 +54,29 @@ export class ViewLargerMapChip extends MvuElement {
 		}
 	}
 
-	isRenderingSkipped() {
-		return (
-			!this._environmentService.getQueryParams().get(QueryParameters.EC_LINK_TO_APP) ||
-			this._environmentService.getQueryParams().get(QueryParameters.EC_LINK_TO_APP) === 'false'
-		);
-	}
-
 	createView(model) {
-		const { href } = model;
+		if (this.#visible && this._environmentService.isEmbedded()) {
+			const { href } = model;
 
-		const translate = (key) => this._translationService.translate(key);
+			const translate = (key) => this._translationService.translate(key);
 
-		const iconClass = `.chips__icon {	
-			mask-size:cover;
-			mask : url("${baSvg}");			
-			-webkit-mask-image : url("${baSvg}");			
-			-webkit-mask-size:cover;			
-		}`;
+			const iconClass = `.chips__icon {	
+				mask-size:cover;
+				mask : url("${baSvg}");			
+				-webkit-mask-image : url("${baSvg}");			
+				-webkit-mask-size:cover;			
+			}`;
 
-		return this._environmentService.isEmbedded()
-			? html` <style>
-						${iconClass}
-							${css}
-					</style>
-					<a class="chips__button" href=${href} target="_blank">
-						<span class="chips__icon"></span>
-						<span class="chips__button-text">${translate('iframe_view_larger_map_chip')}</span>
-					</a>`
-			: nothing;
+			return html` <style>
+					${iconClass}
+						${css}
+				</style>
+				<a class="chips__button" href=${href} target="_blank">
+					<span class="chips__icon"></span>
+					<span class="chips__button-text">${translate('iframe_view_larger_map_chip')}</span>
+				</a>`;
+		}
+		return nothing;
 	}
 
 	static get tag() {
