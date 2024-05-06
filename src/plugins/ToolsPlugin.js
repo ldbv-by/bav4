@@ -5,7 +5,7 @@ import { BaPlugin } from './BaPlugin';
 import { setCurrentTool } from '../store/tools/tools.action';
 import { QueryParameters } from '../domain/queryParameters';
 import { $injector } from '../injection';
-import { EmbedTools, Tools } from '../domain/tools';
+import { WcTools, Tools } from '../domain/tools';
 import { observe } from '../utils/storeUtils';
 
 /**
@@ -28,7 +28,7 @@ export class ToolsPlugin extends BaPlugin {
 		const toolId = environmentService.getQueryParams().get(QueryParameters.TOOL_ID);
 		if (
 			Object.values(Tools).includes(toolId) &&
-			/**in embed mode we check the list of allowed tools*/ (!environmentService.isEmbedded() || EmbedTools.includes(toolId))
+			/**in embed mode we check the list of allowed tools*/ (!environmentService.isEmbedded() || WcTools.includes(toolId))
 		) {
 			setCurrentTool(toolId);
 		}
@@ -42,7 +42,7 @@ export class ToolsPlugin extends BaPlugin {
 					const toolId = environmentService.getQueryParams().get(QueryParameters.TOOL_ID) ?? null;
 					if (!toolId) {
 						setCurrentTool(null);
-					} else if (EmbedTools.includes(toolId)) {
+					} else if (WcTools.includes(toolId)) {
 						setCurrentTool(toolId);
 					}
 				}
