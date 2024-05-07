@@ -765,9 +765,9 @@ export class LayerTree extends MvuElement {
 		this._saveCatalog = callback;
 	}
 
-	get saveCatalog() {
-		return this._saveCatalog;
-	}
+	// get saveCatalog() {
+	// 	return this._saveCatalog;
+	// }
 
 	static get tag() {
 		return 'ba-layer-tree';
