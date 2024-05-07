@@ -9,6 +9,7 @@ import css from './adminPanel.css';
 import { $injector } from '../../../../injection/index';
 import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 import { Topic } from '../../../../domain/topic';
+import { End_Label } from '../layerTree/LayerTree';
 // // eslint-disable-next-line no-unused-vars
 // import { logOnce, onlyOnce } from '../layerTree/LayerTree';
 
@@ -16,7 +17,7 @@ const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
 const Update_Topics = 'update_topics';
 
 const Empty_Label = ' ';
-const End_Label = '  ';
+// const End_Label = '  ';
 
 let _uniqueIdCounter = 0;
 const _generateUniqueId = () => {
@@ -242,7 +243,7 @@ export class AdminPanel extends MvuElement {
 	update(type, data, model) {
 		switch (type) {
 			case Update_CatalogWithResourceData:
-				console.log('🚀 ~ AdminPanel ~ update Update_CatalogWithResourceData ~ data:', data);
+				console.log('🚀🚀🚀🚀🚀🚀🚀 ~ AdminPanel ~ update Update_CatalogWithResourceData ~ data:', data);
 				return { ...model, catalogWithResourceData: [...data], dummy: !model.dummy };
 			case Update_Topics:
 				return { ...model, topics: [...data], dummy: !model.dummy };
@@ -313,6 +314,21 @@ export class AdminPanel extends MvuElement {
 			addEntry(updatedCatalogWithResourceData, currentCatalogEntryUid, elementToMove);
 
 			this.signal(Update_CatalogWithResourceData, updatedCatalogWithResourceData);
+		};
+
+		const xxxxx = () => {
+			console.log('🚀 ~ AdminPanel ~ xxxxx ');
+			// currentCatalogEntryUid, uidFromDrag_elementToMove
+
+			// Remove entries with label End_Label
+			const newCatalogWithResourceData = catalogWithResourceData.filter((element) => element.label !== End_Label);
+			newCatalogWithResourceData.forEach((element) => {
+				if (element.children) {
+					element.children = element.children.filter((child) => child.label !== End_Label);
+				}
+			});
+
+			this.signal(Update_CatalogWithResourceData, newCatalogWithResourceData);
 		};
 
 		const createNewGeoResourceEntry = (newGeoresourceId) => {
@@ -508,25 +524,25 @@ export class AdminPanel extends MvuElement {
 			// eslint-disable-next-line no-console
 			console.log('🚀 ~ AdminPanel ~ saveCatalog ~ catalogToSave:', catalogToSave);
 
-			const xxx = await this._catalogService.save(catalogToSave);
-			// eslint-disable-next-line no-console
-			console.log('🚀 ~ file: AdminPanel.js:458 ~ AdminPanel ~ saveCatalog ~ xxx:', xxx);
+			// const xxx = await this._catalogService.save(catalogToSave);
+			// // eslint-disable-next-line no-console
+			// console.log('🚀 ~ file: AdminPanel.js:458 ~ AdminPanel ~ saveCatalog ~ xxx:', xxx);
 		};
 
-		// todo recursive
-		const removePossibleEndEntry = (children) => {
-			console.log('🚀 ~ AdminPanel ~ removePossibleEndEntry ~ children:', children);
-			for (let entryNumber = 0; entryNumber < children.length; entryNumber++) {
-				const catalogEntry = children[entryNumber];
-				// look for empty label
-				if (catalogEntry.label === End_Label) {
-					console.log('🚀 ~ AdminPanel ~ removePossibleEndEntry ~ catalogEntry:', catalogEntry);
-					children.splice(entryNumber, 1);
-					console.log('🚀 ~ AdminPanel ~ removePossibleEndEntry ~ children:', children);
-					return children;
-				}
-			}
-		};
+		// // todo recursive
+		// const removePossibleEndEntry = (children) => {
+		// 	console.log('🚀 ~ AdminPanel ~ removePossibleEndEntry ~ children:', children);
+		// 	for (let entryNumber = 0; entryNumber < children.length; entryNumber++) {
+		// 		const catalogEntry = children[entryNumber];
+		// 		// look for empty label
+		// 		if (catalogEntry.label === End_Label) {
+		// 			console.log('🚀 ~ AdminPanel ~ removePossibleEndEntry ~ catalogEntry:', catalogEntry);
+		// 			children.splice(entryNumber, 1);
+		// 		}
+		// 	}
+		// 	console.log('🚀 ~ AdminPanel ~ removePossibleEndEntry ~ children:', children);
+		// 	return children;
+		// };
 
 		const resetCatalog = async () => {
 			console.log('🚀 ~ AdminPanel ~ resetCatalog');
@@ -548,7 +564,9 @@ export class AdminPanel extends MvuElement {
 			// 	// }
 			// });
 
-			const catalog = removePossibleEndEntry(this._reduceData(newCatalogWithResourceData, this._copyEverything));
+			// todo hä? wieso?
+			const catalog = this._reduceData(newCatalogWithResourceData, this._copyEverything);
+			// const catalog = removePossibleEndEntry(this._reduceData(newCatalogWithResourceData, this._copyEverything));
 			console.log('🚀 ~ AdminPanel ~ refreshCatalog ~ catalog:', catalog);
 			this.#catalog = catalog;
 
@@ -582,6 +600,7 @@ export class AdminPanel extends MvuElement {
 							.saveCatalog="${saveCatalog}"
 							.deleteTopicLevelTree="${deleteTopicLevelTree}"
 							.disableTopicLevelTree="${toggleTopicLevelTreeDisabled}"
+							.xxxxx="${xxxxx}"
 							.dummy="${dummy}"
 						></ba-layer-tree>
 					</div>

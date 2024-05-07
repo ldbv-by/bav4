@@ -20,7 +20,7 @@ const Update_Layers = 'update_layers';
 const Update_Dummy = 'update_dummy';
 const Update_Edit_Mode = 'update_edit_mode';
 
-const End_Label = ' X ';
+export const End_Label = ' X ';
 
 const hasChildrenClass = 'has-children';
 const showChildrenClass = 'show-children';
@@ -125,6 +125,7 @@ export class LayerTree extends MvuElement {
 
 		// eslint-disable-next-line no-unused-vars
 		this._refreshCatalog = (catalog) => {};
+		this._xxxxx = () => {};
 
 		this.#currentGeoResourceId = null;
 		this.#overTarget = false;
@@ -225,6 +226,23 @@ export class LayerTree extends MvuElement {
 
 			this.render();
 			console.log('🚀 ~ LayerTree ~ onDragStart ~ catalogWithResourceData:', catalogWithResourceData);
+
+			// // Make a deep copy of catalogWithResourceData
+			// const catalogCopy = JSON.parse(JSON.stringify(catalogWithResourceData));
+
+			// catalogCopy.push({ label: End_Label });
+			// catalogCopy.forEach((element) => {
+			// 	if (element.children) {
+			// 		element.children.push({ label: End_Label });
+			// 	}
+			// });
+
+			// // Update_CatalogWithResourceData with [], to force refresh
+			// this.signal(Update_CatalogWithResourceData, []);
+			// this._refreshCatalog(catalogCopy);
+
+			// // this.render();
+			// console.log('🚀 ~ LayerTree ~ onDragStart ~ catalogCopy:', catalogCopy);
 		};
 
 		const onDragEnd = (event) => {
@@ -238,16 +256,26 @@ export class LayerTree extends MvuElement {
 			// 	this._resetCatalog();
 			// }
 
-			// Remove entries with label 'End_Label'
-			const newCatalogWithResourceData = catalogWithResourceData.filter((element) => element.label !== End_Label);
-			console.log('🚀 ~ 🚀 ~ 🚀 ~ LayerTree ~ onDragEnd ~ newCatalogWithResourceData:', newCatalogWithResourceData);
-			newCatalogWithResourceData.forEach((element) => {
-				if (element.children) {
-					element.children = element.children.filter((child) => child.label !== End_Label);
-				}
-			});
+			// // // Remove entries with label End_Label
+			// // const newCatalogWithResourceData = catalogWithResourceData.filter((element) => element.label !== End_Label);
+			// // newCatalogWithResourceData.forEach((element) => {
+			// // 	if (element.children) {
+			// // 		element.children = element.children.filter((child) => child.label !== End_Label);
+			// // 	}
+			// // });
 
-			this.signal(Update_CatalogWithResourceData, newCatalogWithResourceData);
+			// for (let i = catalogWithResourceData.length - 1; i >= 0; i--) {
+			// 	const element = catalogWithResourceData[i];
+
+			// 	if (element.label === End_Label) {
+			// 		catalogWithResourceData.splice(i, 1);
+			// 	} else if (element.children) {
+			// 		element.children = element.children.filter((child) => child.label !== End_Label);
+			// 	}
+			// }
+			console.log('🚀 ~ LayerTree ~ onDragEnd ~ this._xxxxx()');
+			this._xxxxx();
+			// this.signal(Update_CatalogWithResourceData, catalogWithResourceData);
 		};
 
 		const onDragOver = (event, currentCatalogEntry, level) => {
@@ -587,23 +615,25 @@ export class LayerTree extends MvuElement {
 	 * @property {function} resetCatalog - Callback function
 	 */
 	set resetCatalog(callback) {
+		console.log('🚀 ~ LayerTree ~ set resetCatalog ');
 		this._resetCatalog = callback;
 	}
 
-	get resetCatalog() {
-		return this._resetCatalog;
-	}
+	// get resetCatalog() {
+	// 	return this._resetCatalog;
+	// }
 
 	/**
 	 * @property {function} refreshCatalog - Callback function
 	 */
 	set refreshCatalog(callback) {
+		console.log('🚀 ~ LayerTree ~ set refreshCatalog ');
 		this._refreshCatalog = callback;
 	}
 
-	get refreshCatalog() {
-		return this._refreshCatalog;
-	}
+	// get refreshCatalog() {
+	// 	return this._refreshCatalog;
+	// }
 
 	/**
 	 * @property {function} addLayerGroup - Callback function
@@ -708,12 +738,25 @@ export class LayerTree extends MvuElement {
 	 * @property {function} moveElement - Callback function
 	 */
 	set moveElement(callback) {
+		console.log('🚀 ~ LayerTree ~ set moveElement');
 		this._moveElement = callback;
 	}
 
-	get moveElement() {
-		return this._moveElement;
+	// get moveElement() {
+	// 	return this._moveElement;
+	// }
+
+	/**
+	 * @property {function} xxxxx - Callback function
+	 */
+	set xxxxx(callback) {
+		console.log('🚀 ~ LayerTree ~ set xxxxx');
+		this._xxxxx = callback;
 	}
+
+	// get xxxxx() {
+	// 	return this._xxxxx;
+	// }
 
 	/**
 	 * @property {function} saveCatalog - Callback function
