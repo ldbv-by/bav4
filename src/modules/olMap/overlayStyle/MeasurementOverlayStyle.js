@@ -255,7 +255,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		});
 	}
 
-	_createOlOverlay(olMap, overlayOptions = {}, type, isDraggable = false) {
+	_createOlOverlay(olMap, overlayOptions, type, isDraggable = false) {
 		const overlayElement = document.createElement(BaOverlay.tag);
 		overlayElement.type = type;
 		overlayElement.isDraggable = isDraggable;
