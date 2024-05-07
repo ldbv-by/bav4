@@ -29,15 +29,15 @@ import { acknowledgeTermsOfUse } from '../../../../../src/store/shared/shared.ac
 import { simulateMapBrowserEvent } from '../../mapTestUtils';
 import { drawReducer } from '../../../../../src/store/draw/draw.reducer';
 import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
-import { MeasurementOverlay } from '../../../../../src/modules/olMap/components/MeasurementOverlay';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../../src/services/provider/attribution.provider';
 import { Layer } from 'ol/layer';
 import { Tools } from '../../../../../src/domain/tools';
 import { EventLike } from '../../../../../src/utils/storeUtils';
+import { BaOverlay } from '../../../../../src/modules/olMap/components/BaOverlay.js';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
-window.customElements.define(MeasurementOverlay.tag, MeasurementOverlay);
+window.customElements.define(BaOverlay.tag, BaOverlay);
 
 describe('OlMeasurementHandler', () => {
 	class MockClass {
