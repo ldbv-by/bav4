@@ -352,7 +352,7 @@ describe('MeasurementOverlayStyle', () => {
 		expect(baOverlay.outerHTML).toBe('<ba-map-overlay></ba-map-overlay>');
 	});
 
-	it('create draggable measurement tooltip ', () => {
+	it('creates a draggable measurement tooltip ', () => {
 		const state = { ...initialState, active: true };
 		setup(state);
 		const addOverlaySpy = jasmine.createSpy();
@@ -985,6 +985,17 @@ describe('MeasurementOverlayStyle', () => {
 			element.dispatchEvent(new MouseEvent('mouseleave'));
 
 			expect(dragableSpy).toHaveBeenCalledWith('dragable', false);
+		});
+	});
+
+	describe('_getPlacement', () => {
+		it('finds a placement sector for all degrees within 360°', () => {
+			// regression test -> to be safe against changes in private SectorsOfPlacement definitions
+			const classUnderTest = new MeasurementOverlayStyle();
+
+			for (let angle = 0; angle <= 360; angle++) {
+				expect(classUnderTest._getPlacement(angle).sector).not.toBeUndefined();
+			}
 		});
 	});
 });

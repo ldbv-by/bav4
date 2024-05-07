@@ -323,6 +323,6 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		};
 
 		const sector = getSector(angle);
-		return sector ? { sector: sector.name, positioning: 'center-center', offset: getOffset(angle, distance) } : null;
+		return { sector: sector?.name, positioning: 'center-center', offset: getOffset(angle, distance) };
 	}
 }
