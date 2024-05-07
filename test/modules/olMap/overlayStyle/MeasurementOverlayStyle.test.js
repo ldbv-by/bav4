@@ -1208,6 +1208,7 @@ describe('MeasurementOverlayStyle', () => {
 
 	describe('_getPlacement', () => {
 		it('finds a placement sector for all degrees within 360°', () => {
+			setup();
 			// regression test -> to be safe against changes in private SectorsOfPlacement definitions
 			const classUnderTest = new MeasurementOverlayStyle();
 
