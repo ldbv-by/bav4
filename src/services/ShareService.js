@@ -58,6 +58,8 @@ export class ShareService {
 	/**
 	 * Returns all parameters of the current application that are required to restore it.
 	 * For the keys of the returned object see {@link QueryParameters}.
+	 *
+	 * Note: Basically contains the same parameters as {@link ShareService#encodeState} and {@link ShareService#encodeStateForPosition}.
 	 * @param {module:services/ShareService~ParameterOptions} [options]
 	 * @returns {Map<QueryParameters,?>} a map containing the parameters
 	 */
@@ -66,7 +68,8 @@ export class ShareService {
 			...this._extractPosition(),
 			...this._extractLayers(options),
 			...this._extractTopic(),
-			...this._extractRoute()
+			...this._extractRoute(),
+			...this._extractTool()
 		};
 
 		return new Map(Object.entries(params));
@@ -107,7 +110,8 @@ export class ShareService {
 				...this._extractPosition(center, zoom, rotation),
 				...this._extractLayers({ includeHiddenGeoResources: false }),
 				...this._extractTopic(),
-				...this._extractRoute()
+				...this._extractRoute(),
+				...this._extractTool()
 			},
 			extraParams
 		);
@@ -238,6 +242,25 @@ export class ShareService {
 			extractedState[QueryParameters.ROUTE_WAYPOINTS] = waypoints;
 			extractedState[QueryParameters.ROUTE_CATEGORY] = categoryId;
 		}
+		return extractedState;
+	}
+
+	/**
+	 * @private
+	 * @returns {object} extractedState
+	 */
+	_extractTool() {
+		const { StoreService: storeService } = $injector.inject('StoreService');
+
+		const state = storeService.getStore().getState();
+		const extractedState = {};
+
+		const {
+			tools: { current }
+		} = state;
+
+		extractedState[QueryParameters.TOOL_ID] = current ?? '';
+
 		return extractedState;
 	}
 

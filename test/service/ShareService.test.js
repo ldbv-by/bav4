@@ -12,6 +12,8 @@ import { TestUtils } from '../test-utils';
 import { round } from '../../src/utils/numberUtils';
 import { BvvCoordinateRepresentations, GlobalCoordinateRepresentations } from '../../src/domain/coordinateRepresentation';
 import { routingReducer } from '../../src/store/routing/routing.reducer';
+import { toolsReducer } from '../../src/store/tools/tools.reducer';
+import { setCurrentTool } from '../../src/store/tools/tools.action';
 
 describe('ShareService', () => {
 	const coordinateService = {
@@ -39,7 +41,8 @@ describe('ShareService', () => {
 			layers: layersReducer,
 			position: positionReducer,
 			topics: topicsReducer,
-			routing: routingReducer
+			routing: routingReducer,
+			tools: toolsReducer
 		});
 		$injector
 			.registerSingleton('CoordinateService', coordinateService)
@@ -339,6 +342,18 @@ describe('ShareService', () => {
 			});
 		});
 
+		describe('_extractTool', () => {
+			it('extracts the current tool ', () => {
+				setup();
+				const instanceUnderTest = new ShareService();
+				setCurrentTool('someTool');
+
+				const extract = instanceUnderTest._extractTool();
+
+				expect(extract[QueryParameters.TOOL_ID]).toBe('someTool');
+			});
+		});
+
 		describe('_mergeExtraParams', () => {
 			it('merges an array when key already present', () => {
 				setup();
@@ -428,13 +443,14 @@ describe('ShareService', () => {
 					spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
 					spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
 					spyOn(instanceUnderTest, '_extractRoute').and.returnValue({ rtwp: '1,2', rtc: 'rtCatId' });
+					spyOn(instanceUnderTest, '_extractTool').and.returnValue({ tid: 'someTool' });
 					const _mergeExtraParamsSpy = spyOn(instanceUnderTest, '_mergeExtraParams').withArgs(jasmine.anything(), {}).and.callThrough();
 
 					const encoded = instanceUnderTest.encodeStateForPosition({ zoom: 5, center: [44.123, 88.123], rotation: 0.5 });
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/?')).toBeTrue();
-					expect(queryParams.size).toBe(7);
+					expect(queryParams.size).toBe(8);
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
@@ -442,6 +458,7 @@ describe('ShareService', () => {
 					expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
 					expect(queryParams.get(QueryParameters.ROUTE_WAYPOINTS)).toBe('1,2');
 					expect(queryParams.get(QueryParameters.ROUTE_CATEGORY)).toBe('rtCatId');
+					expect(queryParams.get(QueryParameters.TOOL_ID)).toBe('someTool');
 					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
 				});
 
@@ -452,20 +469,13 @@ describe('ShareService', () => {
 					spyOn(instanceUnderTest, '_extractPosition')
 						.withArgs([44.123, 88.123], 5, 0.5)
 						.and.returnValue({ c: [44.123, 88.123], z: 5, r: 0.5 });
-					spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
-					spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
 					const _mergeExtraParamsSpy = spyOn(instanceUnderTest, '_mergeExtraParams').withArgs(jasmine.anything(), {}).and.callThrough();
 
 					const encoded = instanceUnderTest.encodeStateForPosition({ zoom: 5, center: [44.123, 88.123], rotation: 0.5 });
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/?')).toBeTrue();
-					expect(queryParams.size).toBe(5);
-					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
-					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
-					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
-					expect(queryParams.get(QueryParameters.ROTATION)).toBe('0.5');
-					expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
+					expect(queryParams.size).toBe(6);
 					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
 				});
 
@@ -477,20 +487,14 @@ describe('ShareService', () => {
 					spyOn(instanceUnderTest, '_extractPosition')
 						.withArgs([44.123, 88.123], 5, 0.5)
 						.and.returnValue({ c: [44.123, 88.123], z: 5, r: 0.5 });
-					spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
-					spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
 					const _mergeExtraParamsSpy = spyOn(instanceUnderTest, '_mergeExtraParams').withArgs(jasmine.anything(), extraParam).and.callThrough();
 
 					const encoded = instanceUnderTest.encodeStateForPosition({ zoom: 5, center: [44.123, 88.123], rotation: 0.5 }, extraParam);
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/?')).toBeTrue();
-					expect(queryParams.size).toBe(6);
-					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
-					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
-					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
-					expect(queryParams.get(QueryParameters.ROTATION)).toBe('0.5');
-					expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
+					expect(queryParams.size).toBe(7);
+
 					expect(queryParams.get('foo')).toBe('bar');
 					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
 				});
@@ -503,19 +507,12 @@ describe('ShareService', () => {
 					spyOn(instanceUnderTest, '_extractPosition')
 						.withArgs([44.123, 88.123], 5, 0.5)
 						.and.returnValue({ c: [44.123, 88.123], z: 5, r: 0.5 });
-					spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
-					spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
 
 					const encoded = instanceUnderTest.encodeStateForPosition({ zoom: 5, center: [44.123, 88.123], rotation: 0.5 }, {}, pathParameters);
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/param0/param1?')).toBeTrue();
-					expect(queryParams.size).toBe(5);
-					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
-					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
-					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
-					expect(queryParams.get(QueryParameters.ROTATION)).toBe('0.5');
-					expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
+					expect(queryParams.size).toBe(6);
 				});
 			});
 
@@ -531,18 +528,20 @@ describe('ShareService', () => {
 						.and.returnValue({ c: [44.123, 88.123], z: 5, r: 0.5 });
 					spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
 					spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
+					spyOn(instanceUnderTest, '_extractTool').and.returnValue({ tid: 'someTool' });
 					const _mergeExtraParamsSpy = spyOn(instanceUnderTest, '_mergeExtraParams').withArgs(jasmine.anything(), {}).and.callThrough();
 
 					const encoded = instanceUnderTest.encodeStateForPosition({ zoom: 5, center: [44.123, 88.123], rotation: 0.5 });
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/app/?')).toBeTrue();
-					expect(queryParams.size).toBe(5);
+					expect(queryParams.size).toBe(6);
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
 					expect(queryParams.get(QueryParameters.ROTATION)).toBe('0.5');
 					expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
+					expect(queryParams.get(QueryParameters.TOOL_ID)).toBe('someTool');
 					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
 				});
 
@@ -553,20 +552,13 @@ describe('ShareService', () => {
 					spyOn(instanceUnderTest, '_extractPosition')
 						.withArgs([44.123, 88.123], 5, 0.5)
 						.and.returnValue({ c: [44.123, 88.123], z: 5, r: 0.5 });
-					spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
-					spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
 					const _mergeExtraParamsSpy = spyOn(instanceUnderTest, '_mergeExtraParams').withArgs(jasmine.anything(), {}).and.callThrough();
 
 					const encoded = instanceUnderTest.encodeStateForPosition({ zoom: 5, center: [44.123, 88.123], rotation: 0.5 });
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/app/?')).toBeTrue();
-					expect(queryParams.size).toBe(5);
-					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
-					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
-					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
-					expect(queryParams.get(QueryParameters.ROTATION)).toBe('0.5');
-					expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
+					expect(queryParams.size).toBe(6);
 					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
 				});
 
@@ -578,20 +570,13 @@ describe('ShareService', () => {
 					spyOn(instanceUnderTest, '_extractPosition')
 						.withArgs([44.123, 88.123], 5, 0.5)
 						.and.returnValue({ c: [44.123, 88.123], z: 5, r: 0.5 });
-					spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
-					spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
 					const _mergeExtraParamsSpy = spyOn(instanceUnderTest, '_mergeExtraParams').withArgs(jasmine.anything(), extraParam).and.callThrough();
 
 					const encoded = instanceUnderTest.encodeStateForPosition({ zoom: 5, center: [44.123, 88.123], rotation: 0.5 }, extraParam);
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/app/?')).toBeTrue();
-					expect(queryParams.size).toBe(6);
-					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
-					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
-					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
-					expect(queryParams.get(QueryParameters.ROTATION)).toBe('0.5');
-					expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
+					expect(queryParams.size).toBe(7);
 					expect(queryParams.get('foo')).toBe('bar');
 					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
 				});
@@ -604,19 +589,12 @@ describe('ShareService', () => {
 					spyOn(instanceUnderTest, '_extractPosition')
 						.withArgs([44.123, 88.123], 5, 0.5)
 						.and.returnValue({ c: [44.123, 88.123], z: 5, r: 0.5 });
-					spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
-					spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
 
 					const encoded = instanceUnderTest.encodeStateForPosition({ zoom: 5, center: [44.123, 88.123], rotation: 0.5 }, {}, pathParameters);
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/app/param0/param1?')).toBeTrue();
-					expect(queryParams.size).toBe(5);
-					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
-					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
-					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
-					expect(queryParams.get(QueryParameters.ROTATION)).toBe('0.5');
-					expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
+					expect(queryParams.size).toBe(6);
 				});
 			});
 		});
@@ -632,10 +610,11 @@ describe('ShareService', () => {
 				.and.returnValue({ l: ['someLayer', 'anotherLayer'] });
 			spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
 			spyOn(instanceUnderTest, '_extractRoute').and.returnValue({ rtwp: '1,2', rtc: 'rtCatId' });
+			spyOn(instanceUnderTest, '_extractTool').and.returnValue({ tid: 'someTool' });
 
 			const params = instanceUnderTest.getParameters();
 
-			expect(params).toHaveSize(7);
+			expect(params).toHaveSize(8);
 			expect(params.get(QueryParameters.LAYER)).toEqual(['someLayer', 'anotherLayer']);
 			expect(params.get(QueryParameters.ZOOM)).toBe(5);
 			expect(params.get(QueryParameters.CENTER)).toEqual([44.123, 88.123]);
@@ -643,6 +622,7 @@ describe('ShareService', () => {
 			expect(params.get(QueryParameters.TOPIC)).toBe('someTopic');
 			expect(params.get(QueryParameters.ROUTE_WAYPOINTS)).toBe('1,2');
 			expect(params.get(QueryParameters.ROUTE_CATEGORY)).toBe('rtCatId');
+			expect(params.get(QueryParameters.TOOL_ID)).toBe('someTool');
 		});
 	});
 });
