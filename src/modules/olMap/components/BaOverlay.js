@@ -92,7 +92,7 @@ export class BaOverlay extends MvuElement {
 
 	createView(model) {
 		const { overlayType, floating, draggable, placement } = model;
-		const content = this._getContent(model);
+		const content = this.#getContent(model);
 
 		const classes = {
 			help: overlayType === BaOverlayTypes.HELP,
@@ -116,10 +116,10 @@ export class BaOverlay extends MvuElement {
 		`;
 	}
 
-	_getContent(model) {
+	#getContent(model) {
 		const { geometry, overlayType, value } = model;
 		const getStaticDistance = () => {
-			const distance = this._getMeasuredLength(geometry) * value;
+			const distance = this.#getMeasuredLength(geometry) * value;
 			return this.#unitsService.formatDistance(round(Math.round(distance), -1), 0);
 		};
 
@@ -127,10 +127,10 @@ export class BaOverlay extends MvuElement {
 			if (canShowAzimuthCircle(geometry)) {
 				// canShowAzimuthCircle() secures that getAzimuth() always returns a valid value except NULL
 				const azimuthValue = getAzimuth(geometry).toFixed(2);
-				const distanceValue = this.#unitsService.formatDistance(this._getMeasuredLength(geometry), 2);
+				const distanceValue = this.#unitsService.formatDistance(this.#getMeasuredLength(geometry), 2);
 				return `${azimuthValue}°/${distanceValue}`;
 			}
-			return geometry ? this.#unitsService.formatDistance(this._getMeasuredLength(geometry), 2) : '';
+			return geometry ? this.#unitsService.formatDistance(this.#getMeasuredLength(geometry), 2) : '';
 		};
 
 		const getArea = () => {
@@ -157,8 +157,8 @@ export class BaOverlay extends MvuElement {
 		return 'ba-map-overlay';
 	}
 
-	_getMeasuredLength = (geometry) => {
-		const alreadyMeasuredLength = geometry ? geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY) : null;
+	#getMeasuredLength = (geometry) => {
+		const alreadyMeasuredLength = geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY);
 		return alreadyMeasuredLength ?? this.#mapService.calcLength(getLineString(geometry).getCoordinates());
 	};
 

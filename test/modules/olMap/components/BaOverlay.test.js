@@ -47,6 +47,36 @@ describe('BaOverlay', () => {
 		return element;
 	};
 
+	describe('when instantiated', () => {
+		it('has a model with default values', async () => {
+			await setup();
+			const model = new BaOverlay().getModel();
+
+			expect(model).toEqual({
+				value: null,
+				floating: true,
+				overlayType: BaOverlayTypes.TEXT,
+				draggable: false,
+				placement: { sector: 'init', positioning: 'top-center', offset: [0, -25] },
+				geometry: null,
+				position: null
+			});
+		});
+
+		it('has a model accessible by properties ', async () => {
+			await setup();
+			const classUnderTest = new BaOverlay();
+
+			expect(classUnderTest.placement).toEqual({ sector: 'init', positioning: 'top-center', offset: [0, -25] });
+			expect(classUnderTest.value).toBeNull();
+			expect(classUnderTest.type).toBe(BaOverlayTypes.TEXT);
+			expect(classUnderTest.isDraggable).toBeFalse();
+			expect(classUnderTest.static).toBeFalse();
+			expect(classUnderTest.geometry).toBeNull();
+			expect(classUnderTest.position).toBeNull();
+		});
+	});
+
 	describe('when initialized with type property', () => {
 		it('renders the text view', async () => {
 			const element = await setup();
