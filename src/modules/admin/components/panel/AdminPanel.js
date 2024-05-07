@@ -316,8 +316,32 @@ export class AdminPanel extends MvuElement {
 			this.signal(Update_CatalogWithResourceData, updatedCatalogWithResourceData);
 		};
 
-		const xxxxx = () => {
-			console.log('🚀 ~ AdminPanel ~ xxxxx ');
+		const addEndLabels = () => {
+			console.log('🚀 ~ AdminPanel ~ addEndLabels ');
+			// // currentCatalogEntryUid, uidFromDrag_elementToMove
+
+			// // Remove entries with label End_Label
+			// const newCatalogWithResourceData = catalogWithResourceData.filter((element) => element.label !== End_Label);
+			// newCatalogWithResourceData.forEach((element) => {
+			// 	if (element.children) {
+			// 		element.children = element.children.filter((child) => child.label !== End_Label);
+			// 	}
+			// });
+
+			const newCatalogWithResourceData = JSON.parse(JSON.stringify(catalogWithResourceData));
+
+			newCatalogWithResourceData.push({ label: End_Label });
+			newCatalogWithResourceData.forEach((element) => {
+				if (element.children) {
+					element.children.push({ label: End_Label });
+				}
+			});
+
+			this.signal(Update_CatalogWithResourceData, newCatalogWithResourceData);
+		};
+
+		const removeEndLabels = () => {
+			console.log('🚀 ~ AdminPanel ~ removeEndLabels ');
 			// currentCatalogEntryUid, uidFromDrag_elementToMove
 
 			// Remove entries with label End_Label
@@ -600,7 +624,8 @@ export class AdminPanel extends MvuElement {
 							.saveCatalog="${saveCatalog}"
 							.deleteTopicLevelTree="${deleteTopicLevelTree}"
 							.disableTopicLevelTree="${toggleTopicLevelTreeDisabled}"
-							.xxxxx="${xxxxx}"
+							.removeEndLabels="${removeEndLabels}"
+							.addEndLabels="${addEndLabels}"
 							.dummy="${dummy}"
 						></ba-layer-tree>
 					</div>

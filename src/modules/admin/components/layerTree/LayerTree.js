@@ -125,7 +125,8 @@ export class LayerTree extends MvuElement {
 
 		// eslint-disable-next-line no-unused-vars
 		this._refreshCatalog = (catalog) => {};
-		this._xxxxx = () => {};
+		this._removeEndLabels = () => {};
+		this._addEndLabels = () => {};
 
 		this.#currentGeoResourceId = null;
 		this.#overTarget = false;
@@ -217,15 +218,18 @@ export class LayerTree extends MvuElement {
 
 			setTimeout(addIsDragged, 0);
 
-			catalogWithResourceData.push({ label: End_Label });
-			catalogWithResourceData.forEach((element) => {
-				if (element.children) {
-					element.children.push({ label: End_Label });
-				}
-			});
+			// catalogWithResourceData.push({ label: End_Label });
+			// catalogWithResourceData.forEach((element) => {
+			// 	if (element.children) {
+			// 		element.children.push({ label: End_Label });
+			// 	}
+			// });
 
-			this.render();
-			console.log('🚀 ~ LayerTree ~ onDragStart ~ catalogWithResourceData:', catalogWithResourceData);
+			// this.render();
+			// console.log('🚀 ~ LayerTree ~ onDragStart ~ catalogWithResourceData:', catalogWithResourceData);
+
+			console.log('🚀 ~ LayerTree ~ onDragEnd ~ this._addEndLabels()');
+			this._addEndLabels();
 
 			// // Make a deep copy of catalogWithResourceData
 			// const catalogCopy = JSON.parse(JSON.stringify(catalogWithResourceData));
@@ -273,8 +277,8 @@ export class LayerTree extends MvuElement {
 			// 		element.children = element.children.filter((child) => child.label !== End_Label);
 			// 	}
 			// }
-			console.log('🚀 ~ LayerTree ~ onDragEnd ~ this._xxxxx()');
-			this._xxxxx();
+			console.log('🚀 ~ LayerTree ~ onDragEnd ~ this._removeEndLabels()');
+			this._removeEndLabels();
 			// this.signal(Update_CatalogWithResourceData, catalogWithResourceData);
 		};
 
@@ -747,15 +751,23 @@ export class LayerTree extends MvuElement {
 	// }
 
 	/**
-	 * @property {function} xxxxx - Callback function
+	 * @property {function} removeEndLabels - Callback function
 	 */
-	set xxxxx(callback) {
-		console.log('🚀 ~ LayerTree ~ set xxxxx');
-		this._xxxxx = callback;
+	set removeEndLabels(callback) {
+		console.log('🚀 ~ LayerTree ~ set removeEndLabels');
+		this._removeEndLabels = callback;
 	}
 
-	// get xxxxx() {
-	// 	return this._xxxxx;
+	/**
+	 * @property {function} addEndLabels - Callback function
+	 */
+	set addEndLabels(callback) {
+		console.log('🚀 ~ LayerTree ~ set addEndLabels');
+		this._addEndLabels = callback;
+	}
+
+	// get removeEndLabels() {
+	// 	return this._removeEndLabels;
 	// }
 
 	/**
