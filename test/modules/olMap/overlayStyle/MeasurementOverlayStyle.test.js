@@ -1178,7 +1178,7 @@ describe('MeasurementOverlayStyle', () => {
 		it('change overlay-property on mouseenter', () => {
 			setup();
 			const overlay = getOverlay();
-			const dragableSpy = spyOn(overlay, 'set');
+			const draggableSpy = spyOn(overlay, 'set');
 			const dragPan = new DragPan();
 			const mapMock = getMapMock(dragPan);
 			const element = overlay.getElement();
@@ -1187,13 +1187,13 @@ describe('MeasurementOverlayStyle', () => {
 			classUnderTest._createDragOn(overlay, mapMock);
 			element.dispatchEvent(new MouseEvent('mouseenter'));
 
-			expect(dragableSpy).toHaveBeenCalledWith('dragable', true);
+			expect(draggableSpy).toHaveBeenCalledWith('dragable', true);
 		});
 
 		it('change overlay-property on mouseleave', () => {
 			setup();
 			const overlay = getOverlay();
-			const dragableSpy = spyOn(overlay, 'set');
+			const draggableSpy = spyOn(overlay, 'set');
 			const dragPan = new DragPan();
 			const mapMock = getMapMock(dragPan);
 			const element = overlay.getElement();
@@ -1202,7 +1202,7 @@ describe('MeasurementOverlayStyle', () => {
 			classUnderTest._createDragOn(overlay, mapMock);
 			element.dispatchEvent(new MouseEvent('mouseleave'));
 
-			expect(dragableSpy).toHaveBeenCalledWith('dragable', false);
+			expect(draggableSpy).toHaveBeenCalledWith('dragable', false);
 		});
 	});
 
