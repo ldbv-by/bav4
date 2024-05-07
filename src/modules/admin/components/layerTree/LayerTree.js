@@ -26,34 +26,34 @@ const hasChildrenClass = 'has-children';
 const showChildrenClass = 'show-children';
 const droppableClass = 'droppable';
 
-// const logOnceDictionary = {};
-// export const logOnce = (key, objectToShow = 'nix') => {
-// 	if (!logOnceDictionary[key]) {
-// 		if (objectToShow === 'nix') {
-// 			// eslint-disable-next-line no-console
-// 			console.log(key);
-// 		} else {
-// 			if (typeof objectToShow === 'string') {
-// 				// eslint-disable-next-line no-console
-// 				console.log(objectToShow);
-// 			} else {
-// 				// eslint-disable-next-line no-console
-// 				console.log(JSON.stringify(objectToShow));
-// 			}
-// 		}
-// 		logOnceDictionary[key] = objectToShow;
-// 		return true;
-// 	}
-// 	return false;
-// };
+const logOnceDictionary = {};
+export const logOnce = (key, objectToShow = 'nix') => {
+	if (!logOnceDictionary[key]) {
+		if (objectToShow === 'nix') {
+			// eslint-disable-next-line no-console
+			console.log('🚀🚀🚀 ~ :::logOnce:::', key);
+		} else {
+			if (typeof objectToShow === 'string') {
+				// eslint-disable-next-line no-console
+				console.log('🚀🚀🚀 ~ :::logOnce:::', objectToShow);
+			} else {
+				// eslint-disable-next-line no-console
+				console.log('🚀🚀🚀 ~ :::logOnce:::', JSON.stringify(objectToShow));
+			}
+		}
+		logOnceDictionary[key] = objectToShow;
+		return true;
+	}
+	return false;
+};
 
-// export const onlyOnce = (key) => {
-// 	if (logOnceDictionary[key]) {
-// 		return false;
-// 	}
-// 	logOnceDictionary[key] = key;
-// 	return true;
-// };
+export const onlyOnce = (key) => {
+	if (logOnceDictionary[key]) {
+		return false;
+	}
+	logOnceDictionary[key] = key;
+	return true;
+};
 
 // export const getRandomColor = () => {
 // 	const red = Math.floor(Math.random() * 256);
@@ -283,9 +283,21 @@ export class LayerTree extends MvuElement {
 		};
 
 		const onDragOver = (event, currentCatalogEntry, level) => {
+			// if (currentCatalogEntry.geoResourceId !== 'd641233f-68c6-486c-8405-4a3bc63b6443') {
+			// 	console.log('🚀 ~ LayerTree ~ onDragOver ~ currentCatalogEntry.geoResourceId:', currentCatalogEntry.geoResourceId);
+			// }
+
+			// logOnce(
+			// 	currentEntry.uid + ' ' + newGeoResourceIdFromList,
+			// 	'currentEntry : ' + currentEntry.uid + ' ' + currentEntry.label + ' newGeoResourceIdFromList : ' + newGeoResourceIdFromList
+			// );
+
+			logOnce(currentCatalogEntry.uid);
+			logOnce(event);
 			const types = event.dataTransfer.types;
 			const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
 			const newGeoResourceIdFromList = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
+			// console.log('🚀🚀🚀🚀 ~ LayerTree ~ onDragOver ~ newGeoResourceIdFromList:', newGeoResourceIdFromList);
 			if (newGeoResourceIdFromList) {
 				if (newGeoResourceIdFromList === currentCatalogEntry.geoResourceId) {
 					event.preventDefault();
@@ -310,6 +322,8 @@ export class LayerTree extends MvuElement {
 				if (this.#currentUId === currentCatalogEntry.uid) {
 					return;
 				}
+
+				logOnce(uidFromDrag, uidFromDrag);
 
 				this.#overTarget = true;
 				this.#currentUId = currentCatalogEntry.uid;
@@ -619,7 +633,7 @@ export class LayerTree extends MvuElement {
 	 * @property {function} resetCatalog - Callback function
 	 */
 	set resetCatalog(callback) {
-		console.log('🚀 ~ LayerTree ~ set resetCatalog ');
+		// console.log('🚀 ~ LayerTree ~ set resetCatalog ');
 		this._resetCatalog = callback;
 	}
 
@@ -631,7 +645,7 @@ export class LayerTree extends MvuElement {
 	 * @property {function} refreshCatalog - Callback function
 	 */
 	set refreshCatalog(callback) {
-		console.log('🚀 ~ LayerTree ~ set refreshCatalog ');
+		// console.log('🚀 ~ LayerTree ~ set refreshCatalog ');
 		this._refreshCatalog = callback;
 	}
 
@@ -742,7 +756,7 @@ export class LayerTree extends MvuElement {
 	 * @property {function} moveElement - Callback function
 	 */
 	set moveElement(callback) {
-		console.log('🚀 ~ LayerTree ~ set moveElement');
+		// console.log('🚀 ~ LayerTree ~ set moveElement');
 		this._moveElement = callback;
 	}
 
@@ -754,7 +768,7 @@ export class LayerTree extends MvuElement {
 	 * @property {function} removeEndLabels - Callback function
 	 */
 	set removeEndLabels(callback) {
-		console.log('🚀 ~ LayerTree ~ set removeEndLabels');
+		// console.log('🚀 ~ LayerTree ~ set removeEndLabels');
 		this._removeEndLabels = callback;
 	}
 
@@ -762,7 +776,7 @@ export class LayerTree extends MvuElement {
 	 * @property {function} addEndLabels - Callback function
 	 */
 	set addEndLabels(callback) {
-		console.log('🚀 ~ LayerTree ~ set addEndLabels');
+		// console.log('🚀 ~ LayerTree ~ set addEndLabels');
 		this._addEndLabels = callback;
 	}
 

@@ -318,22 +318,16 @@ export class AdminPanel extends MvuElement {
 
 		const addEndLabels = () => {
 			console.log('🚀 ~ AdminPanel ~ addEndLabels ');
-			// // currentCatalogEntryUid, uidFromDrag_elementToMove
-
-			// // Remove entries with label End_Label
-			// const newCatalogWithResourceData = catalogWithResourceData.filter((element) => element.label !== End_Label);
-			// newCatalogWithResourceData.forEach((element) => {
-			// 	if (element.children) {
-			// 		element.children = element.children.filter((child) => child.label !== End_Label);
-			// 	}
-			// });
 
 			const newCatalogWithResourceData = JSON.parse(JSON.stringify(catalogWithResourceData));
 
-			newCatalogWithResourceData.push({ label: End_Label });
+			const newUid = _generateUniqueId();
+
+			newCatalogWithResourceData.push({ uid: newUid, label: End_Label });
 			newCatalogWithResourceData.forEach((element) => {
 				if (element.children) {
-					element.children.push({ label: End_Label });
+					const newUid = _generateUniqueId();
+					element.children.push({ uid: newUid, label: End_Label });
 				}
 			});
 
@@ -553,21 +547,6 @@ export class AdminPanel extends MvuElement {
 			// console.log('🚀 ~ file: AdminPanel.js:458 ~ AdminPanel ~ saveCatalog ~ xxx:', xxx);
 		};
 
-		// // todo recursive
-		// const removePossibleEndEntry = (children) => {
-		// 	console.log('🚀 ~ AdminPanel ~ removePossibleEndEntry ~ children:', children);
-		// 	for (let entryNumber = 0; entryNumber < children.length; entryNumber++) {
-		// 		const catalogEntry = children[entryNumber];
-		// 		// look for empty label
-		// 		if (catalogEntry.label === End_Label) {
-		// 			console.log('🚀 ~ AdminPanel ~ removePossibleEndEntry ~ catalogEntry:', catalogEntry);
-		// 			children.splice(entryNumber, 1);
-		// 		}
-		// 	}
-		// 	console.log('🚀 ~ AdminPanel ~ removePossibleEndEntry ~ children:', children);
-		// 	return children;
-		// };
-
 		const resetCatalog = async () => {
 			console.log('🚀 ~ AdminPanel ~ resetCatalog');
 			const catalogWithResourceData = this._reduceData(this.#catalog, this._enrichWithGeoResource, this.#geoResources);
@@ -576,17 +555,6 @@ export class AdminPanel extends MvuElement {
 
 		const refreshCatalog = async (newCatalogWithResourceData) => {
 			console.log('🚀 ~ AdminPanel ~ refreshCatalog ~ newCatalogWithResourceData:', newCatalogWithResourceData);
-			// newCatalogWithResourceData.forEach((entry) => {
-			// 	// console.log('🚀 ~ AdminPanel ~ newCatalogWithResourceData.forEach ~ entry:', entry);
-			// 	const correspondingEntry = catalogWithResourceData.find((e) => e.uid === entry.uid);
-
-			// 	// if (!correspondingEntry) {
-			// 	// 	entry.label += ' - new';
-			// 	// }
-			// 	// if (correspondingEntry.label !== entry.label) {
-			// 	// 	entry.label += ' - different';
-			// 	// }
-			// });
 
 			// todo hä? wieso?
 			const catalog = this._reduceData(newCatalogWithResourceData, this._copyEverything);
