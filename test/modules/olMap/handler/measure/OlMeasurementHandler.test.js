@@ -3,7 +3,7 @@ import { Point, LineString, Polygon, Geometry } from 'ol/geom';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import { Feature } from 'ol';
-import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
+import { Draw, Modify, Select, Snap } from 'ol/interaction';
 import { DrawEvent } from 'ol/interaction/Draw';
 import { MapBrowserEvent } from 'ol';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
@@ -29,15 +29,15 @@ import { acknowledgeTermsOfUse } from '../../../../../src/store/shared/shared.ac
 import { simulateMapBrowserEvent } from '../../mapTestUtils';
 import { drawReducer } from '../../../../../src/store/draw/draw.reducer';
 import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
-import { MeasurementOverlay } from '../../../../../src/modules/olMap/components/MeasurementOverlay';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../../src/services/provider/attribution.provider';
 import { Layer } from 'ol/layer';
 import { Tools } from '../../../../../src/domain/tools';
 import { EventLike } from '../../../../../src/utils/storeUtils';
+import { BaOverlay } from '../../../../../src/modules/olMap/components/BaOverlay.js';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
-window.customElements.define(MeasurementOverlay.tag, MeasurementOverlay);
+window.customElements.define(BaOverlay.tag, BaOverlay);
 
 describe('OlMeasurementHandler', () => {
 	class MockClass {
@@ -356,8 +356,8 @@ describe('OlMeasurementHandler', () => {
 
 				classUnderTest.activate(map);
 
-				// adds Interaction for select, draw, modify,snap, dragPan
-				expect(map.addInteraction).toHaveBeenCalledTimes(5);
+				// adds Interaction for select, draw, modify,snap
+				expect(map.addInteraction).toHaveBeenCalledTimes(4);
 			});
 
 			it('removes Interaction', () => {
@@ -369,8 +369,8 @@ describe('OlMeasurementHandler', () => {
 				classUnderTest.activate(map);
 				classUnderTest.deactivate(map, layerStub);
 
-				// removes Interaction for select, draw, modify, snap, dragPan
-				expect(map.removeInteraction).toHaveBeenCalledTimes(5);
+				// removes Interaction for select, draw, modify, snap
+				expect(map.removeInteraction).toHaveBeenCalledTimes(4);
 			});
 
 			it('adds a select interaction', () => {
@@ -419,18 +419,6 @@ describe('OlMeasurementHandler', () => {
 
 				expect(classUnderTest._snap).toBeInstanceOf(Snap);
 				expect(map.addInteraction).toHaveBeenCalledWith(classUnderTest._snap);
-			});
-
-			it('adds a dragPan interaction', () => {
-				setup();
-				const classUnderTest = new OlMeasurementHandler();
-				const map = setupMap();
-				map.addInteraction = jasmine.createSpy();
-
-				classUnderTest.activate(map);
-
-				expect(classUnderTest._dragPan).toBeInstanceOf(DragPan);
-				expect(map.addInteraction).toHaveBeenCalledWith(classUnderTest._dragPan);
 			});
 
 			it('initialize interactions and state objects only once on multiple activates', () => {

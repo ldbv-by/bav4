@@ -6,12 +6,21 @@ import { drawReducer } from '../../../../src/store/draw/draw.reducer';
 import { featureInfoReducer } from '../../../../src/store/featureInfo/featureInfo.reducer';
 import { MediaType } from '../../../../src/domain/mediaTypes';
 import { addFeatureInfoItems, registerQuery, resolveQuery, startRequest } from '../../../../src/store/featureInfo/featureInfo.action';
+import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
+import { setIsDarkSchema } from '../../../../src/store/media/media.action';
 
 window.customElements.define(PublicComponent.tag, PublicComponent);
 
 describe('PublicComponent', () => {
-	const setup = (state) => {
-		TestUtils.setupStoreAndDi(state, { draw: drawReducer, featureInfo: featureInfoReducer });
+	const setup = (state = {}) => {
+		const initialState = {
+			media: {
+				darkSchema: false
+			},
+			...state
+		};
+
+		TestUtils.setupStoreAndDi(initialState, { draw: drawReducer, featureInfo: featureInfoReducer, media: createNoInitialStateMediaReducer() });
 		return TestUtils.render(PublicComponent.tag);
 	};
 
@@ -36,6 +45,7 @@ describe('PublicComponent', () => {
 
 			// null as the shadow root is closed
 			expect(element.shadowRoot).toBeNull();
+			expect(element._root.querySelectorAll('ba-dnd-import-panel')).toHaveSize(1);
 			expect(element._root.querySelectorAll('ba-ol-map')).toHaveSize(1);
 			expect(element._root.querySelectorAll('ba-view-larger-map-chip')).toHaveSize(1);
 			expect(element._root.querySelectorAll('ba-draw-tool')).toHaveSize(1);
@@ -47,6 +57,57 @@ describe('PublicComponent', () => {
 			expect(element._root.querySelectorAll('ba-map-context-menu')).toHaveSize(1);
 			expect(element._root.querySelectorAll('ba-activate-map-button')).toHaveSize(1);
 			expect(element._root.querySelectorAll('ba-iframe-container')).toHaveSize(1);
+		});
+
+		it('adds the correct stylesheets', async () => {
+			const element = await setup();
+
+			//element.shadowRoot.styleSheets[0] --> main.css
+			//element.shadowRoot.styleSheets[1] --> baElement.css
+			//element.shadowRoot.styleSheets[2] --> publicComponent.css
+			expect(element._root.styleSheets.length).toBe(3);
+			expect(element._root.styleSheets[2].cssRules.item(0).cssText).toContain('contain: layout;');
+			expect(element._root.styleSheets[2].cssRules.item(0).cssText).toContain('display: block;');
+			expect(element._root.styleSheets[2].cssRules.item(0).cssText).toContain('width: 100%');
+			expect(element._root.styleSheets[2].cssRules.item(0).cssText).toContain('height: 400px');
+		});
+
+		it('adds the correct CSS class', async () => {
+			let element = await setup({
+				media: {
+					darkSchema: true
+				}
+			});
+
+			expect(element.classList.contains('dark-theme')).toBeTrue();
+			expect(element.classList.contains('light-theme')).toBeFalse();
+
+			element = await setup({
+				media: {
+					darkSchema: false
+				}
+			});
+
+			expect(element.classList.contains('dark-theme')).toBeFalse();
+			expect(element.classList.contains('light-theme')).toBeTrue();
+		});
+	});
+
+	describe('when schema changes', () => {
+		it('adds the correct CSS class', async () => {
+			const element = await setup({
+				media: {
+					darkSchema: true
+				}
+			});
+
+			expect(element.classList.contains('dark-theme')).toBeTrue();
+			expect(element.classList.contains('light-theme')).toBeFalse();
+
+			setIsDarkSchema(false);
+
+			expect(element.classList.contains('dark-theme')).toBeFalse();
+			expect(element.classList.contains('light-theme')).toBeTrue();
 		});
 	});
 

@@ -5,15 +5,25 @@ import { $injector } from '../injection';
 import { round } from '../utils/numberUtils';
 import { QueryParameters } from '../domain/queryParameters';
 import { GlobalCoordinateRepresentations } from '../domain/coordinateRepresentation';
+import { getOrigin, getPathParams } from '../utils/urlUtils';
 
 /**
+ * Options for retrieving parameters.
+ * @typedef ParameterOptions
+ * @property {boolean} includeHiddenGeoResources `true` if hidden GeoResources should be included. Default is `false`.
+ */
+
+/**
+ * A service providing methods to restore the current application e.g. through a URL.
  * @class
  */
 export class ShareService {
+	#environmentService;
+	#configService;
 	constructor() {
 		const { EnvironmentService: environmentService, ConfigService: configService } = $injector.inject('EnvironmentService', 'ConfigService');
-		this._environmentService = environmentService;
-		this._configService = configService;
+		this.#environmentService = environmentService;
+		this.#configService = configService;
 	}
 
 	/**
@@ -22,8 +32,8 @@ export class ShareService {
 	 * @returns {Promise<undefined>}
 	 */
 	async copyToClipboard(textToCopy) {
-		if (this._environmentService.getWindow().isSecureContext) {
-			return this._environmentService.getWindow().navigator.clipboard.writeText(textToCopy);
+		if (this.#environmentService.getWindow().isSecureContext) {
+			return this.#environmentService.getWindow().navigator.clipboard.writeText(textToCopy);
 		}
 		throw new Error('Clipboard API is not available');
 	}
@@ -43,6 +53,26 @@ export class ShareService {
 			}
 		}
 		return extractedState;
+	}
+
+	/**
+	 * Returns all parameters of the current application that are required to restore it.
+	 * For the keys of the returned object see {@link QueryParameters}.
+	 *
+	 * Note: Basically contains the same parameters as {@link ShareService#encodeState} and {@link ShareService#encodeStateForPosition}.
+	 * @param {module:services/ShareService~ParameterOptions} [options]
+	 * @returns {Map<QueryParameters,?>} a map containing the parameters
+	 */
+	getParameters(options = { includeHiddenGeoResources: false }) {
+		const params = {
+			...this._extractPosition(),
+			...this._extractLayers(options),
+			...this._extractTopic(),
+			...this._extractRoute(),
+			...this._extractTool()
+		};
+
+		return new Map(Object.entries(params));
 	}
 
 	/**
@@ -78,17 +108,22 @@ export class ShareService {
 		const extractedState = this._mergeExtraParams(
 			{
 				...this._extractPosition(center, zoom, rotation),
-				...this._extractLayers(),
+				...this._extractLayers({ includeHiddenGeoResources: false }),
 				...this._extractTopic(),
-				...this._extractRoute()
+				...this._extractRoute(),
+				...this._extractTool()
 			},
 			extraParams
 		);
 
-		const baseUrl = this._configService.getValueAsPath('FRONTEND_URL').replace('/index.html', '');
+		const baseUrl = `${getOrigin(this.#configService.getValueAsPath('FRONTEND_URL'))}/${getPathParams(
+			this.#configService.getValueAsPath('FRONTEND_URL')
+		)
+			.filter((p) => !p.endsWith('.html'))
+			.join('/')}`;
 		const searchParams = new URLSearchParams(extractedState);
 		const mergedPathParameters = pathParameters.length ? [...pathParameters] : [];
-		return `${baseUrl}${mergedPathParameters.join('/')}?${decodeURIComponent(searchParams.toString())}`;
+		return `${baseUrl}${baseUrl.endsWith('/') ? '' : '/'}${mergedPathParameters.join('/')}?${decodeURIComponent(searchParams.toString())}`;
 	}
 
 	/**
@@ -131,7 +166,7 @@ export class ShareService {
 	 * @private
 	 * @returns {object} extractedState
 	 */
-	_extractLayers() {
+	_extractLayers(options = { includeHiddenGeoResources: false }) {
 		const { StoreService: storeService, GeoResourceService: geoResourceService } = $injector.inject('StoreService', 'GeoResourceService');
 
 		const state = storeService.getStore().getState();
@@ -146,7 +181,7 @@ export class ShareService {
 		let layer_opacity = [];
 		activeLayers
 			.filter((l) => !l.constraints.hidden)
-			.filter((l) => !geoResourceService.byId(l.geoResourceId).hidden)
+			.filter((l) => (options.includeHiddenGeoResources ? true : !geoResourceService.byId(l.geoResourceId).hidden))
 			.forEach((l) => {
 				geoResourceIds.push(l.geoResourceId);
 				layer_visibility.push(l.visible);
@@ -207,6 +242,25 @@ export class ShareService {
 			extractedState[QueryParameters.ROUTE_WAYPOINTS] = waypoints;
 			extractedState[QueryParameters.ROUTE_CATEGORY] = categoryId;
 		}
+		return extractedState;
+	}
+
+	/**
+	 * @private
+	 * @returns {object} extractedState
+	 */
+	_extractTool() {
+		const { StoreService: storeService } = $injector.inject('StoreService');
+
+		const state = storeService.getStore().getState();
+		const extractedState = {};
+
+		const {
+			tools: { current }
+		} = state;
+
+		extractedState[QueryParameters.TOOL_ID] = current ?? '';
+
 		return extractedState;
 	}
 

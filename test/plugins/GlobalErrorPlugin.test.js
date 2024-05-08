@@ -12,6 +12,11 @@ describe('GlobalErrorPlugin', () => {
 			return null;
 		}
 	};
+	const environmentService = {
+		isEmbeddedAsWC() {
+			return false;
+		}
+	};
 	const setup = () => {
 		const store = TestUtils.setupStoreAndDi(
 			{},
@@ -21,7 +26,8 @@ describe('GlobalErrorPlugin', () => {
 		);
 		$injector
 			.registerSingleton('TranslationService', { translate: (key, params = []) => `${key}${params.length ? ` [${params.join(',')}]` : ''}` })
-			.registerSingleton('GeoResourceService', geoResourceService);
+			.registerSingleton('GeoResourceService', geoResourceService)
+			.registerSingleton('EnvironmentService', environmentService);
 		return store;
 	};
 
@@ -165,28 +171,59 @@ describe('GlobalErrorPlugin', () => {
 		});
 
 		describe('any other Error', () => {
-			describe('synchronously thrown', () => {
-				it('emits an error notification', async () => {
-					const message = 'message';
+			describe('in default mode', () => {
+				describe('synchronously thrown', () => {
+					it('emits an error notification', async () => {
+						const message = 'message';
 
-					await instanceUnderTest.register(store);
-					const emitGenericNotificationThrottledSpy = spyOn(instanceUnderTest, '_emitThrottledGenericNotification');
+						await instanceUnderTest.register(store);
+						const emitGenericNotificationThrottledSpy = spyOn(instanceUnderTest, '_emitThrottledGenericNotification');
 
-					window.dispatchEvent(new ErrorEvent('error', { error: new Error(message) }));
-					expect(emitGenericNotificationThrottledSpy).toHaveBeenCalledTimes(1);
+						window.dispatchEvent(new ErrorEvent('error', { error: new Error(message) }));
+						expect(emitGenericNotificationThrottledSpy).toHaveBeenCalledTimes(1);
+					});
+				});
+
+				describe('thrown by promise rejection', () => {
+					it('emits an error notification', async () => {
+						const message = 'message';
+						await instanceUnderTest.register(store);
+						const emitGenericNotificationThrottledSpy = spyOn(instanceUnderTest, '_emitThrottledGenericNotification');
+
+						await expectAsync(Promise.reject(new Error(message)));
+						await TestUtils.timeout(100 /**give the plugin some time to catch the error */);
+
+						expect(emitGenericNotificationThrottledSpy).toHaveBeenCalledTimes(1);
+					});
 				});
 			});
 
-			describe('thrown by promise rejection', () => {
-				it('emits an error notification', async () => {
-					const message = 'message';
-					await instanceUnderTest.register(store);
-					const emitGenericNotificationThrottledSpy = spyOn(instanceUnderTest, '_emitThrottledGenericNotification');
+			describe('embedded as WC', () => {
+				describe('synchronously thrown', () => {
+					it('does nothing', async () => {
+						spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(true);
+						const message = 'message';
 
-					await expectAsync(Promise.reject(new Error(message)));
-					await TestUtils.timeout(100 /**give the plugin some iem to catch the error */);
+						await instanceUnderTest.register(store);
+						const emitGenericNotificationThrottledSpy = spyOn(instanceUnderTest, '_emitThrottledGenericNotification');
 
-					expect(emitGenericNotificationThrottledSpy).toHaveBeenCalledTimes(1);
+						window.dispatchEvent(new ErrorEvent('error', { error: new Error(message) }));
+						expect(emitGenericNotificationThrottledSpy).not.toHaveBeenCalledTimes(1);
+					});
+				});
+
+				describe('thrown by promise rejection', () => {
+					it('does nothing', async () => {
+						spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(true);
+						const message = 'message';
+						await instanceUnderTest.register(store);
+						const emitGenericNotificationThrottledSpy = spyOn(instanceUnderTest, '_emitThrottledGenericNotification');
+
+						await expectAsync(Promise.reject(new Error(message)));
+						await TestUtils.timeout(100 /**give the plugin some time to catch the error */);
+
+						expect(emitGenericNotificationThrottledSpy).not.toHaveBeenCalledTimes(1);
+					});
 				});
 			});
 		});

@@ -2,17 +2,17 @@
 	"files": [
 		{
 			"path": "./dist/bundle.js",
-			"maxSize": "2.9 MB",
+			"maxSize": "2.95 MB",
 			"compression": "none"
 		},
 		{
 			"path": "./dist/embed.js",
-			"maxSize": "1.85 MB",
+			"maxSize": "1.88 MB",
 			"compression": "none"
 		},
 		{
 			"path": "./dist/wc.js",
-			"maxSize": "1.85 MB",
+			"maxSize": "100 KB",
 			"compression": "none"
 		}
 	]

@@ -15,8 +15,9 @@
 			r="0.5"
 			ec_draw_tool="polygon"
 			tid=""
+			style="width: 100%; height: 600px"
 		></bayern-atlas>
-		<div style="position: absolute">
+		<div>
 			<button id="zoomIn">Zoom in</button>
 			<button id="zoomOut">Zoom out</button>
 			<select id="layer-select">
@@ -28,30 +29,28 @@
 		</div>
 	</body>
 	<script>
-		document.querySelector('#zoomIn').addEventListener('click', () => {
-			document.querySelector('bayern-atlas').setAttribute('z', parseInt(document.querySelector('bayern-atlas').getAttribute('z')) + 1);
-		});
-		document.querySelector('#zoomOut').addEventListener('click', () => {
-			document.querySelector('bayern-atlas').setAttribute('z', parseInt(document.querySelector('bayern-atlas').getAttribute('z')) - 1);
-		});
-		document.querySelector('#layer-select').addEventListener('change', (event) => {
-			//replace the layer on index = 0
-			const layers = document.querySelector('bayern-atlas').getAttribute('l').split(',');
-			layers.splice(0, 1, event.target.value);
-			document.querySelector('bayern-atlas').setAttribute('l', layers.join(','));
-		});
-		document.querySelector('#layer-opacity').addEventListener('input', (event) => {
-			document.querySelector('bayern-atlas').setAttribute('l_o', event.target.value / 100);
-		});
-		document.querySelector('bayern-atlas').addEventListener('ba-geometry-change', (event) => {
-			document.querySelector('#geometry').value = event.detail ? event.detail.data : '';
-		});
-		document.querySelector('bayern-atlas').addEventListener('ba-feature-select', (event) => {
-			document.querySelector('#geometry').value = event.detail.items.map((i) => JSON.stringify(i.data));
-		});
-
 		window.addEventListener('ba-load', (event) => {
-			window.ba_wcLoaded = true;
+			document.querySelector('#zoomIn').addEventListener('click', () => {
+				document.querySelector('bayern-atlas').setAttribute('z', parseInt(document.querySelector('bayern-atlas').getAttribute('z')) + 1);
+			});
+			document.querySelector('#zoomOut').addEventListener('click', () => {
+				document.querySelector('bayern-atlas').setAttribute('z', parseInt(document.querySelector('bayern-atlas').getAttribute('z')) - 1);
+			});
+			document.querySelector('#layer-select').addEventListener('change', (event) => {
+				//replace the layer on index = 0
+				const layers = document.querySelector('bayern-atlas').getAttribute('l').split(',');
+				layers.splice(0, 1, event.target.value);
+				document.querySelector('bayern-atlas').setAttribute('l', layers.join(','));
+			});
+			document.querySelector('#layer-opacity').addEventListener('input', (event) => {
+				document.querySelector('bayern-atlas').setAttribute('l_o', event.target.value / 100);
+			});
+			document.querySelector('bayern-atlas').addEventListener('ba-geometry-change', (event) => {
+				document.querySelector('#geometry').value = event.detail ? event.detail.data : '';
+			});
+			document.querySelector('bayern-atlas').addEventListener('ba-feature-select', (event) => {
+				document.querySelector('#geometry').value = event.detail.items.map((i) => JSON.stringify(i.data));
+			});
 		});
 	</script>
 	<script>

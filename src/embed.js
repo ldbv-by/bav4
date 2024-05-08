@@ -2,6 +2,7 @@ import './setupPage';
 
 // register required modules
 import './modules/footer';
+import './modules/dndImport';
 import './modules/map';
 import './modules/olMap';
 import './modules/commons';

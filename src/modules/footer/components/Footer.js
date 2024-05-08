@@ -83,7 +83,7 @@ export class Footer extends MvuElement {
 
 		const classes = {
 			'is-open': isOpen && !isPortrait && !this._environmentService.isEmbedded(),
-			'is-open-navigationRail': isOpenNavigationRail && !isPortrait,
+			'is-open-navigationRail': isOpenNavigationRail && !isPortrait && !this._environmentService.isEmbedded(),
 			'is-desktop': hasMinWidth,
 			'is-tablet': !hasMinWidth,
 			'is-portrait': isPortrait,
