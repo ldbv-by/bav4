@@ -16,7 +16,7 @@ export const Tools = Object.freeze({
 });
 
 /**
- * List of tools that are available for the embed mode.
+ * Enum of tools that are available for the public web component.
  * @constant {Array<Tools>}
  */
-export const EmbedTools = Object.freeze([Tools.DRAW]);
+export const WcTools = Object.freeze([Tools.DRAW]);

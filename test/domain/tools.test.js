@@ -1,4 +1,4 @@
-import { EmbedTools, Tools } from '../../src/domain/tools';
+import { Tools, WcTools } from '../../src/domain/tools';
 
 describe('Tools', () => {
 	it('provides an enum of all valid path parameters', () => {
@@ -14,10 +14,10 @@ describe('Tools', () => {
 	});
 });
 
-describe('EmbedTools', () => {
+describe('WcTools', () => {
 	it('provides an enum of all valid path parameters', () => {
-		expect(EmbedTools.length).toBe(1);
-		expect(Object.isFrozen(EmbedTools)).toBeTrue();
-		expect(EmbedTools).toEqual([Tools.DRAW]);
+		expect(WcTools.length).toBe(1);
+		expect(Object.isFrozen(WcTools)).toBeTrue();
+		expect(WcTools).toEqual([Tools.DRAW]);
 	});
 });

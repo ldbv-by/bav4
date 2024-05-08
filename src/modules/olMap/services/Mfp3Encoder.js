@@ -12,12 +12,12 @@ import Style from 'ol/style/Style';
 
 import { Icon as IconStyle } from 'ol/style';
 import { Feature } from 'ol';
-import { MeasurementOverlay } from '../components/MeasurementOverlay';
 import { Circle, LineString, MultiLineString, MultiPoint, MultiPolygon, Polygon } from 'ol/geom';
 import LayerGroup from 'ol/layer/Group';
 import { WMTS } from 'ol/source';
 import { getPolygonFrom } from '../utils/olGeometryUtils';
 import { getUniqueCopyrights } from '../../../utils/attributionUtils';
+import { BaOverlay } from '../components/BaOverlay';
 
 const UnitsRatio = 39.37; //inches per meter
 const PointsPerInch = 72; // PostScript points 1/72"
@@ -752,7 +752,7 @@ export class BvvMfp3Encoder {
 		const toFeatureWithOverlayProperties = (overlay) => {
 			const element = overlay.getElement();
 
-			if (element.tagName.toLowerCase() !== MeasurementOverlay.tag) {
+			if (element.tagName.toLowerCase() !== BaOverlay.tag) {
 				console.warn('cannot encode overlay element: No rule defined', element);
 				return null;
 			}
