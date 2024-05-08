@@ -38,6 +38,8 @@ export class LayerList extends MvuElement {
 		// this._onDrop = () => {};
 
 		this._refreshLayers = () => {};
+		this._addEndLabels = () => {};
+		this._removeEndLabels = () => {};
 	}
 
 	update(type, data, model) {
@@ -75,10 +77,14 @@ export class LayerList extends MvuElement {
 			};
 
 			setTimeout(addIsDragged, 0);
+
+			this._addEndLabels();
 		};
 
 		const onDragEnd = (event) => {
 			event.target.classList.remove('isdragged');
+
+			this._removeEndLabels();
 		};
 
 		return html`
@@ -106,6 +112,22 @@ export class LayerList extends MvuElement {
 		`;
 	}
 	// @drop=${this._onDrop}
+
+	/**
+	 * @property {function} addEndLabels - Callback function
+	 */
+	set addEndLabels(callback) {
+		// console.log('🚀 ~ LayerTree ~ set addEndLabels');
+		this._addEndLabels = callback;
+	}
+
+	/**
+	 * @property {function} removeEndLabels - Callback function
+	 */
+	set removeEndLabels(callback) {
+		// console.log('🚀 ~ LayerTree ~ set removeEndLabels');
+		this._removeEndLabels = callback;
+	}
 
 	/**
 	 * @property {Array} geoResources = []

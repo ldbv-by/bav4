@@ -599,7 +599,12 @@ export class AdminPanel extends MvuElement {
 					</div>
 
 					<div>
-						<ba-layer-list .geoResources=${this.#geoResources} .refreshLayers="${this._refreshLayers}"></ba-layer-list>
+						<ba-layer-list
+							.geoResources=${this.#geoResources}
+							.refreshLayers="${this._refreshLayers}"
+							.removeEndLabels="${removeEndLabels}"
+							.addEndLabels="${addEndLabels}"
+						></ba-layer-list>
 					</div>
 				</div>
 			`;
