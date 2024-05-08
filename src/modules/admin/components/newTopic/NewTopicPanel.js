@@ -6,7 +6,7 @@ import { closeModal } from '../../../../store/modal/modal.action';
 import { MvuElement } from '../../../MvuElement';
 // import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
 // @ts-ignore
-import css from './NewTopicPanel.css';
+// import css from './NewTopicPanel.css';
 // import { GeneralFeedback } from '../../../../services/FeedbackService';
 
 const Update_Id = 'update_id';
@@ -19,7 +19,7 @@ const Update_Label = 'update_label';
  */
 export class NewTopicPanel extends MvuElement {
 	constructor() {
-		console.log('🚀 ~ NewTopicPanel ~ constructor ');
+		// console.log('🚀 ~ NewTopicPanel ~ constructor ');
 		super({
 			newTopic: {
 				id: null,
@@ -45,7 +45,7 @@ export class NewTopicPanel extends MvuElement {
 	}
 
 	onInitialize() {
-		console.log('🚀 ~ NewTopicPanel ~ onInitialize() ');
+		// console.log('🚀 ~ NewTopicPanel ~ onInitialize() ');
 	}
 
 	update(type, data, model) {
@@ -59,7 +59,7 @@ export class NewTopicPanel extends MvuElement {
 
 	createView(model) {
 		const { newTopic } = model;
-		console.log('🚀 ~ NewTopicPanel ~ createView ~ model:', model);
+		// console.log('🚀 ~ NewTopicPanel ~ createView ~ model:', model);
 
 		this._returnNewTopic(newTopic);
 
@@ -78,26 +78,16 @@ export class NewTopicPanel extends MvuElement {
 		};
 
 		const onSubmit = () => {
-			// 	this.shadowRoot.querySelectorAll('.ba-form-element').forEach((el) => el.classList.add(BA_FORM_ELEMENT_VISITED_CLASS));
-			// 	const newTopicIdElement = this.shadowRoot.getElementById('newTopicId');
-			// 	const newTopicLabelElement = this.shadowRoot.getElementById('newTopicLabel');
-			// 	if (newTopicIdElement.reportValidity() && descriptionElement.reportValidity() && emailElement.reportValidity()) {
-			// 		this
-			// 			._saveNewTopic
-			// 			// new GeneralFeedback(generalFeedback.category, generalFeedback.description, generalFeedback.email, generalFeedback.rating)
-			// 			();
-			// 	}
 			this._returnNewTopic(newTopic);
 			closeModal();
 		};
 
 		const label = 'Save';
 
+		// <style>
+		// 	${css}
+		// </style>
 		return html`
-			<style>
-				${css}
-			</style>
-
 			<div id="feedbackPanelTitle" class="feedback-main-header">New Topic</div>
 
 			<div class="ba-form-element">
@@ -126,17 +116,7 @@ export class NewTopicPanel extends MvuElement {
 	}
 	// <ba-button id="button0" .label=${'Create New Topic'} .type=${'primary'} @click=${this._onSubmit(newTopic)}></ba-button>
 
-	async _saveNewTopic() {
-		// const translate = (key) => this._translationService.translate(key);
-		// try {
-		// 	await this._feedbackService.save(generalFeedback);
-		// 	this._onSubmit();
-		// 	emitNotification(translate('feedback_saved_successfully'), LevelTypes.INFO);
-		// } catch (e) {
-		// 	console.error(e);
-		// 	emitNotification(translate('feedback_generalFeedback_could_not_save'), LevelTypes.ERROR);
-		// }
-	}
+	async _saveNewTopic() {}
 
 	/**
 	 * Registers a callback function which will be called when the form was submitted successfully.
@@ -152,6 +132,7 @@ export class NewTopicPanel extends MvuElement {
 	 * @param {function} callback - The callback function to be set.
 	 */
 	set returnNewTopic(callback) {
+		// @ts-ignore
 		this._returnNewTopic = callback;
 	}
 

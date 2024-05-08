@@ -12,7 +12,7 @@ import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 
 // @ts-ignore
 import { repeat } from 'lit-html/directives/repeat.js';
-import { closeModal, openModal } from '../../../../store/modal/modal.action';
+import { openModal } from '../../../../store/modal/modal.action';
 
 const Update_Topics = 'update_topics';
 const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
@@ -26,34 +26,39 @@ const hasChildrenClass = 'has-children';
 const showChildrenClass = 'show-children';
 const droppableClass = 'droppable';
 
-const logOnceDictionary = {};
-export const logOnce = (key, objectToShow = 'nix') => {
-	if (!logOnceDictionary[key]) {
-		if (objectToShow === 'nix') {
-			// eslint-disable-next-line no-console
-			console.log('🚀🚀🚀 ~ :::logOnce:::', key);
-		} else {
-			if (typeof objectToShow === 'string') {
-				// eslint-disable-next-line no-console
-				console.log('🚀🚀🚀 ~ :::logOnce:::', objectToShow);
-			} else {
-				// eslint-disable-next-line no-console
-				console.log('🚀🚀🚀 ~ :::logOnce:::', JSON.stringify(objectToShow));
-			}
-		}
-		logOnceDictionary[key] = objectToShow;
-		return true;
-	}
-	return false;
-};
+// const logOnceDictionary = {};
+// export const logOnce = (key, objectToShow = 'nix') => {
+// 	if (!logOnceDictionary[key]) {
+// 		if (objectToShow === 'nix') {
+// 			// eslint-disable-next-line no-console
+// 			console.log('🚀🚀🚀 ~ :::logOnce:::', key);
+// 		} else {
+// 			if (typeof objectToShow === 'string') {
+// 				// eslint-disable-next-line no-console
+// 				console.log('🚀🚀🚀 ~ :::logOnce:::', objectToShow);
+// 			} else {
+// 				// eslint-disable-next-line no-console
+// 				console.log('🚀🚀🚀 ~ :::logOnce:::', JSON.stringify(objectToShow));
+// 			}
+// 		}
+// 		logOnceDictionary[key] = objectToShow;
+// 		return true;
+// 	}
+// 	return false;
+// };
 
-export const onlyOnce = (key) => {
-	if (logOnceDictionary[key]) {
-		return false;
-	}
-	logOnceDictionary[key] = key;
-	return true;
-};
+// logOnce(
+// 	currentEntry.uid + ' ' + newGeoResourceIdFromList,
+// 	'currentEntry : ' + currentEntry.uid + ' ' + currentEntry.label + ' newGeoResourceIdFromList : ' + newGeoResourceIdFromList
+// );
+
+// export const onlyOnce = (key) => {
+// 	if (logOnceDictionary[key]) {
+// 		return false;
+// 	}
+// 	logOnceDictionary[key] = key;
+// 	return true;
+// };
 
 // export const getRandomColor = () => {
 // 	const red = Math.floor(Math.random() * 256);
@@ -165,24 +170,19 @@ export class LayerTree extends MvuElement {
 			return nothing;
 		}
 
-		const returnNewTopic = (newTopic) => {
-			console.log('🚀 ~ LayerTree ~ returnNewTopic ~ newTopic:', newTopic);
+		const returnNewTopic = () => {
+			// todo newTopic
+			// console.log('🚀 ~ LayerTree ~ returnNewTopic ~ newTopic:', newTopic);
 			// closeModal();
 			// this._updateTopic(newTopic);
-
-			this._updateTopic(newTopic.label);
 		};
 
 		const openNewTopicDialog = () => {
-			console.log('🚀 ~ LayerTree ~ openNewTopicDialog ');
+			// console.log('🚀 ~ LayerTree ~ openNewTopicDialog ');
 			const title = 'Neue Themen-Konfiguration';
-			// const title = translate('menu_misc_content_panel_feedback_title');
-			//
-			const content = html`<ba-mvu-newtopicpanel .returnNewTopic="${returnNewTopic}" .onSubmit="${returnNewTopic}"></ba-mvu-newtopicpanel>`;
-			// const content = html`<ba-mvu-newtopicpanel .returnNewTopic="${returnNewTopic}" .onSubmit=${closeModal}></ba-mvu-newtopicpanel>`;
-			openModal(title, content);
 
-			// openModal('Showcase', html`<ba-showcase></ba-showcase>`);
+			const content = html`<ba-mvu-newtopicpanel .returnNewTopic="${returnNewTopic}" .onSubmit="${returnNewTopic}"></ba-mvu-newtopicpanel>`;
+			openModal(title, content);
 		};
 
 		const insertDraggedGeoResource = (currentCatalogEntryUid, newGeoResourceIdFromList) => {
@@ -218,82 +218,23 @@ export class LayerTree extends MvuElement {
 
 			setTimeout(addIsDragged, 0);
 
-			// catalogWithResourceData.push({ label: End_Label });
-			// catalogWithResourceData.forEach((element) => {
-			// 	if (element.children) {
-			// 		element.children.push({ label: End_Label });
-			// 	}
-			// });
-
-			// this.render();
-			// console.log('🚀 ~ LayerTree ~ onDragStart ~ catalogWithResourceData:', catalogWithResourceData);
-
-			console.log('🚀 ~ LayerTree ~ onDragEnd ~ this._addEndLabels()');
+			// console.log('🚀 ~ LayerTree ~ onDragEnd ~ this._addEndLabels()');
 			this._addEndLabels();
-
-			// // Make a deep copy of catalogWithResourceData
-			// const catalogCopy = JSON.parse(JSON.stringify(catalogWithResourceData));
-
-			// catalogCopy.push({ label: End_Label });
-			// catalogCopy.forEach((element) => {
-			// 	if (element.children) {
-			// 		element.children.push({ label: End_Label });
-			// 	}
-			// });
-
-			// // Update_CatalogWithResourceData with [], to force refresh
-			// this.signal(Update_CatalogWithResourceData, []);
-			// this._refreshCatalog(catalogCopy);
-
-			// // this.render();
-			// console.log('🚀 ~ LayerTree ~ onDragStart ~ catalogCopy:', catalogCopy);
 		};
 
 		const onDragEnd = (event) => {
-			console.log('🚀 ~ LayerTree ~ onDragEnd ~ event:', event);
+			// console.log('🚀 ~ LayerTree ~ onDragEnd ~ event:', event);
 			event.target.classList.remove('isdragged');
 
 			removeDragOverClass();
 
-			// todo check if this is needed
-			// if (!this.#overTarget) {
-			// 	this._resetCatalog();
-			// }
-
-			// // // Remove entries with label End_Label
-			// // const newCatalogWithResourceData = catalogWithResourceData.filter((element) => element.label !== End_Label);
-			// // newCatalogWithResourceData.forEach((element) => {
-			// // 	if (element.children) {
-			// // 		element.children = element.children.filter((child) => child.label !== End_Label);
-			// // 	}
-			// // });
-
-			// for (let i = catalogWithResourceData.length - 1; i >= 0; i--) {
-			// 	const element = catalogWithResourceData[i];
-
-			// 	if (element.label === End_Label) {
-			// 		catalogWithResourceData.splice(i, 1);
-			// 	} else if (element.children) {
-			// 		element.children = element.children.filter((child) => child.label !== End_Label);
-			// 	}
-			// }
-			console.log('🚀 ~ LayerTree ~ onDragEnd ~ this._removeEndLabels()');
 			this._removeEndLabels();
 			// this.signal(Update_CatalogWithResourceData, catalogWithResourceData);
 		};
 
 		const onDragOver = (event, currentCatalogEntry, level) => {
-			// if (currentCatalogEntry.geoResourceId !== 'd641233f-68c6-486c-8405-4a3bc63b6443') {
-			// 	console.log('🚀 ~ LayerTree ~ onDragOver ~ currentCatalogEntry.geoResourceId:', currentCatalogEntry.geoResourceId);
-			// }
-
-			// logOnce(
-			// 	currentEntry.uid + ' ' + newGeoResourceIdFromList,
-			// 	'currentEntry : ' + currentEntry.uid + ' ' + currentEntry.label + ' newGeoResourceIdFromList : ' + newGeoResourceIdFromList
-			// );
-
-			logOnce(currentCatalogEntry.uid);
-			logOnce(event);
+			// logOnce(currentCatalogEntry.uid);
+			// logOnce(event);
 			const types = event.dataTransfer.types;
 			const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
 			const newGeoResourceIdFromList = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
@@ -323,7 +264,7 @@ export class LayerTree extends MvuElement {
 					return;
 				}
 
-				logOnce(uidFromDrag, uidFromDrag);
+				// logOnce(uidFromDrag, uidFromDrag);
 
 				this.#overTarget = true;
 				this.#currentUId = currentCatalogEntry.uid;
@@ -336,7 +277,7 @@ export class LayerTree extends MvuElement {
 		};
 
 		const onDrop = (event, entry) => {
-			console.log('🚀 ~ LayerTree ~ onDrop ~ event:', event);
+			// console.log('🚀 ~ LayerTree ~ onDrop ~ event:', event);
 			this.#currentGeoResourceId = null;
 			removeDragOverClass();
 			const dropUid = event.dataTransfer.types[0].replace('uid', '');
@@ -470,7 +411,7 @@ export class LayerTree extends MvuElement {
 		};
 
 		const handleNewTopicClick = () => {
-			console.log('🚀 ~ LayerTree ~ handleNewTopicClick ');
+			// console.log('🚀 ~ LayerTree ~ handleNewTopicClick ');
 
 			openNewTopicDialog();
 
