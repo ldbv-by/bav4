@@ -924,12 +924,13 @@ describe('getBoundingBoxFrom', () => {
 				[7, 1]
 			])
 		]);
+
 		it('does NOT create a LineString', () => {
-			expect(multiLineStringToLineString(point)).toBe(point);
-			expect(multiLineStringToLineString(lineString)).toBe(lineString);
-			expect(multiLineStringToLineString(linearRing)).toBe(linearRing);
-			expect(multiLineStringToLineString(polygon)).toBe(polygon);
-			expect(multiLineStringToLineString(disconnectedMultLineString)).toBe(disconnectedMultLineString);
+			expect(multiLineStringToLineString(point)).toBeNull();
+			expect(multiLineStringToLineString(lineString)).toBeNull();
+			expect(multiLineStringToLineString(linearRing)).toBeNull();
+			expect(multiLineStringToLineString(polygon)).toBeNull();
+			expect(multiLineStringToLineString(disconnectedMultLineString)).toBeNull();
 		});
 
 		it('creates a LineString', () => {
