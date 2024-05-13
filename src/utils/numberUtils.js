@@ -31,10 +31,11 @@ export const createUniqueId = () => {
 
 /**
  * Formats a number accordingly to the current `DEFAULT_LANG` property.
- * @param {number} value
+ * @param {number|string} value
+ * @param {number|null} [fractionDigits] number of fraction digits to use. Default is `null` which means no custom options are set and the default options of `toLocaleString` are used.
  * @returns the formatted number as `string` or `undefined`
  */
-export const toLocaleString = (value) => {
+export const toLocaleString = (value, fractionDigits = null) => {
 	/**
 	 * For easier handling in test cases we also support a fallback without configured DI
 	 */
@@ -47,7 +48,10 @@ export const toLocaleString = (value) => {
 		}
 	};
 
-	if (isNumber(value)) {
-		return value.toLocaleString(getDefaultLang());
+	if (isNumber(value, false)) {
+		return Number(value).toLocaleString(
+			getDefaultLang(),
+			fractionDigits ? { minimumFractionDigits: fractionDigits, maximumFractionDigits: fractionDigits } : {}
+		);
 	}
 };

@@ -24,7 +24,7 @@ describe('Unit test functions from numberUtils.js', () => {
 			expect(round(numberToRound, -2)).toBe(100);
 		});
 
-		it('returns undefined for a string containg text', () => {
+		it('returns undefined for a string containing text that is not a number', () => {
 			expect(round('not a number')).toBe(undefined);
 		});
 
@@ -59,9 +59,19 @@ describe('Unit test functions from numberUtils.js', () => {
 		});
 
 		describe('DI is available', () => {
-			it('formates a number according to the current "DEFAULT_LANG" property', () => {
+			it('formats a number according to the current "DEFAULT_LANG" property', () => {
 				spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('de');
 				expect(toLocaleString(5.5)).toBe('5,5');
+			});
+
+			it('formats a string representing a number according to the current "DEFAULT_LANG" property', () => {
+				spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('de');
+				expect(toLocaleString('5.5')).toBe('5,5');
+			});
+
+			it('formats a number according to the current "DEFAULT_LANG" property with custom fractionDigits parameter', () => {
+				spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('de');
+				expect(toLocaleString(5.5555, 1)).toBe('5,6');
 			});
 
 			it('returns undefined when value is not a number', () => {
@@ -71,9 +81,19 @@ describe('Unit test functions from numberUtils.js', () => {
 		});
 
 		describe('DI is NOT available', () => {
-			it('formates a number according to the current "DEFAULT_LANG" property', () => {
+			it('formats a number according to the current "DEFAULT_LANG" property', () => {
 				spyOn(configService, 'getValue').and.throwError();
 				expect(toLocaleString(5.5)).toBe('5.5');
+			});
+
+			it('formats a number according to the current "DEFAULT_LANG" property with custom fractionDigits parameter', () => {
+				spyOn(configService, 'getValue').and.throwError();
+				expect(toLocaleString(5.5555, 1)).toBe('5.6');
+			});
+
+			it('formats a string representing a number according to the current "DEFAULT_LANG" property', () => {
+				spyOn(configService, 'getValue').and.throwError();
+				expect(toLocaleString('5.5')).toBe('5.5');
 			});
 
 			it('returns undefined when value is not a number', () => {
