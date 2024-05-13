@@ -98,8 +98,6 @@ export class LayerList extends MvuElement {
 				Verfügbare Ebenen:
 				<input type="text" @input="${handleFilterChange}" placeholder="Filter" />
 
-				<button id="refreshButton" @click="${() => this._refreshLayers()}">refresh</button>
-
 				<ul class="no-bullets">
 					${filteredGeoResources.map(
 						(geoResource) =>
@@ -112,6 +110,8 @@ export class LayerList extends MvuElement {
 		`;
 	}
 	// @drop=${this._onDrop}
+
+	// <button id="refreshButton" @click="${() => this._refreshLayers()}">refresh</button>
 
 	/**
 	 * @property {function} addEndLabels - Callback function

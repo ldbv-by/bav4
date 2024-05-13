@@ -504,7 +504,6 @@ export class LayerTree extends MvuElement {
 
 				<div>
 					<h2>Themen - Ebenenbaum für Thema "${this.#currentTopic._label}"${sperrText}</h2>
-					<button @click="${handleNewTopicClick}">New Topic</button>
 					<button @click="${handleNewLayerGroupClick}">neue Ebenengruppe</button>
 					<button @click="${handleSaveClick}">sichern</button>
 					<button @click="${handleDisableTopicLevelTreeClick}">${deactivateButtonText}</button>
@@ -525,6 +524,8 @@ export class LayerTree extends MvuElement {
 		}
 		return nothing;
 	}
+
+	// <button @click="${handleNewTopicClick}">New Topic</button>
 
 	/**
 	 * @property {Array} topics = []
