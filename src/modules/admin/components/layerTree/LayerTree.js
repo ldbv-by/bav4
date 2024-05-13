@@ -410,13 +410,13 @@ export class LayerTree extends MvuElement {
 			event.preventDefault();
 		};
 
-		const handleNewTopicClick = () => {
-			// console.log('🚀 ~ LayerTree ~ handleNewTopicClick ');
+		// const handleNewTopicClick = () => {
+		// 	// console.log('🚀 ~ LayerTree ~ handleNewTopicClick ');
 
-			openNewTopicDialog();
+		// 	openNewTopicDialog();
 
-			// this._updateTopic('newEntry');
-		};
+		// 	// this._updateTopic('newEntry');
+		// };
 
 		const handleNewLayerGroupClick = () => {
 			this._addLayerGroup();
