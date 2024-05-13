@@ -805,7 +805,7 @@ describe('getBoundingBoxFrom', () => {
 			])
 		]);
 
-		const multLineString = new MultiLineString([
+		const multiLineString = new MultiLineString([
 			new LineString([
 				[0, 0],
 				[42, 42],
@@ -815,6 +815,23 @@ describe('getBoundingBoxFrom', () => {
 				[3, 5],
 				[21, 21],
 				[1, 1]
+			])
+		]);
+		const disconnectedMultiLineString = new MultiLineString([
+			new LineString([
+				[0, 0],
+				[42, 42],
+				[3, 5]
+			]),
+			new LineString([
+				[3, 5],
+				[21, 21],
+				[1, 1]
+			]),
+			new LineString([
+				[4, 1],
+				[12, 12],
+				[7, 1]
 			])
 		]);
 
@@ -845,7 +862,7 @@ describe('getBoundingBoxFrom', () => {
 				[3, 5]
 			]);
 
-			const fromMultiLineString = getLineString(multLineString);
+			const fromMultiLineString = getLineString(multiLineString);
 			expect(fromMultiLineString).toBeInstanceOf(LineString);
 			expect(fromMultiLineString.getCoordinates()).toEqual([
 				[0, 0],
@@ -859,6 +876,7 @@ describe('getBoundingBoxFrom', () => {
 
 		it('does NOT create a LineString', () => {
 			expect(getLineString(point)).toBeNull();
+			expect(getLineString(disconnectedMultiLineString)).toBeNull();
 		});
 	});
 
@@ -881,7 +899,7 @@ describe('getBoundingBoxFrom', () => {
 				[0, 0]
 			]
 		]);
-		const pseudoMultLineString = new MultiLineString([
+		const pseudoMultiLineString = new MultiLineString([
 			new LineString([
 				[0, 0],
 				[42, 42],
@@ -889,7 +907,7 @@ describe('getBoundingBoxFrom', () => {
 			])
 		]);
 
-		const connectedMultLineString = new MultiLineString([
+		const connectedMultiLineString = new MultiLineString([
 			new LineString([
 				[0, 0],
 				[42, 42],
@@ -907,7 +925,7 @@ describe('getBoundingBoxFrom', () => {
 			])
 		]);
 
-		const disconnectedMultLineString = new MultiLineString([
+		const disconnectedMultiLineString = new MultiLineString([
 			new LineString([
 				[0, 0],
 				[42, 42],
@@ -924,16 +942,17 @@ describe('getBoundingBoxFrom', () => {
 				[7, 1]
 			])
 		]);
+
 		it('does NOT create a LineString', () => {
-			expect(multiLineStringToLineString(point)).toBe(point);
-			expect(multiLineStringToLineString(lineString)).toBe(lineString);
-			expect(multiLineStringToLineString(linearRing)).toBe(linearRing);
-			expect(multiLineStringToLineString(polygon)).toBe(polygon);
-			expect(multiLineStringToLineString(disconnectedMultLineString)).toBe(disconnectedMultLineString);
+			expect(multiLineStringToLineString(point)).toBeNull();
+			expect(multiLineStringToLineString(lineString)).toBeNull();
+			expect(multiLineStringToLineString(linearRing)).toBeNull();
+			expect(multiLineStringToLineString(polygon)).toBeNull();
+			expect(multiLineStringToLineString(disconnectedMultiLineString)).toBeNull();
 		});
 
 		it('creates a LineString', () => {
-			const fromPseudoMultiLineString = getLineString(pseudoMultLineString);
+			const fromPseudoMultiLineString = getLineString(pseudoMultiLineString);
 			expect(fromPseudoMultiLineString).toBeInstanceOf(LineString);
 			expect(fromPseudoMultiLineString.getCoordinates()).toEqual([
 				[0, 0],
@@ -941,7 +960,7 @@ describe('getBoundingBoxFrom', () => {
 				[3, 5]
 			]);
 
-			const fromConnectedMultiLineString = getLineString(connectedMultLineString);
+			const fromConnectedMultiLineString = getLineString(connectedMultiLineString);
 			expect(fromConnectedMultiLineString).toBeInstanceOf(LineString);
 			expect(fromConnectedMultiLineString.getCoordinates()).toEqual([
 				[0, 0],
