@@ -8,7 +8,6 @@ import { MvuElement } from '../../../MvuElement';
 import css from './adminPanel.css';
 import { $injector } from '../../../../injection/index';
 import { nothing } from '../../../../../node_modules/lit-html/lit-html';
-import { Topic } from '../../../../domain/topic';
 import { End_Label } from '../layerTree/LayerTree';
 // eslint-disable-next-line no-unused-vars
 // import { logOnce, onlyOnce } from '../layerTree/LayerTree';
@@ -196,30 +195,24 @@ export class AdminPanel extends MvuElement {
 	}
 
 	async _updateCatalog(currentTopicId) {
-		// todo remove
-		if (currentTopicId === 'newEntry') {
-			this.#currentTopicId = currentTopicId;
-			this.#catalog = [{ uid: '123123123', label: ' ' }];
-			const existingTopic = this.#topics.find((topic) => topic.id === currentTopicId);
-			if (!existingTopic) {
-				const topic = new Topic(currentTopicId, currentTopicId, currentTopicId);
-				this.#topics.unshift(topic);
-			}
+		try {
+			const catalogFromService = await this._catalogService.byId(currentTopicId);
+			this.#catalog = this._addUniqueId(catalogFromService);
+			this._mergeCatalogWithResources();
+		} catch (error) {
+			console.warn(error.message);
+		}
+	}
 
-			this.signal(Update_CatalogWithResourceData, this.#catalog);
-		} else {
-			try {
-				const catalogFromService = await this._catalogService.byId(currentTopicId);
-				this.#catalog = this._addUniqueId(catalogFromService);
-				this._mergeCatalogWithResources();
-			} catch (error) {
-				console.warn(error.message);
-			}
+	async loadGeoResources() {
+		try {
+			this.#geoResources = await this._geoResourceService.init();
+		} catch (error) {
+			console.warn(error.message);
 		}
 	}
 
 	async onInitialize() {
-		await this._geoResourceService.init();
 		await this._topicsService.init();
 
 		try {
@@ -228,11 +221,7 @@ export class AdminPanel extends MvuElement {
 			console.warn(error.message);
 		}
 
-		try {
-			this.#geoResources = await this._geoResourceService.all();
-		} catch (error) {
-			console.warn(error.message);
-		}
+		await this.loadGeoResources();
 
 		if (!this.#currentTopicId) {
 			this.#currentTopicId = this._configService.getValue('DEFAULT_TOPIC_ID', 'ba');
@@ -250,18 +239,13 @@ export class AdminPanel extends MvuElement {
 		}
 	}
 
-	async _refreshLayers() {
-		try {
-			this.#geoResources = await this._geoResourceService.all();
-			this._mergeCatalogWithResources();
-		} catch (error) {
-			console.warn(error.message);
-		}
-	}
-
 	createView(model) {
 		const { catalogWithResourceData, dummy } = model;
 		// console.log('🚀 ~ AdminPanel ~ createView ~ catalogWithResourceData:', catalogWithResourceData);
+
+		const _refreshLayers = async () => {
+			await this.loadGeoResources();
+		};
 
 		const findElementRecursively = (uid, catalogEntry) => {
 			for (let n = 0; n < catalogEntry.children.length; n++) {
@@ -536,15 +520,10 @@ export class AdminPanel extends MvuElement {
 			]);
 		};
 
-		// todo
 		const saveCatalog = async () => {
 			const catalogToSave = this._reduceData(catalogWithResourceData, this._extractOriginal);
-			// eslint-disable-next-line no-console
-			console.log('🚀 ~ AdminPanel ~ saveCatalog ~ catalogToSave:', catalogToSave);
 
-			// const xxx = await this._catalogService.save(catalogToSave);
-			// eslint-disable-next-line no-console
-			// console.log('🚀 ~ file: AdminPanel.js:458 ~ AdminPanel ~ saveCatalog ~ xxx:', xxx);
+			await this._catalogService.save(catalogToSave);
 		};
 
 		const resetCatalog = async () => {
@@ -601,7 +580,7 @@ export class AdminPanel extends MvuElement {
 					<div>
 						<ba-layer-list
 							.geoResources=${this.#geoResources}
-							.refreshLayers="${this._refreshLayers}"
+							.refreshLayers="${_refreshLayers}"
 							.removeEndLabels="${removeEndLabels}"
 							.addEndLabels="${addEndLabels}"
 						></ba-layer-list>
