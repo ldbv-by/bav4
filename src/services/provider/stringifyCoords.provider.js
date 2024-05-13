@@ -3,6 +3,7 @@
  */
 import { LLtoUTM, forward } from '../../utils/mgrs';
 import { GlobalCoordinateRepresentations } from '../../domain/coordinateRepresentation';
+import { toLocaleString } from '../../utils/numberUtils';
 
 /**
  * BVV specific implementation of {@link module:services/OlCoordinateService~stringifyCoordProvider}
@@ -17,7 +18,7 @@ export const bvvStringifyFunction = (coordinate, coordinateRepresentation, trans
 			const coord4326 = transformFn(coordinate, 3857, 4326);
 			switch (label) {
 				case GlobalCoordinateRepresentations.SphericalMercator.label:
-					return createStringXY(digits)(coordinate);
+					return createStringXY(digits, true)(coordinate);
 				case GlobalCoordinateRepresentations.WGS84.label:
 					return stringifyLatLong(options.digits ?? coordinateRepresentation.digits)(coord4326);
 				case GlobalCoordinateRepresentations.UTM.label: {
@@ -44,7 +45,7 @@ export const bvvStringifyFunction = (coordinate, coordinateRepresentation, trans
  */
 const stringifyLatLong = (digits) => {
 	// Possible Z-, M-values are currently ignored. This may change in future implementations.
-	return (coordinate4326) => createStringXY(digits)(coordinate4326.slice(0, 2).reverse());
+	return (coordinate4326) => createStringXY(digits, true)(coordinate4326.slice(0, 2).reverse());
 };
 
 const stringifyLocalUTM = (srid, digits, transformFn) => {
@@ -65,6 +66,10 @@ const stringifyLocalUTM = (srid, digits, transformFn) => {
 	};
 };
 
-const createStringXY = (fractionDigits) => {
-	return (coordinate) => `${coordinate[0].toFixed(fractionDigits)} ${coordinate[1].toFixed(fractionDigits)}`;
+const createStringXY = (fractionDigits, convertToLocalString = false) => {
+	const convert = (value) => {
+		return convertToLocalString ? toLocaleString(value, fractionDigits) : value;
+	};
+
+	return (coordinate) => `${convert(coordinate[0].toFixed(fractionDigits))} ${convert(coordinate[1].toFixed(fractionDigits))}`;
 };

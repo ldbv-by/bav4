@@ -14,7 +14,7 @@ describe('StringifyCoord provider', () => {
 
 				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.WGS84, transformFn, { digits: 3 })).toBe('48.140 11.572');
 				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.WGS84, transformFn)).toBe('48.14021 11.57246');
-				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.SphericalMercator, transformFn)).toBe('10000.000000 20000.000000');
+				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.SphericalMercator, transformFn)).toBe('10,000.000000 20,000.000000');
 			});
 
 			it('stringifies a coordinate for SphericalMercator', () => {
@@ -22,7 +22,7 @@ describe('StringifyCoord provider', () => {
 				const coord4326 = [0, 0, 0];
 				const transformFn = jasmine.createSpy().withArgs(coord3857, 3857, 4326).and.returnValue(coord4326);
 
-				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.SphericalMercator, transformFn)).toBe('10000.000000 20000.000000');
+				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.SphericalMercator, transformFn)).toBe('10,000.000000 20,000.000000');
 			});
 
 			it('stringifies a coordinate for UTM', () => {
