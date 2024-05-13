@@ -60,8 +60,6 @@ describe('WaypointItem', () => {
 			expect(getComputedStyle(waypointElement.shadowRoot.querySelector('.line')).background).toContain('rgb(128, 128, 128)');
 
 			expect(waypointElement.shadowRoot.querySelector('.text-name').innerText).toBe('routing_waypoints_waypoint 42');
-			expect(waypointElement.shadowRoot.querySelector('.text-coordinate').innerText).toBe('11.932 47.898');
-
 			expect(waypointElement.shadowRoot.querySelectorAll('.waypoint-index')).toHaveSize(1);
 
 			// waypoint action buttons
@@ -78,8 +76,6 @@ describe('WaypointItem', () => {
 			expect(getComputedStyle(startElement.shadowRoot.querySelector('.line')).background).toContain('rgb(128, 128, 128)');
 
 			expect(startElement.shadowRoot.querySelector('.text-name').innerText).toBe('routing_waypoints_start');
-			expect(startElement.shadowRoot.querySelector('.text-coordinate').innerText).toBe('11.932 47.898');
-
 			expect(startElement.shadowRoot.querySelectorAll('.waypoint-index')).toHaveSize(0);
 
 			const decreaseIconElement = startElement.shadowRoot.querySelector('#decrease');
@@ -98,8 +94,6 @@ describe('WaypointItem', () => {
 			expect(getComputedStyle(destinationElement.shadowRoot.querySelector('.line')).background).toContain('rgb(128, 128, 128)');
 
 			expect(destinationElement.shadowRoot.querySelector('.text-name').innerText).toBe('routing_waypoints_destination');
-			expect(destinationElement.shadowRoot.querySelector('.text-coordinate').innerText).toBe('11.932 47.898');
-
 			expect(destinationElement.shadowRoot.querySelectorAll('.waypoint-index')).toHaveSize(0);
 
 			const increaseIconElement = destinationElement.shadowRoot.querySelector('#increase');
@@ -120,7 +114,6 @@ describe('WaypointItem', () => {
 			expect(getComputedStyle(waypointElement.shadowRoot.querySelector('.line')).background).toContain('rgb(42, 42, 42)');
 
 			expect(waypointElement.shadowRoot.querySelector('.text-name').innerText).toBe('routing_waypoints_waypoint 42');
-			expect(waypointElement.shadowRoot.querySelector('.text-coordinate').innerText).toBe('11.932 47.898');
 
 			// waypoint action buttons
 			expect(waypointElement.shadowRoot.querySelectorAll('#increase')).toHaveSize(1);

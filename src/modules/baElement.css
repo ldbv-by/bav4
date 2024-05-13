@@ -154,6 +154,11 @@ input[type='range']:focus-visible {
 	--thumb-highlight-size: 0.3em;
 }
 
+/* Default background for transparent images in dark mode*/
+img {
+	background: var(--surface1-light);
+}
+
 /* 
    ba-form-element  
 */

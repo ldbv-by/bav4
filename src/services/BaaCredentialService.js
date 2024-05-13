@@ -1,8 +1,8 @@
 /**
  * @module services/BaaCredentialService
  */
-import { $injector } from '../injection';
 import { isHttpUrl } from '../utils/checks';
+import { getOriginAndPathname } from '../utils/urlUtils';
 
 /**
  * @class
@@ -11,8 +11,6 @@ import { isHttpUrl } from '../utils/checks';
 export class BaaCredentialService {
 	constructor() {
 		this._credentials = new Map();
-		const { UrlService: urlService } = $injector.inject('UrlService');
-		this._urlService = urlService;
 	}
 
 	/**
@@ -23,7 +21,7 @@ export class BaaCredentialService {
 	 */
 	get(url) {
 		if (isHttpUrl(url)) {
-			const credential = this._credentials.get(this._urlService.originAndPathname(url));
+			const credential = this._credentials.get(getOriginAndPathname(url));
 			return credential ? JSON.parse(atob(credential)) : null;
 		}
 		return null;
@@ -37,7 +35,7 @@ export class BaaCredentialService {
 	 */
 	addOrReplace(url, credential) {
 		if (isHttpUrl(url) && credential?.username && credential?.password) {
-			this._credentials.set(this._urlService.originAndPathname(url), btoa(JSON.stringify({ ...credential })));
+			this._credentials.set(getOriginAndPathname(url), btoa(JSON.stringify({ ...credential })));
 			return true;
 		}
 		return false;

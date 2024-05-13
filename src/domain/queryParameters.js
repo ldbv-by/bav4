@@ -54,10 +54,6 @@ export const QueryParameters = Object.freeze({
 	 */
 	TOOL_ID: 'tid',
 	/**
-	 * Ids of components (`string`, comma-separated) which should be displayed within the iframe
-	 */
-	IFRAME_COMPONENTS: 'ifc',
-	/**
 	 * Id (`string`) of the type of marker which should be initially displayed in the center of the map
 	 */
 	CROSSHAIR: 'crh',
@@ -73,13 +69,30 @@ export const QueryParameters = Object.freeze({
 	 * The category (vehicle) of a route (`string`)
 	 */
 	ROUTE_CATEGORY: 'rtc',
-	// technical parameters
+
+	/**
+	 * EMBED MODE CONFIGURATION PARAMETERS
+	 */
+
+	/**
+	 * The drawing tool (`point`, `line`,`polygon`, comma-separated)
+	 */
+	EC_DRAW_TOOL: 'ec_draw_tool',
+	/**
+	 * Show the map insensitive for user interactions unless the user activates the map via a button (`boolean`)
+	 */
+	EC_MAP_ACTIVATION: 'ec_map_activation',
+	/**
+	 * Show a chip that opens the current view in the application (`boolean`)
+	 */
+	EC_LINK_TO_APP: 'ec_link_to_app',
+
+	/**
+	 * TECHNICAL PARAMETERS
+	 */
+
 	/**
 	 * Render test ids (`boolean`)
 	 */
-	T_ENABLE_TEST_IDS: 't_enable-test-ids',
-	/**
-	 * Currently not supported.
-	 */
-	T_DISABLE_INITIAL_UI_HINTS: 't_disable-initial-ui-hints'
+	T_ENABLE_TEST_IDS: 't_enable-test-ids'
 });

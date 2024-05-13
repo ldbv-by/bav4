@@ -12,6 +12,7 @@ import { OlMfpHandler } from '../handler/mfp/OlMfpHandler';
 import { OlElevationProfileHandler } from '../handler/elevationProfile/OlElevationProfileHandler';
 import { OlRoutingHandler } from '../handler/routing/OlRoutingHandler';
 import { OlSelectableFeatureHandler } from '../handler/selectableFeature/OlSelectableFeatureHandler';
+import { RtVectorLayerService } from '../services/RtVectorLayerService';
 
 export const mapModule = ($injector) => {
 	$injector
@@ -21,7 +22,7 @@ export const mapModule = ($injector) => {
 		.register('OlGeolocationHandler', OlGeolocationHandler)
 		.register('OlHighlightLayerHandler', OlHighlightLayerHandler)
 		.register('VectorLayerService', VectorLayerService)
-		.register('RtVectorLayerService', class {}) /**TODO: It's a mock, replace it by the real RtVectorLayerService*/
+		.register('RtVectorLayerService', RtVectorLayerService)
 		.register('LayerService', LayerService)
 		.register('InteractionStorageService', InteractionStorageService)
 		.register('OverlayService', OverlayService)

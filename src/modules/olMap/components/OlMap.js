@@ -17,7 +17,6 @@ import { setBeingMoved, setMoveEnd, setMoveStart } from '../../../store/map/map.
 import VectorSource from 'ol/source/Vector';
 import { Group as LayerGroup } from 'ol/layer';
 import { GeoResourceFuture, GeoResourceTypes } from '../../../domain/geoResources';
-import { setFetching } from '../../../store/network/network.action';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 import { equals } from '../../../utils/storeUtils';
 import { roundCenter, roundRotation, roundZoomLevel } from '../../../utils/mapUtils';
@@ -212,7 +211,7 @@ export class OlMap extends MvuElement {
 		if (this._environmentService.isTouch()) {
 			registerLongPressListener(this._map, contextOrLongPressHandler, singleClickOrShortPressHandler);
 		} else {
-			this._map.addEventListener('contextmenu', contextOrLongPressHandler);
+			this._map.on('contextmenu', contextOrLongPressHandler);
 			this._map.on('singleclick', singleClickOrShortPressHandler);
 		}
 
@@ -228,9 +227,6 @@ export class OlMap extends MvuElement {
 		this._map.on('pointerdrag', () => {
 			setBeingDragged(true);
 		});
-
-		this._map.on('loadstart', () => setFetching(true));
-		this._map.on('loadend', () => setFetching(false));
 
 		this._mapHandler.forEach((handler) => {
 			handler.register(this._map);

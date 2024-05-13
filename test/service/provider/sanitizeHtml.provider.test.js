@@ -9,7 +9,9 @@ describe('DOMPurify sanitize HTML provider', () => {
 		expect(domPurifySanitizeHtml('<img src=x onerror=alert(1)//>')).toBe('<img src="x">');
 		expect(domPurifySanitizeHtml('<p>abc<iframe//src=jAva&Tab;script:alert(3)>def</p>')).toBe('<p>abc</p>');
 		expect(domPurifySanitizeHtml('<TABLE><tr><td>HELLO</tr></TABL>')).toBe('<table><tbody><tr><td>HELLO</td></tr></tbody></table>');
-		expect(domPurifySanitizeHtml('<UL><li><A HREF=//google.com>click</UL>')).toBe('<ul><li><a href="//google.com">click</a></li></ul>');
+		expect(domPurifySanitizeHtml('<UL><li><A HREF=//google.com>click</UL>')).toBe(
+			'<ul><li><a href="//google.com" target="_blank" rel="noopener noreferrer">click</a></li></ul>'
+		);
 
 		// mathML is not allowed
 		expect(domPurifySanitizeHtml('<div><math><mi//xlink:href="data:x,<script>alert(4)</script></div>">')).toBe('<div></div>');
@@ -25,12 +27,17 @@ describe('DOMPurify sanitize HTML provider', () => {
 			domPurifySanitizeHtml(
 				'<div id="33"><a style="pointer-events:none;position:absolute;"><a style="position:absolute;" onclick="alert(33);">XXX</a></a></div>'
 			)
-		).toBe('<div id="33"><a></a><a>XXX</a></div>');
+		).toBe('<div id="33"><a target="_blank" rel="noopener noreferrer"></a><a target="_blank" rel="noopener noreferrer">XXX</a></div>');
 
 		// sanitizes SVG
 		expect(domPurifySanitizeHtml('<div><svg><g/onload=alert(2)//<p></div>')).toBe('<div><svg><g></g></svg></div>');
 
 		// allows style tags but ensure they are sanitized
 		expect(domPurifySanitizeHtml('<style type="text/css">p { </style><script>alert()</script> }</style>')).toBe('}');
+
+		// make all links open a new window
+		expect(domPurifySanitizeHtml('<a href="https://example.com" target="_blank">link</a>')).toBe(
+			'<a href="https://example.com" target="_blank" rel="noopener noreferrer">link</a>'
+		);
 	});
 });

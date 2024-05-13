@@ -50,7 +50,7 @@ export class OlLayerHandler {
 	/**
 	 * Activates this handler and creates an ol layer.
 	 * @param {Map} olMap
-	 * @returns {BaseLayer} olLayer the layer which shoud be added to the map
+	 * @returns {BaseLayer} olLayer the layer which should be added to the map
 	 */
 	activate(map) {
 		const layer = this.onActivate(map);
@@ -72,7 +72,7 @@ export class OlLayerHandler {
 	 * @abstract
 	 * @protected
 	 * @param {Map} olMap
-	 * @returns {BaseLayer} olLayer the layer which shoud be added to the map
+	 * @returns {BaseLayer} olLayer the layer which should be added to the map
 	 */
 	onActivate(/*eslint-disable no-unused-vars */ map) {
 		// The child has not implemented this method.

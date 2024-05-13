@@ -173,9 +173,18 @@ describe('Footer', () => {
 		});
 
 		it('layouts for embedded mode', async () => {
-			const element = await setup({ media: { portrait: false, minWidth: true } }, { embed: true });
+			const element = await setup(
+				{
+					media: { portrait: false, minWidth: true },
+					navigationRail: {
+						open: true
+					}
+				},
+				{ embed: true }
+			);
 
 			expect(element.shadowRoot.querySelectorAll('.is-embedded')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content')).display).toBe('flex');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content ba-map-info')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content ba-privacy-policy')).display).toBe('block');

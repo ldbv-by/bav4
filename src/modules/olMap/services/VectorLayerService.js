@@ -8,6 +8,7 @@ import { KML, GPX, GeoJSON, WKT } from 'ol/format';
 import VectorLayer from 'ol/layer/Vector';
 import { parse } from '../../../utils/ewkt';
 import { Cluster } from 'ol/source';
+import { getOriginAndPathname, getPathParams } from '../../../utils/urlUtils';
 
 const getUrlService = () => {
 	const { UrlService: urlService } = $injector.inject('UrlService');
@@ -20,8 +21,8 @@ export const bvvIconUrlFunction = (url) => {
 	const { UrlService: urlService, ConfigService: configService } = $injector.inject('UrlService', 'ConfigService');
 
 	// legacy v3 backend icons should be mapped to v4
-	if (urlService.originAndPathname(url).startsWith('https://geoportal.bayern.de/ba-backend')) {
-		const pathParams = urlService.pathParams(url);
+	if (getOriginAndPathname(url).startsWith('https://geoportal.bayern.de/ba-backend')) {
+		const pathParams = getPathParams(url);
 		// the legacy icon endpoint contains four path parameters
 		if (pathParams.length === 4 && pathParams[1] === 'icons') {
 			return `${configService.getValueAsPath('BACKEND_URL')}icons/${pathParams[pathParams.length - 2]}/${pathParams[pathParams.length - 1]}.png`;
@@ -29,7 +30,7 @@ export const bvvIconUrlFunction = (url) => {
 		// leave untouched for that case
 		return url;
 	} // icons from our backend do not need to be proxified
-	else if (urlService.originAndPathname(url).startsWith(configService.getValueAsPath('BACKEND_URL'))) {
+	else if (getOriginAndPathname(url).startsWith(configService.getValueAsPath('BACKEND_URL'))) {
 		return url;
 	}
 	return urlService.proxifyInstant(url, false);
@@ -105,7 +106,7 @@ export class VectorLayerService {
 	 * @param {ol.Map} olMap
 	 * @returns olVectorLayer
 	 */
-	_applyStyles(olVectorLayer, olMap) {
+	applyStyles(olVectorLayer, olMap) {
 		/**
 		 * We check if an currently present and possible future features needs a specific styling.
 		 * If so, we apply the style and register an event listeners in order to keep the style (and overlays)
@@ -134,7 +135,7 @@ export class VectorLayerService {
 	 * ol context.
 	 * @param {ol.layer.Vector} olVectorLayer
 	 */
-	_sanitizeStyles(olVectorLayer) {
+	sanitizeStyles(olVectorLayer) {
 		const { StyleService: styleService } = $injector.inject('StyleService');
 		const olVectorSource = olVectorLayer.getSource();
 		olVectorSource.getFeatures().forEach((feature) => styleService.sanitizeStyle(feature));
@@ -145,7 +146,7 @@ export class VectorLayerService {
 	 * @param {ol.layer.Vector} olVectorLayer
 	 * @returns olVectorLayer
 	 */
-	_applyClusterStyle(olVectorLayer) {
+	applyClusterStyle(olVectorLayer) {
 		const { StyleService: styleService } = $injector.inject('StyleService');
 		styleService.addClusterStyle(olVectorLayer);
 
@@ -171,9 +172,9 @@ export class VectorLayerService {
 		const vectorSource = this._vectorSourceForData(vectorGeoResource);
 		vectorLayer.setSource(vectorSource);
 
-		this._sanitizeStyles(vectorLayer);
+		this.sanitizeStyles(vectorLayer);
 
-		return vectorGeoResource.isClustered() ? this._applyClusterStyle(vectorLayer) : this._applyStyles(vectorLayer, olMap);
+		return vectorGeoResource.isClustered() ? this.applyClusterStyle(vectorLayer) : this.applyStyles(vectorLayer, olMap);
 	}
 
 	/**

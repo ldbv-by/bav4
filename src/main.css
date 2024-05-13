@@ -2,8 +2,9 @@
    global variables (custom properties)
    ========================================================================== */
 
-:root {
-	font-size: calc(0.75em + 0.15vw);
+:root,
+:host {
+	font-size: calc(0.75em + max(0.15vw, 0.2vh));
 
 	--border-radius-button: 2.5em;
 
@@ -74,7 +75,8 @@
 	--animationtime-mainmenu: var(--animation-duration-large-open);
 }
 
-.light-theme {
+.light-theme,
+:host(.light-theme) {
 	/* brand */
 	--primary-color: var(--brand-light);
 	--primary-color-lighter: var(--brand-light-lighter);
@@ -95,7 +97,8 @@
 	--roles-color: var(--primary-color);
 }
 
-.dark-theme {
+.dark-theme,
+:host(.dark-theme) {
 	/* brand */
 	--primary-color: var(--brand-dark);
 	--primary-color-lighter: var(--brand-dark-lighter);
@@ -144,7 +147,8 @@
 	padding: 0;
 }
 
-body {
+body,
+:host {
 	overscroll-behavior: contain;
 	color: var(--text1);
 	font-family: var(--font-family);

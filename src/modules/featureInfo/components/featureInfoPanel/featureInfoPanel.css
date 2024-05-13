@@ -53,6 +53,11 @@
 	text-align: center;
 }
 
+ba-spinner {
+	display: block;
+	padding: 0.8em 1.2em;
+}
+
 /* not implemented yet  */
 .icon-rotate-90,
 .print,

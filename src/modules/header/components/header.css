@@ -28,6 +28,7 @@
 	-webkit-mask-image: url('assets/topography.svg');
 }
 .header__logo {
+	pointer-events: none;
 	position: fixed;
 	z-index: calc(var(--z-header) + 10);
 	transition: transform var(--animation-duration-large-open) var(--animation-easing-linear);
@@ -229,6 +230,7 @@
 	transform: scale(1);
 }
 .action-button {
+	pointer-events: all;
 	position: fixed;
 	z-index: calc(var(--z-toolbox) + 10);
 	left: 0.6em;

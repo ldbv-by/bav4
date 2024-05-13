@@ -1,8 +1,12 @@
 /**
  * @module injection/core/injector
  */
-import { forEachPropertyDoAction } from './utils';
 
+/**
+ * A function that returns a dependency.
+ * @typedef {Function} factoryFn
+ * @returns {object} The dependency object
+ */
 /**
  * Dependency injection for vanilla js.
  * @class
@@ -34,7 +38,7 @@ export class Injector {
 	 * @return {Injector} 			The Injector instance.
 	 */
 	register(keyOrPOJO, object) {
-		return this.#register(keyOrPOJO, object, false);
+		return this.#register(keyOrPOJO, object, false, false);
 	}
 
 	/**
@@ -47,7 +51,17 @@ export class Injector {
 	 * @memberOf Injector
 	 */
 	registerSingleton(keyOrPOJO, object) {
-		return this.#register(keyOrPOJO, object, true);
+		return this.#register(keyOrPOJO, object, true, false);
+	}
+
+	/**
+	 * Registers a factory function.
+	 * @param {any} keyOrPOJO	Key of the dependency, javascript object with multiple dependencies defined.
+	 * @param {module:injection/core/injector~factoryFn} fn The factory function
+	 * @returns {Injector}		The Injector instance.
+	 */
+	registerFactory(keyOrPOJO, fn) {
+		return this.#register(keyOrPOJO, fn, false, true);
 	}
 
 	/**
@@ -73,10 +87,13 @@ export class Injector {
 		names.map((argName) => {
 			const registered = this.#dependencies[argName];
 			if (!registered) {
-				throw new Error('No registered instance found for ' + argName);
+				throw new Error(`No registered instance or factory found for "${argName}"`);
 			}
-			// const dependencyIsSingleton = registered.singleton;
-			dependenciesToInject[argName] = registered.singleton ? registered.dependency : new registered.dependency();
+			if (registered.factory) {
+				dependenciesToInject[argName] = registered.dependency();
+			} else {
+				dependenciesToInject[argName] = registered.singleton ? registered.dependency : new registered.dependency();
+			}
 		});
 
 		return dependenciesToInject;
@@ -151,21 +168,20 @@ export class Injector {
 	 * const _regExParenthesesAndSpaces = /[()\s]/g;
 	 * const _getArgumentNames = functionString => _regExInsideParentheses.exec(functionString)[0].replace(_regExParenthesesAndSpaces, "").split(',');
 	 */
-	#register(keyOrPOJO, object, isSingleton) {
+	#register(keyOrPOJO, object, isSingleton, isFactory) {
 		// Called as one registration with key and object.
 		if (typeof keyOrPOJO === 'string') {
 			const key = keyOrPOJO;
 			if (this.#dependencies[key]) {
 				throw new Error('Instance already registered for ' + key);
 			}
-			this.#dependencies[key] = { dependency: object, singleton: isSingleton };
+			this.#dependencies[key] = { dependency: object, singleton: isSingleton, factory: isFactory };
 		}
 		// Called with multiple objects to register.
 		else {
-			const configObject = keyOrPOJO;
-			forEachPropertyDoAction(configObject, (key, property) => {
-				this.#dependencies[key] = { dependency: property, singleton: isSingleton };
-			});
+			for (const [key, value] of Object.entries(keyOrPOJO)) {
+				this.#dependencies[key] = { dependency: value, singleton: isSingleton, factory: isFactory };
+			}
 		}
 
 		return this;

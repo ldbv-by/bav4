@@ -38,11 +38,15 @@ const Update_Collapsed_Chart = 'update_collapsed_chart';
  * @author thiloSchlemmer
  */
 export class RouteChart extends MvuElement {
+	#translationService;
+	#unitsService;
+	#chart;
+
 	constructor() {
 		super({ items: [], label: null, collapsedChart: false });
-		const { TranslationService } = $injector.inject('TranslationService');
-		this._translationService = TranslationService;
-		this._chart = null;
+		const { TranslationService, UnitsService } = $injector.inject('TranslationService', 'UnitsService');
+		this.#translationService = TranslationService;
+		this.#unitsService = UnitsService;
 	}
 
 	update(type, data, model) {
@@ -63,7 +67,7 @@ export class RouteChart extends MvuElement {
 	createView(model) {
 		const { items, label, collapsedChart } = model;
 
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key) => this.#translationService.translate(key);
 		const toggleCollapseChart = () => {
 			this.signal(Update_Collapsed_Chart, !collapsedChart);
 		};
@@ -89,15 +93,7 @@ export class RouteChart extends MvuElement {
 		};
 
 		const getLegendValue = (item) => {
-			const value = item.data.absolute;
-
-			const formattedInMeter = (value) => value.toFixed(0) + ' m';
-			const formattedInKilometer = (value) => {
-				const meterInKilometer = (value) => value / 1000;
-				return value < 5000 ? meterInKilometer(value).toFixed(2) + ' km' : meterInKilometer(value).toFixed(0) + ' km';
-			};
-
-			return value < 1000 ? formattedInMeter(value) : formattedInKilometer(value);
+			return this.#unitsService.formatDistance(item.data.absolute);
 		};
 
 		const onMouseOver = (item) => {
@@ -127,8 +123,8 @@ export class RouteChart extends MvuElement {
 										@mouseout=${() => resetHighlightedSegments()}
 									>
 										<div class="legend_item" style=${getLegendStyle(legendItem)}></div>
-										<span class="legend_item_label"> ${legendItem.label}:</span>
-										<span> ${getLegendValue(legendItem)}</span>
+										<span class="legend_item_label">${legendItem.label}:</span>
+										<span class="legend_item_value">${getLegendValue(legendItem)}</span>
 									</div>
 								`
 							)}
@@ -194,14 +190,14 @@ export class RouteChart extends MvuElement {
 
 	_createChart(items, label) {
 		const ctx = this.shadowRoot.querySelector('.donut').getContext('2d');
-		this._chart = new Chart(ctx, this._getChartConfig(items, label));
+		this.#chart = new Chart(ctx, this._getChartConfig(items, label));
 	}
 
 	_destroyChart() {
-		if (this._chart) {
-			this._chart.clear();
-			this._chart.destroy();
-			delete this._chart;
+		if (this.#chart) {
+			this.#chart.clear();
+			this.#chart.destroy();
+			this.#chart = null;
 		}
 	}
 

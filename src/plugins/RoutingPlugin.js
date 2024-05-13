@@ -84,7 +84,7 @@ export class RoutingPlugin extends BaPlugin {
 			return true;
 		};
 
-		if (this.#environmentService.getQueryParams().has(QueryParameters.ROUTE_WAYPOINTS)) {
+		if (!this.#environmentService.isEmbedded() && this.#environmentService.getQueryParams().has(QueryParameters.ROUTE_WAYPOINTS)) {
 			setCurrentTool(Tools.ROUTING); // implicitly calls onToolChanged()
 		}
 
@@ -149,13 +149,15 @@ export class RoutingPlugin extends BaPlugin {
 				setCurrentTool(Tools.ROUTING);
 			}
 		};
-		const onWaypointsChanged = () => {
+		const onWaypointsChanged = (waypoints) => {
 			clearHighlightFeatures();
 			closeContextMenu();
-			closeBottomSheet();
+			if (waypoints.length < 2) {
+				closeBottomSheet();
+			}
 		};
 		const onLayerRemoved = (eventLike, state) => {
-			if (!state.routing.active && [PERMANENT_ROUTE_LAYER_ID, PERMANENT_WP_LAYER_ID].includes(eventLike.payload)) {
+			if (!state.routing.active && [PERMANENT_ROUTE_LAYER_ID, PERMANENT_WP_LAYER_ID].some((id) => eventLike.payload.includes(id))) {
 				reset();
 			}
 		};
@@ -175,7 +177,7 @@ export class RoutingPlugin extends BaPlugin {
 		observe(
 			store,
 			(state) => state.routing.waypoints,
-			() => onWaypointsChanged()
+			(waypoints) => onWaypointsChanged(waypoints)
 		);
 		observe(
 			store,
