@@ -62,11 +62,13 @@ describe('Unit test functions from numberUtils.js', () => {
 			it('formats a number according to the current "DEFAULT_LANG" property', () => {
 				spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('de');
 				expect(toLocaleString(5.5)).toBe('5,5');
+				expect(toLocaleString(5000.5)).toBe('5000,5');
 			});
 
 			it('formats a string representing a number according to the current "DEFAULT_LANG" property', () => {
 				spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('de');
 				expect(toLocaleString('5.5')).toBe('5,5');
+				expect(toLocaleString('5000.5')).toBe('5000,5');
 			});
 
 			it('formats a number according to the current "DEFAULT_LANG" property with custom fractionDigits parameter', () => {
@@ -84,11 +86,19 @@ describe('Unit test functions from numberUtils.js', () => {
 			it('formats a number according to the current "DEFAULT_LANG" property', () => {
 				spyOn(configService, 'getValue').and.throwError();
 				expect(toLocaleString(5.5)).toBe('5.5');
+				expect(toLocaleString(5000.5)).toBe('5000.5');
+			});
+
+			it('formats a string representing a number according to the current "DEFAULT_LANG" property', () => {
+				spyOn(configService, 'getValue').and.throwError();
+				expect(toLocaleString('5.5')).toBe('5.5');
+				expect(toLocaleString('5000.5')).toBe('5000.5');
 			});
 
 			it('formats a number according to the current "DEFAULT_LANG" property with custom fractionDigits parameter', () => {
 				spyOn(configService, 'getValue').and.throwError();
 				expect(toLocaleString(5.5555, 1)).toBe('5.6');
+				expect(toLocaleString(5000.5)).toBe('5000.5');
 			});
 
 			it('formats a string representing a number according to the current "DEFAULT_LANG" property', () => {

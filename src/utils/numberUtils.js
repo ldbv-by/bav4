@@ -49,9 +49,10 @@ export const toLocaleString = (value, fractionDigits = null) => {
 	};
 
 	if (isNumber(value, false)) {
+		const options = { useGrouping: false };
 		return Number(value).toLocaleString(
 			getDefaultLang(),
-			fractionDigits ? { minimumFractionDigits: fractionDigits, maximumFractionDigits: fractionDigits } : {}
+			fractionDigits ? { ...options, minimumFractionDigits: fractionDigits, maximumFractionDigits: fractionDigits } : options
 		);
 	}
 };
