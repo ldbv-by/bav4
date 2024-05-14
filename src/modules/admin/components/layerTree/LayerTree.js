@@ -20,7 +20,7 @@ const Update_Layers = 'update_layers';
 const Update_Dummy = 'update_dummy';
 const Update_Edit_Mode = 'update_edit_mode';
 
-export const End_Label = ' X ';
+export const End_Label = '  ';
 
 const hasChildrenClass = 'has-children';
 const showChildrenClass = 'show-children';

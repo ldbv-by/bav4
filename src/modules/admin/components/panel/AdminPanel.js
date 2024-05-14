@@ -390,6 +390,8 @@ export class AdminPanel extends MvuElement {
 			return newUid;
 		};
 
+		// todo: check
+
 		const removeEntryRecursively = (uid, catalogBranch) => {
 			const indexToRemove = catalogBranch.findIndex((entry) => entry.uid === uid);
 
@@ -478,6 +480,8 @@ export class AdminPanel extends MvuElement {
 			// Concatenate the non-digit part and the incremented digit part
 			return nonDigitPart + incrementedDigitPart;
 		};
+
+		// todo: check
 
 		const addLayerGroup = () => {
 			const catalog = this._reduceData(catalogWithResourceData, this._extractOriginalIncShowChildren);

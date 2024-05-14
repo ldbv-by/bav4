@@ -93,7 +93,7 @@ export class LayerList extends MvuElement {
 			</style>
 
 			<div>
-				<h2>Georesourcen - Verfügbare Ebenen</h2>
+				<h2>Georessourcen - Verfügbare Ebenen</h2>
 
 				Verfügbare Ebenen:
 				<input type="text" @input="${handleFilterChange}" placeholder="Filter" />
