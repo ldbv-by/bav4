@@ -455,14 +455,18 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	_getSlopeGradient(chart, elevationData) {
+		/** Elevation data points should come with equal distances by interpolation, but in some edge cases
+		 *  (i. e. from routing results), the equality of distance is broken up on connection points.
+		 *
+		 * Thats why we rely on the elevation-element 'dist' property to calculate always a valid xPoint.
+		 * */
 		const { ctx, chartArea } = chart;
 		const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
-		const numberOfPoints = elevationData.elevations.length;
-		const xPointWidth = chartArea.width / numberOfPoints;
+		const distance = elevationData.elevations.at(-1).dist; // the dist-property contains ascending values, starting by ZERO to the final distance of the elevation profile
 
-		elevationData?.elevations.forEach((element, index) => {
-			if (isNumber(element.slope)) {
-				const xPoint = (xPointWidth / chartArea.width) * index;
+		elevationData?.elevations.forEach((element) => {
+			if (isNumber(element.slope) && isNumber(element.dist)) {
+				const xPoint = element.dist / distance;
 				const slopeValue = Math.abs(element.slope);
 				const slopeClass = SoterSlopeClasses.find((c) => c.min <= slopeValue && c.max > slopeValue);
 
