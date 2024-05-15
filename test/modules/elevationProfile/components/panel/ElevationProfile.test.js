@@ -823,6 +823,42 @@ describe('ElevationProfile', () => {
 		});
 	});
 
+	describe('when chart resizes', () => {
+		it('should update the slope gradient', async () => {
+			spyOn(elevationServiceMock, 'fetchProfile').withArgs(id).and.resolveTo(profile());
+			const element = await setup({
+				elevationProfile: {
+					active: true,
+					id
+				}
+			});
+
+			expect(element._chartColorOptions['slope']).toBeUndefined();
+
+			//init slopes
+			const attrs = element.shadowRoot.getElementById('attrs');
+			attrs.value = 'slope';
+			attrs.dispatchEvent(new Event('change'));
+
+			expect(element._chartColorOptions['slope']).toEqual(
+				jasmine.objectContaining({ borderColor: jasmine.any(CanvasGradient), backgroundColor: jasmine.any(String) })
+			);
+
+			const chart = element._chart;
+			const firstSlopeGradient = element._chartColorOptions['slope'].borderColor;
+
+			chart.resize(200, 400);
+
+			const secondSlopeGradient = element._chartColorOptions['slope'].borderColor;
+			expect(firstSlopeGradient).not.toBe(secondSlopeGradient);
+
+			chart.resize(400, 200);
+
+			const thirdSlopeGradient = element._chartColorOptions['slope'].borderColor;
+			expect(secondSlopeGradient).not.toBe(thirdSlopeGradient);
+		});
+	});
+
 	describe('when _getFooterText(x) is called', () => {
 		it('should return "x m" for "x" any number', async () => {
 			// arrange
