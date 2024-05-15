@@ -30,10 +30,10 @@ describe('ElevationProfile', () => {
 	};
 
 	const sumUp = 1480.8;
-	const sumUpAfterToLocaleStringEn = '1,480.8 m';
+	const sumUpAfterToLocaleStringEn = '1480.8 m';
 
 	const sumDown = 1668.6;
-	const sumDownAfterToLocaleStringEn = '1,668.6 m';
+	const sumDownAfterToLocaleStringEn = '1668.6 m';
 
 	const verticalHeight = 50;
 	const highestPoint = 50;
