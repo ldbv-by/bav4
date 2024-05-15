@@ -650,6 +650,64 @@ describe('ElevationProfile', () => {
 			expect(gradientSpy).toHaveBeenCalledWith(jasmine.any(Number), '#d23600');
 		});
 
+		it('returns a gradient that uses the elevation dist property to place the color stop', async () => {
+			// arrange
+			const unequalElevations = [
+				{
+					dist: 0,
+					z: 0,
+					e: 40,
+					n: 50,
+					slope: 0
+				},
+				{
+					dist: 1,
+					z: 10,
+					e: 41,
+					n: 51,
+					slope: 0
+				},
+				{
+					dist: 4,
+					z: 20,
+					e: 42,
+					n: 52,
+					slope: 1
+				},
+				{
+					dist: 10,
+					z: 30,
+					e: 43,
+					n: 53,
+					slope: 7
+				}
+			];
+			const elevationData = { ...profileSlopeSteep(), elevations: unequalElevations };
+			spyOn(elevationServiceMock, 'fetchProfile').withArgs(id).and.resolveTo(elevationData);
+			const element = await setup({
+				elevationProfile: {
+					active: true,
+					id
+				}
+			});
+
+			const gradientMock = {
+				addColorStop: () => {}
+			};
+			const ctxMock = { createLinearGradient: () => gradientMock };
+			const chartMock = { ctx: ctxMock, chartArea: { left: 1, right: 1, width: 1, height: 1 } };
+			const gradientSpy = spyOn(gradientMock, 'addColorStop').and.callThrough();
+
+			// act
+			element._getSlopeGradient(chartMock, elevationData);
+
+			// assert
+			expect(gradientSpy).toHaveBeenCalledWith(0, jasmine.any(String));
+			expect(gradientSpy).toHaveBeenCalledWith(0.1, jasmine.any(String));
+			expect(gradientSpy).toHaveBeenCalledWith(0.4, jasmine.any(String));
+			expect(gradientSpy).toHaveBeenCalledWith(1, jasmine.any(String));
+		});
+
 		it('executes the branch "TextType" for "selectedAttribute surface"', async () => {
 			// arrange
 			const elevationData = profile();
