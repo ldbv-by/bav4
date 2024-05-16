@@ -301,17 +301,17 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const addEndLabels = () => {
-			// console.log('🚀 ~ AdminPanel ~ addEndLabels ');
+			console.log('🚀 ~ AdminPanel ~ addEndLabels ');
 
 			const newCatalogWithResourceData = JSON.parse(JSON.stringify(catalogWithResourceData));
 
-			const newUid = _generateUniqueId();
+			const newUidTop = _generateUniqueId();
 
-			newCatalogWithResourceData.push({ uid: newUid, label: End_Label });
+			newCatalogWithResourceData.push({ uid: newUidTop, label: End_Label });
 			newCatalogWithResourceData.forEach((element) => {
 				if (element.children) {
-					const newUid = _generateUniqueId();
-					element.children.push({ uid: newUid, label: End_Label });
+					const newUidChild = _generateUniqueId();
+					element.children.push({ uid: newUidChild, label: End_Label });
 				}
 			});
 

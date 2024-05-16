@@ -201,12 +201,14 @@ export class LayerTree extends MvuElement {
 		};
 
 		const onDragStart = (event, draggedEntry) => {
+			console.log('🚀 ~ LayerTree ~ onDragStart ~ draggedEntry:', draggedEntry);
+			console.log('🚀 ~ LayerList ~ onDragStart ~ event:', event);
 			const element = event.target;
 			element.style.backgroundColor = '';
 
-			if (draggedEntry.showChildren) {
-				this._showChildren(draggedEntry.uid);
-			}
+			// if (draggedEntry.showChildren) {
+			// 	this._showChildren(draggedEntry.uid);
+			// }
 			const draggedEntryUid = draggedEntry.uid;
 			event.dataTransfer.clearData();
 			event.dataTransfer.setData('UID' + draggedEntryUid, draggedEntryUid);
@@ -223,6 +225,7 @@ export class LayerTree extends MvuElement {
 		};
 
 		const onDragEnd = (event) => {
+			console.log('🚀 ~ LayerTree ~ onDragEnd ~ event:', event);
 			// console.log('🚀 ~ LayerTree ~ onDragEnd ~ event:', event);
 			event.target.classList.remove('isdragged');
 
