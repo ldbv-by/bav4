@@ -33,13 +33,19 @@ export const getLineString = (geometry) => {
 };
 
 /**
+ * Creates a LineString form the parts of the MultiLineString.
+ *
+ * Limitation:
+ * - geometry MUST be a MultiLineString
+ * - all parts must be connected by its start and end nodes
+ *
  * @function
  * @param {MultiLineString} multiLineString
- * @returns {LineString} ol LineString
+ * @returns {Geometry | null} the coerced LineString or null
  */
 export const multiLineStringToLineString = (multiLineString) => {
 	if (!(multiLineString instanceof MultiLineString)) {
-		return multiLineString;
+		return null;
 	}
 
 	const isConnected = (a, b) => {
@@ -62,7 +68,7 @@ export const multiLineStringToLineString = (multiLineString) => {
 			break;
 		}
 	}
-	return coordinates.length === 0 ? multiLineString : new LineString(coordinates);
+	return coordinates.length === 0 ? null : new LineString(coordinates);
 };
 
 /**

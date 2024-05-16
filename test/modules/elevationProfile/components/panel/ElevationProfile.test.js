@@ -30,10 +30,10 @@ describe('ElevationProfile', () => {
 	};
 
 	const sumUp = 1480.8;
-	const sumUpAfterToLocaleStringEn = '1,480.8 m';
+	const sumUpAfterToLocaleStringEn = '1480.8 m';
 
 	const sumDown = 1668.6;
-	const sumDownAfterToLocaleStringEn = '1,668.6 m';
+	const sumDownAfterToLocaleStringEn = '1668.6 m';
 
 	const verticalHeight = 50;
 	const highestPoint = 50;
@@ -650,6 +650,64 @@ describe('ElevationProfile', () => {
 			expect(gradientSpy).toHaveBeenCalledWith(jasmine.any(Number), '#d23600');
 		});
 
+		it('returns a gradient that uses the elevation dist property to place the color stop', async () => {
+			// arrange
+			const unequalElevations = [
+				{
+					dist: 0,
+					z: 0,
+					e: 40,
+					n: 50,
+					slope: 0
+				},
+				{
+					dist: 1,
+					z: 10,
+					e: 41,
+					n: 51,
+					slope: 0
+				},
+				{
+					dist: 4,
+					z: 20,
+					e: 42,
+					n: 52,
+					slope: 1
+				},
+				{
+					dist: 10,
+					z: 30,
+					e: 43,
+					n: 53,
+					slope: 7
+				}
+			];
+			const elevationData = { ...profileSlopeSteep(), elevations: unequalElevations };
+			spyOn(elevationServiceMock, 'fetchProfile').withArgs(id).and.resolveTo(elevationData);
+			const element = await setup({
+				elevationProfile: {
+					active: true,
+					id
+				}
+			});
+
+			const gradientMock = {
+				addColorStop: () => {}
+			};
+			const ctxMock = { createLinearGradient: () => gradientMock };
+			const chartMock = { ctx: ctxMock, chartArea: { left: 1, right: 1, width: 1, height: 1 } };
+			const gradientSpy = spyOn(gradientMock, 'addColorStop').and.callThrough();
+
+			// act
+			element._getSlopeGradient(chartMock, elevationData);
+
+			// assert
+			expect(gradientSpy).toHaveBeenCalledWith(0, jasmine.any(String));
+			expect(gradientSpy).toHaveBeenCalledWith(0.1, jasmine.any(String));
+			expect(gradientSpy).toHaveBeenCalledWith(0.4, jasmine.any(String));
+			expect(gradientSpy).toHaveBeenCalledWith(1, jasmine.any(String));
+		});
+
 		it('executes the branch "TextType" for "selectedAttribute surface"', async () => {
 			// arrange
 			const elevationData = profile();
@@ -762,6 +820,42 @@ describe('ElevationProfile', () => {
 			expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveSize(1);
 			const attrsCheck = element.shadowRoot.getElementById('attrs');
 			expect(attrsCheck.value).toBe('slope');
+		});
+	});
+
+	describe('when chart resizes', () => {
+		it('should update the slope gradient', async () => {
+			spyOn(elevationServiceMock, 'fetchProfile').withArgs(id).and.resolveTo(profile());
+			const element = await setup({
+				elevationProfile: {
+					active: true,
+					id
+				}
+			});
+
+			expect(element._chartColorOptions['slope']).toBeUndefined();
+
+			//init slopes
+			const attrs = element.shadowRoot.getElementById('attrs');
+			attrs.value = 'slope';
+			attrs.dispatchEvent(new Event('change'));
+
+			expect(element._chartColorOptions['slope']).toEqual(
+				jasmine.objectContaining({ borderColor: jasmine.any(CanvasGradient), backgroundColor: jasmine.any(String) })
+			);
+
+			const chart = element._chart;
+			const firstSlopeGradient = element._chartColorOptions['slope'].borderColor;
+
+			chart.resize(200, 400);
+
+			const secondSlopeGradient = element._chartColorOptions['slope'].borderColor;
+			expect(firstSlopeGradient).not.toBe(secondSlopeGradient);
+
+			chart.resize(400, 200);
+
+			const thirdSlopeGradient = element._chartColorOptions['slope'].borderColor;
+			expect(secondSlopeGradient).not.toBe(thirdSlopeGradient);
 		});
 	});
 
