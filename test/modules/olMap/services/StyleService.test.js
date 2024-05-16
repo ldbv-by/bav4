@@ -16,7 +16,7 @@ register(proj4);
 
 describe('StyleTypes', () => {
 	it('provides an enum of all valid StyleTypes', () => {
-		expect(Object.keys(StyleTypes).length).toBe(13);
+		expect(Object.keys(StyleTypes).length).toBe(14);
 
 		expect(StyleTypes.NULL).toBe('null');
 		expect(StyleTypes.DEFAULT).toBe('default');
@@ -24,6 +24,7 @@ describe('StyleTypes', () => {
 		expect(StyleTypes.HIGHLIGHT).toBe('highlight');
 		expect(StyleTypes.HIGHLIGHT_TEMP).toBe('highlight_temp');
 		expect(StyleTypes.DRAW).toBe('draw');
+		expect(StyleTypes.POINT).toBe('point');
 		expect(StyleTypes.MARKER).toBe('marker');
 		expect(StyleTypes.TEXT).toBe('text');
 		expect(StyleTypes.ANNOTATION).toBe('annotation');

@@ -21,6 +21,18 @@ const Black_List = [
 ];
 
 /**
+ * Add a hook to make all links open a new window
+ * see:  https://github.com/cure53/DOMPurify/blob/main/demos/hooks-target-blank-demo.html
+ */
+DOMPurify.addHook('afterSanitizeAttributes', (node) => {
+	// set all elements owning target to target=_blank
+	if ('target' in node) {
+		node.setAttribute('target', '_blank');
+		node.setAttribute('rel', 'noopener noreferrer');
+	}
+});
+
+/**
  * Sanitizes HTML content by removing unsafe HTML-, SVG-, mathML-Tags
  * and scripts.
  * @param {string} dirty the potentially dirty content

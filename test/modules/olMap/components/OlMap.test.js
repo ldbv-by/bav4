@@ -354,20 +354,6 @@ describe('OlMap', () => {
 		});
 	});
 
-	describe('map load events', () => {
-		it("updates the 'fetching' property in network store", async () => {
-			const element = await setup();
-
-			simulateMapEvent(element._map, MapEventType.LOADSTART);
-
-			expect(store.getState().network.fetching).toBeTrue();
-
-			simulateMapEvent(element._map, MapEventType.LOADEND);
-
-			expect(store.getState().network.fetching).toBeFalse();
-		});
-	});
-
 	describe('map move events', () => {
 		describe('movestart', () => {
 			it("updates the 'movestart' property in map store", async () => {

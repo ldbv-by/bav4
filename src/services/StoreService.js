@@ -33,6 +33,7 @@ import { stateForEncodingReducer } from '../store/stateForEncoding/stateForEncod
 import { iframeContainerReducer } from '../store/iframeContainer/iframeContainer.reducer';
 import { routingReducer } from '../store/routing/routing.reducer';
 import { authReducer } from '../store/auth/auth.reducer';
+import { wcAttributeReducer } from '../store/wcAttribute/wcAttribute.reducer';
 
 /**
  * Service which configures, initializes and holds the redux store.
@@ -75,7 +76,8 @@ export class StoreService {
 			stateForEncoding: stateForEncodingReducer,
 			iframeContainer: iframeContainerReducer,
 			routing: routingReducer,
-			auth: authReducer
+			auth: authReducer,
+			wcAttribute: wcAttributeReducer
 		});
 
 		this._store = createStore(rootReducer);
@@ -108,7 +110,8 @@ export class StoreService {
 				ToolsPlugin: toolsPlugin,
 				BeforeUnloadPlugin: beforeUnloadPlugin,
 				IframeGeometryIdPlugin: iframeGeometryIdPlugin,
-				HistoryStatePlugin: historyStatePlugin,
+				ObserveWcAttributesPlugin: observeWcAttributesPlugin,
+				EncodeStatePlugin: encodeStatePlugin,
 				ObserveStateForEncodingPlugin: observeStateForEncodingPlugin
 			} = $injector.inject(
 				'GlobalErrorPlugin',
@@ -137,7 +140,8 @@ export class StoreService {
 				'ToolsPlugin',
 				'BeforeUnloadPlugin',
 				'IframeGeometryIdPlugin',
-				'HistoryStatePlugin',
+				'ObserveWcAttributesPlugin',
+				'EncodeStatePlugin',
 				'ObserveStateForEncodingPlugin'
 			);
 
@@ -169,7 +173,8 @@ export class StoreService {
 				await toolsPlugin.register(this._store);
 				await beforeUnloadPlugin.register(this._store);
 				await iframeGeometryIdPlugin.register(this._store);
-				await historyStatePlugin.register(this._store);
+				await observeWcAttributesPlugin.register(this._store);
+				await encodeStatePlugin.register(this._store);
 				await observeStateForEncodingPlugin.register(this._store); // should be registered as last plugin
 			});
 		});
