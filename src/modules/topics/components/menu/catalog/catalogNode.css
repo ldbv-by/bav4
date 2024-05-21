@@ -1,3 +1,24 @@
 .ba-section {
 	--secondary-color: var(--topic-theme, var(--secondary-color-theme));
 }
+.sub-divider {
+	border-left: 0.15em solid transparent;
+	border-bottom: 1px dotted var(--header-background-color);
+}
+.sub-divider:hover {
+	border-left: 0.15em solid var(--secondary-color);
+}
+.sub-divider .ba-list-item__after {
+	transform: scale(0.8);
+}
+.sub-divider .ba-list-item__after .icon {
+	background: var(--text2);
+}
+.ba-list-item__sub-header {
+	opacity: 1;
+	margin-left: 0;
+	padding-left: 1.4em;
+}
+.sub-divider:hover .ba-list-item__sub-header {
+	color: var(--secondary-color);
+}
