@@ -41,7 +41,7 @@
 		"karma-webkit-launcher": "2.4.0",
 		"karma-webpack": "5.0.1",
 		"mapbox-gl-supported": "1.2.0",
-		"playwright": "1.44.0",
+		"playwright": "1.44.1",
 		"portfinder-sync": "0.0.2",
 		"prettier": "3.2.5",
 		"redux-test-utils": "1.0.2",
