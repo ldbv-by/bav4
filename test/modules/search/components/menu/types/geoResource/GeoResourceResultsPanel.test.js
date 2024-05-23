@@ -1,6 +1,7 @@
 import { $injector } from '../../../../../../../src/injection';
 import { GeoResourceResultsPanel } from '../../../../../../../src/modules/search/components/menu/types/geoResource/GeoResourceResultsPanel';
 import { GeoResourceSearchResult } from '../../../../../../../src/modules/search/services/domain/searchResult';
+import { layersReducer } from '../../../../../../../src/store/layers/layers.reducer.js';
 import { setQuery } from '../../../../../../../src/store/search/search.action';
 import { searchReducer } from '../../../../../../../src/store/search/search.reducer';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../../../src/utils/markup';
@@ -13,9 +14,19 @@ describe('GeoResourceResultsPanel', () => {
 	const searchResultServiceMock = {
 		geoResourcesByTerm() {}
 	};
+	const geoResourceService = {
+		byId: () => {},
+		addOrReplace: () => {}
+	};
+
+	let store;
 
 	const setup = (state) => {
-		TestUtils.setupStoreAndDi(state, { search: searchReducer });
+		store = TestUtils.setupStoreAndDi(state, {
+			search: searchReducer,
+			layers: layersReducer
+		});
+		$injector.registerSingleton('GeoResourceService', geoResourceService);
 		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('SearchResultService', searchResultServiceMock);
 		return TestUtils.render(GeoResourceResultsPanel.tag);
 	};
@@ -235,6 +246,104 @@ describe('GeoResourceResultsPanel', () => {
 
 			expect(element.shadowRoot.querySelector('.georesource-items').childElementCount).toBe(GeoResourceResultsPanel.Default_Result_Item_Length + 1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
+		});
+	});
+
+	describe('activate all layers button', () => {
+		it('shows import all layers button if > 2 elements', async () => {
+			const results = Array.from(
+				{ length: GeoResourceResultsPanel.Default_Result_Item_Length },
+				(_, i) => new GeoResourceSearchResult(`labelGeoResource${i}`, `labelGeoResourceFormated${i}`)
+			);
+			const query = 'foo';
+			const initialState = {
+				search: {
+					query: new EventLike(query)
+				}
+			};
+			spyOn(searchResultServiceMock, 'geoResourcesByTerm').and.resolveTo(results);
+
+			const element = await setup(initialState);
+
+			await TestUtils.timeout(GeoResourceResultsPanel.Debounce_Delay + 100);
+			expect(element.shadowRoot.querySelector('#import-all')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('#import-all').classList).not.toContain('hidden');
+		});
+
+		it('does not show activate all layers button if < 2 elements', async () => {
+			const results = Array.from({ length: 1 }, (_, i) => new GeoResourceSearchResult(`labelGeoResource${i}`, `labelGeoResourceFormated${i}`));
+			const query = 'foo';
+			const initialState = {
+				search: {
+					query: new EventLike(query)
+				}
+			};
+			spyOn(searchResultServiceMock, 'geoResourcesByTerm').and.resolveTo(results);
+
+			const element = await setup(initialState);
+
+			await TestUtils.timeout(GeoResourceResultsPanel.Debounce_Delay + 100);
+			expect(element.shadowRoot.querySelector('#import-all')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('#import-all').classList).toContain('hidden');
+		});
+
+		it('does not show activate all layers button if result list is empty', async () => {
+			const results = [];
+			const query = 'foo';
+			const initialState = {
+				search: {
+					query: new EventLike(query)
+				}
+			};
+			spyOn(searchResultServiceMock, 'geoResourcesByTerm').and.resolveTo(results);
+
+			const element = await setup(initialState);
+
+			await TestUtils.timeout(GeoResourceResultsPanel.Debounce_Delay + 100);
+			expect(element.shadowRoot.querySelector('#import-all')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('#import-all').classList).toContain('hidden');
+		});
+
+		it('shows remove all layers button if all layers are already imported', async () => {
+			const results = Array.from({ length: 1 }, (_, i) => new GeoResourceSearchResult(`labelGeoResource${i}`, `labelGeoResourceFormated${i}`));
+			const query = 'foo';
+			const initialState = {
+				search: {
+					query: new EventLike(query)
+				}
+			};
+			spyOn(searchResultServiceMock, 'geoResourcesByTerm').and.resolveTo(results);
+
+			const element = await setup(initialState);
+
+			await TestUtils.timeout(GeoResourceResultsPanel.Debounce_Delay + 100);
+			expect(element.shadowRoot.querySelector('#import-all')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('#import-all').classList).toContain('hidden');
+		});
+
+		it('imports and removes all layers on click', async () => {
+			const results = Array.from(
+				{ length: GeoResourceResultsPanel.Default_Result_Item_Length },
+				(_, i) => new GeoResourceSearchResult(`labelGeoResource${i}`, `labelGeoResourceFormated${i}`)
+			);
+			const query = 'foo';
+			const initialState = {
+				search: {
+					query: new EventLike(query)
+				}
+			};
+			spyOn(searchResultServiceMock, 'geoResourcesByTerm').and.resolveTo(results);
+
+			const element = await setup(initialState);
+
+			await TestUtils.timeout(GeoResourceResultsPanel.Debounce_Delay + 100);
+			const button = element.shadowRoot.querySelector('#import-all');
+
+			button.click();
+			expect(store.getState().layers.active.length).toBe(GeoResourceResultsPanel.Default_Result_Item_Length);
+
+			button.click();
+			expect(store.getState().layers.active.length).toBe(0);
 		});
 	});
 });

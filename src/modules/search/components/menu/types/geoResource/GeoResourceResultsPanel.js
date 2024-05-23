@@ -8,10 +8,15 @@ import { debounced } from '../../../../../../utils/timer';
 import { MvuElement } from '../../../../../MvuElement';
 import { requestData } from '../resultPanelUtils';
 import css from './geoResourceResultsPanel.css';
+import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
+import { createUniqueId } from '../../../../../../utils/numberUtils';
+import { GeoResourceResultItem } from './GeoResourceResultItem';
 
 const Update_Collapsed = 'update_collapsed';
 const Update_AllShown = 'update_allShown';
 const Update_Results_AllShown = 'update_results_allShown';
+const Update_ActiveLayers = 'update_activeLayers';
+const Update_MapResolution = 'update_mapResolution';
 
 /**
  * Displays GeoResource search results.
@@ -24,15 +29,18 @@ export class GeoResourceResultsPanel extends MvuElement {
 		super({
 			results: [],
 			collapsed: false,
-			allShown: false
+			allShown: false,
+			activeLayers: []
 		});
-		const { SearchResultService: searchResultService, TranslationService: translationService } = $injector.inject(
-			'SearchResultService',
-			'TranslationService'
-		);
+		const {
+			SearchResultService: searchResultService,
+			TranslationService: translationService,
+			GeoResourceService: geoResourceService
+		} = $injector.inject('SearchResultService', 'TranslationService', 'GeoResourceService');
 
 		this._searchResultService = searchResultService;
 		this._translationService = translationService;
+		this._geoResourceService = geoResourceService;
 	}
 
 	update(type, data, model) {
@@ -43,6 +51,10 @@ export class GeoResourceResultsPanel extends MvuElement {
 				return { ...model, allShown: data };
 			case Update_Results_AllShown:
 				return { ...model, ...data };
+			case Update_ActiveLayers:
+				return { ...model, activeLayers: data.map((l) => ({ geoResourceId: l.geoResourceId, id: l.id })) };
+			case Update_MapResolution:
+				return { ...model, mapResolution: data };
 		}
 	}
 
@@ -61,6 +73,11 @@ export class GeoResourceResultsPanel extends MvuElement {
 		});
 
 		this.observe(
+			(state) => state.layers.active,
+			(activeLayers) => this.signal(Update_ActiveLayers, activeLayers),
+			true
+		);
+		this.observe(
 			(state) => state.search.query,
 			(query) => requestGeoResourceDataAndUpdateViewHandler(query.payload)
 		);
@@ -73,6 +90,12 @@ export class GeoResourceResultsPanel extends MvuElement {
 		const { collapsed, allShown, results } = model;
 
 		const translate = (key) => this._translationService.translate(key);
+
+		const isLayerActive = (geoResourceId) => {
+			return model.activeLayers
+				.filter((l) => l.id !== GeoResourceResultItem._tmpLayerId(geoResourceId))
+				.some((l) => l.geoResourceId === geoResourceId);
+		};
 
 		const toggleCollapse = () => {
 			if (results.length) {
@@ -99,6 +122,26 @@ export class GeoResourceResultsPanel extends MvuElement {
 
 		const indexEnd = allShown ? results.length : GeoResourceResultsPanel.Default_Result_Item_Length;
 
+		const allLayersActive = results.every((l) => isLayerActive(l.geoResourceId));
+		const importAll = () => {
+			results.filter((l) => !isLayerActive(l.geoResourceId)).forEach(enableLayer);
+		};
+		const removeAll = () => {
+			results.filter((l) => isLayerActive(l.geoResourceId)).forEach(disableLayer);
+		};
+		const enableLayer = (result) => {
+			const id = `${result.geoResourceId}_${createUniqueId()}`;
+			const geoR = this._geoResourceService.byId(result.geoResourceId);
+			const opacity = geoR?.opacity || 1;
+			addLayer(id, { geoResourceId: result.geoResourceId, opacity });
+		};
+		const disableLayer = (result) => {
+			model.activeLayers.filter((l) => l.geoResourceId === result.geoResourceId).forEach((l) => removeLayer(l.id));
+		};
+		const importAllButton = {
+			hidden: results && results.length < 2
+		};
+
 		return html`
 			<style>
 				${css}
@@ -119,6 +162,12 @@ export class GeoResourceResultsPanel extends MvuElement {
 							)}
 					</ul>
 					<div class="show-all ${classMap(showAllButton)}" tabindex="0" @click="${toggleShowAll}">${translate('search_menu_showAll_label')}</div>
+					<ba-button
+						id="import-all"
+						class="${classMap(importAllButton)}"
+						.label=${allLayersActive ? translate('search_menu_removeAll_label') : translate('search_menu_importAll_label')}
+						@click=${allLayersActive ? removeAll : importAll}
+					></ba-button>
 				</div>
 			</div>
 		`;
