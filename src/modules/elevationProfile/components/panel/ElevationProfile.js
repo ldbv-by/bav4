@@ -15,7 +15,6 @@ import { isNumber } from '../../../../utils/checks';
 const Update_Schema = 'update_schema';
 const Update_Selected_Attribute = 'update_selected_attribute';
 const Update_Profile_Data = 'update_profile_data';
-
 const Update_Media = 'update_media';
 
 const Chart_Duration = 600;
@@ -82,6 +81,7 @@ export class ElevationProfile extends MvuElement {
 			minWidth: false
 		});
 		this._chart = null;
+		this._chartColorOptions = {};
 		this._elevationProfileAttributeTypes = [];
 
 		const {
@@ -331,7 +331,6 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	_getChartData(elevationData, newDataLabels, newDataData) {
-		const currentColors = [];
 		const translate = (key) => this._translationService.translate(key);
 
 		const _chartData = {
@@ -344,31 +343,25 @@ export class ElevationProfile extends MvuElement {
 					borderWidth: 4,
 					backgroundColor: (context) => {
 						const selectedAttribute = this.getModel().selectedAttribute;
-						if (!currentColors[selectedAttribute]) {
-							currentColors[selectedAttribute] = {};
-						}
-						if (!currentColors[selectedAttribute].backgroundColor) {
+						if (!this._chartColorOptions[selectedAttribute].backgroundColor) {
 							if (context.chart.chartArea) {
-								currentColors[selectedAttribute].backgroundColor = this._getBackground(context.chart, elevationData, selectedAttribute);
+								this._chartColorOptions[selectedAttribute].backgroundColor = this._getBackground(context.chart, elevationData, selectedAttribute);
 							} else {
 								return ElevationProfile.BACKGROUND_COLOR;
 							}
 						}
-						return currentColors[selectedAttribute].backgroundColor;
+						return this._chartColorOptions[selectedAttribute].backgroundColor;
 					},
 					borderColor: (context) => {
 						const selectedAttribute = this.getModel().selectedAttribute;
-						if (!currentColors[selectedAttribute]) {
-							currentColors[selectedAttribute] = {};
-						}
-						if (!currentColors[selectedAttribute].borderColor) {
+						if (!this._chartColorOptions[selectedAttribute].borderColor) {
 							if (context.chart.chartArea) {
-								currentColors[selectedAttribute].borderColor = this._getBorder(context.chart, elevationData, selectedAttribute);
+								this._chartColorOptions[selectedAttribute].borderColor = this._getBorder(context.chart, elevationData, selectedAttribute);
 							} else {
 								return ElevationProfile.BORDER_COLOR;
 							}
 						}
-						return currentColors[selectedAttribute].borderColor;
+						return this._chartColorOptions[selectedAttribute].borderColor;
 					},
 					tension: 0.1,
 					pointRadius: 0,
@@ -426,8 +419,8 @@ export class ElevationProfile extends MvuElement {
 	_getTextTypeGradient(chart, elevationData, selectedAttribute) {
 		const { ctx, chartArea } = chart;
 		const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
-		const numberOfPoints = elevationData.elevations.length;
-		const xPointWidth = chartArea.width / numberOfPoints;
+		const distance = elevationData.elevations.at(-1).dist; // the dist-property contains ascending values, starting by ZERO to the final distance of the elevation profile
+
 		const elevationProfileAttributeString = elevationData.elevations[0][selectedAttribute];
 		let currentElevationProfileAttributeType = this._getElevationProfileAttributeType(selectedAttribute, elevationProfileAttributeString);
 		gradientBg.addColorStop(0, currentElevationProfileAttributeType.color);
@@ -436,8 +429,8 @@ export class ElevationProfile extends MvuElement {
 			if (index === 0) {
 				return;
 			}
+			const xPoint = element.dist / distance;
 			if (index === elevationData.elevations.length - 1) {
-				const xPoint = (xPointWidth / chartArea.width) * index;
 				gradientBg.addColorStop(xPoint, currentElevationProfileAttributeType.color);
 				return;
 			}
@@ -446,7 +439,6 @@ export class ElevationProfile extends MvuElement {
 			if (currentElevationProfileAttributeType === elevationProfileAttributeType) {
 				return;
 			}
-			const xPoint = (xPointWidth / chartArea.width) * index;
 			gradientBg.addColorStop(xPoint, currentElevationProfileAttributeType.color);
 			currentElevationProfileAttributeType = elevationProfileAttributeType;
 			gradientBg.addColorStop(xPoint, currentElevationProfileAttributeType.color);
@@ -455,14 +447,18 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	_getSlopeGradient(chart, elevationData) {
+		/** Elevation data points should come with equal distances by interpolation, but in some edge cases
+		 *  (i. e. from routing results), the equality of distance is broken up on connection points.
+		 *
+		 * Thats why we rely on the elevation-element 'dist' property to calculate always a valid xPoint.
+		 * */
 		const { ctx, chartArea } = chart;
 		const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
-		const numberOfPoints = elevationData.elevations.length;
-		const xPointWidth = chartArea.width / numberOfPoints;
+		const distance = elevationData.elevations.at(-1).dist; // the dist-property contains ascending values, starting by ZERO to the final distance of the elevation profile
 
-		elevationData?.elevations.forEach((element, index) => {
-			if (isNumber(element.slope)) {
-				const xPoint = (xPointWidth / chartArea.width) * index;
+		elevationData?.elevations.forEach((element) => {
+			if (isNumber(element.slope) && isNumber(element.dist)) {
+				const xPoint = element.dist / distance;
 				const slopeValue = Math.abs(element.slope);
 				const slopeClass = SoterSlopeClasses.find((c) => c.min <= slopeValue && c.max > slopeValue);
 
@@ -511,6 +507,11 @@ export class ElevationProfile extends MvuElement {
 
 			// If the input is not a string, return the input as-is.
 			return numberOrString;
+		};
+
+		const resetChartColor = () => {
+			const selectedAttribute = this.getModel().selectedAttribute;
+			this._chartColorOptions[selectedAttribute] = {};
 		};
 
 		const config = {
@@ -564,7 +565,7 @@ export class ElevationProfile extends MvuElement {
 					delay: this._noAnimation ? 0 : Chart_Delay
 				},
 				maintainAspectRatio: false,
-
+				onResize: resetChartColor,
 				scales: {
 					x: {
 						type: 'linear',
