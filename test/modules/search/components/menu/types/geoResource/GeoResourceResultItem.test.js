@@ -9,9 +9,10 @@ import {
 import { GeoResourceSearchResult } from '../../../../../../../src/modules/search/services/domain/searchResult';
 import { createDefaultLayer, layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
 import { createNoInitialStateMainMenuReducer } from '../../../../../../../src/store/mainMenu/mainMenu.reducer';
-import { createNoInitialStateMediaReducer } from '../../../../../../../src/store/media/media.reducer';
 import { positionReducer } from '../../../../../../../src/store/position/position.reducer';
 import { TestUtils } from '../../../../../../test-utils.js';
+import { GeoResourceInfoPanel } from '../../../../../../../src/modules/geoResourceInfo/components/GeoResourceInfoPanel';
+import { modalReducer } from '../../../../../../../src/store/modal/modal.reducer';
 
 window.customElements.define(GeoResourceResultItem.tag, GeoResourceResultItem);
 
@@ -32,17 +33,14 @@ describe('GeoResourceResultItem', () => {
 	let store;
 	const setup = (state = {}) => {
 		const initialState = {
-			media: {
-				portrait: false
-			},
 			...state
 		};
 
 		store = TestUtils.setupStoreAndDi(initialState, {
 			layers: layersReducer,
 			mainMenu: createNoInitialStateMainMenuReducer(),
-			media: createNoInitialStateMediaReducer(),
-			position: positionReducer
+			position: positionReducer,
+			modal: modalReducer
 		});
 
 		$injector.registerSingleton('GeoResourceService', geoResourceService);
@@ -72,8 +70,9 @@ describe('GeoResourceResultItem', () => {
 
 			expect(element.shadowRoot.querySelector('li .ba-list-item__text').innerText).toBe('labelFormatted');
 			expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(0); // no badge, due to empty keyword-array
-			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.ba-icon-button.ba-list-item__after')).toHaveSize(1); //placeholder
+			//info button
+			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item__after')).toHaveSize(1);
 		});
 
 		it('renders the view containing keyword badges', async () => {
@@ -87,8 +86,9 @@ describe('GeoResourceResultItem', () => {
 			expect(element.shadowRoot.querySelectorAll('ba-badge')).toHaveSize(2);
 			expect(element.shadowRoot.querySelectorAll('ba-badge')[0].label).toBe('Foo');
 			expect(element.shadowRoot.querySelectorAll('ba-badge')[1].label).toBe('Bar');
-			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.ba-icon-button.ba-list-item__after')).toHaveSize(1); //placeholder
+			//info button
+			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item__after')).toHaveSize(1);
 		});
 
 		it('renders a zoom to extent Button for a VectorGeoResource', async () => {
@@ -99,8 +99,8 @@ describe('GeoResourceResultItem', () => {
 			spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResVector);
 			element.data = data;
 
-			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.ba-icon-button')).toHaveSize(1);
+			// info and zoom to extent
+			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(2);
 			expect(element.shadowRoot.querySelectorAll('.ba-list-item__after')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.separator')).toHaveSize(1);
 
@@ -120,8 +120,36 @@ describe('GeoResourceResultItem', () => {
 			const element = await setup();
 			element.data = data;
 
-			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.ba-icon-button.ba-list-item__after')).toHaveSize(1); //placeholder
+			//info Icon
+			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item__after')).toHaveSize(1);
+		});
+
+		it('checkbox is not checked if layer not active', async () => {
+			const geoResourceId = 'geoResourceId';
+			const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
+			const element = await setup();
+			element.data = data;
+
+			const checkbox = element.shadowRoot.querySelector('#toggle_layer');
+
+			expect(checkbox.checked).toBeFalse();
+		});
+
+		it('checkbox is checked if layer already active', async () => {
+			const geoResourceId = 'geoResourceId';
+			const layer = createDefaultLayer('id1', geoResourceId);
+			const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
+			const element = await setup({
+				layers: {
+					active: [layer]
+				}
+			});
+			element.data = data;
+
+			const checkbox = element.shadowRoot.querySelector('#toggle_layer');
+
+			expect(checkbox.checked).toBeTrue();
 		});
 	});
 
@@ -240,7 +268,7 @@ describe('GeoResourceResultItem', () => {
 
 		describe('the user clicks the result item', () => {
 			const geoResourceId = 'geoResourceId';
-			const setupOnClickTests = async (portraitOrientation) => {
+			const setupOnClickTests = async () => {
 				const previewLayer = createDefaultLayer(GeoResourceResultItem._tmpLayerId(geoResourceId), geoResourceId);
 				const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
 				const element = await setup({
@@ -250,9 +278,6 @@ describe('GeoResourceResultItem', () => {
 					mainMenu: {
 						tab: TabIds.SEARCH,
 						open: true
-					},
-					media: {
-						portrait: portraitOrientation
 					}
 				});
 				element.data = data;
@@ -270,23 +295,106 @@ describe('GeoResourceResultItem', () => {
 				expect(store.getState().layers.active[0].id).toContain(geoResourceId);
 			});
 
-			it('opens the "maps" tab of the main menu in landscape orientation', async () => {
-				const element = await setupOnClickTests(false);
-
+			it('sets the opacity to 1 if layer is unknown', async () => {
+				const element = await setupOnClickTests();
 				const target = element.shadowRoot.querySelector('li');
+				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(null);
+
 				target.click();
 
-				expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
-				expect(store.getState().mainMenu.open).toBeTrue();
+				expect(store.getState().layers.active.length).toBe(1);
+				expect(store.getState().layers.active[0].opacity).toBe(1);
 			});
 
-			it('closes the main menu in portrait orientation', async () => {
-				const element = await setupOnClickTests(true);
+			it('sets the opacity to the the correct value', async () => {
+				const element = await setupOnClickTests();
+				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue({ opacity: 0.5 });
 
-				const target = element.shadowRoot.querySelector('li');
-				target.click();
+				const checkbox = element.shadowRoot.querySelector('#toggle_layer');
 
-				expect(store.getState().mainMenu.open).toBeFalse();
+				checkbox.dispatchEvent(
+					new CustomEvent('toggle', {
+						detail: { checked: true }
+					})
+				);
+
+				expect(store.getState().layers.active[0].opacity).toBe(0.5);
+			});
+		});
+
+		describe('when this geoResourceId is already active', () => {
+			const layerId1 = 'layerId0';
+			const geoResourceId = 'geoResourceId';
+			const layer1 = {
+				constraints: [],
+				id: layerId1,
+				geoResourceId,
+				visible: false,
+				zIndex: 0
+			};
+			const layerId2 = 'layerId0';
+			const layer2 = {
+				constraints: [],
+				id: layerId2,
+				geoResourceId,
+				visible: false,
+				zIndex: 0
+			};
+
+			describe('on mouse enter', () => {
+				it('does not add a preview layer', async () => {
+					const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
+					const state = {
+						layers: {
+							active: [layer1, layer2],
+							background: 'bg0'
+						}
+					};
+					const element = await setup(state);
+					element.data = data;
+
+					const target = element.shadowRoot.querySelector('li');
+					target.dispatchEvent(new Event('mouseenter'));
+					expect(element._timeoutId).toBeNull();
+					jasmine.clock().tick(LOADING_PREVIEW_DELAY_MS + 100);
+
+					expect(element._timeoutId).toBeNull();
+					expect(store.getState().layers.active.length).toBe(2);
+					expect(store.getState().layers.active[0].id).toBe(layerId1);
+					expect(store.getState().layers.active[1].id).toBe(layerId2);
+				});
+			});
+
+			describe('on click', () => {
+				const setupOnClickTests = async () => {
+					const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
+					const state = {
+						layers: {
+							active: [layer1, layer2]
+						},
+						mainMenu: {
+							tab: TabIds.SEARCH,
+							open: true
+						}
+					};
+					const element = await setup(state);
+					element.data = data;
+
+					return element;
+				};
+
+				it('removes all layers with this geoResourceId', async () => {
+					const element = await setupOnClickTests();
+					const checkbox = element.shadowRoot.querySelector('#toggle_layer');
+
+					checkbox.dispatchEvent(
+						new CustomEvent('toggle', {
+							detail: { checked: true }
+						})
+					);
+
+					expect(store.getState().layers.active.length).toBe(0);
+				});
 			});
 		});
 
@@ -302,6 +410,25 @@ describe('GeoResourceResultItem', () => {
 				const button = element.shadowRoot.querySelector('ba-icon');
 				button.click();
 				expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
+			});
+		});
+
+		describe('the user clicks the info button ', () => {
+			it('show georesourceinfo panel as modal', async () => {
+				const geoResVector = new VectorGeoResource('geoResourceId0', async () => ({ label: 'updatedLabel' }));
+				const geoResourceId = 'geoResourceId';
+				const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
+				const element = await setup();
+				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResVector);
+				element.data = data;
+
+				const infoButton = element.shadowRoot.querySelector('.info-button');
+				infoButton.click();
+
+				expect(store.getState().modal.data.title).toBe('label');
+				const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
+				expect(wrapperElement.querySelectorAll(GeoResourceInfoPanel.tag)).toHaveSize(1);
+				expect(wrapperElement.querySelector(GeoResourceInfoPanel.tag).geoResourceId).toBe('geoResourceId');
 			});
 		});
 	});
