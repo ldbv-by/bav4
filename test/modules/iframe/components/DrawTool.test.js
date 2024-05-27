@@ -376,8 +376,17 @@ describe('DrawTool', () => {
 					expect(store.getState().draw.remove).toBeInstanceOf(EventLike);
 				});
 
-				it('deletes the last drawn point of drawing', async () => {
+				it('deletes the last drawn point of drawing line', async () => {
 					const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'line', validGeometry: true });
+					const undoIcon = element.shadowRoot.querySelector('#undo_icon');
+
+					undoIcon.click();
+					expect(undoIcon.title).toBe('iframe_drawTool_delete_point');
+					expect(store.getState().draw.remove).toBeInstanceOf(EventLike);
+				});
+
+				it('deletes the last drawn point of drawing polygon', async () => {
+					const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'polygon', validGeometry: true });
 					const undoIcon = element.shadowRoot.querySelector('#undo_icon');
 
 					undoIcon.click();
