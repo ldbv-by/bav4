@@ -228,7 +228,7 @@ export class DrawTool extends MvuElement {
 		const activeTool = this._getActiveTool(model);
 		const activeToolName = activeTool ? activeTool.name : 'noTool';
 		const removeAllowed = ['draw', 'modify'].includes(mode);
-		const unfinishedLine = mode === 'draw' && activeToolName === 'line' && validGeometry;
+		const unfinishedLine = mode === 'draw' && (activeToolName === 'polygon' || activeToolName === 'line') && validGeometry;
 
 		const getActiveIconTypes = () => {
 			const iconTypes = {
