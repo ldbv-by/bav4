@@ -18,23 +18,19 @@ const Update_IsPortrait_Value = 'update_isportrait_value';
 const Update_Authenticating = 'update_authenticating';
 
 /**
- * @typedef Credential
- * @property {string} username the username
- * @property {string} password the password
- */
-
-/**
- * This callback provides the implementation of the authentication of id and credential.
- * @callback PasswordCredentialPanel~authenticateCallback
- * @param {Credential} credential the credential
- * @param {string} [url] the optional url
- * @returns {Object| null} whether or not the check with the id and the credential was successful an object is returned or null.
+ * This callback provides the implementation of the authentication request.
+ * @async
+ * @typedef {Function} authenticateCallback
+ * @param {module:domain/credentialDef~Credential} credential the credential
+ * @param {string} [url] the optional URL
+ * @throws `Error` when authentication was not successful due to technical reasons
+ * @returns {Object|null|false} an `object` when authentication was successful or `null` or `false`.
  */
 
 /**
  * This callback is called after the authentication was successful.
- * @callback PasswordCredentialPanel~onCloseCallback
- * @param {Credential} credential the valid credential.
+ * @typedef {Function} onCloseCallback
+ * @param {module:domain/credentialDef~Credential} credential the valid credential.
  * @param {Object} result the authentication-result.
  */
 
@@ -94,8 +90,8 @@ const Update_Authenticating = 'update_authenticating';
  * @class
  * @property {string} [url] the url, which needs authentication by a password credential
  * @property {string| templateResult} [footer] the footer, which will be rendered below the username and password fields
- * @property {PasswordCredentialPanel~authenticateCallback} [authenticate] the authenticate callback
- * @property {PasswordCredentialPanel~onCloseCallback} [onClose] the onClose callback
+ * @property {module:modules/auth/components/PasswordCredentialPanel~authenticateCallback} [authenticate] the authenticate callback
+ * @property {module:modules/auth/components/PasswordCredentialPanel~onCloseCallback} [onClose] the onClose callback
  * @author thiloSchlemmer
  */
 export class PasswordCredentialPanel extends MvuElement {
@@ -111,7 +107,7 @@ export class PasswordCredentialPanel extends MvuElement {
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
 		// eslint-disable-next-line no-unused-vars
-		this._authenticate = (credential, url) => false;
+		this._authenticate = async (credential, url) => false;
 		this._onClose = () => {};
 	}
 
