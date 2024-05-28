@@ -107,7 +107,7 @@ describe('bvvSignInProvider', () => {
 					// we take the authFn from the component
 					const authFunc = wrapperElement.querySelector(PasswordCredentialPanel.tag).authenticate;
 
-					await expectAsync(authFunc(credential)).toBeResolvedTo([]);
+					await expectAsync(authFunc(credential)).toBeResolvedTo(false);
 					closeModal(); /** we close the modal in order to resolve the promise */
 					await expectAsync(responsePromise).toBeResolved();
 					expect(configServiceSpy).toHaveBeenCalled();
@@ -165,7 +165,7 @@ describe('bvvSignInProvider', () => {
 						.withArgs(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON)
 						.and.resolveTo(new Response(null, { status: 400 }));
 
-					await expectAsync(bvvSignInProvider(credential)).toBeResolvedTo([]);
+					await expectAsync(bvvSignInProvider(credential)).toBeResolvedTo(false);
 					expect(configServiceSpy).toHaveBeenCalled();
 					expect(httpServiceSpy).toHaveBeenCalled();
 				});
