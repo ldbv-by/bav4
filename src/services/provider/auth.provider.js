@@ -30,7 +30,7 @@ export const bvvSignInProvider = async (credential = null) => {
 			case 200:
 				return await result.json();
 			case 400:
-				return [];
+				return false;
 			default:
 				throw new Error(`Sign in not possible: Http-Status ${result.status}`);
 		}
