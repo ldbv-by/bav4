@@ -93,8 +93,12 @@ describe('CatalogNode', () => {
 			expect(element.shadowRoot.querySelectorAll(CatalogLeaf.tag)).toHaveSize(2);
 			expect(element.shadowRoot.querySelectorAll(CatalogNode.tag)).toHaveSize(1);
 
+			expect(element.shadowRoot.querySelector('.sub-divider')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.ba-list-item__header')).toBeFalsy();
 			expect(element.shadowRoot.querySelector('.ba-list-item__sub-header')).toBeTruthy();
+
+			expect(element.shadowRoot.querySelector('.iscollapse')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
 		});
 
 		it('click collapse', async () => {
