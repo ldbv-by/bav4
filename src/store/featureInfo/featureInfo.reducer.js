@@ -69,7 +69,6 @@ export const featureInfoReducer = (state = initialState, action) => {
 		case FEATURE_INFO_REQUEST_ABORT:
 			return {
 				...state,
-				current: [],
 				queries: [],
 				aborted: payload,
 				querying: false

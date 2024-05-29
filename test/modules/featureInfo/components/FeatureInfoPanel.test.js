@@ -333,6 +333,7 @@ describe('FeatureInfoPanel', () => {
 			it('clear the featureInfo in store', async () => {
 				const element = await setup({
 					featureInfo: {
+						querying: true,
 						current: [
 							{ title: 'title0', content: 'content0' },
 							{ title: 'title1', content: html`content1` }
@@ -343,7 +344,8 @@ describe('FeatureInfoPanel', () => {
 
 				iconButton.click();
 
-				expect(store.getState().featureInfo.current).toEqual([]);
+				expect(store.getState().featureInfo.current).toHaveSize(2);
+				expect(store.getState().featureInfo.querying).toBeFalse();
 			});
 		});
 	});

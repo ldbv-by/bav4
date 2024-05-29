@@ -254,7 +254,7 @@ describe('FeatureInfoPlugin', () => {
 
 				setCurrentTool('foo');
 
-				expect(store.getState().featureInfo.current).toHaveSize(0);
+				expect(store.getState().featureInfo.current).toHaveSize(1);
 			});
 		});
 
