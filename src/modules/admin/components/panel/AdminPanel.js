@@ -301,7 +301,7 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const addEndLabels = () => {
-			console.log('🚀 ~ AdminPanel ~ addEndLabels ');
+			// console.trace('🚀 ~ AdminPanel ~ addEndLabels ');
 
 			const newCatalogWithResourceData = JSON.parse(JSON.stringify(catalogWithResourceData));
 
@@ -341,12 +341,21 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const addEntryToChildrenRecursively = (catalogWithResourceData, currentCatalogEntryUid, catalogEntry, newEntry) => {
+			// console.group('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ');
+
 			for (let n = 0; n < catalogEntry.length; n++) {
 				const catalogEntryN = catalogEntry[n];
+				// console.log(
+				// 	'%c 🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ catalogEntryN:',
+				// 	'color: red; background-color: lightblue; border: solid',
+				// 	catalogEntryN
+				// );
+				// console.table(catalogEntryN);
 
 				if (catalogEntryN.uid === currentCatalogEntryUid) {
 					catalogEntry.splice(n, 0, newEntry);
 					// removePossibleEmptyEntry(catalogEntry);
+					// console.groupEnd();
 					return true;
 				}
 
@@ -354,10 +363,12 @@ export class AdminPanel extends MvuElement {
 				if (catalogEntryN.children) {
 					const found = addEntryToChildrenRecursively(catalogWithResourceData, currentCatalogEntryUid, catalogEntryN.children, newEntry);
 					if (found) {
+						// console.groupEnd();
 						return found;
 					}
 				}
 			}
+			// console.groupEnd();
 			return false;
 		};
 
@@ -374,9 +385,12 @@ export class AdminPanel extends MvuElement {
 		// };
 
 		const addEntry = (catalogWithResourceData, currentCatalogEntryUid, newEntry) => {
+			// console.groupCollapsed('addEntry');
+
 			// console.log('🚀 ~ AdminPanel ~ addEntry ~ currentCatalogEntryUid:', currentCatalogEntryUid);
 			// console.log('🚀 ~ AdminPanel ~ addEntry ~ newEntry:', newEntry);
 			addEntryToChildrenRecursively(catalogWithResourceData, currentCatalogEntryUid, catalogWithResourceData, newEntry);
+			// console.groupEnd();
 		};
 
 		const addGeoResource = (currentCatalogEntryUid, newGeoresourceId, catalogWithResourceDataFromTree) => {
@@ -498,8 +512,18 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const deleteTopicLevelTree = (topic) => {
-			this.#topics = this.#topics.filter((oneTopic) => oneTopic._id !== topic._id);
-			this.signal(Update_Topics, this.#topics);
+			console.log('🚀 ~ AdminPanel ~ deleteTopicLevelTree ~ topic._id:', topic._id);
+			this._topicsService.delete(topic._id).then(
+				() => {
+					this.signal(Update_Topics, this.#topics);
+				},
+				(error) => {
+					console.log('🚀 ~ AdminPanel ~ deleteTopicLevelTree ~ error:', error);
+				}
+			);
+
+			// this.#topics = this.#topics.filter((oneTopic) => oneTopic._id !== topic._id);
+			// this.signal(Update_Topics, this.#topics);
 		};
 
 		const toggleTopicLevelTreeDisabled = (topic) => {

@@ -361,10 +361,25 @@ export class LayerTree extends MvuElement {
 				const input = document.createElement('input');
 				input.type = 'text';
 				input.value = catalogEntry.label;
+
+				input.style.pointerEvents = 'auto';
+				input.style.userSelect = 'text';
+				input.style.zIndex = '1';
+				input.style.opacity = '1';
+				input.style.visibility = 'visible';
+				input.style.position = 'relative';
+
+				// Debugging logs
+				console.log('Span to be replaced:', span);
+				console.log('Created input element:', input);
+
 				li.insertBefore(input, span);
 				li.removeChild(span);
 				button.textContent = 'Save';
 				input.focus();
+				input.classList.add('editable-input');
+
+				console.log('Input element after insertion:', input);
 			} else if (button.textContent === 'Save') {
 				this.signal(Update_Edit_Mode, false);
 				const input = li.firstElementChild;
@@ -396,11 +411,21 @@ export class LayerTree extends MvuElement {
 				this._refreshCatalog(catalogCopy);
 			}
 
-			event.stopPropagation();
+			// event.stopPropagation();
 		};
 
 		const handleDeleteClick = (event, catalogEntry) => {
-			this._removeEntry(catalogEntry.uid);
+			console.log('🚀 ~ LayerTree ~ handleDeleteClick ~ catalogEntry:', catalogEntry);
+			const userConfirmed = confirm('Wollen Sie ' + catalogEntry.label + ' wirklich löschen?');
+			if (userConfirmed) {
+				// User confirmed save action
+				console.log('Deleted:', catalogEntry);
+
+				this._removeEntry(catalogEntry.uid);
+			} else {
+				// User canceled the save action
+				console.log('Delete canceled');
+			}
 
 			event.stopPropagation();
 			event.preventDefault();
@@ -434,8 +459,17 @@ export class LayerTree extends MvuElement {
 		};
 
 		const handleDeleteTopicLevelTreeClick = () => {
-			this._deleteTopicLevelTree(this.#currentTopic);
-			this.#currentTopic = null;
+			const userConfirmed = confirm('Wollen Sie wirklich löschen?');
+			if (userConfirmed) {
+				// User confirmed save action
+				console.log('Changes saved:', this.#currentTopic);
+
+				this._deleteTopicLevelTree(this.#currentTopic);
+				this.#currentTopic = null;
+			} else {
+				// User canceled the save action
+				console.log('Save canceled');
+			}
 		};
 
 		const handleTopicChange = (event) => {

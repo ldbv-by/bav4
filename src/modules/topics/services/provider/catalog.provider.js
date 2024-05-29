@@ -12,9 +12,14 @@ import { $injector } from '../../../../injection';
 export const loadBvvCatalog = async (topicId) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 
-	const url = `${configService.getValueAsPath('BACKEND_URL')}catalog/${topicId}`;
+	const url = `${configService.getValueAsPath('BACKEND_URL')}adminui/catalog/${topicId}`;
 
-	const result = await httpService.get(url);
+	const adminToken = configService.getValue('ADMIN_TOKEN_KEY');
+	const result = await httpService.get(url, {
+		headers: {
+			'X-AUTH-ADMIN-TOKEN': adminToken
+		}
+	});
 
 	if (result.ok) {
 		return await result.json();

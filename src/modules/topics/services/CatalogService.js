@@ -43,8 +43,8 @@ export class CatalogService {
 	/**
 	 * @param {module:modules/topics/services/CatalogService~catalogProvider} [provider=loadBvvCatalog]
 	 */
-	constructor(provider = loadBvvCatalog) {
-		this._provider = provider;
+	constructor(loadBvvCatalogProvider = loadBvvCatalog) {
+		this._loadBvvCatalogProvider = loadBvvCatalogProvider;
 		this._cache = new Map();
 	}
 
@@ -59,7 +59,7 @@ export class CatalogService {
 	async byId(topicId) {
 		try {
 			if (!this._cache.has(topicId)) {
-				const catalog = await this._provider(topicId);
+				const catalog = await this._loadBvvCatalogProvider(topicId);
 				this._cache.set(topicId, catalog);
 			}
 			return this._cache.get(topicId);

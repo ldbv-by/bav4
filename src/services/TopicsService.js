@@ -4,7 +4,7 @@
 // @ts-ignore
 import { $injector } from '../injection';
 import { Topic } from '../domain/topic';
-import { loadBvvTopics } from './provider/topics.provider';
+import { loadBvvTopics, deleteBvvTopic } from './provider/topics.provider';
 
 /**
  * An async function that provides an array of {@link Topic}.
@@ -24,8 +24,9 @@ export class TopicsService {
 	/**
 	 * @param {module:services/TopicsService~topicsProvider} [provider=loadBvvCatalog]
 	 */
-	constructor(provider = loadBvvTopics) {
-		this._provider = provider;
+	constructor(loadBvvTopicsProvider = loadBvvTopics, deleteBvvTopicProvider = deleteBvvTopic) {
+		this._loadBvvTopicsProvider = loadBvvTopicsProvider;
+		this._deleteBvvTopicsProvider = deleteBvvTopicProvider;
 		const { ConfigService: configService, EnvironmentService: environmentService } = $injector.inject('ConfigService', 'EnvironmentService');
 		this._configService = configService;
 		this._environmentService = environmentService;
@@ -43,7 +44,7 @@ export class TopicsService {
 	async init() {
 		if (!this._topics) {
 			try {
-				this._topics = await this._provider();
+				this._topics = await this._loadBvvTopicsProvider();
 			} catch (e) {
 				this._topics = [];
 				if (this._environmentService.isStandalone()) {
@@ -91,6 +92,14 @@ export class TopicsService {
 	default() {
 		return this.byId(this._configService.getValue('DEFAULT_TOPIC_ID', 'ba')) || this.all()[0] || null;
 	}
+
+	delete = async (topicId) => {
+		const result = await this._deleteBvvTopicsProvider(topicId);
+		// if (!result) {
+		//     throw new Error('Could not delete topic');
+		// }
+		return result;
+	};
 
 	/**
 	 * @private

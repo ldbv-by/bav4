@@ -15,9 +15,14 @@ import { Topic } from '../../domain/topic';
 export const loadBvvTopics = async () => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 
-	const url = configService.getValueAsPath('BACKEND_URL') + 'topics';
+	const url = configService.getValueAsPath('BACKEND_URL') + 'adminui/topics';
+	const adminToken = configService.getValue('ADMIN_TOKEN_KEY');
 
-	const result = await httpService.get(`${url}`);
+	const result = await httpService.get(`${url}`, {
+		headers: {
+			'X-AUTH-ADMIN-TOKEN': adminToken
+		}
+	});
 
 	if (result.ok) {
 		const topics = [];
@@ -44,4 +49,38 @@ export const loadBvvTopics = async () => {
 		return topics;
 	}
 	throw new Error('Topics could not be retrieved');
+};
+
+/**
+ * @typedef {Object} Topic
+ * @property {string} id
+ * @property {string} name
+ */
+
+/**
+ * @typedef {Object} TopicsResponse
+ * @property {Topic[]} topics
+ */
+
+/**
+ * @returns {Promise<TopicsResponse>}
+ */
+
+/**
+ * @param {string} topicId
+ * @returns {Promise<void>}
+ */
+export const deleteBvvTopic = async (topicId) => {
+	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
+
+	const url = configService.getValueAsPath('BACKEND_URL') + 'adminui/topics/${topicId}';
+	const adminToken = configService.getValue('ADMIN_TOKEN_KEY');
+
+	const result = await httpService.get(`${url}`, {
+		headers: {
+			'X-AUTH-ADMIN-TOKEN': adminToken
+		}
+	});
+
+	return result;
 };
