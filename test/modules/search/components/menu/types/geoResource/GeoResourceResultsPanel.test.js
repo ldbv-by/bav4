@@ -323,7 +323,7 @@ describe('GeoResourceResultsPanel', () => {
 
 		it('imports and removes all layers on click', async () => {
 			const results = Array.from(
-				{ length: GeoResourceResultsPanel.Default_Result_Item_Length },
+				{ length: GeoResourceResultsPanel.Min_Query_Length },
 				(_, i) => new GeoResourceSearchResult(`labelGeoResource${i}`, `labelGeoResourceFormated${i}`)
 			);
 			const query = 'foo';
@@ -334,13 +334,43 @@ describe('GeoResourceResultsPanel', () => {
 			};
 			spyOn(searchResultServiceMock, 'geoResourcesByTerm').and.resolveTo(results);
 
+			spyOn(geoResourceService, 'byId')
+				.withArgs('labelGeoResource0')
+				.and.returnValue({ opacity: 0.5 })
+				.withArgs('labelGeoResource1')
+				.and.returnValue({ opacity: 0.5 });
+
 			const element = await setup(initialState);
 
 			await TestUtils.timeout(GeoResourceResultsPanel.Debounce_Delay + 100);
 			const button = element.shadowRoot.querySelector('#import-all');
 
 			button.click();
-			expect(store.getState().layers.active.length).toBe(GeoResourceResultsPanel.Default_Result_Item_Length);
+			expect(store.getState().layers.active.length).toBe(GeoResourceResultsPanel.Min_Query_Length);
+
+			button.click();
+			expect(store.getState().layers.active.length).toBe(0);
+		});
+
+		it('does not import all layers on click when GeoResource ids are unknown', async () => {
+			const results = Array.from(
+				{ length: GeoResourceResultsPanel.Min_Query_Length },
+				(_, i) => new GeoResourceSearchResult(`labelGeoResource${i}`, `labelGeoResourceFormated${i}`)
+			);
+			const query = 'foo';
+			const initialState = {
+				search: {
+					query: new EventLike(query)
+				}
+			};
+			spyOn(searchResultServiceMock, 'geoResourcesByTerm').and.resolveTo(results);
+
+			spyOn(geoResourceService, 'byId').withArgs('labelGeoResource0').and.returnValue(null).withArgs('labelGeoResource1').and.returnValue(null);
+
+			const element = await setup(initialState);
+
+			await TestUtils.timeout(GeoResourceResultsPanel.Debounce_Delay + 100);
+			const button = element.shadowRoot.querySelector('#import-all');
 
 			button.click();
 			expect(store.getState().layers.active.length).toBe(0);

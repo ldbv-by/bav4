@@ -16,7 +16,6 @@ const Update_Collapsed = 'update_collapsed';
 const Update_AllShown = 'update_allShown';
 const Update_Results_AllShown = 'update_results_allShown';
 const Update_ActiveLayers = 'update_activeLayers';
-const Update_MapResolution = 'update_mapResolution';
 
 /**
  * Displays GeoResource search results.
@@ -53,8 +52,6 @@ export class GeoResourceResultsPanel extends MvuElement {
 				return { ...model, ...data };
 			case Update_ActiveLayers:
 				return { ...model, activeLayers: data.map((l) => ({ geoResourceId: l.geoResourceId, id: l.id })) };
-			case Update_MapResolution:
-				return { ...model, mapResolution: data };
 		}
 	}
 
@@ -74,8 +71,7 @@ export class GeoResourceResultsPanel extends MvuElement {
 
 		this.observe(
 			(state) => state.layers.active,
-			(activeLayers) => this.signal(Update_ActiveLayers, activeLayers),
-			true
+			(activeLayers) => this.signal(Update_ActiveLayers, activeLayers)
 		);
 		this.observe(
 			(state) => state.search.query,
@@ -130,10 +126,12 @@ export class GeoResourceResultsPanel extends MvuElement {
 			results.filter((l) => isLayerActive(l.geoResourceId)).forEach(disableLayer);
 		};
 		const enableLayer = (result) => {
-			const id = `${result.geoResourceId}_${createUniqueId()}`;
 			const geoR = this._geoResourceService.byId(result.geoResourceId);
-			const opacity = geoR?.opacity || 1;
-			addLayer(id, { geoResourceId: result.geoResourceId, opacity });
+			if (geoR) {
+				const id = `${result.geoResourceId}_${createUniqueId()}`;
+				const opacity = geoR.opacity;
+				addLayer(id, { geoResourceId: result.geoResourceId, opacity });
+			}
 		};
 		const disableLayer = (result) => {
 			model.activeLayers.filter((l) => l.geoResourceId === result.geoResourceId).forEach((l) => removeLayer(l.id));
