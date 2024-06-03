@@ -118,7 +118,6 @@ export class GeoResourceResultItem extends MvuElement {
 		const onMouseLeave = (result) => {
 			//remove the preview layer
 			removeLayer(GeoResourceResultItem._tmpLayerId(result.geoResourceId));
-			// clearPreviewGeoresourceId();
 			if (this._timeoutId) {
 				clearTimeout(this._timeoutId);
 				this._timeoutId = null;
