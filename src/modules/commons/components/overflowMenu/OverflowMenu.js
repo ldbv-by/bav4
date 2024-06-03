@@ -97,8 +97,6 @@ export class OverflowMenu extends MvuElement {
 			this.signal(Update_Anchor_Position, { absolute: [rect.x, rect.y], relative: [rect.x - delta[0], rect.y - delta[1]] });
 
 			this.signal(Update_IsCollapsed, !isCollapsed);
-
-			e.stopPropagation();
 		};
 
 		const menu = this._getMenuOrFixedNotification(model);
