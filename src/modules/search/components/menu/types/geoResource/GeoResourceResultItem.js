@@ -66,8 +66,7 @@ export class GeoResourceResultItem extends MvuElement {
 	onInitialize() {
 		this.observe(
 			(state) => state.layers.active,
-			(activeLayers) => this.signal(Update_ActiveLayers, activeLayers),
-			true
+			(activeLayers) => this.signal(Update_ActiveLayers, activeLayers)
 		);
 	}
 
