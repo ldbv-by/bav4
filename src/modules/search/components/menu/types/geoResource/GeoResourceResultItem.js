@@ -101,11 +101,7 @@ export class GeoResourceResultItem extends MvuElement {
 				const id = GeoResourceResultItem._tmpLayerId(result.geoResourceId);
 				this._timeoutId = setTimeout(() => {
 					addLayer(id, { geoResourceId: result.geoResourceId, constraints: { hidden: true } });
-
-					// setPreviewGeoresourceId(result.geoResourceId);
-
 					const geoRes = this.#geoResourceService.byId(result.geoResourceId);
-
 					if (geoRes instanceof GeoResourceFuture) {
 						this.signal(Update_LoadingPreviewFlag, true);
 						geoRes.onResolve(() => this.signal(Update_LoadingPreviewFlag, false));
