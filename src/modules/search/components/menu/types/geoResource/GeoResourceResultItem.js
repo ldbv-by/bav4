@@ -79,13 +79,15 @@ export class GeoResourceResultItem extends MvuElement {
 	}
 
 	createView(model) {
-		const { geoResourceSearchResult, loadingPreview } = model;
+		const { geoResourceSearchResult, loadingPreview, activeLayers } = model;
 		const translate = (key) => this._translationService.translate(key);
 
-		const isLayerActive = (geoResourceId) => {
-			return model.activeLayers
-				.filter((l) => l.id !== GeoResourceResultItem._tmpLayerId(geoResourceId))
-				.some((l) => l.geoResourceId === geoResourceId);
+		const isGeoResourceActive = (geoResourceId) => {
+			return activeLayers.filter((l) => l.id !== GeoResourceResultItem._tmpLayerId(geoResourceId)).some((l) => l.geoResourceId === geoResourceId);
+		};
+
+		const findFirstPermanentLayerForGr = (geoResourceId) => {
+			return activeLayers.filter((l) => l.id !== GeoResourceResultItem._tmpLayerId(geoResourceId)).find((l) => l.geoResourceId === geoResourceId);
 		};
 
 		/**
@@ -93,7 +95,7 @@ export class GeoResourceResultItem extends MvuElement {
 		 * These events are not fired on touch devices, so there's no extra handling needed.
 		 */
 		const onMouseEnter = (result) => {
-			if (isLayerActive(result.geoResourceId)) return;
+			if (isGeoResourceActive(result.geoResourceId)) return;
 
 			//add a preview layer if GeoResource is accessible
 			if (this.#geoResourceService.isAllowed(result.geoResourceId)) {
@@ -121,13 +123,14 @@ export class GeoResourceResultItem extends MvuElement {
 		};
 
 		const onClick = (result) => {
-			if (isLayerActive(result.geoResourceId)) {
-				model.activeLayers.filter((l) => l.geoResourceId === result.geoResourceId).forEach((l) => removeLayer(l.id));
+			if (isGeoResourceActive(result.geoResourceId)) {
+				activeLayers.filter((l) => l.geoResourceId === result.geoResourceId).forEach((l) => removeLayer(l.id));
 			} else {
 				//remove the preview layer
 				removeLayer(GeoResourceResultItem._tmpLayerId(result.geoResourceId));
 				//add the "real" layer after some delay, which gives the user a better feedback
 				const geoR = this.#geoResourceService.byId(result.geoResourceId);
+				/* istanbul ignore else */
 				if (geoR) {
 					const id = `${result.geoResourceId}_${createUniqueId()}`;
 					const opacity = geoR.opacity;
@@ -138,10 +141,19 @@ export class GeoResourceResultItem extends MvuElement {
 
 		const onClickZoomToExtent = (e, result) => {
 			const id = GeoResourceResultItem._tmpLayerId(result.geoResourceId);
-			//ensures that the layer has been added
-			//the layer will be removed with onMouseLeave
-			addLayer(id, { geoResourceId: result.geoResourceId, constraints: { hidden: true } });
-			fitLayer(id);
+			if (isGeoResourceActive(result.geoResourceId)) {
+				/**
+				 * Fit to the already existing layer
+				 */
+				fitLayer(findFirstPermanentLayerForGr(result.geoResourceId).id);
+			} else {
+				/**
+				 * Ensure that the layer has been added,
+				 * the layer will be removed with onMouseLeave
+				 */
+				addLayer(id, { geoResourceId: result.geoResourceId, constraints: { hidden: true } });
+				fitLayer(id);
+			}
 			e.stopPropagation();
 		};
 
@@ -195,7 +207,7 @@ export class GeoResourceResultItem extends MvuElement {
 							class="ba-list-item__text"							
 							@toggle=${() => onClick(geoResourceSearchResult)}
 							.disabled=${!geoResourceSearchResult}
-							.checked=${isLayerActive(geoResourceSearchResult.geoResourceId)}
+							.checked=${isGeoResourceActive(geoResourceSearchResult.geoResourceId)}
 							tabindex="0"
 							>
 							<span class="ba-list-item__text ">

@@ -1,5 +1,4 @@
 import { GeoResourceFuture, VectorGeoResource } from '../../../../../../../src/domain/geoResources';
-import { TabIds } from '../../../../../../../src/domain/mainMenu';
 import { $injector } from '../../../../../../../src/injection';
 import { Spinner } from '../../../../../../../src/modules/commons/components/spinner/Spinner';
 import {
@@ -8,7 +7,6 @@ import {
 } from '../../../../../../../src/modules/search/components/menu/types/geoResource/GeoResourceResultItem';
 import { GeoResourceSearchResult } from '../../../../../../../src/modules/search/services/domain/searchResult';
 import { createDefaultLayer, layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
-import { createNoInitialStateMainMenuReducer } from '../../../../../../../src/store/mainMenu/mainMenu.reducer';
 import { positionReducer } from '../../../../../../../src/store/position/position.reducer';
 import { TestUtils } from '../../../../../../test-utils.js';
 import { GeoResourceInfoPanel } from '../../../../../../../src/modules/geoResourceInfo/components/GeoResourceInfoPanel';
@@ -32,13 +30,8 @@ describe('GeoResourceResultItem', () => {
 
 	let store;
 	const setup = (state = {}) => {
-		const initialState = {
-			...state
-		};
-
-		store = TestUtils.setupStoreAndDi(initialState, {
+		store = TestUtils.setupStoreAndDi(state, {
 			layers: layersReducer,
-			mainMenu: createNoInitialStateMainMenuReducer(),
 			position: positionReducer,
 			modal: modalReducer
 		});
@@ -275,10 +268,6 @@ describe('GeoResourceResultItem', () => {
 					layers: {
 						active: [previewLayer]
 					},
-					mainMenu: {
-						tab: TabIds.SEARCH,
-						open: true
-					},
 					...state
 				});
 				element.data = data;
@@ -322,31 +311,20 @@ describe('GeoResourceResultItem', () => {
 			});
 		});
 
-		describe('when this geoResourceId is already active', () => {
-			const layerId1 = 'layerId0';
+		describe('when GeoResource id is already active', () => {
+			const layerId0 = 'layerId0';
+			const layerId1 = 'layerId1';
 			const geoResourceId = 'geoResourceId';
-			const layer1 = {
-				constraints: [],
-				id: layerId1,
-				geoResourceId,
-				visible: false,
-				zIndex: 0
-			};
-			const layerId2 = 'layerId0';
-			const layer2 = {
-				constraints: [],
-				id: layerId2,
-				geoResourceId,
-				visible: false,
-				zIndex: 0
-			};
+
+			const layer0 = createDefaultLayer(layerId0, geoResourceId);
+			const layer1 = createDefaultLayer(layerId1, geoResourceId);
 
 			describe('on mouse enter', () => {
 				it('does not add a preview layer', async () => {
 					const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
 					const state = {
 						layers: {
-							active: [layer1, layer2],
+							active: [layer0],
 							background: 'bg0'
 						}
 					};
@@ -359,9 +337,8 @@ describe('GeoResourceResultItem', () => {
 					jasmine.clock().tick(LOADING_PREVIEW_DELAY_MS + 100);
 
 					expect(element._timeoutId).toBeNull();
-					expect(store.getState().layers.active.length).toBe(2);
-					expect(store.getState().layers.active[0].id).toBe(layerId1);
-					expect(store.getState().layers.active[1].id).toBe(layerId2);
+					expect(store.getState().layers.active.length).toBe(1);
+					expect(store.getState().layers.active[0].id).toBe(layerId0);
 				});
 			});
 
@@ -370,11 +347,7 @@ describe('GeoResourceResultItem', () => {
 					const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
 					const state = {
 						layers: {
-							active: [layer1, layer2]
-						},
-						mainMenu: {
-							tab: TabIds.SEARCH,
-							open: true
+							active: [layer0, layer1]
 						}
 					};
 					const element = await setup(state);
@@ -399,22 +372,48 @@ describe('GeoResourceResultItem', () => {
 		});
 
 		describe('the user clicks the zoom-to-extent button', () => {
-			it('zoom to extent', async () => {
-				const geoResVector = new VectorGeoResource('geoResourceId0', async () => ({ label: 'updatedLabel' }));
-				const geoResourceId = 'geoResourceId';
-				const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
-				const element = await setup();
-				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResVector);
-				element.data = data;
+			describe('when GeoResource id is already active', () => {
+				it('zooms to the extent of the already existing layer', async () => {
+					const geoResourceId0 = 'geoResourceId0';
+					const layerId0 = 'layerId0';
+					const layer0 = createDefaultLayer(layerId0, geoResourceId0);
+					const geoResVector = new VectorGeoResource(geoResourceId0, async () => ({ label: 'updatedLabel' }));
+					const data = new GeoResourceSearchResult(geoResourceId0, 'label', 'labelFormatted');
+					const state = {
+						layers: {
+							active: [layer0]
+						}
+					};
+					const element = await setup(state);
+					spyOn(geoResourceService, 'byId').withArgs(geoResourceId0).and.returnValue(geoResVector);
+					element.data = data;
 
-				const button = element.shadowRoot.querySelector('ba-icon');
-				button.click();
-				expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
+					const button = element.shadowRoot.querySelector('ba-icon');
+					button.click();
+
+					expect(store.getState().position.fitLayerRequest.payload.id).toBe(layerId0);
+				});
+			});
+
+			describe('when GeoResource id is not active', () => {
+				it('zooms to the extent of the temp layer', async () => {
+					const geoResourceId0 = 'geoResourceId0';
+					const geoResVector = new VectorGeoResource(geoResourceId0, async () => ({ label: 'updatedLabel' }));
+					const data = new GeoResourceSearchResult(geoResourceId0, 'label', 'labelFormatted');
+					const element = await setup();
+					spyOn(geoResourceService, 'byId').withArgs(geoResourceId0).and.returnValue(geoResVector);
+					element.data = data;
+
+					const button = element.shadowRoot.querySelector('ba-icon');
+					button.click();
+
+					expect(store.getState().position.fitLayerRequest.payload.id).toContain(geoResourceId0);
+				});
 			});
 		});
 
 		describe('the user clicks the info button ', () => {
-			it('show georesourceinfo panel as modal', async () => {
+			it('shows the GeoResource info panel as modal', async () => {
 				const geoResVector = new VectorGeoResource('geoResourceId0', async () => ({ label: 'updatedLabel' }));
 				const geoResourceId = 'geoResourceId';
 				const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
