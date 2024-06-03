@@ -127,16 +127,20 @@ export class GeoResourceResultItem extends MvuElement {
 				//remove the preview layer
 				removeLayer(GeoResourceResultItem._tmpLayerId(result.geoResourceId));
 				//add the "real" layer after some delay, which gives the user a better feedback
-				const id = `${result.geoResourceId}_${createUniqueId()}`;
 				const geoR = this.#geoResourceService.byId(result.geoResourceId);
-				const opacity = geoR?.opacity || 1;
-
-				addLayer(id, { geoResourceId: result.geoResourceId, opacity });
+				if (geoR) {
+					const id = `${result.geoResourceId}_${createUniqueId()}`;
+					const opacity = geoR.opacity;
+					addLayer(id, { geoResourceId: result.geoResourceId, opacity });
+				}
 			}
 		};
 
 		const onClickZoomToExtent = (e, result) => {
 			const id = GeoResourceResultItem._tmpLayerId(result.geoResourceId);
+			//ensures that the layer has been added
+			//the layer will be removed with onMouseLeave
+			addLayer(id, { geoResourceId: result.geoResourceId, constraints: { hidden: true } });
 			fitLayer(id);
 			e.stopPropagation();
 		};

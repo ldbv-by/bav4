@@ -268,7 +268,7 @@ describe('GeoResourceResultItem', () => {
 
 		describe('the user clicks the result item', () => {
 			const geoResourceId = 'geoResourceId';
-			const setupOnClickTests = async () => {
+			const setupOnClickTests = async (state = {}) => {
 				const previewLayer = createDefaultLayer(GeoResourceResultItem._tmpLayerId(geoResourceId), geoResourceId);
 				const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
 				const element = await setup({
@@ -278,7 +278,8 @@ describe('GeoResourceResultItem', () => {
 					mainMenu: {
 						tab: TabIds.SEARCH,
 						open: true
-					}
+					},
+					...state
 				});
 				element.data = data;
 
@@ -295,15 +296,14 @@ describe('GeoResourceResultItem', () => {
 				expect(store.getState().layers.active[0].id).toContain(geoResourceId);
 			});
 
-			it('sets the opacity to 1 if layer is unknown', async () => {
-				const element = await setupOnClickTests();
+			it('does not add a layer when GeoResource id is unknown', async () => {
+				const element = await setupOnClickTests({ layers: { active: [] } });
 				const target = element.shadowRoot.querySelector('li');
 				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(null);
 
 				target.click();
 
-				expect(store.getState().layers.active.length).toBe(1);
-				expect(store.getState().layers.active[0].opacity).toBe(1);
+				expect(store.getState().layers.active.length).toBe(0);
 			});
 
 			it('sets the opacity to the the correct value', async () => {
