@@ -23,17 +23,17 @@ export const navigationRailReducer = (state, action) => {
 };
 
 /**
- * Provides a media reducer which has no initial state
- * @returns media reducer
+ * Provides a navigationRail reducer which has no initial state
+ * @returns navigationRail reducer
  */
 export const createNoInitialStateNavigationRailReducer = () => {
 	return (state = null, action) => navigationRailReducer(state, action);
 };
 
 /**
- * Provides a media reducer which initial state is obtained from the window object.
+ * Provides a navigationRail reducer which initial state is obtained from the window object.
  * @param {Window} _window
- * @returns media reducer
+ * @returns navigationRail reducer
  */
 export const createNavigationRailReducer = (_window = window) => {
 	const initialState = {
