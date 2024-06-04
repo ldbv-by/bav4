@@ -12,23 +12,20 @@
 .ba-list-item:hover {
 	background: var(--header-background-color);
 }
-.ba-list-item > * {
-	padding-top: 0.8em;
-	padding-bottom: 0.8em;
-}
-.ba-list-item > *:first-child {
-	padding-left: 1.5em;
-}
 .ba-list-item > *:last-child {
 	padding-right: 1.5em;
 }
 .ba-list-item__pre {
 	display: flex;
+	flex-grow: 1;
 	margin: 0 1em 0 0;
 }
 .ba-list-item__after {
 	display: flex;
-	margin: 0 0 0 1em;
+	margin: auto !important;
+	min-width: 5em;
+	padding-right: 1em !important;
+	justify-content: flex-end;
 }
 .ba-list-item__icon {
 	mask: url('../../assets/subtract.svg');
@@ -80,15 +77,12 @@ ba-icon {
 ba-icon:hover {
 	background: var(--primary-color);
 }
-.ba-icon-button {
-	padding: 0 0.5em !important;
-	margin: auto;
-	min-width: 3.5em;
-}
 .separator {
 	border-left: 1px dotted var(--header-background-color);
 }
-
+ba-checkbox {
+	padding: 0.8em 0 0.8em 1.5em;
+}
 @keyframes load {
 	0% {
 		transform: translateX(0);
