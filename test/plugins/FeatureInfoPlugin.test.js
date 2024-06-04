@@ -245,31 +245,31 @@ describe('FeatureInfoPlugin', () => {
 
 	describe('when tools.current property changes', () => {
 		describe('when tools.current is a toolId', () => {
-			it('resets the FeatureInfo', async () => {
+			it('aborts the FeatureInfo query', async () => {
 				const store = setup();
 				const instanceUnderTest = new FeatureInfoPlugin();
 				await instanceUnderTest.register(store);
 				addFeatureInfoItems({ title: 'title', content: 'content' });
-				expect(store.getState().featureInfo.current).toHaveSize(1);
+				expect(store.getState().featureInfo.aborted).toBeNull();
 
 				setCurrentTool('foo');
 
-				expect(store.getState().featureInfo.current).toHaveSize(1);
+				expect(store.getState().featureInfo.aborted).not.toBeNull();
 			});
 		});
 
 		describe('when tools.current is a nullish', () => {
-			it('resets NOT the FeatureInfo on tools.current is null', async () => {
+			it('does NOT abort the FeatureInfo query', async () => {
 				const store = setup({ tools: { current: 'some' } });
 				const instanceUnderTest = new FeatureInfoPlugin();
 				await instanceUnderTest.register(store);
 				addFeatureInfoItems({ title: 'title', content: 'content' });
 
-				expect(store.getState().featureInfo.current).toHaveSize(1);
+				expect(store.getState().featureInfo.aborted).toBeNull();
 
 				setCurrentTool(null);
 
-				expect(store.getState().featureInfo.current).toHaveSize(1);
+				expect(store.getState().featureInfo.aborted).toBeNull();
 			});
 		});
 	});
