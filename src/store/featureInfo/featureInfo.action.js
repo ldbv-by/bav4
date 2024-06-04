@@ -12,7 +12,7 @@ const getStore = () => {
 
 /**
  * @typedef {Object} FeatureInfo
- * @property {string} title The Title of this FeatureInfo
+ * @property {string} title The title of this FeatureInfo
  * @property {string|TemplateResult} content The content of this FeatureInfo
  * @property {FeatureInfoGeometry} [geometry] Corresponding geometry of this FeatureInfo
  */
@@ -21,7 +21,7 @@ const getStore = () => {
  * Geometry data for a {@link FeatureInfo}
  * @typedef {Object} FeatureInfoGeometry
  * @property {object|string} data Geometry (e.g. geoJson, WKT)
- * @property {FeatureInfoGeometryTypes} geometryType the type of the geometry
+ * @property {FeatureInfoGeometryTypes} geometryType The type of the geometry
 
 /**
  * Type of a {@link FeatureInfoGeometry}
