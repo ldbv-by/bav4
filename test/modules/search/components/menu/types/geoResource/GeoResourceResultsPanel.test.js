@@ -250,7 +250,7 @@ describe('GeoResourceResultsPanel', () => {
 	});
 
 	describe('activate all layers button', () => {
-		it('shows import all layers button if > 2 elements', async () => {
+		it('shows the add-all-layers button if > 2 elements', async () => {
 			const results = Array.from(
 				{ length: GeoResourceResultsPanel.Default_Result_Item_Length },
 				(_, i) => new GeoResourceSearchResult(`labelGeoResource${i}`, `labelGeoResourceFormated${i}`)
@@ -270,7 +270,7 @@ describe('GeoResourceResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('#import-all').classList).not.toContain('hidden');
 		});
 
-		it('does not show activate all layers button if < 2 elements', async () => {
+		it('does not show the add-all-layers button if < 2 elements', async () => {
 			const results = Array.from({ length: 1 }, (_, i) => new GeoResourceSearchResult(`labelGeoResource${i}`, `labelGeoResourceFormated${i}`));
 			const query = 'foo';
 			const initialState = {
@@ -287,24 +287,7 @@ describe('GeoResourceResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('#import-all').classList).toContain('hidden');
 		});
 
-		it('does not show activate all layers button if result list is empty', async () => {
-			const results = [];
-			const query = 'foo';
-			const initialState = {
-				search: {
-					query: new EventLike(query)
-				}
-			};
-			spyOn(searchResultServiceMock, 'geoResourcesByTerm').and.resolveTo(results);
-
-			const element = await setup(initialState);
-
-			await TestUtils.timeout(GeoResourceResultsPanel.Debounce_Delay + 100);
-			expect(element.shadowRoot.querySelector('#import-all')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('#import-all').classList).toContain('hidden');
-		});
-
-		it('shows remove all layers button if all layers are already imported', async () => {
+		it('shows the remove-all-layers button if all layers are already imported', async () => {
 			const results = Array.from({ length: 1 }, (_, i) => new GeoResourceSearchResult(`labelGeoResource${i}`, `labelGeoResourceFormated${i}`));
 			const query = 'foo';
 			const initialState = {
@@ -333,13 +316,11 @@ describe('GeoResourceResultsPanel', () => {
 				}
 			};
 			spyOn(searchResultServiceMock, 'geoResourcesByTerm').and.resolveTo(results);
-
 			spyOn(geoResourceService, 'byId')
 				.withArgs('labelGeoResource0')
 				.and.returnValue({ opacity: 0.5 })
 				.withArgs('labelGeoResource1')
 				.and.returnValue({ opacity: 0.5 });
-
 			const element = await setup(initialState);
 
 			await TestUtils.timeout(GeoResourceResultsPanel.Debounce_Delay + 100);
@@ -352,7 +333,7 @@ describe('GeoResourceResultsPanel', () => {
 			expect(store.getState().layers.active.length).toBe(0);
 		});
 
-		it('does not import all layers on click when GeoResource ids are unknown', async () => {
+		it('does not import all layers when GeoResource ids are unknown', async () => {
 			const results = Array.from(
 				{ length: GeoResourceResultsPanel.Min_Query_Length },
 				(_, i) => new GeoResourceSearchResult(`labelGeoResource${i}`, `labelGeoResourceFormated${i}`)

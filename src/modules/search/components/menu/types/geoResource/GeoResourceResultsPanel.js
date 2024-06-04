@@ -87,7 +87,7 @@ export class GeoResourceResultsPanel extends MvuElement {
 
 		const translate = (key) => this._translationService.translate(key);
 
-		const isLayerActive = (geoResourceId) => {
+		const isGeoResourceActive = (geoResourceId) => {
 			return model.activeLayers
 				.filter((l) => l.id !== GeoResourceResultItem._tmpLayerId(geoResourceId))
 				.some((l) => l.geoResourceId === geoResourceId);
@@ -118,12 +118,12 @@ export class GeoResourceResultsPanel extends MvuElement {
 
 		const indexEnd = allShown ? results.length : GeoResourceResultsPanel.Default_Result_Item_Length;
 
-		const allLayersActive = results.every((l) => isLayerActive(l.geoResourceId));
+		const allLayersActive = results.every((l) => isGeoResourceActive(l.geoResourceId));
 		const importAll = () => {
-			results.filter((l) => !isLayerActive(l.geoResourceId)).forEach(enableLayer);
+			results.filter((l) => !isGeoResourceActive(l.geoResourceId)).forEach(enableLayer);
 		};
 		const removeAll = () => {
-			results.filter((l) => isLayerActive(l.geoResourceId)).forEach(disableLayer);
+			results.filter((l) => isGeoResourceActive(l.geoResourceId)).forEach(disableLayer);
 		};
 		const enableLayer = (result) => {
 			const geoR = this._geoResourceService.byId(result.geoResourceId);
@@ -137,7 +137,7 @@ export class GeoResourceResultsPanel extends MvuElement {
 			model.activeLayers.filter((l) => l.geoResourceId === result.geoResourceId).forEach((l) => removeLayer(l.id));
 		};
 		const importAllButton = {
-			hidden: results && results.length < 2
+			hidden: results.length < 2
 		};
 
 		return html`
