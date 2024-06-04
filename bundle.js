@@ -1824,7 +1824,7 @@
 					</span>
 					<span class="ba-list-item__text "> ${(0,G._)(i.labelFormatted)} </span>
 				</li>
-			`:o.s6}static get tag(){return"ba-search-content-panel-cp-item"}}window.customElements.get(gt.tag)||window.customElements.define(gt.tag,gt),window.customElements.get(et.tag)||window.customElements.define(et.tag,et),window.customElements.get(He.tag)||window.customElements.define(He.tag,He),window.customElements.get(ot.tag)||window.customElements.define(ot.tag,ot),window.customElements.get(ni.tag)||window.customElements.define(ni.tag,ni),window.customElements.get(dt.tag)||window.customElements.define(dt.tag,dt),window.customElements.get(ui.tag)||window.customElements.define(ui.tag,ui);const{TranslationService:li}=s.z.inject("TranslationService");li.register("topicsProvider",(t=>{switch(t){case"en":return{topics_menu_title:"Topics",topics_catalog_panel_change_topic:"Change topic",topics_catalog_leaf_no_georesource_title:"Layer not available"};case"de":return{topics_menu_title:"Themen",topics_catalog_panel_change_topic:"Thema wechseln",topics_catalog_leaf_no_georesource_title:"Ebene nicht verfügbar"};default:return{}}}));var ci=r(25049),Mi=r(87402),hi=r.n(Mi);class di extends ci.A{constructor(){if(super(),this.constructor===di)throw new TypeError("Can not construct abstract class.")}defaultCss(){return o.qy`
+			`:o.s6}static get tag(){return"ba-search-content-panel-cp-item"}}window.customElements.get(gt.tag)||window.customElements.define(gt.tag,gt),window.customElements.get(et.tag)||window.customElements.define(et.tag,et),window.customElements.get(He.tag)||window.customElements.define(He.tag,He),window.customElements.get(ot.tag)||window.customElements.define(ot.tag,ot),window.customElements.get(ni.tag)||window.customElements.define(ni.tag,ni),window.customElements.get(dt.tag)||window.customElements.define(dt.tag,dt),window.customElements.get(ui.tag)||window.customElements.define(ui.tag,ui);const{TranslationService:li}=s.z.inject("TranslationService");li.register("topicsProvider",(t=>{switch(t){case"en":return{topics_menu_title:"Topics",topics_catalog_panel_change_topic:"Change topic",topics_catalog_leaf_no_georesource_title:"Layer not available",topics_catalog_leaf_info:"Info"};case"de":return{topics_menu_title:"Themen",topics_catalog_panel_change_topic:"Thema wechseln",topics_catalog_leaf_no_georesource_title:"Ebene nicht verfügbar",topics_catalog_leaf_info:"Info"};default:return{}}}));var ci=r(25049),Mi=r(87402),hi=r.n(Mi);class di extends ci.A{constructor(){if(super(),this.constructor===di)throw new TypeError("Can not construct abstract class.")}defaultCss(){return o.qy`
 			${super.defaultCss()}
 			<style>
 				${hi()}
@@ -1900,7 +1900,7 @@
 							.color=${"var(--primary-color)"}
 							.color_hover=${"var(--text3)"}
 							.size=${2}
-							.title=${r("layerManager_move_up")}
+							.title=${r("topics_catalog_leaf_info")}
 							@click=${l}
 						></ba-icon>
 					</div>
