@@ -40,7 +40,7 @@ import CircleStyle from 'ol/style/Circle';
 import { hexToRgb } from '../../../../src/utils/colors';
 
 const Rgb_Black = [0, 0, 0];
-const Expected_Text_Font = 'normal 16px OpenSans';
+const Expected_Text_Font = 'normal 16px Open Sans';
 
 const configService = {
 	getValue: () => {},
@@ -843,7 +843,7 @@ describe('defaultClusterStyleFunction', () => {
 			fill: new Fill({
 				color: [255, 255, 255]
 			}),
-			font: 'normal 16px OpenSans'
+			font: 'normal 16px Open Sans'
 		})
 	});
 
