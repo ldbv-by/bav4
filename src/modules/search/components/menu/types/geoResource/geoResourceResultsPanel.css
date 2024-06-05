@@ -81,3 +81,12 @@
 .show-all:focus-visible {
 	box-shadow: Inset 0 0 0 0.2em var(--primary-color-lighter);
 }
+ba-button {
+	display: block;
+	border-right: 1px dotted var(--header-background-color);
+	max-width: fit-content;
+}
+.hidden {
+	max-height: 0;
+	display: none;
+}

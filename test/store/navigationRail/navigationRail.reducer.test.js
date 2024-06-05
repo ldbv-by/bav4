@@ -6,7 +6,7 @@ import { TabIds } from '../../../src/domain/mainMenu';
 describe('navigationRailReducer', () => {
 	const initialState = {
 		open: false,
-		visitedTabIds: []
+		visitedTabIds: [TabIds.FEATUREINFO, TabIds.ROUTING]
 	};
 
 	const windowMock = {
@@ -22,7 +22,7 @@ describe('navigationRailReducer', () => {
 	it('initializes the store with default values', () => {
 		const store = setup(createNoInitialStateNavigationRailReducer(), { navigationRail: initialState });
 		expect(store.getState().navigationRail.open).toBeFalse();
-		expect(store.getState().navigationRail.visitedTabIds).toEqual([]);
+		expect(store.getState().navigationRail.visitedTabIds).toEqual([TabIds.FEATUREINFO, TabIds.ROUTING]);
 	});
 
 	describe('createNavigationRailReducer', () => {
@@ -87,7 +87,7 @@ describe('navigationRailReducer', () => {
 
 	describe("changes the 'visitedTabIds' property", () => {
 		it('sets a TabId', () => {
-			const store = setup(createNoInitialStateNavigationRailReducer(), { navigationRail: initialState });
+			const store = setup(createNoInitialStateNavigationRailReducer(), { navigationRail: { open: false, visitedTabIds: [] } });
 
 			addTabId(TabIds.ROUTING);
 
@@ -95,7 +95,7 @@ describe('navigationRailReducer', () => {
 		});
 
 		it('sets redundant TabIds', () => {
-			const store = setup(createNoInitialStateNavigationRailReducer(), { navigationRail: initialState });
+			const store = setup(createNoInitialStateNavigationRailReducer(), { navigationRail: { open: false, visitedTabIds: [] } });
 
 			addTabId(TabIds.FEATUREINFO);
 			addTabId(TabIds.ROUTING);
