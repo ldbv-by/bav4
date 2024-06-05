@@ -267,7 +267,7 @@ export const defaultClusterStyleFunction = () => {
 							fill: new Fill({
 								color: White_Color
 							}),
-							font: Default_Font
+							font: 'normal 12px Open Sans'
 						})
 					})
 				];
