@@ -119,7 +119,7 @@ export class RoutingPlugin extends BaPlugin {
 		const onProposalChange = (proposal, state) => {
 			const { coord, type: proposalType } = proposal;
 
-			if (proposalType === CoordinateProposalType.EXISTING_START_OR_DESTINATION && state.routing.waypoints.length < 2) {
+			if (proposalType === CoordinateProposalType.EXISTING_START_OR_DESTINATION && state.routing.waypoints.length < 1) {
 				return;
 			}
 
