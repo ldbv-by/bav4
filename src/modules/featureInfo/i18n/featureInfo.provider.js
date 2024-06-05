@@ -23,7 +23,7 @@ export const provide = (lang) => {
 				geometryInfo_title_line_length: 'Länge',
 				geometryInfo_title_polygon_length: 'Umfang',
 				geometryInfo_title_polygon_area: 'Fläche',
-				geometryInfo_info: 'Keine Information verfügbar.<br>Bitte in die <b>Karte</b> klicken.'
+				geometryInfo_info: 'Keine Informationen verfügbar.<br>Bitte in die <b>Karte</b> klicken.'
 			};
 
 		default:
