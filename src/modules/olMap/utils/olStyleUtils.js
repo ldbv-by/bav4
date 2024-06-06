@@ -393,7 +393,7 @@ export const polygonStyleFunction = (styleOption = DEFAULT_STYLE_OPTION) => {
 	];
 };
 
-const getRulerStyle = () => {
+const getRulerStyle = (feature) => {
 	const getCanvasContextRenderFunction = (state) => {
 		const renderContext = toCanvasContext(state.context, { pixelRatio: 1 });
 		return (geometry, fill, stroke) => {
@@ -402,6 +402,10 @@ const getRulerStyle = () => {
 		};
 	};
 	return new Style({
+		geometry: () => {
+			const geodesicGeometry = feature?.get('geodesic')?.getGeometry();
+			return geodesicGeometry ?? feature.getGeometry();
+		},
 		renderer: (pixelCoordinates, state) => {
 			const getContextRenderFunction = (state) =>
 				state.customContextRenderFunction ? state.customContextRenderFunction : getCanvasContextRenderFunction(state);
@@ -512,9 +516,15 @@ export const measureStyleFunction = (feature, resolution) => {
 		color: Red_Color.concat([1]),
 		width: 3
 	});
+	const getGeodesicOrGeometry = (feature) => {
+		const geodesicGeometry = feature?.get('geodesic')?.getGeometry();
+		return geodesicGeometry ?? feature.getGeometry();
+	};
 
+	const fallbackGeometry = getGeodesicOrGeometry(feature);
 	const getFallbackStyle = () => {
 		return new Style({
+			geometry: fallbackGeometry,
 			stroke: new Stroke({
 				color: Red_Color.concat([1]),
 				lineDash: [8],
@@ -529,16 +539,19 @@ export const measureStyleFunction = (feature, resolution) => {
 		new Style({
 			stroke: stroke,
 			geometry: (feature) => {
-				if (canShowAzimuthCircle(feature.getGeometry())) {
+				const getCircle = () => {
 					const coords = feature.getGeometry().getCoordinates();
 					const radius = feature.getGeometry().getLength();
-					const circle = new Circle(coords[0], radius);
-					return circle;
+					return new Circle(coords[0], radius);
+				};
+				if (canShowAzimuthCircle(feature.getGeometry())) {
+					const geodesicGeometry = feature.get('geodesic');
+					return geodesicGeometry ? geodesicGeometry.azimuthCircle : getCircle();
 				}
 			},
 			zIndex: 0
 		}),
-		resolution ? getRulerStyle() : getFallbackStyle()
+		resolution ? getRulerStyle(feature) : getFallbackStyle()
 	];
 	return styles;
 };
@@ -568,6 +581,16 @@ export const modifyStyleFunction = (feature) => {
 };
 
 export const selectStyleFunction = () => {
+	const constructionStroke = new Stroke({
+		color: Black_Color.concat([1]),
+		width: 1,
+		lineDash: [8]
+	});
+	const getGeodesicConstructionLineStyle = new Style({
+		stroke: constructionStroke,
+		geometry: (feature) => feature.getGeometry(),
+		zIndex: 0
+	});
 	const getAppendableVertexStyle = (color) =>
 		new Style({
 			image: new CircleStyle({
@@ -608,8 +631,11 @@ export const selectStyleFunction = () => {
 		if (!styleFunction || !styleFunction(feature, resolution)) {
 			return [getAppendableVertexStyle(color)];
 		}
-		const styles = styleFunction(feature, resolution);
-		return styles[0] ? styles.concat([getAppendableVertexStyle(color)]) : [styles, getAppendableVertexStyle(color)];
+		const featureStyles = styleFunction(feature, resolution);
+		const selectionStyles = featureStyles[0]
+			? featureStyles.concat([getAppendableVertexStyle(color)])
+			: [featureStyles, getAppendableVertexStyle(color)];
+		return feature.get('geodesic') ? [getGeodesicConstructionLineStyle(), ...selectionStyles] : selectionStyles;
 	};
 };
 

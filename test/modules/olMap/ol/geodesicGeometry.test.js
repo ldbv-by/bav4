@@ -48,60 +48,43 @@ describe('GeodesicGeometry', () => {
 			const feature = new Feature(lineString);
 
 			const instance = new GeodesicGeometry(feature);
-			const updateSpy = spyOn(instance, '_update').and.callThrough();
-			const initializeSpy = spyOn(instance, '_initialize').and.callThrough();
+			const firstGeometryInstance = instance.getGeometry();
 
 			feature.setGeometry(polygon); // trigger new feature revision
-			instance.getGeometry();
+			const secondGeometryInstance = instance.getGeometry();
 
-			expect(updateSpy).toHaveBeenCalled();
-			expect(initializeSpy).toHaveBeenCalled();
+			expect(firstGeometryInstance).not.toBe(secondGeometryInstance);
 		});
 
 		it('does NOT updates the geometry based on feature revision', () => {
 			const feature = new Feature(lineString);
 
 			const instance = new GeodesicGeometry(feature);
-			const updateSpy = spyOn(instance, '_update').and.callThrough();
-			const initializeSpy = spyOn(instance, '_initialize').and.callThrough();
 
-			instance.getGeometry();
+			const geometryInstance = instance.getGeometry();
 
-			expect(updateSpy).toHaveBeenCalledTimes(1);
-			expect(initializeSpy).not.toHaveBeenCalled();
-
-			instance.getGeometry();
-
-			expect(updateSpy).toHaveBeenCalledTimes(2);
-			expect(initializeSpy).not.toHaveBeenCalled();
+			expect(instance.getGeometry()).toBe(geometryInstance);
 		});
 
 		it('is aware of geometry changes for statistic properties', () => {
 			const feature = new Feature(polygon);
 
 			const instance = new GeodesicGeometry(feature);
-			const updateSpy = spyOn(instance, '_update').and.callThrough();
 
 			const length = instance.length;
 			const area = instance.area;
 
 			expect(length).toBeCloseTo(417850.6, 1);
 			expect(Math.abs(area)).toBeCloseTo(8333081687.8, 1);
-
-			expect(updateSpy).toHaveBeenCalledTimes(2);
 		});
 
 		it('is aware of geometry changes for creating polygon geometry', () => {
 			const feature = new Feature(polygon);
 
 			const instance = new GeodesicGeometry(feature);
-			const updateSpy = spyOn(instance, '_update').and.callThrough();
-
 			const geodesicPolygon = instance.getPolygon();
 
 			expect(geodesicPolygon).toBeInstanceOf(MultiPolygon);
-
-			expect(updateSpy).toHaveBeenCalledTimes(1);
 		});
 	});
 });
