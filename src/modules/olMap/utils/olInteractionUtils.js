@@ -70,7 +70,7 @@ export const getSelectOptions = (interactionLayer) => {
 };
 
 /**
- * Creates a standard optn-object for a openlayers modify-interaction, to make
+ * Creates a standard option-object for a openlayers modify-interaction, to make
  * all features in the defined feature-collection modifyable
  * @param {Collection<Feature>} modifyableFeatures the collection of all possible modifyable features
  * @returns {Object} the option-object
@@ -82,7 +82,8 @@ export const getModifyOptions = (modifyableFeatures) => {
 		deleteCondition: (event) => {
 			const isDeletable = noModifierKeys(event) && singleClick(event);
 			return isDeletable;
-		}
+		},
+		wrapX: true
 	};
 };
 
