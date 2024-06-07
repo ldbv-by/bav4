@@ -304,11 +304,11 @@ describe('RoutingPlugin', () => {
 			expect(store.getState().highlight.features[0].id).toBe(RoutingPlugin.HIGHLIGHT_FEATURE_ID);
 		});
 
-		it('prevents selecting a waypoint for removal when it is the only one', async () => {
+		it('prevents selecting a waypoint for removal when no one is available', async () => {
 			const store = setup({
 				routing: {
 					...initialRoutingState,
-					waypoints: [[21, 42]]
+					waypoints: []
 				},
 				tools: {
 					current: Tools.ROUTING

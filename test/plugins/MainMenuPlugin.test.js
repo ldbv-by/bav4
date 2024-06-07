@@ -182,7 +182,7 @@ describe('MainMenuPlugin', () => {
 							featureInfo: {
 								queries: [queryId],
 								querying: true,
-								current: [{ title: 'title', content: 'content' }]
+								current: []
 							}
 						});
 						const instanceUnderTest = new MainMenuPlugin();
