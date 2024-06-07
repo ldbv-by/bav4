@@ -44,6 +44,7 @@ import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../services/provider/attribution.provider';
 import { KML } from 'ol/format';
 import { Tools } from '../../../../domain/tools';
+import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../ol/geodesic/geodesicGeometry';
 
 const Debounce_Delay = 1000;
 
@@ -135,7 +136,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		};
 
 		const createLayer = () => {
-			const source = new VectorSource({ wrapX: false });
+			const source = new VectorSource({ wrapX: false, useSpatialIndex: false });
 			const layer = new VectorLayer({
 				source: source,
 				style: this._styleService.getStyleFunction(StyleTypes.MEASURE)
@@ -163,6 +164,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					oldFeatures.forEach((f) => {
 						f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
 						layer.getSource().addFeature(f);
+						if (f.getId().startsWith(Tools.MEASURE)) {
+							f.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(f, () => false));
+						}
 						this._styleService.removeStyle(f, olMap);
 						this._styleService.addStyle(f, olMap, layer);
 						f.on('change', onFeatureChange);
@@ -447,7 +451,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			type: 'Polygon',
 			minPoints: 2,
 			snapTolerance: getSnapTolerancePerDevice(),
-			style: createSketchStyleFunction(this._styleService.getStyleFunction(StyleTypes.MEASURE))
+			style: createSketchStyleFunction(this._styleService.getStyleFunction(StyleTypes.MEASURE)),
+			wrapX: true
 		});
 
 		const finishDistanceOverlay = (event) => {
@@ -531,6 +536,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._modify.setActive(true);
 		this._modifyActivated = true;
 		if (feature) {
+			feature.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(feature, () => false)); // refresh geodesic with the completed feature from the finished drawing
 			const onFeatureChange = (event) => {
 				const measureGeometry = this._createMeasureGeometry(event.target);
 				this._overlayService.update(event.target, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
