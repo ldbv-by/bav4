@@ -587,7 +587,7 @@ export const selectStyleFunction = () => {
 		width: 1,
 		lineDash: [8]
 	});
-	const getGeodesicConstructionLineStyle = new Style({
+	const geodesicConstructionLineStyle = new Style({
 		stroke: constructionStroke,
 		geometry: (feature) => feature.getGeometry(),
 		zIndex: 0
@@ -636,7 +636,7 @@ export const selectStyleFunction = () => {
 		const selectionStyles = featureStyles[0]
 			? featureStyles.concat([getAppendableVertexStyle(color)])
 			: [featureStyles, getAppendableVertexStyle(color)];
-		return feature.get(GEODESIC_FEATURE_PROPERTY) ? [getGeodesicConstructionLineStyle(), ...selectionStyles] : selectionStyles;
+		return feature.get(GEODESIC_FEATURE_PROPERTY) ? [geodesicConstructionLineStyle, ...selectionStyles] : selectionStyles;
 	};
 };
 

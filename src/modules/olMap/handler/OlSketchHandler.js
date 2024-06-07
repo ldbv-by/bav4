@@ -4,6 +4,7 @@
 import { Polygon } from 'ol/geom';
 import { unByKey } from 'ol/Observable';
 import { Tools } from '../../../domain/tools';
+import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../ol/geodesic/geodesicGeometry';
 
 export const DefaultIdPrefix = Tools.DRAW + '_';
 
@@ -50,6 +51,7 @@ export class OlSketchHandler {
 				const onFeatureChange = (event) => {
 					this._monitorProperties(event.target);
 				};
+				sketchFeature.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(sketchFeature, () => !this._isFinishOnFirstPoint));
 				this._listener = sketchFeature.on('change', onFeatureChange);
 			}
 			this._pointCount = 1;
@@ -59,6 +61,7 @@ export class OlSketchHandler {
 
 	deactivate() {
 		unByKey(this._listener);
+		this._sketch.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(this._sketch.clone()));
 		this._sketch = null;
 		this._isFinishOnFirstPoint = false;
 		this._isSnapOnLastPoint = false;
