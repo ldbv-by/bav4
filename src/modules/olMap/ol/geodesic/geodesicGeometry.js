@@ -5,6 +5,7 @@ import { Geodesic, PolygonArea } from 'geographiclib-geodesic';
 import { LineString, Polygon } from 'ol/geom';
 import { TiledCoordinateBag } from './tiledCoordinateBag';
 
+export const GEODESIC_FEATURE_PROPERTY = 'geodesic';
 const GEODESIC_WGS84 = Geodesic.WGS84;
 const WEBMERCATOR = 'EPSG:3857';
 const WGS84 = 'EPSG:4326';

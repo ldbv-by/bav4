@@ -17,6 +17,7 @@ import markerIcon from '../assets/marker.svg';
 import { isString } from '../../../utils/checks';
 import { getContrastColorFrom, hexToRgb, rgbToHex } from '../../../utils/colors';
 import { AssetSourceType, getAssetSource } from '../../../utils/assets';
+import { GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
 
 const Z_Point = 30;
 const Red_Color = [255, 0, 0];
@@ -403,7 +404,7 @@ const getRulerStyle = (feature) => {
 	};
 	return new Style({
 		geometry: () => {
-			const geodesicGeometry = feature?.get('geodesic')?.getGeometry();
+			const geodesicGeometry = feature?.get(GEODESIC_FEATURE_PROPERTY)?.getGeometry();
 			return geodesicGeometry ?? feature.getGeometry();
 		},
 		renderer: (pixelCoordinates, state) => {
@@ -517,7 +518,7 @@ export const measureStyleFunction = (feature, resolution) => {
 		width: 3
 	});
 	const getGeodesicOrGeometry = (feature) => {
-		const geodesicGeometry = feature?.get('geodesic')?.getGeometry();
+		const geodesicGeometry = feature?.get(GEODESIC_FEATURE_PROPERTY)?.getGeometry();
 		return geodesicGeometry ?? feature.getGeometry();
 	};
 
@@ -545,7 +546,7 @@ export const measureStyleFunction = (feature, resolution) => {
 					return new Circle(coords[0], radius);
 				};
 				if (canShowAzimuthCircle(feature.getGeometry())) {
-					const geodesicGeometry = feature.get('geodesic');
+					const geodesicGeometry = feature.get(GEODESIC_FEATURE_PROPERTY);
 					return geodesicGeometry ? geodesicGeometry.azimuthCircle : getCircle();
 				}
 			},
@@ -635,7 +636,7 @@ export const selectStyleFunction = () => {
 		const selectionStyles = featureStyles[0]
 			? featureStyles.concat([getAppendableVertexStyle(color)])
 			: [featureStyles, getAppendableVertexStyle(color)];
-		return feature.get('geodesic') ? [getGeodesicConstructionLineStyle(), ...selectionStyles] : selectionStyles;
+		return feature.get(GEODESIC_FEATURE_PROPERTY) ? [getGeodesicConstructionLineStyle(), ...selectionStyles] : selectionStyles;
 	};
 };
 
