@@ -44,20 +44,10 @@ export class MainMenuPlugin extends BaPlugin {
 		this._open = store.getState().mainMenu.open;
 		this._previousTab = store.getState().mainMenu.tab;
 
-		const onFeatureInfoQueryingChanged = (querying, state) => {
-			const {
-				featureInfo: { current }
-			} = state;
+		const onFeatureInfoQueryingChanged = (querying) => {
 			if (!querying) {
-				if (current.length === 0) {
-					if (!this._open) {
-						close();
-					}
-					setTab(this._previousTab);
-				} else {
-					setTab(TabIds.FEATUREINFO);
-					open();
-				}
+				setTab(TabIds.FEATUREINFO);
+				open();
 			}
 		};
 
