@@ -27,7 +27,7 @@ export class ToolsPlugin extends BaPlugin {
 		// check if we have a query parameter defining the tool id
 		const toolId = environmentService.getQueryParams().get(QueryParameters.TOOL_ID);
 		if (
-			Object.values(Tools).includes(toolId) &&
+			(Object.values(Tools).includes(toolId) || environmentService.getQueryParams().has(QueryParameters.ROUTE_WAYPOINTS)) &&
 			/**in embed mode we check the list of allowed tools*/ (!environmentService.isEmbedded() || WcTools.includes(toolId))
 		) {
 			/**
