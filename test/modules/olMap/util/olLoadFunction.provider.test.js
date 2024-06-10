@@ -372,7 +372,7 @@ describe('olLoadFunction.provider', () => {
 				.withArgs(
 					src,
 					{
-						timeout: 3000
+						timeout: 5000
 					},
 					{ response: [responseInterceptor] }
 				)
