@@ -17,3 +17,7 @@
 .no-bullets {
 	list-style: none;
 }
+
+li:hover {
+	background-color: #55af4d;
+}

@@ -71,7 +71,6 @@ li > span:hover {
 .droppable.has-children {
 	background-color: #e67e22;
 }
-
 .droppable.drag-over {
 	background-color: #27ae60;
 }

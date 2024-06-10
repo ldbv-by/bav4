@@ -15,7 +15,7 @@ import { End_Label } from '../layerTree/LayerTree';
 const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
 const Update_Topics = 'update_topics';
 
-const Empty_Label = ' ';
+// const Empty_Label = ' ';
 // const End_Label = '  ';
 
 let _uniqueIdCounter = 0;
@@ -359,7 +359,7 @@ export class AdminPanel extends MvuElement {
 					return true;
 				}
 
-				// check the children recursivly, if any
+				// check the children recursively, if any
 				if (catalogEntryN.children) {
 					const found = addEntryToChildrenRecursively(catalogWithResourceData, currentCatalogEntryUid, catalogEntryN.children, newEntry);
 					if (found) {
@@ -413,7 +413,7 @@ export class AdminPanel extends MvuElement {
 			if (indexToRemove !== -1) {
 				catalogBranch.splice(indexToRemove, 1);
 				if (catalogBranch.length === 0) {
-					catalogBranch.push({ label: Empty_Label });
+					catalogBranch.push({ label: End_Label });
 				}
 				return catalogBranch;
 			}
@@ -500,7 +500,7 @@ export class AdminPanel extends MvuElement {
 		const addLayerGroup = () => {
 			const catalog = this._reduceData(catalogWithResourceData, this._extractOriginalIncShowChildren);
 
-			catalog.push({ label: ' ', children: [{ label: Empty_Label }] });
+			catalog.push({ label: ' ', children: [{ label: End_Label }] });
 
 			this.#catalog = this._addUniqueId(catalog);
 			this._mergeCatalogWithResources();
