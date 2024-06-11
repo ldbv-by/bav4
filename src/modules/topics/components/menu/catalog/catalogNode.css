@@ -8,7 +8,6 @@
 }
 .sub-icon {
 	margin: auto 0 auto var(--node-level);
-	background: var(--text2);
 	background: var(--secondary-color);
 	mask: url('../assets/arrowTopRightShort.svg');
 	-webkit-mask: url('../assets/arrowTopRightShort.svg');
