@@ -794,7 +794,7 @@ describe('OlRoutingHandler', () => {
 				const mockRouteStatsProvider = jasmine.createSpy().withArgs(mockGhRoute, mockProfile.stats).and.returnValue(mockStats);
 				const { instanceUnderTest, store } = await newTestInstance({}, mockRouteStatsProvider);
 				const mapServiceSpy = spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
-				const category = { id: 'hike', style: { routeColor: 'blue' } };
+				const category = { id: 'hike', label: 'hikeLabel', style: { routeColor: 'blue' } };
 				spyOn(routingServiceMock, 'getCategoryById').withArgs(mockGhRoute.vehicle).and.returnValue(category);
 				spyOn(elevationServiceMock, 'requestProfile').withArgs(jasmine.any(Array)).and.resolveTo(mockProfile);
 
@@ -804,6 +804,9 @@ describe('OlRoutingHandler', () => {
 				expect(store.getState().routing.route.type.name).toBe(SourceTypeName.KML);
 				expect(store.getState().routing.route.data).toContain('<kml');
 				expect(store.getState().routing.route.data).toContain('<color>ffff0000');
+				expect(store.getState().routing.route.data).toContain(
+					'<Placemark><name>global_app_name olMap_handler_routing_rt_layer_label - hikeLabel</name>'
+				);
 				expect(mapServiceSpy).toHaveBeenCalled();
 			});
 
@@ -1745,6 +1748,8 @@ describe('OlRoutingHandler', () => {
 				const featureRoute = new Feature({
 					geometry: new Point([21, 21])
 				});
+				const category = { label: 'someCatLabel' };
+				featureRoute.set(ROUTING_CATEGORY, category);
 				const featureWaypoint = new Feature({
 					geometry: new Point([42, 42])
 				});
@@ -1763,7 +1768,7 @@ describe('OlRoutingHandler', () => {
 
 				//first vgr and layer
 				expect(store.getState().layers.active[0].id).toBe(PERMANENT_ROUTE_LAYER_ID);
-				expect(geoResources[0].label).toBe('olMap_handler_routing_rt_layer_label');
+				expect(geoResources[0].label).toBe('olMap_handler_routing_rt_layer_label - someCatLabel');
 				expect(geoResources[0].hidden).toBeTrue();
 				expect(geoResources[0].attributionProvider).toEqual(getBvvAttributionForRoutingResult);
 				expect(geoResources[0].sourceType).toBe(VectorSourceType.KML);
@@ -1771,7 +1776,7 @@ describe('OlRoutingHandler', () => {
 				expect(geoResources[1].data).toContain('<Document><Placemark><Style/><Point><coordinates>');
 				//second vgr and layer
 				expect(store.getState().layers.active[1].id).toBe(PERMANENT_WP_LAYER_ID);
-				expect(geoResources[1].label).toBe('olMap_handler_routing_wp_layer_label');
+				expect(geoResources[1].label).toBe('olMap_handler_routing_wp_layer_label - someCatLabel');
 				expect(geoResources[1].hidden).toBeTrue();
 				expect(geoResources[1].attributionProvider).toEqual(getAttributionForLocallyImportedOrCreatedGeoResource);
 				expect(geoResources[1].sourceType).toBe(VectorSourceType.KML);
@@ -1787,6 +1792,8 @@ describe('OlRoutingHandler', () => {
 				const featureRoute = new Feature({
 					geometry: new Point([21, 21])
 				});
+				const category = { label: 'someCatLabel' };
+				featureRoute.set(ROUTING_CATEGORY, category);
 				const featureWaypoint = new Feature({
 					geometry: new Point([42, 42])
 				});
@@ -1807,10 +1814,12 @@ describe('OlRoutingHandler', () => {
 
 				//first vgr and layer
 				expect(store.getState().layers.active[0].id).toBe(PERMANENT_ROUTE_LAYER_ID);
-				expect(geoResources[1].data).toContain('<Document><Placemark><Style/><Point><coordinates>');
+				expect(geoResources[1].data).toContain('<Document><Placemark><Style/>');
+				expect(geoResources[1].data).toContain('<Point><coordinates>');
 				//second vgr and layer
 				expect(store.getState().layers.active[1].id).toBe(PERMANENT_WP_LAYER_ID);
-				expect(geoResources[0].data).toContain('<Document><Placemark><Style/><Point><coordinates>');
+				expect(geoResources[0].data).toContain('<Document><Placemark><Style/>');
+				expect(geoResources[0].data).toContain('<Point><coordinates>');
 
 				expect(geoResources[0].data).not.toBe(geoResources[1].data);
 				expect(mapServiceSpy).toHaveBeenCalledTimes(2);
