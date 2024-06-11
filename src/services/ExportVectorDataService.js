@@ -9,6 +9,7 @@ import { $injector } from '../injection';
 import { LineString, MultiLineString, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
 import { MultiPolygon } from '../../node_modules/ol/geom';
+import { Fill, Stroke, Style } from '../../node_modules/ol/style';
 
 /**
  * Service for exporting vector data
@@ -114,12 +115,14 @@ export class OlExportVectorDataService {
 			const format = this._getFormat(sourceType.name);
 			return format.writeFeatures(data);
 		};
-
+		// todo: add custom kmlWriter to assure that every feature without a style can use a defaultStyle.
 		switch (sourceType.name) {
 			case SourceTypeName.EWKT:
 				return this._getEwktWriter(sourceType.srid ?? 4326);
 			case SourceTypeName.GPX:
 				return this._getGpxWriter();
+			case SourceTypeName.KML:
+				return this._getKmlWriter();
 			default:
 				return defaultWriter;
 		}
@@ -197,6 +200,30 @@ export class OlExportVectorDataService {
 
 			const gpxFormat = new GPX();
 			return gpxFormat.writeFeatures(features.map((feature) => eventuallyToMultiLineString(feature)));
+		};
+	}
+
+	_getKmlWriter() {
+		const format = new KML({ writeStyles: true });
+		const defaultStyle = new Style({
+			stroke: new Stroke({
+				color: [255, 0, 0, 1],
+				width: 2
+			}),
+			fill: new Fill({
+				color: [255, 0, 0].concat([0.4])
+			})
+		});
+		return (features) => {
+			// set a default style if needed
+			features.forEach((feature) => {
+				const style = feature.getStyle();
+				if (!style) {
+					feature.setStyle(defaultStyle);
+				}
+			});
+
+			return format.writeFeatures(features);
 		};
 	}
 }

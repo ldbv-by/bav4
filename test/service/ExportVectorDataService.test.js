@@ -193,12 +193,12 @@ describe('ExportVectorDataService', () => {
 			it('requests the KML format writer', () => {
 				const instance = setup();
 				spyOn(instance, '_getReader').and.returnValue(() => []);
-				const formatSpy = spyOn(instance, '_getFormat').and.callThrough();
+				const formatSpy = spyOn(instance, '_getKmlWriter').and.callThrough();
 				spyOn(sourceTypeServiceMock, 'forData').and.returnValue({ status: SourceTypeResultStatus.OK, sourceType: new SourceType('something') });
 
 				instance.forData('someData', new SourceType(SourceTypeName.KML));
 
-				expect(formatSpy).toHaveBeenCalledWith(SourceTypeName.KML);
+				expect(formatSpy).toHaveBeenCalled();
 			});
 
 			it('writes features as KML ', () => {
