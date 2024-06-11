@@ -8,8 +8,8 @@ import { parse } from '../utils/ewkt';
 import { $injector } from '../injection';
 import { LineString, MultiLineString, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
-import { MultiPolygon } from '../../node_modules/ol/geom';
-import { Fill, Stroke, Style } from '../../node_modules/ol/style';
+import { MultiPolygon } from 'ol/geom';
+import { Fill, Stroke, Style } from 'ol/style';
 
 /**
  * Service for exporting vector data

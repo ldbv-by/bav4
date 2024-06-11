@@ -216,6 +216,27 @@ describe('ExportVectorDataService', () => {
 				expect(instance.forData(EWKT_Polygon, new SourceType(SourceTypeName.KML)).startsWith(FORMAT_KML_START)).toBeTrue();
 				expect(instance.forData(GEOJSON_Data, new SourceType(SourceTypeName.KML)).startsWith(FORMAT_KML_START)).toBeTrue();
 			});
+
+			it('applies a default style', () => {
+				const instance = setup();
+
+				spyOn(sourceTypeServiceMock, 'forData')
+					.withArgs(EWKT_LineString)
+					.and.returnValues({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.EWKT) })
+					.withArgs(EWKT_Polygon)
+					.and.returnValues({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.EWKT) });
+
+				expect(
+					instance
+						.forData(EWKT_LineString, new SourceType(SourceTypeName.KML))
+						.includes('<Style><LineStyle><color>ff0000ff</color><width>2</width></LineStyle></Style>')
+				).toBeTrue();
+				expect(
+					instance
+						.forData(EWKT_Polygon, new SourceType(SourceTypeName.KML))
+						.includes('<Style><LineStyle><color>ff0000ff</color><width>2</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style>')
+				).toBeTrue();
+			});
 		});
 
 		describe('GeoJSON', () => {
