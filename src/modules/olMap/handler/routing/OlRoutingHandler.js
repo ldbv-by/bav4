@@ -28,7 +28,7 @@ import { setCategory, setProposal, setRouteAndStats, setWaypoints } from '../../
 import { CoordinateProposalType, RouteCalculationErrors, RoutingStatusCodes } from '../../../../domain/routing';
 import { fit } from '../../../../store/position/position.action';
 import { equals } from '../../../../../node_modules/ol/coordinate';
-import { GeoJSON as GeoJSONFormat } from 'ol/format';
+import { KML as KmlFormat } from 'ol/format';
 import { SourceType, SourceTypeName } from '../../../../domain/sourceType';
 import { bvvRouteStatsProvider } from './routeStats.provider';
 import { clearHighlightFeatures } from '../../../../store/highlight/highlight.action';
@@ -578,6 +578,13 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 	async _updateStore(ghRoute) {
 		const geom = this._polylineToGeometry(ghRoute.paths[0].points);
+		const routeFeature = new Feature({
+			geometry: geom.clone().transform(`EPSG:${this._mapService.getSrid()}`, 'EPSG:4326')
+		});
+		routeFeature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.ROUTE_SEGMENT);
+		routeFeature.set(ROUTING_CATEGORY, this._routingService.getCategoryById(ghRoute.vehicle));
+		routeFeature.setStyle(getRoutingStyleFunction());
+
 		const coordinates = geom.getCoordinates();
 
 		try {
@@ -585,8 +592,8 @@ export class OlRoutingHandler extends OlLayerHandler {
 			const routeStats = this._routeStatsProvider(ghRoute, profileStats);
 
 			const route = {
-				data: new GeoJSONFormat().writeGeometry(geom.clone().transform(`EPSG:${this._mapService.getSrid()}`, 'EPSG:4326')),
-				type: new SourceType(SourceTypeName.GEOJSON)
+				data: new KmlFormat().writeFeatures([routeFeature]),
+				type: new SourceType(SourceTypeName.KML)
 			};
 			setRouteAndStats(route, routeStats);
 		} catch (e) {

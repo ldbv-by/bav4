@@ -794,13 +794,16 @@ describe('OlRoutingHandler', () => {
 				const mockRouteStatsProvider = jasmine.createSpy().withArgs(mockGhRoute, mockProfile.stats).and.returnValue(mockStats);
 				const { instanceUnderTest, store } = await newTestInstance({}, mockRouteStatsProvider);
 				const mapServiceSpy = spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
+				const category = { id: 'hike', style: { routeColor: 'blue' } };
+				spyOn(routingServiceMock, 'getCategoryById').withArgs(mockGhRoute.vehicle).and.returnValue(category);
 				spyOn(elevationServiceMock, 'requestProfile').withArgs(jasmine.any(Array)).and.resolveTo(mockProfile);
 
 				await instanceUnderTest._updateStore(mockGhRoute);
 
 				expect(store.getState().routing.stats).toEqual(mockStats);
-				expect(store.getState().routing.route.type.name).toBe(SourceTypeName.GEOJSON);
-				expect(store.getState().routing.route.data).toContain('LineString');
+				expect(store.getState().routing.route.type.name).toBe(SourceTypeName.KML);
+				expect(store.getState().routing.route.data).toContain('<kml');
+				expect(store.getState().routing.route.data).toContain('<color>ffff0000');
 				expect(mapServiceSpy).toHaveBeenCalled();
 			});
 
@@ -825,7 +828,9 @@ describe('OlRoutingHandler', () => {
 						},
 						mockRouteStatsProvider
 					);
-
+					spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
+					const category = { id: 'hike', style: { routeColor: 'blue' } };
+					spyOn(routingServiceMock, 'getCategoryById').withArgs(mockGhRoute.vehicle).and.returnValue(category);
 					const clearRouteFeaturesSpy = spyOn(instanceUnderTest, '_clearRouteFeatures');
 					spyOn(elevationServiceMock, 'requestProfile').withArgs(jasmine.any(Array)).and.rejectWith(message);
 					const errorSpy = spyOn(console, 'error');
