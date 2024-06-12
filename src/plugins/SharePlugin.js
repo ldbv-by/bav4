@@ -7,6 +7,7 @@ import { $injector } from '../injection';
 import { emitNotification, LevelTypes } from '../store/notifications/notifications.action';
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
+import { PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID, PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID } from './RoutingPlugin';
 
 /**
  * Checks if the current map contains layers that cannot be shared, e.g. locally imported data like KML, and GPX files.
@@ -40,6 +41,10 @@ export class SharePlugin extends BaPlugin {
 				.filter((l) => !l.constraints.hidden)
 				.map((l) => this._geoResourceService.byId(l.geoResourceId))
 				.filter((gr) => gr.hidden)
+				/**
+				 * Routing -related GeoResources are marked as hidden because they are shared by the ROUTE_WAYPOINTS query parameter. Therefore we can ignore them here.
+				 */
+				.filter((gr) => ![PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID, PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID].includes(gr.id))
 				.map((gr) => gr.label);
 
 			if (grLabels.length) {
