@@ -584,6 +584,10 @@ export class OlRoutingHandler extends OlLayerHandler {
 		routeFeature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.ROUTE_SEGMENT);
 		routeFeature.set(ROUTING_CATEGORY, this._routingService.getCategoryById(ghRoute.vehicle));
 		routeFeature.setStyle(getRoutingStyleFunction());
+		routeFeature.set(
+			'name',
+			`${this._translationService.translate('global_app_name')} ${this._translationService.translate('olMap_handler_routing_rt_layer_label')} - ${this._routingService.getCategoryById(ghRoute.vehicle).label}`
+		);
 
 		const coordinates = geom.getCoordinates();
 
@@ -772,8 +776,9 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 	_convertToPermanentLayer() {
 		if (this._routeLayerCopy.getSource().getFeatures().length > 0) {
-			const labelRtLayer = this._translationService.translate('olMap_handler_routing_rt_layer_label');
-			const labelWpLayer = this._translationService.translate('olMap_handler_routing_wp_layer_label');
+			const catLabel = this._routeLayerCopy.getSource().getFeatures()[0].get(ROUTING_CATEGORY).label;
+			const labelRtLayer = `${this._translationService.translate('olMap_handler_routing_rt_layer_label')} - ${catLabel}`;
+			const labelWpLayer = `${this._translationService.translate('olMap_handler_routing_wp_layer_label')} - ${catLabel}`;
 
 			const routeKML = createKML(this._routeLayerCopy, `EPSG:${this._mapService.getSrid()}`);
 			const interactionKML = createKML(this._interactionLayer, `EPSG:${this._mapService.getSrid()}`);
