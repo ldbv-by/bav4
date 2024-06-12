@@ -109,7 +109,7 @@ export const getBvvTileLoadFunction = (geoResourceId, handleUnexpectedStatusCode
 	const { HttpService: httpService, GeoResourceService: geoResourceService } = $injector.inject('HttpService', 'GeoResourceService');
 
 	return async (tile, src) => {
-		const timeout = 3_000;
+		const timeout = 5_000;
 		try {
 			const getObjectUrlWithAuthInterceptor = async (url) => {
 				const response = await httpService.get(

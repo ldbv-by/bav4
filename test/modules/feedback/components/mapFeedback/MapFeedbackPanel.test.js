@@ -40,9 +40,10 @@ const securityServiceMock = {
 	sanitizeHtml: () => {}
 };
 
-const get_EC_DRAW_TOOL_ExtraParameter = () => {
+const get_ExtraParameters = () => {
 	const queryParameters = {};
 	queryParameters[QueryParameters.EC_DRAW_TOOL] = ['point', 'line', 'polygon'];
+	queryParameters[QueryParameters.EC_MAP_ACTIVATION] = false;
 	return queryParameters;
 };
 
@@ -175,7 +176,7 @@ describe('MapFeedbackPanel', () => {
 			const encodeSpy = spyOn(shareServiceMock, 'encodeState').and.callThrough();
 			await setup();
 
-			expect(encodeSpy).toHaveBeenCalledWith({ ...get_EC_DRAW_TOOL_ExtraParameter(), l: jasmine.any(String) }, [PathParameters.EMBED]);
+			expect(encodeSpy).toHaveBeenCalledWith({ ...get_ExtraParameters(), l: jasmine.any(String) }, [PathParameters.EMBED]);
 		});
 
 		describe('and the center property is set', () => {
@@ -185,7 +186,7 @@ describe('MapFeedbackPanel', () => {
 				const encodeSpy = spyOn(shareServiceMock, 'encodeStateForPosition').and.callThrough();
 				element.center = expectedCenter;
 
-				expect(encodeSpy).toHaveBeenCalledWith({ center: expectedCenter }, { ...get_EC_DRAW_TOOL_ExtraParameter(), l: jasmine.any(String) }, [
+				expect(encodeSpy).toHaveBeenCalledWith({ center: expectedCenter }, { ...get_ExtraParameters(), l: jasmine.any(String) }, [
 					PathParameters.EMBED
 				]);
 			});

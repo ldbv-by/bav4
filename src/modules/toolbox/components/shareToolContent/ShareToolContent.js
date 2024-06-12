@@ -9,6 +9,8 @@ import css from './shareToolContent.css';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { openModal } from '../../../../store/modal/modal.action';
 import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
+import { setQueryParams } from '../../../../utils/urlUtils';
+import { QueryParameters } from '../../../../domain/queryParameters';
 
 /**
  * @class
@@ -79,7 +81,7 @@ export class ShareToolContent extends AbstractToolContent {
 	 *@private
 	 */
 	async _generateShortUrl() {
-		const url = this._shareService.encodeState();
+		const url = setQueryParams(this._shareService.encodeState(), { [QueryParameters.TOOL_ID]: '' });
 		try {
 			return await this._urlService.shorten(url);
 		} catch (e) {

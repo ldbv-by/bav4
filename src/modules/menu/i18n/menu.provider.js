@@ -70,7 +70,7 @@ export const provide = (lang) => {
 				menu_navigation_rail_routing: 'Routing',
 				menu_navigation_rail_close: 'Schließen',
 				menu_navigation_rail_zoom_to_extend: 'Ganz Bayern anzeigen',
-				menu_navigation_rail_object_info: 'Object-Info',
+				menu_navigation_rail_object_info: 'Objekt-Info',
 				menu_navigation_rail_zoom_in: 'Karte vergrößern',
 				menu_navigation_rail_zoom_out: 'Karte verkleinern',
 				menu_navigation_rail_search: 'Suchen'

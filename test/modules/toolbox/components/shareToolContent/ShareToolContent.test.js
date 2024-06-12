@@ -45,11 +45,12 @@ describe('ShareToolContent', () => {
 
 	describe('methods', () => {
 		describe('_generateShortUrl', () => {
-			it('generates a short url', async () => {
+			it('generates a short url enforcing the TOOL_ID query parameter', async () => {
 				const mockUrl = 'https://some.url';
+				const mockUrlWithToolId = `${mockUrl}/?tid=`;
 				const mockShortUrl = 'https://short/url';
 				spyOn(shareServiceMock, 'encodeState').and.returnValue(mockUrl);
-				spyOn(urlServiceMock, 'shorten').withArgs(mockUrl).and.returnValue(mockShortUrl);
+				spyOn(urlServiceMock, 'shorten').withArgs(mockUrlWithToolId).and.returnValue(mockShortUrl);
 				const element = await setup();
 
 				const url = await element._generateShortUrl();
@@ -59,15 +60,16 @@ describe('ShareToolContent', () => {
 
 			it('returns the original url in case of error and logs a warn statement', async () => {
 				const mockUrl = 'https://some.url';
+				const mockUrlWithToolId = `${mockUrl}/?tid=`;
 				spyOn(shareServiceMock, 'encodeState').and.returnValue(mockUrl);
-				spyOn(urlServiceMock, 'shorten').withArgs(mockUrl).and.rejectWith('Something got wrong');
+				spyOn(urlServiceMock, 'shorten').and.rejectWith('Something got wrong');
 				const warnSpy = spyOn(console, 'warn');
 				const element = await setup();
 
 				const url = await element._generateShortUrl();
 
 				expect(warnSpy).toHaveBeenCalledWith('Could not shorten url: Something got wrong');
-				expect(url).toBe(mockUrl);
+				expect(url).toBe(mockUrlWithToolId);
 			});
 		});
 	});

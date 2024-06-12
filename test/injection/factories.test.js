@@ -5,7 +5,7 @@ import { $injector } from '../../src/injection/index.js';
 
 describe('fileStorageServiceFactory', () => {
 	const environmentService = {
-		isEmbedded: () => false
+		isEmbeddedAsWC: () => false
 	};
 
 	beforeAll(() => {
@@ -17,7 +17,7 @@ describe('fileStorageServiceFactory', () => {
 	});
 
 	it('provides a (singleton) FileStorageService for embed mode', () => {
-		spyOn(environmentService, 'isEmbedded').and.returnValue(true);
+		spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(true);
 
 		expect(fileStorageServiceFactory() instanceof TempStorageService).toBeTrue();
 		// must be same instance

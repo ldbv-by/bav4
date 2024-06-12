@@ -4,7 +4,20 @@
 .sub-divider {
 	border-left: 0.15em solid transparent;
 	border-bottom: 1px dotted var(--header-background-color);
+	cursor: pointer;
 }
+.sub-icon {
+	margin: auto 0 auto var(--node-level);
+	background: var(--secondary-color);
+	mask: url('../assets/arrowTopRightShort.svg');
+	-webkit-mask: url('../assets/arrowTopRightShort.svg');
+	mask-size: 1em;
+	mask-repeat: no-repeat;
+	position: relative;
+	top: 0.2em;
+	left: 0.5em;
+}
+
 .sub-divider:hover {
 	border-left: 0.15em solid var(--secondary-color);
 }
