@@ -4,6 +4,8 @@
 // @ts-ignore
 import { html } from 'lit-html';
 // @ts-ignore
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
+// @ts-ignore
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
 // @ts-ignore
@@ -20,7 +22,7 @@ const Update_Layers = 'update_layers';
 const Update_Dummy = 'update_dummy';
 const Update_Edit_Mode = 'update_edit_mode';
 
-export const End_Label = '  ';
+export const End_Label = '&nbsp;';
 
 const hasChildrenClass = 'has-children';
 const showChildrenClass = 'show-children';
@@ -141,6 +143,9 @@ export class LayerTree extends MvuElement {
 	}
 
 	update(type, data, model) {
+		console.log('🚀 ~ LayerTree ~ update ~ data:', data);
+		console.log('🚀 ~ LayerTree ~ update ~ type:', type);
+		console.trace('🚀 ~ AdminPanel ~ update ');
 		switch (type) {
 			case Update_Topics:
 				if (!this.#currentTopic && data.length > 0) {
@@ -514,7 +519,7 @@ export class LayerTree extends MvuElement {
 						@dragstart=${(event) => onDragStart(event, entry)}
 						@dragend=${onDragEnd}
 					>
-						${entry.label} ${entry.geoResourceId ? '(' + entry.geoResourceId + ')' : ''}
+						${unsafeHTML(entry.label)} ${entry.geoResourceId ? '(' + entry.geoResourceId + ')' : ''}
 					</span>
 					${entry.children
 						? html`

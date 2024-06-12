@@ -310,6 +310,12 @@ export class AdminPanel extends MvuElement {
 			newCatalogWithResourceData.push({ uid: newUidTop, label: End_Label });
 			newCatalogWithResourceData.forEach((element) => {
 				if (element.children) {
+					// check if there is already an entry with label End_Label
+					const found = element.children.find((child) => child.label === End_Label);
+					if (found) {
+						return;
+					}
+
 					const newUidChild = _generateUniqueId();
 					element.children.push({ uid: newUidChild, label: End_Label });
 				}
