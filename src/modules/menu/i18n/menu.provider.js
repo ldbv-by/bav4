@@ -35,7 +35,9 @@ export const provide = (lang) => {
 				menu_navigation_rail_object_info: 'Object-Info',
 				menu_navigation_rail_zoom_in: 'Zoom in',
 				menu_navigation_rail_zoom_out: 'Zoom out',
-				menu_navigation_rail_search: 'Search'
+				menu_navigation_rail_search: 'Search',
+				menu_navigation_rail_dark_theme: 'Dark Mode',
+				menu_navigation_rail_light_theme: 'Light Mode'
 			};
 
 		case 'de':
@@ -73,7 +75,9 @@ export const provide = (lang) => {
 				menu_navigation_rail_object_info: 'Objekt-Info',
 				menu_navigation_rail_zoom_in: 'Karte vergrößern',
 				menu_navigation_rail_zoom_out: 'Karte verkleinern',
-				menu_navigation_rail_search: 'Suchen'
+				menu_navigation_rail_search: 'Suchen',
+				menu_navigation_rail_dark_theme: 'Dunkles Design',
+				menu_navigation_rail_light_theme: 'Helles Design'
 			};
 
 		default:
