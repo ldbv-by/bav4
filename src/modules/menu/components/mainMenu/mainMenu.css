@@ -114,9 +114,7 @@
 .is-open.is-open-navigationRail .main-menu {
 	transform: translate(33.5em, 0);
 }
-.is-landscape:not(.is-open) .main-menu {
-	width: 28em !important;
-}
+.is-landscape:not(.is-open) .main-menu,
 .is-landscape:not(.is-full-size) .main-menu {
 	width: 28em !important;
 }
