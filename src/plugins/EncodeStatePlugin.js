@@ -43,8 +43,8 @@ export class EncodeStatePlugin extends BaPlugin {
 	}
 
 	_updateHistory() {
-		const encodedState = this.#shareService.encodeState();
-		this.#environmentService.getWindow().history.replaceState(null, '', encodedState);
+		// const encodedState = this.#shareService.encodeState();
+		// this.#environmentService.getWindow().history.replaceState(null, '', encodedState);
 	}
 	_updateWcAttributes() {
 		const params = this.#shareService.getParameters({ includeHiddenGeoResources: true });
