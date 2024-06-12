@@ -64,7 +64,7 @@ li > span {
 	color: #fff;
 }
 
-li > span:hover {
+li > .droppable:hover {
 	background-color: #55af4d;
 }
 
