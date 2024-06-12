@@ -280,6 +280,7 @@ describe('NavigationRail', () => {
 			expect(element.shadowRoot.querySelectorAll('.theme-toggle.pointer')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.sun')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.moon')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.theme-toggle').title).toBe('menu_navigation_rail_dark_theme');
 			expect(store.getState().media.darkSchema).toBeFalse();
 
 			const button = element.shadowRoot.querySelector('.theme-toggle');
@@ -287,6 +288,7 @@ describe('NavigationRail', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.sun')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.moon')).toHaveSize(0);
+			expect(element.shadowRoot.querySelector('.theme-toggle').title).toBe('menu_navigation_rail_light_theme');
 			expect(store.getState().media.darkSchema).toBeTrue();
 		});
 

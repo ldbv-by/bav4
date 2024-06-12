@@ -39,6 +39,8 @@ describe('i18n for menu module', () => {
 		expect(map.menu_navigation_rail_zoom_out).toBe('Karte verkleinern');
 		expect(map.menu_navigation_rail_zoom_in).toBe('Karte vergrößern');
 		expect(map.menu_navigation_rail_search).toBe('Suchen');
+		expect(map.menu_navigation_rail_dark_theme).toBe('Dunkles Design');
+		expect(map.menu_navigation_rail_light_theme).toBe('Helles Design');
 	});
 
 	it('provides translation for en', () => {
@@ -76,10 +78,12 @@ describe('i18n for menu module', () => {
 		expect(map.menu_navigation_rail_zoom_out).toBe('Zoom out');
 		expect(map.menu_navigation_rail_zoom_in).toBe('Zoom in');
 		expect(map.menu_navigation_rail_search).toBe('Search');
+		expect(map.menu_navigation_rail_dark_theme).toBe('Dark Mode');
+		expect(map.menu_navigation_rail_light_theme).toBe('Light Mode');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 32;
+		const expectedSize = 34;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
