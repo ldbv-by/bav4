@@ -518,12 +518,13 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const deleteTopicLevelTree = (topic) => {
-			console.log('🚀 ~ AdminPanel ~ deleteTopicLevelTree ~ topic._id:', topic._id);
+			// console.log('🚀 ~ AdminPanel ~ deleteTopicLevelTree ~ topic._id:', topic._id);
 			this._topicsService.delete(topic._id).then(
 				() => {
 					this.signal(Update_Topics, this.#topics);
 				},
 				(error) => {
+					// eslint-disable-next-line no-console
 					console.log('🚀 ~ AdminPanel ~ deleteTopicLevelTree ~ error:', error);
 				}
 			);
