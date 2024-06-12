@@ -2,14 +2,13 @@
  * @module services/ExportVectorDataService
  */
 
+import { Feature } from 'ol';
 import { KML, GeoJSON, GPX, WKT } from 'ol/format';
+import { Fill, Stroke, Icon, Style } from 'ol/style';
+import { Point, LineString, MultiLineString, Polygon, MultiPolygon } from 'ol/geom';
 import { SourceTypeName, SourceTypeResultStatus } from '../domain/sourceType';
 import { parse } from '../utils/ewkt';
 import { $injector } from '../injection';
-import { LineString, MultiLineString, Polygon } from 'ol/geom';
-import { Feature } from 'ol';
-import { MultiPolygon } from 'ol/geom';
-import { Fill, Stroke, Style } from 'ol/style';
 
 /**
  * Service for exporting vector data
@@ -204,6 +203,7 @@ export class OlExportVectorDataService {
 	}
 
 	_getKmlWriter() {
+		const { IconService: iconService } = $injector.inject('IconService');
 		const format = new KML({ writeStyles: true });
 		const defaultStyle = new Style({
 			stroke: new Stroke({
@@ -214,14 +214,23 @@ export class OlExportVectorDataService {
 				color: [255, 0, 0].concat([0.4])
 			})
 		});
+
+		const getDefaultIconStyle = () => {
+			const symbolSrc = iconService.getIconResult('marker').getUrl('#ff0000');
+			return new Style({ image: new Icon({ anchor: [0.5, 0.5], anchorXUnits: 'fraction', anchorYUnits: 'fraction', src: symbolSrc }) });
+		};
+
+		const applyDefaultStyle = (feature) => {
+			const style = feature.getStyle();
+			if (!style) {
+				const geometry = feature.getGeometry();
+				feature.setStyle(geometry instanceof Point ? getDefaultIconStyle() : defaultStyle);
+			}
+		};
+
 		return (features) => {
 			// set a default style if needed
-			features.forEach((feature) => {
-				const style = feature.getStyle();
-				if (!style) {
-					feature.setStyle(defaultStyle);
-				}
-			});
+			features.forEach(applyDefaultStyle);
 
 			return format.writeFeatures(features);
 		};

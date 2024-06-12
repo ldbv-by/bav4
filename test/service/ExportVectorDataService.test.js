@@ -31,9 +31,18 @@ describe('ExportVectorDataService', () => {
 		forData: () => 'foo/bar'
 	};
 
+	const iconServiceMock = {
+		getIconResult: (idOrBase64) => {
+			return { id: idOrBase64, getUrl: (color) => `backend.url/icon/${color}/${idOrBase64}`, isMonochrome: true };
+		}
+	};
+
 	const setup = () => {
 		TestUtils.setupStoreAndDi({});
-		$injector.registerSingleton('ProjectionService', projectionServiceMock).registerSingleton('SourceTypeService', sourceTypeServiceMock);
+		$injector
+			.registerSingleton('ProjectionService', projectionServiceMock)
+			.registerSingleton('SourceTypeService', sourceTypeServiceMock)
+			.registerSingleton('IconService', iconServiceMock);
 		return new OlExportVectorDataService();
 	};
 
@@ -221,11 +230,18 @@ describe('ExportVectorDataService', () => {
 				const instance = setup();
 
 				spyOn(sourceTypeServiceMock, 'forData')
+					.withArgs(EWKT_Point)
+					.and.returnValues({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.EWKT) })
 					.withArgs(EWKT_LineString)
 					.and.returnValues({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.EWKT) })
 					.withArgs(EWKT_Polygon)
 					.and.returnValues({ status: SourceTypeResultStatus.OK, sourceType: new SourceType(SourceTypeName.EWKT) });
 
+				expect(
+					instance
+						.forData(EWKT_Point, new SourceType(SourceTypeName.KML))
+						.includes('<Style><IconStyle><scale>2</scale><Icon><href>backend.url/icon/#ff0000/marker</href></Icon></IconStyle></Style>')
+				).toBeTrue();
 				expect(
 					instance
 						.forData(EWKT_LineString, new SourceType(SourceTypeName.KML))
