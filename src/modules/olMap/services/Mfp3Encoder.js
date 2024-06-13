@@ -523,6 +523,10 @@ export class BvvMfp3Encoder {
 					if (symbolizer.strokeOpacity) {
 						symbolizer.strokeOpacity *= layerOpacity;
 					}
+
+					if (symbolizer.graphicOpacity) {
+						symbolizer.graphicOpacity *= layerOpacity;
+					}
 				});
 
 				styleCache.set(olStyle, encodedStyle);
@@ -645,7 +649,7 @@ export class BvvMfp3Encoder {
 
 			if (styleProperties.imageSrc) {
 				encoded.externalGraphic = styleProperties.imageSrc;
-				encoded.fillOpacity = 1;
+				encoded.graphicOpacity = 1;
 			}
 
 			if (styleProperties.radius) {
