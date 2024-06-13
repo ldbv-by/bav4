@@ -90,6 +90,7 @@ describe('NavigationRail', () => {
 			expect(element.shadowRoot.querySelectorAll('.home')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.home')).display).toBe('flex');
 			expect(element.shadowRoot.querySelector('.home .text').innerText).toBe('menu_navigation_rail_home');
+			expect(element.shadowRoot.querySelector('.home').title).toBe('menu_navigation_rail_home_tooltip');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.home')).order).toBe('0');
 
 			expect(element.shadowRoot.querySelectorAll('.separator')).toHaveSize(1);
@@ -98,10 +99,12 @@ describe('NavigationRail', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.routing')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('.routing .text').innerText).toBe('menu_navigation_rail_routing');
+			expect(element.shadowRoot.querySelector('.routing').title).toBe('menu_navigation_rail_routing_tooltip');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.routing')).display).toBe('none');
 
 			expect(element.shadowRoot.querySelectorAll('.objectinfo')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('.objectinfo .text').innerText).toBe('menu_navigation_rail_object_info');
+			expect(element.shadowRoot.querySelector('.objectinfo').title).toBe('menu_navigation_rail_object_info_tooltip');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.objectinfo')).display).toBe('none');
 
 			expect(element.shadowRoot.querySelectorAll('.zoom-in')).toHaveSize(1);
