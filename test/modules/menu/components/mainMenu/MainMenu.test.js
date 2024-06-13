@@ -563,6 +563,15 @@ describe('MainMenu', () => {
 
 			expect(window.getComputedStyle(mainMenu).width).toBe(adjustedWidthInPx);
 			expect(slider.value).toBe('50');
+
+			toggle();
+
+			expect(window.getComputedStyle(mainMenu).width).toBe(initialWidthInPx);
+
+			toggle();
+
+			expect(window.getComputedStyle(mainMenu).width).toBe(adjustedWidthInPx);
+			expect(slider.value).toBe('50');
 		});
 
 		it('prevents default event handling and stops its propagation', async () => {

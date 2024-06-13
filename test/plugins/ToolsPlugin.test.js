@@ -6,6 +6,9 @@ import { ToolsPlugin } from '../../src/plugins/ToolsPlugin';
 import { Tools } from '../../src/domain/tools.js';
 import { indicateAttributeChange } from '../../src/store/wcAttribute/wcAttribute.action.js';
 import { wcAttributeReducer } from '../../src/store/wcAttribute/wcAttribute.reducer.js';
+import { setRoute } from '../../src/store/routing/routing.action.js';
+import { routingReducer } from '../../src/store/routing/routing.reducer.js';
+import { setCurrentTool } from '../../src/store/tools/tools.action.js';
 
 describe('ToolsPlugin', () => {
 	const environmentServiceMock = {
@@ -19,7 +22,8 @@ describe('ToolsPlugin', () => {
 			{},
 			{
 				tools: toolsReducer,
-				wcAttribute: wcAttributeReducer
+				wcAttribute: wcAttributeReducer,
+				routing: routingReducer
 			}
 		);
 		$injector.registerSingleton('EnvironmentService', environmentServiceMock);
@@ -28,7 +32,22 @@ describe('ToolsPlugin', () => {
 	};
 
 	describe('register', () => {
-		describe('in default mode', () => {
+		describe('route waypoints are available', () => {
+			it('updates the "tools" slice-of-state after the route was fetched', async () => {
+				const store = setup();
+				setCurrentTool(Tools.ROUTING);
+				const queryParam = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1.1,2.2,3.3,4.4`);
+				const instanceUnderTest = new ToolsPlugin();
+				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				await instanceUnderTest.register(store);
+
+				setRoute({ foo: 'bar' });
+
+				expect(store.getState().tools.current).toBeNull();
+			});
+		});
+
+		describe('tool id is available', () => {
 			it('updates the "tools" slice-of-state', async () => {
 				const store = setup();
 				const queryParam = new URLSearchParams(`${QueryParameters.TOOL_ID}=${Tools.EXPORT}`);

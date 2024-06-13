@@ -20,6 +20,8 @@ import { closeBottomSheet } from '../../src/store/bottomSheet/bottomSheet.action
 import { mapContextMenuReducer } from '../../src/store/mapContextMenu/mapContextMenu.reducer.js';
 import { QueryParameters } from '../../src/domain/queryParameters.js';
 import { removeLayer } from '../../src/store/layers/layers.action.js';
+import { TabIds } from '../../src/domain/mainMenu.js';
+import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer.js';
 
 describe('RoutingPlugin', () => {
 	const routingService = {
@@ -44,7 +46,8 @@ describe('RoutingPlugin', () => {
 			notifications: notificationReducer,
 			bottomSheet: bottomSheetReducer,
 			highlight: highlightReducer,
-			mapContextMenu: mapContextMenuReducer
+			mapContextMenu: mapContextMenuReducer,
+			mainMenu: createNoInitialStateMainMenuReducer()
 		});
 		$injector
 			.registerSingleton('RoutingService', routingService)
@@ -61,14 +64,36 @@ describe('RoutingPlugin', () => {
 
 	describe('register', () => {
 		describe('when routing related query params are available', () => {
-			it('sets "ROUTING" as the current active tool', async () => {
+			it('calls _lazyInitialize and updates the active property', async () => {
 				const store = setup();
 				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2`);
 				const instanceUnderTest = new RoutingPlugin();
 				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParams);
+				const lazyInitializeSpy = spyOn(instanceUnderTest, '_lazyInitialize').and.resolveTo(true);
+
 				await instanceUnderTest.register(store);
 
-				expect(store.getState().tools.current).toBe(Tools.ROUTING);
+				await TestUtils.timeout();
+				await TestUtils.timeout();
+				expect(store.getState().routing.active).toBeTrue();
+				expect(lazyInitializeSpy).toHaveBeenCalled();
+			});
+
+			describe('_lazyInitialize returns "false"', () => {
+				it('does NOT update the active property', async () => {
+					const store = setup();
+					const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2`);
+					const instanceUnderTest = new RoutingPlugin();
+					spyOn(environmentService, 'getQueryParams').and.returnValue(queryParams);
+					const lazyInitializeSpy = spyOn(instanceUnderTest, '_lazyInitialize').and.resolveTo(false);
+
+					await instanceUnderTest.register(store);
+
+					await TestUtils.timeout();
+					await TestUtils.timeout();
+					expect(store.getState().routing.active).toBeFalse();
+					expect(lazyInitializeSpy).toHaveBeenCalled();
+				});
 			});
 
 			it('does nothing when embedded', async () => {
@@ -84,66 +109,82 @@ describe('RoutingPlugin', () => {
 		});
 	});
 
+	describe('_lazyInitialize', () => {
+		it('initializes the routing service and sets the default routing category', async () => {
+			const store = setup({ routing: initialRoutingState });
+			const instanceUnderTest = new RoutingPlugin();
+			await instanceUnderTest.register(store);
+			const routingServiceSpy = spyOn(routingService, 'init').and.resolveTo([]);
+			const categoryId = 'catId';
+			spyOn(routingService, 'getCategories').and.returnValue([{ id: categoryId }]);
+
+			instanceUnderTest._lazyInitialize();
+
+			// we have to wait for two async operations
+			await TestUtils.timeout();
+			expect(routingServiceSpy).toHaveBeenCalled();
+			await TestUtils.timeout();
+			expect(store.getState().routing.categoryId).toBe(categoryId);
+		});
+
+		it('parses the query parameters', async () => {
+			const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2`);
+			const store = setup({ routing: initialRoutingState });
+			const instanceUnderTest = new RoutingPlugin();
+			const parseRouteFromQueryParamsSpy = spyOn(instanceUnderTest, '_parseRouteFromQueryParams');
+			await instanceUnderTest.register(store);
+			spyOn(routingService, 'init').and.resolveTo([]);
+			spyOn(routingService, 'getCategories').and.returnValue([{ id: 'catId' }]);
+			spyOn(environmentService, 'getQueryParams').and.returnValue(queryParams);
+
+			setCurrentTool(Tools.ROUTING);
+
+			// we have to wait for two async operations
+			await TestUtils.timeout();
+			await TestUtils.timeout();
+			expect(parseRouteFromQueryParamsSpy).toHaveBeenCalledOnceWith(queryParams);
+		});
+
+		it('emits a notification when RoutingService#init throws an error', async () => {
+			const message = 'something got wrong';
+			const store = setup();
+			const instanceUnderTest = new RoutingPlugin();
+			await instanceUnderTest.register(store);
+			spyOn(routingService, 'init').and.rejectWith(new Error(message));
+			const errorSpy = spyOn(console, 'error');
+
+			setCurrentTool(Tools.ROUTING);
+
+			// we have to wait for two async operations
+			await TestUtils.timeout();
+			expect(store.getState().notifications.latest.payload.content).toBe('global_routingService_init_exception');
+			expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
+			expect(errorSpy).toHaveBeenCalledWith('Routing service could not be initialized', new Error(message));
+			await TestUtils.timeout();
+			expect(store.getState().routing.active).toBeFalse();
+		});
+	});
+
 	describe('when tools "current" property changes', () => {
 		describe('and not yet initialized ', () => {
-			it('initializes the routing service, sets the default routing category and updates the active property', async () => {
+			it('calls _lazyInitialize and updates the active property', async () => {
 				const store = setup({ routing: initialRoutingState });
 				const instanceUnderTest = new RoutingPlugin();
 				await instanceUnderTest.register(store);
-				const routingServiceSpy = spyOn(routingService, 'init').and.resolveTo([]);
-				const categoryId = 'catId';
-				spyOn(routingService, 'getCategories').and.returnValue([{ id: categoryId }]);
+				const lazyInitializeSpy = spyOn(instanceUnderTest, '_lazyInitialize').and.resolveTo(true);
 
 				setCurrentTool(Tools.ROUTING);
 
 				// we have to wait for two async operations
 				await TestUtils.timeout();
-				expect(routingServiceSpy).toHaveBeenCalled();
 				await TestUtils.timeout();
 				expect(store.getState().routing.active).toBeTrue();
-				expect(store.getState().routing.categoryId).toBe(categoryId);
-			});
-
-			it('parses the query parameters', async () => {
-				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2`);
-				const store = setup({ routing: initialRoutingState });
-				const instanceUnderTest = new RoutingPlugin();
-				const parseRouteFromQueryParamsSpy = spyOn(instanceUnderTest, '_parseRouteFromQueryParams');
-				await instanceUnderTest.register(store);
-				spyOn(routingService, 'init').and.resolveTo([]);
-				spyOn(routingService, 'getCategories').and.returnValue([{ id: 'catId' }]);
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParams);
-
-				setCurrentTool(Tools.ROUTING);
-
-				// we have to wait for two async operations
-				await TestUtils.timeout();
-				await TestUtils.timeout();
-				expect(parseRouteFromQueryParamsSpy).toHaveBeenCalledOnceWith(queryParams);
-			});
-
-			it('emits a notification when RoutingService#init throws an error', async () => {
-				const message = 'something got wrong';
-				const store = setup();
-				const instanceUnderTest = new RoutingPlugin();
-				await instanceUnderTest.register(store);
-				spyOn(routingService, 'init').and.rejectWith(new Error(message));
-				const errorSpy = spyOn(console, 'error');
-
-				setCurrentTool(Tools.ROUTING);
-
-				// we have to wait for two async operations
-				await TestUtils.timeout();
-				expect(store.getState().notifications.latest.payload.content).toBe('global_routingService_init_exception');
-				expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
-				expect(errorSpy).toHaveBeenCalledWith('Routing service could not be initialized', new Error(message));
-				await TestUtils.timeout();
-				expect(store.getState().routing.active).toBeFalse();
+				expect(lazyInitializeSpy).toHaveBeenCalled();
 			});
 		});
 
 		describe('activation', () => {
-			it('updates the active property', async () => {
+			it('updates the active property and sets the correct MainMenu tab', async () => {
 				const store = setup();
 				const instanceUnderTest = new RoutingPlugin();
 				instanceUnderTest._initialized = true;
@@ -155,6 +196,8 @@ describe('RoutingPlugin', () => {
 				await TestUtils.timeout();
 				await TestUtils.timeout();
 				expect(store.getState().routing.active).toBeTrue();
+				expect(store.getState().routing.active).toBeTrue();
+				expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
 			});
 		});
 
@@ -304,11 +347,11 @@ describe('RoutingPlugin', () => {
 			expect(store.getState().highlight.features[0].id).toBe(RoutingPlugin.HIGHLIGHT_FEATURE_ID);
 		});
 
-		it('prevents selecting a waypoint for removal when it is the only one', async () => {
+		it('prevents selecting a waypoint for removal when no one is available', async () => {
 			const store = setup({
 				routing: {
 					...initialRoutingState,
-					waypoints: [[21, 42]]
+					waypoints: []
 				},
 				tools: {
 					current: Tools.ROUTING

@@ -62,30 +62,35 @@ export class RoutingPlugin extends BaPlugin {
 		this.#routingService = routingService;
 	}
 
+	async _lazyInitialize() {
+		if (!this._initialized) {
+			// let's initial the routing service
+			try {
+				await this.#routingService.init();
+				setCategory(this.#routingService.getCategories()[0]?.id);
+				// parse query parameters if available
+				this._parseRouteFromQueryParams(this.#environmentService.getQueryParams());
+				return (this._initialized = true);
+			} catch (ex) {
+				console.error('Routing service could not be initialized', ex);
+				emitNotification(`${this.#translationService.translate('global_routingService_init_exception')}`, LevelTypes.ERROR);
+			}
+			return false;
+		}
+		return true;
+	}
+
 	/**
 	 * @override
 	 */
 	async register(store) {
-		const lazyInitialize = async () => {
-			if (!this._initialized) {
-				// let's initial the routing service
-				try {
-					await this.#routingService.init();
-					setCategory(this.#routingService.getCategories()[0]?.id);
-					// parse query parameters if available
-					this._parseRouteFromQueryParams(this.#environmentService.getQueryParams());
-					return (this._initialized = true);
-				} catch (ex) {
-					console.error('Routing service could not be initialized', ex);
-					emitNotification(`${this.#translationService.translate('global_routingService_init_exception')}`, LevelTypes.ERROR);
-				}
-				return false;
-			}
-			return true;
-		};
-
 		if (!this.#environmentService.isEmbedded() && this.#environmentService.getQueryParams().has(QueryParameters.ROUTE_WAYPOINTS)) {
-			setCurrentTool(Tools.ROUTING); // implicitly calls onToolChanged()
+			if (await this._lazyInitialize()) {
+				// we activate the tool after another possible active tool was deactivated
+				setTimeout(() => {
+					activate();
+				});
+			}
 		}
 
 		const onToolChanged = async (toolId) => {
@@ -94,7 +99,7 @@ export class RoutingPlugin extends BaPlugin {
 				closeBottomSheet();
 				deactivate();
 			} else {
-				if (await lazyInitialize()) {
+				if (await this._lazyInitialize()) {
 					// we activate the tool after another possible active tool was deactivated
 					setTimeout(() => {
 						activate();
@@ -119,7 +124,7 @@ export class RoutingPlugin extends BaPlugin {
 		const onProposalChange = (proposal, state) => {
 			const { coord, type: proposalType } = proposal;
 
-			if (proposalType === CoordinateProposalType.EXISTING_START_OR_DESTINATION && state.routing.waypoints.length < 2) {
+			if (proposalType === CoordinateProposalType.EXISTING_START_OR_DESTINATION && state.routing.waypoints.length < 1) {
 				return;
 			}
 

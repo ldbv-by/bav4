@@ -1197,6 +1197,7 @@ describe('OlDrawHandler', () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
 
+				expect(classUnderTest._getStyleFunctionByDrawType('point', defaultStyleOption)()).toContain(jasmine.any(Style));
 				expect(classUnderTest._getStyleFunctionByDrawType('marker', defaultStyleOption)()).toContain(jasmine.any(Style));
 				expect(classUnderTest._getStyleFunctionByDrawType('text', defaultStyleOption)()).toContain(jasmine.any(Style));
 				expect(classUnderTest._getStyleFunctionByDrawType('line', defaultStyleOption)()).toContain(jasmine.any(Style));
