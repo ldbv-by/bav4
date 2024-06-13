@@ -32,12 +32,12 @@ export const provide = (lang) => {
 				menu_navigation_rail_routing: 'Routing',
 				menu_navigation_rail_close: 'close',
 				menu_navigation_rail_zoom_to_extend: 'Zoom to full extent',
-				menu_navigation_rail_object_info: 'Object-Info',
+				menu_navigation_rail_object_info: 'Object Info',
 				menu_navigation_rail_zoom_in: 'Zoom in',
 				menu_navigation_rail_zoom_out: 'Zoom out',
 				menu_navigation_rail_search: 'Search',
-				menu_navigation_rail_dark_theme: 'Dark Mode',
-				menu_navigation_rail_light_theme: 'Light Mode'
+				menu_navigation_rail_dark_theme: 'Dark mode',
+				menu_navigation_rail_light_theme: 'Light mode'
 			};
 
 		case 'de':

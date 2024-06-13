@@ -74,12 +74,12 @@ describe('i18n for menu module', () => {
 		expect(map.menu_navigation_rail_routing).toBe('Routing');
 		expect(map.menu_navigation_rail_close).toBe('close');
 		expect(map.menu_navigation_rail_zoom_to_extend).toBe('Zoom to full extent');
-		expect(map.menu_navigation_rail_object_info).toBe('Object-Info');
+		expect(map.menu_navigation_rail_object_info).toBe('Object Info');
 		expect(map.menu_navigation_rail_zoom_out).toBe('Zoom out');
 		expect(map.menu_navigation_rail_zoom_in).toBe('Zoom in');
 		expect(map.menu_navigation_rail_search).toBe('Search');
-		expect(map.menu_navigation_rail_dark_theme).toBe('Dark Mode');
-		expect(map.menu_navigation_rail_light_theme).toBe('Light Mode');
+		expect(map.menu_navigation_rail_dark_theme).toBe('Dark mode');
+		expect(map.menu_navigation_rail_light_theme).toBe('Light mode');
 	});
 
 	it('have the expected amount of translations', () => {
