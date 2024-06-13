@@ -180,6 +180,7 @@ export class MapFeedbackPanel extends MvuElement {
 			queryParameters[QueryParameters.LAYER] = this._feedbackService.getOverlayGeoResourceId();
 			queryParameters[QueryParameters.EC_DRAW_TOOL] = ['point', 'line', 'polygon'];
 			queryParameters[QueryParameters.EC_MAP_ACTIVATION] = false;
+			queryParameters[QueryParameters.EC_LINK_TO_APP] = false;
 			return queryParameters;
 		};
 
