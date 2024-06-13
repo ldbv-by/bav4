@@ -29,13 +29,13 @@ export const provide = (lang) => {
 				menu_misc_content_panel_logout: 'Logout',
 
 				menu_navigation_rail_home: 'Home',
-				menu_navigation_rail_home_tooltip: 'Open start view',
+				menu_navigation_rail_home_tooltip: 'Open home screen',
 				menu_navigation_rail_routing: 'Routing',
 				menu_navigation_rail_routing_tooltip: 'Open routing',
 				menu_navigation_rail_close: 'close',
 				menu_navigation_rail_zoom_to_extend: 'Zoom to full extent',
-				menu_navigation_rail_object_info: 'Object-Info',
-				menu_navigation_rail_object_info_tooltip: 'Open Object-Info',
+				menu_navigation_rail_object_info: 'Object Info',
+				menu_navigation_rail_object_info_tooltip: 'Open Object Info',
 				menu_navigation_rail_zoom_in: 'Zoom in',
 				menu_navigation_rail_zoom_out: 'Zoom out',
 				menu_navigation_rail_search: 'Search'
