@@ -182,13 +182,13 @@ export class LayerTree extends MvuElement {
 			// this._updateTopic(newTopic);
 		};
 
-		const openNewTopicDialog = () => {
-			// console.log('🚀 ~ LayerTree ~ openNewTopicDialog ');
-			const title = 'Neue Themen-Konfiguration';
+		// const openNewTopicDialog = () => {
+		// 	// console.log('🚀 ~ LayerTree ~ openNewTopicDialog ');
+		// 	const title = 'Neue Themen-Konfiguration';
 
-			const content = html`<ba-mvu-newtopicpanel .returnNewTopic="${returnNewTopic}" .onSubmit="${returnNewTopic}"></ba-mvu-newtopicpanel>`;
-			openModal(title, content);
-		};
+		// 	const content = html`<ba-mvu-newtopicpanel .returnNewTopic="${returnNewTopic}" .onSubmit="${returnNewTopic}"></ba-mvu-newtopicpanel>`;
+		// 	openModal(title, content);
+		// };
 
 		const insertDraggedGeoResource = (currentCatalogEntryUid, newGeoResourceIdFromList) => {
 			if (newGeoResourceIdFromList === currentGeoResourceId && this.#currentUId === currentCatalogEntryUid) {
@@ -488,21 +488,17 @@ export class LayerTree extends MvuElement {
 			this._updateTopic(event.target.value);
 		};
 
-		const onMouseEnter = (event) => {
-			// , catalogEntry
-			const element = event.target;
-
-			element.style.backgroundColor = 'lightblue';
-		};
-
-		const onMouseLeave = (event) => {
-			const element = event.target;
-
-			element.style.backgroundColor = '';
-		};
-
-		// @mouseover=${(event) => handleMouseEnter(event, entry)}
-		// @mouseout=${(event) => handleMouseLeave(event, entry)}
+		// const onMouseEnter = (event) => {
+		// 	// , catalogEntry
+		// 	const element = event.target;
+		// 	element.style.backgroundColor = 'lightblue';
+		// };
+		// const onMouseLeave = (event) => {
+		// 	const element = event.target;
+		// 	element.style.backgroundColor = '';
+		// };
+		// @mouseenter=${(event) => onMouseEnter(event, entry)}
+		// @mouseleave=${(event) => onMouseLeave(event, entry)}
 
 		const renderEntry = (entry, level) => {
 			// console.log('🚀 ~ LayerTree ~ renderEntry ~ level:', level);
@@ -538,8 +534,6 @@ export class LayerTree extends MvuElement {
 			`;
 		};
 
-		// @mouseenter=${onMouseEnter}
-		// @mouseleave=${onMouseLeave}
 		if (topics) {
 			const sperrText = this.#currentTopic._disabled ? ' -- deaktiviert -- ' : '';
 			const deactivateButtonText = this.#currentTopic._disabled ? 'Ebenenbaum aktivieren' : 'Ebenenbaum deaktivieren';

@@ -519,6 +519,7 @@ export class AdminPanel extends MvuElement {
 
 		const deleteTopicLevelTree = (topic) => {
 			// console.log('🚀 ~ AdminPanel ~ deleteTopicLevelTree ~ topic._id:', topic._id);
+			// eslint-disable-next-line promise/prefer-await-to-then
 			this._topicsService.delete(topic._id).then(
 				() => {
 					this.signal(Update_Topics, this.#topics);

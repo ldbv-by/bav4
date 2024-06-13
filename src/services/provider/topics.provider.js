@@ -70,6 +70,8 @@ export const loadBvvTopics = async () => {
  * @param {string} topicId
  * @returns {Promise<void>}
  */
+// no-unused-vars in next line ?? used in line 77 ??
+// eslint-disable-next-line no-unused-vars
 export const deleteBvvTopic = async (topicId) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 
