@@ -26,12 +26,14 @@ import { isCoordinate } from '../utils/checks';
 export const ROUTING_LAYER_ID = 'routing_layer';
 /**
  * Id of a permanent layer used for displaying a route.
+ * It is also the id of the referenced GeoResource.
  */
-export const PERMANENT_ROUTE_LAYER_ID = 'perm_rt_layer';
+export const PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID = 'perm_rt_layer';
 /**
  * Id of a permanent layer used for displaying the waypoints of a route.
+ * It is also the id of the referenced GeoResource.
  */
-export const PERMANENT_WP_LAYER_ID = 'perm_wp_layer';
+export const PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID = 'perm_wp_layer';
 
 /**
  * This plugin observes the 'active' property of the routing store.
@@ -114,8 +116,8 @@ export class RoutingPlugin extends BaPlugin {
 				clearHighlightFeatures();
 				closeContextMenu();
 				addLayer(ROUTING_LAYER_ID, { constraints: { hidden: true, alwaysTop: true } });
-				removeLayer(PERMANENT_ROUTE_LAYER_ID);
-				removeLayer(PERMANENT_WP_LAYER_ID);
+				removeLayer(PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID);
+				removeLayer(PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID);
 			} else {
 				removeLayer(ROUTING_LAYER_ID);
 			}
@@ -162,7 +164,10 @@ export class RoutingPlugin extends BaPlugin {
 			}
 		};
 		const onLayerRemoved = (eventLike, state) => {
-			if (!state.routing.active && [PERMANENT_ROUTE_LAYER_ID, PERMANENT_WP_LAYER_ID].some((id) => eventLike.payload.includes(id))) {
+			if (
+				!state.routing.active &&
+				[PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID, PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID].some((id) => eventLike.payload.includes(id))
+			) {
 				reset();
 			}
 		};

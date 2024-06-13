@@ -3,7 +3,7 @@
  */
 import { $injector } from '../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
-import { PERMANENT_ROUTE_LAYER_ID, PERMANENT_WP_LAYER_ID, ROUTING_LAYER_ID } from '../../../../plugins/RoutingPlugin';
+import { PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID, PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID, ROUTING_LAYER_ID } from '../../../../plugins/RoutingPlugin';
 import LayerGroup from 'ol/layer/Group';
 import VectorSource from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
@@ -787,19 +787,19 @@ export class OlRoutingHandler extends OlLayerHandler {
 				const fromService = this._geoResourceService.byId(id);
 				return fromService ? fromService : new VectorGeoResource(id, label, VectorSourceType.KML);
 			};
-			const vgrRoute = getOrCreateVectorGeoResource(PERMANENT_ROUTE_LAYER_ID, labelRtLayer)
+			const vgrRoute = getOrCreateVectorGeoResource(PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID, labelRtLayer)
 				.setSource(routeKML, 4326)
 				.setHidden(true)
 				.setAttributionProvider(this._attributionProvider);
-			const vgrInteraction = getOrCreateVectorGeoResource(PERMANENT_WP_LAYER_ID, labelWpLayer)
+			const vgrInteraction = getOrCreateVectorGeoResource(PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID, labelWpLayer)
 				.setSource(interactionKML, 4326)
 				.setHidden(true)
 				.setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource);
 
 			this._geoResourceService.addOrReplace(vgrRoute);
 			this._geoResourceService.addOrReplace(vgrInteraction);
-			addLayer(PERMANENT_ROUTE_LAYER_ID, { constraints: { metaData: false } });
-			addLayer(PERMANENT_WP_LAYER_ID, { constraints: { metaData: false } });
+			addLayer(PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID, { constraints: { metaData: false } });
+			addLayer(PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID, { constraints: { metaData: false } });
 		}
 	}
 }

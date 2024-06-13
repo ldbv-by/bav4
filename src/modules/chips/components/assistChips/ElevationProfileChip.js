@@ -19,7 +19,7 @@ const Update_Profile_Id = 'update_profile_Id';
 export class ElevationProfileChip extends AbstractAssistChip {
 	constructor() {
 		super({
-			profileCoordinates: [],
+			profileCoordinates: null,
 			id: null
 		});
 		const { TranslationService, ElevationService } = $injector.inject('TranslationService', 'ElevationService');
@@ -51,12 +51,12 @@ export class ElevationProfileChip extends AbstractAssistChip {
 
 	isVisible() {
 		const { profileCoordinates, id } = this.getModel();
-		return profileCoordinates.length > 1 || !!id;
+		return profileCoordinates ? profileCoordinates.length > 1 : !!id;
 	}
 
 	onClick() {
 		const { profileCoordinates } = this.getModel();
-		if (profileCoordinates.length > 1) {
+		if (profileCoordinates?.length > 1) {
 			this._elevationService.requestProfile(profileCoordinates);
 		}
 		openProfile();

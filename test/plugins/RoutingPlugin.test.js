@@ -1,4 +1,9 @@
-import { RoutingPlugin, ROUTING_LAYER_ID, PERMANENT_ROUTE_LAYER_ID, PERMANENT_WP_LAYER_ID } from '../../src/plugins/RoutingPlugin';
+import {
+	RoutingPlugin,
+	ROUTING_LAYER_ID,
+	PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID,
+	PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID
+} from '../../src/plugins/RoutingPlugin';
 
 import { TestUtils } from '../test-utils.js';
 import { createDefaultLayer, layersReducer } from '../../src/store/layers/layers.reducer';
@@ -246,7 +251,7 @@ describe('RoutingPlugin', () => {
 
 		it('removes the permanent layers', async () => {
 			const store = setup({
-				layers: { active: [createDefaultLayer(PERMANENT_ROUTE_LAYER_ID), createDefaultLayer(PERMANENT_WP_LAYER_ID)] }
+				layers: { active: [createDefaultLayer(PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID), createDefaultLayer(PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID)] }
 			});
 			const instanceUnderTest = new RoutingPlugin();
 			instanceUnderTest._initialized = true;
@@ -450,14 +455,14 @@ describe('RoutingPlugin', () => {
 			it('resets the waypoint s-o-s when PERMANENT_ROUTE_LAYER_ID layer was removed', async () => {
 				const store = setup({
 					routing: { ...initialRoutingState, waypoints: [[0, 1]] },
-					layers: { ...initialLayersState, active: [createDefaultLayer(PERMANENT_ROUTE_LAYER_ID)] }
+					layers: { ...initialLayersState, active: [createDefaultLayer(PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID)] }
 				});
 				const instanceUnderTest = new RoutingPlugin();
 				instanceUnderTest._initialized = true;
 				await instanceUnderTest.register(store);
 				deactivate();
 
-				removeLayer(PERMANENT_ROUTE_LAYER_ID);
+				removeLayer(PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID);
 
 				expect(store.getState().routing.waypoints).toHaveSize(0);
 			});
@@ -465,14 +470,14 @@ describe('RoutingPlugin', () => {
 			it('resets the waypoint s-o-s when PERMANENT_WP_LAYER_ID layer was removed', async () => {
 				const store = setup({
 					routing: { ...initialRoutingState, waypoints: [[0, 1]] },
-					layers: { ...initialLayersState, active: [createDefaultLayer(PERMANENT_WP_LAYER_ID)] }
+					layers: { ...initialLayersState, active: [createDefaultLayer(PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID)] }
 				});
 				const instanceUnderTest = new RoutingPlugin();
 				instanceUnderTest._initialized = true;
 				await instanceUnderTest.register(store);
 				deactivate();
 
-				removeLayer(PERMANENT_WP_LAYER_ID);
+				removeLayer(PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID);
 
 				expect(store.getState().routing.waypoints).toHaveSize(0);
 			});
@@ -481,14 +486,14 @@ describe('RoutingPlugin', () => {
 		it('does noting when routing is currently active', async () => {
 			const store = setup({
 				routing: { ...initialRoutingState, waypoints: [[0, 1]] },
-				layers: { ...initialLayersState, active: [createDefaultLayer(PERMANENT_ROUTE_LAYER_ID)] }
+				layers: { ...initialLayersState, active: [createDefaultLayer(PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID)] }
 			});
 			const instanceUnderTest = new RoutingPlugin();
 			instanceUnderTest._initialized = true;
 			await instanceUnderTest.register(store);
 			activate();
 
-			removeLayer(PERMANENT_ROUTE_LAYER_ID);
+			removeLayer(PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID);
 
 			expect(store.getState().routing.waypoints).toHaveSize(1);
 		});
