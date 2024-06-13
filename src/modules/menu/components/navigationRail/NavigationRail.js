@@ -96,6 +96,10 @@ export class NavigationRail extends MvuElement {
 			return darkSchema ? 'sun' : 'moon';
 		};
 
+		const getTooltip = () => {
+			return darkSchema ? 'menu_navigation_rail_light_theme' : 'menu_navigation_rail_dark_theme';
+		};
+
 		const openTab = (tabId) => {
 			if (tabId === TabIds.ROUTING) {
 				setCurrentTool(Tools.ROUTING);
@@ -182,7 +186,7 @@ export class NavigationRail extends MvuElement {
 						<span class="text">${translate('menu_navigation_rail_close')}</span>
 					</button>
 
-					<button @click="${toggleSchema}" class=" ${getSchemaClass()} theme-toggle pointer">
+					<button @click="${toggleSchema}" title="${translate(getTooltip())}" class=" ${getSchemaClass()} theme-toggle pointer">
 						<span class="icon "> </span>
 					</button>
 				</div>
