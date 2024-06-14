@@ -96,6 +96,10 @@ export class NavigationRail extends MvuElement {
 			return darkSchema ? 'sun' : 'moon';
 		};
 
+		const getTooltip = () => {
+			return darkSchema ? 'menu_navigation_rail_light_theme' : 'menu_navigation_rail_dark_theme';
+		};
+
 		const openTab = (tabId) => {
 			if (tabId === TabIds.ROUTING) {
 				setCurrentTool(Tools.ROUTING);
@@ -138,12 +142,17 @@ export class NavigationRail extends MvuElement {
 			</style>
 			<div class="${classMap(classes)}">
 				<div class="navigation-rail__container">
-					<button class="home ${getIsActive(TabIds.MAPS)}" @click="${() => openTab(TabIds.MAPS)}">
+					<button
+						title="${translate('menu_navigation_rail_home_tooltip')}"
+						class="home ${getIsActive(TabIds.MAPS)}"
+						@click="${() => openTab(TabIds.MAPS)}"
+					>
 						<span class="icon "> </span>
 						<span class="text"> ${translate('menu_navigation_rail_home')} </span>
 					</button>
 					<span class="separator landscape"> </span>
 					<button
+						title="${translate('menu_navigation_rail_routing_tooltip')}"
 						class="routing ${getIsVisible(TabIds.ROUTING)} ${getIsActive(TabIds.ROUTING)}"
 						@click="${() => openTab(TabIds.ROUTING)}"
 						style="order:${getFlexOrder(TabIds.ROUTING)}"
@@ -152,6 +161,7 @@ export class NavigationRail extends MvuElement {
 						<span class="text">${translate('menu_navigation_rail_routing')}</span>
 					</button>
 					<button
+						title="${translate('menu_navigation_rail_object_info_tooltip')}"
 						class=" objectinfo ${getIsVisible(TabIds.FEATUREINFO)} ${getIsActive(TabIds.FEATUREINFO)}"
 						@click="${() => openTab(TabIds.FEATUREINFO)}"
 						style="order:${getFlexOrder(TabIds.FEATUREINFO)}"
@@ -176,7 +186,7 @@ export class NavigationRail extends MvuElement {
 						<span class="text">${translate('menu_navigation_rail_close')}</span>
 					</button>
 
-					<button @click="${toggleSchema}" class=" ${getSchemaClass()} theme-toggle pointer">
+					<button @click="${toggleSchema}" title="${translate(getTooltip())}" class=" ${getSchemaClass()} theme-toggle pointer">
 						<span class="icon "> </span>
 					</button>
 				</div>

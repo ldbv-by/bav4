@@ -665,7 +665,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_getStyleFunctionByDrawType(drawType, styleOption) {
-		const drawTypes = [StyleTypes.MARKER, StyleTypes.TEXT, StyleTypes.LINE, StyleTypes.POLYGON];
+		const drawTypes = [StyleTypes.POINT, StyleTypes.MARKER, StyleTypes.TEXT, StyleTypes.LINE, StyleTypes.POLYGON];
 		if (drawTypes.includes(drawType)) {
 			const styleFunction = this._styleService.getStyleFunction(drawType);
 			return () => styleFunction(styleOption);

@@ -60,6 +60,8 @@ export class CatalogNode extends AbstractContentPanel {
 				return html`<div><ba-catalog-leaf .data=${child}></ba-catalog-leaf></div>`;
 			});
 
+			const nodeLevelCss = `.sub-divider{--node-level: ${this._level - 1}em;}`;
+
 			if (this._level === 0) {
 				return html`
 					<style>
@@ -77,11 +79,19 @@ export class CatalogNode extends AbstractContentPanel {
 				`;
 			} else {
 				return html`
+					<style>
+						${nodeLevelCss}
+						${css}
+					</style>
 					<div class="sub-divider">
-						<div class="ba-list-item  ba-list-item__sub-header">
-							<span class="ba-list-item__text  ba-list-item__primary-text">${label}</span>
+						<div class="ba-list-item  ba-list-item__sub-header" @click="${toggleCollapse}">
+							<span class="sub-icon"></span>
+							<span class="ba-list-item__text  ba-list-item__primary-text"> ${label}</span>
+							<span class="ba-list-item__after">
+								<i class="icon icon-rotate-90 chevron ${classMap(iconCollapseClass)}"></i>
+							</span>
 						</div>
-						<div>${childElements}</div>
+						<div class=" collapse-content ${classMap(bodyCollapseClass)}"><div>${childElements}</div></div>
 					</div>
 				`;
 			}

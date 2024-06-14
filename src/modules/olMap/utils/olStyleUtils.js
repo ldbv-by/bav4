@@ -25,7 +25,7 @@ const White_Color = [255, 255, 255];
 const Black_Color = [0, 0, 0];
 const Transparent_Color = [0, 0, 0, 0];
 const Default_Symbol = 'marker';
-const Default_Font = 'normal 16px OpenSans';
+const Default_Font = 'normal 16px Open Sans';
 
 /**
  * @typedef StyleOption
@@ -267,7 +267,7 @@ export const defaultClusterStyleFunction = () => {
 							fill: new Fill({
 								color: White_Color
 							}),
-							font: Default_Font
+							font: 'normal 12px Open Sans'
 						})
 					})
 				];

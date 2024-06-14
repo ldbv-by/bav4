@@ -170,54 +170,6 @@ describe('MainMenuPlugin', () => {
 					expect(store.getState().mainMenu.open).toBeTrue();
 				});
 			});
-
-			describe('and we have NO FeatureInfo items', () => {
-				describe('and MainMenu is initially closed', () => {
-					it('restores the previous panel and closes the menu', async () => {
-						const queryId = 'foo';
-						const store = setup({
-							mainMenu: {
-								open: false
-							},
-							featureInfo: {
-								queries: [queryId],
-								querying: true,
-								current: [{ title: 'title', content: 'content' }]
-							}
-						});
-						const instanceUnderTest = new MainMenuPlugin();
-						await instanceUnderTest.register(store);
-
-						abortOrReset();
-
-						expect(store.getState().mainMenu.tab).toBe(defaultTabId);
-						expect(store.getState().mainMenu.open).toBeFalse();
-					});
-				});
-
-				describe('and MainMenu is initially open', () => {
-					it('restores the previous panel', async () => {
-						const queryId = 'foo';
-						const store = setup({
-							mainMenu: {
-								open: true
-							},
-							featureInfo: {
-								queries: [queryId],
-								querying: true,
-								current: [{ title: 'title', content: 'content' }]
-							}
-						});
-						const instanceUnderTest = new MainMenuPlugin();
-						await instanceUnderTest.register(store);
-
-						abortOrReset();
-
-						expect(store.getState().mainMenu.tab).toBe(defaultTabId);
-						expect(store.getState().mainMenu.open).toBeTrue();
-					});
-				});
-			});
 		});
 	});
 

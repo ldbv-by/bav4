@@ -185,7 +185,42 @@ h5 {
 	margin: 1em 0;
 }
 
-/* just for grundsteuer release, should be removed later */
-.grundsteuer p {
-	padding: 0 0 0.8em 0;
+.button {
+	cursor: pointer;
+	padding: 0.8em 1em;
+	background: transparent;
+	background-color: transparent;
+	border: none;
+	font-weight: bold;
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
+}
+.primary {
+	background-color: var(--primary-color);
+	color: var(--text3);
+	opacity: 0.8;
+}
+.secondary {
+	background-color: var(--primary-bg-color);
+	color: var(--primary-color);
+}
+.primary.button:focus-visible {
+	opacity: 1;
+}
+.secondary.button:focus-visible {
+	background: var(--primary-color);
+	color: var(--text3);
+}
+.secondary.button:focus-visible,
+.primary.button:focus-visible,
+.loading.button:focus-visible {
+	box-shadow: 0 0 0 0.2em var(--primary-color-lighter);
+}
+.primary:hover {
+	opacity: 1;
+	text-decoration: none;
+}
+.secondary:hover {
+	background: var(--primary-color);
+	color: var(--text3);
+	text-decoration: none;
 }

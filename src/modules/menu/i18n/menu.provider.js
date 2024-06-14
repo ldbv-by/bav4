@@ -29,13 +29,18 @@ export const provide = (lang) => {
 				menu_misc_content_panel_logout: 'Logout',
 
 				menu_navigation_rail_home: 'Home',
+				menu_navigation_rail_home_tooltip: 'Open home screen',
 				menu_navigation_rail_routing: 'Routing',
+				menu_navigation_rail_routing_tooltip: 'Open routing',
 				menu_navigation_rail_close: 'close',
 				menu_navigation_rail_zoom_to_extend: 'Zoom to full extent',
-				menu_navigation_rail_object_info: 'Object-Info',
+				menu_navigation_rail_object_info: 'Object Info',
+				menu_navigation_rail_object_info_tooltip: 'Open Object Info',
 				menu_navigation_rail_zoom_in: 'Zoom in',
 				menu_navigation_rail_zoom_out: 'Zoom out',
-				menu_navigation_rail_search: 'Search'
+				menu_navigation_rail_search: 'Search',
+				menu_navigation_rail_dark_theme: 'Dark mode',
+				menu_navigation_rail_light_theme: 'Light mode'
 			};
 
 		case 'de':
@@ -67,13 +72,18 @@ export const provide = (lang) => {
 				menu_misc_content_panel_logout: 'Logout',
 
 				menu_navigation_rail_home: 'Home',
+				menu_navigation_rail_home_tooltip: 'Startansicht öffnen',
 				menu_navigation_rail_routing: 'Routing',
+				menu_navigation_rail_routing_tooltip: 'Routing öffnen',
 				menu_navigation_rail_close: 'Schließen',
 				menu_navigation_rail_zoom_to_extend: 'Ganz Bayern anzeigen',
-				menu_navigation_rail_object_info: 'Object-Info',
+				menu_navigation_rail_object_info: 'Objekt-Info',
+				menu_navigation_rail_object_info_tooltip: 'Objekt-Info öffnen',
 				menu_navigation_rail_zoom_in: 'Karte vergrößern',
 				menu_navigation_rail_zoom_out: 'Karte verkleinern',
-				menu_navigation_rail_search: 'Suchen'
+				menu_navigation_rail_search: 'Suchen',
+				menu_navigation_rail_dark_theme: 'Dunkles Design',
+				menu_navigation_rail_light_theme: 'Helles Design'
 			};
 
 		default:

@@ -41,7 +41,6 @@ const mediaReducer = (state, action) => {
 
 /**
  * Provides a media reducer which has no initial state
- * @param {object} initialState
  * @returns media reducer
  */
 export const createNoInitialStateMediaReducer = () => {

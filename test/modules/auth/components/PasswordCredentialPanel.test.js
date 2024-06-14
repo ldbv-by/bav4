@@ -51,7 +51,7 @@ describe('PasswordCredentialPanel', () => {
 			const instanceUnderTest = new PasswordCredentialPanel();
 
 			expect(instanceUnderTest._authenticate).toBeDefined();
-			expect(instanceUnderTest._authenticate()).toBeFalse();
+			await expectAsync(instanceUnderTest._authenticate()).toBeResolvedTo(false);
 
 			expect(instanceUnderTest._onClose).toBeDefined();
 		});

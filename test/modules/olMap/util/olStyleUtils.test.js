@@ -40,7 +40,7 @@ import CircleStyle from 'ol/style/Circle';
 import { hexToRgb } from '../../../../src/utils/colors';
 
 const Rgb_Black = [0, 0, 0];
-const Expected_Text_Font = 'normal 16px OpenSans';
+const Expected_Text_Font = 'normal 16px Open Sans';
 
 const configService = {
 	getValue: () => {},
@@ -843,7 +843,7 @@ describe('defaultClusterStyleFunction', () => {
 			fill: new Fill({
 				color: [255, 255, 255]
 			}),
-			font: 'normal 16px OpenSans'
+			font: 'normal 12px Open Sans'
 		})
 	});
 
@@ -1288,7 +1288,7 @@ describe('util functions creating a text style', () => {
 	);
 	const resolution = 1;
 
-	const hasTextStyle = (style) => {
+	const hasTextStyle = (style, expectedFont = Expected_Text_Font) => {
 		if (!style) {
 			return false;
 		}
@@ -1297,7 +1297,7 @@ describe('util functions creating a text style', () => {
 			return false;
 		}
 
-		if (style.getText().getFont() !== Expected_Text_Font) {
+		if (style.getText().getFont() !== expectedFont) {
 			return false;
 		}
 		return true;
@@ -1316,7 +1316,7 @@ describe('util functions creating a text style', () => {
 		expect(markerStyles.some((style) => hasTextStyle(style))).toBeTrue();
 		expect(defaultTextStyles.some((style) => hasTextStyle(style))).toBeTrue();
 		expect(customTextStyles.some((style) => hasTextStyle(style))).toBeTrue();
-		expect(clusterStyles.some((style) => hasTextStyle(style))).toBeTrue();
+		expect(clusterStyles.some((style) => hasTextStyle(style, 'normal 12px Open Sans'))).toBeTrue();
 	});
 
 	it('does NOT creates a text style', () => {

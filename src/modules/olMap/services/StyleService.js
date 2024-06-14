@@ -181,6 +181,7 @@ export class StyleService {
 				return lineStyleFunction;
 			case StyleTypes.POLYGON:
 				return polygonStyleFunction;
+			case StyleTypes.POINT:
 			case StyleTypes.MARKER:
 				return markerStyleFunction;
 			case StyleTypes.TEXT:
