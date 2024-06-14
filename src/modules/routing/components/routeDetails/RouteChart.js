@@ -9,6 +9,7 @@ import Chart from 'chart.js/auto';
 import css from './routeChart.css';
 import { $injector } from '../../../../injection/index';
 import { resetHighlightedSegments, setHighlightedSegments } from '../../../../store/routing/routing.action';
+import { Color } from '../../../../../node_modules/maplibre-gl/dist/maplibre-gl';
 
 /**
  * @typedef {Object} RoutingChartData
@@ -25,6 +26,9 @@ import { resetHighlightedSegments, setHighlightedSegments } from '../../../../st
  * @property {string} image the stringified image, visualizing the chart item
  * @property {string} color the stringified color as rgba-value
  */
+
+const Color_Transparent = 'transparent';
+const Color_Transparent_Contrast = '#999'; // a color as visual counterpart for elements with transparent fill, the contrast color should be used to determine the form of the elements (i.e. used as border color)
 
 const Update_Items = 'update_items';
 const Update_Label = 'update_label';
@@ -92,9 +96,7 @@ export class RouteChart extends MvuElement {
 			return item.image ? `${style}; background-image: ${item.image}` : style;
 		};
 
-		const getLegendValue = (item) => {
-			return this.#unitsService.formatDistance(item.data.absolute);
-		};
+		const getLegendValue = (item) => this.#unitsService.formatDistance(item.data.absolute);
 
 		const onMouseOver = (item) => {
 			setHighlightedSegments({ segments: item.data.segments, zoomToExtent: false });
@@ -135,17 +137,7 @@ export class RouteChart extends MvuElement {
 	}
 
 	_getChartConfig(items, title) {
-		const getLegendValue = (item) => {
-			const value = item.data.absolute;
-
-			const formattedInMeter = (value) => value.toFixed(0) + ' m';
-			const formattedInKilometer = (value) => {
-				const meterInKilometer = (value) => value / 1000;
-				return value < 5000 ? meterInKilometer(value).toFixed(2) + ' km' : meterInKilometer(value).toFixed(0) + ' km';
-			};
-
-			return value < 1000 ? formattedInMeter(value) : formattedInKilometer(value);
-		};
+		const getLegendValue = (item) => this.#unitsService.formatDistance(item.data.absolute);
 
 		const data = {
 			labels: items.map((item) => item.label),
@@ -154,6 +146,8 @@ export class RouteChart extends MvuElement {
 					label: title,
 					data: items.map((item) => (item.data.relative ? Math.max(item.data.relative, 1) : item.data.relative)),
 					backgroundColor: items.map((item) => item.color),
+					borderWidth: 1,
+					borderColor: items.map((item) => (item.color === Color_Transparent ? Color_Transparent_Contrast : Color_Transparent)),
 					hoverBorderWidth: 2,
 					hoverOffset: 4
 				}
@@ -183,7 +177,8 @@ export class RouteChart extends MvuElement {
 				},
 				borderWidth: 0,
 				borderAlign: 'inner',
-				cutout: '80%'
+				cutout: '80%',
+				layout: { padding: 3 }
 			}
 		};
 	}
