@@ -9,7 +9,6 @@ import Chart from 'chart.js/auto';
 import css from './routeChart.css';
 import { $injector } from '../../../../injection/index';
 import { resetHighlightedSegments, setHighlightedSegments } from '../../../../store/routing/routing.action';
-import { Color } from '../../../../../node_modules/maplibre-gl/dist/maplibre-gl';
 
 /**
  * @typedef {Object} RoutingChartData
