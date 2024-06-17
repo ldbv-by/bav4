@@ -69,19 +69,49 @@ describe('RoutingPlugin', () => {
 
 	describe('register', () => {
 		describe('when routing related query params are available', () => {
-			it('calls _lazyInitialize and updates the active property', async () => {
-				const store = setup();
-				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2`);
-				const instanceUnderTest = new RoutingPlugin();
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParams);
-				const lazyInitializeSpy = spyOn(instanceUnderTest, '_lazyInitialize').and.resolveTo(true);
+			describe('exactly one waypoint', () => {
+				it('calls _lazyInitialize, updates the active property and set the correct tab id', async () => {
+					const store = setup();
+					const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2`);
+					const instanceUnderTest = new RoutingPlugin();
+					spyOn(environmentService, 'getQueryParams').and.returnValue(queryParams);
+					const lazyInitializeSpy = spyOn(instanceUnderTest, '_lazyInitialize').and.resolveTo(true);
+					await instanceUnderTest.register(store);
+					spyOn(instanceUnderTest, '_parseWaypoints')
+						.withArgs(queryParams)
+						.and.returnValue([[1, 2]]);
 
-				await instanceUnderTest.register(store);
+					await TestUtils.timeout();
+					await TestUtils.timeout();
+					expect(store.getState().routing.active).toBeTrue();
+					expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
+					expect(lazyInitializeSpy).toHaveBeenCalled();
+				});
+			});
 
-				await TestUtils.timeout();
-				await TestUtils.timeout();
-				expect(store.getState().routing.active).toBeTrue();
-				expect(lazyInitializeSpy).toHaveBeenCalled();
+			describe('more then one waypoint', () => {
+				it('calls _lazyInitialize and updates the active property', async () => {
+					const store = setup({mainMenu:{
+						tab: TabIds.MAPS
+					}});
+					const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2,3,4`);
+					const instanceUnderTest = new RoutingPlugin();
+					spyOn(environmentService, 'getQueryParams').and.returnValue(queryParams);
+					const lazyInitializeSpy = spyOn(instanceUnderTest, '_lazyInitialize').and.resolveTo(true);
+					await instanceUnderTest.register(store);
+					spyOn(instanceUnderTest, '_parseWaypoints')
+						.withArgs(queryParams)
+						.and.returnValue([
+							[1, 2],
+							[3, 4]
+						]);
+
+					await TestUtils.timeout();
+					await TestUtils.timeout();
+					expect(store.getState().routing.active).toBeTrue();
+					expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
+					expect(lazyInitializeSpy).toHaveBeenCalled();
+				});
 			});
 
 			describe('_lazyInitialize returns "false"', () => {

@@ -91,6 +91,10 @@ export class RoutingPlugin extends BaPlugin {
 				// we activate the tool after another possible active tool was deactivated
 				setTimeout(() => {
 					activate();
+					// when we have a destination proposal we always open the routing tab
+					if (this._parseWaypoints(this.#environmentService.getQueryParams()).length === 1) {
+						setTab(TabIds.ROUTING);
+					}
 				});
 			}
 		}
@@ -196,20 +200,21 @@ export class RoutingPlugin extends BaPlugin {
 		);
 	}
 
+	_parseWaypoints(queryParams) {
+		const waypointsAsString = queryParams.get(QueryParameters.ROUTE_WAYPOINTS);
+		const waypoints = [];
+		const routeValues = waypointsAsString.split(',');
+		if (routeValues.length > 1 && routeValues.length % 2 === 0) {
+			for (let index = 0; index < routeValues.length - 1; index = index + 2) {
+				waypoints.push([parseFloat(routeValues[index]), parseFloat(routeValues[index + 1])]);
+			}
+		}
+		return waypoints.filter((c) => isCoordinate(c));
+	}
+
 	_parseRouteFromQueryParams(queryParams) {
 		if (queryParams.has(QueryParameters.ROUTE_WAYPOINTS)) {
-			const parseWaypoints = (waypointsAsString) => {
-				const waypoints = [];
-				const routeValues = waypointsAsString.split(',');
-				if (routeValues.length > 1 && routeValues.length % 2 === 0) {
-					for (let index = 0; index < routeValues.length - 1; index = index + 2) {
-						waypoints.push([parseFloat(routeValues[index]), parseFloat(routeValues[index + 1])]);
-					}
-				}
-				return waypoints.filter((c) => isCoordinate(c));
-			};
-
-			const waypoints = parseWaypoints(queryParams.get(QueryParameters.ROUTE_WAYPOINTS));
+			const waypoints = this._parseWaypoints(queryParams);
 			if (waypoints.length > 0) {
 				if (queryParams.has(QueryParameters.ROUTE_CATEGORY)) {
 					const catId = queryParams.get(QueryParameters.ROUTE_CATEGORY);
