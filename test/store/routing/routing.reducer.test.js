@@ -191,7 +191,7 @@ describe('routingReducer', () => {
 		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Ok);
 	});
 
-	it('sets always start waypoint', () => {
+	it('sets always the start waypoint', () => {
 		const store = setup({
 			routing: {
 				waypoints: [[11, 22]],
@@ -202,7 +202,7 @@ describe('routingReducer', () => {
 		setForceStart([11, 22, 'foo']);
 
 		expect(store.getState().routing.waypoints).toEqual([[11, 22]]);
-		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Start_Destination_Missing);
+		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Start_Missing);
 
 		setForceStart([33, 44]);
 
