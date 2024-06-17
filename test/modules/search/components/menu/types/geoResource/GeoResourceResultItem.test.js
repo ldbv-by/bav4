@@ -424,7 +424,7 @@ describe('GeoResourceResultItem', () => {
 				const infoButton = element.shadowRoot.querySelector('.info-button');
 				infoButton.click();
 
-				expect(store.getState().modal.data.title).toBe('label');
+				expect(store.getState().modal.data.title).toBe('labelFormatted');
 				const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 				expect(wrapperElement.querySelectorAll(GeoResourceInfoPanel.tag)).toHaveSize(1);
 				expect(wrapperElement.querySelector(GeoResourceInfoPanel.tag).geoResourceId).toBe('geoResourceId');
