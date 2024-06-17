@@ -1030,7 +1030,7 @@
 						.color_hover=${"var(--text3)"}
 						.size=${2}
 						.title="${r("search_result_item_info")}"
-						@click="${()=>(async t=>{const e=o.qy`<ba-georesourceinfo-panel .geoResourceId=${t.geoResourceId}></ba-georesourceinfo-panel>`;(0,ct.qf)("label",e)})(e)}"
+						@click="${()=>(async t=>{const i=o.qy`<ba-georesourceinfo-panel .geoResourceId=${t.geoResourceId}></ba-georesourceinfo-panel>`;(0,ct.qf)(e.labelFormatted,i)})(e)}"
 					>
 					</ba-icon>
 					</div>
