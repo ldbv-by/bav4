@@ -33,7 +33,7 @@ export const provide = (lang) => {
 				auth_passwordCredentialPanel_footer_register_information: (params) =>
 					html`Hier finden Sie weitere <a target="_blank" href="${params[0]}">Informationen</a>.`,
 				auth_passwordCredentialPanel_footer_forgot_login: 'Kennung vergessen?',
-				auth_passwordCredentialPanel_footer_forgot_password: 'Password vergessen?'
+				auth_passwordCredentialPanel_footer_forgot_password: 'Passwort vergessen?'
 			};
 
 		default:
