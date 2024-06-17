@@ -472,7 +472,67 @@ describe('OlRoutingHandler', () => {
 		};
 
 		describe('translate', () => {
-			it('calls the correct methods', async () => {
+			describe('and just the start waypoint is present', () => {
+				it('sets the translated coordinate as the new start waypoint', async () => {
+					const { instanceUnderTest, map, layer, store } = await newTestInstance({});
+					const requestRouteFromInteractionLayerSpy = spyOn(instanceUnderTest, '_requestRouteFromInteractionLayer');
+					map.addLayer(layer);
+					const translatedFeature = new Feature({
+						geometry: new Point([21, 42])
+					});
+					translatedFeature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.START);
+					spyOn(instanceUnderTest, '_getInteractionFeatures').and.returnValue([translatedFeature]);
+					spyOn(instanceUnderTest, '_requestRouteFromCoordinates').and.resolveTo();
+
+					instanceUnderTest._translateInteraction.dispatchEvent(
+						new TranslateEvent('translatestart', new Collection([translatedFeature]), [0, 0], [0, 0], new Event(MapBrowserEventType.POINTERDOWN))
+					);
+
+					instanceUnderTest._translateInteraction.dispatchEvent(
+						new TranslateEvent('translating', new Collection([translatedFeature]), [10, 20], [0, 0], new Event(MapBrowserEventType.POINTERDRAG))
+					);
+
+					instanceUnderTest._translateInteraction.dispatchEvent(
+						new TranslateEvent('translateend', new Collection([translatedFeature]), [21, 42], [0, 0], new Event(MapBrowserEventType.POINTERUP))
+					);
+
+					expect(requestRouteFromInteractionLayerSpy).not.toHaveBeenCalled();
+					expect(store.getState().routing.waypoints).toEqual([[21, 42]]);
+					expect(store.getState().routing.status).toBe(RoutingStatusCodes.Destination_Missing);
+				});
+			});
+
+			describe('and just the destination waypoint is present', () => {
+				it('sets the translated coordinate as the new destination waypoint', async () => {
+					const { instanceUnderTest, map, layer, store } = await newTestInstance({});
+					const requestRouteFromInteractionLayerSpy = spyOn(instanceUnderTest, '_requestRouteFromInteractionLayer');
+					map.addLayer(layer);
+					const translatedFeature = new Feature({
+						geometry: new Point([21, 42])
+					});
+					translatedFeature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.DESTINATION);
+					spyOn(instanceUnderTest, '_getInteractionFeatures').and.returnValue([translatedFeature]);
+					spyOn(instanceUnderTest, '_requestRouteFromCoordinates').and.resolveTo();
+
+					instanceUnderTest._translateInteraction.dispatchEvent(
+						new TranslateEvent('translatestart', new Collection([translatedFeature]), [0, 0], [0, 0], new Event(MapBrowserEventType.POINTERDOWN))
+					);
+
+					instanceUnderTest._translateInteraction.dispatchEvent(
+						new TranslateEvent('translating', new Collection([translatedFeature]), [10, 20], [0, 0], new Event(MapBrowserEventType.POINTERDRAG))
+					);
+
+					instanceUnderTest._translateInteraction.dispatchEvent(
+						new TranslateEvent('translateend', new Collection([translatedFeature]), [21, 42], [0, 0], new Event(MapBrowserEventType.POINTERUP))
+					);
+
+					expect(requestRouteFromInteractionLayerSpy).not.toHaveBeenCalled();
+					expect(store.getState().routing.waypoints).toEqual([[21, 42]]);
+					expect(store.getState().routing.status).toBe(RoutingStatusCodes.Start_Missing);
+				});
+			});
+
+			it('requests a new route', async () => {
 				const { instanceUnderTest, map, layer } = await newTestInstance();
 				const requestRouteFromInteractionLayerSpy = spyOn(instanceUnderTest, '_requestRouteFromInteractionLayer');
 				map.addLayer(layer);

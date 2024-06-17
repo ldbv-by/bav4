@@ -24,7 +24,14 @@ import EventType from 'ol/events/EventType';
 import { unByKey } from 'ol/Observable';
 import { HelpTooltip } from '../../tooltip/HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
-import { setCategory, setProposal, setRouteAndStats, setWaypoints } from '../../../../store/routing/routing.action';
+import {
+	setCategory,
+	setForceDestination,
+	setForceStart,
+	setProposal,
+	setRouteAndStats,
+	setWaypoints
+} from '../../../../store/routing/routing.action';
 import { CoordinateProposalType, RouteCalculationErrors, RoutingStatusCodes } from '../../../../domain/routing';
 import { fit } from '../../../../store/position/position.action';
 import { equals } from '../../../../../node_modules/ol/coordinate';
@@ -279,7 +286,16 @@ export class OlRoutingHandler extends OlLayerHandler {
 		});
 		translate.on('translateend', (evt) => {
 			if (!equals(startCoordinate, evt.coordinate)) {
-				this._requestRouteFromInteractionLayer();
+				if (this._getInteractionFeatures().length === 1 && evt.features.item(0).get(ROUTING_FEATURE_TYPE) === RoutingFeatureTypes.START) {
+					setForceStart(evt.features.item(0).getGeometry().getCoordinates());
+				} else if (
+					this._getInteractionFeatures().length === 1 &&
+					evt.features.item(0).get(ROUTING_FEATURE_TYPE) === RoutingFeatureTypes.DESTINATION
+				) {
+					setForceDestination(evt.features.item(0).getGeometry().getCoordinates());
+				} else {
+					this._requestRouteFromInteractionLayer();
+				}
 			}
 		});
 		return translate;
