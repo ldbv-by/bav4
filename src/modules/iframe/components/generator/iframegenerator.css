@@ -142,8 +142,8 @@ input[type='number'] {
 	top: 0em;
 }
 .iframe__container-width {
-	min-height: 4.6em;
+	min-height: 4.8em;
 }
 #toggleAutoWidth {
-	display: flex;
+	width: 100%;
 }

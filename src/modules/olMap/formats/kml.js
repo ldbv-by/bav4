@@ -23,7 +23,11 @@ const replaceIcon = (old) => {
 	const svgScale = old.getScale();
 	const { IconService: iconService } = $injector.inject('IconService');
 	const iconResult = iconService.getIconResult(svgSrc);
-	const iconUrl = iconResult.getUrl(old.getColor());
+
+	// A nullish IconResult/IconUrl leads to a invalid KML (according to the specification).
+	// Nevertheless some applications/frameworks can handle such a kml (icons with base64 image sources).
+	// The application uses multicolored and multilayered svg icons, which we prevent to be replaced by the raster version
+	const iconUrl = iconResult && iconResult.isMonochrome ? iconResult?.getUrl(old.getColor()) : null;
 
 	const iconOptions = {
 		anchor: [0.5, 1],
@@ -69,7 +73,22 @@ const sanitizeStyle = (styles) => {
 	return new Style(kmlStyleProperties);
 };
 
-export const create = (layer, projection) => {
+/**
+ * Creates a string containing the features of the specified layer in KML format.
+ * This string includes the styles of the encoded features.
+ *
+ * Point-Features with a base64-ImageSource will be replaced by a defined static
+ * remote resource (URL). If this remote resource is not defined in the list of
+ * fallback icons in the IconService, the base64 ImageSource is used.
+ *
+ * A base64-ImageSource is not permitted according to the KML specification but is
+ * sometimes supported by various applications.
+ *
+ * @param {ol.layer.Layer} layer the layer
+ * @param {ol.proj.ProjectionLike} sourceProjection the projection of the features of the given layer
+ * @returns {string} the kml content
+ */
+export const create = (layer, sourceProjection) => {
 	let kmlString;
 	const kmlFeatures = [];
 	layer
@@ -80,7 +99,7 @@ export const create = (layer, projection) => {
 			const clone = f.clone();
 			clone.setId(f.getId());
 			clone.getGeometry().setProperties(f.getGeometry().getProperties());
-			clone.getGeometry().transform(projection, KML_PROJECTION_LIKE);
+			clone.getGeometry().transform(sourceProjection, KML_PROJECTION_LIKE);
 
 			if (clone.getGeometry().getType() === 'Polygon') {
 				clone.setGeometry(tryRectifyingLineString(clone.getGeometry()));

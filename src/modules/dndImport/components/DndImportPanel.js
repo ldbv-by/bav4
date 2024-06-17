@@ -14,6 +14,7 @@ import { SourceTypeName, SourceTypeResultStatus } from '../../../domain/sourceTy
 import { isHttpUrl } from '../../../utils/checks';
 
 const Update_DropZone_Content = 'update_dropzone_content';
+const Update_Modal_Changed = 'update_modal_changed';
 const DragAndDropTypesMimeTypeFiles = 'Files';
 const stopRedirectAndDefaultHandler = (e) => {
 	e.stopPropagation();
@@ -24,14 +25,17 @@ const stopRedirectAndDefaultHandler = (e) => {
  * @author thiloSchlemmer
  */
 export class DndImportPanel extends MvuElement {
+	#translationService;
+	#sourceTypeService;
 	constructor() {
 		super({
 			dropzoneContent: null,
-			isActive: false
+			active: false,
+			modalActive: false
 		});
 		const { TranslationService, SourceTypeService } = $injector.inject('TranslationService', 'SourceTypeService');
-		this._translationService = TranslationService;
-		this._sourceTypeService = SourceTypeService;
+		this.#translationService = TranslationService;
+		this.#sourceTypeService = SourceTypeService;
 	}
 
 	/**
@@ -39,6 +43,10 @@ export class DndImportPanel extends MvuElement {
 	 */
 	onInitialize() {
 		document.addEventListener('dragenter', (e) => this._onDragEnter(e));
+		this.observe(
+			(state) => state.modal.active,
+			(data) => this.signal(Update_Modal_Changed, data)
+		);
 	}
 
 	/**
@@ -47,7 +55,9 @@ export class DndImportPanel extends MvuElement {
 	update(type, data, model) {
 		switch (type) {
 			case Update_DropZone_Content:
-				return { ...model, dropzoneContent: data, isActive: data !== null };
+				return { ...model, dropzoneContent: data, active: data !== null };
+			case Update_Modal_Changed:
+				return { ...model, modalActive: data };
 		}
 	}
 
@@ -80,7 +90,7 @@ export class DndImportPanel extends MvuElement {
 		};
 
 		const activeClass = {
-			is_active: model.isActive
+			is_active: model.active
 		};
 
 		return html`<style>
@@ -92,7 +102,13 @@ export class DndImportPanel extends MvuElement {
 	}
 
 	_onDragEnter(e) {
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key) => this.#translationService.translate(key);
+
+		// If a modal is active, the import must be suppressed using drag & drop
+		// so as not to disrupt the user process in the modal.
+		if (this.getModel().modalActive) {
+			return;
+		}
 
 		stopRedirectAndDefaultHandler(e);
 		const types = e.dataTransfer.types || [];
@@ -118,7 +134,7 @@ export class DndImportPanel extends MvuElement {
 	 * @param {function} importAction the importAction
 	 */
 	_importOrNotify(sourceTypeResult, importAction) {
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key) => this.#translationService.translate(key);
 		switch (sourceTypeResult.status) {
 			case SourceTypeResultStatus.OK:
 				importAction();
@@ -135,7 +151,7 @@ export class DndImportPanel extends MvuElement {
 	}
 
 	_importFile(dataTransfer) {
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key) => this.#translationService.translate(key);
 		const files = dataTransfer.files;
 
 		const importData = async (blob, sourceType) => {
@@ -145,7 +161,7 @@ export class DndImportPanel extends MvuElement {
 		const handleFiles = (files) => {
 			Array.from(files).forEach(async (f) => {
 				try {
-					const sourceTypeResult = await this._sourceTypeService.forBlob(f);
+					const sourceTypeResult = await this.#sourceTypeService.forBlob(f);
 					this._importOrNotify(sourceTypeResult, () => importData(f, sourceTypeResult.sourceType));
 				} catch (error) {
 					emitNotification(translate('dndImport_import_file_error'), LevelTypes.ERROR);
@@ -165,12 +181,12 @@ export class DndImportPanel extends MvuElement {
 		const textData = dataTransfer.getData(MediaType.TEXT_PLAIN);
 
 		const importAsLocalData = (data) => {
-			const sourceTypeResult = this._sourceTypeService.forData(data);
+			const sourceTypeResult = this.#sourceTypeService.forData(data);
 			this._importOrNotify(sourceTypeResult, () => setImportData(data, sourceTypeResult.sourceType));
 		};
 
 		const importAsUrl = async (url) => {
-			const sourceTypeResult = await this._sourceTypeService.forUrl(url);
+			const sourceTypeResult = await this.#sourceTypeService.forUrl(url);
 			const getImportAction = () => {
 				return sourceTypeResult.sourceType?.name === SourceTypeName.WMS ? () => setQuery(url) : () => setImportUrl(url, sourceTypeResult.sourceType);
 			};

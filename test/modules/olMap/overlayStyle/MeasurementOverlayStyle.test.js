@@ -1,7 +1,7 @@
 import { Feature } from 'ol';
 import { MeasurementOverlayStyle, saveManualOverlayPosition } from '../../../../src/modules/olMap/overlayStyle/MeasurementOverlayStyle';
 import { TestUtils } from '../../../test-utils.js';
-import { LineString, Polygon } from 'ol/geom';
+import { Geometry, LineString, Polygon } from 'ol/geom';
 import { $injector } from '../../../../src/injection';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
@@ -12,6 +12,11 @@ proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0
 register(proj4);
 
 describe('MeasurementOverlayStyle', () => {
+	const mapServiceMock = {
+		getSrid: () => 3857,
+		getLocalProjectedSrid: () => 25832,
+		calcLength: () => {}
+	};
 	const environmentServiceMock = { isTouch: () => false };
 	const initialState = {
 		active: false,
@@ -27,7 +32,7 @@ describe('MeasurementOverlayStyle', () => {
 		TestUtils.setupStoreAndDi(measurementState, { measurement: measurementReducer });
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('MapService', { getSrid: () => 3857, getLocalProjectedSrid: () => 25832 })
+			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('UnitsService', {
 				// eslint-disable-next-line no-unused-vars
@@ -56,6 +61,427 @@ describe('MeasurementOverlayStyle', () => {
 		return overlay.getElement();
 	};
 
+	it('adds overlays', () => {
+		const featureMock = {};
+		const mapMock = {};
+		setup();
+		const classUnderTest = new MeasurementOverlayStyle();
+		const createDistanceOverlaySpy = spyOn(classUnderTest, '_createDistanceOverlay')
+			.withArgs(featureMock, mapMock)
+			.and.callFake(() => {});
+		const createOrRemoveAreaOverlaySpy = spyOn(classUnderTest, '_createOrRemoveAreaOverlay')
+			.withArgs(featureMock, mapMock)
+			.and.callFake(() => {});
+		const createOrRemovePartitionOverlaysSpy = spyOn(classUnderTest, '_createOrRemovePartitionOverlays')
+			.withArgs(featureMock, mapMock)
+			.and.callFake(() => {});
+		const restoreManualOverlayPositionSpy = spyOn(classUnderTest, '_restoreManualOverlayPosition')
+			.withArgs(featureMock, mapMock)
+			.and.callFake(() => {});
+
+		classUnderTest.add(featureMock, mapMock);
+
+		expect(createDistanceOverlaySpy).toHaveBeenCalled();
+		expect(createOrRemoveAreaOverlaySpy).toHaveBeenCalled();
+		expect(createOrRemovePartitionOverlaysSpy).toHaveBeenCalled();
+		expect(restoreManualOverlayPositionSpy).toHaveBeenCalled();
+	});
+
+	describe('updates overlays', () => {
+		it('with existing distance overlay', () => {
+			const distanceOverlayMock = {};
+			const elementMock = { style: { display: false, opacity: false } };
+			const overlayMock = { getElement: () => {} };
+			const featureMock = {
+				get: (key) => (key === 'measurement' ? distanceOverlayMock : [overlayMock]),
+				getGeometry: () =>
+					new LineString([
+						[0, 0],
+						[1, 0]
+					])
+			};
+			const mapMock = {};
+			setup();
+			const classUnderTest = new MeasurementOverlayStyle();
+			const getElementSpy = spyOn(overlayMock, 'getElement').and.returnValue(elementMock);
+			const updateOverlaySpy = spyOn(classUnderTest, '_updateOlOverlay')
+				.withArgs(distanceOverlayMock, jasmine.any(Geometry), '')
+				.and.callFake(() => {});
+			const createOrRemoveAreaOverlaySpy = spyOn(classUnderTest, '_createOrRemoveAreaOverlay')
+				.withArgs(featureMock, mapMock)
+				.and.callFake(() => {});
+			const createOrRemovePartitionOverlaysSpy = spyOn(classUnderTest, '_createOrRemovePartitionOverlays')
+				.withArgs(featureMock, mapMock, jasmine.any(Geometry))
+				.and.callFake(() => {});
+
+			classUnderTest.update(featureMock, mapMock);
+
+			expect(updateOverlaySpy).toHaveBeenCalled();
+			expect(createOrRemoveAreaOverlaySpy).toHaveBeenCalled();
+			expect(createOrRemovePartitionOverlaysSpy).toHaveBeenCalled();
+			expect(getElementSpy).toHaveBeenCalled();
+		});
+
+		describe('and use UpdateProperties', () => {
+			const styleMock = {
+				displayValue: false,
+				opacityValue: false,
+				get display() {
+					return this.displayValue;
+				},
+				set display(value) {
+					this.displayValue = value;
+				},
+
+				get opacity() {
+					return this.opacityValue;
+				},
+				set opacity(value) {
+					this.opacityValue = value;
+				}
+			};
+			const distanceOverlayMock = {};
+
+			const elementMock = { style: styleMock };
+			const overlayMock = { getElement: () => {} };
+			const featureMock = {
+				get: (key) => (key === 'measurement' ? distanceOverlayMock : [overlayMock]),
+				getGeometry: () =>
+					new LineString([
+						[0, 0],
+						[1, 0]
+					])
+			};
+			const mapMock = {};
+			it('updates element style properties with default values', () => {
+				setup();
+				const classUnderTest = new MeasurementOverlayStyle();
+				const getElementSpy = spyOn(overlayMock, 'getElement').and.returnValue(elementMock);
+				const displayPropertySpy = spyOnProperty(styleMock, 'display', 'set').and.callThrough();
+				const opacityPropertySpy = spyOnProperty(styleMock, 'opacity', 'set').and.callThrough();
+				spyOn(classUnderTest, '_updateOlOverlay')
+					.withArgs(distanceOverlayMock, jasmine.any(Geometry), '')
+					.and.callFake(() => {});
+				spyOn(classUnderTest, '_createOrRemoveAreaOverlay')
+					.withArgs(featureMock, mapMock)
+					.and.callFake(() => {});
+				spyOn(classUnderTest, '_createOrRemovePartitionOverlays')
+					.withArgs(featureMock, mapMock, jasmine.any(Geometry))
+					.and.callFake(() => {});
+
+				classUnderTest.update(featureMock, mapMock);
+
+				expect(getElementSpy).toHaveBeenCalled();
+				expect(displayPropertySpy).toHaveBeenCalledWith('inherit');
+				expect(opacityPropertySpy).toHaveBeenCalledWith(1);
+			});
+
+			it('updates element style properties with given opacity value', () => {
+				setup();
+				const classUnderTest = new MeasurementOverlayStyle();
+				const getElementSpy = spyOn(overlayMock, 'getElement').and.returnValue(elementMock);
+				const displayPropertySpy = spyOnProperty(styleMock, 'display', 'set').and.callThrough();
+				const opacityPropertySpy = spyOnProperty(styleMock, 'opacity', 'set').and.callThrough();
+				spyOn(classUnderTest, '_updateOlOverlay')
+					.withArgs(distanceOverlayMock, jasmine.any(Geometry), '')
+					.and.callFake(() => {});
+				spyOn(classUnderTest, '_createOrRemoveAreaOverlay')
+					.withArgs(featureMock, mapMock)
+					.and.callFake(() => {});
+				spyOn(classUnderTest, '_createOrRemovePartitionOverlays')
+					.withArgs(featureMock, mapMock, jasmine.any(Geometry))
+					.and.callFake(() => {});
+
+				classUnderTest.update(featureMock, mapMock, { opacity: 0.42 });
+
+				expect(getElementSpy).toHaveBeenCalled();
+				expect(displayPropertySpy).toHaveBeenCalledWith('inherit');
+				expect(opacityPropertySpy).toHaveBeenCalledWith(0.42);
+			});
+
+			it('updates element style properties with given visible(true) value', () => {
+				setup();
+				const classUnderTest = new MeasurementOverlayStyle();
+				const getElementSpy = spyOn(overlayMock, 'getElement').and.returnValue(elementMock);
+				const displayPropertySpy = spyOnProperty(styleMock, 'display', 'set').and.callThrough();
+				const opacityPropertySpy = spyOnProperty(styleMock, 'opacity', 'set').and.callThrough();
+				spyOn(classUnderTest, '_updateOlOverlay')
+					.withArgs(distanceOverlayMock, jasmine.any(Geometry), '')
+					.and.callFake(() => {});
+				spyOn(classUnderTest, '_createOrRemoveAreaOverlay')
+					.withArgs(featureMock, mapMock)
+					.and.callFake(() => {});
+				spyOn(classUnderTest, '_createOrRemovePartitionOverlays')
+					.withArgs(featureMock, mapMock, jasmine.any(Geometry))
+					.and.callFake(() => {});
+
+				classUnderTest.update(featureMock, mapMock, { visible: true });
+
+				expect(getElementSpy).toHaveBeenCalled();
+				expect(displayPropertySpy).toHaveBeenCalledWith('inherit');
+				expect(opacityPropertySpy).toHaveBeenCalledWith(1);
+			});
+
+			it('updates element style properties with given visible(false) value', () => {
+				setup();
+				const classUnderTest = new MeasurementOverlayStyle();
+				const getElementSpy = spyOn(overlayMock, 'getElement').and.returnValue(elementMock);
+				const displayPropertySpy = spyOnProperty(styleMock, 'display', 'set').and.callThrough();
+				const opacityPropertySpy = spyOnProperty(styleMock, 'opacity', 'set').and.callThrough();
+				spyOn(classUnderTest, '_updateOlOverlay')
+					.withArgs(distanceOverlayMock, jasmine.any(Geometry), '')
+					.and.callFake(() => {});
+				spyOn(classUnderTest, '_createOrRemoveAreaOverlay')
+					.withArgs(featureMock, mapMock)
+					.and.callFake(() => {});
+				spyOn(classUnderTest, '_createOrRemovePartitionOverlays')
+					.withArgs(featureMock, mapMock, jasmine.any(Geometry))
+					.and.callFake(() => {});
+
+				classUnderTest.update(featureMock, mapMock, { visible: false });
+
+				expect(getElementSpy).toHaveBeenCalled();
+				expect(displayPropertySpy).toHaveBeenCalledWith('none');
+				expect(opacityPropertySpy).toHaveBeenCalledWith(1);
+			});
+
+			it('updates element style properties with given top(false) value', () => {
+				setup();
+				const classUnderTest = new MeasurementOverlayStyle();
+				const getElementSpy = spyOn(overlayMock, 'getElement').and.returnValue(elementMock);
+				const displayPropertySpy = spyOnProperty(styleMock, 'display', 'set').and.callThrough();
+				const opacityPropertySpy = spyOnProperty(styleMock, 'opacity', 'set').and.callThrough();
+				spyOn(classUnderTest, '_updateOlOverlay')
+					.withArgs(distanceOverlayMock, jasmine.any(Geometry), '')
+					.and.callFake(() => {});
+				spyOn(classUnderTest, '_createOrRemoveAreaOverlay')
+					.withArgs(featureMock, mapMock)
+					.and.callFake(() => {});
+				spyOn(classUnderTest, '_createOrRemovePartitionOverlays')
+					.withArgs(featureMock, mapMock, jasmine.any(Geometry))
+					.and.callFake(() => {});
+
+				classUnderTest.update(featureMock, mapMock, { top: false });
+
+				expect(getElementSpy).toHaveBeenCalled();
+				expect(displayPropertySpy).toHaveBeenCalledWith('none');
+				expect(opacityPropertySpy).toHaveBeenCalledWith(1);
+			});
+
+			it('updates element style properties with given top(true) value', () => {
+				setup();
+				const classUnderTest = new MeasurementOverlayStyle();
+				const getElementSpy = spyOn(overlayMock, 'getElement').and.returnValue(elementMock);
+				const displayPropertySpy = spyOnProperty(styleMock, 'display', 'set').and.callThrough();
+				const opacityPropertySpy = spyOnProperty(styleMock, 'opacity', 'set').and.callThrough();
+				spyOn(classUnderTest, '_updateOlOverlay')
+					.withArgs(distanceOverlayMock, jasmine.any(Geometry), '')
+					.and.callFake(() => {});
+				spyOn(classUnderTest, '_createOrRemoveAreaOverlay')
+					.withArgs(featureMock, mapMock)
+					.and.callFake(() => {});
+				spyOn(classUnderTest, '_createOrRemovePartitionOverlays')
+					.withArgs(featureMock, mapMock, jasmine.any(Geometry))
+					.and.callFake(() => {});
+
+				classUnderTest.update(featureMock, mapMock, { top: true });
+
+				expect(getElementSpy).toHaveBeenCalled();
+				expect(displayPropertySpy).toHaveBeenCalledWith('inherit');
+				expect(opacityPropertySpy).toHaveBeenCalledWith(1);
+			});
+		});
+
+		it('WITHOUT existing distance overlay', () => {
+			const elementMock = { style: { display: false, opacity: false } };
+			const overlayMock = { getElement: () => elementMock };
+			const featureMock = {
+				get: (key) => (key === 'measurement' ? null : [overlayMock]),
+				getGeometry: () =>
+					new LineString([
+						[0, 0],
+						[1, 0]
+					])
+			};
+			const mapMock = {};
+			setup();
+			const classUnderTest = new MeasurementOverlayStyle();
+
+			const updateOverlaySpy = spyOn(classUnderTest, '_updateOlOverlay').and.callFake(() => {});
+			const createOrRemoveAreaOverlaySpy = spyOn(classUnderTest, '_createOrRemoveAreaOverlay').and.callFake(() => {});
+			const createOrRemovePartitionOverlaysSpy = spyOn(classUnderTest, '_createOrRemovePartitionOverlays').and.callFake(() => {});
+
+			classUnderTest.update(featureMock, mapMock);
+
+			expect(updateOverlaySpy).not.toHaveBeenCalled();
+			expect(createOrRemoveAreaOverlaySpy).not.toHaveBeenCalled();
+			expect(createOrRemovePartitionOverlaysSpy).not.toHaveBeenCalled();
+		});
+
+		it('WITHOUT overlays at all', () => {
+			const featureMock = {
+				get: () => null,
+				getGeometry: () =>
+					new LineString([
+						[0, 0],
+						[1, 0]
+					])
+			};
+			const mapMock = {};
+			setup();
+			const classUnderTest = new MeasurementOverlayStyle();
+			const featureSpy = spyOn(featureMock, 'get').withArgs(jasmine.any(String)).and.callThrough();
+			classUnderTest.update(featureMock, mapMock);
+
+			expect(featureSpy).toHaveBeenCalledTimes(2);
+		});
+
+		it('removes area overlay', () => {
+			const elementMock = { style: { display: false, opacity: false } };
+			const overlayMock = { get: () => {}, setPosition: () => {}, getElement: () => elementMock };
+			const featureWithAreaOverlay = {
+				get: (key) => (['area', 'measurement'].includes(key) ? overlayMock : null),
+				getGeometry: () =>
+					new LineString([
+						[0, 0],
+						[1, 0]
+					]),
+				set: () => {}
+			};
+			const featureWithoutAreaOverlay = {
+				get: (key) => (['measurement'].includes(key) ? overlayMock : null),
+				getGeometry: () =>
+					new LineString([
+						[0, 0],
+						[1, 0]
+					]),
+				set: () => {}
+			};
+			const mapMock = { removeOverlay: () => {} };
+			setup();
+			const classUnderTest = new MeasurementOverlayStyle();
+			spyOn(classUnderTest, '_updateOlOverlay')
+				.withArgs(overlayMock, jasmine.any(Geometry), '')
+				.and.callFake(() => {});
+			spyOn(classUnderTest, '_createOrRemovePartitionOverlays')
+				.withArgs(featureWithAreaOverlay, mapMock, jasmine.any(Geometry))
+				.and.callFake(() => {})
+				.withArgs(featureWithoutAreaOverlay, mapMock, jasmine.any(Geometry))
+				.and.callFake(() => {});
+			spyOn(classUnderTest, '_createOrRemoveAreaOverlay').and.callThrough();
+			spyOn(classUnderTest, '_remove').and.callThrough();
+			const mapSpy = spyOn(mapMock, 'removeOverlay').and.callFake(() => {});
+			const featureWithAreaOverlySpy = spyOn(featureWithAreaOverlay, 'set').and.callFake(() => {});
+			const featureWithoutAreaOverlySpy = spyOn(featureWithoutAreaOverlay, 'set').and.callFake(() => {});
+			classUnderTest.update(featureWithAreaOverlay, mapMock);
+			classUnderTest.update(featureWithoutAreaOverlay, mapMock);
+
+			expect(mapSpy).toHaveBeenCalledWith(overlayMock);
+			expect(featureWithAreaOverlySpy).toHaveBeenCalledWith('area', null);
+			expect(featureWithoutAreaOverlySpy).not.toHaveBeenCalled();
+		});
+
+		it('uses properties.geometry', () => {
+			const distanceOverlayMock = {};
+			const elementMock = { style: { display: false, opacity: false } };
+			const overlayMock = { getElement: () => {} };
+			const featureMock = {
+				get: (key) => (key === 'measurement' ? distanceOverlayMock : [overlayMock]),
+				getGeometry: () => {}
+			};
+			const mapMock = {};
+			const measureGeometry = new LineString([
+				[0, 0],
+				[1, 0]
+			]);
+			const properties = { geometry: measureGeometry };
+			setup();
+			const classUnderTest = new MeasurementOverlayStyle();
+			spyOn(overlayMock, 'getElement').and.returnValue(elementMock);
+			const updateOverlaySpy = spyOn(classUnderTest, '_updateOlOverlay')
+				.withArgs(distanceOverlayMock, measureGeometry, '')
+				.and.callFake(() => {});
+			const createOrRemoveAreaOverlaySpy = spyOn(classUnderTest, '_createOrRemoveAreaOverlay')
+				.withArgs(featureMock, mapMock)
+				.and.callFake(() => {});
+			const createOrRemovePartitionOverlaysSpy = spyOn(classUnderTest, '_createOrRemovePartitionOverlays')
+				.withArgs(featureMock, mapMock, measureGeometry)
+				.and.callFake(() => {});
+
+			classUnderTest.update(featureMock, mapMock, properties);
+
+			expect(updateOverlaySpy).toHaveBeenCalled();
+			expect(createOrRemoveAreaOverlaySpy).toHaveBeenCalled();
+			expect(createOrRemovePartitionOverlaysSpy).toHaveBeenCalled();
+		});
+
+		it('hides not visible overlays with display:none', () => {
+			const distanceOverlayMock = {};
+			const styleMock = { display: false, opacity: false };
+			const overlayMock = { getElement: () => {} };
+			const featureMock = {
+				get: (key) => (key === 'measurement' ? distanceOverlayMock : [overlayMock]),
+				getGeometry: () => {}
+			};
+			const mapMock = {};
+			const measureGeometry = new LineString([
+				[0, 0],
+				[1, 0]
+			]);
+			const properties = { geometry: measureGeometry, visible: false };
+			setup();
+			const classUnderTest = new MeasurementOverlayStyle();
+			spyOn(overlayMock, 'getElement').and.returnValue({ style: styleMock });
+			spyOn(classUnderTest, '_updateOlOverlay').and.callFake(() => {});
+			spyOn(classUnderTest, '_createOrRemoveAreaOverlay').and.callFake(() => {});
+			spyOn(classUnderTest, '_createOrRemovePartitionOverlays').and.callFake(() => {});
+
+			classUnderTest.update(featureMock, mapMock, properties);
+
+			expect(styleMock.display).toBe('none');
+			expect(styleMock.opacity).toBe(1);
+		});
+
+		it('with existing partition overlays, clears old partitions', () => {
+			const elementMock = { style: { display: false, opacity: false } };
+			const overlayMock1 = { getElement: () => elementMock };
+			const overlayMock2 = { getElement: () => elementMock };
+			const featureMock = {
+				get: (key) => (key === 'partitions' ? [overlayMock1, overlayMock2] : [{ getElement: () => elementMock }]),
+				getGeometry: () =>
+					new Polygon([
+						[
+							[0, 0],
+							[2, 0],
+							[0, 0]
+						]
+					]),
+				set: () => {}
+			};
+			const mapMock = {
+				getView: () => {
+					return { getResolution: () => 1 };
+				},
+				addOverlay: () => {},
+				removeOverlay: () => {}
+			};
+			setup();
+			const classUnderTest = new MeasurementOverlayStyle();
+			spyOn(mapServiceMock, 'calcLength').and.returnValue(200);
+			spyOn(classUnderTest, '_updateOlOverlay').and.callFake(() => {});
+			spyOn(classUnderTest, '_createOrRemoveAreaOverlay').and.callFake(() => {});
+			const createOrRemovePartitionOverlaysSpy = spyOn(classUnderTest, '_createOrRemovePartitionOverlays').and.callThrough(() => {});
+			const addPartitionOverlaySpy = spyOn(mapMock, 'addOverlay').and.callFake(() => {});
+			const removePartitionOverlaySpy = spyOn(mapMock, 'removeOverlay').and.callFake(() => {});
+
+			classUnderTest.update(featureMock, mapMock);
+
+			expect(createOrRemovePartitionOverlaysSpy).toHaveBeenCalled();
+			expect(addPartitionOverlaySpy).not.toHaveBeenCalled();
+			expect(removePartitionOverlaySpy).toHaveBeenCalledTimes(1);
+		});
+	});
+
 	it('removes all overlays from feature', () => {
 		setup();
 		const removeSpy = jasmine.createSpy();
@@ -71,7 +497,7 @@ describe('MeasurementOverlayStyle', () => {
 		expect(feature.get('overlays')).toEqual([]);
 	});
 
-	it('removes no overlays from feature with unsyncronized overlays', () => {
+	it('removes no overlays from feature with not synchronized overlays', () => {
 		setup();
 		const removeSpy = jasmine.createSpy();
 		const mapMock = { removeOverlay: removeSpy };
@@ -107,10 +533,10 @@ describe('MeasurementOverlayStyle', () => {
 		classUnderTest._createDistanceOverlay(feature, mapMock);
 
 		const baOverlay = feature.get('measurement').getElement();
-		expect(baOverlay.outerHTML).toBe('<ba-measure-overlay></ba-measure-overlay>');
+		expect(baOverlay.outerHTML).toBe('<ba-map-overlay></ba-map-overlay>');
 	});
 
-	it('create draggable measurement tooltip ', () => {
+	it('creates a draggable measurement tooltip ', () => {
 		const state = { ...initialState, active: true };
 		setup(state);
 		const addOverlaySpy = jasmine.createSpy();
@@ -219,6 +645,40 @@ describe('MeasurementOverlayStyle', () => {
 		expect(feature.get('area').getElement().isDraggable).toBeTrue();
 	});
 
+	it('updates draggable area tooltips ', () => {
+		const state = { ...initialState, active: true };
+		setup(state);
+		const addOverlaySpy = jasmine.createSpy();
+
+		const mapMock = {
+			addOverlay: addOverlaySpy,
+			getInteractions() {
+				return { getArray: () => [] };
+			},
+			getView() {
+				return { getResolution: () => 50 };
+			}
+		};
+
+		const classUnderTest = new MeasurementOverlayStyle();
+		const geometry = new Polygon([
+			[
+				[0, 0],
+				[5000, 0],
+				[5500, 5500],
+				[0, 5000]
+			]
+		]);
+		const feature = new Feature({ geometry: geometry });
+		feature.set('area', 'foo');
+		const updateOverlaySpy = spyOn(classUnderTest, '_updateOlOverlay').and.callFake(() => {});
+
+		classUnderTest._createOrRemoveAreaOverlay(feature, mapMock);
+
+		expect(addOverlaySpy).not.toHaveBeenCalled();
+		expect(updateOverlaySpy).toHaveBeenCalledWith('foo', geometry);
+	});
+
 	it('creates non-draggable area tooltips for touch-environment', () => {
 		const state = { ...initialState, active: true };
 		setup(state);
@@ -299,7 +759,7 @@ describe('MeasurementOverlayStyle', () => {
 			[12345, 0]
 		]);
 		const feature = new Feature({ geometry: geometry });
-
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(12345);
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 
 		expect(feature.get('partitions').length).toBe(1);
@@ -324,7 +784,7 @@ describe('MeasurementOverlayStyle', () => {
 			[12345, 0]
 		]);
 		const feature = new Feature({ geometry: geometry });
-
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(12345);
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 		const partition = getPartition(feature);
 
@@ -350,8 +810,9 @@ describe('MeasurementOverlayStyle', () => {
 			[0, 0]
 		]);
 		const feature = new Feature({ geometry: geometry });
-
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(12345);
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
+
 		const partition = getPartition(feature);
 
 		expect(partition.placement).toEqual({ sector: 'left', positioning: 'center-center', offset: [jasmine.any(Number), jasmine.any(Number)] });
@@ -376,6 +837,7 @@ describe('MeasurementOverlayStyle', () => {
 			[0, 0]
 		]);
 		const feature = new Feature({ geometry: geometry });
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(12345);
 
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 		const partition = getPartition(feature);
@@ -402,6 +864,7 @@ describe('MeasurementOverlayStyle', () => {
 			[0, 12345]
 		]);
 		const feature = new Feature({ geometry: geometry });
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(12345);
 
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 		const partition = getPartition(feature);
@@ -428,6 +891,7 @@ describe('MeasurementOverlayStyle', () => {
 			[12345, 0]
 		]);
 		const feature = new Feature({ geometry: geometry });
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(12345);
 
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 
@@ -457,7 +921,7 @@ describe('MeasurementOverlayStyle', () => {
 			]
 		]);
 		const feature = new Feature({ geometry: geometry });
-
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(16000);
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 
 		expect(feature.get('partitions').length).toBe(1);
@@ -484,7 +948,7 @@ describe('MeasurementOverlayStyle', () => {
 			[123456, 0]
 		]);
 		const feature = new Feature({ geometry: geometry });
-
+		spyOn(mapServiceMock, 'calcLength').and.returnValues(123456, 12345);
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 		expect(feature.get('partitions').length).toBe(12);
 
@@ -492,6 +956,7 @@ describe('MeasurementOverlayStyle', () => {
 			[0, 0],
 			[12345, 0]
 		]);
+
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 
 		expect(feature.get('partitions').length).toBe(1);
@@ -579,12 +1044,7 @@ describe('MeasurementOverlayStyle', () => {
 				return false;
 			}
 		};
-		const staticOverlayMock = {
-			getPosition: () => [],
-			get() {
-				return false;
-			}
-		};
+		const fooOverlayMock = {};
 
 		const geometry = new LineString([
 			[0, 0],
@@ -593,17 +1053,14 @@ describe('MeasurementOverlayStyle', () => {
 		const feature = new Feature({ geometry: geometry });
 
 		feature.set('measurement', draggedOverlayMock);
-		feature.set('area', draggedOverlayMock);
-		feature.set('static', staticOverlayMock);
+		feature.set('foo', fooOverlayMock);
 
 		saveManualOverlayPosition(feature);
 
 		expect(feature.get('measurement_position_x')).toBeUndefined();
 		expect(feature.get('measurement_position_y')).toBeUndefined();
-		expect(feature.get('area_position_x')).toBeUndefined();
-		expect(feature.get('area_position_y')).toBeUndefined();
-		expect(feature.get('static_position_x')).toBeUndefined();
-		expect(feature.get('static_position_y')).toBeUndefined();
+		expect(feature.get('foo_position_x')).toBeUndefined();
+		expect(feature.get('foo_position_y')).toBeUndefined();
 	});
 
 	it('restore manual overlay-position from the related feature', () => {
@@ -677,7 +1134,8 @@ describe('MeasurementOverlayStyle', () => {
 			return {
 				getInteractions: () => {
 					return { getArray: () => [interaction] };
-				}
+				},
+				once: () => {}
 			};
 		};
 
@@ -688,6 +1146,7 @@ describe('MeasurementOverlayStyle', () => {
 			const dragPan = new DragPan();
 			const interactionSpy = spyOn(dragPan, 'setActive');
 			const mapMock = getMapMock(dragPan);
+			const onceSpy = spyOn(mapMock, 'once');
 			const element = overlay.getElement();
 			const classUnderTest = new MeasurementOverlayStyle();
 
@@ -696,6 +1155,7 @@ describe('MeasurementOverlayStyle', () => {
 
 			expect(draggingSpy).toHaveBeenCalledWith('dragging', true);
 			expect(interactionSpy).toHaveBeenCalledWith(false);
+			expect(onceSpy).toHaveBeenCalledWith('pointerup', jasmine.any(Function));
 		});
 
 		it('change overlay-property on pointerup', () => {
@@ -718,7 +1178,7 @@ describe('MeasurementOverlayStyle', () => {
 		it('change overlay-property on mouseenter', () => {
 			setup();
 			const overlay = getOverlay();
-			const dragableSpy = spyOn(overlay, 'set');
+			const draggableSpy = spyOn(overlay, 'set');
 			const dragPan = new DragPan();
 			const mapMock = getMapMock(dragPan);
 			const element = overlay.getElement();
@@ -727,13 +1187,13 @@ describe('MeasurementOverlayStyle', () => {
 			classUnderTest._createDragOn(overlay, mapMock);
 			element.dispatchEvent(new MouseEvent('mouseenter'));
 
-			expect(dragableSpy).toHaveBeenCalledWith('dragable', true);
+			expect(draggableSpy).toHaveBeenCalledWith('dragable', true);
 		});
 
 		it('change overlay-property on mouseleave', () => {
 			setup();
 			const overlay = getOverlay();
-			const dragableSpy = spyOn(overlay, 'set');
+			const draggableSpy = spyOn(overlay, 'set');
 			const dragPan = new DragPan();
 			const mapMock = getMapMock(dragPan);
 			const element = overlay.getElement();
@@ -742,7 +1202,19 @@ describe('MeasurementOverlayStyle', () => {
 			classUnderTest._createDragOn(overlay, mapMock);
 			element.dispatchEvent(new MouseEvent('mouseleave'));
 
-			expect(dragableSpy).toHaveBeenCalledWith('dragable', false);
+			expect(draggableSpy).toHaveBeenCalledWith('dragable', false);
+		});
+	});
+
+	describe('_getPlacement', () => {
+		it('finds a placement sector for all degrees within 360°', () => {
+			setup();
+			// regression test -> to be safe against changes in private SectorsOfPlacement definitions
+			const classUnderTest = new MeasurementOverlayStyle();
+
+			for (let angle = 0; angle <= 360; angle++) {
+				expect(classUnderTest._getPlacement(angle).sector).not.toBeUndefined();
+			}
 		});
 	});
 });

@@ -8,18 +8,38 @@ import { KML, GPX, GeoJSON, WKT } from 'ol/format';
 import VectorLayer from 'ol/layer/Vector';
 import { parse } from '../../../utils/ewkt';
 import { Cluster } from 'ol/source';
+import { getOriginAndPathname, getPathParams } from '../../../utils/urlUtils';
 
 const getUrlService = () => {
 	const { UrlService: urlService } = $injector.inject('UrlService');
 	return urlService;
 };
 
-export const iconUrlFunction = (url) => getUrlService().proxifyInstant(url);
+export const iconUrlFunction = (url) => getUrlService().proxifyInstant(url, false);
+
+export const bvvIconUrlFunction = (url) => {
+	const { UrlService: urlService, ConfigService: configService } = $injector.inject('UrlService', 'ConfigService');
+
+	// legacy v3 backend icons should be mapped to v4
+	if (getOriginAndPathname(url).startsWith('https://geoportal.bayern.de/ba-backend')) {
+		const pathParams = getPathParams(url);
+		// the legacy icon endpoint contains four path parameters
+		if (pathParams.length === 4 && pathParams[1] === 'icons') {
+			return `${configService.getValueAsPath('BACKEND_URL')}icons/${pathParams[pathParams.length - 2]}/${pathParams[pathParams.length - 1]}.png`;
+		}
+		// leave untouched for that case
+		return url;
+	} // icons from our backend do not need to be proxified
+	else if (getOriginAndPathname(url).startsWith(configService.getValueAsPath('BACKEND_URL'))) {
+		return url;
+	}
+	return urlService.proxifyInstant(url, false);
+};
 
 export const mapVectorSourceTypeToFormat = (sourceType) => {
 	switch (sourceType) {
 		case VectorSourceType.KML:
-			return new KML({ iconUrlFunction: iconUrlFunction });
+			return new KML({ iconUrlFunction: bvvIconUrlFunction });
 
 		case VectorSourceType.GPX:
 			return new GPX();
@@ -86,7 +106,7 @@ export class VectorLayerService {
 	 * @param {ol.Map} olMap
 	 * @returns olVectorLayer
 	 */
-	_applyStyles(olVectorLayer, olMap) {
+	applyStyles(olVectorLayer, olMap) {
 		/**
 		 * We check if an currently present and possible future features needs a specific styling.
 		 * If so, we apply the style and register an event listeners in order to keep the style (and overlays)
@@ -110,11 +130,23 @@ export class VectorLayerService {
 	}
 
 	/**
+	 * Sanitizes the style of the present features of the vector layer.
+	 * The sanitizing prepares features with incompatible styling for the rendering in the
+	 * ol context.
+	 * @param {ol.layer.Vector} olVectorLayer
+	 */
+	sanitizeStyles(olVectorLayer) {
+		const { StyleService: styleService } = $injector.inject('StyleService');
+		const olVectorSource = olVectorLayer.getSource();
+		olVectorSource.getFeatures().forEach((feature) => styleService.sanitizeStyle(feature));
+	}
+
+	/**
 	 * Adds a specific or a default cluster styling for this vector layer
 	 * @param {ol.layer.Vector} olVectorLayer
 	 * @returns olVectorLayer
 	 */
-	_applyClusterStyle(olVectorLayer) {
+	applyClusterStyle(olVectorLayer) {
 		const { StyleService: styleService } = $injector.inject('StyleService');
 		styleService.addClusterStyle(olVectorLayer);
 
@@ -128,7 +160,7 @@ export class VectorLayerService {
 	 * @param {OlMap} olMap
 	 * @returns olVectorLayer
 	 */
-	createVectorLayer(id, vectorGeoResource, olMap) {
+	createLayer(id, vectorGeoResource, olMap) {
 		const { minZoom, maxZoom, opacity } = vectorGeoResource;
 		const vectorLayer = new VectorLayer({
 			id: id,
@@ -139,7 +171,10 @@ export class VectorLayerService {
 		});
 		const vectorSource = this._vectorSourceForData(vectorGeoResource);
 		vectorLayer.setSource(vectorSource);
-		return vectorGeoResource.isClustered() ? this._applyClusterStyle(vectorLayer) : this._applyStyles(vectorLayer, olMap);
+
+		this.sanitizeStyles(vectorLayer);
+
+		return vectorGeoResource.isClustered() ? this.applyClusterStyle(vectorLayer) : this.applyStyles(vectorLayer, olMap);
 	}
 
 	/**
@@ -161,7 +196,6 @@ export class VectorLayerService {
 			.filter((f) => !!f.getGeometry()) // filter out features without a geometry. Todo: let's inform the user
 			.map((f) => {
 				f.getGeometry().transform('EPSG:' + geoResource.srid, 'EPSG:' + destinationSrid); //Todo: check for unsupported destinationSrid
-				f.set('srid', destinationSrid, true);
 				return f;
 			});
 		vectorSource.addFeatures(features);
@@ -185,7 +219,7 @@ export class VectorLayerService {
 					source: vectorSource,
 					distance: geoResource.clusterParams.distance,
 					minDistance: geoResource.clusterParams.minDistance
-			  })
+				})
 			: vectorSource;
 	}
 }

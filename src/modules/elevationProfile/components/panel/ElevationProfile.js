@@ -9,13 +9,12 @@ import { $injector } from '../../../../injection';
 
 import { SurfaceType } from '../../utils/elevationProfileAttributeTypes';
 import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
-import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { toLocaleString } from '../../../../utils/numberUtils';
+import { isNumber } from '../../../../utils/checks';
 
 const Update_Schema = 'update_schema';
 const Update_Selected_Attribute = 'update_selected_attribute';
 const Update_Profile_Data = 'update_profile_data';
-
 const Update_Media = 'update_media';
 
 const Chart_Duration = 600;
@@ -82,6 +81,7 @@ export class ElevationProfile extends MvuElement {
 			minWidth: false
 		});
 		this._chart = null;
+		this._chartColorOptions = {};
 		this._elevationProfileAttributeTypes = [];
 
 		const {
@@ -104,8 +104,6 @@ export class ElevationProfile extends MvuElement {
 		this._bottom = 0;
 		this._noAnimationValue = false;
 
-		this._unsubscribers = [];
-
 		this._initSurfaceTypes();
 	}
 
@@ -115,21 +113,19 @@ export class ElevationProfile extends MvuElement {
 	onInitialize() {
 		this.style.width = '100%';
 
-		this._unsubscribers = [
+		this.observe(
+			(state) => state.media.darkSchema,
+			(darkSchema) => this.signal(Update_Schema, darkSchema)
+		),
 			this.observe(
-				(state) => state.media.darkSchema,
-				(darkSchema) => this.signal(Update_Schema, darkSchema)
-			),
-			this.observe(
-				(state) => state.elevationProfile.coordinates,
-				(coordinates) => this._getElevationProfile(coordinates)
+				(state) => state.elevationProfile.id,
+				(id) => this._getElevationProfile(id)
 			),
 			this.observe(
 				(state) => state.media,
 				(data) => this.signal(Update_Media, data),
 				true
-			)
-		];
+			);
 	}
 
 	/**
@@ -168,9 +164,6 @@ export class ElevationProfile extends MvuElement {
 	onDisconnect() {
 		this._destroyChart();
 		removeHighlightFeaturesById(ElevationProfile.HIGHLIGHT_FEATURE_ID);
-		while (this._unsubscribers.length > 0) {
-			this._unsubscribers.shift()();
-		}
 	}
 
 	/**
@@ -209,42 +202,60 @@ export class ElevationProfile extends MvuElement {
 				${css}
 			</style>
 			<div class="profile ${getOrientationClass()} ${getMinWidthClass()}">
-				<span class="profile__options">
-					<select id="attrs" @change=${onChange}>
-						${attrs.map(
-							(attr) => html`
-								<option value="${attr.id}" ?selected=${model.selectedAttribute === attr.id}>${translate('elevationProfile_' + attr.id)}</option>
-							`
-						)}
-					</select>
-				</span>
-				<div class="chart-container" style="">
+				<div class="chart-container">
+					<span class="profile__options">
+						<select id="attrs" @change=${onChange}>
+							${attrs.map(
+								(attr) => html`
+									<option value="${attr.id}" ?selected=${model.selectedAttribute === attr.id}>${translate('elevationProfile_' + attr.id)}</option>
+								`
+							)}
+						</select>
+					</span>
 					<canvas class="elevationprofile" id="route-elevation-chart"></canvas>
 				</div>
 				<div class="profile__data" id="route-elevation-chart-footer">
-					<div class="profile__box" title="${translate('elevationProfile_sumUp')}">
-						<div class="profile__icon up"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-sumUp">${this._getFooterText(sumUp)}</div>
+					<div class="profile__box">
+						<div class="profile__header">${translate('elevationProfile_sumUp')}</div>
+						<div class="profile__content">
+							<div class="profile__icon up"></div>
+							<div class="profile__text" id="route-elevation-chart-footer-sumUp">${this._getFooterText(sumUp)}</div>
+						</div>
 					</div>
-					<div class="profile__box" title="${translate('elevationProfile_sumDown')}">
-						<div class="profile__icon down"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-sumDown">${this._getFooterText(sumDown)}</div>
+					<div class="profile__box">
+						<div class="profile__header">${translate('elevationProfile_sumDown')}</div>
+						<div class="profile__content">
+							<div class="profile__icon down"></div>
+							<div class="profile__text" id="route-elevation-chart-footer-sumDown">${this._getFooterText(sumDown)}</div>
+						</div>
 					</div>
-					<div class="profile__box" title="${translate('elevationProfile_highestPoint')}">
-						<div class="profile__icon highest"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-highestPoint">${this._getFooterText(highestPoint)}</div>
+					<div class="profile__box">
+						<div class="profile__header">${translate('elevationProfile_highestPoint')}</div>
+						<div class="profile__content">
+							<div class="profile__icon highest"></div>
+							<div class="profile__text" id="route-elevation-chart-footer-highestPoint">${this._getFooterText(highestPoint)}</div>
+						</div>
 					</div>
-					<div class="profile__box" title="${translate('elevationProfile_lowestPoint')}">
-						<div class="profile__icon lowest"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-lowestPoint">${this._getFooterText(lowestPoint)}</div>
+					<div class="profile__box">
+						<div class="profile__header">${translate('elevationProfile_lowestPoint')}</div>
+						<div class="profile__content">
+							<div class="profile__icon lowest"></div>
+							<div class="profile__text" id="route-elevation-chart-footer-lowestPoint">${this._getFooterText(lowestPoint)}</div>
+						</div>
 					</div>
-					<div class="profile__box" title="${translate('elevationProfile_verticalHeight')}">
-						<div class="profile__icon height"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-verticalHeight">${toLocaleString(verticalHeight)} m</div>
+					<div class="profile__box">
+						<div class="profile__header">${translate('elevationProfile_verticalHeight')}</div>
+						<div class="profile__content">
+							<div class="profile__icon height"></div>
+							<div class="profile__text" id="route-elevation-chart-footer-verticalHeight">${toLocaleString(verticalHeight)} m</div>
+						</div>
 					</div>
-					<div class="profile__box" title="${translate('elevationProfile_linearDistance')}">
-						<div class="profile__icon distance"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-linearDistance">${this._unitsService.formatDistance(linearDistance)}</div>
+					<div class="profile__box">
+						<div class="profile__header">${translate('elevationProfile_linearDistance')}</div>
+						<div class="profile__content">
+							<div class="profile__icon distance"></div>
+							<div class="profile__text" id="route-elevation-chart-footer-linearDistance">${this._unitsService.formatDistance(linearDistance)}</div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -320,7 +331,6 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	_getChartData(elevationData, newDataLabels, newDataData) {
-		const currentColors = [];
 		const translate = (key) => this._translationService.translate(key);
 
 		const _chartData = {
@@ -333,31 +343,25 @@ export class ElevationProfile extends MvuElement {
 					borderWidth: 4,
 					backgroundColor: (context) => {
 						const selectedAttribute = this.getModel().selectedAttribute;
-						if (!currentColors[selectedAttribute]) {
-							currentColors[selectedAttribute] = {};
-						}
-						if (!currentColors[selectedAttribute].backgroundColor) {
+						if (!this._chartColorOptions[selectedAttribute].backgroundColor) {
 							if (context.chart.chartArea) {
-								currentColors[selectedAttribute].backgroundColor = this._getBackground(context.chart, elevationData, selectedAttribute);
+								this._chartColorOptions[selectedAttribute].backgroundColor = this._getBackground(context.chart, elevationData, selectedAttribute);
 							} else {
 								return ElevationProfile.BACKGROUND_COLOR;
 							}
 						}
-						return currentColors[selectedAttribute].backgroundColor;
+						return this._chartColorOptions[selectedAttribute].backgroundColor;
 					},
 					borderColor: (context) => {
 						const selectedAttribute = this.getModel().selectedAttribute;
-						if (!currentColors[selectedAttribute]) {
-							currentColors[selectedAttribute] = {};
-						}
-						if (!currentColors[selectedAttribute].borderColor) {
+						if (!this._chartColorOptions[selectedAttribute].borderColor) {
 							if (context.chart.chartArea) {
-								currentColors[selectedAttribute].borderColor = this._getBorder(context.chart, elevationData, selectedAttribute);
+								this._chartColorOptions[selectedAttribute].borderColor = this._getBorder(context.chart, elevationData, selectedAttribute);
 							} else {
 								return ElevationProfile.BORDER_COLOR;
 							}
 						}
-						return currentColors[selectedAttribute].borderColor;
+						return this._chartColorOptions[selectedAttribute].borderColor;
 					},
 					tension: 0.1,
 					pointRadius: 0,
@@ -415,8 +419,8 @@ export class ElevationProfile extends MvuElement {
 	_getTextTypeGradient(chart, elevationData, selectedAttribute) {
 		const { ctx, chartArea } = chart;
 		const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
-		const numberOfPoints = elevationData.elevations.length;
-		const xPointWidth = chartArea.width / numberOfPoints;
+		const distance = elevationData.elevations.at(-1).dist; // the dist-property contains ascending values, starting by ZERO to the final distance of the elevation profile
+
 		const elevationProfileAttributeString = elevationData.elevations[0][selectedAttribute];
 		let currentElevationProfileAttributeType = this._getElevationProfileAttributeType(selectedAttribute, elevationProfileAttributeString);
 		gradientBg.addColorStop(0, currentElevationProfileAttributeType.color);
@@ -425,8 +429,8 @@ export class ElevationProfile extends MvuElement {
 			if (index === 0) {
 				return;
 			}
+			const xPoint = element.dist / distance;
 			if (index === elevationData.elevations.length - 1) {
-				const xPoint = (xPointWidth / chartArea.width) * index;
 				gradientBg.addColorStop(xPoint, currentElevationProfileAttributeType.color);
 				return;
 			}
@@ -435,7 +439,6 @@ export class ElevationProfile extends MvuElement {
 			if (currentElevationProfileAttributeType === elevationProfileAttributeType) {
 				return;
 			}
-			const xPoint = (xPointWidth / chartArea.width) * index;
 			gradientBg.addColorStop(xPoint, currentElevationProfileAttributeType.color);
 			currentElevationProfileAttributeType = elevationProfileAttributeType;
 			gradientBg.addColorStop(xPoint, currentElevationProfileAttributeType.color);
@@ -444,14 +447,18 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	_getSlopeGradient(chart, elevationData) {
+		/** Elevation data points should come with equal distances by interpolation, but in some edge cases
+		 *  (i. e. from routing results), the equality of distance is broken up on connection points.
+		 *
+		 * Thats why we rely on the elevation-element 'dist' property to calculate always a valid xPoint.
+		 * */
 		const { ctx, chartArea } = chart;
 		const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
-		const numberOfPoints = elevationData.elevations.length;
-		const xPointWidth = chartArea.width / numberOfPoints;
+		const distance = elevationData.elevations.at(-1).dist; // the dist-property contains ascending values, starting by ZERO to the final distance of the elevation profile
 
-		elevationData?.elevations.forEach((element, index) => {
-			if (element.slope) {
-				const xPoint = (xPointWidth / chartArea.width) * index;
+		elevationData?.elevations.forEach((element) => {
+			if (isNumber(element.slope) && isNumber(element.dist)) {
+				const xPoint = element.dist / distance;
 				const slopeValue = Math.abs(element.slope);
 				const slopeClass = SoterSlopeClasses.find((c) => c.min <= slopeValue && c.max > slopeValue);
 
@@ -474,24 +481,15 @@ export class ElevationProfile extends MvuElement {
 	/**
 	 * @private
 	 */
-	async _getElevationProfile(coordinates) {
-		const translate = (key) => this._translationService.translate(key);
-		if (Array.isArray(coordinates) && coordinates.length >= 2) {
-			try {
-				const profile = await this._elevationService.getProfile(coordinates);
-				if (!profile) {
-					this.signal(Update_Profile_Data, Empty_Profile_Data);
-				} else {
-					this._enrichProfileData(profile);
-					this.signal(Update_Profile_Data, profile);
-				}
-			} catch (e) {
-				console.error(e);
-				emitNotification(translate('elevationProfile_could_not_load'), LevelTypes.ERROR);
+	async _getElevationProfile(id) {
+		if (id) {
+			const profile = await this._elevationService.fetchProfile(id);
+			if (!profile) {
 				this.signal(Update_Profile_Data, Empty_Profile_Data);
+			} else {
+				this._enrichProfileData(profile);
+				this.signal(Update_Profile_Data, profile);
 			}
-		} else {
-			this.signal(Update_Profile_Data, Empty_Profile_Data);
 		}
 	}
 
@@ -509,6 +507,11 @@ export class ElevationProfile extends MvuElement {
 
 			// If the input is not a string, return the input as-is.
 			return numberOrString;
+		};
+
+		const resetChartColor = () => {
+			const selectedAttribute = this.getModel().selectedAttribute;
+			this._chartColorOptions[selectedAttribute] = {};
 		};
 
 		const config = {
@@ -562,7 +565,7 @@ export class ElevationProfile extends MvuElement {
 					delay: this._noAnimation ? 0 : Chart_Delay
 				},
 				maintainAspectRatio: false,
-
+				onResize: resetChartColor,
 				scales: {
 					x: {
 						type: 'linear',
@@ -657,11 +660,13 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	setCoordinates(coordinates) {
-		removeHighlightFeaturesById(ElevationProfile.HIGHLIGHT_FEATURE_ID);
-		addHighlightFeatures({
-			id: ElevationProfile.HIGHLIGHT_FEATURE_ID,
-			type: HighlightFeatureType.TEMPORARY,
-			data: { coordinate: [...coordinates] }
+		setTimeout(() => {
+			removeHighlightFeaturesById(ElevationProfile.HIGHLIGHT_FEATURE_ID);
+			addHighlightFeatures({
+				id: ElevationProfile.HIGHLIGHT_FEATURE_ID,
+				type: HighlightFeatureType.MARKER_TMP,
+				data: { coordinate: [...coordinates] }
+			});
 		});
 	}
 

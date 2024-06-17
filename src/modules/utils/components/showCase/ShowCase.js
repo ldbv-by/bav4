@@ -2,20 +2,23 @@
  * @module modules/utils/components/showCase/ShowCase
  */
 import { html } from 'lit-html';
-import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import { changeZoomAndCenter } from '../../../../store/position/position.action';
-import arrowUpSvg from './assets/arrow-up.svg';
+import rocketSvg from './assets/rocket.svg';
+import rocketRoundSvg from './assets/rocketRound.svg';
 import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../../store/measurement/measurement.action';
 import { addLayer } from '../../../../store/layers/layers.action';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { closeModal, openModal } from '../../../../store/modal/modal.action';
+import { GeoResourceAuthenticationType } from '../../../../domain/geoResources';
 import css from './showCase.css';
-import { observe } from '../../../../utils/storeUtils';
 import { MenuTypes } from '../../../commons/components/overflowMenu/OverflowMenu';
 import { closeBottomSheet, openBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
 import { closeProfile, openProfile } from '../../../../store/elevationProfile/elevationProfile.action';
 import { sleep } from '../../../../utils/timer';
+import { MvuElement } from '../../../MvuElement';
+
+const Update_Profile_Active = 'update_profile_active';
 
 /**
  * Displays a showcase of common and reusable components or
@@ -23,10 +26,9 @@ import { sleep } from '../../../../utils/timer';
  * @class
  * @author thiloSchlemmer
  */
-export class ShowCase extends BaElement {
+export class ShowCase extends MvuElement {
 	constructor() {
-		super();
-
+		super({ activeProfile: false });
 		const { CoordinateService, EnvironmentService, ShareService, UrlService, FileStorageService, ImportVectorDataService } = $injector.inject(
 			'CoordinateService',
 			'EnvironmentService',
@@ -46,10 +48,25 @@ export class ShowCase extends BaElement {
 		this._fileStorageService = FileStorageService;
 	}
 
+	onInitialize() {
+		this.observe(
+			(state) => state.elevationProfile.active,
+			(active) => this.signal(Update_Profile_Active, active)
+		);
+	}
+
+	update(type, data, model) {
+		switch (type) {
+			case Update_Profile_Active:
+				return { ...model, activeProfile: data };
+		}
+	}
+
 	/**
 	 * @override
 	 */
-	createView() {
+	createView(model) {
+		const { profileActive } = model;
 		const onClick0 = async () => {
 			//create a GeoResource
 			const geoResourceFuture = this._importVectorDataService.forUrl('https://www.geodaten.bayern.de/ba-data/Themen/kml/huetten.kml');
@@ -67,7 +84,7 @@ export class ShowCase extends BaElement {
 			});
 		};
 
-		const onClickAuthenticate = async () => {
+		const onClickAuthenticateUrl = async () => {
 			closeModal();
 
 			await sleep(1000);
@@ -85,19 +102,10 @@ export class ShowCase extends BaElement {
 				return null;
 			};
 
-			// in case of aborting the authentification-process by closing the modal,
-			// call the onCloseCallback directly
-			const resolveBeforeClosing = (modal) => {
-				if (!modal.active) {
-					unsubscribe();
-					onClose(null);
-				}
-			};
-
-			const unsubscribe = observe(
-				this._storeService.getStore(),
+			const unsubscribe = this.observe(
 				(state) => state.modal,
-				(modal) => resolveBeforeClosing(modal)
+				(modal) => resolveBeforeClosing(modal),
+				false
 			);
 
 			// onClose-callback is called with a valid credential or NULL
@@ -117,6 +125,15 @@ export class ShowCase extends BaElement {
 				resolveAction();
 			};
 
+			// in case of aborting the authentification-process by closing the modal,
+			// call the onCloseCallback directly
+			const resolveBeforeClosing = (modal) => {
+				if (!modal.active) {
+					unsubscribe();
+					onClose(null);
+				}
+			};
+
 			// creates a PasswordCredentialPanel-element within a templateResult
 			const getCredentialPanel = () => {
 				return html`<ba-auth-password-credential-panel
@@ -129,6 +146,137 @@ export class ShowCase extends BaElement {
 			// using the panel as content for the modal
 			openModal('Connect to restricted WMS...', getCredentialPanel());
 		};
+
+		const onClickAuthenticateRole = async () => {
+			closeModal();
+
+			await sleep(1000);
+			const restrictedRole = GeoResourceAuthenticationType.PLUS;
+			const receivedCredential = {};
+
+			// the authenticate-callback provides the implementation of the authentication of credential and url
+			const authenticate = async (credential, authenticationTarget) => {
+				await sleep(3000);
+				if (authenticationTarget === restrictedRole && credential?.username === 'foo' && credential?.password === 'bar') {
+					receivedCredential.username = credential.username;
+					receivedCredential.password = credential.password;
+					return { message: 'Credential is valid' };
+				}
+				return null;
+			};
+
+			const unsubscribe = this.observe(
+				(state) => state.modal,
+				(modal) => resolveBeforeClosing(modal),
+				false
+			);
+
+			// onClose-callback is called with a valid credential or NULL
+			const onClose = (credential, result) => {
+				unsubscribe();
+
+				const succeed = () => {
+					emitNotification(result.message, LevelTypes.INFO);
+					closeModal();
+				};
+
+				const abort = () => {
+					emitNotification('Authentication aborted', LevelTypes.WARN);
+				};
+
+				const resolveAction = credential ? succeed : abort;
+				resolveAction();
+			};
+
+			// in case of aborting the authentification-process by closing the modal,
+			// call the onCloseCallback directly
+			const resolveBeforeClosing = (modal) => {
+				if (!modal.active) {
+					unsubscribe();
+					onClose(null);
+				}
+			};
+
+			// creates a PasswordCredentialPanel-element within a templateResult
+			const getCredentialPanel = () => {
+				return html`<ba-auth-password-credential-panel .authenticate=${authenticate} .onClose=${onClose}></ba-auth-password-credential-panel>`;
+			};
+
+			const title = html`Sign in
+				<ba-badge .size=${'1.5'} .color=${'var(--text3)'} .background=${'var(--primary-color)'} .label=${'Role'}></ba-badge>`;
+
+			// using the panel as content for the modal
+			openModal(title, getCredentialPanel());
+		};
+
+		const onClickAuthenticateFooter = async () => {
+			closeModal();
+
+			await sleep(1000);
+			const restrictedRole = GeoResourceAuthenticationType.PLUS;
+			const receivedCredential = {};
+
+			// the authenticate-callback provides the implementation of the authentication of credential and url
+			const authenticate = async (credential, authenticationTarget) => {
+				await sleep(3000);
+				if (authenticationTarget === restrictedRole && credential?.username === 'foo' && credential?.password === 'bar') {
+					receivedCredential.username = credential.username;
+					receivedCredential.password = credential.password;
+					return { message: 'Credential is valid' };
+				}
+				return null;
+			};
+
+			const unsubscribe = this.observe(
+				(state) => state.modal,
+				(modal) => resolveBeforeClosing(modal),
+				false
+			);
+
+			// onClose-callback is called with a valid credential or NULL
+			const onClose = (credential, result) => {
+				unsubscribe();
+
+				const succeed = () => {
+					emitNotification(result.message, LevelTypes.INFO);
+					closeModal();
+				};
+
+				const abort = () => {
+					emitNotification('Authentication aborted', LevelTypes.WARN);
+				};
+
+				const resolveAction = credential ? succeed : abort;
+				resolveAction();
+			};
+
+			// in case of aborting the authentification-process by closing the modal,
+			// call the onCloseCallback directly
+			const resolveBeforeClosing = (modal) => {
+				if (!modal.active) {
+					unsubscribe();
+					onClose(null);
+				}
+			};
+
+			const footer = html`<ba-auth-password-credential-bvv-footer></ba-auth-password-credential-bvv-footer>`;
+
+			// creates a PasswordCredentialPanel-element within a templateResult
+			const getCredentialPanel = () => {
+				return html`<ba-auth-password-credential-panel
+					.authenticate=${authenticate}
+					.footer=${footer}
+					.onClose=${onClose}
+				></ba-auth-password-credential-panel>`;
+			};
+
+			const title = html`Sign in
+				<ba-badge .size=${'1.5'} .color=${'var(--text3)'} .background=${'var(--primary-color)'} .label=${'Role'}></ba-badge>`;
+
+			// using the panel as content for the modal
+			openModal(title, getCredentialPanel());
+		};
+
 		const onToggle = (event) => {
 			// eslint-disable-next-line no-console
 			console.log('toggled ' + event.detail.checked);
@@ -166,7 +314,7 @@ export class ShowCase extends BaElement {
 		};
 
 		const onClickOpenProfile = () => {
-			if (this._storeService.getStore().getState().elevationProfile.active) {
+			if (profileActive) {
 				closeProfile();
 			} else {
 				closeModal();
@@ -185,8 +333,7 @@ export class ShowCase extends BaElement {
 				return before === min ? before + 1 : before === max ? min : before + 1;
 			};
 			const getVersionForDragging = () => {
-				const unsubscribe = observe(
-					this._storeService.getStore(),
+				const unsubscribe = this.observe(
 					(state) => state.pointer.beingDragged,
 					() => {
 						closeBottomSheet();
@@ -227,10 +374,10 @@ export class ShowCase extends BaElement {
 			version = nextVersion(version, 1, 3);
 		};
 		const menuitems = [
-			{ label: 'Apple', icon: arrowUpSvg, action: () => emitNotification('Apple', LevelTypes.INFO) },
-			{ label: 'Lemon', icon: arrowUpSvg, action: () => emitNotification('Lemon', LevelTypes.INFO) },
+			{ label: 'Apple', icon: rocketSvg, action: () => emitNotification('Apple', LevelTypes.INFO) },
+			{ label: 'Lemon', icon: rocketSvg, action: () => emitNotification('Lemon', LevelTypes.INFO) },
 			{ label: 'Orange', action: () => emitNotification('Orange', LevelTypes.INFO) },
-			{ label: 'Banana', icon: arrowUpSvg, disabled: true, action: () => emitNotification('Banana', LevelTypes.INFO) }
+			{ label: 'Banana', icon: rocketRoundSvg, disabled: true, action: () => emitNotification('Banana', LevelTypes.INFO) }
 		];
 
 		return html`
@@ -249,9 +396,19 @@ export class ShowCase extends BaElement {
 				<h2>Specific components</h2>
 
 				<div class="section">
-					<h3>Theme-Toggle</h3>
-					<div class="example">
-						<div class="theme-toggle" style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>
+					<h3>slider</h3>
+					<div class="example row">
+						<input type="range" />
+					</div>
+
+					<h3>Switch</h3>
+					<div class="example row">
+						<ba-switch .title=${'Toggle me'} @toggle=${onToggle}><span slot="before">Toggle</span></ba-switch>
+						<ba-switch .title=${'Toggle me'} @toggle=${onToggle}><slot slot="after">Toggle</slot></ba-switch>
+						<ba-switch .title=${'Toggle me.checked'} .checked=${true} @toggle=${onToggle}>checked</ba-switch>
+						<ba-switch .title=${'Toggle me.indeterminate'} .indeterminate=${true} @toggle=${onToggle}>indeterminate</ba-switch>
+						<ba-switch .title=${'Toggle me.disabled'} .disabled=${true}>disabled</ba-switch>
+						<ba-switch .title=${'Toggle me.disabled'} .disabled=${true} .checked=${true}>disabled.checked</ba-switch>
 					</div>
 
 					<h3>Profile</h3>
@@ -314,20 +471,37 @@ export class ShowCase extends BaElement {
 							<ba-button id="button3" .label=${'loading style'} .type=${'loading'}></ba-button>
 						</div>
 						<div class="row" style="margin-top:2em">
-							<ba-button id="button0" .label=${'primary style'} .icon=${arrowUpSvg} .type=${'primary'} @click=${onClick0}></ba-button>
-							<ba-button id="button1" .label=${'secondary style'} .icon=${arrowUpSvg} @click=${onClick1}></ba-button>
-							<ba-button id="button2" .label=${'disabled'} .icon=${arrowUpSvg} .type=${'primary'} .disabled=${true}></ba-button>
-							<ba-button id="button3" .label=${'disabled'} .icon=${arrowUpSvg} .disabled=${true}></ba-button>
-							<ba-button id="button3" .label=${'loading style'} .icon=${arrowUpSvg} .type=${'loading'}></ba-button>
+							<ba-button id="button0" .label=${'primary style'} .icon=${rocketSvg} .type=${'primary'} @click=${onClick0}></ba-button>
+							<ba-button id="button1" .label=${'secondary style'} .icon=${rocketSvg} @click=${onClick1}></ba-button>
+							<ba-button id="button2" .label=${'disabled'} .icon=${rocketSvg} .type=${'primary'} .disabled=${true}></ba-button>
+							<ba-button id="button3" .label=${'disabled'} .icon=${rocketSvg} .disabled=${true}></ba-button>
+							<ba-button id="button3" .label=${'loading style'} .icon=${rocketSvg} .type=${'loading'}></ba-button>
+						</div>
+					</div>
+					<h3>ba-badges</h3>
+					<div class="example">
+						<div class="row">
+							<ba-badge .color=${'var(--text3)'} .background=${'var(--primary-color)'} .label=${'Badge'}></ba-badge>
+							<ba-badge .background=${'var(--secondary-bg-color)'} .label=${'Badge'} .color=${'var(--text2)'}></ba-badge>
+							<ba-badge .background=${'var(--secondary-color)'} .label=${'42'} .color=${'var(--text3)'}></ba-badge>
+							<ba-badge .icon=${rocketSvg} .size=${'1.1'}></ba-badge>
+							<ba-badge
+								.icon=${rocketSvg}
+								.size=${'1.5'}
+								.color=${'var(--text3)'}
+								.background=${'var(--primary-color)'}
+								.label=${'Badge'}
+								.title=${'Badge title'}
+							></ba-badge>
 						</div>
 					</div>
 
 					<h3>ba-icons</h3>
 					<div class="example icons">
-						<ba-icon .icon="${arrowUpSvg}" .title=${'some'} @click=${onClick0}></ba-icon>
-						<ba-icon .icon="${arrowUpSvg}" .disabled=${true} @click=${onClick0}></ba-icon>
-						<ba-icon .icon="${arrowUpSvg}" .size=${1} @click=${onClick0}></ba-icon>
-						<ba-icon .icon="${arrowUpSvg}" .size=${2.5} @click=${onClick0}></ba-icon>
+						<ba-icon .icon="${rocketSvg}" .title=${'some'} @click=${onClick0}></ba-icon>
+						<ba-icon .icon="${rocketRoundSvg}" .disabled=${true} @click=${onClick0}></ba-icon>
+						<ba-icon .icon="${rocketRoundSvg}" .size=${1} @click=${onClick0}></ba-icon>
+						<ba-icon .icon="${rocketRoundSvg}" .size=${2.5} @click=${onClick0}></ba-icon>
 					</div>
 
 					<h3>Overflow-Menu</h3>
@@ -418,17 +592,6 @@ export class ShowCase extends BaElement {
 						</div>
 					</div>
 
-					<h3>slider</h3>
-					<div class="example row">
-						<input type="range" />
-					</div>
-
-					<h3>Toggle-Button</h3>
-					<div class="example row">
-						<div>Toggle me!</div>
-						<ba-toggle id="toggle" .title=${'Toggle'} @toggle=${onToggle}></ba-toggle>
-					</div>
-
 					<h3>Loading hint</h3>
 					<div class="example row">
 						<ba-spinner></ba-spinner>
@@ -437,7 +600,22 @@ export class ShowCase extends BaElement {
 
 					<h3>Credentials</h3>
 					<div class="example row">
-						<ba-button id="button0" .label=${'Authenticate by password'} .type=${'primary'} @click=${onClickAuthenticate}></ba-button>
+						<ba-button id="button0" .label=${'Authenticate by password for URL'} .type=${'primary'} @click=${onClickAuthenticateUrl}></ba-button>
+						<div>Hint: Demo Credentials are foo/bar</div>
+					</div>
+
+					<div class="example row">
+						<ba-button id="button0" .label=${'Authenticate by password for Role'} .type=${'primary'} @click=${onClickAuthenticateRole}></ba-button>
+						<div>Hint: Demo Credentials are foo/bar</div>
+					</div>
+
+					<div class="example row">
+						<ba-button
+							id="button0"
+							.label=${'Authenticate by password with custom footer content'}
+							.type=${'primary'}
+							@click=${onClickAuthenticateFooter}
+						></ba-button>
 						<div>Hint: Demo Credentials are foo/bar</div>
 					</div>
 				</div>

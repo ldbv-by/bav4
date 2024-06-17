@@ -10,6 +10,9 @@ module.exports = function (config) {
 		coverageIstanbulReporter: {
 			dir: path.join(__dirname, 'coverage'),
 			reports: ['lcovonly']
-		}
+		},
+		browserDisconnectTimeout: 90000,
+		browserNoActivityTimeout: 90000,
+		browserDisconnectTolerance: 2
 	});
 };

@@ -17,6 +17,10 @@ test.describe('entry points', () => {
 		const response = await request.get(`${BASE_URL}/config.js`);
 		expect(response.ok()).toBe(true);
 	});
+	test('should provide the wc.js', async ({ request }) => {
+		const response = await request.get(`${BASE_URL}/wc.js`);
+		expect(response.ok()).toBe(true);
+	});
 });
 
 test.describe('chunks', () => {

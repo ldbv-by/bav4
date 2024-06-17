@@ -70,20 +70,6 @@ describe('TopicsPlugin', () => {
 			expect(addTopicFromConfigSpy).not.toHaveBeenCalled();
 			expect(store.getState().topics.ready).toBeTrue();
 		});
-
-		it('throws an error when TopicsService throws', async () => {
-			const store = setup();
-			const queryParam = new URLSearchParams(QueryParameters.TOPIC + '=some');
-			const instanceUnderTest = new TopicsPlugin();
-			const error = new Error('something got wrong');
-			spyOn(topicsServiceMock, 'init').and.rejectWith(error);
-			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
-
-			await expectAsync(instanceUnderTest._init()).toBeRejectedWith(
-				jasmine.objectContaining({ message: 'No topics found. Is the backend running and properly configured?', cause: error })
-			);
-			expect(store.getState().topics.ready).toBeFalse();
-		});
 	});
 
 	describe('_addTopicFromConfig', () => {

@@ -10,7 +10,7 @@ import css from './feedbackBanner.css';
 
 const Update_Status = 'update_status';
 
-const Status_Visibility = [RoutingStatusCodes.Http_Backend_400, RoutingStatusCodes.Http_Backend_500, RoutingStatusCodes.Start_Destination_Missing];
+const Status_Visibility = [RoutingStatusCodes.Start_Destination_Missing, RoutingStatusCodes.Start_Missing, RoutingStatusCodes.Destination_Missing];
 
 /**
  * Gives the user feedback about the routing status.
@@ -24,14 +24,10 @@ export class FeedbackBanner extends MvuElement {
 	}
 
 	onInitialize() {
-		this._unsubscribeFromStore = this.observe(
+		this.observe(
 			(store) => store.routing.status,
 			(status) => this.signal(Update_Status, status)
 		);
-	}
-
-	onDisconnect() {
-		this._unsubscribeFromStore();
 	}
 
 	update(type, data, model) {
@@ -46,12 +42,15 @@ export class FeedbackBanner extends MvuElement {
 		const translate = (key) => this._translationService.translate(key);
 		const isVisible = Status_Visibility.includes(status);
 		const className = isVisible ? `status-${status}` : '';
+		const iconClassName = isVisible ? `icon-status-${status}` : '';
 
 		return isVisible
 			? html`<style>
 						${css}
 					</style>
 					<div class="container">
+						<div class="icon ${iconClassName}"></div>
+
 						<span class=${className}>${unsafeHTML(translate('routing_feedback_' + status))}</span>
 					</div>`
 			: nothing;

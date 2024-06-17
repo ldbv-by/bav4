@@ -9,10 +9,8 @@ import { LevelTypes, emitNotification } from '../../../../store/notifications/no
 import { MapFeedback } from '../../../../services/FeedbackService';
 import { PathParameters } from '../../../../domain/pathParameters';
 import { BA_FORM_ELEMENT_VISITED_CLASS, IFRAME_ENCODED_STATE, IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../utils/markup';
-import { IFrameComponents } from '../../../../domain/iframeComponents';
 import { QueryParameters } from '../../../../domain/queryParameters';
 import { nothing } from 'lit-html';
-import { isExternalGeoResourceId } from '../../../../utils/checks';
 
 const Update_Category = 'update_category';
 const Update_Description = 'update_description';
@@ -180,32 +178,29 @@ export class MapFeedbackPanel extends MvuElement {
 		const getExtraParameters = () => {
 			const queryParameters = {};
 			queryParameters[QueryParameters.LAYER] = this._feedbackService.getOverlayGeoResourceId();
-			queryParameters[QueryParameters.IFRAME_COMPONENTS] = [IFrameComponents.DRAW_TOOL];
+			queryParameters[QueryParameters.EC_DRAW_TOOL] = ['point', 'line', 'polygon'];
+			queryParameters[QueryParameters.EC_MAP_ACTIVATION] = false;
+			queryParameters[QueryParameters.EC_LINK_TO_APP] = false;
 			return queryParameters;
 		};
 
-		const filterUserGeneratedAndExternalLayers = (encodedState) => {
-			const [baseUrl, searchParamsString] = decodeURIComponent(encodedState).split('?');
-			const searchParams = new URLSearchParams(searchParamsString);
-			const layers = searchParams.has(QueryParameters.LAYER) ? searchParams.get(QueryParameters.LAYER).split(',') : [];
+		/**
+		 * Create an iframe source without the user-generated GeoResources, but external layers.
+		 * They could be needed to create aligned feedback geometries.
+		 *
+		 * Local GeoResources must be imported via drag&drop to be displayed.
+		 */
+		const iframeSrc = center
+			? this._shareService.encodeStateForPosition({ center: center }, getExtraParameters(), [PathParameters.EMBED])
+			: this._shareService.encodeState(getExtraParameters(), [PathParameters.EMBED]);
 
-			searchParams.set(
-				QueryParameters.LAYER,
-				layers
-					.filter((l) => !this._fileStorageService.isAdminId(l) && !this._fileStorageService.isFileId(l))
-					.filter((l) => !isExternalGeoResourceId(l))
-					.join(',')
-			);
-			return `${baseUrl}?${searchParams.toString()}`;
+		const onClick = () => {
+			const iframe = this.shadowRoot.querySelector('iframe');
+			iframe.classList.add('attention');
+			iframe.addEventListener('animationend', () => {
+				iframe.classList.remove('attention');
+			});
 		};
-
-		// Create an iframe source without any user-generated GeoResources that could be unintentionally affect the feedback or the GeoResources itself.
-		const iframeSrc = filterUserGeneratedAndExternalLayers(
-			center
-				? this._shareService.encodeStateForPosition({ center: center }, getExtraParameters(), [PathParameters.EMBED])
-				: this._shareService.encodeState(getExtraParameters(), [PathParameters.EMBED])
-		);
-
 		return html`
 			<style>
 				${css}
@@ -221,14 +216,13 @@ export class MapFeedbackPanel extends MvuElement {
 						loading="lazy"
 						referrerpolicy="no-referrer-when-downgrade"
 					></iframe>
-
 					${mapFeedback.fileId ? nothing : html`<span class="map-feedback__iframe-hint">${translate('feedback_mapFeedback_geometry_missing')}</span>`}
 				</div>
 				<div class="map-feedback__form">
 					<span id="feedbackPanelTitle" class="ba-list-item__main-text">${translate('feedback_mapFeedback')}</span>
 					<div class="map-feedback__form-hint">
 						${translate('feedback_mapFeedback_text_before')}
-						<span class="map-feedback__highlight">${translate('feedback_mapFeedback_text_map')}</span>
+						<button class="map-feedback__highlight" @click=${() => onClick()}>${translate('feedback_mapFeedback_text_map')}</button>
 						${translate('feedback_mapFeedback_text_after')}
 					</div>
 					<div class="ba-form-element" id="category-form-element">

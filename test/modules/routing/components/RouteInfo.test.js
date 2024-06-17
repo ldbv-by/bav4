@@ -10,7 +10,7 @@ import { TestUtils } from '../../../test-utils';
 window.customElements.define(RouteInfo.tag, RouteInfo);
 
 const defaultRouteStatistic = {
-	time: 3600000,
+	time: 4200000,
 	details: {
 		surface: {
 			other: {
@@ -235,8 +235,7 @@ describe('RouteInfo', () => {
 	const category = { style: { color: 'red', icon: 'icon_category' } };
 	const routingServiceMock = {
 		getCategoryById: () => category,
-		getParent: () => 'foo',
-		getETAFor: () => {}
+		getParent: () => 'foo'
 	};
 
 	const unitsServiceMock = {
@@ -336,21 +335,18 @@ describe('RouteInfo', () => {
 						stats: defaultRouteStatistic
 					}
 				};
-				spyOn(routingServiceMock, 'getETAFor').and.returnValue(null);
-				const warnSpy = spyOn(console, 'warn');
+
 				const element = await setup(state);
 				setRoute(defaultRoute);
 
 				const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
-				expect(routingDuration[0].innerText).toBe('01:00');
+				expect(routingDuration[0].innerText).toBe('01:10');
 
 				const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
 				expect(routingElements).toHaveSize(3);
 				expect(routingElements[0].innerText).toBe('0.33 km');
 				expect(routingElements[1].innerText).toBe('0.11 km');
 				expect(routingElements[2].innerText).toBe('0.22 km');
-
-				expect(warnSpy).toHaveBeenCalledOnceWith("Unknown category, no estimate available for 'some'");
 			});
 
 			it('renders missing stats', async () => {
@@ -362,8 +358,6 @@ describe('RouteInfo', () => {
 					}
 				};
 
-				spyOn(routingServiceMock, 'getETAFor').and.returnValue(42000000);
-
 				const element = await setup(state);
 				setRoute(defaultRoute);
 
@@ -372,9 +366,9 @@ describe('RouteInfo', () => {
 
 				const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
 				expect(routingElements).toHaveSize(3);
-				expect(routingElements[0].innerText).toBe('0');
-				expect(routingElements[1].innerText).toBe('0');
-				expect(routingElements[2].innerText).toBe('0');
+				expect(routingElements[0].innerText).toBe('-');
+				expect(routingElements[1].innerText).toBe('-');
+				expect(routingElements[2].innerText).toBe('-');
 			});
 
 			it('renders category icon', async () => {
@@ -406,172 +400,7 @@ describe('RouteInfo', () => {
 				setRoute(defaultRoute);
 
 				expect(element.shadowRoot.querySelector('.category-icon').innerHTML).toContain('icon_parent_category');
-				expect(getComputedStyle(element.shadowRoot.querySelector('.routing-info-type')).background).toContain('rgb(0, 0, 255)');
 			});
-
-			describe('when rendering estimate for specific vehicle', () => {
-				it('calculates the estimate for hike', async () => {
-					const state = {
-						routing: {
-							status: RoutingStatusCodes.Ok,
-							categoryId: 'bvv-hike',
-							stats: defaultRouteStatistic
-						}
-					};
-					const calculatorSpy = spyOn(routingServiceMock, 'getETAFor')
-						.withArgs('bvv-hike', jasmine.any(Number), jasmine.any(Number), jasmine.any(Number))
-						.and.returnValue(42000000);
-					const element = await setup(state);
-
-					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
-					expect(routingDuration[0].innerText).toBe('11:40');
-
-					const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
-					expect(routingElements).toHaveSize(3);
-					expect(routingElements[0].innerText).toBe('0.33 km');
-					expect(routingElements[1].innerText).toBe('0.11 km');
-					expect(routingElements[2].innerText).toBe('0.22 km');
-
-					expect(calculatorSpy).toHaveBeenCalled();
-				});
-
-				it('calculates the estimate for bvv-hike', async () => {
-					const state = {
-						routing: {
-							status: RoutingStatusCodes.Ok,
-							categoryId: 'bvv-hike',
-							stats: defaultRouteStatistic
-						}
-					};
-					const calculatorSpy = spyOn(routingServiceMock, 'getETAFor')
-						.withArgs('bvv-hike', jasmine.any(Number), jasmine.any(Number), jasmine.any(Number))
-						.and.returnValue(42000000);
-					const element = await setup(state);
-
-					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
-					expect(routingDuration[0].innerText).toBe('11:40');
-
-					expect(calculatorSpy).toHaveBeenCalled();
-				});
-
-				it('calculates the estimate for bike', async () => {
-					const state = {
-						routing: {
-							status: RoutingStatusCodes.Ok,
-							categoryId: 'bike',
-							stats: defaultRouteStatistic
-						}
-					};
-					const calculatorSpy = spyOn(routingServiceMock, 'getETAFor')
-						.withArgs('bike', jasmine.any(Number), jasmine.any(Number), jasmine.any(Number))
-						.and.returnValue(42000000);
-					const element = await setup(state);
-
-					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
-					expect(routingDuration[0].innerText).toBe('11:40');
-					expect(calculatorSpy).toHaveBeenCalled();
-				});
-
-				it('calculates the estimate for bvv-bike', async () => {
-					const state = {
-						routing: {
-							status: RoutingStatusCodes.Ok,
-							stats: {
-								twoDiff: [111, 222],
-								dist: 333,
-								time: 3600000
-							},
-							categoryId: 'bvv-bike'
-						}
-					};
-					const calculatorSpy = spyOn(routingServiceMock, 'getETAFor')
-						.withArgs('bvv-bike', jasmine.any(Number), jasmine.any(Number), jasmine.any(Number))
-						.and.returnValue(42000000);
-					const element = await setup(state);
-
-					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
-
-					expect(routingDuration[0].innerText).toBe('11:40');
-					expect(calculatorSpy).toHaveBeenCalled();
-				});
-
-				it('calculates the estimate for mtb', async () => {
-					const state = {
-						routing: {
-							status: RoutingStatusCodes.Ok,
-							categoryId: 'bvv-mtb',
-							stats: {
-								twoDiff: [111, 222],
-								dist: 333,
-								time: 3600000
-							}
-						}
-					};
-					const calculatorSpy = spyOn(routingServiceMock, 'getETAFor')
-						.withArgs('bvv-mtb', jasmine.any(Number), jasmine.any(Number), jasmine.any(Number))
-						.and.returnValue(42000000);
-					const element = await setup(state);
-
-					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
-
-					expect(routingDuration[0].innerText).toBe('11:40');
-					expect(calculatorSpy).toHaveBeenCalled();
-				});
-
-				it('calculates the estimate for bvv-mtb', async () => {
-					const state = {
-						routing: {
-							status: RoutingStatusCodes.Ok,
-							categoryId: 'bvv-mtb',
-							stats: {
-								twoDiff: [111, 222],
-								dist: 333,
-								time: 3600000
-							}
-						}
-					};
-					const calculatorSpy = spyOn(routingServiceMock, 'getETAFor')
-						.withArgs('bvv-mtb', jasmine.any(Number), jasmine.any(Number), jasmine.any(Number))
-						.and.returnValue(42000000);
-					const element = await setup(state);
-
-					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
-					expect(routingDuration[0].innerText).toBe('11:40');
-					expect(calculatorSpy).toHaveBeenCalled();
-				});
-
-				it('calculates the estimate for racingbike', async () => {
-					const state = {
-						routing: {
-							status: RoutingStatusCodes.Ok,
-							categoryId: 'racingbike',
-							stats: {
-								twoDiff: [111, 222],
-								dist: 333,
-								time: 3600000
-							}
-						}
-					};
-					const calculatorSpy = spyOn(routingServiceMock, 'getETAFor')
-						.withArgs('racingbike', jasmine.any(Number), jasmine.any(Number), jasmine.any(Number))
-						.and.returnValue(42000000);
-					const element = await setup(state);
-
-					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
-					expect(routingDuration[0].innerText).toBe('11:40');
-					expect(calculatorSpy).toHaveBeenCalled();
-				});
-			});
-		});
-	});
-
-	describe('when disconnected', () => {
-		it('removes all observers', async () => {
-			const element = await setup();
-
-			element.onDisconnect(); // we call onDisconnect manually
-
-			expect(element._storeSubscriptions).toHaveSize(0);
 		});
 	});
 });

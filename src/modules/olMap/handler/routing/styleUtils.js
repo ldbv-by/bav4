@@ -2,12 +2,11 @@
  * @module modules/olMap/handler/routing/styleUtils
  */
 import { Style, Icon, Stroke, Text as TextStyle, Circle, Fill } from 'ol/style';
-import baRoutingStartIcon from './assets/ba-routing-start.svg';
-import baRoutingIntermediateIcon from './assets/ba-routing-intermediate.svg';
-import baRoutingDestinationIcon from './assets/ba-routing-destination.svg';
-import { ROUTING_CATEGORY, ROUTING_FEATURE_TYPE, RoutingFeatureTypes } from './OlRoutingHandler';
+import { ROUTING_CATEGORY, ROUTING_FEATURE_TYPE, RoutingFeatureTypes, ROUTING_FEATURE_INDEX } from './OlRoutingHandler';
+import { $injector } from '../../../../injection/index';
 
 export const getRoutingStyleFunction = () => {
+	const { IconService: iconService } = $injector.inject('IconService');
 	return (feature) => {
 		switch (feature.get(ROUTING_FEATURE_TYPE)) {
 			case RoutingFeatureTypes.START:
@@ -17,7 +16,7 @@ export const getRoutingStyleFunction = () => {
 							anchor: [0.5, 1],
 							anchorXUnits: 'fraction',
 							anchorYUnits: 'fraction',
-							src: baRoutingStartIcon
+							src: iconService.getIconResult('rt_start').base64
 						})
 					})
 				];
@@ -28,17 +27,17 @@ export const getRoutingStyleFunction = () => {
 							anchor: [0.5, 1],
 							anchorXUnits: 'fraction',
 							anchorYUnits: 'fraction',
-							src: baRoutingDestinationIcon
+							src: iconService.getIconResult('rt_destination').base64
 						})
 					})
 				];
 			case RoutingFeatureTypes.INTERMEDIATE: {
-				const text = feature.get('Routing_Feature_Index') ? feature.get('Routing_Feature_Index').toString() : '';
+				const text = feature.get(ROUTING_FEATURE_INDEX) ? feature.get(ROUTING_FEATURE_INDEX).toString() : '';
 
 				const textStyle = new TextStyle({
 					text: text,
 					offsetY: 2,
-					font: 'bold 14px Helvetica',
+					font: 'bold 14px Open Sans',
 					// fill: fill,
 					stroke: new Stroke({
 						color: [255, 255, 255, 1],
@@ -52,7 +51,7 @@ export const getRoutingStyleFunction = () => {
 							anchor: [0.5, 0.5],
 							anchorXUnits: 'fraction',
 							anchorYUnits: 'fraction',
-							src: baRoutingIntermediateIcon
+							src: iconService.getIconResult('rt_intermediate').base64
 						}),
 						text: textStyle
 					})
@@ -63,7 +62,7 @@ export const getRoutingStyleFunction = () => {
 					new Style({
 						stroke: new Stroke({
 							color: feature.get(ROUTING_CATEGORY).style.routeBorderColor,
-							width: 6
+							width: 8
 						})
 					})
 				];
@@ -91,7 +90,7 @@ export const getRoutingStyleFunction = () => {
 					new Style({
 						stroke: new Stroke({
 							color: feature.get(ROUTING_CATEGORY).style.routeColor,
-							width: 2
+							width: 5
 						})
 					})
 				];

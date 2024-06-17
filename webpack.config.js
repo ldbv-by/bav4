@@ -16,7 +16,8 @@ module.exports = {
 	entry: {
 		config: './src/assets/config.js',
 		bundle: './src/main.js',
-		embed: './src/embed.js'
+		embed: './src/embed.js',
+		wc: './src/wc.js'
 	},
 	output: {
 		path: path.resolve(__dirname, 'dist'),
@@ -60,6 +61,11 @@ module.exports = {
 			template: 'src/embedWrapper.html',
 			chunks: []
 		}),
+		new HtmlWebpackPlugin({
+			filename: 'wc/wrapper/index.html',
+			template: 'src/wcWrapper.html',
+			chunks: []
+		}),
 		new CopyPlugin({
 			patterns: [
 				{ from: path.resolve(__dirname, './src/assets/favicon/manifest.json'), to: path.join('assets') },
@@ -73,12 +79,14 @@ module.exports = {
 		}),
 		new Dotenv()
 	],
-
-	// OPTIONAL
-	// Reload On File Change
 	devServer: {
 		static: './dist',
-		port: port
+		port: port,
+		client: {
+			overlay: {
+				runtimeErrors: true /** set to `false` if errors should be caught by the app instead */
+			}
+		}
 	},
 	resolve: {
 		alias: {

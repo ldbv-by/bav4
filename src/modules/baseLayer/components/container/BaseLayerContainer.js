@@ -66,7 +66,7 @@ export class BaseLayerContainer extends MvuElement {
 	}
 
 	_scrollToActiveButton() {
-		findAllBySelector(this, 'button[type="primary"]')[0]?.scrollIntoView();
+		findAllBySelector(this, 'button[type="primary"]')[0]?.parentElement?.scrollIntoView();
 	}
 
 	/**
@@ -112,7 +112,7 @@ export class BaseLayerContainer extends MvuElement {
 							([key]) =>
 								html`<button @click=${() => onClick(key)} class="title ${isActive(key)}">${translate(`baseLayer_container_category_${key}`)}</button>`
 						)}
-				  </div>`}
+					</div>`}
 			<div id="section" class="section scroll-snap-x">
 				${Object.entries(categories).map(
 					([key, value]) =>

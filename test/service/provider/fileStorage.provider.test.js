@@ -3,6 +3,7 @@ import { GeoResourceFuture, VectorGeoResource, VectorSourceType } from '../../..
 import { FileStorageServiceDataTypes } from '../../../src/services/FileStorageService';
 import { loadBvvFileStorageResourceById, _newLoader } from '../../../src/services/provider/fileStorage.provider';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../src/services/provider/attribution.provider';
+import { UnavailableGeoResourceError } from '../../../src/domain/errors';
 
 describe('BVV GeoResource provider', () => {
 	const fileStorageService = {
@@ -98,14 +99,7 @@ describe('BVV GeoResource provider', () => {
 				.and.returnValue(Promise.resolve({ data: data, type: type, srid: srid }));
 			const loader = _newLoader(id);
 
-			await expectAsync(loader()).toBeRejectedWith(
-				jasmine.objectContaining({
-					message: "Could not load vector data for id 'id'",
-					cause: jasmine.objectContaining({
-						message: `Unsupported FileStorageServiceDataType '${type}'`
-					})
-				})
-			);
+			await expectAsync(loader()).toBeRejectedWith(new UnavailableGeoResourceError(`Unsupported FileStorageServiceDataType '${type}'`, id));
 		});
 
 		it('throws an error when FileStorageService throws an error', async () => {
@@ -116,8 +110,9 @@ describe('BVV GeoResource provider', () => {
 			spyOn(fileStorageService, 'get').withArgs(fileId).and.rejectWith(serviceError);
 			const loader = _newLoader(id);
 
-			await expectAsync(loader()).toBeRejectedWithError("Could not load vector data for id 'id'");
-			await expectAsync(loader()).toBeRejectedWith(jasmine.objectContaining({ cause: serviceError }));
+			await expectAsync(loader()).toBeRejectedWith(
+				new UnavailableGeoResourceError(`Could not load vector data for id '${id}'`, id, null, { cause: serviceError })
+			);
 		});
 	});
 });

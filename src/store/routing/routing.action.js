@@ -18,7 +18,8 @@ import {
 	ROUTING_HIGHLIGHT_SEGMENTS_REMOVED,
 	ROUTING_PROPOSAL_SET,
 	ROUTING_WAYPOINT_DELETED,
-	ROUTING_INTERMEDIATE_SET
+	ROUTING_INTERMEDIATE_SET,
+	ROUTING_ROUTE_AND_STATS_CHANGED
 } from './routing.reducer';
 
 /**
@@ -59,13 +60,13 @@ export const setStatus = (statusCode) => {
 
 /**
  * Updates the `stats` property.
- * @param {module:domain/routing~RouteStats}  routeStats the new RouteStats
+ * @param {module:domain/routing~RouteStats}  routeStats the new RouteStats or `null`
  * @function
  */
 export const setRouteStats = (routeStats) => {
 	getStore().dispatch({
 		type: ROUTING_STATS_CHANGED,
-		payload: { ...routeStats }
+		payload: routeStats ? { ...routeStats } : null
 	});
 };
 
@@ -78,6 +79,19 @@ export const setRoute = (route) => {
 	getStore().dispatch({
 		type: ROUTING_ROUTE_CHANGED,
 		payload: route ? { ...route } : null
+	});
+};
+
+/**
+ * Updates the `route` and the `stats` property.
+ * @param {module:domain/routing~RouteGeometry|null}  route the new RouteGeometry or `null`
+ * @param {module:domain/routing~RouteGeometry|null}  routeStats the new RouteStats or `null`
+ * @function
+ */
+export const setRouteAndStats = (route, routeStats) => {
+	getStore().dispatch({
+		type: ROUTING_ROUTE_AND_STATS_CHANGED,
+		payload: { route: route ? { ...route } : null, stats: routeStats ? { ...routeStats } : null }
 	});
 };
 
@@ -164,7 +178,7 @@ export const setProposal = (coordinate, type) => {
 };
 
 /**
- * Sets a coordinate as a proposal for a new intermediate waypoint.
+ * Suggests a coordinate as a new intermediate waypoint.
  * @param {module:domain/coordinateTypeDef~Coordinate}  coordinate the coordinate (in the SRID of the map) which should be a new intermediate waypoint of the route
  * @function
  */
@@ -217,7 +231,6 @@ export const setHighlightedSegments = (highlightSegments) => {
  */
 export const resetHighlightedSegments = () => {
 	getStore().dispatch({
-		type: ROUTING_HIGHLIGHT_SEGMENTS_REMOVED,
-		payload: null
+		type: ROUTING_HIGHLIGHT_SEGMENTS_REMOVED
 	});
 };

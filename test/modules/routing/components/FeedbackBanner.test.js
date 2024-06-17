@@ -56,22 +56,23 @@ describe('FeedbackBanner', () => {
 		it('renders status', async () => {
 			const element = await setup();
 
-			setStatus(400);
+			setStatus(900); // RoutingStatusCodes.Start_Destination_Missing
 
-			const spans = element.shadowRoot.querySelectorAll('span');
+			expect(element.shadowRoot.querySelector('.icon').classList.contains('icon-status-900')).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll('span')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('span')[0].innerText).toBe('routing_feedback_900');
 
-			expect(spans).toHaveSize(1);
-			expect(spans[0].innerText).toBe('routing_feedback_400');
-		});
-	});
+			setStatus(901); // RoutingStatusCodes.Destination_Missing
 
-	describe('when disconnected', () => {
-		it('removes all observers', async () => {
-			const element = await setup();
-			const spy = spyOn(element, '_unsubscribeFromStore').and.callThrough();
-			element.onDisconnect(); // we call onDisconnect manually
+			expect(element.shadowRoot.querySelector('.icon').classList.contains('icon-status-901')).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll('span')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('span')[0].innerText).toBe('routing_feedback_901');
 
-			expect(spy).toHaveBeenCalled();
+			setStatus(902); // RoutingStatusCodes.Start_Missing
+
+			expect(element.shadowRoot.querySelector('.icon').classList.contains('icon-status-902')).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll('span')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('span')[0].innerText).toBe('routing_feedback_902');
 		});
 	});
 });

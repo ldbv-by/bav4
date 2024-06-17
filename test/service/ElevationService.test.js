@@ -2,13 +2,24 @@ import { $injector } from '../../src/injection';
 import { ElevationService } from '../../src/services/ElevationService';
 import { loadBvvElevation } from '../../src/services/provider/elevation.provider';
 import { getBvvProfile } from '../../src/services/provider/profile.provider';
+import { elevationProfileReducer } from '../../src/store/elevationProfile/elevationProfile.reducer';
+import { hashCode } from '../../src/utils/hashCode';
+import { TestUtils } from '../test-utils';
 
 describe('ElevationService', () => {
 	const environmentService = {
 		isStandalone: () => false
 	};
 
+	let store;
+
 	const setup = (elevationProvider = loadBvvElevation, profileProvider = getBvvProfile) => {
+		store = TestUtils.setupStoreAndDi(
+			{},
+			{
+				elevationProfile: elevationProfileReducer
+			}
+		);
 		$injector.registerSingleton('EnvironmentService', environmentService);
 		return new ElevationService(elevationProvider, profileProvider);
 	};
@@ -40,7 +51,7 @@ describe('ElevationService', () => {
 	});
 
 	describe('getElevation', () => {
-		it('provides a elevation', async () => {
+		it('provides an elevation', async () => {
 			const mockElevation = 42;
 			const instanceUnderTest = setup(async () => {
 				return mockElevation;
@@ -72,7 +83,7 @@ describe('ElevationService', () => {
 
 			await expectAsync(instanceUnderTest.getElevation('invalid input')).toBeRejectedWithError(
 				TypeError,
-				"Parameter 'coordinate3857' must be a coordinate"
+				"Parameter 'coordinate3857' must be a CoordinateLike type"
 			);
 		});
 
@@ -90,8 +101,9 @@ describe('ElevationService', () => {
 		});
 	});
 
-	describe('getProfile', () => {
+	describe('_prepareProfile', () => {
 		it('provides a profile', async () => {
+			const id = 'id';
 			const mockProfile = { result: 42 };
 			const instanceUnderTest = setup(null, async () => {
 				return mockProfile;
@@ -101,53 +113,62 @@ describe('ElevationService', () => {
 				[2, 3]
 			];
 
-			const result = await instanceUnderTest.getProfile(mockCoordinates);
+			const result = await instanceUnderTest._prepareProfile(id, mockCoordinates);
 
 			expect(result).toEqual(mockProfile);
+			// results should be always a deep copy
+			expect(result === mockProfile).toBeFalse();
 		});
 
-		it('rejects when backend is not available', async () => {
-			const providerError = new Error('Something got wrong');
-			const instanceUnderTest = setup(null, async () => {
-				throw providerError;
-			});
+		it('provides a profile from cache', async () => {
+			const id = 'id';
+			const mockProfile = { result: 42 };
+
+			const providerSpy = jasmine.createSpy().and.resolveTo(mockProfile);
+
+			const instanceUnderTest = setup(null, providerSpy);
 			const mockCoordinates = [
 				[0, 1],
 				[2, 3]
 			];
 
-			await expectAsync(instanceUnderTest.getProfile(mockCoordinates)).toBeRejectedWith(
-				jasmine.objectContaining({
-					message: 'Could not load an elevation profile from provider',
-					cause: providerError
-				})
-			);
+			const result0 = await instanceUnderTest._prepareProfile(id, mockCoordinates);
+			const result1 = await instanceUnderTest._prepareProfile(id, mockCoordinates);
+
+			expect(result0).toEqual(mockProfile);
+			expect(result1).toEqual(mockProfile);
+			expect(providerSpy).toHaveBeenCalledTimes(1);
+			// results should be always a deep copy
+			expect(result0 === result1).toBeFalse();
 		});
 
-		it('rejects when argument is not an Array or does not contain at least two coordinates', async () => {
-			const instanceUnderTest = setup();
+		it('clears the cache', async () => {
+			const id = 'id';
+			const otherId = 'otherId';
+			const mockProfile = { result: 42 };
 
-			await expectAsync(instanceUnderTest.getProfile('foo')).toBeRejectedWithError(
-				TypeError,
-				"Parameter 'coordinates3857' must be an array containing at least two coordinates"
-			);
-			await expectAsync(instanceUnderTest.getProfile([[0, 1]])).toBeRejectedWithError(
-				TypeError,
-				"Parameter 'coordinates3857' must be an array containing at least two coordinates"
-			);
-		});
+			const providerSpy = jasmine.createSpy().and.resolveTo(mockProfile);
 
-		it('rejects when argument contains not only coordinated', async () => {
-			const instanceUnderTest = setup();
+			const instanceUnderTest = setup(null, providerSpy);
+			const mockCoordinates = [
+				[0, 1],
+				[2, 3]
+			];
+			const otherMockCoordinates = [
+				[4, 5],
+				[6, 7]
+			];
 
-			await expectAsync(instanceUnderTest.getProfile([[0, 1], 'foo'])).toBeRejectedWithError(
-				TypeError,
-				"Parameter 'coordinates3857' contains invalid coordinates"
-			);
+			await instanceUnderTest._prepareProfile(id, mockCoordinates);
+			await instanceUnderTest._prepareProfile(otherId, otherMockCoordinates);
+			await instanceUnderTest._prepareProfile(id, mockCoordinates);
+
+			expect(providerSpy).toHaveBeenCalledTimes(3);
 		});
 
 		describe('in standalone mode', () => {
 			it('provides a mocked profile', async () => {
+				const id = 'id';
 				const warnSpy = spyOn(console, 'warn');
 				spyOn(environmentService, 'isStandalone').and.returnValue(true);
 				const instanceUnderTest = setup();
@@ -157,7 +178,7 @@ describe('ElevationService', () => {
 					[4, 5]
 				];
 
-				const { elevations, stats, attrs } = await instanceUnderTest.getProfile(mockCoordinates);
+				const { elevations, stats, attrs } = await instanceUnderTest._prepareProfile(id, mockCoordinates);
 
 				expect(elevations).toHaveSize(3);
 				elevations.forEach((el, i) => {
@@ -176,6 +197,97 @@ describe('ElevationService', () => {
 				expect(attrs).toHaveSize(0);
 				expect(warnSpy).toHaveBeenCalledWith('Could not fetch an elevation profile from backend. Returning a mocked profile ...');
 			});
+		});
+	});
+
+	describe('requestProfile', () => {
+		it('rejects when backend is not available', async () => {
+			const providerError = new Error('Something got wrong');
+			const instanceUnderTest = setup(null, async () => {
+				throw providerError;
+			});
+			const mockCoordinates = [
+				[0, 1],
+				[2, 3]
+			];
+
+			await expectAsync(instanceUnderTest.requestProfile(mockCoordinates)).toBeRejectedWith(
+				jasmine.objectContaining({
+					message: 'Could not load an elevation profile from provider',
+					cause: providerError
+				})
+			);
+		});
+
+		it('rejects when argument is not an Array or does not contain at least two coordinates', async () => {
+			const instanceUnderTest = setup();
+
+			await expectAsync(instanceUnderTest.requestProfile('foo')).toBeRejectedWithError(
+				TypeError,
+				"Parameter 'coordinates3857' must be an array containing at least two coordinates"
+			);
+			await expectAsync(instanceUnderTest.requestProfile([[0, 1]])).toBeRejectedWithError(
+				TypeError,
+				"Parameter 'coordinates3857' must be an array containing at least two coordinates"
+			);
+		});
+
+		it('rejects when argument contains not only coordinated', async () => {
+			const instanceUnderTest = setup();
+
+			await expectAsync(instanceUnderTest.requestProfile([[0, 1], 'foo'])).toBeRejectedWithError(
+				TypeError,
+				"Parameter 'coordinates3857' contains invalid coordinates"
+			);
+		});
+
+		it('calls _prepareProfile and updates the elevationProfile s-o-s', async () => {
+			const mockProfile = { result: 42 };
+			const instanceUnderTest = setup(null, async () => {
+				return mockProfile;
+			});
+			const mockCoordinates = [
+				[0, 1],
+				[2, 3]
+			];
+			const id = `${hashCode(mockCoordinates)}`;
+			spyOn(instanceUnderTest, '_prepareProfile').withArgs(id, mockCoordinates).and.resolveTo(mockProfile);
+
+			const result = await instanceUnderTest.requestProfile(mockCoordinates);
+
+			expect(result).toEqual(mockProfile);
+			expect(store.getState().elevationProfile.id).toBe(id);
+		});
+	});
+
+	describe('fetchProfile', () => {
+		it('returns an existing profile result', async () => {
+			const id = 'id';
+			const mockProfile = { result: 42 };
+			const instanceUnderTest = setup(null, async () => {
+				return mockProfile;
+			});
+			const mockCoordinates = [
+				[0, 1],
+				[2, 3]
+			];
+			// cache the profile
+			await instanceUnderTest._prepareProfile(id, mockCoordinates);
+
+			const result = instanceUnderTest.fetchProfile(id);
+
+			expect(result).toEqual(mockProfile);
+			// results should be always a deep copy
+			expect(result === mockProfile).toBeFalse();
+		});
+
+		it('returns NULL when not available', async () => {
+			const id = 'id';
+			const instanceUnderTest = setup();
+
+			const result = instanceUnderTest.fetchProfile(id);
+
+			expect(result).toBeNull();
 		});
 	});
 });

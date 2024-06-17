@@ -18,7 +18,9 @@ describe('i18n for search module', () => {
 		expect(map.export_item_download_ewkt).toBe('Download TXT');
 		expect(map.export_item_srid_selection).toBe('SRID auswählen');
 		expect(map.export_item_srid_selection_disabled).toBe('SRID ist vordefiniert');
-		expect(map.export_assistChip_export_vector_data).toBe('Export');
+		expect(map.export_item_copy_to_clipboard(['foo'])).toBe('foo in die Zwischenablage kopieren');
+		expect(map.export_item_clipboard_success).toBe('Die Daten wurden in die Zwischenablage kopiert');
+		expect(map.export_item_clipboard_error).toBe('"In die Zwischenablage kopieren" steht nicht zur Verfügung');
 	});
 
 	it('provides translation for en', () => {
@@ -38,11 +40,13 @@ describe('i18n for search module', () => {
 		expect(map.export_item_download_ewkt).toBe('Download TXT');
 		expect(map.export_item_srid_selection).toBe('Select SRID');
 		expect(map.export_item_srid_selection_disabled).toBe('SRID is predefined');
-		expect(map.export_assistChip_export_vector_data).toBe('Export');
+		expect(map.export_item_copy_to_clipboard(['foo'])).toBe('Copy foo to clipboard');
+		expect(map.export_item_clipboard_success).toBe('The data was copied to the clipboard');
+		expect(map.export_item_clipboard_error).toBe('"Copy to clipboard" is not available');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 15;
+		const expectedSize = 17;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

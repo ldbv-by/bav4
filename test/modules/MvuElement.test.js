@@ -112,6 +112,19 @@ class MvuElementNoDefaultCss extends MvuElement {
 		return 'ba-element-no-default-css';
 	}
 }
+class MvuElementClosedShadowRoot extends MvuElement {
+	isShadowRootOpen() {
+		return false;
+	}
+
+	createView() {
+		return html`something`;
+	}
+
+	static get tag() {
+		return 'ba-element-closed-shadow-root';
+	}
+}
 
 class MvuElementModelTest extends MvuElement {
 	constructor(model) {
@@ -124,6 +137,7 @@ window.customElements.define('ba-element', MvuElement);
 window.customElements.define('ba-element-noimpl', MvuElementNoImpl);
 window.customElements.define(MvuElementDefaultCss.tag, MvuElementDefaultCss);
 window.customElements.define(MvuElementNoDefaultCss.tag, MvuElementNoDefaultCss);
+window.customElements.define(MvuElementClosedShadowRoot.tag, MvuElementClosedShadowRoot);
 window.customElements.define('ba-element-model-test', MvuElementModelTest);
 
 let store;
@@ -417,6 +431,16 @@ describe('MvuElement', () => {
 		});
 	});
 
+	describe('hooks', () => {
+		describe('isShadowRootOpen returns `true`', () => {
+			it('creates a closed shadow root', async () => {
+				const element = await TestUtils.render(MvuElementClosedShadowRoot.tag);
+				// null as the shadow root is closed
+				expect(element.shadowRoot).toBeNull();
+			});
+		});
+	});
+
 	describe('observeModel', () => {
 		it('registers model observers', async () => {
 			const element = await TestUtils.render(MvuElementImpl.tag);
@@ -488,6 +512,29 @@ describe('MvuElement', () => {
 			const element = await TestUtils.render(MvuElementImpl.tag);
 
 			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: element, bubbles: true }));
+		});
+	});
+
+	describe('when disconnected', () => {
+		it('unsubscribes all store observers', async () => {
+			const element = await TestUtils.render(MvuElementImpl.tag);
+			const onModelChangedSpy = spyOn(element, 'onModelChanged').and.callThrough();
+
+			store.dispatch({
+				type: INDEX_CHANGED,
+				payload: 42
+			});
+
+			expect(onModelChangedSpy).toHaveBeenCalledTimes(1);
+
+			element.remove(); // Let's remove the element and force running the disconnect -lifecycle, so no more state changes are observed
+
+			store.dispatch({
+				type: INDEX_CHANGED,
+				payload: 43
+			});
+
+			expect(onModelChangedSpy).toHaveBeenCalledTimes(1);
 		});
 	});
 });

@@ -17,7 +17,7 @@ describe('mainMenuReducer', () => {
 	describe('createMainMenuReducer', () => {
 		describe('returns a reducer function', () => {
 			it("initiales the store by media query for ORIENTATION 'portrait'", () => {
-				spyOn(windowMock, 'matchMedia').withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true));
+				spyOn(windowMock, 'matchMedia').withArgs('(max-width: 80em) or (orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true));
 				const store = setup(createMainMenuReducer(windowMock));
 
 				expect(store.getState().mainMenu.open).toBeFalse();
@@ -25,7 +25,7 @@ describe('mainMenuReducer', () => {
 			});
 
 			it("initiales the store by media query for ORIENTATION 'landscape'", () => {
-				spyOn(windowMock, 'matchMedia').withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(false));
+				spyOn(windowMock, 'matchMedia').withArgs('(max-width: 80em) or (orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(false));
 				const store = setup(createMainMenuReducer(windowMock));
 
 				expect(store.getState().mainMenu.open).toBeTrue();

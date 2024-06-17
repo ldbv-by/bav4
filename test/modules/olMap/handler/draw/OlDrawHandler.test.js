@@ -8,7 +8,7 @@ import { Icon, Style } from 'ol/style';
 import { OlDrawHandler } from '../../../../../src/modules/olMap/handler/draw/OlDrawHandler';
 import Map from 'ol/Map';
 import View from 'ol/View';
-import { DragPan, Modify, Select, Snap } from 'ol/interaction';
+import { Modify, Select, Snap } from 'ol/interaction';
 import { finish, reset, remove, setType, setStyle, setDescription } from '../../../../../src/store/draw/draw.action';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { ModifyEvent } from 'ol/interaction/Modify';
@@ -79,7 +79,9 @@ describe('OlDrawHandler', () => {
 	};
 
 	const translationServiceMock = { translate: (key) => key };
-	const environmentServiceMock = { isTouch: () => false, isStandalone: () => false };
+	const environmentServiceMock = { isTouch: () => false, isStandalone: () => false, isEmbedded: () => false };
+	const iconServiceMock = { getDefault: () => new IconResult('foo', 'bar') };
+
 	const initialState = {
 		active: false,
 		createPermanentLayer: true,
@@ -143,7 +145,7 @@ describe('OlDrawHandler', () => {
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('InteractionStorageService', interactionStorageServiceMock)
-			.registerSingleton('IconService', { getDefault: () => new IconResult('foo', 'bar') })
+			.registerSingleton('IconService', iconServiceMock)
 			.registerSingleton('UnitsService', {
 				// eslint-disable-next-line no-unused-vars
 				formatDistance: (distance, decimals) => {
@@ -265,8 +267,9 @@ describe('OlDrawHandler', () => {
 				expect(store.getState().notifications.latest.payload.content.values[0]).toBe('olMap_handler_termsOfUse');
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 			});
+
 			describe('when termsOfUse are empty', () => {
-				it('emits not a notification', async () => {
+				it('does NOT emit a notification', async () => {
 					const store = setup();
 					const map = setupMap();
 					spyOn(translationServiceMock, 'translate').and.callFake(() => '');
@@ -284,12 +287,27 @@ describe('OlDrawHandler', () => {
 		});
 
 		describe('when TermsOfUse already acknowledged', () => {
-			it('emits NOT a notification', async () => {
+			it('does NOT emit a notification', async () => {
 				const store = setup();
 				const map = setupMap();
 				const classUnderTest = new OlDrawHandler();
 				acknowledgeTermsOfUse();
 				expect(store.getState().shared.termsOfUseAcknowledged).toBeTrue();
+				classUnderTest.activate(map);
+
+				await TestUtils.timeout();
+				//check notification
+				expect(store.getState().notifications.latest).toBeFalsy();
+			});
+		});
+
+		describe('when embedded ', () => {
+			it('does NOT emit a notification', async () => {
+				const store = setup();
+				const map = setupMap();
+				const classUnderTest = new OlDrawHandler();
+				spyOn(environmentServiceMock, 'isEmbedded').and.returnValue(true);
+
 				classUnderTest.activate(map);
 
 				await TestUtils.timeout();
@@ -314,6 +332,8 @@ describe('OlDrawHandler', () => {
 
 				await TestUtils.timeout();
 				expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
+
+				await TestUtils.timeout();
 				expect(store.getState().draw.fileSaveResult.payload.content).toContain('<kml');
 				expect(store.getState().draw.fileSaveResult.payload.fileSaveResult).toEqual(fileSaveResultMock);
 			});
@@ -334,6 +354,34 @@ describe('OlDrawHandler', () => {
 
 				expect(store.getState().draw.fileSaveResult.payload).toBeNull();
 			});
+
+			it('calls the InteractionService and updates the draw slice-of-state with a fileSaveResult without features', async () => {
+				const fileSaveResultMock = { fileId: 'barId', adminId: null };
+				const state = { ...initialState, fileSaveResult: new EventLike(null) };
+				const store = await setup(state);
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const feature = createFeature();
+				const storageSpy = spyOn(interactionStorageServiceMock, 'store')
+					.withArgs(jasmine.any(String), FileStorageServiceDataTypes.KML)
+					.and.resolveTo(fileSaveResultMock)
+					.withArgs(undefined, FileStorageServiceDataTypes.KML)
+					.and.resolveTo(null);
+				const saveSpy = spyOn(classUnderTest, '_save').and.callThrough();
+
+				classUnderTest.activate(map);
+				classUnderTest._vectorLayer.getSource().addFeature(feature);
+				classUnderTest._vectorLayer.getSource().removeFeature(feature);
+				classUnderTest._saveAndOptionallyConvertToPermanentLayer();
+
+				await TestUtils.timeout();
+				expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
+
+				await TestUtils.timeout();
+				expect(saveSpy).toHaveBeenCalledTimes(2);
+				expect(storageSpy).toHaveBeenCalledTimes(2);
+				expect(store.getState().draw.fileSaveResult.payload).toBeNull();
+			});
 		});
 
 		describe('uses Interactions', () => {
@@ -345,8 +393,8 @@ describe('OlDrawHandler', () => {
 
 				classUnderTest.activate(map);
 
-				// adds Interaction for select, modify,snap, dragPan
-				expect(map.addInteraction).toHaveBeenCalledTimes(4);
+				// adds Interaction for select, modify,snap
+				expect(map.addInteraction).toHaveBeenCalledTimes(3);
 			});
 
 			it('removes Interaction', () => {
@@ -358,8 +406,8 @@ describe('OlDrawHandler', () => {
 				classUnderTest.activate(map);
 				classUnderTest.deactivate(map, layerStub);
 
-				// removes Interaction for select, modify, snap, dragPan
-				expect(map.removeInteraction).toHaveBeenCalledTimes(4);
+				// removes Interaction for select, modify, snap
+				expect(map.removeInteraction).toHaveBeenCalledTimes(3);
 			});
 
 			it('removes Interaction, draw inclusive', () => {
@@ -373,12 +421,11 @@ describe('OlDrawHandler', () => {
 				map.removeInteraction = jasmine.createSpy();
 				classUnderTest.deactivate(map, layerStub);
 
-				// removes Interaction for select, draw,modify, snap, dragPan
+				// removes Interaction for select, draw,modify, snap
 				expect(map.removeInteraction).toHaveBeenCalledWith(jasmine.any(Draw));
 				expect(map.removeInteraction).toHaveBeenCalledWith(jasmine.any(Select));
 				expect(map.removeInteraction).toHaveBeenCalledWith(jasmine.any(Modify));
 				expect(map.removeInteraction).toHaveBeenCalledWith(jasmine.any(Snap));
-				expect(map.removeInteraction).toHaveBeenCalledWith(jasmine.any(DragPan));
 			});
 
 			it('adds a select interaction', () => {
@@ -415,18 +462,6 @@ describe('OlDrawHandler', () => {
 
 				expect(classUnderTest._snap).toBeInstanceOf(Snap);
 				expect(map.addInteraction).toHaveBeenCalledWith(classUnderTest._snap);
-			});
-
-			it('adds a dragPan interaction', () => {
-				setup();
-				const classUnderTest = new OlDrawHandler();
-				const map = setupMap();
-				map.addInteraction = jasmine.createSpy();
-
-				classUnderTest.activate(map);
-
-				expect(classUnderTest._dragPan).toBeInstanceOf(DragPan);
-				expect(map.addInteraction).toHaveBeenCalledWith(classUnderTest._dragPan);
 			});
 
 			it('register observer for type-changes', () => {
@@ -777,8 +812,11 @@ describe('OlDrawHandler', () => {
 				expect(store.getState().draw.style.text).toBeNull();
 			});
 
-			it('inits the drawing and sets the store with defaultText for marker', () => {
+			it('inits the drawing and sets the store with defaultText, defaultSymbol for marker', () => {
 				const store = setup();
+				const defaultIconResult = new IconResult('marker', 'some_svg_stuff');
+				spyOn(iconServiceMock, 'getDefault').and.returnValue(defaultIconResult);
+				spyOnProperty(defaultIconResult, 'base64', 'get').and.returnValue('some_base64_stuff');
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
 				const drawStateFake = {
@@ -790,6 +828,8 @@ describe('OlDrawHandler', () => {
 				setType('marker');
 
 				expect(store.getState().draw.style.text).toBe('');
+				expect(store.getState().draw.style.symbolSrc).toBe('some_base64_stuff');
+				expect(store.getState().draw.style.anchor).toEqual([0.5, 1]);
 			});
 
 			it('inits the drawing and sets the store with defaultText for marker', () => {
@@ -1112,6 +1152,7 @@ describe('OlDrawHandler', () => {
 
 				expect(classUnderTest._createDrawByType('marker', defaultStyleOption)).toEqual(jasmine.any(Draw));
 				expect(classUnderTest._createDrawByType('marker', { ...defaultStyleOption, symbolSrc: null })).toBeNull();
+				expect(classUnderTest._createDrawByType('point', defaultStyleOption)).toEqual(jasmine.any(Draw));
 				expect(classUnderTest._createDrawByType('text', defaultStyleOption)).toEqual(jasmine.any(Draw));
 				expect(classUnderTest._createDrawByType('line', defaultStyleOption)).toEqual(jasmine.any(Draw));
 				expect(classUnderTest._createDrawByType('polygon', defaultStyleOption)).toEqual(jasmine.any(Draw));
@@ -1156,6 +1197,7 @@ describe('OlDrawHandler', () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
 
+				expect(classUnderTest._getStyleFunctionByDrawType('point', defaultStyleOption)()).toContain(jasmine.any(Style));
 				expect(classUnderTest._getStyleFunctionByDrawType('marker', defaultStyleOption)()).toContain(jasmine.any(Style));
 				expect(classUnderTest._getStyleFunctionByDrawType('text', defaultStyleOption)()).toContain(jasmine.any(Style));
 				expect(classUnderTest._getStyleFunctionByDrawType('line', defaultStyleOption)()).toContain(jasmine.any(Style));
@@ -1531,6 +1573,7 @@ describe('OlDrawHandler', () => {
 				snap: null,
 				coordinate: [20, 0],
 				pointCount: 1,
+				geometryType: 'Point',
 				dragging: jasmine.any(Boolean)
 			});
 		});
@@ -1578,6 +1621,7 @@ describe('OlDrawHandler', () => {
 				snap: InteractionSnapType.FIRSTPOINT,
 				coordinate: [0, 0],
 				pointCount: 5,
+				geometryType: 'LineString',
 				dragging: jasmine.any(Boolean)
 			});
 		});
@@ -1624,6 +1668,7 @@ describe('OlDrawHandler', () => {
 				snap: InteractionSnapType.LASTPOINT,
 				coordinate: [0, 500],
 				pointCount: 6,
+				geometryType: 'LineString',
 				dragging: jasmine.any(Boolean)
 			});
 		});
@@ -2002,6 +2047,31 @@ describe('OlDrawHandler', () => {
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
 		});
 
+		it('prevents multiselect, when style of selected features changes frequently', () => {
+			const feature = new Feature({ geometry: new Point([0, 0]) });
+			feature.setId('draw_marker_1');
+			setup({ ...initialState });
+
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap(null, 1);
+
+			classUnderTest.activate(map);
+			setStyle({ symbolSrc: 'something' });
+			setType('marker');
+
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+			classUnderTest._select.getFeatures().push(feature);
+			classUnderTest._drawState.type = InteractionStateType.MODIFY;
+			const selectionSpy = spyOn(classUnderTest, '_setSelected').withArgs(feature).and.callThrough();
+
+			setStyle({ symbolSrc: 'something', text: 'a' });
+			setStyle({ symbolSrc: 'something', text: 'aa' });
+			setStyle({ symbolSrc: 'something', text: 'aaa' });
+
+			expect(selectionSpy).toHaveBeenCalledTimes(6);
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
+		});
+
 		it('updates the drawState, while pointerclick drawing', () => {
 			setup();
 			const feature = new Feature({
@@ -2054,6 +2124,25 @@ describe('OlDrawHandler', () => {
 			classUnderTest._setDrawState(newDrawState);
 
 			expect(drawStateSpy).toHaveBeenCalledTimes(1);
+		});
+	});
+
+	describe('_updateStyle', () => {
+		it('prevents style update, when selected feature is missing', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const styleFunctionSpy = spyOn(classUnderTest, '_getStyleFunctionFrom').withArgs(null).and.callThrough();
+			const updateSpy = spyOn(classUnderTest, '_updateStyle').and.callThrough();
+			const map = setupMap();
+
+			classUnderTest.activate(map);
+
+			classUnderTest._drawState.type = InteractionStateType.MODIFY;
+
+			setStyle({ symbolSrc: 'something' });
+
+			expect(updateSpy).toHaveBeenCalled();
+			expect(styleFunctionSpy).not.toHaveBeenCalled();
 		});
 	});
 });

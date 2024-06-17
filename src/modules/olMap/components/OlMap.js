@@ -17,8 +17,9 @@ import { setBeingMoved, setMoveEnd, setMoveStart } from '../../../store/map/map.
 import VectorSource from 'ol/source/Vector';
 import { Group as LayerGroup } from 'ol/layer';
 import { GeoResourceFuture, GeoResourceTypes } from '../../../domain/geoResources';
-import { setFetching } from '../../../store/network/network.action';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
+import { equals } from '../../../utils/storeUtils';
+import { roundCenter, roundRotation, roundZoomLevel } from '../../../utils/mapUtils';
 
 const Update_Position = 'update_position';
 const Update_Layers = 'update_layers';
@@ -40,7 +41,7 @@ export class OlMap extends MvuElement {
 		});
 		const {
 			MapService: mapService,
-			GeoResourceService: georesourceService,
+			GeoResourceService: geoResourceService,
 			LayerService: layerService,
 			EnvironmentService: environmentService,
 			TranslationService: translationService,
@@ -51,7 +52,8 @@ export class OlMap extends MvuElement {
 			OlFeatureInfoHandler: olFeatureInfoHandler,
 			OlElevationProfileHandler: olElevationProfileHandler,
 			OlMfpHandler: olMfpHandler,
-			OlRoutingHandler: olRoutingHandler
+			OlRoutingHandler: olRoutingHandler,
+			OlSelectableFeatureHandler: olSelectableFeatureHandler
 		} = $injector.inject(
 			'MapService',
 			'GeoResourceService',
@@ -65,15 +67,15 @@ export class OlMap extends MvuElement {
 			'OlFeatureInfoHandler',
 			'OlElevationProfileHandler',
 			'OlMfpHandler',
-			'OlRoutingHandler'
+			'OlRoutingHandler',
+			'OlSelectableFeatureHandler'
 		);
 
 		this._mapService = mapService;
-		this._geoResourceService = georesourceService;
 		this._layerService = layerService;
 		this._environmentService = environmentService;
 		this._translationService = translationService;
-		this._geoResourceService = georesourceService;
+		this._geoResourceService = geoResourceService;
 		this._layerHandler = new Map([
 			[measurementHandler.id, measurementHandler],
 			[geolocationHandler.id, geolocationHandler],
@@ -84,9 +86,9 @@ export class OlMap extends MvuElement {
 		]);
 		this._mapHandler = new Map([
 			[olFeatureInfoHandler.id, olFeatureInfoHandler],
-			[olElevationProfileHandler.id, olElevationProfileHandler]
+			[olElevationProfileHandler.id, olElevationProfileHandler],
+			[olSelectableFeatureHandler.id, olSelectableFeatureHandler]
 		]);
-		this._unsubscribers = [];
 	}
 
 	/**
@@ -118,11 +120,10 @@ export class OlMap extends MvuElement {
 	 */
 	onInitialize() {
 		//observe global state (position, active layers, orientation)
-		this._unsubscribers = [
-			this.observe(
-				(state) => state.position,
-				(data) => this.signal(Update_Position, data)
-			),
+		this.observe(
+			(state) => state.position,
+			(data) => this.signal(Update_Position, data)
+		),
 			this.observe(
 				(state) => state.layers.active,
 				(data) => this.signal(Update_Layers, data)
@@ -131,8 +132,7 @@ export class OlMap extends MvuElement {
 				(state) => state.media.portrait,
 				() => this._map.updateSize(),
 				false
-			)
-		];
+			);
 
 		const { zoom, center, rotation } = this.getModel();
 
@@ -211,7 +211,7 @@ export class OlMap extends MvuElement {
 		if (this._environmentService.isTouch()) {
 			registerLongPressListener(this._map, contextOrLongPressHandler, singleClickOrShortPressHandler);
 		} else {
-			this._map.addEventListener('contextmenu', contextOrLongPressHandler);
+			this._map.on('contextmenu', contextOrLongPressHandler);
 			this._map.on('singleclick', singleClickOrShortPressHandler);
 		}
 
@@ -227,9 +227,6 @@ export class OlMap extends MvuElement {
 		this._map.on('pointerdrag', () => {
 			setBeingDragged(true);
 		});
-
-		this._map.on('loadstart', () => setFetching(true));
-		this._map.on('loadend', () => setFetching(false));
 
 		this._mapHandler.forEach((handler) => {
 			handler.register(this._map);
@@ -248,9 +245,6 @@ export class OlMap extends MvuElement {
 	 * @override
 	 */
 	onDisconnect() {
-		while (this._unsubscribers.length > 0) {
-			this._unsubscribers.shift()();
-		}
 		this._map?.setTarget(null);
 		this._map = null;
 		this._view = null;
@@ -273,17 +267,27 @@ export class OlMap extends MvuElement {
 
 	_syncView() {
 		const { zoom, center, rotation } = this.getModel();
-
-		this._view.animate({
-			zoom: zoom,
-			center: center,
-			rotation: rotation,
-			duration: 200
-		});
+		const view = this._map.getView();
+		/**
+		 * Update the view only if the parameters are not virtually the same as the current one.
+		 * Note: Triggering an animation on the ol.View causes an WMS source always to be loaded, even if nothing has changed effectively.
+		 */
+		if (
+			!equals(zoom, roundZoomLevel(view.getZoom())) ||
+			!equals(center, roundCenter(view.getCenter())) ||
+			!equals(rotation, roundRotation(view.getRotation()))
+		) {
+			this._view.animate({
+				zoom: zoom,
+				center: center,
+				rotation: rotation,
+				duration: 200
+			});
+		}
 	}
 
 	_syncLayers() {
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key, params = []) => this._translationService.translate(key, params);
 		const { layers } = this.getModel();
 
 		const updatedIds = layers.map((layer) => layer.id);
@@ -326,15 +330,15 @@ export class OlMap extends MvuElement {
 				const olLayer = geoResource
 					? this._layerService.toOlLayer(id, geoResource, this._map)
 					: this._layerHandler.has(id)
-					  ? toOlLayerFromHandler(id, this._layerHandler.get(id), this._map)
-					  : null;
+						? toOlLayerFromHandler(id, this._layerHandler.get(id), this._map)
+						: null;
 				if (olLayer) {
 					const layer = layers.find((layer) => layer.id === id);
 					updateOlLayer(olLayer, layer);
 					this._map.getLayers().insertAt(layer.zIndex, olLayer);
 				} else {
 					console.warn(`Could not add an olLayer for id '${id}'`);
-					emitNotification(`${translate('olMap_layer_not_available')} '${id}'`, LevelTypes.WARN);
+					emitNotification(`${translate('global_geoResource_not_available', [geoResource?.id ?? id])}`, LevelTypes.WARN);
 					removeLayer(id);
 				}
 			};
@@ -353,12 +357,6 @@ export class OlMap extends MvuElement {
 						updateOlLayer(realOlLayer, layer);
 						this._map.getLayers().remove(getLayerById(this._map, id));
 						this._map.getLayers().insertAt(layer.zIndex, realOlLayer);
-					})
-					// eslint-disable-next-line promise/prefer-await-to-then
-					.catch((error) => {
-						console.warn(error);
-						emitNotification(`${translate('olMap_layer_not_available')} '${geoResource.id}'`, LevelTypes.WARN);
-						removeLayer(id);
 					});
 			}
 			toOlLayer(id, geoResource);
@@ -390,7 +388,7 @@ export class OlMap extends MvuElement {
 							viewportPadding.right + OlMap.DEFAULT_PADDING_PX[1],
 							viewportPadding.bottom + OlMap.DEFAULT_PADDING_PX[2],
 							viewportPadding.left + OlMap.DEFAULT_PADDING_PX[3]
-					  ]
+						]
 					: OlMap.DEFAULT_PADDING_PX;
 				this._view.fit(extent, { maxZoom: maxZoom, callback: onAfterFit, padding: padding });
 			}

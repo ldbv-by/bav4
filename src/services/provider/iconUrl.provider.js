@@ -5,7 +5,7 @@
 import { $injector } from '../../injection/index';
 
 /**
- * Bvv specific implementation of {@link module:services/IconService~iconUrlProvider}
+ * BVV specific implementation of {@link module:services/IconService~iconUrlProvider}
  * @function
  * @type {module:services/IconService~iconUrlProvider}
  */

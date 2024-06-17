@@ -1,4 +1,5 @@
 .chips__container {
+	pointer-events: none;
 	margin-left: 7em;
 	display: flex;
 	transition: all var(--animation-duration-large-open) var(--animation-easing-linear);
@@ -9,6 +10,7 @@
 	scrollbar-width: none;
 }
 .chips__button {
+	pointer-events: all;
 	background: var(--chip-background-color);
 	border: 1px solid var(--chip-color);
 	margin: 0.8em 0.5em 0 0;
@@ -65,15 +67,22 @@
 	padding-bottom: 0.5em;
 	white-space: nowrap;
 }
+.is-tablet.chips__container {
+	margin-left: 6em;
+}
+.is-tablet .chips__button {
+	font-size: 0.8rem;
+}
 .is-portrait.chips__container {
 	top: 8em;
 	margin: 0;
 	width: 100%;
-	z-index: 100;
+	z-index: calc(var(--z-mainmenu) - 10);
 	padding: 0 1em;
 	overflow: scroll;
 }
 .chips__scroll-button {
+	pointer-events: all;
 	display: none;
 	position: sticky;
 	background: var(--primary-bg-color);
@@ -136,4 +145,10 @@ iframe {
 
 ::-webkit-scrollbar {
 	height: 0;
+}
+.is-open.is-open-navigationRail.chips__container {
+	transform: translate(33.5em, 0);
+}
+.is-open-navigationRail.chips__container {
+	transform: translate(6em, 0);
 }

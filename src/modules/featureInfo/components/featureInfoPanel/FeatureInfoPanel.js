@@ -1,7 +1,7 @@
 /**
  * @module modules/featureInfo/components/featureInfoPanel/FeatureInfoPanel
  */
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { $injector } from '../../../../injection';
 import { abortOrReset } from '../../../../store/featureInfo/featureInfo.action';
@@ -21,6 +21,7 @@ import { isTemplateResult } from '../../../../utils/checks';
 
 const Update_FeatureInfo_Data = 'update_featureInfo_data';
 const Update_IsPortrait = 'update_isPortrait_hasMinWidth';
+const Update_Querying = 'update_querying';
 export const TEMPORARY_FEATURE_HIGHLIGHT_ID = `highlightedFeatureInfoGeometry_${createUniqueId()}`;
 
 /**
@@ -32,7 +33,8 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 	constructor() {
 		super({
 			featureInfoData: [],
-			isPortrait: false
+			isPortrait: false,
+			isQuerying: false
 		});
 
 		const { TranslationService } = $injector.inject('TranslationService');
@@ -46,6 +48,10 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 			(state) => state.media,
 			(media) => this.signal(Update_IsPortrait, media.portrait)
 		);
+		this.observe(
+			(state) => state.featureInfo.querying,
+			(querying) => this.signal(Update_Querying, querying)
+		);
 	}
 
 	/**
@@ -57,6 +63,8 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 				return { ...model, featureInfoData: [...data] };
 			case Update_IsPortrait:
 				return { ...model, isPortrait: data };
+			case Update_Querying:
+				return { ...model, isQuerying: data };
 		}
 	}
 
@@ -64,7 +72,7 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 	 *@override
 	 */
 	createView(model) {
-		const { featureInfoData, isPortrait } = model;
+		const { featureInfoData, isPortrait, isQuerying } = model;
 		const translate = (key) => this._translationService.translate(key);
 
 		const getContent = (content) => {
@@ -79,7 +87,7 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 			if (featureInfoGeometry) {
 				addHighlightFeatures({
 					id: TEMPORARY_FEATURE_HIGHLIGHT_ID,
-					type: HighlightFeatureType.TEMPORARY,
+					type: HighlightFeatureType.MARKER_TMP,
 					data: { geometry: featureInfoGeometry.data, geometryType: HighlightGeometryType.GEOJSON }
 				});
 			}
@@ -94,6 +102,17 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 
 		const getGeometryClass = (featureInfoGeometry) => {
 			return featureInfoGeometry ? 'is-geometry' : '';
+		};
+
+		const getInfo = (featureInfoData) => {
+			return isQuerying
+				? html`<ba-spinner></ba-spinner>`
+				: featureInfoData.length === 0
+					? html`<div class="info-container">
+							<div class="info-icon"></div>
+							<span class="info-text">${unsafeHTML(translate('geometryInfo_info'))} </span>
+						</div>`
+					: nothing;
 		};
 
 		return html`
@@ -117,6 +136,7 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 								<ba-icon .icon="${printerIcon}" .size=${1.5}></ba-icon>
 							</span>
 						</li>
+						${getInfo(featureInfoData)}
 						${featureInfoData.map(
 							(item) => html`
 								<li class="ba-section selectable">

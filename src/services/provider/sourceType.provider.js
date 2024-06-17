@@ -28,7 +28,7 @@ import { parse } from '../../utils/ewkt';
  */
 
 /**
- * Returns the default authentification panel bound to the corresponding url and required callback functions.
+ * Returns the default authentication panel bound to the corresponding url and required callback functions.
  * @param {string} url
  * @param {function} authenticateFunction
  * @param {function} onCloseFunction
@@ -64,7 +64,7 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = _create
 			username: credential?.username,
 			password: credential?.password
 		};
-		return await httpService.post(endpointUrl, JSON.stringify(requestPayload), MediaType.JSON, { timeout: 2000 });
+		return await httpService.post(endpointUrl, JSON.stringify(requestPayload), MediaType.JSON, { timeout: 3000 });
 	};
 
 	const mapResponseToSourceType = async (result, authenticated) => {
@@ -123,7 +123,7 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = _create
 				return responseFetchedWithCredentials.status === 401 ? false : responseFetchedWithCredentials;
 			};
 
-			// in case of aborting the authentification-process by closing the modal we call the onClose callback
+			// in case of aborting the authentication-process by closing the modal we call the onClose callback
 			const resolveBeforeClosing = ({ active }) => {
 				if (!active) {
 					onClose(null);

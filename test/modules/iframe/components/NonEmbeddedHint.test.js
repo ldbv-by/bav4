@@ -13,7 +13,7 @@ describe('NonEmbeddedHint', () => {
 		$injector
 			.registerSingleton('EnvironmentService', {
 				getWindow: () => window,
-				isEmbedded: () => embed
+				isEmbeddedAsIframe: () => embed
 			})
 			.registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(NonEmbeddedHint.tag);

@@ -73,19 +73,13 @@ describe('UrlService', () => {
 		});
 
 		it('rejects when argument  represents not  an URL', async () => {
-			try {
-				await instanceUnderTest.isCorsEnabled('foo');
-				throw new Error('Promise should not be resolved');
-			} catch (error) {
-				expect(error).toEqual(jasmine.any(TypeError));
-				expect(error.message).toBe("Parameter 'url' must represent a URL");
-			}
+			await expectAsync(instanceUnderTest.isCorsEnabled('foo')).toBeRejectedWithError(TypeError, "Parameter 'url' must represent an URL");
 		});
 	});
 
 	describe('proxify urls', () => {
 		describe('instantly', () => {
-			it('proxyfies a url instantly', () => {
+			it('proxyfies an url instantly', () => {
 				const url = 'https://some.url';
 
 				const result = instanceUnderTest.proxifyInstant(url);
@@ -93,13 +87,19 @@ describe('UrlService', () => {
 				expect(result).toBe('https://proxified/' + url);
 			});
 
-			it('rejects when argument  represents not  an URL', () => {
-				expect(() => instanceUnderTest.proxifyInstant('foo')).toThrowError(TypeError, /Parameter 'url' must represent a URL/);
+			describe('argument represents not an URL', () => {
+				it('rejects in strict mode', () => {
+					expect(() => instanceUnderTest.proxifyInstant('foo')).toThrowError(TypeError, /Parameter 'url' must represent an URL/);
+				});
+
+				it('returns the argument in non-strict-mode', () => {
+					expect(instanceUnderTest.proxifyInstant('foo', false)).toBe('foo');
+				});
 			});
 		});
 
 		describe('on demand', () => {
-			it('proxyfies a url with cors check (needs proxy)', async () => {
+			it('proxyfies an url with cors check (needs proxy)', async () => {
 				const url = 'https://some.url';
 				const httpServiceSpy = spyOn(httpService, 'head').and.returnValue(
 					Promise.resolve({
@@ -113,7 +113,7 @@ describe('UrlService', () => {
 				expect(result).toBe('https://proxified/' + url);
 			});
 
-			it('proxyfies a url with cors check (does not need proxy)', async () => {
+			it('proxyfies an url with cors check (does not need proxy)', async () => {
 				const url = 'https://some.url';
 				const httpServiceSpy = spyOn(httpService, 'head').and.returnValue(
 					Promise.resolve({
@@ -127,14 +127,14 @@ describe('UrlService', () => {
 				expect(result).toBe(url);
 			});
 
-			it('rejects when argument  represents not  an URL', async () => {
-				try {
-					await instanceUnderTest.proxify('foo');
-					throw new Error('Promise should not be resolved');
-				} catch (error) {
-					expect(error).toEqual(jasmine.any(TypeError));
-					expect(error.message).toBe("Parameter 'url' must represent a URL");
-				}
+			describe('argument represents not an URL', () => {
+				it('rejects in strict mode', async () => {
+					await expectAsync(instanceUnderTest.proxify('foo')).toBeRejectedWithError(TypeError, "Parameter 'url' must represent an URL");
+				});
+
+				it('returns the argument in non-strict-mode', async () => {
+					await expectAsync(instanceUnderTest.proxify('foo', false)).toBeResolvedTo('foo');
+				});
 			});
 		});
 	});
@@ -149,13 +149,7 @@ describe('UrlService', () => {
 		});
 
 		it('rejects when argument  represents not  an URL', async () => {
-			try {
-				await instanceUnderTest.shorten('foo');
-				throw new Error('Promise should not be resolved');
-			} catch (error) {
-				expect(error).toEqual(jasmine.any(TypeError));
-				expect(error.message).toBe("Parameter 'url' must represent a URL");
-			}
+			await expectAsync(instanceUnderTest.shorten('foo')).toBeRejectedWithError(TypeError, "Parameter 'url' must represent an URL");
 		});
 	});
 
@@ -169,43 +163,7 @@ describe('UrlService', () => {
 		});
 
 		it('throws an exception when argument  represents not  an URL', () => {
-			expect(() => instanceUnderTest.qrCode('foo')).toThrowError(Error, "Parameter 'url' must represent a URL");
-		});
-	});
-
-	describe('originAndPathname', () => {
-		it('extracts the origin following by the pathname of an URL', () => {
-			expect(instanceUnderTest.originAndPathname('http://foo.bar')).toBe('http://foo.bar');
-			expect(instanceUnderTest.originAndPathname('http://foo.bar/?=')).toBe('http://foo.bar');
-			expect(instanceUnderTest.originAndPathname('http://foo.bar/?foo=bar')).toBe('http://foo.bar');
-			expect(instanceUnderTest.originAndPathname('http://foo.bar:1234/?foo=bar')).toBe('http://foo.bar:1234');
-			expect(instanceUnderTest.originAndPathname('http://foo.bar/some')).toBe('http://foo.bar/some');
-			expect(instanceUnderTest.originAndPathname('http://foo.bar/some/')).toBe('http://foo.bar/some/');
-			expect(instanceUnderTest.originAndPathname('http://foo.bar/some/?=')).toBe('http://foo.bar/some/');
-			expect(instanceUnderTest.originAndPathname('http://foo.bar/some?foo=bar')).toBe('http://foo.bar/some');
-			expect(instanceUnderTest.originAndPathname('http://foo.bar:1234/some/?foo=bar')).toBe('http://foo.bar:1234/some/');
-		});
-
-		it('throws a TypeError when parameter is not valid', () => {
-			expect(() => instanceUnderTest.originAndPathname('foo')).toThrowError(TypeError);
-		});
-	});
-
-	describe('origin', () => {
-		it('extracts the origin of an URL', () => {
-			expect(instanceUnderTest.origin('http://foo.bar')).toBe('http://foo.bar');
-			expect(instanceUnderTest.origin('http://foo.bar/?=')).toBe('http://foo.bar');
-			expect(instanceUnderTest.origin('http://foo.bar/?foo=bar')).toBe('http://foo.bar');
-			expect(instanceUnderTest.origin('http://foo.bar:1234/?foo=bar')).toBe('http://foo.bar:1234');
-			expect(instanceUnderTest.origin('http://foo.bar/some')).toBe('http://foo.bar');
-			expect(instanceUnderTest.origin('http://foo.bar/some/')).toBe('http://foo.bar');
-			expect(instanceUnderTest.origin('http://foo.bar/some/?=')).toBe('http://foo.bar');
-			expect(instanceUnderTest.origin('http://foo.bar/some/?foo=bar')).toBe('http://foo.bar');
-			expect(instanceUnderTest.origin('http://foo.bar:1234/some/?foo=bar')).toBe('http://foo.bar:1234');
-		});
-
-		it('throws a TypeError when parameter is not valid', () => {
-			expect(() => instanceUnderTest.origin('foo')).toThrowError(TypeError);
+			expect(() => instanceUnderTest.qrCode('foo')).toThrowError(Error, "Parameter 'url' must represent an URL");
 		});
 	});
 });

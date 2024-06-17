@@ -46,8 +46,8 @@ Next-generation web-map viewer based on web standards ([`live example`](https://
 
 ### Prerequisites
 
-- Node.js 18
-- npm 9.5.x or higher
+- Node.js 20
+- npm 10.5.x or higher
 
 Having [nvm](https://github.com/nvm-sh/nvm) installed, just run `nvm install && nvm use`
 
@@ -86,7 +86,7 @@ Currently used properties are:
 <!-- prettier-ignore -->
 | Test | Tests can be run against multiple browsers. Available browsers are `ChromeHeadless`, `FirefoxHeadless`, `WebkitHeadless`. |
 |----|----|
-| `npm run test` | Runs unit and component tests against all available browsers. A (combined) code coverage report can be found under  `./coverage/lcov-report`. Target browsers can be individually specified by the `--browsers` option (comma-seperated).  |
+| `npm run test` | Runs unit and component tests against all available browsers. A (combined) code coverage report can be found under  `./coverage/lcov-report`. Target browsers can be individually specified by the `--browsers` option (comma-separated).  |
 | `npm run test:single` | Runs a single test. Usage `npm run test:single --spec=MyTest.test.js `. The target browser can be individually specified by the `--browser` option. The default is `FirefoxHeadless` |
 | `npm run test:debug` | Runs unit and component tests against headless Chrome (Chromium) with remote debugging enabled |
 
@@ -118,7 +118,7 @@ Currently used properties are:
 
 ## Structure
 
-The project's source code is under `src`, unit, component and e2e tests under `test`.
+The project's source code is under `src`, unit, component and e2e tests are under `test`.
 
 The source code is distributed among the following directories:
 
@@ -136,7 +136,7 @@ Contains the built-in dependency injection. The central configuration is done in
 
 The common types of injection are service classes.
 Service classes may retrieve data from an external source by using a provider function. Such provider functions are also interchangeable.
-Services and provider functions whose names start with 'BVV' are focusing on the LDBV context and infrastructure.
+Services and provider functions whose names start with 'BVV' focus on the LDBV context and infrastructure.
 
 ### `src/modules`
 
@@ -226,6 +226,8 @@ For example, they could be responsible for setting an initial state or reacting 
   - `BaPlugin` implementations
 
 - If an update of the global state has an event-like character, it's recommended to wrap the payload within another object. This makes it possible to track changes and avoids second dispatching in order to "reset" the state. For this purpose, you can use use `EventLike` in storeUtils.js
+
+- Avoid adding huge objects or arrays to the Redux store (e.g. large arrays of coordinates). Detecting changes can be expensive in that case. Instead, try to reference them by an identifier and push this identifier to the store.
 
 ## Links
 

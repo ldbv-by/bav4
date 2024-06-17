@@ -11,20 +11,30 @@ import { OlElevationProfileHandler } from '../../../../../src/modules/olMap/hand
 import { InteractionStateType } from '../../../../../src/modules/olMap/utils/olInteractionUtils';
 import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer';
 import { TestUtils } from '../../../../test-utils';
+import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
+import { Tools } from '../../../../../src/domain/tools';
+import { $injector } from '../../../../../src/injection';
+import { indicateChange } from '../../../../../src/store/elevationProfile/elevationProfile.action';
 
 describe('OlElevationProfileHandler', () => {
 	const initCoordinate = fromLonLat([11, 48]);
 	const defaultState = {
 		elevationProfile: {
 			active: false,
-			coordinates: []
+			id: null
+		},
+		tools: {
+			current: OlElevationProfileHandler.SUPPORTED_TOOL_IDS[0]
 		}
+	};
+	const elevationService = {
+		requestProfile() {}
 	};
 
 	let store;
-
 	const setup = (state = defaultState) => {
-		return TestUtils.setupStoreAndDi(state, { elevationProfile: elevationProfileReducer });
+		store = TestUtils.setupStoreAndDi(state, { elevationProfile: elevationProfileReducer, tools: toolsReducer });
+		$injector.registerSingleton('ElevationService', elevationService);
 	};
 
 	const setupMap = () => {
@@ -52,6 +62,12 @@ describe('OlElevationProfileHandler', () => {
 		return map;
 	};
 
+	describe('class', () => {
+		it('defines constant values', async () => {
+			expect(OlElevationProfileHandler.SUPPORTED_TOOL_IDS).toEqual([Tools.DRAW, Tools.MEASURE]);
+		});
+	});
+
 	describe('constructor', () => {
 		it('initializes listeners', async () => {
 			setup();
@@ -73,159 +89,254 @@ describe('OlElevationProfileHandler', () => {
 	});
 
 	describe('when map interactions changes', () => {
-		it('adds listener for select events', () => {
-			const expectedListenerCount = 1 + 1; // ['add'listener] + ['remove'-listener]
-			store = setup({ ...defaultState, coordinates: [[0, 0][(1, 1)]] });
-			const map = getSelectableMapWith([]);
+		describe('and a non-configured tool is active', () => {
+			it('does NOT add a listener for select events', () => {
+				setup({
+					...defaultState,
+					tools: {
+						current: 'anyUnsupportedToolId'
+					}
+				});
+				const map = getSelectableMapWith([]);
 
-			const select = new Select({ condition: click });
-			const handler = new OlElevationProfileHandler();
-			const updateListenerSpy = spyOn(handler, '_updateListener').and.callThrough();
+				const select = new Select({ condition: click });
+				const handler = new OlElevationProfileHandler();
+				const updateListenerSpy = spyOn(handler, '_updateListener').and.callThrough();
 
-			handler.register(map);
-			map.addInteraction(select);
+				handler.register(map);
+				map.addInteraction(select);
 
-			expect(updateListenerSpy).toHaveBeenCalled();
-			expect(handler._mapListeners[InteractionStateType.SELECT]).toHaveSize(expectedListenerCount);
+				expect(updateListenerSpy).not.toHaveBeenCalled();
+				expect(handler._mapListeners[InteractionStateType.SELECT]).toHaveSize(0);
+			});
+
+			it('does NOT add a listener for modify events', () => {
+				setup({
+					...defaultState,
+					tools: {
+						current: 'anyUnsupportedToolId'
+					}
+				});
+				const map = setupMap();
+				const vectorSource = new VectorSource({ wrapX: false, features: [] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
+
+				map.addLayer(vectorLayer);
+
+				const modify = new Modify({ source: vectorSource });
+				const handler = new OlElevationProfileHandler();
+				const updateListenerSpy = spyOn(handler, '_updateListener').and.callThrough();
+
+				handler.register(map);
+				map.addInteraction(modify);
+
+				expect(updateListenerSpy).not.toHaveBeenCalled();
+				expect(handler._mapListeners[InteractionStateType.MODIFY]).toHaveSize(0);
+			});
+
+			it('does NOT remove a listener for select events', () => {
+				setup({
+					...defaultState,
+					tools: {
+						current: 'anyUnsupportedToolId'
+					}
+				});
+				const map = getSelectableMapWith([]);
+
+				const select = new Select({ condition: click });
+				const handler = new OlElevationProfileHandler();
+				const updateListenerSpy = spyOn(handler, '_updateListener').and.callThrough();
+
+				handler.register(map);
+				map.addInteraction(select);
+
+				map.removeInteraction(select);
+
+				expect(updateListenerSpy).not.toHaveBeenCalled();
+			});
+
+			it('does NOT remove a listener for modify events', () => {
+				setup({
+					...defaultState,
+					tools: {
+						current: 'anyUnsupportedToolId'
+					}
+				});
+				const map = setupMap();
+				const vectorSource = new VectorSource({ wrapX: false, features: [] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
+
+				map.addLayer(vectorLayer);
+
+				const modify = new Modify({ source: vectorSource });
+				const handler = new OlElevationProfileHandler();
+				const updateListenerSpy = spyOn(handler, '_updateListener').and.callThrough();
+
+				handler.register(map);
+				map.addInteraction(modify);
+
+				map.removeInteraction(modify);
+
+				expect(updateListenerSpy).not.toHaveBeenCalled();
+			});
 		});
 
-		it('adds listener for modify events', () => {
-			const expectedListenerCount = 1; // ['modifyend'listener]
-			store = setup({ ...defaultState, coordinates: [[0, 0][(1, 1)]] });
-			const map = setupMap();
-			const vectorSource = new VectorSource({ wrapX: false, features: [] });
-			const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
+		describe('and a non-configured tool is active', () => {
+			it('adds listener for select events', () => {
+				const expectedListenerCount = 1 + 1; // ['add'listener] + ['remove'-listener]
+				setup({ ...defaultState });
+				const map = getSelectableMapWith([]);
 
-			map.addLayer(vectorLayer);
+				const select = new Select({ condition: click });
+				const handler = new OlElevationProfileHandler();
+				const updateListenerSpy = spyOn(handler, '_updateListener').and.callThrough();
 
-			const modify = new Modify({ source: vectorSource });
-			const handler = new OlElevationProfileHandler();
-			const updateListenerSpy = spyOn(handler, '_updateListener').and.callThrough();
+				handler.register(map);
+				map.addInteraction(select);
 
-			handler.register(map);
-			map.addInteraction(modify);
+				expect(updateListenerSpy).toHaveBeenCalled();
+				expect(handler._mapListeners[InteractionStateType.SELECT]).toHaveSize(expectedListenerCount);
+			});
 
-			expect(updateListenerSpy).toHaveBeenCalled();
-			expect(handler._mapListeners[InteractionStateType.MODIFY]).toHaveSize(expectedListenerCount);
-		});
+			it('adds listener for modify events', () => {
+				const expectedListenerCount = 1; // ['modifyend'listener]
+				setup({ ...defaultState });
+				const map = setupMap();
+				const vectorSource = new VectorSource({ wrapX: false, features: [] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
 
-		it('does NOT add listener for other interaction events', () => {
-			store = setup({ ...defaultState, coordinates: [[0, 0][(1, 1)]] });
-			const map = setupMap();
-			const vectorSource = new VectorSource({ wrapX: false, features: [] });
-			const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
+				map.addLayer(vectorLayer);
 
-			map.addLayer(vectorLayer);
+				const modify = new Modify({ source: vectorSource });
+				const handler = new OlElevationProfileHandler();
+				const updateListenerSpy = spyOn(handler, '_updateListener').and.callThrough();
 
-			const draw = new Draw({ source: vectorSource, type: 'Polygon', minPoints: 2 });
-			const handler = new OlElevationProfileHandler();
-			const updateListenerSpy = spyOn(handler, '_updateListener').and.callFake(() => {});
+				handler.register(map);
+				map.addInteraction(modify);
 
-			handler.register(map);
-			map.addInteraction(draw);
+				expect(updateListenerSpy).toHaveBeenCalled();
+				expect(handler._mapListeners[InteractionStateType.MODIFY]).toHaveSize(expectedListenerCount);
+			});
 
-			expect(updateListenerSpy).not.toHaveBeenCalled();
-		});
+			it('does NOT add listener for other interaction events', () => {
+				setup({ ...defaultState });
+				const map = setupMap();
+				const vectorSource = new VectorSource({ wrapX: false, features: [] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
 
-		it('removes listener for select events', () => {
-			const expectedListenerCount = 1 + 1; // ['add'listener] + ['remove'-listener]
-			store = setup({ ...defaultState, coordinates: [[0, 0][(1, 1)]] });
-			const map = getSelectableMapWith([]);
+				map.addLayer(vectorLayer);
 
-			const select = new Select({ condition: click });
-			const handler = new OlElevationProfileHandler();
-			const updateListenerSpy = spyOn(handler, '_updateListener').and.callThrough();
+				const draw = new Draw({ source: vectorSource, type: 'Polygon', minPoints: 2 });
+				const handler = new OlElevationProfileHandler();
+				const updateListenerSpy = spyOn(handler, '_updateListener').and.callFake(() => {});
 
-			handler.register(map);
-			map.addInteraction(select);
+				handler.register(map);
+				map.addInteraction(draw);
 
-			expect(updateListenerSpy).toHaveBeenCalled();
-			expect(handler._mapListeners[InteractionStateType.SELECT]).toHaveSize(expectedListenerCount);
-			updateListenerSpy.calls.reset();
+				expect(updateListenerSpy).not.toHaveBeenCalled();
+			});
 
-			map.removeInteraction(select);
+			it('removes listener for select events', () => {
+				const expectedListenerCount = 1 + 1; // ['add'listener] + ['remove'-listener]
+				setup({ ...defaultState });
+				const map = getSelectableMapWith([]);
 
-			expect(updateListenerSpy).toHaveBeenCalled();
-			expect(handler._mapListeners[InteractionStateType.SELECT]).toHaveSize(0);
-		});
+				const select = new Select({ condition: click });
+				const handler = new OlElevationProfileHandler();
+				const updateListenerSpy = spyOn(handler, '_updateListener').and.callThrough();
 
-		it('removes listener for modify events', () => {
-			const expectedListenerCount = 1; // ['modifyend'listener]
-			store = setup({ ...defaultState, coordinates: [[0, 0][(1, 1)]] });
-			const map = setupMap();
-			const vectorSource = new VectorSource({ wrapX: false, features: [] });
-			const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
+				handler.register(map);
+				map.addInteraction(select);
 
-			map.addLayer(vectorLayer);
+				expect(updateListenerSpy).toHaveBeenCalled();
+				expect(handler._mapListeners[InteractionStateType.SELECT]).toHaveSize(expectedListenerCount);
+				updateListenerSpy.calls.reset();
 
-			const modify = new Modify({ source: vectorSource });
-			const handler = new OlElevationProfileHandler();
-			const updateListenerSpy = spyOn(handler, '_updateListener').and.callThrough();
+				map.removeInteraction(select);
 
-			handler.register(map);
-			map.addInteraction(modify);
+				expect(updateListenerSpy).toHaveBeenCalled();
+				expect(handler._mapListeners[InteractionStateType.SELECT]).toHaveSize(0);
+			});
 
-			expect(updateListenerSpy).toHaveBeenCalled();
-			expect(handler._mapListeners[InteractionStateType.MODIFY]).toHaveSize(expectedListenerCount);
-			updateListenerSpy.calls.reset();
+			it('removes listener for modify events', () => {
+				const expectedListenerCount = 1; // ['modifyend'listener]
+				setup({ ...defaultState });
+				const map = setupMap();
+				const vectorSource = new VectorSource({ wrapX: false, features: [] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
 
-			map.removeInteraction(modify);
+				map.addLayer(vectorLayer);
 
-			expect(updateListenerSpy).toHaveBeenCalled();
-			expect(handler._mapListeners[InteractionStateType.MODIFY]).toHaveSize(0);
-		});
+				const modify = new Modify({ source: vectorSource });
+				const handler = new OlElevationProfileHandler();
+				const updateListenerSpy = spyOn(handler, '_updateListener').and.callThrough();
 
-		it('resets store when select interaction is removed', () => {
-			store = setup({ ...defaultState, coordinates: [[0, 0][(1, 1)]] });
-			const lineString = new LineString([
-				[2, 2],
-				[3, 3]
-			]);
-			const feature = new Feature({ geometry: lineString });
-			const map = getSelectableMapWith([feature]);
-			const select = new Select({ condition: click });
-			const handler = new OlElevationProfileHandler();
-			handler.register(map);
+				handler.register(map);
+				map.addInteraction(modify);
 
-			map.addInteraction(select);
-			select.getFeatures().push(feature);
-			map.removeInteraction(select);
+				expect(updateListenerSpy).toHaveBeenCalled();
+				expect(handler._mapListeners[InteractionStateType.MODIFY]).toHaveSize(expectedListenerCount);
+				updateListenerSpy.calls.reset();
 
-			expect(store.getState().elevationProfile.coordinates).toEqual([]);
-		});
+				map.removeInteraction(modify);
 
-		it('does NOT removes listener for non-select events', () => {
-			store = setup({ ...defaultState, coordinates: [[0, 0][(1, 1)]] });
-			const expectedListenerCount = 1 + 1; // ['add'listener] + ['remove'-listener]
-			const map = setupMap();
-			const vectorSource = new VectorSource({ wrapX: false, features: [] });
-			const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
+				expect(updateListenerSpy).toHaveBeenCalled();
+				expect(handler._mapListeners[InteractionStateType.MODIFY]).toHaveSize(0);
+			});
 
-			map.addLayer(vectorLayer);
+			it('resets store when select interaction is removed', () => {
+				setup({ ...defaultState, id: 'id' });
+				const lineString = new LineString([
+					[2, 2],
+					[3, 3]
+				]);
+				const feature = new Feature({ geometry: lineString });
+				const map = getSelectableMapWith([feature]);
+				const select = new Select({ condition: click });
+				const handler = new OlElevationProfileHandler();
+				handler.register(map);
 
-			const select = new Select({ condition: click });
-			const draw = new Draw({ source: vectorSource, type: 'Polygon', minPoints: 2 });
-			const handler = new OlElevationProfileHandler();
-			const updateListenerSpy = spyOn(handler, '_updateListener').and.callThrough();
+				map.addInteraction(select);
+				select.getFeatures().push(feature);
+				map.removeInteraction(select);
 
-			handler.register(map);
-			map.addInteraction(select);
-			map.addInteraction(draw);
+				expect(store.getState().elevationProfile.id).toBeNull();
+			});
 
-			expect(updateListenerSpy).toHaveBeenCalled();
-			expect(handler._mapListeners[InteractionStateType.SELECT]).toHaveSize(expectedListenerCount);
-			updateListenerSpy.calls.reset();
+			it('does NOT removes listener for non-select events', () => {
+				setup({ ...defaultState });
+				const expectedListenerCount = 1 + 1; // ['add'listener] + ['remove'-listener]
+				const map = setupMap();
+				const vectorSource = new VectorSource({ wrapX: false, features: [] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
 
-			map.removeInteraction(draw);
+				map.addLayer(vectorLayer);
 
-			expect(updateListenerSpy).not.toHaveBeenCalled();
-			expect(handler._mapListeners[InteractionStateType.SELECT]).toHaveSize(expectedListenerCount);
+				const select = new Select({ condition: click });
+				const draw = new Draw({ source: vectorSource, type: 'Polygon', minPoints: 2 });
+				const handler = new OlElevationProfileHandler();
+				const updateListenerSpy = spyOn(handler, '_updateListener').and.callThrough();
+
+				handler.register(map);
+				map.addInteraction(select);
+				map.addInteraction(draw);
+
+				expect(updateListenerSpy).toHaveBeenCalled();
+				expect(handler._mapListeners[InteractionStateType.SELECT]).toHaveSize(expectedListenerCount);
+				updateListenerSpy.calls.reset();
+
+				map.removeInteraction(draw);
+
+				expect(updateListenerSpy).not.toHaveBeenCalled();
+				expect(handler._mapListeners[InteractionStateType.SELECT]).toHaveSize(expectedListenerCount);
+			});
 		});
 	});
 
 	describe('when feature selections changes', () => {
-		it('changes the elevationProfile store for selected Point geometry', () => {
-			store = setup({ ...defaultState, coordinates: [[0, 0][(1, 1)]] });
+		it('does NOT calls the ElevationService for selected Point geometry', () => {
+			const elevationServiceSpy = spyOn(elevationService, 'requestProfile');
+			setup({ ...defaultState });
 			const point = new Point(fromLonLat([11.59036, 48.14165]));
 			const feature = new Feature({ geometry: point });
 			const map = getSelectableMapWith([feature]);
@@ -239,11 +350,12 @@ describe('OlElevationProfileHandler', () => {
 			select.getFeatures().push(feature);
 
 			expect(updateCoordinatesSpy).toHaveBeenCalled();
-			expect(store.getState().elevationProfile.coordinates).toEqual([]);
+			expect(elevationServiceSpy).not.toHaveBeenCalled();
 		});
 
-		it('changes the elevationProfile store for selected LineString geometry', () => {
-			store = setup({ ...defaultState, coordinates: [[0, 0][(1, 1)]] });
+		it('calls the ElevationService for selected LineString geometry', () => {
+			const elevationServiceSpy = spyOn(elevationService, 'requestProfile');
+			setup({ ...defaultState });
 			const lineString = new LineString([
 				[2, 2],
 				[3, 3]
@@ -260,14 +372,15 @@ describe('OlElevationProfileHandler', () => {
 			select.getFeatures().push(feature);
 
 			expect(updateCoordinatesSpy).toHaveBeenCalled();
-			expect(store.getState().elevationProfile.coordinates).toEqual([
+			expect(elevationServiceSpy).toHaveBeenCalledOnceWith([
 				[2, 2],
 				[3, 3]
 			]);
 		});
 
-		it('changes the elevationProfile store for selected LinearRing geometry', () => {
-			store = setup({ ...defaultState, coordinates: [[0, 0][(1, 1)]] });
+		it('calls the ElevationService for selected LinearRing geometry', () => {
+			const elevationServiceSpy = spyOn(elevationService, 'requestProfile');
+			setup({ ...defaultState });
 			const linearRing = new LinearRing([
 				[0, 0],
 				[1, 0],
@@ -287,7 +400,7 @@ describe('OlElevationProfileHandler', () => {
 			select.getFeatures().push(feature);
 
 			expect(updateCoordinatesSpy).toHaveBeenCalled();
-			expect(store.getState().elevationProfile.coordinates).toEqual([
+			expect(elevationServiceSpy).toHaveBeenCalledOnceWith([
 				[0, 0],
 				[1, 0],
 				[1, 1],
@@ -296,8 +409,9 @@ describe('OlElevationProfileHandler', () => {
 			]);
 		});
 
-		it('changes the elevationProfile store for selected Polygon geometry', () => {
-			store = setup({ ...defaultState, coordinates: [[0, 0][(1, 1)]] });
+		it('calls the ElevationService for selected Polygon geometry', () => {
+			const elevationServiceSpy = spyOn(elevationService, 'requestProfile');
+			setup({ ...defaultState });
 			const polygon = new Polygon([
 				[
 					[0, 0],
@@ -319,7 +433,7 @@ describe('OlElevationProfileHandler', () => {
 			select.getFeatures().push(feature);
 
 			expect(updateCoordinatesSpy).toHaveBeenCalled();
-			expect(store.getState().elevationProfile.coordinates).toEqual([
+			expect(elevationServiceSpy).toHaveBeenCalledOnceWith([
 				[0, 0],
 				[0, 1],
 				[1, 1],
@@ -328,8 +442,9 @@ describe('OlElevationProfileHandler', () => {
 			]);
 		});
 
-		it('changes the elevationProfile store for selected MultiPolygon geometry', () => {
-			store = setup({ ...defaultState, coordinates: [[0, 0][(1, 1)]] });
+		it('does NOT call the ElevationService for selected MultiPolygon geometry', () => {
+			const elevationServiceSpy = spyOn(elevationService, 'requestProfile');
+			setup({ ...defaultState });
 			const multiPolygon = new MultiPolygon([
 				new Polygon([
 					[
@@ -360,11 +475,12 @@ describe('OlElevationProfileHandler', () => {
 			select.getFeatures().push(feature);
 
 			expect(updateCoordinatesSpy).toHaveBeenCalled();
-			expect(store.getState().elevationProfile.coordinates).toEqual([]);
+			expect(elevationServiceSpy).not.toHaveBeenCalled();
 		});
 
-		it('changes the elevationProfile store for multi select geometry', () => {
-			store = setup({ ...defaultState, coordinates: [[0, 0][(1, 1)]] });
+		it('calls the ElevationService for multi select geometry for the first selected feature', () => {
+			const elevationServiceSpy = spyOn(elevationService, 'requestProfile');
+			setup({ ...defaultState });
 			const lineString1 = new LineString([
 				[2, 2],
 				[3, 3]
@@ -387,35 +503,15 @@ describe('OlElevationProfileHandler', () => {
 			select.getFeatures().push(feature2);
 
 			expect(updateCoordinatesSpy).toHaveBeenCalled();
-			expect(store.getState().elevationProfile.coordinates).toEqual([]);
-		});
-
-		it('changes the elevationProfile store for selected 3D LineString geometry', () => {
-			store = setup({ ...defaultState, coordinates: [[0, 0][(1, 1)]] });
-			const lineString = new LineString([
-				[2, 2, 2],
-				[3, 3, 3]
-			]);
-			const feature = new Feature({ geometry: lineString });
-			const map = getSelectableMapWith([feature]);
-			const select = new Select({ condition: click });
-			const handler = new OlElevationProfileHandler();
-			const updateCoordinatesSpy = spyOn(handler, '_updateSelectCoordinates').and.callThrough();
-
-			handler.register(map);
-			map.addInteraction(select);
-
-			select.getFeatures().push(feature);
-
-			expect(updateCoordinatesSpy).toHaveBeenCalled();
-			expect(store.getState().elevationProfile.coordinates).toEqual([
+			expect(elevationServiceSpy).toHaveBeenCalledWith([
 				[2, 2],
 				[3, 3]
 			]);
 		});
 
-		it('changes the elevationProfile store for deselect', () => {
-			store = setup({ ...defaultState, coordinates: [[0, 0][(1, 1)]] });
+		it('does NOT calls the ElevationService for deselect, but updates store', () => {
+			const elevationServiceSpy = spyOn(elevationService, 'requestProfile').and.callFake(() => indicateChange('id'));
+			setup({ ...defaultState });
 			const lineString = new LineString([
 				[2, 2],
 				[3, 3]
@@ -432,22 +528,23 @@ describe('OlElevationProfileHandler', () => {
 			select.getFeatures().push(feature);
 
 			expect(updateCoordinatesSpy).toHaveBeenCalled();
-			expect(store.getState().elevationProfile.coordinates).toEqual([
-				[2, 2],
-				[3, 3]
-			]);
+			expect(elevationServiceSpy).toHaveBeenCalled();
+			expect(store.getState().elevationProfile.id).toBe('id');
 
 			updateCoordinatesSpy.calls.reset();
+			elevationServiceSpy.calls.reset();
 			select.getFeatures().clear();
 
 			expect(updateCoordinatesSpy).toHaveBeenCalled();
-			expect(store.getState().elevationProfile.coordinates).toEqual([]);
+			expect(elevationServiceSpy).not.toHaveBeenCalled();
+			expect(store.getState().elevationProfile.id).toBeNull();
 		});
 	});
 
 	describe('when feature modifications changes', () => {
-		it('changes the elevationProfile store for modified Point geometry', () => {
-			store = setup({ ...defaultState, coordinates: [[0, 0][(1, 1)]] });
+		it('does NOT call the ElevationService for modified Point geometry', () => {
+			const elevationServiceSpy = spyOn(elevationService, 'requestProfile');
+			setup({ ...defaultState });
 			const point = new Point(fromLonLat([11.59036, 48.14165]));
 			const feature = new Feature({ geometry: point });
 			const features = new Collection([feature]);
@@ -468,11 +565,12 @@ describe('OlElevationProfileHandler', () => {
 			modify.dispatchEvent(modifyEvent);
 
 			expect(updateCoordinatesSpy).toHaveBeenCalled();
-			expect(store.getState().elevationProfile.coordinates).toEqual([]);
+			expect(elevationServiceSpy).not.toHaveBeenCalled();
 		});
 
-		it('changes the elevationProfile store for modified LineString geometry', () => {
-			store = setup({ ...defaultState, coordinates: [[0, 0][(1, 1)]] });
+		it('calls the ElevationService for modified LineString geometry', () => {
+			const elevationServiceSpy = spyOn(elevationService, 'requestProfile');
+			setup({ ...defaultState });
 			const lineString = new LineString([
 				[2, 2],
 				[3, 3]
@@ -496,14 +594,15 @@ describe('OlElevationProfileHandler', () => {
 			modify.dispatchEvent(modifyEvent);
 
 			expect(updateCoordinatesSpy).toHaveBeenCalled();
-			expect(store.getState().elevationProfile.coordinates).toEqual([
+			expect(elevationServiceSpy).toHaveBeenCalledWith([
 				[2, 2],
 				[3, 3]
 			]);
 		});
 
-		it('changes the elevationProfile store for modified Polygon geometry', () => {
-			store = setup({ ...defaultState, coordinates: [[0, 0][(1, 1)]] });
+		it('calls the ElevationService for modified Polygon geometry', () => {
+			const elevationServiceSpy = spyOn(elevationService, 'requestProfile');
+			setup({ ...defaultState });
 			const polygon = new Polygon([
 				[
 					[0, 0],
@@ -532,7 +631,7 @@ describe('OlElevationProfileHandler', () => {
 			modify.dispatchEvent(modifyEvent);
 
 			expect(updateCoordinatesSpy).toHaveBeenCalled();
-			expect(store.getState().elevationProfile.coordinates).toEqual([
+			expect(elevationServiceSpy).toHaveBeenCalledWith([
 				[0, 0],
 				[0, 1],
 				[1, 1],

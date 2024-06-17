@@ -1,4 +1,5 @@
 import { MediaType } from '../../../src/domain/mediaTypes';
+import { RouteCalculationErrors } from '../../../src/domain/routing';
 import { $injector } from '../../../src/injection';
 import { bvvRouteProvider } from '../../../src/services/provider/route.provider';
 
@@ -54,7 +55,7 @@ describe('Route provider', () => {
 			expect(coordinateServiceSpy).toHaveBeenCalled();
 		});
 
-		it('throws an Error when status code != 200', async () => {
+		it('throws an Error when status code == 400', async () => {
 			const backendUrl = 'https://backend.url/';
 			const categories = ['foo'];
 			const coordinates3857 = [
@@ -79,8 +80,75 @@ describe('Route provider', () => {
 				)
 				.and.resolveTo(new Response(null, { status: statusCode }));
 
-			await expectAsync(bvvRouteProvider(categories, coordinates3857)).toBeRejectedWithError(
-				`A route could not be retrieved: Http-Status ${statusCode}`
+			await expectAsync(bvvRouteProvider(categories, coordinates3857)).toBeRejectedWith(
+				jasmine.objectContaining({
+					message: `A route could not be retrieved: Http-Status ${statusCode}`,
+					cause: RouteCalculationErrors.Improper_Waypoints
+				})
+			);
+		});
+
+		it('throws an Error when status code == 500', async () => {
+			const backendUrl = 'https://backend.url/';
+			const categories = ['foo'];
+			const coordinates3857 = [
+				[1, 2],
+				[3, 4]
+			];
+			const statusCode = 500;
+			spyOn(coordinateService, 'toLonLat').and.callFake((coord) => coord.map((n) => n + 10));
+			spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			spyOn(httpService, 'post')
+				.withArgs(
+					backendUrl + 'routing/route',
+					JSON.stringify({
+						vehicle: categories,
+						points: [
+							[11, 12],
+							[13, 14]
+						]
+					}),
+					MediaType.JSON,
+					{ timeout: 2000 }
+				)
+				.and.resolveTo(new Response(null, { status: statusCode }));
+
+			await expectAsync(bvvRouteProvider(categories, coordinates3857)).toBeRejectedWith(
+				jasmine.objectContaining({
+					message: `A route could not be retrieved: Http-Status ${statusCode}`,
+					cause: RouteCalculationErrors.Technical_Error
+				})
+			);
+		});
+		it('throws an Error for any other status then 200', async () => {
+			const backendUrl = 'https://backend.url/';
+			const categories = ['foo'];
+			const coordinates3857 = [
+				[1, 2],
+				[3, 4]
+			];
+			const statusCode = 301;
+			spyOn(coordinateService, 'toLonLat').and.callFake((coord) => coord.map((n) => n + 10));
+			spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			spyOn(httpService, 'post')
+				.withArgs(
+					backendUrl + 'routing/route',
+					JSON.stringify({
+						vehicle: categories,
+						points: [
+							[11, 12],
+							[13, 14]
+						]
+					}),
+					MediaType.JSON,
+					{ timeout: 2000 }
+				)
+				.and.resolveTo(new Response(null, { status: statusCode }));
+
+			await expectAsync(bvvRouteProvider(categories, coordinates3857)).toBeRejectedWith(
+				jasmine.objectContaining({
+					message: `A route could not be retrieved: Http-Status ${statusCode}`
+				})
 			);
 		});
 	});

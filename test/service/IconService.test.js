@@ -77,7 +77,7 @@ describe('IconsService', () => {
 				const icons = await instanceUnderTest.all();
 				const defaultIcon = instanceUnderTest.getDefault();
 
-				expect(icons.length).toBe(5);
+				expect(icons.length).toBe(8);
 				expect(icons[0]).toEqual(defaultIcon);
 				expect(icons).toEqual(
 					jasmine.arrayContaining([
@@ -85,10 +85,27 @@ describe('IconsService', () => {
 						jasmine.objectContaining({ id: 'triangle-stroked' }),
 						jasmine.objectContaining({ id: 'triangle' }),
 						jasmine.objectContaining({ id: 'square-stroked' }),
-						jasmine.objectContaining({ id: 'square' })
+						jasmine.objectContaining({ id: 'square' }),
+						jasmine.objectContaining({ id: 'rt_start' }),
+						jasmine.objectContaining({ id: 'rt_destination' }),
+						jasmine.objectContaining({ id: 'rt_intermediate' })
 					])
 				);
 				expect(warnSpy).toHaveBeenCalledWith('Icons could not be fetched from backend. Using fallback icons ...');
+			});
+
+			it('provides fallback routing-icons with a specific url-matcher function', async () => {
+				const instanceUnderTest = setup(async () => {
+					throw new Error('Icons could not be loaded');
+				});
+
+				const icons = await instanceUnderTest.all();
+
+				expect(icons.length).toBe(8);
+
+				expect(instanceUnderTest.getIconResult('rt_start').matches('rt_start')).toBeTrue();
+				expect(instanceUnderTest.getIconResult('rt_destination').matches('rt_destination')).toBeTrue();
+				expect(instanceUnderTest.getIconResult('rt_intermediate').matches('rt_intermediate')).toBeTrue();
 			});
 		});
 	});
@@ -204,11 +221,20 @@ describe('IconsService', () => {
 			return null;
 		};
 
-		it('uses default urlProvider, when not given', () => {
+		it('uses default values, when not given', () => {
 			const iconResult = new IconResult('foo', 'bar');
 
 			expect(iconResult.matches('somethingWithfoo')).toBeFalse();
 			expect(iconResult.getUrl()).toBeNull();
+			expect(iconResult.isMonochrome).toBeTrue();
+		});
+
+		it('provides a defined anchor', () => {
+			expect(new IconResult('marker', 'bar').anchor).toEqual([0.5, 1]);
+			expect(new IconResult('anyOther', 'bar').anchor).toEqual([0.5, 0.5]);
+			expect(new IconResult('some', 'bar').anchor).toEqual([0.5, 0.5]);
+			expect(new IconResult('', 'bar').anchor).toEqual([0.5, 0.5]);
+			expect(new IconResult(null, 'bar').anchor).toEqual([0.5, 0.5]);
 		});
 
 		it('creates a base64-encoded string and back', () => {

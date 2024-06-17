@@ -58,10 +58,12 @@ describe('WaypointItem', () => {
 			expect(waypointElement.shadowRoot.querySelectorAll('.container')).toHaveSize(1);
 			expect(waypointElement.shadowRoot.querySelector('.icon').classList).toHaveSize(1);
 			expect(getComputedStyle(waypointElement.shadowRoot.querySelector('.line')).background).toContain('rgb(128, 128, 128)');
-			expect(waypointElement.shadowRoot.querySelector('span').innerText).toBe('routing_waypoints_waypoint 42 - [11.932 47.898]');
+
+			expect(waypointElement.shadowRoot.querySelector('.text-name').innerText).toBe('routing_waypoints_waypoint 42');
 			expect(waypointElement.shadowRoot.querySelectorAll('.waypoint-index')).toHaveSize(1);
 
 			// waypoint action buttons
+			expect(waypointElement.shadowRoot.querySelector('.waypoint__buttons').childElementCount).toBe(3);
 			expect(waypointElement.shadowRoot.querySelectorAll('#increase')).toHaveSize(1);
 			expect(waypointElement.shadowRoot.querySelectorAll('#decrease')).toHaveSize(1);
 			expect(waypointElement.shadowRoot.querySelectorAll('#remove')).toHaveSize(1);
@@ -72,7 +74,8 @@ describe('WaypointItem', () => {
 
 			expect(startElement.shadowRoot.querySelector('.icon-bg').classList.contains('start')).toBeTrue();
 			expect(getComputedStyle(startElement.shadowRoot.querySelector('.line')).background).toContain('rgb(128, 128, 128)');
-			expect(startElement.shadowRoot.querySelector('span').innerText).toBe('routing_waypoints_start - [11.932 47.898]');
+
+			expect(startElement.shadowRoot.querySelector('.text-name').innerText).toBe('routing_waypoints_start');
 			expect(startElement.shadowRoot.querySelectorAll('.waypoint-index')).toHaveSize(0);
 
 			const decreaseIconElement = startElement.shadowRoot.querySelector('#decrease');
@@ -89,7 +92,8 @@ describe('WaypointItem', () => {
 
 			expect(destinationElement.shadowRoot.querySelector('.icon-bg').classList.contains('destination')).toBeTrue();
 			expect(getComputedStyle(destinationElement.shadowRoot.querySelector('.line')).background).toContain('rgb(128, 128, 128)');
-			expect(destinationElement.shadowRoot.querySelector('span').innerText).toBe('routing_waypoints_destination - [11.932 47.898]');
+
+			expect(destinationElement.shadowRoot.querySelector('.text-name').innerText).toBe('routing_waypoints_destination');
 			expect(destinationElement.shadowRoot.querySelectorAll('.waypoint-index')).toHaveSize(0);
 
 			const increaseIconElement = destinationElement.shadowRoot.querySelector('#increase');
@@ -108,7 +112,8 @@ describe('WaypointItem', () => {
 			expect(waypointElement.shadowRoot.querySelectorAll('.container')).toHaveSize(1);
 			expect(waypointElement.shadowRoot.querySelector('.icon').classList).toHaveSize(1);
 			expect(getComputedStyle(waypointElement.shadowRoot.querySelector('.line')).background).toContain('rgb(42, 42, 42)');
-			expect(waypointElement.shadowRoot.querySelector('span').innerText).toBe('routing_waypoints_waypoint 42 - [11.932 47.898]');
+
+			expect(waypointElement.shadowRoot.querySelector('.text-name').innerText).toBe('routing_waypoints_waypoint 42');
 
 			// waypoint action buttons
 			expect(waypointElement.shadowRoot.querySelectorAll('#increase')).toHaveSize(1);
@@ -135,16 +140,6 @@ describe('WaypointItem', () => {
 				expect(decreaseSpy).toHaveBeenCalledOnceWith(jasmine.any(CustomEvent));
 				expect(removeSpy).toHaveBeenCalledOnceWith(jasmine.any(CustomEvent));
 			});
-		});
-	});
-
-	describe('when disconnected', () => {
-		it('removes all observers', async () => {
-			const element = await setup();
-			const spy = spyOn(element, '_unsubscribeFromStore').and.callThrough();
-			element.onDisconnect(); // we call onDisconnect manually
-
-			expect(spy).toHaveBeenCalled();
 		});
 	});
 

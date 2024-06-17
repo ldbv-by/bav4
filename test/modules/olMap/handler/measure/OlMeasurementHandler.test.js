@@ -3,7 +3,7 @@ import { Point, LineString, Polygon, Geometry } from 'ol/geom';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import { Feature } from 'ol';
-import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
+import { Draw, Modify, Select, Snap } from 'ol/interaction';
 import { DrawEvent } from 'ol/interaction/Draw';
 import { MapBrowserEvent } from 'ol';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
@@ -29,15 +29,15 @@ import { acknowledgeTermsOfUse } from '../../../../../src/store/shared/shared.ac
 import { simulateMapBrowserEvent } from '../../mapTestUtils';
 import { drawReducer } from '../../../../../src/store/draw/draw.reducer';
 import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
-import { MeasurementOverlay } from '../../../../../src/modules/olMap/components/MeasurementOverlay';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../../src/services/provider/attribution.provider';
 import { Layer } from 'ol/layer';
 import { Tools } from '../../../../../src/domain/tools';
 import { EventLike } from '../../../../../src/utils/storeUtils';
+import { BaOverlay } from '../../../../../src/modules/olMap/components/BaOverlay.js';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
-window.customElements.define(MeasurementOverlay.tag, MeasurementOverlay);
+window.customElements.define(BaOverlay.tag, BaOverlay);
 
 describe('OlMeasurementHandler', () => {
 	class MockClass {
@@ -70,6 +70,14 @@ describe('OlMeasurementHandler', () => {
 		}
 	};
 
+	const mapServiceMock = {
+		getSrid: () => 3857,
+		getLocalProjectedSrid: () => 25832,
+		getLocalProjectedSridExtent: () => [5, -80, 14, 80],
+		calcLength: () => 1,
+		calcArea: () => 1
+	};
+
 	const interactionStorageServiceMock = {
 		async store() {},
 		isValid() {
@@ -85,7 +93,7 @@ describe('OlMeasurementHandler', () => {
 	};
 
 	const translationServiceMock = { translate: (key) => key };
-	const environmentServiceMock = { isTouch: () => false, isStandalone: () => false };
+	const environmentServiceMock = { isTouch: () => false, isStandalone: () => false, isEmbedded: () => false };
 	const initialState = {
 		active: false,
 		statistic: { length: 0, area: 0 },
@@ -142,11 +150,7 @@ describe('OlMeasurementHandler', () => {
 		});
 		$injector
 			.registerSingleton('TranslationService', translationServiceMock)
-			.registerSingleton('MapService', {
-				getSrid: () => 3857,
-				getLocalProjectedSrid: () => 25832,
-				getLocalProjectedSridExtent: () => [5, -80, 14, 80]
-			})
+			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('InteractionStorageService', interactionStorageServiceMock)
@@ -258,7 +262,7 @@ describe('OlMeasurementHandler', () => {
 			});
 
 			describe('when termsOfUse are empty', () => {
-				it('emits not a notification', async () => {
+				it('does NOT emit a notification', async () => {
 					const store = setup();
 					const map = setupMap();
 					spyOn(translationServiceMock, 'translate').and.callFake(() => '');
@@ -276,12 +280,27 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		describe('when TermsOfUse already acknowledged', () => {
-			it('emits NOT a notification', async () => {
+			it('does NOT emit a notification', async () => {
 				const store = setup();
 				const map = setupMap();
 				const classUnderTest = new OlMeasurementHandler();
 				acknowledgeTermsOfUse();
 				expect(store.getState().shared.termsOfUseAcknowledged).toBeTrue();
+				classUnderTest.activate(map);
+
+				await TestUtils.timeout();
+				//check notification
+				expect(store.getState().notifications.latest).toBeFalsy();
+			});
+		});
+
+		describe('when embedded ', () => {
+			it('does NOT emit a notification', async () => {
+				const store = setup();
+				const map = setupMap();
+				const classUnderTest = new OlMeasurementHandler();
+				spyOn(environmentServiceMock, 'isEmbedded').and.returnValue(true);
+
 				classUnderTest.activate(map);
 
 				await TestUtils.timeout();
@@ -337,8 +356,8 @@ describe('OlMeasurementHandler', () => {
 
 				classUnderTest.activate(map);
 
-				// adds Interaction for select, draw, modify,snap, dragPan
-				expect(map.addInteraction).toHaveBeenCalledTimes(5);
+				// adds Interaction for select, draw, modify,snap
+				expect(map.addInteraction).toHaveBeenCalledTimes(4);
 			});
 
 			it('removes Interaction', () => {
@@ -350,8 +369,8 @@ describe('OlMeasurementHandler', () => {
 				classUnderTest.activate(map);
 				classUnderTest.deactivate(map, layerStub);
 
-				// removes Interaction for select, draw, modify, snap, dragPan
-				expect(map.removeInteraction).toHaveBeenCalledTimes(5);
+				// removes Interaction for select, draw, modify, snap
+				expect(map.removeInteraction).toHaveBeenCalledTimes(4);
 			});
 
 			it('adds a select interaction', () => {
@@ -400,18 +419,6 @@ describe('OlMeasurementHandler', () => {
 
 				expect(classUnderTest._snap).toBeInstanceOf(Snap);
 				expect(map.addInteraction).toHaveBeenCalledWith(classUnderTest._snap);
-			});
-
-			it('adds a dragPan interaction', () => {
-				setup();
-				const classUnderTest = new OlMeasurementHandler();
-				const map = setupMap();
-				map.addInteraction = jasmine.createSpy();
-
-				classUnderTest.activate(map);
-
-				expect(classUnderTest._dragPan).toBeInstanceOf(DragPan);
-				expect(map.addInteraction).toHaveBeenCalledWith(classUnderTest._dragPan);
 			});
 
 			it('initialize interactions and state objects only once on multiple activates', () => {
@@ -794,6 +801,7 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest.activate(map);
 			classUnderTest._sketchHandler.activate(feature);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			spyOn(mapServiceMock, 'calcLength').and.returnValue(1234);
 			feature.getGeometry().dispatchEvent('change');
 
 			expect(feature.get('partitions').length).toBe(12);
@@ -1094,12 +1102,13 @@ describe('OlMeasurementHandler', () => {
 				const feature = new Feature({ geometry: geometry });
 
 				classUnderTest.activate(map);
-				classUnderTest._vectorLayer.getSource().addFeature(feature); // -> first call of debounced _save, caused by vectorsource:addfeature-event
+				classUnderTest._vectorLayer.getSource().addFeature(feature); // -> first call of _save, caused by vectorsource:addfeature-event
+				feature.getGeometry().dispatchEvent('change'); // -> first call of debounced _save, caused by vectorsource:changefeature-event
 				feature.getGeometry().dispatchEvent('change'); // -> second call of debounced _save, caused by vectorsource:changefeature-event
 				jasmine.clock().tick(afterDebounceDelay);
 
-				expect(privateSaveSpy).toHaveBeenCalledTimes(1);
-				expect(storeSpy).toHaveBeenCalledTimes(1);
+				expect(privateSaveSpy).toHaveBeenCalledTimes(2);
+				expect(storeSpy).toHaveBeenCalledTimes(2);
 			});
 
 			it('stores once after a feature removed', async () => {
@@ -1120,8 +1129,8 @@ describe('OlMeasurementHandler', () => {
 				classUnderTest._vectorLayer.getSource().removeFeature(feature); // -> second call of debounced _save, caused by vectorsource:removefeature-event
 				jasmine.clock().tick(afterDebounceDelay);
 
-				expect(privateSaveSpy).toHaveBeenCalledTimes(1);
-				expect(storeSpy).toHaveBeenCalledTimes(1);
+				expect(privateSaveSpy).toHaveBeenCalledTimes(2);
+				expect(storeSpy).toHaveBeenCalledTimes(2);
 			});
 
 			it('stores only once after multiple changes of a feature', async () => {
@@ -1144,8 +1153,39 @@ describe('OlMeasurementHandler', () => {
 				feature.dispatchEvent('change');
 				jasmine.clock().tick(afterDebounceDelay);
 
-				expect(privateSaveSpy).toHaveBeenCalledTimes(1);
-				expect(storeSpy).toHaveBeenCalledTimes(1);
+				expect(privateSaveSpy).toHaveBeenCalledTimes(2);
+				expect(storeSpy).toHaveBeenCalledTimes(2);
+			});
+
+			describe('when in embedded mode', () => {
+				const withinDebounceDelay = OlMeasurementHandler.Debounce_Delay / 10;
+				it('stores after each change of a feature', async () => {
+					setup();
+					spyOn(environmentServiceMock, 'isEmbedded').and.returnValue(true);
+					const classUnderTest = new OlMeasurementHandler();
+					const map = setupMap();
+					const storeSpy = spyOn(interactionStorageServiceMock, 'store');
+					const privateSaveSpy = spyOn(classUnderTest, '_save').and.callThrough();
+					const geometry = new LineString([
+						[0, 0],
+						[1, 0]
+					]);
+					const feature = new Feature({ geometry: geometry });
+
+					classUnderTest.activate(map);
+					classUnderTest._vectorLayer.getSource().addFeature(feature); // -> call of debounced _save, caused by vectorsource:addfeature-event
+					feature.dispatchEvent('change'); // -> second call of debounced _save, caused by vectorsource:changefeature-event
+					jasmine.clock().tick(0);
+					feature.dispatchEvent('change');
+					jasmine.clock().tick(0);
+					feature.dispatchEvent('change');
+					jasmine.clock().tick(0);
+					feature.dispatchEvent('change');
+					jasmine.clock().tick(withinDebounceDelay);
+
+					expect(privateSaveSpy).toHaveBeenCalledTimes(5);
+					expect(storeSpy).toHaveBeenCalledTimes(5);
+				});
 			});
 		});
 
@@ -1373,6 +1413,8 @@ describe('OlMeasurementHandler', () => {
 
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			spyOn(mapServiceMock, 'calcLength').and.returnValue(500);
+			spyOn(mapServiceMock, 'calcArea').and.returnValue(0);
 			firstPointGeometry.setCoordinates([
 				[
 					[0, 0],
@@ -1381,8 +1423,8 @@ describe('OlMeasurementHandler', () => {
 				]
 			]);
 			feature.getGeometry().dispatchEvent('change');
-			expect(store.getState().measurement.statistic.length).toBeCloseTo(500, 0);
-			expect(store.getState().measurement.statistic.area).toBeCloseTo(0, 1);
+			expect(store.getState().measurement.statistic.length).toBe(500);
+			expect(store.getState().measurement.statistic.area).toBe(0);
 		});
 
 		it('change measureState, when mouse enters draggable overlay', () => {
@@ -1919,6 +1961,7 @@ describe('OlMeasurementHandler', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const layer = classUnderTest.activate(map);
 			layer.getSource().addFeature(feature);
+			spyOn(mapServiceMock, 'calcLength').and.returnValue(3);
 			finish();
 
 			map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
@@ -1928,7 +1971,7 @@ describe('OlMeasurementHandler', () => {
 			// select
 			classUnderTest._measureState.type = InteractionStateType.SELECT;
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
-			expect(store.getState().measurement.statistic.length).toBeCloseTo(3, 1);
+			expect(store.getState().measurement.statistic.length).toBe(3);
 			expect(store.getState().measurement.statistic.area).toBeCloseTo(1, 1);
 		});
 
@@ -1965,7 +2008,7 @@ describe('OlMeasurementHandler', () => {
 			// first select
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 1, 0);
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
-			expect(store.getState().measurement.statistic.length).toBeCloseTo(3, 1);
+			expect(store.getState().measurement.statistic.length).toBeCloseTo(1, 1);
 			expect(store.getState().measurement.statistic.area).toBeCloseTo(1, 1);
 
 			map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
@@ -1974,7 +2017,7 @@ describe('OlMeasurementHandler', () => {
 
 			// second select
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 5, 0);
-			expect(store.getState().measurement.statistic.length).toBeCloseTo(8, 0);
+			expect(store.getState().measurement.statistic.length).toBeCloseTo(2, 0);
 			expect(store.getState().measurement.statistic.area).toBeCloseTo(1, 1);
 		});
 

@@ -6,11 +6,11 @@ import { Injector } from '../../src/injection/core/injector.js';
 describe('injector configuration', () => {
 	it('registers the expected dependencies', () => {
 		expect($injector.isReady()).toBeTrue();
-		expect($injector.count()).toBe(71);
+		expect($injector.count()).toBe(78);
 
 		expect($injector.getScope('ProjectionService')).toBe(Injector.SCOPE_SINGLETON);
-		expect($injector.getScope('HttpService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('ConfigService')).toBe(Injector.SCOPE_SINGLETON);
+		expect($injector.getScope('HttpService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('EnvironmentService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('TranslationService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('CoordinateService')).toBe(Injector.SCOPE_PERLOOKUP);
@@ -18,7 +18,7 @@ describe('injector configuration', () => {
 		expect($injector.getScope('StoreService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('GeoResourceService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('TopicsService')).toBe(Injector.SCOPE_SINGLETON);
-		expect($injector.getScope('ElevationService')).toBe(Injector.SCOPE_PERLOOKUP);
+		expect($injector.getScope('ElevationService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('SearchResultService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('ShareService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('UnitsService')).toBe(Injector.SCOPE_PERLOOKUP);
@@ -40,7 +40,10 @@ describe('injector configuration', () => {
 		expect($injector.getScope('ChipsConfigurationService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('FeedbackService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('RoutingService')).toBe(Injector.SCOPE_SINGLETON);
+		expect($injector.getScope('AuthService')).toBe(Injector.SCOPE_SINGLETON);
 
+		expect($injector.getScope('GlobalErrorPlugin')).toBe(Injector.SCOPE_SINGLETON);
+		expect($injector.getScope('AuthPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('DrawPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('RoutingPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('TopicsPlugin')).toBe(Injector.SCOPE_SINGLETON);
@@ -54,6 +57,7 @@ describe('injector configuration', () => {
 		expect($injector.getScope('ContextClickPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('FeatureInfoPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('MainMenuPlugin')).toBe(Injector.SCOPE_SINGLETON);
+		expect($injector.getScope('NavigationRailPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('ImportPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('SearchPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('ExportMfpPlugin')).toBe(Injector.SCOPE_SINGLETON);
@@ -64,7 +68,8 @@ describe('injector configuration', () => {
 		expect($injector.getScope('ToolsPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('BeforeUnloadPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('IframeGeometryIdPlugin')).toBe(Injector.SCOPE_SINGLETON);
-		expect($injector.getScope('HistoryStatePlugin')).toBe(Injector.SCOPE_SINGLETON);
+		expect($injector.getScope('ObserveWcAttributesPlugin')).toBe(Injector.SCOPE_SINGLETON);
+		expect($injector.getScope('EncodeStatePlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('ObserveStateForEncodingPlugin')).toBe(Injector.SCOPE_SINGLETON);
 
 		// map module
@@ -74,6 +79,7 @@ describe('injector configuration', () => {
 		expect($injector.getScope('OlGeolocationHandler')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('OlHighlightLayerHandler')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('VectorLayerService')).toBe(Injector.SCOPE_PERLOOKUP);
+		expect($injector.getScope('RtVectorLayerService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('LayerService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('InteractionStorageService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('OverlayService')).toBe(Injector.SCOPE_PERLOOKUP);
@@ -82,6 +88,7 @@ describe('injector configuration', () => {
 		expect($injector.getScope('OlElevationProfileHandler')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('OlMfpHandler')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('OlRoutingHandler')).toBe(Injector.SCOPE_PERLOOKUP);
+		expect($injector.getScope('OlSelectableFeatureHandler')).toBe(Injector.SCOPE_PERLOOKUP);
 
 		// topic module
 		expect($injector.getScope('CatalogService')).toBe(Injector.SCOPE_SINGLETON);

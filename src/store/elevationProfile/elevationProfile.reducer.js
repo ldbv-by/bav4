@@ -1,16 +1,18 @@
 export const ELEVATION_PROFILE_ACTIVE_CHANGED = 'elevationProfile/activeChanged';
 export const ELEVATION_PROFILE_COORDINATES_CHANGED = 'elevationProfile/coordinatesChanged';
+export const ELEVATION_PROFILE_CHANGED = 'elevationProfile/changed';
 
 export const initialState = {
 	/**
-	 * @property {Array<Coordinate>}
-	 */
-	coordinates: [],
-
-	/**
+	 * Profile component is active
 	 * @property {boolean}
 	 */
-	active: false
+	active: false,
+	/**
+	 * Identifier of the referenced coordinates
+	 * @property {string}
+	 */
+	id: null
 };
 
 export const elevationProfileReducer = (state = initialState, action) => {
@@ -18,17 +20,17 @@ export const elevationProfileReducer = (state = initialState, action) => {
 
 	switch (type) {
 		case ELEVATION_PROFILE_ACTIVE_CHANGED: {
-			const { active, coordinates } = payload;
+			const { active } = payload;
 			return {
 				...state,
-				coordinates: coordinates ? [...coordinates] : [...state.coordinates],
 				active: active
 			};
 		}
-		case ELEVATION_PROFILE_COORDINATES_CHANGED: {
+
+		case ELEVATION_PROFILE_CHANGED: {
 			return {
 				...state,
-				coordinates: [...payload]
+				id: payload
 			};
 		}
 	}

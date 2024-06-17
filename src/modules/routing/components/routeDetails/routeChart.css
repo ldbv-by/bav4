@@ -36,7 +36,7 @@
 .chart-selector {
 	display: flex;
 	justify-content: space-between;
-	padding: 0.8em 1.2em;
+	padding: 0.8em 1.5em;
 	font-weight: bold;
 	border-top: 1px solid var(--header-background-color);
 	color: var(--text2);
@@ -94,6 +94,10 @@
 	user-select: none;
 	flex-grow: 1;
 	margin-left: 0.5em;
+}
+
+.legend_item_value {
+	white-space: nowrap;
 }
 
 .highlight {

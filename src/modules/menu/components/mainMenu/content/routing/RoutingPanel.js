@@ -5,12 +5,12 @@ import { html } from 'lit-html';
 import { AbstractMvuContentPanel } from '../AbstractMvuContentPanel';
 import css from './routingPanel.css';
 import { $injector } from '../../../../../../injection';
-import { setTab } from '../../../../../../store/mainMenu/mainMenu.action';
-import { TabIds } from '../../../../../../domain/mainMenu';
 import svg from './assets/arrowLeftShort.svg';
-import { setCategory, setRoute, setStatus, setWaypoints } from '../../../../../../store/routing/routing.action';
-import { RoutingStatusCodes } from '../../../../../../domain/routing';
 import { nothing } from '../../../../../../../node_modules/lit-html/lit-html';
+import { setCurrentTool } from '../../../../../../store/tools/tools.action';
+
+const Update_Route = 'update_route';
+const Update_Active = 'update_disabled';
 
 /**
  * Container for routing contents.
@@ -20,17 +20,32 @@ import { nothing } from '../../../../../../../node_modules/lit-html/lit-html';
  */
 export class RoutingPanel extends AbstractMvuContentPanel {
 	constructor() {
-		super({});
+		super({ route: null });
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
 	}
 
+	onInitialize() {
+		this.observe(
+			(state) => state.routing.route,
+			(route) => this.signal(Update_Route, route)
+		);
+	}
+
+	update(type, data, model) {
+		switch (type) {
+			case Update_Route:
+				return { ...model, route: data };
+			case Update_Active:
+				return { ...model, active: data };
+		}
+	}
+
 	createView(model) {
-		const { active } = model;
+		const { route, active } = model;
 		const translate = (key) => this._translationService.translate(key);
 		const close = () => {
-			console.warn("Closing RoutingPanel is temporary implemented by setTab('maps').");
-			setTab(TabIds.MAPS);
+			setCurrentTool(null);
 		};
 
 		const getRoutingContent = (active) => {
@@ -39,16 +54,23 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 
 			return active ? html`<ba-lazy-load .chunkName=${chunkName} .content=${content}></ba-lazy-load>` : nothing;
 		};
+		const getChips = (route) => {
+			const exportData = route?.data;
+			return route
+				? html` <ba-share-chip></ba-share-chip>
+						<ba-profile-chip></ba-profile-chip>
+						<ba-export-vector-data-chip .exportData=${exportData}></ba-export-vector-data-chip>`
+				: nothing;
+		};
 
-		return html`
-			<style>
+		return html` <style>
 				${css}
 			</style>
 			<div class="container">
 				<ul class="ba-list">
 					<li class="ba-list-item  ba-list-inline ba-list-item__header featureinfo-header">
 						<span class="ba-list-item__pre" style="position:relative;left:-1em;">
-							<ba-icon .icon="${svg}" .size=${4} .title=${translate('menu_misc_content_panel_routing_title')} @click=${close}></ba-icon>
+							<ba-icon .icon="${svg}" .size=${4} .title=${translate('menu_content_panel_close_button')} @click=${close}></ba-icon>
 						</span>
 						<span class="ba-list-item__text vertical-center">
 							<span class="ba-list-item__main-text" style="position:relative;left:-1em;"> Routing </span>
@@ -56,44 +78,8 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 					</li>
 				</ul>
 				<div>${getRoutingContent(active)}</div>
-				<div class="chips__container">
-					<ba-profile-chip></ba-profile-chip>
-				</div>
-				${this._getDemoContent()}
-			</div>
-		`;
-	}
-
-	/**
-	 * for development use only
-	 * @returns {import('../../../../../../../node_modules/lit-html/lit-html').TemplateResult}
-	 */
-	_getDemoContent() {
-		console.warn('Providing demo routing data is temporary and for development use only');
-		const onClickLoadRoutingData1 = () => {
-			setCategory('bvv-hike');
-			setStatus(RoutingStatusCodes.Start_Destination_Missing);
-			setRoute(null);
-			setWaypoints([]);
-		};
-
-		const onClickLoadRoutingData2 = () => {
-			setCategory('bvv-bike');
-			setStatus(RoutingStatusCodes.Ok);
-			setWaypoints([
-				[1328315.0062647895, 6089975.78297438],
-				[1310581.6157026286, 6045336.558455837],
-				[1310381.715706286, 6045436.855837]
-			]);
-		};
-
-		return html`<div class="demo">
-			<div class="demo_title">Demo</div>
-			<div class="demo_buttons">
-				<ba-button id="button1" .label=${'Reset routing data'} .type=${'primary'} @click=${onClickLoadRoutingData1}></ba-button>
-				<ba-button id="button2" .label=${"Load routing data ('bvv-bike'"} .type=${'primary'} @click=${onClickLoadRoutingData2}></ba-button>
-			</div>
-		</div>`;
+				<div class="chips__container">${getChips(route)}</div>
+			</div>`;
 	}
 
 	static get tag() {

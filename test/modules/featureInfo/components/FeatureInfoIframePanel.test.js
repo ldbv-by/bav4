@@ -146,7 +146,7 @@ describe('FeatureInfoIframePanel', () => {
 				expect(store.getState().highlight.features).toHaveSize(1);
 				expect(store.getState().highlight.features[0].data.geometry).toBe(geoJson);
 				expect(store.getState().highlight.features[0].data.geometryType).toBe(HighlightGeometryType.GEOJSON);
-				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.TEMPORARY);
+				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER_TMP);
 				expect(store.getState().highlight.features[0].id).toBe(TEMPORARY_FEATURE_HIGHLIGHT_ID);
 				expect(element.shadowRoot.querySelectorAll('.is-geometry')).toHaveSize(1);
 			});
@@ -200,6 +200,7 @@ describe('FeatureInfoIframePanel', () => {
 			it('clears the featureInfo in store', async () => {
 				const element = await setup({
 					featureInfo: {
+						querying: true,
 						current: [
 							{ title: 'title0', content: 'content0' },
 							{ title: 'title1', content: html`content1` }
@@ -210,7 +211,8 @@ describe('FeatureInfoIframePanel', () => {
 
 				iconButton.click();
 
-				expect(store.getState().featureInfo.current).toEqual([]);
+				expect(store.getState().featureInfo.current).toHaveSize(2);
+				expect(store.getState().featureInfo.querying).toBeFalse();
 			});
 		});
 	});

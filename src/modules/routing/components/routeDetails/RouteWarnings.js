@@ -8,6 +8,7 @@ import { MvuElement } from '../../../MvuElement';
 import css from './routeWarnings.css';
 import { $injector } from '../../../../injection/index';
 import { resetHighlightedSegments, setHighlightedSegments } from '../../../../store/routing/routing.action';
+import { RouteWarningCriticality } from '../../../../domain/routing';
 
 /**
  * @typedef {Object} WarningItem
@@ -85,12 +86,20 @@ export class RouteWarnings extends MvuElement {
 			setHighlightedSegments({ segments: warningItem.segments, zoomToExtent: zoomToExtent });
 		};
 
-		const warningClasses = { hint_icon: warningItem.criticality === 'Hint', warning_icon: warningItem.criticality !== 'Hint' };
+		const warningClasses = {
+			hint_icon: warningItem.criticality === RouteWarningCriticality.HINT,
+			warning_icon: warningItem.criticality !== RouteWarningCriticality.HINT
+		};
 		return html`<div class="item">
-			<div class="highlight${classMap(warningClasses)}" @mouseover=${() => highlightSegments(false)} @mouseout=${() => resetHighlightedSegments()}>
+			<div
+				class="highlight${classMap(warningClasses)}"
+				@pointerdown=${() => highlightSegments(false)}
+				@mouseover=${() => highlightSegments(false)}
+				@mouseout=${() => resetHighlightedSegments()}
+			>
 				<span class="noselect">${warningItem.message}</span>
+				<button class="geolocation-icon" title=${translate('routing_warnings_zoom')} @click=${() => highlightSegments(true)}></button>
 			</div>
-			<button class="geolocation-icon" title=${translate('routing_warnings_zoom')} @click=${() => highlightSegments(true)}></button>
 		</div>`;
 	}
 

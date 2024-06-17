@@ -2,15 +2,33 @@
 .help,
 .static,
 .floating {
+	cursor: default;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	background-color: var(--primary-bg-color);
+	border-radius: 0;
+	color: var(--text1);
+	padding: 0.3em 0.5em;
+	font-size: 1rem;
+}
+
+.help {
+	border: 1px solid var(--text2);
+}
+
+.distance,
+.area,
+.partition {
+	cursor: default;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 	background-color: rgba(140, 140, 140, 0.9);
 	border-radius: 0.25em;
 	color: var(--text3);
 	padding: 0.125em 0.5em;
 	font-size: 0.75rem;
-	cursor: default;
-	-webkit-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
 }
 
 .ba-overlay:after,
@@ -22,6 +40,20 @@
 	margin-left: -0.25em;
 	content: '';
 	border-top: 6px solid rgba(140, 140, 140, 0.9);
+}
+
+.static,
+.distance,
+.area {
+	background-color: rgba(255, 0, 0, 0.9);
+	/* cursor: move; */
+}
+
+.partition {
+	background: var(--primary-bg-color-05);
+	color: var(--text1);
+	padding: 0.1em 0.2em;
+	border-radius: 0;
 }
 
 .draggable {

@@ -5,6 +5,7 @@ import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
 import { layersReducer, createDefaultLayer } from '../../../../src/store/layers/layers.reducer';
 import { networkReducer } from '../../../../src/store/network/network.reducer';
+import { createNoInitialStateNavigationRailReducer } from '../../../../src/store/navigationRail/navigationRail.reducer';
 import { setFetching } from '../../../../src/store/network/network.action';
 import { searchReducer } from '../../../../src/store/search/search.reducer';
 import { EventLike } from '../../../../src/utils/storeUtils';
@@ -14,12 +15,23 @@ import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 import { REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME, TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { setQuery } from '../../../../src/store/search/search.action';
 import { setIsPortrait } from '../../../../src/store/media/media.action';
+import { authReducer } from '../../../../src/store/auth/auth.reducer';
 import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
 import { Tools } from '../../../../src/domain/tools';
+import { setSignedIn, setSignedOut } from '../../../../src/store/auth/auth.action';
 
 window.customElements.define(Header.tag, Header);
 
 let store;
+
+const authService = {
+	isSignedIn: () => {},
+	getRoles: () => {
+		return ['Plus', 'Admin'];
+	},
+	signIn: () => {},
+	signOut: () => {}
+};
 
 describe('Header', () => {
 	const setup = (state = {}, config = {}) => {
@@ -45,6 +57,12 @@ describe('Header', () => {
 				minWidth: true,
 				observeResponsiveParameter: true
 			},
+			navigationRail: {
+				open: false
+			},
+			auth: {
+				signedIn: false
+			},
 			...state
 		};
 		store = TestUtils.setupStoreAndDi(initialState, {
@@ -54,11 +72,14 @@ describe('Header', () => {
 			layers: layersReducer,
 			search: searchReducer,
 			tools: toolsReducer,
-			media: createNoInitialStateMediaReducer()
+			auth: authReducer,
+			media: createNoInitialStateMediaReducer(),
+			navigationRail: createNoInitialStateNavigationRailReducer()
 		});
 		$injector
 			.registerSingleton('EnvironmentService', { isEmbedded: () => embed, isStandalone: () => standalone })
-			.registerSingleton('TranslationService', { translate: (key) => key });
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('AuthService', authService);
 
 		return TestUtils.render(Header.tag);
 	};
@@ -75,7 +96,8 @@ describe('Header', () => {
 				layers: [],
 				isPortrait: false,
 				hasMinWidth: false,
-				searchTerm: null
+				searchTerm: null,
+				isOpenNavigationRail: false
 			});
 		});
 
@@ -137,8 +159,8 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.header')).toHaveSize(1);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__logo')).display).toBe('none');
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__logo')).display).toBe('block');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header_search_icon')).opacity).toBe('0');
 		});
 
@@ -257,6 +279,55 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelector('.header__emblem').getAttribute('title')).toBe('header_emblem_title_standalone');
 			expect(element.shadowRoot.querySelector('.header__emblem').getAttribute('href')).toBe('header_emblem_link_standalone');
 		});
+
+		it('renders for signIn state', async () => {
+			const element = await setup({ auth: { signedIn: true } });
+
+			expect(element.shadowRoot.querySelectorAll('.badge-signed-in')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.header__logo-badge').innerText).toBe(authService.getRoles().join(' '));
+
+			expect(element.shadowRoot.querySelectorAll('.badges-signed-in')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.badges-signed-in-icon')).toHaveSize(1);
+		});
+
+		it('layouts with open navigation rail', async () => {
+			const state = {
+				navigationRail: {
+					open: true
+				}
+			};
+
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(1);
+		});
+
+		it('layouts with closed navigation rail ', async () => {
+			const state = {
+				navigationRail: {
+					open: false
+				}
+			};
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
+		});
+	});
+
+	describe('when action-button clicked', () => {
+		it('toggle navigation rail', async () => {
+			const element = await setup();
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
+			expect(store.getState().navigationRail.open).toBe(false);
+
+			element.shadowRoot.querySelector('.action-button').click();
+
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(1);
+			expect(store.getState().navigationRail.open).toBe(true);
+
+			element.shadowRoot.querySelector('.action-button').click();
+
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
+			expect(store.getState().navigationRail.open).toBe(false);
+		});
 	});
 
 	describe('when menu button is Tab.MAPS', () => {
@@ -325,7 +396,7 @@ describe('Header', () => {
 			TestUtils.simulateTouchEvent('touchmove', closeButton, center.x, center.y + 55, 2);
 			TestUtils.simulateTouchEvent('touchend', closeButton, center.x, center.y + 200);
 
-			expect(element.shadowRoot.querySelectorAll('.header.is-open')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-open .header')).toHaveSize(1);
 		});
 
 		it('focused menu-button loses the focus after swipe', async () => {
@@ -564,17 +635,17 @@ describe('Header', () => {
 					const element = await setup(state);
 					const input = element.shadowRoot.querySelector('#input');
 
-					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
+					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerLogo')).display).toBe('block');
 
 					input.focus();
 
-					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('none');
+					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerLogo')).display).toBe('none');
 
 					input.blur();
 
 					jasmine.clock().tick(300 + 100);
 
-					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
+					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerLogo')).display).toBe('block');
 				});
 			});
 
@@ -651,7 +722,7 @@ describe('Header', () => {
 
 					const element = await setup(state);
 
-					const container = element.shadowRoot.querySelector('#headerMobile');
+					const container = element.shadowRoot.querySelector('#headerLogo');
 					expect(window.getComputedStyle(container).display).toBe('block');
 					expect(window.getComputedStyle(container).opacity).toBe('1');
 					element.shadowRoot.querySelector('#input').focus();
@@ -704,6 +775,31 @@ describe('Header', () => {
 			setQuery('foo');
 
 			expect(element.shadowRoot.querySelector('#input').getAttribute('value')).toBe('foo');
+		});
+	});
+
+	describe('when auth state change', () => {
+		it('updates the authButton Button', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelectorAll('.badge-signed-in')).toHaveSize(0);
+			expect(element.shadowRoot.querySelector('.header__logo-badge').innerText).toBe('header_logo_badge');
+			expect(element.shadowRoot.querySelectorAll('.badges-signed-in')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.badges-signed-in-icon')).toHaveSize(0);
+
+			setSignedIn();
+
+			expect(element.shadowRoot.querySelectorAll('.badge-signed-in')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.header__logo-badge').innerText).toBe(authService.getRoles().join(' '));
+			expect(element.shadowRoot.querySelectorAll('.badges-signed-in')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.badges-signed-in-icon')).toHaveSize(1);
+
+			setSignedOut();
+
+			expect(element.shadowRoot.querySelectorAll('.badge-signed-in')).toHaveSize(0);
+			expect(element.shadowRoot.querySelector('.header__logo-badge').innerText).toBe('header_logo_badge');
+			expect(element.shadowRoot.querySelectorAll('.badges-signed-in')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.badges-signed-in-icon')).toHaveSize(0);
 		});
 	});
 

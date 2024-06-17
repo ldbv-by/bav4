@@ -11,7 +11,7 @@ describe('Waypoints', () => {
 	const environmentServiceMock = {
 		isTouch: () => false
 	};
-	let store;
+
 	const setup = (state, properties) => {
 		const initialState = {
 			media: {
@@ -20,7 +20,7 @@ describe('Waypoints', () => {
 			...state
 		};
 
-		store = TestUtils.setupStoreAndDi(initialState, {
+		TestUtils.setupStoreAndDi(initialState, {
 			media: createNoInitialStateMediaReducer(),
 			routing: routingReducer
 		});
@@ -93,10 +93,24 @@ describe('Waypoints', () => {
 		it('renders action-button', async () => {
 			const element = await setup(defaultRoutingState);
 
-			const reverseIcon = element.shadowRoot.querySelector('#button_reverse');
+			const reverseButton = element.shadowRoot.querySelector('#button_reverse');
+			expect(reverseButton).toBeDefined();
+			expect(reverseButton.label).toBe('routing_waypoints_reverse');
 
-			expect(reverseIcon).toBeDefined();
-			expect(reverseIcon.title).toBe('routing_waypoints_reverse');
+			const clearButton = element.shadowRoot.querySelector('#button_clear');
+			expect(clearButton).toBeDefined();
+			expect(clearButton.label).toBe('routing_waypoints_remove_all');
+		});
+
+		it('when clear button is clicked', async () => {
+			const element = await setup(defaultRoutingState);
+			const clearButton = element.shadowRoot.querySelector('#button_clear');
+
+			expect(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).toHaveSize(3);
+
+			clearButton.click();
+
+			expect(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).toHaveSize(0);
 		});
 
 		it('renders draggable elements', async () => {
@@ -122,23 +136,29 @@ describe('Waypoints', () => {
 		});
 
 		describe('when action-button is pressed', () => {
-			it('reverse to order of all waypoints', async () => {
+			it('reverse the order of all waypoints', async () => {
 				const element = await setup(defaultRoutingState);
 
 				const actionButtonElement = element.shadowRoot.querySelector('#button_reverse');
-				expect(store.getState().routing.waypoints).toEqual([
-					[0, 0],
-					[1, 1],
-					[2, 2]
-				]);
+				const waypointsBefore = Array.from(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).map((w) => w.waypoint);
+				expect(waypointsBefore).toEqual(
+					jasmine.arrayWithExactContents([
+						{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
+						{ index: 1, listIndex: 3, point: [1, 1], isStart: false, isDestination: false },
+						{ index: 2, listIndex: 5, point: [2, 2], isStart: false, isDestination: true }
+					])
+				);
 
 				actionButtonElement.click();
 
-				expect(store.getState().routing.waypoints).toEqual([
-					[2, 2],
-					[1, 1],
-					[0, 0]
-				]);
+				const waypointsAfter = Array.from(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).map((w) => w.waypoint);
+				expect(waypointsAfter).toEqual(
+					jasmine.arrayWithExactContents([
+						{ index: 0, listIndex: 1, point: [2, 2], isStart: true, isDestination: false },
+						{ index: 1, listIndex: 3, point: [1, 1], isStart: false, isDestination: false },
+						{ index: 2, listIndex: 5, point: [0, 0], isStart: false, isDestination: true }
+					])
+				);
 			});
 		});
 
@@ -150,84 +170,101 @@ describe('Waypoints', () => {
 				it('removes the first waypoint', async () => {
 					const element = await setup(defaultRoutingState);
 					const waypointItemElements = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
-
-					expect(store.getState().routing.waypoints).toEqual([
-						[0, 0],
-						[1, 1],
-						[2, 2]
-					]);
+					expect(Array.from(waypointItemElements).map((w) => w.waypoint)).toEqual(
+						jasmine.arrayWithExactContents([
+							{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
+							{ index: 1, listIndex: 3, point: [1, 1], isStart: false, isDestination: false },
+							{ index: 2, listIndex: 5, point: [2, 2], isStart: false, isDestination: true }
+						])
+					);
 
 					waypointItemElements[0].dispatchEvent(createWaypointEvent('remove', waypointItemElements[0].waypoint));
 
-					expect(store.getState().routing.waypoints).toEqual([
-						[1, 1],
-						[2, 2]
-					]);
+					const waypointsAfter = Array.from(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).map((w) => w.waypoint);
+					expect(waypointsAfter).toEqual(
+						jasmine.arrayWithExactContents([
+							{ index: 0, listIndex: 1, point: [1, 1], isStart: true, isDestination: false },
+							{ index: 1, listIndex: 3, point: [2, 2], isStart: false, isDestination: true }
+						])
+					);
 				});
 
 				it('removes the first waypoint (out of two)', async () => {
 					const element = await setup(twoPointRoutingState);
 					const waypointItemElements = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 
-					expect(store.getState().routing.waypoints).toEqual([
-						[0, 0],
-						[1, 1]
-					]);
+					expect(Array.from(waypointItemElements).map((w) => w.waypoint)).toEqual(
+						jasmine.arrayWithExactContents([
+							{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
+							{ index: 1, listIndex: 3, point: [1, 1], isStart: false, isDestination: true }
+						])
+					);
 
 					waypointItemElements[0].dispatchEvent(createWaypointEvent('remove', waypointItemElements[0].waypoint));
-					expect(store.getState().routing.waypoints).toEqual([[1, 1]]);
-					expect(store.getState().routing.status).toBe(RoutingStatusCodes.Start_Missing);
+
+					// there should be no display of any single waypoint, whether start or destination
+					expect(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).toHaveSize(0);
 				});
 
 				it('removes the waypoint in the middle', async () => {
 					const element = await setup(defaultRoutingState);
 					const waypointItemElements = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 
-					expect(store.getState().routing.waypoints).toEqual([
-						[0, 0],
-						[1, 1],
-						[2, 2]
-					]);
+					expect(Array.from(waypointItemElements).map((w) => w.waypoint)).toEqual(
+						jasmine.arrayWithExactContents([
+							{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
+							{ index: 1, listIndex: 3, point: [1, 1], isStart: false, isDestination: false },
+							{ index: 2, listIndex: 5, point: [2, 2], isStart: false, isDestination: true }
+						])
+					);
 
 					waypointItemElements[1].dispatchEvent(createWaypointEvent('remove', waypointItemElements[1].waypoint));
 
-					expect(store.getState().routing.waypoints).toEqual([
-						[0, 0],
-						[2, 2]
-					]);
+					expect(Array.from(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).map((w) => w.waypoint)).toEqual(
+						jasmine.arrayWithExactContents([
+							{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
+							{ index: 1, listIndex: 3, point: [2, 2], isStart: false, isDestination: true }
+						])
+					);
 				});
 
 				it('removes the last waypoint', async () => {
 					const element = await setup(defaultRoutingState);
 					const waypointItemElements = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 
-					expect(store.getState().routing.waypoints).toEqual([
-						[0, 0],
-						[1, 1],
-						[2, 2]
-					]);
+					expect(Array.from(waypointItemElements).map((w) => w.waypoint)).toEqual(
+						jasmine.arrayWithExactContents([
+							{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
+							{ index: 1, listIndex: 3, point: [1, 1], isStart: false, isDestination: false },
+							{ index: 2, listIndex: 5, point: [2, 2], isStart: false, isDestination: true }
+						])
+					);
 
 					waypointItemElements[2].dispatchEvent(createWaypointEvent('remove', waypointItemElements[2].waypoint));
 
-					expect(store.getState().routing.waypoints).toEqual([
-						[0, 0],
-						[1, 1]
-					]);
+					expect(Array.from(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).map((w) => w.waypoint)).toEqual(
+						jasmine.arrayWithExactContents([
+							{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
+							{ index: 1, listIndex: 3, point: [1, 1], isStart: false, isDestination: true }
+						])
+					);
 				});
 
 				it('removes the last waypoint (out of two)', async () => {
 					const element = await setup(twoPointRoutingState);
 					const waypointItemElements = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 
-					expect(store.getState().routing.waypoints).toEqual([
-						[0, 0],
-						[1, 1]
-					]);
+					expect(Array.from(waypointItemElements).map((w) => w.waypoint)).toEqual(
+						jasmine.arrayWithExactContents([
+							{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
+							{ index: 1, listIndex: 3, point: [1, 1], isStart: false, isDestination: true }
+						])
+					);
 
 					waypointItemElements[0].dispatchEvent(createWaypointEvent('remove', waypointItemElements[1].waypoint));
 
-					expect(store.getState().routing.waypoints).toEqual([[0, 0]]);
-					expect(store.getState().routing.status).toBe(RoutingStatusCodes.Destination_Missing);
+					// there should be no display of any single waypoint, whether start or destination
+					expect(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).toHaveSize(0);
 				});
 			});
 
@@ -236,76 +273,92 @@ describe('Waypoints', () => {
 					const element = await setup(defaultRoutingState);
 					const waypointItemElements = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 
-					expect(store.getState().routing.waypoints).toEqual([
-						[0, 0],
-						[1, 1],
-						[2, 2]
-					]);
+					expect(Array.from(waypointItemElements).map((w) => w.waypoint)).toEqual(
+						jasmine.arrayWithExactContents([
+							{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
+							{ index: 1, listIndex: 3, point: [1, 1], isStart: false, isDestination: false },
+							{ index: 2, listIndex: 5, point: [2, 2], isStart: false, isDestination: true }
+						])
+					);
 
 					waypointItemElements[0].dispatchEvent(createWaypointEvent('increase', waypointItemElements[0].waypoint));
 
-					expect(store.getState().routing.waypoints).toEqual([
-						[1, 1],
-						[0, 0],
-						[2, 2]
-					]);
+					expect(Array.from(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).map((w) => w.waypoint)).toEqual(
+						jasmine.arrayWithExactContents([
+							{ index: 0, listIndex: 1, point: [1, 1], isStart: true, isDestination: false },
+							{ index: 1, listIndex: 3, point: [0, 0], isStart: false, isDestination: false },
+							{ index: 2, listIndex: 5, point: [2, 2], isStart: false, isDestination: true }
+						])
+					);
 				});
 
 				it('does NOT moves the first waypoint backward', async () => {
 					const element = await setup(defaultRoutingState);
 					const waypointItemElements = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 
-					expect(store.getState().routing.waypoints).toEqual([
-						[0, 0],
-						[1, 1],
-						[2, 2]
-					]);
+					expect(Array.from(waypointItemElements).map((w) => w.waypoint)).toEqual(
+						jasmine.arrayWithExactContents([
+							{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
+							{ index: 1, listIndex: 3, point: [1, 1], isStart: false, isDestination: false },
+							{ index: 2, listIndex: 5, point: [2, 2], isStart: false, isDestination: true }
+						])
+					);
 
 					waypointItemElements[0].dispatchEvent(createWaypointEvent('decrease', waypointItemElements[0].waypoint));
 
-					expect(store.getState().routing.waypoints).toEqual([
-						[0, 0],
-						[1, 1],
-						[2, 2]
-					]);
+					expect(Array.from(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).map((w) => w.waypoint)).toEqual(
+						jasmine.arrayWithExactContents([
+							{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
+							{ index: 1, listIndex: 3, point: [1, 1], isStart: false, isDestination: false },
+							{ index: 2, listIndex: 5, point: [2, 2], isStart: false, isDestination: true }
+						])
+					);
 				});
 
 				it('does NOT moves the last waypoint forward', async () => {
 					const element = await setup(defaultRoutingState);
 					const waypointItemElements = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 
-					expect(store.getState().routing.waypoints).toEqual([
-						[0, 0],
-						[1, 1],
-						[2, 2]
-					]);
+					expect(Array.from(waypointItemElements).map((w) => w.waypoint)).toEqual(
+						jasmine.arrayWithExactContents([
+							{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
+							{ index: 1, listIndex: 3, point: [1, 1], isStart: false, isDestination: false },
+							{ index: 2, listIndex: 5, point: [2, 2], isStart: false, isDestination: true }
+						])
+					);
 
 					waypointItemElements[2].dispatchEvent(createWaypointEvent('increase', waypointItemElements[2].waypoint));
 
-					expect(store.getState().routing.waypoints).toEqual([
-						[0, 0],
-						[1, 1],
-						[2, 2]
-					]);
+					expect(Array.from(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).map((w) => w.waypoint)).toEqual(
+						jasmine.arrayWithExactContents([
+							{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
+							{ index: 1, listIndex: 3, point: [1, 1], isStart: false, isDestination: false },
+							{ index: 2, listIndex: 5, point: [2, 2], isStart: false, isDestination: true }
+						])
+					);
 				});
 
 				it('moves the last waypoint backward', async () => {
 					const element = await setup(defaultRoutingState);
 					const waypointItemElements = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 
-					expect(store.getState().routing.waypoints).toEqual([
-						[0, 0],
-						[1, 1],
-						[2, 2]
-					]);
+					expect(Array.from(waypointItemElements).map((w) => w.waypoint)).toEqual(
+						jasmine.arrayWithExactContents([
+							{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
+							{ index: 1, listIndex: 3, point: [1, 1], isStart: false, isDestination: false },
+							{ index: 2, listIndex: 5, point: [2, 2], isStart: false, isDestination: true }
+						])
+					);
 
 					waypointItemElements[2].dispatchEvent(createWaypointEvent('decrease', waypointItemElements[2].waypoint));
 
-					expect(store.getState().routing.waypoints).toEqual([
-						[0, 0],
-						[2, 2],
-						[1, 1]
-					]);
+					expect(Array.from(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).map((w) => w.waypoint)).toEqual(
+						jasmine.arrayWithExactContents([
+							{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
+							{ index: 1, listIndex: 3, point: [2, 2], isStart: false, isDestination: false },
+							{ index: 2, listIndex: 5, point: [1, 1], isStart: false, isDestination: true }
+						])
+					);
 				});
 			});
 		});
@@ -541,9 +594,13 @@ describe('Waypoints', () => {
 				neighborPlaceholder.classList.add('over');
 				neighborPlaceholder.dispatchEvent(dropEvt);
 
-				expect(store.getState().routing.waypoints[0]).toEqual([1, 1]);
-				expect(store.getState().routing.waypoints[1]).toEqual([0, 0]);
-				expect(store.getState().routing.waypoints[2]).toEqual([2, 2]);
+				expect(Array.from(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).map((w) => w.waypoint)).toEqual(
+					jasmine.arrayWithExactContents([
+						{ index: 0, listIndex: 1, point: [1, 1], isStart: true, isDestination: false },
+						{ index: 1, listIndex: 3, point: [0, 0], isStart: false, isDestination: false },
+						{ index: 2, listIndex: 5, point: [2, 2], isStart: false, isDestination: true }
+					])
+				);
 				expect(neighborPlaceholder.classList.contains('over')).toBeFalse();
 			});
 
@@ -566,9 +623,13 @@ describe('Waypoints', () => {
 				neighborPlaceholder.classList.add('over');
 				neighborPlaceholder.dispatchEvent(dropEvt);
 
-				expect(store.getState().routing.waypoints[0]).toEqual([0, 0]);
-				expect(store.getState().routing.waypoints[1]).toEqual([2, 2]);
-				expect(store.getState().routing.waypoints[2]).toEqual([1, 1]);
+				expect(Array.from(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).map((w) => w.waypoint)).toEqual(
+					jasmine.arrayWithExactContents([
+						{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
+						{ index: 1, listIndex: 3, point: [2, 2], isStart: false, isDestination: false },
+						{ index: 2, listIndex: 5, point: [1, 1], isStart: false, isDestination: true }
+					])
+				);
 				expect(neighborPlaceholder.classList.contains('over')).toBeFalse();
 			});
 
@@ -591,21 +652,15 @@ describe('Waypoints', () => {
 				dropOnWaypointElement.classList.add('over');
 				dropOnWaypointElement.dispatchEvent(dropEvt);
 
-				expect(store.getState().routing.waypoints[0]).toEqual([0, 0]);
-				expect(store.getState().routing.waypoints[1]).toEqual([1, 1]);
-				expect(store.getState().routing.waypoints[2]).toEqual([2, 2]);
+				expect(Array.from(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).map((w) => w.waypoint)).toEqual(
+					jasmine.arrayWithExactContents([
+						{ index: 0, listIndex: 1, point: [0, 0], isStart: true, isDestination: false },
+						{ index: 1, listIndex: 3, point: [1, 1], isStart: false, isDestination: false },
+						{ index: 2, listIndex: 5, point: [2, 2], isStart: false, isDestination: true }
+					])
+				);
 				expect(dropOnWaypointElement.classList.contains('over')).toBeFalse();
 			});
-		});
-	});
-
-	describe('when disconnected', () => {
-		it('removes all observers', async () => {
-			const element = await setup();
-
-			element.onDisconnect(); // we call onDisconnect manually
-
-			expect(element._storeSubscriptions).toHaveSize(0);
 		});
 	});
 });

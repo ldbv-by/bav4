@@ -33,6 +33,13 @@ export const SEARCH_RESULT_HIGHLIGHT_FEATURE_ID = 'searchResultHighlightFeatureI
  */
 export const SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID = 'searchResultTemporaryHighlightFeatureId';
 /**
+ * This plugin currently
+ * - adds a layer for displaying all highlight features (needed for all kinds of highlight visualization), exclusive here
+ * - adds a highlight feature when the QueryParameter "CROSSHAIR" is available
+ * - does the highlight feature management for the feature info visualization
+ * - does the highlight feature management for the search result visualization
+ *
+ * Note: Other plugins are allowed to manage their highlight feature management on their own.
  * @class
  * @author taulinger
  */
@@ -47,7 +54,7 @@ export class HighlightPlugin extends BaPlugin {
 	 * @param {Store} store
 	 */
 	async register(store) {
-		const highlightFeatureId = createUniqueId();
+		const highlightFeatureId = `${createUniqueId()}`;
 		const translate = (key) => this._translationService.translate(key);
 
 		const onChange = (active) => {
@@ -99,10 +106,10 @@ export class HighlightPlugin extends BaPlugin {
 		if (crosshair) {
 			setTimeout(() => {
 				addHighlightFeatures({
-					id: createUniqueId(),
+					id: `${createUniqueId()}`,
 					label: translate('global_marker_symbol_label'),
 					data: { coordinate: store.getState().position.center },
-					type: HighlightFeatureType.DEFAULT
+					type: HighlightFeatureType.MARKER
 				});
 			});
 		}

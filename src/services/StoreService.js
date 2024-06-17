@@ -22,6 +22,7 @@ import { measurementReducer } from '../store/measurement/measurement.reducer';
 import { pointerReducer } from '../store/pointer/pointer.reducer';
 import { mapContextMenuReducer } from '../store/mapContextMenu/mapContextMenu.reducer';
 import { createMainMenuReducer } from '../store/mainMenu/mainMenu.reducer';
+import { createNavigationRailReducer } from '../store/navigationRail/navigationRail.reducer';
 import { featureInfoReducer } from '../store/featureInfo/featureInfo.reducer';
 import { importReducer } from '../store/import/import.reducer';
 import { mfpReducer } from '../store/mfp/mfp.reducer';
@@ -31,6 +32,8 @@ import { chipsReducer } from '../store/chips/chips.reducer';
 import { stateForEncodingReducer } from '../store/stateForEncoding/stateForEncoding.reducer';
 import { iframeContainerReducer } from '../store/iframeContainer/iframeContainer.reducer';
 import { routingReducer } from '../store/routing/routing.reducer';
+import { authReducer } from '../store/auth/auth.reducer';
+import { wcAttributeReducer } from '../store/wcAttribute/wcAttribute.reducer';
 
 /**
  * Service which configures, initializes and holds the redux store.
@@ -48,6 +51,7 @@ export class StoreService {
 			pointer: pointerReducer,
 			position: positionReducer,
 			mainMenu: createMainMenuReducer(),
+			navigationRail: createNavigationRailReducer(),
 			tools: toolsReducer,
 			modal: modalReducer,
 			layers: layersReducer,
@@ -71,13 +75,17 @@ export class StoreService {
 			chips: chipsReducer,
 			stateForEncoding: stateForEncodingReducer,
 			iframeContainer: iframeContainerReducer,
-			routing: routingReducer
+			routing: routingReducer,
+			auth: authReducer,
+			wcAttribute: wcAttributeReducer
 		});
 
 		this._store = createStore(rootReducer);
 
 		$injector.onReady(async () => {
 			const {
+				GlobalErrorPlugin: globalErrorPlugin,
+				AuthPlugin: authPlugin,
 				LayersPlugin: layersPlugin,
 				TopicsPlugin: topicsPlugin,
 				ChipsPlugin: chipsPlugin,
@@ -91,6 +99,7 @@ export class StoreService {
 				MediaPlugin: mediaPlugin,
 				FeatureInfoPlugin: featureInfoPlugin,
 				MainMenuPlugin: mainMenuPlugin,
+				NavigationRailPlugin: navigationRailPlugin,
 				ImportPlugin: importPlugin,
 				SearchPlugin: searchPlugin,
 				ExportMfpPlugin: exportMfpPlugin,
@@ -101,9 +110,12 @@ export class StoreService {
 				ToolsPlugin: toolsPlugin,
 				BeforeUnloadPlugin: beforeUnloadPlugin,
 				IframeGeometryIdPlugin: iframeGeometryIdPlugin,
-				HistoryStatePlugin: historyStatePlugin,
+				ObserveWcAttributesPlugin: observeWcAttributesPlugin,
+				EncodeStatePlugin: encodeStatePlugin,
 				ObserveStateForEncodingPlugin: observeStateForEncodingPlugin
 			} = $injector.inject(
+				'GlobalErrorPlugin',
+				'AuthPlugin',
 				'TopicsPlugin',
 				'ChipsPlugin',
 				'LayersPlugin',
@@ -117,6 +129,7 @@ export class StoreService {
 				'MediaPlugin',
 				'FeatureInfoPlugin',
 				'MainMenuPlugin',
+				'NavigationRailPlugin',
 				'ImportPlugin',
 				'SearchPlugin',
 				'ExportMfpPlugin',
@@ -127,12 +140,15 @@ export class StoreService {
 				'ToolsPlugin',
 				'BeforeUnloadPlugin',
 				'IframeGeometryIdPlugin',
-				'HistoryStatePlugin',
+				'ObserveWcAttributesPlugin',
+				'EncodeStatePlugin',
 				'ObserveStateForEncodingPlugin'
 			);
 
 			setTimeout(async () => {
 				//register plugins
+				await globalErrorPlugin.register(this._store);
+				await authPlugin.register(this._store);
 				await mediaPlugin.register(this._store);
 				await topicsPlugin.register(this._store);
 				await chipsPlugin.register(this._store);
@@ -146,6 +162,7 @@ export class StoreService {
 				await highlightPlugin.register(this._store);
 				await featureInfoPlugin.register(this._store);
 				await mainMenuPlugin.register(this._store);
+				await navigationRailPlugin.register(this._store);
 				await importPlugin.register(this._store);
 				await searchPlugin.register(this._store);
 				await exportMfpPlugin.register(this._store);
@@ -156,7 +173,8 @@ export class StoreService {
 				await toolsPlugin.register(this._store);
 				await beforeUnloadPlugin.register(this._store);
 				await iframeGeometryIdPlugin.register(this._store);
-				await historyStatePlugin.register(this._store);
+				await observeWcAttributesPlugin.register(this._store);
+				await encodeStatePlugin.register(this._store);
 				await observeStateForEncodingPlugin.register(this._store); // should be registered as last plugin
 			});
 		});

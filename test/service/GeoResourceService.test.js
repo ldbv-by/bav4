@@ -23,6 +23,7 @@ import { $injector } from '../../src/injection';
 import { loadBvvFileStorageResourceById } from '../../src/services/provider/fileStorage.provider';
 import { TestUtils } from '../test-utils';
 import { createDefaultLayerProperties, layersReducer } from '../../src/store/layers/layers.reducer';
+import { bvvAuthResponseInterceptorProvider } from '../../src/services/provider/auth.provider';
 
 describe('GeoResourceService', () => {
 	const loadExampleGeoResources = async () => {
@@ -50,15 +51,19 @@ describe('GeoResourceService', () => {
 	const environmentService = {
 		isStandalone: () => {}
 	};
+	const authService = {
+		isSignedIn: () => {},
+		getRoles: () => {}
+	};
 
 	let store;
 
-	const setup = (provider = loadExampleGeoResources, byIdProviders, state = {}) => {
+	const setup = (provider = loadExampleGeoResources, byIdProviders, authResponseInterceptorProvider, state = {}) => {
 		store = TestUtils.setupStoreAndDi(state, {
 			layers: layersReducer
 		});
-		$injector.registerSingleton('EnvironmentService', environmentService);
-		return new GeoResourceService(provider, byIdProviders);
+		$injector.registerSingleton('EnvironmentService', environmentService).registerSingleton('AuthService', authService);
+		return new GeoResourceService(provider, byIdProviders, authResponseInterceptorProvider);
 	};
 	const xyzGeoResource = new XyzGeoResource('xyzId', 'xyzLabel', 'xyzUrl');
 
@@ -91,15 +96,18 @@ describe('GeoResourceService', () => {
 			const instanceUnderTest = new GeoResourceService();
 			expect(instanceUnderTest._provider).toEqual(loadBvvGeoResources);
 			expect(instanceUnderTest._byIdProvider).toEqual([loadExternalGeoResource, loadBvvFileStorageResourceById, loadBvvGeoResourceById]);
+			expect(instanceUnderTest._authResponseInterceptorProvider).toEqual(bvvAuthResponseInterceptorProvider);
 		});
 
-		it('initializes the service with custom provider', async () => {
+		it('initializes the service with custom providers', async () => {
 			const customProvider = async () => {};
 			const customByIdProvider0 = async () => {};
 			const customByIdProvider1 = async () => {};
-			const instanceUnderTest = setup(customProvider, [customByIdProvider0, customByIdProvider1]);
+			const customAuthResponseInterceptorProvider = () => {};
+			const instanceUnderTest = setup(customProvider, [customByIdProvider0, customByIdProvider1], customAuthResponseInterceptorProvider);
 			expect(instanceUnderTest._provider).toEqual(customProvider);
 			expect(instanceUnderTest._byIdProvider).toEqual([customByIdProvider0, customByIdProvider1]);
+			expect(instanceUnderTest._authResponseInterceptorProvider).toEqual(customAuthResponseInterceptorProvider);
 		});
 
 		it('just provides GeoResources when already initialized', async () => {
@@ -126,14 +134,14 @@ describe('GeoResourceService', () => {
 				expect(georesources.length).toBe(4);
 				expect(georesources[0].id).toBe(FALLBACK_GEORESOURCE_ID_0);
 				expect(georesources[0].label).toBe(FALLBACK_GEORESOURCE_LABEL_0);
-				expect(georesources[0].getAttribution()[0].copyright[0].label).toBe('Bundesamt für Kartographie und Geodäsie (2022)');
-				expect(georesources[0].getAttribution()[0].copyright[0].url).toBe('http://www.bkg.bund.de/');
+				expect(georesources[0].getAttribution()[0].copyright[0].label).toBe('Bundesamt für Kartographie und Geodäsie (2024)');
+				expect(georesources[0].getAttribution()[0].copyright[0].url).toBe('https://www.bkg.bund.de/');
 				expect(georesources[0].getAttribution()[0].copyright[1].label).toBe('Datenquellen');
 				expect(georesources[0].getAttribution()[0].copyright[1].url).toBe('https://sg.geodatenzentrum.de/web_public/Datenquellen_TopPlus_Open.pdf');
 				expect(georesources[1].id).toBe(FALLBACK_GEORESOURCE_ID_1);
 				expect(georesources[1].label).toBe(FALLBACK_GEORESOURCE_LABEL_1);
-				expect(georesources[1].getAttribution()[0].copyright[0].label).toBe('Bundesamt für Kartographie und Geodäsie (2022)');
-				expect(georesources[1].getAttribution()[0].copyright[0].url).toBe('http://www.bkg.bund.de/');
+				expect(georesources[1].getAttribution()[0].copyright[0].label).toBe('Bundesamt für Kartographie und Geodäsie (2024)');
+				expect(georesources[1].getAttribution()[0].copyright[0].url).toBe('https://www.bkg.bund.de/');
 				expect(georesources[1].getAttribution()[0].copyright[1].label).toBe('Datenquellen');
 				expect(georesources[1].getAttribution()[0].copyright[1].url).toBe('https://sg.geodatenzentrum.de/web_public/Datenquellen_TopPlus_Open.pdf');
 				expect(warnSpy).toHaveBeenCalledWith('GeoResources could not be fetched from backend. Using fallback geoResources ...');
@@ -246,7 +254,7 @@ describe('GeoResourceService', () => {
 			const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: geoResourceId0 };
 			const layerProperties1 = { ...createDefaultLayerProperties(), id: 'id1', geoResourceId: geoResourceId1 };
 			const geoResource0 = new WmsGeoResource(geoResourceId0, 'Wms', 'https://some.url', 'someLayer', 'image/png');
-			const instanceUnderTest = setup(null, null, {
+			const instanceUnderTest = setup(null, null, null, {
 				layers: {
 					active: [layerProperties0, layerProperties1]
 				}
@@ -288,6 +296,206 @@ describe('GeoResourceService', () => {
 		});
 	});
 
+	describe('isAllowed', () => {
+		describe('GeoResource is unknown', () => {
+			it('returns `true`', async () => {
+				const geoResourceId = 'id';
+				const instanceUnderTest = setup();
+				spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(null);
+
+				expect(instanceUnderTest.isAllowed(geoResourceId)).toBeTrue();
+			});
+		});
+
+		describe('User is signed in', () => {
+			describe('and has the wrong role', () => {
+				it('returns `false`', async () => {
+					spyOn(authService, 'getRoles').and.returnValue(['TEST']);
+					const geoResourceId = 'id';
+					const geoResource = { authRoles: ['FOO', 'BAR'] };
+					const instanceUnderTest = setup();
+					spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+
+					expect(instanceUnderTest.isAllowed(geoResourceId)).toBeFalse();
+				});
+			});
+			describe('and has a suitable role', () => {
+				it('returns `true`', async () => {
+					spyOn(authService, 'getRoles').and.returnValue(['BAR']);
+					const geoResourceId = 'id';
+					const geoResource = { authRoles: ['FOO', 'BAR'] };
+					const instanceUnderTest = setup();
+					spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+
+					expect(instanceUnderTest.isAllowed(geoResourceId)).toBeTrue();
+				});
+			});
+			describe('and GeoResource is NOT restricted', () => {
+				it('returns `true`', async () => {
+					spyOn(authService, 'getRoles').and.returnValue(['BAR']);
+					const geoResourceId = 'id';
+					const geoResource = { authRoles: [] };
+					const instanceUnderTest = setup();
+					spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+
+					expect(instanceUnderTest.isAllowed(geoResourceId)).toBeTrue();
+				});
+			});
+		});
+
+		describe('AggregateGeoResource', () => {
+			describe('the AggregateGeoResource defines roles', () => {
+				it('returns `false`', async () => {
+					const aggGeoResourceId = 'aggGeoResourceId';
+					const instanceUnderTest = setup();
+					spyOn(authService, 'getRoles').and.returnValue(['TEST']);
+					spyOn(instanceUnderTest, 'byId').and.callFake((id) => {
+						switch (id) {
+							case aggGeoResourceId:
+								return new AggregateGeoResource(aggGeoResourceId, 'label', ['geoResourceId0', 'geoResourceId1']).setAuthRoles(['TEST']);
+						}
+					});
+
+					expect(instanceUnderTest.isAllowed(aggGeoResourceId)).toBeTrue();
+				});
+			});
+
+			describe('one or more referenced GeoResources are accessible', () => {
+				it('returns `false`', async () => {
+					const aggGeoResourceId = 'aggGeoResourceId';
+					const geoResourceId0 = 'geoResourceId0';
+					const geoResourceId1 = 'geoResourceId1';
+					const instanceUnderTest = setup();
+					spyOn(authService, 'getRoles').and.returnValue([]);
+					spyOn(instanceUnderTest, 'byId').and.callFake((id) => {
+						switch (id) {
+							case aggGeoResourceId:
+								return new AggregateGeoResource(aggGeoResourceId, 'label', [geoResourceId0, geoResourceId1]);
+							case geoResourceId0:
+								return { authRoles: [] };
+							case geoResourceId1:
+								return { authRoles: ['FOO'] };
+						}
+					});
+
+					expect(instanceUnderTest.isAllowed(aggGeoResourceId)).toBeFalse();
+				});
+			});
+
+			describe('all referenced GeoResources are accessible', () => {
+				it('returns `false`', async () => {
+					const aggGeoResourceId = 'aggGeoResourceId';
+					const geoResourceId0 = 'geoResourceId0';
+					const geoResourceId1 = 'geoResourceId1';
+					const instanceUnderTest = setup();
+					spyOn(authService, 'getRoles').and.returnValue([]);
+					spyOn(instanceUnderTest, 'byId').and.callFake((id) => {
+						switch (id) {
+							case aggGeoResourceId:
+								return new AggregateGeoResource(aggGeoResourceId, 'label', [geoResourceId0, geoResourceId1]);
+							case geoResourceId0:
+								return { authRoles: [] };
+							case geoResourceId1:
+								return { authRoles: [] };
+						}
+					});
+
+					expect(instanceUnderTest.isAllowed(aggGeoResourceId)).toBeTrue();
+				});
+			});
+		});
+	});
+
+	describe('getKeywords', () => {
+		it('returns the auth roles as keywords', async () => {
+			const geoResourceId = 'id';
+			const geoResource = { authRoles: ['Foo', 'Bar'] };
+			const instanceUnderTest = setup();
+			spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+
+			expect(instanceUnderTest.getKeywords(geoResourceId)).toEqual(['Foo', 'Bar']);
+		});
+		describe('and GeoResource is unknown', () => {
+			it('returns an empty list', async () => {
+				spyOn(authService, 'isSignedIn').and.returnValue(true);
+				const geoResourceId = 'id';
+				const instanceUnderTest = setup();
+				spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(null);
+
+				expect(instanceUnderTest.getKeywords(geoResourceId)).toEqual([]);
+			});
+		});
+
+		describe('AggregateGeoResource', () => {
+			describe('the AggregateGeoResource contains roles on its own', () => {
+				it('returns the auth roles as keywords', async () => {
+					const aggGeoResourceId = 'aggGeoResourceId';
+					const instanceUnderTest = setup();
+					spyOn(instanceUnderTest, 'byId').and.callFake((id) => {
+						switch (id) {
+							case aggGeoResourceId:
+								return new AggregateGeoResource(aggGeoResourceId, 'label', ['geoResourceId0', 'geoResourceId1']).setAuthRoles(['TEST']);
+						}
+					});
+
+					expect(instanceUnderTest.getKeywords(aggGeoResourceId)).toEqual(['TEST']);
+				});
+			});
+
+			describe('the AggregateGeoResource does not contain roles', () => {
+				it('returns a unique list of all keywords of the referenced GeoResources', async () => {
+					const aggGeoResourceId = 'aggGeoResourceId';
+					const geoResourceId0 = 'geoResourceId0';
+					const geoResourceId1 = 'geoResourceId1';
+					const instanceUnderTest = setup();
+					spyOn(instanceUnderTest, 'byId').and.callFake((id) => {
+						switch (id) {
+							case aggGeoResourceId:
+								return new AggregateGeoResource(aggGeoResourceId, 'label', [geoResourceId0, geoResourceId1]);
+							case geoResourceId0:
+								return { authRoles: ['FOO'] };
+							case geoResourceId1:
+								return { authRoles: ['FOO', 'BAR'] };
+						}
+					});
+
+					expect(instanceUnderTest.getKeywords(aggGeoResourceId)).toEqual(['FOO', 'BAR']);
+				});
+			});
+		});
+	});
+
+	describe('getAuthResponseInterceptorForGeoResource', () => {
+		describe('and GeoResource is known', () => {
+			it('returns a response interceptor for that GeoResource', async () => {
+				const geoResourceId = 'id';
+				const geoResource = { authRoles: ['TEST'] };
+				const responseInterceptor = () => {};
+				const authResponseInterceptorProvider = jasmine.createSpy().withArgs(['TEST'], geoResourceId).and.returnValue(responseInterceptor);
+				const instanceUnderTest = setup(null, null, authResponseInterceptorProvider);
+				spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+
+				const result = instanceUnderTest.getAuthResponseInterceptorForGeoResource(geoResourceId);
+
+				expect(result).toEqual(responseInterceptor);
+			});
+
+			describe('and GeoResource is unknown', () => {
+				it('returns `false`', async () => {
+					const geoResourceId = 'id';
+					const responseInterceptor = () => {};
+					const authResponseInterceptorProvider = jasmine.createSpy().withArgs([], geoResourceId).and.returnValue(responseInterceptor);
+					const instanceUnderTest = setup(null, null, authResponseInterceptorProvider);
+					spyOn(instanceUnderTest, 'byId').withArgs(geoResourceId).and.returnValue(null);
+
+					const result = instanceUnderTest.getAuthResponseInterceptorForGeoResource(geoResourceId);
+
+					expect(result).toEqual(responseInterceptor);
+				});
+			});
+		});
+	});
+
 	describe('_proxify', () => {
 		it('returns an observable GeoResource', () => {
 			const instanceUnderTest = setup();
@@ -309,7 +517,7 @@ describe('GeoResourceService', () => {
 				const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: geoResourceId0 };
 				const layerProperties1 = { ...createDefaultLayerProperties(), id: 'id1', geoResourceId: geoResourceId1 };
 				const geoResource0 = new WmsGeoResource(geoResourceId0, 'Wms', 'https://some.url', 'someLayer', 'image/png');
-				const instanceUnderTest = setup(null, null, {
+				const instanceUnderTest = setup(null, null, null, {
 					layers: {
 						active: [layerProperties0, layerProperties1]
 					}
@@ -328,7 +536,7 @@ describe('GeoResourceService', () => {
 				const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: geoResourceId0 };
 				const layerProperties1 = { ...createDefaultLayerProperties(), id: 'id1', geoResourceId: geoResourceId1 };
 				const geoResource0 = new WmsGeoResource(geoResourceId0, 'Wms', 'https://some.url', 'someLayer', 'image/png');
-				const instanceUnderTest = setup(null, null, {
+				const instanceUnderTest = setup(null, null, null, {
 					layers: {
 						active: [layerProperties0, layerProperties1]
 					}

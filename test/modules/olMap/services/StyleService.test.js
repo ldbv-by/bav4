@@ -3,19 +3,20 @@ import { $injector } from '../../../../src/injection';
 import { TestUtils } from '../../../test-utils.js';
 import { StyleService, StyleTypes } from '../../../../src/modules/olMap/services/StyleService';
 import { OverlayService } from '../../../../src/modules/olMap/services/OverlayService';
-import { Polygon, Point } from 'ol/geom';
+import { Polygon, Point, LineString } from 'ol/geom';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
-import { Icon, Style, Text } from 'ol/style';
+import { Fill, Icon, Stroke, Style, Text } from 'ol/style';
 import { measurementReducer } from '../../../../src/store/measurement/measurement.reducer';
 import VectorLayer from 'ol/layer/Vector';
+import CircleStyle from 'ol/style/Circle.js';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
 
 describe('StyleTypes', () => {
 	it('provides an enum of all valid StyleTypes', () => {
-		expect(Object.keys(StyleTypes).length).toBe(11);
+		expect(Object.keys(StyleTypes).length).toBe(14);
 
 		expect(StyleTypes.NULL).toBe('null');
 		expect(StyleTypes.DEFAULT).toBe('default');
@@ -23,11 +24,14 @@ describe('StyleTypes', () => {
 		expect(StyleTypes.HIGHLIGHT).toBe('highlight');
 		expect(StyleTypes.HIGHLIGHT_TEMP).toBe('highlight_temp');
 		expect(StyleTypes.DRAW).toBe('draw');
+		expect(StyleTypes.POINT).toBe('point');
 		expect(StyleTypes.MARKER).toBe('marker');
 		expect(StyleTypes.TEXT).toBe('text');
+		expect(StyleTypes.ANNOTATION).toBe('annotation');
 		expect(StyleTypes.LINE).toBe('line');
 		expect(StyleTypes.POLYGON).toBe('polygon');
 		expect(StyleTypes.GEOJSON).toBe('geojson');
+		expect(StyleTypes.ROUTING).toBe('routing');
 	});
 });
 
@@ -39,7 +43,11 @@ describe('StyleService', () => {
 		reset: null,
 		fileSaveResult: { adminId: 'init', fileId: 'init' }
 	};
-	const mapServiceMock = { getSrid: () => 3857, getLocalProjectedSrid: () => 25832 };
+	const mapServiceMock = {
+		getSrid: () => 3857,
+		getLocalProjectedSrid: () => 25832,
+		calcLength: () => {}
+	};
 
 	const environmentServiceMock = {
 		isTouch() {},
@@ -110,17 +118,34 @@ describe('StyleService', () => {
 			expect(instanceUnderTest._detectStyleType(feature4)).toEqual(StyleTypes.GEOJSON);
 		});
 
+		it('detects routing as type from olFeature', () => {
+			const feature = { getId: () => 'routing_123' };
+
+			expect(instanceUnderTest._detectStyleType(feature)).toEqual(StyleTypes.ROUTING);
+		});
+
+		it('detects type attribute as type from olFeature', () => {
+			const getFeature = (typeName) => {
+				return { getId: () => 'some', getStyle: () => null, getKeys: () => [], get: (key) => (key === 'type' ? typeName : null) };
+			};
+
+			expect(instanceUnderTest._detectStyleType(getFeature(StyleTypes.MARKER))).toEqual(StyleTypes.MARKER);
+			expect(instanceUnderTest._detectStyleType(getFeature(StyleTypes.ANNOTATION))).toEqual(StyleTypes.ANNOTATION);
+			expect(instanceUnderTest._detectStyleType(getFeature(StyleTypes.LINE))).toEqual(StyleTypes.LINE);
+			expect(instanceUnderTest._detectStyleType(getFeature(StyleTypes.POLYGON))).toEqual(StyleTypes.POLYGON);
+		});
+
 		it('detects default as type from olFeature', () => {
-			const feature = { getId: () => 'some', getStyle: () => null, getKeys: () => [] };
+			const feature = { getId: () => 'some', getStyle: () => null, getKeys: () => [], get: () => {} };
 
 			expect(instanceUnderTest._detectStyleType(feature)).toEqual(StyleTypes.DEFAULT);
 		});
 
 		it('detects not the type from olFeature', () => {
-			const feature1 = { getId: () => 'mea_sure_123', getStyle: () => {}, getKeys: () => [] };
-			const feature2 = { getId: () => '123_measure_123', getStyle: () => {}, getKeys: () => [] };
-			const feature3 = { getId: () => ' measure_123', getStyle: () => {}, getKeys: () => [] };
-			const feature4 = { getId: () => '123measure_123', getStyle: () => {}, getKeys: () => [] };
+			const feature1 = { getId: () => 'mea_sure_123', getStyle: () => {}, getKeys: () => [], get: () => {} };
+			const feature2 = { getId: () => '123_measure_123', getStyle: () => {}, getKeys: () => [], get: () => {} };
+			const feature3 = { getId: () => ' measure_123', getStyle: () => {}, getKeys: () => [], get: () => {} };
+			const feature4 = { getId: () => '123measure_123', getStyle: () => {}, getKeys: () => [], get: () => {} };
 
 			expect(instanceUnderTest._detectStyleType(undefined)).toBeNull();
 			expect(instanceUnderTest._detectStyleType(null)).toBeNull();
@@ -166,6 +191,7 @@ describe('StyleService', () => {
 				}
 			};
 			const layerMock = {};
+			spyOn(mapServiceMock, 'calcLength').and.returnValue(1);
 
 			instanceUnderTest.addStyle(feature, mapMock, layerMock);
 
@@ -178,7 +204,7 @@ describe('StyleService', () => {
 			const featureWithStyleArray = new Feature({ geometry: new Point([0, 0]) });
 			const featureWithStyleFunction = new Feature({ geometry: new Point([0, 0]) });
 			const featureWithoutStyle = new Feature({ geometry: new Point([0, 0]) });
-			const style = new Style({ text: new Text({ text: 'foo' }) });
+			const style = new Style({ text: new Text({ text: 'foo', fill: new Fill({ color: [42, 21, 0] }) }) });
 			featureWithStyleArray.setId('draw_text_12345678');
 			featureWithStyleFunction.setId('draw_text_9876543');
 			featureWithoutStyle.setId('draw_text_noStyle');
@@ -219,6 +245,35 @@ describe('StyleService', () => {
 			expect(textStyle).toContain(jasmine.any(Style));
 		});
 
+		it('adds text-style to annotation feature (type attribute)', () => {
+			const feature = new Feature({ geometry: new Point([0, 0]), type: 'annotation' });
+			const style = new Style({ text: new Text({ text: 'foo' }) });
+			feature.setStyle(() => style);
+
+			const viewMock = {
+				getResolution() {
+					return 50;
+				},
+				once() {}
+			};
+
+			const mapMock = {
+				getView: () => viewMock,
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+			const layerMock = {};
+
+			let textStyle = null;
+			const styleSetterFunctionSpy = spyOn(feature, 'setStyle').and.callFake((f) => (textStyle = f()));
+			const addTextStyleSpy = spyOn(instanceUnderTest, '_addTextStyle').and.callThrough();
+			instanceUnderTest.addStyle(feature, mapMock, layerMock);
+			expect(addTextStyleSpy).toHaveBeenCalledWith(feature);
+			expect(styleSetterFunctionSpy).toHaveBeenCalledWith(jasmine.any(Function));
+			expect(textStyle).toContain(jasmine.any(Style));
+		});
+
 		it('adds text-style to feature without style but attribute', () => {
 			const featureWithoutStyle = new Feature({ geometry: new Point([0, 0]) });
 			featureWithoutStyle.set('name', 'foo-name');
@@ -249,16 +304,22 @@ describe('StyleService', () => {
 
 		it('adds marker-style to feature', () => {
 			const featureWithStyleArray = new Feature({ geometry: new Point([0, 0]) });
+			const featureWithoutTextStyle = new Feature({ geometry: new Point([0, 0]) });
 			const featureWithStyleFunction = new Feature({ geometry: new Point([0, 0]) });
 			const featureWithoutStyle = new Feature({ geometry: new Point([0, 0]) });
 			const style = new Style({
 				image: new Icon({ src: 'http://foo.bar/icon.png', anchor: [0.5, 1], anchorXUnits: 'fraction', anchorYUnits: 'fraction', color: '#ff0000' }),
 				text: new Text({ text: 'foo' })
 			});
+			const styleWithoutTextStyle = new Style({
+				image: new Icon({ src: 'http://foo.bar/icon.png', anchor: [0.5, 1], anchorXUnits: 'fraction', anchorYUnits: 'fraction', color: '#ff0000' })
+			});
 			featureWithStyleArray.setId('draw_marker_12345678');
+			featureWithoutTextStyle.setId('draw_marker_12withoutText');
 			featureWithStyleFunction.setId('draw_marker_9876543');
 			featureWithoutStyle.setId('draw_marker_noStyle');
 			featureWithStyleArray.setStyle([style]);
+			featureWithoutTextStyle.setStyle([styleWithoutTextStyle]);
 			featureWithStyleFunction.setStyle(() => [style]);
 
 			const viewMock = {
@@ -283,6 +344,12 @@ describe('StyleService', () => {
 			expect(markerStyle).toContain(jasmine.any(Style));
 
 			markerStyle = null;
+			const styleSetterWithoutTextStyleSpy = spyOn(featureWithoutTextStyle, 'setStyle').and.callFake((f) => (markerStyle = f()));
+			instanceUnderTest.addStyle(featureWithoutTextStyle, mapMock, layerMock);
+			expect(styleSetterWithoutTextStyleSpy).toHaveBeenCalledWith(jasmine.any(Function));
+			expect(markerStyle).toContain(jasmine.any(Style));
+
+			markerStyle = null;
 			const styleSetterFunctionSpy = spyOn(featureWithStyleFunction, 'setStyle').and.callFake((f) => (markerStyle = f()));
 			instanceUnderTest.addStyle(featureWithStyleFunction, mapMock, layerMock);
 			expect(styleSetterFunctionSpy).toHaveBeenCalledWith(jasmine.any(Function));
@@ -293,6 +360,62 @@ describe('StyleService', () => {
 			instanceUnderTest.addStyle(featureWithoutStyle, mapMock, layerMock);
 			expect(styleSetterNoStyleSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(markerStyle).toContain(jasmine.any(Style));
+		});
+
+		it('adds marker-style with color, anchor and size from existing label-style to feature', () => {
+			const featureWithStyleFunction = new Feature({ geometry: new Point([0, 0]) });
+			const icon = new Icon({
+				src: 'http://foo.bar/icon.png',
+				anchor: [0.5, 1],
+				anchorXUnits: 'fraction',
+				anchorYUnits: 'fraction'
+			});
+
+			const anchorSpy = spyOn(icon, 'getAnchor').and.callFake(() => {
+				return [24, 48];
+			});
+			const sizeSpy = spyOn(icon, 'getSize').and.callFake(() => {
+				return [48, 48];
+			});
+			const style = new Style({
+				image: icon,
+				text: new Text({
+					text: 'foo',
+					fill: new Fill({
+						color: [42, 21, 0, 1]
+					})
+				})
+			});
+			featureWithStyleFunction.setId('draw_marker_9876543');
+			featureWithStyleFunction.setStyle(() => [style]);
+
+			const viewMock = {
+				getResolution() {
+					return 50;
+				},
+				once() {}
+			};
+
+			const mapMock = {
+				getView: () => viewMock,
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+			const layerMock = {};
+			spyOn(iconServiceMock, 'decodeColor').and.returnValue(null); //we simulate a local IconResult, which have no url property
+
+			let markerStyle = null;
+			const styleSetterFunctionSpy = spyOn(featureWithStyleFunction, 'setStyle').and.callFake((f) => (markerStyle = f()));
+			instanceUnderTest.addStyle(featureWithStyleFunction, mapMock, layerMock);
+			expect(styleSetterFunctionSpy).toHaveBeenCalledWith(jasmine.any(Function));
+			expect(markerStyle).toContain(jasmine.any(Style));
+			// uses the existing color
+			expect(markerStyle[0].getText().getFill().getColor()).toEqual([42, 21, 0, 1]);
+
+			//...and the existing anchor/size
+			expect(anchorSpy).toHaveBeenCalled();
+			expect(sizeSpy).toHaveBeenCalled();
 		});
 
 		it('adds marker-style to feature without style but attribute', () => {
@@ -404,6 +527,35 @@ describe('StyleService', () => {
 			instanceUnderTest.addStyle(feature, mapMock);
 
 			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
+		});
+
+		it('adds routing-style to feature routing intermediate id', () => {
+			const routingFeature = new Feature({ geometry: new Point([0, 0]) });
+			routingFeature.set('Routing_Feature_Type', 'intermediate');
+			routingFeature.set('Routing_Feature_Index', 42);
+			routingFeature.setId('routing_42');
+
+			const viewMock = {
+				getResolution() {
+					return 50;
+				},
+				once() {}
+			};
+
+			const mapMock = {
+				getView: () => viewMock,
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+			const layerMock = {};
+
+			const styleSetterNoStyleSpy = spyOn(routingFeature, 'setStyle').and.callThrough();
+			const addRoutingStyleSpy = spyOn(instanceUnderTest, '_addRoutingStyle').withArgs(routingFeature).and.callThrough();
+			instanceUnderTest.addStyle(routingFeature, mapMock, layerMock);
+
+			expect(addRoutingStyleSpy).toHaveBeenCalled();
+			expect(styleSetterNoStyleSpy).toHaveBeenCalledWith(jasmine.any(Function));
 		});
 
 		it('adds default-style to feature without initial style', () => {
@@ -595,6 +747,7 @@ describe('StyleService', () => {
 			const layerMock = {};
 			const eventMock = { map: mapMock };
 			const onceOnMapSpy = spyOn(mapMock, 'once').and.callFake((eventName, callback) => callback(eventMock));
+			spyOn(mapServiceMock, 'calcLength').and.returnValue(1);
 
 			instanceUnderTest.addStyle(feature, mapMock, layerMock);
 
@@ -641,6 +794,7 @@ describe('StyleService', () => {
 				}
 			};
 			const layerMock = {};
+			spyOn(mapServiceMock, 'calcLength').and.returnValue(1);
 
 			instanceUnderTest.addStyle(feature, mapMock, layerMock);
 
@@ -781,10 +935,177 @@ describe('StyleService', () => {
 		});
 	});
 
+	describe('sanitize style', () => {
+		it('does nothing on a feature without a style', () => {
+			const featureWithoutStyle = new Feature({ geometry: new Point([0, 0]) });
+			const spy = spyOn(featureWithoutStyle, 'setStyle').and.callThrough(() => {});
+
+			instanceUnderTest.sanitizeStyle(featureWithoutStyle);
+
+			expect(spy).not.toHaveBeenCalled();
+		});
+
+		it('removes the text style on a point feature without a name', () => {
+			const feature = new Feature({ geometry: new Point([0, 0]) });
+			const style = new Style({
+				image: new Icon({
+					size: [42, 42],
+					anchor: [42, 42],
+					anchorXUnits: 'pixels',
+					anchorYUnits: 'pixels',
+					src: 'https://some.url/to/image/foo.png'
+				}),
+				text: new Text({ text: 'foo', fill: new Fill({ color: [42, 21, 0] }), scale: 1.2 })
+			});
+			feature.setStyle([style]);
+			const spy = spyOn(feature, 'setStyle').and.callThrough(() => {});
+
+			instanceUnderTest.sanitizeStyle(feature);
+
+			expect(spy).toHaveBeenCalledWith(jasmine.arrayContaining([jasmine.any(Style)]));
+			expect(feature.getStyle()[0].getText()).toBeNull();
+		});
+
+		it('sanitizes the style for point feature ', () => {
+			const featureWithStyle = new Feature({ geometry: new Point([0, 0]) });
+			const featureWithStyleArray = new Feature({ geometry: new Point([0, 0]) });
+			const featureWithStyleFunction = new Feature({ geometry: new Point([0, 0]) });
+			const style = new Style({
+				text: new Text({ text: 'foo', fill: new Fill({ color: [42, 21, 0] }), scale: 1.2 })
+			});
+			featureWithStyle.set('name', 'bar');
+			featureWithStyleArray.set('name', 'bar');
+			featureWithStyleFunction.set('name', 'bar');
+			featureWithStyle.setStyle(() => style);
+			featureWithStyleArray.setStyle([style]);
+			featureWithStyleFunction.setStyle(() => [style]);
+			const spyStyle = spyOn(featureWithStyle, 'setStyle').and.callThrough();
+			const spyStyleArray = spyOn(featureWithStyleArray, 'setStyle').and.callThrough();
+			const spyStyleFunction = spyOn(featureWithStyleFunction, 'setStyle').and.callThrough();
+
+			instanceUnderTest.sanitizeStyle(featureWithStyle);
+			instanceUnderTest.sanitizeStyle(featureWithStyleArray);
+			instanceUnderTest.sanitizeStyle(featureWithStyleFunction);
+
+			// set the new style
+			expect(spyStyle).toHaveBeenCalledWith(jasmine.arrayContaining([jasmine.any(Style)]));
+			expect(spyStyleArray).toHaveBeenCalledWith(jasmine.arrayContaining([jasmine.any(Style)]));
+			expect(spyStyleFunction).toHaveBeenCalledWith(jasmine.arrayContaining([jasmine.any(Style)]));
+		});
+
+		it('sanitizes the text & image style for point feature', () => {
+			const feature = new Feature({ geometry: new Point([0, 0]) });
+			const style = new Style({
+				image: new Icon({
+					size: [42, 42],
+					anchor: [42, 42],
+					anchorXUnits: 'pixels',
+					anchorYUnits: 'pixels',
+					src: 'https://some.url/to/image/foo.png',
+					scale: 0
+				}),
+				text: new Text({ text: 'foo', fill: new Fill({ color: [42, 21, 0] }), scale: 1.2 })
+			});
+			feature.set('name', 'bar');
+			feature.setStyle([style]);
+			const spyStyle = spyOn(feature, 'setStyle').and.callThrough();
+
+			instanceUnderTest.sanitizeStyle(feature);
+
+			// set the new style
+			expect(spyStyle).toHaveBeenCalledWith(jasmine.arrayContaining([jasmine.any(Style)]));
+
+			// uses the feature name
+			expect(feature.getStyle()[0].getText().getText()).toBe('bar');
+
+			// uses the scale
+			expect(feature.getStyle()[0].getText().getScale()).toBe(1.2);
+
+			// replaces the icon
+			const actualImageStyle = feature.getStyle()[0].getImage();
+			const expectedAlphaValue = 0; // 0 -> full transparency; 255 -> full opacity
+			const getAlphaValue = (rgbaColorArray) => rgbaColorArray[3];
+			expect(actualImageStyle).toEqual(jasmine.any(CircleStyle));
+			expect(getAlphaValue(actualImageStyle.getFill().getColor())).toEqual(expectedAlphaValue);
+			expect(getAlphaValue(actualImageStyle.getStroke().getColor())).toEqual(expectedAlphaValue);
+		});
+
+		it('sanitizes the stroke style for point feature', () => {
+			const feature = new Feature({ geometry: new Point([0, 0]) });
+			const style = new Style({
+				image: new Icon({
+					size: [42, 42],
+					anchor: [42, 42],
+					anchorXUnits: 'pixels',
+					anchorYUnits: 'pixels',
+					src: 'https://some.url/to/image/foo.png',
+					scale: 0
+				}),
+				text: new Text({ text: 'foo', fill: new Fill({ color: [42, 21, 0] }), scale: 1.2 }),
+				stroke: new Stroke({
+					color: [255, 0, 0, 0.9],
+					width: 0
+				})
+			});
+
+			feature.set('name', 'bar');
+			feature.setStyle(() => [style]);
+			const spyStyle = spyOn(feature, 'setStyle').and.callThrough();
+
+			instanceUnderTest.sanitizeStyle(feature);
+
+			expect(spyStyle).toHaveBeenCalledWith(jasmine.arrayContaining([jasmine.any(Style)]));
+
+			expect(feature.getStyle()[0].getStroke()).toBeNull();
+		});
+
+		it('sanitizes the stroke style for line & polygon feature', () => {
+			const lineStringFeature = new Feature({
+				geometry: new LineString([
+					[0, 0],
+					[10, 0]
+				])
+			});
+			const polygonFeature = new Feature({
+				geometry: new Polygon([
+					[
+						[0, 0],
+						[1, 0],
+						[1, 1],
+						[0, 1],
+						[0, 0]
+					]
+				])
+			});
+			const style = new Style({
+				fill: new Fill({ color: [42, 21, 0] }),
+				stroke: new Stroke({
+					color: [255, 0, 0, 0.9],
+					width: 0
+				})
+			});
+
+			lineStringFeature.setStyle(() => [style]);
+			polygonFeature.setStyle(() => [style]);
+			const spyLineStringStyle = spyOn(lineStringFeature, 'setStyle').and.callThrough();
+			const spyPolygonStyle = spyOn(polygonFeature, 'setStyle').and.callThrough();
+
+			instanceUnderTest.sanitizeStyle(lineStringFeature);
+			instanceUnderTest.sanitizeStyle(polygonFeature);
+
+			expect(spyLineStringStyle).toHaveBeenCalledWith(jasmine.arrayContaining([jasmine.any(Style)]));
+			expect(spyPolygonStyle).toHaveBeenCalledWith(jasmine.arrayContaining([jasmine.any(Style)]));
+
+			expect(lineStringFeature.getStyle()[0].getStroke()).toBeNull();
+			expect(polygonFeature.getStyle()[0].getStroke()).toBeNull();
+		});
+	});
+
 	describe('getStyleFunction', () => {
 		it('returns a StyleFunction for a valid StyleType', () => {
 			expect(instanceUnderTest.getStyleFunction(StyleTypes.NULL)).toEqual(jasmine.any(Function));
 			expect(instanceUnderTest.getStyleFunction(StyleTypes.MEASURE)).toEqual(jasmine.any(Function));
+			expect(instanceUnderTest.getStyleFunction(StyleTypes.POINT)).toEqual(jasmine.any(Function));
 			expect(instanceUnderTest.getStyleFunction(StyleTypes.MARKER)).toEqual(jasmine.any(Function));
 			expect(instanceUnderTest.getStyleFunction(StyleTypes.TEXT)).toEqual(jasmine.any(Function));
 			expect(instanceUnderTest.getStyleFunction(StyleTypes.LINE)).toEqual(jasmine.any(Function));

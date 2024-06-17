@@ -7,16 +7,13 @@ import { $injector } from '../../../../injection';
 import { setCurrentTool } from '../../../../store/tools/tools.action';
 import { MvuElement } from '../../../MvuElement';
 import { Tools } from '../../../../domain/tools';
-import { increaseZoom, decreaseZoom } from '../../../../store/position/position.action';
-import { fit } from '../../../../store/position/position.action';
-import { toggleSchema } from '../../../../store/media/media.action';
+import { toggle as toggleNavigationRail } from '../../../../store/navigationRail/navigationRail.action';
 
 const Update_IsOpen = 'update_isOpen';
 const Update_Fetching = 'update_fetching';
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
 const Update_ToolId = 'update_toolid';
-
-const FULLSCREEN_CSS_ID = 'fullscreen-css-id';
+const Update_Auth = 'update_auth';
 
 /**
  *
@@ -26,6 +23,10 @@ const FULLSCREEN_CSS_ID = 'fullscreen-css-id';
  * @author taulinger
  */
 export class ToolBar extends MvuElement {
+	#authService;
+	#environmentService;
+	#translationService;
+
 	constructor() {
 		super({
 			isOpen: true,
@@ -38,14 +39,12 @@ export class ToolBar extends MvuElement {
 		const {
 			EnvironmentService: environmentService,
 			TranslationService: translationService,
-			MapService: mapService
-		} = $injector.inject('EnvironmentService', 'TranslationService', 'MapService');
+			AuthService: authService
+		} = $injector.inject('EnvironmentService', 'TranslationService', 'AuthService');
 
-		this._environmentService = environmentService;
-		this._translationService = translationService;
-		this._mapService = mapService;
-
-		this._isOpen = false;
+		this.#environmentService = environmentService;
+		this.#translationService = translationService;
+		this.#authService = authService;
 	}
 
 	update(type, data, model) {
@@ -58,6 +57,8 @@ export class ToolBar extends MvuElement {
 				return { ...model, ...data };
 			case Update_ToolId:
 				return { ...model, toolId: data };
+			case Update_Auth:
+				return { ...model, signedIn: data };
 		}
 	}
 
@@ -74,6 +75,10 @@ export class ToolBar extends MvuElement {
 			(state) => state.tools.current,
 			(current) => this.signal(Update_ToolId, current)
 		);
+		this.observe(
+			(state) => state.auth.signedIn,
+			(signedIn) => this.signal(Update_Auth, signedIn)
+		);
 
 		if (this.getModel().isPortrait || !this.getModel().hasMinWidth) {
 			this.signal(Update_IsOpen, false);
@@ -84,7 +89,7 @@ export class ToolBar extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { isFetching, isPortrait, hasMinWidth, isOpen, toolId } = model;
+		const { isFetching, isPortrait, hasMinWidth, isOpen, toolId, signedIn } = model;
 
 		const getOrientationClass = () => {
 			return isPortrait ? 'is-portrait' : 'is-landscape';
@@ -106,12 +111,20 @@ export class ToolBar extends MvuElement {
 			return toolId === id ? 'is-active' : '';
 		};
 
-		const getDemoClass = () => {
-			return this._environmentService.isStandalone() ? 'is-demo' : '';
+		const getBadgeText = () => {
+			return this.#environmentService.isStandalone()
+				? translate('toolbox_toolbar_logo_badge_standalone')
+				: signedIn
+					? this.#authService.getRoles().join(' ')
+					: translate('toolbox_toolbar_logo_badge');
 		};
 
-		const getBadgeText = () => {
-			return this._environmentService.isStandalone() ? translate('header_logo_badge_standalone') : translate('header_logo_badge');
+		const getBadgeClass = () => {
+			return signedIn ? 'badge-signed-in' : 'badge-default';
+		};
+
+		const getDemoClass = () => {
+			return this.#environmentService.isStandalone() ? 'is-demo' : '';
 		};
 
 		const toggleTool = (id) => {
@@ -124,34 +137,7 @@ export class ToolBar extends MvuElement {
 			return isFetching ? 'animated-action-button__border__running' : '';
 		};
 
-		const translate = (key) => this._translationService.translate(key);
-
-		const getDefaultMapExtent = () => this._mapService.getDefaultMapExtent();
-
-		const onClick = () => {
-			this._isOpen = !this._isOpen;
-			this.render();
-		};
-
-		const getOverlayTestClass = () => {
-			return this._isOpen ? 'is-open-mobile' : '';
-		};
-
-		const zoomToExtent = () => {
-			fit(getDefaultMapExtent(), { useVisibleViewport: false });
-		};
-
-		const toggleFullScreen = () => {
-			if (!document.getElementById(FULLSCREEN_CSS_ID)) {
-				const styleElement = document.createElement('style');
-				styleElement.id = FULLSCREEN_CSS_ID;
-				document.head.appendChild(styleElement);
-			}
-			const style = document.getElementById(FULLSCREEN_CSS_ID);
-
-			this._zindex = this._zindex === 601 ? 1 : 601;
-			style.innerHTML = `*{--z-map: ${this._zindex};}`;
-		};
+		const translate = (key) => this.#translationService.translate(key);
 
 		return html`
 			<style>
@@ -166,12 +152,12 @@ export class ToolBar extends MvuElement {
 				>
 					<div class="wrench"></div>
 				</button>
-				<button id="action-button" data-test-id class="action-button" @click="${onClick}">
+				<button id="action-button" data-test-id class="action-button" @click="${toggleNavigationRail}">
 					<div class="action-button__border animated-action-button__border ${getAnimatedBorderClass()}"></div>
 					<div class="action-button__icon">
 						<div class="ba"></div>
 					</div>
-					<div class="toolbar__logo-badge">${getBadgeText()}</div>
+					<div class="toolbar__logo-badge ${getBadgeClass()}">${getBadgeText()}</div>
 				</button>
 				<div class="tool-bar ${getOverlayClass()}">
 					<button
@@ -203,44 +189,12 @@ export class ToolBar extends MvuElement {
 						<div class="tool-bar__button_icon close arrowright"></div>
 					</button>
 				</div>
-
-				<div class="test ${getOverlayTestClass()}  ${getOrientationClass()}">
-					<button @click="${zoomToExtent}" class="hide">
-						<span class="icon luftbild "> </span>
-						<span class="text"> luftbild </span>
-					</button>
-					<button @click="${zoomToExtent}">
-						<span class="icon search-icon "> </span>
-						<span class="text"> Suchen </span>
-					</button>
-					<button @click="${toggleFullScreen}">
-						<span class="icon fullscreen-icon "> </span>
-						<span class="text"> fullscreen- </span>
-					</button>
-					<button @click="${increaseZoom}">
-						<span class="icon zoom-in "> </span>
-						<span class="text"> zoom out </span>
-					</button>
-
-					<button @click="${decreaseZoom}">
-						<span class="icon zoom-out  "> </span>
-						<span class="text">zoom in </span>
-					</button>
-					<button @click="${zoomToExtent}">
-						<span class="icon zoom-to-extent-icon "> </span>
-						<span class="text"> auf Bayern zoomen </span>
-					</button>
-					<button @click="${onClick}">
-						<span class="icon close-icon "> </span>
-						<span class="text"> schließen </span>
-					</button>
-				</div>
 			</div>
 		`;
 	}
 
 	isRenderingSkipped() {
-		return this._environmentService.isEmbedded();
+		return this.#environmentService.isEmbedded();
 	}
 
 	static get tag() {

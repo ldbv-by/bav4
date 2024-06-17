@@ -1,13 +1,20 @@
 /* eslint-disable no-undef */
 import { MapService } from '../../src/services/MapService';
 import { $injector } from '../../src/injection';
+import { equals } from '../../src/utils/storeUtils';
 
 describe('MapService', () => {
 	const coordinateServiceMock = {
 		fromLonLatExtent() {},
 		toLonLatExtent() {},
 		toLonLat() {},
-		containsCoordinate() {}
+		containsCoordinate() {},
+		toCoordinate(c) {
+			return c;
+		},
+		transform() {},
+		getLength() {},
+		getArea() {}
 	};
 
 	beforeAll(() => {
@@ -84,43 +91,92 @@ describe('MapService', () => {
 		});
 	});
 
-	describe('Returns a list with all SridDefinition suitable for the UI', () => {
-		it('provides an array of global SridDefintions when called without argument', () => {
-			const instanceUnderTest = setup();
-			spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue([5, -80, 14, 80]);
+	describe('returns a list with all SRID definitions', () => {
+		describe('called without argument', () => {
+			it('provides an array of global SRID definitions', () => {
+				const instanceUnderTest = setup();
+				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue([5, -80, 14, 80]);
 
-			expect(instanceUnderTest.getCoordinateRepresentations()).toEqual([{ label: 'Global SRID', code: 1111 }]);
+				expect(instanceUnderTest.getCoordinateRepresentations()).toEqual([{ label: 'Global SRID', code: 1111 }]);
+			});
 		});
 
-		it('provides an array of global SridDefintions when local projected extent is not defined', () => {
-			const instanceUnderTest = setup();
-			spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(null);
+		describe('called with a coordinate like', () => {
+			it('provides an array of global SRID definitions when local projected extent is not defined', () => {
+				const instanceUnderTest = setup();
+				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(null);
 
-			expect(instanceUnderTest.getCoordinateRepresentations([0, 0])).toEqual([{ label: 'Global SRID', code: 1111 }]);
+				expect(instanceUnderTest.getCoordinateRepresentations([0, 0])).toEqual([{ label: 'Global SRID', code: 1111 }]);
+			});
+
+			it('provides an array of local projected SRID definitions when coordinate is within local projected extent', () => {
+				const coordinate = [0, 0];
+				const localProjectedSridExtent = [5, -80, 14, 80];
+				const instanceUnderTest = setup();
+				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(localProjectedSridExtent);
+				spyOn(coordinateServiceMock, 'containsCoordinate').withArgs(localProjectedSridExtent, coordinate).and.returnValue(true);
+
+				expect(instanceUnderTest.getCoordinateRepresentations(coordinate)).toEqual([{ label: 'Local projected SRID', code: 9999 }]);
+			});
+
+			it('provides an array of global SRID definitions when when coordinate is outside local projected extent', () => {
+				const coordinate = [0, 0];
+				const localProjectedSridExtent = [5, -80, 14, 80];
+				const instanceUnderTest = setup();
+				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(localProjectedSridExtent);
+				spyOn(coordinateServiceMock, 'containsCoordinate').withArgs(localProjectedSridExtent, coordinate).and.returnValue(false);
+
+				expect(instanceUnderTest.getCoordinateRepresentations(coordinate)).toEqual([{ label: 'Global SRID', code: 1111 }]);
+			});
 		});
 
-		it('provides an array of local projected SridDefintions when coordinate is within local projected extent', () => {
-			const coordinate = [0, 0];
-			const localProjectedSridExtent = [5, -80, 14, 80];
-			const instanceUnderTest = setup();
-			spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(localProjectedSridExtent);
-			spyOn(coordinateServiceMock, 'containsCoordinate').withArgs(localProjectedSridExtent, coordinate).and.returnValue(true);
+		describe('called with an array of coordinate like', () => {
+			it('provides an array of global SRID definitions when local projected extent is not defined', () => {
+				const instanceUnderTest = setup();
+				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(null);
 
-			expect(instanceUnderTest.getCoordinateRepresentations(coordinate)).toEqual([{ label: 'Local projected SRID', code: 9999 }]);
-		});
+				expect(
+					instanceUnderTest.getCoordinateRepresentations([
+						[0, 0],
+						[1, 1]
+					])
+				).toEqual([{ label: 'Global SRID', code: 1111 }]);
+			});
 
-		it('provides an array of global SridDefintions when when coordinate is outside local projected extent', () => {
-			const coordinate = [0, 0];
-			const localProjectedSridExtent = [5, -80, 14, 80];
-			const instanceUnderTest = setup();
-			spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(localProjectedSridExtent);
-			spyOn(coordinateServiceMock, 'containsCoordinate').withArgs(localProjectedSridExtent, coordinate).and.returnValue(false);
+			it('provides an array of local projected SRID definitions when all coordinates are within local projected extent', () => {
+				const coordinates = [
+					[0, 0],
+					[1, 1]
+				];
+				const localProjectedSridExtent = [5, -80, 14, 80];
+				const instanceUnderTest = setup();
+				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(localProjectedSridExtent);
+				spyOn(coordinateServiceMock, 'containsCoordinate').withArgs(localProjectedSridExtent, jasmine.any(Array)).and.returnValue(true);
 
-			expect(instanceUnderTest.getCoordinateRepresentations(coordinate)).toEqual([{ label: 'Global SRID', code: 1111 }]);
+				expect(instanceUnderTest.getCoordinateRepresentations(coordinates)).toEqual([{ label: 'Local projected SRID', code: 9999 }]);
+			});
+
+			it('provides an array of global SRID definitions when one or more coordinate are outside local projected extent', () => {
+				const coordinates = [
+					[0, 0],
+					[100, 100]
+				];
+				const localProjectedSridExtent = [5, -80, 14, 80];
+				const instanceUnderTest = setup();
+				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(localProjectedSridExtent);
+				spyOn(coordinateServiceMock, 'containsCoordinate').and.callFake((_, c) => {
+					if (equals(c, [100, 100])) {
+						return false;
+					}
+					return true;
+				});
+
+				expect(instanceUnderTest.getCoordinateRepresentations(coordinates)).toEqual([{ label: 'Global SRID', code: 1111 }]);
+			});
 		});
 	});
 
-	it('provides the internal srid of the map', () => {
+	it('provides the internal SRID of the map', () => {
 		const instanceUnderTest = setup();
 
 		expect(instanceUnderTest.getSrid()).toBe(3857);
@@ -287,6 +343,221 @@ describe('MapService', () => {
 				const visibleViewPort = instanceUnderTest.getVisibleViewport(mapElementMock);
 
 				expect(visibleViewPort).toEqual({ top: 50, right: 50, bottom: 0, left: 0 });
+			});
+		});
+	});
+
+	describe('calcArea', () => {
+		describe('no projected extent available', () => {
+			it('calculates the area by calling the OlCoordinateService', () => {
+				const instanceUnderTest = setup();
+				const coordinateInMapProjection = [
+					[
+						[8, 8],
+						[64, 64],
+						[256, 256],
+						[8, 8]
+					]
+				];
+				const area = 42.42;
+				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(null);
+				spyOn(coordinateServiceMock, 'toLonLat').and.callFake((c) => c.map((v) => v * 2));
+				const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getArea').and.returnValue(area);
+
+				const result = instanceUnderTest.calcArea(coordinateInMapProjection);
+
+				expect(result).toBe(area);
+				expect(coordinateServiceSpy).toHaveBeenCalledWith(
+					[
+						[
+							[16, 16],
+							[128, 128],
+							[512, 512],
+							[16, 16]
+						]
+					],
+					true
+				);
+			});
+		});
+
+		describe('one or more coordinates are outside the projected extent', () => {
+			it('calculates the area by calling the OlCoordinateService', () => {
+				const instanceUnderTest = setup();
+				const coordinateInMapProjection = [
+					[
+						[8, 8],
+						[64, 64],
+						[256, 256],
+						[8, 8]
+					]
+				];
+				const localProjectedSridExtent = [5, -80, 14, 80];
+				const area = 42.42;
+				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(localProjectedSridExtent);
+				spyOn(coordinateServiceMock, 'containsCoordinate')
+					.withArgs(localProjectedSridExtent, jasmine.anything())
+					.and.callFake((_, c) => {
+						if (equals(c, [64, 64])) {
+							return false;
+						}
+						return true;
+					});
+				spyOn(coordinateServiceMock, 'toLonLat').and.callFake((c) => c.map((v) => v * 2));
+				const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getArea').and.returnValue(area);
+
+				const result = instanceUnderTest.calcArea(coordinateInMapProjection);
+
+				expect(result).toBe(area);
+				expect(coordinateServiceSpy).toHaveBeenCalledWith(
+					[
+						[
+							[16, 16],
+							[128, 128],
+							[512, 512],
+							[16, 16]
+						]
+					],
+					true
+				);
+			});
+		});
+
+		describe('all coordinates are inside the projected extent', () => {
+			it('calculates the area by calling the OlCoordinateService', () => {
+				const instanceUnderTest = setup();
+				const srid = 3857;
+				const localProjectedSrid = 25832;
+				const coordinateInMapProjection = [
+					[
+						[8, 8],
+						[64, 64],
+						[256, 256],
+						[8, 8]
+					]
+				];
+				const localProjectedSridExtent = [5, -80, 14, 80];
+				const area = 42.42;
+				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(localProjectedSridExtent);
+				spyOn(instanceUnderTest, 'getSrid').and.returnValue(srid);
+				spyOn(instanceUnderTest, 'getLocalProjectedSrid').and.returnValue(localProjectedSrid);
+				spyOn(coordinateServiceMock, 'containsCoordinate')
+					.withArgs(localProjectedSridExtent, jasmine.anything())
+					.and.callFake(() => true);
+				spyOn(coordinateServiceMock, 'transform')
+					.withArgs(jasmine.any(Array), srid, localProjectedSrid)
+					.and.callFake((c) => c.map((v) => v * 2));
+				const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getArea').and.returnValue(area);
+
+				const result = instanceUnderTest.calcArea(coordinateInMapProjection);
+
+				expect(result).toBe(area);
+				expect(coordinateServiceSpy).toHaveBeenCalledWith(
+					[
+						[
+							[16, 16],
+							[128, 128],
+							[512, 512],
+							[16, 16]
+						]
+					],
+					false
+				);
+			});
+		});
+	});
+	describe('calcLength', () => {
+		describe('no projected extent available', () => {
+			it('calculates the length by calling the OlCoordinateService', () => {
+				const instanceUnderTest = setup();
+				const coordinateInMapProjection = [
+					[1, 1],
+					[100, 100]
+				];
+				const length = 42.42;
+				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(null);
+				spyOn(coordinateServiceMock, 'toLonLat').and.callFake((c) => c.map((v) => v * 2));
+				const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getLength').and.returnValue(length);
+
+				const result = instanceUnderTest.calcLength(coordinateInMapProjection);
+
+				expect(result).toBe(length);
+				expect(coordinateServiceSpy).toHaveBeenCalledWith(
+					[
+						[2, 2],
+						[200, 200]
+					],
+					true
+				);
+			});
+		});
+
+		describe('one or more coordinates are outside the projected extent', () => {
+			it('calculates the length by calling the OlCoordinateService', () => {
+				const instanceUnderTest = setup();
+				const coordinateInMapProjection = [
+					[1, 1],
+					[100, 100]
+				];
+				const localProjectedSridExtent = [5, -80, 14, 80];
+				const length = 42.42;
+				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(localProjectedSridExtent);
+				spyOn(coordinateServiceMock, 'containsCoordinate')
+					.withArgs(localProjectedSridExtent, jasmine.anything())
+					.and.callFake((_, c) => {
+						if (equals(c, [100, 100])) {
+							return false;
+						}
+						return true;
+					});
+				spyOn(coordinateServiceMock, 'toLonLat').and.callFake((c) => c.map((v) => v * 2));
+				const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getLength').and.returnValue(length);
+
+				const result = instanceUnderTest.calcLength(coordinateInMapProjection);
+
+				expect(result).toBe(length);
+				expect(coordinateServiceSpy).toHaveBeenCalledWith(
+					[
+						[2, 2],
+						[200, 200]
+					],
+					true
+				);
+			});
+		});
+
+		describe('all coordinates are inside the projected extent', () => {
+			it('calculates the length by calling the OlCoordinateService', () => {
+				const instanceUnderTest = setup();
+				const srid = 3857;
+				const localProjectedSrid = 25832;
+				const coordinateInMapProjection = [
+					[1, 1],
+					[100, 100]
+				];
+				const localProjectedSridExtent = [5, -80, 14, 80];
+				const length = 42.42;
+				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(localProjectedSridExtent);
+				spyOn(instanceUnderTest, 'getSrid').and.returnValue(srid);
+				spyOn(instanceUnderTest, 'getLocalProjectedSrid').and.returnValue(localProjectedSrid);
+				spyOn(coordinateServiceMock, 'containsCoordinate')
+					.withArgs(localProjectedSridExtent, jasmine.anything())
+					.and.callFake(() => true);
+				spyOn(coordinateServiceMock, 'transform')
+					.withArgs(jasmine.any(Array), srid, localProjectedSrid)
+					.and.callFake((c) => c.map((v) => v * 2));
+				const coordinateServiceSpy = spyOn(coordinateServiceMock, 'getLength').and.returnValue(length);
+
+				const result = instanceUnderTest.calcLength(coordinateInMapProjection);
+
+				expect(result).toBe(length);
+				expect(coordinateServiceSpy).toHaveBeenCalledWith(
+					[
+						[2, 2],
+						[200, 200]
+					],
+					false
+				);
 			});
 		});
 	});

@@ -1,6 +1,5 @@
 .ba-list {
 	background-color: var(--tertiary-bg-color);
-	box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);
 }
 .ba-list:after {
 	background-image: linear-gradient(180deg, var(--tertiary-bg-color) 20%, var(--primary-bg-color) 100%);
@@ -31,6 +30,32 @@
 }
 .featureinfo-header:hover {
 	background-color: var(--tertiary-bg-color);
+}
+
+.info-container {
+	margin-bottom: -2em;
+}
+
+.info-icon {
+	height: 13em;
+	width: 13em;
+	background-size: contain;
+	background-color: transparent;
+	margin: 3em auto 1em;
+	background-image: url('../assets/info.svg');
+	display: flex;
+}
+.info-text {
+	font-size: 1.4em;
+	margin: 1em;
+	display: block;
+	padding: 1em;
+	text-align: center;
+}
+
+ba-spinner {
+	display: block;
+	padding: 0.8em 1.2em;
 }
 
 /* not implemented yet  */
@@ -160,7 +185,42 @@ h5 {
 	margin: 1em 0;
 }
 
-/* just for grundsteuer release, should be removed later */
-.grundsteuer p {
-	padding: 0 0 0.8em 0;
+.button {
+	cursor: pointer;
+	padding: 0.8em 1em;
+	background: transparent;
+	background-color: transparent;
+	border: none;
+	font-weight: bold;
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
+}
+.primary {
+	background-color: var(--primary-color);
+	color: var(--text3);
+	opacity: 0.8;
+}
+.secondary {
+	background-color: var(--primary-bg-color);
+	color: var(--primary-color);
+}
+.primary.button:focus-visible {
+	opacity: 1;
+}
+.secondary.button:focus-visible {
+	background: var(--primary-color);
+	color: var(--text3);
+}
+.secondary.button:focus-visible,
+.primary.button:focus-visible,
+.loading.button:focus-visible {
+	box-shadow: 0 0 0 0.2em var(--primary-color-lighter);
+}
+.primary:hover {
+	opacity: 1;
+	text-decoration: none;
+}
+.secondary:hover {
+	background: var(--primary-color);
+	color: var(--text3);
+	text-decoration: none;
 }

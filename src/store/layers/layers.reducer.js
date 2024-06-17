@@ -2,6 +2,7 @@ import { EventLike } from '../../utils/storeUtils';
 
 export const LAYER_ADDED = 'layer/added';
 export const LAYER_REMOVED = 'layer/removed';
+export const LAYER_REMOVE_AND_SET = 'layer/removeAndSet';
 export const LAYER_MODIFIED = 'layer/modified';
 export const LAYER_RESOURCES_READY = 'layer/resources/ready';
 export const LAYER_GEORESOURCE_CHANGED = 'layer/geoResource/changed';
@@ -11,6 +12,16 @@ export const initialState = {
 	 * List of currently active {@link Layer}.
 	 */
 	active: [],
+	/**
+	 * Contains the ids of the latest removed layers
+	 * @property {EventLike<String>}
+	 */
+	removed: new EventLike([]),
+	/**
+	 * Contains the ids of the latest added layers
+	 * @property {EventLike<String>}
+	 */
+	added: new EventLike([]),
 	/**
 	 * Flag that indicates if the layer store is ready. "Ready" means all required resources are available.
 	 */
@@ -103,14 +114,51 @@ const addLayer = (state, payload) => {
 	active.splice(insertIndex, 0, layer);
 	return {
 		...state,
-		active: sort(index(active))
+		active: sort(index(active)),
+		added: new EventLike([id])
 	};
 };
 
 const removeLayer = (state, payload) => {
+	const active = index(state.active.filter((layer) => layer.id !== payload));
 	return {
 		...state,
-		active: index(state.active.filter((layer) => layer.id !== payload))
+		active,
+		removed: state.active.length !== active.length ? new EventLike([payload]) : state.removed
+	};
+};
+
+const atomicallyRemoveAndSet = (state, payload) => {
+	const { layerOptions, restoreHiddenLayers } = payload;
+	/**
+	 * Ensure that the `active` property does not change unless one ore more layers are really different (based on their properties).
+	 * Therefore we also have to copy the `grChangedFlag` event property of a layer if appropriate.
+	 */
+	const layers = layerOptions.map((atomicallyAddedLayer, index) => ({
+		...createDefaultLayerProperties(),
+		geoResourceId: atomicallyAddedLayer.id,
+		...atomicallyAddedLayer,
+		zIndex: index,
+		grChangedFlag: state.active[index]?.id === atomicallyAddedLayer.id ? state.active[index].grChangedFlag : null
+	}));
+
+	if (restoreHiddenLayers) {
+		const hiddenLayerIndices = state.active.map((l, index) => (l.constraints.hidden ? index : -1)).filter((i) => i > -1);
+		hiddenLayerIndices.forEach((i) => {
+			const hiddenLayer = state.active[i];
+			hiddenLayer.zIndex = layers.length;
+			layers.splice(layers.length, 0, hiddenLayer);
+		});
+	}
+
+	return {
+		...state,
+		active: layers,
+		removed:
+			state.active.length > 0
+				? new EventLike([...state.active.filter((l) => (restoreHiddenLayers ? !l.constraints.hidden : true)).map((l) => l.id)])
+				: state.removed,
+		added: layerOptions.length > 0 ? new EventLike(layerOptions.map((l) => l.id)) : state.added
 	};
 };
 
@@ -168,6 +216,9 @@ export const layersReducer = (state = initialState, action) => {
 		}
 		case LAYER_REMOVED: {
 			return removeLayer(state, payload);
+		}
+		case LAYER_REMOVE_AND_SET: {
+			return atomicallyRemoveAndSet(state, payload);
 		}
 		case LAYER_MODIFIED: {
 			return modifyLayer(state, payload);

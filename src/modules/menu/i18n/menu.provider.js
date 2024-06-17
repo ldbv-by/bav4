@@ -4,6 +4,7 @@ export const provide = (lang) => {
 			return {
 				//the first part of the snake_case key should be the name of the related module
 				menu_main_open_button: 'Open Menu',
+				menu_content_panel_close_button: 'Close',
 				menu_misc_content_panel_settings: 'Appearance',
 				menu_misc_content_panel_dark_mode: 'Dark theme',
 				menu_misc_content_panel_fullscreen: 'Fullscreen',
@@ -23,13 +24,30 @@ export const provide = (lang) => {
 				menu_misc_content_panel_ea_header: 'Energie-Atlas Bayern',
 				menu_misc_content_panel_ea_text: 'Central portal for saving energy, energy efficiency, and renewable energies.',
 				menu_misc_content_panel_feedback_title: 'Feedback',
-				menu_misc_content_panel_routing_title: 'Routing'
+				menu_misc_content_panel_routing_title: 'Routing',
+				menu_misc_content_panel_login: 'Login BayernAtlas-plus',
+				menu_misc_content_panel_logout: 'Logout',
+
+				menu_navigation_rail_home: 'Home',
+				menu_navigation_rail_home_tooltip: 'Open home screen',
+				menu_navigation_rail_routing: 'Routing',
+				menu_navigation_rail_routing_tooltip: 'Open routing',
+				menu_navigation_rail_close: 'close',
+				menu_navigation_rail_zoom_to_extend: 'Zoom to full extent',
+				menu_navigation_rail_object_info: 'Object Info',
+				menu_navigation_rail_object_info_tooltip: 'Open Object Info',
+				menu_navigation_rail_zoom_in: 'Zoom in',
+				menu_navigation_rail_zoom_out: 'Zoom out',
+				menu_navigation_rail_search: 'Search',
+				menu_navigation_rail_dark_theme: 'Dark mode',
+				menu_navigation_rail_light_theme: 'Light mode'
 			};
 
 		case 'de':
 			return {
 				//the first part of the snake_case key should be the name of the related module
 				menu_main_open_button: 'Menü öffnen',
+				menu_content_panel_close_button: 'Schließen',
 				menu_misc_content_panel_settings: 'Darstellung',
 				menu_misc_content_panel_dark_mode: 'Dunkles Design',
 				menu_misc_content_panel_fullscreen: 'Vollbild',
@@ -49,7 +67,23 @@ export const provide = (lang) => {
 				menu_misc_content_panel_ea_header: 'Energie-Atlas Bayern',
 				menu_misc_content_panel_ea_text: 'Das zentrale Internet-Portal zum Energiesparen, zur Energieeffizienz und zu erneuerbaren Energien.',
 				menu_misc_content_panel_feedback_title: 'Feedback',
-				menu_misc_content_panel_routing_title: 'Routing'
+				menu_misc_content_panel_routing_title: 'Routing',
+				menu_misc_content_panel_login: 'Login BayernAtlas-plus',
+				menu_misc_content_panel_logout: 'Logout',
+
+				menu_navigation_rail_home: 'Home',
+				menu_navigation_rail_home_tooltip: 'Startansicht öffnen',
+				menu_navigation_rail_routing: 'Routing',
+				menu_navigation_rail_routing_tooltip: 'Routing öffnen',
+				menu_navigation_rail_close: 'Schließen',
+				menu_navigation_rail_zoom_to_extend: 'Ganz Bayern anzeigen',
+				menu_navigation_rail_object_info: 'Objekt-Info',
+				menu_navigation_rail_object_info_tooltip: 'Objekt-Info öffnen',
+				menu_navigation_rail_zoom_in: 'Karte vergrößern',
+				menu_navigation_rail_zoom_out: 'Karte verkleinern',
+				menu_navigation_rail_search: 'Suchen',
+				menu_navigation_rail_dark_theme: 'Dunkles Design',
+				menu_navigation_rail_light_theme: 'Helles Design'
 			};
 
 		default:

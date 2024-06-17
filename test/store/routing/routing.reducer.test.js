@@ -11,12 +11,14 @@ import {
 	setIntermediate,
 	setProposal,
 	setRoute,
+	setRouteAndStats,
 	setRouteStats,
 	setStart,
 	setStatus,
 	setWaypoints
 } from '../../../src/store/routing/routing.action';
 import { routingReducer } from '../../../src/store/routing/routing.reducer';
+import { EventLike } from '../../../src/utils/storeUtils.js';
 import { TestUtils } from '../../test-utils.js';
 
 describe('routingReducer', () => {
@@ -34,7 +36,7 @@ describe('routingReducer', () => {
 			stats: null,
 			route: null,
 			waypoints: [],
-			highlightedSegments: null,
+			highlightedSegments: jasmine.objectContaining({ payload: null }),
 			active: false,
 			proposal: jasmine.objectContaining({ payload: null }),
 			intermediate: jasmine.objectContaining({ payload: null })
@@ -64,6 +66,10 @@ describe('routingReducer', () => {
 		setRouteStats(mockStats);
 
 		expect(store.getState().routing.stats).toEqual(mockStats);
+
+		setRouteStats(null);
+
+		expect(store.getState().routing.stats).toBeNull();
 	});
 
 	it("changes the 'route' property", () => {
@@ -77,6 +83,22 @@ describe('routingReducer', () => {
 		setRoute(null);
 
 		expect(store.getState().routing.route).toBeNull();
+	});
+
+	it("changes the 'route' and 'stats' property", () => {
+		const store = setup();
+		const mockRoute = { route: 'route' };
+		const mockStats = { stats: 'stats' };
+
+		setRouteAndStats(mockRoute, mockStats);
+
+		expect(store.getState().routing.route).toEqual(mockRoute);
+		expect(store.getState().routing.stats).toEqual(mockStats);
+
+		setRouteAndStats(null, null);
+
+		expect(store.getState().routing.route).toBeNull();
+		expect(store.getState().routing.stats).toBeNull();
 	});
 
 	it("changes the 'waypoint' property", () => {
@@ -151,6 +173,22 @@ describe('routingReducer', () => {
 		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Destination_Missing);
 	});
 
+	it('sets the start waypoint when exactly one waypoint already exists', () => {
+		const store = setup({
+			routing: {
+				waypoints: [[11, 22]]
+			}
+		});
+
+		setStart([33, 44]);
+
+		expect(store.getState().routing.waypoints).toEqual([
+			[33, 44],
+			[11, 22]
+		]);
+		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Ok);
+	});
+
 	it('sets the destination waypoint', () => {
 		const store = setup();
 		const coordinate = [11, 22];
@@ -164,6 +202,22 @@ describe('routingReducer', () => {
 
 		expect(store.getState().routing.waypoints).toEqual([coordinate]);
 		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Start_Missing);
+	});
+
+	it('sets the destination waypoint when exactly one waypoint already exists', () => {
+		const store = setup({
+			routing: {
+				waypoints: [[11, 22]]
+			}
+		});
+
+		setDestination([33, 44]);
+
+		expect(store.getState().routing.waypoints).toEqual([
+			[11, 22],
+			[33, 44]
+		]);
+		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Ok);
 	});
 
 	it('removes a waypoint', () => {
@@ -227,6 +281,28 @@ describe('routingReducer', () => {
 	});
 
 	it('sets a intermediate coordinate', () => {
+		const store = setup({
+			routing: {
+				waypoints: [[11, 22]],
+				intermediate: new EventLike()
+			}
+		});
+		const coordinate = [33, 44];
+
+		setIntermediate([11, 22]); // already exists, no update
+
+		expect(store.getState().routing.intermediate.payload).toBeNull();
+
+		setIntermediate([11, 22, 'foo']); // invalid coordinate, no update
+
+		expect(store.getState().routing.intermediate.payload).toBeNull();
+
+		setIntermediate(coordinate);
+
+		expect(store.getState().routing.intermediate.payload).toEqual(coordinate);
+	});
+
+	it('sets a intermediate coordinate', () => {
 		const store = setup();
 		const coordinate = [11, 22];
 
@@ -250,17 +326,17 @@ describe('routingReducer', () => {
 			segments
 		});
 
-		expect(store.getState().routing.highlightedSegments).toEqual({ zoomToExtent: false, segments });
+		expect(store.getState().routing.highlightedSegments.payload).toEqual({ zoomToExtent: false, segments });
 
 		setHighlightedSegments({
 			segments,
 			zoomToExtent: true
 		});
-		expect(store.getState().routing.highlightedSegments).toEqual({ zoomToExtent: true, segments });
+		expect(store.getState().routing.highlightedSegments.payload).toEqual({ zoomToExtent: true, segments });
 
 		resetHighlightedSegments();
 
-		expect(store.getState().routing.highlightedSegments).toBeNull();
+		expect(store.getState().routing.highlightedSegments.payload).toBeNull();
 	});
 
 	it("changes the 'active' property", () => {

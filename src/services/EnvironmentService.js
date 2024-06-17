@@ -1,7 +1,9 @@
 /**
  * @module services/EnvironmentService
  */
+import { QueryParameters } from '../domain/queryParameters';
 import { $injector } from '../injection';
+import { PublicComponent } from '../modules/public/components/PublicComponent';
 
 /**
  * @class
@@ -18,9 +20,23 @@ export class EnvironmentService {
 	}
 
 	/**
+	 * Returns the current query parameters. May retrieve the "query parameters" from the attributes of an embedded web component
 	 * @returns the current `URLSearchParams`
 	 */
 	getQueryParams() {
+		if (this.isEmbeddedAsWC()) {
+			const element = this._window.document.querySelector(PublicComponent.tag);
+			const attrNames = element.getAttributeNames();
+
+			const usp = new URLSearchParams();
+			attrNames
+				.filter((n) => Object.values(QueryParameters).includes(n))
+				.forEach((n) => {
+					usp.set(n, element.getAttribute(n));
+				});
+
+			return usp;
+		}
 		return new URLSearchParams(this._window.location.search);
 	}
 
@@ -32,30 +48,25 @@ export class EnvironmentService {
 	}
 
 	/**
-	 *
-	 * @returns `true` if the current device has touch support
+	 * @returns `true` if the primary pointing device is a touch device
 	 */
 	isTouch() {
-		const navigator = this._window.navigator;
-		const window = this._window;
-		let hasTouchScreen = false;
-		if ('maxTouchPoints' in navigator) {
-			hasTouchScreen = navigator.maxTouchPoints > 0;
-		} else {
-			const mQ = window.matchMedia && window.matchMedia('(pointer:coarse)');
-			if (mQ && mQ.media === '(pointer:coarse)') {
-				hasTouchScreen = !!mQ.matches;
-			} else if ('orientation' in window) {
-				hasTouchScreen = true; // deprecated, but good fallback
-			} else {
-				// Only as a last resort, fall back to user agent sniffing
-				const UA = navigator.userAgent;
-				hasTouchScreen = /\b(BlackBerry|webOS|iPhone|IEMobile)\b/i.test(UA) || /\b(Android|Windows Phone|iPad|iPod)\b/i.test(UA);
-			}
-		}
-		return hasTouchScreen;
+		return this._window.matchMedia('(pointer:coarse)').matches;
 	}
 
+	/**
+	 * @returns `true` if the primary pointing device is a mouse / touch pad device
+	 */
+	isMouse() {
+		return this._window.matchMedia('(pointer:fine)').matches && this._window.matchMedia('(hover:hover)').matches;
+	}
+
+	/**
+	 * @returns `true` if the primary pointing device is a mouse device but it has also a touch device as a secondary device
+	 */
+	isMouseWithTouchSupport() {
+		return this._window.matchMedia('(any-pointer:coarse)').matches && this._window.matchMedia('(pointer:fine)').matches;
+	}
 	/**
 	 *
 	 * @returns `true` if the current device has a retina display
@@ -72,10 +83,26 @@ export class EnvironmentService {
 
 	/**
 	 *
-	 * @returns `true` if we are in embedded mode
+	 * @returns `true` if we are in embedded mode (as Iframe or Web Component)
 	 */
 	isEmbedded() {
+		return this.isEmbeddedAsIframe() || this.isEmbeddedAsWC();
+	}
+
+	/**
+	 *
+	 * @returns `true` if we are in embedded mode due to an Iframe
+	 */
+	isEmbeddedAsIframe() {
 		return /(\/embed[/]?(index.html)?|embed.html)$/.test(this._window.location.pathname);
+	}
+
+	/**
+	 *
+	 * @returns `true` if we are in embedded due to a Web Component
+	 */
+	isEmbeddedAsWC() {
+		return !!this._window.customElements.get(PublicComponent.tag);
 	}
 
 	/**

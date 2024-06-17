@@ -19,6 +19,10 @@ describe('FeatureInfoPanel', () => {
 			media: {
 				portrait: false
 			},
+			featureInfo: {
+				current: [],
+				querying: false
+			},
 			...state
 		};
 
@@ -47,7 +51,8 @@ describe('FeatureInfoPanel', () => {
 			expect(model).toEqual({
 				featureInfoData: [],
 				isPortrait: false,
-				active: false
+				active: false,
+				isQuerying: false
 			});
 		});
 	});
@@ -63,6 +68,61 @@ describe('FeatureInfoPanel', () => {
 				expect(button.title).toBe('featureInfo_close_button');
 				expect(container).toHaveSize(1);
 				expect(items).toHaveSize(0);
+
+				expect(element.shadowRoot.querySelectorAll('ba-spinner')).toHaveSize(0);
+
+				expect(element.shadowRoot.querySelectorAll('.info-container')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.info-text')).toHaveSize(1);
+				expect(element.shadowRoot.querySelector('.info-text').innerText).toBe('geometryInfo_info');
+				expect(element.shadowRoot.querySelectorAll('.info-icon')).toHaveSize(1);
+			});
+		});
+
+		describe('and a featureInfo item is available and is querying', () => {
+			it('renders a spinner and one item', async () => {
+				const element = await setup({
+					featureInfo: {
+						current: [{ title: 'title0', content: 'content0' }],
+						querying: true
+					}
+				});
+				const button = element.shadowRoot.querySelector('ba-icon');
+				const container = element.shadowRoot.querySelectorAll('.container');
+				const items = element.shadowRoot.querySelectorAll('.ba-section');
+
+				expect(button.title).toBe('featureInfo_close_button');
+				expect(container).toHaveSize(1);
+				expect(items).toHaveSize(1);
+
+				expect(element.shadowRoot.querySelectorAll('ba-spinner')).toHaveSize(1);
+
+				expect(element.shadowRoot.querySelectorAll('.info-container')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.info-text')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.info-icon')).toHaveSize(0);
+			});
+		});
+
+		describe('and no featureInfo items are available and is querying', () => {
+			it('renders just a spinner', async () => {
+				const element = await setup({
+					featureInfo: {
+						current: [],
+						querying: true
+					}
+				});
+				const button = element.shadowRoot.querySelector('ba-icon');
+				const container = element.shadowRoot.querySelectorAll('.container');
+				const items = element.shadowRoot.querySelectorAll('.ba-section');
+
+				expect(button.title).toBe('featureInfo_close_button');
+				expect(container).toHaveSize(1);
+				expect(items).toHaveSize(0);
+
+				expect(element.shadowRoot.querySelectorAll('ba-spinner')).toHaveSize(1);
+
+				expect(element.shadowRoot.querySelectorAll('.info-container')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.info-text')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.info-icon')).toHaveSize(0);
 			});
 		});
 
@@ -94,6 +154,10 @@ describe('FeatureInfoPanel', () => {
 				expect([...items].every((item) => item.classList.contains('selectable'))).toBeTrue();
 
 				expect(header.innerText).toBe('featureInfo_header');
+
+				expect(element.shadowRoot.querySelectorAll('.info-container')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.info-text')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.info-icon')).toHaveSize(0);
 			});
 
 			it('have only item with selectable content', async () => {
@@ -114,6 +178,10 @@ describe('FeatureInfoPanel', () => {
 
 				expect(items).toHaveSize(3);
 				expect([...items].every((item) => item.classList.contains(cssClass))).toBeTrue();
+
+				expect(element.shadowRoot.querySelectorAll('.info-container')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.info-text')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.info-icon')).toHaveSize(0);
 			});
 		});
 	});
@@ -211,7 +279,7 @@ describe('FeatureInfoPanel', () => {
 				expect(store.getState().highlight.features).toHaveSize(1);
 				expect(store.getState().highlight.features[0].data.geometry).toBe(geoJson);
 				expect(store.getState().highlight.features[0].data.geometryType).toBe(HighlightGeometryType.GEOJSON);
-				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.TEMPORARY);
+				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER_TMP);
 				expect(store.getState().highlight.features[0].id).toBe(TEMPORARY_FEATURE_HIGHLIGHT_ID);
 				expect(element.shadowRoot.querySelectorAll('.is-geometry')).toHaveSize(1);
 			});
@@ -265,6 +333,7 @@ describe('FeatureInfoPanel', () => {
 			it('clear the featureInfo in store', async () => {
 				const element = await setup({
 					featureInfo: {
+						querying: true,
 						current: [
 							{ title: 'title0', content: 'content0' },
 							{ title: 'title1', content: html`content1` }
@@ -275,7 +344,8 @@ describe('FeatureInfoPanel', () => {
 
 				iconButton.click();
 
-				expect(store.getState().featureInfo.current).toEqual([]);
+				expect(store.getState().featureInfo.current).toHaveSize(2);
+				expect(store.getState().featureInfo.querying).toBeFalse();
 			});
 		});
 	});

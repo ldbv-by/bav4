@@ -5,9 +5,11 @@ import { html } from 'lit-html';
 import { $injector } from '../../../injection';
 import css from './footer.css';
 import { MvuElement } from '../../MvuElement';
+import { classMap } from 'lit-html/directives/class-map.js';
 
 const Update_IsOpen = 'update_isOpen_tabIndex';
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
+const Update_IsOpen_NavigationRail = 'update_isOpen_NavigationRail';
 /**
  * Container element for footer stuff.
  * @class
@@ -19,7 +21,8 @@ export class Footer extends MvuElement {
 			isOpen: false,
 			isOpenNav: false,
 			isPortrait: false,
-			hasMinWidth: false
+			hasMinWidth: false,
+			isOpenNavigationRail: false
 		});
 
 		const { EnvironmentService } = $injector.inject('EnvironmentService');
@@ -38,6 +41,10 @@ export class Footer extends MvuElement {
 			(state) => state.media,
 			(media) => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait, hasMinWidth: media.minWidth })
 		);
+		this.observe(
+			(state) => state.navigationRail,
+			(navigationRail) => this.signal(Update_IsOpen_NavigationRail, { isOpenNavigationRail: navigationRail.open })
+		);
 	}
 
 	/**
@@ -48,6 +55,8 @@ export class Footer extends MvuElement {
 			case Update_IsOpen:
 				return { ...model, ...data };
 			case Update_IsPortrait_HasMinWidth:
+				return { ...model, ...data };
+			case Update_IsOpen_NavigationRail:
 				return { ...model, ...data };
 		}
 	}
@@ -64,27 +73,7 @@ export class Footer extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { isOpen, isOpenNav, isPortrait, hasMinWidth } = model;
-
-		const getOverlayClass = () => {
-			return isOpen && !isPortrait && !this._environmentService.isEmbedded() ? 'is-open' : '';
-		};
-
-		const getOverlayTestClass = () => {
-			return isOpenNav ? 'is-open-nav' : '';
-		};
-
-		const getOrientationClass = () => {
-			return isPortrait ? 'is-portrait' : 'is-landscape';
-		};
-
-		const getMinWidthClass = () => {
-			return hasMinWidth ? 'is-desktop' : 'is-tablet';
-		};
-
-		const isEmbedded = () => {
-			return this._environmentService.isEmbedded() ? 'is-embedded' : '';
-		};
+		const { isOpen, isOpenNavigationRail, isPortrait, hasMinWidth } = model;
 
 		const createChildrenView = () => {
 			return html`
@@ -93,13 +82,23 @@ export class Footer extends MvuElement {
 			`;
 		};
 
+		const classes = {
+			'is-open': isOpen && !isPortrait && !this._environmentService.isEmbedded(),
+			'is-open-navigationRail': isOpenNavigationRail && !isPortrait && !this._environmentService.isEmbedded(),
+			'is-desktop': hasMinWidth,
+			'is-tablet': !hasMinWidth,
+			'is-portrait': isPortrait,
+			'is-landscape': !isPortrait,
+			'is-embedded': this._environmentService.isEmbedded()
+		};
+
 		return html`
 			<style>
 				${css}
 			</style>
 			<div class="preload">
-				<div class="${getOrientationClass()} ${getMinWidthClass()} ${isEmbedded()}">
-					<div class="footer ${getOverlayClass()} ${getOverlayTestClass()}">
+				<div class="${classMap(classes)}">
+					<div class="footer">
 						<div class="scale"></div>
 						<ba-attribution-info></ba-attribution-info>
 						<div class="content">${createChildrenView()}</div>

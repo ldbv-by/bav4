@@ -5,6 +5,7 @@ describe('i18n for menu module', () => {
 		const map = provide('de');
 
 		expect(map.menu_main_open_button).toBe('Menü öffnen');
+		expect(map.menu_content_panel_close_button).toBe('Schließen');
 		expect(map.menu_misc_content_panel_settings).toBe('Darstellung');
 		expect(map.menu_misc_content_panel_dark_mode).toBe('Dunkles Design');
 		expect(map.menu_misc_content_panel_fullscreen).toBe('Vollbild');
@@ -27,12 +28,29 @@ describe('i18n for menu module', () => {
 		);
 		expect(map.menu_misc_content_panel_feedback_title).toBe('Feedback');
 		expect(map.menu_misc_content_panel_routing_title).toBe('Routing');
+		expect(map.menu_misc_content_panel_login).toBe('Login BayernAtlas-plus');
+		expect(map.menu_misc_content_panel_logout).toBe('Logout');
+
+		expect(map.menu_navigation_rail_home).toBe('Home');
+		expect(map.menu_navigation_rail_home_tooltip).toBe('Startansicht öffnen');
+		expect(map.menu_navigation_rail_routing).toBe('Routing');
+		expect(map.menu_navigation_rail_routing_tooltip).toBe('Routing öffnen');
+		expect(map.menu_navigation_rail_close).toBe('Schließen');
+		expect(map.menu_navigation_rail_zoom_to_extend).toBe('Ganz Bayern anzeigen');
+		expect(map.menu_navigation_rail_object_info).toBe('Objekt-Info');
+		expect(map.menu_navigation_rail_object_info_tooltip).toBe('Objekt-Info öffnen');
+		expect(map.menu_navigation_rail_zoom_out).toBe('Karte verkleinern');
+		expect(map.menu_navigation_rail_zoom_in).toBe('Karte vergrößern');
+		expect(map.menu_navigation_rail_search).toBe('Suchen');
+		expect(map.menu_navigation_rail_dark_theme).toBe('Dunkles Design');
+		expect(map.menu_navigation_rail_light_theme).toBe('Helles Design');
 	});
 
 	it('provides translation for en', () => {
 		const map = provide('en');
 
 		expect(map.menu_main_open_button).toBe('Open Menu');
+		expect(map.menu_content_panel_close_button).toBe('Close');
 		expect(map.menu_misc_content_panel_settings).toBe('Appearance');
 		expect(map.menu_misc_content_panel_dark_mode).toBe('Dark theme');
 		expect(map.menu_misc_content_panel_fullscreen).toBe('Fullscreen');
@@ -52,10 +70,26 @@ describe('i18n for menu module', () => {
 		expect(map.menu_misc_content_panel_ea_header).toBe('Energie-Atlas Bayern');
 		expect(map.menu_misc_content_panel_ea_text).toBe('Central portal for saving energy, energy efficiency, and renewable energies.');
 		expect(map.menu_misc_content_panel_routing_title).toBe('Routing');
+		expect(map.menu_misc_content_panel_login).toBe('Login BayernAtlas-plus');
+		expect(map.menu_misc_content_panel_logout).toBe('Logout');
+
+		expect(map.menu_navigation_rail_home).toBe('Home');
+		expect(map.menu_navigation_rail_home_tooltip).toBe('Open home screen');
+		expect(map.menu_navigation_rail_routing).toBe('Routing');
+		expect(map.menu_navigation_rail_routing_tooltip).toBe('Open routing');
+		expect(map.menu_navigation_rail_close).toBe('close');
+		expect(map.menu_navigation_rail_zoom_to_extend).toBe('Zoom to full extent');
+		expect(map.menu_navigation_rail_object_info).toBe('Object Info');
+		expect(map.menu_navigation_rail_object_info_tooltip).toBe('Open Object Info');
+		expect(map.menu_navigation_rail_zoom_out).toBe('Zoom out');
+		expect(map.menu_navigation_rail_zoom_in).toBe('Zoom in');
+		expect(map.menu_navigation_rail_search).toBe('Search');
+		expect(map.menu_navigation_rail_dark_theme).toBe('Dark mode');
+		expect(map.menu_navigation_rail_light_theme).toBe('Light mode');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 21;
+		const expectedSize = 37;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

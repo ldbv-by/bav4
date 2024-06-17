@@ -28,7 +28,6 @@ describe('Entities', () => {
 });
 
 describe('FeedbackService', () => {
-	// todo - generalFeedbackCategoriesProvider
 	const setup = (
 		mapFeedbackStorageProvider = bvvFeedbackStorageProvider,
 		mapFeedbackCategoriesProvider = bvvMapFeedbackCategoriesProvider,

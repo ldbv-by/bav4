@@ -3,61 +3,111 @@
  */
 import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { BaElement } from '../../BaElement';
 import css from './baOverlay.css';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { $injector } from '../../../injection/index';
+import { PROJECTED_LENGTH_GEOMETRY_PROPERTY, canShowAzimuthCircle, getAzimuth, getCoordinateAt, getLineString } from '../utils/olGeometryUtils';
+import { Polygon } from '../../../../node_modules/ol/geom';
+import { round } from '../../../utils/numberUtils';
+import { getCenter } from '../../../../node_modules/ol/extent';
+import { MvuElement } from '../../MvuElement';
 
 export const BaOverlayTypes = {
 	TEXT: 'text',
+	AREA: 'area',
+	DISTANCE: 'distance',
+	DISTANCE_PARTITION: 'distance-partition',
 	HELP: 'help'
 };
+
+const Update_Value = 'update_value';
+const Update_Overlay_Type = 'update_overlay_type';
+const Update_Draggable = 'update_draggable';
+const Update_Floating = 'update_floating';
+const Update_Geometry = 'update_geometry';
+const Update_Placement = 'update_placement';
+
+const Default_Placement = { sector: 'init', positioning: 'top-center', offset: [0, -25] };
 /**
- * Internal overlay content for measurements on map-components
+ * Internal overlay content for measurements or context help on map-components
  *
- * Configurable Attributes:
- *
- * Observed Attributes:
- *
- * Configurable Properties:
- * - `type`
- * - `value`
- * - `static`
- * - `geometry`
- * - `projectionHints`
- *
- *
- * Observed Properties:
- * - `value`
- * - `static`
- * - `geometry`
- * - `position`
- * - `projectionHints`
  * @class
+ * @property {string| null} [value] The numeric value.
+ * @property {Geometry} geometry The ol geometry which relates to this overlay.
+ * @property {boolean} static Defines, whether the overlay is static or not.
+ * @property {boolean} isDraggable Defines, whether the overlay is draggable or not.
+ * @property {BaOverlayTypes} type='text' Defines the display properties of the overlay.
+ * @property {Object} [placement={ sector: 'init', positioning: 'top-center', offset: [0, -25] }] Defines the placement of the overlay relative to the geometry.
+ * @property {Coordinate} position The coordinate of the anchor, to positioning the overlay.
  * @author thiloSchlemmer
  */
-export class BaOverlay extends BaElement {
+export class BaOverlay extends MvuElement {
+	#unitsService;
+	#mapService;
 	constructor() {
-		super();
-		this._value = null;
-		this._static = false;
-		this._type = BaOverlayTypes.TEXT;
-		this._projectionHints = false;
-		this._isDraggable = false;
+		super({
+			value: null,
+			floating: true,
+			overlayType: BaOverlayTypes.TEXT,
+			draggable: false,
+			placement: Default_Placement,
+			geometry: null,
+			position: null
+		});
+		const { UnitsService, MapService } = $injector.inject('UnitsService', 'MapService');
+		this.#unitsService = UnitsService;
+		this.#mapService = MapService;
 	}
 
-	/**
-	 * @override
-	 */
-	createView() {
-		const content = this._getContent(this._type);
-
-		const classes = {
-			help: this._type === BaOverlayTypes.HELP,
-			static: this._static && this._type !== BaOverlayTypes.HELP,
-			floating: !this._static && this._type !== BaOverlayTypes.HELP,
-			draggable: this._isDraggable
+	update(type, data, model) {
+		const getPosition = (geometry, overlayType, value) => {
+			switch (overlayType) {
+				case BaOverlayTypes.AREA:
+					return geometry instanceof Polygon ? geometry.getInteriorPoint().getCoordinates().slice(0, -1) : getCenter(geometry.getExtent());
+				case BaOverlayTypes.DISTANCE_PARTITION:
+					return getCoordinateAt(geometry, value);
+				case BaOverlayTypes.DISTANCE:
+				case BaOverlayTypes.HELP:
+				case BaOverlayTypes.TEXT:
+				default:
+					return geometry.getLastCoordinate();
+			}
 		};
 
+		switch (type) {
+			case Update_Value:
+				return { ...model, value: data };
+			case Update_Overlay_Type:
+				return { ...model, overlayType: data };
+			case Update_Draggable:
+				return { ...model, draggable: data };
+			case Update_Floating:
+				return { ...model, floating: data };
+			case Update_Geometry:
+				return { ...model, geometry: data, position: getPosition(data, model.overlayType, model.value) };
+			case Update_Placement:
+				return { ...model, placement: data };
+		}
+	}
+
+	createView(model) {
+		const { overlayType, floating, draggable, placement } = model;
+		const content = this.#getContent(model);
+
+		const classes = {
+			help: overlayType === BaOverlayTypes.HELP,
+			area: overlayType === BaOverlayTypes.AREA,
+			distance: overlayType === BaOverlayTypes.DISTANCE,
+			partition: overlayType === BaOverlayTypes.DISTANCE_PARTITION,
+			static: !floating && overlayType !== BaOverlayTypes.HELP,
+			floating: floating && overlayType !== BaOverlayTypes.HELP,
+			draggable: draggable,
+			top: placement.sector === 'top',
+			right: placement.sector === 'right',
+			bottom: placement.sector === 'bottom',
+			left: placement.sector === 'left',
+			init: placement.sector === 'init'
+		};
 		return html`
 			<style>
 				${css}
@@ -66,94 +116,101 @@ export class BaOverlay extends BaElement {
 		`;
 	}
 
-	/**
-	 * @protected
-	 */
-	_updatePosition() {
-		this._position = this.geometry.getLastCoordinate();
-	}
+	#getContent(model) {
+		const { geometry, overlayType, value } = model;
+		const getStaticDistance = () => {
+			const distance = this.#getMeasuredLength(geometry) * value;
+			return this.#unitsService.formatDistance(round(Math.round(distance), -1), 0);
+		};
 
-	/**
-	 * Returns the displayable content of Overlay
-	 * @protected
-	 * @abstract
-	 * @param {string|BaOverlayTypes} type the BaOverlayType
-	 * @returns {string}
-	 */
-	_getContent(/*eslint-disable no-unused-vars */ type) {
-		return this._value;
+		const getDistance = () => {
+			if (canShowAzimuthCircle(geometry)) {
+				// canShowAzimuthCircle() secures that getAzimuth() always returns a valid value except NULL
+				const azimuthValue = getAzimuth(geometry).toFixed(2);
+				const distanceValue = this.#unitsService.formatDistance(this.#getMeasuredLength(geometry), 2);
+				return `${azimuthValue}°/${distanceValue}`;
+			}
+			return geometry ? this.#unitsService.formatDistance(this.#getMeasuredLength(geometry), 2) : '';
+		};
+
+		const getArea = () => {
+			if (geometry instanceof Polygon) {
+				return this.#unitsService.formatArea(this.#mapService.calcArea(geometry.getCoordinates()), 2);
+			}
+			return '';
+		};
+		switch (overlayType) {
+			case BaOverlayTypes.AREA:
+				return getArea();
+			case BaOverlayTypes.DISTANCE:
+				return getDistance();
+			case BaOverlayTypes.DISTANCE_PARTITION:
+				return geometry ? getStaticDistance() : '';
+			case BaOverlayTypes.HELP:
+			case BaOverlayTypes.TEXT:
+			default:
+				return value;
+		}
 	}
 
 	static get tag() {
 		return 'ba-map-overlay';
 	}
 
+	#getMeasuredLength = (geometry) => {
+		const alreadyMeasuredLength = geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY);
+		return alreadyMeasuredLength ?? this.#mapService.calcLength(getLineString(geometry).getCoordinates());
+	};
+
+	set placement(value) {
+		this.signal(Update_Placement, value);
+	}
+
+	get placement() {
+		return this.getModel().placement;
+	}
+
 	set value(val) {
-		if (val !== this.value) {
-			this._value = val;
-			this.render();
-		}
+		this.signal(Update_Value, val);
 	}
 
 	get value() {
-		return this._value;
+		return this.getModel().value;
 	}
 
 	set type(value) {
-		if (value !== this.type) {
-			this._type = value;
-			this.render();
-		}
+		this.signal(Update_Overlay_Type, value);
 	}
 
 	get type() {
-		return this._type;
+		return this.getModel().overlayType;
 	}
 
 	set isDraggable(value) {
-		if (value !== this.isDraggable) {
-			this._isDraggable = value;
-			this.render();
-		}
+		this.signal(Update_Draggable, value);
 	}
 
 	get isDraggable() {
-		return this._isDraggable;
+		return this.getModel().draggable;
 	}
 
 	set static(value) {
-		if (value !== this.static) {
-			this._static = value;
-			this.render();
-		}
+		this.signal(Update_Floating, !value);
 	}
 
 	get static() {
-		return this._static;
+		return !this.getModel().floating;
 	}
 
 	set geometry(value) {
-		this._geometry = value;
-		this._updatePosition();
-		this.render();
+		this.signal(Update_Geometry, value);
 	}
 
 	get geometry() {
-		return this._geometry;
+		return this.getModel().geometry;
 	}
 
 	get position() {
-		return this._position;
-	}
-
-	set projectionHints(value) {
-		if (value.toProjection !== this.projectionHints.toProjection || value.fromProjection !== this.projectionHints.fromProjection) {
-			this._projectionHints = value;
-			this.render();
-		}
-	}
-
-	get projectionHints() {
-		return this._projectionHints;
+		return this.getModel().position;
 	}
 }

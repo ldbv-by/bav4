@@ -73,6 +73,7 @@ describe('CatalogNode', () => {
 
 			expect(element.shadowRoot.querySelector('.ba-list-item__header')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.ba-list-item__sub-header')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.sub-icon')).toBeFalsy();
 
 			expect(element.shadowRoot.querySelector('.iscollapse')).toBeFalsy();
 			expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
@@ -93,8 +94,15 @@ describe('CatalogNode', () => {
 			expect(element.shadowRoot.querySelectorAll(CatalogLeaf.tag)).toHaveSize(2);
 			expect(element.shadowRoot.querySelectorAll(CatalogNode.tag)).toHaveSize(1);
 
+			expect(element.shadowRoot.querySelector('.sub-divider')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.ba-list-item__header')).toBeFalsy();
 			expect(element.shadowRoot.querySelector('.ba-list-item__sub-header')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.sub-icon')).toBeTruthy();
+
+			expect(element.shadowRoot.querySelector('.iscollapse')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+
+			expect(element.shadowRoot.querySelectorAll(`style`)[2].innerText).toContain('.sub-divider{--node-level: 0em;}');
 		});
 
 		it('click collapse', async () => {

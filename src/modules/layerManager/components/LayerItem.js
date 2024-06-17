@@ -16,7 +16,7 @@ import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/
 import { openModal } from '../../../../src/store/modal/modal.action';
 import { createUniqueId } from '../../../utils/numberUtils';
 import { fitLayer } from '../../../store/position/position.action';
-import { GeoResourceFuture, VectorGeoResource } from '../../../domain/geoResources';
+import { GeoResourceFuture, RtVectorGeoResource, VectorGeoResource } from '../../../domain/geoResources';
 import { MenuTypes } from '../../commons/components/overflowMenu/OverflowMenu';
 
 const Update_Layer = 'update_layer';
@@ -67,7 +67,8 @@ export class LayerItem extends AbstractMvuContentPanel {
 						visible: data.visible,
 						collapsed: data.collapsed,
 						opacity: data.opacity,
-						loading: data.loading
+						loading: data.loading,
+						keywords: data.keywords
 					}
 				};
 			case Update_Layer_Collapsed:
@@ -114,8 +115,16 @@ export class LayerItem extends AbstractMvuContentPanel {
 		}
 		const geoResource = this._geoResourceService.byId(layer.geoResourceId);
 		const currentLabel = layer.label;
+
 		const getCollapseTitle = () => {
 			return layer.collapsed ? translate('layerManager_expand') : translate('layerManager_collapse');
+		};
+
+		const getBadges = (keywords) => {
+			const toBadges = (keywords) =>
+				keywords.map((keyword) => html`<ba-badge .color=${'var(--text3)'} .background=${'var(--roles-color)'} .label=${keyword}></ba-badge>`);
+
+			return keywords.length === 0 ? nothing : toBadges(keywords);
 		};
 
 		const changeOpacity = (event) => {
@@ -212,7 +221,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 					label: translate('layerManager_zoom_to_extent'),
 					icon: zoomToExtentSvg,
 					action: zoomToExtent,
-					disabled: !(geoResource instanceof VectorGeoResource)
+					disabled: !(geoResource instanceof VectorGeoResource || geoResource instanceof RtVectorGeoResource)
 				},
 				{ id: 'info', label: 'Info', icon: infoSvg, action: openGeoResourceInfoPanel, disabled: !layer.constraints?.metaData }
 			];
@@ -224,9 +233,8 @@ export class LayerItem extends AbstractMvuContentPanel {
 			<div class="ba-section divider">
 				<div class="ba-list-item">
 					<ba-checkbox .title="${getVisibilityTitle()}" class="ba-list-item__text" tabindex="0" .checked=${layer.visible} @toggle=${toggleVisibility}
-						>${layer.loading ? html`<ba-spinner .label=${currentLabel}></ba-spinner>` : html`${currentLabel}`}</ba-checkbox
-					>
-
+						>${layer.loading ? html`<ba-spinner .label=${currentLabel}></ba-spinner>` : html`${currentLabel} ${getBadges(layer.keywords)}`}
+					</ba-checkbox>
 					<button id="button-detail" data-test-id class="ba-list-item__after" title="${getCollapseTitle()}" @click="${toggleCollapse}">
 						<i class="icon chevron icon-rotate-90 ${classMap(iconCollapseClass)}"></i>
 					</button>
@@ -276,12 +284,14 @@ export class LayerItem extends AbstractMvuContentPanel {
 	set layer(value) {
 		const translate = (key) => this._translationService.translate(key);
 		const geoResource = this._geoResourceService.byId(value.geoResourceId);
+		const keywords = [...this._geoResourceService.getKeywords(value.geoResourceId)];
 
 		this.signal(Update_Layer, {
 			Default_Extra_Property_Values,
 			...value,
 			label: geoResource instanceof GeoResourceFuture ? translate('layerManager_loading_hint') : geoResource.label,
-			loading: geoResource instanceof GeoResourceFuture
+			loading: geoResource instanceof GeoResourceFuture,
+			keywords: keywords
 		});
 	}
 

@@ -3,7 +3,7 @@
  */
 import { $injector } from '../injection';
 import { getDefaultAttribution } from '../services/provider/attribution.provider';
-import { defaultVectorGeoResourceLoaderForUrl } from '../services/provider/geoResource.provider';
+import { getDefaultVectorGeoResourceLoaderForUrl } from '../services/provider/geoResource.provider';
 import { isExternalGeoResourceId } from '../utils/checks';
 
 /**
@@ -22,6 +22,14 @@ import { isExternalGeoResourceId } from '../utils/checks';
  */
 
 /**
+ * A function that returns an {@link Attribution} (or an array of them).
+ * @typedef {Function} attributionProvider
+ * @param {GeoResource} geoResource the GeoResource
+ * @param {number} [level] level (index-like value, can be a zoom level of a map)
+ * @returns {Attribution|Array<Attribution>}
+ */
+
+/**
  * @readonly
  * @enum {Symbol}
  */
@@ -29,6 +37,7 @@ export const GeoResourceTypes = Object.freeze({
 	WMS: Symbol.for('wms'),
 	XYZ: Symbol.for('xyz'),
 	VECTOR: Symbol.for('vector'),
+	RT_VECTOR: Symbol.for('rtvector'),
 	VT: Symbol.for('vt'),
 	AGGREGATE: Symbol.for('aggregate'),
 	FUTURE: Symbol.for('future')
@@ -40,8 +49,14 @@ export const GeoResourceTypes = Object.freeze({
  * @enum {String}
  */
 export const GeoResourceAuthenticationType = Object.freeze({
+	/**
+	 * Basic access authentication
+	 */
 	BAA: 'baa',
-	PLUS: 'plus'
+	/**
+	 * Internal application based authentication
+	 */
+	APPLICATION: 'application'
 });
 
 /**
@@ -75,6 +90,7 @@ export class GeoResource {
 		this._authenticationType = null;
 		this._queryable = true;
 		this._exportable = true;
+		this._authRoles = [];
 	}
 
 	checkDefined(value, name) {
@@ -162,6 +178,15 @@ export class GeoResource {
 		return this._exportable;
 	}
 
+	/**
+	 * Returns a list of roles which are allowed to access this GeoResource.
+	 * An empty array means any user can access this GeoResource.
+	 *  @type {Array<String>}
+	 */
+	get authRoles() {
+		return [...this._authRoles];
+	}
+
 	get attributionProvider() {
 		return this._attributionProvider;
 	}
@@ -227,6 +252,22 @@ export class GeoResource {
 	}
 
 	/**
+	 * Set the roles for authentication/authorization of this GeoResource
+	 * and updates its authentication type.
+	 * @param {Array<string>} roles Roles of this GeoResource
+	 * @returns `this` for chaining
+	 */
+	setAuthRoles(roles) {
+		if (roles) {
+			this._authRoles = [...roles];
+			if (roles.length > 0) {
+				this.setAuthenticationType(GeoResourceAuthenticationType.APPLICATION);
+			}
+		}
+		return this;
+	}
+
+	/**
 	 * Checks if this GeoResource contains a non-default value as label
 	 * @returns `true` if the label is a non-default value
 	 */
@@ -283,6 +324,7 @@ export class GeoResource {
 			.setAttributionProvider(geoResource.attributionProvider)
 			.setQueryable(geoResource.queryable)
 			.setExportable(geoResource.exportable)
+			.setAuthRoles(geoResource.authRoles)
 			.setAuthenticationType(geoResource.authenticationType);
 	}
 }
@@ -290,9 +332,10 @@ export class GeoResource {
 /**
  * An async function that loads a {@link GeoResource}.
  * @async
- * @callback asyncGeoResourceLoader
+ * @typedef {Function} asyncGeoResourceLoader
  * @param {string} id Id of the requested GeoResource
- * @returns {GeoResource}
+ * @returns {GeoResource} the loaded GeoResource
+ * @throws {UnavailableGeoResourceError}
  */
 
 /**
@@ -344,6 +387,7 @@ export class GeoResourceFuture extends GeoResource {
 	 *
 	 * Note: It's up to the loader implementation which properties of the GeoResourceFuture instance are copied to the resolved GeoResource.
 	 * @returns GeoResource
+	 * @throws {UnavailableGeoResourceError} Error of the underlying loader
 	 */
 	async get() {
 		try {
@@ -370,6 +414,7 @@ export class WmsGeoResource extends GeoResource {
 		this._layers = layers;
 		this._format = format;
 		this._extraParams = {};
+		this._maxSize = null;
 	}
 
 	get url() {
@@ -388,8 +433,21 @@ export class WmsGeoResource extends GeoResource {
 		return { ...this._extraParams };
 	}
 
+	get maxSize() {
+		return this._maxSize ? [...this._maxSize] : null;
+	}
+
 	setExtraParams(extraParams) {
-		this._extraParams = { ...extraParams };
+		if (extraParams) {
+			this._extraParams = { ...extraParams };
+		}
+		return this;
+	}
+
+	setMaxSize(maxSize) {
+		if (maxSize) {
+			this._maxSize = [...maxSize];
+		}
 		return this;
 	}
 
@@ -453,7 +511,6 @@ export const VectorSourceType = Object.freeze({
 
 /**
  * GeoResource for vector data.
- * Data could be either loaded externally by Url or internally from a string.
  * @class
  */
 export class VectorGeoResource extends GeoResource {
@@ -532,7 +589,9 @@ export class VectorGeoResource extends GeoResource {
 	}
 
 	setClusterParams(clusterParams) {
-		this._clusterParams = { ...clusterParams };
+		if (clusterParams) {
+			this._clusterParams = { ...clusterParams };
+		}
 		return this;
 	}
 
@@ -554,11 +613,63 @@ export class VectorGeoResource extends GeoResource {
 	 * @returns {GeoResourceFuture}
 	 */
 	static forUrl(id, url, sourceType, label = null) {
-		return new GeoResourceFuture(id, defaultVectorGeoResourceLoaderForUrl(url, sourceType, id, label))
+		return new GeoResourceFuture(id, getDefaultVectorGeoResourceLoaderForUrl(url, sourceType, id, label))
 			.setLabel(label)
 			.onResolve((resolved, future) => {
 				resolved.copyPropertiesFrom(future);
 			});
+	}
+}
+
+/**
+ * GeoResource for real-time vector data.
+ * @class
+ */
+export class RtVectorGeoResource extends GeoResource {
+	/**
+	 * @param {string} id
+	 * @param {String} label
+	 * @param {String} url
+	 * @param {VectorSourceType} sourceType
+	 */
+	constructor(id, label, url, sourceType) {
+		super(id, label);
+		this._url = url;
+		this._sourceType = sourceType;
+		this._clusterParams = {};
+	}
+
+	get url() {
+		return this._url;
+	}
+
+	get sourceType() {
+		return this._sourceType;
+	}
+
+	get clusterParams() {
+		return { ...this._clusterParams };
+	}
+
+	setClusterParams(clusterParams) {
+		if (clusterParams) {
+			this._clusterParams = { ...clusterParams };
+		}
+		return this;
+	}
+
+	/**
+	 * @returns `true` if this RtVectorGeoResource should be displayed clustered
+	 */
+	isClustered() {
+		return !!Object.keys(this._clusterParams).length;
+	}
+
+	/**
+	 * @override
+	 */
+	getType() {
+		return GeoResourceTypes.RT_VECTOR;
 	}
 }
 

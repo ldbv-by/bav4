@@ -10,6 +10,8 @@ describe('RoutingChart', () => {
 	const environmentServiceMock = {
 		isTouch: () => false
 	};
+
+	const unitsServiceMock = { formatDistance: (value) => value + 'unit' };
 	let store;
 	const setup = (state, properties) => {
 		const initialState = {
@@ -23,7 +25,10 @@ describe('RoutingChart', () => {
 			media: createNoInitialStateMediaReducer(),
 			routing: routingReducer
 		});
-		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('EnvironmentService', environmentServiceMock);
+		$injector
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('EnvironmentService', environmentServiceMock)
+			.registerSingleton('UnitsService', unitsServiceMock);
 
 		return TestUtils.render(RouteChart.tag, properties);
 	};
@@ -111,8 +116,8 @@ describe('RoutingChart', () => {
 			expect(containerElement).toBeTruthy();
 			expect(containerElement.querySelectorAll('.chart_section')).toHaveSize(1);
 			expect(containerElement.querySelectorAll('.highlight')).toHaveSize(2);
-			expect(containerElement.querySelectorAll('.highlight')[0].innerText.replace(/\s/g, '')).toBe('baz:18m');
-			expect(containerElement.querySelectorAll('.highlight')[1].innerText.replace(/\s/g, '')).toBe('bar:57m');
+			expect(containerElement.querySelectorAll('.highlight')[0].innerText.replace(/\s/g, '')).toBe('baz:18unit');
+			expect(containerElement.querySelectorAll('.highlight')[1].innerText.replace(/\s/g, '')).toBe('bar:57unit');
 			expect(containerElement.querySelector('.title').innerText).toBe('foo');
 		});
 
@@ -197,14 +202,16 @@ describe('RoutingChart', () => {
 					}
 				]
 			};
+			const unitsServiceSpy = spyOn(unitsServiceMock, 'formatDistance').withArgs(jasmine.any(Number)).and.callThrough();
 			const element = await setup({}, properties);
 
 			const containerElement = element.shadowRoot.querySelector('.container');
 
 			expect(containerElement).toBeTruthy();
-			expect(containerElement.querySelectorAll('.highlight')[0].innerText.replace(/\s/g, '')).toBe('bar:18m');
-			expect(containerElement.querySelectorAll('.highlight')[1].innerText.replace(/\s/g, '')).toBe('foo:1.23km');
-			expect(containerElement.querySelectorAll('.highlight')[2].innerText.replace(/\s/g, '')).toBe('baz:6km');
+			expect(containerElement.querySelectorAll('.highlight')[0].innerText.replace(/\s/g, '')).toBe('bar:18unit');
+			expect(containerElement.querySelectorAll('.highlight')[1].innerText.replace(/\s/g, '')).toBe('foo:1234unit');
+			expect(containerElement.querySelectorAll('.highlight')[2].innerText.replace(/\s/g, '')).toBe('baz:5678unit');
+			expect(unitsServiceSpy).toHaveBeenCalledTimes(3);
 		});
 	});
 
@@ -350,7 +357,7 @@ describe('RoutingChart', () => {
 			const progressBarElement = containerElement.querySelector('.highlight');
 
 			progressBarElement.dispatchEvent(new Event('mouseover'));
-			expect(store.getState().routing.highlightedSegments).toEqual(
+			expect(store.getState().routing.highlightedSegments.payload).toEqual(
 				jasmine.objectContaining({
 					segments: [
 						[0, 1],
@@ -371,7 +378,7 @@ describe('RoutingChart', () => {
 			const progressBarElements = containerElement.querySelectorAll('.highlight');
 
 			progressBarElements[0].dispatchEvent(new Event('mouseover'));
-			expect(store.getState().routing.highlightedSegments).toEqual(
+			expect(store.getState().routing.highlightedSegments.payload).toEqual(
 				jasmine.objectContaining({
 					segments: [
 						[0, 1],
@@ -383,7 +390,7 @@ describe('RoutingChart', () => {
 
 			progressBarElements[0].dispatchEvent(new Event('mouseout'));
 
-			expect(store.getState().routing.highlightedSegments).toBeNull();
+			expect(store.getState().routing.highlightedSegments.payload).toBeNull();
 		});
 	});
 
@@ -446,7 +453,7 @@ describe('RoutingChart', () => {
 				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 0 })).toBe('8 km');
 				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 1 })).toBe('4.20 km');
 				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 2 })).toBe('21 m');
-				expect(store.getState().routing.highlightedSegments.segments).toEqual([[4, 5]]);
+				expect(store.getState().routing.highlightedSegments.payload.segments).toEqual([[4, 5]]);
 			});
 
 			it('creates a chartConfig with a onHover function', async () => {
@@ -455,13 +462,13 @@ describe('RoutingChart', () => {
 				const actualChartConfig = element._getChartConfig(routingChartItems, title);
 
 				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 2 })).toBe('21 m');
-				expect(store.getState().routing.highlightedSegments.segments).toEqual([[4, 5]]);
+				expect(store.getState().routing.highlightedSegments.payload.segments).toEqual([[4, 5]]);
 
 				actualChartConfig.options.onHover(new Event('foo'), ['something']);
-				expect(store.getState().routing.highlightedSegments.segments).toEqual([[4, 5]]);
+				expect(store.getState().routing.highlightedSegments.payload.segments).toEqual([[4, 5]]);
 
 				actualChartConfig.options.onHover(new Event('foo'), []);
-				expect(store.getState().routing.highlightedSegments).toBeNull();
+				expect(store.getState().routing.highlightedSegments.payload).toBeNull();
 			});
 		});
 	});

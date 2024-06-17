@@ -1,19 +1,40 @@
 import { AbstractMvuContentPanel } from '../../../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { BvvMiscContentPanel } from '../../../../../../../src/modules/menu/components/mainMenu/content/misc/BvvMiscContentPanel';
-import { ThemeToggle } from '../../../../../../../src/modules/uiTheme/components/toggle/ThemeToggle';
 import { TestUtils } from '../../../../../../test-utils';
 import { $injector } from '../../../../../../../src/injection';
 import { ToggleFeedbackPanel } from '../../../../../../../src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
 import { modalReducer } from '../../../../../../../src/store/modal/modal.reducer';
+import { authReducer } from '../../../../../../../src/store/auth/auth.reducer';
+import { setSignedIn, setSignedOut } from '../../../../../../../src/store/auth/auth.action';
 import { closeModal } from '../../../../../../../src/store/modal/modal.action';
+import { Switch } from '../../../../../../../src/modules/commons/components/switch/Switch';
+import { createNoInitialStateMediaReducer } from '../../../../../../../src/store/media/media.reducer';
 
 window.customElements.define(BvvMiscContentPanel.tag, BvvMiscContentPanel);
+window.customElements.define(Switch.tag, Switch);
+
+const authService = {
+	isSignedIn: () => {},
+	getRoles: () => {},
+	signIn: () => {},
+	signOut: () => {}
+};
 
 describe('MiscContentPanel', () => {
 	let store;
-	const setup = () => {
-		store = TestUtils.setupStoreAndDi({}, { modal: modalReducer });
-		$injector.registerSingleton('TranslationService', { translate: (key) => key });
+	const setup = (state = {}) => {
+		const initialState = {
+			media: {
+				darkSchema: true
+			},
+			auth: {
+				signedIn: false
+			},
+			...state
+		};
+		store = TestUtils.setupStoreAndDi(initialState, { media: createNoInitialStateMediaReducer(), modal: modalReducer, auth: authReducer });
+		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('AuthService', authService);
+
 		return TestUtils.render(BvvMiscContentPanel.tag);
 	};
 
@@ -25,10 +46,24 @@ describe('MiscContentPanel', () => {
 		});
 	});
 
+	describe('when instantiated', () => {
+		it('has a model containing default values', async () => {
+			await setup();
+			const model = new BvvMiscContentPanel().getModel();
+
+			expect(model).toEqual({
+				darkSchema: false,
+				active: false,
+				signedIn: false
+			});
+		});
+	});
+
 	describe('when initialized', () => {
 		it('renders the view', async () => {
 			const element = await setup();
-			expect(element.shadowRoot.querySelectorAll(ThemeToggle.tag)).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll(Switch.tag)).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll(Switch.tag)[0].checked).toBeTrue();
 		});
 
 		it('checks the list ', async () => {
@@ -51,9 +86,7 @@ describe('MiscContentPanel', () => {
 			expect(links[1].target).toEqual('_blank');
 			expect(links[1].querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_Contact');
 
-			expect(links[2].href).toEqual(
-				'https://www.geodaten.bayern.de/bayernatlas-info/grundsteuer-nutzungsbedingungen/Nutzungsbedingungen-BayernAtlas-Grundsteuer.pdf'
-			);
+			expect(links[2].href).toEqual('https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen');
 			expect(links[2].target).toEqual('_blank');
 			expect(links[2].querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_terms_of_use');
 
@@ -93,6 +126,24 @@ describe('MiscContentPanel', () => {
 			expect(feedbackButton.querySelectorAll('.ba-list-item__icon.icon.feedback')).toHaveSize(1);
 		});
 
+		it('has a signIn button', async () => {
+			const element = await setup();
+
+			const signedInButton = element.shadowRoot.querySelector('#authButton');
+			expect(signedInButton.querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_login');
+			expect(signedInButton.classList.contains('logout')).toBeFalse();
+			expect(signedInButton.querySelectorAll('.ba-list-item__icon.icon.person')).toHaveSize(1);
+		});
+
+		it('has a signOut button', async () => {
+			const element = await setup({ auth: { signedIn: true } });
+
+			const signedInButton = element.shadowRoot.querySelector('#authButton');
+			expect(signedInButton.querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_logout');
+			expect(signedInButton.classList.contains('logout')).toBeTrue();
+			expect(signedInButton.querySelectorAll('.ba-list-item__icon.icon.person')).toHaveSize(1);
+		});
+
 		it('opens the modal with the toggle-feedback component', async () => {
 			const element = await setup();
 
@@ -104,6 +155,61 @@ describe('MiscContentPanel', () => {
 			const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 			expect(wrapperElement.querySelectorAll(ToggleFeedbackPanel.tag)).toHaveSize(1);
 			expect(wrapperElement.querySelector(ToggleFeedbackPanel.tag).onSubmit).toEqual(closeModal);
+		});
+
+		it('changes the theme with the theme-switch', async () => {
+			const element = await setup();
+			const themeSwitch = element.shadowRoot.querySelector('#themeToggle');
+
+			expect(store.getState().media.darkSchema).toBeTrue();
+
+			themeSwitch.click();
+
+			expect(store.getState().media.darkSchema).toBeFalse();
+		});
+	});
+
+	describe('when auth state change', () => {
+		it('updates the auth button', async () => {
+			const element = await setup();
+			const signedInButton = element.shadowRoot.querySelector('#authButton');
+
+			expect(signedInButton.querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_login');
+			expect(signedInButton.classList.contains('logout')).toBeFalse();
+
+			setSignedIn();
+
+			expect(signedInButton.querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_logout');
+			expect(signedInButton.classList.contains('logout')).toBeTrue();
+
+			setSignedOut();
+
+			expect(signedInButton.querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_login');
+			expect(signedInButton.classList.contains('logout')).toBeFalse();
+		});
+	});
+
+	describe('when signIn button is clicked', () => {
+		it('calls the AuthService', async () => {
+			const authServiceSpy = spyOn(authService, 'signIn');
+			const element = await setup();
+			const signedInButton = element.shadowRoot.querySelector('#authButton');
+
+			signedInButton.click();
+
+			expect(authServiceSpy).toHaveBeenCalled();
+		});
+	});
+
+	describe('when signOut button is clicked', () => {
+		it('calls the AuthService', async () => {
+			const authServiceSpy = spyOn(authService, 'signOut');
+			const element = await setup({ auth: { signedIn: true } });
+			const signedInButton = element.shadowRoot.querySelector('#authButton');
+
+			signedInButton.click();
+
+			expect(authServiceSpy).toHaveBeenCalled();
 		});
 	});
 });

@@ -14,7 +14,6 @@ describe('i18n for search module', () => {
 		expect(map.share_clipboard_link_notification_text).toBe('Der Link');
 		expect(map.share_clipboard_success).toBe('wurde in die Zwischenablage kopiert');
 		expect(map.share_clipboard_error).toBe('"In die Zwischenablage kopieren" steht nicht zur Verfügung');
-		expect(map.share_assistChip_share_stored_data).toBe('Daten teilen');
 	});
 
 	it('provides translation for en', () => {
@@ -30,11 +29,10 @@ describe('i18n for search module', () => {
 		expect(map.share_clipboard_link_notification_text).toBe('The link');
 		expect(map.share_clipboard_success).toBe('was copied to clipboard');
 		expect(map.share_clipboard_error).toBe('"Copy to clipboard" is not available');
-		expect(map.share_assistChip_share_stored_data).toBe('Share data');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 9;
+		const expectedSize = 8;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

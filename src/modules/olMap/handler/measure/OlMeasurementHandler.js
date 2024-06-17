@@ -1,7 +1,7 @@
 /**
  * @module modules/olMap/handler/measure/OlMeasurementHandler
  */
-import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
+import { Draw, Modify, Select, Snap } from 'ol/interaction';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { unByKey } from 'ol/Observable';
@@ -87,17 +87,13 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		this._vectorLayer = null;
 		this._draw = false;
+
 		this._storedContent = null;
 
 		this._sketchHandler = new OlSketchHandler();
 		this._mapListeners = [];
 		this._keyActionMapper = new KeyActionMapper(document).addForKeyUp('Delete', () => this._remove()).addForKeyUp('Escape', () => this._startNew());
 
-		this._projectionHints = {
-			fromProjection: 'EPSG:' + this._mapService.getSrid(),
-			toProjection: 'EPSG:' + this._mapService.getLocalProjectedSrid(),
-			toProjectionExtent: this._mapService.getLocalProjectedSridExtent()
-		};
 		this._lastPointerMoveEvent = null;
 		this._lastInteractionStateType = null;
 		this._measureState = {
@@ -112,6 +108,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._measureStateChangedListeners = [];
 		this._drawingListeners = [];
 		this._registeredObservers = [];
+		this._saveContentDebounced = debounced(this._environmentService.isEmbedded() ? 0 : Debounce_Delay, () => this._save());
 	}
 
 	/**
@@ -120,7 +117,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	 */
 	onActivate(olMap) {
 		const translate = (key) => this._translationService.translate(key);
-		if (!this._storeService.getStore().getState().shared.termsOfUseAcknowledged && !this._environmentService.isStandalone()) {
+		if (
+			!this._storeService.getStore().getState().shared.termsOfUseAcknowledged &&
+			!this._environmentService.isStandalone() &&
+			!this._environmentService.isEmbedded()
+		) {
 			const termsOfUse = translate('olMap_handler_termsOfUse');
 			if (termsOfUse) {
 				emitNotification(unsafeHTML(termsOfUse), LevelTypes.INFO);
@@ -161,7 +162,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					};
 					oldFeatures.forEach((f) => {
 						f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
-						f.set('srid', this._mapService.getSrid(), true);
 						layer.getSource().addFeature(f);
 						this._styleService.removeStyle(f, olMap);
 						this._styleService.addStyle(f, olMap, layer);
@@ -189,16 +189,33 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const oldLayer = getOldLayer(this._map);
 			const layer = createLayer();
 			addOldFeatures(layer, oldLayer);
-			const saveDebounced = debounced(Debounce_Delay, () => this._save());
+
+			const updateContent = () => {
+				const features = layer.getSource().getFeatures();
+				features.forEach((f) => saveManualOverlayPosition(f));
+
+				this._storedContent = createKML(layer, 'EPSG:3857');
+				this._saveContentDebounced();
+			};
 			const setSelectedAndSave = (event) => {
 				if (this._measureState.type === InteractionStateType.DRAW) {
 					setSelection([event.feature.getId()]);
 				}
-				saveDebounced();
+
+				this._storedContent = createKML(layer, 'EPSG:3857');
+				this._save();
 			};
 			this._mapListeners.push(layer.getSource().on('addfeature', setSelectedAndSave));
-			this._mapListeners.push(layer.getSource().on('changefeature', () => saveDebounced()));
-			this._mapListeners.push(layer.getSource().on('removefeature', () => saveDebounced()));
+			this._mapListeners.push(
+				layer.getSource().on('changefeature', () => {
+					updateContent();
+				})
+			);
+			this._mapListeners.push(
+				layer.getSource().on('removefeature', () => {
+					updateContent();
+				})
+			);
 			this._mapListeners.push(this._map.getView().on('change:resolution', () => onResolutionChange(layer)));
 			return layer;
 		};
@@ -267,8 +284,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._modify.setActive(false);
 			this._draw = this._createDraw(source);
 			this._snap = new Snap({ source: source, pixelTolerance: getSnapTolerancePerDevice() });
-			this._dragPan = new DragPan();
-			this._dragPan.setActive(false);
 			this._onMeasureStateChanged((measureState) => this._updateMeasurementMode(measureState));
 			if (!this._environmentService.isTouch()) {
 				this._helpTooltip.activate(this._map);
@@ -293,7 +308,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			olMap.addInteraction(this._modify);
 			olMap.addInteraction(this._draw);
 			olMap.addInteraction(this._snap);
-			olMap.addInteraction(this._dragPan);
 
 			this._storedContent = null;
 		}
@@ -304,7 +318,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 	/**
 	 *  @override
-	 *  @param {Map} olMap
+	 *  @param {ol.Map} olMap
 	 */
 	onDeactivate(olMap) {
 		//use the map to unregister event listener, interactions, etc
@@ -313,7 +327,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		olMap.removeInteraction(this._modify);
 		olMap.removeInteraction(this._snap);
 		olMap.removeInteraction(this._select);
-		olMap.removeInteraction(this._dragPan);
 
 		this._helpTooltip.deactivate();
 
@@ -335,7 +348,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._modify = false;
 		this._select = false;
 		this._snap = false;
-		this._dragPan = false;
 		this._map = null;
 	}
 
@@ -529,12 +541,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_setStatistics(feature) {
-		const stats = getStats(feature.getGeometry(), this._projectionHints);
+		const stats = getStats(feature.getGeometry());
 		if (!this._sketchHandler.isFinishOnFirstPoint) {
 			// As long as the draw-interaction is active, the current geometry is a closed and maybe invalid Polygon
 			// (snapping from pointer-position to first point) and must be corrected into a valid LineString
 			const measureGeometry = this._createMeasureGeometry(feature, this._draw.getActive());
-			const nonAreaStats = getStats(measureGeometry, this._projectionHints);
+			const nonAreaStats = getStats(measureGeometry);
 			setStatistic({ length: nonAreaStats.length, area: stats.area });
 		} else {
 			setStatistic({ length: stats.length, area: stats.area });
@@ -544,7 +556,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	_updateStatistics() {
 		const startStatistic = { length: null, area: null };
 		const sumStatistic = (before, feature) => {
-			const stats = getStats(feature.getGeometry(), this._projectionHints);
+			const stats = getStats(feature.getGeometry());
 			return {
 				length: before.length + stats.length,
 				area: before.area + stats.area
@@ -609,17 +621,14 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		if (dragableOverlay) {
 			measureState.type = InteractionStateType.OVERLAY;
 		}
+		const draggingOverlay = getOverlays(this._vectorLayer).find((o) => o.get('dragging') === true);
+		if (draggingOverlay) {
+			draggingOverlay.setOffset([0, 0]);
+			draggingOverlay.set('manualPositioning', true);
+			draggingOverlay.setPosition(coordinate);
 
-		if (!this._dragPan.getActive()) {
-			const draggingOverlay = getOverlays(this._vectorLayer).find((o) => o.get('dragging') === true);
-			if (draggingOverlay) {
-				draggingOverlay.setOffset([0, 0]);
-				draggingOverlay.set('manualPositioning', true);
-				draggingOverlay.setPosition(coordinate);
-
-				const parentFeature = draggingOverlay.get('feature');
-				parentFeature.dispatchEvent('propertychange');
-			}
+			const parentFeature = draggingOverlay.get('feature');
+			parentFeature.dispatchEvent('propertychange');
 		}
 
 		measureState.dragging = dragging;
@@ -654,45 +663,38 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		action(ids);
 	}
 
-	/**
-	 * todo: redundant with OlDrawHandler, possible responsibility of a stateful _storageHandler
-	 */
 	async _save() {
-		const features = this._vectorLayer.getSource().getFeatures();
-		features.forEach((f) => saveManualOverlayPosition(f));
-
-		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
-		this._storedContent = newContent;
-		const fileSaveResult = await this._storageHandler.store(newContent, FileStorageServiceDataTypes.KML);
-		setFileSaveResult(fileSaveResult ? { fileSaveResult, content: newContent } : null);
+		/**
+		 * The stored content will be created/updated after adding/changing and removing features,
+		 * while interacting with the layer.
+		 */
+		const fileSaveResult = await this._storageHandler.store(this._storedContent, FileStorageServiceDataTypes.KML);
+		setFileSaveResult(fileSaveResult ? { fileSaveResult, content: this._storedContent } : null);
 	}
 
 	async _convertToPermanentLayer() {
 		const translate = (key) => this._translationService.translate(key);
 		const label = translate('olMap_handler_draw_layer_label');
 
-		const isEmpty = this._vectorLayer.getSource().getFeatures().length === 0;
-		if (isEmpty) {
-			return;
-		}
-
 		if (!this._storageHandler.isValid()) {
 			await this._save();
 		}
 
-		const id = this._storageHandler.getStorageId();
-		const getOrCreateVectorGeoResource = () => {
-			const fromService = this._geoResourceService.byId(id);
-			return fromService
-				? fromService
-				: new VectorGeoResource(id, label, VectorSourceType.KML).setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource);
-		};
-		const vgr = getOrCreateVectorGeoResource();
-		vgr.setSource(this._storedContent, 4326);
+		if (this._storedContent) {
+			const id = this._storageHandler.getStorageId();
+			const getOrCreateVectorGeoResource = () => {
+				const fromService = this._geoResourceService.byId(id);
+				return fromService
+					? fromService
+					: new VectorGeoResource(id, label, VectorSourceType.KML).setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource);
+			};
+			const vgr = getOrCreateVectorGeoResource();
+			vgr.setSource(this._storedContent, 4326);
 
-		// register the stored data as new georesource
-		this._geoResourceService.addOrReplace(vgr);
-		addLayer(id, { constraints: { metaData: false } });
+			// register the stored data as new georesource
+			this._geoResourceService.addOrReplace(vgr);
+			addLayer(id, { constraints: { metaData: false } });
+		}
 	}
 
 	static get Debounce_Delay() {

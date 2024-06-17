@@ -13,11 +13,19 @@
 	height: 4em;
 	border-radius: 0;
 }
+.themeToggle {
+	width: 100%;
+}
+
 .help {
 	mask-image: url('assets/help.svg');
 	-webkit-mask-image: url('assets/help.svg');
 }
-
+.feedback {
+	mask-image: url('assets/feedback.svg');
+	-webkit-mask-image: url('assets/feedback.svg');
+	transform: scale(0.9);
+}
 .contact {
 	mask-image: url('assets/contact.svg');
 	-webkit-mask-image: url('assets/contact.svg');
@@ -60,6 +68,14 @@
 	-webkit-mask-image: url('assets/gdo.svg');
 	background: linear-gradient(90deg, rgba(8, 131, 181, 1) 0%, rgba(43, 91, 148, 1) 100%);
 }
+.person {
+	background: var(--text2);
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	mask-image: url('assets/person.svg');
+	-webkit-mask-image: url('assets/person.svg');
+}
+
 .settings {
 	mask-size: cover;
 	-webkit-mask-size: cover;
@@ -76,10 +92,10 @@
 	transform: scale(0.9);
 }
 
-.feedback {
-	mask-size: cover;
-	-webkit-mask-size: cover;
-	mask-image: url('assets/feedback.svg');
-	-webkit-mask-image: url('assets/feedback.svg');
-	transform: scale(0.9);
+.logout {
+	color: var(--error-color);
+}
+
+.logout .person {
+	background: var(--error-color);
 }

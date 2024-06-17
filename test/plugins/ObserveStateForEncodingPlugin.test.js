@@ -6,6 +6,10 @@ import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { changeCenter, changeRotation, increaseZoom } from '../../src/store/position/position.action';
 import { positionReducer } from '../../src/store/position/position.reducer';
 import { TestUtils } from '../test-utils';
+import { setCategory, setWaypoints } from '../../src/store/routing/routing.action';
+import { routingReducer } from '../../src/store/routing/routing.reducer';
+import { toolsReducer } from '../../src/store/tools/tools.reducer';
+import { setCurrentTool } from '../../src/store/tools/tools.action';
 
 describe('ObserveStateForEncodingPlugin', () => {
 	const shareService = {
@@ -24,13 +28,15 @@ describe('ObserveStateForEncodingPlugin', () => {
 		const store = TestUtils.setupStoreAndDi(state, {
 			position: positionReducer,
 			layers: layersReducer,
+			routing: routingReducer,
+			tools: toolsReducer,
 			encodedState: stateForEncodingReducer
 		});
 		$injector.registerSingleton('ShareService', shareService).registerSingleton('MapService', mapService);
 		return store;
 	};
 
-	it('registers position.zoom change listeners and indictate its changes', async () => {
+	it('registers a position.zoom change listener and indicates its changes', async () => {
 		const store = setup();
 		spyOn(shareService, 'encodeState').and.callFake(() => {
 			// let's return a different state each call
@@ -44,7 +50,7 @@ describe('ObserveStateForEncodingPlugin', () => {
 		expect(store.getState().encodedState.changed).not.toEqual(initialState.changed);
 	});
 
-	it('registers position.center change listeners and and indictate its changes', async () => {
+	it('registers a position.center change listener and indicates its changes', async () => {
 		const store = setup();
 		spyOn(shareService, 'encodeState').and.callFake(() => {
 			// let's return a different state each call
@@ -58,7 +64,7 @@ describe('ObserveStateForEncodingPlugin', () => {
 		expect(store.getState().encodedState.changed).not.toEqual(initialState.changed);
 	});
 
-	it('registers position.rotation change listeners and and indictate its changes', async () => {
+	it('registers a position.rotation change listener and indicates its changes', async () => {
 		const store = setup();
 		spyOn(shareService, 'encodeState').and.callFake(() => {
 			// let's return a different state each call
@@ -72,7 +78,7 @@ describe('ObserveStateForEncodingPlugin', () => {
 		expect(store.getState().encodedState.changed).not.toEqual(initialState.changed);
 	});
 
-	it('registers layers.active change listeners and and indictate its changes', async () => {
+	it('register a layers.active change listener and indicates its changes', async () => {
 		const store = setup();
 		spyOn(shareService, 'encodeState').and.callFake(() => {
 			// let's return a different state each call
@@ -86,7 +92,52 @@ describe('ObserveStateForEncodingPlugin', () => {
 		expect(store.getState().encodedState.changed).not.toEqual(initialState.changed);
 	});
 
-	it('and indictate its changes in an asynchronous manner after plugin registration is done', async () => {
+	it('registers a routing.waypoints change listener and indicates its changes', async () => {
+		const store = setup();
+		spyOn(shareService, 'encodeState').and.callFake(() => {
+			// let's return a different state each call
+			return `state_${Math.random()}`;
+		});
+		const instanceUnderTest = new ObserveStateForEncodingPlugin();
+		await instanceUnderTest.register(store);
+
+		setWaypoints([
+			[1, 2],
+			[3, 4]
+		]);
+
+		expect(store.getState().encodedState.changed).not.toEqual(initialState.changed);
+	});
+
+	it('registers routing.categoryId change listeners and indicates its changes', async () => {
+		const store = setup();
+		spyOn(shareService, 'encodeState').and.callFake(() => {
+			// let's return a different state each call
+			return `state_${Math.random()}`;
+		});
+		const instanceUnderTest = new ObserveStateForEncodingPlugin();
+		await instanceUnderTest.register(store);
+
+		setCategory('catId');
+
+		expect(store.getState().encodedState.changed).not.toEqual(initialState.changed);
+	});
+
+	it('registers a tool change listener and indicates its changes', async () => {
+		const store = setup();
+		spyOn(shareService, 'encodeState').and.callFake(() => {
+			// let's return a different state each call
+			return `state_${Math.random()}`;
+		});
+		const instanceUnderTest = new ObserveStateForEncodingPlugin();
+		await instanceUnderTest.register(store);
+
+		setCurrentTool('someTool');
+
+		expect(store.getState().encodedState.changed).not.toEqual(initialState.changed);
+	});
+
+	it('indicates its changes in an asynchronous manner after plugin registration is done', async () => {
 		const store = setup();
 		spyOn(shareService, 'encodeState').and.callFake(() => {
 			// let's return a different state each call

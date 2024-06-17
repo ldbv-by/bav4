@@ -3,6 +3,7 @@ import {
 	AggregateGeoResource,
 	GeoResourceAuthenticationType,
 	GeoResourceFuture,
+	RtVectorGeoResource,
 	VectorGeoResource,
 	VectorSourceType,
 	VTGeoResource,
@@ -13,7 +14,7 @@ import { LayerService } from '../../../../src/modules/olMap/services/LayerServic
 import { Map } from 'ol';
 import VectorLayer from 'ol/layer/Vector';
 import { TestUtils } from '../../../test-utils';
-import { getBvvBaaImageLoadFunction } from '../../../../src/modules/olMap/utils/baaImageLoadFunction.provider';
+import { getBvvBaaImageLoadFunction, getBvvTileLoadFunction } from '../../../../src/modules/olMap/utils/olLoadFunction.provider';
 import MapLibreLayer from '@geoblocks/ol-maplibre-layer';
 import { createXYZ } from 'ol/tilegrid';
 import { AdvWmtsTileGrid } from '../../../../src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid';
@@ -21,37 +22,44 @@ import supported from 'mapbox-gl-supported';
 
 describe('LayerService', () => {
 	const vectorLayerService = {
-		createVectorLayer: () => {}
+		createLayer: () => {}
 	};
-	const georesourceService = {
+	const rtVectorLayerService = {
+		createLayer: () => {}
+	};
+	const geoResourceService = {
 		byId: () => {}
 	};
 	const baaCredentialService = {
 		get: () => {}
 	};
 
-	const setup = (baaImageLoadFunctionProvider) => {
-		return new LayerService(baaImageLoadFunctionProvider);
+	const setup = (imageLoadFunctionProvider, tileLoadFunctionProvider) => {
+		return new LayerService(imageLoadFunctionProvider, tileLoadFunctionProvider);
 	};
 
 	beforeEach(() => {
 		TestUtils.setupStoreAndDi({});
 		$injector
 			.registerSingleton('VectorLayerService', vectorLayerService)
-			.registerSingleton('GeoResourceService', georesourceService)
+			.registerSingleton('RtVectorLayerService', rtVectorLayerService)
+			.registerSingleton('GeoResourceService', geoResourceService)
 			.registerSingleton('BaaCredentialService', baaCredentialService);
 	});
 
 	describe('constructor', () => {
 		it('initializes the service with default providers', () => {
 			const instanceUnderTest = new LayerService();
-			expect(instanceUnderTest._baaImageLoadFunctionProvider).toEqual(getBvvBaaImageLoadFunction);
+			expect(instanceUnderTest._imageLoadFunctionProvider).toEqual(getBvvBaaImageLoadFunction);
+			expect(instanceUnderTest._tileLoadFunctionProvider).toEqual(getBvvTileLoadFunction);
 		});
 
 		it('initializes the service with custom provider', () => {
-			const getBvvBaaImageLoadFunctionCustomProvider = () => {};
-			const instanceUnderTest = setup(getBvvBaaImageLoadFunctionCustomProvider);
-			expect(instanceUnderTest._baaImageLoadFunctionProvider).toEqual(getBvvBaaImageLoadFunctionCustomProvider);
+			const getImageLoadFunctionCustomProvider = () => {};
+			const getTileLoadFunctionCustomProvider = () => {};
+			const instanceUnderTest = setup(getImageLoadFunctionCustomProvider, getTileLoadFunctionCustomProvider);
+			expect(instanceUnderTest._imageLoadFunctionProvider).toEqual(getImageLoadFunctionCustomProvider);
+			expect(instanceUnderTest._tileLoadFunctionProvider).toEqual(getTileLoadFunctionCustomProvider);
 		});
 	});
 
@@ -61,9 +69,9 @@ describe('LayerService', () => {
 				const instanceUnderTest = setup();
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
-				const wmsGeoresource = new GeoResourceFuture(geoResourceId, () => {});
+				const wmsGeoResource = new GeoResourceFuture(geoResourceId, () => {});
 
-				const placeholderOlLayer = instanceUnderTest.toOlLayer(id, wmsGeoresource);
+				const placeholderOlLayer = instanceUnderTest.toOlLayer(id, wmsGeoResource);
 
 				expect(placeholderOlLayer.get('id')).toBe(id);
 				expect(placeholderOlLayer.get('geoResourceId')).toBe(geoResourceId);
@@ -74,31 +82,46 @@ describe('LayerService', () => {
 			});
 		});
 
-		describe('VectorGeoresource', () => {
+		describe('VectorGeoResource', () => {
 			it('calls the VectorLayerService', () => {
 				const instanceUnderTest = setup();
 				const id = 'id';
 				const olMap = new Map();
 				const olLayer = new VectorLayer();
-				const vectorGeoresource = new VectorGeoResource('geoResourceId', 'label', VectorSourceType.KML);
-				const vectorSourceForUrlSpy = spyOn(vectorLayerService, 'createVectorLayer').and.returnValue(olLayer);
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'label', VectorSourceType.KML);
+				const vectorLayerServiceSpy = spyOn(vectorLayerService, 'createLayer').and.returnValue(olLayer);
 
-				instanceUnderTest.toOlLayer(id, vectorGeoresource, olMap);
+				instanceUnderTest.toOlLayer(id, vectorGeoResource, olMap);
 
-				expect(vectorSourceForUrlSpy).toHaveBeenCalledWith(id, vectorGeoresource, olMap);
+				expect(vectorLayerServiceSpy).toHaveBeenCalledWith(id, vectorGeoResource, olMap);
 			});
 		});
 
-		describe('WmsGeoresource', () => {
-			it('converts a WmsGeoresource to a olLayer', () => {
+		describe('RtVectorGeoResource', () => {
+			it('calls the RtVectorLayerService', () => {
+				const instanceUnderTest = setup();
+				const id = 'id';
+				const olMap = new Map();
+				const olLayer = new VectorLayer();
+				const rtVectorGeoResource = new RtVectorGeoResource('geoResourceId', 'label', 'url', VectorSourceType.KML);
+				const rtVectorLayerServiceSpy = spyOn(rtVectorLayerService, 'createLayer').and.returnValue(olLayer);
+
+				instanceUnderTest.toOlLayer(id, rtVectorGeoResource, olMap);
+
+				expect(rtVectorLayerServiceSpy).toHaveBeenCalledWith(id, rtVectorGeoResource, olMap);
+			});
+		});
+
+		describe('WmsGeoResource', () => {
+			it('converts a WmsGeoResource to a olLayer', () => {
 				const mockImageLoadFunction = () => {};
 				const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
 				const instanceUnderTest = setup(providerSpy);
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
-				const wmsGeoresource = new WmsGeoResource(geoResourceId, 'label', 'https://some.url', 'layer', 'image/png');
+				const wmsGeoResource = new WmsGeoResource(geoResourceId, 'label', 'https://some.url', 'layer', 'image/png');
 
-				const wmsOlLayer = instanceUnderTest.toOlLayer(id, wmsGeoresource);
+				const wmsOlLayer = instanceUnderTest.toOlLayer(id, wmsGeoResource);
 
 				expect(wmsOlLayer.get('id')).toBe(id);
 				expect(wmsOlLayer.get('geoResourceId')).toBe(geoResourceId);
@@ -112,23 +135,23 @@ describe('LayerService', () => {
 				expect(wmsSource.getParams().LAYERS).toBe('layer');
 				expect(wmsSource.getParams().FORMAT).toBe('image/png');
 				expect(wmsSource.getParams().VERSION).toBe('1.1.1');
-				expect(providerSpy).toHaveBeenCalledWith();
+				expect(providerSpy).toHaveBeenCalledWith(geoResourceId, null, null);
 				expect(wmsOlLayer.getSource().getImageLoadFunction()).toBe(mockImageLoadFunction);
 			});
 
-			it('converts a WmsGeoresource containing optional properties to a olLayer', () => {
+			it('converts a WmsGeoResource containing optional properties to a olLayer', () => {
 				const mockImageLoadFunction = () => {};
 				const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
 				const instanceUnderTest = setup(providerSpy);
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
-				const wmsGeoresource = new WmsGeoResource(geoResourceId, 'label', 'https://some.url', 'layer', 'image/png')
+				const wmsGeoResource = new WmsGeoResource(geoResourceId, 'label', 'https://some.url', 'layer', 'image/png')
 					.setOpacity(0.5)
 					.setMinZoom(5)
 					.setMaxZoom(19)
 					.setExtraParams({ STYLES: 'some' });
 
-				const wmsOlLayer = instanceUnderTest.toOlLayer(id, wmsGeoresource);
+				const wmsOlLayer = instanceUnderTest.toOlLayer(id, wmsGeoResource);
 
 				expect(wmsOlLayer.get('id')).toBe(id);
 				expect(wmsOlLayer.get('geoResourceId')).toBe(geoResourceId);
@@ -143,7 +166,7 @@ describe('LayerService', () => {
 				expect(wmsSource.getParams().FORMAT).toBe('image/png');
 				expect(wmsSource.getParams().VERSION).toBe('1.1.1');
 				expect(wmsSource.getParams().STYLES).toBe('some');
-				expect(providerSpy).toHaveBeenCalledWith();
+				expect(providerSpy).toHaveBeenCalledWith(geoResourceId, null, null);
 				expect(wmsOlLayer.getSource().getImageLoadFunction()).toBe(mockImageLoadFunction);
 			});
 
@@ -152,18 +175,18 @@ describe('LayerService', () => {
 					const url = 'https://some.url';
 					const credential = { username: 'u', password: 'p' };
 					const mockImageLoadFunction = () => {};
-					const providerSpy = jasmine.createSpy().withArgs(credential).and.returnValue(mockImageLoadFunction);
+					const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
 					spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(credential);
-
 					const instanceUnderTest = setup(providerSpy);
 					const id = 'id';
-					const wmsGeoresource = new WmsGeoResource('geoResourceId', 'label', url, 'layer', 'image/png').setAuthenticationType(
+					const geoResourceId = 'geoResourceId';
+					const wmsGeoResource = new WmsGeoResource(geoResourceId, 'label', url, 'layer', 'image/png').setAuthenticationType(
 						GeoResourceAuthenticationType.BAA
 					);
 
-					const wmsOlLayer = instanceUnderTest.toOlLayer(id, wmsGeoresource);
+					const wmsOlLayer = instanceUnderTest.toOlLayer(id, wmsGeoResource);
 
-					expect(providerSpy).toHaveBeenCalledWith(credential);
+					expect(providerSpy).toHaveBeenCalledWith(geoResourceId, credential, null);
 					expect(wmsOlLayer.getSource().getImageLoadFunction()).toBe(mockImageLoadFunction);
 				});
 
@@ -171,31 +194,33 @@ describe('LayerService', () => {
 					const url = 'https://some.url';
 					const credential = null;
 					const mockImageLoadFunction = () => {};
-					const providerSpy = jasmine.createSpy().withArgs(credential).and.returnValue(mockImageLoadFunction);
+					const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
 					spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(credential);
-
 					const instanceUnderTest = setup(providerSpy);
 					const id = 'id';
-					const wmsGeoresource = new WmsGeoResource('geoResourceId', 'label', url, 'layer', 'image/png').setAuthenticationType(
+					const geoResourceId = 'geoResourceId';
+					const wmsGeoResource = new WmsGeoResource(geoResourceId, 'label', url, 'layer', 'image/png').setAuthenticationType(
 						GeoResourceAuthenticationType.BAA
 					);
 
-					expect(providerSpy).not.toHaveBeenCalledWith(credential);
+					expect(providerSpy).not.toHaveBeenCalled();
 					expect(() => {
-						instanceUnderTest.toOlLayer(id, wmsGeoresource);
-					}).toThrowError(`No credential available for GeoResource with id '${wmsGeoresource.id}' and url '${wmsGeoresource.url}'`);
+						instanceUnderTest.toOlLayer(id, wmsGeoResource);
+					}).toThrowError(`No credential available for GeoResource with id '${wmsGeoResource.id}' and url '${wmsGeoResource.url}'`);
 				});
 			});
 		});
 
-		describe('XyzGeoresource', () => {
-			it('converts a XyzGeoresource to a olLayer', () => {
-				const instanceUnderTest = setup();
+		describe('XyzGeoResource', () => {
+			it('converts a XyzGeoResource to a olLayer', () => {
+				const mockImageLoadFunction = () => {};
+				const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
+				const instanceUnderTest = setup(null, providerSpy);
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
-				const xyzGeoresource = new XyzGeoResource(geoResourceId, 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
+				const xyzGeoResource = new XyzGeoResource(geoResourceId, 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
 
-				const xyzOlLayer = instanceUnderTest.toOlLayer(id, xyzGeoresource);
+				const xyzOlLayer = instanceUnderTest.toOlLayer(id, xyzGeoResource);
 
 				expect(xyzOlLayer.get('id')).toBe(id);
 				expect(xyzOlLayer.get('geoResourceId')).toBe(geoResourceId);
@@ -206,15 +231,19 @@ describe('LayerService', () => {
 				expect(xyzOlLayer.constructor.name).toBe('TileLayer');
 				expect(xyzSource.constructor.name).toBe('XYZ');
 				expect(xyzSource.getUrls()).toEqual(['https://some1/layer/{z}/{x}/{y}', 'https://some2/layer/{z}/{x}/{y}']);
+				expect(xyzSource.getTileLoadFunction()).toBe(mockImageLoadFunction);
+				expect(providerSpy).toHaveBeenCalledWith(geoResourceId);
 			});
 
-			it('converts a XyzGeoresource to a olLayer containing an array of urls', () => {
-				const instanceUnderTest = setup();
+			it('converts a XyzGeoResource to a olLayer containing an array of urls', () => {
+				const mockImageLoadFunction = () => {};
+				const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
+				const instanceUnderTest = setup(null, providerSpy);
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
-				const xyzGeoresource = new XyzGeoResource(geoResourceId, 'label', ['https://some1/layer/{z}/{x}/{y}', 'https://some2/layer/{z}/{x}/{y}']);
+				const xyzGeoResource = new XyzGeoResource(geoResourceId, 'label', ['https://some1/layer/{z}/{x}/{y}', 'https://some2/layer/{z}/{x}/{y}']);
 
-				const xyzOlLayer = instanceUnderTest.toOlLayer(id, xyzGeoresource);
+				const xyzOlLayer = instanceUnderTest.toOlLayer(id, xyzGeoResource);
 
 				expect(xyzOlLayer.get('id')).toBe(id);
 				expect(xyzOlLayer.get('geoResourceId')).toBe(geoResourceId);
@@ -225,18 +254,22 @@ describe('LayerService', () => {
 				expect(xyzOlLayer.constructor.name).toBe('TileLayer');
 				expect(xyzSource.constructor.name).toBe('XYZ');
 				expect(xyzSource.getUrls()).toEqual(['https://some1/layer/{z}/{x}/{y}', 'https://some2/layer/{z}/{x}/{y}']);
+				expect(xyzSource.getTileLoadFunction()).toBe(mockImageLoadFunction);
+				expect(providerSpy).toHaveBeenCalledWith(geoResourceId);
 			});
 
-			it('converts a XyzGeoresource containing optional properties to a olLayer', () => {
-				const instanceUnderTest = setup();
+			it('converts a XyzGeoResource containing optional properties to a olLayer', () => {
+				const mockImageLoadFunction = () => {};
+				const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
+				const instanceUnderTest = setup(null, providerSpy);
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
-				const xyzGeoresource = new XyzGeoResource(geoResourceId, 'label', 'https://some{1-2}/layer/{z}/{x}/{y}')
+				const xyzGeoResource = new XyzGeoResource(geoResourceId, 'label', 'https://some{1-2}/layer/{z}/{x}/{y}')
 					.setOpacity(0.5)
 					.setMinZoom(5)
 					.setMaxZoom(19);
 
-				const xyzOlLayer = instanceUnderTest.toOlLayer(id, xyzGeoresource);
+				const xyzOlLayer = instanceUnderTest.toOlLayer(id, xyzGeoResource);
 
 				expect(xyzOlLayer.get('id')).toBe(id);
 				expect(xyzOlLayer.get('geoResourceId')).toBe(geoResourceId);
@@ -248,14 +281,18 @@ describe('LayerService', () => {
 				expect(xyzOlLayer.constructor.name).toBe('TileLayer');
 				expect(xyzSource.constructor.name).toBe('XYZ');
 				expect(xyzSource.getUrls()).toEqual(['https://some1/layer/{z}/{x}/{y}', 'https://some2/layer/{z}/{x}/{y}']);
+				expect(xyzSource.getTileLoadFunction()).toBe(mockImageLoadFunction);
+				expect(providerSpy).toHaveBeenCalledWith(geoResourceId);
 			});
 
 			it('sets a XYZ source containing the default TileGrid', () => {
-				const instanceUnderTest = setup();
+				const mockImageLoadFunction = () => {};
+				const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
+				const instanceUnderTest = setup(null, providerSpy);
 				const id = 'id';
-				const xyzGeoresource = new XyzGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}');
+				const xyzGeoResource = new XyzGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}');
 
-				const xyzOlLayer = instanceUnderTest.toOlLayer(id, xyzGeoresource);
+				const xyzOlLayer = instanceUnderTest.toOlLayer(id, xyzGeoResource);
 
 				const xyzSource = xyzOlLayer.getSource();
 				expect(xyzSource.getTileGrid()).toEqual(createXYZ());
@@ -263,11 +300,13 @@ describe('LayerService', () => {
 			});
 
 			it('sets a XYZ source containing the ADV WMTS TileGrid', () => {
-				const instanceUnderTest = setup();
+				const mockImageLoadFunction = () => {};
+				const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
+				const instanceUnderTest = setup(null, providerSpy);
 				const id = 'id';
-				const xyzGeoresource = new XyzGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}').setTileGridId('adv_wmts');
+				const xyzGeoResource = new XyzGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}').setTileGridId('adv_wmts');
 
-				const xyzOlLayer = instanceUnderTest.toOlLayer(id, xyzGeoresource);
+				const xyzOlLayer = instanceUnderTest.toOlLayer(id, xyzGeoResource);
 
 				const xyzSource = xyzOlLayer.getSource();
 				expect(xyzSource.getTileGrid()).toEqual(new AdvWmtsTileGrid());
@@ -275,17 +314,17 @@ describe('LayerService', () => {
 			});
 		});
 
-		describe('VTGeoresource', () => {
-			it('converts a VTGeoresource to a olLayer', () => {
+		describe('VTGeoResource', () => {
+			it('converts a VTGeoResource to a olLayer', () => {
 				// FF currently throws a WebGL error when running in headless mode, so we first check if it does make sense to perform the test, otherwise, we skip them
 				// See https://bugzilla.mozilla.org/show_bug.cgi?id=1375585#c27 for more information
 				if (supported()) {
 					const instanceUnderTest = setup();
 					const id = 'id';
 					const geoResourceId = 'geoResourceId';
-					const vtGeoresource = new VTGeoResource(geoResourceId, 'label', null);
+					const vtGeoResource = new VTGeoResource(geoResourceId, 'label', null);
 
-					const vtOlLayer = instanceUnderTest.toOlLayer(id, vtGeoresource);
+					const vtOlLayer = instanceUnderTest.toOlLayer(id, vtGeoResource);
 
 					expect(vtOlLayer.get('id')).toBe(id);
 					expect(vtOlLayer.get('geoResourceId')).toBe(geoResourceId);
@@ -296,16 +335,16 @@ describe('LayerService', () => {
 				}
 			});
 
-			it('converts a VTGeoresource containing optional properties to a olLayer', () => {
+			it('converts a VTGeoResource containing optional properties to a olLayer', () => {
 				// FF currently throws a WebGL error when running in headless mode, so we first check if it does make sense to perform the test, otherwise, we skip them
 				// See https://bugzilla.mozilla.org/show_bug.cgi?id=1375585#c27 for more information
 				if (supported()) {
 					const instanceUnderTest = setup();
 					const id = 'id';
 					const geoResourceId = 'geoResourceId';
-					const vtGeoresource = new VTGeoResource(geoResourceId, 'label', null).setOpacity(0.5).setMinZoom(5).setMaxZoom(19);
+					const vtGeoResource = new VTGeoResource(geoResourceId, 'label', null).setOpacity(0.5).setMinZoom(5).setMaxZoom(19);
 
-					const vtOlLayer = instanceUnderTest.toOlLayer(id, vtGeoresource);
+					const vtOlLayer = instanceUnderTest.toOlLayer(id, vtGeoResource);
 					expect(vtOlLayer.get('id')).toBe(id);
 					expect(vtOlLayer.get('geoResourceId')).toBe(geoResourceId);
 					expect(vtOlLayer.getOpacity()).toBe(0.5);
@@ -317,51 +356,55 @@ describe('LayerService', () => {
 			});
 		});
 
-		it('converts a AggregateGeoresource to a olLayer(Group)', () => {
-			const instanceUnderTest = setup();
+		it('converts a AggregateGeoResource to a olLayer(Group)', () => {
+			const mockImageLoadFunction = () => {};
+			const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
+			const instanceUnderTest = setup(null, providerSpy);
 			const id = 'id';
-			const xyzGeoresource0 = new XyzGeoResource('geoResourceId1', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
-			const xyzGeoresource1 = new XyzGeoResource('geoResourceId1', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
-			spyOn(georesourceService, 'byId').and.callFake((id) => {
+			const xyzGeoResource0 = new XyzGeoResource('geoResourceId1', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
+			const xyzGeoResource1 = new XyzGeoResource('geoResourceId1', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
+			spyOn(geoResourceService, 'byId').and.callFake((id) => {
 				switch (id) {
-					case xyzGeoresource0.id:
-						return xyzGeoresource0;
-					case xyzGeoresource1.id:
-						return xyzGeoresource1;
+					case xyzGeoResource0.id:
+						return xyzGeoResource0;
+					case xyzGeoResource1.id:
+						return xyzGeoResource1;
 				}
 			});
-			const aggreggateGeoResource = new AggregateGeoResource('geoResourceId0', 'label', [xyzGeoresource0.id, xyzGeoresource1.id]);
+			const aggregateGeoResource = new AggregateGeoResource('geoResourceId0', 'label', [xyzGeoResource0.id, xyzGeoResource1.id]);
 
-			const olLayerGroup = instanceUnderTest.toOlLayer(id, aggreggateGeoResource);
+			const olLayerGroup = instanceUnderTest.toOlLayer(id, aggregateGeoResource);
 
 			expect(olLayerGroup.get('id')).toBe(id);
 			expect(olLayerGroup.getMinZoom()).toBeNegativeInfinity();
 			expect(olLayerGroup.getMaxZoom()).toBePositiveInfinity();
 			expect(olLayerGroup.constructor.name).toBe('LayerGroup');
 			const layers = olLayerGroup.getLayers();
-			expect(layers.item(0).get('id')).toBe(xyzGeoresource0.id);
-			expect(layers.item(1).get('id')).toBe(xyzGeoresource1.id);
+			expect(layers.item(0).get('id')).toBe(xyzGeoResource0.id);
+			expect(layers.item(1).get('id')).toBe(xyzGeoResource1.id);
 		});
 
-		it('converts a AggregateGeoresource containing optional properties to a olLayer(Group)', () => {
-			const instanceUnderTest = setup();
+		it('converts a AggregateGeoResource containing optional properties to a olLayer(Group)', () => {
+			const mockImageLoadFunction = () => {};
+			const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
+			const instanceUnderTest = setup(null, providerSpy);
 			const id = 'id';
-			const xyzGeoresource0 = new XyzGeoResource('geoResourceId0', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
-			const xyzGeoresource1 = new XyzGeoResource('geoResourceId1', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
-			spyOn(georesourceService, 'byId').and.callFake((id) => {
+			const xyzGeoResource0 = new XyzGeoResource('geoResourceId0', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
+			const xyzGeoResource1 = new XyzGeoResource('geoResourceId1', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
+			spyOn(geoResourceService, 'byId').and.callFake((id) => {
 				switch (id) {
-					case xyzGeoresource0.id:
-						return xyzGeoresource0;
-					case xyzGeoresource1.id:
-						return xyzGeoresource1;
+					case xyzGeoResource0.id:
+						return xyzGeoResource0;
+					case xyzGeoResource1.id:
+						return xyzGeoResource1;
 				}
 			});
-			const aggreggateGeoResource = new AggregateGeoResource('geoResourceId0', 'label', [xyzGeoresource0.id, xyzGeoresource1.id])
+			const aggregateGeoResource = new AggregateGeoResource('geoResourceId0', 'label', [xyzGeoResource0.id, xyzGeoResource1.id])
 				.setOpacity(0.5)
 				.setMinZoom(5)
 				.setMaxZoom(19);
 
-			const olLayerGroup = instanceUnderTest.toOlLayer(id, aggreggateGeoResource);
+			const olLayerGroup = instanceUnderTest.toOlLayer(id, aggregateGeoResource);
 
 			expect(olLayerGroup.get('id')).toBe(id);
 			expect(olLayerGroup.getOpacity()).toBe(0.5);
@@ -369,28 +412,30 @@ describe('LayerService', () => {
 			expect(olLayerGroup.getMaxZoom()).toBe(19);
 			expect(olLayerGroup.constructor.name).toBe('LayerGroup');
 			const layers = olLayerGroup.getLayers();
-			expect(layers.item(0).get('id')).toBe(xyzGeoresource0.id);
-			expect(layers.item(1).get('id')).toBe(xyzGeoresource1.id);
+			expect(layers.item(0).get('id')).toBe(xyzGeoResource0.id);
+			expect(layers.item(1).get('id')).toBe(xyzGeoResource1.id);
 		});
 
 		it('registers an opacity change listener in order to synchronize the opacity of a MapLibreLayer', () => {
 			// FF currently throws a WebGL error when running in headless mode, so we first check if it does make sense to perform the test, otherwise, we skip them
 			// See https://bugzilla.mozilla.org/show_bug.cgi?id=1375585#c27 for more information
 			if (supported()) {
-				const instanceUnderTest = setup();
+				const mockImageLoadFunction = () => {};
+				const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
+				const instanceUnderTest = setup(null, providerSpy);
 				const id = 'id';
-				const xyzGeoresource = new XyzGeoResource('geoResourceId1', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
-				const vtGeoresource = new VTGeoResource('geoResourceId2', 'label', null);
-				spyOn(georesourceService, 'byId').and.callFake((id) => {
+				const xyzGeoResource = new XyzGeoResource('geoResourceId1', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
+				const vtGeoResource = new VTGeoResource('geoResourceId2', 'label', null);
+				spyOn(geoResourceService, 'byId').and.callFake((id) => {
 					switch (id) {
-						case xyzGeoresource.id:
-							return xyzGeoresource;
-						case vtGeoresource.id:
-							return vtGeoresource;
+						case xyzGeoResource.id:
+							return xyzGeoResource;
+						case vtGeoResource.id:
+							return vtGeoResource;
 					}
 				});
-				const aggreggateGeoResource = new AggregateGeoResource('geoResourceId0', 'label', [xyzGeoresource.id, vtGeoresource.id]);
-				const olLayerGroup = instanceUnderTest.toOlLayer(id, aggreggateGeoResource);
+				const aggregateGeoResource = new AggregateGeoResource('geoResourceId0', 'label', [xyzGeoResource.id, vtGeoResource.id]);
+				const olLayerGroup = instanceUnderTest.toOlLayer(id, aggregateGeoResource);
 				const layers = olLayerGroup.getLayers();
 				const otherOlLayerSetOpacitySpy = spyOn(layers.item(0), 'setOpacity').and.callThrough();
 				const mapLibreLayerSetOpacitySpy = spyOn(layers.item(1), 'setOpacity').and.callThrough();
@@ -402,16 +447,16 @@ describe('LayerService', () => {
 			}
 		});
 
-		it('throws an error when georesource type is not supported', () => {
+		it('throws an error when GeoResource type is not supported', () => {
 			const instanceUnderTest = setup();
 			const id = 'id';
 			expect(() => {
 				instanceUnderTest.toOlLayer(id, {
 					getType() {
-						return 'Unknown';
+						return Symbol.for('Unknown');
 					}
 				});
-			}).toThrowError(/Unknown currently not supported/);
+			}).toThrowError('GeoResource type "Unknown" currently not supported');
 		});
 	});
 });

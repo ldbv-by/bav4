@@ -7,6 +7,9 @@ import { QueryParameters } from '../../src/domain/queryParameters';
 import { Topic } from '../../src/domain/topic';
 import { setCurrent } from '../../src/store/topics/topics.action';
 import { topicsReducer } from '../../src/store/topics/topics.reducer';
+import { wcAttributeReducer } from '../../src/store/wcAttribute/wcAttribute.reducer';
+import { indicateAttributeChange } from '../../src/store/wcAttribute/wcAttribute.action';
+import { initialState as initialPositionState, positionReducer } from '../../src/store/position/position.reducer.js';
 
 describe('LayersPlugin', () => {
 	const geoResourceServiceMock = {
@@ -27,13 +30,16 @@ describe('LayersPlugin', () => {
 	};
 	const environmentService = {
 		getQueryParams: () => new URLSearchParams(),
-		isRetinaDisplay: () => false
+		isRetinaDisplay: () => false,
+		isEmbeddedAsWC: () => false
 	};
 
 	const setup = (state) => {
 		const store = TestUtils.setupStoreAndDi(state, {
 			layers: layersReducer,
-			topics: topicsReducer
+			topics: topicsReducer,
+			position: positionReducer,
+			wcAttribute: wcAttributeReducer
 		});
 		$injector
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
@@ -48,7 +54,7 @@ describe('LayersPlugin', () => {
 		it('calls #_init and awaits its completion', async () => {
 			const store = setup();
 			const instanceUnderTest = new LayersPlugin();
-			const spy = spyOn(instanceUnderTest, '_init').and.returnValue(Promise.resolve(true));
+			const spy = spyOn(instanceUnderTest, '_init').withArgs(store).and.resolveTo(true);
 
 			const result = await instanceUnderTest.register(store);
 
@@ -63,9 +69,9 @@ describe('LayersPlugin', () => {
 			const instanceUnderTest = new LayersPlugin();
 			const addLayersFromQueryParamsSpy = spyOn(instanceUnderTest, '_addLayersFromQueryParams');
 			const addLayersFromConfigSpy = spyOn(instanceUnderTest, '_addLayersFromConfig');
-			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'init').and.returnValue(Promise.resolve());
+			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'init').and.resolveTo();
 
-			await instanceUnderTest._init();
+			await instanceUnderTest._init(store);
 
 			expect(geoResourceServiceSpy).toHaveBeenCalledTimes(1);
 			expect(addLayersFromQueryParamsSpy).not.toHaveBeenCalled();
@@ -79,9 +85,9 @@ describe('LayersPlugin', () => {
 			const instanceUnderTest = new LayersPlugin();
 			const addLayersFromQueryParamsSpy = spyOn(instanceUnderTest, '_addLayersFromQueryParams');
 			const addLayersFromConfigSpy = spyOn(instanceUnderTest, '_addLayersFromConfig');
-			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'init').and.returnValue(Promise.resolve());
+			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'init').and.resolveTo();
 			spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-			await instanceUnderTest._init();
+			await instanceUnderTest._init(store);
 
 			expect(geoResourceServiceSpy).toHaveBeenCalled();
 			expect(addLayersFromQueryParamsSpy).toHaveBeenCalledOnceWith(new URLSearchParams(queryParam));
@@ -219,16 +225,16 @@ describe('LayersPlugin', () => {
 
 		describe('_addLayersFromQueryParams', () => {
 			it('adds layers loading existing and on-demand geoResources', () => {
-				const queryParam = new URLSearchParams(QueryParameters.LAYER + '=some0,some1,some2');
+				const queryParam = new URLSearchParams(QueryParameters.LAYER + '=some0,some1,some2,some0');
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
 				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					switch (id) {
 						case 'some0':
-							return new XyzGeoResource('some0', 'someLabel0', 'someUrl0');
+							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
 						case 'some2':
-							return new XyzGeoResource('some1', 'someLabel1', 'someUrl1');
+							return new XyzGeoResource(id, 'someLabel2', 'someUrl2');
 					}
 				});
 				spyOn(geoResourceServiceMock, 'asyncById').and.callFake((id) => {
@@ -240,10 +246,40 @@ describe('LayersPlugin', () => {
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
+				expect(store.getState().layers.active.length).toBe(4);
+				expect(store.getState().layers.active[0].id).toBe('some0_0');
+				expect(store.getState().layers.active[1].id).toBe('some1_0');
+				expect(store.getState().layers.active[2].id).toBe('some2_0');
+				expect(store.getState().layers.active[3].id).toBe('some0_1');
+			});
+
+			it('restores existing hidden layers', () => {
+				const hiddenLayer = { id: 'hiddenLayer0', constraints: { hidden: true } };
+				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_VISIBILITY}=true,false`);
+				const store = setup({
+					layers: {
+						active: [hiddenLayer]
+					}
+				});
+				const instanceUnderTest = new LayersPlugin();
+				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+					switch (id) {
+						case 'some0':
+							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
+						case 'some1':
+							return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
+					}
+				});
+
+				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
+
 				expect(store.getState().layers.active.length).toBe(3);
-				expect(store.getState().layers.active[0].id).toContain('some0_');
-				expect(store.getState().layers.active[1].id).toContain('some1_');
-				expect(store.getState().layers.active[2].id).toContain('some2_');
+				expect(store.getState().layers.active[0].id).toBe('some0_0');
+				expect(store.getState().layers.active[0].visible).toBeTrue();
+				expect(store.getState().layers.active[1].id).toBe('some1_0');
+				expect(store.getState().layers.active[1].visible).toBeFalse();
+				expect(store.getState().layers.active[2].id).toBe(hiddenLayer.id);
 			});
 
 			it('adds layers for existing geoResources considering visibility', () => {
@@ -254,18 +290,18 @@ describe('LayersPlugin', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					switch (id) {
 						case 'some0':
-							return new XyzGeoResource('some0', 'someLabel0', 'someUrl0');
+							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
 						case 'some1':
-							return new XyzGeoResource('some1', 'someLabel1', 'someUrl1');
+							return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
 					}
 				});
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
 				expect(store.getState().layers.active.length).toBe(2);
-				expect(store.getState().layers.active[0].id).toContain('some0_');
+				expect(store.getState().layers.active[0].id).toBe('some0_0');
 				expect(store.getState().layers.active[0].visible).toBeTrue();
-				expect(store.getState().layers.active[1].id).toContain('some1_');
+				expect(store.getState().layers.active[1].id).toBe('some1_0');
 				expect(store.getState().layers.active[1].visible).toBeFalse();
 			});
 
@@ -277,18 +313,18 @@ describe('LayersPlugin', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					switch (id) {
 						case 'some0':
-							return new XyzGeoResource('some0', 'someLabel0', 'someUrl0');
+							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
 						case 'some1':
-							return new XyzGeoResource('some1', 'someLabel1', 'someUrl1');
+							return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
 					}
 				});
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
 				expect(store.getState().layers.active.length).toBe(2);
-				expect(store.getState().layers.active[0].id).toContain('some0_');
+				expect(store.getState().layers.active[0].id).toBe('some0_0');
 				expect(store.getState().layers.active[0].visible).toBeTrue();
-				expect(store.getState().layers.active[1].id).toContain('some1_');
+				expect(store.getState().layers.active[1].id).toBe('some1_0');
 				expect(store.getState().layers.active[1].visible).toBeTrue();
 			});
 
@@ -300,18 +336,18 @@ describe('LayersPlugin', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					switch (id) {
 						case 'some0':
-							return new XyzGeoResource('some0', 'someLabel0', 'someUrl0');
+							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
 						case 'some1':
-							return new XyzGeoResource('some1', 'someLabel1', 'someUrl1');
+							return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
 					}
 				});
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
 				expect(store.getState().layers.active.length).toBe(2);
-				expect(store.getState().layers.active[0].id).toContain('some0_');
+				expect(store.getState().layers.active[0].id).toBe('some0_0');
 				expect(store.getState().layers.active[0].opacity).toBe(0.8);
-				expect(store.getState().layers.active[1].id).toContain('some1_');
+				expect(store.getState().layers.active[1].id).toBe('some1_0');
 				expect(store.getState().layers.active[1].opacity).toBe(0.6);
 			});
 
@@ -323,18 +359,18 @@ describe('LayersPlugin', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					switch (id) {
 						case 'some0':
-							return new XyzGeoResource('some0', 'someLabel0', 'someUrl0');
+							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
 						case 'some1':
-							return new XyzGeoResource('some1', 'someLabel1', 'someUrl1');
+							return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
 					}
 				});
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
 				expect(store.getState().layers.active.length).toBe(2);
-				expect(store.getState().layers.active[0].id).toContain('some0_');
+				expect(store.getState().layers.active[0].id).toBe('some0_0');
 				expect(store.getState().layers.active[0].opacity).toBe(1);
-				expect(store.getState().layers.active[1].id).toContain('some1_');
+				expect(store.getState().layers.active[1].id).toBe('some1_0');
 				expect(store.getState().layers.active[1].opacity).toBe(1);
 			});
 
@@ -359,6 +395,78 @@ describe('LayersPlugin', () => {
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
 				expect(store.getState().layers.active.length).toBe(0);
+			});
+
+			describe('handle query parameter ZOOM_TO_EXTENT', () => {
+				it('calls action fitLayer() for the correct layer', async () => {
+					const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.ZOOM_TO_EXTENT}=1`);
+					const store = setup({
+						position: initialPositionState
+					});
+					const instanceUnderTest = new LayersPlugin();
+					spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+					spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+						switch (id) {
+							case 'some0':
+								return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
+							case 'some1':
+								return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
+						}
+					});
+
+					expect(store.getState().position.fitLayerRequest.payload).toBeNull();
+
+					instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
+
+					await TestUtils.timeout();
+
+					expect(store.getState().position.fitLayerRequest.payload.id).toBe('some1_0');
+				});
+
+				it('does nothing when parameter value is not an integer', async () => {
+					const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.ZOOM_TO_EXTENT}=foo`);
+					const store = setup({
+						position: initialPositionState
+					});
+					const instanceUnderTest = new LayersPlugin();
+					spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+					spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+						switch (id) {
+							case 'some0':
+								return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
+							case 'some1':
+								return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
+						}
+					});
+
+					expect(store.getState().position.fitLayerRequest.payload).toBeNull();
+
+					instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
+
+					await TestUtils.timeout();
+
+					expect(store.getState().position.fitLayerRequest.payload).toBeNull();
+				});
+			});
+		});
+
+		describe('attribute change of the public web component', () => {
+			it('initializes the GeoResourceService and calls #_addLayersFromQueryParams', async () => {
+				const store = setup();
+				const queryParam = new URLSearchParams(QueryParameters.LAYER + '=some');
+				const instanceUnderTest = new LayersPlugin();
+				const getQueryParamsSpy = spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+				const addLayersFromQueryParamsSpy = spyOn(instanceUnderTest, '_addLayersFromQueryParams').withArgs(queryParam).and.stub();
+				spyOn(geoResourceServiceMock, 'init').and.resolveTo();
+				spyOn(environmentService, 'isEmbeddedAsWC').and.returnValue(true);
+				await instanceUnderTest._init(store);
+				expect(addLayersFromQueryParamsSpy).toHaveBeenCalledTimes(1);
+				expect(getQueryParamsSpy).toHaveBeenCalledTimes(1);
+
+				indicateAttributeChange();
+
+				expect(addLayersFromQueryParamsSpy).toHaveBeenCalledTimes(2);
+				expect(getQueryParamsSpy).toHaveBeenCalledTimes(2);
 			});
 		});
 	});

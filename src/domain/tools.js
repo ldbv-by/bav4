@@ -14,3 +14,9 @@ export const Tools = Object.freeze({
 	EXPORT: 'export',
 	ROUTING: 'routing'
 });
+
+/**
+ * Enum of tools that are available for the public web component.
+ * @constant {Array<Tools>}
+ */
+export const WcTools = Object.freeze([Tools.DRAW]);

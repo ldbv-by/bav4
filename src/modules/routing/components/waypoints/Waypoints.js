@@ -7,9 +7,8 @@ import { RoutingStatusCodes } from '../../../../domain/routing';
 import { $injector } from '../../../../injection/index';
 import { MvuElement } from '../../../MvuElement';
 import css from './waypoints.css';
-import { setDestination, setStart, setWaypoints } from '../../../../store/routing/routing.action';
+import { setDestination, setStart, setWaypoints, reset } from '../../../../store/routing/routing.action';
 import { getPlaceholder, isDraggable, isPlaceholder } from './WaypointItem';
-import arrowDownUpSvg from '../assets/arrow-down-up.svg';
 
 const Update_Status = 'update_status';
 const Update_Waypoints = 'update_waypoints';
@@ -21,27 +20,17 @@ export class Waypoints extends MvuElement {
 		const { TranslationService, EnvironmentService } = $injector.inject('TranslationService', 'EnvironmentService');
 		this._translationService = TranslationService;
 		this._environmentService = EnvironmentService;
-		this._storeSubscriptions = [];
 	}
 
 	onInitialize() {
-		this._storeSubscriptions = [
-			this.observe(
-				(store) => store.routing.status,
-				(status) => this.signal(Update_Status, status)
-			),
-
+		this.observe(
+			(store) => store.routing.status,
+			(status) => this.signal(Update_Status, status)
+		),
 			this.observe(
 				(store) => store.routing.waypoints,
 				(waypoints) => this.signal(Update_Waypoints, waypoints)
-			)
-		];
-	}
-
-	onDisconnect() {
-		while (this._storeSubscriptions.length > 0) {
-			this._storeSubscriptions.shift()();
-		}
+			);
 	}
 
 	update(type, data, model) {
@@ -74,8 +63,8 @@ export class Waypoints extends MvuElement {
 								${waypointItems}
 							</ul>
 						</div>
-						${buttons}
-					</div>`
+					</div>
+					${buttons}`
 			: nothing;
 	}
 
@@ -89,14 +78,9 @@ export class Waypoints extends MvuElement {
 
 		return waypoints.length > 0
 			? html`<div class="waypoints__actions">
-					<ba-icon
-						id="button_reverse"
-						.icon="${arrowDownUpSvg}"
-						.size=${1.5}
-						.title=${translate('routing_waypoints_reverse')}
-						@click=${reverse}
-					></ba-icon>
-			  </div>`
+					<ba-button id="button_reverse" .label=${translate('routing_waypoints_reverse')} @click=${reverse}></ba-button>
+					<ba-button id="button_clear" .label=${translate('routing_waypoints_remove_all')} @click=${reset}></ba-button>
+				</div>`
 			: nothing;
 	}
 
@@ -126,8 +110,8 @@ export class Waypoints extends MvuElement {
 			return listIndex === 0
 				? ` - ${translate('routing_waypoints_as_start')}`
 				: listIndex / 2 === waypoints.length
-				  ? ` - ${translate('routing_waypoints_as_destination')}`
-				  : '';
+					? ` - ${translate('routing_waypoints_as_destination')}`
+					: '';
 		};
 
 		const onDragStart = (e, waypoint) => {

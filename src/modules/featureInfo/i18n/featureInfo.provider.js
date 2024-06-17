@@ -9,7 +9,8 @@ export const provide = (lang) => {
 				geometryInfo_title_azimuth: 'Azimuth-angle',
 				geometryInfo_title_line_length: 'Distance',
 				geometryInfo_title_polygon_length: 'Perimeter',
-				geometryInfo_title_polygon_area: 'Area'
+				geometryInfo_title_polygon_area: 'Area',
+				geometryInfo_info: 'No information available.<br>Please click into the <b>map</b>.'
 			};
 
 		case 'de':
@@ -21,7 +22,8 @@ export const provide = (lang) => {
 				geometryInfo_title_azimuth: 'Azimuth-Winkel',
 				geometryInfo_title_line_length: 'Länge',
 				geometryInfo_title_polygon_length: 'Umfang',
-				geometryInfo_title_polygon_area: 'Fläche'
+				geometryInfo_title_polygon_area: 'Fläche',
+				geometryInfo_info: 'Keine Informationen verfügbar.<br>Bitte in die <b>Karte</b> klicken.'
 			};
 
 		default:

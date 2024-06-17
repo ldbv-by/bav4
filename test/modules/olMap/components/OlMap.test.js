@@ -9,7 +9,14 @@ import { $injector } from '../../../../src/injection';
 import { layersReducer } from '../../../../src/store/layers/layers.reducer';
 import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../../src/domain/geoResources';
 import { addLayer, modifyLayer, removeLayer } from '../../../../src/store/layers/layers.action';
-import { changeRotation, changeZoomAndCenter, fit as fitMap, fitLayer } from '../../../../src/store/position/position.action';
+import {
+	changeRotation,
+	changeZoomAndCenter,
+	fit as fitMap,
+	fitLayer,
+	changeCenter,
+	changeZoom
+} from '../../../../src/store/position/position.action';
 import { simulateMapEvent, simulateMapBrowserEvent } from '../mapTestUtils';
 import VectorLayer from 'ol/layer/Vector';
 import { pointerReducer } from '../../../../src/store/pointer/pointer.reducer';
@@ -134,6 +141,12 @@ describe('OlMap', () => {
 			return 'olElevationProfileHandlerMockId';
 		}
 	};
+	const olSelectableFeatureHandlerMock = {
+		register() {},
+		get id() {
+			return 'olSelectableFeatureHandlerMockId';
+		}
+	};
 	const mfpHandlerMock = {
 		activate() {},
 		deactivate() {},
@@ -193,13 +206,14 @@ describe('OlMap', () => {
 			.registerSingleton('MapService', mapServiceStub)
 			.registerSingleton('GeoResourceService', geoResourceServiceStub)
 			.registerSingleton('EnvironmentService', environmentServiceMock)
-			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('TranslationService', { translate: (key, params = []) => `${key}${params.length ? ` [${params.join(',')}]` : ''}` })
 			.registerSingleton('OlMeasurementHandler', measurementLayerHandlerMock)
 			.registerSingleton('OlDrawHandler', drawLayerHandlerMock)
 			.registerSingleton('OlGeolocationHandler', geolocationLayerHandlerMock)
 			.registerSingleton('OlHighlightLayerHandler', highlightLayerHandlerMock)
 			.registerSingleton('OlFeatureInfoHandler', featureInfoHandlerMock)
 			.registerSingleton('OlElevationProfileHandler', olElevationProfileHandlerMock)
+			.registerSingleton('OlSelectableFeatureHandler', olSelectableFeatureHandlerMock)
 			.registerSingleton('OlMfpHandler', mfpHandlerMock)
 			.registerSingleton('OlRoutingHandler', routingHandlerMock)
 			.registerSingleton('VectorLayerService', vectorLayerServiceMock)
@@ -278,7 +292,6 @@ describe('OlMap', () => {
 
 			element.onDisconnect(); // we call onDisconnect manually
 
-			expect(element._unsubscribers).toHaveSize(0);
 			expect(element._map).toBeNull();
 			expect(element._view).toBeNull();
 			expect(spy).toHaveBeenCalledWith(null);
@@ -338,20 +351,6 @@ describe('OlMap', () => {
 
 				expect(store.getState().position.liveZoom).toBe(zoom);
 			});
-		});
-	});
-
-	describe('map load events', () => {
-		it("updates the 'fetching' property in network store", async () => {
-			const element = await setup();
-
-			simulateMapEvent(element._map, MapEventType.LOADSTART);
-
-			expect(store.getState().network.fetching).toBeTrue();
-
-			simulateMapEvent(element._map, MapEventType.LOADEND);
-
-			expect(store.getState().network.fetching).toBeFalse();
 		});
 	});
 
@@ -508,11 +507,11 @@ describe('OlMap', () => {
 		});
 
 		describe('on touch device', () => {
-			beforeEach(async () => {
+			beforeEach(() => {
 				jasmine.clock().install();
 			});
 
-			afterEach(function () {
+			afterEach(() => {
 				jasmine.clock().uninstall();
 			});
 
@@ -640,11 +639,11 @@ describe('OlMap', () => {
 			});
 
 			describe('on touch device', () => {
-				beforeEach(async () => {
+				beforeEach(() => {
 					jasmine.clock().install();
 				});
 
-				afterEach(function () {
+				afterEach(() => {
 					jasmine.clock().uninstall();
 				});
 
@@ -715,33 +714,47 @@ describe('OlMap', () => {
 	});
 
 	describe('olView management', () => {
-		it('updates zoom and center', async () => {
-			const element = await setup();
-			const view = element._map.getView();
-			const viewSpy = spyOn(view, 'animate');
+		describe('position', () => {
+			it('updates zoom and center', async () => {
+				const element = await setup();
+				const view = element._map.getView();
+				const viewSpy = spyOn(view, 'animate');
 
-			changeZoomAndCenter({ zoom: 5, center: [21, 42] });
+				changeZoomAndCenter({ zoom: 5, center: [21, 42] });
 
-			expect(viewSpy).toHaveBeenCalledWith({
-				zoom: 5,
-				center: [21, 42],
-				rotation: initialRotationValue,
-				duration: 200
+				expect(viewSpy).toHaveBeenCalledWith({
+					zoom: 5,
+					center: [21, 42],
+					rotation: initialRotationValue,
+					duration: 200
+				});
 			});
-		});
 
-		it('updates rotation', async () => {
-			const element = await setup();
-			const view = element._map.getView();
-			const viewSpy = spyOn(view, 'animate');
+			it('updates rotation', async () => {
+				const element = await setup();
+				const view = element._map.getView();
+				const viewSpy = spyOn(view, 'animate');
 
-			changeRotation(1);
+				changeRotation(1);
 
-			expect(viewSpy).toHaveBeenCalledWith({
-				zoom: initialZoomLevel,
-				center: initialCenter,
-				rotation: 1,
-				duration: 200
+				expect(viewSpy).toHaveBeenCalledWith({
+					zoom: initialZoomLevel,
+					center: initialCenter,
+					rotation: 1,
+					duration: 200
+				});
+			});
+
+			it('does nothing when view already in place', async () => {
+				const element = await setup();
+				const view = element._map.getView();
+				const viewSpy = spyOn(view, 'animate');
+
+				changeCenter(initialCenter);
+				changeZoom(initialZoomLevel);
+				changeRotation(initialRotationValue);
+
+				expect(viewSpy).not.toHaveBeenCalled();
 			});
 		});
 
@@ -1179,29 +1192,6 @@ describe('OlMap', () => {
 			expect(map.getLayers().item(1)).toEqual(nonAsyncOlLayer);
 		});
 
-		it('adds NO layer for an unresolveable GeoResourceFuture', async () => {
-			const element = await setup();
-			const map = element._map;
-			const message = 'error';
-			const future = new GeoResourceFuture(geoResourceId0, async () => Promise.reject(message));
-			spyOn(layerServiceMock, 'toOlLayer')
-				.withArgs(id0, jasmine.anything(), map)
-				.and.callFake((id) => new Layer({ id: id, render: () => {}, properties: { placeholder: true } }));
-			spyOn(geoResourceServiceStub, 'byId').withArgs(geoResourceId0).and.returnValue(future);
-			const warnSpy = spyOn(console, 'warn');
-
-			addLayer(id0, { geoResourceId: geoResourceId0 });
-			expect(map.getLayers().getLength()).toBe(1);
-			const layer = map.getLayers().item(0);
-			expect(layer.get('id')).toBe(id0);
-
-			await TestUtils.timeout();
-			expect(map.getLayers().getLength()).toBe(0);
-			expect(warnSpy).toHaveBeenCalledWith(message);
-			expect(store.getState().notifications.latest.payload.content).toBe(`olMap_layer_not_available '${geoResourceId0}'`);
-			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
-		});
-
 		it('removes layer from state store when olLayer not available', async () => {
 			const element = await setup();
 			const map = element._map;
@@ -1219,7 +1209,7 @@ describe('OlMap', () => {
 			expect(map.getLayers().getLength()).toBe(1);
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(warnSpy).toHaveBeenCalledWith("Could not add an olLayer for id 'unknown'");
-			expect(store.getState().notifications.latest.payload.content).toBe("olMap_layer_not_available 'unknown'");
+			expect(store.getState().notifications.latest.payload.content).toBe('global_geoResource_not_available [unknown]');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 		});
 
@@ -1464,6 +1454,14 @@ describe('OlMap', () => {
 			const element = await setup();
 
 			expect(element._mapHandler.get('olElevationProfileHandlerMockId')).toEqual(olElevationProfileHandlerMock);
+		});
+	});
+
+	describe('elevationProfile handler', () => {
+		it('registers the handler', async () => {
+			const element = await setup();
+
+			expect(element._mapHandler.get('olSelectableFeatureHandlerMockId')).toEqual(olSelectableFeatureHandlerMock);
 		});
 	});
 });

@@ -46,13 +46,11 @@
 .is-open {
 	display: block;
 }
-
 .close-icon {
 	display: inline-block;
 	position: relative;
 	top: -1em;
 }
-
 .close-icon::before {
 	position: absolute;
 	content: '';

@@ -7,6 +7,7 @@ describe('i18n for topics module', () => {
 		expect(map.topics_menu_title).toBe('Themen');
 		expect(map.topics_catalog_panel_change_topic).toBe('Thema wechseln');
 		expect(map.topics_catalog_leaf_no_georesource_title).toBe('Ebene nicht verfügbar');
+		expect(map.topics_catalog_leaf_info).toBe('Info');
 	});
 
 	it('provides translation for en', () => {
@@ -15,10 +16,11 @@ describe('i18n for topics module', () => {
 		expect(map.topics_menu_title).toBe('Topics');
 		expect(map.topics_catalog_panel_change_topic).toBe('Change topic');
 		expect(map.topics_catalog_leaf_no_georesource_title).toBe('Layer not available');
+		expect(map.topics_catalog_leaf_info).toBe('Info');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 3;
+		const expectedSize = 4;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
