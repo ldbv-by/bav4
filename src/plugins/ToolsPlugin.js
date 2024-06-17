@@ -31,7 +31,7 @@ export class ToolsPlugin extends BaPlugin {
 			/**in embed mode we check the list of allowed tools*/ (!environmentService.isEmbedded() || WcTools.includes(toolId))
 		) {
 			/**
-			 * When we have route waypoint we activate the current tool after the route was loaded
+			 * When we have route waypoints we activate the current tool after the route was loaded
 			 */
 			if (environmentService.getQueryParams().has(QueryParameters.ROUTE_WAYPOINTS)) {
 				observeOnce(
