@@ -7,6 +7,8 @@ import {
 	resetHighlightedSegments,
 	setCategory,
 	setDestination,
+	setForceDestination,
+	setForceStart,
 	setHighlightedSegments,
 	setIntermediate,
 	setProposal,
@@ -189,6 +191,25 @@ describe('routingReducer', () => {
 		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Ok);
 	});
 
+	it('sets always start waypoint', () => {
+		const store = setup({
+			routing: {
+				waypoints: [[11, 22]],
+				status: RoutingStatusCodes.Start_Missing
+			}
+		});
+
+		setForceStart([11, 22, 'foo']);
+
+		expect(store.getState().routing.waypoints).toEqual([[11, 22]]);
+		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Start_Destination_Missing);
+
+		setForceStart([33, 44]);
+
+		expect(store.getState().routing.waypoints).toEqual([[33, 44]]);
+		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Destination_Missing);
+	});
+
 	it('sets the destination waypoint', () => {
 		const store = setup();
 		const coordinate = [11, 22];
@@ -218,6 +239,25 @@ describe('routingReducer', () => {
 			[33, 44]
 		]);
 		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Ok);
+	});
+
+	it('sets always the destination waypoint', () => {
+		const store = setup({
+			routing: {
+				waypoints: [[11, 22]],
+				status: RoutingStatusCodes.Destination_Missing
+			}
+		});
+
+		setForceDestination([11, 22, 'foo']);
+
+		expect(store.getState().routing.waypoints).toEqual([[11, 22]]);
+		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Destination_Missing);
+
+		setForceDestination([33, 44]);
+
+		expect(store.getState().routing.waypoints).toEqual([[33, 44]]);
+		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Start_Missing);
 	});
 
 	it('removes a waypoint', () => {
