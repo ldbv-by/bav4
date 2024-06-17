@@ -25,7 +25,7 @@ describe('i18n for header module', () => {
 			'_blank'
 		);
 		expect(map.auth_passwordCredentialPanel_footer_forgot_login).toBe('Kennung vergessen?');
-		expect(map.auth_passwordCredentialPanel_footer_forgot_password).toBe('Password vergessen?');
+		expect(map.auth_passwordCredentialPanel_footer_forgot_password).toBe('Passwort vergessen?');
 	});
 
 	it('provides translation for en', () => {
