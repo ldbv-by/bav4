@@ -91,9 +91,11 @@ describe('RoutingPlugin', () => {
 
 			describe('more then one waypoint', () => {
 				it('calls _lazyInitialize and updates the active property', async () => {
-					const store = setup({mainMenu:{
-						tab: TabIds.MAPS
-					}});
+					const store = setup({
+						mainMenu: {
+							tab: TabIds.MAPS
+						}
+					});
 					const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2,3,4`);
 					const instanceUnderTest = new RoutingPlugin();
 					spyOn(environmentService, 'getQueryParams').and.returnValue(queryParams);
