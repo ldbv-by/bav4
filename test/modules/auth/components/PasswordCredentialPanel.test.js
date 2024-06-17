@@ -287,17 +287,18 @@ describe('PasswordCredentialPanel', () => {
 			const element = await setup();
 			const inputPassword = element.shadowRoot.querySelector('#credential_password');
 			const togglePassword = element.shadowRoot.querySelector('#toggle_password');
+			expect(togglePassword).toHaveClass('password-icon');
 
 			expect(inputPassword.getAttribute('type')).toBe('password');
-			expect(togglePassword).toHaveClass('eye-slash');
+			expect(togglePassword).toHaveClass('eyeslash');
 			expect(togglePassword).not.toHaveClass('eye');
 			togglePassword.click();
 			expect(inputPassword.getAttribute('type')).toBe('text');
-			expect(togglePassword).toHaveClass('eye-slash');
 			expect(togglePassword).toHaveClass('eye');
+			expect(togglePassword).not.toHaveClass('eyeslash');
 			togglePassword.click();
 			expect(inputPassword.getAttribute('type')).toBe('password');
-			expect(togglePassword).toHaveClass('eye-slash');
+			expect(togglePassword).toHaveClass('eyeslash');
 			expect(togglePassword).not.toHaveClass('eye');
 		});
 

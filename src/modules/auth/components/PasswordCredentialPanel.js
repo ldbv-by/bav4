@@ -148,7 +148,8 @@ export class PasswordCredentialPanel extends MvuElement {
 		};
 
 		const passwordClasses = {
-			eye: showPassword
+			eye: showPassword,
+			eyeslash: !showPassword
 		};
 
 		const onChangeUserName = (e) => {
@@ -217,7 +218,7 @@ export class PasswordCredentialPanel extends MvuElement {
 						/>
 						<label for="credential_password" class="control-label">${translate('auth_passwordCredentialPanel_credential_password')}</label
 						><i class="bar"></i>
-						<i class="eye-slash ${classMap(passwordClasses)}" id="toggle_password" @click=${togglePassword}></i>
+						<i class="password-icon ${classMap(passwordClasses)}" id="toggle_password" @click=${togglePassword}></i>
 					</div>
 				</div>
 				<div class="credential_custom_content ${footer ? 'visible' : ''}">${getCustomContent()}</div>
