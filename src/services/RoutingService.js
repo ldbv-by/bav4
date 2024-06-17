@@ -96,6 +96,7 @@ export const CHART_ITEM_ROAD_STYLE_UNKNOWN = {
 	id: 0,
 	color: '#eee',
 	image: 'repeating-linear-gradient(45deg,#eee 0px,#eee 7px, #999 8px, #999 10px, #eee 11px)',
+	bordercolor: '#999',
 	label: 'Unknown'
 };
 
@@ -158,6 +159,7 @@ export const CHART_ITEM_SURFACE_STYLE_UNKNOWN = {
 	id: 0,
 	color: '#eee',
 	image: 'repeating-linear-gradient(45deg,gray 25%, transparent 25%,transparent 50%, gray 50%, gray 55%, transparent 55%, transparent)',
+	bordercolor: '#999',
 	label: 'Unknown'
 };
 

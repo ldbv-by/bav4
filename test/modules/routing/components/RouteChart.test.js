@@ -128,7 +128,7 @@ describe('RoutingChart', () => {
 					{
 						id: 300,
 						color: 'transparent',
-						image: 'repeating-linear-gradient(45deg,#eee 0px,#eee 7px, #999 8px, #999 10px, #eee 11px)',
+						bordercolor: '#999',
 						label: 'bar',
 						data: {
 							absolute: 18,
@@ -149,9 +149,8 @@ describe('RoutingChart', () => {
 			expect(containerElement).toBeTruthy();
 			expect(containerElement.querySelectorAll('.legend_item')).toHaveSize(1);
 			expect(getComputedStyle(containerElement.querySelectorAll('.legend_item')[0]).backgroundColor).toBe('rgba(0, 0, 0, 0)');
-			expect(getComputedStyle(containerElement.querySelectorAll('.legend_item')[0]).backgroundImage).toBe(
-				'repeating-linear-gradient(45deg, rgb(238, 238, 238) 0px, rgb(238, 238, 238) 7px, rgb(153, 153, 153) 8px, rgb(153, 153, 153) 10px, rgb(238, 238, 238) 11px)'
-			);
+			expect(getComputedStyle(containerElement.querySelectorAll('.legend_item')[0])['border-style']).toBe('solid');
+			expect(getComputedStyle(containerElement.querySelectorAll('.legend_item')[0])['border-color']).toBe('rgb(153, 153, 153)');
 		});
 
 		it('formats distance values properly', async () => {

@@ -93,7 +93,7 @@ export class RouteChart extends MvuElement {
 		const getLegendStyle = (item) => {
 			const style = 'background-color:' + item.color;
 
-			return item.image ? `${style}; background-image: ${item.image}` : style;
+			return item.bordercolor ? `${style}; border-style:solid;border-width:2px;border-color: ${item.bordercolor}` : style;
 		};
 
 		const getLegendValue = (item) => this.#unitsService.formatDistance(item.data.absolute);
