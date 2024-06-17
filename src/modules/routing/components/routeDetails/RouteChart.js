@@ -27,7 +27,8 @@ import { resetHighlightedSegments, setHighlightedSegments } from '../../../../st
  */
 
 const Color_Transparent = 'transparent';
-const Color_Transparent_Contrast = '#999'; // a color as visual counterpart for elements with transparent fill, the contrast color should be used to determine the form of the elements (i.e. used as border color)
+const Color_Unknown = '#eee';
+const Color_Unknown_Contrast = '#999'; // a color as visual counterpart for elements with transparent fill, the contrast color should be used to determine the form of the elements (i.e. used as border color)
 
 const Update_Items = 'update_items';
 const Update_Label = 'update_label';
@@ -146,7 +147,7 @@ export class RouteChart extends MvuElement {
 					data: items.map((item) => (item.data.relative ? Math.max(item.data.relative, 1) : item.data.relative)),
 					backgroundColor: items.map((item) => item.color),
 					borderWidth: 1,
-					borderColor: items.map((item) => (item.color === Color_Transparent ? Color_Transparent_Contrast : Color_Transparent)),
+					borderColor: items.map((item) => (item.color === Color_Unknown ? Color_Unknown_Contrast : Color_Transparent)),
 					hoverBorderWidth: 2,
 					hoverOffset: 4
 				}

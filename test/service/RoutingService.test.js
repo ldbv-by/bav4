@@ -259,7 +259,7 @@ describe('BvvRoutingService', () => {
 					foo: 'bar',
 					unknown: {
 						id: 0,
-						color: 'transparent',
+						color: '#eee',
 						image: 'repeating-linear-gradient(45deg,#eee 0px,#eee 7px, #999 8px, #999 10px, #eee 11px)',
 						label: 'Unknown'
 					}
@@ -326,7 +326,7 @@ describe('BvvRoutingService', () => {
 					foo: 'bar',
 					unknown: {
 						id: 0,
-						color: 'transparent',
+						color: '#eee',
 						image: 'repeating-linear-gradient(45deg,gray 25%, transparent 25%,transparent 50%, gray 50%, gray 55%, transparent 55%, transparent)',
 						label: 'Unknown'
 					}
