@@ -87,13 +87,26 @@ export class RoutingPlugin extends BaPlugin {
 	 */
 	async register(store) {
 		if (!this.#environmentService.isEmbedded() && this.#environmentService.getQueryParams().has(QueryParameters.ROUTE_WAYPOINTS)) {
+			const toolId = this.#environmentService.getQueryParams().get(QueryParameters.TOOL_ID);
 			if (await this._lazyInitialize()) {
 				// we activate the tool after another possible active tool was deactivated
 				setTimeout(() => {
 					activate();
-					// when we have a destination proposal we always open the routing tab
+					// when we have a destination proposal waypoint we always open the routing tab set the routing tool as the current tool
 					if (this._parseWaypoints(this.#environmentService.getQueryParams()).length === 1) {
 						setTab(TabIds.ROUTING);
+						setCurrentTool(Tools.ROUTING);
+					} else {
+						// we have waypoints for a route but the tool should not be active, so we deactivate the tool after the route was successfully fetched
+						if (toolId !== Tools.ROUTING) {
+							observeOnce(
+								store,
+								(state) => state.routing.route,
+								() => deactivate()
+							);
+						} else {
+							setCurrentTool(Tools.ROUTING);
+						}
 					}
 				});
 			}
