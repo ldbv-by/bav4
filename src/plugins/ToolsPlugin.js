@@ -6,7 +6,7 @@ import { setCurrentTool } from '../store/tools/tools.action';
 import { QueryParameters } from '../domain/queryParameters';
 import { $injector } from '../injection';
 import { WcTools, Tools } from '../domain/tools';
-import { observe, observeOnce } from '../utils/storeUtils';
+import { observe } from '../utils/storeUtils';
 
 /**
  * This plugin checks for the presence of the query parameter `TOOL_ID` (see {@link QueryParameters})
@@ -24,24 +24,21 @@ export class ToolsPlugin extends BaPlugin {
 	async register(store) {
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 
-		// check if we have a query parameter defining the tool id
 		const toolId = environmentService.getQueryParams().get(QueryParameters.TOOL_ID);
+		/**
+		 *  Default mode:
+		 *  - check if we have a valid query parameter defining the tool id, if so we activate
+		 *  - when we have route waypoints we do nothing, all further processing is done by the RoutingPlugin
+		 *  Embed mode
+		 *  - we check the list of allowed tools
+		 */
 		if (
-			(Object.values(Tools).includes(toolId) || environmentService.getQueryParams().has(QueryParameters.ROUTE_WAYPOINTS)) &&
-			/**in embed mode we check the list of allowed tools*/ (!environmentService.isEmbedded() || WcTools.includes(toolId))
+			(!environmentService.isEmbedded() &&
+				Object.values(Tools).includes(toolId) &&
+				!environmentService.getQueryParams().has(QueryParameters.ROUTE_WAYPOINTS)) ||
+			(environmentService.isEmbedded() && WcTools.includes(toolId))
 		) {
-			/**
-			 * When we have route waypoints we activate the current tool after the route was loaded
-			 */
-			if (environmentService.getQueryParams().has(QueryParameters.ROUTE_WAYPOINTS)) {
-				observeOnce(
-					store,
-					(state) => state.routing.route,
-					() => setCurrentTool(toolId)
-				);
-			} else {
-				setCurrentTool(toolId);
-			}
+			setCurrentTool(toolId);
 		}
 
 		if (environmentService.isEmbeddedAsWC()) {
