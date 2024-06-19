@@ -214,30 +214,30 @@ export class RoutingPlugin extends BaPlugin {
 	}
 
 	_parseWaypoints(queryParams) {
-		const waypointsAsString = queryParams.get(QueryParameters.ROUTE_WAYPOINTS);
 		const waypoints = [];
-		const routeValues = waypointsAsString.split(',');
-		if (routeValues.length > 1 && routeValues.length % 2 === 0) {
-			for (let index = 0; index < routeValues.length - 1; index = index + 2) {
-				waypoints.push([parseFloat(routeValues[index]), parseFloat(routeValues[index + 1])]);
+		const waypointsAsString = queryParams.get(QueryParameters.ROUTE_WAYPOINTS);
+		if (waypointsAsString) {
+			const routeValues = waypointsAsString.split(',');
+			if (routeValues.length > 1 && routeValues.length % 2 === 0) {
+				for (let index = 0; index < routeValues.length - 1; index = index + 2) {
+					waypoints.push([parseFloat(routeValues[index]), parseFloat(routeValues[index + 1])]);
+				}
 			}
 		}
 		return waypoints.filter((c) => isCoordinate(c));
 	}
 
 	_parseRouteFromQueryParams(queryParams) {
-		if (queryParams.has(QueryParameters.ROUTE_WAYPOINTS)) {
-			const waypoints = this._parseWaypoints(queryParams);
-			if (waypoints.length > 0) {
-				if (queryParams.has(QueryParameters.ROUTE_CATEGORY)) {
-					const catId = queryParams.get(QueryParameters.ROUTE_CATEGORY);
-					// update the category only if catId is a known id
-					if (this.#routingService.getCategoryById(catId)) {
-						setCategory(catId);
-					}
+		const waypoints = this._parseWaypoints(queryParams);
+		if (waypoints.length > 0) {
+			if (queryParams.has(QueryParameters.ROUTE_CATEGORY)) {
+				const catId = queryParams.get(QueryParameters.ROUTE_CATEGORY);
+				// update the category only if catId is a known id
+				if (this.#routingService.getCategoryById(catId)) {
+					setCategory(catId);
 				}
-				waypoints.length === 1 ? setDestination(waypoints[0]) : setWaypoints(waypoints);
 			}
+			waypoints.length === 1 ? setDestination(waypoints[0]) : setWaypoints(waypoints);
 		}
 	}
 
