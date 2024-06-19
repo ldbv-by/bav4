@@ -63,6 +63,7 @@ describe('bvvSignInProvider', () => {
 			expect(wrapperElementContent.querySelectorAll(PasswordCredentialPanel.tag)).toHaveSize(1);
 			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).authenticate).toEqual(jasmine.any(Function));
 			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).onClose).toEqual(jasmine.any(Function));
+			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).useForm).toBeTrue();
 			const wrapperElementFooter = TestUtils.renderTemplateResult(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).footer);
 			expect(wrapperElementFooter.querySelectorAll(BvvPlusPasswordCredentialFooter.tag)).toHaveSize(1);
 			closeModal(); /** we close the modal in order to resolve the promise */
@@ -425,6 +426,7 @@ describe('bvvAuthResponseInterceptorProvider', () => {
 				expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).authenticate).toEqual(jasmine.any(Function));
 				expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).onClose).toEqual(jasmine.any(Function));
 				expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).footer).toBeNull();
+				expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).useForm).toBeTrue();
 				closeModal(); /** we close the modal in order to resolve the promise */
 				await expectAsync(responsePromise).toBeResolved();
 			});
@@ -441,6 +443,7 @@ describe('bvvAuthResponseInterceptorProvider', () => {
 				expect(wrapperElementContent.querySelectorAll(PasswordCredentialPanel.tag)).toHaveSize(1);
 				expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).authenticate).toEqual(jasmine.any(Function));
 				expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).onClose).toEqual(jasmine.any(Function));
+				expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).useForm).toBeTrue();
 				const wrapperElementFooter = TestUtils.renderTemplateResult(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).footer);
 				expect(wrapperElementFooter.querySelectorAll(BvvPlusPasswordCredentialFooter.tag)).toHaveSize(1);
 				closeModal(); /** we close the modal in order to resolve the promise */
