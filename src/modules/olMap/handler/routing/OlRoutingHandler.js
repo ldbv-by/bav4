@@ -801,7 +801,10 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 			const getOrCreateVectorGeoResource = (id, label) => {
 				const fromService = this._geoResourceService.byId(id);
-				return fromService ? fromService : new VectorGeoResource(id, label, VectorSourceType.KML);
+				return fromService
+					? fromService /**always update the label*/
+							.setLabel(label)
+					: new VectorGeoResource(id, label, VectorSourceType.KML);
 			};
 			const vgrRoute = getOrCreateVectorGeoResource(PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID, labelRtLayer)
 				.setSource(routeKML, 4326)

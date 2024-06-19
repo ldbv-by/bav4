@@ -1833,7 +1833,8 @@ describe('OlRoutingHandler', () => {
 				expect(geoResources[0].attributionProvider).toEqual(getBvvAttributionForRoutingResult);
 				expect(geoResources[0].sourceType).toBe(VectorSourceType.KML);
 				expect(geoResources[0].srid).toEqual(4326);
-				expect(geoResources[1].data).toContain('<Document><Placemark><Style/><Point><coordinates>');
+				expect(geoResources[0].data).toContain('<Document><Placemark><Style/>');
+				expect(geoResources[0].data).toContain('<Point><coordinates>');
 				//second vgr and layer
 				expect(store.getState().layers.active[1].id).toBe(PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID);
 				expect(geoResources[1].label).toBe('olMap_handler_routing_wp_layer_label - someCatLabel');
@@ -1841,7 +1842,8 @@ describe('OlRoutingHandler', () => {
 				expect(geoResources[1].attributionProvider).toEqual(getAttributionForLocallyImportedOrCreatedGeoResource);
 				expect(geoResources[1].sourceType).toBe(VectorSourceType.KML);
 				expect(geoResources[1].srid).toEqual(4326);
-				expect(geoResources[1].data).toContain('<Document><Placemark><Style/><Point><coordinates>');
+				expect(geoResources[1].data).toContain('<Document><Placemark><Style/>');
+				expect(geoResources[1].data).toContain('<Point><coordinates>');
 
 				expect(geoResources[0].data).not.toBe(geoResources[1].data);
 				expect(mapServiceSpy).toHaveBeenCalledTimes(2);
@@ -1861,8 +1863,9 @@ describe('OlRoutingHandler', () => {
 				instanceUnderTest.activate(map);
 				instanceUnderTest._routeLayerCopy.getSource().addFeature(featureRoute);
 				instanceUnderTest._interactionLayer.getSource().addFeature(featureWaypoint);
+				const initialGrLabel = 'label';
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
-					return new VectorGeoResource(id, 'any', VectorSourceType.KML);
+					return new VectorGeoResource(id, initialGrLabel, VectorSourceType.KML);
 				});
 				spyOn(geoResourceServiceMock, 'addOrReplace').and.callFake((gr) => geoResources.push(gr));
 				const mapServiceSpy = spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
@@ -1874,12 +1877,14 @@ describe('OlRoutingHandler', () => {
 
 				//first vgr and layer
 				expect(store.getState().layers.active[0].id).toBe(PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID);
-				expect(geoResources[1].data).toContain('<Document><Placemark><Style/>');
-				expect(geoResources[1].data).toContain('<Point><coordinates>');
-				//second vgr and layer
-				expect(store.getState().layers.active[1].id).toBe(PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID);
+				expect(geoResources[0].label).toBe('olMap_handler_routing_rt_layer_label - someCatLabel');
 				expect(geoResources[0].data).toContain('<Document><Placemark><Style/>');
 				expect(geoResources[0].data).toContain('<Point><coordinates>');
+				//second vgr and layer
+				expect(store.getState().layers.active[1].id).toBe(PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID);
+				expect(geoResources[1].label).toBe('olMap_handler_routing_wp_layer_label - someCatLabel');
+				expect(geoResources[1].data).toContain('<Document><Placemark><Style/>');
+				expect(geoResources[1].data).toContain('<Point><coordinates>');
 
 				expect(geoResources[0].data).not.toBe(geoResources[1].data);
 				expect(mapServiceSpy).toHaveBeenCalledTimes(2);
