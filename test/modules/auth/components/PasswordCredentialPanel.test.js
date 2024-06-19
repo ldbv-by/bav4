@@ -86,18 +86,6 @@ describe('PasswordCredentialPanel', () => {
 			expect(inputPassword.getAttribute('type')).toBe('password');
 		});
 
-		it('shows two properly configured input fields', async () => {
-			const element = await setup();
-
-			const inputUsername = element.shadowRoot.querySelector('#credential_username');
-			const inputPassword = element.shadowRoot.querySelector('#credential_password');
-
-			expect(inputUsername.hasAttribute('autofocus')).toBeTrue();
-			expect(inputUsername.getAttribute('type')).toBe('text');
-
-			expect(inputPassword.getAttribute('type')).toBe('password');
-		});
-
 		it('displays the optional url', async () => {
 			const element = await setup();
 			element.url = 'foo';
