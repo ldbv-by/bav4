@@ -82,6 +82,7 @@ export const bvvSignOutProvider = async () => {
 
 	switch (result.status) {
 		case 200:
+		case 403 /** already signed out */:
 			emitNotification(`${translationService.translate('global_signOut_success')}`, LevelTypes.INFO);
 			return true;
 		default:
