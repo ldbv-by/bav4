@@ -19,7 +19,9 @@ import {
 	ROUTING_PROPOSAL_SET,
 	ROUTING_WAYPOINT_DELETED,
 	ROUTING_INTERMEDIATE_SET,
-	ROUTING_ROUTE_AND_STATS_CHANGED
+	ROUTING_ROUTE_AND_STATS_CHANGED,
+	ROUTING_FORCE_START_SET,
+	ROUTING_FORCE_DESTINATION_SET
 } from './routing.reducer';
 
 /**
@@ -135,7 +137,10 @@ export const reset = () => {
 };
 
 /**
- * Sets a coordinate as the start waypoint and updates the status to {@link RoutingStatusCodes.Destination_Missing}.
+ * Sets a coordinate as the start waypoint.
+ *
+ * If exactly one coordinate is already present the given coordinate complements the existing one and updates the status to {@link RoutingStatusCodes.Ok}.
+ * Otherwise the given coordinate will replace all existing coordinates and the status updated to {@link RoutingStatusCodes.Destination_Missing}.
  * @param {module:domain/coordinateTypeDef~Coordinate}  coordinate the start waypoint (in the SRID of the map)
  * @function
  */
@@ -149,7 +154,25 @@ export const setStart = (coordinate) => {
 };
 
 /**
- * Sets a coordinate as the destination waypoint and updates the status to {@link RoutingStatusCodes.Start_Missing}.
+ * Sets a coordinate as the start waypoint and updates the status to {@link RoutingStatusCodes.Destination_Missing}.
+ *
+ * @param {module:domain/coordinateTypeDef~Coordinate}  coordinate the start waypoint (in the SRID of the map)
+ * @function
+ */
+export const setForceStart = (coordinate) => {
+	if (isCoordinate(coordinate)) {
+		getStore().dispatch({
+			type: ROUTING_FORCE_START_SET,
+			payload: coordinate
+		});
+	}
+};
+
+/**
+ * Sets a coordinate as the destination waypoint.
+ *
+ * If exactly one coordinate is already present the given coordinate complements the existing one and updates the status to {@link RoutingStatusCodes.Ok}.
+ * Otherwise the given coordinate will replace all existing coordinates and the status updated to {@link RoutingStatusCodes.Start_Missing}.
  * @param {module:domain/coordinateTypeDef~Coordinate}  coordinate the destination waypoint (in the SRID of the map)
  * @function
  */
@@ -157,6 +180,21 @@ export const setDestination = (coordinate) => {
 	if (isCoordinate(coordinate)) {
 		getStore().dispatch({
 			type: ROUTING_DESTINATION_SET,
+			payload: coordinate
+		});
+	}
+};
+
+/**
+ * Sets a coordinate as the destination waypoint and updates the status to {@link RoutingStatusCodes.Start_Missing}.
+ *
+ * @param {module:domain/coordinateTypeDef~Coordinate}  coordinate the destination waypoint (in the SRID of the map)
+ * @function
+ */
+export const setForceDestination = (coordinate) => {
+	if (isCoordinate(coordinate)) {
+		getStore().dispatch({
+			type: ROUTING_FORCE_DESTINATION_SET,
 			payload: coordinate
 		});
 	}
