@@ -283,6 +283,24 @@ describe('bvvSignOutProvider', () => {
 		});
 	});
 
+	describe('backend returns status code 403', () => {
+		it('returns "true" and informs the user', async () => {
+			const backendUrl = 'https://backend.url/';
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const httpServiceSpy = spyOn(httpService, 'get')
+				.withArgs(backendUrl + 'auth/signout')
+				.and.resolveTo(new Response());
+
+			const result = await bvvSignOutProvider();
+
+			expect(result).toBeTrue();
+			expect(configServiceSpy).toHaveBeenCalled();
+			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(store.getState().notifications.latest.payload.content).toBe('global_signOut_success');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+		});
+	});
+
 	describe('backend returns any other status code', () => {
 		it('throws an Error', async () => {
 			const statusCode = 500;
