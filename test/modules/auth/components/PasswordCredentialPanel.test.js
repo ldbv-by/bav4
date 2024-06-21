@@ -42,7 +42,8 @@ describe('PasswordCredentialPanel', () => {
 				footer: null,
 				credential: null,
 				authenticating: false,
-				showPassword: false
+				showPassword: false,
+				useForm: false
 			});
 		});
 
@@ -326,6 +327,7 @@ describe('PasswordCredentialPanel', () => {
 			const passwordCredentialPanel = new PasswordCredentialPanel();
 
 			expect(passwordCredentialPanel.url).toBeNull();
+			expect(passwordCredentialPanel.useForm).toBeFalse();
 		});
 
 		it('provides set methods and getters', async () => {
@@ -333,8 +335,22 @@ describe('PasswordCredentialPanel', () => {
 			const passwordCredentialPanel = new PasswordCredentialPanel();
 
 			passwordCredentialPanel.url = 'someUrl';
+			passwordCredentialPanel.useForm = true;
 
 			expect(passwordCredentialPanel.url).toBe('someUrl');
+			expect(passwordCredentialPanel.useForm).toBeTrue();
+		});
+	});
+
+	describe('when property `useForm` changes', () => {
+		it('changes the tag of the form', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('.credential_form').tagName).toBe('DIV');
+
+			element.useForm = true;
+
+			expect(element.shadowRoot.querySelector('.credential_form').tagName).toBe('FORM');
 		});
 	});
 

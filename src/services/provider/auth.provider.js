@@ -121,6 +121,7 @@ const createCredentialPanel = (authenticateFunction, onCloseFunction, roles) => 
 		.authenticate=${authenticateFunction}
 		.onClose=${onCloseFunction}
 		.footer=${footer}
+		.useForm=${true}
 	></ba-auth-password-credential-panel>`;
 };
 
