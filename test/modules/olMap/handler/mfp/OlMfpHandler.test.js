@@ -536,6 +536,36 @@ describe('OlMfpHandler', () => {
 				{ label: 'bar', type: MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE }
 			]);
 		});
+
+		it('sets the encodingProperties properly', async () => {
+			setup();
+			const map = setupMap();
+
+			const handler = new OlMfpHandler();
+			handler._map = setupMap();
+			handler._pageSize = { width: 20, height: 20 };
+			spyOn(handler, '_getMfpProjection').and.returnValue('EPSG:25832');
+
+			handler._updateMfpPreview(new Point([0, 0]));
+
+			const encodeSpy = spyOn(mfpEncoderMock, 'encode').and.callThrough();
+			handler.activate(map);
+			requestJob();
+
+			await TestUtils.timeout();
+			expect(encodeSpy).toHaveBeenCalledWith(
+				map,
+				jasmine.objectContaining({
+					layoutId: jasmine.any(String),
+					scale: jasmine.any(Number),
+					rotation: jasmine.any(Number),
+					dpi: jasmine.any(Number),
+					pageCenter: jasmine.any(Point),
+					pageExtent: jasmine.any(Array),
+					showGrid: jasmine.any(Boolean)
+				})
+			);
+		});
 	});
 
 	describe('when deactivate', () => {

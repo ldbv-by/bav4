@@ -133,6 +133,7 @@ export class BvvMfp3Encoder {
 				? this._mfpProperties.pageCenter.clone().transform(this._mapProjection, this._mfpProjection)
 				: getDefaultMapCenter().clone().transform(this._mapProjection, this._mfpProjection);
 
+		console.log(this._mfpProperties.pageExtent);
 		this._pageExtent = this._mfpProperties.pageExtent ? this._mfpProperties.pageExtent : getDefaultMapExtent();
 		const encodableLayers = olMap
 			.getLayers()
@@ -386,7 +387,7 @@ export class BvvMfp3Encoder {
 		// amount of created style-specs
 		const styleCache = new Map();
 		const mfpPageExtent = getPolygonFrom(this._pageExtent).transform(this._mapProjection, this._mfpProjection).getExtent();
-
+		console.log(mfpPageExtent);
 		const encodingResults = featuresSortedByGeometryType
 			.map((f) => transformForMfp(f))
 			.filter((f) => f.getGeometry().intersectsExtent(mfpPageExtent))
