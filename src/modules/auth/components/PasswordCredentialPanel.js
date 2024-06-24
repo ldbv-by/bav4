@@ -1,7 +1,8 @@
 /**
  * @module modules/auth/components/PasswordCredentialPanel
  */
-import { html, nothing } from 'lit-html';
+import { nothing } from 'lit-html';
+import { literal, html } from 'lit-html/static.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { $injector } from '../../../injection';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
@@ -16,6 +17,7 @@ const Update_Password = 'update_password';
 const Update_Show_Password = 'update_show_password';
 const Update_IsPortrait_Value = 'update_isportrait_value';
 const Update_Authenticating = 'update_authenticating';
+const Update_Use_Form = 'update_use_form';
 
 /**
  * This callback provides the implementation of the authentication request.
@@ -88,8 +90,9 @@ const Update_Authenticating = 'update_authenticating';
  * openModal('Connect with restricted WMS...', getCredentialPanel());
  * </pre>
  * @class
- * @property {string} [url] the url, which needs authentication by a password credential
- * @property {string| templateResult} [footer] the footer, which will be rendered below the username and password fields
+ * @property {string} url the URL which needs authentication by a password credential
+ * @property {string| templateResult} [footer=null] the footer, which will be rendered below the username and password fields
+ * @property {boolean} [useForm=false] `true` if the dialog should be wrapped by a form which (may) trigger the password-save-dialog of the browser. Default is `false`
  * @property {module:modules/auth/components/PasswordCredentialPanel~authenticateCallback} [authenticate] the authenticate callback
  * @property {module:modules/auth/components/PasswordCredentialPanel~onCloseCallback} [onClose] the onClose callback
  * @author thiloSchlemmer
@@ -101,7 +104,8 @@ export class PasswordCredentialPanel extends MvuElement {
 			credential: null,
 			footer: null,
 			authenticating: false,
-			showPassword: false
+			showPassword: false,
+			useForm: false
 		});
 
 		const { TranslationService } = $injector.inject('TranslationService');
@@ -134,6 +138,8 @@ export class PasswordCredentialPanel extends MvuElement {
 				return { ...model, portrait: data };
 			case Update_Authenticating:
 				return { ...model, authenticating: data };
+			case Update_Use_Form:
+				return { ...model, useForm: data };
 		}
 	}
 
@@ -141,14 +147,15 @@ export class PasswordCredentialPanel extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { portrait, url, footer, credential, showPassword } = model;
+		const { portrait, url, footer, credential, showPassword, useForm } = model;
 		const translate = (key) => this._translationService.translate(key);
 		const getOrientationClass = () => {
 			return portrait ? 'is-portrait' : 'is-landscape';
 		};
 
 		const passwordClasses = {
-			eye: showPassword
+			eye: showPassword,
+			eyeslash: !showPassword
 		};
 
 		const onChangeUserName = (e) => {
@@ -186,12 +193,14 @@ export class PasswordCredentialPanel extends MvuElement {
 			return footer ? footer : nothing;
 		};
 
+		const formTag = useForm ? literal`form` : literal`div`;
+
 		return html`
 			<style>
 				${css}
 			</style>
 			<div class="credential_container ${getOrientationClass()}">
-				<div class="credential_form">
+				<${formTag} class="credential_form">
 					<div class="credential_header ${url ? 'visible' : ''}">${getHeaderContent(url)}</div>
 					<div class="ba-form-element" title="${translate('auth_passwordCredentialPanel_credential_username')}">
 						<input
@@ -217,9 +226,9 @@ export class PasswordCredentialPanel extends MvuElement {
 						/>
 						<label for="credential_password" class="control-label">${translate('auth_passwordCredentialPanel_credential_password')}</label
 						><i class="bar"></i>
-						<i class="eye-slash ${classMap(passwordClasses)}" id="toggle_password" @click=${togglePassword}></i>
+						<i class="password-icon ${classMap(passwordClasses)}" id="toggle_password" @click=${togglePassword}></i>
 					</div>
-				</div>
+				</${formTag}>
 				<div class="credential_custom_content ${footer ? 'visible' : ''}">${getCustomContent()}</div>
 				<div class="credential_footer">${this._getSubmitOrSpinner(model)}</div>
 			</div>
@@ -303,6 +312,14 @@ export class PasswordCredentialPanel extends MvuElement {
 
 	set authenticate(callback) {
 		this._authenticate = callback;
+	}
+
+	set useForm(value) {
+		this.signal(Update_Use_Form, value);
+	}
+
+	get useForm() {
+		return this.getModel().useForm;
 	}
 
 	set onClose(callback) {

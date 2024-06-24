@@ -368,9 +368,6 @@ input[type='search']::-webkit-search-results-decoration {
 	border-radius: 0 var(--border-radius-button) var(--border-radius-button) 0;
 	background: var(--primary-color);
 	color: var(--text2);
-	border-color: var(--primary-color);
-	border-width: 1px;
-	border-style: solid;
 	cursor: pointer;
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 	/* color: rgba(255,255,255,.8); */

@@ -3,7 +3,7 @@
  */
 import { $injector } from '../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
-import { PERMANENT_ROUTE_LAYER_ID, PERMANENT_WP_LAYER_ID, ROUTING_LAYER_ID } from '../../../../plugins/RoutingPlugin';
+import { PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID, PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID, ROUTING_LAYER_ID } from '../../../../plugins/RoutingPlugin';
 import LayerGroup from 'ol/layer/Group';
 import VectorSource from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
@@ -24,7 +24,14 @@ import EventType from 'ol/events/EventType';
 import { unByKey } from 'ol/Observable';
 import { HelpTooltip } from '../../tooltip/HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
-import { setCategory, setProposal, setRouteAndStats, setWaypoints } from '../../../../store/routing/routing.action';
+import {
+	setCategory,
+	setForceDestination,
+	setForceStart,
+	setProposal,
+	setRouteAndStats,
+	setWaypoints
+} from '../../../../store/routing/routing.action';
 import { CoordinateProposalType, RouteCalculationErrors, RoutingStatusCodes } from '../../../../domain/routing';
 import { fit } from '../../../../store/position/position.action';
 import { equals } from '../../../../../node_modules/ol/coordinate';
@@ -279,7 +286,16 @@ export class OlRoutingHandler extends OlLayerHandler {
 		});
 		translate.on('translateend', (evt) => {
 			if (!equals(startCoordinate, evt.coordinate)) {
-				this._requestRouteFromInteractionLayer();
+				if (this._getInteractionFeatures().length === 1 && evt.features.item(0).get(ROUTING_FEATURE_TYPE) === RoutingFeatureTypes.START) {
+					setForceStart(evt.features.item(0).getGeometry().getCoordinates());
+				} else if (
+					this._getInteractionFeatures().length === 1 &&
+					evt.features.item(0).get(ROUTING_FEATURE_TYPE) === RoutingFeatureTypes.DESTINATION
+				) {
+					setForceDestination(evt.features.item(0).getGeometry().getCoordinates());
+				} else {
+					this._requestRouteFromInteractionLayer();
+				}
 			}
 		});
 		return translate;
@@ -785,21 +801,24 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 			const getOrCreateVectorGeoResource = (id, label) => {
 				const fromService = this._geoResourceService.byId(id);
-				return fromService ? fromService : new VectorGeoResource(id, label, VectorSourceType.KML);
+				return fromService
+					? fromService /**always update the label*/
+							.setLabel(label)
+					: new VectorGeoResource(id, label, VectorSourceType.KML);
 			};
-			const vgrRoute = getOrCreateVectorGeoResource(PERMANENT_ROUTE_LAYER_ID, labelRtLayer)
+			const vgrRoute = getOrCreateVectorGeoResource(PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID, labelRtLayer)
 				.setSource(routeKML, 4326)
 				.setHidden(true)
 				.setAttributionProvider(this._attributionProvider);
-			const vgrInteraction = getOrCreateVectorGeoResource(PERMANENT_WP_LAYER_ID, labelWpLayer)
+			const vgrInteraction = getOrCreateVectorGeoResource(PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID, labelWpLayer)
 				.setSource(interactionKML, 4326)
 				.setHidden(true)
 				.setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource);
 
 			this._geoResourceService.addOrReplace(vgrRoute);
 			this._geoResourceService.addOrReplace(vgrInteraction);
-			addLayer(PERMANENT_ROUTE_LAYER_ID, { constraints: { metaData: false } });
-			addLayer(PERMANENT_WP_LAYER_ID, { constraints: { metaData: false } });
+			addLayer(PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID, { constraints: { metaData: false } });
+			addLayer(PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID, { constraints: { metaData: false } });
 		}
 	}
 }

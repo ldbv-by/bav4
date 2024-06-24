@@ -386,7 +386,6 @@ export class BvvMfp3Encoder {
 		// amount of created style-specs
 		const styleCache = new Map();
 		const mfpPageExtent = getPolygonFrom(this._pageExtent).transform(this._mapProjection, this._mfpProjection).getExtent();
-
 		const encodingResults = featuresSortedByGeometryType
 			.map((f) => transformForMfp(f))
 			.filter((f) => f.getGeometry().intersectsExtent(mfpPageExtent))
@@ -523,6 +522,10 @@ export class BvvMfp3Encoder {
 					if (symbolizer.strokeOpacity) {
 						symbolizer.strokeOpacity *= layerOpacity;
 					}
+
+					if (symbolizer.graphicOpacity) {
+						symbolizer.graphicOpacity *= layerOpacity;
+					}
 				});
 
 				styleCache.set(olStyle, encodedStyle);
@@ -645,7 +648,7 @@ export class BvvMfp3Encoder {
 
 			if (styleProperties.imageSrc) {
 				encoded.externalGraphic = styleProperties.imageSrc;
-				encoded.fillOpacity = 1;
+				encoded.graphicOpacity = 1;
 			}
 
 			if (styleProperties.radius) {

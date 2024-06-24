@@ -11,7 +11,9 @@ export const ROUTING_WAYPOINTS_CHANGED = 'routing/waypointsChanged';
 export const ROUTING_WAYPOINT_DELETED = 'routing/waypointDeleted';
 export const ROUTING_RESET = 'routing/reset';
 export const ROUTING_START_SET = 'routing/startSet';
+export const ROUTING_FORCE_START_SET = 'routing/forceStartSet';
 export const ROUTING_DESTINATION_SET = 'routing/destinationSet';
+export const ROUTING_FORCE_DESTINATION_SET = 'routing/forceDestinationSet';
 export const ROUTING_PROPOSAL_SET = 'routing/proposalSet';
 export const ROUTING_INTERMEDIATE_SET = 'routing/intermediateSet';
 export const ROUTING_HIGHLIGHT_SEGMENTS_SET = 'routing/highlightSet';
@@ -142,6 +144,13 @@ export const routingReducer = (state = initialState, action) => {
 				status: RoutingStatusCodes.Destination_Missing
 			};
 		}
+		case ROUTING_FORCE_START_SET: {
+			return {
+				...state,
+				waypoints: [[...payload]],
+				status: RoutingStatusCodes.Destination_Missing
+			};
+		}
 		case ROUTING_DESTINATION_SET: {
 			if (state.waypoints.length === 1) {
 				return {
@@ -150,6 +159,13 @@ export const routingReducer = (state = initialState, action) => {
 					status: RoutingStatusCodes.Ok
 				};
 			}
+			return {
+				...state,
+				waypoints: [[...payload]],
+				status: RoutingStatusCodes.Start_Missing
+			};
+		}
+		case ROUTING_FORCE_DESTINATION_SET: {
 			return {
 				...state,
 				waypoints: [[...payload]],

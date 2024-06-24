@@ -9,6 +9,7 @@ import { XyzGeoResource } from '../../src/domain/geoResources.js';
 import { notificationReducer } from '../../src/store/notifications/notifications.reducer.js';
 import { LevelTypes } from '../../src/store/notifications/notifications.action.js';
 import { Tools } from '../../src/domain/tools.js';
+import { PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID, PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID } from '../../src/plugins/RoutingPlugin.js';
 
 describe('SharePlugin', () => {
 	const geoResourceService = {
@@ -34,9 +35,11 @@ describe('SharePlugin', () => {
 			it('emits an notification', async () => {
 				const store = setup();
 				addLayer('id0');
-				addLayer('id1');
+				addLayer('id1'); //should be filtered out
 				addLayer('id2');
 				addLayer('id3', { constraints: { hidden: true } }); //should be filtered out
+				addLayer(PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID); //should be filtered out
+				addLayer(PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID); //should be filtered out
 				spyOn(geoResourceService, 'byId').and.callFake((id) => {
 					const gr = new XyzGeoResource(id, id, '');
 					if (id === 'id1') {
@@ -55,6 +58,12 @@ describe('SharePlugin', () => {
 				expect(TestUtils.renderTemplateResult(store.getState().notifications.latest.payload.content).textContent).toContain('id0');
 				expect(TestUtils.renderTemplateResult(store.getState().notifications.latest.payload.content).textContent).toContain('id2');
 				expect(TestUtils.renderTemplateResult(store.getState().notifications.latest.payload.content).textContent).not.toContain('id1');
+				expect(TestUtils.renderTemplateResult(store.getState().notifications.latest.payload.content).textContent).not.toContain(
+					PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID
+				);
+				expect(TestUtils.renderTemplateResult(store.getState().notifications.latest.payload.content).textContent).not.toContain(
+					PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID
+				);
 				expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.WARN);
 			});
 		});

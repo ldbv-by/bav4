@@ -63,6 +63,7 @@ describe('bvvSignInProvider', () => {
 			expect(wrapperElementContent.querySelectorAll(PasswordCredentialPanel.tag)).toHaveSize(1);
 			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).authenticate).toEqual(jasmine.any(Function));
 			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).onClose).toEqual(jasmine.any(Function));
+			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).useForm).toBeTrue();
 			const wrapperElementFooter = TestUtils.renderTemplateResult(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).footer);
 			expect(wrapperElementFooter.querySelectorAll(BvvPlusPasswordCredentialFooter.tag)).toHaveSize(1);
 			closeModal(); /** we close the modal in order to resolve the promise */
@@ -283,6 +284,24 @@ describe('bvvSignOutProvider', () => {
 		});
 	});
 
+	describe('backend returns status code 403', () => {
+		it('returns "true" and informs the user', async () => {
+			const backendUrl = 'https://backend.url/';
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const httpServiceSpy = spyOn(httpService, 'get')
+				.withArgs(backendUrl + 'auth/signout')
+				.and.resolveTo(new Response());
+
+			const result = await bvvSignOutProvider();
+
+			expect(result).toBeTrue();
+			expect(configServiceSpy).toHaveBeenCalled();
+			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(store.getState().notifications.latest.payload.content).toBe('global_signOut_success');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+		});
+	});
+
 	describe('backend returns any other status code', () => {
 		it('throws an Error', async () => {
 			const statusCode = 500;
@@ -425,6 +444,7 @@ describe('bvvAuthResponseInterceptorProvider', () => {
 				expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).authenticate).toEqual(jasmine.any(Function));
 				expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).onClose).toEqual(jasmine.any(Function));
 				expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).footer).toBeNull();
+				expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).useForm).toBeTrue();
 				closeModal(); /** we close the modal in order to resolve the promise */
 				await expectAsync(responsePromise).toBeResolved();
 			});
@@ -441,6 +461,7 @@ describe('bvvAuthResponseInterceptorProvider', () => {
 				expect(wrapperElementContent.querySelectorAll(PasswordCredentialPanel.tag)).toHaveSize(1);
 				expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).authenticate).toEqual(jasmine.any(Function));
 				expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).onClose).toEqual(jasmine.any(Function));
+				expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).useForm).toBeTrue();
 				const wrapperElementFooter = TestUtils.renderTemplateResult(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).footer);
 				expect(wrapperElementFooter.querySelectorAll(BvvPlusPasswordCredentialFooter.tag)).toHaveSize(1);
 				closeModal(); /** we close the modal in order to resolve the promise */
