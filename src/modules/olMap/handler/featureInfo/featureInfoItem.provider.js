@@ -33,12 +33,7 @@ export const getBvvFeatureInfo = (olFeature, layerProperties) => {
 		GeoResourceService: geoResourceService
 	} = $injector.inject('MapService', 'SecurityService', 'GeoResourceService');
 	const stats = getStats(olFeature.getGeometry());
-	const elevationProfileCoordinates =
-		simplify(
-			getLineString(olFeature.getGeometry()),
-			PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES,
-			PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857
-		)?.getCoordinates() ?? [];
+	const elevationProfileCoordinates = getLineString(olFeature.getGeometry())?.getCoordinates() ?? [];
 	const exportData = new KML().writeFeatures([olFeature], { featureProjection: 'EPSG:' + mapService.getSrid() });
 
 	const getContent = () => {
