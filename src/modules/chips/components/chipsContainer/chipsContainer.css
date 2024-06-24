@@ -3,7 +3,7 @@
 	margin-left: 7em;
 	display: flex;
 	transition: all var(--animation-duration-large-open) var(--animation-easing-linear);
-	position: absolute;
+	position: fixed;
 	scroll-behavior: smooth;
 	overflow: hidden;
 	-ms-overflow-style: none;
@@ -51,6 +51,12 @@
 	overflow: auto;
 	padding-bottom: 0.5em;
 	white-space: nowrap;
+}
+.is-desktop.is-open.is-open-nav.chips__container {
+	transform: translate(33.5em, 0);
+}
+.is-desktop.is-open-nav.chips__container {
+	transform: translate(6em, 0);
 }
 .is-tablet.is-open.chips__container {
 	right: 29em;
@@ -123,7 +129,7 @@
 	-webkit-mask-size: cover;
 }
 iframe {
-	min-height: 50em;
+	min-height: calc(100vh - 15em);
 	border: 0;
 	width: 100%;
 	min-width: 60em;

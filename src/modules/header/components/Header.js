@@ -38,6 +38,7 @@ export class Header extends MvuElement {
 	constructor() {
 		super({
 			isOpen: false,
+			isOpenNav: false,
 			tabIndex: null,
 			isFetching: false,
 			layers: [],
@@ -80,7 +81,7 @@ export class Header extends MvuElement {
 	onInitialize() {
 		this.observe(
 			(state) => state.mainMenu,
-			(mainMenu) => this.signal(Update_IsOpen_TabIndex, { isOpen: mainMenu.open, tabIndex: mainMenu.tab })
+			(mainMenu) => this.signal(Update_IsOpen_TabIndex, { isOpen: mainMenu.open, isOpenNav: mainMenu.openNav, tabIndex: mainMenu.tab })
 		);
 		this.observe(
 			(state) => state.network.fetching,
@@ -155,6 +156,9 @@ export class Header extends MvuElement {
 
 		const getIsClearClass = () => {
 			return searchTerm ? 'is-clear-visible' : '';
+		};
+		const getSchemaClass = () => {
+			return darkSchema ? 'sun' : 'moon';
 		};
 
 		const getBadgeText = () => {
@@ -237,6 +241,10 @@ export class Header extends MvuElement {
 
 		const openMiscTab = () => {
 			setTab(TabIds.MISC);
+			openMainMenu();
+		};
+		const openFeatureInfo = () => {
+			setTab(TabIds.FEATUREINFO);
 			openMainMenu();
 		};
 

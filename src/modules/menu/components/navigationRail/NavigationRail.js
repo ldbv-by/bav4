@@ -20,6 +20,8 @@ const Update_IsOpen_NavigationRail = 'update_NavigationRail';
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
 const Update_Schema = 'update_schema';
 
+const FULLSCREEN_CSS_ID = 'fullscreen-css-id';
+
 /**
  * Side navigation component in large window sizes and a map navigation component in compact window sizes.
  * @class
@@ -124,6 +126,18 @@ export class NavigationRail extends MvuElement {
 			fit(getDefaultMapExtent(), { useVisibleViewport: false });
 		};
 
+		const toggleFullScreen = () => {
+			if (!document.getElementById(FULLSCREEN_CSS_ID)) {
+				const styleElement = document.createElement('style');
+				styleElement.id = FULLSCREEN_CSS_ID;
+				document.head.appendChild(styleElement);
+			}
+			const style = document.getElementById(FULLSCREEN_CSS_ID);
+
+			this._zindex = this._zindex === 601 ? 1 : 601;
+			style.innerHTML = `*{--z-map: ${this._zindex};}`;
+		};
+
 		const getFlexOrder = (tabId) => {
 			//first tow are always home-button and separator
 			return reverseTabIds.indexOf(tabId) + 2;
@@ -168,6 +182,10 @@ export class NavigationRail extends MvuElement {
 					>
 						<span class="icon "> </span>
 						<span class="text">${translate('menu_navigation_rail_object_info')}</span>
+					</button>
+					<button @click="${toggleFullScreen}" class="fullscreen">
+						<span class="icon "> </span>
+						<span class="text"> fullscreen </span>
 					</button>
 					<button @click="${increaseZoom}" class="zoom-in">
 						<span class="icon  "> </span>

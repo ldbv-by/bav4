@@ -1,4 +1,5 @@
 export const OPEN_CLOSED_CHANGED = 'components/menu/mainMenu/open';
+export const OPENNAV_CLOSEDNAV_CHANGED = 'components/menu/mainMenu/openNav';
 export const TAB_CHANGED = 'components/menu/mainMenu/tabChanged';
 const ORIENTATION_MEDIA_QUERY = '(max-width: 80em) or (orientation: portrait)';
 
@@ -9,6 +10,12 @@ const mainMenuReducer = (state, action) => {
 			return {
 				...state,
 				open: payload
+			};
+		}
+		case OPENNAV_CLOSEDNAV_CHANGED: {
+			return {
+				...state,
+				openNav: payload
 			};
 		}
 
@@ -44,7 +51,8 @@ export const createMainMenuReducer = (_window = window) => {
 		/**
 		 * @property {number}
 		 */
-		tab: null
+		tab: null,
+		openNav: false
 	};
 
 	return (state = initialState, action) => mainMenuReducer(state, action);
