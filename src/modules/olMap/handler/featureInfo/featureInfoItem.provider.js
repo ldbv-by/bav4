@@ -3,13 +3,7 @@
  */
 import { FeatureInfoGeometryTypes } from '../../../../store/featureInfo/featureInfo.action';
 import GeoJSON from 'ol/format/GeoJSON';
-import {
-	getLineString,
-	getStats,
-	PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES,
-	PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857,
-	simplify
-} from '../../utils/olGeometryUtils';
+import { getLineString, getStats } from '../../utils/olGeometryUtils';
 import { $injector } from '../../../../injection';
 import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
