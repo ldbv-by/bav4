@@ -189,6 +189,24 @@ export class GeoResourceResultItem extends MvuElement {
 				: nothing;
 		};
 
+		const getInfoButton = (result) => {
+			const geoRes = this.#geoResourceService.byId(result.geoResourceId);
+			return geoRes && !geoRes.isExternal()
+				? html`
+						<ba-icon
+							class="info-button"
+							.icon="${infoSvg}"
+							.color=${'var(--primary-color)'}
+							.color_hover=${'var(--text3)'}
+							.size=${2}
+							.title="${translate('search_result_item_info')}"
+							@click="${() => onClickOpenGeoResourceInfoPanel(geoResourceSearchResult)}"
+						>
+						</ba-icon>
+					`
+				: nothing;
+		};
+
 		if (geoResourceSearchResult) {
 			const keywords = [...this.#geoResourceService.getKeywords(geoResourceSearchResult.geoResourceId)];
 			return html`
@@ -221,16 +239,7 @@ export class GeoResourceResultItem extends MvuElement {
 					</span>
 					<div class="ba-list-item__after separator">
 					${getZoomToExtentButton(geoResourceSearchResult)}
-					<ba-icon
-						class='info-button'
-						.icon="${infoSvg}"
-						.color=${'var(--primary-color)'}
-						.color_hover=${'var(--text3)'}
-						.size=${2}
-						.title="${translate('search_result_item_info')}"
-						@click="${() => onClickOpenGeoResourceInfoPanel(geoResourceSearchResult)}"
-					>
-					</ba-icon>
+					${getInfoButton(geoResourceSearchResult)}
 					</div>
 				</li>
 			`;

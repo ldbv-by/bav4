@@ -56,7 +56,11 @@ describe('GeoResourceResultItem', () => {
 		});
 
 		it('renders the view', async () => {
-			const data = new GeoResourceSearchResult('id', 'label', 'labelFormatted');
+			const geoResourceId = 'geoResourceId';
+			const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
+			const geoResourceFuture = new GeoResourceFuture(geoResourceId, { label: 'labelFormatted' });
+			spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResourceFuture);
+
 			const element = await setup();
 
 			element.data = data;
@@ -69,8 +73,12 @@ describe('GeoResourceResultItem', () => {
 		});
 
 		it('renders the view containing keyword badges', async () => {
-			const data = new GeoResourceSearchResult('id', 'label', 'labelFormatted');
-			spyOn(geoResourceService, 'getKeywords').withArgs('id').and.returnValue(['Foo', 'Bar']);
+			const geoResourceId = 'geoResourceId';
+			const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
+			const geoResourceFuture = new GeoResourceFuture(geoResourceId, { label: 'labelFormatted' });
+			spyOn(geoResourceService, 'getKeywords').withArgs(geoResourceId).and.returnValue(['Foo', 'Bar']);
+			spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResourceFuture);
+
 			const element = await setup();
 
 			element.data = data;
@@ -115,6 +123,20 @@ describe('GeoResourceResultItem', () => {
 
 			//info Icon
 			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item__after')).toHaveSize(1);
+		});
+
+		it('renders no info Button for a external GeoResource', async () => {
+			const geoResourceId = 'https://foo.bar';
+			const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
+			const geoResourceFuture = new GeoResourceFuture(geoResourceId, null);
+			spyOn(geoResourceService, 'isAllowed').withArgs(geoResourceId).and.returnValue(false);
+			spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResourceFuture);
+			const element = await setup();
+			element.data = data;
+
+			//info Icon
+			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.ba-list-item__after')).toHaveSize(1);
 		});
 
@@ -297,7 +319,10 @@ describe('GeoResourceResultItem', () => {
 
 			it('sets the opacity to the the correct value', async () => {
 				const element = await setupOnClickTests();
-				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue({ opacity: 0.5 });
+
+				const geoResourceFuture = new GeoResourceFuture(geoResourceId);
+				geoResourceFuture.setOpacity(0.5);
+				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResourceFuture);
 
 				const checkbox = element.shadowRoot.querySelector('#toggle_layer');
 
