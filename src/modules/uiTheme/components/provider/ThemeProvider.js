@@ -10,11 +10,12 @@ import { MvuElement } from '../../../MvuElement';
  * @author taulinger
  */
 export class ThemeProvider extends MvuElement {
+	#environmentService;
 	constructor() {
 		super();
 
 		const { EnvironmentService } = $injector.inject('EnvironmentService');
-		this._environmentService = EnvironmentService;
+		this.#environmentService = EnvironmentService;
 	}
 
 	onInitialize() {
@@ -27,8 +28,8 @@ export class ThemeProvider extends MvuElement {
 	#updateCss(darkSchema) {
 		const cssClassToAdd = darkSchema ? 'dark-theme' : 'light-theme';
 		const cssClassToRemove = darkSchema ? 'light-theme' : 'dark-theme';
-		this._environmentService.getWindow().document.body.classList.add(cssClassToAdd);
-		this._environmentService.getWindow().document.body.classList.remove(cssClassToRemove);
+		this.#environmentService.getWindow().document.body.classList.add(cssClassToAdd);
+		this.#environmentService.getWindow().document.body.classList.remove(cssClassToRemove);
 	}
 
 	isRenderingSkipped() {
