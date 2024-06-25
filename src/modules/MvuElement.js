@@ -329,7 +329,7 @@ export class MvuElement extends HTMLElement {
 	 * The observer is automatically unsubscribed when the element is disconnected from the DOM but can be unsubscribed manually at an earlier point in time when needed.
 	 * @param {module:modules/MvuElement~extractStateFn} extract A function that extract a portion (single value or a object) from the current state which will be observed for comparison
 	 * @param {module:modules/MvuElement~onObservedStateChange} onChange A function that will be called when the observed state has changed
-	 * @param {boolean|true} immediately A boolean that indicates, if the callback should be called immediately after the observer has been registered. Default is `true`
+	 * @param {boolean|true} immediately A boolean that indicates, if the callback should be called immediately after the observer has been registered. Default is `true`.
 	 * @returns  A function that unsubscribes the observer
 	 * @see observe
 	 */
@@ -352,7 +352,7 @@ export class MvuElement extends HTMLElement {
 	 * @protected
 	 * @param {(string|string[])} names Name(s) of the observed field(s)
 	 * @param {module:modules/MvuElement~onObservedModelChange} onChange A function that will be called when one of the observed fields has change
-	 * @param {boolean|false} immediately A boolean that indicates, if the callback should be called immediately after the observer has been registered
+	 * @param {boolean|false} immediately A boolean that indicates, if the callback should be called immediately after the observer has been registered. Default is `false`.
 	 * @returns  A function that unsubscribes the observer
 	 */
 	observeModel(names, onChange, immediately = false) {
