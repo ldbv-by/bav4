@@ -87,10 +87,27 @@ export class RoutingPlugin extends BaPlugin {
 	 */
 	async register(store) {
 		if (!this.#environmentService.isEmbedded() && this.#environmentService.getQueryParams().has(QueryParameters.ROUTE_WAYPOINTS)) {
+			const toolId = this.#environmentService.getQueryParams().get(QueryParameters.TOOL_ID);
 			if (await this._lazyInitialize()) {
 				// we activate the tool after another possible active tool was deactivated
 				setTimeout(() => {
 					activate();
+					// when we have a destination proposal waypoint we always open the routing tab set the routing tool as the current tool
+					if (this._parseWaypoints(this.#environmentService.getQueryParams()).length === 1) {
+						setTab(TabIds.ROUTING);
+						setCurrentTool(Tools.ROUTING);
+					} else {
+						// we have waypoints for a route but the tool should not be active, so we deactivate the tool after the route was successfully fetched
+						if (toolId !== Tools.ROUTING) {
+							observeOnce(
+								store,
+								(state) => state.routing.route,
+								() => deactivate()
+							);
+						} else {
+							setCurrentTool(Tools.ROUTING);
+						}
+					}
 				});
 			}
 		}
@@ -196,30 +213,31 @@ export class RoutingPlugin extends BaPlugin {
 		);
 	}
 
-	_parseRouteFromQueryParams(queryParams) {
-		if (queryParams.has(QueryParameters.ROUTE_WAYPOINTS)) {
-			const parseWaypoints = (waypointsAsString) => {
-				const waypoints = [];
-				const routeValues = waypointsAsString.split(',');
-				if (routeValues.length > 1 && routeValues.length % 2 === 0) {
-					for (let index = 0; index < routeValues.length - 1; index = index + 2) {
-						waypoints.push([parseFloat(routeValues[index]), parseFloat(routeValues[index + 1])]);
-					}
+	_parseWaypoints(queryParams) {
+		const waypoints = [];
+		const waypointsAsString = queryParams.get(QueryParameters.ROUTE_WAYPOINTS);
+		if (waypointsAsString) {
+			const routeValues = waypointsAsString.split(',');
+			if (routeValues.length > 1 && routeValues.length % 2 === 0) {
+				for (let index = 0; index < routeValues.length - 1; index = index + 2) {
+					waypoints.push([parseFloat(routeValues[index]), parseFloat(routeValues[index + 1])]);
 				}
-				return waypoints.filter((c) => isCoordinate(c));
-			};
-
-			const waypoints = parseWaypoints(queryParams.get(QueryParameters.ROUTE_WAYPOINTS));
-			if (waypoints.length > 0) {
-				if (queryParams.has(QueryParameters.ROUTE_CATEGORY)) {
-					const catId = queryParams.get(QueryParameters.ROUTE_CATEGORY);
-					// update the category only if catId is a known id
-					if (this.#routingService.getCategoryById(catId)) {
-						setCategory(catId);
-					}
-				}
-				waypoints.length === 1 ? setDestination(waypoints[0]) : setWaypoints(waypoints);
 			}
+		}
+		return waypoints.filter((c) => isCoordinate(c));
+	}
+
+	_parseRouteFromQueryParams(queryParams) {
+		const waypoints = this._parseWaypoints(queryParams);
+		if (waypoints.length > 0) {
+			if (queryParams.has(QueryParameters.ROUTE_CATEGORY)) {
+				const catId = queryParams.get(QueryParameters.ROUTE_CATEGORY);
+				// update the category only if catId is a known id
+				if (this.#routingService.getCategoryById(catId)) {
+					setCategory(catId);
+				}
+			}
+			waypoints.length === 1 ? setDestination(waypoints[0]) : setWaypoints(waypoints);
 		}
 	}
 

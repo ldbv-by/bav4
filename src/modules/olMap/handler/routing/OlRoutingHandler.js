@@ -24,7 +24,14 @@ import EventType from 'ol/events/EventType';
 import { unByKey } from 'ol/Observable';
 import { HelpTooltip } from '../../tooltip/HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
-import { setCategory, setProposal, setRouteAndStats, setWaypoints } from '../../../../store/routing/routing.action';
+import {
+	setCategory,
+	setForceDestination,
+	setForceStart,
+	setProposal,
+	setRouteAndStats,
+	setWaypoints
+} from '../../../../store/routing/routing.action';
 import { CoordinateProposalType, RouteCalculationErrors, RoutingStatusCodes } from '../../../../domain/routing';
 import { fit } from '../../../../store/position/position.action';
 import { equals } from '../../../../../node_modules/ol/coordinate';
@@ -279,7 +286,16 @@ export class OlRoutingHandler extends OlLayerHandler {
 		});
 		translate.on('translateend', (evt) => {
 			if (!equals(startCoordinate, evt.coordinate)) {
-				this._requestRouteFromInteractionLayer();
+				if (this._getInteractionFeatures().length === 1 && evt.features.item(0).get(ROUTING_FEATURE_TYPE) === RoutingFeatureTypes.START) {
+					setForceStart(evt.features.item(0).getGeometry().getCoordinates());
+				} else if (
+					this._getInteractionFeatures().length === 1 &&
+					evt.features.item(0).get(ROUTING_FEATURE_TYPE) === RoutingFeatureTypes.DESTINATION
+				) {
+					setForceDestination(evt.features.item(0).getGeometry().getCoordinates());
+				} else {
+					this._requestRouteFromInteractionLayer();
+				}
 			}
 		});
 		return translate;
@@ -785,7 +801,10 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 			const getOrCreateVectorGeoResource = (id, label) => {
 				const fromService = this._geoResourceService.byId(id);
-				return fromService ? fromService : new VectorGeoResource(id, label, VectorSourceType.KML);
+				return fromService
+					? fromService /**always update the label*/
+							.setLabel(label)
+					: new VectorGeoResource(id, label, VectorSourceType.KML);
 			};
 			const vgrRoute = getOrCreateVectorGeoResource(PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID, labelRtLayer)
 				.setSource(routeKML, 4326)

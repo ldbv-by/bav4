@@ -159,7 +159,7 @@ export class GeoResourceResultItem extends MvuElement {
 
 		const onClickOpenGeoResourceInfoPanel = async (result) => {
 			const content = html`<ba-georesourceinfo-panel .geoResourceId=${result.geoResourceId}></ba-georesourceinfo-panel>`;
-			openModal('label', content);
+			openModal(geoResourceSearchResult.labelFormatted, content);
 		};
 
 		const getActivePreviewClass = () => {
