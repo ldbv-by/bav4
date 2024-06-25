@@ -9,7 +9,7 @@ import { TopicsContentPanelIndex } from '../../../../../../src/modules/topics/co
 import { Topic } from '../../../../../../src/domain/topic';
 import { Spinner } from '../../../../../../src/modules/commons/components/spinner/Spinner';
 import { topicsContentPanelReducer } from '../../../../../../src/store/topicsContentPanel/topicsContentPanel.reducer';
-import { AbstractContentPanel } from '../../../../../../src/modules/menu/components/mainMenu/content/AbstractContentPanel';
+import { AbstractMvuContentPanel } from '../../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel.js';
 
 window.customElements.define(CatalogContentPanel.tag, CatalogContentPanel);
 
@@ -25,7 +25,7 @@ describe('TopicsContentPanel', () => {
 					geoResourceId: 'gr1'
 				},
 				{
-					label: 'Suptopic 2',
+					label: 'Subtopic 2',
 					children: [
 						{
 							geoResourceId: 'gr3'
@@ -61,10 +61,23 @@ describe('TopicsContentPanel', () => {
 	};
 
 	describe('class', () => {
-		it('inherits from AbstractContentPanel', async () => {
+		it('inherits from AbstractMvuContentPanel', async () => {
 			const element = await setup();
 
-			expect(element instanceof AbstractContentPanel).toBeTrue();
+			expect(element instanceof AbstractMvuContentPanel).toBeTrue();
+		});
+	});
+
+	describe('when instantiated', () => {
+		it('sets a default model', async () => {
+			await setup();
+			const element = new CatalogContentPanel();
+
+			expect(element.getModel()).toEqual({
+				matchingTopicId: false,
+				catalog: null,
+				active: false
+			});
 		});
 	});
 
@@ -95,7 +108,7 @@ describe('TopicsContentPanel', () => {
 
 			expect(renderSpy).toHaveBeenCalledTimes(2);
 
-			//shoud not cause further calls of #render
+			//should not cause further calls of #render
 			setCurrent(topicId);
 			setCurrent(topicId);
 			setCurrent(topicId);
@@ -119,12 +132,12 @@ describe('TopicsContentPanel', () => {
 
 			//wait for elements
 			await TestUtils.timeout();
-			expect(element.style.display).toBe('inline');
+			expect(element.shadowRoot.children.length).not.toBe(0);
 
 			setCurrent('doesNotMatchTopicId');
 
 			await TestUtils.timeout();
-			expect(element.style.display).toBe('none');
+			expect(element.shadowRoot.children.length).toBe(0);
 		});
 	});
 
