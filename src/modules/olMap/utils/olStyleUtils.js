@@ -17,7 +17,8 @@ import markerIcon from '../assets/marker.svg';
 import { isString } from '../../../utils/checks';
 import { getContrastColorFrom, hexToRgb, rgbToHex } from '../../../utils/colors';
 import { AssetSourceType, getAssetSource } from '../../../utils/assets';
-import { GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
+import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../ol/geodesic/geodesicGeometry';
+import { MultiLineString } from '../../../../node_modules/ol/geom';
 
 const Z_Point = 30;
 const Red_Color = [255, 0, 0];
@@ -405,7 +406,7 @@ const getRulerStyle = (feature) => {
 	return new Style({
 		geometry: () => {
 			const geodesicGeometry = feature?.get(GEODESIC_FEATURE_PROPERTY)?.getGeometry();
-			return geodesicGeometry ?? feature.getGeometry();
+			return geodesicGeometry ?? null;
 		},
 		renderer: (pixelCoordinates, state) => {
 			const getContextRenderFunction = (state) =>
@@ -417,7 +418,6 @@ const getRulerStyle = (feature) => {
 
 export const renderRulerSegments = (pixelCoordinates, state, contextRenderFunction) => {
 	const { MapService: mapService } = $injector.inject('MapService');
-
 	const geometry = state.geometry.clone();
 	const lineString = getLineString(geometry);
 	const resolution = state.resolution;
@@ -425,6 +425,19 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 
 	const getMeasuredLength = () => {
 		const alreadyMeasuredLength = state.geometry ? state.geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY) : null;
+		if (!alreadyMeasuredLength) {
+			/**  Usually state.geometry should have the custom property PROJECTED_LENGTH_GEOMETRY_PROPERTY.
+			 * This property is provided by a geodesicGeometry object in the processing steps before rendering occur.
+			 * If this property is missing, we try to get this property from the state.feature with the
+			 * related geodesic (geodesicGeometry object) property.
+			 */
+			const geodesic = state.feature ? state.feature.get(GEODESIC_FEATURE_PROPERTY) : null;
+			const geodesicLength = geodesic?.getGeometry()?.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY);
+			if (geodesicLength) {
+				return geodesicLength;
+			}
+		}
+
 		return alreadyMeasuredLength ?? mapService.calcLength(lineString.getCoordinates());
 	};
 
@@ -497,7 +510,7 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 	contextRenderFunction(geometry, fill, baseStroke);
 
 	// per segment
-	const segmentCoordinates = geometry instanceof Polygon ? pixelCoordinates[0] : pixelCoordinates;
+	const segmentCoordinates = geometry instanceof Polygon || geometry instanceof MultiLineString ? pixelCoordinates[0] : pixelCoordinates;
 
 	segmentCoordinates.every((coordinate, index, coordinates) => {
 		return drawTicks(contextRenderFunction, [coordinate, coordinates[index + 1]], residuals[index], partitionTickDistance);
@@ -719,20 +732,22 @@ export const getTransparentImageStyle = () => {
 };
 
 export const createSketchStyleFunction = (styleFunction) => {
-	const sketchPolygon = new Style({
-		fill: new Fill({
-			color: White_Color.concat([0.4])
-		}),
-		stroke: new Stroke({
-			color: White_Color,
-			width: 0
-		})
-	});
+	const getSketchPolygon = (feature) =>
+		new Style({
+			geometry: feature?.get(GEODESIC_FEATURE_PROPERTY)?.getGeometry(),
+			fill: new Fill({
+				color: White_Color.concat([0.4])
+			}),
+			stroke: new Stroke({
+				color: White_Color,
+				width: 2
+			})
+		});
 
 	return (feature, resolution) => {
 		let styles;
 		if (feature.getGeometry().getType() === 'Polygon') {
-			styles = [sketchPolygon];
+			styles = [getSketchPolygon(feature)];
 		} else if (feature.getGeometry().getType() === 'Point') {
 			const fill = new Fill({
 				color: Red_Color.concat([0.4])
@@ -748,6 +763,9 @@ export const createSketchStyleFunction = (styleFunction) => {
 			});
 			styles = [sketchCircle];
 		} else {
+			if (!feature.get(GEODESIC_FEATURE_PROPERTY)) {
+				feature.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(feature, () => true));
+			}
 			styles = styleFunction(feature, resolution);
 		}
 

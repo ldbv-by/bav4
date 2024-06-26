@@ -581,15 +581,24 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}
 	}
 
-	_createMeasureGeometry(feature, isDrawing = false) {
-		if (feature.getGeometry() instanceof Polygon) {
-			const lineCoordinates = isDrawing ? feature.getGeometry().getCoordinates()[0].slice(0, -1) : feature.getGeometry().getCoordinates(false)[0];
+	_createMeasureGeometry(feature) {
+		const getGeodesicGeometry = (feature) => {
+			const geodesic = feature.get(GEODESIC_FEATURE_PROPERTY);
+			return geodesic.getGeometry(); // always returns a MultiLineString
+		};
 
-			if (!this._sketchHandler.isFinishOnFirstPoint) {
-				return new LineString(lineCoordinates);
+		const getGeometry = (feature) => {
+			if (feature.getGeometry() instanceof Polygon) {
+				const lineCoordinates = feature.getGeometry().getCoordinates(false)[0];
+
+				if (!this._sketchHandler.isFinishOnFirstPoint) {
+					return new LineString(lineCoordinates);
+				}
 			}
-		}
-		return feature.getGeometry();
+			return feature.getGeometry();
+		};
+
+		return feature.get(GEODESIC_FEATURE_PROPERTY) ? getGeodesicGeometry(feature) : getGeometry(feature);
 	}
 
 	_updateMeasureState(coordinate, pixel, dragging) {

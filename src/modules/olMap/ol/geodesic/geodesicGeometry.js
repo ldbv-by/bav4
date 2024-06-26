@@ -4,6 +4,7 @@
 import { Geodesic, PolygonArea } from 'geographiclib-geodesic';
 import { LineString, Polygon } from 'ol/geom';
 import { TiledCoordinateBag } from './tiledCoordinateBag';
+import { PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../utils/olGeometryUtils';
 
 export const GEODESIC_FEATURE_PROPERTY = 'geodesic';
 const GEODESIC_WGS84 = Geodesic.WGS84;
@@ -43,7 +44,7 @@ export class GeodesicGeometry {
 		this.#azimuthCircle = hasAzimuthCircle ? this.#calculateAzimuthCircle(coordinates, geodesicProperties.rotation, geodesicProperties.length) : null;
 		this.#geometry = geodesicCoords.createTiledGeometry();
 		this.#polygon = isPolygon && !this.#isDrawing() ? geodesicCoords.createTiledPolygon(this) : null;
-
+		this.#geometry.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, geodesicProperties.length);
 		this.#length = geodesicProperties.length;
 		this.#area = geodesicProperties.area;
 	}
