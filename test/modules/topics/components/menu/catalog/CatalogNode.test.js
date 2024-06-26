@@ -19,7 +19,7 @@ describe('CatalogNode', () => {
 					geoResourceId: 'gr1'
 				},
 				{
-					label: 'Suptopic 2',
+					label: 'Subtopic 2',
 					children: [
 						{
 							geoResourceId: 'gr3'
