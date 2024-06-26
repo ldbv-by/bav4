@@ -1,3 +1,4 @@
+import { AbstractMvuContentPanel } from '../../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel.js';
 import { CatalogLeaf } from '../../../../../../src/modules/topics/components/menu/catalog/CatalogLeaf';
 import { CatalogNode } from '../../../../../../src/modules/topics/components/menu/catalog/CatalogNode';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../../src/utils/markup';
@@ -31,30 +32,41 @@ describe('CatalogNode', () => {
 			geoResourceId: 'gr3'
 		}
 	];
-	const setup = (levelAttribute = { level: 0 }) => {
+	const setup = (levelProperty = { level: 0 }) => {
 		const state = {
 			topics: { current: 'foo' }
 		};
 
 		TestUtils.setupStoreAndDi(state);
 
-		if (levelAttribute) {
-			return TestUtils.render(CatalogNode.tag, {}, levelAttribute);
+		if (levelProperty) {
+			return TestUtils.render(CatalogNode.tag, levelProperty);
 		}
 		return TestUtils.render(CatalogNode.tag);
 	};
+
+	describe('class', () => {
+		it('inherits from AbstractMvuContentPanel', async () => {
+			const element = await setup();
+
+			expect(element instanceof AbstractMvuContentPanel).toBeTrue();
+		});
+	});
+
+	describe('when instantiated', () => {
+		it('sets a default model', async () => {
+			await setup();
+			const element = new CatalogNode();
+
+			expect(element.getModel()).toEqual({ level: 0, collapsed: true, catalogEntry: null, active: false });
+		});
+	});
 
 	describe('when initialized', () => {
 		it('renders the nothing', async () => {
 			const element = await setup();
 
 			expect(element.shadowRoot.children.length).toBe(0);
-		});
-
-		it('has a default level of 0', async () => {
-			const element = await setup(null);
-
-			expect(element._level).toBe(0);
 		});
 	});
 
