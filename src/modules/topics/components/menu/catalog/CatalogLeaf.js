@@ -37,8 +37,8 @@ export class CatalogLeaf extends AbstractMvuContentPanel {
 		this.#translationService = translationService;
 	}
 
-	set data(catalogPart) {
-		this.signal(Update_GeoResource_Id, catalogPart.geoResourceId);
+	set data(catalogEntry) {
+		this.signal(Update_GeoResource_Id, catalogEntry.geoResourceId);
 	}
 
 	onInitialize() {
