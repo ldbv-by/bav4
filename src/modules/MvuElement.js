@@ -6,7 +6,7 @@ import { $injector } from '../injection';
 import { generateTestIds, LOG_LIFECYLE_ATTRIBUTE_NAME } from '../utils/markup';
 import { equals } from '../utils/storeUtils';
 import { observe } from '../utils/storeUtils';
-import css from './baElement.css';
+import css from './mvuElement.css';
 
 /**
  * Base class for components. Improved version of {@link BaElement} and based on
