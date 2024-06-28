@@ -9,6 +9,7 @@ import { TopicsContentPanelIndex } from '../TopicsContentPanel';
 import css from './catalogContentPanel.css';
 import arrowLeftShort from '../assets/arrowLeftShort.svg';
 import { AbstractMvuContentPanel } from '../../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
+import { LevelTypes, emitNotification } from '../../../../../store/notifications/notifications.action';
 
 const Update_Catalog = 'update_catalog';
 const Update_Matching_TopicId = 'update_matching_topicId';
@@ -51,13 +52,16 @@ export class CatalogContentPanel extends AbstractMvuContentPanel {
 	}
 
 	onInitialize() {
+		const translate = (key, params) => this.#translationService.translate(key, params);
 		const loadCatalog = async () => {
 			try {
 				const catalog = await this.#catalogService.byId(this.#topicId);
 				this.signal(Update_Catalog, catalog);
 			} catch (error) {
 				//Todo: As soon as we have a message channel we should inform the user here and remove the spinner
-				console.warn(error.message);
+				this.signal(Update_Catalog, []);
+				console.error(error);
+				emitNotification(translate('topics_catalog_contentPanel_topic_could_not_be_loaded', [this.#topicId]), LevelTypes.WARN);
 			}
 		};
 
@@ -111,14 +115,20 @@ export class CatalogContentPanel extends AbstractMvuContentPanel {
 					`;
 				}
 
-				return catalog.map((item) => {
-					//node
-					if (item.children) {
-						return html`<ba-catalog-node .data=${item}></ba-catalog-node>`;
-					}
-					//leaf
-					return html`<ba-catalog-leaf .data=${item}></ba-catalog-leaf>`;
-				});
+				return catalog.length > 0
+					? catalog.map((item) => {
+							//node
+							if (item.children) {
+								return html`<ba-catalog-node .data=${item}></ba-catalog-node>`;
+							}
+							//leaf
+							return html`<ba-catalog-leaf .data=${item}></ba-catalog-leaf>`;
+						})
+					: html`
+							<li class="ba-list-item">
+								<span class="ba-list-item__text_warning">${translate('topics_catalog_contentPanel_topic_not_available')}</span>
+							</li>
+						`;
 			};
 
 			const renderTopicIcon = (topic) => {
