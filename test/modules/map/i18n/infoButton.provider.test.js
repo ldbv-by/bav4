@@ -19,7 +19,7 @@ describe('i18n for map module', () => {
 		expect(map.map_infoButton_about).toBe('About us');
 	});
 
-	it('have the expected amount of translations', () => {
+	it('contains the expected amount of entries', () => {
 		const expectedSize = 4;
 		const deMap = provide('de');
 		const enMap = provide('en');

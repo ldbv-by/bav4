@@ -23,7 +23,7 @@ describe('i18n for topics module', () => {
 		expect(map.topics_catalog_contentPanel_topic_not_available).toBe('The topic is not available');
 	});
 
-	it('have the expected amount of translations', () => {
+	it('contains the expected amount of entries', () => {
 		const expectedSize = 6;
 		const deMap = provide('de');
 		const enMap = provide('en');

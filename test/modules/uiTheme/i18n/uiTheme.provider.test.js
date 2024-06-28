@@ -15,7 +15,7 @@ describe('i18n for map module', () => {
 		expect(map.uiTheme_toggle_tooltip_light).toBe('Enable contrast mode');
 	});
 
-	it('have the expected amount of translations', () => {
+	it('contains the expected amount of entries', () => {
 		const expectedSize = 2;
 		const deMap = provide('de');
 		const enMap = provide('en');
