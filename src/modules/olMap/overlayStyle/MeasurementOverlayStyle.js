@@ -10,6 +10,8 @@ import { LineString, Polygon } from 'ol/geom';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { DragPan } from 'ol/interaction';
 import { BaOverlay } from '../components/BaOverlay';
+import { containsCoordinate, getBottomLeft, getBottomRight, getTopLeft, getTopRight } from '../../../../node_modules/ol/extent';
+import { fromLonLat, toLonLat, transformExtent } from '../../../../node_modules/ol/proj';
 
 export const saveManualOverlayPosition = (feature) => {
 	const draggableOverlayTypes = ['area', 'measurement'];
@@ -96,11 +98,44 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 			const isVisibleStyle = isVisible(properties);
 			const opacity = 'opacity' in properties ? properties.opacity : 1;
 
+			const viewExtent = olMap.getView().calculateExtent(olMap.getSize());
+			const wgs84Extent = transformExtent(viewExtent, 'EPSG:3857', 'EPSG:4326');
+
+			const getOffset = (latitude) => {
+				return -180 > latitude ? (latitude - (latitude % 180)) / 180 : -180 < latitude && latitude < 180 ? 0 : (latitude - (latitude % 180)) / 180;
+			};
+			const worldOffset = [
+				getOffset(getBottomLeft(wgs84Extent)[0]),
+				getOffset(getBottomRight(wgs84Extent)[0]),
+				getOffset(getTopLeft(wgs84Extent)[0]),
+				getOffset(getTopRight(wgs84Extent)[0])
+			];
+
+			const offsetMinMax = [Math.min(...worldOffset), Math.max(...worldOffset)];
+
 			// setting both properties, to prevent an issue with webkit-based browsers
 			// where opacity is not applied as a single property
 			overlays.forEach((o) => {
 				o.getElement().style.display = isVisibleStyle;
 				o.getElement().style.opacity = opacity;
+
+				const overlayPosition = o.getPosition();
+				if (!containsCoordinate(viewExtent, overlayPosition)) {
+					const wgs84Position = toLonLat(overlayPosition, 'EPSG:3857');
+
+					const withOffset = (offset, wgs84Position) => {
+						const wgs84Coordinate = [offset * 360 + wgs84Position[0], wgs84Position[1]];
+						return fromLonLat(wgs84Coordinate, 'EPSG:3857');
+					};
+					const bestOffset = offsetMinMax.find((offset) => {
+						const candidate = withOffset(offset, wgs84Position);
+						return containsCoordinate(viewExtent, candidate);
+					});
+
+					const newPos = withOffset(bestOffset, wgs84Position);
+
+					o.setPosition(newPos);
+				}
 			});
 		}
 	}

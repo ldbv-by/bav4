@@ -46,7 +46,7 @@ export class OlOverlayMapHandler extends OlMapHandler {
 	_updatePosition(overlay, viewExtent, offsetMinMax) {
 		const overlayPosition = overlay.getPosition();
 
-		if (!containsCoordinate(viewExtent, overlayPosition)) {
+		if (overlayPosition && !containsCoordinate(viewExtent, overlayPosition)) {
 			const wgs84Position = toLonLat(overlayPosition, Epsg_WebMercartor);
 			const withOffset = (offset, wgs84Position) => {
 				const wgs84Coordinate = [offset * 360 + wgs84Position[0], wgs84Position[1]];

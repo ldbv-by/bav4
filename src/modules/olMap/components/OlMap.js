@@ -51,6 +51,7 @@ export class OlMap extends MvuElement {
 			OlHighlightLayerHandler: olHighlightLayerHandler,
 			OlFeatureInfoHandler: olFeatureInfoHandler,
 			OlElevationProfileHandler: olElevationProfileHandler,
+			OlOverlayMapHandler: olOverlayMapHandler,
 			OlMfpHandler: olMfpHandler,
 			OlRoutingHandler: olRoutingHandler,
 			OlSelectableFeatureHandler: olSelectableFeatureHandler
@@ -66,6 +67,7 @@ export class OlMap extends MvuElement {
 			'OlHighlightLayerHandler',
 			'OlFeatureInfoHandler',
 			'OlElevationProfileHandler',
+			'OlOverlayMapHandler',
 			'OlMfpHandler',
 			'OlRoutingHandler',
 			'OlSelectableFeatureHandler'
@@ -87,6 +89,7 @@ export class OlMap extends MvuElement {
 		this._mapHandler = new Map([
 			[olFeatureInfoHandler.id, olFeatureInfoHandler],
 			[olElevationProfileHandler.id, olElevationProfileHandler],
+			[olOverlayMapHandler.id, olOverlayMapHandler],
 			[olSelectableFeatureHandler.id, olSelectableFeatureHandler]
 		]);
 	}
