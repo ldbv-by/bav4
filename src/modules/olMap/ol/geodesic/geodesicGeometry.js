@@ -21,6 +21,7 @@ const FULL_CIRCLE_POINTS = 100; // count of points to form a smooth circle (clos
 export class GeodesicGeometry {
 	#isDrawing = null;
 	#geometry = null;
+	#geodesicLines = null;
 	#polygon = null;
 	#length = null;
 	#area = null;
@@ -40,9 +41,9 @@ export class GeodesicGeometry {
 		const isPolygon = this.feature?.getGeometry() instanceof Polygon && !this.#isDrawing();
 		const hasAzimuthCircle = !isPolygon && this.#isEffectiveSegment(coordinates);
 		const geodesicProperties = this.#calculateGlobalProperties(coordinates, isPolygon, hasAzimuthCircle);
-		const geodesicLines = this.#createGeodesicLines(coordinates);
+		this.#geodesicLines = this.#createGeodesicLines(coordinates);
 
-		const geodesicCoords = this.#calculateGeodesicCoordinatesFrom(geodesicLines);
+		const geodesicCoords = this.#calculateGeodesicCoordinatesFrom(this.#geodesicLines);
 		this.#azimuthCircle = hasAzimuthCircle ? this.#calculateAzimuthCircle(coordinates, geodesicProperties.rotation, geodesicProperties.length) : null;
 		this.#geometry = geodesicCoords.createTiledGeometry();
 		this.#polygon = isPolygon && !this.#isDrawing() ? geodesicCoords.createTiledPolygon(this) : null;
