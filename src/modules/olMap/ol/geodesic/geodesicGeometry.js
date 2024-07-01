@@ -40,7 +40,9 @@ export class GeodesicGeometry {
 		const isPolygon = this.feature?.getGeometry() instanceof Polygon && !this.#isDrawing();
 		const hasAzimuthCircle = !isPolygon && this.#isEffectiveSegment(coordinates);
 		const geodesicProperties = this.#calculateGlobalProperties(coordinates, isPolygon, hasAzimuthCircle);
-		const geodesicCoords = this.#calculateGeodesicCoordinates(coordinates);
+		const geodesicLines = this.#createGeodesicLines(coordinates);
+
+		const geodesicCoords = this.#calculateGeodesicCoordinatesFrom(geodesicLines);
 		this.#azimuthCircle = hasAzimuthCircle ? this.#calculateAzimuthCircle(coordinates, geodesicProperties.rotation, geodesicProperties.length) : null;
 		this.#geometry = geodesicCoords.createTiledGeometry();
 		this.#polygon = isPolygon && !this.#isDrawing() ? geodesicCoords.createTiledPolygon(this) : null;
@@ -118,6 +120,50 @@ export class GeodesicGeometry {
 			calculateGeodesicCoordinates(from, to).forEach((c, index) => (index === 0 ? geodesicBag.add(c, true) : geodesicBag.add(c)));
 		}
 		return geodesicBag;
+	}
+
+	#calculateGeodesicCoordinatesFrom(geodesicLines) {
+		const geodesicBag = new TiledCoordinateBag();
+		const geodesicCalculationThresholdInMeter = 55555;
+		const arcInterpolationCount = FULL_CIRCLE_POINTS / 2;
+
+		const calculateGeodesicCoordinates = (geodesicLine) => {
+			const { geodesic, from, to } = geodesicLine;
+			if (geodesic.s13 < geodesicCalculationThresholdInMeter) {
+				return [from, to];
+			}
+			const calculatedCoords = [];
+			const daIncrement = geodesic.a13 / arcInterpolationCount;
+			for (let z = 0; z <= arcInterpolationCount; ++z) {
+				const a = daIncrement * z;
+
+				const r = geodesic.ArcPosition(a, Geodesic.STANDARD | Geodesic.LONG_UNROLL);
+				calculatedCoords.push([r.lon2, r.lat2]);
+			}
+			return calculatedCoords;
+		};
+
+		geodesicLines.forEach((geodesicLine) =>
+			calculateGeodesicCoordinates(geodesicLine).forEach((c, index) => (index === 0 ? geodesicBag.add(c, true) : geodesicBag.add(c)))
+		);
+		return geodesicBag;
+	}
+
+	#createGeodesicLines(coordinates) {
+		return coordinates
+			? coordinates.reduce((geodesicLines, toCoordinate, index) => {
+					const fromCoordinate = index > 0 ? coordinates[index - 1] : null;
+					if (fromCoordinate) {
+						const geodesicLine = {
+							geodesic: Geodesic.WGS84.InverseLine(fromCoordinate[1], fromCoordinate[0], toCoordinate[1], toCoordinate[0]),
+							from: fromCoordinate,
+							to: toCoordinate
+						};
+						geodesicLines.push(geodesicLine);
+					}
+					return geodesicLines;
+				}, [])
+			: [];
 	}
 
 	#calculateAzimuthCircle(coords, rotation, length) {
