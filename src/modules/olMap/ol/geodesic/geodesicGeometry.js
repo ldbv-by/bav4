@@ -93,35 +93,6 @@ export class GeodesicGeometry {
 		return { length: result.perimeter, area: result.area, rotation: hasAzimuthCircle ? calculateRotation() : null };
 	}
 
-	#calculateGeodesicCoordinates(coordinates) {
-		const geodesicBag = new TiledCoordinateBag();
-		const geodesicCalculationThresholdInMeter = 55555;
-		const arcInterpolationCount = FULL_CIRCLE_POINTS / 2;
-
-		const calculateGeodesicCoordinates = (fromCoord, toCoord) => {
-			const l = Geodesic.WGS84.InverseLine(fromCoord[1], fromCoord[0], toCoord[1], toCoord[0]);
-			if (l.s13 < geodesicCalculationThresholdInMeter) {
-				return [fromCoord, toCoord];
-			}
-			const calculatedCoords = [];
-			const daIncrement = l.a13 / arcInterpolationCount;
-			for (let z = 0; z <= arcInterpolationCount; ++z) {
-				const a = daIncrement * z;
-
-				const r = l.ArcPosition(a, Geodesic.STANDARD | Geodesic.LONG_UNROLL);
-				calculatedCoords.push([r.lon2, r.lat2]);
-			}
-			return calculatedCoords;
-		};
-
-		for (let i = 0; i < coordinates.length - 1; i++) {
-			const from = coordinates[i];
-			const to = coordinates[i + 1];
-			calculateGeodesicCoordinates(from, to).forEach((c, index) => (index === 0 ? geodesicBag.add(c, true) : geodesicBag.add(c)));
-		}
-		return geodesicBag;
-	}
-
 	#calculateGeodesicCoordinatesFrom(geodesicLines) {
 		const geodesicBag = new TiledCoordinateBag();
 		const geodesicCalculationThresholdInMeter = 55555;
