@@ -12,6 +12,7 @@ import { CollectionEvent } from 'ol/Collection';
 import VectorLayer from 'ol/layer/Vector';
 import { TestUtils } from '../../../test-utils';
 import { createDefaultLayer, layersReducer } from '../../../../src/store/layers/layers.reducer';
+import { UnavailableGeoResourceError } from '../../../../src/domain/errors';
 
 describe('VectorLayerService', () => {
 	const urlService = {
@@ -299,6 +300,27 @@ describe('VectorLayerService', () => {
 
 				expect(olVectorSource.constructor.name).toBe('VectorSource');
 				expect(olVectorSource.getFeatures().length).toBe(1);
+			});
+
+			it('throws an UnavailableGeoResourceError when data cannot be parsed', async () => {
+				setup();
+				const sourceSrid = 4326;
+				const destinationSrid = 3857;
+				const geoResourceLabel = 'geoResourceLabel';
+				spyOn(mapService, 'getSrid').and.returnValue(destinationSrid);
+				const sourceAsString = `SRID=4326;POLYGON((7.58081 48.13805,7.58081 48.100 46,7.57031 48.10046,7.57031 48.13805,7.58081 48.13805))`;
+				const geoResourceId = 'someId';
+				const vectorGeoResource = new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.EWKT).setSource(sourceAsString, sourceSrid);
+
+				expect(() => {
+					instanceUnderTest._vectorSourceForData(vectorGeoResource);
+				}).toThrowMatching((t) => {
+					return (
+						t.message === `Data of VectorGeoResource could not be parsed` &&
+						t instanceof UnavailableGeoResourceError &&
+						t.geoResourceId === geoResourceId
+					);
+				});
 			});
 
 			it('filters out features without a geometry', () => {
