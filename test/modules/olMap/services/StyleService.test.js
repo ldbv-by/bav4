@@ -822,7 +822,8 @@ describe('StyleService', () => {
 			const overlayMock = {
 				getElement() {
 					return measureOverlayMock;
-				}
+				},
+				getPosition: () => [0, 0]
 			};
 			const feature = new Feature({
 				geometry: new Polygon([
@@ -840,7 +841,8 @@ describe('StyleService', () => {
 			const viewMock = {
 				getResolution() {
 					return 50;
-				}
+				},
+				calculateExtent: () => [0, 0, 1, 1]
 			};
 
 			const mapMock = {
@@ -850,7 +852,8 @@ describe('StyleService', () => {
 				},
 				getInteractions() {
 					return { getArray: () => [] };
-				}
+				},
+				getSize: () => {}
 			};
 
 			instanceUnderTest.updateStyle(feature, mapMock, { visible: true, opacity: 0.5, top: true });
@@ -867,7 +870,8 @@ describe('StyleService', () => {
 			const overlayMock = {
 				getElement() {
 					return measureOverlayMock;
-				}
+				},
+				getPosition: () => [0, 0]
 			};
 			const feature = new Feature({
 				geometry: new Polygon([
@@ -884,7 +888,8 @@ describe('StyleService', () => {
 			const viewMock = {
 				getResolution() {
 					return 50;
-				}
+				},
+				calculateExtent: () => [0, 0, 1, 1]
 			};
 
 			const mapMock = {
@@ -894,7 +899,8 @@ describe('StyleService', () => {
 				},
 				getInteractions() {
 					return { getArray: () => [] };
-				}
+				},
+				getSize: () => {}
 			};
 
 			instanceUnderTest.updateStyle(feature, mapMock, { visible: true, opacity: 0.5, top: true }, 'measure');
