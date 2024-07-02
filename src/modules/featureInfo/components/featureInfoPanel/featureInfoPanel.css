@@ -226,7 +226,7 @@ h5 {
 	text-decoration: none;
 }
 
-/* temp just for Open-Data */
+/*Fixme: remove temporary workaround for OpenData*/
 a[href^="https://geodaten.bayern.de/odd/"]
 {
 	cursor: pointer;
