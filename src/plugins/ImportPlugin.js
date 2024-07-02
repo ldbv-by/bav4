@@ -84,7 +84,6 @@ export class ImportPlugin extends BaPlugin {
 	/**
 	 * Imports the data as local {@link GeoResource}
 	 * @param {string} data the local data
-	 * @param {string} mimeType the mimeType of the data
 	 * @returns {GeoResource|null} the imported GeoResource or null on failure
 	 */
 	_importByData(data, sourceType) {
