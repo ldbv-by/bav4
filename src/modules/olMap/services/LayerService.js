@@ -11,6 +11,7 @@ import MapLibreLayer from '@geoblocks/ol-maplibre-layer';
 import { AdvWmtsTileGrid } from '../ol/tileGrid/AdvWmtsTileGrid';
 import { Projection } from 'ol/proj';
 import ImageWMS from 'ol/source/ImageWMS.js';
+import { UnavailableGeoResourceError } from '../../../domain/errors';
 
 /**
  * A function that returns a `ol.image.LoadFunction` for loading also restricted images via basic access authentication
@@ -47,6 +48,7 @@ export class LayerService {
 	 * @param {string} id layerId
 	 * @param {GeoResource} geoResource
 	 * @param {Map} olMap
+	 * @throws UnavailableGeoResourceError
 	 * @returns ol layer
 	 */
 	toOlLayer(id, geoResource, olMap) {
@@ -82,7 +84,10 @@ export class LayerService {
 					case GeoResourceAuthenticationType.BAA: {
 						const credential = baaCredentialService.get(geoResource.url);
 						if (!credential) {
-							throw new Error(`No credential available for GeoResource with id '${geoResource.id}' and url '${geoResource.url}'`);
+							throw new UnavailableGeoResourceError(
+								`No credential available for GeoResource with id '${geoResource.id}' and url '${geoResource.url}'`,
+								geoResource.id
+							);
 						}
 						imageWmsSource.setImageLoadFunction(this._imageLoadFunctionProvider(geoResource.id, credential, geoResource.maxSize));
 						break;

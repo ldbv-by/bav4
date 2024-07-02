@@ -70,6 +70,7 @@ export class ImportPlugin extends BaPlugin {
 					case SourceTypeName.KML:
 					case SourceTypeName.GPX:
 					case SourceTypeName.GEOJSON:
+					case SourceTypeName.EWKT:
 						return this._importVectorDataService.forUrl(url, { sourceType: sourceType });
 				}
 			}
@@ -77,21 +78,12 @@ export class ImportPlugin extends BaPlugin {
 			return null;
 		};
 
-		const geoResource = createGeoResource(url, sourceType);
-		if (geoResource) {
-			geoResource.onReject(() => {
-				emitNotification(this._translationService.translate('global_import_url_failed'), LevelTypes.ERROR);
-			});
-			return geoResource;
-		}
-
-		return null;
+		return createGeoResource(url, sourceType);
 	}
 
 	/**
 	 * Imports the data as local {@link GeoResource}
 	 * @param {string} data the local data
-	 * @param {string} mimeType the mimeType of the data
 	 * @returns {GeoResource|null} the imported GeoResource or null on failure
 	 */
 	_importByData(data, sourceType) {

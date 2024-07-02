@@ -115,28 +115,6 @@ describe('ImportPlugin', () => {
 			expect(store.getState().notifications.latest.payload.content).toBe('global_import_unsupported_sourceType');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 		});
-
-		it('emits a notification when GeoResourceFuture rejects', async () => {
-			const store = setup();
-			const geoResourceFutureMock = {
-				id: 'idFoo',
-				label: 'labelBar',
-				onReject: (f) => {
-					f();
-				}
-			};
-			const sourceType = new SourceType(SourceTypeName.KML);
-			spyOn(importVectorDataServiceMock, 'forUrl').and.callFake(() => geoResourceFutureMock);
-			const instanceUnderTest = new ImportPlugin();
-			await instanceUnderTest.register(store);
-
-			expect(store.getState().layers.active.length).toBe(0);
-			setUrl('http://some.url', sourceType);
-
-			await TestUtils.timeout();
-			expect(store.getState().notifications.latest.payload.content).toBe('global_import_url_failed');
-			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
-		});
 	});
 
 	describe('when import.data property changes', () => {

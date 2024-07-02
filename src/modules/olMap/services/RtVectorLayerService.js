@@ -192,6 +192,7 @@ export class RtVectorLayerService {
 	 * @param {string} id layerId
 	 * @param {RtVectorGeoResource} rtVectorGeoResource the geoResource
 	 * @param {ol.map} olMap the map
+	 * @throws UnavailableGeoResourceError
 	 * @returns {ol.layer} the vectorLayer
 	 */
 	createLayer(id, rtVectorGeoResource, olMap) {
