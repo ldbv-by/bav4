@@ -6,6 +6,7 @@ import { UnavailableGeoResourceError } from '../domain/errors';
 import { LevelTypes, emitNotification } from '../store/notifications/notifications.action';
 import { $injector } from '../injection/index';
 import { throttled } from '../utils/timer';
+import { removeLayerOf } from '../store/layers/layers.action';
 
 /**
  * This plugin catches exceptions of type `Error` and {@link BaRuntimeError} and displays a notification.
@@ -40,6 +41,7 @@ export class GlobalErrorPlugin extends BaPlugin {
 		const handleError = (error) => {
 			if (error instanceof UnavailableGeoResourceError) {
 				const geoResourceName = this.#geoResourceService.byId(error.geoResourceId)?.label ?? error.geoResourceId;
+				removeLayerOf(error.geoResourceId);
 				switch (error.httpStatus) {
 					case 401:
 						emitNotification(
