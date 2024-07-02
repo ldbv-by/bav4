@@ -322,7 +322,6 @@ export class OlMap extends MvuElement {
 
 		toBeAdded.forEach((id) => {
 			const toOlLayer = (id, geoResource) => {
-				// try {
 				const olLayer = geoResource
 					? this._layerService.toOlLayer(id, geoResource, this._map)
 					: this._layerHandler.has(id)
