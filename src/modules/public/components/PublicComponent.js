@@ -6,7 +6,7 @@ import { MvuElement } from '../../MvuElement';
 import { WcEvents } from '../../../domain/wcEvents';
 import { MediaType } from '../../../domain/mediaTypes';
 import mainCss from '../../../main.css';
-import defaultCss from '../../../modules/baElement.css';
+import defaultCss from '../../../modules/mvuElement.css';
 import css from './publicComponent.css';
 
 /**

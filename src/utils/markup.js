@@ -1,7 +1,6 @@
 /**
  * @module utils/markup
  */
-import { BaElement } from '../modules/BaElement';
 import { MvuElement } from '../modules/MvuElement';
 
 /**
@@ -55,7 +54,7 @@ export const generateTestIds = (element) => {
 		let currentMvuElement = element;
 
 		while (currentParent) {
-			if (currentParent instanceof BaElement || currentParent instanceof MvuElement) {
+			if (currentParent instanceof MvuElement) {
 				const elementIndex = [...currentParent.shadowRoot.querySelectorAll(currentMvuElement.tagName)].indexOf(currentMvuElement);
 				const elementTag = currentMvuElement.tagName.toLowerCase();
 				pathElements.push(`${elementTag}-${elementIndex}`);
@@ -79,7 +78,7 @@ export const generateTestIds = (element) => {
 		//Provide all child elements (except for MvuElements) with test ids if requested
 		[...element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)].forEach((el) => {
 			// MvuElement/BaElement instances are handled on their own
-			if (!(el instanceof BaElement || el instanceof MvuElement)) {
+			if (!(el instanceof MvuElement)) {
 				//priority: id -> css-classes
 				const qualifier = el.getAttribute('id') ?? el.getAttribute('class');
 				if (qualifier) {

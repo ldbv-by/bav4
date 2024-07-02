@@ -61,7 +61,7 @@ describe('global i18n', () => {
 		expect(map.global_signOut_success).toBe('Sie haben sich erfolgreich abgemeldet');
 	});
 
-	it('have the expected amount of translations', () => {
+	it('contains the expected amount of entries', () => {
 		const expectedSize = 21;
 		const deMap = provide('de');
 		const enMap = provide('en');

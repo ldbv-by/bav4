@@ -1,5 +1,4 @@
 import { html } from 'lit-html';
-import { BaElement } from '../../src/modules/BaElement';
 import { MvuElement } from '../../src/modules/MvuElement';
 import {
 	BA_FORM_ELEMENT_VISITED_CLASS,
@@ -46,38 +45,6 @@ class MvuElementChild extends MvuElement {
 
 window.customElements.define(MvuElementParent.tag, MvuElementParent);
 window.customElements.define(MvuElementChild.tag, MvuElementChild);
-
-class BaElementParent extends BaElement {
-	createView() {
-		return html`
-			<div id="id" data-test-id></div>
-			<div class="class foo" data-test-id></div>
-			<div data-test-id></div>
-			<ba-element-child data-test-id id="id"></ba-element-child>
-			<ba-element-child data-test-id class="class"></ba-element-child>
-			<div id="id"></div>
-			<div class="class foo"></div>
-			<div></div>
-			<ba-element-child></ba-element-child>
-		`;
-	}
-
-	static get tag() {
-		return 'ba-element-parent';
-	}
-}
-
-class BaElementChild extends BaElement {
-	createView() {
-		return html``;
-	}
-
-	static get tag() {
-		return 'ba-element-child';
-	}
-}
-window.customElements.define(BaElementParent.tag, BaElementParent);
-window.customElements.define(BaElementChild.tag, BaElementChild);
 
 describe('markup utils', () => {
 	describe('constants', () => {
@@ -141,43 +108,6 @@ describe('markup utils', () => {
 				const element = await TestUtils.render(MvuElementParent.tag, {}, { 'data-test-id': '' });
 
 				const all = [...element.shadowRoot.querySelectorAll('div'), ...element.shadowRoot.querySelectorAll(MvuElementChild.tag)];
-
-				expect(all).toHaveSize(9);
-				all.forEach((el) => {
-					expect(el.getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalsy();
-				});
-			});
-		});
-
-		describe('generateTestIds for BaElements', () => {
-			it('provides the correct test id for MvuElements', async () => {
-				window.ba_enableTestIds = true;
-				const warnSpy = spyOn(console, 'warn');
-				const element = await TestUtils.render(BaElementParent.tag, {}, { 'data-test-id': '' });
-
-				const divElements = element.shadowRoot.querySelectorAll('div');
-				const baChildElements = element.shadowRoot.querySelectorAll(BaElementChild.tag);
-
-				expect(element.getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('ba-element-parent-0');
-				expect(divElements).toHaveSize(6);
-				expect(divElements.item(0).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('ba-element-parent-0_id');
-				expect(divElements.item(1).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('ba-element-parent-0_class-foo');
-				expect(warnSpy).toHaveBeenCalledOnceWith(
-					'No data-test-id qualifier found for: ba-element-parent-0 -> div. Please add either an id or a class attribute.'
-				);
-				expect(divElements.item(3).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();
-				expect(divElements.item(4).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();
-				expect(divElements.item(5).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();
-				expect(baChildElements).toHaveSize(3);
-				expect(baChildElements.item(0).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('ba-element-parent-0_ba-element-child-0');
-				expect(baChildElements.item(1).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('ba-element-parent-0_ba-element-child-1');
-				expect(baChildElements.item(2).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();
-			});
-
-			it('does nothing', async () => {
-				const element = await TestUtils.render(BaElementParent.tag, {}, { 'data-test-id': '' });
-
-				const all = [...element.shadowRoot.querySelectorAll('div'), ...element.shadowRoot.querySelectorAll(BaElementChild.tag)];
 
 				expect(all).toHaveSize(9);
 				all.forEach((el) => {

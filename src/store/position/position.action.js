@@ -83,7 +83,7 @@ const getValidZoomLevelValue = (zoom) => {
 
 /**
  * Changes the zoom level and the position.
- * @param {ZoomCenter} zoomCenter zoom and center
+ * @param {module:store/position/position_action~ZoomCenter} zoomCenter zoom and center
  * @function
  */
 export const changeZoomAndCenter = (zoomCenter) => {
@@ -96,7 +96,7 @@ export const changeZoomAndCenter = (zoomCenter) => {
 
 /**
  * Changes the zoom level and the rotation.
- * @param {ZoomRotation} zoomRotation zoom and rotation
+ * @param {module:store/position/position_action~ZoomRotation} zoomRotation zoom and rotation
  * @function
  */
 export const changeZoomAndRotation = (zoomRotation) => {
@@ -109,7 +109,7 @@ export const changeZoomAndRotation = (zoomRotation) => {
 
 /**
  * Changes the center and the rotation.
- * @param {CenterRotation} centerRotation center and rotation
+ * @param {module:store/position/position_action~CenterRotation} centerRotation center and rotation
  * @function
  */
 export const changeCenterAndRotation = (centerRotation) => {
@@ -122,7 +122,7 @@ export const changeCenterAndRotation = (centerRotation) => {
 
 /**
  * Changes the zoom level, center and rotation
- * @param {ZoomCenterRotation} zoomCenterRotation zoom, center and rotation
+ * @param {module:store/position/position_action~ZoomCenterRotation} zoomCenterRotation zoom, center and rotation
  * @function
  */
 export const changeZoomCenterAndRotation = (zoomCenterRotation) => {
@@ -212,7 +212,7 @@ export const decreaseZoom = () => {
 
 /**
  * Changes the center.
- * @param {coordinate} center coordinate in map projection (will rounded to 7 decimal digits)
+ * @param {module:domain/coordinateTypeDef~Coordinate} center coordinate in map projection (will rounded to 7 decimal digits)
  * @function
  */
 export const changeCenter = (center) => {
@@ -224,7 +224,7 @@ export const changeCenter = (center) => {
 
 /**
  * Changes the live center value.
- * @param {coordinate} center coordinate in map projection (will rounded to 7 decimal digits)
+ * @param {module:domain/coordinateTypeDef~Coordinate} center coordinate in map projection (will rounded to 7 decimal digits)
  * @function
  */
 export const changeLiveCenter = (center) => {
@@ -241,8 +241,8 @@ const defaultFitOptions = {
 /**
  * Sets a fit request.
  * The fitRequest object is wrapper by an {@link EventLike} object.
- * @param {extent} extent extent for this fit request
- * @param {FitRequestOptions} opts options for this fit request
+ * @param {module:domain/extentTypeDef~Extent} extent extent for this fit request
+ * @param {module:store/position/position_action~FitRequestOptions} opts options for this fit request
  * @function
  */
 export const fit = (extent, opts = {}) => {
@@ -257,7 +257,7 @@ export const fit = (extent, opts = {}) => {
  * Sets a fit request for a layer.
  * The fitRequest object is wrapper by an {@link EventLike} object.
  * @param {string} id  id of the layer this fit request targets at
- * @param {FitRequestOptions} opts options for this fit request
+ * @param {module:store/position/position_action~FitRequestOptions} opts options for this fit request
  * @function
  */
 export const fitLayer = (id, opts = {}) => {

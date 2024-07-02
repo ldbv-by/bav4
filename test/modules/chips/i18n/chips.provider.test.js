@@ -31,7 +31,7 @@ describe('i18n for chips module', () => {
 		expect(map.chips_assist_chip_map_feedback_title).toBe('Feedback');
 	});
 
-	it('have the expected amount of translations', () => {
+	it('contains the expected amount of entries', () => {
 		const expectedSize = 10;
 		const deMap = provide('de');
 		const enMap = provide('en');

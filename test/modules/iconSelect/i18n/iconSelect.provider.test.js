@@ -13,7 +13,7 @@ describe('i18n for iconSelect module', () => {
 		expect(map.iconSelect_icon_hint).toBe('Click to select as icon');
 	});
 
-	it('have the expected amount of translations', () => {
+	it('contains the expected amount of entries', () => {
 		const expectedSize = 1;
 		const deMap = provide('de');
 		const enMap = provide('en');

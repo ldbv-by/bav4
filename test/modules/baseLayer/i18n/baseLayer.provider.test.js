@@ -17,7 +17,7 @@ describe('i18n for header module', () => {
 		expect(map.baseLayer_container_category_vector).toBe('Vector');
 	});
 
-	it('have the expected amount of translations', () => {
+	it('contains the expected amount of entries', () => {
 		const expectedSize = 3;
 		const deMap = provide('de');
 		const enMap = provide('en');

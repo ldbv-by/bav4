@@ -27,7 +27,7 @@ describe('i18n for featureInfo module', () => {
 		expect(map.geometryInfo_info).toBe('No information available.<br>Please click into the <b>map</b>.');
 	});
 
-	it('have the expected amount of translations', () => {
+	it('contains the expected amount of entries', () => {
 		const expectedSize = 8;
 		const deMap = provide('de');
 		const enMap = provide('en');

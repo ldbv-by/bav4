@@ -15,7 +15,7 @@ describe('i18n for baseLayer info', () => {
 		expect(map.map_baseLayerInfo_fallback).toBe('Keine Informationen verfügbar');
 	});
 
-	it('have the expected amount of translations', () => {
+	it('contains the expected amount of entries', () => {
 		const expectedSize = 2;
 		const deMap = provide('de');
 		const enMap = provide('en');

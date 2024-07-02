@@ -13,7 +13,7 @@ describe('i18n for map module', () => {
 		expect(map.map_rotationButton_title).toBe('Reset rotation to north');
 	});
 
-	it('have the expected amount of translations', () => {
+	it('contains the expected amount of entries', () => {
 		const expectedSize = 1;
 		const deMap = provide('de');
 		const enMap = provide('en');

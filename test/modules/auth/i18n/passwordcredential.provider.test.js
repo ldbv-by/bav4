@@ -54,7 +54,7 @@ describe('i18n for header module', () => {
 		expect(map.auth_passwordCredentialPanel_footer_forgot_password).toBe('Forgot password?');
 	});
 
-	it('have the expected amount of translations', () => {
+	it('contains the expected amount of entries', () => {
 		const expectedSize = 11;
 		const deMap = provide('de');
 		const enMap = provide('en');

@@ -17,7 +17,7 @@ describe('i18n for map module', () => {
 		expect(map.map_zoomButtons_extent).toBe('Zoom to full extent');
 	});
 
-	it('have the expected amount of translations', () => {
+	it('contains the expected amount of entries', () => {
 		const expectedSize = 3;
 		const deMap = provide('de');
 		const enMap = provide('en');

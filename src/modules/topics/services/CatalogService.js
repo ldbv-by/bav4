@@ -11,24 +11,12 @@ import { FALLBACK_TOPICS_IDS } from '../../../services/TopicsService';
 import { loadBvvCatalog } from './provider/catalog.provider';
 
 /**
- * @typedef {Object} CatalogEntry
- * @property {string} label The label of this CatalogEntry
- * @property {boolean} [open] `true` if this entry should be displayed opened
- * @property {Array<module:modules/topics/services/CatalogService~GeoResouceRef|module:modules/topics/services/CatalogService~CatalogEntry>} children The elements of this CatalogEntry
- */
-
-/**
- * @typedef {Object} GeoResouceRef
- * @property {string} geoResourceId The id of a {@link GeoResource}
- */
-
-/**
  * An async function that provides an array of {@link module:modules/topics/services/CatalogService~CatalogEntry}.
  *
  * @async
  * @typedef {function} catalogProvider
  * @throws May throw when entries cannot be loaded
- * @return {module:modules/topics/services/CatalogService~CatalogEntry[]}
+ * @return {module:domain/catalogTypeDef~CatalogEntry[]}
  */
 
 /**
@@ -50,7 +38,7 @@ export class CatalogService {
 	 * Returns a catalog definition for an id.
 	 * @public
 	 * @param {string} topicId Id of the desired {@link Catalog}
-	 * @returns {Array<module:modules/topics/services/CatalogService~CatalogEntry> | null}
+	 * @returns {Promise<Array<module:domain/catalogTypeDef~CatalogEntry>|null>}
 	 */
 	async byId(topicId) {
 		try {

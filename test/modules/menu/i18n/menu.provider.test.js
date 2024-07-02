@@ -88,7 +88,7 @@ describe('i18n for menu module', () => {
 		expect(map.menu_navigation_rail_light_theme).toBe('Light mode');
 	});
 
-	it('have the expected amount of translations', () => {
+	it('contains the expected amount of entries', () => {
 		const expectedSize = 37;
 		const deMap = provide('de');
 		const enMap = provide('en');

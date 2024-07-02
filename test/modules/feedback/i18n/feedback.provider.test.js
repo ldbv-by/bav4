@@ -73,7 +73,7 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_mapFeedback).toBe('Map - Feedback');
 	});
 
-	it('have the expected amount of translations', () => {
+	it('contains the expected amount of entries', () => {
 		const expectedSize = 26;
 		const deMap = provide('de');
 		const enMap = provide('en');

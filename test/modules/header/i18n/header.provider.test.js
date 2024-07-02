@@ -37,7 +37,7 @@ describe('i18n for header module', () => {
 		expect(map.header_search_placeholder).toBe('Search');
 	});
 
-	it('have the expected amount of translations', () => {
+	it('contains the expected amount of entries', () => {
 		const expectedSize = 13;
 		const deMap = provide('de');
 		const enMap = provide('en');

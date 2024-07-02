@@ -211,7 +211,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_show_grid).toBe('Coordinate grid');
 	});
 
-	it('have the expected amount of translations', () => {
+	it('contains the expected amount of entries', () => {
 		const expectedSize = 97;
 		const deMap = provide('de');
 		const enMap = provide('en');

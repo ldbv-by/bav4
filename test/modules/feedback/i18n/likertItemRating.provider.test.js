@@ -21,7 +21,7 @@ describe('i18n for starsRatingPanel', () => {
 		expect(map.likertItem_response_very_likely).toBe('Very likely');
 	});
 
-	it('have the expected amount of translations', () => {
+	it('contains the expected amount of entries', () => {
 		const expectedSize = 5;
 		const deMap = provide('de');
 		const enMap = provide('en');

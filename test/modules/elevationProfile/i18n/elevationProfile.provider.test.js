@@ -37,7 +37,7 @@ describe('i18n for elevationProfile module', () => {
 		expect(map.elevationProfile_unknown).toBe('unknown');
 	});
 
-	it('have the expected amount of translations', () => {
+	it('contains the expected amount of entries', () => {
 		const expectedSize = 13;
 		const deMap = provide('de');
 		const enMap = provide('en');

@@ -40,7 +40,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_loading_hint).toBe('Loading');
 	});
 
-	it('have the expected amount of translations', () => {
+	it('contains the expected amount of entries', () => {
 		const expectedSize = 15;
 		const deMap = provide('de');
 		const enMap = provide('en');

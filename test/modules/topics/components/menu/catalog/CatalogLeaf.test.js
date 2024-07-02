@@ -8,6 +8,7 @@ import { Checkbox } from '../../../../../../src/modules/commons/components/check
 import { modalReducer } from '../../../../../../src/store/modal/modal.reducer';
 import { isTemplateResult } from '../../../../../../src/utils/checks';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../../src/utils/markup';
+import { AbstractMvuContentPanel } from '../../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel.js';
 
 window.customElements.define(CatalogLeaf.tag, CatalogLeaf);
 window.customElements.define(Checkbox.tag, Checkbox);
@@ -40,6 +41,23 @@ describe('CatalogLeaf', () => {
 	};
 
 	const getLeaf = () => ({ geoResourceId });
+
+	describe('class', () => {
+		it('inherits from AbstractMvuContentPanel', async () => {
+			const element = await setup();
+
+			expect(element instanceof AbstractMvuContentPanel).toBeTrue();
+		});
+	});
+
+	describe('when instantiated', () => {
+		it('sets a default model', async () => {
+			await setup();
+			const element = new CatalogLeaf();
+
+			expect(element.getModel()).toEqual({ layersStoreReady: false, geoResourceId: null, activeLayers: [], active: false });
+		});
+	});
 
 	describe('when initialized', () => {
 		it('renders the nothing', async () => {

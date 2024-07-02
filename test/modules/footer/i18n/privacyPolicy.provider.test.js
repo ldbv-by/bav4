@@ -13,7 +13,7 @@ describe('i18n for coordinate select', () => {
 		expect(map.footer_privacy_policy_link).toBe('Datenschutzerklärung');
 	});
 
-	it('have the expected amount of translations', () => {
+	it('contains the expected amount of entries', () => {
 		const expectedSize = 1;
 		const deMap = privacyPolicyProvider('de');
 		const enMap = privacyPolicyProvider('en');
