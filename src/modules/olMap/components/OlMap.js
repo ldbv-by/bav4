@@ -321,29 +321,21 @@ export class OlMap extends MvuElement {
 		});
 
 		toBeAdded.forEach((id) => {
-			const handleLayerServiceError = (error) => {
-				// we just remove the layer and re-throw a possible error
-				removeLayer(id);
-				throw error;
-			};
 			const toOlLayer = (id, geoResource) => {
-				try {
-					const olLayer = geoResource
-						? this._layerService.toOlLayer(id, geoResource, this._map)
-						: this._layerHandler.has(id)
-							? toOlLayerFromHandler(id, this._layerHandler.get(id), this._map)
-							: null;
+				// try {
+				const olLayer = geoResource
+					? this._layerService.toOlLayer(id, geoResource, this._map)
+					: this._layerHandler.has(id)
+						? toOlLayerFromHandler(id, this._layerHandler.get(id), this._map)
+						: null;
 
-					if (olLayer) {
-						const layer = layers.find((layer) => layer.id === id);
-						updateOlLayer(olLayer, layer);
-						this._map.getLayers().insertAt(layer.zIndex, olLayer);
-					} else {
-						console.warn(`Could not add an olLayer for id '${id}'`);
-						removeLayer(id);
-					}
-				} catch (error) {
-					handleLayerServiceError(error);
+				if (olLayer) {
+					const layer = layers.find((layer) => layer.id === id);
+					updateOlLayer(olLayer, layer);
+					this._map.getLayers().insertAt(layer.zIndex, olLayer);
+				} else {
+					console.warn(`Could not add an olLayer for id '${id}'`);
+					removeLayer(id);
 				}
 			};
 
@@ -352,22 +344,15 @@ export class OlMap extends MvuElement {
 			//if geoResource is a future, we insert a placeholder olLayer replacing it after the geoResource was resolved
 			if (geoResource?.getType() === GeoResourceTypes.FUTURE) {
 				geoResource
-					.onReject(() => {
-						removeLayer(id);
-					})
 					.get()
 					// eslint-disable-next-line promise/prefer-await-to-then
 					.then((lazyLoadedGeoResource) => {
-						try {
-							// replace the placeholder olLayer by the real the olLayer
-							const realOlLayer = this._layerService.toOlLayer(id, lazyLoadedGeoResource, this._map);
-							const layer = layers.find((layer) => layer.id === id);
-							updateOlLayer(realOlLayer, layer);
-							this._map.getLayers().remove(getLayerById(this._map, id));
-							this._map.getLayers().insertAt(layer.zIndex, realOlLayer);
-						} catch (error) {
-							handleLayerServiceError(error);
-						}
+						// replace the placeholder olLayer by the real the olLayer
+						const realOlLayer = this._layerService.toOlLayer(id, lazyLoadedGeoResource, this._map);
+						const layer = layers.find((layer) => layer.id === id);
+						updateOlLayer(realOlLayer, layer);
+						this._map.getLayers().remove(getLayerById(this._map, id));
+						this._map.getLayers().insertAt(layer.zIndex, realOlLayer);
 					});
 			}
 			toOlLayer(id, geoResource);
