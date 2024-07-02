@@ -30,10 +30,9 @@ import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { networkReducer } from '../../../../src/store/network/network.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { setIsPortrait } from '../../../../src/store/media/media.action';
-import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
-import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import ImageLayer from 'ol/layer/Image';
 import { ImageWMS } from 'ol/source';
+import { UnavailableGeoResourceError } from '../../../../src/domain/errors.js';
 
 window.customElements.define(OlMap.tag, OlMap);
 
@@ -198,15 +197,13 @@ describe('OlMap', () => {
 			layers: layersReducer,
 			measurement: measurementReducer,
 			network: networkReducer,
-			media: createNoInitialStateMediaReducer(),
-			notifications: notificationReducer
+			media: createNoInitialStateMediaReducer()
 		});
 
 		$injector
 			.registerSingleton('MapService', mapServiceStub)
 			.registerSingleton('GeoResourceService', geoResourceServiceStub)
 			.registerSingleton('EnvironmentService', environmentServiceMock)
-			.registerSingleton('TranslationService', { translate: (key, params = []) => `${key}${params.length ? ` [${params.join(',')}]` : ''}` })
 			.registerSingleton('OlMeasurementHandler', measurementLayerHandlerMock)
 			.registerSingleton('OlDrawHandler', drawLayerHandlerMock)
 			.registerSingleton('OlGeolocationHandler', geolocationLayerHandlerMock)
@@ -1121,6 +1118,43 @@ describe('OlMap', () => {
 			expect(layer).toEqual(olRealLayer);
 		});
 
+		describe('GeoResourceFuture does not resolve', () => {
+			let errors;
+			/**
+			 * We have to tweak jasmine's global error catching behavior to be able to test our global error handling.
+			 * See also: https://github.com/jasmine/jasmine/blob/main/spec/core/GlobalErrorsSpec.js
+			 */
+			beforeEach(() => {
+				errors = new jasmine.GlobalErrors();
+				errors.install();
+			});
+			afterEach(() => {
+				errors.uninstall();
+			});
+
+			it('removes the layer from the layers s-o-s ', async () => {
+				errors.install();
+				const element = await setup();
+				const map = element._map;
+				const olPlaceHolderLayer = new Layer({ id: id0, render: () => {} });
+				const future = new GeoResourceFuture(geoResourceId0, () => Promise.reject());
+				spyOn(layerServiceMock, 'toOlLayer')
+					.withArgs(id0, jasmine.anything(), map)
+					.and.callFake(() => olPlaceHolderLayer);
+				spyOn(geoResourceServiceStub, 'byId').withArgs(geoResourceId0).and.returnValue(future);
+
+				addLayer(id0, { geoResourceId: geoResourceId0 });
+
+				expect(map.getLayers().getLength()).toBe(1);
+				const layer = map.getLayers().item(0);
+				expect(layer.get('id')).toBe(id0);
+				expect(layer).toEqual(olPlaceHolderLayer);
+
+				await TestUtils.timeout();
+				expect(map.getLayers().getLength()).toBe(0);
+			});
+		});
+
 		it('adds an olLayer resolving a GeoResourceFuture with custom settings', async () => {
 			const element = await setup();
 			const map = element._map;
@@ -1192,7 +1226,7 @@ describe('OlMap', () => {
 			expect(map.getLayers().item(1)).toEqual(nonAsyncOlLayer);
 		});
 
-		it('removes layer from state store when olLayer not available', async () => {
+		it('removes the layer from the layers s-o-s when olLayer not available', async () => {
 			const element = await setup();
 			const map = element._map;
 			spyOn(layerServiceMock, 'toOlLayer')
@@ -1209,8 +1243,69 @@ describe('OlMap', () => {
 			expect(map.getLayers().getLength()).toBe(1);
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(warnSpy).toHaveBeenCalledWith("Could not add an olLayer for id 'unknown'");
-			expect(store.getState().notifications.latest.payload.content).toBe('global_geoResource_not_available [unknown]');
-			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+		});
+
+		describe('LayerService throws UnavailableGeoResourceError', () => {
+			it('removes the layer from the layers s-o-s an re-throws the error', async () => {
+				const element = await setup();
+				const map = element._map;
+				const message = 'message';
+				const geoResourceId = 'geoResourceId';
+				spyOn(layerServiceMock, 'toOlLayer')
+					.withArgs(id0, jasmine.anything(), map)
+					.and.throwError(new UnavailableGeoResourceError(message, geoResourceId));
+				expect(store.getState().layers.active.length).toBe(0);
+
+				expect(() => {
+					addLayer(id0, { geoResourceId: geoResourceId0 });
+				}).toThrowMatching((t) => {
+					return t.message === message && t instanceof UnavailableGeoResourceError && t.geoResourceId === geoResourceId;
+				});
+				expect(map.getLayers().getLength()).toBe(0);
+				expect(store.getState().layers.active.length).toBe(0);
+			});
+
+			describe('after a GeoResourceFuture was resolved', () => {
+				let errors;
+				/**
+				 * We have to tweak jasmine's global error catching behavior to be able to test our global error handling.
+				 * See also: https://github.com/jasmine/jasmine/blob/main/spec/core/GlobalErrorsSpec.js
+				 */
+				beforeEach(() => {
+					errors = new jasmine.GlobalErrors();
+					errors.install();
+				});
+				afterEach(() => {
+					errors.uninstall();
+				});
+
+				it('removes the layer from the layers s-o-s an re-throws the error', async () => {
+					errors.install();
+					const element = await setup();
+					const map = element._map;
+					const geoResource = new WmsGeoResource(geoResourceId0, 'Label2', 'https://something0.url', 'layer2', 'image/png');
+					const olPlaceHolderLayer = new Layer({ id: id0, render: () => {} });
+					const future = new GeoResourceFuture(geoResourceId0, async () => geoResource);
+					const message = 'message';
+					const geoResourceId = 'geoResourceId';
+					spyOn(layerServiceMock, 'toOlLayer')
+						.withArgs(jasmine.anything(), jasmine.anything(), map)
+						.and.callFake((id, geoResource) => {
+							if (geoResource instanceof GeoResourceFuture) {
+								return olPlaceHolderLayer;
+							}
+							throw new UnavailableGeoResourceError(message, geoResourceId);
+						});
+					spyOn(geoResourceServiceStub, 'byId').withArgs(geoResourceId0).and.returnValue(future);
+					spyOn(geoResourceServiceStub, 'addOrReplace').and.callFake((gr) => gr);
+
+					addLayer(id0, { geoResourceId: geoResourceId0 });
+					expect(map.getLayers().getLength()).toBe(1);
+					await TestUtils.timeout();
+
+					expect(map.getLayers().getLength()).toBe(0);
+				});
+			});
 		});
 
 		it('removes an olLayer', async () => {
