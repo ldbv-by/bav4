@@ -14,7 +14,7 @@ import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 
 // @ts-ignore
 import { repeat } from 'lit-html/directives/repeat.js';
-import { openModal } from '../../../../store/modal/modal.action';
+// import { openModal } from '../../../../store/modal/modal.action';
 
 const Update_Topics = 'update_topics';
 const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
@@ -49,10 +49,30 @@ const droppableClass = 'droppable';
 // 	return false;
 // };
 
-// // logOnce(
-// // 	currentEntry.uid + ' ' + newGeoResourceIdFromList,
-// // 	'currentEntry : ' + currentEntry.uid + ' ' + currentEntry.label + ' newGeoResourceIdFromList : ' + newGeoResourceIdFromList
-// // );
+// export const traceOnce = (key, objectToShow = 'nix') => {
+// 	if (!logOnceDictionary[key]) {
+// 		if (objectToShow === 'nix') {
+// 			// eslint-disable-next-line no-console
+// 			console.trace('🚀LO🚀 ~ ', key);
+// 		} else {
+// 			if (typeof objectToShow === 'string') {
+// 				// eslint-disable-next-line no-console
+// 				console.trace('🚀LO🚀 ~ ', objectToShow);
+// 			} else {
+// 				// eslint-disable-next-line no-console
+// 				console.trace('🚀LO🚀 ~ ', JSON.stringify(objectToShow));
+// 			}
+// 		}
+// 		logOnceDictionary[key] = objectToShow;
+// 		return true;
+// 	}
+// 	return false;
+// };
+
+// logOnce(
+// 	currentEntry.uid + ' ' + newGeoResourceIdFromList,
+// 	'currentEntry : ' + currentEntry.uid + ' ' + currentEntry.label + ' newGeoResourceIdFromList : ' + newGeoResourceIdFromList
+// );
 
 // export const onlyOnce = (key) => {
 // 	if (logOnceDictionary[key]) {
@@ -175,12 +195,12 @@ export class LayerTree extends MvuElement {
 			return nothing;
 		}
 
-		const returnNewTopic = () => {
-			// todo newTopic
-			// console.log('🚀 ~ LayerTree ~ returnNewTopic ~ newTopic:', newTopic);
-			// closeModal();
-			// this._updateTopic(newTopic);
-		};
+		// const returnNewTopic = () => {
+		// 	// todo newTopic
+		// 	// console.log('🚀 ~ LayerTree ~ returnNewTopic ~ newTopic:', newTopic);
+		// 	// closeModal();
+		// 	// this._updateTopic(newTopic);
+		// };
 
 		// const openNewTopicDialog = () => {
 		// 	// console.log('🚀 ~ LayerTree ~ openNewTopicDialog ');
@@ -221,12 +241,10 @@ export class LayerTree extends MvuElement {
 			const target = event.target;
 			const addIsDragged = () => {
 				target.classList.add('isdragged');
+				this._addEndLabels();
 			};
 
 			setTimeout(addIsDragged, 0);
-
-			// console.log('🚀 ~ LayerTree ~ onDragEnd ~ this._addEndLabels()');
-			this._addEndLabels();
 		};
 
 		const onDragEnd = (event) => {
@@ -236,18 +254,20 @@ export class LayerTree extends MvuElement {
 			removeDragOverClass();
 
 			this._removeEndLabels();
-			// this.signal(Update_CatalogWithResourceData, catalogWithResourceData);
+			// todo ??? return;
 		};
 
 		const onDragOver = (event, currentCatalogEntry, level) => {
 			// console.log('🚀 ~ LayerTree ~ onDragOver ~ level:', level);
-			// logOnce(currentCatalogEntry.uid, currentCatalogEntry);
+			// traceOnce(currentCatalogEntry.uid + 'header', '🚀 ~ LayerTree ~ onDragOver ~ currentCatalogEntry:');
+			// logOnce(currentCatalogEntry.uid + 'data', currentCatalogEntry);
 			// logOnce(event);
 			const types = event.dataTransfer.types;
 			const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
 			const newGeoResourceIdFromList = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
-			// console.log('🚀🚀🚀🚀 ~ LayerTree ~ on DragOver ~ newGeoResourceIdFromList:', newGeoResourceIdFromList);
+			// logOnce(newGeoResourceIdFromList.uid, '🚀 ~ LayerTree ~ onDragOver ~ newGeoResourceIdFromList: ' + newGeoResourceIdFromList);
 			if (newGeoResourceIdFromList) {
+				// logOnce(newGeoResourceIdFromList.uid + 'if', '🚀 ~ LayerTree ~ onDragOver ~ if (newGeoResourceIdFromList)');
 				if (newGeoResourceIdFromList === currentCatalogEntry.geoResourceId) {
 					event.preventDefault();
 					return;
@@ -285,7 +305,10 @@ export class LayerTree extends MvuElement {
 		};
 
 		const onDrop = (event, entry) => {
-			// console.log('🚀 ~ LayerTree ~ onDrop ~ event:', event);
+			// console.group('🚀 ~ LayerTree ~ onDrop ');
+			// console.log('🚀 ~ LayerTree ~ onDrop ~ event.target:', event.target);
+			// console.log('🚀 ~ LayerTree ~ onDrop ~ entry:', entry);
+
 			this.#currentGeoResourceId = null;
 			removeDragOverClass();
 			const dropUid = event.dataTransfer.types[0].replace('uid', '');
