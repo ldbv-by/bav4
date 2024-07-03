@@ -6,7 +6,7 @@ describe('i18n for header module', () => {
 		const map = provide('de');
 
 		expect(map.auth_passwordCredentialPanel_title).toBe('Anmelden für:');
-		expect(map.auth_passwordCredentialPanel_credential_username).toBe('Name');
+		expect(map.auth_passwordCredentialPanel_credential_username).toBe('Kennung');
 		expect(map.auth_passwordCredentialPanel_credential_password).toBe('Passwort');
 		expect(map.auth_passwordCredentialPanel_submit).toBe('Senden');
 		expect(map.auth_passwordCredentialPanel_credential_failed).toBe('Anmeldung fehlgeschlagen. Name oder Passwort ungültig!');
