@@ -128,7 +128,7 @@ describe('RoutingChart', () => {
 					{
 						id: 300,
 						color: 'transparent',
-						image: 'repeating-linear-gradient(45deg,#eee 0px,#eee 7px, #999 8px, #999 10px, #eee 11px)',
+						bordercolor: '#999',
 						label: 'bar',
 						data: {
 							absolute: 18,
@@ -149,9 +149,8 @@ describe('RoutingChart', () => {
 			expect(containerElement).toBeTruthy();
 			expect(containerElement.querySelectorAll('.legend_item')).toHaveSize(1);
 			expect(getComputedStyle(containerElement.querySelectorAll('.legend_item')[0]).backgroundColor).toBe('rgba(0, 0, 0, 0)');
-			expect(getComputedStyle(containerElement.querySelectorAll('.legend_item')[0]).backgroundImage).toBe(
-				'repeating-linear-gradient(45deg, rgb(238, 238, 238) 0px, rgb(238, 238, 238) 7px, rgb(153, 153, 153) 8px, rgb(153, 153, 153) 10px, rgb(238, 238, 238) 11px)'
-			);
+			expect(getComputedStyle(containerElement.querySelectorAll('.legend_item')[0])['border-style']).toBe('solid');
+			expect(getComputedStyle(containerElement.querySelectorAll('.legend_item')[0])['border-color']).toBe('rgb(153, 153, 153)');
 		});
 
 		it('formats distance values properly', async () => {
@@ -422,6 +421,8 @@ describe('RoutingChart', () => {
 									label: title,
 									data: [84, 0, 1],
 									backgroundColor: ['rgb(238,213,183)', 'rgb(123,213,183)', 'rgb(123,321,42)'],
+									borderWidth: 1,
+									borderColor: ['transparent', 'transparent', 'transparent'],
 									hoverBorderWidth: 2,
 									hoverOffset: 4
 								}
@@ -439,7 +440,8 @@ describe('RoutingChart', () => {
 							},
 							borderWidth: 0,
 							borderAlign: 'inner',
-							cutout: '80%'
+							cutout: '80%',
+							layout: { padding: 3 }
 						}
 					})
 				);
@@ -450,9 +452,9 @@ describe('RoutingChart', () => {
 				const title = 'FooBar';
 				const actualChartConfig = element._getChartConfig(routingChartItems, title);
 
-				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 0 })).toBe('8 km');
-				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 1 })).toBe('4.20 km');
-				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 2 })).toBe('21 m');
+				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 0 })).toBe('8200unit');
+				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 1 })).toBe('4200unit');
+				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 2 })).toBe('21unit');
 				expect(store.getState().routing.highlightedSegments.payload.segments).toEqual([[4, 5]]);
 			});
 
@@ -461,7 +463,7 @@ describe('RoutingChart', () => {
 				const title = 'FooBar';
 				const actualChartConfig = element._getChartConfig(routingChartItems, title);
 
-				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 2 })).toBe('21 m');
+				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 2 })).toBe('21unit');
 				expect(store.getState().routing.highlightedSegments.payload.segments).toEqual([[4, 5]]);
 
 				actualChartConfig.options.onHover(new Event('foo'), ['something']);

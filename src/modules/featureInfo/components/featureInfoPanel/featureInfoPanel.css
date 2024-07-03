@@ -193,6 +193,7 @@ h5 {
 	border: none;
 	font-weight: bold;
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
+	display: inline-block;
 }
 .primary {
 	background-color: var(--primary-color);
@@ -222,5 +223,26 @@ h5 {
 .secondary:hover {
 	background: var(--primary-color);
 	color: var(--text3);
+	text-decoration: none;
+}
+
+/*Fixme: remove temporary workaround for OpenData*/
+a[href^="https://geodaten.bayern.de/odd/"]
+{
+	cursor: pointer;
+	padding: 0.8em 1em;
+	background: transparent;
+	border: none;
+	font-weight: bold;
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
+	background-color: var(--primary-color);
+	color: var(--text3);
+	opacity: 0.8;
+	display: block;
+	text-align: center;
+}
+a[href^="https://geodaten.bayern.de/odd/"]:hover
+{
+	opacity: 1;
 	text-decoration: none;
 }

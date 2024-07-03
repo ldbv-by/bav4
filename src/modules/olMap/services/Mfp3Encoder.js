@@ -386,7 +386,6 @@ export class BvvMfp3Encoder {
 		// amount of created style-specs
 		const styleCache = new Map();
 		const mfpPageExtent = getPolygonFrom(this._pageExtent).transform(this._mapProjection, this._mfpProjection).getExtent();
-
 		const encodingResults = featuresSortedByGeometryType
 			.map((f) => transformForMfp(f))
 			.filter((f) => f.getGeometry().intersectsExtent(mfpPageExtent))

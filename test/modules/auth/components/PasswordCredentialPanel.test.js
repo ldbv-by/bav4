@@ -42,7 +42,8 @@ describe('PasswordCredentialPanel', () => {
 				footer: null,
 				credential: null,
 				authenticating: false,
-				showPassword: false
+				showPassword: false,
+				useForm: false
 			});
 		});
 
@@ -287,17 +288,18 @@ describe('PasswordCredentialPanel', () => {
 			const element = await setup();
 			const inputPassword = element.shadowRoot.querySelector('#credential_password');
 			const togglePassword = element.shadowRoot.querySelector('#toggle_password');
+			expect(togglePassword).toHaveClass('password-icon');
 
 			expect(inputPassword.getAttribute('type')).toBe('password');
-			expect(togglePassword).toHaveClass('eye-slash');
+			expect(togglePassword).toHaveClass('eyeslash');
 			expect(togglePassword).not.toHaveClass('eye');
 			togglePassword.click();
 			expect(inputPassword.getAttribute('type')).toBe('text');
-			expect(togglePassword).toHaveClass('eye-slash');
 			expect(togglePassword).toHaveClass('eye');
+			expect(togglePassword).not.toHaveClass('eyeslash');
 			togglePassword.click();
 			expect(inputPassword.getAttribute('type')).toBe('password');
-			expect(togglePassword).toHaveClass('eye-slash');
+			expect(togglePassword).toHaveClass('eyeslash');
 			expect(togglePassword).not.toHaveClass('eye');
 		});
 
@@ -325,6 +327,7 @@ describe('PasswordCredentialPanel', () => {
 			const passwordCredentialPanel = new PasswordCredentialPanel();
 
 			expect(passwordCredentialPanel.url).toBeNull();
+			expect(passwordCredentialPanel.useForm).toBeFalse();
 		});
 
 		it('provides set methods and getters', async () => {
@@ -332,8 +335,22 @@ describe('PasswordCredentialPanel', () => {
 			const passwordCredentialPanel = new PasswordCredentialPanel();
 
 			passwordCredentialPanel.url = 'someUrl';
+			passwordCredentialPanel.useForm = true;
 
 			expect(passwordCredentialPanel.url).toBe('someUrl');
+			expect(passwordCredentialPanel.useForm).toBeTrue();
+		});
+	});
+
+	describe('when property `useForm` changes', () => {
+		it('changes the tag of the form', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('.credential_form').tagName).toBe('DIV');
+
+			element.useForm = true;
+
+			expect(element.shadowRoot.querySelector('.credential_form').tagName).toBe('FORM');
 		});
 	});
 
