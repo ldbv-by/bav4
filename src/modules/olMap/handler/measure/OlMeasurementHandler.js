@@ -10,7 +10,7 @@ import { $injector } from '../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { setStatistic, setMode, setSelection, setFileSaveResult } from '../../../../store/measurement/measurement.action';
 import { addLayer, removeLayer } from '../../../../store/layers/layers.action';
-import { createSketchStyleFunction, selectStyleFunction } from '../../utils/olStyleUtils';
+import { createSketchStyleFunction, measureStyleFunction, selectStyleFunction } from '../../utils/olStyleUtils';
 import { getStats } from '../../utils/olGeometryUtils';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { observe } from '../../../../utils/storeUtils';
@@ -451,7 +451,14 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			type: 'Polygon',
 			minPoints: 2,
 			snapTolerance: getSnapTolerancePerDevice(),
-			style: createSketchStyleFunction(this._styleService.getStyleFunction(StyleTypes.MEASURE)),
+			style: createSketchStyleFunction(this._styleService.getStyleFunction(StyleTypes.MEASURE), {
+				LineString: (feature, resolution) => {
+					if (!feature.get(GEODESIC_FEATURE_PROPERTY)) {
+						feature.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(feature, () => true));
+					}
+					return measureStyleFunction(feature, resolution);
+				}
+			}),
 			wrapX: true
 		});
 

@@ -403,6 +403,17 @@ const getRulerStyle = (feature) => {
 			renderContext.drawGeometry(geometry);
 		};
 	};
+	const geometry = feature.getGeometry();
+	if (geometry instanceof Polygon) {
+		if (geometry.getArea() === 0) {
+			return new Style();
+		}
+	}
+	if (geometry instanceof MultiLineString) {
+		if (geometry.getLineStrings().every((l) => l.getLength() === 0)) {
+			return new Style();
+		}
+	}
 	return new Style({
 		geometry: () => {
 			const geodesicGeometry = feature?.get(GEODESIC_FEATURE_PROPERTY)?.getGeometry();
@@ -731,45 +742,57 @@ export const getTransparentImageStyle = () => {
 	});
 };
 
-export const createSketchStyleFunction = (styleFunction) => {
-	const getSketchPolygon = (feature) =>
-		new Style({
-			geometry: feature?.get(GEODESIC_FEATURE_PROPERTY)?.getGeometry(),
-			fill: new Fill({
-				color: White_Color.concat([0.4])
-			}),
-			stroke: new Stroke({
-				color: White_Color,
-				width: 2
+export const createSketchStyleFunction = (featureStyleFunction, sketchStyleFunctionsByGeometry = {}) => {
+	const defaultSketchStyles = {
+		Point: () => [
+			new Style({
+				image: new CircleStyle({
+					radius: 4,
+					fill: new Fill({
+						color: Red_Color.concat([0.4])
+					}),
+					stroke: new Stroke({
+						color: Red_Color.concat([1]),
+						width: 3
+					})
+				}),
+				zIndex: Z_Point
 			})
-		});
+		],
+		LineString: () => [
+			new Style({
+				fill: new Fill({
+					color: White_Color.concat([0.4])
+				}),
+				stroke: new Stroke({
+					color: White_Color,
+					width: 2,
+					lineDash: [5]
+				}),
+				zIndex: 0
+			})
+		],
+		Polygon: () => [
+			new Style({
+				fill: new Fill({
+					color: White_Color.concat([0.4])
+				}),
+				stroke: new Stroke({
+					color: White_Color,
+					width: 2
+				})
+			})
+		]
+	};
+	const getSketchStyles = (feature, resolution) => {
+		const geometryType = feature.getGeometry().getType();
+		const sketchStyleFunction = sketchStyleFunctionsByGeometry[geometryType] ?? defaultSketchStyles[geometryType];
+
+		return sketchStyleFunction ? sketchStyleFunction(feature, resolution) : [];
+	};
 
 	return (feature, resolution) => {
-		let styles;
-		if (feature.getGeometry().getType() === 'Polygon') {
-			styles = [getSketchPolygon(feature)];
-		} else if (feature.getGeometry().getType() === 'Point') {
-			const fill = new Fill({
-				color: Red_Color.concat([0.4])
-			});
-
-			const stroke = new Stroke({
-				color: Red_Color.concat([1]),
-				width: 3
-			});
-			const sketchCircle = new Style({
-				image: new CircleStyle({ radius: 4, fill: fill, stroke: stroke }),
-				zIndex: Z_Point
-			});
-			styles = [sketchCircle];
-		} else {
-			if (!feature.get(GEODESIC_FEATURE_PROPERTY)) {
-				feature.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(feature, () => true));
-			}
-			styles = styleFunction(feature, resolution);
-		}
-
-		return styles;
+		return feature.getId() ? featureStyleFunction(feature, resolution) : getSketchStyles(feature, resolution);
 	};
 };
 
