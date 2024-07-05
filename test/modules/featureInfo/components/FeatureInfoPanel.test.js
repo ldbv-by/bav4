@@ -161,7 +161,7 @@ describe('FeatureInfoPanel', () => {
 			});
 
 			it('have only item with selectable content', async () => {
-				// HINT: the existence of the behavior (user select text) is driven by css-classes specified in main.css and baElement.css.
+				// HINT: the existence of the behavior (user select text) is driven by css-classes specified in main.css and mvuElement.css.
 				// All elements are not selectable by default, but can be activated with the 'selectable' class.
 				const cssClass = 'selectable';
 				const element = await setup({

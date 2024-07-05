@@ -15,7 +15,7 @@ describe('i18n for georesourceinfo', () => {
 		expect(map.geoResourceInfo_geoResourceInfo_response_error).toBe('Die Ebenen-Information konnte nicht geladen werden');
 	});
 
-	it('have the expected amount of translations', () => {
+	it('contains the expected amount of entries', () => {
 		const expectedSize = 2;
 		const deMap = provide('de');
 		const enMap = provide('en');

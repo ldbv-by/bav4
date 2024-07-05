@@ -2,45 +2,75 @@
  * @module modules/topics/components/menu/catalog/CatalogLeaf
  */
 import { html, nothing } from 'lit-html';
-import { AbstractContentPanel } from '../../../../menu/components/mainMenu/content/AbstractContentPanel';
 import css from './catalogLeaf.css';
 import { $injector } from '../../../../../injection';
 import { addLayer, removeLayerOf } from '../../../../../store/layers/layers.action';
 import infoSvg from '../assets/info.svg';
 import { openModal } from '../../../../../store/modal/modal.action';
 import { createUniqueId } from '../../../../../utils/numberUtils';
+import { AbstractMvuContentPanel } from '../../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
+
+const Update_Layers_Store_Ready = 'update_layers_store_ready';
+const Update_Active_Layers = 'update_active_layers';
+const Update_GeoResource_Id = 'update_geoResource_id';
 
 /**
  * @class
+ * @property {module:domain/catalogTypeDef~CatalogEntry} data The catalog entry for this CatalogLeaf
  * @author taulinger
  * @author alsturm
  * @author costa_gi
  */
-export class CatalogLeaf extends AbstractContentPanel {
+export class CatalogLeaf extends AbstractMvuContentPanel {
+	#geoResourceService;
+	#translationService;
+
 	constructor() {
-		super();
+		super({ layersStoreReady: false, geoResourceId: null, activeLayers: [] });
 
 		const { GeoResourceService: geoResourceService, TranslationService: translationService } = $injector.inject(
 			'GeoResourceService',
 			'TranslationService'
 		);
 
-		this._geoResourceService = geoResourceService;
-		this._translationService = translationService;
+		this.#geoResourceService = geoResourceService;
+		this.#translationService = translationService;
 	}
 
-	set data(catalogPart) {
-		this._catalogPart = catalogPart;
-		this.updateState();
+	set data(catalogEntry) {
+		this.signal(Update_GeoResource_Id, catalogEntry.geoResourceId);
 	}
 
-	createView(state) {
-		const { layersStoreReady, checked, geoResourceId } = state;
-		const translate = (key) => this._translationService.translate(key);
+	onInitialize() {
+		this.observe(
+			(state) => state.layers.ready,
+			(ready) => this.signal(Update_Layers_Store_Ready, ready)
+		);
+		this.observe(
+			(state) => state.layers.active,
+			(layers) => this.signal(Update_Active_Layers, layers)
+		);
+	}
+
+	update(type, data, model) {
+		switch (type) {
+			case Update_Layers_Store_Ready:
+				return { ...model, layersStoreReady: data };
+			case Update_Active_Layers:
+				return { ...model, activeLayers: [...data] };
+			case Update_GeoResource_Id:
+				return { ...model, geoResourceId: data };
+		}
+	}
+
+	createView(model) {
+		const { layersStoreReady, geoResourceId, activeLayers } = model;
+		const translate = (key) => this.#translationService.translate(key);
 
 		if (geoResourceId && layersStoreReady) {
-			const geoR = this._geoResourceService.byId(geoResourceId);
-			const keywords = [...this._geoResourceService.getKeywords(geoResourceId)];
+			const checked = activeLayers.map((layer) => layer.geoResourceId).includes(geoResourceId);
+			const geoR = this.#geoResourceService.byId(geoResourceId);
+			const keywords = [...this.#geoResourceService.getKeywords(geoResourceId)];
 			const label = geoR ? geoR.label : geoResourceId;
 			const title = geoR ? geoR.label : translate('topics_catalog_leaf_no_georesource_title');
 
@@ -86,18 +116,6 @@ export class CatalogLeaf extends AbstractContentPanel {
 			`;
 		}
 		return nothing;
-	}
-
-	extractState(globalState) {
-		//our local state contains values derived form the global state and local data (_catalogPart)
-		const {
-			layers: { active: activeLayers, ready: layersStoreReady }
-		} = globalState;
-
-		const geoResourceId = this._catalogPart ? this._catalogPart.geoResourceId : null;
-		const checked = geoResourceId ? activeLayers.map((layer) => layer.geoResourceId).includes(geoResourceId) : false;
-
-		return { layersStoreReady, geoResourceId, checked };
 	}
 
 	static get tag() {

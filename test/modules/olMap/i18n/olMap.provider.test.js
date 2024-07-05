@@ -111,7 +111,7 @@ describe('i18n for map module', () => {
 		expect(map.olMap_vectorLayerService_default_layer_name_vector).toBe('Data');
 	});
 
-	it('have the expected amount of translations', () => {
+	it('contains the expected amount of entries', () => {
 		const expectedSize = 40;
 		const deMap = provide('de');
 		const enMap = provide('en');

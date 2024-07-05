@@ -33,6 +33,14 @@ describe('ExtentButton', () => {
 		element = await TestUtils.render(ZoomToExtentButton.tag);
 	});
 
+	describe('when instantiated', () => {
+		it('sets a default model', async () => {
+			const element = new ZoomToExtentButton();
+
+			expect(element.getModel()).toEqual({});
+		});
+	});
+
 	describe('when initialized', () => {
 		it('shows zoom to extent button', () => {
 			expect(element.shadowRoot.querySelector('.zoom-to-extent')).toBeTruthy();
