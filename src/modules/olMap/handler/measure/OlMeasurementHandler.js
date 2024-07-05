@@ -446,19 +446,21 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_createDraw(source) {
+		const measureFeatureStyleFunction = this._styleService.getStyleFunction(StyleTypes.MEASURE);
+		const sketchStyleFunctionsByGeometry = {
+			LineString: (feature, resolution) => {
+				if (!feature.get(GEODESIC_FEATURE_PROPERTY)) {
+					feature.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(feature, () => true));
+				}
+				return measureStyleFunction(feature, resolution);
+			}
+		};
 		const draw = new Draw({
 			source: source,
 			type: 'Polygon',
 			minPoints: 2,
 			snapTolerance: getSnapTolerancePerDevice(),
-			style: createSketchStyleFunction(this._styleService.getStyleFunction(StyleTypes.MEASURE), {
-				LineString: (feature, resolution) => {
-					if (!feature.get(GEODESIC_FEATURE_PROPERTY)) {
-						feature.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(feature, () => true));
-					}
-					return measureStyleFunction(feature, resolution);
-				}
-			}),
+			style: createSketchStyleFunction(measureFeatureStyleFunction, sketchStyleFunctionsByGeometry),
 			wrapX: true
 		});
 
