@@ -13,7 +13,7 @@ describe('i18n for modal module', () => {
 		expect(modal.modal_close_button).toBe('Close');
 	});
 
-	it('have the expected amount of translations', () => {
+	it('contains the expected amount of entries', () => {
 		const expectedSize = 1;
 		const deMap = provide('de');
 		const enMap = provide('en');

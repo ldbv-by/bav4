@@ -45,7 +45,7 @@ describe('i18n for search module', () => {
 		expect(map.export_item_clipboard_error).toBe('"Copy to clipboard" is not available');
 	});
 
-	it('have the expected amount of translations', () => {
+	it('contains the expected amount of entries', () => {
 		const expectedSize = 17;
 		const deMap = provide('de');
 		const enMap = provide('en');

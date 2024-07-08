@@ -19,7 +19,7 @@ describe('i18n for the routing module', () => {
 		expect(map.routing_contextContent_remove_waypoint).toBe('Remove Waypoint');
 	});
 
-	it('have the expected amount of translations', () => {
+	it('contains the expected amount of entries', () => {
 		const expectedSize = 4;
 		const deMap = provide('de');
 		const enMap = provide('en');

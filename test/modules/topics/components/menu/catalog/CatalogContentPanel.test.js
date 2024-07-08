@@ -9,7 +9,9 @@ import { TopicsContentPanelIndex } from '../../../../../../src/modules/topics/co
 import { Topic } from '../../../../../../src/domain/topic';
 import { Spinner } from '../../../../../../src/modules/commons/components/spinner/Spinner';
 import { topicsContentPanelReducer } from '../../../../../../src/store/topicsContentPanel/topicsContentPanel.reducer';
-import { AbstractContentPanel } from '../../../../../../src/modules/menu/components/mainMenu/content/AbstractContentPanel';
+import { AbstractMvuContentPanel } from '../../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel.js';
+import { notificationReducer } from '../../../../../../src/store/notifications/notifications.reducer.js';
+import { LevelTypes } from '../../../../../../src/store/notifications/notifications.action.js';
 
 window.customElements.define(CatalogContentPanel.tag, CatalogContentPanel);
 
@@ -25,7 +27,7 @@ describe('TopicsContentPanel', () => {
 					geoResourceId: 'gr1'
 				},
 				{
-					label: 'Suptopic 2',
+					label: 'Subtopic 2',
 					children: [
 						{
 							geoResourceId: 'gr3'
@@ -50,10 +52,14 @@ describe('TopicsContentPanel', () => {
 	let store;
 
 	const setup = (state) => {
-		store = TestUtils.setupStoreAndDi(state, { topics: topicsReducer, topicsContentPanel: topicsContentPanelReducer });
+		store = TestUtils.setupStoreAndDi(state, {
+			topics: topicsReducer,
+			topicsContentPanel: topicsContentPanelReducer,
+			notifications: notificationReducer
+		});
 
 		$injector
-			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('TranslationService', { translate: (key, params = []) => `${key}${params.length ? ` [${params.join(',')}]` : ''}` })
 			.registerSingleton('CatalogService', catalogServiceMock)
 			.registerSingleton('TopicsService', topicsServiceMock);
 
@@ -61,10 +67,23 @@ describe('TopicsContentPanel', () => {
 	};
 
 	describe('class', () => {
-		it('inherits from AbstractContentPanel', async () => {
+		it('inherits from AbstractMvuContentPanel', async () => {
 			const element = await setup();
 
-			expect(element instanceof AbstractContentPanel).toBeTrue();
+			expect(element instanceof AbstractMvuContentPanel).toBeTrue();
+		});
+	});
+
+	describe('when instantiated', () => {
+		it('sets a default model', async () => {
+			await setup();
+			const element = new CatalogContentPanel();
+
+			expect(element.getModel()).toEqual({
+				matchingTopicId: false,
+				catalog: null,
+				active: false
+			});
 		});
 	});
 
@@ -95,7 +114,7 @@ describe('TopicsContentPanel', () => {
 
 			expect(renderSpy).toHaveBeenCalledTimes(2);
 
-			//shoud not cause further calls of #render
+			//should not cause further calls of #render
 			setCurrent(topicId);
 			setCurrent(topicId);
 			setCurrent(topicId);
@@ -119,12 +138,12 @@ describe('TopicsContentPanel', () => {
 
 			//wait for elements
 			await TestUtils.timeout();
-			expect(element.style.display).toBe('inline');
+			expect(element.shadowRoot.children.length).not.toBe(0);
 
 			setCurrent('doesNotMatchTopicId');
 
 			await TestUtils.timeout();
-			expect(element.style.display).toBe('none');
+			expect(element.shadowRoot.children.length).toBe(0);
 		});
 	});
 
@@ -209,13 +228,12 @@ describe('TopicsContentPanel', () => {
 	});
 
 	describe('and CatalogService cannot fulfill', () => {
-		it('logs a warn statement and renders nothing', async () => {
+		it('logs, shows a WARN notification and renders nothing', async () => {
+			const error = new Error('Something got wrong');
 			const topicId = 'foo';
 			spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'This is a fallback topic...'));
-			spyOn(catalogServiceMock, 'byId')
-				.withArgs(topicId)
-				.and.returnValue(Promise.reject(new Error('Something got wrong')));
-			const warnSpy = spyOn(console, 'warn');
+			spyOn(catalogServiceMock, 'byId').withArgs(topicId).and.returnValue(Promise.reject(error));
+			const errorSpy = spyOn(console, 'error');
 			const element = await setup();
 			//assign data
 			element.data = topicId;
@@ -223,10 +241,13 @@ describe('TopicsContentPanel', () => {
 			setCurrent(topicId);
 
 			await TestUtils.timeout();
-			expect(warnSpy).toHaveBeenCalledWith('Something got wrong');
+			expect(errorSpy).toHaveBeenCalledWith(error);
 			expect(element.shadowRoot.querySelectorAll(CatalogLeaf.tag)).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll(CatalogNode.tag)).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(0);
+			expect(element.shadowRoot.querySelector('.ba-list-item__text_warning').textContent).toBe('topics_catalog_contentPanel_topic_not_available');
+			expect(store.getState().notifications.latest.payload.content).toBe('topics_catalog_contentPanel_topic_could_not_be_loaded [foo]');
+			expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.WARN);
 		});
 	});
 

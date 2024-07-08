@@ -166,7 +166,7 @@ describe('OverflowMenu', () => {
 
 			button.click();
 
-			//element.shadowRoot.styleSheets[0] --> baElement.css
+			//element.shadowRoot.styleSheets[0] --> mvuElement.css
 			//element.shadowRoot.styleSheets[1] --> overflowmenu.css
 			//element.shadowRoot.styleSheets[2] --> menuitem.css
 			expect(element.shadowRoot.styleSheets[3].cssRules.item(0).cssText).toContain(
