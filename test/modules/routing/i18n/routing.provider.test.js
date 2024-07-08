@@ -57,7 +57,7 @@ describe('i18n for dynamically loaded parts of the routing module', () => {
 		expect(map.routing_details_road_type).toBe('Road type');
 	});
 
-	it('have the expected amount of translations', () => {
+	it('contains the expected amount of entries', () => {
 		const expectedSize = 28;
 		const deMap = provide('de');
 		const enMap = provide('en');

@@ -3,11 +3,13 @@ export const TOPIC_RESOURCES_READY = 'topics/resources/ready';
 
 export const initialState = {
 	/**
-	 * List of currently active layers.
+	 * Currently active topic ID.
+	 * @property {string}
 	 */
 	current: null,
 	/**
 	 * Flag that indicates if the topics store is ready. "Ready" means all required resources are available.
+	 *  @property {boolean}
 	 */
 	ready: false
 };

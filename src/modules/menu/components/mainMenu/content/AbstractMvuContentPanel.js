@@ -3,7 +3,7 @@
  */
 import { html } from 'lit-html';
 import { MvuElement } from '../../../../MvuElement';
-import contentPanelCss from './abstractContentPanel.css';
+import contentPanelCss from './abstractMvuContentPanel.css';
 
 const Update_Active = 'update_disabled';
 

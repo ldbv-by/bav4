@@ -25,7 +25,7 @@ describe('i18n for dndImport module', () => {
 		expect(map.dndImport_import_max_size_exceeded).toBe('Filesize is too large');
 	});
 
-	it('have the expected amount of translations', () => {
+	it('contains the expected amount of entries', () => {
 		const expectedSize = 7;
 		const deMap = provide('de');
 		const enMap = provide('en');
