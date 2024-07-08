@@ -46,12 +46,12 @@ export class AdminPanel extends MvuElement {
 		this._topicsService = topicsService;
 	}
 
-	_addUniqueId(catalogFromService) {
+	_addUniqueIds(catalogFromService) {
 		const catalogWithUniqueId = catalogFromService.map((category) => {
 			const uid = self.crypto.randomUUID();
 
 			if (category.children) {
-				const children = this._addUniqueId(category.children);
+				const children = this._addUniqueIds(category.children);
 
 				return {
 					uid,
@@ -183,7 +183,7 @@ export class AdminPanel extends MvuElement {
 	async _updateCatalog(currentTopicId) {
 		try {
 			const catalogFromService = await this._catalogService.byId(currentTopicId);
-			this.#catalog = this._addUniqueId(catalogFromService);
+			this.#catalog = this._addUniqueIds(catalogFromService);
 			this._mergeCatalogWithResources();
 		} catch (error) {
 			console.warn(error.message);
@@ -465,12 +465,8 @@ export class AdminPanel extends MvuElement {
 		// todo: check
 
 		const addLayerGroup = () => {
-			const catalog = this._reduceData(catalogWithResourceData, this._extractOriginalIncShowChildren);
-
-			catalog.push({ label: ' ', children: [{ label: End_Label }] });
-
-			this.#catalog = this._addUniqueId(catalog);
-			this._mergeCatalogWithResources();
+			catalogWithResourceData.push({ uid: self.crypto.randomUUID(), label: ' ', children: [{ label: End_Label }] });
+			this.signal(Update_CatalogWithResourceData, catalogWithResourceData);
 		};
 
 		const updateTopic = (topicId) => {
