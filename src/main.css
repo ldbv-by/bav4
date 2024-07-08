@@ -37,6 +37,7 @@
 	*/
 	/* brand */
 	--brand-hue: 198;
+	--brand-complementary-hue: calc(var(--brand-hue) - 180);
 	--brand-saturation: 92%;
 	--brand-lightness: 45%;
 	/* light */
@@ -51,6 +52,8 @@
 	--surface3-light: hsl(var(--brand-hue) 60% 95%);
 	--surface4-light: hsl(var(--brand-hue) 20% 100%);
 	--surface5-light: hsla(var(--brand-hue), 10%, 15%, 0.8);
+	--brand-light-complementary: hsl(var(--brand-complementary-hue) var(--brand-saturation) var(--brand-lightness));
+	--brand-light-complementary-lighter: hsl(var(--brand-complementary-hue) var(--brand-saturation) calc(var(--brand-lightness) / 0.55));
 	/* dark */
 	--brand-dark: hsl(var(--brand-hue) calc(var(--brand-saturation) / 1.6) calc(var(--brand-lightness) / 0.9));
 	--brand-dark-lighter: hsl(var(--brand-hue) calc(var(--brand-saturation) / 1.6) calc(var(--brand-lightness) * 1.7));
@@ -63,6 +66,8 @@
 	--surface3-dark: hsl(var(--brand-hue) 40% 25%);
 	--surface4-dark: hsl(var(--brand-hue) 10% 15%);
 	--surface5-dark: hsla(var(--brand-hue), 15%, 40%, 0.8);
+	--brand-dark-complementary: hsl(var(--brand-complementary-hue) calc(var(--brand-saturation) / 1.6) calc(var(--brand-lightness) / 0.9));
+	--brand-dark-complementary-lighter: hsl(var(--brand-complementary-hue) calc(var(--brand-saturation) / 1.6) calc(var(--brand-lightness) * 1.7));
 	/* others */
 	--error-color: hsla(341, 60%, 52%, 1);
 	--warning-color: hsla(18, 89%, 48%, 1);
@@ -81,6 +86,8 @@
 	--primary-color: var(--brand-light);
 	--primary-color-lighter: var(--brand-light-lighter);
 	--secondary-color: var(--brand-secondary-light);
+	--complementary-color: var(--brand-light-complementary);
+	--complementary-color-lighter: var(--brand-light-complementary-lighter);
 	/* background */
 	--primary-bg-color: var(--surface1-light);
 	--primary-bg-color-05: hsla(var(--brand-hue), 20%, 99%, 0.9);
@@ -103,6 +110,8 @@
 	--primary-color: var(--brand-dark);
 	--primary-color-lighter: var(--brand-dark-lighter);
 	--secondary-color: var(--brand-secondary-dark);
+	--complementary-color: var(--brand-dark-complementary);
+	--complementary-color-lighter: var(--brand-dark-complementary-lighter);
 	/* background */
 	--primary-bg-color: var(--surface1-dark);
 	--primary-bg-color-05: rgba(0, 0, 0, 0.6);

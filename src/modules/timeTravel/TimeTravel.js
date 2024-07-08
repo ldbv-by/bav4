@@ -255,7 +255,7 @@ export class TimeTravel extends MvuElement {
 						${jsonMock.map(
 							(item) => html`
 								<div class="row">
-									<span class="title">${item.bezeichnung}</span>
+									<span class="title" title="Zoom ${item.zoomlevel}">${item.bezeichnung}</span>
 									${jears.map((jear) => isActiveJear(jear, item.years.split(',')))}
 								</div>
 							`
