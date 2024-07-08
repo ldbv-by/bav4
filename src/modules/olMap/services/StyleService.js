@@ -371,7 +371,7 @@ export class StyleService {
 				const text = style.getText()?.getText();
 				return {
 					symbolSrc: symbolSrc,
-					color: rgbToHex(color ? color : style.getText().getFill().getColor()),
+					color: rgbToHex(color ? color : style.getText()?.getFill()?.getColor()),
 					scale: scale,
 					text: text,
 					anchor: size && pixelAnchor ? [pixelAnchor[0] / size[0], pixelAnchor[1] / size[1]] : null

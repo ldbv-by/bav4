@@ -188,7 +188,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const getOrCreateLayer = () => {
 			const oldLayer = getOldLayer(this._map);
 			const layer = createLayer();
-			addOldFeatures(layer, oldLayer);
 
 			const updateContent = () => {
 				const features = layer.getSource().getFeatures();
@@ -205,18 +204,23 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				this._storedContent = createKML(layer, 'EPSG:3857');
 				this._save();
 			};
-			this._mapListeners.push(layer.getSource().on('addfeature', setSelectedAndSave));
-			this._mapListeners.push(
-				layer.getSource().on('changefeature', () => {
-					updateContent();
-				})
-			);
-			this._mapListeners.push(
-				layer.getSource().on('removefeature', () => {
-					updateContent();
-				})
-			);
-			this._mapListeners.push(this._map.getView().on('change:resolution', () => onResolutionChange(layer)));
+
+			const registerListeners = (layer) => {
+				this._mapListeners.push(layer.getSource().on('addfeature', setSelectedAndSave));
+				this._mapListeners.push(
+					layer.getSource().on('changefeature', () => {
+						updateContent();
+					})
+				);
+				this._mapListeners.push(
+					layer.getSource().on('removefeature', () => {
+						updateContent();
+					})
+				);
+				this._mapListeners.push(this._map.getView().on('change:resolution', () => onResolutionChange(layer)));
+			};
+			// eslint-disable-next-line promise/prefer-await-to-then
+			addOldFeatures(layer, oldLayer).finally(() => registerListeners(layer));
 			return layer;
 		};
 
