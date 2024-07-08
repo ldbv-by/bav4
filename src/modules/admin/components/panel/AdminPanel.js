@@ -247,19 +247,17 @@ export class AdminPanel extends MvuElement {
 			await this.loadGeoResources();
 		};
 
-		const findElementRecursively = (uid, catalogEntry) => {
-			for (let n = 0; n < catalogEntry.children.length; n++) {
-				const childCatalogEntry = catalogEntry.children[n];
+		const findElementByUid = (uid, catalogEntry) => {
+			for (let entryNumber = 0; entryNumber < catalogEntry.length; entryNumber++) {
+				const childCatalogEntry = catalogEntry[entryNumber];
 
 				if (childCatalogEntry.uid === uid) {
 					return childCatalogEntry;
 				}
 
-				// Check the children if any
 				if (childCatalogEntry.children) {
-					const element = findElementRecursively(uid, childCatalogEntry);
+					const element = findElementByUid(uid, childCatalogEntry.children);
 					if (element) {
-						// stop if found
 						return element;
 					}
 				}
@@ -267,28 +265,8 @@ export class AdminPanel extends MvuElement {
 			return null;
 		};
 
-		const findElement = (uid, catalogWithResourceData) => {
-			for (let entryNumber = 0; entryNumber < catalogWithResourceData.length; entryNumber++) {
-				const catalogEntry = catalogWithResourceData[entryNumber];
-
-				if (catalogEntry.uid === uid) {
-					// found the uid in the top-level entries
-					return catalogEntry;
-				}
-
-				// Check the children if any
-				if (catalogEntry.children) {
-					const element = findElementRecursively(uid, catalogEntry);
-					if (element) {
-						// found the uid in children --> return entry
-						return element;
-					}
-				}
-			}
-		};
-
 		const moveElement = (currentCatalogEntryUid, uidFromDrag_elementToMove) => {
-			const elementToMove = findElement(uidFromDrag_elementToMove, catalogWithResourceData);
+			const elementToMove = findElementByUid(uidFromDrag_elementToMove, catalogWithResourceData);
 			if (!elementToMove) {
 				return;
 			}
