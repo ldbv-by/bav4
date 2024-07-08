@@ -76,7 +76,7 @@ export class AdminPanel extends MvuElement {
 		return catalogWithUniqueId;
 	}
 
-	_enrichWithGeoResource(obj, extractFunction, geoResources) {
+	_enrichWithGeoResource = (obj, geoResources) => {
 		const result = { uid: obj.uid };
 
 		if (obj.geoResourceId) {
@@ -97,13 +97,12 @@ export class AdminPanel extends MvuElement {
 			if (obj.showChildren) {
 				result.showChildren = obj.showChildren;
 			}
-			result.children = obj.children.map((child) => extractFunction(child, extractFunction, geoResources));
+			result.children = obj.children.map((child) => this._enrichWithGeoResource(child, geoResources));
 		}
 		return result;
-	}
+	};
 
-	// extract 'original data' recursively from the input object
-	_extractOriginal(obj, extractFunction) {
+	_extractOriginal(obj) {
 		const result = {};
 		if (obj.geoResourceId) {
 			result.geoResourceId = obj.geoResourceId;
@@ -111,13 +110,12 @@ export class AdminPanel extends MvuElement {
 			result.label = obj.label;
 		}
 		if (obj.children && obj.children.length > 0) {
-			result.children = obj.children.map((child) => extractFunction(child, extractFunction));
+			result.children = obj.children.map((child) => this._extractOriginal(child));
 		}
 		return result;
 	}
 
-	// extract 'original data' recursively from the input object, but keep showChildren
-	_extractOriginalIncShowChildren(obj, extractFunction) {
+	_extractOriginalIncShowChildren = (obj) => {
 		const result = {};
 		if (obj.geoResourceId) {
 			result.geoResourceId = obj.geoResourceId;
@@ -129,13 +127,12 @@ export class AdminPanel extends MvuElement {
 			if (obj.showChildren) {
 				result.showChildren = obj.showChildren;
 			}
-			result.children = obj.children.map((child) => extractFunction(child, extractFunction));
+			result.children = obj.children.map((child) => this._extractOriginalIncShowChildren(child));
 		}
 		return result;
-	}
+	};
 
-	_copyEverything(obj, extractFunction) {
-		// console.log('🚀 ~ AdminPanel ~ _copyEverything ~ obj:', obj);
+	_copyEverything = (obj) => {
 		const result = { uid: obj.uid };
 		if (obj.geoResourceId) {
 			result.geoResourceId = obj.geoResourceId;
@@ -147,13 +144,12 @@ export class AdminPanel extends MvuElement {
 			if (obj.showChildren) {
 				result.showChildren = obj.showChildren;
 			}
-			result.children = obj.children.map((child) => extractFunction(child, extractFunction));
+			result.children = obj.children.map((child) => this._copyEverything(child));
 		}
-		// console.log('🚀 ~ AdminPanel ~ _copyEverything ~ result:', result);
 		return result;
-	}
+	};
 
-	_copyBranch(obj, extractFunction) {
+	_copyBranch(obj) {
 		const result = { uid: _generateUniqueId() };
 		if (obj.geoResourceId) {
 			result.geoResourceId = obj.geoResourceId;
@@ -165,7 +161,7 @@ export class AdminPanel extends MvuElement {
 			if (obj.showChildren) {
 				result.showChildren = obj.showChildren;
 			}
-			result.children = obj.children.map((child) => extractFunction(child, extractFunction));
+			result.children = obj.children.map((child) => this._copyBranch(child));
 		}
 		return result;
 	}
@@ -181,7 +177,7 @@ export class AdminPanel extends MvuElement {
 	 */
 	_reduceData(obj, extractFunction, geoResources) {
 		return obj.map((item) => {
-			return extractFunction(item, extractFunction, geoResources);
+			return extractFunction(item, geoResources);
 		});
 	}
 
