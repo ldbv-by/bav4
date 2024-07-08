@@ -319,7 +319,6 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		this._storedContent = null; // reset last saved content for new changes
 		this._updateDrawState();
-		console.log(this._vectorLayer);
 		return this._vectorLayer;
 	}
 
