@@ -15,23 +15,13 @@ import { End_Label } from '../layerTree/LayerTree';
 const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
 const Update_Topics = 'update_topics';
 
-// const Empty_Label = ' ';
-// const End_Label = '  ';
-
-let _uniqueIdCounter = 0;
-const _generateUniqueId = () => {
-	const timestamp = new Date().getTime();
-	_uniqueIdCounter++;
-	return `${timestamp}-${_uniqueIdCounter}`;
-};
-
 /**
  * @class
  */
 export class AdminPanel extends MvuElement {
 	#catalog = [];
 	#geoResources = [];
-	#topics = []; // todo remove
+	#topics = []; // todo remove ???
 	#currentTopicId = null;
 
 	constructor() {
@@ -58,7 +48,7 @@ export class AdminPanel extends MvuElement {
 
 	_addUniqueId(catalogFromService) {
 		const catalogWithUniqueId = catalogFromService.map((category) => {
-			const uid = _generateUniqueId();
+			const uid = self.crypto.randomUUID();
 
 			if (category.children) {
 				const children = this._addUniqueId(category.children);
@@ -150,7 +140,7 @@ export class AdminPanel extends MvuElement {
 	};
 
 	_copyBranch(obj) {
-		const result = { uid: _generateUniqueId() };
+		const result = { uid: self.crypto.randomUUID() };
 		if (obj.geoResourceId) {
 			result.geoResourceId = obj.geoResourceId;
 		}
@@ -279,9 +269,7 @@ export class AdminPanel extends MvuElement {
 
 			const newCatalogWithResourceData = JSON.parse(JSON.stringify(catalogWithResourceData));
 
-			const newUidTop = _generateUniqueId();
-
-			newCatalogWithResourceData.push({ uid: newUidTop, label: End_Label });
+			newCatalogWithResourceData.push({ uid: self.crypto.randomUUID(), label: End_Label });
 			newCatalogWithResourceData.forEach((element) => {
 				if (element.children) {
 					// check if there is already an entry with label End_Label
@@ -290,8 +278,7 @@ export class AdminPanel extends MvuElement {
 						return;
 					}
 
-					const newUidChild = _generateUniqueId();
-					element.children.push({ uid: newUidChild, label: End_Label });
+					element.children.push({ uid: self.crypto.randomUUID(), label: End_Label });
 				}
 			});
 
@@ -315,7 +302,7 @@ export class AdminPanel extends MvuElement {
 
 		const createNewGeoResourceEntry = (newGeoresourceId) => {
 			const geoResource = this.#geoResources.find((georesource) => georesource.id === newGeoresourceId);
-			const newUid = _generateUniqueId();
+			const newUid = self.crypto.randomUUID();
 			const newEntry = { uid: newUid, geoResourceId: newGeoresourceId, label: geoResource.label };
 			return { newEntry, newUid };
 		};
@@ -526,7 +513,7 @@ export class AdminPanel extends MvuElement {
 			const newBranch = this._reduceData(catalogEntry.children, this._copyBranch);
 			this.signal(Update_CatalogWithResourceData, [
 				...catalogWithResourceData,
-				{ uid: _generateUniqueId(), label: incrementStringDigit(catalogEntry.label), children: newBranch }
+				{ uid: self.crypto.randomUUID(), label: incrementStringDigit(catalogEntry.label), children: newBranch }
 			]);
 		};
 
