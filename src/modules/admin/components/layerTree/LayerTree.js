@@ -163,9 +163,6 @@ export class LayerTree extends MvuElement {
 	}
 
 	update(type, data, model) {
-		// console.log('🚀 ~ LayerTree ~ update ~ data:', data);
-		// console.log('🚀 ~ LayerTree ~ update ~ type:', type);
-		// console.trace('🚀 ~ AdminPanel ~ update ');
 		switch (type) {
 			case Update_Topics:
 				if (!this.#currentTopic && data.length > 0) {
@@ -194,21 +191,6 @@ export class LayerTree extends MvuElement {
 		) {
 			return nothing;
 		}
-
-		// const returnNewTopic = () => {
-		// 	// todo newTopic
-		// 	// console.log('🚀 ~ LayerTree ~ returnNewTopic ~ newTopic:', newTopic);
-		// 	// closeModal();
-		// 	// this._updateTopic(newTopic);
-		// };
-
-		// const openNewTopicDialog = () => {
-		// 	// console.log('🚀 ~ LayerTree ~ openNewTopicDialog ');
-		// 	const title = 'Neue Themen-Konfiguration';
-
-		// 	const content = html`<ba-mvu-newtopicpanel .returnNewTopic="${returnNewTopic}" .onSubmit="${returnNewTopic}"></ba-mvu-newtopicpanel>`;
-		// 	openModal(title, content);
-		// };
 
 		const insertDraggedGeoResource = (currentCatalogEntryUid, newGeoResourceIdFromList) => {
 			if (newGeoResourceIdFromList === currentGeoResourceId && this.#currentUId === currentCatalogEntryUid) {
@@ -467,14 +449,6 @@ export class LayerTree extends MvuElement {
 			event.preventDefault();
 		};
 
-		// const handleNewTopicClick = () => {
-		// 	// console.log('🚀 ~ LayerTree ~ handleNewTopicClick ');
-
-		// 	openNewTopicDialog();
-
-		// 	// this._updateTopic('newEntry');
-		// };
-
 		const handleNewLayerGroupClick = () => {
 			this._addLayerGroup();
 		};
@@ -510,18 +484,6 @@ export class LayerTree extends MvuElement {
 
 			this._updateTopic(event.target.value);
 		};
-
-		// const onMouseEnter = (event) => {
-		// 	// , catalogEntry
-		// 	const element = event.target;
-		// 	element.style.backgroundColor = 'lightblue';
-		// };
-		// const onMouseLeave = (event) => {
-		// 	const element = event.target;
-		// 	element.style.backgroundColor = '';
-		// };
-		// @mouseenter=${(event) => onMouseEnter(event, entry)}
-		// @mouseleave=${(event) => onMouseLeave(event, entry)}
 
 		const renderEntry = (entry, level) => {
 			// console.log('🚀 ~ LayerTree ~ renderEntry ~ level:', level);
