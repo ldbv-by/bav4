@@ -704,11 +704,11 @@ describe('OlMeasurementHandler', () => {
 			const map = setupMap();
 			const source = new VectorSource({ wrapX: false });
 			source.addFeature(createFeature());
-			const saveSpy = spyOn(classUnderTest, '_save');
 			spyOn(interactionStorageServiceMock, 'isValid').and.callFake(() => true);
-
 			classUnderTest.activate(map);
 			await TestUtils.timeout();
+			const saveSpy = spyOn(classUnderTest, '_save');
+
 			classUnderTest._vectorLayer.setSource(source);
 			classUnderTest.deactivate(map);
 
@@ -1097,7 +1097,7 @@ describe('OlMeasurementHandler', () => {
 				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
-				const privateSaveSpy = spyOn(classUnderTest, '_save').and.callFake(() => {});
+
 				const geometry = new LineString([
 					[0, 0],
 					[1, 0]
@@ -1106,6 +1106,7 @@ describe('OlMeasurementHandler', () => {
 
 				classUnderTest.activate(map);
 				await TestUtils.timeout();
+				const privateSaveSpy = spyOn(classUnderTest, '_save').and.callFake(() => {});
 				classUnderTest._vectorLayer.getSource().addFeature(feature); // -> first call of _save, caused by vectorsource:addfeature-event
 				feature.getGeometry().dispatchEvent('change'); // -> first call of debounced _save, caused by vectorsource:changefeature-event
 				feature.getGeometry().dispatchEvent('change'); // -> second call of debounced _save, caused by vectorsource:changefeature-event
@@ -1117,7 +1118,7 @@ describe('OlMeasurementHandler', () => {
 				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
-				const privateSaveSpy = spyOn(classUnderTest, '_save').and.callFake(() => {});
+
 				const geometry = new LineString([
 					[0, 0],
 					[1, 0]
@@ -1126,6 +1127,7 @@ describe('OlMeasurementHandler', () => {
 
 				classUnderTest.activate(map);
 				await TestUtils.timeout();
+				const privateSaveSpy = spyOn(classUnderTest, '_save').and.callFake(() => {});
 				classUnderTest._vectorLayer.getSource().addFeature(feature); // -> first call of _save, caused by vectorsource:addfeature-event
 				feature.getGeometry().dispatchEvent('change'); // -> first call of debounced _save, caused by vectorsource:changefeature-event
 				feature.getGeometry().dispatchEvent('change'); // -> second call of debounced _save, caused by vectorsource:changefeature-event
@@ -1138,16 +1140,17 @@ describe('OlMeasurementHandler', () => {
 				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
-				const privateSaveSpy = spyOn(classUnderTest, '_save').and.callFake(() => {});
+
 				const geometry = new LineString([
 					[0, 0],
 					[1, 0]
 				]);
 				const feature = new Feature({ geometry: geometry });
 				feature.set('debug', 'stores once after a feature removed');
-
 				classUnderTest.activate(map);
 				await TestUtils.timeout();
+				const privateSaveSpy = spyOn(classUnderTest, '_save').and.callFake(() => {});
+
 				classUnderTest._vectorLayer.getSource().addFeature(feature); // -> first call of debounced _save, caused by vectorsource:addfeature-event
 				classUnderTest._vectorLayer.getSource().removeFeature(feature); // -> second call of debounced _save, caused by vectorsource:removefeature-event
 				await TestUtils.timeout(afterDebounceDelay);
@@ -1159,15 +1162,15 @@ describe('OlMeasurementHandler', () => {
 				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
-				const privateSaveSpy = spyOn(classUnderTest, '_save').and.callFake(() => {});
 				const geometry = new LineString([
 					[0, 0],
 					[1, 0]
 				]);
 				const feature = new Feature({ geometry: geometry });
-
 				classUnderTest.activate(map);
 				await TestUtils.timeout();
+				const privateSaveSpy = spyOn(classUnderTest, '_save').and.callFake(() => {});
+
 				classUnderTest._vectorLayer.getSource().addFeature(feature); // -> call of debounced _save, caused by vectorsource:addfeature-event
 				feature.dispatchEvent('change'); // -> second call of debounced _save, caused by vectorsource:changefeature-event
 				feature.dispatchEvent('change');
@@ -1185,15 +1188,15 @@ describe('OlMeasurementHandler', () => {
 					spyOn(environmentServiceMock, 'isEmbedded').and.returnValue(true);
 					const classUnderTest = new OlMeasurementHandler();
 					const map = setupMap();
-					const privateSaveSpy = spyOn(classUnderTest, '_save').and.callFake(() => {});
 					const geometry = new LineString([
 						[0, 0],
 						[1, 0]
 					]);
 					const feature = new Feature({ geometry: geometry });
-
 					classUnderTest.activate(map);
 					await TestUtils.timeout();
+					const privateSaveSpy = spyOn(classUnderTest, '_save').and.callFake(() => {});
+
 					classUnderTest._vectorLayer.getSource().addFeature(feature); // -> call of debounced _save, caused by vectorsource:addfeature-event
 					feature.dispatchEvent('change'); // -> second call of debounced _save, caused by vectorsource:changefeature-event
 					await TestUtils.timeout(withinDebounceDelay);

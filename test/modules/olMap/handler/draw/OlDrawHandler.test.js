@@ -364,23 +364,21 @@ describe('OlDrawHandler', () => {
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
 				const feature = createFeature();
+				classUnderTest.activate(map);
+				await TestUtils.timeout();
+				const saveSpy = spyOn(classUnderTest, '_save').and.callThrough();
 				const storageSpy = spyOn(interactionStorageServiceMock, 'store')
 					.withArgs(jasmine.any(String), FileStorageServiceDataTypes.KML)
 					.and.resolveTo(fileSaveResultMock)
 					.withArgs(undefined, FileStorageServiceDataTypes.KML)
 					.and.resolveTo(null);
-				const saveSpy = spyOn(classUnderTest, '_save').and.callThrough();
 
-				classUnderTest.activate(map);
-				await TestUtils.timeout();
 				classUnderTest._vectorLayer.getSource().addFeature(feature);
 				classUnderTest._vectorLayer.getSource().removeFeature(feature);
 				classUnderTest._saveAndOptionallyConvertToPermanentLayer();
 
 				await TestUtils.timeout();
 				expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
-
-				await TestUtils.timeout();
 				expect(saveSpy).toHaveBeenCalledTimes(2);
 				expect(storageSpy).toHaveBeenCalledTimes(2);
 				expect(store.getState().draw.fileSaveResult.payload).toBeNull();
@@ -1238,11 +1236,11 @@ describe('OlDrawHandler', () => {
 			const map = setupMap();
 			const source = new VectorSource({ wrapX: false });
 			source.addFeature(createFeature());
-			const saveSpy = spyOn(classUnderTest, '_save');
 			spyOn(interactionStorageServiceMock, 'isValid').and.callFake(() => true);
-
 			classUnderTest.activate(map);
 			await TestUtils.timeout();
+			const saveSpy = spyOn(classUnderTest, '_save');
+
 			classUnderTest._vectorLayer.setSource(source);
 			classUnderTest.deactivate(map);
 

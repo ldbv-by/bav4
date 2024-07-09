@@ -220,7 +220,13 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				this._mapListeners.push(this._map.getView().on('change:resolution', () => onResolutionChange(layer)));
 			};
 			// eslint-disable-next-line promise/prefer-await-to-then
-			addOldFeatures(layer, oldLayer).finally(() => registerListeners(layer));
+			addOldFeatures(layer, oldLayer)
+				// eslint-disable-next-line promise/prefer-await-to-then
+				.finally(() => {
+					this._storedContent = createKML(layer, 'EPSG:3857');
+					this._save();
+					registerListeners(layer);
+				});
 			return layer;
 		};
 
@@ -683,7 +689,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		if (!this._storageHandler.isValid()) {
 			await this._save();
 		}
-
 		if (this._storedContent) {
 			const id = this._storageHandler.getStorageId();
 			const getOrCreateVectorGeoResource = () => {

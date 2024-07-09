@@ -228,8 +228,13 @@ export class OlDrawHandler extends OlLayerHandler {
 			};
 			if (this._storeService.getStore().getState().draw.createPermanentLayer) {
 				const oldLayer = getOldLayer(this._map);
-				// eslint-disable-next-line promise/prefer-await-to-then
-				addOldFeatures(layer, oldLayer).finally(() => registerListeners(layer));
+				addOldFeatures(layer, oldLayer)
+					// eslint-disable-next-line promise/prefer-await-to-then
+					.finally(() => {
+						this._storedContent = createKML(layer, 'EPSG:3857');
+						this._save();
+						registerListeners(layer);
+					});
 			} else {
 				registerListeners(layer);
 			}
