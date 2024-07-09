@@ -5,6 +5,7 @@ import { TestUtils } from '../../../test-utils';
 import shareSvg from '../../../../src/modules/chips/components/assistChips/assets/share.svg';
 import { sharedReducer } from '../../../../src/store/shared/shared.reducer';
 import { ShareDialogContent } from '../../../../src/modules/share/components/dialog/ShareDialogContent';
+import { QueryParameters } from '../../../../src/domain/queryParameters';
 
 window.customElements.define(ShareDialogContent.tag, ShareDialogContent);
 window.customElements.define(ShareDataChip.tag, ShareDataChip);
@@ -101,6 +102,22 @@ describe('ShareDataChip', () => {
 			const contentElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 			const shareDialogContentElement = contentElement.querySelector('ba-share-content');
 			expect(shareDialogContentElement.shadowRoot.querySelector('input').value).toBe('http://shorten.foo');
+		});
+
+		it('explicitly sets the TOOL_ID query parameter', async () => {
+			const fileSaveResult = { adminId: 'a_fooBar', fileId: 'f_fooBar' };
+			const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.resolve('http://shorten.foo'));
+			spyOn(shareServiceMock, 'encodeState').and.returnValue(`http://foo.bar?${QueryParameters.TOOL_ID}=someTool`);
+			const sharedState = { ...defaultSharedState, fileSaveResult: fileSaveResult };
+			const element = await setup(sharedState);
+
+			const button = element.shadowRoot.querySelector('button');
+			button.click();
+
+			await TestUtils.timeout();
+			expect(shortenerSpy).toHaveBeenCalledTimes(2);
+			expect(shortenerSpy.calls.all()[0].args[0]).toBe(`http://foo.bar/?${QueryParameters.TOOL_ID}=`);
+			expect(shortenerSpy.calls.all()[1].args[0]).toBe(`http://foo.bar/?${QueryParameters.TOOL_ID}=`);
 		});
 	});
 
