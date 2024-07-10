@@ -17,7 +17,7 @@ import markerIcon from '../assets/marker.svg';
 import { isString } from '../../../utils/checks';
 import { getContrastColorFrom, hexToRgb, rgbToHex } from '../../../utils/colors';
 import { AssetSourceType, getAssetSource } from '../../../utils/assets';
-import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../ol/geodesic/geodesicGeometry';
+import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../ol/geodesic/geodesicGeometry';
 import { MultiLineString } from '../../../../node_modules/ol/geom';
 
 const Z_Point = 30;
@@ -404,6 +404,7 @@ const getRulerStyle = (feature) => {
 		};
 	};
 	const geometry = feature.getGeometry();
+	const geodesic = feature?.get(GEODESIC_FEATURE_PROPERTY);
 	if (geometry instanceof Polygon) {
 		if (geometry.getArea() === 0) {
 			return new Style();
@@ -414,20 +415,25 @@ const getRulerStyle = (feature) => {
 			return new Style();
 		}
 	}
-	return new Style({
-		geometry: () => {
-			const geodesicGeometry = feature?.get(GEODESIC_FEATURE_PROPERTY)?.getGeometry();
-			return geodesicGeometry ?? null;
-		},
-		renderer: (pixelCoordinates, state) => {
-			const getContextRenderFunction = (state) =>
-				state.customContextRenderFunction ? state.customContextRenderFunction : getCanvasContextRenderFunction(state);
-			renderRulerSegments(pixelCoordinates, state, getContextRenderFunction(state));
-		}
-	});
+	return geodesic && geodesic.getCalculationStatus === GEODESIC_CALCULATION_STATUS.ACTIVE
+		? new Style({
+				geometry: geodesic.getGeometry(),
+				renderer: (pixelCoordinates, state) => {
+					const getContextRenderFunction = (state) =>
+						state.customContextRenderFunction ? state.customContextRenderFunction : getCanvasContextRenderFunction(state);
+					renderGeodesicRulerSegments(pixelCoordinates, state, getContextRenderFunction(state), geodesic);
+				}
+			})
+		: new Style({
+				renderer: (pixelCoordinates, state) => {
+					const getContextRenderFunction = (state) =>
+						state.customContextRenderFunction ? state.customContextRenderFunction : getCanvasContextRenderFunction(state);
+					renderLinearRulerSegments(pixelCoordinates, state, getContextRenderFunction(state));
+				}
+			});
 };
 
-export const renderRulerSegments = (pixelCoordinates, state, contextRenderFunction) => {
+export const renderLinearRulerSegments = (pixelCoordinates, state, contextRenderFunction) => {
 	const { MapService: mapService } = $injector.inject('MapService');
 	const geometry = state.geometry.clone();
 	const lineString = getLineString(geometry);
@@ -526,6 +532,62 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 	segmentCoordinates.every((coordinate, index, coordinates) => {
 		return drawTicks(contextRenderFunction, [coordinate, coordinates[index + 1]], residuals[index], partitionTickDistance);
 	});
+};
+
+export const renderGeodesicRulerSegments = (pixelCoordinates, state, contextRenderFunction, geodesic) => {
+	const { MapService: mapService } = $injector.inject('MapService');
+	const geometry = state.geometry.clone();
+	const lineString = getLineString(geometry);
+	const resolution = state.resolution;
+	const pixelRatio = state.pixelRatio;
+
+	const getMeasuredLength = () => {
+		const alreadyMeasuredLength = state.geometry ? state.geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY) : null;
+		if (!alreadyMeasuredLength) {
+			/**  Usually state.geometry should have the custom property PROJECTED_LENGTH_GEOMETRY_PROPERTY.
+			 * This property is provided by a geodesicGeometry object in the processing steps before rendering occur.
+			 * If this property is missing, we try to get this property from the state.feature with the
+			 * related geodesic (geodesicGeometry object) property.
+			 */
+			const geodesic = state.feature ? state.feature.get(GEODESIC_FEATURE_PROPERTY) : null;
+			const geodesicLength = geodesic?.getGeometry()?.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY);
+			if (geodesicLength) {
+				return geodesicLength;
+			}
+		}
+
+		return alreadyMeasuredLength ?? mapService.calcLength(lineString.getCoordinates());
+	};
+
+	const projectedGeometryLength = getMeasuredLength();
+	const delta = getPartitionDelta(projectedGeometryLength, resolution);
+	const partitionLength = delta * lineString.getLength();
+
+	const fill = new Fill({ color: Red_Color.concat([0.4]) });
+	const baseStroke = new Stroke({
+		color: Red_Color.concat([1]),
+		width: 3 * pixelRatio
+	});
+
+	const getMainTickStroke = (residual, partitionTickDistance) => {
+		return new Stroke({
+			color: Red_Color.concat([1]),
+			width: 8 * pixelRatio,
+			lineCap: 'butt',
+			lineDash: [3 * pixelRatio, (partitionTickDistance - 3) * pixelRatio],
+			lineDashOffset: 3 * pixelRatio + partitionTickDistance * residual
+		});
+	};
+
+	const drawTick = (contextRenderer, tick) => {};
+
+	// baseLine
+	geometry.setCoordinates(pixelCoordinates);
+	contextRenderFunction(geometry, fill, baseStroke);
+
+	// ticks
+	const ticks = geodesic.getTicksByDistance(partitionLength);
+	ticks.forEach((t) => drawTick(contextRenderFunction, t));
 };
 
 /**

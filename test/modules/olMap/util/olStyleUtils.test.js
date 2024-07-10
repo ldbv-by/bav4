@@ -16,7 +16,7 @@ import {
 	markerScaleToKeyword,
 	getTextFrom,
 	getStyleArray,
-	renderRulerSegments,
+	renderLinearRulerSegments,
 	defaultStyleFunction,
 	defaultClusterStyleFunction,
 	geojsonStyleFunction,
@@ -228,7 +228,7 @@ describe('measureStyleFunction', () => {
 	});
 });
 
-describe('renderRulerSegments', () => {
+describe('renderLinearRulerSegments', () => {
 	const geometry = new LineString([
 		[0, 0],
 		[1, 0]
@@ -244,7 +244,7 @@ describe('renderRulerSegments', () => {
 		];
 		spyOn(mapServiceMock, 'calcLength').and.returnValue(1);
 
-		renderRulerSegments(pixelCoordinates, stateMock, contextRenderer);
+		renderLinearRulerSegments(pixelCoordinates, stateMock, contextRenderer);
 		expect(contextRenderer).toHaveBeenCalledTimes(1 + 1 + 1); //baseStroke + mainStroke + subStroke
 		expect(contextRenderer).toHaveBeenCalledWith(jasmine.any(Geometry), jasmine.any(Fill), jasmine.any(Stroke));
 	});
@@ -267,7 +267,7 @@ describe('renderRulerSegments', () => {
 			[0, 0],
 			[0, 1]
 		];
-		renderRulerSegments(pixelCoordinates, stateMock, contextRendererStub);
+		renderLinearRulerSegments(pixelCoordinates, stateMock, contextRendererStub);
 
 		expect(actualStrokes).toContain(expectedSubStroke);
 	});
@@ -290,7 +290,7 @@ describe('renderRulerSegments', () => {
 			[0, 0],
 			[0, 1]
 		];
-		renderRulerSegments(pixelCoordinates, stateMock, contextRendererStub);
+		renderLinearRulerSegments(pixelCoordinates, stateMock, contextRendererStub);
 
 		expect(actualStrokes).toContain(expectedMainStroke);
 	});
@@ -316,7 +316,7 @@ describe('renderRulerSegments', () => {
 			[0, 0],
 			[0, 1]
 		];
-		renderRulerSegments(pixelCoordinates, stateMock, contextRendererStub);
+		renderLinearRulerSegments(pixelCoordinates, stateMock, contextRendererStub);
 
 		expect(actualStrokes).toBeTruthy();
 	});

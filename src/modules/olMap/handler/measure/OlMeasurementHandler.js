@@ -478,17 +478,17 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		draw.on('drawstart', (event) => {
 			const onFeatureChange = (event) => {
-				const measureGeometry = this._createMeasureGeometry(event.target, true);
+				const measureGeometry = this._createMeasureGeometry(event.target);
 				this._overlayService.update(event.target, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
 				this._setStatistics(event.target);
 			};
 
 			const onResolutionChange = () => {
-				const measureGeometry = this._createMeasureGeometry(this._sketchHandler.active, true);
+				const measureGeometry = this._createMeasureGeometry(this._sketchHandler.active);
 				this._overlayService.update(this._sketchHandler.active, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
 			};
 
-			this._sketchHandler.activate(event.feature, Tools.MEASURE + '_');
+			this._sketchHandler.activate(event.feature, this._map, Tools.MEASURE + '_');
 			this._overlayService.add(this._sketchHandler.active, this._map, StyleTypes.MEASURE);
 			this._drawingListeners.push(event.feature.on('change', onFeatureChange));
 			this._drawingListeners.push(this._map.getView().on('change:resolution', onResolutionChange));
@@ -560,7 +560,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		if (!this._sketchHandler.isFinishOnFirstPoint) {
 			// As long as the draw-interaction is active, the current geometry is a closed and maybe invalid Polygon
 			// (snapping from pointer-position to first point) and must be corrected into a valid LineString
-			const measureGeometry = this._createMeasureGeometry(feature, this._draw.getActive());
+			const measureGeometry = this._createMeasureGeometry(feature);
 			const nonAreaStats = getStats(measureGeometry);
 			setStatistic({ length: nonAreaStats.length, area: stats.area });
 		} else {

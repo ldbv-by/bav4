@@ -1288,7 +1288,8 @@ describe('OlMeasurementHandler', () => {
 						[0, 0],
 						[1, 0]
 					])
-				})
+				}),
+				map
 			);
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 20, 0);
 			expect(measureStateSpy).toHaveBeenCalledWith({
@@ -2042,7 +2043,7 @@ describe('OlMeasurementHandler', () => {
 			const updateMeasureStateSpy = spyOn(classUnderTest, '_updateMeasureState');
 
 			// initial Phase: the drawing will be activated after this click-event
-			classUnderTest._sketchHandler.activate(feature);
+			classUnderTest._sketchHandler.activate(feature, map);
 			classUnderTest._measureState.type = InteractionStateType.ACTIVE;
 
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);

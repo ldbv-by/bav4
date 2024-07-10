@@ -5,8 +5,11 @@ import { Geodesic, PolygonArea } from 'geographiclib-geodesic';
 import { LineString, Polygon } from 'ol/geom';
 import { TiledCoordinateBag } from './tiledCoordinateBag';
 import { PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../utils/olGeometryUtils';
+import { transform } from '../../../../../node_modules/ol/proj';
 
 export const GEODESIC_FEATURE_PROPERTY = 'geodesic';
+export const GEODESIC_CALCULATION_STATUS = Object.freeze({ ACTIVE: 'active', INACTIVE: 'inactive' });
+
 const GEODESIC_WGS84 = Geodesic.WGS84;
 const WEBMERCATOR = 'EPSG:3857';
 const WGS84 = 'EPSG:4326';
@@ -26,12 +29,16 @@ export class GeodesicGeometry {
 	#length = null;
 	#area = null;
 	#azimuthCircle = null;
-	constructor(feature, isDrawingCallback = () => false) {
+	#calculationStatus;
+	#map;
+
+	constructor(feature, map, isDrawingCallback = () => false) {
 		this.feature = feature;
 		this.featureRevision = feature.getRevision();
 		if (!(this.feature.getGeometry() instanceof Polygon) && !(this.feature.getGeometry() instanceof LineString)) {
 			throw new Error('This class only accepts Polygons (and Linestrings ' + 'after initial drawing is finished)');
 		}
+		this.#map = map;
 		this.#isDrawing = isDrawingCallback;
 		this.#initialize();
 	}
@@ -98,12 +105,13 @@ export class GeodesicGeometry {
 		const geodesicBag = new TiledCoordinateBag();
 		const geodesicCalculationThresholdInMeter = 55555;
 		const arcInterpolationCount = FULL_CIRCLE_POINTS / 2;
-
+		let interpolationCount = 0;
 		const calculateGeodesicCoordinates = (geodesicLine) => {
 			const { geodesic, from, to } = geodesicLine;
 			if (geodesic.s13 < geodesicCalculationThresholdInMeter) {
 				return [from, to];
 			}
+
 			const calculatedCoords = [];
 			const daIncrement = geodesic.a13 / arcInterpolationCount;
 			for (let z = 0; z <= arcInterpolationCount; ++z) {
@@ -112,13 +120,31 @@ export class GeodesicGeometry {
 				const r = geodesic.ArcPosition(a, Geodesic.STANDARD | Geodesic.LONG_UNROLL);
 				calculatedCoords.push([r.lon2, r.lat2]);
 			}
+			interpolationCount++;
 			return calculatedCoords;
 		};
 
 		geodesicLines.forEach((geodesicLine) =>
 			calculateGeodesicCoordinates(geodesicLine).forEach((c, index) => (index === 0 ? geodesicBag.add(c, true) : geodesicBag.add(c)))
 		);
+		this.#calculationStatus = interpolationCount === 0 ? GEODESIC_CALCULATION_STATUS.INACTIVE : GEODESIC_CALCULATION_STATUS.ACTIVE;
 		return geodesicBag;
+	}
+
+	#createTicksByDistance(distance, map) {
+		const ticks = [];
+		let residual = 0;
+		this.#geodesicLines.forEach((geodesicLine) => {
+			const { geodesic } = geodesicLine;
+			for (let currentDistance = residual; currentDistance <= geodesic.s13; currentDistance + distance) {
+				const r = geodesic.Position(currentDistance, Geodesic.STANDARD | Geodesic.LONG_UNROLL);
+				const tickCoordinate = transform([r.lon2, r.lat2], WGS84, 'EPSG:3857');
+				const pixel = map.getPixelFromCoordinate(tickCoordinate);
+				ticks.push([...pixel, r.azi2]);
+				residual = geodesic.s13 - currentDistance;
+			}
+		});
+		return ticks;
 	}
 
 	#createGeodesicLines(coordinates) {
@@ -153,6 +179,15 @@ export class GeodesicGeometry {
 			circleCoords.add([res.lon2, res.lat2]);
 		}
 		return circleCoords.createTiledGeometry();
+	}
+
+	getPixelsByDistance(distance) {
+		return this.#createTicksByDistance(distance, this.#map);
+	}
+
+	getCalculationStatus() {
+		this.#update();
+		return this.#calculationStatus;
 	}
 
 	/** @returns {import('ol').MultiLineString} Represents the drawn LineString or the border of the drawn Polygon */

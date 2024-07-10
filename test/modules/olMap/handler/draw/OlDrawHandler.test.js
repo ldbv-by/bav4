@@ -921,7 +921,7 @@ describe('OlDrawHandler', () => {
 				};
 				classUnderTest.activate(map);
 				classUnderTest._drawState = drawStateFake;
-				classUnderTest._sketchHandler.activate(feature, 'draw_line_');
+				classUnderTest._sketchHandler.activate(feature, map, 'draw_line_');
 
 				setType('line');
 

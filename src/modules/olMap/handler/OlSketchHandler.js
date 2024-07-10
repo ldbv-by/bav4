@@ -20,6 +20,7 @@ export class OlSketchHandler {
 		this._isSnapOnLastPoint = false;
 		this._isFinishOnFirstPoint = false;
 		this._sketch = null;
+		this._map = null;
 	}
 
 	_getLineCoordinates(geometry) {
@@ -44,14 +45,15 @@ export class OlSketchHandler {
 		}
 	}
 
-	activate(sketchFeature, idPrefix = Tools.DRAW + '_') {
+	activate(sketchFeature, map, idPrefix = Tools.DRAW + '_') {
+		this._map = map;
 		if (sketchFeature !== this._sketch) {
 			if (sketchFeature) {
 				sketchFeature.setId(idPrefix + new Date().getTime());
 				const onFeatureChange = (event) => {
 					this._monitorProperties(event.target);
 				};
-				sketchFeature.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(sketchFeature, () => !this._isFinishOnFirstPoint));
+				sketchFeature.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(sketchFeature, map, () => !this._isFinishOnFirstPoint));
 				this._listener = sketchFeature.on('change', onFeatureChange);
 			}
 			this._pointCount = 1;
@@ -61,7 +63,7 @@ export class OlSketchHandler {
 
 	deactivate() {
 		unByKey(this._listener);
-		this._sketch.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(this._sketch.clone()));
+		this._sketch.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(this._sketch.clone(), this._map));
 		this._sketch = null;
 		this._isFinishOnFirstPoint = false;
 		this._isSnapOnLastPoint = false;
