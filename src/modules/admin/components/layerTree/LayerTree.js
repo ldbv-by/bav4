@@ -182,6 +182,7 @@ export class LayerTree extends MvuElement {
 
 	createView(model) {
 		const { topics, catalogWithResourceData, currentGeoResourceId, editMode } = model;
+		console.log('🚀 ~ LayerTree ~ createView ~ editMode:', editMode);
 
 		if (
 			catalogWithResourceData === null ||
@@ -338,7 +339,7 @@ export class LayerTree extends MvuElement {
 			}
 		};
 
-		const handleEnterKeyPress = (event, button, catalogEntry) => {
+		const handleKeyPress = (event, button, catalogEntry) => {
 			if (event.key === 'Enter') {
 				const focusedElement = document.activeElement;
 				if (focusedElement.tagName === 'BA-ADMINPANEL' || focusedElement.tagName === 'TEXTAREA') {
@@ -347,19 +348,73 @@ export class LayerTree extends MvuElement {
 					}
 				}
 			}
+
+			if (event.key === 'Escape') {
+				handleAbortClick(event, catalogEntry);
+			}
+		};
+
+		const handleAbortClick = (event, catalogEntry) => {
+			const target = event.target;
+			console.log('🚀 ~ LayerTree ~ handleAbortClick ~ target:', target);
+			const closestLi = target.closest('li');
+			console.log('🚀 ~ LayerTree ~ handleAbortClick ~ closestLi:', closestLi);
+			const button = closestLi.querySelector('button');
+			console.log('🚀 ~ LayerTree ~ handleAbortClick ~ button:', button);
+			if (button.textContent === 'Save') {
+				// Revert to the original state
+				this.signal(Update_Edit_Mode, false);
+
+				// button.textContent = 'Edit'; // Change the button text back to 'Edit'
+				// const abortButton = button.nextElementSibling; // Assuming the Abort button is next
+				// abortButton.style.display = 'none'; // Hide the Abort button
+
+				const input = button.parentNode.firstElementChild;
+				const span = document.createElement('span');
+				span.textContent = catalogEntry.label; // Revert to the original label
+
+				if (this.#keyListener !== null) {
+					document.removeEventListener('keydown', this.#keyListener);
+					this.#keyListener = null;
+				}
+
+				button.parentNode.insertBefore(span, input);
+				button.parentNode.removeChild(input);
+				button.textContent = 'Edit';
+			}
 		};
 
 		const handleEditClick = (event, catalogEntry) => {
+			console.log('🚀 ~ LayerTree ~ handleEditClick ~ catalogEntry:', catalogEntry);
 			const button = event.target;
 			const li = button.parentNode;
+			console.log('🚀 ~ LayerTree ~ handleEditClick ~ li:', li);
+			// const abortButtonById = document.getElementById('abortButton');
+			// console.log('🚀 ~ LayerTree ~ handleEditClick ~ abortButtonById:', abortButtonById);
+			const abortButton = li.querySelector('button[style*="display: none;"]');
+			console.log('🚀 ~ LayerTree ~ handleEditClick ~ abortButton:', abortButton);
+			// Assuming the Abort button is initially hidden
 
 			const keyPressHandler = (event) => {
-				handleEnterKeyPress(event, button, catalogEntry);
+				handleKeyPress(event, button, catalogEntry);
 			};
 
 			if (button.textContent === 'Edit') {
 				this.signal(Update_Edit_Mode, true);
+				abortButton.style.display = '';
 				const span = li.firstElementChild;
+
+				const copyButton = li.querySelector('.copy-button');
+				if (copyButton) {
+					console.log('🚀 ~ LayerTree ~ handleEditClick ~ copyButton:', copyButton);
+					copyButton.style.display = 'none';
+				}
+
+				const deleteButton = li.querySelector('.delete-button');
+				if (deleteButton) {
+					console.log('🚀 ~ LayerTree ~ handleEditClick ~ deleteButton:', deleteButton);
+					deleteButton.style.display = 'none';
+				}
 
 				if (this.#keyListener === null) {
 					this.#keyListener = keyPressHandler;
@@ -390,6 +445,7 @@ export class LayerTree extends MvuElement {
 				// console.log('Input element after insertion:', input);
 			} else if (button.textContent === 'Save') {
 				this.signal(Update_Edit_Mode, false);
+				abortButton.style.display = 'none';
 				const input = li.firstElementChild;
 				const span = document.createElement('span');
 
@@ -505,8 +561,9 @@ export class LayerTree extends MvuElement {
 					${entry.children
 						? html`
 								<button @click="${(event) => handleEditClick(event, entry)}">Edit</button>
-								<button .disabled=${editMode} @click="${(event) => handleCopyClick(event, entry)}">Copy</button>
-								<button .disabled=${editMode} @click="${(event) => handleDeleteClick(event, entry)}">X</button>
+								<button class="abort-button" @click="${(event) => handleAbortClick(event, entry)}" style="display: none;">Abort</button>
+								<button class="copy-button" @click="${(event) => handleCopyClick(event, entry)}">Copy</button>
+								<button class="delete-button" @click="${(event) => handleDeleteClick(event, entry)}">X</button>
 								<ul>
 									${entry.children.map((child) => html`<li>${renderEntry(child, level + 1)}</li>`)}
 								</ul>
