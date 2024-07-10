@@ -125,8 +125,11 @@
 	margin: auto;
 	margin-bottom: 0;
 }
-.navigation-rail__container button:hover {
-	background: var(--primary-bg-color);
+
+@media (hover: hover) {
+	.navigation-rail__container button:hover {
+		background: var(--primary-bg-color);
+	}
 }
 .navigation-rail__container button:hover .text {
 	color: var(--text1);

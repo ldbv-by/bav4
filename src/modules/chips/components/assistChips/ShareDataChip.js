@@ -7,6 +7,7 @@ import { $injector } from '../../../../injection/index';
 import { openModal } from '../../../../store/modal/modal.action';
 import { AbstractAssistChip } from './AbstractAssistChip';
 import shareIcon from './assets/share.svg';
+import { setQueryParams } from '../../../../utils/urlUtils';
 
 const Update = 'update';
 /**
@@ -66,7 +67,11 @@ export class ShareDataChip extends AbstractAssistChip {
 		const title = translate('chips_assist_chip_share_stored_data');
 		const buildShareUrl = async (id) => {
 			const extraParams = { [QueryParameters.LAYER]: id };
-			const url = this._shareService.encodeState(extraParams);
+			/**
+			 * Todo: For now as a workaround for https://github.com/ldbv-by/bav4/issues/2478 we always set an existing TOOL_ID query parameter to "",
+			 * but in the future it does make sense to activate the draw or measurement tool when the file is shared with admin privileges.
+			 */
+			const url = setQueryParams(this._shareService.encodeState(extraParams), { [QueryParameters.TOOL_ID]: '' });
 			try {
 				const shortUrl = await this._urlService.shorten(url);
 				return shortUrl;
