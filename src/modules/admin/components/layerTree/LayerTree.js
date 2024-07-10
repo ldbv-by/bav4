@@ -160,6 +160,8 @@ export class LayerTree extends MvuElement {
 		this.#ignoreLevelOneFirstOnLeave = false;
 
 		this.#keyListener = null;
+
+		this.activeEditElements = null;
 	}
 
 	update(type, data, model) {
@@ -355,51 +357,59 @@ export class LayerTree extends MvuElement {
 		};
 
 		const handleAbortClick = (event, catalogEntry) => {
-			const target = event.target;
-			console.log('🚀 ~ LayerTree ~ handleAbortClick ~ target:', target);
-			const closestLi = target.closest('li');
-			console.log('🚀 ~ LayerTree ~ handleAbortClick ~ closestLi:', closestLi);
-			const button = closestLi.querySelector('button');
-			console.log('🚀 ~ LayerTree ~ handleAbortClick ~ button:', button);
-			if (button.textContent === 'Save') {
-				// Revert to the original state
-				this.signal(Update_Edit_Mode, false);
+			// const target = event.target;
+			// console.log('🚀 ~ LayerTree ~ handleAbortClick ~ target:', target);
+			// const closestLi = target.closest('li');
+			// console.log('🚀 ~ LayerTree ~ handleAbortClick ~ closestLi:', closestLi);
+			// const button = closestLi.querySelector('button');
+			// console.log('🚀 ~ LayerTree ~ handleAbortClick ~ button:', button);
 
-				// button.textContent = 'Edit'; // Change the button text back to 'Edit'
-				// const abortButton = button.nextElementSibling; // Assuming the Abort button is next
-				// abortButton.style.display = 'none'; // Hide the Abort button
+			if (this.activeEditElements) {
+				const { editButton, abortButton, copyButton, deleteButton } = this.activeEditElements;
 
-				const input = button.parentNode.firstElementChild;
-				const span = document.createElement('span');
-				span.textContent = catalogEntry.label; // Revert to the original label
+				if (editButton.textContent === 'Save') {
+					// Revert to the original state
+					this.signal(Update_Edit_Mode, false);
 
-				if (this.#keyListener !== null) {
-					document.removeEventListener('keydown', this.#keyListener);
-					this.#keyListener = null;
+					editButton.textContent = 'Edit';
+					abortButton.style.display = 'none';
+					copyButton.style.display = '';
+					deleteButton.style.display = '';
+
+					const input = editButton.parentNode.firstElementChild;
+					const span = document.createElement('span');
+					span.textContent = catalogEntry.label; // Revert to the original label
+
+					if (this.#keyListener !== null) {
+						document.removeEventListener('keydown', this.#keyListener);
+						this.#keyListener = null;
+					}
+
+					this.activeEditElements = null;
+					editButton.parentNode.insertBefore(span, input);
+					editButton.parentNode.removeChild(input);
+					editButton.textContent = 'Edit';
 				}
-
-				button.parentNode.insertBefore(span, input);
-				button.parentNode.removeChild(input);
-				button.textContent = 'Edit';
 			}
 		};
 
 		const handleEditClick = (event, catalogEntry) => {
 			console.log('🚀 ~ LayerTree ~ handleEditClick ~ catalogEntry:', catalogEntry);
-			const button = event.target;
-			const li = button.parentNode;
+			const editButton = event.target;
+			const li = editButton.parentNode;
 			console.log('🚀 ~ LayerTree ~ handleEditClick ~ li:', li);
 			// const abortButtonById = document.getElementById('abortButton');
 			// console.log('🚀 ~ LayerTree ~ handleEditClick ~ abortButtonById:', abortButtonById);
-			const abortButton = li.querySelector('button[style*="display: none;"]');
+			const abortButton = li.querySelector('.abort-button');
+			// const abortButton = li.querySelector('button[style*="display: none;"]');
 			console.log('🚀 ~ LayerTree ~ handleEditClick ~ abortButton:', abortButton);
 			// Assuming the Abort button is initially hidden
 
 			const keyPressHandler = (event) => {
-				handleKeyPress(event, button, catalogEntry);
+				handleKeyPress(event, editButton, catalogEntry);
 			};
 
-			if (button.textContent === 'Edit') {
+			if (editButton.textContent === 'Edit') {
 				this.signal(Update_Edit_Mode, true);
 				abortButton.style.display = '';
 				const span = li.firstElementChild;
@@ -415,6 +425,13 @@ export class LayerTree extends MvuElement {
 					console.log('🚀 ~ LayerTree ~ handleEditClick ~ deleteButton:', deleteButton);
 					deleteButton.style.display = 'none';
 				}
+
+				this.activeEditElements = {
+					editButton,
+					abortButton,
+					copyButton,
+					deleteButton
+				};
 
 				if (this.#keyListener === null) {
 					this.#keyListener = keyPressHandler;
@@ -438,12 +455,12 @@ export class LayerTree extends MvuElement {
 
 				li.insertBefore(input, span);
 				li.removeChild(span);
-				button.textContent = 'Save';
+				editButton.textContent = 'Save';
 				input.focus();
 				input.classList.add('editable-input');
 
 				// console.log('Input element after insertion:', input);
-			} else if (button.textContent === 'Save') {
+			} else if (editButton.textContent === 'Save') {
 				this.signal(Update_Edit_Mode, false);
 				abortButton.style.display = 'none';
 				const input = li.firstElementChild;
@@ -457,7 +474,7 @@ export class LayerTree extends MvuElement {
 				span.textContent = input.value.trim();
 				li.insertBefore(span, input);
 				li.removeChild(input);
-				button.textContent = 'Edit';
+				editButton.textContent = 'Edit';
 
 				// Make a deep copy of catalogWithResourceData
 				const catalogCopy = JSON.parse(JSON.stringify(catalogWithResourceData));
