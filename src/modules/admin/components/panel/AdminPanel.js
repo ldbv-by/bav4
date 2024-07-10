@@ -339,18 +339,6 @@ export class AdminPanel extends MvuElement {
 			return false;
 		};
 
-		// const removePossibleEmptyEntry = (children) => {
-		// 	// console.log('🚀 ~ AdminPanel ~ removePossibleEmptyEntry');
-		// 	for (let entryNumber = 0; entryNumber < children.length; entryNumber++) {
-		// 		const catalogEntry = children[entryNumber];
-		// 		// look for empty label
-		// 		if (catalogEntry.label === Empty_Label) {
-		// 			children = children.splice(entryNumber, 1);
-		// 			return;
-		// 		}
-		// 	}
-		// };
-
 		const addEntry = (catalogWithResourceData, currentCatalogEntryUid, newEntry) => {
 			// console.groupCollapsed('addEntry');
 
@@ -398,16 +386,11 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const removeEntry = (uid) => {
-			// console.log('🚀 ~ AdminPanel ~ removeEntry ~ uid:', uid);
-			if (!uid) {
-				return;
-			}
-
 			const updatedCatalogWithResourceData = removeEntryRecursively(uid, [...catalogWithResourceData]);
 			this.signal(Update_CatalogWithResourceData, updatedCatalogWithResourceData);
 		};
 
-		const showChildrenRecursive = (uid, catalogWithResourceData) => {
+		const toggleShowChildrenRecursive = (uid, catalogWithResourceData) => {
 			if (!uid) {
 				return catalogWithResourceData;
 			}
@@ -423,7 +406,7 @@ export class AdminPanel extends MvuElement {
 			// Handle sublevels recursively
 			const updatedCatalog = newCatalogWithResourceData.map((element) => {
 				if (element.children) {
-					const updatedChildren = showChildrenRecursive(uid, element.children);
+					const updatedChildren = toggleShowChildrenRecursive(uid, element.children);
 					return { ...element, children: updatedChildren };
 				}
 
@@ -432,8 +415,8 @@ export class AdminPanel extends MvuElement {
 			return updatedCatalog;
 		};
 
-		const showChildren = (uid) => {
-			const updatedCatalogWithResourceData = showChildrenRecursive(uid, [...catalogWithResourceData]);
+		const toggleShowChildren = (uid) => {
+			const updatedCatalogWithResourceData = toggleShowChildrenRecursive(uid, [...catalogWithResourceData]);
 			this.signal(Update_CatalogWithResourceData, updatedCatalogWithResourceData);
 		};
 
@@ -555,7 +538,7 @@ export class AdminPanel extends MvuElement {
 							.addGeoResource="${addGeoResource}"
 							.moveElement="${moveElement}"
 							.removeEntry="${removeEntry}"
-							.showChildren="${showChildren}"
+							.toggleShowChildren="${toggleShowChildren}"
 							.addGeoResourcePermanently="${addGeoResourcePermanently}"
 							.resetCatalog="${resetCatalog}"
 							.refreshCatalog="${refreshCatalog}"

@@ -135,7 +135,7 @@ export class LayerTree extends MvuElement {
 		// eslint-disable-next-line no-unused-vars
 		this._removeEntry = (uid) => {};
 		// eslint-disable-next-line no-unused-vars
-		this._showChildren = (uid) => {};
+		this._toggleShowChildren = (uid) => {};
 		this._addGeoResourcePermanently = () => {};
 		// eslint-disable-next-line no-unused-vars
 		this._copyBranch = (catalog, catalogEntry) => {};
@@ -213,9 +213,6 @@ export class LayerTree extends MvuElement {
 			const element = event.target;
 			element.style.backgroundColor = '';
 
-			// if (draggedEntry.showChildren) {
-			// 	this._showChildren(draggedEntry.uid);
-			// }
 			const draggedEntryUid = draggedEntry.uid;
 			event.dataTransfer.clearData();
 			event.dataTransfer.setData('UID' + draggedEntryUid, draggedEntryUid);
@@ -337,7 +334,7 @@ export class LayerTree extends MvuElement {
 			}
 
 			if (entry.children) {
-				this._showChildren(entry.uid);
+				this._toggleShowChildren(entry.uid);
 			}
 		};
 
@@ -677,14 +674,14 @@ export class LayerTree extends MvuElement {
 	}
 
 	/**
-	 * @property {function} showChildren - Callback function
+	 * @property {function} toggleShowChildren - Callback function
 	 */
-	set showChildren(callback) {
-		this._showChildren = callback;
+	set toggleShowChildren(callback) {
+		this._toggleShowChildren = callback;
 	}
 
-	get showChildren() {
-		return this._showChildren;
+	get toggleShowChildren() {
+		return this._toggleShowChildren;
 	}
 
 	/**
