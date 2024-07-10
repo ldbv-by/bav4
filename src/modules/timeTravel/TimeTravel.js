@@ -12,8 +12,10 @@ import plus from './assets/plusCircle.svg';
 import resetSvg from './assets/reset.svg';
 import stopSvg from './assets/stop.svg';
 import css from './timeTravel.css';
+import { changeZoom } from '../../store/position/position.action';
 
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
+const Update_ZoomLevel_Property = 'update_zoomLevel_property';
 
 const jsonMock = [
 	{
@@ -140,11 +142,14 @@ export class TimeTravel extends MvuElement {
 			//TODO
 		};
 
-		const onJearClick = (jear) => {
+		const onJearClick = (jear, zoom = 0) => {
 			const searchInput = this.shadowRoot.getElementById('rangeSlider');
 			if (searchInput) {
 				searchInput.value = jear;
 				searchInput.dispatchEvent(new Event('input'));
+				if (zoom) {
+					changeZoom(zoom);
+				}
 			}
 		};
 		const increaseJear = () => {
@@ -158,9 +163,11 @@ export class TimeTravel extends MvuElement {
 			onJearClick(newJear - 1);
 		};
 
-		const isActiveJear = (jear, itemjears = []) => {
+		const isActiveJear = (jear, zoom, itemjears = []) => {
 			return itemjears.includes(jear.toString())
-				? html`<span class="item active ${'y' + jear}" data-year="${jear}" title="${jear}" @click="${() => onJearClick(jear)}"><span> </span></span>`
+				? html`<span class="item active ${'y' + jear}" data-year="${jear}" title="${jear}" @click="${() => onJearClick(jear, zoom)}"
+						><span> </span
+					></span>`
 				: html`<span class="item ${'y' + jear}" data-year="${jear}" title="${jear} "><span> </span></span>`;
 		};
 
@@ -255,8 +262,8 @@ export class TimeTravel extends MvuElement {
 						${jsonMock.map(
 							(item) => html`
 								<div class="row">
-									<span class="title" title="Zoom ${item.zoomlevel}">${item.bezeichnung}</span>
-									${jears.map((jear) => isActiveJear(jear, item.years.split(',')))}
+									<span class="title" title="beste Darstellung Zoom ${item.zoomlevel}">${item.bezeichnung}</span>
+									${jears.map((jear) => isActiveJear(jear, item.zoomlevel, item.years.split(',')))}
 								</div>
 							`
 						)}
