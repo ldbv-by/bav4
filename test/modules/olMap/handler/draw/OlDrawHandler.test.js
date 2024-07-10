@@ -327,6 +327,7 @@ describe('OlDrawHandler', () => {
 				const storageSpy = spyOn(interactionStorageServiceMock, 'store').and.resolveTo(fileSaveResultMock);
 
 				classUnderTest.activate(map);
+				await TestUtils.timeout();
 				classUnderTest._vectorLayer.getSource().addFeature(feature);
 				classUnderTest._save();
 
@@ -347,6 +348,7 @@ describe('OlDrawHandler', () => {
 				spyOn(interactionStorageServiceMock, 'store').and.resolveTo(null);
 
 				classUnderTest.activate(map);
+				await TestUtils.timeout();
 				classUnderTest._vectorLayer.getSource().addFeature(feature);
 				classUnderTest._save();
 
@@ -362,22 +364,21 @@ describe('OlDrawHandler', () => {
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
 				const feature = createFeature();
+				classUnderTest.activate(map);
+				await TestUtils.timeout();
+				const saveSpy = spyOn(classUnderTest, '_save').and.callThrough();
 				const storageSpy = spyOn(interactionStorageServiceMock, 'store')
 					.withArgs(jasmine.any(String), FileStorageServiceDataTypes.KML)
 					.and.resolveTo(fileSaveResultMock)
 					.withArgs(undefined, FileStorageServiceDataTypes.KML)
 					.and.resolveTo(null);
-				const saveSpy = spyOn(classUnderTest, '_save').and.callThrough();
 
-				classUnderTest.activate(map);
 				classUnderTest._vectorLayer.getSource().addFeature(feature);
 				classUnderTest._vectorLayer.getSource().removeFeature(feature);
 				classUnderTest._saveAndOptionallyConvertToPermanentLayer();
 
 				await TestUtils.timeout();
 				expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
-
-				await TestUtils.timeout();
 				expect(saveSpy).toHaveBeenCalledTimes(2);
 				expect(storageSpy).toHaveBeenCalledTimes(2);
 				expect(store.getState().draw.fileSaveResult.payload).toBeNull();
@@ -1119,7 +1120,7 @@ describe('OlDrawHandler', () => {
 			expect(updateStyleSpy).toHaveBeenCalledTimes(1);
 		});
 
-		it('adds a drawn feature to the selection, after adding to layer (on addFeature)', () => {
+		it('adds a drawn feature to the selection, after adding to layer (on addFeature)', async () => {
 			const geometry = new LineString([
 				[0, 0],
 				[500, 0],
@@ -1135,6 +1136,7 @@ describe('OlDrawHandler', () => {
 			const map = setupMap();
 
 			classUnderTest.activate(map);
+			await TestUtils.timeout();
 			setType('marker');
 			classUnderTest._drawState.type = InteractionStateType.DRAW;
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
@@ -1218,6 +1220,7 @@ describe('OlDrawHandler', () => {
 			const storageSpy = spyOn(interactionStorageServiceMock, 'store').and.resolveTo(fileSaveResultMock);
 
 			classUnderTest.activate(map);
+			await TestUtils.timeout();
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 			classUnderTest.deactivate(map);
 
@@ -1227,16 +1230,17 @@ describe('OlDrawHandler', () => {
 			expect(store.getState().draw.fileSaveResult.payload.fileSaveResult).toEqual(fileSaveResultMock);
 		});
 
-		it('uses already written features for persisting purpose', () => {
+		it('uses already written features for persisting purpose', async () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
 			const source = new VectorSource({ wrapX: false });
 			source.addFeature(createFeature());
-			const saveSpy = spyOn(classUnderTest, '_save');
 			spyOn(interactionStorageServiceMock, 'isValid').and.callFake(() => true);
-
 			classUnderTest.activate(map);
+			await TestUtils.timeout();
+			const saveSpy = spyOn(classUnderTest, '_save');
+
 			classUnderTest._vectorLayer.setSource(source);
 			classUnderTest.deactivate(map);
 
@@ -1253,6 +1257,7 @@ describe('OlDrawHandler', () => {
 			spyOn(interactionStorageServiceMock, 'getStorageId').and.returnValue('f_ooBarId');
 			const storageSpy = spyOn(interactionStorageServiceMock, 'store');
 			classUnderTest.activate(map);
+			await TestUtils.timeout();
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 			classUnderTest.deactivate(map);
 
@@ -1277,6 +1282,7 @@ describe('OlDrawHandler', () => {
 			spyOn(interactionStorageServiceMock, 'getStorageId').and.returnValue('f_ooBarId');
 
 			classUnderTest.activate(map);
+			await TestUtils.timeout();
 			expect(classUnderTest._vectorLayer).toBeTruthy();
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 			classUnderTest.deactivate(map);
@@ -1293,6 +1299,7 @@ describe('OlDrawHandler', () => {
 			const map = setupMap();
 
 			classUnderTest.activate(map);
+			await TestUtils.timeout();
 			expect(classUnderTest._vectorLayer).toBeTruthy();
 			classUnderTest.deactivate(map);
 
@@ -1306,6 +1313,7 @@ describe('OlDrawHandler', () => {
 			const map = setupMap();
 
 			classUnderTest.activate(map);
+			await TestUtils.timeout();
 			setType('line');
 			classUnderTest.deactivate(map);
 
@@ -1325,6 +1333,7 @@ describe('OlDrawHandler', () => {
 			const map = setupMap();
 
 			classUnderTest.activate(map);
+			await TestUtils.timeout();
 			setType('line');
 			classUnderTest.deactivate(map);
 			setType('marker');
@@ -1350,6 +1359,7 @@ describe('OlDrawHandler', () => {
 			const feature = new Feature({ geometry: geometry });
 
 			classUnderTest.activate(map);
+			await TestUtils.timeout();
 			setType('line');
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 
@@ -1486,6 +1496,7 @@ describe('OlDrawHandler', () => {
 			};
 
 			classUnderTest.activate(map);
+			await TestUtils.timeout();
 			setType('line');
 			const geometry = new Polygon([
 				[
