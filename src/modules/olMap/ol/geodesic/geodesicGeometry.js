@@ -5,7 +5,7 @@ import { Geodesic, PolygonArea } from 'geographiclib-geodesic';
 import { LineString, Polygon } from 'ol/geom';
 import { TiledCoordinateBag } from './tiledCoordinateBag';
 import { PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../utils/olGeometryUtils';
-import { transform } from '../../../../../node_modules/ol/proj';
+import { fromLonLat } from '../../../../../node_modules/ol/proj';
 
 export const GEODESIC_FEATURE_PROPERTY = 'geodesic';
 export const GEODESIC_CALCULATION_STATUS = Object.freeze({ ACTIVE: 'active', INACTIVE: 'inactive' });
@@ -136,13 +136,15 @@ export class GeodesicGeometry {
 		let residual = 0;
 		this.#geodesicLines.forEach((geodesicLine) => {
 			const { geodesic } = geodesicLine;
-			for (let currentDistance = residual; currentDistance <= geodesic.s13; currentDistance + distance) {
+			let currentResidual = residual;
+			for (let currentDistance = currentResidual; currentDistance <= geodesic.s13; currentDistance += distance) {
 				const r = geodesic.Position(currentDistance, Geodesic.STANDARD | Geodesic.LONG_UNROLL);
-				const tickCoordinate = transform([r.lon2, r.lat2], WGS84, 'EPSG:3857');
+				const tickCoordinate = fromLonLat([r.lon2, r.lat2], 'EPSG:3857');
 				const pixel = map.getPixelFromCoordinate(tickCoordinate);
 				ticks.push([...pixel, r.azi2]);
-				residual = geodesic.s13 - currentDistance;
+				currentResidual = geodesic.s13 - currentDistance;
 			}
+			residual = distance - currentResidual;
 		});
 		return ticks;
 	}
@@ -181,7 +183,7 @@ export class GeodesicGeometry {
 		return circleCoords.createTiledGeometry();
 	}
 
-	getPixelsByDistance(distance) {
+	getTicksByDistance(distance) {
 		return this.#createTicksByDistance(distance, this.#map);
 	}
 

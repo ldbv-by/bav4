@@ -7,7 +7,8 @@ import {
 	getPartitionDelta,
 	moveParallel,
 	getLineString,
-	PROJECTED_LENGTH_GEOMETRY_PROPERTY
+	PROJECTED_LENGTH_GEOMETRY_PROPERTY,
+	polarStakeOut
 } from './olGeometryUtils';
 import { toContext as toCanvasContext } from 'ol/render';
 import { Fill, Stroke, Style, Circle as CircleStyle, Icon, Text as TextStyle } from 'ol/style';
@@ -17,7 +18,7 @@ import markerIcon from '../assets/marker.svg';
 import { isString } from '../../../utils/checks';
 import { getContrastColorFrom, hexToRgb, rgbToHex } from '../../../utils/colors';
 import { AssetSourceType, getAssetSource } from '../../../utils/assets';
-import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../ol/geodesic/geodesicGeometry';
+import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
 import { MultiLineString } from '../../../../node_modules/ol/geom';
 
 const Z_Point = 30;
@@ -415,9 +416,10 @@ const getRulerStyle = (feature) => {
 			return new Style();
 		}
 	}
-	return geodesic && geodesic.getCalculationStatus === GEODESIC_CALCULATION_STATUS.ACTIVE
+	return geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE
 		? new Style({
-				geometry: geodesic.getGeometry(),
+				geometry: (feature) =>
+					feature.get(GEODESIC_FEATURE_PROPERTY) ? feature.get(GEODESIC_FEATURE_PROPERTY).getGeometry() : feature.getGeometry(),
 				renderer: (pixelCoordinates, state) => {
 					const getContextRenderFunction = (state) =>
 						state.customContextRenderFunction ? state.customContextRenderFunction : getCanvasContextRenderFunction(state);
@@ -537,7 +539,6 @@ export const renderLinearRulerSegments = (pixelCoordinates, state, contextRender
 export const renderGeodesicRulerSegments = (pixelCoordinates, state, contextRenderFunction, geodesic) => {
 	const { MapService: mapService } = $injector.inject('MapService');
 	const geometry = state.geometry.clone();
-	const lineString = getLineString(geometry);
 	const resolution = state.resolution;
 	const pixelRatio = state.pixelRatio;
 
@@ -556,12 +557,12 @@ export const renderGeodesicRulerSegments = (pixelCoordinates, state, contextRend
 			}
 		}
 
-		return alreadyMeasuredLength ?? mapService.calcLength(lineString.getCoordinates());
+		return alreadyMeasuredLength ?? mapService.calcLength(getLineString(geometry).getCoordinates());
 	};
 
 	const projectedGeometryLength = getMeasuredLength();
 	const delta = getPartitionDelta(projectedGeometryLength, resolution);
-	const partitionLength = delta * lineString.getLength();
+	const partitionLength = delta * projectedGeometryLength;
 
 	const fill = new Fill({ color: Red_Color.concat([0.4]) });
 	const baseStroke = new Stroke({
@@ -569,17 +570,21 @@ export const renderGeodesicRulerSegments = (pixelCoordinates, state, contextRend
 		width: 3 * pixelRatio
 	});
 
-	const getMainTickStroke = (residual, partitionTickDistance) => {
-		return new Stroke({
-			color: Red_Color.concat([1]),
-			width: 8 * pixelRatio,
-			lineCap: 'butt',
-			lineDash: [3 * pixelRatio, (partitionTickDistance - 3) * pixelRatio],
-			lineDashOffset: 3 * pixelRatio + partitionTickDistance * residual
-		});
-	};
+	const tickStroke = new Stroke({
+		color: Red_Color.concat([1]),
+		width: 4,
+		lineCap: 'butt'
+	});
 
-	const drawTick = (contextRenderer, tick) => {};
+	const drawTick = (contextRenderer, tick) => {
+		const distance = 10;
+		const [x, y, angle] = tick;
+		const fromPoint = [x * pixelRatio, y * pixelRatio];
+		const toPoint = polarStakeOut(fromPoint, angle, distance);
+
+		const tickLine = new LineString([fromPoint, toPoint]);
+		contextRenderer(tickLine, fill, tickStroke);
+	};
 
 	// baseLine
 	geometry.setCoordinates(pixelCoordinates);

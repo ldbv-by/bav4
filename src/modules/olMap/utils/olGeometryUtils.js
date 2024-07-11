@@ -283,6 +283,18 @@ export const moveParallel = (fromPoint, toPoint, distance) => {
 };
 
 /**
+ * Creates a coordinate in the specified direction (angle) with the specified distance from the specified coordinate.
+ * @param {Coordinate} fromCoordinate the start coordinate
+ * @param {number} angle the angle in degree
+ * @param {number} distance distance in meter
+ * @returns {Coordinate}
+ */
+export const polarStakeOut = (fromCoordinate, angle, distance) => {
+	const radian = (angle * Math.PI) / 180;
+	return [Math.cos(radian) * distance + fromCoordinate[0], Math.sin(radian) * distance + fromCoordinate[1]];
+};
+
+/**
  * Calculates the residuals that occurs when the partitions are distributed over the individual segments of the geometry
  * @function
  * @param {Geometry} geometry the source geometry
