@@ -133,11 +133,11 @@ export class GeodesicGeometry {
 
 	#createTicksByDistance(distance, map) {
 		const ticks = [];
-		let residual = 0;
+		let residual = null;
 		this.#geodesicLines.forEach((geodesicLine) => {
 			const { geodesic } = geodesicLine;
 			let currentResidual = residual;
-			for (let currentDistance = currentResidual; currentDistance <= geodesic.s13; currentDistance += distance) {
+			for (let currentDistance = currentResidual ?? distance; currentDistance <= geodesic.s13; currentDistance += distance) {
 				const r = geodesic.Position(currentDistance, Geodesic.STANDARD | Geodesic.LONG_UNROLL);
 				const tickCoordinate = fromLonLat([r.lon2, r.lat2], 'EPSG:3857');
 				const pixel = map.getPixelFromCoordinate(tickCoordinate);
