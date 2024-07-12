@@ -2,7 +2,7 @@
    <img src="https://raw.githubusercontent.com/ldbv-by/bav4/master/logo.svg" height="128">
 </p>
 <h1 align="center">
-   BayernAtlas v4 <br><br>
+   <a target="_blank" href="https://atlas.bayern.de">BayernAtlas v4</a>  <br><br>
 
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ldbv-by/bav4/node.js.yml?branch=master&style=for-the-badge)](https://github.com/ldbv-by/bav4/actions/workflows/node.js.yml?query=branch%3Amaster)
 [![Coveralls branch](https://img.shields.io/coveralls/github/ldbv-by/bav4/master?style=for-the-badge)](https://coveralls.io/github/ldbv-by/bav4?branch=master)
@@ -154,7 +154,7 @@ Modules meet the following conventions:
    - `/services` : service, provider, and domain classes of the module
    - `/i18n` : i18n provider and loader for this module
 
-4. Outside their package, modules are only allowed to use global services, actions, and components from other modules for composition.
+4. Outside their package, modules can only use global services, actions, and components from other modules for composition.
 
 ### `src/plugins`
 
@@ -162,7 +162,7 @@ Contains all plugins (see [Plugins](#plugins)).
 
 ### `src/services`
 
-All global services like the `HttpService` and their providers are located here.
+All global services like the `HttpService` and their providers are here.
 
 ### `src/store`
 
@@ -174,7 +174,7 @@ Contains global utilities.
 
 ### `src/chunks`
 
-Contains chunk definitions for dynamically loading js resources (code splitting).
+It contains chunk definitions for dynamically loading js resources (code splitting).
 
 ### Overview
 
@@ -225,7 +225,7 @@ For example, they could be responsible for setting an initial state or reacting 
   - `MvuElement` based components
   - `BaPlugin` implementations
 
-- If an update of the global state has an event-like character, it's recommended to wrap the payload within another object. This makes it possible to track changes and avoids second dispatching in order to "reset" the state. For this purpose, you can use use `EventLike` in storeUtils.js
+- If an update of the global state has an event-like character, it's recommended to wrap the payload within another object. This makes it possible to track changes and avoids second dispatching to "reset" the state. For this purpose, you can use use `EventLike` in storeUtils.js
 
 - Avoid adding huge objects or arrays to the Redux store (e.g. large arrays of coordinates). Detecting changes can be expensive in that case. Instead, try to reference them by an identifier and push this identifier to the store.
 
