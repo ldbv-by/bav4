@@ -6,7 +6,6 @@ import { addLayer } from '../store/layers/layers.action';
 import { emitNotification, LevelTypes } from '../store/notifications/notifications.action';
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
-import { SourceTypeName } from '../domain/sourceType';
 import { setTab } from '../store/mainMenu/mainMenu.action';
 import { TabIds } from '../domain/mainMenu';
 import { fitLayer } from '../store/position/position.action';
@@ -17,6 +16,9 @@ import { fitLayer } from '../store/position/position.action';
 export const LAYER_ADDING_DELAY_MS = 500;
 
 /**
+ * Observes the import s-o-s and puts the data to the map by calling the `ImportVectorDataService`.
+ *
+ * Note: The source type is assumed to be checked before committing it to the s-o-s (e.g. by calling the `SourceTypeService`), no further checks are done here.
  * @class
  * @author thiloSchlemmer
  * @author taulinger
@@ -42,7 +44,9 @@ export class ImportPlugin extends BaPlugin {
 				payload: { url, data, sourceType }
 			} = latestImport;
 
-			const geoResource = url ? await this._importByUrl(url, sourceType) : this._importByData(data, sourceType);
+			const geoResource = url
+				? this._importVectorDataService.forUrl(url, { sourceType: sourceType })
+				: this._importVectorDataService.forData(data, { sourceType: sourceType });
 			if (geoResource) {
 				const { id } = geoResource;
 				//switch to the main menu's maps tab
@@ -52,54 +56,11 @@ export class ImportPlugin extends BaPlugin {
 					addLayer(id);
 					fitLayer(id);
 				}, LAYER_ADDING_DELAY_MS);
+			} else {
+				emitNotification(this._translationService.translate('global_import_data_failed'), LevelTypes.ERROR);
 			}
 		};
 
 		observe(store, (state) => state.import.latest, onChange);
-	}
-
-	/**
-	 * Imports the data as remote {@link GeoResource}
-	 * @param {string} url the url to the data
-	 * @returns {Promise<GeoResource>} the imported GeoResource
-	 */
-	async _importByUrl(url, sourceType) {
-		const createGeoResource = (url, sourceType) => {
-			if (sourceType) {
-				switch (sourceType.name) {
-					case SourceTypeName.KML:
-					case SourceTypeName.GPX:
-					case SourceTypeName.GEOJSON:
-						return this._importVectorDataService.forUrl(url, { sourceType: sourceType });
-				}
-			}
-			emitNotification(`${this._translationService.translate('global_import_unsupported_sourceType')}`, LevelTypes.WARN);
-			return null;
-		};
-
-		const geoResource = createGeoResource(url, sourceType);
-		if (geoResource) {
-			geoResource.onReject(() => {
-				emitNotification(this._translationService.translate('global_import_url_failed'), LevelTypes.ERROR);
-			});
-			return geoResource;
-		}
-
-		return null;
-	}
-
-	/**
-	 * Imports the data as local {@link GeoResource}
-	 * @param {string} data the local data
-	 * @param {string} mimeType the mimeType of the data
-	 * @returns {GeoResource|null} the imported GeoResource or null on failure
-	 */
-	_importByData(data, sourceType) {
-		const vectorGeoResource = this._importVectorDataService.forData(data, { sourceType: sourceType });
-		if (vectorGeoResource) {
-			return vectorGeoResource;
-		}
-		emitNotification(this._translationService.translate('global_import_data_failed'), LevelTypes.ERROR);
-		return null;
 	}
 }
