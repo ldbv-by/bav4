@@ -19,6 +19,7 @@ import MapLibreLayer from '@geoblocks/ol-maplibre-layer';
 import { createXYZ } from 'ol/tilegrid';
 import { AdvWmtsTileGrid } from '../../../../src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid';
 import supported from 'mapbox-gl-supported';
+import { UnavailableGeoResourceError } from '../../../../src/domain/errors';
 
 describe('LayerService', () => {
 	const vectorLayerService = {
@@ -206,7 +207,13 @@ describe('LayerService', () => {
 					expect(providerSpy).not.toHaveBeenCalled();
 					expect(() => {
 						instanceUnderTest.toOlLayer(id, wmsGeoResource);
-					}).toThrowError(`No credential available for GeoResource with id '${wmsGeoResource.id}' and url '${wmsGeoResource.url}'`);
+					}).toThrowMatching((t) => {
+						return (
+							t.message === `No credential available for GeoResource with id '${wmsGeoResource.id}' and url '${wmsGeoResource.url}'` &&
+							t instanceof UnavailableGeoResourceError &&
+							t.geoResourceId === geoResourceId
+						);
+					});
 				});
 			});
 		});
