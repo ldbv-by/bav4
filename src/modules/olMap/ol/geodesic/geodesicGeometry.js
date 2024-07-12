@@ -22,6 +22,8 @@ const FULL_CIRCLE_POINTS = 100; // count of points to form a smooth circle (clos
  * and reduced (style-depending methods and properties removed) to our needs
  */
 export class GeodesicGeometry {
+	#feature;
+	#featureRevision;
 	#isDrawing = null;
 	#geometry = null;
 	#geodesicLines = null;
@@ -33,9 +35,9 @@ export class GeodesicGeometry {
 	#map;
 
 	constructor(feature, map, isDrawingCallback = () => false) {
-		this.feature = feature;
-		this.featureRevision = feature.getRevision();
-		if (!(this.feature.getGeometry() instanceof Polygon) && !(this.feature.getGeometry() instanceof LineString)) {
+		this.#feature = feature;
+		this.#featureRevision = feature.getRevision();
+		if (!(this.#feature.getGeometry() instanceof Polygon) && !(this.#feature.getGeometry() instanceof LineString)) {
 			throw new Error('This class only accepts Polygons (and Linestrings ' + 'after initial drawing is finished)');
 		}
 		this.#map = map;
@@ -44,8 +46,8 @@ export class GeodesicGeometry {
 	}
 
 	#initialize() {
-		const coordinates = this.#getCoordinates(this.feature.getGeometry().clone().transform(WEBMERCATOR, WGS84));
-		const isPolygon = this.feature?.getGeometry() instanceof Polygon && !this.#isDrawing();
+		const coordinates = this.#getCoordinates(this.#feature.getGeometry().clone().transform(WEBMERCATOR, WGS84));
+		const isPolygon = this.#feature?.getGeometry() instanceof Polygon && !this.#isDrawing();
 		const hasAzimuthCircle = !isPolygon && this.#isEffectiveSegment(coordinates);
 		const geodesicProperties = this.#calculateGlobalProperties(coordinates, isPolygon, hasAzimuthCircle);
 		this.#geodesicLines = this.#createGeodesicLines(coordinates);
@@ -54,14 +56,14 @@ export class GeodesicGeometry {
 		this.#azimuthCircle = hasAzimuthCircle ? this.#calculateAzimuthCircle(coordinates, geodesicProperties.rotation, geodesicProperties.length) : null;
 		this.#geometry = geodesicCoords.createTiledGeometry();
 		this.#polygon = isPolygon && !this.#isDrawing() ? geodesicCoords.createTiledPolygon(this) : null;
-		this.#geometry.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, geodesicProperties.length);
+		this.#feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, geodesicProperties.length);
 		this.#length = geodesicProperties.length;
 		this.#area = geodesicProperties.area;
 	}
 
 	#update() {
-		if (this.feature.getRevision() !== this.featureRevision) {
-			this.featureRevision = this.feature.getRevision();
+		if (this.#feature.getRevision() !== this.#featureRevision) {
+			this.#featureRevision = this.#feature.getRevision();
 			this.#initialize();
 		}
 	}
@@ -185,6 +187,20 @@ export class GeodesicGeometry {
 
 	getTicksByDistance(distance) {
 		return this.#createTicksByDistance(distance, this.#map);
+	}
+
+	getCoordinateAt(fraction) {
+		let fractionLength = this.#length * fraction;
+
+		for (const geodesicLine of this.#geodesicLines) {
+			const { geodesic } = geodesicLine;
+			if (geodesic.s13 < fractionLength) {
+				fractionLength -= geodesic.s13;
+			} else {
+				const r = geodesic.Position(fractionLength, Geodesic.STANDARD | Geodesic.LONG_UNROLL);
+				return fromLonLat([r.lon2, r.lat2], 'EPSG:3857');
+			}
+		}
 	}
 
 	getCalculationStatus() {
