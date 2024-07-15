@@ -457,6 +457,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 	_createDraw(source) {
 		const measureFeatureStyleFunction = this._styleService.getStyleFunction(StyleTypes.MEASURE);
+		// todo: missing test coverage
 		const sketchStyleFunctionsByGeometry = {
 			LineString: (feature, resolution) => {
 				if (!feature.get(GEODESIC_FEATURE_PROPERTY)) {
