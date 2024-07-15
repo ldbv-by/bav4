@@ -56,7 +56,9 @@ export class GeodesicGeometry {
 		this.#azimuthCircle = hasAzimuthCircle ? this.#calculateAzimuthCircle(coordinates, geodesicProperties.rotation, geodesicProperties.length) : null;
 		this.#geometry = geodesicCoords.createTiledGeometry();
 		this.#polygon = isPolygon && !this.#isDrawing() ? geodesicCoords.createTiledPolygon(this) : null;
-		this.#feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, geodesicProperties.length);
+		if (this.#calculationStatus === GEODESIC_CALCULATION_STATUS.ACTIVE) {
+			this.#feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, geodesicProperties.length);
+		}
 		this.#length = geodesicProperties.length;
 		this.#area = geodesicProperties.area;
 	}

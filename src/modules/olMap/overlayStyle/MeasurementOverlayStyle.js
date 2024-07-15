@@ -209,21 +209,15 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 			return simplifiedGeometry ? partitions : cleanPartitions(partitions);
 		};
 		const partitions = getPartitions();
-		if (!simplifiedGeometry) {
-			simplifiedGeometry = olFeature.getGeometry();
-			if (olFeature.getGeometry() instanceof Polygon) {
-				simplifiedGeometry = new LineString(olFeature.getGeometry().getCoordinates(false)[0]);
-			}
-		}
 
+		const projectedLength = olFeature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY);
 		const resolution = olMap.getView().getResolution();
-		const projectedLength = this._mapService.calcLength(getLineString(simplifiedGeometry)?.getCoordinates());
-		if (projectedLength) {
-			simplifiedGeometry.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
-		}
-		const delta = getPartitionDelta(projectedLength, resolution);
+
+		const delta = projectedLength ? getPartitionDelta(olFeature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY), resolution) : 1;
+		console.log(delta);
 		let partitionIndex = 0;
 		for (let i = delta; i < 1; i += delta, partitionIndex++) {
+			console.log(i);
 			let partition = partitions[partitionIndex] || false;
 			if (partition === false) {
 				partition = this._createOlOverlay(olMap, { offset: [0, -25], positioning: 'top-center' }, BaOverlayTypes.DISTANCE_PARTITION);

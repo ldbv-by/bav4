@@ -43,6 +43,8 @@ export class OlSketchHandler {
 
 			this._isSnapOnLastPoint = lastPoint[0] === lastPoint2[0] && lastPoint[1] === lastPoint2[1];
 		}
+
+		feature.set('finishOnFirstPoint', this._isFinishOnFirstPoint);
 	}
 
 	activate(sketchFeature, map, idPrefix = Tools.DRAW + '_') {

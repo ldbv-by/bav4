@@ -7,6 +7,7 @@ import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { measurementReducer } from '../../../../src/store/measurement/measurement.reducer';
 import { DragPan } from 'ol/interaction';
+import { PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../../../src/modules/olMap/utils/olGeometryUtils.js';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -58,7 +59,7 @@ describe('MeasurementOverlayStyle', () => {
 	const getPartition = (feature) => {
 		const partitionOverlays = feature.get('partitions');
 		const overlay = partitionOverlays[0];
-		return overlay.getElement();
+		return overlay?.getElement();
 	};
 
 	it('adds overlays', () => {
@@ -451,17 +452,23 @@ describe('MeasurementOverlayStyle', () => {
 				getElement: () => elementMock
 			};
 			const featureMock = {
-				get: (key) =>
-					key === 'partitions'
-						? [overlayMock1, overlayMock2]
-						: [
+				get: (key) => {
+					switch (key) {
+						case 'partitions':
+							return [overlayMock1, overlayMock2];
+						case PROJECTED_LENGTH_GEOMETRY_PROPERTY:
+							return 200;
+						default:
+							return [
 								{
 									getElement: () => elementMock,
 									getPosition: () => {
 										return [0, 0];
 									}
 								}
-							],
+							];
+					}
+				},
 				getGeometry: () =>
 					new Polygon([
 						[
@@ -482,14 +489,21 @@ describe('MeasurementOverlayStyle', () => {
 			};
 			setup();
 			const classUnderTest = new MeasurementOverlayStyle();
-			spyOn(mapServiceMock, 'calcLength').and.returnValue(200);
 			spyOn(classUnderTest, '_updateOlOverlay').and.callFake(() => {});
 			spyOn(classUnderTest, '_createOrRemoveAreaOverlay').and.callFake(() => {});
-			const createOrRemovePartitionOverlaysSpy = spyOn(classUnderTest, '_createOrRemovePartitionOverlays').and.callThrough(() => {});
+			const createOrRemovePartitionOverlaysSpy = spyOn(classUnderTest, '_createOrRemovePartitionOverlays').and.callThrough();
 			const addPartitionOverlaySpy = spyOn(mapMock, 'addOverlay').and.callFake(() => {});
 			const removePartitionOverlaySpy = spyOn(mapMock, 'removeOverlay').and.callFake(() => {});
 
-			classUnderTest.update(featureMock, mapMock);
+			classUnderTest.update(featureMock, mapMock, {
+				geometry: new Polygon([
+					[
+						[0, 0],
+						[2, 0],
+						[0, 0]
+					]
+				])
+			});
 
 			expect(createOrRemovePartitionOverlaysSpy).toHaveBeenCalled();
 			expect(addPartitionOverlaySpy).not.toHaveBeenCalled();
@@ -774,8 +788,8 @@ describe('MeasurementOverlayStyle', () => {
 			[12345, 0]
 		]);
 		const feature = new Feature({ geometry: geometry });
-		spyOn(mapServiceMock, 'calcLength').and.returnValue(12345);
-		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
+		feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, 12345);
+		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock, geometry);
 
 		expect(feature.get('partitions').length).toBe(1);
 	});
@@ -799,8 +813,8 @@ describe('MeasurementOverlayStyle', () => {
 			[12345, 0]
 		]);
 		const feature = new Feature({ geometry: geometry });
-		spyOn(mapServiceMock, 'calcLength').and.returnValue(12345);
-		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
+		feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, 12345);
+		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock, geometry);
 		const partition = getPartition(feature);
 
 		expect(partition.placement).toEqual({ sector: 'right', positioning: 'center-center', offset: [jasmine.any(Number), jasmine.any(Number)] });
@@ -825,8 +839,8 @@ describe('MeasurementOverlayStyle', () => {
 			[0, 0]
 		]);
 		const feature = new Feature({ geometry: geometry });
-		spyOn(mapServiceMock, 'calcLength').and.returnValue(12345);
-		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
+		feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, 12345);
+		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock, geometry);
 
 		const partition = getPartition(feature);
 
@@ -852,9 +866,9 @@ describe('MeasurementOverlayStyle', () => {
 			[0, 0]
 		]);
 		const feature = new Feature({ geometry: geometry });
-		spyOn(mapServiceMock, 'calcLength').and.returnValue(12345);
+		feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, 12345);
 
-		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
+		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock, geometry);
 		const partition = getPartition(feature);
 
 		expect(partition.placement).toEqual({ sector: 'bottom', positioning: 'center-center', offset: [jasmine.any(Number), jasmine.any(Number)] });
@@ -879,9 +893,9 @@ describe('MeasurementOverlayStyle', () => {
 			[0, 12345]
 		]);
 		const feature = new Feature({ geometry: geometry });
-		spyOn(mapServiceMock, 'calcLength').and.returnValue(12345);
+		feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, 12345);
 
-		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
+		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock, geometry);
 		const partition = getPartition(feature);
 
 		expect(partition.placement).toEqual({ sector: 'top', positioning: 'center-center', offset: [jasmine.any(Number), jasmine.any(Number)] });
@@ -906,9 +920,9 @@ describe('MeasurementOverlayStyle', () => {
 			[12345, 0]
 		]);
 		const feature = new Feature({ geometry: geometry });
-		spyOn(mapServiceMock, 'calcLength').and.returnValue(12345);
+		feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, 12345);
 
-		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
+		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock, geometry);
 
 		expect(feature.get('partitions').length).toBe(12);
 	});
@@ -936,8 +950,8 @@ describe('MeasurementOverlayStyle', () => {
 			]
 		]);
 		const feature = new Feature({ geometry: geometry });
-		spyOn(mapServiceMock, 'calcLength').and.returnValue(16000);
-		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
+		feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, 16000);
+		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock, geometry);
 
 		expect(feature.get('partitions').length).toBe(1);
 	});
@@ -963,8 +977,8 @@ describe('MeasurementOverlayStyle', () => {
 			[123456, 0]
 		]);
 		const feature = new Feature({ geometry: geometry });
-		spyOn(mapServiceMock, 'calcLength').and.returnValues(123456, 12345);
-		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
+		feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, 123456);
+		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock, geometry);
 		expect(feature.get('partitions').length).toBe(12);
 
 		geometry.setCoordinates([
@@ -972,7 +986,8 @@ describe('MeasurementOverlayStyle', () => {
 			[12345, 0]
 		]);
 
-		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
+		feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, 12345);
+		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock, geometry);
 
 		expect(feature.get('partitions').length).toBe(1);
 	});

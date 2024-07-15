@@ -416,23 +416,32 @@ const getRulerStyle = (feature) => {
 			return new Style();
 		}
 	}
-	return geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE
-		? new Style({
-				geometry: (feature) =>
-					feature.get(GEODESIC_FEATURE_PROPERTY) ? feature.get(GEODESIC_FEATURE_PROPERTY).getGeometry() : feature.getGeometry(),
-				renderer: (pixelCoordinates, state) => {
-					const getContextRenderFunction = (state) =>
-						state.customContextRenderFunction ? state.customContextRenderFunction : getCanvasContextRenderFunction(state);
-					renderGeodesicRulerSegments(pixelCoordinates, state, getContextRenderFunction(state), geodesic);
+
+	return new Style({
+		geometry: (feature) => {
+			const geodesic = feature.get(GEODESIC_FEATURE_PROPERTY);
+			const finishOnFirstPoint = feature.get('finishOnFirstPoint');
+			if (geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE) {
+				return geodesic.getGeometry();
+			}
+
+			if (feature.getGeometry() instanceof Polygon) {
+				if (finishOnFirstPoint) {
+					return feature.getGeometry();
+				} else {
+					return new LineString(feature.getGeometry().getCoordinates()[0].slice(0, -1));
 				}
-			})
-		: new Style({
-				renderer: (pixelCoordinates, state) => {
-					const getContextRenderFunction = (state) =>
-						state.customContextRenderFunction ? state.customContextRenderFunction : getCanvasContextRenderFunction(state);
-					renderLinearRulerSegments(pixelCoordinates, state, getContextRenderFunction(state));
-				}
-			});
+			}
+			return feature.getGeometry();
+		},
+		renderer: (pixelCoordinates, state) => {
+			const getContextRenderFunction = (state) =>
+				state.customContextRenderFunction ? state.customContextRenderFunction : getCanvasContextRenderFunction(state);
+			geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE
+				? renderGeodesicRulerSegments(pixelCoordinates, state, getContextRenderFunction(state), geodesic)
+				: renderLinearRulerSegments(pixelCoordinates, state, getContextRenderFunction(state));
+		}
+	});
 };
 
 export const renderLinearRulerSegments = (pixelCoordinates, state, contextRenderFunction) => {
