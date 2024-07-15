@@ -85,6 +85,40 @@ describe('OlOverlayMapHandler', () => {
 
 			expect(updateSpy).toHaveBeenCalledTimes(3);
 		});
+
+		it('calculates min/max offset right', async () => {
+			setup();
+			const map = setupMap();
+			const view = map.getView();
+			map.getView().setCenter(fromLonLat([11 + 360, 48]));
+			const overlaysMock = { getArray: () => [createOverlay(), createOverlay(), createOverlay()] };
+			spyOn(map, 'getOverlays').and.callFake(() => overlaysMock);
+
+			const instanceUnderTest = new OlOverlayMapHandler();
+			const updateSpy = spyOn(instanceUnderTest, '_updatePosition').and.callFake(() => {});
+
+			instanceUnderTest.register(map);
+			view.dispatchEvent(new ObjectEvent('change:center'));
+
+			expect(updateSpy).toHaveBeenCalledWith(jasmine.any(Object), jasmine.any(Array), [0, 1]);
+		});
+
+		it('calculates min/max offset left', async () => {
+			setup();
+			const map = setupMap();
+			const view = map.getView();
+			map.getView().setCenter(fromLonLat([11 - 360, 48]));
+			const overlaysMock = { getArray: () => [createOverlay(), createOverlay(), createOverlay()] };
+			spyOn(map, 'getOverlays').and.callFake(() => overlaysMock);
+
+			const instanceUnderTest = new OlOverlayMapHandler();
+			const updateSpy = spyOn(instanceUnderTest, '_updatePosition').and.callFake(() => {});
+
+			instanceUnderTest.register(map);
+			view.dispatchEvent(new ObjectEvent('change:center'));
+
+			expect(updateSpy).toHaveBeenCalledWith(jasmine.any(Object), jasmine.any(Array), [-1, 0]);
+		});
 	});
 
 	describe('_updatePosition', () => {

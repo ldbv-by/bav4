@@ -1,8 +1,8 @@
 /**
  * @module modules/olMap/handler/measure/OlOverlayMapHandler
  */
-import { containsCoordinate, getBottomLeft, getBottomRight, getTopLeft, getTopRight } from '../../../../../node_modules/ol/extent';
-import { fromLonLat, toLonLat, transformExtent } from '../../../../../node_modules/ol/proj';
+import { containsCoordinate, getBottomLeft, getBottomRight, getTopLeft, getTopRight } from 'ol/extent';
+import { fromLonLat, toLonLat, transformExtent } from 'ol/proj';
 import { BaOverlay } from '../../components/BaOverlay';
 import { OlMapHandler } from '../OlMapHandler';
 
