@@ -422,7 +422,7 @@ const getRulerStyle = (feature) => {
 			const geodesic = feature.get(GEODESIC_FEATURE_PROPERTY);
 			const finishOnFirstPoint = feature.get('finishOnFirstPoint');
 			if (geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE) {
-				return geodesic.getGeometry();
+				return geodesic.area ? geodesic.getPolygon() : geodesic.getGeometry();
 			}
 
 			if (feature.getGeometry() instanceof Polygon) {
@@ -554,18 +554,9 @@ export const renderGeodesicRulerSegments = (pixelCoordinates, state, contextRend
 	const getMeasuredLength = () => {
 		const alreadyMeasuredLength = state.geometry ? state.geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY) : null;
 		if (!alreadyMeasuredLength) {
-			/**  Usually state.geometry should have the custom property PROJECTED_LENGTH_GEOMETRY_PROPERTY.
-			 * This property is provided by a geodesicGeometry object in the processing steps before rendering occur.
-			 * If this property is missing, we try to get this property from the state.feature with the
-			 * related geodesic (geodesicGeometry object) property.
-			 */
 			const geodesic = state.feature ? state.feature.get(GEODESIC_FEATURE_PROPERTY) : null;
-			const geodesicLength = geodesic?.getGeometry()?.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY);
-			if (geodesicLength) {
-				return geodesicLength;
-			}
+			return geodesic?.length;
 		}
-
 		return alreadyMeasuredLength ?? mapService.calcLength(getLineString(geometry).getCoordinates());
 	};
 
