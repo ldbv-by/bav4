@@ -218,7 +218,6 @@ export class AdminPanel extends MvuElement {
 	update(type, data, model) {
 		switch (type) {
 			case Update_CatalogWithResourceData:
-				// console.log('🚀🚀🚀🚀🚀🚀🚀 ~ AdminPanel ~ update Update_CatalogWithResourceData ~ data:', data);
 				return { ...model, catalogWithResourceData: [...data], dummy: !model.dummy };
 			case Update_Topics:
 				return { ...model, topics: [...data], dummy: !model.dummy };
@@ -227,7 +226,6 @@ export class AdminPanel extends MvuElement {
 
 	createView(model) {
 		const { catalogWithResourceData, dummy } = model;
-		// console.log('🚀 ~ AdminPanel ~ createView ~ catalogWithResourceData:', catalogWithResourceData);
 
 		const _refreshLayers = async () => {
 			await this.loadGeoResources();
@@ -286,7 +284,6 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const removeEndLabels = () => {
-			// console.log('🚀 ~ AdminPanel ~ removeEndLabels ');
 			// currentCatalogEntryUid, uidFromDrag_elementToMove
 
 			// Remove entries with label End_Label
@@ -308,63 +305,38 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const addEntryToChildrenRecursively = (catalogWithResourceData, currentCatalogEntryUid, catalogEntry, newEntry) => {
-			// console.group('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ');
-
 			for (let n = 0; n < catalogEntry.length; n++) {
 				const catalogEntryN = catalogEntry[n];
-				// console.log(
-				// 	'%c 🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ catalogEntryN:',
-				// 	'color: red; background-color: lightblue; border: solid',
-				// 	catalogEntryN
-				// );
-				// console.table(catalogEntryN);
 
 				if (catalogEntryN.uid === currentCatalogEntryUid) {
 					catalogEntry.splice(n, 0, newEntry);
-					// removePossibleEmptyEntry(catalogEntry);
-					// console.groupEnd();
 					return true;
 				}
 
-				// check the children recursively, if any
 				if (catalogEntryN.children) {
 					const found = addEntryToChildrenRecursively(catalogWithResourceData, currentCatalogEntryUid, catalogEntryN.children, newEntry);
 					if (found) {
-						// console.groupEnd();
 						return found;
 					}
 				}
 			}
-			// console.groupEnd();
 			return false;
 		};
 
 		const addEntry = (catalogWithResourceData, currentCatalogEntryUid, newEntry) => {
-			// console.groupCollapsed('addEntry');
-
-			// console.log('🚀 ~ AdminPanel ~ addEntry ~ currentCatalogEntryUid:', currentCatalogEntryUid);
-			// console.log('🚀 ~ AdminPanel ~ addEntry ~ newEntry:', newEntry);
 			addEntryToChildrenRecursively(catalogWithResourceData, currentCatalogEntryUid, catalogWithResourceData, newEntry);
-			// console.groupEnd();
 		};
 
 		const addGeoResource = (currentCatalogEntryUid, newGeoresourceId, catalogWithResourceDataFromTree) => {
-			// find georesource to add
 			const { newEntry, newUid } = createNewGeoResourceEntry(newGeoresourceId);
-			// console.log('🚀 ~ AdminPanel ~ addGeoResource ~ newEntry:', newEntry);
-
 			addEntry(catalogWithResourceDataFromTree, currentCatalogEntryUid, newEntry);
 			this.signal(Update_CatalogWithResourceData, catalogWithResourceDataFromTree);
-
 			return newUid;
 		};
-
-		// todo: check
 
 		const removeEntryRecursively = (uid, catalogBranch) => {
 			const indexToRemove = catalogBranch.findIndex((entry) => entry.uid === uid);
 
-			// found in top level - done
 			if (indexToRemove !== -1) {
 				catalogBranch.splice(indexToRemove, 1);
 				if (catalogBranch.length === 0) {
@@ -373,7 +345,6 @@ export class AdminPanel extends MvuElement {
 				return catalogBranch;
 			}
 
-			// handle sublevels recursively
 			const updatedCatalogBranch = catalogBranch.map((element) => {
 				if (element.children) {
 					const updatedChildren = removeEntryRecursively(uid, element.children);
@@ -445,8 +416,6 @@ export class AdminPanel extends MvuElement {
 			return nonDigitPart + incrementedDigitPart;
 		};
 
-		// todo: check
-
 		const addLayerGroup = () => {
 			catalogWithResourceData.push({ uid: self.crypto.randomUUID(), label: ' ', children: [{ label: End_Label }] });
 			this.signal(Update_CatalogWithResourceData, catalogWithResourceData);
@@ -458,7 +427,6 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const deleteTopicLevelTree = (topic) => {
-			// console.log('🚀 ~ AdminPanel ~ deleteTopicLevelTree ~ topic._id:', topic._id);
 			// eslint-disable-next-line promise/prefer-await-to-then
 			this._topicsService.delete(topic._id).then(
 				() => {
@@ -469,19 +437,12 @@ export class AdminPanel extends MvuElement {
 					console.log('🚀 ~ AdminPanel ~ deleteTopicLevelTree ~ error:', error);
 				}
 			);
-
-			// this.#topics = this.#topics.filter((oneTopic) => oneTopic._id !== topic._id);
-			// this.signal(Update_Topics, this.#topics);
 		};
 
 		const toggleTopicLevelTreeDisabled = (topic) => {
-			// console.log('🚀 ~ AdminPanel ~ toggleTopicLevelTreeDisabled ~ topic:', topic);
-			// console.log('🚀 ~ AdminPanel ~ toggleTopicLevelTreeDisabled ~ topic._id:', topic._id);
-
 			const foundTopic = this.#topics.find((oneTopic) => oneTopic._id === topic._id);
 
 			if (foundTopic) {
-				// console.log('🚀 ~ AdminPanel ~ toggleTopicLevelTreeDisabled ~ foundTopic:', foundTopic);
 				foundTopic._disabled = !foundTopic._disabled;
 
 				this.signal(Update_Topics, this.#topics);
@@ -503,18 +464,12 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const resetCatalog = async () => {
-			// console.log('🚀 ~ AdminPanel ~ resetCatalog');
 			const catalogWithResourceData = this._reduceData(this.#catalog, this._enrichWithGeoResource, this.#geoResources);
 			refreshCatalog(catalogWithResourceData);
 		};
 
 		const refreshCatalog = async (newCatalogWithResourceData) => {
-			// console.log('🚀 ~ AdminPanel ~ refreshCatalog ~ newCatalogWithResourceData:', newCatalogWithResourceData);
-
-			// todo hä? wieso?
 			const catalog = this._reduceData(newCatalogWithResourceData, this._copyEverything);
-			// const catalog = removePossibleEndEntry(this._reduceData(newCatalogWithResourceData, this._copyEverything));
-			// console.log('🚀 ~ AdminPanel ~ refreshCatalog ~ catalog:', catalog);
 			this.#catalog = catalog;
 
 			this.signal(Update_CatalogWithResourceData, catalog);

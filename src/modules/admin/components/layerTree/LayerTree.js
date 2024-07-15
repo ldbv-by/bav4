@@ -14,7 +14,6 @@ import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 
 // @ts-ignore
 import { repeat } from 'lit-html/directives/repeat.js';
-// import { openModal } from '../../../../store/modal/modal.action';
 
 const Update_Topics = 'update_topics';
 const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
@@ -27,70 +26,6 @@ export const End_Label = '&nbsp;';
 const hasChildrenClass = 'has-children';
 const showChildrenClass = 'show-children';
 const droppableClass = 'droppable';
-
-// const logOnceDictionary = {};
-// export const logOnce = (key, objectToShow = 'nix') => {
-// 	if (!logOnceDictionary[key]) {
-// 		if (objectToShow === 'nix') {
-// 			// eslint-disable-next-line no-console
-// 			console.log('🚀🚀🚀 ~ :::logOnce:::', key);
-// 		} else {
-// 			if (typeof objectToShow === 'string') {
-// 				// eslint-disable-next-line no-console
-// 				console.log('🚀🚀🚀 ~ :::logOnce:::', objectToShow);
-// 			} else {
-// 				// eslint-disable-next-line no-console
-// 				console.log('🚀🚀🚀 ~ :::logOnce:::', JSON.stringify(objectToShow));
-// 			}
-// 		}
-// 		logOnceDictionary[key] = objectToShow;
-// 		return true;
-// 	}
-// 	return false;
-// };
-
-// export const traceOnce = (key, objectToShow = 'nix') => {
-// 	if (!logOnceDictionary[key]) {
-// 		if (objectToShow === 'nix') {
-// 			// eslint-disable-next-line no-console
-// 			console.trace('🚀LO🚀 ~ ', key);
-// 		} else {
-// 			if (typeof objectToShow === 'string') {
-// 				// eslint-disable-next-line no-console
-// 				console.trace('🚀LO🚀 ~ ', objectToShow);
-// 			} else {
-// 				// eslint-disable-next-line no-console
-// 				console.trace('🚀LO🚀 ~ ', JSON.stringify(objectToShow));
-// 			}
-// 		}
-// 		logOnceDictionary[key] = objectToShow;
-// 		return true;
-// 	}
-// 	return false;
-// };
-
-// logOnce(
-// 	currentEntry.uid + ' ' + newGeoResourceIdFromList,
-// 	'currentEntry : ' + currentEntry.uid + ' ' + currentEntry.label + ' newGeoResourceIdFromList : ' + newGeoResourceIdFromList
-// );
-
-// export const onlyOnce = (key) => {
-// 	if (logOnceDictionary[key]) {
-// 		return false;
-// 	}
-// 	logOnceDictionary[key] = key;
-// 	return true;
-// };
-
-// export const getRandomColor = () => {
-// 	const red = Math.floor(Math.random() * 256);
-// 	const green = Math.floor(Math.random() * 256);
-// 	const blue = Math.floor(Math.random() * 256);
-
-// 	const color = `rgb(${red}, ${green}, ${blue})`;
-
-// 	return color;
-// };
 
 /**
  * Contains
@@ -184,7 +119,6 @@ export class LayerTree extends MvuElement {
 
 	createView(model) {
 		const { topics, catalogWithResourceData, currentGeoResourceId, editMode } = model;
-		console.log('🚀 ~ LayerTree ~ createView ~ editMode:', editMode);
 
 		if (
 			catalogWithResourceData === null ||
@@ -211,8 +145,6 @@ export class LayerTree extends MvuElement {
 		};
 
 		const onDragStart = (event, draggedEntry) => {
-			// console.log('🚀 ~ LayerTree ~ onDragStart ~ draggedEntry:', draggedEntry);
-			// console.log('🚀 ~ LayerList ~ onDragStart ~ event:', event);
 			const element = event.target;
 			element.style.backgroundColor = '';
 
@@ -230,26 +162,18 @@ export class LayerTree extends MvuElement {
 		};
 
 		const onDragEnd = (event) => {
-			// console.log('🚀 ~ LayerTree ~ onDragEnd ~ event:', event);
 			event.target.classList.remove('isdragged');
 
 			removeDragOverClass();
 
 			this._removeEndLabels();
-			// todo ??? return;
 		};
 
 		const onDragOver = (event, currentCatalogEntry, level) => {
-			// console.log('🚀 ~ LayerTree ~ onDragOver ~ level:', level);
-			// traceOnce(currentCatalogEntry.uid + 'header', '🚀 ~ LayerTree ~ onDragOver ~ currentCatalogEntry:');
-			// logOnce(currentCatalogEntry.uid + 'data', currentCatalogEntry);
-			// logOnce(event);
 			const types = event.dataTransfer.types;
 			const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
 			const newGeoResourceIdFromList = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
-			// logOnce(newGeoResourceIdFromList.uid, '🚀 ~ LayerTree ~ onDragOver ~ newGeoResourceIdFromList: ' + newGeoResourceIdFromList);
 			if (newGeoResourceIdFromList) {
-				// logOnce(newGeoResourceIdFromList.uid + 'if', '🚀 ~ LayerTree ~ onDragOver ~ if (newGeoResourceIdFromList)');
 				if (newGeoResourceIdFromList === currentCatalogEntry.geoResourceId) {
 					event.preventDefault();
 					return;
@@ -274,8 +198,6 @@ export class LayerTree extends MvuElement {
 					return;
 				}
 
-				// logOnce(uidFromDrag, uidFromDrag);
-
 				this.#overTarget = true;
 				this.#currentUId = currentCatalogEntry.uid;
 				this._moveElement(currentCatalogEntry.uid, uidFromDrag);
@@ -287,10 +209,6 @@ export class LayerTree extends MvuElement {
 		};
 
 		const onDrop = (event, entry) => {
-			// console.group('🚀 ~ LayerTree ~ onDrop ');
-			// console.log('🚀 ~ LayerTree ~ onDrop ~ event.target:', event.target);
-			// console.log('🚀 ~ LayerTree ~ onDrop ~ entry:', entry);
-
 			this.#currentGeoResourceId = null;
 			removeDragOverClass();
 			const dropUid = event.dataTransfer.types[0].replace('uid', '');
@@ -305,7 +223,6 @@ export class LayerTree extends MvuElement {
 
 		const onDragLeave = (event) => {
 			if (this.#ignoreLevelOneFirstOnLeave) {
-				// console.log('🚀 ~ LayerTree ~ onDragLeave ~ this.#ignoreLevelOneFirstOnLeave = true: return');
 				this.#ignoreLevelOneFirstOnLeave = false;
 				return;
 			}
@@ -357,18 +274,10 @@ export class LayerTree extends MvuElement {
 		};
 
 		const handleAbortClick = (event, catalogEntry) => {
-			// const target = event.target;
-			// console.log('🚀 ~ LayerTree ~ handleAbortClick ~ target:', target);
-			// const closestLi = target.closest('li');
-			// console.log('🚀 ~ LayerTree ~ handleAbortClick ~ closestLi:', closestLi);
-			// const button = closestLi.querySelector('button');
-			// console.log('🚀 ~ LayerTree ~ handleAbortClick ~ button:', button);
-
 			if (this.activeEditElements) {
 				const { editButton, abortButton, copyButton, deleteButton } = this.activeEditElements;
 
 				if (editButton.textContent === 'Save') {
-					// Revert to the original state
 					this.signal(Update_Edit_Mode, false);
 
 					editButton.textContent = 'Edit';
@@ -378,7 +287,7 @@ export class LayerTree extends MvuElement {
 
 					const input = editButton.parentNode.firstElementChild;
 					const span = document.createElement('span');
-					span.textContent = catalogEntry.label; // Revert to the original label
+					span.textContent = catalogEntry.label;
 
 					if (this.#keyListener !== null) {
 						document.removeEventListener('keydown', this.#keyListener);
@@ -394,16 +303,9 @@ export class LayerTree extends MvuElement {
 		};
 
 		const handleEditClick = (event, catalogEntry) => {
-			console.log('🚀 ~ LayerTree ~ handleEditClick ~ catalogEntry:', catalogEntry);
 			const editButton = event.target;
 			const li = editButton.parentNode;
-			console.log('🚀 ~ LayerTree ~ handleEditClick ~ li:', li);
-			// const abortButtonById = document.getElementById('abortButton');
-			// console.log('🚀 ~ LayerTree ~ handleEditClick ~ abortButtonById:', abortButtonById);
 			const abortButton = li.querySelector('.abort-button');
-			// const abortButton = li.querySelector('button[style*="display: none;"]');
-			console.log('🚀 ~ LayerTree ~ handleEditClick ~ abortButton:', abortButton);
-			// Assuming the Abort button is initially hidden
 
 			const keyPressHandler = (event) => {
 				handleKeyPress(event, editButton, catalogEntry);
@@ -416,13 +318,11 @@ export class LayerTree extends MvuElement {
 
 				const copyButton = li.querySelector('.copy-button');
 				if (copyButton) {
-					console.log('🚀 ~ LayerTree ~ handleEditClick ~ copyButton:', copyButton);
 					copyButton.style.display = 'none';
 				}
 
 				const deleteButton = li.querySelector('.delete-button');
 				if (deleteButton) {
-					console.log('🚀 ~ LayerTree ~ handleEditClick ~ deleteButton:', deleteButton);
 					deleteButton.style.display = 'none';
 				}
 
@@ -449,17 +349,11 @@ export class LayerTree extends MvuElement {
 				input.style.visibility = 'visible';
 				input.style.position = 'relative';
 
-				// Debugging logs
-				// console.log('Span to be replaced:', span);
-				// console.log('Created input element:', input);
-
 				li.insertBefore(input, span);
 				li.removeChild(span);
 				editButton.textContent = 'Save';
 				input.focus();
 				input.classList.add('editable-input');
-
-				// console.log('Input element after insertion:', input);
 			} else if (editButton.textContent === 'Save') {
 				this.signal(Update_Edit_Mode, false);
 				abortButton.style.display = 'none';
@@ -476,38 +370,23 @@ export class LayerTree extends MvuElement {
 				li.removeChild(input);
 				editButton.textContent = 'Edit';
 
-				// Make a deep copy of catalogWithResourceData
 				const catalogCopy = JSON.parse(JSON.stringify(catalogWithResourceData));
 
-				// Find the corresponding entry in the copy and update its label
 				const catalogEntryCopy = catalogCopy.find((e) => e.uid === catalogEntry.uid);
 				if (catalogEntryCopy) {
 					catalogEntryCopy.label = input.value.trim();
 				}
 
-				// newCatalogWithResourceData
-
-				// Update_CatalogWithResourceData with [], to force refresh
 				this.signal(Update_CatalogWithResourceData, []);
 				this._refreshCatalog(catalogCopy);
 			}
-
-			// event.stopPropagation();
 		};
 
 		const handleDeleteClick = (event, catalogEntry) => {
-			// console.log('🚀 ~ LayerTree ~ handleDeleteClick ~ catalogEntry:', catalogEntry);
 			const userConfirmed = confirm('Wollen Sie ' + catalogEntry.label + ' wirklich löschen?');
 			if (userConfirmed) {
-				// User confirmed save action
-				// console.log('Deleted:', catalogEntry);
-
 				this._removeEntry(catalogEntry.uid);
-				// } else {
-				// 	// User canceled the save action
-				// 	console.log('Delete canceled');
 			}
-
 			event.stopPropagation();
 			event.preventDefault();
 		};
@@ -534,14 +413,8 @@ export class LayerTree extends MvuElement {
 		const handleDeleteTopicLevelTreeClick = () => {
 			const userConfirmed = confirm('Wollen Sie wirklich löschen?');
 			if (userConfirmed) {
-				// User confirmed save action
-				// console.log('Changes saved:', this.#currentTopic);
-
 				this._deleteTopicLevelTree(this.#currentTopic);
 				this.#currentTopic = null;
-				// } else {
-				// 	// User canceled the save action
-				// 	console.log('Save canceled');
 			}
 		};
 
@@ -556,7 +429,6 @@ export class LayerTree extends MvuElement {
 		};
 
 		const renderEntry = (entry, level) => {
-			// console.log('🚀 ~ LayerTree ~ renderEntry ~ level:', level);
 			return html`
 				<li
 					@click="${(event) => handleCategoryClick(event, entry)}"
@@ -622,8 +494,6 @@ export class LayerTree extends MvuElement {
 		return nothing;
 	}
 
-	// <button @click="${handleNewTopicClick}">New Topic</button>
-
 	/**
 	 * @property {Array} topics = []
 	 */
@@ -672,25 +542,15 @@ export class LayerTree extends MvuElement {
 	 * @property {function} resetCatalog - Callback function
 	 */
 	set resetCatalog(callback) {
-		// console.log('🚀 ~ LayerTree ~ set resetCatalog ');
 		this._resetCatalog = callback;
 	}
-
-	// get resetCatalog() {
-	// 	return this._resetCatalog;
-	// }
 
 	/**
 	 * @property {function} refreshCatalog - Callback function
 	 */
 	set refreshCatalog(callback) {
-		// console.log('🚀 ~ LayerTree ~ set refreshCatalog ');
 		this._refreshCatalog = callback;
 	}
-
-	// get refreshCatalog() {
-	// 	return this._refreshCatalog;
-	// }
 
 	/**
 	 * @property {function} addLayerGroup - Callback function
@@ -795,19 +655,13 @@ export class LayerTree extends MvuElement {
 	 * @property {function} moveElement - Callback function
 	 */
 	set moveElement(callback) {
-		// console.log('🚀 ~ LayerTree ~ set moveElement');
 		this._moveElement = callback;
 	}
-
-	// get moveElement() {
-	// 	return this._moveElement;
-	// }
 
 	/**
 	 * @property {function} removeEndLabels - Callback function
 	 */
 	set removeEndLabels(callback) {
-		// console.log('🚀 ~ LayerTree ~ set removeEndLabels');
 		this._removeEndLabels = callback;
 	}
 
@@ -815,13 +669,8 @@ export class LayerTree extends MvuElement {
 	 * @property {function} addEndLabels - Callback function
 	 */
 	set addEndLabels(callback) {
-		// console.log('🚀 ~ LayerTree ~ set addEndLabels');
 		this._addEndLabels = callback;
 	}
-
-	// get removeEndLabels() {
-	// 	return this._removeEndLabels;
-	// }
 
 	/**
 	 * @property {function} saveCatalog - Callback function
@@ -829,10 +678,6 @@ export class LayerTree extends MvuElement {
 	set saveCatalog(callback) {
 		this._saveCatalog = callback;
 	}
-
-	// get saveCatalog() {
-	// 	return this._saveCatalog;
-	// }
 
 	static get tag() {
 		return 'ba-layer-tree';
