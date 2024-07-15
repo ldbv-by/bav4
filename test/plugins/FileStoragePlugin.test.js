@@ -1,7 +1,7 @@
 import { TestUtils } from '../test-utils.js';
 import { $injector } from '../../src/injection/index.js';
 import { FileStoragePlugin } from '../../src/plugins/FileStoragePlugin.js';
-import { fileStorageReducer } from '../../src/store/fileStorage/fileStorage.reducer.js';
+import { fileStorageReducer, initialState } from '../../src/store/fileStorage/fileStorage.reducer.js';
 import { notificationReducer } from '../../src/store/notifications/notifications.reducer.js';
 import { QueryParameters } from '../../src/domain/queryParameters.js';
 import { setData } from '../../src/store/fileStorage/fileStorage.action.js';
@@ -51,7 +51,7 @@ describe('FileStoragePlugin', () => {
 
 				await instanceUnderTest.register(store);
 
-				expect(store.getState().fileStorage.adminId).toBeNull();
+				expect(store.getState().fileStorage.adminId).toBe(initialState.adminId);
 			});
 
 			it('does nothing when no admin id is detected', async () => {
@@ -63,7 +63,7 @@ describe('FileStoragePlugin', () => {
 
 				await instanceUnderTest.register(store);
 
-				expect(store.getState().fileStorage.adminId).toBeNull();
+				expect(store.getState().fileStorage.adminId).toBe(initialState.adminId);
 			});
 
 			it('sets the admin id when an admin id is detected', async () => {
