@@ -405,7 +405,6 @@ const getRulerStyle = (feature) => {
 		};
 	};
 	const geometry = feature.getGeometry();
-	const geodesic = feature?.get(GEODESIC_FEATURE_PROPERTY);
 	if (geometry instanceof Polygon) {
 		if (geometry.getArea() === 0) {
 			return new Style();
@@ -435,6 +434,7 @@ const getRulerStyle = (feature) => {
 			return feature.getGeometry();
 		},
 		renderer: (pixelCoordinates, state) => {
+			const geodesic = state.feature.get(GEODESIC_FEATURE_PROPERTY);
 			const getContextRenderFunction = (state) =>
 				state.customContextRenderFunction ? state.customContextRenderFunction : getCanvasContextRenderFunction(state);
 			geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE

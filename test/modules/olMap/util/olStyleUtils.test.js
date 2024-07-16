@@ -25,7 +25,7 @@ import {
 	textScaleToKeyword,
 	getTransparentImageStyle
 } from '../../../../src/modules/olMap/utils/olStyleUtils';
-import { Point, LineString, Polygon, Geometry } from 'ol/geom';
+import { Point, LineString, Polygon, Geometry, MultiLineString } from 'ol/geom';
 import { Feature } from 'ol';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
@@ -38,6 +38,7 @@ import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import CircleStyle from 'ol/style/Circle';
 import { hexToRgb } from '../../../../src/utils/colors';
+import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../../../src/modules/olMap/ol/geodesic/geodesicGeometry';
 
 const Rgb_Black = [0, 0, 0];
 const Expected_Text_Font = 'normal 16px Open Sans';
@@ -52,6 +53,7 @@ const environmentService = {
 };
 
 const iconServiceMock = { decodeColor: () => [0, 0, 0] };
+const mapMock = { getPixelFromCoordinate: () => [0, 0] };
 
 const mapServiceMock = {
 	getSrid: () => 3857,
@@ -135,6 +137,9 @@ describe('measureStyleFunction', () => {
 		[1, 0]
 	]);
 	const feature = new Feature({ geometry: geometry });
+	const featureWithGeodesic = new Feature({ geometry: geometry });
+	const geodesic = new GeodesicGeometry(featureWithGeodesic, mapMock);
+	featureWithGeodesic.set(GEODESIC_FEATURE_PROPERTY, geodesic);
 	const resolution = 1;
 	it('should create styles', () => {
 		const styles = measureStyleFunction(feature, resolution);
@@ -167,6 +172,48 @@ describe('measureStyleFunction', () => {
 		expect(circleStyle).toBeTruthy();
 	});
 
+	it('should have an empty style for an empty polygon', () => {
+		const emptyFeature = new Feature({ geometry: new Polygon([]) });
+		const feature = new Feature({
+			geometry: new Polygon([
+				[
+					[0, 0],
+					[0, 1],
+					[1, 0]
+				]
+			])
+		});
+		const emptyStyles = measureStyleFunction(emptyFeature, resolution);
+		const styles = measureStyleFunction(feature, resolution);
+
+		expect(emptyStyles).toHaveSize(2);
+		expect(emptyStyles[1].getStroke()).toBeNull();
+		expect(emptyStyles[1].getFill()).toBeNull();
+		expect(styles).toHaveSize(2);
+		expect(styles[1].getGeometryFunction()).not.toBeNull();
+	});
+
+	it('should have an empty style for an empty multiLineString', () => {
+		const emptyFeature = new Feature({ geometry: new MultiLineString([]) });
+		const feature = new Feature({
+			geometry: new MultiLineString([
+				[
+					[0, 0],
+					[0, 1],
+					[1, 0]
+				]
+			])
+		});
+		const emptyStyles = measureStyleFunction(emptyFeature, resolution);
+		const styles = measureStyleFunction(feature, resolution);
+
+		expect(emptyStyles).toHaveSize(2);
+		expect(emptyStyles[1].getStroke()).toBeNull();
+		expect(emptyStyles[1].getFill()).toBeNull();
+		expect(styles).toHaveSize(2);
+		expect(styles[1].getGeometryFunction()).not.toBeNull();
+	});
+
 	it('should have a fallback-style', () => {
 		const styles = measureStyleFunction(feature, null);
 
@@ -177,7 +224,23 @@ describe('measureStyleFunction', () => {
 		expect(styles[1].getFill().getColor()).toEqual([255, 0, 0, 0.4]);
 	});
 
-	it('should have a ruler-style with renderer-function', () => {
+	it('should have a linear ruler-style with renderer-function', () => {
+		const styles = measureStyleFunction(feature, resolution);
+
+		const rulerStyle = styles.find((style) => style.getRenderer != null);
+
+		expect(rulerStyle).toBeDefined();
+	});
+
+	it('should have a geodesic ruler-style with renderer-function', () => {
+		const geometry = new LineString([
+			[0, 0],
+			[1, 0]
+		]);
+		const feature = new Feature({ geometry: geometry });
+		const geodesic = new GeodesicGeometry(feature);
+		spyOn(geodesic, 'getCalculationStatus').and.returnValue(GEODESIC_CALCULATION_STATUS.ACTIVE);
+		feature.set(GEODESIC_FEATURE_PROPERTY, geodesic);
 		const styles = measureStyleFunction(feature, resolution);
 
 		const rulerStyle = styles.find((style) => style.getRenderer != null);
@@ -188,7 +251,7 @@ describe('measureStyleFunction', () => {
 	it('should have a ruler-style with renderer-function, which uses customContextRenderFunction', () => {
 		spyOn(mapServiceMock, 'calcLength').and.returnValue(1);
 		const styles = measureStyleFunction(feature, resolution);
-		const stateMock = { context: null, geometry: geometry, pixelRatio: 1, resolution: 1, customContextRenderFunction: () => {} };
+		const stateMock = { context: null, geometry: geometry, feature: feature, pixelRatio: 1, resolution: 1, customContextRenderFunction: () => {} };
 		const spy = spyOn(stateMock, 'customContextRenderFunction');
 		const rulerStyle = styles.find((style) => style.getRenderer != null && typeof style.getRenderer() == 'function');
 		rulerStyle.getRenderer()(
@@ -202,7 +265,7 @@ describe('measureStyleFunction', () => {
 		expect(spy).toHaveBeenCalled();
 	});
 
-	it('should draw to context with ruler-style', () => {
+	it('should draw to context with linear ruler-style', () => {
 		const pixelCoordinates = [
 			[0, 0],
 			[1, 1]
@@ -216,11 +279,39 @@ describe('measureStyleFunction', () => {
 			setLineDash: () => {}
 		};
 		spyOn(mapServiceMock, 'calcLength').and.returnValue(1);
-		const stateMock = { context: contextMock, geometry: feature.getGeometry() };
+		const stateMock = { context: contextMock, geometry: feature.getGeometry(), feature: feature };
 		const styles = measureStyleFunction(feature, resolution);
 		const rulerStyle = styles.find((style) => style.getRenderer());
 
 		const contextMoveToSpy = spyOn(contextMock, 'moveTo');
+		const customRenderer = rulerStyle.getRenderer();
+		customRenderer(pixelCoordinates, stateMock);
+
+		expect(contextMoveToSpy).toHaveBeenCalled();
+	});
+
+	it('should draw to context with geodetic ruler-style', () => {
+		const pixelCoordinates = [
+			[0, 0],
+			[1, 1]
+		];
+		const contextMock = {
+			canvas: { width: 100, height: 100, style: { width: 100, height: 100 } },
+			stroke: () => new Stroke(),
+			beginPath: () => {},
+			moveTo: () => {},
+			lineTo: () => {},
+			setLineDash: () => {}
+		};
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(1);
+		const stateMock = { context: contextMock, geometry: feature.getGeometry(), feature: featureWithGeodesic };
+		spyOn(geodesic, 'getCalculationStatus').and.returnValue(GEODESIC_CALCULATION_STATUS.ACTIVE);
+		const styles = measureStyleFunction(featureWithGeodesic, resolution);
+		const rulerStyle = styles.find((style) => style.getRenderer());
+
+		const contextMoveToSpy = spyOn(contextMock, 'moveTo');
+
+		expect(rulerStyle.getGeometryFunction()(featureWithGeodesic)).toEqual(jasmine.any(MultiLineString));
 		const customRenderer = rulerStyle.getRenderer();
 		customRenderer(pixelCoordinates, stateMock);
 
@@ -760,7 +851,7 @@ describe('modifyStyleFunction', () => {
 });
 
 describe('selectStyleFunction', () => {
-	it('should create a stylefunction', () => {
+	it('should create a styleFunction', () => {
 		const styleFunction = selectStyleFunction();
 
 		expect(styleFunction).toBeDefined();
@@ -813,6 +904,48 @@ describe('selectStyleFunction', () => {
 		expect(geometryFunction(lineFeature)).toBeTruthy();
 		expect(geometryFunction(pointFeature)).toBeTruthy();
 		expect(geometryFunction(polygonFeature)).toBeTruthy();
+	});
+
+	it('should append a style for features with geodesic geometry', () => {
+		const geometry = new LineString([
+			[0, 0],
+			[1, 0]
+		]);
+		const featureWithStyle = new Feature({ geometry: geometry });
+		featureWithStyle.setStyle(defaultStyleFunction([0, 0, 0, 0]));
+		const featureWithEmptyFirstStyle = new Feature({ geometry: geometry });
+		const featureWithoutStyles = new Feature({ geometry: geometry });
+		featureWithEmptyFirstStyle.setStyle(() => []);
+		const styleFunction = selectStyleFunction();
+		featureWithStyle.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(featureWithStyle));
+		featureWithEmptyFirstStyle.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(featureWithEmptyFirstStyle));
+		featureWithoutStyles.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(featureWithoutStyles));
+
+		expect(styleFunction(featureWithStyle).length).toBe(3);
+		expect(
+			styleFunction(featureWithStyle)
+				.find((style) => style.getGeometryFunction())
+				.getStroke()
+				.getLineDash()
+		).toEqual([8]);
+		expect(
+			styleFunction(featureWithStyle)
+				.find((style) => style.getGeometryFunction())
+				.getGeometryFunction()(featureWithStyle)
+		).toEqual(jasmine.any(LineString));
+		expect(styleFunction(featureWithEmptyFirstStyle).length).toBe(3);
+		expect(
+			styleFunction(featureWithEmptyFirstStyle)
+				.find((style) => style.getGeometryFunction())
+				.getStroke()
+				.getLineDash()
+		).toEqual([8]);
+		expect(
+			styleFunction(featureWithEmptyFirstStyle)
+				.find((style) => style.getGeometryFunction())
+				.getGeometryFunction()(featureWithEmptyFirstStyle)
+		).toEqual(jasmine.any(LineString));
+		expect(styleFunction(featureWithoutStyles).length).toBe(1);
 	});
 });
 
