@@ -453,19 +453,6 @@ export const renderLinearRulerSegments = (pixelCoordinates, state, contextRender
 
 	const getMeasuredLength = () => {
 		const alreadyMeasuredLength = state.geometry ? state.geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY) : null;
-		if (!alreadyMeasuredLength) {
-			/**  Usually state.geometry should have the custom property PROJECTED_LENGTH_GEOMETRY_PROPERTY.
-			 * This property is provided by a geodesicGeometry object in the processing steps before rendering occur.
-			 * If this property is missing, we try to get this property from the state.feature with the
-			 * related geodesic (geodesicGeometry object) property.
-			 */
-			const geodesic = state.feature ? state.feature.get(GEODESIC_FEATURE_PROPERTY) : null;
-			const geodesicLength = geodesic?.getGeometry()?.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY);
-			if (geodesicLength) {
-				return geodesicLength;
-			}
-		}
-
 		return alreadyMeasuredLength ?? mapService.calcLength(lineString.getCoordinates());
 	};
 
@@ -546,21 +533,11 @@ export const renderLinearRulerSegments = (pixelCoordinates, state, contextRender
 };
 
 export const renderGeodesicRulerSegments = (pixelCoordinates, state, contextRenderFunction, geodesic) => {
-	const { MapService: mapService } = $injector.inject('MapService');
 	const geometry = state.geometry.clone();
 	const resolution = state.resolution;
 	const pixelRatio = state.pixelRatio;
 
-	const getMeasuredLength = () => {
-		const alreadyMeasuredLength = state.geometry ? state.geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY) : null;
-		if (!alreadyMeasuredLength) {
-			const geodesic = state.feature ? state.feature.get(GEODESIC_FEATURE_PROPERTY) : null;
-			return geodesic?.length;
-		}
-		return alreadyMeasuredLength ?? mapService.calcLength(getLineString(geometry).getCoordinates());
-	};
-
-	const projectedGeometryLength = getMeasuredLength();
+	const projectedGeometryLength = geodesic.length;
 	const delta = getPartitionDelta(projectedGeometryLength, resolution);
 	const partitionLength = delta * projectedGeometryLength;
 
@@ -572,12 +549,12 @@ export const renderGeodesicRulerSegments = (pixelCoordinates, state, contextRend
 
 	const tickStroke = new Stroke({
 		color: Red_Color.concat([1]),
-		width: 4,
+		width: 4 * pixelRatio,
 		lineCap: 'butt'
 	});
 
 	const drawTick = (contextRenderer, tick) => {
-		const distance = 10;
+		const distance = 10 * pixelRatio;
 		const [x, y, angle] = tick;
 		const fromPoint = [x * pixelRatio, y * pixelRatio];
 		const toPoint = polarStakeOut(fromPoint, angle, distance);

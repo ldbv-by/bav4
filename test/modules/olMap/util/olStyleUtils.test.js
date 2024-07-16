@@ -23,7 +23,8 @@ import {
 	DEFAULT_TEXT,
 	getSizeFrom,
 	textScaleToKeyword,
-	getTransparentImageStyle
+	getTransparentImageStyle,
+	renderGeodesicRulerSegments
 } from '../../../../src/modules/olMap/utils/olStyleUtils';
 import { Point, LineString, Polygon, Geometry, MultiLineString } from 'ol/geom';
 import { Feature } from 'ol';
@@ -39,6 +40,7 @@ import { $injector } from '../../../../src/injection';
 import CircleStyle from 'ol/style/Circle';
 import { hexToRgb } from '../../../../src/utils/colors';
 import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../../../src/modules/olMap/ol/geodesic/geodesicGeometry';
+import { PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../../../src/modules/olMap/utils/olGeometryUtils';
 
 const Rgb_Black = [0, 0, 0];
 const Expected_Text_Font = 'normal 16px Open Sans';
@@ -410,6 +412,50 @@ describe('renderLinearRulerSegments', () => {
 		renderLinearRulerSegments(pixelCoordinates, stateMock, contextRendererStub);
 
 		expect(actualStrokes).toBeTruthy();
+	});
+});
+
+describe('renderGeodesicRulerSegments', () => {
+	const geometry = new LineString([
+		[0, 0],
+		[1, 0]
+	]);
+	const feature = new Feature({ geometry: geometry });
+	const featureWithGeodesic = new Feature({ geometry: geometry });
+	const geodesic = new GeodesicGeometry(featureWithGeodesic, mapMock);
+	featureWithGeodesic.set(GEODESIC_FEATURE_PROPERTY, geodesic);
+
+	const resolution = 1;
+	it('should call contextRenderer', () => {
+		const contextRenderer = jasmine.createSpy();
+		const stateMock = { geometry: feature.getGeometry(), resolution: resolution };
+		const pixelCoordinates = [
+			[0, 0],
+			[0, 1]
+		];
+
+		renderGeodesicRulerSegments(pixelCoordinates, stateMock, contextRenderer, geodesic);
+		expect(contextRenderer).toHaveBeenCalledTimes(1 + 1); //baseStroke +  tickStroke
+		expect(contextRenderer).toHaveBeenCalledWith(jasmine.any(Geometry), jasmine.any(Fill), jasmine.any(Stroke));
+	});
+
+	it('should call contextRenderer with mainTickStroke', () => {
+		const expectedStroke = new Stroke({
+			color: [255, 0, 0, 1],
+			width: 3
+		});
+		const actualStrokes = [];
+		const contextRendererStub = (geometry, fill, stroke) => {
+			actualStrokes.push(stroke);
+		};
+		const stateMock = { geometry: feature.getGeometry(), resolution: resolution, pixelRatio: 1, feature: featureWithGeodesic };
+		const pixelCoordinates = [
+			[0, 0],
+			[0, 1]
+		];
+		renderGeodesicRulerSegments(pixelCoordinates, stateMock, contextRendererStub, geodesic);
+
+		expect(actualStrokes).toContain(expectedStroke);
 	});
 });
 
