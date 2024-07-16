@@ -87,11 +87,6 @@ export const FileStorageServiceDataTypes = Object.freeze({
 });
 
 /**
- * Fallback file id e.g. when no backend id available
- */
-export const FileStorageFallbackFileId = 'f_fallbackFileId';
-
-/**
  * BVV service for persisting and loading ASCII based geo-data using a RESTful endpoint.
  * @class
  * @author taulinger
