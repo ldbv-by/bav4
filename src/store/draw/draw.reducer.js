@@ -57,6 +57,7 @@ export const initialState = {
 	description: null,
 	/**
 	 * @type {EventLike<DrawFileSaveResult>}
+	 * @deprecated
 	 */
 	fileSaveResult: new EventLike(null),
 	/**

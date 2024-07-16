@@ -15,6 +15,7 @@ export const KML_EMPTY_CONTENT =
  * Todo: Let's move the synchronization of the shared slice-of-state to a plugin (e.g. SharePlugin)
  * @class
  * @author thiloSchlemmer
+ * @deprecated
  */
 export class InteractionStorageService {
 	/**

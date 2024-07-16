@@ -24,6 +24,7 @@ export const initialState = {
 	mode: null,
 	/**
 	 * @type {MeasureFileSaveResult}
+	 * @deprecated
 	 */
 	fileSaveResult: new EventLike(null),
 	/**
