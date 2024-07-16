@@ -427,16 +427,24 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const deleteTopicLevelTree = (topic) => {
-			// eslint-disable-next-line promise/prefer-await-to-then
-			this._topicsService.delete(topic._id).then(
-				() => {
-					this.signal(Update_Topics, this.#topics);
-				},
-				(error) => {
-					// eslint-disable-next-line no-console
-					console.log('🚀 ~ AdminPanel ~ deleteTopicLevelTree ~ error:', error);
-				}
-			);
+			// todo remove this
+			this.#topics = this.#topics.filter((aTopic) => aTopic.id !== topic._id);
+
+			this.#currentTopicId = this.#topics[0].id;
+			this._updateCatalog(this.#currentTopicId);
+
+			// todo and replace with this
+			//  // eslint-disable-next-line promise/prefer-await-to-then
+			// this._topicsService.delete(topic._id).then(
+			// 	() => {
+
+			// 		this.signal(Update_Topics, this.#topics);
+			// 	},
+			// 	(error) => {
+			// 		// eslint-disable-next-line no-console
+			// 		console.log('🚀 ~ AdminPanel ~ deleteTopicLevelTree ~ error:', error);
+			// 	}
+			// );
 		};
 
 		const toggleTopicLevelTreeDisabled = (topic) => {
