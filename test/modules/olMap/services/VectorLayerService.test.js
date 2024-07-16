@@ -104,6 +104,12 @@ describe('VectorLayerService', () => {
 
 				expect(bvvIconUrlFunction(iconUrl)).toBe(iconUrl);
 			});
+
+			it('provides a function that leaves a value which is not an URL untouched', () => {
+				const iconUrl = 'data:image/svg+xml;base64,PHN2ZyBpZD0ibWFya2VyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC==';
+
+				expect(bvvIconUrlFunction(iconUrl)).toBe(iconUrl);
+			});
 		});
 	});
 
