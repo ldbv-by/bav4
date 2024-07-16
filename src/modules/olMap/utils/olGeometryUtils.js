@@ -290,7 +290,7 @@ export const moveParallel = (fromPoint, toPoint, distance) => {
  * @returns {Coordinate}
  */
 export const polarStakeOut = (fromCoordinate, angle, distance) => {
-	const radian = (angle * Math.PI) / 180;
+	const radian = angle * (Math.PI / 180);
 	return [Math.cos(radian) * distance + fromCoordinate[0], Math.sin(radian) * distance + fromCoordinate[1]];
 };
 
