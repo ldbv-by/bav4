@@ -423,7 +423,6 @@ const getRulerStyle = (feature) => {
 			if (geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE) {
 				return geodesic.area ? geodesic.getPolygon() : geodesic.getGeometry();
 			}
-
 			if (feature.getGeometry() instanceof Polygon) {
 				if (finishOnFirstPoint) {
 					return feature.getGeometry();

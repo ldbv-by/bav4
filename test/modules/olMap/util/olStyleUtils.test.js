@@ -40,7 +40,6 @@ import { $injector } from '../../../../src/injection';
 import CircleStyle from 'ol/style/Circle';
 import { hexToRgb } from '../../../../src/utils/colors';
 import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../../../src/modules/olMap/ol/geodesic/geodesicGeometry';
-import { PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../../../src/modules/olMap/utils/olGeometryUtils';
 
 const Rgb_Black = [0, 0, 0];
 const Expected_Text_Font = 'normal 16px Open Sans';
@@ -224,6 +223,40 @@ describe('measureStyleFunction', () => {
 		expect(styles[1].getStroke().getLineDash()).toEqual([8]);
 		expect(styles[1].getStroke().getWidth()).toBe(2);
 		expect(styles[1].getFill().getColor()).toEqual([255, 0, 0, 0.4]);
+	});
+
+	it('should have a ruler-style with geometry-function for unfinished polygon', () => {
+		const polygon = new Polygon([
+			[
+				[0, 0],
+				[0, 1],
+				[1, 0]
+			]
+		]);
+		const unfinishedPolygonFeature = new Feature({ geometry: polygon });
+		unfinishedPolygonFeature.set('finishOnFirstPoint', false);
+		const finishedPolygonFeature = new Feature({ geometry: polygon });
+		finishedPolygonFeature.set('finishOnFirstPoint', true);
+
+		const styles = measureStyleFunction(unfinishedPolygonFeature, resolution);
+
+		const geometryFunction = styles[1].getGeometryFunction();
+		expect(geometryFunction(unfinishedPolygonFeature)).toEqual(jasmine.any(LineString));
+		expect(geometryFunction(finishedPolygonFeature)).toEqual(jasmine.any(Polygon));
+	});
+
+	it('should have a ruler-style with geometry-function for other than polygon', () => {
+		const lineString = new LineString([
+			[0, 0],
+			[0, 1],
+			[1, 0]
+		]);
+		const lineStringFeature = new Feature({ geometry: lineString });
+
+		const styles = measureStyleFunction(lineStringFeature, resolution);
+
+		const geometryFunction = styles[1].getGeometryFunction();
+		expect(geometryFunction(lineStringFeature)).toBe(lineString);
 	});
 
 	it('should have a linear ruler-style with renderer-function', () => {
