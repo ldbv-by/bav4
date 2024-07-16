@@ -43,7 +43,7 @@ import { createUniqueId } from '../utils/numberUtils';
  * @async
  * @name FileStorageService#get
  * @param {String} fileId
- * @returns {Promise<string>} content
+ * @returns {Promise<FileLoadResult>} content
  */
 
 /**
