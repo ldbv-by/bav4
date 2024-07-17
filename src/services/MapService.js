@@ -56,7 +56,7 @@ export class MapService {
 	 * When a coordinate or a list of coordinates is given the list contains all
 	 * suitable CoordinateRepresentation regarding this coordinate(s).
 	 *
-	 * Note: The most specific list of CoordinateRepresentation will be returned when the argument is a only a single coordinate.
+	 * Note: The most specific list of CoordinateRepresentation will be returned when the argument is only a single coordinate.
 	 *
 	 * The returned list is dependent on whether all coordinates are inside the extent
 	 * of the supported local projected system (if defined).
