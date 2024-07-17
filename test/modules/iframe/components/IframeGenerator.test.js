@@ -1,4 +1,5 @@
 import { PathParameters } from '../../../../src/domain/pathParameters';
+import { QueryParameters } from '../../../../src/domain/queryParameters';
 import { $injector } from '../../../../src/injection';
 import { Switch } from '../../../../src/modules/commons/components/switch/Switch';
 import { IframeGenerator } from '../../../../src/modules/iframe/components/generator/IframeGenerator';
@@ -16,6 +17,13 @@ describe('IframeGenerator', () => {
 	const shareServiceMock = {
 		encodeState: () => {},
 		copyToClipboard() {}
+	};
+
+	const getExtraParameters = () => {
+		const queryParameters = {};
+		queryParameters[QueryParameters.EC_MAP_ACTIVATION] = true;
+		queryParameters[QueryParameters.EC_LINK_TO_APP] = true;
+		return queryParameters;
 	};
 
 	const setup = () => {
@@ -81,7 +89,7 @@ describe('IframeGenerator', () => {
 			const iframeElement = element.shadowRoot.querySelector('iframe');
 
 			expect(iframeElement.src).toBe(expectedUrl);
-			expect(shareServiceSpy).toHaveBeenCalledWith({}, [PathParameters.EMBED]);
+			expect(shareServiceSpy).toHaveBeenCalledWith(getExtraParameters(), [PathParameters.EMBED]);
 		});
 
 		it('shows a textarea with a embedable code', async () => {
@@ -95,7 +103,7 @@ describe('IframeGenerator', () => {
 			expect(textAreaElement.value).toBe(
 				`<iframe src=${expectedUrl} width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>`
 			);
-			expect(shareServiceSpy).toHaveBeenCalledWith({}, [PathParameters.EMBED]);
+			expect(shareServiceSpy).toHaveBeenCalledWith(getExtraParameters(), [PathParameters.EMBED]);
 		});
 
 		it('shows a ba-icon to copy code to clipboard', async () => {
@@ -112,7 +120,7 @@ describe('IframeGenerator', () => {
 	describe('when user requests the iframe code', () => {
 		it('copies the example html code to clipboard', async () => {
 			const expectedUrl = 'https://myhost/app/embed.html?param=foo';
-			spyOn(shareServiceMock, 'encodeState').withArgs({}, [PathParameters.EMBED]).and.returnValue(expectedUrl);
+			spyOn(shareServiceMock, 'encodeState').withArgs(getExtraParameters(), [PathParameters.EMBED]).and.returnValue(expectedUrl);
 			const element = await setup();
 			const clipboardSpy = spyOn(shareServiceMock, 'copyToClipboard').and.callThrough();
 
@@ -151,7 +159,7 @@ describe('IframeGenerator', () => {
 	describe('when input values for size changes', () => {
 		it('renders iframe with the changed values', async () => {
 			const expectedUrl = 'https://myhost/app/embed.html?param=foo';
-			spyOn(shareServiceMock, 'encodeState').withArgs({}, [PathParameters.EMBED]).and.returnValue(expectedUrl);
+			spyOn(shareServiceMock, 'encodeState').withArgs(getExtraParameters(), [PathParameters.EMBED]).and.returnValue(expectedUrl);
 			const element = await setup();
 			const textElement = element.shadowRoot.querySelector('#iframe_code');
 			const widthInputElement = element.shadowRoot.querySelector('#iframe_width');
@@ -185,7 +193,7 @@ describe('IframeGenerator', () => {
 
 		it('does NOT render the iframe when values are out of range', async () => {
 			const expectedUrl = 'https://myhost/app/embed.html?param=foo';
-			spyOn(shareServiceMock, 'encodeState').withArgs({}, [PathParameters.EMBED]).and.returnValue(expectedUrl);
+			spyOn(shareServiceMock, 'encodeState').withArgs(getExtraParameters(), [PathParameters.EMBED]).and.returnValue(expectedUrl);
 			const element = await setup();
 			const textElement = element.shadowRoot.querySelector('#iframe_code');
 			const widthInputElement = element.shadowRoot.querySelector('#iframe_width');
@@ -219,7 +227,7 @@ describe('IframeGenerator', () => {
 
 		it('renders iframe with the changed slider values', async () => {
 			const expectedUrl = 'https://myhost/app/embed.html?param=foo';
-			spyOn(shareServiceMock, 'encodeState').withArgs({}, [PathParameters.EMBED]).and.returnValue(expectedUrl);
+			spyOn(shareServiceMock, 'encodeState').withArgs(getExtraParameters(), [PathParameters.EMBED]).and.returnValue(expectedUrl);
 			const element = await setup();
 			const textElement = element.shadowRoot.querySelector('#iframe_code');
 			const widthInputElement = element.shadowRoot.querySelector('#iframe_slider_width');
@@ -253,7 +261,7 @@ describe('IframeGenerator', () => {
 
 		it('renders iframe with the min slider values', async () => {
 			const expectedUrl = 'https://myhost/app/embed.html?param=foo';
-			spyOn(shareServiceMock, 'encodeState').withArgs({}, [PathParameters.EMBED]).and.returnValue(expectedUrl);
+			spyOn(shareServiceMock, 'encodeState').withArgs(getExtraParameters(), [PathParameters.EMBED]).and.returnValue(expectedUrl);
 			const element = await setup();
 			const textElement = element.shadowRoot.querySelector('#iframe_code');
 			const widthInputElement = element.shadowRoot.querySelector('#iframe_slider_width');
@@ -287,7 +295,7 @@ describe('IframeGenerator', () => {
 
 		it('renders iframe with the max slider values', async () => {
 			const expectedUrl = 'https://myhost/app/embed.html?param=foo';
-			spyOn(shareServiceMock, 'encodeState').withArgs({}, [PathParameters.EMBED]).and.returnValue(expectedUrl);
+			spyOn(shareServiceMock, 'encodeState').withArgs(getExtraParameters(), [PathParameters.EMBED]).and.returnValue(expectedUrl);
 			const element = await setup();
 
 			const textElement = element.shadowRoot.querySelector('#iframe_code');
@@ -322,7 +330,7 @@ describe('IframeGenerator', () => {
 
 		it('toggles auto width', async () => {
 			const expectedUrl = 'https://myhost/app/embed.html?param=foo';
-			spyOn(shareServiceMock, 'encodeState').withArgs({}, [PathParameters.EMBED]).and.returnValue(expectedUrl);
+			spyOn(shareServiceMock, 'encodeState').withArgs(getExtraParameters(), [PathParameters.EMBED]).and.returnValue(expectedUrl);
 			const element = await setup();
 			const toggle = element.shadowRoot.querySelector('#toggleAutoWidth');
 			const textElement = element.shadowRoot.querySelector('#iframe_code');
@@ -350,21 +358,24 @@ describe('IframeGenerator', () => {
 
 	describe('when iframe source changes by user interaction (drag&zoom)', () => {
 		it('renders iframe with the changed values', async () => {
-			const expectedUrl = 'https://myhost/app/embed.html?param=foo';
-			spyOn(shareServiceMock, 'encodeState').withArgs({}, [PathParameters.EMBED]).and.returnValue(expectedUrl);
+			const initialUrl = 'https://myhost/app/embed.html?param=foo';
+			const updatedUrl = 'https://myhost/app/embed.html?param=bar&ec_map_activation=true&ec_link_to_app=true';
+			spyOn(shareServiceMock, 'encodeState').withArgs(getExtraParameters(), [PathParameters.EMBED]).and.returnValue(initialUrl);
 			const element = await setup();
 
 			const textElement = element.shadowRoot.querySelector('#iframe_code');
 			const iframeElement = element.shadowRoot.querySelector('iframe');
 
 			expect(textElement.value).toBe(
-				`<iframe src=${expectedUrl} width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>`
+				`<iframe src=${initialUrl} width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>`
 			);
 
-			iframeElement.setAttribute(IFRAME_ENCODED_STATE, 'foo');
+			iframeElement.setAttribute(IFRAME_ENCODED_STATE, updatedUrl);
 			await TestUtils.timeout();
 
-			expect(textElement.value).toBe("<iframe src=foo width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>");
+			expect(textElement.value).toBe(
+				`<iframe src=${updatedUrl} width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>`
+			);
 		});
 	});
 });

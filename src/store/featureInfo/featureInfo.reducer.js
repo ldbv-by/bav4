@@ -30,7 +30,7 @@ export const initialState = {
 	querying: false,
 
 	/**
-	 * Changes when current FeatureInfo request should be aborted and/or results should be reseted.
+	 * Changes when current FeatureInfo request should be aborted and/or results should be reset.
 	 * Contains no payload.
 	 * @property {EvenLike | null}
 	 */
@@ -69,7 +69,6 @@ export const featureInfoReducer = (state = initialState, action) => {
 		case FEATURE_INFO_REQUEST_ABORT:
 			return {
 				...state,
-				current: [],
 				queries: [],
 				aborted: payload,
 				querying: false

@@ -23,7 +23,7 @@ export const provide = (lang) => {
 			return {
 				//the first part of the snake_case key should be the name of the related module
 				auth_passwordCredentialPanel_title: 'Anmelden für:',
-				auth_passwordCredentialPanel_credential_username: 'Name',
+				auth_passwordCredentialPanel_credential_username: 'Kennung',
 				auth_passwordCredentialPanel_credential_password: 'Passwort',
 				auth_passwordCredentialPanel_submit: 'Senden',
 				auth_passwordCredentialPanel_credential_failed: 'Anmeldung fehlgeschlagen. Name oder Passwort ungültig!',
@@ -33,7 +33,7 @@ export const provide = (lang) => {
 				auth_passwordCredentialPanel_footer_register_information: (params) =>
 					html`Hier finden Sie weitere <a target="_blank" href="${params[0]}">Informationen</a>.`,
 				auth_passwordCredentialPanel_footer_forgot_login: 'Kennung vergessen?',
-				auth_passwordCredentialPanel_footer_forgot_password: 'Password vergessen?'
+				auth_passwordCredentialPanel_footer_forgot_password: 'Passwort vergessen?'
 			};
 
 		default:

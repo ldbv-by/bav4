@@ -1,6 +1,7 @@
 export const OPEN_CLOSED_CHANGED = 'navigationRail/open';
 export const ADD_TAB_ID = 'navigationRail/visitedTabIds';
 export const MEDIA_QUERY = '(orientation: landscape) and (max-width: 80em)';
+import { TabIds } from '../../domain/mainMenu';
 
 export const navigationRailReducer = (state, action) => {
 	const { type, payload } = action;
@@ -22,17 +23,17 @@ export const navigationRailReducer = (state, action) => {
 };
 
 /**
- * Provides a media reducer which has no initial state
- * @returns media reducer
+ * Provides a navigationRail reducer which has no initial state
+ * @returns navigationRail reducer
  */
 export const createNoInitialStateNavigationRailReducer = () => {
 	return (state = null, action) => navigationRailReducer(state, action);
 };
 
 /**
- * Provides a media reducer which initial state is obtained from the window object.
+ * Provides a navigationRail reducer which initial state is obtained from the window object.
  * @param {Window} _window
- * @returns media reducer
+ * @returns navigationRail reducer
  */
 export const createNavigationRailReducer = (_window = window) => {
 	const initialState = {
@@ -43,7 +44,7 @@ export const createNavigationRailReducer = (_window = window) => {
 		/**
 		 * @property {number}
 		 */
-		visitedTabIds: []
+		visitedTabIds: [TabIds.FEATUREINFO, TabIds.ROUTING]
 	};
 
 	return (state = initialState, action) => navigationRailReducer(state, action);

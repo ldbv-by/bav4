@@ -26,6 +26,10 @@ import { resetHighlightedSegments, setHighlightedSegments } from '../../../../st
  * @property {string} color the stringified color as rgba-value
  */
 
+const Color_Transparent = 'transparent';
+const Color_Unknown = '#eee';
+const Color_Unknown_Contrast = '#999'; // a color as visual counterpart for elements with transparent fill, the contrast color should be used to determine the form of the elements (i.e. used as border color)
+
 const Update_Items = 'update_items';
 const Update_Label = 'update_label';
 const Update_Collapsed_Chart = 'update_collapsed_chart';
@@ -38,11 +42,15 @@ const Update_Collapsed_Chart = 'update_collapsed_chart';
  * @author thiloSchlemmer
  */
 export class RouteChart extends MvuElement {
+	#translationService;
+	#unitsService;
+	#chart;
+
 	constructor() {
 		super({ items: [], label: null, collapsedChart: false });
-		const { TranslationService } = $injector.inject('TranslationService');
-		this._translationService = TranslationService;
-		this._chart = null;
+		const { TranslationService, UnitsService } = $injector.inject('TranslationService', 'UnitsService');
+		this.#translationService = TranslationService;
+		this.#unitsService = UnitsService;
 	}
 
 	update(type, data, model) {
@@ -63,7 +71,7 @@ export class RouteChart extends MvuElement {
 	createView(model) {
 		const { items, label, collapsedChart } = model;
 
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key) => this.#translationService.translate(key);
 		const toggleCollapseChart = () => {
 			this.signal(Update_Collapsed_Chart, !collapsedChart);
 		};
@@ -85,20 +93,10 @@ export class RouteChart extends MvuElement {
 		const getLegendStyle = (item) => {
 			const style = 'background-color:' + item.color;
 
-			return item.image ? `${style}; background-image: ${item.image}` : style;
+			return item.bordercolor ? `${style}; border-style:solid;border-width:2px;border-color: ${item.bordercolor}` : style;
 		};
 
-		const getLegendValue = (item) => {
-			const value = item.data.absolute;
-
-			const formattedInMeter = (value) => value.toFixed(0) + ' m';
-			const formattedInKilometer = (value) => {
-				const meterInKilometer = (value) => value / 1000;
-				return value < 5000 ? meterInKilometer(value).toFixed(2) + ' km' : meterInKilometer(value).toFixed(0) + ' km';
-			};
-
-			return value < 1000 ? formattedInMeter(value) : formattedInKilometer(value);
-		};
+		const getLegendValue = (item) => this.#unitsService.formatDistance(item.data.absolute);
 
 		const onMouseOver = (item) => {
 			setHighlightedSegments({ segments: item.data.segments, zoomToExtent: false });
@@ -127,8 +125,8 @@ export class RouteChart extends MvuElement {
 										@mouseout=${() => resetHighlightedSegments()}
 									>
 										<div class="legend_item" style=${getLegendStyle(legendItem)}></div>
-										<span class="legend_item_label"> ${legendItem.label}:</span>
-										<span> ${getLegendValue(legendItem)}</span>
+										<span class="legend_item_label">${legendItem.label}:</span>
+										<span class="legend_item_value">${getLegendValue(legendItem)}</span>
 									</div>
 								`
 							)}
@@ -139,17 +137,7 @@ export class RouteChart extends MvuElement {
 	}
 
 	_getChartConfig(items, title) {
-		const getLegendValue = (item) => {
-			const value = item.data.absolute;
-
-			const formattedInMeter = (value) => value.toFixed(0) + ' m';
-			const formattedInKilometer = (value) => {
-				const meterInKilometer = (value) => value / 1000;
-				return value < 5000 ? meterInKilometer(value).toFixed(2) + ' km' : meterInKilometer(value).toFixed(0) + ' km';
-			};
-
-			return value < 1000 ? formattedInMeter(value) : formattedInKilometer(value);
-		};
+		const getLegendValue = (item) => this.#unitsService.formatDistance(item.data.absolute);
 
 		const data = {
 			labels: items.map((item) => item.label),
@@ -158,6 +146,8 @@ export class RouteChart extends MvuElement {
 					label: title,
 					data: items.map((item) => (item.data.relative ? Math.max(item.data.relative, 1) : item.data.relative)),
 					backgroundColor: items.map((item) => item.color),
+					borderWidth: 1,
+					borderColor: items.map((item) => (item.color === Color_Unknown ? Color_Unknown_Contrast : Color_Transparent)),
 					hoverBorderWidth: 2,
 					hoverOffset: 4
 				}
@@ -187,21 +177,22 @@ export class RouteChart extends MvuElement {
 				},
 				borderWidth: 0,
 				borderAlign: 'inner',
-				cutout: '80%'
+				cutout: '80%',
+				layout: { padding: 3 }
 			}
 		};
 	}
 
 	_createChart(items, label) {
 		const ctx = this.shadowRoot.querySelector('.donut').getContext('2d');
-		this._chart = new Chart(ctx, this._getChartConfig(items, label));
+		this.#chart = new Chart(ctx, this._getChartConfig(items, label));
 	}
 
 	_destroyChart() {
-		if (this._chart) {
-			this._chart.clear();
-			this._chart.destroy();
-			delete this._chart;
+		if (this.#chart) {
+			this.#chart.clear();
+			this.#chart.destroy();
+			this.#chart = null;
 		}
 	}
 

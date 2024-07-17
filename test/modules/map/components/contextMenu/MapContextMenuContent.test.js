@@ -108,8 +108,20 @@ describe('OlMapContextMenuContent', () => {
 			expect(element.shadowRoot.querySelectorAll('ba-routing-chip')[0].coordinate).toBe(coordinateMock);
 		});
 
+		it('renders the content when AdministrationService returns null', async () => {
+			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([{ label: 'code42', code: 42 }]);
+			spyOn(administrationServiceMock, 'getAdministration').and.resolveTo(null);
+			const element = await setup();
+
+			element.coordinate = [1000, 2000];
+
+			await TestUtils.timeout();
+			expect(element.shadowRoot.querySelectorAll('.coordinate')[0].innerText).toEqual('-');
+			expect(element.shadowRoot.querySelectorAll('.coordinate')[1].innerText).toEqual('-');
+		});
+
 		it('renders selectable content', async () => {
-			// HINT: the existence of the behavior (user select text) is driven by css-classes specified in main.css and baElement.css.
+			// HINT: the existence of the behavior (user select text) is driven by css-classes specified in main.css and mvuElement.css.
 			// All elements are not selectable by default, but can be activated with the 'selectable' class.
 			const cssClass = 'selectable';
 			const coordinateMock = [1000, 2000];
@@ -185,7 +197,7 @@ describe('OlMapContextMenuContent', () => {
 			expect(element.shadowRoot.querySelectorAll('.coordinate')[3].innerText).toEqual('-');
 		});
 
-		it('logs an error statement when Administration Service is not available', async () => {
+		it('logs an error statement when AdministrationService is not available', async () => {
 			const error = new Error('Administration Error');
 			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([{ label: 'code42', code: 42 }]);
 			spyOn(administrationServiceMock, 'getAdministration').and.returnValue(Promise.reject(error));

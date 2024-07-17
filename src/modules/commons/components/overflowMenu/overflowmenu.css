@@ -45,6 +45,19 @@
 	background-color: var(--primary-bg-color);
 	z-index: 100;
 	pointer-events: auto;
+	transform-origin: top right;
+	animation-name: openScale;
+	animation-duration: var(--animation-duration-medium-open);
+	animation-iteration-count: 1;
+}
+
+@keyframes openScale {
+	0% {
+		scale: 0;
+	}
+	100% {
+		scale: 1;
+	}
 }
 
 .sector0 {

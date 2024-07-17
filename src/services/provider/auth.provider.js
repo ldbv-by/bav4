@@ -30,7 +30,7 @@ export const bvvSignInProvider = async (credential = null) => {
 			case 200:
 				return await result.json();
 			case 400:
-				return [];
+				return false;
 			default:
 				throw new Error(`Sign in not possible: Http-Status ${result.status}`);
 		}
@@ -82,6 +82,7 @@ export const bvvSignOutProvider = async () => {
 
 	switch (result.status) {
 		case 200:
+		case 403 /** already signed out */:
 			emitNotification(`${translationService.translate('global_signOut_success')}`, LevelTypes.INFO);
 			return true;
 		default:
@@ -120,6 +121,7 @@ const createCredentialPanel = (authenticateFunction, onCloseFunction, roles) => 
 		.authenticate=${authenticateFunction}
 		.onClose=${onCloseFunction}
 		.footer=${footer}
+		.useForm=${true}
 	></ba-auth-password-credential-panel>`;
 };
 

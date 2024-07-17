@@ -40,7 +40,7 @@ import CircleStyle from 'ol/style/Circle';
 import { hexToRgb } from '../../../../src/utils/colors';
 
 const Rgb_Black = [0, 0, 0];
-const Expected_Text_Font = 'normal 16px OpenSans';
+const Expected_Text_Font = 'normal 16px Open Sans';
 
 const configService = {
 	getValue: () => {},
@@ -433,7 +433,6 @@ describe('defaultStyleFunction', () => {
 });
 
 describe('markerStyleFunction', () => {
-	const imageLoadDelayTime = 50;
 	it('should return a style', () => {
 		const styles = markerStyleFunction();
 
@@ -461,40 +460,6 @@ describe('markerStyleFunction', () => {
 		expect(image.getColor()).toEqual([190, 218, 85, 1]);
 		expect(image.getScale()).toBe(0.5);
 		expect(styles[0].getImage().getSrc()).toBe(markerIcon);
-	});
-
-	it('should return a style with a default anchor', async () => {
-		const styleOption = { color: '#BEDA55', scale: 'small', anchor: null };
-		spyOn(environmentService, 'isStandalone').and.returnValue(() => true);
-		const styles = markerStyleFunction(styleOption);
-
-		expect(styles).toBeDefined();
-		const iconStyle = styles[0].getImage();
-		expect(iconStyle).toBeTruthy();
-
-		// we must preload the IconImage and wait until the image-resource is loaded, to get valid
-		// a normalized anchor
-		iconStyle.load();
-		await TestUtils.timeout(imageLoadDelayTime);
-
-		expect(iconStyle.getAnchor()).toEqual([16, 16]); // the default markerIcon have a size of 32x32 px
-	});
-
-	it('should return a style with a specific anchor', async () => {
-		const styleOption = { color: '#BEDA55', scale: 'large', anchor: [1, 1] };
-		spyOn(environmentService, 'isStandalone').and.returnValue(() => true);
-		const styles = markerStyleFunction(styleOption);
-
-		expect(styles).toBeDefined();
-		const iconStyle = styles[0].getImage();
-		expect(iconStyle).toBeTruthy();
-
-		// we must preload the IconImage and wait until the image-resource is loaded, to get valid
-		// a normalized anchor
-		iconStyle.load();
-		await TestUtils.timeout(imageLoadDelayTime);
-
-		expect(iconStyle.getAnchor()).toEqual([32, 32]); // the default markerIcon have a size of 32x32 px
 	});
 
 	it('should return a style with a Text', () => {
@@ -563,6 +528,17 @@ describe('markerStyleFunction', () => {
 
 		expect(image.getColor()).toEqual([190, 218, 85, 1]);
 		expect(image.getScale()).toBe(0.75);
+	});
+
+	it('should return a style specified as remote raster icon', () => {
+		const styleOption = { symbolSrc: 'http://url.to/raster.resource', color: '#BEDA55', scale: 0.75 };
+		const styles = markerStyleFunction(styleOption);
+
+		expect(styles).toBeDefined();
+		const image = styles[0].getImage();
+		expect(image).toBeTruthy();
+
+		expect(styles[0].getImage().getSrc()).toBe(styleOption.symbolSrc);
 	});
 });
 
@@ -867,7 +843,7 @@ describe('defaultClusterStyleFunction', () => {
 			fill: new Fill({
 				color: [255, 255, 255]
 			}),
-			font: 'normal 16px OpenSans'
+			font: 'normal 12px Open Sans'
 		})
 	});
 
@@ -1312,7 +1288,7 @@ describe('util functions creating a text style', () => {
 	);
 	const resolution = 1;
 
-	const hasTextStyle = (style) => {
+	const hasTextStyle = (style, expectedFont = Expected_Text_Font) => {
 		if (!style) {
 			return false;
 		}
@@ -1321,7 +1297,7 @@ describe('util functions creating a text style', () => {
 			return false;
 		}
 
-		if (style.getText().getFont() !== Expected_Text_Font) {
+		if (style.getText().getFont() !== expectedFont) {
 			return false;
 		}
 		return true;
@@ -1340,7 +1316,7 @@ describe('util functions creating a text style', () => {
 		expect(markerStyles.some((style) => hasTextStyle(style))).toBeTrue();
 		expect(defaultTextStyles.some((style) => hasTextStyle(style))).toBeTrue();
 		expect(customTextStyles.some((style) => hasTextStyle(style))).toBeTrue();
-		expect(clusterStyles.some((style) => hasTextStyle(style))).toBeTrue();
+		expect(clusterStyles.some((style) => hasTextStyle(style, 'normal 12px Open Sans'))).toBeTrue();
 	});
 
 	it('does NOT creates a text style', () => {

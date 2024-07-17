@@ -3,7 +3,7 @@
  */
 import { $injector } from '../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
-import { PERMANENT_ROUTE_LAYER_ID, PERMANENT_WP_LAYER_ID, ROUTING_LAYER_ID } from '../../../../plugins/RoutingPlugin';
+import { PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID, PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID, ROUTING_LAYER_ID } from '../../../../plugins/RoutingPlugin';
 import LayerGroup from 'ol/layer/Group';
 import VectorSource from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
@@ -20,14 +20,22 @@ import { observe } from '../../../../utils/storeUtils';
 import { PromiseQueue } from '../../../../utils/PromiseQueue';
 import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
+import EventType from 'ol/events/EventType';
 import { unByKey } from 'ol/Observable';
 import { HelpTooltip } from '../../tooltip/HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
-import { setCategory, setProposal, setRouteAndStats, setWaypoints } from '../../../../store/routing/routing.action';
+import {
+	setCategory,
+	setForceDestination,
+	setForceStart,
+	setProposal,
+	setRouteAndStats,
+	setWaypoints
+} from '../../../../store/routing/routing.action';
 import { CoordinateProposalType, RouteCalculationErrors, RoutingStatusCodes } from '../../../../domain/routing';
 import { fit } from '../../../../store/position/position.action';
 import { equals } from '../../../../../node_modules/ol/coordinate';
-import { GeoJSON as GeoJSONFormat } from 'ol/format';
+import { KML as KmlFormat } from 'ol/format';
 import { SourceType, SourceTypeName } from '../../../../domain/sourceType';
 import { bvvRouteStatsProvider } from './routeStats.provider';
 import { clearHighlightFeatures } from '../../../../store/highlight/highlight.action';
@@ -149,7 +157,10 @@ export class OlRoutingHandler extends OlLayerHandler {
 				MapBrowserEventType.POINTERMOVE,
 				this._newPointerMoveHandler(olMap, this._interactionLayer, this._alternativeRouteLayer, this._routeLayerCopy)
 			),
-			olMap.on(MapBrowserEventType.CLICK, this._newClickHandler(olMap, this._interactionLayer, this._alternativeRouteLayer, this._routeLayerCopy))
+			olMap.on(
+				[MapBrowserEventType.CLICK, EventType.CONTEXTMENU],
+				this._newClickHandler(olMap, this._interactionLayer, this._alternativeRouteLayer, this._routeLayerCopy)
+			)
 		);
 		return this._routingLayerGroup;
 	}
@@ -163,6 +174,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 	_newClickHandler(map, interactionLayer, alternativeRouteLayer, routeLayerCopy) {
 		return (event) => {
+			event.preventDefault();
 			const coord = map.getEventCoordinate(event.originalEvent);
 			const pixel = map.getEventPixel(event.originalEvent);
 			const hit = map.getFeaturesAtPixel(pixel, this._getFeaturesAtPixelOptionsForClickHandler(interactionLayer, alternativeRouteLayer));
@@ -274,7 +286,16 @@ export class OlRoutingHandler extends OlLayerHandler {
 		});
 		translate.on('translateend', (evt) => {
 			if (!equals(startCoordinate, evt.coordinate)) {
-				this._requestRouteFromInteractionLayer();
+				if (this._getInteractionFeatures().length === 1 && evt.features.item(0).get(ROUTING_FEATURE_TYPE) === RoutingFeatureTypes.START) {
+					setForceStart(evt.features.item(0).getGeometry().getCoordinates());
+				} else if (
+					this._getInteractionFeatures().length === 1 &&
+					evt.features.item(0).get(ROUTING_FEATURE_TYPE) === RoutingFeatureTypes.DESTINATION
+				) {
+					setForceDestination(evt.features.item(0).getGeometry().getCoordinates());
+				} else {
+					this._requestRouteFromInteractionLayer();
+				}
 			}
 		});
 		return translate;
@@ -573,6 +594,17 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 	async _updateStore(ghRoute) {
 		const geom = this._polylineToGeometry(ghRoute.paths[0].points);
+		const routeFeature = new Feature({
+			geometry: geom.clone().transform(`EPSG:${this._mapService.getSrid()}`, 'EPSG:4326')
+		});
+		routeFeature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.ROUTE_SEGMENT);
+		routeFeature.set(ROUTING_CATEGORY, this._routingService.getCategoryById(ghRoute.vehicle));
+		routeFeature.setStyle(getRoutingStyleFunction());
+		routeFeature.set(
+			'name',
+			`${this._translationService.translate('global_app_name')} ${this._translationService.translate('olMap_handler_routing_rt_layer_label')} - ${this._routingService.getCategoryById(ghRoute.vehicle).label}`
+		);
+
 		const coordinates = geom.getCoordinates();
 
 		try {
@@ -580,8 +612,8 @@ export class OlRoutingHandler extends OlLayerHandler {
 			const routeStats = this._routeStatsProvider(ghRoute, profileStats);
 
 			const route = {
-				data: new GeoJSONFormat().writeGeometry(geom.clone().transform(`EPSG:${this._mapService.getSrid()}`, 'EPSG:4326')),
-				type: new SourceType(SourceTypeName.GEOJSON)
+				data: new KmlFormat().writeFeatures([routeFeature]),
+				type: new SourceType(SourceTypeName.KML)
 			};
 			setRouteAndStats(route, routeStats);
 		} catch (e) {
@@ -760,29 +792,33 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 	_convertToPermanentLayer() {
 		if (this._routeLayerCopy.getSource().getFeatures().length > 0) {
-			const labelRtLayer = this._translationService.translate('olMap_handler_routing_rt_layer_label');
-			const labelWpLayer = this._translationService.translate('olMap_handler_routing_wp_layer_label');
+			const catLabel = this._routeLayerCopy.getSource().getFeatures()[0].get(ROUTING_CATEGORY).label;
+			const labelRtLayer = `${this._translationService.translate('olMap_handler_routing_rt_layer_label')} - ${catLabel}`;
+			const labelWpLayer = `${this._translationService.translate('olMap_handler_routing_wp_layer_label')} - ${catLabel}`;
 
 			const routeKML = createKML(this._routeLayerCopy, `EPSG:${this._mapService.getSrid()}`);
 			const interactionKML = createKML(this._interactionLayer, `EPSG:${this._mapService.getSrid()}`);
 
 			const getOrCreateVectorGeoResource = (id, label) => {
 				const fromService = this._geoResourceService.byId(id);
-				return fromService ? fromService : new VectorGeoResource(id, label, VectorSourceType.KML);
+				return fromService
+					? fromService /**always update the label*/
+							.setLabel(label)
+					: new VectorGeoResource(id, label, VectorSourceType.KML);
 			};
-			const vgrRoute = getOrCreateVectorGeoResource(PERMANENT_ROUTE_LAYER_ID, labelRtLayer)
+			const vgrRoute = getOrCreateVectorGeoResource(PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID, labelRtLayer)
 				.setSource(routeKML, 4326)
 				.setHidden(true)
 				.setAttributionProvider(this._attributionProvider);
-			const vgrInteraction = getOrCreateVectorGeoResource(PERMANENT_WP_LAYER_ID, labelWpLayer)
+			const vgrInteraction = getOrCreateVectorGeoResource(PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID, labelWpLayer)
 				.setSource(interactionKML, 4326)
 				.setHidden(true)
 				.setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource);
 
 			this._geoResourceService.addOrReplace(vgrRoute);
 			this._geoResourceService.addOrReplace(vgrInteraction);
-			addLayer(PERMANENT_ROUTE_LAYER_ID, { constraints: { metaData: false } });
-			addLayer(PERMANENT_WP_LAYER_ID, { constraints: { metaData: false } });
+			addLayer(PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID, { constraints: { metaData: false } });
+			addLayer(PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID, { constraints: { metaData: false } });
 		}
 	}
 }

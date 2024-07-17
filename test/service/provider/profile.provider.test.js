@@ -164,7 +164,7 @@ describe('profile provider', () => {
 			const mapServiceSpy = spyOn(mapService, 'calcLength').withArgs(coords).and.returnValue(42);
 			const httpServiceSpy = spyOn(httpService, 'post')
 				.withArgs(`${backendUrl}/dem/profile`, expectedPayload, MediaType.JSON, {
-					timeout: 2000
+					timeout: 5000
 				})
 				.and.resolveTo(new Response(JSON.stringify(mockProfileResponse)));
 
@@ -197,7 +197,7 @@ describe('profile provider', () => {
 				.and.returnValue(coords);
 			const httpServiceSpy = spyOn(httpService, 'post')
 				.withArgs(`${backendUrl}/dem/profile`, expectedPayload, MediaType.JSON, {
-					timeout: 2000
+					timeout: 5000
 				})
 				.and.resolveTo(new Response(JSON.stringify({}), { status: 500 }));
 

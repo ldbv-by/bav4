@@ -36,6 +36,7 @@ export const StyleTypes = Object.freeze({
 	HIGHLIGHT_TEMP: 'highlight_temp',
 	DRAW: 'draw',
 	MARKER: 'marker',
+	POINT: 'point',
 	TEXT: 'text',
 	ANNOTATION: 'annotation',
 	LINE: 'line',
@@ -180,6 +181,7 @@ export class StyleService {
 				return lineStyleFunction;
 			case StyleTypes.POLYGON:
 				return polygonStyleFunction;
+			case StyleTypes.POINT:
 			case StyleTypes.MARKER:
 				return markerStyleFunction;
 			case StyleTypes.TEXT:
@@ -366,10 +368,10 @@ export class StyleService {
 				const scale = markerScaleToKeyword(style.getImage().getScale());
 				const size = style.getImage()?.getSize();
 				const pixelAnchor = style.getImage()?.getAnchor();
-				const text = style.getText().getText();
+				const text = style.getText()?.getText();
 				return {
 					symbolSrc: symbolSrc,
-					color: rgbToHex(color ? color : style.getText().getFill().getColor()),
+					color: rgbToHex(color ? color : style.getText()?.getFill()?.getColor()),
 					scale: scale,
 					text: text,
 					anchor: size && pixelAnchor ? [pixelAnchor[0] / size[0], pixelAnchor[1] / size[1]] : null

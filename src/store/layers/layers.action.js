@@ -1,7 +1,7 @@
 /**
  * @module store/layers/layers_action
  */
-import { LAYER_MODIFIED, LAYER_ADDED, LAYER_REMOVED, LAYER_RESOURCES_READY, LAYER_GEORESOURCE_CHANGED } from './layers.reducer';
+import { LAYER_MODIFIED, LAYER_ADDED, LAYER_REMOVED, LAYER_RESOURCES_READY, LAYER_GEORESOURCE_CHANGED, LAYER_REMOVE_AND_SET } from './layers.reducer';
 import { $injector } from '../../injection';
 import { GeoResource } from '../../domain/geoResources';
 
@@ -42,13 +42,21 @@ import { GeoResource } from '../../domain/geoResources';
 
 /**
  * Options for adding a {@link Layer}.
- * @typedef {Object} LayerOptions
+ * @typedef {Object} AddLayerOptions
  * @property {string} [geoResourceId]  Id of the linked GeoResource. If not set, it will take the Id of this layer as value
  * @property {number} [opacity=1] Opacity (0, 1)
  * @property {boolean} [visible=true] Visibility
  * @property {number} [zIndex]  Index of this layer within the list of active layers. When not set, the layer will be appended at the end
  * @property {Constraints} [constraints] Constraints of the layer
- * @property {module:utils/storeUtils.EventLike<String|null>} [grChangedFlag] Flag that indicates a change of the linked GeoResource
+ */
+
+/**
+ * Options for a new {@link Layer} which may be added together with other layers atomically
+ * @typedef {Object} AtomicallyAddLayerOptions
+ * @property {string} id Id of the layer
+ * @property {string} [geoResourceId]  Id of the linked GeoResource. If not set, it will take the Id of this layer as value
+ * @property {number} [opacity=1] Opacity (0, 1)
+ * @property {boolean} [visible=true] Visibility
  */
 
 const getStore = () => {
@@ -60,7 +68,7 @@ const getStore = () => {
  * Updates the properties of a {@link Layer}.
  * @function
  * @param {string} id Id of the layer
- * @param {ModifyLayerOptions} options options
+ * @param {module:store/layers/layers_action~ModifyLayerOptions} options options
  */
 export const modifyLayer = (id, options = {}) => {
 	getStore().dispatch({
@@ -73,12 +81,12 @@ export const modifyLayer = (id, options = {}) => {
  * Adds a {@link Layer} to the list of active layers.
  * @function
  * @param {string} id Id of the layer
- * @param {LayerOptions} properties layer properties
+ * @param {module:store/layers/layers_action~AddLayerOptions} options layer options
  */
-export const addLayer = (id, properties = {}) => {
+export const addLayer = (id, options = {}) => {
 	getStore().dispatch({
 		type: LAYER_ADDED,
-		payload: { id: id, properties: properties }
+		payload: { id: id, properties: options }
 	});
 };
 
@@ -92,6 +100,33 @@ export const removeLayer = (id) => {
 		type: LAYER_REMOVED,
 		payload: id
 	});
+};
+
+/**
+ * Atomically removes all current layers and (optionally) adds a list of layers.
+ * @function
+ * @param {Array<module:store/layers/layers_action~AtomicallyAddLayerOptions>} [options=[]] Options, one for each layer
+ * @param {boolean} [restoreHiddenLayers=false] `true` if existing hidden layers should be restored. The hidden layers will be appended to the given layers (see param `options`). Default is `false`
+ */
+export const removeAndSetLayers = (options = [], restoreHiddenLayers = false) => {
+	getStore().dispatch({
+		type: LAYER_REMOVE_AND_SET,
+		payload: { layerOptions: [...options], restoreHiddenLayers }
+	});
+};
+
+/**
+ * Removes all {@link Layer} which references a certain GeoResource from the list of active layers
+ * @param {string} geoResourceId The id of a GeoResource
+ */
+export const removeLayerOf = (geoResourceId) => {
+	getStore()
+		.getState()
+		.layers.active.forEach((l) => {
+			if (l.geoResourceId === geoResourceId) {
+				removeLayer(l.id);
+			}
+		});
 };
 
 /**

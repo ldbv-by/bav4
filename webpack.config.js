@@ -16,7 +16,8 @@ module.exports = {
 	entry: {
 		config: './src/assets/config.js',
 		bundle: './src/main.js',
-		embed: './src/embed.js'
+		embed: './src/embed.js',
+		wc: './src/wc.js'
 	},
 	output: {
 		path: path.resolve(__dirname, 'dist'),
@@ -58,6 +59,11 @@ module.exports = {
 		new HtmlWebpackPlugin({
 			filename: 'embed/wrapper/index.html',
 			template: 'src/embedWrapper.html',
+			chunks: []
+		}),
+		new HtmlWebpackPlugin({
+			filename: 'wc/wrapper/index.html',
+			template: 'src/wcWrapper.html',
 			chunks: []
 		}),
 		new CopyPlugin({

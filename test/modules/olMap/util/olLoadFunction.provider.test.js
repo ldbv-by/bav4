@@ -1,6 +1,10 @@
 import { UnavailableGeoResourceError } from '../../../../src/domain/errors.js';
 import { $injector } from '../../../../src/injection/index.js';
-import { getBvvBaaImageLoadFunction, getBvvTileLoadFunction } from '../../../../src/modules/olMap/utils/olLoadFunction.provider';
+import {
+	getBvvBaaImageLoadFunction,
+	getBvvTileLoadFunction,
+	handleUnexpectedStatusCodeThrottled
+} from '../../../../src/modules/olMap/utils/olLoadFunction.provider';
 import { TestUtils } from '../../../test-utils.js';
 import TileState from 'ol/TileState.js';
 
@@ -48,9 +52,26 @@ describe('olLoadFunction.provider', () => {
 				spyOn(httpService, 'get').and.resolveTo(new Response(null, { status: 404 }));
 				const imageLoadFunction = getBvvBaaImageLoadFunction(geoResourceId, credential, null);
 
-				await expectAsync(imageLoadFunction(fakeImageWrapper, src)).toBeRejectedWith(
-					new UnavailableGeoResourceError(`Unexpected network status`, geoResourceId, 404)
-				);
+				try {
+					await imageLoadFunction(fakeImageWrapper, src);
+					throw new Error('Promise should not be resolved');
+				} catch (error) {
+					expect(error).toBeInstanceOf(UnavailableGeoResourceError);
+					expect(error.message).toBe('Unexpected network status');
+					expect(error.geoResourceId).toBe(geoResourceId);
+					expect(error.httpStatus).toBe(404);
+				}
+			});
+
+			it('rejects with an UnavailableGeoResourceError when a request was aborted', async () => {
+				const geoResourceId = 'geoResourceId';
+				const fakeImageWrapper = getFakeImageWrapperInstance();
+				const src = 'http://foo.var?WIDTH=2000&HEIGHT=2000';
+				const credential = { username: 'username', password: 'password' };
+				spyOn(httpService, 'get').and.rejectWith(new DOMException('aborted'));
+				const imageLoadFunction = getBvvBaaImageLoadFunction(geoResourceId, credential, null);
+
+				await expectAsync(imageLoadFunction(fakeImageWrapper, src)).toBeRejectedWith(new UnavailableGeoResourceError(`aborted`, geoResourceId));
 			});
 
 			describe('when NO scaling is needed', () => {
@@ -140,9 +161,25 @@ describe('olLoadFunction.provider', () => {
 				spyOn(httpService, 'get').and.resolveTo(new Response(null, { status: 404 }));
 				const imageLoadFunction = getBvvBaaImageLoadFunction(geoResourceId);
 
-				await expectAsync(imageLoadFunction(fakeImageWrapper, src)).toBeRejectedWith(
-					new UnavailableGeoResourceError(`Unexpected network status`, geoResourceId, 404)
-				);
+				try {
+					await imageLoadFunction(fakeImageWrapper, src);
+					throw new Error('Promise should not be resolved');
+				} catch (error) {
+					expect(error).toBeInstanceOf(UnavailableGeoResourceError);
+					expect(error.message).toBe('Unexpected network status');
+					expect(error.geoResourceId).toBe(geoResourceId);
+					expect(error.httpStatus).toBe(404);
+				}
+			});
+
+			it('rejects with an UnavailableGeoResourceError when a request was aborted', async () => {
+				const geoResourceId = 'geoResourceId';
+				const fakeImageWrapper = getFakeImageWrapperInstance();
+				const src = 'http://foo.var?WIDTH=2000&HEIGHT=2000';
+				spyOn(httpService, 'get').and.rejectWith(new DOMException('aborted'));
+				const imageLoadFunction = getBvvBaaImageLoadFunction(geoResourceId);
+
+				await expectAsync(imageLoadFunction(fakeImageWrapper, src)).toBeRejectedWith(new UnavailableGeoResourceError(`aborted`, geoResourceId));
 			});
 
 			describe('when NO scaling is needed', () => {
@@ -221,6 +258,25 @@ describe('olLoadFunction.provider', () => {
 		});
 	});
 
+	describe('handleUnexpectedStatusCodeThrottled', () => {
+		it('rejects with an UnavailableGeoResourceError when http status is other than 200 and 400', async () => {
+			const geoResourceId = 'geoResourceId';
+			const response = new Response(null, { status: 404 });
+
+			try {
+				await handleUnexpectedStatusCodeThrottled(geoResourceId, response);
+				throw new Error('Promise should not be resolved');
+			} catch (error) {
+				expect(error).toBeInstanceOf(UnavailableGeoResourceError);
+				expect(error.message).toBe('Unexpected network status');
+				expect(error.geoResourceId).toBe(geoResourceId);
+				expect(error.httpStatus).toBe(404);
+			}
+			expect(handleUnexpectedStatusCodeThrottled(geoResourceId, response)).toBeUndefined(); // throttled calls return undefined
+			expect(handleUnexpectedStatusCodeThrottled(geoResourceId, response)).toBeUndefined(); // throttled calls return undefined
+		});
+	});
+
 	describe('getBvvTileLoadFunction', () => {
 		const configService = {
 			getValueAsPath: () => {}
@@ -265,16 +321,32 @@ describe('olLoadFunction.provider', () => {
 			const geoResourceId = 'geoResourceId';
 			const fakeTileWrapper = getFakeTileWrapperInstance();
 			const src = 'http://foo.var/some/11/1089/710';
-			spyOn(httpService, 'get').and.resolveTo(new Response(null, { status: 404 }));
-			const tileLoadFunction = getBvvTileLoadFunction(geoResourceId);
+			const response = new Response(null, { status: 404 });
+			spyOn(httpService, 'get').and.resolveTo(response);
+			const handleUnexpectedStatusCodeThrottledFnSpy = jasmine.createSpy().and.rejectWith(new UnavailableGeoResourceError());
+			const tileLoadFunction = getBvvTileLoadFunction(geoResourceId, handleUnexpectedStatusCodeThrottledFnSpy);
+
+			await expectAsync(tileLoadFunction(fakeTileWrapper, src)).toBeRejected();
+			await TestUtils.timeout();
+
+			expect(fakeTileWrapper.state).toBe(TileState.ERROR);
+			expect(handleUnexpectedStatusCodeThrottledFnSpy).toHaveBeenCalledOnceWith(geoResourceId, response);
+		});
+
+		it('rejects with an UnavailableGeoResourceError when a request was aborted', async () => {
+			const geoResourceId = 'geoResourceId';
+			const fakeTileWrapper = getFakeTileWrapperInstance();
+			const src = 'http://foo.var/some/11/1089/710';
+			spyOn(httpService, 'get').and.rejectWith(new DOMException());
+			const handleUnexpectedStatusCodeThrottledFnSpy = jasmine.createSpy();
+			const tileLoadFunction = getBvvTileLoadFunction(geoResourceId, handleUnexpectedStatusCodeThrottledFnSpy);
 
 			// tile loading causes multiple simultaneously requests, therefore we check the use of the throttle function to keep the notification at a count of 1
-			await expectAsync(tileLoadFunction(fakeTileWrapper, src)).toBeRejectedWith(
-				new UnavailableGeoResourceError(`Unexpected network status`, geoResourceId, 404)
-			);
-			await expectAsync(tileLoadFunction(fakeTileWrapper, src)).toBeResolved(); // throttles calls are resolved to undefined
-			await expectAsync(tileLoadFunction(fakeTileWrapper, src)).toBeResolved();
+			await expectAsync(tileLoadFunction(fakeTileWrapper, src));
+			await TestUtils.timeout();
+
 			expect(fakeTileWrapper.state).toBe(TileState.ERROR);
+			expect(handleUnexpectedStatusCodeThrottledFnSpy).toHaveBeenCalledOnceWith(geoResourceId);
 		});
 
 		it('sets the TileState when http status is 400', async () => {
@@ -300,7 +372,7 @@ describe('olLoadFunction.provider', () => {
 				.withArgs(
 					src,
 					{
-						timeout: 3000
+						timeout: 5000
 					},
 					{ response: [responseInterceptor] }
 				)

@@ -2,65 +2,74 @@
  * @module modules/topics/components/menu/catalog/CatalogNode
  */
 import { html, nothing } from 'lit-html';
-import { AbstractContentPanel } from '../../../../menu/components/mainMenu/content/AbstractContentPanel';
 import { classMap } from 'lit-html/directives/class-map.js';
 import css from './catalogNode.css';
+import { AbstractMvuContentPanel } from '../../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
+import { round } from '../../../../../utils/numberUtils';
+
+const Update_Collapsed = 'update_collapsed';
+const Update_Level = 'update_level';
+const Update_CatalogEntry = 'update_catalogEntry';
 
 /**
  * @class
+ * @property {module:domain/catalogTypeDef~CatalogEntry} data The catalog entry for this CatalogNode
+ * @property {number} level The level of this CatalogNode (integer)
  * @author taulinger
  * @author alsturm
  */
-export class CatalogNode extends AbstractContentPanel {
+export class CatalogNode extends AbstractMvuContentPanel {
 	constructor() {
-		super();
-
-		this._catalogPart = null;
-		this._isCollapsed = true;
-		this._level = 0;
+		super({ level: 0, collapsed: true, catalogEntry: null });
 	}
 
-	set data(catalogPart) {
-		this._catalogPart = catalogPart;
-		const { open } = this._catalogPart;
-		this._isCollapsed = !open;
-		this.render();
+	set data(catalogEntry) {
+		this.signal(Update_CatalogEntry, catalogEntry);
 	}
 
-	initialize() {
-		this._level = this.getAttribute('level') ? parseInt(this.getAttribute('level')) : 0;
+	set level(level) {
+		this.signal(Update_Level, round(level));
 	}
 
-	onStateChanged() {
-		//nothing to do here: initial rendering does it
+	update(type, data, model) {
+		switch (type) {
+			case Update_CatalogEntry:
+				return { ...model, catalogEntry: data, collapsed: !data.open };
+			case Update_Collapsed:
+				return { ...model, collapsed: data };
+			case Update_Level:
+				return { ...model, level: data };
+		}
 	}
 
-	createView() {
+	createView(model) {
+		const { level, collapsed, catalogEntry } = model;
 		const toggleCollapse = () => {
-			this._isCollapsed = !this._isCollapsed;
-			this.render();
+			this.signal(Update_Collapsed, !collapsed);
 		};
 
 		const iconCollapseClass = {
-			iconexpand: !this._isCollapsed
+			iconexpand: !collapsed
 		};
 
 		const bodyCollapseClass = {
-			iscollapse: this._isCollapsed
+			iscollapse: collapsed
 		};
 
-		if (this._catalogPart) {
-			const { label, children } = this._catalogPart;
+		if (catalogEntry) {
+			const { label, children } = catalogEntry;
 			const childElements = children.map((child) => {
 				//node
 				if (child.children) {
-					return html`<div><ba-catalog-node .data=${child} level=${this._level + 1}></ba-catalog-node></div>`;
+					return html`<div><ba-catalog-node .data=${child} .level=${level + 1}></ba-catalog-node></div>`;
 				}
 				//leaf
 				return html`<div><ba-catalog-leaf .data=${child}></ba-catalog-leaf></div>`;
 			});
 
-			if (this._level === 0) {
+			const nodeLevelCss = `.sub-divider{--node-level: ${level - 1}em;}`;
+
+			if (level === 0) {
 				return html`
 					<style>
 						${css}
@@ -77,11 +86,19 @@ export class CatalogNode extends AbstractContentPanel {
 				`;
 			} else {
 				return html`
+					<style>
+						${nodeLevelCss}
+						${css}
+					</style>
 					<div class="sub-divider">
-						<div class="ba-list-item  ba-list-item__sub-header">
-							<span class="ba-list-item__text  ba-list-item__primary-text">${label}</span>
+						<div class="ba-list-item  ba-list-item__sub-header" @click="${toggleCollapse}">
+							<span class="sub-icon"></span>
+							<span class="ba-list-item__text  ba-list-item__primary-text"> ${label}</span>
+							<span class="ba-list-item__after">
+								<i class="icon icon-rotate-90 chevron ${classMap(iconCollapseClass)}"></i>
+							</span>
 						</div>
-						<div>${childElements}</div>
+						<div class=" collapse-content ${classMap(bodyCollapseClass)}"><div>${childElements}</div></div>
 					</div>
 				`;
 			}

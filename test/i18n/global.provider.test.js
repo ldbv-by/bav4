@@ -4,6 +4,7 @@ describe('global i18n', () => {
 	it('provides translation for en', () => {
 		const map = provide('en');
 
+		expect(map.global_app_name).toBe('BayernAtlas');
 		expect(map.global_generic_exception).toBe('Something got wrong. See the console output for more information...');
 		expect(map.global_mfpService_init_exception).toBe('PDF export currently not available');
 		expect(map.global_mfpService_createJob_exception).toBe('PDF generation was not successful');
@@ -12,7 +13,6 @@ describe('global i18n', () => {
 			'The acquisition of the position failed because your browser settings does not allow it. Allow your browser / this website to use your location. Deactivate the "private" mode of your browser.'
 		);
 		expect(map.global_geolocation_not_available).toBe('The acquisition of the position failed');
-		expect(map.global_import_url_failed).toBe('URL-Import failed');
 		expect(map.global_import_data_failed).toBe('Importing data failed');
 		expect(map.global_import_unsupported_sourceType).toBe('Source type could not be detected or is not supported');
 		expect(map.global_import_authenticationModal_title).toBe('Authentication');
@@ -32,6 +32,7 @@ describe('global i18n', () => {
 	it('provides translation for de', () => {
 		const map = provide('de');
 
+		expect(map.global_app_name).toBe('BayernAtlas');
 		expect(map.global_generic_exception).toBe('Leider ist etwas schiefgegangen. Weitere Informationen sind in der Konsole des Browsers zu finden...');
 		expect(map.global_mfpService_init_exception).toBe('PDF Export derzeit leider nicht möglich');
 		expect(map.global_mfpService_createJob_exception).toBe('PDF konnte nicht erstellt werden');
@@ -40,7 +41,6 @@ describe('global i18n', () => {
 			'Es ist keine Positionsbestimmung möglich, da Ihre Browsereinstellungen dies nicht zulassen. Erlauben Sie die Positionsbestimmung und deaktivieren Sie den "Privat" Modus des Browsers.'
 		);
 		expect(map.global_geolocation_not_available).toBe('Es ist keine Positionsbestimmung möglich');
-		expect(map.global_import_url_failed).toBe('URL-Import schlug fehl');
 		expect(map.global_import_data_failed).toBe('Import der Daten schlug fehl');
 		expect(map.global_import_unsupported_sourceType).toBe('Daten-Typ konnte nicht erkannt werden oder wird nicht unterstützt');
 		expect(map.global_import_authenticationModal_title).toBe('Anmeldung');

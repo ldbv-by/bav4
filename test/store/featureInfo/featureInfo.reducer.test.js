@@ -103,6 +103,6 @@ describe('featureInfoReducer', () => {
 		expect(store.getState().featureInfo.aborted).not.toBeNull();
 		expect(store.getState().featureInfo.queries).toHaveSize(0);
 		expect(store.getState().featureInfo.querying).toBeFalse();
-		expect(store.getState().featureInfo.current).toHaveSize(0);
+		expect(store.getState().featureInfo.current).toEqual(['some']);
 	});
 });

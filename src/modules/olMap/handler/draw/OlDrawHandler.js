@@ -6,7 +6,7 @@ import { OlLayerHandler } from '../OlLayerHandler';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { $injector } from '../../../../injection';
-import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
+import { Draw, Modify, Select, Snap } from 'ol/interaction';
 import {
 	createSketchStyleFunction,
 	getColorFrom,
@@ -119,9 +119,9 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._modify = null;
 		this._snap = null;
 		this._select = null;
-		this._dragPan = null;
 
 		this._storedContent = null;
+
 		this._sketchHandler = new OlSketchHandler();
 		this._mapListeners = [];
 		this._drawingListeners = [];
@@ -141,6 +141,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._helpTooltip.messageProvideFunction = messageProvide;
 		this._drawStateChangedListeners = [];
 		this._registeredObservers = [];
+		this._saveContentDebounced = debounced(this._environmentService.isEmbedded() ? 0 : Debounce_Delay, () => this._save());
 	}
 
 	/**
@@ -149,7 +150,11 @@ export class OlDrawHandler extends OlLayerHandler {
 	 */
 	onActivate(olMap) {
 		const translate = (key) => this._translationService.translate(key);
-		if (!this._storeService.getStore().getState().shared.termsOfUseAcknowledged && !this._environmentService.isStandalone()) {
+		if (
+			!this._storeService.getStore().getState().shared.termsOfUseAcknowledged &&
+			!this._environmentService.isStandalone() &&
+			!this._environmentService.isEmbedded()
+		) {
 			const termsOfUse = translate('olMap_handler_termsOfUse');
 			if (termsOfUse) {
 				emitNotification(unsafeHTML(termsOfUse), LevelTypes.INFO);
@@ -204,21 +209,36 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		const getOrCreateLayer = () => {
 			const layer = createLayer();
-			if (this._storeService.getStore().getState().draw.createPermanentLayer) {
-				const oldLayer = getOldLayer(this._map);
-				addOldFeatures(layer, oldLayer);
-			}
-
-			const saveDebounced = debounced(Debounce_Delay, () => this._save());
+			const updateAndSaveContent = () => {
+				this._storedContent = createKML(layer, 'EPSG:3857');
+				this._saveContentDebounced();
+			};
 			const setSelectedAndSave = (event) => {
 				if (this._drawState.type === InteractionStateType.DRAW) {
 					setSelection([event.feature.getId()]);
 				}
+
+				this._storedContent = createKML(layer, 'EPSG:3857');
 				this._save();
 			};
-			this._mapListeners.push(layer.getSource().on('addfeature', setSelectedAndSave));
-			this._mapListeners.push(layer.getSource().on('changefeature', () => saveDebounced()));
-			this._mapListeners.push(layer.getSource().on('removefeature', () => saveDebounced()));
+			const registerListeners = (layer) => {
+				this._mapListeners.push(layer.getSource().on('addfeature', setSelectedAndSave));
+				this._mapListeners.push(layer.getSource().on('changefeature', () => updateAndSaveContent()));
+				this._mapListeners.push(layer.getSource().on('removefeature', () => updateAndSaveContent()));
+			};
+			if (this._storeService.getStore().getState().draw.createPermanentLayer) {
+				const oldLayer = getOldLayer(this._map);
+				addOldFeatures(layer, oldLayer)
+					// eslint-disable-next-line promise/prefer-await-to-then
+					.finally(() => {
+						this._storedContent = createKML(layer, 'EPSG:3857');
+						this._save();
+						registerListeners(layer);
+					});
+			} else {
+				registerListeners(layer);
+			}
+
 			return layer;
 		};
 
@@ -274,8 +294,6 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._select.setActive(false);
 			this._modify.setActive(false);
 			this._snap = new Snap({ source: source, pixelTolerance: getSnapTolerancePerDevice() });
-			this._dragPan = new DragPan();
-			this._dragPan.setActive(false);
 			this._onDrawStateChanged((drawState) => this._updateDrawMode(drawState));
 			if (!this._environmentService.isTouch()) {
 				this._helpTooltip.activate(this._map);
@@ -298,14 +316,14 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._map.addInteraction(this._select);
 		this._map.addInteraction(this._modify);
 		this._map.addInteraction(this._snap);
-		this._map.addInteraction(this._dragPan);
 
 		const preselectDrawType = this._storeService.getStore().getState().draw.type;
 		if (preselectDrawType) {
 			this._init(preselectDrawType);
 		}
-		this._updateDrawState();
 
+		this._storedContent = null; // reset last saved content for new changes
+		this._updateDrawState();
 		return this._vectorLayer;
 	}
 
@@ -330,7 +348,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		olMap.removeInteraction(this._modify);
 		olMap.removeInteraction(this._snap);
 		olMap.removeInteraction(this._select);
-		olMap.removeInteraction(this._dragPan);
 
 		removeAllDrawInteractions(olMap);
 		this._helpTooltip.deactivate();
@@ -351,7 +368,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._modify = false;
 		this._select = false;
 		this._snap = false;
-		this._dragPan = false;
 		this._vectorLayer = null;
 		this._map = null;
 	}
@@ -544,6 +560,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		const source = this._vectorLayer.getSource();
 		const snapTolerance = getSnapTolerancePerDevice();
 		switch (type) {
+			case StyleTypes.POINT:
 			case StyleTypes.MARKER:
 			case StyleTypes.TEXT:
 				return new Draw({
@@ -658,7 +675,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_getStyleFunctionByDrawType(drawType, styleOption) {
-		const drawTypes = [StyleTypes.MARKER, StyleTypes.TEXT, StyleTypes.LINE, StyleTypes.POLYGON];
+		const drawTypes = [StyleTypes.POINT, StyleTypes.MARKER, StyleTypes.TEXT, StyleTypes.LINE, StyleTypes.POLYGON];
 		if (drawTypes.includes(drawType)) {
 			const styleFunction = this._styleService.getStyleFunction(drawType);
 			return () => styleFunction(styleOption);
@@ -835,30 +852,24 @@ export class OlDrawHandler extends OlLayerHandler {
 		return feature ? setSelected(feature) : deselect();
 	}
 
-	/**
-	 * todo: redundant with OlMeasurementHandler, possible responsibility of a stateful _storageHandler
-	 */
 	async _save() {
-		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
-		this._storedContent = newContent;
-		const fileSaveResult = await this._storageHandler.store(newContent, FileStorageServiceDataTypes.KML);
-		setFileSaveResult(fileSaveResult ? { fileSaveResult, content: newContent } : null);
+		/**
+		 * The stored content will be created/updated after adding/changing and removing features,
+		 * while interacting with the layer.
+		 */
+		const fileSaveResult = await this._storageHandler.store(this._storedContent, FileStorageServiceDataTypes.KML);
+		setFileSaveResult(fileSaveResult ? { fileSaveResult, content: this._storedContent } : null);
 	}
 
 	async _saveAndOptionallyConvertToPermanentLayer() {
 		const translate = (key) => this._translationService.translate(key);
 		const label = translate('olMap_handler_draw_layer_label');
 
-		const isEmpty = this._vectorLayer.getSource().getFeatures().length === 0;
-		if (isEmpty) {
-			return;
-		}
-
 		if (!this._storageHandler.isValid()) {
 			await this._save();
 		}
 
-		if (this._storeService.getStore().getState().draw.createPermanentLayer) {
+		if (this._storeService.getStore().getState().draw.createPermanentLayer && this._storedContent) {
 			const id = this._storageHandler.getStorageId();
 			const getOrCreateVectorGeoResource = () => {
 				const fromService = this._geoResourceService.byId(id);

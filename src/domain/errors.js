@@ -21,7 +21,7 @@ export class BaRuntimeError extends Error {
 	}
 }
 /**
- * `BaRuntimeError` indicating that a `GeoResource` could not be loaded.
+ * `BaRuntimeError` indicating that a `GeoResource` could not be loaded or processed.
  * @extends BaRuntimeError
  * @class
  */

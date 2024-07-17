@@ -63,6 +63,7 @@ describe('bvvSignInProvider', () => {
 			expect(wrapperElementContent.querySelectorAll(PasswordCredentialPanel.tag)).toHaveSize(1);
 			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).authenticate).toEqual(jasmine.any(Function));
 			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).onClose).toEqual(jasmine.any(Function));
+			expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).useForm).toBeTrue();
 			const wrapperElementFooter = TestUtils.renderTemplateResult(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).footer);
 			expect(wrapperElementFooter.querySelectorAll(BvvPlusPasswordCredentialFooter.tag)).toHaveSize(1);
 			closeModal(); /** we close the modal in order to resolve the promise */
@@ -107,7 +108,7 @@ describe('bvvSignInProvider', () => {
 					// we take the authFn from the component
 					const authFunc = wrapperElement.querySelector(PasswordCredentialPanel.tag).authenticate;
 
-					await expectAsync(authFunc(credential)).toBeResolvedTo([]);
+					await expectAsync(authFunc(credential)).toBeResolvedTo(false);
 					closeModal(); /** we close the modal in order to resolve the promise */
 					await expectAsync(responsePromise).toBeResolved();
 					expect(configServiceSpy).toHaveBeenCalled();
@@ -165,7 +166,7 @@ describe('bvvSignInProvider', () => {
 						.withArgs(backendUrl + 'auth/signin', JSON.stringify(credential), MediaType.JSON)
 						.and.resolveTo(new Response(null, { status: 400 }));
 
-					await expectAsync(bvvSignInProvider(credential)).toBeResolvedTo([]);
+					await expectAsync(bvvSignInProvider(credential)).toBeResolvedTo(false);
 					expect(configServiceSpy).toHaveBeenCalled();
 					expect(httpServiceSpy).toHaveBeenCalled();
 				});
@@ -266,6 +267,24 @@ describe('bvvSignOutProvider', () => {
 	});
 
 	describe('backend returns status code 200', () => {
+		it('returns "true" and informs the user', async () => {
+			const backendUrl = 'https://backend.url/';
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const httpServiceSpy = spyOn(httpService, 'get')
+				.withArgs(backendUrl + 'auth/signout')
+				.and.resolveTo(new Response());
+
+			const result = await bvvSignOutProvider();
+
+			expect(result).toBeTrue();
+			expect(configServiceSpy).toHaveBeenCalled();
+			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(store.getState().notifications.latest.payload.content).toBe('global_signOut_success');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+		});
+	});
+
+	describe('backend returns status code 403', () => {
 		it('returns "true" and informs the user', async () => {
 			const backendUrl = 'https://backend.url/';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
@@ -425,6 +444,7 @@ describe('bvvAuthResponseInterceptorProvider', () => {
 				expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).authenticate).toEqual(jasmine.any(Function));
 				expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).onClose).toEqual(jasmine.any(Function));
 				expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).footer).toBeNull();
+				expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).useForm).toBeTrue();
 				closeModal(); /** we close the modal in order to resolve the promise */
 				await expectAsync(responsePromise).toBeResolved();
 			});
@@ -441,6 +461,7 @@ describe('bvvAuthResponseInterceptorProvider', () => {
 				expect(wrapperElementContent.querySelectorAll(PasswordCredentialPanel.tag)).toHaveSize(1);
 				expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).authenticate).toEqual(jasmine.any(Function));
 				expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).onClose).toEqual(jasmine.any(Function));
+				expect(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).useForm).toBeTrue();
 				const wrapperElementFooter = TestUtils.renderTemplateResult(wrapperElementContent.querySelector(PasswordCredentialPanel.tag).footer);
 				expect(wrapperElementFooter.querySelectorAll(BvvPlusPasswordCredentialFooter.tag)).toHaveSize(1);
 				closeModal(); /** we close the modal in order to resolve the promise */

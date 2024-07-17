@@ -3,7 +3,7 @@ import { Point, LineString, Polygon, Geometry } from 'ol/geom';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import { Feature } from 'ol';
-import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
+import { Draw, Modify, Select, Snap } from 'ol/interaction';
 import { DrawEvent } from 'ol/interaction/Draw';
 import { MapBrowserEvent } from 'ol';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
@@ -29,15 +29,15 @@ import { acknowledgeTermsOfUse } from '../../../../../src/store/shared/shared.ac
 import { simulateMapBrowserEvent } from '../../mapTestUtils';
 import { drawReducer } from '../../../../../src/store/draw/draw.reducer';
 import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
-import { MeasurementOverlay } from '../../../../../src/modules/olMap/components/MeasurementOverlay';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../../src/services/provider/attribution.provider';
 import { Layer } from 'ol/layer';
 import { Tools } from '../../../../../src/domain/tools';
 import { EventLike } from '../../../../../src/utils/storeUtils';
+import { BaOverlay } from '../../../../../src/modules/olMap/components/BaOverlay.js';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
-window.customElements.define(MeasurementOverlay.tag, MeasurementOverlay);
+window.customElements.define(BaOverlay.tag, BaOverlay);
 
 describe('OlMeasurementHandler', () => {
 	class MockClass {
@@ -93,7 +93,7 @@ describe('OlMeasurementHandler', () => {
 	};
 
 	const translationServiceMock = { translate: (key) => key };
-	const environmentServiceMock = { isTouch: () => false, isStandalone: () => false };
+	const environmentServiceMock = { isTouch: () => false, isStandalone: () => false, isEmbedded: () => false };
 	const initialState = {
 		active: false,
 		statistic: { length: 0, area: 0 },
@@ -233,12 +233,13 @@ describe('OlMeasurementHandler', () => {
 			expect(documentSpy).toHaveBeenCalledWith('keyup', jasmine.any(Function));
 		});
 
-		it('removes a keyup-EventListener from the document', () => {
+		it('removes a keyup-EventListener from the document', async () => {
 			setup();
 			const documentSpy = spyOn(document, 'removeEventListener').and.callThrough();
 			const map = setupMap();
 			const classUnderTest = new OlMeasurementHandler();
 			classUnderTest.activate(map);
+			await TestUtils.timeout();
 			classUnderTest.deactivate(map);
 
 			expect(documentSpy).toHaveBeenCalledWith('keyup', jasmine.any(Function));
@@ -262,7 +263,7 @@ describe('OlMeasurementHandler', () => {
 			});
 
 			describe('when termsOfUse are empty', () => {
-				it('emits not a notification', async () => {
+				it('does NOT emit a notification', async () => {
 					const store = setup();
 					const map = setupMap();
 					spyOn(translationServiceMock, 'translate').and.callFake(() => '');
@@ -280,12 +281,27 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		describe('when TermsOfUse already acknowledged', () => {
-			it('emits NOT a notification', async () => {
+			it('does NOT emit a notification', async () => {
 				const store = setup();
 				const map = setupMap();
 				const classUnderTest = new OlMeasurementHandler();
 				acknowledgeTermsOfUse();
 				expect(store.getState().shared.termsOfUseAcknowledged).toBeTrue();
+				classUnderTest.activate(map);
+
+				await TestUtils.timeout();
+				//check notification
+				expect(store.getState().notifications.latest).toBeFalsy();
+			});
+		});
+
+		describe('when embedded ', () => {
+			it('does NOT emit a notification', async () => {
+				const store = setup();
+				const map = setupMap();
+				const classUnderTest = new OlMeasurementHandler();
+				spyOn(environmentServiceMock, 'isEmbedded').and.returnValue(true);
+
 				classUnderTest.activate(map);
 
 				await TestUtils.timeout();
@@ -305,6 +321,7 @@ describe('OlMeasurementHandler', () => {
 				const storageSpy = spyOn(interactionStorageServiceMock, 'store').and.resolveTo(fileSaveResultMock);
 
 				classUnderTest.activate(map);
+				await TestUtils.timeout();
 				classUnderTest._vectorLayer.getSource().addFeature(feature);
 				classUnderTest._save(map);
 
@@ -341,21 +358,22 @@ describe('OlMeasurementHandler', () => {
 
 				classUnderTest.activate(map);
 
-				// adds Interaction for select, draw, modify,snap, dragPan
-				expect(map.addInteraction).toHaveBeenCalledTimes(5);
+				// adds Interaction for select, draw, modify,snap
+				expect(map.addInteraction).toHaveBeenCalledTimes(4);
 			});
 
-			it('removes Interaction', () => {
+			it('removes Interaction', async () => {
 				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				const layerStub = {};
 				map.removeInteraction = jasmine.createSpy();
 				classUnderTest.activate(map);
+				await TestUtils.timeout();
 				classUnderTest.deactivate(map, layerStub);
 
-				// removes Interaction for select, draw, modify, snap, dragPan
-				expect(map.removeInteraction).toHaveBeenCalledTimes(5);
+				// removes Interaction for select, draw, modify, snap
+				expect(map.removeInteraction).toHaveBeenCalledTimes(4);
 			});
 
 			it('adds a select interaction', () => {
@@ -404,18 +422,6 @@ describe('OlMeasurementHandler', () => {
 
 				expect(classUnderTest._snap).toBeInstanceOf(Snap);
 				expect(map.addInteraction).toHaveBeenCalledWith(classUnderTest._snap);
-			});
-
-			it('adds a dragPan interaction', () => {
-				setup();
-				const classUnderTest = new OlMeasurementHandler();
-				const map = setupMap();
-				map.addInteraction = jasmine.createSpy();
-
-				classUnderTest.activate(map);
-
-				expect(classUnderTest._dragPan).toBeInstanceOf(DragPan);
-				expect(map.addInteraction).toHaveBeenCalledWith(classUnderTest._dragPan);
 			});
 
 			it('initialize interactions and state objects only once on multiple activates', () => {
@@ -597,7 +603,7 @@ describe('OlMeasurementHandler', () => {
 			expect(updateOverlaysSpy).toHaveBeenCalledTimes(1);
 		});
 
-		it('adds a drawn feature to the selection, after adding to layer (on addFeature)', () => {
+		it('adds a drawn feature to the selection, after adding to layer (on addFeature)', async () => {
 			const geometry = new LineString([
 				[0, 0],
 				[500, 0],
@@ -612,6 +618,7 @@ describe('OlMeasurementHandler', () => {
 			const map = setupMap();
 
 			classUnderTest.activate(map);
+			await TestUtils.timeout();
 			classUnderTest._measureState.type = InteractionStateType.DRAW;
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 
@@ -680,6 +687,7 @@ describe('OlMeasurementHandler', () => {
 			const storageSpy = spyOn(interactionStorageServiceMock, 'store').and.resolveTo(fileSaveResultMock);
 
 			classUnderTest.activate(map);
+			await TestUtils.timeout();
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 			classUnderTest.deactivate(map);
 
@@ -690,16 +698,17 @@ describe('OlMeasurementHandler', () => {
 			expect(store.getState().measurement.fileSaveResult.payload.fileSaveResult).toEqual(fileSaveResultMock);
 		});
 
-		it('uses already written features for persisting purpose', () => {
+		it('uses already written features for persisting purpose', async () => {
 			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const source = new VectorSource({ wrapX: false });
 			source.addFeature(createFeature());
-			const saveSpy = spyOn(classUnderTest, '_save');
 			spyOn(interactionStorageServiceMock, 'isValid').and.callFake(() => true);
-
 			classUnderTest.activate(map);
+			await TestUtils.timeout();
+			const saveSpy = spyOn(classUnderTest, '_save');
+
 			classUnderTest._vectorLayer.setSource(source);
 			classUnderTest.deactivate(map);
 
@@ -716,6 +725,7 @@ describe('OlMeasurementHandler', () => {
 			spyOn(interactionStorageServiceMock, 'getStorageId').and.returnValue('f_ooBarId');
 			const storageSpy = spyOn(interactionStorageServiceMock, 'store');
 			classUnderTest.activate(map);
+			await TestUtils.timeout();
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 			classUnderTest.deactivate(map);
 
@@ -740,6 +750,7 @@ describe('OlMeasurementHandler', () => {
 			spyOn(interactionStorageServiceMock, 'getStorageId').and.returnValue('f_ooBarId');
 
 			classUnderTest.activate(map);
+			await TestUtils.timeout();
 			expect(classUnderTest._vectorLayer).toBeTruthy();
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 			classUnderTest.deactivate(map);
@@ -756,6 +767,7 @@ describe('OlMeasurementHandler', () => {
 			const map = setupMap();
 
 			classUnderTest.activate(map);
+			await TestUtils.timeout();
 			expect(classUnderTest._vectorLayer).toBeTruthy();
 			classUnderTest.deactivate(map);
 
@@ -774,6 +786,7 @@ describe('OlMeasurementHandler', () => {
 			const feature = new Feature({ geometry: geometry });
 
 			classUnderTest.activate(map);
+			await TestUtils.timeout();
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 
 			expect(classUnderTest._drawingListeners).toHaveSize(2);
@@ -1078,20 +1091,13 @@ describe('OlMeasurementHandler', () => {
 
 	describe('when storing layer', () => {
 		const afterDebounceDelay = OlMeasurementHandler.Debounce_Delay + 100;
-		describe('debouncing takes place', () => {
-			beforeEach(function () {
-				jasmine.clock().install();
-			});
 
-			afterEach(function () {
-				jasmine.clock().uninstall();
-			});
+		describe('debouncing takes place', () => {
 			it('stores once after a single change of a feature', async () => {
 				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
-				const storeSpy = spyOn(interactionStorageServiceMock, 'store');
-				const privateSaveSpy = spyOn(classUnderTest, '_save').and.callThrough();
+
 				const geometry = new LineString([
 					[0, 0],
 					[1, 0]
@@ -1099,58 +1105,110 @@ describe('OlMeasurementHandler', () => {
 				const feature = new Feature({ geometry: geometry });
 
 				classUnderTest.activate(map);
-				classUnderTest._vectorLayer.getSource().addFeature(feature); // -> first call of debounced _save, caused by vectorsource:addfeature-event
+				await TestUtils.timeout();
+				const privateSaveSpy = spyOn(classUnderTest, '_save').and.callFake(() => {});
+				classUnderTest._vectorLayer.getSource().addFeature(feature); // -> first call of _save, caused by vectorsource:addfeature-event
+				feature.getGeometry().dispatchEvent('change'); // -> first call of debounced _save, caused by vectorsource:changefeature-event
 				feature.getGeometry().dispatchEvent('change'); // -> second call of debounced _save, caused by vectorsource:changefeature-event
-				jasmine.clock().tick(afterDebounceDelay);
+				await TestUtils.timeout(afterDebounceDelay);
+				expect(privateSaveSpy).toHaveBeenCalledTimes(2);
+			});
 
-				expect(privateSaveSpy).toHaveBeenCalledTimes(1);
-				expect(storeSpy).toHaveBeenCalledTimes(1);
+			it('stores once after a single change of a feature', async () => {
+				setup();
+				const classUnderTest = new OlMeasurementHandler();
+				const map = setupMap();
+
+				const geometry = new LineString([
+					[0, 0],
+					[1, 0]
+				]);
+				const feature = new Feature({ geometry: geometry });
+
+				classUnderTest.activate(map);
+				await TestUtils.timeout();
+				const privateSaveSpy = spyOn(classUnderTest, '_save').and.callFake(() => {});
+				classUnderTest._vectorLayer.getSource().addFeature(feature); // -> first call of _save, caused by vectorsource:addfeature-event
+				feature.getGeometry().dispatchEvent('change'); // -> first call of debounced _save, caused by vectorsource:changefeature-event
+				feature.getGeometry().dispatchEvent('change'); // -> second call of debounced _save, caused by vectorsource:changefeature-event
+				await TestUtils.timeout(afterDebounceDelay);
+
+				expect(privateSaveSpy).toHaveBeenCalledTimes(2);
 			});
 
 			it('stores once after a feature removed', async () => {
 				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
-				const storeSpy = spyOn(interactionStorageServiceMock, 'store');
-				const privateSaveSpy = spyOn(classUnderTest, '_save').and.callThrough();
+
 				const geometry = new LineString([
 					[0, 0],
 					[1, 0]
 				]);
 				const feature = new Feature({ geometry: geometry });
 				feature.set('debug', 'stores once after a feature removed');
-
 				classUnderTest.activate(map);
+				await TestUtils.timeout();
+				const privateSaveSpy = spyOn(classUnderTest, '_save').and.callFake(() => {});
+
 				classUnderTest._vectorLayer.getSource().addFeature(feature); // -> first call of debounced _save, caused by vectorsource:addfeature-event
 				classUnderTest._vectorLayer.getSource().removeFeature(feature); // -> second call of debounced _save, caused by vectorsource:removefeature-event
-				jasmine.clock().tick(afterDebounceDelay);
+				await TestUtils.timeout(afterDebounceDelay);
 
-				expect(privateSaveSpy).toHaveBeenCalledTimes(1);
-				expect(storeSpy).toHaveBeenCalledTimes(1);
+				expect(privateSaveSpy).toHaveBeenCalledTimes(2);
 			});
 
 			it('stores only once after multiple changes of a feature', async () => {
 				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
-				const storeSpy = spyOn(interactionStorageServiceMock, 'store');
-				const privateSaveSpy = spyOn(classUnderTest, '_save').and.callThrough();
 				const geometry = new LineString([
 					[0, 0],
 					[1, 0]
 				]);
 				const feature = new Feature({ geometry: geometry });
-
 				classUnderTest.activate(map);
+				await TestUtils.timeout();
+				const privateSaveSpy = spyOn(classUnderTest, '_save').and.callFake(() => {});
+
 				classUnderTest._vectorLayer.getSource().addFeature(feature); // -> call of debounced _save, caused by vectorsource:addfeature-event
 				feature.dispatchEvent('change'); // -> second call of debounced _save, caused by vectorsource:changefeature-event
 				feature.dispatchEvent('change');
 				feature.dispatchEvent('change');
 				feature.dispatchEvent('change');
-				jasmine.clock().tick(afterDebounceDelay);
+				await TestUtils.timeout(afterDebounceDelay);
 
-				expect(privateSaveSpy).toHaveBeenCalledTimes(1);
-				expect(storeSpy).toHaveBeenCalledTimes(1);
+				expect(privateSaveSpy).toHaveBeenCalledTimes(2);
+			});
+
+			describe('when in embedded mode', () => {
+				const withinDebounceDelay = OlMeasurementHandler.Debounce_Delay / 10;
+				it('stores after each change of a feature', async () => {
+					setup();
+					spyOn(environmentServiceMock, 'isEmbedded').and.returnValue(true);
+					const classUnderTest = new OlMeasurementHandler();
+					const map = setupMap();
+					const geometry = new LineString([
+						[0, 0],
+						[1, 0]
+					]);
+					const feature = new Feature({ geometry: geometry });
+					classUnderTest.activate(map);
+					await TestUtils.timeout();
+					const privateSaveSpy = spyOn(classUnderTest, '_save').and.callFake(() => {});
+
+					classUnderTest._vectorLayer.getSource().addFeature(feature); // -> call of debounced _save, caused by vectorsource:addfeature-event
+					feature.dispatchEvent('change'); // -> second call of debounced _save, caused by vectorsource:changefeature-event
+					await TestUtils.timeout(withinDebounceDelay);
+					feature.dispatchEvent('change');
+					await TestUtils.timeout(withinDebounceDelay);
+					feature.dispatchEvent('change');
+					await TestUtils.timeout(withinDebounceDelay);
+					feature.dispatchEvent('change');
+					await TestUtils.timeout(withinDebounceDelay);
+
+					expect(privateSaveSpy).toHaveBeenCalledTimes(5);
+				});
 			});
 		});
 
@@ -1161,6 +1219,7 @@ describe('OlMeasurementHandler', () => {
 			const storageSpy = spyOn(classUnderTest._storageHandler, 'store').and.callFake(() => {});
 
 			classUnderTest.activate(map);
+			await TestUtils.timeout();
 			const feature = new Feature({
 				geometry: new LineString([
 					[0, 0],
@@ -1472,7 +1531,7 @@ describe('OlMeasurementHandler', () => {
 			expect(classUnderTest._draw.handleEvent).toHaveBeenCalledWith(jasmine.any(MapBrowserEvent));
 		});
 
-		it('add the drawn feature to select after drawends', () => {
+		it('add the drawn feature to select after drawends', async () => {
 			setup();
 			const geometry = new Polygon([
 				[
@@ -1489,6 +1548,7 @@ describe('OlMeasurementHandler', () => {
 			const map = setupMap();
 			const classUnderTest = new OlMeasurementHandler();
 			classUnderTest.activate(map);
+			await TestUtils.timeout();
 			classUnderTest._measureState.type = InteractionStateType.DRAW;
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 

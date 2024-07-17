@@ -30,8 +30,6 @@ import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { networkReducer } from '../../../../src/store/network/network.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { setIsPortrait } from '../../../../src/store/media/media.action';
-import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
-import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import ImageLayer from 'ol/layer/Image';
 import { ImageWMS } from 'ol/source';
 
@@ -198,15 +196,13 @@ describe('OlMap', () => {
 			layers: layersReducer,
 			measurement: measurementReducer,
 			network: networkReducer,
-			media: createNoInitialStateMediaReducer(),
-			notifications: notificationReducer
+			media: createNoInitialStateMediaReducer()
 		});
 
 		$injector
 			.registerSingleton('MapService', mapServiceStub)
 			.registerSingleton('GeoResourceService', geoResourceServiceStub)
 			.registerSingleton('EnvironmentService', environmentServiceMock)
-			.registerSingleton('TranslationService', { translate: (key, params = []) => `${key}${params.length ? ` [${params.join(',')}]` : ''}` })
 			.registerSingleton('OlMeasurementHandler', measurementLayerHandlerMock)
 			.registerSingleton('OlDrawHandler', drawLayerHandlerMock)
 			.registerSingleton('OlGeolocationHandler', geolocationLayerHandlerMock)
@@ -351,20 +347,6 @@ describe('OlMap', () => {
 
 				expect(store.getState().position.liveZoom).toBe(zoom);
 			});
-		});
-	});
-
-	describe('map load events', () => {
-		it("updates the 'fetching' property in network store", async () => {
-			const element = await setup();
-
-			simulateMapEvent(element._map, MapEventType.LOADSTART);
-
-			expect(store.getState().network.fetching).toBeTrue();
-
-			simulateMapEvent(element._map, MapEventType.LOADEND);
-
-			expect(store.getState().network.fetching).toBeFalse();
 		});
 	});
 
@@ -1206,7 +1188,7 @@ describe('OlMap', () => {
 			expect(map.getLayers().item(1)).toEqual(nonAsyncOlLayer);
 		});
 
-		it('removes layer from state store when olLayer not available', async () => {
+		it('removes the layer from the layers s-o-s when olLayer not available', async () => {
 			const element = await setup();
 			const map = element._map;
 			spyOn(layerServiceMock, 'toOlLayer')
@@ -1223,8 +1205,6 @@ describe('OlMap', () => {
 			expect(map.getLayers().getLength()).toBe(1);
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(warnSpy).toHaveBeenCalledWith("Could not add an olLayer for id 'unknown'");
-			expect(store.getState().notifications.latest.payload.content).toBe('global_geoResource_not_available [unknown]');
-			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 		});
 
 		it('removes an olLayer', async () => {

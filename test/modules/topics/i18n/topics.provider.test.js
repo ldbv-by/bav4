@@ -7,6 +7,9 @@ describe('i18n for topics module', () => {
 		expect(map.topics_menu_title).toBe('Themen');
 		expect(map.topics_catalog_panel_change_topic).toBe('Thema wechseln');
 		expect(map.topics_catalog_leaf_no_georesource_title).toBe('Ebene nicht verfügbar');
+		expect(map.topics_catalog_leaf_info).toBe('Info');
+		expect(map.topics_catalog_contentPanel_topic_could_not_be_loaded(['foo'])).toBe('Das Thema mit der ID "foo" konnte nicht geladen werden');
+		expect(map.topics_catalog_contentPanel_topic_not_available).toBe('Das Thema steht leider derzeit nicht zur Verfügung');
 	});
 
 	it('provides translation for en', () => {
@@ -15,10 +18,13 @@ describe('i18n for topics module', () => {
 		expect(map.topics_menu_title).toBe('Topics');
 		expect(map.topics_catalog_panel_change_topic).toBe('Change topic');
 		expect(map.topics_catalog_leaf_no_georesource_title).toBe('Layer not available');
+		expect(map.topics_catalog_leaf_info).toBe('Info');
+		expect(map.topics_catalog_contentPanel_topic_could_not_be_loaded(['foo'])).toBe('The topic with the id "foo" could not be loaded');
+		expect(map.topics_catalog_contentPanel_topic_not_available).toBe('The topic is not available');
 	});
 
-	it('have the expected amount of translations', () => {
-		const expectedSize = 3;
+	it('contains the expected amount of entries', () => {
+		const expectedSize = 6;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

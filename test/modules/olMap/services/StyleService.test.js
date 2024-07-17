@@ -16,7 +16,7 @@ register(proj4);
 
 describe('StyleTypes', () => {
 	it('provides an enum of all valid StyleTypes', () => {
-		expect(Object.keys(StyleTypes).length).toBe(13);
+		expect(Object.keys(StyleTypes).length).toBe(14);
 
 		expect(StyleTypes.NULL).toBe('null');
 		expect(StyleTypes.DEFAULT).toBe('default');
@@ -24,6 +24,7 @@ describe('StyleTypes', () => {
 		expect(StyleTypes.HIGHLIGHT).toBe('highlight');
 		expect(StyleTypes.HIGHLIGHT_TEMP).toBe('highlight_temp');
 		expect(StyleTypes.DRAW).toBe('draw');
+		expect(StyleTypes.POINT).toBe('point');
 		expect(StyleTypes.MARKER).toBe('marker');
 		expect(StyleTypes.TEXT).toBe('text');
 		expect(StyleTypes.ANNOTATION).toBe('annotation');
@@ -303,16 +304,22 @@ describe('StyleService', () => {
 
 		it('adds marker-style to feature', () => {
 			const featureWithStyleArray = new Feature({ geometry: new Point([0, 0]) });
+			const featureWithoutTextStyle = new Feature({ geometry: new Point([0, 0]) });
 			const featureWithStyleFunction = new Feature({ geometry: new Point([0, 0]) });
 			const featureWithoutStyle = new Feature({ geometry: new Point([0, 0]) });
 			const style = new Style({
 				image: new Icon({ src: 'http://foo.bar/icon.png', anchor: [0.5, 1], anchorXUnits: 'fraction', anchorYUnits: 'fraction', color: '#ff0000' }),
 				text: new Text({ text: 'foo' })
 			});
+			const styleWithoutTextStyle = new Style({
+				image: new Icon({ src: 'http://foo.bar/icon.png', anchor: [0.5, 1], anchorXUnits: 'fraction', anchorYUnits: 'fraction', color: '#ff0000' })
+			});
 			featureWithStyleArray.setId('draw_marker_12345678');
+			featureWithoutTextStyle.setId('draw_marker_12withoutText');
 			featureWithStyleFunction.setId('draw_marker_9876543');
 			featureWithoutStyle.setId('draw_marker_noStyle');
 			featureWithStyleArray.setStyle([style]);
+			featureWithoutTextStyle.setStyle([styleWithoutTextStyle]);
 			featureWithStyleFunction.setStyle(() => [style]);
 
 			const viewMock = {
@@ -334,6 +341,12 @@ describe('StyleService', () => {
 			const styleSetterArraySpy = spyOn(featureWithStyleArray, 'setStyle').and.callFake((f) => (markerStyle = f()));
 			instanceUnderTest.addStyle(featureWithStyleArray, mapMock, layerMock);
 			expect(styleSetterArraySpy).toHaveBeenCalledWith(jasmine.any(Function));
+			expect(markerStyle).toContain(jasmine.any(Style));
+
+			markerStyle = null;
+			const styleSetterWithoutTextStyleSpy = spyOn(featureWithoutTextStyle, 'setStyle').and.callFake((f) => (markerStyle = f()));
+			instanceUnderTest.addStyle(featureWithoutTextStyle, mapMock, layerMock);
+			expect(styleSetterWithoutTextStyleSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(markerStyle).toContain(jasmine.any(Style));
 
 			markerStyle = null;
@@ -1092,6 +1105,7 @@ describe('StyleService', () => {
 		it('returns a StyleFunction for a valid StyleType', () => {
 			expect(instanceUnderTest.getStyleFunction(StyleTypes.NULL)).toEqual(jasmine.any(Function));
 			expect(instanceUnderTest.getStyleFunction(StyleTypes.MEASURE)).toEqual(jasmine.any(Function));
+			expect(instanceUnderTest.getStyleFunction(StyleTypes.POINT)).toEqual(jasmine.any(Function));
 			expect(instanceUnderTest.getStyleFunction(StyleTypes.MARKER)).toEqual(jasmine.any(Function));
 			expect(instanceUnderTest.getStyleFunction(StyleTypes.TEXT)).toEqual(jasmine.any(Function));
 			expect(instanceUnderTest.getStyleFunction(StyleTypes.LINE)).toEqual(jasmine.any(Function));

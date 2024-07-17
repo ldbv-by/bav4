@@ -6,7 +6,7 @@ import { $injector } from '../injection';
 import { generateTestIds, LOG_LIFECYLE_ATTRIBUTE_NAME } from '../utils/markup';
 import { equals } from '../utils/storeUtils';
 import { observe } from '../utils/storeUtils';
-import css from './baElement.css';
+import css from './mvuElement.css';
 
 /**
  * Base class for components. Improved version of {@link BaElement} and based on
@@ -65,7 +65,7 @@ export class MvuElement extends HTMLElement {
 			// Abstract class can not be constructed.
 			throw new Error('Can not construct abstract class.');
 		}
-		this._root = this.attachShadow({ mode: 'open' });
+		this._root = this.attachShadow({ mode: this.isShadowRootOpen() ? 'open' : 'closed' });
 		const { StoreService } = $injector.inject('StoreService');
 		/**
 		 * Do not access the store in child classes. Always use {@link MvuElement#model}.
@@ -82,6 +82,16 @@ export class MvuElement extends HTMLElement {
 		this._model = { ...model };
 
 		this._rendered = false;
+	}
+
+	/**
+	 * Hook that defines whether or not the shadow root's internal features are accessible from JavaScript.
+	 * Default is `true`.
+	 * @protected
+	 * @returns {boolean}
+	 */
+	isShadowRootOpen() {
+		return true;
 	}
 
 	/**
@@ -319,7 +329,7 @@ export class MvuElement extends HTMLElement {
 	 * The observer is automatically unsubscribed when the element is disconnected from the DOM but can be unsubscribed manually at an earlier point in time when needed.
 	 * @param {module:modules/MvuElement~extractStateFn} extract A function that extract a portion (single value or a object) from the current state which will be observed for comparison
 	 * @param {module:modules/MvuElement~onObservedStateChange} onChange A function that will be called when the observed state has changed
-	 * @param {boolean|true} immediately A boolean that indicates, if the callback should be called immediately after the observer has been registered. Default is `true`
+	 * @param {boolean|true} immediately A boolean that indicates, if the callback should be called immediately after the observer has been registered. Default is `true`.
 	 * @returns  A function that unsubscribes the observer
 	 * @see observe
 	 */
@@ -342,7 +352,7 @@ export class MvuElement extends HTMLElement {
 	 * @protected
 	 * @param {(string|string[])} names Name(s) of the observed field(s)
 	 * @param {module:modules/MvuElement~onObservedModelChange} onChange A function that will be called when one of the observed fields has change
-	 * @param {boolean|false} immediately A boolean that indicates, if the callback should be called immediately after the observer has been registered
+	 * @param {boolean|false} immediately A boolean that indicates, if the callback should be called immediately after the observer has been registered. Default is `false`.
 	 * @returns  A function that unsubscribes the observer
 	 */
 	observeModel(names, onChange, immediately = false) {

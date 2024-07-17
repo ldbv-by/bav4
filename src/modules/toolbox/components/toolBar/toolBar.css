@@ -57,6 +57,15 @@
 	padding: 0.2em 0.4em 0.4em;
 }
 
+.is-portrait .tool-bar__button {
+	font-size: 1.2rem;
+	display: inline-block;
+	cursor: pointer;
+	background: var(--header-button-color);
+	opacity: 0.9;
+	padding: 0.3em 0.4em 0.5em;
+}
+
 .is-active.tool-bar__button {
 	background-color: var(--primary-color);
 }
@@ -145,6 +154,9 @@
 	border-radius: 3.5em;
 	background-color: var(--primary-bg-color);
 	border: none;
+}
+.action-button:hover {
+	box-shadow: 0 0 0 0.2em var(--primary-color-lighter);
 }
 
 .is-desktop .action-button,

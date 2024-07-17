@@ -17,8 +17,6 @@ import { setBeingMoved, setMoveEnd, setMoveStart } from '../../../store/map/map.
 import VectorSource from 'ol/source/Vector';
 import { Group as LayerGroup } from 'ol/layer';
 import { GeoResourceFuture, GeoResourceTypes } from '../../../domain/geoResources';
-import { setFetching } from '../../../store/network/network.action';
-import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 import { equals } from '../../../utils/storeUtils';
 import { roundCenter, roundRotation, roundZoomLevel } from '../../../utils/mapUtils';
 
@@ -45,7 +43,6 @@ export class OlMap extends MvuElement {
 			GeoResourceService: geoResourceService,
 			LayerService: layerService,
 			EnvironmentService: environmentService,
-			TranslationService: translationService,
 			OlMeasurementHandler: measurementHandler,
 			OlDrawHandler: olDrawHandler,
 			OlGeolocationHandler: geolocationHandler,
@@ -60,7 +57,6 @@ export class OlMap extends MvuElement {
 			'GeoResourceService',
 			'LayerService',
 			'EnvironmentService',
-			'TranslationService',
 			'OlMeasurementHandler',
 			'OlDrawHandler',
 			'OlGeolocationHandler',
@@ -75,7 +71,6 @@ export class OlMap extends MvuElement {
 		this._mapService = mapService;
 		this._layerService = layerService;
 		this._environmentService = environmentService;
-		this._translationService = translationService;
 		this._geoResourceService = geoResourceService;
 		this._layerHandler = new Map([
 			[measurementHandler.id, measurementHandler],
@@ -212,7 +207,7 @@ export class OlMap extends MvuElement {
 		if (this._environmentService.isTouch()) {
 			registerLongPressListener(this._map, contextOrLongPressHandler, singleClickOrShortPressHandler);
 		} else {
-			this._map.addEventListener('contextmenu', contextOrLongPressHandler);
+			this._map.on('contextmenu', contextOrLongPressHandler);
 			this._map.on('singleclick', singleClickOrShortPressHandler);
 		}
 
@@ -228,9 +223,6 @@ export class OlMap extends MvuElement {
 		this._map.on('pointerdrag', () => {
 			setBeingDragged(true);
 		});
-
-		this._map.on('loadstart', () => setFetching(true));
-		this._map.on('loadend', () => setFetching(false));
 
 		this._mapHandler.forEach((handler) => {
 			handler.register(this._map);
@@ -291,7 +283,6 @@ export class OlMap extends MvuElement {
 	}
 
 	_syncLayers() {
-		const translate = (key, params = []) => this._translationService.translate(key, params);
 		const { layers } = this.getModel();
 
 		const updatedIds = layers.map((layer) => layer.id);
@@ -336,13 +327,13 @@ export class OlMap extends MvuElement {
 					: this._layerHandler.has(id)
 						? toOlLayerFromHandler(id, this._layerHandler.get(id), this._map)
 						: null;
+
 				if (olLayer) {
 					const layer = layers.find((layer) => layer.id === id);
 					updateOlLayer(olLayer, layer);
 					this._map.getLayers().insertAt(layer.zIndex, olLayer);
 				} else {
 					console.warn(`Could not add an olLayer for id '${id}'`);
-					emitNotification(`${translate('global_geoResource_not_available', [geoResource?.id ?? id])}`, LevelTypes.WARN);
 					removeLayer(id);
 				}
 			};
@@ -356,8 +347,8 @@ export class OlMap extends MvuElement {
 					// eslint-disable-next-line promise/prefer-await-to-then
 					.then((lazyLoadedGeoResource) => {
 						// replace the placeholder olLayer by the real the olLayer
-						const layer = layers.find((layer) => layer.id === id);
 						const realOlLayer = this._layerService.toOlLayer(id, lazyLoadedGeoResource, this._map);
+						const layer = layers.find((layer) => layer.id === id);
 						updateOlLayer(realOlLayer, layer);
 						this._map.getLayers().remove(getLayerById(this._map, id));
 						this._map.getLayers().insertAt(layer.zIndex, realOlLayer);

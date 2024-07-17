@@ -6,6 +6,7 @@ import { UnavailableGeoResourceError } from '../domain/errors';
 import { LevelTypes, emitNotification } from '../store/notifications/notifications.action';
 import { $injector } from '../injection/index';
 import { throttled } from '../utils/timer';
+import { removeLayerOf } from '../store/layers/layers.action';
 
 /**
  * This plugin catches exceptions of type `Error` and {@link BaRuntimeError} and displays a notification.
@@ -18,15 +19,18 @@ export class GlobalErrorPlugin extends BaPlugin {
 	#geoResourceService;
 	#errorListener;
 	#unhandledrejectionListener;
+	#environmentService;
 
 	constructor() {
 		super();
-		const { TranslationService: translationService, GeoResourceService: geoResourceService } = $injector.inject(
-			'TranslationService',
-			'GeoResourceService'
-		);
+		const {
+			TranslationService: translationService,
+			GeoResourceService: geoResourceService,
+			EnvironmentService: environmentService
+		} = $injector.inject('TranslationService', 'GeoResourceService', 'EnvironmentService');
 		this.#translationService = translationService;
 		this.#geoResourceService = geoResourceService;
+		this.#environmentService = environmentService;
 	}
 	/**
 	 * @override
@@ -37,6 +41,7 @@ export class GlobalErrorPlugin extends BaPlugin {
 		const handleError = (error) => {
 			if (error instanceof UnavailableGeoResourceError) {
 				const geoResourceName = this.#geoResourceService.byId(error.geoResourceId)?.label ?? error.geoResourceId;
+				removeLayerOf(error.geoResourceId);
 				switch (error.httpStatus) {
 					case 401:
 						emitNotification(
@@ -54,7 +59,7 @@ export class GlobalErrorPlugin extends BaPlugin {
 						emitNotification(`${translate('global_geoResource_not_available', [geoResourceName])}`, LevelTypes.WARN);
 						break;
 				}
-			} else {
+			} else if (!this.#environmentService.isEmbeddedAsWC()) {
 				this._emitThrottledGenericNotification();
 			}
 		};

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="16"
+   height="16"
+   fill="currentColor"
+   class="bi bi-arrow-return-right"
+   viewBox="0 0 16 16"
+   version="1.1"
+   id="svg35"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs39" />
+  <rect
+     style="fill:#000000;stroke-width:8.23012;stroke-miterlimit:0.4;stroke-dasharray:16.4602, 8.23012;stroke-dashoffset:68.3099"
+     id="rect836"
+     width="1.2426"
+     height="10.241477"
+     x="1.2510779"
+     y="1.1459116" />
+  <rect
+     style="fill:#000000;stroke-width:8.23012;stroke-miterlimit:0.4;stroke-dasharray:16.4602, 8.23012;stroke-dashoffset:68.3099"
+     id="rect836-6"
+     width="1.2426"
+     height="10.241477"
+     x="10.146872"
+     y="-11.473442"
+     transform="rotate(89.903842)" />
+</svg>
+<!--MIT License-->

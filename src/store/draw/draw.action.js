@@ -187,7 +187,7 @@ export const reset = () => {
 };
 
 /**
- * Set the reset request.
+ * Set the finish request.
  * @function
  */
 export const finish = () => {

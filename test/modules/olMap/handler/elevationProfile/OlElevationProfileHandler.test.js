@@ -14,6 +14,7 @@ import { TestUtils } from '../../../../test-utils';
 import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
 import { Tools } from '../../../../../src/domain/tools';
 import { $injector } from '../../../../../src/injection';
+import { indicateChange } from '../../../../../src/store/elevationProfile/elevationProfile.action';
 
 describe('OlElevationProfileHandler', () => {
 	const initCoordinate = fromLonLat([11, 48]);
@@ -508,7 +509,8 @@ describe('OlElevationProfileHandler', () => {
 			]);
 		});
 
-		it('calls the ElevationService for deselect', () => {
+		it('does NOT calls the ElevationService for deselect, but updates store', () => {
+			const elevationServiceSpy = spyOn(elevationService, 'requestProfile').and.callFake(() => indicateChange('id'));
 			setup({ ...defaultState });
 			const lineString = new LineString([
 				[2, 2],
@@ -526,11 +528,16 @@ describe('OlElevationProfileHandler', () => {
 			select.getFeatures().push(feature);
 
 			expect(updateCoordinatesSpy).toHaveBeenCalled();
+			expect(elevationServiceSpy).toHaveBeenCalled();
+			expect(store.getState().elevationProfile.id).toBe('id');
 
 			updateCoordinatesSpy.calls.reset();
+			elevationServiceSpy.calls.reset();
 			select.getFeatures().clear();
 
 			expect(updateCoordinatesSpy).toHaveBeenCalled();
+			expect(elevationServiceSpy).not.toHaveBeenCalled();
+			expect(store.getState().elevationProfile.id).toBeNull();
 		});
 	});
 
