@@ -26,7 +26,7 @@ import {
 	getTransparentImageStyle,
 	renderGeodesicRulerSegments
 } from '../../../../src/modules/olMap/utils/olStyleUtils';
-import { Point, LineString, Polygon, Geometry, MultiLineString } from 'ol/geom';
+import { Point, LineString, Polygon, Geometry, MultiLineString, MultiPolygon } from 'ol/geom';
 import { Feature } from 'ol';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
@@ -281,6 +281,23 @@ describe('measureStyleFunction', () => {
 		const rulerStyle = styles.find((style) => style.getRenderer != null);
 
 		expect(rulerStyle).toBeDefined();
+	});
+
+	it('should have a geodesic ruler-style with renderer-function and provides a geodesic polygon', () => {
+		const polygon = new Polygon([
+			[
+				[0, 0],
+				[0, 1],
+				[1, 0]
+			]
+		]);
+		const feature = new Feature({ geometry: polygon });
+		const geodesic = new GeodesicGeometry(feature);
+		spyOn(geodesic, 'getCalculationStatus').and.returnValue(GEODESIC_CALCULATION_STATUS.ACTIVE);
+		feature.set(GEODESIC_FEATURE_PROPERTY, geodesic);
+		const styles = measureStyleFunction(feature, resolution);
+
+		expect(styles[1].getGeometryFunction()(feature)).toEqual(jasmine.any(MultiPolygon));
 	});
 
 	it('should have a ruler-style with renderer-function, which uses customContextRenderFunction', () => {
