@@ -45,6 +45,7 @@ export class TiledCoordinateBag {
 		if (newSegment) {
 			this.#segmentIndex++;
 		}
+
 		if (this.#lastCoordinate && 180 - Math.abs(this.#lastCoordinate[0]) < Dateline_Buffer) {
 			if (coordinate[0] < 0 && this.#lastCoordinate[0] > 0) {
 				this.#push(coordinate, Right_World);

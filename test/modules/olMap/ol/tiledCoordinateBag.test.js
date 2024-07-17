@@ -1,6 +1,6 @@
 import { TiledCoordinateBag } from '../../../../src/modules/olMap/ol/geodesic/tiledCoordinateBag';
 
-import { MultiLineString } from 'ol/geom';
+import { MultiLineString, MultiPolygon } from 'ol/geom';
 
 describe('TiledCoordinateBag', () => {
 	describe('constructor', () => {
@@ -48,15 +48,52 @@ describe('TiledCoordinateBag', () => {
 		it('creates a geometry for 3 points over date shift border left', () => {
 			const instance = new TiledCoordinateBag();
 
-			instance.add(coordinateMunich);
-			instance.add([coordinateBeijing[0] - 360, coordinateBeijing[1]], true);
+			instance.add([coordinateBeijing[0] - 360, coordinateBeijing[1]]);
 			instance.add([coordinateParis[0] - 360, coordinateBeijing[1]], true);
+			instance.add(coordinateMunich, true);
 
 			const geometry = instance.createTiledGeometry();
 			const pointCount = geometry.getCoordinates()[0].length;
 
 			expect(geometry).toBeInstanceOf(MultiLineString);
 			expect(pointCount).toBe(3);
+		});
+
+		it('creates a geometry for 3 points over date shift border right', () => {
+			const instance = new TiledCoordinateBag();
+
+			instance.add(coordinateMunich);
+			instance.add([coordinateParis[0] + 360, coordinateParis[1]], true);
+			instance.add([coordinateBeijing[0] - 360, coordinateBeijing[1]], true);
+
+			const geometry = instance.createTiledGeometry();
+			const pointCount = geometry.getCoordinates()[0].length;
+
+			expect(geometry).toBeInstanceOf(MultiLineString);
+			expect(pointCount).toBe(3);
+		});
+
+		it('creates a MultiPolygon for 3 points ', () => {
+			const instance = new TiledCoordinateBag();
+
+			instance.add(coordinateMunich);
+			instance.add(coordinateParis, true);
+			instance.add(coordinateBeijing, true);
+
+			const polygon = instance.createTiledPolygon();
+			const pointCount = polygon.getCoordinates()[0][0].length;
+
+			expect(polygon).toBeInstanceOf(MultiPolygon);
+			expect(pointCount).toBe(4);
+		});
+
+		it('does NOT creates a MultiPolygon for lineString over date shift border ', () => {
+			const instance = new TiledCoordinateBag();
+
+			instance.add([coordinateBeijing[0] - 360, coordinateBeijing[1]]);
+			instance.add(coordinateMunich);
+
+			expect(instance.createTiledPolygon()).toBeNull();
 		});
 	});
 });
