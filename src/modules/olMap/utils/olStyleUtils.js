@@ -451,7 +451,7 @@ export const renderLinearRulerSegments = (pixelCoordinates, state, contextRender
 	const pixelRatio = state.pixelRatio;
 
 	const getMeasuredLength = () => {
-		const alreadyMeasuredLength = state.geometry ? state.geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY) : null;
+		const alreadyMeasuredLength = state.geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY);
 		return alreadyMeasuredLength ?? mapService.calcLength(lineString.getCoordinates());
 	};
 
