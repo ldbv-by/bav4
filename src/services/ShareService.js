@@ -6,6 +6,7 @@ import { round } from '../utils/numberUtils';
 import { QueryParameters } from '../domain/queryParameters';
 import { GlobalCoordinateRepresentations } from '../domain/coordinateRepresentation';
 import { getOrigin, getPathParams } from '../utils/urlUtils';
+import { HighlightFeatureType } from '../store/highlight/highlight.action';
 
 /**
  * Options for retrieving parameters.
@@ -69,7 +70,8 @@ export class ShareService {
 			...this._extractLayers(options),
 			...this._extractTopic(),
 			...this._extractRoute(),
-			...this._extractTool()
+			...this._extractTool(),
+			...this._extractMarker()
 		};
 
 		return new Map(Object.entries(params));
@@ -111,7 +113,8 @@ export class ShareService {
 				...this._extractLayers({ includeHiddenGeoResources: false }),
 				...this._extractTopic(),
 				...this._extractRoute(),
-				...this._extractTool()
+				...this._extractTool(),
+				...this._extractMarker()
 			},
 			extraParams
 		);
@@ -260,6 +263,29 @@ export class ShareService {
 		} = state;
 
 		extractedState[QueryParameters.TOOL_ID] = current ?? '';
+
+		return extractedState;
+	}
+	/**
+	 * @private
+	 * @returns {object} extractedState
+	 */
+	_extractMarker() {
+		const { StoreService: storeService } = $injector.inject('StoreService');
+
+		const state = storeService.getStore().getState();
+		const extractedState = {};
+
+		const {
+			highlight: { features }
+		} = state;
+
+		/**
+		 * When we have exactly one highlight feature of type MARKER we add the CROSSHAIR query parameter.
+		 */
+		if (features.filter((hf) => hf.type === HighlightFeatureType.MARKER).length === 1) {
+			extractedState[QueryParameters.CROSSHAIR] = true;
+		}
 
 		return extractedState;
 	}
