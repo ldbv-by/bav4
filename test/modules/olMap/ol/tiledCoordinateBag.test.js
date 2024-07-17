@@ -32,7 +32,7 @@ describe('TiledCoordinateBag', () => {
 			const instance = new TiledCoordinateBag();
 
 			instance.add(coordinateMunich);
-			instance.add(coordinateParis);
+			instance.add(coordinateParis, true);
 
 			const afterSecondPointGeometry = instance.createTiledGeometry();
 			const pointCount = afterSecondPointGeometry.getCoordinates()[0].length;
@@ -49,8 +49,8 @@ describe('TiledCoordinateBag', () => {
 			const instance = new TiledCoordinateBag();
 
 			instance.add(coordinateMunich);
-			instance.add([coordinateBeijing[0] - 360, coordinateBeijing[1]]);
-			instance.add([coordinateParis[0] - 360, coordinateBeijing[1]]);
+			instance.add([coordinateBeijing[0] - 360, coordinateBeijing[1]], true);
+			instance.add([coordinateParis[0] - 360, coordinateBeijing[1]], true);
 
 			const geometry = instance.createTiledGeometry();
 			const pointCount = geometry.getCoordinates()[0].length;

@@ -47,18 +47,18 @@ export class TiledCoordinateBag {
 		}
 		if (this.#lastCoordinate && 180 - Math.abs(this.#lastCoordinate[0]) < Dateline_Buffer) {
 			if (coordinate[0] < 0 && this.#lastCoordinate[0] > 0) {
-				this._push(coordinate, Right_World);
+				this.#push(coordinate, Right_World);
 				this.#lineStrings[++this.#lineStringIndex] = [];
 			} else if (coordinate[0] > 0 && this.#lastCoordinate[0] < 0) {
-				this._push(coordinate, Left_World);
+				this.#push(coordinate, Left_World);
 				this.#lineStrings[++this.#lineStringIndex] = [];
 			}
 		}
-		this._push(coordinate);
+		this.#push(coordinate);
 		this.#lastCoordinate = coordinate;
 	}
 
-	_push(coordinate, offset = 0) {
+	#push(coordinate, offset = 0) {
 		const coord = [coordinate[0] + offset * 360, coordinate[1]];
 		const polygonId = 'polygon_' + this.#worldIndex;
 		this.#worldIndex += offset;
