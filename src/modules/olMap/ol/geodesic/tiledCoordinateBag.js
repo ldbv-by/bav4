@@ -105,7 +105,6 @@ export class TiledCoordinateBag {
 	}
 
 	/**
-	 * Creates a tiled MultiPolygon from all added coordinates.
 	 * @returns {MultiPolygon | null}
 	 */
 	createTiledPolygon() {
@@ -117,7 +116,7 @@ export class TiledCoordinateBag {
 		return new MultiPolygon(
 			Object.values(this.#polygons).map((coordinates) => {
 				const first = coordinates[0];
-				return [...coordinates, first];
+				return [[...coordinates, first]];
 			})
 		).transform(Epsg_Wgs84, Epsg_WebMercartor);
 	}
