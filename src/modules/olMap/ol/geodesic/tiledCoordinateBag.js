@@ -1,7 +1,6 @@
 /**
  * @module modules/olMap/ol/geodesic/tiledCoordinateBag
  */
-import { Math as geographicMath } from 'geographiclib-geodesic';
 import { MultiLineString, MultiPolygon } from 'ol/geom';
 import { boundingExtent } from 'ol/extent';
 import proj4 from 'proj4';
