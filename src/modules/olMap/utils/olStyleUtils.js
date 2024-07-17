@@ -831,7 +831,7 @@ export const createSketchStyleFunction = (featureStyleFunction, sketchStyleFunct
 		const geometryType = feature.getGeometry().getType();
 		const sketchStyleFunction = sketchStyleFunctionsByGeometry[geometryType] ?? defaultSketchStyles[geometryType];
 
-		return sketchStyleFunction ? sketchStyleFunction(feature, resolution) : [];
+		return sketchStyleFunction(feature, resolution);
 	};
 
 	return (feature, resolution) => {

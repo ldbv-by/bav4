@@ -173,6 +173,38 @@ describe('measureStyleFunction', () => {
 		expect(circleStyle).toBeTruthy();
 	});
 
+	it('should have a style which creates circle for geodesic lines', () => {
+		const styles = measureStyleFunction(feature, resolution);
+
+		const circleStyle = styles.find((style) => {
+			const geometryFunction = style.getGeometryFunction();
+			if (geometryFunction) {
+				const renderObject = geometryFunction(feature, resolution);
+				return renderObject.getType() === 'Circle';
+			} else {
+				return false;
+			}
+		});
+		const geometryFunction = circleStyle.getGeometryFunction();
+
+		const geometry = new LineString([
+			[0, 0],
+			[1, 0]
+		]);
+		const lineFeature = new Feature({ geometry: geometry });
+		const geodesic = new GeodesicGeometry(lineFeature);
+		spyOn(geodesic, 'getCalculationStatus').and.returnValue(GEODESIC_CALCULATION_STATUS.ACTIVE);
+		lineFeature.set(GEODESIC_FEATURE_PROPERTY, geodesic);
+
+		const pointFeature = new Feature({ geometry: new Point([0, 0]) });
+		const circle = geometryFunction(lineFeature);
+		const nonCircle = geometryFunction(pointFeature);
+
+		expect(circle).toBeTruthy();
+		expect(nonCircle).toBeFalsy();
+		expect(circleStyle).toBeTruthy();
+	});
+
 	it('should have an empty style for an empty polygon', () => {
 		const emptyFeature = new Feature({ geometry: new Polygon([]) });
 		const feature = new Feature({
@@ -1170,6 +1202,23 @@ describe('createSketchStyleFunction', () => {
 
 		expect(styles).toBeTruthy();
 		expect(geometrySpy).toHaveBeenCalled();
+	});
+
+	it('should query the feature id and call featureStyleFunction', () => {
+		const geometry = new LineString([
+			[0, 0],
+			[1, 0]
+		]);
+		const feature = new Feature({ geometry: geometry });
+		const resolution = 1;
+		const idSpy = spyOn(feature, 'getId').and.returnValue('foo');
+		const featureStyleFunction = jasmine.createSpy();
+
+		const styleFunction = createSketchStyleFunction(featureStyleFunction);
+		styleFunction(feature, resolution);
+
+		expect(idSpy).toHaveBeenCalled();
+		expect(featureStyleFunction).toHaveBeenCalledWith(feature, resolution);
 	});
 
 	it('should have a style for sketch polygon', () => {
