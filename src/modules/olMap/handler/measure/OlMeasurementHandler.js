@@ -457,21 +457,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 	_createDraw(source) {
 		const measureFeatureStyleFunction = this._styleService.getStyleFunction(StyleTypes.MEASURE);
-		// todo: missing test coverage
-		const sketchStyleFunctionsByGeometry = {
-			LineString: (feature, resolution) => {
-				if (!feature.get(GEODESIC_FEATURE_PROPERTY)) {
-					feature.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(feature, this._map, () => true));
-				}
-				return measureStyleFunction(feature, resolution);
-			}
-		};
 		const draw = new Draw({
 			source: source,
 			type: 'Polygon',
 			minPoints: 2,
 			snapTolerance: getSnapTolerancePerDevice(),
-			style: createSketchStyleFunction(measureFeatureStyleFunction, sketchStyleFunctionsByGeometry),
+			style: createSketchStyleFunction(measureFeatureStyleFunction, this._getSketchStyleOptions()),
 			wrapX: true
 		});
 
@@ -627,6 +618,24 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const geodesic = feature.get(GEODESIC_FEATURE_PROPERTY);
 
 		return geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE ? getGeodesicGeometry(feature) : getGeometry(feature);
+	}
+
+	/**
+	 * Provides styleFunctions for sketch feature, which should be rendered as measure features.
+	 * Sketch features are created additionally by ol 'Draw'-interaction to the drawn feature and could be: Point,
+	 * LineString and Polygon.
+	 * @see {@link https://openlayers.org/en/latest/apidoc/module-ol_interaction_Draw-Draw.html|Draw-Interaction}
+	 * @returns {Object}
+	 */
+	_getSketchStyleOptions() {
+		return {
+			LineString: (feature, resolution) => {
+				if (!feature.get(GEODESIC_FEATURE_PROPERTY)) {
+					feature.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(feature, this._map, () => true));
+				}
+				return measureStyleFunction(feature, resolution);
+			}
+		};
 	}
 
 	_updateMeasureState(coordinate, pixel, dragging) {

@@ -889,6 +889,24 @@ describe('OlMeasurementHandler', () => {
 			expect(id).toMatch(/measure_[0-9]{13}/g);
 		});
 
+		it('feature gets style properties for sketch features', () => {
+			setup();
+			const classUnderTest = new OlMeasurementHandler();
+			const sketchStyleSpy = spyOn(classUnderTest, '_getSketchStyleOptions').and.callThrough();
+			const map = setupMap();
+			const geometry = new LineString([
+				[0, 0],
+				[1, 0]
+			]);
+			const feature = new Feature({ geometry: geometry });
+
+			classUnderTest.activate(map);
+
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+
+			expect(sketchStyleSpy).toHaveBeenCalled();
+		});
+
 		it('positions tooltip content on the end of not closed Polygon', () => {
 			setup();
 			const classUnderTest = new OlMeasurementHandler();
@@ -2083,6 +2101,18 @@ describe('OlMeasurementHandler', () => {
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
 
 			expect(updateMeasureStateSpy).toHaveBeenCalled();
+		});
+	});
+
+	describe('_getSketchStyleOptions', () => {
+		it('provides a styleFunction for LineString', () => {
+			setup();
+
+			const classUnderTest = new OlMeasurementHandler();
+			const options = classUnderTest._getSketchStyleOptions();
+
+			expect(classUnderTest._getSketchStyleOptions()).toEqual(jasmine.objectContaining({ LineString: jasmine.any(Function) }));
+			expect(options.LineString(new Feature({ geometry: new LineString([[0, 1]]) }), 1)).toEqual(jasmine.arrayContaining([jasmine.any(Style)]));
 		});
 	});
 });
