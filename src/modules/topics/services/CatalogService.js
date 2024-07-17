@@ -29,7 +29,7 @@ import { loadBvvCatalog } from './provider/catalog.provider';
  */
 export class CatalogService {
 	/**
-	 * @param {module:modules/topics/services/CatalogService~catalogProvider} [provider=loadBvvCatalog]
+	 * @param {module:modules/topics/services/CatalogService~catalogProvider} [loadBvvCatalogProvider=loadBvvCatalog]
 	 */
 	constructor(loadBvvCatalogProvider = loadBvvCatalog) {
 		this._loadBvvCatalogProvider = loadBvvCatalogProvider;
@@ -104,17 +104,16 @@ export class CatalogService {
 		const adminToken = configService.getValue('ADMIN_TOKEN_KEY');
 
 		fetch(url, {
-			method: 'POST',
+			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
 				'X-AUTH-ADMIN-TOKEN': adminToken
 			},
 			body: JSON.stringify(catalog)
-			// body: JSON.stringify(catalog)
 		})
 			// eslint-disable-next-line promise/prefer-await-to-then
 			.then(() => {
-				const message = 'Catalog successfully posted.';
+				const message = 'Catalog successfully saved.';
 				// eslint-disable-next-line no-console
 				console.log(message); // handle success, if needed
 				emitNotification(message, LevelTypes.INFO);

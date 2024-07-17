@@ -92,7 +92,7 @@ export class AdminPanel extends MvuElement {
 		return result;
 	};
 
-	_extractOriginal(obj) {
+	_extractOriginal = (obj) => {
 		const result = {};
 		if (obj.geoResourceId) {
 			result.geoResourceId = obj.geoResourceId;
@@ -103,7 +103,7 @@ export class AdminPanel extends MvuElement {
 			result.children = obj.children.map((child) => this._extractOriginal(child));
 		}
 		return result;
-	}
+	};
 
 	_extractOriginalIncShowChildren = (obj) => {
 		const result = {};
