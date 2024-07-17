@@ -105,10 +105,10 @@ export class TiledCoordinateBag {
 	}
 
 	/**
-	 * @param {import('./geodesicGeometry').GeodesicGeometry} geodesicGeometry
+	 * Creates a tiled MultiPolygon from all added coordinates.
 	 * @returns {MultiPolygon | null}
 	 */
-	createTiledPolygon(geodesicGeometry) {
+	createTiledPolygon() {
 		if (this.#lineStringIndex === 1 || (this.#lineStringIndex > 1 && this.#worldIndex !== 0) || this.#lineStringIndex > 2) {
 			/* If polygon should not be filled OR
             the chance for the algorithm to not color the polygon correctly is too high.*/
@@ -117,17 +117,7 @@ export class TiledCoordinateBag {
 		return new MultiPolygon(
 			Object.values(this.#polygons).map((coordinates) => {
 				const first = coordinates[0];
-				if (this.#lineStringIndex === 1) {
-					/* The polygon goes through north or south pol. The coloring will be correct as
-                    long as the shape is not too complex (no overlapping) */
-					if (coordinates.length <= 1) return [coordinates];
-					const last = coordinates[coordinates.length - 1];
-					// Drawing at 90deg breaks things, thats why we stop at 89
-					const lat = geographicMath.copysign(89, this.#worldIndex * geodesicGeometry.area);
-					coordinates.push([last[0], lat], [first[0], lat]);
-				}
-				coordinates.push(first);
-				return [coordinates];
+				return [...coordinates, first];
 			})
 		).transform(Epsg_Wgs84, Epsg_WebMercartor);
 	}
