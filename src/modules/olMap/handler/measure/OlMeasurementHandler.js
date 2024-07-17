@@ -165,7 +165,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 						f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
 						layer.getSource().addFeature(f);
 						if (f.getId().startsWith(Tools.MEASURE)) {
-							f.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(f, olMap, () => false));
+							f.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(f, olMap));
 						}
 						this._styleService.removeStyle(f, olMap);
 						this._styleService.addStyle(f, olMap, layer);
@@ -562,7 +562,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._modify.setActive(true);
 		this._modifyActivated = true;
 		if (feature) {
-			feature.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(feature, this._map, () => false)); // refresh geodesic with the completed feature from the finished drawing
+			feature.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(feature, this._map)); // refresh geodesic with the completed feature from the finished drawing
 			const onFeatureChange = (event) => {
 				const measureGeometry = this._createMeasureGeometry(event.target);
 				this._overlayService.update(event.target, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
@@ -687,11 +687,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._setMeasureState(measureState);
 	}
 
-	_setSelection(ids = []) {
+	_setSelection(ids) {
 		const clear = () => {
-			if (this._select) {
-				this._select.getFeatures().clear();
-			}
+			this._select?.getFeatures().clear();
 		};
 		const fill = (ids) => {
 			ids.forEach((id) => {

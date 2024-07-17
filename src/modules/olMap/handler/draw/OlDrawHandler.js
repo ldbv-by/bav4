@@ -197,7 +197,7 @@ export class OlDrawHandler extends OlLayerHandler {
 					oldFeatures.forEach((f) => {
 						f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
 						if (f.getId().startsWith(Tools.MEASURE)) {
-							f.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(f, olMap, () => false));
+							f.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(f, olMap));
 						}
 						this._styleService.removeStyle(f, olMap);
 						this._styleService.addStyle(f, olMap, layer);
