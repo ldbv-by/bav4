@@ -36,8 +36,8 @@ test.describe('favicons', () => {
 					purpose: 'maskable'
 				}
 			],
-			name: 'BayernAtlas Beta',
-			short_name: 'BayernAtlas Beta',
+			name: 'BayernAtlas 4 Admin',
+			short_name: 'BayernAtlas 4 Admin',
 			orientation: 'portrait',
 			display: 'standalone',
 			start_url: '/',
