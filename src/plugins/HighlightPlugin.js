@@ -36,7 +36,7 @@ export const SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID = 'searchResultTempora
 /**
  *ID for a highlight feature a query is running
  */
- export const CROSSHAIR_HIGHLIGHT_FEATURE_ID = 'crosshairHighlightFeatureId';
+export const CROSSHAIR_HIGHLIGHT_FEATURE_ID = 'crosshairHighlightFeatureId';
 /**
  * This plugin currently
  * - adds a layer for displaying all highlight features (needed for all kinds of highlight visualization), exclusive here
