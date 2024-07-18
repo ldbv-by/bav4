@@ -29,7 +29,6 @@ import { measurementReducer } from '../../../../../src/store/measurement/measure
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../../src/services/provider/attribution.provider';
 import { Layer } from 'ol/layer';
 import { Tools } from '../../../../../src/domain/tools';
-import { EventLike } from '../../../../../src/utils/storeUtils';
 import { fileStorageReducer } from '../../../../../src/store/fileStorage/fileStorage.reducer.js';
 import { KML_EMPTY_CONTENT } from '../../../../../src/modules/olMap/formats/kml.js';
 
