@@ -11,6 +11,8 @@ import { featureInfoReducer } from '../../../../../src/store/featureInfo/feature
 import { routingReducer } from '../../../../../src/store/routing/routing.reducer';
 import { TabIds } from '../../../../../src/domain/mainMenu';
 import { setTab } from '../../../../../src/store/mainMenu/mainMenu.action';
+import { Tools } from '../../../../../src/domain/tools.js';
+import { toolsReducer } from '../../../../../src/store/tools/tools.reducer.js';
 
 window.customElements.define(NavigationRail.tag, NavigationRail);
 
@@ -50,7 +52,8 @@ describe('NavigationRail', () => {
 			media: createNoInitialStateMediaReducer(),
 			featureInfo: featureInfoReducer,
 			routing: routingReducer,
-			position: positionReducer
+			position: positionReducer,
+			tools: toolsReducer
 		});
 		$injector
 			.registerSingleton('EnvironmentService', {
@@ -238,6 +241,48 @@ describe('NavigationRail', () => {
 			expect(element.shadowRoot.querySelectorAll('.routing.is-active')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.objectinfo.is-active')).toHaveSize(0);
 			expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
+		});
+
+		it('activates / deactivates a possible corresponding tool', async () => {
+			const state = {
+				media: { portrait: false, minWidth: false },
+				mainMenu: {
+					open: false,
+					tab: TabIds.ROUTING
+				},
+				navigationRail: {
+					open: true,
+					visitedTabIds: [TabIds.FEATUREINFO]
+				},
+				tools: {
+					current: Tools.ROUTING
+				}
+			};
+			const element = await setup(state);
+
+			expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
+			expect(store.getState().tools.current).toBe(Tools.ROUTING);
+
+			// the home button should not deactivate a current tool
+			const homeButton = element.shadowRoot.querySelector('.home');
+			homeButton.click();
+
+			expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
+			expect(store.getState().tools.current).toBe(Tools.ROUTING);
+
+			// the objectinfo button should deactivate an active tool
+			const objectinfoButton = element.shadowRoot.querySelector('.objectinfo');
+			objectinfoButton.click();
+
+			expect(store.getState().mainMenu.tab).toBe(TabIds.FEATUREINFO);
+			expect(store.getState().tools.current).toBeNull();
+
+			// the routing button should activate the routing tool
+			const routingButton = element.shadowRoot.querySelector('.routing');
+			routingButton.click();
+
+			expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
+			expect(store.getState().tools.current).toBe(Tools.ROUTING);
 		});
 
 		it('changes the tab and opens the mainMenu', async () => {
