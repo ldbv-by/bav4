@@ -7,6 +7,7 @@ import { LevelTypes } from '../../src/store/notifications/notifications.action.j
 import { observe } from '../../src/utils/storeUtils.js';
 import { layersReducer } from '../../src/store/layers/layers.reducer.js';
 import { addLayer } from '../../src/store/layers/layers.action.js';
+import { GeoResourceAuthenticationType } from '../../src/domain/geoResources.js';
 
 describe('GlobalErrorPlugin', () => {
 	const geoResourceService = {
@@ -78,24 +79,47 @@ describe('GlobalErrorPlugin', () => {
 		});
 
 		describe('UnavailableGeoResourceError', () => {
-			it('removes all associated layers from the layers s-o-s', async () => {
-				const message = 'message';
-				const geoResourceId = 'geoResourceId';
-				const geoResourceLabel = 'geoResourceLabel';
-				const httpStatus = 401;
-				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue({ label: geoResourceLabel });
-				await instanceUnderTest.register(store);
-				addLayer('id0', { geoResourceId: geoResourceId });
-				addLayer('id1', { geoResourceId: geoResourceId });
-				const event = new ErrorEvent('error', { error: new UnavailableGeoResourceError(message, geoResourceId, httpStatus) });
-				expect(store.getState().layers.active).toHaveSize(2);
-
-				window.dispatchEvent(event);
-
-				expect(store.getState().layers.active).toHaveSize(0);
-			});
-
 			describe('and the GeoResource is known', () => {
+				describe('and requires authentication', () => {
+					it('removes all associated layers from the layers s-o-s', async () => {
+						const message = 'message';
+						const geoResourceId = 'geoResourceId';
+						const geoResourceLabel = 'geoResourceLabel';
+						const httpStatus = 401;
+						spyOn(geoResourceService, 'byId')
+							.withArgs(geoResourceId)
+							.and.returnValue({ label: geoResourceLabel, authenticationType: GeoResourceAuthenticationType.BAA });
+						await instanceUnderTest.register(store);
+						addLayer('id0', { geoResourceId: geoResourceId });
+						addLayer('id1', { geoResourceId: geoResourceId });
+						const event = new ErrorEvent('error', { error: new UnavailableGeoResourceError(message, geoResourceId, httpStatus) });
+						expect(store.getState().layers.active).toHaveSize(2);
+
+						window.dispatchEvent(event);
+
+						expect(store.getState().layers.active).toHaveSize(0);
+					});
+				});
+
+				describe('and does NOT require authentication', () => {
+					it('does NOT remove all associated layers from the layers s-o-s', async () => {
+						const message = 'message';
+						const geoResourceId = 'geoResourceId';
+						const geoResourceLabel = 'geoResourceLabel';
+						const httpStatus = 401;
+						spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue({ label: geoResourceLabel, authenticationType: null });
+						await instanceUnderTest.register(store);
+						addLayer('id0', { geoResourceId: geoResourceId });
+						addLayer('id1', { geoResourceId: geoResourceId });
+						const event = new ErrorEvent('error', { error: new UnavailableGeoResourceError(message, geoResourceId, httpStatus) });
+						expect(store.getState().layers.active).toHaveSize(2);
+
+						window.dispatchEvent(event);
+
+						expect(store.getState().layers.active).toHaveSize(2);
+					});
+				});
+
 				it('handles an UnavailableGeoResourceError with code 401', async () => {
 					const message = 'message';
 					const geoResourceId = 'geoResourceId';

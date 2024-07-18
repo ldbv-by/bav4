@@ -88,7 +88,7 @@ describe('olLoadFunction.provider', () => {
 					const expectedUrl = `${backendUrl}proxy/basicAuth/wms/map/?url=${encodeURIComponent(src)}`;
 					spyOn(httpService, 'get')
 						.withArgs(expectedUrl, {
-							timeout: 10000,
+							timeout: 30_000,
 							headers: new Headers({
 								Authorization: `Basic ${btoa(`${credential.username}:${credential.password}`)}`
 							})
@@ -117,7 +117,7 @@ describe('olLoadFunction.provider', () => {
 					const expectedUrl = `${backendUrl}proxy/basicAuth/wms/map/?url=${encodeURIComponent(adjustedUrl)}`;
 					spyOn(httpService, 'get')
 						.withArgs(expectedUrl, {
-							timeout: 10000,
+							timeout: 30_000,
 							headers: new Headers({
 								Authorization: `Basic ${btoa(`${credential.username}:${credential.password}`)}`
 							})
@@ -194,7 +194,7 @@ describe('olLoadFunction.provider', () => {
 						.withArgs(
 							src,
 							{
-								timeout: 10000
+								timeout: 30_000
 							},
 							{ response: [responseInterceptor] }
 						)
@@ -222,7 +222,7 @@ describe('olLoadFunction.provider', () => {
 						.withArgs(
 							adjustedSrc,
 							{
-								timeout: 10000
+								timeout: 30_000
 							},
 							{ response: [responseInterceptor] }
 						)
