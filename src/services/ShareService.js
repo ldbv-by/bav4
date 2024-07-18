@@ -6,7 +6,7 @@ import { round } from '../utils/numberUtils';
 import { QueryParameters } from '../domain/queryParameters';
 import { GlobalCoordinateRepresentations } from '../domain/coordinateRepresentation';
 import { getOrigin, getPathParams } from '../utils/urlUtils';
-import { HighlightFeatureType } from '../store/highlight/highlight.action';
+import { CROSSHAIR_HIGHLIGHT_FEATURE_ID } from '../plugins/HighlightPlugin';
 
 /**
  * Options for retrieving parameters.
@@ -283,7 +283,7 @@ export class ShareService {
 		/**
 		 * When we have exactly one highlight feature of type MARKER we add the CROSSHAIR query parameter.
 		 */
-		if (features.filter((hf) => hf.type === HighlightFeatureType.MARKER).length === 1) {
+		if (features.filter((hf) => hf.id === CROSSHAIR_HIGHLIGHT_FEATURE_ID).length === 1) {
 			extractedState[QueryParameters.CROSSHAIR] = true;
 		}
 

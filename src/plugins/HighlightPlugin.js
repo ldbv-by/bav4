@@ -1,7 +1,7 @@
 /**
  * @module plugins/HighlightPlugin
  */
-import { observe } from '../utils/storeUtils';
+import { observe, observeOnce } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
@@ -32,6 +32,11 @@ export const SEARCH_RESULT_HIGHLIGHT_FEATURE_ID = 'searchResultHighlightFeatureI
  *ID for SearchResult related temporary highlight features
  */
 export const SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID = 'searchResultTemporaryHighlightFeatureId';
+
+/**
+ *ID for a highlight feature a query is running
+ */
+export const CROSSHAIR_HIGHLIGHT_FEATURE_ID = 'crosshairHighlightFeatureId';
 /**
  * This plugin currently
  * - adds a layer for displaying all highlight features (needed for all kinds of highlight visualization), exclusive here
@@ -106,11 +111,16 @@ export class HighlightPlugin extends BaPlugin {
 		if (crosshair) {
 			setTimeout(() => {
 				addHighlightFeatures({
-					id: `${createUniqueId()}`,
+					id: CROSSHAIR_HIGHLIGHT_FEATURE_ID,
 					label: translate('global_marker_symbol_label'),
 					data: { coordinate: store.getState().position.center },
 					type: HighlightFeatureType.MARKER
 				});
+				observeOnce(
+					store,
+					(state) => state.position.center,
+					() => removeHighlightFeaturesById(CROSSHAIR_HIGHLIGHT_FEATURE_ID)
+				);
 			});
 		}
 
