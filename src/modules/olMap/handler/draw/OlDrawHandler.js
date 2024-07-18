@@ -37,7 +37,6 @@ import { HelpTooltip } from '../../tooltip/HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
 import { VectorGeoResource, VectorSourceType } from '../../../../domain/geoResources';
 import { addLayer, removeLayer } from '../../../../store/layers/layers.action';
-import { debounced } from '../../../../utils/timer';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { OlSketchHandler } from '../OlSketchHandler';
 import { setMode } from '../../../../store/draw/draw.action';
@@ -56,8 +55,6 @@ import { Tools } from '../../../../domain/tools';
 import { setData } from '../../../../store/fileStorage/fileStorage.action';
 
 export const MAX_SELECTION_SIZE = 1;
-
-const Debounce_Delay = 1000;
 
 const defaultStyleOption = {
 	symbolSrc: null, // used by: Symbol
@@ -133,7 +130,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._helpTooltip.messageProvideFunction = messageProvide;
 		this._drawStateChangedListeners = [];
 		this._registeredObservers = [];
-		this._saveContentDebounced = debounced(this._environmentService.isEmbedded() ? 0 : Debounce_Delay, () => this._save());
 	}
 
 	/**
@@ -204,7 +200,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			const updateAndSaveContent = () => {
 				const kmlContent = createKML(layer, 'EPSG:3857');
 				this._storedContent = kmlContent ?? KML_EMPTY_CONTENT;
-				this._saveContentDebounced();
+				this._save();
 			};
 			const setSelectedAndSave = (event) => {
 				if (this._drawState.type === InteractionStateType.DRAW) {
@@ -873,11 +869,4 @@ export class OlDrawHandler extends OlLayerHandler {
 			addLayer(id, { constraints: { metaData: false } });
 		}
 	}
-
-	// todo: move to FileStoragePlugin
-	_warn = () => {
-		const translate = (key) => this._translationService.translate(key);
-		console.warn('Could not store layer-data. The data will get lost after this session.');
-		emitNotification(translate('olMap_handler_storage_offline'), LevelTypes.WARN);
-	};
 }

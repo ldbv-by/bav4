@@ -332,11 +332,11 @@ describe('OlDrawHandler', () => {
 				await TestUtils.timeout();
 				const saveSpy = spyOn(classUnderTest, '_save').and.callThrough();
 
-				classUnderTest._vectorLayer.getSource().addFeature(feature);
-				classUnderTest._vectorLayer.getSource().removeFeature(feature);
-				classUnderTest._saveAndOptionallyConvertToPermanentLayer();
+				classUnderTest._vectorLayer.getSource().addFeature(feature); // first save
+				classUnderTest._vectorLayer.getSource().removeFeature(feature); // second save
+				classUnderTest._saveAndOptionallyConvertToPermanentLayer(); // third and last save
 				await TestUtils.timeout();
-				expect(saveSpy).toHaveBeenCalledTimes(2);
+				expect(saveSpy).toHaveBeenCalledTimes(3);
 				expect(store.getState().fileStorage.data).toBe(KML_EMPTY_CONTENT);
 			});
 		});
