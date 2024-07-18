@@ -78,7 +78,7 @@ export const deleteBvvTopic = async (topicId) => {
 	const url = configService.getValueAsPath('BACKEND_URL') + 'adminui/topics/${topicId}';
 	const adminToken = configService.getValue('ADMIN_TOKEN_KEY');
 
-	const result = await httpService.get(`${url}`, {
+	const result = await httpService.delete(`${url}`, {
 		headers: {
 			'X-AUTH-ADMIN-TOKEN': adminToken
 		}
