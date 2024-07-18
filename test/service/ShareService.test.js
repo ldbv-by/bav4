@@ -16,6 +16,7 @@ import { toolsReducer } from '../../src/store/tools/tools.reducer';
 import { setCurrentTool } from '../../src/store/tools/tools.action';
 import { highlightReducer } from '../../src/store/highlight/highlight.reducer';
 import { addHighlightFeatures, HighlightFeatureType } from '../../src/store/highlight/highlight.action';
+import { CROSSHAIR_HIGHLIGHT_FEATURE_ID } from '../../src/plugins/HighlightPlugin';
 
 describe('ShareService', () => {
 	const coordinateService = {
@@ -352,7 +353,7 @@ describe('ShareService', () => {
 					const instanceUnderTest = new ShareService();
 					addHighlightFeatures([
 						{
-							id: 'hf_id0',
+							id: CROSSHAIR_HIGHLIGHT_FEATURE_ID,
 							type: HighlightFeatureType.MARKER,
 							data: {}
 						},
@@ -375,12 +376,12 @@ describe('ShareService', () => {
 					const instanceUnderTest = new ShareService();
 					addHighlightFeatures([
 						{
-							id: 'hf_id0',
+							id: CROSSHAIR_HIGHLIGHT_FEATURE_ID,
 							type: HighlightFeatureType.MARKER,
 							data: {}
 						},
 						{
-							id: 'hf_id1',
+							id: CROSSHAIR_HIGHLIGHT_FEATURE_ID,
 							type: HighlightFeatureType.MARKER,
 							data: {}
 						}
