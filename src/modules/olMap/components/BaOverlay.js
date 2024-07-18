@@ -159,7 +159,7 @@ export class BaOverlay extends MvuElement {
 
 	#getMeasuredLength = (geometry) => {
 		const alreadyMeasuredLength = geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY);
-		return alreadyMeasuredLength ?? this.#mapService.calcLength(getLineString(geometry).getCoordinates());
+		return alreadyMeasuredLength ?? 0;
 	};
 
 	set placement(value) {

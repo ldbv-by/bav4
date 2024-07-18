@@ -120,7 +120,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 				o.getElement().style.opacity = opacity;
 
 				const overlayPosition = o.getPosition();
-				if (!containsCoordinate(viewExtent, overlayPosition)) {
+				if (overlayPosition && !containsCoordinate(viewExtent, overlayPosition)) {
 					const wgs84Position = toLonLat(overlayPosition, 'EPSG:3857');
 
 					const withOffset = (offset, wgs84Position) => {
