@@ -40,8 +40,16 @@ export class GlobalErrorPlugin extends BaPlugin {
 
 		const handleError = (error) => {
 			if (error instanceof UnavailableGeoResourceError) {
-				const geoResourceName = this.#geoResourceService.byId(error.geoResourceId)?.label ?? error.geoResourceId;
-				removeLayerOf(error.geoResourceId);
+				const geoR = this.#geoResourceService.byId(error.geoResourceId);
+				/**
+				 * If the corresponding GeoResource requires authentication we remove the layer in order to prevent
+				 * opening the the authentication dialog periodically
+				 */
+				if (geoR?.authenticationType) {
+					removeLayerOf(error.geoResourceId);
+				}
+				const geoResourceName = geoR?.label ?? error.geoResourceId;
+
 				switch (error.httpStatus) {
 					case 401:
 						emitNotification(
