@@ -4,7 +4,8 @@ import {
 	HighlightPlugin,
 	HIGHLIGHT_LAYER_ID,
 	SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
-	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID
+	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID,
+	CROSSHAIR_HIGHLIGHT_FEATURE_ID
 } from '../../src/plugins/HighlightPlugin';
 import { TestUtils } from '../test-utils.js';
 import { highlightReducer } from '../../src/store/highlight/highlight.reducer';
@@ -13,6 +14,7 @@ import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { pointerReducer } from '../../src/store/pointer/pointer.reducer';
 import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer';
 import { setTab } from '../../src/store/mainMenu/mainMenu.action';
+import { changeCenter } from '../../src/store/position/position.action';
 import { TabIds } from '../../src/domain/mainMenu';
 import { setClick } from '../../src/store/pointer/pointer.action';
 import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.reducer';
@@ -280,6 +282,41 @@ describe('HighlightPlugin', () => {
 			expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
 			expect(store.getState().highlight.features[0].label).toBe('global_marker_symbol_label');
 			expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureType.MARKER);
+			expect(store.getState().highlight.features[0].id).toBe(CROSSHAIR_HIGHLIGHT_FEATURE_ID);
+		});
+
+		it('removes the highlight feature once on the first change of the `center` property of the position s-o-s', async () => {
+			const coordinate0 = [42, 21];
+			const coordinate1 = [55, 22];
+			const coordinate2 = [99, 33];
+			const state = {
+				position: { center: coordinate0 }
+			};
+			const store = setup(state);
+			const queryParam = new URLSearchParams(QueryParameters.CROSSHAIR + '=some');
+			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+			const instanceUnderTest = new HighlightPlugin();
+			await instanceUnderTest.register(store);
+
+			await TestUtils.timeout();
+
+			expect(store.getState().highlight.features).toHaveSize(1);
+
+			changeCenter(coordinate1);
+
+			expect(store.getState().highlight.features).toHaveSize(0);
+
+			addHighlightFeatures({
+				id: CROSSHAIR_HIGHLIGHT_FEATURE_ID,
+				label: '',
+				data: { coordinate: coordinate1 },
+				type: HighlightFeatureType.MARKER
+			});
+			expect(store.getState().highlight.features).toHaveSize(1);
+
+			changeCenter(coordinate2);
+
+			expect(store.getState().highlight.features).toHaveSize(1);
 		});
 	});
 
