@@ -285,7 +285,7 @@ describe('HighlightPlugin', () => {
 			expect(store.getState().highlight.features[0].id).toBe(CROSSHAIR_HIGHLIGHT_FEATURE_ID);
 		});
 
-		it('removes the highlight feature once on the first change of the `center` property of the position s-o-s', async () => {
+		it('replaces the highlight feature on the first change of the `center` property of the position s-o-s', async () => {
 			const coordinate0 = [42, 21];
 			const coordinate1 = [55, 22];
 			const coordinate2 = [99, 33];
@@ -304,15 +304,8 @@ describe('HighlightPlugin', () => {
 
 			changeCenter(coordinate1);
 
-			expect(store.getState().highlight.features).toHaveSize(0);
-
-			addHighlightFeatures({
-				id: CROSSHAIR_HIGHLIGHT_FEATURE_ID,
-				label: '',
-				data: { coordinate: coordinate1 },
-				type: HighlightFeatureType.MARKER
-			});
 			expect(store.getState().highlight.features).toHaveSize(1);
+			expect(store.getState().highlight.features.id).not.toBe(CROSSHAIR_HIGHLIGHT_FEATURE_ID);
 
 			changeCenter(coordinate2);
 
