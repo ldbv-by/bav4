@@ -355,18 +355,18 @@ describe('ShareService', () => {
 						{
 							id: CROSSHAIR_HIGHLIGHT_FEATURE_ID,
 							type: HighlightFeatureType.MARKER,
-							data: {}
+							data: { coordinate: [42, 21] }
 						},
 						{
 							id: 'hf_id1',
 							type: HighlightFeatureType.DEFAULT,
-							data: {}
+							data: { coordinate: [77, 55] }
 						}
 					]);
 
 					const extract = instanceUnderTest._extractMarker();
 
-					expect(extract[QueryParameters.CROSSHAIR]).toBeTrue();
+					expect(extract[QueryParameters.CROSSHAIR]).toEqual([true, 42, 21]);
 				});
 			});
 
@@ -378,12 +378,12 @@ describe('ShareService', () => {
 						{
 							id: CROSSHAIR_HIGHLIGHT_FEATURE_ID,
 							type: HighlightFeatureType.MARKER,
-							data: {}
+							data: { coordinate: [42, 21] }
 						},
 						{
 							id: CROSSHAIR_HIGHLIGHT_FEATURE_ID,
 							type: HighlightFeatureType.MARKER,
-							data: {}
+							data: { coordinate: [77, 55] }
 						}
 					]);
 

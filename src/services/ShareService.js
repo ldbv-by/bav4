@@ -284,7 +284,8 @@ export class ShareService {
 		 * When we have exactly one highlight feature containing the CROSSHAIR_HIGHLIGHT_FEATURE_ID we add the CROSSHAIR query parameter.
 		 */
 		if (features.filter((hf) => hf.id === CROSSHAIR_HIGHLIGHT_FEATURE_ID).length === 1) {
-			extractedState[QueryParameters.CROSSHAIR] = true;
+			const feature = features.find((hf) => hf.id === CROSSHAIR_HIGHLIGHT_FEATURE_ID);
+			extractedState[QueryParameters.CROSSHAIR] = [true, ...feature.data.coordinate];
 		}
 
 		return extractedState;
