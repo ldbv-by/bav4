@@ -110,16 +110,30 @@ export class HighlightPlugin extends BaPlugin {
 
 		if (crosshair) {
 			setTimeout(() => {
+				const initialCoord = store.getState().position.center;
+				const type = HighlightFeatureType.MARKER;
 				addHighlightFeatures({
 					id: CROSSHAIR_HIGHLIGHT_FEATURE_ID,
 					label: translate('global_marker_symbol_label'),
-					data: { coordinate: store.getState().position.center },
-					type: HighlightFeatureType.MARKER
+					data: { coordinate: initialCoord },
+					type
 				});
 				observeOnce(
 					store,
 					(state) => state.position.center,
-					() => removeHighlightFeaturesById(CROSSHAIR_HIGHLIGHT_FEATURE_ID)
+					() => {
+						/**
+						 * To avoid further state encoding (see ShareService) of the CROSSHAIR query param, we remove the CROSSHAIR_HIGHLIGHT_FEATURE_ID feature
+						 * after the map was relocated the first time and immediately add the optically same feature with a different id
+						 */
+						removeHighlightFeaturesById(CROSSHAIR_HIGHLIGHT_FEATURE_ID);
+						addHighlightFeatures({
+							id: `${createUniqueId()}`,
+							label: translate('global_marker_symbol_label'),
+							data: { coordinate: initialCoord },
+							type
+						});
+					}
 				);
 			});
 		}
