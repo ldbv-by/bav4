@@ -15,7 +15,7 @@ import { register } from 'ol/proj/proj4';
 import { MEASUREMENT_LAYER_ID } from '../../../../../src/plugins/MeasurementPlugin';
 import { ModifyEvent } from 'ol/interaction/Modify';
 import { layersReducer } from '../../../../../src/store/layers/layers.reducer';
-import { finish, remove, reset } from '../../../../../src/store/measurement/measurement.action';
+import { finish, remove, reset, setSelection } from '../../../../../src/store/measurement/measurement.action';
 import { OverlayService } from '../../../../../src/modules/olMap/services/OverlayService';
 import { Stroke, Style } from 'ol/style';
 import { FileStorageServiceDataTypes } from '../../../../../src/services/FileStorageService';
@@ -794,6 +794,21 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest.deactivate(map);
 
 			expect(classUnderTest._drawingListeners).toEqual(jasmine.arrayWithExactContents([{}, {}]));
+		});
+
+		fit('does NOT clears the selection, if select-interaction is missing ', async () => {
+			await setup();
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+
+			classUnderTest.activate(map);
+			await TestUtils.timeout();
+			const spy = spyOn(classUnderTest._vectorLayer.getSource(), 'getFeatureById').and.callThrough();
+			classUnderTest.deactivate(map);
+
+			classUnderTest._setSelection([]);
+
+			expect(spy).not.toHaveBeenCalled();
 		});
 	});
 

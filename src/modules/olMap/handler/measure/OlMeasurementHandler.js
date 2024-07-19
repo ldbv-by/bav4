@@ -372,7 +372,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 	_unsubscribe(observers) {
 		observers.forEach((unsubscribe) => unsubscribe());
-		observers = [];
+		observers.splice(0, observers.length);
 	}
 
 	_setMeasureState(value) {
@@ -710,7 +710,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			});
 		};
 		const action = ids.length === 0 ? clear : fill;
-		action(ids);
+		if (this._select) action(ids);
 	}
 
 	async _save() {
