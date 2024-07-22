@@ -315,6 +315,8 @@ describe('ShareService', () => {
 		describe('_extractRoute', () => {
 			it('extracts the current route', () => {
 				setup();
+				const mapSrid = 3857;
+				spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
 				const categoryId = 'catId';
 				const waypoints = [
 					[1, 2],
@@ -328,7 +330,10 @@ describe('ShareService', () => {
 				const extract = instanceUnderTest._extractRoute();
 
 				expect(extract[QueryParameters.ROUTE_CATEGORY]).toBe(categoryId);
-				expect(extract[QueryParameters.ROUTE_WAYPOINTS]).toEqual(waypoints);
+				expect(extract[QueryParameters.ROUTE_WAYPOINTS]).toEqual([
+					['1.000000', '2.000000'],
+					['3.000000', '4.000000']
+				]);
 			});
 
 			it('does nothing when no waypoints are available', () => {
@@ -357,7 +362,7 @@ describe('ShareService', () => {
 						{
 							id: CROSSHAIR_HIGHLIGHT_FEATURE_ID,
 							type: HighlightFeatureType.MARKER,
-							data: { coordinate: [42.1234567, 21.1234567] }
+							data: { coordinate: [42, 21] }
 						},
 						{
 							id: 'hf_id1',
@@ -368,7 +373,7 @@ describe('ShareService', () => {
 
 					const extract = instanceUnderTest._extractCrosshair();
 
-					expect(extract[QueryParameters.CROSSHAIR]).toEqual([true, '42.123457', '21.123457']);
+					expect(extract[QueryParameters.CROSSHAIR]).toEqual([true, '42.000000', '21.000000']);
 				});
 			});
 

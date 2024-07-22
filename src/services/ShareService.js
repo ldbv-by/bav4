@@ -242,7 +242,10 @@ export class ShareService {
 		} = state;
 
 		if (waypoints.length > 0) {
-			extractedState[QueryParameters.ROUTE_WAYPOINTS] = waypoints;
+			const { MapService: mapService } = $injector.inject('MapService');
+			// waypoints should be rounded according to the internal projection of the map
+			const { digits } = Object.values(GlobalCoordinateRepresentations).filter((cr) => cr.code === mapService.getSrid())[0];
+			extractedState[QueryParameters.ROUTE_WAYPOINTS] = waypoints.map((wp) => wp.map((n) => n.toFixed(digits)));
 			extractedState[QueryParameters.ROUTE_CATEGORY] = categoryId;
 		}
 		return extractedState;
