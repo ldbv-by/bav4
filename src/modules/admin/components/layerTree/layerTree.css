@@ -107,3 +107,57 @@ input[type='text'] {
 	pointer-events: auto;
 	user-select: text;
 }
+
+.custom-dropdown .dropdown-items.hidden {
+	display: none;
+}
+
+.custom-dropdown {
+	position: relative;
+	width: 100%;
+	font-family: Arial, sans-serif; /* Match your application's font */
+	user-select: none;
+}
+
+.dropdown-selected {
+	padding: 10px;
+	background-color: #f0f0f0; /* Light grey, adjust to match your design */
+	border: 1px solid #ccc; /* Light border */
+	cursor: pointer;
+}
+
+.dropdown-items {
+	position: absolute;
+	width: 100%;
+	background-color: #fff; /* White background */
+	border: 1px solid #ccc; /* Light border, similar to the container */
+	border-top: none; /* Remove top border to blend with the container */
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Optional: Add a subtle shadow */
+	z-index: 1000; /* Ensure dropdown appears above other content */
+	max-height: 300px; /* Adjust based on your needs */
+	overflow-y: auto; /* Enable scroll for many items */
+}
+
+.dropdown-item {
+	padding: 10px;
+	cursor: pointer;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+	background-color: #e9e9e9; /* Light grey, adjust to match your design */
+}
+
+.edit-btn {
+	padding: 5px 8px;
+	margin-left: 10px; /* Space from the label */
+	background-color: #007bff; /* Adjust to match your design */
+	color: white;
+	border: none;
+	cursor: pointer;
+	border-radius: 4px; /* Optional: Rounded corners */
+}
+
+.edit-btn:hover {
+	background-color: #0056b3; /* Darker shade on hover */
+}
