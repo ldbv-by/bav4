@@ -15,7 +15,7 @@ import { register } from 'ol/proj/proj4';
 import { MEASUREMENT_LAYER_ID } from '../../../../../src/plugins/MeasurementPlugin';
 import { ModifyEvent } from 'ol/interaction/Modify';
 import { layersReducer } from '../../../../../src/store/layers/layers.reducer';
-import { finish, remove, reset, setSelection } from '../../../../../src/store/measurement/measurement.action';
+import { finish, remove, reset } from '../../../../../src/store/measurement/measurement.action';
 import { OverlayService } from '../../../../../src/modules/olMap/services/OverlayService';
 import { Stroke, Style } from 'ol/style';
 import { FileStorageServiceDataTypes } from '../../../../../src/services/FileStorageService';
@@ -34,6 +34,7 @@ import { Layer } from 'ol/layer';
 import { Tools } from '../../../../../src/domain/tools';
 import { EventLike } from '../../../../../src/utils/storeUtils';
 import { BaOverlay } from '../../../../../src/modules/olMap/components/BaOverlay.js';
+import { GEODESIC_FEATURE_PROPERTY } from '../../../../../src/modules/olMap/ol/geodesic/geodesicGeometry.js';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -198,7 +199,7 @@ describe('OlMeasurementHandler', () => {
 		document.dispatchEvent(keyEvent);
 	};
 
-	const createFeature = () => {
+	const createFeature = (id = null) => {
 		const feature = new Feature({
 			geometry: new Polygon([
 				[
@@ -210,6 +211,9 @@ describe('OlMeasurementHandler', () => {
 				]
 			])
 		});
+		if (id) {
+			feature.setId(id);
+		}
 		return feature;
 	};
 
@@ -538,7 +542,7 @@ describe('OlMeasurementHandler', () => {
 			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const lastData =
-				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measurement_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measure_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
@@ -555,6 +559,27 @@ describe('OlMeasurementHandler', () => {
 
 			await TestUtils.timeout();
 			expect(addStyleSpy).toHaveBeenCalledWith(oldFeature, map, classUnderTest._vectorLayer);
+		});
+
+		it('adds geodesic property on old measurement features', async () => {
+			setup();
+			const classUnderTest = new OlMeasurementHandler();
+			const lastData =
+				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measure_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark><Placemark id="fooBar"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+			const map = setupMap();
+			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
+			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
+			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
+			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
+			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
+
+			classUnderTest.activate(map);
+
+			await TestUtils.timeout();
+
+			const loadedFeatures = classUnderTest._vectorLayer.getSource().getFeatures();
+			expect(loadedFeatures.filter((f) => f.get(GEODESIC_FEATURE_PROPERTY) && f.getId().startsWith('measure_'))).toHaveSize(1);
+			expect(loadedFeatures.filter((f) => !f.get(GEODESIC_FEATURE_PROPERTY) && !f.getId().startsWith('measure_'))).toHaveSize(1);
 		});
 
 		it('updates overlays of old features onChange', async () => {
@@ -796,7 +821,7 @@ describe('OlMeasurementHandler', () => {
 			expect(classUnderTest._drawingListeners).toEqual(jasmine.arrayWithExactContents([{}, {}]));
 		});
 
-		fit('does NOT clears the selection, if select-interaction is missing ', async () => {
+		it('does NOT clears the selection, if select-interaction is missing ', async () => {
 			await setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
