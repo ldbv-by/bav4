@@ -10,6 +10,8 @@ import { LevelTypes } from '../../../../../src/store/notifications/notifications
 import { isString } from '../../../../../src/utils/checks';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer';
+import { fileStorageReducer } from '../../../../../src/store/fileStorage/fileStorage.reducer.js';
+import { setData } from '../../../../../src/store/fileStorage/fileStorage.action.js';
 
 window.customElements.define(MeasureToolContent.tag, MeasureToolContent);
 
@@ -24,7 +26,6 @@ describe('MeasureToolContent', () => {
 			active: true,
 			statistic: { length: null, area: null },
 			mode: null,
-			fileSaveResult: null,
 			reset: null,
 			remove: null
 		},
@@ -71,7 +72,8 @@ describe('MeasureToolContent', () => {
 			measurement: measurementReducer,
 			modal: modalReducer,
 			notifications: notificationReducer,
-			elevationProfile: elevationProfileReducer
+			elevationProfile: elevationProfileReducer,
+			fileStorage: fileStorageReducer
 		});
 		$injector
 			.registerSingleton('EnvironmentService', {
@@ -99,7 +101,7 @@ describe('MeasureToolContent', () => {
 			await setup();
 			const model = new MeasureToolContent().getModel();
 
-			expect(model).toEqual({ statistic: { length: null, area: null }, mode: null, fileSaveResult: null });
+			expect(model).toEqual({ statistic: { length: null, area: null }, mode: null, storedContent: null });
 		});
 
 		it('displays the finish-button', async () => {
@@ -288,12 +290,12 @@ describe('MeasureToolContent', () => {
 			const state = {
 				measurement: {
 					statistic: { length: 42, area: 0 },
-					fileSaveResult: new EventLike({ fileSaveResult: 'foo', content: exportData }),
 					reset: null,
 					remove: null
 				}
 			};
 			const element = await setup(state);
+			setData(exportData);
 			const chipElement = element.shadowRoot.querySelector('ba-export-vector-data-chip');
 
 			expect(chipElement.exportData).toBe(exportData);
