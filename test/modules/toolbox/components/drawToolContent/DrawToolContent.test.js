@@ -11,6 +11,8 @@ import { IconSelect } from '../../../../../src/modules/iconSelect/components/Ico
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer';
+import { fileStorageReducer } from '../../../../../src/store/fileStorage/fileStorage.reducer.js';
+import { setData } from '../../../../../src/store/fileStorage/fileStorage.action.js';
 
 window.customElements.define(DrawToolContent.tag, DrawToolContent);
 window.customElements.define(IconSelect.tag, IconSelect);
@@ -62,7 +64,8 @@ describe('DrawToolContent', () => {
 			draw: drawReducer,
 			modal: modalReducer,
 			media: createNoInitialStateMediaReducer(),
-			elevationProfile: elevationProfileReducer
+			elevationProfile: elevationProfileReducer,
+			fileStorage: fileStorageReducer
 		});
 		$injector
 			.registerSingleton('EnvironmentService', {
@@ -98,7 +101,7 @@ describe('DrawToolContent', () => {
 				tools: jasmine.any(Array),
 				collapsedInfo: null,
 				collapsedStyle: null,
-				fileSaveResult: null
+				storedContent: null
 			});
 		});
 	});
@@ -667,9 +670,9 @@ describe('DrawToolContent', () => {
 				...drawDefaultState,
 				mode: 'draw',
 				type: 'polygon',
-				validGeometry: true,
-				fileSaveResult: new EventLike({ fileSaveResult: 'foo', content: exportData })
+				validGeometry: true
 			});
+			setData(exportData);
 			const chipElement = element.shadowRoot.querySelector('ba-export-vector-data-chip');
 
 			expect(chipElement.exportData).toBe(exportData);
