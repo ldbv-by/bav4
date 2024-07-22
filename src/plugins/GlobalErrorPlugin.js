@@ -43,7 +43,7 @@ export class GlobalErrorPlugin extends BaPlugin {
 				const geoR = this.#geoResourceService.byId(error.geoResourceId);
 				/**
 				 * If the corresponding GeoResource requires authentication we remove the layer in order to prevent
-				 * opening the the authentication dialog periodically
+				 * opening the authentication dialog periodically
 				 */
 				if (geoR?.authenticationType) {
 					removeLayerOf(error.geoResourceId);
