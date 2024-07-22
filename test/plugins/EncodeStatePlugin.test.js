@@ -28,6 +28,12 @@ describe('EncodeStatePlugin', () => {
 		return store;
 	};
 
+	describe('class', () => {
+		it('defines constant values', async () => {
+			expect(EncodeStatePlugin.DEBOUNCED_DELAY_MS).toBe(200);
+		});
+	});
+
 	it('registers stateForEncoding.changed listeners and updates the window history state', async () => {
 		const expectedEncodedState = 'state';
 		const mockHistory = { replaceState: () => {} };
@@ -42,7 +48,38 @@ describe('EncodeStatePlugin', () => {
 
 		indicateChange();
 
+		await TestUtils.timeout(EncodeStatePlugin.DEBOUNCED_DELAY_MS + 100);
 		expect(historySpy).toHaveBeenCalledWith(null, '', expectedEncodedState);
+
+		await TestUtils.timeout(0);
+	});
+
+	it('updates the window history state in a debounced manner', async () => {
+		const expectedEncodedState = 'state';
+		const mockHistory = { replaceState: () => {} };
+		const historySpy = spyOn(mockHistory, 'replaceState');
+		const mockWindow = { history: mockHistory };
+		spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+		spyOn(environmentService, 'isEmbedded').and.returnValue(false);
+		spyOn(shareService, 'encodeState').and.returnValue(expectedEncodedState);
+		const store = setup();
+		const instanceUnderTest = new EncodeStatePlugin();
+		await instanceUnderTest.register(store);
+
+		indicateChange();
+		indicateChange();
+		indicateChange();
+
+		await TestUtils.timeout(EncodeStatePlugin.DEBOUNCED_DELAY_MS + 100);
+		expect(historySpy).toHaveBeenCalledTimes(1);
+
+		indicateChange();
+		indicateChange();
+		indicateChange();
+
+		await TestUtils.timeout(EncodeStatePlugin.DEBOUNCED_DELAY_MS + 100);
+		expect(historySpy).toHaveBeenCalledTimes(2);
+
 		await TestUtils.timeout(0);
 	});
 
