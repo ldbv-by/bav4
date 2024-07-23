@@ -6,7 +6,7 @@ import { closeModal } from '../../../../store/modal/modal.action';
 import { MvuElement } from '../../../MvuElement';
 // import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
 // @ts-ignore
-// import css from './NewTopicPanel.css';
+import css from './NewTopicPanel.css';
 // import { GeneralFeedback } from '../../../../services/FeedbackService';
 
 const Update_Id = 'update_id';
@@ -84,10 +84,11 @@ export class NewTopicPanel extends MvuElement {
 
 		const label = 'Save';
 
-		// <style>
-		// 	${css}
-		// </style>
 		return html`
+			<style>
+				${css}
+			</style>
+
 			<div id="feedbackPanelTitle" class="feedback-main-header">New Topic</div>
 
 			<div class="ba-form-element">

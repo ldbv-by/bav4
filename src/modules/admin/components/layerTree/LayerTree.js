@@ -14,6 +14,7 @@ import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 
 // @ts-ignore
 import { repeat } from 'lit-html/directives/repeat.js';
+import { openModal } from '../../../../store/modal/modal.action';
 
 const Update_Topics = 'update_topics';
 const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
@@ -450,9 +451,11 @@ export class LayerTree extends MvuElement {
 		};
 
 		const handleEditTopic = (event, topic) => {
-			event.stopPropagation(); // Prevent the dropdown from closing
+			// Prevent the dropdown from closing event.stopPropagation();
 			console.log('Editing topic', topic._id);
 			// Add your edit logic here
+
+			openModal('Thema', html`<ba-mvu-newtopicpanel></ba-mvu-newtopicpanel>`);
 		};
 
 		// Logic to show/hide the dropdown
