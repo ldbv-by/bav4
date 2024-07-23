@@ -12,6 +12,7 @@ import { DragPan } from 'ol/interaction';
 import { BaOverlay } from '../components/BaOverlay';
 import { containsCoordinate, getBottomLeft, getBottomRight, getTopLeft, getTopRight } from '../../../../node_modules/ol/extent';
 import { fromLonLat, toLonLat, transformExtent } from '../../../../node_modules/ol/proj';
+import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
 
 export const saveManualOverlayPosition = (feature) => {
 	const draggableOverlayTypes = ['area', 'measurement'];
@@ -293,11 +294,25 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	}
 
 	_updateOlOverlay(overlay, geometry, value) {
+		const getGeodesicPosition = (feature, value) => {
+			if (feature) {
+				const geodesic = feature.get(GEODESIC_FEATURE_PROPERTY);
+				if (geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE) {
+					return geodesic.getCoordinateAt(value);
+				}
+			}
+			return null;
+		};
 		const element = overlay.getElement();
 		element.value = value;
 		element.geometry = geometry;
 		if (!overlay.get('manualPositioning')) {
-			overlay.setPosition(element.position);
+			if (element.type === BaOverlayTypes.DISTANCE_PARTITION) {
+				const geodesicPosition = getGeodesicPosition(overlay.get('feature'), value);
+				overlay.setPosition(geodesicPosition ?? element.position);
+			} else {
+				overlay.setPosition(element.position);
+			}
 		}
 	}
 
