@@ -315,6 +315,8 @@ describe('ShareService', () => {
 		describe('_extractRoute', () => {
 			it('extracts the current route', () => {
 				setup();
+				const mapSrid = 3857;
+				spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
 				const categoryId = 'catId';
 				const waypoints = [
 					[1, 2],
@@ -328,7 +330,10 @@ describe('ShareService', () => {
 				const extract = instanceUnderTest._extractRoute();
 
 				expect(extract[QueryParameters.ROUTE_CATEGORY]).toBe(categoryId);
-				expect(extract[QueryParameters.ROUTE_WAYPOINTS]).toEqual(waypoints);
+				expect(extract[QueryParameters.ROUTE_WAYPOINTS]).toEqual([
+					['1.000000', '2.000000'],
+					['3.000000', '4.000000']
+				]);
 			});
 
 			it('does nothing when no waypoints are available', () => {
@@ -346,27 +351,29 @@ describe('ShareService', () => {
 			});
 		});
 
-		describe('_extractMarker', () => {
+		describe('_extractCrosshair', () => {
 			describe('exactly one suitable highlight feature is available', () => {
 				it('sets the crosshair query parameter', () => {
 					setup();
+					const mapSrid = 3857;
+					spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
 					const instanceUnderTest = new ShareService();
 					addHighlightFeatures([
 						{
 							id: CROSSHAIR_HIGHLIGHT_FEATURE_ID,
 							type: HighlightFeatureType.MARKER,
-							data: {}
+							data: { coordinate: [42, 21] }
 						},
 						{
 							id: 'hf_id1',
 							type: HighlightFeatureType.DEFAULT,
-							data: {}
+							data: { coordinate: [77, 55] }
 						}
 					]);
 
-					const extract = instanceUnderTest._extractMarker();
+					const extract = instanceUnderTest._extractCrosshair();
 
-					expect(extract[QueryParameters.CROSSHAIR]).toBeTrue();
+					expect(extract[QueryParameters.CROSSHAIR]).toEqual([true, '42.000000', '21.000000']);
 				});
 			});
 
@@ -378,16 +385,16 @@ describe('ShareService', () => {
 						{
 							id: CROSSHAIR_HIGHLIGHT_FEATURE_ID,
 							type: HighlightFeatureType.MARKER,
-							data: {}
+							data: { coordinate: [42, 21] }
 						},
 						{
 							id: CROSSHAIR_HIGHLIGHT_FEATURE_ID,
 							type: HighlightFeatureType.MARKER,
-							data: {}
+							data: { coordinate: [77, 55] }
 						}
 					]);
 
-					const extract = instanceUnderTest._extractMarker();
+					const extract = instanceUnderTest._extractCrosshair();
 
 					expect(extract[QueryParameters.CROSSHAIR]).toBeUndefined();
 				});
@@ -398,7 +405,7 @@ describe('ShareService', () => {
 					setup();
 					const instanceUnderTest = new ShareService();
 
-					const extract = instanceUnderTest._extractMarker();
+					const extract = instanceUnderTest._extractCrosshair();
 
 					expect(extract[QueryParameters.CROSSHAIR]).toBeUndefined();
 				});
@@ -414,7 +421,7 @@ describe('ShareService', () => {
 						data: {}
 					});
 
-					const extract = instanceUnderTest._extractMarker();
+					const extract = instanceUnderTest._extractCrosshair();
 
 					expect(extract[QueryParameters.CROSSHAIR]).toBeUndefined();
 				});
@@ -523,7 +530,7 @@ describe('ShareService', () => {
 					spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
 					spyOn(instanceUnderTest, '_extractRoute').and.returnValue({ rtwp: '1,2', rtc: 'rtCatId' });
 					spyOn(instanceUnderTest, '_extractTool').and.returnValue({ tid: 'someTool' });
-					spyOn(instanceUnderTest, '_extractMarker').and.returnValue({ crh: 'true' });
+					spyOn(instanceUnderTest, '_extractCrosshair').and.returnValue({ crh: 'true' });
 					const _mergeExtraParamsSpy = spyOn(instanceUnderTest, '_mergeExtraParams').withArgs(jasmine.anything(), {}).and.callThrough();
 
 					const encoded = instanceUnderTest.encodeStateForPosition({ zoom: 5, center: [44.123, 88.123], rotation: 0.5 });
@@ -692,7 +699,7 @@ describe('ShareService', () => {
 			spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
 			spyOn(instanceUnderTest, '_extractRoute').and.returnValue({ rtwp: '1,2', rtc: 'rtCatId' });
 			spyOn(instanceUnderTest, '_extractTool').and.returnValue({ tid: 'someTool' });
-			spyOn(instanceUnderTest, '_extractMarker').and.returnValue({ crh: 'true' });
+			spyOn(instanceUnderTest, '_extractCrosshair').and.returnValue({ crh: 'true' });
 
 			const params = instanceUnderTest.getParameters();
 

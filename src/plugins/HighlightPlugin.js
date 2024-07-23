@@ -1,7 +1,7 @@
 /**
  * @module plugins/HighlightPlugin
  */
-import { observe, observeOnce } from '../utils/storeUtils';
+import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
@@ -9,6 +9,7 @@ import { TabIds } from '../domain/mainMenu';
 import { createUniqueId } from '../utils/numberUtils';
 import { $injector } from '../injection/index';
 import { QueryParameters } from '../domain/queryParameters';
+import { isCoordinate } from '../utils/checks';
 
 /**
  * Id of the layer used for highlight visualization.
@@ -106,21 +107,25 @@ export class HighlightPlugin extends BaPlugin {
 		};
 
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
-		const crosshair = environmentService.getQueryParams().get(QueryParameters.CROSSHAIR);
 
-		if (crosshair) {
+		if (environmentService.getQueryParams().get(QueryParameters.CROSSHAIR)) {
+			const crosshairValues = environmentService.getQueryParams().get(QueryParameters.CROSSHAIR).split(',');
 			setTimeout(() => {
-				addHighlightFeatures({
-					id: CROSSHAIR_HIGHLIGHT_FEATURE_ID,
-					label: translate('global_marker_symbol_label'),
-					data: { coordinate: store.getState().position.center },
-					type: HighlightFeatureType.MARKER
-				});
-				observeOnce(
-					store,
-					(state) => state.position.center,
-					() => removeHighlightFeaturesById(CROSSHAIR_HIGHLIGHT_FEATURE_ID)
-				);
+				const crosshairCoordinate =
+					crosshairValues.length > 1
+						? isFinite(crosshairValues[1]) && isFinite(crosshairValues[2])
+							? [crosshairValues[1], crosshairValues[2]].map((v) => parseFloat(v))
+							: null
+						: store.getState().position.center;
+
+				if (isCoordinate(crosshairCoordinate)) {
+					addHighlightFeatures({
+						id: CROSSHAIR_HIGHLIGHT_FEATURE_ID,
+						label: translate('global_marker_symbol_label'),
+						data: { coordinate: crosshairCoordinate },
+						type: HighlightFeatureType.MARKER
+					});
+				}
 			});
 		}
 
