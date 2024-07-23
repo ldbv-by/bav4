@@ -5,6 +5,7 @@ import { QueryParameters } from '../domain/queryParameters';
 import { $injector } from '../injection';
 import { PublicComponent } from '../modules/public/components/PublicComponent';
 import { equals, observe } from '../utils/storeUtils';
+import { debounced } from '../utils/timer';
 import { BaPlugin } from './BaPlugin';
 
 /**
@@ -16,6 +17,7 @@ import { BaPlugin } from './BaPlugin';
 export class EncodeStatePlugin extends BaPlugin {
 	#environmentService;
 	#shareService;
+	#debouncedUpdateHistoryFn = debounced(EncodeStatePlugin.DEBOUNCED_DELAY_MS, () => this._updateHistory());
 	constructor() {
 		super();
 		const { EnvironmentService: environmentService, ShareService: shareService } = $injector.inject('EnvironmentService', 'ShareService');
@@ -29,7 +31,7 @@ export class EncodeStatePlugin extends BaPlugin {
 	async register(store) {
 		if (!this.#environmentService.isEmbedded()) {
 			const updateHistory = () => {
-				this._updateHistory();
+				this.#debouncedUpdateHistoryFn();
 			};
 
 			observe(store, (state) => state.stateForEncoding.changed, updateHistory);
@@ -71,5 +73,9 @@ export class EncodeStatePlugin extends BaPlugin {
 				this.#environmentService.getWindow().document.querySelector(PublicComponent.tag).setAttribute(key, value);
 			}
 		}
+	}
+
+	static get DEBOUNCED_DELAY_MS() {
+		return 200;
 	}
 }
