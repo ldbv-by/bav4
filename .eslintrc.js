@@ -3,7 +3,7 @@ module.exports = {
 	env: {
 		browser: true,
 		node: true,
-		es2022: true,
+		es2023: true,
 		jasmine: true
 	},
 	plugins: ['promise'],
