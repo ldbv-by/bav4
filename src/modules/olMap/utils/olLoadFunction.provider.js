@@ -30,7 +30,7 @@ export const getBvvBaaImageLoadFunction = (geoResourceId, credential = null, max
 	} = $injector.inject('HttpService', 'ConfigService', 'GeoResourceService');
 
 	return async (image, src) => {
-		const timeout = 10_000;
+		const timeout = 30_000;
 
 		const getObjectUrlForBaa = async (url) => {
 			try {
