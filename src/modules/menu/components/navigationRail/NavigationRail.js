@@ -102,13 +102,21 @@ export class NavigationRail extends MvuElement {
 
 		const openTab = (tabId) => {
 			// handle current tool if necessary
-			switch (tabId) {
-				case TabIds.ROUTING:
+			if (!isPortrait) {
+				if (tabId === TabIds.ROUTING) {
 					setCurrentTool(Tools.ROUTING);
-					break;
-				case TabIds.FEATUREINFO:
+				} else {
 					setCurrentTool(null);
-					break;
+				}
+			} else {
+				switch (tabId) {
+					case TabIds.ROUTING:
+						setCurrentTool(Tools.ROUTING);
+						break;
+					case TabIds.FEATUREINFO:
+						setCurrentTool(null);
+						break;
+				}
 			}
 			isPortrait || tabId === tabIndex ? toggle() : open();
 			setTab(tabId);

@@ -243,46 +243,92 @@ describe('NavigationRail', () => {
 			expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
 		});
 
-		it('activates / deactivates a possible corresponding tool', async () => {
-			const state = {
-				media: { portrait: false, minWidth: false },
-				mainMenu: {
-					open: false,
-					tab: TabIds.ROUTING
-				},
-				navigationRail: {
-					open: true,
-					visitedTabIds: [TabIds.FEATUREINFO]
-				},
-				tools: {
-					current: Tools.ROUTING
-				}
-			};
-			const element = await setup(state);
+		describe('in portrait mode', () => {
+			it('activates / deactivates a possible corresponding tool', async () => {
+				const state = {
+					media: { portrait: true, minWidth: false },
+					mainMenu: {
+						open: false,
+						tab: TabIds.ROUTING
+					},
+					navigationRail: {
+						open: true,
+						visitedTabIds: [TabIds.FEATUREINFO]
+					},
+					tools: {
+						current: Tools.ROUTING
+					}
+				};
+				const element = await setup(state);
 
-			expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
-			expect(store.getState().tools.current).toBe(Tools.ROUTING);
+				expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
+				expect(store.getState().tools.current).toBe(Tools.ROUTING);
 
-			// the home button should not deactivate a current tool
-			const homeButton = element.shadowRoot.querySelector('.home');
-			homeButton.click();
+				// the home button should not deactivate the current tool
+				const homeButton = element.shadowRoot.querySelector('.home');
+				homeButton.click();
 
-			expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
-			expect(store.getState().tools.current).toBe(Tools.ROUTING);
+				expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
+				expect(store.getState().tools.current).toBe(Tools.ROUTING);
 
-			// the objectinfo button should deactivate an active tool
-			const objectinfoButton = element.shadowRoot.querySelector('.objectinfo');
-			objectinfoButton.click();
+				// the objectinfo button should deactivate an active tool
+				const objectinfoButton = element.shadowRoot.querySelector('.objectinfo');
+				objectinfoButton.click();
 
-			expect(store.getState().mainMenu.tab).toBe(TabIds.FEATUREINFO);
-			expect(store.getState().tools.current).toBeNull();
+				expect(store.getState().mainMenu.tab).toBe(TabIds.FEATUREINFO);
+				expect(store.getState().tools.current).toBeNull();
 
-			// the routing button should activate the routing tool
-			const routingButton = element.shadowRoot.querySelector('.routing');
-			routingButton.click();
+				// the routing button should activate the routing tool
+				const routingButton = element.shadowRoot.querySelector('.routing');
+				routingButton.click();
 
-			expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
-			expect(store.getState().tools.current).toBe(Tools.ROUTING);
+				expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
+				expect(store.getState().tools.current).toBe(Tools.ROUTING);
+			});
+		});
+
+		describe('in landscape mode mode', () => {
+			it('activates / deactivates a possible corresponding tool', async () => {
+				const state = {
+					media: { portrait: false, minWidth: false },
+					mainMenu: {
+						open: false,
+						tab: TabIds.ROUTING
+					},
+					navigationRail: {
+						open: true,
+						visitedTabIds: [TabIds.FEATUREINFO]
+					},
+					tools: {
+						current: Tools.ROUTING
+					}
+				};
+				const element = await setup(state);
+
+				expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
+				expect(store.getState().tools.current).toBe(Tools.ROUTING);
+
+				// the home button should deactivate the current tool
+				const homeButton = element.shadowRoot.querySelector('.home');
+				homeButton.click();
+
+				expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
+				expect(store.getState().tools.current).toBe(null);
+
+				// the objectinfo button should deactivate an active tool
+				const objectinfoButton = element.shadowRoot.querySelector('.objectinfo');
+				objectinfoButton.click();
+
+				expect(store.getState().mainMenu.tab).toBe(TabIds.FEATUREINFO);
+				expect(store.getState().tools.current).toBeNull();
+
+				// the routing button should activate the routing tool
+				const routingButton = element.shadowRoot.querySelector('.routing');
+				routingButton.click();
+
+				expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
+				expect(store.getState().tools.current).toBe(Tools.ROUTING);
+			});
 		});
 
 		it('changes the tab and opens the mainMenu', async () => {
