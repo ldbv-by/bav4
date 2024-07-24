@@ -2,6 +2,7 @@ import { EventLike } from '../../utils/storeUtils';
 
 export const ADMIN_ID_CHANGED = 'fileStorage/adminId';
 export const ADMIN_AND_FILE_ID_CHANGED = 'fileStorage/adminAndFileId';
+export const CLEARED = 'fileStorage/clear';
 export const DATA_CHANGED = 'fileStorage/data';
 export const LATEST_CHANGED = 'fileStorage/latest';
 export const LATEST_AND_FILE_ID_CHANGED = 'fileStorage/latestAndFileId';
@@ -41,6 +42,9 @@ export const fileStorageReducer = (state = initialState, action) => {
 				...state,
 				data: payload
 			};
+		}
+		case CLEARED: {
+			return initialState;
 		}
 		case LATEST_CHANGED: {
 			return {

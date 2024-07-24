@@ -7,6 +7,7 @@ import { EventLike } from '../../utils/storeUtils';
 import {
 	ADMIN_ID_CHANGED,
 	DATA_CHANGED,
+	CLEARED,
 	LATEST_AND_ADMIN_AND_FILE_ID_CHANGED,
 	LATEST_AND_FILE_ID_CHANGED,
 	LATEST_CHANGED
@@ -49,6 +50,13 @@ export const setData = (data) => {
 			payload: data
 		});
 	}
+};
+
+export const clear = () => {
+	getStore().dispatch({
+		type: CLEARED,
+		payload: null
+	});
 };
 
 /**

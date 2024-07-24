@@ -1,4 +1,5 @@
 import {
+	clear,
 	setAdminId,
 	setData,
 	setLatestStorageResult,
@@ -29,6 +30,20 @@ describe('fileStorageReducer', () => {
 		setAdminId('adminId');
 
 		expect(store.getState().fileStorage.adminId).toBe('adminId');
+	});
+
+	it('clears the store and resets to default values', () => {
+		const store = setup();
+		const data = { foo: 'bar' };
+
+		setData(data);
+
+		expect(store.getState().fileStorage.data).toEqual(data);
+
+		clear();
+
+		expect(store.getState().fileStorage.data).toBeNull();
+		expect(store.getState().fileStorage.data).toBeNull();
 	});
 
 	it('updates the `data` property', () => {
