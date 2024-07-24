@@ -25,7 +25,7 @@ export const initialState = {
 	/**
 	 * @property {EventLike<module:store/fileStorage/fileStorage_action~FileStorageResult|null>}
 	 */
-	latest: new EventLike(null)
+	latest: new EventLike({ success: false, created: null, lastSaved: null })
 };
 
 export const fileStorageReducer = (state = initialState, action) => {

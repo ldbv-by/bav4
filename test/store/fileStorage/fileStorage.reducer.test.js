@@ -21,7 +21,7 @@ describe('fileStorageReducer', () => {
 		expect(store.getState().fileStorage.adminId).toBeNull();
 		expect(store.getState().fileStorage.fileId).toBeNull();
 		expect(store.getState().fileStorage.data).toBeNull();
-		expect(store.getState().fileStorage.latest.payload).toBeNull();
+		expect(store.getState().fileStorage.latest.payload).toEqual({ success: false, created: null, lastSaved: null });
 	});
 
 	it('updates the `adminId` property', () => {
@@ -65,7 +65,7 @@ describe('fileStorageReducer', () => {
 
 		setLatestStorageResult();
 
-		expect(store.getState().fileStorage.latest.payload).toBeNull();
+		expect(store.getState().fileStorage.latest.payload).toEqual({ success: false, created: null, lastSaved: null });
 
 		setLatestStorageResult(result);
 
@@ -79,12 +79,12 @@ describe('fileStorageReducer', () => {
 
 		setLatestStorageResultAndFileId(result);
 
-		expect(store.getState().fileStorage.latest.payload).toBeNull();
+		expect(store.getState().fileStorage.latest.payload).toEqual({ success: false, created: null, lastSaved: null });
 		expect(store.getState().fileStorage.fileId).toBeNull();
 
 		setLatestStorageResultAndFileId(null, fileId);
 
-		expect(store.getState().fileStorage.latest.payload).toBeNull();
+		expect(store.getState().fileStorage.latest.payload).toEqual({ success: false, created: null, lastSaved: null });
 		expect(store.getState().fileStorage.fileId).toBeNull();
 
 		setLatestStorageResultAndFileId(result, fileId);
@@ -101,19 +101,19 @@ describe('fileStorageReducer', () => {
 
 		setLatestStorageResultAndAdminAndFileId(result);
 
-		expect(store.getState().fileStorage.latest.payload).toBeNull();
+		expect(store.getState().fileStorage.latest.payload).toEqual({ success: false, created: null, lastSaved: null });
 		expect(store.getState().fileStorage.adminId).toBeNull();
 		expect(store.getState().fileStorage.fileId).toBeNull();
 
 		setLatestStorageResultAndAdminAndFileId(null, adminId);
 
-		expect(store.getState().fileStorage.latest.payload).toBeNull();
+		expect(store.getState().fileStorage.latest.payload).toEqual({ success: false, created: null, lastSaved: null });
 		expect(store.getState().fileStorage.adminId).toBeNull();
 		expect(store.getState().fileStorage.fileId).toBeNull();
 
 		setLatestStorageResultAndAdminAndFileId(null, null);
 
-		expect(store.getState().fileStorage.latest.payload).toBeNull();
+		expect(store.getState().fileStorage.latest.payload).toEqual({ success: false, created: null, lastSaved: null });
 		expect(store.getState().fileStorage.adminId).toBeNull();
 		expect(store.getState().fileStorage.fileId).toBeNull();
 
