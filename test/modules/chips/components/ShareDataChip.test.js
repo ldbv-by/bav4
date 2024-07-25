@@ -13,12 +13,7 @@ window.customElements.define(ShareDialogContent.tag, ShareDialogContent);
 window.customElements.define(ShareDataChip.tag, ShareDataChip);
 
 describe('ShareDataChip', () => {
-	const defaultState = {
-		shared: {
-			fileSaveResult: null,
-			coordinates: []
-		}
-	};
+	const defaultState = { adminId: null, fileId: null, latest: new EventLike({ success: false }) };
 
 	let store;
 	const shareServiceMock = {
@@ -36,7 +31,7 @@ describe('ShareDataChip', () => {
 	};
 	const setup = async (state = defaultState) => {
 		const windowMock = { navigator: {}, open() {} };
-		store = TestUtils.setupStoreAndDi(state, { modal: modalReducer, shared: sharedReducer, fileStorage: fileStorageReducer });
+		store = TestUtils.setupStoreAndDi({ fileStorage: state }, { modal: modalReducer, shared: sharedReducer, fileStorage: fileStorageReducer });
 		$injector
 			.registerSingleton('EnvironmentService', {
 				getWindow: () => windowMock
@@ -65,7 +60,7 @@ describe('ShareDataChip', () => {
 
 	describe('when initialized', () => {
 		it('renders the view with given FileSaveResults', async () => {
-			const state = { ...defaultState, fileStorage: { adminId: 'a_fooBar', fileId: 'f_fooBar', latest: new EventLike({ success: true }) } };
+			const state = { ...defaultState, adminId: 'a_fooBar', fileId: 'f_fooBar', latest: new EventLike({ success: true }) };
 			const element = await setup(state);
 
 			expect(element.isVisible()).toBeTrue();
@@ -78,9 +73,7 @@ describe('ShareDataChip', () => {
 		});
 
 		it('does NOT render the view with invalid FileSaveResult', async () => {
-			const invalidFileStorage = { adminId: null, fileId: null, latest: new EventLike({ success: false }) };
-			const state = { ...defaultState, fileStorage: invalidFileStorage };
-			const element = await setup(state);
+			const element = await setup();
 
 			expect(element.isVisible()).toBeFalse();
 		});
@@ -88,9 +81,8 @@ describe('ShareDataChip', () => {
 
 	describe('when chip is clicked', () => {
 		it('opens the modal with shortened share-urls', async () => {
-			const fileStorageState = { adminId: 'a_fooBar', fileId: 'f_fooBar', latest: new EventLike({ success: true }) };
 			const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.resolve('http://shorten.foo'));
-			const state = { ...defaultState, fileStorage: fileStorageState };
+			const state = { ...defaultState, adminId: 'a_fooBar', fileId: 'f_fooBar', latest: new EventLike({ success: true }) };
 			const element = await setup(state);
 
 			const button = element.shadowRoot.querySelector('button');
@@ -106,10 +98,9 @@ describe('ShareDataChip', () => {
 		});
 
 		it('explicitly sets the TOOL_ID query parameter', async () => {
-			const fileStorageState = { adminId: 'a_fooBar', fileId: 'f_fooBar', latest: new EventLike({ success: true }) };
 			const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.resolve('http://shorten.foo'));
 			spyOn(shareServiceMock, 'encodeState').and.returnValue(`http://foo.bar?${QueryParameters.TOOL_ID}=someTool`);
-			const state = { ...defaultState, fileStorage: fileStorageState };
+			const state = { ...defaultState, adminId: 'a_fooBar', fileId: 'f_fooBar', latest: new EventLike({ success: true }) };
 			const element = await setup(state);
 
 			const button = element.shadowRoot.querySelector('button');
@@ -126,8 +117,7 @@ describe('ShareDataChip', () => {
 		it('logs a warning', async () => {
 			const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.reject('not available'));
 			const warnSpy = spyOn(console, 'warn');
-			const fileStorageState = { adminId: 'a_fooBar', fileId: 'f_fooBar', latest: new EventLike({ success: true }) };
-			const state = { ...defaultState, fileStorage: fileStorageState };
+			const state = { ...defaultState, adminId: 'a_fooBar', fileId: 'f_fooBar', latest: new EventLike({ success: true }) };
 			const element = await setup(state);
 
 			const button = element.shadowRoot.querySelector('button');
