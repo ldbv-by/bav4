@@ -36,8 +36,7 @@ describe('DrawToolContent', () => {
 		style: null,
 		mode: null,
 		type: null,
-		reset: null,
-		fileSaveResult: null
+		reset: null
 	};
 
 	const StyleOptionTemplate = {
