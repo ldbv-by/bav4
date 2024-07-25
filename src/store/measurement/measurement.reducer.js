@@ -3,7 +3,6 @@ import { EventLike } from '../../utils/storeUtils';
 export const ACTIVE_CHANGED = 'measurement/active';
 export const STATISTIC_CHANGED = 'measurement/statistic';
 export const MODE_CHANGED = 'measurement/mode';
-export const FILE_SAVE_RESULT_CHANGED = 'measurement/fileSaveResult';
 export const SELECTION_CHANGED = 'measurement/selection';
 export const FINISH_REQUESTED = 'measurement/finish';
 export const RESET_REQUESTED = 'measurement/reset';
@@ -22,11 +21,6 @@ export const initialState = {
 	 * @type {String}
 	 */
 	mode: null,
-	/**
-	 * @type {MeasureFileSaveResult}
-	 * @deprecated
-	 */
-	fileSaveResult: new EventLike(null),
 	/**
 	 * @type {Array<String>}
 	 */
@@ -64,12 +58,6 @@ export const measurementReducer = (state = initialState, action) => {
 			return {
 				...state,
 				mode: payload
-			};
-		}
-		case FILE_SAVE_RESULT_CHANGED: {
-			return {
-				...state,
-				fileSaveResult: payload
 			};
 		}
 		case SELECTION_CHANGED: {

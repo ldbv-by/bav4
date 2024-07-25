@@ -19,15 +19,3 @@ export const acknowledgeTermsOfUse = () => {
 		payload: true
 	});
 };
-
-/**
- * Set the {@link FileSaveResult}
- * @function
- * @param {FileSaveResult} fileSaveResult the fileSaveResult of the stored data
- */
-export const setFileSaveResult = (fileSaveResult) => {
-	getStore().dispatch({
-		type: FILE_SAVE_RESULT_CHANGED,
-		payload: fileSaveResult
-	});
-};

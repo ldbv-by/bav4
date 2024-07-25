@@ -9,7 +9,6 @@ export const SELECTED_STYLE_CHANGED = 'draw/selectedStyle';
 export const CLEAR_TEXT = 'draw/clearText';
 export const CLEAR_DESCRIPTION = 'draw/clearDescription';
 export const DESCRIPTION_CHANGED = 'draw/description';
-export const FILE_SAVE_RESULT_CHANGED = 'draw/fileSaveResult';
 export const SELECTION_CHANGED = 'draw/selection';
 export const FINISH_REQUESTED = 'draw/finish';
 export const RESET_REQUESTED = 'draw/reset';
@@ -55,11 +54,6 @@ export const initialState = {
 	 * @type {String}
 	 */
 	description: null,
-	/**
-	 * @type {EventLike<DrawFileSaveResult>}
-	 * @deprecated
-	 */
-	fileSaveResult: new EventLike(null),
 	/**
 	 * @type {Array<String>}
 	 */
@@ -136,12 +130,6 @@ export const drawReducer = (state = initialState, action) => {
 				...state,
 				style: { ...state.style, text: null },
 				selectedStyle: state.selectedStyle ? { ...state.selectedStyle, style: { ...state.selectedStyle.style, text: null } } : null
-			};
-		}
-		case FILE_SAVE_RESULT_CHANGED: {
-			return {
-				...state,
-				fileSaveResult: payload
 			};
 		}
 		case SELECTION_CHANGED: {

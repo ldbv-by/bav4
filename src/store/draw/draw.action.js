@@ -21,13 +21,6 @@ import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
 
 /**
- * MetaData and content of a successfully saved drawing (@see {@link FileSaveResult}).
- * @typedef {Object} DrawFileSaveResult
- * @property {FileSaveResult} fileSaveResult the FileSaveResult
- * @property {string} content the content (geometry) that was saved
- */
-
-/**
  * The Options of a Style-Request
  * @typedef {Object} DrawingStyleOption
  * @property {string} symbolSrc the source of a vector graphic, used by a symbol-drawing
@@ -148,18 +141,6 @@ export const clearDescription = () => {
 export const clearText = () => {
 	getStore().dispatch({
 		type: CLEAR_TEXT
-	});
-};
-
-/**
- * Set the {@link FileSaveResult}
- * @function
- * @param {DrawFileSaveResult} fileSaveResult the fileSaveResult of the stored drawing-data
- */
-export const setFileSaveResult = (fileSaveResult) => {
-	getStore().dispatch({
-		type: FILE_SAVE_RESULT_CHANGED,
-		payload: new EventLike(fileSaveResult)
 	});
 };
 
