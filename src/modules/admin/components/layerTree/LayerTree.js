@@ -450,12 +450,15 @@ export class LayerTree extends MvuElement {
 			this._updateTopic(selectedTopic._id);
 		};
 
-		const handleEditTopic = (event, topic) => {
-			// Prevent the dropdown from closing event.stopPropagation();
-			console.log('Editing topic', topic._id);
-			// Add your edit logic here
+		const handleEditTopic = (event, selectedTopic) => {
+			const updateTopic = (topic) => {
+				console.log('🚀 ~ LayerTree ~ updateTopic ~ topic:', topic);
+			};
 
-			openModal('Thema', html`<ba-mvu-newtopicpanel></ba-mvu-newtopicpanel>`);
+			console.log('Editing topic', selectedTopic._id, selectedTopic._label);
+			event.stopPropagation();
+
+			openModal('Thema', html`<ba-mvu-newtopicpanel .topic="${selectedTopic}" .updateTopic="${updateTopic}"></ba-mvu-newtopicpanel>`);
 		};
 
 		// Logic to show/hide the dropdown
@@ -524,7 +527,7 @@ export class LayerTree extends MvuElement {
 						<div class="dropdown-selected" @click="${(e) => handleTopicSelectClick(e)}">${this.#currentTopic._label}</div>
 						<div class="dropdown-items hidden">
 							${topics.map((topic) => {
-								console.log('🚀 ~ LayerTree ~ createView ~ topic: ', topic);
+								// console.log('🚀 ~ LayerTree ~ createView ~ topic: ', topic);
 								const deactivateButtonText = topic._disabled ? 'aktivieren' : 'deaktivieren';
 								return html`
 									<div class="dropdown-item" data-value="${topic._id}" @click="${(e) => handleTopicChange(e, topic)}">
@@ -542,6 +545,10 @@ export class LayerTree extends MvuElement {
 
 					<button @click="${handleNewLayerGroupClick}">neue Ebenengruppe</button>
 					<button @click="${handleSaveClick}">sichern</button>
+					<button @click="${handleSaveClick}">Catalog 2 Test</button>
+					<button @click="${handleSaveClick}">Catalog 2 Prod</button>
+					<button @click="${handleSaveClick}">Topic 2 Test</button>
+					<button @click="${handleSaveClick}">Topic 2 Prod</button>
 
 					<ul>
 						${repeat(
