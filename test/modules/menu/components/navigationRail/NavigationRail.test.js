@@ -287,7 +287,7 @@ describe('NavigationRail', () => {
 			});
 		});
 
-		describe('in landscape mode mode', () => {
+		describe('in landscape mode', () => {
 			it('activates / deactivates a possible corresponding tool', async () => {
 				const state = {
 					media: { portrait: false, minWidth: false },
