@@ -53,7 +53,7 @@ export const setData = (data) => {
 };
 
 /**
- * Clears and resets the fileStorage to the default values
+ * Clears and resets the fileStorage to the default values.
  * @function
  */
 export const clear = () => {
