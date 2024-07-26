@@ -3,7 +3,6 @@ import {
 	deactivate,
 	reset,
 	remove,
-	setFileSaveResult,
 	setMode,
 	setType,
 	finish,

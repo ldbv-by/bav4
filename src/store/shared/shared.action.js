@@ -2,7 +2,7 @@
  * @module store/shared/shared_action
  */
 import { $injector } from '../../injection';
-import { FILE_SAVE_RESULT_CHANGED, TERMS_OF_USE_ACKNOWLEDGED_CHANGED } from './shared.reducer';
+import { TERMS_OF_USE_ACKNOWLEDGED_CHANGED } from './shared.reducer';
 
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');

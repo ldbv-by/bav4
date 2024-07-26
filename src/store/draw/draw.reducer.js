@@ -1,5 +1,3 @@
-import { EventLike } from '../../utils/storeUtils';
-
 export const ACTIVE_CHANGED = 'draw/active';
 export const MODE_CHANGED = 'draw/mode';
 export const TYPE_CHANGED = 'draw/type';
