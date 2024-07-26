@@ -32,18 +32,24 @@ describe('fileStorageReducer', () => {
 		expect(store.getState().fileStorage.adminId).toBe('adminId');
 	});
 
-	it('clears the store and resets to default values', () => {
+	it('clears the store and resets to initial state', () => {
 		const store = setup();
 		const data = { foo: 'bar' };
 
+		setLatestStorageResultAndAdminAndFileId({ success: true, created: 42, lastSaved: 21 }, 'a_fooBar', 'f_ooBar');
 		setData(data);
 
 		expect(store.getState().fileStorage.data).toEqual(data);
+		expect(store.getState().fileStorage.fileId).toBe('f_ooBar');
+		expect(store.getState().fileStorage.adminId).toBe('a_fooBar');
+		expect(store.getState().fileStorage.latest.payload).toEqual({ success: true, created: 42, lastSaved: 21 });
 
 		clear();
 
 		expect(store.getState().fileStorage.data).toBeNull();
-		expect(store.getState().fileStorage.data).toBeNull();
+		expect(store.getState().fileStorage.fileId).toBeNull();
+		expect(store.getState().fileStorage.adminId).toBeNull();
+		expect(store.getState().fileStorage.latest.payload).toEqual({ success: false, created: null, lastSaved: null });
 	});
 
 	it('updates the `data` property', () => {

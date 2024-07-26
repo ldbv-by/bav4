@@ -30,8 +30,7 @@ describe('MeasureToolContent', () => {
 			remove: null
 		},
 		shared: {
-			termsOfUseAcknowledged: false,
-			fileSaveResult: null
+			termsOfUseAcknowledged: false
 		}
 	};
 

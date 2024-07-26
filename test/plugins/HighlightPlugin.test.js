@@ -4,7 +4,8 @@ import {
 	HighlightPlugin,
 	HIGHLIGHT_LAYER_ID,
 	SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
-	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID
+	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID,
+	CROSSHAIR_HIGHLIGHT_FEATURE_ID
 } from '../../src/plugins/HighlightPlugin';
 import { TestUtils } from '../test-utils.js';
 import { highlightReducer } from '../../src/store/highlight/highlight.reducer';
@@ -280,6 +281,29 @@ describe('HighlightPlugin', () => {
 			expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
 			expect(store.getState().highlight.features[0].label).toBe('global_marker_symbol_label');
 			expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureType.MARKER);
+			expect(store.getState().highlight.features[0].id).toBe(CROSSHAIR_HIGHLIGHT_FEATURE_ID);
+		});
+
+		describe("when search query parameter 'CROSSHAIR' has a value and valid coordinates", () => {
+			it('adds a highlight feature', async () => {
+				const coordinate = [42, 21];
+				const state = {
+					position: { center: coordinate }
+				};
+				const store = setup(state);
+				const queryParam = new URLSearchParams(`${QueryParameters.CROSSHAIR}=true,42,21`);
+				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				const instanceUnderTest = new HighlightPlugin();
+				await instanceUnderTest.register(store);
+
+				await TestUtils.timeout();
+
+				expect(store.getState().highlight.features).toHaveSize(1);
+				expect(store.getState().highlight.features[0].data.coordinate).toEqual([42, 21]);
+				expect(store.getState().highlight.features[0].label).toBe('global_marker_symbol_label');
+				expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureType.MARKER);
+				expect(store.getState().highlight.features[0].id).toBe(CROSSHAIR_HIGHLIGHT_FEATURE_ID);
+			});
 		});
 	});
 
@@ -292,6 +316,24 @@ describe('HighlightPlugin', () => {
 			const store = setup(state);
 			const emptyQueryParam = new URLSearchParams(QueryParameters.CROSSHAIR + '=');
 			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(emptyQueryParam);
+			const instanceUnderTest = new HighlightPlugin();
+			await instanceUnderTest.register(store);
+
+			await TestUtils.timeout();
+
+			expect(store.getState().highlight.features).toHaveSize(0);
+		});
+	});
+
+	describe("when search query parameter 'CROSSHAIR' contains invalid coordinates", () => {
+		it('does NOT add a highlight feature', async () => {
+			const coordinate = [42, 21];
+			const state = {
+				position: { center: coordinate }
+			};
+			const store = setup(state);
+			const queryParam = new URLSearchParams(`${QueryParameters.CROSSHAIR}="true,foo,bar"`);
+			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 			const instanceUnderTest = new HighlightPlugin();
 			await instanceUnderTest.register(store);
 
