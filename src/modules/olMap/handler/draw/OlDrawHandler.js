@@ -209,11 +209,6 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		const getOrCreateLayer = () => {
 			const layer = createLayer();
-			if (this._storeService.getStore().getState().draw.createPermanentLayer) {
-				const oldLayer = getOldLayer(this._map);
-				addOldFeatures(layer, oldLayer);
-			}
-
 			const updateAndSaveContent = () => {
 				this._storedContent = createKML(layer, 'EPSG:3857');
 				this._saveContentDebounced();
@@ -226,9 +221,24 @@ export class OlDrawHandler extends OlLayerHandler {
 				this._storedContent = createKML(layer, 'EPSG:3857');
 				this._save();
 			};
-			this._mapListeners.push(layer.getSource().on('addfeature', setSelectedAndSave));
-			this._mapListeners.push(layer.getSource().on('changefeature', () => updateAndSaveContent()));
-			this._mapListeners.push(layer.getSource().on('removefeature', () => updateAndSaveContent()));
+			const registerListeners = (layer) => {
+				this._mapListeners.push(layer.getSource().on('addfeature', setSelectedAndSave));
+				this._mapListeners.push(layer.getSource().on('changefeature', () => updateAndSaveContent()));
+				this._mapListeners.push(layer.getSource().on('removefeature', () => updateAndSaveContent()));
+			};
+			if (this._storeService.getStore().getState().draw.createPermanentLayer) {
+				const oldLayer = getOldLayer(this._map);
+				addOldFeatures(layer, oldLayer)
+					// eslint-disable-next-line promise/prefer-await-to-then
+					.finally(() => {
+						this._storedContent = createKML(layer, 'EPSG:3857');
+						this._save();
+						registerListeners(layer);
+					});
+			} else {
+				registerListeners(layer);
+			}
+
 			return layer;
 		};
 

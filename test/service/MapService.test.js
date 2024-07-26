@@ -21,19 +21,20 @@ describe('MapService', () => {
 		$injector.registerSingleton('CoordinateService', coordinateServiceMock);
 	});
 
-	const setup = () => {
-		const definitionsProvider = () => {
-			return {
-				defaultExtent: [0, 1, 2, 3],
-				localProjectedSridExtent: [4, 5, 6, 7],
-				srid: 3857,
-				localProjectedCoordinateRepresentations: () => [{ label: 'Local projected SRID', code: 9999 }],
-				globalCoordinateRepresentations: [{ label: 'Global SRID', code: 1111 }],
-				localProjectedSrid: 9999,
-				minZoomLevel: 5,
-				maxZoomLevel: 21
-			};
+	const getTestDefinitionProvider = () => {
+		return {
+			defaultExtent: [0, 1, 2, 3],
+			localProjectedSridExtent: [4, 5, 6, 7],
+			srid: 3857,
+			localProjectedCoordinateRepresentations: () => [{ label: 'Local projected SRID', code: 9999 }],
+			globalCoordinateRepresentations: [{ label: 'Global SRID', code: 1111 }],
+			localProjectedSrid: 9999,
+			minZoomLevel: 5,
+			maxZoomLevel: 21
 		};
+	};
+
+	const setup = (definitionsProvider = getTestDefinitionProvider) => {
 		return new MapService(definitionsProvider);
 	};
 
@@ -112,11 +113,17 @@ describe('MapService', () => {
 			it('provides an array of local projected SRID definitions when coordinate is within local projected extent', () => {
 				const coordinate = [0, 0];
 				const localProjectedSridExtent = [5, -80, 14, 80];
-				const instanceUnderTest = setup();
+				const localProjectedCoordinateRepresentationsFnSpy = jasmine.createSpy().and.returnValue([{ label: 'Local projected SRID', code: 9999 }]);
+				const defProvider = () => ({
+					localProjectedCoordinateRepresentations: localProjectedCoordinateRepresentationsFnSpy
+				});
+
+				const instanceUnderTest = setup(defProvider);
 				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(localProjectedSridExtent);
 				spyOn(coordinateServiceMock, 'containsCoordinate').withArgs(localProjectedSridExtent, coordinate).and.returnValue(true);
 
 				expect(instanceUnderTest.getCoordinateRepresentations(coordinate)).toEqual([{ label: 'Local projected SRID', code: 9999 }]);
+				expect(localProjectedCoordinateRepresentationsFnSpy).toHaveBeenCalledOnceWith(coordinate);
 			});
 
 			it('provides an array of global SRID definitions when when coordinate is outside local projected extent', () => {
@@ -149,11 +156,16 @@ describe('MapService', () => {
 					[1, 1]
 				];
 				const localProjectedSridExtent = [5, -80, 14, 80];
-				const instanceUnderTest = setup();
+				const localProjectedCoordinateRepresentationsFnSpy = jasmine.createSpy().and.returnValue([{ label: 'Local projected SRID', code: 9999 }]);
+				const defProvider = () => ({
+					localProjectedCoordinateRepresentations: localProjectedCoordinateRepresentationsFnSpy
+				});
+				const instanceUnderTest = setup(defProvider);
 				spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(localProjectedSridExtent);
 				spyOn(coordinateServiceMock, 'containsCoordinate').withArgs(localProjectedSridExtent, jasmine.any(Array)).and.returnValue(true);
 
 				expect(instanceUnderTest.getCoordinateRepresentations(coordinates)).toEqual([{ label: 'Local projected SRID', code: 9999 }]);
+				expect(localProjectedCoordinateRepresentationsFnSpy).toHaveBeenCalledOnceWith(coordinates[0]);
 			});
 
 			it('provides an array of global SRID definitions when one or more coordinate are outside local projected extent', () => {
