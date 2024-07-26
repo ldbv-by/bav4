@@ -13,6 +13,7 @@ import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 
 const Update = 'update';
+const Update_StoredContent = 'update_storedContent';
 
 /**
  * @class
@@ -24,7 +25,7 @@ export class MeasureToolContent extends AbstractToolContent {
 		super({
 			statistic: { length: null, area: null },
 			mode: null,
-			fileSaveResult: null
+			storedContent: null
 		});
 
 		const {
@@ -44,6 +45,10 @@ export class MeasureToolContent extends AbstractToolContent {
 			(state) => state.measurement,
 			(data) => this.signal(Update, data)
 		);
+		this.observe(
+			(state) => state.fileStorage.data,
+			(data) => this.signal(Update_StoredContent, data)
+		);
 	}
 
 	update(type, data, model) {
@@ -52,15 +57,16 @@ export class MeasureToolContent extends AbstractToolContent {
 				return {
 					...model,
 					statistic: data.statistic,
-					mode: data.mode,
-					fileSaveResult: data?.fileSaveResult?.payload ?? null
+					mode: data.mode
 				};
+			case Update_StoredContent:
+				return { ...model, storedContent: data };
 		}
 	}
 
 	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
-		const { statistic, fileSaveResult } = model;
+		const { statistic, storedContent } = model;
 		const areaClasses = { 'is-area': statistic.area != null };
 
 		const buttons = this._getButtons(model);
@@ -116,7 +122,7 @@ export class MeasureToolContent extends AbstractToolContent {
 				<div class='chips__container'> 
 					<ba-profile-chip></ba-profile-chip>
 					<ba-share-data-chip></ba-share-data-chip>
-					<ba-export-vector-data-chip .exportData=${fileSaveResult?.content}></ba-export-vector-data-chip>
+					<ba-export-vector-data-chip .exportData=${storedContent}></ba-export-vector-data-chip>
 				</div>				
 				<div class="ba-tool-container__actions">                         						 
 					${buttons}					
