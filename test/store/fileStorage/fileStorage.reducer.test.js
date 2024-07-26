@@ -32,7 +32,7 @@ describe('fileStorageReducer', () => {
 		expect(store.getState().fileStorage.adminId).toBe('adminId');
 	});
 
-	it('clears the store and resets to default values', () => {
+	it('clears the store and resets to initial state', () => {
 		const store = setup();
 		const data = { foo: 'bar' };
 
