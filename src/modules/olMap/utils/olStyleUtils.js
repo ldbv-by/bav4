@@ -7,7 +7,8 @@ import {
 	getPartitionDelta,
 	moveParallel,
 	getLineString,
-	PROJECTED_LENGTH_GEOMETRY_PROPERTY
+	PROJECTED_LENGTH_GEOMETRY_PROPERTY,
+	polarStakeOut
 } from './olGeometryUtils';
 import { toContext as toCanvasContext } from 'ol/render';
 import { Fill, Stroke, Style, Circle as CircleStyle, Icon, Text as TextStyle } from 'ol/style';
@@ -17,6 +18,8 @@ import markerIcon from '../assets/marker.svg';
 import { isString } from '../../../utils/checks';
 import { getContrastColorFrom, hexToRgb, rgbToHex } from '../../../utils/colors';
 import { AssetSourceType, getAssetSource } from '../../../utils/assets';
+import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
+import { MultiLineString } from '../../../../node_modules/ol/geom';
 
 const Z_Point = 30;
 const Red_Color = [255, 0, 0];
@@ -393,7 +396,7 @@ export const polygonStyleFunction = (styleOption = DEFAULT_STYLE_OPTION) => {
 	];
 };
 
-const getRulerStyle = () => {
+const getRulerStyle = (feature) => {
 	const getCanvasContextRenderFunction = (state) => {
 		const renderContext = toCanvasContext(state.context, { pixelRatio: 1 });
 		return (geometry, fill, stroke) => {
@@ -401,25 +404,54 @@ const getRulerStyle = () => {
 			renderContext.drawGeometry(geometry);
 		};
 	};
+	const geometry = feature.getGeometry();
+	if (geometry instanceof Polygon) {
+		if (geometry.getArea() === 0) {
+			return new Style();
+		}
+	}
+	if (geometry instanceof MultiLineString) {
+		if (geometry.getLineStrings().every((l) => l.getLength() === 0)) {
+			return new Style();
+		}
+	}
+
 	return new Style({
+		geometry: (feature) => {
+			const geodesic = feature.get(GEODESIC_FEATURE_PROPERTY);
+			const finishOnFirstPoint = feature.get('finishOnFirstPoint');
+			if (geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE) {
+				return geodesic.area ? geodesic.getPolygon() : geodesic.getGeometry();
+			}
+			if (feature.getGeometry() instanceof Polygon) {
+				if (finishOnFirstPoint) {
+					return feature.getGeometry();
+				} else {
+					return new LineString(feature.getGeometry().getCoordinates()[0].slice(0, -1));
+				}
+			}
+			return feature.getGeometry();
+		},
 		renderer: (pixelCoordinates, state) => {
+			const geodesic = state.feature.get(GEODESIC_FEATURE_PROPERTY);
 			const getContextRenderFunction = (state) =>
 				state.customContextRenderFunction ? state.customContextRenderFunction : getCanvasContextRenderFunction(state);
-			renderRulerSegments(pixelCoordinates, state, getContextRenderFunction(state));
+			geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE
+				? renderGeodesicRulerSegments(pixelCoordinates, state, getContextRenderFunction(state), geodesic)
+				: renderLinearRulerSegments(pixelCoordinates, state, getContextRenderFunction(state));
 		}
 	});
 };
 
-export const renderRulerSegments = (pixelCoordinates, state, contextRenderFunction) => {
+export const renderLinearRulerSegments = (pixelCoordinates, state, contextRenderFunction) => {
 	const { MapService: mapService } = $injector.inject('MapService');
-
 	const geometry = state.geometry.clone();
 	const lineString = getLineString(geometry);
 	const resolution = state.resolution;
 	const pixelRatio = state.pixelRatio;
 
 	const getMeasuredLength = () => {
-		const alreadyMeasuredLength = state.geometry ? state.geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY) : null;
+		const alreadyMeasuredLength = state.geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY);
 		return alreadyMeasuredLength ?? mapService.calcLength(lineString.getCoordinates());
 	};
 
@@ -492,11 +524,51 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 	contextRenderFunction(geometry, fill, baseStroke);
 
 	// per segment
-	const segmentCoordinates = geometry instanceof Polygon ? pixelCoordinates[0] : pixelCoordinates;
+	const segmentCoordinates = geometry instanceof Polygon || geometry instanceof MultiLineString ? pixelCoordinates[0] : pixelCoordinates;
 
 	segmentCoordinates.every((coordinate, index, coordinates) => {
 		return drawTicks(contextRenderFunction, [coordinate, coordinates[index + 1]], residuals[index], partitionTickDistance);
 	});
+};
+
+export const renderGeodesicRulerSegments = (pixelCoordinates, state, contextRenderFunction, geodesic) => {
+	const geometry = state.geometry.clone();
+	const resolution = state.resolution;
+	const pixelRatio = state.pixelRatio;
+
+	const projectedGeometryLength = geodesic.length;
+	const delta = getPartitionDelta(projectedGeometryLength, resolution);
+	const partitionLength = delta * projectedGeometryLength;
+
+	const fill = new Fill({ color: Red_Color.concat([0.4]) });
+	const baseStroke = new Stroke({
+		color: Red_Color.concat([1]),
+		width: 3 * pixelRatio
+	});
+
+	const tickStroke = new Stroke({
+		color: Red_Color.concat([1]),
+		width: 4 * pixelRatio,
+		lineCap: 'butt'
+	});
+
+	const drawTick = (contextRenderer, tick) => {
+		const distance = 10 * pixelRatio;
+		const [x, y, angle] = tick;
+		const fromPoint = [x * pixelRatio, y * pixelRatio];
+		const toPoint = polarStakeOut(fromPoint, angle, distance);
+
+		const tickLine = new LineString([fromPoint, toPoint]);
+		contextRenderer(tickLine, fill, tickStroke);
+	};
+
+	// baseLine
+	geometry.setCoordinates(pixelCoordinates);
+	contextRenderFunction(geometry, fill, baseStroke);
+
+	// ticks
+	const ticks = geodesic.getTicksByDistance(partitionLength);
+	ticks.forEach((t) => drawTick(contextRenderFunction, t));
 };
 
 /**
@@ -512,9 +584,15 @@ export const measureStyleFunction = (feature, resolution) => {
 		color: Red_Color.concat([1]),
 		width: 3
 	});
+	const getGeodesicOrGeometry = (feature) => {
+		const geodesicGeometry = feature?.get(GEODESIC_FEATURE_PROPERTY)?.getGeometry();
+		return geodesicGeometry ?? feature.getGeometry();
+	};
 
+	const fallbackGeometry = getGeodesicOrGeometry(feature);
 	const getFallbackStyle = () => {
 		return new Style({
+			geometry: fallbackGeometry,
 			stroke: new Stroke({
 				color: Red_Color.concat([1]),
 				lineDash: [8],
@@ -529,16 +607,19 @@ export const measureStyleFunction = (feature, resolution) => {
 		new Style({
 			stroke: stroke,
 			geometry: (feature) => {
-				if (canShowAzimuthCircle(feature.getGeometry())) {
+				const getCircle = () => {
 					const coords = feature.getGeometry().getCoordinates();
 					const radius = feature.getGeometry().getLength();
-					const circle = new Circle(coords[0], radius);
-					return circle;
+					return new Circle(coords[0], radius);
+				};
+				if (canShowAzimuthCircle(feature.getGeometry())) {
+					const geodesicGeometry = feature.get(GEODESIC_FEATURE_PROPERTY);
+					return geodesicGeometry ? geodesicGeometry.azimuthCircle : getCircle();
 				}
 			},
 			zIndex: 0
 		}),
-		resolution ? getRulerStyle() : getFallbackStyle()
+		resolution ? getRulerStyle(feature) : getFallbackStyle()
 	];
 	return styles;
 };
@@ -568,6 +649,16 @@ export const modifyStyleFunction = (feature) => {
 };
 
 export const selectStyleFunction = () => {
+	const constructionStroke = new Stroke({
+		color: Black_Color.concat([1]),
+		width: 1,
+		lineDash: [8]
+	});
+	const geodesicConstructionLineStyle = new Style({
+		stroke: constructionStroke,
+		geometry: (feature) => feature.getGeometry(),
+		zIndex: 0
+	});
 	const getAppendableVertexStyle = (color) =>
 		new Style({
 			image: new CircleStyle({
@@ -608,8 +699,11 @@ export const selectStyleFunction = () => {
 		if (!styleFunction || !styleFunction(feature, resolution)) {
 			return [getAppendableVertexStyle(color)];
 		}
-		const styles = styleFunction(feature, resolution);
-		return styles[0] ? styles.concat([getAppendableVertexStyle(color)]) : [styles, getAppendableVertexStyle(color)];
+		const featureStyles = styleFunction(feature, resolution);
+		const selectionStyles = featureStyles[0]
+			? featureStyles.concat([getAppendableVertexStyle(color)])
+			: [featureStyles, getAppendableVertexStyle(color)];
+		return feature.get(GEODESIC_FEATURE_PROPERTY) ? [geodesicConstructionLineStyle, ...selectionStyles] : selectionStyles;
 	};
 };
 
@@ -691,40 +785,57 @@ export const getTransparentImageStyle = () => {
 	});
 };
 
-export const createSketchStyleFunction = (styleFunction) => {
-	const sketchPolygon = new Style({
-		fill: new Fill({
-			color: White_Color.concat([0.4])
-		}),
-		stroke: new Stroke({
-			color: White_Color,
-			width: 0
-		})
-	});
+export const createSketchStyleFunction = (featureStyleFunction, sketchStyleFunctionsByGeometry = {}) => {
+	const defaultSketchStyles = {
+		Point: () => [
+			new Style({
+				image: new CircleStyle({
+					radius: 4,
+					fill: new Fill({
+						color: Red_Color.concat([0.4])
+					}),
+					stroke: new Stroke({
+						color: Red_Color.concat([1]),
+						width: 3
+					})
+				}),
+				zIndex: Z_Point
+			})
+		],
+		LineString: () => [
+			new Style({
+				fill: new Fill({
+					color: White_Color.concat([0.4])
+				}),
+				stroke: new Stroke({
+					color: White_Color,
+					width: 2,
+					lineDash: [5]
+				}),
+				zIndex: 0
+			})
+		],
+		Polygon: () => [
+			new Style({
+				fill: new Fill({
+					color: White_Color.concat([0.4])
+				}),
+				stroke: new Stroke({
+					color: White_Color,
+					width: 2
+				})
+			})
+		]
+	};
+	const getSketchStyles = (feature, resolution) => {
+		const geometryType = feature.getGeometry().getType();
+		const sketchStyleFunction = sketchStyleFunctionsByGeometry[geometryType] ?? defaultSketchStyles[geometryType];
+
+		return sketchStyleFunction(feature, resolution);
+	};
 
 	return (feature, resolution) => {
-		let styles;
-		if (feature.getGeometry().getType() === 'Polygon') {
-			styles = [sketchPolygon];
-		} else if (feature.getGeometry().getType() === 'Point') {
-			const fill = new Fill({
-				color: Red_Color.concat([0.4])
-			});
-
-			const stroke = new Stroke({
-				color: Red_Color.concat([1]),
-				width: 3
-			});
-			const sketchCircle = new Style({
-				image: new CircleStyle({ radius: 4, fill: fill, stroke: stroke }),
-				zIndex: Z_Point
-			});
-			styles = [sketchCircle];
-		} else {
-			styles = styleFunction(feature, resolution);
-		}
-
-		return styles;
+		return feature.getId() ? featureStyleFunction(feature, resolution) : getSketchStyles(feature, resolution);
 	};
 };
 

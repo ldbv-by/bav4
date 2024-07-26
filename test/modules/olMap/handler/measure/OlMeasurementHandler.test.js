@@ -34,6 +34,7 @@ import { Layer } from 'ol/layer';
 import { Tools } from '../../../../../src/domain/tools';
 import { EventLike } from '../../../../../src/utils/storeUtils';
 import { BaOverlay } from '../../../../../src/modules/olMap/components/BaOverlay.js';
+import { GEODESIC_FEATURE_PROPERTY } from '../../../../../src/modules/olMap/ol/geodesic/geodesicGeometry.js';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -198,7 +199,7 @@ describe('OlMeasurementHandler', () => {
 		document.dispatchEvent(keyEvent);
 	};
 
-	const createFeature = () => {
+	const createFeature = (id = null) => {
 		const feature = new Feature({
 			geometry: new Polygon([
 				[
@@ -210,6 +211,9 @@ describe('OlMeasurementHandler', () => {
 				]
 			])
 		});
+		if (id) {
+			feature.setId(id);
+		}
 		return feature;
 	};
 
@@ -538,7 +542,7 @@ describe('OlMeasurementHandler', () => {
 			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const lastData =
-				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measurement_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measure_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
@@ -555,6 +559,27 @@ describe('OlMeasurementHandler', () => {
 
 			await TestUtils.timeout();
 			expect(addStyleSpy).toHaveBeenCalledWith(oldFeature, map, classUnderTest._vectorLayer);
+		});
+
+		it('adds geodesic property on old measurement features', async () => {
+			setup();
+			const classUnderTest = new OlMeasurementHandler();
+			const lastData =
+				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measure_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark><Placemark id="fooBar"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+			const map = setupMap();
+			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
+			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
+			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
+			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
+			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
+
+			classUnderTest.activate(map);
+
+			await TestUtils.timeout();
+
+			const loadedFeatures = classUnderTest._vectorLayer.getSource().getFeatures();
+			expect(loadedFeatures.filter((f) => f.get(GEODESIC_FEATURE_PROPERTY) && f.getId().startsWith('measure_'))).toHaveSize(1);
+			expect(loadedFeatures.filter((f) => !f.get(GEODESIC_FEATURE_PROPERTY) && !f.getId().startsWith('measure_'))).toHaveSize(1);
 		});
 
 		it('updates overlays of old features onChange', async () => {
@@ -795,13 +820,28 @@ describe('OlMeasurementHandler', () => {
 
 			expect(classUnderTest._drawingListeners).toEqual(jasmine.arrayWithExactContents([{}, {}]));
 		});
+
+		it('does NOT clears the selection, if select-interaction is missing ', async () => {
+			await setup();
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+
+			classUnderTest.activate(map);
+			await TestUtils.timeout();
+			const spy = spyOn(classUnderTest._vectorLayer.getSource(), 'getFeatureById').and.callThrough();
+			classUnderTest.deactivate(map);
+
+			classUnderTest._setSelection([]);
+
+			expect(spy).not.toHaveBeenCalled();
+		});
 	});
 
 	describe('when draw a line', () => {
 		it('removes partition tooltips after zoom out', () => {
 			setup();
 			const classUnderTest = new OlMeasurementHandler();
-			const map = setupMap(null, 16);
+			const map = setupMap([0, 0], 16);
 			const geometry = new LineString([
 				[0, 0],
 				[1234, 0]
@@ -889,6 +929,24 @@ describe('OlMeasurementHandler', () => {
 			expect(id).toMatch(/measure_[0-9]{13}/g);
 		});
 
+		it('feature gets style properties for sketch features', () => {
+			setup();
+			const classUnderTest = new OlMeasurementHandler();
+			const sketchStyleSpy = spyOn(classUnderTest, '_getSketchStyleOptions').and.callThrough();
+			const map = setupMap();
+			const geometry = new LineString([
+				[0, 0],
+				[1, 0]
+			]);
+			const feature = new Feature({ geometry: geometry });
+
+			classUnderTest.activate(map);
+
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+
+			expect(sketchStyleSpy).toHaveBeenCalled();
+		});
+
 		it('positions tooltip content on the end of not closed Polygon', () => {
 			setup();
 			const classUnderTest = new OlMeasurementHandler();
@@ -911,7 +969,7 @@ describe('OlMeasurementHandler', () => {
 			const overlay = feature.get('measurement');
 
 			expect(overlay.getPosition()[0]).toBe(0);
-			expect(overlay.getPosition()[1]).toBe(500);
+			expect(overlay.getPosition()[1]).toBeCloseTo(500, 0);
 		});
 
 		it('positions tooltip content on the end of a updated not closed Polygon', () => {
@@ -935,7 +993,7 @@ describe('OlMeasurementHandler', () => {
 
 			const overlay = feature.get('measurement');
 			expect(overlay.getPosition()[0]).toBe(0);
-			expect(overlay.getPosition()[1]).toBe(500);
+			expect(overlay.getPosition()[1]).toBeCloseTo(500, 0);
 			snappedGeometry.setCoordinates([
 				[
 					[0, 0],
@@ -950,7 +1008,7 @@ describe('OlMeasurementHandler', () => {
 			simulateDrawEvent('drawend', classUnderTest._draw, feature);
 
 			expect(overlay.getPosition()[0]).toBe(0);
-			expect(overlay.getPosition()[1]).toBe(250);
+			expect(overlay.getPosition()[1]).toBeCloseTo(250, 0);
 		});
 
 		it('removes last point if keypressed', () => {
@@ -1013,7 +1071,7 @@ describe('OlMeasurementHandler', () => {
 			const geometry = new Polygon([
 				[
 					[0, 0],
-					[0, 0]
+					[0, 1]
 				]
 			]);
 			const feature = new Feature({ geometry: geometry });
@@ -1312,7 +1370,8 @@ describe('OlMeasurementHandler', () => {
 						[0, 0],
 						[1, 0]
 					])
-				})
+				}),
+				map
 			);
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 20, 0);
 			expect(measureStateSpy).toHaveBeenCalledWith({
@@ -2067,7 +2126,7 @@ describe('OlMeasurementHandler', () => {
 			const updateMeasureStateSpy = spyOn(classUnderTest, '_updateMeasureState');
 
 			// initial Phase: the drawing will be activated after this click-event
-			classUnderTest._sketchHandler.activate(feature);
+			classUnderTest._sketchHandler.activate(feature, map);
 			classUnderTest._measureState.type = InteractionStateType.ACTIVE;
 
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
@@ -2082,6 +2141,18 @@ describe('OlMeasurementHandler', () => {
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
 
 			expect(updateMeasureStateSpy).toHaveBeenCalled();
+		});
+	});
+
+	describe('_getSketchStyleOptions', () => {
+		it('provides a styleFunction for LineString', () => {
+			setup();
+
+			const classUnderTest = new OlMeasurementHandler();
+			const options = classUnderTest._getSketchStyleOptions();
+
+			expect(classUnderTest._getSketchStyleOptions()).toEqual(jasmine.objectContaining({ LineString: jasmine.any(Function) }));
+			expect(options.LineString(new Feature({ geometry: new LineString([[0, 1]]) }), 1)).toEqual(jasmine.arrayContaining([jasmine.any(Style)]));
 		});
 	});
 });

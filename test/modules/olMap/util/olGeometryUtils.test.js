@@ -16,7 +16,8 @@ import {
 	PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES,
 	getLineString,
 	multiLineStringToLineString,
-	getCoordinatesForElevationProfile
+	getCoordinatesForElevationProfile,
+	polarStakeOut
 } from '../../../../src/modules/olMap/utils/olGeometryUtils';
 import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing, MultiLineString, MultiPolygon } from 'ol/geom';
 import proj4 from 'proj4';
@@ -501,6 +502,15 @@ describe('moveParallel', () => {
 			[0, -3],
 			[1, -3]
 		]);
+	});
+});
+
+describe('polarStakeOut', () => {
+	it('creates a point', () => {
+		expect(polarStakeOut([0, 0], 0, 1)).toEqual([1, 0]);
+		const result = polarStakeOut([0, 0], 45, 1.5);
+		expect(result[0]).toBeCloseTo(1, 0);
+		expect(result[1]).toBeCloseTo(1, 0);
 	});
 });
 
