@@ -48,7 +48,7 @@ export const provide = (lang) => {
 				iframe_drawTool_polygon: 'Polygon',
 				iframe_drawTool_cancel: 'Abbrechen',
 				iframe_drawTool_finish: 'Fertig',
-				iframe_drawTool_delete_point: 'letzten Punk löschen',
+				iframe_drawTool_delete_point: 'letzten Punkt löschen',
 				iframe_drawTool_delete_drawing: 'Zeichnung löschen'
 			};
 

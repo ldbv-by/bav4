@@ -29,7 +29,7 @@ export const loadBvvFeatureInfo = async (geoResourceId, coordinate3857, mapResol
 	if (geoResource) {
 		const determineCredential = (geoResource) => {
 			return geoResource.authenticationType === GeoResourceAuthenticationType.BAA
-				? baaCredentialService.get(geoResource.url) ?? throwError('No credentials available')
+				? (baaCredentialService.get(geoResource.url) ?? throwError('No credentials available'))
 				: {};
 		};
 

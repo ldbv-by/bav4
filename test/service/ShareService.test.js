@@ -14,6 +14,9 @@ import { BvvCoordinateRepresentations, GlobalCoordinateRepresentations } from '.
 import { routingReducer } from '../../src/store/routing/routing.reducer';
 import { toolsReducer } from '../../src/store/tools/tools.reducer';
 import { setCurrentTool } from '../../src/store/tools/tools.action';
+import { highlightReducer } from '../../src/store/highlight/highlight.reducer';
+import { addHighlightFeatures, HighlightFeatureType } from '../../src/store/highlight/highlight.action';
+import { CROSSHAIR_HIGHLIGHT_FEATURE_ID } from '../../src/plugins/HighlightPlugin';
 
 describe('ShareService', () => {
 	const coordinateService = {
@@ -42,7 +45,8 @@ describe('ShareService', () => {
 			position: positionReducer,
 			topics: topicsReducer,
 			routing: routingReducer,
-			tools: toolsReducer
+			tools: toolsReducer,
+			highlight: highlightReducer
 		});
 		$injector
 			.registerSingleton('CoordinateService', coordinateService)
@@ -311,6 +315,8 @@ describe('ShareService', () => {
 		describe('_extractRoute', () => {
 			it('extracts the current route', () => {
 				setup();
+				const mapSrid = 3857;
+				spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
 				const categoryId = 'catId';
 				const waypoints = [
 					[1, 2],
@@ -324,7 +330,10 @@ describe('ShareService', () => {
 				const extract = instanceUnderTest._extractRoute();
 
 				expect(extract[QueryParameters.ROUTE_CATEGORY]).toBe(categoryId);
-				expect(extract[QueryParameters.ROUTE_WAYPOINTS]).toEqual(waypoints);
+				expect(extract[QueryParameters.ROUTE_WAYPOINTS]).toEqual([
+					['1.000000', '2.000000'],
+					['3.000000', '4.000000']
+				]);
 			});
 
 			it('does nothing when no waypoints are available', () => {
@@ -339,6 +348,83 @@ describe('ShareService', () => {
 
 				expect(extract[QueryParameters.ROUTE_CATEGORY]).toBeUndefined();
 				expect(extract[QueryParameters.ROUTE_WAYPOINTS]).toBeUndefined();
+			});
+		});
+
+		describe('_extractCrosshair', () => {
+			describe('exactly one suitable highlight feature is available', () => {
+				it('sets the crosshair query parameter', () => {
+					setup();
+					const mapSrid = 3857;
+					spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
+					const instanceUnderTest = new ShareService();
+					addHighlightFeatures([
+						{
+							id: CROSSHAIR_HIGHLIGHT_FEATURE_ID,
+							type: HighlightFeatureType.MARKER,
+							data: { coordinate: [42, 21] }
+						},
+						{
+							id: 'hf_id1',
+							type: HighlightFeatureType.DEFAULT,
+							data: { coordinate: [77, 55] }
+						}
+					]);
+
+					const extract = instanceUnderTest._extractCrosshair();
+
+					expect(extract[QueryParameters.CROSSHAIR]).toEqual([true, '42.000000', '21.000000']);
+				});
+			});
+
+			describe('more than one highlight features are available', () => {
+				it('does nothing', () => {
+					setup();
+					const instanceUnderTest = new ShareService();
+					addHighlightFeatures([
+						{
+							id: CROSSHAIR_HIGHLIGHT_FEATURE_ID,
+							type: HighlightFeatureType.MARKER,
+							data: { coordinate: [42, 21] }
+						},
+						{
+							id: CROSSHAIR_HIGHLIGHT_FEATURE_ID,
+							type: HighlightFeatureType.MARKER,
+							data: { coordinate: [77, 55] }
+						}
+					]);
+
+					const extract = instanceUnderTest._extractCrosshair();
+
+					expect(extract[QueryParameters.CROSSHAIR]).toBeUndefined();
+				});
+			});
+
+			describe('no highlight feature is available', () => {
+				it('does nothing', () => {
+					setup();
+					const instanceUnderTest = new ShareService();
+
+					const extract = instanceUnderTest._extractCrosshair();
+
+					expect(extract[QueryParameters.CROSSHAIR]).toBeUndefined();
+				});
+			});
+
+			describe('wrong type of highlight feature is available', () => {
+				it('does nothing', () => {
+					setup();
+					const instanceUnderTest = new ShareService();
+					addHighlightFeatures({
+						id: 'hf_id',
+						type: HighlightFeatureType.MARKER_TMP,
+						data: {}
+					});
+
+					const extract = instanceUnderTest._extractCrosshair();
+
+					expect(extract[QueryParameters.CROSSHAIR]).toBeUndefined();
+				});
 			});
 		});
 
@@ -444,13 +530,14 @@ describe('ShareService', () => {
 					spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
 					spyOn(instanceUnderTest, '_extractRoute').and.returnValue({ rtwp: '1,2', rtc: 'rtCatId' });
 					spyOn(instanceUnderTest, '_extractTool').and.returnValue({ tid: 'someTool' });
+					spyOn(instanceUnderTest, '_extractCrosshair').and.returnValue({ crh: 'true' });
 					const _mergeExtraParamsSpy = spyOn(instanceUnderTest, '_mergeExtraParams').withArgs(jasmine.anything(), {}).and.callThrough();
 
 					const encoded = instanceUnderTest.encodeStateForPosition({ zoom: 5, center: [44.123, 88.123], rotation: 0.5 });
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/?')).toBeTrue();
-					expect(queryParams.size).toBe(8);
+					expect(queryParams.size).toBe(9);
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
@@ -459,6 +546,7 @@ describe('ShareService', () => {
 					expect(queryParams.get(QueryParameters.ROUTE_WAYPOINTS)).toBe('1,2');
 					expect(queryParams.get(QueryParameters.ROUTE_CATEGORY)).toBe('rtCatId');
 					expect(queryParams.get(QueryParameters.TOOL_ID)).toBe('someTool');
+					expect(queryParams.get(QueryParameters.CROSSHAIR)).toBe('true');
 					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
 				});
 
@@ -611,10 +699,11 @@ describe('ShareService', () => {
 			spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
 			spyOn(instanceUnderTest, '_extractRoute').and.returnValue({ rtwp: '1,2', rtc: 'rtCatId' });
 			spyOn(instanceUnderTest, '_extractTool').and.returnValue({ tid: 'someTool' });
+			spyOn(instanceUnderTest, '_extractCrosshair').and.returnValue({ crh: 'true' });
 
 			const params = instanceUnderTest.getParameters();
 
-			expect(params).toHaveSize(8);
+			expect(params).toHaveSize(9);
 			expect(params.get(QueryParameters.LAYER)).toEqual(['someLayer', 'anotherLayer']);
 			expect(params.get(QueryParameters.ZOOM)).toBe(5);
 			expect(params.get(QueryParameters.CENTER)).toEqual([44.123, 88.123]);
@@ -623,6 +712,7 @@ describe('ShareService', () => {
 			expect(params.get(QueryParameters.ROUTE_WAYPOINTS)).toBe('1,2');
 			expect(params.get(QueryParameters.ROUTE_CATEGORY)).toBe('rtCatId');
 			expect(params.get(QueryParameters.TOOL_ID)).toBe('someTool');
+			expect(params.get(QueryParameters.CROSSHAIR)).toBe('true');
 		});
 	});
 });
