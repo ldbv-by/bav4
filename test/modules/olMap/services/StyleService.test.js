@@ -40,8 +40,7 @@ describe('StyleService', () => {
 		active: false,
 		statistic: { length: 0, area: 0 },
 		selection: [],
-		reset: null,
-		fileSaveResult: { adminId: 'init', fileId: 'init' }
+		reset: null
 	};
 	const mapServiceMock = {
 		getSrid: () => 3857,

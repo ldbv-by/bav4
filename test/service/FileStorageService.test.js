@@ -183,6 +183,7 @@ describe('BvvFileStorageService', () => {
 		it('checks if a string represents a fileId', async () => {
 			const instanceUnderTest = new BvvFileStorageService();
 
+			expect(instanceUnderTest.isFileId()).toBeFalse();
 			expect(instanceUnderTest.isFileId('foo')).toBeFalse();
 			expect(instanceUnderTest.isFileId('f_foo')).toBeTrue();
 		});
@@ -192,6 +193,7 @@ describe('BvvFileStorageService', () => {
 		it('checks if a string represents an adminId', async () => {
 			const instanceUnderTest = new BvvFileStorageService();
 
+			expect(instanceUnderTest.isAdminId()).toBeFalse();
 			expect(instanceUnderTest.isAdminId('foo')).toBeFalse();
 			expect(instanceUnderTest.isAdminId('a_foo')).toBeTrue();
 		});
@@ -323,6 +325,7 @@ describe('TempStorageService', () => {
 		it('checks if a string represents a fileId', async () => {
 			const instanceUnderTest = new TempStorageService();
 
+			expect(instanceUnderTest.isFileId()).toBeFalse();
 			expect(instanceUnderTest.isFileId('foo')).toBeFalse();
 			expect(instanceUnderTest.isFileId('f_foo')).toBeTrue();
 		});
@@ -332,6 +335,7 @@ describe('TempStorageService', () => {
 		it('checks if a string represents an adminId', async () => {
 			const instanceUnderTest = new TempStorageService();
 
+			expect(instanceUnderTest.isAdminId()).toBeFalse();
 			expect(instanceUnderTest.isAdminId('foo')).toBeFalse();
 			expect(instanceUnderTest.isAdminId('a_foo')).toBeTrue();
 		});

@@ -2,10 +2,10 @@ import { html } from 'lit-html';
 import { $injector } from '../../src/injection';
 import { MvuElement } from '../../src/modules/MvuElement';
 import { IframeGeometryIdPlugin } from '../../src/plugins/IframeGeometryIdPlugin';
-import { setFileSaveResult } from '../../src/store/draw/draw.action';
-import { drawReducer } from '../../src/store/draw/draw.reducer';
 import { IFRAME_GEOMETRY_REFERENCE_ID } from '../../src/utils/markup';
 import { TestUtils } from '../test-utils';
+import { clear, setLatestStorageResultAndFileId } from '../../src/store/fileStorage/fileStorage.action';
+import { fileStorageReducer } from '../../src/store/fileStorage/fileStorage.reducer';
 
 class MvuElementParent extends MvuElement {
 	createView() {
@@ -32,14 +32,14 @@ describe('IframeGeometryIdPlugin', () => {
 		const store = TestUtils.setupStoreAndDi(
 			{},
 			{
-				draw: drawReducer
+				fileStorage: fileStorageReducer
 			}
 		);
 		$injector.registerSingleton('EnvironmentService', environmentService);
 		return store;
 	};
 
-	it('registers draw.fileSaveResult listeners and updates the iframes data attribute', async () => {
+	it('registers fileStorage.fileId listeners and updates the iframes data attribute', async () => {
 		const expectedGeometryId = 'foo';
 		spyOn(environmentService, 'isEmbedded').and.returnValue(true);
 		const store = setup();
@@ -49,12 +49,12 @@ describe('IframeGeometryIdPlugin', () => {
 		await instanceUnderTest.register(store);
 
 		// drawing created
-		setFileSaveResult({ content: 'content', fileSaveResult: { adminId: 'adminId', fileId: expectedGeometryId } });
+		setLatestStorageResultAndFileId('content', expectedGeometryId);
 
 		expect(iframeSpy).toHaveBeenCalledWith(IFRAME_GEOMETRY_REFERENCE_ID, expectedGeometryId);
 
 		// drawing deleted
-		setFileSaveResult(null);
+		clear();
 
 		expect(iframeSpy).toHaveBeenCalledWith(IFRAME_GEOMETRY_REFERENCE_ID, '');
 	});
@@ -66,7 +66,7 @@ describe('IframeGeometryIdPlugin', () => {
 		const updateAttributeSpy = spyOn(instanceUnderTest, '_updateAttribute');
 		await instanceUnderTest.register(store);
 
-		setFileSaveResult({ content: 'content', fileSaveResult: { adminId: 'adminId', fileId: 'fileId' } });
+		setLatestStorageResultAndFileId('content', 'fileId');
 
 		expect(updateAttributeSpy).not.toHaveBeenCalled();
 	});

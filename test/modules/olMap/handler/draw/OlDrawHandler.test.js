@@ -17,8 +17,6 @@ import { Collection, Feature, MapBrowserEvent } from 'ol';
 import Draw, { DrawEvent } from 'ol/interaction/Draw';
 import { InteractionSnapType, InteractionStateType } from '../../../../../src/modules/olMap/utils/olInteractionUtils';
 import { VectorGeoResource, VectorSourceType } from '../../../../../src/domain/geoResources';
-import { FileStorageServiceDataTypes } from '../../../../../src/services/FileStorageService';
-import VectorSource from 'ol/source/Vector';
 import { simulateMapBrowserEvent } from '../../mapTestUtils';
 import { IconResult } from '../../../../../src/services/IconService';
 import Stroke from 'ol/style/Stroke';
@@ -31,7 +29,8 @@ import { measurementReducer } from '../../../../../src/store/measurement/measure
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../../src/services/provider/attribution.provider';
 import { Layer } from 'ol/layer';
 import { Tools } from '../../../../../src/domain/tools';
-import { EventLike } from '../../../../../src/utils/storeUtils';
+import { fileStorageReducer } from '../../../../../src/store/fileStorage/fileStorage.reducer.js';
+import { KML_EMPTY_CONTENT } from '../../../../../src/modules/olMap/formats/kml.js';
 
 describe('OlDrawHandler', () => {
 	class MockClass {
@@ -64,34 +63,26 @@ describe('OlDrawHandler', () => {
 		}
 	};
 
-	const interactionStorageServiceMock = {
-		async store() {},
-		isValid() {
-			return false;
-		},
-		isStorageId() {
-			return false;
-		},
-		setStorageId() {},
-		getStorageId() {
-			return 'f_some';
-		}
+	const fileStorageServiceMock = {
+		isAdminId: () => false,
+		isFileId: () => false
 	};
 
 	const translationServiceMock = { translate: (key) => key };
 	const environmentServiceMock = { isTouch: () => false, isStandalone: () => false, isEmbedded: () => false };
 	const iconServiceMock = { getDefault: () => new IconResult('foo', 'bar') };
 
-	const initialState = {
+	const initialDrawState = {
 		active: false,
 		createPermanentLayer: true,
 		mode: null,
 		type: null,
 		style: INITIAL_STYLE,
 		reset: null,
-		description: null,
-		fileSaveResult: { adminId: 'init', fileId: 'init' }
+		description: null
 	};
+
+	const initialFileStorageState = { adminId: null, fileId: null, data: null, latest: null };
 
 	const setupMap = (center = [0, 0], zoom = 0) => {
 		const containerId = 'mapContainer';
@@ -116,35 +107,36 @@ describe('OlDrawHandler', () => {
 		return map;
 	};
 
-	const setup = (state = initialState) => {
-		const drawState = {
-			draw: state,
+	const setup = (drawState = initialDrawState, fileStorageState = initialFileStorageState) => {
+		const state = {
+			draw: drawState,
 			layers: {
 				active: [],
 				background: 'null'
 			},
 			shared: {
-				termsOfUseAcknowledged: false,
-				fileSaveResult: null
+				termsOfUseAcknowledged: false
 			},
 			notifications: {
 				notification: null
-			}
+			},
+			fileStorage: fileStorageState
 		};
-		const store = TestUtils.setupStoreAndDi(drawState, {
+		const store = TestUtils.setupStoreAndDi(state, {
 			draw: drawReducer,
 			measurement: measurementReducer,
 			layers: layersReducer,
 			shared: sharedReducer,
 			notifications: notificationReducer,
-			tools: toolsReducer
+			tools: toolsReducer,
+			fileStorage: fileStorageReducer
 		});
 		$injector
 			.registerSingleton('TranslationService', translationServiceMock)
 			.registerSingleton('MapService', { getSrid: () => 3857, getLocalProjectedSrid: () => 25832, getLocalProjectedSridExtent: () => null })
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
-			.registerSingleton('InteractionStorageService', interactionStorageServiceMock)
+			.registerSingleton('FileStorageService', fileStorageServiceMock)
 			.registerSingleton('IconService', iconServiceMock)
 			.registerSingleton('UnitsService', {
 				// eslint-disable-next-line no-unused-vars
@@ -317,71 +309,35 @@ describe('OlDrawHandler', () => {
 		});
 
 		describe('_save', () => {
-			it('calls the InteractionService and updates the draw slice-of-state with a fileSaveResult', async () => {
-				const fileSaveResultMock = { fileId: 'barId', adminId: null };
-				const state = { ...initialState, fileSaveResult: new EventLike(null) };
-				const store = await setup(state);
+			it('updates the fileStorage slice-of-state with data', async () => {
+				const store = await setup();
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
 				const feature = createFeature();
-				const storageSpy = spyOn(interactionStorageServiceMock, 'store').and.resolveTo(fileSaveResultMock);
 
 				classUnderTest.activate(map);
 				await TestUtils.timeout();
 				classUnderTest._vectorLayer.getSource().addFeature(feature);
 				classUnderTest._save();
 
-				await TestUtils.timeout();
-				expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
-
-				await TestUtils.timeout();
-				expect(store.getState().draw.fileSaveResult.payload.content).toContain('<kml');
-				expect(store.getState().draw.fileSaveResult.payload.fileSaveResult).toEqual(fileSaveResultMock);
+				expect(store.getState().fileStorage.data).toContain('<kml');
 			});
 
-			it('calls the InteractionService and updates the draw slice-of-state with null', async () => {
-				const state = { ...initialState, fileSaveResult: new EventLike(null) };
-				const store = await setup(state);
-				const classUnderTest = new OlDrawHandler();
-				const map = setupMap();
-				const feature = createFeature();
-				spyOn(interactionStorageServiceMock, 'store').and.resolveTo(null);
-
-				classUnderTest.activate(map);
-				await TestUtils.timeout();
-				classUnderTest._vectorLayer.getSource().addFeature(feature);
-				classUnderTest._save();
-
-				await TestUtils.timeout();
-
-				expect(store.getState().draw.fileSaveResult.payload).toBeNull();
-			});
-
-			it('calls the InteractionService and updates the draw slice-of-state with a fileSaveResult without features', async () => {
-				const fileSaveResultMock = { fileId: 'barId', adminId: null };
-				const state = { ...initialState, fileSaveResult: new EventLike(null) };
-				const store = await setup(state);
+			it('updates the fileStorage slice-of-state with no data (kml without content)', async () => {
+				const store = await setup(initialDrawState, { ...initialFileStorageState, fileId: 'f_ooBarId' });
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
 				const feature = createFeature();
 				classUnderTest.activate(map);
 				await TestUtils.timeout();
 				const saveSpy = spyOn(classUnderTest, '_save').and.callThrough();
-				const storageSpy = spyOn(interactionStorageServiceMock, 'store')
-					.withArgs(jasmine.any(String), FileStorageServiceDataTypes.KML)
-					.and.resolveTo(fileSaveResultMock)
-					.withArgs(undefined, FileStorageServiceDataTypes.KML)
-					.and.resolveTo(null);
 
-				classUnderTest._vectorLayer.getSource().addFeature(feature);
-				classUnderTest._vectorLayer.getSource().removeFeature(feature);
-				classUnderTest._saveAndOptionallyConvertToPermanentLayer();
-
+				classUnderTest._vectorLayer.getSource().addFeature(feature); // first save
+				classUnderTest._vectorLayer.getSource().removeFeature(feature); // second save
+				classUnderTest._saveAndOptionallyConvertToPermanentLayer(); // third and last save
 				await TestUtils.timeout();
-				expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
-				expect(saveSpy).toHaveBeenCalledTimes(2);
-				expect(storageSpy).toHaveBeenCalledTimes(2);
-				expect(store.getState().draw.fileSaveResult.payload).toBeNull();
+				expect(saveSpy).toHaveBeenCalledTimes(3);
+				expect(store.getState().fileStorage.data).toBe(KML_EMPTY_CONTENT);
 			});
 		});
 
@@ -544,7 +500,7 @@ describe('OlDrawHandler', () => {
 			});
 
 			it('starts with a preselected drawType', () => {
-				const state = { ...initialState, type: 'marker', style: { symbolSrc: 'something' } };
+				const state = { ...initialDrawState, type: 'marker', style: { symbolSrc: 'something' } };
 				setup(state);
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
@@ -557,7 +513,7 @@ describe('OlDrawHandler', () => {
 			});
 
 			it('starts without a preselected drawType, caused by unknown type', () => {
-				const state = { ...initialState, type: 'somethingWrong' };
+				const state = { ...initialDrawState, type: 'somethingWrong' };
 				setup(state);
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
@@ -850,7 +806,7 @@ describe('OlDrawHandler', () => {
 
 			it('re-inits the drawing and sets the store with defaultText for marker', async () => {
 				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5, text: null };
-				const state = { ...initialState, style: style };
+				const state = { ...initialDrawState, style: style };
 
 				const store = await setup(state);
 				const classUnderTest = new OlDrawHandler();
@@ -868,7 +824,7 @@ describe('OlDrawHandler', () => {
 
 			it('re-inits the drawing and sets the store with defaultText for text', async () => {
 				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5, text: null };
-				const state = { ...initialState, style: style };
+				const state = { ...initialDrawState, style: style };
 
 				const store = await setup(state);
 				const classUnderTest = new OlDrawHandler();
@@ -1012,21 +968,19 @@ describe('OlDrawHandler', () => {
 				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="draw_line_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
+			spyOn(fileStorageServiceMock, 'isAdminId').withArgs('a_lastId').and.returnValue(true);
 
 			// we add two fileStorage related layers
 			map.addLayer(new Layer({ geoResourceId: 'a_notWanted', render: () => {} }));
 			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
-			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 
-			const geoResourceSpy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
-			const storageSpy = spyOn(classUnderTest._storageHandler, 'setStorageId').and.callFake(() => {});
+			const geoResourceSpy = spyOn(geoResourceServiceMock, 'byId').withArgs('a_lastId').and.returnValue(vectorGeoResource);
 			classUnderTest.activate(map);
 			const addFeatureSpy = spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature');
 
 			await TestUtils.timeout();
 			expect(geoResourceSpy).toHaveBeenCalledWith('a_lastId');
-			expect(storageSpy).toHaveBeenCalledWith('a_lastId');
 			expect(addFeatureSpy).toHaveBeenCalledTimes(1);
 		});
 
@@ -1036,22 +990,20 @@ describe('OlDrawHandler', () => {
 			const map = setupMap();
 
 			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
-			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
+			spyOn(fileStorageServiceMock, 'isAdminId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 
 			const geoResourceSpy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(null);
-			const storageSpy = spyOn(classUnderTest._storageHandler, 'setStorageId').and.callFake(() => {});
 			classUnderTest.activate(map);
 			const addFeatureSpy = spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature');
 
 			await TestUtils.timeout();
 			expect(geoResourceSpy).toHaveBeenCalledWith('a_lastId');
-			expect(storageSpy).not.toHaveBeenCalled();
 			expect(addFeatureSpy).not.toHaveBeenCalled();
 		});
 
 		it('does NOT look for an existing drawing-layer', async () => {
-			setup({ ...initialState, createPermanentLayer: false });
+			setup({ ...initialDrawState, createPermanentLayer: false });
 			const classUnderTest = new OlDrawHandler();
 			const lastData =
 				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="draw_line_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
@@ -1061,13 +1013,11 @@ describe('OlDrawHandler', () => {
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 
 			const geoResourceSpy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
-			const storageSpy = spyOn(classUnderTest._storageHandler, 'setStorageId').and.callFake(() => {});
 			classUnderTest.activate(map);
 			const addFeatureSpy = spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature');
 
 			await TestUtils.timeout();
 			expect(geoResourceSpy).not.toHaveBeenCalledWith('a_lastId');
-			expect(storageSpy).not.toHaveBeenCalledWith('a_lastId');
 			expect(addFeatureSpy).not.toHaveBeenCalledTimes(1);
 		});
 
@@ -1080,7 +1030,7 @@ describe('OlDrawHandler', () => {
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
 			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
-			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
+			spyOn(fileStorageServiceMock, 'isAdminId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
 			const addStyleSpy = spyOn(classUnderTest._styleService, 'addStyle');
@@ -1104,7 +1054,7 @@ describe('OlDrawHandler', () => {
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
 			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
-			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
+			spyOn(fileStorageServiceMock, 'isFileId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
 			const updateStyleSpy = spyOn(classUnderTest._styleService, 'updateStyle');
@@ -1211,13 +1161,10 @@ describe('OlDrawHandler', () => {
 
 	describe('when deactivated over olMap', () => {
 		it('writes features to kml format for persisting purpose', async () => {
-			const fileSaveResultMock = { fileId: 'barId', adminId: null };
-			const state = { ...initialState, fileSaveResult: new EventLike(null) };
-			const store = await setup(state);
+			const store = await setup(initialDrawState, { ...initialFileStorageState, fileId: 'f_ooBarId' });
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
 			const feature = createFeature();
-			const storageSpy = spyOn(interactionStorageServiceMock, 'store').and.resolveTo(fileSaveResultMock);
 
 			classUnderTest.activate(map);
 			await TestUtils.timeout();
@@ -1225,44 +1172,22 @@ describe('OlDrawHandler', () => {
 			classUnderTest.deactivate(map);
 
 			await TestUtils.timeout();
-			expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
-			expect(store.getState().draw.fileSaveResult.payload.content).toContain('<kml');
-			expect(store.getState().draw.fileSaveResult.payload.fileSaveResult).toEqual(fileSaveResultMock);
-		});
-
-		it('uses already written features for persisting purpose', async () => {
-			setup();
-			const classUnderTest = new OlDrawHandler();
-			const map = setupMap();
-			const source = new VectorSource({ wrapX: false });
-			source.addFeature(createFeature());
-			spyOn(interactionStorageServiceMock, 'isValid').and.callFake(() => true);
-			classUnderTest.activate(map);
-			await TestUtils.timeout();
-			const saveSpy = spyOn(classUnderTest, '_save');
-
-			classUnderTest._vectorLayer.setSource(source);
-			classUnderTest.deactivate(map);
-
-			expect(saveSpy).not.toHaveBeenCalled();
+			expect(store.getState().fileStorage.data).toContain('<kml');
 		});
 
 		it('adds a vectorGeoResource for persisting purpose', async () => {
-			const state = { ...initialState, fileSaveResult: { fileId: null, adminId: null } };
-			setup(state);
+			const fileStorageState = { ...initialFileStorageState, fileId: 'f_ooBarId' };
+			setup(initialDrawState, fileStorageState);
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
 			const feature = createFeature();
 			const addOrReplaceSpy = spyOn(geoResourceServiceMock, 'addOrReplace');
-			spyOn(interactionStorageServiceMock, 'getStorageId').and.returnValue('f_ooBarId');
-			const storageSpy = spyOn(interactionStorageServiceMock, 'store');
 			classUnderTest.activate(map);
 			await TestUtils.timeout();
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 			classUnderTest.deactivate(map);
 
 			await TestUtils.timeout();
-			expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
 			expect(addOrReplaceSpy).toHaveBeenCalledTimes(1);
 			expect(addOrReplaceSpy).toHaveBeenCalledWith(
 				jasmine.objectContaining({
@@ -1274,12 +1199,11 @@ describe('OlDrawHandler', () => {
 		});
 
 		it('adds layer with specific constraints', async () => {
-			const state = { ...initialState, fileSaveResult: { fileId: null, adminId: null } };
-			const store = await setup(state);
+			const fileStorageState = { ...initialFileStorageState, fileId: 'f_ooBarId' };
+			const store = await setup(initialDrawState, fileStorageState);
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
 			const feature = createFeature();
-			spyOn(interactionStorageServiceMock, 'getStorageId').and.returnValue('f_ooBarId');
 
 			classUnderTest.activate(map);
 			await TestUtils.timeout();
@@ -1865,7 +1789,7 @@ describe('OlDrawHandler', () => {
 		});
 
 		it('deselect feature, if clickposition is disjoint to selected feature', () => {
-			setup({ ...initialState, selection: ['draw_1'] });
+			setup({ ...initialDrawState, selection: ['draw_1'] });
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap(null, 1);
 
@@ -1920,7 +1844,7 @@ describe('OlDrawHandler', () => {
 
 		it('select marker feature, updates store with empty text property', async () => {
 			const drawStyle = { symbolSrc: null, color: '#ff0000', scale: 0.5, text: 'foo' };
-			const state = { ...initialState, style: drawStyle };
+			const state = { ...initialDrawState, style: drawStyle };
 
 			const store = await setup(state);
 			const geometry = new Point([550, 550]);
@@ -2061,7 +1985,7 @@ describe('OlDrawHandler', () => {
 		it('prevents multiselect, when style of selected features changes frequently', () => {
 			const feature = new Feature({ geometry: new Point([0, 0]) });
 			feature.setId('draw_marker_1');
-			setup({ ...initialState });
+			setup({ ...initialDrawState });
 
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap(null, 1);

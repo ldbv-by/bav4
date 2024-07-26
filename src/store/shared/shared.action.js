@@ -2,7 +2,7 @@
  * @module store/shared/shared_action
  */
 import { $injector } from '../../injection';
-import { FILE_SAVE_RESULT_CHANGED, TERMS_OF_USE_ACKNOWLEDGED_CHANGED } from './shared.reducer';
+import { TERMS_OF_USE_ACKNOWLEDGED_CHANGED } from './shared.reducer';
 
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');
@@ -17,17 +17,5 @@ export const acknowledgeTermsOfUse = () => {
 	getStore().dispatch({
 		type: TERMS_OF_USE_ACKNOWLEDGED_CHANGED,
 		payload: true
-	});
-};
-
-/**
- * Set the {@link FileSaveResult}
- * @function
- * @param {FileSaveResult} fileSaveResult the fileSaveResult of the stored data
- */
-export const setFileSaveResult = (fileSaveResult) => {
-	getStore().dispatch({
-		type: FILE_SAVE_RESULT_CHANGED,
-		payload: fileSaveResult
 	});
 };

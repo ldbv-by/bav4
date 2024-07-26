@@ -5,7 +5,8 @@ import { $injector } from '../../src/injection/index.js';
 
 describe('fileStorageServiceFactory', () => {
 	const environmentService = {
-		isEmbeddedAsWC: () => false
+		isEmbeddedAsWC: () => false,
+		isStandalone: () => false
 	};
 
 	beforeAll(() => {
@@ -23,6 +24,15 @@ describe('fileStorageServiceFactory', () => {
 		// must be same instance
 		expect(fileStorageServiceFactory() === fileStorageServiceFactory()).toBeTrue();
 	});
+
+	it('provides a (singleton) FileStorageService for standalone mode', () => {
+		spyOn(environmentService, 'isStandalone').and.returnValue(true);
+
+		expect(fileStorageServiceFactory() instanceof TempStorageService).toBeTrue();
+		// must be same instance
+		expect(fileStorageServiceFactory() === fileStorageServiceFactory()).toBeTrue();
+	});
+
 	it('provides a FileStorageService for default mode', () => {
 		expect(fileStorageServiceFactory() instanceof BvvFileStorageService).toBeTrue();
 	});

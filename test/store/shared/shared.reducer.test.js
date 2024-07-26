@@ -1,4 +1,4 @@
-import { setFileSaveResult, acknowledgeTermsOfUse } from '../../../src/store/shared/shared.action';
+import { acknowledgeTermsOfUse } from '../../../src/store/shared/shared.action';
 import { sharedReducer } from '../../../src/store/shared/shared.reducer';
 import { TestUtils } from '../../test-utils';
 
@@ -12,7 +12,6 @@ describe('sharedReducer', () => {
 	it('initializes the store with default values', () => {
 		const store = setup();
 		expect(store.getState().shared.termsOfUseAcknowledged).toBeFalse();
-		expect(store.getState().shared.fileSaveResult).toBeNull();
 	});
 
 	it('updates the termsOfUseAcknowlegded property', () => {
@@ -23,14 +22,5 @@ describe('sharedReducer', () => {
 		acknowledgeTermsOfUse();
 
 		expect(store.getState().shared.termsOfUseAcknowledged).toBeTrue();
-	});
-
-	it('updates the fileSaveResult property', () => {
-		const store = setup();
-		const fileSaveResult = { adminId: 'fooBarId', fileId: 'barBazId' };
-
-		setFileSaveResult(fileSaveResult);
-
-		expect(store.getState().shared.fileSaveResult).toEqual({ adminId: 'fooBarId', fileId: 'barBazId' });
 	});
 });

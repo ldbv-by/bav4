@@ -1,14 +1,4 @@
-import {
-	activate,
-	deactivate,
-	setStatistic,
-	reset,
-	remove,
-	setFileSaveResult,
-	setSelection,
-	finish,
-	setMode
-} from '../../../src/store/measurement/measurement.action';
+import { activate, deactivate, setStatistic, reset, remove, setSelection, finish, setMode } from '../../../src/store/measurement/measurement.action';
 import { TestUtils } from '../../test-utils.js';
 import { EventLike } from '../../../src/utils/storeUtils';
 import { measurementReducer } from '../../../src/store/measurement/measurement.reducer';
@@ -26,7 +16,6 @@ describe('measurementReducer', () => {
 		expect(store.getState().measurement.statistic).toEqual({ length: null, area: null });
 		expect(store.getState().measurement.reset).toBeNull();
 		expect(store.getState().measurement.finish).toBeNull();
-		expect(store.getState().measurement.fileSaveResult.payload).toBeNull();
 		expect(store.getState().measurement.mode).toBeNull();
 		expect(store.getState().measurement.selection).toEqual([]);
 	});
@@ -50,15 +39,6 @@ describe('measurementReducer', () => {
 		setStatistic(statistic);
 
 		expect(store.getState().measurement.statistic).toEqual({ length: 42, area: 2 });
-	});
-
-	it('updates the fileSaveResult property', () => {
-		const store = setup();
-		const measurementFileSaveResult = { content: 'content', fileSaveResult: { adminId: 'fooBarId', fileId: 'barBazId' } };
-
-		setFileSaveResult(measurementFileSaveResult);
-
-		expect(store.getState().measurement.fileSaveResult.payload).toEqual(measurementFileSaveResult);
 	});
 
 	it('updates the reset property', () => {

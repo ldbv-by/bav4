@@ -6,7 +6,6 @@ import { LayerService } from '../services/LayerService';
 import { StyleService } from '../services/StyleService';
 import { OverlayService } from '../services/OverlayService';
 import { OlDrawHandler } from '../handler/draw/OlDrawHandler';
-import { InteractionStorageService } from '../services/InteractionStorageService';
 import { OlFeatureInfoHandler } from '../handler/featureInfo/OlFeatureInfoHandler';
 import { OlMfpHandler } from '../handler/mfp/OlMfpHandler';
 import { OlElevationProfileHandler } from '../handler/elevationProfile/OlElevationProfileHandler';
@@ -24,7 +23,6 @@ export const mapModule = ($injector) => {
 		.register('VectorLayerService', VectorLayerService)
 		.register('RtVectorLayerService', RtVectorLayerService)
 		.register('LayerService', LayerService)
-		.register('InteractionStorageService', InteractionStorageService)
 		.register('OverlayService', OverlayService)
 		.register('OlFeatureInfoHandler', OlFeatureInfoHandler)
 		.register('OlElevationProfileHandler', OlElevationProfileHandler)

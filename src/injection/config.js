@@ -63,6 +63,7 @@ import { GlobalErrorPlugin } from '../plugins/GlobalErrorPlugin';
 import { AuthPlugin } from '../plugins/AuthPlugin';
 import { ObserveWcAttributesPlugin } from '../plugins/ObserveWcAttributesPlugin';
 import { fileStorageServiceFactory } from './factories';
+import { FileStoragePlugin } from '../plugins/FileStoragePlugin';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
@@ -123,6 +124,7 @@ $injector
 	.registerSingleton('IframeContainerPlugin', new IframeContainerPlugin())
 	.registerSingleton('SharePlugin', new SharePlugin())
 	.registerSingleton('ToolsPlugin', new ToolsPlugin())
+	.registerSingleton('FileStoragePlugin', new FileStoragePlugin())
 	.registerSingleton('BeforeUnloadPlugin', new BeforeUnloadPlugin())
 	.registerSingleton('IframeGeometryIdPlugin', new IframeGeometryIdPlugin())
 	.registerSingleton('ObserveWcAttributesPlugin', new ObserveWcAttributesPlugin())

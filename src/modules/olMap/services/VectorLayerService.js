@@ -10,6 +10,7 @@ import { parse } from '../../../utils/ewkt';
 import { Cluster } from 'ol/source';
 import { getOriginAndPathname, getPathParams } from '../../../utils/urlUtils';
 import { UnavailableGeoResourceError } from '../../../domain/errors';
+import { isHttpUrl } from '../../../utils/checks';
 
 const getUrlService = () => {
 	const { UrlService: urlService } = $injector.inject('UrlService');
@@ -19,22 +20,25 @@ const getUrlService = () => {
 export const iconUrlFunction = (url) => getUrlService().proxifyInstant(url, false);
 
 export const bvvIconUrlFunction = (url) => {
-	const { UrlService: urlService, ConfigService: configService } = $injector.inject('UrlService', 'ConfigService');
+	if (isHttpUrl(url)) {
+		const { UrlService: urlService, ConfigService: configService } = $injector.inject('UrlService', 'ConfigService');
 
-	// legacy v3 backend icons should be mapped to v4
-	if (getOriginAndPathname(url).startsWith('https://geoportal.bayern.de/ba-backend')) {
-		const pathParams = getPathParams(url);
-		// the legacy icon endpoint contains four path parameters
-		if (pathParams.length === 4 && pathParams[1] === 'icons') {
-			return `${configService.getValueAsPath('BACKEND_URL')}icons/${pathParams[pathParams.length - 2]}/${pathParams[pathParams.length - 1]}.png`;
+		// legacy v3 backend icons should be mapped to v4
+		if (getOriginAndPathname(url).startsWith('https://geoportal.bayern.de/ba-backend')) {
+			const pathParams = getPathParams(url);
+			// the legacy icon endpoint contains four path parameters
+			if (pathParams.length === 4 && pathParams[1] === 'icons') {
+				return `${configService.getValueAsPath('BACKEND_URL')}icons/${pathParams[pathParams.length - 2]}/${pathParams[pathParams.length - 1]}.png`;
+			}
+			// leave untouched for that case
+			return url;
+		} // icons from our backend do not need to be proxified
+		else if (getOriginAndPathname(url).startsWith(configService.getValueAsPath('BACKEND_URL'))) {
+			return url;
 		}
-		// leave untouched for that case
-		return url;
-	} // icons from our backend do not need to be proxified
-	else if (getOriginAndPathname(url).startsWith(configService.getValueAsPath('BACKEND_URL'))) {
-		return url;
+		return urlService.proxifyInstant(url, false);
 	}
-	return urlService.proxifyInstant(url, false);
+	return url;
 };
 
 export const mapVectorSourceTypeToFormat = (sourceType) => {

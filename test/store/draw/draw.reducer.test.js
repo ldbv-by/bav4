@@ -3,7 +3,6 @@ import {
 	deactivate,
 	reset,
 	remove,
-	setFileSaveResult,
 	setMode,
 	setType,
 	finish,
@@ -39,7 +38,6 @@ describe('drawReducer', () => {
 		expect(store.getState().draw.description).toBeNull();
 		expect(store.getState().draw.reset).toBeNull();
 		expect(store.getState().draw.selection).toEqual([]);
-		expect(store.getState().draw.fileSaveResult.payload).toBeNull();
 		expect(store.getState().draw.validGeometry).toBeFalse();
 	});
 
@@ -125,15 +123,6 @@ describe('drawReducer', () => {
 		clearDescription();
 
 		expect(store.getState().draw.description).toBeNull();
-	});
-
-	it('updates the drawFileSaveResult property', () => {
-		const store = setup();
-		const drawFileSaveResult = { content: 'content', fileSaveResult: { adminId: 'fooBarId', fileId: 'barBazId' } };
-
-		setFileSaveResult(drawFileSaveResult);
-
-		expect(store.getState().draw.fileSaveResult.payload).toEqual(drawFileSaveResult);
 	});
 
 	it('updates the reset property', () => {
