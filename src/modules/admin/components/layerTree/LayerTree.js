@@ -421,53 +421,47 @@ export class LayerTree extends MvuElement {
 			}
 		};
 
-		const handleTopicChange = (event, selectedTopic) => {
-			console.log('🚀 ~ LayerTree ~ handleTopicChange ~ selectedTopic:', selectedTopic);
-			// const foundTopic = topics.find((topic) => topic._id === selectedTopic._id);
-
-			// if (foundTopic) {
-			// 	this.#currentTopic = foundTopic;
-			// }
-
+		function toggleDropdownVisibility(event) {
 			// Navigate up to the common parent
 			const dropdownContainer = event.target.closest('.custom-dropdown');
 			console.log('🚀 ~ LayerTree ~ handleTopicChange ~ dropdownContainer:', dropdownContainer);
 
 			// Find the .dropdown-selected child within the common parent
 			const dropdownItems = dropdownContainer.querySelector('.dropdown-items');
-
 			console.log('Dropdown Selected:', dropdownItems);
 
 			// If the dropdownItems element exists, toggle the 'hidden' class
 			if (dropdownItems) {
 				dropdownItems.classList.toggle('hidden');
 			}
-			// Now you can update the .dropdown-selected content or perform other actions
-			// For example, to update its text content:
-			// dropdownSelected.textContent = topic._label;
+		}
+
+		const handleTopicChange = (event, selectedTopic) => {
+			toggleDropdownVisibility(event);
 
 			this.#currentTopic = selectedTopic;
 			this._updateTopic(selectedTopic._id);
 		};
 
 		const handleEditTopic = (event, selectedTopic) => {
+			toggleDropdownVisibility(event);
+
 			const updateTopic = (topic) => {
 				console.log('🚀 ~ LayerTree ~ updateTopic ~ topic:', topic);
 			};
 
-			console.log('Editing topic', selectedTopic._id, selectedTopic._label);
 			event.stopPropagation();
 
 			openModal('Thema', html`<ba-mvu-newtopicpanel .topic="${selectedTopic}" .updateTopic="${updateTopic}"></ba-mvu-newtopicpanel>`);
 		};
 
-		// Logic to show/hide the dropdown
 		const handleTopicSelectClick = (event) => {
 			const dropdownItems = event.target.nextElementSibling;
-			console.log('🚀 ~ LayerTree ~ handleSelectTopicClick ~ dropdownItems:', dropdownItems);
+			// console.log('🚀 ~ LayerTree ~ handleSelectTopicClick ~ dropdownItems:', dropdownItems);
 
 			// If the dropdownItems element exists, toggle the 'hidden' class
 			if (dropdownItems) {
+				// console.log('🚀 ~ LayerTree ~ handleTopicSelectClick ~ dropdownItems.classList:', dropdownItems.classList);
 				dropdownItems.classList.toggle('hidden');
 			}
 		};
