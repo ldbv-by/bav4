@@ -18,10 +18,10 @@ describe('ShareChip', () => {
 			return Promise.resolve();
 		},
 		encodeStateForPosition() {
-			return 'http://this.is.a.url?forTestCase';
+			return 'http://this.is.a.url?foo=bar';
 		},
 		encodeState() {
-			return 'http://this.is.a.url?forTestCase';
+			return 'http://this.is.a.url?foo=bar';
 		}
 	};
 
@@ -103,7 +103,8 @@ describe('ShareChip', () => {
 
 				await TestUtils.timeout();
 				expect(shortenerSpy).toHaveBeenCalledTimes(1);
-				expect(shareServiceSpy).toHaveBeenCalledWith({ center: [42, 21] }, { [QueryParameters.CROSSHAIR]: true });
+				expect(shortenerSpy.calls.all()[0].args[0]).toBe(`http://this.is.a.url/?foo=bar&${QueryParameters.CROSSHAIR}=true`);
+				expect(shareServiceSpy).toHaveBeenCalledWith({ center: [42, 21] });
 				expect(shareSpy).toHaveBeenCalledWith({ url: 'http://shorten.foo' });
 			});
 
@@ -134,7 +135,7 @@ describe('ShareChip', () => {
 
 				await TestUtils.timeout();
 				expect(shortenerSpy).toHaveBeenCalledTimes(1);
-				expect(shareServiceSpy).toHaveBeenCalledWith({ center: [42, 21] }, { [QueryParameters.CROSSHAIR]: true });
+				expect(shareServiceSpy).toHaveBeenCalledTimes(1);
 
 				expect(shareSpy).toHaveBeenCalledWith({ url: 'http://shorten.foo' });
 

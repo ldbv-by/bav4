@@ -9,6 +9,7 @@ import { LevelTypes, emitNotification } from '../../../../store/notifications/no
 import { isCoordinate } from '../../../../utils/checks';
 import { AbstractAssistChip } from './AbstractAssistChip';
 import shareIcon from './assets/share.svg';
+import { setQueryParams } from '../../../../utils/urlUtils';
 
 const Update = 'update';
 
@@ -72,8 +73,8 @@ export class ShareChip extends AbstractAssistChip {
 
 	async _buildShareUrl(center) {
 		const getStateAndOverridePosition = () => {
-			const extraParams = { [QueryParameters.CROSSHAIR]: true };
-			return new URL(this._shareService.encodeStateForPosition({ center: center }, extraParams));
+			const url = setQueryParams(this._shareService.encodeStateForPosition({ center: center }), { [QueryParameters.CROSSHAIR]: 'true' });
+			return new URL(url);
 		};
 
 		const getState = () => {
