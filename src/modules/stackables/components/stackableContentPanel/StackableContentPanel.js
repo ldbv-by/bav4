@@ -51,7 +51,7 @@ export class StackableContentPanel extends MvuElement {
 					lastNotification: data
 				};
 			case Update_Bottom_Sheet:
-				return { ...model, bottomSheet: data.data };
+				return { ...model, bottomSheet: data.data[0]?.content ?? null };
 			case Update_Remove_Notification:
 				return { ...model, notifications: model.notifications.filter((n) => n.id !== data.id) };
 			case Update_Autoclose_Time:

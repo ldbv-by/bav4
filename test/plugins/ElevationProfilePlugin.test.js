@@ -45,7 +45,7 @@ describe('ElevationProfilePlugin', () => {
 				[2, 3]
 			]);
 
-			const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data);
+			const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data[0].content);
 			expect(wrapperElement.querySelectorAll(LazyLoadWrapper.tag)).toHaveSize(1);
 			expect(wrapperElement.querySelectorAll(LazyLoadWrapper.tag)[0].chunkName).toBe('elevation-profile');
 			const wrapperElementForContent = TestUtils.renderTemplateResult(wrapperElement.querySelectorAll(LazyLoadWrapper.tag)[0].content);
@@ -53,7 +53,7 @@ describe('ElevationProfilePlugin', () => {
 
 			closeProfile();
 
-			expect(store.getState().bottomSheet.data).toBeNull();
+			expect(store.getState().bottomSheet.data).toEqual(jasmine.arrayWithExactContents([{ id: 'main', content: null }]));
 		});
 	});
 
@@ -64,9 +64,7 @@ describe('ElevationProfilePlugin', () => {
 					active: true,
 					coordinates: []
 				},
-				bottomSheet: {
-					active: true
-				}
+				bottomSheet: { data: [], active: true }
 			});
 			const instanceUnderTest = new ElevationProfilePlugin();
 			const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetUnsubscribeFn');
@@ -81,9 +79,7 @@ describe('ElevationProfilePlugin', () => {
 					active: true,
 					coordinates: []
 				},
-				bottomSheet: {
-					active: true
-				}
+				bottomSheet: { data: [], active: true }
 			});
 			const instanceUnderTest = new ElevationProfilePlugin();
 			await instanceUnderTest.register(store);

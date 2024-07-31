@@ -277,7 +277,7 @@ describe('RoutingPlugin', () => {
 					current: Tools.ROUTING
 				},
 
-				bottomSheet: { active: true },
+				bottomSheet: { data: [], active: true },
 				highlight: {
 					features: [{ id: RoutingPlugin.HIGHLIGHT_FEATURE_ID, data: { coordinate: [11, 22] } }]
 				}
@@ -376,7 +376,7 @@ describe('RoutingPlugin', () => {
 
 			expect(store.getState().mapContextMenu.active).toBeFalse();
 			expect(store.getState().bottomSheet.active).toBeTrue();
-			const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data);
+			const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data[0].content);
 			expect(wrapperElement.querySelectorAll(ProposalContextContent.tag)).toHaveSize(1);
 			expect(store.getState().bottomSheet.active).toBeTrue();
 			expect(store.getState().highlight.features).toHaveSize(1);
@@ -491,7 +491,7 @@ describe('RoutingPlugin', () => {
 		describe('and we have less than two waypoints', () => {
 			it('resets the UI and also closes the elevation profile', async () => {
 				const store = setup({
-					bottomSheet: { active: true },
+					bottomSheet: { data: [], active: true },
 					mapContextMenu: { active: true },
 					highlight: {
 						features: [{ id: RoutingPlugin.HIGHLIGHT_FEATURE_ID, data: { coordinate: [11, 22] } }],

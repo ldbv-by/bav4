@@ -46,14 +46,14 @@ describe('ContextClickPlugin', () => {
 
 				setContextClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 
-				expect(isTemplateResult(store.getState().bottomSheet.data)).toBeTrue();
+				expect(isTemplateResult(store.getState().bottomSheet.data[0].content)).toBeTrue();
 				expect(store.getState().highlight.features).toHaveSize(1);
 				expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureType.QUERY_SUCCESS);
 
 				//let's call it again
 				setContextClick({ coordinate: [21210, 42420], screenCoordinate: [210, 420] });
 
-				expect(isTemplateResult(store.getState().bottomSheet.data)).toBeTrue();
+				expect(isTemplateResult(store.getState().bottomSheet.data[0].content)).toBeTrue();
 				expect(store.getState().highlight.features).toHaveSize(1);
 				expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureType.QUERY_SUCCESS);
 			});

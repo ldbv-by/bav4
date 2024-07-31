@@ -32,7 +32,7 @@ describe('StackableContentPanel', () => {
 	describe('when initialized', () => {
 		it('renders nothing when no data available', async () => {
 			TestUtils.setupStoreAndDi(
-				{ notifications: { notification: null }, bottomSheet: { data: null } },
+				{ notifications: { notification: null }, bottomSheet: { data: [] } },
 				{
 					notifications: notificationReducer,
 					bottomSheet: bottomSheetReducer
@@ -46,7 +46,7 @@ describe('StackableContentPanel', () => {
 
 	describe('when rendered', () => {
 		const setup = async (
-			state = { notifications: { notification: null }, bottomSheet: { data: null }, mainMenu: { open: false }, media: { portrait: false } }
+			state = { notifications: { notification: null }, bottomSheet: { data: [] }, mainMenu: { open: false }, media: { portrait: false } }
 		) => {
 			TestUtils.setupStoreAndDi(state, {
 				notifications: notificationReducer,

@@ -196,7 +196,7 @@ describe('BottomSheet', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.fade-out')).toHaveSize(1);
 			contentElement.dispatchEvent(new Event('animationend'));
-			expect(store.getState().bottomSheet.data).toBeNull();
+			expect(store.getState().bottomSheet.data).toEqual(jasmine.arrayWithExactContents([{ id: 'main', content: null }]));
 		});
 	});
 });
