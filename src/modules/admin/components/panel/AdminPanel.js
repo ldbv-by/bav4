@@ -423,19 +423,19 @@ export class AdminPanel extends MvuElement {
 
 		const updateTopic = (topicId) => {
 			this.#currentTopicId = topicId;
-			this._updateCatalog(this.#currentTopicId);
+			// todo this._updateCatalog(this.#currentTopicId);
 		};
 
 		// todo
 		const deleteTopicLevelTree = (topic) => {
-			console.log('🚀 ~ AdminPanel ~ deleteTopicLevelTree ~ topic._id:', topic._id);
-			this.#topics = this.#topics.filter((aTopic) => aTopic.id !== topic._id);
+			console.log('🚀 ~ AdminPanel ~ deleteTopicLevelTree ~ topic.id:', topic.id);
+			this.#topics = this.#topics.filter((aTopic) => aTopic.id !== topic.id);
 
 			this.#currentTopicId = this.#topics[0].id;
 			this._updateCatalog(this.#currentTopicId);
 
 			// eslint-disable-next-line promise/prefer-await-to-then
-			this._topicsService.delete(topic._id).then(
+			this._topicsService.delete(topic.id).then(
 				() => {
 					this.signal(Update_Topics, this.#topics);
 				},
@@ -447,7 +447,7 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const toggleTopicLevelTreeDisabled = (topic) => {
-			const foundTopic = this.#topics.find((oneTopic) => oneTopic._id === topic._id);
+			const foundTopic = this.#topics.find((oneTopic) => oneTopic.id === topic.id);
 
 			if (foundTopic) {
 				foundTopic._disabled = !foundTopic._disabled;

@@ -67,6 +67,8 @@ export class LayerTree extends MvuElement {
 			return '';
 		};
 		// eslint-disable-next-line no-unused-vars
+		this._updateSelectedTopic = (topic) => {};
+		// eslint-disable-next-line no-unused-vars
 		this._updateTopic = (topic) => {};
 		// eslint-disable-next-line no-unused-vars
 		this._removeEntry = (uid) => {};
@@ -414,7 +416,7 @@ export class LayerTree extends MvuElement {
 
 		const handleDeleteTopicLevelTreeClick = (event, selectedTopic) => {
 			event.stopPropagation();
-			const userConfirmed = confirm('Wollen Sie "' + selectedTopic._label + '" wirklich löschen?');
+			const userConfirmed = confirm('Wollen Sie "' + selectedTopic.label + '" wirklich löschen?');
 			if (userConfirmed) {
 				this._deleteTopicLevelTree(selectedTopic);
 				this.#currentTopic = null;
@@ -424,12 +426,8 @@ export class LayerTree extends MvuElement {
 		function toggleDropdownVisibility(event) {
 			// Navigate up to the common parent
 			const dropdownContainer = event.target.closest('.custom-dropdown');
-			console.log('🚀 ~ LayerTree ~ handleTopicChange ~ dropdownContainer:', dropdownContainer);
-
 			// Find the .dropdown-selected child within the common parent
 			const dropdownItems = dropdownContainer.querySelector('.dropdown-items');
-			console.log('Dropdown Selected:', dropdownItems);
-
 			// If the dropdownItems element exists, toggle the 'hidden' class
 			if (dropdownItems) {
 				dropdownItems.classList.toggle('hidden');
@@ -437,18 +435,31 @@ export class LayerTree extends MvuElement {
 		}
 
 		const handleTopicChange = (event, selectedTopic) => {
+			console.log('🚀 ~ LayerTree ~ handleTopicChange ~ selectedTopic:', selectedTopic);
 			toggleDropdownVisibility(event);
 
 			this.#currentTopic = selectedTopic;
-			this._updateTopic(selectedTopic._id);
+			this._updateSelectedTopic(selectedTopic.id);
+		};
+
+		const updateTopic = (topic) => {
+			console.log('🚀 ~ LayerTree ~ updateTopic ~ topic:', topic);
+
+			// create a copy of the topics array
+			const topics = [...this.topics];
+
+			// find the topic in the topics array and update it
+			const index = topics.findIndex((t) => t.id === topic.id);
+			console.log('🚀 ~ LayerTree ~ updateTopic ~ index:', index);
+			topics[index] = topic;
+
+			this.signal(Update_Topics, topics);
+
+			this._updateSelectedTopic(topic);
 		};
 
 		const handleEditTopic = (event, selectedTopic) => {
 			toggleDropdownVisibility(event);
-
-			const updateTopic = (topic) => {
-				console.log('🚀 ~ LayerTree ~ updateTopic ~ topic:', topic);
-			};
 
 			event.stopPropagation();
 
@@ -516,26 +527,24 @@ export class LayerTree extends MvuElement {
 					${css}
 				</style>
 
-				<div>
-					<div class="custom-dropdown">
-						<div class="dropdown-selected" @click="${(e) => handleTopicSelectClick(e)}">${this.#currentTopic._label}</div>
-						<div class="dropdown-items hidden">
-							${topics.map((topic) => {
-								// console.log('🚀 ~ LayerTree ~ createView ~ topic: ', topic);
-								const deactivateButtonText = topic._disabled ? 'aktivieren' : 'deaktivieren';
-								return html`
-									<div class="dropdown-item" data-value="${topic._id}" @click="${(e) => handleTopicChange(e, topic)}">
-										${topic._label} ${topic._disabled ? ' -- deaktiviert -- ' : ''}
-										<button class="disable-btn" @click="${(e) => handleDisableTopicLevelTreeClick(e, topic)}">${deactivateButtonText}</button>
-										<button class="delete-btn" @click="${(e) => handleDeleteTopicLevelTreeClick(e, topic)}">Löschen</button>
-										<button class="edit-btn" @click="${(e) => handleEditTopic(e, topic)}">Edit</button>
-									</div>
-								`;
-							})}
-						</div>
+				<div class="custom-dropdown">
+					<div class="dropdown-selected" @click="${(e) => handleTopicSelectClick(e)}">${this.#currentTopic.label}</div>
+					<div class="dropdown-items hidden">
+						${topics.map((topic) => {
+							// console.log('🚀 ~ LayerTree ~ createView ~ topic: ', topic);
+							const deactivateButtonText = topic._disabled ? 'aktivieren' : 'deaktivieren';
+							return html`
+								<div class="dropdown-item" data-value="${topic.id}" @click="${(e) => handleTopicChange(e, topic)}">
+									${topic.label} ${topic._disabled ? ' -- deaktiviert -- ' : ''}
+									<button class="disable-btn" @click="${(e) => handleDisableTopicLevelTreeClick(e, topic)}">${deactivateButtonText}</button>
+									<button class="delete-btn" @click="${(e) => handleDeleteTopicLevelTreeClick(e, topic)}">Löschen</button>
+									<button class="edit-btn" @click="${(e) => handleEditTopic(e, topic)}">Edit</button>
+								</div>
+							`;
+						})}
 					</div>
 
-					<h2>Themen - Ebenenbaum für Thema "${this.#currentTopic._label}"${sperrText}</h2>
+					<h2>Themen - Ebenenbaum für Thema "${this.#currentTopic.label}"${sperrText}</h2>
 
 					<button @click="${handleNewLayerGroupClick}">neue Ebenengruppe</button>
 					<button @click="${handleSaveClick}">sichern</button>
@@ -630,11 +639,11 @@ export class LayerTree extends MvuElement {
 	 * @property {function} updateTopic - Callback function
 	 */
 	set updateTopic(callback) {
-		this._updateTopic = callback;
+		this._updateSelectedTopic = callback;
 	}
 
 	get updateTopic() {
-		return this._updateTopic;
+		return this._updateSelectedTopic;
 	}
 
 	/**

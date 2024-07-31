@@ -41,8 +41,6 @@ export class NewTopicPanel extends MvuElement {
 		// this._translationService = translationService;
 		// this._feedbackService = feedbackService;
 		this._securityService = securityService;
-		this._onSubmit = () => {};
-		// @ts-ignore
 		// eslint-disable-next-line no-unused-vars
 		this._updateTopic = (topic) => {};
 	}
@@ -56,6 +54,7 @@ export class NewTopicPanel extends MvuElement {
 			case Update_Topic:
 				return { ...model, topic: data };
 			case Update_Label:
+				console.log('🚀 ~ NewTopicPanel ~ update ~ Update_Label ~ data:', data);
 				return { ...model, topic: { ...model.topic, label: data } };
 			case Update_Description:
 				return { ...model, topic: { ...model.topic, description: data } };
@@ -66,8 +65,8 @@ export class NewTopicPanel extends MvuElement {
 		const { topic } = model;
 		console.log('🚀 ~ NewTopicPanel ~ createView ~ topic:', topic);
 
-		this._updateTopic(topic);
-		console.log('🚀 ~ NewTopicPanel ~ createView ~ nach this._updateTopic(topic)');
+		// this._updateTopic(topic);
+		// console.log('🚀 ~ NewTopicPanel ~ createView ~ nach this._updateTopic(topic)');
 
 		// const translate = (key) => this._translationService.translate(key);
 
@@ -84,6 +83,8 @@ export class NewTopicPanel extends MvuElement {
 		};
 
 		const onSubmit = () => {
+			console.log('🚀 ~ NewTopicPanel ~ onSubmit ~ topic:', topic);
+			console.log('🚀 ~ NewTopicPanel ~ onSubmit ~ onSubmit()');
 			this._updateTopic(topic);
 			closeModal();
 		};
@@ -121,24 +122,18 @@ export class NewTopicPanel extends MvuElement {
 			<ba-button id="button0" .label=${label} .type=${'primary'} @click=${onSubmit}></ba-button>
 		`;
 	}
-	// <ba-button id="button0" .label=${'Create New Topic'} .type=${'primary'} @click=${this._onSubmit(topic)}></ba-button>
 
-	async _saveTopic() {}
-
+	/**
+	 * Sets the topic.
+	 * @param {string} value - The topic to
+	 * be edited.
+	 */
 	set topic(value) {
 		this.signal(Update_Topic, value);
 	}
 
 	get topic() {
 		return this.getModel().topic;
-	}
-
-	/**
-	 * Registers a callback function which will be called when the form was submitted successfully.
-	 * @type {Function}
-	 */
-	set onSubmit(callback) {
-		this._onSubmit = callback;
 	}
 
 	/**
