@@ -308,7 +308,11 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		element.geometry = geometry;
 		if (!overlay.get('manualPositioning')) {
 			if (element.type === BaOverlayTypes.DISTANCE_PARTITION) {
-				const geodesicPosition = getGeodesicPosition(overlay.get('feature'), value);
+				const feature = overlay.get('feature');
+				if (geometry && !geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY)) {
+					geometry.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, feature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY));
+				}
+				const geodesicPosition = getGeodesicPosition(feature, value);
 				overlay.setPosition(geodesicPosition ?? element.position);
 			} else {
 				overlay.setPosition(element.position);
