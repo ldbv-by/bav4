@@ -241,9 +241,7 @@ export class TimeTravel extends MvuElement {
 			clearInterval(this.#myTimer);
 			this.#myTimer = setInterval(function () {
 				const value = (+slider.value + 1) % (+slider.getAttribute('max') + 1);
-				if (value === 0) {
-					slider.value = +slider.getAttribute('min');
-				}
+				slider.value = value;
 				slider.dispatchEvent(new Event('input'));
 			}, Time_Interval);
 		};
