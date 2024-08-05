@@ -421,7 +421,7 @@ export class AdminPanel extends MvuElement {
 			this.signal(Update_CatalogWithResourceData, catalogWithResourceData);
 		};
 
-		const updateTopic = (topicId) => {
+		const updateSelectedTopic = (topicId) => {
 			this.#currentTopicId = topicId;
 			// todo this._updateCatalog(this.#currentTopicId);
 		};
@@ -495,7 +495,7 @@ export class AdminPanel extends MvuElement {
 						<ba-layer-tree
 							.topics="${this.#topics}"
 							.selectedTopic="${this.#currentTopicId}"
-							.updateTopic="${updateTopic}"
+							.updateSelectedTopic="${updateSelectedTopic}"
 							.catalogWithResourceData="${catalogWithResourceData}"
 							.addGeoResource="${addGeoResource}"
 							.moveElement="${moveElement}"

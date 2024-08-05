@@ -15,6 +15,7 @@ import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 // @ts-ignore
 import { repeat } from 'lit-html/directives/repeat.js';
 import { openModal } from '../../../../store/modal/modal.action';
+import { equals } from '../../../../utils/storeUtils';
 
 const Update_Topics = 'update_topics';
 const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
@@ -69,8 +70,6 @@ export class LayerTree extends MvuElement {
 		// eslint-disable-next-line no-unused-vars
 		this._updateSelectedTopic = (topic) => {};
 		// eslint-disable-next-line no-unused-vars
-		this._updateTopic = (topic) => {};
-		// eslint-disable-next-line no-unused-vars
 		this._removeEntry = (uid) => {};
 		// eslint-disable-next-line no-unused-vars
 		this._toggleShowChildren = (uid) => {};
@@ -103,12 +102,20 @@ export class LayerTree extends MvuElement {
 	}
 
 	update(type, data, model) {
+		// model.topics.forEach((topic) => {
+		// 	console.log(topic.label);
+		// });
+
 		switch (type) {
 			case Update_Topics:
+				// console.log('🚀 ~ LayerTree ~ update ~ Update_Topics ~ data:', data);
 				if (!this.#currentTopic && data.length > 0) {
 					this.#currentTopic = data[0];
 				}
-				return { ...model, topics: data };
+
+				// console.log('🚀 ~ MvuElement ~ signal ~ equals(newModel, this._model):', equals(model.topics, data));
+
+				return { ...model, topics: [...data] }; //, dummy: !this.dummy
 			case Update_CatalogWithResourceData:
 				return { ...model, catalogWithResourceData: data };
 			case Update_Layers:
@@ -122,6 +129,7 @@ export class LayerTree extends MvuElement {
 
 	createView(model) {
 		const { topics, catalogWithResourceData, currentGeoResourceId, editMode } = model;
+		// console.log('🚀 ~ LayerTree ~ createView ~ topics:', topics);
 
 		if (
 			catalogWithResourceData === null ||
@@ -446,24 +454,27 @@ export class LayerTree extends MvuElement {
 			console.log('🚀 ~ LayerTree ~ updateTopic ~ topic:', topic);
 
 			// create a copy of the topics array
-			const topics = [...this.topics];
+			const newTopicsArray = [...topics];
 
 			// find the topic in the topics array and update it
-			const index = topics.findIndex((t) => t.id === topic.id);
+			const index = newTopicsArray.findIndex((t) => t.id === topic.id);
 			console.log('🚀 ~ LayerTree ~ updateTopic ~ index:', index);
-			topics[index] = topic;
+			newTopicsArray[index] = topic;
 
-			this.signal(Update_Topics, topics);
+			// todo: check if this is correct
+			this.#currentTopic = topic;
+			this._updateSelectedTopic(topic.id);
 
-			this._updateSelectedTopic(topic);
+			this.signal(Update_Topics, [...newTopicsArray]);
 		};
 
 		const handleEditTopic = (event, selectedTopic) => {
 			toggleDropdownVisibility(event);
-
 			event.stopPropagation();
 
-			openModal('Thema', html`<ba-mvu-newtopicpanel .topic="${selectedTopic}" .updateTopic="${updateTopic}"></ba-mvu-newtopicpanel>`);
+			const selectedTopicCopy = selectedTopic.clone();
+
+			openModal('Thema', html`<ba-mvu-newtopicpanel .topic="${selectedTopicCopy}" .updateTopic="${updateTopic}"></ba-mvu-newtopicpanel>`);
 		};
 
 		const handleTopicSelectClick = (event) => {
@@ -476,13 +487,6 @@ export class LayerTree extends MvuElement {
 				dropdownItems.classList.toggle('hidden');
 			}
 		};
-
-		// // Optional: Close the dropdown when clicking outside
-		// window.addEventListener('click', function (e) {
-		// 	if (!document.querySelector('.custom-dropdown').contains(e.target)) {
-		// 		document.querySelector('.dropdown-items').classList.add('hidden');
-		// 	}
-		// });
 
 		const renderEntry = (entry, level) => {
 			return html`
@@ -520,6 +524,7 @@ export class LayerTree extends MvuElement {
 
 		// <button @click="${handleDisableTopicLevelTreeClick}">${deactivateButtonText}</button>
 		// <button @click="${handleDeleteTopicLevelTreeClick}">Ebenenbaum löschen</button>
+		console.log('🚀 ~ LayerTree ~ createView ~ this.#currentTopic.label:', this.#currentTopic.label);
 		if (topics) {
 			const sperrText = this.#currentTopic._disabled ? ' -- deaktiviert -- ' : '';
 			return html`
@@ -539,8 +544,8 @@ export class LayerTree extends MvuElement {
 														<button class="disable-btn" @click="${(e) => handleDisableTopicLevelTreeClick(e, topic)}">${deactivateButtonText}</button>
 														<button class="delete-btn" @click="${(e) => handleDeleteTopicLevelTreeClick(e, topic)}">Löschen</button>
 														<button class="edit-btn" @click="${(e) => handleEditTopic(e, topic)}">Edit</button>
-														<button @click="${handleSaveClick}">in Testumgebung</button>
-														<button @click="${handleSaveClick}">Topic 2 Prod</button>
+														<button @click="${handleSaveClick}">Themenüberschrift in Testumgebung</button>
+														<button @click="${handleSaveClick}">Thema nach Prod</button>
 													</div>
 												</div>
 											`;
@@ -552,8 +557,8 @@ export class LayerTree extends MvuElement {
 
 					<button @click="${handleNewLayerGroupClick}">neue Ebenengruppe</button>
 					<button @click="${handleSaveClick}">sichern</button>
-					<button @click="${handleSaveClick}">Catalog 2 Test</button>
-					<button @click="${handleSaveClick}">Catalog 2 Prod</button>
+					<button @click="${handleSaveClick}">Ebenenbaum ${this.#currentTopic.label} in Testumgebung</button>
+					<button @click="${handleSaveClick}">${this.#currentTopic.label} nach Prod</button>
 
 					<ul>
 						${repeat(
@@ -638,13 +643,13 @@ export class LayerTree extends MvuElement {
 	}
 
 	/**
-	 * @property {function} updateTopic - Callback function
+	 * @property {function} updateSelectedTopic - Callback function
 	 */
-	set updateTopic(callback) {
+	set updateSelectedTopic(callback) {
 		this._updateSelectedTopic = callback;
 	}
 
-	get updateTopic() {
+	get updateSelectedTopic() {
 		return this._updateSelectedTopic;
 	}
 

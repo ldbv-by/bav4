@@ -42,7 +42,27 @@ export class Topic {
 		this._selectedGeoRs = selectedGeoRs;
 		this._style = { hue: null, icon: null, ...style };
 	}
+	/**
+	 * Creates a deep copy of the Topic object.
+	 * @returns {Topic} The cloned Topic object.
+	 */
+	clone() {
+		const clonedBaseGeoRs = this._baseGeoRs ? { ...this._baseGeoRs } : null;
+		const clonedActivatedGeoRs = [...this._activatedGeoRs];
+		const clonedSelectedGeoRs = [...this._selectedGeoRs];
+		const clonedStyle = { ...this._style };
 
+		return new Topic(
+			this._id,
+			this._label,
+			this._description,
+			clonedBaseGeoRs,
+			this._defaultBaseGeoR,
+			clonedActivatedGeoRs,
+			clonedSelectedGeoRs,
+			clonedStyle
+		);
+	}
 	/**
 	 *  @type {String}
 	 */
