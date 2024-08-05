@@ -14,6 +14,7 @@ describe('i18n for chips module', () => {
 		expect(map.chips_assist_chip_share_state_api_failed).toBe('Teilen der Seite ist fehlgeschlagen');
 		expect(map.chips_assist_chip_map_feedback_label).toBe('Karte verbessern');
 		expect(map.chips_assist_chip_map_feedback_title).toBe('Feedback');
+		expect(map.chips_assist_chip_timeline).toBe('Zeitreise');
 	});
 
 	it('provides translation for en', () => {
@@ -29,10 +30,11 @@ describe('i18n for chips module', () => {
 		expect(map.chips_assist_chip_share_state_api_failed).toBe('Sharing the website has failed');
 		expect(map.chips_assist_chip_map_feedback_label).toBe('Improve map');
 		expect(map.chips_assist_chip_map_feedback_title).toBe('Feedback');
+		expect(map.chips_assist_chip_timeline).toBe('Time travel');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 10;
+		const expectedSize = 11;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
