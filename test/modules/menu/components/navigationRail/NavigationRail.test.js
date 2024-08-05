@@ -110,6 +110,11 @@ describe('NavigationRail', () => {
 			expect(element.shadowRoot.querySelector('.objectinfo').title).toBe('menu_navigation_rail_object_info_tooltip');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.objectinfo')).display).toBe('none');
 
+			expect(element.shadowRoot.querySelectorAll('.time')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.time .text').innerText).toBe('menu_navigation_rail_time_travel');
+			expect(element.shadowRoot.querySelector('.time').title).toBe('menu_navigation_rail_time_travel_tooltip');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.time')).display).toBe('flex');
+
 			expect(element.shadowRoot.querySelectorAll('.zoom-in')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('.zoom-in .text').innerText).toBe('menu_navigation_rail_zoom_in');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.zoom-in')).display).toBe('none');
@@ -150,6 +155,9 @@ describe('NavigationRail', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.objectinfo')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.objectinfo')).display).toBe('none');
+
+			expect(element.shadowRoot.querySelectorAll('.time')).toHaveSize(1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.time')).display).toBe('none');
 
 			expect(element.shadowRoot.querySelectorAll('.zoom-in')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.zoom-in')).display).toBe('flex');

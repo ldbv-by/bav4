@@ -40,7 +40,9 @@ export const provide = (lang) => {
 				menu_navigation_rail_zoom_out: 'Zoom out',
 				menu_navigation_rail_search: 'Search',
 				menu_navigation_rail_dark_theme: 'Dark mode',
-				menu_navigation_rail_light_theme: 'Light mode'
+				menu_navigation_rail_light_theme: 'Light mode',
+				menu_navigation_rail_time_travel: 'Time travel',
+				menu_navigation_rail_time_travel_tooltip: 'Open time travel'
 			};
 
 		case 'de':
@@ -83,7 +85,9 @@ export const provide = (lang) => {
 				menu_navigation_rail_zoom_out: 'Karte verkleinern',
 				menu_navigation_rail_search: 'Suchen',
 				menu_navigation_rail_dark_theme: 'Dunkles Design',
-				menu_navigation_rail_light_theme: 'Helles Design'
+				menu_navigation_rail_light_theme: 'Helles Design',
+				menu_navigation_rail_time_travel: 'Zeitreise',
+				menu_navigation_rail_time_travel_tooltip: 'Zeitreise öffnen'
 			};
 
 		default:
