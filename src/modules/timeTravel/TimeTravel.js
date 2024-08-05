@@ -5,17 +5,17 @@ import { html } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { MvuElement } from '../MvuElement';
 import { $injector } from '../../injection';
-import toggleSvg from './assets/arrow.svg';
-import minus from './assets/minusCircle.svg';
-import startSvg from './assets/play.svg';
-import plus from './assets/plusCircle.svg';
+import { changeZoom } from '../../store/position/position.action';
+import css from './timeTravel.css';
+import arrowDownSvg from './assets/chevron-down.svg';
+import arrowUpSvg from './assets/chevron-up.svg';
+import minusSvg from './assets/minusCircle.svg';
+import playSvg from './assets/play.svg';
+import plusSvg from './assets/plusCircle.svg';
 import resetSvg from './assets/reset.svg';
 import stopSvg from './assets/stop.svg';
-import css from './timeTravel.css';
-import { changeZoom } from '../../store/position/position.action';
 
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
-const Update_ZoomLevel_Property = 'update_zoomLevel_property';
 
 const jsonMock = [
 	{
@@ -89,8 +89,13 @@ const jsonMock = [
 	}
 ];
 
+const Time_Interval = 1000;
+const Initial_Value = 1834;
+const Min = 1834;
+const Max = 2014;
+
 /**
- * Panel to control historic data via slider
+ * Panel to control chronological data via slider
  *
  * @class
  * @author alsturm
@@ -99,9 +104,11 @@ export class TimeTravel extends MvuElement {
 	#environmentService;
 	#translationService;
 
+	#isOpen;
+	#myTimer;
+
 	constructor() {
 		super({
-			open: false,
 			isPortrait: false
 		});
 
@@ -112,6 +119,8 @@ export class TimeTravel extends MvuElement {
 
 		this.#environmentService = environmentService;
 		this.#translationService = translationService;
+
+		this.#isOpen = false;
 	}
 
 	update(type, data, model) {
@@ -124,7 +133,7 @@ export class TimeTravel extends MvuElement {
 	onInitialize() {
 		this.observe(
 			(state) => state.media,
-			(media) => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait, hasMinWidth: media.minWidth })
+			(media) => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait })
 		);
 	}
 
@@ -135,110 +144,147 @@ export class TimeTravel extends MvuElement {
 	createView(model) {
 		const { isPortrait } = model;
 
-		const getScaleOptions = (jears) => {
-			return jears.map((j) => html`<option value=${j}>${j}</option> `);
-		};
-		const onChangeScale = () => {
-			//TODO
+		const arrayRange = (start, stop, step) => Array.from({ length: (stop - start) / step + 1 }, (value, index) => start + index * step);
+		const years = arrayRange(Min, Max, 1);
+		const yearsActiveMap = new Map();
+
+		const getSelectOptions = (years) => {
+			return years.map((year) => html`<option ?selected=${year.toString() === Initial_Value.toString()} value=${year}>${year}</option> `);
 		};
 
-		const onJearClick = (jear, zoom = 0) => {
-			const searchInput = this.shadowRoot.getElementById('rangeSlider');
-			if (searchInput) {
-				searchInput.value = jear;
-				searchInput.dispatchEvent(new Event('input'));
-				if (zoom) {
-					changeZoom(zoom);
-				}
-			}
-		};
-		const increaseJear = () => {
-			const select = this.shadowRoot.getElementById('select_jear');
-			const newJear = parseInt(select.value);
-			onJearClick(newJear + 1);
-		};
-		const decreaseJear = () => {
-			const select = this.shadowRoot.getElementById('select_jear');
-			const newJear = parseInt(select.value);
-			onJearClick(newJear - 1);
+		const onChange = (e) => {
+			const rangeSlider = this.shadowRoot.getElementById('rangeSlider');
+			rangeSlider.value = e.target.value;
+			rangeSlider.dispatchEvent(new Event('input'));
 		};
 
-		const isActiveJear = (jear, zoom, itemjears = []) => {
-			return itemjears.includes(jear.toString())
-				? html`<span class="item active ${'y' + jear}" data-year="${jear}" title="${jear}" @click="${() => onJearClick(jear, zoom)}"
-						><span> </span
-					></span>`
-				: html`<span class="item ${'y' + jear}" data-year="${jear}" title="${jear} "><span> </span></span>`;
-		};
-
-		const onChangeSliderWidth = (event) => {
-			const select = this.shadowRoot.getElementById('select_jear');
+		const onChangeRange = (event) => {
+			//select
+			const select = this.shadowRoot.getElementById('yearSelect');
 			select.value = event.target.value;
 
+			//reset color
 			const items = this.shadowRoot.querySelectorAll('.item');
 			items.forEach((item) => {
-				item.classList.remove('active-item');
+				item.classList.remove('activeItem');
 			});
 
-			const searchInput = this.shadowRoot.querySelectorAll('.y' + event.target.value);
+			//set color
+			const searchInput = this.shadowRoot.querySelectorAll('.data [data-year="' + event.target.value + '"]');
 			searchInput.forEach((item) => {
-				item.classList.add('active-item');
+				item.classList.add('activeItem');
 			});
 		};
 
-		let myTimer;
+		const setYear = (years, zoom = 0) => {
+			const rangeSlider = this.shadowRoot.getElementById('rangeSlider');
+			rangeSlider.value = years;
+			rangeSlider.dispatchEvent(new Event('input'));
+			if (zoom) changeZoom(zoom);
+		};
+
+		const increaseYear = () => {
+			const select = this.shadowRoot.getElementById('yearSelect');
+			setYear(parseInt(select.value) + 1);
+		};
+
+		const decreaseYear = () => {
+			const select = this.shadowRoot.getElementById('yearSelect');
+			setYear(parseInt(select.value) - 1);
+		};
+
+		const isDecade = (year) => {
+			return year.toString().endsWith('0') ? true : false;
+		};
+
+		const isHalfCentury = (year) => {
+			return year.toString().endsWith('50') || year.toString().endsWith('00') ? true : false;
+		};
+
+		const getYearItems = (year, yearsActiveMap, zoom, itemYear = []) => {
+			//fill Map
+			if (itemYear.includes(year.toString())) {
+				yearsActiveMap.set(year, true);
+			} else {
+				if (!yearsActiveMap.has(year)) yearsActiveMap.set(year, false);
+			}
+
+			const classes = {
+				border: isHalfCentury(year),
+				activeItem: year.toString() === Initial_Value.toString()
+			};
+
+			return itemYear.includes(year.toString())
+				? html`<span class="item active ${classMap(classes)}" data-year="${year}" title="${year}" @click="${() => setYear(year, zoom)}"></span>`
+				: html`<span class="item ${classMap(classes)}" data-year="${year}" title="${year} "></span>`;
+		};
+
+		const getRangeBackground = (yearsActive) => {
+			const sortedMap = new Map([...yearsActive.entries()].sort());
+			const array = Array.from(sortedMap, ([year, active]) => ({ year, active }));
+			return array.map((item) => {
+				const classes = {
+					active: item.active,
+					border: isDecade(item.year)
+				};
+				return html`<span class="range-bg  ${classMap(classes)}" data-year="${item.year}"></span>`;
+			});
+		};
 
 		const start = () => {
 			const start = this.shadowRoot.getElementById('start');
-			start.classList.add('hide');
 			const stop = this.shadowRoot.getElementById('stop');
-			stop.classList.remove('hide');
-
 			const slider = this.shadowRoot.getElementById('rangeSlider');
 
-			clearInterval(myTimer);
-			myTimer = setInterval(function () {
-				let value = (+slider.value + 1) % (+slider.getAttribute('max') + 1);
+			start.classList.add('hide');
+			stop.classList.remove('hide');
+			clearInterval(this.#myTimer);
+			this.#myTimer = setInterval(function () {
+				const value = (+slider.value + 1) % (+slider.getAttribute('max') + 1);
 				if (value === 0) {
-					value = +slider.getAttribute('min');
+					slider.value = +slider.getAttribute('min');
 				}
-				slider.value = value;
 				slider.dispatchEvent(new Event('input'));
-			}, 300);
+			}, Time_Interval);
 		};
+
 		const stop = () => {
 			const start = this.shadowRoot.getElementById('start');
-			start.classList.remove('hide');
 			const stop = this.shadowRoot.getElementById('stop');
-			stop.classList.add('hide');
 
-			clearInterval(myTimer);
+			start.classList.remove('hide');
+			stop.classList.add('hide');
+			clearInterval(this.#myTimer);
 		};
+
 		const reset = () => {
 			const start = this.shadowRoot.getElementById('start');
-			start.classList.remove('hide');
-
 			const stop = this.shadowRoot.getElementById('stop');
+
+			start.classList.remove('hide');
 			stop.classList.add('hide');
-
-			clearInterval(myTimer);
-			onJearClick(1834);
+			clearInterval(this.#myTimer);
+			setYear(Min);
 		};
+
 		const toggle = () => {
-			const containerMobeile = this.shadowRoot.querySelectorAll('.jear-container')[0];
-			containerMobeile.classList.toggle('hide');
+			const data = this.shadowRoot.getElementById('data');
 
-			const containerDesktop = this.shadowRoot.querySelectorAll('.container')[0];
-			containerDesktop.classList.toggle('hide');
+			this.#isOpen = !this.#isOpen;
+			this.#isOpen ? data.classList.remove('hide') : data.classList.add('hide');
 		};
 
-		const arrayRange = (start, stop, step) => Array.from({ length: (stop - start) / step + 1 }, (value, index) => start + index * step);
+		const getIcon = () => {
+			return this.#isOpen ? arrowDownSvg : arrowUpSvg;
+		};
 
-		const jears = arrayRange(1834, 2020, 1);
-
-		const classes = {
+		const classContainer = {
 			'is-portrait': isPortrait,
 			'is-landscape': !isPortrait
+		};
+
+		const classData = {
+			hide: !this.#isOpen
 		};
 
 		const translate = (key) => this.#translationService.translate(key);
@@ -246,60 +292,75 @@ export class TimeTravel extends MvuElement {
 			<style>
 				${css}
 			</style>
-			<div class="${classMap(classes)}">
-				<div>
-					<ba-icon
-						id="increase"
-						class="toggle"
-						.icon="${toggleSvg}"
-						.color=${'var(--text2)'}
-						.size=${1.5}
-						.title=${translate('')}
-						@click=${toggle}
-					></ba-icon>
-					<h3>${translate('timeTravel_title')}</h3>
-					<div class="container">
-						${jsonMock.map(
-							(item) => html`
-								<div class="row">
-									<span class="title" title="beste Darstellung Zoom ${item.zoomlevel}">${item.bezeichnung}</span>
-									${jears.map((jear) => isActiveJear(jear, item.zoomlevel, item.years.split(',')))}
-								</div>
-							`
-						)}
-					</div>
-					<div class="jear-container  hide">
-						<ba-icon
-							id="increase"
-							.icon="${minus}"
-							.color=${'var(--primary-color)'}
-							.size=${2.2}
-							.title=${translate('')}
-							@click=${decreaseJear}
-						></ba-icon>
-						<select id="select_jear" @change=${onChangeScale}>
-							${getScaleOptions(jears)}
-						</select>
-						<ba-icon
-							id="decrease"
-							.icon="${plus}"
-							.color=${'var(--primary-color)'}
-							.size=${2.2}
-							.title=${translate('')}
-							@click=${increaseJear}
-						></ba-icon>
-					</div>
-					<div class="slider-container">
-						<div class="slider-pre">
-							<ba-icon id="start" .type=${'primary'} . .icon=${startSvg} @click=${start}></ba-icon>
-							<ba-icon id="stop" class="hide" .type=${'primary'} .icon=${stopSvg} @click=${stop}></ba-icon>
-							<ba-icon id="reset" .type=${'primary'} .icon=${resetSvg} @click=${reset}></ba-icon>
+			<div class="${classMap(classContainer)}">
+				<h3 class="header  ">${translate('timeTravel_title')}</h3>
+				<div id="data" class="data ${classMap(classData)}">
+					${jsonMock.map(
+						(item) =>
+							html`<div class="row">
+								<span class="title" title="beste Darstellung Zoom ${item.zoomlevel}">${item.bezeichnung}</span>
+								${years.map((year) => getYearItems(year, yearsActiveMap, item.zoomlevel, item.years.split(',')))}
+							</div>`
+					)}
+				</div>
+				<div id="base" class="base">
+					<div class="actions">
+						<div>
+							<select id="yearSelect" @change=${onChange}>
+								${getSelectOptions(years)}
+							</select>
+							<ba-button id="buttonData" .label=${translate('timeTravel_data')} .icon=${getIcon()} .type=${'secondary'} @click=${toggle}></ba-button>
 						</div>
-						<input id="rangeSlider" class="slider" type="range" min="1834" max="2020" value="1" @input=${onChangeSliderWidth} />
-						<div class="slider-after"></div>
+						<div>
+							<ba-icon
+								id="increase"
+								.icon="${minusSvg}"
+								.color=${'var(--primary-color)'}
+								.size=${isPortrait ? 2.8 : 1.9}
+								.title=${translate('timeTravel_decrease')}
+								@click=${decreaseYear}
+							></ba-icon>
+							<ba-icon
+								id="decrease"
+								.icon="${plusSvg}"
+								.color=${'var(--primary-color)'}
+								.size=${isPortrait ? 2.8 : 1.9}
+								.title=${translate('timeTravel_increase')}
+								@click=${increaseYear}
+							></ba-icon>
+							<ba-icon
+								id="start"
+								.title=${translate('timeTravel_start')}
+								.size=${isPortrait ? 2.8 : 1.9}
+								.type=${'primary'}
+								.
+								.icon=${playSvg}
+								@click=${start}
+							></ba-icon>
+							<ba-icon
+								id="stop"
+								.title=${translate('timeTravel_stop')}
+								.size=${isPortrait ? 2.8 : 1.9}
+								class="hide"
+								.type=${'primary'}
+								.icon=${stopSvg}
+								@click=${stop}
+							></ba-icon>
+							<ba-icon
+								id="reset"
+								.title=${translate('timeTravel_reset')}
+								.size=${isPortrait ? 3.1 : 2.1}
+								.type=${'primary'}
+								.icon=${resetSvg}
+								@click=${reset}
+							></ba-icon>
+						</div>
+					</div>
+					<div class="slider">
+						<input id="rangeSlider" class="slider" type="range" min="${Min}" max="${Max}" value="${Initial_Value}" @input=${onChangeRange} />
+						<div class="range-background">${getRangeBackground(yearsActiveMap)}</div>
 					</div>
 				</div>
-				<div class="button-container"></div>
 			</div>
 		`;
 	}
