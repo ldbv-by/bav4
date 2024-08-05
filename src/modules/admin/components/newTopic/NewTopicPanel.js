@@ -50,12 +50,15 @@ export class NewTopicPanel extends MvuElement {
 	}
 
 	update(type, data, model) {
+		console.log('🚀 ~ NewTopicPanel ~ update ~ data:', data);
+		console.log('🚀 ~ NewTopicPanel ~ update ~ model:', model);
 		switch (type) {
 			case Update_Topic:
 				return { ...model, topic: data };
 			case Update_Label:
-				console.log('🚀 ~ NewTopicPanel ~ update ~ Update_Label ~ data:', data);
 				return { ...model, topic: { ...model.topic, label: data } };
+			// model.topic.label = data;
+			// return { ...model, topic: model.topic };
 			case Update_Description:
 				return { ...model, topic: { ...model.topic, description: data } };
 		}
@@ -78,8 +81,11 @@ export class NewTopicPanel extends MvuElement {
 
 		const onLabelChange = (event) => {
 			const { value } = event.target;
+			console.log('🚀 ~ NewTopicPanel ~ onLabelChange ~ event.target:', event.target);
 
-			this.signal(Update_Label, this._securityService.sanitizeHtml(value));
+			const sanitized = this._securityService.sanitizeHtml(value);
+			console.log('🚀 ~ NewTopicPanel ~ onLabelChange ~ sanitized:', sanitized);
+			this.signal(Update_Label, sanitized);
 		};
 
 		const onSubmit = () => {
@@ -96,7 +102,7 @@ export class NewTopicPanel extends MvuElement {
 				${css}
 			</style>
 
-			<div id="feedbackPanelTitle" class="feedback-main-header">New Topic</div>
+			<div id="feedbackPanelTitle" class="feedback-main-header">Topic</div>
 
 			<div class="ba-form-element">
 				<textarea type="text" id="newTopicLabel" placeholder="new topic label" .value="${topic.label}" @input="${onLabelChange}" required></textarea>
@@ -129,10 +135,12 @@ export class NewTopicPanel extends MvuElement {
 	 * be edited.
 	 */
 	set topic(value) {
+		console.log('🚀 ~ NewTopicPanel ~ set topic ~ set topic(value):', value);
 		this.signal(Update_Topic, value);
 	}
 
 	get topic() {
+		console.log('🚀 ~ NewTopicPanel ~ get topic ~ get topic():');
 		return this.getModel().topic;
 	}
 

@@ -53,8 +53,22 @@ export class Topic {
 	/**
 	 *  @type {String}
 	 */
+	set id(value) {
+		this._id = value;
+	}
+
+	/**
+	 *  @type {String}
+	 */
 	get label() {
 		return this._label;
+	}
+
+	/**
+	 *  @type {String}
+	 */
+	set label(value) {
+		this._label = value;
 	}
 
 	/**
@@ -65,6 +79,13 @@ export class Topic {
 	}
 
 	/**
+	 *  @type {String}
+	 */
+	set description(value) {
+		this._description = value;
+	}
+
+	/**
 	 *  @type {String|null}
 	 */
 	get defaultBaseGeoR() {
@@ -72,10 +93,24 @@ export class Topic {
 	}
 
 	/**
+	 *  @type {String|null}
+	 */
+	set defaultBaseGeoR(value) {
+		this._defaultBaseGeoR = value;
+	}
+
+	/**
 	 *  @type {Object|null}
 	 */
 	get baseGeoRs() {
 		return this._baseGeoRs ? { ...this._baseGeoRs } : null;
+	}
+
+	/**
+	 *  @type {Object|null}
+	 */
+	set baseGeoRs(value) {
+		this._baseGeoRs = value ? { ...value } : null;
 	}
 
 	/**
@@ -88,8 +123,22 @@ export class Topic {
 	/**
 	 *  @type {Array}
 	 */
+	set selectedGeoRs(value) {
+		this._selectedGeoRs = [...value];
+	}
+
+	/**
+	 *  @type {Array}
+	 */
 	get activatedGeoRs() {
 		return [...this._activatedGeoRs];
+	}
+
+	/**
+	 *  @type {Array}
+	 */
+	set activatedGeoRs(value) {
+		this._activatedGeoRs = [...value];
 	}
 
 	/**
@@ -97,5 +146,12 @@ export class Topic {
 	 */
 	get style() {
 		return this._style;
+	}
+
+	/**
+	 *  @type {Object}
+	 */
+	set style(value) {
+		this._style = { ...value };
 	}
 }

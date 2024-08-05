@@ -527,22 +527,26 @@ export class LayerTree extends MvuElement {
 					${css}
 				</style>
 
-				<div class="custom-dropdown">
-					<div class="dropdown-selected" @click="${(e) => handleTopicSelectClick(e)}">${this.#currentTopic.label}</div>
-					<div class="dropdown-items hidden">
-						${topics.map((topic) => {
-							// console.log('🚀 ~ LayerTree ~ createView ~ topic: ', topic);
-							const deactivateButtonText = topic._disabled ? 'aktivieren' : 'deaktivieren';
-							return html`
-								<div class="dropdown-item" data-value="${topic.id}" @click="${(e) => handleTopicChange(e, topic)}">
-									${topic.label} ${topic._disabled ? ' -- deaktiviert -- ' : ''}
-									<button class="disable-btn" @click="${(e) => handleDisableTopicLevelTreeClick(e, topic)}">${deactivateButtonText}</button>
-									<button class="delete-btn" @click="${(e) => handleDeleteTopicLevelTreeClick(e, topic)}">Löschen</button>
-									<button class="edit-btn" @click="${(e) => handleEditTopic(e, topic)}">Edit</button>
-								</div>
-							`;
-						})}
-					</div>
+                <div class="custom-dropdown">
+                <div class="dropdown-selected" @click="${(e) => handleTopicSelectClick(e)}">${this.#currentTopic.label}</div>
+                <div class="dropdown-items hidden">
+                    ${topics.map((topic) => {
+											const deactivateButtonText = topic._disabled ? 'aktivieren' : 'deaktivieren';
+											return html`
+												<div class="dropdown-item" data-value="${topic.id}" @click="${(e) => handleTopicChange(e, topic)}">
+													${topic.label} ${topic._disabled ? ' -- deaktiviert -- ' : ''}
+													<div class="buttons">
+														<button class="disable-btn" @click="${(e) => handleDisableTopicLevelTreeClick(e, topic)}">${deactivateButtonText}</button>
+														<button class="delete-btn" @click="${(e) => handleDeleteTopicLevelTreeClick(e, topic)}">Löschen</button>
+														<button class="edit-btn" @click="${(e) => handleEditTopic(e, topic)}">Edit</button>
+														<button @click="${handleSaveClick}">in Testumgebung</button>
+														<button @click="${handleSaveClick}">Topic 2 Prod</button>
+													</div>
+												</div>
+											`;
+										})}
+                </div>
+                </div>
 
 					<h2>Themen - Ebenenbaum für Thema "${this.#currentTopic.label}"${sperrText}</h2>
 
@@ -550,8 +554,6 @@ export class LayerTree extends MvuElement {
 					<button @click="${handleSaveClick}">sichern</button>
 					<button @click="${handleSaveClick}">Catalog 2 Test</button>
 					<button @click="${handleSaveClick}">Catalog 2 Prod</button>
-					<button @click="${handleSaveClick}">Topic 2 Test</button>
-					<button @click="${handleSaveClick}">Topic 2 Prod</button>
 
 					<ul>
 						${repeat(

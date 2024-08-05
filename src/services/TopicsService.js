@@ -22,7 +22,7 @@ import { loadBvvTopics, deleteBvvTopic } from './provider/topics.provider';
  */
 export class TopicsService {
 	/**
-	 * @param {module:services/TopicsService~topicsProvider} [provider=loadBvvCatalog]
+	 * @param {module:services/TopicsService~topicsProvider} [loadBvvTopicsProvider = loadBvvTopics, deleteBvvTopicProvider = deleteBvvTopic]
 	 */
 	constructor(loadBvvTopicsProvider = loadBvvTopics, deleteBvvTopicProvider = deleteBvvTopic) {
 		this._loadBvvTopicsProvider = loadBvvTopicsProvider;

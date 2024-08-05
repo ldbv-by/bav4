@@ -139,8 +139,18 @@ input[type='text'] {
 }
 
 .dropdown-item {
+	display: flex;
+	align-items: center;
 	padding: 10px;
 	cursor: pointer;
+}
+
+.dropdown-item .buttons {
+	margin-left: auto;
+}
+
+.dropdown-item button {
+	margin-left: 5px; /* Optional: Add some space between buttons */
 }
 
 .dropdown-item:hover,
