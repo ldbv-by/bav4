@@ -111,29 +111,28 @@ export class LayerTree extends MvuElement {
 
 		switch (type) {
 			case Update_Selected_Topic:
-				// eslint-disable-next-line no-console
-				console.log('🚀 ~ LayerTree ~ update ~ Update_Selected_Topic ~ data:', data);
+				// // eslint-disable-next-line no-console
+				// console.log('🚀 ~ LayerTree ~ update ~ Update_Selected_Topic ~ data:', data);
 				return { ...model, selectedTopic: data };
 			case Update_Topics:
-				// eslint-disable-next-line no-console
-				console.log('🚀 ~ LayerTree ~ update ~ Update_Topics ~ data:', data);
+				// // eslint-disable-next-line no-console
+				// console.log('🚀 ~ LayerTree ~ update ~ Update_Topics ~ data:', data);
 				return { ...model, topics: [...data] }; //, dummy: !this.dummy
 			case Update_CatalogWithResourceData:
-				// eslint-disable-next-line no-console
-				console.log('🚀 ~ LayerTree ~ update ~ Update_CatalogWithResourceData ~ data:', data);
-				// eslint-disable-next-line no-console
+				// // eslint-disable-next-line no-console
+				// console.log('🚀 ~ LayerTree ~ update ~ Update_CatalogWithResourceData ~ data:', data);
 				return { ...model, catalogWithResourceData: data };
 			case Update_Layers:
-				// eslint-disable-next-line no-console
-				console.log('🚀 ~ LayerTree ~ update ~ Update_Layers ~ data:', data);
+				// // eslint-disable-next-line no-console
+				// console.log('🚀 ~ LayerTree ~ update ~ Update_Layers ~ data:', data);
 				return { ...model, layers: data };
 			case Update_Dummy:
-				// eslint-disable-next-line no-console
-				console.log('🚀 ~ LayerTree ~ update ~ Update_Dummy ~ data:', data);
+				// // eslint-disable-next-line no-console
+				// console.log('🚀 ~ LayerTree ~ update ~ Update_Dummy ~ data:', data);
 				return { ...model, dummy: data };
 			case Update_Edit_Mode:
-				// eslint-disable-next-line no-console
-				console.log('🚀 ~ LayerTree ~ update ~ Update_Edit_Mode ~ data:', data);
+				// // eslint-disable-next-line no-console
+				// console.log('🚀 ~ LayerTree ~ update ~ Update_Edit_Mode ~ data:', data);
 				return { ...model, editMode: data };
 		}
 	}
@@ -625,11 +624,8 @@ export class LayerTree extends MvuElement {
 
 	/**
 	 * @property {Array} catalogWithResourceData = []
-	 console.log("🚀 ~ LayerTree ~ catalogWithResourceData:", catalogWithResourceData);
 	 */
 	set catalogWithResourceData(value) {
-		// eslint-disable-next-line no-console
-		console.log('🚀 ~ LayerTree ~ set catalogWithResourceData ~ this.signal(Update_CatalogWithResourceData, []);');
 		this.signal(Update_CatalogWithResourceData, value);
 	}
 

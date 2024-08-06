@@ -13,7 +13,7 @@ import { End_Label } from '../layerTree/LayerTree';
 // import { logOnce, onlyOnce } from '../layerTree/LayerTree';
 
 const Update_Selected_Topic_Id = 'update_selected_topic_id';
-const Update_Selected_Topic = 'update_selected_topic';
+// const Update_Selected_Topic = 'update_selected_topic';
 const Update_Topics = 'update_topics';
 const Update_Catalog = 'update_catalog';
 const Update_GeoResources = 'update_georesources';
@@ -226,6 +226,16 @@ export class AdminPanel extends MvuElement {
 		}
 	}
 
+	getTopic(topics, topicId) {
+		if (topicId && topics && topics.length > 0) {
+			const topic = topics.find((topic) => topic.id === topicId);
+			if (topic) {
+				return topic;
+			}
+		}
+		return null;
+	}
+
 	async onInitialize() {
 		const selectedTopicId = this._configService.getValue('DEFAULT_TOPIC_ID', 'ba');
 
@@ -234,17 +244,7 @@ export class AdminPanel extends MvuElement {
 		const geoResources = await this._loadGeoResources();
 		const catalogWithResourceData = this._updateCatalogWithResourceData(catalog, geoResources);
 
-		let selectedTopic;
-		if (selectedTopicId && topics && topics.length > 0) {
-			selectedTopic = topics.find((topic) => topic.id === selectedTopicId);
-			if (!selectedTopic) {
-				// eslint-disable-next-line no-console
-				console.log('missing selectedTopic');
-				return html`<div>Loading...</div>`;
-			}
-		}
-		// eslint-disable-next-line no-console
-		console.log('🚀 ~ AdminPanel ~ onInitialize ~ selectedTopic:', selectedTopic);
+		const selectedTopic = this.getTopic(topics, selectedTopicId);
 
 		this.signal(Update_All, {
 			selectedTopicId,
@@ -257,15 +257,33 @@ export class AdminPanel extends MvuElement {
 	}
 
 	update(type, data, model) {
+		const selectedTopicId = model.selectedTopicId;
+		const topics = model.topics;
 		switch (type) {
 			case Update_Selected_Topic_Id:
 				// eslint-disable-next-line no-console
 				console.log('🚀 ~ AdminPanel ~ update ~ Update_Selected_Topic_Id ~ data:', data);
-				return { ...model, selectedTopicId: data };
+
+				if (topics && topics.length > 0) {
+					const selectedTopic = this.getTopic(data, topics);
+
+					return { ...model, selectedTopicId: data, selectedTopic };
+				}
+				return { ...model, selectedTopicId, selectedTopic: null };
+
 			case Update_Topics:
 				// eslint-disable-next-line no-console
 				console.log('🚀 ~ AdminPanel ~ update ~ Update_Topics ~ data:', data);
-				return { ...model, topics: [...data], dummy: !model.dummy };
+
+				if (selectedTopicId) {
+					const selectedTopic = this.getTopic(selectedTopicId, data);
+
+					if (selectedTopic) {
+						return { ...model, topics: data, selectedTopicId, selectedTopic };
+					}
+				}
+				return { ...model, topics: data, selectedTopicId: data[0].id, selectedTopic: data[0] };
+
 			case Update_Catalog:
 				// eslint-disable-next-line no-console
 				console.log('🚀 ~ AdminPanel ~ update ~ Update_Catalog ~ data:', data);
