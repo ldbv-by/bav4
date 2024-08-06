@@ -12,23 +12,27 @@ import { End_Label } from '../layerTree/LayerTree';
 // eslint-disable-next-line no-unused-vars
 // import { logOnce, onlyOnce } from '../layerTree/LayerTree';
 
-const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
+const Update_Selected_Topic_Id = 'update_selected_topic_id';
+const Update_Selected_Topic = 'update_selected_topic';
 const Update_Topics = 'update_topics';
+const Update_Catalog = 'update_catalog';
+const Update_GeoResources = 'update_georesources';
+const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
+const Update_All = 'update_all';
 
 /**
  * @class
  */
 export class AdminPanel extends MvuElement {
-	#catalog = [];
-	#geoResources = [];
-	#topics = []; // todo remove ???
-	#currentTopicId = null;
-
 	constructor() {
 		super({
 			dummy: true,
-			catalogWithResourceData: null,
-			topics: []
+			selectedTopicId: null,
+			selectedTopic: null,
+			topics: [],
+			catalog: [],
+			geoResources: [],
+			catalogWithResourceData: []
 		});
 
 		const {
@@ -66,13 +70,13 @@ export class AdminPanel extends MvuElement {
 		return catalogWithUniqueId;
 	}
 
-	_enrichWithGeoResource = (obj, geoResources) => {
-		const result = { uid: obj.uid };
+	_enrichWithGeoResource = (catalog, geoResources) => {
+		const result = { uid: catalog.uid };
 
-		if (obj.geoResourceId) {
-			result.geoResourceId = obj.geoResourceId;
+		if (catalog.geoResourceId) {
+			result.geoResourceId = catalog.geoResourceId;
 
-			const geoResource = geoResources.find((georesource) => georesource.id === obj.geoResourceId);
+			const geoResource = geoResources.find((georesource) => georesource.id === catalog.geoResourceId);
 
 			if (geoResource) {
 				result.label = geoResource.label;
@@ -80,14 +84,14 @@ export class AdminPanel extends MvuElement {
 				result.label = ' ';
 			}
 		}
-		if (obj.label) {
-			result.label = obj.label;
+		if (catalog.label) {
+			result.label = catalog.label;
 		}
-		if (obj.children && obj.children.length > 0) {
-			if (obj.showChildren) {
-				result.showChildren = obj.showChildren;
+		if (catalog.children && catalog.children.length > 0) {
+			if (catalog.showChildren) {
+				result.showChildren = catalog.showChildren;
 			}
-			result.children = obj.children.map((child) => this._enrichWithGeoResource(child, geoResources));
+			result.children = catalog.children.map((child) => this._enrichWithGeoResource(child, geoResources));
 		}
 		return result;
 	};
@@ -171,64 +175,150 @@ export class AdminPanel extends MvuElement {
 		});
 	}
 
-	_mergeCatalogWithResources() {
-		if (this.#geoResources.length === 0 || this.#catalog.length === 0) {
-			return null;
-		}
-
-		const catalogWithResourceData = this._reduceData(this.#catalog, this._enrichWithGeoResource, this.#geoResources);
-		this.signal(Update_CatalogWithResourceData, catalogWithResourceData);
+	_mergeCatalogWithResources(catalog, geoResources) {
+		return this._reduceData(catalog, this._enrichWithGeoResource, geoResources);
 	}
 
-	async _updateCatalog(currentTopicId) {
+	async _loadTopics() {
+		await this._topicsService.init();
+
 		try {
-			const catalogFromService = await this._catalogService.byId(currentTopicId);
-			this.#catalog = this._addUniqueIds(catalogFromService);
-			this._mergeCatalogWithResources();
+			return await this._topicsService.all();
 		} catch (error) {
 			console.warn(error.message);
 		}
 	}
 
-	async loadGeoResources() {
+	async _loadCatalog(topicId) {
+		if (!topicId) {
+			return;
+		}
 		try {
-			this.#geoResources = await this._geoResourceService.init();
+			const catalogFromService = await this._catalogService.byId(topicId);
+			const catalog = this._addUniqueIds(catalogFromService);
+			return catalog;
+		} catch (error) {
+			console.warn(error.message);
+		}
+	}
+
+	async _loadGeoResources() {
+		try {
+			const geoResourcesFromService = await this._geoResourceService.init();
+			return geoResourcesFromService;
+		} catch (error) {
+			console.warn(error.message);
+		}
+	}
+
+	_updateCatalogWithResourceData(catalog, geoResources) {
+		if (!catalog || catalog.length === 0 || !geoResources || geoResources.length === 0) {
+			return [];
+		}
+		try {
+			const catalogWithResourceData = this._mergeCatalogWithResources(catalog, geoResources);
+			if (catalogWithResourceData) {
+				return catalogWithResourceData;
+			}
+			return [];
 		} catch (error) {
 			console.warn(error.message);
 		}
 	}
 
 	async onInitialize() {
-		await this._topicsService.init();
+		const selectedTopicId = this._configService.getValue('DEFAULT_TOPIC_ID', 'ba');
 
-		try {
-			this.#topics = await this._topicsService.all();
-		} catch (error) {
-			console.warn(error.message);
+		const topics = await this._loadTopics();
+		const catalog = await this._loadCatalog(selectedTopicId);
+		const geoResources = await this._loadGeoResources();
+		const catalogWithResourceData = this._updateCatalogWithResourceData(catalog, geoResources);
+
+		let selectedTopic;
+		if (selectedTopicId && topics && topics.length > 0) {
+			selectedTopic = topics.find((topic) => topic.id === selectedTopicId);
+			if (!selectedTopic) {
+				// eslint-disable-next-line no-console
+				console.log('missing selectedTopic');
+				return html`<div>Loading...</div>`;
+			}
 		}
+		// eslint-disable-next-line no-console
+		console.log('🚀 ~ AdminPanel ~ onInitialize ~ selectedTopic:', selectedTopic);
 
-		await this.loadGeoResources();
-
-		if (!this.#currentTopicId) {
-			this.#currentTopicId = this._configService.getValue('DEFAULT_TOPIC_ID', 'ba');
-			this._updateCatalog(this.#currentTopicId);
-		}
+		this.signal(Update_All, {
+			selectedTopicId,
+			selectedTopic,
+			topics,
+			catalog,
+			geoResources,
+			catalogWithResourceData
+		});
 	}
 
 	update(type, data, model) {
 		switch (type) {
-			case Update_CatalogWithResourceData:
-				return { ...model, catalogWithResourceData: [...data], dummy: !model.dummy };
+			case Update_Selected_Topic_Id:
+				// eslint-disable-next-line no-console
+				console.log('🚀 ~ AdminPanel ~ update ~ Update_Selected_Topic_Id ~ data:', data);
+				return { ...model, selectedTopicId: data };
 			case Update_Topics:
+				// eslint-disable-next-line no-console
+				console.log('🚀 ~ AdminPanel ~ update ~ Update_Topics ~ data:', data);
 				return { ...model, topics: [...data], dummy: !model.dummy };
+			case Update_Catalog:
+				// eslint-disable-next-line no-console
+				console.log('🚀 ~ AdminPanel ~ update ~ Update_Catalog ~ data:', data);
+				return { ...model, catalog: [...data], catalogWithResourceData: [], dummy: !model.dummy };
+			case Update_GeoResources:
+				// eslint-disable-next-line no-console
+				console.log('🚀 ~ AdminPanel ~ update ~ Update_Catalog ~ data:', data);
+				return { ...model, geoResources: [...data], catalogWithResourceData: [], dummy: !model.dummy };
+			case Update_CatalogWithResourceData:
+				// eslint-disable-next-line no-console
+				console.log('🚀 ~ AdminPanel ~ update ~ Update_CatalogWithResourceData ~ data:', data);
+				return { ...model, catalogWithResourceData: [...data], dummy: !model.dummy };
+			case Update_All:
+				// eslint-disable-next-line no-console
+				console.log('🚀 ~ AdminPanel ~ update ~ Update_All ~ data:', data);
+				return {
+					...model,
+					selectedTopicId: data.selectedTopicId,
+					selectedTopic: data.selectedTopic,
+					topics: [...data.topics],
+					catalog: { ...data.catalog },
+					geoResources: [...data.geoResources],
+					catalogWithResourceData: [...data.catalogWithResourceData],
+					dummy: !model.dummy
+				};
 		}
 	}
 
 	createView(model) {
-		const { catalogWithResourceData, dummy } = model;
+		const { selectedTopicId, selectedTopic, topics, geoResources, catalogWithResourceData, dummy } = model;
+
+		// if (!topics || topics.length === 0) {
+		// 	this._loadTopics();
+		// 	return html`<div>Loading Topics...</div>`;
+		// }
+
+		// if (!catalog || catalog.length === 0) {
+		// 	this._loadCatalog(selectedTopicId);
+		// 	return html`<div>Loading Catalog...</div>`;
+		// }
+
+		// if (!geoResources || geoResources.length === 0) {
+		// 	this._loadGeoResources();
+		// 	return html`<div>Loading GeoResources...</div>`;
+		// }
+
+		// if (!catalogWithResourceData || catalogWithResourceData.length === 0) {
+		// 	this._updateCatalogWithResourceData();
+		// 	// return html`<div>Updating Catalog with GeoResources ...</div>`;
+		// }
 
 		const _refreshLayers = async () => {
-			await this.loadGeoResources();
+			await this._loadGeoResources();
 		};
 
 		const findElementByUid = (uid, catalogEntry) => {
@@ -298,7 +388,7 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const createNewGeoResourceEntry = (newGeoresourceId) => {
-			const geoResource = this.#geoResources.find((georesource) => georesource.id === newGeoresourceId);
+			const geoResource = this.getModel().geoResources.find((georesource) => georesource.id === newGeoresourceId);
 			const newUid = self.crypto.randomUUID();
 			const newEntry = { uid: newUid, geoResourceId: newGeoresourceId, label: geoResource.label };
 			return { newEntry, newUid };
@@ -393,7 +483,7 @@ export class AdminPanel extends MvuElement {
 
 		const addGeoResourcePermanently = () => {
 			const catalog = this._reduceData(catalogWithResourceData, this._copyEverything);
-			this.#catalog = catalog;
+			this.signal(Update_Catalog, catalog);
 		};
 
 		const incrementStringDigit = (str) => {
@@ -422,37 +512,37 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const updateSelectedTopic = (topicId) => {
-			this.#currentTopicId = topicId;
-			// todo this._updateCatalog(this.#currentTopicId);
+			this.signal(Update_Selected_Topic_Id, topicId);
 		};
 
 		// todo
 		const deleteTopicLevelTree = (topic) => {
-			console.log('🚀 ~ AdminPanel ~ deleteTopicLevelTree ~ topic.id:', topic.id);
-			this.#topics = this.#topics.filter((aTopic) => aTopic.id !== topic.id);
+			const newTopics = topics.filter((aTopic) => aTopic.id !== topic.id);
 
-			this.#currentTopicId = this.#topics[0].id;
-			this._updateCatalog(this.#currentTopicId);
+			if (selectedTopicId !== topic.id) {
+				return;
+			}
+			this.signal(Update_Selected_Topic_Id, newTopics[0].id);
 
 			// eslint-disable-next-line promise/prefer-await-to-then
 			this._topicsService.delete(topic.id).then(
 				() => {
-					this.signal(Update_Topics, this.#topics);
+					this.signal(Update_Topics, newTopics);
 				},
 				(error) => {
-					// eslint-disable-next-line no-console
-					console.log('🚀 ~ AdminPanel ~ deleteTopicLevelTree ~ error:', error);
+					console.error('🚀 ~ AdminPanel ~ deleteTopicLevelTree ~ error:', error);
 				}
 			);
 		};
 
 		const toggleTopicLevelTreeDisabled = (topic) => {
-			const foundTopic = this.#topics.find((oneTopic) => oneTopic.id === topic.id);
+			const foundTopic = topics.find((oneTopic) => oneTopic.id === topic.id);
 
 			if (foundTopic) {
 				foundTopic._disabled = !foundTopic._disabled;
 
-				this.signal(Update_Topics, this.#topics);
+				// todo hä??
+				this.signal(Update_Topics, topics);
 			}
 		};
 
@@ -471,18 +561,17 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const resetCatalog = async () => {
-			const catalogWithResourceData = this._reduceData(this.#catalog, this._enrichWithGeoResource, this.#geoResources);
-			refreshCatalog(catalogWithResourceData);
+			const catalog = this._reduceData(catalogWithResourceData, this._enrichWithGeoResource);
+			refreshCatalog(catalog);
 		};
 
 		const refreshCatalog = async (newCatalogWithResourceData) => {
 			const catalog = this._reduceData(newCatalogWithResourceData, this._copyEverything);
-			this.#catalog = catalog;
 
 			this.signal(Update_CatalogWithResourceData, catalog);
 		};
 
-		if (this.#currentTopicId) {
+		if (selectedTopic && catalogWithResourceData) {
 			return html`
 				<style>
 					${css}
@@ -493,8 +582,8 @@ export class AdminPanel extends MvuElement {
 				<div class="container">
 					<div>
 						<ba-layer-tree
-							.topics="${this.#topics}"
-							.selectedTopic="${this.#currentTopicId}"
+							.selectedTopic="${selectedTopic}"
+							.topics="${topics}"
 							.updateSelectedTopic="${updateSelectedTopic}"
 							.catalogWithResourceData="${catalogWithResourceData}"
 							.addGeoResource="${addGeoResource}"
@@ -517,7 +606,7 @@ export class AdminPanel extends MvuElement {
 
 					<div>
 						<ba-layer-list
-							.geoResources=${this.#geoResources}
+							.geoResources=${geoResources}
 							.refreshLayers="${_refreshLayers}"
 							.removeEndLabels="${removeEndLabels}"
 							.addEndLabels="${addEndLabels}"
