@@ -67,6 +67,12 @@
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
+.time .icon {
+	mask: url('assets/time.svg');
+	-webkit-mask: url('assets/time.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
 .objectinfo .icon {
 	mask: url('assets/objektinfo.svg');
 	-webkit-mask: url('assets/objektinfo.svg');
@@ -157,6 +163,7 @@
 .is-portrait .separator,
 .is-portrait .routing,
 .is-portrait .objectinfo,
+.is-portrait .time,
 .is-portrait .theme-toggle {
 	display: none;
 }

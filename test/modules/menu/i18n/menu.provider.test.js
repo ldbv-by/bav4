@@ -44,6 +44,8 @@ describe('i18n for menu module', () => {
 		expect(map.menu_navigation_rail_search).toBe('Suchen');
 		expect(map.menu_navigation_rail_dark_theme).toBe('Dunkles Design');
 		expect(map.menu_navigation_rail_light_theme).toBe('Helles Design');
+		expect(map.menu_navigation_rail_time_travel).toBe('Zeitreise');
+		expect(map.menu_navigation_rail_time_travel_tooltip).toBe('Zeitreise öffnen');
 	});
 
 	it('provides translation for en', () => {
@@ -86,10 +88,12 @@ describe('i18n for menu module', () => {
 		expect(map.menu_navigation_rail_search).toBe('Search');
 		expect(map.menu_navigation_rail_dark_theme).toBe('Dark mode');
 		expect(map.menu_navigation_rail_light_theme).toBe('Light mode');
+		expect(map.menu_navigation_rail_time_travel).toBe('Time travel');
+		expect(map.menu_navigation_rail_time_travel_tooltip).toBe('Open time travel');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 37;
+		const expectedSize = 39;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

@@ -14,6 +14,8 @@ import { increaseZoom, decreaseZoom } from '../../../../store/position/position.
 import { fit } from '../../../../store/position/position.action';
 import { close } from '../../../../store/navigationRail/navigationRail.action';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { openBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
+import { close as closeMainMenu } from '../../../../store/mainMenu/mainMenu.action';
 
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_IsOpen_NavigationRail = 'update_NavigationRail';
@@ -114,6 +116,18 @@ export class NavigationRail extends MvuElement {
 			setTab(tabId);
 		};
 
+		const openTimeTravel = () => {
+			const getContent = () => {
+				return html`
+				</div>
+					<ba-time-travel></ba-time-travel>
+				<div>
+				`;
+			};
+			closeMainMenu();
+			openBottomSheet(getContent());
+		};
+
 		const getIsActive = (tabId) => {
 			return tabIndex === tabId && (isOpen || isPortrait) ? 'is-active' : '';
 		};
@@ -172,6 +186,15 @@ export class NavigationRail extends MvuElement {
 					>
 						<span class="icon "> </span>
 						<span class="text">${translate('menu_navigation_rail_object_info')}</span>
+					</button>
+					<button
+						title="${translate('menu_navigation_rail_time_travel_tooltip')}"
+						class=" time"
+						@click="${openTimeTravel}"
+						style="order: ${reverseTabIds.length + 1}"
+					>
+						<span class="icon "> </span>
+						<span class="text">${translate('menu_navigation_rail_time_travel')}</span>
 					</button>
 					<button @click="${increaseZoom}" class="zoom-in">
 						<span class="icon  "> </span>
