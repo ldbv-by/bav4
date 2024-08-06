@@ -1,3 +1,6 @@
+/**
+ * @module modules/admin/components/newTopic/NewTopicPanel
+ */
 // import { html } from 'lit-html';
 import { html } from '../../../../../node_modules/lit-html/lit-html';
 // import { $injector } from '../../../../injection';
