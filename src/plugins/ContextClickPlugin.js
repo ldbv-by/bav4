@@ -9,6 +9,7 @@ import { $injector } from '../injection';
 import { createUniqueId } from '../utils/numberUtils';
 import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
 import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
+import { MAIN_BOTTOM_SHEET_ID } from '../store/bottomSheet/bottomSheet.reducer';
 
 /**
  * Plugin for context-click related slice-of-state management.
@@ -23,7 +24,7 @@ export class ContextClickPlugin extends BaPlugin {
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 
 		const onBottomSheetChanged = (active) => {
-			if (!active) {
+			if (active !== MAIN_BOTTOM_SHEET_ID) {
 				bottomSheetOpenedFromHere = false;
 			}
 		};

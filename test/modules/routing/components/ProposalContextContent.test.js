@@ -238,13 +238,13 @@ describe('ProposalContextContent', () => {
 		it('requests the closing of bottomSheet and ContextMenu', async () => {
 			const element = await setup({
 				routing: { ...initialRoutingState, ...{ proposal: new EventLike({ coord: [42, 21], type: CoordinateProposalType.START }) } },
-				bottomSheet: { data: [], active: true },
+				bottomSheet: { data: [{ id: 'main', content: 'some' }], active: 'main' },
 				mapContextMenu: { active: true }
 			});
 
 			element.shadowRoot.querySelector('#start').click();
 
-			expect(store.getState().bottomSheet.active).toBeFalse();
+			expect(store.getState().bottomSheet.active).toBeNull();
 			expect(store.getState().mapContextMenu.active).toBeFalse();
 		});
 

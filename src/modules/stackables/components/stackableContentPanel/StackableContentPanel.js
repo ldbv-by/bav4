@@ -43,6 +43,10 @@ export class StackableContentPanel extends MvuElement {
 	}
 
 	update(type, data, model) {
+		const getMostVisibleBottomSheet = (data) => {
+			const mostVisibleBottomSheet = data.data.find((b) => b.content);
+			return mostVisibleBottomSheet ?? null;
+		};
 		switch (type) {
 			case Update_Notifications:
 				return {
@@ -51,7 +55,7 @@ export class StackableContentPanel extends MvuElement {
 					lastNotification: data
 				};
 			case Update_Bottom_Sheet:
-				return { ...model, bottomSheet: data.data[0]?.content ?? null };
+				return { ...model, bottomSheet: getMostVisibleBottomSheet(data) };
 			case Update_Remove_Notification:
 				return { ...model, notifications: model.notifications.filter((n) => n.id !== data.id) };
 			case Update_Autoclose_Time:
@@ -73,8 +77,8 @@ export class StackableContentPanel extends MvuElement {
 			></ba-notification-item>`;
 		};
 
-		const createBottomSheet = (content) => {
-			return content ? html`<ba-bottom-sheet .content=${bottomSheet}></ba-bottom-sheet>` : nothing;
+		const createBottomSheet = (bottomSheet) => {
+			return bottomSheet ? html`<ba-bottom-sheet .id=${bottomSheet.id} .content=${bottomSheet.content}></ba-bottom-sheet>` : nothing;
 		};
 
 		const isEmpty = notifications.length === 0 && bottomSheet == null;

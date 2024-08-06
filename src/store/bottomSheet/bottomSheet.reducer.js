@@ -13,9 +13,9 @@ export const initialState = {
 	 */
 	data: [],
 	/**
-	 * @property {boolean}
+	 * @property {string| null}
 	 */
-	active: false
+	active: null
 };
 
 const addOrReplaceContent = (state, payload) => {
@@ -30,19 +30,22 @@ const addOrReplaceContent = (state, payload) => {
 	return currentIndex === -1 ? add() : replace();
 };
 
-const isActive = (state, payload) => {
-	const mainBottomSheet = payload.id === MAIN_BOTTOM_SHEET_ID ? payload : state.data.find((b) => b.id === MAIN_BOTTOM_SHEET_ID);
-	return !!mainBottomSheet.content;
+const getActive = (bottomSheets) => {
+	const mostActiveBottomSheet = bottomSheets.find((b) => !!b.content);
+	console.log('mostActiveBottomSheet', mostActiveBottomSheet);
+	return mostActiveBottomSheet ? mostActiveBottomSheet.id : null;
 };
 
 export const bottomSheetReducer = (state = initialState, action) => {
 	const { type, payload } = action;
 	switch (type) {
 		case BOTTOM_SHEET_CHANGED: {
+			const changedBottomSheets = addOrReplaceContent(state, payload);
+			console.log(changedBottomSheets);
 			return {
 				...state,
-				data: addOrReplaceContent(state, payload),
-				active: isActive(state, payload)
+				data: changedBottomSheets,
+				active: getActive(changedBottomSheets)
 			};
 		}
 	}

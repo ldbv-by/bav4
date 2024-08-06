@@ -9,6 +9,7 @@ import closeIcon from '../assets/x-square.svg';
 import { classMap } from 'lit-html/directives/class-map.js';
 
 const Update = 'update';
+const Update_Id = 'update_id';
 const Update_Main_Menu = 'update_main_menu';
 const Update_Media = 'update_media';
 const Update_IsOpen_NavigationRail = 'update_isOpen_NavigationRail';
@@ -21,6 +22,7 @@ const Update_IsOpen_NavigationRail = 'update_isOpen_NavigationRail';
 export class BottomSheet extends MvuElement {
 	constructor() {
 		super({
+			id: null,
 			content: null,
 			isOpen: false,
 			isOpenNavigationRail: false,
@@ -55,6 +57,12 @@ export class BottomSheet extends MvuElement {
 					...model,
 					content: data
 				};
+			case Update_Id:
+				return {
+					...model,
+					id: data
+				};
+
 			case Update_Media:
 				return {
 					...model,
@@ -69,13 +77,13 @@ export class BottomSheet extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { content, isOpen, isOpenNavigationRail, isPortrait } = model;
+		const { id, content, isOpen, isOpenNavigationRail, isPortrait } = model;
 
 		const onDismiss = () => {
 			const elementModal = this.shadowRoot.querySelector('.bottom-sheet');
 			elementModal.classList.add('fade-out');
 			elementModal.addEventListener('animationend', () => {
-				closeBottomSheet();
+				closeBottomSheet(id);
 			});
 		};
 
@@ -111,5 +119,9 @@ export class BottomSheet extends MvuElement {
 
 	set content(value) {
 		this.signal(Update, value);
+	}
+
+	set id(value) {
+		this.signal(Update_Id, value);
 	}
 }

@@ -66,12 +66,12 @@ describe('ContextClickPlugin', () => {
 					setContextClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 
 					expect(store.getState().highlight.features).toHaveSize(1);
-					expect(store.getState().bottomSheet.active).toBeTrue();
+					expect(store.getState().bottomSheet.active).toBe('main');
 
 					setMoveStart();
 
 					expect(store.getState().highlight.features).toHaveSize(0);
-					expect(store.getState().bottomSheet.active).toBeFalse();
+					expect(store.getState().bottomSheet.active).toBeNull();
 				});
 			});
 
@@ -83,39 +83,39 @@ describe('ContextClickPlugin', () => {
 					setContextClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 
 					expect(store.getState().highlight.features).toHaveSize(1);
-					expect(store.getState().bottomSheet.active).toBeTrue();
+					expect(store.getState().bottomSheet.active).toBe('main');
 
 					setClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 
 					expect(store.getState().highlight.features).toHaveSize(0);
-					expect(store.getState().bottomSheet.active).toBeFalse();
+					expect(store.getState().bottomSheet.active).toBeNull();
 				});
 			});
 		});
 		describe('when context-click state does NOT change', () => {
 			describe('when move-start state changed', () => {
 				it('does nothing', () => {
-					const store = setup({ bottomSheet: { active: true } });
+					const store = setup({ bottomSheet: { active: 'main' } });
 					new ContextClickPlugin().register(store);
 
-					expect(store.getState().bottomSheet.active).toBeTrue();
+					expect(store.getState().bottomSheet.active).toBe('main');
 
 					setMoveStart();
 
-					expect(store.getState().bottomSheet.active).toBeTrue();
+					expect(store.getState().bottomSheet.active).toBe('main');
 				});
 			});
 
 			describe('when pointer-click state changed', () => {
 				it('does nothing', () => {
-					const store = setup({ bottomSheet: { active: true } });
+					const store = setup({ bottomSheet: { active: 'main' } });
 					new ContextClickPlugin().register(store);
 
-					expect(store.getState().bottomSheet.active).toBeTrue();
+					expect(store.getState().bottomSheet.active).toBe('main');
 
 					setClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 
-					expect(store.getState().bottomSheet.active).toBeTrue();
+					expect(store.getState().bottomSheet.active).toBe('main');
 				});
 			});
 		});

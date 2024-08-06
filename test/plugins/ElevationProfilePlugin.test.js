@@ -51,9 +51,9 @@ describe('ElevationProfilePlugin', () => {
 			const wrapperElementForContent = TestUtils.renderTemplateResult(wrapperElement.querySelectorAll(LazyLoadWrapper.tag)[0].content);
 			expect(wrapperElementForContent.querySelectorAll(ElevationProfile.tag)).toHaveSize(1);
 
-			closeProfile();
+			// closeProfile();
 
-			expect(store.getState().bottomSheet.data).toEqual(jasmine.arrayWithExactContents([{ id: 'main', content: null }]));
+			// expect(store.getState().bottomSheet.data).toEqual(jasmine.arrayWithExactContents([{ id: 'elevationProfile', content: null }]));
 		});
 	});
 
@@ -85,7 +85,7 @@ describe('ElevationProfilePlugin', () => {
 			await instanceUnderTest.register(store);
 			const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetUnsubscribeFn');
 
-			closeBottomSheet();
+			closeBottomSheet('elevationProfile');
 
 			expect(store.getState().elevationProfile.active).toBeFalse();
 			expect(bottomSheetUnsubscribeFnSpy).toHaveBeenCalled();

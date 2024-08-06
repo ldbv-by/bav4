@@ -105,7 +105,7 @@ describe('StackableContentPanel', () => {
 			openBottomSheet('fooBar');
 
 			expect(element._model.notifications.length).toBe(1);
-			expect(element._model.bottomSheet).toBe('fooBar');
+			expect(element._model.bottomSheet).toEqual(jasmine.objectContaining({ id: 'main', content: 'fooBar' }));
 
 			const notificationElements = element.shadowRoot.querySelectorAll('ba-notification-item');
 			const bottomSheetElements = element.shadowRoot.querySelectorAll('ba-bottom-sheet');
@@ -125,14 +125,14 @@ describe('StackableContentPanel', () => {
 			const bottomSheetElements1 = element.shadowRoot.querySelectorAll('ba-bottom-sheet');
 			expect(bottomSheetElements1).toHaveSize(1);
 			expect(bottomSheetElements1[0].content).toBe('fooBar');
-			expect(element.getModel().bottomSheet).toBe('fooBar');
+			expect(element.getModel().bottomSheet).toEqual(jasmine.objectContaining({ id: 'main', content: 'fooBar' }));
 
 			openBottomSheet('fooBarBaz');
 
 			const bottomSheetElements2 = element.shadowRoot.querySelectorAll('ba-bottom-sheet');
 			expect(bottomSheetElements2).toHaveSize(1);
 			expect(bottomSheetElements2[0].content).toBe('fooBarBaz');
-			expect(element.getModel().bottomSheet).toBe('fooBarBaz');
+			expect(element.getModel().bottomSheet).toEqual(jasmine.objectContaining({ id: 'main', content: 'fooBarBaz' }));
 		});
 
 		it('adds a NotificationItem only once, when panel is rerendered', async () => {

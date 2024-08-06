@@ -12,7 +12,7 @@ describe('bottomSheetReducer', () => {
 	it('initialize the store with default values', () => {
 		const store = setup();
 		expect(store.getState().bottomSheet.data).toEqual([]);
-		expect(store.getState().bottomSheet.active).toBeFalse();
+		expect(store.getState().bottomSheet.active).toBeNull();
 	});
 
 	it('updates the main bottom sheet properties', () => {
@@ -21,12 +21,12 @@ describe('bottomSheetReducer', () => {
 		openBottomSheet('content');
 
 		expect(store.getState().bottomSheet.data).toEqual(jasmine.arrayWithExactContents([{ id: 'main', content: 'content' }]));
-		expect(store.getState().bottomSheet.active).toBeTrue();
+		expect(store.getState().bottomSheet.active).toBe('main');
 
 		closeBottomSheet();
 
 		expect(store.getState().bottomSheet.data).toEqual(jasmine.arrayWithExactContents([{ id: 'main', content: null }]));
-		expect(store.getState().bottomSheet.active).toBeFalse();
+		expect(store.getState().bottomSheet.active).toBeNull();
 	});
 
 	it('updates the other bottom sheet properties', () => {
@@ -35,11 +35,11 @@ describe('bottomSheetReducer', () => {
 		openBottomSheet('content');
 
 		expect(store.getState().bottomSheet.data).toEqual(jasmine.arrayWithExactContents([{ id: 'main', content: 'content' }]));
-		expect(store.getState().bottomSheet.active).toBeTrue();
+		expect(store.getState().bottomSheet.active).toBe('main');
 
 		openBottomSheet('content', 'some');
 
-		expect(store.getState().bottomSheet.active).toBeTrue();
+		expect(store.getState().bottomSheet.active).toBe('some');
 		expect(store.getState().bottomSheet.data).toEqual(
 			jasmine.arrayWithExactContents([
 				{ id: 'some', content: 'content' },
@@ -59,7 +59,7 @@ describe('bottomSheetReducer', () => {
 				{ id: 'main', content: null }
 			])
 		);
-		expect(store.getState().bottomSheet.active).toBeFalse();
+		expect(store.getState().bottomSheet.active).toBeNull();
 
 		closeBottomSheet('unknown');
 
@@ -69,6 +69,6 @@ describe('bottomSheetReducer', () => {
 				{ id: 'main', content: null }
 			])
 		);
-		expect(store.getState().bottomSheet.active).toBeFalse();
+		expect(store.getState().bottomSheet.active).toBeNull();
 	});
 });
