@@ -275,6 +275,9 @@ export class TimeTravel extends MvuElement {
 		const getIcon = () => {
 			return this.#isOpen ? arrowDownSvg : arrowUpSvg;
 		};
+		const getThumbWidth = () => {
+			return 100 / (years.length - 1);
+		};
 
 		const classContainer = {
 			'is-portrait': isPortrait,
@@ -287,6 +290,11 @@ export class TimeTravel extends MvuElement {
 
 		const translate = (key) => this.#translationService.translate(key);
 		return html`
+			<style>
+				input {
+					--thumb-width: ${getThumbWidth()}%;
+				}
+			</style>
 			<style>
 				${css}
 			</style>

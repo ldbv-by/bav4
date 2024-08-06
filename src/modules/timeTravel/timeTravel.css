@@ -22,10 +22,9 @@
 	color: var(--secondary-bg-color);
 }
 .item {
-	/* border-left: 1px solid var(--tertiary-bg-color); */
 	border-top: 1px solid var(--tertiary-bg-color);
 	display: inline-block;
-	width: 1em;
+	width: 100%;
 	background: var(--header-background-color);
 }
 .active {
@@ -119,13 +118,13 @@ input[type='range']::-moz-range-thumb {
 	background: var(--split-one-color);
 	border-radius: 0;
 	height: 2rem;
-	width: 0.54%;
+	width: var(--thumb-width);
 	border: 1px solid var(--text1);
 }
 input[type='range']::-webkit-slider-thumb {
 	border-radius: 0;
 	height: 2.5rem;
-	width: 0.54%;
+	width: var(--thumb-width);
 	background: var(--split-one-color);
 	border: 1px solid var(--text1);
 }
