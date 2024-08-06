@@ -259,6 +259,8 @@ export class AdminPanel extends MvuElement {
 	update(type, data, model) {
 		const selectedTopicId = model.selectedTopicId;
 		const topics = model.topics;
+		let newCatalogWithResourceData = [];
+
 		switch (type) {
 			case Update_Selected_Topic_Id:
 				// eslint-disable-next-line no-console
@@ -287,11 +289,18 @@ export class AdminPanel extends MvuElement {
 			case Update_Catalog:
 				// eslint-disable-next-line no-console
 				console.log('🚀 ~ AdminPanel ~ update ~ Update_Catalog ~ data:', data);
-				return { ...model, catalog: [...data], catalogWithResourceData: [], dummy: !model.dummy };
+
+				newCatalogWithResourceData = this._updateCatalogWithResourceData(data, model.geoResources);
+
+				return { ...model, catalog: [...data], catalogWithResourceData: newCatalogWithResourceData, dummy: !model.dummy };
 			case Update_GeoResources:
 				// eslint-disable-next-line no-console
 				console.log('🚀 ~ AdminPanel ~ update ~ Update_Catalog ~ data:', data);
-				return { ...model, geoResources: [...data], catalogWithResourceData: [], dummy: !model.dummy };
+				// todo
+
+				newCatalogWithResourceData = this._updateCatalogWithResourceData(model.catalog, data);
+
+				return { ...model, geoResources: [...data], catalogWithResourceData: newCatalogWithResourceData, dummy: !model.dummy };
 			case Update_CatalogWithResourceData:
 				// eslint-disable-next-line no-console
 				console.log('🚀 ~ AdminPanel ~ update ~ Update_CatalogWithResourceData ~ data:', data);

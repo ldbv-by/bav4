@@ -471,7 +471,6 @@ export class LayerTree extends MvuElement {
 		}
 
 		const handleTopicChange = (event, selectNewTopic) => {
-			// console.log('🚀 ~ LayerTree ~ handleTopicChange ~ selectedTopic:', selectNewTopic);
 			toggleDropdownVisibility(event);
 
 			this.signal(Update_Selected_Topic, selectNewTopic);
@@ -553,12 +552,12 @@ export class LayerTree extends MvuElement {
 		// <button @click="${handleDisableTopicLevelTreeClick}">${deactivateButtonText}</button>
 		// <button @click="${handleDeleteTopicLevelTreeClick}">Ebenenbaum löschen</button>
 		// console.log('🚀 ~ LayerTree ~ createView ~ selectedTopic.label:', selectedTopic.label);
-		// eslint-disable-next-line no-console
-		console.log('🚀 ~ LayerTree ~ createView ~ selectedTopic:', selectedTopic);
-		// eslint-disable-next-line no-console
-		console.log('🚀 ~ LayerTree ~ createView ~ topics:', topics);
-		// eslint-disable-next-line no-console
-		console.log('🚀 ~ LayerTree ~ createView ~ catalogWithResourceData:', catalogWithResourceData);
+		// // eslint-disable-next-line no-console
+		// console.log('🚀 ~ LayerTree ~ createView ~ selectedTopic:', selectedTopic);
+		// // eslint-disable-next-line no-console
+		// console.log('🚀 ~ LayerTree ~ createView ~ topics:', topics);
+		// // eslint-disable-next-line no-console
+		// console.log('🚀 ~ LayerTree ~ createView ~ catalogWithResourceData:', catalogWithResourceData);
 		if (selectedTopic && topics && catalogWithResourceData) {
 			const sperrText = selectedTopic._disabled ? ' -- deaktiviert -- ' : '';
 			return html`
@@ -600,7 +599,6 @@ export class LayerTree extends MvuElement {
 							(item) => item.uid + item.label,
 							(catalogEntry) => html`<li class="ba-list-item">${renderEntry(catalogEntry, 1)}</li>`
 						)}
-							console.log("🚀 ~ LayerTree ~ createView ~ catalogWithResourceData:", catalogWithResourceData);
 					</ul>
 				</div>
 			`;
