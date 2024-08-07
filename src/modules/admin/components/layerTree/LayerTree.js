@@ -105,54 +105,38 @@ export class LayerTree extends MvuElement {
 	}
 
 	update(type, data, model) {
-		// model.topics.forEach((topic) => {
-		// 	console.log(topic.label);
-		// });
-
 		switch (type) {
 			case Update_Selected_Topic:
-				// // eslint-disable-next-line no-console
-				// console.log('🚀 ~ LayerTree ~ update ~ Update_Selected_Topic ~ data:', data);
 				return { ...model, selectedTopic: data };
 			case Update_Topics:
-				// // eslint-disable-next-line no-console
-				// console.log('🚀 ~ LayerTree ~ update ~ Update_Topics ~ data:', data);
 				return { ...model, topics: [...data] }; //, dummy: !this.dummy
 			case Update_CatalogWithResourceData:
-				// // eslint-disable-next-line no-console
-				// console.log('🚀 ~ LayerTree ~ update ~ Update_CatalogWithResourceData ~ data:', data);
 				return { ...model, catalogWithResourceData: data };
 			case Update_Layers:
-				// // eslint-disable-next-line no-console
-				// console.log('🚀 ~ LayerTree ~ update ~ Update_Layers ~ data:', data);
 				return { ...model, layers: data };
 			case Update_Dummy:
-				// // eslint-disable-next-line no-console
-				// console.log('🚀 ~ LayerTree ~ update ~ Update_Dummy ~ data:', data);
 				return { ...model, dummy: data };
 			case Update_Edit_Mode:
-				// // eslint-disable-next-line no-console
-				// console.log('🚀 ~ LayerTree ~ update ~ Update_Edit_Mode ~ data:', data);
 				return { ...model, editMode: data };
 		}
 	}
 
 	createView(model) {
 		const { selectedTopic, topics, catalogWithResourceData, editMode } = model;
-		// eslint-disable-next-line no-console
-		console.groupCollapsed();
-		// eslint-disable-next-line no-console
-		console.log('🚀 ~ LayerTree ~ createView ~ selectedTopic:', selectedTopic);
-		// eslint-disable-next-line no-console
-		console.log('🚀 ~ LayerTree ~ createView ~ topics:', topics);
-		// eslint-disable-next-line no-console
-		console.log('🚀 ~ LayerTree ~ createView ~ catalogWithResourceData:', catalogWithResourceData);
 		// // eslint-disable-next-line no-console
-		// console.log('🚀 ~ LayerTree ~ createView ~ currentGeoResourceId:', currentGeoResourceId);
-		// eslint-disable-next-line no-console
-		console.log('🚀 ~ LayerTree ~ createView ~ editMode:', editMode);
-		// eslint-disable-next-line no-console
-		console.groupEnd();
+		// console.groupCollapsed();
+		// // eslint-disable-next-line no-console
+		// console.log('🚀 ~ LayerTree ~ createView ~ selectedTopic:', selectedTopic);
+		// // eslint-disable-next-line no-console
+		// console.log('🚀 ~ LayerTree ~ createView ~ topics:', topics);
+		// // eslint-disable-next-line no-console
+		// console.log('🚀 ~ LayerTree ~ createView ~ catalogWithResourceData:', catalogWithResourceData);
+		// // // eslint-disable-next-line no-console
+		// // console.log('🚀 ~ LayerTree ~ createView ~ currentGeoResourceId:', currentGeoResourceId);
+		// // eslint-disable-next-line no-console
+		// console.log('🚀 ~ LayerTree ~ createView ~ editMode:', editMode);
+		// // eslint-disable-next-line no-console
+		// console.groupEnd();
 		if (
 			!selectedTopic ||
 			catalogWithResourceData === null ||
@@ -160,8 +144,6 @@ export class LayerTree extends MvuElement {
 			topics === null ||
 			(topics && topics.length === 0)
 		) {
-			// eslint-disable-next-line no-console
-			console.log('🚀 ~ return nothing - top ~ 🚀');
 			return nothing;
 		}
 
@@ -479,18 +461,13 @@ export class LayerTree extends MvuElement {
 
 		const updateTopic = (topic) => {
 			const newTopic = topic.clone();
-			console.log('🚀 ~ LayerTree ~ updateTopic ~ topic:', newTopic);
-			console.log('🚀 ~ LayerTree ~ updateTopic ~ topic.label:', newTopic.label);
 
 			// create a copy of the topics array
 			const newTopicsArray = [...topics];
 
 			// find the topic in the topics array and update it
 			const index = newTopicsArray.findIndex((t) => t.id === newTopic.id);
-			// console.log('🚀 ~ LayerTree ~ updateTopic ~ index:', index);
 			newTopicsArray[index] = newTopic;
-			console.log('🚀 ~ LayerTree ~ updateTopic ~ newTopicsArray[index]:', newTopicsArray[index]);
-			console.log('🚀 ~ LayerTree ~ updateTopic ~ newTopicsArray[index].label:', newTopicsArray[index].label);
 
 			this._updateSelectedTopic(newTopic, newTopicsArray);
 		};
@@ -506,11 +483,9 @@ export class LayerTree extends MvuElement {
 
 		const handleTopicSelectClick = (event) => {
 			const dropdownItems = event.target.nextElementSibling;
-			// console.log('🚀 ~ LayerTree ~ handleSelectTopicClick ~ dropdownItems:', dropdownItems);
 
 			// If the dropdownItems element exists, toggle the 'hidden' class
 			if (dropdownItems) {
-				// console.log('🚀 ~ LayerTree ~ handleTopicSelectClick ~ dropdownItems.classList:', dropdownItems.classList);
 				dropdownItems.classList.toggle('hidden');
 			}
 		};
@@ -549,15 +524,6 @@ export class LayerTree extends MvuElement {
 			`;
 		};
 
-		// <button @click="${handleDisableTopicLevelTreeClick}">${deactivateButtonText}</button>
-		// <button @click="${handleDeleteTopicLevelTreeClick}">Ebenenbaum löschen</button>
-		// console.log('🚀 ~ LayerTree ~ createView ~ selectedTopic.label:', selectedTopic.label);
-		// // eslint-disable-next-line no-console
-		// console.log('🚀 ~ LayerTree ~ createView ~ selectedTopic:', selectedTopic);
-		// // eslint-disable-next-line no-console
-		// console.log('🚀 ~ LayerTree ~ createView ~ topics:', topics);
-		// // eslint-disable-next-line no-console
-		// console.log('🚀 ~ LayerTree ~ createView ~ catalogWithResourceData:', catalogWithResourceData);
 		if (selectedTopic && topics && catalogWithResourceData) {
 			const sperrText = selectedTopic._disabled ? ' -- deaktiviert -- ' : '';
 			return html`
@@ -604,8 +570,6 @@ export class LayerTree extends MvuElement {
 			`;
 		}
 
-		// eslint-disable-next-line no-console
-		console.log('🚀 ~ return nothing - bottom ~ 🚀');
 		return nothing;
 	}
 

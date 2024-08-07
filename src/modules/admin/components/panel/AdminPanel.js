@@ -260,12 +260,10 @@ export class AdminPanel extends MvuElement {
 		const selectedTopicId = model.selectedTopicId;
 		const topics = model.topics;
 		let newCatalogWithResourceData = [];
+		let newModel = {};
 
 		switch (type) {
 			case Update_Selected_Topic_Id:
-				// eslint-disable-next-line no-console
-				console.log('🚀 ~ AdminPanel ~ update ~ Update_Selected_Topic_Id ~ data:', data);
-
 				if (topics && topics.length > 0) {
 					const selectedTopic = this.getTopic(data, topics);
 
@@ -274,38 +272,22 @@ export class AdminPanel extends MvuElement {
 				return { ...model, selectedTopicId, selectedTopic: null };
 
 			case Update_Topics:
-				// eslint-disable-next-line no-console
-				console.log('🚀 ~ AdminPanel ~ update ~ Update_Topics ~ data:', data);
-
 				// eslint-disable-next-line no-case-declarations
-				const newModel = { ...model, selectedTopicId: data.newTopic.id, selectedTopic: data.newTopic, topics: data.newTopicsArray };
+				newModel = { ...model, selectedTopicId: data.newTopic.id, selectedTopic: data.newTopic, topics: data.newTopicsArray };
 				return newModel;
 
 			case Update_Catalog:
-				// eslint-disable-next-line no-console
-				console.log('🚀 ~ AdminPanel ~ update ~ Update_Catalog ~ data:', data);
-
 				newCatalogWithResourceData = this._updateCatalogWithResourceData(data, model.geoResources);
-
 				return { ...model, catalog: [...data], catalogWithResourceData: newCatalogWithResourceData, dummy: !model.dummy };
 
 			case Update_GeoResources:
-				// eslint-disable-next-line no-console
-				console.log('🚀 ~ AdminPanel ~ update ~ Update_Catalog ~ data:', data);
-				// todo
-
 				newCatalogWithResourceData = this._updateCatalogWithResourceData(model.catalog, data);
-
 				return { ...model, geoResources: [...data], catalogWithResourceData: newCatalogWithResourceData, dummy: !model.dummy };
 
 			case Update_CatalogWithResourceData:
-				// eslint-disable-next-line no-console
-				console.log('🚀 ~ AdminPanel ~ update ~ Update_CatalogWithResourceData ~ data:', data);
 				return { ...model, catalogWithResourceData: [...data], dummy: !model.dummy };
 
 			case Update_All:
-				// eslint-disable-next-line no-console
-				console.log('🚀 ~ AdminPanel ~ update ~ Update_All ~ data:', data);
 				return {
 					...model,
 					selectedTopicId: data.selectedTopicId,
@@ -321,27 +303,6 @@ export class AdminPanel extends MvuElement {
 
 	createView(model) {
 		const { selectedTopicId, selectedTopic, topics, geoResources, catalogWithResourceData, dummy } = model;
-		console.log('🚀 ~ AdminPanel ~ createView ~ topics:', topics);
-
-		// if (!topics || topics.length === 0) {
-		// 	this._loadTopics();
-		// 	return html`<div>Loading Topics...</div>`;
-		// }
-
-		// if (!catalog || catalog.length === 0) {
-		// 	this._loadCatalog(selectedTopicId);
-		// 	return html`<div>Loading Catalog...</div>`;
-		// }
-
-		// if (!geoResources || geoResources.length === 0) {
-		// 	this._loadGeoResources();
-		// 	return html`<div>Loading GeoResources...</div>`;
-		// }
-
-		// if (!catalogWithResourceData || catalogWithResourceData.length === 0) {
-		// 	this._updateCatalogWithResourceData();
-		// 	// return html`<div>Updating Catalog with GeoResources ...</div>`;
-		// }
 
 		const _refreshLayers = async () => {
 			await this._loadGeoResources();

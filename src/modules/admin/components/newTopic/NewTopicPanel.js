@@ -24,7 +24,6 @@ const Update_Description = 'update_description';
  */
 export class NewTopicPanel extends MvuElement {
 	constructor() {
-		// console.log('🚀 ~ NewTopicPanel ~ constructor ');
 		super({
 			topic: null
 		});
@@ -44,10 +43,6 @@ export class NewTopicPanel extends MvuElement {
 		this._updateTopic = (topic) => {};
 	}
 
-	onInitialize() {
-		// console.log('🚀 ~ NewTopicPanel ~ onInitialize() ');
-	}
-
 	update(type, data, model) {
 		const newTopic = model.topic.clone();
 		const newTopicFromData = data.clone();
@@ -65,12 +60,6 @@ export class NewTopicPanel extends MvuElement {
 
 	createView(model) {
 		const { topic } = model;
-		console.log('🚀 ~ NewTopicPanel ~ createView ~ topic:', topic);
-
-		// this._updateTopic(topic);
-		// console.log('🚀 ~ NewTopicPanel ~ createView ~ nach this._updateTopic(topic)');
-
-		// const translate = (key) => this._translationService.translate(key);
 
 		const onDescriptionChange = (event) => {
 			const { value } = event.target;
@@ -80,16 +69,11 @@ export class NewTopicPanel extends MvuElement {
 
 		const onLabelChange = (event) => {
 			const { value } = event.target;
-			// console.log('🚀 ~ NewTopicPanel ~ onLabelChange ~ event.target:', event.target);
-
 			const sanitized = this._securityService.sanitizeHtml(value);
-			// console.log('🚀 ~ NewTopicPanel ~ onLabelChange ~ sanitized:', sanitized);
 			this.signal(Update_Label, sanitized);
 		};
 
 		const onSubmit = () => {
-			// console.log('🚀 ~ NewTopicPanel ~ onSubmit ~ topic:', topic);
-			// console.log('🚀 ~ NewTopicPanel ~ onSubmit ~ onSubmit()');
 			this._updateTopic(topic);
 			closeModal();
 		};
@@ -132,12 +116,10 @@ export class NewTopicPanel extends MvuElement {
 	 * be edited.
 	 */
 	set topic(value) {
-		console.log('🚀 ~ NewTopicPanel ~ set topic ~ set topic(value):', value);
 		this.signal(Update_Topic, value);
 	}
 
 	get topic() {
-		// console.log('🚀 ~ NewTopicPanel ~ get topic ~ get topic():');
 		return this.getModel().topic;
 	}
 
