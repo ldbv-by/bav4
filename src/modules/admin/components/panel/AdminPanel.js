@@ -277,14 +277,9 @@ export class AdminPanel extends MvuElement {
 				// eslint-disable-next-line no-console
 				console.log('🚀 ~ AdminPanel ~ update ~ Update_Topics ~ data:', data);
 
-				if (selectedTopicId) {
-					const selectedTopic = this.getTopic(selectedTopicId, data);
-
-					if (selectedTopic) {
-						return { ...model, topics: data, selectedTopicId, selectedTopic };
-					}
-				}
-				return { ...model, topics: data, selectedTopicId: data[0].id, selectedTopic: data[0] };
+				// eslint-disable-next-line no-case-declarations
+				const newModel = { ...model, selectedTopicId: data.newTopic.id, selectedTopic: data.newTopic, topics: data.newTopicsArray };
+				return newModel;
 
 			case Update_Catalog:
 				// eslint-disable-next-line no-console
@@ -293,6 +288,7 @@ export class AdminPanel extends MvuElement {
 				newCatalogWithResourceData = this._updateCatalogWithResourceData(data, model.geoResources);
 
 				return { ...model, catalog: [...data], catalogWithResourceData: newCatalogWithResourceData, dummy: !model.dummy };
+
 			case Update_GeoResources:
 				// eslint-disable-next-line no-console
 				console.log('🚀 ~ AdminPanel ~ update ~ Update_Catalog ~ data:', data);
@@ -301,10 +297,12 @@ export class AdminPanel extends MvuElement {
 				newCatalogWithResourceData = this._updateCatalogWithResourceData(model.catalog, data);
 
 				return { ...model, geoResources: [...data], catalogWithResourceData: newCatalogWithResourceData, dummy: !model.dummy };
+
 			case Update_CatalogWithResourceData:
 				// eslint-disable-next-line no-console
 				console.log('🚀 ~ AdminPanel ~ update ~ Update_CatalogWithResourceData ~ data:', data);
 				return { ...model, catalogWithResourceData: [...data], dummy: !model.dummy };
+
 			case Update_All:
 				// eslint-disable-next-line no-console
 				console.log('🚀 ~ AdminPanel ~ update ~ Update_All ~ data:', data);
@@ -323,6 +321,7 @@ export class AdminPanel extends MvuElement {
 
 	createView(model) {
 		const { selectedTopicId, selectedTopic, topics, geoResources, catalogWithResourceData, dummy } = model;
+		console.log('🚀 ~ AdminPanel ~ createView ~ topics:', topics);
 
 		// if (!topics || topics.length === 0) {
 		// 	this._loadTopics();
@@ -538,8 +537,8 @@ export class AdminPanel extends MvuElement {
 			this.signal(Update_CatalogWithResourceData, catalogWithResourceData);
 		};
 
-		const updateSelectedTopic = (topicId) => {
-			this.signal(Update_Selected_Topic_Id, topicId);
+		const updateSelectedTopic = (newTopic, newTopicsArray) => {
+			this.signal(Update_Topics, { newTopic, newTopicsArray });
 		};
 
 		// todo

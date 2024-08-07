@@ -71,7 +71,7 @@ export class LayerTree extends MvuElement {
 			return '';
 		};
 		// eslint-disable-next-line no-unused-vars
-		this._updateSelectedTopic = (topic) => {};
+		this._updateSelectedTopic = (topic, topics) => {};
 		// eslint-disable-next-line no-unused-vars
 		this._removeEntry = (uid) => {};
 		// eslint-disable-next-line no-unused-vars
@@ -478,21 +478,21 @@ export class LayerTree extends MvuElement {
 		};
 
 		const updateTopic = (topic) => {
-			// console.log('🚀 ~ LayerTree ~ updateTopic ~ topic:', topic);
+			const newTopic = topic.clone();
+			console.log('🚀 ~ LayerTree ~ updateTopic ~ topic:', newTopic);
+			console.log('🚀 ~ LayerTree ~ updateTopic ~ topic.label:', newTopic.label);
 
 			// create a copy of the topics array
 			const newTopicsArray = [...topics];
 
 			// find the topic in the topics array and update it
-			const index = newTopicsArray.findIndex((t) => t.id === topic.id);
+			const index = newTopicsArray.findIndex((t) => t.id === newTopic.id);
 			// console.log('🚀 ~ LayerTree ~ updateTopic ~ index:', index);
-			newTopicsArray[index] = topic;
+			newTopicsArray[index] = newTopic;
+			console.log('🚀 ~ LayerTree ~ updateTopic ~ newTopicsArray[index]:', newTopicsArray[index]);
+			console.log('🚀 ~ LayerTree ~ updateTopic ~ newTopicsArray[index].label:', newTopicsArray[index].label);
 
-			// todo: check if this is correct
-			// this.#currentTopic = topic;
-			this._updateSelectedTopic(topic.id);
-
-			this.signal(Update_Topics, [...newTopicsArray]);
+			this._updateSelectedTopic(newTopic, newTopicsArray);
 		};
 
 		const handleEditTopic = (event, selectedTopic) => {

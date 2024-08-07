@@ -26,11 +26,7 @@ export class NewTopicPanel extends MvuElement {
 	constructor() {
 		// console.log('🚀 ~ NewTopicPanel ~ constructor ');
 		super({
-			topic: {
-				id: null,
-				label: null,
-				description: null
-			}
+			topic: null
 		});
 
 		const {
@@ -53,24 +49,23 @@ export class NewTopicPanel extends MvuElement {
 	}
 
 	update(type, data, model) {
-		// console.log('🚀 ~ NewTopicPanel ~ update ~ data:', data);
-		// console.log('🚀 ~ NewTopicPanel ~ update ~ model:', model);
+		const newTopic = model.topic.clone();
+		const newTopicFromData = data.clone();
 		switch (type) {
 			case Update_Topic:
-				return { ...model, topic: data };
+				return { ...model, topic: newTopicFromData };
 			case Update_Label:
-				return { ...model, topic: { ...model.topic, label: data } };
-			// // return { ...model, topic: { ...model.topic, label: data } };
-			// model.topic.label = data;
-			// return { ...model };
+				newTopic.label = data;
+				return { ...model, topic: newTopic };
 			case Update_Description:
-				return { ...model, topic: { ...model.topic, description: data } };
+				newTopic.description = data;
+				return { ...model, topic: newTopic };
 		}
 	}
 
 	createView(model) {
 		const { topic } = model;
-		// console.log('🚀 ~ NewTopicPanel ~ createView ~ topic:', topic);
+		console.log('🚀 ~ NewTopicPanel ~ createView ~ topic:', topic);
 
 		// this._updateTopic(topic);
 		// console.log('🚀 ~ NewTopicPanel ~ createView ~ nach this._updateTopic(topic)');
@@ -137,7 +132,7 @@ export class NewTopicPanel extends MvuElement {
 	 * be edited.
 	 */
 	set topic(value) {
-		// console.log('🚀 ~ NewTopicPanel ~ set topic ~ set topic(value):', value);
+		console.log('🚀 ~ NewTopicPanel ~ set topic ~ set topic(value):', value);
 		this.signal(Update_Topic, value);
 	}
 
