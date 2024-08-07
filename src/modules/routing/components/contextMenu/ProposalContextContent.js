@@ -9,6 +9,7 @@ import { MvuElement } from '../../../MvuElement';
 import css from './proposalContextContent.css';
 import { closeBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
 import { closeContextMenu } from '../../../../store/mapContextMenu/mapContextMenu.action';
+import { INTERACTION_BOTTOM_SHEET_ID } from '../../../../store/bottomSheet/bottomSheet.reducer';
 
 const Update_Proposal = 'update_proposal';
 const Update_Prevent_Close = 'update_prevent_close';
@@ -83,7 +84,7 @@ export class ProposalContextContent extends MvuElement {
 
 			proposalAction(proposal.coord);
 			if (closeAfterAction) {
-				closeBottomSheet();
+				closeBottomSheet(INTERACTION_BOTTOM_SHEET_ID);
 				closeContextMenu();
 			}
 		};

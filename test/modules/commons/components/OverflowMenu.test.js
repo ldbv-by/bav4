@@ -311,7 +311,7 @@ describe('OverflowMenu', () => {
 			document.dispatchEvent(new Event('pointerdown'));
 
 			// menu is closed
-			expect(store.getState().bottomSheet.data).toEqual(jasmine.arrayWithExactContents([{ id: 'main', content: null }]));
+			expect(store.getState().bottomSheet.data).toEqual(jasmine.arrayWithExactContents([{ id: 'default', content: null }]));
 		});
 
 		it('deregisters the document listener on pointerdown', async () => {

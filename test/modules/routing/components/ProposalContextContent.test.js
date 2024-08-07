@@ -238,7 +238,7 @@ describe('ProposalContextContent', () => {
 		it('requests the closing of bottomSheet and ContextMenu', async () => {
 			const element = await setup({
 				routing: { ...initialRoutingState, ...{ proposal: new EventLike({ coord: [42, 21], type: CoordinateProposalType.START }) } },
-				bottomSheet: { data: [{ id: 'main', content: 'some' }], active: 'main' },
+				bottomSheet: { data: [{ id: 'interaction', content: 'some' }], active: 'interaction' },
 				mapContextMenu: { active: true }
 			});
 

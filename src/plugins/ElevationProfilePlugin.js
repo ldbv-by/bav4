@@ -6,7 +6,7 @@ import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSh
 import { closeProfile, indicateChange } from '../store/elevationProfile/elevationProfile.action';
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
-import { MAIN_BOTTOM_SHEET_ID } from '../store/bottomSheet/bottomSheet.reducer';
+import { DEFAULT_BOTTOM_SHEET_ID } from '../store/bottomSheet/bottomSheet.reducer';
 
 /**
  * This plugin observes the 'active' property of the elevationProfile slice-of-state and shows/hides

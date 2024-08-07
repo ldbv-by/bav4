@@ -66,7 +66,7 @@ describe('ContextClickPlugin', () => {
 					setContextClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 
 					expect(store.getState().highlight.features).toHaveSize(1);
-					expect(store.getState().bottomSheet.active).toBe('main');
+					expect(store.getState().bottomSheet.active).toBe('interaction');
 
 					setMoveStart();
 
@@ -83,7 +83,7 @@ describe('ContextClickPlugin', () => {
 					setContextClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 
 					expect(store.getState().highlight.features).toHaveSize(1);
-					expect(store.getState().bottomSheet.active).toBe('main');
+					expect(store.getState().bottomSheet.active).toBe('interaction');
 
 					setClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 
@@ -95,27 +95,27 @@ describe('ContextClickPlugin', () => {
 		describe('when context-click state does NOT change', () => {
 			describe('when move-start state changed', () => {
 				it('does nothing', () => {
-					const store = setup({ bottomSheet: { active: 'main' } });
+					const store = setup({ bottomSheet: { active: 'interaction' } });
 					new ContextClickPlugin().register(store);
 
-					expect(store.getState().bottomSheet.active).toBe('main');
+					expect(store.getState().bottomSheet.active).toBe('interaction');
 
 					setMoveStart();
 
-					expect(store.getState().bottomSheet.active).toBe('main');
+					expect(store.getState().bottomSheet.active).toBe('interaction');
 				});
 			});
 
 			describe('when pointer-click state changed', () => {
 				it('does nothing', () => {
-					const store = setup({ bottomSheet: { active: 'main' } });
+					const store = setup({ bottomSheet: { active: 'interaction' } });
 					new ContextClickPlugin().register(store);
 
-					expect(store.getState().bottomSheet.active).toBe('main');
+					expect(store.getState().bottomSheet.active).toBe('interaction');
 
 					setClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 
-					expect(store.getState().bottomSheet.active).toBe('main');
+					expect(store.getState().bottomSheet.active).toBe('interaction');
 				});
 			});
 		});

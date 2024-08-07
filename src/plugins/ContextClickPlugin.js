@@ -9,7 +9,7 @@ import { $injector } from '../injection';
 import { createUniqueId } from '../utils/numberUtils';
 import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
 import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
-import { MAIN_BOTTOM_SHEET_ID } from '../store/bottomSheet/bottomSheet.reducer';
+import { INTERACTION_BOTTOM_SHEET_ID, DEFAULT_BOTTOM_SHEET_ID } from '../store/bottomSheet/bottomSheet.reducer';
 
 /**
  * Plugin for context-click related slice-of-state management.
@@ -24,7 +24,7 @@ export class ContextClickPlugin extends BaPlugin {
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 
 		const onBottomSheetChanged = (active) => {
-			if (active !== MAIN_BOTTOM_SHEET_ID) {
+			if (active !== DEFAULT_BOTTOM_SHEET_ID) {
 				bottomSheetOpenedFromHere = false;
 			}
 		};
@@ -36,7 +36,7 @@ export class ContextClickPlugin extends BaPlugin {
 			if (environmentService.isTouch()) {
 				removeHighlightFeaturesById(highlightFeatureId);
 				addHighlightFeatures({ id: highlightFeatureId, data: { coordinate: coordinate }, type: HighlightFeatureType.QUERY_SUCCESS });
-				openBottomSheet(content);
+				openBottomSheet(content, INTERACTION_BOTTOM_SHEET_ID);
 				bottomSheetOpenedFromHere = true;
 			} else {
 				openContextMenu([screenCoordinate[0], screenCoordinate[1]], content);
@@ -47,7 +47,7 @@ export class ContextClickPlugin extends BaPlugin {
 			if (environmentService.isTouch()) {
 				removeHighlightFeaturesById(highlightFeatureId);
 				if (bottomSheetOpenedFromHere) {
-					closeBottomSheet();
+					closeBottomSheet(INTERACTION_BOTTOM_SHEET_ID);
 				}
 			} else {
 				closeContextMenu();

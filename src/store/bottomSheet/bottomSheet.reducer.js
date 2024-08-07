@@ -1,5 +1,6 @@
 export const BOTTOM_SHEET_CHANGED = 'bottomSheet/contentChanged';
-export const MAIN_BOTTOM_SHEET_ID = 'main';
+export const DEFAULT_BOTTOM_SHEET_ID = 'default';
+export const INTERACTION_BOTTOM_SHEET_ID = 'interaction';
 
 /**
  * @typedef {Object} BottomSheetContent
@@ -32,7 +33,6 @@ const addOrReplaceContent = (state, payload) => {
 
 const getActive = (bottomSheets) => {
 	const mostActiveBottomSheet = bottomSheets.find((b) => !!b.content);
-	console.log('mostActiveBottomSheet', mostActiveBottomSheet);
 	return mostActiveBottomSheet ? mostActiveBottomSheet.id : null;
 };
 

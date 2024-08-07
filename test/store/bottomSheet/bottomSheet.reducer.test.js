@@ -20,12 +20,12 @@ describe('bottomSheetReducer', () => {
 
 		openBottomSheet('content');
 
-		expect(store.getState().bottomSheet.data).toEqual(jasmine.arrayWithExactContents([{ id: 'main', content: 'content' }]));
-		expect(store.getState().bottomSheet.active).toBe('main');
+		expect(store.getState().bottomSheet.data).toEqual(jasmine.arrayWithExactContents([{ id: 'default', content: 'content' }]));
+		expect(store.getState().bottomSheet.active).toBe('default');
 
 		closeBottomSheet();
 
-		expect(store.getState().bottomSheet.data).toEqual(jasmine.arrayWithExactContents([{ id: 'main', content: null }]));
+		expect(store.getState().bottomSheet.data).toEqual(jasmine.arrayWithExactContents([{ id: 'default', content: null }]));
 		expect(store.getState().bottomSheet.active).toBeNull();
 	});
 
@@ -34,8 +34,8 @@ describe('bottomSheetReducer', () => {
 
 		openBottomSheet('content');
 
-		expect(store.getState().bottomSheet.data).toEqual(jasmine.arrayWithExactContents([{ id: 'main', content: 'content' }]));
-		expect(store.getState().bottomSheet.active).toBe('main');
+		expect(store.getState().bottomSheet.data).toEqual(jasmine.arrayWithExactContents([{ id: 'default', content: 'content' }]));
+		expect(store.getState().bottomSheet.active).toBe('default');
 
 		openBottomSheet('content', 'some');
 
@@ -43,7 +43,7 @@ describe('bottomSheetReducer', () => {
 		expect(store.getState().bottomSheet.data).toEqual(
 			jasmine.arrayWithExactContents([
 				{ id: 'some', content: 'content' },
-				{ id: 'main', content: 'content' }
+				{ id: 'default', content: 'content' }
 			])
 		);
 
@@ -56,7 +56,7 @@ describe('bottomSheetReducer', () => {
 		expect(store.getState().bottomSheet.data).toEqual(
 			jasmine.arrayWithExactContents([
 				{ id: 'some', content: null },
-				{ id: 'main', content: null }
+				{ id: 'default', content: null }
 			])
 		);
 		expect(store.getState().bottomSheet.active).toBeNull();
@@ -66,7 +66,7 @@ describe('bottomSheetReducer', () => {
 		expect(store.getState().bottomSheet.data).toEqual(
 			jasmine.arrayWithExactContents([
 				{ id: 'some', content: null },
-				{ id: 'main', content: null }
+				{ id: 'default', content: null }
 			])
 		);
 		expect(store.getState().bottomSheet.active).toBeNull();
