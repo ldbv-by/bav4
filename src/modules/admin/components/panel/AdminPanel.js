@@ -272,8 +272,24 @@ export class AdminPanel extends MvuElement {
 				return { ...model, selectedTopicId, selectedTopic: null };
 
 			case Update_Topics:
-				// eslint-disable-next-line no-case-declarations
-				newModel = { ...model, selectedTopicId: data.newTopic.id, selectedTopic: data.newTopic, topics: data.newTopicsArray };
+				if (data.catalog) {
+					const newCatalogWithResourceData = this._updateCatalogWithResourceData(data.catalog, model.geoResources);
+
+					newModel = {
+						...model,
+						selectedTopicId: data.newTopic.id,
+						selectedTopic: data.newTopic,
+						topics: data.newTopicsArray,
+						catalogWithResourceData: newCatalogWithResourceData
+					};
+				} else {
+					newModel = {
+						...model,
+						selectedTopicId: data.newTopic.id,
+						selectedTopic: data.newTopic,
+						topics: data.newTopicsArray
+					};
+				}
 				return newModel;
 
 			case Update_Catalog:
@@ -498,8 +514,9 @@ export class AdminPanel extends MvuElement {
 			this.signal(Update_CatalogWithResourceData, catalogWithResourceData);
 		};
 
-		const updateSelectedTopic = (newTopic, newTopicsArray) => {
-			this.signal(Update_Topics, { newTopic, newTopicsArray });
+		const updateSelectedTopic = async (newTopic, newTopicsArray) => {
+			const catalog = await this._loadCatalog(newTopic.id);
+			this.signal(Update_Topics, { newTopic, newTopicsArray, catalog });
 		};
 
 		// todo

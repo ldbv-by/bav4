@@ -455,8 +455,7 @@ export class LayerTree extends MvuElement {
 		const handleTopicChange = (event, selectNewTopic) => {
 			toggleDropdownVisibility(event);
 
-			this.signal(Update_Selected_Topic, selectNewTopic);
-			this._updateSelectedTopic(selectNewTopic.id);
+			this._updateSelectedTopic(selectNewTopic, [...topics]);
 		};
 
 		const updateTopic = (topic) => {
