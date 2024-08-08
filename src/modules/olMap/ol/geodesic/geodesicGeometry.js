@@ -4,7 +4,7 @@
 import { Geodesic, PolygonArea } from 'geographiclib-geodesic';
 import { LineString, Polygon } from 'ol/geom';
 import { TiledCoordinateBag } from './tiledCoordinateBag';
-import { PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../utils/olGeometryUtils';
+import { AZIMUTH_GEOMETRY_PROPERTY, PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../utils/olGeometryUtils';
 import { fromLonLat } from '../../../../../node_modules/ol/proj';
 
 export const GEODESIC_FEATURE_PROPERTY = 'geodesic';
@@ -59,6 +59,7 @@ export class GeodesicGeometry {
 		if (this.#calculationStatus === GEODESIC_CALCULATION_STATUS.ACTIVE) {
 			this.#feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, geodesicProperties.length);
 			this.#geometry.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, geodesicProperties.length);
+			this.#geometry.set(AZIMUTH_GEOMETRY_PROPERTY, geodesicProperties.rotation);
 		}
 		this.#length = geodesicProperties.length;
 		this.#area = geodesicProperties.area;
