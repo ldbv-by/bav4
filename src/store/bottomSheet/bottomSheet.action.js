@@ -26,7 +26,6 @@ export const openBottomSheet = (content, id = DEFAULT_BOTTOM_SHEET_ID) => {
  * @function
  */
 export const closeBottomSheet = (id = DEFAULT_BOTTOM_SHEET_ID) => {
-	console.log('closeBottomSheet', id);
 	getStore().dispatch({
 		type: BOTTOM_SHEET_CHANGED,
 		payload: { id: id, content: null }

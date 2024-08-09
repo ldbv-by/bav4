@@ -41,7 +41,6 @@ export const bottomSheetReducer = (state = initialState, action) => {
 	switch (type) {
 		case BOTTOM_SHEET_CHANGED: {
 			const changedBottomSheets = addOrReplaceContent(state, payload);
-			console.log(changedBottomSheets);
 			return {
 				...state,
 				data: changedBottomSheets,
