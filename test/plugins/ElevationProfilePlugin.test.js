@@ -1,5 +1,5 @@
 import { ElevationProfilePlugin } from '../../src/plugins/ElevationProfilePlugin';
-import { closeProfile, openProfile } from '../../src/store/elevationProfile/elevationProfile.action';
+import { openProfile } from '../../src/store/elevationProfile/elevationProfile.action';
 import { elevationProfileReducer, initialState as elevationProfileInitialState } from '../../src/store/elevationProfile/elevationProfile.reducer';
 import { bottomSheetReducer, initialState as bottomSheetInitialState } from '../../src/store/bottomSheet/bottomSheet.reducer';
 import { featureInfoReducer, initialState as featureInfoInitialState } from '../../src/store/featureInfo/featureInfo.reducer';

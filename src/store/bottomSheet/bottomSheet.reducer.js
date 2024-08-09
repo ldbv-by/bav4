@@ -32,7 +32,6 @@ const addOrReplaceContent = (state, payload) => {
 
 const getActive = (bottomSheets) => {
 	const mostActiveBottomSheet = bottomSheets.find((b) => !!b.content);
-	console.log('mostActiveBottomSheet', mostActiveBottomSheet);
 	return mostActiveBottomSheet ? mostActiveBottomSheet.id : null;
 };
 
@@ -41,7 +40,6 @@ export const bottomSheetReducer = (state = initialState, action) => {
 	switch (type) {
 		case BOTTOM_SHEET_CHANGED: {
 			const changedBottomSheets = addOrReplaceContent(state, payload);
-			console.log(changedBottomSheets);
 			return {
 				...state,
 				data: changedBottomSheets,
