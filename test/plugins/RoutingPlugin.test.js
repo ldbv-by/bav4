@@ -12,7 +12,7 @@ import { initialState as initialToolsState, toolsReducer } from '../../src/store
 import { initialState as initialLayersState } from '../../src/store/layers/layers.reducer';
 import { setCurrentTool } from '../../src/store/tools/tools.action';
 import { Tools } from '../../src/domain/tools';
-import { deactivate, activate, setProposal, setStatus, setWaypoints, setStart, setRoute } from '../../src/store/routing/routing.action';
+import { deactivate, activate, setProposal, setStatus, setWaypoints, setStart } from '../../src/store/routing/routing.action';
 import { $injector } from '../../src/injection';
 import { LevelTypes } from '../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../src/store/notifications/notifications.reducer';
@@ -91,36 +91,6 @@ describe('RoutingPlugin', () => {
 			});
 
 			describe('more then one waypoint', () => {
-				describe('and tool id is NOT available', () => {
-					it('calls _lazyInitialize and updates the active property', async () => {
-						const store = setup({
-							mainMenu: {
-								tab: TabIds.MAPS
-							}
-						});
-						const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2,3,4&`);
-						const instanceUnderTest = new RoutingPlugin();
-						spyOn(environmentService, 'getQueryParams').and.returnValue(queryParams);
-						const lazyInitializeSpy = spyOn(instanceUnderTest, '_lazyInitialize').and.resolveTo(true);
-						await instanceUnderTest.register(store);
-						spyOn(instanceUnderTest, '_parseWaypoints')
-							.withArgs(queryParams)
-							.and.returnValue([
-								[1, 2],
-								[3, 4]
-							]);
-
-						await TestUtils.timeout();
-						await TestUtils.timeout();
-						expect(store.getState().routing.active).toBeTrue();
-						expect(lazyInitializeSpy).toHaveBeenCalled();
-
-						setRoute({ foo: 'bar' });
-
-						expect(store.getState().routing.active).toBeFalse();
-					});
-				});
-
 				describe('and tool id is NOT available', () => {
 					it('calls _lazyInitialize and updates the active property', async () => {
 						const store = setup({
@@ -461,7 +431,7 @@ describe('RoutingPlugin', () => {
 	});
 
 	describe('when routing "waypoint" property changes', () => {
-		describe('and we have more then one waypoint', () => {
+		describe('and we have more than one waypoint', () => {
 			it('resets the UI but does not close the elevation profile', async () => {
 				const store = setup({
 					bottomSheet: { active: true },

@@ -8,7 +8,6 @@ import {
 	RESET_REQUESTED,
 	FINISH_REQUESTED,
 	REMOVE_REQUESTED,
-	FILE_SAVE_RESULT_CHANGED,
 	STYLE_CHANGED,
 	SELECTED_STYLE_CHANGED,
 	DESCRIPTION_CHANGED,
@@ -19,13 +18,6 @@ import {
 } from './draw.reducer';
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
-
-/**
- * MetaData and content of a successfully saved drawing (@see {@link FileSaveResult}).
- * @typedef {Object} DrawFileSaveResult
- * @property {FileSaveResult} fileSaveResult the FileSaveResult
- * @property {string} content the content (geometry) that was saved
- */
 
 /**
  * The Options of a Style-Request
@@ -148,18 +140,6 @@ export const clearDescription = () => {
 export const clearText = () => {
 	getStore().dispatch({
 		type: CLEAR_TEXT
-	});
-};
-
-/**
- * Set the {@link FileSaveResult}
- * @function
- * @param {DrawFileSaveResult} fileSaveResult the fileSaveResult of the stored drawing-data
- */
-export const setFileSaveResult = (fileSaveResult) => {
-	getStore().dispatch({
-		type: FILE_SAVE_RESULT_CHANGED,
-		payload: new EventLike(fileSaveResult)
 	});
 };
 

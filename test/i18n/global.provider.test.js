@@ -27,6 +27,7 @@ describe('global i18n', () => {
 		expect(map.global_geoResource_unauthorized).toBe('401 - Unauthorized');
 		expect(map.global_geoResource_forbidden).toBe('403 - Forbidden');
 		expect(map.global_signOut_success).toBe('Signed out successfully');
+		expect(map.global_fileStorageService_exception).toBe('The data could not be stored');
 	});
 
 	it('provides translation for de', () => {
@@ -57,10 +58,11 @@ describe('global i18n', () => {
 		expect(map.global_geoResource_unauthorized).toBe('401 - Fehlende Berechtigung');
 		expect(map.global_geoResource_forbidden).toBe('403 - Zugriff nicht erlaubt');
 		expect(map.global_signOut_success).toBe('Sie haben sich erfolgreich abgemeldet');
+		expect(map.global_fileStorageService_exception).toBe('Die Daten konnten nicht gespeichert werden');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 20;
+		const expectedSize = 21;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

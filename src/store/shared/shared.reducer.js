@@ -1,15 +1,10 @@
 export const TERMS_OF_USE_ACKNOWLEDGED_CHANGED = 'shared/termsOfUsAcknowledged';
-export const FILE_SAVE_RESULT_CHANGED = 'shared/fileSaveResult';
 
 export const initialState = {
 	/**
 	 * @type {boolean}
 	 */
-	termsOfUseAcknowledged: false,
-	/**
-	 * @type {FileSaveResult}
-	 */
-	fileSaveResult: null
+	termsOfUseAcknowledged: false
 };
 
 export const sharedReducer = (state = initialState, action) => {
@@ -19,12 +14,6 @@ export const sharedReducer = (state = initialState, action) => {
 			return {
 				...state,
 				termsOfUseAcknowledged: payload
-			};
-		}
-		case FILE_SAVE_RESULT_CHANGED: {
-			return {
-				...state,
-				fileSaveResult: payload
 			};
 		}
 	}

@@ -65,6 +65,7 @@ describe('injector configuration', () => {
 		expect($injector.getScope('IframeStatePlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('IframeContainerPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('SharePlugin')).toBe(Injector.SCOPE_SINGLETON);
+		expect($injector.getScope('FileStoragePlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('ToolsPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('BeforeUnloadPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('IframeGeometryIdPlugin')).toBe(Injector.SCOPE_SINGLETON);
@@ -81,7 +82,6 @@ describe('injector configuration', () => {
 		expect($injector.getScope('VectorLayerService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('RtVectorLayerService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('LayerService')).toBe(Injector.SCOPE_PERLOOKUP);
-		expect($injector.getScope('InteractionStorageService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('OverlayService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('OlFeatureInfoHandler')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('OlFeatureInfoHandler')).toBe(Injector.SCOPE_PERLOOKUP);
