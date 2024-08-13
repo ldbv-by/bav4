@@ -87,7 +87,6 @@ export class RoutingPlugin extends BaPlugin {
 	 */
 	async register(store) {
 		if (!this.#environmentService.isEmbedded() && this.#environmentService.getQueryParams().has(QueryParameters.ROUTE_WAYPOINTS)) {
-			// const toolId = this.#environmentService.getQueryParams().get(QueryParameters.TOOL_ID);
 			if (await this._lazyInitialize()) {
 				// we activate the tool after another possible active tool was deactivated
 				setTimeout(() => {
