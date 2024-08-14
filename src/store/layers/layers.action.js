@@ -18,6 +18,7 @@ import { GeoResource } from '../../domain/geoResources';
  * @property {string} geoResourceId  Id of the linked GeoResource. If not set, it will take the Id of this layer as value
  * @property {number} [opacity=1] Opacity (0, 1)
  * @property {boolean} [visible=true] Visibility
+ * @property {string} [timestamp=null] Timestamp
  * @property {number} [zIndex]  Index of this layer within the list of active layers. When not set, the layer will be appended at the end
  * @property {Constraints} [constraints] Constraints of the layer
  * @property {module:utils/storeUtils.EventLike<String|null>} [grChangedFlag] Flag that indicates a change of the linked GeoResource
@@ -35,9 +36,10 @@ import { GeoResource } from '../../domain/geoResources';
 /**
  * Modifiable options of a {@link Layer}.
  * @typedef {Object} ModifyLayerOptions
- * @property {number} [opacity] Opacity (0, 1).
- * @property {boolean} [visible] Visibility.
- * @property {number} [zIndex] Desired index of this layer within the list of active layers
+ * @property {number} [opacity] The new opacity value (0, 1)
+ * @property {boolean} [visible] The new visibility value
+ * @property {string} [timestamp] The new timestamp value
+ * @property {number} [zIndex] The new index of this layer within the list of active layers
  */
 
 /**
@@ -46,6 +48,7 @@ import { GeoResource } from '../../domain/geoResources';
  * @property {string} [geoResourceId]  Id of the linked GeoResource. If not set, it will take the Id of this layer as value
  * @property {number} [opacity=1] Opacity (0, 1)
  * @property {boolean} [visible=true] Visibility
+ * @property {string} [timestamp=null] Timestamp
  * @property {number} [zIndex]  Index of this layer within the list of active layers. When not set, the layer will be appended at the end
  * @property {Constraints} [constraints] Constraints of the layer
  */
@@ -57,6 +60,7 @@ import { GeoResource } from '../../domain/geoResources';
  * @property {string} [geoResourceId]  Id of the linked GeoResource. If not set, it will take the Id of this layer as value
  * @property {number} [opacity=1] Opacity (0, 1)
  * @property {boolean} [visible=true] Visibility
+ * @property {string} [timestamp=null] Timestamp
  */
 
 const getStore = () => {
