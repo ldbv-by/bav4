@@ -8,12 +8,13 @@ describe('olMapUtils', () => {
 	describe('updateOlLayer', () => {
 		it('updates the properties of a olLayer', () => {
 			const olLayer = new BaseLayer({});
-			const layer = { visible: false, opacity: 0.5 };
+			const layer = { visible: false, opacity: 0.5, timestamp: '20001231' };
 
 			updateOlLayer(olLayer, layer);
 
 			expect(olLayer.getVisible()).toBeFalse();
 			expect(olLayer.getOpacity()).toBe(0.5);
+			expect(olLayer.get('timestamp')).toBe('20001231');
 		});
 	});
 
