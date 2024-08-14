@@ -42,18 +42,21 @@ export const copyCatalogToProd = async (topicId) => {
 	});
 
 	return result;
+};
 
-	// const response = await fetch(url, {
-	// 	method: 'POST',
-	// 	headers: {
-	// 		'Content-Type': 'application/json',
-	// 		Authorization: `Bearer ${adminToken}`
-	// 	}
-	// });
+export const copyCatalogToTest = async (topicId) => {
+	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 
-	// if (!response.ok) {
-	// 	throw new Error(`Error: ${response.status} - ${response.statusText}`);
-	// }
+	const baseURL = configService.getValueAsPath('BACKEND_URL');
 
-	// return response.json();
+	const url = `${baseURL}/adminui/copy2test/catalog/${topicId}`;
+	const adminToken = configService.getValue('ADMIN_TOKEN_KEY');
+
+	const result = await httpService.post(`${url}`, {
+		headers: {
+			'X-AUTH-ADMIN-TOKEN': adminToken
+		}
+	});
+
+	return result;
 };

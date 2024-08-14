@@ -427,8 +427,19 @@ export class LayerTree extends MvuElement {
 			this._saveCatalog();
 		};
 
+		const handleCopyTopic2Test = () => {
+			console.log('🚀 ~ LayerTree ~ handleCopyTopic2Prod ~ handleCopyTopic2Test');
+			this._copyTopic2Test(topic);
+		};
+
+		const handleCopyCatalog2Test = () => {
+			console.log('🚀 ~ LayerTree ~ handleCopyCatalog2Prod ~ handleCopyCatalog2Test');
+			this._copyCatalog2Test(catalogWithResourceData);
+		};
+
 		const handleCopyTopic2Prod = () => {
 			console.log('🚀 ~ LayerTree ~ handleCopyTopic2Prod ~ handleCopyTopic2Prod');
+			this._copyTopic2Prod(topic);
 		};
 
 		const handleCopyCatalog2Prod = () => {

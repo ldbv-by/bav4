@@ -95,7 +95,22 @@ export class CatalogService {
 
 	async copyCatalogToProd(topicId) {
 		try {
-			const result = await this._copyCatalogToProd(topicId);
+			const result = await this._copyCatalogToProd(topicId)
+
+				// eslint-disable-next-line promise/prefer-await-to-then
+				.then(() => {
+					const message = 'Catalog successfully copied to prod.';
+					// eslint-disable-next-line no-console
+					console.log(message); // handle success, if needed
+					emitNotification(message, LevelTypes.INFO);
+				})
+				// eslint-disable-next-line promise/prefer-await-to-then
+				.catch((error) => {
+					const message = 'There has been a problem with your operation:';
+					console.error(message, error);
+					emitNotification(message, LevelTypes.ERROR);
+				});
+
 			return result;
 		} catch (error) {
 			console.error('Failed to copy catalog to production environment:', error);
