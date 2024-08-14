@@ -10,7 +10,7 @@ import {
 } from '../../../services/GeoResourceService';
 import { FALLBACK_TOPICS_IDS } from '../../../services/TopicsService';
 import { LevelTypes, emitNotification } from '../../../store/notifications/notifications.action';
-import { copyCatalogToProd, loadBvvCatalog } from './provider/catalog.provider';
+import { copyCatalogToTest, copyCatalogToProd, loadBvvCatalog } from './provider/catalog.provider';
 
 /**
  * An async function that provides an array of {@link module:modules/topics/services/CatalogService~CatalogEntry}.
@@ -31,9 +31,10 @@ export class CatalogService {
 	/**
 	 * @param {module:modules/topics/services/CatalogService~catalogProvider} [loadBvvCatalogProvider=loadBvvCatalog]
 	 */
-	constructor(loadBvvCatalogProvider = loadBvvCatalog, bvvCopyCatalogToProd = copyCatalogToProd) {
+	constructor(loadBvvCatalogProvider = loadBvvCatalog, bvvCopyCatalogToTest = copyCatalogToTest, bvvCopyCatalogToProd = copyCatalogToProd) {
 		const { ConfigService: configService } = $injector.inject('ConfigService');
 		this._configService = configService;
+		this._copyCatalogToTest = bvvCopyCatalogToTest;
 		this._copyCatalogToProd = bvvCopyCatalogToProd;
 		this._loadBvvCatalogProvider = loadBvvCatalogProvider;
 		this._cache = new Map();
@@ -91,6 +92,31 @@ export class CatalogService {
 			});
 
 		return true;
+	}
+
+	async copyCatalogToTest(topicId) {
+		try {
+			const result = await this._copyCatalogToTest(topicId)
+
+				// eslint-disable-next-line promise/prefer-await-to-then
+				.then(() => {
+					const message = 'Catalog successfully copied to Test.';
+					// eslint-disable-next-line no-console
+					console.log(message); // handle success, if needed
+					emitNotification(message, LevelTypes.INFO);
+				})
+				// eslint-disable-next-line promise/prefer-await-to-then
+				.catch((error) => {
+					const message = 'There has been a problem with your operation:';
+					console.error(message, error);
+					emitNotification(message, LevelTypes.ERROR);
+				});
+
+			return result;
+		} catch (error) {
+			console.error('Failed to copy catalog to production environment:', error);
+			throw error;
+		}
 	}
 
 	async copyCatalogToProd(topicId) {

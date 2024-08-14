@@ -52,12 +52,6 @@ export const loadBvvTopics = async () => {
 };
 
 /**
- * @typedef {Object} Topic
- * @property {string} id
- * @property {string} name
- */
-
-/**
  * @typedef {Object} TopicsResponse
  * @property {Topic[]} topics
  */
@@ -70,7 +64,6 @@ export const loadBvvTopics = async () => {
  * @param {string} topicId
  * @returns {Promise<void>}
  */
-// no-unused-vars in next line ?? used in line 77 ??
 // eslint-disable-next-line no-unused-vars
 export const deleteBvvTopic = async (topicId) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
@@ -79,6 +72,40 @@ export const deleteBvvTopic = async (topicId) => {
 	const adminToken = configService.getValue('ADMIN_TOKEN_KEY');
 
 	const result = await httpService.delete(`${url}`, {
+		headers: {
+			'X-AUTH-ADMIN-TOKEN': adminToken
+		}
+	});
+
+	return result;
+};
+
+export const copyTopicToProd = async (topicId) => {
+	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
+
+	const baseURL = configService.getValueAsPath('BACKEND_URL');
+
+	const url = `${baseURL}/adminui/copy2prod/topic/${topicId}`;
+	const adminToken = configService.getValue('ADMIN_TOKEN_KEY');
+
+	const result = await httpService.post(`${url}`, {
+		headers: {
+			'X-AUTH-ADMIN-TOKEN': adminToken
+		}
+	});
+
+	return result;
+};
+
+export const copyTopicToTest = async (topicId) => {
+	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
+
+	const baseURL = configService.getValueAsPath('BACKEND_URL');
+
+	const url = `${baseURL}/adminui/copy2test/topic/${topicId}`;
+	const adminToken = configService.getValue('ADMIN_TOKEN_KEY');
+
+	const result = await httpService.post(`${url}`, {
 		headers: {
 			'X-AUTH-ADMIN-TOKEN': adminToken
 		}

@@ -86,7 +86,13 @@ export class LayerTree extends MvuElement {
 		this._addLayerGroup = () => {};
 		this._resetCatalog = () => {};
 		// eslint-disable-next-line no-unused-vars
-		this._copyCatalog2Prod = (catalog) => {};
+		this._copyCatalog2Test = (topicId) => {};
+		// eslint-disable-next-line no-unused-vars
+		this._copyCatalog2Prod = (topicId) => {};
+		// eslint-disable-next-line no-unused-vars
+		this._copyTopic2Test = (topicId) => {};
+		// eslint-disable-next-line no-unused-vars
+		this._copyTopic2Prod = (topicId) => {};
 		// eslint-disable-next-line no-unused-vars
 		this._disableTopicLevelTree = (topicId) => {};
 		// eslint-disable-next-line no-unused-vars
@@ -427,24 +433,24 @@ export class LayerTree extends MvuElement {
 			this._saveCatalog();
 		};
 
-		const handleCopyTopic2Test = () => {
-			console.log('🚀 ~ LayerTree ~ handleCopyTopic2Prod ~ handleCopyTopic2Test');
-			this._copyTopic2Test(topic);
+		const handleCopyTopic2Test = (event, topicId) => {
+			console.log('🚀 ~ LayerTree ~ handleCopyTopic2Prod ~ handleCopyTopic2Test ~ topicId:', topicId);
+			this._copyTopic2Test(topicId);
 		};
 
-		const handleCopyCatalog2Test = () => {
-			console.log('🚀 ~ LayerTree ~ handleCopyCatalog2Prod ~ handleCopyCatalog2Test');
-			this._copyCatalog2Test(catalogWithResourceData);
+		const handleCopyCatalog2Test = (event, topicId) => {
+			console.log('🚀 ~ LayerTree ~ handleCopyCatalog2Prod ~ handleCopyCatalog2Test ~ topicId:', topicId);
+			this._copyCatalog2Test(topicId);
 		};
 
-		const handleCopyTopic2Prod = () => {
-			console.log('🚀 ~ LayerTree ~ handleCopyTopic2Prod ~ handleCopyTopic2Prod');
-			this._copyTopic2Prod(topic);
+		const handleCopyTopic2Prod = (event, topicId) => {
+			console.log('🚀 ~ LayerTree ~ handleCopyTopic2Prod ~ handleCopyTopic2Prod ~ topicId:', topicId);
+			this._copyTopic2Prod(topicId);
 		};
 
-		const handleCopyCatalog2Prod = () => {
-			console.log('🚀 ~ LayerTree ~ handleCopyCatalog2Prod ~ handleCopyCatalog2Prod');
-			this._copyCatalog2Prod(catalogWithResourceData);
+		const handleCopyCatalog2Prod = (event, topicId) => {
+			console.log('🚀 ~ LayerTree ~ handleCopyCatalog2Prod ~ handleCopyCatalog2Prod ~ topicId:', topicId);
+			this._copyCatalog2Prod(topicId);
 		};
 
 		const handleDisableTopicLevelTreeClick = (event, topicToDisable) => {
@@ -564,8 +570,8 @@ export class LayerTree extends MvuElement {
 														<button class="disable-btn" @click="${(e) => handleDisableTopicLevelTreeClick(e, topic)}">${deactivateButtonText}</button>
 														<button class="delete-btn" @click="${(e) => handleDeleteTopicLevelTreeClick(e, topic)}">Löschen</button>
 														<button class="edit-btn" @click="${(e) => handleEditTopic(e, topic)}">Edit</button>
-														<button @click="${handleSaveClick}">Themenüberschrift in Testumgebung</button>
-														<button @click="${handleCopyTopic2Prod}">Thema nach Prod</button>
+														<button @click="${(e) => handleCopyTopic2Test(e, topic.id)}">Themenüberschrift in Testumgebung</button>
+														<button @click="${(e) => handleCopyTopic2Prod(e, topic.id)}">Thema nach Prod</button>
 													</div>
 												</div>
 											`;
@@ -577,8 +583,8 @@ export class LayerTree extends MvuElement {
 
 					<button @click="${handleNewLayerGroupClick}">neue Ebenengruppe</button>
 					<button @click="${handleSaveClick}">sichern</button>
-					<button @click="${handleSaveClick}">Ebenenbaum ${selectedTopic.label} in Testumgebung</button>
-					<button @click="${handleCopyCatalog2Prod}">${selectedTopic.label} nach Prod</button>
+					<button @click="${(e) => handleCopyCatalog2Test(e, selectedTopic.id)}">Ebenenbaum ${selectedTopic.label} in Testumgebung</button>
+					<button @click="${(e) => handleCopyCatalog2Prod(e, selectedTopic.id)}">${selectedTopic.label} nach Prod</button>
 
 					<ul>
 						${repeat(
@@ -647,6 +653,27 @@ export class LayerTree extends MvuElement {
 
 	get dummy() {
 		return this.getModel().dummy;
+	}
+
+	/**
+	 * @property {function} copyTopic2Test - Callback function
+	 */
+	set copyTopic2Test(callback) {
+		this._copyTopic2Test = callback;
+	}
+
+	/**
+	 * @property {function} copyTopic2Prod - Callback function
+	 */
+	set copyTopic2Prod(callback) {
+		this._copyTopic2Prod = callback;
+	}
+
+	/**
+	 * @property {function} copyCatalog2Test - Callback function
+	 */
+	set copyCatalog2Test(callback) {
+		this._copyCatalog2Test = callback;
 	}
 
 	/**

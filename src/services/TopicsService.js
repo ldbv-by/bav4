@@ -4,7 +4,8 @@
 // @ts-ignore
 import { $injector } from '../injection';
 import { Topic } from '../domain/topic';
-import { loadBvvTopics, deleteBvvTopic } from './provider/topics.provider';
+import { loadBvvTopics, deleteBvvTopic, copyTopicToTest, copyTopicToProd } from './provider/topics.provider';
+import { emitNotification, LevelTypes } from '../store/notifications/notifications.action';
 
 /**
  * An async function that provides an array of {@link Topic}.
@@ -22,12 +23,19 @@ import { loadBvvTopics, deleteBvvTopic } from './provider/topics.provider';
  */
 export class TopicsService {
 	/**
-	 * @param {module:services/TopicsService~topicsProvider} [loadBvvTopicsProvider = loadBvvTopics, deleteBvvTopicProvider = deleteBvvTopic]
+	 * @param {module:services/TopicsService~topicsProvider} [loadBvvTopicsProvider = loadBvvTopics, deleteBvvTopicProvider = deleteBvvTopic, bvvCopyTopicToTest = copyTopicToTest, bvvCopyTopicToProd = copyTopicToProd]
 	 */
-	constructor(loadBvvTopicsProvider = loadBvvTopics, deleteBvvTopicProvider = deleteBvvTopic) {
+	constructor(
+		loadBvvTopicsProvider = loadBvvTopics,
+		deleteBvvTopicProvider = deleteBvvTopic,
+		bvvCopyTopicToTest = copyTopicToTest,
+		bvvCopyTopicToProd = copyTopicToProd
+	) {
 		this._loadBvvTopicsProvider = loadBvvTopicsProvider;
 		this._deleteBvvTopicsProvider = deleteBvvTopicProvider;
 		const { ConfigService: configService, EnvironmentService: environmentService } = $injector.inject('ConfigService', 'EnvironmentService');
+		this._copyTopicToTest = bvvCopyTopicToTest;
+		this._copyTopicToProd = bvvCopyTopicToProd;
 		this._configService = configService;
 		this._environmentService = environmentService;
 		this._topics = null;
@@ -100,6 +108,56 @@ export class TopicsService {
 		// }
 		return result;
 	};
+
+	async copyTopic2Test(topicId) {
+		try {
+			const result = await this._copyTopicToTest(topicId)
+
+				// eslint-disable-next-line promise/prefer-await-to-then
+				.then(() => {
+					const message = 'Topic successfully copied to Test.';
+					// eslint-disable-next-line no-console
+					console.log(message); // handle success, if needed
+					emitNotification(message, LevelTypes.INFO);
+				})
+				// eslint-disable-next-line promise/prefer-await-to-then
+				.catch((error) => {
+					const message = 'There has been a problem with your operation:';
+					console.error(message, error);
+					emitNotification(message, LevelTypes.ERROR);
+				});
+
+			return result;
+		} catch (error) {
+			console.error('Failed to copy topic to production environment:', error);
+			throw error;
+		}
+	}
+
+	async copyTopic2Prod(topicId) {
+		try {
+			const result = await this._copyTopicToProd(topicId)
+
+				// eslint-disable-next-line promise/prefer-await-to-then
+				.then(() => {
+					const message = 'Topic successfully copied to prod.';
+					// eslint-disable-next-line no-console
+					console.log(message); // handle success, if needed
+					emitNotification(message, LevelTypes.INFO);
+				})
+				// eslint-disable-next-line promise/prefer-await-to-then
+				.catch((error) => {
+					const message = 'There has been a problem with your operation:';
+					console.error(message, error);
+					emitNotification(message, LevelTypes.ERROR);
+				});
+
+			return result;
+		} catch (error) {
+			console.error('Failed to copy topic to production environment:', error);
+			throw error;
+		}
+	}
 
 	/**
 	 * @private
