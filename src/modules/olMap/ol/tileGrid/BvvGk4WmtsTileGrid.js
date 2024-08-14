@@ -1,5 +1,5 @@
 /**
- * @module modules/olMap/ol/tileGrid/AdvWmtsTileGrid
+ * @module modules/olMap/ol/tileGrid/BvvGk4WmtsTileGrid
  */
 import { getTopLeft } from 'ol/extent';
 import TileGrid from 'ol/tilegrid/TileGrid';
