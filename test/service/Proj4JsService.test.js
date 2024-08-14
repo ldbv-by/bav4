@@ -13,7 +13,7 @@ describe('Proj4JsService', () => {
 
 		it('initializes the service with default provider', async () => {
 			const instanceUnderTest = new Proj4JsService();
-			expect(instanceUnderTest.getProjections()).toEqual([4326, 3857, 25832, 25833]);
+			expect(instanceUnderTest.getProjections()).toEqual([4326, 3857, 25832, 25833, 31468]);
 		});
 	});
 });
