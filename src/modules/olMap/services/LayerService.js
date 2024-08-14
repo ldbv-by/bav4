@@ -12,6 +12,7 @@ import { AdvWmtsTileGrid } from '../ol/tileGrid/AdvWmtsTileGrid';
 import { Projection } from 'ol/proj';
 import ImageWMS from 'ol/source/ImageWMS.js';
 import { UnavailableGeoResourceError } from '../../../domain/errors';
+import { BvvGk4WmtsTileGrid } from '../ol/tileGrid/BvvGk4WmtsTileGrid';
 
 /**
  * A function that returns a `ol.image.LoadFunction` for loading also restricted images via basic access authentication
@@ -26,6 +27,7 @@ import { UnavailableGeoResourceError } from '../../../domain/errors';
  * A function that returns a `ol.tile.LoadFunction`.
  * @typedef {Function} tileLoadFunctionProvider
  * @param {string} geoResourceId The id of the corresponding GeoResource
+ * @param {ol.layer.Layer} olLayer The the corresponding ol layer
  * @returns {Function} ol.tile.LoadFunction
  */
 
@@ -109,18 +111,32 @@ export class LayerService {
 			}
 
 			case GeoResourceTypes.XYZ: {
+				const tileLayer = new TileLayer({
+					id: id,
+					geoResourceId: geoResource.id,
+					opacity: opacity,
+					minZoom: minZoom ?? undefined,
+					maxZoom: maxZoom ?? undefined,
+					preload: 3
+				});
 				const xyzSource = () => {
 					const config = {
 						url: Array.isArray(geoResource.urls) ? undefined : geoResource.urls,
 						urls: Array.isArray(geoResource.urls) ? geoResource.urls : undefined,
-						tileLoadFunction: this._tileLoadFunctionProvider(geoResource.id)
+						tileLoadFunction: this._tileLoadFunctionProvider(geoResource.id, tileLayer)
 					};
 					switch (geoResource.tileGridId) {
-						case 'adv_wmts':
+						case 'adv_utm':
 							return new XYZSource({
 								...config,
 								tileGrid: new AdvWmtsTileGrid(),
 								projection: new Projection({ code: 'EPSG:25832' }) // to make it testable we use a Projection instead of a ProjectionLike here
+							});
+						case 'bvv_gk4':
+							return new XYZSource({
+								...config,
+								tileGrid: new BvvGk4WmtsTileGrid(),
+								projection: new Projection({ code: 'EPSG:31468' }) // to make it testable we use a Projection instead of a ProjectionLike here
 							});
 						default:
 							return new XYZSource({
@@ -128,16 +144,8 @@ export class LayerService {
 							});
 					}
 				};
-
-				return new TileLayer({
-					id: id,
-					geoResourceId: geoResource.id,
-					source: xyzSource(),
-					opacity: opacity,
-					minZoom: minZoom ?? undefined,
-					maxZoom: maxZoom ?? undefined,
-					preload: 3
-				});
+				tileLayer.setSource(xyzSource());
+				return tileLayer;
 			}
 
 			case GeoResourceTypes.VECTOR: {

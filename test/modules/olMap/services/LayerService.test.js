@@ -20,6 +20,8 @@ import { createXYZ } from 'ol/tilegrid';
 import { AdvWmtsTileGrid } from '../../../../src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid';
 import supported from 'mapbox-gl-supported';
 import { UnavailableGeoResourceError } from '../../../../src/domain/errors';
+import TileLayer from 'ol/layer/Tile';
+import { BvvGk4WmtsTileGrid } from '../../../../src/modules/olMap/ol/tileGrid/BvvGk4WmtsTileGrid';
 
 describe('LayerService', () => {
 	const vectorLayerService = {
@@ -239,7 +241,7 @@ describe('LayerService', () => {
 				expect(xyzSource.constructor.name).toBe('XYZ');
 				expect(xyzSource.getUrls()).toEqual(['https://some1/layer/{z}/{x}/{y}', 'https://some2/layer/{z}/{x}/{y}']);
 				expect(xyzSource.getTileLoadFunction()).toBe(mockImageLoadFunction);
-				expect(providerSpy).toHaveBeenCalledWith(geoResourceId);
+				expect(providerSpy).toHaveBeenCalledWith(geoResourceId, jasmine.any(TileLayer));
 			});
 
 			it('converts a XyzGeoResource to a olLayer containing an array of urls', () => {
@@ -262,7 +264,7 @@ describe('LayerService', () => {
 				expect(xyzSource.constructor.name).toBe('XYZ');
 				expect(xyzSource.getUrls()).toEqual(['https://some1/layer/{z}/{x}/{y}', 'https://some2/layer/{z}/{x}/{y}']);
 				expect(xyzSource.getTileLoadFunction()).toBe(mockImageLoadFunction);
-				expect(providerSpy).toHaveBeenCalledWith(geoResourceId);
+				expect(providerSpy).toHaveBeenCalledWith(geoResourceId, jasmine.any(TileLayer));
 			});
 
 			it('converts a XyzGeoResource containing optional properties to a olLayer', () => {
@@ -289,7 +291,7 @@ describe('LayerService', () => {
 				expect(xyzSource.constructor.name).toBe('XYZ');
 				expect(xyzSource.getUrls()).toEqual(['https://some1/layer/{z}/{x}/{y}', 'https://some2/layer/{z}/{x}/{y}']);
 				expect(xyzSource.getTileLoadFunction()).toBe(mockImageLoadFunction);
-				expect(providerSpy).toHaveBeenCalledWith(geoResourceId);
+				expect(providerSpy).toHaveBeenCalledWith(geoResourceId, jasmine.any(TileLayer));
 			});
 
 			it('sets a XYZ source containing the default TileGrid', () => {
@@ -306,18 +308,32 @@ describe('LayerService', () => {
 				expect(xyzSource.getProjection().getCode()).toBe('EPSG:3857');
 			});
 
-			it('sets a XYZ source containing the ADV WMTS TileGrid', () => {
+			it('sets a XYZ source containing the ADV UTM TileGrid', () => {
 				const mockImageLoadFunction = () => {};
 				const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
 				const instanceUnderTest = setup(null, providerSpy);
 				const id = 'id';
-				const xyzGeoResource = new XyzGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}').setTileGridId('adv_wmts');
+				const xyzGeoResource = new XyzGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}').setTileGridId('adv_utm');
 
 				const xyzOlLayer = instanceUnderTest.toOlLayer(id, xyzGeoResource);
 
 				const xyzSource = xyzOlLayer.getSource();
 				expect(xyzSource.getTileGrid()).toEqual(new AdvWmtsTileGrid());
 				expect(xyzSource.getProjection().getCode()).toBe('EPSG:25832');
+			});
+
+			it('sets a XYZ source containing the BVV GK4 TileGrid', () => {
+				const mockImageLoadFunction = () => {};
+				const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
+				const instanceUnderTest = setup(null, providerSpy);
+				const id = 'id';
+				const xyzGeoResource = new XyzGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}').setTileGridId('bvv_gk4');
+
+				const xyzOlLayer = instanceUnderTest.toOlLayer(id, xyzGeoResource);
+
+				const xyzSource = xyzOlLayer.getSource();
+				expect(xyzSource.getTileGrid()).toEqual(new BvvGk4WmtsTileGrid());
+				expect(xyzSource.getProjection().getCode()).toBe('EPSG:31468');
 			});
 		});
 
