@@ -86,6 +86,8 @@ export class LayerTree extends MvuElement {
 		this._addLayerGroup = () => {};
 		this._resetCatalog = () => {};
 		// eslint-disable-next-line no-unused-vars
+		this._copyCatalog2Prod = (catalog) => {};
+		// eslint-disable-next-line no-unused-vars
 		this._disableTopicLevelTree = (topicId) => {};
 		// eslint-disable-next-line no-unused-vars
 		this._deleteTopicLevelTree = (topicId) => {};
@@ -425,6 +427,15 @@ export class LayerTree extends MvuElement {
 			this._saveCatalog();
 		};
 
+		const handleCopyTopic2Prod = () => {
+			console.log('🚀 ~ LayerTree ~ handleCopyTopic2Prod ~ handleCopyTopic2Prod');
+		};
+
+		const handleCopyCatalog2Prod = () => {
+			console.log('🚀 ~ LayerTree ~ handleCopyCatalog2Prod ~ handleCopyCatalog2Prod');
+			this._copyCatalog2Prod(catalogWithResourceData);
+		};
+
 		const handleDisableTopicLevelTreeClick = (event, topicToDisable) => {
 			event.stopPropagation();
 			this._disableTopicLevelTree(topicToDisable);
@@ -543,7 +554,7 @@ export class LayerTree extends MvuElement {
 														<button class="delete-btn" @click="${(e) => handleDeleteTopicLevelTreeClick(e, topic)}">Löschen</button>
 														<button class="edit-btn" @click="${(e) => handleEditTopic(e, topic)}">Edit</button>
 														<button @click="${handleSaveClick}">Themenüberschrift in Testumgebung</button>
-														<button @click="${handleSaveClick}">Thema nach Prod</button>
+														<button @click="${handleCopyTopic2Prod}">Thema nach Prod</button>
 													</div>
 												</div>
 											`;
@@ -556,7 +567,7 @@ export class LayerTree extends MvuElement {
 					<button @click="${handleNewLayerGroupClick}">neue Ebenengruppe</button>
 					<button @click="${handleSaveClick}">sichern</button>
 					<button @click="${handleSaveClick}">Ebenenbaum ${selectedTopic.label} in Testumgebung</button>
-					<button @click="${handleSaveClick}">${selectedTopic.label} nach Prod</button>
+					<button @click="${handleCopyCatalog2Prod}">${selectedTopic.label} nach Prod</button>
 
 					<ul>
 						${repeat(
@@ -625,6 +636,13 @@ export class LayerTree extends MvuElement {
 
 	get dummy() {
 		return this.getModel().dummy;
+	}
+
+	/**
+	 * @property {function} copyCatalog2Prod - Callback function
+	 */
+	set copyCatalog2Prod(callback) {
+		this._copyCatalog2Prod = callback;
 	}
 
 	/**

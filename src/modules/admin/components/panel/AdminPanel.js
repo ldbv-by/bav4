@@ -564,6 +564,11 @@ export class AdminPanel extends MvuElement {
 			await this._catalogService.save(catalogToSave);
 		};
 
+		const copyCatalog2Prod = async (catalog) => {
+			console.log('🚀 ~ AdminPanel ~ copyCatalog2Prod ~ catalog:', catalog);
+			// await this._catalogService.copyCatalogToProd(catalog);
+		};
+
 		const resetCatalog = async () => {
 			const catalog = this._reduceData(catalogWithResourceData, this._enrichWithGeoResource);
 			refreshCatalog(catalog);
@@ -600,6 +605,7 @@ export class AdminPanel extends MvuElement {
 							.addLayerGroup="${addLayerGroup}"
 							.copyBranch="${copyBranch}"
 							.saveCatalog="${saveCatalog}"
+							.copyCatalog2Prod="${copyCatalog2Prod}"
 							.deleteTopicLevelTree="${deleteTopicLevelTree}"
 							.disableTopicLevelTree="${toggleTopicLevelTreeDisabled}"
 							.removeEndLabels="${removeEndLabels}"

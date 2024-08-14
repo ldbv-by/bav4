@@ -10,7 +10,7 @@ import {
 } from '../../../services/GeoResourceService';
 import { FALLBACK_TOPICS_IDS } from '../../../services/TopicsService';
 import { LevelTypes, emitNotification } from '../../../store/notifications/notifications.action';
-import { loadBvvCatalog } from './provider/catalog.provider';
+import { copyCatalogToProd, loadBvvCatalog } from './provider/catalog.provider';
 
 /**
  * An async function that provides an array of {@link module:modules/topics/services/CatalogService~CatalogEntry}.
@@ -31,7 +31,10 @@ export class CatalogService {
 	/**
 	 * @param {module:modules/topics/services/CatalogService~catalogProvider} [loadBvvCatalogProvider=loadBvvCatalog]
 	 */
-	constructor(loadBvvCatalogProvider = loadBvvCatalog) {
+	constructor(loadBvvCatalogProvider = loadBvvCatalog, bvvCopyCatalogToProd = copyCatalogToProd) {
+		const { ConfigService: configService } = $injector.inject('ConfigService');
+		this._configService = configService;
+		this._copyCatalogToProd = bvvCopyCatalogToProd;
 		this._loadBvvCatalogProvider = loadBvvCatalogProvider;
 		this._cache = new Map();
 	}
@@ -58,44 +61,6 @@ export class CatalogService {
 			throw new Error('Could not load catalog from provider', { cause: e });
 		}
 	}
-
-	/**
-	 *
-	 * Saves a catalog object for an id.
-	 * @async
-	 * @param {string} topicId Id of the {@link Catalog} to be saved
-	 * @param {@link Catalog} catalog to be saved
-	 * @throws `Error` when storing was not successful
-	 * @returns {Promise<Boolean>} `true` when storing was successful
-	 */
-	// Access to fetch at 'http://localhost:8075/ba-backend-v4/adminui/catalog/ba' from origin 'http://localhost:8080' has
-	// been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque
-	// response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.
-	//
-	// async save(topicId, catalog) {
-	// 	try {
-	// 		const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
-	// 		const url = `${configService.getValueAsPath('BACKEND_URL')}adminui/catalog/ba`;
-
-	// 		const response = await httpService.post(url, catalog, {
-	// 			headers: {
-	// 				'Content-Type': 'application/json',
-	// 				'X-AUTH-ADMIN-TOKEN': 'adminToken123'
-	// 			}
-	// 		});
-	// 		// eslint-disable-next-line no-console
-	// 		console.log('🚀 ~ file: CatalogService.js:94 ~ CatalogService ~ save ~ response:', response);
-
-	// 		// Handle success if needed
-	// 		// eslint-disable-next-line no-console
-	// 		console.log('Catalog successfully posted.');
-
-	// 		return true;
-	// 	} catch (error) {
-	// 		console.error('There has been a problem with your HTTP request:', error);
-	// 		return false;
-	// 	}
-	// }
 
 	async save(catalog) {
 		const { ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
@@ -126,6 +91,16 @@ export class CatalogService {
 			});
 
 		return true;
+	}
+
+	async copyCatalogToProd(topicId) {
+		try {
+			const result = await this._copyCatalogToProd(topicId);
+			return result;
+		} catch (error) {
+			console.error('Failed to copy catalog to production environment:', error);
+			throw error;
+		}
 	}
 
 	/**
