@@ -145,6 +145,13 @@ export class LayerService {
 					}
 				};
 				tileLayer.setSource(xyzSource());
+				// Trigger a refresh of the source when layers property changed
+				tileLayer.on('propertychange', (event) => {
+					const property = event.key;
+					if (property === 'timestamp' && tileLayer.get('timestamp') !== event.oldValue) {
+						tileLayer.getSource().smoothRefresh(tileLayer.get('timestamp'));
+					}
+				});
 				return tileLayer;
 			}
 
