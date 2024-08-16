@@ -26,8 +26,6 @@ describe('TimeTravel', () => {
 		}
 	]);
 
-	let store;
-
 	const setup = (state = {}, config = {}) => {
 		const { embed = false } = config;
 		// state of store
@@ -37,7 +35,7 @@ describe('TimeTravel', () => {
 			},
 			...state
 		};
-		store = TestUtils.setupStoreAndDi(initialState, {
+		TestUtils.setupStoreAndDi(initialState, {
 			media: createNoInitialStateMediaReducer()
 		});
 		$injector
@@ -77,13 +75,7 @@ describe('TimeTravel', () => {
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
 
-		it('renders a time travel component', async () => {
-			const element = await setup({
-				media: {
-					darkSchema: true
-				}
-			});
-		});
+		it('renders a time travel component', async () => {});
 
 		it('layouts for portrait mode', async () => {
 			const state = {

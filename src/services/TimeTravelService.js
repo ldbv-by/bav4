@@ -1,7 +1,6 @@
 /**
  * @module services/TimeTravelService
  */
-import { $injector } from '../injection';
 
 /**
  * @class

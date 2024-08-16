@@ -1,5 +1,5 @@
 /**
- * @module modules/timeTravel/TimeTravel
+ * @module modules/timeTravel/components/TimeTravel
  */
 import { html, nothing } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
