@@ -238,7 +238,7 @@ describe('LayerService', () => {
 				expect(xyzOlLayer.getMaxZoom()).toBePositiveInfinity();
 				const xyzSource = xyzOlLayer.getSource();
 				expect(xyzOlLayer.constructor.name).toBe('TileLayer');
-				expect(xyzSource.constructor.name).toBe('XYZ');
+				expect(xyzSource.constructor.name).toBe('RefreshableXYZ');
 				expect(xyzSource.getUrls()).toEqual(['https://some1/layer/{z}/{x}/{y}', 'https://some2/layer/{z}/{x}/{y}']);
 				expect(xyzSource.getTileLoadFunction()).toBe(mockImageLoadFunction);
 				expect(providerSpy).toHaveBeenCalledWith(geoResourceId, jasmine.any(TileLayer));
@@ -261,7 +261,7 @@ describe('LayerService', () => {
 				expect(xyzOlLayer.getMaxZoom()).toBePositiveInfinity();
 				const xyzSource = xyzOlLayer.getSource();
 				expect(xyzOlLayer.constructor.name).toBe('TileLayer');
-				expect(xyzSource.constructor.name).toBe('XYZ');
+				expect(xyzSource.constructor.name).toBe('RefreshableXYZ');
 				expect(xyzSource.getUrls()).toEqual(['https://some1/layer/{z}/{x}/{y}', 'https://some2/layer/{z}/{x}/{y}']);
 				expect(xyzSource.getTileLoadFunction()).toBe(mockImageLoadFunction);
 				expect(providerSpy).toHaveBeenCalledWith(geoResourceId, jasmine.any(TileLayer));
@@ -288,7 +288,7 @@ describe('LayerService', () => {
 				expect(xyzOlLayer.getMaxZoom()).toBe(19);
 				const xyzSource = xyzOlLayer.getSource();
 				expect(xyzOlLayer.constructor.name).toBe('TileLayer');
-				expect(xyzSource.constructor.name).toBe('XYZ');
+				expect(xyzSource.constructor.name).toBe('RefreshableXYZ');
 				expect(xyzSource.getUrls()).toEqual(['https://some1/layer/{z}/{x}/{y}', 'https://some2/layer/{z}/{x}/{y}']);
 				expect(xyzSource.getTileLoadFunction()).toBe(mockImageLoadFunction);
 				expect(providerSpy).toHaveBeenCalledWith(geoResourceId, jasmine.any(TileLayer));

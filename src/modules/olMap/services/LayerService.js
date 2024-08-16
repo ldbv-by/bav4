@@ -5,7 +5,6 @@ import { $injector } from '../../../injection';
 import { GeoResourceAuthenticationType, GeoResourceTypes } from '../../../domain/geoResources';
 import { Image as ImageLayer, Group as LayerGroup, Layer } from 'ol/layer';
 import TileLayer from 'ol/layer/Tile';
-import { XYZ as XYZSource } from 'ol/source';
 import { getBvvBaaImageLoadFunction, getBvvTileLoadFunction } from '../utils/olLoadFunction.provider';
 import MapLibreLayer from '@geoblocks/ol-maplibre-layer';
 import { AdvWmtsTileGrid } from '../ol/tileGrid/AdvWmtsTileGrid';
@@ -13,6 +12,7 @@ import { Projection } from 'ol/proj';
 import ImageWMS from 'ol/source/ImageWMS.js';
 import { UnavailableGeoResourceError } from '../../../domain/errors';
 import { BvvGk4WmtsTileGrid } from '../ol/tileGrid/BvvGk4WmtsTileGrid';
+import { RefreshableXYZ } from '../ol/source/RefreshableXYZ';
 
 /**
  * A function that returns a `ol.image.LoadFunction` for loading also restricted images via basic access authentication
@@ -127,19 +127,19 @@ export class LayerService {
 					};
 					switch (geoResource.tileGridId) {
 						case 'adv_utm':
-							return new XYZSource({
+							return new RefreshableXYZ({
 								...config,
 								tileGrid: new AdvWmtsTileGrid(),
 								projection: new Projection({ code: 'EPSG:25832' }) // to make it testable we use a Projection instead of a ProjectionLike here
 							});
 						case 'bvv_gk4':
-							return new XYZSource({
+							return new RefreshableXYZ({
 								...config,
 								tileGrid: new BvvGk4WmtsTileGrid(),
 								projection: new Projection({ code: 'EPSG:31468' }) // to make it testable we use a Projection instead of a ProjectionLike here
 							});
 						default:
-							return new XYZSource({
+							return new RefreshableXYZ({
 								...config
 							});
 					}
