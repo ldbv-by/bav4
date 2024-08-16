@@ -43,6 +43,7 @@ import { SearchPlugin } from '../plugins/SearchPlugin';
 import { EncodeStatePlugin } from '../plugins/EncodeStatePlugin';
 import { BvvMfpService } from '../services/MfpService';
 import { ChipsConfigurationService } from '../services/ChipsConfigurationService';
+import { TimeTravelService } from '../services/TimeTravelService';
 import { ExportMfpPlugin } from '../plugins/ExportMfpPlugin';
 import { Proj4JsService } from '../services/Proj4JsService';
 import { BvvMfp3Encoder } from '../modules/olMap/services/Mfp3Encoder';
@@ -96,6 +97,7 @@ $injector
 	.registerSingleton('BaaCredentialService', new BaaCredentialService())
 	.registerSingleton('MfpService', new BvvMfpService())
 	.registerSingleton('ChipsConfigurationService', new ChipsConfigurationService())
+	.registerSingleton('TimeTravelService', new TimeTravelService())
 	.registerSingleton('FeedbackService', new FeedbackService())
 	.registerSingleton('RoutingService', new BvvRoutingService())
 
