@@ -73,6 +73,9 @@ describe('StoreService', () => {
 		const sharePluginMock = {
 			register: () => {}
 		};
+		const fileStoragePluginMock = {
+			register: () => {}
+		};
 		const toolsPluginMock = {
 			register: () => {}
 		};
@@ -126,6 +129,7 @@ describe('StoreService', () => {
 				.registerSingleton('IframeStatePlugin', iframeStatePluginMock)
 				.registerSingleton('IframeContainerPlugin', iframeContainerPluginMock)
 				.registerSingleton('SharePlugin', sharePluginMock)
+				.registerSingleton('FileStoragePlugin', fileStoragePluginMock)
 				.registerSingleton('ToolsPlugin', toolsPluginMock)
 				.registerSingleton('BeforeUnloadPlugin', beforeUnloadPluginMock)
 				.registerSingleton('IframeGeometryIdPlugin', iframeGeometryIdPluginMock)
@@ -143,7 +147,7 @@ describe('StoreService', () => {
 			expect(store).toBeDefined();
 
 			const reducerKeys = Object.keys(store.getState());
-			expect(reducerKeys.length).toBe(31);
+			expect(reducerKeys.length).toBe(32);
 			expect(reducerKeys.includes('map')).toBeTrue();
 			expect(reducerKeys.includes('pointer')).toBeTrue();
 			expect(reducerKeys.includes('position')).toBeTrue();
@@ -175,6 +179,7 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('navigationRail')).toBeTrue();
 			expect(reducerKeys.includes('auth')).toBeTrue();
 			expect(reducerKeys.includes('wcAttribute')).toBeTrue();
+			expect(reducerKeys.includes('fileStorage')).toBeTrue();
 		});
 
 		it('registers all plugins', async () => {
@@ -200,6 +205,7 @@ describe('StoreService', () => {
 			const iframeStatePluginSpy = spyOn(iframeStatePluginMock, 'register');
 			const iframeContainerPluginSpy = spyOn(iframeContainerPluginMock, 'register');
 			const sharePluginSpy = spyOn(sharePluginMock, 'register');
+			const fileStoragePluginSpy = spyOn(fileStoragePluginMock, 'register');
 			const toolsPluginSpy = spyOn(toolsPluginMock, 'register');
 			const beforeUnloadPluginSpy = spyOn(beforeUnloadPluginMock, 'register');
 			const iframeGeometryIdPluginSpy = spyOn(iframeGeometryIdPluginMock, 'register');
@@ -237,6 +243,7 @@ describe('StoreService', () => {
 			expect(iframeStatePluginSpy).toHaveBeenCalledWith(store);
 			expect(iframeContainerPluginSpy).toHaveBeenCalledWith(store);
 			expect(sharePluginSpy).toHaveBeenCalledWith(store);
+			expect(fileStoragePluginSpy).toHaveBeenCalledWith(store);
 			expect(toolsPluginSpy).toHaveBeenCalledWith(store);
 			expect(beforeUnloadPluginSpy).toHaveBeenCalledWith(store);
 			expect(iframeGeometryIdPluginSpy).toHaveBeenCalledWith(store);
