@@ -34,6 +34,10 @@ export const QueryParameters = Object.freeze({
 	 */
 	LAYER_OPACITY: 'l_o',
 	/**
+	 * The timestamp of a layer (`string`)
+	 */
+	LAYER_TIMESTAMP: 'l_t',
+	/**
 	 * Currently not supported. The active topic (`string`)
 	 */
 	TOPIC: 't',
