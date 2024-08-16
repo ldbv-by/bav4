@@ -91,6 +91,7 @@ export class GeoResource {
 		this._queryable = true;
 		this._exportable = true;
 		this._authRoles = [];
+		this._timestamps = [];
 	}
 
 	checkDefined(value, name) {
@@ -179,6 +180,14 @@ export class GeoResource {
 	}
 
 	/**
+	 * Returns a list of timestamps which for this GeoResource.
+	 *  @type {Array<String>}
+	 */
+	get timestamps() {
+		return [...this._timestamps];
+	}
+
+	/**
 	 * Returns a list of roles which are allowed to access this GeoResource.
 	 * An empty array means any user can access this GeoResource.
 	 *  @type {Array<String>}
@@ -248,6 +257,18 @@ export class GeoResource {
 
 	setExportable(exportable) {
 		this._exportable = exportable;
+		return this;
+	}
+
+	/**
+	 * Set the timestamps of this GeoResource
+	 * @param {Array<string>} timestamps Timestamps of this GeoResource
+	 * @returns `this` for chaining
+	 */
+	setTimestamps(timestamps) {
+		if (timestamps) {
+			this._timestamps = [...timestamps];
+		}
 		return this;
 	}
 
@@ -324,6 +345,7 @@ export class GeoResource {
 			.setAttributionProvider(geoResource.attributionProvider)
 			.setQueryable(geoResource.queryable)
 			.setExportable(geoResource.exportable)
+			.setTimestamps(geoResource.timestamps)
 			.setAuthRoles(geoResource.authRoles)
 			.setAuthenticationType(geoResource.authenticationType);
 	}
