@@ -4,7 +4,7 @@
 		"@geoblocks/ol-maplibre-layer": "1.0.1",
 		"chart.js": "4.4.3",
 		"dompurify": "3.1.6",
-		"geographiclib-geodesic": "2.0.0",
+		"geographiclib-geodesic": "2.1.1",
 		"lit-html": "3.2.0",
 		"maplibre-gl": "4.5.2",
 		"ol": "^10.0.0",
