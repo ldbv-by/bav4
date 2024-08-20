@@ -32,7 +32,7 @@ export const copyCatalogToProd = async (topicId) => {
 
 	const baseURL = configService.getValueAsPath('BACKEND_URL');
 
-	const url = `${baseURL}/adminui/copy2prod/catalog/${topicId}`;
+	const url = `${baseURL}adminui/copy2prod/catalog/${topicId}`;
 	const adminToken = configService.getValue('ADMIN_TOKEN_KEY');
 
 	const result = await httpService.post(`${url}`, {
@@ -45,12 +45,14 @@ export const copyCatalogToProd = async (topicId) => {
 };
 
 export const copyCatalogToTest = async (topicId) => {
+	console.log('🚀 ~ copyCatalogToTest ~ topicId:', topicId);
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 
 	const baseURL = configService.getValueAsPath('BACKEND_URL');
 
-	const url = `${baseURL}/adminui/copy2test/catalog/${topicId}`;
+	const url = `${baseURL}adminui/copy2test/catalog/${topicId}`;
 	const adminToken = configService.getValue('ADMIN_TOKEN_KEY');
+	console.log('🚀 ~ copyCatalogToTest ~ url:', url);
 
 	const result = await httpService.post(`${url}`, {
 		headers: {

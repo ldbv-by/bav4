@@ -85,7 +85,7 @@ export const copyTopicToProd = async (topicId) => {
 
 	const baseURL = configService.getValueAsPath('BACKEND_URL');
 
-	const url = `${baseURL}/adminui/copy2prod/topic/${topicId}`;
+	const url = `${baseURL}adminui/copy2prod/topic/${topicId}`;
 	const adminToken = configService.getValue('ADMIN_TOKEN_KEY');
 
 	const result = await httpService.post(`${url}`, {
@@ -102,7 +102,7 @@ export const copyTopicToTest = async (topicId) => {
 
 	const baseURL = configService.getValueAsPath('BACKEND_URL');
 
-	const url = `${baseURL}/adminui/copy2test/topic/${topicId}`;
+	const url = `${baseURL}adminui/copy2test/topic/${topicId}`;
 	const adminToken = configService.getValue('ADMIN_TOKEN_KEY');
 
 	const result = await httpService.post(`${url}`, {

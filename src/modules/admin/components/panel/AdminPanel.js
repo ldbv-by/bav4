@@ -515,6 +515,7 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const updateSelectedTopic = async (newTopic, newTopicsArray) => {
+			console.log('🚀 ~ AdminPanel ~ updateSelectedTopic ~ newTopic:', newTopic);
 			const catalog = await this._loadCatalog(newTopic.id);
 			this.signal(Update_Topics, { newTopic, newTopicsArray, catalog });
 		};
@@ -566,7 +567,7 @@ export class AdminPanel extends MvuElement {
 
 		const copyTopic2Prod = async (topicID) => {
 			console.log('🚀 ~ AdminPanel ~ copyTopic2Prod ~ topicID:', topicID);
-			await this._topicsService.copyTopicToProd(topicID);
+			await this._topicsService.copyTopic2Prod(topicID);
 		};
 
 		const copyTopic2Test = async (topicID) => {
