@@ -28,37 +28,69 @@ export const loadBvvCatalog = async (topicId) => {
 };
 
 export const copyCatalogToProd = async (topicId) => {
-	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
+	const { ConfigService: configService } = $injector.inject('ConfigService');
+	// const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 
 	const baseURL = configService.getValueAsPath('BACKEND_URL');
 
 	const url = `${baseURL}adminui/copy2prod/catalog/${topicId}`;
 	const adminToken = configService.getValue('ADMIN_TOKEN_KEY');
 
-	const result = await httpService.post(`${url}`, {
+	// why does this not work? ask Thomas
+	// const result = await httpService.post(`${url}`, {
+	// 	headers: {
+	// 		'X-AUTH-ADMIN-TOKEN': adminToken,
+	// 		'Content-Type': 'text/plain' // Or 'application/json'
+	// 	},
+	// 	body: ''
+	// 	// ,
+	// 	// data: {}
+	// });
+	// return result;
+
+	const response = await fetch(`${url}`, {
+		method: 'POST',
+		body: '',
 		headers: {
 			'X-AUTH-ADMIN-TOKEN': adminToken
 		}
 	});
+
+	if (response.status === 501) {
+		const error = '501 Not Implemented - Wird vom Server noch nicht unterstützt.';
+		throw new Error(error);
+	} else if (!response.ok) {
+		throw new Error(`HTTP error! Status: ${response.status}`);
+	}
+
+	const result = await response.json();
 
 	return result;
 };
 
 export const copyCatalogToTest = async (topicId) => {
-	console.log('🚀 ~ copyCatalogToTest ~ topicId:', topicId);
-	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
+	const { ConfigService: configService } = $injector.inject('ConfigService');
 
 	const baseURL = configService.getValueAsPath('BACKEND_URL');
-
 	const url = `${baseURL}adminui/copy2test/catalog/${topicId}`;
 	const adminToken = configService.getValue('ADMIN_TOKEN_KEY');
-	console.log('🚀 ~ copyCatalogToTest ~ url:', url);
 
-	const result = await httpService.post(`${url}`, {
+	const response = await fetch(`${url}`, {
+		method: 'POST',
+		body: '',
 		headers: {
 			'X-AUTH-ADMIN-TOKEN': adminToken
 		}
 	});
+
+	if (response.status === 501) {
+		const error = '501 Not Implemented - Wird vom Server noch nicht unterstützt.';
+		throw new Error(error);
+	} else if (!response.ok) {
+		throw new Error(`HTTP error! Status: ${response.status}`);
+	}
+
+	const result = await response.json();
 
 	return result;
 };

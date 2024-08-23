@@ -110,53 +110,38 @@ export class TopicsService {
 	};
 
 	async copyTopic2Test(topicId) {
-		try {
-			const result = await this._copyTopicToTest(topicId)
+		const result = await this._copyTopicToTest(topicId)
+			// eslint-disable-next-line promise/prefer-await-to-then
+			.then(() => {
+				const message = 'Topic successfully copied to Test.';
+				emitNotification(message, LevelTypes.INFO);
+			})
+			// eslint-disable-next-line promise/prefer-await-to-then
+			.catch((error) => {
+				const message = 'There has been a problem with your operation:';
+				console.error(message, error);
+				emitNotification(error, LevelTypes.ERROR);
+			});
 
-				// eslint-disable-next-line promise/prefer-await-to-then
-				.then(() => {
-					const message = 'Topic successfully copied to Test.';
-					// eslint-disable-next-line no-console
-					console.log(message); // handle success, if needed
-					emitNotification(message, LevelTypes.INFO);
-				})
-				// eslint-disable-next-line promise/prefer-await-to-then
-				.catch((error) => {
-					const message = 'There has been a problem with your operation:';
-					console.error(message, error);
-					emitNotification(message, LevelTypes.ERROR);
-				});
-
-			return result;
-		} catch (error) {
-			console.error('Failed to copy topic to production environment:', error);
-			throw error;
-		}
+		return result;
 	}
 
 	async copyTopic2Prod(topicId) {
-		try {
-			const result = await this._copyTopicToProd(topicId)
+		const result = await this._copyTopicToProd(topicId)
 
-				// eslint-disable-next-line promise/prefer-await-to-then
-				.then(() => {
-					const message = 'Topic successfully copied to prod.';
-					// eslint-disable-next-line no-console
-					console.log(message); // handle success, if needed
-					emitNotification(message, LevelTypes.INFO);
-				})
-				// eslint-disable-next-line promise/prefer-await-to-then
-				.catch((error) => {
-					const message = 'There has been a problem with your operation:';
-					console.error(message, error);
-					emitNotification(message, LevelTypes.ERROR);
-				});
+			// eslint-disable-next-line promise/prefer-await-to-then
+			.then(() => {
+				const message = 'Topic successfully copied to prod.';
+				emitNotification(message, LevelTypes.INFO);
+			})
+			// eslint-disable-next-line promise/prefer-await-to-then
+			.catch((error) => {
+				const message = 'There has been a problem with your operation:';
+				console.error(message, error);
+				emitNotification(error, LevelTypes.ERROR);
+			});
 
-			return result;
-		} catch (error) {
-			console.error('Failed to copy topic to production environment:', error);
-			throw error;
-		}
+		return result;
 	}
 
 	/**

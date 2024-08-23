@@ -21,6 +21,14 @@ const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
 const Update_All = 'update_all';
 
 /**
+
+http://geotest.bvv.bayern.de:8075/ba-backend-v4/adminui/copy2prod/catalog/ba
+http://geotest.bvv.bayern.de:8075/ba-backend-v4/adminui/copy2prod/catalog/ba
+
+
+ */
+
+/**
  * @class
  */
 export class AdminPanel extends MvuElement {

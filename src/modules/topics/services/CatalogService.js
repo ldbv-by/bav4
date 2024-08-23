@@ -101,20 +101,18 @@ export class CatalogService {
 				// eslint-disable-next-line promise/prefer-await-to-then
 				.then(() => {
 					const message = 'Catalog successfully copied to Test.';
-					// eslint-disable-next-line no-console
-					console.log(message); // handle success, if needed
 					emitNotification(message, LevelTypes.INFO);
 				})
 				// eslint-disable-next-line promise/prefer-await-to-then
 				.catch((error) => {
 					const message = 'There has been a problem with your operation:';
 					console.error(message, error);
-					emitNotification(message, LevelTypes.ERROR);
+					emitNotification(error, LevelTypes.ERROR);
 				});
 
 			return result;
 		} catch (error) {
-			console.error('Failed to copy catalog to production environment:', error);
+			console.error('Failed to copy catalog to test environment:', error);
 			throw error;
 		}
 	}
@@ -125,16 +123,14 @@ export class CatalogService {
 
 				// eslint-disable-next-line promise/prefer-await-to-then
 				.then(() => {
-					const message = 'Catalog successfully copied to prod.';
-					// eslint-disable-next-line no-console
-					console.log(message); // handle success, if needed
+					const message = 'Catalog successfully copied to prod. ';
 					emitNotification(message, LevelTypes.INFO);
 				})
 				// eslint-disable-next-line promise/prefer-await-to-then
 				.catch((error) => {
 					const message = 'There has been a problem with your operation:';
 					console.error(message, error);
-					emitNotification(message, LevelTypes.ERROR);
+					emitNotification(error, LevelTypes.ERROR);
 				});
 
 			return result;

@@ -81,35 +81,55 @@ export const deleteBvvTopic = async (topicId) => {
 };
 
 export const copyTopicToProd = async (topicId) => {
-	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
+	const { ConfigService: configService } = $injector.inject('ConfigService');
 
 	const baseURL = configService.getValueAsPath('BACKEND_URL');
-
 	const url = `${baseURL}adminui/copy2prod/topic/${topicId}`;
 	const adminToken = configService.getValue('ADMIN_TOKEN_KEY');
 
-	const result = await httpService.post(`${url}`, {
+	const response = await fetch(`${url}`, {
+		method: 'POST',
+		body: '',
 		headers: {
 			'X-AUTH-ADMIN-TOKEN': adminToken
 		}
 	});
+
+	if (response.status === 501) {
+		const error = '501 Not Implemented - Wird vom Server noch nicht unterstützt.';
+		throw new Error(error);
+	} else if (!response.ok) {
+		throw new Error(`HTTP error! Status: ${response.status}`);
+	}
+
+	const result = await response.json();
 
 	return result;
 };
 
 export const copyTopicToTest = async (topicId) => {
-	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
+	const { ConfigService: configService } = $injector.inject('ConfigService');
 
 	const baseURL = configService.getValueAsPath('BACKEND_URL');
-
 	const url = `${baseURL}adminui/copy2test/topic/${topicId}`;
 	const adminToken = configService.getValue('ADMIN_TOKEN_KEY');
 
-	const result = await httpService.post(`${url}`, {
+	const response = await fetch(`${url}`, {
+		method: 'POST',
+		body: '',
 		headers: {
 			'X-AUTH-ADMIN-TOKEN': adminToken
 		}
 	});
+
+	if (response.status === 501) {
+		const error = '501 Not Implemented - Wird vom Server noch nicht unterstützt.';
+		throw new Error(error);
+	} else if (!response.ok) {
+		throw new Error(`HTTP error! Status: ${response.status}`);
+	}
+
+	const result = await response.json();
 
 	return result;
 };
