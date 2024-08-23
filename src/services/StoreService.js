@@ -34,6 +34,7 @@ import { iframeContainerReducer } from '../store/iframeContainer/iframeContainer
 import { routingReducer } from '../store/routing/routing.reducer';
 import { authReducer } from '../store/auth/auth.reducer';
 import { wcAttributeReducer } from '../store/wcAttribute/wcAttribute.reducer';
+import { fileStorageReducer } from '../store/fileStorage/fileStorage.reducer';
 
 /**
  * Service which configures, initializes and holds the redux store.
@@ -77,7 +78,8 @@ export class StoreService {
 			iframeContainer: iframeContainerReducer,
 			routing: routingReducer,
 			auth: authReducer,
-			wcAttribute: wcAttributeReducer
+			wcAttribute: wcAttributeReducer,
+			fileStorage: fileStorageReducer
 		});
 
 		this._store = createStore(rootReducer);
@@ -108,6 +110,7 @@ export class StoreService {
 				IframeContainerPlugin: iframeContainerPlugin,
 				SharePlugin: sharePlugin,
 				ToolsPlugin: toolsPlugin,
+				FileStoragePlugin: fileStoragePlugin,
 				BeforeUnloadPlugin: beforeUnloadPlugin,
 				IframeGeometryIdPlugin: iframeGeometryIdPlugin,
 				ObserveWcAttributesPlugin: observeWcAttributesPlugin,
@@ -138,6 +141,7 @@ export class StoreService {
 				'IframeContainerPlugin',
 				'SharePlugin',
 				'ToolsPlugin',
+				'FileStoragePlugin',
 				'BeforeUnloadPlugin',
 				'IframeGeometryIdPlugin',
 				'ObserveWcAttributesPlugin',
@@ -171,6 +175,7 @@ export class StoreService {
 				await iframeContainerPlugin.register(this._store);
 				await sharePlugin.register(this._store);
 				await toolsPlugin.register(this._store);
+				await fileStoragePlugin.register(this._store);
 				await beforeUnloadPlugin.register(this._store);
 				await iframeGeometryIdPlugin.register(this._store);
 				await observeWcAttributesPlugin.register(this._store);

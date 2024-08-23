@@ -1,17 +1,13 @@
 import { Feature } from 'ol';
 import Map from 'ol/Map';
-import TileLayer from 'ol/layer/Tile';
 import { fromLonLat } from 'ol/proj';
 import View from 'ol/View';
-import { OSM, TileDebug } from 'ol/source';
 import { $injector } from '../../../../../src/injection';
 import { OlMfpHandler } from '../../../../../src/modules/olMap/handler/mfp/OlMfpHandler';
 import { mfpReducer } from '../../../../../src/store/mfp/mfp.reducer';
 import { positionReducer } from '../../../../../src/store/position/position.reducer';
 import { mapReducer } from '../../../../../src/store/map/map.reducer';
-
 import { TestUtils } from '../../../../test-utils';
-
 import { register } from 'ol/proj/proj4';
 import { Polygon, Point, Geometry } from 'ol/geom';
 import { requestJob, setCurrent } from '../../../../../src/store/mfp/mfp.action';
@@ -104,14 +100,6 @@ describe('OlMfpHandler', () => {
 		const viewCenter = center ?? initialCenter;
 		const requestedCoordinate = coordinateFromPixel ?? initialCenter;
 		const map = new Map({
-			layers: [
-				new TileLayer({
-					source: new OSM()
-				}),
-				new TileLayer({
-					source: new TileDebug()
-				})
-			],
 			target: getTarget(),
 			view: new View({
 				center: viewCenter,
