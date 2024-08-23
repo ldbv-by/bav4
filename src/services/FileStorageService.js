@@ -14,7 +14,7 @@ import { createUniqueId } from '../utils/numberUtils';
  * Checks if a string represents an adminId.
  * @function
  * @name FileStorageService#isAdminId
- * @param {String} id
+ * @param {String|null|undefined} id
  * @returns {boolean} fileId
  */
 
@@ -23,7 +23,7 @@ import { createUniqueId } from '../utils/numberUtils';
  * @function
  * @async
  * @name FileStorageService#isFileId
- * @param {String} id
+ * @param {String|null|undefined} id
  * @returns {boolean} fileId
  */
 
@@ -33,7 +33,7 @@ import { createUniqueId } from '../utils/numberUtils';
  * @function
  * @async
  * @name FileStorageService#getFileId
- * @param {String} adminId
+ * @param {String|null} adminId
  * @returns {Promise<string>} fileId
  */
 
@@ -43,7 +43,7 @@ import { createUniqueId } from '../utils/numberUtils';
  * @async
  * @name FileStorageService#get
  * @param {String} fileId
- * @returns {Promise<string>} content
+ * @returns {Promise<FileLoadResult>} content
  */
 
 /**
@@ -108,11 +108,17 @@ export class BvvFileStorageService {
 	}
 
 	isAdminId(id) {
-		return id.startsWith('a_');
+		if (id) {
+			return id.startsWith('a_');
+		}
+		return false;
 	}
 
 	isFileId(id) {
-		return id.startsWith('f_');
+		if (id) {
+			return id.startsWith('f_');
+		}
+		return false;
 	}
 
 	async getFileId(possibleAdminId) {
@@ -177,11 +183,17 @@ export class TempStorageService {
 	#store = {};
 
 	isAdminId(id) {
-		return id.startsWith('a_');
+		if (id) {
+			return id.startsWith('a_');
+		}
+		return false;
 	}
 
 	isFileId(id) {
-		return id.startsWith('f_');
+		if (id) {
+			return id.startsWith('f_');
+		}
+		return false;
 	}
 
 	async getFileId(possibleAdminId) {

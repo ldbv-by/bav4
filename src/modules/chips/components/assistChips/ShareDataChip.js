@@ -9,7 +9,9 @@ import { AbstractAssistChip } from './AbstractAssistChip';
 import shareIcon from './assets/share.svg';
 import { setQueryParams } from '../../../../utils/urlUtils';
 
-const Update = 'update';
+const Update_Latest = 'update_latest';
+const Update_FileId = 'update_fileId';
+const Update_AdminId = 'update_adminId';
 /**
  * A chip to share a stored file. The file is stored by the backend and
  * consist of drawings or measurements created within the application.
@@ -19,7 +21,7 @@ const Update = 'update';
  */
 export class ShareDataChip extends AbstractAssistChip {
 	constructor() {
-		super({ fileSaveResult: null });
+		super({ storedDataAvailable: false, adminId: null, fileId: null });
 		const {
 			TranslationService: translationService,
 			EnvironmentService: environmentService,
@@ -31,17 +33,37 @@ export class ShareDataChip extends AbstractAssistChip {
 		this._shareService = shareService;
 		this._urlService = urlService;
 		this.observe(
-			(state) => state.shared,
-			(data) => this.signal(Update, data)
+			(state) => state.fileStorage.latest,
+			(data) => this.signal(Update_Latest, data)
+		);
+
+		this.observe(
+			(state) => state.fileStorage.fileId,
+			(data) => this.signal(Update_FileId, data)
+		);
+
+		this.observe(
+			(state) => state.fileStorage.adminId,
+			(data) => this.signal(Update_AdminId, data)
 		);
 	}
 
 	update(type, data, model) {
 		switch (type) {
-			case Update:
+			case Update_Latest:
 				return {
 					...model,
-					fileSaveResult: data.fileSaveResult
+					storedDataAvailable: data.payload.success
+				};
+			case Update_AdminId:
+				return {
+					...model,
+					adminId: data
+				};
+			case Update_FileId:
+				return {
+					...model,
+					fileId: data
 				};
 		}
 	}
@@ -56,15 +78,15 @@ export class ShareDataChip extends AbstractAssistChip {
 	}
 
 	isVisible() {
-		const { fileSaveResult } = this.getModel();
+		const { storedDataAvailable } = this.getModel();
 
-		return !!(fileSaveResult?.adminId && fileSaveResult?.fileId);
+		return !!storedDataAvailable;
 	}
 
 	async onClick() {
-		const { fileSaveResult } = this.getModel();
 		const translate = (key) => this._translationService.translate(key);
 		const title = translate('chips_assist_chip_share_stored_data');
+		const { fileId, adminId } = this.getModel();
 		const buildShareUrl = async (id) => {
 			const extraParams = { [QueryParameters.LAYER]: id };
 			/**
@@ -81,8 +103,8 @@ export class ShareDataChip extends AbstractAssistChip {
 			}
 		};
 		const generateShareUrls = async () => {
-			const forAdminId = await buildShareUrl(fileSaveResult.adminId);
-			const forFileId = await buildShareUrl(fileSaveResult.fileId);
+			const forAdminId = await buildShareUrl(adminId);
+			const forFileId = await buildShareUrl(fileId);
 			return { adminId: forAdminId, fileId: forFileId };
 		};
 
