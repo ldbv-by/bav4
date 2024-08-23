@@ -234,8 +234,8 @@ export class TimeTravel extends MvuElement {
 		});
 
 		//set data color
-		const searchInput = this.shadowRoot.querySelectorAll('.data [data-year="' + activeYear + '"]');
-		searchInput.forEach((item) => {
+		const activeItem = this.shadowRoot.querySelectorAll('.data [data-year="' + activeYear + '"]');
+		activeItem.forEach((item) => {
 			item.classList.add('activeItem');
 		});
 
@@ -255,7 +255,7 @@ export class TimeTravel extends MvuElement {
 							${data.map(
 								(item) =>
 									html`<div class="row">
-										<span class="title" title="beste Darstellung Zoom ${item.zoomlevel}">${item.bezeichnung}</span>
+										<span class="title" title="${translate('timeTravel_map_series')}">${item.bezeichnung}</span>
 										${years.map((year) => getYearItems(year, yearsActiveMap, item.zoomlevel, item.years.split(',')))}
 									</div>`
 							)}
@@ -263,9 +263,13 @@ export class TimeTravel extends MvuElement {
 						<div id="base" class="base">
 							<div class="actions">
 								<div>
-									<select id="yearSelect" @change=${onChangeSelect}>
+									<select id="yearSelect" class="hide" @change=${onChangeSelect}>
 										${getSelectOptions(years)}
 									</select>
+									<div class="ba-form-element active-year-input">
+										<input id="yearInput" type="number" min="${min}" max="${max}" .value="${activeYear}" @change=${onChangeSelect} />
+										<i class="bar"></i>
+									</div>
 									<ba-button
 										id="buttonData"
 										.label=${translate('timeTravel_data')}
@@ -276,7 +280,7 @@ export class TimeTravel extends MvuElement {
 								</div>
 								<div>
 									<ba-icon
-										id="increase"
+										id="decrease"
 										.icon="${minusSvg}"
 										.color=${'var(--primary-color)'}
 										.size=${isPortrait ? 2.8 : 1.9}
@@ -284,7 +288,7 @@ export class TimeTravel extends MvuElement {
 										@click=${decreaseYear}
 									></ba-icon>
 									<ba-icon
-										id="decrease"
+										id="increase"
 										.icon="${plusSvg}"
 										.color=${'var(--primary-color)'}
 										.size=${isPortrait ? 2.8 : 1.9}
@@ -322,7 +326,6 @@ export class TimeTravel extends MvuElement {
 							<div class="slider">
 								<input
 									id="rangeSlider"
-									class="slider"
 									type="range"
 									step="${Range_Slider_Step}"
 									min="${min}"

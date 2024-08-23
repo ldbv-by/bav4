@@ -187,3 +187,30 @@ input[type='range']::-webkit-slider-thumb {
 	width: 100%;
 	margin-right: 2em;
 }
+input[type='number'] {
+	-moz-appearance: textfield;
+}
+input[type='number'] {
+	font-size: 1.5rem;
+	padding: 0 1.5em 0 0;
+	border: 0;
+	color: var(--split-one-color);
+}
+.active-year-input {
+	display: block !important;
+	width: 5.5em;
+	margin: 0 0.5em 0 0 !important;
+	padding: 0;
+}
+.active-year-input input {
+	padding: 0 0.6em;
+	text-align: center;
+}
+
+.ba-form-element .bar {
+	border-bottom: 0.2em solid var(--split-one-color-lighter) !important;
+}
+
+.ba-form-element .bar::before {
+	background: var(--split-one-color) !important;
+}

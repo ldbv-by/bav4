@@ -11,6 +11,7 @@ describe('i18n for timetravel module', () => {
 		expect(map.timeTravel_start).toBe('Start');
 		expect(map.timeTravel_stop).toBe('Stop');
 		expect(map.timeTravel_reset).toBe('Zurücksetzten');
+		expect(map.timeTravel_map_series).toBe('map series');
 	});
 
 	it('provides translation for en', () => {
@@ -23,10 +24,11 @@ describe('i18n for timetravel module', () => {
 		expect(map.timeTravel_start).toBe('start');
 		expect(map.timeTravel_stop).toBe('stop');
 		expect(map.timeTravel_reset).toBe('reset');
+		expect(map.timeTravel_map_series).toBe('Kartenwerk');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 7;
+		const expectedSize = 8;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

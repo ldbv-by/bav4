@@ -9,7 +9,8 @@ export const provide = (lang) => {
 				timeTravel_decrease: 'previous year',
 				timeTravel_start: 'start',
 				timeTravel_stop: 'stop',
-				timeTravel_reset: 'reset'
+				timeTravel_reset: 'reset',
+				timeTravel_map_series: 'map series'
 			};
 
 		case 'de':
@@ -21,7 +22,8 @@ export const provide = (lang) => {
 				timeTravel_decrease: 'vorheriges Jahr',
 				timeTravel_start: 'Start',
 				timeTravel_stop: 'Stop',
-				timeTravel_reset: 'Zurücksetzten'
+				timeTravel_reset: 'Zurücksetzten',
+				timeTravel_map_series: 'Kartenwerk'
 			};
 
 		default:
