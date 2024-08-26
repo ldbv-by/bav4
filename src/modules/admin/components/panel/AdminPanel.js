@@ -9,6 +9,7 @@ import css from './adminPanel.css';
 import { $injector } from '../../../../injection/index';
 import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 import { End_Label } from '../layerTree/LayerTree';
+import { toggleSchema } from '../../../../store/media/media.action';
 // eslint-disable-next-line no-unused-vars
 // import { logOnce, onlyOnce } from '../layerTree/LayerTree';
 
@@ -19,6 +20,8 @@ const Update_Catalog = 'update_catalog';
 const Update_GeoResources = 'update_georesources';
 const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
 const Update_All = 'update_all';
+
+const Update_Schema = 'update_schema';
 
 /**
 
@@ -245,6 +248,15 @@ export class AdminPanel extends MvuElement {
 	}
 
 	async onInitialize() {
+		console.log('🚀 ~ AdminPanel ~ createView ~ darkSchema:', this.getModel().darkSchema);
+		if (this.getModel().darkSchema) {
+			this.signal(Update_Schema, !this.getModel().darkSchema);
+		}
+
+		this.observe(
+			(state) => state.media.darkSchema,
+			(darkSchema) => this.signal(Update_Schema, darkSchema)
+		);
 		const selectedTopicId = this._configService.getValue('DEFAULT_TOPIC_ID', 'ba');
 
 		const topics = await this._loadTopics();
@@ -322,11 +334,15 @@ export class AdminPanel extends MvuElement {
 					catalogWithResourceData: [...data.catalogWithResourceData],
 					dummy: !model.dummy
 				};
+
+			case Update_Schema:
+				console.log('🚀 ~ AdminPanel ~ update ~ Update_Schema ~ data:', data);
+				return { ...model, darkSchema: data };
 		}
 	}
 
 	createView(model) {
-		const { selectedTopicId, selectedTopic, topics, geoResources, catalogWithResourceData, dummy } = model;
+		const { darkSchema, selectedTopicId, selectedTopic, topics, geoResources, catalogWithResourceData, dummy } = model;
 
 		const _refreshLayers = async () => {
 			await this._loadGeoResources();
@@ -604,6 +620,11 @@ export class AdminPanel extends MvuElement {
 			this.signal(Update_CatalogWithResourceData, catalog);
 		};
 
+		const getSchemaClass = () => {
+			return darkSchema ? 'sun' : 'moon';
+		};
+
+		// <span class="icon "> </span>
 		if (selectedTopic && catalogWithResourceData) {
 			return html`
 				<style>
@@ -611,6 +632,8 @@ export class AdminPanel extends MvuElement {
 				</style>
 
 				<h1 id="admin-app-title">Admin App</h1>
+
+				<button @click="${toggleSchema}" title="Mode" class=" ${getSchemaClass()} theme-toggle pointer">Mode</button>
 
 				<div class="container">
 					<div>
