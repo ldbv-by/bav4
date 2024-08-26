@@ -248,7 +248,6 @@ export class AdminPanel extends MvuElement {
 	}
 
 	async onInitialize() {
-		console.log('🚀 ~ AdminPanel ~ createView ~ darkSchema:', this.getModel().darkSchema);
 		if (this.getModel().darkSchema) {
 			this.signal(Update_Schema, !this.getModel().darkSchema);
 		}
@@ -336,7 +335,6 @@ export class AdminPanel extends MvuElement {
 				};
 
 			case Update_Schema:
-				console.log('🚀 ~ AdminPanel ~ update ~ Update_Schema ~ data:', data);
 				return { ...model, darkSchema: data };
 		}
 	}
