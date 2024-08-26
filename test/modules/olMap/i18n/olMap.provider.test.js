@@ -4,28 +4,24 @@ describe('i18n for map module', () => {
 	it('provides translation for de', () => {
 		const map = provide('de');
 
-		expect(map.olMap_handler_measure_start).toBe('Klicken, um die Messung zu beginnen');
-		expect(map.olMap_handler_measure_continue_line).toBe('Klicken, um die Messlinie zu zeichnen (Doppelklick zum Beenden)');
-		expect(map.olMap_handler_measure_continue_polygon).toBe('Klicken, um die Fläche zu zeichnen (Doppelklick zum Beenden)');
-		expect(map.olMap_handler_measure_snap_first_point).toBe('Klicke, um die Fläche zu schliessen');
-		expect(map.olMap_handler_measure_snap_last_point).toBe('Klicke, um die Messung abzuschliessen');
-		expect(map.olMap_handler_measure_modify_click_new_point).toBe('Klicke, um einen Punkt hinzuzufügen.<br/> Punkt verschieben: klicken und ziehen');
+		expect(map.olMap_handler_measure_start).toBe('Messung beginnen: klicken');
+		expect(map.olMap_handler_measure_continue_line).toBe('Messlinie zeichnen: klicken<br/>beenden: Doppelklick');
+		expect(map.olMap_handler_measure_continue_polygon).toBe('Fläche zeichnen: klicken<br/>beenden: Doppelklick');
+		expect(map.olMap_handler_measure_snap_first_point).toBe('Fläche schließen: klicken');
+		expect(map.olMap_handler_measure_snap_last_point).toBe('Messung abschließen: klicken');
+		expect(map.olMap_handler_measure_modify_click_new_point).toBe('Punkt hinzufügen: klicken<br/>Punkt verschieben: klicken und ziehen');
 		expect(map.olMap_handler_measure_modify_click_or_drag).toBe('Punkt verschieben: klicken und ziehen');
-		expect(map.olMap_handler_measure_modify_polygon_click_or_drag).toBe(
-			'Klicke, um den Punkt zu löschen (mind. 3 Punkte).<br/> Punkt verschieben: klicken und ziehen'
-		);
-		expect(map.olMap_handler_measure_modify_linestring_click_or_drag).toBe(
-			'Klicke, um den Punkt zu löschen (mind. 2 Punkte).<br/> Punkt verschieben: klicken und ziehen'
-		);
-		expect(map.olMap_handler_measure_modify_click_drag_overlay).toBe('Klicke und ziehen um die Beschriftung zu verschieben');
-		expect(map.olMap_handler_measure_modify_key_for_delete).toBe('Messung löschen: ENTF Taste');
-		expect(map.olMap_handler_draw_modify_key_for_delete).toBe('Zeichnung löschen: ENTF Taste');
-		expect(map.olMap_handler_delete_last_point).toBe('Letzter Punkt löschen: ENTF Taste');
+		expect(map.olMap_handler_measure_modify_polygon_click_or_drag).toBe('Punkt löschen: klicken<br/>Punkt verschieben: klicken und ziehen');
+		expect(map.olMap_handler_measure_modify_linestring_click_or_drag).toBe('Punkt löschen: klicken<br/>Punkt verschieben: klicken und ziehen');
+		expect(map.olMap_handler_measure_modify_click_drag_overlay).toBe('Beschriftung verschieben: klicken und ziehen');
+		expect(map.olMap_handler_measure_modify_key_for_delete).toBe('Messung löschen: ENTF-Taste');
+		expect(map.olMap_handler_draw_modify_key_for_delete).toBe('Zeichnung löschen: ENTF-Taste');
+		expect(map.olMap_handler_delete_last_point).toBe('Letzten Punkt löschen: ENTF-Taste');
 		expect(map.olMap_handler_measure_select).toBe('bestehende Messung auswählen oder neue Messung beginnen');
 		expect(map.olMap_handler_measure_layer_label).toBe('Messung');
-		expect(map.olMap_handler_draw_start).toBe('Klicken, um die Zeichnung zu beginnen');
+		expect(map.olMap_handler_draw_start).toBe('Zeichnung beginnen: klicken');
 		expect(map.olMap_handler_draw_layer_label).toBe('Zeichnung');
-		expect(map.olMap_handler_draw_continue_line).toBe('Klicken, um die Linie zu zeichnen (Doppelklick zum Beenden)');
+		expect(map.olMap_handler_draw_continue_line).toBe('Linie zeichnen: klicken<br/>Beenden: Doppelklick');
 		expect(map.olMap_handler_draw_select).toBe('bestehende Zeichnung auswählen oder neue Zeichnung beginnen');
 		expect(map.olMap_handler_draw_new_text).toBe('Neuer Text');
 		expect(map.olMap_handler_storage_offline).toBe(
@@ -45,10 +41,10 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_mfp_id_a3_portrait).toBe('DIN A3 Hochformat');
 		expect(map.olMap_handler_mfp_encoder_layer_not_exportable).toBe('Die folgenden Ebenen können nicht exportiert werden:');
 		expect(map.olMap_handler_routing_choose_alternative_route(['label'])).toBe('label');
-		expect(map.olMap_handler_routing_modify_segment).toBe('Zum Ändern der Route ziehen');
-		expect(map.olMap_handler_routing_modify_start).toBe('Zum Ändern des Startpunktes ziehen');
-		expect(map.olMap_handler_routing_modify_destination).toBe('Zum Ändern des Zielpunktes ziehen');
-		expect(map.olMap_handler_routing_modify_intermediate).toBe('Zum Ändern des Zwischenpunktes ziehen');
+		expect(map.olMap_handler_routing_modify_segment).toBe('Ändern der Route: klicken und ziehen');
+		expect(map.olMap_handler_routing_modify_start).toBe('Ändern des Startpunktes: klicken und ziehen');
+		expect(map.olMap_handler_routing_modify_destination).toBe('Ändern des Zielpunktes: klicken und ziehen');
+		expect(map.olMap_handler_routing_modify_intermediate).toBe('Ändern des Zwischenpunktes: klicken und ziehen');
 		expect(map.olMap_handler_routing_rt_layer_label).toBe('Route (Track)');
 		expect(map.olMap_handler_routing_wp_layer_label).toBe('Route (Wegpunkte)');
 		expect(map.olMap_handler_routing_routingService_exception).toBe('Aufgrund eines technischen Fehlers konnte keine Route erstellt werden');
@@ -61,28 +57,24 @@ describe('i18n for map module', () => {
 	it('provides translation for en', () => {
 		const map = provide('en');
 
-		expect(map.olMap_handler_measure_start).toBe('Click to start measurement');
-		expect(map.olMap_handler_measure_continue_line).toBe('Click to continue drawing the line (double-click to finish)');
-		expect(map.olMap_handler_measure_continue_polygon).toBe('Click to continue drawing the polygon (double-click to finish)');
-		expect(map.olMap_handler_measure_snap_first_point).toBe('Click to close the surface');
-		expect(map.olMap_handler_measure_snap_last_point).toBe('Click to finish the line');
-		expect(map.olMap_handler_measure_modify_click_new_point).toBe('Click, to add point<br/> Click then drag to move the point');
+		expect(map.olMap_handler_measure_start).toBe('start measurement: click');
+		expect(map.olMap_handler_measure_continue_line).toBe('draw a line: continue clicking;<br/>finish line: double click');
+		expect(map.olMap_handler_measure_continue_polygon).toBe('draw a polygon: continue clicking;<br/> finish: double-click');
+		expect(map.olMap_handler_measure_snap_first_point).toBe('close polygon: click');
+		expect(map.olMap_handler_measure_snap_last_point).toBe('finish measurement: click');
+		expect(map.olMap_handler_measure_modify_click_new_point).toBe('add point: click<br/>move point: click and drag');
 		expect(map.olMap_handler_measure_modify_click_or_drag).toBe('Click then drag to move the point');
-		expect(map.olMap_handler_measure_modify_polygon_click_or_drag).toBe(
-			'Click to delete the point (3 points min.).<br/> Click then drag to move the point'
-		);
-		expect(map.olMap_handler_measure_modify_linestring_click_or_drag).toBe(
-			'Click to delete the point (2 points min.).<br/> Click then drag to move the point'
-		);
-		expect(map.olMap_handler_measure_modify_click_drag_overlay).toBe('Click then drag to move the label');
-		expect(map.olMap_handler_measure_modify_key_for_delete).toBe('Press DEL to delete the measurement');
-		expect(map.olMap_handler_draw_modify_key_for_delete).toBe('Press DEL to delete the drawing');
-		expect(map.olMap_handler_delete_last_point).toBe('Press DEL to remove the last point drawn');
+		expect(map.olMap_handler_measure_modify_polygon_click_or_drag).toBe('delete point: click<br/>move point: click and drag');
+		expect(map.olMap_handler_measure_modify_linestring_click_or_drag).toBe('delete point: click<br/>move point: click and drag');
+		expect(map.olMap_handler_measure_modify_click_drag_overlay).toBe('move label: click and drag');
+		expect(map.olMap_handler_measure_modify_key_for_delete).toBe('delete measurement: press DEL');
+		expect(map.olMap_handler_draw_modify_key_for_delete).toBe('delete drawing: press DEL');
+		expect(map.olMap_handler_delete_last_point).toBe('delete last point drawn: press DEL');
 		expect(map.olMap_handler_measure_select).toBe('Select existing or start new measurement');
 		expect(map.olMap_handler_measure_layer_label).toBe('Measurement');
-		expect(map.olMap_handler_draw_start).toBe('Click to start drawing');
+		expect(map.olMap_handler_draw_start).toBe('start drawing: click');
 		expect(map.olMap_handler_draw_layer_label).toBe('Drawing');
-		expect(map.olMap_handler_draw_continue_line).toBe('Click to continue drawing the line (double-click to finish)');
+		expect(map.olMap_handler_draw_continue_line).toBe('continue drawing: click<br/>finish drawing: double-click');
 		expect(map.olMap_handler_draw_select).toBe('Select existing or start new drawing');
 		expect(map.olMap_handler_draw_new_text).toBe('new text');
 		expect(map.olMap_handler_storage_offline).toBe('Offline: Could not store layer-data. The data will get lost after this session.');
@@ -98,10 +90,10 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_mfp_id_a3_portrait).toBe('DIN A3 portrait');
 		expect(map.olMap_handler_mfp_encoder_layer_not_exportable).toBe('The following layers cannot be exported:');
 		expect(map.olMap_handler_routing_choose_alternative_route(['label'])).toBe('label');
-		expect(map.olMap_handler_routing_modify_segment).toBe('Pull to modify the route');
-		expect(map.olMap_handler_routing_modify_start).toBe('Pull to modify the start point');
-		expect(map.olMap_handler_routing_modify_destination).toBe('Pull to modify the destination point');
-		expect(map.olMap_handler_routing_modify_intermediate).toBe('Pull to modify the waypoint');
+		expect(map.olMap_handler_routing_modify_segment).toBe('modify route: click and pull');
+		expect(map.olMap_handler_routing_modify_start).toBe('modify starting point: click and pull');
+		expect(map.olMap_handler_routing_modify_destination).toBe('modify destination point: click and pull');
+		expect(map.olMap_handler_routing_modify_intermediate).toBe('modify waypoint: click and pull');
 		expect(map.olMap_handler_routing_rt_layer_label).toBe('Route (Track)');
 		expect(map.olMap_handler_routing_wp_layer_label).toBe('Route (Waypoints)');
 		expect(map.olMap_handler_routing_routingService_exception).toBe('Due to a technical error no route could be created');
