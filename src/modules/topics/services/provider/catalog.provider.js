@@ -28,15 +28,13 @@ export const loadBvvCatalog = async (topicId) => {
 };
 
 export const copyCatalogToProd = async (topicId) => {
-	const { ConfigService: configService } = $injector.inject('ConfigService');
-	// const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
-
 	const baseURL = configService.getValueAsPath('BACKEND_URL');
 
 	const url = `${baseURL}adminui/copy2prod/catalog/${topicId}`;
 	const adminToken = configService.getValue('ADMIN_TOKEN_KEY');
 
-	// why does this not work? ask Thomas
+	// // why does this not work? ask Thomas
+	// const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 	// const result = await httpService.post(`${url}`, {
 	// 	headers: {
 	// 		'X-AUTH-ADMIN-TOKEN': adminToken,
@@ -48,6 +46,7 @@ export const copyCatalogToProd = async (topicId) => {
 	// });
 	// return result;
 
+	const { ConfigService: configService } = $injector.inject('ConfigService');
 	const response = await fetch(`${url}`, {
 		method: 'POST',
 		body: '',

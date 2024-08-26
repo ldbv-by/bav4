@@ -523,7 +523,7 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const updateSelectedTopic = async (newTopic, newTopicsArray) => {
-			console.log('🚀 ~ AdminPanel ~ updateSelectedTopic ~ newTopic:', newTopic);
+			// console.log('🚀 ~ AdminPanel ~ updateSelectedTopic ~ newTopic:', newTopic);
 			const catalog = await this._loadCatalog(newTopic.id);
 			this.signal(Update_Topics, { newTopic, newTopicsArray, catalog });
 		};
@@ -574,22 +574,22 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const copyTopic2Prod = async (topicID) => {
-			console.log('🚀 ~ AdminPanel ~ copyTopic2Prod ~ topicID:', topicID);
+			// console.log('🚀 ~ AdminPanel ~ copyTopic2Prod ~ topicID:', topicID);
 			await this._topicsService.copyTopic2Prod(topicID);
 		};
 
 		const copyTopic2Test = async (topicID) => {
-			console.log('🚀 ~ AdminPanel ~ copyTopic2Test ~ topicID:', topicID);
+			// console.log('🚀 ~ AdminPanel ~ copyTopic2Test ~ topicID:', topicID);
 			await this._topicsService.copyTopic2Test(topicID);
 		};
 
 		const copyCatalog2Prod = async (topicID) => {
-			console.log('🚀 ~ AdminPanel ~ copyCatalog2Prod ~ topicID:', topicID);
+			// console.log('🚀 ~ AdminPanel ~ copyCatalog2Prod ~ topicID:', topicID);
 			await this._catalogService.copyCatalogToProd(topicID);
 		};
 
 		const copyCatalog2Test = async (topicID) => {
-			console.log('🚀 ~ AdminPanel ~ copyCatalog2Test ~ topic:', topicID);
+			// console.log('🚀 ~ AdminPanel ~ copyCatalog2Test ~ topic:', topicID);
 			await this._catalogService.copyCatalogToTest(topicID);
 		};
 

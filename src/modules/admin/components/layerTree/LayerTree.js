@@ -434,22 +434,22 @@ export class LayerTree extends MvuElement {
 		};
 
 		const handleCopyTopic2Test = (event, topicId) => {
-			console.log('🚀 ~ LayerTree ~ handleCopyTopic2Prod ~ handleCopyTopic2Test ~ topicId:', topicId);
+			// console.log('🚀 ~ LayerTree ~ handleCopyTopic2Prod ~ handleCopyTopic2Test ~ topicId:', topicId);
 			this._copyTopic2Test(topicId);
 		};
 
 		const handleCopyCatalog2Test = (event, topicId) => {
-			console.log('🚀 ~ LayerTree ~ handleCopyCatalog2Prod ~ handleCopyCatalog2Test ~ topicId:', topicId);
+			// console.log('🚀 ~ LayerTree ~ handleCopyCatalog2Prod ~ handleCopyCatalog2Test ~ topicId:', topicId);
 			this._copyCatalog2Test(topicId);
 		};
 
 		const handleCopyTopic2Prod = (event, topicId) => {
-			console.log('🚀 ~ LayerTree ~ handleCopyTopic2Prod ~ handleCopyTopic2Prod ~ topicId:', topicId);
+			// console.log('🚀 ~ LayerTree ~ handleCopyTopic2Prod ~ handleCopyTopic2Prod ~ topicId:', topicId);
 			this._copyTopic2Prod(topicId);
 		};
 
 		const handleCopyCatalog2Prod = (event, topicId) => {
-			console.log('🚀 ~ LayerTree ~ handleCopyCatalog2Prod ~ handleCopyCatalog2Prod ~ topicId:', topicId);
+			// console.log('🚀 ~ LayerTree ~ handleCopyCatalog2Prod ~ handleCopyCatalog2Prod ~ topicId:', topicId);
 			this._copyCatalog2Prod(topicId);
 		};
 
