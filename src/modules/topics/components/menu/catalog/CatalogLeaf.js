@@ -9,10 +9,18 @@ import infoSvg from '../assets/info.svg';
 import { openModal } from '../../../../../store/modal/modal.action';
 import { createUniqueId } from '../../../../../utils/numberUtils';
 import { AbstractMvuContentPanel } from '../../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
+import { GeoResourceFuture } from '../../../../../domain/geoResources';
+import { removeLayer } from '../../../../../store/layers/layers.action';
 
 const Update_Layers_Store_Ready = 'update_layers_store_ready';
 const Update_Active_Layers = 'update_active_layers';
 const Update_GeoResource_Id = 'update_geoResource_id';
+const Update_LoadingPreviewFlag = 'update_loadingPreviewFlag';
+
+/**
+ * Amount of time waiting before adding a layer in ms.
+ */
+export const LOADING_PREVIEW_DELAY_MS = 500;
 
 /**
  * @class
@@ -24,6 +32,7 @@ const Update_GeoResource_Id = 'update_geoResource_id';
 export class CatalogLeaf extends AbstractMvuContentPanel {
 	#geoResourceService;
 	#translationService;
+	#isTmpLayer = false;
 
 	constructor() {
 		super({ layersStoreReady: false, geoResourceId: null, activeLayers: [] });
@@ -60,11 +69,17 @@ export class CatalogLeaf extends AbstractMvuContentPanel {
 				return { ...model, activeLayers: [...data] };
 			case Update_GeoResource_Id:
 				return { ...model, geoResourceId: data };
+			case Update_LoadingPreviewFlag:
+				return { ...model, loadingPreview: data };
 		}
 	}
 
+	static _tmpLayerId(id) {
+		return `tmp_${CatalogLeaf.name}_${id}`;
+	}
+
 	createView(model) {
-		const { layersStoreReady, geoResourceId, activeLayers } = model;
+		const { layersStoreReady, geoResourceId, activeLayers, loadingPreview } = model;
 		const translate = (key) => this.#translationService.translate(key);
 
 		if (geoResourceId && layersStoreReady) {
@@ -92,12 +107,61 @@ export class CatalogLeaf extends AbstractMvuContentPanel {
 
 				return keywords.length === 0 ? nothing : toBadges(keywords);
 			};
+
+			const isGeoResourceActive = (geoResourceId) => {
+				return activeLayers.filter((l) => l.id !== CatalogLeaf._tmpLayerId(geoResourceId)).some((l) => l.geoResourceId === geoResourceId);
+			};
+
+			const getActivePreviewClass = () => {
+				return loadingPreview ? 'loading' : '';
+			};
+
+			/**
+			 * Uses mouseenter and mouseleave events for adding/removing a preview layer.
+			 * These events are not fired on touch devices, so there's no extra handling needed.
+			 */
+			const onMouseEnter = () => {
+				if (isGeoResourceActive(geoResourceId)) return;
+
+				//add a preview layer if GeoResource is accessible
+				if (this.#geoResourceService.isAllowed(geoResourceId)) {
+					const id = CatalogLeaf._tmpLayerId(geoResourceId);
+					this._timeoutId = setTimeout(() => {
+						this.#isTmpLayer = true;
+						addLayer(id, { geoResourceId: geoResourceId, constraints: { hidden: true } });
+						const geoRes = this.#geoResourceService.byId(geoResourceId);
+						if (geoRes instanceof GeoResourceFuture) {
+							this.signal(Update_LoadingPreviewFlag, true);
+							geoRes.onResolve(() => this.signal(Update_LoadingPreviewFlag, false));
+						}
+						this._timeoutId = null;
+					}, LOADING_PREVIEW_DELAY_MS);
+				}
+			};
+
+			const onMouseLeave = () => {
+				//remove the preview layer
+				removeLayer(CatalogLeaf._tmpLayerId(geoResourceId));
+				if (this._timeoutId) {
+					clearTimeout(this._timeoutId);
+					this._timeoutId = null;
+				}
+				this.#isTmpLayer = false;
+				this.signal(Update_LoadingPreviewFlag, false);
+			};
+
 			return html`
 				<style>
 					${css}
 				</style>
-				<span class="ba-list-item">
-					<ba-checkbox class="ba-list-item__text" @toggle=${onToggle} .disabled=${!geoR} .checked=${checked} tabindex="0" .title=${title}
+				<span class="ba-list-item ${getActivePreviewClass()}" @mouseenter=${() => onMouseEnter()} @mouseleave=${() => onMouseLeave()}>
+					<ba-checkbox
+						class="ba-list-item__text"
+						@toggle=${onToggle}
+						.disabled=${!geoR}
+						.checked=${checked && !this.#isTmpLayer}
+						tabindex="0"
+						.title=${title}
 						><span>${label}</span> ${getBadges(keywords)}</ba-checkbox
 					>
 					<div class="ba-icon-button ba-list-item__after vertical-center separator">
