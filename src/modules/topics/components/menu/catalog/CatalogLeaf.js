@@ -32,7 +32,6 @@ export const LOADING_PREVIEW_DELAY_MS = 500;
 export class CatalogLeaf extends AbstractMvuContentPanel {
 	#geoResourceService;
 	#translationService;
-	#isTmpLayer = false;
 
 	constructor() {
 		super({ layersStoreReady: false, geoResourceId: null, activeLayers: [] });
@@ -44,6 +43,8 @@ export class CatalogLeaf extends AbstractMvuContentPanel {
 
 		this.#geoResourceService = geoResourceService;
 		this.#translationService = translationService;
+
+		this._timeoutId = null;
 	}
 
 	set data(catalogEntry) {
@@ -83,7 +84,10 @@ export class CatalogLeaf extends AbstractMvuContentPanel {
 		const translate = (key) => this.#translationService.translate(key);
 
 		if (geoResourceId && layersStoreReady) {
-			const checked = activeLayers.map((layer) => layer.geoResourceId).includes(geoResourceId);
+			const checked = activeLayers
+				.filter((l) => l.constraints.hidden === false)
+				.map((layer) => layer.geoResourceId)
+				.includes(geoResourceId);
 			const geoR = this.#geoResourceService.byId(geoResourceId);
 			const keywords = [...this.#geoResourceService.getKeywords(geoResourceId)];
 			const label = geoR ? geoR.label : geoResourceId;
@@ -116,6 +120,10 @@ export class CatalogLeaf extends AbstractMvuContentPanel {
 				return loadingPreview ? 'loading' : '';
 			};
 
+			const getPreviewClass = () => {
+				return !checked && activeLayers.filter((l) => l.id === CatalogLeaf._tmpLayerId(geoResourceId)).length === 1 ? 'preview' : '';
+			};
+
 			/**
 			 * Uses mouseenter and mouseleave events for adding/removing a preview layer.
 			 * These events are not fired on touch devices, so there's no extra handling needed.
@@ -127,7 +135,6 @@ export class CatalogLeaf extends AbstractMvuContentPanel {
 				if (this.#geoResourceService.isAllowed(geoResourceId)) {
 					const id = CatalogLeaf._tmpLayerId(geoResourceId);
 					this._timeoutId = setTimeout(() => {
-						this.#isTmpLayer = true;
 						addLayer(id, { geoResourceId: geoResourceId, constraints: { hidden: true } });
 						const geoRes = this.#geoResourceService.byId(geoResourceId);
 						if (geoRes instanceof GeoResourceFuture) {
@@ -146,7 +153,6 @@ export class CatalogLeaf extends AbstractMvuContentPanel {
 					clearTimeout(this._timeoutId);
 					this._timeoutId = null;
 				}
-				this.#isTmpLayer = false;
 				this.signal(Update_LoadingPreviewFlag, false);
 			};
 
@@ -154,14 +160,12 @@ export class CatalogLeaf extends AbstractMvuContentPanel {
 				<style>
 					${css}
 				</style>
-				<span class="ba-list-item ${getActivePreviewClass()}" @mouseenter=${() => onMouseEnter()} @mouseleave=${() => onMouseLeave()}>
-					<ba-checkbox
-						class="ba-list-item__text"
-						@toggle=${onToggle}
-						.disabled=${!geoR}
-						.checked=${checked && !this.#isTmpLayer}
-						tabindex="0"
-						.title=${title}
+				<span
+					class="ba-list-item ${getActivePreviewClass()} ${getPreviewClass()}"
+					@mouseenter=${() => onMouseEnter()}
+					@mouseleave=${() => onMouseLeave()}
+				>
+					<ba-checkbox class="ba-list-item__text" @toggle=${onToggle} .disabled=${!geoR} .checked=${checked} tabindex="0" .title=${title}
 						><span>${label}</span> ${getBadges(keywords)}</ba-checkbox
 					>
 					<div class="ba-icon-button ba-list-item__after vertical-center separator">

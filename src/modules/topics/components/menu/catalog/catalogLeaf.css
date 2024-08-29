@@ -52,3 +52,8 @@ ba-icon:focus-visible {
 		transform: translateX(-1.75rem);
 	}
 }
+
+.preview ba-checkbox::part(checkbox-background) {
+	border-color: var(--topic-theme, var(--secondary-color));
+	background-color: color(from var(--topic-theme, var(--secondary-color)) srgb r g b / 0.4);
+}
