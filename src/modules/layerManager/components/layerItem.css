@@ -57,3 +57,14 @@ ba-icon:focus {
 .opacity-slider {
 	-webkit-user-drag: element;
 }
+.compare {
+	/* height: 1.5em; */
+	display: flex;
+	width: 100%;
+	background: var(--primary-color);
+	align-items: stretch;
+}
+.compare ba-button {
+	display: flex;
+	width: 100%;
+}

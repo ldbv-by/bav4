@@ -13,7 +13,8 @@ import {
 	CENTER_ROTATION_CHANGED,
 	FIT_LAYER_REQUESTED,
 	LIVE_CENTER_CHANGED,
-	LIVE_ZOOM_CHANGED
+	LIVE_ZOOM_CHANGED,
+	SPLIT_MAP
 } from './position.reducer';
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
@@ -253,6 +254,14 @@ export const fit = (extent, opts = {}) => {
 	});
 };
 
+export const split = (opts = {}) => {
+	const options = { ...opts };
+	getStore().dispatch({
+		type: SPLIT_MAP,
+		payload: new EventLike({ options })
+	});
+};
+
 /**
  * Sets a fit request for a layer.
  * The fitRequest object is wrapper by an {@link EventLike} object.
@@ -261,7 +270,7 @@ export const fit = (extent, opts = {}) => {
  * @function
  */
 export const fitLayer = (id, opts = {}) => {
-	const options = { ...defaultFitOptions, ...opts };
+	const options = { ...opts };
 	getStore().dispatch({
 		type: FIT_LAYER_REQUESTED,
 		payload: new EventLike({ id, options })

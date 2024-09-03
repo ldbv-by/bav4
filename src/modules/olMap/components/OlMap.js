@@ -19,6 +19,8 @@ import { Group as LayerGroup } from 'ol/layer';
 import { GeoResourceFuture, GeoResourceTypes } from '../../../domain/geoResources';
 import { equals } from '../../../utils/storeUtils';
 import { roundCenter, roundRotation, roundZoomLevel } from '../../../utils/mapUtils';
+import { getRenderPixel } from 'ol/render';
+import { unByKey } from 'ol/Observable.js';
 
 const Update_Position = 'update_position';
 const Update_Layers = 'update_layers';
@@ -29,12 +31,15 @@ const Update_Layers = 'update_layers';
  * @author taulinger
  */
 export class OlMap extends MvuElement {
+	#range = 50;
+	#position = 0;
 	constructor() {
 		super({
 			zoom: null,
 			center: null,
 			rotation: null,
 			fitRequest: null,
+			splitRequest: null,
 			fitLayerRequest: null,
 			layers: []
 		});
@@ -235,6 +240,8 @@ export class OlMap extends MvuElement {
 		this.observeModel('layers', () => this._syncLayers());
 		//sync the view
 		this.observeModel(['zoom', 'center', 'rotation'], () => this._syncView());
+		//handle splitMap
+		this.observeModel(['splitRequest'], (eventLike) => this._splitMap(eventLike));
 	}
 
 	/**
@@ -404,6 +411,58 @@ export class OlMap extends MvuElement {
 		} else {
 			// we have an extent
 			fit();
+		}
+	}
+
+	_splitMap(eventLike) {
+		const { layers } = this.getModel();
+		const tempMap = this._map;
+
+		if (eventLike.payload.options.range) {
+			this.#range = eventLike.payload.options.range;
+		}
+		console.log(eventLike.payload.options.position);
+		if (eventLike.payload.options.position) {
+			this.#position = eventLike.payload.options.position;
+		}
+
+		const split = (layers) => {
+			layers.forEach((layer) => {
+				if (layer.zIndex > 0) {
+					const olLayer = getLayerById(tempMap, layers[1].id);
+
+					olLayer.on('prerender', (event) => {
+						const ctx = event.context;
+						const mapSize = tempMap.getSize();
+						const width = mapSize[0] * (this.#range / 100);
+
+						const tl = this.#position === 1 ? getRenderPixel(event, [width, 0]) : getRenderPixel(event, [0, mapSize[1]]);
+						const tr = this.#position === 1 ? getRenderPixel(event, [mapSize[0], 0]) : getRenderPixel(event, [width, mapSize[1]]);
+						const bl = this.#position === 1 ? getRenderPixel(event, [width, mapSize[1]]) : getRenderPixel(event, [0, 0]);
+						const br = this.#position === 1 ? getRenderPixel(event, mapSize) : getRenderPixel(event, [width, 0]);
+
+						ctx.save();
+						ctx.beginPath();
+						ctx.moveTo(tl[0], tl[1]);
+						ctx.lineTo(bl[0], bl[1]);
+						ctx.lineTo(br[0], br[1]);
+						ctx.lineTo(tr[0], tr[1]);
+						ctx.closePath();
+						ctx.clip();
+						tempMap.render();
+					});
+
+					olLayer.on('postrender', (event) => {
+						const ctx = event.context;
+						ctx.restore();
+					});
+				}
+			});
+		};
+
+		if (eventLike.payload.options.active) {
+			split(layers);
+			tempMap.render();
 		}
 	}
 

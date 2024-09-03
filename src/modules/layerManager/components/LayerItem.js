@@ -18,6 +18,7 @@ import { createUniqueId } from '../../../utils/numberUtils';
 import { fitLayer } from '../../../store/position/position.action';
 import { GeoResourceFuture, RtVectorGeoResource, VectorGeoResource } from '../../../domain/geoResources';
 import { MenuTypes } from '../../commons/components/overflowMenu/OverflowMenu';
+import { split } from '../../../store/position/position.action';
 
 const Update_Layer = 'update_layer';
 const Update_Layer_Collapsed = 'update_layer_collapsed';
@@ -277,6 +278,11 @@ export class LayerItem extends AbstractMvuContentPanel {
 						</div>
 						<ba-overflow-menu .type=${MenuTypes.MEATBALL} .items=${getMenuItems()}></ba-overflow-menu>
 					</div>
+				</div>
+				<div class="compare">
+					<ba-button .label=${'left'} @click=${() => split({ active: false, position: 2 })}></ba-button>
+					<ba-button .label=${'both'}></ba-button>
+					<ba-button .label=${'right'} @click=${() => split({ active: false, position: 1 })}></ba-button>
 				</div>
 			</div>`;
 	}

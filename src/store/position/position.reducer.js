@@ -12,6 +12,7 @@ export const ROTATION_CHANGED = 'position/rotation';
 export const LIVE_ROTATION_CHANGED = 'position/live_rotation';
 export const FIT_REQUESTED = 'position/fit';
 export const FIT_LAYER_REQUESTED = 'position/fit_layer';
+export const SPLIT_MAP = 'position/split_map';
 
 const defaultCenter = [1288239.2412306187, 6130212.561641981];
 const defaultZoom = 12;
@@ -24,7 +25,8 @@ export const initialState = {
 	rotation: 0,
 	liveRotation: 0,
 	fitRequest: new EventLike(null),
-	fitLayerRequest: new EventLike(null)
+	fitLayerRequest: new EventLike(null),
+	splitRequest: new EventLike(null)
 };
 
 export const positionReducer = (state = initialState, action) => {
@@ -115,6 +117,13 @@ export const positionReducer = (state = initialState, action) => {
 			return {
 				...state,
 				fitLayerRequest: payload
+			};
+		}
+
+		case SPLIT_MAP: {
+			return {
+				...state,
+				splitRequest: payload
 			};
 		}
 	}

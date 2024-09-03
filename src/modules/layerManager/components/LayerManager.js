@@ -7,6 +7,7 @@ import { repeat } from 'lit-html/directives/repeat.js';
 import { modifyLayer, removeLayer } from './../../../store/layers/layers.action';
 import css from './layerManager.css';
 import { MvuElement } from '../../MvuElement';
+import { split } from '../../../store/position/position.action';
 
 const Update_Draggable_Items = 'update_draggable_items';
 const Update_Collapse_Change = 'update_collapse_change';
@@ -230,19 +231,28 @@ export class LayerManager extends MvuElement {
 		const expandOrCollapseLabel = draggableItemsExpandable ? translate('layerManager_expand_all') : translate('layerManager_collapse_all');
 		const expandOrCollapseAction = draggableItemsExpandable ? expandAll : collapseAll;
 
+		const onChangeRange = (event) => {
+			const width = parseInt(event.target.value);
+			split({ active: false, range: width });
+		};
+
 		return draggableItems.filter((i) => !i.isPlaceholder).length > 0
 			? html`<div class="layermanager__actions">
-					<ba-button
-						id="button_expand_or_collapse"
-						class="layermanager__expandOrCollapse"
-						.label=${expandOrCollapseLabel}
-						.type=${'secondary'}
-						@click=${expandOrCollapseAction}
-						style="border-right: 1px dotted var(--header-background-color);"
-					></ba-button>
-					<ba-button id="button_remove_all" .label=${translate('layerManager_remove_all')} .type=${'secondary'} @click=${removeAll}></ba-button>
-					<div></div>
-				</div>`
+						<ba-button
+							id="button_expand_or_collapse"
+							class="layermanager__expandOrCollapse"
+							.label=${expandOrCollapseLabel}
+							.type=${'secondary'}
+							@click=${expandOrCollapseAction}
+							style="border-right: 1px dotted var(--header-background-color);"
+						></ba-button>
+						<ba-button id="button_remove_all" .label=${translate('layerManager_remove_all')} .type=${'secondary'} @click=${removeAll}></ba-button>
+						<ba-button .label=${translate('Campare')} .type=${'secondary'} @click=${() => split({ active: true })}></ba-button>
+						<div></div>
+					</div>
+					<div>
+						<input type="range" step="1" min="0" max="100" .value="${50}" @input=${onChangeRange} />
+					</div>`
 			: nothing;
 	}
 
