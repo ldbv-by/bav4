@@ -618,10 +618,6 @@ export class AdminPanel extends MvuElement {
 			this.signal(Update_CatalogWithResourceData, catalog);
 		};
 
-		const getSchemaClass = () => {
-			return darkSchema ? 'sun' : 'moon';
-		};
-
 		// <span class="icon "> </span>
 		if (selectedTopic && catalogWithResourceData) {
 			return html`
@@ -630,8 +626,6 @@ export class AdminPanel extends MvuElement {
 				</style>
 
 				<h1 id="admin-app-title">Admin App</h1>
-
-				<button @click="${toggleSchema}" title="Mode" class=" ${getSchemaClass()} theme-toggle pointer">Mode</button>
 
 				<div class="container">
 					<div>

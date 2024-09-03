@@ -93,29 +93,29 @@
 	--text2: var(--text2-light);
 	--text3: var(--text3-light);
 	--text4: var(--brand-secondary-light);
-	/* otther */
+	/* other */
 	--roles-color: var(--primary-color);
 }
 
 .dark-theme,
 :host(.dark-theme) {
 	/* brand */
-	--primary-color: var(--brand-dark);
-	--primary-color-lighter: var(--brand-dark-lighter);
-	--secondary-color: var(--brand-secondary-dark);
+	--primary-color: var(--brand-light);
+	--primary-color-lighter: var(--brand-light-lighter);
+	--secondary-color: var(--brand-secondary-light);
 	/* background */
-	--primary-bg-color: var(--surface1-dark);
-	--primary-bg-color-05: rgba(0, 0, 0, 0.6);
-	--secondary-bg-color: var(--surface2-dark);
-	--tertiary-bg-color: var(--surface4-dark);
-	--header-background-color: var(--surface3-dark);
-	--modal-background-color: var(--surface5-dark);
+	--primary-bg-color: var(--surface1-light);
+	--primary-bg-color-05: hsla(var(--brand-hue), 20%, 99%, 0.9);
+	--secondary-bg-color: var(--surface2-light);
+	--tertiary-bg-color: var(--surface4-light);
+	--header-background-color: var(--surface3-light);
+	--modal-background-color: var(--surface5-light);
 	/* text */
-	--text1: var(--text1-dark);
-	--text2: var(--text2-dark);
-	--text3: var(--text3-dark);
-	--text4: var(--brand-dark-lighter);
-	/* otther */
+	--text1: var(--text1-light);
+	--text2: var(--text2-light);
+	--text3: var(--text3-light);
+	--text4: var(--brand-secondary-light);
+	/* other */
 	--roles-color: var(--primary-color);
 }
 
