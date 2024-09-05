@@ -84,7 +84,11 @@ export class StackableContentPanel extends MvuElement {
 		};
 		const createInteractionBottomSheet = (interactionBottomSheet) => {
 			return interactionBottomSheet
-				? html`<ba-bottom-sheet .id=${interactionBottomSheet.id} .content=${interactionBottomSheet.content}></ba-bottom-sheet>`
+				? html`<ba-bottom-sheet
+						class="interaction-bottomsheet"
+						.id=${interactionBottomSheet.id}
+						.content=${interactionBottomSheet.content}
+					></ba-bottom-sheet>`
 				: nothing;
 		};
 		const createBottomSheet = (bottomSheet) => {
