@@ -280,9 +280,9 @@ export class LayerItem extends AbstractMvuContentPanel {
 					</div>
 				</div>
 				<div class="compare">
-					<ba-button .label=${'left'} @click=${() => split({ active: false, position: 2 })}></ba-button>
-					<ba-button .label=${'both'}></ba-button>
-					<ba-button .label=${'right'} @click=${() => split({ active: false, position: 1 })}></ba-button>
+					<ba-button .type=${'primary'} .label=${''} @click=${() => split({ active: false, id: layer.id, position: 'left' })}></ba-button>
+					<ba-button .label=${''} @click=${() => split({ active: false, id: layer.id, position: 'both' })}></ba-button>
+					<ba-button .label=${''} @click=${() => split({ active: false, id: layer.id, position: 'right' })}></ba-button>
 				</div>
 			</div>`;
 	}

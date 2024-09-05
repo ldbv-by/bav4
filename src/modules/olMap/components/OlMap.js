@@ -8,7 +8,7 @@ import css from './olMap.css';
 import { Map as MapOl, View } from 'ol';
 import { defaults as defaultControls, ScaleLine } from 'ol/control';
 import { defaults as defaultInteractions, PinchRotate } from 'ol/interaction';
-import { removeLayer } from '../../../store/layers/layers.action';
+import { addLayer, removeLayer, modifyLayer } from '../../../store/layers/layers.action';
 import { changeLiveCenter, changeLiveRotation, changeLiveZoom, changeZoomCenterAndRotation } from '../../../store/position/position.action';
 import { $injector } from '../../../injection';
 import { updateOlLayer, toOlLayerFromHandler, registerLongPressListener, getLayerById } from '../utils/olMapUtils';
@@ -32,7 +32,8 @@ const Update_Layers = 'update_layers';
  */
 export class OlMap extends MvuElement {
 	#range = 50;
-	#position = 0;
+	#mapKey = new Map();
+	// #position = 0;
 	constructor() {
 		super({
 			zoom: null,
@@ -415,54 +416,115 @@ export class OlMap extends MvuElement {
 	}
 
 	_splitMap(eventLike) {
-		const { layers } = this.getModel();
-		const tempMap = this._map;
-
 		if (eventLike.payload.options.range) {
 			this.#range = eventLike.payload.options.range;
-		}
-		console.log(eventLike.payload.options.position);
-		if (eventLike.payload.options.position) {
-			this.#position = eventLike.payload.options.position;
+			return;
 		}
 
-		const split = (layers) => {
-			layers.forEach((layer) => {
-				if (layer.zIndex > 0) {
-					const olLayer = getLayerById(tempMap, layers[1].id);
-
-					olLayer.on('prerender', (event) => {
-						const ctx = event.context;
-						const mapSize = tempMap.getSize();
-						const width = mapSize[0] * (this.#range / 100);
-
-						const tl = this.#position === 1 ? getRenderPixel(event, [width, 0]) : getRenderPixel(event, [0, mapSize[1]]);
-						const tr = this.#position === 1 ? getRenderPixel(event, [mapSize[0], 0]) : getRenderPixel(event, [width, mapSize[1]]);
-						const bl = this.#position === 1 ? getRenderPixel(event, [width, mapSize[1]]) : getRenderPixel(event, [0, 0]);
-						const br = this.#position === 1 ? getRenderPixel(event, mapSize) : getRenderPixel(event, [width, 0]);
-
-						ctx.save();
-						ctx.beginPath();
-						ctx.moveTo(tl[0], tl[1]);
-						ctx.lineTo(bl[0], bl[1]);
-						ctx.lineTo(br[0], br[1]);
-						ctx.lineTo(tr[0], tr[1]);
-						ctx.closePath();
-						ctx.clip();
-						tempMap.render();
-					});
-
-					olLayer.on('postrender', (event) => {
-						const ctx = event.context;
-						ctx.restore();
+		const splitInit = () => {
+			this._map.getLayers().forEach((layer) => {
+				console.log(layer.get('id'));
+				if (this.#mapKey.get(layer.get('id'))) {
+					this.#mapKey.get(layer.get('id')).forEach((key) => {
+						unByKey(key);
 					});
 				}
+
+				const key3 = layer.on('prerender', (event) => {
+					const ctx = event.context;
+					const mapSize = this._map.getSize();
+					const width = mapSize[0] * (this.#range / 100);
+
+					const tl = getRenderPixel(event, [0, mapSize[1]]);
+					const tr = getRenderPixel(event, [width, mapSize[1]]);
+					const bl = getRenderPixel(event, [0, 0]);
+					const br = getRenderPixel(event, [width, 0]);
+
+					ctx.save();
+					ctx.beginPath();
+					ctx.moveTo(tl[0], tl[1]);
+					ctx.lineTo(bl[0], bl[1]);
+					ctx.lineTo(br[0], br[1]);
+					ctx.lineTo(tr[0], tr[1]);
+					ctx.closePath();
+					ctx.clip();
+					this._map.render();
+				});
+
+				const key4 = layer.on('postrender', (event) => {
+					const ctx = event.context;
+					ctx.restore();
+				});
+
+				this.#mapKey.set(layer.get('id'), [key3, key4]);
 			});
 		};
 
-		if (eventLike.payload.options.active) {
-			split(layers);
-			tempMap.render();
+		const splitId = (id, position) => {
+			const olLayer = getLayerById(this._map, id);
+
+			if (this.#mapKey.get(id)) {
+				this.#mapKey.get(id).forEach((key) => {
+					unByKey(key);
+				});
+			}
+			if (position === 'both') {
+				return;
+			}
+			const key1 = olLayer.on('prerender', (event) => {
+				const ctx = event.context;
+				const mapSize = this._map.getSize();
+				const width = mapSize[0] * (this.#range / 100);
+
+				let tl;
+				let tr;
+				let bl;
+				let br;
+
+				switch (position) {
+					case 'left':
+						tl = getRenderPixel(event, [0, mapSize[1]]);
+						tr = getRenderPixel(event, [width, mapSize[1]]);
+						bl = getRenderPixel(event, [0, 0]);
+						br = getRenderPixel(event, [width, 0]);
+
+						break;
+					case 'both':
+					case 'right':
+						tl = getRenderPixel(event, [width, 0]);
+						tr = getRenderPixel(event, [mapSize[0], 0]);
+						bl = getRenderPixel(event, [width, mapSize[1]]);
+						br = getRenderPixel(event, mapSize);
+
+						break;
+					default:
+				}
+
+				ctx.save();
+				ctx.beginPath();
+				ctx.moveTo(tl[0], tl[1]);
+				ctx.lineTo(bl[0], bl[1]);
+				ctx.lineTo(br[0], br[1]);
+				ctx.lineTo(tr[0], tr[1]);
+				ctx.closePath();
+				ctx.clip();
+				this._map.render();
+			});
+
+			const key2 = olLayer.on('postrender', (event) => {
+				const ctx = event.context;
+				ctx.restore();
+			});
+			this.#mapKey.set(id, [key1, key2]);
+		};
+
+		if (!eventLike.payload.options.active) {
+			splitId(eventLike.payload.options.id, eventLike.payload.options.position);
+			this._map.render();
+			return;
+		} else {
+			splitInit();
+			this._map.render();
 		}
 	}
 
