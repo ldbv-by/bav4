@@ -99,7 +99,7 @@ export class AdminPanel extends MvuElement {
 		return result;
 	};
 
-	_extractOriginal = (obj) => {
+	_extractOriginalForSave = (obj) => {
 		const result = {};
 		if (obj.geoResourceId) {
 			result.geoResourceId = obj.geoResourceId;
@@ -107,11 +107,12 @@ export class AdminPanel extends MvuElement {
 			result.label = obj.label;
 		}
 		if (obj.children && obj.children.length > 0) {
-			result.children = obj.children.map((child) => this._extractOriginal(child));
+			result.children = obj.children.map((child) => this._extractOriginalForSave(child));
 		}
 		return result;
 	};
 
+	// todo check if keeping label always would be better and ok
 	_extractOriginalIncShowChildren = (obj) => {
 		const result = {};
 		if (obj.geoResourceId) {
@@ -130,38 +131,20 @@ export class AdminPanel extends MvuElement {
 	};
 
 	_copyEverything = (obj) => {
-		const result = { uid: obj.uid };
-		if (obj.geoResourceId) {
-			result.geoResourceId = obj.geoResourceId;
-		}
-		if (obj.label) {
-			result.label = obj.label;
-		}
-		if (obj.children && obj.children.length > 0) {
-			if (obj.showChildren) {
-				result.showChildren = obj.showChildren;
+		const result = {};
+
+		for (const key in obj) {
+			if (Object.prototype.hasOwnProperty.call(obj, key)) {
+				if (key === 'children' && Array.isArray(obj[key]) && obj[key].length > 0) {
+					result[key] = obj[key].map((child) => this._copyEverything(child));
+				} else {
+					result[key] = obj[key];
+				}
 			}
-			result.children = obj.children.map((child) => this._copyEverything(child));
 		}
+
 		return result;
 	};
-
-	_copyBranch(obj) {
-		const result = { uid: self.crypto.randomUUID() };
-		if (obj.geoResourceId) {
-			result.geoResourceId = obj.geoResourceId;
-		}
-		if (obj.label) {
-			result.label = obj.label;
-		}
-		if (obj.children && obj.children.length > 0) {
-			if (obj.showChildren) {
-				result.showChildren = obj.showChildren;
-			}
-			result.children = obj.children.map((child) => this._copyBranch(child));
-		}
-		return result;
-	}
 
 	/**
 	 * reduce / enrich the JSON data to the desired format
@@ -574,7 +557,7 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const saveCatalog = async () => {
-			const catalogToSave = this._reduceData(catalogWithResourceData, this._extractOriginal);
+			const catalogToSave = this._reduceData(catalogWithResourceData, this._extractOriginalForSave);
 
 			await this._catalogService.save(catalogToSave);
 		};
