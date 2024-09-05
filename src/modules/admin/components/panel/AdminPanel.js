@@ -223,14 +223,6 @@ export class AdminPanel extends MvuElement {
 	}
 
 	async onInitialize() {
-		if (this.getModel().darkSchema) {
-			this.signal(Update_Schema, !this.getModel().darkSchema);
-		}
-
-		this.observe(
-			(state) => state.media.darkSchema,
-			(darkSchema) => this.signal(Update_Schema, darkSchema)
-		);
 		const selectedTopicId = this._configService.getValue('DEFAULT_TOPIC_ID', 'ba');
 
 		const topics = await this._loadTopics();
