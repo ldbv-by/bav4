@@ -9,7 +9,6 @@ import css from './adminPanel.css';
 import { $injector } from '../../../../injection/index';
 import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 import { End_Label } from '../layerTree/LayerTree';
-import { toggleSchema } from '../../../../store/media/media.action';
 // eslint-disable-next-line no-unused-vars
 // import { logOnce, onlyOnce } from '../layerTree/LayerTree';
 
@@ -22,14 +21,6 @@ const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
 const Update_All = 'update_all';
 
 const Update_Schema = 'update_schema';
-
-/**
-
-http://geotest.bvv.bayern.de:8075/ba-backend-v4/adminui/copy2prod/catalog/ba
-http://geotest.bvv.bayern.de:8075/ba-backend-v4/adminui/copy2prod/catalog/ba
-
-
- */
 
 /**
  * @class
@@ -84,19 +75,20 @@ export class AdminPanel extends MvuElement {
 	_enrichWithGeoResource = (catalog, geoResources) => {
 		const result = { uid: catalog.uid };
 
-		if (catalog.geoResourceId) {
+		if (catalog.label) {
+			result.label = catalog.label;
+			if (catalog.geoResourceId) {
+				result.geoResourceId = catalog.geoResourceId;
+			}
+		} else if (catalog.geoResourceId) {
 			result.geoResourceId = catalog.geoResourceId;
 
 			const geoResource = geoResources.find((georesource) => georesource.id === catalog.geoResourceId);
-
 			if (geoResource) {
 				result.label = geoResource.label;
 			} else {
 				result.label = ' ';
 			}
-		}
-		if (catalog.label) {
-			result.label = catalog.label;
 		}
 		if (catalog.children && catalog.children.length > 0) {
 			if (catalog.showChildren) {
@@ -340,7 +332,7 @@ export class AdminPanel extends MvuElement {
 	}
 
 	createView(model) {
-		const { darkSchema, selectedTopicId, selectedTopic, topics, geoResources, catalogWithResourceData, dummy } = model;
+		const { selectedTopicId, selectedTopic, topics, geoResources, catalogWithResourceData, dummy } = model;
 
 		const _refreshLayers = async () => {
 			await this._loadGeoResources();
