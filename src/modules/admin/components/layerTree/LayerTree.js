@@ -519,6 +519,10 @@ export class LayerTree extends MvuElement {
 
 		const renderEntry = (entry, level) => {
 			return html`
+				<li <span class="ba-list-item__pre">
+						${entry.uid}
+					</span>
+				</li>
 				<li
 					@click="${(event) => handleCategoryClick(event, entry)}"
 					class="${(entry.children ? hasChildrenClass + ' ' : '') + (entry.showChildren ? showChildrenClass : '')}"
@@ -536,17 +540,19 @@ export class LayerTree extends MvuElement {
 					>
 						${unsafeHTML(entry.label)} ${entry.geoResourceId ? '(' + entry.geoResourceId + ')' : ''}
 					</span>
-					${entry.children
-						? html`
-								<button @click="${(event) => handleEditClick(event, entry)}">Edit</button>
-								<button class="abort-button" @click="${(event) => handleAbortClick(event, entry)}" style="display: none;">Abort</button>
-								<button class="copy-button" @click="${(event) => handleCopyClick(event, entry)}">Copy</button>
-								<button class="delete-button" @click="${(event) => handleDeleteClick(event, entry)}">X</button>
-								<ul>
-									${entry.children.map((child) => html`<li>${renderEntry(child, level + 1)}</li>`)}
-								</ul>
-							`
-						: html`<button .disabled=${editMode} @click="${(event) => handleDeleteClick(event, entry)}">X</button>`}
+					${
+						entry.children
+							? html`
+									<button @click="${(event) => handleEditClick(event, entry)}">Edit</button>
+									<button class="abort-button" @click="${(event) => handleAbortClick(event, entry)}" style="display: none;">Abort</button>
+									<button class="copy-button" @click="${(event) => handleCopyClick(event, entry)}">Copy</button>
+									<button class="delete-button" @click="${(event) => handleDeleteClick(event, entry)}">X</button>
+									<ul>
+										${entry.children.map((child) => html`<li>${renderEntry(child, level + 1)}</li>`)}
+									</ul>
+								`
+							: html`<button .disabled=${editMode} @click="${(event) => handleDeleteClick(event, entry)}">X</button>`
+					}
 				</li>
 			`;
 		};

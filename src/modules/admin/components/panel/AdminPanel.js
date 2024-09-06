@@ -146,6 +146,28 @@ export class AdminPanel extends MvuElement {
 		return result;
 	};
 
+	// console.log('🚀 ~ AdminPanel ~ _copyBranch ~ obj[key]:', obj[key]);
+	_copyBranch(catalogEntry) {
+		// console.log('🚀 ~ AdminPanel ~ _copyBranch ~ catalogEntry:', catalogEntry);
+
+		const result = {};
+
+		for (const key in catalogEntry) {
+			if (Object.prototype.hasOwnProperty.call(catalogEntry, key)) {
+				if (key === 'children' && Array.isArray(catalogEntry[key]) && catalogEntry[key].length > 0) {
+					result[key] = catalogEntry[key].map((child) => this._copyBranch(child));
+				} else if (key === 'uid') {
+					result[key] = self.crypto.randomUUID();
+				} else {
+					result[key] = catalogEntry[key];
+				}
+			}
+		}
+		// console.log('🚀 ~ AdminPanel ~ _copyBranch ~ result:', result);
+
+		return result;
+	}
+
 	/**
 	 * reduce / enrich the JSON data to the desired format
 	 *
