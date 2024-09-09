@@ -71,7 +71,7 @@ export class ShareService {
 			...this._extractTopic(),
 			...this._extractRoute(),
 			...this._extractTool(),
-			...this._extractMarker()
+			...this._extractCrosshair()
 		};
 
 		return new Map(Object.entries(params));
@@ -114,7 +114,7 @@ export class ShareService {
 				...this._extractTopic(),
 				...this._extractRoute(),
 				...this._extractTool(),
-				...this._extractMarker()
+				...this._extractCrosshair()
 			},
 			extraParams
 		);
@@ -242,7 +242,10 @@ export class ShareService {
 		} = state;
 
 		if (waypoints.length > 0) {
-			extractedState[QueryParameters.ROUTE_WAYPOINTS] = waypoints;
+			const { MapService: mapService } = $injector.inject('MapService');
+			// waypoints should be rounded according to the internal projection of the map
+			const { digits } = Object.values(GlobalCoordinateRepresentations).filter((cr) => cr.code === mapService.getSrid())[0];
+			extractedState[QueryParameters.ROUTE_WAYPOINTS] = waypoints.map((wp) => wp.map((n) => n.toFixed(digits)));
 			extractedState[QueryParameters.ROUTE_CATEGORY] = categoryId;
 		}
 		return extractedState;
@@ -270,7 +273,7 @@ export class ShareService {
 	 * @private
 	 * @returns {object} extractedState
 	 */
-	_extractMarker() {
+	_extractCrosshair() {
 		const { StoreService: storeService } = $injector.inject('StoreService');
 
 		const state = storeService.getStore().getState();
@@ -284,7 +287,12 @@ export class ShareService {
 		 * When we have exactly one highlight feature containing the CROSSHAIR_HIGHLIGHT_FEATURE_ID we add the CROSSHAIR query parameter.
 		 */
 		if (features.filter((hf) => hf.id === CROSSHAIR_HIGHLIGHT_FEATURE_ID).length === 1) {
-			extractedState[QueryParameters.CROSSHAIR] = true;
+			const { MapService: mapService } = $injector.inject('MapService');
+			// crosshair coordinate should be rounded according to the internal projection of the map
+			const { digits } = Object.values(GlobalCoordinateRepresentations).filter((cr) => cr.code === mapService.getSrid())[0];
+			const feature = features.find((hf) => hf.id === CROSSHAIR_HIGHLIGHT_FEATURE_ID);
+			const crosshairCoords = feature.data.coordinate.map((n) => n.toFixed(digits));
+			extractedState[QueryParameters.CROSSHAIR] = [true, ...crosshairCoords];
 		}
 
 		return extractedState;
