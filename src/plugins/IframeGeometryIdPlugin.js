@@ -23,18 +23,11 @@ export class IframeGeometryIdPlugin extends BaPlugin {
 	 */
 	async register(store) {
 		if (this._environmentService.isEmbedded()) {
-			const update = (eventLike) => {
-				const { payload } = eventLike;
-				const getFileId = () => {
-					const {
-						fileSaveResult: { fileId }
-					} = payload;
-					return fileId;
-				};
-				this._updateAttribute(eventLike.payload ? getFileId() : null);
-			};
-
-			observe(store, (state) => state.draw.fileSaveResult, update);
+			observe(
+				store,
+				(state) => state.fileStorage.fileId,
+				(fileId) => this._updateAttribute(fileId ?? null)
+			);
 		}
 	}
 
