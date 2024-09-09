@@ -146,10 +146,7 @@ export class AdminPanel extends MvuElement {
 		return result;
 	};
 
-	// console.log('🚀 ~ AdminPanel ~ _copyBranch ~ obj[key]:', obj[key]);
 	_copyBranch(catalogEntry) {
-		// console.log('🚀 ~ AdminPanel ~ _copyBranch ~ catalogEntry:', catalogEntry);
-
 		const result = {};
 
 		for (const key in catalogEntry) {
@@ -163,7 +160,6 @@ export class AdminPanel extends MvuElement {
 				}
 			}
 		}
-		// console.log('🚀 ~ AdminPanel ~ _copyBranch ~ result:', result);
 
 		return result;
 	}
@@ -295,7 +291,8 @@ export class AdminPanel extends MvuElement {
 						...model,
 						selectedTopicId: data.newTopic.id,
 						selectedTopic: data.newTopic,
-						topics: data.newTopicsArray
+						topics: data.newTopicsArray,
+						dummy: !model.dummy
 					};
 				}
 				return newModel;
@@ -526,7 +523,6 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const updateSelectedTopic = async (newTopic, newTopicsArray) => {
-			// console.log('🚀 ~ AdminPanel ~ updateSelectedTopic ~ newTopic:', newTopic);
 			const catalog = await this._loadCatalog(newTopic.id);
 			this.signal(Update_Topics, { newTopic, newTopicsArray, catalog });
 		};
@@ -557,8 +553,16 @@ export class AdminPanel extends MvuElement {
 			if (foundTopic) {
 				foundTopic._disabled = !foundTopic._disabled;
 
-				// todo hä??
-				this.signal(Update_Topics, topics);
+				const newTopicsArray = JSON.parse(JSON.stringify(topics));
+
+				let newSelectedTopic = selectedTopic;
+				if (foundTopic.id === selectedTopic.id) {
+					newSelectedTopic = topics[0];
+					if (newSelectedTopic.id === topic.id) {
+						newSelectedTopic = topics[1];
+					}
+				}
+				this.signal(Update_Topics, { newTopic: newSelectedTopic, newTopicsArray });
 			}
 		};
 
