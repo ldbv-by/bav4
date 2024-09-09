@@ -485,6 +485,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				const projectedLength = measureGeometry ? this._mapService.calcLength(getLineString(measureGeometry)?.getCoordinates()) : null;
 				if (projectedLength) {
 					feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
+					feature.getGeometry().set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
 					measureGeometry.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
 				}
 				this._overlayService.update(event.target, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });

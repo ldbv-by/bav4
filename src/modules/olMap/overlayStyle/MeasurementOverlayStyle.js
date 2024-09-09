@@ -12,6 +12,7 @@ import { DragPan } from 'ol/interaction';
 import { BaOverlay } from '../components/BaOverlay';
 import { containsCoordinate, getBottomLeft, getBottomRight, getTopLeft, getTopRight } from '../../../../node_modules/ol/extent';
 import { fromLonLat, toLonLat, transformExtent } from '../../../../node_modules/ol/proj';
+import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
 
 export const saveManualOverlayPosition = (feature) => {
 	const draggableOverlayTypes = ['area', 'measurement'];
@@ -169,6 +170,9 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		};
 
 		const distanceOverlay = olFeature.get('measurement') || createNew();
+		if (olFeature && !olFeature.getGeometry().get(PROJECTED_LENGTH_GEOMETRY_PROPERTY)) {
+			olFeature.getGeometry().set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, olFeature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY));
+		}
 		this._updateOlOverlay(distanceOverlay, olFeature.getGeometry());
 		return distanceOverlay;
 	}
@@ -200,6 +204,14 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	}
 
 	_createOrRemovePartitionOverlays(olFeature, olMap, simplifiedGeometry = null) {
+		const getOverlayGeometry = (feature) => {
+			const geodesic = feature.get(GEODESIC_FEATURE_PROPERTY);
+			if (geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE) {
+				return geodesic.getGeometry();
+			}
+			return olFeature.getGeometry();
+		};
+		const overlayGeometry = simplifiedGeometry ?? getOverlayGeometry(olFeature);
 		const getPartitions = () => {
 			const partitions = olFeature.get('partitions') || [];
 			const cleanPartitions = (partitions) => {
@@ -222,7 +234,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 				this._add(partition, olFeature, olMap);
 				partitions.push(partition);
 			}
-			this._updateOlOverlay(partition, simplifiedGeometry, i);
+			this._updateOlOverlay(partition, overlayGeometry, i);
 		}
 		if (partitionIndex < partitions.length) {
 			for (let j = partitions.length - 1; j >= partitionIndex; j--) {
@@ -232,7 +244,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 			}
 		}
 
-		this._justifyPlacement(simplifiedGeometry, partitions);
+		this._justifyPlacement(overlayGeometry, partitions);
 
 		olFeature.set('partitions', partitions);
 		if (delta !== 1) {
@@ -293,11 +305,29 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	}
 
 	_updateOlOverlay(overlay, geometry, value) {
+		const getGeodesicPosition = (feature, value) => {
+			if (feature) {
+				const geodesic = feature.get(GEODESIC_FEATURE_PROPERTY);
+				if (geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE) {
+					return geodesic.getCoordinateAt(value);
+				}
+			}
+			return null;
+		};
 		const element = overlay.getElement();
 		element.value = value;
 		element.geometry = geometry;
 		if (!overlay.get('manualPositioning')) {
-			overlay.setPosition(element.position);
+			if (element.type === BaOverlayTypes.DISTANCE_PARTITION) {
+				const feature = overlay.get('feature');
+				if (geometry && !geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY)) {
+					geometry.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, feature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY));
+				}
+				const geodesicPosition = getGeodesicPosition(feature, value);
+				overlay.setPosition(geodesicPosition ?? element.position);
+			} else {
+				overlay.setPosition(element.position);
+			}
 		}
 	}
 
