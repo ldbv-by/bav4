@@ -91,3 +91,7 @@ ba-checkbox {
 		transform: translateX(-1.75rem);
 	}
 }
+.preview ba-checkbox::part(checkbox-background) {
+	border-color: var(--primary-color);
+	background-color: color(from var(--primary-color) srgb r g b / 0.4);
+}

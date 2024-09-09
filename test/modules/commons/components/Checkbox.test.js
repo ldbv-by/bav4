@@ -26,6 +26,7 @@ describe('Checkbox', () => {
 			expect(element.shadowRoot.querySelector('.input').disabled).toBeFalse();
 			expect(element.shadowRoot.querySelector('.input').checked).toBeFalse();
 			expect(element.shadowRoot.querySelector('label').title).toBe('');
+			expect(element.shadowRoot.querySelector('.ba-checkbox span:first-child').getAttribute('part')).toBe('checkbox-background');
 			//has slot tag?
 			expect(element.shadowRoot.querySelector('slot')).toBeTruthy();
 			//has slot assigned content?
