@@ -20,17 +20,9 @@ import { StyleTypes } from '../../services/StyleService';
 import { StyleSizeTypes } from '../../../../domain/styles';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { equals, observe } from '../../../../utils/storeUtils';
-import {
-	setSelectedStyle,
-	setStyle,
-	setType,
-	setGeometryIsValid,
-	setSelection,
-	setDescription,
-	setFileSaveResult
-} from '../../../../store/draw/draw.action';
+import { setSelectedStyle, setStyle, setType, setGeometryIsValid, setSelection, setDescription } from '../../../../store/draw/draw.action';
 import { unByKey } from 'ol/Observable';
-import { create as createKML } from '../../formats/kml';
+import { create as createKML, KML_EMPTY_CONTENT } from '../../formats/kml';
 import {
 	getModifyOptions,
 	getSelectableFeatures,
@@ -43,10 +35,8 @@ import {
 } from '../../utils/olInteractionUtils';
 import { HelpTooltip } from '../../tooltip/HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
-import { FileStorageServiceDataTypes } from '../../../../services/FileStorageService';
 import { VectorGeoResource, VectorSourceType } from '../../../../domain/geoResources';
 import { addLayer, removeLayer } from '../../../../store/layers/layers.action';
-import { debounced } from '../../../../utils/timer';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { OlSketchHandler } from '../OlSketchHandler';
 import { setMode } from '../../../../store/draw/draw.action';
@@ -63,10 +53,9 @@ import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../.
 import { KML } from 'ol/format';
 import { Tools } from '../../../../domain/tools';
 import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../ol/geodesic/geodesicGeometry';
+import { setData } from '../../../../store/fileStorage/fileStorage.action';
 
 export const MAX_SELECTION_SIZE = 1;
-
-const Debounce_Delay = 1000;
 
 const defaultStyleOption = {
 	symbolSrc: null, // used by: Symbol
@@ -92,8 +81,8 @@ export class OlDrawHandler extends OlLayerHandler {
 			GeoResourceService,
 			OverlayService,
 			StyleService,
-			InteractionStorageService,
-			IconService
+			IconService,
+			FileStorageService
 		} = $injector.inject(
 			'TranslationService',
 			'MapService',
@@ -102,8 +91,8 @@ export class OlDrawHandler extends OlLayerHandler {
 			'GeoResourceService',
 			'OverlayService',
 			'StyleService',
-			'InteractionStorageService',
-			'IconService'
+			'IconService',
+			'FileStorageService'
 		);
 		this._translationService = TranslationService;
 		this._mapService = MapService;
@@ -112,8 +101,8 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._geoResourceService = GeoResourceService;
 		this._overlayService = OverlayService;
 		this._styleService = StyleService;
-		this._storageHandler = InteractionStorageService;
 		this._iconService = IconService;
+		this._fileStorageService = FileStorageService;
 
 		this._vectorLayer = null;
 		this._draw = null;
@@ -142,7 +131,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._helpTooltip.messageProvideFunction = messageProvide;
 		this._drawStateChangedListeners = [];
 		this._registeredObservers = [];
-		this._saveContentDebounced = debounced(this._environmentService.isEmbedded() ? 0 : Debounce_Delay, () => this._save());
 	}
 
 	/**
@@ -163,7 +151,8 @@ export class OlDrawHandler extends OlLayerHandler {
 			acknowledgeTermsOfUse();
 		}
 		const getOldLayer = (map) => {
-			const isOldLayer = (layer) => this._storageHandler.isStorageId(layer.get('geoResourceId'));
+			const isOldLayer = (layer) =>
+				this._fileStorageService.isAdminId(layer.get('geoResourceId')) || this._fileStorageService.isFileId(layer.get('geoResourceId'));
 			// we iterate over all layers in reverse order, the top-most layer is the one we take source for our drawing layer
 			return map.getLayers().getArray().reverse().find(isOldLayer);
 		};
@@ -181,7 +170,6 @@ export class OlDrawHandler extends OlLayerHandler {
 			if (oldLayer) {
 				const vgr = this._geoResourceService.byId(oldLayer.get('geoResourceId'));
 				if (vgr) {
-					this._storageHandler.setStorageId(oldLayer.get('geoResourceId'));
 					/**
 					 * Note: vgr.data does not return a Promise anymore.
 					 * To preserve the internal logic of this handler, we create a Promise by using 'await' anyway
@@ -214,14 +202,14 @@ export class OlDrawHandler extends OlLayerHandler {
 		const getOrCreateLayer = () => {
 			const layer = createLayer();
 			const updateAndSaveContent = () => {
-				this._storedContent = createKML(layer, 'EPSG:3857');
-				this._saveContentDebounced();
+				const kmlContent = createKML(layer, 'EPSG:3857');
+				this._storedContent = kmlContent ?? KML_EMPTY_CONTENT;
+				this._save();
 			};
 			const setSelectedAndSave = (event) => {
 				if (this._drawState.type === InteractionStateType.DRAW) {
 					setSelection([event.feature.getId()]);
 				}
-
 				this._storedContent = createKML(layer, 'EPSG:3857');
 				this._save();
 			};
@@ -864,20 +852,16 @@ export class OlDrawHandler extends OlLayerHandler {
 		 * The stored content will be created/updated after adding/changing and removing features,
 		 * while interacting with the layer.
 		 */
-		const fileSaveResult = await this._storageHandler.store(this._storedContent, FileStorageServiceDataTypes.KML);
-		setFileSaveResult(fileSaveResult ? { fileSaveResult, content: this._storedContent } : null);
+		setData(this._storedContent);
 	}
 
 	async _saveAndOptionallyConvertToPermanentLayer() {
 		const translate = (key) => this._translationService.translate(key);
 		const label = translate('olMap_handler_draw_layer_label');
 
-		if (!this._storageHandler.isValid()) {
-			await this._save();
-		}
-
+		await this._save();
 		if (this._storeService.getStore().getState().draw.createPermanentLayer && this._storedContent) {
-			const id = this._storageHandler.getStorageId();
+			const id = this._storeService.getStore().getState().fileStorage.fileId;
 			const getOrCreateVectorGeoResource = () => {
 				const fromService = this._geoResourceService.byId(id);
 				return fromService

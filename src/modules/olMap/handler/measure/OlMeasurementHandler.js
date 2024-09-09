@@ -8,7 +8,7 @@ import { unByKey } from 'ol/Observable';
 import { LineString, Polygon } from 'ol/geom';
 import { $injector } from '../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
-import { setStatistic, setMode, setSelection, setFileSaveResult } from '../../../../store/measurement/measurement.action';
+import { setStatistic, setMode, setSelection } from '../../../../store/measurement/measurement.action';
 import { addLayer, removeLayer } from '../../../../store/layers/layers.action';
 import { createSketchStyleFunction, measureStyleFunction, selectStyleFunction } from '../../utils/olStyleUtils';
 import { getLineString, getStats, PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../utils/olGeometryUtils';
@@ -16,13 +16,11 @@ import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { observe } from '../../../../utils/storeUtils';
 import { HelpTooltip } from '../../tooltip/HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
-import { create as createKML } from '../../formats/kml';
-import { debounced } from '../../../../utils/timer';
+import { create as createKML, KML_EMPTY_CONTENT } from '../../formats/kml';
 import { VectorGeoResource, VectorSourceType } from '../../../../domain/geoResources';
 import { saveManualOverlayPosition } from '../../overlayStyle/MeasurementOverlayStyle';
 import { getOverlays } from '../../overlayStyle/OverlayStyle';
 import { StyleTypes } from '../../services/StyleService';
-import { FileStorageServiceDataTypes } from '../../../../services/FileStorageService';
 import {
 	getModifyOptions,
 	getSelectableFeatures,
@@ -45,8 +43,7 @@ import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../.
 import { KML } from 'ol/format';
 import { Tools } from '../../../../domain/tools';
 import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../ol/geodesic/geodesicGeometry';
-
-const Debounce_Delay = 1000;
+import { setData } from '../../../../store/fileStorage/fileStorage.action';
 
 /**
  * Handler for measurement-interaction with the map.
@@ -58,25 +55,17 @@ const Debounce_Delay = 1000;
 export class OlMeasurementHandler extends OlLayerHandler {
 	constructor() {
 		super(MEASUREMENT_LAYER_ID);
-		const {
-			TranslationService,
-			MapService,
-			EnvironmentService,
-			StoreService,
-			GeoResourceService,
-			OverlayService,
-			StyleService,
-			InteractionStorageService
-		} = $injector.inject(
-			'TranslationService',
-			'MapService',
-			'EnvironmentService',
-			'StoreService',
-			'GeoResourceService',
-			'OverlayService',
-			'StyleService',
-			'InteractionStorageService'
-		);
+		const { TranslationService, MapService, EnvironmentService, StoreService, GeoResourceService, OverlayService, StyleService, FileStorageService } =
+			$injector.inject(
+				'TranslationService',
+				'MapService',
+				'EnvironmentService',
+				'StoreService',
+				'GeoResourceService',
+				'OverlayService',
+				'StyleService',
+				'FileStorageService'
+			);
 		this._translationService = TranslationService;
 		this._mapService = MapService;
 		this._environmentService = EnvironmentService;
@@ -84,7 +73,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._geoResourceService = GeoResourceService;
 		this._overlayService = OverlayService;
 		this._styleService = StyleService;
-		this._storageHandler = InteractionStorageService;
+		this._fileStorageService = FileStorageService;
 
 		this._vectorLayer = null;
 		this._draw = false;
@@ -109,7 +98,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._measureStateChangedListeners = [];
 		this._drawingListeners = [];
 		this._registeredObservers = [];
-		this._saveContentDebounced = debounced(this._environmentService.isEmbedded() ? 0 : Debounce_Delay, () => this._save());
 	}
 
 	/**
@@ -130,7 +118,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			acknowledgeTermsOfUse();
 		}
 		const getOldLayer = (map) => {
-			const isOldLayer = (layer) => this._storageHandler.isStorageId(layer.get('geoResourceId'));
+			const isOldLayer = (layer) =>
+				this._fileStorageService.isAdminId(layer.get('geoResourceId')) || this._fileStorageService.isFileId(layer.get('geoResourceId'));
 			// we iterate over all layers in reverse order, the top-most layer is the one we take source for our drawing layer
 			return map.getLayers().getArray().reverse().find(isOldLayer);
 		};
@@ -149,7 +138,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			if (oldLayer) {
 				const vgr = this._geoResourceService.byId(oldLayer.get('geoResourceId'));
 				if (vgr) {
-					this._storageHandler.setStorageId(oldLayer.get('geoResourceId'));
 					/**
 					 * Note: vgr.data does not return a Promise anymore.
 					 * To preserve the internal logic of this handler, we create a Promise by using 'await' anyway
@@ -197,8 +185,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				const features = layer.getSource().getFeatures();
 				features.forEach((f) => saveManualOverlayPosition(f));
 
-				this._storedContent = createKML(layer, 'EPSG:3857');
-				this._saveContentDebounced();
+				const kmlContent = createKML(layer, 'EPSG:3857');
+				this._storedContent = kmlContent ?? KML_EMPTY_CONTENT;
+				this._save();
 			};
 			const setSelectedAndSave = (event) => {
 				if (this._measureState.type === InteractionStateType.DRAW) {
@@ -719,19 +708,17 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		 * The stored content will be created/updated after adding/changing and removing features,
 		 * while interacting with the layer.
 		 */
-		const fileSaveResult = await this._storageHandler.store(this._storedContent, FileStorageServiceDataTypes.KML);
-		setFileSaveResult(fileSaveResult ? { fileSaveResult, content: this._storedContent } : null);
+		setData(this._storedContent);
 	}
 
 	async _convertToPermanentLayer() {
 		const translate = (key) => this._translationService.translate(key);
 		const label = translate('olMap_handler_draw_layer_label');
 
-		if (!this._storageHandler.isValid()) {
-			await this._save();
-		}
+		await this._save();
+
 		if (this._storedContent) {
-			const id = this._storageHandler.getStorageId();
+			const id = this._storeService.getStore().getState().fileStorage.fileId;
 			const getOrCreateVectorGeoResource = () => {
 				const fromService = this._geoResourceService.byId(id);
 				return fromService
@@ -745,9 +732,5 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._geoResourceService.addOrReplace(vgr);
 			addLayer(id, { constraints: { metaData: false } });
 		}
-	}
-
-	static get Debounce_Delay() {
-		return Debounce_Delay;
 	}
 }

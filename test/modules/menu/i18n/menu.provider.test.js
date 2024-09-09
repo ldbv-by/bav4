@@ -44,6 +44,9 @@ describe('i18n for menu module', () => {
 		expect(map.menu_navigation_rail_search).toBe('Suchen');
 		expect(map.menu_navigation_rail_dark_theme).toBe('Dunkles Design');
 		expect(map.menu_navigation_rail_light_theme).toBe('Helles Design');
+		expect(map.menu_navigation_rail_feedback).toBe('Feedback');
+		expect(map.menu_navigation_rail_login).toBe('Login BayernAtlas-plus');
+		expect(map.menu_navigation_rail_logout).toBe('Logout');
 	});
 
 	it('provides translation for en', () => {
@@ -69,6 +72,7 @@ describe('i18n for menu module', () => {
 		expect(map.menu_misc_content_panel_gp_text).toBe('Central access to geospatial data and services.');
 		expect(map.menu_misc_content_panel_ea_header).toBe('Energie-Atlas Bayern');
 		expect(map.menu_misc_content_panel_ea_text).toBe('Central portal for saving energy, energy efficiency, and renewable energies.');
+		expect(map.menu_misc_content_panel_feedback_title).toBe('Feedback');
 		expect(map.menu_misc_content_panel_routing_title).toBe('Routing');
 		expect(map.menu_misc_content_panel_login).toBe('Login BayernAtlas-plus');
 		expect(map.menu_misc_content_panel_logout).toBe('Logout');
@@ -86,10 +90,13 @@ describe('i18n for menu module', () => {
 		expect(map.menu_navigation_rail_search).toBe('Search');
 		expect(map.menu_navigation_rail_dark_theme).toBe('Dark mode');
 		expect(map.menu_navigation_rail_light_theme).toBe('Light mode');
+		expect(map.menu_navigation_rail_feedback).toBe('Feedback');
+		expect(map.menu_navigation_rail_login).toBe('Login BayernAtlas-plus');
+		expect(map.menu_navigation_rail_logout).toBe('Logout');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 37;
+		const expectedSize = 40;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
