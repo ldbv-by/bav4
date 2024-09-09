@@ -4,6 +4,7 @@ import { MapFeedbackChip } from './MapFeedbackChip';
 import { RoutingChip } from './RoutingChip';
 import { ShareDataChip } from './ShareDataChip';
 import { ShareChip } from './ShareChip';
+import { TimeTravelChip } from './TimeTravelChip';
 
 if (!window.customElements.get(ElevationProfileChip.tag)) {
 	window.customElements.define(ElevationProfileChip.tag, ElevationProfileChip);
@@ -27,4 +28,8 @@ if (!window.customElements.get(ShareDataChip.tag)) {
 
 if (!window.customElements.get(ShareChip.tag)) {
 	window.customElements.define(ShareChip.tag, ShareChip);
+}
+
+if (!window.customElements.get(TimeTravelChip.tag)) {
+	window.customElements.define(TimeTravelChip.tag, TimeTravelChip);
 }
