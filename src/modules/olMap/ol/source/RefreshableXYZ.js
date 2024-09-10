@@ -16,7 +16,7 @@ export class RefreshableXYZ extends XYZ {
 	/**
 	 *
 	 * Smoothly updates the tiles by calling the protected method `setKey`.
-	 * Note: calling `changed` does nothing and calling `refresh`prunes the cache and which is visually not smooth.
+	 * Note: calling `changed` does nothing and calling `refresh` prunes the cache which is visually not smooth.
 	 *
 	 * @param {*} key
 	 */
