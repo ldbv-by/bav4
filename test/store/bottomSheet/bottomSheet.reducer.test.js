@@ -37,25 +37,25 @@ describe('bottomSheetReducer', () => {
 		expect(store.getState().bottomSheet.data).toEqual(jasmine.arrayWithExactContents([{ id: 'default', content: 'content' }]));
 		expect(store.getState().bottomSheet.active).toBe('default');
 
-		openBottomSheet('content', 'some');
+		openBottomSheet('content', 'id');
 
-		expect(store.getState().bottomSheet.active).toBe('some');
+		expect(store.getState().bottomSheet.active).toBe('id');
 		expect(store.getState().bottomSheet.data).toEqual(
 			jasmine.arrayWithExactContents([
-				{ id: 'some', content: 'content' },
+				{ id: 'id', content: 'content' },
 				{ id: 'default', content: 'content' }
 			])
 		);
 
 		openBottomSheet('contentUpdate');
-		openBottomSheet('contentUpdate', 'some');
+		openBottomSheet('contentUpdate', 'id');
 
 		closeBottomSheet();
-		closeBottomSheet('some');
+		closeBottomSheet('id');
 
 		expect(store.getState().bottomSheet.data).toEqual(
 			jasmine.arrayWithExactContents([
-				{ id: 'some', content: null },
+				{ id: 'id', content: null },
 				{ id: 'default', content: null }
 			])
 		);
@@ -65,7 +65,7 @@ describe('bottomSheetReducer', () => {
 
 		expect(store.getState().bottomSheet.data).toEqual(
 			jasmine.arrayWithExactContents([
-				{ id: 'some', content: null },
+				{ id: 'id', content: null },
 				{ id: 'default', content: null }
 			])
 		);
