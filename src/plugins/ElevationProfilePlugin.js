@@ -48,9 +48,6 @@ export class ElevationProfilePlugin extends BaPlugin {
 				const chunkName = 'elevation-profile';
 				openBottomSheet(html`<ba-lazy-load .chunkName=${chunkName} .content=${content}></ba-lazy-load>`, 'elevationProfile');
 			}
-			// else {
-			// 	closeBottomSheet('elevationProfile');
-			// }
 		};
 
 		observe(store, (state) => state.elevationProfile.active, onProfileActiveStateChanged, false);

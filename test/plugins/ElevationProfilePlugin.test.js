@@ -50,10 +50,6 @@ describe('ElevationProfilePlugin', () => {
 			expect(wrapperElement.querySelectorAll(LazyLoadWrapper.tag)[0].chunkName).toBe('elevation-profile');
 			const wrapperElementForContent = TestUtils.renderTemplateResult(wrapperElement.querySelectorAll(LazyLoadWrapper.tag)[0].content);
 			expect(wrapperElementForContent.querySelectorAll(ElevationProfile.tag)).toHaveSize(1);
-
-			// closeProfile();
-
-			// expect(store.getState().bottomSheet.data).toEqual(jasmine.arrayWithExactContents([{ id: 'elevationProfile', content: null }]));
 		});
 	});
 
