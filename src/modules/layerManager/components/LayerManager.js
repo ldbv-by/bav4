@@ -8,6 +8,7 @@ import { modifyLayer, removeLayer } from './../../../store/layers/layers.action'
 import css from './layerManager.css';
 import { MvuElement } from '../../MvuElement';
 import { split } from '../../../store/position/position.action';
+import { toggle, changeRange } from '../../../store/layerSwipe/layerSwipe.action';
 
 const Update_Draggable_Items = 'update_draggable_items';
 const Update_Collapse_Change = 'update_collapse_change';
@@ -232,8 +233,8 @@ export class LayerManager extends MvuElement {
 		const expandOrCollapseAction = draggableItemsExpandable ? expandAll : collapseAll;
 
 		const onChangeRange = (event) => {
-			const width = parseInt(event.target.value);
-			split({ active: false, range: width });
+			const range = parseInt(event.target.value);
+			changeRange(range);
 		};
 
 		return draggableItems.filter((i) => !i.isPlaceholder).length > 0
@@ -247,7 +248,7 @@ export class LayerManager extends MvuElement {
 							style="border-right: 1px dotted var(--header-background-color);"
 						></ba-button>
 						<ba-button id="button_remove_all" .label=${translate('layerManager_remove_all')} .type=${'secondary'} @click=${removeAll}></ba-button>
-						<ba-button .label=${translate('Campare')} .type=${'secondary'} @click=${() => split({ active: true })}></ba-button>
+						<ba-button .label=${translate('Campare')} .type=${'secondary'} @click=${toggle}></ba-button>
 						<div></div>
 					</div>
 					<div>

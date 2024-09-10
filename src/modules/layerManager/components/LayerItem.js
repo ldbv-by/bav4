@@ -18,10 +18,11 @@ import { createUniqueId } from '../../../utils/numberUtils';
 import { fitLayer } from '../../../store/position/position.action';
 import { GeoResourceFuture, RtVectorGeoResource, VectorGeoResource } from '../../../domain/geoResources';
 import { MenuTypes } from '../../commons/components/overflowMenu/OverflowMenu';
-import { split } from '../../../store/position/position.action';
+import { changeLayerSideEvent } from '../../../store/layerSwipe/layerSwipe.action';
 
 const Update_Layer = 'update_layer';
 const Update_Layer_Collapsed = 'update_layer_collapsed';
+const Update_LAYER_SWIPE = 'update_layer_swipe';
 const Default_Extra_Property_Values = {
 	collapsed: true,
 	opacity: 1,
@@ -74,7 +75,19 @@ export class LayerItem extends AbstractMvuContentPanel {
 				};
 			case Update_Layer_Collapsed:
 				return { ...model, layer: { ...model.layer, collapsed: data } };
+			case Update_LAYER_SWIPE:
+				return { ...model, ...data };
 		}
+	}
+
+	/**
+	 * @override
+	 */
+	onInitialize() {
+		this.observe(
+			(state) => state.layerSwipe,
+			(layerSwipe) => this.signal(Update_LAYER_SWIPE, { isActiveLayerSwipe: layerSwipe.active, layerids: layerSwipe.layerids })
+		);
 	}
 
 	/**
@@ -109,7 +122,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 	 */
 	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
-		const { layer } = model;
+		const { layer, isActiveLayerSwipe, layerids } = model;
 
 		if (!layer) {
 			return nothing;
@@ -194,6 +207,19 @@ export class LayerItem extends AbstractMvuContentPanel {
 				/>
 			</div>`;
 		};
+		const getLayerSwipe = () => {
+			const direction = new Map(layerids).get(layer.id);
+			console.log(direction);
+			return isActiveLayerSwipe
+				? html`
+						<div class="compare">
+							<ba-button .type=${direction === 'left' ? 'primary' : 'secondary'} .label=${''} @click=${() => onClickChangeSide('left')}></ba-button>
+							<ba-button .type=${direction === 'both' ? 'primary' : 'secondary'} .label=${''} @click=${() => onClickChangeSide('both')}></ba-button>
+							<ba-button .type=${direction === 'right' ? 'primary' : 'secondary'} .label=${''} @click=${() => onClickChangeSide('right')}></ba-button>
+						</div>
+					`
+				: nothing;
+		};
 
 		const getVisibilityTitle = () => {
 			return layer.label + ' - ' + translate('layerManager_change_visibility');
@@ -212,6 +238,10 @@ export class LayerItem extends AbstractMvuContentPanel {
 				layer: { label, geoResourceId }
 			} = this.getModel();
 			openModal(label, html`<ba-georesourceinfo-panel .geoResourceId=${geoResourceId}></ba-georesourceinfo-panel>`);
+		};
+
+		const onClickChangeSide = (side) => {
+			changeLayerSideEvent(layer.id, side);
 		};
 
 		const getMenuItems = () => {
@@ -279,11 +309,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 						<ba-overflow-menu .type=${MenuTypes.MEATBALL} .items=${getMenuItems()}></ba-overflow-menu>
 					</div>
 				</div>
-				<div class="compare">
-					<ba-button .type=${'primary'} .label=${''} @click=${() => split({ active: false, id: layer.id, position: 'left' })}></ba-button>
-					<ba-button .label=${''} @click=${() => split({ active: false, id: layer.id, position: 'both' })}></ba-button>
-					<ba-button .label=${''} @click=${() => split({ active: false, id: layer.id, position: 'right' })}></ba-button>
-				</div>
+				${getLayerSwipe()}
 			</div>`;
 	}
 

@@ -23,6 +23,7 @@ import { pointerReducer } from '../store/pointer/pointer.reducer';
 import { mapContextMenuReducer } from '../store/mapContextMenu/mapContextMenu.reducer';
 import { createMainMenuReducer } from '../store/mainMenu/mainMenu.reducer';
 import { createNavigationRailReducer } from '../store/navigationRail/navigationRail.reducer';
+import { layerSwipeReducer } from '../store/layerSwipe/layerSwipe.reducer';
 import { featureInfoReducer } from '../store/featureInfo/featureInfo.reducer';
 import { importReducer } from '../store/import/import.reducer';
 import { mfpReducer } from '../store/mfp/mfp.reducer';
@@ -53,6 +54,7 @@ export class StoreService {
 			position: positionReducer,
 			mainMenu: createMainMenuReducer(),
 			navigationRail: createNavigationRailReducer(),
+			layerSwipe: layerSwipeReducer,
 			tools: toolsReducer,
 			modal: modalReducer,
 			layers: layersReducer,

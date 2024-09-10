@@ -25,8 +25,7 @@ export const initialState = {
 	rotation: 0,
 	liveRotation: 0,
 	fitRequest: new EventLike(null),
-	fitLayerRequest: new EventLike(null),
-	splitRequest: new EventLike(null)
+	fitLayerRequest: new EventLike(null)
 };
 
 export const positionReducer = (state = initialState, action) => {
@@ -110,20 +109,6 @@ export const positionReducer = (state = initialState, action) => {
 			return {
 				...state,
 				fitRequest: payload
-			};
-		}
-
-		case FIT_LAYER_REQUESTED: {
-			return {
-				...state,
-				fitLayerRequest: payload
-			};
-		}
-
-		case SPLIT_MAP: {
-			return {
-				...state,
-				splitRequest: payload
 			};
 		}
 	}

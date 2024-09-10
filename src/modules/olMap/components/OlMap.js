@@ -21,9 +21,11 @@ import { equals } from '../../../utils/storeUtils';
 import { roundCenter, roundRotation, roundZoomLevel } from '../../../utils/mapUtils';
 import { getRenderPixel } from 'ol/render';
 import { unByKey } from 'ol/Observable.js';
+import { addMapId } from '../../../store/layerSwipe/layerSwipe.action';
 
 const Update_Position = 'update_position';
 const Update_Layers = 'update_layers';
+const Update_Swipe = 'update_swipe';
 
 /**
  * Element which renders the ol map.
@@ -31,9 +33,8 @@ const Update_Layers = 'update_layers';
  * @author taulinger
  */
 export class OlMap extends MvuElement {
-	#range = 50;
 	#mapKey = new Map();
-	// #position = 0;
+	#range = 50;
 	constructor() {
 		super({
 			zoom: null,
@@ -102,6 +103,8 @@ export class OlMap extends MvuElement {
 				return { ...model, ...data };
 			case Update_Layers:
 				return { ...model, layers: data };
+			case Update_Swipe:
+				return { ...model, active: data.active, range: data.range, layerSide: data.layerSide };
 		}
 	}
 
@@ -129,6 +132,10 @@ export class OlMap extends MvuElement {
 			this.observe(
 				(state) => state.layers.active,
 				(data) => this.signal(Update_Layers, data)
+			),
+			this.observe(
+				(state) => state.layerSwipe,
+				(data) => this.signal(Update_Swipe, { active: data.active, range: data.range, layerSide: data.layerSide })
 			),
 			this.observe(
 				(state) => state.media.portrait,
@@ -239,10 +246,14 @@ export class OlMap extends MvuElement {
 		this.observeModel(['fitRequest', 'fitLayerRequest'], (eventLike) => this._fitToExtent(eventLike));
 		//sync layers
 		this.observeModel('layers', () => this._syncLayers());
+		//sync layerSwipe
+		this.observeModel('active', () => this._splitMapInit());
+		//sync layerSwipe
+		this.observeModel('range', () => this._splitMapSetRange());
+		// sync layerSwipe
+		this.observeModel('layerSide', () => this._splitMapSide());
 		//sync the view
 		this.observeModel(['zoom', 'center', 'rotation'], () => this._syncView());
-		//handle splitMap
-		this.observeModel(['splitRequest'], (eventLike) => this._splitMap(eventLike));
 	}
 
 	/**
@@ -415,60 +426,26 @@ export class OlMap extends MvuElement {
 		}
 	}
 
-	_splitMap(eventLike) {
-		if (eventLike.payload.options.range) {
-			this.#range = eventLike.payload.options.range;
-			return;
-		}
+	_splitMapSetRange() {
+		const { range } = this.getModel();
+		this.#range = range;
+	}
 
-		const splitInit = () => {
-			this._map.getLayers().forEach((layer) => {
-				console.log(layer.get('id'));
-				if (this.#mapKey.get(layer.get('id'))) {
-					this.#mapKey.get(layer.get('id')).forEach((key) => {
-						unByKey(key);
-					});
-				}
+	_splitMapSide() {
+		const { range, layerSide } = this.getModel();
+		const id = layerSide.payload.id;
+		const side = layerSide.payload.side;
 
-				const key3 = layer.on('prerender', (event) => {
-					const ctx = event.context;
-					const mapSize = this._map.getSize();
-					const width = mapSize[0] * (this.#range / 100);
-
-					const tl = getRenderPixel(event, [0, mapSize[1]]);
-					const tr = getRenderPixel(event, [width, mapSize[1]]);
-					const bl = getRenderPixel(event, [0, 0]);
-					const br = getRenderPixel(event, [width, 0]);
-
-					ctx.save();
-					ctx.beginPath();
-					ctx.moveTo(tl[0], tl[1]);
-					ctx.lineTo(bl[0], bl[1]);
-					ctx.lineTo(br[0], br[1]);
-					ctx.lineTo(tr[0], tr[1]);
-					ctx.closePath();
-					ctx.clip();
-					this._map.render();
-				});
-
-				const key4 = layer.on('postrender', (event) => {
-					const ctx = event.context;
-					ctx.restore();
-				});
-
-				this.#mapKey.set(layer.get('id'), [key3, key4]);
-			});
-		};
-
-		const splitId = (id, position) => {
+		const splitId = () => {
 			const olLayer = getLayerById(this._map, id);
 
+			addMapId(id, side);
 			if (this.#mapKey.get(id)) {
 				this.#mapKey.get(id).forEach((key) => {
 					unByKey(key);
 				});
 			}
-			if (position === 'both') {
+			if (side === 'both') {
 				return;
 			}
 			const key1 = olLayer.on('prerender', (event) => {
@@ -481,7 +458,7 @@ export class OlMap extends MvuElement {
 				let bl;
 				let br;
 
-				switch (position) {
+				switch (side) {
 					case 'left':
 						tl = getRenderPixel(event, [0, mapSize[1]]);
 						tr = getRenderPixel(event, [width, mapSize[1]]);
@@ -518,14 +495,55 @@ export class OlMap extends MvuElement {
 			this.#mapKey.set(id, [key1, key2]);
 		};
 
-		if (!eventLike.payload.options.active) {
-			splitId(eventLike.payload.options.id, eventLike.payload.options.position);
-			this._map.render();
-			return;
-		} else {
-			splitInit();
-			this._map.render();
-		}
+		splitId();
+		this._map.render();
+	}
+	_splitMapInit() {
+		const { active, range } = this.getModel();
+
+		const splitInit = () => {
+			this._map.getLayers().forEach((layer) => {
+				if (this.#mapKey.get(layer.get('id'))) {
+					this.#mapKey.get(layer.get('id')).forEach((key) => {
+						unByKey(key);
+					});
+				}
+				if (!active) {
+					return;
+				}
+				addMapId(layer.get('id'), 'left');
+				const key3 = layer.on('prerender', (event) => {
+					const ctx = event.context;
+					const mapSize = this._map.getSize();
+					const width = mapSize[0] * (this.#range / 100);
+
+					const tl = getRenderPixel(event, [0, mapSize[1]]);
+					const tr = getRenderPixel(event, [width, mapSize[1]]);
+					const bl = getRenderPixel(event, [0, 0]);
+					const br = getRenderPixel(event, [width, 0]);
+
+					ctx.save();
+					ctx.beginPath();
+					ctx.moveTo(tl[0], tl[1]);
+					ctx.lineTo(bl[0], bl[1]);
+					ctx.lineTo(br[0], br[1]);
+					ctx.lineTo(tr[0], tr[1]);
+					ctx.closePath();
+					ctx.clip();
+					this._map.render();
+				});
+
+				const key4 = layer.on('postrender', (event) => {
+					const ctx = event.context;
+					ctx.restore();
+				});
+
+				this.#mapKey.set(layer.get('id'), [key3, key4]);
+			});
+		};
+
+		splitInit();
+		this._map.render();
 	}
 
 	/**
