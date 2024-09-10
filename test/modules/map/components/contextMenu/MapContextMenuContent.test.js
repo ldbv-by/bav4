@@ -59,7 +59,7 @@ describe('OlMapContextMenuContent', () => {
 	});
 
 	describe('when screen coordinate available', () => {
-		it('renders the content', async () => {
+		it('renders the content when parcel is not available', async () => {
 			const coordinateMock = [1000, 2000];
 			const stringifiedCoord = 'stringified coordinate';
 			const getCoordinateRepresentationsMock = spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([
@@ -70,24 +70,24 @@ describe('OlMapContextMenuContent', () => {
 			const elevationMock = spyOn(elevationServiceMock, 'getElevation').withArgs(coordinateMock).and.returnValue(42);
 			const administrationMock = spyOn(administrationServiceMock, 'getAdministration')
 				.withArgs(coordinateMock)
-				.and.returnValue({ community: 'LDBV', district: 'Ref42' });
+				.and.returnValue({ community: 'LDBV', district: 'Ref42', parcel: null });
 			const element = await setup();
 
 			element.coordinate = coordinateMock;
 
+			await TestUtils.timeout();
 			expect(element.shadowRoot.querySelector('.container')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.content')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('.label')).toHaveSize(4);
 			expect(element.shadowRoot.querySelectorAll('.label')[0].innerText).toBe('map_contextMenuContent_community_label');
 			expect(element.shadowRoot.querySelectorAll('.label')[1].innerText).toBe('map_contextMenuContent_district_label');
 			expect(element.shadowRoot.querySelectorAll('.label')[2].innerText).toBe(GlobalCoordinateRepresentations.WGS84.label);
 			expect(element.shadowRoot.querySelectorAll('.label')[3].innerText).toBe('map_contextMenuContent_elevation_label');
 
-			window.requestAnimationFrame(() => {
-				expect(element.shadowRoot.querySelectorAll('.coordinate')[0].innerText).toEqual('LDBV');
-				expect(element.shadowRoot.querySelectorAll('.coordinate')[1].innerText).toEqual('Ref42');
-				expect(element.shadowRoot.querySelectorAll('.coordinate')[2].innerText).toBe(stringifiedCoord);
-				expect(element.shadowRoot.querySelectorAll('.coordinate')[3].innerText).toEqual('42 (m)');
-			});
+			expect(element.shadowRoot.querySelectorAll('.coordinate')[0].innerText).toEqual('LDBV');
+			expect(element.shadowRoot.querySelectorAll('.coordinate')[1].innerText).toEqual('Ref42');
+			expect(element.shadowRoot.querySelectorAll('.coordinate')[2].innerText).toBe(stringifiedCoord);
+			expect(element.shadowRoot.querySelectorAll('.coordinate')[3].innerText).toEqual('42 (m)');
 
 			const copyIcon = element.shadowRoot.querySelector(Icon.tag);
 			expect(copyIcon).toBeTruthy();
@@ -106,6 +106,37 @@ describe('OlMapContextMenuContent', () => {
 
 			expect(element.shadowRoot.querySelectorAll('ba-routing-chip')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('ba-routing-chip')[0].coordinate).toBe(coordinateMock);
+		});
+
+		it('renders the content when parcel is available', async () => {
+			const coordinateMock = [1000, 2000];
+			const stringifiedCoord = 'stringified coordinate';
+			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([GlobalCoordinateRepresentations.WGS84]);
+			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
+			spyOn(coordinateServiceMock, 'stringify').and.returnValue(stringifiedCoord);
+			spyOn(elevationServiceMock, 'getElevation').withArgs(coordinateMock).and.returnValue(42);
+			spyOn(administrationServiceMock, 'getAdministration')
+				.withArgs(coordinateMock)
+				.and.returnValue({ community: 'LDBV', district: 'Ref42', parcel: '12345' });
+			const element = await setup();
+
+			element.coordinate = coordinateMock;
+
+			await TestUtils.timeout();
+			expect(element.shadowRoot.querySelector('.container')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.content')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('.label')).toHaveSize(5);
+			expect(element.shadowRoot.querySelectorAll('.label')[0].innerText).toBe('map_contextMenuContent_community_label');
+			expect(element.shadowRoot.querySelectorAll('.label')[1].innerText).toBe('map_contextMenuContent_district_label');
+			expect(element.shadowRoot.querySelectorAll('.label')[2].innerText).toBe('map_contextMenuContent_parcel_label');
+			expect(element.shadowRoot.querySelectorAll('.label')[3].innerText).toBe(GlobalCoordinateRepresentations.WGS84.label);
+			expect(element.shadowRoot.querySelectorAll('.label')[4].innerText).toBe('map_contextMenuContent_elevation_label');
+
+			expect(element.shadowRoot.querySelectorAll('.coordinate')[0].innerText).toEqual('LDBV');
+			expect(element.shadowRoot.querySelectorAll('.coordinate')[1].innerText).toEqual('Ref42');
+			expect(element.shadowRoot.querySelectorAll('.coordinate')[2].innerText).toEqual('12345');
+			expect(element.shadowRoot.querySelectorAll('.coordinate')[3].innerText).toBe(stringifiedCoord);
+			expect(element.shadowRoot.querySelectorAll('.coordinate')[4].innerText).toEqual('42 (m)');
 		});
 
 		it('renders the content when AdministrationService returns null', async () => {
