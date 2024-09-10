@@ -16,7 +16,8 @@ export class RefreshableXYZ extends XYZ {
 	/**
 	 *
 	 * Smoothly updates the tiles by calling the protected method `setKey`.
-	 * Note: calling `changed` does nothing and calling `refresh` prunes the cache which is visually not smooth.
+	 * Note: calling `changed` does nothing and calling `refresh` prunes the cache which is visually not smooth
+	 * (see also https://gis.stackexchange.com/questions/302532/how-to-update-tile-source-url-at-zoom-change).
 	 *
 	 * @param {*} key
 	 */
