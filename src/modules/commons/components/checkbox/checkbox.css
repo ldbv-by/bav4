@@ -72,7 +72,7 @@ base from: https://codepen.io/avstorm/pen/vYYBxRM
 }
 .input:checked + .ba-checkbox span:first-child {
 	border-color: var(--primary-color);
-	background: var(--primary-color);
+	background: color(from var(--primary-color) srgb r g b / 0.8);
 	animation: check 0.6s ease;
 }
 .input:disabled + .ba-checkbox span:first-child {

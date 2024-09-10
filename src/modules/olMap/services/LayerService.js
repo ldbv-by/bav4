@@ -6,7 +6,7 @@ import { GeoResourceAuthenticationType, GeoResourceTypes } from '../../../domain
 import { Image as ImageLayer, Group as LayerGroup, Layer } from 'ol/layer';
 import TileLayer from 'ol/layer/Tile';
 import { getBvvBaaImageLoadFunction, getBvvTileLoadFunction } from '../utils/olLoadFunction.provider';
-import MapLibreLayer from '@geoblocks/ol-maplibre-layer';
+import { MapLibreLayer } from '@geoblocks/ol-maplibre-layer';
 import { AdvWmtsTileGrid } from '../ol/tileGrid/AdvWmtsTileGrid';
 import { Projection } from 'ol/proj';
 import ImageWMS from 'ol/source/ImageWMS.js';
@@ -169,7 +169,7 @@ export class LayerService {
 					opacity: opacity,
 					minZoom: minZoom ?? undefined,
 					maxZoom: maxZoom ?? undefined,
-					maplibreOptions: {
+					mapLibreOptions: {
 						style: geoResource.styleUrl
 					}
 				});

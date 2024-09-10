@@ -172,6 +172,13 @@ export class GeoResourceResultItem extends MvuElement {
 			return keywords.length === 0 ? nothing : toBadges(keywords);
 		};
 
+		const getPreviewClass = (result) => {
+			return !isGeoResourceActive(geoResourceSearchResult.geoResourceId) &&
+				activeLayers.filter((l) => l.id === GeoResourceResultItem._tmpLayerId(result.geoResourceId)).length === 1
+				? 'preview'
+				: '';
+		};
+
 		const getZoomToExtentButton = (result) => {
 			const geoRes = this.#geoResourceService.byId(result.geoResourceId);
 			return geoRes instanceof VectorGeoResource && this.#geoResourceService.isAllowed(result.geoResourceId)
@@ -196,7 +203,7 @@ export class GeoResourceResultItem extends MvuElement {
 					${css}
 				</style>
 				<li
-					class="ba-list-item ${getActivePreviewClass()}"
+					class="ba-list-item ${getActivePreviewClass()} ${getPreviewClass(geoResourceSearchResult)}"
 					tabindex="0"
 					@mouseenter=${() => onMouseEnter(geoResourceSearchResult)}
 					@mouseleave=${() => onMouseLeave(geoResourceSearchResult)}
