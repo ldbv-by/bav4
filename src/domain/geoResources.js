@@ -180,7 +180,7 @@ export class GeoResource {
 	}
 
 	/**
-	 * Returns a list of timestamps which for this GeoResource.
+	 * Returns a list of timestamps for this GeoResource.
 	 *  @type {Array<String>}
 	 */
 	get timestamps() {
