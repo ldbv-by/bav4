@@ -136,6 +136,30 @@ describe('StackableContentPanel', () => {
 			expect(element.getModel().bottomSheet).toEqual(jasmine.objectContaining({ id: 'default', content: 'fooBarBaz' }));
 		});
 
+		it('adds interaction bottomSheet content', async () => {
+			const element = await setup();
+
+			expect(element).toBeTruthy();
+			expect(element._model.notifications.length).toBe(0);
+			expect(element._model.bottomSheet).toBeNull();
+
+			openBottomSheet('fooBar');
+
+			const bottomSheetElements1 = element.shadowRoot.querySelectorAll('ba-bottom-sheet');
+			expect(bottomSheetElements1).toHaveSize(1);
+			expect(bottomSheetElements1[0].content).toBe('fooBar');
+			expect(element.getModel().bottomSheet).toEqual(jasmine.objectContaining({ id: 'default', content: 'fooBar' }));
+
+			openBottomSheet('fooBarBaz', 'interaction');
+
+			const bottomSheetElements2 = element.shadowRoot.querySelectorAll('ba-bottom-sheet');
+			expect(bottomSheetElements2).toHaveSize(2);
+			expect(bottomSheetElements2[0].content).toBe('fooBarBaz');
+			expect(element.getModel().interactionBottomSheet).toEqual(jasmine.objectContaining({ id: 'interaction', content: 'fooBarBaz' }));
+			expect(bottomSheetElements2[1].content).toBe('fooBar');
+			expect(element.getModel().bottomSheet).toEqual(jasmine.objectContaining({ id: 'default', content: 'fooBar' }));
+		});
+
 		it('adds a NotificationItem only once, when panel is rerendered', async () => {
 			const element = await setup();
 
