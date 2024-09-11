@@ -2503,10 +2503,14 @@ describe('BvvMfp3Encoder', () => {
 			});
 		});
 
-		it("resolves overlay with element of 'ba-measure-overlay' to a mfp 'geojson' spec", () => {
+		it("resolves overlay with element of 'ba-overlay' to a mfp 'geojson' spec", () => {
 			const distanceOverlayMock = {
 				getElement: () => {
-					return { tagName: 'ba-map-overlay', innerText: 'foo bar baz', placement: { offset: [0.4, 2], positioning: 'top-center' } };
+					return {
+						tagName: 'ba-map-overlay',
+						placement: { offset: [0.4, 2], positioning: 'top-center' },
+						childNodes: [{ innerText: 'foo bar baz', matches: (selector) => selector === '.ba-overlay', childNodes: [] }]
+					};
 				},
 				getPosition: () => [42, 21]
 			};
@@ -2514,9 +2518,9 @@ describe('BvvMfp3Encoder', () => {
 				getElement: () => {
 					return {
 						tagName: 'ba-map-overlay',
-						innerText: 'foo bar baz',
 						type: BaOverlayTypes.DISTANCE_PARTITION,
-						placement: { offset: [0.4, 2], positioning: 'top-center' }
+						placement: { offset: [0.4, 2], positioning: 'top-center' },
+						childNodes: [{ innerText: 'foo bar', matches: (selector) => selector === '.ba-overlay', childNodes: [] }]
 					};
 				},
 				getPosition: () => [42, 21]
@@ -2524,6 +2528,8 @@ describe('BvvMfp3Encoder', () => {
 			const encoder = setup();
 			const specs = encoder._encodeOverlays([distanceOverlayMock, partitionDistanceOverlayMock]);
 			expect(specs.geoJson.features).toHaveSize(2);
+			expect(specs.geoJson.features[0].properties.label).toBe('foo bar baz');
+			expect(specs.geoJson.features[1].properties.label).toBe('foo bar');
 			expect(specs).toEqual({
 				type: 'geojson',
 				name: 'overlay',
