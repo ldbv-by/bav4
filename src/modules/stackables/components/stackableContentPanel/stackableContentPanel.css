@@ -27,3 +27,10 @@
 .stackable-content-panel ba-notification-item:last-child {
 	margin-bottom: 1em;
 }
+
+.interaction-bottomsheet {
+	position: absolute;
+	bottom: 0;
+	z-index: 1;
+	width: 100%;
+}
