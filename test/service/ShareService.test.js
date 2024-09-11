@@ -112,6 +112,7 @@ describe('ShareService', () => {
 				expect(extract[QueryParameters.LAYER]).toEqual(['someLayer', 'https%3A%2F%2Ffoo.bar%2Fsome%7C%7Cthing']);
 				expect(extract[QueryParameters.LAYER_OPACITY]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_VISIBILITY]).not.toBeDefined();
+				expect(extract[QueryParameters.LAYER_TIMESTAMP]).not.toBeDefined();
 			});
 
 			it('extracts the current layers state ignoring hidden layers', () => {
@@ -125,6 +126,7 @@ describe('ShareService', () => {
 				expect(extract[QueryParameters.LAYER]).toEqual(['anotherLayer']);
 				expect(extract[QueryParameters.LAYER_OPACITY]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_VISIBILITY]).not.toBeDefined();
+				expect(extract[QueryParameters.LAYER_TIMESTAMP]).not.toBeDefined();
 			});
 
 			it('extracts the current layers state ignoring hidden geoResources', () => {
@@ -140,6 +142,7 @@ describe('ShareService', () => {
 				expect(extract[QueryParameters.LAYER]).toEqual(['anotherLayer']);
 				expect(extract[QueryParameters.LAYER_OPACITY]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_VISIBILITY]).not.toBeDefined();
+				expect(extract[QueryParameters.LAYER_TIMESTAMP]).not.toBeDefined();
 			});
 
 			it('extracts the current layers state ignoring including geoResources', () => {
@@ -155,6 +158,7 @@ describe('ShareService', () => {
 				expect(extract[QueryParameters.LAYER]).toEqual(['someLayer', 'anotherLayer']);
 				expect(extract[QueryParameters.LAYER_OPACITY]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_VISIBILITY]).not.toBeDefined();
+				expect(extract[QueryParameters.LAYER_TIMESTAMP]).not.toBeDefined();
 			});
 
 			it('extracts the current layers state considering non default values', () => {
@@ -163,11 +167,13 @@ describe('ShareService', () => {
 				spyOn(geoResourceService, 'byId').and.returnValue({ hidden: false });
 				addLayer('someLayer', { opacity: 0.5 });
 				addLayer('anotherLayer', { visible: false });
+				addLayer('aThirdLayer', { timestamp: '2000' });
 
 				const extract = instanceUnderTest._extractLayers();
-				expect(extract[QueryParameters.LAYER]).toEqual(['someLayer', 'anotherLayer']);
-				expect(extract[QueryParameters.LAYER_OPACITY]).toEqual([0.5, 1.0]);
-				expect(extract[QueryParameters.LAYER_VISIBILITY]).toEqual([true, false]);
+				expect(extract[QueryParameters.LAYER]).toEqual(['someLayer', 'anotherLayer', 'aThirdLayer']);
+				expect(extract[QueryParameters.LAYER_OPACITY]).toEqual([0.5, 1.0, 1.0]);
+				expect(extract[QueryParameters.LAYER_VISIBILITY]).toEqual([true, false, true]);
+				expect(extract[QueryParameters.LAYER_TIMESTAMP]).toEqual(['', '', '2000']);
 			});
 		});
 

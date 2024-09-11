@@ -26,6 +26,7 @@ describe('defaultLayerProperties', () => {
 		expect(defaultLayerProperties.visible).toBeTrue();
 		expect(defaultLayerProperties.opacity).toBe(1);
 		expect(defaultLayerProperties.zIndex).toBe(-1);
+		expect(defaultLayerProperties.timestamp).toBeNull();
 		expect(defaultLayerProperties.grChangedFlag).toBeNull();
 		expect(defaultLayerProperties.constraints).toEqual(createDefaultLayersConstraints());
 	});
@@ -51,6 +52,7 @@ describe('createDefaultLayer', () => {
 		expect(layer.opacity).toBe(1);
 		expect(layer.zIndex).toBe(-1);
 		expect(layer.grChangedFlag).toBeNull();
+		expect(layer.timestamp).toBeNull();
 		expect(layer.constraints).toEqual(createDefaultLayersConstraints());
 	});
 
@@ -62,6 +64,7 @@ describe('createDefaultLayer', () => {
 		expect(layer.visible).toBeTrue();
 		expect(layer.opacity).toBe(1);
 		expect(layer.zIndex).toBe(-1);
+		expect(layer.timestamp).toBeNull();
 		expect(layer.grChangedFlag).toBeNull();
 		expect(layer.constraints).toEqual(createDefaultLayersConstraints());
 	});
@@ -146,6 +149,9 @@ describe('layersReducer', () => {
 			expect(store.getState().layers.active[0].id).toBe('id0');
 			expect(store.getState().layers.active[0].geoResourceId).toBe('id0');
 			expect(store.getState().layers.active[0].zIndex).toBe(0);
+			expect(store.getState().layers.active[0].visible).toBeTrue();
+			expect(store.getState().layers.active[0].opacity).toBe(1);
+			expect(store.getState().layers.active[0].timestamp).toBeNull();
 			expect(store.getState().layers.active[0].constraints).toEqual(createDefaultLayersConstraints());
 
 			expect(store.getState().layers.active[1].id).toBe('id1');
@@ -509,6 +515,36 @@ describe('layersReducer', () => {
 			modifyLayer('id0', { visible: false });
 
 			expect(store.getState().layers.active[0].visible).toBe(false);
+		});
+
+		it("modifies the 'opacity' property of a layer", () => {
+			const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', opacity: 0.5 };
+			const store = setup({
+				layers: {
+					active: index([layerProperties0])
+				}
+			});
+
+			expect(store.getState().layers.active[0].opacity).toBe(0.5);
+
+			modifyLayer('id0', { opacity: 0.42 });
+
+			expect(store.getState().layers.active[0].opacity).toBe(0.42);
+		});
+
+		it("modifies the 'timestamp' property of a layer", () => {
+			const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', timestamp: 20081231 };
+			const store = setup({
+				layers: {
+					active: index([layerProperties0])
+				}
+			});
+
+			expect(store.getState().layers.active[0].timestamp).toBe(20081231);
+
+			modifyLayer('id0', { timestamp: 20241231 });
+
+			expect(store.getState().layers.active[0].timestamp).toBe(20241231);
 		});
 
 		it("modifies the 'zIndex' property of a layer", () => {
