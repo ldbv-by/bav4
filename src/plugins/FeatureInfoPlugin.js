@@ -47,13 +47,13 @@ export class FeatureInfoPlugin extends BaPlugin {
 				// call FeatureInfoService
 				[...state.layers.active].filter(layerFilter).forEach(async (layerProperties) => {
 					const geoRes = this._geoResourceService.byId(layerProperties.geoResourceId);
-					const queryId = createUniqueId();
+					const queryId = `${createUniqueId()}`;
 					try {
 						registerQuery(queryId);
 						const featureInfoResult = await this._featureInfoService.get(layerProperties.geoResourceId, coordinate, resolution);
 						if (featureInfoResult) {
 							const title = featureInfoResult.title || geoRes.label;
-							addFeatureInfoItems({ title: title, content: featureInfoResult.content });
+							addFeatureInfoItems({ ...featureInfoResult, title });
 						}
 					} catch (error) {
 						console.error(error);

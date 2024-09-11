@@ -3,7 +3,6 @@
  */
 import { $injector } from '../../injection';
 import { GeoResourceAuthenticationType } from '../../domain/geoResources';
-import { FeatureInfoResult } from '../FeatureInfoService';
 import { MediaType } from '../../domain/mediaTypes';
 import { isHttpUrl } from '../../utils/checks';
 
@@ -65,8 +64,8 @@ export const loadBvvFeatureInfo = async (geoResourceId, coordinate3857, mapResol
 
 		switch (result.status) {
 			case 200: {
-				const { title, content } = await result.json();
-				return new FeatureInfoResult(content, title);
+				const { title = '', content } = await result.json();
+				return { content, title };
 			}
 			case 204: {
 				return null;

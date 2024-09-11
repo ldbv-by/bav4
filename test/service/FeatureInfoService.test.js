@@ -1,6 +1,6 @@
 import { $injector } from '../../src/injection';
 import { WmsGeoResource, XyzGeoResource } from '../../src/domain/geoResources';
-import { FeatureInfoResult, FeatureInfoService } from '../../src/services/FeatureInfoService';
+import { FeatureInfoService } from '../../src/services/FeatureInfoService';
 import { loadBvvFeatureInfo } from '../../src/services/provider/featureInfo.provider';
 
 describe('FeatureInfoService', () => {
@@ -35,7 +35,7 @@ describe('FeatureInfoService', () => {
 			const geoResourceId = 'id';
 			const coordinate = [21, 42];
 			const resolution = 5;
-			const featureInfoResultMock = new FeatureInfoResult('content', 'title');
+			const featureInfoResultMock = { content: 'content', title: 'title' };
 			const providerSpy = jasmine.createSpy().withArgs(geoResourceId, coordinate, resolution).and.resolveTo(featureInfoResultMock);
 			const instanceUnderTest = setup(providerSpy);
 			const isQueryableSpy = spyOn(instanceUnderTest, 'isQueryable').withArgs(geoResourceId).and.returnValue(true);
@@ -51,7 +51,7 @@ describe('FeatureInfoService', () => {
 			const geoResourceId = 'id';
 			const coordinate = [21, 42];
 			const resolution = 5;
-			const featureInfoResultMock = new FeatureInfoResult('content', 'title');
+			const featureInfoResultMock = { content: 'content', title: 'title' };
 			const providerSpy = jasmine.createSpy().withArgs(geoResourceId, coordinate, resolution).and.resolveTo(featureInfoResultMock);
 			const instanceUnderTest = setup(providerSpy);
 			const isQueryableSpy = spyOn(instanceUnderTest, 'isQueryable').withArgs(geoResourceId).and.returnValue(false);
@@ -98,22 +98,6 @@ describe('FeatureInfoService', () => {
 
 				expect(instanceUnderTest.isQueryable(geoResourceId)).toBeFalse();
 			});
-		});
-	});
-
-	describe('FeatureInfoResult', () => {
-		it('provides getter for properties', () => {
-			const layerInfoResult = new FeatureInfoResult('<b>content</b>', 'title');
-
-			expect(layerInfoResult.content).toBe('<b>content</b>');
-			expect(layerInfoResult.title).toBe('title');
-		});
-
-		it('provides default properties', () => {
-			const layerInfoResult = new FeatureInfoResult('<b>content</b>', undefined);
-
-			expect(layerInfoResult.content).toBe('<b>content</b>');
-			expect(layerInfoResult.title).toBeNull();
 		});
 	});
 });

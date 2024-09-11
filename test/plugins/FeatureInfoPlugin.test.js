@@ -9,7 +9,6 @@ import { pointerReducer } from '../../src/store/pointer/pointer.reducer.js';
 import { $injector } from '../../src/injection/index.js';
 import { createDefaultLayer, layersReducer } from '../../src/store/layers/layers.reducer.js';
 import { positionReducer } from '../../src/store/position/position.reducer.js';
-import { FeatureInfoResult } from '../../src/services/FeatureInfoService.js';
 import { notificationReducer } from '../../src/store/notifications/notifications.reducer.js';
 import { LevelTypes } from '../../src/store/notifications/notifications.action.js';
 import { setCurrentTool } from '../../src/store/tools/tools.action.js';
@@ -104,7 +103,7 @@ describe('FeatureInfoPlugin', () => {
 				const instanceUnderTest = new FeatureInfoPlugin();
 
 				spyOn(mapService, 'calcResolution').withArgs(zoom, coordinate).and.returnValue(resolution);
-				spyOn(featureInfoService, 'get').withArgs(geoResourceId0, coordinate, resolution).and.resolveTo(new FeatureInfoResult('content', 'title'));
+				spyOn(featureInfoService, 'get').withArgs(geoResourceId0, coordinate, resolution).and.resolveTo({ content: 'content', title: 'title' });
 				await instanceUnderTest.register(store);
 
 				setClick({ coordinate: coordinate, screenCoordinate: [33, 44] });
@@ -136,7 +135,7 @@ describe('FeatureInfoPlugin', () => {
 				const instanceUnderTest = new FeatureInfoPlugin();
 
 				spyOn(mapService, 'calcResolution').withArgs(zoom, coordinate).and.returnValue(resolution);
-				spyOn(featureInfoService, 'get').withArgs(geoResourceId0, coordinate, resolution).and.resolveTo(new FeatureInfoResult('content'));
+				spyOn(featureInfoService, 'get').withArgs(geoResourceId0, coordinate, resolution).and.resolveTo({ content: 'content', title: '' });
 				await instanceUnderTest.register(store);
 
 				setClick({ coordinate: coordinate, screenCoordinate: [33, 44] });

@@ -9,12 +9,12 @@ import { loadBvvFeatureInfo } from './provider/featureInfo.provider';
  * An async function that returns a {@link GeoResourceInfoResult} for a `coordinate`.
  * @async
  * @typedef {Function} featureInfoProvider
- * @function
  * @param {string} geoResourceId The id of the corresponding GeoResource
  * @param {module:domain/coordinateTypeDef~Coordinate} coordinate3857 The coordinate in 3857
  * @param {number} mapResolution The current resolution of the map in meters
+ * @param {string|null} timestamp The current resolution of the map in meters
  * @throws `Error`
- * @returns {Promise<FeatureInfoResult>}
+ * @returns {Promise<module:domain/featureInfo~FeatureInfo>}
  */
 
 /**
@@ -38,7 +38,7 @@ export class FeatureInfoService {
 	 * @param {string} geoResourceId The id of a GeoResource
 	 * @param {Coordinate} coordinate The coordinate for the FeatureInfo request
 	 * @param {number} mapResolution Current map resolution in meters
-	 * @returns {Promise<FeatureInfoResult|null>} The result or `null`
+	 * @returns {Promise<module:domain/featureInfo~FeatureInfo|null>} The result or `null`
 	 */
 	async get(geoResourceId, coordinate, mapResolution) {
 		if (this.isQueryable(geoResourceId)) {
@@ -65,21 +65,21 @@ export class FeatureInfoService {
 /**
  * @class
  */
-export class FeatureInfoResult {
-	/**
-	 * @param {string} content The content of this FeatureInfoResult
-	 * @param {string} [title=null] The title of this FeatureInfoResult
-	 */
-	constructor(content, title = null) {
-		this._content = content;
-		this._title = title;
-	}
+// export class FeatureInfoResult {
+// 	/**
+// 	 * @param {string} content The content of this FeatureInfoResult
+// 	 * @param {string} [title=null] The title of this FeatureInfoResult
+// 	 */
+// 	constructor(content, title = null) {
+// 		this._content = content;
+// 		this._title = title;
+// 	}
 
-	get content() {
-		return this._content;
-	}
+// 	get content() {
+// 		return this._content;
+// 	}
 
-	get title() {
-		return this._title;
-	}
-}
+// 	get title() {
+// 		return this._title;
+// 	}
+// }

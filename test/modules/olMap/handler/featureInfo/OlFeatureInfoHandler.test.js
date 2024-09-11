@@ -9,7 +9,7 @@ import {
 } from '../../../../../src/modules/olMap/handler/featureInfo/OlFeatureInfoHandler';
 import { featureInfoReducer } from '../../../../../src/store/featureInfo/featureInfo.reducer';
 import { TestUtils } from '../../../../test-utils';
-import { abortOrReset, FeatureInfoGeometryTypes, startRequest } from '../../../../../src/store/featureInfo/featureInfo.action';
+import { abortOrReset, startRequest } from '../../../../../src/store/featureInfo/featureInfo.action';
 import { fromLonLat } from 'ol/proj';
 import { createDefaultLayer, layersReducer } from '../../../../../src/store/layers/layers.reducer';
 import { getBvvFeatureInfo } from '../../../../../src/modules/olMap/handler/featureInfo/featureInfoItem.provider';
@@ -20,6 +20,7 @@ import GeoJSON from 'ol/format/GeoJSON';
 import { $injector } from '../../../../../src/injection';
 import { QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../../src/plugins/HighlightPlugin';
 import { Cluster } from 'ol/source';
+import { FeatureInfoGeometryTypes } from '../../../../../src/domain/featureInfo';
 
 describe('OlFeatureInfoHandler_Query_Resolution_Delay', () => {
 	it('determines amount of time query resolution delayed', async () => {
