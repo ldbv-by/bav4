@@ -18,6 +18,7 @@ import { isCoordinate } from '../utils/checks';
  * @typedef {Object} Administration
  * @property {string} community The community at the delivered coordinate.
  * @property {string} district The district at the delivered coordinate.
+ * @property {string|null} parcel The parcel number at the delivered coordinate.
  */
 
 /**

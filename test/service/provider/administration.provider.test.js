@@ -17,9 +17,9 @@ describe('Administration provider', () => {
 
 		const coordinateMock = [21, 42];
 
-		it('loads an Administration object', async () => {
+		it('loads an Administration object without a parcel', async () => {
 			const backendUrl = 'https://backend.url';
-			const administrationMock = { gemeinde: 'gemeinde', gemarkung: 'gemarkung' };
+			const administrationMock = { gemeinde: 'gemeinde', gemarkung: 'gemarkung', flstBezeichnung: null };
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(JSON.stringify(administrationMock))));
 
@@ -27,9 +27,26 @@ describe('Administration provider', () => {
 
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
-			expect(administration.community).toEqual(administrationMock.gemeinde);
-			expect(administration.district).toEqual(administrationMock.gemarkung);
+			expect(administration.community).toBe(administrationMock.gemeinde);
+			expect(administration.district).toBe(administrationMock.gemarkung);
+			expect(administration.parcel).toBeNull();
 		});
+
+		it('loads an Administration object containing a parcel', async () => {
+			const backendUrl = 'https://backend.url';
+			const administrationMock = { gemeinde: 'gemeinde', gemarkung: 'gemarkung', flstBezeichnung: '12345' };
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(JSON.stringify(administrationMock))));
+
+			const administration = await loadBvvAdministration(coordinateMock);
+
+			expect(configServiceSpy).toHaveBeenCalled();
+			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(administration.community).toBe(administrationMock.gemeinde);
+			expect(administration.district).toBe(administrationMock.gemarkung);
+			expect(administration.parcel).toBe(administrationMock.flstBezeichnung);
+		});
+
 		it('return null when for status 404', async () => {
 			const backendUrl = 'https://backend.url';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
