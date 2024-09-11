@@ -104,6 +104,11 @@ describe('GeoResource', () => {
 				expect(new GeoResourceImpl('https://foo.bar||some||thing', null).isExternal()).toBeTrue();
 			});
 
+			it('provides a check for containing timestamps', () => {
+				expect(new GeoResourceImpl('id').hasTimestamps()).toBeFalse();
+				expect(new GeoResourceImpl('id').setTimestamps(['0']).hasTimestamps()).toBeTrue();
+			});
+
 			it('sets the attribution provider', () => {
 				const provider = jasmine.createSpy();
 				const grs = new GeoResourceImpl('id');

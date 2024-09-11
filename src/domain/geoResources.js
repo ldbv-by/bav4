@@ -297,6 +297,14 @@ export class GeoResource {
 	}
 
 	/**
+	 * Checks if this GeoResource contains one or more timestamps
+	 * @returns `true` if it contains one or more timestamps
+	 */
+	hasTimestamps() {
+		return this._timestamps.length > 0;
+	}
+
+	/**
 	 * Checks if this GeoResource has an HTTP based id
 	 * which means it denotes an (imported) external resource.
 	 */
