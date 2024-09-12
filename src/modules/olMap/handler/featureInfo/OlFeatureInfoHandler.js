@@ -7,12 +7,7 @@ import { observe } from '../../../../utils/storeUtils';
 import { getLayerById } from '../../utils/olMapUtils';
 import { OlMapHandler } from '../OlMapHandler';
 import { getBvvFeatureInfo } from './featureInfoItem.provider';
-import {
-	addHighlightFeatures,
-	HighlightFeatureType,
-	HighlightGeometryType,
-	removeHighlightFeaturesById
-} from '../../../../store/highlight/highlight.action';
+import { removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
 import { QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../plugins/HighlightPlugin';
 import { createUniqueId } from '../../../../utils/numberUtils';
 
@@ -44,7 +39,7 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 	 * @override
 	 */
 	register(map) {
-		const queryId = createUniqueId();
+		const queryId = `${createUniqueId()}`;
 		const translate = (key) => this._translationService.translate(key);
 		//find ONE closest feature per layer
 		const findOlFeature = (map, pixel, olLayer) => {
@@ -108,27 +103,6 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 				//publish FeatureInfo items
 				addFeatureInfoItems(featureInfoItems);
 
-				const highlightFeatures = featureInfoItems
-					.filter((featureInfo) => featureInfo.geometry)
-					.map((featureInfo) => ({
-						id: QUERY_RUNNING_HIGHLIGHT_FEATURE_ID,
-						type: HighlightFeatureType.DEFAULT,
-						data: { geometry: featureInfo.geometry.data, geometryType: HighlightGeometryType.GEOJSON }
-					}));
-
-				const unsubscribe = observe(
-					this._storeService.getStore(),
-					(state) => state.featureInfo.querying,
-					(querying) => {
-						//untestable else path cause function is self-removing
-						/* istanbul ignore else */
-						if (!querying) {
-							//publish current HighlightFeature items when all pending queries are resolved
-							addHighlightFeatures(highlightFeatures);
-							unsubscribe();
-						}
-					}
-				);
 				/**
 				 * let's delay this call and put it in the callback queue,
 				 * so we always run the HighlightFeature animation at least for this amount of time
