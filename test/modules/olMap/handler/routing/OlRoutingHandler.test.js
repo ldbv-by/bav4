@@ -557,7 +557,7 @@ describe('OlRoutingHandler', () => {
 
 			it('updates the store', async () => {
 				const { instanceUnderTest, map, layer, store } = await newTestInstance({
-					bottomSheet: { active: true },
+					bottomSheet: { active: null },
 					highlight: {
 						features: [{ id: 'foo', data: { coordinate: [11, 22] } }]
 					}
@@ -574,7 +574,7 @@ describe('OlRoutingHandler', () => {
 					new TranslateEvent('translatestart', new Collection([feature]), [0, 0], [0, 0], new Event(MapBrowserEventType.POINTERDOWN))
 				);
 
-				expect(store.getState().bottomSheet.active).toBeFalse();
+				expect(store.getState().bottomSheet.active).toBeNull();
 				expect(store.getState().highlight.features).toHaveSize(0);
 			});
 

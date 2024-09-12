@@ -30,10 +30,11 @@ export class LayersPlugin extends BaPlugin {
 	_addLayersFromQueryParams(queryParams) {
 		const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
 
-		const parseLayer = (layerValue, layerVisibilityValue, layerOpacityValue) => {
+		const parseLayer = (layerValue, layerVisibilityValue, layerOpacityValue, layerTimestampValue) => {
 			const layer = layerValue.split(',');
 			const layerVisibility = layerVisibilityValue ? layerVisibilityValue.split(',') : [];
 			const layerOpacity = layerOpacityValue ? layerOpacityValue.split(',') : [];
+			const layerTimestamp = layerTimestampValue ? layerTimestampValue.split(',') : [];
 
 			/**
 			 * parseLayer() is called not only initially at application startup time but also dynamically during runtime.
@@ -61,6 +62,9 @@ export class LayersPlugin extends BaPlugin {
 								if (isFinite(layerOpacity[index]) && layerOpacity[index] >= 0 && layerOpacity[index] <= 1) {
 									atomicallyAddedLayer.opacity = parseFloat(layerOpacity[index]);
 								}
+								if (!!layerTimestamp[index] && geoResource.timestamps.includes(layerTimestamp[index])) {
+									atomicallyAddedLayer.timestamp = layerTimestamp[index];
+								}
 
 								return atomicallyAddedLayer;
 							}
@@ -74,7 +78,8 @@ export class LayersPlugin extends BaPlugin {
 		const parsedLayers = parseLayer(
 			queryParams.get(QueryParameters.LAYER),
 			queryParams.get(QueryParameters.LAYER_VISIBILITY),
-			queryParams.get(QueryParameters.LAYER_OPACITY)
+			queryParams.get(QueryParameters.LAYER_OPACITY),
+			queryParams.get(QueryParameters.LAYER_TIMESTAMP)
 		);
 		const zteIndex = parseInt(queryParams.get(QueryParameters.ZOOM_TO_EXTENT));
 		const zoomToExtentLayerIndex = isNumber(zteIndex) ? zteIndex : -1;

@@ -83,6 +83,7 @@ export const createDefaultLayerProperties = () => ({
 	visible: true,
 	zIndex: -1,
 	opacity: 1,
+	timestamp: null,
 	constraints: createDefaultLayersConstraints(),
 	grChangedFlag: null
 });

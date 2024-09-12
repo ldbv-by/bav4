@@ -1,5 +1,5 @@
 import { ElevationProfilePlugin } from '../../src/plugins/ElevationProfilePlugin';
-import { closeProfile, openProfile } from '../../src/store/elevationProfile/elevationProfile.action';
+import { openProfile } from '../../src/store/elevationProfile/elevationProfile.action';
 import { elevationProfileReducer, initialState as elevationProfileInitialState } from '../../src/store/elevationProfile/elevationProfile.reducer';
 import { bottomSheetReducer, initialState as bottomSheetInitialState } from '../../src/store/bottomSheet/bottomSheet.reducer';
 import { featureInfoReducer, initialState as featureInfoInitialState } from '../../src/store/featureInfo/featureInfo.reducer';
@@ -45,15 +45,11 @@ describe('ElevationProfilePlugin', () => {
 				[2, 3]
 			]);
 
-			const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data);
+			const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data[0].content);
 			expect(wrapperElement.querySelectorAll(LazyLoadWrapper.tag)).toHaveSize(1);
 			expect(wrapperElement.querySelectorAll(LazyLoadWrapper.tag)[0].chunkName).toBe('elevation-profile');
 			const wrapperElementForContent = TestUtils.renderTemplateResult(wrapperElement.querySelectorAll(LazyLoadWrapper.tag)[0].content);
 			expect(wrapperElementForContent.querySelectorAll(ElevationProfile.tag)).toHaveSize(1);
-
-			closeProfile();
-
-			expect(store.getState().bottomSheet.data).toBeNull();
 		});
 	});
 
@@ -64,9 +60,7 @@ describe('ElevationProfilePlugin', () => {
 					active: true,
 					coordinates: []
 				},
-				bottomSheet: {
-					active: true
-				}
+				bottomSheet: { data: [], active: true }
 			});
 			const instanceUnderTest = new ElevationProfilePlugin();
 			const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetUnsubscribeFn');
@@ -81,15 +75,13 @@ describe('ElevationProfilePlugin', () => {
 					active: true,
 					coordinates: []
 				},
-				bottomSheet: {
-					active: true
-				}
+				bottomSheet: { data: [], active: true }
 			});
 			const instanceUnderTest = new ElevationProfilePlugin();
 			await instanceUnderTest.register(store);
 			const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetUnsubscribeFn');
 
-			closeBottomSheet();
+			closeBottomSheet('elevationProfile');
 
 			expect(store.getState().elevationProfile.active).toBeFalse();
 			expect(bottomSheetUnsubscribeFnSpy).toHaveBeenCalled();

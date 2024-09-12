@@ -247,7 +247,7 @@ describe('RoutingPlugin', () => {
 					current: Tools.ROUTING
 				},
 
-				bottomSheet: { active: true },
+				bottomSheet: { data: [], active: true },
 				highlight: {
 					features: [{ id: RoutingPlugin.HIGHLIGHT_FEATURE_ID, data: { coordinate: [11, 22] } }]
 				}
@@ -259,7 +259,7 @@ describe('RoutingPlugin', () => {
 			setCurrentTool('foo');
 
 			expect(store.getState().routing.active).toBeFalse();
-			expect(store.getState().bottomSheet.active).toBeFalse();
+			expect(store.getState().bottomSheet.active).toBeNull();
 			expect(store.getState().highlight.features).toHaveSize(0);
 		});
 	});
@@ -345,16 +345,16 @@ describe('RoutingPlugin', () => {
 			setProposal(coordinate, CoordinateProposalType.START_OR_DESTINATION);
 
 			expect(store.getState().mapContextMenu.active).toBeFalse();
-			expect(store.getState().bottomSheet.active).toBeTrue();
-			const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data);
+			expect(store.getState().bottomSheet.active).toBe('interaction');
+			const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data[0].content);
 			expect(wrapperElement.querySelectorAll(ProposalContextContent.tag)).toHaveSize(1);
-			expect(store.getState().bottomSheet.active).toBeTrue();
+			expect(store.getState().bottomSheet.active).toBe('interaction');
 			expect(store.getState().highlight.features).toHaveSize(1);
 			expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
 			expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER_TMP);
 			expect(store.getState().highlight.features[0].id).toBe(RoutingPlugin.HIGHLIGHT_FEATURE_ID);
 
-			closeBottomSheet();
+			closeBottomSheet('interaction');
 
 			expect(store.getState().highlight.features).toHaveSize(0);
 		});
@@ -434,7 +434,7 @@ describe('RoutingPlugin', () => {
 		describe('and we have more than one waypoint', () => {
 			it('resets the UI but does not close the elevation profile', async () => {
 				const store = setup({
-					bottomSheet: { active: true },
+					bottomSheet: { active: 'interaction' },
 					mapContextMenu: { active: true },
 					highlight: {
 						features: [{ id: RoutingPlugin.HIGHLIGHT_FEATURE_ID, data: { coordinate: [11, 22] } }],
@@ -453,7 +453,7 @@ describe('RoutingPlugin', () => {
 					[3, 4]
 				]);
 
-				expect(store.getState().bottomSheet.active).toBeTrue();
+				expect(store.getState().bottomSheet.active).toBe('interaction');
 				expect(store.getState().mapContextMenu.active).toBeFalse();
 				expect(store.getState().highlight.active).toBeFalse();
 			});
@@ -461,7 +461,7 @@ describe('RoutingPlugin', () => {
 		describe('and we have less than two waypoints', () => {
 			it('resets the UI and also closes the elevation profile', async () => {
 				const store = setup({
-					bottomSheet: { active: true },
+					bottomSheet: { data: [], active: true },
 					mapContextMenu: { active: true },
 					highlight: {
 						features: [{ id: RoutingPlugin.HIGHLIGHT_FEATURE_ID, data: { coordinate: [11, 22] } }],
@@ -477,7 +477,7 @@ describe('RoutingPlugin', () => {
 
 				setStart([1, 2]);
 
-				expect(store.getState().bottomSheet.active).toBeFalse();
+				expect(store.getState().bottomSheet.active).toBeNull();
 				expect(store.getState().mapContextMenu.active).toBeFalse();
 				expect(store.getState().highlight.active).toBeFalse();
 			});
