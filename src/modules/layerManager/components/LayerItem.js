@@ -194,6 +194,22 @@ export class LayerItem extends AbstractMvuContentPanel {
 			</div>`;
 		};
 
+		const getTimestampContent = () => {
+			const getTimestampControl = () => {
+				const onTimestampChange = (event) => {
+					const selectElement = event.target;
+					const timestamp = selectElement.options[selectElement.selectedIndex].value;
+					modifyLayer(layer.id, { timestamp });
+				};
+				return html`<div class="timespan-content">
+					<select @change="${onTimestampChange}">
+						${geoResource.timestamps.map((timestamp) => html` <option value="${timestamp}">${timestamp}</option>`)}
+					</select>
+				</div>`;
+			};
+			return geoResource.timestamps ? getTimestampControl() : nothing;
+		};
+
 		const getVisibilityTitle = () => {
 			return layer.label + ' - ' + translate('layerManager_change_visibility');
 		};
@@ -241,7 +257,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 				</div>
 				<div class="collapse-content  ${classMap(bodyCollapseClass)}">
 					<div class="ba-list-item">
-						${getSlider()}
+						${getSlider()} ${getTimestampContent()}
 						<div>
 							<ba-icon
 								id="increase"
