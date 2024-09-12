@@ -2,7 +2,6 @@
  * @module services/FeatureInfoService
  */
 import { $injector } from '../injection';
-import { WmsGeoResource } from '../domain/geoResources';
 import { loadBvvFeatureInfo } from './provider/featureInfo.provider';
 
 /**
@@ -41,7 +40,7 @@ export class FeatureInfoService {
 	 * @returns {Promise<module:domain/featureInfo~FeatureInfo|null>} The result or `null`
 	 */
 	async get(geoResourceId, coordinate, mapResolution) {
-		if (this.isQueryable(geoResourceId)) {
+		if (this._geoResourceService.byId(geoResourceId)?.queryable) {
 			try {
 				return await this._featureInfoProvider(geoResourceId, coordinate, mapResolution);
 			} catch (e) {
@@ -50,36 +49,4 @@ export class FeatureInfoService {
 		}
 		return null;
 	}
-
-	/**
-	 * Tests if a GeoResource can be used for a GetFeatureInfo request.
-	 * @param {string} geoResourceId The id of a GeoResource
-	 * @returns {boolean} `true` if the GeoResource can be used for a GetFeatureInfo request
-	 */
-	isQueryable(geoResourceId) {
-		const geoResource = this._geoResourceService.byId(geoResourceId);
-		return geoResource.queryable && geoResource instanceof WmsGeoResource;
-	}
 }
-
-/**
- * @class
- */
-// export class FeatureInfoResult {
-// 	/**
-// 	 * @param {string} content The content of this FeatureInfoResult
-// 	 * @param {string} [title=null] The title of this FeatureInfoResult
-// 	 */
-// 	constructor(content, title = null) {
-// 		this._content = content;
-// 		this._title = title;
-// 	}
-
-// 	get content() {
-// 		return this._content;
-// 	}
-
-// 	get title() {
-// 		return this._title;
-// 	}
-// }
