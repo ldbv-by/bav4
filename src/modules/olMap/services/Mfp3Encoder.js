@@ -17,7 +17,8 @@ import LayerGroup from 'ol/layer/Group';
 import { WMTS } from 'ol/source';
 import { getPolygonFrom } from '../utils/olGeometryUtils';
 import { getUniqueCopyrights } from '../../../utils/attributionUtils';
-import { BaOverlay } from '../components/BaOverlay';
+import { BaOverlay, OVERLAY_STYLE_CLASS } from '../components/BaOverlay';
+import { findAllBySelector } from '../../../utils/markup';
 
 const UnitsRatio = 39.37; //inches per meter
 const PointsPerInch = 72; // PostScript points 1/72"
@@ -759,6 +760,9 @@ export class BvvMfp3Encoder {
 				console.warn('cannot encode overlay element: No rule defined', element);
 				return null;
 			}
+			const selector = `.${OVERLAY_STYLE_CLASS}`;
+			const labelElements = findAllBySelector(element, selector);
+			const label = labelElements.length > 0 ? labelElements[0].innerText : '';
 
 			const center = overlay.getPosition();
 			const mfpCenter = new Point(center).transform(this._mapProjection, this._mfpProjection).getCoordinates();
@@ -766,11 +770,12 @@ export class BvvMfp3Encoder {
 			const offsetX = Math.round(element.placement.offset[0]);
 			const offsetY = -Math.round(element.placement.offset[1]);
 			const labelAnchorPoint = anchorPointFromPositioning(element.placement.positioning);
+
 			return {
 				type: 'Feature',
 				properties: {
 					type: element.type,
-					label: element.innerText,
+					label: label,
 					labelXOffset: offsetX,
 					labelYOffset: offsetY,
 					labelAnchorPointX: labelAnchorPoint.x,
