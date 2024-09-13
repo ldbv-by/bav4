@@ -92,9 +92,10 @@ describe('FeatureInfoPlugin', () => {
 				const coordinate = [11, 22];
 				const zoom = 5;
 				const resolution = 25;
+				const timestamp = '1900';
 				const store = setup({
 					layers: {
-						active: [createDefaultLayer(layerId0, geoResourceId0)]
+						active: [{ ...createDefaultLayer(layerId0, geoResourceId0), timestamp }]
 					},
 					position: {
 						zoom: zoom
@@ -103,7 +104,9 @@ describe('FeatureInfoPlugin', () => {
 				const instanceUnderTest = new FeatureInfoPlugin();
 
 				spyOn(mapService, 'calcResolution').withArgs(zoom, coordinate).and.returnValue(resolution);
-				spyOn(featureInfoService, 'get').withArgs(geoResourceId0, coordinate, resolution).and.resolveTo({ content: 'content', title: 'title' });
+				spyOn(featureInfoService, 'get')
+					.withArgs(geoResourceId0, coordinate, resolution, timestamp)
+					.and.resolveTo({ content: 'content', title: 'title' });
 				await instanceUnderTest.register(store);
 
 				setClick({ coordinate: coordinate, screenCoordinate: [33, 44] });
@@ -165,7 +168,7 @@ describe('FeatureInfoPlugin', () => {
 				const instanceUnderTest = new FeatureInfoPlugin();
 
 				spyOn(mapService, 'calcResolution').withArgs(zoom, coordinate).and.returnValue(resolution);
-				spyOn(featureInfoService, 'get').withArgs(geoResourceId0, coordinate, resolution).and.resolveTo(null);
+				spyOn(featureInfoService, 'get').withArgs(geoResourceId0, coordinate, resolution, null).and.resolveTo(null);
 				await instanceUnderTest.register(store);
 
 				setClick({ coordinate: coordinate, screenCoordinate: [33, 44] });
@@ -195,7 +198,7 @@ describe('FeatureInfoPlugin', () => {
 				});
 				const instanceUnderTest = new FeatureInfoPlugin();
 				spyOn(mapService, 'calcResolution').withArgs(zoom, coordinate).and.returnValue(resolution);
-				spyOn(featureInfoService, 'get').withArgs(geoResourceId0, coordinate, resolution).and.returnValue(Promise.reject(errorMessage));
+				spyOn(featureInfoService, 'get').withArgs(geoResourceId0, coordinate, resolution, null).and.returnValue(Promise.reject(errorMessage));
 				const errorSpy = spyOn(console, 'error');
 				await instanceUnderTest.register(store);
 

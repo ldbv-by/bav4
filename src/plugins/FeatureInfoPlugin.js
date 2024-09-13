@@ -50,7 +50,12 @@ export class FeatureInfoPlugin extends BaPlugin {
 					const queryId = `${createUniqueId()}`;
 					try {
 						registerQuery(queryId);
-						const featureInfoResult = await this._featureInfoService.get(layerProperties.geoResourceId, coordinate, resolution);
+						const featureInfoResult = await this._featureInfoService.get(
+							layerProperties.geoResourceId,
+							coordinate,
+							resolution,
+							layerProperties.timestamp
+						);
 						if (featureInfoResult) {
 							addFeatureInfoItems({ ...featureInfoResult });
 						}
