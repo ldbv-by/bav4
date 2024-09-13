@@ -11,7 +11,7 @@ import { loadBvvFeatureInfo } from './provider/featureInfo.provider';
  * @param {string} geoResourceId The id of the corresponding GeoResource
  * @param {module:domain/coordinateTypeDef~Coordinate} coordinate3857 The coordinate in 3857
  * @param {number} mapResolution The current resolution of the map in meters
- * @param {string|null} timestamp The current resolution of the map in meters
+ * @param {string|null} timestamp The timestamp or `null`
  * @throws `Error`
  * @returns {Promise<module:domain/featureInfo~FeatureInfo>}
  */
@@ -39,10 +39,10 @@ export class FeatureInfoService {
 	 * @param {number} mapResolution Current map resolution in meters
 	 * @returns {Promise<module:domain/featureInfo~FeatureInfo|null>} The result or `null`
 	 */
-	async get(geoResourceId, coordinate, mapResolution) {
+	async get(geoResourceId, coordinate, mapResolution, timestamp) {
 		if (this._geoResourceService.byId(geoResourceId)?.queryable) {
 			try {
-				return await this._featureInfoProvider(geoResourceId, coordinate, mapResolution);
+				return await this._featureInfoProvider(geoResourceId, coordinate, mapResolution, timestamp);
 			} catch (e) {
 				throw new Error(`Could not load a FeatureInfoResult from provider: ${e}`);
 			}
