@@ -201,13 +201,17 @@ export class LayerItem extends AbstractMvuContentPanel {
 					const timestamp = selectElement.options[selectElement.selectedIndex].value;
 					modifyLayer(layer.id, { timestamp });
 				};
-				return html`<div class="timespan-content">
+
+				const cropToYear = (timestampValue) => {
+					return timestampValue.slice(0, 4);
+				};
+				return html`<div class="timestamp-content ba-form-element">
 					<select @change="${onTimestampChange}">
-						${geoResource.timestamps.map((timestamp) => html` <option value="${timestamp}">${timestamp}</option>`)}
+						${geoResource.timestamps.map((timestamp) => html` <option value="${timestamp}">${cropToYear(timestamp)}</option>`)}
 					</select>
 				</div>`;
 			};
-			return geoResource.timestamps ? getTimestampControl() : nothing;
+			return geoResource.timestamps.length > 0 ? getTimestampControl() : nothing;
 		};
 
 		const getVisibilityTitle = () => {
@@ -251,13 +255,14 @@ export class LayerItem extends AbstractMvuContentPanel {
 					<ba-checkbox .title="${getVisibilityTitle()}" class="ba-list-item__text" tabindex="0" .checked=${layer.visible} @toggle=${toggleVisibility}
 						>${layer.loading ? html`<ba-spinner .label=${currentLabel}></ba-spinner>` : html`${currentLabel} ${getBadges(layer.keywords)}`}
 					</ba-checkbox>
+					${getTimestampContent()}
 					<button id="button-detail" data-test-id class="ba-list-item__after" title="${getCollapseTitle()}" @click="${toggleCollapse}">
 						<i class="icon chevron icon-rotate-90 ${classMap(iconCollapseClass)}"></i>
 					</button>
 				</div>
 				<div class="collapse-content  ${classMap(bodyCollapseClass)}">
 					<div class="ba-list-item">
-						${getSlider()} ${getTimestampContent()}
+						${getSlider()}
 						<div>
 							<ba-icon
 								id="increase"
