@@ -69,7 +69,7 @@ const loadWmsFeatureInfo = async (geoResource, coordinate3857, mapResolution) =>
 	throwError(geoResourceId, `Http-Status ${result.status}`);
 };
 
-const loadTimeTravelFeatureInfo = async (geoResource, coordinate3857) => {
+const loadTimeTravelFeatureInfo = async (geoResource, coordinate3857, timestamp) => {
 	const geoResourceId = geoResource.id;
 
 	const {
@@ -84,7 +84,7 @@ const loadTimeTravelFeatureInfo = async (geoResource, coordinate3857) => {
 		easting: coordinate3857[0],
 		northing: coordinate3857[1],
 		zoom: Math.round(zoomLevel),
-		year: 1925
+		year: timestamp
 	};
 
 	const url = configService.getValueAsPath('BACKEND_URL') + `timetravel`;
@@ -111,7 +111,7 @@ const loadTimeTravelFeatureInfo = async (geoResource, coordinate3857) => {
  * @function
  * @type {module:services/FeatureInfoService~featureInfoProvider}
  */
-export const loadBvvFeatureInfo = async (geoResourceId, coordinate3857, mapResolution) => {
+export const loadBvvFeatureInfo = async (geoResourceId, coordinate3857, mapResolution, timestamp) => {
 	const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
 
 	const geoResource = geoResourceService.byId(geoResourceId);
@@ -119,7 +119,7 @@ export const loadBvvFeatureInfo = async (geoResourceId, coordinate3857, mapResol
 		if (geoResource instanceof WmsGeoResource) {
 			return loadWmsFeatureInfo(geoResource, coordinate3857, mapResolution);
 		} else if (geoResource.hasTimestamps()) {
-			return loadTimeTravelFeatureInfo(geoResource, coordinate3857);
+			return loadTimeTravelFeatureInfo(geoResource, coordinate3857, timestamp);
 		}
 		// unsupported GeoResource
 		return null;

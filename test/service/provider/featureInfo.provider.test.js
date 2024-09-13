@@ -32,7 +32,7 @@ describe('FeatureInfoResult provider', () => {
 			TestUtils.setupStoreAndDi(
 				{
 					position: {
-						zoom:zoomLevel
+						zoom: zoomLevel
 					}
 				},
 				{ position: positionReducer }
@@ -74,7 +74,7 @@ describe('FeatureInfoResult provider', () => {
 					)
 					.and.resolveTo(new Response(JSON.stringify(featureInfoResultPayload)));
 
-				const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution);
+				const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution, null);
 
 				expect(configServiceSpy).toHaveBeenCalled();
 				expect(httpServiceSpy).toHaveBeenCalled();
@@ -112,7 +112,7 @@ describe('FeatureInfoResult provider', () => {
 					)
 					.and.resolveTo(new Response(JSON.stringify(featureInfoResultPayload)));
 
-				const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution);
+				const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution, null);
 
 				expect(featureInfoResult.content).toBe(content);
 				expect(featureInfoResult.title).toBe(geoResourceLabel);
@@ -140,7 +140,7 @@ describe('FeatureInfoResult provider', () => {
 					.withArgs(`${backendUrl}getFeature/url`, expectedRequestPayload, MediaType.JSON, { timeout: 10000 }, { response: [] })
 					.and.resolveTo(new Response(JSON.stringify(featureInfoResultPayload)));
 
-				const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution);
+				const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution, null);
 
 				expect(configServiceSpy).toHaveBeenCalled();
 				expect(httpServiceSpy).toHaveBeenCalled();
@@ -181,7 +181,7 @@ describe('FeatureInfoResult provider', () => {
 					.withArgs(`${backendUrl}getFeature/url`, expectedRequestPayload, MediaType.JSON, { timeout: 10000 }, { response: [] })
 					.and.resolveTo(new Response(JSON.stringify(featureInfoResultPayload)));
 
-				const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution);
+				const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution, null);
 
 				expect(configServiceSpy).toHaveBeenCalled();
 				expect(httpServiceSpy).toHaveBeenCalled();
@@ -202,7 +202,7 @@ describe('FeatureInfoResult provider', () => {
 				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(wmsGeoResource);
 				spyOn(baaCredentialService, 'get').withArgs(geoResourceUrl).and.returnValue(null);
 
-				await expectAsync(loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution)).toBeRejectedWithError(
+				await expectAsync(loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution, null)).toBeRejectedWithError(
 					`FeatureInfoResult for '${geoResourceId}' could not be loaded: No credentials available`
 				);
 			});
@@ -217,7 +217,7 @@ describe('FeatureInfoResult provider', () => {
 				const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 				const httpServiceSpy = spyOn(httpService, 'post').and.resolveTo(new Response(null, { status: 204 }));
 
-				const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution);
+				const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution, null);
 
 				expect(configServiceSpy).toHaveBeenCalled();
 				expect(httpServiceSpy).toHaveBeenCalled();
@@ -234,7 +234,7 @@ describe('FeatureInfoResult provider', () => {
 				const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 				const httpServiceSpy = spyOn(httpService, 'post').and.resolveTo(new Response(null, { status: 500 }));
 
-				await expectAsync(loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution)).toBeRejectedWithError(
+				await expectAsync(loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution, null)).toBeRejectedWithError(
 					`FeatureInfoResult for '${geoResourceId}' could not be loaded: Http-Status 500`
 				);
 				expect(configServiceSpy).toHaveBeenCalled();
@@ -251,6 +251,7 @@ describe('FeatureInfoResult provider', () => {
 				const coordinate3857 = [38, 57];
 				const geoJson = '{"type":"Point","coordinates":[1224514.3987260093,6106854.83488507]}';
 				const mapResolution = 5;
+				const timestamp = '1900';
 				const content = 'content';
 				const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(xyzGeoResource);
@@ -259,14 +260,14 @@ describe('FeatureInfoResult provider', () => {
 					easting: coordinate3857[0],
 					northing: coordinate3857[1],
 					zoom: Math.round(zoomLevel),
-					year: 1925
+					year: timestamp
 				});
 				const featureInfoResultPayload = { fragment: 'content', geometry: geoJson };
 				const httpServiceSpy = spyOn(httpService, 'post')
 					.withArgs(`${backendUrl}timetravel`, expectedRequestPayload, MediaType.JSON, { timeout: 10000 })
 					.and.resolveTo(new Response(JSON.stringify(featureInfoResultPayload)));
 
-				const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution);
+				const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution, timestamp);
 
 				expect(configServiceSpy).toHaveBeenCalled();
 				expect(httpServiceSpy).toHaveBeenCalled();
@@ -283,6 +284,7 @@ describe('FeatureInfoResult provider', () => {
 				const xyzGeoResource = new XyzGeoResource(geoResourceId, geoResourceLabel, '').setTimestamps([1900]);
 				const coordinate3857 = [38, 57];
 				const mapResolution = 5;
+				const timestamp = '1900';
 				const content = 'content';
 				const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(xyzGeoResource);
@@ -291,14 +293,14 @@ describe('FeatureInfoResult provider', () => {
 					easting: coordinate3857[0],
 					northing: coordinate3857[1],
 					zoom: Math.round(zoomLevel),
-					year: 1925
+					year: timestamp
 				});
 				const featureInfoResultPayload = { fragment: 'content' };
 				const httpServiceSpy = spyOn(httpService, 'post')
 					.withArgs(`${backendUrl}timetravel`, expectedRequestPayload, MediaType.JSON, { timeout: 10000 })
 					.and.resolveTo(new Response(JSON.stringify(featureInfoResultPayload)));
 
-				const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution);
+				const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution, timestamp);
 
 				expect(configServiceSpy).toHaveBeenCalled();
 				expect(httpServiceSpy).toHaveBeenCalled();
@@ -312,12 +314,13 @@ describe('FeatureInfoResult provider', () => {
 				const geoResourceId = 'geoResourceId';
 				const coordinate3857 = [38, 57];
 				const mapResolution = 5;
+				const timestamp = '1900';
 				const xyzGeoResource = new XyzGeoResource(geoResourceId, '', '').setTimestamps([1900]);
 				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(xyzGeoResource);
 				const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 				const httpServiceSpy = spyOn(httpService, 'post').and.resolveTo(new Response(null, { status: 204 }));
 
-				const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution);
+				const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution, timestamp);
 
 				expect(configServiceSpy).toHaveBeenCalled();
 				expect(httpServiceSpy).toHaveBeenCalled();
@@ -329,29 +332,30 @@ describe('FeatureInfoResult provider', () => {
 				const geoResourceId = 'geoResourceId';
 				const coordinate3857 = [38, 57];
 				const mapResolution = 5;
+				const timestamp = '1900';
 				const xyzGeoResource = new XyzGeoResource(geoResourceId, '', '').setTimestamps([1900]);
 				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(xyzGeoResource);
 				const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 				const httpServiceSpy = spyOn(httpService, 'post').and.resolveTo(new Response(null, { status: 500 }));
 
-				await expectAsync(loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution)).toBeRejectedWithError(
+				await expectAsync(loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution, timestamp)).toBeRejectedWithError(
 					`FeatureInfoResult for '${geoResourceId}' could not be loaded: Http-Status 500`
 				);
 				expect(configServiceSpy).toHaveBeenCalled();
 				expect(httpServiceSpy).toHaveBeenCalled();
 			});
+		});
 
-			it('return NULL when GeoResource is not supported', async () => {
-				const geoResourceId = 'geoResourceId';
-				const coordinate3857 = [38, 57];
-				const mapResolution = 5;
-				const xyzGeoResource = new XyzGeoResource(geoResourceId, '', '');
-				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(xyzGeoResource);
+		it('return NULL when GeoResource is not supported', async () => {
+			const geoResourceId = 'geoResourceId';
+			const coordinate3857 = [38, 57];
+			const mapResolution = 5;
+			const xyzGeoResource = new XyzGeoResource(geoResourceId, '', '');
+			spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(xyzGeoResource);
 
-				const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution);
+			const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution, null);
 
-				expect(featureInfoResult).toBeNull;
-			});
+			expect(featureInfoResult).toBeNull;
 		});
 
 		it('throws an exception when GeoResourceService cannot fulfill', async () => {
@@ -360,7 +364,7 @@ describe('FeatureInfoResult provider', () => {
 			const mapResolution = 5;
 			spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(null);
 
-			await expectAsync(loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution)).toBeRejectedWithError(
+			await expectAsync(loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution, null)).toBeRejectedWithError(
 				`FeatureInfoResult for '${geoResourceId}' could not be loaded: No GeoResource found with id "geoResourceId"`
 			);
 		});
