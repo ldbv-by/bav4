@@ -116,36 +116,6 @@ describe('FeatureInfoPlugin', () => {
 				expect(store.getState().featureInfo.querying).toBeFalse();
 			});
 
-			it("adds FeatureInfo items taking the GeoResource' label as title", async () => {
-				const labelO = 'label0';
-				const layerId0 = 'id0';
-				const geoResourceId0 = 'geoResourceId0';
-				spyOn(geoResourceService, 'byId').withArgs(geoResourceId0).and.returnValue({ label: labelO } /*fake GeoResource */);
-				const coordinate = [11, 22];
-				const zoom = 5;
-				const resolution = 25;
-				const store = setup({
-					layers: {
-						active: [{ ...createDefaultLayer(layerId0, geoResourceId0) }]
-					},
-					position: {
-						zoom: zoom
-					}
-				});
-				const instanceUnderTest = new FeatureInfoPlugin();
-
-				spyOn(mapService, 'calcResolution').withArgs(zoom, coordinate).and.returnValue(resolution);
-				spyOn(featureInfoService, 'get').withArgs(geoResourceId0, coordinate, resolution).and.resolveTo({ content: 'content', title: '' });
-				await instanceUnderTest.register(store);
-
-				setClick({ coordinate: coordinate, screenCoordinate: [33, 44] });
-
-				await TestUtils.timeout();
-				expect(store.getState().featureInfo.current).toHaveSize(1);
-				expect(store.getState().featureInfo.current[0].content).toBe('content');
-				expect(store.getState().featureInfo.current[0].title).toBe(labelO);
-			});
-
 			it('adds NO FeatureInfo items when layer is invisible or hidden', async () => {
 				const layerId0 = 'id0';
 				const geoResourceId0 = 'geoResourceId0';
