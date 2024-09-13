@@ -202,12 +202,9 @@ export class LayerItem extends AbstractMvuContentPanel {
 					modifyLayer(layer.id, { timestamp });
 				};
 
-				const cropToYear = (timestampValue) => {
-					return timestampValue.slice(0, 4);
-				};
 				return html`<div class="timestamp-content ba-form-element">
 					<select @change="${onTimestampChange}">
-						${geoResource.timestamps.map((timestamp) => html` <option value="${timestamp}">${cropToYear(timestamp)}</option>`)}
+						${geoResource.timestamps.map((timestamp) => html` <option value="${timestamp}">${timestamp}</option>`)}
 					</select>
 				</div>`;
 			};
