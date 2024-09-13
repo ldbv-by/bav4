@@ -9,7 +9,14 @@ import { isTemplateResult } from '../../../../src/utils/checks';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { EventLike } from '../../../../src/utils/storeUtils';
 import { positionReducer } from '../../../../src/store/position/position.reducer';
-import { GeoResourceFuture, RtVectorGeoResource, VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../../src/domain/geoResources';
+import {
+	GeoResourceFuture,
+	RtVectorGeoResource,
+	VectorGeoResource,
+	VectorSourceType,
+	WmsGeoResource,
+	XyzGeoResource
+} from '../../../../src/domain/geoResources';
 import { Spinner } from '../../../../src/modules/commons/components/spinner/Spinner';
 import { GeoResourceInfoPanel } from '../../../../src/modules/geoResourceInfo/components/GeoResourceInfoPanel';
 import cloneSvg from '../../../../src/modules/layerManager/components/assets/clone.svg';
@@ -52,7 +59,11 @@ describe('LayerItem', () => {
 	describe('when layer item is rendered', () => {
 		const setup = async (layer) => {
 			store = TestUtils.setupStoreAndDi(
-				{},
+				{
+					layers: {
+						active: [layer]
+					}
+				},
 				{
 					layers: layersReducer,
 					modal: modalReducer
@@ -167,6 +178,69 @@ describe('LayerItem', () => {
 			const toggle = element.shadowRoot.querySelector('ba-checkbox');
 
 			expect(toggle.checked).toBe(false);
+		});
+
+		it('use layer.timestamps-property to render the timestamp component ', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceIdWithTimestamps')
+				.and.returnValue(new XyzGeoResource('geoResourceIdWithTimestamps', 'someLabel0', 'someUrl0').setTimestamps(['2000', '2024']));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceIdWithTimestamps',
+				visible: false,
+				zIndex: 0,
+				opacity: 1,
+				collapsed: true
+			};
+
+			const element = await setup(layer);
+			const timestampElements = element.shadowRoot.querySelectorAll('.timestamp-content');
+
+			expect(timestampElements).toHaveSize(1);
+			expect(timestampElements[0].querySelectorAll('select')).toHaveSize(1);
+		});
+
+		it('use layer.timestamps-property to skip render the timestamp component ', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId_Without_Timestamp')
+				.and.returnValue(new XyzGeoResource('geoResourceId_Without_Timestamp', 'someLabel1', 'someUrl1'));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId_Without_Timestamp',
+				visible: false,
+				zIndex: 0,
+				opacity: 1,
+				collapsed: true
+			};
+
+			const element = await setup(layer);
+			const timestampElements = element.shadowRoot.querySelectorAll('.timestamp-content');
+
+			expect(timestampElements).toHaveSize(0);
+		});
+
+		it('click on timestamp component modifies the layer ', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceIdWithTimestamps')
+				.and.returnValue(new XyzGeoResource('geoResourceIdWithTimestamps', 'someLabel0', 'someUrl0').setTimestamps(['2000', '2024']));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceIdWithTimestamps',
+				visible: false,
+				zIndex: 0,
+				opacity: 1,
+				collapsed: true
+			};
+			const element = await setup(layer);
+			const timestampSelect = element.shadowRoot.querySelector('.timestamp-content select');
+			const option2004 = timestampSelect.item(1);
+			option2004.selected = true;
+			timestampSelect.dispatchEvent(new Event('change'));
+
+			expect(store.getState().layers.active[0].timestamp).toBe('2024');
 		});
 
 		it('use layer.collapsed-property in element style ', async () => {
@@ -620,308 +694,308 @@ describe('LayerItem', () => {
 
 			expect(store.getState().position.fitLayerRequest.payload.id).toEqual('id0');
 		});
-	});
 
-	describe('when user change order of layer in group', () => {
-		let store;
-		const setup = (state) => {
-			store = TestUtils.setupStoreAndDi(state, { layers: layersReducer });
-			$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
-			return store;
-		};
-
-		it('click on increase-button change state in store', async () => {
-			spyOn(geoResourceService, 'byId')
-				.withArgs('geoResourceId0')
-				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
-			const layer0 = {
-				...createDefaultLayerProperties(),
-				id: 'id0',
-				geoResourceId: 'geoResourceId0',
-				visible: true,
-				zIndex: 0,
-				opacity: 1
-			};
-			const layer1 = {
-				...createDefaultLayerProperties(),
-				id: 'id1',
-				geoResourceId: 'geoResourceId0',
-				visible: true,
-				zIndex: 1,
-				opacity: 1
-			};
-			const layer2 = {
-				...createDefaultLayerProperties(),
-				id: 'id2',
-				geoResourceId: 'geoResourceId0',
-				visible: true,
-				zIndex: 2,
-				opacity: 1
-			};
-			const state = {
-				layers: {
-					active: [layer0, layer1, layer2],
-					background: 'bg0'
-				}
-			};
-			const store = setup(state);
-			const element = await TestUtils.render(LayerItem.tag);
-			element.layer = { ...layer0 };
-
-			expect(store.getState().layers.active[0].id).toBe('id0');
-			expect(store.getState().layers.active[1].id).toBe('id1');
-			expect(store.getState().layers.active[2].id).toBe('id2');
-			const increaseButton = element.shadowRoot.querySelector('#increase');
-			increaseButton.click();
-
-			expect(store.getState().layers.active[0].id).toBe('id1');
-			expect(store.getState().layers.active[1].id).toBe('id0');
-			expect(store.getState().layers.active[2].id).toBe('id2');
-		});
-
-		it('click on decrease-button change state in store', async () => {
-			spyOn(geoResourceService, 'byId')
-				.withArgs('geoResourceId0')
-				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
-			const layer0 = {
-				...createDefaultLayerProperties(),
-				id: 'id0',
-				geoResourceId: 'geoResourceId0',
-				visible: true,
-				zIndex: 0,
-				opacity: 1
-			};
-			const layer1 = {
-				...createDefaultLayerProperties(),
-				id: 'id1',
-				geoResourceId: 'geoResourceId0',
-				visible: true,
-				zIndex: 1,
-				opacity: 1
-			};
-			const layer2 = {
-				...createDefaultLayerProperties(),
-				id: 'id2',
-				geoResourceId: 'geoResourceId0',
-				visible: true,
-				zIndex: 2,
-				opacity: 1
-			};
-			const state = {
-				layers: {
-					active: [layer0, layer1, layer2],
-					background: 'bg0'
-				}
-			};
-			const store = setup(state);
-			const element = await TestUtils.render(LayerItem.tag);
-			element.layer = { ...layer2 };
-
-			expect(store.getState().layers.active[0].id).toBe('id0');
-			expect(store.getState().layers.active[1].id).toBe('id1');
-			expect(store.getState().layers.active[2].id).toBe('id2');
-			const decreaseButton = element.shadowRoot.querySelector('#decrease');
-			decreaseButton.click();
-			expect(store.getState().layers.active.length).toBe(3);
-			expect(store.getState().layers.active[0].id).toBe('id0');
-			expect(store.getState().layers.active[1].id).toBe('id2');
-			expect(store.getState().layers.active[2].id).toBe('id1');
-		});
-
-		it('click on decrease-button for first layer change not state in store', async () => {
-			spyOn(geoResourceService, 'byId')
-				.withArgs('geoResourceId0')
-				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
-			const layer0 = {
-				...createDefaultLayerProperties(),
-				id: 'id0',
-				geoResourceId: 'geoResourceId0',
-				visible: true,
-				zIndex: 0,
-				opacity: 1
-			};
-			const layer1 = {
-				...createDefaultLayerProperties(),
-				id: 'id1',
-				geoResourceId: 'geoResourceId0',
-				visible: true,
-				zIndex: 1,
-				opacity: 1
-			};
-			const layer2 = {
-				...createDefaultLayerProperties(),
-				id: 'id2',
-				geoResourceId: 'geoResourceId0',
-				visible: true,
-				zIndex: 2,
-				opacity: 1
-			};
-			const state = {
-				layers: {
-					active: [layer0, layer1, layer2],
-					background: 'bg0'
-				}
-			};
-			const store = setup(state);
-			const element = await TestUtils.render(LayerItem.tag);
-			element.layer = { ...layer0 };
-
-			expect(store.getState().layers.active[0].id).toBe('id0');
-			expect(store.getState().layers.active[1].id).toBe('id1');
-			expect(store.getState().layers.active[2].id).toBe('id2');
-			const decreaseButton = element.shadowRoot.querySelector('#decrease');
-			decreaseButton.click();
-			expect(store.getState().layers.active.length).toBe(3);
-			expect(store.getState().layers.active[0].id).toBe('id0');
-			expect(store.getState().layers.active[1].id).toBe('id1');
-			expect(store.getState().layers.active[2].id).toBe('id2');
-		});
-
-		it("click on 'copy' icon adds a layer copy", async () => {
-			spyOn(geoResourceService, 'byId')
-				.withArgs('geoResourceId0')
-				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
-			const layer0 = {
-				...createDefaultLayerProperties(),
-				id: 'id0',
-				geoResourceId: 'geoResourceId0',
-				visible: true,
-				zIndex: 0,
-				opacity: 1
+		describe('when user change order of layer in group', () => {
+			let store;
+			const setup = (state) => {
+				store = TestUtils.setupStoreAndDi(state, { layers: layersReducer });
+				$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
+				return store;
 			};
 
-			const state = {
-				layers: {
-					active: [layer0],
-					background: 'bg0'
-				}
-			};
-			const store = setup(state);
-			const element = await TestUtils.render(LayerItem.tag);
-			element.layer = { ...layer0 };
-
-			expect(store.getState().layers.active[0].id).toBe('id0');
-
-			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
-			const copyMenuItem = menu.items.find((item) => item.label === 'layerManager_to_copy');
-			copyMenuItem.action();
-
-			expect(store.getState().layers.active[0].id).toBe(layer0.id);
-			expect(store.getState().layers.active[1].id.startsWith('geoResourceId0_')).toBeTrue();
-			expect(store.getState().layers.active[1].geoResourceId).toBe(layer0.geoResourceId);
-		});
-
-		it('click on remove-button change state in store', async () => {
-			spyOn(geoResourceService, 'byId')
-				.withArgs('geoResourceId0')
-				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
-			const layer0 = {
-				...createDefaultLayerProperties(),
-				id: 'id0',
-				geoResourceId: 'geoResourceId0',
-				visible: true,
-				zIndex: 0,
-				opacity: 1
-			};
-			const layer1 = {
-				...createDefaultLayerProperties(),
-				id: 'id1',
-				geoResourceId: 'geoResourceId0',
-				visible: true,
-				zIndex: 1,
-				opacity: 1
-			};
-			const layer2 = {
-				...createDefaultLayerProperties(),
-				id: 'id2',
-				geoResourceId: 'geoResourceId0',
-				visible: true,
-				zIndex: 2,
-				opacity: 1
-			};
-			const state = {
-				layers: {
-					active: [layer0, layer1, layer2],
-					background: 'bg0'
-				}
-			};
-			const store = setup(state);
-			const element = await TestUtils.render(LayerItem.tag);
-			element.layer = { ...layer0 };
-
-			expect(store.getState().layers.active[0].id).toBe('id0');
-			expect(store.getState().layers.active[1].id).toBe('id1');
-			expect(store.getState().layers.active[2].id).toBe('id2');
-			const decreaseButton = element.shadowRoot.querySelector('#remove');
-			decreaseButton.click();
-			expect(store.getState().layers.active.length).toBe(2);
-			expect(store.getState().layers.active[0].id).toBe('id1');
-			expect(store.getState().layers.active[1].id).toBe('id2');
-		});
-	});
-
-	describe('event handling', () => {
-		const layer = {
-			...createDefaultLayerProperties(),
-			id: 'id0',
-			geoResourceId: 'geoResourceId0',
-			visible: true,
-			zIndex: 0,
-			opacity: 1,
-			collapsed: true
-		};
-
-		const setup = () => {
-			const store = TestUtils.setupStoreAndDi({}, { layers: layersReducer, modal: modalReducer });
-			$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
-			return store;
-		};
-
-		describe('on collapse', () => {
-			it('fires a "collapse" event', async () => {
-				setup();
+			it('click on increase-button change state in store', async () => {
 				spyOn(geoResourceService, 'byId')
 					.withArgs('geoResourceId0')
 					.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+				const layer0 = {
+					...createDefaultLayerProperties(),
+					id: 'id0',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 0,
+					opacity: 1
+				};
+				const layer1 = {
+					...createDefaultLayerProperties(),
+					id: 'id1',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 1,
+					opacity: 1
+				};
+				const layer2 = {
+					...createDefaultLayerProperties(),
+					id: 'id2',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 2,
+					opacity: 1
+				};
+				const state = {
+					layers: {
+						active: [layer0, layer1, layer2],
+						background: 'bg0'
+					}
+				};
+				const store = setup(state);
 				const element = await TestUtils.render(LayerItem.tag);
+				element.layer = { ...layer0 };
 
-				element.layer = { ...layer }; // collapsed = true is initialized
-				element.onCollapse = jasmine.createSpy();
-				const collapseButton = element.shadowRoot.querySelector('button');
-				const spy = jasmine.createSpy();
-				element.addEventListener('collapse', spy);
+				expect(store.getState().layers.active[0].id).toBe('id0');
+				expect(store.getState().layers.active[1].id).toBe('id1');
+				expect(store.getState().layers.active[2].id).toBe('id2');
+				const increaseButton = element.shadowRoot.querySelector('#increase');
+				increaseButton.click();
 
-				collapseButton.click();
-
-				expect(spy).toHaveBeenCalledOnceWith(
-					jasmine.objectContaining({
-						detail: {
-							layer: jasmine.objectContaining({ ...layer, collapsed: false })
-						}
-					})
-				);
-				expect(element.getModel().layer.collapsed).toBeFalse();
+				expect(store.getState().layers.active[0].id).toBe('id1');
+				expect(store.getState().layers.active[1].id).toBe('id0');
+				expect(store.getState().layers.active[2].id).toBe('id2');
 			});
 
-			it('calls the onCollapse callback via property callback', async () => {
-				setup();
+			it('click on decrease-button change state in store', async () => {
 				spyOn(geoResourceService, 'byId')
 					.withArgs('geoResourceId0')
 					.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+				const layer0 = {
+					...createDefaultLayerProperties(),
+					id: 'id0',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 0,
+					opacity: 1
+				};
+				const layer1 = {
+					...createDefaultLayerProperties(),
+					id: 'id1',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 1,
+					opacity: 1
+				};
+				const layer2 = {
+					...createDefaultLayerProperties(),
+					id: 'id2',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 2,
+					opacity: 1
+				};
+				const state = {
+					layers: {
+						active: [layer0, layer1, layer2],
+						background: 'bg0'
+					}
+				};
+				const store = setup(state);
 				const element = await TestUtils.render(LayerItem.tag);
+				element.layer = { ...layer2 };
 
-				element.layer = { ...layer }; // collapsed = true is initialized
-				element.onCollapse = jasmine.createSpy();
-				const collapseButton = element.shadowRoot.querySelector('button');
+				expect(store.getState().layers.active[0].id).toBe('id0');
+				expect(store.getState().layers.active[1].id).toBe('id1');
+				expect(store.getState().layers.active[2].id).toBe('id2');
+				const decreaseButton = element.shadowRoot.querySelector('#decrease');
+				decreaseButton.click();
+				expect(store.getState().layers.active.length).toBe(3);
+				expect(store.getState().layers.active[0].id).toBe('id0');
+				expect(store.getState().layers.active[1].id).toBe('id2');
+				expect(store.getState().layers.active[2].id).toBe('id1');
+			});
 
-				collapseButton.click();
+			it('click on decrease-button for first layer change not state in store', async () => {
+				spyOn(geoResourceService, 'byId')
+					.withArgs('geoResourceId0')
+					.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+				const layer0 = {
+					...createDefaultLayerProperties(),
+					id: 'id0',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 0,
+					opacity: 1
+				};
+				const layer1 = {
+					...createDefaultLayerProperties(),
+					id: 'id1',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 1,
+					opacity: 1
+				};
+				const layer2 = {
+					...createDefaultLayerProperties(),
+					id: 'id2',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 2,
+					opacity: 1
+				};
+				const state = {
+					layers: {
+						active: [layer0, layer1, layer2],
+						background: 'bg0'
+					}
+				};
+				const store = setup(state);
+				const element = await TestUtils.render(LayerItem.tag);
+				element.layer = { ...layer0 };
 
-				expect(element.getModel().layer.collapsed).toBeFalse();
+				expect(store.getState().layers.active[0].id).toBe('id0');
+				expect(store.getState().layers.active[1].id).toBe('id1');
+				expect(store.getState().layers.active[2].id).toBe('id2');
+				const decreaseButton = element.shadowRoot.querySelector('#decrease');
+				decreaseButton.click();
+				expect(store.getState().layers.active.length).toBe(3);
+				expect(store.getState().layers.active[0].id).toBe('id0');
+				expect(store.getState().layers.active[1].id).toBe('id1');
+				expect(store.getState().layers.active[2].id).toBe('id2');
+			});
 
-				collapseButton.click();
+			it("click on 'copy' icon adds a layer copy", async () => {
+				spyOn(geoResourceService, 'byId')
+					.withArgs('geoResourceId0')
+					.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+				const layer0 = {
+					...createDefaultLayerProperties(),
+					id: 'id0',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 0,
+					opacity: 1
+				};
 
-				expect(element.getModel().layer.collapsed).toBeTrue();
-				expect(element._onCollapse).toHaveBeenCalledTimes(2);
+				const state = {
+					layers: {
+						active: [layer0],
+						background: 'bg0'
+					}
+				};
+				const store = setup(state);
+				const element = await TestUtils.render(LayerItem.tag);
+				element.layer = { ...layer0 };
+
+				expect(store.getState().layers.active[0].id).toBe('id0');
+
+				const menu = element.shadowRoot.querySelector('ba-overflow-menu');
+				const copyMenuItem = menu.items.find((item) => item.label === 'layerManager_to_copy');
+				copyMenuItem.action();
+
+				expect(store.getState().layers.active[0].id).toBe(layer0.id);
+				expect(store.getState().layers.active[1].id.startsWith('geoResourceId0_')).toBeTrue();
+				expect(store.getState().layers.active[1].geoResourceId).toBe(layer0.geoResourceId);
+			});
+
+			it('click on remove-button change state in store', async () => {
+				spyOn(geoResourceService, 'byId')
+					.withArgs('geoResourceId0')
+					.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+				const layer0 = {
+					...createDefaultLayerProperties(),
+					id: 'id0',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 0,
+					opacity: 1
+				};
+				const layer1 = {
+					...createDefaultLayerProperties(),
+					id: 'id1',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 1,
+					opacity: 1
+				};
+				const layer2 = {
+					...createDefaultLayerProperties(),
+					id: 'id2',
+					geoResourceId: 'geoResourceId0',
+					visible: true,
+					zIndex: 2,
+					opacity: 1
+				};
+				const state = {
+					layers: {
+						active: [layer0, layer1, layer2],
+						background: 'bg0'
+					}
+				};
+				const store = setup(state);
+				const element = await TestUtils.render(LayerItem.tag);
+				element.layer = { ...layer0 };
+
+				expect(store.getState().layers.active[0].id).toBe('id0');
+				expect(store.getState().layers.active[1].id).toBe('id1');
+				expect(store.getState().layers.active[2].id).toBe('id2');
+				const decreaseButton = element.shadowRoot.querySelector('#remove');
+				decreaseButton.click();
+				expect(store.getState().layers.active.length).toBe(2);
+				expect(store.getState().layers.active[0].id).toBe('id1');
+				expect(store.getState().layers.active[1].id).toBe('id2');
+			});
+		});
+
+		describe('event handling', () => {
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				collapsed: true
+			};
+
+			const setup = () => {
+				const store = TestUtils.setupStoreAndDi({}, { layers: layersReducer, modal: modalReducer });
+				$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
+				return store;
+			};
+
+			describe('on collapse', () => {
+				it('fires a "collapse" event', async () => {
+					setup();
+					spyOn(geoResourceService, 'byId')
+						.withArgs('geoResourceId0')
+						.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+					const element = await TestUtils.render(LayerItem.tag);
+
+					element.layer = { ...layer }; // collapsed = true is initialized
+					element.onCollapse = jasmine.createSpy();
+					const collapseButton = element.shadowRoot.querySelector('button');
+					const spy = jasmine.createSpy();
+					element.addEventListener('collapse', spy);
+
+					collapseButton.click();
+
+					expect(spy).toHaveBeenCalledOnceWith(
+						jasmine.objectContaining({
+							detail: {
+								layer: jasmine.objectContaining({ ...layer, collapsed: false })
+							}
+						})
+					);
+					expect(element.getModel().layer.collapsed).toBeFalse();
+				});
+
+				it('calls the onCollapse callback via property callback', async () => {
+					setup();
+					spyOn(geoResourceService, 'byId')
+						.withArgs('geoResourceId0')
+						.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+					const element = await TestUtils.render(LayerItem.tag);
+
+					element.layer = { ...layer }; // collapsed = true is initialized
+					element.onCollapse = jasmine.createSpy();
+					const collapseButton = element.shadowRoot.querySelector('button');
+
+					collapseButton.click();
+
+					expect(element.getModel().layer.collapsed).toBeFalse();
+
+					collapseButton.click();
+
+					expect(element.getModel().layer.collapsed).toBeTrue();
+					expect(element._onCollapse).toHaveBeenCalledTimes(2);
+				});
 			});
 		});
 	});
