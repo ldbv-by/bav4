@@ -265,7 +265,6 @@ export class AdminPanel extends MvuElement {
 		const topics = model.topics;
 		let newCatalogWithResourceData = [];
 		let newModel = {};
-
 		switch (type) {
 			case Update_Selected_Topic_Id:
 				if (topics && topics.length > 0) {
@@ -295,6 +294,7 @@ export class AdminPanel extends MvuElement {
 						dummy: !model.dummy
 					};
 				}
+
 				return newModel;
 
 			case Update_Catalog:
@@ -553,7 +553,10 @@ export class AdminPanel extends MvuElement {
 			if (foundTopic) {
 				foundTopic._disabled = !foundTopic._disabled;
 
-				const newTopicsArray = JSON.parse(JSON.stringify(topics));
+				const newTopicsArray = [];
+				topics.forEach((topic) => {
+					newTopicsArray.push(topic);
+				});
 
 				let newSelectedTopic = selectedTopic;
 				if (foundTopic.id === selectedTopic.id) {
