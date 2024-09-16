@@ -50,10 +50,6 @@ li > button {
 	cursor: pointer;
 }
 
-.dropdown-item button {
-	margin-left: 5px;
-}
-
 li > button:hover {
 	background-color: #c0392b;
 }
@@ -112,53 +108,47 @@ input[type='text'] {
 	user-select: text;
 }
 
-.custom-dropdown .dropdown-items.hidden {
+.hidden {
 	display: none;
 }
 
 .custom-dropdown {
 	position: relative;
 	width: 100%;
-	font-family: Arial, sans-serif;
-	user-select: none;
-	color: #330606;
 }
 
 .dropdown-selected {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	cursor: pointer;
 	padding: 10px;
 	background-color: #f0f0f0;
 	border: 1px solid #ccc;
-	cursor: pointer;
-	color: #330606;
 }
 
 .dropdown-items {
 	position: absolute;
+	top: 100%;
+	left: 0;
 	width: 100%;
-	background-color: #fff;
+	background-color: white;
 	border: 1px solid #ccc;
-	border-top: none;
 	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 	z-index: 1000;
-	max-height: 300px;
-	overflow-y: auto;
-	color: #330606;
 }
 
 .dropdown-item {
-	display: flex;
-	align-items: center;
 	padding: 10px;
 	cursor: pointer;
 }
 
-.dropdown-item .buttons {
+.buttons {
 	margin-left: auto;
 }
 
-.dropdown-item:hover,
-.dropdown-item:focus {
-	background-color: #e9e9e9;
+.dropdown-item:hover {
+	background-color: #f0f0f0;
 }
 
 .edit-btn {
@@ -173,4 +163,13 @@ input[type='text'] {
 
 .edit-btn:hover {
 	background-color: #0056b3;
+}
+
+.buttons button {
+	margin-left: 5px;
+}
+
+.dropdown-icon,
+.close-dropdown-icon {
+	margin-left: 10px;
 }

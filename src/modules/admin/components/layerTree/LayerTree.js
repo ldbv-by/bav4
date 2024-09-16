@@ -508,13 +508,15 @@ export class LayerTree extends MvuElement {
 			openModal('Thema', html`<ba-mvu-newtopicpanel .topic="${selectedTopicCopy}" .updateTopic="${updateTopic}"></ba-mvu-newtopicpanel>`);
 		};
 
-		const handleTopicSelectClick = (event) => {
-			const dropdownItems = event.target.nextElementSibling;
+		const handleDropdownToggle = (event) => {
+			const dropdownContainer = event.target.closest('.custom-dropdown');
+			const dropdownItems = dropdownContainer.querySelector('.dropdown-items');
+			const dropdownIcon = dropdownContainer.querySelector('.dropdown-icon');
+			const closeDropdownIcon = dropdownContainer.querySelector('.close-dropdown-icon');
 
-			// If the dropdownItems element exists, toggle the 'hidden' class
-			if (dropdownItems) {
-				dropdownItems.classList.toggle('hidden');
-			}
+			dropdownItems.classList.toggle('hidden');
+			dropdownIcon.classList.toggle('hidden');
+			closeDropdownIcon.classList.toggle('hidden');
 		};
 
 		const renderEntry = (entry, level) => {
@@ -558,26 +560,30 @@ export class LayerTree extends MvuElement {
 					${css}
 				</style>
 
-                <div class="custom-dropdown">
-                <div class="dropdown-selected" @click="${(e) => handleTopicSelectClick(e)}">${selectedTopic.label}</div>
-                <div class="dropdown-items hidden">
-                    ${topics.map((topic) => {
-											const deactivateButtonText = topic._disabled ? 'aktivieren' : 'deaktivieren';
-											return html`
-												<div class="dropdown-item" data-value="${topic.id}" @click="${(e) => handleTopicChange(e, topic)}">
-													${topic.label} ${topic._disabled ? ' -- deaktiviert -- ' : ''}
-													<div class="buttons">
-														<button class="disable-btn" @click="${(e) => handleDisableTopicLevelTreeClick(e, topic)}">${deactivateButtonText}</button>
-														<button class="delete-btn" @click="${(e) => handleDeleteTopicLevelTreeClick(e, topic)}">Löschen</button>
-														<button class="edit-btn" @click="${(e) => handleEditTopic(e, topic)}">Edit</button>
-														<button @click="${(e) => handleCopyTopic2Test(e, topic.id)}">Themenüberschrift in Testumgebung</button>
-														<button @click="${(e) => handleCopyTopic2Prod(e, topic.id)}">Thema nach Prod</button>
-													</div>
-												</div>
-											`;
-										})}
-                </div>
-                </div>
+<div class="custom-dropdown">
+  <div class="dropdown-selected" @click="${(e) => handleDropdownToggle(e)}">
+    ${selectedTopic.label}
+    <span class="dropdown-icon">&#9660;</span>
+    <span class="close-dropdown-icon hidden">&#9650;</span>
+  </div>
+  <div class="dropdown-items hidden">
+    ${topics.map((topic) => {
+			const deactivateButtonText = topic._disabled ? 'aktivieren' : 'deaktivieren';
+			return html`
+				<div class="dropdown-item" data-value="${topic.id}" @click="${(e) => handleTopicChange(e, topic)}">
+					${topic.label} ${topic._disabled ? ' -- deaktiviert -- ' : ''}
+					<div class="buttons">
+						<button class="disable-btn" @click="${(e) => handleDisableTopicLevelTreeClick(e, topic)}">${deactivateButtonText}</button>
+						<button class="delete-btn" @click="${(e) => handleDeleteTopicLevelTreeClick(e, topic)}">Löschen</button>
+						<button class="edit-btn" @click="${(e) => handleEditTopic(e, topic)}">Edit</button>
+						<button @click="${(e) => handleCopyTopic2Test(e, topic.id)}">Themenüberschrift in Testumgebung</button>
+						<button @click="${(e) => handleCopyTopic2Prod(e, topic.id)}">Thema nach Prod</button>
+					</div>
+				</div>
+			`;
+		})}
+  </div>
+</div>
 
 					<h2>Themen - Ebenenbaum für Thema "${selectedTopic.label}"${sperrText}</h2>
 
