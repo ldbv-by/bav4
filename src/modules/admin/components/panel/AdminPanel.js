@@ -29,7 +29,7 @@ export class AdminPanel extends MvuElement {
 	constructor() {
 		super({
 			dummy: true,
-			selectedTopicId: null,
+			// selectedTopicId: null,
 			selectedTopic: null,
 			topics: [],
 			catalog: [],
@@ -251,7 +251,7 @@ export class AdminPanel extends MvuElement {
 		const selectedTopic = this.getTopic(topics, selectedTopicId);
 
 		this.signal(Update_All, {
-			selectedTopicId,
+			// selectedTopicId,
 			selectedTopic,
 			topics,
 			catalog,
@@ -261,18 +261,19 @@ export class AdminPanel extends MvuElement {
 	}
 
 	update(type, data, model) {
-		const selectedTopicId = model.selectedTopicId;
+		// const selectedTopicId = model.selectedTopicId;
 		const topics = model.topics;
 		let newCatalogWithResourceData = [];
 		let newModel = {};
 		switch (type) {
-			case Update_Selected_Topic_Id:
-				if (topics && topics.length > 0) {
-					const selectedTopic = this.getTopic(data, topics);
+			// case Update_Selected_Topic_Id:
+			// 	if (topics && topics.length > 0) {
+			// 		const selectedTopic = this.getTopic(topics, data);
+			// 		console.log('🚀 ~ AdminPanel ~ update ~ selectedTopic:', selectedTopic);
 
-					return { ...model, selectedTopicId: data, selectedTopic };
-				}
-				return { ...model, selectedTopicId, selectedTopic: null };
+			// 		return { ...model, selectedTopicId: data, selectedTopic };
+			// 	}
+			// 	return { ...model, selectedTopicId, selectedTopic: null };
 
 			case Update_Topics:
 				if (data.catalog) {
@@ -280,7 +281,7 @@ export class AdminPanel extends MvuElement {
 
 					newModel = {
 						...model,
-						selectedTopicId: data.newTopic.id,
+						// selectedTopicId: data.newTopic.id,
 						selectedTopic: data.newTopic,
 						topics: data.newTopicsArray,
 						catalogWithResourceData: newCatalogWithResourceData
@@ -288,7 +289,7 @@ export class AdminPanel extends MvuElement {
 				} else {
 					newModel = {
 						...model,
-						selectedTopicId: data.newTopic.id,
+						// selectedTopicId: data.newTopic.id,
 						selectedTopic: data.newTopic,
 						topics: data.newTopicsArray,
 						dummy: !model.dummy
@@ -311,7 +312,7 @@ export class AdminPanel extends MvuElement {
 			case Update_All:
 				return {
 					...model,
-					selectedTopicId: data.selectedTopicId,
+					// selectedTopicId: data.selectedTopicId,
 					selectedTopic: data.selectedTopic,
 					topics: [...data.topics],
 					catalog: { ...data.catalog },
@@ -326,7 +327,7 @@ export class AdminPanel extends MvuElement {
 	}
 
 	createView(model) {
-		const { selectedTopicId, selectedTopic, topics, geoResources, catalogWithResourceData, dummy } = model;
+		const { selectedTopic, topics, geoResources, catalogWithResourceData, dummy } = model; // selectedTopicId,
 
 		const _refreshLayers = async () => {
 			await this._loadGeoResources();
@@ -531,7 +532,7 @@ export class AdminPanel extends MvuElement {
 		const deleteTopicLevelTree = (topic) => {
 			const newTopics = topics.filter((aTopic) => aTopic.id !== topic.id);
 
-			if (selectedTopicId !== topic.id) {
+			if (selectedTopic.id !== topic.id) {
 				return;
 			}
 			this.signal(Update_Selected_Topic_Id, newTopics[0].id);
