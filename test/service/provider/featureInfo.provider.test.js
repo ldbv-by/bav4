@@ -253,6 +253,7 @@ describe('FeatureInfoResult provider', () => {
 				const mapResolution = 5;
 				const timestamp = '1900';
 				const content = 'content';
+				const title = 'title';
 				const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(xyzGeoResource);
 				const expectedRequestPayload = JSON.stringify({
@@ -262,7 +263,7 @@ describe('FeatureInfoResult provider', () => {
 					zoom: Math.round(zoomLevel),
 					year: timestamp
 				});
-				const featureInfoResultPayload = { fragment: 'content', geometry: geoJson };
+				const featureInfoResultPayload = { title, content, geometry: geoJson };
 				const httpServiceSpy = spyOn(httpService, 'post')
 					.withArgs(`${backendUrl}timetravel`, expectedRequestPayload, MediaType.JSON, { timeout: 10000 })
 					.and.resolveTo(new Response(JSON.stringify(featureInfoResultPayload)));
@@ -272,7 +273,7 @@ describe('FeatureInfoResult provider', () => {
 				expect(configServiceSpy).toHaveBeenCalled();
 				expect(httpServiceSpy).toHaveBeenCalled();
 				expect(featureInfoResult.content).toBe(content);
-				expect(featureInfoResult.title).toBe(geoResourceLabel);
+				expect(featureInfoResult.title).toBe(title);
 				expect(featureInfoResult.geometry.data).toBe(geoJson);
 				expect(featureInfoResult.geometry.geometryType).toBe(FeatureInfoGeometryTypes.GEOJSON);
 			});
@@ -286,6 +287,7 @@ describe('FeatureInfoResult provider', () => {
 				const mapResolution = 5;
 				const timestamp = '1900';
 				const content = 'content';
+				const title = 'title';
 				const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(xyzGeoResource);
 				const expectedRequestPayload = JSON.stringify({
@@ -295,7 +297,7 @@ describe('FeatureInfoResult provider', () => {
 					zoom: Math.round(zoomLevel),
 					year: timestamp
 				});
-				const featureInfoResultPayload = { fragment: 'content' };
+				const featureInfoResultPayload = { title, content };
 				const httpServiceSpy = spyOn(httpService, 'post')
 					.withArgs(`${backendUrl}timetravel`, expectedRequestPayload, MediaType.JSON, { timeout: 10000 })
 					.and.resolveTo(new Response(JSON.stringify(featureInfoResultPayload)));
@@ -305,7 +307,7 @@ describe('FeatureInfoResult provider', () => {
 				expect(configServiceSpy).toHaveBeenCalled();
 				expect(httpServiceSpy).toHaveBeenCalled();
 				expect(featureInfoResult.content).toBe(content);
-				expect(featureInfoResult.title).toBe(geoResourceLabel);
+				expect(featureInfoResult.title).toBe(title);
 				expect(featureInfoResult.geometry).toBeNull();
 			});
 

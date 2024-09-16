@@ -95,9 +95,9 @@ const loadTimeTravelFeatureInfo = async (geoResource, coordinate3857, timestamp)
 
 	switch (result.status) {
 		case 200: {
-			const { geometry: dataAsGeoJson, fragment } = await result.json();
-			const geometry = dataAsGeoJson ? { data: dataAsGeoJson, geometryType: FeatureInfoGeometryTypes.GEOJSON } : null;
-			return { content: fragment, title: geoResource.label, geometry };
+			const { title, content, geometry: geoJson } = await result.json();
+			const geometry = geoJson ? { data: geoJson, geometryType: FeatureInfoGeometryTypes.GEOJSON } : null;
+			return { content, title, geometry };
 		}
 		case 204: {
 			return null;
