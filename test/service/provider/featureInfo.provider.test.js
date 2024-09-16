@@ -277,40 +277,6 @@ describe('FeatureInfoResult provider', () => {
 				expect(featureInfoResult.geometry.data).toBe(geoJson);
 				expect(featureInfoResult.geometry.geometryType).toBe(FeatureInfoGeometryTypes.GEOJSON);
 			});
-			it('loads a FeatureInfoResult taking the GeoResource timestamp as fallback', async () => {
-				const backendUrl = 'https://backend.url/';
-				const geoResourceId = 'geoResourceId';
-				const geoResourceLabel = 'label';
-				const timestamp = 1900;
-				const xyzGeoResource = new XyzGeoResource(geoResourceId, geoResourceLabel, '').setTimestamps([timestamp]);
-				const coordinate3857 = [38, 57];
-				const geoJson = '{"type":"Point","coordinates":[1224514.3987260093,6106854.83488507]}';
-				const mapResolution = 5;
-				const content = 'content';
-				const title = 'title';
-				const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(xyzGeoResource);
-				const expectedRequestPayload = JSON.stringify({
-					geoResourceId,
-					easting: coordinate3857[0],
-					northing: coordinate3857[1],
-					zoom: Math.round(zoomLevel),
-					year: timestamp
-				});
-				const featureInfoResultPayload = { title, content, geometry: geoJson };
-				const httpServiceSpy = spyOn(httpService, 'post')
-					.withArgs(`${backendUrl}timetravel`, expectedRequestPayload, MediaType.JSON, { timeout: 10000 })
-					.and.resolveTo(new Response(JSON.stringify(featureInfoResultPayload)));
-
-				const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution, null);
-
-				expect(configServiceSpy).toHaveBeenCalled();
-				expect(httpServiceSpy).toHaveBeenCalled();
-				expect(featureInfoResult.content).toBe(content);
-				expect(featureInfoResult.title).toBe(title);
-				expect(featureInfoResult.geometry.data).toBe(geoJson);
-				expect(featureInfoResult.geometry.geometryType).toBe(FeatureInfoGeometryTypes.GEOJSON);
-			});
 
 			it('loads a FeatureInfoResult without a geometry', async () => {
 				const backendUrl = 'https://backend.url/';

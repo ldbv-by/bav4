@@ -84,8 +84,7 @@ const loadTimeTravelFeatureInfo = async (geoResource, coordinate3857, timestamp)
 		easting: coordinate3857[0],
 		northing: coordinate3857[1],
 		zoom: Math.round(zoomLevel),
-		// we take the latest timestamp of the corresponding GeoResource as fallback
-		year: timestamp ?? geoResource.timestamps[0]
+		year: timestamp
 	};
 
 	const url = configService.getValueAsPath('BACKEND_URL') + `timetravel`;
