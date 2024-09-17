@@ -14,12 +14,12 @@ export const initialState = {
 	active: [],
 	/**
 	 * Contains the ids of the latest removed layers
-	 * @property {EventLike<String>}
+	 * @property {EventLike<String[]>}
 	 */
 	removed: new EventLike([]),
 	/**
 	 * Contains the ids of the latest added layers
-	 * @property {EventLike<String>}
+	 * @property {EventLike<String[]>}
 	 */
 	added: new EventLike([]),
 	/**
