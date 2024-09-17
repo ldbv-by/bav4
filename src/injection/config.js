@@ -64,6 +64,7 @@ import { AuthPlugin } from '../plugins/AuthPlugin';
 import { ObserveWcAttributesPlugin } from '../plugins/ObserveWcAttributesPlugin';
 import { fileStorageServiceFactory } from './factories';
 import { FileStoragePlugin } from '../plugins/FileStoragePlugin';
+import { TimeTravelPlugin } from '../plugins/TimeTravelPlugin';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
@@ -129,6 +130,7 @@ $injector
 	.registerSingleton('IframeGeometryIdPlugin', new IframeGeometryIdPlugin())
 	.registerSingleton('ObserveWcAttributesPlugin', new ObserveWcAttributesPlugin())
 	.registerSingleton('EncodeStatePlugin', new EncodeStatePlugin())
+	.registerSingleton('TimeTravelPlugin', new TimeTravelPlugin())
 	.registerSingleton('ObserveStateForEncodingPlugin', new ObserveStateForEncodingPlugin())
 	.registerModule(mapModule)
 	.registerModule(topicsModule)
