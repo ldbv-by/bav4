@@ -5,7 +5,8 @@ import {
 	createDefaultLayerProperties,
 	createDefaultLayer,
 	createDefaultLayersConstraints,
-	initialState
+	initialState,
+	getTimestamp
 } from '../../../src/store/layers/layers.reducer';
 import {
 	addLayer,
@@ -17,8 +18,9 @@ import {
 	removeAndSetLayers
 } from '../../../src/store/layers/layers.action';
 import { TestUtils } from '../../test-utils.js';
-import { GeoResourceFuture } from '../../../src/domain/geoResources';
+import { GeoResourceFuture, XyzGeoResource } from '../../../src/domain/geoResources';
 import { EventLike, equals } from '../../../src/utils/storeUtils.js';
+import { $injector } from '../../../src/injection/index.js';
 
 describe('defaultLayerProperties', () => {
 	it('returns an object containing default layer properties', () => {
@@ -681,5 +683,101 @@ describe('layersReducer', () => {
 		setReady();
 
 		expect(store.getState().layers.ready).toBeTrue();
+	});
+
+	/**
+	 * We implicitly test the call of the getTimestamp() util fn
+	 */
+	describe('calls the `getTimestamp` util fn', () => {
+		const geoResourceService = {
+			byId: () => {}
+		};
+		beforeAll(() => {
+			$injector.reset();
+		});
+		it('updates the GeoResource change flag by a GeoResource id', () => {
+			const store = setup();
+			$injector.registerSingleton('GeoResourceService', geoResourceService);
+			// see layerUtils.test.js
+			const timestamp = '1900';
+			const geoResourceId = 'geoResourceId';
+			const geoResource = new XyzGeoResource(geoResourceId, 'label', 'url').setTimestamps([timestamp]);
+			const spy = spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+
+			expect(store.getState().layers.ready).toBeFalse();
+
+			addLayer('id0', { geoResourceId });
+
+			expect(spy).toHaveBeenCalled();
+			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
+		});
+	});
+});
+
+describe('getTimestamp', () => {
+	const geoResourceService = {
+		byId: () => {}
+	};
+	describe('GeoResourceService is available', () => {
+		beforeAll(() => {
+			$injector.registerSingleton('GeoResourceService', geoResourceService);
+		});
+
+		describe('referenced GeoResource has no timestamps', () => {
+			it('returns `null`', () => {
+				const geoResourceId = 'geoResourceId';
+				const geoResource = new XyzGeoResource(geoResourceId, 'label', 'url');
+				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+				const layer = createDefaultLayer('id', geoResourceId);
+
+				expect(getTimestamp(layer)).toBeNull();
+			});
+		});
+		describe('referenced GeoResource is unknown', () => {
+			it('returns `null`', () => {
+				const geoResourceId = 'geoResourceId';
+				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(null);
+				const layer = createDefaultLayer('id', geoResourceId);
+
+				expect(getTimestamp(layer)).toBeNull();
+			});
+		});
+		describe('the layer contains a timestamp', () => {
+			it('returns the timestamp of the layer', () => {
+				const timestamp = '1900';
+				const geoResourceId = 'geoResourceId';
+				const geoResource = new XyzGeoResource(geoResourceId, 'label', 'url').setTimestamps(['2000']);
+				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+				const layer = createDefaultLayer('id', geoResourceId);
+
+				expect(getTimestamp({ ...layer, timestamp })).toBe(timestamp);
+			});
+		});
+		describe('the layer does NOT contain a timestamp', () => {
+			it('returns the latest timestamp of the GeoResource', () => {
+				const timestamp = '1900';
+				const geoResourceId = 'geoResourceId';
+				const geoResource = new XyzGeoResource(geoResourceId, 'label', 'url').setTimestamps([timestamp, '2000']);
+				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+				const layer = createDefaultLayer('id', geoResourceId);
+
+				expect(getTimestamp(layer)).toBe(timestamp);
+			});
+		});
+	});
+
+	describe('GeoResourceService is NOT available', () => {
+		beforeAll(() => {
+			$injector.reset();
+		});
+
+		describe('referenced GeoResource has no timestamps', () => {
+			it('returns `null`', () => {
+				const geoResourceId = 'geoResourceId';
+				const layer = createDefaultLayer('id', geoResourceId);
+
+				expect(getTimestamp(layer)).toBe(layer.timestamp);
+			});
+		});
 	});
 });

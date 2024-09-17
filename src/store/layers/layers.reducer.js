@@ -1,3 +1,4 @@
+import { $injector } from '../../injection/index';
 import { EventLike } from '../../utils/storeUtils';
 
 export const LAYER_ADDED = 'layer/added';
@@ -209,7 +210,7 @@ const updateGrChangedFlags = (state, payload /* the geoResourceId*/) => {
 	};
 };
 
-export const layersReducer = (state = initialState, action) => {
+const applyActionSpecificUpdate = (state, action) => {
 	const { type, payload } = action;
 	switch (type) {
 		case LAYER_ADDED: {
@@ -231,6 +232,39 @@ export const layersReducer = (state = initialState, action) => {
 			return setReady(state, payload);
 		}
 	}
-
 	return state;
+};
+
+const applyCommonUpdate = (state) => {
+	return {
+		// determine timestamp property
+		...state,
+		active: state.active.map((layer) => ({
+			...layer,
+			timestamp: getTimestamp(layer)
+		}))
+	};
+};
+
+/**
+ * Determines the resulting timestamp of a layer.
+ * Requires a registered {@link GeoResourceService} for injection. If it is not available it returns the existing timestamp of the given `Layer`
+ * @function
+ * @param {module:store/layers/layers_action~Layer} layer
+ * @returns the timestamp or null
+ */
+export const getTimestamp = (layer) => {
+	// first check if the GeoResourceService is available
+	if ($injector.getScope('GeoResourceService')) {
+		const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
+
+		const geoResource = geoResourceService.byId(layer.geoResourceId);
+		return geoResource?.hasTimestamps() ? (layer.timestamp ?? geoResource.timestamps[0]) : null;
+	}
+
+	return layer.timestamp;
+};
+
+export const layersReducer = (state = initialState, action) => {
+	return applyCommonUpdate(applyActionSpecificUpdate(state, action));
 };
