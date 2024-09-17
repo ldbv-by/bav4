@@ -14,6 +14,8 @@ import { html } from 'lit-html';
  *
  * - update the timestamp property of all suitable layers the timestamp property of the timeTravel s-o-s changes
  *
+ *
+ * Note: This plugin must be registered **before** the `LayersPlugin`
  * @class
  * @author taulinger
  */
