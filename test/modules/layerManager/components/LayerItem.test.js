@@ -1,4 +1,5 @@
 import { LayerItem } from '../../../../src/modules/layerManager/components/LayerItem';
+import { ValueSelect } from '../../../../src/modules/layerManager/components/ValueSelect';
 import { Checkbox } from '../../../../src/modules/commons/components/checkbox/Checkbox';
 import { Icon } from '../../../../src/modules/commons/components/icon/Icon';
 import { layersReducer, createDefaultLayerProperties } from '../../../../src/store/layers/layers.reducer';
@@ -22,8 +23,10 @@ import { GeoResourceInfoPanel } from '../../../../src/modules/geoResourceInfo/co
 import cloneSvg from '../../../../src/modules/layerManager/components/assets/clone.svg';
 import zoomToExtentSvg from '../../../../src/modules/layerManager/components/assets/zoomToExtent.svg';
 import infoSvg from '../../../../src/modules/layerManager/components/assets/info.svg';
+import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 
 window.customElements.define(LayerItem.tag, LayerItem);
+window.customElements.define(ValueSelect.tag, ValueSelect);
 window.customElements.define(Checkbox.tag, Checkbox);
 window.customElements.define(Icon.tag, Icon);
 
@@ -62,11 +65,15 @@ describe('LayerItem', () => {
 				{
 					layers: {
 						active: [layer]
+					},
+					media: {
+						portrait: false
 					}
 				},
 				{
 					layers: layersReducer,
-					modal: modalReducer
+					modal: modalReducer,
+					media: createNoInitialStateMediaReducer()
 				}
 			);
 			$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
@@ -195,10 +202,10 @@ describe('LayerItem', () => {
 			};
 
 			const element = await setup(layer);
-			const timestampElements = element.shadowRoot.querySelectorAll('.timestamp-content');
+			const timestampElements = element.shadowRoot.querySelectorAll('ba-value-select');
 
 			expect(timestampElements).toHaveSize(1);
-			expect(timestampElements[0].querySelectorAll('select')).toHaveSize(1);
+			expect(timestampElements[0].values).toHaveSize(2);
 		});
 
 		it('use layer.timestamps-property to skip render the timestamp component ', async () => {
@@ -216,7 +223,7 @@ describe('LayerItem', () => {
 			};
 
 			const element = await setup(layer);
-			const timestampElements = element.shadowRoot.querySelectorAll('.timestamp-content');
+			const timestampElements = element.shadowRoot.querySelectorAll('ba-value-select');
 
 			expect(timestampElements).toHaveSize(0);
 		});
@@ -235,10 +242,14 @@ describe('LayerItem', () => {
 				collapsed: true
 			};
 			const element = await setup(layer);
-			const timestampSelect = element.shadowRoot.querySelector('.timestamp-content select');
-			const option2004 = timestampSelect.item(1);
-			option2004.selected = true;
-			timestampSelect.dispatchEvent(new Event('change'));
+			const timestampSelect = element.shadowRoot.querySelector('ba-value-select');
+			timestampSelect.dispatchEvent(
+				new CustomEvent('select', {
+					detail: {
+						selected: '2024'
+					}
+				})
+			);
 
 			expect(store.getState().layers.active[0].timestamp).toBe('2024');
 		});

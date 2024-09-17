@@ -197,16 +197,16 @@ export class LayerItem extends AbstractMvuContentPanel {
 		const getTimestampContent = () => {
 			const getTimestampControl = () => {
 				const onTimestampChange = (event) => {
-					const selectElement = event.target;
-					const timestamp = selectElement.options[selectElement.selectedIndex].value;
+					const timestamp = event.detail.selected;
 					modifyLayer(layer.id, { timestamp });
 				};
 
-				return html`<div class="timestamp-content ba-form-element">
-					<select @change="${onTimestampChange}">
-						${geoResource.timestamps.map((timestamp) => html` <option value="${timestamp}">${timestamp}</option>`)}
-					</select>
-				</div>`;
+				return html`<ba-value-select
+					.title=${'Choose a value'}
+					.values=${geoResource.timestamps}
+					.selected=${geoResource.timestamps[0]}
+					@select=${onTimestampChange}
+				></ba-value-select>`;
 			};
 			return geoResource.timestamps.length > 0 ? getTimestampControl() : nothing;
 		};
