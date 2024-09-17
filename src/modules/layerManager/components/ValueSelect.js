@@ -88,7 +88,7 @@ export class ValueSelect extends MvuElement {
 				return html` <div
 					id="value_${value}"
 					class="ba_value_item ${classMap(isSelectedClass)}"
-					title=${translate('iconSelect_icon_hint')}
+					title=${translate('valueSelect_icon_hint')}
 					@click=${onClick}
 				>
 					${value}
@@ -109,7 +109,6 @@ export class ValueSelect extends MvuElement {
 		const getOrientationClass = () => {
 			return portrait ? 'is-portrait' : 'is-landscape';
 		};
-
 		return html`
 			<style>
 				${css}
