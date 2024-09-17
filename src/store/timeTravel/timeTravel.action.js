@@ -1,5 +1,5 @@
 /**
- * @module store/topics/topics_action
+ * @module store/timeTravel/timeTravel_action
  */
 import { $injector } from '../../injection';
 import { TIME_TRAVEL_ACTIVE_CHANGED, TIME_TRAVEL_TIMESTAMP_CHANGED } from './timeTravel.reducer';
@@ -11,7 +11,7 @@ const getStore = () => {
 
 /**
  * Sets the current timestamp.
- * @param {string} timestamp id of the current topic
+ * @param {string} timestamp the new timestamp
  * @function
  */
 export const setCurrentTimestamp = (timestamp) => {
@@ -23,20 +23,13 @@ export const setCurrentTimestamp = (timestamp) => {
 
 /**
  *
+ * Sets the `active` property
+ * @param {boolean} active
  * @function
  */
-export const activate = () => {
+export const updateActivity = (active) => {
 	getStore().dispatch({
 		type: TIME_TRAVEL_ACTIVE_CHANGED,
-		payload: true
-	});
-};
-/**
- * @function
- */
-export const deactivate = () => {
-	getStore().dispatch({
-		type: TIME_TRAVEL_ACTIVE_CHANGED,
-		payload: false
+		payload: active
 	});
 };

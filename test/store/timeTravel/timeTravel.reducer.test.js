@@ -1,6 +1,6 @@
 import { TestUtils } from '../../test-utils.js';
 import { timeTravelReducer } from '../../../src/store/timeTravel/timeTravel.reducer.js';
-import { activate, deactivate, setCurrentTimestamp } from '../../../src/store/timeTravel/timeTravel.action.js';
+import { updateActivity, setCurrentTimestamp } from '../../../src/store/timeTravel/timeTravel.action.js';
 
 describe('timeTravelReducer', () => {
 	const setup = (state) => {
@@ -30,11 +30,11 @@ describe('timeTravelReducer', () => {
 	it("changes the 'active' property", () => {
 		const store = setup();
 
-		activate();
+		updateActivity(true);
 
 		expect(store.getState().timeTravel.active).toBeTrue();
 
-		deactivate();
+		updateActivity(false);
 
 		expect(store.getState().timeTravel.active).toBeFalse();
 	});
