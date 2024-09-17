@@ -13,6 +13,7 @@ import { notificationReducer } from '../../src/store/notifications/notifications
 import { LevelTypes } from '../../src/store/notifications/notifications.action.js';
 import { setCurrentTool } from '../../src/store/tools/tools.action.js';
 import { toolsReducer } from '../../src/store/tools/tools.reducer.js';
+import { XyzGeoResource } from '../../src/domain/geoResources.js';
 
 describe('FeatureInfoPlugin', () => {
 	const featureInfoService = {
@@ -89,10 +90,13 @@ describe('FeatureInfoPlugin', () => {
 			it('adds FeatureInfo items ', async () => {
 				const layerId0 = 'id0';
 				const geoResourceId0 = 'geoResourceId0';
+				const timestamp = '1900';
+				spyOn(geoResourceService, 'byId')
+					.withArgs(geoResourceId0)
+					.and.returnValue(new XyzGeoResource(geoResourceId0, 'label', 'url').setTimestamps('timestamp'));
 				const coordinate = [11, 22];
 				const zoom = 5;
 				const resolution = 25;
-				const timestamp = '1900';
 				const store = setup({
 					layers: {
 						active: [{ ...createDefaultLayer(layerId0, geoResourceId0), timestamp }]
@@ -153,7 +157,9 @@ describe('FeatureInfoPlugin', () => {
 				const layerId0 = 'id0';
 				const geoResourceId0 = 'geoResource0';
 				const label0 = 'label0';
-				spyOn(geoResourceService, 'byId').withArgs(geoResourceId0).and.returnValue({ label: label0 } /*fake GeoResource */);
+				spyOn(geoResourceService, 'byId')
+					.withArgs(geoResourceId0)
+					.and.returnValue(new XyzGeoResource(geoResourceId0, label0, 'url'));
 				const coordinate = [11, 22];
 				const zoom = 5;
 				const resolution = 25;
@@ -183,7 +189,9 @@ describe('FeatureInfoPlugin', () => {
 				const layerId0 = 'id0';
 				const geoResourceId0 = 'geoResource0';
 				const label0 = 'label0';
-				spyOn(geoResourceService, 'byId').withArgs(geoResourceId0).and.returnValue({ label: label0 } /*fake GeoResource */);
+				spyOn(geoResourceService, 'byId')
+					.withArgs(geoResourceId0)
+					.and.returnValue(new XyzGeoResource(geoResourceId0, label0, 'url'));
 				const coordinate = [11, 22];
 				const zoom = 5;
 				const resolution = 25;
