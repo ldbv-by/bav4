@@ -238,7 +238,6 @@ const applyActionSpecificUpdate = (state, action) => {
 /**
  * Workaround for complex mutation of this s-o-s that are difficult to handle in common test cases.
  * And alternative approach would be using redux-thunk.
- * @returns
  */
 const applyProductionOnlyUpdate = (state, action) => {
 	if ([LAYER_ADDED, LAYER_REMOVED, LAYER_REMOVE_AND_SET, LAYER_MODIFIED].includes(action.type)) {
