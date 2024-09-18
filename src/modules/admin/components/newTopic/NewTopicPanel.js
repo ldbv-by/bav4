@@ -1,24 +1,19 @@
 /**
  * @module modules/admin/components/newTopic/NewTopicPanel
  */
-// import { html } from 'lit-html';
 import { html } from '../../../../../node_modules/lit-html/lit-html';
-// import { $injector } from '../../../../injection';
 import { $injector } from '../../../../injection/index';
 import { closeModal } from '../../../../store/modal/modal.action';
 import { MvuElement } from '../../../MvuElement';
-// import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
 // @ts-ignore
 import css from './NewTopicPanel.css';
-// import { GeneralFeedback } from '../../../../services/FeedbackService';
 
 const Update_Topic = 'update_topic';
-// const Update_Id = 'update_id';
 const Update_Label = 'update_label';
 const Update_Description = 'update_description';
 
 /**
- * Contains a form for submitting a new topic.
+ * Contains a form for editing a topic.
  * @property {Function} onSubmit
  * @class
  */
@@ -28,33 +23,22 @@ export class NewTopicPanel extends MvuElement {
 			topic: null
 		});
 
-		const {
-			ConfigService: configService,
-			// TranslationService: translationService,
-			// FeedbackService: feedbackService,
-			SecurityService: securityService
-		} = $injector.inject('ConfigService', 'SecurityService'); // , 'TranslationService', 'FeedbackService'
+		const { ConfigService: configService, SecurityService: securityService } = $injector.inject('ConfigService', 'SecurityService');
 
 		this._configService = configService;
-		// this._translationService = translationService;
-		// this._feedbackService = feedbackService;
 		this._securityService = securityService;
 		// eslint-disable-next-line no-unused-vars
 		this._updateTopic = (topic) => {};
 	}
 
 	update(type, data, model) {
-		const newTopic = model.topic.clone();
-		const newTopicFromData = data.clone();
 		switch (type) {
 			case Update_Topic:
-				return { ...model, topic: newTopicFromData };
+				return { ...model, topic: data };
 			case Update_Label:
-				newTopic.label = data;
-				return { ...model, topic: newTopic };
+				return { ...model, topic: data };
 			case Update_Description:
-				newTopic.description = data;
-				return { ...model, topic: newTopic };
+				return { ...model, topic: data };
 		}
 	}
 
@@ -64,13 +48,18 @@ export class NewTopicPanel extends MvuElement {
 		const onDescriptionChange = (event) => {
 			const { value } = event.target;
 
-			this.signal(Update_Description, this._securityService.sanitizeHtml(value));
+			const sanitizedDescription = this._securityService.sanitizeHtml(value);
+			const newTopic = model.topic.clone();
+			newTopic.description = sanitizedDescription;
+			this.signal(Update_Description, newTopic);
 		};
 
 		const onLabelChange = (event) => {
 			const { value } = event.target;
-			const sanitized = this._securityService.sanitizeHtml(value);
-			this.signal(Update_Label, sanitized);
+			const sanitizedLabel = this._securityService.sanitizeHtml(value);
+			const newTopic = model.topic.clone();
+			newTopic.label = sanitizedLabel;
+			this.signal(Update_Label, newTopic);
 		};
 
 		const onSubmit = () => {
