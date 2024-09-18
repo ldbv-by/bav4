@@ -489,6 +489,14 @@ export class LayerTree extends MvuElement {
 		const updateTopic = (topic) => {
 			const newTopic = topic.clone();
 
+			// todo
+			// const newTopicsArray = [];
+			// topics.forEach((topic) => {
+			// 	console.log('🚀 ~ LayerTree ~ topics.forEach ~ topic:', topic);
+			// 	newTopicsArray.push(topic);
+			// });
+			// console.log('🚀 ~ LayerTree ~ topics.forEach ~ topics:', topics);
+
 			// create a copy of the topics array
 			const newTopicsArray = [...topics];
 
