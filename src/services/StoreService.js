@@ -3,7 +3,7 @@
  */
 import { combineReducers, createStore } from 'redux';
 import { positionReducer } from '../store/position/position.reducer';
-import { layersReducer } from '../store/layers/layers.reducer';
+import { extendedLayersReducer } from '../store/layers/layers.reducer';
 import { $injector } from '../injection';
 import { topicsReducer } from '../store/topics/topics.reducer';
 import { networkReducer } from '../store/network/network.reducer';
@@ -56,7 +56,7 @@ export class StoreService {
 			navigationRail: createNavigationRailReducer(),
 			tools: toolsReducer,
 			modal: modalReducer,
-			layers: layersReducer,
+			layers: extendedLayersReducer,
 			mapContextMenu: mapContextMenuReducer,
 			measurement: measurementReducer,
 			draw: drawReducer,
