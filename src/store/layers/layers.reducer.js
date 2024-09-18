@@ -235,15 +235,23 @@ const applyActionSpecificUpdate = (state, action) => {
 	return state;
 };
 
-const applyCommonUpdate = (state) => {
-	return {
-		// determine timestamp property
-		...state,
-		active: state.active.map((layer) => ({
-			...layer,
-			timestamp: getTimestamp(layer)
-		}))
-	};
+/**
+ * Workaround for complex mutation of this s-o-s that are difficult to handle in common test cases.
+ * And alternative approach would be using redux-thunk.
+ * @returns
+ */
+const applyProductionOnlyUpdate = (state, action) => {
+	if ([LAYER_ADDED, LAYER_REMOVED, LAYER_REMOVE_AND_SET, LAYER_MODIFIED].includes(action.type)) {
+		return {
+			// determine timestamp property
+			...state,
+			active: state.active.map((layer) => ({
+				...layer,
+				timestamp: getTimestamp(layer)
+			}))
+		};
+	}
+	return state;
 };
 
 /**
@@ -254,17 +262,22 @@ const applyCommonUpdate = (state) => {
  * @returns the timestamp or null
  */
 export const getTimestamp = (layer) => {
-	// first check if the GeoResourceService is available
-	if ($injector.getScope('GeoResourceService')) {
-		const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
+	const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
 
-		const geoResource = geoResourceService.byId(layer.geoResourceId);
-		return geoResource?.hasTimestamps() ? (layer.timestamp ?? geoResource.timestamps[0]) : null;
-	}
-
-	return layer.timestamp;
+	const geoResource = geoResourceService.byId(layer.geoResourceId);
+	return geoResource?.hasTimestamps() ? (layer.timestamp ?? geoResource.timestamps[0]) : layer.timestamp;
 };
 
+/**
+ * Use this reducer for tests.
+ */
 export const layersReducer = (state = initialState, action) => {
-	return applyCommonUpdate(applyActionSpecificUpdate(state, action));
+	return applyActionSpecificUpdate(state, action);
+};
+
+/**
+ * Use this reducer for production.
+ */
+export const extendedLayersReducer = (state = initialState, action) => {
+	return applyProductionOnlyUpdate(applyActionSpecificUpdate(state, action), action);
 };

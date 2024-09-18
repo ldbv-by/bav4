@@ -6,7 +6,8 @@ import {
 	createDefaultLayer,
 	createDefaultLayersConstraints,
 	initialState,
-	getTimestamp
+	getTimestamp,
+	extendedLayersReducer
 } from '../../../src/store/layers/layers.reducer';
 import {
 	addLayer,
@@ -684,29 +685,95 @@ describe('layersReducer', () => {
 
 		expect(store.getState().layers.ready).toBeTrue();
 	});
+});
+
+describe('productiveLayersReducer', () => {
+	const setup = (state) => {
+		return TestUtils.setupStoreAndDi(state, {
+			layers: extendedLayersReducer
+		});
+	};
 
 	/**
 	 * We implicitly test the call of the getTimestamp() util fn
 	 */
-	describe('calls the `getTimestamp` util fn', () => {
+	describe('call the `getTimestamp` util fn', () => {
 		const geoResourceService = {
 			byId: () => {}
 		};
-		beforeAll(() => {
+		afterEach(() => {
 			$injector.reset();
 		});
-		it('updates the GeoResource change flag by a GeoResource id', () => {
+
+		it('for LAYER_ADDED action type', () => {
 			const store = setup();
 			$injector.registerSingleton('GeoResourceService', geoResourceService);
-			// see layerUtils.test.js
 			const timestamp = '1900';
 			const geoResourceId = 'geoResourceId';
 			const geoResource = new XyzGeoResource(geoResourceId, 'label', 'url').setTimestamps([timestamp]);
 			const spy = spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
 
-			expect(store.getState().layers.ready).toBeFalse();
-
 			addLayer('id0', { geoResourceId });
+
+			expect(spy).toHaveBeenCalled();
+			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
+		});
+
+		it('for LAYER_REMOVED action type', () => {
+			const geoResourceId = 'geoResourceId';
+			const layerProperties0 = createDefaultLayer('id0', geoResourceId);
+			const layerProperties1 = createDefaultLayer('id1', 'geoResourceId1');
+			const store = setup({
+				layers: {
+					active: [layerProperties0, layerProperties1]
+				}
+			});
+			$injector.registerSingleton('GeoResourceService', geoResourceService);
+			const timestamp = '1900';
+			const geoResource = new XyzGeoResource(geoResourceId, 'label', 'url').setTimestamps([timestamp]);
+			const spy = spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+
+			removeLayer('id1', { geoResourceId });
+
+			expect(spy).toHaveBeenCalled();
+			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
+		});
+
+		it('for LAYER_REMOVE_AND_SET action type', () => {
+			const geoResourceId = 'geoResourceId';
+			const layerProperties0 = createDefaultLayer('id0', geoResourceId);
+			const layerProperties1 = createDefaultLayer('id1', 'geoResourceId1');
+			const store = setup({
+				layers: {
+					active: [layerProperties1]
+				}
+			});
+			$injector.registerSingleton('GeoResourceService', geoResourceService);
+			const timestamp = '1900';
+			const geoResource = new XyzGeoResource(geoResourceId, 'label', 'url').setTimestamps([timestamp]);
+			const spy = spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+
+			removeAndSetLayers([layerProperties0]);
+
+			expect(spy).toHaveBeenCalled();
+			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
+		});
+
+		it('for LAYER_MODIFIED action type', () => {
+			const id = 'id0';
+			const geoResourceId = 'geoResourceId';
+			const layerProperties0 = createDefaultLayer(id, geoResourceId);
+			const store = setup({
+				layers: {
+					active: [layerProperties0]
+				}
+			});
+			$injector.registerSingleton('GeoResourceService', geoResourceService);
+			const timestamp = '1900';
+			const geoResource = new XyzGeoResource(geoResourceId, 'label', 'url').setTimestamps([timestamp]);
+			const spy = spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+
+			modifyLayer(id, { visible: true });
 
 			expect(spy).toHaveBeenCalled();
 			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
@@ -719,8 +786,12 @@ describe('getTimestamp', () => {
 		byId: () => {}
 	};
 	describe('GeoResourceService is available', () => {
-		beforeAll(() => {
+		beforeEach(() => {
 			$injector.registerSingleton('GeoResourceService', geoResourceService);
+		});
+
+		afterEach(() => {
+			$injector.reset();
 		});
 
 		describe('referenced GeoResource has no timestamps', () => {
@@ -762,21 +833,6 @@ describe('getTimestamp', () => {
 				const layer = createDefaultLayer('id', geoResourceId);
 
 				expect(getTimestamp(layer)).toBe(timestamp);
-			});
-		});
-	});
-
-	describe('GeoResourceService is NOT available', () => {
-		beforeAll(() => {
-			$injector.reset();
-		});
-
-		describe('referenced GeoResource has no timestamps', () => {
-			it('returns `null`', () => {
-				const geoResourceId = 'geoResourceId';
-				const layer = createDefaultLayer('id', geoResourceId);
-
-				expect(getTimestamp(layer)).toBe(layer.timestamp);
 			});
 		});
 	});
