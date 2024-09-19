@@ -9,11 +9,7 @@ import css from './adminPanel.css';
 import { $injector } from '../../../../injection/index';
 import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 import { End_Label } from '../layerTree/LayerTree';
-// eslint-disable-next-line no-unused-vars
-// import { logOnce, onlyOnce } from '../layerTree/LayerTree';
 
-const Update_Selected_Topic_Id = 'update_selected_topic_id';
-// const Update_Selected_Topic = 'update_selected_topic';
 const Update_Topics = 'update_topics';
 const Update_Catalog = 'update_catalog';
 const Update_GeoResources = 'update_georesources';
@@ -29,7 +25,6 @@ export class AdminPanel extends MvuElement {
 	constructor() {
 		super({
 			dummy: true,
-			// selectedTopicId: null,
 			selectedTopic: null,
 			topics: [],
 			catalog: [],
@@ -112,7 +107,6 @@ export class AdminPanel extends MvuElement {
 		return result;
 	};
 
-	// todo check if keeping label always would be better and ok
 	_extractOriginalIncShowChildren = (obj) => {
 		const result = {};
 		if (obj.geoResourceId) {
@@ -179,9 +173,9 @@ export class AdminPanel extends MvuElement {
 		});
 	}
 
-	_mergeCatalogWithResources(catalog, geoResources) {
-		return this._reduceData(catalog, this._enrichWithGeoResource, geoResources);
-	}
+	// _mergeCatalogWithResources(catalog, geoResources) {
+	// 	return this._reduceData(catalog, this._enrichWithGeoResource, geoResources);
+	// }
 
 	async _loadTopics() {
 		await this._topicsService.init();
@@ -220,7 +214,7 @@ export class AdminPanel extends MvuElement {
 			return [];
 		}
 		try {
-			const catalogWithResourceData = this._mergeCatalogWithResources(catalog, geoResources);
+			const catalogWithResourceData = this._reduceData(catalog, this._enrichWithGeoResource, geoResources);
 			if (catalogWithResourceData) {
 				return catalogWithResourceData;
 			}
@@ -251,7 +245,6 @@ export class AdminPanel extends MvuElement {
 		const selectedTopic = this.getTopic(topics, selectedTopicId);
 
 		this.signal(Update_All, {
-			// selectedTopicId,
 			selectedTopic,
 			topics,
 			catalog,
@@ -261,27 +254,15 @@ export class AdminPanel extends MvuElement {
 	}
 
 	update(type, data, model) {
-		// const selectedTopicId = model.selectedTopicId;
-		const topics = model.topics;
 		let newCatalogWithResourceData = [];
 		let newModel = {};
 		switch (type) {
-			// case Update_Selected_Topic_Id:
-			// 	if (topics && topics.length > 0) {
-			// 		const selectedTopic = this.getTopic(topics, data);
-			// 		console.log('🚀 ~ AdminPanel ~ update ~ selectedTopic:', selectedTopic);
-
-			// 		return { ...model, selectedTopicId: data, selectedTopic };
-			// 	}
-			// 	return { ...model, selectedTopicId, selectedTopic: null };
-
 			case Update_Topics:
 				if (data.catalog) {
-					const newCatalogWithResourceData = this._updateCatalogWithResourceData(data.catalog, model.geoResources);
+					newCatalogWithResourceData = this._updateCatalogWithResourceData(data.catalog, model.geoResources);
 
 					newModel = {
 						...model,
-						// selectedTopicId: data.newTopic.id,
 						selectedTopic: data.newTopic,
 						topics: data.newTopicsArray,
 						catalogWithResourceData: newCatalogWithResourceData
@@ -289,7 +270,6 @@ export class AdminPanel extends MvuElement {
 				} else {
 					newModel = {
 						...model,
-						// selectedTopicId: data.newTopic.id,
 						selectedTopic: data.newTopic,
 						topics: data.newTopicsArray,
 						dummy: !model.dummy
@@ -312,7 +292,6 @@ export class AdminPanel extends MvuElement {
 			case Update_All:
 				return {
 					...model,
-					// selectedTopicId: data.selectedTopicId,
 					selectedTopic: data.selectedTopic,
 					topics: [...data.topics],
 					catalog: { ...data.catalog },
@@ -327,7 +306,7 @@ export class AdminPanel extends MvuElement {
 	}
 
 	createView(model) {
-		const { selectedTopic, topics, geoResources, catalogWithResourceData, dummy } = model; // selectedTopicId,
+		const { selectedTopic, topics, geoResources, catalogWithResourceData, dummy } = model;
 
 		const _refreshLayers = async () => {
 			await this._loadGeoResources();
@@ -365,14 +344,11 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const addEndLabels = () => {
-			// console.trace('🚀 ~ AdminPanel ~ addEndLabels ');
-
 			const newCatalogWithResourceData = JSON.parse(JSON.stringify(catalogWithResourceData));
 
 			newCatalogWithResourceData.push({ uid: self.crypto.randomUUID(), label: End_Label });
 			newCatalogWithResourceData.forEach((element) => {
 				if (element.children) {
-					// check if there is already an entry with label End_Label
 					const found = element.children.find((child) => child.label === End_Label);
 					if (found) {
 						return;
@@ -386,9 +362,6 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const removeEndLabels = () => {
-			// currentCatalogEntryUid, uidFromDrag_elementToMove
-
-			// Remove entries with label End_Label
 			const newCatalogWithResourceData = catalogWithResourceData.filter((element) => element.label !== End_Label);
 			newCatalogWithResourceData.forEach((element) => {
 				if (element.children) {
@@ -476,7 +449,6 @@ export class AdminPanel extends MvuElement {
 				return newCatalogWithResourceData;
 			}
 
-			// Handle sublevels recursively
 			const updatedCatalog = newCatalogWithResourceData.map((element) => {
 				if (element.children) {
 					const updatedChildren = toggleShowChildrenRecursive(uid, element.children);
@@ -585,22 +557,18 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const copyTopic2Prod = async (topicID) => {
-			// console.log('🚀 ~ AdminPanel ~ copyTopic2Prod ~ topicID:', topicID);
 			await this._topicsService.copyTopic2Prod(topicID);
 		};
 
 		const copyTopic2Test = async (topicID) => {
-			// console.log('🚀 ~ AdminPanel ~ copyTopic2Test ~ topicID:', topicID);
 			await this._topicsService.copyTopic2Test(topicID);
 		};
 
 		const copyCatalog2Prod = async (topicID) => {
-			// console.log('🚀 ~ AdminPanel ~ copyCatalog2Prod ~ topicID:', topicID);
 			await this._catalogService.copyCatalogToProd(topicID);
 		};
 
 		const copyCatalog2Test = async (topicID) => {
-			// console.log('🚀 ~ AdminPanel ~ copyCatalog2Test ~ topic:', topicID);
 			await this._catalogService.copyCatalogToTest(topicID);
 		};
 
@@ -615,7 +583,6 @@ export class AdminPanel extends MvuElement {
 			this.signal(Update_CatalogWithResourceData, catalog);
 		};
 
-		// <span class="icon "> </span>
 		if (selectedTopic && catalogWithResourceData) {
 			return html`
 				<style>
