@@ -24,9 +24,11 @@ export const timeTravelReducer = (state = initialState, action) => {
 			};
 		}
 		case TIME_TRAVEL_ACTIVE_CHANGED: {
+			const { active, timestamp } = payload;
 			return {
 				...state,
-				active: payload
+				active,
+				current: timestamp ?? state.current
 			};
 		}
 	}
