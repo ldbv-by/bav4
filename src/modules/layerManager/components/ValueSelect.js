@@ -28,9 +28,12 @@ const Update_IsPortrait_Value = 'update_isportrait_value';
 export class ValueSelect extends MvuElement {
 	constructor() {
 		super({ title: '', values: [], selected: null, isCollapsed: true, portrait: false });
-		const { TranslationService: translationService } = $injector.inject('TranslationService');
-
+		const { TranslationService: translationService, EnvironmentService: environmentService } = $injector.inject(
+			'TranslationService',
+			'EnvironmentService'
+		);
 		this._translationService = translationService;
+		this._environmentService = environmentService;
 		// eslint-disable-next-line no-unused-vars
 		this._onSelect = (selectedValue) => {};
 	}
@@ -58,6 +61,10 @@ export class ValueSelect extends MvuElement {
 	}
 
 	createView(model) {
+		return this._environmentService.isTouch() ? this.#createSelectView(model) : this.#createComponentView(model);
+	}
+
+	#createComponentView(model) {
 		const { portrait, selected } = model;
 		const translate = (key) => this._translationService.translate(key);
 		const valuesAvailable = model.values.length > 0;
@@ -129,6 +136,34 @@ export class ValueSelect extends MvuElement {
 				<div class="ba_values_container ${classMap(isCollapsedClass)}">${getValues()}</div>
 			</div>
 		`;
+	}
+
+	#createSelectView(model) {
+		const { portrait, selected } = model;
+		const getTimestampControl = () => {
+			const onClick = (event) => {
+				const selectElement = event.target;
+				const selectedValue = selectElement.options[selectElement.selectedIndex].value;
+				this.signal(Update_Selected, selectedValue);
+				this.dispatchEvent(
+					new CustomEvent('select', {
+						detail: {
+							selected: selectedValue
+						}
+					})
+				);
+				this._onSelect(selectedValue);
+			};
+			const getOrientationClass = () => {
+				return portrait ? 'is-portrait' : 'is-landscape';
+			};
+			return html`<div class="valueselect__container ${getOrientationClass()}">
+				<select @change="${onClick}">
+					${model.values.map((value) => html` <option value="${value}" ?selected=${selected === value}>${value}</option>`)}
+				</select>
+			</div>`;
+		};
+		return model.values.length > 0 ? getTimestampControl() : nothing;
 	}
 
 	static get tag() {

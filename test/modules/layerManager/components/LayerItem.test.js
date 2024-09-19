@@ -31,6 +31,9 @@ window.customElements.define(Checkbox.tag, Checkbox);
 window.customElements.define(Icon.tag, Icon);
 
 describe('LayerItem', () => {
+	const environmentService = {
+		isTouch: () => false
+	};
 	const geoResourceService = { byId: () => {}, addOrReplace: () => {}, getKeywords: () => [] };
 	const createNewDataTransfer = () => {
 		let data = {};
@@ -76,7 +79,10 @@ describe('LayerItem', () => {
 					media: createNoInitialStateMediaReducer()
 				}
 			);
-			$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
+			$injector
+				.registerSingleton('TranslationService', { translate: (key) => key })
+				.registerSingleton('GeoResourceService', geoResourceService)
+				.registerSingleton('EnvironmentService', environmentService);
 			const element = await TestUtils.render(LayerItem.tag);
 			if (layer) {
 				element.layer = layer;
