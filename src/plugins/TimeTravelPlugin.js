@@ -41,7 +41,6 @@ export class TimeTravelPlugin extends BaPlugin {
 
 			if (timestampSet.size === 1 && geoResourceSet.size === 1) {
 				this.#currentGeoResourceId = [...geoResourceSet][0];
-				// openBottomSheet('Zeitreisee ' + [...timestampSet][0] + ' ' + [...geoResourceSet][0]);
 				openBottomSheet(
 					html`<ba-time-travel-slider .timestamp=${[...timestampSet][0]} .geoResourceId=${this.#currentGeoResourceId}></ba-time-travel-slider>`
 				);
