@@ -7,6 +7,10 @@ import { TestUtils } from '../../../test-utils';
 window.customElements.define(ValueSelect.tag, ValueSelect);
 
 describe('ValueSelect', () => {
+	const environmentService = {
+		isTouch: () => false
+	};
+
 	const setup = (state = {}, attributes = {}, properties = {}) => {
 		const initialState = {
 			media: {
@@ -18,7 +22,7 @@ describe('ValueSelect', () => {
 		TestUtils.setupStoreAndDi(initialState, {
 			media: createNoInitialStateMediaReducer()
 		});
-		$injector.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('EnvironmentService', environmentService);
 		return TestUtils.render(ValueSelect.tag, properties, attributes);
 	};
 	describe('when initialized', () => {
