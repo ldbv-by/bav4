@@ -255,7 +255,7 @@ const applyProductionOnlyUpdate = (state, action) => {
 
 /**
  * Determines the resulting timestamp of a layer.
- * Requires a registered {@link GeoResourceService} for injection. If it is not available it returns the existing timestamp of the given `Layer`
+ * Requires a registered {@link GeoResourceService} for injection.
  * @function
  * @param {module:store/layers/layers_action~Layer} layer
  * @returns the timestamp or null
