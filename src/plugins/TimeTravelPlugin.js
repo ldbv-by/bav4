@@ -33,8 +33,8 @@ export class TimeTravelPlugin extends BaPlugin {
 		const onLayersChanged = (activeLayers) => {
 			/**
 			 * Check if we have one or more layers referencing the same timestamp
-			 * and check if they reference all th same GeoResource.
-			 * In that case we show the time travel component
+			 * and check if they reference all the same GeoResource.
+			 * Only in that case we show the time travel component.
 			 */
 			const timestampSet = new Set(findSuitableLayers(activeLayers).map((l) => l.timestamp));
 			const geoResourceSet = new Set(findSuitableLayers(activeLayers).map((l) => l.geoResourceId));
