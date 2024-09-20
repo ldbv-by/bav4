@@ -6,9 +6,9 @@ export const initialState = {
 	 * Current timestamp
 	 * @property {string|null}
 	 */
-	current: null,
+	timestamp: null,
 	/**
-	 * Flag that indicates if the time travel feature is active
+	 * Flag that indicates if the time travel slider is active
 	 *  @property {boolean}
 	 */
 	active: false
@@ -20,7 +20,7 @@ export const timeTravelReducer = (state = initialState, action) => {
 		case TIME_TRAVEL_TIMESTAMP_CHANGED: {
 			return {
 				...state,
-				current: payload
+				timestamp: payload
 			};
 		}
 		case TIME_TRAVEL_ACTIVE_CHANGED: {
@@ -28,7 +28,7 @@ export const timeTravelReducer = (state = initialState, action) => {
 			return {
 				...state,
 				active,
-				current: timestamp ?? state.current
+				timestamp: timestamp ?? state.timestamp
 			};
 		}
 	}
