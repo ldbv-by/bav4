@@ -254,7 +254,7 @@ describe('HighlightPlugin', () => {
 			expect(store.getState().highlight.features[0].id).not.toBe(QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID);
 		});
 
-		it('adds a success highlight feature both for FeatureInfos owning a geometry and a not', async () => {
+		it('adds a success highlight feature both for FeatureInfos owning a geometry and not', async () => {
 			const coordinate = [21, 42];
 			const geoJson = '{"type":"Point","coordinates":[1224514.3987260093,6106854.83488507]}';
 			const store = setup();
