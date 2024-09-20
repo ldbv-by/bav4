@@ -43,12 +43,13 @@ describe('ValueSelect', () => {
 			expect(model.portrait).toBeFalse();
 		});
 
-		it('renders the view', async () => {
+		it('renders the view as responsive container in non-touch environment', async () => {
 			const state = {
 				media: {
 					portrait: false
 				}
 			};
+			spyOn(environmentService, 'isTouch').and.returnValue(false);
 			const element = await setup(state, {}, { title: 'foo' });
 
 			//view
@@ -57,8 +58,28 @@ describe('ValueSelect', () => {
 			expect(element.shadowRoot.querySelector('.valueselect__toggle-button').title).toBe('foo');
 			expect(element.shadowRoot.querySelector('.valueselect__toggle-button').disabled).toBeTrue();
 			expect(element.shadowRoot.querySelector('.ba_values_container').childElementCount).toBe(0);
+
+			expect(element.shadowRoot.querySelectorAll('.valueselect__container .values_header')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.valueselect__container .ba_values_container')).toHaveSize(1);
+
 			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('#symbol-value').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+		});
+
+		it('renders the view as select element in touch environment', async () => {
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+			spyOn(environmentService, 'isTouch').and.returnValue(true);
+			const element = await setup(state, {}, { title: 'foo', values: [21, 42] });
+
+			//view
+			expect(element.shadowRoot.querySelectorAll('.valueselect__container select')).toHaveSize(1);
+
+			expect(element.shadowRoot.querySelectorAll('.valueselect__container .values_header')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.valueselect__container .ba_values_container')).toHaveSize(0);
 		});
 
 		it('check portrait', async () => {
