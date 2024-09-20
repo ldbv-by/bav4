@@ -50,14 +50,13 @@ describe('ValueSelect', () => {
 				}
 			};
 			spyOn(environmentService, 'isTouch').and.returnValue(false);
-			const element = await setup(state, {}, { title: 'foo' });
+			const element = await setup(state, {}, { title: 'foo', values: [21, 42] });
 
 			//view
 			expect(element.shadowRoot.querySelector('.values_header')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.ba_values_container.iscollapsed')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.valueselect__toggle-button').title).toBe('foo');
-			expect(element.shadowRoot.querySelector('.valueselect__toggle-button').disabled).toBeTrue();
-			expect(element.shadowRoot.querySelector('.ba_values_container').childElementCount).toBe(0);
+			expect(element.shadowRoot.querySelector('.ba_values_container').childElementCount).toBe(2);
 
 			expect(element.shadowRoot.querySelectorAll('.valueselect__container .values_header')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.valueselect__container .ba_values_container')).toHaveSize(1);
@@ -88,7 +87,7 @@ describe('ValueSelect', () => {
 					portrait: false
 				}
 			};
-			const element = await setup(state, {});
+			const element = await setup(state, {}, { values: [21, 42] });
 
 			expect(element.shadowRoot.querySelector('.valueselect__container').classList).toContain('is-landscape');
 			expect(element.shadowRoot.querySelector('.valueselect__container').classList).not.toContain('is-portrait');
@@ -100,7 +99,7 @@ describe('ValueSelect', () => {
 					portrait: true
 				}
 			};
-			const element = await setup(state, {});
+			const element = await setup(state, {}, { values: [21, 42] });
 
 			expect(element.shadowRoot.querySelector('.valueselect__container').classList).not.toContain('is-landscape');
 			expect(element.shadowRoot.querySelector('.valueselect__container').classList).toContain('is-portrait');
@@ -114,7 +113,7 @@ describe('ValueSelect', () => {
 					portrait: false
 				}
 			};
-			const element = await setup(state, {});
+			const element = await setup(state, {}, { values: [21, 42] });
 			const iconButton = element.shadowRoot.querySelector('.valueselect__toggle-button');
 
 			expect(iconButton.title).toBe('');

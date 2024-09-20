@@ -13,6 +13,10 @@ const Update_Selected = 'update_selected';
 const Update_IsCollapsed = 'update_is_collapsed';
 const Update_IsPortrait_Value = 'update_isportrait_value';
 
+const Value_Select_Empty = html`<div class="valueselect__container">
+	<select .disabled="true"></select>
+</div>`;
+
 /**
  * Component to select a value from a list of values.
  *
@@ -61,19 +65,17 @@ export class ValueSelect extends MvuElement {
 	}
 
 	createView(model) {
+		if (model.values.length === 0) {
+			return Value_Select_Empty;
+		}
 		return this._environmentService.isTouch() ? this.#createSelectView(model) : this.#createComponentView(model);
 	}
 
 	#createComponentView(model) {
 		const { portrait, selected } = model;
 		const translate = (key) => this._translationService.translate(key);
-		const valuesAvailable = model.values.length > 0;
 
 		const getValues = () => {
-			if (!valuesAvailable) {
-				return nothing;
-			}
-
 			const onClick = (event) => {
 				const selectedValue = model.values.find((value) => event.currentTarget.id === 'value_' + value);
 				this.signal(Update_Selected, selectedValue);
@@ -122,16 +124,7 @@ export class ValueSelect extends MvuElement {
 			</style>
 			<div class="valueselect__container ${getOrientationClass()}">
 				<div class="values_header">
-					<button
-						id="symbol-value"
-						data-test-id
-						class="valueselect__toggle-button"
-						@click=${onClick}
-						.title=${model.title}
-						.disabled=${!valuesAvailable}
-					>
-						${selected}
-					</button>
+					<button id="symbol-value" data-test-id class="valueselect__toggle-button" @click=${onClick} .title=${model.title}>${selected}</button>
 				</div>
 				<div class="ba_values_container ${classMap(isCollapsedClass)}">${getValues()}</div>
 			</div>
@@ -163,7 +156,7 @@ export class ValueSelect extends MvuElement {
 				</select>
 			</div>`;
 		};
-		return model.values.length > 0 ? getTimestampControl() : nothing;
+		return getTimestampControl();
 	}
 
 	static get tag() {
