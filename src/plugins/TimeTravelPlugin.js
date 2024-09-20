@@ -78,10 +78,11 @@ export class TimeTravelPlugin extends BaPlugin {
 					html`<ba-time-travel-slider
 						.timestamp=${state.timeTravel.timestamp}
 						.geoResourceId=${this.#currentSuitableGeoResourceId}
-					></ba-time-travel-slider>`
+					></ba-time-travel-slider>`,
+					TIME_TRAVEL_BOTTOM_SHEET_ID
 				);
 			} else {
-				closeBottomSheet();
+				closeBottomSheet(TIME_TRAVEL_BOTTOM_SHEET_ID);
 			}
 		};
 
@@ -102,3 +103,5 @@ export class TimeTravelPlugin extends BaPlugin {
 		);
 	}
 }
+
+export const TIME_TRAVEL_BOTTOM_SHEET_ID = 'timeTravel';

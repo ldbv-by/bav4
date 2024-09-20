@@ -1,4 +1,4 @@
-import { TimeTravelPlugin } from '../../src/plugins/TimeTravelPlugin.js';
+import { TIME_TRAVEL_BOTTOM_SHEET_ID, TimeTravelPlugin } from '../../src/plugins/TimeTravelPlugin.js';
 import { TestUtils } from '../test-utils.js';
 import { layersReducer } from '../../src/store/layers/layers.reducer.js';
 import { closeSlider, openSlider, setCurrentTimestamp } from '../../src/store/timeTravel/timeTravel.action.js';
@@ -25,7 +25,7 @@ describe('TimeTravelPlugin', () => {
 
 	describe('when timeTravel "active" property changes', () => {
 		describe('is active and we have an unique geoResourceId', () => {
-			it('displays the time travel slider', async () => {
+			it('displays the time travel slider within the BottomSheet component', async () => {
 				const store = setup({ layers: initialLayersState, timeTravel: initialTimeTravelState, bottomSheet: initialBottomSheetState });
 				const instanceUnderTest = new TimeTravelPlugin();
 				await instanceUnderTest.register(store);
@@ -43,6 +43,7 @@ describe('TimeTravelPlugin', () => {
 				expect(wrapperElement.querySelectorAll(expectedTag)).toHaveSize(1);
 				expect(wrapperElement.querySelector(expectedTag).geoResourceId).toBe(geoResourceId);
 				expect(wrapperElement.querySelector(expectedTag).timestamp).toBe(timestamp0);
+				expect(store.getState().bottomSheet.active).toBe(TIME_TRAVEL_BOTTOM_SHEET_ID);
 
 				closeSlider();
 
@@ -54,6 +55,7 @@ describe('TimeTravelPlugin', () => {
 				expect(wrapperElement.querySelectorAll(expectedTag)).toHaveSize(1);
 				expect(wrapperElement.querySelector(expectedTag).geoResourceId).toBe(geoResourceId);
 				expect(wrapperElement.querySelector(expectedTag).timestamp).toBe(timestamp1);
+				expect(store.getState().bottomSheet.active).toBe(TIME_TRAVEL_BOTTOM_SHEET_ID);
 			});
 		});
 	});
