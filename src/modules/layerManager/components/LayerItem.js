@@ -200,15 +200,15 @@ export class LayerItem extends AbstractMvuContentPanel {
 					const timestamp = event.detail.selected;
 					modifyLayer(layer.id, { timestamp });
 				};
-
+				const selected = layer.timestamp ?? geoResource.timestamps[0];
 				return html`<ba-value-select
 					.title=${'Choose a value'}
 					.values=${geoResource.timestamps}
-					.selected=${geoResource.timestamps[0]}
+					.selected=${selected}
 					@select=${onTimestampChange}
 				></ba-value-select>`;
 			};
-			return geoResource.timestamps.length > 0 ? getTimestampControl() : nothing;
+			return geoResource.hasTimestamps() ? getTimestampControl() : nothing;
 		};
 
 		const getVisibilityTitle = () => {
