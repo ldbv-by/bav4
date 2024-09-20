@@ -6,6 +6,8 @@ import { modifyLayer } from '../store/layers/layers.action';
 import { BaPlugin } from './BaPlugin';
 import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
 import { html } from 'lit-html';
+import { closeSlider, openSlider } from '../store/timeTravel/timeTravel.action';
+import { $injector } from '../injection/index';
 
 /**
  * This plugin does the following time travel related things:
@@ -20,7 +22,14 @@ import { html } from 'lit-html';
  * @author taulinger
  */
 export class TimeTravelPlugin extends BaPlugin {
-	#currentGeoResourceId = null;
+	#currentSuitableGeoResourceId = null;
+	#environmentService;
+
+	constructor() {
+		super();
+		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
+		this.#environmentService = environmentService;
+	}
 
 	/**
 	 * @override
@@ -31,22 +40,22 @@ export class TimeTravelPlugin extends BaPlugin {
 		};
 
 		const onLayersChanged = (activeLayers) => {
-			/**
-			 * Check if we have one or more layers referencing the same timestamp
-			 * and check if they reference all the same GeoResource.
-			 * Only in that case we show the time travel component.
-			 */
-			const timestampSet = new Set(findSuitableLayers(activeLayers).map((l) => l.timestamp));
-			const geoResourceSet = new Set(findSuitableLayers(activeLayers).map((l) => l.geoResourceId));
+			if (!this.#environmentService.isEmbedded()) {
+				/**
+				 * Check if we have one or more layers referencing the same timestamp
+				 * and check if they reference all the same GeoResource.
+				 * Only in that case we show the time travel component.
+				 */
+				const timestampSet = new Set(findSuitableLayers(activeLayers).map((l) => l.timestamp));
+				const geoResourceSet = new Set(findSuitableLayers(activeLayers).map((l) => l.geoResourceId));
 
-			if (timestampSet.size === 1 && geoResourceSet.size === 1) {
-				this.#currentGeoResourceId = [...geoResourceSet][0];
-				openBottomSheet(
-					html`<ba-time-travel-slider .timestamp=${[...timestampSet][0]} .geoResourceId=${this.#currentGeoResourceId}></ba-time-travel-slider>`
-				);
-			} else {
-				this.#currentGeoResourceId = null;
-				closeBottomSheet();
+				if (timestampSet.size === 1 && geoResourceSet.size === 1) {
+					this.#currentSuitableGeoResourceId = [...geoResourceSet][0];
+					openSlider([...timestampSet][0]);
+				} else {
+					this.#currentSuitableGeoResourceId = null;
+					closeSlider();
+				}
 			}
 		};
 
@@ -54,10 +63,25 @@ export class TimeTravelPlugin extends BaPlugin {
 		 *  Update the timestamp property of each suitable layer
 		 */
 		const onTimestampChanged = (timestamp, state) => {
-			if (this.#currentGeoResourceId) {
+			if (this.#currentSuitableGeoResourceId) {
 				findSuitableLayers(state.layers.active)
-					.filter((l) => l.geoResourceId === this.#currentGeoResourceId)
+					.filter((l) => l.geoResourceId === this.#currentSuitableGeoResourceId)
 					.forEach((l) => modifyLayer(l.id, { timestamp }));
+			}
+		};
+		/**
+		 * Open or close the BottomSheet
+		 */
+		const onActiveChanged = (active, state) => {
+			if (active && this.#currentSuitableGeoResourceId) {
+				openBottomSheet(
+					html`<ba-time-travel-slider
+						.timestamp=${state.timeTravel.timestamp}
+						.geoResourceId=${this.#currentSuitableGeoResourceId}
+					></ba-time-travel-slider>`
+				);
+			} else {
+				closeBottomSheet();
 			}
 		};
 
@@ -68,8 +92,13 @@ export class TimeTravelPlugin extends BaPlugin {
 		);
 		observe(
 			store,
-			(state) => state.timeTravel.current,
-			(current, state) => onTimestampChanged(current, state)
+			(state) => state.timeTravel.timestamp,
+			(timestamp, state) => onTimestampChanged(timestamp, state)
+		);
+		observe(
+			store,
+			(state) => state.timeTravel.active,
+			(active, state) => onActiveChanged(active, state)
 		);
 	}
 }
