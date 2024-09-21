@@ -3,7 +3,7 @@
  */
 import { MvuElement } from '../../MvuElement';
 import { $injector } from '../../../injection';
-import { html, nothing } from 'lit-html';
+import { html } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 import css from './valueselect.css';
 
