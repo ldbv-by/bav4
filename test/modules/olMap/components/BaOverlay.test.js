@@ -92,6 +92,7 @@ describe('BaOverlay', () => {
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
 
+			expect(div.classList.contains('ba-overlay')).toBeTrue();
 			expect(div.classList.contains('help')).toBeTrue();
 			expect(div.classList.contains('floating')).toBeFalse();
 			expect(div.classList.contains('static')).toBeFalse();
@@ -105,6 +106,7 @@ describe('BaOverlay', () => {
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
 
+			expect(div.classList.contains('ba-overlay')).toBeTrue();
 			expect(div.classList.contains('help')).toBeTrue();
 			expect(div.classList.contains('floating')).toBeFalse();
 			expect(div.classList.contains('static')).toBeFalse();
@@ -125,6 +127,7 @@ describe('BaOverlay', () => {
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
 
+			expect(div.classList.contains('ba-overlay')).toBeTrue();
 			expect(div.classList.contains('distance')).toBeTrue();
 			expect(div.classList.contains('floating')).toBeTrue();
 			expect(div.innerText).toBe('90.00°/THE DISTANCE IN m');
@@ -145,6 +148,7 @@ describe('BaOverlay', () => {
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
 
+			expect(div.classList.contains('ba-overlay')).toBeTrue();
 			expect(div.classList.contains('distance')).toBeTrue();
 			expect(div.classList.contains('floating')).toBeTrue();
 			expect(div.innerText).toBe('THE DISTANCE IN m');
@@ -169,6 +173,7 @@ describe('BaOverlay', () => {
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
 
+			expect(div.classList.contains('ba-overlay')).toBeTrue();
 			expect(div.classList.contains('area')).toBeTrue();
 			expect(div.classList.contains('floating')).toBeTrue();
 			expect(div.innerText).toBe('THE AREA IN m²');
@@ -190,6 +195,7 @@ describe('BaOverlay', () => {
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
 
+			expect(div.classList.contains('ba-overlay')).toBeTrue();
 			expect(div.classList.contains('area')).toBeTrue();
 			expect(div.classList.contains('floating')).toBeTrue();
 			expect(div.innerText).toBe('');
