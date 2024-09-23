@@ -55,6 +55,23 @@ describe('canShowAzimuthCircle', () => {
 		expect(canShowAzimuthCircle(threePointLineString)).toBeTrue();
 	});
 
+	it('can show for a MultiLineString with azimuth property', () => {
+		const validMultiLineString = new MultiLineString([[
+			[0, 0],
+			[1, 0],
+			[1, 0]]
+		]);
+		const invalidMultiLineString = new MultiLineString([[
+			[0, 0],
+			[1, 0],
+			[1, 0]]
+		]);
+		validMultiLineString.set('azimuth', 42);
+
+		expect(canShowAzimuthCircle(validMultiLineString)).toBeTrue();
+		expect(canShowAzimuthCircle(invalidMultiLineString)).toBeFalse();
+	});
+
 	it('can NOT show for a point', () => {
 		const point = new Point([0, 0]);
 
@@ -81,6 +98,26 @@ describe('getAzimuth', () => {
 			]);
 
 			expect(getAzimuth(twoPointLineString)).toBe(90);
+		});
+
+		it('reads angle as property for a MultiLineString', () => {
+			const twoPointLineString = new MultiLineString([[
+				[0, 0],
+				[1, 0]
+			] ]);
+			twoPointLineString.set('azimuth', 42)
+
+			expect(getAzimuth(twoPointLineString)).toBe(42);
+		});
+
+
+		it('does not calculate angle due to missing azimuth property from a MultiLineString', () => {
+			const twoPointLineString = new MultiLineString([[
+				[0, 0],
+				[1, 0]
+			] ]);
+
+			expect(getAzimuth(twoPointLineString)).toBe(null);
 		});
 
 		it('calculates angle for a LinearRing', () => {
