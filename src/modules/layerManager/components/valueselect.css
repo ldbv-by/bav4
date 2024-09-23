@@ -1,24 +1,28 @@
 .ba_values_container {
-	display: grid;
-	grid-template-columns: repeat(10, 1fr);
-	grid-template-rows: 1fr;
-	grid-column-gap: 0;
-	grid-row-gap: 0;
 	max-height: 19em;
 	overflow: auto;
 	padding: 0.1em;
 	border: 1px solid var(--primary-bg-color);
 	box-shadow: 0px 0px 4px rgb(0 0 0 / 50%);
-	background-color: var(--primary-bg-color);
+	background-color: var(--tertiary-bg-color);
 	z-index: 100;
 	pointer-events: auto;
 	transform-origin: top right;
 	animation-name: openScale;
 	animation-duration: var(--animation-duration-medium-open);
 	animation-iteration-count: 1;
-	width: 38em;
+	width: 38.5em;
 	contain: layout;
 	padding-right: 0.5em;
+}
+
+.grid {
+	display: grid;
+	grid-template-columns: repeat(10, 1fr);
+	grid-template-rows: 1fr;
+	grid-column-gap: 0;
+	grid-row-gap: 0;
+	transform: scaleX(-1);
 }
 
 .is-portrait .ba_values_container {
@@ -32,24 +36,29 @@
 
 .ba_value_item {
 	color: var(--text1);
-	padding: 0.3em 0.3em;
+	padding: 0.3em 0.5em;
 	border-color: var(--primary-bg-color);
-	border-width: 1px;
+	border-width: 0px;
 	border-style: solid;
 	transition: transform var(--animation-duration-medium-close) var(--animation-easing-open);
 	justify-self: center;
 	text-align: center;
 	font-size: 1.1rem;
+	transform: scaleX(-1);
+	margin-top: 0.1em;
+	border-right: 2px dotted var(--header-background-color);
 }
 
 .ba_value_item:hover {
 	background: var(--primary-color-lighter);
-	color: var(--secondary-color);
+	color: var(--secondary-color) !important;
+	border-right: 2px solid var(--header-background-color) !important;
 }
 
 .isselected {
 	color: var(--text3) !important;
 	background: var(--primary-color);
+	border-right: 2px solid var(--primary-color) !important;
 }
 
 .iscollapsed {

@@ -133,7 +133,12 @@ export class ValueSelect extends MvuElement {
 						${selected}
 					</button>
 				</div>
-				<div class="ba_values_container ${classMap(isCollapsedClass)}">${getValues()}</div>
+				<div class="ba_values_container ${classMap(isCollapsedClass)}">
+					<div class="grid">
+						${getValues()}
+						<div></div>
+					</div>
+				</div>
 			</div>
 		`;
 	}
