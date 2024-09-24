@@ -22,8 +22,12 @@ export class OlOverlayMapHandler extends OlMapHandler {
 	}
 
 	_updateOverlays() {
-		const overlays = this._map.getOverlays().getArray();
-		if (overlays.length !== 0) {
+		const baOverlays = this._map
+			.getOverlays()
+			.getArray()
+			.filter((o) => o.getElement() instanceof BaOverlay);
+
+		if (baOverlays.length !== 0) {
 			const viewExtent = this._map.getView().calculateExtent(this._map.getSize());
 			const wgs84Extent = transformExtent(viewExtent, Epsg_WebMercartor, Epsg_Wgs84);
 
@@ -39,7 +43,7 @@ export class OlOverlayMapHandler extends OlMapHandler {
 
 			const offsetMinMax = [Math.min(...worldOffset), Math.max(...worldOffset)];
 
-			overlays.filter((o) => o.getElement() instanceof BaOverlay).forEach((o) => this._updatePosition(o, viewExtent, offsetMinMax));
+			baOverlays.forEach((o) => this._updatePosition(o, viewExtent, offsetMinMax));
 		}
 	}
 
