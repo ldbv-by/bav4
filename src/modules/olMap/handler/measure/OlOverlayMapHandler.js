@@ -22,25 +22,25 @@ export class OlOverlayMapHandler extends OlMapHandler {
 	}
 
 	_updateOverlays() {
-		const viewExtent = this._map.getView().calculateExtent(this._map.getSize());
-		const wgs84Extent = transformExtent(viewExtent, Epsg_WebMercartor, Epsg_Wgs84);
+		const overlays = this._map.getOverlays().getArray();
+		if (overlays.length !== 0) {
+			const viewExtent = this._map.getView().calculateExtent(this._map.getSize());
+			const wgs84Extent = transformExtent(viewExtent, Epsg_WebMercartor, Epsg_Wgs84);
 
-		const getOffset = (latitude) => {
-			return -180 > latitude ? (latitude - (latitude % 360)) / 360 : -180 < latitude && latitude < 180 ? 0 : (latitude - (latitude % 360)) / 360;
-		};
-		const worldOffset = [
-			getOffset(getBottomLeft(wgs84Extent)[0]),
-			getOffset(getBottomRight(wgs84Extent)[0]),
-			getOffset(getTopLeft(wgs84Extent)[0]),
-			getOffset(getTopRight(wgs84Extent)[0])
-		];
+			const getOffset = (latitude) => {
+				return -180 > latitude ? (latitude - (latitude % 360)) / 360 : -180 < latitude && latitude < 180 ? 0 : (latitude - (latitude % 360)) / 360;
+			};
+			const worldOffset = [
+				getOffset(getBottomLeft(wgs84Extent)[0]),
+				getOffset(getBottomRight(wgs84Extent)[0]),
+				getOffset(getTopLeft(wgs84Extent)[0]),
+				getOffset(getTopRight(wgs84Extent)[0])
+			];
 
-		const offsetMinMax = [Math.min(...worldOffset), Math.max(...worldOffset)];
-		this._map
-			.getOverlays()
-			.getArray()
-			.filter((o) => o.getElement() instanceof BaOverlay)
-			.forEach((o) => this._updatePosition(o, viewExtent, offsetMinMax));
+			const offsetMinMax = [Math.min(...worldOffset), Math.max(...worldOffset)];
+
+			overlays.filter((o) => o.getElement() instanceof BaOverlay).forEach((o) => this._updatePosition(o, viewExtent, offsetMinMax));
+		}
 	}
 
 	_updatePosition(overlay, viewExtent, offsetMinMax) {

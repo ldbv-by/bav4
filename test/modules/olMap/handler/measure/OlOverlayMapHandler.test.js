@@ -119,6 +119,23 @@ describe('OlOverlayMapHandler', () => {
 
 			expect(updateSpy).toHaveBeenCalledWith(jasmine.any(Object), jasmine.any(Array), [-1, 0]);
 		});
+
+		it('skips calculation without any overlay', async () => {
+			setup();
+			const map = setupMap();
+			const view = map.getView();
+			map.getView().setCenter(fromLonLat([11 + 360, 48]));
+			const overlaysMock = { getArray: () => [] };
+			spyOn(map, 'getOverlays').and.callFake(() => overlaysMock);
+
+			const instanceUnderTest = new OlOverlayMapHandler();
+			const updateSpy = spyOn(instanceUnderTest, '_updatePosition').and.callFake(() => {});
+
+			instanceUnderTest.register(map);
+			view.dispatchEvent(new ObjectEvent('change:center'));
+
+			expect(updateSpy).not.toHaveBeenCalled();
+		});
 	});
 
 	describe('_updatePosition', () => {
