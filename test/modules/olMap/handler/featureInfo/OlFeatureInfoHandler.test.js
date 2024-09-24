@@ -9,17 +9,18 @@ import {
 } from '../../../../../src/modules/olMap/handler/featureInfo/OlFeatureInfoHandler';
 import { featureInfoReducer } from '../../../../../src/store/featureInfo/featureInfo.reducer';
 import { TestUtils } from '../../../../test-utils';
-import { abortOrReset, FeatureInfoGeometryTypes, startRequest } from '../../../../../src/store/featureInfo/featureInfo.action';
+import { abortOrReset, startRequest } from '../../../../../src/store/featureInfo/featureInfo.action';
 import { fromLonLat } from 'ol/proj';
 import { createDefaultLayer, layersReducer } from '../../../../../src/store/layers/layers.reducer';
 import { getBvvFeatureInfo } from '../../../../../src/modules/olMap/handler/featureInfo/featureInfoItem.provider';
 import { modifyLayer } from '../../../../../src/store/layers/layers.action';
 import { highlightReducer } from '../../../../../src/store/highlight/highlight.reducer';
-import { HighlightFeatureType, HighlightGeometryType } from '../../../../../src/store/highlight/highlight.action';
+import { HighlightFeatureType } from '../../../../../src/store/highlight/highlight.action';
 import GeoJSON from 'ol/format/GeoJSON';
 import { $injector } from '../../../../../src/injection';
 import { QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../../src/plugins/HighlightPlugin';
 import { Cluster } from 'ol/source';
+import { FeatureInfoGeometryTypes } from '../../../../../src/domain/featureInfo';
 
 describe('OlFeatureInfoHandler_Query_Resolution_Delay', () => {
 	it('determines amount of time query resolution delayed', async () => {
@@ -123,7 +124,7 @@ describe('OlFeatureInfoHandler', () => {
 			expect(store.getState().featureInfo.querying).toBeFalse();
 		});
 
-		it('adds exactly one FeatureInfo and HighlightFeature per layer', async () => {
+		it('adds exactly one FeatureInfo', async () => {
 			const handler = setup(
 				{
 					layers: {
@@ -157,13 +158,10 @@ describe('OlFeatureInfoHandler', () => {
 
 			await TestUtils.timeout(TestDelay);
 
-			expect(store.getState().highlight.features).toHaveSize(1);
-
 			abortOrReset();
 			startRequest(notMatchingCoordinate);
 
 			expect(store.getState().featureInfo.current).toHaveSize(0);
-			expect(store.getState().highlight.features).toHaveSize(0);
 			expect(forEachFeatureAtPixelSpy).toHaveBeenCalledWith(
 				jasmine.any(Object),
 				jasmine.any(Function),
@@ -196,7 +194,7 @@ describe('OlFeatureInfoHandler', () => {
 			expect(store.getState().highlight.features[0].id).toBe('foo');
 		});
 
-		it('adds one FeatureInfo and HighlightFeature from each suitable layer', async () => {
+		it('adds one FeatureInfo from each suitable layer', async () => {
 			const handler = setup(
 				{
 					layers: {
@@ -208,7 +206,6 @@ describe('OlFeatureInfoHandler', () => {
 			const map = setupMap();
 			const geometry = new Point(matchingCoordinate);
 			const expectedFeatureInfoGeometry = { data: new GeoJSON().writeGeometry(geometry), geometryType: FeatureInfoGeometryTypes.GEOJSON };
-			const expectedHighlightFeatureGeometry = { geometry: new GeoJSON().writeGeometry(geometry), geometryType: HighlightGeometryType.GEOJSON };
 			const olVectorSource0 = new VectorSource();
 			const feature0 = new Feature({ geometry: geometry });
 			feature0.set('name', 'name0');
@@ -247,30 +244,17 @@ describe('OlFeatureInfoHandler', () => {
 				content: 'description0',
 				geometry: expectedFeatureInfoGeometry
 			});
-			expect(store.getState().highlight.features).toHaveSize(2);
-			expect(store.getState().highlight.features[0]).toEqual({
-				id: QUERY_RUNNING_HIGHLIGHT_FEATURE_ID,
-				type: HighlightFeatureType.DEFAULT,
-				data: expectedHighlightFeatureGeometry
-			});
-			expect(store.getState().highlight.features[1]).toEqual({
-				id: QUERY_RUNNING_HIGHLIGHT_FEATURE_ID,
-				type: HighlightFeatureType.DEFAULT,
-				data: expectedHighlightFeatureGeometry
-			});
 
 			//we update with non matching coordinates
 			abortOrReset();
 			startRequest(notMatchingCoordinate);
 
 			expect(store.getState().featureInfo.current).toHaveSize(0);
-			expect(store.getState().highlight.features).toHaveSize(0);
 
 			startRequest(matchingCoordinate);
 
 			await TestUtils.timeout(TestDelay);
 			expect(store.getState().featureInfo.current).toHaveSize(2);
-			expect(store.getState().highlight.features).toHaveSize(2);
 
 			// we modify the first layer so that it is not queryable anymore
 			modifyLayer(layerId0, { visible: false });
@@ -279,7 +263,6 @@ describe('OlFeatureInfoHandler', () => {
 
 			await TestUtils.timeout(TestDelay);
 			expect(store.getState().featureInfo.current).toHaveSize(1);
-			expect(store.getState().highlight.features).toHaveSize(1);
 
 			//we modify the second layer so that it is not queryable anymore, but the feature1 has a name property
 			modifyLayer(layerId1, { constraints: { hidden: true } });
@@ -288,7 +271,6 @@ describe('OlFeatureInfoHandler', () => {
 
 			await TestUtils.timeout(TestDelay);
 			expect(store.getState().featureInfo.current).toHaveSize(1);
-			expect(store.getState().highlight.features).toHaveSize(1);
 
 			//we modify feature1 by setting the name property to undefined
 			feature1.set('name', undefined);
@@ -297,7 +279,6 @@ describe('OlFeatureInfoHandler', () => {
 
 			await TestUtils.timeout(TestDelay);
 			expect(store.getState().featureInfo.current).toHaveSize(0);
-			expect(store.getState().highlight.features).toHaveSize(0);
 		});
 
 		it('ignores a clustered feature containing more than one features', async () => {

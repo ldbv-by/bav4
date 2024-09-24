@@ -71,6 +71,7 @@ describe('injector configuration', () => {
 		expect($injector.getScope('IframeGeometryIdPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('ObserveWcAttributesPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('EncodeStatePlugin')).toBe(Injector.SCOPE_SINGLETON);
+		expect($injector.getScope('TimeTravelPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('ObserveStateForEncodingPlugin')).toBe(Injector.SCOPE_SINGLETON);
 
 		// map module

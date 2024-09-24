@@ -1,13 +1,13 @@
 /**
  * @module modules/olMap/handler/featureInfo/featureInfoItem_provider
  */
-import { FeatureInfoGeometryTypes } from '../../../../store/featureInfo/featureInfo.action';
 import GeoJSON from 'ol/format/GeoJSON';
 import { getLineString, getStats } from '../../utils/olGeometryUtils';
 import { $injector } from '../../../../injection';
 import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { KML } from 'ol/format';
+import { FeatureInfoGeometryTypes } from '../../../../domain/featureInfo';
 
 /**
  * BVV strategy for mapping an olFeature to a FeatureInfo item.
