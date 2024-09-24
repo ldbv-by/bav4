@@ -1,4 +1,4 @@
-import { FeatureInfoGeometryTypes } from '../../../src/store/featureInfo/featureInfo.action';
+import { FeatureInfoGeometryTypes } from '../../src/domain/featureInfo';
 
 describe('featureInfoAction', () => {
 	it('exports a enum for FeatureInfoGeometryTypes', () => {

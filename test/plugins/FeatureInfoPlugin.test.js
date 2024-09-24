@@ -9,11 +9,11 @@ import { pointerReducer } from '../../src/store/pointer/pointer.reducer.js';
 import { $injector } from '../../src/injection/index.js';
 import { createDefaultLayer, layersReducer } from '../../src/store/layers/layers.reducer.js';
 import { positionReducer } from '../../src/store/position/position.reducer.js';
-import { FeatureInfoResult } from '../../src/services/FeatureInfoService.js';
 import { notificationReducer } from '../../src/store/notifications/notifications.reducer.js';
 import { LevelTypes } from '../../src/store/notifications/notifications.action.js';
 import { setCurrentTool } from '../../src/store/tools/tools.action.js';
 import { toolsReducer } from '../../src/store/tools/tools.reducer.js';
+import { XyzGeoResource } from '../../src/domain/geoResources.js';
 
 describe('FeatureInfoPlugin', () => {
 	const featureInfoService = {
@@ -90,12 +90,16 @@ describe('FeatureInfoPlugin', () => {
 			it('adds FeatureInfo items ', async () => {
 				const layerId0 = 'id0';
 				const geoResourceId0 = 'geoResourceId0';
+				const timestamp = '1900';
+				spyOn(geoResourceService, 'byId')
+					.withArgs(geoResourceId0)
+					.and.returnValue(new XyzGeoResource(geoResourceId0, 'label', 'url').setTimestamps('timestamp'));
 				const coordinate = [11, 22];
 				const zoom = 5;
 				const resolution = 25;
 				const store = setup({
 					layers: {
-						active: [createDefaultLayer(layerId0, geoResourceId0)]
+						active: [{ ...createDefaultLayer(layerId0, geoResourceId0), timestamp }]
 					},
 					position: {
 						zoom: zoom
@@ -104,7 +108,9 @@ describe('FeatureInfoPlugin', () => {
 				const instanceUnderTest = new FeatureInfoPlugin();
 
 				spyOn(mapService, 'calcResolution').withArgs(zoom, coordinate).and.returnValue(resolution);
-				spyOn(featureInfoService, 'get').withArgs(geoResourceId0, coordinate, resolution).and.resolveTo(new FeatureInfoResult('content', 'title'));
+				spyOn(featureInfoService, 'get')
+					.withArgs(geoResourceId0, coordinate, resolution, timestamp)
+					.and.resolveTo({ content: 'content', title: 'title' });
 				await instanceUnderTest.register(store);
 
 				setClick({ coordinate: coordinate, screenCoordinate: [33, 44] });
@@ -115,36 +121,6 @@ describe('FeatureInfoPlugin', () => {
 				expect(store.getState().featureInfo.current[0].content).toBe('content');
 				expect(store.getState().featureInfo.current[0].title).toBe('title');
 				expect(store.getState().featureInfo.querying).toBeFalse();
-			});
-
-			it("adds FeatureInfo items taking the GeoResource' label as title", async () => {
-				const labelO = 'label0';
-				const layerId0 = 'id0';
-				const geoResourceId0 = 'geoResourceId0';
-				spyOn(geoResourceService, 'byId').withArgs(geoResourceId0).and.returnValue({ label: labelO } /*fake GeoResource */);
-				const coordinate = [11, 22];
-				const zoom = 5;
-				const resolution = 25;
-				const store = setup({
-					layers: {
-						active: [{ ...createDefaultLayer(layerId0, geoResourceId0) }]
-					},
-					position: {
-						zoom: zoom
-					}
-				});
-				const instanceUnderTest = new FeatureInfoPlugin();
-
-				spyOn(mapService, 'calcResolution').withArgs(zoom, coordinate).and.returnValue(resolution);
-				spyOn(featureInfoService, 'get').withArgs(geoResourceId0, coordinate, resolution).and.resolveTo(new FeatureInfoResult('content'));
-				await instanceUnderTest.register(store);
-
-				setClick({ coordinate: coordinate, screenCoordinate: [33, 44] });
-
-				await TestUtils.timeout();
-				expect(store.getState().featureInfo.current).toHaveSize(1);
-				expect(store.getState().featureInfo.current[0].content).toBe('content');
-				expect(store.getState().featureInfo.current[0].title).toBe(labelO);
 			});
 
 			it('adds NO FeatureInfo items when layer is invisible or hidden', async () => {
@@ -181,7 +157,9 @@ describe('FeatureInfoPlugin', () => {
 				const layerId0 = 'id0';
 				const geoResourceId0 = 'geoResource0';
 				const label0 = 'label0';
-				spyOn(geoResourceService, 'byId').withArgs(geoResourceId0).and.returnValue({ label: label0 } /*fake GeoResource */);
+				spyOn(geoResourceService, 'byId')
+					.withArgs(geoResourceId0)
+					.and.returnValue(new XyzGeoResource(geoResourceId0, label0, 'url'));
 				const coordinate = [11, 22];
 				const zoom = 5;
 				const resolution = 25;
@@ -196,7 +174,7 @@ describe('FeatureInfoPlugin', () => {
 				const instanceUnderTest = new FeatureInfoPlugin();
 
 				spyOn(mapService, 'calcResolution').withArgs(zoom, coordinate).and.returnValue(resolution);
-				spyOn(featureInfoService, 'get').withArgs(geoResourceId0, coordinate, resolution).and.resolveTo(null);
+				spyOn(featureInfoService, 'get').withArgs(geoResourceId0, coordinate, resolution, null).and.resolveTo(null);
 				await instanceUnderTest.register(store);
 
 				setClick({ coordinate: coordinate, screenCoordinate: [33, 44] });
@@ -211,7 +189,9 @@ describe('FeatureInfoPlugin', () => {
 				const layerId0 = 'id0';
 				const geoResourceId0 = 'geoResource0';
 				const label0 = 'label0';
-				spyOn(geoResourceService, 'byId').withArgs(geoResourceId0).and.returnValue({ label: label0 } /*fake GeoResource */);
+				spyOn(geoResourceService, 'byId')
+					.withArgs(geoResourceId0)
+					.and.returnValue(new XyzGeoResource(geoResourceId0, label0, 'url'));
 				const coordinate = [11, 22];
 				const zoom = 5;
 				const resolution = 25;
@@ -226,7 +206,7 @@ describe('FeatureInfoPlugin', () => {
 				});
 				const instanceUnderTest = new FeatureInfoPlugin();
 				spyOn(mapService, 'calcResolution').withArgs(zoom, coordinate).and.returnValue(resolution);
-				spyOn(featureInfoService, 'get').withArgs(geoResourceId0, coordinate, resolution).and.returnValue(Promise.reject(errorMessage));
+				spyOn(featureInfoService, 'get').withArgs(geoResourceId0, coordinate, resolution, null).and.returnValue(Promise.reject(errorMessage));
 				const errorSpy = spyOn(console, 'error');
 				await instanceUnderTest.register(store);
 

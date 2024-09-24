@@ -100,6 +100,9 @@ describe('StoreService', () => {
 		const observeWcAttributesPluginMock = {
 			register: () => {}
 		};
+		const timeTravelPluginMock = {
+			register: () => {}
+		};
 
 		const setupInjector = () => {
 			$injector
@@ -136,6 +139,7 @@ describe('StoreService', () => {
 				.registerSingleton('ObserveWcAttributesPlugin', observeWcAttributesPluginMock)
 				.registerSingleton('EncodeStatePlugin', encodeStatePlugin)
 				.registerSingleton('ObserveStateForEncodingPlugin', observeStateForEncodingPluginMock)
+				.registerSingleton('TimeTravelPlugin', timeTravelPluginMock)
 
 				.ready();
 		};
@@ -147,7 +151,7 @@ describe('StoreService', () => {
 			expect(store).toBeDefined();
 
 			const reducerKeys = Object.keys(store.getState());
-			expect(reducerKeys.length).toBe(32);
+			expect(reducerKeys.length).toBe(33);
 			expect(reducerKeys.includes('map')).toBeTrue();
 			expect(reducerKeys.includes('pointer')).toBeTrue();
 			expect(reducerKeys.includes('position')).toBeTrue();
@@ -180,6 +184,7 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('auth')).toBeTrue();
 			expect(reducerKeys.includes('wcAttribute')).toBeTrue();
 			expect(reducerKeys.includes('fileStorage')).toBeTrue();
+			expect(reducerKeys.includes('timeTravel')).toBeTrue();
 		});
 
 		it('registers all plugins', async () => {
@@ -212,6 +217,7 @@ describe('StoreService', () => {
 			const observeWcAttributesPluginSpy = spyOn(observeWcAttributesPluginMock, 'register');
 			const historyStatePluginSpy = spyOn(encodeStatePlugin, 'register');
 			const observeStateForEncodingPluginSpy = spyOn(observeStateForEncodingPluginMock, 'register');
+			const timeTravelPluginSpy = spyOn(timeTravelPluginMock, 'register');
 			const instanceUnderTest = new StoreService();
 
 			setupInjector();
@@ -250,6 +256,7 @@ describe('StoreService', () => {
 			expect(observeWcAttributesPluginSpy).toHaveBeenCalledWith(store);
 			expect(historyStatePluginSpy).toHaveBeenCalledWith(store);
 			expect(observeStateForEncodingPluginSpy).toHaveBeenCalledWith(store);
+			expect(timeTravelPluginSpy).toHaveBeenCalledWith(store);
 		});
 	});
 });

@@ -5,7 +5,9 @@ import {
 	createDefaultLayerProperties,
 	createDefaultLayer,
 	createDefaultLayersConstraints,
-	initialState
+	initialState,
+	getTimestamp,
+	extendedLayersReducer
 } from '../../../src/store/layers/layers.reducer';
 import {
 	addLayer,
@@ -17,8 +19,9 @@ import {
 	removeAndSetLayers
 } from '../../../src/store/layers/layers.action';
 import { TestUtils } from '../../test-utils.js';
-import { GeoResourceFuture } from '../../../src/domain/geoResources';
+import { GeoResourceFuture, XyzGeoResource } from '../../../src/domain/geoResources';
 import { EventLike, equals } from '../../../src/utils/storeUtils.js';
+import { $injector } from '../../../src/injection/index.js';
 
 describe('defaultLayerProperties', () => {
 	it('returns an object containing default layer properties', () => {
@@ -681,5 +684,156 @@ describe('layersReducer', () => {
 		setReady();
 
 		expect(store.getState().layers.ready).toBeTrue();
+	});
+});
+
+describe('productiveLayersReducer', () => {
+	const setup = (state) => {
+		return TestUtils.setupStoreAndDi(state, {
+			layers: extendedLayersReducer
+		});
+	};
+
+	/**
+	 * We implicitly test the call of the getTimestamp() util fn
+	 */
+	describe('call the `getTimestamp` util fn', () => {
+		const geoResourceService = {
+			byId: () => {}
+		};
+		afterEach(() => {
+			$injector.reset();
+		});
+
+		it('for LAYER_ADDED action type', () => {
+			const store = setup();
+			$injector.registerSingleton('GeoResourceService', geoResourceService);
+			const timestamp = '1900';
+			const geoResourceId = 'geoResourceId';
+			const geoResource = new XyzGeoResource(geoResourceId, 'label', 'url').setTimestamps([timestamp]);
+			const spy = spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+
+			addLayer('id0', { geoResourceId });
+
+			expect(spy).toHaveBeenCalled();
+			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
+		});
+
+		it('for LAYER_REMOVED action type', () => {
+			const geoResourceId = 'geoResourceId';
+			const layerProperties0 = createDefaultLayer('id0', geoResourceId);
+			const layerProperties1 = createDefaultLayer('id1', 'geoResourceId1');
+			const store = setup({
+				layers: {
+					active: [layerProperties0, layerProperties1]
+				}
+			});
+			$injector.registerSingleton('GeoResourceService', geoResourceService);
+			const timestamp = '1900';
+			const geoResource = new XyzGeoResource(geoResourceId, 'label', 'url').setTimestamps([timestamp]);
+			const spy = spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+
+			removeLayer('id1', { geoResourceId });
+
+			expect(spy).toHaveBeenCalled();
+			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
+		});
+
+		it('for LAYER_REMOVE_AND_SET action type', () => {
+			const geoResourceId = 'geoResourceId';
+			const layerProperties0 = createDefaultLayer('id0', geoResourceId);
+			const layerProperties1 = createDefaultLayer('id1', 'geoResourceId1');
+			const store = setup({
+				layers: {
+					active: [layerProperties1]
+				}
+			});
+			$injector.registerSingleton('GeoResourceService', geoResourceService);
+			const timestamp = '1900';
+			const geoResource = new XyzGeoResource(geoResourceId, 'label', 'url').setTimestamps([timestamp]);
+			const spy = spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+
+			removeAndSetLayers([layerProperties0]);
+
+			expect(spy).toHaveBeenCalled();
+			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
+		});
+
+		it('for LAYER_MODIFIED action type', () => {
+			const id = 'id0';
+			const geoResourceId = 'geoResourceId';
+			const layerProperties0 = createDefaultLayer(id, geoResourceId);
+			const store = setup({
+				layers: {
+					active: [layerProperties0]
+				}
+			});
+			$injector.registerSingleton('GeoResourceService', geoResourceService);
+			const timestamp = '1900';
+			const geoResource = new XyzGeoResource(geoResourceId, 'label', 'url').setTimestamps([timestamp]);
+			const spy = spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+
+			modifyLayer(id, { visible: true });
+
+			expect(spy).toHaveBeenCalled();
+			expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
+		});
+	});
+});
+
+describe('getTimestamp', () => {
+	const geoResourceService = {
+		byId: () => {}
+	};
+	describe('GeoResourceService is available', () => {
+		beforeEach(() => {
+			$injector.registerSingleton('GeoResourceService', geoResourceService);
+		});
+
+		afterEach(() => {
+			$injector.reset();
+		});
+
+		describe('referenced GeoResource has no timestamps', () => {
+			it('returns `null`', () => {
+				const geoResourceId = 'geoResourceId';
+				const geoResource = new XyzGeoResource(geoResourceId, 'label', 'url');
+				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+				const layer = createDefaultLayer('id', geoResourceId);
+
+				expect(getTimestamp(layer)).toBeNull();
+			});
+		});
+		describe('referenced GeoResource is unknown', () => {
+			it('returns `null`', () => {
+				const geoResourceId = 'geoResourceId';
+				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(null);
+				const layer = createDefaultLayer('id', geoResourceId);
+
+				expect(getTimestamp(layer)).toBeNull();
+			});
+		});
+		describe('the layer contains a timestamp', () => {
+			it('returns the timestamp of the layer', () => {
+				const timestamp = '1900';
+				const geoResourceId = 'geoResourceId';
+				const geoResource = new XyzGeoResource(geoResourceId, 'label', 'url').setTimestamps(['2000']);
+				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+				const layer = createDefaultLayer('id', geoResourceId);
+
+				expect(getTimestamp({ ...layer, timestamp })).toBe(timestamp);
+			});
+		});
+		describe('the layer does NOT contain a timestamp', () => {
+			it('returns the latest timestamp of the GeoResource', () => {
+				const timestamp = '1900';
+				const geoResourceId = 'geoResourceId';
+				const geoResource = new XyzGeoResource(geoResourceId, 'label', 'url').setTimestamps([timestamp, '2000']);
+				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResource);
+				const layer = createDefaultLayer('id', geoResourceId);
+
+				expect(getTimestamp(layer)).toBe(timestamp);
+			});
+		});
 	});
 });
