@@ -11,9 +11,8 @@ export const GEODESIC_FEATURE_PROPERTY = 'geodesic';
 export const GEODESIC_CALCULATION_STATUS = Object.freeze({ ACTIVE: 'active', INACTIVE: 'inactive' });
 
 const GEODESIC_WGS84 = Geodesic.WGS84;
-const WEBMERCATOR = 'EPSG:3857';
-const WGS84 = 'EPSG:4326';
 const FULL_CIRCLE_POINTS = 100; // count of points to form a smooth circle (closed arc)
+const GEODESIC_CALCULATION_THRESHOLD_IN_METER = 55555; // half of a degree of a longitude
 
 /**
  * A geodesic-geometry
@@ -46,7 +45,7 @@ export class GeodesicGeometry {
 	}
 
 	#initialize() {
-		const coordinates = this.#getCoordinates(this.#feature.getGeometry().clone().transform(WEBMERCATOR, WGS84));
+		const coordinates = this.#getCoordinates(this.#feature.getGeometry().clone().transform('EPSG:3857', 'EPSG:4326'));
 		const isPolygon = this.#feature?.getGeometry() instanceof Polygon && !this.#isDrawing();
 		const hasAzimuthCircle = !isPolygon && this.#isEffectiveSegment(coordinates);
 		const geodesicProperties = this.#calculateGlobalProperties(coordinates, isPolygon, hasAzimuthCircle);
@@ -109,12 +108,11 @@ export class GeodesicGeometry {
 
 	#calculateGeodesicCoordinatesFrom(geodesicLines) {
 		const geodesicBag = new TiledCoordinateBag();
-		const geodesicCalculationThresholdInMeter = 55555;
 		const arcInterpolationCount = FULL_CIRCLE_POINTS / 2;
 		let interpolationCount = 0;
 		const calculateGeodesicCoordinates = (geodesicLine) => {
 			const { geodesic, from, to } = geodesicLine;
-			if (geodesic.s13 < geodesicCalculationThresholdInMeter) {
+			if (geodesic.s13 < GEODESIC_CALCULATION_THRESHOLD_IN_METER) {
 				return [from, to];
 			}
 
