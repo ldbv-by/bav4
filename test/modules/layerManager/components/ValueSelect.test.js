@@ -93,7 +93,7 @@ describe('ValueSelect', () => {
 			expect(element.shadowRoot.querySelector('.valueselect__container').classList).not.toContain('is-portrait');
 		});
 
-		it('check landscape', async () => {
+		it('check landscape for non-touch environment', async () => {
 			const state = {
 				media: {
 					portrait: true
@@ -104,9 +104,22 @@ describe('ValueSelect', () => {
 			expect(element.shadowRoot.querySelector('.valueselect__container').classList).not.toContain('is-landscape');
 			expect(element.shadowRoot.querySelector('.valueselect__container').classList).toContain('is-portrait');
 		});
+
+		it('check landscape for touch environment', async () => {
+			const state = {
+				media: {
+					portrait: true
+				}
+			};
+			spyOn(environmentService, 'isTouch').and.returnValue(true);
+			const element = await setup(state, {}, { values: [21, 42] });
+
+			expect(element.shadowRoot.querySelector('.valueselect__container').classList).not.toContain('is-landscape');
+			expect(element.shadowRoot.querySelector('.valueselect__container').classList).toContain('is-portrait');
+		});
 	});
 
-	describe("when property'title' changes", () => {
+	describe("when property 'title' changes", () => {
 		it('updates the view', async () => {
 			const state = {
 				media: {
@@ -125,6 +138,8 @@ describe('ValueSelect', () => {
 			element.title = 'bar';
 
 			expect(iconButton.title).toBe('bar');
+
+			expect(element.title).toBe('bar');
 		});
 	});
 
@@ -138,6 +153,21 @@ describe('ValueSelect', () => {
 			const element = await setup(state, {}, { values: [21, 42] });
 
 			expect(element.values.length).toBe(2);
+		});
+	});
+
+	describe("when property 'selected' changes", () => {
+		it('updates the view', async () => {
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+			const element = await setup(state, {}, { values: [21, 42] });
+
+			element.selected = 21;
+
+			expect(element.selected).toBe(21);
 		});
 	});
 
@@ -161,7 +191,7 @@ describe('ValueSelect', () => {
 		});
 	});
 
-	describe('when icon is selected (event handling) ', () => {
+	describe('when value is selected (event handling) in non-touch environment', () => {
 		it('fires a "select" event', async () => {
 			const state = {
 				media: {
@@ -173,8 +203,8 @@ describe('ValueSelect', () => {
 			element.addEventListener('select', spy);
 
 			element.click();
-			const selectableIcon = element.shadowRoot.querySelector('#value_21');
-			selectableIcon.click();
+			const selectableValue = element.shadowRoot.querySelector('#value_21');
+			selectableValue.click();
 
 			expect(spy).toHaveBeenCalledOnceWith(jasmine.any(CustomEvent));
 		});
@@ -212,6 +242,59 @@ describe('ValueSelect', () => {
 			const selectableValue = element.shadowRoot.querySelector('#value_21');
 
 			selectableValue.click();
+
+			expect(window.alert).toHaveBeenCalledWith('called');
+		});
+	});
+
+	describe('when value is selected (event handling) in touch environment', () => {
+		it('fires a "select" event', async () => {
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+			spyOn(environmentService, 'isTouch').and.returnValue(true);
+			const element = await setup(state, {}, { values: [21, 42] });
+			const spy = jasmine.createSpy();
+			element.addEventListener('select', spy);
+
+			const selectElement = element.shadowRoot.querySelector('.valueselect__container select');
+			selectElement.selected = 21;
+			selectElement.dispatchEvent(new Event('change'));
+
+			expect(spy).toHaveBeenCalledOnceWith(jasmine.any(CustomEvent));
+		});
+
+		it('calls the onSelect callback via property callback', async () => {
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+			spyOn(environmentService, 'isTouch').and.returnValue(true);
+			const element = await setup(state, {}, { values: [21, 42] });
+			const selectSpy = spyOn(element, 'onSelect');
+			const selectElement = element.shadowRoot.querySelector('.valueselect__container select');
+			selectElement.selected = 21;
+			selectElement.dispatchEvent(new Event('change'));
+
+			expect(selectSpy).toHaveBeenCalledWith('21');
+		});
+
+		it('calls the onSelect callback via attribute callback', async () => {
+			spyOn(window, 'alert');
+
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+			spyOn(environmentService, 'isTouch').and.returnValue(true);
+			const element = await setup(state, { onSelect: "alert('called')" }, { values: ['21', '42'] });
+			const selectElement = element.shadowRoot.querySelector('.valueselect__container select');
+			selectElement.selected = 21;
+			selectElement.dispatchEvent(new Event('change'));
 
 			expect(window.alert).toHaveBeenCalledWith('called');
 		});
