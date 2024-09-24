@@ -471,7 +471,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const onFeatureChange = (event) => {
 				const feature = event.target;
 				const measureGeometry = this._createMeasureGeometry(feature);
-				const projectedLength = measureGeometry ? this._mapService.calcLength(getLineString(measureGeometry)?.getCoordinates()) : null;
+				const projectedLength = measureGeometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY)
+					? measureGeometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY)
+					: this._mapService.calcLength(getLineString(measureGeometry)?.getCoordinates());
 				if (projectedLength) {
 					feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
 					feature.getGeometry().set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
