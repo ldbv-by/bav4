@@ -56,7 +56,7 @@ describe('ValueSelect', () => {
 			expect(element.shadowRoot.querySelector('.values_header')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.ba_values_container.iscollapsed')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.valueselect__toggle-button').title).toBe('foo');
-			expect(element.shadowRoot.querySelector('.ba_values_container').childElementCount).toBe(2);
+			expect(element.shadowRoot.querySelector('.ba_values_container .grid').childElementCount).toBe(2 + 1); // two value elements + one static div element
 
 			expect(element.shadowRoot.querySelectorAll('.valueselect__container .values_header')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.valueselect__container .ba_values_container')).toHaveSize(1);
@@ -76,6 +76,7 @@ describe('ValueSelect', () => {
 
 			//view
 			expect(element.shadowRoot.querySelectorAll('.valueselect__container select')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.valueselect__container select').childElementCount).toBe(2);
 
 			expect(element.shadowRoot.querySelectorAll('.valueselect__container .values_header')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.valueselect__container .ba_values_container')).toHaveSize(0);
