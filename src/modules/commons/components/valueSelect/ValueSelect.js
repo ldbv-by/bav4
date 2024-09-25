@@ -1,5 +1,5 @@
 /**
- * @module modules/layerManager/components/ValueSelect
+ * @module modules/commons/components/valueSelect/ValueSelect
  */
 import { MvuElement } from '../../../MvuElement';
 import { $injector } from '../../../../injection';
