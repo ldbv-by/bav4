@@ -1,5 +1,5 @@
 import { $injector } from '../../../../src/injection';
-import { ValueSelect } from '../../../../src/modules/layerManager/components/ValueSelect';
+import { ValueSelect } from '../../../../src/modules/commons/components/valueSelect/ValueSelect';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { TestUtils } from '../../../test-utils';

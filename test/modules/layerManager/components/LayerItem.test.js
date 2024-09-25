@@ -1,5 +1,5 @@
 import { LayerItem } from '../../../../src/modules/layerManager/components/LayerItem';
-import { ValueSelect } from '../../../../src/modules/layerManager/components/ValueSelect';
+import { ValueSelect } from '../../../../src/modules/commons/components/valueSelect/ValueSelect';
 import { Checkbox } from '../../../../src/modules/commons/components/checkbox/Checkbox';
 import { Icon } from '../../../../src/modules/commons/components/icon/Icon';
 import { layersReducer, createDefaultLayerProperties } from '../../../../src/store/layers/layers.reducer';
