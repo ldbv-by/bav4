@@ -118,6 +118,20 @@ export class ValueSelect extends MvuElement {
 		const getOrientationClass = () => {
 			return portrait ? 'is-portrait' : 'is-landscape';
 		};
+
+		/**
+		 * HINT: for more flexibility in other usecases, the styling should be externalized from the component
+		 * like:
+		 * 
+		 * <div class="valueselect__container ${getOrientationClass()}" part="value-select-background">
+			...
+			.
+			.
+			<div class="ba_values_container ${classMap(isCollapsedClass)}" part="value-select-container">
+			<div class="ba_values_container_grid">${getValues()}</div>
+				</div>
+			</div>
+		 */
 		return html`
 			<style>
 				${css}
