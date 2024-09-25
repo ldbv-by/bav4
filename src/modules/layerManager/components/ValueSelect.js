@@ -126,7 +126,12 @@ export class ValueSelect extends MvuElement {
 				<div class="values_header">
 					<button id="symbol-value" data-test-id class="valueselect__toggle-button" @click=${onClick} .title=${model.title}>${selected}</button>
 				</div>
-				<div class="ba_values_container ${classMap(isCollapsedClass)}">${getValues()}</div>
+				<div class="ba_values_container ${classMap(isCollapsedClass)}">
+					<div class="grid">
+						${getValues()}
+						<div></div>
+					</div>
+				</div>
 			</div>
 		`;
 	}
