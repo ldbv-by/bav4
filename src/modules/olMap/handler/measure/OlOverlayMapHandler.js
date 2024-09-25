@@ -9,6 +9,13 @@ import { OlMapHandler } from '../OlMapHandler';
 const Epsg_WebMercartor = 'EPSG:3857';
 const Epsg_Wgs84 = 'EPSG:4326';
 
+/**
+ * A MapHandler to synchronize BaOverlay-Elements to changes of the map view. If a BAOverlay element
+ * is placed on a specific world (with or without offset), this handler ensures to render the
+ * BaOverlay on every viewed world(with or without offset).
+ *
+ * @author thiloSchlemmer
+ */
 export class OlOverlayMapHandler extends OlMapHandler {
 	constructor() {
 		super('Overlay_Handler');
