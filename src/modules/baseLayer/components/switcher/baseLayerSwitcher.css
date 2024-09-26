@@ -3,6 +3,7 @@
 	flex-direction: row;
 	flex-wrap: wrap;
 	padding: 0.8em 1.5em;
+	background: var(--primary-bg-color);
 }
 .baselayer__label:after {
 	content: '';
