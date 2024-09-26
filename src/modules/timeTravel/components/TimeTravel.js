@@ -14,6 +14,7 @@ import playSvg from './assets/play.svg';
 import plusSvg from './assets/plusCircle.svg';
 import resetSvg from './assets/reset.svg';
 import stopSvg from './assets/stop.svg';
+import { setCurrentTimestamp } from '../../../store/timeTravel/timeTravel.action';
 
 const Update_Timestamp = 'update_timestamp';
 const Update_GeoResourceId = 'update_georesourceid';
@@ -60,7 +61,7 @@ export class TimeTravel extends MvuElement {
 	update(type, data, model) {
 		const fromGeoResource = (geoResourceId) => {
 			const gr = this.#geoResourceService.byId(geoResourceId);
-			return gr.hasTimestamps() ? gr.timestamps : [];
+			return gr.hasTimestamps() ? gr.timestamps.map(Number) : [];
 		};
 		switch (type) {
 			case Update_IsPortrait:
@@ -96,6 +97,7 @@ export class TimeTravel extends MvuElement {
 
 		const setYear = (year, zoom = 0) => {
 			this.signal(Update_Timestamp, year);
+			setCurrentTimestamp(year);
 			if (zoom) changeZoom(zoom);
 		};
 
@@ -160,7 +162,6 @@ export class TimeTravel extends MvuElement {
 		const isDecade = (year) => {
 			return year.toString().endsWith('0') ? true : false;
 		};
-
 		const getRangeBackground = () => {
 			const fullRange = Array.from({ length: max - min }, (value, index) => min + index);
 
