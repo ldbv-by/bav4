@@ -85,7 +85,7 @@ export class TimeTravel extends MvuElement {
 
 		const min = timestamps.length !== 0 ? Math.min(...timestamps) : 0;
 		const max = timestamps.length !== 0 ? Math.max(...timestamps) : 0;
-		const initialValue = min;
+
 		const arrayRange = (start, stop, step) => Array.from({ length: (stop - start) / step + 1 }, (value, index) => start + index * step);
 		const years = arrayRange(min, max, Range_Slider_Step);
 
@@ -178,18 +178,6 @@ export class TimeTravel extends MvuElement {
 		};
 
 		const translate = (key) => this.#translationService.translate(key);
-
-		//reset data color
-		const items = this.shadowRoot.querySelectorAll('.item');
-		items.forEach((item) => {
-			item.classList.remove('activeItem');
-		});
-
-		//set data color
-		const activeItem = this.shadowRoot.querySelectorAll('.data [data-year="' + activeTimestamp + '"]');
-		activeItem.forEach((item) => {
-			item.classList.add('activeItem');
-		});
 
 		return timestamps.length !== 0
 			? html`
