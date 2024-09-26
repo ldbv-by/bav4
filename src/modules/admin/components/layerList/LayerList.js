@@ -119,7 +119,6 @@ export class LayerList extends MvuElement {
 	 * @property {function} addEndLabels - Callback function
 	 */
 	set addEndLabels(callback) {
-		// console.log('🚀 ~ LayerTree ~ set addEndLabels');
 		this._addEndLabels = callback;
 	}
 
@@ -127,7 +126,6 @@ export class LayerList extends MvuElement {
 	 * @property {function} removeEndLabels - Callback function
 	 */
 	set removeEndLabels(callback) {
-		// console.log('🚀 ~ LayerTree ~ set removeEndLabels');
 		this._removeEndLabels = callback;
 	}
 

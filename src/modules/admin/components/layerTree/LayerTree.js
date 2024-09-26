@@ -131,20 +131,7 @@ export class LayerTree extends MvuElement {
 
 	createView(model) {
 		const { selectedTopic, topics, catalogWithResourceData, editMode } = model;
-		// // eslint-disable-next-line no-console
-		// console.groupCollapsed();
-		// // eslint-disable-next-line no-console
-		// console.log('🚀 ~ LayerTree ~ createView ~ selectedTopic:', selectedTopic);
-		// // eslint-disable-next-line no-console
-		// console.log('🚀 ~ LayerTree ~ createView ~ topics:', topics);
-		// // eslint-disable-next-line no-console
-		// console.log('🚀 ~ LayerTree ~ createView ~ catalogWithResourceData:', catalogWithResourceData);
-		// // // eslint-disable-next-line no-console
-		// // console.log('🚀 ~ LayerTree ~ createView ~ currentGeoResourceId:', currentGeoResourceId);
-		// // eslint-disable-next-line no-console
-		// console.log('🚀 ~ LayerTree ~ createView ~ editMode:', editMode);
-		// // eslint-disable-next-line no-console
-		// console.groupEnd();
+
 		if (
 			!selectedTopic ||
 			catalogWithResourceData === null ||
@@ -156,7 +143,6 @@ export class LayerTree extends MvuElement {
 		}
 
 		const insertDraggedGeoResource = (currentCatalogEntryUid, newGeoResourceIdFromList) => {
-			// todo check - this.#currentGeoResourceId was currentGeoResourceId ??? never changed from null
 			if (newGeoResourceIdFromList === this.#currentGeoResourceId && this.#currentUId === currentCatalogEntryUid) {
 				return;
 			}
@@ -434,22 +420,18 @@ export class LayerTree extends MvuElement {
 		};
 
 		const handleCopyTopic2Test = (event, topicId) => {
-			// console.log('🚀 ~ LayerTree ~ handleCopyTopic2Prod ~ handleCopyTopic2Test ~ topicId:', topicId);
 			this._copyTopic2Test(topicId);
 		};
 
 		const handleCopyCatalog2Test = (event, topicId) => {
-			// console.log('🚀 ~ LayerTree ~ handleCopyCatalog2Prod ~ handleCopyCatalog2Test ~ topicId:', topicId);
 			this._copyCatalog2Test(topicId);
 		};
 
 		const handleCopyTopic2Prod = (event, topicId) => {
-			// console.log('🚀 ~ LayerTree ~ handleCopyTopic2Prod ~ handleCopyTopic2Prod ~ topicId:', topicId);
 			this._copyTopic2Prod(topicId);
 		};
 
 		const handleCopyCatalog2Prod = (event, topicId) => {
-			// console.log('🚀 ~ LayerTree ~ handleCopyCatalog2Prod ~ handleCopyCatalog2Prod ~ topicId:', topicId);
 			this._copyCatalog2Prod(topicId);
 		};
 
@@ -474,7 +456,6 @@ export class LayerTree extends MvuElement {
 			const dropdownContainer = event.target.closest('.custom-dropdown');
 			// Find the .dropdown-selected child within the common parent
 			const dropdownItems = dropdownContainer.querySelector('.dropdown-items');
-			// If the dropdownItems element exists, toggle the 'hidden' class
 			if (dropdownItems) {
 				dropdownItems.classList.toggle('hidden');
 			}
@@ -488,14 +469,6 @@ export class LayerTree extends MvuElement {
 
 		const updateTopic = (topic) => {
 			const newTopic = topic.clone();
-
-			// todo
-			// const newTopicsArray = [];
-			// topics.forEach((topic) => {
-			// 	console.log('🚀 ~ LayerTree ~ topics.forEach ~ topic:', topic);
-			// 	newTopicsArray.push(topic);
-			// });
-			// console.log('🚀 ~ LayerTree ~ topics.forEach ~ topics:', topics);
 
 			// create a copy of the topics array
 			const newTopicsArray = [...topics];

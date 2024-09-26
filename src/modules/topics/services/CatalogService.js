@@ -81,7 +81,7 @@ export class CatalogService {
 			.then(() => {
 				const message = 'Catalog successfully saved.';
 				// eslint-disable-next-line no-console
-				console.log(message); // handle success, if needed
+				console.log(message);
 				emitNotification(message, LevelTypes.INFO);
 			})
 			// eslint-disable-next-line promise/prefer-await-to-then

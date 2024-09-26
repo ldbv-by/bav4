@@ -9,6 +9,7 @@ import css from './adminPanel.css';
 import { $injector } from '../../../../injection/index';
 import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 import { End_Label } from '../layerTree/LayerTree';
+import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 
 const Update_Topics = 'update_topics';
 const Update_Catalog = 'update_catalog';
@@ -173,10 +174,6 @@ export class AdminPanel extends MvuElement {
 		});
 	}
 
-	// _mergeCatalogWithResources(catalog, geoResources) {
-	// 	return this._reduceData(catalog, this._enrichWithGeoResource, geoResources);
-	// }
-
 	async _loadTopics() {
 		await this._topicsService.init();
 
@@ -196,6 +193,9 @@ export class AdminPanel extends MvuElement {
 			const catalog = this._addUniqueIds(catalogFromService);
 			return catalog;
 		} catch (error) {
+			emitNotification(error.cause, LevelTypes.ERROR);
+			// emitNotification(error.message, LevelTypes.WARN);
+
 			console.warn(error.message);
 		}
 	}
