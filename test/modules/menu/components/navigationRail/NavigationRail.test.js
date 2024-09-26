@@ -148,6 +148,12 @@ describe('NavigationRail', () => {
 			const feedbackButton = element.shadowRoot.querySelector('#feedback');
 			expect(feedbackButton.title).toBe('menu_navigation_rail_feedback');
 			expect(feedbackButton.querySelectorAll('.feedback .icon')).toHaveSize(1);
+
+			const helpLink = element.shadowRoot.querySelector('#help');
+			expect(helpLink.href).toContain('menu_navigation_rail_help_url');
+			expect(helpLink.target).toBe('_blank');
+			expect(helpLink.title).toBe('menu_navigation_rail_help');
+			expect(helpLink.querySelectorAll('.help .icon')).toHaveSize(1);
 		});
 
 		it('adds closed navigationRail for portrait mode', async () => {
