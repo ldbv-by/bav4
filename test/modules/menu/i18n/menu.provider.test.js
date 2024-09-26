@@ -47,6 +47,8 @@ describe('i18n for menu module', () => {
 		expect(map.menu_navigation_rail_feedback).toBe('Feedback');
 		expect(map.menu_navigation_rail_login).toBe('Login BayernAtlas-plus');
 		expect(map.menu_navigation_rail_logout).toBe('Logout');
+		expect(map.menu_navigation_rail_help).toBe('Hilfe');
+		expect(map.menu_navigation_rail_help_url).toBe('https://www.ldbv.bayern.de/hilfe-v4.html');
 	});
 
 	it('provides translation for en', () => {
@@ -93,6 +95,8 @@ describe('i18n for menu module', () => {
 		expect(map.menu_navigation_rail_feedback).toBe('Feedback');
 		expect(map.menu_navigation_rail_login).toBe('Login BayernAtlas-plus');
 		expect(map.menu_navigation_rail_logout).toBe('Logout');
+		expect(map.menu_navigation_rail_help).toBe('Help');
+		expect(map.menu_navigation_rail_help_url).toBe('https://www.ldbv.bayern.de/hilfe-v4.html');
 	});
 
 	it('contains the expected amount of entries', () => {
