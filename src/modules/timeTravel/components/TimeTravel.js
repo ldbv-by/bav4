@@ -7,8 +7,6 @@ import { MvuElement } from '../../MvuElement';
 import { $injector } from '../../../injection';
 import { changeZoom } from '../../../store/position/position.action';
 import css from './timeTravel.css';
-import arrowDownSvg from './assets/chevron-down.svg';
-import arrowUpSvg from './assets/chevron-up.svg';
 import minusSvg from './assets/minusCircle.svg';
 import playSvg from './assets/play.svg';
 import plusSvg from './assets/plusCircle.svg';
@@ -33,15 +31,12 @@ export class TimeTravel extends MvuElement {
 	#environmentService;
 	#translationService;
 	#geoResourceService;
-	#isOpen;
 	#myTimer;
 
 	constructor() {
 		super({
-			timestamps: null,
+			timestamps: [],
 			activeTimestamp: null,
-			min: null,
-			max: null,
 			isPortrait: false
 		});
 
@@ -54,8 +49,6 @@ export class TimeTravel extends MvuElement {
 		this.#environmentService = environmentService;
 		this.#translationService = translationService;
 		this.#geoResourceService = geoResourceService;
-
-		this.#isOpen = false;
 	}
 
 	update(type, data, model) {
@@ -67,7 +60,7 @@ export class TimeTravel extends MvuElement {
 			case Update_IsPortrait:
 				return { ...model, ...data };
 			case Update_GeoResourceId:
-				return { ...model, timestamps: fromGeoResource(data) };
+				return { ...model, timestamps: fromGeoResource(data), activeTimestamp: model.activeTimestamp ?? fromGeoResource(data)[0] };
 			case Update_Timestamp:
 				return {
 					...model,
@@ -88,9 +81,10 @@ export class TimeTravel extends MvuElement {
 	}
 
 	createView(model) {
-		const { timestamps, isPortrait, activeTimestamp } = model;
-		const min = Math.min(...timestamps);
-		const max = Math.max(...timestamps);
+		const { timestamps, activeTimestamp, isPortrait } = model;
+
+		const min = timestamps.length !== 0 ? Math.min(...timestamps) : 0;
+		const max = timestamps.length !== 0 ? Math.max(...timestamps) : 0;
 		const initialValue = min;
 		const arrayRange = (start, stop, step) => Array.from({ length: (stop - start) / step + 1 }, (value, index) => start + index * step);
 		const years = arrayRange(min, max, Range_Slider_Step);
@@ -197,7 +191,7 @@ export class TimeTravel extends MvuElement {
 			item.classList.add('activeItem');
 		});
 
-		return timestamps.length !== 0 && initialValue && min & max
+		return timestamps.length !== 0
 			? html`
 					<style>
 						input {
