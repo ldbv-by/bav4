@@ -6,20 +6,11 @@
 	top: -2.2em;
 	border-radius: 0 2em 0 0;
 }
-.data {
-	margin-top: 2em;
-	border-radius: 0em;
-	margin-bottom: 0.8em;
-	margin-right: 1.5em;
-}
 .title {
 	display: inline-block;
 	min-width: 28em;
 	font-size: 0.9rem;
 	transition: all var(--animation-duration-small-open) var(--animation-easing-open);
-}
-.data:hover .title {
-	color: var(--secondary-bg-color);
 }
 .item {
 	border-top: 1px solid var(--tertiary-bg-color);
@@ -43,7 +34,7 @@
 	color: var(--text1);
 }
 .actions {
-	min-width: 25em;
+	min-width: 17em;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -194,6 +185,7 @@ input[type='number'] {
 	font-size: 1.5rem;
 	padding: 0 1.5em 0 0;
 	border: 0;
+	width: auto;
 	color: var(--split-one-color);
 }
 .active-year-input {
