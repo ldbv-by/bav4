@@ -180,8 +180,7 @@ input[type='range']::-webkit-slider-thumb {
 }
 input[type='number'] {
 	-moz-appearance: textfield;
-}
-input[type='number'] {
+	appearance: textfield;
 	font-size: 1.5rem;
 	padding: 0 1.5em 0 0;
 	border: 0;
