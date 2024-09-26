@@ -331,7 +331,8 @@ export class OlMap extends MvuElement {
 				if (olLayer) {
 					const layer = layers.find((layer) => layer.id === id);
 					updateOlLayer(olLayer, layer);
-					this._map.getLayers().insertAt(layer.zIndex, olLayer);
+					olLayer.setZIndex(layer.zIndex);
+					this._map.addLayer(olLayer);
 				} else {
 					console.warn(`Could not add an olLayer for id '${id}'`);
 					removeLayer(id);
@@ -351,7 +352,8 @@ export class OlMap extends MvuElement {
 						const layer = layers.find((layer) => layer.id === id);
 						updateOlLayer(realOlLayer, layer);
 						this._map.getLayers().remove(getLayerById(this._map, id));
-						this._map.getLayers().insertAt(layer.zIndex, realOlLayer);
+						realOlLayer.setZIndex(layer.zIndex);
+						this._map.addLayer(realOlLayer);
 					});
 			}
 			toOlLayer(id, geoResource);
