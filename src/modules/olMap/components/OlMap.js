@@ -361,8 +361,7 @@ export class OlMap extends MvuElement {
 			const layer = layers.find((layer) => layer.id === id);
 			const olLayer = getLayerById(this._map, id);
 			updateOlLayer(olLayer, layer);
-			this._map.getLayers().remove(olLayer);
-			this._map.getLayers().insertAt(layer.zIndex, olLayer);
+			olLayer.setZIndex(layer.zIndex);
 		});
 	}
 

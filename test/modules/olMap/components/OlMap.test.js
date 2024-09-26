@@ -1298,10 +1298,12 @@ describe('OlMap', () => {
 			modifyLayer('id0', { zIndex: 2 });
 
 			const layer0 = map.getLayers().item(0);
-			expect(layer0.get('id')).toBe('id1');
+			expect(layer0.get('id')).toBe('id0');
+			expect(layer0.getZIndex()).toBe(1);
 
 			const layer1 = map.getLayers().item(1);
-			expect(layer1.get('id')).toBe('id0');
+			expect(layer1.get('id')).toBe('id1');
+			expect(layer1.getZIndex()).toBe(0);
 		});
 	});
 
