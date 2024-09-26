@@ -1,0 +1,5 @@
+ba-base-layer-container {
+	position: sticky;
+	top: -2.5em;
+	z-index: 1;
+}

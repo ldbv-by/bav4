@@ -3,6 +3,7 @@
  */
 import { html } from 'lit-html';
 import { AbstractMvuContentPanel } from '../AbstractMvuContentPanel';
+import css from './mapsContentPanel.css';
 
 /**
  * Container for different types of maps.
@@ -12,6 +13,9 @@ import { AbstractMvuContentPanel } from '../AbstractMvuContentPanel';
 export class MapsContentPanel extends AbstractMvuContentPanel {
 	createView() {
 		return html`
+			<style>
+				${css}
+			</style>
 			<div>
 				<ba-base-layer-container></ba-base-layer-container>
 				<ba-layer-manager></ba-layer-manager>

@@ -25,6 +25,8 @@ describe('MapsContentPanel', () => {
 			const element = await setup();
 
 			expect(element.shadowRoot.querySelectorAll(BaseLayerContainer.tag)).toHaveSize(1);
+			expect((element.shadowRoot.querySelector(BaseLayerContainer.tag).style.display = 'sticky'));
+			expect((element.shadowRoot.querySelector(BaseLayerContainer.tag).style.top = '2.5em'));
 			expect(element.shadowRoot.querySelectorAll(LayerManager.tag)).toHaveSize(1);
 		});
 	});
