@@ -57,3 +57,11 @@ ba-icon:focus {
 .opacity-slider {
 	-webkit-user-drag: element;
 }
+
+.ba-form-element {
+	width: 11ch;
+}
+
+.ba-form-element:last-of-type {
+	margin: 0em 0 0em 0;
+}
