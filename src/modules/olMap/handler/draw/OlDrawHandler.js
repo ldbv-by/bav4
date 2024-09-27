@@ -104,6 +104,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._fileStorageService = FileStorageService;
 
 		this._vectorLayer = null;
+		this._layerId = null;
 		this._draw = null;
 		this._modify = null;
 		this._snap = null;
@@ -188,7 +189,9 @@ export class OlDrawHandler extends OlLayerHandler {
 						layer.getSource().addFeature(f);
 						f.on('change', onFeatureChange);
 					});
-					removeLayer(oldLayer.get('id'));
+					const oldLayerId = oldLayer.get('id');
+					this._layerId = oldLayerId;
+					removeLayer(oldLayerId);
 					this._init(null);
 					this._setSelection(this._storeService.getStore().getState().draw.selection);
 				}
@@ -346,8 +349,8 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		setSelection([]);
 
-		this._saveAndOptionallyConvertToPermanentLayer();
-
+		// eslint-disable-next-line promise/prefer-await-to-then
+		this._saveAndOptionallyConvertToPermanentLayer().finally(() => (this._layerId = null));
 		this._vectorLayer
 			.getSource()
 			.getFeatures()
@@ -866,7 +869,8 @@ export class OlDrawHandler extends OlLayerHandler {
 
 			// register the stored data as new georesource
 			this._geoResourceService.addOrReplace(vgr);
-			addLayer(id, { constraints: { metaData: false } });
+			const layerId = this._layerId ?? `${id}_draw`;
+			addLayer(layerId, { geoResourceId: id, constraints: { metaData: false } });
 		}
 	}
 }

@@ -709,7 +709,40 @@ describe('OlMeasurementHandler', () => {
 
 			await TestUtils.timeout();
 			expect(store.getState().layers.active.length).toBe(1);
-			expect(store.getState().layers.active[0].id).toBe('f_ooBarId');
+			expect(store.getState().layers.active[0].id).toBe('f_ooBarId_draw');
+			expect(store.getState().layers.active[0].geoResourceId).toBe('f_ooBarId');
+			expect(store.getState().layers.active[0].constraints.metaData).toBeFalse();
+		});
+
+		it('adds layer and reuse id of old layer', async () => {
+			const fileStorageState = { ...initialFileStorageState, fileId: 'f_ooBarId' };
+			const lastData =
+				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measurement_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+
+			const vectorGeoResource = new VectorGeoResource('f_ooBarId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
+			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
+			const store = await setup(initialMeasureState, fileStorageState);
+			const classUnderTest = new OlMeasurementHandler();
+
+			const map = setupMap();
+			const feature = createFeature();
+			spyOn(fileStorageServiceMock, 'isAdminId').withArgs('f_ooBarId').and.returnValue(true);
+
+			// we add an existing(old) fileStorage related layer
+			map.addLayer(new Layer({ id: 'a_oldLayer_id', geoResourceId: 'f_ooBarId', render: () => {} }));
+
+			classUnderTest.activate(map);
+			await TestUtils.timeout();
+			expect(classUnderTest._layerId).toBe('a_oldLayer_id');
+			expect(classUnderTest._vectorLayer).toBeTruthy();
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+			classUnderTest.deactivate(map);
+
+			await TestUtils.timeout();
+			expect(classUnderTest._layerId).toBeNull();
+			expect(store.getState().layers.active.length).toBe(1);
+			expect(store.getState().layers.active[0].id).toBe('a_oldLayer_id');
+			expect(store.getState().layers.active[0].geoResourceId).toBe('f_ooBarId');
 			expect(store.getState().layers.active[0].constraints.metaData).toBeFalse();
 		});
 
