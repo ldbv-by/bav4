@@ -152,8 +152,8 @@ export class OlDrawHandler extends OlLayerHandler {
 		const getOldLayer = (map) => {
 			const isOldLayer = (layer) =>
 				this._fileStorageService.isAdminId(layer.get('geoResourceId')) || this._fileStorageService.isFileId(layer.get('geoResourceId'));
-			// we iterate over all layers in reverse order, the top-most layer is the one we take source for our drawing layer
-			return map.getLayers().getArray().reverse().find(isOldLayer);
+			// we iterate over all layers (index=0 -> top-most; index=length-1 -> lowest), the top-most layer is the one we take source for our drawing layer
+			return map.getLayers().getArray().find(isOldLayer);
 		};
 
 		const createLayer = () => {

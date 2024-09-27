@@ -971,8 +971,8 @@ describe('OlDrawHandler', () => {
 			spyOn(fileStorageServiceMock, 'isAdminId').withArgs('a_lastId').and.returnValue(true);
 
 			// we add two fileStorage related layers
-			map.addLayer(new Layer({ geoResourceId: 'a_notWanted', render: () => {} }));
 			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
+			map.addLayer(new Layer({ geoResourceId: 'a_notWanted', render: () => {} }));
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 
 			const geoResourceSpy = spyOn(geoResourceServiceMock, 'byId').withArgs('a_lastId').and.returnValue(vectorGeoResource);
