@@ -75,6 +75,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._fileStorageService = FileStorageService;
 
 		this._vectorLayer = null;
+		this._layerId = null;
 		this._draw = false;
 
 		this._storedContent = null;
@@ -119,8 +120,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const getOldLayer = (map) => {
 			const isOldLayer = (layer) =>
 				this._fileStorageService.isAdminId(layer.get('geoResourceId')) || this._fileStorageService.isFileId(layer.get('geoResourceId'));
-			// we iterate over all layers in reverse order, the top-most layer is the one we take source for our drawing layer
-			return map.getLayers().getArray().reverse().find(isOldLayer);
+			// we iterate over all layers (index=0 -> top-most; index=length-1 -> lowest), the top-most layer is the one we take source for our drawing layer
+			return map.getLayers().getArray().find(isOldLayer);
 		};
 
 		const createLayer = () => {
@@ -155,7 +156,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 						this._styleService.addStyle(f, olMap, layer);
 						f.on('change', onFeatureChange);
 					});
-					removeLayer(oldLayer.get('id'));
+					const oldLayerId = oldLayer.get('id');
+					this._layerId = oldLayerId;
+					removeLayer(oldLayerId);
 					this._finish();
 					this._setSelection(this._storeService.getStore().getState().measurement.selection);
 					this._updateMeasureState();
@@ -335,7 +338,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._unsubscribe(this._registeredObservers);
 		this._keyActionMapper.deactivate();
 
-		this._convertToPermanentLayer();
+		// eslint-disable-next-line promise/prefer-await-to-then
+		this._convertToPermanentLayer().finally(() => (this._layerId = null));
 		this._vectorLayer
 			.getSource()
 			.getFeatures()
@@ -689,7 +693,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 			// register the stored data as new georesource
 			this._geoResourceService.addOrReplace(vgr);
-			addLayer(id, { constraints: { metaData: false } });
+			const layerId = this._layerId ?? `${id}_draw`;
+			addLayer(layerId, { geoResourceId: id, constraints: { metaData: false } });
 		}
 	}
 }
