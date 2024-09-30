@@ -22,9 +22,12 @@ const Time_Interval = 1000;
 const Range_Slider_Step = 1;
 
 /**
- * Panel to control chronological data via slider
+ * Panel to control chronological data via slider *
  *
  * @class
+ *@property {string} geoResourceId the id of the georesource which have timestamps
+ *@property {string} timestamp the current selected timestamp
+ *@property {function(timestamp)} decadeFunction the decadeFunctions which checks whether or not the timestamp is the start of a decade
  * @author alsturm
  */
 export class TimeTravel extends MvuElement {
@@ -32,7 +35,7 @@ export class TimeTravel extends MvuElement {
 	#translationService;
 	#geoResourceService;
 	#decadeFunction;
-	#myTimer;
+	#timer;
 
 	constructor() {
 		super({
@@ -123,8 +126,8 @@ export class TimeTravel extends MvuElement {
 
 			start.classList.add('hide');
 			stop.classList.remove('hide');
-			clearInterval(this.#myTimer);
-			this.#myTimer = setInterval(function () {
+			clearInterval(this.#timer);
+			this.#timer = setInterval(function () {
 				const value = (+slider.value + Range_Slider_Step) % (+slider.getAttribute('max') + Range_Slider_Step);
 				slider.value = value;
 				slider.dispatchEvent(new Event('input'));
@@ -137,7 +140,7 @@ export class TimeTravel extends MvuElement {
 
 			start.classList.remove('hide');
 			stop.classList.add('hide');
-			clearInterval(this.#myTimer);
+			clearInterval(this.#timer);
 		};
 
 		const reset = () => {
@@ -146,7 +149,7 @@ export class TimeTravel extends MvuElement {
 
 			start.classList.remove('hide');
 			stop.classList.add('hide');
-			clearInterval(this.#myTimer);
+			clearInterval(this.#timer);
 			setTimestamp(min);
 		};
 
