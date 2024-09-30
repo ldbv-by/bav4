@@ -10,9 +10,9 @@ const Epsg_WebMercartor = 'EPSG:3857';
 const Epsg_Wgs84 = 'EPSG:4326';
 
 /**
- * A MapHandler to synchronize BaOverlay-Elements to changes of the map view. If a BAOverlay element
+ * A MapHandler to synchronize BaOverlay-Elements to changes in the map view. If a BAOverlay element
  * is placed on a specific world (with or without offset), this handler ensures to render the
- * BaOverlay on every viewed world(with or without offset).
+ * BaOverlay on every viewed world (with or without offset).
  *
  * @author thiloSchlemmer
  */
@@ -34,7 +34,7 @@ export class OlOverlayMapHandler extends OlMapHandler {
 			.getArray()
 			.filter((o) => o.getElement() instanceof BaOverlay);
 
-		if (baOverlays.length !== 0) {
+		if (baOverlays.length > 0) {
 			const viewExtent = this._map.getView().calculateExtent(this._map.getSize());
 			const wgs84Extent = transformExtent(viewExtent, Epsg_WebMercartor, Epsg_Wgs84);
 
