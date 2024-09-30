@@ -3,11 +3,11 @@
 	"dependencies": {
 		"@geoblocks/ol-maplibre-layer": "1.0.1",
 		"chart.js": "4.4.4",
-		"dompurify": "3.1.6",
+		"dompurify": "3.1.7",
 		"geographiclib-geodesic": "2.1.1",
 		"lit-html": "3.2.0",
 		"maplibre-gl": "4.7.1",
-		"ol": "^10.2.0",
+		"ol": "^10.2.1",
 		"proj4": "2.12.1",
 		"redux": "4.2.1",
 		"vanilla-swipe": "2.4.1"
@@ -49,7 +49,7 @@
 		"stylelint": "16.9.0",
 		"stylelint-config-recommended": "14.0.1",
 		"to-string-loader": "1.2.0",
-		"webpack": "5.94.0",
+		"webpack": "5.95.0",
 		"webpack-bundle-analyzer": "4.10.2",
 		"webpack-cli": "5.1.4",
 		"webpack-dev-server": "5.1.0",
