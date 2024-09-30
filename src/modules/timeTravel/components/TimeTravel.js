@@ -5,7 +5,6 @@ import { html, nothing } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { MvuElement } from '../../MvuElement';
 import { $injector } from '../../../injection';
-import { changeZoom } from '../../../store/position/position.action';
 import css from './timeTravel.css';
 import minusSvg from './assets/minusCircle.svg';
 import playSvg from './assets/play.svg';
@@ -89,10 +88,9 @@ export class TimeTravel extends MvuElement {
 		const arrayRange = (start, stop, step) => Array.from({ length: (stop - start) / step + 1 }, (value, index) => start + index * step);
 		const years = arrayRange(min, max, Range_Slider_Step);
 
-		const setYear = (year, zoom = 0) => {
+		const setYear = (year) => {
 			this.signal(Update_Timestamp, year);
 			setCurrentTimestamp(year);
-			if (zoom) changeZoom(zoom);
 		};
 
 		const onChangeSelect = (e) => {
@@ -149,10 +147,6 @@ export class TimeTravel extends MvuElement {
 			setYear(min);
 		};
 
-		const getSelectOptions = (years) => {
-			return years.map((year) => html`<option ?selected=${year === activeTimestamp} value=${year}>${year}</option> `);
-		};
-
 		const isDecade = (year) => {
 			return year.toString().endsWith('0') ? true : false;
 		};
@@ -194,9 +188,6 @@ export class TimeTravel extends MvuElement {
 						<div id="base" class="base">
 							<div class="actions">
 								<div>
-									<select id="yearSelect" class="hide" @change=${onChangeSelect}>
-										${getSelectOptions(years)}
-									</select>
 									<div class="ba-form-element active-year-input">
 										<input id="yearInput" type="number" min="${min}" max="${max}" .value="${activeTimestamp}" @change=${onChangeSelect} />
 										<i class="bar"></i>
@@ -224,7 +215,6 @@ export class TimeTravel extends MvuElement {
 										.title=${translate('timeTravel_start')}
 										.size=${isPortrait ? 2.8 : 1.9}
 										.type=${'primary'}
-										.
 										.icon=${playSvg}
 										@click=${start}
 									></ba-icon>
@@ -266,15 +256,11 @@ export class TimeTravel extends MvuElement {
 	}
 
 	get timestamp() {
-		return this.getModel().timestamp;
+		return this.getModel().activeTimestamp;
 	}
 
 	set timestamp(value) {
 		this.signal(Update_Timestamp, value);
-	}
-
-	get geoResourceId() {
-		return this.getModel().geoResourceId;
 	}
 
 	set geoResourceId(value) {

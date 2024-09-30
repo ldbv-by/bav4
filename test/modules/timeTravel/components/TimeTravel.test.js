@@ -36,7 +36,7 @@ describe('TimeTravel', () => {
 			},
 			...state
 		};
-		const props = { ...properties, geoResourceId: 'fooId' };
+		const props = { ...properties, geoResourceId: properties.geoResourceId ?? 'fooId' };
 		TestUtils.setupStoreAndDi(initialState, {
 			media: createNoInitialStateMediaReducer()
 		});
@@ -65,6 +65,26 @@ describe('TimeTravel', () => {
 	});
 
 	describe('when instantiated', () => {
+		it('have accessible properties', async () => {
+			const element = await setup({}, {}, { timestamp: 1950 });
+
+			expect(element.getModel().activeTimestamp).toEqual(1950);
+			expect(element.timestamp).toEqual(1950);
+
+			element.timestamp = 1949;
+
+			expect(element.getModel().activeTimestamp).toEqual(1949);
+		});
+
+		it('renders nothing without received timestamps', async () => {
+			spyOn(geoResourceServiceMock, 'byId')
+				.withArgs('invalidId')
+				.and.returnValue({ hasTimestamps: () => false });
+			const element = await setup({}, {}, { timestamp: 1940, geoResourceId: 'invalidId' });
+
+			expect(element.shadowRoot.children.length).toBe(0);
+		});
+
 		it('renders nothing when embedded', async () => {
 			const element = await setup({}, { embed: true });
 
@@ -180,12 +200,12 @@ describe('TimeTravel', () => {
 					portrait: false
 				}
 			};
-			const element = await setup(state);
+			const element = await setup(state, {}, { timestamp: Max });
 
-			expect(element.getModel().activeTimestamp).toBe(Initial_Value);
-			const buttonElement = element.shadowRoot.querySelector('#decrease');
+			expect(element.getModel().activeTimestamp).toBe(Max);
+			const buttonElement = element.shadowRoot.querySelector('#increase');
 			buttonElement.click();
-			expect(element.getModel().activeTimestamp).toBe(Initial_Value);
+			expect(element.getModel().activeTimestamp).toBe(Max);
 		});
 
 		it('increase Year', async () => {
