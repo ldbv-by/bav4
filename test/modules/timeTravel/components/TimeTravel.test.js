@@ -129,7 +129,7 @@ describe('TimeTravel', () => {
 			expect(element.shadowRoot.querySelectorAll('.range-background')).toHaveSize(1);
 		});
 
-		it('renders a time travel component', async () => {
+		it('renders a time travel component with custom decadeFunction', async () => {
 			const element = await setup({}, {}, { timestamp: 1950 });
 
 			expect(element.shadowRoot.querySelectorAll('span.range-bg.border')).toHaveSize(6); // 1900[1]-10[2]-20[3]-30[4]-40[5]-50[6]-1951
@@ -139,6 +139,18 @@ describe('TimeTravel', () => {
 			element.timestamp = 1949;
 
 			expect(element.shadowRoot.querySelectorAll('span.range-bg.border')).toHaveSize(0);
+		});
+
+		it('accepts only functions as custom decadeFunction', async () => {
+			const element = await setup({}, {}, { timestamp: 1950 });
+
+			expect(element.shadowRoot.querySelectorAll('span.range-bg.border')).toHaveSize(6); // 1900[1]-10[2]-20[3]-30[4]-40[5]-50[6]-1951
+			expect(element.getModel().timestamp).toEqual(1950);
+
+			element.decadeFunction = 'foo';
+			element.timestamp = 1949;
+
+			expect(element.shadowRoot.querySelectorAll('span.range-bg.border')).toHaveSize(6);
 		});
 
 		it('layouts for portrait mode', async () => {

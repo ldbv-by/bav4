@@ -4,6 +4,8 @@
 import { html, nothing } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { MvuElement } from '../../MvuElement';
+import { setCurrentTimestamp } from '../../../store/timeTravel/timeTravel.action';
+import { isFunction } from '../../../utils/checks';
 import { $injector } from '../../../injection';
 import css from './timeTravel.css';
 import minusSvg from './assets/minusCircle.svg';
@@ -11,8 +13,6 @@ import playSvg from './assets/play.svg';
 import plusSvg from './assets/plusCircle.svg';
 import resetSvg from './assets/reset.svg';
 import stopSvg from './assets/stop.svg';
-import { setCurrentTimestamp } from '../../../store/timeTravel/timeTravel.action';
-import { isFunction } from '../../../utils/checks';
 
 const Update_Timestamp = 'update_timestamp';
 const Update_GeoResourceId = 'update_georesourceid';
