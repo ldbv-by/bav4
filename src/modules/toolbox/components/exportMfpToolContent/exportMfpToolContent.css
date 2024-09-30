@@ -28,6 +28,10 @@
 	transition: all var(--animation-duration-small-open) var(--animation-easing-close);
 }
 
+.tool-sub-header {
+	margin: 0.8em 0;
+}
+
 .button-container button::after {
 	color: var(--primary-color);
 }
