@@ -65,7 +65,14 @@ export class FileStoragePlugin extends BaPlugin {
 			store,
 			(state) => state.fileStorage.data,
 			(data, store) => {
-				saveDataDebounced(store.fileStorage.adminId, data);
+				/**
+				 * When the data are saved for the first time, we have to call the FileStorageService immediately (not debounced) to ensure we have a fileId before the user possibly closes the tool
+				 */
+				if (store.fileStorage.fileId) {
+					saveDataDebounced(store.fileStorage.adminId, data);
+				} else {
+					this._saveData(store.fileStorage.adminId, data);
+				}
 			}
 		);
 	}
