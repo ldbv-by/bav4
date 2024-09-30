@@ -80,27 +80,58 @@ describe('FileStoragePlugin', () => {
 		});
 
 		describe('registers an observer for fileStorage `data` property changes', () => {
-			it('saves the data in debounced manner', async () => {
-				const data = { foo: 'bar' };
-				const data2 = { foo: 'bar2' };
-				const adminId = 'adminId';
-				const store = setup({
-					fileStorage: {
-						adminId
-					}
+			describe('`fileId` is available', () => {
+				it('saves the data in a debounced manner', async () => {
+					const data = { foo: 'bar' };
+					const data2 = { foo: 'bar2' };
+					const adminId = 'adminId';
+					const fileId = 'fileId';
+					const store = setup({
+						fileStorage: {
+							adminId,
+							fileId
+						}
+					});
+					const queryParam = new URLSearchParams();
+					spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+					const instanceUnderTest = new FileStoragePlugin();
+					const saveDataSpy = spyOn(instanceUnderTest, '_saveData');
+					await instanceUnderTest.register(store);
+
+					setData(data);
+					setData(data2);
+
+					await TestUtils.timeout(FileStoragePlugin.Debounce_Delay_Ms + 100);
+
+					expect(saveDataSpy).toHaveBeenCalledOnceWith(adminId, data2);
 				});
-				const queryParam = new URLSearchParams();
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
-				const instanceUnderTest = new FileStoragePlugin();
-				const saveDataSpy = spyOn(instanceUnderTest, '_saveData');
-				await instanceUnderTest.register(store);
+			});
 
-				setData(data);
-				setData(data2);
+			describe('`fileId` is NOT available', () => {
+				it('saves the data immediately', async () => {
+					const data = { foo: 'bar' };
+					const data2 = { foo: 'bar2' };
+					const adminId = 'adminId';
+					const store = setup({
+						fileStorage: {
+							adminId
+						}
+					});
+					const queryParam = new URLSearchParams();
+					spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+					const instanceUnderTest = new FileStoragePlugin();
+					const saveDataSpy = spyOn(instanceUnderTest, '_saveData');
+					await instanceUnderTest.register(store);
 
-				await TestUtils.timeout(FileStoragePlugin.Debounce_Delay_Ms + 100);
+					setData(data);
+					setData(data2);
 
-				expect(saveDataSpy).toHaveBeenCalledOnceWith(adminId, data2);
+					await TestUtils.timeout(FileStoragePlugin.Debounce_Delay_Ms + 100);
+
+					expect(saveDataSpy).toHaveBeenCalledTimes(2);
+					expect(saveDataSpy).toHaveBeenCalledWith(adminId, data);
+					expect(saveDataSpy).toHaveBeenCalledWith(adminId, data2);
+				});
 			});
 		});
 	});
