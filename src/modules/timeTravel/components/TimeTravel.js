@@ -12,6 +12,7 @@ import plusSvg from './assets/plusCircle.svg';
 import resetSvg from './assets/reset.svg';
 import stopSvg from './assets/stop.svg';
 import { setCurrentTimestamp } from '../../../store/timeTravel/timeTravel.action';
+import { isFunction } from '../../../utils/checks';
 
 const Update_Timestamp = 'update_timestamp';
 const Update_GeoResourceId = 'update_georesourceid';
@@ -30,12 +31,13 @@ export class TimeTravel extends MvuElement {
 	#environmentService;
 	#translationService;
 	#geoResourceService;
+	#decadeFunction;
 	#myTimer;
 
 	constructor() {
 		super({
 			timestamps: [],
-			activeTimestamp: null,
+			timestamp: null,
 			isPortrait: false
 		});
 
@@ -48,6 +50,7 @@ export class TimeTravel extends MvuElement {
 		this.#environmentService = environmentService;
 		this.#translationService = translationService;
 		this.#geoResourceService = geoResourceService;
+		this.#decadeFunction = this._isDecade;
 	}
 
 	update(type, data, model) {
@@ -59,11 +62,11 @@ export class TimeTravel extends MvuElement {
 			case Update_IsPortrait:
 				return { ...model, ...data };
 			case Update_GeoResourceId:
-				return { ...model, timestamps: fromGeoResource(data), activeTimestamp: model.activeTimestamp ?? fromGeoResource(data)[0] };
+				return { ...model, timestamps: fromGeoResource(data), timestamp: model.timestamp ?? fromGeoResource(data)[0] };
 			case Update_Timestamp:
 				return {
 					...model,
-					activeTimestamp: data
+					timestamp: data
 				};
 		}
 	}
@@ -80,36 +83,36 @@ export class TimeTravel extends MvuElement {
 	}
 
 	createView(model) {
-		const { timestamps, activeTimestamp, isPortrait } = model;
+		const { timestamps, timestamp, isPortrait } = model;
 
 		const min = timestamps.length !== 0 ? Math.min(...timestamps) : 0;
 		const max = timestamps.length !== 0 ? Math.max(...timestamps) : 0;
 
 		const arrayRange = (start, stop, step) => Array.from({ length: (stop - start) / step + 1 }, (value, index) => start + index * step);
-		const years = arrayRange(min, max, Range_Slider_Step);
+		const timestampSteps = arrayRange(min, max, Range_Slider_Step);
 
-		const setYear = (year) => {
-			this.signal(Update_Timestamp, year);
-			setCurrentTimestamp(year);
+		const setTimestamp = (timestamp) => {
+			this.signal(Update_Timestamp, timestamp);
+			setCurrentTimestamp(timestamp);
 		};
 
 		const onChangeSelect = (e) => {
-			setYear(parseInt(e.target.value));
+			setTimestamp(parseInt(e.target.value));
 		};
 
 		const onChangeRangeSlider = (e) => {
-			setYear(parseInt(e.target.value));
+			setTimestamp(parseInt(e.target.value));
 		};
 
-		const increaseYear = () => {
-			if (activeTimestamp < max) {
-				setYear(activeTimestamp + Range_Slider_Step);
+		const increaseTimestamp = () => {
+			if (timestamp < max) {
+				setTimestamp(timestamp + Range_Slider_Step);
 			}
 		};
 
-		const decreaseYear = () => {
-			if (activeTimestamp > min) {
-				setYear(activeTimestamp - Range_Slider_Step);
+		const decreaseTimestamp = () => {
+			if (timestamp > min) {
+				setTimestamp(timestamp - Range_Slider_Step);
 			}
 		};
 
@@ -144,26 +147,23 @@ export class TimeTravel extends MvuElement {
 			start.classList.remove('hide');
 			stop.classList.add('hide');
 			clearInterval(this.#myTimer);
-			setYear(min);
+			setTimestamp(min);
 		};
 
-		const isDecade = (year) => {
-			return year.toString().endsWith('0') ? true : false;
-		};
 		const getRangeBackground = () => {
 			const fullRange = Array.from({ length: max - min }, (value, index) => min + index);
 
 			return fullRange.map((timestamp) => {
 				const classes = {
 					active: timestamps.includes(timestamp),
-					border: isDecade(timestamp)
+					border: this.#decadeFunction(timestamp)
 				};
 				return html`<span class="range-bg  ${classMap(classes)}" data-year="${timestamp}"></span>`;
 			});
 		};
 
 		const getThumbWidth = () => {
-			return 100 / (years.length - 1);
+			return 100 / (timestampSteps.length - 1);
 		};
 
 		const classContainer = {
@@ -189,7 +189,7 @@ export class TimeTravel extends MvuElement {
 							<div class="actions">
 								<div>
 									<div class="ba-form-element active-year-input">
-										<input id="yearInput" type="number" min="${min}" max="${max}" .value="${activeTimestamp}" @change=${onChangeSelect} />
+										<input id="yearInput" type="number" min="${min}" max="${max}" .value="${timestamp}" @change=${onChangeSelect} />
 										<i class="bar"></i>
 									</div>
 								</div>
@@ -200,7 +200,7 @@ export class TimeTravel extends MvuElement {
 										.color=${'var(--primary-color)'}
 										.size=${isPortrait ? 2.8 : 1.9}
 										.title=${translate('timeTravel_decrease')}
-										@click=${decreaseYear}
+										@click=${decreaseTimestamp}
 									></ba-icon>
 									<ba-icon
 										id="increase"
@@ -208,7 +208,7 @@ export class TimeTravel extends MvuElement {
 										.color=${'var(--primary-color)'}
 										.size=${isPortrait ? 2.8 : 1.9}
 										.title=${translate('timeTravel_increase')}
-										@click=${increaseYear}
+										@click=${increaseTimestamp}
 									></ba-icon>
 									<ba-icon
 										id="start"
@@ -244,7 +244,7 @@ export class TimeTravel extends MvuElement {
 									step="${Range_Slider_Step}"
 									min="${min}"
 									max="${max}"
-									.value="${activeTimestamp}"
+									.value="${timestamp}"
 									@input=${onChangeRangeSlider}
 								/>
 								<div class="range-background">${getRangeBackground()}</div>
@@ -255,8 +255,16 @@ export class TimeTravel extends MvuElement {
 			: nothing;
 	}
 
+	_isDecade(timestamp) {
+		return timestamp.toString().endsWith('0') ? true : false;
+	}
+
+	set decadeFunction(fn) {
+		if (isFunction(fn)) this.#decadeFunction = fn;
+	}
+
 	get timestamp() {
-		return this.getModel().activeTimestamp;
+		return this.getModel().timestamp;
 	}
 
 	set timestamp(value) {

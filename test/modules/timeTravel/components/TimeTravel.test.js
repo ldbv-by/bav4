@@ -48,7 +48,7 @@ describe('TimeTravel', () => {
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('TranslationService', { translate: (key) => key });
 
-		return TestUtils.renderAndLogLifecycle(TimeTravel.tag, props);
+		return TestUtils.render(TimeTravel.tag, props);
 	};
 
 	describe('constructor', () => {
@@ -58,7 +58,7 @@ describe('TimeTravel', () => {
 
 			expect(element.getModel()).toEqual({
 				timestamps: [],
-				activeTimestamp: null,
+				timestamp: null,
 				isPortrait: false
 			});
 		});
@@ -68,12 +68,12 @@ describe('TimeTravel', () => {
 		it('have accessible properties', async () => {
 			const element = await setup({}, {}, { timestamp: 1950 });
 
-			expect(element.getModel().activeTimestamp).toEqual(1950);
+			expect(element.getModel().timestamp).toEqual(1950);
 			expect(element.timestamp).toEqual(1950);
 
 			element.timestamp = 1949;
 
-			expect(element.getModel().activeTimestamp).toEqual(1949);
+			expect(element.getModel().timestamp).toEqual(1949);
 		});
 
 		it('renders nothing without received timestamps', async () => {
@@ -129,6 +129,18 @@ describe('TimeTravel', () => {
 			expect(element.shadowRoot.querySelectorAll('.range-background')).toHaveSize(1);
 		});
 
+		it('renders a time travel component', async () => {
+			const element = await setup({}, {}, { timestamp: 1950 });
+
+			expect(element.shadowRoot.querySelectorAll('span.range-bg.border')).toHaveSize(6); // 1900[1]-10[2]-20[3]-30[4]-40[5]-50[6]-1951
+			expect(element.getModel().timestamp).toEqual(1950);
+
+			element.decadeFunction = () => false;
+			element.timestamp = 1949;
+
+			expect(element.shadowRoot.querySelectorAll('span.range-bg.border')).toHaveSize(0);
+		});
+
 		it('layouts for portrait mode', async () => {
 			const state = {
 				media: {
@@ -173,10 +185,10 @@ describe('TimeTravel', () => {
 
 			const element = await setup(state);
 
-			expect(element.getModel().activeTimestamp).toBe(Initial_Value);
+			expect(element.getModel().timestamp).toBe(Initial_Value);
 			const buttonElement = element.shadowRoot.querySelector('#decrease');
 			buttonElement.click();
-			expect(element.getModel().activeTimestamp).toBe(Initial_Value);
+			expect(element.getModel().timestamp).toBe(Initial_Value);
 		});
 
 		it('decrease Year', async () => {
@@ -188,10 +200,10 @@ describe('TimeTravel', () => {
 
 			const element = await setup(state, {}, { timestamp: 1950 });
 
-			expect(element.getModel().activeTimestamp).toBe(1950);
+			expect(element.getModel().timestamp).toBe(1950);
 			const buttonElement = element.shadowRoot.querySelector('#decrease');
 			buttonElement.click();
-			expect(element.getModel().activeTimestamp).toBe(1949);
+			expect(element.getModel().timestamp).toBe(1949);
 		});
 
 		it('do not increase Year because max value', async () => {
@@ -202,10 +214,10 @@ describe('TimeTravel', () => {
 			};
 			const element = await setup(state, {}, { timestamp: Max });
 
-			expect(element.getModel().activeTimestamp).toBe(Max);
+			expect(element.getModel().timestamp).toBe(Max);
 			const buttonElement = element.shadowRoot.querySelector('#increase');
 			buttonElement.click();
-			expect(element.getModel().activeTimestamp).toBe(Max);
+			expect(element.getModel().timestamp).toBe(Max);
 		});
 
 		it('increase Year', async () => {
@@ -217,10 +229,10 @@ describe('TimeTravel', () => {
 
 			const element = await setup(state);
 
-			expect(element.getModel().activeTimestamp).toBe(Initial_Value);
+			expect(element.getModel().timestamp).toBe(Initial_Value);
 			const buttonElement = element.shadowRoot.querySelector('#increase');
 			buttonElement.click();
-			expect(element.getModel().activeTimestamp).toBe(Initial_Value + 1);
+			expect(element.getModel().timestamp).toBe(Initial_Value + 1);
 		});
 
 		it('start', async () => {
@@ -232,26 +244,26 @@ describe('TimeTravel', () => {
 
 			const element = await setup(state, {}, { timestamp: Max - 2 });
 
-			expect(element.getModel().activeTimestamp).toBe(Max - 2);
+			expect(element.getModel().timestamp).toBe(Max - 2);
 			const buttonElement = element.shadowRoot.querySelector('#start');
 			const stop = element.shadowRoot.getElementById('stop');
 
 			buttonElement.click();
 			expect(stop.classList.contains('hide')).toBeFalse();
 			expect(buttonElement.classList.contains('hide')).toBeTrue();
-			expect(element.getModel().activeTimestamp).toBe(Max - 2);
+			expect(element.getModel().timestamp).toBe(Max - 2);
 
 			await TestUtils.timeout(Time_Interval);
 
-			expect(element.getModel().activeTimestamp).toBe(Max - 1);
+			expect(element.getModel().timestamp).toBe(Max - 1);
 
 			await TestUtils.timeout(Time_Interval);
 
-			expect(element.getModel().activeTimestamp).toBe(Max);
+			expect(element.getModel().timestamp).toBe(Max);
 
 			await TestUtils.timeout(Time_Interval);
 
-			expect(element.getModel().activeTimestamp).toBe(Min);
+			expect(element.getModel().timestamp).toBe(Min);
 		});
 
 		it('stop', async () => {
@@ -263,7 +275,7 @@ describe('TimeTravel', () => {
 
 			const element = await setup(state);
 
-			expect(element.getModel().activeTimestamp).toBe(Initial_Value);
+			expect(element.getModel().timestamp).toBe(Initial_Value);
 			const stop = element.shadowRoot.querySelector('#stop');
 			const start = element.shadowRoot.getElementById('start');
 
@@ -273,11 +285,11 @@ describe('TimeTravel', () => {
 
 			await TestUtils.timeout(Time_Interval);
 
-			expect(element.getModel().activeTimestamp).toBe(Initial_Value + 1);
+			expect(element.getModel().timestamp).toBe(Initial_Value + 1);
 
 			await TestUtils.timeout(Time_Interval);
 
-			expect(element.getModel().activeTimestamp).toBe(Initial_Value + 2);
+			expect(element.getModel().timestamp).toBe(Initial_Value + 2);
 
 			stop.click();
 			expect(stop.classList.contains('hide')).toBeTrue();
@@ -285,11 +297,11 @@ describe('TimeTravel', () => {
 
 			await TestUtils.timeout(Time_Interval);
 
-			expect(element.getModel().activeTimestamp).toBe(Initial_Value + 2);
+			expect(element.getModel().timestamp).toBe(Initial_Value + 2);
 
 			await TestUtils.timeout(Time_Interval);
 
-			expect(element.getModel().activeTimestamp).toBe(Initial_Value + 2);
+			expect(element.getModel().timestamp).toBe(Initial_Value + 2);
 		});
 
 		it('reset', async () => {
@@ -301,14 +313,14 @@ describe('TimeTravel', () => {
 
 			const element = await setup(state, {}, { timestamp: 1950 });
 
-			expect(element.getModel().activeTimestamp).toBe(1950);
+			expect(element.getModel().timestamp).toBe(1950);
 			const buttonElement = element.shadowRoot.querySelector('#reset');
 			const start = element.shadowRoot.getElementById('start');
 			const stop = element.shadowRoot.getElementById('stop');
 
 			buttonElement.click();
 
-			expect(element.getModel().activeTimestamp).toBe(Min);
+			expect(element.getModel().timestamp).toBe(Min);
 
 			expect(start.classList.contains('hide')).toBeFalse();
 			expect(stop.classList.contains('hide')).toBeTrue();
@@ -326,13 +338,13 @@ describe('TimeTravel', () => {
 			const element = await setup(state);
 			const newValue = 1950;
 
-			expect(element.getModel().activeTimestamp).toBe(Initial_Value);
+			expect(element.getModel().timestamp).toBe(Initial_Value);
 
 			const sliderElement = element.shadowRoot.querySelector('#rangeSlider');
 			sliderElement.value = newValue;
 			sliderElement.dispatchEvent(new Event('input'));
 
-			expect(element.getModel().activeTimestamp).toBe(newValue);
+			expect(element.getModel().timestamp).toBe(newValue);
 		});
 	});
 
@@ -347,13 +359,13 @@ describe('TimeTravel', () => {
 			const element = await setup(state);
 			const newValue = 1985;
 
-			expect(element.getModel().activeTimestamp).toBe(Initial_Value);
+			expect(element.getModel().timestamp).toBe(Initial_Value);
 
 			const inputElement = element.shadowRoot.querySelector('#yearInput');
 			inputElement.value = newValue;
 			inputElement.dispatchEvent(new Event('change'));
 
-			expect(element.getModel().activeTimestamp).toBe(newValue);
+			expect(element.getModel().timestamp).toBe(newValue);
 		});
 	});
 
