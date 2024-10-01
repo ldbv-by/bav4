@@ -79,6 +79,11 @@ export class TimeTravel extends MvuElement {
 			(state) => state.media,
 			(media) => this.signal(Update_IsPortrait, { isPortrait: media.portrait })
 		);
+		this.observe(
+			(state) => state.timeTravel.timestamp,
+			(timestamp) => this.signal(Update_Timestamp, timestamp),
+			false
+		);
 	}
 
 	isRenderingSkipped() {

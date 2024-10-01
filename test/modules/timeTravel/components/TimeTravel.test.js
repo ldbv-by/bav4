@@ -3,6 +3,8 @@ import { TimeTravel } from '../../../../src/modules/timeTravel/components/TimeTr
 import { $injector } from '../../../../src/injection/index.js';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer.js';
 import { TestUtils } from '../../../test-utils.js';
+import { timeTravelReducer } from '../../../../src/store/timeTravel/timeTravel.reducer.js';
+import { setCurrentTimestamp } from '../../../../src/store/timeTravel/timeTravel.action.js';
 
 window.customElements.define(TimeTravel.tag, TimeTravel);
 
@@ -38,7 +40,8 @@ describe('TimeTravel', () => {
 		};
 		const props = { ...properties, geoResourceId: properties.geoResourceId ?? 'fooId' };
 		TestUtils.setupStoreAndDi(initialState, {
-			media: createNoInitialStateMediaReducer()
+			media: createNoInitialStateMediaReducer(),
+			timeTravel: timeTravelReducer
 		});
 		$injector
 			.registerSingleton('EnvironmentService', {
@@ -184,6 +187,17 @@ describe('TimeTravel', () => {
 			expect(element.shadowRoot.querySelector('#rangeSlider').getAttribute('max')).toBe(Max.toString());
 			expect(element.shadowRoot.querySelector('#rangeSlider').getAttribute('step')).toBe('1');
 			expect(element.shadowRoot.querySelectorAll('.range-background')).toHaveSize(1);
+		});
+
+		it('observes timestamp from s-o-s timeTravel', async () => {
+			const element = await setup({}, {}, { timestamp: 1950 });
+
+			expect(element.getModel().timestamp).toEqual(1950);
+			expect(element.timestamp).toEqual(1950);
+
+			setCurrentTimestamp(1949);
+
+			expect(element.getModel().timestamp).toEqual(1949);
 		});
 	});
 
