@@ -51,12 +51,7 @@
 	min-width: 1em;
 	display: block;
 }
-#yearSelect {
-	width: 4em;
-	display: block;
-	font-size: 2.2rem;
-	color: var(--split-one-color);
-}
+
 #start,
 #stop,
 #reset {
@@ -120,10 +115,10 @@ input[type='range']::-webkit-slider-thumb {
 	background: var(--split-one-color);
 	border: 1px solid var(--text1);
 }
-/* year */
+/* timestamp */
 .row:first-child .activeItem::after {
 	position: absolute;
-	content: attr(data-year);
+	content: attr(data-timestamp);
 	top: 0.1em !important;
 	font-size: 1.9em !important;
 	font-weight: normal;
@@ -134,7 +129,7 @@ input[type='range']::-webkit-slider-thumb {
 }
 .row .item:hover::after {
 	position: absolute;
-	content: attr(data-year);
+	content: attr(data-timestamp);
 	top: 0.1em;
 	font-size: 1.9em;
 	font-weight: normal;
@@ -146,10 +141,10 @@ input[type='range']::-webkit-slider-thumb {
 .row .item.activeItem:hover::after {
 	color: var(--split-one-color) !important;
 }
-/*scale years */
+/*scale timestamps */
 .range-background .border::after {
 	position: absolute;
-	content: attr(data-year);
+	content: attr(data-timestamp);
 	margin-top: 1.3em;
 	font-size: 0.9em;
 	margin-left: -1.2em;
@@ -159,7 +154,7 @@ input[type='range']::-webkit-slider-thumb {
 }
 .row:first-child .border::after {
 	position: absolute;
-	content: attr(data-year);
+	content: attr(data-timestamp);
 	top: 1.5em;
 	font-size: 0.9em;
 	margin-left: -1.2em;
@@ -188,13 +183,13 @@ input[type='number'] {
 	width: auto;
 	color: var(--split-one-color);
 }
-.active-year-input {
+.active-timestamp-input {
 	display: block !important;
 	width: 5.5em;
 	margin: 0 0.5em 0 0 !important;
 	padding: 0;
 }
-.active-year-input input {
+.active-timestamp-input input {
 	padding: 0;
 	text-align: center;
 	width: 100%;

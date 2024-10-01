@@ -106,13 +106,13 @@ describe('TimeTravel', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.base')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.actions')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.ba-form-element.active-year-input')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.ba-form-element.active-year-input .bar')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.ba-form-element.active-timestamp-input')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.ba-form-element.active-timestamp-input .bar')).toHaveSize(1);
 
-			expect(element.shadowRoot.querySelectorAll('#yearInput')).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('#yearInput').getAttribute('type')).toBe('number');
-			expect(element.shadowRoot.querySelector('#yearInput').getAttribute('min')).toBe(Min.toString());
-			expect(element.shadowRoot.querySelector('#yearInput').getAttribute('max')).toBe(Max.toString());
+			expect(element.shadowRoot.querySelectorAll('#timestampInput')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('#timestampInput').getAttribute('type')).toBe('number');
+			expect(element.shadowRoot.querySelector('#timestampInput').getAttribute('min')).toBe(Min.toString());
+			expect(element.shadowRoot.querySelector('#timestampInput').getAttribute('max')).toBe(Max.toString());
 
 			expect(element.shadowRoot.querySelectorAll('#increase')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('#decrease')).toHaveSize(1);
@@ -166,10 +166,10 @@ describe('TimeTravel', () => {
 			expect(element.shadowRoot.querySelectorAll('.header')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('.header').textContent).toBe('timeTravel_title');
 
-			expect(element.shadowRoot.querySelectorAll('#yearInput')).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('#yearInput').getAttribute('type')).toBe('number');
-			expect(element.shadowRoot.querySelector('#yearInput').getAttribute('min')).toBe(Min.toString());
-			expect(element.shadowRoot.querySelector('#yearInput').getAttribute('max')).toBe(Max.toString());
+			expect(element.shadowRoot.querySelectorAll('#timestampInput')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('#timestampInput').getAttribute('type')).toBe('number');
+			expect(element.shadowRoot.querySelector('#timestampInput').getAttribute('min')).toBe(Min.toString());
+			expect(element.shadowRoot.querySelector('#timestampInput').getAttribute('max')).toBe(Max.toString());
 
 			expect(element.shadowRoot.querySelectorAll('#increase')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('#decrease')).toHaveSize(1);
@@ -188,7 +188,7 @@ describe('TimeTravel', () => {
 	});
 
 	describe('when actions buttons are clicked', () => {
-		it('do not decrease Year because min value', async () => {
+		it('do not decrease Timestamp because min value', async () => {
 			const state = {
 				media: {
 					portrait: false
@@ -203,7 +203,7 @@ describe('TimeTravel', () => {
 			expect(element.getModel().timestamp).toBe(Initial_Value);
 		});
 
-		it('decrease Year', async () => {
+		it('decrease Timestamp', async () => {
 			const state = {
 				media: {
 					portrait: false
@@ -218,7 +218,7 @@ describe('TimeTravel', () => {
 			expect(element.getModel().timestamp).toBe(1949);
 		});
 
-		it('do not increase Year because max value', async () => {
+		it('do not increase Timestamp because max value', async () => {
 			const state = {
 				media: {
 					portrait: false
@@ -232,7 +232,7 @@ describe('TimeTravel', () => {
 			expect(element.getModel().timestamp).toBe(Max);
 		});
 
-		it('increase Year', async () => {
+		it('increase Timestamp', async () => {
 			const state = {
 				media: {
 					portrait: false
@@ -373,7 +373,7 @@ describe('TimeTravel', () => {
 
 			expect(element.getModel().timestamp).toBe(Initial_Value);
 
-			const inputElement = element.shadowRoot.querySelector('#yearInput');
+			const inputElement = element.shadowRoot.querySelector('#timestampInput');
 			inputElement.value = newValue;
 			inputElement.dispatchEvent(new Event('change'));
 

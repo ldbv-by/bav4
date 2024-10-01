@@ -161,7 +161,7 @@ export class TimeTravel extends MvuElement {
 					active: timestamps.includes(timestamp),
 					border: this.#decadeFunction(timestamp)
 				};
-				return html`<span class="range-bg  ${classMap(classes)}" data-year="${timestamp}"></span>`;
+				return html`<span class="range-bg  ${classMap(classes)}" data-timestamp="${timestamp}"></span>`;
 			});
 		};
 
@@ -191,8 +191,8 @@ export class TimeTravel extends MvuElement {
 						<div id="base" class="base">
 							<div class="actions">
 								<div>
-									<div class="ba-form-element active-year-input">
-										<input id="yearInput" type="number" min="${min}" max="${max}" .value="${timestamp}" @change=${onChangeSelect} />
+									<div class="ba-form-element active-timestamp-input">
+										<input id="timestampInput" type="number" min="${min}" max="${max}" .value="${timestamp}" @change=${onChangeSelect} />
 										<i class="bar"></i>
 									</div>
 								</div>
