@@ -154,7 +154,7 @@ export class TimeTravel extends MvuElement {
 		};
 
 		const getRangeBackground = () => {
-			const fullRange = Array.from({ length: max - min }, (value, index) => min + index);
+			const fullRange = Array.from({ length: max - min + 1 }, (value, index) => min + index);
 
 			return fullRange.map((timestamp) => {
 				const classes = {
