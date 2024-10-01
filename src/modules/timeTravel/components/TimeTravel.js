@@ -22,12 +22,12 @@ const Time_Interval = 1000;
 const Range_Slider_Step = 1;
 
 /**
- * Panel to control chronological data via slider *
+ * Panel to control chronological data via slider
  *
  * @class
- *@property {string} geoResourceId the id of the georesource which have timestamps
- *@property {string} timestamp the current selected timestamp
- *@property {function(timestamp)} decadeFunction the decadeFunctions which checks whether or not the timestamp is the start of a decade
+ * @property {string} geoResourceId the id of the GeoResource which have timestamps
+ * @property {string} timestamp the current selected timestamp
+ * @property {function(timestamp)} decadeFunction the decadeFunctions which checks whether or not the timestamp is the start of a decade
  * @author alsturm
  */
 export class TimeTravel extends MvuElement {
