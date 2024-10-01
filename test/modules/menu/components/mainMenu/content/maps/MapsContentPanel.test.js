@@ -24,6 +24,19 @@ describe('MapsContentPanel', () => {
 		return TestUtils.render(MapsContentPanel.tag);
 	};
 
+	describe('constructor', () => {
+		it('sets a default model', async () => {
+			setup();
+			const element = new MapsContentPanel();
+
+			expect(element.getModel()).toEqual({
+				isPortrait: false,
+				//from AbstractMvuContentPanel
+				active: false
+			});
+		});
+	});
+
 	describe('class', () => {
 		it('inherits from AbstractContentPanel', async () => {
 			const element = await setup();
