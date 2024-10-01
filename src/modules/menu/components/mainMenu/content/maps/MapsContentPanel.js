@@ -7,7 +7,7 @@ import css from './mapsContentPanel.css';
 
 const Update_Media_Related_Properties = 'update_isPortrait';
 /**
- * Container for different types of maps.
+ * Container for different types of map configuration panel.
  * @class
  * @author costa_gi
  */
