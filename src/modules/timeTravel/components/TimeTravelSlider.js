@@ -18,7 +18,6 @@ const Update_Timestamp = 'update_timestamp';
 const Update_GeoResourceId = 'update_georesourceid';
 const Update_IsPortrait = 'update_isPortrait';
 
-const Time_Interval = 1000;
 const Range_Slider_Step = 1;
 
 /**
@@ -137,7 +136,7 @@ export class TimeTravelSlider extends MvuElement {
 				const value = (+slider.value + Range_Slider_Step) % (+slider.getAttribute('max') + Range_Slider_Step);
 				slider.value = value;
 				slider.dispatchEvent(new Event('input'));
-			}, Time_Interval);
+			}, TimeTravelSlider.TIME_INTERVAL_MS);
 		};
 
 		const stop = () => {
@@ -286,5 +285,9 @@ export class TimeTravelSlider extends MvuElement {
 
 	static get tag() {
 		return 'ba-time-travel-slider';
+	}
+
+	static get TIME_INTERVAL_MS() {
+		return 1000;
 	}
 }

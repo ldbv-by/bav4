@@ -27,7 +27,6 @@ describe('TimeTravel', () => {
 			return { hasTimestamps: () => true, timestamps: [1900, 1902, 1903, 1921, 1923, 1924, 1927, 1937, 1939, 1940, 1949, 1951] };
 		}
 	};
-	const Time_Interval = 1000;
 
 	const setup = (state = {}, config = {}, properties = {}) => {
 		const { embed = false } = config;
@@ -54,6 +53,11 @@ describe('TimeTravel', () => {
 		return TestUtils.render(TimeTravelSlider.tag, props);
 	};
 
+	describe('class', () => {
+		it('static constants', async () => {
+			expect(TimeTravelSlider.TIME_INTERVAL_MS).toBe(1000);
+		});
+	});
 	describe('constructor', () => {
 		it('sets a default model', async () => {
 			setup();
@@ -202,7 +206,7 @@ describe('TimeTravel', () => {
 	});
 
 	describe('when actions buttons are clicked', () => {
-		it('do not decrease Timestamp because min value', async () => {
+		it('does NOT decrease timestamp because min value', async () => {
 			const state = {
 				media: {
 					portrait: false
@@ -217,7 +221,7 @@ describe('TimeTravel', () => {
 			expect(element.getModel().timestamp).toBe(Initial_Value);
 		});
 
-		it('decrease Timestamp', async () => {
+		it('decreases the timestamp', async () => {
 			const state = {
 				media: {
 					portrait: false
@@ -232,7 +236,7 @@ describe('TimeTravel', () => {
 			expect(element.getModel().timestamp).toBe(1949);
 		});
 
-		it('do not increase Timestamp because max value', async () => {
+		it('does NOT increase the timestamp because max value', async () => {
 			const state = {
 				media: {
 					portrait: false
@@ -246,7 +250,7 @@ describe('TimeTravel', () => {
 			expect(element.getModel().timestamp).toBe(Max);
 		});
 
-		it('increase Timestamp', async () => {
+		it('increases Timestamp', async () => {
 			const state = {
 				media: {
 					portrait: false
@@ -271,7 +275,7 @@ describe('TimeTravel', () => {
 				clock.uninstall();
 			});
 
-			it('increase timestamps on start', async () => {
+			it('increases the timestamp on start', async () => {
 				const state = {
 					media: {
 						portrait: false
@@ -289,15 +293,15 @@ describe('TimeTravel', () => {
 				expect(buttonElement.classList.contains('hide')).toBeTrue();
 				expect(element.getModel().timestamp).toBe(Max - 2);
 
-				clock.tick(Time_Interval);
+				clock.tick(TimeTravelSlider.TIME_INTERVAL_MS);
 
 				expect(element.getModel().timestamp).toBe(Max - 1);
 
-				clock.tick(Time_Interval);
+				clock.tick(TimeTravelSlider.TIME_INTERVAL_MS);
 
 				expect(element.getModel().timestamp).toBe(Max);
 
-				clock.tick(Time_Interval);
+				clock.tick(TimeTravelSlider.TIME_INTERVAL_MS);
 
 				expect(element.getModel().timestamp).toBe(Min);
 			});
@@ -319,11 +323,11 @@ describe('TimeTravel', () => {
 				expect(stop.classList.contains('hide')).toBeFalse();
 				expect(start.classList.contains('hide')).toBeTrue();
 
-				clock.tick(Time_Interval);
+				clock.tick(TimeTravelSlider.TIME_INTERVAL_MS);
 
 				expect(element.getModel().timestamp).toBe(Initial_Value + 1);
 
-				clock.tick(Time_Interval);
+				clock.tick(TimeTravelSlider.TIME_INTERVAL_MS);
 
 				expect(element.getModel().timestamp).toBe(Initial_Value + 2);
 
@@ -331,41 +335,43 @@ describe('TimeTravel', () => {
 				expect(stop.classList.contains('hide')).toBeTrue();
 				expect(start.classList.contains('hide')).toBeFalse();
 
-				clock.tick(Time_Interval);
+				clock.tick(TimeTravelSlider.TIME_INTERVAL_MS);
 
 				expect(element.getModel().timestamp).toBe(Initial_Value + 2);
 
-				clock.tick(Time_Interval);
+				clock.tick(TimeTravelSlider.TIME_INTERVAL_MS);
 
 				expect(element.getModel().timestamp).toBe(Initial_Value + 2);
 			});
 		});
 
-		it('reset', async () => {
-			const state = {
-				media: {
-					portrait: false
-				}
-			};
+		describe('reset buttin is clicked', () => {
+			it('resets the slider', async () => {
+				const state = {
+					media: {
+						portrait: false
+					}
+				};
 
-			const element = await setup(state, {}, { timestamp: 1950 });
+				const element = await setup(state, {}, { timestamp: 1950 });
 
-			expect(element.getModel().timestamp).toBe(1950);
-			const buttonElement = element.shadowRoot.querySelector('#reset');
-			const start = element.shadowRoot.getElementById('start');
-			const stop = element.shadowRoot.getElementById('stop');
+				expect(element.getModel().timestamp).toBe(1950);
+				const buttonElement = element.shadowRoot.querySelector('#reset');
+				const start = element.shadowRoot.getElementById('start');
+				const stop = element.shadowRoot.getElementById('stop');
 
-			buttonElement.click();
+				buttonElement.click();
 
-			expect(element.getModel().timestamp).toBe(Min);
+				expect(element.getModel().timestamp).toBe(Min);
 
-			expect(start.classList.contains('hide')).toBeFalse();
-			expect(stop.classList.contains('hide')).toBeTrue();
+				expect(start.classList.contains('hide')).toBeFalse();
+				expect(stop.classList.contains('hide')).toBeTrue();
+			});
 		});
 	});
 
 	describe('when slider change', () => {
-		it('set new value', async () => {
+		it('sets the new value', async () => {
 			const state = {
 				media: {
 					portrait: false
@@ -386,7 +392,7 @@ describe('TimeTravel', () => {
 	});
 
 	describe('when input change', () => {
-		it('set new value', async () => {
+		it('sets the new value', async () => {
 			const state = {
 				media: {
 					portrait: false
