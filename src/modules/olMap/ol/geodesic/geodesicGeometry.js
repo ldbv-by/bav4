@@ -154,20 +154,18 @@ export class GeodesicGeometry {
 	}
 
 	#createGeodesicLines(coordinates) {
-		return coordinates
-			? coordinates.reduce((geodesicLines, toCoordinate, index) => {
-					const fromCoordinate = index > 0 ? coordinates[index - 1] : null;
-					if (fromCoordinate) {
-						const geodesicLine = {
-							geodesic: Geodesic.WGS84.InverseLine(fromCoordinate[1], fromCoordinate[0], toCoordinate[1], toCoordinate[0]),
-							from: fromCoordinate,
-							to: toCoordinate
-						};
-						geodesicLines.push(geodesicLine);
-					}
-					return geodesicLines;
-				}, [])
-			: [];
+		return coordinates.reduce((geodesicLines, toCoordinate, index) => {
+			const fromCoordinate = index > 0 ? coordinates[index - 1] : null;
+			if (fromCoordinate) {
+				const geodesicLine = {
+					geodesic: Geodesic.WGS84.InverseLine(fromCoordinate[1], fromCoordinate[0], toCoordinate[1], toCoordinate[0]),
+					from: fromCoordinate,
+					to: toCoordinate
+				};
+				geodesicLines.push(geodesicLine);
+			}
+			return geodesicLines;
+		}, []);
 	}
 
 	#calculateAzimuthCircle(coords, rotation, length) {

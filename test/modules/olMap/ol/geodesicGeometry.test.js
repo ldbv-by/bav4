@@ -15,29 +15,44 @@ describe('GeodesicGeometry', () => {
 
 	const lineMunich_Paris = new LineString([fromLonLat([11.60221, 48.15629]), fromLonLat([2.192, 48.86656])]);
 	const polygon = new Polygon([[fromLonLat([9, 48]), fromLonLat([11, 48]), fromLonLat([10, 47])]]);
+	const segmentAsDrawPolygon = new Polygon([[fromLonLat([9, 48]), fromLonLat([11, 48]), fromLonLat([9, 48])]]);
 
 	const mapMock = { getPixelFromCoordinate: (c) => c };
 
 	describe('constructor', () => {
-		fit('initializes an instance with correct parameters', () => {
+		it('initializes an instance with correct parameters', () => {
+			const emptyLineStringFeature = new Feature(new LineString([]));
 			const shortLineStringFeature = new Feature(shortLineString);
 			const lineStringFeature = new Feature(lineString);
 			const polygonFeature = new Feature(polygon);
+			const segmentAsDrawPolygonFeature = new Feature(segmentAsDrawPolygon);
 			const segmentAsLineStringFeature = new Feature(segmentAsLineString);
 
+			const emptyLineStringInstance = new GeodesicGeometry(emptyLineStringFeature);
 			const shortLineStringInstance = new GeodesicGeometry(shortLineStringFeature);
 			const lineStringInstance = new GeodesicGeometry(lineStringFeature);
 			const polygonInstance = new GeodesicGeometry(polygonFeature);
-			const segmentAsLineStringInstance = new GeodesicGeometry(segmentAsLineStringFeature, () => true);
+			const polygonDrawInstance = new GeodesicGeometry(segmentAsDrawPolygonFeature, null, () => true);
+			const segmentAsLineStringInstance = new GeodesicGeometry(segmentAsLineStringFeature);
 
+			expect(emptyLineStringInstance).toBeInstanceOf(GeodesicGeometry);
+			expect(emptyLineStringInstance.getCalculationStatus()).toBe(GEODESIC_CALCULATION_STATUS.INACTIVE);
+			expect(emptyLineStringInstance.azimuthCircle).toBeNull();
 			expect(shortLineStringInstance).toBeInstanceOf(GeodesicGeometry);
 			expect(shortLineStringInstance.getCalculationStatus()).toBe(GEODESIC_CALCULATION_STATUS.INACTIVE);
+			expect(lineStringInstance.azimuthCircle).toBeNull();
 			expect(lineStringInstance).toBeInstanceOf(GeodesicGeometry);
 			expect(lineStringInstance.getCalculationStatus()).toBe(GEODESIC_CALCULATION_STATUS.ACTIVE);
+			expect(lineStringInstance.azimuthCircle).toBeNull();
 			expect(polygonInstance).toBeInstanceOf(GeodesicGeometry);
 			expect(polygonInstance.getCalculationStatus()).toBe(GEODESIC_CALCULATION_STATUS.ACTIVE);
+			expect(polygonInstance.azimuthCircle).toBeNull();
+			expect(polygonDrawInstance).toBeInstanceOf(GeodesicGeometry);
+			expect(polygonDrawInstance.getCalculationStatus()).toBe(GEODESIC_CALCULATION_STATUS.ACTIVE);
+			expect(polygonDrawInstance.azimuthCircle).toEqual(jasmine.any(Geometry));
 			expect(segmentAsLineStringInstance).toBeInstanceOf(GeodesicGeometry);
 			expect(segmentAsLineStringInstance.getCalculationStatus()).toBe(GEODESIC_CALCULATION_STATUS.ACTIVE);
+			expect(segmentAsLineStringInstance.azimuthCircle).toEqual(jasmine.any(Geometry));
 		});
 
 		it('throws an error while initializing an instance with incorrect parameters', () => {
