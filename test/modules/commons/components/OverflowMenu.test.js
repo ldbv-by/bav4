@@ -166,7 +166,7 @@ describe('OverflowMenu', () => {
 
 			button.click();
 
-			//element.shadowRoot.styleSheets[0] --> baElement.css
+			//element.shadowRoot.styleSheets[0] --> mvuElement.css
 			//element.shadowRoot.styleSheets[1] --> overflowmenu.css
 			//element.shadowRoot.styleSheets[2] --> menuitem.css
 			expect(element.shadowRoot.styleSheets[3].cssRules.item(0).cssText).toContain(
@@ -306,12 +306,12 @@ describe('OverflowMenu', () => {
 			button.click();
 
 			// menu is open
-			expect(isTemplateResult(store.getState().bottomSheet.data));
+			expect(isTemplateResult(store.getState().bottomSheet.data[0].content));
 
 			document.dispatchEvent(new Event('pointerdown'));
 
 			// menu is closed
-			expect(store.getState().bottomSheet.data).toBeNull();
+			expect(store.getState().bottomSheet.data).toEqual(jasmine.arrayWithExactContents([{ id: 'default', content: null }]));
 		});
 
 		it('deregisters the document listener on pointerdown', async () => {

@@ -11,6 +11,9 @@ import { AssetSourceType, getAssetSource } from '../../../utils/assets';
 
 export const KML_PROJECTION_LIKE = 'EPSG:4326';
 
+export const KML_EMPTY_CONTENT =
+	'<?xml version="1.0" encoding="UTF-8"?><kml xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.opengis.net/kml/2.2"><Document></Document></kml>';
+
 const tryRectifyingLineString = (polygonCandidate) => {
 	if (polygonCandidate instanceof Polygon && polygonCandidate.getCoordinates()[0].length === 3) {
 		return new LineString(polygonCandidate.getCoordinates()[0]);

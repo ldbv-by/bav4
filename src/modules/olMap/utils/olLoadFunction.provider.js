@@ -30,7 +30,7 @@ export const getBvvBaaImageLoadFunction = (geoResourceId, credential = null, max
 	} = $injector.inject('HttpService', 'ConfigService', 'GeoResourceService');
 
 	return async (image, src) => {
-		const timeout = 10_000;
+		const timeout = 30_000;
 
 		const getObjectUrlForBaa = async (url) => {
 			try {
@@ -105,10 +105,11 @@ export const getBvvBaaImageLoadFunction = (geoResourceId, credential = null, max
  * @function
  * @type {module:modules/olMap/services/LayerService~tileLoadFunctionProvider}
  */
-export const getBvvTileLoadFunction = (geoResourceId, handleUnexpectedStatusCodeThrottledFn = handleUnexpectedStatusCodeThrottled) => {
+export const getBvvTileLoadFunction = (geoResourceId, olLayer, handleUnexpectedStatusCodeThrottledFn = handleUnexpectedStatusCodeThrottled) => {
 	const { HttpService: httpService, GeoResourceService: geoResourceService } = $injector.inject('HttpService', 'GeoResourceService');
 
 	return async (tile, src) => {
+		src = olLayer.get('timestamp') ? src + '?t=' + olLayer.get('timestamp') : src;
 		const timeout = 5_000;
 		try {
 			const getObjectUrlWithAuthInterceptor = async (url) => {

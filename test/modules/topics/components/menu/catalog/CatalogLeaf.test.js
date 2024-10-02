@@ -1,4 +1,4 @@
-import { CatalogLeaf } from '../../../../../../src/modules/topics/components/menu/catalog/CatalogLeaf';
+import { CatalogLeaf, LOADING_PREVIEW_DELAY_MS } from '../../../../../../src/modules/topics/components/menu/catalog/CatalogLeaf';
 import { TestUtils } from '../../../../../test-utils.js';
 import { $injector } from '../../../../../../src/injection';
 import { topicsReducer } from '../../../../../../src/store/topics/topics.reducer';
@@ -8,6 +8,9 @@ import { Checkbox } from '../../../../../../src/modules/commons/components/check
 import { modalReducer } from '../../../../../../src/store/modal/modal.reducer';
 import { isTemplateResult } from '../../../../../../src/utils/checks';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../../src/utils/markup';
+import { AbstractMvuContentPanel } from '../../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel.js';
+import { GeoResourceFuture } from '../../../../../../src/domain/geoResources';
+import { positionReducer } from '../../../../../../src/store/position/position.reducer';
 
 window.customElements.define(CatalogLeaf.tag, CatalogLeaf);
 window.customElements.define(Checkbox.tag, Checkbox);
@@ -15,8 +18,16 @@ window.customElements.define(Checkbox.tag, Checkbox);
 describe('CatalogLeaf', () => {
 	const geoResourceServiceMock = {
 		byId() {},
-		getKeywords: () => []
+		getKeywords: () => [],
+		isAllowed: () => true,
+		addOrReplace: () => {}
 	};
+
+	describe('LAYER_ADDING_DELAY_MS', () => {
+		it('exports a const defining amount of time waiting before adding a layer', async () => {
+			expect(LOADING_PREVIEW_DELAY_MS).toBe(500);
+		});
+	});
 
 	let store;
 
@@ -32,7 +43,7 @@ describe('CatalogLeaf', () => {
 			}
 		};
 
-		store = TestUtils.setupStoreAndDi(state, { topics: topicsReducer, layers: layersReducer, modal: modalReducer });
+		store = TestUtils.setupStoreAndDi(state, { topics: topicsReducer, layers: layersReducer, modal: modalReducer, position: positionReducer });
 
 		$injector.registerSingleton('GeoResourceService', geoResourceServiceMock).registerSingleton('TranslationService', { translate: (key) => key });
 
@@ -40,6 +51,23 @@ describe('CatalogLeaf', () => {
 	};
 
 	const getLeaf = () => ({ geoResourceId });
+
+	describe('class', () => {
+		it('inherits from AbstractMvuContentPanel', async () => {
+			const element = await setup();
+
+			expect(element instanceof AbstractMvuContentPanel).toBeTrue();
+		});
+	});
+
+	describe('when instantiated', () => {
+		it('sets a default model', async () => {
+			await setup();
+			const element = new CatalogLeaf();
+
+			expect(element.getModel()).toEqual({ layersStoreReady: false, geoResourceId: null, activeLayers: [], active: false });
+		});
+	});
 
 	describe('when initialized', () => {
 		it('renders the nothing', async () => {
@@ -205,6 +233,150 @@ describe('CatalogLeaf', () => {
 					expect(isTemplateResult(store.getState().modal.data.content)).toBeTrue();
 				});
 			});
+		});
+	});
+
+	describe('on mouse enter leaf', () => {
+		beforeEach(() => {
+			jasmine.clock().install();
+		});
+
+		afterEach(() => {
+			jasmine.clock().uninstall();
+		});
+
+		describe('GeoResource is allowed to access', () => {
+			it('adds a preview layer', async () => {
+				//load leaf data
+				const leaf = getLeaf();
+				const element = await setup('foo', []);
+				//assign data
+				element.data = leaf;
+
+				const target = element.shadowRoot.querySelector('.ba-list-item');
+				target.dispatchEvent(new Event('mouseenter'));
+				expect(element._timeoutId).not.toBeNull();
+				jasmine.clock().tick(LOADING_PREVIEW_DELAY_MS + 100);
+
+				expect(element._timeoutId).toBeNull();
+				expect(store.getState().layers.active.length).toBe(1);
+				expect(store.getState().layers.active[0].id).toBe(CatalogLeaf._tmpLayerId(geoResourceId));
+				expect(store.getState().layers.active[0].constraints.hidden).toBeTrue();
+				expect(store.getState().layers.active[0].geoResourceId).toBe(geoResourceId);
+
+				expect(target.classList.contains('loading')).toBeFalse();
+				expect(target.classList.contains('preview')).toBeTrue();
+			});
+		});
+
+		describe('GeoResource is NOT allowed to access', () => {
+			it('does nothing', async () => {
+				//load leaf data
+				const leaf = getLeaf();
+				const element = await setup('foo', []);
+				//assign data
+				element.data = leaf;
+
+				spyOn(geoResourceServiceMock, 'isAllowed').withArgs(geoResourceId).and.returnValue(false);
+
+				const target = element.shadowRoot.querySelector('.ba-list-item');
+				target.dispatchEvent(new Event('mouseenter'));
+				expect(element._timeoutId).toBeNull();
+				jasmine.clock().tick(LOADING_PREVIEW_DELAY_MS + 100);
+
+				expect(element._timeoutId).toBeNull();
+				expect(store.getState().layers.active.length).toBe(0);
+				expect(store.getState().position.fitLayerRequest.payload).toBeNull();
+				expect(target.classList.contains('preview')).toBeFalse();
+			});
+		});
+
+		describe('GeoResource is active', () => {
+			it('does nothing', async () => {
+				const activeLayer = createDefaultLayer(geoResourceId, geoResourceId);
+
+				//load leaf data
+				const leaf = getLeaf();
+				const element = await setup('foo', [activeLayer]);
+				//assign data
+				element.data = leaf;
+
+				spyOn(geoResourceServiceMock, 'isAllowed').withArgs(geoResourceId).and.returnValue(false);
+
+				expect(store.getState().layers.active.length).toBe(1);
+				const target = element.shadowRoot.querySelector('.ba-list-item');
+				target.dispatchEvent(new Event('mouseenter'));
+				expect(element._timeoutId).toBeNull();
+				jasmine.clock().tick(LOADING_PREVIEW_DELAY_MS + 100);
+
+				expect(element._timeoutId).toBeNull();
+				expect(store.getState().layers.active.length).toBe(1);
+				expect(store.getState().position.fitLayerRequest.payload).toBeNull();
+				expect(target.classList.contains('preview')).toBeFalse();
+			});
+		});
+
+		it('shows and hides a loading hint for a GeoResourceFuture', async () => {
+			const geoResFuture = new GeoResourceFuture(geoResourceId, async () => ({ label: 'updatedLabel' }));
+			//load leaf data
+			const leaf = getLeaf();
+			const element = await setup('foo', []);
+			//assign data
+			element.data = leaf;
+			spyOn(geoResourceServiceMock, 'byId').withArgs(geoResourceId).and.returnValue(geoResFuture);
+
+			const target = element.shadowRoot.querySelector('.ba-list-item');
+			target.dispatchEvent(new Event('mouseenter'));
+			jasmine.clock().tick(LOADING_PREVIEW_DELAY_MS + 100);
+
+			expect(store.getState().layers.active.length).toBe(1);
+			expect(store.getState().layers.active[0].id).toBe(CatalogLeaf._tmpLayerId(geoResourceId));
+			expect(store.getState().layers.active[0].geoResourceId).toBe(geoResourceId);
+
+			expect(target.classList.contains('loading')).toBeTrue();
+			expect(target.classList.contains('preview')).toBeTrue();
+
+			await geoResFuture.get();
+
+			expect(target.classList.contains('loading')).toBeFalse();
+			expect(target.classList.contains('preview')).toBeTrue();
+		});
+	});
+
+	describe('on mouse leave', () => {
+		it('removes the preview layer', async () => {
+			const previewLayer = createDefaultLayer(CatalogLeaf._tmpLayerId(geoResourceId), geoResourceId);
+			previewLayer.constraints.hidden = true;
+
+			//load leaf data
+			const leaf = getLeaf();
+			const element = await setup('foo', [previewLayer]);
+			//assign data
+			element.data = leaf;
+
+			const target = element.shadowRoot.querySelector('.ba-list-item');
+			expect(store.getState().layers.active.length).toBe(1);
+			expect(store.getState().layers.active[0].id).toBe(CatalogLeaf._tmpLayerId(geoResourceId));
+			expect(store.getState().layers.active[0].constraints.hidden).toBeTrue();
+			expect(target.classList.contains('preview')).toBeTrue();
+
+			target.dispatchEvent(new Event('mouseleave'));
+			expect(store.getState().layers.active.length).toBe(0);
+			expect(target.classList.contains('preview')).toBeFalse();
+		});
+
+		it('clears a GeoResourceFuture timeout function', async () => {
+			//load leaf data
+			const leaf = getLeaf();
+			const element = await setup('foo', []);
+			//assign data
+			element.data = leaf;
+			const target = element.shadowRoot.querySelector('.ba-list-item');
+
+			target.dispatchEvent(new Event('mouseenter'));
+			expect(element.__timeoutId).not.toBeNull();
+			target.dispatchEvent(new Event('mouseleave'));
+			expect(element._timeoutId).toBeNull();
 		});
 	});
 });

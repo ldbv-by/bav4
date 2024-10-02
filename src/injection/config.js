@@ -63,6 +63,8 @@ import { GlobalErrorPlugin } from '../plugins/GlobalErrorPlugin';
 import { AuthPlugin } from '../plugins/AuthPlugin';
 import { ObserveWcAttributesPlugin } from '../plugins/ObserveWcAttributesPlugin';
 import { fileStorageServiceFactory } from './factories';
+import { FileStoragePlugin } from '../plugins/FileStoragePlugin';
+import { TimeTravelPlugin } from '../plugins/TimeTravelPlugin';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
@@ -123,10 +125,12 @@ $injector
 	.registerSingleton('IframeContainerPlugin', new IframeContainerPlugin())
 	.registerSingleton('SharePlugin', new SharePlugin())
 	.registerSingleton('ToolsPlugin', new ToolsPlugin())
+	.registerSingleton('FileStoragePlugin', new FileStoragePlugin())
 	.registerSingleton('BeforeUnloadPlugin', new BeforeUnloadPlugin())
 	.registerSingleton('IframeGeometryIdPlugin', new IframeGeometryIdPlugin())
 	.registerSingleton('ObserveWcAttributesPlugin', new ObserveWcAttributesPlugin())
 	.registerSingleton('EncodeStatePlugin', new EncodeStatePlugin())
+	.registerSingleton('TimeTravelPlugin', new TimeTravelPlugin())
 	.registerSingleton('ObserveStateForEncodingPlugin', new ObserveStateForEncodingPlugin())
 	.registerModule(mapModule)
 	.registerModule(topicsModule)

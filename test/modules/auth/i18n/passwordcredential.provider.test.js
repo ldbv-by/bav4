@@ -6,7 +6,7 @@ describe('i18n for header module', () => {
 		const map = provide('de');
 
 		expect(map.auth_passwordCredentialPanel_title).toBe('Anmelden für:');
-		expect(map.auth_passwordCredentialPanel_credential_username).toBe('Name');
+		expect(map.auth_passwordCredentialPanel_credential_username).toBe('Kennung');
 		expect(map.auth_passwordCredentialPanel_credential_password).toBe('Passwort');
 		expect(map.auth_passwordCredentialPanel_submit).toBe('Senden');
 		expect(map.auth_passwordCredentialPanel_credential_failed).toBe('Anmeldung fehlgeschlagen. Name oder Passwort ungültig!');
@@ -25,7 +25,7 @@ describe('i18n for header module', () => {
 			'_blank'
 		);
 		expect(map.auth_passwordCredentialPanel_footer_forgot_login).toBe('Kennung vergessen?');
-		expect(map.auth_passwordCredentialPanel_footer_forgot_password).toBe('Password vergessen?');
+		expect(map.auth_passwordCredentialPanel_footer_forgot_password).toBe('Passwort vergessen?');
 	});
 
 	it('provides translation for en', () => {
@@ -54,7 +54,7 @@ describe('i18n for header module', () => {
 		expect(map.auth_passwordCredentialPanel_footer_forgot_password).toBe('Forgot password?');
 	});
 
-	it('have the expected amount of translations', () => {
+	it('contains the expected amount of entries', () => {
 		const expectedSize = 11;
 		const deMap = provide('de');
 		const enMap = provide('en');

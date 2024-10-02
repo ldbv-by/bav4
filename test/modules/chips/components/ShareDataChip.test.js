@@ -4,17 +4,15 @@ import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 import { TestUtils } from '../../../test-utils';
 import shareSvg from '../../../../src/modules/chips/components/assistChips/assets/share.svg';
 import { sharedReducer } from '../../../../src/store/shared/shared.reducer';
+import { fileStorageReducer, initialState } from '../../../../src/store/fileStorage/fileStorage.reducer';
 import { ShareDialogContent } from '../../../../src/modules/share/components/dialog/ShareDialogContent';
+import { QueryParameters } from '../../../../src/domain/queryParameters';
+import { EventLike } from '../../../../src/utils/storeUtils';
 
 window.customElements.define(ShareDialogContent.tag, ShareDialogContent);
 window.customElements.define(ShareDataChip.tag, ShareDataChip);
 
 describe('ShareDataChip', () => {
-	const defaultSharedState = {
-		fileSaveResult: null,
-		coordinates: []
-	};
-
 	let store;
 	const shareServiceMock = {
 		copyToClipboard() {
@@ -29,12 +27,9 @@ describe('ShareDataChip', () => {
 			return Promise.resolve('http://foo');
 		}
 	};
-	const setup = async (sharedState = defaultSharedState) => {
-		const state = {
-			shared: sharedState
-		};
+	const setup = async (state = initialState) => {
 		const windowMock = { navigator: {}, open() {} };
-		store = TestUtils.setupStoreAndDi(state, { modal: modalReducer, shared: sharedReducer });
+		store = TestUtils.setupStoreAndDi({ fileStorage: state }, { modal: modalReducer, shared: sharedReducer, fileStorage: fileStorageReducer });
 		$injector
 			.registerSingleton('EnvironmentService', {
 				getWindow: () => windowMock
@@ -50,7 +45,7 @@ describe('ShareDataChip', () => {
 		it('has a model containing default values', async () => {
 			const element = await setup();
 
-			expect(element.getModel()).toEqual({ fileSaveResult: null });
+			expect(element.getModel()).toEqual({ storedDataAvailable: false, fileId: null, adminId: null });
 		});
 
 		it('properly implements abstract methods', async () => {
@@ -63,8 +58,8 @@ describe('ShareDataChip', () => {
 
 	describe('when initialized', () => {
 		it('renders the view with given FileSaveResults', async () => {
-			const sharedState = { ...defaultSharedState, fileSaveResult: { adminId: 'a_fooBar', fileId: 'f_fooBar' } };
-			const element = await setup(sharedState);
+			const state = { ...initialState, adminId: 'a_fooBar', fileId: 'f_fooBar', latest: new EventLike({ success: true }) };
+			const element = await setup(state);
 
 			expect(element.isVisible()).toBeTrue();
 		});
@@ -76,9 +71,7 @@ describe('ShareDataChip', () => {
 		});
 
 		it('does NOT render the view with invalid FileSaveResult', async () => {
-			const invalidFileSaveResult = { adminId: 'a_fooBar', fileId: null };
-			const sharedState = { ...defaultSharedState, fileSaveResult: invalidFileSaveResult };
-			const element = await setup(sharedState);
+			const element = await setup();
 
 			expect(element.isVisible()).toBeFalse();
 		});
@@ -86,10 +79,9 @@ describe('ShareDataChip', () => {
 
 	describe('when chip is clicked', () => {
 		it('opens the modal with shortened share-urls', async () => {
-			const fileSaveResult = { adminId: 'a_fooBar', fileId: 'f_fooBar' };
 			const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.resolve('http://shorten.foo'));
-			const sharedState = { ...defaultSharedState, fileSaveResult: fileSaveResult };
-			const element = await setup(sharedState);
+			const state = { ...initialState, adminId: 'a_fooBar', fileId: 'f_fooBar', latest: new EventLike({ success: true }) };
+			const element = await setup(state);
 
 			const button = element.shadowRoot.querySelector('button');
 			button.click();
@@ -102,15 +94,29 @@ describe('ShareDataChip', () => {
 			const shareDialogContentElement = contentElement.querySelector('ba-share-content');
 			expect(shareDialogContentElement.shadowRoot.querySelector('input').value).toBe('http://shorten.foo');
 		});
+
+		it('explicitly sets the TOOL_ID query parameter', async () => {
+			const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.resolve('http://shorten.foo'));
+			spyOn(shareServiceMock, 'encodeState').and.returnValue(`http://foo.bar?${QueryParameters.TOOL_ID}=someTool`);
+			const state = { ...initialState, adminId: 'a_fooBar', fileId: 'f_fooBar', latest: new EventLike({ success: true }) };
+			const element = await setup(state);
+
+			const button = element.shadowRoot.querySelector('button');
+			button.click();
+
+			await TestUtils.timeout();
+			expect(shortenerSpy).toHaveBeenCalledTimes(2);
+			expect(shortenerSpy.calls.all()[0].args[0]).toBe(`http://foo.bar/?${QueryParameters.TOOL_ID}=`);
+			expect(shortenerSpy.calls.all()[1].args[0]).toBe(`http://foo.bar/?${QueryParameters.TOOL_ID}=`);
+		});
 	});
 
 	describe('when shortener fails', () => {
 		it('logs a warning', async () => {
 			const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.reject('not available'));
 			const warnSpy = spyOn(console, 'warn');
-			const fileSaveResult = { adminId: 'a_fooBar', fileId: 'f_fooBar' };
-			const sharedState = { ...defaultSharedState, fileSaveResult: fileSaveResult };
-			const element = await setup(sharedState);
+			const state = { ...initialState, adminId: 'a_fooBar', fileId: 'f_fooBar', latest: new EventLike({ success: true }) };
+			const element = await setup(state);
 
 			const button = element.shadowRoot.querySelector('button');
 			button.click();

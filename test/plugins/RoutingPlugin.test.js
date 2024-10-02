@@ -69,19 +69,53 @@ describe('RoutingPlugin', () => {
 
 	describe('register', () => {
 		describe('when routing related query params are available', () => {
-			it('calls _lazyInitialize and updates the active property', async () => {
-				const store = setup();
-				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2`);
-				const instanceUnderTest = new RoutingPlugin();
-				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParams);
-				const lazyInitializeSpy = spyOn(instanceUnderTest, '_lazyInitialize').and.resolveTo(true);
+			describe('exactly one waypoint', () => {
+				it('calls _lazyInitialize, updates the active property and set the correct tab and tools id', async () => {
+					const store = setup();
+					const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2`);
+					const instanceUnderTest = new RoutingPlugin();
+					spyOn(environmentService, 'getQueryParams').and.returnValue(queryParams);
+					const lazyInitializeSpy = spyOn(instanceUnderTest, '_lazyInitialize').and.resolveTo(true);
+					await instanceUnderTest.register(store);
+					spyOn(instanceUnderTest, '_parseWaypoints')
+						.withArgs(queryParams)
+						.and.returnValue([[1, 2]]);
 
-				await instanceUnderTest.register(store);
+					await TestUtils.timeout();
+					await TestUtils.timeout();
+					expect(store.getState().routing.active).toBeTrue();
+					expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
+					expect(store.getState().tools.current).toBe(Tools.ROUTING);
+					expect(lazyInitializeSpy).toHaveBeenCalled();
+				});
+			});
 
-				await TestUtils.timeout();
-				await TestUtils.timeout();
-				expect(store.getState().routing.active).toBeTrue();
-				expect(lazyInitializeSpy).toHaveBeenCalled();
+			describe('more then one waypoint', () => {
+				describe('and tool id is NOT available', () => {
+					it('calls _lazyInitialize and updates the active property', async () => {
+						const store = setup({
+							mainMenu: {
+								tab: TabIds.MAPS
+							}
+						});
+						const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2,3,4&${QueryParameters.TOOL_ID}=${Tools.ROUTING}`);
+						const instanceUnderTest = new RoutingPlugin();
+						spyOn(environmentService, 'getQueryParams').and.returnValue(queryParams);
+						const lazyInitializeSpy = spyOn(instanceUnderTest, '_lazyInitialize').and.resolveTo(true);
+						await instanceUnderTest.register(store);
+						spyOn(instanceUnderTest, '_parseWaypoints')
+							.withArgs(queryParams)
+							.and.returnValue([
+								[1, 2],
+								[3, 4]
+							]);
+
+						await TestUtils.timeout();
+						await TestUtils.timeout();
+						expect(store.getState().routing.active).toBeTrue();
+						expect(lazyInitializeSpy).toHaveBeenCalled();
+					});
+				});
 			});
 
 			describe('_lazyInitialize returns "false"', () => {
@@ -213,7 +247,7 @@ describe('RoutingPlugin', () => {
 					current: Tools.ROUTING
 				},
 
-				bottomSheet: { active: true },
+				bottomSheet: { data: [], active: true },
 				highlight: {
 					features: [{ id: RoutingPlugin.HIGHLIGHT_FEATURE_ID, data: { coordinate: [11, 22] } }]
 				}
@@ -225,7 +259,7 @@ describe('RoutingPlugin', () => {
 			setCurrentTool('foo');
 
 			expect(store.getState().routing.active).toBeFalse();
-			expect(store.getState().bottomSheet.active).toBeFalse();
+			expect(store.getState().bottomSheet.active).toBeNull();
 			expect(store.getState().highlight.features).toHaveSize(0);
 		});
 	});
@@ -311,16 +345,16 @@ describe('RoutingPlugin', () => {
 			setProposal(coordinate, CoordinateProposalType.START_OR_DESTINATION);
 
 			expect(store.getState().mapContextMenu.active).toBeFalse();
-			expect(store.getState().bottomSheet.active).toBeTrue();
-			const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data);
+			expect(store.getState().bottomSheet.active).toBe('interaction');
+			const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data[0].content);
 			expect(wrapperElement.querySelectorAll(ProposalContextContent.tag)).toHaveSize(1);
-			expect(store.getState().bottomSheet.active).toBeTrue();
+			expect(store.getState().bottomSheet.active).toBe('interaction');
 			expect(store.getState().highlight.features).toHaveSize(1);
 			expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
 			expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER_TMP);
 			expect(store.getState().highlight.features[0].id).toBe(RoutingPlugin.HIGHLIGHT_FEATURE_ID);
 
-			closeBottomSheet();
+			closeBottomSheet('interaction');
 
 			expect(store.getState().highlight.features).toHaveSize(0);
 		});
@@ -397,10 +431,10 @@ describe('RoutingPlugin', () => {
 	});
 
 	describe('when routing "waypoint" property changes', () => {
-		describe('and we have more then one waypoint', () => {
+		describe('and we have more than one waypoint', () => {
 			it('resets the UI but does not close the elevation profile', async () => {
 				const store = setup({
-					bottomSheet: { active: true },
+					bottomSheet: { active: 'interaction' },
 					mapContextMenu: { active: true },
 					highlight: {
 						features: [{ id: RoutingPlugin.HIGHLIGHT_FEATURE_ID, data: { coordinate: [11, 22] } }],
@@ -419,7 +453,7 @@ describe('RoutingPlugin', () => {
 					[3, 4]
 				]);
 
-				expect(store.getState().bottomSheet.active).toBeTrue();
+				expect(store.getState().bottomSheet.active).toBe('interaction');
 				expect(store.getState().mapContextMenu.active).toBeFalse();
 				expect(store.getState().highlight.active).toBeFalse();
 			});
@@ -427,7 +461,7 @@ describe('RoutingPlugin', () => {
 		describe('and we have less than two waypoints', () => {
 			it('resets the UI and also closes the elevation profile', async () => {
 				const store = setup({
-					bottomSheet: { active: true },
+					bottomSheet: { data: [], active: true },
 					mapContextMenu: { active: true },
 					highlight: {
 						features: [{ id: RoutingPlugin.HIGHLIGHT_FEATURE_ID, data: { coordinate: [11, 22] } }],
@@ -443,7 +477,7 @@ describe('RoutingPlugin', () => {
 
 				setStart([1, 2]);
 
-				expect(store.getState().bottomSheet.active).toBeFalse();
+				expect(store.getState().bottomSheet.active).toBeNull();
 				expect(store.getState().mapContextMenu.active).toBeFalse();
 				expect(store.getState().highlight.active).toBeFalse();
 			});
@@ -499,13 +533,84 @@ describe('RoutingPlugin', () => {
 		});
 	});
 
+	describe('_parseWaypoints', () => {
+		describe('valid waypoints are available', () => {
+			it('returns an array of parsed coordinates', async () => {
+				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1.1,2.2,3.3,4.4`);
+				setup();
+				const instanceUnderTest = new RoutingPlugin();
+
+				const coords = instanceUnderTest._parseWaypoints(queryParams);
+
+				expect(coords).toEqual([
+					[1.1, 2.2],
+					[3.3, 4.4]
+				]);
+			});
+		});
+
+		describe('one or more waypoints are invalid', () => {
+			it('returns an array of valid coordinates', async () => {
+				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1.1,2.2,3.3,foo`);
+				setup();
+				const instanceUnderTest = new RoutingPlugin();
+
+				const coords = instanceUnderTest._parseWaypoints(queryParams);
+
+				expect(coords).toEqual([[1.1, 2.2]]);
+			});
+		});
+
+		describe('waypoint parameter contains invalid number of values', () => {
+			it('returns an empty array', async () => {
+				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1.1,2.2,3.3`);
+				setup();
+				const instanceUnderTest = new RoutingPlugin();
+
+				const coords = instanceUnderTest._parseWaypoints(queryParams);
+
+				expect(coords).toEqual([]);
+			});
+		});
+
+		describe('no waypoints are available', () => {
+			it('returns an empty array', async () => {
+				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=`);
+				setup();
+				const instanceUnderTest = new RoutingPlugin();
+
+				const coords = instanceUnderTest._parseWaypoints(queryParams);
+
+				expect(coords).toEqual([]);
+			});
+		});
+
+		describe('ROUTE_WAYPOINTS query parameter is not available', () => {
+			it('returns an empty array', async () => {
+				const queryParams = new URLSearchParams();
+				setup();
+				const instanceUnderTest = new RoutingPlugin();
+
+				const coords = instanceUnderTest._parseWaypoints(queryParams);
+
+				expect(coords).toEqual([]);
+			});
+		});
+	});
+
 	describe('_parseRouteFromQueryParams', () => {
 		describe('waypoints and categoryId are available', () => {
 			it('updates the "waypoint" and "categoryId" properties of the routing s-o-s', async () => {
-				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1.1,2.2,3.3,4.4&${QueryParameters.ROUTE_CATEGORY}=catId`);
+				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_CATEGORY}=catId`);
 				const store = setup();
 				spyOn(routingService, 'getCategoryById').and.returnValue({});
 				const instanceUnderTest = new RoutingPlugin();
+				spyOn(instanceUnderTest, '_parseWaypoints')
+					.withArgs(queryParams)
+					.and.returnValue([
+						[1.1, 2.2],
+						[3.3, 4.4]
+					]);
 
 				instanceUnderTest._parseRouteFromQueryParams(queryParams);
 
@@ -517,12 +622,15 @@ describe('RoutingPlugin', () => {
 			});
 		});
 
-		describe('one waypoint and a categoryId are available', () => {
+		describe('exactly one waypoint and a categoryId are available', () => {
 			it('updates the "waypoint" and "categoryId" properties of the routing s-o-s', async () => {
-				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1.1,2.2&${QueryParameters.ROUTE_CATEGORY}=catId`);
+				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_CATEGORY}=catId`);
 				const store = setup();
 				spyOn(routingService, 'getCategoryById').and.returnValue({});
 				const instanceUnderTest = new RoutingPlugin();
+				spyOn(instanceUnderTest, '_parseWaypoints')
+					.withArgs(queryParams)
+					.and.returnValue([[1.1, 2.2]]);
 
 				instanceUnderTest._parseRouteFromQueryParams(queryParams);
 
@@ -534,10 +642,16 @@ describe('RoutingPlugin', () => {
 
 		describe('categoryId is unknown', () => {
 			it('updates just the "waypoint" property of the routing s-o-s', async () => {
-				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1.1,2.2,3.3,4.4&${QueryParameters.ROUTE_CATEGORY}=catId`);
+				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_CATEGORY}=catId`);
 				const store = setup();
 				spyOn(routingService, 'getCategoryById').and.returnValue(null);
 				const instanceUnderTest = new RoutingPlugin();
+				spyOn(instanceUnderTest, '_parseWaypoints')
+					.withArgs(queryParams)
+					.and.returnValue([
+						[1.1, 2.2],
+						[3.3, 4.4]
+					]);
 
 				instanceUnderTest._parseRouteFromQueryParams(queryParams);
 
@@ -551,10 +665,16 @@ describe('RoutingPlugin', () => {
 
 		describe('just waypoints are available', () => {
 			it('updates the "waypoint" property of the routing s-o-s', async () => {
-				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1.1,2.2,3.3,4.4`);
+				const queryParams = new URLSearchParams();
 				const store = setup();
 				spyOn(routingService, 'getCategoryById').and.returnValue({});
 				const instanceUnderTest = new RoutingPlugin();
+				spyOn(instanceUnderTest, '_parseWaypoints')
+					.withArgs(queryParams)
+					.and.returnValue([
+						[1.1, 2.2],
+						[3.3, 4.4]
+					]);
 
 				instanceUnderTest._parseRouteFromQueryParams(queryParams);
 
@@ -565,39 +685,14 @@ describe('RoutingPlugin', () => {
 				expect(store.getState().routing.categoryId).toBeNull();
 			});
 		});
+
 		describe('no waypoints are available', () => {
 			it('does nothing', async () => {
 				const queryParams = new URLSearchParams(`{QueryParameters.ROUTE_CATEGORY}=catId`);
 				const store = setup();
-				const instanceUnderTest = new RoutingPlugin();
-
-				instanceUnderTest._parseRouteFromQueryParams(queryParams);
-
-				expect(store.getState().routing.waypoints).toEqual([]);
-				expect(store.getState().routing.categoryId).toBeNull();
-			});
-		});
-
-		describe('waypoint parameter contains invalid number of values', () => {
-			it('does nothing', async () => {
-				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1.1,2.2,3.3&${QueryParameters.ROUTE_CATEGORY}=catId`);
-				const store = setup();
 				spyOn(routingService, 'getCategoryById').and.returnValue({});
 				const instanceUnderTest = new RoutingPlugin();
-
-				instanceUnderTest._parseRouteFromQueryParams(queryParams);
-
-				expect(store.getState().routing.waypoints).toEqual([]);
-				expect(store.getState().routing.categoryId).toBeNull();
-			});
-		});
-
-		describe('waypoint parameter contains invalid number as value', () => {
-			it('does nothing', async () => {
-				const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1.1,two&${QueryParameters.ROUTE_CATEGORY}=catId`);
-				const store = setup();
-				spyOn(routingService, 'getCategoryById').and.returnValue({});
-				const instanceUnderTest = new RoutingPlugin();
+				spyOn(instanceUnderTest, '_parseWaypoints').withArgs(queryParams).and.returnValue([]);
 
 				instanceUnderTest._parseRouteFromQueryParams(queryParams);
 

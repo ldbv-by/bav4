@@ -6,7 +6,7 @@ import { MvuElement } from '../../MvuElement';
 import { WcEvents } from '../../../domain/wcEvents';
 import { MediaType } from '../../../domain/mediaTypes';
 import mainCss from '../../../main.css';
-import defaultCss from '../../../modules/baElement.css';
+import defaultCss from '../../../modules/mvuElement.css';
 import css from './publicComponent.css';
 
 /**
@@ -37,12 +37,11 @@ export class PublicComponent extends MvuElement {
 		 * Publish public GEOMETRY_CHANGE event
 		 */
 		this.observe(
-			(state) => state.draw.fileSaveResult,
-			(fileSaveResult) => {
-				const { payload } = fileSaveResult;
+			(state) => state.fileStorage.data,
+			(data) => {
 				this.dispatchEvent(
 					new CustomEvent(WcEvents.GEOMETRY_CHANGE, {
-						detail: payload ? { data: payload.content, type: MediaType.KML } : null,
+						detail: data ? { data: data, type: MediaType.KML } : null,
 						bubbles: true,
 						composed: true
 					})

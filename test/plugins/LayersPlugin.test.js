@@ -374,6 +374,52 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[1].opacity).toBe(1);
 			});
 
+			it('adds layers considering timestamp', () => {
+				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_TIMESTAMP}=2000,2024`);
+				const store = setup();
+				const instanceUnderTest = new LayersPlugin();
+				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+					switch (id) {
+						case 'some0':
+							return new XyzGeoResource(id, 'someLabel0', 'someUrl0').setTimestamps(['2000', '2024']);
+						case 'some1':
+							return new XyzGeoResource(id, 'someLabel1', 'someUrl1').setTimestamps(['2000', '2024']);
+					}
+				});
+
+				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
+
+				expect(store.getState().layers.active.length).toBe(2);
+				expect(store.getState().layers.active[0].id).toBe('some0_0');
+				expect(store.getState().layers.active[0].timestamp).toBe('2000');
+				expect(store.getState().layers.active[1].id).toBe('some1_0');
+				expect(store.getState().layers.active[1].timestamp).toBe('2024');
+			});
+
+			it('adds layers considering unusable timestamp params', () => {
+				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_OPACITY}=,1900`);
+				const store = setup();
+				const instanceUnderTest = new LayersPlugin();
+				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+					switch (id) {
+						case 'some0':
+							return new XyzGeoResource(id, 'someLabel0', 'someUrl0').setTimestamps(['2000', '2024']);
+						case 'some1':
+							return new XyzGeoResource(id, 'someLabel1', 'someUrl1').setTimestamps(['2000', '2024']);
+					}
+				});
+
+				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
+
+				expect(store.getState().layers.active.length).toBe(2);
+				expect(store.getState().layers.active[0].id).toBe('some0_0');
+				expect(store.getState().layers.active[0].timestamp).toBeNull();
+				expect(store.getState().layers.active[1].id).toBe('some1_0');
+				expect(store.getState().layers.active[1].timestamp).toBeNull();
+			});
+
 			it('does NOT add a layer when geoResourceService cannot fulfill', () => {
 				const queryParam = new URLSearchParams(QueryParameters.LAYER + '=unknown');
 				const store = setup();

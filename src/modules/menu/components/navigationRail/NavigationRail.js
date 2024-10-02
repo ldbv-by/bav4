@@ -14,11 +14,13 @@ import { increaseZoom, decreaseZoom } from '../../../../store/position/position.
 import { fit } from '../../../../store/position/position.action';
 import { close } from '../../../../store/navigationRail/navigationRail.action';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { closeModal, openModal } from '../../../../store/modal/modal.action';
 
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_IsOpen_NavigationRail = 'update_NavigationRail';
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
 const Update_Schema = 'update_schema';
+const Update_Auth = 'update_auth';
 
 const FULLSCREEN_CSS_ID = 'fullscreen-css-id';
 
@@ -31,6 +33,7 @@ export class NavigationRail extends MvuElement {
 	#environmentService;
 	#translationService;
 	#mapService;
+	#authService;
 
 	constructor() {
 		super({
@@ -44,12 +47,14 @@ export class NavigationRail extends MvuElement {
 		const {
 			EnvironmentService: environmentService,
 			TranslationService: translationService,
-			MapService: mapService
-		} = $injector.inject('EnvironmentService', 'MapService', 'TranslationService');
+			MapService: mapService,
+			AuthService: authService
+		} = $injector.inject('EnvironmentService', 'MapService', 'TranslationService', 'AuthService');
 
 		this.#environmentService = environmentService;
 		this.#translationService = translationService;
 		this.#mapService = mapService;
+		this.#authService = authService;
 	}
 
 	update(type, data, model) {
@@ -62,6 +67,8 @@ export class NavigationRail extends MvuElement {
 				return { ...model, ...data };
 			case Update_Schema:
 				return { ...model, darkSchema: data };
+			case Update_Auth:
+				return { ...model, signedIn: data };
 		}
 	}
 
@@ -83,6 +90,10 @@ export class NavigationRail extends MvuElement {
 			(state) => state.media,
 			(media) => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait, hasMinWidth: media.minWidth })
 		);
+		this.observe(
+			(state) => state.auth.signedIn,
+			(signedIn) => this.signal(Update_Auth, signedIn)
+		);
 	}
 
 	isRenderingSkipped() {
@@ -90,9 +101,23 @@ export class NavigationRail extends MvuElement {
 	}
 
 	createView(model) {
-		const { isOpenNavigationRail, darkSchema, isPortrait, tabIndex, isOpen, visitedTabIds } = model;
+		const { isOpenNavigationRail, darkSchema, isPortrait, tabIndex, isOpen, visitedTabIds, signedIn } = model;
 
 		const reverseTabIds = [...visitedTabIds].reverse();
+
+		const openFeedbackDialog = () => {
+			const title = translate('menu_navigation_rail_feedback');
+			const content = html`<ba-mvu-togglefeedbackpanel .onSubmit=${closeModal}></ba-mvu-togglefeedbackpanel>`;
+			openModal(title, content, { steps: 2 });
+		};
+
+		const onClickSignIn = async () => {
+			this.#authService.signIn();
+		};
+
+		const onClickSignOut = () => {
+			this.#authService.signOut();
+		};
 
 		const getSchemaClass = () => {
 			return darkSchema ? 'sun' : 'moon';
@@ -103,10 +128,14 @@ export class NavigationRail extends MvuElement {
 		};
 
 		const openTab = (tabId) => {
-			if (tabId === TabIds.ROUTING) {
-				setCurrentTool(Tools.ROUTING);
-			} else {
-				setCurrentTool(null);
+			// handle current tool if necessary
+			switch (tabId) {
+				case TabIds.ROUTING:
+					setCurrentTool(Tools.ROUTING);
+					break;
+				case TabIds.FEATUREINFO:
+					setCurrentTool(null);
+					break;
 			}
 			isPortrait || tabId === tabIndex ? toggle() : open();
 			setTab(tabId);
@@ -203,10 +232,31 @@ export class NavigationRail extends MvuElement {
 						<span class="icon "> </span>
 						<span class="text">${translate('menu_navigation_rail_close')}</span>
 					</button>
-
-					<button @click="${toggleSchema}" title="${translate(getTooltip())}" class=" ${getSchemaClass()} theme-toggle pointer">
-						<span class="icon "> </span>
-					</button>
+					<div class="sub-button-container">
+						<button
+							id="authButton"
+							@click=${signedIn ? onClickSignOut : onClickSignIn}
+							title="${translate(signedIn ? 'menu_navigation_rail_logout' : 'menu_navigation_rail_login')}"
+							class="log-in pointer ${signedIn ? 'logout' : ''}"
+						>
+							<span class="icon "> </span>
+						</button>
+						<button id="feedback" @click="${openFeedbackDialog}" title="${translate('menu_navigation_rail_feedback')}" class="feedback pointer">
+							<span class="icon "> </span>
+						</button>
+						<a
+							id="help"
+							href="${translate('menu_navigation_rail_help_url')}"
+							target="_blank"
+							title="${translate('menu_navigation_rail_help')}"
+							class="help pointer"
+						>
+							<span class="icon "> </span>
+						</a>
+						<button @click="${toggleSchema}" title="${translate(getTooltip())}" class=" ${getSchemaClass()} theme-toggle pointer">
+							<span class="icon "> </span>
+						</button>
+					</div>
 				</div>
 			</div>
 		`;

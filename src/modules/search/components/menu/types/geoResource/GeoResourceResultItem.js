@@ -159,7 +159,7 @@ export class GeoResourceResultItem extends MvuElement {
 
 		const onClickOpenGeoResourceInfoPanel = async (result) => {
 			const content = html`<ba-georesourceinfo-panel .geoResourceId=${result.geoResourceId}></ba-georesourceinfo-panel>`;
-			openModal('label', content);
+			openModal(geoResourceSearchResult.labelFormatted, content);
 		};
 
 		const getActivePreviewClass = () => {
@@ -170,6 +170,13 @@ export class GeoResourceResultItem extends MvuElement {
 			const toBadges = (keywords) =>
 				keywords.map((keyword) => html`<ba-badge .color=${'var(--text3)'} .background=${'var(--roles-color)'} .label=${keyword}></ba-badge>`);
 			return keywords.length === 0 ? nothing : toBadges(keywords);
+		};
+
+		const getPreviewClass = (result) => {
+			return !isGeoResourceActive(geoResourceSearchResult.geoResourceId) &&
+				activeLayers.filter((l) => l.id === GeoResourceResultItem._tmpLayerId(result.geoResourceId)).length === 1
+				? 'preview'
+				: '';
 		};
 
 		const getZoomToExtentButton = (result) => {
@@ -196,7 +203,7 @@ export class GeoResourceResultItem extends MvuElement {
 					${css}
 				</style>
 				<li
-					class="ba-list-item ${getActivePreviewClass()}"
+					class="ba-list-item ${getActivePreviewClass()} ${getPreviewClass(geoResourceSearchResult)}"
 					tabindex="0"
 					@mouseenter=${() => onMouseEnter(geoResourceSearchResult)}
 					@mouseleave=${() => onMouseLeave(geoResourceSearchResult)}

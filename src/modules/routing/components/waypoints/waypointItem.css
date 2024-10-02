@@ -61,8 +61,10 @@
 }
 .text {
 	flex-grow: 2;
+	/*  Hint: deactivated as long as no secondary info for a waypoint item must be displayed (coordinates, segment length et cetera
 	display: grid;
-	grid-template-columns: 3em 7em;
+	grid-template-columns: 3em 7em; 
+	*/
 }
 .text-name {
 	font-weight: bold;

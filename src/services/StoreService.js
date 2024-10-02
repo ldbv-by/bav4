@@ -3,7 +3,7 @@
  */
 import { combineReducers, createStore } from 'redux';
 import { positionReducer } from '../store/position/position.reducer';
-import { layersReducer } from '../store/layers/layers.reducer';
+import { extendedLayersReducer } from '../store/layers/layers.reducer';
 import { $injector } from '../injection';
 import { topicsReducer } from '../store/topics/topics.reducer';
 import { networkReducer } from '../store/network/network.reducer';
@@ -34,6 +34,8 @@ import { iframeContainerReducer } from '../store/iframeContainer/iframeContainer
 import { routingReducer } from '../store/routing/routing.reducer';
 import { authReducer } from '../store/auth/auth.reducer';
 import { wcAttributeReducer } from '../store/wcAttribute/wcAttribute.reducer';
+import { fileStorageReducer } from '../store/fileStorage/fileStorage.reducer';
+import { timeTravelReducer } from '../store/timeTravel/timeTravel.reducer';
 
 /**
  * Service which configures, initializes and holds the redux store.
@@ -54,7 +56,7 @@ export class StoreService {
 			navigationRail: createNavigationRailReducer(),
 			tools: toolsReducer,
 			modal: modalReducer,
-			layers: layersReducer,
+			layers: extendedLayersReducer,
 			mapContextMenu: mapContextMenuReducer,
 			measurement: measurementReducer,
 			draw: drawReducer,
@@ -77,7 +79,9 @@ export class StoreService {
 			iframeContainer: iframeContainerReducer,
 			routing: routingReducer,
 			auth: authReducer,
-			wcAttribute: wcAttributeReducer
+			wcAttribute: wcAttributeReducer,
+			fileStorage: fileStorageReducer,
+			timeTravel: timeTravelReducer
 		});
 
 		this._store = createStore(rootReducer);
@@ -108,10 +112,12 @@ export class StoreService {
 				IframeContainerPlugin: iframeContainerPlugin,
 				SharePlugin: sharePlugin,
 				ToolsPlugin: toolsPlugin,
+				FileStoragePlugin: fileStoragePlugin,
 				BeforeUnloadPlugin: beforeUnloadPlugin,
 				IframeGeometryIdPlugin: iframeGeometryIdPlugin,
 				ObserveWcAttributesPlugin: observeWcAttributesPlugin,
 				EncodeStatePlugin: encodeStatePlugin,
+				TimeTravelPlugin: timeTravelPlugin,
 				ObserveStateForEncodingPlugin: observeStateForEncodingPlugin
 			} = $injector.inject(
 				'GlobalErrorPlugin',
@@ -138,10 +144,12 @@ export class StoreService {
 				'IframeContainerPlugin',
 				'SharePlugin',
 				'ToolsPlugin',
+				'FileStoragePlugin',
 				'BeforeUnloadPlugin',
 				'IframeGeometryIdPlugin',
 				'ObserveWcAttributesPlugin',
 				'EncodeStatePlugin',
+				'TimeTravelPlugin',
 				'ObserveStateForEncodingPlugin'
 			);
 
@@ -152,6 +160,7 @@ export class StoreService {
 				await mediaPlugin.register(this._store);
 				await topicsPlugin.register(this._store);
 				await chipsPlugin.register(this._store);
+				await timeTravelPlugin.register(this._store);
 				await layersPlugin.register(this._store);
 				await positionPlugin.register(this._store);
 				await measurementPlugin.register(this._store);
@@ -171,6 +180,7 @@ export class StoreService {
 				await iframeContainerPlugin.register(this._store);
 				await sharePlugin.register(this._store);
 				await toolsPlugin.register(this._store);
+				await fileStoragePlugin.register(this._store);
 				await beforeUnloadPlugin.register(this._store);
 				await iframeGeometryIdPlugin.register(this._store);
 				await observeWcAttributesPlugin.register(this._store);

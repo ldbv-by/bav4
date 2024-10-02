@@ -1,3 +1,4 @@
+import { MediaType } from '../../../../../src/domain/mediaTypes';
 import { $injector } from '../../../../../src/injection';
 import {
 	CadastralParcelSearchResult,
@@ -17,7 +18,8 @@ describe('SearchResult provider', () => {
 	};
 
 	const httpService = {
-		get: async () => {}
+		get: async () => {},
+		post: async () => {}
 	};
 
 	beforeAll(() => {
@@ -121,12 +123,12 @@ describe('SearchResult provider', () => {
 
 		it('loads SearchResults for locations', async () => {
 			const term = 'term?/foo';
-			const termReplacedAndEncoded = 'term%3F%20foo';
 			const backendUrl = 'https://backend.url';
-			const expectedArgs0 = `${backendUrl}/search/type/locations/searchText/${termReplacedAndEncoded}`;
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
-			const httpServiceSpy = spyOn(httpService, 'get')
-				.withArgs(expectedArgs0)
+			const expectedUrl = `${backendUrl}/search/type/locations/searchText`;
+			const payload = { term };
+			const httpServiceSpy = spyOn(httpService, 'post')
+				.withArgs(expectedUrl, JSON.stringify(payload), MediaType.JSON)
 				.and.returnValue(Promise.resolve(new Response(JSON.stringify(mockResponse))));
 
 			const searchResults = await loadBvvLocationSearchResults(term);
@@ -151,10 +153,11 @@ describe('SearchResult provider', () => {
 		it('returns an empty array when response is empty', async () => {
 			const term = 'term';
 			const backendUrl = 'https://backend.url';
-			const expectedArgs0 = `${backendUrl}/search/type/locations/searchText/${term}`;
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
-			const httpServiceSpy = spyOn(httpService, 'get')
-				.withArgs(expectedArgs0)
+			const expectedUrl = `${backendUrl}/search/type/locations/searchText`;
+			const payload = { term };
+			const httpServiceSpy = spyOn(httpService, 'post')
+				.withArgs(expectedUrl, JSON.stringify(payload), MediaType.JSON)
 				.and.returnValue(Promise.resolve(new Response(JSON.stringify([]))));
 
 			const searchResults = await loadBvvLocationSearchResults(term);
@@ -167,10 +170,11 @@ describe('SearchResult provider', () => {
 		it('rejects when backend request cannot be fulfilled', async () => {
 			const term = 'term';
 			const backendUrl = 'https://backend.url';
-			const expectedArgs0 = `${backendUrl}/search/type/locations/searchText/${term}`;
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
-			const httpServiceSpy = spyOn(httpService, 'get')
-				.withArgs(expectedArgs0)
+			const expectedUrl = `${backendUrl}/search/type/locations/searchText`;
+			const payload = { term };
+			const httpServiceSpy = spyOn(httpService, 'post')
+				.withArgs(expectedUrl, JSON.stringify(payload), MediaType.JSON)
 				.and.returnValue(Promise.resolve(new Response(null, { status: 404 })));
 
 			try {

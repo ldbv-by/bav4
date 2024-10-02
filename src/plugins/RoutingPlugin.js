@@ -18,6 +18,7 @@ import { QueryParameters } from '../domain/queryParameters';
 import { setTab } from '../store/mainMenu/mainMenu.action';
 import { TabIds } from '../domain/mainMenu';
 import { isCoordinate } from '../utils/checks';
+import { INTERACTION_BOTTOM_SHEET_ID } from '../store/bottomSheet/bottomSheet.reducer';
 
 /**
  * Id of the temporary layer used for routing interaction when the tool is activated.
@@ -91,6 +92,11 @@ export class RoutingPlugin extends BaPlugin {
 				// we activate the tool after another possible active tool was deactivated
 				setTimeout(() => {
 					activate();
+					// when we have a destination proposal waypoint we always open the routing tab set the routing tool as the current tool
+					if (this._parseWaypoints(this.#environmentService.getQueryParams()).length === 1) {
+						setTab(TabIds.ROUTING);
+						setCurrentTool(Tools.ROUTING);
+					}
 				});
 			}
 		}
@@ -98,7 +104,7 @@ export class RoutingPlugin extends BaPlugin {
 		const onToolChanged = async (toolId) => {
 			if (toolId !== Tools.ROUTING) {
 				removeHighlightFeaturesById(RoutingPlugin.HIGHLIGHT_FEATURE_ID);
-				closeBottomSheet();
+				closeBottomSheet(INTERACTION_BOTTOM_SHEET_ID);
 				deactivate();
 			} else {
 				if (await this._lazyInitialize()) {
@@ -143,7 +149,7 @@ export class RoutingPlugin extends BaPlugin {
 				data: { coordinate: [...coord] }
 			});
 			const content = html`<ba-proposal-context-content></ba-proposal-context-content>`;
-			openBottomSheet(content);
+			openBottomSheet(content, INTERACTION_BOTTOM_SHEET_ID);
 			// we also want to remove the highlight feature when the BottomSheet was closed
 			observeOnce(
 				store,
@@ -160,7 +166,7 @@ export class RoutingPlugin extends BaPlugin {
 			clearHighlightFeatures();
 			closeContextMenu();
 			if (waypoints.length < 2) {
-				closeBottomSheet();
+				closeBottomSheet(INTERACTION_BOTTOM_SHEET_ID);
 			}
 		};
 		const onLayerRemoved = (eventLike, state) => {
@@ -196,30 +202,31 @@ export class RoutingPlugin extends BaPlugin {
 		);
 	}
 
-	_parseRouteFromQueryParams(queryParams) {
-		if (queryParams.has(QueryParameters.ROUTE_WAYPOINTS)) {
-			const parseWaypoints = (waypointsAsString) => {
-				const waypoints = [];
-				const routeValues = waypointsAsString.split(',');
-				if (routeValues.length > 1 && routeValues.length % 2 === 0) {
-					for (let index = 0; index < routeValues.length - 1; index = index + 2) {
-						waypoints.push([parseFloat(routeValues[index]), parseFloat(routeValues[index + 1])]);
-					}
+	_parseWaypoints(queryParams) {
+		const waypoints = [];
+		const waypointsAsString = queryParams.get(QueryParameters.ROUTE_WAYPOINTS);
+		if (waypointsAsString) {
+			const routeValues = waypointsAsString.split(',');
+			if (routeValues.length > 1 && routeValues.length % 2 === 0) {
+				for (let index = 0; index < routeValues.length - 1; index = index + 2) {
+					waypoints.push([parseFloat(routeValues[index]), parseFloat(routeValues[index + 1])]);
 				}
-				return waypoints.filter((c) => isCoordinate(c));
-			};
-
-			const waypoints = parseWaypoints(queryParams.get(QueryParameters.ROUTE_WAYPOINTS));
-			if (waypoints.length > 0) {
-				if (queryParams.has(QueryParameters.ROUTE_CATEGORY)) {
-					const catId = queryParams.get(QueryParameters.ROUTE_CATEGORY);
-					// update the category only if catId is a known id
-					if (this.#routingService.getCategoryById(catId)) {
-						setCategory(catId);
-					}
-				}
-				waypoints.length === 1 ? setDestination(waypoints[0]) : setWaypoints(waypoints);
 			}
+		}
+		return waypoints.filter((c) => isCoordinate(c));
+	}
+
+	_parseRouteFromQueryParams(queryParams) {
+		const waypoints = this._parseWaypoints(queryParams);
+		if (waypoints.length > 0) {
+			if (queryParams.has(QueryParameters.ROUTE_CATEGORY)) {
+				const catId = queryParams.get(QueryParameters.ROUTE_CATEGORY);
+				// update the category only if catId is a known id
+				if (this.#routingService.getCategoryById(catId)) {
+					setCategory(catId);
+				}
+			}
+			waypoints.length === 1 ? setDestination(waypoints[0]) : setWaypoints(waypoints);
 		}
 	}
 

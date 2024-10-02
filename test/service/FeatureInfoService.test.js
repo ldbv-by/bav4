@@ -1,6 +1,6 @@
 import { $injector } from '../../src/injection';
-import { WmsGeoResource, XyzGeoResource } from '../../src/domain/geoResources';
-import { FeatureInfoResult, FeatureInfoService } from '../../src/services/FeatureInfoService';
+import { WmsGeoResource } from '../../src/domain/geoResources';
+import { FeatureInfoService } from '../../src/services/FeatureInfoService';
 import { loadBvvFeatureInfo } from '../../src/services/provider/featureInfo.provider';
 
 describe('FeatureInfoService', () => {
@@ -35,31 +35,31 @@ describe('FeatureInfoService', () => {
 			const geoResourceId = 'id';
 			const coordinate = [21, 42];
 			const resolution = 5;
-			const featureInfoResultMock = new FeatureInfoResult('content', 'title');
-			const providerSpy = jasmine.createSpy().withArgs(geoResourceId, coordinate, resolution).and.resolveTo(featureInfoResultMock);
+			const timestamp = '1900';
+			const featureInfoResultMock = { content: 'content', title: 'title' };
+			const providerSpy = jasmine.createSpy().withArgs(geoResourceId, coordinate, resolution, timestamp).and.resolveTo(featureInfoResultMock);
+			spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(new WmsGeoResource(geoResourceId));
 			const instanceUnderTest = setup(providerSpy);
-			const isQueryableSpy = spyOn(instanceUnderTest, 'isQueryable').withArgs(geoResourceId).and.returnValue(true);
 
-			const featureInfoResult = await instanceUnderTest.get(geoResourceId, coordinate, resolution);
+			const featureInfoResult = await instanceUnderTest.get(geoResourceId, coordinate, resolution, timestamp);
 
 			expect(featureInfoResult).toEqual(featureInfoResultMock);
-			expect(isQueryableSpy).toHaveBeenCalled();
 			expect(providerSpy).toHaveBeenCalled();
 		});
 
-		it('returns Null when GeoResource is not queryable', async () => {
+		it('returns NULL when GeoResource is not queryable', async () => {
 			const geoResourceId = 'id';
 			const coordinate = [21, 42];
 			const resolution = 5;
-			const featureInfoResultMock = new FeatureInfoResult('content', 'title');
-			const providerSpy = jasmine.createSpy().withArgs(geoResourceId, coordinate, resolution).and.resolveTo(featureInfoResultMock);
+			const timestamp = '1900';
+			const featureInfoResultMock = { content: 'content', title: 'title' };
+			const providerSpy = jasmine.createSpy().withArgs(geoResourceId, coordinate, resolution, timestamp).and.resolveTo(featureInfoResultMock);
+			spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(new WmsGeoResource(geoResourceId).setQueryable(false));
 			const instanceUnderTest = setup(providerSpy);
-			const isQueryableSpy = spyOn(instanceUnderTest, 'isQueryable').withArgs(geoResourceId).and.returnValue(false);
 
-			const featureInfoResult = await instanceUnderTest.get(geoResourceId, coordinate, resolution);
+			const featureInfoResult = await instanceUnderTest.get(geoResourceId, coordinate, resolution, timestamp);
 
 			expect(featureInfoResult).toBeNull();
-			expect(isQueryableSpy).toHaveBeenCalled();
 			expect(providerSpy).not.toHaveBeenCalled();
 		});
 
@@ -67,53 +67,18 @@ describe('FeatureInfoService', () => {
 			const geoResourceId = 'id';
 			const coordinate = [21, 42];
 			const resolution = 5;
+			const timestamp = '1900';
 			const errorMessage = 'something got wrong';
-			const providerSpy = jasmine.createSpy().withArgs(geoResourceId, coordinate, resolution).and.returnValue(Promise.reject(errorMessage));
+			const providerSpy = jasmine
+				.createSpy()
+				.withArgs(geoResourceId, coordinate, resolution, timestamp)
+				.and.returnValue(Promise.reject(errorMessage));
+			spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(new WmsGeoResource(geoResourceId));
 			const instanceUnderTest = setup(providerSpy);
-			const isQueryableSpy = spyOn(instanceUnderTest, 'isQueryable').withArgs(geoResourceId).and.returnValue(true);
 
-			try {
-				await instanceUnderTest.get(geoResourceId, coordinate, resolution);
-				throw new Error('Promise should not be resolved');
-			} catch (e) {
-				expect(e.message).toBe(`Could not load a FeatureInfoResult from provider: ${errorMessage}`);
-				expect(isQueryableSpy).toHaveBeenCalled();
-				expect(providerSpy).toHaveBeenCalled();
-			}
-		});
-
-		describe('isQueryable', () => {
-			it('tests if a GeoResource is queryable', async () => {
-				const geoResourceId = 'id';
-				const instanceUnderTest = setup();
-				const geoResourceServiceSpy = spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(new WmsGeoResource(geoResourceId));
-
-				expect(instanceUnderTest.isQueryable(geoResourceId)).toBeTrue();
-
-				geoResourceServiceSpy.withArgs(geoResourceId).and.returnValue(new WmsGeoResource(geoResourceId).setQueryable(false));
-
-				expect(instanceUnderTest.isQueryable(geoResourceId)).toBeFalse();
-
-				geoResourceServiceSpy.withArgs(geoResourceId).and.returnValue(new XyzGeoResource(geoResourceId));
-
-				expect(instanceUnderTest.isQueryable(geoResourceId)).toBeFalse();
-			});
-		});
-	});
-
-	describe('FeatureInfoResult', () => {
-		it('provides getter for properties', () => {
-			const layerInfoResult = new FeatureInfoResult('<b>content</b>', 'title');
-
-			expect(layerInfoResult.content).toBe('<b>content</b>');
-			expect(layerInfoResult.title).toBe('title');
-		});
-
-		it('provides default properties', () => {
-			const layerInfoResult = new FeatureInfoResult('<b>content</b>', undefined);
-
-			expect(layerInfoResult.content).toBe('<b>content</b>');
-			expect(layerInfoResult.title).toBeNull();
+			await expectAsync(instanceUnderTest.get(geoResourceId, coordinate, resolution, timestamp)).toBeRejectedWithError(
+				`Could not load a FeatureInfoResult from provider: ${errorMessage}`
+			);
 		});
 	});
 });

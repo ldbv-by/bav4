@@ -13,7 +13,6 @@ describe('global i18n', () => {
 			'The acquisition of the position failed because your browser settings does not allow it. Allow your browser / this website to use your location. Deactivate the "private" mode of your browser.'
 		);
 		expect(map.global_geolocation_not_available).toBe('The acquisition of the position failed');
-		expect(map.global_import_url_failed).toBe('URL-Import failed');
 		expect(map.global_import_data_failed).toBe('Importing data failed');
 		expect(map.global_import_unsupported_sourceType).toBe('Source type could not be detected or is not supported');
 		expect(map.global_import_authenticationModal_title).toBe('Authentication');
@@ -28,6 +27,7 @@ describe('global i18n', () => {
 		expect(map.global_geoResource_unauthorized).toBe('401 - Unauthorized');
 		expect(map.global_geoResource_forbidden).toBe('403 - Forbidden');
 		expect(map.global_signOut_success).toBe('Signed out successfully');
+		expect(map.global_fileStorageService_exception).toBe('The data could not be stored');
 	});
 
 	it('provides translation for de', () => {
@@ -42,7 +42,6 @@ describe('global i18n', () => {
 			'Es ist keine Positionsbestimmung möglich, da Ihre Browsereinstellungen dies nicht zulassen. Erlauben Sie die Positionsbestimmung und deaktivieren Sie den "Privat" Modus des Browsers.'
 		);
 		expect(map.global_geolocation_not_available).toBe('Es ist keine Positionsbestimmung möglich');
-		expect(map.global_import_url_failed).toBe('URL-Import schlug fehl');
 		expect(map.global_import_data_failed).toBe('Import der Daten schlug fehl');
 		expect(map.global_import_unsupported_sourceType).toBe('Daten-Typ konnte nicht erkannt werden oder wird nicht unterstützt');
 		expect(map.global_import_authenticationModal_title).toBe('Anmeldung');
@@ -59,6 +58,7 @@ describe('global i18n', () => {
 		expect(map.global_geoResource_unauthorized).toBe('401 - Fehlende Berechtigung');
 		expect(map.global_geoResource_forbidden).toBe('403 - Zugriff nicht erlaubt');
 		expect(map.global_signOut_success).toBe('Sie haben sich erfolgreich abgemeldet');
+		expect(map.global_fileStorageService_exception).toBe('Die Daten konnten nicht gespeichert werden');
 	});
 
 	it('have the expected amount of translations', () => {

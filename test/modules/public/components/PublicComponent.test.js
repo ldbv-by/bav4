@@ -1,8 +1,8 @@
 import { WcEvents } from '../../../../src/domain/wcEvents';
 import { PublicComponent } from '../../../../src/modules/public/components/PublicComponent';
 import { TestUtils } from '../../../test-utils';
-import { setFileSaveResult } from '../../../../src/store/draw/draw.action';
-import { drawReducer } from '../../../../src/store/draw/draw.reducer';
+import { clear, setData } from '../../../../src/store/fileStorage/fileStorage.action';
+import { fileStorageReducer } from '../../../../src/store/fileStorage/fileStorage.reducer';
 import { featureInfoReducer } from '../../../../src/store/featureInfo/featureInfo.reducer';
 import { MediaType } from '../../../../src/domain/mediaTypes';
 import { addFeatureInfoItems, registerQuery, resolveQuery, startRequest } from '../../../../src/store/featureInfo/featureInfo.action';
@@ -20,7 +20,11 @@ describe('PublicComponent', () => {
 			...state
 		};
 
-		TestUtils.setupStoreAndDi(initialState, { draw: drawReducer, featureInfo: featureInfoReducer, media: createNoInitialStateMediaReducer() });
+		TestUtils.setupStoreAndDi(initialState, {
+			featureInfo: featureInfoReducer,
+			media: createNoInitialStateMediaReducer(),
+			fileStorage: fileStorageReducer
+		});
 		return TestUtils.render(PublicComponent.tag);
 	};
 
@@ -63,7 +67,7 @@ describe('PublicComponent', () => {
 			const element = await setup();
 
 			//element.shadowRoot.styleSheets[0] --> main.css
-			//element.shadowRoot.styleSheets[1] --> baElement.css
+			//element.shadowRoot.styleSheets[1] --> mvuElement.css
 			//element.shadowRoot.styleSheets[2] --> publicComponent.css
 			expect(element._root.styleSheets.length).toBe(3);
 			expect(element._root.styleSheets[2].cssRules.item(0).cssText).toContain('contain: layout;');
@@ -124,7 +128,7 @@ describe('PublicComponent', () => {
 			element.addEventListener(WcEvents.GEOMETRY_CHANGE, elementListener);
 			window.addEventListener(WcEvents.GEOMETRY_CHANGE, windowListener);
 
-			setFileSaveResult({ content, fileSaveResult: { adminId: 'adminId', fileId: 'fileId' } });
+			setData(content);
 
 			expect(elementListener).toHaveBeenCalledOnceWith(jasmine.objectContaining(expectedEventDetailConfiguration));
 			expect(windowListener).toHaveBeenCalledOnceWith(jasmine.objectContaining(expectedEventDetailConfiguration));
@@ -140,10 +144,13 @@ describe('PublicComponent', () => {
 			const elementListener = jasmine.createSpy();
 			const windowListener = jasmine.createSpy();
 			const element = await setup();
+
+			setData('someContent');
+
 			element.addEventListener(WcEvents.GEOMETRY_CHANGE, elementListener);
 			window.addEventListener(WcEvents.GEOMETRY_CHANGE, windowListener);
 
-			setFileSaveResult(null);
+			clear();
 
 			expect(elementListener).toHaveBeenCalledOnceWith(jasmine.objectContaining(expectedEventDetailConfiguration));
 			expect(windowListener).toHaveBeenCalledOnceWith(jasmine.objectContaining(expectedEventDetailConfiguration));

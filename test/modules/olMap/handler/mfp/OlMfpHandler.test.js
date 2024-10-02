@@ -1,17 +1,13 @@
 import { Feature } from 'ol';
 import Map from 'ol/Map';
-import TileLayer from 'ol/layer/Tile';
 import { fromLonLat } from 'ol/proj';
 import View from 'ol/View';
-import { OSM, TileDebug } from 'ol/source';
 import { $injector } from '../../../../../src/injection';
 import { OlMfpHandler } from '../../../../../src/modules/olMap/handler/mfp/OlMfpHandler';
 import { mfpReducer } from '../../../../../src/store/mfp/mfp.reducer';
 import { positionReducer } from '../../../../../src/store/position/position.reducer';
 import { mapReducer } from '../../../../../src/store/map/map.reducer';
-
 import { TestUtils } from '../../../../test-utils';
-
 import { register } from 'ol/proj/proj4';
 import { Polygon, Point, Geometry } from 'ol/geom';
 import { requestJob, setCurrent } from '../../../../../src/store/mfp/mfp.action';
@@ -104,14 +100,6 @@ describe('OlMfpHandler', () => {
 		const viewCenter = center ?? initialCenter;
 		const requestedCoordinate = coordinateFromPixel ?? initialCenter;
 		const map = new Map({
-			layers: [
-				new TileLayer({
-					source: new OSM()
-				}),
-				new TileLayer({
-					source: new TileDebug()
-				})
-			],
 			target: getTarget(),
 			view: new View({
 				center: viewCenter,
@@ -535,6 +523,36 @@ describe('OlMfpHandler', () => {
 				{ label: 'foo', type: MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE },
 				{ label: 'bar', type: MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE }
 			]);
+		});
+
+		it('sets the encodingProperties properly', async () => {
+			setup();
+			const map = setupMap();
+
+			const handler = new OlMfpHandler();
+			handler._map = setupMap();
+			handler._pageSize = { width: 20, height: 20 };
+			spyOn(handler, '_getMfpProjection').and.returnValue('EPSG:25832');
+
+			handler._updateMfpPreview(new Point([0, 0]));
+
+			const encodeSpy = spyOn(mfpEncoderMock, 'encode').and.callThrough();
+			handler.activate(map);
+			requestJob();
+
+			await TestUtils.timeout();
+			expect(encodeSpy).toHaveBeenCalledWith(
+				map,
+				jasmine.objectContaining({
+					layoutId: jasmine.any(String),
+					scale: jasmine.any(Number),
+					rotation: jasmine.any(Number),
+					dpi: jasmine.any(Number),
+					pageCenter: jasmine.any(Point),
+					pageExtent: jasmine.any(Array),
+					showGrid: jasmine.any(Boolean)
+				})
+			);
 		});
 	});
 

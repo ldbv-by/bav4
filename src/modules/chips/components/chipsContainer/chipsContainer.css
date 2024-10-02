@@ -44,6 +44,7 @@
 }
 
 .is-desktop.is-open.chips__container {
+	position: fixed;
 	right: 38em;
 	margin-left: 1em;
 	transform: translate(28em, 0);

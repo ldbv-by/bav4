@@ -5,7 +5,8 @@ import { FeatureInfoPanel, TEMPORARY_FEATURE_HIGHLIGHT_ID } from '../../../../sr
 import { featureInfoReducer } from '../../../../src/store/featureInfo/featureInfo.reducer';
 import { AbstractMvuContentPanel } from '../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel.js';
 import { html } from 'lit-html';
-import { addFeatureInfoItems, FeatureInfoGeometryTypes } from '../../../../src/store/featureInfo/featureInfo.action.js';
+import { FeatureInfoGeometryTypes } from '../../../../src/domain/featureInfo.js';
+import { addFeatureInfoItems } from '../../../../src/store/featureInfo/featureInfo.action.js';
 import { highlightReducer } from '../../../../src/store/highlight/highlight.reducer.js';
 import { HighlightFeatureType, HighlightGeometryType } from '../../../../src/store/highlight/highlight.action.js';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
@@ -161,7 +162,7 @@ describe('FeatureInfoPanel', () => {
 			});
 
 			it('have only item with selectable content', async () => {
-				// HINT: the existence of the behavior (user select text) is driven by css-classes specified in main.css and baElement.css.
+				// HINT: the existence of the behavior (user select text) is driven by css-classes specified in main.css and mvuElement.css.
 				// All elements are not selectable by default, but can be activated with the 'selectable' class.
 				const cssClass = 'selectable';
 				const element = await setup({

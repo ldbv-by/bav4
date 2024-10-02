@@ -23,7 +23,7 @@ describe('i18n for iframe module', () => {
 		expect(map.iframe_drawTool_polygon).toBe('Polygon');
 		expect(map.iframe_drawTool_cancel).toBe('Abbrechen');
 		expect(map.iframe_drawTool_finish).toBe('Fertig');
-		expect(map.iframe_drawTool_delete_point).toBe('letzten Punk löschen');
+		expect(map.iframe_drawTool_delete_point).toBe('letzten Punkt löschen');
 		expect(map.iframe_drawTool_delete_drawing).toBe('Zeichnung löschen');
 	});
 
@@ -53,7 +53,7 @@ describe('i18n for iframe module', () => {
 		expect(map.iframe_drawTool_delete_drawing).toBe('Remove drawing');
 	});
 
-	it('have the expected amount of translations', () => {
+	it('contains the expected amount of entries', () => {
 		const expectedSize = 21;
 		const deMap = provide('de');
 		const enMap = provide('en');

@@ -1,3 +1,4 @@
+import { $injector } from '../../injection/index';
 import { EventLike } from '../../utils/storeUtils';
 
 export const LAYER_ADDED = 'layer/added';
@@ -14,12 +15,12 @@ export const initialState = {
 	active: [],
 	/**
 	 * Contains the ids of the latest removed layers
-	 * @property {EventLike<String>}
+	 * @property {EventLike<String[]>}
 	 */
 	removed: new EventLike([]),
 	/**
 	 * Contains the ids of the latest added layers
-	 * @property {EventLike<String>}
+	 * @property {EventLike<String[]>}
 	 */
 	added: new EventLike([]),
 	/**
@@ -83,6 +84,7 @@ export const createDefaultLayerProperties = () => ({
 	visible: true,
 	zIndex: -1,
 	opacity: 1,
+	timestamp: null,
 	constraints: createDefaultLayersConstraints(),
 	grChangedFlag: null
 });
@@ -208,7 +210,7 @@ const updateGrChangedFlags = (state, payload /* the geoResourceId*/) => {
 	};
 };
 
-export const layersReducer = (state = initialState, action) => {
+const applyActionSpecificUpdate = (state, action) => {
 	const { type, payload } = action;
 	switch (type) {
 		case LAYER_ADDED: {
@@ -230,6 +232,51 @@ export const layersReducer = (state = initialState, action) => {
 			return setReady(state, payload);
 		}
 	}
-
 	return state;
+};
+
+/**
+ * Workaround for complex mutation of this s-o-s that are difficult to handle in common test cases.
+ * An alternative approach would be using redux-thunk.
+ */
+const applyProductionOnlyUpdate = (state, action) => {
+	if ([LAYER_ADDED, LAYER_REMOVED, LAYER_REMOVE_AND_SET, LAYER_MODIFIED].includes(action.type)) {
+		return {
+			// determine timestamp property
+			...state,
+			active: state.active.map((layer) => ({
+				...layer,
+				timestamp: getTimestamp(layer)
+			}))
+		};
+	}
+	return state;
+};
+
+/**
+ * Determines the resulting timestamp of a layer.
+ * Requires a registered {@link GeoResourceService} for injection.
+ * @function
+ * @param {module:store/layers/layers_action~Layer} layer
+ * @returns the timestamp or null
+ */
+export const getTimestamp = (layer) => {
+	const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
+
+	const geoResource = geoResourceService.byId(layer.geoResourceId);
+	return geoResource?.hasTimestamps() ? (layer.timestamp ?? geoResource.timestamps[0]) : layer.timestamp;
+};
+
+/**
+ * Use this reducer for tests.
+ */
+export const layersReducer = (state = initialState, action) => {
+	return applyActionSpecificUpdate(state, action);
+};
+
+/**
+ * Use this reducer for production.
+ */
+export const extendedLayersReducer = (state = initialState, action) => {
+	return applyProductionOnlyUpdate(applyActionSpecificUpdate(state, action), action);
 };

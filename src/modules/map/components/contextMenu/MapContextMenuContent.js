@@ -109,7 +109,7 @@ export class MapContextMenuContent extends MvuElement {
 		const {
 			coordinate,
 			elevation,
-			administration: { community, district }
+			administration: { community, district, parcel }
 		} = model;
 		const translate = (key) => this._translationService.translate(key);
 
@@ -148,6 +148,11 @@ export class MapContextMenuContent extends MvuElement {
 						<li>
 							<span class="label">${translate('map_contextMenuContent_district_label')}</span><span class="coordinate">${district || '-'}</span>
 						</li>
+						${parcel
+							? html`<li>
+									<span class="label">${translate('map_contextMenuContent_parcel_label')}</span><span class="coordinate">${parcel || '-'}</span>
+								</li>`
+							: nothing}
 						${stringifiedCoords.map((strCoord) => html`<li>${strCoord}</li>`)}
 						<li>
 							<span class="label">${translate('map_contextMenuContent_elevation_label')}</span><span class="coordinate">${elevation || '-'}</span>

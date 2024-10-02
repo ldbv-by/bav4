@@ -3,6 +3,7 @@
  */
 import { CadastralParcelSearchResult, GeoResourceSearchResult, LocationSearchResult } from '../domain/searchResult';
 import { $injector } from '../../../../injection';
+import { MediaType } from '../../../../domain/mediaTypes';
 
 /**
  *A async function that returns a promise with an array of SearchResults with type LOCATION.
@@ -47,7 +48,9 @@ export const loadBvvLocationSearchResults = async (query) => {
 
 	const url = configService.getValueAsPath('BACKEND_URL') + 'search/type/locations/searchText';
 
-	const result = await httpService.get(`${url}/${encodeURIComponent(query.replace(/\//g, ' '))}`);
+	const requestPayload = { term: query };
+
+	const result = await httpService.post(url, JSON.stringify(requestPayload), MediaType.JSON);
 
 	if (result.ok) {
 		const raw = await result.json();

@@ -40,7 +40,12 @@ export const provide = (lang) => {
 				menu_navigation_rail_zoom_out: 'Zoom out',
 				menu_navigation_rail_search: 'Search',
 				menu_navigation_rail_dark_theme: 'Dark mode',
-				menu_navigation_rail_light_theme: 'Light mode'
+				menu_navigation_rail_light_theme: 'Light mode',
+				menu_navigation_rail_feedback: 'Feedback',
+				menu_navigation_rail_login: 'Login BayernAtlas-plus',
+				menu_navigation_rail_logout: 'Logout',
+				menu_navigation_rail_help: 'Help',
+				menu_navigation_rail_help_url: 'https://www.ldbv.bayern.de/hilfe-v4.html'
 			};
 
 		case 'de':
@@ -83,7 +88,12 @@ export const provide = (lang) => {
 				menu_navigation_rail_zoom_out: 'Karte verkleinern',
 				menu_navigation_rail_search: 'Suchen',
 				menu_navigation_rail_dark_theme: 'Dunkles Design',
-				menu_navigation_rail_light_theme: 'Helles Design'
+				menu_navigation_rail_light_theme: 'Helles Design',
+				menu_navigation_rail_feedback: 'Feedback',
+				menu_navigation_rail_login: 'Login BayernAtlas-plus',
+				menu_navigation_rail_logout: 'Logout',
+				menu_navigation_rail_help: 'Hilfe',
+				menu_navigation_rail_help_url: 'https://www.ldbv.bayern.de/hilfe-v4.html'
 			};
 
 		default:

@@ -8,7 +8,6 @@ import {
 	RESET_REQUESTED,
 	FINISH_REQUESTED,
 	REMOVE_REQUESTED,
-	FILE_SAVE_RESULT_CHANGED,
 	SELECTION_CHANGED
 } from './measurement.reducer';
 import { $injector } from '../../injection';
@@ -19,13 +18,6 @@ import { EventLike } from '../../utils/storeUtils';
  * @typedef {Object} MeasureStatistic
  * @property {number} length the length in meter of the feature(s)
  * @property {number} area the area in squaremeter of the feature(s)
- */
-
-/**
- * MetaData of a successfully saved measurement (@see {@link FileSaveResult}).
- * @typedef {Object} MeasureFileSaveResult
- * @property {FileSaveResult} fileSaveResult the FileSaveResult
- * @property {string} content the content (geometry) that was saved
  */
 
 const getStore = () => {
@@ -75,18 +67,6 @@ export const setMode = (mode) => {
 	getStore().dispatch({
 		type: MODE_CHANGED,
 		payload: mode
-	});
-};
-
-/**
- * set the {@link FileSaveResult}
- * @function
- * @param {MeasureFileSaveResult} fileSaveResult the fileSaveResult of the stored measurement-data
- */
-export const setFileSaveResult = (fileSaveResult) => {
-	getStore().dispatch({
-		type: FILE_SAVE_RESULT_CHANGED,
-		payload: new EventLike(fileSaveResult)
 	});
 };
 

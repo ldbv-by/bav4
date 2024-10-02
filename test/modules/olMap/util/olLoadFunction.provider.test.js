@@ -1,3 +1,4 @@
+import TileLayer from 'ol/layer/Tile.js';
 import { UnavailableGeoResourceError } from '../../../../src/domain/errors.js';
 import { $injector } from '../../../../src/injection/index.js';
 import {
@@ -88,7 +89,7 @@ describe('olLoadFunction.provider', () => {
 					const expectedUrl = `${backendUrl}proxy/basicAuth/wms/map/?url=${encodeURIComponent(src)}`;
 					spyOn(httpService, 'get')
 						.withArgs(expectedUrl, {
-							timeout: 10000,
+							timeout: 30_000,
 							headers: new Headers({
 								Authorization: `Basic ${btoa(`${credential.username}:${credential.password}`)}`
 							})
@@ -117,7 +118,7 @@ describe('olLoadFunction.provider', () => {
 					const expectedUrl = `${backendUrl}proxy/basicAuth/wms/map/?url=${encodeURIComponent(adjustedUrl)}`;
 					spyOn(httpService, 'get')
 						.withArgs(expectedUrl, {
-							timeout: 10000,
+							timeout: 30_000,
 							headers: new Headers({
 								Authorization: `Basic ${btoa(`${credential.username}:${credential.password}`)}`
 							})
@@ -194,7 +195,7 @@ describe('olLoadFunction.provider', () => {
 						.withArgs(
 							src,
 							{
-								timeout: 10000
+								timeout: 30_000
 							},
 							{ response: [responseInterceptor] }
 						)
@@ -222,7 +223,7 @@ describe('olLoadFunction.provider', () => {
 						.withArgs(
 							adjustedSrc,
 							{
-								timeout: 10000
+								timeout: 30_000
 							},
 							{ response: [responseInterceptor] }
 						)
@@ -324,7 +325,7 @@ describe('olLoadFunction.provider', () => {
 			const response = new Response(null, { status: 404 });
 			spyOn(httpService, 'get').and.resolveTo(response);
 			const handleUnexpectedStatusCodeThrottledFnSpy = jasmine.createSpy().and.rejectWith(new UnavailableGeoResourceError());
-			const tileLoadFunction = getBvvTileLoadFunction(geoResourceId, handleUnexpectedStatusCodeThrottledFnSpy);
+			const tileLoadFunction = getBvvTileLoadFunction(geoResourceId, new TileLayer(), handleUnexpectedStatusCodeThrottledFnSpy);
 
 			await expectAsync(tileLoadFunction(fakeTileWrapper, src)).toBeRejected();
 			await TestUtils.timeout();
@@ -339,7 +340,7 @@ describe('olLoadFunction.provider', () => {
 			const src = 'http://foo.var/some/11/1089/710';
 			spyOn(httpService, 'get').and.rejectWith(new DOMException());
 			const handleUnexpectedStatusCodeThrottledFnSpy = jasmine.createSpy();
-			const tileLoadFunction = getBvvTileLoadFunction(geoResourceId, handleUnexpectedStatusCodeThrottledFnSpy);
+			const tileLoadFunction = getBvvTileLoadFunction(geoResourceId, new TileLayer(), handleUnexpectedStatusCodeThrottledFnSpy);
 
 			// tile loading causes multiple simultaneously requests, therefore we check the use of the throttle function to keep the notification at a count of 1
 			await expectAsync(tileLoadFunction(fakeTileWrapper, src));
@@ -354,7 +355,7 @@ describe('olLoadFunction.provider', () => {
 			const fakeTileWrapper = getFakeTileWrapperInstance();
 			const src = 'http://foo.var/some/11/1089/710';
 			spyOn(httpService, 'get').and.resolveTo(new Response(null, { status: 400 }));
-			const tileLoadFunction = getBvvTileLoadFunction(geoResourceId);
+			const tileLoadFunction = getBvvTileLoadFunction(geoResourceId, new TileLayer());
 
 			await tileLoadFunction(fakeTileWrapper, src);
 
@@ -377,12 +378,35 @@ describe('olLoadFunction.provider', () => {
 					{ response: [responseInterceptor] }
 				)
 				.and.resolveTo(new Response(base64ImageData));
-			const tileLoadFunction = getBvvTileLoadFunction(geoResourceId);
+			const tileLoadFunction = getBvvTileLoadFunction(geoResourceId, new TileLayer());
 
 			await tileLoadFunction(fakeImageWrapper, src);
 
 			expect(fakeImageWrapper.getImage().src).toMatch('blob:http://');
 			expect(geoResourceServiceSpy).toHaveBeenCalledOnceWith(geoResourceId);
+		});
+
+		it('provides a image load function that loads an image including a timestamp query parameter', async () => {
+			const geoResourceId = 'geoResourceId';
+			const base64ImageData =
+				'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAApJREFUCNdjYAAAAAIAAeIhvDMAAAAASUVORK5CYII=';
+			const fakeImageWrapper = getFakeTileWrapperInstance();
+			const src = 'http://foo.var/some/11/1089/710';
+			const tileLayer = new TileLayer({ properties: { timestamp: '20001231' } });
+			const expectedUrl = src + '?t=20001231';
+			spyOn(geoResourceService, 'getAuthResponseInterceptorForGeoResource').and.returnValue(responseInterceptor);
+			const httpsServiceSpy = spyOn(httpService, 'get').and.resolveTo(new Response(base64ImageData));
+			const tileLoadFunction = getBvvTileLoadFunction(geoResourceId, tileLayer);
+
+			await tileLoadFunction(fakeImageWrapper, src);
+
+			expect(httpsServiceSpy).toHaveBeenCalledWith(
+				expectedUrl,
+				{
+					timeout: 5000
+				},
+				{ response: [responseInterceptor] }
+			);
 		});
 	});
 });

@@ -70,6 +70,7 @@ export const _definitionToGeoResource = (definition) => {
 					.setQueryable(definition.queryable ?? true)
 					.setExportable(definition.exportable ?? true)
 					.setAuthRoles(definition.authRoles ?? [])
+					.setTimestamps(definition.timestamps ?? [])
 			: null;
 	};
 	return setPropertiesAndProviders(toGeoResource(definition));

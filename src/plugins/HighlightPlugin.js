@@ -4,11 +4,12 @@
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
-import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
+import { addHighlightFeatures, HighlightFeatureType, HighlightGeometryType, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
 import { TabIds } from '../domain/mainMenu';
 import { createUniqueId } from '../utils/numberUtils';
 import { $injector } from '../injection/index';
 import { QueryParameters } from '../domain/queryParameters';
+import { isCoordinate } from '../utils/checks';
 
 /**
  * Id of the layer used for highlight visualization.
@@ -16,14 +17,18 @@ import { QueryParameters } from '../domain/queryParameters';
 export const HIGHLIGHT_LAYER_ID = 'highlight_layer';
 
 /**
- *ID for a highlight feature a query is running
+ *ID for a highlight feature when a query is running
  */
 export const QUERY_RUNNING_HIGHLIGHT_FEATURE_ID = 'queryRunningHighlightFeatureId';
 
 /**
- *ID for a highlight feature a query was successful
+ *ID for a highlight feature after a query was successful
  */
 export const QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID = 'querySuccessHighlightFeatureId';
+/**
+ *ID for a highlight feature containing a geometry after a query was successful
+ */
+export const QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID = 'querySuccessWithGeometryHighlightFeatureId';
 /**
  *ID for SearchResult related highlight features
  */
@@ -32,6 +37,11 @@ export const SEARCH_RESULT_HIGHLIGHT_FEATURE_ID = 'searchResultHighlightFeatureI
  *ID for SearchResult related temporary highlight features
  */
 export const SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID = 'searchResultTemporaryHighlightFeatureId';
+
+/**
+ *ID for a highlight feature a query is running
+ */
+export const CROSSHAIR_HIGHLIGHT_FEATURE_ID = 'crosshairHighlightFeatureId';
 /**
  * This plugin currently
  * - adds a layer for displaying all highlight features (needed for all kinds of highlight visualization), exclusive here
@@ -71,7 +81,11 @@ export class HighlightPlugin extends BaPlugin {
 
 		const onTabChanged = (tab) => {
 			if (tab !== TabIds.FEATUREINFO) {
-				removeHighlightFeaturesById([QUERY_RUNNING_HIGHLIGHT_FEATURE_ID, QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID]);
+				removeHighlightFeaturesById([
+					QUERY_RUNNING_HIGHLIGHT_FEATURE_ID,
+					QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID,
+					QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID
+				]);
 			}
 		};
 
@@ -85,7 +99,7 @@ export class HighlightPlugin extends BaPlugin {
 			if (querying) {
 				const coordinate = state.featureInfo.coordinate.payload;
 				addHighlightFeatures({ id: highlightFeatureId, data: { coordinate: coordinate }, type: HighlightFeatureType.QUERY_RUNNING });
-				removeHighlightFeaturesById(QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID);
+				removeHighlightFeaturesById([QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID, QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID]);
 			} else {
 				const coordinate = state.featureInfo.coordinate.payload;
 				removeHighlightFeaturesById(highlightFeatureId);
@@ -97,20 +111,37 @@ export class HighlightPlugin extends BaPlugin {
 						type: HighlightFeatureType.QUERY_SUCCESS
 					});
 				}
+				const highlightFeatures = state.featureInfo.current
+					.filter((featureInfo) => featureInfo.geometry)
+					.map((featureInfo) => ({
+						id: QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID,
+						type: HighlightFeatureType.DEFAULT,
+						data: { geometry: featureInfo.geometry.data, geometryType: HighlightGeometryType.GEOJSON }
+					}));
+				addHighlightFeatures(highlightFeatures);
 			}
 		};
 
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
-		const crosshair = environmentService.getQueryParams().get(QueryParameters.CROSSHAIR);
 
-		if (crosshair) {
+		if (environmentService.getQueryParams().get(QueryParameters.CROSSHAIR)) {
+			const crosshairValues = environmentService.getQueryParams().get(QueryParameters.CROSSHAIR).split(',');
 			setTimeout(() => {
-				addHighlightFeatures({
-					id: `${createUniqueId()}`,
-					label: translate('global_marker_symbol_label'),
-					data: { coordinate: store.getState().position.center },
-					type: HighlightFeatureType.MARKER
-				});
+				const crosshairCoordinate =
+					crosshairValues.length > 1
+						? isFinite(crosshairValues[1]) && isFinite(crosshairValues[2])
+							? [crosshairValues[1], crosshairValues[2]].map((v) => parseFloat(v))
+							: null
+						: store.getState().position.center;
+
+				if (isCoordinate(crosshairCoordinate)) {
+					addHighlightFeatures({
+						id: CROSSHAIR_HIGHLIGHT_FEATURE_ID,
+						label: translate('global_marker_symbol_label'),
+						data: { coordinate: crosshairCoordinate },
+						type: HighlightFeatureType.MARKER
+					});
+				}
 			});
 		}
 

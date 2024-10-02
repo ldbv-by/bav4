@@ -6,6 +6,7 @@ import { round } from '../utils/numberUtils';
 import { QueryParameters } from '../domain/queryParameters';
 import { GlobalCoordinateRepresentations } from '../domain/coordinateRepresentation';
 import { getOrigin, getPathParams } from '../utils/urlUtils';
+import { CROSSHAIR_HIGHLIGHT_FEATURE_ID } from '../plugins/HighlightPlugin';
 
 /**
  * Options for retrieving parameters.
@@ -69,7 +70,8 @@ export class ShareService {
 			...this._extractLayers(options),
 			...this._extractTopic(),
 			...this._extractRoute(),
-			...this._extractTool()
+			...this._extractTool(),
+			...this._extractCrosshair()
 		};
 
 		return new Map(Object.entries(params));
@@ -111,7 +113,8 @@ export class ShareService {
 				...this._extractLayers({ includeHiddenGeoResources: false }),
 				...this._extractTopic(),
 				...this._extractRoute(),
-				...this._extractTool()
+				...this._extractTool(),
+				...this._extractCrosshair()
 			},
 			extraParams
 		);
@@ -179,6 +182,7 @@ export class ShareService {
 		const geoResourceIds = [];
 		let layer_visibility = [];
 		let layer_opacity = [];
+		let layer_timestamp = [];
 		activeLayers
 			.filter((l) => !l.constraints.hidden)
 			.filter((l) => (options.includeHiddenGeoResources ? true : !geoResourceService.byId(l.geoResourceId).hidden))
@@ -186,14 +190,17 @@ export class ShareService {
 				geoResourceIds.push(l.geoResourceId);
 				layer_visibility.push(l.visible);
 				layer_opacity.push(l.opacity);
+				layer_timestamp.push(l.timestamp);
 			});
 		//remove if it contains only default values
-		if (layer_visibility.filter((lv) => lv === false).length === 0) {
+		if (!layer_visibility.some((lv) => lv === false)) {
 			layer_visibility = null;
 		}
-		//remove if it contains only default values
-		if (layer_opacity.filter((lo) => lo !== 1).length === 0) {
+		if (!layer_opacity.some((lo) => lo !== 1)) {
 			layer_opacity = null;
+		}
+		if (!layer_timestamp.some((t) => t)) {
+			layer_timestamp = null;
 		}
 		extractedState[QueryParameters.LAYER] = geoResourceIds.map((grId) => encodeURIComponent(grId)); //an GeoResource id may contain also an URL, so we encode it
 		if (layer_visibility) {
@@ -201,6 +208,9 @@ export class ShareService {
 		}
 		if (layer_opacity) {
 			extractedState[QueryParameters.LAYER_OPACITY] = layer_opacity;
+		}
+		if (layer_timestamp) {
+			extractedState[QueryParameters.LAYER_TIMESTAMP] = layer_timestamp.map((t) => (t === null ? '' : t));
 		}
 		return extractedState;
 	}
@@ -239,7 +249,10 @@ export class ShareService {
 		} = state;
 
 		if (waypoints.length > 0) {
-			extractedState[QueryParameters.ROUTE_WAYPOINTS] = waypoints;
+			const { MapService: mapService } = $injector.inject('MapService');
+			// waypoints should be rounded according to the internal projection of the map
+			const { digits } = Object.values(GlobalCoordinateRepresentations).filter((cr) => cr.code === mapService.getSrid())[0];
+			extractedState[QueryParameters.ROUTE_WAYPOINTS] = waypoints.map((wp) => wp.map((n) => n.toFixed(digits)));
 			extractedState[QueryParameters.ROUTE_CATEGORY] = categoryId;
 		}
 		return extractedState;
@@ -260,6 +273,34 @@ export class ShareService {
 		} = state;
 
 		extractedState[QueryParameters.TOOL_ID] = current ?? '';
+
+		return extractedState;
+	}
+	/**
+	 * @private
+	 * @returns {object} extractedState
+	 */
+	_extractCrosshair() {
+		const { StoreService: storeService } = $injector.inject('StoreService');
+
+		const state = storeService.getStore().getState();
+		const extractedState = {};
+
+		const {
+			highlight: { features }
+		} = state;
+
+		/**
+		 * When we have exactly one highlight feature containing the CROSSHAIR_HIGHLIGHT_FEATURE_ID we add the CROSSHAIR query parameter.
+		 */
+		if (features.filter((hf) => hf.id === CROSSHAIR_HIGHLIGHT_FEATURE_ID).length === 1) {
+			const { MapService: mapService } = $injector.inject('MapService');
+			// crosshair coordinate should be rounded according to the internal projection of the map
+			const { digits } = Object.values(GlobalCoordinateRepresentations).filter((cr) => cr.code === mapService.getSrid())[0];
+			const feature = features.find((hf) => hf.id === CROSSHAIR_HIGHLIGHT_FEATURE_ID);
+			const crosshairCoords = feature.data.coordinate.map((n) => n.toFixed(digits));
+			extractedState[QueryParameters.CROSSHAIR] = [true, ...crosshairCoords];
+		}
 
 		return extractedState;
 	}

@@ -171,6 +171,28 @@ describe('MainMenuPlugin', () => {
 				});
 			});
 		});
+
+		describe('and we have NO FeatureInfo items', () => {
+			describe('and MainMenu is initially closed', () => {
+				it('does nothing', async () => {
+					const queryId = 'foo';
+					const store = setup({
+						featureInfo: {
+							queries: [queryId],
+							querying: true,
+							current: []
+						}
+					});
+					const instanceUnderTest = new MainMenuPlugin();
+					await instanceUnderTest.register(store);
+
+					resolveQuery(queryId);
+
+					expect(store.getState().mainMenu.tab).toBe(defaultTabId);
+					expect(store.getState().mainMenu.open).toBeFalse();
+				});
+			});
+		});
 	});
 
 	describe('when featureInfo.aborted property changes', () => {

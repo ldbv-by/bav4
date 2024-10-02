@@ -26,7 +26,7 @@ describe('BottomSheet', () => {
 		}
 	};
 
-	const setup = async (content, state = {}) => {
+	const setup = async (id, content, state = {}) => {
 		const initialState = { ...defaultState, ...state };
 
 		store = TestUtils.setupStoreAndDi(initialState, {
@@ -37,6 +37,7 @@ describe('BottomSheet', () => {
 		});
 
 		const element = await TestUtils.renderAndLogLifecycle(BottomSheet.tag);
+		element.id = id;
 		element.content = content;
 		return element;
 	};
@@ -47,6 +48,7 @@ describe('BottomSheet', () => {
 			const element = await setup();
 
 			expect(element.getModel()).toEqual({
+				id: null,
 				content: null,
 				isOpen: false,
 				isOpenNavigationRail: false,
@@ -65,7 +67,7 @@ describe('BottomSheet', () => {
 
 	describe('when BottomSheet is rendered', () => {
 		it('displays the bottom sheet content', async () => {
-			const element = await setup('FooBar');
+			const element = await setup('someId', 'FooBar');
 			const contentElement = element.shadowRoot.querySelector('.bottom-sheet');
 
 			expect(contentElement.innerText).toContain('FooBar');
@@ -76,7 +78,7 @@ describe('BottomSheet', () => {
 		it('displays the bottom sheet content from a lit-html template-result', async () => {
 			const template = (str) => html`${str}`;
 
-			const element = await setup(template('FooBarBaz'));
+			const element = await setup('someId', template('FooBarBaz'));
 			const contentElement = element.shadowRoot.querySelector('.bottom-sheet');
 
 			expect(contentElement.innerText).toMatch(/FooBarBaz[\r\n]?/);
@@ -86,7 +88,7 @@ describe('BottomSheet', () => {
 
 	describe('responsive layout ', () => {
 		it('layouts for landscape and open Menu', async () => {
-			const element = await setup('FooBar', { mainMenu: { open: true }, media: { portrait: false } });
+			const element = await setup('someId', 'FooBar', { mainMenu: { open: true }, media: { portrait: false } });
 			const contentElement = element.shadowRoot.querySelector('.bottom-sheet');
 
 			expect(contentElement.innerText).toContain('FooBar');
@@ -96,7 +98,7 @@ describe('BottomSheet', () => {
 		});
 
 		it('layouts for landscape and closed Menu', async () => {
-			const element = await setup('FooBar', { mainMenu: { open: false }, media: { portrait: false } });
+			const element = await setup('someId', 'FooBar', { mainMenu: { open: false }, media: { portrait: false } });
 			const contentElement = element.shadowRoot.querySelector('.bottom-sheet');
 
 			expect(contentElement.innerText).toContain('FooBar');
@@ -106,7 +108,7 @@ describe('BottomSheet', () => {
 		});
 
 		it('layouts for portrait and open Menu', async () => {
-			const element = await setup('FooBar', { mainMenu: { open: true }, media: { portrait: true } });
+			const element = await setup('someId', 'FooBar', { mainMenu: { open: true }, media: { portrait: true } });
 			const contentElement = element.shadowRoot.querySelector('.bottom-sheet');
 
 			expect(contentElement.innerText).toContain('FooBar');
@@ -116,7 +118,7 @@ describe('BottomSheet', () => {
 		});
 
 		it('layouts for portrait and closed Menu', async () => {
-			const element = await setup('FooBar', { mainMenu: { open: false }, media: { portrait: true } });
+			const element = await setup('someId', 'FooBar', { mainMenu: { open: false }, media: { portrait: true } });
 			const contentElement = element.shadowRoot.querySelector('.bottom-sheet');
 
 			expect(contentElement.innerText).toContain('FooBar');
@@ -137,7 +139,7 @@ describe('BottomSheet', () => {
 		});
 
 		it('layouts open navigation rail for landscape mode', async () => {
-			const element = await setup('FooBar', {
+			const element = await setup('someId', 'FooBar', {
 				mainMenu: { open: true },
 				media: { portrait: false },
 				navigationRail: {
@@ -151,7 +153,7 @@ describe('BottomSheet', () => {
 
 	describe('after initial rendering ', () => {
 		it('when orientation changes', async () => {
-			const element = await setup('FooBar', { mainMenu: { open: true }, media: { portrait: false, observeResponsiveParameter: true } });
+			const element = await setup('someId', 'FooBar', { mainMenu: { open: true }, media: { portrait: false, observeResponsiveParameter: true } });
 
 			const contentElement = element.shadowRoot.querySelector('.bottom-sheet');
 
@@ -166,7 +168,7 @@ describe('BottomSheet', () => {
 		});
 
 		it('when toggle menu', async () => {
-			const element = await setup('FooBar', { mainMenu: { open: true }, media: { portrait: false } });
+			const element = await setup('someId', 'FooBar', { mainMenu: { open: true }, media: { portrait: false } });
 
 			const contentElement = element.shadowRoot.querySelector('.bottom-sheet');
 
@@ -181,22 +183,22 @@ describe('BottomSheet', () => {
 		});
 
 		it('when close button clicked', async () => {
-			const element = await setup('FooBar', { mainMenu: { open: true }, media: { portrait: false } });
+			const element = await setup('someId', 'FooBar', { mainMenu: { open: true }, media: { portrait: false } });
 
 			const contentElement = element.shadowRoot.querySelector('.bottom-sheet');
 			expect(element.shadowRoot.querySelectorAll('.fade-out')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.tool-container__close-button')).toHaveSize(1);
 			const closeButton = element.shadowRoot.querySelectorAll('.tool-container__close-button')[0];
-			openBottomSheet(true);
+			openBottomSheet('some content', 'someId');
 
-			expect(store.getState().bottomSheet.data).not.toBeNull();
+			expect(store.getState().bottomSheet.data).toEqual(jasmine.arrayWithExactContents([{ id: 'someId', content: 'some content' }]));
 			expect(contentElement.innerText).toContain('FooBar');
 
 			closeButton.click();
 
 			expect(element.shadowRoot.querySelectorAll('.fade-out')).toHaveSize(1);
 			contentElement.dispatchEvent(new Event('animationend'));
-			expect(store.getState().bottomSheet.data).toBeNull();
+			expect(store.getState().bottomSheet.data).toEqual(jasmine.arrayWithExactContents([{ id: 'someId', content: null }]));
 		});
 	});
 });

@@ -9,6 +9,8 @@ import VectorLayer from 'ol/layer/Vector';
 import { parse } from '../../../utils/ewkt';
 import { Cluster } from 'ol/source';
 import { getOriginAndPathname, getPathParams } from '../../../utils/urlUtils';
+import { UnavailableGeoResourceError } from '../../../domain/errors';
+import { isHttpUrl } from '../../../utils/checks';
 
 const getUrlService = () => {
 	const { UrlService: urlService } = $injector.inject('UrlService');
@@ -18,22 +20,25 @@ const getUrlService = () => {
 export const iconUrlFunction = (url) => getUrlService().proxifyInstant(url, false);
 
 export const bvvIconUrlFunction = (url) => {
-	const { UrlService: urlService, ConfigService: configService } = $injector.inject('UrlService', 'ConfigService');
+	if (isHttpUrl(url)) {
+		const { UrlService: urlService, ConfigService: configService } = $injector.inject('UrlService', 'ConfigService');
 
-	// legacy v3 backend icons should be mapped to v4
-	if (getOriginAndPathname(url).startsWith('https://geoportal.bayern.de/ba-backend')) {
-		const pathParams = getPathParams(url);
-		// the legacy icon endpoint contains four path parameters
-		if (pathParams.length === 4 && pathParams[1] === 'icons') {
-			return `${configService.getValueAsPath('BACKEND_URL')}icons/${pathParams[pathParams.length - 2]}/${pathParams[pathParams.length - 1]}.png`;
+		// legacy v3 backend icons should be mapped to v4
+		if (getOriginAndPathname(url).startsWith('https://geoportal.bayern.de/ba-backend')) {
+			const pathParams = getPathParams(url);
+			// the legacy icon endpoint contains four path parameters
+			if (pathParams.length === 4 && pathParams[1] === 'icons') {
+				return `${configService.getValueAsPath('BACKEND_URL')}icons/${pathParams[pathParams.length - 2]}/${pathParams[pathParams.length - 1]}.png`;
+			}
+			// leave untouched for that case
+			return url;
+		} // icons from our backend do not need to be proxified
+		else if (getOriginAndPathname(url).startsWith(configService.getValueAsPath('BACKEND_URL'))) {
+			return url;
 		}
-		// leave untouched for that case
-		return url;
-	} // icons from our backend do not need to be proxified
-	else if (getOriginAndPathname(url).startsWith(configService.getValueAsPath('BACKEND_URL'))) {
-		return url;
+		return urlService.proxifyInstant(url, false);
 	}
-	return urlService.proxifyInstant(url, false);
+	return url;
 };
 
 export const mapVectorSourceTypeToFormat = (sourceType) => {
@@ -158,6 +163,7 @@ export class VectorLayerService {
 	 * @param {string} id layerId
 	 * @param {VectorGeoResource} vectorGeoResource
 	 * @param {OlMap} olMap
+	 * @throws UnavailableGeoResourceError
 	 * @returns olVectorLayer
 	 */
 	createLayer(id, vectorGeoResource, olMap) {
@@ -179,47 +185,50 @@ export class VectorLayerService {
 
 	/**
 	 * Builds an ol VectorSource from an VectorGeoResource
-	 * @param {VectorGeoResource} vectorGeoResource
-	 * @param {ol.Map} map
+	 * @param {VectorGeoResource} geoResource
 	 * @returns olVectorSource
 	 */
 	_vectorSourceForData(geoResource) {
-		const { MapService: mapService } = $injector.inject('MapService');
+		try {
+			const { MapService: mapService } = $injector.inject('MapService');
 
-		const destinationSrid = mapService.getSrid();
-		const vectorSource = new VectorSource();
+			const destinationSrid = mapService.getSrid();
+			const vectorSource = new VectorSource();
 
-		const data = geoResource.sourceType === VectorSourceType.EWKT ? parse(geoResource.data).wkt : geoResource.data;
-		const format = mapVectorSourceTypeToFormat(geoResource.sourceType);
-		const features = format
-			.readFeatures(data)
-			.filter((f) => !!f.getGeometry()) // filter out features without a geometry. Todo: let's inform the user
-			.map((f) => {
-				f.getGeometry().transform('EPSG:' + geoResource.srid, 'EPSG:' + destinationSrid); //Todo: check for unsupported destinationSrid
-				return f;
-			});
-		vectorSource.addFeatures(features);
+			const data = geoResource.sourceType === VectorSourceType.EWKT ? parse(geoResource.data).wkt : geoResource.data;
+			const format = mapVectorSourceTypeToFormat(geoResource.sourceType);
+			const features = format
+				.readFeatures(data)
+				.filter((f) => !!f.getGeometry()) // filter out features without a geometry. Todo: let's inform the user
+				.map((f) => {
+					f.getGeometry().transform('EPSG:' + geoResource.srid, 'EPSG:' + destinationSrid); //Todo: check for unsupported destinationSrid
+					return f;
+				});
+			vectorSource.addFeatures(features);
 
-		/**
-		 * If we know a name for the GeoResource now, we update the geoResource's label.
-		 * At this moment an olLayer and its source are about to be added to the map.
-		 * To avoid conflicts, we have to delay the update of the GeoResource (and subsequent possible modifications of the connected layer).
-		 */
-		if (!geoResource.hasLabel()) {
-			switch (geoResource.sourceType) {
-				case VectorSourceType.KML:
-					setTimeout(() => {
-						geoResource.setLabel(format.readName(data));
-					});
-					break;
+			/**
+			 * If we know a name for the GeoResource now, we update the geoResource's label.
+			 * At this moment an olLayer and its source are about to be added to the map.
+			 * To avoid conflicts, we have to delay the update of the GeoResource (and subsequent possible modifications of the connected layer).
+			 */
+			if (!geoResource.hasLabel()) {
+				switch (geoResource.sourceType) {
+					case VectorSourceType.KML:
+						setTimeout(() => {
+							geoResource.setLabel(format.readName(data));
+						});
+						break;
+				}
 			}
+			return geoResource.isClustered()
+				? new Cluster({
+						source: vectorSource,
+						distance: geoResource.clusterParams.distance,
+						minDistance: geoResource.clusterParams.minDistance
+					})
+				: vectorSource;
+		} catch (error) {
+			throw new UnavailableGeoResourceError(`Data of VectorGeoResource could not be parsed`, geoResource.id, null, { cause: error });
 		}
-		return geoResource.isClustered()
-			? new Cluster({
-					source: vectorSource,
-					distance: geoResource.clusterParams.distance,
-					minDistance: geoResource.clusterParams.minDistance
-				})
-			: vectorSource;
 	}
 }

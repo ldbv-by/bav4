@@ -4,6 +4,7 @@
 export const updateOlLayer = (olLayer, layer) => {
 	olLayer.setVisible(layer.visible);
 	olLayer.setOpacity(layer.opacity);
+	olLayer.set('timestamp', layer.timestamp);
 	return olLayer;
 };
 

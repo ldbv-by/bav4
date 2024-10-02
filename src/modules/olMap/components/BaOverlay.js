@@ -19,6 +19,7 @@ export const BaOverlayTypes = {
 	DISTANCE_PARTITION: 'distance-partition',
 	HELP: 'help'
 };
+export const OVERLAY_STYLE_CLASS = 'ba-overlay';
 
 const Update_Value = 'update_value';
 const Update_Overlay_Type = 'update_overlay_type';
@@ -108,11 +109,13 @@ export class BaOverlay extends MvuElement {
 			left: placement.sector === 'left',
 			init: placement.sector === 'init'
 		};
+		classes[OVERLAY_STYLE_CLASS] = true;
+
 		return html`
 			<style>
 				${css}
 			</style>
-			<div class="ba-overlay ${classMap(classes)}">${content ? unsafeHTML(content) : nothing}</div>
+			<div class="${classMap(classes)}">${content ? unsafeHTML(content) : nothing}</div>
 		`;
 	}
 

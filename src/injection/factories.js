@@ -5,5 +5,5 @@ const tempStorageService = new TempStorageService();
 export const fileStorageServiceFactory = () => {
 	const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 
-	return environmentService.isEmbeddedAsWC() ? tempStorageService : new BvvFileStorageService();
+	return environmentService.isEmbeddedAsWC() || environmentService.isStandalone() ? tempStorageService : new BvvFileStorageService();
 };

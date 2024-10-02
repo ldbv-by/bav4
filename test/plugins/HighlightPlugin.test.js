@@ -4,11 +4,18 @@ import {
 	HighlightPlugin,
 	HIGHLIGHT_LAYER_ID,
 	SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
-	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID
+	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID,
+	CROSSHAIR_HIGHLIGHT_FEATURE_ID,
+	QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID
 } from '../../src/plugins/HighlightPlugin';
 import { TestUtils } from '../test-utils.js';
 import { highlightReducer } from '../../src/store/highlight/highlight.reducer';
-import { addHighlightFeatures, clearHighlightFeatures, HighlightFeatureType } from '../../src/store/highlight/highlight.action';
+import {
+	addHighlightFeatures,
+	clearHighlightFeatures,
+	HighlightFeatureType,
+	HighlightGeometryType
+} from '../../src/store/highlight/highlight.action';
 import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { pointerReducer } from '../../src/store/pointer/pointer.reducer';
 import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer';
@@ -23,6 +30,7 @@ import { setQuery } from '../../src/store/search/search.action';
 import { $injector } from '../../src/injection';
 import { QueryParameters } from '../../src/domain/queryParameters';
 import { positionReducer } from '../../src/store/position/position.reducer';
+import { FeatureInfoGeometryTypes } from '../../src/domain/featureInfo.js';
 
 describe('HighlightPlugin', () => {
 	const environmentServiceMock = {
@@ -101,16 +109,22 @@ describe('HighlightPlugin', () => {
 
 	describe('when mainMenu.tab changes', () => {
 		it('clears all featureInfo related highlight items (also initially)', async () => {
+			const geoJson = '{"type":"Point","coordinates":[1224514.3987260093,6106854.83488507]}';
 			const highlightFeature0 = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] }, id: QUERY_RUNNING_HIGHLIGHT_FEATURE_ID };
 			const highlightFeature1 = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] }, id: 'foo' };
 			const highlightFeature2 = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] }, id: QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID };
+			const highlightFeature3 = {
+				type: HighlightFeatureType.DEFAULT,
+				data: { geometry: geoJson, geometryType: HighlightGeometryType.GEOJSON },
+				id: QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID
+			};
 			const store = setup({
 				mainMenu: {
 					tab: TabIds.TOPICS,
 					open: false
 				},
 				highlight: {
-					features: [highlightFeature0, highlightFeature1, highlightFeature2]
+					features: [highlightFeature0, highlightFeature1, highlightFeature2, highlightFeature3]
 				}
 			});
 			const instanceUnderTest = new HighlightPlugin();
@@ -121,7 +135,7 @@ describe('HighlightPlugin', () => {
 			expect(store.getState().highlight.features[0].id).toBe('foo');
 
 			clearHighlightFeatures();
-			addHighlightFeatures([highlightFeature0, highlightFeature1, highlightFeature2]);
+			addHighlightFeatures([highlightFeature0, highlightFeature1, highlightFeature2, highlightFeature3]);
 
 			//we change the tab index
 			setTab(TabIds.MAPS);
@@ -130,12 +144,12 @@ describe('HighlightPlugin', () => {
 			expect(store.getState().highlight.features[0].id).toBe('foo');
 
 			clearHighlightFeatures();
-			addHighlightFeatures([highlightFeature0, highlightFeature1, highlightFeature2]);
+			addHighlightFeatures([highlightFeature0, highlightFeature1, highlightFeature2, highlightFeature3]);
 
 			//we change the tab index to the FeatureInfo tab
 			setTab(TabIds.FEATUREINFO);
 
-			expect(store.getState().highlight.features).toHaveSize(3);
+			expect(store.getState().highlight.features).toHaveSize(4);
 		});
 	});
 
@@ -204,32 +218,45 @@ describe('HighlightPlugin', () => {
 			expect(store.getState().highlight.features).toHaveSize(0);
 		});
 
-		it('removes an existing success highlight feature', async () => {
+		it('removes existing success highlight feature', async () => {
 			const coordinate = [21, 42];
-			const highlightFeature = { type: HighlightFeatureType.QUERY_SUCCESS, data: { coordinate: coordinate }, id: QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID };
+			const geoJson = '{"type":"Point","coordinates":[1224514.3987260093,6106854.83488507]}';
+			const highlightFeature0 = {
+				type: HighlightFeatureType.QUERY_SUCCESS,
+				data: { coordinate: coordinate },
+				id: QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID
+			};
+			const highlightFeature1 = {
+				type: HighlightFeatureType.DEFAULT,
+				data: { geometry: geoJson, geometryType: HighlightGeometryType.GEOJSON },
+				id: QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID
+			};
 			const store = setup({
 				mainMenu: {
 					open: true,
 					tab: TabIds.FEATUREINFO
 				},
 				highlight: {
-					features: [highlightFeature]
+					features: [highlightFeature0, highlightFeature1]
 				}
 			});
 			const instanceUnderTest = new HighlightPlugin();
 			await instanceUnderTest.register(store);
 
 			expect(store.getState().highlight.features[0].id).toBe(QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID);
-			expect(store.getState().highlight.features).toHaveSize(1);
+			expect(store.getState().highlight.features[1].id).toBe(QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID);
+			expect(store.getState().highlight.features).toHaveSize(2);
 
 			startRequest(coordinate);
 
 			expect(store.getState().highlight.features).toHaveSize(1);
 			expect(store.getState().highlight.features[0].id).not.toBe(QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID);
+			expect(store.getState().highlight.features[0].id).not.toBe(QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID);
 		});
 
-		it('adds a success highlight feature when containing a FeatureInfo owning no geometry', async () => {
+		it('adds a success highlight feature both for FeatureInfos owning a geometry and not', async () => {
 			const coordinate = [21, 42];
+			const geoJson = '{"type":"Point","coordinates":[1224514.3987260093,6106854.83488507]}';
 			const store = setup();
 			const queryId = 'foo';
 			const instanceUnderTest = new HighlightPlugin();
@@ -238,15 +265,28 @@ describe('HighlightPlugin', () => {
 			startRequest(coordinate);
 			registerQuery(queryId);
 			// add results
-			addFeatureInfoItems({ title: 'title0', content: 'content0' }, { title: 'title1', content: 'content1', geometry: {} });
+			addFeatureInfoItems([
+				{ title: 'title0', content: 'content0' },
+				{
+					title: 'title1',
+					content: 'content1',
+					geometry: { data: geoJson, geometryType: FeatureInfoGeometryTypes.GEOJSON }
+				}
+			]);
 			resolveQuery(queryId);
 
-			expect(store.getState().highlight.features).toHaveSize(1);
+			expect(store.getState().highlight.features).toHaveSize(2);
 			expect(store.getState().highlight.features[0].id).toBe(QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID);
+			expect(store.getState().highlight.features[0].data.coordinate).toBe(coordinate);
+			expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.QUERY_SUCCESS);
+			expect(store.getState().highlight.features[1].id).toBe(QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID);
+			expect(store.getState().highlight.features[1].data.geometry).toBe(geoJson);
+			expect(store.getState().highlight.features[1].type).toBe(HighlightFeatureType.DEFAULT);
 		});
 
 		it('does NOT add a success highlight feature when containing solely FeatureInfo objects owning a geometry', async () => {
 			const coordinate = [21, 42];
+			const geoJson = '{"type":"Point","coordinates":[1224514.3987260093,6106854.83488507]}';
 			const store = setup();
 			const queryId = 'foo';
 			const instanceUnderTest = new HighlightPlugin();
@@ -255,10 +295,16 @@ describe('HighlightPlugin', () => {
 			startRequest(coordinate);
 			registerQuery(queryId);
 			// add results
-			addFeatureInfoItems({ title: 'title0', content: 'content0', geometry: {} }, { title: 'title1', content: 'content1', geometry: {} });
+			addFeatureInfoItems({
+				title: 'title1',
+				content: 'content1',
+				geometry: { data: geoJson, geometryType: FeatureInfoGeometryTypes.GEOJSON }
+			});
 			resolveQuery(queryId);
 
-			expect(store.getState().highlight.features).toHaveSize(0);
+			expect(store.getState().highlight.features).toHaveSize(1);
+			expect(store.getState().highlight.features[0].id).toBe(QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID);
+			expect(store.getState().highlight.features[0].data.geometry).toBe(geoJson);
 		});
 	});
 
@@ -280,6 +326,29 @@ describe('HighlightPlugin', () => {
 			expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
 			expect(store.getState().highlight.features[0].label).toBe('global_marker_symbol_label');
 			expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureType.MARKER);
+			expect(store.getState().highlight.features[0].id).toBe(CROSSHAIR_HIGHLIGHT_FEATURE_ID);
+		});
+
+		describe("when search query parameter 'CROSSHAIR' has a value and valid coordinates", () => {
+			it('adds a highlight feature', async () => {
+				const coordinate = [42, 21];
+				const state = {
+					position: { center: coordinate }
+				};
+				const store = setup(state);
+				const queryParam = new URLSearchParams(`${QueryParameters.CROSSHAIR}=true,42,21`);
+				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				const instanceUnderTest = new HighlightPlugin();
+				await instanceUnderTest.register(store);
+
+				await TestUtils.timeout();
+
+				expect(store.getState().highlight.features).toHaveSize(1);
+				expect(store.getState().highlight.features[0].data.coordinate).toEqual([42, 21]);
+				expect(store.getState().highlight.features[0].label).toBe('global_marker_symbol_label');
+				expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureType.MARKER);
+				expect(store.getState().highlight.features[0].id).toBe(CROSSHAIR_HIGHLIGHT_FEATURE_ID);
+			});
 		});
 	});
 
@@ -292,6 +361,24 @@ describe('HighlightPlugin', () => {
 			const store = setup(state);
 			const emptyQueryParam = new URLSearchParams(QueryParameters.CROSSHAIR + '=');
 			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(emptyQueryParam);
+			const instanceUnderTest = new HighlightPlugin();
+			await instanceUnderTest.register(store);
+
+			await TestUtils.timeout();
+
+			expect(store.getState().highlight.features).toHaveSize(0);
+		});
+	});
+
+	describe("when search query parameter 'CROSSHAIR' contains invalid coordinates", () => {
+		it('does NOT add a highlight feature', async () => {
+			const coordinate = [42, 21];
+			const state = {
+				position: { center: coordinate }
+			};
+			const store = setup(state);
+			const queryParam = new URLSearchParams(`${QueryParameters.CROSSHAIR}="true,foo,bar"`);
+			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 			const instanceUnderTest = new HighlightPlugin();
 			await instanceUnderTest.register(store);
 

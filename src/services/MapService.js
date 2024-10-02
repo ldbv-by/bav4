@@ -54,8 +54,11 @@ export class MapService {
 	 * Returns a list with all available CoordinateRepresentation.
 	 *
 	 * When a coordinate or a list of coordinates is given the list contains all
-	 * suitable CoordinateRepresentation regarding this coordinate.
-	 * The returned list is dependent on whether this coordinate is inside or outside the extent
+	 * suitable CoordinateRepresentation regarding this coordinate(s).
+	 *
+	 * Note: The most specific list of CoordinateRepresentation will be returned when the argument is only a single coordinate.
+	 *
+	 * The returned list is dependent on whether all coordinates are inside the extent
 	 * of the supported local projected system (if defined).
 	 *
 	 * If no coordinate is provided the list contains all available global CoordinateRepresentations.
@@ -66,21 +69,21 @@ export class MapService {
 	 * @returns {Array<module:domain/coordinateRepresentation~CoordinateRepresentation>} Array of `CoordinateRepresentation`
 	 */
 	getCoordinateRepresentations(coordinateLikeInMapProjection = []) {
-		const coordinateInMapProjection = this._coordinateService.toCoordinate(
+		const coordinatesInMapProjection = this._coordinateService.toCoordinate(
 			isCoordinateLike(coordinateLikeInMapProjection) ? [coordinateLikeInMapProjection] : [...coordinateLikeInMapProjection]
 		);
 
 		// we have no projected extent defined or no coordinate is provided
-		if (!this.getLocalProjectedSridExtent() || coordinateInMapProjection.length === 0) {
+		if (!this.getLocalProjectedSridExtent() || coordinatesInMapProjection.length === 0) {
 			return this._definitions.globalCoordinateRepresentations;
 		}
 
 		// one or more coordinates are outside the projected extent
-		if (coordinateInMapProjection.find((c) => !this._coordinateService.containsCoordinate(this.getLocalProjectedSridExtent(), c))) {
+		if (coordinatesInMapProjection.find((c) => !this._coordinateService.containsCoordinate(this.getLocalProjectedSridExtent(), c))) {
 			return this._definitions.globalCoordinateRepresentations;
 		}
 
-		return this._definitions.localProjectedCoordinateRepresentations(coordinateInMapProjection);
+		return this._definitions.localProjectedCoordinateRepresentations(coordinatesInMapProjection[0]);
 	}
 
 	/**
