@@ -1,11 +1,13 @@
 .title {
 	font-weight: bold;
 	padding: 0.8em 1.5em;
+	background: var(--primary-bg-color);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 .button-group {
-	position: absolute;
-	right: 1.3em;
-	top: 0.6em;
+	display: flex;
 }
 .button-group button {
 	font-size: 0.8rem;
