@@ -261,7 +261,7 @@ describe('TimeTravel', () => {
 			expect(element.getModel().timestamp).toBe(Initial_Value + 1);
 		});
 
-		describe('and slider animation', () => {
+		describe('and when slider animation is executing', () => {
 			let clock;
 			beforeEach(() => {
 				clock = jasmine.clock().install();
@@ -271,7 +271,7 @@ describe('TimeTravel', () => {
 				clock.uninstall();
 			});
 
-			it('start', async () => {
+			it('increase timestamps on start', async () => {
 				const state = {
 					media: {
 						portrait: false
@@ -302,7 +302,7 @@ describe('TimeTravel', () => {
 				expect(element.getModel().timestamp).toBe(Min);
 			});
 
-			it('stop', async () => {
+			it('does NOT increase the timestamps on stop', async () => {
 				const state = {
 					media: {
 						portrait: false
