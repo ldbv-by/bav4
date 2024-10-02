@@ -1,5 +1,5 @@
 /**
- * @module modules/timeTravel/components/TimeTravel
+ * @module modules/timeTravel/components/TimeTravelSlider
  */
 import { html, nothing } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
@@ -7,7 +7,7 @@ import { MvuElement } from '../../MvuElement';
 import { setCurrentTimestamp } from '../../../store/timeTravel/timeTravel.action';
 import { isFunction } from '../../../utils/checks';
 import { $injector } from '../../../injection';
-import css from './timeTravel.css';
+import css from './timeTravelSlider.css';
 import minusSvg from './assets/minusCircle.svg';
 import playSvg from './assets/play.svg';
 import plusSvg from './assets/plusCircle.svg';
@@ -29,8 +29,9 @@ const Range_Slider_Step = 1;
  * @property {string} timestamp the current selected timestamp
  * @property {function(timestamp)} decadeFunction the decadeFunctions which checks whether or not the timestamp is the start of a decade
  * @author alsturm
+ * @author thiloSchlemmer
  */
-export class TimeTravel extends MvuElement {
+export class TimeTravelSlider extends MvuElement {
 	#environmentService;
 	#translationService;
 	#geoResourceService;

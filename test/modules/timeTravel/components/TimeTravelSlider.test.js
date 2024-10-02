@@ -1,12 +1,12 @@
 /* eslint-disable no-undef */
-import { TimeTravel } from '../../../../src/modules/timeTravel/components/TimeTravel.js';
+import { TimeTravelSlider } from '../../../../src/modules/timeTravel/components/TimeTravelSlider.js';
 import { $injector } from '../../../../src/injection/index.js';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer.js';
 import { TestUtils } from '../../../test-utils.js';
 import { timeTravelReducer } from '../../../../src/store/timeTravel/timeTravel.reducer.js';
 import { setCurrentTimestamp } from '../../../../src/store/timeTravel/timeTravel.action.js';
 
-window.customElements.define(TimeTravel.tag, TimeTravel);
+window.customElements.define(TimeTravelSlider.tag, TimeTravelSlider);
 
 describe('TimeTravel', () => {
 	const Initial_Value = 1900;
@@ -51,13 +51,13 @@ describe('TimeTravel', () => {
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('TranslationService', { translate: (key) => key });
 
-		return TestUtils.render(TimeTravel.tag, props);
+		return TestUtils.render(TimeTravelSlider.tag, props);
 	};
 
 	describe('constructor', () => {
 		it('sets a default model', async () => {
 			setup();
-			const element = new TimeTravel();
+			const element = new TimeTravelSlider();
 
 			expect(element.getModel()).toEqual({
 				timestamps: [],

@@ -1,5 +1,5 @@
 import './i18n';
-import { TimeTravel } from './components/TimeTravel';
-if (!window.customElements.get(TimeTravel.tag)) {
-	window.customElements.define(TimeTravel.tag, TimeTravel);
+import { TimeTravelSlider } from './components/TimeTravelSlider';
+if (!window.customElements.get(TimeTravelSlider.tag)) {
+	window.customElements.define(TimeTravelSlider.tag, TimeTravelSlider);
 }
