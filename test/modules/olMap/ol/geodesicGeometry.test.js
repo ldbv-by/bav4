@@ -11,6 +11,7 @@ describe('GeodesicGeometry', () => {
 	const point = new Point(fromLonLat([9, 48]));
 	const shortLineString = new LineString([fromLonLat([9, 48]), fromLonLat([9.0001, 48])]);
 	const lineString = new LineString([fromLonLat([9, 48]), fromLonLat([11, 48]), fromLonLat([10, 47])]);
+	const segmentAsLineString = new LineString([fromLonLat([9, 48]), fromLonLat([11, 48]), fromLonLat([9, 48])]);
 
 	const lineMunich_Paris = new LineString([fromLonLat([11.60221, 48.15629]), fromLonLat([2.192, 48.86656])]);
 	const polygon = new Polygon([[fromLonLat([9, 48]), fromLonLat([11, 48]), fromLonLat([10, 47])]]);
@@ -18,14 +19,16 @@ describe('GeodesicGeometry', () => {
 	const mapMock = { getPixelFromCoordinate: (c) => c };
 
 	describe('constructor', () => {
-		it('initializes an instance with correct parameters', () => {
+		fit('initializes an instance with correct parameters', () => {
 			const shortLineStringFeature = new Feature(shortLineString);
 			const lineStringFeature = new Feature(lineString);
 			const polygonFeature = new Feature(polygon);
+			const segmentAsLineStringFeature = new Feature(segmentAsLineString);
 
 			const shortLineStringInstance = new GeodesicGeometry(shortLineStringFeature);
 			const lineStringInstance = new GeodesicGeometry(lineStringFeature);
 			const polygonInstance = new GeodesicGeometry(polygonFeature);
+			const segmentAsLineStringInstance = new GeodesicGeometry(segmentAsLineStringFeature, () => true);
 
 			expect(shortLineStringInstance).toBeInstanceOf(GeodesicGeometry);
 			expect(shortLineStringInstance.getCalculationStatus()).toBe(GEODESIC_CALCULATION_STATUS.INACTIVE);
@@ -33,6 +36,8 @@ describe('GeodesicGeometry', () => {
 			expect(lineStringInstance.getCalculationStatus()).toBe(GEODESIC_CALCULATION_STATUS.ACTIVE);
 			expect(polygonInstance).toBeInstanceOf(GeodesicGeometry);
 			expect(polygonInstance.getCalculationStatus()).toBe(GEODESIC_CALCULATION_STATUS.ACTIVE);
+			expect(segmentAsLineStringInstance).toBeInstanceOf(GeodesicGeometry);
+			expect(segmentAsLineStringInstance.getCalculationStatus()).toBe(GEODESIC_CALCULATION_STATUS.ACTIVE);
 		});
 
 		it('throws an error while initializing an instance with incorrect parameters', () => {

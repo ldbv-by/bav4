@@ -80,7 +80,7 @@ export class GeodesicGeometry {
 	 */
 	#isEffectiveSegment(coordinates) {
 		return (
-			coordinates.length === 2 || (coordinates.length === 3 && coordinates[1][0] === coordinates[2][0] && coordinates[1][1] === coordinates[2][1])
+			coordinates.length === 2 || (coordinates.length === 3 && coordinates[0][0] === coordinates[2][0] && coordinates[0][1] === coordinates[2][1])
 		);
 	}
 
