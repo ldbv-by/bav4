@@ -261,73 +261,84 @@ describe('TimeTravel', () => {
 			expect(element.getModel().timestamp).toBe(Initial_Value + 1);
 		});
 
-		it('start', async () => {
-			const state = {
-				media: {
-					portrait: false
-				}
-			};
+		describe('and slider animation', () => {
+			let clock;
+			beforeEach(() => {
+				clock = jasmine.clock().install();
+			});
 
-			const element = await setup(state, {}, { timestamp: Max - 2 });
+			afterEach(() => {
+				clock.uninstall();
+			});
 
-			expect(element.getModel().timestamp).toBe(Max - 2);
-			const buttonElement = element.shadowRoot.querySelector('#start');
-			const stop = element.shadowRoot.getElementById('stop');
+			it('start', async () => {
+				const state = {
+					media: {
+						portrait: false
+					}
+				};
 
-			buttonElement.click();
-			expect(stop.classList.contains('hide')).toBeFalse();
-			expect(buttonElement.classList.contains('hide')).toBeTrue();
-			expect(element.getModel().timestamp).toBe(Max - 2);
+				const element = await setup(state, {}, { timestamp: Max - 2 });
 
-			await TestUtils.timeout(Time_Interval);
+				expect(element.getModel().timestamp).toBe(Max - 2);
+				const buttonElement = element.shadowRoot.querySelector('#start');
+				const stop = element.shadowRoot.getElementById('stop');
 
-			expect(element.getModel().timestamp).toBe(Max - 1);
+				buttonElement.click();
+				expect(stop.classList.contains('hide')).toBeFalse();
+				expect(buttonElement.classList.contains('hide')).toBeTrue();
+				expect(element.getModel().timestamp).toBe(Max - 2);
 
-			await TestUtils.timeout(Time_Interval);
+				clock.tick(Time_Interval);
 
-			expect(element.getModel().timestamp).toBe(Max);
+				expect(element.getModel().timestamp).toBe(Max - 1);
 
-			await TestUtils.timeout(Time_Interval);
+				clock.tick(Time_Interval);
 
-			expect(element.getModel().timestamp).toBe(Min);
-		});
+				expect(element.getModel().timestamp).toBe(Max);
 
-		it('stop', async () => {
-			const state = {
-				media: {
-					portrait: false
-				}
-			};
+				clock.tick(Time_Interval);
 
-			const element = await setup(state);
+				expect(element.getModel().timestamp).toBe(Min);
+			});
 
-			expect(element.getModel().timestamp).toBe(Initial_Value);
-			const stop = element.shadowRoot.querySelector('#stop');
-			const start = element.shadowRoot.getElementById('start');
+			it('stop', async () => {
+				const state = {
+					media: {
+						portrait: false
+					}
+				};
 
-			start.click();
-			expect(stop.classList.contains('hide')).toBeFalse();
-			expect(start.classList.contains('hide')).toBeTrue();
+				const element = await setup(state);
 
-			await TestUtils.timeout(Time_Interval);
+				expect(element.getModel().timestamp).toBe(Initial_Value);
+				const stop = element.shadowRoot.querySelector('#stop');
+				const start = element.shadowRoot.getElementById('start');
 
-			expect(element.getModel().timestamp).toBe(Initial_Value + 1);
+				start.click();
+				expect(stop.classList.contains('hide')).toBeFalse();
+				expect(start.classList.contains('hide')).toBeTrue();
 
-			await TestUtils.timeout(Time_Interval);
+				clock.tick(Time_Interval);
 
-			expect(element.getModel().timestamp).toBe(Initial_Value + 2);
+				expect(element.getModel().timestamp).toBe(Initial_Value + 1);
 
-			stop.click();
-			expect(stop.classList.contains('hide')).toBeTrue();
-			expect(start.classList.contains('hide')).toBeFalse();
+				clock.tick(Time_Interval);
 
-			await TestUtils.timeout(Time_Interval);
+				expect(element.getModel().timestamp).toBe(Initial_Value + 2);
 
-			expect(element.getModel().timestamp).toBe(Initial_Value + 2);
+				stop.click();
+				expect(stop.classList.contains('hide')).toBeTrue();
+				expect(start.classList.contains('hide')).toBeFalse();
 
-			await TestUtils.timeout(Time_Interval);
+				clock.tick(Time_Interval);
 
-			expect(element.getModel().timestamp).toBe(Initial_Value + 2);
+				expect(element.getModel().timestamp).toBe(Initial_Value + 2);
+
+				clock.tick(Time_Interval);
+
+				expect(element.getModel().timestamp).toBe(Initial_Value + 2);
+			});
 		});
 
 		it('reset', async () => {
