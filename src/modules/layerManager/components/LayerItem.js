@@ -194,6 +194,23 @@ export class LayerItem extends AbstractMvuContentPanel {
 			</div>`;
 		};
 
+		const getTimestampContent = () => {
+			const getTimestampControl = () => {
+				const onTimestampChange = (event) => {
+					const timestamp = event.detail.selected;
+					modifyLayer(layer.id, { timestamp });
+				};
+				const selected = layer.timestamp ?? geoResource.timestamps[0];
+				return html`<ba-value-select
+					.title=${'Choose a value'}
+					.values=${geoResource.timestamps}
+					.selected=${selected}
+					@select=${onTimestampChange}
+				></ba-value-select>`;
+			};
+			return geoResource.hasTimestamps() ? getTimestampControl() : nothing;
+		};
+
 		const getVisibilityTitle = () => {
 			return layer.label + ' - ' + translate('layerManager_change_visibility');
 		};
@@ -235,6 +252,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 					<ba-checkbox .title="${getVisibilityTitle()}" class="ba-list-item__text" tabindex="0" .checked=${layer.visible} @toggle=${toggleVisibility}
 						>${layer.loading ? html`<ba-spinner .label=${currentLabel}></ba-spinner>` : html`${currentLabel} ${getBadges(layer.keywords)}`}
 					</ba-checkbox>
+					${getTimestampContent()}
 					<button id="button-detail" data-test-id class="ba-list-item__after" title="${getCollapseTitle()}" @click="${toggleCollapse}">
 						<i class="icon chevron icon-rotate-90 ${classMap(iconCollapseClass)}"></i>
 					</button>

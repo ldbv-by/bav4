@@ -226,6 +226,15 @@ export class NavigationRail extends MvuElement {
 						<button id="feedback" @click="${openFeedbackDialog}" title="${translate('menu_navigation_rail_feedback')}" class="feedback pointer">
 							<span class="icon "> </span>
 						</button>
+						<a
+							id="help"
+							href="${translate('menu_navigation_rail_help_url')}"
+							target="_blank"
+							title="${translate('menu_navigation_rail_help')}"
+							class="help pointer"
+						>
+							<span class="icon "> </span>
+						</a>
 						<button @click="${toggleSchema}" title="${translate(getTooltip())}" class=" ${getSchemaClass()} theme-toggle pointer">
 							<span class="icon "> </span>
 						</button>
