@@ -16,17 +16,17 @@ describe('i18n for timetravel module', () => {
 	it('provides translation for en', () => {
 		const map = provide('en');
 
-		expect(map.timeTravel_title).toBe('time travel');
-		expect(map.timeTravel_data).toBe('data');
-		expect(map.timeTravel_increase).toBe('increase year');
-		expect(map.timeTravel_decrease).toBe('previous year');
-		expect(map.timeTravel_start).toBe('start');
-		expect(map.timeTravel_stop).toBe('stop');
-		expect(map.timeTravel_reset).toBe('reset');
+		expect(map.timeTravel_title).toBe('Time travel');
+		expect(map.timeTravel_data).toBe('Data');
+		expect(map.timeTravel_increase).toBe('Increase year');
+		expect(map.timeTravel_decrease).toBe('Previous year');
+		expect(map.timeTravel_start).toBe('Start');
+		expect(map.timeTravel_stop).toBe('Stop');
+		expect(map.timeTravel_reset).toBe('Reset');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 8;
+		const expectedSize = 7;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

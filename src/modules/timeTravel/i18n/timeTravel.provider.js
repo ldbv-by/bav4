@@ -3,14 +3,13 @@ export const provide = (lang) => {
 		case 'en':
 			return {
 				//the first part of the snake_case key should be the name of the related module
-				timeTravel_title: 'time travel',
-				timeTravel_data: 'data',
-				timeTravel_increase: 'increase year',
-				timeTravel_decrease: 'previous year',
-				timeTravel_start: 'start',
-				timeTravel_stop: 'stop',
-				timeTravel_reset: 'reset',
-				timeTravel_map_series: 'map series'
+				timeTravel_title: 'Time travel',
+				timeTravel_data: 'Data',
+				timeTravel_increase: 'Increase year',
+				timeTravel_decrease: 'Previous year',
+				timeTravel_start: 'Start',
+				timeTravel_stop: 'Stop',
+				timeTravel_reset: 'Reset'
 			};
 
 		case 'de':
@@ -22,8 +21,7 @@ export const provide = (lang) => {
 				timeTravel_decrease: 'vorheriges Jahr',
 				timeTravel_start: 'Start',
 				timeTravel_stop: 'Stop',
-				timeTravel_reset: 'Zurücksetzten',
-				timeTravel_map_series: 'Kartenwerk'
+				timeTravel_reset: 'Zurücksetzten'
 			};
 
 		default:
