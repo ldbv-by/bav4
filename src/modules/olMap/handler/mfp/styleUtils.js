@@ -3,6 +3,7 @@
  */
 import { Style, Fill, Circle } from 'ol/style';
 import { DEVICE_PIXEL_RATIO } from 'ol/has';
+import { getRenderPixel } from 'ol/render';
 
 export const createThumbnailStyleFunction = (beingDraggedCallback) => {
 	const isPolygonArray = (arr) => arr[0][0] != null && arr[0][0][0] != null;
@@ -48,8 +49,8 @@ export const forceRenderStyle = new Style({
 
 export const nullStyleFunction = () => [new Style({})];
 
-export const createMapMaskFunction = (map, getPixelCoordinatesCallback) => {
-	const getMask = (map, pixelCoordinates) => {
+export const createMapMaskFunction = (map, getPixelCoordinatesCallback, context) => {
+	const getMask = (map, event, pixelCoordinates) => {
 		const size = map.getSize();
 		const width = size[0] * DEVICE_PIXEL_RATIO;
 		const height = size[1] * DEVICE_PIXEL_RATIO;
@@ -61,12 +62,18 @@ export const createMapMaskFunction = (map, getPixelCoordinatesCallback) => {
 			[0, 0]
 		];
 
-		return [outerPixelPolygon, pixelCoordinates.map((c) => [c[0] * DEVICE_PIXEL_RATIO, c[1] * DEVICE_PIXEL_RATIO])];
+		// the calculated pixelCoordinates must be adapted to get the pixel of the event's canvas context from the map viewport's CSS pixel.
+		// @see {@link https://openlayers.org/en/latest/apidoc/module-ol_render.html| getRenderPixel}
+		return [
+			outerPixelPolygon.map((c) => getRenderPixel(event, c)),
+			pixelCoordinates.map((c) => getRenderPixel(event, [c[0] * DEVICE_PIXEL_RATIO, c[1] * DEVICE_PIXEL_RATIO]))
+		];
 	};
 
 	const drawMask = (ctx, mask) => {
 		const outer = mask[0];
 		const inner = mask[1];
+		ctx.save();
 		ctx.beginPath();
 
 		// outside -> clockwise
@@ -88,11 +95,10 @@ export const createMapMaskFunction = (map, getPixelCoordinatesCallback) => {
 
 	const renderMask = (event) => {
 		const pixelCoordinates = getPixelCoordinatesCallback();
-		const pixelMask = getMask(map, pixelCoordinates);
+
+		const pixelMask = getMask(map, event, pixelCoordinates);
 		const ctx = event.context;
 		drawMask(ctx, pixelMask);
-
-		ctx.restore();
 	};
 	return renderMask;
 };
