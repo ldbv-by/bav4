@@ -396,7 +396,7 @@ describe('TimeTravel', () => {
 			};
 
 			const element = await setup(state);
-			const newValue = 1985;
+			const newValue = 1949;
 
 			expect(element.getModel().timestamp).toBe(Initial_Value);
 
@@ -405,6 +405,49 @@ describe('TimeTravel', () => {
 			inputElement.dispatchEvent(new Event('change'));
 
 			expect(element.getModel().timestamp).toBe(newValue);
+		});
+
+		it('does NOT sets an invalid value', async () => {
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+
+			const element = await setup(state);
+			const newValue = 'foo';
+
+			expect(element.getModel().timestamp).toBe(Initial_Value);
+
+			const inputElement = element.shadowRoot.querySelector('#timestampInput');
+			inputElement.value = newValue;
+			inputElement.dispatchEvent(new Event('change'));
+
+			expect(element.getModel().timestamp).toBe(Initial_Value);
+		});
+
+		it('does NOT sets value out of min max range', async () => {
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+
+			const element = await setup(state);
+			const underMinValue = Min - 100;
+			const overMaxValue = Max + 100;
+			expect(element.getModel().timestamp).toBe(Initial_Value);
+
+			const inputElement = element.shadowRoot.querySelector('#timestampInput');
+			inputElement.value = underMinValue;
+			inputElement.dispatchEvent(new Event('change'));
+
+			expect(element.getModel().timestamp).toBe(Min);
+
+			inputElement.value = overMaxValue;
+			inputElement.dispatchEvent(new Event('change'));
+
+			expect(element.getModel().timestamp).toBe(Max);
 		});
 	});
 

@@ -5,7 +5,7 @@ import { html, nothing } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { MvuElement } from '../../MvuElement';
 import { setCurrentTimestamp } from '../../../store/timeTravel/timeTravel.action';
-import { isFunction } from '../../../utils/checks';
+import { isFunction, isNumber } from '../../../utils/checks';
 import { $injector } from '../../../injection';
 import css from './timeTravelSlider.css';
 import minusSvg from './assets/minusCircle.svg';
@@ -99,6 +99,19 @@ export class TimeTravelSlider extends MvuElement {
 		};
 
 		const onChangeSelect = (e) => {
+			const inputValue = e.target.value;
+			if (inputValue === '') {
+				e.target.value = min;
+			}
+			if (isNumber(inputValue, false)) {
+				const candidate = parseInt(inputValue);
+				if (candidate < min) {
+					e.target.value = min;
+				}
+				if (candidate > max) {
+					e.target.value = max;
+				}
+			}
 			setTimestamp(parseInt(e.target.value));
 		};
 
