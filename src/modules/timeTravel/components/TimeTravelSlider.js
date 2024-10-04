@@ -17,6 +17,7 @@ import stopSvg from './assets/stop.svg';
 const Update_Timestamp = 'update_timestamp';
 const Update_GeoResourceId = 'update_georesourceid';
 const Update_IsPortrait = 'update_isPortrait';
+const Update_IsPlaying = 'update_isPlaying';
 
 const Range_Slider_Step = 1;
 
@@ -31,7 +32,6 @@ const Range_Slider_Step = 1;
  * @author thiloSchlemmer
  */
 export class TimeTravelSlider extends MvuElement {
-	#environmentService;
 	#translationService;
 	#geoResourceService;
 	#decadeFunction;
@@ -41,16 +41,15 @@ export class TimeTravelSlider extends MvuElement {
 		super({
 			timestamps: [],
 			timestamp: null,
-			isPortrait: false
+			isPortrait: false,
+			isPlaying: false
 		});
 
-		const {
-			EnvironmentService: environmentService,
-			TranslationService: translationService,
-			GeoResourceService: geoResourceService
-		} = $injector.inject('EnvironmentService', 'TranslationService', 'GeoResourceService');
+		const { TranslationService: translationService, GeoResourceService: geoResourceService } = $injector.inject(
+			'TranslationService',
+			'GeoResourceService'
+		);
 
-		this.#environmentService = environmentService;
 		this.#translationService = translationService;
 		this.#geoResourceService = geoResourceService;
 		this.#decadeFunction = this._isDecade;
@@ -67,10 +66,9 @@ export class TimeTravelSlider extends MvuElement {
 			case Update_GeoResourceId:
 				return { ...model, timestamps: fromGeoResource(data), timestamp: model.timestamp ?? fromGeoResource(data)[0] };
 			case Update_Timestamp:
-				return {
-					...model,
-					timestamp: data
-				};
+				return { ...model, timestamp: data };
+			case Update_IsPlaying:
+				return { ...model, isPlaying: data };
 		}
 	}
 
@@ -86,12 +84,8 @@ export class TimeTravelSlider extends MvuElement {
 		);
 	}
 
-	isRenderingSkipped() {
-		return this.#environmentService.isEmbedded();
-	}
-
 	createView(model) {
-		const { timestamps, timestamp, isPortrait } = model;
+		const { timestamps, timestamp, isPortrait, isPlaying } = model;
 
 		const min = timestamps.length !== 0 ? Math.min(...timestamps) : 0;
 		const max = timestamps.length !== 0 ? Math.max(...timestamps) : 0;
@@ -137,6 +131,7 @@ export class TimeTravelSlider extends MvuElement {
 				slider.value = value;
 				slider.dispatchEvent(new Event('input'));
 			}, TimeTravelSlider.TIME_INTERVAL_MS);
+			this.signal(Update_IsPlaying, true);
 		};
 
 		const stop = () => {
@@ -146,6 +141,7 @@ export class TimeTravelSlider extends MvuElement {
 			start.classList.remove('hide');
 			stop.classList.add('hide');
 			clearInterval(this.#timer);
+			this.signal(Update_IsPlaying, false);
 		};
 
 		const reset = () => {
@@ -156,6 +152,8 @@ export class TimeTravelSlider extends MvuElement {
 			stop.classList.add('hide');
 			clearInterval(this.#timer);
 			setTimestamp(min);
+
+			this.signal(Update_IsPlaying, false);
 		};
 
 		const getRangeBackground = () => {
@@ -180,7 +178,6 @@ export class TimeTravelSlider extends MvuElement {
 		};
 
 		const translate = (key) => this.#translationService.translate(key);
-
 		return timestamps.length !== 0
 			? html`
 					<style>
@@ -197,7 +194,15 @@ export class TimeTravelSlider extends MvuElement {
 							<div class="actions">
 								<div>
 									<div class="ba-form-element active-timestamp-input">
-										<input id="timestampInput" type="number" min="${min}" max="${max}" .value="${timestamp}" @change=${onChangeSelect} />
+										<input
+											?disabled=${isPlaying}
+											id="timestampInput"
+											type="number"
+											min="${min}"
+											max="${max}"
+											.value="${timestamp}"
+											@change=${onChangeSelect}
+										/>
 										<i class="bar"></i>
 									</div>
 								</div>

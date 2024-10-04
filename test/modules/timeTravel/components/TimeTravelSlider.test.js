@@ -43,9 +43,6 @@ describe('TimeTravel', () => {
 			timeTravel: timeTravelReducer
 		});
 		$injector
-			.registerSingleton('EnvironmentService', {
-				isEmbedded: () => embed
-			})
 			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('TranslationService', { translate: (key) => key });
@@ -66,7 +63,8 @@ describe('TimeTravel', () => {
 			expect(element.getModel()).toEqual({
 				timestamps: [],
 				timestamp: null,
-				isPortrait: false
+				isPortrait: false,
+				isPlaying: false
 			});
 		});
 	});
@@ -92,13 +90,7 @@ describe('TimeTravel', () => {
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
 
-		it('renders nothing when embedded', async () => {
-			const element = await setup({}, { embed: true });
-
-			expect(element.shadowRoot.children.length).toBe(0);
-		});
-
-		it('renders a time travel component', async () => {
+		it('renders a time travel slider', async () => {
 			const state = {
 				media: {
 					portrait: false
@@ -136,7 +128,7 @@ describe('TimeTravel', () => {
 			expect(element.shadowRoot.querySelectorAll('.range-background')).toHaveSize(1);
 		});
 
-		it('renders a time travel component with custom decadeFunction', async () => {
+		it('renders a time travel slider with custom decadeFunction', async () => {
 			const element = await setup({}, {}, { timestamp: 1950 });
 
 			expect(element.shadowRoot.querySelectorAll('span.range-bg.border')).toHaveSize(6); // 1900[1]-10[2]-20[3]-30[4]-40[5]-50[6]-1951
@@ -285,12 +277,14 @@ describe('TimeTravel', () => {
 				const element = await setup(state, {}, { timestamp: Max - 2 });
 
 				expect(element.getModel().timestamp).toBe(Max - 2);
+				expect(element.shadowRoot.querySelector('#timestampInput').disabled).toBeFalse();
 				const buttonElement = element.shadowRoot.querySelector('#start');
 				const stop = element.shadowRoot.getElementById('stop');
 
 				buttonElement.click();
 				expect(stop.classList.contains('hide')).toBeFalse();
 				expect(buttonElement.classList.contains('hide')).toBeTrue();
+				expect(element.shadowRoot.querySelector('#timestampInput').disabled).toBeTrue();
 				expect(element.getModel().timestamp).toBe(Max - 2);
 
 				clock.tick(TimeTravelSlider.TIME_INTERVAL_MS);
@@ -316,12 +310,14 @@ describe('TimeTravel', () => {
 				const element = await setup(state);
 
 				expect(element.getModel().timestamp).toBe(Initial_Value);
+				expect(element.shadowRoot.querySelector('#timestampInput').disabled).toBeFalse();
 				const stop = element.shadowRoot.querySelector('#stop');
 				const start = element.shadowRoot.getElementById('start');
 
 				start.click();
 				expect(stop.classList.contains('hide')).toBeFalse();
 				expect(start.classList.contains('hide')).toBeTrue();
+				expect(element.shadowRoot.querySelector('#timestampInput').disabled).toBeTrue();
 
 				clock.tick(TimeTravelSlider.TIME_INTERVAL_MS);
 
@@ -334,6 +330,7 @@ describe('TimeTravel', () => {
 				stop.click();
 				expect(stop.classList.contains('hide')).toBeTrue();
 				expect(start.classList.contains('hide')).toBeFalse();
+				expect(element.shadowRoot.querySelector('#timestampInput').disabled).toBeFalse();
 
 				clock.tick(TimeTravelSlider.TIME_INTERVAL_MS);
 
