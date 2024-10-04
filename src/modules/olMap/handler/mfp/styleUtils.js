@@ -49,7 +49,7 @@ export const forceRenderStyle = new Style({
 
 export const nullStyleFunction = () => [new Style({})];
 
-export const createMapMaskFunction = (map, getPixelCoordinatesCallback, context) => {
+export const createMapMaskFunction = (map, getPixelCoordinatesCallback) => {
 	const getMask = (map, event, pixelCoordinates) => {
 		const size = map.getSize();
 		const width = size[0] * DEVICE_PIXEL_RATIO;
