@@ -53,6 +53,7 @@ import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../.
 import { KML } from 'ol/format';
 import { Tools } from '../../../../domain/tools';
 import { setData } from '../../../../store/fileStorage/fileStorage.action';
+import { createDefaultLayerProperties } from '../../../../store/layers/layers.reducer';
 
 export const MAX_SELECTION_SIZE = 1;
 
@@ -151,10 +152,12 @@ export class OlDrawHandler extends OlLayerHandler {
 			acknowledgeTermsOfUse();
 		}
 		const getOldLayer = (map) => {
+			const byZIndex = (a, b) => b.getZIndex() - a.getZIndex(); // implicit reversed sort order
 			const isOldLayer = (layer) =>
 				this._fileStorageService.isAdminId(layer.get('geoResourceId')) || this._fileStorageService.isFileId(layer.get('geoResourceId'));
-			// we iterate over all layers (index=0 -> top-most; index=length-1 -> lowest), the top-most layer is the one we take source for our drawing layer
-			return map.getLayers().getArray().find(isOldLayer);
+			// we sort all layers by zIndex (z-index=0 -> top-most; index=length-1 -> lowest)
+			// and iterate over the result, the top-most layer is the one we take as source for our drawing layer
+			return map.getLayers().getArray().sort(byZIndex).find(isOldLayer);
 		};
 
 		const createLayer = () => {
@@ -191,6 +194,7 @@ export class OlDrawHandler extends OlLayerHandler {
 					});
 					const oldLayerId = oldLayer.get('id');
 					this._layerId = oldLayerId;
+					this._layerZIndex = oldLayer.getZIndex();
 					removeLayer(oldLayerId);
 					this._init(null);
 					this._setSelection(this._storeService.getStore().getState().draw.selection);
@@ -350,7 +354,10 @@ export class OlDrawHandler extends OlLayerHandler {
 		setSelection([]);
 
 		// eslint-disable-next-line promise/prefer-await-to-then
-		this._saveAndOptionallyConvertToPermanentLayer().finally(() => (this._layerId = null));
+		this._saveAndOptionallyConvertToPermanentLayer().finally(() => {
+			this._layerId = null;
+			this._layerZIndex = null;
+		});
 		this._vectorLayer
 			.getSource()
 			.getFeatures()
@@ -870,7 +877,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			// register the stored data as new georesource
 			this._geoResourceService.addOrReplace(vgr);
 			const layerId = this._layerId ?? `${id}_draw`;
-			addLayer(layerId, { geoResourceId: id, constraints: { metaData: false } });
+			addLayer(layerId, { zIndex: this._layerZIndex ?? createDefaultLayerProperties().zIndex, geoResourceId: id, constraints: { metaData: false } });
 		}
 	}
 }
