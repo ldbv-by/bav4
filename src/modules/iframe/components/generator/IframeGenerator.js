@@ -16,6 +16,7 @@ const Update_Size_Width = 'update_size_width';
 const Update_Size_Height = 'update_size_height';
 const Update_Auto_Width = 'update_auto_width';
 const Update_Preview_Url = 'update_preview_url';
+const Update_Media_Related_Properties = 'update_isPortrait';
 
 const Auto_Width = '100';
 const Range_Min = 250;
@@ -36,12 +37,20 @@ export class IframeGenerator extends MvuElement {
 		super({
 			size: [800, 600],
 			autoWidth: false,
-			previewUrl: null
+			previewUrl: null,
+			isPortrait: false
 		});
 		const { TranslationService: translationService, ShareService: shareService } = $injector.inject('TranslationService', 'ShareService');
 		this.#translationService = translationService;
 		this.#shareService = shareService;
 		this.#iframeObserver = null;
+	}
+
+	onInitialize() {
+		this.observe(
+			(state) => state.media,
+			(media) => this.signal(Update_Media_Related_Properties, { isPortrait: media.portrait })
+		);
 	}
 
 	update(type, data, model) {
@@ -63,6 +72,8 @@ export class IframeGenerator extends MvuElement {
 				};
 			case Update_Preview_Url:
 				return { ...model, previewUrl: data };
+			case Update_Media_Related_Properties:
+				return { ...model, ...data };
 		}
 	}
 
@@ -72,6 +83,11 @@ export class IframeGenerator extends MvuElement {
 			const config = { attributes: true, childList: false, subtree: false };
 			this.#iframeObserver = new MutationObserver((mutationList) => this.#onIFrameChanged(mutationList));
 			this.#iframeObserver.observe(iframeElement, config);
+			const { isPortrait } = this.getModel();
+			if (isPortrait) {
+				this.signal(Update_Size_Width, 250);
+				this.signal(Update_Size_Height, 250);
+			}
 		}
 	}
 
