@@ -28,8 +28,7 @@ describe('TimeTravel', () => {
 		}
 	};
 
-	const setup = (state = {}, config = {}, properties = {}) => {
-		const { embed = false } = config;
+	const setup = (state = {}, properties = {}) => {
 		// state of store
 		const initialState = {
 			media: {
@@ -71,7 +70,7 @@ describe('TimeTravel', () => {
 
 	describe('when instantiated', () => {
 		it('have accessible properties', async () => {
-			const element = await setup({}, {}, { timestamp: 1950 });
+			const element = await setup({}, { timestamp: 1950 });
 
 			expect(element.getModel().timestamp).toEqual(1950);
 			expect(element.timestamp).toEqual(1950);
@@ -85,7 +84,7 @@ describe('TimeTravel', () => {
 			spyOn(geoResourceServiceMock, 'byId')
 				.withArgs('invalidId')
 				.and.returnValue({ hasTimestamps: () => false });
-			const element = await setup({}, {}, { timestamp: 1940, geoResourceId: 'invalidId' });
+			const element = await setup({}, { timestamp: 1940, geoResourceId: 'invalidId' });
 
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
@@ -129,7 +128,7 @@ describe('TimeTravel', () => {
 		});
 
 		it('renders a time travel slider with custom decadeFunction', async () => {
-			const element = await setup({}, {}, { timestamp: 1950 });
+			const element = await setup({}, { timestamp: 1950 });
 
 			expect(element.shadowRoot.querySelectorAll('span.range-bg.border')).toHaveSize(6); // 1900[1]-10[2]-20[3]-30[4]-40[5]-50[6]-1951
 			expect(element.getModel().timestamp).toEqual(1950);
@@ -141,7 +140,7 @@ describe('TimeTravel', () => {
 		});
 
 		it('accepts only functions as custom decadeFunction', async () => {
-			const element = await setup({}, {}, { timestamp: 1950 });
+			const element = await setup({}, { timestamp: 1950 });
 
 			expect(element.shadowRoot.querySelectorAll('span.range-bg.border')).toHaveSize(6); // 1900[1]-10[2]-20[3]-30[4]-40[5]-50[6]-1951
 			expect(element.getModel().timestamp).toEqual(1950);
@@ -186,7 +185,7 @@ describe('TimeTravel', () => {
 		});
 
 		it('observes timestamp from s-o-s timeTravel', async () => {
-			const element = await setup({}, {}, { timestamp: 1950 });
+			const element = await setup({}, { timestamp: 1950 });
 
 			expect(element.getModel().timestamp).toEqual(1950);
 			expect(element.timestamp).toEqual(1950);
@@ -220,7 +219,7 @@ describe('TimeTravel', () => {
 				}
 			};
 
-			const element = await setup(state, {}, { timestamp: 1950 });
+			const element = await setup(state, { timestamp: 1950 });
 
 			expect(element.getModel().timestamp).toBe(1950);
 			const buttonElement = element.shadowRoot.querySelector('#decrease');
@@ -234,7 +233,7 @@ describe('TimeTravel', () => {
 					portrait: false
 				}
 			};
-			const element = await setup(state, {}, { timestamp: Max });
+			const element = await setup(state, { timestamp: Max });
 
 			expect(element.getModel().timestamp).toBe(Max);
 			const buttonElement = element.shadowRoot.querySelector('#increase');
@@ -274,7 +273,7 @@ describe('TimeTravel', () => {
 					}
 				};
 
-				const element = await setup(state, {}, { timestamp: Max - 2 });
+				const element = await setup(state, { timestamp: Max - 2 });
 
 				expect(element.getModel().timestamp).toBe(Max - 2);
 				expect(element.shadowRoot.querySelector('#timestampInput').disabled).toBeFalse();
@@ -350,7 +349,7 @@ describe('TimeTravel', () => {
 					}
 				};
 
-				const element = await setup(state, {}, { timestamp: 1950 });
+				const element = await setup(state, { timestamp: 1950 });
 
 				expect(element.getModel().timestamp).toBe(1950);
 				const buttonElement = element.shadowRoot.querySelector('#reset');
