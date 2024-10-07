@@ -49,6 +49,5 @@ export const bottomSheetReducer = (state = initialState, action) => {
 		}
 	}
 
-	console.log(state);
 	return state;
 };
