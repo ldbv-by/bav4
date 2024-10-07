@@ -611,6 +611,25 @@ describe('Header', () => {
 
 					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
 				});
+
+				it('hides/shows the mobile header', async () => {
+					const state = {
+						mainMenu: {
+							open: false
+						},
+						media: {
+							portrait: true,
+							minWidth: true
+						}
+					};
+					const element = await setup(state);
+					const inputElement = element.shadowRoot.querySelector('#input');
+					inputElement.value = 'foo';
+
+					inputElement.focus();
+					const cursorPosition = inputElement.selectionStart;
+					expect(cursorPosition).toBe(3);
+				});
 			});
 
 			describe('min-width < 80em', () => {

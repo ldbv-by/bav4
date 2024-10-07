@@ -182,18 +182,27 @@ export class Header extends MvuElement {
 
 		const layerCount = layers.length;
 
+		const moveCursorToEnd = () => {
+			const input = this.shadowRoot.getElementById('input');
+			const length = input.value.length;
+			input.setSelectionRange(length, length); // Set the cursor to the end
+		};
+
 		const onInputFocus = () => {
 			disableResponsiveParameterObservation();
 			setTab(TabIds.SEARCH);
+
 			if (isPortrait) {
 				const popup = this.shadowRoot.getElementById('headerMobile');
 				popup.style.display = 'none';
 				popup.style.opacity = 0;
+				moveCursorToEnd();
 			}
 			if (!hasMinWidth) {
 				const popup = this.shadowRoot.getElementById('headerLogo');
 				popup.style.display = 'none';
 				popup.style.opacity = 0;
+				moveCursorToEnd();
 			}
 
 			//in portrait mode we open the main menu to display existing results
