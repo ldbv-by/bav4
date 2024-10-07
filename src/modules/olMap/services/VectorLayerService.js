@@ -93,16 +93,13 @@ export class VectorLayerService {
 		});
 
 		/**
-		 * Changes of visibility, opacity and index always go along with removing and re-adding the olLayer to the map
-		 * therefore it's sufficient to listen just to the 'add' event of the layers collection
+		 * Track layer changes of visibility, opacity and z-index
 		 */
-		const addLayerListenerKey = olMap.getLayers().on('add', (event) => {
-			if (event.element === olLayer) {
-				olVectorSource.getFeatures().forEach((f) => this._updateStyle(f, olLayer, olMap));
-			}
+		const layerChangeListenerKey = olLayer.on(['change:zIndex', 'change:visible', 'change:opacity'], () => {
+			olVectorSource.getFeatures().forEach((f) => this._updateStyle(f, olLayer, olMap));
 		});
 
-		return { addFeatureListenerKey, removeFeatureListenerKey, clearFeaturesListenerKey, addLayerListenerKey };
+		return { addFeatureListenerKey, removeFeatureListenerKey, clearFeaturesListenerKey, layerChangeListenerKey };
 	}
 
 	/**
