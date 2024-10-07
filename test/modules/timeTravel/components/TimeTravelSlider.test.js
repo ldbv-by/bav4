@@ -71,7 +71,7 @@ describe('TimeTravel', () => {
 	});
 
 	describe('when instantiated', () => {
-		it('have accessible properties', async () => {
+		it('has accessible properties', async () => {
 			const element = await setup({}, { timestamp: 1950 });
 
 			expect(element.getModel().timestamp).toEqual(1950);
@@ -186,7 +186,7 @@ describe('TimeTravel', () => {
 			expect(element.shadowRoot.querySelectorAll('.range-background')).toHaveSize(1);
 		});
 
-		it('observes timestamp from s-o-s timeTravel', async () => {
+		it('observes the timestamp from the s-o-s timeTravel', async () => {
 			const element = await setup({}, { timestamp: 1950 });
 
 			expect(element.getModel().timestamp).toEqual(1950);
@@ -354,7 +354,7 @@ describe('TimeTravel', () => {
 			});
 		});
 
-		describe('reset buttin is clicked', () => {
+		describe('reset button is clicked', () => {
 			it('resets the slider', async () => {
 				const state = {
 					media: {
@@ -399,7 +399,7 @@ describe('TimeTravel', () => {
 			expect(element.getModel().timestamp).toBe(newValue);
 		});
 
-		it('sets the new value in timetravel s-o-s in a debounced manner', async () => {
+		it('sets the new value in the timetravel s-o-s in a debounced manner', async () => {
 			const state = {
 				media: {
 					portrait: false
@@ -457,7 +457,7 @@ describe('TimeTravel', () => {
 			expect(element.getModel().timestamp).toBe(newValue);
 		});
 
-		it('does NOT sets an invalid value', async () => {
+		it('does NOT set an invalid value', async () => {
 			const state = {
 				media: {
 					portrait: false
@@ -476,7 +476,7 @@ describe('TimeTravel', () => {
 			expect(element.getModel().timestamp).toBe(Initial_Value);
 		});
 
-		it('does NOT sets value out of min max range', async () => {
+		it('does NOT set a value out of min/max range', async () => {
 			const state = {
 				media: {
 					portrait: false
