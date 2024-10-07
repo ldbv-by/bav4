@@ -14,9 +14,10 @@ export const initialState = {
 	 */
 	data: [],
 	/**
-	 * @property {string| null}
+	 * The ids of all active sheets
+	 * @property {Array<String>}
 	 */
-	active: null
+	active: []
 };
 
 const addOrReplaceContent = (state, payload) => {
@@ -26,14 +27,13 @@ const addOrReplaceContent = (state, payload) => {
 		return content ? [payload, ...state.data] : state.data;
 	};
 	const replace = () => {
-		return content ? [payload, ...state.data.toSpliced(currentIndex, 1)] : state.data.with(currentIndex, { id, content: null });
+		return content ? [payload, ...state.data.toSpliced(currentIndex, 1)] : state.data.filter((btc) => btc.id !== id);
 	};
 	return currentIndex === -1 ? add() : replace();
 };
 
 const getActive = (bottomSheets) => {
-	const mostActiveBottomSheet = bottomSheets.find((b) => !!b.content);
-	return mostActiveBottomSheet ? mostActiveBottomSheet.id : null;
+	return bottomSheets.map((bts) => bts.id);
 };
 
 export const bottomSheetReducer = (state = initialState, action) => {
@@ -49,5 +49,6 @@ export const bottomSheetReducer = (state = initialState, action) => {
 		}
 	}
 
+	console.log(state);
 	return state;
 };
