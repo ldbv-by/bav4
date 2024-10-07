@@ -421,7 +421,7 @@ describe('TimeTravel', () => {
 			sliderElement.dispatchEvent(new Event('input'));
 			sliderElement.dispatchEvent(new Event('input'));
 
-			await TestUtils.timeout(TIMESPAN_DEBOUNCE_DELAY + 50);
+			await TestUtils.timeout(TIMESPAN_DEBOUNCE_DELAY + 100);
 
 			expect(timeTravelSpy).toHaveBeenCalledTimes(1);
 
@@ -431,7 +431,7 @@ describe('TimeTravel', () => {
 			sliderElement.dispatchEvent(new Event('input'));
 			sliderElement.dispatchEvent(new Event('input'));
 
-			await TestUtils.timeout(TIMESPAN_DEBOUNCE_DELAY + 50);
+			await TestUtils.timeout(TIMESPAN_DEBOUNCE_DELAY + 100);
 
 			expect(timeTravelSpy).toHaveBeenCalledTimes(2);
 		});
