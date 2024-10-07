@@ -198,6 +198,10 @@ export class NavigationRail extends MvuElement {
 						<span class="icon "> </span>
 						<span class="text">${translate('menu_navigation_rail_object_info')}</span>
 					</button>
+					<button title="${translate('menu_navigation_rail_time_travel_tooltip')}" class=" time" style="order: ${reverseTabIds.length + 1}">
+						<span class="icon "> </span>
+						<span class="text">${translate('menu_navigation_rail_time_travel')}</span>
+					</button>
 					<button @click="${increaseZoom}" class="zoom-in">
 						<span class="icon  "> </span>
 						<span class="text">${translate('menu_navigation_rail_zoom_in')}</span>
