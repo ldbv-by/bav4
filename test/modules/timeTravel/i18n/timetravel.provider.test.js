@@ -5,7 +5,6 @@ describe('i18n for timetravel module', () => {
 		const map = provide('de');
 
 		expect(map.timeTravel_title).toBe('Zeitreise');
-		expect(map.timeTravel_slider_data).toBe('Daten');
 		expect(map.timeTravel_slider_increase).toBe('nächstes Jahr');
 		expect(map.timeTravel_slider_decrease).toBe('vorheriges Jahr');
 		expect(map.timeTravel_slider_start).toBe('Start');
@@ -17,7 +16,6 @@ describe('i18n for timetravel module', () => {
 		const map = provide('en');
 
 		expect(map.timeTravel_title).toBe('Time travel');
-		expect(map.timeTravel_slider_data).toBe('Data');
 		expect(map.timeTravel_slider_increase).toBe('Increase year');
 		expect(map.timeTravel_slider_decrease).toBe('Previous year');
 		expect(map.timeTravel_slider_start).toBe('Start');
@@ -26,7 +24,7 @@ describe('i18n for timetravel module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 7;
+		const expectedSize = 6;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
