@@ -43,11 +43,11 @@ describe('TimeTravelPlugin', () => {
 				expect(wrapperElement.querySelectorAll(expectedTag)).toHaveSize(1);
 				expect(wrapperElement.querySelector(expectedTag).geoResourceId).toBe(geoResourceId);
 				expect(wrapperElement.querySelector(expectedTag).timestamp).toBe(timestamp0);
-				expect(store.getState().bottomSheet.active).toBe(TIME_TRAVEL_BOTTOM_SHEET_ID);
+				expect(store.getState().bottomSheet.active).toEqual([TIME_TRAVEL_BOTTOM_SHEET_ID]);
 
 				closeSlider();
 
-				expect(store.getState().bottomSheet.active).toBeNull();
+				expect(store.getState().bottomSheet.active).toEqual([]);
 
 				openSlider(timestamp1);
 
@@ -55,7 +55,7 @@ describe('TimeTravelPlugin', () => {
 				expect(wrapperElement.querySelectorAll(expectedTag)).toHaveSize(1);
 				expect(wrapperElement.querySelector(expectedTag).geoResourceId).toBe(geoResourceId);
 				expect(wrapperElement.querySelector(expectedTag).timestamp).toBe(timestamp1);
-				expect(store.getState().bottomSheet.active).toBe(TIME_TRAVEL_BOTTOM_SHEET_ID);
+				expect(store.getState().bottomSheet.active).toEqual([TIME_TRAVEL_BOTTOM_SHEET_ID]);
 			});
 		});
 	});
