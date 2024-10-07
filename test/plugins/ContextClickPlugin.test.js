@@ -10,7 +10,7 @@ import { $injector } from '../../src/injection/index.js';
 import { toolsReducer } from '../../src/store/tools/tools.reducer';
 import { highlightReducer } from '../../src/store/highlight/highlight.reducer.js';
 import { HighlightFeatureType } from '../../src/store/highlight/highlight.action.js';
-import { bottomSheetReducer } from '../../src/store/bottomSheet/bottomSheet.reducer.js';
+import { bottomSheetReducer, INTERACTION_BOTTOM_SHEET_ID } from '../../src/store/bottomSheet/bottomSheet.reducer.js';
 import { setCurrentTool } from '../../src/store/tools/tools.action.js';
 import { Tools } from '../../src/domain/tools.js';
 
@@ -66,12 +66,12 @@ describe('ContextClickPlugin', () => {
 					setContextClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 
 					expect(store.getState().highlight.features).toHaveSize(1);
-					expect(store.getState().bottomSheet.active).toBe('interaction');
+					expect(store.getState().bottomSheet.active).toEqual([INTERACTION_BOTTOM_SHEET_ID]);
 
 					setMoveStart();
 
 					expect(store.getState().highlight.features).toHaveSize(0);
-					expect(store.getState().bottomSheet.active).toBeNull();
+					expect(store.getState().bottomSheet.active).toEqual([]);
 				});
 			});
 
@@ -83,39 +83,39 @@ describe('ContextClickPlugin', () => {
 					setContextClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 
 					expect(store.getState().highlight.features).toHaveSize(1);
-					expect(store.getState().bottomSheet.active).toBe('interaction');
+					expect(store.getState().bottomSheet.active).toEqual([INTERACTION_BOTTOM_SHEET_ID]);
 
 					setClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 
 					expect(store.getState().highlight.features).toHaveSize(0);
-					expect(store.getState().bottomSheet.active).toBeNull();
+					expect(store.getState().bottomSheet.active).toEqual([]);
 				});
 			});
 		});
 		describe('when context-click state does NOT change', () => {
 			describe('when move-start state changed', () => {
 				it('does nothing', () => {
-					const store = setup({ bottomSheet: { active: 'interaction' } });
+					const store = setup({ bottomSheet: { active: [INTERACTION_BOTTOM_SHEET_ID] } });
 					new ContextClickPlugin().register(store);
 
-					expect(store.getState().bottomSheet.active).toBe('interaction');
+					expect(store.getState().bottomSheet.active).toEqual([INTERACTION_BOTTOM_SHEET_ID]);
 
 					setMoveStart();
 
-					expect(store.getState().bottomSheet.active).toBe('interaction');
+					expect(store.getState().bottomSheet.active).toEqual([INTERACTION_BOTTOM_SHEET_ID]);
 				});
 			});
 
 			describe('when pointer-click state changed', () => {
 				it('does nothing', () => {
-					const store = setup({ bottomSheet: { active: 'interaction' } });
+					const store = setup({ bottomSheet: { active: [INTERACTION_BOTTOM_SHEET_ID] } });
 					new ContextClickPlugin().register(store);
 
-					expect(store.getState().bottomSheet.active).toBe('interaction');
+					expect(store.getState().bottomSheet.active).toEqual([INTERACTION_BOTTOM_SHEET_ID]);
 
 					setClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 
-					expect(store.getState().bottomSheet.active).toBe('interaction');
+					expect(store.getState().bottomSheet.active).toEqual([INTERACTION_BOTTOM_SHEET_ID]);
 				});
 			});
 		});
