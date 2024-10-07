@@ -1,4 +1,4 @@
-import { ElevationProfilePlugin } from '../../src/plugins/ElevationProfilePlugin';
+import { ELEVATION_PROFILE_BOTTOM_SHEET_ID, ElevationProfilePlugin } from '../../src/plugins/ElevationProfilePlugin';
 import { openProfile } from '../../src/store/elevationProfile/elevationProfile.action';
 import { elevationProfileReducer, initialState as elevationProfileInitialState } from '../../src/store/elevationProfile/elevationProfile.reducer';
 import { bottomSheetReducer, initialState as bottomSheetInitialState } from '../../src/store/bottomSheet/bottomSheet.reducer';
@@ -60,7 +60,7 @@ describe('ElevationProfilePlugin', () => {
 					active: true,
 					coordinates: []
 				},
-				bottomSheet: { data: [], active: true }
+				bottomSheet: { data: [], active: [ELEVATION_PROFILE_BOTTOM_SHEET_ID] }
 			});
 			const instanceUnderTest = new ElevationProfilePlugin();
 			const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetUnsubscribeFn');
