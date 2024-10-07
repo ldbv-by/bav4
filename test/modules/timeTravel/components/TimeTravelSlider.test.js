@@ -1,10 +1,11 @@
 /* eslint-disable no-undef */
-import { TimeTravelSlider } from '../../../../src/modules/timeTravel/components/TimeTravelSlider.js';
+import { TIMESPAN_DEBOUNCE_DELAY, TimeTravelSlider } from '../../../../src/modules/timeTravel/components/TimeTravelSlider.js';
 import { $injector } from '../../../../src/injection/index.js';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer.js';
 import { TestUtils } from '../../../test-utils.js';
 import { timeTravelReducer } from '../../../../src/store/timeTravel/timeTravel.reducer.js';
 import { setCurrentTimestamp } from '../../../../src/store/timeTravel/timeTravel.action.js';
+import { observe } from '../../../../src/utils/storeUtils.js';
 
 window.customElements.define(TimeTravelSlider.tag, TimeTravelSlider);
 
@@ -21,7 +22,7 @@ describe('TimeTravel', () => {
 			return extent;
 		}
 	};
-
+	let store = null;
 	const geoResourceServiceMock = {
 		byId: () => {
 			return { hasTimestamps: () => true, timestamps: [1900, 1902, 1903, 1921, 1923, 1924, 1927, 1937, 1939, 1940, 1949, 1951] };
@@ -34,10 +35,11 @@ describe('TimeTravel', () => {
 			media: {
 				portrait: true
 			},
+			timeTravel: { timestamp: null, active: null },
 			...state
 		};
 		const props = { ...properties, geoResourceId: properties.geoResourceId ?? 'fooId' };
-		TestUtils.setupStoreAndDi(initialState, {
+		store = TestUtils.setupStoreAndDi(initialState, {
 			media: createNoInitialStateMediaReducer(),
 			timeTravel: timeTravelReducer
 		});
@@ -384,6 +386,42 @@ describe('TimeTravel', () => {
 			sliderElement.dispatchEvent(new Event('input'));
 
 			expect(element.getModel().timestamp).toBe(newValue);
+		});
+
+		it('sets the new value in timetravel s-o-s in a debounced manner', async () => {
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+
+			const timeTravelSpy = jasmine.createSpy('timestamp').and.callFake(() => {});
+
+			const element = await setup(state);
+			observe(store, (state) => state.timeTravel.timestamp, timeTravelSpy);
+
+			expect(element.getModel().timestamp).toBe(Initial_Value);
+
+			const sliderElement = element.shadowRoot.querySelector('#rangeSlider');
+			sliderElement.value = 1950;
+			sliderElement.dispatchEvent(new Event('input'));
+			sliderElement.dispatchEvent(new Event('input'));
+			sliderElement.dispatchEvent(new Event('input'));
+			sliderElement.dispatchEvent(new Event('input'));
+
+			await TestUtils.timeout(TIMESPAN_DEBOUNCE_DELAY + 100);
+
+			expect(timeTravelSpy).toHaveBeenCalledTimes(1);
+
+			sliderElement.value = 1951;
+			sliderElement.dispatchEvent(new Event('input'));
+			sliderElement.dispatchEvent(new Event('input'));
+			sliderElement.dispatchEvent(new Event('input'));
+			sliderElement.dispatchEvent(new Event('input'));
+
+			await TestUtils.timeout(TIMESPAN_DEBOUNCE_DELAY + 100);
+
+			expect(timeTravelSpy).toHaveBeenCalledTimes(2);
 		});
 	});
 
