@@ -612,7 +612,7 @@ describe('Header', () => {
 					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
 				});
 
-				it('hides/shows the mobile header', async () => {
+				it('move cursor to the end', async () => {
 					const state = {
 						mainMenu: {
 							open: false
