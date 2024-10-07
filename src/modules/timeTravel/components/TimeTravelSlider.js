@@ -148,7 +148,7 @@ export class TimeTravelSlider extends MvuElement {
 			start.classList.add('hide');
 			stop.classList.remove('hide');
 			clearInterval(this.#timer);
-			this.#timer = setInterval(function () {
+			this.#timer = setInterval(() => {
 				const value = (+slider.value + Range_Slider_Step) % (+slider.getAttribute('max') + Range_Slider_Step);
 				slider.value = value;
 				slider.dispatchEvent(new Event('input'));
