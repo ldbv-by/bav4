@@ -234,7 +234,7 @@ export class TimeTravelSlider extends MvuElement {
 										.icon="${minusSvg}"
 										.color=${'var(--primary-color)'}
 										.size=${isPortrait ? 2.8 : 1.9}
-										.title=${translate('timeTravel_decrease')}
+										.title=${translate('timeTravel_slider_decrease')}
 										@click=${decreaseTimestamp}
 									></ba-icon>
 									<ba-icon
@@ -242,12 +242,12 @@ export class TimeTravelSlider extends MvuElement {
 										.icon="${plusSvg}"
 										.color=${'var(--primary-color)'}
 										.size=${isPortrait ? 2.8 : 1.9}
-										.title=${translate('timeTravel_increase')}
+										.title=${translate('timeTravel_slider_increase')}
 										@click=${increaseTimestamp}
 									></ba-icon>
 									<ba-icon
 										id="start"
-										.title=${translate('timeTravel_start')}
+										.title=${translate('timeTravel_slider_start')}
 										.size=${isPortrait ? 2.8 : 1.9}
 										.type=${'primary'}
 										.icon=${playSvg}
@@ -255,7 +255,7 @@ export class TimeTravelSlider extends MvuElement {
 									></ba-icon>
 									<ba-icon
 										id="stop"
-										.title=${translate('timeTravel_stop')}
+										.title=${translate('timeTravel_slider_stop')}
 										.size=${isPortrait ? 2.8 : 1.9}
 										class="hide"
 										.type=${'primary'}
@@ -264,7 +264,7 @@ export class TimeTravelSlider extends MvuElement {
 									></ba-icon>
 									<ba-icon
 										id="reset"
-										.title=${translate('timeTravel_reset')}
+										.title=${translate('timeTravel_slider_reset')}
 										.size=${isPortrait ? 3.1 : 2.1}
 										.type=${'primary'}
 										.icon=${resetSvg}
