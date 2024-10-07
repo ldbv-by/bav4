@@ -88,6 +88,11 @@ export class TimeTravelSlider extends MvuElement {
 		);
 	}
 
+	onDisconnect() {
+		clearInterval(this.#timer);
+		this.#timer = null;
+	}
+
 	createView(model) {
 		const { timestamps, timestamp, isPortrait, isPlaying } = model;
 

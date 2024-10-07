@@ -198,6 +198,17 @@ describe('TimeTravel', () => {
 		});
 	});
 
+	describe('when disconnected', () => {
+		it('clears the timer', async () => {
+			const element = await setup({}, { timestamp: 1950 });
+			const spy = spyOn(global, 'clearInterval').and.callThrough();
+
+			element.onDisconnect(); // we have to call onDisconnect manually
+
+			expect(spy).toHaveBeenCalled();
+		});
+	});
+
 	describe('when actions buttons are clicked', () => {
 		it('does NOT decrease timestamp because min value', async () => {
 			const state = {
@@ -403,13 +414,14 @@ describe('TimeTravel', () => {
 			expect(element.getModel().timestamp).toBe(Initial_Value);
 
 			const sliderElement = element.shadowRoot.querySelector('#rangeSlider');
+			timeTravelSpy.calls.reset();
 			sliderElement.value = 1950;
 			sliderElement.dispatchEvent(new Event('input'));
 			sliderElement.dispatchEvent(new Event('input'));
 			sliderElement.dispatchEvent(new Event('input'));
 			sliderElement.dispatchEvent(new Event('input'));
 
-			await TestUtils.timeout(TIMESPAN_DEBOUNCE_DELAY + 100);
+			await TestUtils.timeout(TIMESPAN_DEBOUNCE_DELAY + 50);
 
 			expect(timeTravelSpy).toHaveBeenCalledTimes(1);
 
@@ -419,7 +431,7 @@ describe('TimeTravel', () => {
 			sliderElement.dispatchEvent(new Event('input'));
 			sliderElement.dispatchEvent(new Event('input'));
 
-			await TestUtils.timeout(TIMESPAN_DEBOUNCE_DELAY + 100);
+			await TestUtils.timeout(TIMESPAN_DEBOUNCE_DELAY + 50);
 
 			expect(timeTravelSpy).toHaveBeenCalledTimes(2);
 		});
