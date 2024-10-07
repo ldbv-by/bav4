@@ -17,7 +17,7 @@ import { $injector } from '../../src/injection';
 import { LevelTypes } from '../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../src/store/notifications/notifications.reducer';
 import { CoordinateProposalType, RoutingStatusCodes } from '../../src/domain/routing';
-import { bottomSheetReducer } from '../../src/store/bottomSheet/bottomSheet.reducer.js';
+import { bottomSheetReducer, INTERACTION_BOTTOM_SHEET_ID } from '../../src/store/bottomSheet/bottomSheet.reducer.js';
 import { ProposalContextContent } from '../../src/modules/routing/components/contextMenu/ProposalContextContent.js';
 import { highlightReducer } from '../../src/store/highlight/highlight.reducer.js';
 import { HighlightFeatureType } from '../../src/store/highlight/highlight.action.js';
@@ -247,7 +247,7 @@ describe('RoutingPlugin', () => {
 					current: Tools.ROUTING
 				},
 
-				bottomSheet: { data: [], active: true },
+				bottomSheet: { data: [], active: [INTERACTION_BOTTOM_SHEET_ID] },
 				highlight: {
 					features: [{ id: RoutingPlugin.HIGHLIGHT_FEATURE_ID, data: { coordinate: [11, 22] } }]
 				}
@@ -259,7 +259,7 @@ describe('RoutingPlugin', () => {
 			setCurrentTool('foo');
 
 			expect(store.getState().routing.active).toBeFalse();
-			expect(store.getState().bottomSheet.active).toBeNull();
+			expect(store.getState().bottomSheet.active).toEqual([]);
 			expect(store.getState().highlight.features).toHaveSize(0);
 		});
 	});
@@ -345,18 +345,20 @@ describe('RoutingPlugin', () => {
 			setProposal(coordinate, CoordinateProposalType.START_OR_DESTINATION);
 
 			expect(store.getState().mapContextMenu.active).toBeFalse();
-			expect(store.getState().bottomSheet.active).toBe('interaction');
+			expect(store.getState().bottomSheet.active).toEqual([INTERACTION_BOTTOM_SHEET_ID]);
 			const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data[0].content);
 			expect(wrapperElement.querySelectorAll(ProposalContextContent.tag)).toHaveSize(1);
-			expect(store.getState().bottomSheet.active).toBe('interaction');
+			expect(store.getState().bottomSheet.active).toEqual([INTERACTION_BOTTOM_SHEET_ID]);
 			expect(store.getState().highlight.features).toHaveSize(1);
 			expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
 			expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER_TMP);
 			expect(store.getState().highlight.features[0].id).toBe(RoutingPlugin.HIGHLIGHT_FEATURE_ID);
+			const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetUnsubscribeFn');
 
-			closeBottomSheet('interaction');
+			closeBottomSheet(INTERACTION_BOTTOM_SHEET_ID);
 
 			expect(store.getState().highlight.features).toHaveSize(0);
+			expect(bottomSheetUnsubscribeFnSpy).toHaveBeenCalled();
 		});
 
 		it('adds a different highlight feature when waypoint already exists', async () => {
@@ -434,7 +436,7 @@ describe('RoutingPlugin', () => {
 		describe('and we have more than one waypoint', () => {
 			it('resets the UI but does not close the elevation profile', async () => {
 				const store = setup({
-					bottomSheet: { active: 'interaction' },
+					bottomSheet: { active: [INTERACTION_BOTTOM_SHEET_ID] },
 					mapContextMenu: { active: true },
 					highlight: {
 						features: [{ id: RoutingPlugin.HIGHLIGHT_FEATURE_ID, data: { coordinate: [11, 22] } }],
@@ -453,7 +455,7 @@ describe('RoutingPlugin', () => {
 					[3, 4]
 				]);
 
-				expect(store.getState().bottomSheet.active).toBe('interaction');
+				expect(store.getState().bottomSheet.active).toEqual([INTERACTION_BOTTOM_SHEET_ID]);
 				expect(store.getState().mapContextMenu.active).toBeFalse();
 				expect(store.getState().highlight.active).toBeFalse();
 			});
@@ -461,7 +463,7 @@ describe('RoutingPlugin', () => {
 		describe('and we have less than two waypoints', () => {
 			it('resets the UI and also closes the elevation profile', async () => {
 				const store = setup({
-					bottomSheet: { data: [], active: true },
+					bottomSheet: { data: [], active: [INTERACTION_BOTTOM_SHEET_ID] },
 					mapContextMenu: { active: true },
 					highlight: {
 						features: [{ id: RoutingPlugin.HIGHLIGHT_FEATURE_ID, data: { coordinate: [11, 22] } }],
@@ -477,7 +479,7 @@ describe('RoutingPlugin', () => {
 
 				setStart([1, 2]);
 
-				expect(store.getState().bottomSheet.active).toBeNull();
+				expect(store.getState().bottomSheet.active).toEqual([]);
 				expect(store.getState().mapContextMenu.active).toBeFalse();
 				expect(store.getState().highlight.active).toBeFalse();
 			});
