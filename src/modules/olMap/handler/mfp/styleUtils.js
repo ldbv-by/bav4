@@ -2,7 +2,6 @@
  * @module modules/olMap/handler/mfp/styleUtils
  */
 import { Style, Fill, Circle } from 'ol/style';
-import { DEVICE_PIXEL_RATIO } from 'ol/has';
 import { getRenderPixel } from 'ol/render';
 
 export const createThumbnailStyleFunction = (beingDraggedCallback) => {
@@ -51,9 +50,7 @@ export const nullStyleFunction = () => [new Style({})];
 
 export const createMapMaskFunction = (map, getPixelCoordinatesCallback) => {
 	const getMask = (map, event, pixelCoordinates) => {
-		const size = map.getSize();
-		const width = size[0] * DEVICE_PIXEL_RATIO;
-		const height = size[1] * DEVICE_PIXEL_RATIO;
+		const [width, height] = map.getSize();
 		const outerPixelPolygon = [
 			[0, 0],
 			[width, 0],
@@ -64,10 +61,7 @@ export const createMapMaskFunction = (map, getPixelCoordinatesCallback) => {
 
 		// the calculated pixelCoordinates must be adapted to get the pixel of the event's canvas context from the map viewport's CSS pixel.
 		// @see {@link https://openlayers.org/en/latest/apidoc/module-ol_render.html| getRenderPixel}
-		return [
-			outerPixelPolygon.map((c) => getRenderPixel(event, c)),
-			pixelCoordinates.map((c) => getRenderPixel(event, [c[0] * DEVICE_PIXEL_RATIO, c[1] * DEVICE_PIXEL_RATIO]))
-		];
+		return [outerPixelPolygon.map((c) => getRenderPixel(event, c)), pixelCoordinates.map((c) => getRenderPixel(event, c))];
 	};
 
 	const drawMask = (ctx, mask) => {
