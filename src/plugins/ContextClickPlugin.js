@@ -24,7 +24,7 @@ export class ContextClickPlugin extends BaPlugin {
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 
 		const onBottomSheetChanged = (active) => {
-			if (!active.includes(DEFAULT_BOTTOM_SHEET_ID)) {
+			if (active.includes(INTERACTION_BOTTOM_SHEET_ID)) {
 				bottomSheetOpenedFromHere = false;
 			}
 		};
