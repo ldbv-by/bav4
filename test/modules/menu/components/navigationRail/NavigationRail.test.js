@@ -17,7 +17,7 @@ import { authReducer } from '../../../../../src/store/auth/auth.reducer';
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 import { ToggleFeedbackPanel } from '../../../../../src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
 import { closeModal } from '../../../../../src/store/modal/modal.action';
-import { Actions } from '../../../../../src/services/PredefinedActionService.js';
+import { PredefinedConfiguration } from '../../../../../src/services/PredefinedConfigurationService.js';
 
 window.customElements.define(NavigationRail.tag, NavigationRail);
 
@@ -30,8 +30,8 @@ describe('NavigationRail', () => {
 		signIn: () => {},
 		signOut: () => {}
 	};
-	const predefinedActionService = {
-		run: () => {}
+	const predefinedConfigurationService = {
+		apply: () => {}
 	};
 
 	const mapService = {
@@ -83,7 +83,7 @@ describe('NavigationRail', () => {
 			.registerSingleton('MapService', mapService)
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('AuthService', authService)
-			.registerSingleton('PredefinedActionService', predefinedActionService);
+			.registerSingleton('PredefinedConfigurationService', predefinedConfigurationService);
 
 		return TestUtils.render(NavigationRail.tag);
 	};
@@ -400,7 +400,7 @@ describe('NavigationRail', () => {
 			expect(store.getState().media.darkSchema).toBeTrue();
 		});
 
-		it('calls the PredefinedActionService to turn on the time travel', async () => {
+		it('calls the PredefinedConfigurationService to turn on the time travel', async () => {
 			const state = {
 				media: { portrait: false, minWidth: false, darkSchema: false },
 				navigationRail: {
@@ -409,12 +409,12 @@ describe('NavigationRail', () => {
 				}
 			};
 			const element = await setup(state);
-			const predefinedActionServiceSpy = spyOn(predefinedActionService, 'run');
+			const predefinedActionServiceSpy = spyOn(predefinedConfigurationService, 'apply');
 
 			const button = element.shadowRoot.querySelector('.timeTravel');
 			button.click();
 
-			expect(predefinedActionServiceSpy).toHaveBeenCalledWith(Actions.DISPLAY_TIME_TRAVEL);
+			expect(predefinedActionServiceSpy).toHaveBeenCalledWith(PredefinedConfiguration.DISPLAY_TIME_TRAVEL);
 		});
 
 		it('closes the component', async () => {

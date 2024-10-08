@@ -15,7 +15,7 @@ import { fit } from '../../../../store/position/position.action';
 import { close } from '../../../../store/navigationRail/navigationRail.action';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { closeModal, openModal } from '../../../../store/modal/modal.action';
-import { Actions } from '../../../../services/PredefinedActionService';
+import { PredefinedConfiguration } from '../../../../services/PredefinedConfigurationService';
 
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_IsOpen_NavigationRail = 'update_NavigationRail';
@@ -33,7 +33,7 @@ export class NavigationRail extends MvuElement {
 	#translationService;
 	#mapService;
 	#authService;
-	#predefinedActionService;
+	#predefinedConfigurationService;
 
 	constructor() {
 		super({
@@ -49,14 +49,14 @@ export class NavigationRail extends MvuElement {
 			TranslationService: translationService,
 			MapService: mapService,
 			AuthService: authService,
-			PredefinedActionService: predefinedActionService
-		} = $injector.inject('EnvironmentService', 'MapService', 'TranslationService', 'AuthService', 'PredefinedActionService');
+			PredefinedConfigurationService: predefinedConfigurationService
+		} = $injector.inject('EnvironmentService', 'MapService', 'TranslationService', 'AuthService', 'PredefinedConfigurationService');
 
 		this.#environmentService = environmentService;
 		this.#translationService = translationService;
 		this.#mapService = mapService;
 		this.#authService = authService;
-		this.#predefinedActionService = predefinedActionService;
+		this.#predefinedConfigurationService = predefinedConfigurationService;
 	}
 
 	update(type, data, model) {
@@ -130,7 +130,7 @@ export class NavigationRail extends MvuElement {
 		};
 
 		const showTimeTravel = () => {
-			this.#predefinedActionService.run(Actions.DISPLAY_TIME_TRAVEL);
+			this.#predefinedConfigurationService.apply(PredefinedConfiguration.DISPLAY_TIME_TRAVEL);
 		};
 
 		const openTab = (tabId) => {
