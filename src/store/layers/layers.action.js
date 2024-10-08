@@ -86,7 +86,7 @@ export const modifyLayer = (id, options = {}) => {
  * @function
  * @param {string} id Id of the layer
  * @param {module:store/layers/layers_action~AddLayerOptions} options layer options
-*/
+ */
 export const addLayer = (id, options = {}) => {
 	getStore().dispatch({
 		type: LAYER_ADDED,
