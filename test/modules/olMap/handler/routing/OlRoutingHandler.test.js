@@ -574,7 +574,7 @@ describe('OlRoutingHandler', () => {
 					new TranslateEvent('translatestart', new Collection([feature]), [0, 0], [0, 0], new Event(MapBrowserEventType.POINTERDOWN))
 				);
 
-				expect(store.getState().bottomSheet.active).toBeNull();
+				expect(store.getState().bottomSheet.active).toEqual([]);
 				expect(store.getState().highlight.features).toHaveSize(0);
 			});
 
