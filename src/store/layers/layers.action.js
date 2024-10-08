@@ -95,6 +95,21 @@ export const addLayer = (id, options = {}) => {
 };
 
 /**
+ * Adds a {@link Layer} to the list of active layers but only if the referenced GeoResource is not already present.
+ * @param {string} id Id of the layer
+ * @param {module:store/layers/layers_action~AddLayerOptions} options layer options
+ */
+export const addLayerIfNotPresent = (id, options = {}) => {
+	if (
+		!getStore()
+			.getState()
+			.layers.active.some((l) => l.geoResourceId === (options.geoResourceId ?? id))
+	) {
+		addLayer(id, options);
+	}
+};
+
+/**
  * Removes a {@link Layer} from the list of active layers.
  * @function
  * @param {string} id Id of the layer

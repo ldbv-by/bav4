@@ -16,7 +16,8 @@ import {
 	setReady,
 	geoResourceChanged,
 	removeLayerOf,
-	removeAndSetLayers
+	removeAndSetLayers,
+	addLayerIfNotPresent
 } from '../../../src/store/layers/layers.action';
 import { TestUtils } from '../../test-utils.js';
 import { GeoResourceFuture, XyzGeoResource } from '../../../src/domain/geoResources';
@@ -268,6 +269,23 @@ describe('layersReducer', () => {
 
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.added.payload).toEqual(['id0']);
+		});
+	});
+
+	describe('addLayerIfNotPresent', () => {
+		it('adds a layer if its GeoResource is not already present', () => {
+			const store = setup();
+
+			const geoResourceId = 'geoResourceId0';
+			const layerProperties0 = { geoResourceId };
+
+			addLayerIfNotPresent('id0', layerProperties0);
+			addLayerIfNotPresent('id1', layerProperties0);
+			addLayerIfNotPresent(geoResourceId);
+
+			expect(store.getState().layers.active.length).toBe(1);
+			expect(store.getState().layers.active[0].id).toBe('id0');
+			expect(store.getState().layers.active[0].geoResourceId).toBe(geoResourceId);
 		});
 	});
 
