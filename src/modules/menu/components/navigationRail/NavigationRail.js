@@ -15,6 +15,7 @@ import { fit } from '../../../../store/position/position.action';
 import { close } from '../../../../store/navigationRail/navigationRail.action';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { closeModal, openModal } from '../../../../store/modal/modal.action';
+import { Actions } from '../../../../services/PredefinedActionService';
 
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_IsOpen_NavigationRail = 'update_NavigationRail';
@@ -32,6 +33,7 @@ export class NavigationRail extends MvuElement {
 	#translationService;
 	#mapService;
 	#authService;
+	#predefinedActionService;
 
 	constructor() {
 		super({
@@ -46,13 +48,15 @@ export class NavigationRail extends MvuElement {
 			EnvironmentService: environmentService,
 			TranslationService: translationService,
 			MapService: mapService,
-			AuthService: authService
-		} = $injector.inject('EnvironmentService', 'MapService', 'TranslationService', 'AuthService');
+			AuthService: authService,
+			PredefinedActionService: predefinedActionService
+		} = $injector.inject('EnvironmentService', 'MapService', 'TranslationService', 'AuthService', 'PredefinedActionService');
 
 		this.#environmentService = environmentService;
 		this.#translationService = translationService;
 		this.#mapService = mapService;
 		this.#authService = authService;
+		this.#predefinedActionService = predefinedActionService;
 	}
 
 	update(type, data, model) {
@@ -123,6 +127,10 @@ export class NavigationRail extends MvuElement {
 
 		const getTooltip = () => {
 			return darkSchema ? 'menu_navigation_rail_light_theme' : 'menu_navigation_rail_dark_theme';
+		};
+
+		const showTimeTravel = () => {
+			this.#predefinedActionService.run(Actions.DISPLAY_TIME_TRAVEL);
 		};
 
 		const openTab = (tabId) => {
@@ -198,7 +206,12 @@ export class NavigationRail extends MvuElement {
 						<span class="icon "> </span>
 						<span class="text">${translate('menu_navigation_rail_object_info')}</span>
 					</button>
-					<button title="${translate('menu_navigation_rail_time_travel_tooltip')}" class=" time" style="order: ${reverseTabIds.length + 1}">
+					<button
+						title="${translate('menu_navigation_rail_time_travel_tooltip')}"
+						class="timeTravel"
+						@click="${() => showTimeTravel()}"
+						style="order: ${reverseTabIds.length + 1}"
+					>
 						<span class="icon "> </span>
 						<span class="text">${translate('menu_navigation_rail_time_travel')}</span>
 					</button>
