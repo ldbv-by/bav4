@@ -271,7 +271,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		const pixelSize = toPixelSize(this._pageSize);
 		const mfpBoundingBox = getBoundingBoxFrom(centerPixel, pixelSize);
 
-		return getPolygonFrom(mfpBoundingBox).getCoordinates()[0].reverse();
+		return getPolygonFrom(mfpBoundingBox).getCoordinates()[0];
 	}
 
 	_createPagePolygon(pageSize, center) {

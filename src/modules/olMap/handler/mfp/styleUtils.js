@@ -77,10 +77,7 @@ export const createMapMaskFunction = (map, getPixelCoordinatesCallback) => {
 
 		// inside -> counter-clockwise
 		ctx.moveTo(inner[0][0], inner[0][1]);
-		[...inner]
-			.reverse()
-			.slice(1)
-			.forEach((c) => ctx.lineTo(c[0], c[1]));
+		[...inner].slice(1).forEach((c) => ctx.lineTo(c[0], c[1]));
 		ctx.closePath();
 
 		ctx.fillStyle = 'rgba(0, 5, 25, 0.75)';
