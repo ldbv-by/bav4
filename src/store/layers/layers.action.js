@@ -86,7 +86,7 @@ export const modifyLayer = (id, options = {}) => {
  * @function
  * @param {string} id Id of the layer
  * @param {module:store/layers/layers_action~AddLayerOptions} options layer options
- */
+*/
 export const addLayer = (id, options = {}) => {
 	getStore().dispatch({
 		type: LAYER_ADDED,
@@ -96,6 +96,7 @@ export const addLayer = (id, options = {}) => {
 
 /**
  * Adds a {@link Layer} to the list of active layers but only if the referenced GeoResource is not already present.
+ * @function
  * @param {string} id Id of the layer
  * @param {module:store/layers/layers_action~AddLayerOptions} options layer options
  */
@@ -136,6 +137,7 @@ export const removeAndSetLayers = (options = [], restoreHiddenLayers = false) =>
 
 /**
  * Removes all {@link Layer} which references a certain GeoResource from the list of active layers
+ * @function
  * @param {string} geoResourceId The id of a GeoResource
  */
 export const removeLayerOf = (geoResourceId) => {
