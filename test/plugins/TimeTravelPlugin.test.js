@@ -12,7 +12,6 @@ import {
 import { removeAndSetLayers } from '../../src/store/layers/layers.action.js';
 import { $injector } from '../../src/injection/index.js';
 import { closeBottomSheet, openBottomSheet } from '../../src/store/bottomSheet/bottomSheet.action.js';
-import { activate } from '../../src/store/routing/routing.action.js';
 
 describe('TimeTravelPlugin', () => {
 	const environmentService = {
