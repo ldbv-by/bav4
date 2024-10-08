@@ -110,3 +110,12 @@
 .tool-option {
 	margin: 0 1em 1em;
 }
+
+span.grid-note {
+	font-style: italic;
+	font-size: small;
+}
+
+span.hide {
+	display: none;
+}

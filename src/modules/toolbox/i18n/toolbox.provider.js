@@ -100,7 +100,8 @@ export const provide = (lang) => {
 				toolbox_exportMfp_id_a3_portrait: 'A3 portrait',
 				toolbox_exportMfp_options: 'Export options',
 				toolbox_exportMfp_show_grid_title: 'Add coordinate grid in export',
-				toolbox_exportMfp_show_grid: 'Coordinate grid'
+				toolbox_exportMfp_show_grid: 'Coordinate grid',
+				toolbox_exportMfp_grid_supported: '(Only supported in north orientation.)'
 			};
 
 		case 'de':
@@ -206,7 +207,8 @@ export const provide = (lang) => {
 				toolbox_exportMfp_id_a3_portrait: 'A3 Hochformat',
 				toolbox_exportMfp_options: 'Export-Optionen',
 				toolbox_exportMfp_show_grid_title: 'Ein Koordinatennetz im Export hinzufügen',
-				toolbox_exportMfp_show_grid: 'Koordinatennetz'
+				toolbox_exportMfp_show_grid: 'Koordinatennetz',
+				toolbox_exportMfp_grid_supported: '(Karte muss nach Norden ausgerichtet sein.)'
 			};
 
 		default:
