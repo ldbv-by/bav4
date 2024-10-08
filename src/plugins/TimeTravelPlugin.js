@@ -1,7 +1,7 @@
 /**
  * @module plugins/TimeTravelPlugin
  */
-import { observe } from '../utils/storeUtils';
+import { observe, observeOnce } from '../utils/storeUtils';
 import { modifyLayer } from '../store/layers/layers.action';
 import { BaPlugin } from './BaPlugin';
 import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
@@ -29,6 +29,7 @@ export class TimeTravelPlugin extends BaPlugin {
 		super();
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 		this.#environmentService = environmentService;
+		this._bottomSheetUnsubscribeFn = null;
 	}
 
 	/**
@@ -80,6 +81,17 @@ export class TimeTravelPlugin extends BaPlugin {
 						.geoResourceId=${this.#currentSuitableGeoResourceId}
 					></ba-time-travel-slider>`,
 					TIME_TRAVEL_BOTTOM_SHEET_ID
+				);
+				this._bottomSheetUnsubscribeFn = observe(
+					store,
+					(state) => state.bottomSheet.active,
+					(active) => {
+						// when the time travel bottom sheet is closed, we also want to mark the slider as closed
+						if (!active.includes(TIME_TRAVEL_BOTTOM_SHEET_ID)) {
+							closeSlider();
+							this._bottomSheetUnsubscribeFn();
+						}
+					}
 				);
 			} else {
 				closeBottomSheet(TIME_TRAVEL_BOTTOM_SHEET_ID);
