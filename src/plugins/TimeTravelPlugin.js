@@ -1,7 +1,7 @@
 /**
  * @module plugins/TimeTravelPlugin
  */
-import { observe, observeOnce } from '../utils/storeUtils';
+import { observe } from '../utils/storeUtils';
 import { modifyLayer } from '../store/layers/layers.action';
 import { BaPlugin } from './BaPlugin';
 import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
