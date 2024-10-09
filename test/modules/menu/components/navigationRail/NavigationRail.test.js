@@ -17,19 +17,24 @@ import { authReducer } from '../../../../../src/store/auth/auth.reducer';
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 import { ToggleFeedbackPanel } from '../../../../../src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
 import { closeModal } from '../../../../../src/store/modal/modal.action';
+import { PredefinedConfiguration } from '../../../../../src/services/PredefinedConfigurationService.js';
 
 window.customElements.define(NavigationRail.tag, NavigationRail);
 
-const authService = {
-	isSignedIn: () => {},
-	getRoles: () => {},
-	signIn: () => {},
-	signOut: () => {}
-};
-
 describe('NavigationRail', () => {
 	const extent = [995772.9694449581, 5982715.763684852, 1548341.2904285304, 6544564.28740462];
-	const mapServiceMock = {
+
+	const authService = {
+		isSignedIn: () => {},
+		getRoles: () => {},
+		signIn: () => {},
+		signOut: () => {}
+	};
+	const predefinedConfigurationService = {
+		apply: () => {}
+	};
+
+	const mapService = {
 		getMinZoomLevel: () => {},
 		getMaxZoomLevel: () => {},
 		getDefaultMapExtent: () => {
@@ -75,9 +80,10 @@ describe('NavigationRail', () => {
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed
 			})
-			.registerSingleton('MapService', mapServiceMock)
+			.registerSingleton('MapService', mapService)
 			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('AuthService', authService);
+			.registerSingleton('AuthService', authService)
+			.registerSingleton('PredefinedConfigurationService', predefinedConfigurationService);
 
 		return TestUtils.render(NavigationRail.tag);
 	};
@@ -127,10 +133,10 @@ describe('NavigationRail', () => {
 			expect(element.shadowRoot.querySelector('.objectinfo').title).toBe('menu_navigation_rail_object_info_tooltip');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.objectinfo')).display).toBe('none');
 
-			expect(element.shadowRoot.querySelectorAll('.time')).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('.time .text').innerText).toBe('menu_navigation_rail_time_travel');
-			expect(element.shadowRoot.querySelector('.time').title).toBe('menu_navigation_rail_time_travel_tooltip');
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.time')).display).toBe('flex');
+			expect(element.shadowRoot.querySelectorAll('.timeTravel')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.timeTravel .text').innerText).toBe('menu_navigation_rail_time_travel');
+			expect(element.shadowRoot.querySelector('.timeTravel').title).toBe('menu_navigation_rail_time_travel_tooltip');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.timeTravel')).display).toBe('flex');
 
 			expect(element.shadowRoot.querySelectorAll('.zoom-in')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('.zoom-in .text').innerText).toBe('menu_navigation_rail_zoom_in');
@@ -392,6 +398,23 @@ describe('NavigationRail', () => {
 			expect(element.shadowRoot.querySelectorAll('.moon')).toHaveSize(0);
 			expect(element.shadowRoot.querySelector('.theme-toggle').title).toBe('menu_navigation_rail_light_theme');
 			expect(store.getState().media.darkSchema).toBeTrue();
+		});
+
+		it('calls the PredefinedConfigurationService to turn on the time travel', async () => {
+			const state = {
+				media: { portrait: false, minWidth: false, darkSchema: false },
+				navigationRail: {
+					open: true,
+					visitedTabIds: [TabIds.ROUTING, TabIds.FEATUREINFO]
+				}
+			};
+			const element = await setup(state);
+			const predefinedActionServiceSpy = spyOn(predefinedConfigurationService, 'apply');
+
+			const button = element.shadowRoot.querySelector('.timeTravel');
+			button.click();
+
+			expect(predefinedActionServiceSpy).toHaveBeenCalledWith(PredefinedConfiguration.DISPLAY_TIME_TRAVEL);
 		});
 
 		it('closes the component', async () => {

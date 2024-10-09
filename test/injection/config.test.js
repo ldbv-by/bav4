@@ -6,7 +6,7 @@ import { Injector } from '../../src/injection/core/injector.js';
 describe('injector configuration', () => {
 	it('registers the expected dependencies', () => {
 		expect($injector.isReady()).toBeTrue();
-		expect($injector.count()).toBe(79);
+		expect($injector.count()).toBe(80);
 
 		expect($injector.getScope('ProjectionService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('ConfigService')).toBe(Injector.SCOPE_SINGLETON);
@@ -41,6 +41,7 @@ describe('injector configuration', () => {
 		expect($injector.getScope('FeedbackService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('RoutingService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('AuthService')).toBe(Injector.SCOPE_SINGLETON);
+		expect($injector.getScope('PredefinedConfigurationService')).toBe(Injector.SCOPE_PERLOOKUP);
 
 		expect($injector.getScope('GlobalErrorPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('AuthPlugin')).toBe(Injector.SCOPE_SINGLETON);

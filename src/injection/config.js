@@ -65,6 +65,7 @@ import { ObserveWcAttributesPlugin } from '../plugins/ObserveWcAttributesPlugin'
 import { fileStorageServiceFactory } from './factories';
 import { FileStoragePlugin } from '../plugins/FileStoragePlugin';
 import { TimeTravelPlugin } from '../plugins/TimeTravelPlugin';
+import { BvvPredefinedConfigurationService } from '../services/PredefinedConfigurationService';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
@@ -100,6 +101,7 @@ $injector
 	.registerSingleton('ChipsConfigurationService', new ChipsConfigurationService())
 	.registerSingleton('FeedbackService', new FeedbackService())
 	.registerSingleton('RoutingService', new BvvRoutingService())
+	.register('PredefinedConfigurationService', BvvPredefinedConfigurationService)
 
 	.registerSingleton('GlobalErrorPlugin', new GlobalErrorPlugin())
 	.registerSingleton('AuthPlugin', new AuthPlugin())

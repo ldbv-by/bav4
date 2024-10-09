@@ -23,11 +23,11 @@ export const setCurrentTimestamp = (timestamp) => {
 
 /**
  *
- * Opens the time slider for a dedicated timestamp
- * @param {string} timestamp
+ * Opens the time slider, optionally for a dedicated timestamp
+ * @param {string} [timestamp]
  * @function
  */
-export const openSlider = (timestamp) => {
+export const openSlider = (timestamp = null) => {
 	getStore().dispatch({
 		type: TIME_TRAVEL_ACTIVE_CHANGED,
 		payload: { active: true, timestamp }
