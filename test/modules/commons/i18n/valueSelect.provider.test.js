@@ -10,7 +10,7 @@ describe('i18n for coordinate select', () => {
 	it('provides translation for de', () => {
 		const map = provide('de');
 
-		expect(map.valueSelect_icon_hint).toBe('Klicken zum auswählen');
+		expect(map.valueSelect_icon_hint).toBe('Klicken zum Auswählen');
 	});
 
 	it('provides an empty map for a unknown lang', () => {
