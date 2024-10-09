@@ -1,6 +1,7 @@
 /**
  * @module services/PredefinedConfigurationService
  */
+import { $injector } from '../injection/index';
 import { addLayerIfNotPresent, modifyLayer } from '../store/layers/layers.action';
 import { openSlider } from '../store/timeTravel/timeTravel.action';
 
@@ -34,6 +35,11 @@ export const PredefinedConfiguration = Object.freeze({
  * @implements {PredefinedConfigurationService}
  */
 export class BvvPredefinedConfigurationService {
+	#storeService;
+	constructor() {
+		const { StoreService: storeService } = $injector.inject('StoreService');
+		this.#storeService = storeService;
+	}
 	apply(task) {
 		switch (task) {
 			case PredefinedConfiguration.DISPLAY_TIME_TRAVEL:
@@ -45,7 +51,14 @@ export class BvvPredefinedConfigurationService {
 	_displayTimeTravel() {
 		const timeTravelGeoResourceId = 'zeitreihe_tk';
 		addLayerIfNotPresent(timeTravelGeoResourceId);
-		modifyLayer(timeTravelGeoResourceId, { visible: true });
+		this.#storeService
+			.getStore()
+			.getState()
+			.layers.active.forEach((l) => {
+				if (l.geoResourceId === timeTravelGeoResourceId) {
+					modifyLayer(l.id, { visible: true });
+				}
+			});
 		openSlider();
 	}
 }

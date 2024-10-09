@@ -45,16 +45,19 @@ describe('BvvPredefinedConfigurationService', () => {
 			expect(store.getState().timeTravel.active).toBeTrue();
 		});
 
-		it('ensures the visibility of the time travel GeoResource', async () => {
+		it('ensures the visibility of all layers referencing the time travel GeoResource', async () => {
 			const instanceUnderTest = setup();
 
 			addLayer(timeTravelGeoResourceId, { visible: false });
+			addLayer('foo', { geoResourceId: timeTravelGeoResourceId, visible: false });
 
 			instanceUnderTest.apply(PredefinedConfiguration.DISPLAY_TIME_TRAVEL);
 
-			expect(store.getState().layers.active).toHaveSize(1);
-			expect(store.getState().layers.active[0].id).toEqual(timeTravelGeoResourceId);
+			expect(store.getState().layers.active).toHaveSize(2);
+			expect(store.getState().layers.active[0].geoResourceId).toEqual(timeTravelGeoResourceId);
 			expect(store.getState().layers.active[0].visible).toBeTrue();
+			expect(store.getState().layers.active[1].geoResourceId).toEqual(timeTravelGeoResourceId);
+			expect(store.getState().layers.active[1].visible).toBeTrue();
 			expect(store.getState().timeTravel.active).toBeTrue();
 		});
 
