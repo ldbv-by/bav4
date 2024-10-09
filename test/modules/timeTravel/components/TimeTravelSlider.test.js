@@ -232,7 +232,7 @@ describe('TimeTravel', () => {
 				}
 			};
 
-			const element = await setup(state, { timestamp: 1950 });
+			const element = await setup(state, { timestamp: '1950' });
 
 			expect(element.getModel().timestamp).toBe(1950);
 			const buttonElement = element.shadowRoot.querySelector('#decrease');
