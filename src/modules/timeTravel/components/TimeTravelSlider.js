@@ -315,6 +315,6 @@ export class TimeTravelSlider extends MvuElement {
 	}
 
 	static get TIME_INTERVAL_MS() {
-		return 1000;
+		return 2000;
 	}
 }
