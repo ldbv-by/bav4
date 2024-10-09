@@ -6,7 +6,7 @@ import { modifyLayer } from '../store/layers/layers.action';
 import { BaPlugin } from './BaPlugin';
 import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
 import { html } from 'lit-html';
-import { closeSlider, openSlider } from '../store/timeTravel/timeTravel.action';
+import { closeSlider, openSlider, setCurrentTimestamp } from '../store/timeTravel/timeTravel.action';
 import { $injector } from '../injection/index';
 
 /**
@@ -44,25 +44,31 @@ export class TimeTravelPlugin extends BaPlugin {
 			};
 
 			const onLayersChanged = (activeLayers) => {
-				if (!this._closedByUser) {
-					/**
-					 * Check if we have one or more layers referencing the same timestamp
-					 * and check if they reference all the same GeoResource.
-					 * Only in that case we show the time travel component.
-					 */
-					const timestampSet = new Set(findSuitableLayers(activeLayers).map((l) => l.timestamp));
-					const geoResourceSet = new Set(findSuitableLayers(activeLayers).map((l) => l.geoResourceId));
+				/**
+				 * Check if we have one or more layers referencing the same timestamp
+				 * and check if they reference all the same GeoResource.
+				 * Only in that case we show the time travel component.
+				 */
+				const timestampSet = new Set(findSuitableLayers(activeLayers).map((l) => l.timestamp));
+				const geoResourceSet = new Set(findSuitableLayers(activeLayers).map((l) => l.geoResourceId));
 
-					if (timestampSet.size === 1 && geoResourceSet.size === 1) {
-						this.#currentSuitableGeoResourceId = [...geoResourceSet][0];
-						clearTimeout(this.#timeoutId);
+				if (timestampSet.size === 1 && geoResourceSet.size === 1) {
+					this.#currentSuitableGeoResourceId = [...geoResourceSet][0];
+					clearTimeout(this.#timeoutId);
+					if (!this._closedByUser) {
 						openSlider([...timestampSet][0]);
 					} else {
-						this.#timeoutId = setTimeout(() => {
-							this.#currentSuitableGeoResourceId = null;
-							closeSlider();
-						}, TimeTravelPlugin.SLIDER_CLOSE_DELAY_MS);
+						/**
+						 * In this case we have to update the timestamp in the timeTravel s-o-s so that when the user re-opens the slider
+						 * the slider will show the correct timestamp
+						 */
+						setCurrentTimestamp([...timestampSet][0]);
 					}
+				} else {
+					this.#timeoutId = setTimeout(() => {
+						this.#currentSuitableGeoResourceId = null;
+						closeSlider();
+					}, TimeTravelPlugin.SLIDER_CLOSE_DELAY_MS);
 				}
 			};
 
@@ -92,7 +98,9 @@ export class TimeTravelPlugin extends BaPlugin {
 						store,
 						(state) => state.bottomSheet.active,
 						(active) => {
-							// when the time travel bottom sheet is closed, we also want to mark the slider as closed
+							/**
+							 * When the time travel bottom sheet is closed, we also want to mark the slider as closed
+							 */
 							if (!active.includes(TIME_TRAVEL_BOTTOM_SHEET_ID)) {
 								closeSlider();
 								this._bottomSheetUnsubscribeFn();

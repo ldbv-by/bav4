@@ -159,7 +159,7 @@ describe('TimeTravelPlugin', () => {
 		});
 
 		describe('and the slider was previously closed by the user', () => {
-			it('does nothing', async () => {
+			it('updates the timestamp of the timeTravel s-o-s', async () => {
 				const store = setup({ layers: initialLayersState, timeTravel: initialTimeTravelState });
 				const instanceUnderTest = new TimeTravelPlugin();
 				instanceUnderTest._closedByUser = true;
@@ -172,7 +172,7 @@ describe('TimeTravelPlugin', () => {
 					{ id: 'id1', timestamp, geoResourceId }
 				]);
 
-				expect(store.getState().timeTravel).toEqual(initialTimeTravelState);
+				expect(store.getState().timeTravel.timestamp).toEqual('1900');
 			});
 		});
 		describe('and we have an unique timestamp', () => {
