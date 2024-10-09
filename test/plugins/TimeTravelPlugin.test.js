@@ -66,7 +66,7 @@ describe('TimeTravelPlugin', () => {
 	});
 
 	describe('when the correct bottom sheet is closed', () => {
-		it('updates the timeTravel s-o-s and and calls the unsubscribe function', async () => {
+		it('updates the timeTravel s-o-s and calls the unsubscribe function', async () => {
 			const store = setup({ layers: initialLayersState, timeTravel: initialTimeTravelState, bottomSheet: initialBottomSheetState });
 			const instanceUnderTest = new TimeTravelPlugin();
 			await instanceUnderTest.register(store);
@@ -89,8 +89,8 @@ describe('TimeTravelPlugin', () => {
 		});
 	});
 
-	describe('when the any other bottom sheet is closed', () => {
-		it('updates the timeTravel s-o-s and and calls the unsubscribe function', async () => {
+	describe('when any other bottom sheet is closed', () => {
+		it('updates the timeTravel s-o-s and calls the unsubscribe function', async () => {
 			const store = setup({ layers: initialLayersState, timeTravel: initialTimeTravelState, bottomSheet: initialBottomSheetState });
 			const instanceUnderTest = new TimeTravelPlugin();
 			await instanceUnderTest.register(store);
