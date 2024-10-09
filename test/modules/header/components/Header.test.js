@@ -612,7 +612,7 @@ describe('Header', () => {
 					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
 				});
 
-				it('move cursor to the end', async () => {
+				it('moves cursor to the end', async () => {
 					const state = {
 						mainMenu: {
 							open: false
@@ -625,8 +625,10 @@ describe('Header', () => {
 					const element = await setup(state);
 					const inputElement = element.shadowRoot.querySelector('#input');
 					inputElement.value = 'foo';
+					inputElement.setSelectionRange(0, 0); // set the cursor to start
 
 					inputElement.focus();
+
 					const cursorPosition = inputElement.selectionStart;
 					expect(cursorPosition).toBe(3);
 				});
