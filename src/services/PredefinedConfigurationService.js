@@ -1,7 +1,7 @@
 /**
  * @module services/PredefinedConfigurationService
  */
-import { addLayerIfNotPresent } from '../store/layers/layers.action';
+import { addLayerIfNotPresent, modifyLayer } from '../store/layers/layers.action';
 import { openSlider } from '../store/timeTravel/timeTravel.action';
 
 /**
@@ -43,7 +43,9 @@ export class BvvPredefinedConfigurationService {
 	}
 
 	_displayTimeTravel() {
-		addLayerIfNotPresent('zeitreihe_tk');
+		const timeTravelGeoResourceId = 'zeitreihe_tk';
+		addLayerIfNotPresent(timeTravelGeoResourceId);
+		modifyLayer(timeTravelGeoResourceId, { visible: true });
 		openSlider();
 	}
 }
