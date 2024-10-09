@@ -53,7 +53,7 @@ describe('TimeTravel', () => {
 
 	describe('class', () => {
 		it('static constants', async () => {
-			expect(TimeTravelSlider.TIME_INTERVAL_MS).toBe(1000);
+			expect(TimeTravelSlider.TIME_INTERVAL_MS).toBe(2000);
 		});
 	});
 	describe('constructor', () => {
