@@ -301,10 +301,10 @@ export const moveParallel = (fromPoint, toPoint, distance) => {
 
 /**
  * Creates a coordinate in the specified direction (angle) with the specified distance from the specified coordinate.
- * @param {Coordinate} fromCoordinate the start coordinate
+ * @param {Array<Number>} fromCoordinate the start coordinate
  * @param {number} angle the angle in degree
  * @param {number} distance distance in meter
- * @returns {Coordinate}
+ * @returns {Array<Number>}
  */
 export const polarStakeOut = (fromCoordinate, angle, distance) => {
 	const radian = angle * (Math.PI / 180);
