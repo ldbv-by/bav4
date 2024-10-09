@@ -24,6 +24,7 @@ import { $injector } from '../injection/index';
 export class TimeTravelPlugin extends BaPlugin {
 	#currentSuitableGeoResourceId = null;
 	#environmentService;
+	#timeoutId = null;
 
 	constructor() {
 		super();
@@ -54,10 +55,13 @@ export class TimeTravelPlugin extends BaPlugin {
 
 					if (timestampSet.size === 1 && geoResourceSet.size === 1) {
 						this.#currentSuitableGeoResourceId = [...geoResourceSet][0];
+						clearTimeout(this.#timeoutId);
 						openSlider([...timestampSet][0]);
 					} else {
-						this.#currentSuitableGeoResourceId = null;
-						closeSlider();
+						this.#timeoutId = setTimeout(() => {
+							this.#currentSuitableGeoResourceId = null;
+							closeSlider();
+						}, TimeTravelPlugin.SLIDER_CLOSE_DELAY_MS);
 					}
 				}
 			};
@@ -118,6 +122,9 @@ export class TimeTravelPlugin extends BaPlugin {
 				(active, state) => onActiveChanged(active, state)
 			);
 		}
+	}
+	static get SLIDER_CLOSE_DELAY_MS() {
+		return 200;
 	}
 }
 
