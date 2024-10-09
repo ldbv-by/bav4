@@ -30,89 +30,94 @@ export class TimeTravelPlugin extends BaPlugin {
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 		this.#environmentService = environmentService;
 		this._bottomSheetUnsubscribeFn = null;
+		this._closedByUser = false;
 	}
 
 	/**
 	 * @override
 	 */
 	async register(store) {
-		const findSuitableLayers = (layers) => {
-			return layers.filter((l) => l.visible).filter((l) => l.timestamp);
-		};
+		if (!this.#environmentService.isEmbedded()) {
+			const findSuitableLayers = (layers) => {
+				return layers.filter((l) => l.visible).filter((l) => l.timestamp);
+			};
 
-		const onLayersChanged = (activeLayers) => {
-			if (!this.#environmentService.isEmbedded()) {
-				/**
-				 * Check if we have one or more layers referencing the same timestamp
-				 * and check if they reference all the same GeoResource.
-				 * Only in that case we show the time travel component.
-				 */
-				const timestampSet = new Set(findSuitableLayers(activeLayers).map((l) => l.timestamp));
-				const geoResourceSet = new Set(findSuitableLayers(activeLayers).map((l) => l.geoResourceId));
+			const onLayersChanged = (activeLayers) => {
+				if (!this._closedByUser) {
+					/**
+					 * Check if we have one or more layers referencing the same timestamp
+					 * and check if they reference all the same GeoResource.
+					 * Only in that case we show the time travel component.
+					 */
+					const timestampSet = new Set(findSuitableLayers(activeLayers).map((l) => l.timestamp));
+					const geoResourceSet = new Set(findSuitableLayers(activeLayers).map((l) => l.geoResourceId));
 
-				if (timestampSet.size === 1 && geoResourceSet.size === 1) {
-					this.#currentSuitableGeoResourceId = [...geoResourceSet][0];
-					openSlider([...timestampSet][0]);
-				} else {
-					this.#currentSuitableGeoResourceId = null;
-					closeSlider();
-				}
-			}
-		};
-
-		/**
-		 *  Update the timestamp property of each suitable layer
-		 */
-		const onTimestampChanged = (timestamp, state) => {
-			if (this.#currentSuitableGeoResourceId) {
-				findSuitableLayers(state.layers.active)
-					.filter((l) => l.geoResourceId === this.#currentSuitableGeoResourceId)
-					.forEach((l) => modifyLayer(l.id, { timestamp }));
-			}
-		};
-		/**
-		 * Open or close the BottomSheet
-		 */
-		const onActiveChanged = (active, state) => {
-			if (active && this.#currentSuitableGeoResourceId) {
-				openBottomSheet(
-					html`<ba-time-travel-slider
-						.timestamp=${state.timeTravel.timestamp}
-						.geoResourceId=${this.#currentSuitableGeoResourceId}
-					></ba-time-travel-slider>`,
-					TIME_TRAVEL_BOTTOM_SHEET_ID
-				);
-				this._bottomSheetUnsubscribeFn = observe(
-					store,
-					(state) => state.bottomSheet.active,
-					(active) => {
-						// when the time travel bottom sheet is closed, we also want to mark the slider as closed
-						if (!active.includes(TIME_TRAVEL_BOTTOM_SHEET_ID)) {
-							closeSlider();
-							this._bottomSheetUnsubscribeFn();
-						}
+					if (timestampSet.size === 1 && geoResourceSet.size === 1) {
+						this.#currentSuitableGeoResourceId = [...geoResourceSet][0];
+						openSlider([...timestampSet][0]);
+					} else {
+						this.#currentSuitableGeoResourceId = null;
+						closeSlider();
 					}
-				);
-			} else {
-				closeBottomSheet(TIME_TRAVEL_BOTTOM_SHEET_ID);
-			}
-		};
+				}
+			};
 
-		observe(
-			store,
-			(state) => state.layers.active,
-			(active) => onLayersChanged(active)
-		);
-		observe(
-			store,
-			(state) => state.timeTravel.timestamp,
-			(timestamp, state) => onTimestampChanged(timestamp, state)
-		);
-		observe(
-			store,
-			(state) => state.timeTravel.active,
-			(active, state) => onActiveChanged(active, state)
-		);
+			/**
+			 *  Update the timestamp property of each suitable layer
+			 */
+			const onTimestampChanged = (timestamp, state) => {
+				if (this.#currentSuitableGeoResourceId) {
+					findSuitableLayers(state.layers.active)
+						.filter((l) => l.geoResourceId === this.#currentSuitableGeoResourceId)
+						.forEach((l) => modifyLayer(l.id, { timestamp }));
+				}
+			};
+			/**
+			 * Open or close the BottomSheet
+			 */
+			const onActiveChanged = (active, state) => {
+				if (active && this.#currentSuitableGeoResourceId) {
+					openBottomSheet(
+						html`<ba-time-travel-slider
+							.timestamp=${state.timeTravel.timestamp}
+							.geoResourceId=${this.#currentSuitableGeoResourceId}
+						></ba-time-travel-slider>`,
+						TIME_TRAVEL_BOTTOM_SHEET_ID
+					);
+					this._bottomSheetUnsubscribeFn = observe(
+						store,
+						(state) => state.bottomSheet.active,
+						(active) => {
+							// when the time travel bottom sheet is closed, we also want to mark the slider as closed
+							if (!active.includes(TIME_TRAVEL_BOTTOM_SHEET_ID)) {
+								closeSlider();
+								this._bottomSheetUnsubscribeFn();
+								this._closedByUser = true;
+							}
+						}
+					);
+				} else {
+					closeBottomSheet(TIME_TRAVEL_BOTTOM_SHEET_ID);
+				}
+				this._closedByUser = false;
+			};
+
+			observe(
+				store,
+				(state) => state.layers.active,
+				(active) => onLayersChanged(active)
+			);
+			observe(
+				store,
+				(state) => state.timeTravel.timestamp,
+				(timestamp, state) => onTimestampChanged(timestamp, state)
+			);
+			observe(
+				store,
+				(state) => state.timeTravel.active,
+				(active, state) => onActiveChanged(active, state)
+			);
+		}
 	}
 }
 

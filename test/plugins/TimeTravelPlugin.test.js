@@ -28,6 +28,15 @@ describe('TimeTravelPlugin', () => {
 		return store;
 	};
 
+	describe('constructor', () => {
+		it('setups local state', () => {
+			setup();
+			const instanceUnderTest = new TimeTravelPlugin();
+
+			expect(instanceUnderTest._closedByUser).toBeFalse();
+		});
+	});
+
 	describe('when timeTravel "active" property changes', () => {
 		describe('is active and we have an unique geoResourceId', () => {
 			it('displays the time travel slider within the BottomSheet component', async () => {
@@ -86,6 +95,7 @@ describe('TimeTravelPlugin', () => {
 
 			expect(store.getState().timeTravel.active).toBeFalse();
 			expect(bottomSheetUnsubscribeFnSpy).toHaveBeenCalled();
+			expect(instanceUnderTest._closedByUser).toBeTrue();
 		});
 	});
 
@@ -119,6 +129,24 @@ describe('TimeTravelPlugin', () => {
 				const store = setup({ layers: initialLayersState, timeTravel: initialTimeTravelState });
 				spyOn(environmentService, 'isEmbedded').and.returnValue(true);
 				const instanceUnderTest = new TimeTravelPlugin();
+				await instanceUnderTest.register(store);
+				const geoResourceId = 'geoResourceId';
+				const timestamp = '1900';
+
+				removeAndSetLayers([
+					{ id: 'id0', timestamp, geoResourceId },
+					{ id: 'id1', timestamp, geoResourceId }
+				]);
+
+				expect(store.getState().timeTravel).toEqual(initialTimeTravelState);
+			});
+		});
+
+		describe('and the slider was previously closed by the user', () => {
+			it('does nothing', async () => {
+				const store = setup({ layers: initialLayersState, timeTravel: initialTimeTravelState });
+				const instanceUnderTest = new TimeTravelPlugin();
+				instanceUnderTest._closedByUser = true;
 				await instanceUnderTest.register(store);
 				const geoResourceId = 'geoResourceId';
 				const timestamp = '1900';
