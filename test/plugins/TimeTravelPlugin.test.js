@@ -291,4 +291,23 @@ describe('TimeTravelPlugin', () => {
 			});
 		});
 	});
+
+	describe('when timeTravel "active" property is set to `true`', () => {
+		describe('and we do NOT have a suitable layer', () => {
+			it('resets the timeTravel "active" property', async () => {
+				const store = setup({ layers: initialLayersState, timeTravel: initialTimeTravelState, bottomSheet: initialBottomSheetState });
+				const instanceUnderTest = new TimeTravelPlugin();
+				await instanceUnderTest.register(store);
+				removeAndSetLayers([
+					{ id: 'id0', timestamp: '1900', geoResourceId: 'geoResourceId0' },
+					{ id: 'id1', timestamp: '2000', geoResourceId: 'geoResourceId0' }
+				]);
+
+				openSlider();
+
+				expect(store.getState().bottomSheet.active).toEqual([]);
+				expect(store.getState().timeTravel.active).toBeFalse();
+			});
+		});
+	});
 });
