@@ -75,8 +75,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 			case Update_Job_Started:
 				return { ...model, isJobStarted: !!data?.payload };
 			case Update_Grid_Supported:
-				console.log(data);
-				return { ...model, gridSupported: data === 0 };
+				return { ...model, gridSupported: data === 0, showGrid: data === 0 ? false : model.showGrid };
 		}
 	}
 
@@ -220,7 +219,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 							.title=${translate('toolbox_exportMfp_show_grid_title')}
 							@toggle=${onChangeShowGrid}
 							.disabled=${!gridSupported}
-							><span>${translate('toolbox_exportMfp_show_grid')}</span>
+							><span class=${gridSupported ? '' : 'no-support'}>${translate('toolbox_exportMfp_show_grid')}</span>
 							<span class=${gridSupported ? 'hide' : 'grid-note'}>${translate('toolbox_exportMfp_grid_supported')}</span></ba-checkbox
 						>
 					</div>

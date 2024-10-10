@@ -6,6 +6,8 @@ import { setIsPortrait } from '../../../../../src/store/media/media.action';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { startJob } from '../../../../../src/store/mfp/mfp.action';
 import { mfpReducer } from '../../../../../src/store/mfp/mfp.reducer';
+import { changeRotation } from '../../../../../src/store/position/position.action';
+import { positionReducer } from '../../../../../src/store/position/position.reducer';
 import { REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 import { EventLike } from '../../../../../src/utils/storeUtils';
 import { TestUtils } from '../../../../test-utils';
@@ -47,7 +49,8 @@ describe('ExportMfpToolContent', () => {
 
 		const { embed = false, isTouch = false } = config;
 
-		store = TestUtils.setupStoreAndDi(state, { mfp: mfpReducer, media: createNoInitialStateMediaReducer() });
+		store = TestUtils.setupStoreAndDi(state, { mfp: mfpReducer, media: createNoInitialStateMediaReducer(), position: positionReducer });
+
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,
@@ -76,7 +79,8 @@ describe('ExportMfpToolContent', () => {
 				scale: null,
 				showGrid: false,
 				isJobStarted: false,
-				isPortrait: false
+				isPortrait: false,
+				gridSupported: false
 			});
 		});
 	});
@@ -399,6 +403,18 @@ describe('ExportMfpToolContent', () => {
 
 			expect(element.shadowRoot.querySelectorAll(`[${REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME}]`)).toHaveSize(0);
 			expect(element.shadowRoot.querySelector('.ba-tool-container').hasAttribute(REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME)).toBeFalse();
+		});
+	});
+
+	describe('when the map is rotated', () => {
+		it('disables the showGrid checkbox and displays the hint', async () => {
+			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
+			expect(element.shadowRoot.querySelector('#showgrid').disabled).toBeFalse();
+			changeRotation(42);
+			expect(element.shadowRoot.querySelector('#showgrid').disabled).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll('span.grid-note')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('span.no-support')).toHaveSize(1);
 		});
 	});
 });

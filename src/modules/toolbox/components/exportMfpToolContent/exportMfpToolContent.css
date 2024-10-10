@@ -111,6 +111,10 @@
 	margin: 0 1em 1em;
 }
 
+span.no-support {
+	text-decoration: line-through;
+}
+
 span.grid-note {
 	font-style: italic;
 	font-size: small;
