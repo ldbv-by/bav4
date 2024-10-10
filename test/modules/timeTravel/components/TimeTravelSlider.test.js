@@ -25,7 +25,12 @@ describe('TimeTravel', () => {
 	let store = null;
 	const geoResourceServiceMock = {
 		byId: () => {
-			return { hasTimestamps: () => true, timestamps: [1900, 1902, 1903, 1921, 1923, 1924, 1927, 1937, 1939, 1940, 1949, 1951] };
+			return {
+				hasTimestamps: () => true,
+				timestamps: [
+					1900, 1902, 1903, 1918 /* only for debounce test*/, 1919 /* only for debounce test*/, 1921, 1923, 1924, 1927, 1937, 1939, 1940, 1949, 1951
+				]
+			};
 		}
 	};
 
@@ -409,13 +414,23 @@ describe('TimeTravel', () => {
 			const timeTravelSpy = jasmine.createSpy('timestamp').and.callFake(() => {});
 
 			const element = await setup(state);
-			observe(store, (state) => state.timeTravel.timestamp, timeTravelSpy);
+			// HINT:specifying the concrete test values to get rid of other interferencing operations on the timeTravel s-o-s
+			// it must be ensured, that the test-values 1918,1919 are only used in this test.
+			observe(
+				store,
+				(state) => state.timeTravel.timestamp,
+				(timestamp) => {
+					if ([1918, 1919].includes(timestamp)) {
+						timeTravelSpy();
+					}
+				}
+			);
 
 			expect(element.getModel().timestamp).toBe(Initial_Value);
 
 			const sliderElement = element.shadowRoot.querySelector('#rangeSlider');
 			timeTravelSpy.calls.reset();
-			sliderElement.value = 1950;
+			sliderElement.value = 1919;
 			sliderElement.dispatchEvent(new Event('input'));
 			sliderElement.dispatchEvent(new Event('input'));
 			sliderElement.dispatchEvent(new Event('input'));
@@ -425,7 +440,7 @@ describe('TimeTravel', () => {
 
 			expect(timeTravelSpy).toHaveBeenCalledTimes(1);
 
-			sliderElement.value = 1951;
+			sliderElement.value = 1918;
 			sliderElement.dispatchEvent(new Event('input'));
 			sliderElement.dispatchEvent(new Event('input'));
 			sliderElement.dispatchEvent(new Event('input'));
