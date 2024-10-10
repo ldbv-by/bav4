@@ -294,7 +294,7 @@ describe('TimeTravelPlugin', () => {
 
 	describe('when timeTravel "active" property is set to `true`', () => {
 		describe('and we do NOT have a suitable layer', () => {
-			it('resets the timeTravel "active" property', async () => {
+			it('sets the timeTravel "active" property to `false`', async () => {
 				const store = setup({ layers: initialLayersState, timeTravel: initialTimeTravelState, bottomSheet: initialBottomSheetState });
 				const instanceUnderTest = new TimeTravelPlugin();
 				await instanceUnderTest.register(store);
