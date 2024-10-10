@@ -1,7 +1,7 @@
 /**
  * @module plugins/RoutingPlugin
  */
-import { observe, observeOnce } from '../utils/storeUtils';
+import { observe } from '../utils/storeUtils';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { BaPlugin } from './BaPlugin';
 import { activate, deactivate, reset, setCategory, setDestination, setWaypoints } from '../store/routing/routing.action';
@@ -63,6 +63,7 @@ export class RoutingPlugin extends BaPlugin {
 		this.#translationService = translationService;
 		this.#environmentService = environmentService;
 		this.#routingService = routingService;
+		this._bottomSheetUnsubscribeFn = null;
 	}
 
 	async _lazyInitialize() {
@@ -150,11 +151,16 @@ export class RoutingPlugin extends BaPlugin {
 			});
 			const content = html`<ba-proposal-context-content></ba-proposal-context-content>`;
 			openBottomSheet(content, INTERACTION_BOTTOM_SHEET_ID);
-			// we also want to remove the highlight feature when the BottomSheet was closed
-			observeOnce(
+			// we also want to remove the highlight feature when the interaction BottomSheet was closed
+			this._bottomSheetUnsubscribeFn = observe(
 				store,
 				(state) => state.bottomSheet.data,
-				() => removeHighlightFeaturesById(RoutingPlugin.HIGHLIGHT_FEATURE_ID)
+				(active) => {
+					if (!active.includes(INTERACTION_BOTTOM_SHEET_ID)) {
+						removeHighlightFeaturesById(RoutingPlugin.HIGHLIGHT_FEATURE_ID);
+						this._bottomSheetUnsubscribeFn();
+					}
+				}
 			);
 		};
 		const onRoutingStatusChanged = async (status) => {

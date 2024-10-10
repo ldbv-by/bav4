@@ -4,9 +4,14 @@ import { layersReducer } from '../../src/store/layers/layers.reducer.js';
 import { closeSlider, openSlider, setCurrentTimestamp } from '../../src/store/timeTravel/timeTravel.action.js';
 import { initialState as initialTimeTravelState, timeTravelReducer } from '../../src/store/timeTravel/timeTravel.reducer.js';
 import { initialState as initialLayersState } from '../../src/store/layers/layers.reducer.js';
-import { bottomSheetReducer, initialState as initialBottomSheetState } from '../../src/store/bottomSheet/bottomSheet.reducer.js';
+import {
+	bottomSheetReducer,
+	DEFAULT_BOTTOM_SHEET_ID,
+	initialState as initialBottomSheetState
+} from '../../src/store/bottomSheet/bottomSheet.reducer.js';
 import { removeAndSetLayers } from '../../src/store/layers/layers.action.js';
 import { $injector } from '../../src/injection/index.js';
+import { closeBottomSheet, openBottomSheet } from '../../src/store/bottomSheet/bottomSheet.action.js';
 
 describe('TimeTravelPlugin', () => {
 	const environmentService = {
@@ -43,11 +48,11 @@ describe('TimeTravelPlugin', () => {
 				expect(wrapperElement.querySelectorAll(expectedTag)).toHaveSize(1);
 				expect(wrapperElement.querySelector(expectedTag).geoResourceId).toBe(geoResourceId);
 				expect(wrapperElement.querySelector(expectedTag).timestamp).toBe(timestamp0);
-				expect(store.getState().bottomSheet.active).toBe(TIME_TRAVEL_BOTTOM_SHEET_ID);
+				expect(store.getState().bottomSheet.active).toEqual([TIME_TRAVEL_BOTTOM_SHEET_ID]);
 
 				closeSlider();
 
-				expect(store.getState().bottomSheet.active).toBeNull();
+				expect(store.getState().bottomSheet.active).toEqual([]);
 
 				openSlider(timestamp1);
 
@@ -55,8 +60,56 @@ describe('TimeTravelPlugin', () => {
 				expect(wrapperElement.querySelectorAll(expectedTag)).toHaveSize(1);
 				expect(wrapperElement.querySelector(expectedTag).geoResourceId).toBe(geoResourceId);
 				expect(wrapperElement.querySelector(expectedTag).timestamp).toBe(timestamp1);
-				expect(store.getState().bottomSheet.active).toBe(TIME_TRAVEL_BOTTOM_SHEET_ID);
+				expect(store.getState().bottomSheet.active).toEqual([TIME_TRAVEL_BOTTOM_SHEET_ID]);
 			});
+		});
+	});
+
+	describe('when the correct bottom sheet is closed', () => {
+		it('updates the timeTravel s-o-s and calls the unsubscribe function', async () => {
+			const store = setup({ layers: initialLayersState, timeTravel: initialTimeTravelState, bottomSheet: initialBottomSheetState });
+			const instanceUnderTest = new TimeTravelPlugin();
+			await instanceUnderTest.register(store);
+			const geoResourceId = 'geoResourceId';
+			const timestamp0 = '1900';
+
+			removeAndSetLayers([
+				{ id: 'id0', timestamp: timestamp0, geoResourceId },
+				{ id: 'id1', timestamp: timestamp0, geoResourceId }
+			]);
+
+			expect(store.getState().bottomSheet.active).toEqual([TIME_TRAVEL_BOTTOM_SHEET_ID]);
+
+			const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetUnsubscribeFn');
+
+			closeBottomSheet(TIME_TRAVEL_BOTTOM_SHEET_ID);
+
+			expect(store.getState().timeTravel.active).toBeFalse();
+			expect(bottomSheetUnsubscribeFnSpy).toHaveBeenCalled();
+		});
+	});
+
+	describe('when any other bottom sheet is closed', () => {
+		it('updates the timeTravel s-o-s and calls the unsubscribe function', async () => {
+			const store = setup({ layers: initialLayersState, timeTravel: initialTimeTravelState, bottomSheet: initialBottomSheetState });
+			const instanceUnderTest = new TimeTravelPlugin();
+			await instanceUnderTest.register(store);
+			const geoResourceId = 'geoResourceId';
+			const timestamp0 = '1900';
+
+			removeAndSetLayers([
+				{ id: 'id0', timestamp: timestamp0, geoResourceId },
+				{ id: 'id1', timestamp: timestamp0, geoResourceId }
+			]);
+			openBottomSheet('default bottom sheet');
+
+			expect(store.getState().bottomSheet.active).toEqual([DEFAULT_BOTTOM_SHEET_ID, TIME_TRAVEL_BOTTOM_SHEET_ID]);
+
+			const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetUnsubscribeFn');
+			closeBottomSheet();
+
+			expect(store.getState().timeTravel.active).toBeTrue();
+			expect(bottomSheetUnsubscribeFnSpy).not.toHaveBeenCalled();
 		});
 	});
 

@@ -12,63 +12,65 @@ describe('bottomSheetReducer', () => {
 	it('initialize the store with default values', () => {
 		const store = setup();
 		expect(store.getState().bottomSheet.data).toEqual([]);
-		expect(store.getState().bottomSheet.active).toBeNull();
+		expect(store.getState().bottomSheet.active).toEqual([]);
 	});
 
-	it('updates the main bottom sheet properties', () => {
+	it('updates the default bottom sheet properties', () => {
 		const store = setup();
 
 		openBottomSheet('content');
 
-		expect(store.getState().bottomSheet.data).toEqual(jasmine.arrayWithExactContents([{ id: 'default', content: 'content' }]));
-		expect(store.getState().bottomSheet.active).toBe('default');
+		expect(store.getState().bottomSheet.data).toEqual([{ id: 'default', content: 'content' }]);
+		expect(store.getState().bottomSheet.active).toEqual(['default']);
+
+		openBottomSheet('contentUpdate');
+
+		expect(store.getState().bottomSheet.data).toEqual([{ id: 'default', content: 'contentUpdate' }]);
+		expect(store.getState().bottomSheet.active).toEqual(['default']);
 
 		closeBottomSheet();
 
-		expect(store.getState().bottomSheet.data).toEqual(jasmine.arrayWithExactContents([{ id: 'default', content: null }]));
-		expect(store.getState().bottomSheet.active).toBeNull();
+		expect(store.getState().bottomSheet.data).toEqual([]);
+		expect(store.getState().bottomSheet.active).toEqual([]);
 	});
 
-	it('updates the other bottom sheet properties', () => {
+	it('updates also custom bottom sheet properties', () => {
 		const store = setup();
 
 		openBottomSheet('content');
 
-		expect(store.getState().bottomSheet.data).toEqual(jasmine.arrayWithExactContents([{ id: 'default', content: 'content' }]));
-		expect(store.getState().bottomSheet.active).toBe('default');
+		expect(store.getState().bottomSheet.data).toEqual([{ id: 'default', content: 'content' }]);
+		expect(store.getState().bottomSheet.active).toEqual(['default']);
 
 		openBottomSheet('content', 'id');
 
-		expect(store.getState().bottomSheet.active).toBe('id');
-		expect(store.getState().bottomSheet.data).toEqual(
-			jasmine.arrayWithExactContents([
-				{ id: 'id', content: 'content' },
-				{ id: 'default', content: 'content' }
-			])
-		);
+		expect(store.getState().bottomSheet.active).toEqual(['id', 'default']);
+		expect(store.getState().bottomSheet.data).toEqual([
+			{ id: 'id', content: 'content' },
+			{ id: 'default', content: 'content' }
+		]);
 
 		openBottomSheet('contentUpdate');
 		openBottomSheet('contentUpdate', 'id');
 
-		closeBottomSheet();
-		closeBottomSheet('id');
-
-		expect(store.getState().bottomSheet.data).toEqual(
-			jasmine.arrayWithExactContents([
-				{ id: 'id', content: null },
-				{ id: 'default', content: null }
-			])
-		);
-		expect(store.getState().bottomSheet.active).toBeNull();
+		expect(store.getState().bottomSheet.active).toEqual(['id', 'default']);
+		expect(store.getState().bottomSheet.data).toEqual([
+			{ id: 'id', content: 'contentUpdate' },
+			{ id: 'default', content: 'contentUpdate' }
+		]);
 
 		closeBottomSheet('unknown');
 
-		expect(store.getState().bottomSheet.data).toEqual(
-			jasmine.arrayWithExactContents([
-				{ id: 'id', content: null },
-				{ id: 'default', content: null }
-			])
-		);
-		expect(store.getState().bottomSheet.active).toBeNull();
+		expect(store.getState().bottomSheet.active).toEqual(['id', 'default']);
+		expect(store.getState().bottomSheet.data).toEqual([
+			{ id: 'id', content: 'contentUpdate' },
+			{ id: 'default', content: 'contentUpdate' }
+		]);
+
+		closeBottomSheet();
+		closeBottomSheet('id');
+
+		expect(store.getState().bottomSheet.data).toEqual([]);
+		expect(store.getState().bottomSheet.active).toEqual([]);
 	});
 });
