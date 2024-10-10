@@ -47,21 +47,16 @@ export class ExportMfpToolContent extends AbstractToolContent {
 			(data) => this.signal(Update_Show_Grid, data)
 		);
 		this.observe(
+			(state) => state.mfp.gridSupported,
+			(data) => this.signal(Update_Grid_Supported, data)
+		);
+		this.observe(
 			(state) => state.mfp.jobSpec,
 			(data) => this.signal(Update_Job_Started, data)
 		);
 		this.observe(
 			(state) => state.media,
 			(data) => this.signal(Update_IsPortrait, data.portrait)
-		);
-		this.observe(
-			(state) => state.position.rotation,
-			(rotation) => {
-				if (rotation !== 0) {
-					setShowGrid(false);
-				}
-				this.signal(Update_Grid_Supported, rotation);
-			}
 		);
 	}
 
@@ -80,7 +75,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 			case Update_Job_Started:
 				return { ...model, isJobStarted: !!data?.payload };
 			case Update_Grid_Supported:
-				return { ...model, gridSupported: data === 0, showGrid: data !== 0 ? false : model.showGrid };
+				return { ...model, gridSupported: data };
 		}
 	}
 

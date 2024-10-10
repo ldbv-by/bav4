@@ -3,7 +3,7 @@
  */
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
-import { activate, cancelJob, deactivate, setCurrent } from '../store/mfp/mfp.action';
+import { activate, cancelJob, deactivate, setCurrent, setGridSupported } from '../store/mfp/mfp.action';
 import { $injector } from '../injection';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { emitNotification, LevelTypes } from '../store/notifications/notifications.action';
@@ -92,8 +92,13 @@ export class ExportMfpPlugin extends BaPlugin {
 			}
 		};
 
+		const onRotationChanged = (rotation) => {
+			setGridSupported(rotation === 0);
+		};
+
 		observe(store, (state) => state.tools.current, onToolChanged);
 		observe(store, (state) => state.mfp.active, onChange);
 		observe(store, (state) => state.mfp.jobSpec, onJobSpecChanged);
+		observe(store, (state) => state.position.rotation, onRotationChanged);
 	}
 }

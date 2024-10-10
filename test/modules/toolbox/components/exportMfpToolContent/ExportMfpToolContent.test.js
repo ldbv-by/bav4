@@ -4,7 +4,7 @@ import { ExportMfpToolContent } from '../../../../../src/modules/toolbox/compone
 import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
 import { setIsPortrait } from '../../../../../src/store/media/media.action';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
-import { startJob } from '../../../../../src/store/mfp/mfp.action';
+import { setGridSupported, startJob } from '../../../../../src/store/mfp/mfp.action';
 import { mfpReducer } from '../../../../../src/store/mfp/mfp.reducer';
 import { changeRotation } from '../../../../../src/store/position/position.action';
 import { positionReducer } from '../../../../../src/store/position/position.reducer';
@@ -34,6 +34,7 @@ describe('ExportMfpToolContent', () => {
 		active: false,
 		current: { id: null, scale: null, dpi: null },
 		showGrid: false,
+		gridSupported: true,
 		jobSpec: null,
 		isJobStarted: false
 	};
@@ -411,26 +412,10 @@ describe('ExportMfpToolContent', () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 			expect(element.shadowRoot.querySelector('#showgrid').disabled).toBeFalse();
-			changeRotation(42);
+			setGridSupported(false);
 			expect(element.shadowRoot.querySelector('#showgrid').disabled).toBeTrue();
 			expect(element.shadowRoot.querySelectorAll('span.grid-note')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('span.no-support')).toHaveSize(1);
-		});
-
-		it('updates mfp s-o-s', async () => {
-			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
-			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
-			const checkbox = element.shadowRoot.querySelector('#showgrid');
-
-			expect(store.getState().mfp.showGrid).toBeFalse();
-
-			checkbox.click();
-
-			expect(store.getState().mfp.showGrid).toBeTrue();
-
-			changeRotation(42);
-
-			expect(store.getState().mfp.showGrid).toBeFalse();
 		});
 	});
 });
