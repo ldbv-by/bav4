@@ -11,6 +11,12 @@ import { $injector } from '../../../injection/index';
  * @type {string}
  */
 export const PROJECTED_LENGTH_GEOMETRY_PROPERTY = 'projectedLength';
+/**
+ * Key indicating that its value is a azimuth between the start and the last point directly connected without any point in between.
+ * @constant
+ * @type {string}
+ */
+export const AZIMUTH_GEOMETRY_PROPERTY = 'azimuth';
 
 /**
  * Coerce the provided geometry to a LineString or null,
@@ -150,6 +156,11 @@ export const canShowAzimuthCircle = (geometry) => {
 			return true;
 		}
 	}
+	if (geometry instanceof MultiLineString) {
+		const azimuthValue = geometry.get(AZIMUTH_GEOMETRY_PROPERTY);
+		return azimuthValue != null;
+	}
+
 	return false;
 };
 
@@ -160,6 +171,12 @@ export const canShowAzimuthCircle = (geometry) => {
  * @returns {number} the azimuth-angle as degree of arc with a value between 0 and 360
  */
 export const getAzimuth = (geometry) => {
+	if (geometry instanceof MultiLineString) {
+		const azimuthValue = geometry.get(AZIMUTH_GEOMETRY_PROPERTY);
+		if (azimuthValue != null) {
+			return azimuthValue;
+		}
+	}
 	if (!(geometry instanceof Polygon) && !(geometry instanceof LineString) && !(geometry instanceof LinearRing)) {
 		return null;
 	}
@@ -280,6 +297,18 @@ export const moveParallel = (fromPoint, toPoint, distance) => {
 	const movedFrom = [Math.sin(angle) * distance + fromPoint[0], -Math.cos(angle) * distance + fromPoint[1]];
 	const movedTo = [Math.sin(angle) * distance + toPoint[0], -Math.cos(angle) * distance + toPoint[1]];
 	return new LineString([movedFrom, movedTo]);
+};
+
+/**
+ * Creates a coordinate in the specified direction (angle) with the specified distance from the specified coordinate.
+ * @param {Array<Number>} fromCoordinate the start coordinate
+ * @param {number} angle the angle in degree
+ * @param {number} distance distance in meter
+ * @returns {Array<Number>}
+ */
+export const polarStakeOut = (fromCoordinate, angle, distance) => {
+	const radian = angle * (Math.PI / 180);
+	return [Math.cos(radian) * distance + fromCoordinate[0], Math.sin(radian) * distance + fromCoordinate[1]];
 };
 
 /**

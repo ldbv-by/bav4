@@ -4,6 +4,7 @@ import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection/index.js';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4.js';
+import { PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../../../src/modules/olMap/utils/olGeometryUtils.js';
 
 window.customElements.define(BaOverlay.tag, BaOverlay);
 
@@ -227,12 +228,12 @@ describe('BaOverlay', () => {
 				[0, 0],
 				[1000, 0]
 			]);
+			geodeticGeometry.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, 1000);
 			const properties = {
 				type: BaOverlayTypes.DISTANCE_PARTITION,
 				value: 0.099,
 				geometry: geodeticGeometry
 			};
-			spyOn(mapServiceMock, 'calcLength').and.returnValue(1000);
 			const spy = spyOn(unitServiceMock, 'formatDistance').and.callThrough();
 			const element = await setup(properties);
 			element.value = 0.099;
@@ -246,12 +247,12 @@ describe('BaOverlay', () => {
 				[0, 0],
 				[1000, 0]
 			]);
+			geodeticGeometry.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, 1000);
 			const properties = {
 				type: BaOverlayTypes.DISTANCE_PARTITION,
 				value: 0.1001,
 				geometry: geodeticGeometry
 			};
-			spyOn(mapServiceMock, 'calcLength').and.returnValue(1000);
 			const spy = spyOn(unitServiceMock, 'formatDistance').and.callThrough();
 			const element = await setup(properties);
 

@@ -10,6 +10,9 @@ import { LineString, Polygon } from 'ol/geom';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { DragPan } from 'ol/interaction';
 import { BaOverlay } from '../components/BaOverlay';
+import { containsCoordinate, getBottomLeft, getBottomRight, getTopLeft, getTopRight } from '../../../../node_modules/ol/extent';
+import { fromLonLat, toLonLat, transformExtent } from '../../../../node_modules/ol/proj';
+import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
 
 export const saveManualOverlayPosition = (feature) => {
 	const draggableOverlayTypes = ['area', 'measurement'];
@@ -96,11 +99,44 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 			const isVisibleStyle = isVisible(properties);
 			const opacity = 'opacity' in properties ? properties.opacity : 1;
 
+			const viewExtent = olMap.getView().calculateExtent(olMap.getSize());
+			const wgs84Extent = transformExtent(viewExtent, 'EPSG:3857', 'EPSG:4326');
+
+			const getOffset = (latitude) => {
+				return -180 > latitude ? (latitude - (latitude % 180)) / 180 : -180 < latitude && latitude < 180 ? 0 : (latitude - (latitude % 180)) / 180;
+			};
+			const worldOffset = [
+				getOffset(getBottomLeft(wgs84Extent)[0]),
+				getOffset(getBottomRight(wgs84Extent)[0]),
+				getOffset(getTopLeft(wgs84Extent)[0]),
+				getOffset(getTopRight(wgs84Extent)[0])
+			];
+
+			const offsetMinMax = [Math.min(...worldOffset), Math.max(...worldOffset)];
+
 			// setting both properties, to prevent an issue with webkit-based browsers
 			// where opacity is not applied as a single property
 			overlays.forEach((o) => {
 				o.getElement().style.display = isVisibleStyle;
 				o.getElement().style.opacity = opacity;
+
+				const overlayPosition = o.getPosition();
+				if (overlayPosition && !containsCoordinate(viewExtent, overlayPosition)) {
+					const wgs84Position = toLonLat(overlayPosition, 'EPSG:3857');
+
+					const withOffset = (offset, wgs84Position) => {
+						const wgs84Coordinate = [offset * 360 + wgs84Position[0], wgs84Position[1]];
+						return fromLonLat(wgs84Coordinate, 'EPSG:3857');
+					};
+					const bestOffset = offsetMinMax.find((offset) => {
+						const candidate = withOffset(offset, wgs84Position);
+						return containsCoordinate(viewExtent, candidate);
+					});
+
+					const newPos = withOffset(bestOffset, wgs84Position);
+
+					o.setPosition(newPos);
+				}
 			});
 		}
 	}
@@ -134,6 +170,9 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		};
 
 		const distanceOverlay = olFeature.get('measurement') || createNew();
+		if (olFeature && !olFeature.getGeometry().get(PROJECTED_LENGTH_GEOMETRY_PROPERTY)) {
+			olFeature.getGeometry().set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, olFeature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY));
+		}
 		this._updateOlOverlay(distanceOverlay, olFeature.getGeometry());
 		return distanceOverlay;
 	}
@@ -165,6 +204,14 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	}
 
 	_createOrRemovePartitionOverlays(olFeature, olMap, simplifiedGeometry = null) {
+		const getOverlayGeometry = (feature) => {
+			const geodesic = feature.get(GEODESIC_FEATURE_PROPERTY);
+			if (geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE) {
+				return geodesic.getGeometry();
+			}
+			return olFeature.getGeometry();
+		};
+		const overlayGeometry = simplifiedGeometry ?? getOverlayGeometry(olFeature);
 		const getPartitions = () => {
 			const partitions = olFeature.get('partitions') || [];
 			const cleanPartitions = (partitions) => {
@@ -174,20 +221,11 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 			return simplifiedGeometry ? partitions : cleanPartitions(partitions);
 		};
 		const partitions = getPartitions();
-		if (!simplifiedGeometry) {
-			simplifiedGeometry = olFeature.getGeometry();
-			if (olFeature.getGeometry() instanceof Polygon) {
-				simplifiedGeometry = new LineString(olFeature.getGeometry().getCoordinates(false)[0]);
-			}
-		}
 
+		const projectedLength = olFeature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY);
 		const resolution = olMap.getView().getResolution();
 
-		const projectedLength = this._mapService.calcLength(getLineString(simplifiedGeometry).getCoordinates());
-		if (projectedLength) {
-			simplifiedGeometry.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
-		}
-		const delta = getPartitionDelta(projectedLength, resolution);
+		const delta = projectedLength ? getPartitionDelta(olFeature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY), resolution) : 1;
 		let partitionIndex = 0;
 		for (let i = delta; i < 1; i += delta, partitionIndex++) {
 			let partition = partitions[partitionIndex] || false;
@@ -196,7 +234,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 				this._add(partition, olFeature, olMap);
 				partitions.push(partition);
 			}
-			this._updateOlOverlay(partition, simplifiedGeometry, i);
+			this._updateOlOverlay(partition, overlayGeometry, i);
 		}
 		if (partitionIndex < partitions.length) {
 			for (let j = partitions.length - 1; j >= partitionIndex; j--) {
@@ -206,7 +244,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 			}
 		}
 
-		this._justifyPlacement(simplifiedGeometry, partitions);
+		this._justifyPlacement(overlayGeometry, partitions);
 
 		olFeature.set('partitions', partitions);
 		if (delta !== 1) {
@@ -234,7 +272,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		const lineString = getLineString(geometry);
 		const collectedSegments = { minPartition: 0, length: 0 };
 
-		lineString.forEachSegment((from, to) => {
+		lineString?.forEachSegment((from, to) => {
 			const segment = new LineString([from, to]);
 
 			const currentLength = collectedSegments.length + segment.getLength();
@@ -267,11 +305,29 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	}
 
 	_updateOlOverlay(overlay, geometry, value) {
+		const getGeodesicPosition = (feature, value) => {
+			if (feature) {
+				const geodesic = feature.get(GEODESIC_FEATURE_PROPERTY);
+				if (geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE) {
+					return geodesic.getCoordinateAt(value);
+				}
+			}
+			return null;
+		};
 		const element = overlay.getElement();
 		element.value = value;
 		element.geometry = geometry;
 		if (!overlay.get('manualPositioning')) {
-			overlay.setPosition(element.position);
+			if (element.type === BaOverlayTypes.DISTANCE_PARTITION) {
+				const feature = overlay.get('feature');
+				if (geometry && !geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY)) {
+					geometry.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, feature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY));
+				}
+				const geodesicPosition = getGeodesicPosition(feature, value);
+				overlay.setPosition(geodesicPosition ?? element.position);
+			} else {
+				overlay.setPosition(element.position);
+			}
 		}
 	}
 
