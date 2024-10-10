@@ -17,7 +17,8 @@ export const provide = (lang) => {
 				layerManager_expand_all: 'expand all',
 				layerManager_collapse_all: 'collapse all',
 				layerManager_remove_all: 'remove all',
-				layerManager_loading_hint: 'Loading'
+				layerManager_loading_hint: 'Loading',
+				layerManager_time_travel_hint: 'Choose a year'
 			};
 
 		case 'de':
@@ -37,7 +38,8 @@ export const provide = (lang) => {
 				layerManager_expand_all: 'Alle ausklappen',
 				layerManager_collapse_all: 'Alle einklappen',
 				layerManager_remove_all: 'Alle entfernen',
-				layerManager_loading_hint: 'Wird geladen'
+				layerManager_loading_hint: 'Wird geladen',
+				layerManager_time_travel_hint: 'Bitte ein Jahr auswählen'
 			};
 
 		default:

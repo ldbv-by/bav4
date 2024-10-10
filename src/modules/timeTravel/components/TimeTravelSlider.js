@@ -70,7 +70,7 @@ export class TimeTravelSlider extends MvuElement {
 			case Update_GeoResourceId:
 				return { ...model, timestamps: fromGeoResource(data), timestamp: model.timestamp ?? fromGeoResource(data)[0] };
 			case Update_Timestamp:
-				return { ...model, timestamp: data };
+				return { ...model, timestamp: parseInt(data) };
 			case Update_IsPlaying:
 				return { ...model, isPlaying: data };
 		}
@@ -315,6 +315,6 @@ export class TimeTravelSlider extends MvuElement {
 	}
 
 	static get TIME_INTERVAL_MS() {
-		return 1000;
+		return 2000;
 	}
 }

@@ -18,6 +18,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_collapse_all).toBe('Alle einklappen');
 		expect(map.layerManager_remove_all).toBe('Alle entfernen');
 		expect(map.layerManager_loading_hint).toBe('Wird geladen');
+		expect(map.layerManager_time_travel_hint).toBe('Bitte ein Jahr auswählen');
 	});
 
 	it('provides translation for en', () => {
@@ -38,10 +39,11 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_collapse_all).toBe('collapse all');
 		expect(map.layerManager_remove_all).toBe('remove all');
 		expect(map.layerManager_loading_hint).toBe('Loading');
+		expect(map.layerManager_time_travel_hint).toBe('Choose a year');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 15;
+		const expectedSize = 16;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

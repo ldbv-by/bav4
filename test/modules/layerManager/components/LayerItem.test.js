@@ -211,7 +211,9 @@ describe('LayerItem', () => {
 			const timestampElements = element.shadowRoot.querySelectorAll('ba-value-select');
 
 			expect(timestampElements).toHaveSize(1);
+
 			expect(timestampElements[0].values).toHaveSize(2);
+			expect(timestampElements[0].title).toBe('layerManager_time_travel_hint');
 		});
 
 		it('use layer.timestamps-property to skip render the timestamp component ', async () => {
