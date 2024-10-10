@@ -27,9 +27,7 @@ describe('TimeTravel', () => {
 		byId: () => {
 			return {
 				hasTimestamps: () => true,
-				timestamps: [
-					1900, 1902, 1903, 1918 /* only for debounce test*/, 1919 /* only for debounce test*/, 1921, 1923, 1924, 1927, 1937, 1939, 1940, 1949, 1951
-				]
+				timestamps: [1900, 1902, 1903, 1921, 1923, 1924, 1927, 1937, 1939, 1940, 1949, 1951]
 			};
 		}
 	};
@@ -411,11 +409,16 @@ describe('TimeTravel', () => {
 				}
 			};
 
+			// HINT:specifying the concrete test values to get rid of other interferencing operations on the timeTravel s-o-s
+			// it must be ensured, that the test-values 1918,1919 are only used in this test.
+			spyOn(geoResourceServiceMock, 'byId').and.returnValue({
+				hasTimestamps: () => true,
+				timestamps: [1917, 1918, 1919]
+			});
+
 			const timeTravelSpy = jasmine.createSpy('timestamp').and.callFake(() => {});
 
 			const element = await setup(state);
-			// HINT:specifying the concrete test values to get rid of other interferencing operations on the timeTravel s-o-s
-			// it must be ensured, that the test-values 1918,1919 are only used in this test.
 			observe(
 				store,
 				(state) => state.timeTravel.timestamp,
@@ -426,7 +429,7 @@ describe('TimeTravel', () => {
 				}
 			);
 
-			expect(element.getModel().timestamp).toBe(Initial_Value);
+			expect(element.getModel().timestamp).toBe(1917);
 
 			const sliderElement = element.shadowRoot.querySelector('#rangeSlider');
 			timeTravelSpy.calls.reset();
