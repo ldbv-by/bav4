@@ -378,6 +378,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		const { id, scale, dpi } = this._storeService.getStore().getState().mfp.current;
 		const rotation = (getAzimuthFrom(this._mfpBoundaryFeature.getGeometry()) * 180) / Math.PI;
 		const showGrid = this._storeService.getStore().getState().mfp.showGrid;
+		const gridSupported = this._storeService.getStore().getState().mfp.gridSupported;
 		const pageCenter = this._getVisibleCenterPoint();
 		const encodingProperties = {
 			layoutId: id,
@@ -386,7 +387,7 @@ export class OlMfpHandler extends OlLayerHandler {
 			dpi: dpi,
 			pageCenter: pageCenter,
 			pageExtent: this._mfpBoundaryFeature?.getGeometry()?.getExtent(),
-			showGrid: showGrid
+			showGrid: showGrid && gridSupported
 		};
 		const encodingResult = await this._encoder.encode(this._map, encodingProperties);
 
