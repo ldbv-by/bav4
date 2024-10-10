@@ -28,6 +28,21 @@ describe('TimeTravelPlugin', () => {
 		return store;
 	};
 
+	describe('constructor', () => {
+		it('setups local state', () => {
+			setup();
+			const instanceUnderTest = new TimeTravelPlugin();
+
+			expect(instanceUnderTest._closedByUser).toBeFalse();
+		});
+	});
+
+	describe('class', () => {
+		it('defines constant values', async () => {
+			expect(TimeTravelPlugin.SLIDER_CLOSE_DELAY_MS).toBe(200);
+		});
+	});
+
 	describe('when timeTravel "active" property changes', () => {
 		describe('is active and we have an unique geoResourceId', () => {
 			it('displays the time travel slider within the BottomSheet component', async () => {
@@ -86,6 +101,7 @@ describe('TimeTravelPlugin', () => {
 
 			expect(store.getState().timeTravel.active).toBeFalse();
 			expect(bottomSheetUnsubscribeFnSpy).toHaveBeenCalled();
+			expect(instanceUnderTest._closedByUser).toBeTrue();
 		});
 	});
 
@@ -114,6 +130,16 @@ describe('TimeTravelPlugin', () => {
 	});
 
 	describe('when layers "active" property changes', () => {
+		beforeEach(() => {
+			jasmine.clock().install();
+		});
+
+		afterEach(() => {
+			jasmine.clock().uninstall();
+		});
+
+		const closeSliderTimeout = 200;
+
 		describe('and we are in embed mode', () => {
 			it('does nothing', async () => {
 				const store = setup({ layers: initialLayersState, timeTravel: initialTimeTravelState });
@@ -129,6 +155,24 @@ describe('TimeTravelPlugin', () => {
 				]);
 
 				expect(store.getState().timeTravel).toEqual(initialTimeTravelState);
+			});
+		});
+
+		describe('and the slider was previously closed by the user', () => {
+			it('updates the timestamp of the timeTravel s-o-s', async () => {
+				const store = setup({ layers: initialLayersState, timeTravel: initialTimeTravelState });
+				const instanceUnderTest = new TimeTravelPlugin();
+				instanceUnderTest._closedByUser = true;
+				await instanceUnderTest.register(store);
+				const geoResourceId = 'geoResourceId';
+				const timestamp = '1900';
+
+				removeAndSetLayers([
+					{ id: 'id0', timestamp, geoResourceId },
+					{ id: 'id1', timestamp, geoResourceId }
+				]);
+
+				expect(store.getState().timeTravel.timestamp).toEqual('1900');
 			});
 		});
 		describe('and we have an unique timestamp', () => {
@@ -163,10 +207,12 @@ describe('TimeTravelPlugin', () => {
 					{ id: 'id0', timestamp: '1900', geoResourceId },
 					{ id: 'id1', timestamp: '2000', geoResourceId }
 				]);
+				jasmine.clock().tick(closeSliderTimeout + 100);
 
 				expect(store.getState().timeTravel.active).toBeFalse();
 			});
 		});
+
 		describe('and we have different GeoResource ids', () => {
 			it('hides the time travel slider', async () => {
 				const store = setup({
@@ -181,6 +227,7 @@ describe('TimeTravelPlugin', () => {
 					{ id: 'id0', timestamp, geoResourceId: 'geoResourceId0' },
 					{ id: 'id1', timestamp, geoResourceId: 'geoResourceId1' }
 				]);
+				jasmine.clock().tick(closeSliderTimeout + 100);
 
 				expect(store.getState().timeTravel.active).toBeFalse();
 			});
