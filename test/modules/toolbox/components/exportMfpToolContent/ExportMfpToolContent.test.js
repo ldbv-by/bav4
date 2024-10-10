@@ -6,7 +6,6 @@ import { setIsPortrait } from '../../../../../src/store/media/media.action';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { setGridSupported, startJob } from '../../../../../src/store/mfp/mfp.action';
 import { mfpReducer } from '../../../../../src/store/mfp/mfp.reducer';
-import { changeRotation } from '../../../../../src/store/position/position.action';
 import { positionReducer } from '../../../../../src/store/position/position.reducer';
 import { REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 import { EventLike } from '../../../../../src/utils/storeUtils';
