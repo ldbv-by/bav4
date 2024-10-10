@@ -33,10 +33,12 @@
 	--animation-easing-linear: cubic-bezier(0.4, 0, 0.2, 1);
 
 	/* 
-		color 
-	*/
+		   color 
+	   */
 	/* brand */
 	--brand-hue: 198;
+	--brand-hue-split-one: calc(var(--brand-hue) - 215);
+	--brand-hue-split-tow: calc(var(--brand-hue) - 145);
 	--brand-saturation: 92%;
 	--brand-lightness: 45%;
 	/* light */
@@ -51,6 +53,8 @@
 	--surface3-light: hsl(var(--brand-hue) 60% 95%);
 	--surface4-light: hsl(var(--brand-hue) 20% 100%);
 	--surface5-light: hsla(var(--brand-hue), 10%, 15%, 0.8);
+	--brand-light-split-one: hsl(var(--brand-hue-split-one) var(--brand-saturation) var(--brand-lightness));
+	--brand-light-split-one-lighter: hsl(var(--brand-hue-split-one) var(--brand-saturation) calc(var(--brand-lightness) / 0.55));
 	/* dark */
 	--brand-dark: hsl(var(--brand-hue) calc(var(--brand-saturation) / 1.6) calc(var(--brand-lightness) / 0.9));
 	--brand-dark-lighter: hsl(var(--brand-hue) calc(var(--brand-saturation) / 1.6) calc(var(--brand-lightness) * 1.7));
@@ -63,6 +67,8 @@
 	--surface3-dark: hsl(var(--brand-hue) 40% 25%);
 	--surface4-dark: hsl(var(--brand-hue) 10% 15%);
 	--surface5-dark: hsla(var(--brand-hue), 15%, 40%, 0.8);
+	--brand-dark-split-one: hsl(var(--brand-hue-split-one) calc(var(--brand-saturation) / 1) calc(var(--brand-lightness) / 0.7));
+	--brand-dark-split-one-lighter: hsl(var(--brand-hue-split-one) calc(var(--brand-saturation) / 1.9) calc(var(--brand-lightness) * 1.4));
 	/* others */
 	--error-color: hsla(341, 60%, 52%, 1);
 	--warning-color: hsla(18, 89%, 48%, 1);
@@ -81,6 +87,8 @@
 	--primary-color: var(--brand-light);
 	--primary-color-lighter: var(--brand-light-lighter);
 	--secondary-color: var(--brand-secondary-light);
+	--split-one-color: var(--brand-light-split-one);
+	--split-one-color-lighter: var(--brand-light-split-one-lighter);
 	/* background */
 	--primary-bg-color: var(--surface1-light);
 	--primary-bg-color-05: hsla(var(--brand-hue), 20%, 99%, 0.9);
@@ -103,6 +111,8 @@
 	--primary-color: var(--brand-dark);
 	--primary-color-lighter: var(--brand-dark-lighter);
 	--secondary-color: var(--brand-secondary-dark);
+	--split-one-color: var(--brand-dark-split-one);
+	--split-one-color-lighter: var(--brand-dark-split-one-lighter);
 	/* background */
 	--primary-bg-color: var(--surface1-dark);
 	--primary-bg-color-05: rgba(0, 0, 0, 0.6);

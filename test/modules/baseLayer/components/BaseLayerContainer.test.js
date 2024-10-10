@@ -76,7 +76,7 @@ describe('BaseLayerContainer', () => {
 							managed: baseGeoRs.vector,
 							all: [...baseGeoRs.raster, ...baseGeoRs.vector]
 						});
-						expect(element.shadowRoot.querySelector('.title').innerText).toBe('baseLayer_switcher_header');
+						expect(element.shadowRoot.querySelector('.title').innerText).toContain('baseLayer_switcher_header');
 						expect(element.shadowRoot.querySelectorAll('button')[0].innerText).toBe('baseLayer_container_category_raster');
 						expect(element.shadowRoot.querySelectorAll('button')[1].innerText).toBe('baseLayer_container_category_vector');
 

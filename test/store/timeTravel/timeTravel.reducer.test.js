@@ -30,12 +30,15 @@ describe('timeTravelReducer', () => {
 	it("opens the slider and optionally updates the 'timestamp' property", () => {
 		const store = setup();
 
+		openSlider();
+
+		expect(store.getState().timeTravel.active).toBeTrue();
+		expect(store.getState().timeTravel.timestamp).toBeNull();
+
 		openSlider('1900');
 
 		expect(store.getState().timeTravel.active).toBeTrue();
 		expect(store.getState().timeTravel.timestamp).toBe('1900');
-
-		openSlider();
 
 		openSlider('2000');
 

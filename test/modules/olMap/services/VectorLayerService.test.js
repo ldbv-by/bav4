@@ -367,13 +367,13 @@ describe('VectorLayerService', () => {
 		describe('_registerEvents', () => {
 			it('adds four listeners', () => {
 				setup();
-				const { addFeatureListenerKey, removeFeatureListenerKey, clearFeaturesListenerKey, addLayerListenerKey } =
+				const { addFeatureListenerKey, removeFeatureListenerKey, clearFeaturesListenerKey, layerChangeListenerKey } =
 					instanceUnderTest._registerStyleEventListeners(new VectorSource(), new VectorLayer(), new Map());
 
 				expect(addFeatureListenerKey).toBeDefined();
 				expect(removeFeatureListenerKey).toBeDefined();
 				expect(clearFeaturesListenerKey).toBeDefined();
-				expect(addLayerListenerKey).toBeDefined();
+				expect(layerChangeListenerKey).toBeDefined();
 			});
 
 			it('calls StyleService#addStyle on "addFeature"', () => {
@@ -412,7 +412,7 @@ describe('VectorLayerService', () => {
 				expect(styleServiceUpdateSpy).toHaveBeenCalledWith(olFeature, olLayer, olMap);
 			});
 
-			it('calls StyleService#removeStyle on "removeFeature"', () => {
+			it('calls #removeStyle on "removeFeature"', () => {
 				setup();
 				const olMap = new Map();
 				const olSource = new VectorSource();
@@ -426,7 +426,7 @@ describe('VectorLayerService', () => {
 				expect(styleServiceSpy).toHaveBeenCalledWith(olFeature, olMap);
 			});
 
-			it('calls StyleService#removeStyle on "clearFeatures"', () => {
+			it('calls #removeStyle on "clearFeatures"', () => {
 				setup();
 				const olMap = new Map();
 				const olFeature = new Feature();
@@ -440,7 +440,7 @@ describe('VectorLayerService', () => {
 				expect(styleServiceSpy).toHaveBeenCalledWith(olFeature, olMap);
 			});
 
-			it('calls _updateStyle on "addLayer"', () => {
+			it('calls #_updateStyle on layer "change:visible"', () => {
 				setup();
 				const olMap = new Map();
 				const olFeature = new Feature();
@@ -449,12 +449,40 @@ describe('VectorLayerService', () => {
 				const updateStyleSpy = spyOn(instanceUnderTest, '_updateStyle');
 				instanceUnderTest._registerStyleEventListeners(olSource, olLayer, olMap);
 
-				olMap.getLayers().dispatchEvent(new CollectionEvent('add', olLayer));
+				olLayer.setVisible(false);
 
 				expect(updateStyleSpy).toHaveBeenCalledWith(olFeature, olLayer, olMap);
 			});
 
-			it('does not call _updateStyle when other layers are added', () => {
+			it('calls #_updateStyle on layer "change:opacity"', () => {
+				setup();
+				const olMap = new Map();
+				const olFeature = new Feature();
+				const olSource = new VectorSource({ features: [olFeature] });
+				const olLayer = new VectorLayer();
+				const updateStyleSpy = spyOn(instanceUnderTest, '_updateStyle');
+				instanceUnderTest._registerStyleEventListeners(olSource, olLayer, olMap);
+
+				olLayer.setOpacity(0.42);
+
+				expect(updateStyleSpy).toHaveBeenCalledWith(olFeature, olLayer, olMap);
+			});
+
+			it('calls #_updateStyle on layer "change:zIndex"', () => {
+				setup();
+				const olMap = new Map();
+				const olFeature = new Feature();
+				const olSource = new VectorSource({ features: [olFeature] });
+				const olLayer = new VectorLayer();
+				const updateStyleSpy = spyOn(instanceUnderTest, '_updateStyle');
+				instanceUnderTest._registerStyleEventListeners(olSource, olLayer, olMap);
+
+				olLayer.setZIndex(1);
+
+				expect(updateStyleSpy).toHaveBeenCalledWith(olFeature, olLayer, olMap);
+			});
+
+			it('does not call #_updateStyle when other layers are added', () => {
 				setup();
 				const olMap = new Map();
 				const olFeature = new Feature();

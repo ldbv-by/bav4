@@ -202,7 +202,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 				};
 				const selected = layer.timestamp ?? geoResource.timestamps[0];
 				return html`<ba-value-select
-					.title=${'Choose a value'}
+					.title=${translate('layerManager_time_travel_hint')}
 					.values=${geoResource.timestamps}
 					.selected=${selected}
 					@select=${onTimestampChange}

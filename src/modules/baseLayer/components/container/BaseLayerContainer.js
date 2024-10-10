@@ -90,7 +90,7 @@ export class BaseLayerContainer extends MvuElement {
 
 		const onClick = (category) => {
 			const tab = this.shadowRoot.getElementById(category);
-			tab.scrollIntoView();
+			tab.scrollIntoView({ block: 'nearest' });
 		};
 
 		const isActive = (category) => {
@@ -104,15 +104,19 @@ export class BaseLayerContainer extends MvuElement {
 			<style>
 				${css}
 			</style>
-			<div class="title">${translate('baseLayer_switcher_header')}</div>
-			${isButtonGroupHidden()
-				? nothing
-				: html`<div class="button-group">
-						${Object.entries(categories).map(
-							([key]) =>
-								html`<button @click=${() => onClick(key)} class="title ${isActive(key)}">${translate(`baseLayer_container_category_${key}`)}</button>`
-						)}
-					</div>`}
+			<div class="title">
+				${translate('baseLayer_switcher_header')}
+				${isButtonGroupHidden()
+					? nothing
+					: html`<div class="button-group">
+							${Object.entries(categories).map(
+								([key]) =>
+									html`<button @click=${() => onClick(key)} class="title ${isActive(key)}">
+										${translate(`baseLayer_container_category_${key}`)}
+									</button>`
+							)}
+						</div>`}
+			</div>
 			<div id="section" class="section scroll-snap-x">
 				${Object.entries(categories).map(
 					([key, value]) =>

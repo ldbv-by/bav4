@@ -44,6 +44,7 @@ import { KML } from 'ol/format';
 import { Tools } from '../../../../domain/tools';
 import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../ol/geodesic/geodesicGeometry';
 import { setData } from '../../../../store/fileStorage/fileStorage.action';
+import { createDefaultLayerProperties } from '../../../../store/layers/layers.reducer';
 
 /**
  * Handler for measurement-interaction with the map.
@@ -77,6 +78,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		this._vectorLayer = null;
 		this._layerId = null;
+		this._layerZIndex = null;
 		this._draw = false;
 
 		this._storedContent = null;
@@ -119,10 +121,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			acknowledgeTermsOfUse();
 		}
 		const getOldLayer = (map) => {
+			const byZIndex = (a, b) => b.getZIndex() - a.getZIndex(); // implicit reversed sort order
 			const isOldLayer = (layer) =>
 				this._fileStorageService.isAdminId(layer.get('geoResourceId')) || this._fileStorageService.isFileId(layer.get('geoResourceId'));
-			// we iterate over all layers (index=0 -> top-most; index=length-1 -> lowest), the top-most layer is the one we take source for our drawing layer
-			return map.getLayers().getArray().find(isOldLayer);
+			// we sort all layers by zIndex (z-index=0 -> top-most; index=length-1 -> lowest)
+			// and iterate over the result, the top-most layer is the one we take as source for our drawing layer
+			return map.getLayers().getArray().sort(byZIndex).find(isOldLayer);
 		};
 
 		const createLayer = () => {
@@ -162,6 +166,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					});
 					const oldLayerId = oldLayer.get('id');
 					this._layerId = oldLayerId;
+					this._layerZIndex = oldLayer.getZIndex();
 					removeLayer(oldLayerId);
 					this._finish();
 					this._setSelection(this._storeService.getStore().getState().measurement.selection);
@@ -343,7 +348,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._keyActionMapper.deactivate();
 
 		// eslint-disable-next-line promise/prefer-await-to-then
-		this._convertToPermanentLayer().finally(() => (this._layerId = null));
+		this._convertToPermanentLayer().finally(() => {
+			this._layerId = null;
+			this._layerZIndex = null;
+		});
 		this._vectorLayer
 			.getSource()
 			.getFeatures()
@@ -737,7 +745,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			// register the stored data as new georesource
 			this._geoResourceService.addOrReplace(vgr);
 			const layerId = this._layerId ?? `${id}_draw`;
-			addLayer(layerId, { geoResourceId: id, constraints: { metaData: false } });
+			addLayer(layerId, { zIndex: this._layerZIndex ?? createDefaultLayerProperties().zIndex, geoResourceId: id, constraints: { metaData: false } });
 		}
 	}
 }
