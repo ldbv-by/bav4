@@ -110,6 +110,10 @@ export class TimeTravelPlugin extends BaPlugin {
 					);
 				} else {
 					closeBottomSheet(TIME_TRAVEL_BOTTOM_SHEET_ID);
+					/**
+					 * If the slider is set to active but the bottom sheet was not opened we mark the slider as closed
+					 */
+					closeSlider();
 				}
 				this._closedByUser = false;
 			};
