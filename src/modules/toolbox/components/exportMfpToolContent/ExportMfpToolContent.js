@@ -56,7 +56,12 @@ export class ExportMfpToolContent extends AbstractToolContent {
 		);
 		this.observe(
 			(state) => state.position.rotation,
-			(rotation) => this.signal(Update_Grid_Supported, rotation)
+			(rotation) => {
+				if (rotation !== 0) {
+					setShowGrid(false);
+				}
+				this.signal(Update_Grid_Supported, rotation);
+			}
 		);
 	}
 
@@ -75,7 +80,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 			case Update_Job_Started:
 				return { ...model, isJobStarted: !!data?.payload };
 			case Update_Grid_Supported:
-				return { ...model, gridSupported: data === 0, showGrid: data === 0 ? false : model.showGrid };
+				return { ...model, gridSupported: data === 0, showGrid: data !== 0 ? false : model.showGrid };
 		}
 	}
 

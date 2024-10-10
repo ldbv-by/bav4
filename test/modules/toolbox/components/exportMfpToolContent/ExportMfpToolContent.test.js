@@ -416,5 +416,21 @@ describe('ExportMfpToolContent', () => {
 			expect(element.shadowRoot.querySelectorAll('span.grid-note')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('span.no-support')).toHaveSize(1);
 		});
+
+		it('updates mfp s-o-s', async () => {
+			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
+			const checkbox = element.shadowRoot.querySelector('#showgrid');
+
+			expect(store.getState().mfp.showGrid).toBeFalse();
+
+			checkbox.click();
+
+			expect(store.getState().mfp.showGrid).toBeTrue();
+
+			changeRotation(42);
+
+			expect(store.getState().mfp.showGrid).toBeFalse();
+		});
 	});
 });
