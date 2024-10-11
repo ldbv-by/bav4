@@ -210,9 +210,11 @@ describe('TimeTravel', () => {
 				timeTravel: { timestamp: Initial_Value }
 			};
 
-			const element = await setup(state);
 			const newValue = '1949';
 			const newValueNumber = 1949;
+
+			const element = await setup(state);
+			const spy = spyOn(element, '_setTimestamp').and.callThrough();
 
 			expect(element.getModel().timestamp).toBe(Initial_Number);
 			expect(store.getState().timeTravel.timestamp).toBe(Initial_Value);
@@ -224,6 +226,7 @@ describe('TimeTravel', () => {
 			await TestUtils.timeout(TIMESPAN_DEBOUNCE_DELAY + 100);
 
 			expect(element.getModel().timestamp).toBe(newValueNumber);
+			expect(spy).toHaveBeenCalledWith(newValueNumber);
 			expect(store.getState().timeTravel.timestamp).toBe(newValue);
 		});
 	});
@@ -437,7 +440,9 @@ describe('TimeTravel', () => {
 			};
 
 			const element = await setup(state);
-			const timeTravelSpy = spyOn(element, '_setTimestamp').and.callFake(() => {});
+			const timeTravelSpy = spyOn(element, '_setTimestamp')
+				.withArgs(jasmine.any(Number))
+				.and.callFake(() => {});
 
 			expect(element.getModel().timestamp).toBe(Initial_Number);
 

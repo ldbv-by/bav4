@@ -35,7 +35,7 @@ const Range_Slider_Step = 1;
  * @author thiloSchlemmer
  */
 export class TimeTravelSlider extends MvuElement {
-	#setDebouncedTimestampFn = debounced(TIMESPAN_DEBOUNCE_DELAY, (timestamp) => this._setTimestamp(`${timestamp}`));
+	#setDebouncedTimestampFn = debounced(TIMESPAN_DEBOUNCE_DELAY, (timestamp) => this._setTimestamp(timestamp));
 	#translationService;
 	#geoResourceService;
 	#decadeFunction;
@@ -291,7 +291,7 @@ export class TimeTravelSlider extends MvuElement {
 	}
 
 	_setTimestamp(timestamp) {
-		setCurrentTimestamp(timestamp);
+		setCurrentTimestamp(`${timestamp}`);
 	}
 
 	_isDecade(timestamp) {
