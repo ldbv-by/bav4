@@ -259,8 +259,8 @@ describe('TimeTravelPlugin', () => {
 			const store = setup({ layers: initialLayersState, timeTravel: initialTimeTravelState, bottomSheet: initialBottomSheetState });
 			const instanceUnderTest = new TimeTravelPlugin();
 			await instanceUnderTest.register(store);
-			const timestamp = "1900";
-			const newTimestamp = "2000";
+			const timestamp = '1900';
+			const newTimestamp = '2000';
 			removeAndSetLayers([
 				{ id: 'id0', timestamp, geoResourceId: 'geoResourceId0' },
 				{ id: 'id1', timestamp, geoResourceId: 'geoResourceId1', visible: false }
