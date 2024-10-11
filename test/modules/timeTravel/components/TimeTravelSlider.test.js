@@ -10,7 +10,6 @@ import { observe } from '../../../../src/utils/storeUtils.js';
 window.customElements.define(TimeTravelSlider.tag, TimeTravelSlider);
 
 describe('TimeTravel', () => {
-	const Initial_Value = '1900';
 	const Initial_Number = 1900;
 	const Min_Number = 1900;
 	const Min_Value = '1900';
