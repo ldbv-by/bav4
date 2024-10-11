@@ -22,6 +22,10 @@ describe('timeTravelReducer', () => {
 
 		expect(store.getState().timeTravel.timestamp).toBe('1900');
 
+		setCurrentTimestamp(2000);
+
+		expect(store.getState().timeTravel.timestamp).toBe('1900');
+
 		setCurrentTimestamp(null);
 
 		expect(store.getState().timeTravel.timestamp).toBeNull();
@@ -36,6 +40,11 @@ describe('timeTravelReducer', () => {
 		expect(store.getState().timeTravel.timestamp).toBeNull();
 
 		openSlider('1900');
+
+		expect(store.getState().timeTravel.active).toBeTrue();
+		expect(store.getState().timeTravel.timestamp).toBe('1900');
+
+		openSlider(2000);
 
 		expect(store.getState().timeTravel.active).toBeTrue();
 		expect(store.getState().timeTravel.timestamp).toBe('1900');
