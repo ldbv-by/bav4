@@ -1,7 +1,15 @@
 /**
  * @module store/layers/layers_action
  */
-import { LAYER_MODIFIED, LAYER_ADDED, LAYER_REMOVED, LAYER_RESOURCES_READY, LAYER_GEORESOURCE_CHANGED, LAYER_REMOVE_AND_SET } from './layers.reducer';
+import {
+	LAYER_MODIFIED,
+	LAYER_ADDED,
+	LAYER_REMOVED,
+	LAYER_RESOURCES_READY,
+	LAYER_GEORESOURCE_CHANGED,
+	LAYER_REMOVE_AND_SET,
+	createDefaultLayerProperties
+} from './layers.reducer';
 import { $injector } from '../../injection';
 import { GeoResource } from '../../domain/geoResources';
 
@@ -36,6 +44,15 @@ import { GeoResource } from '../../domain/geoResources';
 /**
  * Modifiable options of a {@link Layer}.
  * @typedef {Object} ModifyLayerOptions
+ * @property {number} [opacity] The new opacity value (0, 1)
+ * @property {boolean} [visible] The new visibility value
+ * @property {string} [timestamp] The new timestamp value
+ * @property {number} [zIndex] The new index of this layer within the list of active layers
+ */
+
+/**
+ * Options for cloning a {@link Layer}.
+ * @typedef {Object} CloneLayerOptions
  * @property {number} [opacity] The new opacity value (0, 1)
  * @property {boolean} [visible] The new visibility value
  * @property {string} [timestamp] The new timestamp value
@@ -107,6 +124,34 @@ export const addLayerIfNotPresent = (id, options = {}) => {
 			.layers.active.some((l) => l.geoResourceId === (options.geoResourceId ?? id))
 	) {
 		addLayer(id, options);
+	}
+};
+
+/**
+ * Clones an existing {@link Layer} and adds it to the list of active layers.
+ * @function
+ * @param {string} id the Id of the layer that should be cloned
+ * @param {string} clonedId the Id of the  cloned layer
+ * @param {module:store/layers/layers_action~CloneLayerOptions} options layer options
+ */
+export const cloneAndAddLayer = (id, clonedId, options = {}) => {
+	const layer = getStore()
+		.getState()
+		.layers.active.find((l) => l.id === id);
+
+	if (layer) {
+		const layerAddOptions = {
+			...{
+				geoResourceId: layer.geoResourceId,
+				opacity: layer.opacity,
+				visible: layer.visible,
+				timestamp: layer.timestamp,
+				zIndex: createDefaultLayerProperties().zIndex,
+				constraints: { ...layer.constraints }
+			},
+			...options
+		};
+		addLayer(clonedId, layerAddOptions);
 	}
 };
 
