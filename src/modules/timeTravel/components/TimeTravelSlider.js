@@ -16,7 +16,6 @@ import stopSvg from './assets/stop.svg';
 import { debounced } from '../../../utils/timer';
 
 export const TIMESPAN_DEBOUNCE_DELAY = 200;
-const setDebouncedTimestamp = debounced(TIMESPAN_DEBOUNCE_DELAY, (timestamp) => setCurrentTimestamp(timestamp));
 
 const Update_Timestamp = 'update_timestamp';
 const Update_GeoResourceId = 'update_georesourceid';
@@ -36,6 +35,7 @@ const Range_Slider_Step = 1;
  * @author thiloSchlemmer
  */
 export class TimeTravelSlider extends MvuElement {
+	#setDebouncedTimestampFn = debounced(TIMESPAN_DEBOUNCE_DELAY, (timestamp) => this._setTimestamp(timestamp));
 	#translationService;
 	#geoResourceService;
 	#decadeFunction;
@@ -104,7 +104,7 @@ export class TimeTravelSlider extends MvuElement {
 
 		const setTimestamp = (timestamp) => {
 			this.signal(Update_Timestamp, timestamp);
-			setDebouncedTimestamp(timestamp);
+			this.#setDebouncedTimestampFn(timestamp);
 		};
 
 		const onChangeSelect = (e) => {
@@ -301,6 +301,10 @@ export class TimeTravelSlider extends MvuElement {
 					</div>
 				`
 			: nothing;
+	}
+
+	_setTimestamp(timestamp) {
+		setCurrentTimestamp(`${timestamp}`);
 	}
 
 	_isDecade(timestamp) {
