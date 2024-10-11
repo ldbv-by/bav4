@@ -5,7 +5,7 @@ import { html, nothing } from 'lit-html';
 import css from './layerItem.css';
 import { $injector } from '../../../injection';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { addLayer, modifyLayer, removeLayer } from './../../../store/layers/layers.action';
+import { cloneAndAddLayer, modifyLayer, removeLayer } from './../../../store/layers/layers.action';
 import arrowUpSvg from './assets/arrow-up-short.svg';
 import arrowDownSvg from './assets/arrow-down-short.svg';
 import cloneSvg from './assets/clone.svg';
@@ -159,8 +159,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 		};
 
 		const cloneLayer = () => {
-			//state store change -> implicit call of #render()
-			addLayer(`${layer.geoResourceId}_${createUniqueId()}`, { ...layer, geoResourceId: layer.geoResourceId, zIndex: layer.zIndex + 1 });
+			cloneAndAddLayer(layer.id, `${layer.geoResourceId}_${createUniqueId()}`, { zIndex: layer.zIndex + 1 });
 		};
 
 		const zoomToExtent = () => {
