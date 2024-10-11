@@ -159,6 +159,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 		};
 
 		const cloneLayer = () => {
+			//state store change -> implicit call of #render()
 			cloneAndAddLayer(layer.id, `${layer.geoResourceId}_${createUniqueId()}`, { zIndex: layer.zIndex + 1 });
 		};
 
