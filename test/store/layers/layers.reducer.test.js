@@ -303,6 +303,18 @@ describe('layersReducer', () => {
 			});
 		});
 
+		describe('original layer is not allowed to be cloned', () => {
+			it('does nothing', () => {
+				const store = setup();
+				addLayer('id0', { constraints: { cloneable: false } });
+
+				cloneAndAddLayer('id0');
+
+				expect(store.getState().layers.active.length).toBe(1);
+				expect(store.getState().layers.active[0].id).toBe('id0');
+			});
+		});
+
 		describe('containing NO custom CloneLayerOptions', () => {
 			it('clones and adds the layer', () => {
 				const store = setup();

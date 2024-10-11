@@ -139,7 +139,7 @@ export const cloneAndAddLayer = (id, clonedId, options = {}) => {
 		.getState()
 		.layers.active.find((l) => l.id === id);
 
-	if (layer) {
+	if (layer?.constraints.cloneable) {
 		const layerAddOptions = {
 			...{
 				geoResourceId: layer.geoResourceId,
