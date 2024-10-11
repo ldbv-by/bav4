@@ -10,9 +10,12 @@ import { observe } from '../../../../src/utils/storeUtils.js';
 window.customElements.define(TimeTravelSlider.tag, TimeTravelSlider);
 
 describe('TimeTravel', () => {
-	const Initial_Value = 1900;
-	const Min = 1900;
-	const Max = 1951;
+	const Initial_Value = '1900';
+	const Initial_Number = 1900;
+	const Min_Number = 1900;
+	const Min_Value = '1900';
+	const Max_Number = 1951;
+	const Max_Value = '1951';
 
 	const extent = [995772.9694449581, 5982715.763684852, 1548341.2904285304, 6544564.28740462];
 	const mapServiceMock = {
@@ -27,7 +30,7 @@ describe('TimeTravel', () => {
 		byId: () => {
 			return {
 				hasTimestamps: () => true,
-				timestamps: [1900, 1902, 1903, 1921, 1923, 1924, 1927, 1937, 1939, 1940, 1949, 1951]
+				timestamps: ['1900', '1902', '1903', '1921', '1923', '1924', '1927', '1937', '1939', '1940', '1949', '1951']
 			};
 		}
 	};
@@ -75,12 +78,12 @@ describe('TimeTravel', () => {
 
 	describe('when instantiated', () => {
 		it('has accessible properties', async () => {
-			const element = await setup({}, { timestamp: 1950 });
+			const element = await setup({}, { timestamp: '1950' });
 
 			expect(element.getModel().timestamp).toEqual(1950);
 			expect(element.timestamp).toEqual(1950);
 
-			element.timestamp = 1949;
+			element.timestamp = '1949';
 
 			expect(element.getModel().timestamp).toEqual(1949);
 		});
@@ -89,7 +92,7 @@ describe('TimeTravel', () => {
 			spyOn(geoResourceServiceMock, 'byId')
 				.withArgs('invalidId')
 				.and.returnValue({ hasTimestamps: () => false });
-			const element = await setup({}, { timestamp: 1940, geoResourceId: 'invalidId' });
+			const element = await setup({}, { timestamp: '1940', geoResourceId: 'invalidId' });
 
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
@@ -114,8 +117,8 @@ describe('TimeTravel', () => {
 
 			expect(element.shadowRoot.querySelectorAll('#timestampInput')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('#timestampInput').getAttribute('type')).toBe('number');
-			expect(element.shadowRoot.querySelector('#timestampInput').getAttribute('min')).toBe(Min.toString());
-			expect(element.shadowRoot.querySelector('#timestampInput').getAttribute('max')).toBe(Max.toString());
+			expect(element.shadowRoot.querySelector('#timestampInput').getAttribute('min')).toBe(Min_Value);
+			expect(element.shadowRoot.querySelector('#timestampInput').getAttribute('max')).toBe(Max_Value);
 
 			expect(element.shadowRoot.querySelectorAll('#increase')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('#decrease')).toHaveSize(1);
@@ -126,32 +129,32 @@ describe('TimeTravel', () => {
 			expect(element.shadowRoot.querySelectorAll('.slider')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('#rangeSlider')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('#rangeSlider').getAttribute('type')).toBe('range');
-			expect(element.shadowRoot.querySelector('#rangeSlider').getAttribute('min')).toBe(Min.toString());
-			expect(element.shadowRoot.querySelector('#rangeSlider').getAttribute('max')).toBe(Max.toString());
+			expect(element.shadowRoot.querySelector('#rangeSlider').getAttribute('min')).toBe(Min_Value);
+			expect(element.shadowRoot.querySelector('#rangeSlider').getAttribute('max')).toBe(Max_Value);
 			expect(element.shadowRoot.querySelector('#rangeSlider').getAttribute('step')).toBe('1');
 			expect(element.shadowRoot.querySelectorAll('.range-background')).toHaveSize(1);
 		});
 
 		it('renders a time travel slider with custom decadeFunction', async () => {
-			const element = await setup({}, { timestamp: 1950 });
+			const element = await setup({}, { timestamp: '1950' });
 
 			expect(element.shadowRoot.querySelectorAll('span.range-bg.border')).toHaveSize(6); // 1900[1]-10[2]-20[3]-30[4]-40[5]-50[6]-1951
 			expect(element.getModel().timestamp).toEqual(1950);
 
 			element.decadeFunction = () => false;
-			element.timestamp = 1949;
+			element.timestamp = '1949';
 
 			expect(element.shadowRoot.querySelectorAll('span.range-bg.border')).toHaveSize(0);
 		});
 
 		it('accepts only functions as custom decadeFunction', async () => {
-			const element = await setup({}, { timestamp: 1950 });
+			const element = await setup({}, { timestamp: '1950' });
 
 			expect(element.shadowRoot.querySelectorAll('span.range-bg.border')).toHaveSize(6); // 1900[1]-10[2]-20[3]-30[4]-40[5]-50[6]-1951
 			expect(element.getModel().timestamp).toEqual(1950);
 
 			element.decadeFunction = 'foo';
-			element.timestamp = 1949;
+			element.timestamp = '1949';
 
 			expect(element.shadowRoot.querySelectorAll('span.range-bg.border')).toHaveSize(6);
 		});
@@ -171,8 +174,8 @@ describe('TimeTravel', () => {
 
 			expect(element.shadowRoot.querySelectorAll('#timestampInput')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('#timestampInput').getAttribute('type')).toBe('number');
-			expect(element.shadowRoot.querySelector('#timestampInput').getAttribute('min')).toBe(Min.toString());
-			expect(element.shadowRoot.querySelector('#timestampInput').getAttribute('max')).toBe(Max.toString());
+			expect(element.shadowRoot.querySelector('#timestampInput').getAttribute('min')).toBe(Min_Value);
+			expect(element.shadowRoot.querySelector('#timestampInput').getAttribute('max')).toBe(Max_Value);
 
 			expect(element.shadowRoot.querySelectorAll('#increase')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('#decrease')).toHaveSize(1);
@@ -183,19 +186,19 @@ describe('TimeTravel', () => {
 			expect(element.shadowRoot.querySelectorAll('.slider')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('#rangeSlider')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('#rangeSlider').getAttribute('type')).toBe('range');
-			expect(element.shadowRoot.querySelector('#rangeSlider').getAttribute('min')).toBe(Min.toString());
-			expect(element.shadowRoot.querySelector('#rangeSlider').getAttribute('max')).toBe(Max.toString());
+			expect(element.shadowRoot.querySelector('#rangeSlider').getAttribute('min')).toBe(Min_Value);
+			expect(element.shadowRoot.querySelector('#rangeSlider').getAttribute('max')).toBe(Max_Value);
 			expect(element.shadowRoot.querySelector('#rangeSlider').getAttribute('step')).toBe('1');
 			expect(element.shadowRoot.querySelectorAll('.range-background')).toHaveSize(1);
 		});
 
 		it('observes the timestamp from the s-o-s timeTravel', async () => {
-			const element = await setup({}, { timestamp: 1950 });
+			const element = await setup({}, { timestamp: '1950' });
 
 			expect(element.getModel().timestamp).toEqual(1950);
 			expect(element.timestamp).toEqual(1950);
 
-			setCurrentTimestamp(1949);
+			setCurrentTimestamp('1949');
 
 			expect(element.getModel().timestamp).toEqual(1949);
 		});
@@ -203,7 +206,7 @@ describe('TimeTravel', () => {
 
 	describe('when disconnected', () => {
 		it('clears the timer', async () => {
-			const element = await setup({}, { timestamp: 1950 });
+			const element = await setup({}, { timestamp: '1950' });
 			const spy = spyOn(global, 'clearInterval').and.callThrough();
 
 			element.onDisconnect(); // we have to call onDisconnect manually
@@ -222,10 +225,10 @@ describe('TimeTravel', () => {
 
 			const element = await setup(state);
 
-			expect(element.getModel().timestamp).toBe(Initial_Value);
+			expect(element.getModel().timestamp).toBe(Initial_Number);
 			const buttonElement = element.shadowRoot.querySelector('#decrease');
 			buttonElement.click();
-			expect(element.getModel().timestamp).toBe(Initial_Value);
+			expect(element.getModel().timestamp).toBe(Initial_Number);
 		});
 
 		it('decreases the timestamp', async () => {
@@ -249,12 +252,12 @@ describe('TimeTravel', () => {
 					portrait: false
 				}
 			};
-			const element = await setup(state, { timestamp: Max });
+			const element = await setup(state, { timestamp: Max_Value });
 
-			expect(element.getModel().timestamp).toBe(Max);
+			expect(element.getModel().timestamp).toBe(Max_Number);
 			const buttonElement = element.shadowRoot.querySelector('#increase');
 			buttonElement.click();
-			expect(element.getModel().timestamp).toBe(Max);
+			expect(element.getModel().timestamp).toBe(Max_Number);
 		});
 
 		it('increases Timestamp', async () => {
@@ -266,10 +269,10 @@ describe('TimeTravel', () => {
 
 			const element = await setup(state);
 
-			expect(element.getModel().timestamp).toBe(Initial_Value);
+			expect(element.getModel().timestamp).toBe(Initial_Number);
 			const buttonElement = element.shadowRoot.querySelector('#increase');
 			buttonElement.click();
-			expect(element.getModel().timestamp).toBe(Initial_Value + 1);
+			expect(element.getModel().timestamp).toBe(Initial_Number + 1);
 		});
 
 		describe('and when slider animation is executing', () => {
@@ -289,9 +292,9 @@ describe('TimeTravel', () => {
 					}
 				};
 
-				const element = await setup(state, { timestamp: Max - 2 });
+				const element = await setup(state, { timestamp: `${Max_Number - 2}` });
 
-				expect(element.getModel().timestamp).toBe(Max - 2);
+				expect(element.getModel().timestamp).toBe(Max_Number - 2);
 				expect(element.shadowRoot.querySelector('#timestampInput').disabled).toBeFalse();
 				const buttonElement = element.shadowRoot.querySelector('#start');
 				const stop = element.shadowRoot.getElementById('stop');
@@ -300,19 +303,19 @@ describe('TimeTravel', () => {
 				expect(stop.classList.contains('hide')).toBeFalse();
 				expect(buttonElement.classList.contains('hide')).toBeTrue();
 				expect(element.shadowRoot.querySelector('#timestampInput').disabled).toBeTrue();
-				expect(element.getModel().timestamp).toBe(Max - 2);
+				expect(element.getModel().timestamp).toBe(Max_Number - 2);
 
 				clock.tick(TimeTravelSlider.TIME_INTERVAL_MS);
 
-				expect(element.getModel().timestamp).toBe(Max - 1);
+				expect(element.getModel().timestamp).toBe(Max_Number - 1);
 
 				clock.tick(TimeTravelSlider.TIME_INTERVAL_MS);
 
-				expect(element.getModel().timestamp).toBe(Max);
+				expect(element.getModel().timestamp).toBe(Max_Number);
 
 				clock.tick(TimeTravelSlider.TIME_INTERVAL_MS);
 
-				expect(element.getModel().timestamp).toBe(Min);
+				expect(element.getModel().timestamp).toBe(Min_Number);
 			});
 
 			it('does NOT increase the timestamps on stop', async () => {
@@ -324,7 +327,7 @@ describe('TimeTravel', () => {
 
 				const element = await setup(state);
 
-				expect(element.getModel().timestamp).toBe(Initial_Value);
+				expect(element.getModel().timestamp).toBe(Initial_Number);
 				expect(element.shadowRoot.querySelector('#timestampInput').disabled).toBeFalse();
 				const stop = element.shadowRoot.querySelector('#stop');
 				const start = element.shadowRoot.getElementById('start');
@@ -336,11 +339,11 @@ describe('TimeTravel', () => {
 
 				clock.tick(TimeTravelSlider.TIME_INTERVAL_MS);
 
-				expect(element.getModel().timestamp).toBe(Initial_Value + 1);
+				expect(element.getModel().timestamp).toBe(Initial_Number + 1);
 
 				clock.tick(TimeTravelSlider.TIME_INTERVAL_MS);
 
-				expect(element.getModel().timestamp).toBe(Initial_Value + 2);
+				expect(element.getModel().timestamp).toBe(Initial_Number + 2);
 
 				stop.click();
 				expect(stop.classList.contains('hide')).toBeTrue();
@@ -349,11 +352,11 @@ describe('TimeTravel', () => {
 
 				clock.tick(TimeTravelSlider.TIME_INTERVAL_MS);
 
-				expect(element.getModel().timestamp).toBe(Initial_Value + 2);
+				expect(element.getModel().timestamp).toBe(Initial_Number + 2);
 
 				clock.tick(TimeTravelSlider.TIME_INTERVAL_MS);
 
-				expect(element.getModel().timestamp).toBe(Initial_Value + 2);
+				expect(element.getModel().timestamp).toBe(Initial_Number + 2);
 			});
 		});
 
@@ -365,7 +368,7 @@ describe('TimeTravel', () => {
 					}
 				};
 
-				const element = await setup(state, { timestamp: 1950 });
+				const element = await setup(state, { timestamp: '1950' });
 
 				expect(element.getModel().timestamp).toBe(1950);
 				const buttonElement = element.shadowRoot.querySelector('#reset');
@@ -374,7 +377,7 @@ describe('TimeTravel', () => {
 
 				buttonElement.click();
 
-				expect(element.getModel().timestamp).toBe(Min);
+				expect(element.getModel().timestamp).toBe(Min_Number);
 
 				expect(start.classList.contains('hide')).toBeFalse();
 				expect(stop.classList.contains('hide')).toBeTrue();
@@ -391,15 +394,15 @@ describe('TimeTravel', () => {
 			};
 
 			const element = await setup(state);
-			const newValue = 1950;
+			const newValue = '1950';
 
-			expect(element.getModel().timestamp).toBe(Initial_Value);
+			expect(element.getModel().timestamp).toBe(Initial_Number);
 
 			const sliderElement = element.shadowRoot.querySelector('#rangeSlider');
 			sliderElement.value = newValue;
 			sliderElement.dispatchEvent(new Event('input'));
 
-			expect(element.getModel().timestamp).toBe(newValue);
+			expect(element.getModel().timestamp).toBe(parseInt(newValue));
 		});
 
 		it('sets the new value in the timetravel s-o-s in a debounced manner', async () => {
@@ -413,7 +416,7 @@ describe('TimeTravel', () => {
 			// it must be ensured, that the test-values 1918,1919 are only used in this test.
 			spyOn(geoResourceServiceMock, 'byId').and.returnValue({
 				hasTimestamps: () => true,
-				timestamps: [1917, 1918, 1919]
+				timestamps: ['1917', '1918', '1919']
 			});
 
 			const timeTravelSpy = jasmine.createSpy('timestamp').and.callFake(() => {});
@@ -423,7 +426,7 @@ describe('TimeTravel', () => {
 				store,
 				(state) => state.timeTravel.timestamp,
 				(timestamp) => {
-					if ([1918, 1919].includes(timestamp)) {
+					if (['1918', '1919'].includes(timestamp)) {
 						timeTravelSpy();
 					}
 				}
@@ -433,7 +436,7 @@ describe('TimeTravel', () => {
 
 			const sliderElement = element.shadowRoot.querySelector('#rangeSlider');
 			timeTravelSpy.calls.reset();
-			sliderElement.value = 1919;
+			sliderElement.value = '1919';
 			sliderElement.dispatchEvent(new Event('input'));
 			sliderElement.dispatchEvent(new Event('input'));
 			sliderElement.dispatchEvent(new Event('input'));
@@ -443,7 +446,7 @@ describe('TimeTravel', () => {
 
 			expect(timeTravelSpy).toHaveBeenCalledTimes(1);
 
-			sliderElement.value = 1918;
+			sliderElement.value = '1918';
 			sliderElement.dispatchEvent(new Event('input'));
 			sliderElement.dispatchEvent(new Event('input'));
 			sliderElement.dispatchEvent(new Event('input'));
@@ -464,15 +467,15 @@ describe('TimeTravel', () => {
 			};
 
 			const element = await setup(state);
-			const newValue = 1949;
+			const newValue = '1949';
 
-			expect(element.getModel().timestamp).toBe(Initial_Value);
+			expect(element.getModel().timestamp).toBe(Initial_Number);
 
 			const inputElement = element.shadowRoot.querySelector('#timestampInput');
 			inputElement.value = newValue;
 			inputElement.dispatchEvent(new Event('change'));
 
-			expect(element.getModel().timestamp).toBe(newValue);
+			expect(element.getModel().timestamp).toBe(parseInt(newValue));
 		});
 
 		it('does NOT set an invalid value', async () => {
@@ -485,13 +488,13 @@ describe('TimeTravel', () => {
 			const element = await setup(state);
 			const newValue = 'foo';
 
-			expect(element.getModel().timestamp).toBe(Initial_Value);
+			expect(element.getModel().timestamp).toBe(Initial_Number);
 
 			const inputElement = element.shadowRoot.querySelector('#timestampInput');
 			inputElement.value = newValue;
 			inputElement.dispatchEvent(new Event('change'));
 
-			expect(element.getModel().timestamp).toBe(Initial_Value);
+			expect(element.getModel().timestamp).toBe(Initial_Number);
 		});
 
 		it('does NOT set a value out of min/max range', async () => {
@@ -502,20 +505,20 @@ describe('TimeTravel', () => {
 			};
 
 			const element = await setup(state);
-			const underMinValue = Min - 100;
-			const overMaxValue = Max + 100;
-			expect(element.getModel().timestamp).toBe(Initial_Value);
+			const underMinValue = Min_Number - 100;
+			const overMaxValue = Max_Number + 100;
+			expect(element.getModel().timestamp).toBe(Initial_Number);
 
 			const inputElement = element.shadowRoot.querySelector('#timestampInput');
-			inputElement.value = underMinValue;
+			inputElement.value = `${underMinValue}`;
 			inputElement.dispatchEvent(new Event('change'));
 
-			expect(element.getModel().timestamp).toBe(Min);
+			expect(element.getModel().timestamp).toBe(Min_Number);
 
-			inputElement.value = overMaxValue;
+			inputElement.value = `${overMaxValue}`;
 			inputElement.dispatchEvent(new Event('change'));
 
-			expect(element.getModel().timestamp).toBe(Max);
+			expect(element.getModel().timestamp).toBe(Max_Number);
 		});
 	});
 

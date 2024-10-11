@@ -16,7 +16,7 @@ import stopSvg from './assets/stop.svg';
 import { debounced } from '../../../utils/timer';
 
 export const TIMESPAN_DEBOUNCE_DELAY = 200;
-const setDebouncedTimestamp = debounced(TIMESPAN_DEBOUNCE_DELAY, (timestamp) => setCurrentTimestamp(timestamp));
+const setDebouncedTimestamp = debounced(TIMESPAN_DEBOUNCE_DELAY, (timestamp) => setCurrentTimestamp(`${timestamp}`));
 
 const Update_Timestamp = 'update_timestamp';
 const Update_GeoResourceId = 'update_georesourceid';
@@ -121,6 +121,7 @@ export class TimeTravelSlider extends MvuElement {
 					e.target.value = max;
 				}
 			}
+			console.log(e.target.value);
 			setTimestamp(parseInt(e.target.value));
 		};
 
