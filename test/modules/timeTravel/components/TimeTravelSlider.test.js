@@ -5,11 +5,11 @@ import { createNoInitialStateMediaReducer } from '../../../../src/store/media/me
 import { TestUtils } from '../../../test-utils.js';
 import { timeTravelReducer } from '../../../../src/store/timeTravel/timeTravel.reducer.js';
 import { setCurrentTimestamp } from '../../../../src/store/timeTravel/timeTravel.action.js';
-import { observe } from '../../../../src/utils/storeUtils.js';
 
 window.customElements.define(TimeTravelSlider.tag, TimeTravelSlider);
 
 describe('TimeTravel', () => {
+	const Initial_Value = '1900';
 	const Initial_Number = 1900;
 	const Min_Number = 1900;
 	const Min_Value = '1900';
@@ -200,6 +200,31 @@ describe('TimeTravel', () => {
 			setCurrentTimestamp('1949');
 
 			expect(element.getModel().timestamp).toEqual(1949);
+		});
+
+		it('updates the timestamp value in the s-o-s timeTravel', async () => {
+			const state = {
+				media: {
+					portrait: false
+				},
+				timeTravel: { timestamp: Initial_Value }
+			};
+
+			const element = await setup(state);
+			const newValue = '1949';
+			const newValueNumber = 1949;
+
+			expect(element.getModel().timestamp).toBe(Initial_Number);
+			expect(store.getState().timeTravel.timestamp).toBe(Initial_Value);
+
+			const inputElement = element.shadowRoot.querySelector('#timestampInput');
+			inputElement.value = newValue;
+			inputElement.dispatchEvent(new Event('change'));
+
+			await TestUtils.timeout(TIMESPAN_DEBOUNCE_DELAY + 100);
+
+			expect(element.getModel().timestamp).toBe(newValueNumber);
+			expect(store.getState().timeTravel.timestamp).toBe(newValue);
 		});
 	});
 
@@ -411,31 +436,14 @@ describe('TimeTravel', () => {
 				}
 			};
 
-			// HINT:specifying the concrete test values to get rid of other interferencing operations on the timeTravel s-o-s
-			// it must be ensured, that the test-values 1918,1919 are only used in this test.
-			spyOn(geoResourceServiceMock, 'byId').and.returnValue({
-				hasTimestamps: () => true,
-				timestamps: ['1917', '1918', '1919']
-			});
-
-			const timeTravelSpy = jasmine.createSpy('timestamp').and.callFake(() => {});
-
 			const element = await setup(state);
-			observe(
-				store,
-				(state) => state.timeTravel.timestamp,
-				(timestamp) => {
-					if (['1918', '1919'].includes(timestamp)) {
-						timeTravelSpy();
-					}
-				}
-			);
+			const timeTravelSpy = spyOn(element, '_setTimestamp').and.callFake(() => {});
 
-			expect(element.getModel().timestamp).toBe(1917);
+			expect(element.getModel().timestamp).toBe(Initial_Number);
 
 			const sliderElement = element.shadowRoot.querySelector('#rangeSlider');
-			timeTravelSpy.calls.reset();
-			sliderElement.value = '1919';
+
+			sliderElement.value = '1950';
 			sliderElement.dispatchEvent(new Event('input'));
 			sliderElement.dispatchEvent(new Event('input'));
 			sliderElement.dispatchEvent(new Event('input'));
@@ -445,7 +453,7 @@ describe('TimeTravel', () => {
 
 			expect(timeTravelSpy).toHaveBeenCalledTimes(1);
 
-			sliderElement.value = '1918';
+			sliderElement.value = '1949';
 			sliderElement.dispatchEvent(new Event('input'));
 			sliderElement.dispatchEvent(new Event('input'));
 			sliderElement.dispatchEvent(new Event('input'));
