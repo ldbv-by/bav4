@@ -121,7 +121,6 @@ export class TimeTravelSlider extends MvuElement {
 					e.target.value = max;
 				}
 			}
-			console.log(e.target.value);
 			setTimestamp(parseInt(e.target.value));
 		};
 
