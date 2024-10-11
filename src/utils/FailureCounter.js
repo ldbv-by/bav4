@@ -4,7 +4,10 @@
 import { isFunction, isNumber } from './checks';
 
 /**
- * Helper class that tracks the number of successful and failed operations and calls a fn when a threshold value is exceeded.
+ * Helper class that tracks the number of successful and failed operations and calls a function when a specified threshold value of fails is exceeded.
+ *
+ * The re-calculation of the statistic is done every time a new attempt is indicated.
+ * @class
  */
 export class FailureCounter {
 	#failureCount = [];
@@ -42,7 +45,7 @@ export class FailureCounter {
 	}
 
 	/**
-	 * Indicates a successful attempt
+	 * Indicates a successful attempt and initializes a re-calculation of the statistics.
 	 */
 	indicateFailure() {
 		this.#failureCount.push(new Date().getTime());
@@ -50,7 +53,7 @@ export class FailureCounter {
 	}
 
 	/**
-	 *  Indicates a failed attempt
+	 *  Indicates a failed attempt and initializes a re-calculation of the statistics.
 	 */
 	indicateSuccess() {
 		this.#successCount.push(new Date().getTime());
