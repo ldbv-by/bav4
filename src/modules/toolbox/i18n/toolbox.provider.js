@@ -101,7 +101,7 @@ export const provide = (lang) => {
 				toolbox_exportMfp_options: 'Export options',
 				toolbox_exportMfp_show_grid_title: 'Add coordinate grid in export',
 				toolbox_exportMfp_show_grid: 'Coordinate grid',
-				toolbox_exportMfp_grid_supported: '(Not supported while rotated)'
+				toolbox_exportMfp_grid_supported: '(Not supported while map is rotated)'
 			};
 
 		case 'de':
