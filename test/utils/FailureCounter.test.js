@@ -18,131 +18,145 @@ describe('FailureCounter', () => {
 		});
 	});
 
-	/**
-	 * Threshold is 0.5, sample size = 20
-	 */
-	describe('calculated value is greater than the exact threshold', () => {
-		it('calls the callback fn when given ratio is reached for default sample size', async () => {
-			const spy = jasmine.createSpy();
-			const instanceUnderTest = new FailureCounter(10, 0.5, spy);
+	describe('properties', () => {
+		it('provides getters', () => {
+			const callbackFn = () => {};
+			const failureCounter = new FailureCounter(1, 0.5, callbackFn, 42);
 
-			for (let index = 0; index < 9; index++) {
-				instanceUnderTest.indicateSuccess();
-				instanceUnderTest.indicateFailure();
-			}
-			instanceUnderTest.indicateSuccess();
-
-			expect(spy).not.toHaveBeenCalled();
-
-			instanceUnderTest.indicateFailure();
-
-			expect(spy).toHaveBeenCalled();
+			expect(failureCounter.callbackFn).toEqual(callbackFn);
+			expect(failureCounter.interval).toEqual(1);
+			expect(failureCounter.threshold).toEqual(0.5);
+			expect(failureCounter.minSampleSize).toEqual(42);
 		});
 	});
 
-	describe('custom sample size', () => {
+	describe('calculate the threshold', () => {
 		/**
-		 * Threshold is 0.5, sample size = 40
+		 * Threshold is 0.5, sample size = 20
 		 */
-		it('calls the callback fn', async () => {
-			const spy = jasmine.createSpy();
-			const instanceUnderTest = new FailureCounter(10, 0.5, spy, 40);
+		describe('calculated value is greater than the exact threshold', () => {
+			it('calls the callback fn when given ratio is reached for default sample size', async () => {
+				const spy = jasmine.createSpy();
+				const instanceUnderTest = new FailureCounter(10, 0.5, spy);
 
-			for (let index = 0; index < 19; index++) {
+				for (let index = 0; index < 9; index++) {
+					instanceUnderTest.indicateSuccess();
+					instanceUnderTest.indicateFailure();
+				}
 				instanceUnderTest.indicateSuccess();
-				await TestUtils.timeout(1);
+
+				expect(spy).not.toHaveBeenCalled();
+
 				instanceUnderTest.indicateFailure();
-			}
-			await TestUtils.timeout(1);
-			instanceUnderTest.indicateSuccess();
 
-			expect(spy).not.toHaveBeenCalled();
-
-			instanceUnderTest.indicateFailure();
-
-			expect(spy).toHaveBeenCalled();
+				expect(spy).toHaveBeenCalled();
+			});
 		});
-	});
 
-	describe('calculated value meets the exact threshold', () => {
-		it('calls the callback f', async () => {
-			const spy = jasmine.createSpy();
-			const instanceUnderTest = new FailureCounter(10, 0.5, spy);
-
+		describe('we have a custom sample size', () => {
 			/**
-			 * Exactly 0.5
+			 * Threshold is 0.5, sample size = 40
 			 */
-			for (let index = 0; index < 10; index++) {
+			it('calls the callback fn', async () => {
+				const spy = jasmine.createSpy();
+				const instanceUnderTest = new FailureCounter(10, 0.5, spy, 40);
+
+				for (let index = 0; index < 19; index++) {
+					instanceUnderTest.indicateSuccess();
+					await TestUtils.timeout(1);
+					instanceUnderTest.indicateFailure();
+				}
+				await TestUtils.timeout(1);
 				instanceUnderTest.indicateSuccess();
-				await TestUtils.timeout(1);
+
+				expect(spy).not.toHaveBeenCalled();
+
 				instanceUnderTest.indicateFailure();
-			}
 
-			expect(spy).toHaveBeenCalled();
-		});
-	});
-
-	describe('calculated does NOT value meet the exact threshold', () => {
-		it('calls the callback f', async () => {
-			const spy = jasmine.createSpy();
-			const instanceUnderTest = new FailureCounter(10, 0.5, spy);
-
-			/**
-			 * Exactly 0.5
-			 */
-			for (let index = 0; index < 9; index++) {
-				instanceUnderTest.indicateSuccess();
-				await TestUtils.timeout(1);
-				instanceUnderTest.indicateFailure();
-			}
-			await TestUtils.timeout(1);
-			instanceUnderTest.indicateSuccess();
-			await TestUtils.timeout(1);
-			instanceUnderTest.indicateSuccess();
-
-			expect(spy).not.toHaveBeenCalled();
-		});
-	});
-
-	describe('calculated value meets the exact threshold', () => {
-		it('calls the callback function exactly once', async () => {
-			const spy = jasmine.createSpy();
-			const instanceUnderTest = new FailureCounter(10, 0.5, spy);
-
-			// 25 bad one, callback is called
-			for (let index = 0; index < 24; index++) {
-				instanceUnderTest.indicateFailure();
-				await TestUtils.timeout(1);
-			}
-			expect(spy).toHaveBeenCalled();
-			// 25 bad again one
-			for (let index = 0; index < 24; index++) {
-				instanceUnderTest.indicateFailure();
-				await TestUtils.timeout(1);
-			}
-
-			expect(spy).toHaveBeenCalledTimes(1);
+				expect(spy).toHaveBeenCalled();
+			});
 		});
 
-		it('calls the callback function again after the configured interval has passed and the threshold felt below in the meantime', async () => {
-			const spy = jasmine.createSpy();
-			const instanceUnderTest = new FailureCounter(0.1, 0.5, spy);
+		describe('calculated value meets the exact threshold', () => {
+			it('calls the callback f', async () => {
+				const spy = jasmine.createSpy();
+				const instanceUnderTest = new FailureCounter(10, 0.5, spy);
 
-			for (let index = 0; index < 24; index++) {
-				instanceUnderTest.indicateFailure();
+				/**
+				 * Exactly 0.5
+				 */
+				for (let index = 0; index < 10; index++) {
+					instanceUnderTest.indicateSuccess();
+					await TestUtils.timeout(1);
+					instanceUnderTest.indicateFailure();
+				}
+
+				expect(spy).toHaveBeenCalled();
+			});
+		});
+
+		describe('calculated does NOT value meet the exact threshold', () => {
+			it('calls the callback f', async () => {
+				const spy = jasmine.createSpy();
+				const instanceUnderTest = new FailureCounter(10, 0.5, spy);
+
+				/**
+				 * Exactly 0.5
+				 */
+				for (let index = 0; index < 9; index++) {
+					instanceUnderTest.indicateSuccess();
+					await TestUtils.timeout(1);
+					instanceUnderTest.indicateFailure();
+				}
 				await TestUtils.timeout(1);
-			}
-			for (let index = 0; index < 24; index++) {
 				instanceUnderTest.indicateSuccess();
 				await TestUtils.timeout(1);
-			}
-			await TestUtils.timeout(200);
-			for (let index = 0; index < 24; index++) {
-				instanceUnderTest.indicateFailure();
-				await TestUtils.timeout(1);
-			}
+				instanceUnderTest.indicateSuccess();
 
-			expect(spy).toHaveBeenCalledTimes(2);
+				expect(spy).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('calculated value meets the exact threshold', () => {
+			it('calls the callback function exactly once', async () => {
+				const spy = jasmine.createSpy();
+				const instanceUnderTest = new FailureCounter(10, 0.5, spy);
+
+				// 25 bad one, callback is called
+				for (let index = 0; index < 24; index++) {
+					instanceUnderTest.indicateFailure();
+					await TestUtils.timeout(1);
+				}
+				expect(spy).toHaveBeenCalled();
+				// 25 bad again one
+				for (let index = 0; index < 24; index++) {
+					instanceUnderTest.indicateFailure();
+					await TestUtils.timeout(1);
+				}
+
+				expect(spy).toHaveBeenCalledTimes(1);
+			});
+
+			it('calls the callback function again after the configured interval has passed and the threshold felt below in the meantime', async () => {
+				const spy = jasmine.createSpy();
+				const instanceUnderTest = new FailureCounter(0.1, 0.5, spy);
+
+				for (let index = 0; index < 24; index++) {
+					instanceUnderTest.indicateFailure();
+					await TestUtils.timeout(1);
+				}
+				for (let index = 0; index < 24; index++) {
+					instanceUnderTest.indicateSuccess();
+					await TestUtils.timeout(1);
+				}
+				await TestUtils.timeout(200);
+				for (let index = 0; index < 24; index++) {
+					instanceUnderTest.indicateFailure();
+					await TestUtils.timeout(1);
+				}
+
+				expect(spy).toHaveBeenCalledTimes(2);
+			});
 		});
 	});
 });

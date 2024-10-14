@@ -20,10 +20,10 @@ export class FailureCounter {
 
 	/**
 	 *
-	 * @param {number} interval The interval in seconds used for the calculation of the statistics (now - interval)
+	 * @param {number} interval The interval in seconds used for the calculation of the statistics (now - interval). This is the observation period.
 	 * @param {number} threshold The threshold ratio (failure / success)
-	 * @param {Function} onFailureFn The callback fn
-	 * @param {number} [minSampleSize = 20] The min sample size (failure + success)
+	 * @param {Function} [onFailureFn] The callback fn called when the threshold is exceeded
+	 * @param {number} [minSampleSize = 20] The min sample size (failure + success) before the calculation begins
 	 */
 	constructor(interval, threshold, onFailureFn, minSampleSize = 20) {
 		if (!isNumber(interval) || interval <= 0) {
@@ -76,5 +76,21 @@ export class FailureCounter {
 				this.#ok = true;
 			}
 		}
+	}
+
+	get interval() {
+		return this.#statsIntervalInMs / 1000;
+	}
+
+	get threshold() {
+		return this.#statsFailureThreshold;
+	}
+
+	get minSampleSize() {
+		return this.#statsSampleSize;
+	}
+
+	get callbackFn() {
+		return this.#onThresholdFn;
 	}
 }
