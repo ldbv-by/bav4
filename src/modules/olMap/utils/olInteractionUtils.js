@@ -119,7 +119,7 @@ export const getSnapState = (map, interactionLayer, pixel) => {
 		}
 		return InteractionSnapType.EDGE;
 	}
-	if (!vertexFeature && featuresFromInteractionLayer.length > 0) {
+	if (featuresFromInteractionLayer.length > 0) {
 		return InteractionSnapType.FACE;
 	}
 	return null;
