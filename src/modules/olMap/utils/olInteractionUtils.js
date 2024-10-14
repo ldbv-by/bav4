@@ -158,9 +158,7 @@ export const removeSelectedFeatures = (selectedFeatures, interactionLayer, addit
 	const additionalRemoveAction = typeof additionalAction === 'function' ? additionalAction : () => {};
 	selectedFeatures.forEach((f) => {
 		additionalRemoveAction(f);
-		if (interactionLayer.getSource().hasFeature(f)) {
-			interactionLayer.getSource().removeFeature(f);
-		}
+		interactionLayer.getSource().removeFeature(f);
 	});
 };
 
