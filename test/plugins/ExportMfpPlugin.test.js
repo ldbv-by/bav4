@@ -10,7 +10,7 @@ import { notificationReducer } from '../../src/store/notifications/notifications
 import { LevelTypes } from '../../src/store/notifications/notifications.action.js';
 import { positionReducer } from '../../src/store/position/position.reducer.js';
 import { Tools } from '../../src/domain/tools.js';
-import { changeRotation } from '../../src/store/position/position.action.js';
+import { changeLiveRotation, changeRotation } from '../../src/store/position/position.action.js';
 
 describe('ExportMfpPlugin', () => {
 	const mfpService = {
@@ -214,7 +214,7 @@ describe('ExportMfpPlugin', () => {
 		});
 	});
 
-	describe('when position.rotation property changes', () => {
+	describe('when position.liveRotation property changes', () => {
 		it('sets the gridSupported property in mfp s-o-s', async () => {
 			const store = setup();
 			const instanceUnderTest = new ExportMfpPlugin();
@@ -222,11 +222,11 @@ describe('ExportMfpPlugin', () => {
 
 			expect(store.getState().mfp.gridSupported).toBeTrue();
 
-			changeRotation(42);
+			changeLiveRotation(42);
 
 			expect(store.getState().mfp.gridSupported).toBeFalse();
 
-			changeRotation(0);
+			changeLiveRotation(0);
 
 			expect(store.getState().mfp.gridSupported).toBeTrue();
 		});

@@ -99,6 +99,6 @@ export class ExportMfpPlugin extends BaPlugin {
 		observe(store, (state) => state.tools.current, onToolChanged);
 		observe(store, (state) => state.mfp.active, onChange);
 		observe(store, (state) => state.mfp.jobSpec, onJobSpecChanged);
-		observe(store, (state) => state.position.rotation, onRotationChanged);
+		observe(store, (state) => state.position.liveRotation, onRotationChanged);
 	}
 }
