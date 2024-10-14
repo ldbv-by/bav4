@@ -3,15 +3,13 @@
  */
 import { $injector } from '../../../injection';
 import TileState from 'ol/TileState.js';
-import { throttled } from '../../../utils/timer';
 import { UnavailableGeoResourceError } from '../../../domain/errors';
+import { FailureCounter } from '../../../utils/FailureCounter';
 
 const handleUnexpectedStatusCode = (geoResourceId, response) => {
 	// we have to throw the UnavailableGeoResourceError in a asynchronous manner, otherwise it would be caught by ol and not be  propagated to the window (see GlobalErrorPlugin)
 	return Promise.reject(new UnavailableGeoResourceError(`Unexpected network status`, geoResourceId, response?.status));
 };
-
-export const handleUnexpectedStatusCodeThrottled = throttled(3000, (geoResourceId, response) => handleUnexpectedStatusCode(geoResourceId, response));
 
 /**
  * Returns a BVV specific image load function loading either unrestricted images, restricted images via basic access authentication or application restricted images (via backend).
@@ -100,17 +98,26 @@ export const getBvvBaaImageLoadFunction = (geoResourceId, credential = null, max
 	};
 };
 
+export const bvvTileLoadFailureCounterProvider = (geoResourceId) => {
+	const callbackFn = async () => {
+		throw new UnavailableGeoResourceError(`Unexpected network status`, geoResourceId);
+	};
+
+	return new FailureCounter(10, 0.5, callbackFn);
+};
 /**
  * BVV specific implementation of {@link module:modules/olMap/services/LayerService~tileLoadFunctionProvider}.
  * @function
  * @type {module:modules/olMap/services/LayerService~tileLoadFunctionProvider}
  */
-export const getBvvTileLoadFunction = (geoResourceId, olLayer, handleUnexpectedStatusCodeThrottledFn = handleUnexpectedStatusCodeThrottled) => {
+export const getBvvTileLoadFunction = (geoResourceId, olLayer, failureCounterProvider = bvvTileLoadFailureCounterProvider) => {
 	const { HttpService: httpService, GeoResourceService: geoResourceService } = $injector.inject('HttpService', 'GeoResourceService');
+
+	const failureCounter = failureCounterProvider(geoResourceId);
 
 	return async (tile, src) => {
 		src = olLayer.get('timestamp') ? src + '?t=' + olLayer.get('timestamp') : src;
-		const timeout = 5_000;
+		const timeout = 10_000;
 		try {
 			const getObjectUrlWithAuthInterceptor = async (url) => {
 				const response = await httpService.get(
@@ -122,22 +129,19 @@ export const getBvvTileLoadFunction = (geoResourceId, olLayer, handleUnexpectedS
 				);
 				switch (response.status) {
 					case 200:
+						failureCounter.indicateSuccess();
 						return URL.createObjectURL(await response.blob());
 					case 400 /** expected status code when zoom-level is not supported > client-side zooming*/:
 						tile.setState(TileState.ERROR);
 						break;
 					default:
-						tile.setState(TileState.ERROR);
-						return handleUnexpectedStatusCodeThrottledFn(geoResourceId, response);
+						return Promise.reject();
 				}
 			};
 			tile.getImage().src = await getObjectUrlWithAuthInterceptor(src);
 		} catch (error) {
-			if (error instanceof UnavailableGeoResourceError) {
-				throw error;
-			}
 			tile.setState(TileState.ERROR);
-			return handleUnexpectedStatusCodeThrottledFn(geoResourceId);
+			failureCounter.indicateFailure();
 		}
 	};
 };
