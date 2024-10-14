@@ -11,7 +11,6 @@ import { measurementReducer } from '../../../../src/store/measurement/measuremen
 import VectorLayer from 'ol/layer/Vector';
 import CircleStyle from 'ol/style/Circle.js';
 import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../../../src/modules/olMap/ol/geodesic/geodesicGeometry.js';
-import { Geodesic } from 'geographiclib-geodesic';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
