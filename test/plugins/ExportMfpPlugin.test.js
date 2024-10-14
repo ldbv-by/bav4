@@ -10,7 +10,7 @@ import { notificationReducer } from '../../src/store/notifications/notifications
 import { LevelTypes } from '../../src/store/notifications/notifications.action.js';
 import { positionReducer } from '../../src/store/position/position.reducer.js';
 import { Tools } from '../../src/domain/tools.js';
-import { changeLiveRotation, changeRotation } from '../../src/store/position/position.action.js';
+import { changeLiveRotation } from '../../src/store/position/position.action.js';
 
 describe('ExportMfpPlugin', () => {
 	const mfpService = {
