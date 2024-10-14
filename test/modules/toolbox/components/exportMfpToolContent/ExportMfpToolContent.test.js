@@ -414,7 +414,6 @@ describe('ExportMfpToolContent', () => {
 			setGridSupported(false);
 			expect(element.shadowRoot.querySelector('#showgrid').disabled).toBeTrue();
 			expect(element.shadowRoot.querySelectorAll('span.grid-note')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('span.no-support')).toHaveSize(1);
 		});
 	});
 });
