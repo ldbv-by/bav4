@@ -74,11 +74,11 @@ export class OlMfpHandler extends OlLayerHandler {
 			setScale(this._getOptimalScale(olMap));
 
 			const mfpSettings = this._storeService.getStore().getState().mfp.current;
-			this._mfpLayer.on('prerender', (event) => event.context.save());
 			this._mfpLayer.on(
-				'postrender',
+				'prerender',
 				createMapMaskFunction(this._map, () => this._getPixelCoordinates())
 			);
+			this._mfpLayer.on('postrender', (event) => event.context.restore());
 			this._registeredObservers = this._register(this._storeService.getStore());
 
 			// Initialize forceRenderFeature with centerpoint to get a first valid
@@ -271,7 +271,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		const pixelSize = toPixelSize(this._pageSize);
 		const mfpBoundingBox = getBoundingBoxFrom(centerPixel, pixelSize);
 
-		return getPolygonFrom(mfpBoundingBox).getCoordinates()[0].reverse();
+		return getPolygonFrom(mfpBoundingBox).getCoordinates()[0];
 	}
 
 	_createPagePolygon(pageSize, center) {

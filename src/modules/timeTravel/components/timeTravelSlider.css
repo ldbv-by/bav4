@@ -1,0 +1,204 @@
+.header {
+	position: absolute;
+	left: 0;
+	padding: 0.5em 1.6em 0.5em 1.3em;
+	background: var(--primary-bg-color-05);
+	top: -2.2em;
+	border-radius: 0 2em 0 0;
+}
+.title {
+	display: inline-block;
+	min-width: 28em;
+	font-size: 0.9rem;
+	transition: all var(--animation-duration-small-open) var(--animation-easing-open);
+}
+.item {
+	border-top: 1px solid var(--tertiary-bg-color);
+	display: inline-block;
+	width: 100%;
+	background: var(--header-background-color);
+}
+.active {
+	background: var(--primary-color);
+}
+.activeItem {
+	background: var(--split-one-color-lighter);
+}
+.activeItem.active {
+	background: var(--split-one-color) !important;
+}
+.row {
+	display: flex;
+}
+.row:hover .title {
+	color: var(--text1);
+}
+.actions {
+	min-width: 17em;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.actions div {
+	display: flex;
+	align-items: center;
+}
+.actions div ba-icon {
+	margin-right: 0.3em;
+}
+.slider-after {
+	min-width: 1em;
+	display: block;
+}
+
+#start,
+#stop,
+#reset {
+	transition: all var(--animation-duration-large-open) var(--animation-easing-linear);
+}
+.toggle {
+	position: absolute;
+	right: 3em;
+}
+.border {
+	border-left: 1px solid var(--text4) !important;
+}
+.range-background {
+	position: absolute;
+	margin-top: 1.4em;
+	height: 1em;
+	z-index: 0;
+	display: flex;
+	width: 100%;
+	border: 1px solid var(--text4);
+}
+.slider,
+.base {
+	display: flex;
+	position: relative;
+	width: 100%;
+	margin-right: 2.5em;
+	min-height: 3.8em;
+}
+.range-bg {
+	background: var(--header-background-color);
+	height: 0.9em;
+	width: 100%;
+}
+.range-bg.active {
+	background: var(--primary-color);
+}
+/* range slider */
+input[type='range'] {
+	z-index: 1;
+}
+input[type='range']::-webkit-slider-runnable-track {
+	background: transparent;
+	height: 1rem;
+}
+input[type='range']::-moz-range-track {
+	background: transparent;
+	height: 1rem;
+}
+input[type='range']::-moz-range-thumb {
+	background: var(--split-one-color);
+	border-radius: 0;
+	height: 2rem;
+	width: var(--thumb-width);
+	border: 1px solid var(--text1);
+}
+input[type='range']::-webkit-slider-thumb {
+	border-radius: 0;
+	height: 2.5rem;
+	width: var(--thumb-width);
+	background: var(--split-one-color);
+	border: 1px solid var(--text1);
+}
+/* timestamp */
+.row:first-child .activeItem::after {
+	position: absolute;
+	content: attr(data-timestamp);
+	top: 0.1em !important;
+	font-size: 1.9em !important;
+	font-weight: normal;
+	margin-left: -1em;
+	color: var(--split-one-color) !important;
+	background: var(--primary-bg-color) !important;
+	z-index: 1;
+}
+.row .item:hover::after {
+	position: absolute;
+	content: attr(data-timestamp);
+	top: 0.1em;
+	font-size: 1.9em;
+	font-weight: normal;
+	margin-left: -1em;
+	color: var(--text1);
+	background: var(--primary-bg-color);
+	z-index: 2;
+}
+.row .item.activeItem:hover::after {
+	color: var(--split-one-color) !important;
+}
+/*scale timestamps */
+.range-background .border::after {
+	position: absolute;
+	content: attr(data-timestamp);
+	margin-top: 1.3em;
+	font-size: 0.9em;
+	margin-left: -1.2em;
+	color: var(--text4);
+	background: var(--primary-bg-color);
+	z-index: 0;
+}
+.row:first-child .border::after {
+	position: absolute;
+	content: attr(data-timestamp);
+	top: 1.5em;
+	font-size: 0.9em;
+	margin-left: -1.2em;
+	color: var(--text4);
+	background: var(--primary-bg-color);
+	z-index: 0;
+}
+.is-portrait .slider,
+.is-portrait #buttonData {
+	display: none;
+}
+
+.is-portrait .actions div ba-icon {
+	margin-left: 0.3em;
+}
+.is-portrait .actions {
+	width: 100%;
+	margin-right: 2em;
+}
+input[type='number'] {
+	-moz-appearance: textfield;
+	appearance: textfield;
+	font-size: 1.5rem;
+	padding: 0 1.5em 0 0;
+	border: 0;
+	width: auto;
+	color: var(--split-one-color);
+}
+.active-timestamp-input {
+	display: block !important;
+	width: 5.5em;
+	margin: 0 0.5em 0 0 !important;
+	padding: 0;
+}
+.active-timestamp-input input {
+	padding: 0;
+	text-align: center;
+	width: 100%;
+}
+
+.ba-form-element .bar {
+	border-bottom: 0.2em solid var(--split-one-color-lighter) !important;
+}
+
+.ba-form-element .bar::before {
+	background: var(--split-one-color) !important;
+}

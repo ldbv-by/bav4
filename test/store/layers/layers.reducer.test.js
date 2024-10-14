@@ -16,7 +16,9 @@ import {
 	setReady,
 	geoResourceChanged,
 	removeLayerOf,
-	removeAndSetLayers
+	removeAndSetLayers,
+	addLayerIfNotPresent,
+	cloneAndAddLayer
 } from '../../../src/store/layers/layers.action';
 import { TestUtils } from '../../test-utils.js';
 import { GeoResourceFuture, XyzGeoResource } from '../../../src/domain/geoResources';
@@ -268,6 +270,101 @@ describe('layersReducer', () => {
 
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.added.payload).toEqual(['id0']);
+		});
+	});
+
+	describe('addLayerIfNotPresent', () => {
+		it('adds a layer if its GeoResource is not already present', () => {
+			const store = setup();
+
+			const geoResourceId = 'geoResourceId0';
+			const layerProperties0 = { geoResourceId };
+
+			addLayerIfNotPresent('id0', layerProperties0);
+			addLayerIfNotPresent('id1', layerProperties0);
+			addLayerIfNotPresent(geoResourceId);
+
+			expect(store.getState().layers.active.length).toBe(1);
+			expect(store.getState().layers.active[0].id).toBe('id0');
+			expect(store.getState().layers.active[0].geoResourceId).toBe(geoResourceId);
+		});
+	});
+
+	describe('cloneAndAddLayer', () => {
+		describe('original layer does not exist', () => {
+			it('does nothing', () => {
+				const store = setup();
+				addLayer('id0');
+
+				cloneAndAddLayer('id1');
+
+				expect(store.getState().layers.active.length).toBe(1);
+				expect(store.getState().layers.active[0].id).toBe('id0');
+			});
+		});
+
+		describe('original layer is not allowed to be cloned', () => {
+			it('does nothing', () => {
+				const store = setup();
+				addLayer('id0', { constraints: { cloneable: false } });
+
+				cloneAndAddLayer('id0');
+
+				expect(store.getState().layers.active.length).toBe(1);
+				expect(store.getState().layers.active[0].id).toBe('id0');
+			});
+		});
+
+		describe('containing NO custom CloneLayerOptions', () => {
+			it('clones and adds the layer', () => {
+				const store = setup();
+				const geoResourceId = 'geoResourceId';
+				const opacity = 0.5;
+				const visible = false;
+				const timestamp = '1900';
+				const constraints = { ...createDefaultLayersConstraints(), hidden: true };
+				addLayer('id0', { geoResourceId, opacity, visible, timestamp, constraints });
+
+				cloneAndAddLayer('id0', 'id0Clone');
+
+				expect(store.getState().layers.active.length).toBe(2);
+				expect(store.getState().layers.active[0].id).toBe('id0');
+				expect(store.getState().layers.active[0].zIndex).toBe(0);
+				expect(store.getState().layers.active[1].id).toBe('id0Clone');
+				expect(store.getState().layers.active[1].zIndex).toBe(1);
+				expect(store.getState().layers.active[1].geoResourceId).toBe(geoResourceId);
+				expect(store.getState().layers.active[1].opacity).toBe(opacity);
+				expect(store.getState().layers.active[1].visible).toBe(visible);
+				expect(store.getState().layers.active[1].timestamp).toBe(timestamp);
+				expect(store.getState().layers.active[1].constraints).toEqual(constraints);
+			});
+		});
+
+		describe('containing custom CloneLayerOptions', () => {
+			it('clones and adds the layer', () => {
+				const store = setup();
+				const geoResourceId = 'geoResourceId';
+				const zIndex = 0;
+				const opacity = 0.5;
+				const visible = false;
+				const timestamp = '1900';
+				const constraints = { ...createDefaultLayersConstraints(), hidden: true };
+
+				addLayer('id0');
+
+				cloneAndAddLayer('id0', 'id0Clone', { geoResourceId, opacity, visible, zIndex, timestamp, constraints });
+
+				expect(store.getState().layers.active.length).toBe(2);
+				expect(store.getState().layers.active[1].id).toBe('id0');
+				expect(store.getState().layers.active[1].zIndex).toBe(1);
+				expect(store.getState().layers.active[0].id).toBe('id0Clone');
+				expect(store.getState().layers.active[0].zIndex).toBe(zIndex);
+				expect(store.getState().layers.active[0].geoResourceId).toBe(geoResourceId);
+				expect(store.getState().layers.active[0].opacity).toBe(opacity);
+				expect(store.getState().layers.active[0].visible).toBe(visible);
+				expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
+				expect(store.getState().layers.active[0].constraints).toEqual(constraints);
+			});
 		});
 	});
 

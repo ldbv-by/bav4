@@ -17,6 +17,7 @@ import './modules/modal';
 import './modules/baseLayer';
 import './modules/layerManager';
 import './modules/stackables';
+import './modules/timeTravel';
 import './modules/examples';
 import './modules/featureInfo';
 import './modules/iconSelect';
