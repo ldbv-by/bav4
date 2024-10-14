@@ -6,6 +6,7 @@ module.exports = function (config) {
 	baseConfig(config);
 
 	config.set({
+		browsers: ['FirefoxHeadless', 'WebkitHeadless'],
 		reporters: ['progress', 'coverage-istanbul'],
 		coverageIstanbulReporter: {
 			dir: path.join(__dirname, 'coverage'),
