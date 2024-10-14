@@ -871,10 +871,16 @@ describe('MeasurementOverlayStyle', () => {
 			[0, 0],
 			[1, 0]
 		]);
+
+		const geometryPropertySpy = spyOn(geometry, 'set').and.callThrough();
 		const feature = new Feature({ geometry: geometry });
+		feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, 42);
+
 		classUnderTest._createDistanceOverlay(feature, mapMock);
 
+		classUnderTest._createDistanceOverlay(feature, mapMock);
 		const baOverlay = feature.get('measurement').getElement();
+		expect(geometryPropertySpy).toHaveBeenCalledOnceWith(PROJECTED_LENGTH_GEOMETRY_PROPERTY, 42);
 		expect(baOverlay.outerHTML).toBe('<ba-map-overlay></ba-map-overlay>');
 	});
 
