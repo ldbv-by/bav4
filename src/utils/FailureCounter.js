@@ -15,7 +15,7 @@ export class FailureCounter {
 	#statsFailureThreshold;
 	#statsIntervalInMs;
 	#statsSampleSize;
-	#onThresholdFn;
+	#onFailureFn;
 	#ok = true;
 
 	/**
@@ -37,7 +37,7 @@ export class FailureCounter {
 		if (!isFunction(onFailureFn)) {
 			throw new Error(`"onFailureFn" must be a function`);
 		}
-		this.#onThresholdFn = onFailureFn;
+		this.#onFailureFn = onFailureFn;
 		if (!isNumber(minSampleSize) || minSampleSize <= 0) {
 			throw new Error(`"minSampleSize" must be a number and > 0`);
 		}
@@ -69,7 +69,7 @@ export class FailureCounter {
 			const currentRatio = this.#failureCount.length / (this.#failureCount.length + this.#successCount.length);
 			if (currentRatio >= this.#statsFailureThreshold) {
 				if (this.#ok) {
-					this.#onThresholdFn();
+					this.#onFailureFn();
 					this.#ok = false;
 				}
 			} else {
@@ -90,7 +90,7 @@ export class FailureCounter {
 		return this.#statsSampleSize;
 	}
 
-	get callbackFn() {
-		return this.#onThresholdFn;
+	get onFailureFn() {
+		return this.#onFailureFn;
 	}
 }

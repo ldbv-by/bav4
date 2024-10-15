@@ -20,10 +20,10 @@ describe('FailureCounter', () => {
 
 	describe('properties', () => {
 		it('provides getters', () => {
-			const callbackFn = () => {};
-			const failureCounter = new FailureCounter(1, 0.5, callbackFn, 42);
+			const failureFn = () => {};
+			const failureCounter = new FailureCounter(1, 0.5, failureFn, 42);
 
-			expect(failureCounter.callbackFn).toEqual(callbackFn);
+			expect(failureCounter.onFailureFn).toEqual(failureFn);
 			expect(failureCounter.interval).toEqual(1);
 			expect(failureCounter.threshold).toEqual(0.5);
 			expect(failureCounter.minSampleSize).toEqual(42);
