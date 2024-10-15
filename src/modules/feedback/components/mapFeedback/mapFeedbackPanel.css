@@ -14,6 +14,7 @@
 .is-landscape .map-feedback__iframe {
 	height: 700px;
 	width: 900px;
+	max-width: 65%;
 }
 .map-feedback__iframe iframe {
 	border: 0;
