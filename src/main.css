@@ -157,6 +157,10 @@
 	padding: 0;
 }
 
+html {
+	overscroll-behavior: none;
+}
+
 body,
 :host {
 	overscroll-behavior: contain;
