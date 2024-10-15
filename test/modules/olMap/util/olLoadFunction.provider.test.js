@@ -2,9 +2,9 @@ import TileLayer from 'ol/layer/Tile.js';
 import { UnavailableGeoResourceError } from '../../../../src/domain/errors.js';
 import { $injector } from '../../../../src/injection/index.js';
 import {
+	bvvTileLoadFailureCounterProvider,
 	getBvvBaaImageLoadFunction,
-	getBvvTileLoadFunction,
-	handleUnexpectedStatusCodeThrottled
+	getBvvTileLoadFunction
 } from '../../../../src/modules/olMap/utils/olLoadFunction.provider';
 import { TestUtils } from '../../../test-utils.js';
 import TileState from 'ol/TileState.js';
@@ -259,22 +259,15 @@ describe('olLoadFunction.provider', () => {
 		});
 	});
 
-	describe('handleUnexpectedStatusCodeThrottled', () => {
-		it('rejects with an UnavailableGeoResourceError when http status is other than 200 and 400', async () => {
+	describe('bvvTileLoadFailureCounterProvider', () => {
+		it('return a correctly configured FailureCounter instance', async () => {
 			const geoResourceId = 'geoResourceId';
-			const response = new Response(null, { status: 404 });
+			const failureCounter = bvvTileLoadFailureCounterProvider(geoResourceId);
+			const onFailure = failureCounter.onFailureFn;
 
-			try {
-				await handleUnexpectedStatusCodeThrottled(geoResourceId, response);
-				throw new Error('Promise should not be resolved');
-			} catch (error) {
-				expect(error).toBeInstanceOf(UnavailableGeoResourceError);
-				expect(error.message).toBe('Unexpected network status');
-				expect(error.geoResourceId).toBe(geoResourceId);
-				expect(error.httpStatus).toBe(404);
-			}
-			expect(handleUnexpectedStatusCodeThrottled(geoResourceId, response)).toBeUndefined(); // throttled calls return undefined
-			expect(handleUnexpectedStatusCodeThrottled(geoResourceId, response)).toBeUndefined(); // throttled calls return undefined
+			expect(failureCounter.interval).toBe(10);
+			expect(failureCounter.threshold).toBe(0.5);
+			await expectAsync(onFailure()).toBeRejectedWithError(UnavailableGeoResourceError, 'Unexpected network status', geoResourceId);
 		});
 	});
 
@@ -318,20 +311,35 @@ describe('olLoadFunction.provider', () => {
 			};
 		};
 
-		it('rejects with an UnavailableGeoResourceError when http status is other than 200 and 400', async () => {
+		it('calls the failureCounterProvider', async () => {
+			const geoResourceId = 'geoResourceId';
+			const failureCounter = {
+				indicateFailure: () => {}
+			};
+			const failureCounterProviderSpy = jasmine.createSpy().and.returnValue(failureCounter);
+
+			getBvvTileLoadFunction(geoResourceId, new TileLayer(), failureCounterProviderSpy);
+
+			expect(failureCounterProviderSpy).toHaveBeenCalledOnceWith(geoResourceId);
+		});
+
+		it('updated the tile state and the failure counter when http status is other than 200 and 400', async () => {
 			const geoResourceId = 'geoResourceId';
 			const fakeTileWrapper = getFakeTileWrapperInstance();
 			const src = 'http://foo.var/some/11/1089/710';
 			const response = new Response(null, { status: 404 });
 			spyOn(httpService, 'get').and.resolveTo(response);
-			const handleUnexpectedStatusCodeThrottledFnSpy = jasmine.createSpy().and.rejectWith(new UnavailableGeoResourceError());
-			const tileLoadFunction = getBvvTileLoadFunction(geoResourceId, new TileLayer(), handleUnexpectedStatusCodeThrottledFnSpy);
+			const failureCounter = {
+				indicateFailure: () => {}
+			};
+			const failureCounterSpy = spyOn(failureCounter, 'indicateFailure');
+			const failureCounterProvider = () => failureCounter;
+			const tileLoadFunction = getBvvTileLoadFunction(geoResourceId, new TileLayer(), failureCounterProvider);
 
-			await expectAsync(tileLoadFunction(fakeTileWrapper, src)).toBeRejected();
-			await TestUtils.timeout();
+			await tileLoadFunction(fakeTileWrapper, src);
 
 			expect(fakeTileWrapper.state).toBe(TileState.ERROR);
-			expect(handleUnexpectedStatusCodeThrottledFnSpy).toHaveBeenCalledOnceWith(geoResourceId, response);
+			expect(failureCounterSpy).toHaveBeenCalledTimes(1);
 		});
 
 		it('rejects with an UnavailableGeoResourceError when a request was aborted', async () => {
@@ -339,15 +347,17 @@ describe('olLoadFunction.provider', () => {
 			const fakeTileWrapper = getFakeTileWrapperInstance();
 			const src = 'http://foo.var/some/11/1089/710';
 			spyOn(httpService, 'get').and.rejectWith(new DOMException());
-			const handleUnexpectedStatusCodeThrottledFnSpy = jasmine.createSpy();
-			const tileLoadFunction = getBvvTileLoadFunction(geoResourceId, new TileLayer(), handleUnexpectedStatusCodeThrottledFnSpy);
+			const failureCounter = {
+				indicateFailure: () => {}
+			};
+			const failureCounterSpy = spyOn(failureCounter, 'indicateFailure');
+			const failureCounterProvider = () => failureCounter;
+			const tileLoadFunction = getBvvTileLoadFunction(geoResourceId, new TileLayer(), failureCounterProvider);
 
-			// tile loading causes multiple simultaneously requests, therefore we check the use of the throttle function to keep the notification at a count of 1
-			await expectAsync(tileLoadFunction(fakeTileWrapper, src));
-			await TestUtils.timeout();
+			await tileLoadFunction(fakeTileWrapper, src);
 
 			expect(fakeTileWrapper.state).toBe(TileState.ERROR);
-			expect(handleUnexpectedStatusCodeThrottledFnSpy).toHaveBeenCalledOnceWith(geoResourceId);
+			expect(failureCounterSpy).toHaveBeenCalledTimes(1);
 		});
 
 		it('sets the TileState when http status is 400', async () => {
@@ -373,7 +383,7 @@ describe('olLoadFunction.provider', () => {
 				.withArgs(
 					src,
 					{
-						timeout: 5000
+						timeout: 10_000
 					},
 					{ response: [responseInterceptor] }
 				)
@@ -403,7 +413,7 @@ describe('olLoadFunction.provider', () => {
 			expect(httpsServiceSpy).toHaveBeenCalledWith(
 				expectedUrl,
 				{
-					timeout: 5000
+					timeout: 10_000
 				},
 				{ response: [responseInterceptor] }
 			);
