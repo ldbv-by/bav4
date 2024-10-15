@@ -263,11 +263,11 @@ describe('olLoadFunction.provider', () => {
 		it('return a correctly configured FailureCounter instance', async () => {
 			const geoResourceId = 'geoResourceId';
 			const failureCounter = bvvTileLoadFailureCounterProvider(geoResourceId);
-			const callbackFn = failureCounter.callbackFn;
+			const onFailure = failureCounter.onFailureFn;
 
 			expect(failureCounter.interval).toBe(10);
 			expect(failureCounter.threshold).toBe(0.5);
-			await expectAsync(callbackFn()).toBeRejectedWithError(UnavailableGeoResourceError, 'Unexpected network status', geoResourceId);
+			await expectAsync(onFailure()).toBeRejectedWithError(UnavailableGeoResourceError, 'Unexpected network status', geoResourceId);
 		});
 	});
 

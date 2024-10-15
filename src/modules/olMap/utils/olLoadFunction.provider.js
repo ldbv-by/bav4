@@ -99,11 +99,11 @@ export const getBvvBaaImageLoadFunction = (geoResourceId, credential = null, max
 };
 
 export const bvvTileLoadFailureCounterProvider = (geoResourceId) => {
-	const callbackFn = async () => {
+	const onFailure = async () => {
 		throw new UnavailableGeoResourceError(`Unexpected network status`, geoResourceId);
 	};
 
-	return new FailureCounter(10, 0.5, callbackFn);
+	return new FailureCounter(10, 0.5, onFailure);
 };
 /**
  * BVV specific implementation of {@link module:modules/olMap/services/LayerService~tileLoadFunctionProvider}.
