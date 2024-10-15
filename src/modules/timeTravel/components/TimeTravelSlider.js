@@ -16,7 +16,6 @@ import stopSvg from './assets/stop.svg';
 import { debounced } from '../../../utils/timer';
 
 export const TIMESPAN_DEBOUNCE_DELAY = 200;
-const setDebouncedTimestamp = debounced(TIMESPAN_DEBOUNCE_DELAY, (timestamp) => setCurrentTimestamp(timestamp));
 
 const Update_Timestamp = 'update_timestamp';
 const Update_GeoResourceId = 'update_georesourceid';
@@ -36,6 +35,7 @@ const Range_Slider_Step = 1;
  * @author thiloSchlemmer
  */
 export class TimeTravelSlider extends MvuElement {
+	#setDebouncedTimestampFn = debounced(TIMESPAN_DEBOUNCE_DELAY, (timestamp) => this._setTimestamp(timestamp));
 	#translationService;
 	#geoResourceService;
 	#decadeFunction;
@@ -70,7 +70,7 @@ export class TimeTravelSlider extends MvuElement {
 			case Update_GeoResourceId:
 				return { ...model, timestamps: fromGeoResource(data), timestamp: model.timestamp ?? fromGeoResource(data)[0] };
 			case Update_Timestamp:
-				return { ...model, timestamp: data };
+				return { ...model, timestamp: parseInt(data) };
 			case Update_IsPlaying:
 				return { ...model, isPlaying: data };
 		}
@@ -104,7 +104,7 @@ export class TimeTravelSlider extends MvuElement {
 
 		const setTimestamp = (timestamp) => {
 			this.signal(Update_Timestamp, timestamp);
-			setDebouncedTimestamp(timestamp);
+			this.#setDebouncedTimestampFn(timestamp);
 		};
 
 		const onChangeSelect = (e) => {
@@ -206,6 +206,19 @@ export class TimeTravelSlider extends MvuElement {
 						input {
 							--thumb-width: ${getThumbWidth()}%;
 						}
+						.range-bg[data-timestamp='${timestamp}']::before {
+							position: absolute;
+							content: attr(data-timestamp);
+							top: -2.4em !important;
+							font-size: 1.4em;
+							margin-left: -1.4em;
+							color: var(--text3);
+							background: var(--split-one-color);
+							z-index: 9999;
+							padding: 0.1em 0.4em;
+							border-radius: 1.5em;
+							border: 1px solid var(--text1);
+						}
 					</style>
 					<style>
 						${css}
@@ -290,6 +303,10 @@ export class TimeTravelSlider extends MvuElement {
 			: nothing;
 	}
 
+	_setTimestamp(timestamp) {
+		setCurrentTimestamp(`${timestamp}`);
+	}
+
 	_isDecade(timestamp) {
 		return timestamp.toString().endsWith('0') ? true : false;
 	}
@@ -315,6 +332,6 @@ export class TimeTravelSlider extends MvuElement {
 	}
 
 	static get TIME_INTERVAL_MS() {
-		return 1000;
+		return 2000;
 	}
 }
