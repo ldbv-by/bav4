@@ -1,4 +1,15 @@
-import { activate, cancelJob, deactivate, requestJob, setCurrent, setId, setScale, setShowGrid, startJob } from '../../../src/store/mfp/mfp.action';
+import {
+	activate,
+	cancelJob,
+	deactivate,
+	requestJob,
+	setCurrent,
+	setGridSupported,
+	setId,
+	setScale,
+	setShowGrid,
+	startJob
+} from '../../../src/store/mfp/mfp.action';
 import { mfpReducer } from '../../../src/store/mfp/mfp.reducer';
 import { EventLike } from '../../../src/utils/storeUtils';
 import { TestUtils } from '../../test-utils';
@@ -16,6 +27,7 @@ describe('mfpReducer', () => {
 		expect(store.getState().mfp.current.id).toBeNull();
 		expect(store.getState().mfp.current.scale).toBeNull();
 		expect(store.getState().mfp.showGrid).toBeFalse();
+		expect(store.getState().mfp.gridSupported).toBeTrue();
 		expect(store.getState().mfp.jobRequest).toBeNull();
 		expect(store.getState().mfp.jobSpec).toBeNull();
 	});
@@ -68,6 +80,18 @@ describe('mfpReducer', () => {
 		setShowGrid(false);
 
 		expect(store.getState().mfp.showGrid).toBeFalse();
+	});
+
+	it('updates the gridSupported property', () => {
+		const store = setup();
+
+		setGridSupported(false);
+
+		expect(store.getState().mfp.gridSupported).toBeFalse();
+
+		setGridSupported(true);
+
+		expect(store.getState().mfp.gridSupported).toBeTrue();
 	});
 
 	it('places a new request for an mfp job', () => {
