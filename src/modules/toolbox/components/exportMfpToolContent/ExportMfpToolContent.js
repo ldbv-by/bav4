@@ -216,12 +216,11 @@ export class ExportMfpToolContent extends AbstractToolContent {
 						<ba-checkbox
 							id="showgrid"
 							.checked=${gridSupported ? showGrid : false}
-							.title=${translate('toolbox_exportMfp_show_grid_title')}
+							.title=${gridSupported ? translate('toolbox_exportMfp_show_grid_title') : translate('toolbox_exportMfp_grid_supported')}
 							@toggle=${onChangeShowGrid}
 							.disabled=${!gridSupported}
 							><span>${translate('toolbox_exportMfp_show_grid')}</span>
-							<span class=${gridSupported ? 'hide' : 'grid-note'}>${translate('toolbox_exportMfp_grid_supported')}</span></ba-checkbox
-						>
+						</ba-checkbox>
 					</div>
 				</div>
 			</div>`;

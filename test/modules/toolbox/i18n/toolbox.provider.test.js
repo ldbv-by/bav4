@@ -106,7 +106,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_options).toBe('Export-Optionen');
 		expect(map.toolbox_exportMfp_show_grid_title).toBe('Ein Koordinatennetz im Export hinzufügen');
 		expect(map.toolbox_exportMfp_show_grid).toBe('Koordinatennetz');
-		expect(map.toolbox_exportMfp_grid_supported).toBe('(Nicht verfügbar, wenn Karte rotiert ist)');
+		expect(map.toolbox_exportMfp_grid_supported).toBe('Nicht verfügbar, wenn Karte rotiert ist');
 	});
 
 	it('provides translation for en', () => {
@@ -210,7 +210,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_options).toBe('Export options');
 		expect(map.toolbox_exportMfp_show_grid_title).toBe('Add coordinate grid in export');
 		expect(map.toolbox_exportMfp_show_grid).toBe('Coordinate grid');
-		expect(map.toolbox_exportMfp_grid_supported).toBe('(not supported while map is rotated)');
+		expect(map.toolbox_exportMfp_grid_supported).toBe('Not supported while map is rotated');
 	});
 
 	it('contains the expected amount of entries', () => {

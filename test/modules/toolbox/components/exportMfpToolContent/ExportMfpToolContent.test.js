@@ -407,13 +407,14 @@ describe('ExportMfpToolContent', () => {
 	});
 
 	describe('when the map is rotated', () => {
-		it('disables the showGrid checkbox and displays the hint', async () => {
+		it('disables the showGrid checkbox and updates tooltip', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 			expect(element.shadowRoot.querySelector('#showgrid').disabled).toBeFalse();
+			expect(element.shadowRoot.querySelector('#showgrid').title).toBe('toolbox_exportMfp_show_grid_title');
 			setGridSupported(false);
 			expect(element.shadowRoot.querySelector('#showgrid').disabled).toBeTrue();
-			expect(element.shadowRoot.querySelectorAll('span.grid-note')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('#showgrid').title).toBe('toolbox_exportMfp_grid_supported');
 		});
 	});
 });
