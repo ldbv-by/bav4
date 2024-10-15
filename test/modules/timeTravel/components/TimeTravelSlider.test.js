@@ -132,6 +132,7 @@ describe('TimeTravel', () => {
 			expect(element.shadowRoot.querySelector('#rangeSlider').getAttribute('max')).toBe(Max_Value);
 			expect(element.shadowRoot.querySelector('#rangeSlider').getAttribute('step')).toBe('1');
 			expect(element.shadowRoot.querySelectorAll('.range-background')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll(`style`)[1].innerText).toContain(".range-bg[data-timestamp='" + Initial_Number + "']::before {");
 		});
 
 		it('renders a time travel slider with custom decadeFunction', async () => {
@@ -298,7 +299,13 @@ describe('TimeTravel', () => {
 
 			expect(element.getModel().timestamp).toBe(Initial_Number);
 			const buttonElement = element.shadowRoot.querySelector('#increase');
+			expect(element.shadowRoot.querySelectorAll(`style`)[1].innerText).toContain(".range-bg[data-timestamp='" + Initial_Value + "']::before {");
+
 			buttonElement.click();
+
+			expect(element.shadowRoot.querySelectorAll(`style`)[1].innerText).toContain(
+				".range-bg[data-timestamp='" + (Initial_Number + 1) + "']::before {"
+			);
 			expect(element.getModel().timestamp).toBe(Initial_Number + 1);
 		});
 
