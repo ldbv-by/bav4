@@ -206,6 +206,20 @@ describe('olInteractionUtils', () => {
 
 			expect(getSnapState(mapMock, mockLayer, pixel)).toBe(InteractionSnapType.FACE);
 		});
+
+		it('detects NO snap at all', () => {
+			const pixel = {};
+			const mockLayer = {};
+			const mapMock = {
+				// no feature at all in this layer at this pixel
+				// eslint-disable-next-line no-unused-vars
+				forEachFeatureAtPixel: (pixel, featureFunction) => {
+					return false;
+				}
+			};
+
+			expect(getSnapState(mapMock, mockLayer, pixel)).toBeNull();
+		});
 	});
 
 	describe('getSelectableFeatures', () => {

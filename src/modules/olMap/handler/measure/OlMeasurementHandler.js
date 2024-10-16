@@ -10,8 +10,8 @@ import { $injector } from '../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { setStatistic, setMode, setSelection } from '../../../../store/measurement/measurement.action';
 import { addLayer, removeLayer } from '../../../../store/layers/layers.action';
-import { createSketchStyleFunction, selectStyleFunction } from '../../utils/olStyleUtils';
-import { getStats } from '../../utils/olGeometryUtils';
+import { createSketchStyleFunction, measureStyleFunction, selectStyleFunction } from '../../utils/olStyleUtils';
+import { getLineString, getStats, PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../utils/olGeometryUtils';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { observe } from '../../../../utils/storeUtils';
 import { HelpTooltip } from '../../tooltip/HelpTooltip';
@@ -42,6 +42,7 @@ import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../services/provider/attribution.provider';
 import { KML } from 'ol/format';
 import { Tools } from '../../../../domain/tools';
+import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../ol/geodesic/geodesicGeometry';
 import { setData } from '../../../../store/fileStorage/fileStorage.action';
 import { createDefaultLayerProperties } from '../../../../store/layers/layers.reducer';
 
@@ -129,7 +130,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		};
 
 		const createLayer = () => {
-			const source = new VectorSource({ wrapX: false });
+			const source = new VectorSource({ wrapX: true, useSpatialIndex: false });
 			const layer = new VectorLayer({
 				source: source,
 				style: this._styleService.getStyleFunction(StyleTypes.MEASURE)
@@ -156,6 +157,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					oldFeatures.forEach((f) => {
 						f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
 						layer.getSource().addFeature(f);
+						if (f.getId().startsWith(Tools.MEASURE)) {
+							f.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(f, olMap));
+						}
 						this._styleService.removeStyle(f, olMap);
 						this._styleService.addStyle(f, olMap, layer);
 						f.on('change', onFeatureChange);
@@ -369,7 +373,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 	_unsubscribe(observers) {
 		observers.forEach((unsubscribe) => unsubscribe());
-		observers = [];
+		observers.splice(0, observers.length);
 	}
 
 	_setMeasureState(value) {
@@ -453,12 +457,14 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_createDraw(source) {
+		const measureFeatureStyleFunction = this._styleService.getStyleFunction(StyleTypes.MEASURE);
 		const draw = new Draw({
 			source: source,
 			type: 'Polygon',
 			minPoints: 2,
 			snapTolerance: getSnapTolerancePerDevice(),
-			style: createSketchStyleFunction(this._styleService.getStyleFunction(StyleTypes.MEASURE))
+			style: createSketchStyleFunction(measureFeatureStyleFunction, this._getSketchStyleOptions()),
+			wrapX: true
 		});
 
 		const finishDistanceOverlay = (event) => {
@@ -475,17 +481,26 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		draw.on('drawstart', (event) => {
 			const onFeatureChange = (event) => {
-				const measureGeometry = this._createMeasureGeometry(event.target, true);
+				const feature = event.target;
+				const measureGeometry = this._createMeasureGeometry(feature);
+				const projectedLength = measureGeometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY)
+					? measureGeometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY)
+					: this._mapService.calcLength(getLineString(measureGeometry)?.getCoordinates());
+				if (projectedLength) {
+					feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
+					feature.getGeometry().set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
+					measureGeometry.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
+				}
 				this._overlayService.update(event.target, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
 				this._setStatistics(event.target);
 			};
 
 			const onResolutionChange = () => {
-				const measureGeometry = this._createMeasureGeometry(this._sketchHandler.active, true);
+				const measureGeometry = this._createMeasureGeometry(this._sketchHandler.active);
 				this._overlayService.update(this._sketchHandler.active, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
 			};
 
-			this._sketchHandler.activate(event.feature, Tools.MEASURE + '_');
+			this._sketchHandler.activate(event.feature, this._map, Tools.MEASURE + '_');
 			this._overlayService.add(this._sketchHandler.active, this._map, StyleTypes.MEASURE);
 			this._drawingListeners.push(event.feature.on('change', onFeatureChange));
 			this._drawingListeners.push(this._map.getView().on('change:resolution', onResolutionChange));
@@ -542,6 +557,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._modify.setActive(true);
 		this._modifyActivated = true;
 		if (feature) {
+			feature.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(feature, this._map)); // refresh geodesic with the completed feature from the finished drawing
 			const onFeatureChange = (event) => {
 				const measureGeometry = this._createMeasureGeometry(event.target);
 				this._overlayService.update(event.target, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
@@ -556,7 +572,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		if (!this._sketchHandler.isFinishOnFirstPoint) {
 			// As long as the draw-interaction is active, the current geometry is a closed and maybe invalid Polygon
 			// (snapping from pointer-position to first point) and must be corrected into a valid LineString
-			const measureGeometry = this._createMeasureGeometry(feature, this._draw.getActive());
+			const measureGeometry = this._createMeasureGeometry(feature);
 			const nonAreaStats = getStats(measureGeometry);
 			setStatistic({ length: nonAreaStats.length, area: stats.area });
 		} else {
@@ -586,15 +602,43 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}
 	}
 
-	_createMeasureGeometry(feature, isDrawing = false) {
-		if (feature.getGeometry() instanceof Polygon) {
-			const lineCoordinates = isDrawing ? feature.getGeometry().getCoordinates()[0].slice(0, -1) : feature.getGeometry().getCoordinates(false)[0];
+	_createMeasureGeometry(feature) {
+		const getGeodesicGeometry = (feature) => {
+			const geodesic = feature.get(GEODESIC_FEATURE_PROPERTY);
+			return geodesic.getGeometry(); // always returns a MultiLineString
+		};
 
-			if (!this._sketchHandler.isFinishOnFirstPoint) {
-				return new LineString(lineCoordinates);
+		const getGeometry = (feature) => {
+			if (feature.getGeometry() instanceof Polygon) {
+				const lineCoordinates = feature.getGeometry().getCoordinates()[0];
+				if (!this._sketchHandler.isFinishOnFirstPoint && this._sketchHandler.isActive) {
+					return new LineString(lineCoordinates.slice(0, -1));
+				}
 			}
-		}
-		return feature.getGeometry();
+			return feature.getGeometry();
+		};
+
+		const geodesic = feature.get(GEODESIC_FEATURE_PROPERTY);
+
+		return geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE ? getGeodesicGeometry(feature) : getGeometry(feature);
+	}
+
+	/**
+	 * Provides styleFunctions for sketch feature, which should be rendered as measure features.
+	 * Sketch features are created additionally by ol 'Draw'-interaction to the drawn feature and could be: Point,
+	 * LineString and Polygon.
+	 * @see {@link https://openlayers.org/en/latest/apidoc/module-ol_interaction_Draw-Draw.html|Draw-Interaction}
+	 * @returns {Object}
+	 */
+	_getSketchStyleOptions() {
+		return {
+			LineString: (feature, resolution) => {
+				if (!feature.get(GEODESIC_FEATURE_PROPERTY)) {
+					feature.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(feature, this._map, () => true));
+				}
+				return measureStyleFunction(feature, resolution);
+			}
+		};
 	}
 
 	_updateMeasureState(coordinate, pixel, dragging) {
@@ -655,11 +699,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._setMeasureState(measureState);
 	}
 
-	_setSelection(ids = []) {
+	_setSelection(ids) {
 		const clear = () => {
-			if (this._select) {
-				this._select.getFeatures().clear();
-			}
+			this._select?.getFeatures().clear();
 		};
 		const fill = (ids) => {
 			ids.forEach((id) => {
@@ -671,7 +713,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			});
 		};
 		const action = ids.length === 0 ? clear : fill;
-		action(ids);
+		if (this._select) action(ids);
 	}
 
 	async _save() {

@@ -22,6 +22,7 @@ import { isFunction } from '../../../utils/checks';
 import { getRoutingStyleFunction } from '../handler/routing/styleUtils';
 import { GeometryCollection, MultiPoint, Point } from '../../../../node_modules/ol/geom';
 import { Stroke, Style, Text } from '../../../../node_modules/ol/style';
+import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../ol/geodesic/geodesicGeometry';
 
 /**
  * Enumeration of predefined types of style
@@ -325,6 +326,10 @@ export class StyleService {
 		 */
 		if (olFeature.get('partition_delta') == null) {
 			olMap.getView().once('change:resolution', () => olMap.once('moveend', (e) => overlayService.update(olFeature, e.map, StyleTypes.MEASURE)));
+		}
+
+		if (!olFeature.get(GEODESIC_FEATURE_PROPERTY)) {
+			olFeature.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(olFeature, olMap));
 		}
 
 		olFeature.setStyle(measureStyleFunction);

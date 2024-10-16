@@ -70,7 +70,7 @@ export const getSelectOptions = (interactionLayer) => {
 };
 
 /**
- * Creates a standard optn-object for a openlayers modify-interaction, to make
+ * Creates a standard option-object for a openlayers modify-interaction, to make
  * all features in the defined feature-collection modifyable
  * @param {Collection<Feature>} modifyableFeatures the collection of all possible modifyable features
  * @returns {Object} the option-object
@@ -82,7 +82,8 @@ export const getModifyOptions = (modifyableFeatures) => {
 		deleteCondition: (event) => {
 			const isDeletable = noModifierKeys(event) && singleClick(event);
 			return isDeletable;
-		}
+		},
+		wrapX: true
 	};
 };
 
@@ -118,7 +119,7 @@ export const getSnapState = (map, interactionLayer, pixel) => {
 		}
 		return InteractionSnapType.EDGE;
 	}
-	if (!vertexFeature && featuresFromInteractionLayer.length > 0) {
+	if (featuresFromInteractionLayer.length > 0) {
 		return InteractionSnapType.FACE;
 	}
 	return null;
@@ -157,9 +158,7 @@ export const removeSelectedFeatures = (selectedFeatures, interactionLayer, addit
 	const additionalRemoveAction = typeof additionalAction === 'function' ? additionalAction : () => {};
 	selectedFeatures.forEach((f) => {
 		additionalRemoveAction(f);
-		if (interactionLayer.getSource().hasFeature(f)) {
-			interactionLayer.getSource().removeFeature(f);
-		}
+		interactionLayer.getSource().removeFeature(f);
 	});
 };
 

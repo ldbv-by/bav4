@@ -6,7 +6,7 @@ import { Injector } from '../../src/injection/core/injector.js';
 describe('injector configuration', () => {
 	it('registers the expected dependencies', () => {
 		expect($injector.isReady()).toBeTrue();
-		expect($injector.count()).toBe(80);
+		expect($injector.count()).toBe(81);
 
 		expect($injector.getScope('ProjectionService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('ConfigService')).toBe(Injector.SCOPE_SINGLETON);
@@ -88,6 +88,7 @@ describe('injector configuration', () => {
 		expect($injector.getScope('OlFeatureInfoHandler')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('OlFeatureInfoHandler')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('OlElevationProfileHandler')).toBe(Injector.SCOPE_PERLOOKUP);
+		expect($injector.getScope('OlOverlayMapHandler')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('OlMfpHandler')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('OlRoutingHandler')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('OlSelectableFeatureHandler')).toBe(Injector.SCOPE_PERLOOKUP);
