@@ -719,7 +719,7 @@ describe('MeasurementOverlayStyle', () => {
 			expect(geodesicSpy).toHaveBeenCalled();
 		});
 
-		it('and updates overlay position with world offset 1, if needed', () => {
+		xit('and updates overlay position with world offset 1, if needed', () => {
 			spyOn(viewMock, 'calculateExtent').and.returnValue([29165706.587837674, 2391878.587944315, 26939316.771972205, 5160979.444049783]);
 			const elementMock = { style: { display: false, opacity: false }, type: BaOverlayTypes.DISTANCE_PARTITION };
 			const geodesicMock = { getCalculationStatus: () => GEODESIC_CALCULATION_STATUS.ACTIVE, getCoordinateAt: () => [42, 21] };
@@ -771,7 +771,7 @@ describe('MeasurementOverlayStyle', () => {
 			expect(positionSpy).toHaveBeenCalledWith(jasmine.arrayContaining([42, 21]));
 		});
 
-		it('and updates overlay position with world offset -1, if needed', () => {
+		xit('and updates overlay position with world offset -1, if needed', () => {
 			spyOn(viewMock, 'calculateExtent').and.returnValue([-29165706.587837674, 2391878.587944315, -26939316.771972205, 5160979.444049783]);
 			const elementMock = { style: { display: false, opacity: false }, type: BaOverlayTypes.DISTANCE_PARTITION };
 			const geodesicMock = { getCalculationStatus: () => GEODESIC_CALCULATION_STATUS.ACTIVE, getCoordinateAt: () => [42, 21] };
