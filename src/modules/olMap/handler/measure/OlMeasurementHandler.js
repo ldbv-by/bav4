@@ -611,8 +611,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const getGeometry = (feature) => {
 			if (feature.getGeometry() instanceof Polygon) {
 				const lineCoordinates = feature.getGeometry().getCoordinates()[0];
-
-				if (!this._sketchHandler.isFinishOnFirstPoint) {
+				if (!this._sketchHandler.isFinishOnFirstPoint && this._sketchHandler.isActive) {
 					return new LineString(lineCoordinates.slice(0, -1));
 				}
 			}
