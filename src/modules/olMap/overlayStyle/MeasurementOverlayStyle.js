@@ -336,7 +336,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 			const rad = (degree / 180) * Math.PI;
 			const point = [Math.sin(rad) * distance, -Math.cos(rad) * distance];
 			const lot = Math.atan2(point[1], point[0]);
-			return [Math.sin(lot) * distance, -Math.cos(lot) * distance];
+			return [Math.sin(lot) * distance, -Math.cos(lot) * distance].map((v) => Math.round(v));
 		};
 
 		const getSector = (angle) => {
@@ -344,6 +344,6 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		};
 
 		const sector = getSector(angle);
-		return { sector: sector?.name, positioning: 'center-center', offset: getOffset(angle, distance) };
+		return { sector: sector?.name, positioning: 'center-center', offset: getOffset(angle - 180, distance) };
 	}
 }
