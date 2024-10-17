@@ -2,9 +2,10 @@ import { NotificationItem, NOTIFICATION_AUTOCLOSE_TIME_NEVER } from '../../../..
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
-import { html } from 'lit-html';
+import { html, TemplateInstance } from 'lit-html';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
+import { TemplateResultType } from 'lit-html/directive-helpers.js';
 
 window.customElements.define(NotificationItem.tag, NotificationItem);
 
@@ -15,9 +16,16 @@ describe('NotificationItem', () => {
 		autocloseTime: 0
 	};
 
+	const securityServiceMock = {
+		sanitizeHtml(html) {
+			return html;
+		}
+	};
+
 	const setup = async (notification = null) => {
 		TestUtils.setupStoreAndDi({}, { notifications: notificationReducer });
-		$injector.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('SecurityService', securityServiceMock);
+
 		const element = await TestUtils.render(NotificationItem.tag);
 		element.content = notification;
 		return element;
@@ -25,7 +33,7 @@ describe('NotificationItem', () => {
 
 	describe('constructor', () => {
 		TestUtils.setupStoreAndDi({}, { notifications: notificationReducer });
-		$injector.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('SecurityService', securityServiceMock);
 
 		it('sets a default model', async () => {
 			const element = new NotificationItem();
@@ -76,6 +84,27 @@ describe('NotificationItem', () => {
 			const contentElement = element.shadowRoot.querySelector('.notification_content');
 
 			expect(contentElement.innerText).toMatch(/FooBarBaz[\r\n]?/);
+		});
+
+		it('displays the notification content sanitized', async () => {
+			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').withArgs('FooBar').and.callThrough();
+
+			const element = await setup({ ...notificationContent, content: 'FooBar' });
+			const contentElement = element.shadowRoot.querySelector('.notification_content');
+
+			expect(contentElement.innerText).toContain('FooBar');
+			expect(sanitizeSpy).toHaveBeenCalled();
+		});
+
+		it('displays the notification content from a lit-html template-result NOT sanitized', async () => {
+			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').withArgs(jasmine.any(Object)).and.callThrough();
+			const template = (str) => html`${str}`;
+
+			const element = await setup({ ...notificationContent, content: template('FooBarBaz'), level: LevelTypes.CUSTOM });
+			const contentElement = element.shadowRoot.querySelector('.notification_content');
+
+			expect(contentElement.innerText).toMatch(/FooBarBaz[\r\n]?/);
+			expect(sanitizeSpy).not.toHaveBeenCalled();
 		});
 
 		it('starts hiding with autoclose after 1 sec.', async () => {

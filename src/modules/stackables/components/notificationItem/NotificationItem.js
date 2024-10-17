@@ -7,6 +7,7 @@ import { $injector } from '../../../../injection';
 import { LevelTypes } from '../../../../store/notifications/notifications.action';
 import css from './notificationItem.css';
 import { MvuElement } from '../../../MvuElement';
+import { isTemplateResult } from '../../../../utils/checks';
 
 export const NOTIFICATION_AUTOCLOSE_TIME_NEVER = 0;
 
@@ -33,8 +34,9 @@ export class NotificationItem extends MvuElement {
 			notification: Default_Notification_Content,
 			autocloseTimeoutId: null
 		});
-		const { TranslationService } = $injector.inject('TranslationService');
+		const { TranslationService, SecurityService } = $injector.inject('TranslationService', 'SecurityService');
 		this._translationService = TranslationService;
+		this._securityService = SecurityService;
 		this._onClose = () => {};
 	}
 
@@ -73,14 +75,18 @@ export class NotificationItem extends MvuElement {
 					return html.nothing;
 			}
 		};
-
-		return notification.content
+		const content = notification.content
+			? isTemplateResult(notification.content)
+				? notification.content
+				: this._securityService.sanitizeHtml(notification.content)
+			: null;
+		return content
 			? html` <style>
 						${css}
 					</style>
 					<div class="notification_item ${classMap(levelClass)}">
 						${getLevelText(notification.level)}
-						<div class="notification_content">${notification.content}</div>
+						<div class="notification_content">${content}</div>
 					</div>`
 			: nothing;
 	}
