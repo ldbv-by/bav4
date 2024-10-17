@@ -9,7 +9,7 @@ import { createNoInitialStateNavigationRailReducer } from '../../../../src/store
 import { setCurrent } from '../../../../src/store/chips/chips.action';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 import { isTemplateResult } from '../../../../src/utils/checks';
-import { layersReducer, createDefaultLayer } from '../../../../src/store/layers/layers.reducer';
+import { layersReducer } from '../../../../src/store/layers/layers.reducer';
 
 window.customElements.define(ChipsContainer.tag, ChipsContainer);
 
