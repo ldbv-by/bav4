@@ -1,6 +1,7 @@
 /**
  * @module modules/search/services/domain/searchResult
  */
+
 /**
  * @readonly
  * @enum {String}
@@ -82,11 +83,25 @@ export class LocationSearchResult extends SearchResult {
 	}
 }
 
+/**
+ * @typedef {Object} CadastralParcelSearchResultGeometry
+ * @property {object} geometry
+ * @property {SourceType} geometryType
+ */
 export class CadastralParcelSearchResult extends SearchResult {
-	constructor(label, labelFormatted, center = null, extent = null) {
+	/**
+	 *
+	 * @param {string} label the label (plain text)
+	 * @param {string} labelFormatted  the label (html formatted)
+	 * @param {module:domain/coordinateTypeDef~Coordinate} center
+	 * @param {module:domain/extentTypeDef~Extent} extent
+	 * @param {module:modules/search/services/domain/searchResult~CadastralParcelSearchResultGeometry} data
+	 */
+	constructor(label, labelFormatted, center = null, extent = null, data = null) {
 		super(label, labelFormatted);
 		this._center = center;
 		this._extent = extent;
+		this._data = data;
 	}
 
 	get center() {
@@ -95,6 +110,10 @@ export class CadastralParcelSearchResult extends SearchResult {
 
 	get extent() {
 		return this._extent;
+	}
+
+	get data() {
+		return this._data;
 	}
 
 	getType() {
