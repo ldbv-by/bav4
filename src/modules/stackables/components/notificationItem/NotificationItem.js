@@ -18,7 +18,7 @@ const Update_Notification = 'update_notification';
  * Content of a Notification.
  *
  * @typedef NotificationContent
- * @property {string|TemplateResult} content the displayed content of the notification
+ * @property {string|TemplateResult} content the displayed content of the notification.
  * @property {LevelTypes} level The type of level for this notification
  * @property {Number} autocloseTime the time in ms, when the notification should close automatically. 0 sets the Autoclose to "never".
  */
@@ -111,6 +111,7 @@ export class NotificationItem extends MvuElement {
 
 	/**
 	 * Sets the notification content
+	 * If the @see {@link NotificationContent} contains a @see {@link TemplateResult} as content, the provider must ensure that the content is already sanitized.
 	 * @param {NotificationContent} notification
 	 */
 	set content(notification) {

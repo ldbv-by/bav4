@@ -2,10 +2,9 @@ import { NotificationItem, NOTIFICATION_AUTOCLOSE_TIME_NEVER } from '../../../..
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
-import { html, TemplateInstance } from 'lit-html';
+import { html } from 'lit-html';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
-import { TemplateResultType } from 'lit-html/directive-helpers.js';
 
 window.customElements.define(NotificationItem.tag, NotificationItem);
 
