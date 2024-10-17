@@ -9,11 +9,15 @@ import { createNoInitialStateNavigationRailReducer } from '../../../../src/store
 import { setCurrent } from '../../../../src/store/chips/chips.action';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 import { isTemplateResult } from '../../../../src/utils/checks';
+import { layersReducer, createDefaultLayer } from '../../../../src/store/layers/layers.reducer';
 
 window.customElements.define(ChipsContainer.tag, ChipsContainer);
 
 describe('ChipsContainer', () => {
 	const animationTimeout = 200;
+
+	const geoResourceId1 = 'geoResourceId1';
+	const geoResourceId2 = 'geoResourceId2';
 
 	const chipsConfiguration1 = [
 		{
@@ -80,6 +84,24 @@ describe('ChipsContainer', () => {
 				backgroundColorDark: 'maroon',
 				icon: '<path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>'
 			}
+		},
+		{
+			id: 'ID5',
+			title: 'Internal',
+			href: geoResourceId1,
+			permanent: true,
+			target: 'internal',
+			observer: {
+				geoResources: [],
+				topics: []
+			},
+			style: {
+				colorLight: 'black',
+				backgroundColorLight: 'red',
+				colorDark: 'white',
+				backgroundColorDark: 'maroon',
+				icon: ''
+			}
 		}
 	];
 
@@ -116,6 +138,24 @@ describe('ChipsContainer', () => {
 				backgroundColorDark: 'maroon',
 				icon: '<path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>'
 			}
+		},
+		{
+			id: 'ID5',
+			title: 'Internal',
+			href: geoResourceId1 + ',' + geoResourceId2,
+			permanent: true,
+			target: 'internal',
+			observer: {
+				geoResources: [],
+				topics: []
+			},
+			style: {
+				colorLight: 'black',
+				backgroundColorLight: 'red',
+				colorDark: 'white',
+				backgroundColorDark: 'maroon',
+				icon: ''
+			}
 		}
 	];
 
@@ -139,6 +179,9 @@ describe('ChipsContainer', () => {
 			navigationRail: {
 				open: false
 			},
+			layers: {
+				active: []
+			},
 			...state
 		};
 		store = TestUtils.setupStoreAndDi(initialState, {
@@ -146,7 +189,8 @@ describe('ChipsContainer', () => {
 			media: createNoInitialStateMediaReducer(),
 			chips: chipsReducer,
 			navigationRail: createNoInitialStateNavigationRailReducer(),
-			mainMenu: createNoInitialStateMainMenuReducer()
+			mainMenu: createNoInitialStateMainMenuReducer(),
+			layers: layersReducer
 		});
 		$injector.registerSingleton('EnvironmentService', {
 			isEmbedded: () => embed,
@@ -298,20 +342,20 @@ describe('ChipsContainer', () => {
 			expect(window.getComputedStyle(chip1).getPropertyValue('--chip-background-color').trim()).toBe('backgroundColorDark');
 		});
 
-		it('renders 4 chips', async () => {
+		it('renders 5 chips', async () => {
 			const element = await setup({ chips: { current: chipsConfiguration1 } });
 			expect(element.shadowRoot.querySelectorAll('#chipscontainer')).toHaveSize(1);
 
 			const scrollButtons = element.shadowRoot.querySelectorAll('.chips__scroll-button');
 			expect(scrollButtons).toHaveSize(2);
 
-			expect(element.shadowRoot.querySelectorAll('.chips__button')).toHaveSize(4);
-			expect(element.shadowRoot.querySelectorAll('button.chips__button')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.chips__button')).toHaveSize(5);
+			expect(element.shadowRoot.querySelectorAll('button.chips__button')).toHaveSize(2);
 			expect(element.shadowRoot.querySelectorAll('a.chips__button')).toHaveSize(3);
 			expect(element.shadowRoot.querySelectorAll('.chips__icon')).toHaveSize(1);
 
 			const chips = element.shadowRoot.querySelectorAll('.chips__button');
-			expect(chips).toHaveSize(4);
+			expect(chips).toHaveSize(5);
 
 			expect(chips[0].classList.contains('chips__ID1')).toBeTrue();
 			expect(chips[0].querySelector('.chips__button-text').innerText).toEqual('Permanent');
@@ -334,6 +378,9 @@ describe('ChipsContainer', () => {
 			expect(chips[3].querySelectorAll('svg path')[0].getAttribute('d')).toBe(
 				'M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z'
 			);
+
+			expect(chips[4].classList.contains('chips__ID5')).toBeTrue();
+			expect(chips[4].querySelector('.chips__button-text').innerText).toEqual('Internal');
 		});
 
 		it('does not show scroll buttons', async () => {
@@ -438,13 +485,13 @@ describe('ChipsContainer', () => {
 
 			expect(element.shadowRoot.querySelectorAll('#chipscontainer')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.chips__scroll-button')).toHaveSize(2);
-			expect(element.shadowRoot.querySelectorAll('.chips__button')).toHaveSize(4);
-			expect(element.shadowRoot.querySelectorAll('button.chips__button')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.chips__button')).toHaveSize(5);
+			expect(element.shadowRoot.querySelectorAll('button.chips__button')).toHaveSize(2);
 			expect(element.shadowRoot.querySelectorAll('a.chips__button')).toHaveSize(3);
 			expect(element.shadowRoot.querySelectorAll('.chips__icon')).toHaveSize(1);
 
 			const chips = element.shadowRoot.querySelectorAll('.chips__button');
-			expect(chips.length).toBe(4);
+			expect(chips.length).toBe(5);
 
 			expect(chips[0].classList.contains('chips__ID1')).toBeTrue();
 			expect(chips[0].querySelector('.chips__button-text').innerText).toEqual('Permanent');
@@ -467,13 +514,13 @@ describe('ChipsContainer', () => {
 
 			setCurrent(chipsConfiguration2);
 
-			expect(element.shadowRoot.querySelectorAll('.chips__button')).toHaveSize(2);
-			expect(element.shadowRoot.querySelectorAll('button.chips__button')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.chips__button')).toHaveSize(3);
+			expect(element.shadowRoot.querySelectorAll('button.chips__button')).toHaveSize(2);
 			expect(element.shadowRoot.querySelectorAll('a.chips__button')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.chips__icon')).toHaveSize(1);
 
 			const chipsNew = element.shadowRoot.querySelectorAll('.chips__button');
-			expect(chipsNew.length).toBe(2);
+			expect(chipsNew.length).toBe(3);
 
 			expect(chipsNew[0].classList.contains('chips__ID1')).toBeTrue();
 			expect(chipsNew[0].querySelector('.chips__button-text').innerText).toEqual('Permanent');
@@ -503,6 +550,37 @@ describe('ChipsContainer', () => {
 			expect(contentElement.querySelector('iframe').getAttribute('mozallowfullscreen')).toBe('true');
 			expect(contentElement.querySelector('iframe').src).toBe('https://www.one.com/');
 			expect(contentElement.querySelector('iframe').title).toBe('Permanent');
+		});
+	});
+
+	describe('when internal button is clicked', () => {
+		it('adds a layer', async () => {
+			const element = await setup({ chips: { current: chipsConfiguration1 } });
+
+			const chips = element.shadowRoot.querySelectorAll('.chips__button');
+			expect(store.getState().layers.active.length).toBe(0);
+
+			chips[4].click();
+
+			expect(store.getState().layers.active.length).toBe(1);
+			expect(store.getState().layers.active[0].id.startsWith(geoResourceId1)).toBeTrue();
+
+			chips[4].click();
+
+			expect(store.getState().layers.active.length).toBe(1);
+		});
+
+		it('adds tow layers', async () => {
+			const element = await setup({ chips: { current: chipsConfiguration2 } });
+
+			const chips = element.shadowRoot.querySelectorAll('.chips__button');
+			expect(store.getState().layers.active.length).toBe(0);
+
+			chips[2].click();
+
+			expect(store.getState().layers.active.length).toBe(2);
+			expect(store.getState().layers.active[0].id.startsWith(geoResourceId1)).toBeTrue();
+			expect(store.getState().layers.active[1].id.startsWith(geoResourceId2)).toBeTrue();
 		});
 	});
 
