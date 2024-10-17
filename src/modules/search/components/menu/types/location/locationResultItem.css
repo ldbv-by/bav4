@@ -57,3 +57,24 @@ path {
 svg {
 	fill: red;
 }
+
+ba-icon {
+	border-radius: 2em;
+	width: 2em;
+	height: 2em;
+	display: block;
+	margin: 0 0.3em;
+	font-size: 0.9rem;
+}
+ba-icon:hover {
+	background: var(--primary-color);
+}
+.ba-icon-button {
+	padding: 0.6em !important;
+	margin: auto;
+	min-width: 3.5em;
+	margin-right: 0.5em;
+}
+.separator {
+	border-left: 1px dotted var(--header-background-color);
+}
