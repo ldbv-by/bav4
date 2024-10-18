@@ -6,9 +6,15 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import css from './cpResultItem.css';
 import { close as closeMainMenu } from '../../../../../../store/mainMenu/mainMenu.action';
 import { fit } from '../../../../../../store/position/position.action';
-import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../../../../../../store/highlight/highlight.action';
+import {
+	addHighlightFeatures,
+	HighlightFeatureType,
+	HighlightGeometryType,
+	removeHighlightFeaturesById
+} from '../../../../../../store/highlight/highlight.action';
 import { SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../plugins/HighlightPlugin';
 import { MvuElement } from '../../../../../MvuElement';
+import { SourceTypeName } from '../../../../../../domain/sourceType';
 
 const Update_IsPortrait = 'update_isPortrait';
 const Update_CpSearchResult = 'update_cpSearchResult';
@@ -54,6 +60,10 @@ export class CpResultItem extends MvuElement {
 		this.signal(Update_CpSearchResult, cpSearchResult);
 	}
 
+	_throwError(message) {
+		throw message;
+	}
+
 	createView(model) {
 		const { isPortrait, cpSearchResult } = model;
 		/**
@@ -74,7 +84,22 @@ export class CpResultItem extends MvuElement {
 			const extent = result.extent ? [...result.extent] : [...result.center, ...result.center];
 			removeHighlightFeaturesById([SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_HIGHLIGHT_FEATURE_ID]);
 			fit(extent, { maxZoom: CpResultItem._maxZoomLevel });
-			if (!result.extent) {
+			if (result.data) {
+				const matchGeomType = (sourceType) => {
+					switch (sourceType.name) {
+						case SourceTypeName.WKT:
+							return HighlightGeometryType.WKT;
+						case SourceTypeName.GEOJSON:
+							return HighlightGeometryType.GEOJSON;
+					}
+					this._throwError(`SourceType ${sourceType.name} is currently not supported`);
+				};
+				addHighlightFeatures({
+					id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
+					type: HighlightFeatureType.DEFAULT,
+					data: { geometry: result.data.geometry, geometryType: matchGeomType(result.data.geometryType) }
+				});
+			} else if (!result.extent) {
 				addHighlightFeatures({
 					id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
 					type: HighlightFeatureType.MARKER,
