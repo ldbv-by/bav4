@@ -85,7 +85,7 @@ describe('NotificationItem', () => {
 			expect(contentElement.innerText).toMatch(/FooBarBaz[\r\n]?/);
 		});
 
-		it('displays the notification content sanitized', async () => {
+		it('displays the notification content string sanitized', async () => {
 			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').withArgs('FooBar').and.callThrough();
 
 			const element = await setup({ ...notificationContent, content: 'FooBar' });

@@ -7,7 +7,7 @@ import { $injector } from '../../../../injection';
 import { LevelTypes } from '../../../../store/notifications/notifications.action';
 import css from './notificationItem.css';
 import { MvuElement } from '../../../MvuElement';
-import { isTemplateResult } from '../../../../utils/checks';
+import { isString } from '../../../../utils/checks';
 
 export const NOTIFICATION_AUTOCLOSE_TIME_NEVER = 0;
 
@@ -76,9 +76,9 @@ export class NotificationItem extends MvuElement {
 			}
 		};
 		const content = notification.content
-			? isTemplateResult(notification.content)
-				? notification.content
-				: this._securityService.sanitizeHtml(notification.content)
+			? isString(notification.content)
+				? this._securityService.sanitizeHtml(notification.content)
+				: notification.content
 			: null;
 		return content
 			? html` <style>
