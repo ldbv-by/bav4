@@ -100,7 +100,7 @@ describe('ChipsCofigurationService', () => {
 
 				const configurations = await instanceUnderTest.all();
 
-				expect(configurations.length).toBe(3);
+				expect(configurations.length).toBe(4);
 				expect(warnSpy).toHaveBeenCalledWith('Chips configuration could not be fetched from backend. Using fallback configuration ...');
 			});
 
