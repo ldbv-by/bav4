@@ -52,6 +52,7 @@ import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../services/provider/attribution.provider';
 import { KML } from 'ol/format';
 import { Tools } from '../../../../domain/tools';
+import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../ol/geodesic/geodesicGeometry';
 import { setData } from '../../../../store/fileStorage/fileStorage.action';
 import { createDefaultLayerProperties } from '../../../../store/layers/layers.reducer';
 
@@ -187,6 +188,9 @@ export class OlDrawHandler extends OlLayerHandler {
 
 					oldFeatures.forEach((f) => {
 						f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
+						if (f.getId().startsWith(Tools.MEASURE)) {
+							f.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(f, olMap));
+						}
 						this._styleService.removeStyle(f, olMap);
 						this._styleService.addStyle(f, olMap, layer);
 						layer.getSource().addFeature(f);
@@ -457,7 +461,7 @@ export class OlDrawHandler extends OlLayerHandler {
 					const geometry = event.target.getGeometry();
 					setGeometryIsValid(isValidGeometry(geometry));
 				};
-				this._sketchHandler.activate(event.feature, Tools.DRAW + '_' + type + '_');
+				this._sketchHandler.activate(event.feature, this._map, Tools.DRAW + '_' + type + '_');
 				const description = this._storeService.getStore().getState().draw.description;
 
 				if (description) {
@@ -566,14 +570,16 @@ export class OlDrawHandler extends OlLayerHandler {
 					type: 'Point',
 					minPoints: 1,
 					snapTolerance: snapTolerance,
-					style: this._getStyleFunctionByDrawType(type, styleOption)
+					style: this._getStyleFunctionByDrawType(type, styleOption),
+					wrapX: true
 				});
 			case StyleTypes.LINE:
 				return new Draw({
 					source: source,
 					type: 'LineString',
 					snapTolerance: snapTolerance,
-					style: createSketchStyleFunction(this._getStyleFunctionByDrawType('line', styleOption))
+					style: createSketchStyleFunction(this._getStyleFunctionByDrawType('line', styleOption)),
+					wrapX: true
 				});
 			case StyleTypes.POLYGON:
 				return new Draw({
@@ -581,7 +587,8 @@ export class OlDrawHandler extends OlLayerHandler {
 					type: 'Polygon',
 					minPoints: 3,
 					snapTolerance: snapTolerance,
-					style: createSketchStyleFunction(this._getStyleFunctionByDrawType('polygon', styleOption))
+					style: createSketchStyleFunction(this._getStyleFunctionByDrawType('polygon', styleOption)),
+					wrapX: true
 				});
 			default:
 				console.warn('unknown Drawtype: ' + type);
