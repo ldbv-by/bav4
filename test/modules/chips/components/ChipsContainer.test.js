@@ -564,13 +564,14 @@ describe('ChipsContainer', () => {
 
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.active[0].id.startsWith(geoResourceId1)).toBeTrue();
+			expect(store.getState().layers.active[0].geoResourceId).toBe(geoResourceId1);
 
 			chips[4].click();
 
 			expect(store.getState().layers.active.length).toBe(1);
 		});
 
-		it('adds tow layers', async () => {
+		it('adds two layers', async () => {
 			const element = await setup({ chips: { current: chipsConfiguration2 } });
 
 			const chips = element.shadowRoot.querySelectorAll('.chips__button');
@@ -580,7 +581,9 @@ describe('ChipsContainer', () => {
 
 			expect(store.getState().layers.active.length).toBe(2);
 			expect(store.getState().layers.active[0].id.startsWith(geoResourceId1)).toBeTrue();
+			expect(store.getState().layers.active[0].geoResourceId).toBe(geoResourceId1);
 			expect(store.getState().layers.active[1].id.startsWith(geoResourceId2)).toBeTrue();
+			expect(store.getState().layers.active[1].geoResourceId).toBe(geoResourceId2);
 		});
 	});
 
