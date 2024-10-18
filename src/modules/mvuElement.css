@@ -110,7 +110,6 @@ input[type='range'] {
 	appearance: none;
 	display: block;
 	inline-size: 100%;
-	margin: 1em 0;
 	background: transparent;
 	outline-offset: 5px;
 }
