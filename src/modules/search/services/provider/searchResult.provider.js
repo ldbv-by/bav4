@@ -77,7 +77,7 @@ export const loadBvvCadastralParcelSearchResults = async (query) => {
 				removeHtml(o.attrs.label),
 				o.attrs.label,
 				o.attrs.coordinate,
-				null,
+				o.attrs.extent ? o.attrs.extent : null,
 				o.attrs.ewkt ? { geometry: parse(o.attrs.ewkt).wkt, geometryType: new SourceType(SourceTypeName.WKT, null, 3857) } : null
 			);
 		});

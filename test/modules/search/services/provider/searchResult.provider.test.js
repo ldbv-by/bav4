@@ -199,6 +199,7 @@ describe('SearchResult provider', () => {
 				id: 'id0',
 				attrs: {
 					coordinate: [10.270116669125855, 48.44638557638974],
+					extent: [0, 1, 2, 3],
 					label: '<b>foo</b>, bar',
 					ewkt: 'SRID=3857;POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))'
 				}
@@ -207,6 +208,7 @@ describe('SearchResult provider', () => {
 				id: 'id1',
 				attrs: {
 					coordinate: [10.257489331997931, 48.436180253047496],
+					extent: [4, 5, 6, 7],
 					label: '<b>some</b> <b>other</b>, result',
 					ewkt: 'SRID=3857;POLYGON ((30 10, 20 30, 20 40, 10 20, 30 10))'
 				}
@@ -258,7 +260,7 @@ describe('SearchResult provider', () => {
 			expect(searchResult0 instanceof CadastralParcelSearchResult).toBeTrue(), expect(searchResult0.label).toBe('foo, bar');
 			expect(searchResult0.labelFormatted).toBe('<b>foo</b>, bar');
 			expect(searchResult0.center).toEqual([10.270116669125855, 48.44638557638974]);
-			expect(searchResult0.extent).toBeNull();
+			expect(searchResult0.extent).toEqual([0, 1, 2, 3]);
 			expect(searchResult0.data.geometry).toBe('POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))');
 			expect(searchResult0.data.geometryType).toEqual(new SourceType(SourceTypeName.WKT, null, 3857));
 		});
