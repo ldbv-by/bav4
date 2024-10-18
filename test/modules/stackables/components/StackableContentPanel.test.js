@@ -46,6 +46,11 @@ describe('StackableContentPanel', () => {
 	});
 
 	describe('when rendered', () => {
+		const securityServiceMock = {
+			sanitizeHtml(html) {
+				return html;
+			}
+		};
 		const setup = async (
 			state = { notifications: { notification: null }, bottomSheet: { data: [] }, mainMenu: { open: false }, media: { portrait: false } }
 		) => {
@@ -57,7 +62,8 @@ describe('StackableContentPanel', () => {
 				media: createNoInitialStateMediaReducer(),
 				navigationRail: createNoInitialStateNavigationRailReducer()
 			});
-			$injector.registerSingleton('TranslationService', { translate: (key) => key });
+			$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('SecurityService', securityServiceMock);
+
 			const element = await TestUtils.render(StackableContentPanel.tag);
 
 			return element;
