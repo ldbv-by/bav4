@@ -460,6 +460,7 @@ input[type='search']::-webkit-search-results-decoration {
 .is-tablet .header__search:focus {
 	width: 100%;
 	z-index: 0;
+	padding: 0.5em 2.7em 0.5em 0;
 }
 
 .is-portrait .header__search:focus,
