@@ -133,6 +133,9 @@ describe('TimeTravel', () => {
 			expect(element.shadowRoot.querySelector('#rangeSlider').getAttribute('step')).toBe('1');
 			expect(element.shadowRoot.querySelectorAll('.range-background')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll(`style`)[1].innerText).toContain(".range-bg[data-timestamp='" + Initial_Number + "']::before {");
+
+			expect(element._root.styleSheets.length).toBe(3);
+			expect(element._root.styleSheets[1].cssRules.item(0).cssText).toContain('--thumb-width: 1.9');
 		});
 
 		it('renders a time travel slider with custom decadeFunction', async () => {
@@ -190,6 +193,9 @@ describe('TimeTravel', () => {
 			expect(element.shadowRoot.querySelector('#rangeSlider').getAttribute('max')).toBe(Max_Value);
 			expect(element.shadowRoot.querySelector('#rangeSlider').getAttribute('step')).toBe('1');
 			expect(element.shadowRoot.querySelectorAll('.range-background')).toHaveSize(1);
+
+			expect(element._root.styleSheets.length).toBe(3);
+			expect(element._root.styleSheets[1].cssRules.item(0).cssText).toContain('--thumb-width: .9rem');
 		});
 
 		it('observes the timestamp from the s-o-s timeTravel', async () => {

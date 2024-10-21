@@ -152,6 +152,9 @@ input[type='range']::-webkit-slider-thumb {
 	background: var(--primary-bg-color);
 	z-index: 0;
 }
+.is-portrait .range-background .border::after {
+	display: none;
+}
 .row:first-child .border::after {
 	position: absolute;
 	content: attr(data-timestamp);
@@ -162,9 +165,13 @@ input[type='range']::-webkit-slider-thumb {
 	background: var(--primary-bg-color);
 	z-index: 0;
 }
-.is-portrait .slider,
-.is-portrait #buttonData {
-	display: none;
+
+.is-portrait .base {
+	flex-direction: column-reverse;
+}
+.is-portrait .slider {
+	width: auto;
+	margin-right: 3em;
 }
 
 .is-portrait .actions div ba-icon {
