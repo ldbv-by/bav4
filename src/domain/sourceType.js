@@ -44,8 +44,7 @@ export const SourceTypeName = Object.freeze({
 	GPX: 'gpx',
 	GEOJSON: 'geojson',
 	WMS: 'wms',
-	EWKT: 'ewkt',
-	WKT: 'wkt'
+	EWKT: 'ewkt'
 });
 
 /**
