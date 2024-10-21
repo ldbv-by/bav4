@@ -191,7 +191,7 @@ describe('OlHighlightLayerHandler', () => {
 			const handler = new OlHighlightLayerHandler();
 			const appendStyleSpy = spyOn(handler, '_appendStyle').withArgs(jasmine.anything(), jasmine.any(Feature)).and.callThrough();
 			const highlightGeometryWktFeature = {
-				data: { geometry: new WKT().writeGeometry(new Point([21, 42])), geometryType: HighlightGeometryType.WKT },
+				data: { geometry: `SRID=3857;${new WKT().writeGeometry(new Point([21, 42]))}`, geometryType: HighlightGeometryType.WKT },
 				label: 'WKT'
 			};
 			const highlightGeometryGeoJsonFeature = {

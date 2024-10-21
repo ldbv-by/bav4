@@ -21,6 +21,7 @@ import { HighlightFeatureType, HighlightGeometryType } from '../../../../store/h
 import WKT from 'ol/format/WKT';
 import GeoJSON from 'ol/format/GeoJSON';
 import { unByKey } from 'ol/Observable';
+import { parse } from '../../../../utils/ewkt';
 
 /**
  * Handler for displaying highlighted features
@@ -80,8 +81,10 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 
 		//we have a HighlightGeometry
 		switch (data.geometryType) {
-			case HighlightGeometryType.WKT:
-				return this._appendStyle(feature, addLabel(new WKT().readFeature(data.geometry)));
+			case HighlightGeometryType.WKT: {
+				const ewkt = parse(data.geometry);
+				return this._appendStyle(feature, addLabel(new WKT().readFeature(ewkt.wkt)));
+			}
 			case HighlightGeometryType.GEOJSON:
 				return this._appendStyle(feature, addLabel(new GeoJSON().readFeature(data.geometry)));
 		}
