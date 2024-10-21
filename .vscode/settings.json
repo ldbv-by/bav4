@@ -12,5 +12,5 @@
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
 	"cSpell.enabled": true,
-	"cSpell.words": ["ewkt"]
+	"cSpell.words": ["ewkt", "srid"]
 }
