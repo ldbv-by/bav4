@@ -103,7 +103,7 @@ describe('CpResultItem', () => {
 			const previousCoordinate = [1, 2];
 			const coordinate = [21, 42];
 			const extent = [0, 1, 2, 3];
-			const wktData = { geometry: 'POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))', geometryType: new SourceType(SourceTypeName.WKT, null, 3857) };
+			const wktData = { geometry: 'POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))', geometryType: new SourceType(SourceTypeName.EWKT, null, 3857) };
 			const geoJsonData = { geometry: { type: 'Point', coordinates: [21, 42, 0] }, geometryType: new SourceType(SourceTypeName.GEOJSON, null, 4326) };
 			const kmlData = { geometry: 'kml', geometryType: new SourceType(SourceTypeName.KML, null, 4326) };
 

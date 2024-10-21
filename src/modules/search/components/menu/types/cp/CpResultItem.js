@@ -87,7 +87,7 @@ export class CpResultItem extends MvuElement {
 			if (result.data) {
 				const matchGeomType = (sourceType) => {
 					switch (sourceType.name) {
-						case SourceTypeName.WKT:
+						case SourceTypeName.EWKT:
 							return HighlightGeometryType.WKT;
 						case SourceTypeName.GEOJSON:
 							return HighlightGeometryType.GEOJSON;
