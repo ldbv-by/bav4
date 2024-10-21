@@ -31,8 +31,9 @@ import { parse } from '../../../../utils/ewkt';
 export class OlHighlightLayerHandler extends OlLayerHandler {
 	constructor() {
 		super(HIGHLIGHT_LAYER_ID, { preventDefaultClickHandling: false, preventDefaultContextClickHandling: false });
-		const { StoreService } = $injector.inject('StoreService');
+		const { StoreService, MapService } = $injector.inject('StoreService', 'MapService');
 		this._storeService = StoreService;
+		this._mapService = MapService;
 		this._unregister = () => {};
 		this._olMap = null;
 		this._olLayer = null;
@@ -83,6 +84,9 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 		switch (data.geometryType) {
 			case HighlightGeometryType.WKT: {
 				const ewkt = parse(data.geometry);
+				if (ewkt.srid !== this._mapService.getSrid()) {
+					throw new Error('Unsupported SRID ' + ewkt.srid);
+				}
 				return this._appendStyle(feature, addLabel(new WKT().readFeature(ewkt.wkt)));
 			}
 			case HighlightGeometryType.GEOJSON:

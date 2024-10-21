@@ -21,6 +21,7 @@ import WKT from 'ol/format/WKT';
 import GeoJSON from 'ol/format/GeoJSON';
 import { Point } from 'ol/geom';
 import { Feature } from 'ol';
+import { $injector } from '../../../../../src/injection';
 
 describe('OlHighlightLayerHandler', () => {
 	const initialCenter = fromLonLat([11.57245, 48.14021]);
@@ -29,12 +30,16 @@ describe('OlHighlightLayerHandler', () => {
 		features: [],
 		temporaryFeatures: []
 	};
+	const mapService = {
+		getSrid: () => {}
+	};
 
 	const setup = (state = initialState) => {
 		const highlightState = {
 			highlight: state
 		};
 		TestUtils.setupStoreAndDi(highlightState, { highlight: highlightReducer });
+		$injector.registerSingleton('MapService', mapService);
 	};
 
 	const setupMap = () => {
@@ -189,6 +194,7 @@ describe('OlHighlightLayerHandler', () => {
 		it('maps features containing data as HighlightGeometry', () => {
 			setup();
 			const handler = new OlHighlightLayerHandler();
+			spyOn(mapService, 'getSrid').and.returnValue(3857);
 			const appendStyleSpy = spyOn(handler, '_appendStyle').withArgs(jasmine.anything(), jasmine.any(Feature)).and.callThrough();
 			const highlightGeometryWktFeature = {
 				data: { geometry: `SRID=3857;${new WKT().writeGeometry(new Point([21, 42]))}`, geometryType: HighlightGeometryType.WKT },
@@ -207,6 +213,20 @@ describe('OlHighlightLayerHandler', () => {
 			expect(olFeature1.getGeometry().getCoordinates()).toEqual([5, 10]);
 			expect(olFeature1.get('name')).toBe('GeoJSON');
 			expect(appendStyleSpy).toHaveBeenCalledTimes(2);
+		});
+
+		describe('HighlightGeometryType EWKT', () => {
+			it('throws an error when the SRID of the HighlightGeometry is not supported', () => {
+				setup();
+				const handler = new OlHighlightLayerHandler();
+				spyOn(mapService, 'getSrid').and.returnValue(3857);
+				const highlightGeometryWktFeature = {
+					data: { geometry: `SRID=4326;${new WKT().writeGeometry(new Point([21, 42]))}`, geometryType: HighlightGeometryType.WKT },
+					label: 'WKT'
+				};
+
+				expect(() => handler._toOlFeature(highlightGeometryWktFeature)).toThrowError('Unsupported SRID 4326');
+			});
 		});
 
 		it('maps features with an invalid type', () => {
