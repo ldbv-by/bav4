@@ -10,24 +10,6 @@ import { MediaType } from '../../domain/mediaTypes';
 import { parse } from '../../utils/ewkt';
 
 /**
- * A function that tries to detect the source type for a url
- *
- * @typedef {function(string) : (Promise<SourceTypeResult>)} urlSourceTypeProvider
- */
-
-/**
- * A function that tries to detect the source type for given data
- *
- * @typedef {function(string) : (SourceTypeResult)} dataSourceTypeProvider
- */
-
-/**
- * A function that tries to detect the source by given media type
- *
- * @typedef {function(Source) : (SourceTypeResult)} mediaSourceTypeProvider
- */
-
-/**
  * Returns the default authentication panel bound to the corresponding url and required callback functions.
  * @param {string} url
  * @param {function} authenticateFunction
@@ -45,9 +27,7 @@ export const _createCredentialPanel = (url, authenticateFunction, onCloseFunctio
 /**
  * Uses a BVV endpoint to detect the source type for a url.
  * @function
- * @param {string} url
- * @param {function} createModalContent function that provides the credential ui as the modals content
- * @returns {SourceTypeResult}
+ * @type {module:services/SourceTypeService~urlSourceTypeProvider}
  */
 export const bvvUrlSourceTypeProvider = async (url, createModalContent = _createCredentialPanel) => {
 	const {
@@ -161,8 +141,7 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = _create
  * Default source type provider for data.
  * Currently only character data are supported.
  * @function
- * @param {string} data
- * @returns {SourceTypeResult}
+ * @type {module:services/SourceTypeService~dataSourceTypeProvider}
  */
 export const defaultDataSourceTypeProvider = (data) => {
 	const { ProjectionService: projectionService } = $injector.inject('ProjectionService');
@@ -200,8 +179,7 @@ export const defaultDataSourceTypeProvider = (data) => {
 /**
  * Default source type provider for a given MediaType.
  * @function
- * @param {string} mediaType
- * @returns {SourceTypeResult}
+ * @type {module:services/SourceTypeService~mediaSourceTypeProvider}
  */
 export const defaultMediaSourceTypeProvider = (mediaType) => {
 	switch (mediaType) {
