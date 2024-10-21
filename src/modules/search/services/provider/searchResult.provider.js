@@ -4,7 +4,6 @@
 import { CadastralParcelSearchResult, GeoResourceSearchResult, LocationSearchResult } from '../domain/searchResult';
 import { $injector } from '../../../../injection';
 import { MediaType } from '../../../../domain/mediaTypes';
-import { parse } from '../../../../utils/ewkt';
 import { SourceType, SourceTypeName } from '../../../../domain/sourceType';
 
 /**
