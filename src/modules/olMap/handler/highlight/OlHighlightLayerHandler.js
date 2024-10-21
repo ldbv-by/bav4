@@ -82,7 +82,7 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 
 		//we have a HighlightGeometry
 		switch (data.geometryType) {
-			case HighlightGeometryType.WKT: {
+			case HighlightGeometryType.EWKT: {
 				const ewkt = parse(data.geometry);
 				if (ewkt.srid !== this._mapService.getSrid()) {
 					throw new Error('Unsupported SRID ' + ewkt.srid);

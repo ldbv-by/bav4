@@ -138,7 +138,7 @@ describe('CpResultItem', () => {
 						expect(store.getState().highlight.features).toHaveSize(1);
 						expect(store.getState().highlight.features[0].id).toEqual(SEARCH_RESULT_HIGHLIGHT_FEATURE_ID);
 						expect(store.getState().highlight.features[0].data.geometry).toEqual(wktData.geometry);
-						expect(store.getState().highlight.features[0].data.geometryType).toBe(HighlightGeometryType.WKT);
+						expect(store.getState().highlight.features[0].data.geometryType).toBe(HighlightGeometryType.EWKT);
 						expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.DEFAULT);
 					});
 				});

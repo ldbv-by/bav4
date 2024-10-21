@@ -197,7 +197,7 @@ describe('OlHighlightLayerHandler', () => {
 			spyOn(mapService, 'getSrid').and.returnValue(3857);
 			const appendStyleSpy = spyOn(handler, '_appendStyle').withArgs(jasmine.anything(), jasmine.any(Feature)).and.callThrough();
 			const highlightGeometryWktFeature = {
-				data: { geometry: `SRID=3857;${new WKT().writeGeometry(new Point([21, 42]))}`, geometryType: HighlightGeometryType.WKT },
+				data: { geometry: `SRID=3857;${new WKT().writeGeometry(new Point([21, 42]))}`, geometryType: HighlightGeometryType.EWKT },
 				label: 'WKT'
 			};
 			const highlightGeometryGeoJsonFeature = {
@@ -221,7 +221,7 @@ describe('OlHighlightLayerHandler', () => {
 				const handler = new OlHighlightLayerHandler();
 				spyOn(mapService, 'getSrid').and.returnValue(3857);
 				const highlightGeometryWktFeature = {
-					data: { geometry: `SRID=4326;${new WKT().writeGeometry(new Point([21, 42]))}`, geometryType: HighlightGeometryType.WKT },
+					data: { geometry: `SRID=4326;${new WKT().writeGeometry(new Point([21, 42]))}`, geometryType: HighlightGeometryType.EWKT },
 					label: 'WKT'
 				};
 
