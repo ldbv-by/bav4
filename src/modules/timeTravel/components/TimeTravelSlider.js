@@ -191,7 +191,7 @@ export class TimeTravelSlider extends MvuElement {
 		};
 
 		const getThumbWidth = () => {
-			return 100 / (timestampSteps.length - 1);
+			return isPortrait ? '.9rem' : 100 / (timestampSteps.length - 1) + '%';
 		};
 
 		const classContainer = {
@@ -204,7 +204,7 @@ export class TimeTravelSlider extends MvuElement {
 			? html`
 					<style>
 						input {
-							--thumb-width: ${getThumbWidth()}%;
+							--thumb-width: ${getThumbWidth()};
 						}
 						.range-bg[data-timestamp='${timestamp}']::before {
 							position: absolute;
