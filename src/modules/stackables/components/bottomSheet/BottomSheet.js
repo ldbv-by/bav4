@@ -84,6 +84,7 @@ export class BottomSheet extends MvuElement {
 			elementModal.classList.add('fade-out');
 			elementModal.addEventListener('animationend', () => {
 				closeBottomSheet(id);
+				elementModal.classList.remove('fade-out');
 			});
 		};
 
