@@ -215,7 +215,7 @@ describe('SearchResult provider', () => {
 			}
 		];
 
-		it('loads SearchResults for cadastial parcels without a geometry', async () => {
+		it('loads SearchResults for cadastral parcels without a geometry', async () => {
 			const term = 'term?/foo';
 			const termReplacedAndEncoded = 'term%3F%20foo';
 			const backendUrl = 'https://backend.url';
@@ -239,7 +239,7 @@ describe('SearchResult provider', () => {
 			expect(searchResult0.extent).toBeNull();
 		});
 
-		it('loads SearchResults for cadastial parcels including a geometry', async () => {
+		it('loads SearchResults for cadastral parcels including a geometry', async () => {
 			const term = 'term?/foo';
 			const termReplacedAndEncoded = 'term%3F%20foo';
 			const backendUrl = 'https://backend.url';
