@@ -195,10 +195,12 @@ describe('BottomSheet', () => {
 			expect(contentElement.innerText).toContain('FooBar');
 
 			closeButton.click();
-
 			expect(element.shadowRoot.querySelectorAll('.fade-out')).toHaveSize(1);
+
 			contentElement.dispatchEvent(new Event('animationend'));
+
 			expect(store.getState().bottomSheet.data).toEqual([]);
+			expect(element.shadowRoot.querySelectorAll('.fade-out')).toHaveSize(0);
 		});
 	});
 });
