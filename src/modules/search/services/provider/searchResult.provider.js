@@ -4,6 +4,7 @@
 import { CadastralParcelSearchResult, GeoResourceSearchResult, LocationSearchResult } from '../domain/searchResult';
 import { $injector } from '../../../../injection';
 import { MediaType } from '../../../../domain/mediaTypes';
+import { SourceType, SourceTypeName } from '../../../../domain/sourceType';
 
 /**
  *A async function that returns a promise with an array of SearchResults with type LOCATION.
@@ -16,8 +17,7 @@ import { MediaType } from '../../../../domain/mediaTypes';
 /**
  *A async function that returns a promise with an array of SearchResults with type GEORESOURCE.
  * @callback GeoresourceResultProvider
- * @param  {string} term The query term
- * @async
+ * @param  {string} htmlLabel The query term
  * @returns {Promise<SearchResult>} results
  */
 
@@ -40,7 +40,7 @@ export const loadBvvGeoResourceSearchResults = async (query) => {
 		});
 		return data;
 	}
-	throw new Error('SearchResults for georesources could not be retrieved');
+	throw new Error('SearchResults for GeoResources could not be retrieved');
 };
 
 export const loadBvvLocationSearchResults = async (query) => {
@@ -72,9 +72,15 @@ export const loadBvvCadastralParcelSearchResults = async (query) => {
 	if (result.ok) {
 		const raw = await result.json();
 		const data = raw.map((o) => {
-			return new CadastralParcelSearchResult(removeHtml(o.attrs.label), o.attrs.label, o.attrs.coordinate, o.attrs.extent ?? null);
+			return new CadastralParcelSearchResult(
+				removeHtml(o.attrs.label),
+				o.attrs.label,
+				o.attrs.coordinate,
+				o.attrs.extent ? o.attrs.extent : null,
+				o.attrs.ewkt ? { geometry: o.attrs.ewkt, geometryType: new SourceType(SourceTypeName.EWKT, null, 3857) } : null
+			);
 		});
 		return data;
 	}
-	throw new Error('SearchResults for cadastrial parcels could not be retrieved');
+	throw new Error('SearchResults for cadastral parcels could not be retrieved');
 };

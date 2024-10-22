@@ -64,7 +64,7 @@ export const HighlightFeatureType = Object.freeze({
  */
 export const HighlightGeometryType = Object.freeze({
 	GEOJSON: 0,
-	WKT: 1
+	EWKT: 1
 });
 
 const getStore = () => {

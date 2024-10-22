@@ -5,6 +5,7 @@ import {
 	SearchResult,
 	SearchResultTypes
 } from '../../../../../src/modules/search/services/domain/searchResult';
+import { SourceType, SourceTypeName } from '../../../../../src/domain/sourceType';
 
 describe('searchResult', () => {
 	describe('SearchResultTypes', () => {
@@ -96,14 +97,29 @@ describe('LocationSearchResult', () => {
 		expect(locationSearchResult.center).toBeNull();
 		expect(locationSearchResult.extent).toBeNull();
 	});
+
+	it('provides custom properties', () => {
+		const label = 'label';
+		const labelFormatted = 'labelFormatted';
+
+		const center = [11, 22];
+		const extent = [0, 1, 2, 3];
+		const locationSearchResult = new LocationSearchResult(label, labelFormatted, center, extent);
+
+		expect(locationSearchResult.getType()).toEqual(SearchResultTypes.LOCATION);
+		expect(locationSearchResult.label).toBe(label);
+		expect(locationSearchResult.labelFormatted).toBe(labelFormatted);
+		expect(locationSearchResult.center).toEqual(center);
+		expect(locationSearchResult.extent).toEqual(extent);
+	});
 });
 
 describe('CadastralParcelSearchResult', () => {
 	it('instantiates a CadastralParcelSearchResult', () => {
 		const label = 'label';
 		const labelFormatted = 'labelFormatted';
-		const center = [1, 2],
-			extent = [3, 4, 5, 6];
+		const center = [1, 2];
+		const extent = [3, 4, 5, 6];
 
 		const cadastralParcelSearchResult = new CadastralParcelSearchResult(label, labelFormatted, center, extent);
 
@@ -125,6 +141,24 @@ describe('CadastralParcelSearchResult', () => {
 		expect(cadastralParcelSearchResult.labelFormatted).toBe(labelFormatted);
 		expect(cadastralParcelSearchResult.center).toBeNull();
 		expect(cadastralParcelSearchResult.extent).toBeNull();
+		expect(cadastralParcelSearchResult.data).toBeNull();
+	});
+
+	it('provides custom properties', () => {
+		const label = 'label';
+		const labelFormatted = 'labelFormatted';
+		const center = [1, 2];
+		const extent = [3, 4, 5, 6];
+		const data = { geometry: 'ewkt', geometryType: new SourceType(SourceTypeName.EWKT) };
+
+		const cadastralParcelSearchResult = new CadastralParcelSearchResult(label, labelFormatted, center, extent, data);
+
+		expect(cadastralParcelSearchResult.getType()).toEqual(SearchResultTypes.CADASTRAL_PARCEL);
+		expect(cadastralParcelSearchResult.label).toBe(label);
+		expect(cadastralParcelSearchResult.labelFormatted).toBe(labelFormatted);
+		expect(cadastralParcelSearchResult.center).toEqual(center);
+		expect(cadastralParcelSearchResult.extent).toEqual(extent);
+		expect(cadastralParcelSearchResult.data).toEqual(data);
 	});
 });
 
