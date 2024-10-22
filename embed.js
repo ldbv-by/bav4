@@ -623,7 +623,7 @@
 							.size=${1.6}
 							.color=${"var(--text2)"}
 							.color_hover=${"var(--text2)"}
-							@click=${()=>{const t=this.shadowRoot.querySelector(".bottom-sheet");t.classList.add("fade-out"),t.addEventListener("animationend",(()=>{(0,_.D)(e)}))}}
+							@click=${()=>{const t=this.shadowRoot.querySelector(".bottom-sheet");t.classList.add("fade-out"),t.addEventListener("animationend",(()=>{(0,_.D)(e),t.classList.remove("fade-out")}))}}
 						></ba-icon>
 					</div>`:s.s6}static get tag(){return"ba-bottom-sheet"}set content(t){this.signal(v,t)}set id(t){this.signal(x,t)}}var A=i(2277),I=i(87093),E=i.n(I),T=i(28353);const C={content:null,level:null,autocloseTime:0},L="update_notification";class k extends c.T{constructor(){super({notification:C,autocloseTimeoutId:null});const{TranslationService:t,SecurityService:e}=n.z.inject("TranslationService","SecurityService");this._translationService=t,this._securityService=e,this._onClose=()=>{}}update(t,e,i){if(t===L)return{...i,notification:e,autocloseTimeoutId:e.autocloseTime>0?(()=>setTimeout((()=>this._hide()),e.autocloseTime))():null}}createView(t){const{notification:e}=t,i=t=>this._translationService.translate(t),n={notification_info:e.level===A.A.INFO,notification_warn:e.level===A.A.WARN,notification_error:e.level===A.A.ERROR},r=e.content?(0,T.Kg)(e.content)?this._securityService.sanitizeHtml(e.content):e.content:null;return r?s.qy` <style>
 						${E()}
