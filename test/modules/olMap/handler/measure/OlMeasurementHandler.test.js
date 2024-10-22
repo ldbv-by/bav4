@@ -31,7 +31,7 @@ import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../.
 import { Layer } from 'ol/layer';
 import { Tools } from '../../../../../src/domain/tools';
 import { BaOverlay } from '../../../../../src/modules/olMap/components/BaOverlay.js';
-import { GEODESIC_FEATURE_PROPERTY } from '../../../../../src/modules/olMap/ol/geodesic/geodesicGeometry.js';
+import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../../../../src/modules/olMap/ol/geodesic/geodesicGeometry.js';
 import { fileStorageReducer } from '../../../../../src/store/fileStorage/fileStorage.reducer.js';
 import { KML_EMPTY_CONTENT } from '../../../../../src/modules/olMap/formats/kml.js';
 
@@ -656,6 +656,27 @@ describe('OlMeasurementHandler', () => {
 
 			expect(statsSpy).toHaveBeenCalledTimes(1);
 			expect(updateOverlaysSpy).toHaveBeenCalledTimes(1);
+		});
+
+		it('sets a geodesic geometry on drawstart', () => {
+			setup();
+			const map = setupMap();
+			const geometry = new LineString([
+				[0, 0],
+				[500, 0],
+				[550, 550],
+				[0, 500],
+				[0, 500]
+			]);
+			const feature = new Feature({ geometry: geometry });
+			feature.setId('measure');
+
+			const classUnderTest = new OlMeasurementHandler();
+
+			classUnderTest.activate(map);
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+
+			expect(feature.get(GEODESIC_FEATURE_PROPERTY)).toEqual(jasmine.any(GeodesicGeometry));
 		});
 
 		it("removes overlays of features on 'drawabort'", () => {
