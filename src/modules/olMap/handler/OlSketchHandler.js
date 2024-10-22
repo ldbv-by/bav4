@@ -55,7 +55,6 @@ export class OlSketchHandler {
 				const onFeatureChange = (event) => {
 					this._monitorProperties(event.target);
 				};
-				sketchFeature.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(sketchFeature, map, () => !this._isFinishOnFirstPoint));
 				this._listener = sketchFeature.on('change', onFeatureChange);
 			}
 			this._pointCount = 1;
@@ -65,7 +64,6 @@ export class OlSketchHandler {
 
 	deactivate() {
 		unByKey(this._listener);
-		this._sketch.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(this._sketch.clone(), this._map));
 		this._sketch = null;
 		this._isFinishOnFirstPoint = false;
 		this._isSnapOnLastPoint = false;

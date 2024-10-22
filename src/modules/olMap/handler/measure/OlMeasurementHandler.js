@@ -501,6 +501,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			};
 
 			this._sketchHandler.activate(event.feature, this._map, Tools.MEASURE + '_');
+			event.feature.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(event.feature, this._map, () => !this._sketchHandler.isFinishOnFirstPoint));
 			this._overlayService.add(this._sketchHandler.active, this._map, StyleTypes.MEASURE);
 			this._drawingListeners.push(event.feature.on('change', onFeatureChange));
 			this._drawingListeners.push(this._map.getView().on('change:resolution', onResolutionChange));
