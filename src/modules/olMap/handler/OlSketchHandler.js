@@ -4,7 +4,6 @@
 import { Polygon } from 'ol/geom';
 import { unByKey } from 'ol/Observable';
 import { Tools } from '../../../domain/tools';
-import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../ol/geodesic/geodesicGeometry';
 
 export const DefaultIdPrefix = Tools.DRAW + '_';
 
