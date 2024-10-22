@@ -35,9 +35,7 @@ describe('navigationRailReducer', () => {
 			});
 
 			it("initializes the store by media query for ORIENTATION 'landscape'", () => {
-				spyOn(windowMock, 'matchMedia')
-					.withArgs('(orientation: landscape)')
-					.and.returnValue(TestUtils.newMediaQueryList(false));
+				spyOn(windowMock, 'matchMedia').withArgs('(orientation: landscape)').and.returnValue(TestUtils.newMediaQueryList(false));
 				const store = setup(createNavigationRailReducer(windowMock));
 
 				expect(store.getState().navigationRail.open).toBeFalse();
