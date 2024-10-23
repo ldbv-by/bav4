@@ -51,16 +51,19 @@ export class TranslationService {
 	}
 
 	/**
-	 *
-	 * @param {string} key
+	 * Returns the i18n value for a key. If the key is unknown the key is returned untouched.
+	 * @param {string} key the i18n key
 	 * @param {string[]} [params] Optional list of parameters (For template interpolation. In that case the provider must return the template from a function)
+	 * @param {boolean} [silent] `true` if no WARN statement should be logged when the key is unknown. Default is `false`
 	 * @returns the translated text
 	 */
-	translate(key, params = []) {
+	translate(key, params = [], silent = false) {
 		if (this._translations.has(key)) {
 			return this._filter(isFunction(this._translations.get(key)) ? this._translations.get(key)(params) : this._translations.get(key));
 		}
-		console.warn('No value found for ' + this._language + '.' + key);
+		if (!silent) {
+			console.warn('No value found for ' + this._language + '.' + key);
+		}
 		return key;
 	}
 
