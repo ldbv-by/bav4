@@ -2,7 +2,7 @@
 	position: absolute;
 	left: 0;
 	padding: 0.5em 1.6em 0.5em 1.3em;
-	background: var(--primary-bg-color-05);
+	background: color(from var(--primary-bg-color) srgb r g b / 0.9);
 	top: -2.2em;
 	border-radius: 0 2em 0 0;
 }
