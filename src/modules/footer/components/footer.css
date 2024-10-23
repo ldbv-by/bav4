@@ -16,7 +16,7 @@
 .content {
 	display: flex;
 	font-size: 0.8rem;
-	background-color: var(--primary-bg-color-05);
+	background-color: color(from var(--primary-bg-color) srgb r g b / 0.9);
 }
 .is-open .footer {
 	transform: translate(28em, 0);
