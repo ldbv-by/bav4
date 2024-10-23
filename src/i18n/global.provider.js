@@ -24,7 +24,8 @@ export const provide = (lang) => {
 				global_geoResource_unauthorized: '401 - Unauthorized',
 				global_geoResource_forbidden: '403 - Forbidden',
 				global_signOut_success: 'Signed out successfully',
-				global_fileStorageService_exception: 'The data could not be stored'
+				global_fileStorageService_exception: 'The data could not be stored',
+				global_cr_global_wgs84: 'Lat, Lon'
 			};
 
 		case 'de':
@@ -52,7 +53,8 @@ export const provide = (lang) => {
 				global_geoResource_unauthorized: '401 - Fehlende Berechtigung',
 				global_geoResource_forbidden: '403 - Zugriff nicht erlaubt',
 				global_signOut_success: 'Sie haben sich erfolgreich abgemeldet',
-				global_fileStorageService_exception: 'Die Daten konnten nicht gespeichert werden'
+				global_fileStorageService_exception: 'Die Daten konnten nicht gespeichert werden',
+				global_cr_global_wgs84: 'Breite, Länge'
 			};
 
 		default:
