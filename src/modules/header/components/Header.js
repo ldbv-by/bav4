@@ -236,17 +236,17 @@ export class Header extends MvuElement {
 
 		const openTopicsTab = () => {
 			setTab(TabIds.TOPICS);
-			openMainMenu();
+			isPortrait && tabIndex === TabIds.TOPICS ? toggleMainMenu() : openMainMenu();
 		};
 
 		const openMapLayerTab = () => {
 			setTab(TabIds.MAPS);
-			openMainMenu();
+			isPortrait && tabIndex === TabIds.MAPS ? toggleMainMenu() : openMainMenu();
 		};
 
 		const openMiscTab = () => {
 			setTab(TabIds.MISC);
-			openMainMenu();
+			isPortrait && tabIndex === TabIds.MISC ? toggleMainMenu() : openMainMenu();
 		};
 
 		const openRoutingTab = () => {
