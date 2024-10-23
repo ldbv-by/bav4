@@ -28,6 +28,9 @@ describe('MapContextMenuContent', () => {
 	const administrationServiceMock = {
 		getAdministration() {}
 	};
+	const translationServiceMock = {
+		translate: (key) => key
+	};
 
 	let store;
 
@@ -43,7 +46,7 @@ describe('MapContextMenuContent', () => {
 			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('CoordinateService', coordinateServiceMock)
 			.registerSingleton('ShareService', shareServiceMock)
-			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('TranslationService', translationServiceMock)
 			.registerSingleton('ElevationService', elevationServiceMock)
 			.registerSingleton('AdministrationService', administrationServiceMock);
 
@@ -88,6 +91,7 @@ describe('MapContextMenuContent', () => {
 			const administrationMock = spyOn(administrationServiceMock, 'getAdministration')
 				.withArgs(coordinateMock)
 				.and.resolveTo({ community: 'LDBV', district: 'Ref42', parcel: 'Parcel' });
+			const translationServiceSpy = spyOn(translationServiceMock, 'translate').and.callThrough();
 			const element = await setup();
 
 			element.coordinate = [...coordinateMock];
@@ -130,6 +134,7 @@ describe('MapContextMenuContent', () => {
 
 			expect(element.shadowRoot.querySelectorAll('ba-routing-chip')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('ba-routing-chip')[0].coordinate).toEqual(coordinateMock);
+			expect(translationServiceSpy).toHaveBeenCalledWith(GlobalCoordinateRepresentations.WGS84.label, [], true);
 		});
 
 		it('renders the content when parcel is NOT available', async () => {

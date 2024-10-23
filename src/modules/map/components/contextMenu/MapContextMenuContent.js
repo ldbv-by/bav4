@@ -107,6 +107,7 @@ export class MapContextMenuContent extends MvuElement {
 			administration: { community, district, parcel }
 		} = model;
 		const translate = (key) => this._translationService.translate(key);
+		const translateSilently = (key) => this._translationService.translate(key, [], true);
 
 		if (coordinate) {
 			const coordinateRepresentations = this._mapService.getCoordinateRepresentations(coordinate);
@@ -117,7 +118,7 @@ export class MapContextMenuContent extends MvuElement {
 					this._copyCoordinateToClipboard(stringifiedCoord);
 				};
 				return html`
-					<span class="label">${label}</span><span class="coordinate">${stringifiedCoord}</span>
+					<span class="label">${translateSilently(label)}</span><span class="coordinate">${stringifiedCoord}</span>
 					<span class="icon">
 						<ba-icon
 							class="close"
