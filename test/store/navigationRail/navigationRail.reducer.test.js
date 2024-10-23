@@ -27,17 +27,15 @@ describe('navigationRailReducer', () => {
 
 	describe('createNavigationRailReducer', () => {
 		describe('returns a reducer function', () => {
-			it("initializes the store by media query for ORIENTATION 'landscape' and 'max-width: 80em'", () => {
-				spyOn(windowMock, 'matchMedia').withArgs('(orientation: landscape) and (max-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
+			it("initializes the store by media query for ORIENTATION 'landscape'", () => {
+				spyOn(windowMock, 'matchMedia').withArgs('(orientation: landscape)').and.returnValue(TestUtils.newMediaQueryList(true));
 				const store = setup(createNavigationRailReducer(windowMock));
 
 				expect(store.getState().navigationRail.open).toBeTrue();
 			});
 
-			it("initializes the store by media query for ORIENTATION 'landscape' and 'max-width: 80em'", () => {
-				spyOn(windowMock, 'matchMedia')
-					.withArgs('(orientation: landscape) and (max-width: 80em)')
-					.and.returnValue(TestUtils.newMediaQueryList(false));
+			it("initializes the store by media query for ORIENTATION 'landscape'", () => {
+				spyOn(windowMock, 'matchMedia').withArgs('(orientation: landscape)').and.returnValue(TestUtils.newMediaQueryList(false));
 				const store = setup(createNavigationRailReducer(windowMock));
 
 				expect(store.getState().navigationRail.open).toBeFalse();
