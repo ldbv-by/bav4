@@ -946,12 +946,12 @@
 							</button>
 						</div>
 						<div  class="header__button-container">
-							<button id="topics_button" data-test-id class="${A(c.K.TOPICS)}" title=${I("header_tab_topics_title")} @click="${()=>{(0,l.sI)(c.K.TOPICS),(0,l.ho)()}}">
+							<button id="topics_button" data-test-id class="${A(c.K.TOPICS)}" title=${I("header_tab_topics_title")} @click="${()=>{(0,l.sI)(c.K.TOPICS),o&&n===c.K.TOPICS?(0,l.L$)():(0,l.ho)()}}">
 								<span>
 									${I("header_tab_topics_button")}
 								</span>
 							</button>
-							<button id="maps_button" data-test-id class="${A(c.K.MAPS)}" title=${I("header_tab_maps_title")}  @click="${()=>{(0,l.sI)(c.K.MAPS),(0,l.ho)()}}">
+							<button id="maps_button" data-test-id class="${A(c.K.MAPS)}" title=${I("header_tab_maps_title")}  @click="${()=>{(0,l.sI)(c.K.MAPS),o&&n===c.K.MAPS?(0,l.L$)():(0,l.ho)()}}">
 								<span>
 									${I("header_tab_maps_button")}
 								</span>
@@ -959,7 +959,7 @@
 									${N}
 								</div>
 							</button>
-							<button id="misc_button" data-test-id class="${A(c.K.MISC)}" title=${I("header_tab_misc_title")}  @click="${()=>{(0,l.sI)(c.K.MISC),(0,l.ho)()}}">
+							<button id="misc_button" data-test-id class="${A(c.K.MISC)}" title=${I("header_tab_misc_title")}  @click="${()=>{(0,l.sI)(c.K.MISC),o&&n===c.K.MISC?(0,l.L$)():(0,l.ho)()}}">
 								<span>
 									${I("header_tab_misc_button")}
 								</span>
