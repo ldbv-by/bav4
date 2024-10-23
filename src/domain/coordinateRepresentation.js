@@ -4,7 +4,7 @@
 /**
  * Defines the (target) representation for a coordinate.
  * @typedef {Object} CoordinateRepresentation
- * @property {string} label label
+ * @property {string} label label (may be an i18n key)
  * @property {number} code the SRID or `null`
  * @property {number} digits decimal places for rounding
  * @property {boolean} global suitable for global usage
@@ -17,10 +17,10 @@
  * @enum {CoordinateRepresentation}
  */
 export const GlobalCoordinateRepresentations = Object.freeze({
-	WGS84: { label: 'WGS84', code: 4326, digits: 5, global: true, group: 'wgs84' },
-	UTM: { label: 'UTM', code: null, digits: 0, global: true, group: 'utm' },
-	MGRS: { label: 'MGRS', code: null, digits: 0, global: true, group: 'mgrs' },
-	SphericalMercator: { label: '3857', code: 3857, digits: 6, global: true, group: 'sm' }
+	WGS84: { key: 'cr_global_wgs84', label: 'global_cr_global_wgs84', code: 4326, digits: 5, global: true, group: 'wgs84' },
+	UTM: { key: 'cr_global_utm', label: 'UTM', code: null, digits: 0, global: true, group: 'utm' },
+	MGRS: { key: 'cr_global_mgrs', label: 'MGRS', code: null, digits: 0, global: true, group: 'mgrs' },
+	SphericalMercator: { key: 'cr_global_3857', label: '3857', code: 3857, digits: 6, global: true, group: 'sm' }
 });
 /**
  * BVV specific local projected enum of CoordinateRepresentations.
@@ -28,6 +28,6 @@ export const GlobalCoordinateRepresentations = Object.freeze({
  * @enum {CoordinateRepresentation}
  */
 export const BvvCoordinateRepresentations = Object.freeze({
-	UTM32: { label: 'UTM32', code: 25832, digits: 0, global: false, group: 'utm' },
-	UTM33: { label: 'UTM33', code: 25833, digits: 0, global: false, group: 'utm' }
+	UTM32: { key: 'cr_local_utm32', label: 'UTM32', code: 25832, digits: 0, global: false, group: 'utm' },
+	UTM33: { key: 'cr_local_utm33', label: 'UTM33', code: 25833, digits: 0, global: false, group: 'utm' }
 });
