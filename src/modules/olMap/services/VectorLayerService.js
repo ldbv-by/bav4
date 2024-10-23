@@ -92,6 +92,12 @@ export class VectorLayerService {
 			olVectorSource.getFeatures().forEach((f) => styleService.removeStyle(f, olMap));
 		});
 
+		// changes in the list of layers, should have impact on style properties of the vectorLayer (e.g. related overlays),
+		// which are not tracked by openlayers
+		const layerListChangedListenerKey = olMap.getLayers().on(['add', 'remove'], () => {
+			olVectorSource.getFeatures().forEach((f) => this._updateStyle(f, olLayer, olMap));
+		});
+
 		/**
 		 * Track layer changes of visibility, opacity and z-index
 		 */
@@ -99,7 +105,7 @@ export class VectorLayerService {
 			olVectorSource.getFeatures().forEach((f) => this._updateStyle(f, olLayer, olMap));
 		});
 
-		return { addFeatureListenerKey, removeFeatureListenerKey, clearFeaturesListenerKey, layerChangeListenerKey };
+		return { addFeatureListenerKey, removeFeatureListenerKey, clearFeaturesListenerKey, layerChangeListenerKey, layerListChangedListenerKey };
 	}
 
 	/**
