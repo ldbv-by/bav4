@@ -67,6 +67,7 @@ export class MapButtonsContainer extends MvuElement {
 				<ba-geolocation-button></ba-geolocation-button>
 				<ba-zoom-buttons></ba-zoom-buttons>
 				<ba-extent-button></ba-extent-button>
+				<ba-three-dimension-button></ba-three-dimension-button>
 			</div>
 		`;
 	}
