@@ -4,13 +4,13 @@ describe('i18n for map module', () => {
 	it('provides translation for de', () => {
 		const map = provide('de');
 
-		expect(map.map_threeDimensionButton_title).toBe('lorem ipsum');
+		expect(map.map_threeDimensionButton_title).toBe('3D-Ansicht in neuem Fenster öffnen');
 	});
 
 	it('provides translation for en', () => {
 		const map = provide('en');
 
-		expect(map.map_threeDimensionButton_title).toBe('lorem ipsum');
+		expect(map.map_threeDimensionButton_title).toBe('Open the 3D view in a new window');
 	});
 
 	it('contains the expected amount of entries', () => {
