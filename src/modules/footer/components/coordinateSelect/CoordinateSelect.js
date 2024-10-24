@@ -88,7 +88,7 @@ export class CoordinateSelect extends MvuElement {
 		const onChange = (event) => {
 			this.signal(
 				Selected_Cr_Changed,
-				this._items.find((cr) => cr.key === event.target.value)
+				this._items.find((cr) => cr.id === event.target.value)
 			);
 		};
 		return html`
@@ -97,7 +97,7 @@ export class CoordinateSelect extends MvuElement {
 			</style>
 			<div class="coordinate-container">
 				<select class="select-coordinate" @change="${onChange}" title="${translate('footer_coordinate_select')}">
-					${this._items.map((item) => html`<option class="select-coordinate-option" value="${item.key}">${translateSilently(item.label)}</option>`)}
+					${this._items.map((item) => html`<option class="select-coordinate-option" value="${item.id}">${translateSilently(item.label)}</option>`)}
 				</select>
 				${pointerPosition.length ? html`<div class="coordinate-label">${getStringifiedCoordinate()}</div>` : nothing}
 			</div>
