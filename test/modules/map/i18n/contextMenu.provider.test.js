@@ -6,7 +6,7 @@ describe('i18n for context menu', () => {
 
 		expect(map.map_contextMenu_header).toBe('Location');
 		expect(map.map_contextMenu_close_button).toBe('Close');
-		expect(map.map_contextMenuContent_elevation_label).toBe('Elev.');
+		expect(map.map_contextMenuContent_elevation_label).toBe('Elev. (m)');
 		expect(map.map_contextMenuContent_community_label).toBe('Community');
 		expect(map.map_contextMenuContent_district_label).toBe('District');
 		expect(map.map_contextMenuContent_parcel_label).toBe('Parcel');
@@ -20,7 +20,7 @@ describe('i18n for context menu', () => {
 
 		expect(map.map_contextMenu_header).toBe('Position');
 		expect(map.map_contextMenu_close_button).toBe('Schließen');
-		expect(map.map_contextMenuContent_elevation_label).toBe('Höhe');
+		expect(map.map_contextMenuContent_elevation_label).toBe('Höhe (m)');
 		expect(map.map_contextMenuContent_community_label).toBe('Gemeinde');
 		expect(map.map_contextMenuContent_district_label).toBe('Gemarkung');
 		expect(map.map_contextMenuContent_parcel_label).toBe('Flurstück');

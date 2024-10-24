@@ -16,6 +16,10 @@ describe('CoordinateSelect', () => {
 		getCoordinateRepresentations: () => {}
 	};
 
+	const translationServiceMock = {
+		translate: (key) => key
+	};
+
 	const setup = (config = { touch: false }) => {
 		const state = {
 			pointer: pointerReducer.initialState
@@ -23,7 +27,7 @@ describe('CoordinateSelect', () => {
 
 		TestUtils.setupStoreAndDi(state, { pointer: pointerReducer });
 
-		$injector.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('TranslationService', translationServiceMock);
 		$injector.registerSingleton('CoordinateService', coordinateServiceMock);
 		$injector.registerSingleton('MapService', mapServiceMock);
 		$injector.registerSingleton('EnvironmentService', { isTouch: () => config.touch });
@@ -62,13 +66,18 @@ describe('CoordinateSelect', () => {
 				GlobalCoordinateRepresentations.UTM,
 				GlobalCoordinateRepresentations.WGS84
 			]);
+			const translationServiceSpy = spyOn(translationServiceMock, 'translate').and.callThrough();
 			const element = await setup();
 
 			expect(element.shadowRoot.querySelectorAll('select')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('select')[0].title).toBe('footer_coordinate_select');
-			expect(element.shadowRoot.querySelectorAll('.select-coordinate-option')[0].value).toBe(GlobalCoordinateRepresentations.UTM.label);
-			expect(element.shadowRoot.querySelectorAll('.select-coordinate-option')[1].value).toEqual(GlobalCoordinateRepresentations.WGS84.label);
+			expect(element.shadowRoot.querySelectorAll('.select-coordinate-option')[0].value).toBe(GlobalCoordinateRepresentations.UTM.id);
+			expect(element.shadowRoot.querySelectorAll('.select-coordinate-option')[1].value).toEqual(GlobalCoordinateRepresentations.WGS84.id);
 			expect(element.shadowRoot.querySelectorAll('.coordinate-label')).toHaveSize(0);
+			expect(translationServiceSpy).toHaveBeenCalledTimes(3);
+			expect(translationServiceSpy.calls.all()[0].args.length).toBe(1);
+			expect(translationServiceSpy.calls.all()[1].args[2]).toBe(true);
+			expect(translationServiceSpy.calls.all()[2].args[2]).toBe(true);
 		});
 	});
 
@@ -106,19 +115,23 @@ describe('CoordinateSelect', () => {
 				GlobalCoordinateRepresentations.UTM,
 				GlobalCoordinateRepresentations.WGS84
 			]);
-			spyOn(coordinateServiceMock, 'stringify').and.callFake((coordinate, cr) => `stringified coordinate for ${cr.label}`);
+			spyOn(coordinateServiceMock, 'stringify').and.callFake((coordinate, cr) => `stringified coordinate for ${cr.id}`);
 			const element = await setup();
 			const testCoordinate = [1211817.6233080907, 6168328.021915435];
 			setPointerMove({ coordinate: testCoordinate, screenCoordinate: [] });
 
-			expect(element.shadowRoot.querySelector('.coordinate-label').innerText).toBe('stringified coordinate for UTM');
+			expect(element.shadowRoot.querySelector('.coordinate-label').innerText).toBe(
+				`stringified coordinate for ${GlobalCoordinateRepresentations.UTM.id}`
+			);
 
 			// change selection
 			const select = element.shadowRoot.querySelector('select');
-			select.value = GlobalCoordinateRepresentations.WGS84.label;
+			select.value = GlobalCoordinateRepresentations.WGS84.id;
 			select.dispatchEvent(new Event('change'));
 
-			expect(element.shadowRoot.querySelector('.coordinate-label').innerText).toBe('stringified coordinate for WGS84');
+			expect(element.shadowRoot.querySelector('.coordinate-label').innerText).toBe(
+				`stringified coordinate for ${GlobalCoordinateRepresentations.WGS84.id}`
+			);
 		});
 	});
 

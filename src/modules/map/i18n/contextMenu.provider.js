@@ -5,7 +5,7 @@ export const provide = (lang) => {
 				//the first part of the snake_case key should be the name of the related module
 				map_contextMenu_header: 'Location',
 				map_contextMenu_close_button: 'Close',
-				map_contextMenuContent_elevation_label: 'Elev.',
+				map_contextMenuContent_elevation_label: 'Elev. (m)',
 				map_contextMenuContent_community_label: 'Community',
 				map_contextMenuContent_district_label: 'District',
 				map_contextMenuContent_parcel_label: 'Parcel',
@@ -19,7 +19,7 @@ export const provide = (lang) => {
 				//the first part of the snake_case key should be the name of the related module
 				map_contextMenu_header: 'Position',
 				map_contextMenu_close_button: 'Schließen',
-				map_contextMenuContent_elevation_label: 'Höhe',
+				map_contextMenuContent_elevation_label: 'Höhe (m)',
 				map_contextMenuContent_community_label: 'Gemeinde',
 				map_contextMenuContent_district_label: 'Gemarkung',
 				map_contextMenuContent_parcel_label: 'Flurstück',

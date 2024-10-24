@@ -58,10 +58,10 @@ describe('DrawTool', () => {
 		it('builds list of tools', async () => {
 			const element = await setup();
 
-			expect(element._model.tools).toBeTruthy();
-			expect(element._model.tools.length).toBe(3);
+			expect(element.getModel().tools).toBeTruthy();
+			expect(element.getModel().tools.length).toBe(3);
 
-			expect(element._model.tools.map((t) => t.name)).toEqual(jasmine.arrayWithExactContents(['point', 'line', 'polygon']));
+			expect(element.getModel().tools.map((t) => t.name)).toEqual(jasmine.arrayWithExactContents(['point', 'line', 'polygon']));
 		});
 
 		describe('QueryParameters.EC_DRAW_TOOL is NOT present', () => {
@@ -200,8 +200,8 @@ describe('DrawTool', () => {
 			it('shows a list of tools', async () => {
 				const element = await setup();
 
-				expect(element._model.tools).toBeTruthy();
-				expect(element._model.tools.length).toBe(3);
+				expect(element.getModel().tools).toBeTruthy();
+				expect(element.getModel().tools.length).toBe(3);
 
 				expect(element.shadowRoot.querySelectorAll('.draw-tool__enable-button')).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll('#close-icon')).toHaveSize(1);
