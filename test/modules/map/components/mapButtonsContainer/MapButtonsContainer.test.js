@@ -51,8 +51,11 @@ describe('MapButtonsContainer', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(0);
 
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-rotation-button')).display).toBe('block');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-geolocation-button')).display).toBe('block');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-zoom-buttons')).display).toBe('block');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-extent-button')).display).toBe('block');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-three-dimension-button')).display).toBe('block');
 		});
 
 		it('layouts for portrait and width >= 80em', async () => {
@@ -70,6 +73,8 @@ describe('MapButtonsContainer', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(0);
 
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-rotation-button')).display).toBe('block');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-geolocation-button')).display).toBe('block');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-zoom-buttons')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-extent-button')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-three-dimension-button')).display).toBe('none');
@@ -90,6 +95,8 @@ describe('MapButtonsContainer', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
 
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-rotation-button')).display).toBe('block');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-geolocation-button')).display).toBe('block');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-zoom-buttons')).display).toBe('block');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-extent-button')).display).toBe('block');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-three-dimension-button')).display).toBe('block');
@@ -110,6 +117,8 @@ describe('MapButtonsContainer', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
 
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-rotation-button')).display).toBe('block');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-geolocation-button')).display).toBe('block');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-zoom-buttons')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-extent-button')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-three-dimension-button')).display).toBe('none');
@@ -128,9 +137,10 @@ describe('MapButtonsContainer', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.is-embedded')).toHaveSize(1);
 
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-rotation-button')).display).toBe('block');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-geolocation-button')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-zoom-buttons')).display).toBe('block');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-extent-button')).display).toBe('none');
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-geolocation-button')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-three-dimension-button')).display).toBe('none');
 		});
 	});
