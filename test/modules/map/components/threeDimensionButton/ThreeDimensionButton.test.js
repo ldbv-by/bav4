@@ -21,7 +21,7 @@ describe('ThreeDimensionButton', () => {
 	const setup = async (state = {}) => {
 		const initialState = { ...state };
 
-		TestUtils.setupStoreAndDi(state, { position: positionReducer });
+		TestUtils.setupStoreAndDi(initialState, { position: positionReducer });
 
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key })
