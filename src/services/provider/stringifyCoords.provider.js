@@ -11,25 +11,25 @@ import { toLocaleString } from '../../utils/numberUtils';
  * @type {module:services/OlCoordinateService~stringifyCoordProvider}
  */
 export const bvvStringifyFunction = (coordinate, coordinateRepresentation, transformFn, options = {}) => {
-	const { global, code, digits, label } = coordinateRepresentation;
+	const { global, code, digits, id } = coordinateRepresentation;
 	// all global coordinate representations
 	if (global) {
-		const stringifyGlobal = (label, coordinate) => {
+		const stringifyGlobal = (id, coordinate) => {
 			const coord4326 = transformFn(coordinate, 3857, 4326);
-			switch (label) {
-				case GlobalCoordinateRepresentations.SphericalMercator.label:
+			switch (id) {
+				case GlobalCoordinateRepresentations.SphericalMercator.id:
 					return createStringXY(digits, true)(coordinate);
-				case GlobalCoordinateRepresentations.WGS84.label:
+				case GlobalCoordinateRepresentations.WGS84.id:
 					return stringifyLatLong(options.digits ?? coordinateRepresentation.digits)(coord4326);
-				case GlobalCoordinateRepresentations.UTM.label: {
+				case GlobalCoordinateRepresentations.UTM.id: {
 					const { northing, easting, zoneNumber, zoneLetter } = LLtoUTM({ lat: coord4326[1], lon: coord4326[0] });
 					return `${zoneNumber}${zoneLetter} ${easting} ${northing}`;
 				}
-				case GlobalCoordinateRepresentations.MGRS.label:
+				case GlobalCoordinateRepresentations.MGRS.id:
 					return forward(coord4326);
 			}
 		};
-		return stringifyGlobal(label, coordinate);
+		return stringifyGlobal(id, coordinate);
 	}
 
 	// all local coordinate representations

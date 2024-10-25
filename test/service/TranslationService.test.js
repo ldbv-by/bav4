@@ -91,13 +91,24 @@ describe('TranslationService', () => {
 			});
 		}).toThrowError(/Key key0 already registered/);
 	});
+	describe('key is unknown', () => {
+		it('returns the key and logs a warn statement', () => {
+			spyOn(configService, 'getValue').and.returnValue('de');
+			const warnSpy = spyOn(console, 'warn');
 
-	it('provides the requested key when unknown and logs a warn statement', () => {
-		spyOn(configService, 'getValue').and.returnValue('de');
-		const warnSpy = spyOn(console, 'warn');
+			expect(instanceUnderTest.translate('unknown_key')).toBe('unknown_key');
+			expect(warnSpy).toHaveBeenCalled();
+		});
+	});
 
-		expect(instanceUnderTest.translate('unknown_key')).toBe('unknown_key');
-		expect(warnSpy).toHaveBeenCalled();
+	describe('key is unknown and service is called with silent flag', () => {
+		it('returns the key and does NOT logs a warn statement', () => {
+			spyOn(configService, 'getValue').and.returnValue('de');
+			const warnSpy = spyOn(console, 'warn');
+
+			expect(instanceUnderTest.translate('unknown_key', [], true)).toBe('unknown_key');
+			expect(warnSpy).not.toHaveBeenCalled();
+		});
 	});
 
 	it('filters a value when app is in standalone mode', () => {
