@@ -128,7 +128,9 @@ export class ShareToolContent extends AbstractToolContent {
 
 								await this._window.navigator.share(shareData);
 							} catch (e) {
-								emitNotification(translate('toolbox_shareTool_share_api_failed'), LevelTypes.WARN);
+								if (!(e instanceof DOMException && e.name === 'AbortError')) {
+									emitNotification(translate('toolbox_shareTool_share_api_failed'), LevelTypes.WARN);
+								}
 							}
 						};
 					} else {
