@@ -43,31 +43,33 @@ export const createAnimateFunction = (map, feature, endCallback) => {
 	const start = Date.now();
 
 	const animate = (event) => {
-		const vectorContext = getVectorContext(event);
-		const frameState = event.frameState;
-		const flashGeom = feature.getGeometry().clone();
-		const elapsed = frameState.time - start;
-		// don't allow negative values for radius
-		const elapsedRatio = (elapsed >= 0 ? elapsed : 0) / duration;
-		// radius will be 6 at start and 30 at end.
-		const radius = easeOut(elapsedRatio) * 24 + 6;
-		const opacity = easeOut(1 - elapsedRatio);
+		if (feature.getGeometry()) {
+			const vectorContext = getVectorContext(event);
+			const frameState = event.frameState;
+			const flashGeom = feature.getGeometry().clone();
+			const elapsed = frameState.time - start;
+			// don't allow negative values for radius
+			const elapsedRatio = (elapsed >= 0 ? elapsed : 0) / duration;
+			// radius will be 6 at start and 30 at end.
+			const radius = easeOut(elapsedRatio) * 24 + 6;
+			const opacity = easeOut(1 - elapsedRatio);
 
-		const style = new Style({
-			image: new CircleStyle({
-				radius: radius,
-				stroke: new Stroke({
-					color: 'rgba(255, 0, 0, ' + opacity + ')',
-					width: 0.25 + opacity
+			const style = new Style({
+				image: new CircleStyle({
+					radius: radius,
+					stroke: new Stroke({
+						color: 'rgba(255, 0, 0, ' + opacity + ')',
+						width: 0.25 + opacity
+					})
 				})
-			})
-		});
+			});
 
-		vectorContext.setStyle(style);
-		vectorContext.drawGeometry(flashGeom);
-		if (elapsed > duration) {
-			endCallback();
-			return;
+			vectorContext.setStyle(style);
+			vectorContext.drawGeometry(flashGeom);
+			if (elapsed > duration) {
+				endCallback();
+				return;
+			}
 		}
 		// tell OpenLayers to continue postrender animation
 		map.render();
