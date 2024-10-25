@@ -191,6 +191,9 @@ describe('NavigationRail', () => {
 			expect(element.shadowRoot.querySelectorAll('.objectinfo')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.objectinfo')).display).toBe('none');
 
+			expect(element.shadowRoot.querySelectorAll('.timeTravel')).toHaveSize(1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.timeTravel')).display).toBe('none');
+
 			expect(element.shadowRoot.querySelectorAll('.zoom-in')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.zoom-in')).display).toBe('flex');
 
