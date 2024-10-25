@@ -113,7 +113,7 @@ describe('ShareToolContent', () => {
 					expect(windowShareSpy).toHaveBeenCalledWith(mockShareData);
 				});
 
-				it('logs a warn statement on share api reject', async () => {
+				it('emits a warn statement on share api reject', async () => {
 					const mockShortUrl = 'https://short/url';
 					const mockErrorMsg = 'something got wrong';
 					const windowMock = {
@@ -134,7 +134,7 @@ describe('ShareToolContent', () => {
 					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 				});
 
-				it('does NOT log a warn statement on share api canceled', async () => {
+				it('does NOT emit a warn statement on share api canceled', async () => {
 					const mockShortUrl = 'https://short/url';
 					const windowMock = {
 						navigator: {
