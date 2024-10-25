@@ -22,7 +22,7 @@ export class ThreeDimensionButton extends MvuElement {
 	#shareService;
 	#coordinateService;
 	#storeService;
-
+	#mapService;
 	constructor() {
 		super();
 
@@ -31,13 +31,15 @@ export class ThreeDimensionButton extends MvuElement {
 			EnvironmentService: environmentService,
 			ShareService: shareService,
 			CoordinateService: coordinateService,
-			StoreService: storeService
-		} = $injector.inject('TranslationService', 'EnvironmentService', 'ShareService', 'CoordinateService', 'StoreService');
+			StoreService: storeService,
+			MapService: mapService
+		} = $injector.inject('TranslationService', 'EnvironmentService', 'ShareService', 'CoordinateService', 'StoreService', 'MapService');
 		this.#translationService = translationService;
 		this.#environmentService = environmentService;
 		this.#shareService = shareService;
 		this.#coordinateService = coordinateService;
 		this.#storeService = storeService;
+		this.#mapService = mapService;
 	}
 
 	createView() {
@@ -49,6 +51,9 @@ export class ThreeDimensionButton extends MvuElement {
 				.toLonLat(this.#storeService.getStore().getState().position.center)
 				.map((n) => n.toFixed(GlobalCoordinateRepresentations.WGS84.digits));
 			queryParameters[QueryParameters.CENTER] = transformedCenter;
+			queryParameters['res'] = this.#mapService
+				.calcResolution(this.#storeService.getStore().getState().position.zoom, this.#storeService.getStore().getState().position.center)
+				.toFixed(1);
 
 			const url = `https://cert42.bayern.de/bayernatlas_3d_preview?${decodeURIComponent(new URLSearchParams(queryParameters).toString())}`;
 			this.#environmentService.getWindow().open(url);

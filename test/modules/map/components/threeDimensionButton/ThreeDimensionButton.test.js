@@ -14,9 +14,12 @@ describe('ThreeDimensionButton', () => {
 	const coordinateService = {
 		toLonLat: () => {}
 	};
+	const mapService = {
+		calcResolution: () => {}
+	};
 
-	const setup = async () => {
-		const state = {};
+	const setup = async (state = {}) => {
+		const initialState = { ...state };
 
 		TestUtils.setupStoreAndDi(state, { position: positionReducer });
 
@@ -24,7 +27,8 @@ describe('ThreeDimensionButton', () => {
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('EnvironmentService', environmentService)
 			.registerSingleton('ShareService', shareService)
-			.registerSingleton('CoordinateService', coordinateService);
+			.registerSingleton('CoordinateService', coordinateService)
+			.registerSingleton('MapService', mapService);
 
 		return await TestUtils.render(ThreeDimensionButton.tag);
 	};
@@ -48,20 +52,29 @@ describe('ThreeDimensionButton', () => {
 	});
 
 	describe('when button is clicked', () => {
-		it('it opens the 3D view in an external window', async () => {
+		it('opens the 3D view in an external window', async () => {
+			const center3857 = [123, 345];
+			const zoom = 8;
+			const center4326 = [11.1111111, 22.2222222];
+			const resolution = 42;
 			const openSpy = jasmine.createSpy();
 			const mockWindow = { open: openSpy };
 			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
-			const coord4326 = [11.1111111, 22.2222222];
-			spyOn(coordinateService, 'toLonLat').and.returnValue(coord4326);
+			spyOn(coordinateService, 'toLonLat').withArgs(center3857).and.returnValue(center4326);
+			spyOn(mapService, 'calcResolution').withArgs(zoom, center3857).and.returnValue(resolution);
 			const shareServiceSpy = spyOn(shareService, 'getParameters').and.returnValue(new Map());
-			const element = await setup();
+			const element = await setup({
+				position: {
+					center: [...center3857],
+					zoom
+				}
+			});
 			const button = element.shadowRoot.querySelector('.three-dimension-button');
 
 			button.click();
 
 			expect(shareServiceSpy).toHaveBeenCalled();
-			expect(openSpy).toHaveBeenCalledWith('https://cert42.bayern.de/bayernatlas_3d_preview?c=11.11111,22.22222');
+			expect(openSpy).toHaveBeenCalledWith('https://cert42.bayern.de/bayernatlas_3d_preview?c=11.11111,22.22222&res=42.0');
 		});
 	});
 });
