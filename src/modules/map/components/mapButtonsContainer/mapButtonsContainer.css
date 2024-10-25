@@ -11,7 +11,8 @@
 	margin: 0.2em 0;
 }
 .is-portrait ba-zoom-buttons,
-.is-portrait ba-extent-button {
+.is-portrait ba-extent-button,
+.is-portrait ba-three-dimension-button {
 	display: none;
 }
 .is-portrait > * {
@@ -37,6 +38,7 @@
 	display: block;
 }
 .is-embedded ba-geolocation-button,
-.is-embedded ba-extent-button {
+.is-embedded ba-extent-button,
+.is-embedded ba-three-dimension-button {
 	display: none;
 }
