@@ -116,8 +116,7 @@ export class LayerService {
 					geoResourceId: geoResource.id,
 					opacity: opacity,
 					minZoom: minZoom ?? undefined,
-					maxZoom: maxZoom ?? undefined,
-					preload: 3
+					maxZoom: maxZoom ?? undefined
 				});
 				const xyzSource = () => {
 					const config = {
