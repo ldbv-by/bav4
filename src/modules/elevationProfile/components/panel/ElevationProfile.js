@@ -609,10 +609,7 @@ export class ElevationProfile extends MvuElement {
 								const tooltipItem = tooltipItems[0];
 								const elevationEntry = getElevationEntry(tooltipItem);
 								this.setCoordinates([elevationEntry.e, elevationEntry.n]);
-								const distInM = distUnit === 'km' ? convertToNumber(tooltipItem.label) * 1000 : convertToNumber(tooltipItem.label);
-
-								const dist = this._unitsService.formatDistance(distInM);
-								return translate('elevationProfile_distance') + ': ' + dist;
+								return `${translate('elevationProfile_distance')}: ${this._unitsService.formatDistance(elevationEntry.dist)}`;
 							},
 							label: (tooltipItem) => {
 								const retArray = [];
