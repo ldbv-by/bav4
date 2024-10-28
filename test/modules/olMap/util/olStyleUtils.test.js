@@ -1238,6 +1238,28 @@ describe('createSketchStyleFunction', () => {
 
 		expect(styles).toBeTruthy();
 		expect(styles.length).toBe(1);
+
+		expect(styles[0].getStroke()).toBeNull();
+		expect(styles[0].getFill()).toBeNull();
+	});
+
+	it('should have a style for sketch lineString', () => {
+		const geometry = new LineString([
+			[0, 0],
+			[500, 0],
+			[550, 550],
+			[0, 500]
+		]);
+		const feature = new Feature({ geometry: geometry });
+
+		const styleFunction = createSketchStyleFunction(measureStyleFunction);
+		const styles = styleFunction(feature, null);
+
+		expect(styles).toBeTruthy();
+		expect(styles.length).toBe(1);
+
+		expect(styles[0].getStroke()).toBeNull();
+		expect(styles[0].getFill()).toBeNull();
 	});
 
 	it('should have a style for sketch point', () => {
@@ -1249,6 +1271,8 @@ describe('createSketchStyleFunction', () => {
 
 		expect(styles).toBeTruthy();
 		expect(styles.length).toBe(1);
+
+		expect(styles[0].getImage()).toBeInstanceOf(CircleStyle);
 	});
 });
 
