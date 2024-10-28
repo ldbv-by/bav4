@@ -500,14 +500,6 @@ export class ElevationProfile extends MvuElement {
 			const index = elevationData.labels.indexOf(tooltipItem.parsed.x);
 			return elevationData.elevations[index];
 		};
-		const convertToNumber = (numberOrString) => {
-			if (typeof numberOrString === 'string') {
-				return parseFloat(numberOrString.replace(',', '.'));
-			}
-
-			// If the input is not a string, return the input as-is.
-			return numberOrString;
-		};
 
 		const resetChartColor = () => {
 			const selectedAttribute = this.getModel().selectedAttribute;
