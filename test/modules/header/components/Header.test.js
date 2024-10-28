@@ -456,10 +456,56 @@ describe('Header', () => {
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('.header__button-container').children[0].click());
 			expect(store.getState().mainMenu.tab).toBe(TabIds.TOPICS);
+			expect(store.getState().mainMenu.open).toBe(true);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[1].click());
 			expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
+			expect(store.getState().mainMenu.open).toBe(true);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[2].click());
 			expect(store.getState().mainMenu.tab).toBe(TabIds.MISC);
+			expect(store.getState().mainMenu.open).toBe(true);
+		});
+
+		it('updates the store in portrait mode', async () => {
+			const state = {
+				mainMenu: {
+					open: false
+				},
+				media: {
+					portrait: true,
+					minWidth: true
+				}
+			};
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelector('.header__button-container').children[0].click());
+			expect(store.getState().mainMenu.tab).toBe(TabIds.TOPICS);
+			expect(store.getState().mainMenu.open).toBe(true);
+			expect(element.shadowRoot.querySelector('.header__button-container').children[0].click());
+			expect(store.getState().mainMenu.tab).toBe(TabIds.TOPICS);
+			expect(store.getState().mainMenu.open).toBe(false);
+
+			expect(element.shadowRoot.querySelector('.header__button-container').children[1].click());
+			expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
+			expect(store.getState().mainMenu.open).toBe(true);
+			expect(element.shadowRoot.querySelector('.header__button-container').children[1].click());
+			expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
+			expect(store.getState().mainMenu.open).toBe(false);
+
+			expect(element.shadowRoot.querySelector('.header__button-container').children[2].click());
+			expect(store.getState().mainMenu.tab).toBe(TabIds.MISC);
+			expect(store.getState().mainMenu.open).toBe(true);
+			expect(element.shadowRoot.querySelector('.header__button-container').children[2].click());
+			expect(store.getState().mainMenu.tab).toBe(TabIds.MISC);
+			expect(store.getState().mainMenu.open).toBe(false);
+
+			expect(element.shadowRoot.querySelector('.header__button-container').children[0].click());
+			expect(store.getState().mainMenu.tab).toBe(TabIds.TOPICS);
+			expect(store.getState().mainMenu.open).toBe(true);
+			expect(element.shadowRoot.querySelector('.header__button-container').children[1].click());
+			expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
+			expect(store.getState().mainMenu.open).toBe(true);
+			expect(element.shadowRoot.querySelector('.header__button-container').children[2].click());
+			expect(store.getState().mainMenu.tab).toBe(TabIds.MISC);
+			expect(store.getState().mainMenu.open).toBe(true);
 		});
 	});
 

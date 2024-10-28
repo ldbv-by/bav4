@@ -134,6 +134,23 @@ describe('createAnimateFunction', () => {
 		expect(() => layer.dispatchEvent(earlyEvent)).not.toThrow();
 	});
 
+	it('when feature has no geometry, should NOT call the endCallback', () => {
+		const feature = new Feature();
+		const map = setupMap();
+		const layer = setupLayer(map, feature);
+
+		const endCallback = jasmine.createSpy();
+
+		const functionUnderTest = createAnimateFunction(map, feature, endCallback);
+		layer.on('postrender', functionUnderTest);
+		layer.dispatchEvent(getPostRenderEvent(Date.now()));
+
+		expect(functionUnderTest).toBeDefined();
+
+		layer.dispatchEvent(getPostRenderEvent(Date.now() + 1100));
+		expect(endCallback).not.toHaveBeenCalled();
+	});
+
 	it('when animation ends, should NOT call the endCallback', () => {
 		const feature = getFeature();
 		const map = setupMap();

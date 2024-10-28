@@ -365,15 +365,16 @@ describe('VectorLayerService', () => {
 		});
 
 		describe('_registerEvents', () => {
-			it('adds four listeners', () => {
+			it('adds five listeners', () => {
 				setup();
-				const { addFeatureListenerKey, removeFeatureListenerKey, clearFeaturesListenerKey, layerChangeListenerKey } =
+				const { addFeatureListenerKey, removeFeatureListenerKey, clearFeaturesListenerKey, layerChangeListenerKey, layerListChangedListenerKey } =
 					instanceUnderTest._registerStyleEventListeners(new VectorSource(), new VectorLayer(), new Map());
 
 				expect(addFeatureListenerKey).toBeDefined();
 				expect(removeFeatureListenerKey).toBeDefined();
 				expect(clearFeaturesListenerKey).toBeDefined();
 				expect(layerChangeListenerKey).toBeDefined();
+				expect(layerListChangedListenerKey).toBeDefined();
 			});
 
 			it('calls StyleService#addStyle on "addFeature"', () => {
@@ -482,7 +483,7 @@ describe('VectorLayerService', () => {
 				expect(updateStyleSpy).toHaveBeenCalledWith(olFeature, olLayer, olMap);
 			});
 
-			it('does not call #_updateStyle when other layers are added', () => {
+			it('calls #_updateStyle when layers are added', () => {
 				setup();
 				const olMap = new Map();
 				const olFeature = new Feature();
@@ -494,7 +495,25 @@ describe('VectorLayerService', () => {
 
 				olMap.getLayers().dispatchEvent(new CollectionEvent('add', otherOlLayer));
 
-				expect(updateStyleSpy).not.toHaveBeenCalledWith(olFeature, olLayer, olMap);
+				expect(updateStyleSpy).toHaveBeenCalledWith(olFeature, olLayer, olMap);
+			});
+
+			it('calls #_updateStyle when layers are removed', () => {
+				setup();
+				const olMap = new Map();
+				const olFeature = new Feature();
+				const olSource = new VectorSource({ features: [olFeature] });
+				const olLayer = new VectorLayer();
+				const otherOlLayer = new VectorLayer();
+				const updateStyleSpy = spyOn(instanceUnderTest, '_updateStyle')
+					.withArgs(olFeature, olLayer, olMap)
+					.and.callFake(() => {});
+				instanceUnderTest._registerStyleEventListeners(olSource, olLayer, olMap);
+
+				olMap.addLayer(otherOlLayer);
+				olMap.removeLayer(otherOlLayer);
+
+				expect(updateStyleSpy).toHaveBeenCalledTimes(2);
 			});
 		});
 

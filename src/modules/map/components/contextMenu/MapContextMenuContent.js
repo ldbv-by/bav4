@@ -12,6 +12,12 @@ const Update_Coordinate = 'update_coordinate';
 const Update_Elevation = 'update_elevation';
 const Update_Administration = 'update_administration';
 
+const emptyAdministration = {
+	community: null,
+	district: null,
+	parcel: null
+};
+
 /**
  * @class
  * @author taulinger
@@ -20,15 +26,14 @@ const Update_Administration = 'update_administration';
  * @author bakir_en
  */
 export class MapContextMenuContent extends MvuElement {
-	constructor() {
-		super({
-			coordinate: null,
-			elevation: null,
-			administration: {
-				community: null,
-				district: null
+	constructor(model) {
+		super(
+			model ?? {
+				coordinate: null,
+				elevation: null,
+				administration: { ...emptyAdministration }
 			}
-		});
+		);
 
 		const {
 			MapService: mapService,
@@ -50,7 +55,7 @@ export class MapContextMenuContent extends MvuElement {
 	update(type, data, model) {
 		switch (type) {
 			case Update_Coordinate:
-				return { ...model, coordinate: data };
+				return { ...model, coordinate: data, administration: { ...emptyAdministration }, elevation: null };
 			case Update_Elevation:
 				return { ...model, elevation: data };
 			case Update_Administration:
@@ -64,33 +69,23 @@ export class MapContextMenuContent extends MvuElement {
 		this._getAdministration(coordinateInMapSrid);
 	}
 
-	/**
-	 * @private
-	 */
 	async _getElevation(coordinate) {
 		try {
-			const elevation = (await this._elevationService.getElevation(coordinate)) + ' (m)';
+			const elevation = await this._elevationService.getElevation(coordinate);
 			this.signal(Update_Elevation, elevation);
 		} catch (e) {
-			console.error(e);
 			this.signal(Update_Elevation, null);
+			throw e;
 		}
 	}
 
-	/**
-	 * @private
-	 */
 	async _getAdministration(coordinate) {
-		const emptyAdministration = {
-			community: null,
-			district: null
-		};
 		try {
 			const administration = await this._administrationService.getAdministration(coordinate);
 			this.signal(Update_Administration, administration ?? emitNotification);
 		} catch (e) {
-			console.error(e);
-			this.signal(Update_Administration, emptyAdministration);
+			this.signal(Update_Administration, { ...emptyAdministration });
+			throw e;
 		}
 	}
 
@@ -112,6 +107,7 @@ export class MapContextMenuContent extends MvuElement {
 			administration: { community, district, parcel }
 		} = model;
 		const translate = (key) => this._translationService.translate(key);
+		const translateSilently = (key) => this._translationService.translate(key, [], true);
 
 		if (coordinate) {
 			const coordinateRepresentations = this._mapService.getCoordinateRepresentations(coordinate);
@@ -122,7 +118,7 @@ export class MapContextMenuContent extends MvuElement {
 					this._copyCoordinateToClipboard(stringifiedCoord);
 				};
 				return html`
-					<span class="label">${label}</span><span class="coordinate">${stringifiedCoord}</span>
+					<span class="label">${translateSilently(label)}</span><span class="coordinate">${stringifiedCoord}</span>
 					<span class="icon">
 						<ba-icon
 							class="close"
@@ -142,21 +138,25 @@ export class MapContextMenuContent extends MvuElement {
 
 				<div class="container">
 					<ul class="content selectable">
-						<li>
-							<span class="label">${translate('map_contextMenuContent_community_label')}</span><span class="coordinate">${community || '-'}</span>
-						</li>
-						<li>
-							<span class="label">${translate('map_contextMenuContent_district_label')}</span><span class="coordinate">${district || '-'}</span>
-						</li>
-						${parcel
-							? html`<li>
-									<span class="label">${translate('map_contextMenuContent_parcel_label')}</span><span class="coordinate">${parcel || '-'}</span>
+						${community && district
+							? html`<li class="r_community">
+										<span class="label">${translate('map_contextMenuContent_community_label')}</span><span class="coordinate">${community}</span>
+									</li>
+									<li class="r_district">
+										<span class="label">${translate('map_contextMenuContent_district_label')}</span><span class="coordinate">${district}</span>
+									</li>
+									${parcel
+										? html`<li class="r_parcel">
+												<span class="label">${translate('map_contextMenuContent_parcel_label')}</span><span class="coordinate">${parcel}</span>
+											</li>`
+										: nothing}`
+							: nothing}
+						${stringifiedCoords.map((strCoord) => html`<li class="r_coordinate">${strCoord}</li>`)}
+						${elevation
+							? html`<li class="r_elevation">
+									<span class="label">${translate('map_contextMenuContent_elevation_label')}</span><span class="coordinate">${elevation}</span>
 								</li>`
 							: nothing}
-						${stringifiedCoords.map((strCoord) => html`<li>${strCoord}</li>`)}
-						<li>
-							<span class="label">${translate('map_contextMenuContent_elevation_label')}</span><span class="coordinate">${elevation || '-'}</span>
-						</li>
 					</ul>
 					<div class="chips">
 						<ba-share-chip .center=${coordinate}></ba-share-chip>
