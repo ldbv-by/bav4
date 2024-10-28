@@ -1718,7 +1718,7 @@
 				title=${e.title}
 				role="button"
 				tabindex="0"
-				@click=${(()=>"share-api"===e.name?this._isShareApiAvailable()?async()=>{try{const t={url:await this._generateShortUrl()};await this._window.navigator.share(t)}catch(e){e instanceof DOMException&&"AbortError"===e.name||(0,Se.L)(t("toolbox_shareTool_share_api_failed"),Se.A.WARN)}}:async()=>{const e=await this._generateShortUrl(),i=t("toolbox_shareTool_share"),n=a.qy`<ba-share-content .urls=${e}></ba-share-content>`;(0,ct.qf)(i,n)}:async()=>{try{const t=await this._generateShortUrl();if(null===this._window.open(e.href(t)))throw new Error("Could not open window")}catch(t){console.warn("Could not share content: "+t)}})()}
+				@click=${(()=>"share-api"===e.name?this._isShareApiAvailable()?async()=>{try{const t={url:await this._generateShortUrl()};await this._window.navigator.share(t)}catch(e){(0,Se.L)(t("toolbox_shareTool_share_api_failed"),Se.A.WARN)}}:async()=>{const e=await this._generateShortUrl(),i=t("toolbox_shareTool_share"),n=a.qy`<ba-share-content .urls=${e}></ba-share-content>`;(0,ct.qf)(i,n)}:async()=>{try{const t=await this._generateShortUrl();if(null===this._window.open(e.href(t)))throw new Error("Could not open window")}catch(t){console.warn("Could not share content: "+t)}})()}
 				target="_blank"
 			>
 				${i}
