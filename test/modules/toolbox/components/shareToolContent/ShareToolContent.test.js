@@ -113,7 +113,7 @@ describe('ShareToolContent', () => {
 					expect(windowShareSpy).toHaveBeenCalledWith(mockShareData);
 				});
 
-				it('logs a warn statement on share api reject', async () => {
+				it('emits a warn statement on share api reject', async () => {
 					const mockShortUrl = 'https://short/url';
 					const mockErrorMsg = 'something got wrong';
 					const windowMock = {
@@ -132,6 +132,26 @@ describe('ShareToolContent', () => {
 					await TestUtils.timeout();
 					expect(store.getState().notifications.latest.payload.content).toBe('toolbox_shareTool_share_api_failed');
 					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				});
+
+				it('does NOT emit a warn statement on share api canceled', async () => {
+					const mockShortUrl = 'https://short/url';
+					const windowMock = {
+						navigator: {
+							share() {}
+						}
+					};
+					spyOn(windowMock.navigator, 'share').and.returnValue(Promise.reject(new DOMException('message', 'AbortError')));
+					const config = { windowMock };
+					const element = await setup(config);
+					spyOn(element, '_generateShortUrl').and.returnValue(mockShortUrl);
+					const shareButton = element.shadowRoot.querySelectorAll('.tool-container__button')[0];
+
+					shareButton.click();
+
+					await TestUtils.timeout();
+					expect(store.getState().notifications.latest).toBeNull();
+					expect(store.getState().notifications.latest).toBeNull();
 				});
 			});
 		});
