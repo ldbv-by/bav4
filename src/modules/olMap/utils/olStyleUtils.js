@@ -802,30 +802,8 @@ export const createSketchStyleFunction = (featureStyleFunction, sketchStyleFunct
 				zIndex: Z_Point
 			})
 		],
-		LineString: () => [
-			new Style({
-				fill: new Fill({
-					color: White_Color.concat([0.4])
-				}),
-				stroke: new Stroke({
-					color: White_Color,
-					width: 2,
-					lineDash: [5]
-				}),
-				zIndex: 0
-			})
-		],
-		Polygon: () => [
-			new Style({
-				fill: new Fill({
-					color: White_Color.concat([0.4])
-				}),
-				stroke: new Stroke({
-					color: White_Color,
-					width: 2
-				})
-			})
-		]
+		LineString: () => [new Style()],
+		Polygon: () => [new Style()]
 	};
 	const getSketchStyles = (feature, resolution) => {
 		const geometryType = feature.getGeometry().getType();
