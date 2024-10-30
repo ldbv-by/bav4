@@ -31,7 +31,6 @@ export class TimeTravelPlugin extends BaPlugin {
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 		this.#environmentService = environmentService;
 		this._bottomSheetUnsubscribeFn = null;
-		this._closedByUser = false;
 	}
 
 	/**
@@ -55,15 +54,7 @@ export class TimeTravelPlugin extends BaPlugin {
 				if (timestampSet.size === 1 && geoResourceSet.size === 1) {
 					this.#currentSuitableGeoResourceId = [...geoResourceSet][0];
 					clearTimeout(this.#timeoutId);
-					if (!this._closedByUser) {
-						openSlider([...timestampSet][0]);
-					} else {
-						/**
-						 * In this case we have to update the timestamp in the timeTravel s-o-s so that when the user re-opens the slider
-						 * the slider will show the correct timestamp
-						 */
-						setCurrentTimestamp([...timestampSet][0]);
-					}
+					openSlider([...timestampSet][0]);
 				} else {
 					this.#timeoutId = setTimeout(() => {
 						this.#currentSuitableGeoResourceId = null;
@@ -104,7 +95,6 @@ export class TimeTravelPlugin extends BaPlugin {
 							if (!active.includes(TIME_TRAVEL_BOTTOM_SHEET_ID)) {
 								closeSlider();
 								this._bottomSheetUnsubscribeFn();
-								this._closedByUser = true;
 							}
 						}
 					);
@@ -115,7 +105,6 @@ export class TimeTravelPlugin extends BaPlugin {
 					 */
 					closeSlider();
 				}
-				this._closedByUser = false;
 			};
 
 			observe(

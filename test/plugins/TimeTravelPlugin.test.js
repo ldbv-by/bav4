@@ -28,15 +28,6 @@ describe('TimeTravelPlugin', () => {
 		return store;
 	};
 
-	describe('constructor', () => {
-		it('setups local state', () => {
-			setup();
-			const instanceUnderTest = new TimeTravelPlugin();
-
-			expect(instanceUnderTest._closedByUser).toBeFalse();
-		});
-	});
-
 	describe('class', () => {
 		it('defines constant values', async () => {
 			expect(TimeTravelPlugin.SLIDER_CLOSE_DELAY_MS).toBe(200);
@@ -101,7 +92,6 @@ describe('TimeTravelPlugin', () => {
 
 			expect(store.getState().timeTravel.active).toBeFalse();
 			expect(bottomSheetUnsubscribeFnSpy).toHaveBeenCalled();
-			expect(instanceUnderTest._closedByUser).toBeTrue();
 		});
 	});
 
