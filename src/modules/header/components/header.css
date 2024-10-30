@@ -491,8 +491,8 @@
 .is-tablet.is-open-navigationRail .header__logo {
 	transform: translate(8.7em, 0);
 }
-.is-landscape.is-desktop .header__search-container:hover,
-.header__search-container:focus-within {
+.header__search-container:focus-within,
+.is-landscape.is-desktop .header__search-container:hover {
 	box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.4) !important;
 }
 /* disable default clear search button */
