@@ -182,27 +182,28 @@ export class Header extends MvuElement {
 
 		const layerCount = layers.length;
 
-		const moveCursorToEnd = () => {
-			const input = this.shadowRoot.getElementById('input');
-			const length = input.value.length;
-			input.setSelectionRange(length, length); // Set the cursor to the end
-		};
-
 		const onInputFocus = () => {
 			disableResponsiveParameterObservation();
 			setTab(TabIds.SEARCH);
 
 			if (isPortrait) {
 				const popup = this.shadowRoot.getElementById('headerMobile');
+				const clear = this.shadowRoot.getElementById('clear');
 				popup.style.display = 'none';
 				popup.style.opacity = 0;
-				moveCursorToEnd();
+
+				if (searchTerm) {
+					clear.classList.add('is-clear-visible');
+				}
 			}
 			if (!hasMinWidth) {
 				const popup = this.shadowRoot.getElementById('headerLogo');
+				const clear = this.shadowRoot.getElementById('clear');
 				popup.style.display = 'none';
 				popup.style.opacity = 0;
-				moveCursorToEnd();
+				if (searchTerm) {
+					clear.classList.add('is-clear-visible');
+				}
 			}
 
 			//in portrait mode we open the main menu to display existing results
@@ -212,6 +213,11 @@ export class Header extends MvuElement {
 					openMainMenu();
 				}
 			}
+		};
+
+		const onButtonClick = () => {
+			const input = this.shadowRoot.querySelector('#input');
+			input.focus();
 		};
 
 		const onInput = (evt) => {
@@ -224,13 +230,21 @@ export class Header extends MvuElement {
 			enableResponsiveParameterObservation();
 			if (isPortrait) {
 				const popup = this.shadowRoot.getElementById('headerMobile');
+				const clear = this.shadowRoot.getElementById('clear');
 				popup.style.display = '';
-				window.setTimeout(() => (popup.style.opacity = 1), 300);
+				window.setTimeout(() => {
+					popup.style.opacity = 1;
+					clear.classList.remove('is-clear-visible');
+				}, 300);
 			}
 			if (!hasMinWidth) {
 				const popup = this.shadowRoot.getElementById('headerLogo');
+				const clear = this.shadowRoot.getElementById('clear');
 				popup.style.display = '';
-				window.setTimeout(() => (popup.style.opacity = 1), 300);
+				window.setTimeout(() => {
+					popup.style.opacity = 1;
+					clear.classList.remove('is-clear-visible');
+				}, 300);
 			}
 		};
 
@@ -312,15 +326,19 @@ export class Header extends MvuElement {
 						<div class="header__background">
 						</div>
 						<div class='header__search-container'>
+						<button id="inputFocusButton" @click="${onButtonClick}" class="open-search-button" title="${translate('header_search_placeholder')}">
+							<span class="button_search_icon"></span>					
+						</button>
 						<input id='input' data-test-id placeholder='${translate(
 							'header_search_placeholder'
-						)}' value="${searchTerm}" @focus="${onInputFocus}" @blur="${onInputBlur}" @input="${onInput}" class='header__search' type="search" placeholder="" />          
-								<div class='header_search_icon'>
-								</div>
-							<span class="header__search-clear ${getIsClearClass()}" @click="${clearSearchInput}">        							
-							</span>       
+						)}' value="${searchTerm}" @focus="${onInputFocus}" @blur="${onInputBlur}" @input="${onInput}" class='header__search' type="search" placeholder="" />          		
+							<button id="clear" class="header__search-clear ${getIsClearClass()}" @click="${clearSearchInput}" title="${translate('header_search_clear_button')}">   
+								<span class="border">
+									<span class="icon"> </icon>   							
+								</span>
+							</button>       
 							<button @click="${openRoutingTab}" class="header__routing-button" title="${translate('header_tab_routing_button')}">
-							&nbsp;
+								<span class="routing-icon"></span>
 							</button>
 						</div>
 						<div  class="header__button-container">
