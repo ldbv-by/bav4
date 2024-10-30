@@ -416,8 +416,9 @@
 	justify-content: flex-end;
 	border-radius: var(--border-radius-button);
 	box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
+	transition: all var(--animation-duration-small-open) var(--animation-easing-linear);
 }
+.header__search-container:hover,
 .header__search-container:focus-within {
 	box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5) !important;
 }
