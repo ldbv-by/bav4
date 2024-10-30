@@ -326,12 +326,12 @@ export class Header extends MvuElement {
 						<div class="header__background">
 						</div>
 						<div class='header__search-container'>
-						<button id="inputFocusButton" @click="${onButtonClick}" class="open-search-button" title="${translate('header_search_placeholder')}">
-							<span class="button_search_icon"></span>					
-						</button>
-						<input id='input' data-test-id placeholder='${translate(
-							'header_search_placeholder'
-						)}' value="${searchTerm}" @focus="${onInputFocus}" @blur="${onInputBlur}" @input="${onInput}" class='header__search' type="search" placeholder="" />          		
+							<button id="inputFocusButton" @click="${onButtonClick}" class="open-search-button" title="${translate('header_search_placeholder')}">
+								<span class="button_search_icon"></span>					
+							</button>
+							<input id='input' data-test-id placeholder='${translate(
+								'header_search_placeholder'
+							)}' value="${searchTerm}" @focus="${onInputFocus}" @blur="${onInputBlur}" @input="${onInput}" class='header__search' type="search" placeholder="" />          		
 							<button id="clear" class="header__search-clear ${getIsClearClass()}" @click="${clearSearchInput}" title="${translate('header_search_clear_button')}">   
 								<span class="border">
 									<span class="icon"> </icon>   							

@@ -277,7 +277,6 @@
 	width: 3.1em;
 	z-index: 4;
 	background: var(--secondary-bg-color);
-	box-shadow: -1px 1px 1px rgba(0, 0, 0, 0.5);
 }
 .open-search-button svg {
 	fill: var(--text1);
@@ -309,7 +308,6 @@
 	z-index: 2;
 	background: var(--secondary-bg-color);
 	border: none;
-	box-shadow: -1px 1px 1px rgba(0, 0, 0, 0.5);
 	border-radius: 0;
 }
 .header__search::placeholder {
@@ -324,7 +322,6 @@
 	min-width: 2.6em;
 	right: 3em;
 	background: var(--secondary-bg-color);
-	box-shadow: -1px 1px 1px rgba(0, 0, 0, 0.5);
 	z-index: 1;
 }
 .header__search-clear .icon {
@@ -363,7 +360,6 @@
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 	font-weight: bold;
 	background-position: 0.1em;
-	box-shadow: -1px 1px 1px rgba(0, 0, 0, 0.5);
 	padding: 0 0.3em 0 0.2em;
 	border: 0.5em solid var(--primary-color);
 	z-index: 0;
@@ -418,6 +414,8 @@
 	display: flex;
 	position: relative;
 	justify-content: flex-end;
+	border-radius: var(--border-radius-button);
+	box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
 }
 .is-portrait .header__search-container {
 	font-size: 1.1rem;
