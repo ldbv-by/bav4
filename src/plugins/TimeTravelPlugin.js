@@ -6,7 +6,7 @@ import { modifyLayer } from '../store/layers/layers.action';
 import { BaPlugin } from './BaPlugin';
 import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
 import { html } from 'lit-html';
-import { closeSlider, openSlider, setCurrentTimestamp } from '../store/timeTravel/timeTravel.action';
+import { closeSlider, openSlider } from '../store/timeTravel/timeTravel.action';
 import { $injector } from '../injection/index';
 
 /**
