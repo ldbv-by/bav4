@@ -418,9 +418,9 @@
 	box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
 	transition: all var(--animation-duration-small-open) var(--animation-easing-linear);
 }
-.header__search-container:hover,
+.is-landscape.is-desktop .header__search-container:hover,
 .header__search-container:focus-within {
-	box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5) !important;
+	box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.4) !important;
 }
 .is-portrait .header__search-container {
 	font-size: 1.1rem;
