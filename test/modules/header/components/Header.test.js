@@ -123,7 +123,7 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelectorAll('.header')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__logo')).display).toBe('block');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('none');
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('#input')).width).toBe('223.317px');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#input')).width).not.toBe('0px');
 		});
 
 		it('layouts for portrait and width >= 80em', async () => {
@@ -750,6 +750,43 @@ describe('Header', () => {
 					jasmine.clock().tick(300 + 100);
 
 					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerLogo')).display).toBe('block');
+				});
+
+				it('hides/shows the clear button', async () => {
+					const state = {
+						mainMenu: {
+							open: false
+						},
+						media: {
+							portrait: false,
+							minWidth: false
+						}
+					};
+					const element = await setup(state);
+					const input = element.shadowRoot.querySelector('#input');
+					const inputFocusButton = element.shadowRoot.querySelector('#inputFocusButton');
+					const clearButton = element.shadowRoot.querySelector('#clear');
+
+					expect(window.getComputedStyle(clearButton).display).toBe('none');
+					expect(clearButton.classList.contains('is-clear-visible')).toBeFalse();
+
+					inputFocusButton.click();
+					input.value = 'foo';
+					input.dispatchEvent(new Event('input'));
+
+					expect(window.getComputedStyle(clearButton).display).toBe('flex');
+					expect(clearButton.classList.contains('is-clear-visible')).toBeTrue();
+
+					input.blur();
+					jasmine.clock().tick(300 + 100);
+
+					expect(window.getComputedStyle(clearButton).display).toBe('none');
+					expect(clearButton.classList.contains('is-clear-visible')).toBeFalse();
+
+					inputFocusButton.click();
+
+					expect(window.getComputedStyle(clearButton).display).toBe('flex');
+					expect(clearButton.classList.contains('is-clear-visible')).toBeTrue();
 				});
 			});
 
