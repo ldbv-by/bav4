@@ -211,10 +211,9 @@ export class TimeTravelSlider extends MvuElement {
 							content: attr(data-timestamp);
 							top: -2.4em !important;
 							font-size: 1.4em;
-							margin-left: -1.4em;
+							margin-left: -1.5em;
 							color: var(--text3);
 							background: var(--split-one-color);
-							z-index: 9999;
 							padding: 0.1em 0.4em;
 							border-radius: 1.5em;
 							border: 1px solid var(--text1);
