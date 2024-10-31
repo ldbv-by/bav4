@@ -17,6 +17,7 @@ describe('i18n for header module', () => {
 		expect(map.header_emblem_title_standalone).toBe('bav4 auf github');
 		expect(map.header_emblem_link_standalone).toBe('https://github.com/ldbv-by/bav4/');
 		expect(map.header_search_placeholder).toBe('Suchen');
+		expect(map.header_search_clear_button).toBe('Löschen');
 	});
 
 	it('provides translation for en', () => {
@@ -35,10 +36,11 @@ describe('i18n for header module', () => {
 		expect(map.header_emblem_title_standalone).toBe('bav4 on github');
 		expect(map.header_emblem_link_standalone).toBe('https://github.com/ldbv-by/bav4/');
 		expect(map.header_search_placeholder).toBe('Search');
+		expect(map.header_search_clear_button).toBe('Clear');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 13;
+		const expectedSize = 14;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

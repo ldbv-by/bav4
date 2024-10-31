@@ -123,7 +123,7 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelectorAll('.header')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__logo')).display).toBe('block');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('none');
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header_search_icon')).opacity).toBe('1');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#input')).width).not.toBe('0px');
 		});
 
 		it('layouts for portrait and width >= 80em', async () => {
@@ -142,7 +142,7 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelectorAll('.header')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__logo')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header_search_icon')).opacity).toBe('0');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#input')).width).toBe('0px');
 		});
 
 		it('layouts for landscape and width < 80em', async () => {
@@ -161,7 +161,7 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelectorAll('.header')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__logo')).display).toBe('block');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('none');
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header_search_icon')).opacity).toBe('0');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#input')).width).toBe('0px');
 		});
 
 		it('layouts for portrait and layouts for width < 80em', async () => {
@@ -180,7 +180,7 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelectorAll('.header')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__logo')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header_search_icon')).opacity).toBe('0');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('#input')).width).toBe('0px');
 		});
 	});
 
@@ -210,8 +210,13 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelector('.header__button-container').children[2].innerText).toBe('header_tab_misc_button');
 			expect(element.shadowRoot.querySelector('.header__button-container').children[2].classList.contains('is-active')).toBeFalse();
 
-			expect(element.shadowRoot.querySelectorAll('.header_search_icon')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('#inputFocusButton')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('#inputFocusButton').title).toBe('header_search_placeholder');
+
 			expect(element.shadowRoot.querySelector('.header__search').getAttribute('placeholder')).toBe('header_search_placeholder');
+
+			expect(element.shadowRoot.querySelectorAll('#clear')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('#clear').title).toBe('header_search_clear_button');
 
 			expect(element.shadowRoot.querySelector('.header__logo-badge').innerText).toBe('header_logo_badge');
 
@@ -327,6 +332,19 @@ describe('Header', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
 			expect(store.getState().navigationRail.open).toBe(false);
+		});
+	});
+
+	describe('when search-button clicked', () => {
+		it('focus search input', async () => {
+			const element = await setup();
+
+			const searchButton = element.shadowRoot.querySelector('#inputFocusButton');
+			const input = element.shadowRoot.querySelector('#input');
+
+			expect(input.matches(':focus')).toBeFalse();
+			searchButton.click();
+			expect(input.matches(':focus')).toBeTrue();
 		});
 	});
 
@@ -547,15 +565,16 @@ describe('Header', () => {
 				const element = await setup(state);
 
 				const inputElement = element.shadowRoot.querySelector('#input');
+				const clearButton = element.shadowRoot.querySelector('#clear');
 				inputElement.value = 'foo';
 				inputElement.dispatchEvent(new Event('input'));
 
-				expect(element.shadowRoot.querySelector('.header__search-clear').classList.contains('is-clear-visible')).toBeTrue();
+				expect(clearButton.classList.contains('is-clear-visible')).toBeTrue();
 
 				inputElement.value = '';
 				inputElement.dispatchEvent(new Event('input'));
 
-				expect(element.shadowRoot.querySelector('.header__search-clear').classList.contains('is-clear-visible')).toBeFalse();
+				expect(clearButton.classList.contains('is-clear-visible')).toBeFalse();
 			});
 		});
 
@@ -588,14 +607,13 @@ describe('Header', () => {
 				const element = await setup(state);
 				const input = element.shadowRoot.querySelector('#input');
 
-				expect(window.getComputedStyle(element.shadowRoot.querySelector('.header_search_icon')).opacity).toBe('0');
+				expect(window.getComputedStyle(element.shadowRoot.querySelector('#input')).width).toBe('0px');
 
 				input.focus();
-				expect(window.getComputedStyle(element.shadowRoot.querySelector('.header_search_icon')).opacity).toBe('1');
 				expect(store.getState().media.observeResponsiveParameter).toBeFalse();
 
 				input.blur();
-				expect(window.getComputedStyle(element.shadowRoot.querySelector('.header_search_icon')).opacity).toBe('0');
+				expect(window.getComputedStyle(element.shadowRoot.querySelector('#input')).width).toBe('0px');
 				expect(store.getState().media.observeResponsiveParameter).toBeTrue();
 			});
 
@@ -620,8 +638,9 @@ describe('Header', () => {
 					};
 					const element = await setup(state);
 					const input = element.shadowRoot.querySelector('#input');
+					const inputFocusButton = element.shadowRoot.querySelector('#inputFocusButton');
 
-					input.focus();
+					inputFocusButton.click();
 
 					expect(store.getState().mainMenu.open).toBeFalse();
 
@@ -644,10 +663,11 @@ describe('Header', () => {
 					};
 					const element = await setup(state);
 					const input = element.shadowRoot.querySelector('#input');
+					const inputFocusButton = element.shadowRoot.querySelector('#inputFocusButton');
 
 					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
 
-					input.focus();
+					inputFocusButton.click();
 
 					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('none');
 
@@ -658,7 +678,7 @@ describe('Header', () => {
 					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
 				});
 
-				it('moves cursor to the end', async () => {
+				it('hides/shows the clear button', async () => {
 					const state = {
 						mainMenu: {
 							open: false
@@ -669,14 +689,30 @@ describe('Header', () => {
 						}
 					};
 					const element = await setup(state);
-					const inputElement = element.shadowRoot.querySelector('#input');
-					inputElement.value = 'foo';
-					inputElement.setSelectionRange(0, 0); // set the cursor to start
+					const input = element.shadowRoot.querySelector('#input');
+					const inputFocusButton = element.shadowRoot.querySelector('#inputFocusButton');
+					const clearButton = element.shadowRoot.querySelector('#clear');
 
-					inputElement.focus();
+					expect(window.getComputedStyle(clearButton).display).toBe('none');
+					expect(clearButton.classList.contains('is-clear-visible')).toBeFalse();
 
-					const cursorPosition = inputElement.selectionStart;
-					expect(cursorPosition).toBe(3);
+					inputFocusButton.click();
+					input.value = 'foo';
+					input.dispatchEvent(new Event('input'));
+
+					expect(window.getComputedStyle(clearButton).display).toBe('flex');
+					expect(clearButton.classList.contains('is-clear-visible')).toBeTrue();
+
+					input.blur();
+					jasmine.clock().tick(300 + 100);
+
+					expect(window.getComputedStyle(clearButton).display).toBe('none');
+					expect(clearButton.classList.contains('is-clear-visible')).toBeFalse();
+
+					inputFocusButton.click();
+
+					expect(window.getComputedStyle(clearButton).display).toBe('flex');
+					expect(clearButton.classList.contains('is-clear-visible')).toBeTrue();
 				});
 			});
 
@@ -713,6 +749,43 @@ describe('Header', () => {
 					jasmine.clock().tick(300 + 100);
 
 					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerLogo')).display).toBe('block');
+				});
+
+				it('hides/shows the clear button', async () => {
+					const state = {
+						mainMenu: {
+							open: false
+						},
+						media: {
+							portrait: false,
+							minWidth: false
+						}
+					};
+					const element = await setup(state);
+					const input = element.shadowRoot.querySelector('#input');
+					const inputFocusButton = element.shadowRoot.querySelector('#inputFocusButton');
+					const clearButton = element.shadowRoot.querySelector('#clear');
+
+					expect(window.getComputedStyle(clearButton).display).toBe('none');
+					expect(clearButton.classList.contains('is-clear-visible')).toBeFalse();
+
+					inputFocusButton.click();
+					input.value = 'foo';
+					input.dispatchEvent(new Event('input'));
+
+					expect(window.getComputedStyle(clearButton).display).toBe('flex');
+					expect(clearButton.classList.contains('is-clear-visible')).toBeTrue();
+
+					input.blur();
+					jasmine.clock().tick(300 + 100);
+
+					expect(window.getComputedStyle(clearButton).display).toBe('none');
+					expect(clearButton.classList.contains('is-clear-visible')).toBeFalse();
+
+					inputFocusButton.click();
+
+					expect(window.getComputedStyle(clearButton).display).toBe('flex');
+					expect(clearButton.classList.contains('is-clear-visible')).toBeTrue();
 				});
 			});
 
