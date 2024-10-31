@@ -25,7 +25,7 @@ import cloneSvg from '../../../../src/modules/layerManager/components/assets/clo
 import zoomToExtentSvg from '../../../../src/modules/layerManager/components/assets/zoomToExtent.svg';
 import infoSvg from '../../../../src/modules/layerManager/components/assets/info.svg';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { closeSlider, openSlider } from '../../../../src/store/timeTravel/timeTravel.action';
+import { closeSlider } from '../../../../src/store/timeTravel/timeTravel.action';
 
 window.customElements.define(LayerItem.tag, LayerItem);
 window.customElements.define(ValueSelect.tag, ValueSelect);
