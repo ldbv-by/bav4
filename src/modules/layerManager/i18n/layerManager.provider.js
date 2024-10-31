@@ -41,7 +41,7 @@ export const provide = (lang) => {
 				layerManager_remove_all: 'Alle entfernen',
 				layerManager_loading_hint: 'Wird geladen',
 				layerManager_time_travel_hint: 'Bitte ein Jahr auswählen',
-				layerManager_time_travel_slider: 'Slider öffnen'
+				layerManager_time_travel_slider: 'Schieberegler öffnen'
 			};
 
 		default:
