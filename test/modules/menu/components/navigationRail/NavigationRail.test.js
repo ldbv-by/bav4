@@ -17,6 +17,7 @@ import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 import { ToggleFeedbackPanel } from '../../../../../src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
 import { closeModal } from '../../../../../src/store/modal/modal.action';
 import { PredefinedConfiguration } from '../../../../../src/services/PredefinedConfigurationService.js';
+import { timeTravelReducer } from '../../../../../src/store/timeTravel/timeTravel.reducer.js';
 
 window.customElements.define(NavigationRail.tag, NavigationRail);
 
@@ -71,7 +72,8 @@ describe('NavigationRail', () => {
 			position: positionReducer,
 			tools: toolsReducer,
 			modal: modalReducer,
-			auth: authReducer
+			auth: authReducer,
+			timeTravel: timeTravelReducer
 		});
 		$injector
 			.registerSingleton('EnvironmentService', {
@@ -277,13 +279,30 @@ describe('NavigationRail', () => {
 	});
 
 	describe('_showTimeTravel', () => {
-		it('calls the PredefinedConfigurationService', async () => {
-			const element = await setup();
-			const predefinedConfigurationServiceSpy = spyOn(predefinedConfigurationService, 'apply');
+		describe('timeTravel is NOT active', () => {
+			it('calls the PredefinedConfigurationService', async () => {
+				const element = await setup();
+				const predefinedConfigurationServiceSpy = spyOn(predefinedConfigurationService, 'apply');
 
-			element._showTimeTravel();
+				element._showTimeTravel();
 
-			expect(predefinedConfigurationServiceSpy).toHaveBeenCalledOnceWith(PredefinedConfiguration.DISPLAY_TIME_TRAVEL);
+				expect(predefinedConfigurationServiceSpy).toHaveBeenCalledOnceWith(PredefinedConfiguration.DISPLAY_TIME_TRAVEL);
+			});
+		});
+
+		describe('timeTravel is active', () => {
+			it('calls #_openTab', async () => {
+				const element = await setup({
+					timeTravel: {
+						active: true
+					}
+				});
+				const openTabSpy = spyOn(element, '_openTab');
+
+				element._showTimeTravel();
+
+				expect(openTabSpy).toHaveBeenCalledOnceWith(TabIds.MAPS);
+			});
 		});
 	});
 

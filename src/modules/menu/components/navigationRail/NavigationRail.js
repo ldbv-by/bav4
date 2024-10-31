@@ -34,6 +34,7 @@ export class NavigationRail extends MvuElement {
 	#mapService;
 	#authService;
 	#predefinedConfigurationService;
+	#storeService;
 
 	constructor() {
 		super({
@@ -49,14 +50,16 @@ export class NavigationRail extends MvuElement {
 			TranslationService: translationService,
 			MapService: mapService,
 			AuthService: authService,
-			PredefinedConfigurationService: predefinedConfigurationService
-		} = $injector.inject('EnvironmentService', 'MapService', 'TranslationService', 'AuthService', 'PredefinedConfigurationService');
+			PredefinedConfigurationService: predefinedConfigurationService,
+			StoreService: storeService
+		} = $injector.inject('EnvironmentService', 'MapService', 'TranslationService', 'AuthService', 'PredefinedConfigurationService', 'StoreService');
 
 		this.#environmentService = environmentService;
 		this.#translationService = translationService;
 		this.#mapService = mapService;
 		this.#authService = authService;
 		this.#predefinedConfigurationService = predefinedConfigurationService;
+		this.#storeService = storeService;
 	}
 
 	update(type, data, model) {
@@ -259,7 +262,11 @@ export class NavigationRail extends MvuElement {
 	}
 
 	_showTimeTravel() {
-		this.#predefinedConfigurationService.apply(PredefinedConfiguration.DISPLAY_TIME_TRAVEL);
+		if (this.#storeService.getStore().getState().timeTravel.active) {
+			this._openTab(TabIds.MAPS);
+		} else {
+			this.#predefinedConfigurationService.apply(PredefinedConfiguration.DISPLAY_TIME_TRAVEL);
+		}
 	}
 
 	static get tag() {
