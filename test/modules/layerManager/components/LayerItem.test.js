@@ -239,7 +239,7 @@ describe('LayerItem', () => {
 			expect(timestampElements).toHaveSize(0);
 		});
 
-		it('click on timestamp icon to open the slider ', async () => {
+		it('click on timestamp icon opens the time travel slider ', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceIdWithTimestamps')
 				.and.returnValue(new XyzGeoResource('geoResourceIdWithTimestamps', 'someLabel0', 'someUrl0').setTimestamps(['2000', '2024']));
@@ -254,14 +254,14 @@ describe('LayerItem', () => {
 			};
 			const element = await setup(layer);
 			const timestampIcon = element.shadowRoot.querySelector('.time-travel-icon');
+
 			expect(element.shadowRoot.querySelectorAll('.time-travel-icon')).toHaveSize(1);
 
-			closeSlider();
-			expect(store.getState().timeTravel.active).toBeFalse();
-
 			timestampIcon.click();
+
 			expect(store.getState().timeTravel.active).toBeTrue();
 		});
+
 		it('click on timestamp component modifies the layer ', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceIdWithTimestamps')
