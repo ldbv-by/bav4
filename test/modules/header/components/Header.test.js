@@ -610,7 +610,6 @@ describe('Header', () => {
 				expect(window.getComputedStyle(element.shadowRoot.querySelector('#input')).width).toBe('0px');
 
 				input.focus();
-				// expect(window.getComputedStyle(element.shadowRoot.querySelector('#input')).width).toBe('217.067px');
 				expect(store.getState().media.observeResponsiveParameter).toBeFalse();
 
 				input.blur();
