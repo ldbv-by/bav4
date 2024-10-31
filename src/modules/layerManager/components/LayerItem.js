@@ -203,7 +203,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 					modifyLayer(layer.id, { timestamp });
 				};
 				const selected = layer.timestamp ?? geoResource.timestamps[0];
-				return html` <ba-icon
+				return html`<ba-icon
 						.icon="${timeSvg}"
 						.title=${translate('layerManager_time_travel_slider')}
 						.color=${'var(--secondary-color)'}
