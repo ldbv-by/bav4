@@ -19,11 +19,13 @@ import {
 	XyzGeoResource
 } from '../../../../src/domain/geoResources';
 import { Spinner } from '../../../../src/modules/commons/components/spinner/Spinner';
+import { timeTravelReducer } from '../../../../src/store/timeTravel/timeTravel.reducer.js';
 import { GeoResourceInfoPanel } from '../../../../src/modules/geoResourceInfo/components/GeoResourceInfoPanel';
 import cloneSvg from '../../../../src/modules/layerManager/components/assets/clone.svg';
 import zoomToExtentSvg from '../../../../src/modules/layerManager/components/assets/zoomToExtent.svg';
 import infoSvg from '../../../../src/modules/layerManager/components/assets/info.svg';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
+import { closeSlider, openSlider } from '../../../../src/store/timeTravel/timeTravel.action';
 
 window.customElements.define(LayerItem.tag, LayerItem);
 window.customElements.define(ValueSelect.tag, ValueSelect);
@@ -76,7 +78,8 @@ describe('LayerItem', () => {
 				{
 					layers: layersReducer,
 					modal: modalReducer,
-					media: createNoInitialStateMediaReducer()
+					media: createNoInitialStateMediaReducer(),
+					timeTravel: timeTravelReducer
 				}
 			);
 			$injector
@@ -236,6 +239,29 @@ describe('LayerItem', () => {
 			expect(timestampElements).toHaveSize(0);
 		});
 
+		it('click on timestamp icon to open the slider ', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceIdWithTimestamps')
+				.and.returnValue(new XyzGeoResource('geoResourceIdWithTimestamps', 'someLabel0', 'someUrl0').setTimestamps(['2000', '2024']));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceIdWithTimestamps',
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				collapsed: true
+			};
+			const element = await setup(layer);
+			const timestampIcon = element.shadowRoot.querySelector('.time-travel-icon');
+			expect(element.shadowRoot.querySelectorAll('.time-travel-icon')).toHaveSize(1);
+
+			closeSlider();
+			expect(store.getState().timeTravel.active).toBeFalse();
+
+			timestampIcon.click();
+			expect(store.getState().timeTravel.active).toBeTrue();
+		});
 		it('click on timestamp component modifies the layer ', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceIdWithTimestamps')

@@ -12,12 +12,14 @@ import cloneSvg from './assets/clone.svg';
 import zoomToExtentSvg from './assets/zoomToExtent.svg';
 import removeSvg from './assets/trash.svg';
 import infoSvg from './assets/info.svg';
+import timeSvg from './assets/time.svg';
 import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { openModal } from '../../../../src/store/modal/modal.action';
 import { createUniqueId } from '../../../utils/numberUtils';
 import { fitLayer } from '../../../store/position/position.action';
 import { GeoResourceFuture, RtVectorGeoResource, VectorGeoResource } from '../../../domain/geoResources';
 import { MenuTypes } from '../../commons/components/overflowMenu/OverflowMenu';
+import { openSlider } from '../../../store/timeTravel/timeTravel.action';
 
 const Update_Layer = 'update_layer';
 const Update_Layer_Collapsed = 'update_layer_collapsed';
@@ -201,12 +203,19 @@ export class LayerItem extends AbstractMvuContentPanel {
 					modifyLayer(layer.id, { timestamp });
 				};
 				const selected = layer.timestamp ?? geoResource.timestamps[0];
-				return html`<ba-value-select
-					.title=${translate('layerManager_time_travel_hint')}
-					.values=${geoResource.timestamps}
-					.selected=${selected}
-					@select=${onTimestampChange}
-				></ba-value-select>`;
+				return html` <ba-icon
+						.icon="${timeSvg}"
+						.title=${translate('layerManager_time_travel_slider')}
+						.color=${'var(--secondary-color)'}
+						@click=${() => openSlider()}
+						class="time-travel-icon"
+					></ba-icon>
+					<ba-value-select
+						.title=${translate('layerManager_time_travel_hint')}
+						.values=${geoResource.timestamps}
+						.selected=${selected}
+						@select=${onTimestampChange}
+					></ba-value-select>`;
 			};
 			return geoResource.hasTimestamps() ? getTimestampControl() : nothing;
 		};
