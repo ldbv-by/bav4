@@ -688,7 +688,7 @@ describe('markerStyleFunction', () => {
 
 		expect(styles).toBeDefined();
 		expect(styles[0].getText().getText()).toBe('foo');
-		expect(styles[0].getText().getOffsetY()).toBe(2);
+		expect(styles[0].getText().getOffsetY()).toBe(20);
 		expect(styles[0].getText().getFont()).toBe(Expected_Text_Font);
 	});
 
@@ -713,6 +713,20 @@ describe('markerStyleFunction', () => {
 		expect(image.getScale()).toBe(0.5);
 	});
 
+	it('should return a style specified by styleOption with a Text; small image', () => {
+		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 'small', text: 'foo' };
+		const styles = markerStyleFunction(styleOption);
+
+		expect(styles).toBeDefined();
+		const image = styles[0].getImage();
+		expect(image).toBeTruthy();
+
+		expect(image.getColor()).toEqual([190, 218, 85, 1]);
+		expect(image.getScale()).toBe(0.5);
+		expect(styles[0].getText().getText()).toBe('foo');
+		expect(styles[0].getText().getOffsetY()).toBe(20);
+	});
+
 	it('should return a style specified by styleOption; medium image', () => {
 		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 'medium' };
 		const styles = markerStyleFunction(styleOption);
@@ -725,6 +739,20 @@ describe('markerStyleFunction', () => {
 		expect(image.getScale()).toBe(0.75);
 	});
 
+	it('should return a style specified by styleOption with a Text; medium image', () => {
+		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 'medium', text: 'foo' };
+		const styles = markerStyleFunction(styleOption);
+
+		expect(styles).toBeDefined();
+		const image = styles[0].getImage();
+		expect(image).toBeTruthy();
+
+		expect(image.getColor()).toEqual([190, 218, 85, 1]);
+		expect(image.getScale()).toBe(0.75);
+		expect(styles[0].getText().getText()).toBe('foo');
+		expect(styles[0].getText().getOffsetY()).toBe(30);
+	});
+
 	it('should return a style specified by styleOption; large image', () => {
 		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 'large' };
 		const styles = markerStyleFunction(styleOption);
@@ -735,6 +763,20 @@ describe('markerStyleFunction', () => {
 
 		expect(image.getColor()).toEqual([190, 218, 85, 1]);
 		expect(image.getScale()).toBe(1);
+	});
+
+	it('should return a style specified by styleOption with a Text; large image', () => {
+		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 'large', text: 'foo' };
+		const styles = markerStyleFunction(styleOption);
+
+		expect(styles).toBeDefined();
+		const image = styles[0].getImage();
+		expect(image).toBeTruthy();
+
+		expect(image.getColor()).toEqual([190, 218, 85, 1]);
+		expect(image.getScale()).toBe(1);
+		expect(styles[0].getText().getText()).toBe('foo');
+		expect(styles[0].getText().getOffsetY()).toBe(40);
 	});
 
 	it('should return a style specified by styleOption; scale value as number', () => {
