@@ -877,7 +877,8 @@ describe('BvvMfp3Encoder', () => {
 							font: 'normal 10px sans-serif',
 							fill: textFill,
 							textAlign: textAlign,
-							textBaseline: textBaseline
+							textBaseline: textBaseline,
+							offsetY: 10
 						})
 					})
 				];
@@ -1360,6 +1361,7 @@ describe('BvvMfp3Encoder', () => {
 									pointRadius: 5,
 									label: 'FooBarBaz',
 									labelAlign: 'cm',
+									labelYOffset: -16.666666666666668,
 									fontColor: '#000000',
 									fontFamily: 'sans-serif',
 									fontSize: 16.666666666666668,
@@ -1419,6 +1421,7 @@ describe('BvvMfp3Encoder', () => {
 									pointRadius: 5,
 									label: 'FooBarBaz',
 									labelAlign: 'lt',
+									labelYOffset: -16.666666666666668,
 									fontColor: '#000000',
 									fontFamily: 'sans-serif',
 									fontSize: 16.666666666666668,
@@ -1478,6 +1481,7 @@ describe('BvvMfp3Encoder', () => {
 									pointRadius: 5,
 									label: 'FooBarBaz',
 									labelAlign: 'lb',
+									labelYOffset: -16.666666666666668,
 									fontColor: '#000000',
 									fontFamily: 'sans-serif',
 									fontSize: 16.666666666666668,
@@ -1702,6 +1706,7 @@ describe('BvvMfp3Encoder', () => {
 										label: 'FooBarBaz',
 										labelAlign: 'cm',
 										labelRotation: expectedLabelRotation,
+										labelYOffset: -16.666666666666668,
 										fontColor: '#000000',
 										fontFamily: 'sans-serif',
 										fontSize: 16.666666666666668,
