@@ -66,7 +66,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_toolbar_draw_button).toBe('Zeichnen');
 		expect(map.toolbox_toolbar_share_button).toBe('Teilen');
 		expect(map.toolbox_toolbar_measure_button).toBe('Messen');
-		expect(map.toolbox_toolbar_logo_badge).toBe('Beta');
+		expect(map.toolbox_toolbar_logo_badge).toBe('');
 		expect(map.toolbox_toolbar_logo_badge_standalone).toBe('Demo');
 		expect(map.toolbox_measureTool_clipboard_measure_area_notification_text).toBe('Die Fläche');
 		expect(map.toolbox_measureTool_clipboard_measure_distance_notification_text).toBe('Die Länge');
@@ -170,7 +170,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_toolbar_draw_button).toBe('Draw');
 		expect(map.toolbox_toolbar_share_button).toBe('Share');
 		expect(map.toolbox_toolbar_measure_button).toBe('Measure');
-		expect(map.toolbox_toolbar_logo_badge).toBe('Beta');
+		expect(map.toolbox_toolbar_logo_badge).toBe('');
 		expect(map.toolbox_toolbar_logo_badge_standalone).toBe('Demo');
 		expect(map.toolbox_measureTool_clipboard_measure_area_notification_text).toBe('The area');
 		expect(map.toolbox_measureTool_clipboard_measure_distance_notification_text).toBe('The distance');
