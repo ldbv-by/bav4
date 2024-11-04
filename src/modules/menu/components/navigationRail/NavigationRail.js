@@ -34,6 +34,7 @@ export class NavigationRail extends MvuElement {
 	#mapService;
 	#authService;
 	#predefinedConfigurationService;
+	#storeService;
 
 	constructor() {
 		super({
@@ -49,14 +50,16 @@ export class NavigationRail extends MvuElement {
 			TranslationService: translationService,
 			MapService: mapService,
 			AuthService: authService,
-			PredefinedConfigurationService: predefinedConfigurationService
-		} = $injector.inject('EnvironmentService', 'MapService', 'TranslationService', 'AuthService', 'PredefinedConfigurationService');
+			PredefinedConfigurationService: predefinedConfigurationService,
+			StoreService: storeService
+		} = $injector.inject('EnvironmentService', 'MapService', 'TranslationService', 'AuthService', 'PredefinedConfigurationService', 'StoreService');
 
 		this.#environmentService = environmentService;
 		this.#translationService = translationService;
 		this.#mapService = mapService;
 		this.#authService = authService;
 		this.#predefinedConfigurationService = predefinedConfigurationService;
+		this.#storeService = storeService;
 	}
 
 	update(type, data, model) {
@@ -129,24 +132,6 @@ export class NavigationRail extends MvuElement {
 			return darkSchema ? 'menu_navigation_rail_light_theme' : 'menu_navigation_rail_dark_theme';
 		};
 
-		const showTimeTravel = () => {
-			this.#predefinedConfigurationService.apply(PredefinedConfiguration.DISPLAY_TIME_TRAVEL);
-		};
-
-		const openTab = (tabId) => {
-			// handle current tool if necessary
-			switch (tabId) {
-				case TabIds.ROUTING:
-					setCurrentTool(Tools.ROUTING);
-					break;
-				case TabIds.FEATUREINFO:
-					setCurrentTool(null);
-					break;
-			}
-			isPortrait || tabId === tabIndex ? toggle() : open();
-			setTab(tabId);
-		};
-
 		const getIsActive = (tabId) => {
 			return tabIndex === tabId && (isOpen || isPortrait) ? 'is-active' : '';
 		};
@@ -182,7 +167,7 @@ export class NavigationRail extends MvuElement {
 					<button
 						title="${translate('menu_navigation_rail_home_tooltip')}"
 						class="home ${getIsActive(TabIds.MAPS)}"
-						@click="${() => openTab(TabIds.MAPS)}"
+						@click="${() => this._openTab(TabIds.MAPS)}"
 					>
 						<span class="icon "> </span>
 						<span class="text"> ${translate('menu_navigation_rail_home')} </span>
@@ -191,7 +176,7 @@ export class NavigationRail extends MvuElement {
 					<button
 						title="${translate('menu_navigation_rail_routing_tooltip')}"
 						class="routing ${getIsVisible(TabIds.ROUTING)} ${getIsActive(TabIds.ROUTING)}"
-						@click="${() => openTab(TabIds.ROUTING)}"
+						@click="${() => this._openTab(TabIds.ROUTING)}"
 						style="order:${getFlexOrder(TabIds.ROUTING)}"
 					>
 						<span class="icon"></span>
@@ -200,7 +185,7 @@ export class NavigationRail extends MvuElement {
 					<button
 						title="${translate('menu_navigation_rail_object_info_tooltip')}"
 						class=" objectinfo ${getIsVisible(TabIds.FEATUREINFO)} ${getIsActive(TabIds.FEATUREINFO)}"
-						@click="${() => openTab(TabIds.FEATUREINFO)}"
+						@click="${() => this._openTab(TabIds.FEATUREINFO)}"
 						style="order:${getFlexOrder(TabIds.FEATUREINFO)}"
 					>
 						<span class="icon "> </span>
@@ -209,7 +194,7 @@ export class NavigationRail extends MvuElement {
 					<button
 						title="${translate('menu_navigation_rail_time_travel_tooltip')}"
 						class="timeTravel"
-						@click="${() => showTimeTravel()}"
+						@click="${() => this._showTimeTravel()}"
 						style="order: ${reverseTabIds.length + 1}"
 					>
 						<span class="icon "> </span>
@@ -259,6 +244,29 @@ export class NavigationRail extends MvuElement {
 				</div>
 			</div>
 		`;
+	}
+
+	_openTab(tabId) {
+		const { isPortrait, tabIndex } = this.getModel();
+		// handle current tool if necessary
+		switch (tabId) {
+			case TabIds.ROUTING:
+				setCurrentTool(Tools.ROUTING);
+				break;
+			case TabIds.FEATUREINFO:
+				setCurrentTool(null);
+				break;
+		}
+		isPortrait || tabId === tabIndex ? toggle() : open();
+		setTab(tabId);
+	}
+
+	_showTimeTravel() {
+		if (this.#storeService.getStore().getState().timeTravel.active) {
+			this._openTab(TabIds.MAPS);
+		} else {
+			this.#predefinedConfigurationService.apply(PredefinedConfiguration.DISPLAY_TIME_TRAVEL);
+		}
 	}
 
 	static get tag() {
