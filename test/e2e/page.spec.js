@@ -18,10 +18,13 @@ test.describe('page', () => {
 		});
 
 		test('should contain favicon related link tag', async ({ page }) => {
+			const appleMobileWebWppTitle = await page.getAttribute("head > meta[name='apple-mobile-web-app-title']", 'content');
+			expect(appleMobileWebWppTitle).toBe('BayernAtlas');
+			expect(await page.$("head > link[href='assets/favicon-96x96.png']")).toBeTruthy();
+			expect(await page.$("head > link[href='assets/favicon.svg']")).toBeTruthy();
 			expect(await page.$("head > link[href='assets/favicon.ico']")).toBeTruthy();
-			expect(await page.$("head > link[href='assets/manifest.json']")).toBeTruthy();
-			expect(await page.$("head > link[href='assets/icon.svg']")).toBeTruthy();
 			expect(await page.$("head > link[href='assets/apple-touch-icon.png']")).toBeTruthy();
+			expect(await page.$("head > link[href='assets/site.webmanifest']")).toBeTruthy();
 		});
 
 		test('should contain theme-color meta tags', async ({ page }) => {
