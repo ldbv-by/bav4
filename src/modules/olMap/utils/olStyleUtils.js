@@ -323,10 +323,12 @@ export const markerStyleFunction = (styleOption = DEFAULT_STYLE_OPTION) => {
 			: rasterIconOptions
 		: svgIconOptions;
 
+	const textScale = getTextScale(styleOption.scale);
+	const offsetY = (getTextScale(styleOption.scale) * 10) / markerAnchor[1];
 	return [
 		new Style({
 			image: new Icon(iconOptions),
-			text: styleOption.text ? getTextStyle(styleOption.text, markerColor, getTextScale(styleOption.scale), 2) : null
+			text: styleOption.text ? getTextStyle(styleOption.text, markerColor, textScale, offsetY) : null
 		})
 	];
 };
