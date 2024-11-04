@@ -312,9 +312,7 @@ export class Header extends MvuElement {
 						</div>
 						<div id='header__text' class='header__text'>
 						</div>
-						<div class='header__logo-badge  ${getBadgeClass()}'>										
-						${getBadgeText()}
-						</div>	
+						<div class='header__logo-badge  ${getBadgeClass()}'>${getBadgeText()}</div>	
 					</div>		
 					<div id='headerMobile' class='header__text-mobile'>	
 					</div>
