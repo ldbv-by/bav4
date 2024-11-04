@@ -4,45 +4,44 @@ const BASE_URL = (process.env.URL || 'http://localhost:8080').replace(/\/$/, '')
 
 test.describe('favicons', () => {
 	test('should provide favicon related assets', async ({ request }) => {
+		const favicon96 = await request.get(`${BASE_URL}/assets/favicon-96x96.png`);
+		const faviconSvg = await request.get(`${BASE_URL}/assets/favicon.svg`);
 		const responseIco = await request.get(`${BASE_URL}/assets/favicon.ico`);
-		const responseManifest = await request.get(`${BASE_URL}/assets/manifest.json`);
-		const responsePng192 = await request.get(`${BASE_URL}/assets/icon_192x192.png`);
-		const responsePng512 = await request.get(`${BASE_URL}/assets/icon_512x512.png`);
-		const responsePng512_maskable = await request.get(`${BASE_URL}/assets/icon_512x512_maskable.png`);
+		const appleTouchIcon = await request.get(`${BASE_URL}/assets/apple-touch-icon.png`);
 
+		const responsePng192 = await request.get(`${BASE_URL}/assets/web-app-manifest-192x192.png`);
+		const responsePng512 = await request.get(`${BASE_URL}/assets/web-app-manifest-512x512.png`);
+		const responseWebmanifest = await request.get(`${BASE_URL}/assets/site.webmanifest`);
+
+		expect(favicon96.ok()).toBe(true);
+		expect(faviconSvg.ok()).toBe(true);
 		expect(responseIco.ok()).toBe(true);
-		expect(responseManifest.ok()).toBe(true);
+		expect(appleTouchIcon.ok()).toBe(true);
+
+		expect(responseWebmanifest.ok()).toBe(true);
 		expect(responsePng192.ok()).toBe(true);
 		expect(responsePng512.ok()).toBe(true);
-		expect(responsePng512_maskable.ok()).toBe(true);
-		expect(await responseManifest.json()).toEqual({
+		expect(await responseWebmanifest.json()).toEqual({
+			name: 'BayernAtlas',
+			short_name: 'BayernAtlas',
 			icons: [
 				{
-					src: 'icon_512x512.png',
-					sizes: '512x512',
-					type: 'image/png',
-					purpose: 'any'
-				},
-				{
-					src: 'icon_192x192.png',
+					src: 'web-app-manifest-192x192.png',
 					sizes: '192x192',
 					type: 'image/png',
-					purpose: 'any'
+					purpose: 'maskable'
 				},
 				{
-					src: 'icon_512x512_maskable.png',
+					src: 'web-app-manifest-512x512.png',
 					sizes: '512x512',
 					type: 'image/png',
 					purpose: 'maskable'
 				}
 			],
-			name: 'BayernAtlas Beta',
-			short_name: 'BayernAtlas Beta',
-			orientation: 'portrait',
-			display: 'standalone',
-			start_url: '/',
+			theme_color: '#2f6a94',
 			background_color: '#2f6a94',
-			theme_color: '#2f6a94'
+			display: 'standalone',
+			start_url: '/'
 		});
 	});
 });
