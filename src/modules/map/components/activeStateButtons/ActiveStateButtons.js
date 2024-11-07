@@ -1,5 +1,5 @@
 /**
- * @module modules/map/components/ActiveStateButtons
+ * @module modules/map/components/activeStateButtons/ActiveStateButtons
  */
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
@@ -15,7 +15,8 @@ const Update_FeatureInfo_Data = 'update_featureInfo_data';
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 
 /**
- * Container for Map-Buttons
+ * Container for active state buttons
+ *
  * @class
  * @author alsturm
  */
