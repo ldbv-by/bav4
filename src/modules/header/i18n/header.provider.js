@@ -16,7 +16,9 @@ export const provide = (lang) => {
 				header_emblem_title_standalone: 'bav4 on github',
 				header_emblem_link_standalone: 'https://github.com/ldbv-by/bav4/',
 				header_search_placeholder: 'Search',
-				header_search_clear_button: 'Clear'
+				header_search_clear_button: 'Clear',
+				header_logo_title_open: 'Show navigation rail',
+				header_logo_title_close: 'Hide navigation rail'
 			};
 
 		case 'de':
@@ -35,7 +37,9 @@ export const provide = (lang) => {
 				header_emblem_title_standalone: 'bav4 auf github',
 				header_emblem_link_standalone: 'https://github.com/ldbv-by/bav4/',
 				header_search_placeholder: 'Suchen',
-				header_search_clear_button: 'Löschen'
+				header_search_clear_button: 'Löschen',
+				header_logo_title_open: 'Navigationsleiste einblenden',
+				header_logo_title_close: 'Navigationsleiste ausblenden'
 			};
 
 		default:

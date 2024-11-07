@@ -220,6 +220,8 @@ describe('Header', () => {
 
 			expect(element.shadowRoot.querySelector('.header__logo-badge').innerText).toBe('header_logo_badge');
 
+			expect(element.shadowRoot.querySelector('.header__logo').title).toBe('header_logo_title_open');
+
 			expect(element.shadowRoot.querySelectorAll('div.header__emblem')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('a.header__emblem')).toHaveSize(0);
 		});
@@ -304,6 +306,7 @@ describe('Header', () => {
 
 			const element = await setup(state);
 			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.header__logo').title).toBe('header_logo_title_close');
 		});
 
 		it('layouts with closed navigation rail ', async () => {
@@ -314,6 +317,7 @@ describe('Header', () => {
 			};
 			const element = await setup(state);
 			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
+			expect(element.shadowRoot.querySelector('.header__logo').title).toBe('header_logo_title_open');
 		});
 	});
 
