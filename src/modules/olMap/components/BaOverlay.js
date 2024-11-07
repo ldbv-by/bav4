@@ -35,6 +35,7 @@ const Default_Placement = { sector: 'init', positioning: 'top-center', offset: [
  * @class
  * @property {string| null} [value] The numeric value.
  * @property {Geometry} geometry The ol geometry which relates to this overlay.
+ * @property {Number} geometryRevision The geometry revision to keep track of complex geometry changes.
  * @property {boolean} static Defines, whether the overlay is static or not.
  * @property {boolean} isDraggable Defines, whether the overlay is draggable or not.
  * @property {BaOverlayTypes} type='text' Defines the display properties of the overlay.
@@ -53,6 +54,7 @@ export class BaOverlay extends MvuElement {
 			draggable: false,
 			placement: Default_Placement,
 			geometry: null,
+			geometryRevision: null,
 			position: null
 		});
 		const { UnitsService, MapService } = $injector.inject('UnitsService', 'MapService');
@@ -85,7 +87,7 @@ export class BaOverlay extends MvuElement {
 			case Update_Floating:
 				return { ...model, floating: data };
 			case Update_Geometry:
-				return { ...model, geometry: data, position: getPosition(data, model.overlayType, model.value) };
+				return { ...model, position: getPosition(data, model.overlayType, model.value), geometry: data, geometryRevision: data.getRevision() };
 			case Update_Placement:
 				return { ...model, placement: data };
 		}
