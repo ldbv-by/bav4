@@ -73,7 +73,7 @@ test.describe('page', () => {
 			 * }
 			 */
 
-			expect(await page.locator('body > *').count()).toBe(15);
+			expect(await page.locator('body > *').count()).toBe(16);
 
 			expect(await page.locator('ba-header').count()).toBe(1);
 			expect(await page.locator('ba-main-menu').count()).toBe(1);
@@ -90,6 +90,7 @@ test.describe('page', () => {
 			expect(await page.locator('ba-modal').count()).toBe(1);
 			expect(await page.locator('ba-map-context-menu').count()).toBe(1);
 			expect(await page.locator('ba-navigation-rail').count()).toBe(1);
+			expect(await page.locator('ba-active-state-buttons').count()).toBe(1);
 		});
 	});
 });

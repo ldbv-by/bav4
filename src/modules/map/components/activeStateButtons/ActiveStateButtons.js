@@ -95,6 +95,6 @@ export class ActiveStateButtons extends MvuElement {
 	}
 
 	static get tag() {
-		return 'active-state-buttons';
+		return 'ba-active-state-buttons';
 	}
 }
