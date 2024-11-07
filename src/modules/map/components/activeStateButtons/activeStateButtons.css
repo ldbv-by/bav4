@@ -16,17 +16,15 @@
 	border-radius: 2em;
 	overflow: hidden;
 	width: 20em;
+	transition: all var(--animation-duration-small-open) var(--animation-easing-open);
+	pointer-events: all;
+}
+.active-state-buttons-container ba-button::part(button) {
+	background-color: var(--split-one-color);
 }
 .is-landscape.active-state-buttons-container ba-button:first-child {
 	margin-right: 0.5em;
 }
 .is-portrait.active-state-buttons-container ba-button:first-child {
 	margin-bottom: 0.3em;
-}
-ba-button {
-	transition: all var(--animation-duration-small-open) var(--animation-easing-open);
-	pointer-events: all;
-}
-ba-button::part(button) {
-	background-color: var(--split-one-color);
 }
