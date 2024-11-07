@@ -286,6 +286,10 @@ export class Header extends MvuElement {
 				: nothing;
 		};
 
+		const getTitle = () => {
+			return isOpenNavigationRail ? 'header_logo_title_close' : 'header_logo_title_open';
+		};
+
 		const classes = {
 			'is-open': isOpen && !isPortrait,
 			'is-open-navigationRail': isOpenNavigationRail && !isPortrait,
@@ -301,7 +305,7 @@ export class Header extends MvuElement {
 			<style>${css}</style>
 			<div class="preload">
 				<div class="${classMap(classes)}">
-					<div class='header__logo' id="headerLogo">				
+					<div class='header__logo' id="headerLogo" title="${translate(getTitle())}">		
 						<div class="action-button"  @click="${toggleNavigationRail}">
 							<div class="action-button__border animated-action-button__border ${getAnimatedBorderClass()}">
 							</div>
