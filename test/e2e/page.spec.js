@@ -65,7 +65,7 @@ test.describe('page', () => {
 			expect(description).toBe(templateParameters.description);
 		});
 
-		test('should contain 15 top level ba-components', async ({ page }) => {
+		test('should contain 16 top level ba-components', async ({ page }) => {
 			/**
 			 * Print current top level element with:
 			 * for (const el of await page.locator('body > *').all()) {
@@ -90,7 +90,7 @@ test.describe('page', () => {
 			expect(await page.locator('ba-modal').count()).toBe(1);
 			expect(await page.locator('ba-map-context-menu').count()).toBe(1);
 			expect(await page.locator('ba-navigation-rail').count()).toBe(1);
-			expect(await page.locator('ba-active-state-buttons').count()).toBe(1);
+			expect(await page.locator('ba-map-interaction-button-container').count()).toBe(1);
 		});
 	});
 });

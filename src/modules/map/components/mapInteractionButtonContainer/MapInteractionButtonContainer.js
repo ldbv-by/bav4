@@ -1,27 +1,25 @@
 /**
- * @module modules/map/components/activeStateButtons/ActiveStateButtons
+ * @module modules/map/components/mapInteractionButtonContainer/MapInteractionButtonContainer
  */
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
-import css from './activeStateButtons.css';
+import css from './mapInteractionButtonContainer.css';
 import { setCurrentTool } from '../../../../store/tools/tools.action';
 import { Tools } from '../../../../domain/tools';
 import closeSvg from './assets/close.svg';
 
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
 const Update_ToolId = 'update_tooId';
-const Update_FeatureInfo_Data = 'update_featureInfo_data';
-const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 
 /**
- * Container for active state buttons
+ * Container for map interaction button
  *
  * @class
  * @author alsturm
  */
 
-export class ActiveStateButtons extends MvuElement {
+export class MapInteractionButtonContainer extends MvuElement {
 	constructor() {
 		super({
 			isPortrait: false,
@@ -29,7 +27,7 @@ export class ActiveStateButtons extends MvuElement {
 			toolId: null
 		});
 
-		const { TranslationService, EnvironmentService } = $injector.inject('TranslationService', 'GeoResourceService', 'EnvironmentService');
+		const { TranslationService, EnvironmentService } = $injector.inject('TranslationService', 'EnvironmentService');
 
 		this._translationService = TranslationService;
 		this._environmentService = EnvironmentService;
@@ -41,10 +39,6 @@ export class ActiveStateButtons extends MvuElement {
 				return { ...model, ...data };
 			case Update_ToolId:
 				return { ...model, toolId: data };
-			case Update_FeatureInfo_Data:
-				return { ...model, featureInfoData: [...data] };
-			case Update_IsOpen_TabIndex:
-				return { ...model, ...data };
 		}
 	}
 
@@ -88,13 +82,13 @@ export class ActiveStateButtons extends MvuElement {
 					.icon=${closeSvg}
 					.label=${translate('active_state_buttons_stop_routing')}
 					.type=${'primary'}
-					@click=${setCurrentTool}
+					@click=${() => setCurrentTool(null)}
 				></ba-button>
 			</div>
 		`;
 	}
 
 	static get tag() {
-		return 'ba-active-state-buttons';
+		return 'ba-map-interaction-button-container';
 	}
 }
