@@ -59,7 +59,6 @@ describe('BaOverlay', () => {
 				overlayType: BaOverlayTypes.TEXT,
 				draggable: false,
 				placement: { sector: 'init', positioning: 'top-center', offset: [0, -25] },
-				geometry: null,
 				geometryRevision: null,
 				position: null
 			});
