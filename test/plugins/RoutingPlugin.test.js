@@ -12,7 +12,7 @@ import { initialState as initialToolsState, toolsReducer } from '../../src/store
 import { initialState as initialLayersState } from '../../src/store/layers/layers.reducer';
 import { setCurrentTool } from '../../src/store/tools/tools.action';
 import { Tools } from '../../src/domain/tools';
-import { deactivate, activate, setProposal, setStatus, setWaypoints, setStart } from '../../src/store/routing/routing.action';
+import { deactivate, activate, setProposal, setStatus, setWaypoints, setStart, setRoute } from '../../src/store/routing/routing.action';
 import { $injector } from '../../src/injection';
 import { LevelTypes } from '../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../src/store/notifications/notifications.reducer';
@@ -70,7 +70,7 @@ describe('RoutingPlugin', () => {
 	describe('register', () => {
 		describe('when routing related query params are available', () => {
 			describe('exactly one waypoint', () => {
-				it('calls _lazyInitialize, updates the active property and set the correct tab and tools id', async () => {
+				it('calls _lazyInitialize, sets the routing s-o-s `active` property to `true and set the correct tab and tools id', async () => {
 					const store = setup();
 					const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2`);
 					const instanceUnderTest = new RoutingPlugin();
@@ -91,8 +91,37 @@ describe('RoutingPlugin', () => {
 			});
 
 			describe('more then one waypoint', () => {
-				describe('and tool id is NOT available', () => {
-					it('calls _lazyInitialize and updates the active property', async () => {
+				describe('and tool id is NOT `ROUTING`', () => {
+					it('calls _lazyInitialize and set the routing s-o-s `active` property first to `true` and after the route was loaded to `false`', async () => {
+						const store = setup({
+							mainMenu: {
+								tab: TabIds.MAPS
+							}
+						});
+						const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2,3,4&`);
+						const instanceUnderTest = new RoutingPlugin();
+						spyOn(environmentService, 'getQueryParams').and.returnValue(queryParams);
+						const lazyInitializeSpy = spyOn(instanceUnderTest, '_lazyInitialize').and.resolveTo(true);
+						await instanceUnderTest.register(store);
+						spyOn(instanceUnderTest, '_parseWaypoints')
+							.withArgs(queryParams)
+							.and.returnValue([
+								[1, 2],
+								[3, 4]
+							]);
+
+						await TestUtils.timeout();
+						await TestUtils.timeout();
+						expect(store.getState().routing.active).toBeTrue();
+						expect(lazyInitializeSpy).toHaveBeenCalled();
+
+						setRoute({ foo: 'bar' });
+
+						expect(store.getState().routing.active).toBeFalse();
+					});
+				});
+				describe('and tool id is `ROUTING`', () => {
+					it('calls _lazyInitialize and set the routing s-o-s `active` property to `true`', async () => {
 						const store = setup({
 							mainMenu: {
 								tab: TabIds.MAPS

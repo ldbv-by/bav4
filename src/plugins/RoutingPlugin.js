@@ -1,7 +1,7 @@
 /**
  * @module plugins/RoutingPlugin
  */
-import { observe } from '../utils/storeUtils';
+import { observe, observeOnce } from '../utils/storeUtils';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { BaPlugin } from './BaPlugin';
 import { activate, deactivate, reset, setCategory, setDestination, setWaypoints } from '../store/routing/routing.action';
@@ -89,6 +89,7 @@ export class RoutingPlugin extends BaPlugin {
 	 */
 	async register(store) {
 		if (!this.#environmentService.isEmbedded() && this.#environmentService.getQueryParams().has(QueryParameters.ROUTE_WAYPOINTS)) {
+			const toolId = this.#environmentService.getQueryParams().get(QueryParameters.TOOL_ID);
 			if (await this._lazyInitialize()) {
 				// we activate the tool after another possible active tool was deactivated
 				setTimeout(() => {
@@ -97,6 +98,14 @@ export class RoutingPlugin extends BaPlugin {
 					if (this._parseWaypoints(this.#environmentService.getQueryParams()).length === 1) {
 						setTab(TabIds.ROUTING);
 						setCurrentTool(Tools.ROUTING);
+					}
+					// we have waypoints for a route but the tool should not be active, so we deactivate the tool after the route was successfully fetched
+					if (toolId !== Tools.ROUTING) {
+						observeOnce(
+							store,
+							(state) => state.routing.route,
+							() => deactivate()
+						);
 					}
 				});
 			}
