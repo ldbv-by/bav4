@@ -23,7 +23,6 @@ export class MapInteractionButtonContainer extends MvuElement {
 	constructor() {
 		super({
 			isPortrait: false,
-			hasMinWidth: false,
 			toolId: null
 		});
 
@@ -45,7 +44,7 @@ export class MapInteractionButtonContainer extends MvuElement {
 	onInitialize() {
 		this.observe(
 			(state) => state.media,
-			(media) => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait, hasMinWidth: media.minWidth })
+			(media) => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait })
 		);
 		this.observe(
 			(state) => state.tools.current,
@@ -58,17 +57,13 @@ export class MapInteractionButtonContainer extends MvuElement {
 	 */
 	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
-		const { isPortrait, hasMinWidth, toolId } = model;
+		const { isPortrait, toolId } = model;
 
 		const getOrientationClass = () => {
 			return isPortrait ? 'is-portrait' : 'is-landscape';
 		};
 
-		const getMinWidthClass = () => {
-			return hasMinWidth ? 'is-desktop' : 'is-tablet';
-		};
-
-		const getShowRoutingClass = (toolId) => {
+		const getShowRoutingClass = () => {
 			return Tools.ROUTING === toolId ? '' : 'hide';
 		};
 
@@ -76,9 +71,9 @@ export class MapInteractionButtonContainer extends MvuElement {
 			<style>
 				${css}
 			</style>
-			<div class="active-state-buttons-container ${getOrientationClass()} ${getMinWidthClass()}">
+			<div class="map-interaction-button-container ${getOrientationClass()}">
 				<ba-button
-					class="${getShowRoutingClass(toolId)}"
+					class="${getShowRoutingClass()} routing"
 					.icon=${closeSvg}
 					.label=${translate('active_state_buttons_stop_routing')}
 					.type=${'primary'}
