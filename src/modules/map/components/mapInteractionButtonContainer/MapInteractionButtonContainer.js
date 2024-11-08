@@ -13,7 +13,7 @@ const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
 const Update_ToolId = 'update_tooId';
 
 /**
- * Container for map interaction button
+ * Container for map interaction buttons.
  *
  * @class
  * @author alsturm
