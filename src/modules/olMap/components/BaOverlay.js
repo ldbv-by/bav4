@@ -35,7 +35,6 @@ const Default_Placement = { sector: 'init', positioning: 'top-center', offset: [
  * @class
  * @property {string| null} [value] The numeric value.
  * @property {Geometry} geometry The ol geometry which relates to this overlay.
- * @property {Number} geometryRevision The geometry revision to keep track of geometry changes.
  * @property {boolean} static Defines, whether the overlay is static or not.
  * @property {boolean} isDraggable Defines, whether the overlay is draggable or not.
  * @property {BaOverlayTypes} type='text' Defines the display properties of the overlay.
