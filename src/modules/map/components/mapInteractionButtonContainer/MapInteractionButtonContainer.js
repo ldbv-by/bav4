@@ -20,16 +20,16 @@ const Update_ToolId = 'update_tooId';
  */
 
 export class MapInteractionButtonContainer extends MvuElement {
+	#translationService;
 	constructor() {
 		super({
 			isPortrait: false,
 			toolId: null
 		});
 
-		const { TranslationService, EnvironmentService } = $injector.inject('TranslationService', 'EnvironmentService');
+		const { TranslationService } = $injector.inject('TranslationService');
 
-		this._translationService = TranslationService;
-		this._environmentService = EnvironmentService;
+		this.#translationService = TranslationService;
 	}
 
 	update(type, data, model) {
@@ -56,7 +56,7 @@ export class MapInteractionButtonContainer extends MvuElement {
 	 *@override
 	 */
 	createView(model) {
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key) => this.#translationService.translate(key);
 		const { isPortrait, toolId } = model;
 
 		const getOrientationClass = () => {
