@@ -33,6 +33,18 @@ describe('MapInteractionButtonContainer', () => {
 		return TestUtils.render(MapInteractionButtonContainer.tag);
 	};
 
+	describe('constructor', () => {
+		it('sets a default model', async () => {
+			await setup();
+			const element = new MapInteractionButtonContainer();
+
+			expect(element.getModel()).toEqual({
+				isPortrait: false,
+				toolId: null
+			});
+		});
+	});
+
 	describe('when instantiated', () => {
 		it('has a model containing default values', async () => {
 			await setup();
