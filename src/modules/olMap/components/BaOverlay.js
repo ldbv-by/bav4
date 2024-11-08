@@ -25,7 +25,7 @@ const Update_Value = 'update_value';
 const Update_Overlay_Type = 'update_overlay_type';
 const Update_Draggable = 'update_draggable';
 const Update_Floating = 'update_floating';
-const Update_Geometry = 'update_geometry';
+const Update_Geometry_Revision = 'update_geometry_revision';
 const Update_Placement = 'update_placement';
 
 const Default_Placement = { sector: 'init', positioning: 'top-center', offset: [0, -25] };
@@ -45,6 +45,7 @@ const Default_Placement = { sector: 'init', positioning: 'top-center', offset: [
 export class BaOverlay extends MvuElement {
 	#unitsService;
 	#mapService;
+	#geometry;
 	constructor() {
 		super({
 			value: null,
@@ -52,26 +53,29 @@ export class BaOverlay extends MvuElement {
 			overlayType: BaOverlayTypes.TEXT,
 			draggable: false,
 			placement: Default_Placement,
-			geometry: null,
+			geometryRevision: null,
 			position: null
 		});
 		const { UnitsService, MapService } = $injector.inject('UnitsService', 'MapService');
 		this.#unitsService = UnitsService;
 		this.#mapService = MapService;
+		this.#geometry = null;
 	}
 
 	update(type, data, model) {
-		const getPosition = (geometry, overlayType, value) => {
+		const getPosition = (overlayType, value) => {
 			switch (overlayType) {
 				case BaOverlayTypes.AREA:
-					return geometry instanceof Polygon ? geometry.getInteriorPoint().getCoordinates().slice(0, -1) : getCenter(geometry.getExtent());
+					return this.#geometry instanceof Polygon
+						? this.#geometry.getInteriorPoint().getCoordinates().slice(0, -1)
+						: getCenter(this.#geometry.getExtent());
 				case BaOverlayTypes.DISTANCE_PARTITION:
-					return getCoordinateAt(geometry, value);
+					return getCoordinateAt(this.#geometry, value);
 				case BaOverlayTypes.DISTANCE:
 				case BaOverlayTypes.HELP:
 				case BaOverlayTypes.TEXT:
 				default:
-					return geometry.getLastCoordinate();
+					return this.#geometry.getLastCoordinate();
 			}
 		};
 
@@ -84,8 +88,8 @@ export class BaOverlay extends MvuElement {
 				return { ...model, draggable: data };
 			case Update_Floating:
 				return { ...model, floating: data };
-			case Update_Geometry:
-				return { ...model, geometry: data, position: getPosition(data, model.overlayType, model.value) };
+			case Update_Geometry_Revision:
+				return { ...model, position: getPosition(model.overlayType, model.value), geometryRevision: data };
 			case Update_Placement:
 				return { ...model, placement: data };
 		}
@@ -120,7 +124,8 @@ export class BaOverlay extends MvuElement {
 	}
 
 	#getContent(model) {
-		const { geometry, overlayType, value } = model;
+		const { overlayType, value } = model;
+		const geometry = this.#geometry;
 		const getStaticDistance = () => {
 			const distance = this.#getMeasuredLength(geometry) * value;
 			return this.#unitsService.formatDistance(round(Math.round(distance), -1), 0);
@@ -206,11 +211,12 @@ export class BaOverlay extends MvuElement {
 	}
 
 	set geometry(value) {
-		this.signal(Update_Geometry, value);
+		this.#geometry = value;
+		this.signal(Update_Geometry_Revision, this.#geometry?.getRevision());
 	}
 
 	get geometry() {
-		return this.getModel().geometry;
+		return this.#geometry;
 	}
 
 	get position() {

@@ -59,7 +59,7 @@ describe('BaOverlay', () => {
 				overlayType: BaOverlayTypes.TEXT,
 				draggable: false,
 				placement: { sector: 'init', positioning: 'top-center', offset: [0, -25] },
-				geometry: null,
+				geometryRevision: null,
 				position: null
 			});
 		});
@@ -133,6 +133,7 @@ describe('BaOverlay', () => {
 			expect(div.innerText).toBe('90.00°/THE DISTANCE IN m');
 			expect(element.type).toBe(BaOverlayTypes.DISTANCE);
 			expect(element.static).toBeFalse();
+			expect(element.getModel().geometryRevision).not.toBeNull();
 		});
 
 		it('renders the distance view without azimuth angle', async () => {
@@ -154,6 +155,7 @@ describe('BaOverlay', () => {
 			expect(div.innerText).toBe('THE DISTANCE IN m');
 			expect(element.type).toBe(BaOverlayTypes.DISTANCE);
 			expect(element.static).toBeFalse();
+			expect(element.getModel().geometryRevision).not.toBeNull();
 		});
 
 		it('renders the area view', async () => {
@@ -179,6 +181,7 @@ describe('BaOverlay', () => {
 			expect(div.innerText).toBe('THE AREA IN m²');
 			expect(element.type).toBe(BaOverlayTypes.AREA);
 			expect(element.static).toBeFalse();
+			expect(element.getModel().geometryRevision).not.toBeNull();
 		});
 
 		it('does NOT render the area view', async () => {
@@ -201,6 +204,7 @@ describe('BaOverlay', () => {
 			expect(div.innerText).toBe('');
 			expect(element.type).toBe(BaOverlayTypes.AREA);
 			expect(element.static).toBeFalse();
+			expect(element.getModel().geometryRevision).not.toBeNull();
 		});
 
 		it('renders the distance-partition view', async () => {
@@ -221,6 +225,7 @@ describe('BaOverlay', () => {
 			expect(div.innerText).toBe('THE DISTANCE IN m');
 			expect(element.type).toBe(BaOverlayTypes.DISTANCE_PARTITION);
 			expect(element.static).toBeFalse();
+			expect(element.getModel().geometryRevision).not.toBeNull();
 		});
 
 		it('renders the distance-partition view with rounded values (up)', async () => {
