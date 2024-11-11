@@ -16,7 +16,7 @@ describe('i18n for header module', () => {
 		expect(map.header_logo_badge_standalone).toBe('Demo');
 		expect(map.header_emblem_title_standalone).toBe('bav4 auf github');
 		expect(map.header_emblem_link_standalone).toBe('https://github.com/ldbv-by/bav4/');
-		expect(map.header_search_placeholder).toBe('Suchen');
+		expect(map.header_search_placeholder).toBe('Orte, Geodaten, Flurstücke');
 		expect(map.header_search_clear_button).toBe('Löschen');
 		expect(map.header_logo_title_open).toBe('Navigationsleiste einblenden');
 		expect(map.header_logo_title_close).toBe('Navigationsleiste ausblenden');
@@ -37,7 +37,7 @@ describe('i18n for header module', () => {
 		expect(map.header_logo_badge_standalone).toBe('Demo');
 		expect(map.header_emblem_title_standalone).toBe('bav4 on github');
 		expect(map.header_emblem_link_standalone).toBe('https://github.com/ldbv-by/bav4/');
-		expect(map.header_search_placeholder).toBe('Search');
+		expect(map.header_search_placeholder).toBe('Places, geodata, cadastral parcels');
 		expect(map.header_search_clear_button).toBe('Clear');
 		expect(map.header_logo_title_open).toBe('Show navigation rail');
 		expect(map.header_logo_title_close).toBe('Hide navigation rail');
