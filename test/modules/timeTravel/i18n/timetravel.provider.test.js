@@ -9,7 +9,7 @@ describe('i18n for timetravel module', () => {
 		expect(map.timeTravel_slider_decrease).toBe('vorheriges Jahr');
 		expect(map.timeTravel_slider_start).toBe('Start');
 		expect(map.timeTravel_slider_stop).toBe('Stop');
-		expect(map.timeTravel_slider_reset).toBe('Zurücksetzten');
+		expect(map.timeTravel_slider_reset).toBe('Zurücksetzen');
 	});
 
 	it('provides translation for en', () => {
