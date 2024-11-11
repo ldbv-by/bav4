@@ -6,10 +6,10 @@ describe('i18n for map module', () => {
 
 		expect(map.map_interaction_button_container).toBe('Routing abschließen');
 	});
-	
+
 	it('provides translation for en', () => {
 		const map = provide('en');
-		
+
 		expect(map.map_interaction_button_container).toBe('Complete routing');
 	});
 
