@@ -5,7 +5,7 @@ import { provide as contextMenuProvider } from './contextMenu.provider';
 import { provide as attributionInfoProvider } from './attributionInfo.provider';
 import { provide as rotationButtonProvider } from './rotationButton.provider';
 import { provide as threeDimensionButtonProvider } from './threeDimensionButton.provider';
-import { provide as activeStatButtonsProvider } from './activeStatButtons.provider';
+import { provide as activeStatButtonsProvider } from './mapInteractionButtonContainer.provider';
 import { $injector } from '../../../injection';
 const { TranslationService: translationService } = $injector.inject('TranslationService');
 translationService.register('infoButtonProvider', infoButtonProvide);
