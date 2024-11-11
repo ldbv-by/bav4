@@ -678,6 +678,26 @@ export class ShowCase extends MvuElement {
 								<span> --text4 </span>
 								<div class="column" style="height: 1.5em; width:5em;background:var(--text4);"></div>
 							</div>
+							<div class="row" style="justify-content:space-between">
+								<span> --error-color </span>
+								<div class="column" style="height: 1.5em; width:5em;background:var(--error-color);"></div>
+							</div>
+							<div class="row" style="justify-content:space-between">
+								<span> --warning-color </span>
+								<div class="column" style="height: 1.5em; width:5em;background:var(--warning-color);"></div>
+							</div>
+							<div class="row" style="justify-content:space-between">
+								<span> --info-color</span>
+								<div class="column" style="height: 1.5em; width:5em;background:var(--info-color);"></div>
+							</div>
+							<div class="row" style="justify-content:space-between">
+								<span>--success-color </span>
+								<div class="column" style="height: 1.5em; width:5em;background:var(--success-color);"></div>
+							</div>
+							<div class="row" style="justify-content:space-between">
+								<span> --highlight-map-color </span>
+								<div class="column" style="height: 1.5em; width:5em;background:var(--highlight-map-color);"></div>
+							</div>
 						</div>
 					</div>
 				</div>
