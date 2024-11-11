@@ -317,7 +317,7 @@ img {
 	color: var(--text1);
 }
 .ba-form-element .check .icon {
-	background: var(--sucess-color);
+	background: var(--success-color);
 	background-repeat: no-repeat;
 	background-position: center;
 	background-image: url('./assets/checkcircle.svg');
