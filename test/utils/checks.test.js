@@ -9,9 +9,9 @@ import {
 	isString,
 	isTemplateResult,
 	isFunction,
-	isCoordinateLike
+	isCoordinateLike,
+	isPrimitive
 } from '../../src/utils/checks';
-import { isPrimitive } from 'lit-html/directive-helpers.js';
 
 describe('provides checks for commons types', () => {
 	it('checks for an object', () => {

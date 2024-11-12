@@ -80,10 +80,10 @@ export const isPromise = (val) => {
  * Checks if a value is a primitive.
  * @function
  * @param {*} val
- * @returns {boolean} `true` if it is a Promise
+ * @returns {boolean} `true` if it is a primitive
  */
 export const isPrimitive = (val) => {
-	return val === Object(val);
+	return val !== Object(val);
 };
 
 /**
