@@ -21,6 +21,7 @@ import { $injector } from '../../../../../src/injection';
 import { QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../../src/plugins/HighlightPlugin';
 import { Cluster } from 'ol/source';
 import { FeatureInfoGeometryTypes } from '../../../../../src/domain/featureInfo';
+import LayerGroup from 'ol/layer/Group';
 
 describe('OlFeatureInfoHandler_Query_Resolution_Delay', () => {
 	it('determines amount of time query resolution delayed', async () => {
@@ -101,8 +102,10 @@ describe('OlFeatureInfoHandler', () => {
 	describe('when featureInfo.coordinate property changes', () => {
 		const layerId0 = 'layerId0';
 		const layerId1 = 'layerId1';
+		const layerId2 = 'layerId2';
 		const geoResourceId0 = 'geoResourceId0';
 		const geoResourceId1 = 'geoResourceId1';
+		const geoResourceId2 = 'geoResourceId2';
 		let vectorLayer0;
 		let vectorLayer1;
 
@@ -198,7 +201,11 @@ describe('OlFeatureInfoHandler', () => {
 			const handler = setup(
 				{
 					layers: {
-						active: [createDefaultLayer(layerId0, geoResourceId0), createDefaultLayer(layerId1, geoResourceId1)]
+						active: [
+							createDefaultLayer(layerId0, geoResourceId0),
+							createDefaultLayer(layerId1, geoResourceId1),
+							createDefaultLayer(layerId2, geoResourceId2)
+						]
 					}
 				},
 				mockFeatureInfoProvider
@@ -206,6 +213,7 @@ describe('OlFeatureInfoHandler', () => {
 			const map = setupMap();
 			const geometry = new Point(matchingCoordinate);
 			const expectedFeatureInfoGeometry = { data: new GeoJSON().writeGeometry(geometry), geometryType: FeatureInfoGeometryTypes.GEOJSON };
+			// "default" vector layer
 			const olVectorSource0 = new VectorSource();
 			const feature0 = new Feature({ geometry: geometry });
 			feature0.set('name', 'name0');
@@ -214,8 +222,8 @@ describe('OlFeatureInfoHandler', () => {
 			vectorLayer0.setSource(olVectorSource0);
 			map.addLayer(vectorLayer0);
 
+			// vector layer containing a clustered source
 			const olVectorSource1 = new VectorSource();
-			// here we use a clustered VectorSource
 			const olClusterdVectorSource1 = new Cluster({ source: olVectorSource1 });
 			const feature1 = new Feature({ geometry: geometry });
 			feature1.set('name', 'name1');
@@ -223,6 +231,16 @@ describe('OlFeatureInfoHandler', () => {
 			olVectorSource1.addFeature(feature1);
 			vectorLayer1.setSource(olClusterdVectorSource1);
 			map.addLayer(vectorLayer1);
+
+			// vector layer grouped in a layer group
+			const olVectorSource2 = new VectorSource();
+			const feature2 = new Feature({ geometry: geometry });
+			feature2.set('name', 'name2');
+			feature2.set('description', 'description2');
+			olVectorSource2.addFeature(feature2);
+			const vectorLayer = new VectorLayer();
+			vectorLayer.setSource(olVectorSource2);
+			map.addLayer(new LayerGroup({ id: layerId2, layers: [vectorLayer] }));
 
 			handler.register(map);
 
@@ -232,14 +250,19 @@ describe('OlFeatureInfoHandler', () => {
 
 			//must be called within a timeout function cause implementation delays call of 'resolveQuery'
 			await TestUtils.timeout(TestDelay);
-			expect(store.getState().featureInfo.current).toHaveSize(2);
+			expect(store.getState().featureInfo.current).toHaveSize(3);
 			// ensure correct order of LayerInfo items -> must correspond to layers.active ordering
 			expect(store.getState().featureInfo.current[0]).toEqual({
+				title: 'name2-layerId2',
+				content: 'description2',
+				geometry: expectedFeatureInfoGeometry
+			});
+			expect(store.getState().featureInfo.current[1]).toEqual({
 				title: 'name1-layerId1',
 				content: 'description1',
 				geometry: expectedFeatureInfoGeometry
 			});
-			expect(store.getState().featureInfo.current[1]).toEqual({
+			expect(store.getState().featureInfo.current[2]).toEqual({
 				title: 'name0-layerId0',
 				content: 'description0',
 				geometry: expectedFeatureInfoGeometry
@@ -254,7 +277,7 @@ describe('OlFeatureInfoHandler', () => {
 			startRequest(matchingCoordinate);
 
 			await TestUtils.timeout(TestDelay);
-			expect(store.getState().featureInfo.current).toHaveSize(2);
+			expect(store.getState().featureInfo.current).toHaveSize(3);
 
 			// we modify the first layer so that it is not queryable anymore
 			modifyLayer(layerId0, { visible: false });
@@ -262,7 +285,7 @@ describe('OlFeatureInfoHandler', () => {
 			startRequest(matchingCoordinate);
 
 			await TestUtils.timeout(TestDelay);
-			expect(store.getState().featureInfo.current).toHaveSize(1);
+			expect(store.getState().featureInfo.current).toHaveSize(2);
 
 			//we modify the second layer so that it is not queryable anymore, but the feature1 has a name property
 			modifyLayer(layerId1, { constraints: { hidden: true } });
@@ -270,7 +293,7 @@ describe('OlFeatureInfoHandler', () => {
 			startRequest(matchingCoordinate);
 
 			await TestUtils.timeout(TestDelay);
-			expect(store.getState().featureInfo.current).toHaveSize(1);
+			expect(store.getState().featureInfo.current).toHaveSize(2);
 
 			//we modify feature1 by setting the name property to undefined
 			feature1.set('name', undefined);
@@ -278,7 +301,7 @@ describe('OlFeatureInfoHandler', () => {
 			startRequest(matchingCoordinate);
 
 			await TestUtils.timeout(TestDelay);
-			expect(store.getState().featureInfo.current).toHaveSize(0);
+			expect(store.getState().featureInfo.current).toHaveSize(1);
 		});
 
 		it('ignores a clustered feature containing more than one features', async () => {
