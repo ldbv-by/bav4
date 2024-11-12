@@ -10,6 +10,7 @@ import { getBvvFeatureInfo } from './featureInfoItem.provider';
 import { removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
 import { QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../plugins/HighlightPlugin';
 import { createUniqueId } from '../../../../utils/numberUtils';
+import LayerGroup from '../../../../../node_modules/ol/layer/Group';
 
 /**
  * Amount of time (in ms) query resolution should be delayed.
@@ -55,7 +56,7 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 						return feature;
 					},
 					{
-						layerFilter: (l) => l === olLayer,
+						layerFilter: (l) => (olLayer instanceof LayerGroup ? olLayer.getLayers().getArray().includes(l) : l === olLayer),
 						hitTolerance: OlFeatureInfoHandler_Hit_Tolerance_Px
 					}
 				) ?? null
