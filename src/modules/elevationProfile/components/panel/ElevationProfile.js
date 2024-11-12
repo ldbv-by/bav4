@@ -506,6 +506,7 @@ export class ElevationProfile extends MvuElement {
 			this._chartColorOptions[selectedAttribute] = {};
 		};
 
+		const labelsMax = newDataLabels ? Math.max(...newDataLabels) : 0;
 		const config = {
 			type: 'line',
 			data: this._getChartData(elevationData, newDataLabels, newDataData),
@@ -525,13 +526,6 @@ export class ElevationProfile extends MvuElement {
 						if (args?.event?.native && ['mouseout', 'pointerup'].includes(args.event.native.type)) {
 							removeHighlightFeaturesById(ElevationProfile.HIGHLIGHT_FEATURE_ID);
 						}
-					}
-				},
-				{
-					id: 'shortenLeftEndOfScale',
-					beforeInit: (chart) => {
-						chart.options.scales.x.min = Math.min(...chart.data.labels);
-						chart.options.scales.x.max = Math.max(...chart.data.labels);
 					}
 				},
 				{
@@ -567,8 +561,11 @@ export class ElevationProfile extends MvuElement {
 							color: ElevationProfile.DEFAULT_TEXT_COLOR
 						},
 						ticks: {
+							includeBounds: false,
+							maxRotation: 0,
 							color: ElevationProfile.DEFAULT_TEXT_COLOR
-						}
+						},
+						max: labelsMax
 					},
 					y: {
 						type: 'linear',
