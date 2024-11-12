@@ -11,6 +11,7 @@ import {
 	isFunction,
 	isCoordinateLike
 } from '../../src/utils/checks';
+import { isPrimitive } from 'lit-html/directive-helpers.js';
 
 describe('provides checks for commons types', () => {
 	it('checks for an object', () => {
@@ -104,6 +105,20 @@ describe('provides checks for commons types', () => {
 		expect(isPromise(5)).toBeFalse();
 
 		expect(isPromise(Promise.resolve())).toBeTrue();
+	});
+
+	it('checks for a primitive', () => {
+		expect(isPrimitive()).toBeTrue();
+		expect(isPrimitive(null)).toBeTrue();
+		expect(isPrimitive('foo')).toBeTrue();
+		expect(isPrimitive(42)).toBeTrue();
+		expect(isPrimitive(false)).toBeTrue();
+		expect(isPrimitive(BigInt(42))).toBeTrue();
+
+		expect(isPrimitive(new String('foo'))).toBeFalse();
+		expect(isPrimitive(new Number(42))).toBeFalse();
+		expect(isPrimitive([])).toBeFalse();
+		expect(isPrimitive({})).toBeFalse();
 	});
 
 	it('checks for a lit-html TemplateResult', () => {
