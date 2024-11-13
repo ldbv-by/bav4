@@ -23,6 +23,13 @@
 ::-webkit-scrollbar {
 	width: 0.4em;
 }
+/* fix Windows Firefox scrollbar*/
+@-moz-document url-prefix() {
+	* {
+		scrollbar-color: var(--secondary-bg-color) var(--primary-bg-color);
+		scrollbar-width: thin;
+	}
+}
 ::-webkit-scrollbar-thumb {
 	border-radius: 0.9em;
 	background: var(--secondary-bg-color);

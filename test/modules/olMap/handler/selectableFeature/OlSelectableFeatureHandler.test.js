@@ -78,8 +78,9 @@ describe('OlSelectableFeatureHandler', () => {
 			spyOn(handler, '_getDataAtPixel')
 				.withArgs(jasmine.any(Array), map)
 				.and.callFake((pixel) => {
-					return equals(pixel, matchingCoordinate);
+					return equals(pixel, matchingCoordinateInPixel);
 				});
+			spyOn(geoResourceService, 'byId').and.returnValue(null);
 
 			expect(map.getTargetElement().style.cursor).toBe('');
 
@@ -94,27 +95,57 @@ describe('OlSelectableFeatureHandler', () => {
 	});
 
 	describe('when pointer moves over vector feature', () => {
-		it('changes the cursor', async () => {
-			const map = setupMap();
-			const vectorSource = new VectorSource();
-			vectorSource.addFeature(new Feature(new Point(matchingCoordinate)));
-			map.addLayer(new VectorLayer({ source: vectorSource }));
-			const handler = setup();
-			handler.register(map);
-			await renderComplete(map);
-			// safe to call map.getPixelFromCoordinate from now on
-			const matchingCoordinateInPixel = map.getPixelFromCoordinate(matchingCoordinate);
-			const notMatchingCoordinateInPixel = map.getPixelFromCoordinate(notMatchingCoordinate);
+		describe('the corresponding GeoResource is queryable', () => {
+			it('changes the cursor', async () => {
+				const geoResourceId = 'geoResourceId';
+				const map = setupMap();
+				const vectorSource = new VectorSource();
+				vectorSource.addFeature(new Feature(new Point(matchingCoordinate)));
+				map.addLayer(new VectorLayer({ source: vectorSource, geoResourceId }));
+				const handler = setup();
+				handler.register(map);
+				await renderComplete(map);
+				// safe to call map.getPixelFromCoordinate from now on
+				const matchingCoordinateInPixel = map.getPixelFromCoordinate(matchingCoordinate);
+				const notMatchingCoordinateInPixel = map.getPixelFromCoordinate(notMatchingCoordinate);
+				spyOn(geoResourceService, 'byId')
+					.withArgs(geoResourceId)
+					.and.returnValue(new WmsGeoResource(geoResourceId, '', '', '', ''));
 
-			expect(map.getTargetElement().style.cursor).toBe('');
+				expect(map.getTargetElement().style.cursor).toBe('');
 
-			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, matchingCoordinateInPixel[0], matchingCoordinateInPixel[1], false);
+				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, matchingCoordinateInPixel[0], matchingCoordinateInPixel[1], false);
 
-			expect(map.getTargetElement().style.cursor).toBe('pointer');
+				expect(map.getTargetElement().style.cursor).toBe('pointer');
 
-			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, notMatchingCoordinateInPixel[0], notMatchingCoordinateInPixel[1], false);
+				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, notMatchingCoordinateInPixel[0], notMatchingCoordinateInPixel[1], false);
 
-			expect(map.getTargetElement().style.cursor).toBe('');
+				expect(map.getTargetElement().style.cursor).toBe('');
+			});
+		});
+
+		describe('the corresponding GeoResource is queryable', () => {
+			it('changes the cursor', async () => {
+				const geoResourceId = 'geoResourceId';
+				const map = setupMap();
+				const vectorSource = new VectorSource();
+				vectorSource.addFeature(new Feature(new Point(matchingCoordinate)));
+				map.addLayer(new VectorLayer({ source: vectorSource, geoResourceId }));
+				const handler = setup();
+				handler.register(map);
+				await renderComplete(map);
+				// safe to call map.getPixelFromCoordinate from now on
+				const matchingCoordinateInPixel = map.getPixelFromCoordinate(matchingCoordinate);
+				spyOn(geoResourceService, 'byId')
+					.withArgs(geoResourceId)
+					.and.returnValue(new WmsGeoResource(geoResourceId, '', '', '', '').setQueryable(false));
+
+				expect(map.getTargetElement().style.cursor).toBe('');
+
+				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, matchingCoordinateInPixel[0], matchingCoordinateInPixel[1], false);
+
+				expect(map.getTargetElement().style.cursor).toBe('');
+			});
 		});
 	});
 
