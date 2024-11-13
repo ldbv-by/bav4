@@ -24,6 +24,7 @@ describe('TopicsContentPanelIndex', () => {
 describe('TopicsContentPanel', () => {
 	const topic0 = new Topic('topic0', 'Topic 0', 'This is Topic 0...', null, [], [], [], { hue: 42, icon: 'icon' });
 	const topic1 = new Topic('topic1', 'Topic 1', 'This is Topic 1...');
+	const topic2 = new Topic('topic2', 'Topic 2', '');
 
 	let store;
 
@@ -125,7 +126,7 @@ describe('TopicsContentPanel', () => {
 
 			describe('and topics should be visible', () => {
 				it('renders a list of topic elements and CatalogContentPanels', async () => {
-					spyOn(topicsServiceMock, 'all').and.returnValue([topic0, topic1]);
+					spyOn(topicsServiceMock, 'all').and.returnValue([topic0, topic1, topic2]);
 
 					const element = await setup({
 						topics: {
@@ -137,33 +138,43 @@ describe('TopicsContentPanel', () => {
 						}
 					});
 
-					//we expect five style -Elements included: mvuElement.css, contentPanel.css, topicsContentPanle.css and one for each topic (in this case two)
-					expect(element.shadowRoot.styleSheets.length).toBe(5);
+					//we expect six style -Elements included: mvuElement.css, contentPanel.css, topicsContentPanle.css and one for each topic (in this case two)
+					expect(element.shadowRoot.styleSheets.length).toBe(6);
 
 					//test existence of important css classes
 					expect(element.shadowRoot.querySelectorAll('.topics-content-panel')).toHaveSize(1);
 					expect(element.shadowRoot.querySelector('.topics-content-panel').classList.contains('invisible')).toBeFalse();
-					expect(element.shadowRoot.querySelectorAll('.topic')).toHaveSize(2);
-					expect(element.shadowRoot.querySelectorAll('button')).toHaveSize(2);
-					expect(element.shadowRoot.querySelectorAll('.ba-list-item__icon')).toHaveSize(2);
+					expect(element.shadowRoot.querySelectorAll('.topic')).toHaveSize(3);
+					expect(element.shadowRoot.querySelectorAll('button')).toHaveSize(3);
+					expect(element.shadowRoot.querySelectorAll('.ba-list-item__icon')).toHaveSize(3);
 					expect(element.shadowRoot.querySelectorAll('.svg-icon').length).toBe(1);
 
 					expect(element.shadowRoot.querySelectorAll('.topic')[0].classList.contains('active')).toBeTrue();
 					expect(element.shadowRoot.querySelectorAll('.topic')[0].getAttribute('tabindex')).toBe('0');
 					expect(element.shadowRoot.querySelectorAll('.icon-topic0')).toHaveSize(1);
 					expect(element.shadowRoot.querySelectorAll('.ba-list-item__primary-text')[0].innerText).toBe(topic0.label);
+					expect(element.shadowRoot.querySelectorAll('.ba-list-item__primary-text')[0].classList.contains('large-text')).toBeFalse();
 					expect(element.shadowRoot.querySelectorAll('.ba-list-item__secondary-text')[0].innerText).toBe(topic0.description);
 
 					expect(element.shadowRoot.querySelectorAll('.topic')[1].classList.contains('active')).toBeFalse();
 					expect(element.shadowRoot.querySelectorAll('.topic')[1].getAttribute('tabindex')).toBe('0');
 					expect(element.shadowRoot.querySelectorAll('.icon-topic1')).toHaveSize(1);
 					expect(element.shadowRoot.querySelectorAll('.ba-list-item__primary-text')[1].innerText).toBe(topic1.label);
+					expect(element.shadowRoot.querySelectorAll('.ba-list-item__primary-text')[1].classList.contains('large-text')).toBeFalse();
 					expect(element.shadowRoot.querySelectorAll('.ba-list-item__secondary-text')[1].innerText).toBe(topic1.description);
 
-					expect(element.shadowRoot.querySelectorAll(CatalogContentPanel.tag)).toHaveSize(2);
+					expect(element.shadowRoot.querySelectorAll('.topic')[2].classList.contains('active')).toBeFalse();
+					expect(element.shadowRoot.querySelectorAll('.topic')[2].getAttribute('tabindex')).toBe('0');
+					expect(element.shadowRoot.querySelectorAll('.icon-topic2')).toHaveSize(1);
+					expect(element.shadowRoot.querySelectorAll('.ba-list-item__primary-text')[2].innerText).toBe(topic2.label);
+					expect(element.shadowRoot.querySelectorAll('.ba-list-item__primary-text')[2].classList.contains('large-text')).toBeTrue();
+
+					expect(element.shadowRoot.querySelectorAll('.ba-list-item__secondary-text')[2].innerText).toBe(topic2.description);
+
+					expect(element.shadowRoot.querySelectorAll(CatalogContentPanel.tag)).toHaveSize(3);
 
 					// test-id attributes
-					expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(2);
+					expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(3);
 					expect(element.shadowRoot.querySelector(`#button-${topic0.id}`).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 					expect(element.shadowRoot.querySelector(`#button-${topic1.id}`).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 				});

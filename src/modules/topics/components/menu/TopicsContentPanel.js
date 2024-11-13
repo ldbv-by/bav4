@@ -143,6 +143,10 @@ export class TopicsContentPanel extends AbstractMvuContentPanel {
 				return nothing;
 			};
 
+			const getLargeText = (description) => {
+				return description === '' ? 'large-text' : '';
+			};
+
 			return html`
 				<style>
 					${css}
@@ -164,7 +168,7 @@ export class TopicsContentPanel extends AbstractMvuContentPanel {
 						</span>
 						</span>
 						<span class="ba-list-item__text ">
-							<span class="ba-list-item__primary-text">${topic.label}</span>
+							<span class="ba-list-item__primary-text ${getLargeText(topic.description)}">${topic.label}</span>
 							<span class="ba-list-item__secondary-text">${topic.description}</span>
 						</span>
 						<span class="ba-list-item__after vertical-center">
