@@ -138,7 +138,7 @@ describe('TopicsContentPanel', () => {
 						}
 					});
 
-					//we expect five style -Elements included: mvuElement.css, contentPanel.css, topicsContentPanle.css and one for each topic (in this case two)
+					//we expect six style -Elements included: mvuElement.css, contentPanel.css, topicsContentPanle.css and one for each topic (in this case two)
 					expect(element.shadowRoot.styleSheets.length).toBe(6);
 
 					//test existence of important css classes
