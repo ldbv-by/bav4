@@ -75,7 +75,7 @@ export class MapInteractionButtonContainer extends MvuElement {
 				<ba-button
 					class="${getShowRoutingClass()} routing"
 					.icon=${closeSvg}
-					.label=${translate('active_state_buttons_stop_routing')}
+					.label=${translate('map_interaction_button_container')}
 					.type=${'primary'}
 					@click=${() => setCurrentTool(null)}
 				></ba-button>

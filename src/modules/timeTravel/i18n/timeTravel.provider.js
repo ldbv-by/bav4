@@ -19,7 +19,7 @@ export const provide = (lang) => {
 				timeTravel_slider_decrease: 'vorheriges Jahr',
 				timeTravel_slider_start: 'Start',
 				timeTravel_slider_stop: 'Stop',
-				timeTravel_slider_reset: 'Zurücksetzten'
+				timeTravel_slider_reset: 'Zurücksetzen'
 			};
 
 		default:

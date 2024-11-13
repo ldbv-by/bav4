@@ -51,6 +51,10 @@
 	min-width: 1em;
 	display: block;
 }
+#start,
+#stop {
+	display: none !important;
+}
 
 #start,
 #stop,

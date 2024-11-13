@@ -70,6 +70,7 @@ describe('MapInteractionButtonContainer', () => {
 			expect(element.shadowRoot.querySelector('.map-interaction-button-container').children).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('ba-button.routing.hide')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('ba-button.routing')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-button.routing')[0].label).toBe('map_interaction_button_container');
 		});
 	});
 
