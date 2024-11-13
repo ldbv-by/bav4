@@ -28,19 +28,13 @@ export const OlFeatureInfoHandler_Hit_Tolerance_Px = 10;
 export class OlFeatureInfoHandler extends OlMapHandler {
 	#storeService;
 	#translationService;
-	#geoResourceService;
 	constructor(featureInfoProvider = getBvvFeatureInfo) {
 		super('Feature_Info_Handler');
 
-		const {
-			StoreService: storeService,
-			TranslationService: translationService,
-			GeoResourceService: geoResourceService
-		} = $injector.inject('StoreService', 'TranslationService', 'GeoResourceService');
+		const { StoreService: storeService, TranslationService: translationService } = $injector.inject('StoreService', 'TranslationService');
 		this._featureInfoProvider = featureInfoProvider;
 		this.#storeService = storeService;
 		this.#translationService = translationService;
-		this.#geoResourceService = geoResourceService;
 	}
 
 	/**
@@ -64,9 +58,7 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 						return feature;
 					},
 					{
-						layerFilter: (l) =>
-							this.#geoResourceService.byId(l.get('geoResourceId'))?.queryable &&
-							(olLayer instanceof LayerGroup ? olLayer.getLayers().getArray().includes(l) : l === olLayer),
+						layerFilter: (l) => !!l.get('queryable') && (olLayer instanceof LayerGroup ? olLayer.getLayers().getArray().includes(l) : l === olLayer),
 						hitTolerance: OlFeatureInfoHandler_Hit_Tolerance_Px
 					}
 				) ?? null
