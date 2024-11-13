@@ -22,6 +22,7 @@ import { QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../../src/plugins/H
 import { Cluster } from 'ol/source';
 import { FeatureInfoGeometryTypes } from '../../../../../src/domain/featureInfo';
 import LayerGroup from 'ol/layer/Group';
+import { VectorGeoResource, VectorSourceType } from '../../../../../src/domain/geoResources';
 
 describe('OlFeatureInfoHandler_Query_Resolution_Delay', () => {
 	it('determines amount of time query resolution delayed', async () => {
@@ -51,13 +52,16 @@ describe('OlFeatureInfoHandler', () => {
 	};
 	const mockNullFeatureInfoProvider = () => null;
 
+	const geoResourceService = {
+		byId: () => {}
+	};
 	const matchingCoordinate = fromLonLat([11, 48]);
 	const notMatchingCoordinate = fromLonLat([5, 12]);
 	let store;
 
 	const setup = (state = {}, featureInfoProvider = getBvvFeatureInfo) => {
 		store = TestUtils.setupStoreAndDi(state, { featureInfo: featureInfoReducer, layers: layersReducer, highlight: highlightReducer });
-		$injector.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
 		return new OlFeatureInfoHandler(featureInfoProvider);
 	};
 
@@ -103,15 +107,17 @@ describe('OlFeatureInfoHandler', () => {
 		const layerId0 = 'layerId0';
 		const layerId1 = 'layerId1';
 		const layerId2 = 'layerId2';
+		const layerId3 = 'layerId3';
 		const geoResourceId0 = 'geoResourceId0';
 		const geoResourceId1 = 'geoResourceId1';
 		const geoResourceId2 = 'geoResourceId2';
+		const geoResourceId3 = 'geoResourceId3';
 		let vectorLayer0;
 		let vectorLayer1;
 
 		beforeEach(() => {
-			vectorLayer0 = new VectorLayer({ properties: { id: layerId0 } });
-			vectorLayer1 = new VectorLayer({ properties: { id: layerId1 } });
+			vectorLayer0 = new VectorLayer({ properties: { id: layerId0, geoResourceId: geoResourceId0 } });
+			vectorLayer1 = new VectorLayer({ properties: { id: layerId1, geoResourceId: geoResourceId1 } });
 		});
 
 		it('registers and resolves a query', async () => {
@@ -152,6 +158,7 @@ describe('OlFeatureInfoHandler', () => {
 			map.addLayer(vectorLayer0);
 
 			handler.register(map);
+			spyOn(geoResourceService, 'byId').and.returnValue(new VectorGeoResource(geoResourceId0, '', VectorSourceType.GEOJSON));
 
 			await renderComplete(map);
 			// safe to call map.getPixelFromCoordinate from now on
@@ -204,7 +211,8 @@ describe('OlFeatureInfoHandler', () => {
 						active: [
 							createDefaultLayer(layerId0, geoResourceId0),
 							createDefaultLayer(layerId1, geoResourceId1),
-							createDefaultLayer(layerId2, geoResourceId2)
+							createDefaultLayer(layerId2, geoResourceId2),
+							createDefaultLayer(layerId3, geoResourceId3)
 						]
 					}
 				},
@@ -213,7 +221,7 @@ describe('OlFeatureInfoHandler', () => {
 			const map = setupMap();
 			const geometry = new Point(matchingCoordinate);
 			const expectedFeatureInfoGeometry = { data: new GeoJSON().writeGeometry(geometry), geometryType: FeatureInfoGeometryTypes.GEOJSON };
-			// "default" vector layer
+			// 1. "default" vector layer
 			const olVectorSource0 = new VectorSource();
 			const feature0 = new Feature({ geometry: geometry });
 			feature0.set('name', 'name0');
@@ -222,26 +230,39 @@ describe('OlFeatureInfoHandler', () => {
 			vectorLayer0.setSource(olVectorSource0);
 			map.addLayer(vectorLayer0);
 
-			// vector layer containing a clustered source
+			//2. vector layer containing a clustered source
 			const olVectorSource1 = new VectorSource();
-			const olClusterdVectorSource1 = new Cluster({ source: olVectorSource1 });
+			const olClusteredVectorSource1 = new Cluster({ source: olVectorSource1 });
 			const feature1 = new Feature({ geometry: geometry });
 			feature1.set('name', 'name1');
 			feature1.set('description', 'description1');
 			olVectorSource1.addFeature(feature1);
-			vectorLayer1.setSource(olClusterdVectorSource1);
+			vectorLayer1.setSource(olClusteredVectorSource1);
 			map.addLayer(vectorLayer1);
 
-			// vector layer grouped in a layer group
+			//3. vector layer grouped in a layer group
 			const olVectorSource2 = new VectorSource();
 			const feature2 = new Feature({ geometry: geometry });
 			feature2.set('name', 'name2');
 			feature2.set('description', 'description2');
 			olVectorSource2.addFeature(feature2);
-			const vectorLayer = new VectorLayer();
-			vectorLayer.setSource(olVectorSource2);
-			map.addLayer(new LayerGroup({ id: layerId2, layers: [vectorLayer] }));
+			const vectorLayer2 = new VectorLayer({ properties: { geoResourceId: 'aggregateGeoResource' } });
+			vectorLayer2.setSource(olVectorSource2);
+			map.addLayer(new LayerGroup({ properties: { id: layerId2, geoResourceId: geoResourceId2 }, layers: [vectorLayer2] }));
 
+			//4. referenced GeoResource is not queryable (see GeoResourceService syp below)
+			const olVectorSource3 = new VectorSource();
+			const feature3 = new Feature({ geometry: geometry });
+			feature3.set('name', 'name03');
+			feature3.set('description', 'description3');
+			olVectorSource3.addFeature(feature3);
+			const vectorLayer3 = new VectorLayer({ properties: { id: layerId3, geoResourceId: geoResourceId3 } });
+			vectorLayer3.setSource(olVectorSource3);
+			map.addLayer(vectorLayer3);
+
+			spyOn(geoResourceService, 'byId').and.callFake((geoResourceId) =>
+				new VectorGeoResource(geoResourceId, '', VectorSourceType.GEOJSON).setQueryable(geoResourceId !== geoResourceId3)
+			);
 			handler.register(map);
 
 			await renderComplete(map);
@@ -318,7 +339,7 @@ describe('OlFeatureInfoHandler', () => {
 
 			const olVectorSource1 = new VectorSource();
 			// here we use a clustered VectorSource
-			const olClusterdVectorSource1 = new Cluster({ source: olVectorSource1 });
+			const olClusteredVectorSource1 = new Cluster({ source: olVectorSource1 });
 			const feature0 = new Feature({ geometry: geometry });
 			feature0.set('name', 'name0');
 			feature0.set('description', 'description0');
@@ -327,7 +348,7 @@ describe('OlFeatureInfoHandler', () => {
 			feature0.set('name', 'name1');
 			feature0.set('description', 'description1');
 			olVectorSource1.addFeature(feature1);
-			vectorLayer1.setSource(olClusterdVectorSource1);
+			vectorLayer1.setSource(olClusteredVectorSource1);
 			map.addLayer(vectorLayer1);
 
 			handler.register(map);
@@ -351,7 +372,7 @@ describe('OlFeatureInfoHandler', () => {
 				mockNullFeatureInfoProvider
 			);
 			const map = setupMap();
-
+			spyOn(geoResourceService, 'byId').and.callFake((geoResourceId) => new VectorGeoResource(geoResourceId, '', VectorSourceType.GEOJSON));
 			const geometry = new Point(matchingCoordinate);
 			const olVectorSource0 = new VectorSource();
 			const feature0 = new Feature({ geometry: geometry });
