@@ -4,6 +4,14 @@
 	grid-template-columns: 50% 50%;
 	transition: transform var(--animation-duration-large-open) var(--animation-easing-open);
 }
+.large-text {
+	font-size: 1.5rem;
+	font-weight: normal;
+	line-height: 1.7em;
+}
+.ba-list-item__secondary-text:empty {
+	display: none;
+}
 .col {
 	width: 100%;
 	max-width: 100%;
