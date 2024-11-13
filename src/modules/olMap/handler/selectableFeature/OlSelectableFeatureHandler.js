@@ -44,7 +44,10 @@ export class OlSelectableFeatureHandler extends OlMapHandler {
 			const pixel = map.getEventPixel(evt.originalEvent);
 			const feature = map.forEachFeatureAtPixel(
 				pixel,
-				(someFeature) => someFeature // returns first element
+				(someFeature) => someFeature, // returns first element
+				{
+					layerFilter: (l) => !!this.#geoResourceService.byId(l.get('geoResourceId'))?.queryable
+				}
 			);
 			// change the cursor style
 			map.getTargetElement().style.cursor = feature || this._getDataAtPixel(evt.pixel, map) ? 'pointer' : '';
