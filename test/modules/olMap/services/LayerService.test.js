@@ -66,6 +66,19 @@ describe('LayerService', () => {
 		});
 	});
 
+	describe('_addCommonProperties', () => {
+		it('add common properties to an ol layer', () => {
+			const instanceUnderTest = setup();
+			const geoResourceId = 'geoResourceId';
+			const geoResource = new VectorGeoResource('geoResourceId', 'label', VectorSourceType.KML).setQueryable(false);
+
+			const olLayer = instanceUnderTest._addCommonProperties(new VectorLayer(), geoResource);
+
+			expect(olLayer.get('geoResourceId')).toBe(geoResourceId);
+			expect(olLayer.get('queryable')).toBeFalse();
+		});
+	});
+
 	describe('toOlLayer', () => {
 		describe('GeoResourceFuture', () => {
 			it('converts a GeoResourceFuture to a placeholder olLayer', () => {
@@ -78,6 +91,7 @@ describe('LayerService', () => {
 
 				expect(placeholderOlLayer.get('id')).toBe(id);
 				expect(placeholderOlLayer.get('geoResourceId')).toBe(geoResourceId);
+				expect(placeholderOlLayer.get('queryable')).toBeFalse();
 				expect(placeholderOlLayer.get('placeholder')).toBeTrue();
 				expect(placeholderOlLayer.getSource()).toBeNull();
 				expect(placeholderOlLayer.render()).toBeUndefined();
@@ -93,10 +107,12 @@ describe('LayerService', () => {
 				const olLayer = new VectorLayer();
 				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'label', VectorSourceType.KML);
 				const vectorLayerServiceSpy = spyOn(vectorLayerService, 'createLayer').and.returnValue(olLayer);
+				const addCommonPropertiesCallSpy = spyOn(instanceUnderTest, '_addCommonProperties').and.callThrough();
 
 				instanceUnderTest.toOlLayer(id, vectorGeoResource, olMap);
 
 				expect(vectorLayerServiceSpy).toHaveBeenCalledWith(id, vectorGeoResource, olMap);
+				expect(addCommonPropertiesCallSpy).toHaveBeenCalledWith(olLayer, vectorGeoResource);
 			});
 		});
 
@@ -108,10 +124,12 @@ describe('LayerService', () => {
 				const olLayer = new VectorLayer();
 				const rtVectorGeoResource = new RtVectorGeoResource('geoResourceId', 'label', 'url', VectorSourceType.KML);
 				const rtVectorLayerServiceSpy = spyOn(rtVectorLayerService, 'createLayer').and.returnValue(olLayer);
+				const addCommonPropertiesCallSpy = spyOn(instanceUnderTest, '_addCommonProperties').and.callThrough();
 
 				instanceUnderTest.toOlLayer(id, rtVectorGeoResource, olMap);
 
 				expect(rtVectorLayerServiceSpy).toHaveBeenCalledWith(id, rtVectorGeoResource, olMap);
+				expect(addCommonPropertiesCallSpy).toHaveBeenCalledWith(olLayer, rtVectorGeoResource);
 			});
 		});
 
@@ -123,6 +141,7 @@ describe('LayerService', () => {
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
 				const wmsGeoResource = new WmsGeoResource(geoResourceId, 'label', 'https://some.url', 'layer', 'image/png');
+				const addCommonPropertiesCallSpy = spyOn(instanceUnderTest, '_addCommonProperties').and.callThrough();
 
 				const wmsOlLayer = instanceUnderTest.toOlLayer(id, wmsGeoResource);
 
@@ -140,6 +159,7 @@ describe('LayerService', () => {
 				expect(wmsSource.getParams().VERSION).toBe('1.1.1');
 				expect(providerSpy).toHaveBeenCalledWith(geoResourceId, null, null);
 				expect(wmsOlLayer.getSource().getImageLoadFunction()).toBe(mockImageLoadFunction);
+				expect(addCommonPropertiesCallSpy).toHaveBeenCalledWith(wmsOlLayer, wmsGeoResource);
 			});
 
 			it('converts a WmsGeoResource containing optional properties to a olLayer', () => {
@@ -228,6 +248,7 @@ describe('LayerService', () => {
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
 				const xyzGeoResource = new XyzGeoResource(geoResourceId, 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
+				const addCommonPropertiesCallSpy = spyOn(instanceUnderTest, '_addCommonProperties').and.callThrough();
 
 				const xyzOlLayer = instanceUnderTest.toOlLayer(id, xyzGeoResource);
 
@@ -242,6 +263,7 @@ describe('LayerService', () => {
 				expect(xyzSource.getUrls()).toEqual(['https://some1/layer/{z}/{x}/{y}', 'https://some2/layer/{z}/{x}/{y}']);
 				expect(xyzSource.getTileLoadFunction()).toBe(mockImageLoadFunction);
 				expect(providerSpy).toHaveBeenCalledWith(geoResourceId, jasmine.any(TileLayer));
+				expect(addCommonPropertiesCallSpy).toHaveBeenCalledWith(xyzOlLayer, xyzGeoResource);
 			});
 
 			it('converts a XyzGeoResource containing timestamps to a olLayer', () => {
@@ -389,6 +411,7 @@ describe('LayerService', () => {
 					const id = 'id';
 					const geoResourceId = 'geoResourceId';
 					const vtGeoResource = new VTGeoResource(geoResourceId, 'label', null);
+					const addCommonPropertiesCallSpy = spyOn(instanceUnderTest, '_addCommonProperties').and.callThrough();
 
 					const vtOlLayer = instanceUnderTest.toOlLayer(id, vtGeoResource);
 
@@ -398,6 +421,7 @@ describe('LayerService', () => {
 					expect(vtOlLayer.getMaxZoom()).toBePositiveInfinity();
 					// Todo: currently we have no simple possibility to check the correctness of the styleUrl, so we just check for the expected ol layer class
 					expect(vtOlLayer instanceof MapLibreLayer).toBeTrue();
+					expect(addCommonPropertiesCallSpy).toHaveBeenCalledWith(vtOlLayer, vtGeoResource);
 				}
 			});
 

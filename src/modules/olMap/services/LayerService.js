@@ -45,6 +45,12 @@ export class LayerService {
 		this._tileLoadFunctionProvider = tileLoadFunctionProvider;
 	}
 
+	_addCommonProperties(layer, geoResource) {
+		layer.set('geoResourceId', geoResource.id, true);
+		layer.set('queryable', geoResource.queryable, true);
+		return layer;
+	}
+
 	/**
 	 *
 	 * @param {string} id layerId
@@ -66,7 +72,7 @@ export class LayerService {
 		switch (geoResource.getType()) {
 			case GeoResourceTypes.FUTURE: {
 				// in that case we return a placeholder layer
-				return new Layer({ id: id, geoResourceId: geoResource.id, render: () => {}, properties: { placeholder: true } });
+				return new Layer({ id: id, geoResourceId: geoResource.id, queryable: false, render: () => {}, properties: { placeholder: true } });
 			}
 
 			case GeoResourceTypes.WMS: {
@@ -101,19 +107,17 @@ export class LayerService {
 
 				const layer = new ImageLayer({
 					id: id,
-					geoResourceId: geoResource.id,
 					source: imageWmsSource,
 					opacity: opacity,
 					minZoom: minZoom ?? undefined,
 					maxZoom: maxZoom ?? undefined
 				});
-				return layer;
+				return this._addCommonProperties(layer, geoResource);
 			}
 
 			case GeoResourceTypes.XYZ: {
 				const tileLayer = new TileLayer({
 					id: id,
-					geoResourceId: geoResource.id,
 					opacity: opacity,
 					minZoom: minZoom ?? undefined,
 					maxZoom: maxZoom ?? undefined,
@@ -153,27 +157,30 @@ export class LayerService {
 						tileLayer.getSource().smoothRefresh(tileLayer.get('timestamp'));
 					}
 				});
-				return tileLayer;
+				return this._addCommonProperties(tileLayer, geoResource);
 			}
 
 			case GeoResourceTypes.VECTOR: {
-				return vectorLayerService.createLayer(id, geoResource, olMap);
+				return this._addCommonProperties(vectorLayerService.createLayer(id, geoResource, olMap), geoResource);
 			}
 			case GeoResourceTypes.RT_VECTOR: {
-				return rtVectorLayerService.createLayer(id, geoResource, olMap);
+				return this._addCommonProperties(rtVectorLayerService.createLayer(id, geoResource, olMap), geoResource);
 			}
 
 			case GeoResourceTypes.VT: {
-				return new MapLibreLayer({
-					id: id,
-					geoResourceId: geoResource.id,
-					opacity: opacity,
-					minZoom: minZoom ?? undefined,
-					maxZoom: maxZoom ?? undefined,
-					mapLibreOptions: {
-						style: geoResource.styleUrl
-					}
-				});
+				return this._addCommonProperties(
+					new MapLibreLayer({
+						id: id,
+						geoResourceId: geoResource.id,
+						opacity: opacity,
+						minZoom: minZoom ?? undefined,
+						maxZoom: maxZoom ?? undefined,
+						mapLibreOptions: {
+							style: geoResource.styleUrl
+						}
+					}),
+					geoResource
+				);
 			}
 
 			case GeoResourceTypes.AGGREGATE: {
