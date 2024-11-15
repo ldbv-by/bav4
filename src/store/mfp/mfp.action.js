@@ -14,6 +14,7 @@ import {
 	ACTIVE_CHANGED,
 	CURRENT_CHANGED,
 	GRID_SUPPORTED_CHANGED,
+	EXPORT_SUPPORTED_CHANGED,
 	ID_CHANGED,
 	JOB_REQUEST_CHANGED,
 	JOB_SPEC_CHANGED,
@@ -98,6 +99,17 @@ export const setShowGrid = (isActive) => {
 export const setGridSupported = (isSupported) => {
 	getStore().dispatch({
 		type: GRID_SUPPORTED_CHANGED,
+		payload: isSupported
+	});
+};
+
+/**
+ * Updates the exportSupported property.
+ * @param {boolean} isSupported Whether an export is supported in the MFP map or not.
+ */
+export const setExportSupported = (isSupported) => {
+	getStore().dispatch({
+		type: EXPORT_SUPPORTED_CHANGED,
 		payload: isSupported
 	});
 };

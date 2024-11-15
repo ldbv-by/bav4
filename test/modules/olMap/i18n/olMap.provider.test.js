@@ -34,6 +34,9 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_mfp_distortion_warning).toBe(
 			'Die für den Export verwendete Projektion besitzt in einigen Bereichen\nVerzerrungen, die nicht für Längenmessungen geeignet sind.'
 		);
+		expect(map.olMap_handler_mfp_support_warning).toBe(
+			'Der Export des ausgewählten Ausschnitts wird mit der verwendeten Kartenprojektion nicht unterstützt.'
+		);
 		expect(map.olMap_handler_mfp_distortion_more_info).toBe('Mehr erfahren...');
 		expect(map.olMap_handler_mfp_id_a4_landscape).toBe('DIN A4 Querformat');
 		expect(map.olMap_handler_mfp_id_a4_portrait).toBe('DIN A4 Hochformat');
@@ -83,6 +86,7 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_mfp_distortion_warning).toBe(
 			'The projection used for export has distortions in some areas which are not suitable for length measurements.'
 		);
+		expect(map.olMap_handler_mfp_support_warning).toBe('The export of the selected view is not supported with the map projection used.');
 		expect(map.olMap_handler_mfp_distortion_more_info).toBe('More info...');
 		expect(map.olMap_handler_mfp_id_a4_landscape).toBe('DIN A4 landscape');
 		expect(map.olMap_handler_mfp_id_a4_portrait).toBe('DIN A4 portrait');
@@ -104,7 +108,7 @@ describe('i18n for map module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 40;
+		const expectedSize = 41;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

@@ -35,7 +35,8 @@ describe('ExportMfpToolContent', () => {
 		showGrid: false,
 		gridSupported: true,
 		jobSpec: null,
-		isJobStarted: false
+		isJobStarted: false,
+		exportSupported: true
 	};
 
 	const setup = async (mfpState = mfpDefaultState, config = {}) => {
@@ -80,7 +81,8 @@ describe('ExportMfpToolContent', () => {
 				showGrid: false,
 				isJobStarted: false,
 				isPortrait: false,
-				gridSupported: false
+				gridSupported: false,
+				exportSupported: true
 			});
 		});
 	});
