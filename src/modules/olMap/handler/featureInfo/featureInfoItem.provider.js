@@ -8,6 +8,7 @@ import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { KML } from 'ol/format';
 import { FeatureInfoGeometryTypes } from '../../../../domain/featureInfo';
+import { isPrimitive } from '../../../../utils/checks';
 
 /**
  * BVV strategy for mapping an olFeature to a FeatureInfo item.
@@ -17,7 +18,7 @@ import { FeatureInfoGeometryTypes } from '../../../../domain/featureInfo';
  * @returns {module:store/featureInfo/featureInfo_action~FeatureInfo} featureInfo
  */
 export const getBvvFeatureInfo = (olFeature, layerProperties) => {
-	if (!olFeature.get('name') && !olFeature.get('description') && !olFeature.get('desc') && !olFeature.getGeometry()) {
+	if (!olFeature.getGeometry()) {
 		return null;
 	}
 
@@ -32,6 +33,21 @@ export const getBvvFeatureInfo = (olFeature, layerProperties) => {
 
 	const getContent = () => {
 		const descContent = olFeature.get('description') || olFeature.get('desc');
+		const properties = html`
+			<table>
+				${olFeature
+					.getKeys()
+					.map((key) => ({ key, prop: olFeature.get(key) }))
+					.filter(({ prop }) => isPrimitive(prop))
+					.map(
+						({ key, prop }) =>
+							html`<tr>
+								<td>${key}</td>
+								<td>${prop}</td>
+							</tr>`
+					)}
+			</table>
+		`;
 		const geometryContent = html`
 		</div>
 			<ba-geometry-info .statistics=${stats}></ba-geometry-info>
@@ -42,8 +58,8 @@ export const getBvvFeatureInfo = (olFeature, layerProperties) => {
 
 		return descContent
 			? html`<div class="content">${unsafeHTML(securityService.sanitizeHtml(descContent))}</div>
-					${geometryContent}`
-			: html`${geometryContent}`;
+					${properties} ${geometryContent}`
+			: html`${properties} ${geometryContent}`;
 	};
 
 	const geoRes = geoResourceService.byId(layerProperties.geoResourceId);

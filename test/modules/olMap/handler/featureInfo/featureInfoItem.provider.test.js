@@ -91,7 +91,6 @@ describe('FeatureInfo provider', () => {
 						content: jasmine.any(Object),
 						geometry: expectedFeatureInfoGeometry
 					});
-					expect(target.innerText.trim()).toBe('');
 					expect(target.querySelector('ba-geometry-info')).toBeTruthy();
 					expect(target.querySelector('ba-profile-chip')).toBeTruthy();
 					expect(target.querySelector('ba-export-vector-data-chip')).toBeTruthy();
@@ -126,6 +125,26 @@ describe('FeatureInfo provider', () => {
 						geometry: expectedFeatureInfoGeometry
 					});
 					expect(target.querySelector('.content').innerText).toBe('desc');
+					expect(target.querySelector('ba-geometry-info')).toBeTruthy();
+					expect(target.querySelector('ba-profile-chip')).toBeTruthy();
+					expect(target.querySelector('ba-export-vector-data-chip')).toBeTruthy();
+
+					//no known properties, but all primitive properties of the feature info
+					feature = new Feature({ geometry: new Point(coordinate) });
+					feature.set('some', 'thing');
+
+					featureInfo = getBvvFeatureInfo(feature, layerProperties);
+					render(featureInfo.content, target);
+
+					expect(featureInfo).toEqual({
+						title: 'foo',
+						content: jasmine.any(Object),
+						geometry: expectedFeatureInfoGeometry
+					});
+					expect(target.querySelectorAll('.content')).toHaveSize(0);
+					expect(target.querySelectorAll('tr')).toHaveSize(1);
+					expect(target.querySelectorAll('td')[0].innerText).toBe('some');
+					expect(target.querySelectorAll('td')[1].innerText).toBe('thing');
 					expect(target.querySelector('ba-geometry-info')).toBeTruthy();
 					expect(target.querySelector('ba-profile-chip')).toBeTruthy();
 					expect(target.querySelector('ba-export-vector-data-chip')).toBeTruthy();
@@ -186,7 +205,6 @@ describe('FeatureInfo provider', () => {
 						content: jasmine.any(Object),
 						geometry: expectedFeatureInfoGeometry
 					});
-					expect(target.innerText.trim()).toBe('');
 					expect(target.querySelector('ba-geometry-info')).toBeTruthy();
 					expect(target.querySelector('ba-profile-chip')).toBeTruthy();
 					expect(target.querySelector('ba-export-vector-data-chip')).toBeTruthy();

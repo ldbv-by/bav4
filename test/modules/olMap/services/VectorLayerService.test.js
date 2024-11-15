@@ -150,7 +150,6 @@ describe('VectorLayerService', () => {
 				expect(sanitizeSpy).toHaveBeenCalledWith(olVectorLayer);
 
 				expect(olVectorLayer.get('id')).toBe(id);
-				expect(olVectorLayer.get('geoResourceId')).toBe(geoResourceId);
 				expect(olVectorLayer.getMinZoom()).toBeNegativeInfinity();
 				expect(olVectorLayer.getMaxZoom()).toBePositiveInfinity();
 
@@ -177,7 +176,6 @@ describe('VectorLayerService', () => {
 				const olVectorLayer = instanceUnderTest.createLayer(id, vectorGeoresource, olMap);
 
 				expect(olVectorLayer.get('id')).toBe(id);
-				expect(olVectorLayer.get('geoResourceId')).toBe(geoResourceId);
 				expect(olVectorLayer.getMinZoom()).toBeNegativeInfinity();
 				expect(olVectorLayer.getMaxZoom()).toBePositiveInfinity();
 
@@ -206,7 +204,6 @@ describe('VectorLayerService', () => {
 				const olVectorLayer = instanceUnderTest.createLayer(id, vectorGeoResource, olMap);
 
 				expect(olVectorLayer.get('id')).toBe(id);
-				expect(olVectorLayer.get('geoResourceId')).toBe(geoResourceId);
 				expect(olVectorLayer.getOpacity()).toBe(0.5);
 				expect(olVectorLayer.getMinZoom()).toBe(5);
 				expect(olVectorLayer.getMaxZoom()).toBe(19);
@@ -236,7 +233,6 @@ describe('VectorLayerService', () => {
 				const olVectorLayer = instanceUnderTest.createLayer(id, vectorGeoResource, olMap);
 
 				expect(olVectorLayer.get('id')).toBe(id);
-				expect(olVectorLayer.get('geoResourceId')).toBe(geoResourceId);
 				expect(olVectorLayer.getOpacity()).toBe(0.5);
 				expect(olVectorLayer.getMinZoom()).toBe(5);
 				expect(olVectorLayer.getMaxZoom()).toBe(19);

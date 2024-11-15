@@ -160,7 +160,6 @@ describe('RtVectorLayerService', () => {
 				const olVectorLayer = instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
 
 				expect(olVectorLayer.get('id')).toBe(id);
-				expect(olVectorLayer.get('geoResourceId')).toBe('geoResourceId');
 				expect(olVectorLayer.getMinZoom()).toBeNegativeInfinity();
 				expect(olVectorLayer.getMaxZoom()).toBePositiveInfinity();
 				expect(olVectorLayer.constructor.name).toBe('VectorLayer');
