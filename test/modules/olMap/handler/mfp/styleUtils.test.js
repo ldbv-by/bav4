@@ -140,7 +140,7 @@ describe('mfp style utility functions', () => {
 			expect(renderState.context.lineWidth).toBe(5);
 		});
 
-		it('should use the notSupportedStyle for a feature completely out of the printable area', () => {
+		it('should NOT draw a style for a feature completely out of the printable area', () => {
 			const pixelCoordinates = [
 				[
 					[5, 5],
@@ -152,16 +152,12 @@ describe('mfp style utility functions', () => {
 			];
 			const renderState = getRenderState({ feature: new Feature({ inPrintableArea: false, inSupportedArea: false }) });
 			const spy = spyOn(renderState.context, 'beginPath').and.callThrough();
-			const dashSpy = spyOn(renderState.context, 'setLineDash').and.callThrough();
 
 			const styles = createThumbnailStyleFunction(beingDraggedCallback);
 			const renderStyle = styles[0];
 			renderStyle.getRenderer()(pixelCoordinates, renderState);
 
-			expect(spy).toHaveBeenCalled();
-			expect(dashSpy).toHaveBeenCalledWith(jasmine.arrayWithExactContents([5, 5]));
-			expect(renderState.context.strokeStyle).toBe('rgba(250, 40, 13, 0.8)');
-			expect(renderState.context.lineWidth).toBe(3);
+			expect(spy).not.toHaveBeenCalled();
 		});
 	});
 

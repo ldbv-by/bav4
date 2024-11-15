@@ -9,7 +9,6 @@ export const createThumbnailStyleFunction = (beingDraggedCallback) => {
 
 	const drawBoundary = (context, pixelCoordinates, style) => {
 		context.beginPath();
-		context.setLineDash(style.lineDash ?? []);
 		context.moveTo(pixelCoordinates[0][0], pixelCoordinates[0][1]);
 		[...pixelCoordinates].slice(1).forEach((c) => context.lineTo(c[0], c[1]));
 		context.closePath();
@@ -25,11 +24,6 @@ export const createThumbnailStyleFunction = (beingDraggedCallback) => {
 			if (!beingDragged) {
 				const inPrintableArea = state.feature.get('inPrintableArea') ?? true;
 				const inSupportedArea = state.feature.get('inSupportedArea') ?? true;
-				const notSupportedStyle = {
-					strokeStyle: 'rgba(250, 40, 13, 0.8)',
-					lineWidth: 3,
-					lineDash: [5, 5]
-				};
 
 				const style = {
 					strokeStyle: inPrintableArea ? 'rgba(9, 157, 220, 0.5)' : 'rgba(231, 79, 13, 0.8)',
@@ -37,7 +31,7 @@ export const createThumbnailStyleFunction = (beingDraggedCallback) => {
 				};
 
 				const pixelCoordinates = isPolygonArray(coordinates) ? coordinates[0] : coordinates;
-				drawBoundary(state.context, pixelCoordinates, inSupportedArea ? style : notSupportedStyle);
+				inSupportedArea ? drawBoundary(state.context, pixelCoordinates, style) : () => {};
 			}
 		}
 	});
@@ -94,10 +88,11 @@ export const createMapMaskFunction = (map, getPixelCoordinatesCallback) => {
 
 	const renderMask = (event) => {
 		const pixelCoordinates = getPixelCoordinatesCallback();
-
-		const pixelMask = getMask(map, event, pixelCoordinates);
-		const ctx = event.context;
-		drawMask(ctx, pixelMask);
+		if (pixelCoordinates) {
+			const pixelMask = getMask(map, event, pixelCoordinates);
+			const ctx = event.context;
+			drawMask(ctx, pixelMask);
+		}
 	};
 	return renderMask;
 };
