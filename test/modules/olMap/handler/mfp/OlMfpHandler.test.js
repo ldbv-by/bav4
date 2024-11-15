@@ -164,7 +164,7 @@ describe('OlMfpHandler', () => {
 			const layer = classUnderTest.activate(map);
 
 			expect(layer).toBeTruthy();
-
+			classUnderTest._mfpBoundaryFeature.set('inSupportedArea', true);
 			layer.dispatchEvent(prerenderEvent);
 			expect(saveContextSpy).toHaveBeenCalled();
 
