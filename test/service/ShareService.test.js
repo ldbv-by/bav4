@@ -438,9 +438,9 @@ describe('ShareService', () => {
 			it('extracts the current tool ', () => {
 				setup();
 				const instanceUnderTest = new ShareService();
-				
+
 				expect(instanceUnderTest._extractTool()).toEqual({});
-				
+
 				setCurrentTool('someTool');
 
 				expect(instanceUnderTest._extractTool()[QueryParameters.TOOL_ID]).toBe('someTool');
