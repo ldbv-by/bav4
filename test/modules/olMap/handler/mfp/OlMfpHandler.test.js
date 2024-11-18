@@ -432,7 +432,10 @@ describe('OlMfpHandler', () => {
 			setup();
 
 			const handler = new OlMfpHandler();
-			spyOn(handler, '_updateMfpPreview').and.callFake(() => handler._mfpBoundaryFeature.set('inPrintableArea', false));
+			spyOn(handler, '_updateMfpPreview').and.callFake(() => {
+				handler._mfpBoundaryFeature.set('inPrintableArea', false);
+				handler._mfpBoundaryFeature.set('inSupportedArea', true);
+			});
 			handler._previewDelayTime = previewDelayTime;
 			handler.activate(map);
 

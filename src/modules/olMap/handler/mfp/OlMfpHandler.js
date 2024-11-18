@@ -256,12 +256,13 @@ export class OlMfpHandler extends OlLayerHandler {
 			this._beingDragged = false;
 			this._updateMfpPreview(center);
 			const inPrintableArea = this._mfpBoundaryFeature.get('inPrintableArea');
-			if (!inPrintableArea) {
+			const inSupportedArea = this._mfpBoundaryFeature.get('inSupportedArea');
+			if (!inPrintableArea && inSupportedArea) {
 				this._warnOnce(translate('olMap_handler_mfp_distortion_warning'));
 			}
-			const inSupportedArea = this._mfpBoundaryFeature.get('inSupportedArea');
+
 			if (!inSupportedArea) {
-				emitNotification(translate('olMap_handler_mfp_support_warning'), LevelTypes.WARN);
+				emitNotification(translate('olMap_handler_mfp_support_warning'), LevelTypes.ERROR);
 			}
 			this._previewDelayTimeoutId = null;
 		}, timeOut);
