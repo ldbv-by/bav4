@@ -438,11 +438,12 @@ describe('ShareService', () => {
 			it('extracts the current tool ', () => {
 				setup();
 				const instanceUnderTest = new ShareService();
+				
+				expect(instanceUnderTest._extractTool()).toEqual({});
+				
 				setCurrentTool('someTool');
 
-				const extract = instanceUnderTest._extractTool();
-
-				expect(extract[QueryParameters.TOOL_ID]).toBe('someTool');
+				expect(instanceUnderTest._extractTool()[QueryParameters.TOOL_ID]).toBe('someTool');
 			});
 		});
 
@@ -569,7 +570,7 @@ describe('ShareService', () => {
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/?')).toBeTrue();
-					expect(queryParams.size).toBe(6);
+					expect(queryParams.size).toBe(5);
 					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
 				});
 
@@ -587,7 +588,7 @@ describe('ShareService', () => {
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/?')).toBeTrue();
-					expect(queryParams.size).toBe(7);
+					expect(queryParams.size).toBe(6);
 
 					expect(queryParams.get('foo')).toBe('bar');
 					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
@@ -606,7 +607,7 @@ describe('ShareService', () => {
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/param0/param1?')).toBeTrue();
-					expect(queryParams.size).toBe(6);
+					expect(queryParams.size).toBe(5);
 				});
 			});
 
@@ -652,7 +653,7 @@ describe('ShareService', () => {
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/app/?')).toBeTrue();
-					expect(queryParams.size).toBe(6);
+					expect(queryParams.size).toBe(5);
 					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
 				});
 
@@ -670,7 +671,7 @@ describe('ShareService', () => {
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/app/?')).toBeTrue();
-					expect(queryParams.size).toBe(7);
+					expect(queryParams.size).toBe(6);
 					expect(queryParams.get('foo')).toBe('bar');
 					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
 				});
@@ -688,7 +689,7 @@ describe('ShareService', () => {
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/app/param0/param1?')).toBeTrue();
-					expect(queryParams.size).toBe(6);
+					expect(queryParams.size).toBe(5);
 				});
 			});
 		});
