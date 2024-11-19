@@ -4,6 +4,7 @@ export const ID_CHANGED = 'mfp/current/id';
 export const CURRENT_CHANGED = 'mfp/current';
 export const SHOW_GRID_CHANGED = 'mfp/showGrid';
 export const GRID_SUPPORTED_CHANGED = 'mfp/gridSupported';
+export const EXPORT_SUPPORTED_CHANGED = 'mfp/exportSupported';
 export const JOB_REQUEST_CHANGED = 'mfp/job/request';
 export const JOB_SPEC_CHANGED = 'mfp/job/spec';
 
@@ -28,6 +29,10 @@ export const initialState = {
 	 * @property {boolean}
 	 */
 	gridSupported: true,
+	/**
+	 * @property {boolean}
+	 */
+	exportSupported: true,
 	/**
 	 *@property {EvenLike | null}
 	 */
@@ -77,6 +82,12 @@ export const mfpReducer = (state = initialState, action) => {
 			return {
 				...state,
 				gridSupported: payload
+			};
+		}
+		case EXPORT_SUPPORTED_CHANGED: {
+			return {
+				...state,
+				exportSupported: payload
 			};
 		}
 		case JOB_REQUEST_CHANGED: {

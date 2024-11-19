@@ -4,6 +4,11 @@
 import { Style, Fill, Circle } from 'ol/style';
 import { getRenderPixel } from 'ol/render';
 
+const Hint_Color_RGBA = 'rgba(9, 157, 220, 0.5)';
+const Warn_Color_RGBA = 'rgba(231, 79, 13, 0.8)';
+const Mask_Color_RGBA = 'rgba(0, 5, 25, 0.75)';
+const Not_Supported_Color_RGBA = 'rgba(150, 150, 150, 0.5)';
+
 export const createThumbnailStyleFunction = (beingDraggedCallback) => {
 	const isPolygonArray = (arr) => arr[0][0] != null && arr[0][0][0] != null;
 
@@ -23,13 +28,15 @@ export const createThumbnailStyleFunction = (beingDraggedCallback) => {
 			const beingDragged = beingDraggedCallback();
 			if (!beingDragged) {
 				const inPrintableArea = state.feature.get('inPrintableArea') ?? true;
+				const inSupportedArea = state.feature.get('inSupportedArea') ?? true;
+
 				const style = {
-					strokeStyle: inPrintableArea ? 'rgba(9, 157, 220, 0.5)' : 'rgba(231, 79, 13, 0.8)',
+					strokeStyle: inPrintableArea ? Hint_Color_RGBA : Warn_Color_RGBA,
 					lineWidth: inPrintableArea ? 3 : 5
 				};
 
 				const pixelCoordinates = isPolygonArray(coordinates) ? coordinates[0] : coordinates;
-				drawBoundary(state.context, pixelCoordinates, style);
+				inSupportedArea ? drawBoundary(state.context, pixelCoordinates, style) : () => {};
 			}
 		}
 	});
@@ -61,13 +68,16 @@ export const createMapMaskFunction = (map, getPixelCoordinatesCallback) => {
 
 		// the calculated pixelCoordinates must be adapted to get the pixel of the event's canvas context from the map viewport's CSS pixel.
 		// @see {@link https://openlayers.org/en/latest/apidoc/module-ol_render.html| getRenderPixel}
-		return [outerPixelPolygon.map((c) => getRenderPixel(event, c)), pixelCoordinates.map((c) => getRenderPixel(event, c))];
+		return {
+			outer: outerPixelPolygon.map((c) => getRenderPixel(event, c)),
+			inner: pixelCoordinates.map((c) => getRenderPixel(event, c))
+		};
 	};
 
-	const drawMask = (ctx, mask) => {
-		const outer = mask[0];
-		const inner = mask[1];
+	const drawMask = (ctx, mask, supportedArea) => {
+		const { outer, inner } = mask;
 		ctx.save();
+		ctx.globalCompositeOperation = 'source-over';
 		ctx.beginPath();
 
 		// outside -> clockwise
@@ -80,16 +90,25 @@ export const createMapMaskFunction = (map, getPixelCoordinatesCallback) => {
 		[...inner].slice(1).forEach((c) => ctx.lineTo(c[0], c[1]));
 		ctx.closePath();
 
-		ctx.fillStyle = 'rgba(0, 5, 25, 0.75)';
+		ctx.fillStyle = Mask_Color_RGBA;
 		ctx.fill();
+
+		if (!supportedArea) {
+			ctx.beginPath();
+			const reversedInner = [...inner].reverse();
+			ctx.moveTo(reversedInner[0][0], reversedInner[0][1]);
+			reversedInner.slice(1).forEach((c) => ctx.lineTo(c[0], c[1]));
+			ctx.closePath();
+			ctx.fillStyle = Not_Supported_Color_RGBA;
+			ctx.fill();
+		}
 	};
 
 	const renderMask = (event) => {
-		const pixelCoordinates = getPixelCoordinatesCallback();
-
+		const { pixelCoordinates, supportedArea } = getPixelCoordinatesCallback();
 		const pixelMask = getMask(map, event, pixelCoordinates);
 		const ctx = event.context;
-		drawMask(ctx, pixelMask);
+		drawMask(ctx, pixelMask, supportedArea);
 	};
 	return renderMask;
 };

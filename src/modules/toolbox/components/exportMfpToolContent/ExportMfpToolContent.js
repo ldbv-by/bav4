@@ -16,6 +16,7 @@ const Update_Show_Grid = 'update_show_grid';
 const Update_Job_Started = 'update_job_started';
 const Update_IsPortrait = 'update_isPortrait';
 const Update_Grid_Supported = 'update_grid_supported';
+const Update_Export_Supported = 'update_export_supported';
 
 /**
  * @class
@@ -29,7 +30,8 @@ export class ExportMfpToolContent extends AbstractToolContent {
 			showGrid: false,
 			isJobStarted: false,
 			isPortrait: false,
-			gridSupported: false
+			gridSupported: false,
+			exportSupported: true
 		});
 
 		const { TranslationService: translationService, MfpService: mfpService } = $injector.inject('TranslationService', 'MfpService');
@@ -49,6 +51,10 @@ export class ExportMfpToolContent extends AbstractToolContent {
 		this.observe(
 			(state) => state.mfp.gridSupported,
 			(data) => this.signal(Update_Grid_Supported, data)
+		);
+		this.observe(
+			(state) => state.mfp.exportSupported,
+			(data) => this.signal(Update_Export_Supported, data)
 		);
 		this.observe(
 			(state) => state.mfp.jobSpec,
@@ -76,11 +82,13 @@ export class ExportMfpToolContent extends AbstractToolContent {
 				return { ...model, isJobStarted: !!data?.payload };
 			case Update_Grid_Supported:
 				return { ...model, gridSupported: data };
+			case Update_Export_Supported:
+				return { ...model, exportSupported: data };
 		}
 	}
 
 	createView(model) {
-		const { id, scale, isJobStarted, showGrid, isPortrait, gridSupported } = model;
+		const { id, scale, isJobStarted, showGrid, isPortrait, gridSupported, exportSupported } = model;
 		const translate = (key) => this._translationService.translate(key);
 		const capabilities = this._mfpService.getCapabilities();
 
@@ -89,6 +97,20 @@ export class ExportMfpToolContent extends AbstractToolContent {
 		const btnType = isJobStarted ? 'loading' : 'primary';
 		const btnId = isJobStarted ? 'btn_cancel' : 'btn_submit';
 		const areSettingsComplete = capabilities && scale && id;
+
+		const getButton = () =>
+			html`<ba-button
+				id="${btnId}"
+				class="tool-container__button preview_button"
+				.label=${btnLabel}
+				@click=${onClickAction}
+				.type=${btnType}
+				.disabled=${!areSettingsComplete}
+			></ba-button>`;
+
+		const getNotSupportedHint = () =>
+			html`<div class="tool-container__button not-supported-hint">${translate('toolbox_exportMfp_export_not_supported')}</div>`;
+
 		return html` <style>
 				${css}
 			</style>
@@ -97,16 +119,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 				<div class="ba-tool-container__content">
 					${areSettingsComplete ? this._getContent(id, scale, capabilities.layouts, showGrid, gridSupported) : this._getSpinner()}
 				</div>
-				<div class="ba-tool-container__actions">
-					<ba-button
-						id="${btnId}"
-						class="tool-container__button preview_button"
-						.label=${btnLabel}
-						@click=${onClickAction}
-						.type=${btnType}
-						.disabled=${!areSettingsComplete}
-					></ba-button>
-				</div>
+				<div class="ba-tool-container__actions">${exportSupported ? getButton() : getNotSupportedHint()}</div>
 			</div>`;
 	}
 

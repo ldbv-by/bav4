@@ -164,7 +164,7 @@ describe('OlMfpHandler', () => {
 			const layer = classUnderTest.activate(map);
 
 			expect(layer).toBeTruthy();
-
+			classUnderTest._mfpBoundaryFeature.set('inSupportedArea', true);
 			layer.dispatchEvent(prerenderEvent);
 			expect(saveContextSpy).toHaveBeenCalled();
 
@@ -432,7 +432,10 @@ describe('OlMfpHandler', () => {
 			setup();
 
 			const handler = new OlMfpHandler();
-			spyOn(handler, '_updateMfpPreview').and.callFake(() => handler._mfpBoundaryFeature.set('inPrintableArea', false));
+			spyOn(handler, '_updateMfpPreview').and.callFake(() => {
+				handler._mfpBoundaryFeature.set('inPrintableArea', false);
+				handler._mfpBoundaryFeature.set('inSupportedArea', true);
+			});
 			handler._previewDelayTime = previewDelayTime;
 			handler.activate(map);
 
@@ -484,12 +487,15 @@ describe('OlMfpHandler', () => {
 			);
 		});
 
-		it('warns with a i18n message', async () => {
+		it('warns with a i18n message for leaving printable area', async () => {
 			const map = setupMap();
 			const previewDelayTime = 0;
 			const store = setup();
 			const handler = new OlMfpHandler();
-			spyOn(handler, '_updateMfpPreview').and.callFake(() => handler._mfpBoundaryFeature.set('inPrintableArea', false));
+			spyOn(handler, '_updateMfpPreview').and.callFake(() => {
+				handler._mfpBoundaryFeature.set('inPrintableArea', false);
+				handler._mfpBoundaryFeature.set('inSupportedArea', true);
+			});
 			handler._previewDelayTime = previewDelayTime;
 			handler.activate(map);
 
