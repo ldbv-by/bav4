@@ -507,26 +507,6 @@ describe('OlMfpHandler', () => {
 			expect(store.getState().notifications.latest.payload.content).toBe('olMap_handler_mfp_distortion_warning');
 		});
 
-		it('warns with a i18n message for leaving supported printable area', async () => {
-			const map = setupMap();
-			const previewDelayTime = 0;
-			const store = setup();
-			const handler = new OlMfpHandler();
-			spyOn(handler, '_updateMfpPreview').and.callFake(() => {
-				handler._mfpBoundaryFeature.set('inPrintableArea', false);
-				handler._mfpBoundaryFeature.set('inSupportedArea', false);
-			});
-			handler._previewDelayTime = previewDelayTime;
-			handler.activate(map);
-
-			setBeingDragged(true);
-
-			setBeingDragged(false);
-			await TestUtils.timeout(previewDelayTime + 10);
-
-			expect(store.getState().notifications.latest.payload.content).toBe('olMap_handler_mfp_support_warning');
-		});
-
 		it('warns about encoding errors after jobRequest', async () => {
 			setup();
 			const map = setupMap();

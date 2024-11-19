@@ -260,10 +260,6 @@ export class OlMfpHandler extends OlLayerHandler {
 			if (!inPrintableArea && inSupportedArea) {
 				this._warnOnce(translate('olMap_handler_mfp_distortion_warning'));
 			}
-
-			if (!inSupportedArea) {
-				emitNotification(translate('olMap_handler_mfp_support_warning'), LevelTypes.ERROR);
-			}
 			this._previewDelayTimeoutId = null;
 		}, timeOut);
 	}
@@ -280,7 +276,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		const pixelSize = toPixelSize(this._pageSize);
 		const mfpBoundingBox = getBoundingBoxFrom(centerPixel, pixelSize);
 
-		return this._mfpBoundaryFeature.get('inSupportedArea') ? getPolygonFrom(mfpBoundingBox).getCoordinates()[0] : null;
+		return this._mfpBoundaryFeature.get('inSupportedArea') ? getPolygonFrom(mfpBoundingBox).getCoordinates()[0] : [centerPixel];
 	}
 
 	_createPagePolygon(pageSize, center) {
