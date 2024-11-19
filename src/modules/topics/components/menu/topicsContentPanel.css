@@ -5,9 +5,9 @@
 	transition: transform var(--animation-duration-large-open) var(--animation-easing-open);
 }
 .large-text {
-	font-size: 1.5rem;
+	font-size: 1.3rem;
 	font-weight: normal;
-	line-height: 1.7em;
+	line-height: 2.2em;
 }
 .ba-list-item__secondary-text:empty {
 	display: none;
