@@ -12,6 +12,12 @@
 	padding: 0.8em 1.5em;
 }
 
+.not-supported-hint {
+	width: 100%;
+	padding: 0.8em 1.5em;
+	color: var(--warning-color);
+}
+
 .button-container {
 	display: flex;
 	align-items: flex-end;

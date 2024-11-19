@@ -107,6 +107,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_show_grid_title).toBe('Ein Koordinatennetz im Export hinzufügen');
 		expect(map.toolbox_exportMfp_show_grid).toBe('Koordinatennetz');
 		expect(map.toolbox_exportMfp_grid_supported).toBe('Nicht verfügbar, wenn Karte rotiert ist');
+		expect(map.toolbox_exportMfp_export_not_supported).toBe('Der Export des ausgewählten Ausschnitts ist in diesem Gebiet nicht möglich.');
 	});
 
 	it('provides translation for en', () => {
@@ -211,10 +212,11 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_show_grid_title).toBe('Add coordinate grid in export');
 		expect(map.toolbox_exportMfp_show_grid).toBe('Coordinate grid');
 		expect(map.toolbox_exportMfp_grid_supported).toBe('Not supported while map is rotated');
+		expect(map.toolbox_exportMfp_export_not_supported).toBe('Exporting the selected extent is not supported in this area.');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 98;
+		const expectedSize = 99;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

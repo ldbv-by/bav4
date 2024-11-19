@@ -97,6 +97,20 @@ export class ExportMfpToolContent extends AbstractToolContent {
 		const btnType = isJobStarted ? 'loading' : 'primary';
 		const btnId = isJobStarted ? 'btn_cancel' : 'btn_submit';
 		const areSettingsComplete = capabilities && scale && id;
+
+		const getButton = () =>
+			html`<ba-button
+				id="${btnId}"
+				class="tool-container__button preview_button"
+				.label=${btnLabel}
+				@click=${onClickAction}
+				.type=${btnType}
+				.disabled=${!areSettingsComplete}
+			></ba-button>`;
+
+		const getNotSupportedHint = () =>
+			html`<div class="tool-container__button not-supported-hint">${translate('toolbox_exportMfp_export_not_supported')}</div>`;
+
 		return html` <style>
 				${css}
 			</style>
@@ -105,16 +119,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 				<div class="ba-tool-container__content">
 					${areSettingsComplete ? this._getContent(id, scale, capabilities.layouts, showGrid, gridSupported) : this._getSpinner()}
 				</div>
-				<div class="ba-tool-container__actions">
-					<ba-button
-						id="${btnId}"
-						class="tool-container__button preview_button"
-						.label=${btnLabel}
-						@click=${onClickAction}
-						.type=${btnType}
-						.disabled=${!areSettingsComplete || !exportSupported}
-					></ba-button>
-				</div>
+				<div class="ba-tool-container__actions">${exportSupported ? getButton() : getNotSupportedHint()}</div>
 			</div>`;
 	}
 

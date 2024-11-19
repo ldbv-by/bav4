@@ -421,14 +421,22 @@ describe('ExportMfpToolContent', () => {
 	});
 
 	describe('when the map extent changes to a unsupported mfp extent', () => {
-		it('disables the submit-button', async () => {
+		it('shows a hint instead of the submit button', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
-			expect(element.shadowRoot.querySelector('#btn_submit').disabled).toBeFalse();
+
+			expect(element.shadowRoot.querySelectorAll('#btn_submit')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.not-supported-hint')).toHaveSize(0);
+
 			setExportSupported(false);
-			expect(element.shadowRoot.querySelector('#btn_submit').disabled).toBeTrue();
+
+			expect(element.shadowRoot.querySelectorAll('#btn_submit')).toHaveSize(0);
+			expect(element.shadowRoot.querySelector('.not-supported-hint').innerText).toBe('toolbox_exportMfp_export_not_supported');
+
 			setExportSupported(true);
-			expect(element.shadowRoot.querySelector('#btn_submit').disabled).toBeFalse();
+
+			expect(element.shadowRoot.querySelectorAll('#btn_submit')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.not-supported-hint')).toHaveSize(0);
 		});
 	});
 });
