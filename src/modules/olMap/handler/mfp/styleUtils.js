@@ -7,6 +7,7 @@ import { getRenderPixel } from 'ol/render';
 const Hint_Color_RGBA = 'rgba(9, 157, 220, 0.5)';
 const Warn_Color_RGBA = 'rgba(231, 79, 13, 0.8)';
 const Mask_Color_RGBA = 'rgba(0, 5, 25, 0.75)';
+const Not_Supported_Color_RGBA = 'rgba(150, 150, 150, 0.5)';
 
 export const createThumbnailStyleFunction = (beingDraggedCallback) => {
 	const isPolygonArray = (arr) => arr[0][0] != null && arr[0][0][0] != null;
@@ -65,23 +66,18 @@ export const createMapMaskFunction = (map, getPixelCoordinatesCallback) => {
 			[0, 0]
 		];
 
-		const innerPixelPolygon = pixelCoordinates.length > 1 ? pixelCoordinates : null;
-		const centerPixel = pixelCoordinates.length > 1 ? null : pixelCoordinates;
-		const radius = (width > height ? width : height) * 0.2;
-
 		// the calculated pixelCoordinates must be adapted to get the pixel of the event's canvas context from the map viewport's CSS pixel.
 		// @see {@link https://openlayers.org/en/latest/apidoc/module-ol_render.html| getRenderPixel}
 		return {
 			outer: outerPixelPolygon.map((c) => getRenderPixel(event, c)),
-			inner: innerPixelPolygon?.map((c) => getRenderPixel(event, c)),
-			center: centerPixel ? getRenderPixel(event, centerPixel[0]) : null,
-			radius: radius
+			inner: pixelCoordinates.map((c) => getRenderPixel(event, c))
 		};
 	};
 
-	const drawMask = (ctx, mask) => {
-		const { outer, inner, center, radius } = mask;
+	const drawMask = (ctx, mask, supportedArea) => {
+		const { outer, inner } = mask;
 		ctx.save();
+		ctx.globalCompositeOperation = 'source-over';
 		ctx.beginPath();
 
 		// outside -> clockwise
@@ -90,30 +86,29 @@ export const createMapMaskFunction = (map, getPixelCoordinatesCallback) => {
 		ctx.closePath();
 
 		// inside -> counter-clockwise
-		if (inner) {
-			ctx.moveTo(inner[0][0], inner[0][1]);
-			[...inner].slice(1).forEach((c) => ctx.lineTo(c[0], c[1]));
-			ctx.closePath();
-		}
+		ctx.moveTo(inner[0][0], inner[0][1]);
+		[...inner].slice(1).forEach((c) => ctx.lineTo(c[0], c[1]));
+		ctx.closePath();
 
 		ctx.fillStyle = Mask_Color_RGBA;
 		ctx.fill();
 
-		// if there is no inner rectangle present, we draw a circle to provide the user with an orientation aid
-		if (center) {
+		if (!supportedArea) {
 			ctx.beginPath();
-			ctx.arc(center[0], center[1], radius, 0, 2 * Math.PI);
-			ctx.lineWidth = 4;
-			ctx.strokeStyle = Hint_Color_RGBA;
-			ctx.stroke();
+			const reversedInner = [...inner].reverse();
+			ctx.moveTo(reversedInner[0][0], reversedInner[0][1]);
+			reversedInner.slice(1).forEach((c) => ctx.lineTo(c[0], c[1]));
+			ctx.closePath();
+			ctx.fillStyle = Not_Supported_Color_RGBA;
+			ctx.fill();
 		}
 	};
 
 	const renderMask = (event) => {
-		const pixelCoordinates = getPixelCoordinatesCallback();
+		const { pixelCoordinates, supportedArea } = getPixelCoordinatesCallback();
 		const pixelMask = getMask(map, event, pixelCoordinates);
 		const ctx = event.context;
-		drawMask(ctx, pixelMask);
+		drawMask(ctx, pixelMask, supportedArea);
 	};
 	return renderMask;
 };
