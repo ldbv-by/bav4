@@ -22,6 +22,7 @@ describe('StackableContentPanel', () => {
 
 			expect(element.getModel()).toEqual({
 				notifications: [],
+				interactionBottomSheet: null,
 				bottomSheet: null,
 				autocloseTime: jasmine.any(Number),
 				lastNotification: null
@@ -32,7 +33,7 @@ describe('StackableContentPanel', () => {
 	describe('when initialized', () => {
 		it('renders nothing when no data available', async () => {
 			TestUtils.setupStoreAndDi(
-				{ notifications: { notification: null }, bottomSheet: { data: null } },
+				{ notifications: { notification: null }, bottomSheet: { data: [] } },
 				{
 					notifications: notificationReducer,
 					bottomSheet: bottomSheetReducer
@@ -45,8 +46,13 @@ describe('StackableContentPanel', () => {
 	});
 
 	describe('when rendered', () => {
+		const securityServiceMock = {
+			sanitizeHtml(html) {
+				return html;
+			}
+		};
 		const setup = async (
-			state = { notifications: { notification: null }, bottomSheet: { data: null }, mainMenu: { open: false }, media: { portrait: false } }
+			state = { notifications: { notification: null }, bottomSheet: { data: [] }, mainMenu: { open: false }, media: { portrait: false } }
 		) => {
 			TestUtils.setupStoreAndDi(state, {
 				notifications: notificationReducer,
@@ -56,7 +62,8 @@ describe('StackableContentPanel', () => {
 				media: createNoInitialStateMediaReducer(),
 				navigationRail: createNoInitialStateNavigationRailReducer()
 			});
-			$injector.registerSingleton('TranslationService', { translate: (key) => key });
+			$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('SecurityService', securityServiceMock);
+
 			const element = await TestUtils.render(StackableContentPanel.tag);
 
 			return element;
@@ -66,14 +73,14 @@ describe('StackableContentPanel', () => {
 			const element = await setup();
 
 			expect(element).toBeTruthy();
-			expect(element._model.notifications.length).toBe(0);
+			expect(element.getModel().notifications.length).toBe(0);
 
 			emitNotification('fooBar', LevelTypes.INFO);
 
-			expect(element._model.notifications.length).toBe(1);
-			expect(element._model.notifications[0].id).toEqual(jasmine.any(Number));
-			expect(element._model.notifications[0].content).toBe('fooBar');
-			expect(element._model.notifications[0].level).toBe(LevelTypes.INFO);
+			expect(element.getModel().notifications.length).toBe(1);
+			expect(element.getModel().notifications[0].id).toEqual(jasmine.any(Number));
+			expect(element.getModel().notifications[0].content).toBe('fooBar');
+			expect(element.getModel().notifications[0].level).toBe(LevelTypes.INFO);
 
 			const notificationElement = element.shadowRoot.querySelector('ba-notification-item');
 			expect(notificationElement).toBeTruthy();
@@ -83,12 +90,12 @@ describe('StackableContentPanel', () => {
 			const element = await setup();
 
 			expect(element).toBeTruthy();
-			expect(element._model.notifications.length).toBe(0);
+			expect(element.getModel().notifications.length).toBe(0);
 
 			emitNotification('fooBar', LevelTypes.INFO);
 			emitNotification('fooBar', LevelTypes.INFO);
 
-			expect(element._model.notifications.length).toBe(2);
+			expect(element.getModel().notifications.length).toBe(2);
 
 			const notificationElements = element.shadowRoot.querySelectorAll('ba-notification-item');
 			expect(notificationElements.length).toBe(2);
@@ -98,14 +105,14 @@ describe('StackableContentPanel', () => {
 			const element = await setup();
 
 			expect(element).toBeTruthy();
-			expect(element._model.notifications.length).toBe(0);
-			expect(element._model.bottomSheet).toBeNull();
+			expect(element.getModel().notifications.length).toBe(0);
+			expect(element.getModel().bottomSheet).toBeNull();
 
 			emitNotification('fooBar', LevelTypes.INFO);
 			openBottomSheet('fooBar');
 
-			expect(element._model.notifications.length).toBe(1);
-			expect(element._model.bottomSheet).toBe('fooBar');
+			expect(element.getModel().notifications.length).toBe(1);
+			expect(element.getModel().bottomSheet).toEqual(jasmine.objectContaining({ id: 'default', content: 'fooBar' }));
 
 			const notificationElements = element.shadowRoot.querySelectorAll('ba-notification-item');
 			const bottomSheetElements = element.shadowRoot.querySelectorAll('ba-bottom-sheet');
@@ -117,38 +124,62 @@ describe('StackableContentPanel', () => {
 			const element = await setup();
 
 			expect(element).toBeTruthy();
-			expect(element._model.notifications.length).toBe(0);
-			expect(element._model.bottomSheet).toBeNull();
+			expect(element.getModel().notifications.length).toBe(0);
+			expect(element.getModel().bottomSheet).toBeNull();
 
 			openBottomSheet('fooBar');
 
 			const bottomSheetElements1 = element.shadowRoot.querySelectorAll('ba-bottom-sheet');
 			expect(bottomSheetElements1).toHaveSize(1);
 			expect(bottomSheetElements1[0].content).toBe('fooBar');
-			expect(element.getModel().bottomSheet).toBe('fooBar');
+			expect(element.getModel().bottomSheet).toEqual(jasmine.objectContaining({ id: 'default', content: 'fooBar' }));
 
 			openBottomSheet('fooBarBaz');
 
 			const bottomSheetElements2 = element.shadowRoot.querySelectorAll('ba-bottom-sheet');
 			expect(bottomSheetElements2).toHaveSize(1);
 			expect(bottomSheetElements2[0].content).toBe('fooBarBaz');
-			expect(element.getModel().bottomSheet).toBe('fooBarBaz');
+			expect(element.getModel().bottomSheet).toEqual(jasmine.objectContaining({ id: 'default', content: 'fooBarBaz' }));
+		});
+
+		it('adds interaction bottomSheet content', async () => {
+			const element = await setup();
+
+			expect(element).toBeTruthy();
+			expect(element.getModel().notifications.length).toBe(0);
+			expect(element.getModel().bottomSheet).toBeNull();
+
+			openBottomSheet('fooBar');
+
+			const bottomSheetElements1 = element.shadowRoot.querySelectorAll('ba-bottom-sheet');
+			expect(bottomSheetElements1).toHaveSize(1);
+			expect(bottomSheetElements1[0].content).toBe('fooBar');
+			expect(element.getModel().bottomSheet).toEqual(jasmine.objectContaining({ id: 'default', content: 'fooBar' }));
+
+			openBottomSheet('fooBarBaz', 'interaction');
+
+			const bottomSheetElements2 = element.shadowRoot.querySelectorAll('ba-bottom-sheet');
+			expect(bottomSheetElements2).toHaveSize(2);
+			expect(bottomSheetElements2[0].content).toBe('fooBarBaz');
+			expect(element.getModel().interactionBottomSheet).toEqual(jasmine.objectContaining({ id: 'interaction', content: 'fooBarBaz' }));
+			expect(bottomSheetElements2[1].content).toBe('fooBar');
+			expect(element.getModel().bottomSheet).toEqual(jasmine.objectContaining({ id: 'default', content: 'fooBar' }));
 		});
 
 		it('adds a NotificationItem only once, when panel is rerendered', async () => {
 			const element = await setup();
 
 			expect(element).toBeTruthy();
-			expect(element._model.notifications.length).toBe(0);
+			expect(element.getModel().notifications.length).toBe(0);
 
 			emitNotification('fooBar', LevelTypes.INFO);
 
-			expect(element._model.notifications.length).toBe(1);
+			expect(element.getModel().notifications.length).toBe(1);
 
 			await element.render();
 			await element.render();
 
-			expect(element._model.notifications.length).toBe(1);
+			expect(element.getModel().notifications.length).toBe(1);
 
 			const notificationElements = element.shadowRoot.querySelectorAll('ba-notification-item');
 			expect(notificationElements.length).toBe(1);

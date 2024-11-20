@@ -5,7 +5,8 @@ import { FeatureInfoPanel, TEMPORARY_FEATURE_HIGHLIGHT_ID } from '../../../../sr
 import { featureInfoReducer } from '../../../../src/store/featureInfo/featureInfo.reducer';
 import { AbstractMvuContentPanel } from '../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel.js';
 import { html } from 'lit-html';
-import { addFeatureInfoItems, FeatureInfoGeometryTypes } from '../../../../src/store/featureInfo/featureInfo.action.js';
+import { FeatureInfoGeometryTypes } from '../../../../src/domain/featureInfo.js';
+import { addFeatureInfoItems } from '../../../../src/store/featureInfo/featureInfo.action.js';
 import { highlightReducer } from '../../../../src/store/highlight/highlight.reducer.js';
 import { HighlightFeatureType, HighlightGeometryType } from '../../../../src/store/highlight/highlight.action.js';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';

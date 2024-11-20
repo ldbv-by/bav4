@@ -7,14 +7,10 @@ import { observe } from '../../../../utils/storeUtils';
 import { getLayerById } from '../../utils/olMapUtils';
 import { OlMapHandler } from '../OlMapHandler';
 import { getBvvFeatureInfo } from './featureInfoItem.provider';
-import {
-	addHighlightFeatures,
-	HighlightFeatureType,
-	HighlightGeometryType,
-	removeHighlightFeaturesById
-} from '../../../../store/highlight/highlight.action';
+import { removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
 import { QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../plugins/HighlightPlugin';
 import { createUniqueId } from '../../../../utils/numberUtils';
+import LayerGroup from '../../../../../node_modules/ol/layer/Group';
 
 /**
  * Amount of time (in ms) query resolution should be delayed.
@@ -30,13 +26,21 @@ export const OlFeatureInfoHandler_Hit_Tolerance_Px = 10;
  * @author taulinger
  */
 export class OlFeatureInfoHandler extends OlMapHandler {
+	#storeService;
+	#translationService;
+	#geoResourceService;
 	constructor(featureInfoProvider = getBvvFeatureInfo) {
 		super('Feature_Info_Handler');
 
-		const { StoreService: storeService, TranslationService: translationService } = $injector.inject('StoreService', 'TranslationService');
+		const {
+			StoreService: storeService,
+			TranslationService: translationService,
+			GeoResourceService: geoResourceService
+		} = $injector.inject('StoreService', 'TranslationService', 'GeoResourceService');
 		this._featureInfoProvider = featureInfoProvider;
-		this._storeService = storeService;
-		this._translationService = translationService;
+		this.#storeService = storeService;
+		this.#translationService = translationService;
+		this.#geoResourceService = geoResourceService;
 	}
 
 	/**
@@ -44,8 +48,8 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 	 * @override
 	 */
 	register(map) {
-		const queryId = createUniqueId();
-		const translate = (key) => this._translationService.translate(key);
+		const queryId = `${createUniqueId()}`;
+		const translate = (key) => this.#translationService.translate(key);
 		//find ONE closest feature per layer
 		const findOlFeature = (map, pixel, olLayer) => {
 			return (
@@ -60,7 +64,9 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 						return feature;
 					},
 					{
-						layerFilter: (l) => l === olLayer,
+						layerFilter: (l) =>
+							this.#geoResourceService.byId(l.get('geoResourceId'))?.queryable &&
+							(olLayer instanceof LayerGroup ? olLayer.getLayers().getArray().includes(l) : l === olLayer),
 						hitTolerance: OlFeatureInfoHandler_Hit_Tolerance_Px
 					}
 				) ?? null
@@ -71,7 +77,7 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 		const layerFilter = (layerProperties) => layerProperties.visible;
 
 		observe(
-			this._storeService.getStore(),
+			this.#storeService.getStore(),
 			(state) => state.featureInfo.coordinate,
 			(coordinate, state) => {
 				//remove previous HighlightFeature items
@@ -108,27 +114,6 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 				//publish FeatureInfo items
 				addFeatureInfoItems(featureInfoItems);
 
-				const highlightFeatures = featureInfoItems
-					.filter((featureInfo) => featureInfo.geometry)
-					.map((featureInfo) => ({
-						id: QUERY_RUNNING_HIGHLIGHT_FEATURE_ID,
-						type: HighlightFeatureType.DEFAULT,
-						data: { geometry: featureInfo.geometry.data, geometryType: HighlightGeometryType.GEOJSON }
-					}));
-
-				const unsubscribe = observe(
-					this._storeService.getStore(),
-					(state) => state.featureInfo.querying,
-					(querying) => {
-						//untestable else path cause function is self-removing
-						/* istanbul ignore else */
-						if (!querying) {
-							//publish current HighlightFeature items when all pending queries are resolved
-							addHighlightFeatures(highlightFeatures);
-							unsubscribe();
-						}
-					}
-				);
 				/**
 				 * let's delay this call and put it in the callback queue,
 				 * so we always run the HighlightFeature animation at least for this amount of time

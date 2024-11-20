@@ -18,10 +18,13 @@ test.describe('page', () => {
 		});
 
 		test('should contain favicon related link tag', async ({ page }) => {
+			const appleMobileWebWppTitle = await page.getAttribute("head > meta[name='apple-mobile-web-app-title']", 'content');
+			expect(appleMobileWebWppTitle).toBe('BayernAtlas');
+			expect(await page.$("head > link[href='assets/favicon-96x96.png']")).toBeTruthy();
+			expect(await page.$("head > link[href='assets/favicon.svg']")).toBeTruthy();
 			expect(await page.$("head > link[href='assets/favicon.ico']")).toBeTruthy();
-			expect(await page.$("head > link[href='assets/manifest.json']")).toBeTruthy();
-			expect(await page.$("head > link[href='assets/icon.svg']")).toBeTruthy();
 			expect(await page.$("head > link[href='assets/apple-touch-icon.png']")).toBeTruthy();
+			expect(await page.$("head > link[href='assets/site.webmanifest']")).toBeTruthy();
 		});
 
 		test('should contain theme-color meta tags', async ({ page }) => {
@@ -62,7 +65,7 @@ test.describe('page', () => {
 			expect(description).toBe(templateParameters.description);
 		});
 
-		test('should contain 15 top level ba-components', async ({ page }) => {
+		test('should contain 16 top level ba-components', async ({ page }) => {
 			/**
 			 * Print current top level element with:
 			 * for (const el of await page.locator('body > *').all()) {
@@ -70,7 +73,7 @@ test.describe('page', () => {
 			 * }
 			 */
 
-			expect(await page.locator('body > *').count()).toBe(15);
+			expect(await page.locator('body > *').count()).toBe(16);
 
 			expect(await page.locator('ba-header').count()).toBe(1);
 			expect(await page.locator('ba-main-menu').count()).toBe(1);
@@ -87,6 +90,7 @@ test.describe('page', () => {
 			expect(await page.locator('ba-modal').count()).toBe(1);
 			expect(await page.locator('ba-map-context-menu').count()).toBe(1);
 			expect(await page.locator('ba-navigation-rail').count()).toBe(1);
+			expect(await page.locator('ba-map-interaction-button-container').count()).toBe(1);
 		});
 	});
 });

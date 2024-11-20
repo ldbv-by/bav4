@@ -11,7 +11,7 @@ describe('i18n for menu module', () => {
 		expect(map.menu_misc_content_panel_fullscreen).toBe('Vollbild');
 		expect(map.menu_misc_content_panel_language).toBe('Sprache');
 		expect(map.menu_misc_content_panel_information).toBe('Information');
-		expect(map.menu_misc_content_panel_help).toBe('Hilfe');
+		expect(map.menu_misc_content_panel_help).toBe('Hilfe und FAQ');
 		expect(map.menu_misc_content_panel_Contact).toBe('Kontakt');
 		expect(map.menu_misc_content_panel_terms_of_use).toBe('Nutzungsbedingungen');
 		expect(map.menu_misc_content_panel_privacy_policy).toBe('Datenschutzerklärung');
@@ -44,6 +44,13 @@ describe('i18n for menu module', () => {
 		expect(map.menu_navigation_rail_search).toBe('Suchen');
 		expect(map.menu_navigation_rail_dark_theme).toBe('Dunkles Design');
 		expect(map.menu_navigation_rail_light_theme).toBe('Helles Design');
+		expect(map.menu_navigation_rail_feedback).toBe('Feedback');
+		expect(map.menu_navigation_rail_login).toBe('Login BayernAtlas-plus');
+		expect(map.menu_navigation_rail_logout).toBe('Logout');
+		expect(map.menu_navigation_rail_help).toBe('Hilfe und FAQ');
+		expect(map.menu_navigation_rail_help_url).toBe('https://www.ldbv.bayern.de/hilfe-v4.html');
+		expect(map.menu_navigation_rail_time_travel).toBe('Zeitreise');
+		expect(map.menu_navigation_rail_time_travel_tooltip).toBe('Zeitreise öffnen');
 	});
 
 	it('provides translation for en', () => {
@@ -56,7 +63,7 @@ describe('i18n for menu module', () => {
 		expect(map.menu_misc_content_panel_fullscreen).toBe('Fullscreen');
 		expect(map.menu_misc_content_panel_language).toBe('Language');
 		expect(map.menu_misc_content_panel_information).toBe('Information');
-		expect(map.menu_misc_content_panel_help).toBe('Help');
+		expect(map.menu_misc_content_panel_help).toBe('Help and FAQ');
 		expect(map.menu_misc_content_panel_Contact).toBe('Contact');
 		expect(map.menu_misc_content_panel_terms_of_use).toBe('Terms of Use');
 		expect(map.menu_misc_content_panel_privacy_policy).toBe('Privacy Policy');
@@ -69,6 +76,7 @@ describe('i18n for menu module', () => {
 		expect(map.menu_misc_content_panel_gp_text).toBe('Central access to geospatial data and services.');
 		expect(map.menu_misc_content_panel_ea_header).toBe('Energie-Atlas Bayern');
 		expect(map.menu_misc_content_panel_ea_text).toBe('Central portal for saving energy, energy efficiency, and renewable energies.');
+		expect(map.menu_misc_content_panel_feedback_title).toBe('Feedback');
 		expect(map.menu_misc_content_panel_routing_title).toBe('Routing');
 		expect(map.menu_misc_content_panel_login).toBe('Login BayernAtlas-plus');
 		expect(map.menu_misc_content_panel_logout).toBe('Logout');
@@ -86,10 +94,17 @@ describe('i18n for menu module', () => {
 		expect(map.menu_navigation_rail_search).toBe('Search');
 		expect(map.menu_navigation_rail_dark_theme).toBe('Dark mode');
 		expect(map.menu_navigation_rail_light_theme).toBe('Light mode');
+		expect(map.menu_navigation_rail_feedback).toBe('Feedback');
+		expect(map.menu_navigation_rail_login).toBe('Login BayernAtlas-plus');
+		expect(map.menu_navigation_rail_logout).toBe('Logout');
+		expect(map.menu_navigation_rail_help).toBe('Help and FAQ');
+		expect(map.menu_navigation_rail_help_url).toBe('https://www.ldbv.bayern.de/hilfe-v4.html');
+		expect(map.menu_navigation_rail_time_travel).toBe('Time travel');
+		expect(map.menu_navigation_rail_time_travel_tooltip).toBe('Open time travel');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 37;
+		const expectedSize = 44;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

@@ -5,7 +5,7 @@ describe('i18n for search module', () => {
 		const map = provide('de');
 
 		expect(map.search_menu_locationResultsPanel_label).toBe('Orte');
-		expect(map.search_menu_geoResourceResultsPanel_label).toBe('Daten');
+		expect(map.search_menu_geoResourceResultsPanel_label).toBe('Geodaten');
 		expect(map.search_menu_cpResultsPanel_label).toBe('Flurstücke');
 		expect(map.search_menu_showAll_label).toBe('Mehr...');
 		expect(map.search_menu_importAll_label).toBe('Alle importieren');
@@ -18,7 +18,7 @@ describe('i18n for search module', () => {
 		const map = provide('en');
 
 		expect(map.search_menu_locationResultsPanel_label).toBe('Places');
-		expect(map.search_menu_geoResourceResultsPanel_label).toBe('Data');
+		expect(map.search_menu_geoResourceResultsPanel_label).toBe('Geodata');
 		expect(map.search_menu_cpResultsPanel_label).toBe('Cadastral parcel');
 		expect(map.search_menu_showAll_label).toBe('Show more...');
 		expect(map.search_menu_importAll_label).toBe('Import all');

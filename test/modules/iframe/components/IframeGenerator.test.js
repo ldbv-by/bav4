@@ -7,6 +7,7 @@ import { LevelTypes } from '../../../../src/store/notifications/notifications.ac
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { IFRAME_ENCODED_STATE } from '../../../../src/utils/markup';
 import { TestUtils } from '../../../test-utils';
+import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 
 window.customElements.define(IframeGenerator.tag, IframeGenerator);
 window.customElements.define(Switch.tag, Switch);
@@ -26,9 +27,20 @@ describe('IframeGenerator', () => {
 		return queryParameters;
 	};
 
-	const setup = () => {
-		store = TestUtils.setupStoreAndDi({ notifications: { latest: null } }, { notifications: notificationReducer });
-		$injector.registerSingleton('ShareService', shareServiceMock).registerSingleton('TranslationService', { translate: (key) => key });
+	const setup = (state = {}) => {
+		const initialState = {
+			notifications: { latest: null },
+			media: {
+				portrait: false
+			},
+			...state
+		};
+
+		store = TestUtils.setupStoreAndDi(initialState, { notifications: notificationReducer, media: createNoInitialStateMediaReducer() });
+		$injector
+			.registerSingleton('ShareService', shareServiceMock)
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('EnvironmentService', {});
 		return TestUtils.render(IframeGenerator.tag);
 	};
 
@@ -39,7 +51,8 @@ describe('IframeGenerator', () => {
 			expect(model).toEqual({
 				size: [800, 600],
 				autoWidth: false,
-				previewUrl: null
+				previewUrl: null,
+				isPortrait: false
 			});
 		});
 	});
@@ -73,6 +86,19 @@ describe('IframeGenerator', () => {
 			expect(iframeHeightSliderInput.getAttribute('min')).toBe('250');
 			expect(iframeHeightSliderInput.getAttribute('max')).toBe('2000');
 			expect(iframeHeightSliderInput.getAttribute('step')).toBe('10');
+		});
+
+		it('renders the input elements with correct attributes in portrait layout', async () => {
+			const element = await setup({ media: { portrait: true } });
+
+			const iframeWidthInput = element.shadowRoot.querySelector('#iframe_width');
+			const iframeWidthSliderInput = element.shadowRoot.querySelector('#iframe_slider_width');
+			const iframeHeightInput = element.shadowRoot.querySelector('#iframe_height');
+			const iframeHeightSliderInput = element.shadowRoot.querySelector('#iframe_slider_height');
+			expect(iframeWidthInput.value).toBe('250');
+			expect(iframeWidthSliderInput.value).toBe('250');
+			expect(iframeHeightInput.value).toBe('250');
+			expect(iframeHeightSliderInput.value).toBe('250');
 		});
 
 		it('renders the iframe content', async () => {

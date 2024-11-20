@@ -32,7 +32,7 @@
 	height: 3em;
 	border-radius: 1.5em;
 	border: 0;
-	background: var(--primary-bg-color);
+	background: transparent;
 	font-weight: bold;
 	cursor: pointer;
 	display: block;

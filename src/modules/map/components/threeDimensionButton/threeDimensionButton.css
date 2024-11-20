@@ -1,0 +1,36 @@
+.three-dimension-icon {
+	mask: url('./assets/3d.svg');
+	-webkit-mask-image: url('./assets/3d.svg');
+	background: var(--text3);
+}
+.icon {
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	cursor: pointer;
+	display: inline-block;
+	height: 1.6em;
+	width: 1.6em;
+}
+
+.three-dimension-button {
+	background-color: var(--primary-color);
+	display: inline-block;
+	height: 2.5em;
+	width: 2.5em;
+	border-radius: 50%;
+	border: none;
+	outline: none;
+	padding: 0.4em;
+}
+
+.three-dimension-button:hover,
+.three-dimension-button:focus {
+	transform: scale(1.1);
+}
+.three-dimension-button:focus {
+	box-shadow: 0 0 0 0.2em var(--primary-color-lighter);
+}
+.three-dimension-button:active {
+	transform: scale(1.15);
+	border: none;
+}

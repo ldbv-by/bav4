@@ -3,13 +3,14 @@
 	flex-direction: row;
 	flex-wrap: wrap;
 	padding: 0.8em 1.5em;
+	background: var(--primary-bg-color);
 }
 .baselayer__label:after {
 	content: '';
 	position: absolute;
 	border-width: 0.8em;
 	border-style: solid;
-	border-color: transparent transparent var(--primary-bg-color-05) transparent;
+	border-color: transparent transparent color(from var(--primary-bg-color) srgb r g b / 0.9) transparent;
 	left: 50%;
 	margin-left: -0.8em;
 	top: -1.4em;
@@ -45,7 +46,7 @@
 	font-size: 0.6rem;
 	padding: 0.3em;
 	position: absolute;
-	background: var(--primary-bg-color-05);
+	background: color(from var(--primary-bg-color) srgb r g b / 0.9);
 	color: var(--text1);
 	opacity: 1;
 	z-index: 1;

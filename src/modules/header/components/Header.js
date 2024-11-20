@@ -185,15 +185,25 @@ export class Header extends MvuElement {
 		const onInputFocus = () => {
 			disableResponsiveParameterObservation();
 			setTab(TabIds.SEARCH);
+
 			if (isPortrait) {
 				const popup = this.shadowRoot.getElementById('headerMobile');
+				const clear = this.shadowRoot.getElementById('clear');
 				popup.style.display = 'none';
 				popup.style.opacity = 0;
+
+				if (searchTerm) {
+					clear.classList.add('is-clear-visible');
+				}
 			}
 			if (!hasMinWidth) {
 				const popup = this.shadowRoot.getElementById('headerLogo');
+				const clear = this.shadowRoot.getElementById('clear');
 				popup.style.display = 'none';
 				popup.style.opacity = 0;
+				if (searchTerm) {
+					clear.classList.add('is-clear-visible');
+				}
 			}
 
 			//in portrait mode we open the main menu to display existing results
@@ -203,6 +213,11 @@ export class Header extends MvuElement {
 					openMainMenu();
 				}
 			}
+		};
+
+		const onButtonClick = () => {
+			const input = this.shadowRoot.querySelector('#input');
+			input.focus();
 		};
 
 		const onInput = (evt) => {
@@ -215,29 +230,37 @@ export class Header extends MvuElement {
 			enableResponsiveParameterObservation();
 			if (isPortrait) {
 				const popup = this.shadowRoot.getElementById('headerMobile');
+				const clear = this.shadowRoot.getElementById('clear');
 				popup.style.display = '';
-				window.setTimeout(() => (popup.style.opacity = 1), 300);
+				window.setTimeout(() => {
+					popup.style.opacity = 1;
+					clear.classList.remove('is-clear-visible');
+				}, 300);
 			}
 			if (!hasMinWidth) {
 				const popup = this.shadowRoot.getElementById('headerLogo');
+				const clear = this.shadowRoot.getElementById('clear');
 				popup.style.display = '';
-				window.setTimeout(() => (popup.style.opacity = 1), 300);
+				window.setTimeout(() => {
+					popup.style.opacity = 1;
+					clear.classList.remove('is-clear-visible');
+				}, 300);
 			}
 		};
 
 		const openTopicsTab = () => {
 			setTab(TabIds.TOPICS);
-			openMainMenu();
+			isPortrait && tabIndex === TabIds.TOPICS ? toggleMainMenu() : openMainMenu();
 		};
 
 		const openMapLayerTab = () => {
 			setTab(TabIds.MAPS);
-			openMainMenu();
+			isPortrait && tabIndex === TabIds.MAPS ? toggleMainMenu() : openMainMenu();
 		};
 
 		const openMiscTab = () => {
 			setTab(TabIds.MISC);
-			openMainMenu();
+			isPortrait && tabIndex === TabIds.MISC ? toggleMainMenu() : openMainMenu();
 		};
 
 		const openRoutingTab = () => {
@@ -263,6 +286,10 @@ export class Header extends MvuElement {
 				: nothing;
 		};
 
+		const getTitle = () => {
+			return isOpenNavigationRail ? 'header_logo_title_close' : 'header_logo_title_open';
+		};
+
 		const classes = {
 			'is-open': isOpen && !isPortrait,
 			'is-open-navigationRail': isOpenNavigationRail && !isPortrait,
@@ -278,7 +305,7 @@ export class Header extends MvuElement {
 			<style>${css}</style>
 			<div class="preload">
 				<div class="${classMap(classes)}">
-					<div class='header__logo' id="headerLogo">				
+					<div class='header__logo' id="headerLogo" title="${translate(getTitle())}">		
 						<div class="action-button"  @click="${toggleNavigationRail}">
 							<div class="action-button__border animated-action-button__border ${getAnimatedBorderClass()}">
 							</div>
@@ -289,9 +316,7 @@ export class Header extends MvuElement {
 						</div>
 						<div id='header__text' class='header__text'>
 						</div>
-						<div class='header__logo-badge  ${getBadgeClass()}'>										
-						${getBadgeText()}
-						</div>	
+						<div class='header__logo-badge  ${getBadgeClass()}'>${getBadgeText()}</div>	
 					</div>		
 					<div id='headerMobile' class='header__text-mobile'>	
 					</div>
@@ -303,15 +328,19 @@ export class Header extends MvuElement {
 						<div class="header__background">
 						</div>
 						<div class='header__search-container'>
-						<input id='input' data-test-id placeholder='${translate(
-							'header_search_placeholder'
-						)}' value="${searchTerm}" @focus="${onInputFocus}" @blur="${onInputBlur}" @input="${onInput}" class='header__search' type="search" placeholder="" />          
-								<div class='header_search_icon'>
-								</div>
-							<span class="header__search-clear ${getIsClearClass()}" @click="${clearSearchInput}">        							
-							</span>       
+							<button id="inputFocusButton" @click="${onButtonClick}" class="open-search-button" title="${translate('header_search_placeholder')}">
+								<span class="button_search_icon"></span>					
+							</button>
+							<input id='input' data-test-id placeholder='${translate(
+								'header_search_placeholder'
+							)}' value="${searchTerm}" @focus="${onInputFocus}" @blur="${onInputBlur}" @input="${onInput}" class='header__search' type="search" placeholder="" />          		
+							<button id="clear" class="header__search-clear ${getIsClearClass()}" @click="${clearSearchInput}" title="${translate('header_search_clear_button')}">   
+								<span class="border">
+									<span class="icon"> </icon>   							
+								</span>
+							</button>       
 							<button @click="${openRoutingTab}" class="header__routing-button" title="${translate('header_tab_routing_button')}">
-							&nbsp;
+								<span class="routing-icon"></span>
 							</button>
 						</div>
 						<div  class="header__button-container">

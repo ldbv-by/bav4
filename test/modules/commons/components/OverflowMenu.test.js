@@ -306,12 +306,12 @@ describe('OverflowMenu', () => {
 			button.click();
 
 			// menu is open
-			expect(isTemplateResult(store.getState().bottomSheet.data));
+			expect(isTemplateResult(store.getState().bottomSheet.data[0].content));
 
 			document.dispatchEvent(new Event('pointerdown'));
 
 			// menu is closed
-			expect(store.getState().bottomSheet.data).toBeNull();
+			expect(store.getState().bottomSheet.data).toEqual([]);
 		});
 
 		it('deregisters the document listener on pointerdown', async () => {

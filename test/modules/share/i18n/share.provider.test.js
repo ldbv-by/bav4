@@ -6,7 +6,7 @@ describe('i18n for search module', () => {
 
 		expect(map.share_dialog_link_title).toBe('Editierbarkeit');
 		expect(map.share_dialog_link).toBe(
-			'Alle, die über diesen Link verfügen, können die Zeichnung verändern, ohne dass ein neuer Link generiert werden muss. Diese Funkion ist sinnvoll für Zeichnungen, die von mehreren Personen bearbeitet werden.'
+			'Alle, die über diesen Link verfügen, können die Zeichnung verändern, ohne dass ein neuer Link generiert werden muss. Diese Funktion ist sinnvoll für Zeichnungen, die von mehreren Personen bearbeitet werden.'
 		);
 		expect(map.share_dialog_api).toBe('Klicken, um zu teilen');
 		expect(map.share_dialog_api_failed).toBe('Teilen der Position ist fehlgeschlagen');

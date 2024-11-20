@@ -10,20 +10,34 @@ import { createNoInitialStateMainMenuReducer } from '../../../../../src/store/ma
 import { featureInfoReducer } from '../../../../../src/store/featureInfo/featureInfo.reducer';
 import { routingReducer } from '../../../../../src/store/routing/routing.reducer';
 import { TabIds } from '../../../../../src/domain/mainMenu';
-import { setTab } from '../../../../../src/store/mainMenu/mainMenu.action';
 import { Tools } from '../../../../../src/domain/tools.js';
 import { toolsReducer } from '../../../../../src/store/tools/tools.reducer.js';
+import { authReducer } from '../../../../../src/store/auth/auth.reducer';
+import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
+import { ToggleFeedbackPanel } from '../../../../../src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
+import { closeModal } from '../../../../../src/store/modal/modal.action';
+import { PredefinedConfiguration } from '../../../../../src/services/PredefinedConfigurationService.js';
+import { timeTravelReducer } from '../../../../../src/store/timeTravel/timeTravel.reducer.js';
 
 window.customElements.define(NavigationRail.tag, NavigationRail);
 
 describe('NavigationRail', () => {
 	const extent = [995772.9694449581, 5982715.763684852, 1548341.2904285304, 6544564.28740462];
-	const mapServiceMock = {
+
+	const authService = {
+		isSignedIn: () => {},
+		getRoles: () => {},
+		signIn: () => {},
+		signOut: () => {}
+	};
+	const predefinedConfigurationService = {
+		apply: () => {}
+	};
+
+	const mapService = {
 		getMinZoomLevel: () => {},
 		getMaxZoomLevel: () => {},
-		getDefaultMapExtent: () => {
-			return extent;
-		}
+		getDefaultMapExtent: () => extent
 	};
 
 	let store;
@@ -43,6 +57,9 @@ describe('NavigationRail', () => {
 				open: true,
 				tab: null
 			},
+			auth: {
+				signedIn: false
+			},
 			...state
 		};
 
@@ -53,14 +70,19 @@ describe('NavigationRail', () => {
 			featureInfo: featureInfoReducer,
 			routing: routingReducer,
 			position: positionReducer,
-			tools: toolsReducer
+			tools: toolsReducer,
+			modal: modalReducer,
+			auth: authReducer,
+			timeTravel: timeTravelReducer
 		});
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed
 			})
-			.registerSingleton('MapService', mapServiceMock)
-			.registerSingleton('TranslationService', { translate: (key) => key });
+			.registerSingleton('MapService', mapService)
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('AuthService', authService)
+			.registerSingleton('PredefinedConfigurationService', predefinedConfigurationService);
 
 		return TestUtils.render(NavigationRail.tag);
 	};
@@ -110,6 +132,11 @@ describe('NavigationRail', () => {
 			expect(element.shadowRoot.querySelector('.objectinfo').title).toBe('menu_navigation_rail_object_info_tooltip');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.objectinfo')).display).toBe('none');
 
+			expect(element.shadowRoot.querySelectorAll('.timeTravel')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.timeTravel .text').innerText).toBe('menu_navigation_rail_time_travel');
+			expect(element.shadowRoot.querySelector('.timeTravel').title).toBe('menu_navigation_rail_time_travel_tooltip');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.timeTravel')).display).toBe('flex');
+
 			expect(element.shadowRoot.querySelectorAll('.zoom-in')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('.zoom-in .text').innerText).toBe('menu_navigation_rail_zoom_in');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.zoom-in')).display).toBe('none');
@@ -125,6 +152,18 @@ describe('NavigationRail', () => {
 			expect(element.shadowRoot.querySelectorAll('.close')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('.close .text').innerText).toBe('menu_navigation_rail_close');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.close')).display).toBe('none');
+
+			expect(element.shadowRoot.querySelectorAll('.sub-button-container')).toHaveSize(1);
+
+			const feedbackButton = element.shadowRoot.querySelector('#feedback');
+			expect(feedbackButton.title).toBe('menu_navigation_rail_feedback');
+			expect(feedbackButton.querySelectorAll('.feedback .icon')).toHaveSize(1);
+
+			const helpLink = element.shadowRoot.querySelector('#help');
+			expect(helpLink.href).toContain('menu_navigation_rail_help_url');
+			expect(helpLink.target).toBe('_blank');
+			expect(helpLink.title).toBe('menu_navigation_rail_help');
+			expect(helpLink.querySelectorAll('.help .icon')).toHaveSize(1);
 		});
 
 		it('adds closed navigationRail for portrait mode', async () => {
@@ -151,6 +190,9 @@ describe('NavigationRail', () => {
 			expect(element.shadowRoot.querySelectorAll('.objectinfo')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.objectinfo')).display).toBe('none');
 
+			expect(element.shadowRoot.querySelectorAll('.timeTravel')).toHaveSize(1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.timeTravel')).display).toBe('none');
+
 			expect(element.shadowRoot.querySelectorAll('.zoom-in')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.zoom-in')).display).toBe('flex');
 
@@ -162,6 +204,26 @@ describe('NavigationRail', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.close')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.close')).display).toBe('flex');
+
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.sub-button-container')).display).toBe('none');
+		});
+
+		it('has a signIn button', async () => {
+			const element = await setup();
+
+			const signedInButton = element.shadowRoot.querySelector('#authButton');
+			expect(signedInButton.title).toBe('menu_navigation_rail_login');
+			expect(signedInButton.classList.contains('logout')).toBeFalse();
+			expect(signedInButton.querySelectorAll('.icon')).toHaveSize(1);
+		});
+
+		it('has a signOut button', async () => {
+			const element = await setup({ auth: { signedIn: true } });
+
+			const signedInButton = element.shadowRoot.querySelector('#authButton');
+			expect(signedInButton.title).toBe('menu_navigation_rail_logout');
+			expect(signedInButton.classList.contains('logout')).toBeTrue();
+			expect(signedInButton.querySelectorAll('.icon')).toHaveSize(1);
 		});
 
 		it('adds open navigationRail for landscape mode width active routing', async () => {
@@ -216,8 +278,121 @@ describe('NavigationRail', () => {
 		});
 	});
 
-	describe('when clicked', () => {
-		it('changes the active button', async () => {
+	describe('_showTimeTravel', () => {
+		describe('timeTravel is NOT active', () => {
+			it('calls the PredefinedConfigurationService', async () => {
+				const element = await setup();
+				const predefinedConfigurationServiceSpy = spyOn(predefinedConfigurationService, 'apply');
+
+				element._showTimeTravel();
+
+				expect(predefinedConfigurationServiceSpy).toHaveBeenCalledOnceWith(PredefinedConfiguration.DISPLAY_TIME_TRAVEL);
+			});
+		});
+
+		describe('timeTravel is active', () => {
+			it('calls #_openTab', async () => {
+				const element = await setup({
+					timeTravel: {
+						active: true
+					}
+				});
+				const openTabSpy = spyOn(element, '_openTab');
+
+				element._showTimeTravel();
+
+				expect(openTabSpy).toHaveBeenCalledOnceWith(TabIds.MAPS);
+			});
+		});
+	});
+
+	describe('_openTab', () => {
+		describe('orientation is `landscape`', () => {
+			it('sets the correct tab id and toggles the main menu', async () => {
+				const state = {
+					mainMenu: {
+						open: false,
+						tab: TabIds.MISC
+					},
+					media: {
+						portrait: false
+					}
+				};
+				const element = await setup(state);
+
+				element._openTab(TabIds.MAPS);
+
+				expect(store.getState().mainMenu.open).toBeTrue();
+				expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
+				expect(store.getState().tools.current).toBeNull();
+
+				element._openTab(TabIds.MAPS);
+
+				expect(store.getState().mainMenu.open).toBeFalse();
+				expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
+				expect(store.getState().tools.current).toBeNull();
+			});
+		});
+
+		describe('orientation is `portrait`', () => {
+			it('sets the correct tab id and toggles the main menu', async () => {
+				const state = {
+					mainMenu: {
+						open: false,
+						tab: TabIds.TOPICS
+					},
+					media: {
+						portrait: true
+					}
+				};
+				const element = await setup(state);
+
+				element._openTab(TabIds.MAPS);
+
+				expect(store.getState().mainMenu.open).toBeTrue();
+				expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
+				expect(store.getState().tools.current).toBeNull();
+
+				element._openTab(TabIds.MAPS);
+
+				expect(store.getState().mainMenu.open).toBeFalse();
+				expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
+				expect(store.getState().tools.current).toBeNull();
+			});
+		});
+
+		describe('tab id is `ROUTING` ', () => {
+			it('sets `ROUTING as the current tool`', async () => {
+				const state = {
+					tools: {
+						active: Tools.DRAW
+					}
+				};
+				const element = await setup(state);
+
+				element._openTab(TabIds.ROUTING);
+
+				expect(store.getState().tools.current).toBe(Tools.ROUTING);
+			});
+		});
+		describe('tab id is `FEATUREINFO` ', () => {
+			it('disables any active tool', async () => {
+				const state = {
+					tools: {
+						active: Tools.ROUTING
+					}
+				};
+				const element = await setup(state);
+
+				element._openTab(TabIds.FEATUREINFO);
+
+				expect(store.getState().tools.current).toBeNull();
+			});
+		});
+	});
+
+	describe('when a button is clicked', () => {
+		it('changes the layout of the button', async () => {
 			const state = {
 				media: { portrait: false, minWidth: false },
 				mainMenu: {
@@ -233,246 +408,200 @@ describe('NavigationRail', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.objectinfo.is-active')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.routing.is-active')).toHaveSize(0);
-			expect(store.getState().mainMenu.tab).toBe(TabIds.FEATUREINFO);
 
 			const button = element.shadowRoot.querySelector('.routing');
 			button.click();
 
 			expect(element.shadowRoot.querySelectorAll('.routing.is-active')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.objectinfo.is-active')).toHaveSize(0);
-			expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
 		});
 
-		it('activates / deactivates a possible corresponding tool', async () => {
-			const state = {
-				media: { portrait: false, minWidth: false },
-				mainMenu: {
-					open: false,
-					tab: TabIds.ROUTING
-				},
-				navigationRail: {
-					open: true,
-					visitedTabIds: [TabIds.FEATUREINFO]
-				},
-				tools: {
-					current: Tools.ROUTING
-				}
-			};
-			const element = await setup(state);
+		describe('`home` button', () => {
+			it('calls #_openTab', async () => {
+				const element = await setup();
+				const openTabSpy = spyOn(element, '_openTab');
+				const homeButton = element.shadowRoot.querySelector('.home');
 
-			expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
-			expect(store.getState().tools.current).toBe(Tools.ROUTING);
+				homeButton.click();
 
-			// the home button should not deactivate a current tool
-			const homeButton = element.shadowRoot.querySelector('.home');
-			homeButton.click();
-
-			expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
-			expect(store.getState().tools.current).toBe(Tools.ROUTING);
-
-			// the objectinfo button should deactivate an active tool
-			const objectinfoButton = element.shadowRoot.querySelector('.objectinfo');
-			objectinfoButton.click();
-
-			expect(store.getState().mainMenu.tab).toBe(TabIds.FEATUREINFO);
-			expect(store.getState().tools.current).toBeNull();
-
-			// the routing button should activate the routing tool
-			const routingButton = element.shadowRoot.querySelector('.routing');
-			routingButton.click();
-
-			expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
-			expect(store.getState().tools.current).toBe(Tools.ROUTING);
+				expect(openTabSpy).toHaveBeenCalledWith(TabIds.MAPS);
+			});
 		});
 
-		it('changes the tab and opens the mainMenu', async () => {
-			const state = {
-				media: { portrait: false, minWidth: false },
-				mainMenu: {
-					open: false,
-					tab: TabIds.MAPS
-				},
-				navigationRail: {
-					open: true,
-					visitedTabIds: [TabIds.FEATUREINFO]
-				}
-			};
-			const element = await setup(state);
+		describe('`routing` button', () => {
+			it('calls #_openTab', async () => {
+				const element = await setup();
+				const openTabSpy = spyOn(element, '_openTab');
+				const routingButton = element.shadowRoot.querySelector('.routing');
 
-			expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
-			expect(store.getState().mainMenu.open).toBeFalse();
+				routingButton.click();
 
-			const objectinfoButton = element.shadowRoot.querySelector('.objectinfo');
-			objectinfoButton.click();
-
-			expect(store.getState().mainMenu.tab).toBe(TabIds.FEATUREINFO);
-			expect(store.getState().mainMenu.open).toBeTrue();
-
-			const homeButton = element.shadowRoot.querySelector('.home');
-			homeButton.click();
-
-			expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
-			expect(store.getState().mainMenu.open).toBeTrue();
+				expect(openTabSpy).toHaveBeenCalledWith(TabIds.ROUTING);
+			});
 		});
 
-		it('changes the schema', async () => {
-			const state = {
-				media: { portrait: false, minWidth: false, darkSchema: false },
-				navigationRail: {
-					open: true,
-					visitedTabIds: [TabIds.ROUTING, TabIds.FEATUREINFO]
-				}
-			};
-			const element = await setup(state);
+		describe('`objectinfo` button', () => {
+			it('calls #_openTab', async () => {
+				const element = await setup();
+				const openTabSpy = spyOn(element, '_openTab');
+				const objectinfoButton = element.shadowRoot.querySelector('.objectinfo');
 
-			expect(element.shadowRoot.querySelectorAll('.theme-toggle.pointer')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.sun')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.moon')).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('.theme-toggle').title).toBe('menu_navigation_rail_dark_theme');
-			expect(store.getState().media.darkSchema).toBeFalse();
+				objectinfoButton.click();
 
-			const button = element.shadowRoot.querySelector('.theme-toggle');
-			button.click();
-
-			expect(element.shadowRoot.querySelectorAll('.sun')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.moon')).toHaveSize(0);
-			expect(element.shadowRoot.querySelector('.theme-toggle').title).toBe('menu_navigation_rail_light_theme');
-			expect(store.getState().media.darkSchema).toBeTrue();
+				expect(openTabSpy).toHaveBeenCalledWith(TabIds.FEATUREINFO);
+			});
 		});
 
-		it('closes the component', async () => {
-			const state = {
-				media: {
-					portrait: true,
-					minWidth: true
-				},
-				navigationRail: {
-					open: true,
-					visitedTabIds: []
-				}
-			};
-			const element = await setup(state);
+		describe('`timeTravel` button', () => {
+			it('calls #_showTimeTravel', async () => {
+				const element = await setup();
+				const showTimeTravelSpy = spyOn(element, '_showTimeTravel');
+				const timeTravelButton = element.shadowRoot.querySelector('.timeTravel');
 
-			expect(store.getState().navigationRail.open).toBeTrue();
-			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(1);
+				timeTravelButton.click();
 
-			element.shadowRoot.querySelector('.close').click();
-
-			expect(store.getState().navigationRail.open).toBeFalse();
-			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(0);
+				expect(showTimeTravelSpy).toHaveBeenCalled();
+			});
 		});
 
-		it('decreases the current zoom level by one', async () => {
-			const state = {
-				position: {
-					zoom: 10
-				},
-				media: {
-					portrait: true,
-					minWidth: true
-				}
-			};
-			const element = await setup(state);
-			element.shadowRoot.querySelector('.zoom-out').click();
-			expect(store.getState().position.zoom).toBe(9);
+		describe('`toggle schema` button', () => {
+			it('changes the schema', async () => {
+				const state = {
+					media: { portrait: false, minWidth: false, darkSchema: false },
+					navigationRail: {
+						open: true,
+						visitedTabIds: [TabIds.ROUTING, TabIds.FEATUREINFO]
+					}
+				};
+				const element = await setup(state);
+
+				expect(element.shadowRoot.querySelectorAll('.theme-toggle.pointer')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.sun')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.moon')).toHaveSize(1);
+				expect(element.shadowRoot.querySelector('.theme-toggle').title).toBe('menu_navigation_rail_dark_theme');
+				expect(store.getState().media.darkSchema).toBeFalse();
+
+				const button = element.shadowRoot.querySelector('.theme-toggle');
+				button.click();
+
+				expect(element.shadowRoot.querySelectorAll('.sun')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.moon')).toHaveSize(0);
+				expect(element.shadowRoot.querySelector('.theme-toggle').title).toBe('menu_navigation_rail_light_theme');
+				expect(store.getState().media.darkSchema).toBeTrue();
+			});
 		});
 
-		it('increases the current zoom level by one', async () => {
-			const state = {
-				position: {
-					zoom: 10
-				},
-				media: {
-					portrait: true,
-					minWidth: true
-				}
-			};
-			const element = await setup(state);
-			element.shadowRoot.querySelector('.zoom-in').click();
-			expect(store.getState().position.zoom).toBe(11);
+		describe('`close` button', () => {
+			it('closes the component', async () => {
+				const state = {
+					media: {
+						portrait: true,
+						minWidth: true
+					},
+					navigationRail: {
+						open: true,
+						visitedTabIds: []
+					}
+				};
+				const element = await setup(state);
+
+				expect(store.getState().navigationRail.open).toBeTrue();
+				expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(1);
+
+				element.shadowRoot.querySelector('.close').click();
+
+				expect(store.getState().navigationRail.open).toBeFalse();
+				expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(0);
+			});
+		});
+		describe('`zoom out` button', () => {
+			it('decreases the current zoom level by one', async () => {
+				const state = {
+					position: {
+						zoom: 10
+					},
+					media: {
+						portrait: true,
+						minWidth: true
+					}
+				};
+				const element = await setup(state);
+				element.shadowRoot.querySelector('.zoom-out').click();
+				expect(store.getState().position.zoom).toBe(9);
+			});
 		});
 
-		it('zooms to extent', async () => {
-			const state = {
-				position: {
-					zoom: 10
-				},
-				media: {
-					portrait: true,
-					minWidth: true
-				}
-			};
-			const element = await setup(state);
-			element.shadowRoot.querySelector('.zoom-to-extent').click();
-			expect(store.getState().position.fitRequest.payload.extent).toEqual(extent);
-			expect(store.getState().position.fitRequest.payload.options).toEqual({ useVisibleViewport: false });
+		describe('`zoom in` button', () => {
+			it('increases the current zoom level by one', async () => {
+				const state = {
+					position: {
+						zoom: 10
+					},
+					media: {
+						portrait: true,
+						minWidth: true
+					}
+				};
+				const element = await setup(state);
+				element.shadowRoot.querySelector('.zoom-in').click();
+				expect(store.getState().position.zoom).toBe(11);
+			});
+		});
+		describe('`zoom to extent` button', () => {
+			it('zooms to extent', async () => {
+				const state = {
+					position: {
+						zoom: 10
+					},
+					media: {
+						portrait: true,
+						minWidth: true
+					}
+				};
+				const element = await setup(state);
+				element.shadowRoot.querySelector('.zoom-to-extent').click();
+				expect(store.getState().position.fitRequest.payload.extent).toEqual(extent);
+				expect(store.getState().position.fitRequest.payload.options).toEqual({ useVisibleViewport: false });
+			});
 		});
 
-		it('toggles routing tab', async () => {
-			const state = {
-				mainMenu: {
-					open: false,
-					tab: TabIds.TOPICS
-				},
-				media: {
-					portrait: true,
-					minWidth: true
-				},
-				navigationRail: {
-					open: true,
-					visitedTabIds: []
-				}
-			};
-			const element = await setup(state);
+		describe('`feedback` button', () => {
+			it('opens the modal with the toggle-feedback component', async () => {
+				const element = await setup();
 
-			expect(element.shadowRoot.querySelectorAll('.routing.is-active')).toHaveSize(0);
-			setTab(TabIds.ROUTING);
-			expect(element.shadowRoot.querySelectorAll('.routing.is-active')).toHaveSize(1);
+				const feedbackButton = element.shadowRoot.querySelector('#feedback');
+				feedbackButton.click();
 
-			expect(store.getState().mainMenu.open).toBeFalse();
-
-			element.shadowRoot.querySelector('.routing').click();
-
-			expect(store.getState().mainMenu.open).toBeTrue();
-
-			element.shadowRoot.querySelector('.routing').click();
-
-			expect(store.getState().mainMenu.open).toBeFalse();
+				expect(store.getState().modal.data.title).toBe('menu_navigation_rail_feedback');
+				expect(store.getState().modal.steps).toBe(2);
+				const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
+				expect(wrapperElement.querySelectorAll(ToggleFeedbackPanel.tag)).toHaveSize(1);
+				expect(wrapperElement.querySelector(ToggleFeedbackPanel.tag).onSubmit).toEqual(closeModal);
+			});
 		});
 
-		it('toggles featureInfo tab', async () => {
-			const state = {
-				mainMenu: {
-					open: true,
-					tab: TabIds.TOPICS
-				},
-				media: {
-					portrait: false,
-					minWidth: false
-				},
-				navigationRail: {
-					open: true,
-					visitedTabIds: []
-				}
-			};
-			const element = await setup(state);
+		describe('`sign-in` button', () => {
+			it('calls the AuthService to the login screen', async () => {
+				const authServiceSpy = spyOn(authService, 'signIn');
+				const element = await setup();
+				const signedInButton = element.shadowRoot.querySelector('#authButton');
 
-			expect(element.shadowRoot.querySelectorAll('.objectinfo.is-active')).toHaveSize(0);
-			setTab(TabIds.ROUTING);
+				signedInButton.click();
 
-			expect(store.getState().mainMenu.open).toBeTrue();
+				expect(authServiceSpy).toHaveBeenCalled();
+			});
+		});
 
-			element.shadowRoot.querySelector('.objectinfo').click();
-			expect(element.shadowRoot.querySelectorAll('.objectinfo.is-active')).toHaveSize(1);
-			expect(store.getState().mainMenu.open).toBeTrue();
+		describe('`sign-out` button', () => {
+			it('calls the AuthService to the logout screen', async () => {
+				const authServiceSpy = spyOn(authService, 'signOut');
+				const element = await setup({ auth: { signedIn: true } });
+				const signedInButton = element.shadowRoot.querySelector('#authButton');
 
-			element.shadowRoot.querySelector('.objectinfo').click();
-			expect(element.shadowRoot.querySelectorAll('.objectinfo.is-active')).toHaveSize(0);
-			expect(store.getState().mainMenu.open).toBeFalse();
+				signedInButton.click();
 
-			element.shadowRoot.querySelector('.objectinfo').click();
-			expect(store.getState().mainMenu.open).toBeTrue();
-			expect(element.shadowRoot.querySelectorAll('.objectinfo.is-active')).toHaveSize(1);
+				expect(authServiceSpy).toHaveBeenCalled();
+			});
 		});
 	});
 

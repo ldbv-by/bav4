@@ -1,7 +1,7 @@
 /**
  * @module store/bottomSheet/bottomSheet_action
  */
-import { BOTTOM_SHEET_CHANGED } from './bottomSheet.reducer';
+import { BOTTOM_SHEET_CHANGED, DEFAULT_BOTTOM_SHEET_ID } from './bottomSheet.reducer';
 import { $injector } from '../../injection';
 
 const getStore = () => {
@@ -14,10 +14,10 @@ const getStore = () => {
  * @param {string|TemplateResult} content  The content of the bottom sheet. Could either be a a plain string or a lit-html TemplateResult.
  * @function
  */
-export const openBottomSheet = (content) => {
+export const openBottomSheet = (content, id = DEFAULT_BOTTOM_SHEET_ID) => {
 	getStore().dispatch({
 		type: BOTTOM_SHEET_CHANGED,
-		payload: content
+		payload: { id: id, content: content }
 	});
 };
 
@@ -25,9 +25,9 @@ export const openBottomSheet = (content) => {
  * Closes the bottom sheet.
  * @function
  */
-export const closeBottomSheet = () => {
+export const closeBottomSheet = (id = DEFAULT_BOTTOM_SHEET_ID) => {
 	getStore().dispatch({
 		type: BOTTOM_SHEET_CHANGED,
-		payload: null
+		payload: { id: id, content: null }
 	});
 };

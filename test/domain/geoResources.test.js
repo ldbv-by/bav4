@@ -104,6 +104,11 @@ describe('GeoResource', () => {
 				expect(new GeoResourceImpl('https://foo.bar||some||thing', null).isExternal()).toBeTrue();
 			});
 
+			it('provides a check for containing timestamps', () => {
+				expect(new GeoResourceImpl('id').hasTimestamps()).toBeFalse();
+				expect(new GeoResourceImpl('id').setTimestamps(['0']).hasTimestamps()).toBeTrue();
+			});
+
 			it('sets the attribution provider', () => {
 				const provider = jasmine.createSpy();
 				const grs = new GeoResourceImpl('id');
@@ -188,6 +193,7 @@ describe('GeoResource', () => {
 			it('copies the properties from another GeoResource', () => {
 				const attributionProvider = () => {};
 				const roles = ['TEST'];
+				const timestamps = ['2001231'];
 				const geoResource0 = new GeoResourceNoImpl('id0');
 				geoResource0
 					.setOpacity(0.5)
@@ -200,7 +206,8 @@ describe('GeoResource', () => {
 					.setQueryable(false)
 					.setExportable(false)
 					.setAuthRoles(roles)
-					.setAuthenticationType(GeoResourceAuthenticationType.BAA);
+					.setAuthenticationType(GeoResourceAuthenticationType.BAA)
+					.setTimestamps(timestamps);
 				const geoResource1 = new GeoResourceNoImpl('id1');
 
 				geoResource1.copyPropertiesFrom(geoResource0);
@@ -217,6 +224,7 @@ describe('GeoResource', () => {
 				expect(geoResource1.exportable).toBeFalse();
 				expect(geoResource1.authRoles).toEqual(roles);
 				expect(geoResource1.authRoles === roles).toBeFalse(); //must be a shallow copy
+				expect(geoResource1.timestamps).toEqual(timestamps);
 			});
 
 			describe('setAuthRoles', () => {
@@ -261,11 +269,13 @@ describe('GeoResource', () => {
 				expect(geoResource.queryable).toBeTrue();
 				expect(geoResource.exportable).toBeTrue();
 				expect(geoResource.authRoles).toEqual([]);
+				expect(geoResource.timestamps).toEqual([]);
 			});
 
 			it('provides set methods and getters', () => {
 				setup();
 				const roles = ['TEST'];
+				const timestamps = ['20001231'];
 				const geoResource = new GeoResourceNoImpl('id');
 
 				geoResource
@@ -278,7 +288,8 @@ describe('GeoResource', () => {
 					.setQueryable(false)
 					.setExportable(false)
 					.setAuthRoles(roles)
-					.setAuthenticationType(GeoResourceAuthenticationType.BAA);
+					.setAuthenticationType(GeoResourceAuthenticationType.BAA)
+					.setTimestamps(timestamps);
 
 				expect(geoResource.hidden).toBeTrue();
 				expect(geoResource.opacity).toBe(0.5);
@@ -291,6 +302,7 @@ describe('GeoResource', () => {
 				expect(geoResource.exportable).toBeFalse();
 				expect(geoResource.authRoles).toEqual(roles);
 				expect(geoResource.authRoles === roles).toBeFalse(); //must be a shallow copy
+				expect(geoResource.timestamps).toEqual(timestamps);
 			});
 		});
 	});

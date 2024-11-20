@@ -66,7 +66,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_toolbar_draw_button).toBe('Zeichnen');
 		expect(map.toolbox_toolbar_share_button).toBe('Teilen');
 		expect(map.toolbox_toolbar_measure_button).toBe('Messen');
-		expect(map.toolbox_toolbar_logo_badge).toBe('Beta');
+		expect(map.toolbox_toolbar_logo_badge).toBe('');
 		expect(map.toolbox_toolbar_logo_badge_standalone).toBe('Demo');
 		expect(map.toolbox_measureTool_clipboard_measure_area_notification_text).toBe('Die Fläche');
 		expect(map.toolbox_measureTool_clipboard_measure_distance_notification_text).toBe('Die Länge');
@@ -94,8 +94,8 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_header).toBe('Export nach PDF');
 		expect(map.toolbox_exportMfp_layout).toBe('Seitenformat');
 		expect(map.toolbox_exportMfp_scale).toBe('Maßstab');
-		expect(map.toolbox_exportMfp_scale_decrease).toBe('Maßstab verkleinern');
-		expect(map.toolbox_exportMfp_scale_increase).toBe('Maßstab vergrößern');
+		expect(map.toolbox_exportMfp_scale_decrease).toBe('Ausschnitt verkleinern');
+		expect(map.toolbox_exportMfp_scale_increase).toBe('Ausschnitt vergrößern');
 		expect(map.toolbox_exportMfp_submit).toBe('PDF erzeugen');
 		expect(map.toolbox_exportMfp_cancel).toBe('Abbrechen');
 		expect(map.toolbox_exportMfp_select_option).toBe('auswählen...');
@@ -106,6 +106,8 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_options).toBe('Export-Optionen');
 		expect(map.toolbox_exportMfp_show_grid_title).toBe('Ein Koordinatennetz im Export hinzufügen');
 		expect(map.toolbox_exportMfp_show_grid).toBe('Koordinatennetz');
+		expect(map.toolbox_exportMfp_grid_supported).toBe('Nicht verfügbar, wenn Karte rotiert ist');
+		expect(map.toolbox_exportMfp_export_not_supported).toBe('Der Export des ausgewählten Ausschnitts ist in diesem Gebiet nicht möglich.');
 	});
 
 	it('provides translation for en', () => {
@@ -169,7 +171,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_toolbar_draw_button).toBe('Draw');
 		expect(map.toolbox_toolbar_share_button).toBe('Share');
 		expect(map.toolbox_toolbar_measure_button).toBe('Measure');
-		expect(map.toolbox_toolbar_logo_badge).toBe('Beta');
+		expect(map.toolbox_toolbar_logo_badge).toBe('');
 		expect(map.toolbox_toolbar_logo_badge_standalone).toBe('Demo');
 		expect(map.toolbox_measureTool_clipboard_measure_area_notification_text).toBe('The area');
 		expect(map.toolbox_measureTool_clipboard_measure_distance_notification_text).toBe('The distance');
@@ -209,10 +211,12 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_options).toBe('Export options');
 		expect(map.toolbox_exportMfp_show_grid_title).toBe('Add coordinate grid in export');
 		expect(map.toolbox_exportMfp_show_grid).toBe('Coordinate grid');
+		expect(map.toolbox_exportMfp_grid_supported).toBe('Not supported while map is rotated');
+		expect(map.toolbox_exportMfp_export_not_supported).toBe('Exporting the selected extent is not supported in this area.');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 97;
+		const expectedSize = 99;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

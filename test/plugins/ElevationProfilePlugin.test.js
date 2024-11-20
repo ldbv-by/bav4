@@ -1,5 +1,5 @@
-import { ElevationProfilePlugin } from '../../src/plugins/ElevationProfilePlugin';
-import { closeProfile, openProfile } from '../../src/store/elevationProfile/elevationProfile.action';
+import { ELEVATION_PROFILE_BOTTOM_SHEET_ID, ElevationProfilePlugin } from '../../src/plugins/ElevationProfilePlugin';
+import { openProfile } from '../../src/store/elevationProfile/elevationProfile.action';
 import { elevationProfileReducer, initialState as elevationProfileInitialState } from '../../src/store/elevationProfile/elevationProfile.reducer';
 import { bottomSheetReducer, initialState as bottomSheetInitialState } from '../../src/store/bottomSheet/bottomSheet.reducer';
 import { featureInfoReducer, initialState as featureInfoInitialState } from '../../src/store/featureInfo/featureInfo.reducer';
@@ -8,8 +8,8 @@ import { closeBottomSheet } from '../../src/store/bottomSheet/bottomSheet.action
 import { addFeatureInfoItems } from '../../src/store/featureInfo/featureInfo.action';
 import { drawReducer, initialState as drawInitialState } from '../../src/store/draw/draw.reducer';
 import { measurementReducer, initialState as measurementInitialState } from '../../src/store/measurement/measurement.reducer';
-import { deactivate as deactivateDraw } from '../../src/store/draw/draw.action';
-import { deactivate as deactivateMeasurement } from '../../src/store/measurement/measurement.action';
+import { activate as activateDraw, deactivate as deactivateDraw } from '../../src/store/draw/draw.action';
+import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../src/store/measurement/measurement.action';
 import { LazyLoadWrapper } from '../../src/modules/commons/components/lazy/LazyLoadWrapper';
 import { ElevationProfile } from '../../src/modules/elevationProfile/components/panel/ElevationProfile';
 
@@ -45,15 +45,11 @@ describe('ElevationProfilePlugin', () => {
 				[2, 3]
 			]);
 
-			const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data);
+			const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data[0].content);
 			expect(wrapperElement.querySelectorAll(LazyLoadWrapper.tag)).toHaveSize(1);
 			expect(wrapperElement.querySelectorAll(LazyLoadWrapper.tag)[0].chunkName).toBe('elevation-profile');
 			const wrapperElementForContent = TestUtils.renderTemplateResult(wrapperElement.querySelectorAll(LazyLoadWrapper.tag)[0].content);
 			expect(wrapperElementForContent.querySelectorAll(ElevationProfile.tag)).toHaveSize(1);
-
-			closeProfile();
-
-			expect(store.getState().bottomSheet.data).toBeNull();
 		});
 	});
 
@@ -64,9 +60,7 @@ describe('ElevationProfilePlugin', () => {
 					active: true,
 					coordinates: []
 				},
-				bottomSheet: {
-					active: true
-				}
+				bottomSheet: { data: [], active: [ELEVATION_PROFILE_BOTTOM_SHEET_ID] }
 			});
 			const instanceUnderTest = new ElevationProfilePlugin();
 			const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetUnsubscribeFn');
@@ -81,15 +75,13 @@ describe('ElevationProfilePlugin', () => {
 					active: true,
 					coordinates: []
 				},
-				bottomSheet: {
-					active: true
-				}
+				bottomSheet: { data: [], active: true }
 			});
 			const instanceUnderTest = new ElevationProfilePlugin();
 			await instanceUnderTest.register(store);
 			const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetUnsubscribeFn');
 
-			closeBottomSheet();
+			closeBottomSheet('elevationProfile');
 
 			expect(store.getState().elevationProfile.active).toBeFalse();
 			expect(bottomSheetUnsubscribeFnSpy).toHaveBeenCalled();
@@ -97,7 +89,7 @@ describe('ElevationProfilePlugin', () => {
 	});
 
 	describe('when property `active` of slice-of-state `draw` changes', () => {
-		it('closes the ElevationProfile component and unsubscribes the bottomSheet observer', async () => {
+		it('closes the ElevationProfile component and unsubscribes the bottomSheet observer when changed to `false`', async () => {
 			const store = setup({
 				elevationProfile: {
 					active: true,
@@ -116,10 +108,30 @@ describe('ElevationProfilePlugin', () => {
 			expect(store.getState().elevationProfile.active).toBeFalse();
 			expect(bottomSheetUnsubscribeFnSpy).toHaveBeenCalled();
 		});
+
+		it('does nothing when changed to `true`', async () => {
+			const store = setup({
+				elevationProfile: {
+					active: true,
+					coordinates: []
+				},
+				draw: {
+					active: false
+				}
+			});
+			const instanceUnderTest = new ElevationProfilePlugin();
+			await instanceUnderTest.register(store);
+			const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetUnsubscribeFn');
+
+			activateDraw();
+
+			expect(store.getState().elevationProfile.active).toBeTrue();
+			expect(bottomSheetUnsubscribeFnSpy).not.toHaveBeenCalled();
+		});
 	});
 
 	describe('when property `active` of slice-of-state `measurement` changes', () => {
-		it('closes the ElevationProfile component and unsubscribes the bottomSheet observer', async () => {
+		it('closes the ElevationProfile component and unsubscribes the bottomSheet observer when changed to `false`', async () => {
 			const store = setup({
 				elevationProfile: {
 					active: true,
@@ -137,6 +149,26 @@ describe('ElevationProfilePlugin', () => {
 
 			expect(store.getState().elevationProfile.active).toBeFalse();
 			expect(bottomSheetUnsubscribeFnSpy).toHaveBeenCalled();
+		});
+
+		it('does nothing when changed to `true`', async () => {
+			const store = setup({
+				elevationProfile: {
+					active: true,
+					coordinates: []
+				},
+				measurement: {
+					active: false
+				}
+			});
+			const instanceUnderTest = new ElevationProfilePlugin();
+			await instanceUnderTest.register(store);
+			const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetUnsubscribeFn');
+
+			activateMeasurement();
+
+			expect(store.getState().elevationProfile.active).toBeTrue();
+			expect(bottomSheetUnsubscribeFnSpy).not.toHaveBeenCalled();
 		});
 	});
 

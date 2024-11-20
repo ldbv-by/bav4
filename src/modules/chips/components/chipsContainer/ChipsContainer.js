@@ -8,6 +8,8 @@ import { MvuElement } from '../../../MvuElement';
 import { openModal } from '../../../../store/modal/modal.action';
 import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { addLayerIfNotPresent } from '../../../../store/layers/layers.action';
+import { createUniqueId } from '../../../../utils/numberUtils';
 
 const Update_Media_Related_Properties = 'update_isPortrait_hasMinWidth';
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
@@ -170,8 +172,37 @@ export class ChipsContainer extends MvuElement {
 			`;
 		};
 
+		const addGeoResources = (geoResourceIds) => {
+			const geoResourceIdsArray = geoResourceIds.split(',');
+			geoResourceIdsArray.map((geoResourceId) => {
+				const layerId = `${geoResourceId}_${createUniqueId()}`;
+				addLayerIfNotPresent(layerId, { geoResourceId });
+			});
+		};
+
+		const getInternalButton = (chip) => {
+			return html`
+				${renderStyle(chip)}
+				<button class="chips__${chip.id} chips__button" draggable="false" @click=${() => addGeoResources(chip.href)}>
+					${renderIcon(chip)}
+					<span class="chips__button-text">${chip.title}</span>
+				</button>
+			`;
+		};
+
 		const getLayoutChips = (currentChips) => {
-			return currentChips.map((chip) => (chip.target === 'modal' ? getButton(chip) : getLink(chip)));
+			return currentChips.map((chip) => {
+				switch (chip.target) {
+					case 'modal':
+						return getButton(chip);
+
+					case 'internal':
+						return getInternalButton(chip);
+
+					default:
+						return getLink(chip);
+				}
+			});
 		};
 
 		const classes = {

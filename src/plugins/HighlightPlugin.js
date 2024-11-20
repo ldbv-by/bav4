@@ -4,7 +4,7 @@
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
-import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
+import { addHighlightFeatures, HighlightFeatureType, HighlightGeometryType, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
 import { TabIds } from '../domain/mainMenu';
 import { createUniqueId } from '../utils/numberUtils';
 import { $injector } from '../injection/index';
@@ -17,14 +17,18 @@ import { isCoordinate } from '../utils/checks';
 export const HIGHLIGHT_LAYER_ID = 'highlight_layer';
 
 /**
- *ID for a highlight feature a query is running
+ *ID for a highlight feature when a query is running
  */
 export const QUERY_RUNNING_HIGHLIGHT_FEATURE_ID = 'queryRunningHighlightFeatureId';
 
 /**
- *ID for a highlight feature a query was successful
+ *ID for a highlight feature after a query was successful
  */
 export const QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID = 'querySuccessHighlightFeatureId';
+/**
+ *ID for a highlight feature containing a geometry after a query was successful
+ */
+export const QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID = 'querySuccessWithGeometryHighlightFeatureId';
 /**
  *ID for SearchResult related highlight features
  */
@@ -77,7 +81,11 @@ export class HighlightPlugin extends BaPlugin {
 
 		const onTabChanged = (tab) => {
 			if (tab !== TabIds.FEATUREINFO) {
-				removeHighlightFeaturesById([QUERY_RUNNING_HIGHLIGHT_FEATURE_ID, QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID]);
+				removeHighlightFeaturesById([
+					QUERY_RUNNING_HIGHLIGHT_FEATURE_ID,
+					QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID,
+					QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID
+				]);
 			}
 		};
 
@@ -91,7 +99,7 @@ export class HighlightPlugin extends BaPlugin {
 			if (querying) {
 				const coordinate = state.featureInfo.coordinate.payload;
 				addHighlightFeatures({ id: highlightFeatureId, data: { coordinate: coordinate }, type: HighlightFeatureType.QUERY_RUNNING });
-				removeHighlightFeaturesById(QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID);
+				removeHighlightFeaturesById([QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID, QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID]);
 			} else {
 				const coordinate = state.featureInfo.coordinate.payload;
 				removeHighlightFeaturesById(highlightFeatureId);
@@ -103,6 +111,14 @@ export class HighlightPlugin extends BaPlugin {
 						type: HighlightFeatureType.QUERY_SUCCESS
 					});
 				}
+				const highlightFeatures = state.featureInfo.current
+					.filter((featureInfo) => featureInfo.geometry)
+					.map((featureInfo) => ({
+						id: QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID,
+						type: HighlightFeatureType.DEFAULT,
+						data: { geometry: featureInfo.geometry.data, geometryType: HighlightGeometryType.GEOJSON }
+					}));
+				addHighlightFeatures(highlightFeatures);
 			}
 		};
 

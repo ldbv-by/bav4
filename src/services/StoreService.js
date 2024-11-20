@@ -3,7 +3,7 @@
  */
 import { combineReducers, createStore } from 'redux';
 import { positionReducer } from '../store/position/position.reducer';
-import { layersReducer } from '../store/layers/layers.reducer';
+import { extendedLayersReducer } from '../store/layers/layers.reducer';
 import { $injector } from '../injection';
 import { topicsReducer } from '../store/topics/topics.reducer';
 import { networkReducer } from '../store/network/network.reducer';
@@ -36,6 +36,7 @@ import { routingReducer } from '../store/routing/routing.reducer';
 import { authReducer } from '../store/auth/auth.reducer';
 import { wcAttributeReducer } from '../store/wcAttribute/wcAttribute.reducer';
 import { fileStorageReducer } from '../store/fileStorage/fileStorage.reducer';
+import { timeTravelReducer } from '../store/timeTravel/timeTravel.reducer';
 
 /**
  * Service which configures, initializes and holds the redux store.
@@ -57,7 +58,7 @@ export class StoreService {
 			layerSwipe: layerSwipeReducer,
 			tools: toolsReducer,
 			modal: modalReducer,
-			layers: layersReducer,
+			layers: extendedLayersReducer,
 			mapContextMenu: mapContextMenuReducer,
 			measurement: measurementReducer,
 			draw: drawReducer,
@@ -81,7 +82,8 @@ export class StoreService {
 			routing: routingReducer,
 			auth: authReducer,
 			wcAttribute: wcAttributeReducer,
-			fileStorage: fileStorageReducer
+			fileStorage: fileStorageReducer,
+			timeTravel: timeTravelReducer
 		});
 
 		this._store = createStore(rootReducer);
@@ -117,6 +119,7 @@ export class StoreService {
 				IframeGeometryIdPlugin: iframeGeometryIdPlugin,
 				ObserveWcAttributesPlugin: observeWcAttributesPlugin,
 				EncodeStatePlugin: encodeStatePlugin,
+				TimeTravelPlugin: timeTravelPlugin,
 				ObserveStateForEncodingPlugin: observeStateForEncodingPlugin
 			} = $injector.inject(
 				'GlobalErrorPlugin',
@@ -148,6 +151,7 @@ export class StoreService {
 				'IframeGeometryIdPlugin',
 				'ObserveWcAttributesPlugin',
 				'EncodeStatePlugin',
+				'TimeTravelPlugin',
 				'ObserveStateForEncodingPlugin'
 			);
 
@@ -158,6 +162,7 @@ export class StoreService {
 				await mediaPlugin.register(this._store);
 				await topicsPlugin.register(this._store);
 				await chipsPlugin.register(this._store);
+				await timeTravelPlugin.register(this._store);
 				await layersPlugin.register(this._store);
 				await positionPlugin.register(this._store);
 				await measurementPlugin.register(this._store);

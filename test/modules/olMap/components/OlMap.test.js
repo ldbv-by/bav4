@@ -145,6 +145,14 @@ describe('OlMap', () => {
 			return 'olSelectableFeatureHandlerMockId';
 		}
 	};
+
+	const olOverlayMapHandlerMock = {
+		register() {},
+		get id() {
+			return 'olOverlayMapHandlerMockId';
+		}
+	};
+
 	const mfpHandlerMock = {
 		activate() {},
 		deactivate() {},
@@ -209,6 +217,7 @@ describe('OlMap', () => {
 			.registerSingleton('OlHighlightLayerHandler', highlightLayerHandlerMock)
 			.registerSingleton('OlFeatureInfoHandler', featureInfoHandlerMock)
 			.registerSingleton('OlElevationProfileHandler', olElevationProfileHandlerMock)
+			.registerSingleton('OlOverlayMapHandler', olOverlayMapHandlerMock)
 			.registerSingleton('OlSelectableFeatureHandler', olSelectableFeatureHandlerMock)
 			.registerSingleton('OlMfpHandler', mfpHandlerMock)
 			.registerSingleton('OlRoutingHandler', routingHandlerMock)
@@ -899,7 +908,7 @@ describe('OlMap', () => {
 			expect(spy).toHaveBeenCalledTimes(1);
 		});
 
-		it('fits to  vector layers extent with custom useVisibleViewport option', async () => {
+		it('fits to vector layers extent with custom useVisibleViewport option', async () => {
 			const element = await setup();
 			const map = element._map;
 			const view = map.getView();
@@ -1079,10 +1088,12 @@ describe('OlMap', () => {
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 			addLayer(id1, { zIndex: 0, geoResourceId: geoResourceId1 });
 			expect(map.getLayers().getLength()).toBe(2);
-			const layer1 = map.getLayers().item(0);
-			expect(layer1.get('id')).toBe(id1);
-			const layer0 = map.getLayers().item(1);
+			const layer0 = map.getLayers().item(0);
 			expect(layer0.get('id')).toBe(id0);
+			expect(layer0.getZIndex()).toBe(1);
+			const layer1 = map.getLayers().item(1);
+			expect(layer1.get('id')).toBe(id1);
+			expect(layer1.getZIndex()).toBe(0);
 		});
 
 		it('adds an olLayer resolving a GeoResourceFuture', async () => {
@@ -1184,8 +1195,10 @@ describe('OlMap', () => {
 
 			await TestUtils.timeout();
 			expect(map.getLayers().getLength()).toBe(2);
-			expect(map.getLayers().item(0)).toEqual(olRealLayer);
-			expect(map.getLayers().item(1)).toEqual(nonAsyncOlLayer);
+			expect(map.getLayers().item(0)).toEqual(nonAsyncOlLayer);
+			expect(map.getLayers().item(0).getZIndex()).toBe(1);
+			expect(map.getLayers().item(1)).toEqual(olRealLayer);
+			expect(map.getLayers().item(1).getZIndex()).toBe(0);
 		});
 
 		it('removes the layer from the layers s-o-s when olLayer not available', async () => {
@@ -1298,10 +1311,12 @@ describe('OlMap', () => {
 			modifyLayer('id0', { zIndex: 2 });
 
 			const layer0 = map.getLayers().item(0);
-			expect(layer0.get('id')).toBe('id1');
+			expect(layer0.get('id')).toBe('id0');
+			expect(layer0.getZIndex()).toBe(1);
 
 			const layer1 = map.getLayers().item(1);
-			expect(layer1.get('id')).toBe('id0');
+			expect(layer1.get('id')).toBe('id1');
+			expect(layer1.getZIndex()).toBe(0);
 		});
 	});
 

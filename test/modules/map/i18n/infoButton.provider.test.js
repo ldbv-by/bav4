@@ -5,7 +5,7 @@ describe('i18n for map module', () => {
 		const map = provide('de');
 
 		expect(map.map_infoButton_title).toBe('Information');
-		expect(map.map_infoButton_help).toBe('Hilfe');
+		expect(map.map_infoButton_help).toBe('Hilfe und FAQ');
 		expect(map.map_infoButton_contact).toBe('Kontakt');
 		expect(map.map_infoButton_about).toBe('Impressum');
 	});
@@ -14,7 +14,7 @@ describe('i18n for map module', () => {
 		const map = provide('en');
 
 		expect(map.map_infoButton_title).toBe('Information');
-		expect(map.map_infoButton_help).toBe('Help');
+		expect(map.map_infoButton_help).toBe('Help and FAQ');
 		expect(map.map_infoButton_contact).toBe('Contact');
 		expect(map.map_infoButton_about).toBe('About us');
 	});

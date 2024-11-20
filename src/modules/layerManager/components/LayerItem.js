@@ -5,13 +5,14 @@ import { html, nothing } from 'lit-html';
 import css from './layerItem.css';
 import { $injector } from '../../../injection';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { addLayer, modifyLayer, removeLayer } from './../../../store/layers/layers.action';
+import { cloneAndAddLayer, modifyLayer, removeLayer } from './../../../store/layers/layers.action';
 import arrowUpSvg from './assets/arrow-up-short.svg';
 import arrowDownSvg from './assets/arrow-down-short.svg';
 import cloneSvg from './assets/clone.svg';
 import zoomToExtentSvg from './assets/zoomToExtent.svg';
 import removeSvg from './assets/trash.svg';
 import infoSvg from './assets/info.svg';
+import timeSvg from './assets/time.svg';
 import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { openModal } from '../../../../src/store/modal/modal.action';
 import { createUniqueId } from '../../../utils/numberUtils';
@@ -19,6 +20,7 @@ import { fitLayer } from '../../../store/position/position.action';
 import { GeoResourceFuture, RtVectorGeoResource, VectorGeoResource } from '../../../domain/geoResources';
 import { MenuTypes } from '../../commons/components/overflowMenu/OverflowMenu';
 import { changeLayerSideEvent } from '../../../store/layerSwipe/layerSwipe.action';
+import { openSlider } from '../../../store/timeTravel/timeTravel.action';
 
 const Update_Layer = 'update_layer';
 const Update_Layer_Collapsed = 'update_layer_collapsed';
@@ -174,7 +176,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 
 		const cloneLayer = () => {
 			//state store change -> implicit call of #render()
-			addLayer(`${layer.geoResourceId}_${createUniqueId()}`, { ...layer, geoResourceId: layer.geoResourceId, zIndex: layer.zIndex + 1 });
+			cloneAndAddLayer(layer.id, `${layer.geoResourceId}_${createUniqueId()}`, { zIndex: layer.zIndex + 1 });
 		};
 
 		const zoomToExtent = () => {
@@ -219,6 +221,30 @@ export class LayerItem extends AbstractMvuContentPanel {
 						</div>
 					`
 				: nothing;
+		};
+
+		const getTimestampContent = () => {
+			const getTimestampControl = () => {
+				const onTimestampChange = (event) => {
+					const timestamp = event.detail.selected;
+					modifyLayer(layer.id, { timestamp });
+				};
+				const selected = layer.timestamp ?? geoResource.timestamps[0];
+				return html`<ba-icon
+						.icon="${timeSvg}"
+						.title=${translate('layerManager_time_travel_slider')}
+						.color=${'var(--secondary-color)'}
+						@click=${() => openSlider()}
+						class="time-travel-icon"
+					></ba-icon>
+					<ba-value-select
+						.title=${translate('layerManager_time_travel_hint')}
+						.values=${geoResource.timestamps}
+						.selected=${selected}
+						@select=${onTimestampChange}
+					></ba-value-select>`;
+			};
+			return geoResource.hasTimestamps() ? getTimestampControl() : nothing;
 		};
 
 		const getVisibilityTitle = () => {
@@ -266,6 +292,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 					<ba-checkbox .title="${getVisibilityTitle()}" class="ba-list-item__text" tabindex="0" .checked=${layer.visible} @toggle=${toggleVisibility}
 						>${layer.loading ? html`<ba-spinner .label=${currentLabel}></ba-spinner>` : html`${currentLabel} ${getBadges(layer.keywords)}`}
 					</ba-checkbox>
+					${getTimestampContent()}
 					<button id="button-detail" data-test-id class="ba-list-item__after" title="${getCollapseTitle()}" @click="${toggleCollapse}">
 						<i class="icon chevron icon-rotate-90 ${classMap(iconCollapseClass)}"></i>
 					</button>

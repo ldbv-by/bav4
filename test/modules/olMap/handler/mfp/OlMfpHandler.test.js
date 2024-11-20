@@ -10,7 +10,7 @@ import { mapReducer } from '../../../../../src/store/map/map.reducer';
 import { TestUtils } from '../../../../test-utils';
 import { register } from 'ol/proj/proj4';
 import { Polygon, Point, Geometry } from 'ol/geom';
-import { requestJob, setCurrent } from '../../../../../src/store/mfp/mfp.action';
+import { requestJob, setCurrent, setGridSupported, setShowGrid } from '../../../../../src/store/mfp/mfp.action';
 import { changeCenter, changeLiveZoom } from '../../../../../src/store/position/position.action';
 import proj4 from 'proj4';
 import RenderEvent from 'ol/render/Event';
@@ -27,7 +27,8 @@ describe('OlMfpHandler', () => {
 	const initialState = {
 		active: false,
 		current: { id: 'foo', scale: null, dpi: 125 },
-		showGrid: false
+		showGrid: false,
+		gridSupported: true
 	};
 
 	const configService = {
@@ -163,7 +164,7 @@ describe('OlMfpHandler', () => {
 			const layer = classUnderTest.activate(map);
 
 			expect(layer).toBeTruthy();
-
+			classUnderTest._mfpBoundaryFeature.set('inSupportedArea', true);
 			layer.dispatchEvent(prerenderEvent);
 			expect(saveContextSpy).toHaveBeenCalled();
 
@@ -431,7 +432,10 @@ describe('OlMfpHandler', () => {
 			setup();
 
 			const handler = new OlMfpHandler();
-			spyOn(handler, '_updateMfpPreview').and.callFake(() => handler._mfpBoundaryFeature.set('inPrintableArea', false));
+			spyOn(handler, '_updateMfpPreview').and.callFake(() => {
+				handler._mfpBoundaryFeature.set('inPrintableArea', false);
+				handler._mfpBoundaryFeature.set('inSupportedArea', true);
+			});
 			handler._previewDelayTime = previewDelayTime;
 			handler.activate(map);
 
@@ -483,12 +487,15 @@ describe('OlMfpHandler', () => {
 			);
 		});
 
-		it('warns with a i18n message', async () => {
+		it('warns with a i18n message for leaving printable area', async () => {
 			const map = setupMap();
 			const previewDelayTime = 0;
 			const store = setup();
 			const handler = new OlMfpHandler();
-			spyOn(handler, '_updateMfpPreview').and.callFake(() => handler._mfpBoundaryFeature.set('inPrintableArea', false));
+			spyOn(handler, '_updateMfpPreview').and.callFake(() => {
+				handler._mfpBoundaryFeature.set('inPrintableArea', false);
+				handler._mfpBoundaryFeature.set('inSupportedArea', true);
+			});
 			handler._previewDelayTime = previewDelayTime;
 			handler.activate(map);
 
@@ -550,7 +557,73 @@ describe('OlMfpHandler', () => {
 					dpi: jasmine.any(Number),
 					pageCenter: jasmine.any(Point),
 					pageExtent: jasmine.any(Array),
-					showGrid: jasmine.any(Boolean)
+					showGrid: false
+				})
+			);
+
+			setShowGrid(true);
+			requestJob();
+
+			await TestUtils.timeout();
+			expect(encodeSpy).toHaveBeenCalledWith(
+				map,
+				jasmine.objectContaining({
+					layoutId: jasmine.any(String),
+					scale: jasmine.any(Number),
+					rotation: jasmine.any(Number),
+					dpi: jasmine.any(Number),
+					pageCenter: jasmine.any(Point),
+					pageExtent: jasmine.any(Array),
+					showGrid: true
+				})
+			);
+		});
+
+		it('sets the encodingProperties properly, after mfp.gridSupported changed', async () => {
+			setup();
+			const map = setupMap();
+
+			const handler = new OlMfpHandler();
+			handler._map = setupMap();
+			handler._pageSize = { width: 20, height: 20 };
+			spyOn(handler, '_getMfpProjection').and.returnValue('EPSG:25832');
+
+			handler._updateMfpPreview(new Point([0, 0]));
+
+			const encodeSpy = spyOn(mfpEncoderMock, 'encode').and.callThrough();
+			handler.activate(map);
+			setShowGrid(true);
+			setGridSupported(false);
+			requestJob();
+
+			await TestUtils.timeout();
+			expect(encodeSpy).toHaveBeenCalledWith(
+				map,
+				jasmine.objectContaining({
+					layoutId: jasmine.any(String),
+					scale: jasmine.any(Number),
+					rotation: jasmine.any(Number),
+					dpi: jasmine.any(Number),
+					pageCenter: jasmine.any(Point),
+					pageExtent: jasmine.any(Array),
+					showGrid: false
+				})
+			);
+
+			setGridSupported(true);
+			requestJob();
+
+			await TestUtils.timeout();
+			expect(encodeSpy).toHaveBeenCalledWith(
+				map,
+				jasmine.objectContaining({
+					layoutId: jasmine.any(String),
+					scale: jasmine.any(Number),
+					rotation: jasmine.any(Number),
+					dpi: jasmine.any(Number),
+					pageCenter: jasmine.any(Point),
+					pageExtent: jasmine.any(Array),
+					showGrid: true
 				})
 			);
 		});

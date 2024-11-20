@@ -12,11 +12,14 @@ describe('i18n for header module', () => {
 		expect(map.header_tab_misc_button).toBe('Mehr...');
 		expect(map.header_tab_misc_title).toBe('Weitere Einstellungen und Informationen');
 		expect(map.header_close_button_title).toBe('Menü schließen');
-		expect(map.header_logo_badge).toBe('Beta');
+		expect(map.header_logo_badge).toBe('');
 		expect(map.header_logo_badge_standalone).toBe('Demo');
 		expect(map.header_emblem_title_standalone).toBe('bav4 auf github');
 		expect(map.header_emblem_link_standalone).toBe('https://github.com/ldbv-by/bav4/');
-		expect(map.header_search_placeholder).toBe('Suchen');
+		expect(map.header_search_placeholder).toBe('Orte, Geodaten, Flurstücke');
+		expect(map.header_search_clear_button).toBe('Löschen');
+		expect(map.header_logo_title_open).toBe('Navigationsleiste einblenden');
+		expect(map.header_logo_title_close).toBe('Navigationsleiste ausblenden');
 	});
 
 	it('provides translation for en', () => {
@@ -30,15 +33,18 @@ describe('i18n for header module', () => {
 		expect(map.header_tab_misc_button).toBe('More...');
 		expect(map.header_tab_misc_title).toBe('Additional settings and information');
 		expect(map.header_close_button_title).toBe('Close menu');
-		expect(map.header_logo_badge).toBe('Beta');
+		expect(map.header_logo_badge).toBe('');
 		expect(map.header_logo_badge_standalone).toBe('Demo');
 		expect(map.header_emblem_title_standalone).toBe('bav4 on github');
 		expect(map.header_emblem_link_standalone).toBe('https://github.com/ldbv-by/bav4/');
-		expect(map.header_search_placeholder).toBe('Search');
+		expect(map.header_search_placeholder).toBe('Places, geodata, cadastral parcels');
+		expect(map.header_search_clear_button).toBe('Clear');
+		expect(map.header_logo_title_open).toBe('Show navigation rail');
+		expect(map.header_logo_title_close).toBe('Hide navigation rail');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 13;
+		const expectedSize = 16;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

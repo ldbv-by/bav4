@@ -12,12 +12,12 @@ import { initialState as initialToolsState, toolsReducer } from '../../src/store
 import { initialState as initialLayersState } from '../../src/store/layers/layers.reducer';
 import { setCurrentTool } from '../../src/store/tools/tools.action';
 import { Tools } from '../../src/domain/tools';
-import { deactivate, activate, setProposal, setStatus, setWaypoints, setStart } from '../../src/store/routing/routing.action';
+import { deactivate, activate, setProposal, setStatus, setWaypoints, setStart, setRoute } from '../../src/store/routing/routing.action';
 import { $injector } from '../../src/injection';
 import { LevelTypes } from '../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../src/store/notifications/notifications.reducer';
 import { CoordinateProposalType, RoutingStatusCodes } from '../../src/domain/routing';
-import { bottomSheetReducer } from '../../src/store/bottomSheet/bottomSheet.reducer.js';
+import { bottomSheetReducer, INTERACTION_BOTTOM_SHEET_ID } from '../../src/store/bottomSheet/bottomSheet.reducer.js';
 import { ProposalContextContent } from '../../src/modules/routing/components/contextMenu/ProposalContextContent.js';
 import { highlightReducer } from '../../src/store/highlight/highlight.reducer.js';
 import { HighlightFeatureType } from '../../src/store/highlight/highlight.action.js';
@@ -70,7 +70,7 @@ describe('RoutingPlugin', () => {
 	describe('register', () => {
 		describe('when routing related query params are available', () => {
 			describe('exactly one waypoint', () => {
-				it('calls _lazyInitialize, updates the active property and set the correct tab and tools id', async () => {
+				it('calls _lazyInitialize, sets the routing s-o-s `active` property to `true and set the correct tab and tools id', async () => {
 					const store = setup();
 					const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2`);
 					const instanceUnderTest = new RoutingPlugin();
@@ -91,8 +91,37 @@ describe('RoutingPlugin', () => {
 			});
 
 			describe('more then one waypoint', () => {
-				describe('and tool id is NOT available', () => {
-					it('calls _lazyInitialize and updates the active property', async () => {
+				describe('and tool id is NOT `ROUTING`', () => {
+					it('calls _lazyInitialize and set the routing s-o-s `active` property first to `true` and after the route was loaded to `false`', async () => {
+						const store = setup({
+							mainMenu: {
+								tab: TabIds.MAPS
+							}
+						});
+						const queryParams = new URLSearchParams(`${QueryParameters.ROUTE_WAYPOINTS}=1,2,3,4&`);
+						const instanceUnderTest = new RoutingPlugin();
+						spyOn(environmentService, 'getQueryParams').and.returnValue(queryParams);
+						const lazyInitializeSpy = spyOn(instanceUnderTest, '_lazyInitialize').and.resolveTo(true);
+						await instanceUnderTest.register(store);
+						spyOn(instanceUnderTest, '_parseWaypoints')
+							.withArgs(queryParams)
+							.and.returnValue([
+								[1, 2],
+								[3, 4]
+							]);
+
+						await TestUtils.timeout();
+						await TestUtils.timeout();
+						expect(store.getState().routing.active).toBeTrue();
+						expect(lazyInitializeSpy).toHaveBeenCalled();
+
+						setRoute({ foo: 'bar' });
+
+						expect(store.getState().routing.active).toBeFalse();
+					});
+				});
+				describe('and tool id is `ROUTING`', () => {
+					it('calls _lazyInitialize and set the routing s-o-s `active` property to `true`', async () => {
 						const store = setup({
 							mainMenu: {
 								tab: TabIds.MAPS
@@ -247,7 +276,7 @@ describe('RoutingPlugin', () => {
 					current: Tools.ROUTING
 				},
 
-				bottomSheet: { active: true },
+				bottomSheet: { data: [], active: [INTERACTION_BOTTOM_SHEET_ID] },
 				highlight: {
 					features: [{ id: RoutingPlugin.HIGHLIGHT_FEATURE_ID, data: { coordinate: [11, 22] } }]
 				}
@@ -259,7 +288,7 @@ describe('RoutingPlugin', () => {
 			setCurrentTool('foo');
 
 			expect(store.getState().routing.active).toBeFalse();
-			expect(store.getState().bottomSheet.active).toBeFalse();
+			expect(store.getState().bottomSheet.active).toEqual([]);
 			expect(store.getState().highlight.features).toHaveSize(0);
 		});
 	});
@@ -345,18 +374,20 @@ describe('RoutingPlugin', () => {
 			setProposal(coordinate, CoordinateProposalType.START_OR_DESTINATION);
 
 			expect(store.getState().mapContextMenu.active).toBeFalse();
-			expect(store.getState().bottomSheet.active).toBeTrue();
-			const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data);
+			expect(store.getState().bottomSheet.active).toEqual([INTERACTION_BOTTOM_SHEET_ID]);
+			const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data[0].content);
 			expect(wrapperElement.querySelectorAll(ProposalContextContent.tag)).toHaveSize(1);
-			expect(store.getState().bottomSheet.active).toBeTrue();
+			expect(store.getState().bottomSheet.active).toEqual([INTERACTION_BOTTOM_SHEET_ID]);
 			expect(store.getState().highlight.features).toHaveSize(1);
 			expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
 			expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER_TMP);
 			expect(store.getState().highlight.features[0].id).toBe(RoutingPlugin.HIGHLIGHT_FEATURE_ID);
+			const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetUnsubscribeFn');
 
-			closeBottomSheet();
+			closeBottomSheet(INTERACTION_BOTTOM_SHEET_ID);
 
 			expect(store.getState().highlight.features).toHaveSize(0);
+			expect(bottomSheetUnsubscribeFnSpy).toHaveBeenCalled();
 		});
 
 		it('adds a different highlight feature when waypoint already exists', async () => {
@@ -434,7 +465,7 @@ describe('RoutingPlugin', () => {
 		describe('and we have more than one waypoint', () => {
 			it('resets the UI but does not close the elevation profile', async () => {
 				const store = setup({
-					bottomSheet: { active: true },
+					bottomSheet: { active: [INTERACTION_BOTTOM_SHEET_ID] },
 					mapContextMenu: { active: true },
 					highlight: {
 						features: [{ id: RoutingPlugin.HIGHLIGHT_FEATURE_ID, data: { coordinate: [11, 22] } }],
@@ -453,7 +484,7 @@ describe('RoutingPlugin', () => {
 					[3, 4]
 				]);
 
-				expect(store.getState().bottomSheet.active).toBeTrue();
+				expect(store.getState().bottomSheet.active).toEqual([INTERACTION_BOTTOM_SHEET_ID]);
 				expect(store.getState().mapContextMenu.active).toBeFalse();
 				expect(store.getState().highlight.active).toBeFalse();
 			});
@@ -461,7 +492,7 @@ describe('RoutingPlugin', () => {
 		describe('and we have less than two waypoints', () => {
 			it('resets the UI and also closes the elevation profile', async () => {
 				const store = setup({
-					bottomSheet: { active: true },
+					bottomSheet: { data: [], active: [INTERACTION_BOTTOM_SHEET_ID] },
 					mapContextMenu: { active: true },
 					highlight: {
 						features: [{ id: RoutingPlugin.HIGHLIGHT_FEATURE_ID, data: { coordinate: [11, 22] } }],
@@ -477,7 +508,7 @@ describe('RoutingPlugin', () => {
 
 				setStart([1, 2]);
 
-				expect(store.getState().bottomSheet.active).toBeFalse();
+				expect(store.getState().bottomSheet.active).toEqual([]);
 				expect(store.getState().mapContextMenu.active).toBeFalse();
 				expect(store.getState().highlight.active).toBeFalse();
 			});

@@ -437,13 +437,13 @@ describe('ElevationProfile', () => {
 				}
 			});
 			const config = element._chart.config;
-			const tooltipItems = [{ parsed: { x: 1 }, label: 10 }];
+			const tooltipItems = [{ parsed: { x: 1 } }];
 
 			// act
 			const titleRet = config.options.plugins.tooltip.callbacks.title(tooltipItems);
 
 			// assert
-			expect(titleRet).toBe('elevationProfile_distance: 10 m');
+			expect(titleRet).toBe('elevationProfile_distance: 1 m');
 		});
 
 		it('calls setCoordinates() with valid coordinates', async () => {

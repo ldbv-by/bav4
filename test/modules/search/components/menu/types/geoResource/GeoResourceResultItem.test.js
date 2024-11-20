@@ -175,6 +175,7 @@ describe('GeoResourceResultItem', () => {
 					expect(store.getState().layers.active[0].geoResourceId).toBe(geoResourceId);
 					expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(0);
 					expect(target.classList.contains('loading')).toBeFalse();
+					expect(target.classList.contains('preview')).toBeTrue();
 				});
 			});
 			describe('GeoResource is NOT allowed to access', () => {
@@ -193,6 +194,7 @@ describe('GeoResourceResultItem', () => {
 					expect(element._timeoutId).toBeNull();
 					expect(store.getState().layers.active.length).toBe(0);
 					expect(store.getState().position.fitLayerRequest.payload).toBeNull();
+					expect(target.classList.contains('preview')).toBeFalse();
 				});
 			});
 
@@ -214,11 +216,13 @@ describe('GeoResourceResultItem', () => {
 				expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(1);
 				expect(element.shadowRoot.querySelector(Spinner.tag).label).toBe('labelFormatted');
 				expect(target.classList.contains('loading')).toBeTrue();
+				expect(target.classList.contains('preview')).toBeTrue();
 
 				await geoResFuture.get();
 
 				expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(0);
 				expect(target.classList.contains('loading')).toBeFalse();
+				expect(target.classList.contains('preview')).toBeTrue();
 				expect(element.shadowRoot.querySelector('li .ba-list-item__text').innerText).toBe('labelFormatted');
 			});
 		});
@@ -236,9 +240,11 @@ describe('GeoResourceResultItem', () => {
 				element.data = data;
 
 				const target = element.shadowRoot.querySelector('li');
+				expect(target.classList.contains('preview')).toBeTrue();
 				target.dispatchEvent(new Event('mouseleave'));
 
 				expect(store.getState().layers.active.length).toBe(0);
+				expect(target.classList.contains('preview')).toBeFalse();
 			});
 
 			it('clears a GeoResourceFuture timeout function', async () => {

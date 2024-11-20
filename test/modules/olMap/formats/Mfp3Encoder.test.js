@@ -877,7 +877,8 @@ describe('BvvMfp3Encoder', () => {
 							font: 'normal 10px sans-serif',
 							fill: textFill,
 							textAlign: textAlign,
-							textBaseline: textBaseline
+							textBaseline: textBaseline,
+							offsetY: 10
 						})
 					})
 				];
@@ -1360,6 +1361,7 @@ describe('BvvMfp3Encoder', () => {
 									pointRadius: 5,
 									label: 'FooBarBaz',
 									labelAlign: 'cm',
+									labelYOffset: -16.666666666666668,
 									fontColor: '#000000',
 									fontFamily: 'sans-serif',
 									fontSize: 16.666666666666668,
@@ -1419,6 +1421,7 @@ describe('BvvMfp3Encoder', () => {
 									pointRadius: 5,
 									label: 'FooBarBaz',
 									labelAlign: 'lt',
+									labelYOffset: -16.666666666666668,
 									fontColor: '#000000',
 									fontFamily: 'sans-serif',
 									fontSize: 16.666666666666668,
@@ -1478,6 +1481,7 @@ describe('BvvMfp3Encoder', () => {
 									pointRadius: 5,
 									label: 'FooBarBaz',
 									labelAlign: 'lb',
+									labelYOffset: -16.666666666666668,
 									fontColor: '#000000',
 									fontFamily: 'sans-serif',
 									fontSize: 16.666666666666668,
@@ -1702,6 +1706,7 @@ describe('BvvMfp3Encoder', () => {
 										label: 'FooBarBaz',
 										labelAlign: 'cm',
 										labelRotation: expectedLabelRotation,
+										labelYOffset: -16.666666666666668,
 										fontColor: '#000000',
 										fontFamily: 'sans-serif',
 										fontSize: 16.666666666666668,
@@ -2503,10 +2508,14 @@ describe('BvvMfp3Encoder', () => {
 			});
 		});
 
-		it("resolves overlay with element of 'ba-measure-overlay' to a mfp 'geojson' spec", () => {
+		it("resolves overlay with element of 'ba-overlay' to a mfp 'geojson' spec", () => {
 			const distanceOverlayMock = {
 				getElement: () => {
-					return { tagName: 'ba-map-overlay', innerText: 'foo bar baz', placement: { offset: [0.4, 2], positioning: 'top-center' } };
+					return {
+						tagName: 'ba-map-overlay',
+						placement: { offset: [0.4, 2], positioning: 'top-center' },
+						childNodes: [{ innerText: 'foo bar baz', matches: (selector) => selector === '.ba-overlay', childNodes: [] }]
+					};
 				},
 				getPosition: () => [42, 21]
 			};
@@ -2514,9 +2523,9 @@ describe('BvvMfp3Encoder', () => {
 				getElement: () => {
 					return {
 						tagName: 'ba-map-overlay',
-						innerText: 'foo bar baz',
 						type: BaOverlayTypes.DISTANCE_PARTITION,
-						placement: { offset: [0.4, 2], positioning: 'top-center' }
+						placement: { offset: [0.4, 2], positioning: 'top-center' },
+						childNodes: [{ innerText: 'foo bar', matches: (selector) => selector === '.ba-overlay', childNodes: [] }]
 					};
 				},
 				getPosition: () => [42, 21]
@@ -2524,6 +2533,8 @@ describe('BvvMfp3Encoder', () => {
 			const encoder = setup();
 			const specs = encoder._encodeOverlays([distanceOverlayMock, partitionDistanceOverlayMock]);
 			expect(specs.geoJson.features).toHaveSize(2);
+			expect(specs.geoJson.features[0].properties.label).toBe('foo bar baz');
+			expect(specs.geoJson.features[1].properties.label).toBe('foo bar');
 			expect(specs).toEqual({
 				type: 'geojson',
 				name: 'overlay',

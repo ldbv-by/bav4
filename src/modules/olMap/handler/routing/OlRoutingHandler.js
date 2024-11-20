@@ -49,6 +49,7 @@ import {
 } from '../../../../services/provider/attribution.provider';
 import { StyleTypes } from '../../services/StyleService';
 import { createUniqueId } from '../../../../utils/numberUtils';
+import { INTERACTION_BOTTOM_SHEET_ID } from '../../../../store/bottomSheet/bottomSheet.reducer';
 
 export const RoutingFeatureTypes = Object.freeze({
 	START: 'start',
@@ -282,7 +283,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 		translate.on('translatestart', (evt) => {
 			startCoordinate = evt.coordinate;
 			clearHighlightFeatures();
-			closeBottomSheet();
+			closeBottomSheet(INTERACTION_BOTTOM_SHEET_ID);
 		});
 		translate.on('translateend', (evt) => {
 			if (!equals(startCoordinate, evt.coordinate)) {

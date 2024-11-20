@@ -56,6 +56,7 @@ export class OlMap extends MvuElement {
 			OlHighlightLayerHandler: olHighlightLayerHandler,
 			OlFeatureInfoHandler: olFeatureInfoHandler,
 			OlElevationProfileHandler: olElevationProfileHandler,
+			OlOverlayMapHandler: olOverlayMapHandler,
 			OlMfpHandler: olMfpHandler,
 			OlRoutingHandler: olRoutingHandler,
 			OlSelectableFeatureHandler: olSelectableFeatureHandler
@@ -70,6 +71,7 @@ export class OlMap extends MvuElement {
 			'OlHighlightLayerHandler',
 			'OlFeatureInfoHandler',
 			'OlElevationProfileHandler',
+			'OlOverlayMapHandler',
 			'OlMfpHandler',
 			'OlRoutingHandler',
 			'OlSelectableFeatureHandler'
@@ -90,6 +92,7 @@ export class OlMap extends MvuElement {
 		this._mapHandler = new Map([
 			[olFeatureInfoHandler.id, olFeatureInfoHandler],
 			[olElevationProfileHandler.id, olElevationProfileHandler],
+			[olOverlayMapHandler.id, olOverlayMapHandler],
 			[olSelectableFeatureHandler.id, olSelectableFeatureHandler]
 		]);
 	}
@@ -350,7 +353,8 @@ export class OlMap extends MvuElement {
 				if (olLayer) {
 					const layer = layers.find((layer) => layer.id === id);
 					updateOlLayer(olLayer, layer);
-					this._map.getLayers().insertAt(layer.zIndex, olLayer);
+					olLayer.setZIndex(layer.zIndex);
+					this._map.addLayer(olLayer);
 				} else {
 					console.warn(`Could not add an olLayer for id '${id}'`);
 					removeLayer(id);
@@ -370,7 +374,8 @@ export class OlMap extends MvuElement {
 						const layer = layers.find((layer) => layer.id === id);
 						updateOlLayer(realOlLayer, layer);
 						this._map.getLayers().remove(getLayerById(this._map, id));
-						this._map.getLayers().insertAt(layer.zIndex, realOlLayer);
+						realOlLayer.setZIndex(layer.zIndex);
+						this._map.addLayer(realOlLayer);
 					});
 			}
 			toOlLayer(id, geoResource);
@@ -380,8 +385,7 @@ export class OlMap extends MvuElement {
 			const layer = layers.find((layer) => layer.id === id);
 			const olLayer = getLayerById(this._map, id);
 			updateOlLayer(olLayer, layer);
-			this._map.getLayers().remove(olLayer);
-			this._map.getLayers().insertAt(layer.zIndex, olLayer);
+			olLayer.setZIndex(layer.zIndex);
 		});
 	}
 

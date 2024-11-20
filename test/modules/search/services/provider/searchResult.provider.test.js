@@ -1,3 +1,5 @@
+import { MediaType } from '../../../../../src/domain/mediaTypes';
+import { SourceType, SourceTypeName } from '../../../../../src/domain/sourceType';
 import { $injector } from '../../../../../src/injection';
 import {
 	CadastralParcelSearchResult,
@@ -17,7 +19,8 @@ describe('SearchResult provider', () => {
 	};
 
 	const httpService = {
-		get: async () => {}
+		get: async () => {},
+		post: async () => {}
 	};
 
 	beforeAll(() => {
@@ -101,7 +104,7 @@ describe('SearchResult provider', () => {
 			} catch (error) {
 				expect(configServiceSpy).toHaveBeenCalled();
 				expect(httpServiceSpy).toHaveBeenCalled();
-				expect(error.message).toBe('SearchResults for georesources could not be retrieved');
+				expect(error.message).toBe('SearchResults for GeoResources could not be retrieved');
 			}
 		});
 	});
@@ -121,12 +124,12 @@ describe('SearchResult provider', () => {
 
 		it('loads SearchResults for locations', async () => {
 			const term = 'term?/foo';
-			const termReplacedAndEncoded = 'term%3F%20foo';
 			const backendUrl = 'https://backend.url';
-			const expectedArgs0 = `${backendUrl}/search/type/locations/searchText/${termReplacedAndEncoded}`;
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
-			const httpServiceSpy = spyOn(httpService, 'get')
-				.withArgs(expectedArgs0)
+			const expectedUrl = `${backendUrl}/search/type/locations/searchText`;
+			const payload = { term };
+			const httpServiceSpy = spyOn(httpService, 'post')
+				.withArgs(expectedUrl, JSON.stringify(payload), MediaType.JSON)
 				.and.returnValue(Promise.resolve(new Response(JSON.stringify(mockResponse))));
 
 			const searchResults = await loadBvvLocationSearchResults(term);
@@ -151,10 +154,11 @@ describe('SearchResult provider', () => {
 		it('returns an empty array when response is empty', async () => {
 			const term = 'term';
 			const backendUrl = 'https://backend.url';
-			const expectedArgs0 = `${backendUrl}/search/type/locations/searchText/${term}`;
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
-			const httpServiceSpy = spyOn(httpService, 'get')
-				.withArgs(expectedArgs0)
+			const expectedUrl = `${backendUrl}/search/type/locations/searchText`;
+			const payload = { term };
+			const httpServiceSpy = spyOn(httpService, 'post')
+				.withArgs(expectedUrl, JSON.stringify(payload), MediaType.JSON)
 				.and.returnValue(Promise.resolve(new Response(JSON.stringify([]))));
 
 			const searchResults = await loadBvvLocationSearchResults(term);
@@ -167,10 +171,11 @@ describe('SearchResult provider', () => {
 		it('rejects when backend request cannot be fulfilled', async () => {
 			const term = 'term';
 			const backendUrl = 'https://backend.url';
-			const expectedArgs0 = `${backendUrl}/search/type/locations/searchText/${term}`;
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
-			const httpServiceSpy = spyOn(httpService, 'get')
-				.withArgs(expectedArgs0)
+			const expectedUrl = `${backendUrl}/search/type/locations/searchText`;
+			const payload = { term };
+			const httpServiceSpy = spyOn(httpService, 'post')
+				.withArgs(expectedUrl, JSON.stringify(payload), MediaType.JSON)
 				.and.returnValue(Promise.resolve(new Response(null, { status: 404 })));
 
 			try {
@@ -184,13 +189,33 @@ describe('SearchResult provider', () => {
 		});
 	});
 
-	describe('Bvv SearchResult provider for cadastrial parcels', () => {
+	describe('Bvv SearchResult provider for cadastral parcels', () => {
 		const mockResponse = [
 			{ id: 'id0', attrs: { coordinate: [10.270116669125855, 48.44638557638974], label: '<b>foo</b>, bar' } },
 			{ id: 'id1', attrs: { coordinate: [10.257489331997931, 48.436180253047496], label: '<b>some</b> <b>other</b>, result' } }
 		];
+		const mockResponseIncludingEwkt = [
+			{
+				id: 'id0',
+				attrs: {
+					coordinate: [10.270116669125855, 48.44638557638974],
+					extent: [0, 1, 2, 3],
+					label: '<b>foo</b>, bar',
+					ewkt: 'SRID=3857;POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))'
+				}
+			},
+			{
+				id: 'id1',
+				attrs: {
+					coordinate: [10.257489331997931, 48.436180253047496],
+					extent: [4, 5, 6, 7],
+					label: '<b>some</b> <b>other</b>, result',
+					ewkt: 'SRID=3857;POLYGON ((30 10, 20 30, 20 40, 10 20, 30 10))'
+				}
+			}
+		];
 
-		it('loads SearchResults for cadastial parcels', async () => {
+		it('loads SearchResults for cadastral parcels without a geometry', async () => {
 			const term = 'term?/foo';
 			const termReplacedAndEncoded = 'term%3F%20foo';
 			const backendUrl = 'https://backend.url';
@@ -212,6 +237,32 @@ describe('SearchResult provider', () => {
 			expect(searchResult0.labelFormatted).toBe('<b>foo</b>, bar');
 			expect(searchResult0.center).toEqual([10.270116669125855, 48.44638557638974]);
 			expect(searchResult0.extent).toBeNull();
+		});
+
+		it('loads SearchResults for cadastral parcels including a geometry', async () => {
+			const term = 'term?/foo';
+			const termReplacedAndEncoded = 'term%3F%20foo';
+			const backendUrl = 'https://backend.url';
+			const expectedArgs0 = `${backendUrl}/search/type/cp/searchText/${termReplacedAndEncoded}`;
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
+			const httpServiceSpy = spyOn(httpService, 'get')
+				.withArgs(expectedArgs0)
+				.and.returnValue(Promise.resolve(new Response(JSON.stringify(mockResponseIncludingEwkt))));
+
+			const searchResults = await loadBvvCadastralParcelSearchResults(term);
+
+			expect(configServiceSpy).toHaveBeenCalled();
+			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(searchResults.length).toBe(2);
+
+			const searchResult0 = searchResults[0];
+
+			expect(searchResult0 instanceof CadastralParcelSearchResult).toBeTrue(), expect(searchResult0.label).toBe('foo, bar');
+			expect(searchResult0.labelFormatted).toBe('<b>foo</b>, bar');
+			expect(searchResult0.center).toEqual([10.270116669125855, 48.44638557638974]);
+			expect(searchResult0.extent).toEqual([0, 1, 2, 3]);
+			expect(searchResult0.data.geometry).toBe('SRID=3857;POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))');
+			expect(searchResult0.data.geometryType).toEqual(new SourceType(SourceTypeName.EWKT, null, 3857));
 		});
 
 		it('returns an empty array when response is empty', async () => {
@@ -245,7 +296,7 @@ describe('SearchResult provider', () => {
 			} catch (error) {
 				expect(configServiceSpy).toHaveBeenCalled();
 				expect(httpServiceSpy).toHaveBeenCalled();
-				expect(error.message).toBe('SearchResults for cadastrial parcels could not be retrieved');
+				expect(error.message).toBe('SearchResults for cadastral parcels could not be retrieved');
 			}
 		});
 	});

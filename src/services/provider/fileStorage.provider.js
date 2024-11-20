@@ -33,8 +33,7 @@ export const _newLoader = (id) => {
 /**
  * Uses the BVV endpoint to load a GeoResource from the FileStorage.
  * @function
- * @implements {module:services/GeoResourceService~geoResourceByIdProvider}
- * @returns {GeoResourceFuture|null}
+ * @type {module:services/GeoResourceService~geoResourceByIdProvider}
  */
 export const loadBvvFileStorageResourceById = (id) => {
 	const { FileStorageService: fileStorageService } = $injector.inject('FileStorageService');

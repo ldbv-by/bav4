@@ -20,6 +20,8 @@ import { createXYZ } from 'ol/tilegrid';
 import { AdvWmtsTileGrid } from '../../../../src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid';
 import supported from 'mapbox-gl-supported';
 import { UnavailableGeoResourceError } from '../../../../src/domain/errors';
+import TileLayer from 'ol/layer/Tile';
+import { BvvGk4WmtsTileGrid } from '../../../../src/modules/olMap/ol/tileGrid/BvvGk4WmtsTileGrid';
 
 describe('LayerService', () => {
 	const vectorLayerService = {
@@ -231,15 +233,38 @@ describe('LayerService', () => {
 
 				expect(xyzOlLayer.get('id')).toBe(id);
 				expect(xyzOlLayer.get('geoResourceId')).toBe(geoResourceId);
-				expect(xyzOlLayer.getPreload()).toBe(3);
+				expect(xyzOlLayer.getPreload()).toBe(1);
 				expect(xyzOlLayer.getMinZoom()).toBeNegativeInfinity();
 				expect(xyzOlLayer.getMaxZoom()).toBePositiveInfinity();
 				const xyzSource = xyzOlLayer.getSource();
 				expect(xyzOlLayer.constructor.name).toBe('TileLayer');
-				expect(xyzSource.constructor.name).toBe('XYZ');
+				expect(xyzSource.constructor.name).toBe('RefreshableXYZ');
 				expect(xyzSource.getUrls()).toEqual(['https://some1/layer/{z}/{x}/{y}', 'https://some2/layer/{z}/{x}/{y}']);
 				expect(xyzSource.getTileLoadFunction()).toBe(mockImageLoadFunction);
-				expect(providerSpy).toHaveBeenCalledWith(geoResourceId);
+				expect(providerSpy).toHaveBeenCalledWith(geoResourceId, jasmine.any(TileLayer));
+			});
+
+			it('converts a XyzGeoResource containing timestamps to a olLayer', () => {
+				const mockImageLoadFunction = () => {};
+				const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
+				const instanceUnderTest = setup(null, providerSpy);
+				const id = 'id';
+				const geoResourceId = 'geoResourceId';
+				const xyzGeoResource = new XyzGeoResource(geoResourceId, 'label', 'https://some{1-2}/layer/{z}/{x}/{y}').setTimestamps(['2000']);
+
+				const xyzOlLayer = instanceUnderTest.toOlLayer(id, xyzGeoResource);
+
+				expect(xyzOlLayer.get('id')).toBe(id);
+				expect(xyzOlLayer.get('geoResourceId')).toBe(geoResourceId);
+				expect(xyzOlLayer.getPreload()).toBe(0);
+				expect(xyzOlLayer.getMinZoom()).toBeNegativeInfinity();
+				expect(xyzOlLayer.getMaxZoom()).toBePositiveInfinity();
+				const xyzSource = xyzOlLayer.getSource();
+				expect(xyzOlLayer.constructor.name).toBe('TileLayer');
+				expect(xyzSource.constructor.name).toBe('RefreshableXYZ');
+				expect(xyzSource.getUrls()).toEqual(['https://some1/layer/{z}/{x}/{y}', 'https://some2/layer/{z}/{x}/{y}']);
+				expect(xyzSource.getTileLoadFunction()).toBe(mockImageLoadFunction);
+				expect(providerSpy).toHaveBeenCalledWith(geoResourceId, jasmine.any(TileLayer));
 			});
 
 			it('converts a XyzGeoResource to a olLayer containing an array of urls', () => {
@@ -254,15 +279,15 @@ describe('LayerService', () => {
 
 				expect(xyzOlLayer.get('id')).toBe(id);
 				expect(xyzOlLayer.get('geoResourceId')).toBe(geoResourceId);
-				expect(xyzOlLayer.getPreload()).toBe(3);
+				expect(xyzOlLayer.getPreload()).toBe(1);
 				expect(xyzOlLayer.getMinZoom()).toBeNegativeInfinity();
 				expect(xyzOlLayer.getMaxZoom()).toBePositiveInfinity();
 				const xyzSource = xyzOlLayer.getSource();
 				expect(xyzOlLayer.constructor.name).toBe('TileLayer');
-				expect(xyzSource.constructor.name).toBe('XYZ');
+				expect(xyzSource.constructor.name).toBe('RefreshableXYZ');
 				expect(xyzSource.getUrls()).toEqual(['https://some1/layer/{z}/{x}/{y}', 'https://some2/layer/{z}/{x}/{y}']);
 				expect(xyzSource.getTileLoadFunction()).toBe(mockImageLoadFunction);
-				expect(providerSpy).toHaveBeenCalledWith(geoResourceId);
+				expect(providerSpy).toHaveBeenCalledWith(geoResourceId, jasmine.any(TileLayer));
 			});
 
 			it('converts a XyzGeoResource containing optional properties to a olLayer', () => {
@@ -280,16 +305,16 @@ describe('LayerService', () => {
 
 				expect(xyzOlLayer.get('id')).toBe(id);
 				expect(xyzOlLayer.get('geoResourceId')).toBe(geoResourceId);
-				expect(xyzOlLayer.getPreload()).toBe(3);
+				expect(xyzOlLayer.getPreload()).toBe(1);
 				expect(xyzOlLayer.getOpacity()).toBe(0.5);
 				expect(xyzOlLayer.getMinZoom()).toBe(5);
 				expect(xyzOlLayer.getMaxZoom()).toBe(19);
 				const xyzSource = xyzOlLayer.getSource();
 				expect(xyzOlLayer.constructor.name).toBe('TileLayer');
-				expect(xyzSource.constructor.name).toBe('XYZ');
+				expect(xyzSource.constructor.name).toBe('RefreshableXYZ');
 				expect(xyzSource.getUrls()).toEqual(['https://some1/layer/{z}/{x}/{y}', 'https://some2/layer/{z}/{x}/{y}']);
 				expect(xyzSource.getTileLoadFunction()).toBe(mockImageLoadFunction);
-				expect(providerSpy).toHaveBeenCalledWith(geoResourceId);
+				expect(providerSpy).toHaveBeenCalledWith(geoResourceId, jasmine.any(TileLayer));
 			});
 
 			it('sets a XYZ source containing the default TileGrid', () => {
@@ -306,18 +331,52 @@ describe('LayerService', () => {
 				expect(xyzSource.getProjection().getCode()).toBe('EPSG:3857');
 			});
 
-			it('sets a XYZ source containing the ADV WMTS TileGrid', () => {
+			it('sets a XYZ source containing the ADV UTM TileGrid', () => {
 				const mockImageLoadFunction = () => {};
 				const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
 				const instanceUnderTest = setup(null, providerSpy);
 				const id = 'id';
-				const xyzGeoResource = new XyzGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}').setTileGridId('adv_wmts');
+				const xyzGeoResource = new XyzGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}').setTileGridId('adv_utm');
 
 				const xyzOlLayer = instanceUnderTest.toOlLayer(id, xyzGeoResource);
 
 				const xyzSource = xyzOlLayer.getSource();
 				expect(xyzSource.getTileGrid()).toEqual(new AdvWmtsTileGrid());
 				expect(xyzSource.getProjection().getCode()).toBe('EPSG:25832');
+			});
+
+			it('sets a XYZ source containing the BVV GK4 TileGrid', () => {
+				const mockImageLoadFunction = () => {};
+				const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
+				const instanceUnderTest = setup(null, providerSpy);
+				const id = 'id';
+				const xyzGeoResource = new XyzGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}').setTileGridId('bvv_gk4');
+
+				const xyzOlLayer = instanceUnderTest.toOlLayer(id, xyzGeoResource);
+
+				const xyzSource = xyzOlLayer.getSource();
+				expect(xyzSource.getTileGrid()).toEqual(new BvvGk4WmtsTileGrid());
+				expect(xyzSource.getProjection().getCode()).toBe('EPSG:31468');
+			});
+
+			it('registers a listener that calls `smoothRefresh` of the underlying source when the timestamp property changes', () => {
+				const mockImageLoadFunction = () => {};
+				const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
+				const instanceUnderTest = setup(null, providerSpy);
+				const id = 'id';
+				const xyzGeoResource = new XyzGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}');
+				const xyzOlLayer = instanceUnderTest.toOlLayer(id, xyzGeoResource);
+				const xyzSource = xyzOlLayer.getSource();
+				const xyzSourceSpy = spyOn(xyzSource, 'smoothRefresh');
+
+				xyzOlLayer.set('foo', 'bar');
+
+				expect(xyzSourceSpy).not.toHaveBeenCalled();
+
+				xyzOlLayer.set('timestamp', '2000');
+				xyzOlLayer.set('timestamp', '2000');
+
+				expect(xyzSourceSpy).toHaveBeenCalledOnceWith('2000');
 			});
 		});
 

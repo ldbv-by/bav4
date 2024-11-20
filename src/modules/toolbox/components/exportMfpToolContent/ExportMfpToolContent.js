@@ -15,6 +15,8 @@ const Update_Id = 'update_id';
 const Update_Show_Grid = 'update_show_grid';
 const Update_Job_Started = 'update_job_started';
 const Update_IsPortrait = 'update_isPortrait';
+const Update_Grid_Supported = 'update_grid_supported';
+const Update_Export_Supported = 'update_export_supported';
 
 /**
  * @class
@@ -27,7 +29,9 @@ export class ExportMfpToolContent extends AbstractToolContent {
 			scale: null,
 			showGrid: false,
 			isJobStarted: false,
-			isPortrait: false
+			isPortrait: false,
+			gridSupported: false,
+			exportSupported: true
 		});
 
 		const { TranslationService: translationService, MfpService: mfpService } = $injector.inject('TranslationService', 'MfpService');
@@ -43,6 +47,14 @@ export class ExportMfpToolContent extends AbstractToolContent {
 		this.observe(
 			(state) => state.mfp.showGrid,
 			(data) => this.signal(Update_Show_Grid, data)
+		);
+		this.observe(
+			(state) => state.mfp.gridSupported,
+			(data) => this.signal(Update_Grid_Supported, data)
+		);
+		this.observe(
+			(state) => state.mfp.exportSupported,
+			(data) => this.signal(Update_Export_Supported, data)
 		);
 		this.observe(
 			(state) => state.mfp.jobSpec,
@@ -68,11 +80,15 @@ export class ExportMfpToolContent extends AbstractToolContent {
 				return { ...model, isPortrait: data };
 			case Update_Job_Started:
 				return { ...model, isJobStarted: !!data?.payload };
+			case Update_Grid_Supported:
+				return { ...model, gridSupported: data };
+			case Update_Export_Supported:
+				return { ...model, exportSupported: data };
 		}
 	}
 
 	createView(model) {
-		const { id, scale, isJobStarted, showGrid, isPortrait } = model;
+		const { id, scale, isJobStarted, showGrid, isPortrait, gridSupported, exportSupported } = model;
 		const translate = (key) => this._translationService.translate(key);
 		const capabilities = this._mfpService.getCapabilities();
 
@@ -81,24 +97,29 @@ export class ExportMfpToolContent extends AbstractToolContent {
 		const btnType = isJobStarted ? 'loading' : 'primary';
 		const btnId = isJobStarted ? 'btn_cancel' : 'btn_submit';
 		const areSettingsComplete = capabilities && scale && id;
+
+		const getButton = () =>
+			html`<ba-button
+				id="${btnId}"
+				class="tool-container__button preview_button"
+				.label=${btnLabel}
+				@click=${onClickAction}
+				.type=${btnType}
+				.disabled=${!areSettingsComplete}
+			></ba-button>`;
+
+		const getNotSupportedHint = () =>
+			html`<div class="tool-container__button not-supported-hint">${translate('toolbox_exportMfp_export_not_supported')}</div>`;
+
 		return html` <style>
 				${css}
 			</style>
 			<div class="ba-tool-container" ?data-register-for-viewport-calc=${isPortrait}>
 				<div class="ba-tool-container__title">${translate('toolbox_exportMfp_header')}</div>
 				<div class="ba-tool-container__content">
-					${areSettingsComplete ? this._getContent(id, scale, capabilities.layouts, showGrid) : this._getSpinner()}
+					${areSettingsComplete ? this._getContent(id, scale, capabilities.layouts, showGrid, gridSupported) : this._getSpinner()}
 				</div>
-				<div class="ba-tool-container__actions">
-					<ba-button
-						id="${btnId}"
-						class="tool-container__button preview_button"
-						.label=${btnLabel}
-						@click=${onClickAction}
-						.type=${btnType}
-						.disabled=${!areSettingsComplete}
-					></ba-button>
-				</div>
+				<div class="ba-tool-container__actions">${exportSupported ? getButton() : getNotSupportedHint()}</div>
 			</div>`;
 	}
 
@@ -106,7 +127,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 		return html`<ba-spinner></ba-spinner>`;
 	}
 
-	_getContent(id, scale, layouts, showGrid) {
+	_getContent(id, scale, layouts, showGrid, gridSupported) {
 		const translate = (key) => this._translationService.translate(key);
 
 		const layoutItems = layouts.map((capability) => {
@@ -205,9 +226,14 @@ export class ExportMfpToolContent extends AbstractToolContent {
 				</div>
 				<div class="tool-section separator" style="margin-top:1em">
 					<div class="tool-section" style="margin-top:1em">
-						<ba-checkbox id="showgrid" .checked=${showGrid} .title=${translate('toolbox_exportMfp_show_grid_title')} @toggle=${onChangeShowGrid}
-							><span>${translate('toolbox_exportMfp_show_grid')}</span></ba-checkbox
-						>
+						<ba-checkbox
+							id="showgrid"
+							.checked=${gridSupported ? showGrid : false}
+							.title=${gridSupported ? translate('toolbox_exportMfp_show_grid_title') : translate('toolbox_exportMfp_grid_supported')}
+							@toggle=${onChangeShowGrid}
+							.disabled=${!gridSupported}
+							><span>${translate('toolbox_exportMfp_show_grid')}</span>
+						</ba-checkbox>
 					</div>
 				</div>
 			</div>`;

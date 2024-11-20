@@ -79,7 +79,7 @@ export const provide = (lang) => {
 				toolbox_toolbar_measure_button: 'Measure',
 				toolbox_toolbar_import_button: 'Import',
 				toolbox_toolbar_export_button: 'Export',
-				toolbox_toolbar_logo_badge: 'Beta',
+				toolbox_toolbar_logo_badge: '',
 				toolbox_toolbar_logo_badge_standalone: 'Demo',
 				toolbox_measureTool_clipboard_measure_area_notification_text: 'The area',
 				toolbox_measureTool_clipboard_measure_distance_notification_text: 'The distance',
@@ -100,7 +100,9 @@ export const provide = (lang) => {
 				toolbox_exportMfp_id_a3_portrait: 'A3 portrait',
 				toolbox_exportMfp_options: 'Export options',
 				toolbox_exportMfp_show_grid_title: 'Add coordinate grid in export',
-				toolbox_exportMfp_show_grid: 'Coordinate grid'
+				toolbox_exportMfp_show_grid: 'Coordinate grid',
+				toolbox_exportMfp_grid_supported: 'Not supported while map is rotated',
+				toolbox_exportMfp_export_not_supported: 'Exporting the selected extent is not supported in this area.'
 			};
 
 		case 'de':
@@ -185,7 +187,7 @@ export const provide = (lang) => {
 				toolbox_toolbar_measure_button: 'Messen',
 				toolbox_toolbar_import_button: 'Import',
 				toolbox_toolbar_export_button: 'Export',
-				toolbox_toolbar_logo_badge: 'Beta',
+				toolbox_toolbar_logo_badge: '',
 				toolbox_toolbar_logo_badge_standalone: 'Demo',
 				toolbox_measureTool_clipboard_measure_area_notification_text: 'Die Fläche',
 				toolbox_measureTool_clipboard_measure_distance_notification_text: 'Die Länge',
@@ -195,8 +197,8 @@ export const provide = (lang) => {
 				toolbox_exportMfp_header: 'Export nach PDF',
 				toolbox_exportMfp_layout: 'Seitenformat',
 				toolbox_exportMfp_scale: 'Maßstab',
-				toolbox_exportMfp_scale_decrease: 'Maßstab verkleinern',
-				toolbox_exportMfp_scale_increase: 'Maßstab vergrößern',
+				toolbox_exportMfp_scale_decrease: 'Ausschnitt verkleinern',
+				toolbox_exportMfp_scale_increase: 'Ausschnitt vergrößern',
 				toolbox_exportMfp_submit: 'PDF erzeugen',
 				toolbox_exportMfp_cancel: 'Abbrechen',
 				toolbox_exportMfp_select_option: 'auswählen...',
@@ -206,7 +208,9 @@ export const provide = (lang) => {
 				toolbox_exportMfp_id_a3_portrait: 'A3 Hochformat',
 				toolbox_exportMfp_options: 'Export-Optionen',
 				toolbox_exportMfp_show_grid_title: 'Ein Koordinatennetz im Export hinzufügen',
-				toolbox_exportMfp_show_grid: 'Koordinatennetz'
+				toolbox_exportMfp_show_grid: 'Koordinatennetz',
+				toolbox_exportMfp_grid_supported: 'Nicht verfügbar, wenn Karte rotiert ist',
+				toolbox_exportMfp_export_not_supported: 'Der Export des ausgewählten Ausschnitts ist in diesem Gebiet nicht möglich.'
 			};
 
 		default:

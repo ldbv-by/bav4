@@ -30,7 +30,6 @@ describe('LayersPlugin', () => {
 	};
 	const environmentService = {
 		getQueryParams: () => new URLSearchParams(),
-		isRetinaDisplay: () => false,
 		isEmbeddedAsWC: () => false
 	};
 
@@ -107,13 +106,11 @@ describe('LayersPlugin', () => {
 					new XyzGeoResource(configuredBgId, 'someLabel0', 'someUrl0')
 				]);
 				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic('topicId', 'label', 'description', null, configuredBgId));
-				const replaceForRetinaDisplaySpy = spyOn(instanceUnderTest, '_replaceForRetinaDisplays').and.callFake((id) => id);
 
 				instanceUnderTest._addLayersFromConfig();
 
 				expect(store.getState().layers.active.length).toBe(1);
 				expect(store.getState().layers.active[0].id).toBe(configuredBgId);
-				expect(replaceForRetinaDisplaySpy).toHaveBeenCalled();
 			});
 
 			it('adds the configured layer from default topic', () => {
@@ -128,13 +125,11 @@ describe('LayersPlugin', () => {
 				]);
 				spyOn(topicsServiceMock, 'byId').and.returnValue(null);
 				spyOn(topicsServiceMock, 'default').and.returnValue(new Topic('topicId', 'label', 'description', null, configuredBgId));
-				const replaceForRetinaDisplaySpy = spyOn(instanceUnderTest, '_replaceForRetinaDisplays').and.callFake((id) => id);
 
 				instanceUnderTest._addLayersFromConfig();
 
 				expect(store.getState().layers.active.length).toBe(1);
 				expect(store.getState().layers.active[0].id).toBe(configuredBgId);
-				expect(replaceForRetinaDisplaySpy).toHaveBeenCalled();
 			});
 
 			it('adds the first found layer ', () => {
@@ -145,81 +140,11 @@ describe('LayersPlugin', () => {
 					new XyzGeoResource('someId1', 'someLabel1', 'someUrl1')
 				]);
 				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic('topicId', 'label', 'description', null, 'somethingDifferent'));
-				const replaceForRetinaDisplaySpy = spyOn(instanceUnderTest, '_replaceForRetinaDisplays').and.callFake((id) => id);
 
 				instanceUnderTest._addLayersFromConfig();
 
 				expect(store.getState().layers.active.length).toBe(1);
 				expect(store.getState().layers.active[0].id).toBe('someId0');
-				expect(replaceForRetinaDisplaySpy).toHaveBeenCalled();
-			});
-		});
-
-		describe('_replaceForRetinaDisplays', () => {
-			it('returns the unchanged argument when no retina display', () => {
-				setup();
-				const topicId = 'topic;';
-				setCurrent(topicId);
-				const rasterGeoResId = 'rasterGr';
-				const instanceUnderTest = new LayersPlugin();
-				spyOn(environmentService, 'isRetinaDisplay').and.returnValue(false);
-
-				const result = instanceUnderTest._replaceForRetinaDisplays(rasterGeoResId);
-
-				expect(result).toBe(rasterGeoResId);
-			});
-
-			it('returns the VT pendant for the default raster GeoResource retrieved from the CURRENT topic', () => {
-				setup();
-				const topicId = 'topic;';
-				setCurrent(topicId);
-				const rasterGeoResId = 'rasterGr';
-				const vectorGeoResId = 'vectorGr';
-				const instanceUnderTest = new LayersPlugin();
-				spyOn(environmentService, 'isRetinaDisplay').and.returnValue(true);
-				spyOn(topicsServiceMock, 'byId').and.returnValue(
-					new Topic(topicId, 'label', 'description', { raster: [rasterGeoResId], vector: [vectorGeoResId] })
-				);
-
-				const result = instanceUnderTest._replaceForRetinaDisplays(rasterGeoResId);
-
-				expect(result).toBe(vectorGeoResId);
-			});
-
-			it('returns the VT pendant for the default raster GeoResource retrieved from the DEFAULT topic', () => {
-				setup();
-				const topicId = 'topic;';
-				setCurrent(topicId);
-				const rasterGeoResId = 'rasterGr';
-				const vectorGeoResId = 'vectorGr';
-				const instanceUnderTest = new LayersPlugin();
-				spyOn(environmentService, 'isRetinaDisplay').and.returnValue(true);
-				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'description'));
-				spyOn(topicsServiceMock, 'default').and.returnValue(
-					new Topic('default', 'label', 'description', { raster: [rasterGeoResId], vector: [vectorGeoResId] })
-				);
-
-				const result = instanceUnderTest._replaceForRetinaDisplays(rasterGeoResId);
-
-				expect(result).toBe(vectorGeoResId);
-			});
-
-			it('returns the unchanged argument when the topics baseGeoRs property does not contain expected categories', () => {
-				setup();
-				const topicId = 'topic;';
-				setCurrent(topicId);
-				const rasterGeoResId = 'rasterGr';
-				const vectorGeoResId = 'vectorGr';
-				const instanceUnderTest = new LayersPlugin();
-				spyOn(environmentService, 'isRetinaDisplay').and.returnValue(true);
-				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'description'));
-				spyOn(topicsServiceMock, 'default').and.returnValue(
-					new Topic('default', 'label', 'description', { foo: [rasterGeoResId], bar: [vectorGeoResId] })
-				);
-
-				const result = instanceUnderTest._replaceForRetinaDisplays(rasterGeoResId);
-
-				expect(result).toBe(rasterGeoResId);
 			});
 		});
 
@@ -372,6 +297,52 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[0].opacity).toBe(1);
 				expect(store.getState().layers.active[1].id).toBe('some1_0');
 				expect(store.getState().layers.active[1].opacity).toBe(1);
+			});
+
+			it('adds layers considering timestamp', () => {
+				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_TIMESTAMP}=2000,2024`);
+				const store = setup();
+				const instanceUnderTest = new LayersPlugin();
+				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+					switch (id) {
+						case 'some0':
+							return new XyzGeoResource(id, 'someLabel0', 'someUrl0').setTimestamps(['2000', '2024']);
+						case 'some1':
+							return new XyzGeoResource(id, 'someLabel1', 'someUrl1').setTimestamps(['2000', '2024']);
+					}
+				});
+
+				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
+
+				expect(store.getState().layers.active.length).toBe(2);
+				expect(store.getState().layers.active[0].id).toBe('some0_0');
+				expect(store.getState().layers.active[0].timestamp).toBe('2000');
+				expect(store.getState().layers.active[1].id).toBe('some1_0');
+				expect(store.getState().layers.active[1].timestamp).toBe('2024');
+			});
+
+			it('adds layers considering unusable timestamp params', () => {
+				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_OPACITY}=,1900`);
+				const store = setup();
+				const instanceUnderTest = new LayersPlugin();
+				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+					switch (id) {
+						case 'some0':
+							return new XyzGeoResource(id, 'someLabel0', 'someUrl0').setTimestamps(['2000', '2024']);
+						case 'some1':
+							return new XyzGeoResource(id, 'someLabel1', 'someUrl1').setTimestamps(['2000', '2024']);
+					}
+				});
+
+				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
+
+				expect(store.getState().layers.active.length).toBe(2);
+				expect(store.getState().layers.active[0].id).toBe('some0_0');
+				expect(store.getState().layers.active[0].timestamp).toBeNull();
+				expect(store.getState().layers.active[1].id).toBe('some1_0');
+				expect(store.getState().layers.active[1].timestamp).toBeNull();
 			});
 
 			it('does NOT add a layer when geoResourceService cannot fulfill', () => {

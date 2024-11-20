@@ -39,7 +39,8 @@ describe('mfp style utility functions', () => {
 			beginPath: () => {},
 			closePath: () => {},
 			moveTo: () => {},
-			lineTo: () => {}
+			lineTo: () => {},
+			setLineDash: () => {}
 		};
 		const defaultRenderState = { feature: feature, context: defaultContextStub, geometry: geometry };
 		const getRenderState = (state = {}) => {
@@ -138,6 +139,26 @@ describe('mfp style utility functions', () => {
 			expect(renderState.context.strokeStyle).toBe('rgba(231, 79, 13, 0.8)');
 			expect(renderState.context.lineWidth).toBe(5);
 		});
+
+		it('should NOT draw a style for a feature completely out of the printable area', () => {
+			const pixelCoordinates = [
+				[
+					[5, 5],
+					[6, 5],
+					[6, 6],
+					[5, 6],
+					[5, 5]
+				]
+			];
+			const renderState = getRenderState({ feature: new Feature({ inPrintableArea: false, inSupportedArea: false }) });
+			const spy = spyOn(renderState.context, 'beginPath').and.callThrough();
+
+			const styles = createThumbnailStyleFunction(beingDraggedCallback);
+			const renderStyle = styles[0];
+			renderStyle.getRenderer()(pixelCoordinates, renderState);
+
+			expect(spy).not.toHaveBeenCalled();
+		});
 	});
 
 	describe('nullStyleFunction', () => {
@@ -167,13 +188,19 @@ describe('mfp style utility functions', () => {
 	});
 
 	describe('createMapMaskFunction', () => {
-		const pixelCoordinatesCallBack = () => [
-			[5, 5],
-			[6, 5],
-			[6, 6],
-			[5, 6],
-			[5, 5]
-		];
+		const getPixelCoordinatesCallBack = (supportedArea) => {
+			const pixelCoordinatesObject = {
+				pixelCoordinates: [
+					[5, 5],
+					[6, 5],
+					[6, 6],
+					[5, 6],
+					[5, 5]
+				],
+				supportedArea
+			};
+			return () => pixelCoordinatesObject;
+		};
 
 		const createMapMock = () => {
 			return {
@@ -185,7 +212,7 @@ describe('mfp style utility functions', () => {
 
 		it('creates a function', () => {
 			const mapMock = {};
-			const renderFunction = createMapMaskFunction(mapMock, pixelCoordinatesCallBack);
+			const renderFunction = createMapMaskFunction(mapMock, getPixelCoordinatesCallBack(true));
 
 			expect(renderFunction).toEqual(jasmine.any(Function));
 		});
@@ -208,7 +235,7 @@ describe('mfp style utility functions', () => {
 		};
 		const getPostRenderEvent = (time, context) => new RenderEvent('postrender', transform, setupFrameState(time), context);
 
-		it('draws a mask', () => {
+		it('draws a mask inside the supported extent', () => {
 			const expectedFillColor = 'rgba(0, 5, 25, 0.75)';
 			const mapMock = createMapMock();
 			const context = get2dContext();
@@ -216,7 +243,7 @@ describe('mfp style utility functions', () => {
 			const fillStylePropertySpy = spyOnProperty(context, 'fillStyle', 'set').and.callThrough();
 			const moveToSpy = spyOn(context, 'moveTo').and.callThrough();
 
-			const renderFunction = createMapMaskFunction(mapMock, pixelCoordinatesCallBack);
+			const renderFunction = createMapMaskFunction(mapMock, getPixelCoordinatesCallBack(true));
 			renderFunction(getPostRenderEvent(0, context));
 
 			expect(renderFunction).toEqual(jasmine.any(Function));
@@ -226,6 +253,30 @@ describe('mfp style utility functions', () => {
 			expect(moveToSpy).toHaveBeenCalledWith(0, 0);
 			// for inner drawn polygon
 			expect(moveToSpy).toHaveBeenCalledWith(5, 5);
+		});
+
+		it('draws a mask outside the supported extent', () => {
+			const expectedMaskFillColor = 'rgba(0, 5, 25, 0.75)';
+			const expectedNotSupportedFillColor = 'rgba(150, 150, 150, 0.5)';
+			const mapMock = createMapMock();
+			const context = get2dContext();
+
+			const fillStylePropertySpy = spyOnProperty(context, 'fillStyle', 'set').and.callThrough();
+			const moveToSpy = spyOn(context, 'moveTo').and.callThrough();
+
+			const renderFunction = createMapMaskFunction(mapMock, getPixelCoordinatesCallBack(false));
+			renderFunction(getPostRenderEvent(0, context));
+
+			expect(renderFunction).toEqual(jasmine.any(Function));
+			expect(fillStylePropertySpy).toHaveBeenCalledWith(expectedMaskFillColor);
+			expect(fillStylePropertySpy).toHaveBeenCalledWith(expectedNotSupportedFillColor);
+
+			// for all drawn polygon -> [[start of outer], [start of inner],[start of not_supported]]]
+			expect(moveToSpy.calls.allArgs()).toEqual([
+				[0, 0],
+				[5, 5],
+				[5, 5]
+			]);
 		});
 	});
 });

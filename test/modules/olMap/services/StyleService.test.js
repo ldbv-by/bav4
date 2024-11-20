@@ -10,6 +10,7 @@ import { Fill, Icon, Stroke, Style, Text } from 'ol/style';
 import { measurementReducer } from '../../../../src/store/measurement/measurement.reducer';
 import VectorLayer from 'ol/layer/Vector';
 import CircleStyle from 'ol/style/Circle.js';
+import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../../../src/modules/olMap/ol/geodesic/geodesicGeometry.js';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -156,8 +157,8 @@ describe('StyleService', () => {
 	});
 
 	describe('add style', () => {
-		it('adds measure-style to feature', () => {
-			const feature = new Feature({
+		it('adds measure-style to feature with geodesic property', () => {
+			const featureWithGeodesic = new Feature({
 				geometry: new Polygon([
 					[
 						[0, 0],
@@ -168,10 +169,11 @@ describe('StyleService', () => {
 					]
 				])
 			});
-			feature.setId('measure_123');
+			featureWithGeodesic.setId('measure_123');
+			featureWithGeodesic.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(featureWithGeodesic));
 			const addOverlaySpy = jasmine.createSpy();
-			const styleSetterSpy = spyOn(feature, 'setStyle');
-			const propertySetterSpy = spyOn(feature, 'set');
+			const styleSetterSpy = spyOn(featureWithGeodesic, 'setStyle');
+			const propertySetterSpy = spyOn(featureWithGeodesic, 'set');
 
 			const viewMock = {
 				getResolution() {
@@ -192,10 +194,54 @@ describe('StyleService', () => {
 			const layerMock = {};
 			spyOn(mapServiceMock, 'calcLength').and.returnValue(1);
 
-			instanceUnderTest.addStyle(feature, mapMock, layerMock);
+			instanceUnderTest.addStyle(featureWithGeodesic, mapMock, layerMock);
 
 			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(propertySetterSpy).toHaveBeenCalledWith('overlays', jasmine.any(Object));
+			expect(addOverlaySpy).toHaveBeenCalledTimes(2);
+		});
+
+		it('adds measure-style to feature WITHOUT geodesic property', () => {
+			const featureWithoutGeodesic = new Feature({
+				geometry: new Polygon([
+					[
+						[0, 0],
+						[1, 0],
+						[1, 1],
+						[0, 1],
+						[0, 0]
+					]
+				])
+			});
+			featureWithoutGeodesic.setId('measure_123');
+			const addOverlaySpy = jasmine.createSpy();
+			const styleSetterSpy = spyOn(featureWithoutGeodesic, 'setStyle');
+			const propertySetterSpy = spyOn(featureWithoutGeodesic, 'set');
+
+			const viewMock = {
+				getResolution() {
+					return 50;
+				},
+				once() {}
+			};
+			const mapMock = {
+				getView: () => viewMock,
+				addOverlay: addOverlaySpy,
+				getOverlays() {
+					return [];
+				},
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+			const layerMock = {};
+			spyOn(mapServiceMock, 'calcLength').and.returnValue(1);
+
+			instanceUnderTest.addStyle(featureWithoutGeodesic, mapMock, layerMock);
+
+			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
+			expect(propertySetterSpy).toHaveBeenCalledWith('overlays', jasmine.any(Object));
+			expect(propertySetterSpy).toHaveBeenCalledWith(GEODESIC_FEATURE_PROPERTY, jasmine.any(Object));
 			expect(addOverlaySpy).toHaveBeenCalledTimes(2);
 		});
 
@@ -821,7 +867,8 @@ describe('StyleService', () => {
 			const overlayMock = {
 				getElement() {
 					return measureOverlayMock;
-				}
+				},
+				getPosition: () => [0, 0]
 			};
 			const feature = new Feature({
 				geometry: new Polygon([
@@ -839,7 +886,8 @@ describe('StyleService', () => {
 			const viewMock = {
 				getResolution() {
 					return 50;
-				}
+				},
+				calculateExtent: () => [0, 0, 1, 1]
 			};
 
 			const mapMock = {
@@ -849,7 +897,8 @@ describe('StyleService', () => {
 				},
 				getInteractions() {
 					return { getArray: () => [] };
-				}
+				},
+				getSize: () => {}
 			};
 
 			instanceUnderTest.updateStyle(feature, mapMock, { visible: true, opacity: 0.5, top: true });
@@ -866,7 +915,8 @@ describe('StyleService', () => {
 			const overlayMock = {
 				getElement() {
 					return measureOverlayMock;
-				}
+				},
+				getPosition: () => [0, 0]
 			};
 			const feature = new Feature({
 				geometry: new Polygon([
@@ -883,7 +933,8 @@ describe('StyleService', () => {
 			const viewMock = {
 				getResolution() {
 					return 50;
-				}
+				},
+				calculateExtent: () => [0, 0, 1, 1]
 			};
 
 			const mapMock = {
@@ -893,7 +944,8 @@ describe('StyleService', () => {
 				},
 				getInteractions() {
 					return { getArray: () => [] };
-				}
+				},
+				getSize: () => {}
 			};
 
 			instanceUnderTest.updateStyle(feature, mapMock, { visible: true, opacity: 0.5, top: true }, 'measure');

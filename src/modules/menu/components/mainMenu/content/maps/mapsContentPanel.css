@@ -1,0 +1,10 @@
+ba-base-layer-container {
+	position: sticky;
+	z-index: 1;
+}
+.is-portrait ba-base-layer-container {
+	top: -2.5em;
+}
+.is-landscape ba-base-layer-container {
+	top: 0;
+}

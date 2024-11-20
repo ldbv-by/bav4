@@ -182,6 +182,7 @@ export class ShareService {
 		const geoResourceIds = [];
 		let layer_visibility = [];
 		let layer_opacity = [];
+		let layer_timestamp = [];
 		activeLayers
 			.filter((l) => !l.constraints.hidden)
 			.filter((l) => (options.includeHiddenGeoResources ? true : !geoResourceService.byId(l.geoResourceId).hidden))
@@ -189,14 +190,17 @@ export class ShareService {
 				geoResourceIds.push(l.geoResourceId);
 				layer_visibility.push(l.visible);
 				layer_opacity.push(l.opacity);
+				layer_timestamp.push(l.timestamp);
 			});
 		//remove if it contains only default values
-		if (layer_visibility.filter((lv) => lv === false).length === 0) {
+		if (!layer_visibility.some((lv) => lv === false)) {
 			layer_visibility = null;
 		}
-		//remove if it contains only default values
-		if (layer_opacity.filter((lo) => lo !== 1).length === 0) {
+		if (!layer_opacity.some((lo) => lo !== 1)) {
 			layer_opacity = null;
+		}
+		if (!layer_timestamp.some((t) => t)) {
+			layer_timestamp = null;
 		}
 		extractedState[QueryParameters.LAYER] = geoResourceIds.map((grId) => encodeURIComponent(grId)); //an GeoResource id may contain also an URL, so we encode it
 		if (layer_visibility) {
@@ -204,6 +208,9 @@ export class ShareService {
 		}
 		if (layer_opacity) {
 			extractedState[QueryParameters.LAYER_OPACITY] = layer_opacity;
+		}
+		if (layer_timestamp) {
+			extractedState[QueryParameters.LAYER_TIMESTAMP] = layer_timestamp.map((t) => (t === null ? '' : t));
 		}
 		return extractedState;
 	}
@@ -265,7 +272,9 @@ export class ShareService {
 			tools: { current }
 		} = state;
 
-		extractedState[QueryParameters.TOOL_ID] = current ?? '';
+		if (current) {
+			extractedState[QueryParameters.TOOL_ID] = current;
+		}
 
 		return extractedState;
 	}

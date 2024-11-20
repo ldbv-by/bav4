@@ -39,18 +39,30 @@ export class ElevationProfilePlugin extends BaPlugin {
 		const onProfileActiveStateChanged = (active) => {
 			this._bottomSheetUnsubscribeFn?.();
 			if (active) {
-				this._bottomSheetUnsubscribeFn = observe(store, (state) => state.bottomSheet.active, onActiveStateChanged);
+				this._bottomSheetUnsubscribeFn = observe(
+					store,
+					(state) => state.bottomSheet.active,
+					(activeIds) => onActiveStateChanged(activeIds.includes(ELEVATION_PROFILE_BOTTOM_SHEET_ID))
+				);
 				const content = html`<ba-elevation-profile></ba-elevation-profile>`;
 				const chunkName = 'elevation-profile';
-				openBottomSheet(html`<ba-lazy-load .chunkName=${chunkName} .content=${content}></ba-lazy-load>`);
-			} else {
-				closeBottomSheet();
+				openBottomSheet(html`<ba-lazy-load .chunkName=${chunkName} .content=${content}></ba-lazy-load>`, ELEVATION_PROFILE_BOTTOM_SHEET_ID);
 			}
 		};
 
 		observe(store, (state) => state.elevationProfile.active, onProfileActiveStateChanged, false);
-		observe(store, (state) => state.draw.active, onActiveStateChanged);
-		observe(store, (state) => state.measurement.active, onActiveStateChanged);
+		observe(
+			store,
+			(state) => state.draw.active,
+			(active) => (active ? null : closeBottomSheet(ELEVATION_PROFILE_BOTTOM_SHEET_ID))
+		);
+		observe(
+			store,
+			(state) => state.measurement.active,
+			(active) => (active ? null : closeBottomSheet(ELEVATION_PROFILE_BOTTOM_SHEET_ID))
+		);
 		observe(store, (state) => state.featureInfo.current, onFeatureInfoSelected);
 	}
 }
+
+export const ELEVATION_PROFILE_BOTTOM_SHEET_ID = 'elevationProfile';

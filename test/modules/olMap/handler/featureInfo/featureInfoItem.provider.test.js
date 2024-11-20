@@ -5,11 +5,11 @@ import { fromLonLat } from 'ol/proj';
 import { getBvvFeatureInfo } from '../../../../../src/modules/olMap/handler/featureInfo/featureInfoItem.provider';
 import { createDefaultLayer, createDefaultLayerProperties } from '../../../../../src/store/layers/layers.reducer';
 import GeoJSON from 'ol/format/GeoJSON';
-import { FeatureInfoGeometryTypes } from '../../../../../src/store/featureInfo/featureInfo.action';
 import { $injector } from '../../../../../src/injection';
 import { GeometryInfo } from '../../../../../src/modules/featureInfo/components/geometryInfo/GeometryInfo';
 import { ExportVectorDataChip } from '../../../../../src/modules/chips/components/assistChips/ExportVectorDataChip';
 import { TestUtils } from '../../../../test-utils';
+import { FeatureInfoGeometryTypes } from '../../../../../src/domain/featureInfo';
 
 window.customElements.define(GeometryInfo.tag, GeometryInfo);
 window.customElements.define(ExportVectorDataChip.tag, ExportVectorDataChip);
