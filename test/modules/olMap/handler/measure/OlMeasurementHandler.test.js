@@ -1729,6 +1729,34 @@ describe('OlMeasurementHandler', () => {
 				classUnderTest._modify.dispatchEvent(new ModifyEvent('modifyend', null, new Event(MapBrowserEventType.POINTERUP)));
 				expect(mapContainer.classList.contains('grabbing')).toBeFalse();
 			});
+
+			it('updates feature property while geometry changes', () => {
+				setup();
+				const expectedLength = 42;
+				const classUnderTest = new OlMeasurementHandler();
+				const map = setupMap();
+
+				const geometry = new Polygon([
+					[
+						[0, 0],
+						[500, 0],
+						[550, 550],
+						[0, 500],
+						[0, 500]
+					]
+				]);
+				const feature = new Feature({ geometry: geometry });
+				feature.set('projectedLength', 0);
+				classUnderTest.activate(map);
+				simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+
+				simulateDrawEvent('drawend', classUnderTest._draw, feature);
+				const calcLengthSpy = spyOn(mapServiceMock, 'calcLength').and.returnValue(expectedLength);
+				feature.getGeometry().dispatchEvent('change');
+
+				expect(calcLengthSpy).toHaveBeenCalled();
+				expect(feature.get('projectedLength')).toBe(expectedLength);
+			});
 		});
 
 		describe('drags overlays', () => {
