@@ -19,7 +19,7 @@ export const provide = (lang) => {
 				//the first part of the snake_case key should be the name of the related module
 				share_dialog_link_title: 'Editierbarkeit',
 				share_dialog_link:
-					'Alle, die über diesen Link verfügen, können die Zeichnung verändern, ohne dass ein neuer Link generiert werden muss. Diese Funkion ist sinnvoll für Zeichnungen, die von mehreren Personen bearbeitet werden.',
+					'Alle, die über diesen Link verfügen, können die Zeichnung verändern, ohne dass ein neuer Link generiert werden muss. Diese Funktion ist sinnvoll für Zeichnungen, die von mehreren Personen bearbeitet werden.',
 				share_dialog_api: 'Klicken, um zu teilen',
 				share_dialog_api_failed: 'Teilen der Position ist fehlgeschlagen',
 				share_dialog_copy_icon: 'In die Zwischenablage kopieren',

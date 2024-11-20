@@ -11,11 +11,14 @@ export const provide = (lang) => {
 				header_tab_misc_button: 'More...',
 				header_tab_misc_title: 'Additional settings and information',
 				header_close_button_title: 'Close menu',
-				header_logo_badge: 'Beta',
+				header_logo_badge: '',
 				header_logo_badge_standalone: 'Demo',
 				header_emblem_title_standalone: 'bav4 on github',
 				header_emblem_link_standalone: 'https://github.com/ldbv-by/bav4/',
-				header_search_placeholder: 'Search'
+				header_search_placeholder: 'Places, geodata, cadastral parcels',
+				header_search_clear_button: 'Clear',
+				header_logo_title_open: 'Show navigation rail',
+				header_logo_title_close: 'Hide navigation rail'
 			};
 
 		case 'de':
@@ -29,11 +32,14 @@ export const provide = (lang) => {
 				header_tab_misc_button: 'Mehr...',
 				header_tab_misc_title: 'Weitere Einstellungen und Informationen',
 				header_close_button_title: 'Menü schließen',
-				header_logo_badge: 'Beta',
+				header_logo_badge: '',
 				header_logo_badge_standalone: 'Demo',
 				header_emblem_title_standalone: 'bav4 auf github',
 				header_emblem_link_standalone: 'https://github.com/ldbv-by/bav4/',
-				header_search_placeholder: 'Suchen'
+				header_search_placeholder: 'Orte, Geodaten, Flurstücke',
+				header_search_clear_button: 'Löschen',
+				header_logo_title_open: 'Navigationsleiste einblenden',
+				header_logo_title_close: 'Navigationsleiste ausblenden'
 			};
 
 		default:

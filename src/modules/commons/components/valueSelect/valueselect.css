@@ -11,9 +11,8 @@
 	animation-name: openScale;
 	animation-duration: var(--animation-duration-medium-open);
 	animation-iteration-count: 1;
-	width: 38.5em;
+	width: auto;
 	contain: layout;
-	padding-right: 0.5em;
 }
 
 .grid {

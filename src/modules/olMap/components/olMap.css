@@ -14,3 +14,8 @@
 .grabbing {
 	cursor: grabbing;
 }
+
+.ol-dragzoom {
+	border: 2px solid var(--split-one-color);
+	background-color: color(from var(--primary-color) srgb r g b / 0.2);
+}

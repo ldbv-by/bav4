@@ -6,7 +6,7 @@ import { MvuElement } from '../../../../src/modules/MvuElement';
 import { EventLike } from '../../../../src/utils/storeUtils';
 import { reset, setProposal } from '../../../../src/store/routing/routing.action';
 import { CoordinateProposalType, RoutingStatusCodes } from '../../../../src/domain/routing';
-import { bottomSheetReducer } from '../../../../src/store/bottomSheet/bottomSheet.reducer';
+import { bottomSheetReducer, INTERACTION_BOTTOM_SHEET_ID } from '../../../../src/store/bottomSheet/bottomSheet.reducer';
 import { mapContextMenuReducer } from '../../../../src/store/mapContextMenu/mapContextMenu.reducer';
 
 window.customElements.define(ProposalContextContent.tag, ProposalContextContent);
@@ -244,7 +244,7 @@ describe('ProposalContextContent', () => {
 
 			element.shadowRoot.querySelector('#start').click();
 
-			expect(store.getState().bottomSheet.active).toBeNull();
+			expect(store.getState().bottomSheet.active).toEqual([]);
 			expect(store.getState().mapContextMenu.active).toBeFalse();
 		});
 
@@ -253,7 +253,7 @@ describe('ProposalContextContent', () => {
 				const element = await setup(
 					{
 						routing: { ...initialRoutingState, ...{ proposal: new EventLike({ coord: [42, 21], type: CoordinateProposalType.START }) } },
-						bottomSheet: { active: true },
+						bottomSheet: { active: [INTERACTION_BOTTOM_SHEET_ID] },
 						mapContextMenu: { active: true }
 					},
 					{ preventClose: true }
@@ -261,7 +261,7 @@ describe('ProposalContextContent', () => {
 
 				element.shadowRoot.querySelector('#start').click();
 
-				expect(store.getState().bottomSheet.active).toBeTrue();
+				expect(store.getState().bottomSheet.active).toEqual([INTERACTION_BOTTOM_SHEET_ID]);
 				expect(store.getState().mapContextMenu.active).toBeTrue();
 			});
 		});

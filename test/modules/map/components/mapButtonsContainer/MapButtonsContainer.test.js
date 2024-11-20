@@ -26,11 +26,12 @@ describe('MapButtonsContainer', () => {
 		it('adds a div which contains map buttons', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('div').children).toHaveSize(4);
+			expect(element.shadowRoot.querySelector('div').children).toHaveSize(5);
 			expect(element.shadowRoot.querySelectorAll('ba-rotation-button')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('ba-geolocation-button')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('ba-zoom-buttons')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('ba-extent-button')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-three-dimension-button')).toHaveSize(1);
 		});
 	});
 
@@ -50,8 +51,11 @@ describe('MapButtonsContainer', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(0);
 
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-rotation-button')).display).toBe('block');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-geolocation-button')).display).toBe('block');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-zoom-buttons')).display).toBe('block');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-extent-button')).display).toBe('block');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-three-dimension-button')).display).toBe('block');
 		});
 
 		it('layouts for portrait and width >= 80em', async () => {
@@ -69,8 +73,11 @@ describe('MapButtonsContainer', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(0);
 
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-rotation-button')).display).toBe('block');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-geolocation-button')).display).toBe('block');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-zoom-buttons')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-extent-button')).display).toBe('none');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-three-dimension-button')).display).toBe('none');
 		});
 
 		it('layouts for landscape and width < 80em', async () => {
@@ -88,8 +95,11 @@ describe('MapButtonsContainer', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
 
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-rotation-button')).display).toBe('block');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-geolocation-button')).display).toBe('block');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-zoom-buttons')).display).toBe('block');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-extent-button')).display).toBe('block');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-three-dimension-button')).display).toBe('block');
 		});
 
 		it('layouts for portrait and layouts for width < 80em', async () => {
@@ -107,8 +117,11 @@ describe('MapButtonsContainer', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
 
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-rotation-button')).display).toBe('block');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-geolocation-button')).display).toBe('block');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-zoom-buttons')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-extent-button')).display).toBe('none');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-three-dimension-button')).display).toBe('none');
 		});
 	});
 
@@ -124,9 +137,11 @@ describe('MapButtonsContainer', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.is-embedded')).toHaveSize(1);
 
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-rotation-button')).display).toBe('block');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-geolocation-button')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-zoom-buttons')).display).toBe('block');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-extent-button')).display).toBe('none');
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-geolocation-button')).display).toBe('none');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-three-dimension-button')).display).toBe('none');
 		});
 	});
 });

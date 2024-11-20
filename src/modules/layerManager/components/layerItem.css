@@ -1,21 +1,22 @@
 .slider-container {
 	width: 50%;
 	padding-top: 1em;
+	display: flex;
 }
 
-ba-icon {
+.collapse-content ba-icon {
 	border-radius: 2.5em;
-	width: 2.6em;
-	height: 2.6em;
+	width: 2.6rem;
+	height: 2.6rem;
 	display: block;
 	margin: 0 0.3em;
 }
 
-ba-icon:hover {
+.collapse-content ba-icon:hover {
 	background: var(--primary-color);
 }
 
-ba-icon:focus {
+.collapse-content ba-icon:focus {
 	box-shadow: 0 0 0 0.2em var(--primary-color-lighter);
 }
 
@@ -64,4 +65,8 @@ ba-icon:focus {
 
 .ba-form-element:last-of-type {
 	margin: 0em 0 0em 0;
+}
+
+.time-travel-icon {
+	margin-right: 0.5em;
 }

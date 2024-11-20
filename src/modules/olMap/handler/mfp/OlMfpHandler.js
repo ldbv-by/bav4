@@ -3,7 +3,7 @@
  */
 import { $injector } from '../../../../injection';
 import { observe } from '../../../../utils/storeUtils';
-import { setScale, startJob } from '../../../../store/mfp/mfp.action';
+import { setExportSupported, setScale, startJob } from '../../../../store/mfp/mfp.action';
 import { Point } from 'ol/geom';
 import { OlLayerHandler } from '../OlLayerHandler';
 import VectorSource from 'ol/source/Vector';
@@ -13,7 +13,7 @@ import { nullStyleFunction, createThumbnailStyleFunction, createMapMaskFunction,
 import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
 import { getAzimuthFrom, getBoundingBoxFrom, getPolygonFrom } from '../../utils/olGeometryUtils';
 import { toLonLat } from 'ol/proj';
-import { equals, getIntersection } from 'ol/extent';
+import { equals, getIntersection, containsCoordinate } from 'ol/extent';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { unByKey } from 'ol/Observable';
 import { html } from 'lit-html';
@@ -74,11 +74,11 @@ export class OlMfpHandler extends OlLayerHandler {
 			setScale(this._getOptimalScale(olMap));
 
 			const mfpSettings = this._storeService.getStore().getState().mfp.current;
-			this._mfpLayer.on('prerender', (event) => event.context.save());
 			this._mfpLayer.on(
-				'postrender',
+				'prerender',
 				createMapMaskFunction(this._map, () => this._getPixelCoordinates())
 			);
+			this._mfpLayer.on('postrender', (event) => event.context.restore());
 			this._registeredObservers = this._register(this._storeService.getStore());
 
 			// Initialize forceRenderFeature with centerpoint to get a first valid
@@ -224,6 +224,7 @@ export class OlMfpHandler extends OlLayerHandler {
 			// HINT: In standalone-mode is the map- and the mfp-projection identical
 			// and a projected geometry not needed.
 			this._mfpBoundaryFeature.set('inPrintableArea', true);
+			this._mfpBoundaryFeature.set('inSupportedArea', true);
 			this._mfpBoundaryFeature.setGeometry(center);
 		};
 		const createProjectedGeometry = () => {
@@ -232,9 +233,12 @@ export class OlMfpHandler extends OlLayerHandler {
 			const pagePolygon = this._createPagePolygon(this._pageSize, center);
 			const mfpGeometry = this._toMfpBoundary(pagePolygon, center, rotation);
 
+			const exportSupported = containsCoordinate(mfpExtent, center.getCoordinates());
 			const intersect = getIntersection(mfpGeometry.getExtent(), mfpExtent);
 			this._mfpBoundaryFeature.set('inPrintableArea', equals(intersect, mfpGeometry.getExtent()));
+			this._mfpBoundaryFeature.set('inSupportedArea', exportSupported);
 			this._mfpBoundaryFeature.setGeometry(mfpGeometry);
+			setExportSupported(exportSupported);
 		};
 
 		const updateAction = this._getMfpProjection() === this._mapProjection ? skipPreview : createProjectedGeometry;
@@ -252,7 +256,8 @@ export class OlMfpHandler extends OlLayerHandler {
 			this._beingDragged = false;
 			this._updateMfpPreview(center);
 			const inPrintableArea = this._mfpBoundaryFeature.get('inPrintableArea');
-			if (!inPrintableArea) {
+			const inSupportedArea = this._mfpBoundaryFeature.get('inSupportedArea');
+			if (!inPrintableArea && inSupportedArea) {
 				this._warnOnce(translate('olMap_handler_mfp_distortion_warning'));
 			}
 			this._previewDelayTimeoutId = null;
@@ -271,7 +276,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		const pixelSize = toPixelSize(this._pageSize);
 		const mfpBoundingBox = getBoundingBoxFrom(centerPixel, pixelSize);
 
-		return getPolygonFrom(mfpBoundingBox).getCoordinates()[0].reverse();
+		return { pixelCoordinates: getPolygonFrom(mfpBoundingBox).getCoordinates()[0], supportedArea: this._mfpBoundaryFeature.get('inSupportedArea') };
 	}
 
 	_createPagePolygon(pageSize, center) {
@@ -378,6 +383,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		const { id, scale, dpi } = this._storeService.getStore().getState().mfp.current;
 		const rotation = (getAzimuthFrom(this._mfpBoundaryFeature.getGeometry()) * 180) / Math.PI;
 		const showGrid = this._storeService.getStore().getState().mfp.showGrid;
+		const gridSupported = this._storeService.getStore().getState().mfp.gridSupported;
 		const pageCenter = this._getVisibleCenterPoint();
 		const encodingProperties = {
 			layoutId: id,
@@ -386,7 +392,7 @@ export class OlMfpHandler extends OlLayerHandler {
 			dpi: dpi,
 			pageCenter: pageCenter,
 			pageExtent: this._mfpBoundaryFeature?.getGeometry()?.getExtent(),
-			showGrid: showGrid
+			showGrid: showGrid && gridSupported
 		};
 		const encodingResult = await this._encoder.encode(this._map, encodingProperties);
 

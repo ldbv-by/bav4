@@ -52,7 +52,9 @@ import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../services/provider/attribution.provider';
 import { KML } from 'ol/format';
 import { Tools } from '../../../../domain/tools';
+import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../ol/geodesic/geodesicGeometry';
 import { setData } from '../../../../store/fileStorage/fileStorage.action';
+import { createDefaultLayerProperties } from '../../../../store/layers/layers.reducer';
 
 export const MAX_SELECTION_SIZE = 1;
 
@@ -151,10 +153,12 @@ export class OlDrawHandler extends OlLayerHandler {
 			acknowledgeTermsOfUse();
 		}
 		const getOldLayer = (map) => {
+			const byZIndex = (a, b) => b.getZIndex() - a.getZIndex(); // implicit reversed sort order
 			const isOldLayer = (layer) =>
 				this._fileStorageService.isAdminId(layer.get('geoResourceId')) || this._fileStorageService.isFileId(layer.get('geoResourceId'));
-			// we iterate over all layers (index=0 -> top-most; index=length-1 -> lowest), the top-most layer is the one we take source for our drawing layer
-			return map.getLayers().getArray().find(isOldLayer);
+			// we sort all layers by zIndex (z-index=0 -> top-most; index=length-1 -> lowest)
+			// and iterate over the result, the top-most layer is the one we take as source for our drawing layer
+			return map.getLayers().getArray().sort(byZIndex).find(isOldLayer);
 		};
 
 		const createLayer = () => {
@@ -184,6 +188,9 @@ export class OlDrawHandler extends OlLayerHandler {
 
 					oldFeatures.forEach((f) => {
 						f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
+						if (f.getId().startsWith(Tools.MEASURE)) {
+							f.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(f, olMap));
+						}
 						this._styleService.removeStyle(f, olMap);
 						this._styleService.addStyle(f, olMap, layer);
 						layer.getSource().addFeature(f);
@@ -191,6 +198,7 @@ export class OlDrawHandler extends OlLayerHandler {
 					});
 					const oldLayerId = oldLayer.get('id');
 					this._layerId = oldLayerId;
+					this._layerZIndex = oldLayer.getZIndex();
 					removeLayer(oldLayerId);
 					this._init(null);
 					this._setSelection(this._storeService.getStore().getState().draw.selection);
@@ -350,7 +358,10 @@ export class OlDrawHandler extends OlLayerHandler {
 		setSelection([]);
 
 		// eslint-disable-next-line promise/prefer-await-to-then
-		this._saveAndOptionallyConvertToPermanentLayer().finally(() => (this._layerId = null));
+		this._saveAndOptionallyConvertToPermanentLayer().finally(() => {
+			this._layerId = null;
+			this._layerZIndex = null;
+		});
 		this._vectorLayer
 			.getSource()
 			.getFeatures()
@@ -450,7 +461,7 @@ export class OlDrawHandler extends OlLayerHandler {
 					const geometry = event.target.getGeometry();
 					setGeometryIsValid(isValidGeometry(geometry));
 				};
-				this._sketchHandler.activate(event.feature, Tools.DRAW + '_' + type + '_');
+				this._sketchHandler.activate(event.feature, this._map, Tools.DRAW + '_' + type + '_');
 				const description = this._storeService.getStore().getState().draw.description;
 
 				if (description) {
@@ -559,14 +570,16 @@ export class OlDrawHandler extends OlLayerHandler {
 					type: 'Point',
 					minPoints: 1,
 					snapTolerance: snapTolerance,
-					style: this._getStyleFunctionByDrawType(type, styleOption)
+					style: this._getStyleFunctionByDrawType(type, styleOption),
+					wrapX: true
 				});
 			case StyleTypes.LINE:
 				return new Draw({
 					source: source,
 					type: 'LineString',
 					snapTolerance: snapTolerance,
-					style: createSketchStyleFunction(this._getStyleFunctionByDrawType('line', styleOption))
+					style: createSketchStyleFunction(this._getStyleFunctionByDrawType('line', styleOption)),
+					wrapX: true
 				});
 			case StyleTypes.POLYGON:
 				return new Draw({
@@ -574,7 +587,8 @@ export class OlDrawHandler extends OlLayerHandler {
 					type: 'Polygon',
 					minPoints: 3,
 					snapTolerance: snapTolerance,
-					style: createSketchStyleFunction(this._getStyleFunctionByDrawType('polygon', styleOption))
+					style: createSketchStyleFunction(this._getStyleFunctionByDrawType('polygon', styleOption)),
+					wrapX: true
 				});
 			default:
 				console.warn('unknown Drawtype: ' + type);
@@ -870,7 +884,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			// register the stored data as new georesource
 			this._geoResourceService.addOrReplace(vgr);
 			const layerId = this._layerId ?? `${id}_draw`;
-			addLayer(layerId, { geoResourceId: id, constraints: { metaData: false } });
+			addLayer(layerId, { zIndex: this._layerZIndex ?? createDefaultLayerProperties().zIndex, geoResourceId: id, constraints: { metaData: false } });
 		}
 	}
 }

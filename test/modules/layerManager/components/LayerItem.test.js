@@ -19,6 +19,7 @@ import {
 	XyzGeoResource
 } from '../../../../src/domain/geoResources';
 import { Spinner } from '../../../../src/modules/commons/components/spinner/Spinner';
+import { timeTravelReducer } from '../../../../src/store/timeTravel/timeTravel.reducer.js';
 import { GeoResourceInfoPanel } from '../../../../src/modules/geoResourceInfo/components/GeoResourceInfoPanel';
 import cloneSvg from '../../../../src/modules/layerManager/components/assets/clone.svg';
 import zoomToExtentSvg from '../../../../src/modules/layerManager/components/assets/zoomToExtent.svg';
@@ -76,7 +77,8 @@ describe('LayerItem', () => {
 				{
 					layers: layersReducer,
 					modal: modalReducer,
-					media: createNoInitialStateMediaReducer()
+					media: createNoInitialStateMediaReducer(),
+					timeTravel: timeTravelReducer
 				}
 			);
 			$injector
@@ -211,7 +213,9 @@ describe('LayerItem', () => {
 			const timestampElements = element.shadowRoot.querySelectorAll('ba-value-select');
 
 			expect(timestampElements).toHaveSize(1);
+
 			expect(timestampElements[0].values).toHaveSize(2);
+			expect(timestampElements[0].title).toBe('layerManager_time_travel_hint');
 		});
 
 		it('use layer.timestamps-property to skip render the timestamp component ', async () => {
@@ -232,6 +236,29 @@ describe('LayerItem', () => {
 			const timestampElements = element.shadowRoot.querySelectorAll('ba-value-select');
 
 			expect(timestampElements).toHaveSize(0);
+		});
+
+		it('click on timestamp icon opens the time travel slider ', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceIdWithTimestamps')
+				.and.returnValue(new XyzGeoResource('geoResourceIdWithTimestamps', 'someLabel0', 'someUrl0').setTimestamps(['2000', '2024']));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceIdWithTimestamps',
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				collapsed: true
+			};
+			const element = await setup(layer);
+			const timestampIcon = element.shadowRoot.querySelector('.time-travel-icon');
+
+			expect(element.shadowRoot.querySelectorAll('.time-travel-icon')).toHaveSize(1);
+
+			timestampIcon.click();
+
+			expect(store.getState().timeTravel.active).toBeTrue();
 		});
 
 		it('click on timestamp component modifies the layer ', async () => {

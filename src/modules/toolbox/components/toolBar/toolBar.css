@@ -273,6 +273,11 @@
 	box-shadow: 0 1px 2px rgb(0 0 0 / 50%);
 	font-size: 0.6rem;
 }
+
+.toolbar__logo-badge:empty {
+	display: none;
+}
+
 .badge-default {
 	background: var(--error-color);
 	font-weight: bold;

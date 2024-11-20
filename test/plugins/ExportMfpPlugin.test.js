@@ -10,6 +10,7 @@ import { notificationReducer } from '../../src/store/notifications/notifications
 import { LevelTypes } from '../../src/store/notifications/notifications.action.js';
 import { positionReducer } from '../../src/store/position/position.reducer.js';
 import { Tools } from '../../src/domain/tools.js';
+import { changeLiveRotation } from '../../src/store/position/position.action.js';
 
 describe('ExportMfpPlugin', () => {
 	const mfpService = {
@@ -210,6 +211,24 @@ describe('ExportMfpPlugin', () => {
 
 				expect(mfpServiceSpy).toHaveBeenCalled();
 			});
+		});
+	});
+
+	describe('when position.liveRotation property changes', () => {
+		it('sets the gridSupported property in mfp s-o-s', async () => {
+			const store = setup();
+			const instanceUnderTest = new ExportMfpPlugin();
+			await instanceUnderTest.register(store);
+
+			expect(store.getState().mfp.gridSupported).toBeTrue();
+
+			changeLiveRotation(42);
+
+			expect(store.getState().mfp.gridSupported).toBeFalse();
+
+			changeLiveRotation(0);
+
+			expect(store.getState().mfp.gridSupported).toBeTrue();
 		});
 	});
 });

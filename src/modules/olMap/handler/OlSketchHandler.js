@@ -19,6 +19,7 @@ export class OlSketchHandler {
 		this._isSnapOnLastPoint = false;
 		this._isFinishOnFirstPoint = false;
 		this._sketch = null;
+		this._map = null;
 	}
 
 	_getLineCoordinates(geometry) {
@@ -41,9 +42,12 @@ export class OlSketchHandler {
 
 			this._isSnapOnLastPoint = lastPoint[0] === lastPoint2[0] && lastPoint[1] === lastPoint2[1];
 		}
+
+		feature.set('finishOnFirstPoint', this._isFinishOnFirstPoint);
 	}
 
-	activate(sketchFeature, idPrefix = Tools.DRAW + '_') {
+	activate(sketchFeature, map, idPrefix = Tools.DRAW + '_') {
+		this._map = map;
 		if (sketchFeature !== this._sketch) {
 			if (sketchFeature) {
 				sketchFeature.setId(idPrefix + new Date().getTime());

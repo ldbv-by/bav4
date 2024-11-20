@@ -2,6 +2,7 @@
  * @module store/timeTravel/timeTravel_action
  */
 import { $injector } from '../../injection';
+import { isString } from '../../utils/checks';
 import { TIME_TRAVEL_ACTIVE_CHANGED, TIME_TRAVEL_TIMESTAMP_CHANGED } from './timeTravel.reducer';
 
 const getStore = () => {
@@ -11,27 +12,31 @@ const getStore = () => {
 
 /**
  * Sets the current timestamp.
- * @param {string} timestamp the new timestamp
+ * @param {string|null} timestamp the new timestamp
  * @function
  */
 export const setCurrentTimestamp = (timestamp) => {
-	getStore().dispatch({
-		type: TIME_TRAVEL_TIMESTAMP_CHANGED,
-		payload: timestamp
-	});
+	if (timestamp === null || isString(timestamp)) {
+		getStore().dispatch({
+			type: TIME_TRAVEL_TIMESTAMP_CHANGED,
+			payload: timestamp
+		});
+	}
 };
 
 /**
  *
- * Opens the time slider for a dedicated timestamp
- * @param {string} timestamp
+ * Opens the time slider, optionally for a dedicated timestamp
+ * @param {string} [timestamp]
  * @function
  */
-export const openSlider = (timestamp) => {
-	getStore().dispatch({
-		type: TIME_TRAVEL_ACTIVE_CHANGED,
-		payload: { active: true, timestamp }
-	});
+export const openSlider = (timestamp = null) => {
+	if (timestamp === null || isString(timestamp)) {
+		getStore().dispatch({
+			type: TIME_TRAVEL_ACTIVE_CHANGED,
+			payload: { active: true, timestamp }
+		});
+	}
 };
 /**
  *

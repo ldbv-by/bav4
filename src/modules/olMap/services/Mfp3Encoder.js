@@ -681,10 +681,9 @@ export class BvvMfp3Encoder {
 
 		if (textStyle && textStyle.getText()) {
 			encoded.label = textStyle.getText();
-			// additional X- or Y-Offset is ommitted, text is currently center aligned.
-			// An Y-offset of -5 is only needed to display the text in ol map vertical centered.
+			// additional X-Offset is ommitted, text is currently center aligned. Only Y-Offset will be translate to a
 			// encoded.labelXOffset = textStyle.getOffsetX();
-			// encoded.labelYOffset = textStyle.getOffsetY();
+			encoded.labelYOffset = textStyle.getOffsetY() ? BvvMfp3Encoder.adjustDistance(textStyle.getOffsetY() * -1, dpi) : 0;
 			encoded.type = 'text';
 
 			const fromOlTextAlign = (olTextAlign) => {

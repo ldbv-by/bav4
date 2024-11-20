@@ -12,6 +12,7 @@ import { OlElevationProfileHandler } from '../handler/elevationProfile/OlElevati
 import { OlRoutingHandler } from '../handler/routing/OlRoutingHandler';
 import { OlSelectableFeatureHandler } from '../handler/selectableFeature/OlSelectableFeatureHandler';
 import { RtVectorLayerService } from '../services/RtVectorLayerService';
+import { OlOverlayMapHandler } from '../handler/measure/OlOverlayMapHandler';
 
 export const mapModule = ($injector) => {
 	$injector
@@ -26,6 +27,7 @@ export const mapModule = ($injector) => {
 		.register('OverlayService', OverlayService)
 		.register('OlFeatureInfoHandler', OlFeatureInfoHandler)
 		.register('OlElevationProfileHandler', OlElevationProfileHandler)
+		.register('OlOverlayMapHandler', OlOverlayMapHandler)
 		.register('OlMfpHandler', OlMfpHandler)
 		.register('OlRoutingHandler', OlRoutingHandler)
 		.register('OlSelectableFeatureHandler', OlSelectableFeatureHandler);

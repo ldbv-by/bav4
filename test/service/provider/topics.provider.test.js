@@ -37,7 +37,7 @@ describe('Topics provider', () => {
 			activatedGeoRs: ['mockActivatedLayer2'],
 			id: 'Ref422',
 			label: 'LDBV2',
-			description: 'A 2nd mocked description',
+			description: '',
 			notNeeded: 'Value'
 		};
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);

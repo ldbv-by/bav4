@@ -6,6 +6,29 @@ import { PromiseQueue } from '../utils/PromiseQueue';
 import { bvvUrlSourceTypeProvider, defaultDataSourceTypeProvider, defaultMediaSourceTypeProvider } from './provider/sourceType.provider';
 
 /**
+ * A function that tries to detect the source type for a url
+ * @async
+ * @typedef {function} urlSourceTypeProvider
+ * @param {string} url the url
+ * @returns {SourceTypeResult} the result
+ */
+
+/**
+ * A function that tries to detect the source type for given data
+ * @typedef {function} dataSourceTypeProvider
+ * @param {string|object} data the data
+ * @returns {SourceTypeResult} the result
+ */
+
+/**
+ * A function that tries to detect the source by given media type
+ *
+ * @typedef {function} mediaSourceTypeProvider
+ * @param {MediaType} data the media type
+ * @returns {SourceTypeResult} the result
+ */
+
+/**
  * Determines the source type of a Url or given data.
  * @class
  * @author taulinger
@@ -14,9 +37,9 @@ import { bvvUrlSourceTypeProvider, defaultDataSourceTypeProvider, defaultMediaSo
 export class SourceTypeService {
 	/**
 	 *
-	 * @param {urlSourceTypeProvider} [urlSourceTypeProvider=bvvUrlSourceTypeProvider]
-	 * @param {dataSourceTypeProvider} [dataSourceTypeProvider=defaultDataSourceTypeProvider]
-	 * @param {mediaSourceTypeProvider} [mediaSourceTypeProvider=defaultMediaSourceTypeProvider]
+	 * @param {module:services/SourceTypeService~urlSourceTypeProvider} [urlSourceTypeProvider=bvvUrlSourceTypeProvider]
+	 * @param {module:services/SourceTypeService~dataSourceTypeProvider} [dataSourceTypeProvider=defaultDataSourceTypeProvider]
+	 * @param {module:services/SourceTypeService~mediaSourceTypeProvider} [mediaSourceTypeProvider=defaultMediaSourceTypeProvider]
 	 */
 	constructor(
 		urlSourceTypeProvider = bvvUrlSourceTypeProvider,

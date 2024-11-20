@@ -23,6 +23,13 @@
 ::-webkit-scrollbar {
 	width: 0.4em;
 }
+/* fix Windows Firefox scrollbar*/
+@-moz-document url-prefix() {
+	* {
+		scrollbar-color: var(--secondary-bg-color) var(--primary-bg-color);
+		scrollbar-width: thin;
+	}
+}
 ::-webkit-scrollbar-thumb {
 	border-radius: 0.9em;
 	background: var(--secondary-bg-color);
@@ -110,7 +117,6 @@ input[type='range'] {
 	appearance: none;
 	display: block;
 	inline-size: 100%;
-	margin: 1em 0;
 	background: transparent;
 	outline-offset: 5px;
 }
@@ -318,7 +324,7 @@ img {
 	color: var(--text1);
 }
 .ba-form-element .check .icon {
-	background: var(--sucess-color);
+	background: var(--success-color);
 	background-repeat: no-repeat;
 	background-position: center;
 	background-image: url('./assets/checkcircle.svg');

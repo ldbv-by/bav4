@@ -878,7 +878,7 @@ describe('OlDrawHandler', () => {
 				};
 				classUnderTest.activate(map);
 				classUnderTest._drawState = drawStateFake;
-				classUnderTest._sketchHandler.activate(feature, 'draw_line_');
+				classUnderTest._sketchHandler.activate(feature, map, 'draw_line_');
 
 				setType('line');
 
@@ -1534,14 +1534,21 @@ describe('OlDrawHandler', () => {
 				pointCount: 0,
 				dragging: jasmine.any(Boolean)
 			});
-			classUnderTest._sketchHandler.activate(new Feature({ geometry: new Point([1, 0]) }));
+			classUnderTest._sketchHandler.activate(
+				new Feature({
+					geometry: new LineString([
+						[1, 0],
+						[1, 1]
+					])
+				})
+			);
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 20, 0);
 			expect(drawStateSpy).toHaveBeenCalledWith({
 				type: InteractionStateType.DRAW,
 				snap: null,
 				coordinate: [20, 0],
 				pointCount: 1,
-				geometryType: 'Point',
+				geometryType: 'LineString',
 				dragging: jasmine.any(Boolean)
 			});
 		});

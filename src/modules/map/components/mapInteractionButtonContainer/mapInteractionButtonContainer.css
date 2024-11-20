@@ -1,0 +1,27 @@
+.map-interaction-button-container {
+	position: fixed;
+	z-index: var(--z-mapbuttons);
+	bottom: 4.3em;
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	pointer-events: none;
+	row-gap: 0.5em;
+	column-gap: 0.3em;
+}
+.is-portrait.map-interaction-button-container {
+	flex-direction: column;
+}
+ba-button {
+	background: var(--text3);
+	border-radius: 2em;
+	overflow: hidden;
+	width: 16em;
+	transition: all var(--animation-duration-small-open) var(--animation-easing-open);
+	pointer-events: all;
+}
+ba-button.routing::part(button) {
+	background-color: var(--info-color);
+	font-size: 0.9rem;
+}

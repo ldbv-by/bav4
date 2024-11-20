@@ -46,6 +46,11 @@ describe('StackableContentPanel', () => {
 	});
 
 	describe('when rendered', () => {
+		const securityServiceMock = {
+			sanitizeHtml(html) {
+				return html;
+			}
+		};
 		const setup = async (
 			state = { notifications: { notification: null }, bottomSheet: { data: [] }, mainMenu: { open: false }, media: { portrait: false } }
 		) => {
@@ -57,7 +62,8 @@ describe('StackableContentPanel', () => {
 				media: createNoInitialStateMediaReducer(),
 				navigationRail: createNoInitialStateNavigationRailReducer()
 			});
-			$injector.registerSingleton('TranslationService', { translate: (key) => key });
+			$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('SecurityService', securityServiceMock);
+
 			const element = await TestUtils.render(StackableContentPanel.tag);
 
 			return element;
@@ -67,14 +73,14 @@ describe('StackableContentPanel', () => {
 			const element = await setup();
 
 			expect(element).toBeTruthy();
-			expect(element._model.notifications.length).toBe(0);
+			expect(element.getModel().notifications.length).toBe(0);
 
 			emitNotification('fooBar', LevelTypes.INFO);
 
-			expect(element._model.notifications.length).toBe(1);
-			expect(element._model.notifications[0].id).toEqual(jasmine.any(Number));
-			expect(element._model.notifications[0].content).toBe('fooBar');
-			expect(element._model.notifications[0].level).toBe(LevelTypes.INFO);
+			expect(element.getModel().notifications.length).toBe(1);
+			expect(element.getModel().notifications[0].id).toEqual(jasmine.any(Number));
+			expect(element.getModel().notifications[0].content).toBe('fooBar');
+			expect(element.getModel().notifications[0].level).toBe(LevelTypes.INFO);
 
 			const notificationElement = element.shadowRoot.querySelector('ba-notification-item');
 			expect(notificationElement).toBeTruthy();
@@ -84,12 +90,12 @@ describe('StackableContentPanel', () => {
 			const element = await setup();
 
 			expect(element).toBeTruthy();
-			expect(element._model.notifications.length).toBe(0);
+			expect(element.getModel().notifications.length).toBe(0);
 
 			emitNotification('fooBar', LevelTypes.INFO);
 			emitNotification('fooBar', LevelTypes.INFO);
 
-			expect(element._model.notifications.length).toBe(2);
+			expect(element.getModel().notifications.length).toBe(2);
 
 			const notificationElements = element.shadowRoot.querySelectorAll('ba-notification-item');
 			expect(notificationElements.length).toBe(2);
@@ -99,14 +105,14 @@ describe('StackableContentPanel', () => {
 			const element = await setup();
 
 			expect(element).toBeTruthy();
-			expect(element._model.notifications.length).toBe(0);
-			expect(element._model.bottomSheet).toBeNull();
+			expect(element.getModel().notifications.length).toBe(0);
+			expect(element.getModel().bottomSheet).toBeNull();
 
 			emitNotification('fooBar', LevelTypes.INFO);
 			openBottomSheet('fooBar');
 
-			expect(element._model.notifications.length).toBe(1);
-			expect(element._model.bottomSheet).toEqual(jasmine.objectContaining({ id: 'default', content: 'fooBar' }));
+			expect(element.getModel().notifications.length).toBe(1);
+			expect(element.getModel().bottomSheet).toEqual(jasmine.objectContaining({ id: 'default', content: 'fooBar' }));
 
 			const notificationElements = element.shadowRoot.querySelectorAll('ba-notification-item');
 			const bottomSheetElements = element.shadowRoot.querySelectorAll('ba-bottom-sheet');
@@ -118,8 +124,8 @@ describe('StackableContentPanel', () => {
 			const element = await setup();
 
 			expect(element).toBeTruthy();
-			expect(element._model.notifications.length).toBe(0);
-			expect(element._model.bottomSheet).toBeNull();
+			expect(element.getModel().notifications.length).toBe(0);
+			expect(element.getModel().bottomSheet).toBeNull();
 
 			openBottomSheet('fooBar');
 
@@ -140,8 +146,8 @@ describe('StackableContentPanel', () => {
 			const element = await setup();
 
 			expect(element).toBeTruthy();
-			expect(element._model.notifications.length).toBe(0);
-			expect(element._model.bottomSheet).toBeNull();
+			expect(element.getModel().notifications.length).toBe(0);
+			expect(element.getModel().bottomSheet).toBeNull();
 
 			openBottomSheet('fooBar');
 
@@ -164,16 +170,16 @@ describe('StackableContentPanel', () => {
 			const element = await setup();
 
 			expect(element).toBeTruthy();
-			expect(element._model.notifications.length).toBe(0);
+			expect(element.getModel().notifications.length).toBe(0);
 
 			emitNotification('fooBar', LevelTypes.INFO);
 
-			expect(element._model.notifications.length).toBe(1);
+			expect(element.getModel().notifications.length).toBe(1);
 
 			await element.render();
 			await element.render();
 
-			expect(element._model.notifications.length).toBe(1);
+			expect(element.getModel().notifications.length).toBe(1);
 
 			const notificationElements = element.shadowRoot.querySelectorAll('ba-notification-item');
 			expect(notificationElements.length).toBe(1);

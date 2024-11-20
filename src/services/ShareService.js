@@ -272,7 +272,9 @@ export class ShareService {
 			tools: { current }
 		} = state;
 
-		extractedState[QueryParameters.TOOL_ID] = current ?? '';
+		if (current) {
+			extractedState[QueryParameters.TOOL_ID] = current;
+		}
 
 		return extractedState;
 	}

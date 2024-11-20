@@ -1,5 +1,4 @@
 .chips__container {
-	pointer-events: none;
 	margin-left: 7em;
 	display: flex;
 	transition: all var(--animation-duration-large-open) var(--animation-easing-linear);
@@ -77,7 +76,6 @@
 .is-portrait.chips__container {
 	top: 8em;
 	margin: 0;
-	width: 100%;
 	z-index: calc(var(--z-mainmenu) - 10);
 	padding: 0 1em;
 	overflow: scroll;

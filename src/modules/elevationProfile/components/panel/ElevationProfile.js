@@ -500,20 +500,13 @@ export class ElevationProfile extends MvuElement {
 			const index = elevationData.labels.indexOf(tooltipItem.parsed.x);
 			return elevationData.elevations[index];
 		};
-		const convertToNumber = (numberOrString) => {
-			if (typeof numberOrString === 'string') {
-				return parseFloat(numberOrString.replace(',', '.'));
-			}
-
-			// If the input is not a string, return the input as-is.
-			return numberOrString;
-		};
 
 		const resetChartColor = () => {
 			const selectedAttribute = this.getModel().selectedAttribute;
 			this._chartColorOptions[selectedAttribute] = {};
 		};
 
+		const labelsMax = newDataLabels ? Math.max(...newDataLabels) : 0;
 		const config = {
 			type: 'line',
 			data: this._getChartData(elevationData, newDataLabels, newDataData),
@@ -533,13 +526,6 @@ export class ElevationProfile extends MvuElement {
 						if (args?.event?.native && ['mouseout', 'pointerup'].includes(args.event.native.type)) {
 							removeHighlightFeaturesById(ElevationProfile.HIGHLIGHT_FEATURE_ID);
 						}
-					}
-				},
-				{
-					id: 'shortenLeftEndOfScale',
-					beforeInit: (chart) => {
-						chart.options.scales.x.min = Math.min(...chart.data.labels);
-						chart.options.scales.x.max = Math.max(...chart.data.labels);
 					}
 				},
 				{
@@ -575,8 +561,11 @@ export class ElevationProfile extends MvuElement {
 							color: ElevationProfile.DEFAULT_TEXT_COLOR
 						},
 						ticks: {
+							includeBounds: false,
+							maxRotation: 0,
 							color: ElevationProfile.DEFAULT_TEXT_COLOR
-						}
+						},
+						max: labelsMax
 					},
 					y: {
 						type: 'linear',
@@ -609,10 +598,7 @@ export class ElevationProfile extends MvuElement {
 								const tooltipItem = tooltipItems[0];
 								const elevationEntry = getElevationEntry(tooltipItem);
 								this.setCoordinates([elevationEntry.e, elevationEntry.n]);
-								const distInM = distUnit === 'km' ? convertToNumber(tooltipItem.label) * 1000 : convertToNumber(tooltipItem.label);
-
-								const dist = this._unitsService.formatDistance(distInM);
-								return translate('elevationProfile_distance') + ': ' + dist;
+								return `${translate('elevationProfile_distance')}: ${this._unitsService.formatDistance(elevationEntry.dist)}`;
 							},
 							label: (tooltipItem) => {
 								const retArray = [];

@@ -14,6 +14,6 @@ describe('highlightAction', () => {
 	it('exports a enum for HighlightGeometryTypes', () => {
 		expect(Object.keys(HighlightGeometryType).length).toBe(2);
 		expect(HighlightGeometryType.GEOJSON).toBe(0);
-		expect(HighlightGeometryType.WKT).toBe(1);
+		expect(HighlightGeometryType.EWKT).toBe(1);
 	});
 });

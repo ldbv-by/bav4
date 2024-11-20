@@ -63,6 +63,7 @@ export class RoutingPlugin extends BaPlugin {
 		this.#translationService = translationService;
 		this.#environmentService = environmentService;
 		this.#routingService = routingService;
+		this._bottomSheetUnsubscribeFn = null;
 	}
 
 	async _lazyInitialize() {
@@ -88,6 +89,7 @@ export class RoutingPlugin extends BaPlugin {
 	 */
 	async register(store) {
 		if (!this.#environmentService.isEmbedded() && this.#environmentService.getQueryParams().has(QueryParameters.ROUTE_WAYPOINTS)) {
+			const toolId = this.#environmentService.getQueryParams().get(QueryParameters.TOOL_ID);
 			if (await this._lazyInitialize()) {
 				// we activate the tool after another possible active tool was deactivated
 				setTimeout(() => {
@@ -96,6 +98,14 @@ export class RoutingPlugin extends BaPlugin {
 					if (this._parseWaypoints(this.#environmentService.getQueryParams()).length === 1) {
 						setTab(TabIds.ROUTING);
 						setCurrentTool(Tools.ROUTING);
+					}
+					// we have waypoints for a route but the tool should not be active, so we deactivate the tool after the route was successfully fetched
+					if (toolId !== Tools.ROUTING) {
+						observeOnce(
+							store,
+							(state) => state.routing.route,
+							() => deactivate()
+						);
 					}
 				});
 			}
@@ -150,11 +160,16 @@ export class RoutingPlugin extends BaPlugin {
 			});
 			const content = html`<ba-proposal-context-content></ba-proposal-context-content>`;
 			openBottomSheet(content, INTERACTION_BOTTOM_SHEET_ID);
-			// we also want to remove the highlight feature when the BottomSheet was closed
-			observeOnce(
+			// we also want to remove the highlight feature when the interaction BottomSheet was closed
+			this._bottomSheetUnsubscribeFn = observe(
 				store,
 				(state) => state.bottomSheet.data,
-				() => removeHighlightFeaturesById(RoutingPlugin.HIGHLIGHT_FEATURE_ID)
+				(active) => {
+					if (!active.includes(INTERACTION_BOTTOM_SHEET_ID)) {
+						removeHighlightFeaturesById(RoutingPlugin.HIGHLIGHT_FEATURE_ID);
+						this._bottomSheetUnsubscribeFn();
+					}
+				}
 			);
 		};
 		const onRoutingStatusChanged = async (status) => {

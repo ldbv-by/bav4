@@ -109,8 +109,8 @@ describe('DrawToolContent', () => {
 		it('builds list of tools', async () => {
 			const element = await setup();
 
-			expect(element._model.tools).toBeTruthy();
-			expect(element._model.tools.length).toBe(4);
+			expect(element.getModel().tools).toBeTruthy();
+			expect(element.getModel().tools.length).toBe(4);
 			expect(element.shadowRoot.querySelector('.tool-container__buttons')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-container__buttons').childElementCount).toBe(4);
 		});

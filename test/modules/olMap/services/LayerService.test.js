@@ -233,7 +233,30 @@ describe('LayerService', () => {
 
 				expect(xyzOlLayer.get('id')).toBe(id);
 				expect(xyzOlLayer.get('geoResourceId')).toBe(geoResourceId);
-				expect(xyzOlLayer.getPreload()).toBe(3);
+				expect(xyzOlLayer.getPreload()).toBe(1);
+				expect(xyzOlLayer.getMinZoom()).toBeNegativeInfinity();
+				expect(xyzOlLayer.getMaxZoom()).toBePositiveInfinity();
+				const xyzSource = xyzOlLayer.getSource();
+				expect(xyzOlLayer.constructor.name).toBe('TileLayer');
+				expect(xyzSource.constructor.name).toBe('RefreshableXYZ');
+				expect(xyzSource.getUrls()).toEqual(['https://some1/layer/{z}/{x}/{y}', 'https://some2/layer/{z}/{x}/{y}']);
+				expect(xyzSource.getTileLoadFunction()).toBe(mockImageLoadFunction);
+				expect(providerSpy).toHaveBeenCalledWith(geoResourceId, jasmine.any(TileLayer));
+			});
+
+			it('converts a XyzGeoResource containing timestamps to a olLayer', () => {
+				const mockImageLoadFunction = () => {};
+				const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
+				const instanceUnderTest = setup(null, providerSpy);
+				const id = 'id';
+				const geoResourceId = 'geoResourceId';
+				const xyzGeoResource = new XyzGeoResource(geoResourceId, 'label', 'https://some{1-2}/layer/{z}/{x}/{y}').setTimestamps(['2000']);
+
+				const xyzOlLayer = instanceUnderTest.toOlLayer(id, xyzGeoResource);
+
+				expect(xyzOlLayer.get('id')).toBe(id);
+				expect(xyzOlLayer.get('geoResourceId')).toBe(geoResourceId);
+				expect(xyzOlLayer.getPreload()).toBe(0);
 				expect(xyzOlLayer.getMinZoom()).toBeNegativeInfinity();
 				expect(xyzOlLayer.getMaxZoom()).toBePositiveInfinity();
 				const xyzSource = xyzOlLayer.getSource();
@@ -256,7 +279,7 @@ describe('LayerService', () => {
 
 				expect(xyzOlLayer.get('id')).toBe(id);
 				expect(xyzOlLayer.get('geoResourceId')).toBe(geoResourceId);
-				expect(xyzOlLayer.getPreload()).toBe(3);
+				expect(xyzOlLayer.getPreload()).toBe(1);
 				expect(xyzOlLayer.getMinZoom()).toBeNegativeInfinity();
 				expect(xyzOlLayer.getMaxZoom()).toBePositiveInfinity();
 				const xyzSource = xyzOlLayer.getSource();
@@ -282,7 +305,7 @@ describe('LayerService', () => {
 
 				expect(xyzOlLayer.get('id')).toBe(id);
 				expect(xyzOlLayer.get('geoResourceId')).toBe(geoResourceId);
-				expect(xyzOlLayer.getPreload()).toBe(3);
+				expect(xyzOlLayer.getPreload()).toBe(1);
 				expect(xyzOlLayer.getOpacity()).toBe(0.5);
 				expect(xyzOlLayer.getMinZoom()).toBe(5);
 				expect(xyzOlLayer.getMaxZoom()).toBe(19);

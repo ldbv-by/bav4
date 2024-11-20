@@ -21,6 +21,7 @@ import { HighlightFeatureType, HighlightGeometryType } from '../../../../store/h
 import WKT from 'ol/format/WKT';
 import GeoJSON from 'ol/format/GeoJSON';
 import { unByKey } from 'ol/Observable';
+import { parse } from '../../../../utils/ewkt';
 
 /**
  * Handler for displaying highlighted features
@@ -30,8 +31,9 @@ import { unByKey } from 'ol/Observable';
 export class OlHighlightLayerHandler extends OlLayerHandler {
 	constructor() {
 		super(HIGHLIGHT_LAYER_ID, { preventDefaultClickHandling: false, preventDefaultContextClickHandling: false });
-		const { StoreService } = $injector.inject('StoreService');
+		const { StoreService, MapService } = $injector.inject('StoreService', 'MapService');
 		this._storeService = StoreService;
+		this._mapService = MapService;
 		this._unregister = () => {};
 		this._olMap = null;
 		this._olLayer = null;
@@ -80,8 +82,13 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 
 		//we have a HighlightGeometry
 		switch (data.geometryType) {
-			case HighlightGeometryType.WKT:
-				return this._appendStyle(feature, addLabel(new WKT().readFeature(data.geometry)));
+			case HighlightGeometryType.EWKT: {
+				const ewkt = parse(data.geometry);
+				if (ewkt.srid !== this._mapService.getSrid()) {
+					throw new Error('Unsupported SRID ' + ewkt.srid);
+				}
+				return this._appendStyle(feature, addLabel(new WKT().readFeature(ewkt.wkt)));
+			}
 			case HighlightGeometryType.GEOJSON:
 				return this._appendStyle(feature, addLabel(new GeoJSON().readFeature(data.geometry)));
 		}

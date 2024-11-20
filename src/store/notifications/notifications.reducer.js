@@ -2,7 +2,7 @@ export const NOTIFICATION_ADDED = 'notification/added';
 
 export const initialState = {
 	/**
-	 * @type {EventLike<Notification>}
+	 * @type {EventLike<Notification>|null}
 	 */
 	latest: null
 };
