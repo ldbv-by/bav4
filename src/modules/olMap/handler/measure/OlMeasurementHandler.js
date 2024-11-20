@@ -561,6 +561,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			feature.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(feature, this._map)); // refresh geodesic with the completed feature from the finished drawing
 			const onFeatureChange = (event) => {
 				const measureGeometry = this._createMeasureGeometry(event.target);
+				const projectedLength = this._mapService.calcLength(getLineString(measureGeometry)?.getCoordinates());
+				feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
+				feature.getGeometry().set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
+				measureGeometry.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
+
 				this._overlayService.update(event.target, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
 				this._updateStatistics();
 			};
