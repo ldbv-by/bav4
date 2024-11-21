@@ -16,9 +16,7 @@ import { observe } from '../utils/storeUtils';
 export class ChipsPlugin extends BaPlugin {
 	_updateStore(chips, permanentChips, state) {
 		const findTopicsChips = () => {
-			return state.topicsContentPanel.index // check topics only if TopicsContentPanel is displayed at least at level 1
-				? chips.filter((c) => c.observer?.topics.includes(state.topics.current))
-				: [];
+			return chips.filter((c) => c.observer?.topics.includes(state.topics.current));
 		};
 
 		const findActiveGeoResourceChips = () => {
