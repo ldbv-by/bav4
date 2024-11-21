@@ -56,7 +56,7 @@ describe('BvvMfp3Encoder', () => {
 	};
 
 	const shareServiceMock = {
-		encodeState() {},
+		encodeState: () => 'http://foo',
 		copyToClipboard() {}
 	};
 
@@ -2760,33 +2760,25 @@ describe('BvvMfp3Encoder', () => {
 
 	describe('_generateShortUrl', () => {
 		it('shortenens the url', async () => {
-			const encodedState = 'foo';
-			const shareServiceSpy = spyOn(shareServiceMock, 'encodeState').and.returnValue(encodedState);
-			const urlServiceSpy = spyOn(urlServiceMock, 'shorten').withArgs(encodedState).and.resolveTo('bar');
-
+			const urlServiceSpy = spyOn(urlServiceMock, 'shorten').withArgs('http://foo/?tid=').and.resolveTo('bar');
 			const classUnderTest = setup();
 
 			const shortUrl = await classUnderTest._generateShortUrl();
 
-			expect(shareServiceSpy).toHaveBeenCalled();
 			expect(urlServiceSpy).toHaveBeenCalled();
 			expect(shortUrl).toBe('bar');
 		});
 
 		it('warns in console, if shortening fails', async () => {
-			const encodedState = 'foo';
-			const shareServiceSpy = spyOn(shareServiceMock, 'encodeState').and.returnValue(encodedState);
 			const urlServiceSpy = spyOn(urlServiceMock, 'shorten').and.throwError('bar');
 			const warnSpy = spyOn(console, 'warn');
-
 			const classUnderTest = setup();
 
 			const shortUrl = await classUnderTest._generateShortUrl();
 
-			expect(shareServiceSpy).toHaveBeenCalled();
 			expect(warnSpy).toHaveBeenCalledWith('Could not shorten url: Error: bar');
 			expect(urlServiceSpy).toThrowError('bar');
-			expect(shortUrl).toBe('foo');
+			expect(shortUrl).toBe('http://foo/?tid=');
 		});
 	});
 
