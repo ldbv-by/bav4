@@ -93,7 +93,7 @@ export class ShareDataChip extends AbstractAssistChip {
 			 * Todo: For now as a workaround for https://github.com/ldbv-by/bav4/issues/2478 we always set an existing TOOL_ID query parameter to "",
 			 * but in the future it does make sense to activate the draw or measurement tool when the file is shared with admin privileges.
 			 */
-			const url = setQueryParams(this._shareService.encodeState(extraParams), { [QueryParameters.TOOL_ID]: '' });
+			const url = setQueryParams(this._shareService.encodeState(extraParams), { [QueryParameters.TOOL_ID]: null });
 			try {
 				const shortUrl = await this._urlService.shorten(url);
 				return shortUrl;

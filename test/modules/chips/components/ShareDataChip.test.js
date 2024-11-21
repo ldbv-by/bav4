@@ -106,8 +106,8 @@ describe('ShareDataChip', () => {
 
 			await TestUtils.timeout();
 			expect(shortenerSpy).toHaveBeenCalledTimes(2);
-			expect(shortenerSpy.calls.all()[0].args[0]).toBe(`http://foo.bar/?${QueryParameters.TOOL_ID}=`);
-			expect(shortenerSpy.calls.all()[1].args[0]).toBe(`http://foo.bar/?${QueryParameters.TOOL_ID}=`);
+			expect(shortenerSpy.calls.all()[0].args[0]).toBe(`http://foo.bar/?`);
+			expect(shortenerSpy.calls.all()[1].args[0]).toBe(`http://foo.bar/?`);
 		});
 	});
 
