@@ -7,6 +7,7 @@ import { IframeGenerator } from '../../../../../src/modules/iframe/components/ge
 import { ShareDialogContent } from '../../../../../src/modules/share/components/dialog/ShareDialogContent';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
+import { QueryParameters } from '../../../../../src/domain/queryParameters';
 
 window.customElements.define(ShareDialogContent.tag, ShareDialogContent);
 window.customElements.define(ShareToolContent.tag, ShareToolContent);
@@ -46,11 +47,11 @@ describe('ShareToolContent', () => {
 	describe('methods', () => {
 		describe('_generateShortUrl', () => {
 			it('generates a short url enforcing the TOOL_ID query parameter', async () => {
-				const mockUrl = 'https://some.url';
-				const mockUrlWithToolId = `${mockUrl}/?tid=`;
+				const mockUrl = `https://some.url?${QueryParameters.TOOL_ID}=someTool`;
+				const mockUrlWithoutToolId = `https://some.url/?`;
 				const mockShortUrl = 'https://short/url';
 				spyOn(shareServiceMock, 'encodeState').and.returnValue(mockUrl);
-				spyOn(urlServiceMock, 'shorten').withArgs(mockUrlWithToolId).and.returnValue(mockShortUrl);
+				spyOn(urlServiceMock, 'shorten').withArgs(mockUrlWithoutToolId).and.returnValue(mockShortUrl);
 				const element = await setup();
 
 				const url = await element._generateShortUrl();
@@ -59,8 +60,8 @@ describe('ShareToolContent', () => {
 			});
 
 			it('returns the original url in case of error and logs a warn statement', async () => {
-				const mockUrl = 'https://some.url';
-				const mockUrlWithToolId = `${mockUrl}/?tid=`;
+				const mockUrl = `https://some.url?${QueryParameters.TOOL_ID}=someTool`;
+				const mockUrlWithoutToolId = `https://some.url/?`;
 				spyOn(shareServiceMock, 'encodeState').and.returnValue(mockUrl);
 				spyOn(urlServiceMock, 'shorten').and.rejectWith('Something got wrong');
 				const warnSpy = spyOn(console, 'warn');
@@ -69,7 +70,7 @@ describe('ShareToolContent', () => {
 				const url = await element._generateShortUrl();
 
 				expect(warnSpy).toHaveBeenCalledWith('Could not shorten url: Something got wrong');
-				expect(url).toBe(mockUrlWithToolId);
+				expect(url).toBe(mockUrlWithoutToolId);
 			});
 		});
 	});
