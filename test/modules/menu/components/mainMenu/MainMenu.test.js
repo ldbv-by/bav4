@@ -402,6 +402,40 @@ describe('MainMenu', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.is-full-size .main-menu')).toHaveSize(0);
 		});
+
+		it('scrolls to top', async () => {
+			const activeTabIndex = TabIds.MISC;
+			const state = {
+				mainMenu: {
+					open: true,
+					tab: activeTabIndex
+				}
+			};
+			const element = await setup(state);
+			const container = element.shadowRoot.querySelector('#mainMenuContainer');
+			const scrollToTopSpy = spyOn(container, 'scroll');
+
+			setTab(TabIds.TOPICS);
+
+			expect(scrollToTopSpy).toHaveBeenCalled();
+		});
+
+		it('scrolls not to top', async () => {
+			const activeTabIndex = TabIds.MISC;
+			const state = {
+				mainMenu: {
+					open: true,
+					tab: activeTabIndex
+				}
+			};
+			const element = await setup(state);
+			const container = element.shadowRoot.querySelector('#mainMenuContainer');
+			const scrollToTopSpy = spyOn(container, 'scroll');
+
+			setTab(TabIds.MISC);
+
+			expect(scrollToTopSpy).not.toHaveBeenCalled();
+		});
 	});
 
 	describe('when close button clicked', () => {
