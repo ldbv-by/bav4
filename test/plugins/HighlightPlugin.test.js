@@ -66,6 +66,12 @@ describe('HighlightPlugin', () => {
 		return store;
 	};
 
+	describe('class', () => {
+		it('defines constant values', async () => {
+			expect(HighlightPlugin.CROSSHAIR_DELAY_MS).toBe(1000);
+		});
+	});
+
 	describe('when highlight.active changes', () => {
 		it('adds or removes the highlight layer', async () => {
 			const highlightFeature = { data: [21, 42] };
@@ -309,6 +315,13 @@ describe('HighlightPlugin', () => {
 	});
 
 	describe("when search query parameter 'CROSSHAIR' has a value", () => {
+		beforeEach(() => {
+			jasmine.clock().install();
+		});
+
+		afterEach(() => {
+			jasmine.clock().uninstall();
+		});
 		it('adds a highlight feature', async () => {
 			const coordinate = [42, 21];
 			const state = {
@@ -320,7 +333,7 @@ describe('HighlightPlugin', () => {
 			const instanceUnderTest = new HighlightPlugin();
 			await instanceUnderTest.register(store);
 
-			await TestUtils.timeout();
+			jasmine.clock().tick(HighlightPlugin.CROSSHAIR_DELAY_MS + 100);
 
 			expect(store.getState().highlight.features).toHaveSize(1);
 			expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
@@ -341,7 +354,7 @@ describe('HighlightPlugin', () => {
 				const instanceUnderTest = new HighlightPlugin();
 				await instanceUnderTest.register(store);
 
-				await TestUtils.timeout();
+				jasmine.clock().tick(HighlightPlugin.CROSSHAIR_DELAY_MS + 100);
 
 				expect(store.getState().highlight.features).toHaveSize(1);
 				expect(store.getState().highlight.features[0].data.coordinate).toEqual([42, 21]);
