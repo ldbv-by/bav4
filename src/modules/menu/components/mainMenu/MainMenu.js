@@ -85,6 +85,7 @@ export class MainMenu extends MvuElement {
 			const active = Object.values(TabIds)[i] === key;
 			// @ts-ignore
 			tabcontent.firstElementChild.setActive?.(active); // child AbstractMvuContentPanel-impl may not yet be fully initialized
+			if (active && !tabcontent.classList.contains('is-active')) this.shadowRoot.getElementById('mainMenuContainer').scroll(0, 0);
 			active ? tabcontent.classList.add('is-active') : tabcontent.classList.remove('is-active');
 		});
 	}
