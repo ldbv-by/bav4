@@ -1,9 +1,10 @@
 /**
  * @module modules/footer/components/baseLayerInfo/BaseLayerInfo
  */
-import { html, nothing } from 'lit-html';
+import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
+import { AggregateGeoResource } from '../../../../domain/geoResources';
 
 const Update_Layers = 'update_layers';
 const Update_ZoomLevel = 'update_zoomLevel';
@@ -53,23 +54,40 @@ export class BaseLayerInfo extends MvuElement {
 
 		const { activeLayers, zoomLevel } = model;
 
+		const getDescriptionForSingleGeoResource = (gr) => {
+			const description = gr
+				.getAttribution(zoomLevel)
+				.map((a) => a.description)
+				.filter((d) => !!d);
+
+			return description.length ? description : [gr.label];
+		};
+
 		const getDescription = () => {
-			const geoResource = activeLayers[0] ? this._georesourceService.byId(activeLayers[0].geoResourceId) : null;
+			const layer = activeLayers.find((l) => l.visible);
+
+			const geoResource = layer ? this._georesourceService.byId(layer.geoResourceId) : null;
 			if (geoResource) {
-				const description = geoResource
-					.getAttribution(zoomLevel)
-					.map((a) => a.description)
-					.filter((d) => !!d)
+				const geoResources =
+					geoResource instanceof AggregateGeoResource
+						? geoResource.geoResourceIds
+								.map((gr) => this._georesourceService.byId(gr))
+								.filter((gr) => !!gr)
+								.reverse()
+						: [geoResource];
+
+				const description = geoResources
+					.map((gr) => getDescriptionForSingleGeoResource(gr))
+					.flat()
 					.join(', ');
-				return description ? description : geoResource.label;
+				return description.length ? description : null;
 			}
 
 			return null;
 		};
 
 		const content = getDescription() ?? translate('map_baseLayerInfo_fallback');
-
-		return activeLayers.length > 0 ? html` <div>${translate('map_baseLayerInfo_label')}: ${content}</div> ` : nothing;
+		return html` <div>${content}</div> `;
 	}
 
 	static get tag() {
