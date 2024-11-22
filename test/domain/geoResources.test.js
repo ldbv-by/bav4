@@ -106,6 +106,7 @@ describe('GeoResource', () => {
 
 			it('provides a check for containing timestamps', () => {
 				expect(new GeoResourceImpl('id').hasTimestamps()).toBeFalse();
+				expect(new GeoResourceImpl('id').setTimestamps(null).hasTimestamps()).toBeFalse();
 				expect(new GeoResourceImpl('id').setTimestamps(['0']).hasTimestamps()).toBeTrue();
 			});
 
@@ -469,6 +470,7 @@ describe('GeoResource', () => {
 			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML);
 
 			expect(vectorGeoResource.clusterParams).toEqual({});
+			expect(vectorGeoResource.showPointNames).toBe(true);
 		});
 
 		it('provides the source type as fallback label', () => {
@@ -488,10 +490,28 @@ describe('GeoResource', () => {
 		});
 
 		describe('methods', () => {
+			it('sets the source of an internal VectorGeoResource by a string', () => {
+				const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setSource('someData', 1234);
+
+				expect(vectorGeoResource.data).toBe('someData');
+				expect(vectorGeoResource.srid).toBe(1234);
+			});
+
+			it('sets the showPointNames property', () => {
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setShowPointNames(false).showPointNames).toBeFalse();
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setShowPointNames(true).showPointNames).toBeTrue();
+			});
+
 			it('provides a check for containing a non-default value as clusterParam', () => {
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).isClustered()).toBeFalse();
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setClusterParams(null).isClustered()).toBeFalse();
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setClusterParams({ foo: 'bar' }).isClustered()).toBeTrue();
+			});
+
+			it('provides a check for containing a non-default value as label', () => {
+				expect(new VectorGeoResource('id', null, VectorSourceType.KML).hasLabel()).toBeFalse();
+				expect(new VectorGeoResource('id', '', VectorSourceType.KML).hasLabel()).toBeFalse();
+				expect(new VectorGeoResource('id', 'foo', VectorSourceType.KML).hasLabel()).toBeTrue();
 			});
 
 			it('provides a check for containing a non-default value as label', () => {

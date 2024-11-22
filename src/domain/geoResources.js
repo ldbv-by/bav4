@@ -549,6 +549,7 @@ export class VectorGeoResource extends GeoResource {
 		this._sourceType = sourceType;
 		this._data = null;
 		this._srid = null;
+		this._showPointNames = true;
 		this._clusterParams = {};
 	}
 
@@ -622,6 +623,21 @@ export class VectorGeoResource extends GeoResource {
 		if (clusterParams) {
 			this._clusterParams = { ...clusterParams };
 		}
+		return this;
+	}
+
+	get showPointNames() {
+		return this._showPointNames;
+	}
+
+	/**
+	 * Currently effective only for KML:
+	 * Show names as labels for placemarks which contain points.
+	 * @param {boolean} showPointNames
+	 * @returns
+	 */
+	setShowPointNames(showPointNames) {
+		this._showPointNames = showPointNames;
 		return this;
 	}
 
