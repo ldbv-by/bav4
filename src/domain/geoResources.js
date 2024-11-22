@@ -634,7 +634,7 @@ export class VectorGeoResource extends GeoResource {
 	 * Currently effective only for KML:
 	 * Show names as labels for placemarks which contain points.
 	 * @param {boolean} showPointNames
-	 * @returns
+	 * @returns `this` for chaining
 	 */
 	setShowPointNames(showPointNames) {
 		this._showPointNames = showPointNames;
@@ -713,7 +713,7 @@ export class RtVectorGeoResource extends GeoResource {
 	 * Currently effective only for KML:
 	 * Show names as labels for placemarks which contain points.
 	 * @param {boolean} showPointNames
-	 * @returns
+	 * @returns `this` for chaining
 	 */
 	setShowPointNames(showPointNames) {
 		this._showPointNames = showPointNames;
