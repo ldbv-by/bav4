@@ -3,6 +3,7 @@
 	height: 100%;
 	position: fixed;
 	background: var(--secondary-bg-color);
+	z-index: var(--z-map);
 }
 
 .grab {
