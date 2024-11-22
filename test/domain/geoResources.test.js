@@ -571,6 +571,7 @@ describe('GeoResource', () => {
 			expect(rtVectorGeoResource.id).toBe('id');
 			expect(rtVectorGeoResource.label).toBe('label');
 			expect(rtVectorGeoResource.url).toBe('url');
+			expect(rtVectorGeoResource.showPointNames).toBeTrue();
 			expect(rtVectorGeoResource.sourceType).toEqual(VectorSourceType.KML);
 		});
 
@@ -585,6 +586,11 @@ describe('GeoResource', () => {
 				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).isClustered()).toBeFalse();
 				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).setClusterParams(null).isClustered()).toBeFalse();
 				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).setClusterParams({ foo: 'bar' }).isClustered()).toBeTrue();
+			});
+
+			it('sets the showPointNames property', () => {
+				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).setShowPointNames(false).showPointNames).toBeFalse();
+				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).setShowPointNames(true).showPointNames).toBeTrue();
 			});
 		});
 	});

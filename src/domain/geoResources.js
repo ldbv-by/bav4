@@ -683,6 +683,7 @@ export class RtVectorGeoResource extends GeoResource {
 		this._url = url;
 		this._sourceType = sourceType;
 		this._clusterParams = {};
+		this._showPointNames = true;
 	}
 
 	get url() {
@@ -701,6 +702,21 @@ export class RtVectorGeoResource extends GeoResource {
 		if (clusterParams) {
 			this._clusterParams = { ...clusterParams };
 		}
+		return this;
+	}
+
+	get showPointNames() {
+		return this._showPointNames;
+	}
+
+	/**
+	 * Currently effective only for KML:
+	 * Show names as labels for placemarks which contain points.
+	 * @param {boolean} showPointNames
+	 * @returns
+	 */
+	setShowPointNames(showPointNames) {
+		this._showPointNames = showPointNames;
 		return this;
 	}
 
