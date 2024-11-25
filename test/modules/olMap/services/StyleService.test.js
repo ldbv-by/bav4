@@ -1081,6 +1081,41 @@ describe('StyleService', () => {
 			expect(getAlphaValue(actualImageStyle.getStroke().getColor())).toEqual(expectedAlphaValue);
 		});
 
+		it("sanitizes/removes the text style for point feature with feature property 'showPointNames'", () => {
+			const feature = new Feature({ geometry: new Point([0, 0]) });
+			feature.set('showPointNames', false);
+			const style = new Style({
+				image: new Icon({
+					size: [42, 42],
+					anchor: [42, 42],
+					anchorXUnits: 'pixels',
+					anchorYUnits: 'pixels',
+					src: 'https://some.url/to/image/foo.png',
+					scale: 0
+				}),
+				text: new Text({ text: 'foo', fill: new Fill({ color: [42, 21, 0] }), scale: 1.2 })
+			});
+			feature.set('name', 'bar');
+			feature.setStyle([style]);
+			const spyStyle = spyOn(feature, 'setStyle').and.callThrough();
+
+			instanceUnderTest.sanitizeStyle(feature);
+
+			// set the new style
+			expect(spyStyle).toHaveBeenCalledWith(jasmine.arrayContaining([jasmine.any(Style)]));
+
+			// respects the feature property and set no text style...
+			expect(feature.getStyle()[0].getText()).toBeNull();
+
+			// ...although replaces the icon
+			const actualImageStyle = feature.getStyle()[0].getImage();
+			const expectedAlphaValue = 0; // 0 -> full transparency; 255 -> full opacity
+			const getAlphaValue = (rgbaColorArray) => rgbaColorArray[3];
+			expect(actualImageStyle).toEqual(jasmine.any(CircleStyle));
+			expect(getAlphaValue(actualImageStyle.getFill().getColor())).toEqual(expectedAlphaValue);
+			expect(getAlphaValue(actualImageStyle.getStroke().getColor())).toEqual(expectedAlphaValue);
+		});
+
 		it('sanitizes the stroke style for point feature', () => {
 			const feature = new Feature({ geometry: new Point([0, 0]) });
 			const style = new Style({
