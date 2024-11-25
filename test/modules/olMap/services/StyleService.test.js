@@ -67,8 +67,6 @@ describe('StyleService', () => {
 	};
 
 	const geoResourceServiceMock = {
-		async init() {},
-		all() {},
 		byId() {}
 	};
 
@@ -646,7 +644,7 @@ describe('StyleService', () => {
 			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
 		});
 
-		it('adds default-style to gpx feature without initial style', () => {
+		it('adds default-style to GPX feature without initial style', () => {
 			const feature = new Feature({
 				geometry: new Polygon([
 					[
