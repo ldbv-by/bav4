@@ -388,7 +388,7 @@ export class GeoResourceFuture extends GeoResource {
 	/**
 	 * Registers a function called when the loader resolves.
 	 * The callback function will be called with two arguments: the loaded `GeoResource` and the current `GeoResourceFuture`.
-	 * @param {function (GeoResource, GeoResourceFuture): GeoResource|undefined} callback
+	 * @param {function (GeoResource, GeoResourceFuture): void} callback
 	 */
 	onResolve(callback) {
 		this._onResolve.push(callback);
@@ -397,7 +397,7 @@ export class GeoResourceFuture extends GeoResource {
 
 	/**
 	 * Registers a function called when the loader function rejected.
-	 * @param {function (GeoResourceFuture)} callback
+	 * @param {function (GeoResourceFuture): void} callback
 	 */
 	onReject(callback) {
 		this._onReject.push(callback);
