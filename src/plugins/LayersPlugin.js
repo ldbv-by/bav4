@@ -48,7 +48,6 @@ export class LayersPlugin extends BaPlugin {
 			};
 			return (
 				layer
-					.map((id) => geoResourceService.parseId(id)) //remove possible optional parameters for URL-based GeoResources
 					.map((id, index) => {
 						if (id) {
 							const geoResource = geoResourceService.byId(id) ?? geoResourceService.asyncById(id);
