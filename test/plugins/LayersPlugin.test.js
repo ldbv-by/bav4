@@ -17,7 +17,8 @@ describe('LayersPlugin', () => {
 		all() {},
 		byId() {},
 		asyncById() {},
-		addOrReplace() {}
+		addOrReplace() {},
+		parseId: (id) => id
 	};
 	const topicsServiceMock = {
 		default() {},
@@ -169,6 +170,8 @@ describe('LayersPlugin', () => {
 					}
 				});
 
+				const parseIdSpy = spyOn(geoResourceServiceMock, 'parseId').and.callThrough();
+
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
 				expect(store.getState().layers.active.length).toBe(4);
@@ -176,6 +179,7 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[1].id).toBe('some1_0');
 				expect(store.getState().layers.active[2].id).toBe('some2_0');
 				expect(store.getState().layers.active[3].id).toBe('some0_1');
+				expect(parseIdSpy).toHaveBeenCalled();
 			});
 
 			it('restores existing hidden layers', () => {
