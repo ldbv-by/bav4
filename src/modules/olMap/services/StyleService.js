@@ -23,6 +23,7 @@ import { getRoutingStyleFunction } from '../handler/routing/styleUtils';
 import { GeometryCollection, MultiPoint, Point } from '../../../../node_modules/ol/geom';
 import { Stroke, Style, Text } from '../../../../node_modules/ol/style';
 import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../ol/geodesic/geodesicGeometry';
+import { VectorSourceType } from '../../../domain/geoResources';
 
 /**
  * Enumeration of predefined types of style
@@ -402,6 +403,11 @@ export class StyleService {
 	}
 
 	_addDefaultStyle(olFeature, olLayer = null) {
+		const isGPX = (layer) => {
+			const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
+			return geoResourceService.byId(layer.get('geoResourceId'))?.sourceType === VectorSourceType.GPX;
+		};
+
 		const getColorByLayerId = (layer) => {
 			const id = getUid(layer);
 			if (this._defaultColorByLayerId[id] === undefined) {
@@ -410,7 +416,7 @@ export class StyleService {
 			return [...this._defaultColorByLayerId[id]];
 		};
 
-		const color = olLayer ? getColorByLayerId(olLayer) : this._nextColor();
+		const color = olLayer && !isGPX(olLayer) ? getColorByLayerId(olLayer) : this._nextColor();
 		olFeature.setStyle(defaultStyleFunction(color));
 	}
 
