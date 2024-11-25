@@ -145,7 +145,7 @@ export class GeoResourceService {
 	 * Note:  It's recommended to use the return value for further handling,
 	 * which guarantees all necessary synchronization between the GeoResource and the layers slice-of-state
 	 * @param {GeoResource} geoResource
-	 * @returns the added or replaced  and observed GeoResource
+	 * @returns the added or replaced and observed GeoResource
 	 */
 	addOrReplace(geoResource) {
 		const observedGeoResource = this._proxify(geoResource);
