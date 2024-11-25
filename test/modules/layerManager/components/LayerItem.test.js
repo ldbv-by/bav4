@@ -576,7 +576,7 @@ describe('LayerItem', () => {
 
 		it('shows a loading hint for GeoResourceFutures', async () => {
 			const geoResourceId = 'geoResourceId0';
-			const resolvedGeoResource = new VectorGeoResource(geoResourceId, 'label0', VectorSourceType.KML)
+			const resolvedGeoResource = new VectorGeoResource(geoResourceId, 'label0', VectorSourceType.KML);
 			const geoResFuture = new GeoResourceFuture(geoResourceId, async () => resolvedGeoResource);
 			spyOn(geoResourceService, 'addOrReplace').withArgs(resolvedGeoResource).and.returnValue(resolvedGeoResource);
 			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(geoResFuture);
