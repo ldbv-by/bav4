@@ -465,15 +465,6 @@ describe('GeoResourceService', () => {
 		});
 	});
 
-	describe('parseId', () => {
-		it('returns an uniform identifier for both normal and URL-based ids', async () => {
-			const instanceUnderTest = setup();
-			expect(instanceUnderTest.parseId('foo')).toBe('foo');
-			expect(instanceUnderTest.parseId('https://foo.bar||some')).toBe('https://foo.bar');
-			expect(() => instanceUnderTest.parseId(undefined)).toThrowError(TypeError, 'undefined is not a valid identifier for a GeoResource');
-		});
-	});
-
 	describe('getAuthResponseInterceptorForGeoResource', () => {
 		describe('and GeoResource is known', () => {
 			it('returns a response interceptor for that GeoResource', async () => {

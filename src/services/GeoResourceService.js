@@ -22,7 +22,6 @@ import { loadBvvFileStorageResourceById } from './provider/fileStorage.provider'
 import { loadBvvGeoResourceById, loadBvvGeoResources, loadExternalGeoResource } from './provider/geoResource.provider';
 import { geoResourceChanged } from '../store/layers/layers.action';
 import { bvvAuthResponseInterceptorProvider } from './provider/auth.provider';
-import { isString } from '../utils/checks';
 
 export const FALLBACK_GEORESOURCE_ID_0 = 'tpo';
 export const FALLBACK_GEORESOURCE_ID_1 = 'tpo_mono';
@@ -199,19 +198,6 @@ export class GeoResourceService {
 			return [...gr.authRoles];
 		}
 		return [];
-	}
-
-	/**
-	 * Returns an uniform identifier for both normal and URL-based ids
-	 * @param {String} raw a string that denotes a possible GeoResource id
-	 * @returns the uniformed id for a possible GeoResource
-	 * @throws `TypeError` if the id is not valid
-	 */
-	parseId(raw) {
-		if (isString(raw)) {
-			return raw.split('||')[0];
-		}
-		throw new TypeError(`${raw} is not a valid identifier for a GeoResource`);
 	}
 
 	/**
