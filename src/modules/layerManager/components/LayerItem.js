@@ -313,8 +313,20 @@ export class LayerItem extends AbstractMvuContentPanel {
 		const geoResource = this._geoResourceService.byId(value.geoResourceId);
 		const keywords = [...this._geoResourceService.getKeywords(value.geoResourceId)];
 
+		if (geoResource instanceof GeoResourceFuture) {
+			geoResource.onResolve((resolvedGeoR) => {
+				this.signal(Update_Layer, {
+					...Default_Extra_Property_Values,
+					...value,
+					label: resolvedGeoR.label,
+					loading: false,
+					keywords: keywords
+				});
+			});
+		}
+
 		this.signal(Update_Layer, {
-			Default_Extra_Property_Values,
+			...Default_Extra_Property_Values,
 			...value,
 			label: geoResource instanceof GeoResourceFuture ? translate('layerManager_loading_hint') : geoResource.label,
 			loading: geoResource instanceof GeoResourceFuture,

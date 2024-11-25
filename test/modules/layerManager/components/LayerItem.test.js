@@ -576,9 +576,11 @@ describe('LayerItem', () => {
 
 		it('shows a loading hint for GeoResourceFutures', async () => {
 			const geoResourceId = 'geoResourceId0';
-			spyOn(geoResourceService, 'byId')
-				.withArgs(geoResourceId)
-				.and.returnValue(new GeoResourceFuture(geoResourceId, async () => {}));
+			const resolvedGeoResource = new VectorGeoResource(geoResourceId, 'label0', VectorSourceType.KML)
+			const geoResFuture = new GeoResourceFuture(geoResourceId, async () => resolvedGeoResource);
+			spyOn(geoResourceService, 'addOrReplace').withArgs(resolvedGeoResource).and.returnValue(resolvedGeoResource);
+			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(geoResFuture);
+
 			const layer = {
 				...createDefaultLayerProperties(),
 				id: 'id0',
@@ -592,6 +594,11 @@ describe('LayerItem', () => {
 
 			expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(1);
 			expect(element.shadowRoot.querySelector(Spinner.tag).label).toBe('layerManager_loading_hint');
+
+			await geoResFuture.get(); // resolve future
+
+			expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(0);
+			expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe('label0');
 		});
 	});
 
