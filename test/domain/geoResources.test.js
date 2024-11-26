@@ -514,12 +514,6 @@ describe('GeoResource', () => {
 				expect(new VectorGeoResource('id', 'foo', VectorSourceType.KML).hasLabel()).toBeTrue();
 			});
 
-			it('provides a check for containing a non-default value as label', () => {
-				expect(new VectorGeoResource('id', null, VectorSourceType.KML).hasLabel()).toBeFalse();
-				expect(new VectorGeoResource('id', '', VectorSourceType.KML).hasLabel()).toBeFalse();
-				expect(new VectorGeoResource('id', 'foo', VectorSourceType.KML).hasLabel()).toBeTrue();
-			});
-
 			it('provides a static method for creating a VectorGeoResource from an URL', async () => {
 				setup();
 				const url = 'url';
