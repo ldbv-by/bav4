@@ -4,7 +4,7 @@
 import { $injector } from '../injection';
 import { QueryParameters } from '../domain/queryParameters';
 import { BaPlugin } from './BaPlugin';
-import { changeCenterAndRotation, changeZoomAndRotation, changeZoomCenterAndRotation, fit } from '../store/position/position.action';
+import { changeCenterAndRotation, changeZoomCenterAndRotation, fit } from '../store/position/position.action';
 import { isCoordinate, isNumber } from '../utils/checks';
 import { observe } from '../utils/storeUtils';
 
@@ -63,7 +63,11 @@ export class PositionPlugin extends BaPlugin {
 		} else if (isCoordinate(center) && !isNumber(zoom)) {
 			changeCenterAndRotation({ center, rotation: isNumber(rotation) ? rotation : 0 });
 		} else if (!isCoordinate(center) && isNumber(zoom)) {
-			changeZoomAndRotation({ zoom: zoom, rotation: isNumber(rotation) ? rotation : 0 });
+			changeZoomCenterAndRotation({
+				zoom: zoom,
+				center: coordinateService.getCenter(mapService.getDefaultMapExtent()),
+				rotation: isNumber(rotation) ? rotation : 0
+			});
 		}
 		//fallback
 		else {

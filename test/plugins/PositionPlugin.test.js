@@ -16,7 +16,8 @@ describe('PositionPlugin', () => {
 	};
 
 	const coordinateService = {
-		transform() {}
+		transform() {},
+		getCenter() {}
 	};
 
 	const environmentService = {
@@ -231,12 +232,17 @@ describe('PositionPlugin', () => {
 				const instanceUnderTest = new PositionPlugin();
 				const expectedZoomLevel = 5;
 				const expectedRotationValue = 0.5;
+				const expectedCoordinate = [11111, 22222];
+				const extent = [[21, 21, 42, 42]];
 				const queryParam = new URLSearchParams(`${QueryParameters.ZOOM}=${expectedZoomLevel}&${QueryParameters.ROTATION}=${expectedRotationValue}`);
 				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
 				spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
+				spyOn(mapServiceMock, 'getDefaultMapExtent').and.returnValue(extent);
+				spyOn(coordinateService, 'getCenter').withArgs(extent).and.returnValue(expectedCoordinate);
 
 				instanceUnderTest._setPositionFromQueryParams(new URLSearchParams(queryParam));
 
+				expect(store.getState().position.center).toEqual(expectedCoordinate);
 				expect(store.getState().position.zoom).toBe(expectedZoomLevel);
 				expect(store.getState().position.rotation).toBe(expectedRotationValue);
 			});
@@ -245,12 +251,17 @@ describe('PositionPlugin', () => {
 				const store = setup();
 				const instanceUnderTest = new PositionPlugin();
 				const expectedZoomLevel = 5;
+				const expectedCoordinate = [11111, 22222];
+				const extent = [[21, 21, 42, 42]];
 				const queryParam = new URLSearchParams(`${QueryParameters.ZOOM}=${expectedZoomLevel}`);
 				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
 				spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
+				spyOn(mapServiceMock, 'getDefaultMapExtent').and.returnValue(extent);
+				spyOn(coordinateService, 'getCenter').withArgs(extent).and.returnValue(expectedCoordinate);
 
 				instanceUnderTest._setPositionFromQueryParams(new URLSearchParams(queryParam));
 
+				expect(store.getState().position.center).toEqual(expectedCoordinate);
 				expect(store.getState().position.zoom).toBe(expectedZoomLevel);
 			});
 

@@ -3,7 +3,7 @@
  */
 import { fromLonLat, toLonLat, transformExtent, transform } from 'ol/proj';
 import { bvvStringifyFunction } from './provider/stringifyCoords.provider';
-import { buffer, containsCoordinate } from 'ol/extent';
+import { buffer, containsCoordinate, getCenter } from 'ol/extent';
 import { $injector } from '../injection';
 import { getCoordinatesForElevationProfile } from '../modules/olMap/utils/olGeometryUtils';
 import { LineString, Polygon } from '../../node_modules/ol/geom';
@@ -139,12 +139,21 @@ export class OlCoordinateService {
 
 	/**
 	 * Returns an extent increased by the provided value.
-	 * @param {module:domain/extentTypeDef~Extent} extend
+	 * @param {module:domain/extentTypeDef~Extent} extent
 	 * @param {number} value
 	 * @returns {module:domain/extentTypeDef~Extent} new extent with the applied buffer
 	 */
-	buffer(extend, value) {
-		return [...buffer(extend, value)];
+	buffer(extent, value) {
+		return [...buffer(extent, value)];
+	}
+
+	/**
+	 * Returns the center coordinate of an extent.
+	 * @param {module:domain/extentTypeDef~Extent} extent
+	 * @returns {module:domain/coordinateTypeDef~Coordinate} coordinate
+	 */
+	getCenter(extent) {
+		return [...getCenter(extent)];
 	}
 
 	/**
