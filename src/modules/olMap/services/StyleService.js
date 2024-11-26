@@ -266,7 +266,7 @@ export class StyleService {
 					scale: style.getText().getScale()
 				});
 			}
-			return null;
+			return undefined;
 		};
 		const isPointLike = (geometry) => {
 			return geometry instanceof Point || geometry instanceof MultiPoint;
@@ -281,19 +281,21 @@ export class StyleService {
 		// if the feature is a Point and has a name with a text style, we
 		// create a correct text style.
 		if (style && isPointLike(geometry)) {
-			const image = style.getImage() ?? null;
+			const image = style.getImage() ?? undefined;
 
 			const sanitizedImage = getImageStyle(image);
 			const sanitizedText = getTextStyle(olFeature.get('name'), style);
+
 			const sanitizedStyles = [
 				new Style({
-					fill: sanitizedText ? null : style.getFill(),
-					stroke: sanitizedText ? null : sanitizedStroke,
+					fill: sanitizedText ? undefined : style.getFill(),
+					stroke: sanitizedText ? undefined : sanitizedStroke,
 					image: sanitizedText ? sanitizedImage : image,
-					text: sanitizedText,
+					text: olFeature.get('showPointNames') === false ? undefined : sanitizedText,
 					zIndex: style.getZIndex()
 				})
 			];
+
 			olFeature.setStyle(sanitizedStyles);
 		}
 
