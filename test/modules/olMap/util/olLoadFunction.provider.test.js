@@ -139,6 +139,7 @@ describe('olLoadFunction.provider', () => {
 								return mockCanvas;
 						}
 					});
+					const revokeObjectUrlSpy = spyOn(URL, 'revokeObjectURL').and.callThrough();
 					const imageLoadFunction = getBvvBaaImageLoadFunction(geoResourceId, credential);
 
 					await imageLoadFunction(fakeImageWrapper, src);
@@ -150,6 +151,7 @@ describe('olLoadFunction.provider', () => {
 					expect(mockCanvas.height).toBe(2000);
 					expect(fakeImageWrapper.getImage().src).toBe(mockCanvasDataURL);
 					expect(drawImageSpy).toHaveBeenCalledWith(mockTempImage, 0, 0, 2001, 2000);
+					expect(revokeObjectUrlSpy).toHaveBeenCalled();
 				});
 			});
 		});
@@ -243,6 +245,7 @@ describe('olLoadFunction.provider', () => {
 								return mockCanvas;
 						}
 					});
+					const revokeObjectUrlSpy = spyOn(URL, 'revokeObjectURL').and.callThrough();
 					const imageLoadFunction = getBvvBaaImageLoadFunction(geoResourceId, null, [1000, 1000]);
 
 					await imageLoadFunction(fakeImageWrapper, src);
@@ -254,6 +257,7 @@ describe('olLoadFunction.provider', () => {
 					expect(mockCanvas.height).toBe(1001);
 					expect(fakeImageWrapper.getImage().src).toBe(mockCanvasDataURL);
 					expect(drawImageSpy).toHaveBeenCalledWith(mockTempImage, 0, 0, 1000, 1001);
+					expect(revokeObjectUrlSpy).toHaveBeenCalled();
 				});
 			});
 		});
@@ -370,6 +374,7 @@ describe('olLoadFunction.provider', () => {
 			await tileLoadFunction(fakeTileWrapper, src);
 
 			expect(fakeTileWrapper.state).toBe(TileState.ERROR);
+			expect(fakeTileWrapper.getImage().src).toBeNull();
 		});
 
 		it('provides a image load function that loads an image by using the AuthResponseInterceptorForGeoResource', async () => {
@@ -388,12 +393,17 @@ describe('olLoadFunction.provider', () => {
 					{ response: [responseInterceptor] }
 				)
 				.and.resolveTo(new Response(base64ImageData));
+			const revokeObjectUrlSpy = spyOn(URL, 'revokeObjectURL').and.callThrough();
 			const tileLoadFunction = getBvvTileLoadFunction(geoResourceId, new TileLayer());
 
 			await tileLoadFunction(fakeImageWrapper, src);
 
 			expect(fakeImageWrapper.getImage().src).toMatch('blob:http://');
 			expect(geoResourceServiceSpy).toHaveBeenCalledOnceWith(geoResourceId);
+
+			fakeImageWrapper.getImage().onload();
+
+			expect(revokeObjectUrlSpy).toHaveBeenCalled();
 		});
 
 		it('provides a image load function that loads an image including a timestamp query parameter', async () => {
