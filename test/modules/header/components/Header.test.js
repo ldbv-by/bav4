@@ -828,22 +828,28 @@ describe('Header', () => {
 
 					const element = await setup(state);
 
-					const container = element.shadowRoot.querySelector('#headerMobile');
-					expect(window.getComputedStyle(container).display).toBe('block');
-					expect(window.getComputedStyle(container).opacity).toBe('1');
+					const header = element.shadowRoot.querySelector('#headerMobile');
+					expect(header.classList.contains('hide')).toBeFalse();
+					expect(header.classList.contains('fadein')).toBeFalse();
+
 					element.shadowRoot.querySelector('#input').focus();
-					expect(window.getComputedStyle(container).display).toBe('none');
-					expect(window.getComputedStyle(container).opacity).toBe('0');
+
+					expect(header.classList.contains('hide')).toBeTrue();
+					expect(header.classList.contains('fadein')).toBeFalse();
+
 					element.shadowRoot.querySelector('#input').blur();
-					expect(window.getComputedStyle(container).display).toBe('block');
-					expect(window.getComputedStyle(container).opacity).toBe('0');
-					jasmine.clock().tick(800);
+
+					expect(header.classList.contains('hide')).toBeTrue();
+					expect(header.classList.contains('fadein')).toBeFalse();
+
+					jasmine.clock().tick(301);
 					/**
 					 * From https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle:
 					 * 'The element.style object should be used to set styles on that element, or inspect styles directly added to it from JavaScript manipulation or the global style attribute.'
 					 * --> So we have to test for 'style' here
 					 */
-					expect(container.style.opacity).toBe('1');
+					expect(header.classList.contains('hide')).toBeFalse();
+					expect(header.classList.contains('fadein')).toBeTrue();
 				});
 			});
 
@@ -866,22 +872,37 @@ describe('Header', () => {
 
 					const element = await setup(state);
 
-					const container = element.shadowRoot.querySelector('#headerLogo');
-					expect(window.getComputedStyle(container).display).toBe('block');
-					expect(window.getComputedStyle(container).opacity).toBe('1');
+					const header = element.shadowRoot.querySelector('#headerMobile');
+					const logo = element.shadowRoot.querySelector('#headerLogo');
+					expect(header.classList.contains('hide')).toBeFalse();
+					expect(header.classList.contains('fadein')).toBeFalse();
+					expect(logo.classList.contains('hide')).toBeFalse();
+					expect(logo.classList.contains('fadein')).toBeFalse();
+
 					element.shadowRoot.querySelector('#input').focus();
-					expect(window.getComputedStyle(container).display).toBe('none');
-					expect(window.getComputedStyle(container).opacity).toBe('0');
+
+					expect(header.classList.contains('hide')).toBeTrue();
+					expect(header.classList.contains('fadein')).toBeFalse();
+					expect(logo.classList.contains('hide')).toBeTrue();
+					expect(logo.classList.contains('fadein')).toBeFalse();
+
 					element.shadowRoot.querySelector('#input').blur();
-					expect(window.getComputedStyle(container).display).toBe('block');
-					expect(window.getComputedStyle(container).opacity).toBe('0');
-					jasmine.clock().tick(800);
+
+					expect(header.classList.contains('hide')).toBeTrue();
+					expect(header.classList.contains('fadein')).toBeFalse();
+					expect(logo.classList.contains('hide')).toBeTrue();
+					expect(logo.classList.contains('fadein')).toBeFalse();
+
+					jasmine.clock().tick(301);
 					/**
 					 * From https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle:
 					 * 'The element.style object should be used to set styles on that element, or inspect styles directly added to it from JavaScript manipulation or the global style attribute.'
 					 * --> So we have to test for 'style' here
 					 */
-					expect(container.style.opacity).toBe('1');
+					expect(header.classList.contains('hide')).toBeFalse();
+					expect(header.classList.contains('fadein')).toBeTrue();
+					expect(logo.classList.contains('hide')).toBeFalse();
+					expect(logo.classList.contains('fadein')).toBeTrue();
 				});
 			});
 		});

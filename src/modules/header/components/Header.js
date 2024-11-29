@@ -34,6 +34,7 @@ export class Header extends MvuElement {
 	#authService;
 	#environmentService;
 	#translationService;
+	#timeoutId;
 
 	constructor() {
 		super({
@@ -186,21 +187,15 @@ export class Header extends MvuElement {
 			disableResponsiveParameterObservation();
 			setTab(TabIds.SEARCH);
 
-			if (isPortrait) {
-				const popup = this.shadowRoot.getElementById('headerMobile');
-				const clear = this.shadowRoot.getElementById('clear');
-				popup.style.display = 'none';
-				popup.style.opacity = 0;
+			if (this._timeoutId) clearTimeout(this._timeoutId);
 
-				if (searchTerm) {
-					clear.classList.add('is-clear-visible');
-				}
-			}
-			if (!hasMinWidth) {
-				const popup = this.shadowRoot.getElementById('headerLogo');
+			if (isPortrait || !hasMinWidth) {
+				const header = this.shadowRoot.getElementById('headerMobile');
+				const logo = this.shadowRoot.getElementById('headerLogo');
 				const clear = this.shadowRoot.getElementById('clear');
-				popup.style.display = 'none';
-				popup.style.opacity = 0;
+
+				header.classList.add('hide');
+				logo.classList.add('hide');
 				if (searchTerm) {
 					clear.classList.add('is-clear-visible');
 				}
@@ -228,21 +223,16 @@ export class Header extends MvuElement {
 
 		const onInputBlur = () => {
 			enableResponsiveParameterObservation();
-			if (isPortrait) {
-				const popup = this.shadowRoot.getElementById('headerMobile');
+			if (isPortrait || !hasMinWidth) {
+				const header = this.shadowRoot.getElementById('headerMobile');
+				const logo = this.shadowRoot.getElementById('headerLogo');
 				const clear = this.shadowRoot.getElementById('clear');
-				popup.style.display = '';
-				window.setTimeout(() => {
-					popup.style.opacity = 1;
-					clear.classList.remove('is-clear-visible');
-				}, 300);
-			}
-			if (!hasMinWidth) {
-				const popup = this.shadowRoot.getElementById('headerLogo');
-				const clear = this.shadowRoot.getElementById('clear');
-				popup.style.display = '';
-				window.setTimeout(() => {
-					popup.style.opacity = 1;
+
+				this._timeoutId = setTimeout(() => {
+					header.classList.remove('hide');
+					logo.classList.remove('hide');
+					header.classList.add('fadein');
+					logo.classList.add('fadein');
 					clear.classList.remove('is-clear-visible');
 				}, 300);
 			}

@@ -505,3 +505,17 @@ input[type='search']::-webkit-search-results-button,
 input[type='search']::-webkit-search-results-decoration {
 	display: none;
 }
+
+.fadein {
+	animation-name: fadein;
+	animation-duration: var(--animation-duration-large-open);
+}
+
+@keyframes fadein {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
