@@ -41,10 +41,10 @@ export const bvvIconUrlFunction = (url) => {
 	return url;
 };
 
-export const mapVectorSourceTypeToFormat = (sourceType) => {
-	switch (sourceType) {
+export const mapVectorSourceTypeToFormat = (geoResource) => {
+	switch (geoResource.sourceType) {
 		case VectorSourceType.KML:
-			return new KML({ iconUrlFunction: bvvIconUrlFunction });
+			return new KML({ iconUrlFunction: bvvIconUrlFunction, showPointNames: geoResource.showPointNames });
 
 		case VectorSourceType.GPX:
 			return new GPX();
@@ -55,7 +55,7 @@ export const mapVectorSourceTypeToFormat = (sourceType) => {
 		case VectorSourceType.EWKT:
 			return new WKT();
 	}
-	throw new Error(sourceType + ' currently not supported');
+	throw new Error(geoResource?.sourceType + ' currently not supported');
 };
 
 /**
@@ -201,11 +201,12 @@ export class VectorLayerService {
 			const vectorSource = new VectorSource();
 
 			const data = geoResource.sourceType === VectorSourceType.EWKT ? parse(geoResource.data).wkt : geoResource.data;
-			const format = mapVectorSourceTypeToFormat(geoResource.sourceType);
+			const format = mapVectorSourceTypeToFormat(geoResource);
 			const features = format
 				.readFeatures(data)
 				.filter((f) => !!f.getGeometry()) // filter out features without a geometry. Todo: let's inform the user
 				.map((f) => {
+					f.set('showPointNames', geoResource.showPointNames);
 					f.getGeometry().transform('EPSG:' + geoResource.srid, 'EPSG:' + destinationSrid); //Todo: check for unsupported destinationSrid
 					return f;
 				});

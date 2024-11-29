@@ -145,11 +145,13 @@ export const loadBvvGeoResourceById = (id) => {
 
 /**
  * Loader for external URL-based ID: An URL-based ID must basically match the following pattern:
- * `{url}||{extraParam1}||{extraParam2}`.
+ * `{url}||[{optionalParam1}]||[{optionalParam2}]`.
  *
  * In detail:
  *
- * KML,GPX,GEOJSON,EWKT: `{url}||[{label}]`
+ * KML: `{url}||[{label}]||[{showPointNames}]`
+ *
+ * GPX,GEOJSON,EWKT: `{url}||[{label}]`
  *
  * WMS: `{url}||{layer}||[{label}]`
  * @function
@@ -177,10 +179,15 @@ export const loadExternalGeoResource = (urlBasedAsId) => {
 						case SourceTypeName.KML:
 						case SourceTypeName.EWKT: {
 							const label = parts[1];
+							const showPointNames = parts[2];
 							const geoResource = await importVectorDataService
 								.forUrl(url, { sourceType: sourceType, id: urlBasedAsId })
 								// we get a GeoResourceFuture, so we have to wait until it is resolved
 								.get();
+							if (showPointNames === 'false') {
+								// in any other cases we use the default value from the VectorGeoResource
+								geoResource.setShowPointNames(false);
+							}
 							return label?.length ? geoResource.setLabel(label) : geoResource;
 						}
 						case SourceTypeName.WMS: {

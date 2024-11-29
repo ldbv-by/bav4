@@ -11,6 +11,7 @@ import { measurementReducer } from '../../../../src/store/measurement/measuremen
 import VectorLayer from 'ol/layer/Vector';
 import CircleStyle from 'ol/style/Circle.js';
 import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../../../src/modules/olMap/ol/geodesic/geodesicGeometry.js';
+import { VectorSourceType } from '../../../../src/domain/geoResources.js';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -65,6 +66,10 @@ describe('StyleService', () => {
 		}
 	};
 
+	const geoResourceServiceMock = {
+		byId() {}
+	};
+
 	const iconServiceMock = { decodeColor: () => [0, 0, 0] };
 	let instanceUnderTest;
 
@@ -78,6 +83,7 @@ describe('StyleService', () => {
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('UnitsService', unitsServiceMock)
 			.registerSingleton('IconService', iconServiceMock)
+			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.register('OverlayService', OverlayService);
 	});
 
@@ -630,11 +636,51 @@ describe('StyleService', () => {
 				}
 			};
 
-			const layerMock = { ol_uid: 1 };
+			const layerMock = { ol_uid: 1, get: () => 'fooId' };
 			const addSpy = spyOn(instanceUnderTest, '_addDefaultStyle').and.callThrough();
 			instanceUnderTest.addStyle(feature, mapMock, layerMock);
 
 			expect(addSpy).toHaveBeenCalledWith(feature, layerMock);
+			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
+		});
+
+		it('adds default-style to GPX feature without initial style', () => {
+			const feature = new Feature({
+				geometry: new Polygon([
+					[
+						[0, 0],
+						[1, 0],
+						[1, 1],
+						[0, 1],
+						[0, 0]
+					]
+				])
+			});
+			const styleSetterSpy = spyOn(feature, 'setStyle');
+			const viewMock = {
+				getResolution() {
+					return 50;
+				},
+				once() {}
+			};
+
+			const mapMock = {
+				getView: () => viewMock,
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+
+			const layerMock = { ol_uid: 1, get: () => 'gpxGeoResourceId' };
+			const addSpy = spyOn(instanceUnderTest, '_addDefaultStyle').and.callThrough();
+			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'byId')
+				.withArgs('gpxGeoResourceId')
+				.and.returnValue({ sourceType: VectorSourceType.GPX });
+			instanceUnderTest.addStyle(feature, mapMock, layerMock);
+
+			expect(addSpy).toHaveBeenCalledWith(feature, layerMock);
+			expect(geoResourceServiceSpy).toHaveBeenCalled();
+			expect(instanceUnderTest._defaultColorByLayerId).toHaveSize(0);
 			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
 		});
 
@@ -665,7 +711,7 @@ describe('StyleService', () => {
 				}
 			};
 
-			const layerMock = { ol_uid: 'some' };
+			const layerMock = { ol_uid: 'some', get: () => 'fooId' };
 			instanceUnderTest._defaultColorByLayerId['some'] = [0, 0, 0, 1];
 			const addSpy = spyOn(instanceUnderTest, '_addDefaultStyle').and.callThrough();
 			instanceUnderTest.addStyle(feature, mapMock, layerMock);
@@ -1073,6 +1119,41 @@ describe('StyleService', () => {
 			expect(feature.getStyle()[0].getText().getScale()).toBe(1.2);
 
 			// replaces the icon
+			const actualImageStyle = feature.getStyle()[0].getImage();
+			const expectedAlphaValue = 0; // 0 -> full transparency; 255 -> full opacity
+			const getAlphaValue = (rgbaColorArray) => rgbaColorArray[3];
+			expect(actualImageStyle).toEqual(jasmine.any(CircleStyle));
+			expect(getAlphaValue(actualImageStyle.getFill().getColor())).toEqual(expectedAlphaValue);
+			expect(getAlphaValue(actualImageStyle.getStroke().getColor())).toEqual(expectedAlphaValue);
+		});
+
+		it("sanitizes/removes the text style for point feature with feature property 'showPointNames'", () => {
+			const feature = new Feature({ geometry: new Point([0, 0]) });
+			feature.set('showPointNames', false);
+			const style = new Style({
+				image: new Icon({
+					size: [42, 42],
+					anchor: [42, 42],
+					anchorXUnits: 'pixels',
+					anchorYUnits: 'pixels',
+					src: 'https://some.url/to/image/foo.png',
+					scale: 0
+				}),
+				text: new Text({ text: 'foo', fill: new Fill({ color: [42, 21, 0] }), scale: 1.2 })
+			});
+			feature.set('name', 'bar');
+			feature.setStyle([style]);
+			const spyStyle = spyOn(feature, 'setStyle').and.callThrough();
+
+			instanceUnderTest.sanitizeStyle(feature);
+
+			// set the new style
+			expect(spyStyle).toHaveBeenCalledWith(jasmine.arrayContaining([jasmine.any(Style)]));
+
+			// respects the feature property and set no text style...
+			expect(feature.getStyle()[0].getText()).toBeNull();
+
+			// ...although replaces the icon
 			const actualImageStyle = feature.getStyle()[0].getImage();
 			const expectedAlphaValue = 0; // 0 -> full transparency; 255 -> full opacity
 			const getAlphaValue = (rgbaColorArray) => rgbaColorArray[3];
