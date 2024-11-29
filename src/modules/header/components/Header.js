@@ -187,7 +187,7 @@ export class Header extends MvuElement {
 			disableResponsiveParameterObservation();
 			setTab(TabIds.SEARCH);
 
-			if (this._timeoutId) clearTimeout(this._timeoutId);
+			if (this.#timeoutId) clearTimeout(this.#timeoutId);
 
 			if (isPortrait || !hasMinWidth) {
 				const header = this.shadowRoot.getElementById('headerMobile');
@@ -228,7 +228,7 @@ export class Header extends MvuElement {
 				const logo = this.shadowRoot.getElementById('headerLogo');
 				const clear = this.shadowRoot.getElementById('clear');
 
-				this._timeoutId = setTimeout(() => {
+				this.#timeoutId = setTimeout(() => {
 					header.classList.remove('hide');
 					logo.classList.remove('hide');
 					header.classList.add('fadein');
