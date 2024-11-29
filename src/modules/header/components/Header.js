@@ -234,7 +234,7 @@ export class Header extends MvuElement {
 					header.classList.add('fadein');
 					logo.classList.add('fadein');
 					clear.classList.remove('is-clear-visible');
-				}, 300);
+				}, Header.TIME_INTERVAL_MS);
 			}
 		};
 
@@ -364,6 +364,10 @@ export class Header extends MvuElement {
 
 	static get SWIPE_DELTA_PX() {
 		return 50;
+	}
+
+	static get TIME_INTERVAL_MS() {
+		return 300;
 	}
 
 	static get tag() {

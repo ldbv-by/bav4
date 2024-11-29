@@ -84,6 +84,12 @@ describe('Header', () => {
 		return TestUtils.render(Header.tag);
 	};
 
+	describe('class', () => {
+		it('static constants', () => {
+			expect(Header.TIME_INTERVAL_MS).toBe(300);
+		});
+	});
+
 	describe('when instantiated', () => {
 		it('has a model with default values', async () => {
 			await setup();
@@ -677,7 +683,7 @@ describe('Header', () => {
 
 					input.blur();
 
-					jasmine.clock().tick(300 + 100);
+					jasmine.clock().tick(Header.TIME_INTERVAL_MS + 100);
 
 					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
 				});
@@ -708,7 +714,7 @@ describe('Header', () => {
 					expect(clearButton.classList.contains('is-clear-visible')).toBeTrue();
 
 					input.blur();
-					jasmine.clock().tick(300 + 100);
+					jasmine.clock().tick(Header.TIME_INTERVAL_MS + 100);
 
 					expect(window.getComputedStyle(clearButton).display).toBe('none');
 					expect(clearButton.classList.contains('is-clear-visible')).toBeFalse();
@@ -750,7 +756,7 @@ describe('Header', () => {
 
 					input.blur();
 
-					jasmine.clock().tick(300 + 100);
+					jasmine.clock().tick(Header.TIME_INTERVAL_MS + 100);
 
 					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerLogo')).display).toBe('block');
 				});
@@ -781,7 +787,7 @@ describe('Header', () => {
 					expect(clearButton.classList.contains('is-clear-visible')).toBeTrue();
 
 					input.blur();
-					jasmine.clock().tick(300 + 100);
+					jasmine.clock().tick(Header.TIME_INTERVAL_MS + 100);
 
 					expect(window.getComputedStyle(clearButton).display).toBe('none');
 					expect(clearButton.classList.contains('is-clear-visible')).toBeFalse();
@@ -842,7 +848,7 @@ describe('Header', () => {
 					expect(header.classList.contains('hide')).toBeTrue();
 					expect(header.classList.contains('fadein')).toBeFalse();
 
-					jasmine.clock().tick(301);
+					jasmine.clock().tick(Header.TIME_INTERVAL_MS);
 					/**
 					 * From https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle:
 					 * 'The element.style object should be used to set styles on that element, or inspect styles directly added to it from JavaScript manipulation or the global style attribute.'
@@ -893,7 +899,7 @@ describe('Header', () => {
 					expect(logo.classList.contains('hide')).toBeTrue();
 					expect(logo.classList.contains('fadein')).toBeFalse();
 
-					jasmine.clock().tick(301);
+					jasmine.clock().tick(Header.TIME_INTERVAL_MS);
 					/**
 					 * From https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle:
 					 * 'The element.style object should be used to set styles on that element, or inspect styles directly added to it from JavaScript manipulation or the global style attribute.'
