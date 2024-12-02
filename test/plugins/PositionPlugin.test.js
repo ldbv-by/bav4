@@ -11,6 +11,7 @@ describe('PositionPlugin', () => {
 		getDefaultMapExtent() {},
 		getLocalProjectedSrid() {},
 		getSrid() {},
+		getMinZoomLevel: () => {},
 		getMaxZoomLevel: () => {}
 	};
 
@@ -64,17 +65,18 @@ describe('PositionPlugin', () => {
 		describe('_setPositionFromConfig', () => {
 			it('sets the position by zooming to configured extent', async () => {
 				const store = setup();
+				const expectedRotationValue = 0.5;
 				const initialFitRequest = store.getState().position.fitRequest;
-
 				const instanceUnderTest = new PositionPlugin();
 				const mapServiceSpy = spyOn(mapServiceMock, 'getDefaultMapExtent').and.returnValue([[21, 21, 42, 42]]);
 
-				instanceUnderTest._setPositionFromConfig();
+				instanceUnderTest._setPositionFromConfig(expectedRotationValue);
 
 				await TestUtils.timeout();
 				expect(mapServiceSpy).toHaveBeenCalledTimes(1);
 				expect(store.getState().position.fitRequest).not.toEqual(initialFitRequest);
 				expect(store.getState().position.fitRequest.payload.options).toEqual({ useVisibleViewport: false });
+				expect(store.getState().position.rotation).toBe(expectedRotationValue);
 			});
 		});
 
@@ -220,9 +222,9 @@ describe('PositionPlugin', () => {
 			});
 
 			it('sets the position by calling #_setPositionFromConfig as fallback', async () => {
-				const store = setup();
+				setup();
 				const instanceUnderTest = new PositionPlugin();
-				const expectedRotationValue = 0.5;
+				const expectedRotationValue = 1.5;
 				const wgs84Coordinate = ['some', 'thing'];
 				const expectedZoomLevel = 'unparseable';
 				const queryParam = `${QueryParameters.CENTER}=${wgs84Coordinate.join(',')}&${QueryParameters.ZOOM}=${expectedZoomLevel}&${QueryParameters.ROTATION}=${expectedRotationValue}`;
@@ -230,8 +232,7 @@ describe('PositionPlugin', () => {
 
 				instanceUnderTest._setPositionFromQueryParams(new URLSearchParams(queryParam));
 
-				expect(store.getState().position.rotation).toBe(expectedRotationValue);
-				expect(setPositionFromConfigSpy).toHaveBeenCalled();
+				expect(setPositionFromConfigSpy).toHaveBeenCalledOnceWith(expectedRotationValue);
 			});
 		});
 

@@ -66,16 +66,16 @@ export class PositionPlugin extends BaPlugin {
 		}
 		//fallback
 		else {
-			changeRotation(rotation);
-			this._setPositionFromConfig();
+			this._setPositionFromConfig(rotation);
 		}
 	}
 
-	_setPositionFromConfig() {
+	_setPositionFromConfig(rotation) {
 		const { MapService: mapService } = $injector.inject('MapService');
 
 		setTimeout(() => {
 			fit(mapService.getDefaultMapExtent(), { useVisibleViewport: false });
+			changeRotation(rotation);
 		});
 	}
 
