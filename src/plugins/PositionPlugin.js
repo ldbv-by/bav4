@@ -4,7 +4,7 @@
 import { $injector } from '../injection';
 import { QueryParameters } from '../domain/queryParameters';
 import { BaPlugin } from './BaPlugin';
-import { changeCenterAndRotation, changeZoomCenterAndRotation, fit } from '../store/position/position.action';
+import { changeRotation, changeZoomCenterAndRotation, fit } from '../store/position/position.action';
 import { isCoordinate, isNumber } from '../utils/checks';
 import { observe } from '../utils/storeUtils';
 
@@ -54,23 +54,19 @@ export class PositionPlugin extends BaPlugin {
 			return null;
 		};
 
-		const center = parseCenter(queryParams.get(QueryParameters.CENTER));
 		const zoom = parseZoom(queryParams.get(QueryParameters.ZOOM));
-		const rotation = parseRotation(queryParams.get(QueryParameters.ROTATION));
-
-		if (isCoordinate(center) && isNumber(zoom)) {
-			changeZoomCenterAndRotation({ zoom: zoom, center: center, rotation: isNumber(rotation) ? rotation : 0 });
-		} else if (isCoordinate(center) && !isNumber(zoom)) {
-			changeCenterAndRotation({ center, rotation: isNumber(rotation) ? rotation : 0 });
-		} else if (!isCoordinate(center) && isNumber(zoom)) {
+		const center = parseCenter(queryParams.get(QueryParameters.CENTER));
+		const rotation = parseRotation(queryParams.get(QueryParameters.ROTATION)) ?? 0;
+		if (isCoordinate(center) || isNumber(zoom)) {
 			changeZoomCenterAndRotation({
-				zoom: zoom,
-				center: coordinateService.getCenter(mapService.getDefaultMapExtent()),
-				rotation: isNumber(rotation) ? rotation : 0
+				zoom: zoom ?? Math.round(mapService.getMaxZoomLevel() - mapService.getMaxZoomLevel() / 2),
+				center: center ?? coordinateService.getCenter(mapService.getDefaultMapExtent()),
+				rotation
 			});
 		}
 		//fallback
 		else {
+			changeRotation(rotation);
 			this._setPositionFromConfig();
 		}
 	}
@@ -87,14 +83,7 @@ export class PositionPlugin extends BaPlugin {
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 		const queryParams = environmentService.getQueryParams();
 
-		//from query params
-		if (queryParams.has(QueryParameters.CENTER) || queryParams.has(QueryParameters.ZOOM)) {
-			this._setPositionFromQueryParams(queryParams);
-		}
-		//from config
-		else {
-			this._setPositionFromConfig();
-		}
+		this._setPositionFromQueryParams(queryParams);
 
 		if (environmentService.isEmbeddedAsWC()) {
 			// handle WC attribute changes
