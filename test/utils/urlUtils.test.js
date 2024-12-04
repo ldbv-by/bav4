@@ -67,10 +67,12 @@ describe('urlUtils', () => {
 	});
 
 	describe('setQueryParams', () => {
-		it('sets query parameters to an existing url', () => {
+		it('sets to or removes query parameters from an existing url', () => {
 			expect(setQueryParams('http://foo.bar?some=thing')).toBe('http://foo.bar/?some=thing');
 			expect(setQueryParams('http://foo.bar?some=thing', { foo: 'bar' })).toBe('http://foo.bar/?some=thing&foo=bar');
 			expect(setQueryParams('http://foo.bar?some=thing', { some: 'thing' })).toBe('http://foo.bar/?some=thing');
+			expect(setQueryParams('http://foo.bar?some=thing&some=thing2', { some: 'thing3' })).toBe('http://foo.bar/?some=thing3');
+			expect(setQueryParams('http://foo.bar?some=thing&some=thing2', { some: null })).toBe('http://foo.bar/?');
 		});
 
 		it('throws a TypeError when parameter is not valid', () => {

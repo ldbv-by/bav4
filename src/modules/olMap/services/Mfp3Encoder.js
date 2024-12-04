@@ -931,7 +931,7 @@ export class BvvMfp3Encoder {
 	 *@private
 	 */
 	async _generateShortUrl() {
-		const url = setQueryParams(this._shareService.encodeState(), { [QueryParameters.TOOL_ID]: '' });
+		const url = setQueryParams(this._shareService.encodeState(), { [QueryParameters.TOOL_ID]: null });
 		try {
 			return await this._urlService.shorten(url);
 		} catch (e) {
