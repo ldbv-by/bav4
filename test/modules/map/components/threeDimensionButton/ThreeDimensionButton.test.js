@@ -74,7 +74,7 @@ describe('ThreeDimensionButton', () => {
 			button.click();
 
 			expect(shareServiceSpy).toHaveBeenCalled();
-			expect(openSpy).toHaveBeenCalledWith('https://cert42.bayern.de/bayernatlas_3d_preview?c=11.11111,22.22222&res=42.0');
+			expect(openSpy).toHaveBeenCalledWith('https://geodaten.bayern.de/bayernatlas_3d_preview?c=11.11111,22.22222&res=42.0');
 		});
 	});
 });
