@@ -576,7 +576,7 @@
 				${oe()}
 			</style>
 			<div>
-				<button @click="${()=>{const e=Object.fromEntries(this.#Z.getParameters()),t=this.#we.toLonLat(this.#U.getStore().getState().position.center).map((e=>e.toFixed(se.I.WGS84.digits)));e[ae.h.CENTER]=t,e.res=this.#Se.calcResolution(this.#U.getStore().getState().position.zoom,this.#U.getStore().getState().position.center).toFixed(1);const n=`https://cert42.bayern.de/bayernatlas_3d_preview?${decodeURIComponent(new URLSearchParams(e).toString())}`;this.#n.getWindow().open(n)}}" class="three-dimension-button" title=${(e=>this.#C.translate("map_threeDimensionButton_title"))()}>
+				<button @click="${()=>{const e=Object.fromEntries(this.#Z.getParameters()),t=this.#we.toLonLat(this.#U.getStore().getState().position.center).map((e=>e.toFixed(se.I.WGS84.digits)));e[ae.h.CENTER]=t,e.res=this.#Se.calcResolution(this.#U.getStore().getState().position.zoom,this.#U.getStore().getState().position.center).toFixed(1);const n=`https://geodaten.bayern.de/bayernatlas_3d_preview?${decodeURIComponent(new URLSearchParams(e).toString())}`;this.#n.getWindow().open(n)}}" class="three-dimension-button" title=${(e=>this.#C.translate("map_threeDimensionButton_title"))()}>
 					<i class="icon three-dimension-icon"></i>
 				</button>
 			</div>
