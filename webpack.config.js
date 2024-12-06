@@ -11,6 +11,8 @@ const templateParameters = process.env.BACKEND_URL
 	? require(`./src/assets/${process.env.DEFAULT_LANG || 'en'}.json`)
 	: require(`./src/assets/standalone.json`);
 
+const hashFilenames = !(process.env.HASH_FILENAMES === 'false');
+
 module.exports = {
 	mode: 'development',
 	entry: {
@@ -21,7 +23,7 @@ module.exports = {
 	},
 	output: {
 		path: path.resolve(__dirname, 'dist'),
-		filename: '[name].[contenthash].js',
+		filename: hashFilenames ? '[name].[contenthash].js' : '[name].js',
 		clean: true
 	},
 	module: {

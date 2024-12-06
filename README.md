@@ -80,6 +80,7 @@ Currently used properties are:
 |----|----|
 | `npm run start` | Compiles and hot-reloads for development. Will serve the project under `http://localhost:8080` (or the next available port if `8080` is already used, see console output) |
 | `npm run start:nohostcheck` | Compiles and hot-reloads for development. Will serve the project under `http://0.0.0.0:8080` (or the next available port if `8080` is already used, see console output) with disabled host checking so that the application is reachable from another device|
+| `npm run start:nohashing` | Compiles and hot-reloads for development. Will serve the project under `http://0.0.0.0:8080` (or the next available port if `8080` is already used, see console output) with disabled hashing of bundles and chunks|
 | `npm run build:dev` | Compiles all files without bundling and minification |
 | `npm run build:prod` | Compiles and minifies for production |
 
