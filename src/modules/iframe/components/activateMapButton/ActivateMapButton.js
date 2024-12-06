@@ -4,10 +4,11 @@
 import { html } from 'lit-html';
 import { QueryParameters } from '../../../../domain/queryParameters';
 import { $injector } from '../../../../injection';
+import { Footer } from '../../../footer/components/Footer';
 import { MvuElement } from '../../../MvuElement';
 import { OlMap } from '../../../olMap/components/OlMap';
-import { Footer } from '../../../footer/components/Footer';
 import css from './activateMapButton.css';
+import { findAllBySelector } from '../../../../utils/markup';
 
 /**
  * @class
@@ -54,6 +55,10 @@ export class ActivateMapButton extends MvuElement {
 				style.id = ActivateMapButton.STYLE_ID;
 				document.head.appendChild(style);
 			}
+			const olMap = findAllBySelector(document.querySelector(OlMap.tag) ?? this, '#ol-map');
+			if (olMap[0]) {
+				olMap[0].setAttribute('inert', '');
+			}
 		}
 	}
 
@@ -65,6 +70,11 @@ export class ActivateMapButton extends MvuElement {
 			commonStyle.remove();
 			const background = this.shadowRoot.getElementById('background');
 			background.classList.add('hide');
+			const olMap = findAllBySelector(document.querySelector(OlMap.tag) ?? this, '#ol-map');
+			if (olMap[0]) {
+				olMap[0].removeAttribute('inert');
+				olMap[0].focus();
+			}
 		};
 
 		return html`
