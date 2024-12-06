@@ -71,6 +71,39 @@
 	right: 0;
 }
 
+.attribution-container:focus-within {
+	white-space: unset;
+	overflow: hidden;
+	padding: 0.4em 1em;
+	max-width: 100vw;
+	background-color: var(--primary-bg-color);
+	width: 25em !important;
+}
+.attribution-container:focus-within .attribution {
+	display: block;
+	margin: 0.5em;
+}
+
+.attribution-container:focus-within .icon {
+	-moz-transform: rotate(90deg);
+	-webkit-transform: rotate(90deg);
+	transform: rotate(90deg);
+}
+.attribution-container:focus-within .collapse-button {
+	padding: 0.5em 1em;
+	margin: 0;
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+
 .is-collapse {
 	display: block;
+}
+
+.attribution-link:focus {
+	overflow: visible;
+	box-shadow:
+		0 0 0 0.1em var(--primary-color-lighter),
+		0 0 0 0.3em var(--secondary-color);
 }
