@@ -22,6 +22,7 @@ import supported from 'mapbox-gl-supported';
 import { UnavailableGeoResourceError } from '../../../../src/domain/errors';
 import TileLayer from 'ol/layer/Tile';
 import { BvvGk4WmtsTileGrid } from '../../../../src/modules/olMap/ol/tileGrid/BvvGk4WmtsTileGrid';
+import { Eu25832WmtsTileGrid } from '../../../../src/modules/olMap/ol/tileGrid/Eu25832WmtsTileGrid';
 
 describe('LayerService', () => {
 	const vectorLayerService = {
@@ -342,6 +343,20 @@ describe('LayerService', () => {
 
 				const xyzSource = xyzOlLayer.getSource();
 				expect(xyzSource.getTileGrid()).toEqual(new AdvWmtsTileGrid());
+				expect(xyzSource.getProjection().getCode()).toBe('EPSG:25832');
+			});
+
+			it('sets a XYZ source containing the EU25832 TileGrid', () => {
+				const mockImageLoadFunction = () => {};
+				const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
+				const instanceUnderTest = setup(null, providerSpy);
+				const id = 'id';
+				const xyzGeoResource = new XyzGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}').setTileGridId('eu25832');
+
+				const xyzOlLayer = instanceUnderTest.toOlLayer(id, xyzGeoResource);
+
+				const xyzSource = xyzOlLayer.getSource();
+				expect(xyzSource.getTileGrid()).toEqual(new Eu25832WmtsTileGrid());
 				expect(xyzSource.getProjection().getCode()).toBe('EPSG:25832');
 			});
 

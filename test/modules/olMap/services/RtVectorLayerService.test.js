@@ -2,7 +2,7 @@ import { $injector } from '../../../../src/injection';
 import { getNextPort, isNextPortAvailable, RtVectorLayerService } from '../../../../src/modules/olMap/services/RtVectorLayerService';
 import { createDefaultLayerProperties, layersReducer } from '../../../../src/store/layers/layers.reducer';
 import { TestUtils } from '../../../test-utils';
-import { VectorSourceType } from '../../../../src/domain/geoResources';
+import { RtVectorGeoResource, VectorSourceType } from '../../../../src/domain/geoResources';
 import { Server as WebsocketMockServer } from 'mock-socket';
 import VectorLayer from 'ol/layer/Vector';
 import { UnavailableGeoResourceError } from '../../../../src/domain/errors';
@@ -129,14 +129,10 @@ describe('RtVectorLayerService', () => {
 		describe('createVectorLayer', () => {
 			const wsUrl = 'ws://localhost';
 
-			const rtVectorGeoResource = {
-				id: 'geoResourceId',
-				label: 'geoResourceLabel',
-				sourceType: VectorSourceType.KML,
-				url: wsUrl,
-				srid: 4326,
-				isClustered: () => false
-			};
+			const rtVectorGeoResource = new RtVectorGeoResource('geoResourceId', 'geoResourceLabel', wsUrl, VectorSourceType.KML);
+			const clusteredRtVectorGeoResource = new RtVectorGeoResource('geoResourceId', 'geoResourceLabel', wsUrl, VectorSourceType.KML).setClusterParams(
+				{ foo: 'bar' }
+			);
 
 			let mockServer;
 			beforeEach(() => {
@@ -191,6 +187,7 @@ describe('RtVectorLayerService', () => {
 				mockServer.emit('message', kmlData);
 
 				expect(olVectorLayer.getSource().getFeatures().length).toBe(1);
+				expect(olVectorLayer.getSource().getFeatures()[0].get('showPointNames')).toBeTrue();
 				expect(processSpy).toHaveBeenCalled();
 				expect(sanitizeStyleSpy).toHaveBeenCalled();
 				expect(applyStyleSpy).toHaveBeenCalled();
@@ -210,9 +207,8 @@ describe('RtVectorLayerService', () => {
 				const id = 'id0';
 				const olMap = { getView: () => {} };
 				const viewMock = { calculateExtent: () => [] };
-				const clusteredRtGeoResource = { ...rtVectorGeoResource, isClustered: () => true };
 
-				const olVectorLayer = instanceUnderTest.createLayer(id, clusteredRtGeoResource, olMap);
+				const olVectorLayer = instanceUnderTest.createLayer(id, clusteredRtVectorGeoResource, olMap);
 				const processSpy = spyOn(instanceUnderTest, '_processMessage').and.callThrough();
 				spyOn(olMap, 'getView').and.callFake(() => viewMock);
 				const sanitizeStyleSpy = spyOn(vectorLayerService, 'sanitizeStyles').and.callFake(() => {});
@@ -226,6 +222,7 @@ describe('RtVectorLayerService', () => {
 				mockServer.emit('message', kmlData);
 
 				expect(olVectorLayer.getSource().getFeatures().length).toBe(1);
+				expect(olVectorLayer.getSource().getFeatures()[0].get('showPointNames')).toBeTrue();
 				expect(processSpy).toHaveBeenCalled();
 				expect(sanitizeStyleSpy).toHaveBeenCalled();
 				expect(applyStyleSpy).toHaveBeenCalled();

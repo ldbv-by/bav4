@@ -7,7 +7,6 @@ import { setCurrent as setCurrentTopic } from '../../src/store/topics/topics.act
 import { QueryParameters } from '../../src/domain/queryParameters';
 import { topicsReducer } from '../../src/store/topics/topics.reducer';
 import { addLayer } from '../../src/store/layers/layers.action';
-import { topicsContentPanelReducer } from '../../src/store/topicsContentPanel/topicsContentPanel.reducer';
 
 describe('ChipsPlugin', () => {
 	const chipsConfigurationService = {
@@ -22,8 +21,7 @@ describe('ChipsPlugin', () => {
 		const store = TestUtils.setupStoreAndDi(state, {
 			chips: chipsReducer,
 			layers: layersReducer,
-			topics: topicsReducer,
-			topicsContentPanel: topicsContentPanelReducer
+			topics: topicsReducer
 		});
 		$injector
 			.registerSingleton('ChipsConfigurationService', chipsConfigurationService)
@@ -109,9 +107,6 @@ describe('ChipsPlugin', () => {
 			const store = setup({
 				topics: {
 					current: topicId
-				},
-				topicsContentPanel: {
-					index: 1
 				}
 			});
 			const instanceUnderTest = new ChipsPlugin();
@@ -169,11 +164,7 @@ describe('ChipsPlugin', () => {
 					}
 				}
 			];
-			const store = setup({
-				topicsContentPanel: {
-					index: 1
-				}
-			});
+			const store = setup();
 			const instanceUnderTest = new ChipsPlugin();
 			spyOn(chipsConfigurationService, 'all').and.resolveTo(mockChips);
 			await instanceUnderTest.register(store);

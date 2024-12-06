@@ -388,7 +388,7 @@ export class GeoResourceFuture extends GeoResource {
 	/**
 	 * Registers a function called when the loader resolves.
 	 * The callback function will be called with two arguments: the loaded `GeoResource` and the current `GeoResourceFuture`.
-	 * @param {function (GeoResource, GeoResourceFuture): GeoResource|undefined} callback
+	 * @param {function (GeoResource, GeoResourceFuture): void} callback
 	 */
 	onResolve(callback) {
 		this._onResolve.push(callback);
@@ -397,7 +397,7 @@ export class GeoResourceFuture extends GeoResource {
 
 	/**
 	 * Registers a function called when the loader function rejected.
-	 * @param {function (GeoResourceFuture)} callback
+	 * @param {function (GeoResourceFuture): void} callback
 	 */
 	onReject(callback) {
 		this._onReject.push(callback);
@@ -549,6 +549,7 @@ export class VectorGeoResource extends GeoResource {
 		this._sourceType = sourceType;
 		this._data = null;
 		this._srid = null;
+		this._showPointNames = true;
 		this._clusterParams = {};
 	}
 
@@ -625,6 +626,21 @@ export class VectorGeoResource extends GeoResource {
 		return this;
 	}
 
+	get showPointNames() {
+		return this._showPointNames;
+	}
+
+	/**
+	 * Currently effective only for KML:
+	 * Show names as labels for placemarks which contain points.
+	 * @param {boolean} showPointNames
+	 * @returns `this` for chaining
+	 */
+	setShowPointNames(showPointNames) {
+		this._showPointNames = showPointNames;
+		return this;
+	}
+
 	/**
 	 * @override
 	 */
@@ -667,6 +683,7 @@ export class RtVectorGeoResource extends GeoResource {
 		this._url = url;
 		this._sourceType = sourceType;
 		this._clusterParams = {};
+		this._showPointNames = true;
 	}
 
 	get url() {
@@ -685,6 +702,21 @@ export class RtVectorGeoResource extends GeoResource {
 		if (clusterParams) {
 			this._clusterParams = { ...clusterParams };
 		}
+		return this;
+	}
+
+	get showPointNames() {
+		return this._showPointNames;
+	}
+
+	/**
+	 * Currently effective only for KML:
+	 * Show names as labels for placemarks which contain points.
+	 * @param {boolean} showPointNames
+	 * @returns `this` for chaining
+	 */
+	setShowPointNames(showPointNames) {
+		this._showPointNames = showPointNames;
 		return this;
 	}
 

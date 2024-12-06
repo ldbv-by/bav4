@@ -23,6 +23,7 @@ import LayerGroup from 'ol/layer/Group';
 import TileGrid from 'ol/tilegrid/TileGrid';
 import { AdvWmtsTileGrid } from '../../../../src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid';
 import { BaOverlayTypes } from '../../../../src/modules/olMap/components/BaOverlay';
+import { QueryParameters } from '../../../../src/domain/queryParameters';
 
 describe('BvvMfp3Encoder', () => {
 	const viewMock = { getCenter: () => [50, 50], calculateExtent: () => [0, 0, 100, 100], getResolution: () => 10, getZoomForResolution: () => 21 };
@@ -56,7 +57,7 @@ describe('BvvMfp3Encoder', () => {
 	};
 
 	const shareServiceMock = {
-		encodeState() {},
+		encodeState: () => `http://foo?${QueryParameters.TOOL_ID}=someTool`,
 		copyToClipboard() {}
 	};
 
@@ -2759,34 +2760,26 @@ describe('BvvMfp3Encoder', () => {
 	});
 
 	describe('_generateShortUrl', () => {
-		it('shortenens the url', async () => {
-			const encodedState = 'foo';
-			const shareServiceSpy = spyOn(shareServiceMock, 'encodeState').and.returnValue(encodedState);
-			const urlServiceSpy = spyOn(urlServiceMock, 'shorten').withArgs(encodedState).and.resolveTo('bar');
-
+		it('shortens the url', async () => {
+			const urlServiceSpy = spyOn(urlServiceMock, 'shorten').withArgs('http://foo/?').and.resolveTo('bar');
 			const classUnderTest = setup();
 
 			const shortUrl = await classUnderTest._generateShortUrl();
 
-			expect(shareServiceSpy).toHaveBeenCalled();
 			expect(urlServiceSpy).toHaveBeenCalled();
 			expect(shortUrl).toBe('bar');
 		});
 
 		it('warns in console, if shortening fails', async () => {
-			const encodedState = 'foo';
-			const shareServiceSpy = spyOn(shareServiceMock, 'encodeState').and.returnValue(encodedState);
 			const urlServiceSpy = spyOn(urlServiceMock, 'shorten').and.throwError('bar');
 			const warnSpy = spyOn(console, 'warn');
-
 			const classUnderTest = setup();
 
 			const shortUrl = await classUnderTest._generateShortUrl();
 
-			expect(shareServiceSpy).toHaveBeenCalled();
 			expect(warnSpy).toHaveBeenCalledWith('Could not shorten url: Error: bar');
 			expect(urlServiceSpy).toThrowError('bar');
-			expect(shortUrl).toBe('foo');
+			expect(shortUrl).toBe('http://foo/?');
 		});
 	});
 

@@ -175,6 +175,17 @@ describe('OlCoordinateService', () => {
 			});
 		});
 
+		describe('getCenter', () => {
+			it('returns the center coordinate of an extent', () => {
+				setup();
+				const extent = [10, 10, 20, 20];
+
+				const center = instanceUnderTest.getCenter(extent);
+
+				expect(center).toEqual([15, 15]);
+			});
+		});
+
 		describe('containsCoordinate', () => {
 			it('checks if the passed coordinate is contained or on the edge of the extent', () => {
 				setup();

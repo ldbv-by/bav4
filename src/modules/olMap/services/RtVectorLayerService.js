@@ -64,7 +64,7 @@ export class RtVectorLayerService {
 		const { MapService: mapService } = $injector.inject('MapService');
 		const destinationSrid = mapService.getSrid();
 
-		const format = mapVectorSourceTypeToFormat(rtVectorGeoResource.sourceType);
+		const format = mapVectorSourceTypeToFormat(rtVectorGeoResource);
 
 		/**
 		 * Only eWKT needs a 'per-data'-check for the srid. All other (currently) supported
@@ -77,6 +77,7 @@ export class RtVectorLayerService {
 						.readFeatures(eWkt.wkt)
 						.filter((f) => !!f.getGeometry())
 						.map((f) => {
+							f.set('showPointNames', rtVectorGeoResource.showPointNames);
 							f.getGeometry().transform('EPSG:' + eWkt.srid, 'EPSG:' + destinationSrid);
 							return f;
 						});
@@ -86,6 +87,7 @@ export class RtVectorLayerService {
 						.readFeatures(data)
 						.filter((f) => !!f.getGeometry())
 						.map((f) => {
+							f.set('showPointNames', rtVectorGeoResource.showPointNames);
 							f.getGeometry().transform('EPSG:4326', 'EPSG:' + destinationSrid);
 							return f;
 						});

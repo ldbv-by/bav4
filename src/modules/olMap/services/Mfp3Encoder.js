@@ -19,6 +19,8 @@ import { getPolygonFrom } from '../utils/olGeometryUtils';
 import { getUniqueCopyrights } from '../../../utils/attributionUtils';
 import { BaOverlay, OVERLAY_STYLE_CLASS } from '../components/BaOverlay';
 import { findAllBySelector } from '../../../utils/markup';
+import { setQueryParams } from '../../../utils/urlUtils';
+import { QueryParameters } from '../../../domain/queryParameters';
 
 const UnitsRatio = 39.37; //inches per meter
 const PointsPerInch = 72; // PostScript points 1/72"
@@ -929,7 +931,7 @@ export class BvvMfp3Encoder {
 	 *@private
 	 */
 	async _generateShortUrl() {
-		const url = this._shareService.encodeState();
+		const url = setQueryParams(this._shareService.encodeState(), { [QueryParameters.TOOL_ID]: null });
 		try {
 			return await this._urlService.shorten(url);
 		} catch (e) {
