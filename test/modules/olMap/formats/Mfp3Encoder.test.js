@@ -401,8 +401,8 @@ describe('BvvMfp3Encoder', () => {
 
 		it('does NOT encode a invisible layer', async () => {
 			const encoder = new BvvMfp3Encoder();
-			const invisibleLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getVisible: () => false };
-			const visibleLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getVisible: () => true };
+			const invisibleLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getVisible: () => false, getZIndex: () => 1 };
+			const visibleLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getVisible: () => true, getZIndex: () => 0 };
 			spyOn(encoder, '_getCopyrights').and.callFake(() => [{}]);
 			spyOn(mapMock, 'getLayers').and.callFake(() => {
 				return { getArray: () => [invisibleLayerMock, visibleLayerMock] };
@@ -416,8 +416,8 @@ describe('BvvMfp3Encoder', () => {
 
 		it('does NOT encode a invisible layer without extent', async () => {
 			const encoder = new BvvMfp3Encoder();
-			const invisibleLayerMock = { get: () => 'foo', getExtent: () => undefined, getVisible: () => false };
-			const visibleLayerMock = { get: () => 'foo', getExtent: () => undefined, getVisible: () => true };
+			const invisibleLayerMock = { get: () => 'foo', getExtent: () => undefined, getVisible: () => false, getZIndex: () => 1 };
+			const visibleLayerMock = { get: () => 'foo', getExtent: () => undefined, getVisible: () => true, getZIndex: () => 0 };
 			spyOn(mapMock, 'getLayers').and.callFake(() => {
 				return { getArray: () => [invisibleLayerMock, visibleLayerMock] };
 			});
@@ -469,20 +469,34 @@ describe('BvvMfp3Encoder', () => {
 				getUrls: () => ['https://some.url/to/foo/{z}/{x}/{y}'],
 				getParams: () => []
 			};
-			const geoResourceFoo = new TestGeoResource(GeoResourceTypes.WMS).setAttribution({ copyright: { label: 'Foo CopyRight' } });
-			const geoResourceBar = new TestGeoResource(GeoResourceTypes.WMS).setAttribution({ copyright: { label: 'Bar CopyRight' } });
+			const geoResourceFirst = new TestGeoResource(GeoResourceTypes.WMS, 'first').setAttribution({ copyright: { label: 'First CopyRight' } });
+			const geoResourceSecond = new TestGeoResource(GeoResourceTypes.WMS, 'second').setAttribution({ copyright: { label: 'Second CopyRight' } });
 			spyOn(geoResourceServiceMock, 'byId')
-				.withArgs('foo')
-				.and.callFake(() => geoResourceFoo)
-				.withArgs('bar')
-				.and.callFake(() => geoResourceBar);
+				.withArgs('first')
+				.and.callFake(() => geoResourceFirst)
+				.withArgs('second')
+				.and.callFake(() => geoResourceSecond);
 			const encoder = new BvvMfp3Encoder();
 
 			spyOn(mapMock, 'getLayers').and.callFake(() => {
 				return {
 					getArray: () => [
-						{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1, getVisible: () => true },
-						{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1, getVisible: () => true }
+						{
+							get: () => 'first',
+							getExtent: () => [20, 20, 50, 50],
+							getSource: () => sourceMock,
+							getOpacity: () => 1,
+							getVisible: () => true,
+							getZIndex: () => 0
+						},
+						{
+							get: () => 'second',
+							getExtent: () => [20, 20, 50, 50],
+							getSource: () => sourceMock,
+							getOpacity: () => 1,
+							getVisible: () => true,
+							getZIndex: () => 1
+						}
 					]
 				};
 			});
@@ -500,13 +514,16 @@ describe('BvvMfp3Encoder', () => {
 							dpi: jasmine.any(Number),
 							rotation: null
 						},
-						dataOwner: 'Bar CopyRight,Foo CopyRight',
+						dataOwner: 'Second CopyRight,First CopyRight',
 						shortLink: 'http://url.to/shorten',
 						qrcodeurl: 'http://url.to/shorten.png'
 					}
 				},
 				errors: []
 			});
+
+			expect(encodingResult.specs.attributes.map.layers[0].name).toBe('test_second');
+			expect(encodingResult.specs.attributes.map.layers[1].name).toBe('test_first');
 		});
 
 		it('encodes and collect errors', async () => {
@@ -535,10 +552,38 @@ describe('BvvMfp3Encoder', () => {
 			spyOn(mapMock, 'getLayers').and.callFake(() => {
 				return {
 					getArray: () => [
-						{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1, getVisible: () => true },
-						{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1, getVisible: () => true },
-						{ get: () => 'baz', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1, getVisible: () => true },
-						{ get: () => 'fuzz', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1, getVisible: () => true }
+						{
+							get: () => 'foo',
+							getExtent: () => [20, 20, 50, 50],
+							getSource: () => sourceMock,
+							getOpacity: () => 1,
+							getVisible: () => true,
+							getZIndex: () => 3
+						},
+						{
+							get: () => 'bar',
+							getExtent: () => [20, 20, 50, 50],
+							getSource: () => sourceMock,
+							getOpacity: () => 1,
+							getVisible: () => true,
+							getZIndex: () => 2
+						},
+						{
+							get: () => 'baz',
+							getExtent: () => [20, 20, 50, 50],
+							getSource: () => sourceMock,
+							getOpacity: () => 1,
+							getVisible: () => true,
+							getZIndex: () => 0
+						},
+						{
+							get: () => 'fuzz',
+							getExtent: () => [20, 20, 50, 50],
+							getSource: () => sourceMock,
+							getOpacity: () => 1,
+							getVisible: () => true,
+							getZIndex: () => 1
+						}
 					]
 				};
 			});
@@ -592,8 +637,22 @@ describe('BvvMfp3Encoder', () => {
 			spyOn(mapMock, 'getLayers').and.callFake(() => {
 				return {
 					getArray: () => [
-						{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1, getVisible: () => true },
-						{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1, getVisible: () => true }
+						{
+							get: () => 'foo',
+							getExtent: () => [20, 20, 50, 50],
+							getSource: () => sourceMock,
+							getOpacity: () => 1,
+							getVisible: () => true,
+							getZIndex: () => 0
+						},
+						{
+							get: () => 'bar',
+							getExtent: () => [20, 20, 50, 50],
+							getSource: () => sourceMock,
+							getOpacity: () => 1,
+							getVisible: () => true,
+							getZIndex: () => 1
+						}
 					]
 				};
 			});
@@ -641,8 +700,22 @@ describe('BvvMfp3Encoder', () => {
 			spyOn(mapMock, 'getLayers').and.callFake(() => {
 				return {
 					getArray: () => [
-						{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1, getVisible: () => true },
-						{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1, getVisible: () => true }
+						{
+							get: () => 'foo',
+							getExtent: () => [20, 20, 50, 50],
+							getSource: () => sourceMock,
+							getOpacity: () => 1,
+							getVisible: () => true,
+							getZIndex: () => 1
+						},
+						{
+							get: () => 'bar',
+							getExtent: () => [20, 20, 50, 50],
+							getSource: () => sourceMock,
+							getOpacity: () => 1,
+							getVisible: () => true,
+							getZIndex: () => 0
+						}
 					]
 				};
 			});

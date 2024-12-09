@@ -137,9 +137,11 @@ export class BvvMfp3Encoder {
 				: getDefaultMapCenter().clone().transform(this._mapProjection, this._mfpProjection);
 
 		this._pageExtent = this._mfpProperties.pageExtent ? this._mfpProperties.pageExtent : getDefaultMapExtent();
+		const byZIndex = (a, b) => a.getZIndex() - b.getZIndex();
 		const encodableLayers = olMap
 			.getLayers()
 			.getArray()
+			.sort(byZIndex)
 			.filter((layer) => {
 				const layerExtent = layer.getExtent();
 				return layerExtent ? extentIntersects(layer.getExtent(), this._pageExtent) && layer.getVisible() : layer.getVisible();
