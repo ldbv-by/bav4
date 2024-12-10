@@ -48,6 +48,15 @@ describe('HelpTooltip', () => {
 	});
 
 	describe('on activate', () => {
+		const overlayPositioningMatcher = (positioningString) => {
+			return {
+				asymmetricMatch: (compareTo) => {
+					return compareTo instanceof Overlay ? compareTo.getPositioning() === positioningString : false;
+				},
+
+				jasmineToString: () => `<Overlay positioning does not match:'${positioningString}'>`
+			};
+		};
 		it('creates a overlay', () => {
 			const addSpy = jasmine.createSpy();
 			const mapMock = { addOverlay: addSpy };
@@ -55,7 +64,7 @@ describe('HelpTooltip', () => {
 			const classUnderTest = new HelpTooltip();
 			classUnderTest.activate(mapMock);
 
-			expect(addSpy).toHaveBeenCalledWith(jasmine.any(Overlay));
+			expect(addSpy).toHaveBeenCalledWith(jasmine.any(Overlay) && overlayPositioningMatcher('top-left'));
 			expect(classUnderTest.active).toBeTrue();
 		});
 	});
