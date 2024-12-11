@@ -6,13 +6,14 @@ import { SourceType, SourceTypeName } from '../domain/sourceType';
 
 import { bvvCapabilitiesProvider } from './provider/wmsCapabilities.provider';
 import { getAttributionProviderForGeoResourceImportedByUrl } from './provider/attribution.provider';
-import { getOriginAndPathname } from '../utils/urlUtils';
 
 /**
  * An async function that provides an array of {@link WmsGeoResource}s.
- *
  * @async
- * @typedef {function(ImportWmsOptions):(Array<WmsGeoResource>)} wmsCapabilitiesProvider
+ * @typedef {Function} wmsCapabilitiesProvider
+ * @param {string} url
+ * @param {module:services/ImportWmsService~ImportWmsOptions} options
+ * @returns {Promise<Array<WmsGeoResource>>} available categories
  */
 
 /**
@@ -62,7 +63,7 @@ export class ImportWmsService {
 	 */
 	async forUrl(url, options = {}) {
 		const completeOptions = { ...this._newDefaultImportWmsOptions(), ...options };
-		const geoResources = await this._wmsCapabilitiesProvider(getOriginAndPathname(url), completeOptions);
+		const geoResources = await this._wmsCapabilitiesProvider(url, completeOptions);
 		return geoResources
 			.map((gr) => gr.setAttributionProvider(getAttributionProviderForGeoResourceImportedByUrl(url)))
 			.map((gr) => this._geoResourceService.addOrReplace(gr));

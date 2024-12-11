@@ -45,7 +45,7 @@ describe('ImportWmsService', () => {
 		};
 
 		it('calls the provider with the whole set of options', async () => {
-			const url = 'https://some.url/wms';
+			const url = 'https://some.url/wms?preserve=me';
 			const subSetOfOptions = {
 				sourceType: new SourceType(SourceTypeName.WMS, '42')
 			};
@@ -60,7 +60,7 @@ describe('ImportWmsService', () => {
 		});
 
 		it('registers the WmsGeoResources', async () => {
-			const url = 'https://some.url/wms';
+			const url = 'https://some.url/wms?preserve=me';
 			const options = getCompleteOptions();
 			const resultMock = [new WmsGeoResource('0', '', '', '', ''), new WmsGeoResource('1', '', '', '', ''), new WmsGeoResource('2', '', '', '', '')];
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(addOrReplaceMethodMock);
@@ -78,7 +78,7 @@ describe('ImportWmsService', () => {
 		});
 
 		it('uses defaultOptions', async () => {
-			const url = 'https://some.url/wms';
+			const url = 'https://some.url/wms?preserve=me';
 
 			const resultMock = [];
 			const providerSpy = jasmine
