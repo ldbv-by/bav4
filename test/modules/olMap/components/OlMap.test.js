@@ -267,7 +267,7 @@ describe('OlMap', () => {
 			//all default controls are removed, ScaleLine control added
 			expect(element._map.getControls().getLength()).toBe(1);
 			//all interactions are present
-			expect(element._map.getInteractions().getLength()).toBe(9);
+			expect(element._map.getInteractions().getLength()).toBe(10);
 			expect(element._map.moveTolerance_).toBe(1);
 			expect(mapServiceSpy).toHaveBeenCalled();
 		});
