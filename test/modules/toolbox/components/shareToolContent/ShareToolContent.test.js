@@ -8,7 +8,6 @@ import { ShareDialogContent } from '../../../../../src/modules/share/components/
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 import { QueryParameters } from '../../../../../src/domain/queryParameters';
-import { html } from 'lit-html';
 
 window.customElements.define(ShareDialogContent.tag, ShareDialogContent);
 window.customElements.define(ShareToolContent.tag, ShareToolContent);
