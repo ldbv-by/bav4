@@ -1,4 +1,5 @@
 import { provide } from '../../../../src/modules/toolbox/i18n/toolbox.provider';
+import { TestUtils } from '../../../test-utils';
 
 describe('i18n for menu module', () => {
 	it('provides translation for de', () => {
@@ -42,8 +43,8 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_shareTool_header).toBe('Teilen');
 		expect(map.toolbox_shareTool_embed).toBe('BayernAtlas-IFrame');
 		expect(map.toolbox_shareTool_preview).toBe('Vorschau');
-		expect(map.toolbox_shareTool_disclaimer).toBe(
-			'Sie können die Karte in Ihre Website oder ein Blog einbetten. Mit dem Einbetten dieser Karte stimmen Sie den <a href="https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen.html" target="_blank" tabindex="0"> Nutzungsbedingungen</a> zu.'
+		expect(TestUtils.renderTemplateResult(map.toolbox_shareTool_disclaimer(['https://foo.bar'])).innerHTML).toContain(
+			'Sie können die Karte in Ihre Website oder ein Blog einbetten. Mit dem Einbetten dieser Karte stimmen Sie den <a target="_blank" tabindex="0" href="https://foo.bar">Nutzungsbedingungen</a> zu.'
 		);
 		expect(map.toolbox_shareTool_mail).toBe('Mail');
 		expect(map.toolbox_shareTool_qr).toBe('QR-Code');
