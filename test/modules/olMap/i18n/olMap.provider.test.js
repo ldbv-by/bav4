@@ -29,7 +29,7 @@ describe('i18n for map module', () => {
 		);
 		expect(map.olMap_handler_featureInfo_not_available).toBe('Objekt-Info nicht verfügbar');
 		expect(map.olMap_handler_termsOfUse).toBe(
-			'Ihre Zeichnung wird automatisch gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den <a href="https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen.html" target="_blank" tabindex="0">Nutzungsbedingungen</a> zu.'
+			'Ihre Zeichnung wird automatisch gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den <a href="https://www.ldbv.bayern.de/file/pdf/18295/Nutzungsbedingungen_Geoportal_BayernAtlas_BayernAtlasplus.pdf" target="_blank" tabindex="0">Nutzungsbedingungen</a> zu.'
 		);
 		expect(map.olMap_handler_mfp_distortion_warning).toBe(
 			'Die für den Export verwendete Projektion besitzt in einigen Bereichen\nVerzerrungen, die nicht für Längenmessungen geeignet sind.'
