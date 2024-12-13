@@ -222,7 +222,8 @@ describe('OlMap', () => {
 			.registerSingleton('OlMfpHandler', mfpHandlerMock)
 			.registerSingleton('OlRoutingHandler', routingHandlerMock)
 			.registerSingleton('VectorLayerService', vectorLayerServiceMock)
-			.registerSingleton('LayerService', layerServiceMock);
+			.registerSingleton('LayerService', layerServiceMock)
+			.registerSingleton('TranslationService', { translate: (key) => key });
 
 		return TestUtils.render(OlMap.tag);
 	};
@@ -264,6 +265,8 @@ describe('OlMap', () => {
 			expect(element._view.get('constrainResolution')).toBeTrue();
 			expect(element.shadowRoot.querySelectorAll('#ol-map')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('#ol-map').getAttribute('tabindex')).toBe('0');
+			expect(element.shadowRoot.querySelector('#ol-map').getAttribute('aria-label')).toBe('olMap_map');
+			expect(element.shadowRoot.querySelector('#ol-map').getAttribute('aria-roledescription')).toBe('olMap_map');
 			//all default controls are removed, ScaleLine control added
 			expect(element._map.getControls().getLength()).toBe(1);
 			//all interactions are present
