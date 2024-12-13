@@ -94,16 +94,21 @@ describe('ActivateMapButton', () => {
 			const queryParam = new URLSearchParams(`${QueryParameters.EC_MAP_ACTIVATION}=true`);
 			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 			const element = await setup({ embed: true });
+			const mapElement = document.createElement('div');
+			mapElement.setAttribute('id', 'ol-map');
+			element.shadowRoot.append(mapElement);
 
 			const button = element.shadowRoot.querySelectorAll('ba-button')[0];
 
 			expect(element.shadowRoot.querySelectorAll('.active-map__background')[0].classList.contains('hide')).toBeFalse();
 			expect(document.querySelectorAll(`#${ActivateMapButton.STYLE_ID}`)).toHaveSize(1);
+			expect(element.shadowRoot.querySelector(`#ol-map`).hasAttribute('inert')).toBeTrue();
 
 			button.click();
 
 			expect(element.shadowRoot.querySelectorAll('.active-map__background')[0].classList.contains('hide')).toBeTrue();
 			expect(document.querySelectorAll(`#${ActivateMapButton.STYLE_ID}`)).toHaveSize(0);
+			expect(element.shadowRoot.querySelector(`#ol-map`).hasAttribute('inert')).toBeFalse();
 		});
 	});
 });
