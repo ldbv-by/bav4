@@ -80,8 +80,8 @@ export class AttributionInfo extends MvuElement {
 				? html`<a
 						class="attribution attribution-link"
 						target="_blank"
-						aria-label="${translate('map_attributionInfo_label')}${index + 1}${copyright.label}"
-						title="${copyright.label}"
+						aria-label="${translate('map_attributionInfo_label_aria_label')}${index + 1}${': ' + copyright.label}"
+						title="${translate('map_attributionInfo_label_aria_label')}${index + 1}${': ' + copyright.label}"
 						href=${copyright.url}
 						>${copyright.label}${separator}</a
 					>`
