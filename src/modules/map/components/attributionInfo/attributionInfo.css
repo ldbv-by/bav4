@@ -18,7 +18,8 @@
 	color: var(--text4);
 	margin-left: 0.2em;
 }
-.attribution-link:hover {
+.attribution-link:hover,
+.attribution-link:focus {
 	text-decoration: underline;
 }
 .collapse-button {
@@ -101,9 +102,9 @@
 	display: block;
 }
 
-.attribution-link:focus {
+.attribution-link:focus-visible {
 	overflow: visible;
-	box-shadow:
-		0 0 0 0.1em var(--primary-color-lighter),
-		0 0 0 0.3em var(--secondary-color);
+	outline-offset: 0.2em;
+	outline: 0.2em solid var(--secondary-color);
+	text-decoration: underline;
 }
