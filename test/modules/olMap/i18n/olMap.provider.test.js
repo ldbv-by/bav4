@@ -52,6 +52,7 @@ describe('i18n for map module', () => {
 			'Anhand der angegebenen Punkte konnte keine Route erstellt werden. Bitte passen Sie einen oder mehrere Punkte an.'
 		);
 		expect(map.olMap_vectorLayerService_default_layer_name_vector).toBe('Daten');
+		expect(map.olMap_map).toBe('Interaktive Karte');
 	});
 
 	it('provides translation for en', () => {
@@ -101,10 +102,11 @@ describe('i18n for map module', () => {
 			'No route could be created based on the given points. Please adjust one ore more points.'
 		);
 		expect(map.olMap_vectorLayerService_default_layer_name_vector).toBe('Data');
+		expect(map.olMap_map).toBe('Interactive map');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 40;
+		const expectedSize = 41;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
