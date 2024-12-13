@@ -111,11 +111,22 @@ export class OlMap extends MvuElement {
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
 
+		const getEmbeddedClass = () => {
+			return this._environmentService.isEmbedded() ? 'is-embedded' : '';
+		};
+
 		return html`
 			<style>
 				${olCss + css}
 			</style>
-			<div data-test-id id="ol-map" aria-label="${translate('olMap_map')}" aria-roledescription="${translate('olMap_map')}" tabindex="0"></div>
+			<div
+				data-test-id
+				id="ol-map"
+				class="${getEmbeddedClass()}"
+				aria-label="${translate('olMap_map')}"
+				aria-roledescription="${translate('olMap_map')}"
+				tabindex="0"
+			></div>
 		`;
 	}
 

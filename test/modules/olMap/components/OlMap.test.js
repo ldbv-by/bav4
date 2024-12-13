@@ -79,7 +79,8 @@ describe('OlMap', () => {
 	};
 
 	const environmentServiceMock = {
-		isTouch() {}
+		isTouch() {},
+		isEmbedded() {}
 	};
 
 	const measurementLayerHandlerMock = {
@@ -267,6 +268,7 @@ describe('OlMap', () => {
 			expect(element.shadowRoot.querySelector('#ol-map').getAttribute('tabindex')).toBe('0');
 			expect(element.shadowRoot.querySelector('#ol-map').getAttribute('aria-label')).toBe('olMap_map');
 			expect(element.shadowRoot.querySelector('#ol-map').getAttribute('aria-roledescription')).toBe('olMap_map');
+			expect(element.shadowRoot.querySelector('#ol-map').classList.contains('is-embedded')).toBeFalse();
 			//all default controls are removed, ScaleLine control added
 			expect(element._map.getControls().getLength()).toBe(1);
 			//all interactions are present
@@ -282,6 +284,15 @@ describe('OlMap', () => {
 
 				expect(element._map.moveTolerance_).toBe(3);
 				expect(element._view.get('constrainResolution')).toBeFalse();
+			});
+		});
+
+		describe('in embedded mode', () => {
+			it('configures the map and adds a div which contains the ol-map', async () => {
+				spyOn(environmentServiceMock, 'isEmbedded').and.returnValue(true);
+				const element = await setup();
+
+				expect(element.shadowRoot.querySelector('#ol-map').classList.contains('is-embedded')).toBeTrue();
 			});
 		});
 

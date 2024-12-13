@@ -5,6 +5,16 @@
 	background: var(--secondary-bg-color);
 }
 
+#ol-map.is-embedded:focus-within .ol-overlaycontainer-stopevent {
+	box-shadow: inset 0 0 0 0.2em var(--primary-color-lighter);
+}
+
+#ol-map.is-embedded:focus-visible .ol-overlaycontainer-stopevent {
+	box-shadow:
+		inset 0 0 0 0.2em var(--primary-color-lighter),
+		inset 0 0 0 0.4em var(--secondary-color);
+}
+
 .grab {
 	cursor: grab;
 }
