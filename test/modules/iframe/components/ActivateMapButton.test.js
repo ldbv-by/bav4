@@ -96,6 +96,7 @@ describe('ActivateMapButton', () => {
 			const element = await setup({ embed: true });
 			const mapElement = document.createElement('div');
 			mapElement.setAttribute('id', 'ol-map');
+			mapElement.setAttribute('inert', '');
 			element.shadowRoot.append(mapElement);
 
 			const button = element.shadowRoot.querySelectorAll('ba-button')[0];
