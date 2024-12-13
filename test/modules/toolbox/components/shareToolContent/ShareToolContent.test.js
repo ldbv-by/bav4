@@ -38,7 +38,7 @@ describe('ShareToolContent', () => {
 				getWindow: () => windowMock,
 				isStandalone: () => standalone
 			})
-			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('TranslationService', { translate: (key, params = []) => `${key}${params.length ? ` [${params.join(',')}]` : ''}` })
 			.registerSingleton('UrlService', urlServiceMock)
 			.registerSingleton('ShareService', shareServiceMock);
 		return TestUtils.render(ShareToolContent.tag);
@@ -277,7 +277,7 @@ describe('ShareToolContent', () => {
 
 			expect(button.disabled).toBeTrue();
 			expect(checkbox.checked).toBeFalse();
-			expect(element.shadowRoot.querySelector('.disclaimer-text').innerText).toBe('toolbox_shareTool_disclaimer');
+			expect(element.shadowRoot.querySelector('.disclaimer-text').innerText).toBe('toolbox_shareTool_disclaimer [global_terms_of_use]');
 		});
 
 		describe('on checkbox click', () => {
