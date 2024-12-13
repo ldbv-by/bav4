@@ -45,7 +45,7 @@ export class Spinner extends MvuElement {
 		const { label } = model;
 		const translate = (key) => this._translationService.translate(key);
 
-		const currentLabel = label ? label : translate('spinner_text');
+		const currentLabel = label ? label : translate('commons_spinner_text');
 
 		return html`
 			<style>

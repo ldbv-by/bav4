@@ -97,7 +97,7 @@ export class ValueSelect extends MvuElement {
 				return html` <div
 					id="value_${value}"
 					class="ba_value_item ${classMap(isSelectedClass)}"
-					title=${translate('valueSelect_icon_hint')}
+					title=${translate('commons_valueSelect_icon_hint')}
 					@click=${onClick}
 				>
 					${value}
