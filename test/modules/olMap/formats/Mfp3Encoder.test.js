@@ -24,6 +24,7 @@ import TileGrid from 'ol/tilegrid/TileGrid';
 import { AdvWmtsTileGrid } from '../../../../src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid';
 import { BaOverlayTypes } from '../../../../src/modules/olMap/components/BaOverlay';
 import { QueryParameters } from '../../../../src/domain/queryParameters';
+import { HIGHLIGHT_LAYER_ID } from '../../../../src/plugins/HighlightPlugin';
 
 describe('BvvMfp3Encoder', () => {
 	const viewMock = { getCenter: () => [50, 50], calculateExtent: () => [0, 0, 100, 100], getResolution: () => 10, getZoomForResolution: () => 21 };
@@ -443,6 +444,25 @@ describe('BvvMfp3Encoder', () => {
 
 			expect(actualEncoded).toBeFalse();
 			expect(errorSpy).toHaveBeenCalledWith('[foo]', MFP_ENCODING_ERROR_TYPE.MISSING_GEORESOURCE);
+		});
+
+		it('encodes the highlight layer as vector layer', () => {
+			spyOn(geoResourceServiceMock, 'byId')
+				.withArgs(HIGHLIGHT_LAYER_ID)
+				.and.callFake(() => null);
+			const encoder = new BvvMfp3Encoder();
+			const encodingResult = {};
+			const layerMock = { get: () => HIGHLIGHT_LAYER_ID };
+			const encodingSpy = spyOn(encoder, '_encodeVector').and.callFake(() => {
+				return encodingResult;
+			});
+			const errorSpy = jasmine.createSpy();
+
+			const actualEncoded = encoder._encode(layerMock, errorSpy);
+
+			expect(actualEncoded).toBe(encodingResult);
+			expect(encodingSpy).toHaveBeenCalled();
+			expect(errorSpy).not.toHaveBeenCalled();
 		});
 
 		it('does NOT encode a layer, if a geoResource is not exportable', () => {
