@@ -240,6 +240,14 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				this._updateMeasureState(coordinate, pixel, dragging);
 				return;
 			}
+
+			const isDrawFeature = (feature) =>
+				feature.getId().startsWith(Tools.DRAW + '_') ||
+				feature.getId().startsWith('polygon_') ||
+				feature.getId().startsWith('line_') ||
+				feature.getId().startsWith('annotation_') ||
+				feature.getId().startsWith('marker_');
+
 			const addToSelection = (features) => {
 				if ([InteractionStateType.MODIFY, InteractionStateType.SELECT].includes(this._measureState.type)) {
 					const ids = features.map((f) => f.getId());
@@ -250,11 +258,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			};
 
 			const changeTool = (features) => {
-				const changeToMeasureTool = (features) => {
-					return features.some((f) => f.getId().startsWith(Tools.DRAW + '_'));
+				const changeToDrawTool = (features) => {
+					return features.some((f) => isDrawFeature(f));
 				};
-				if (changeToMeasureTool(features)) {
-					const drawIds = features.filter((f) => f.getId().startsWith(Tools.DRAW + '_')).map((f) => f.getId());
+				if (changeToDrawTool(features)) {
+					const drawIds = features.filter((f) => isDrawFeature(f)).map((f) => f.getId());
 					setDrawSelection(drawIds);
 					setCurrentTool(Tools.DRAW);
 				}

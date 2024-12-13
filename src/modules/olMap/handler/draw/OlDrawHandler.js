@@ -191,6 +191,19 @@ export class OlDrawHandler extends OlLayerHandler {
 						if (f.getId().startsWith(Tools.MEASURE)) {
 							f.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(f, olMap));
 						}
+						// legacy-ids polygon_|line_|marker_|annotation_
+						if (f.getId().startsWith('polygon_') || f.getId().startsWith('line_') || f.getId().startsWith('marker_')) {
+							const oldId = f.getId();
+							const newId = `${Tools.DRAW}_${oldId}`;
+
+							f.setId(newId);
+						}
+						if (f.getId().startsWith('annotation_')) {
+							const oldId = f.getId();
+							const newId = oldId.replace('annotation_', `${Tools.DRAW}_text_`);
+							f.setId(newId);
+						}
+
 						this._styleService.removeStyle(f, olMap);
 						this._styleService.addStyle(f, olMap, layer);
 						layer.getSource().addFeature(f);
@@ -246,6 +259,8 @@ export class OlDrawHandler extends OlLayerHandler {
 			const dragging = event.dragging;
 			const pixel = event.pixel;
 
+			const isMeasureFeature = (feature) => feature.getId().startsWith(Tools.MEASURE + '_');
+
 			const addToSelection = (features) => {
 				if ([InteractionStateType.MODIFY, InteractionStateType.SELECT].includes(this._drawState.type)) {
 					const ids = features.map((f) => f.getId());
@@ -256,17 +271,17 @@ export class OlDrawHandler extends OlLayerHandler {
 
 			const changeTool = (features) => {
 				const changeToMeasureTool = (features) => {
-					return features.some((f) => f.getId().startsWith(Tools.MEASURE + '_'));
+					return features.some((f) => isMeasureFeature(f));
 				};
 				if (changeToMeasureTool(features)) {
-					const measurementIds = features.filter((f) => f.getId().startsWith(Tools.MEASURE + '_')).map((f) => f.getId());
+					const measurementIds = features.filter((f) => isMeasureFeature(f)).map((f) => f.getId());
 					setMeasurementSelection(measurementIds);
 					setCurrentTool(Tools.MEASURE);
 				}
 			};
 
 			const isToolChangeNeeded = (features) => {
-				return features.some((f) => !f.getId().startsWith(Tools.DRAW + '_'));
+				return features.some((f) => isMeasureFeature(f));
 			};
 
 			const selectableFeatures = getSelectableFeatures(this._map, this._vectorLayer, pixel).slice(0, 1); // we only want the first selectable feature
