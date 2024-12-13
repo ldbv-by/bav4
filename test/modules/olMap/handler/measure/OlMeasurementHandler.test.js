@@ -1997,6 +1997,154 @@ describe('OlMeasurementHandler', () => {
 			expect(store.getState().tools.current).toBe(Tools.DRAW);
 		});
 
+		it('switch to draw-tool, if clickposition is in anyinteract to selected legacy annotation-feature', () => {
+			const store = setup();
+			const geometry = new Polygon([
+				[
+					[0, 0],
+					[500, 0],
+					[550, 550],
+					[0, 500],
+					[0, 500]
+				]
+			]);
+			const feature = new Feature({ geometry: geometry });
+			feature.setId('annotation_1');
+			const map = setupMap();
+
+			const classUnderTest = new OlMeasurementHandler();
+			classUnderTest.activate(map);
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+
+			expect(classUnderTest._select).toBeDefined();
+
+			// force deselect
+			classUnderTest._select.getFeatures().clear();
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(0);
+
+			map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
+				callback(feature, classUnderTest._vectorLayer);
+			});
+
+			// re-select
+			classUnderTest._measureState.type = InteractionStateType.SELECT;
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 250, 250);
+
+			expect(store.getState().draw.selection.length).toBe(1);
+			expect(store.getState().tools.current).toBe(Tools.DRAW);
+		});
+
+		it('switch to draw-tool, if clickposition is in anyinteract to selected legacy marker-feature', () => {
+			const store = setup();
+			const geometry = new Polygon([
+				[
+					[0, 0],
+					[500, 0],
+					[550, 550],
+					[0, 500],
+					[0, 500]
+				]
+			]);
+			const feature = new Feature({ geometry: geometry });
+			feature.setId('marker_1');
+			const map = setupMap();
+
+			const classUnderTest = new OlMeasurementHandler();
+			classUnderTest.activate(map);
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+
+			expect(classUnderTest._select).toBeDefined();
+
+			// force deselect
+			classUnderTest._select.getFeatures().clear();
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(0);
+
+			map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
+				callback(feature, classUnderTest._vectorLayer);
+			});
+
+			// re-select
+			classUnderTest._measureState.type = InteractionStateType.SELECT;
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 250, 250);
+
+			expect(store.getState().draw.selection.length).toBe(1);
+			expect(store.getState().tools.current).toBe(Tools.DRAW);
+		});
+
+		it('switch to draw-tool, if clickposition is in anyinteract to selected legacy polygon-feature', () => {
+			const store = setup();
+			const geometry = new Polygon([
+				[
+					[0, 0],
+					[500, 0],
+					[550, 550],
+					[0, 500],
+					[0, 500]
+				]
+			]);
+			const feature = new Feature({ geometry: geometry });
+			feature.setId('polygon_1');
+			const map = setupMap();
+
+			const classUnderTest = new OlMeasurementHandler();
+			classUnderTest.activate(map);
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+
+			expect(classUnderTest._select).toBeDefined();
+
+			// force deselect
+			classUnderTest._select.getFeatures().clear();
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(0);
+
+			map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
+				callback(feature, classUnderTest._vectorLayer);
+			});
+
+			// re-select
+			classUnderTest._measureState.type = InteractionStateType.SELECT;
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 250, 250);
+
+			expect(store.getState().draw.selection.length).toBe(1);
+			expect(store.getState().tools.current).toBe(Tools.DRAW);
+		});
+
+		it('switch to draw-tool, if clickposition is in anyinteract to selected legacy line-feature', () => {
+			const store = setup();
+			const geometry = new Polygon([
+				[
+					[0, 0],
+					[500, 0],
+					[550, 550],
+					[0, 500],
+					[0, 500]
+				]
+			]);
+			const feature = new Feature({ geometry: geometry });
+			feature.setId('line_1');
+			const map = setupMap();
+
+			const classUnderTest = new OlMeasurementHandler();
+			classUnderTest.activate(map);
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+
+			expect(classUnderTest._select).toBeDefined();
+
+			// force deselect
+			classUnderTest._select.getFeatures().clear();
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(0);
+
+			map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
+				callback(feature, classUnderTest._vectorLayer);
+			});
+
+			// re-select
+			classUnderTest._measureState.type = InteractionStateType.SELECT;
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 250, 250);
+
+			expect(store.getState().draw.selection.length).toBe(1);
+			expect(store.getState().tools.current).toBe(Tools.DRAW);
+		});
+
 		it('updates statistics if clickposition is in anyinteract to selected feature', () => {
 			const store = setup();
 			const geometry = new Polygon([
