@@ -32,6 +32,8 @@ describe('Button', () => {
 			expect(button.children.length).toBe(0);
 			expect(element.shadowRoot.styleSheets.length).toBe(2);
 			expect(button.innerText).toBe('label');
+			expect(button.getAttribute('aria-label')).toBe('label');
+			expect(button.getAttribute('part')).toBe('button');
 		});
 
 		it('automatically appends the "data-test-id" attribute', async () => {
