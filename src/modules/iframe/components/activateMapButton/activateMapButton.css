@@ -11,11 +11,20 @@
 	opacity: 0;
 	background: var(--text3);
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
-	overflow: hidden;
+	/* overflow: hidden; */
 	border-radius: 0;
 	margin: 2em;
 	width: 100%;
 }
 .active-map__background:hover .active-map__button {
 	opacity: 1;
+}
+ba-button::part(button):focus-visible {
+	opacity: 1;
+	outline-offset: 0.2em;
+	outline: 0.2em solid var(--secondary-color);
+}
+ba-button::part(button):focus {
+	opacity: 1;
+	box-shadow: 0 0 0 0.2em var(--primary-color-lighter);
 }

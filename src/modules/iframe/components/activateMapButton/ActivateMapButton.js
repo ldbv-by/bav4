@@ -36,13 +36,11 @@ export class ActivateMapButton extends MvuElement {
 				${ActivateMapButton.tag},
 				${OlMap.tag},
 				${Footer.tag}
-
-				) {
+				),${Footer.tag}::part(scale) {
 					display: none;
-				}					
+				}		
+					
 				ba-footer{
-					--text3: transparent;
-					--secondary-color: transparent;		
 					--z-mapbuttons: calc(var(--z-disableall) + 1);			
 				}
 				
