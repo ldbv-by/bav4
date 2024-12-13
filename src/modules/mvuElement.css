@@ -15,9 +15,6 @@
 *:hover {
 	outline: none;
 }
-*:focus-visible {
-	box-shadow: 0 0 0 0.2em var(--primary-color-lighter) 0 0 0 0.4em var(--primary-color);
-}
 
 /* not working in Firefox */
 ::-webkit-scrollbar {
