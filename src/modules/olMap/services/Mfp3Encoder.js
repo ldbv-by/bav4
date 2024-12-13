@@ -21,6 +21,8 @@ import { BaOverlay, OVERLAY_STYLE_CLASS } from '../components/BaOverlay';
 import { findAllBySelector } from '../../../utils/markup';
 import { setQueryParams } from '../../../utils/urlUtils';
 import { QueryParameters } from '../../../domain/queryParameters';
+import { OlHighlightLayerHandler } from '../handler/highlight/OlHighlightLayerHandler';
+import { HIGHLIGHT_LAYER_ID } from '../../../plugins/HighlightPlugin';
 
 const UnitsRatio = 39.37; //inches per meter
 const PointsPerInch = 72; // PostScript points 1/72"
@@ -147,12 +149,18 @@ export class BvvMfp3Encoder {
 				return layerExtent ? extentIntersects(layer.getExtent(), this._pageExtent) && layer.getVisible() : layer.getVisible();
 			});
 
+		console.log(
+			'encodableLayers',
+			encodableLayers.map((l) => l.get('id'))
+		);
+
 		const errors = [];
 		const collectErrors = (label, errorType) => {
 			errors.push({ label: label, type: errorType });
 		};
 
 		const encodedLayers = encodableLayers.flatMap((l) => this._encode(l, collectErrors));
+
 		const copyRights = this._getCopyrights(olMap, encodableLayers);
 		const encodedOverlays = this._encodeOverlays(olMap.getOverlays().getArray());
 		const encodedGridLayer = this._mfpProperties.showGrid ? this._encodeGridLayer(this._mfpProperties.scale) : {};
@@ -241,7 +249,10 @@ export class BvvMfp3Encoder {
 		 * - WMTS/XYZ layers are defined for a specific projection. If the application projection and the print projection differs, the layer must be replaced.
 		 */
 		const encodableLayer = this._getSubstitutionLayerOptional(layer);
-		const geoResource = this._geoResourceService.byId(encodableLayer.get('geoResourceId'));
+		const geoResource =
+			layer.get('id') === HIGHLIGHT_LAYER_ID
+				? { exportable: true, getType: () => GeoResourceTypes.VECTOR }
+				: this._geoResourceService.byId(encodableLayer.get('geoResourceId'));
 
 		if (!geoResource) {
 			encodingErrorCallback(`[${layer.get('id')}]`, MFP_ENCODING_ERROR_TYPE.MISSING_GEORESOURCE);
