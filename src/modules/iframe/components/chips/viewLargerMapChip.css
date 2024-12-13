@@ -17,6 +17,10 @@
 .chips__button:focus {
 	box-shadow: 0 0 0 0.2em var(--primary-color-lighter);
 }
+.chips__button:focus-visible {
+	outline-offset: 0.2em;
+	outline: 0.2em solid var(--secondary-color);
+}
 .chips__button-text {
 	color: var(--text1);
 	font-weight: bold;
