@@ -214,6 +214,10 @@ const loadFallbackIcons = () => {
 		),
 		new IconResult('rt_start', Svg_Marker_Content, (id) => id === 'rt_start', null, false),
 		new IconResult('rt_destination', Svg_Marker_Content, (id) => id === 'rt_destination', null, false),
-		new IconResult('rt_intermediate', Svg_Marker_Content, (id) => id === 'rt_intermediate', null, false)
+		new IconResult('rt_intermediate', Svg_Marker_Content, (id) => id === 'rt_intermediate', null, false),
+		new IconResult('highlight_marker', Svg_Marker_Content, (id) => id === 'highlight_marker', null, false),
+		new IconResult('highlight_default', Svg_Marker_Content, (id) => id === 'highlight_default', null, false),
+		new IconResult('highlight_marker_tmp', Svg_Marker_Content, (id) => id === 'highlight_marker_tmp', null, false),
+		new IconResult('highlight_default_tmp', Svg_Marker_Content, (id) => id === 'highlight_default_tmp', null, false)
 	];
 };
