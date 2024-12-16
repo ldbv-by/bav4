@@ -5,30 +5,35 @@ import { getVectorContext } from 'ol/render';
 import { easeIn, easeOut } from 'ol/easing';
 import { Style, Icon, Stroke, Fill } from 'ol/style';
 import CircleStyle from 'ol/style/Circle';
-import locationIcon from './assets/location.svg';
-import tempLocationIcon from './assets/temporaryLocation.svg';
+import { $injector } from '../../../../injection/index';
 
-export const highlightCoordinateFeatureStyleFunction = () => [
-	new Style({
-		image: new Icon({
-			anchor: [0.5, 1],
-			anchorXUnits: 'fraction',
-			anchorYUnits: 'fraction',
-			src: locationIcon
+export const highlightCoordinateFeatureStyleFunction = () => {
+	const { IconService: iconService } = $injector.inject('IconService');
+	return [
+		new Style({
+			image: new Icon({
+				anchor: [0.5, 1],
+				anchorXUnits: 'fraction',
+				anchorYUnits: 'fraction',
+				src: iconService.getIconResult('highlight_default').base64
+			})
 		})
-	})
-];
+	];
+};
 
-export const highlightTemporaryCoordinateFeatureStyleFunction = () => [
-	new Style({
-		image: new Icon({
-			anchor: [0.5, 1],
-			anchorXUnits: 'fraction',
-			anchorYUnits: 'fraction',
-			src: tempLocationIcon
+export const highlightTemporaryCoordinateFeatureStyleFunction = () => {
+	const { IconService: iconService } = $injector.inject('IconService');
+	return [
+		new Style({
+			image: new Icon({
+				anchor: [0.5, 1],
+				anchorXUnits: 'fraction',
+				anchorYUnits: 'fraction',
+				src: iconService.getIconResult('highlight_default_tmp').base64
+			})
 		})
-	})
-];
+	];
+};
 
 export const highlightGeometryOrCoordinateFeatureStyleFunction = () => {
 	const selectStroke = new Stroke({

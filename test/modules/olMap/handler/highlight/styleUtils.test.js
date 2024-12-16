@@ -8,8 +8,6 @@ import {
 } from '../../../../../src/modules/olMap/handler/highlight/styleUtils';
 import { Fill, Icon, Stroke, Style } from 'ol/style';
 import CircleStyle from 'ol/style/Circle';
-import locationIcon from '../../../../../src/modules/olMap/handler/highlight/assets/location.svg';
-import tempLocationIcon from '../../../../../src/modules/olMap/handler/highlight//assets/temporaryLocation.svg';
 import { fromLonLat, get as getProjection } from 'ol/proj';
 import { Feature, View, Map } from 'ol';
 import VectorSource from 'ol/source/Vector';
@@ -17,38 +15,51 @@ import VectorLayer from 'ol/layer/Vector';
 import RenderEvent from 'ol/render/Event';
 import Point from 'ol/geom/Point';
 import { sleep } from '../../../../../src/utils/timer';
+import { TestUtils } from '../../../../test-utils';
+import { $injector } from '../../../../../src/injection';
+
+const baHighlightIconMock = 'data:image/svg+xml;base64,foo';
+const iconServiceMock = { getIconResult: () => {} };
+beforeAll(() => {
+	TestUtils.setupStoreAndDi();
+	$injector.registerSingleton('IconService', iconServiceMock);
+});
 
 describe('styleUtils', () => {
 	describe('highlightCoordinateStyleFunction', () => {
 		it('should return a style function', () => {
+			const iconSpy = spyOn(iconServiceMock, 'getIconResult').withArgs('highlight_default').and.returnValue({ base64: baHighlightIconMock });
 			const style = new Style({
 				image: new Icon({
 					anchor: [0.5, 1],
 					anchorXUnits: 'fraction',
 					anchorYUnits: 'fraction',
-					src: locationIcon
+					src: baHighlightIconMock
 				})
 			});
 			const styles = highlightCoordinateFeatureStyleFunction();
 
 			expect(styles).toEqual([style]);
+			expect(iconSpy).toHaveBeenCalled();
 		});
 	});
 
 	describe('highlightCoordinateTemporaryFeatureStyleFunction', () => {
 		it('should return a style function', () => {
+			const iconSpy = spyOn(iconServiceMock, 'getIconResult').withArgs('highlight_default_tmp').and.returnValue({ base64: baHighlightIconMock });
 			const style = new Style({
 				image: new Icon({
 					anchor: [0.5, 1],
 					anchorXUnits: 'fraction',
 					anchorYUnits: 'fraction',
-					src: tempLocationIcon
+					src: baHighlightIconMock
 				})
 			});
 
 			const styles = highlightTemporaryCoordinateFeatureStyleFunction();
 
 			expect(styles).toEqual([style]);
+			expect(iconSpy).toHaveBeenCalled();
 		});
 	});
 
