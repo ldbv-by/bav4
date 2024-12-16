@@ -33,7 +33,7 @@ describe('GlobalCoordinateRepresentations', () => {
 
 describe('BvvCoordinateRepresentations', () => {
 	it('provides an enum of all available types', () => {
-		expect(Object.keys(BvvCoordinateRepresentations).length).toBe(2);
+		expect(Object.keys(BvvCoordinateRepresentations).length).toBe(3);
 		expect(BvvCoordinateRepresentations.UTM32).toEqual({
 			id: 'cr_local_utm32',
 			label: 'UTM32',
@@ -49,6 +49,14 @@ describe('BvvCoordinateRepresentations', () => {
 			digits: 0,
 			global: false,
 			group: 'utm'
+		});
+		expect(BvvCoordinateRepresentations.GK4).toEqual({
+			id: 'cr_local_gk4',
+			label: 'GK4',
+			code: 31468,
+			digits: 0,
+			global: false,
+			group: 'gk4'
 		});
 	});
 });
