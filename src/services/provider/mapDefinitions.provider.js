@@ -30,6 +30,7 @@ export const getBvvMapDefinitions = () => {
 const getBvvLocalProjectedCoordinateRepresentations = (coordinateInMapProjection) => {
 	const definitions = [
 		BvvCoordinateRepresentations.UTM32,
+		BvvCoordinateRepresentations.GK4,
 		GlobalCoordinateRepresentations.WGS84,
 		GlobalCoordinateRepresentations.SphericalMercator,
 		GlobalCoordinateRepresentations.MGRS
