@@ -30,5 +30,6 @@ export const GlobalCoordinateRepresentations = Object.freeze({
  */
 export const BvvCoordinateRepresentations = Object.freeze({
 	UTM32: { id: 'cr_local_utm32', label: 'UTM32', code: 25832, digits: 0, global: false, group: 'utm' },
-	UTM33: { id: 'cr_local_utm33', label: 'UTM33', code: 25833, digits: 0, global: false, group: 'utm' }
+	UTM33: { id: 'cr_local_utm33', label: 'UTM33', code: 25833, digits: 0, global: false, group: 'utm' },
+	GK4: { id: 'cr_local_gk4', label: 'GK4', code: 31468, digits: 0, global: false, group: 'gk4' }
 });
