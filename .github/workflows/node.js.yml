@@ -36,7 +36,7 @@ jobs:
 
       - name: Run e2e tests
         run: |
-          npm run start &
+          npm run start:nohashing &
           npm run e2e
 
       - name: Publish Coveralls report
