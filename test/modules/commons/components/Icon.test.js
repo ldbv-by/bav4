@@ -65,6 +65,7 @@ describe('Icon', () => {
 			element.title = 'foo';
 
 			expect(anchor.title).toBe('foo');
+			expect(anchor.getAttribute('aria-label')).toBe('foo');
 		});
 	});
 

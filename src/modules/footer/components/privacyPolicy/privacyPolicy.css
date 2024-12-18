@@ -14,3 +14,10 @@
 .privacy-policy-link:hover {
 	text-decoration: underline;
 }
+.privacy-policy-link:focus {
+	text-decoration: underline;
+}
+.privacy-policy-link:focus-visible {
+	outline-offset: 0.2em;
+	outline: 0.2em solid var(--secondary-color);
+}

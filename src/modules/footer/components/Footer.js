@@ -98,7 +98,7 @@ export class Footer extends MvuElement {
 			<div class="preload">
 				<div class="${classMap(classes)}">
 					<div class="footer">
-						<div class="scale"></div>
+						<div class="scale" part="scale"></div>
 						<ba-attribution-info></ba-attribution-info>
 						<div class="content">${createChildrenView()}</div>
 					</div>

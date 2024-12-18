@@ -71,7 +71,7 @@ export class ViewLargerMapChip extends MvuElement {
 					${iconClass}
 						${css}
 				</style>
-				<a class="chips__button" href=${href} target="_blank">
+				<a class="chips__button" aria-label="${translate('iframe_view_larger_map_chip')}" href=${href} target="_blank">
 					<span class="chips__icon"></span>
 					<span class="chips__button-text">${translate('iframe_view_larger_map_chip')}</span>
 				</a>`;

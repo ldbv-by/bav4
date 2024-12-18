@@ -62,6 +62,7 @@ describe('ViewLargerMapChip', () => {
 				expect(element.shadowRoot.styleSheets[1].cssRules.item(0).cssText).toContain('.chips__icon {');
 
 				expect(element.shadowRoot.querySelectorAll('.chips__button')).toHaveSize(1);
+				expect(element.shadowRoot.querySelector('.chips__button').getAttribute('aria-label')).toBe('iframe_view_larger_map_chip');
 				const link = element.shadowRoot.querySelectorAll('.chips__button');
 				expect(link[0].target).toBe('_blank');
 

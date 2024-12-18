@@ -65,6 +65,9 @@ describe('Footer', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.footer')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.content')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.scale')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.scale')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector(`.scale`).getAttribute('part')).toBe('scale');
 			expect(element.shadowRoot.querySelectorAll('ba-map-info')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('ba-attribution-info')).toHaveSize(1);
 		});

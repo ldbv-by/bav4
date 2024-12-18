@@ -96,7 +96,9 @@ export class Button extends MvuElement {
 				${css}
 			</style>
 			${getIconStyle()}
-			<button class="button ${classMap(classes)}" ?disabled=${disabled} @click=${onClick} part="button">${getIcon()} ${label}</button>
+			<button class="button ${classMap(classes)}" aria-label=${label} ?disabled=${disabled} @click=${onClick} part="button">
+				${getIcon()} ${label}
+			</button>
 		`;
 	}
 
