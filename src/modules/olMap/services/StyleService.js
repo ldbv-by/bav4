@@ -346,9 +346,9 @@ export class StyleService {
 	_addTextStyle(olFeature) {
 		const getStyleOption = () => {
 			const fromStyle = (style) => {
-				const currentColor = style.getText().getFill().getColor();
-				const currentText = style.getText().getText();
-				const currentScale = style.getText().getScale();
+				const currentColor = style.getText()?.getFill().getColor();
+				const currentText = style.getText()?.getText();
+				const currentScale = style.getText()?.getScale();
 				return { color: Array.isArray(currentColor) ? rgbToHex(currentColor) : currentColor, scale: currentScale, text: currentText };
 			};
 
