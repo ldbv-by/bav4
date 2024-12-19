@@ -600,7 +600,7 @@ describe('OlMeasurementHandler', () => {
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
 			let oldFeature, styledOldFeature, measureGeometry;
-			const updateOverlaysSpy = spyOn(classUnderTest._styleService, 'updateStyle').and.callFake((f, m, props, t) => {
+			const updateOverlaysSpy = spyOn(classUnderTest._styleService, 'updateStyle').and.callFake((f, m, props) => {
 				styledOldFeature = f;
 				measureGeometry = props.geometry;
 			});
