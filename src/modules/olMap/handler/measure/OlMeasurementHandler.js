@@ -151,6 +151,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					const oldFeatures = new KML().readFeatures(data);
 					const onFeatureChange = (event) => {
 						const measureGeometry = this._createMeasureGeometry(event.target);
+						const projectedLength = this._mapService.calcLength(getLineString(measureGeometry)?.getCoordinates());
+						event.target.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
+						measureGeometry.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
 						this._styleService.updateStyle(event.target, olMap, { geometry: measureGeometry }, StyleTypes.MEASURE);
 						this._setStatistics(event.target);
 					};
