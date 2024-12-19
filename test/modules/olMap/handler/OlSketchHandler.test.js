@@ -162,10 +162,12 @@ describe('OlSketchHandler', () => {
 			);
 			const classUnderTest = new OlSketchHandler();
 			classUnderTest.activate(feature);
+			feature.dispatchEvent('change');
 			const empty = {};
 			classUnderTest.deactivate();
 
 			expect(classUnderTest._listener).toEqual(empty);
+			expect(feature.get('finishOnFirstPoint')).toBeUndefined();
 		});
 	});
 });

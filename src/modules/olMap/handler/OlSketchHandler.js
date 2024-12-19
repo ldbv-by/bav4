@@ -63,6 +63,7 @@ export class OlSketchHandler {
 
 	deactivate() {
 		unByKey(this._listener);
+		this._sketch.unset('finishOnFirstPoint');
 		this._sketch = null;
 		this._isFinishOnFirstPoint = false;
 		this._isSnapOnLastPoint = false;
