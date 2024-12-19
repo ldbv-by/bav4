@@ -34,6 +34,7 @@ import { BaOverlay } from '../../../../../src/modules/olMap/components/BaOverlay
 import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../../../../src/modules/olMap/ol/geodesic/geodesicGeometry.js';
 import { fileStorageReducer } from '../../../../../src/store/fileStorage/fileStorage.reducer.js';
 import { KML_EMPTY_CONTENT } from '../../../../../src/modules/olMap/formats/kml.js';
+import { PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../../../../src/modules/olMap/utils/olGeometryUtils.js';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -584,6 +585,41 @@ describe('OlMeasurementHandler', () => {
 			await TestUtils.timeout();
 			oldFeature.getGeometry().dispatchEvent('change');
 			expect(updateOverlaysSpy).toHaveBeenCalledTimes(1);
+		});
+
+		it('updates measurement property of old features onChange', async () => {
+			setup();
+			const classUnderTest = new OlMeasurementHandler();
+			const lastData =
+				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measure_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+			const map = setupMap();
+			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
+
+			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
+			spyOn(fileStorageServiceMock, 'isFileId').and.callFake(() => true);
+			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
+			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
+			let oldFeature, styledOldFeature, measureGeometry;
+			const updateOverlaysSpy = spyOn(classUnderTest._styleService, 'updateStyle').and.callFake((f, m, props, t) => {
+				styledOldFeature = f;
+				measureGeometry = props.geometry;
+			});
+
+			classUnderTest.activate(map);
+			spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature').and.callFake((f) => {
+				oldFeature = f;
+			});
+			await TestUtils.timeout();
+
+			//reset feature property to detect a change
+			oldFeature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, 0);
+			expect(oldFeature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY)).toBe(0);
+
+			oldFeature.dispatchEvent('change');
+			expect(updateOverlaysSpy).toHaveBeenCalledTimes(1);
+			expect(oldFeature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY)).toBe(1);
+			expect(styledOldFeature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY)).toBe(1);
+			expect(measureGeometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY)).toBe(1);
 		});
 
 		it("updates overlays of old features on 'change:Resolution'", async () => {
