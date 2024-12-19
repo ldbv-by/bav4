@@ -421,11 +421,13 @@ const getRulerStyle = (feature) => {
 	return new Style({
 		geometry: (feature) => {
 			const geodesic = feature.get(GEODESIC_FEATURE_PROPERTY);
-			const finishOnFirstPoint = feature.get('finishOnFirstPoint');
+
 			if (geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE) {
 				return geodesic.area ? geodesic.getPolygon() : geodesic.getGeometry();
 			}
 			if (feature.getGeometry() instanceof Polygon) {
+				console.log(feature.get('finishOnFirstPoint'));
+				const finishOnFirstPoint = feature.get('finishOnFirstPoint') ?? true;
 				if (finishOnFirstPoint) {
 					return feature.getGeometry();
 				} else {
