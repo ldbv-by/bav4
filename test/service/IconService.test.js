@@ -77,7 +77,7 @@ describe('IconsService', () => {
 				const icons = await instanceUnderTest.all();
 				const defaultIcon = instanceUnderTest.getDefault();
 
-				expect(icons.length).toBe(8);
+				expect(icons.length).toBe(12);
 				expect(icons[0]).toEqual(defaultIcon);
 				expect(icons).toEqual(
 					jasmine.arrayContaining([
@@ -88,7 +88,11 @@ describe('IconsService', () => {
 						jasmine.objectContaining({ id: 'square' }),
 						jasmine.objectContaining({ id: 'rt_start' }),
 						jasmine.objectContaining({ id: 'rt_destination' }),
-						jasmine.objectContaining({ id: 'rt_intermediate' })
+						jasmine.objectContaining({ id: 'rt_intermediate' }),
+						jasmine.objectContaining({ id: 'highlight_marker' }),
+						jasmine.objectContaining({ id: 'highlight_default' }),
+						jasmine.objectContaining({ id: 'highlight_marker_tmp' }),
+						jasmine.objectContaining({ id: 'highlight_default_tmp' })
 					])
 				);
 				expect(warnSpy).toHaveBeenCalledWith('Icons could not be fetched from backend. Using fallback icons ...');
@@ -101,11 +105,16 @@ describe('IconsService', () => {
 
 				const icons = await instanceUnderTest.all();
 
-				expect(icons.length).toBe(8);
+				expect(icons.length).toBe(12);
 
 				expect(instanceUnderTest.getIconResult('rt_start').matches('rt_start')).toBeTrue();
 				expect(instanceUnderTest.getIconResult('rt_destination').matches('rt_destination')).toBeTrue();
 				expect(instanceUnderTest.getIconResult('rt_intermediate').matches('rt_intermediate')).toBeTrue();
+
+				expect(instanceUnderTest.getIconResult('highlight_marker').matches('highlight_marker')).toBeTrue();
+				expect(instanceUnderTest.getIconResult('highlight_default').matches('highlight_default')).toBeTrue();
+				expect(instanceUnderTest.getIconResult('highlight_marker_tmp').matches('highlight_marker_tmp')).toBeTrue();
+				expect(instanceUnderTest.getIconResult('highlight_default_tmp').matches('highlight_default_tmp')).toBeTrue();
 			});
 		});
 	});

@@ -42,7 +42,6 @@ import { OlSketchHandler } from '../OlSketchHandler';
 import { setMode } from '../../../../store/draw/draw.action';
 import { isValidGeometry } from '../../utils/olGeometryUtils';
 import { acknowledgeTermsOfUse } from '../../../../store/shared/shared.action';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { setCurrentTool } from '../../../../store/tools/tools.action';
 import { setSelection as setMeasurementSelection } from '../../../../store/measurement/measurement.action';
 import { INITIAL_STYLE } from '../../../../store/draw/draw.reducer';
@@ -140,15 +139,15 @@ export class OlDrawHandler extends OlLayerHandler {
 	 * @override
 	 */
 	onActivate(olMap) {
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key, params = []) => this._translationService.translate(key, params);
 		if (
 			!this._storeService.getStore().getState().shared.termsOfUseAcknowledged &&
 			!this._environmentService.isStandalone() &&
 			!this._environmentService.isEmbedded()
 		) {
-			const termsOfUse = translate('olMap_handler_termsOfUse');
+			const termsOfUse = translate('olMap_handler_termsOfUse', [translate('global_terms_of_use')]);
 			if (termsOfUse) {
-				emitNotification(unsafeHTML(termsOfUse), LevelTypes.INFO);
+				emitNotification(termsOfUse, LevelTypes.INFO);
 			}
 			acknowledgeTermsOfUse();
 		}

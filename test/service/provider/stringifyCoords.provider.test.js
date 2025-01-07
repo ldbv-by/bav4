@@ -138,6 +138,22 @@ describe('StringifyCoord provider', () => {
 				expect(bvvStringifyFunction(coord3857, BvvCoordinateRepresentations.UTM33, transformFn)).toBe('33 327250 5305507');
 				expect(bvvStringifyFunction(coord3857, BvvCoordinateRepresentations.UTM33, transformFn, { digits: 3 })).toBe('33 327250.000 5305507.000');
 			});
+
+			it('stringifies a coordinate for GK4', () => {
+				const coord3857 = [10000, 20000];
+				spyOn(coordinateService, 'transform').and.returnValue([9.94835, 50.0021]);
+				const transformFn = jasmine.createSpy().and.callFake((coordinate, sourceSrid, targetSrid) => {
+					switch (targetSrid) {
+						case 31468:
+							return [4467647, 5405041];
+						case 4326:
+							return [9.94835, 50.0021];
+					}
+				});
+
+				expect(bvvStringifyFunction(coord3857, BvvCoordinateRepresentations.GK4, transformFn)).toBe('4467647 5405041');
+				expect(bvvStringifyFunction(coord3857, BvvCoordinateRepresentations.GK4, transformFn, { digits: 3 })).toBe('4467647.000 5405041.000');
+			});
 		});
 	});
 });

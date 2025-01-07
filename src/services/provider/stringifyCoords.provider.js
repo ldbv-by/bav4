@@ -33,7 +33,7 @@ export const bvvStringifyFunction = (coordinate, coordinateRepresentation, trans
 	}
 
 	// all local coordinate representations
-	return stringifyLocalUTM(code, options.digits ?? coordinateRepresentation.digits, transformFn)(transformFn(coordinate, 3857, code));
+	return stringifyLocal(code, options.digits ?? coordinateRepresentation.digits, transformFn)(transformFn(coordinate, 3857, code));
 };
 
 /**
@@ -48,7 +48,13 @@ const stringifyLatLong = (digits) => {
 	return (coordinate4326) => createStringXY(digits, true)(coordinate4326.slice(0, 2).reverse());
 };
 
-const stringifyLocalUTM = (srid, digits, transformFn) => {
+const stringifyLocal = (srid, digits, transformFn) => {
+	if (srid === 31468) {
+		return (coordinate) => {
+			return createStringXY(digits)(coordinate);
+		};
+	}
+
 	const determineUtmZoneBand = (coordinate4326) => {
 		if (coordinate4326[1] < 54 && coordinate4326[1] >= 48) {
 			return 'U';

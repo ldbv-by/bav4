@@ -68,7 +68,7 @@ describe('OlDrawHandler', () => {
 		isFileId: () => false
 	};
 
-	const translationServiceMock = { translate: (key) => key };
+	const translationServiceMock = { translate: (key, params = []) => `${key}${params.length ? ` [${params.join(',')}]` : ''}` };
 	const environmentServiceMock = { isTouch: () => false, isStandalone: () => false, isEmbedded: () => false };
 	const iconServiceMock = { getDefault: () => new IconResult('foo', 'bar') };
 
@@ -255,8 +255,7 @@ describe('OlDrawHandler', () => {
 				expect(store.getState().shared.termsOfUseAcknowledged).toBeTrue();
 				await TestUtils.timeout();
 				// check notification
-				// content is provided by lit unsafeHtml-Directive; a testable string is found in the values-property
-				expect(store.getState().notifications.latest.payload.content.values[0]).toBe('olMap_handler_termsOfUse');
+				expect(store.getState().notifications.latest.payload.content).toBe('olMap_handler_termsOfUse [global_terms_of_use]');
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 			});
 

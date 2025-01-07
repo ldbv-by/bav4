@@ -6,7 +6,6 @@ import { repeat } from 'lit-html/directives/repeat.js';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import { $injector } from '../../../../injection';
 import css from './shareToolContent.css';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { openModal } from '../../../../store/modal/modal.action';
 import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
 import { setQueryParams } from '../../../../utils/urlUtils';
@@ -81,7 +80,7 @@ export class ShareToolContent extends AbstractToolContent {
 	 *@private
 	 */
 	async _generateShortUrl() {
-		const url = setQueryParams(this._shareService.encodeState(), { [QueryParameters.TOOL_ID]: '' });
+		const url = setQueryParams(this._shareService.encodeState(), { [QueryParameters.TOOL_ID]: null });
 		try {
 			return await this._urlService.shorten(url);
 		} catch (e) {
@@ -94,7 +93,7 @@ export class ShareToolContent extends AbstractToolContent {
 	 * @override
 	 */
 	createView() {
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key, params = []) => this._translationService.translate(key, params);
 
 		const onToggle = (event) => {
 			//Todo: This is workaround until all commons components / ba-button is reworked
@@ -186,7 +185,7 @@ export class ShareToolContent extends AbstractToolContent {
 				<div class="ba-tool-container__title">${translate('toolbox_shareTool_embed')}</div>
 				<div class="ba-tool-container__content">
 					<ba-checkbox class="tool-container__checkbox" tabindex="0" @toggle=${onToggle} .checked=${false}>
-						<span class="disclaimer-text">${unsafeHTML(`${translate('toolbox_shareTool_disclaimer')}`)}</span>
+						<span class="disclaimer-text">${translate('toolbox_shareTool_disclaimer', [translate('global_terms_of_use')])}</span>
 					</ba-checkbox>
 				</div>
 				<div class="ba-tool-container__actions">

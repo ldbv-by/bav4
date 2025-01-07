@@ -55,7 +55,7 @@ export class ThreeDimensionButton extends MvuElement {
 				.calcResolution(this.#storeService.getStore().getState().position.zoom, this.#storeService.getStore().getState().position.center)
 				.toFixed(1);
 
-			const url = `https://cert42.bayern.de/bayernatlas_3d_preview?${decodeURIComponent(new URLSearchParams(queryParameters).toString())}`;
+			const url = `https://geodaten.bayern.de/bayernatlas_3d_preview?${decodeURIComponent(new URLSearchParams(queryParameters).toString())}`;
 			this.#environmentService.getWindow().open(url);
 		};
 		return html`

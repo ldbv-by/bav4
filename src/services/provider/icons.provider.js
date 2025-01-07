@@ -4,7 +4,7 @@
 import { $injector } from '../../injection';
 import { IconResult } from '../IconService';
 
-const loadRoutingIcons = () => {
+const loadClientVectorIcons = () => {
 	const { ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 	const url = configService.getValueAsPath('BACKEND_URL') + 'icons';
 	const matcher = (id) => {
@@ -36,6 +36,34 @@ const loadRoutingIcons = () => {
 			matcher('rt_destination'),
 			urlFactoryFunction(url, 'rt_destination'),
 			false
+		),
+		new IconResult(
+			'highlight_marker',
+			'<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="rgba(9, 157, 218, 1)" viewBox="0 0 16 16"><path fill="#fff" d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/><path d="M8.028 14.624s5.203-4.931 5.203-8.671c0-6.937-10.406-6.937-10.406 0 0 3.741 5.203 8.671 5.203 8.671" style="fill:#369dc9"/><ellipse cx="8.026" cy="5.976" rx="3.455" ry="3.387" style="opacity:.15500004;fill:#000;stroke-width:.93009061;paint-order:stroke fill markers"/><ellipse cx="8.032" cy="5.979" rx="2.294" ry="2.249" style="opacity:1;fill:#fff;stroke-width:.61752313;paint-order:stroke fill markers"/></svg>',
+			matcher('highlight_marker'),
+			urlFactoryFunction(url, 'highlight_marker'),
+			false
+		),
+		new IconResult(
+			'highlight_default',
+			'<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="rgba(9, 157, 218, 1)" viewBox="0 0 16 16"><path fill="#fff" d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/><path d="M8.028 14.624s5.203-4.931 5.203-8.671c0-6.937-10.406-6.937-10.406 0 0 3.741 5.203 8.671 5.203 8.671" style="fill:#369dc9"/><ellipse cx="8.026" cy="5.976" rx="3.455" ry="3.387" style="opacity:.15500004;fill:#000;stroke-width:.93009061;paint-order:stroke fill markers"/><ellipse cx="8.032" cy="5.979" rx="2.294" ry="2.249" style="opacity:1;fill:#fff;stroke-width:.61752313;paint-order:stroke fill markers"/></svg>',
+			matcher('highlight_default'),
+			urlFactoryFunction(url, 'highlight_default'),
+			false
+		),
+		new IconResult(
+			'highlight_marker_tmp',
+			'<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="rgba(9, 157, 218, 1)" viewBox="0 0 16 16"><path fill="#fff" d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/><path d="M8.028 14.624s5.203-4.931 5.203-8.671c0-6.937-10.406-6.937-10.406 0 0 3.741 5.203 8.671 5.203 8.671" style="fill:#2c5a93;fill-opacity:1"/><ellipse cx="8.026" cy="5.976" rx="3.455" ry="3.387" style="opacity:.15500004;fill:#000;stroke-width:.93009061;paint-order:stroke fill markers"/><ellipse cx="8.032" cy="5.979" rx="2.294" ry="2.249" style="opacity:1;fill:#fff;stroke-width:.61752313;paint-order:stroke fill markers"/></svg>',
+			matcher('highlight_marker_tmp'),
+			urlFactoryFunction(url, 'highlight_marker_tmp'),
+			false
+		),
+		new IconResult(
+			'highlight_default_tmp',
+			'<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="rgba(9, 157, 218, 1)" viewBox="0 0 16 16"><path fill="#fff" d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/><path d="M8.028 14.624s5.203-4.931 5.203-8.671c0-6.937-10.406-6.937-10.406 0 0 3.741 5.203 8.671 5.203 8.671" style="fill:#2c5a93;fill-opacity:1"/><ellipse cx="8.026" cy="5.976" rx="3.455" ry="3.387" style="opacity:.15500004;fill:#000;stroke-width:.93009061;paint-order:stroke fill markers"/><ellipse cx="8.032" cy="5.979" rx="2.294" ry="2.249" style="opacity:1;fill:#fff;stroke-width:.61752313;paint-order:stroke fill markers"/></svg>',
+			matcher('highlight_default_tmp'),
+			urlFactoryFunction(url, 'highlight_default_tmp'),
+			false
 		)
 	];
 };
@@ -52,7 +80,7 @@ export const loadBvvIcons = async () => {
 	if (result.ok) {
 		const icons = [];
 		const payload = await result.json();
-		const routingIcons = loadRoutingIcons();
+		const clientVectorIcons = loadClientVectorIcons();
 
 		const matcher = (id) => {
 			return (idOrUrl) => idOrUrl === id || !!idOrUrl?.endsWith(`/${id}.png`);
@@ -68,7 +96,7 @@ export const loadBvvIcons = async () => {
 			if (svg) {
 				icons.push(new IconResult(id, svg, matcher(id), urlFactoryFunction(id)));
 			} else {
-				const candidate = routingIcons.find((iconResult) => iconResult.id === id);
+				const candidate = clientVectorIcons.find((iconResult) => iconResult.id === id);
 				if (candidate) {
 					icons.push(candidate);
 				} else {

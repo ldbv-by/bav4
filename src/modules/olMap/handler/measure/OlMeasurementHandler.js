@@ -35,7 +35,6 @@ import { emitNotification, LevelTypes } from '../../../../store/notifications/no
 import { OlSketchHandler } from '../OlSketchHandler';
 import { MEASUREMENT_LAYER_ID } from '../../../../plugins/MeasurementPlugin';
 import { acknowledgeTermsOfUse } from '../../../../store/shared/shared.action';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { setCurrentTool } from '../../../../store/tools/tools.action';
 import { setSelection as setDrawSelection } from '../../../../store/draw/draw.action';
 import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
@@ -108,15 +107,15 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	 * @override
 	 */
 	onActivate(olMap) {
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key, params = []) => this._translationService.translate(key, params);
 		if (
 			!this._storeService.getStore().getState().shared.termsOfUseAcknowledged &&
 			!this._environmentService.isStandalone() &&
 			!this._environmentService.isEmbedded()
 		) {
-			const termsOfUse = translate('olMap_handler_termsOfUse');
+			const termsOfUse = translate('olMap_handler_termsOfUse', [translate('global_terms_of_use')]);
 			if (termsOfUse) {
-				emitNotification(unsafeHTML(termsOfUse), LevelTypes.INFO);
+				emitNotification(termsOfUse, LevelTypes.INFO);
 			}
 			acknowledgeTermsOfUse();
 		}
@@ -151,6 +150,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					const oldFeatures = new KML().readFeatures(data);
 					const onFeatureChange = (event) => {
 						const measureGeometry = this._createMeasureGeometry(event.target);
+						const projectedLength = this._mapService.calcLength(getLineString(measureGeometry)?.getCoordinates());
+						event.target.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
+						measureGeometry.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
 						this._styleService.updateStyle(event.target, olMap, { geometry: measureGeometry }, StyleTypes.MEASURE);
 						this._setStatistics(event.target);
 					};

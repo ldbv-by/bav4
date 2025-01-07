@@ -30,7 +30,7 @@ export class HelpTooltip {
 
 	activate(map) {
 		this._map = map;
-		this._overlay = this._createOverlay({ offset: [15, 0], positioning: 'center-left' }, BaOverlayTypes.HELP);
+		this._overlay = this._createOverlay({ offset: [15, 0], positioning: 'top-left' }, BaOverlayTypes.HELP);
 		this._map.addOverlay(this._overlay);
 	}
 

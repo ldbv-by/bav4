@@ -21,7 +21,7 @@ describe('Spinner', () => {
 		it('renders the view', async () => {
 			const element = await TestUtils.render(Spinner.tag);
 
-			expect(element.shadowRoot.querySelector('.loading').innerText).toBe('spinner_text');
+			expect(element.shadowRoot.querySelector('.loading').innerText).toBe('commons_spinner_text');
 		});
 
 		it('automatically appends the "data-test-id" attribute', async () => {
@@ -34,7 +34,7 @@ describe('Spinner', () => {
 			const element = await TestUtils.render(Spinner.tag);
 			const label = element.shadowRoot.querySelector('.loading');
 
-			expect(label.innerText).toBe('spinner_text');
+			expect(label.innerText).toBe('commons_spinner_text');
 
 			element.label = 'foo';
 

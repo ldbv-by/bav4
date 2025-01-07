@@ -346,9 +346,9 @@ export class StyleService {
 	_addTextStyle(olFeature) {
 		const getStyleOption = () => {
 			const fromStyle = (style) => {
-				const currentColor = style.getText().getFill().getColor();
-				const currentText = style.getText().getText();
-				const currentScale = style.getText().getScale();
+				const currentColor = style.getText()?.getFill().getColor();
+				const currentText = style.getText()?.getText();
+				const currentScale = style.getText()?.getScale();
 				return { color: Array.isArray(currentColor) ? rgbToHex(currentColor) : currentColor, scale: currentScale, text: currentText };
 			};
 
@@ -370,10 +370,10 @@ export class StyleService {
 
 		const getStyleOption = (feature) => {
 			const fromStyle = (style) => {
-				const symbolSrc = style.getImage().getSrc();
-				const styleColor = style.getImage().getColor();
+				const symbolSrc = style.getImage()?.getSrc();
+				const styleColor = style.getImage()?.getColor();
 				const color = styleColor ? styleColor : iconService.decodeColor(symbolSrc);
-				const scale = markerScaleToKeyword(style.getImage().getScale());
+				const scale = markerScaleToKeyword(style.getImage()?.getScale());
 				const size = style.getImage()?.getSize();
 				const pixelAnchor = style.getImage()?.getAnchor();
 				const text = style.getText()?.getText();

@@ -56,6 +56,8 @@ export const appendQueryParams = (url, params = {}) => {
 
 /**
  * Sets query parameters to a given URL. Existing parameters containing the same key will be removed.
+ *
+ * If the value for a query parameter is `null`, existing parameters containing the same key will be removed.
  * @param {string} url The URL
  * @param {object} params The query parameters that should be appended
  * @returns the complemented URL
@@ -67,7 +69,11 @@ export const setQueryParams = (url, params = {}) => {
 	const searchParams = new URLSearchParams(originalUrl.search);
 
 	for (const [key, value] of Object.entries(params)) {
-		searchParams.set(key, value);
+		if (value === null) {
+			searchParams.delete(key);
+		} else {
+			searchParams.set(key, value);
+		}
 	}
 
 	return `${urlWithoutQP}?${searchParams.toString()}`;

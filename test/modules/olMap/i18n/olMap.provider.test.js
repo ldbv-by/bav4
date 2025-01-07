@@ -1,4 +1,5 @@
 import { provide } from '../../../../src/modules/olMap/i18n/olMap.provider';
+import { TestUtils } from '../../../test-utils';
 
 describe('i18n for map module', () => {
 	it('provides translation for de', () => {
@@ -28,8 +29,8 @@ describe('i18n for map module', () => {
 			'Offline: Die Zeichnung kann nicht gespeichert werden. Die Daten werden nach der Sitzung gelöscht.'
 		);
 		expect(map.olMap_handler_featureInfo_not_available).toBe('Objekt-Info nicht verfügbar');
-		expect(map.olMap_handler_termsOfUse).toBe(
-			'Ihre Zeichnung wird automatisch gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den <a href="https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen.html" target="_blank" tabindex="0">Nutzungsbedingungen</a> zu.'
+		expect(TestUtils.renderTemplateResult(map.olMap_handler_termsOfUse(['https://foo.bar'])).innerHTML).toContain(
+			'Ihre Zeichnung wird automatisch gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den <a target="_blank" tabindex="0" href="https://foo.bar">Nutzungsbedingungen</a> zu.'
 		);
 		expect(map.olMap_handler_mfp_distortion_warning).toBe(
 			'Die für den Export verwendete Projektion besitzt in einigen Bereichen\nVerzerrungen, die nicht für Längenmessungen geeignet sind.'
