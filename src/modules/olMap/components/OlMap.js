@@ -7,7 +7,7 @@ import olCss from 'ol/ol.css';
 import css from './olMap.css';
 import { Map as MapOl, View } from 'ol';
 import { defaults as defaultControls, ScaleLine } from 'ol/control';
-import { defaults as defaultInteractions, PinchRotate, DragPan } from 'ol/interaction';
+import { defaults as defaultInteractions, PinchRotate } from 'ol/interaction';
 import { removeLayer } from '../../../store/layers/layers.action';
 import { changeLiveCenter, changeLiveRotation, changeLiveZoom, changeZoomCenterAndRotation } from '../../../store/position/position.action';
 import { $injector } from '../../../injection';
@@ -171,11 +171,6 @@ export class OlMap extends MvuElement {
 			}).extend([
 				new PinchRotate({
 					threshold: this._mapService.getMinimalRotation()
-				}),
-				new DragPan({
-					condition: (mapBrowserEvent) => {
-						return mapBrowserEvent.originalEvent.isPrimary && mapBrowserEvent.originalEvent.button < 2;
-					}
 				})
 			])
 		});
