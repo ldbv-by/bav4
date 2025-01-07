@@ -138,7 +138,13 @@ export const getBvvTileLoadFunction = (geoResourceId, olLayer, failureCounterPro
 						return Promise.reject();
 				}
 			};
-			tile.getImage().src = await getObjectUrlWithAuthInterceptor(src);
+			const source = await getObjectUrlWithAuthInterceptor(src);
+			if (source) {
+				tile.getImage().src = source;
+				tile.getImage().onload = () => {
+					URL.revokeObjectURL(source);
+				};
+			}
 		} catch (error) {
 			tile.setState(TileState.ERROR);
 			failureCounter.indicateFailure();

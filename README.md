@@ -57,11 +57,11 @@ Having [nvm](https://github.com/nvm-sh/nvm) installed, just run `nvm install && 
 
 ### Configuration
 
-The app can be run without any configuration and uses default values and fallback mechanisms for that case.
+The app can be run without any configuration and uses default values and fallback mechanisms.
 That is also the case when the `BACKEND_URL` property is missing.  
-To enable the showcase component, the `SOFTWARE_INFO` property must be set.
+The `SOFTWARE_INFO` property must be set to enable the showcase component.
 
-Configuration properties are read at build time from a `.env` file located in the project's root directory.
+Configuration properties are read at build time from a `.env` file in the project's root directory.
 Currently used properties are:
 
 | key                      | default value                            | description                                          |
@@ -80,6 +80,7 @@ Currently used properties are:
 |----|----|
 | `npm run start` | Compiles and hot-reloads for development. Will serve the project under `http://localhost:8080` (or the next available port if `8080` is already used, see console output) |
 | `npm run start:nohostcheck` | Compiles and hot-reloads for development. Will serve the project under `http://0.0.0.0:8080` (or the next available port if `8080` is already used, see console output) with disabled host checking so that the application is reachable from another device|
+| `npm run start:nohashing` | Compiles and hot-reloads for development. Will serve the project under `http://0.0.0.0:8080` (or the next available port if `8080` is already used, see console output) with disabled hashing of bundles and chunks|
 | `npm run build:dev` | Compiles all files without bundling and minification |
 | `npm run build:prod` | Compiles and minifies for production |
 
@@ -118,7 +119,7 @@ Currently used properties are:
 
 ## Structure
 
-The project's source code is under `src`, unit, component and e2e tests are under `test`.
+The project's source code is under `src`, and unit, component and e2e tests are under `test`.
 
 The source code is distributed among the following directories:
 

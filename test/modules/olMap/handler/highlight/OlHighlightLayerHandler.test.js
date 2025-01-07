@@ -34,12 +34,21 @@ describe('OlHighlightLayerHandler', () => {
 		getSrid: () => {}
 	};
 
+	const iconServiceMock = {
+		getIconResult: (idOrBase64) => {
+			return { id: idOrBase64, base64: 'data:image/svg+xml;base64,foo' };
+		}
+	};
+
 	const setup = (state = initialState) => {
 		const highlightState = {
 			highlight: state
 		};
 		TestUtils.setupStoreAndDi(highlightState, { highlight: highlightReducer });
-		$injector.registerSingleton('MapService', mapService);
+		$injector
+			.registerSingleton('MapService', mapService)
+			// implicitly required by highlightCoordinateFeatureStyleFunction & highlightTemporaryCoordinateFeatureStyleFunction
+			.registerSingleton('IconService', iconServiceMock);
 	};
 
 	const setupMap = () => {

@@ -142,7 +142,7 @@ export class HighlightPlugin extends BaPlugin {
 						type: HighlightFeatureType.MARKER
 					});
 				}
-			});
+			}, HighlightPlugin.CROSSHAIR_DELAY_MS /**ensure the correct center was set in the meantime */);
 		}
 
 		observe(store, (state) => state.highlight.active, onChange);
@@ -150,5 +150,9 @@ export class HighlightPlugin extends BaPlugin {
 		observe(store, (store) => store.mainMenu.tab, onTabChanged, false);
 		observe(store, (store) => store.search.query, onQueryChanged);
 		observe(store, (state) => state.featureInfo.querying, onFeatureInfoQueryingChange);
+	}
+
+	static get CROSSHAIR_DELAY_MS() {
+		return 1000;
 	}
 }

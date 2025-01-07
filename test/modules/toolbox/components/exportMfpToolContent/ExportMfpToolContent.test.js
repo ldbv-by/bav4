@@ -4,7 +4,7 @@ import { ExportMfpToolContent } from '../../../../../src/modules/toolbox/compone
 import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
 import { setIsPortrait } from '../../../../../src/store/media/media.action';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
-import { setGridSupported, startJob } from '../../../../../src/store/mfp/mfp.action';
+import { setExportSupported, setGridSupported, startJob } from '../../../../../src/store/mfp/mfp.action';
 import { mfpReducer } from '../../../../../src/store/mfp/mfp.reducer';
 import { positionReducer } from '../../../../../src/store/position/position.reducer';
 import { REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
@@ -35,7 +35,8 @@ describe('ExportMfpToolContent', () => {
 		showGrid: false,
 		gridSupported: true,
 		jobSpec: null,
-		isJobStarted: false
+		isJobStarted: false,
+		exportSupported: true
 	};
 
 	const setup = async (mfpState = mfpDefaultState, config = {}) => {
@@ -80,7 +81,8 @@ describe('ExportMfpToolContent', () => {
 				showGrid: false,
 				isJobStarted: false,
 				isPortrait: false,
-				gridSupported: false
+				gridSupported: false,
+				exportSupported: true
 			});
 		});
 	});
@@ -415,6 +417,26 @@ describe('ExportMfpToolContent', () => {
 			setGridSupported(false);
 			expect(element.shadowRoot.querySelector('#showgrid').disabled).toBeTrue();
 			expect(element.shadowRoot.querySelector('#showgrid').title).toBe('toolbox_exportMfp_grid_supported');
+		});
+	});
+
+	describe('when the map extent changes to a unsupported mfp extent', () => {
+		it('shows a hint instead of the submit button', async () => {
+			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
+
+			expect(element.shadowRoot.querySelectorAll('#btn_submit')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.not-supported-hint')).toHaveSize(0);
+
+			setExportSupported(false);
+
+			expect(element.shadowRoot.querySelectorAll('#btn_submit')).toHaveSize(0);
+			expect(element.shadowRoot.querySelector('.not-supported-hint').innerText).toBe('toolbox_exportMfp_export_not_supported');
+
+			setExportSupported(true);
+
+			expect(element.shadowRoot.querySelectorAll('#btn_submit')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.not-supported-hint')).toHaveSize(0);
 		});
 	});
 });

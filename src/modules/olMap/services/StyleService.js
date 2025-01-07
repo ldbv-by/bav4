@@ -23,6 +23,7 @@ import { getRoutingStyleFunction } from '../handler/routing/styleUtils';
 import { GeometryCollection, MultiPoint, Point } from '../../../../node_modules/ol/geom';
 import { Stroke, Style, Text } from '../../../../node_modules/ol/style';
 import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../ol/geodesic/geodesicGeometry';
+import { VectorSourceType } from '../../../domain/geoResources';
 
 /**
  * Enumeration of predefined types of style
@@ -265,7 +266,7 @@ export class StyleService {
 					scale: style.getText().getScale()
 				});
 			}
-			return null;
+			return undefined;
 		};
 		const isPointLike = (geometry) => {
 			return geometry instanceof Point || geometry instanceof MultiPoint;
@@ -280,19 +281,21 @@ export class StyleService {
 		// if the feature is a Point and has a name with a text style, we
 		// create a correct text style.
 		if (style && isPointLike(geometry)) {
-			const image = style.getImage() ?? null;
+			const image = style.getImage() ?? undefined;
 
 			const sanitizedImage = getImageStyle(image);
 			const sanitizedText = getTextStyle(olFeature.get('name'), style);
+
 			const sanitizedStyles = [
 				new Style({
-					fill: sanitizedText ? null : style.getFill(),
-					stroke: sanitizedText ? null : sanitizedStroke,
+					fill: sanitizedText ? undefined : style.getFill(),
+					stroke: sanitizedText ? undefined : sanitizedStroke,
 					image: sanitizedText ? sanitizedImage : image,
-					text: sanitizedText,
+					text: olFeature.get('showPointNames') === false ? undefined : sanitizedText,
 					zIndex: style.getZIndex()
 				})
 			];
+
 			olFeature.setStyle(sanitizedStyles);
 		}
 
@@ -343,9 +346,9 @@ export class StyleService {
 	_addTextStyle(olFeature) {
 		const getStyleOption = () => {
 			const fromStyle = (style) => {
-				const currentColor = style.getText().getFill().getColor();
-				const currentText = style.getText().getText();
-				const currentScale = style.getText().getScale();
+				const currentColor = style.getText()?.getFill().getColor();
+				const currentText = style.getText()?.getText();
+				const currentScale = style.getText()?.getScale();
 				return { color: Array.isArray(currentColor) ? rgbToHex(currentColor) : currentColor, scale: currentScale, text: currentText };
 			};
 
@@ -367,10 +370,10 @@ export class StyleService {
 
 		const getStyleOption = (feature) => {
 			const fromStyle = (style) => {
-				const symbolSrc = style.getImage().getSrc();
-				const styleColor = style.getImage().getColor();
+				const symbolSrc = style.getImage()?.getSrc();
+				const styleColor = style.getImage()?.getColor();
 				const color = styleColor ? styleColor : iconService.decodeColor(symbolSrc);
-				const scale = markerScaleToKeyword(style.getImage().getScale());
+				const scale = markerScaleToKeyword(style.getImage()?.getScale());
 				const size = style.getImage()?.getSize();
 				const pixelAnchor = style.getImage()?.getAnchor();
 				const text = style.getText()?.getText();
@@ -402,6 +405,11 @@ export class StyleService {
 	}
 
 	_addDefaultStyle(olFeature, olLayer = null) {
+		const isGPX = (layer) => {
+			const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
+			return geoResourceService.byId(layer.get('geoResourceId'))?.sourceType === VectorSourceType.GPX;
+		};
+
 		const getColorByLayerId = (layer) => {
 			const id = getUid(layer);
 			if (this._defaultColorByLayerId[id] === undefined) {
@@ -410,7 +418,7 @@ export class StyleService {
 			return [...this._defaultColorByLayerId[id]];
 		};
 
-		const color = olLayer ? getColorByLayerId(olLayer) : this._nextColor();
+		const color = olLayer && !isGPX(olLayer) ? getColorByLayerId(olLayer) : this._nextColor();
 		olFeature.setStyle(defaultStyleFunction(color));
 	}
 

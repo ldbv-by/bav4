@@ -25,7 +25,8 @@ export const provide = (lang) => {
 				global_geoResource_forbidden: '403 - Forbidden',
 				global_signOut_success: 'Signed out successfully',
 				global_fileStorageService_exception: 'The data could not be stored',
-				global_cr_global_wgs84: 'Lat, Lon'
+				global_cr_global_wgs84: 'Lat, Lon',
+				global_terms_of_use: 'https://www.ldbv.bayern.de/file/pdf/18295/Nutzungsbedingungen_Geoportal_BayernAtlas_BayernAtlasplus.pdf'
 			};
 
 		case 'de':
@@ -54,7 +55,8 @@ export const provide = (lang) => {
 				global_geoResource_forbidden: '403 - Zugriff nicht erlaubt',
 				global_signOut_success: 'Sie haben sich erfolgreich abgemeldet',
 				global_fileStorageService_exception: 'Die Daten konnten nicht gespeichert werden',
-				global_cr_global_wgs84: 'Breite, Länge'
+				global_cr_global_wgs84: 'Breite, Länge',
+				global_terms_of_use: 'https://www.ldbv.bayern.de/file/pdf/18295/Nutzungsbedingungen_Geoportal_BayernAtlas_BayernAtlasplus.pdf'
 			};
 
 		default:

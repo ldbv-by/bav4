@@ -51,11 +51,15 @@ describe('VectorLayerService', () => {
 	describe('utils', () => {
 		describe('mapVectorSourceTypeToFormat', () => {
 			it('maps vectorSourceType to olFormats', () => {
-				expect(mapVectorSourceTypeToFormat(VectorSourceType.KML).constructor.name).toBe('KML');
-				expect(mapVectorSourceTypeToFormat(VectorSourceType.GPX).constructor.name).toBe('GPX');
-				expect(mapVectorSourceTypeToFormat(VectorSourceType.GEOJSON).constructor.name).toBe('GeoJSON');
+				expect(mapVectorSourceTypeToFormat(new VectorGeoResource('id', 'label', VectorSourceType.KML)).constructor.name).toBe('KML');
+				expect(
+					mapVectorSourceTypeToFormat(new VectorGeoResource('id', 'label', VectorSourceType.KML).setShowPointNames(false)).showPointNames_
+				).toBeFalse();
+				expect(mapVectorSourceTypeToFormat(new VectorGeoResource('id', 'label', VectorSourceType.GPX)).constructor.name).toBe('GPX');
+				expect(mapVectorSourceTypeToFormat(new VectorGeoResource('id', 'label', VectorSourceType.GEOJSON)).constructor.name).toBe('GeoJSON');
+				expect(mapVectorSourceTypeToFormat(new VectorGeoResource('id', 'label', VectorSourceType.EWKT)).constructor.name).toBe('WKT');
 				expect(() => {
-					mapVectorSourceTypeToFormat('unknown');
+					mapVectorSourceTypeToFormat({ sourceType: 'unknown' });
 				}).toThrowError(/unknown currently not supported/);
 			});
 		});
@@ -251,13 +255,16 @@ describe('VectorLayerService', () => {
 				const geoResourceLabel = 'geoResourceLabel';
 				spyOn(mapService, 'getSrid').and.returnValue(destinationSrid);
 				const sourceAsString = `<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name>${kmlName}</name><Placemark id="line_1617976924317"><ExtendedData><Data name="type"><value>line</value></Data></ExtendedData><description></description><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>10.713458946685412,49.70007647302964 11.714932179089468,48.34411758499924</coordinates></LineString></Placemark></Document></kml>`;
-				const vectorGeoResource = new VectorGeoResource('someId', geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, sourceSrid);
+				const vectorGeoResource = new VectorGeoResource('someId', geoResourceLabel, VectorSourceType.KML)
+					.setSource(sourceAsString, sourceSrid)
+					.setShowPointNames(false);
 
 				const olVectorSource = instanceUnderTest._vectorSourceForData(vectorGeoResource);
 
 				expect(olVectorSource.constructor.name).toBe('VectorSource');
 				expect(olVectorSource.getFeatures().length).toBe(1);
 				expect(olVectorSource.getFeatures()[0].get('type')).toBe(expectedTypeValue);
+				expect(olVectorSource.getFeatures()[0].get('showPointNames')).toBeFalse();
 
 				await TestUtils.timeout();
 				expect(vectorGeoResource.label).toBe(geoResourceLabel);
@@ -284,6 +291,7 @@ describe('VectorLayerService', () => {
 				expect(olVectorSource.getSource().constructor.name).toBe('VectorSource');
 				expect(olVectorSource.getSource().getFeatures().length).toBe(1);
 				expect(olVectorSource.getSource().getFeatures()[0].get('type')).toBe(expectedTypeValue);
+				expect(olVectorSource.getSource().getFeatures()[0].get('showPointNames')).toBeTrue();
 
 				await TestUtils.timeout();
 				expect(vectorGeoResource.label).toBe(geoResourceLabel);

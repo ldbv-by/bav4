@@ -1,4 +1,5 @@
 import { provide } from '../../../../src/modules/toolbox/i18n/toolbox.provider';
+import { TestUtils } from '../../../test-utils';
 
 describe('i18n for menu module', () => {
 	it('provides translation for de', () => {
@@ -42,8 +43,8 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_shareTool_header).toBe('Teilen');
 		expect(map.toolbox_shareTool_embed).toBe('BayernAtlas-IFrame');
 		expect(map.toolbox_shareTool_preview).toBe('Vorschau');
-		expect(map.toolbox_shareTool_disclaimer).toBe(
-			'Sie können die Karte in Ihre Website oder ein Blog einbetten. Mit dem Einbetten dieser Karte stimmen Sie den <a href="https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen.html" target="_blank" tabindex="0"> Nutzungsbedingungen</a> zu.'
+		expect(TestUtils.renderTemplateResult(map.toolbox_shareTool_disclaimer(['https://foo.bar'])).innerHTML).toContain(
+			'Sie können die Karte in Ihre Website oder ein Blog einbetten. Mit dem Einbetten dieser Karte stimmen Sie den <a target="_blank" tabindex="0" href="https://foo.bar">Nutzungsbedingungen</a> zu.'
 		);
 		expect(map.toolbox_shareTool_mail).toBe('Mail');
 		expect(map.toolbox_shareTool_qr).toBe('QR-Code');
@@ -107,6 +108,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_show_grid_title).toBe('Ein Koordinatennetz im Export hinzufügen');
 		expect(map.toolbox_exportMfp_show_grid).toBe('Koordinatennetz');
 		expect(map.toolbox_exportMfp_grid_supported).toBe('Nicht verfügbar, wenn Karte rotiert ist');
+		expect(map.toolbox_exportMfp_export_not_supported).toBe('Der Export des ausgewählten Ausschnitts ist in diesem Gebiet nicht möglich.');
 	});
 
 	it('provides translation for en', () => {
@@ -211,10 +213,11 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_show_grid_title).toBe('Add coordinate grid in export');
 		expect(map.toolbox_exportMfp_show_grid).toBe('Coordinate grid');
 		expect(map.toolbox_exportMfp_grid_supported).toBe('Not supported while map is rotated');
+		expect(map.toolbox_exportMfp_export_not_supported).toBe('Exporting the selected extent is not supported in this area.');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 98;
+		const expectedSize = 99;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

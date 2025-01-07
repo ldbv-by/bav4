@@ -46,6 +46,10 @@ describe('Icons provider', () => {
 			{ id: 'foo1', svg: '<svg>bar1</svg>' },
 			{ id: 'rt_start' },
 			{ id: 'rt_destination' },
+			{ id: 'highlight_marker' },
+			{ id: 'highlight_default' },
+			{ id: 'highlight_default_tmp' },
+			{ id: 'highlight_marker_tmp' },
 			{ id: 'misconfigured_icon', svg: null }
 		]);
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
@@ -55,7 +59,7 @@ describe('Icons provider', () => {
 
 		expect(configServiceSpy).toHaveBeenCalled();
 		expect(httpServiceSpy).toHaveBeenCalled();
-		expect(icons.length).toBe(3);
+		expect(icons.length).toBe(7);
 
 		const fooIconResult1 = icons[0];
 		expect(fooIconResult1).toEqual(jasmine.any(IconResult));
@@ -78,6 +82,34 @@ describe('Icons provider', () => {
 		expect(fooIconResult3.matches('somethingWrong')).toBeFalse();
 		expect(fooIconResult3.matches(null)).toBeFalse();
 		expect(fooIconResult3.getUrl([0, 0, 0])).toBe('https://backend.url/icons/rt_destination.png');
+		const fooIconResult4 = icons[3];
+		expect(fooIconResult4).toEqual(jasmine.any(IconResult));
+		expect(fooIconResult4.matches('highlight_marker')).toBeTrue();
+		expect(fooIconResult4.matches('https://backend.url/icons/highlight_marker.png')).toBeTrue();
+		expect(fooIconResult4.matches('somethingWrong')).toBeFalse();
+		expect(fooIconResult4.matches(null)).toBeFalse();
+		expect(fooIconResult4.getUrl([0, 0, 0])).toBe('https://backend.url/icons/highlight_marker.png');
+		const fooIconResult5 = icons[4];
+		expect(fooIconResult5).toEqual(jasmine.any(IconResult));
+		expect(fooIconResult5.matches('highlight_default')).toBeTrue();
+		expect(fooIconResult5.matches('https://backend.url/icons/highlight_default.png')).toBeTrue();
+		expect(fooIconResult5.matches('somethingWrong')).toBeFalse();
+		expect(fooIconResult5.matches(null)).toBeFalse();
+		expect(fooIconResult5.getUrl([0, 0, 0])).toBe('https://backend.url/icons/highlight_default.png');
+		const fooIconResult6 = icons[5];
+		expect(fooIconResult6).toEqual(jasmine.any(IconResult));
+		expect(fooIconResult6.matches('highlight_default_tmp')).toBeTrue();
+		expect(fooIconResult6.matches('https://backend.url/icons/highlight_default_tmp.png')).toBeTrue();
+		expect(fooIconResult6.matches('somethingWrong')).toBeFalse();
+		expect(fooIconResult6.matches(null)).toBeFalse();
+		expect(fooIconResult6.getUrl([0, 0, 0])).toBe('https://backend.url/icons/highlight_default_tmp.png');
+		const fooIconResult7 = icons[6];
+		expect(fooIconResult7).toEqual(jasmine.any(IconResult));
+		expect(fooIconResult7.matches('highlight_marker_tmp')).toBeTrue();
+		expect(fooIconResult7.matches('https://backend.url/icons/highlight_marker_tmp.png')).toBeTrue();
+		expect(fooIconResult7.matches('somethingWrong')).toBeFalse();
+		expect(fooIconResult7.matches(null)).toBeFalse();
+		expect(fooIconResult7.getUrl([0, 0, 0])).toBe('https://backend.url/icons/highlight_marker_tmp.png');
 
 		expect(icons.find((iconResult) => iconResult.id === 'misconfigured_icon')).toBeUndefined();
 		expect(icons.find((iconResult) => iconResult.id === 'rt_intermediate')).toBeUndefined();

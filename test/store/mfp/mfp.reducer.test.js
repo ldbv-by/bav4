@@ -4,6 +4,7 @@ import {
 	deactivate,
 	requestJob,
 	setCurrent,
+	setExportSupported,
 	setGridSupported,
 	setId,
 	setScale,
@@ -28,6 +29,7 @@ describe('mfpReducer', () => {
 		expect(store.getState().mfp.current.scale).toBeNull();
 		expect(store.getState().mfp.showGrid).toBeFalse();
 		expect(store.getState().mfp.gridSupported).toBeTrue();
+		expect(store.getState().mfp.exportSupported).toBeTrue();
 		expect(store.getState().mfp.jobRequest).toBeNull();
 		expect(store.getState().mfp.jobSpec).toBeNull();
 	});
@@ -92,6 +94,18 @@ describe('mfpReducer', () => {
 		setGridSupported(true);
 
 		expect(store.getState().mfp.gridSupported).toBeTrue();
+	});
+
+	it('updates the exportSupported property', () => {
+		const store = setup();
+
+		setExportSupported(false);
+
+		expect(store.getState().mfp.exportSupported).toBeFalse();
+
+		setExportSupported(true);
+
+		expect(store.getState().mfp.exportSupported).toBeTrue();
 	});
 
 	it('places a new request for an mfp job', () => {

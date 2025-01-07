@@ -117,7 +117,8 @@ export const markerScaleToKeyword = (scaleCandidate) => {
 		case 0.5:
 			return 'small';
 		default:
-			return scale;
+			// scales greater then 'large' are not allowed for bvv-drawings
+			return scale > 1 ? 1 : scale;
 	}
 };
 
@@ -299,7 +300,6 @@ export const defaultClusterStyleFunction = () => {
 export const markerStyleFunction = (styleOption = DEFAULT_STYLE_OPTION) => {
 	const markerColor = styleOption.color ? styleOption.color : '#ff0000';
 	const markerAnchor = styleOption.anchor ? styleOption.anchor : [0.5, 0.5];
-
 	const rasterIconOptions = {
 		anchor: markerAnchor,
 		anchorXUnits: 'fraction',

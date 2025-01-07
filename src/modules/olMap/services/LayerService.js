@@ -13,6 +13,7 @@ import ImageWMS from 'ol/source/ImageWMS.js';
 import { UnavailableGeoResourceError } from '../../../domain/errors';
 import { BvvGk4WmtsTileGrid } from '../ol/tileGrid/BvvGk4WmtsTileGrid';
 import { RefreshableXYZ } from '../ol/source/RefreshableXYZ';
+import { Eu25832WmtsTileGrid } from '../ol/tileGrid/Eu25832WmtsTileGrid';
 
 /**
  * A function that returns a `ol.image.LoadFunction` for loading also restricted images via basic access authentication
@@ -135,6 +136,12 @@ export class LayerService {
 							return new RefreshableXYZ({
 								...config,
 								tileGrid: new AdvWmtsTileGrid(),
+								projection: new Projection({ code: 'EPSG:25832' }) // to make it testable we use a Projection instead of a ProjectionLike here
+							});
+						case 'eu25832':
+							return new RefreshableXYZ({
+								...config,
+								tileGrid: new Eu25832WmtsTileGrid(),
 								projection: new Projection({ code: 'EPSG:25832' }) // to make it testable we use a Projection instead of a ProjectionLike here
 							});
 						case 'bvv_gk4':

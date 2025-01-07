@@ -45,7 +45,7 @@ export const provide = (lang) => {
 				feedback_privacyPolicy: 'Hinweis zum Datenschutz',
 				feedback_required_field_error: 'Pflichtfeld',
 				feedback_required_field_helper: 'Pflichtfeld',
-				feedback_saved_successfully: 'Ihr Feedback wurde gespeichert',
+				feedback_saved_successfully: 'Ihr Feedback ist eingegangen. Vielen Dank!',
 				feedback_submit: 'Senden',
 				feedback_toggleFeedback_generalButton_sub: 'Machen Sie Änderungs- oder Verbesserungsvorschläge oder teilen Sie uns Ihre Meinung mit.',
 				feedback_toggleFeedback_mapButton_sub: 'Melden Sie uns Korrekturvorschläge zu den Karteninhalten.',

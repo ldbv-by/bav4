@@ -1,3 +1,5 @@
+import { html } from '../../../../node_modules/lit-html/lit-html';
+
 export const provide = (lang) => {
 	switch (lang) {
 		case 'en':
@@ -101,7 +103,8 @@ export const provide = (lang) => {
 				toolbox_exportMfp_options: 'Export options',
 				toolbox_exportMfp_show_grid_title: 'Add coordinate grid in export',
 				toolbox_exportMfp_show_grid: 'Coordinate grid',
-				toolbox_exportMfp_grid_supported: 'Not supported while map is rotated'
+				toolbox_exportMfp_grid_supported: 'Not supported while map is rotated',
+				toolbox_exportMfp_export_not_supported: 'Exporting the selected extent is not supported in this area.'
 			};
 
 		case 'de':
@@ -146,8 +149,9 @@ export const provide = (lang) => {
 				toolbox_shareTool_header: 'Teilen',
 				toolbox_shareTool_embed: 'BayernAtlas-IFrame',
 				toolbox_shareTool_preview: 'Vorschau',
-				toolbox_shareTool_disclaimer:
-					'Sie können die Karte in Ihre Website oder ein Blog einbetten. Mit dem Einbetten dieser Karte stimmen Sie den <a href="https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen.html" target="_blank" tabindex="0"> Nutzungsbedingungen</a> zu.',
+				toolbox_shareTool_disclaimer: (params) =>
+					// prettier-ignore
+					html`Sie können die Karte in Ihre Website oder ein Blog einbetten. Mit dem Einbetten dieser Karte stimmen Sie den <a href="${params[0]}" target="_blank" tabindex="0">Nutzungsbedingungen</a> zu.`,
 				toolbox_shareTool_mail: 'Mail',
 				toolbox_shareTool_qr: 'QR-Code',
 				toolbox_shareTool_share: 'Teilen',
@@ -208,7 +212,8 @@ export const provide = (lang) => {
 				toolbox_exportMfp_options: 'Export-Optionen',
 				toolbox_exportMfp_show_grid_title: 'Ein Koordinatennetz im Export hinzufügen',
 				toolbox_exportMfp_show_grid: 'Koordinatennetz',
-				toolbox_exportMfp_grid_supported: 'Nicht verfügbar, wenn Karte rotiert ist'
+				toolbox_exportMfp_grid_supported: 'Nicht verfügbar, wenn Karte rotiert ist',
+				toolbox_exportMfp_export_not_supported: 'Der Export des ausgewählten Ausschnitts ist in diesem Gebiet nicht möglich.'
 			};
 
 		default:
