@@ -21,7 +21,6 @@ import { BaOverlay, OVERLAY_STYLE_CLASS } from '../components/BaOverlay';
 import { findAllBySelector } from '../../../utils/markup';
 import { setQueryParams } from '../../../utils/urlUtils';
 import { QueryParameters } from '../../../domain/queryParameters';
-import { HIGHLIGHT_LAYER_ID } from '../../../plugins/HighlightPlugin';
 import { GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
 
 const UnitsRatio = 39.37; //inches per meter
