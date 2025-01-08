@@ -2344,6 +2344,103 @@ describe('BvvMfp3Encoder', () => {
 				});
 			});
 
+			it('writes a feature with geodesic geometry with a advanced feature style function (geometryFunction)', () => {
+				const feature = new Feature({
+					geometry: new LineString([
+						[30, 30],
+						[40, 40]
+					]),
+					measurement: {},
+					geodesic: {
+						getGeometry: () => {},
+						azimuthCircle: {
+							clone: () =>
+								new LineString([
+									[80, 80],
+									[90, 90]
+								])
+						}
+					}
+				});
+				feature.setStyle(getGeometryStyleFunction());
+				const vectorSource = new VectorSource({ wrapX: false, features: [feature] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
+				const groupOpacity = 1;
+				vectorLayer.setStyle(getGeometryStyleFunction());
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+				const geoResourceMock = getGeoResourceMock();
+				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
+				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
+				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+
+				expect(actualSpec).toEqual({
+					opacity: 1,
+					type: 'geojson',
+					name: 'foo',
+					geoJson: {
+						features: [
+							{
+								type: 'Feature',
+								geometry: {
+									type: 'LineString',
+									coordinates: jasmine.any(Array)
+								},
+								properties: {
+									_gx_style: 0
+								}
+							},
+							jasmine.any(Object), // the geodesic geometry
+							jasmine.any(Object) // the circle geometry as polygon
+						],
+						type: 'FeatureCollection'
+					},
+					style: {
+						version: '2',
+						'[_gx_style = 0]': {
+							symbolizers: [
+								{
+									type: 'line',
+									zIndex: 0,
+									fillOpacity: 0.4,
+									strokeOpacity: 1,
+									strokeWidth: jasmine.any(Number),
+									strokeColor: '#ff0000',
+									strokeLinecap: 'round',
+									strokeLineJoin: 'round',
+									strokeDashstyle: 'dash',
+									fillColor: '#ff0000'
+								}
+							]
+						},
+						'[_gx_style = 1]': {
+							symbolizers: [
+								{
+									type: 'line',
+									zIndex: 0,
+									strokeWidth: 5,
+									strokeColor: '#ff0000',
+									strokeOpacity: 1,
+									strokeLinecap: 'round',
+									strokeLineJoin: 'round',
+									fillOpacity: 0
+								},
+								{
+									type: 'polygon',
+									zIndex: 0,
+									strokeWidth: 5,
+									strokeColor: '#ff0000',
+									strokeOpacity: 1,
+									strokeLinecap: 'round',
+									strokeLineJoin: 'round',
+									fillOpacity: 0
+								}
+							]
+						}
+					}
+				});
+			});
+
 			it('writes features with same unique stroke style', () => {
 				const uniqueStyle = getStrokeStyle();
 				const feature1 = new Feature({
