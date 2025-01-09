@@ -151,7 +151,7 @@ describe('StoreService', () => {
 			expect(store).toBeDefined();
 
 			const reducerKeys = Object.keys(store.getState());
-			expect(reducerKeys.length).toBe(33);
+			expect(reducerKeys.length).toBe(34);
 			expect(reducerKeys.includes('map')).toBeTrue();
 			expect(reducerKeys.includes('pointer')).toBeTrue();
 			expect(reducerKeys.includes('position')).toBeTrue();
@@ -185,6 +185,7 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('wcAttribute')).toBeTrue();
 			expect(reducerKeys.includes('fileStorage')).toBeTrue();
 			expect(reducerKeys.includes('timeTravel')).toBeTrue();
+			expect(reducerKeys.includes('layerSwipe')).toBeTrue();
 		});
 
 		it('registers all plugins', async () => {

@@ -36,6 +36,7 @@ import { authReducer } from '../store/auth/auth.reducer';
 import { wcAttributeReducer } from '../store/wcAttribute/wcAttribute.reducer';
 import { fileStorageReducer } from '../store/fileStorage/fileStorage.reducer';
 import { timeTravelReducer } from '../store/timeTravel/timeTravel.reducer';
+import { layerSwipeReducer } from '../store/layerSwipe/layerSwipe.reducer';
 
 /**
  * Service which configures, initializes and holds the redux store.
@@ -81,7 +82,8 @@ export class StoreService {
 			auth: authReducer,
 			wcAttribute: wcAttributeReducer,
 			fileStorage: fileStorageReducer,
-			timeTravel: timeTravelReducer
+			timeTravel: timeTravelReducer,
+			layerSwipe: layerSwipeReducer
 		});
 
 		this._store = createStore(rootReducer);
