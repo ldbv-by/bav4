@@ -1,5 +1,6 @@
 import { $injector } from '../../injection/index';
 import { EventLike } from '../../utils/storeUtils';
+import { SwipeAlignment } from './layers.action';
 
 export const LAYER_ADDED = 'layer/added';
 export const LAYER_REMOVED = 'layer/removed';
@@ -73,7 +74,7 @@ export const createDefaultLayer = (id, geoResourceId = id) => {
  * @returns Constraints
  */
 export const createDefaultLayersConstraints = () => {
-	return { alwaysTop: false, hidden: false, cloneable: true, metaData: true };
+	return { alwaysTop: false, hidden: false, cloneable: true, metaData: true, swipeAlignment: SwipeAlignment.NOT_SET };
 };
 
 /**

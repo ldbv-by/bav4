@@ -39,6 +39,7 @@ import { GeoResource } from '../../domain/geoResources';
  * @property {boolean} [alwaysTop=false] Layer always on top
  * @property {boolean} [cloneable=true] Layer is allowed to be cloned
  * @property {boolean} [metaData=true] Layer references meta data that can be viewed
+ * @property {SwipeAlignment} [swipeAlignment=SwipeAlignment.NOT_SET] Layer references meta data that can be viewed
  */
 
 /**
@@ -79,6 +80,18 @@ import { GeoResource } from '../../domain/geoResources';
  * @property {boolean} [visible=true] Visibility
  * @property {string} [timestamp=null] Timestamp
  */
+
+/**
+ * The side a layers is shown if the swipe feature is active
+ * @readonly
+ * @enum {Number}
+ */
+export const SwipeAlignment = Object.freeze({
+	NOT_SET: 0,
+	BOTH: 1,
+	LEFT: 2,
+	RIGHT: 3
+});
 
 const getStore = () => {
 	const { StoreService: storeService } = $injector.inject('StoreService');

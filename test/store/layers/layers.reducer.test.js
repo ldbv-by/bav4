@@ -18,7 +18,8 @@ import {
 	removeLayerOf,
 	removeAndSetLayers,
 	addLayerIfNotPresent,
-	cloneAndAddLayer
+	cloneAndAddLayer,
+	SwipeAlignment
 } from '../../../src/store/layers/layers.action';
 import { TestUtils } from '../../test-utils.js';
 import { GeoResourceFuture, XyzGeoResource } from '../../../src/domain/geoResources';
@@ -40,10 +41,12 @@ describe('defaultLayerProperties', () => {
 describe('createDefaultLayersConstraints', () => {
 	it('returns an object containing all layer specific default constraint properties', () => {
 		const defaultLayerConstraints = createDefaultLayersConstraints();
+		expect(Object.keys(defaultLayerConstraints).length).toBe(5);
 		expect(defaultLayerConstraints.alwaysTop).toBeFalse();
 		expect(defaultLayerConstraints.hidden).toBeFalse();
 		expect(defaultLayerConstraints.cloneable).toBeTrue();
 		expect(defaultLayerConstraints.metaData).toBeTrue();
+		expect(defaultLayerConstraints.swipeAlignment).toEqual(SwipeAlignment.NOT_SET);
 	});
 });
 
@@ -163,7 +166,7 @@ describe('layersReducer', () => {
 			expect(store.getState().layers.active[1].geoResourceId).toBe('geoResourceId1');
 			expect(store.getState().layers.active[1].zIndex).toBe(1);
 			expect(store.getState().layers.active[1].constraints.hidden).toBeFalse();
-			expect(Object.keys(store.getState().layers.active[1].constraints).length).toBe(4);
+			expect(Object.keys(store.getState().layers.active[1].constraints).length).toBe(5);
 		});
 
 		it("adds layers regarding a 'z-index' property of 0", () => {
