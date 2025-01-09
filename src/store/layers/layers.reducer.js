@@ -173,7 +173,7 @@ const setReady = (state, payload) => {
 };
 
 const modifyLayer = (state, payload) => {
-	const { id, properties } = payload;
+	const { id, properties, constraints } = payload;
 
 	const layer = state.active.find((layer) => layer.id === id);
 	if (layer) {
@@ -185,7 +185,8 @@ const modifyLayer = (state, payload) => {
 
 		const updatedLayer = {
 			...layer,
-			...properties
+			...properties,
+			constraints: { ...layer.constraints, ...constraints }
 		};
 
 		//add updated layer

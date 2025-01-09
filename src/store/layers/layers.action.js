@@ -39,7 +39,7 @@ import { GeoResource } from '../../domain/geoResources';
  * @property {boolean} [alwaysTop=false] Layer always on top
  * @property {boolean} [cloneable=true] Layer is allowed to be cloned
  * @property {boolean} [metaData=true] Layer references meta data that can be viewed
- * @property {SwipeAlignment} [swipeAlignment=SwipeAlignment.NOT_SET] Layer references meta data that can be viewed
+ * @property {SwipeAlignment} [swipeAlignment=SwipeAlignment.NOT_SET] The alignment of the layer is visible if the swipe feature is active
  */
 
 /**
@@ -49,6 +49,7 @@ import { GeoResource } from '../../domain/geoResources';
  * @property {boolean} [visible] The new visibility value
  * @property {string} [timestamp] The new timestamp value
  * @property {number} [zIndex] The new index of this layer within the list of active layers
+ * @property {SwipeAlignment} [swipeAlignment] The new alignment of the layer is visible if the swipe feature is active
  */
 
 /**
@@ -105,9 +106,14 @@ const getStore = () => {
  * @param {module:store/layers/layers_action~ModifyLayerOptions} options options
  */
 export const modifyLayer = (id, options = {}) => {
+	const { swipeAlignment, ...properties } = options;
+	const constraints = {};
+	if (swipeAlignment) {
+		constraints.swipeAlignment = swipeAlignment;
+	}
 	getStore().dispatch({
 		type: LAYER_MODIFIED,
-		payload: { id: id, properties: options }
+		payload: { id: id, properties, constraints }
 	});
 };
 

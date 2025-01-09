@@ -701,6 +701,21 @@ describe('layersReducer', () => {
 			expect(store.getState().layers.active[2].id).toBe('id1');
 		});
 
+		it("modifies the 'swipeAlignment' constraint property of a layer", () => {
+			const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0' };
+			const store = setup({
+				layers: {
+					active: index([layerProperties0])
+				}
+			});
+
+			expect(store.getState().layers.active[0].constraints.swipeAlignment).toEqual(SwipeAlignment.NOT_SET);
+
+			modifyLayer('id0', { swipeAlignment: SwipeAlignment.RIGHT });
+
+			expect(store.getState().layers.active[0].constraints.swipeAlignment).toEqual(SwipeAlignment.RIGHT);
+		});
+
 		it('does nothing when modified layer is not present', () => {
 			const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', visible: true };
 			const store = setup({
