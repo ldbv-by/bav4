@@ -13,7 +13,7 @@ export const Tools = Object.freeze({
 	IMPORT: 'import',
 	EXPORT: 'export',
 	ROUTING: 'routing',
-	SWIPE: 'compare'
+	COMPARE: 'compare'
 });
 
 /**
