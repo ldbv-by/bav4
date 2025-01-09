@@ -91,25 +91,55 @@ describe('ActivateMapButton', () => {
 		});
 
 		it('when activate map button clicked', async () => {
-			const queryParam = new URLSearchParams(`${QueryParameters.EC_MAP_ACTIVATION}=true`);
+			const queryParam = new URLSearchParams(`${QueryParameters.EC_MAP_ACTIVATION}=''`);
 			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 			const element = await setup({ embed: true });
-			const mapElement = document.createElement('div');
-			mapElement.setAttribute('id', 'ol-map');
-			mapElement.setAttribute('inert', '');
-			element.shadowRoot.append(mapElement);
+			const removeInertAttr = spyOn(element, '_removeInertAttr');
 
 			const button = element.shadowRoot.querySelectorAll('ba-button')[0];
 
 			expect(element.shadowRoot.querySelectorAll('.active-map__background')[0].classList.contains('hide')).toBeFalse();
 			expect(document.querySelectorAll(`#${ActivateMapButton.STYLE_ID}`)).toHaveSize(1);
-			expect(element.shadowRoot.querySelector(`#ol-map`).hasAttribute('inert')).toBeTrue();
 
 			button.click();
 
 			expect(element.shadowRoot.querySelectorAll('.active-map__background')[0].classList.contains('hide')).toBeTrue();
 			expect(document.querySelectorAll(`#${ActivateMapButton.STYLE_ID}`)).toHaveSize(0);
-			expect(element.shadowRoot.querySelector(`#ol-map`).hasAttribute('inert')).toBeFalse();
+
+			expect(removeInertAttr).toHaveBeenCalled();
+		});
+
+		describe('_addInertAttr', () => {
+			it('adds the inert attribute to the map element', async () => {
+				const queryParam = new URLSearchParams(`${QueryParameters.EC_MAP_ACTIVATION}=true`);
+				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				const element = await setup({ embed: true });
+
+				const mapElement = document.createElement('div');
+				mapElement.setAttribute('id', 'ol-map');
+				element.shadowRoot.append(mapElement);
+
+				expect(element.shadowRoot.querySelector(`#ol-map`).hasAttribute('inert')).toBeFalse();
+				element._addInertAttr();
+				expect(element.shadowRoot.querySelector(`#ol-map`).hasAttribute('inert')).toBeTrue();
+			});
+		});
+
+		describe('_removeInertAttr', () => {
+			it('removes the inert attribute to the map element', async () => {
+				const queryParam = new URLSearchParams(`${QueryParameters.EC_MAP_ACTIVATION}=true`);
+				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				const element = await setup({ embed: true });
+
+				const mapElement = document.createElement('div');
+				mapElement.setAttribute('id', 'ol-map');
+				mapElement.setAttribute('inert', '');
+				element.shadowRoot.append(mapElement);
+
+				expect(element.shadowRoot.querySelector(`#ol-map`).hasAttribute('inert')).toBeTrue();
+				element._removeInertAttr();
+				expect(element.shadowRoot.querySelector(`#ol-map`).hasAttribute('inert')).toBeFalse();
+			});
 		});
 	});
 });

@@ -26,6 +26,21 @@ export class ActivateMapButton extends MvuElement {
 		this._translationService = translationService;
 	}
 
+	_addInertAttr() {
+		const olMap = findAllBySelector(document.querySelector(OlMap.tag) ?? this, '#ol-map');
+		if (olMap[0]) {
+			olMap[0].setAttribute('inert', '');
+		}
+	}
+
+	_removeInertAttr() {
+		const olMap = findAllBySelector(document.querySelector(OlMap.tag) ?? this, '#ol-map');
+		if (olMap[0]) {
+			olMap[0].removeAttribute('inert');
+			olMap[0].focus();
+		}
+	}
+
 	onInitialize() {
 		if (this._isVisible()) {
 			//append common styles
@@ -53,10 +68,7 @@ export class ActivateMapButton extends MvuElement {
 				style.id = ActivateMapButton.STYLE_ID;
 				document.head.appendChild(style);
 			}
-			const olMap = findAllBySelector(document.querySelector(OlMap.tag) ?? this, '#ol-map');
-			if (olMap[0]) {
-				olMap[0].setAttribute('inert', '');
-			}
+			this._addInertAttr();
 		}
 	}
 
@@ -68,11 +80,7 @@ export class ActivateMapButton extends MvuElement {
 			commonStyle.remove();
 			const background = this.shadowRoot.getElementById('background');
 			background.classList.add('hide');
-			const olMap = findAllBySelector(document.querySelector(OlMap.tag) ?? this, '#ol-map');
-			if (olMap[0]) {
-				olMap[0].removeAttribute('inert');
-				olMap[0].focus();
-			}
+			this._removeInertAttr();
 		};
 
 		return html`
