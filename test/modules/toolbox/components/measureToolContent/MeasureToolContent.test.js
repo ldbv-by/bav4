@@ -25,6 +25,7 @@ describe('MeasureToolContent', () => {
 		measurement: {
 			active: true,
 			statistic: { length: null, area: null },
+			displayOverlays: true,
 			mode: null,
 			reset: null,
 			remove: null
@@ -100,7 +101,7 @@ describe('MeasureToolContent', () => {
 			await setup();
 			const model = new MeasureToolContent().getModel();
 
-			expect(model).toEqual({ statistic: { length: null, area: null }, mode: null, storedContent: null });
+			expect(model).toEqual({ statistic: { length: null, area: null }, displayOverlays: null, mode: null, storedContent: null });
 		});
 
 		it('displays the finish-button', async () => {
