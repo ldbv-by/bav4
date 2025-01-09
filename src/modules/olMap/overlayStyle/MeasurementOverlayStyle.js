@@ -125,6 +125,11 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		return measurement.active;
 	}
 
+	_displayPartitionOverlays() {
+		const { measurement } = this._storeService.getStore().getState();
+		return measurement.displayOverlays;
+	}
+
 	_createDistanceOverlay(olFeature, olMap) {
 		const createNew = () => {
 			const isDraggable = !this._environmentService.isTouch() && this._isActiveMeasurement();
@@ -169,6 +174,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	}
 
 	_createOrRemovePartitionOverlays(olFeature, olMap, simplifiedGeometry = null) {
+		const displayOverlays = this._displayPartitionOverlays();
 		const getOverlayGeometry = (feature) => {
 			const geodesic = feature.get(GEODESIC_FEATURE_PROPERTY);
 			if (geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE) {
@@ -192,15 +198,18 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 
 		const delta = projectedLength ? getPartitionDelta(olFeature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY), resolution) : 1;
 		let partitionIndex = 0;
-		for (let i = delta; i < 1; i += delta, partitionIndex++) {
-			let partition = partitions[partitionIndex] || false;
-			if (partition === false) {
-				partition = this._createOlOverlay(olMap, { offset: [0, -25], positioning: 'top-center' }, BaOverlayTypes.DISTANCE_PARTITION);
-				this._add(partition, olFeature, olMap);
-				partitions.push(partition);
+		if (displayOverlays) {
+			for (let i = delta; i < 1; i += delta, partitionIndex++) {
+				let partition = partitions[partitionIndex] || false;
+				if (partition === false) {
+					partition = this._createOlOverlay(olMap, { offset: [0, -25], positioning: 'top-center' }, BaOverlayTypes.DISTANCE_PARTITION);
+					this._add(partition, olFeature, olMap);
+					partitions.push(partition);
+				}
+				this._updateOlOverlay(partition, overlayGeometry, i);
 			}
-			this._updateOlOverlay(partition, overlayGeometry, i);
 		}
+
 		if (partitionIndex < partitions.length) {
 			for (let j = partitions.length - 1; j >= partitionIndex; j--) {
 				const removablePartition = partitions[j];

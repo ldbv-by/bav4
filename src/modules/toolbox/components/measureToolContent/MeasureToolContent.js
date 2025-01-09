@@ -6,7 +6,7 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { $injector } from '../../../../injection';
 import clipboardIcon from './assets/clipboard.svg';
-import { finish, remove, reset } from '../../../../store/measurement/measurement.action';
+import { finish, remove, reset, setDisplayOverlays } from '../../../../store/measurement/measurement.action';
 
 import css from './measureToolContent.css';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
@@ -25,6 +25,7 @@ export class MeasureToolContent extends AbstractToolContent {
 		super({
 			statistic: { length: null, area: null },
 			mode: null,
+			displayOverlays: null,
 			storedContent: null
 		});
 
@@ -57,6 +58,7 @@ export class MeasureToolContent extends AbstractToolContent {
 				return {
 					...model,
 					statistic: data.statistic,
+					displayOverlays: data.displayOverlays,
 					mode: data.mode
 				};
 			case Update_StoredContent:
@@ -66,7 +68,7 @@ export class MeasureToolContent extends AbstractToolContent {
 
 	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
-		const { statistic, storedContent } = model;
+		const { statistic, displayOverlays, storedContent } = model;
 		const areaClasses = { 'is-area': statistic.area != null };
 
 		const buttons = this._getButtons(model);
@@ -86,6 +88,7 @@ export class MeasureToolContent extends AbstractToolContent {
 
 		const onCopyDistanceToClipboard = async () => this._copyValueToClipboard(formattedDistance, 'distance');
 		const onCopyAreaToClipboard = async () => this._copyValueToClipboard(formattedArea, 'area');
+		const onToggleDisplayOverlays = () => setDisplayOverlays(!displayOverlays);
 
 		return html`
         <style>${css}</style>
@@ -116,6 +119,9 @@ export class MeasureToolContent extends AbstractToolContent {
 							</ba-icon>
 						</ba-icon>
 						</span>			
+					</div>
+					<div class='partition-overlay-toggle'>
+						<ba-switch .title=${translate('toolbox_measureTool_display_partition_labels')} .checked=${displayOverlays} @toggle=${onToggleDisplayOverlays}><span slot="before">${translate('toolbox_measureTool_display_partition_labels')}</slot></ba-switch>
 					</div>
 					<div class='sub-text'>${subText}</div>	
 				</div>	

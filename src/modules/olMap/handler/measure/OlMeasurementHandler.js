@@ -410,6 +410,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				store,
 				(state) => state.measurement.selection,
 				(ids) => this._setSelection(ids)
+			),
+			observe(
+				store,
+				(state) => state.measurement.displayOverlays,
+				() => this._updateStyle()
 			)
 		];
 	}
@@ -456,6 +461,16 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._helpTooltip.deactivate();
 		this._helpTooltip.activate(this._map);
 		this._updateMeasureState();
+	}
+
+	_updateStyle() {
+		this._vectorLayer
+			.getSource()
+			.getFeatures()
+			.forEach((f) => {
+				const measureGeometry = this._createMeasureGeometry(f);
+				this._styleService.updateStyle(f, this._map, { geometry: measureGeometry }, StyleTypes.MEASURE);
+			});
 	}
 
 	_createDraw(source) {
