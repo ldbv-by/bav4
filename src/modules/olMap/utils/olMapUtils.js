@@ -1,3 +1,5 @@
+import LayerGroup from '../../../../node_modules/ol/layer/Group';
+
 /**
  * @module modules/olMap/utils/olMapUtils
  */
@@ -68,6 +70,32 @@ export const getLayerById = (map, id) => {
 				.getLayers()
 				.getArray()
 				.find((olLayer) => olLayer.get('id') === id) ?? null
+		);
+	}
+	return null;
+};
+
+/**
+ * Finds the (first) corresponding layer group for an ol layer.
+ * Returns `null` if there's no corresponding layer group
+ * @param {OlMap} map olMap
+ * @param {OlLayer} olLayer the olLayer which group should be found
+ * @returns olLayer or `null`
+ */
+export const getLayerGroup = (map, olLayer) => {
+	if (map && olLayer) {
+		return (
+			map
+				.getLayers()
+				.getArray()
+				.filter((olLayer) => olLayer instanceof LayerGroup)
+				.filter((groupOlLayer) =>
+					groupOlLayer
+						.getLayers()
+						.getArray()
+						.flat()
+						.find((ol) => ol === olLayer)
+				)[0] ?? null
 		);
 	}
 	return null;
