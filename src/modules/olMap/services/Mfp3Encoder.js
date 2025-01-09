@@ -21,6 +21,7 @@ import { BaOverlay, OVERLAY_STYLE_CLASS } from '../components/BaOverlay';
 import { findAllBySelector } from '../../../utils/markup';
 import { setQueryParams } from '../../../utils/urlUtils';
 import { QueryParameters } from '../../../domain/queryParameters';
+import { GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
 
 const UnitsRatio = 39.37; //inches per meter
 const PointsPerInch = 72; // PostScript points 1/72"
@@ -563,7 +564,14 @@ export class BvvMfp3Encoder {
 					if (isGeometryFunction) {
 						const geometry = style.getGeometry()(olFeatureToEncode);
 						if (geometry) {
-							const result = this._encodeFeature(new Feature(geometry), olLayer, styleCache, groupOpacity, [style]);
+							const mfpGeometry = geometry.clone(); // explicit clone, because changes may be added through transformations
+							const geodesicGeometry = olFeatureToEncode.get(GEODESIC_FEATURE_PROPERTY);
+							if (geodesicGeometry) {
+								// if the feature have a geodesic geometry, we have a measurement feature with explicit geodesic styling and
+								// the resulting style geometry must be transformed to mfp projection
+								mfpGeometry.transform(this._mapProjection, this._mfpProjection);
+							}
+							const result = this._encodeFeature(new Feature(mfpGeometry), olLayer, styleCache, groupOpacity, [style]);
 							return result ? { features: [...styleFeatures.features, ...result.features] } : defaultResult;
 						}
 					}
