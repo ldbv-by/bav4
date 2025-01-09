@@ -12,7 +12,8 @@ export const Tools = Object.freeze({
 	SHARE: 'share',
 	IMPORT: 'import',
 	EXPORT: 'export',
-	ROUTING: 'routing'
+	ROUTING: 'routing',
+	SWIPE: 'compare'
 });
 
 /**
