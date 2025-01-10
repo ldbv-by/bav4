@@ -158,7 +158,9 @@ export class BvvFileStorageService {
 	async save(id, content, type) {
 		if (type === FileStorageServiceDataTypes.KML) {
 			const url = id ? `${this._getFileStorageUrl()}/${id}` : this._getFileStorageUrl();
-			const result = await this._httpService.post(url, content, type);
+			const result = await this._httpService.post(url, content, type, {
+				timeout: 2000
+			});
 			if (result.ok) {
 				const data = await result.json();
 				return {
