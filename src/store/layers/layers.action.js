@@ -90,9 +90,9 @@ import { GeoResource } from '../../domain/geoResources';
  * @enum {Number}
  */
 export const SwipeAlignment = Object.freeze({
-	NOT_SET: 0,
-	LEFT: 1,
-	RIGHT: 2
+	NOT_SET: 'b',
+	LEFT: 'l',
+	RIGHT: 'r'
 });
 
 const getStore = () => {
