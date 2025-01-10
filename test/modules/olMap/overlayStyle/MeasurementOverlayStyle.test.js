@@ -103,7 +103,74 @@ describe('MeasurementOverlayStyle', () => {
 						case 'partitions':
 							return [overlayMock1, overlayMock2];
 						case PROJECTED_LENGTH_GEOMETRY_PROPERTY:
-							return 200;
+							return 2000;
+						case 'geodesic':
+							return { getCalculationStatus: () => 'foo' };
+						default:
+							return [
+								{
+									getElement: () => elementMock,
+									getPosition: () => {
+										return [0, 0];
+									}
+								}
+							];
+					}
+				},
+				getGeometry: () =>
+					new Polygon([
+						[
+							[0, 0],
+							[2, 0],
+							[0, 0]
+						]
+					]),
+				set: () => {}
+			};
+			const mapMock = {
+				addOverlay: () => {},
+				removeOverlay: () => {},
+				getSize: () => [100, 100],
+				getView: () => {
+					return { getResolution: () => 10 };
+				}
+			};
+			setup();
+			const classUnderTest = new MeasurementOverlayStyle();
+			const addOverlaySpy = spyOn(mapMock, 'addOverlay').and.callFake(() => {});
+			const removeSpy = spyOn(classUnderTest, '_remove')
+				.withArgs(jasmine.any(Object), featureMock, mapMock)
+				.and.callFake(() => {});
+			spyOn(classUnderTest, '_createDistanceOverlay')
+				.withArgs(featureMock, mapMock)
+				.and.callFake(() => {});
+			spyOn(classUnderTest, '_createOrRemoveAreaOverlay')
+				.withArgs(featureMock, mapMock)
+				.and.callFake(() => {});
+			spyOn(classUnderTest, '_restoreManualOverlayPosition')
+				.withArgs(featureMock, mapMock)
+				.and.callFake(() => {});
+
+			classUnderTest.add(featureMock, mapMock);
+			expect(removeSpy).toHaveBeenCalledTimes(2);
+			expect(addOverlaySpy).toHaveBeenCalledTimes(1);
+		});
+
+		it('does NOT creates partition overlays for projected_length > 1000  ', () => {
+			const elementMock = { style: { display: false, opacity: false } };
+			const overlayMock1 = {
+				getElement: () => elementMock
+			};
+			const overlayMock2 = {
+				getElement: () => elementMock
+			};
+			const featureMock = {
+				get: (key) => {
+					switch (key) {
+						case 'partitions':
+							return [overlayMock1, overlayMock2];
+						case PROJECTED_LENGTH_GEOMETRY_PROPERTY:
+							return 900;
 						case 'geodesic':
 							return { getCalculationStatus: () => 'foo' };
 						default:
@@ -153,7 +220,7 @@ describe('MeasurementOverlayStyle', () => {
 
 			classUnderTest.add(featureMock, mapMock);
 			expect(removeSpy).toHaveBeenCalledTimes(2);
-			expect(addOverlaySpy).toHaveBeenCalledTimes(1);
+			expect(addOverlaySpy).not.toHaveBeenCalled();
 		});
 
 		it('creates partition overlays without simplified geometry using geodesic', () => {
@@ -184,7 +251,7 @@ describe('MeasurementOverlayStyle', () => {
 						case 'partitions':
 							return [overlayMock1, overlayMock2];
 						case PROJECTED_LENGTH_GEOMETRY_PROPERTY:
-							return 200;
+							return 2000;
 						case 'geodesic':
 							return geodesicMock;
 						default:
@@ -213,7 +280,7 @@ describe('MeasurementOverlayStyle', () => {
 				removeOverlay: () => {},
 				getSize: () => [100, 100],
 				getView: () => {
-					return { getResolution: () => 1 };
+					return { getResolution: () => 10 };
 				}
 			};
 			setup();
@@ -610,7 +677,7 @@ describe('MeasurementOverlayStyle', () => {
 						case 'partitions':
 							return [overlayMock1, overlayMock2];
 						case PROJECTED_LENGTH_GEOMETRY_PROPERTY:
-							return 200;
+							return 2000;
 						default:
 							return [
 								{
@@ -634,7 +701,7 @@ describe('MeasurementOverlayStyle', () => {
 			};
 			const mapMock = {
 				getView: () => {
-					return { getResolution: () => 1, calculateExtent: () => [0, 0, 1, 1] };
+					return { getResolution: () => 10, calculateExtent: () => [0, 0, 1, 1] };
 				},
 				getSize: () => {},
 				addOverlay: () => {},
