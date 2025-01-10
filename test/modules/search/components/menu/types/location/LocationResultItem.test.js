@@ -63,7 +63,7 @@ describe('LocationResultItem', () => {
 
 			element.data = data;
 
-			expect(element.shadowRoot.querySelector('li').innerText).toBe('labelFormatted');
+			expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe('labelFormatted');
 			expect(element.shadowRoot.querySelectorAll('.copy-button')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.copy-button')[0].title).toBe('search_result_item_copy');
 		});
