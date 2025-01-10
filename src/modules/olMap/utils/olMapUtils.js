@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/utils/olMapUtils
+ */
 import LayerGroup from '../../../../node_modules/ol/layer/Group';
 
 /**
