@@ -29,7 +29,10 @@
 }
 .ba-list-item__after {
 	display: flex;
-	margin: 0 0 0 1em;
+	margin: auto !important;
+	min-width: 5em;
+	padding-right: 1em !important;
+	justify-content: flex-end;
 }
 .ba-list-item__icon {
 	mask: url('../../assets/geofill.svg');
@@ -50,7 +53,19 @@
 .ba-list-item__text {
 	flex-grow: 1;
 }
-
+.separator {
+	border-left: 1px dotted var(--header-background-color);
+}
+ba-icon {
+	border-radius: 2em;
+	width: 2em;
+	height: 2em;
+	display: block;
+	font-size: 1rem;
+}
+ba-icon:hover {
+	background: var(--primary-color);
+}
 path {
 	fill: red;
 }
