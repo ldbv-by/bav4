@@ -37,7 +37,7 @@ describe('FileStoragePlugin', () => {
 
 	describe('static properties', () => {
 		it('defines a debounce time', async () => {
-			expect(FileStoragePlugin.Debounce_Delay_Ms).toBe(1000);
+			expect(FileStoragePlugin.Debounce_Delay_Ms).toBe(2000);
 		});
 	});
 
