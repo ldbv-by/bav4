@@ -92,6 +92,7 @@ describe('injector configuration', () => {
 		expect($injector.getScope('OlMfpHandler')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('OlRoutingHandler')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('OlSelectableFeatureHandler')).toBe(Injector.SCOPE_PERLOOKUP);
+		expect($injector.getScope('OlLayerSwipeHandler')).toBe(Injector.SCOPE_PERLOOKUP);
 
 		// topic module
 		expect($injector.getScope('CatalogService')).toBe(Injector.SCOPE_SINGLETON);
