@@ -1526,6 +1526,47 @@ describe('BvvMfp3Encoder', () => {
 				});
 			});
 
+			it('writes a point feature with feature style (text) and scaled font size', () => {
+				const featureWithScale1 = new Feature({ geometry: new Point([30, 30]) });
+				const featureWithScale2 = new Feature({ geometry: new Point([40, 40]) });
+				const stylesScaled1 = getTextStyle();
+				const stylesScaled2 = getTextStyle();
+				stylesScaled1[0].getText().setScale(1);
+				stylesScaled1[0].getImage().setScale(1);
+				stylesScaled2[0].getText().setScale(2);
+				stylesScaled2[0].getImage().setScale(2);
+				featureWithScale1.setStyle(stylesScaled1);
+				featureWithScale2.setStyle(stylesScaled2);
+				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithScale1, featureWithScale2] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
+				const groupOpacity = 1;
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+				const geoResourceMock = getGeoResourceMock();
+				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
+				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
+				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+
+				expect(actualSpec).toEqual({
+					opacity: 1,
+					type: 'geojson',
+					name: 'foo',
+					geoJson: {
+						features: jasmine.any(Array),
+						type: 'FeatureCollection'
+					},
+					style: {
+						version: '2',
+						'[_gx_style = 0]': {
+							symbolizers: [jasmine.objectContaining({ type: 'text', fontSize: 16.666666666666668 })]
+						},
+						'[_gx_style = 1]': {
+							symbolizers: [jasmine.objectContaining({ type: 'text', fontSize: 33.333333333333336 })]
+						}
+					}
+				});
+			});
+
 			it('writes a point feature with feature style (text) and alignment (bottom)', () => {
 				const featureWithStyle = new Feature({ geometry: new Point([30, 30]) });
 				featureWithStyle.setStyle(getTextStyle('left', 'bottom'));
@@ -1622,6 +1663,54 @@ describe('BvvMfp3Encoder', () => {
 						version: '2',
 						'[_gx_style = 0]': {
 							symbolizers: [jasmine.objectContaining({ type: 'point' }), jasmine.objectContaining({ type: 'text' })]
+						}
+					}
+				});
+			});
+
+			it('writes a point feature with feature style (text & symbol) with two symbolizers and scaling', () => {
+				const featureWithScale1 = new Feature({ geometry: new Point([30, 30]) });
+				const featureWithScale2 = new Feature({ geometry: new Point([40, 40]) });
+				const stylesScaled1 = getTextAndImageStyle('left', 'top');
+				const stylesScaled2 = getTextAndImageStyle('left', 'top');
+				stylesScaled1[0].getText().setScale(1);
+				stylesScaled1[0].getImage().setScale(1);
+				stylesScaled2[0].getText().setScale(2);
+				stylesScaled2[0].getImage().setScale(2);
+				featureWithScale1.setStyle(stylesScaled1);
+				featureWithScale2.setStyle(stylesScaled2);
+
+				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithScale1, featureWithScale2] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
+				const groupOpacity = 1;
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+				const geoResourceMock = getGeoResourceMock();
+				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
+				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
+				const actualSpec = encoder._encodeVector(vectorLayer, groupOpacity);
+
+				expect(actualSpec).toEqual({
+					opacity: 1,
+					type: 'geojson',
+					name: 'foo',
+					geoJson: {
+						features: jasmine.any(Array),
+						type: 'FeatureCollection'
+					},
+					style: {
+						version: '2',
+						'[_gx_style = 0]': {
+							symbolizers: [
+								jasmine.objectContaining({ type: 'point', graphicHeight: 70 }),
+								jasmine.objectContaining({ type: 'text', fontSize: 16.666666666666668 })
+							]
+						},
+						'[_gx_style = 1]': {
+							symbolizers: [
+								jasmine.objectContaining({ type: 'point', graphicHeight: 140 }),
+								jasmine.objectContaining({ type: 'text', fontSize: 33.333333333333336 })
+							]
 						}
 					}
 				});

@@ -730,13 +730,14 @@ export class BvvMfp3Encoder {
 
 			if (textStyle.getFont()) {
 				const fontValues = textStyle.getFont().split(' ');
+				const scale = textStyle.getScale() ?? 1;
 				const [weight, size, ...fontFamilyValues] = fontValues;
 				// hint: the fontFamily value relates to all installed font on the server.
 				// If the application use any custom fonts over css-styles which are used
 				// for labels on the map, these fonts must be available as TrueTypeFonts
 				// on the MapFishPrint server
 				encoded.fontFamily = fontFamilyValues.join(' ');
-				encoded.fontSize = BvvMfp3Encoder.adjustDistance(parseInt(size), dpi);
+				encoded.fontSize = scale * BvvMfp3Encoder.adjustDistance(parseInt(size), dpi);
 				encoded.fontWeight = weight;
 			}
 
