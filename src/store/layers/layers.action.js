@@ -91,9 +91,8 @@ import { GeoResource } from '../../domain/geoResources';
  */
 export const SwipeAlignment = Object.freeze({
 	NOT_SET: 0,
-	BOTH: 1,
-	LEFT: 2,
-	RIGHT: 3
+	LEFT: 1,
+	RIGHT: 2
 });
 
 const getStore = () => {

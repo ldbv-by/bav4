@@ -189,14 +189,12 @@ describe('OlLayerSwipeHandler', () => {
 				const id0 = 'id0';
 				const id1 = 'id1';
 				const id2 = 'id2';
-				const id3 = 'id3';
 				const handler = setup({
 					layers: {
 						active: [
 							{ ...createDefaultLayer(id0), ...{ constraints: { ...createDefaultLayersConstraints, swipeAlignment: SwipeAlignment.NOT_SET } } },
-							{ ...createDefaultLayer(id1), ...{ constraints: { ...createDefaultLayersConstraints, swipeAlignment: SwipeAlignment.BOTH } } },
-							{ ...createDefaultLayer(id2), ...{ constraints: { ...createDefaultLayersConstraints, swipeAlignment: SwipeAlignment.LEFT } } },
-							{ ...createDefaultLayer(id3), ...{ constraints: { ...createDefaultLayersConstraints, swipeAlignment: SwipeAlignment.RIGHT } } }
+							{ ...createDefaultLayer(id1), ...{ constraints: { ...createDefaultLayersConstraints, swipeAlignment: SwipeAlignment.LEFT } } },
+							{ ...createDefaultLayer(id2), ...{ constraints: { ...createDefaultLayersConstraints, swipeAlignment: SwipeAlignment.RIGHT } } }
 						]
 					}
 				});
@@ -205,26 +203,22 @@ describe('OlLayerSwipeHandler', () => {
 				const mapLibreLayer0 = new MapLibreLayer({ id: id0 });
 				const mapLibreLayer1 = new MapLibreLayer({ id: id1 });
 				const mapLibreLayer2 = new MapLibreLayer({ id: id2 });
-				const mapLibreLayer3 = new MapLibreLayer({ id: id3 });
 				map.addLayer(mapLibreLayer0);
 				map.addLayer(mapLibreLayer1);
 				map.addLayer(mapLibreLayer2);
-				map.addLayer(mapLibreLayer3);
 
 				handler._updateOlLayers(map);
 				handler._updateOlLayers(map);
 
-				expect(mapLibreLayer0.mapLibreMap.getContainer().style.clipPath).toBe('polygon(0% 0%, 25% 0%, 25% 100%, 0% 100%)');
-				expect(mapLibreLayer1.mapLibreMap.getContainer().style.clipPath).toBe('');
-				expect(mapLibreLayer2.mapLibreMap.getContainer().style.clipPath).toBe('polygon(0% 0%, 25% 0%, 25% 100%, 0% 100%)');
-				expect(mapLibreLayer3.mapLibreMap.getContainer().style.clipPath).toBe('polygon(25% 0%, 100% 0%, 100% 100%, 25% 100%)');
+				expect(mapLibreLayer0.mapLibreMap.getContainer().style.clipPath).toBe('');
+				expect(mapLibreLayer1.mapLibreMap.getContainer().style.clipPath).toBe('polygon(0% 0%, 25% 0%, 25% 100%, 0% 100%)');
+				expect(mapLibreLayer2.mapLibreMap.getContainer().style.clipPath).toBe('polygon(25% 0%, 100% 0%, 100% 100%, 25% 100%)');
 
 				handler._resetOlLayers();
 
 				expect(mapLibreLayer0.mapLibreMap.getContainer().style.clipPath).toBe('none');
 				expect(mapLibreLayer1.mapLibreMap.getContainer().style.clipPath).toBe('none');
 				expect(mapLibreLayer2.mapLibreMap.getContainer().style.clipPath).toBe('none');
-				expect(mapLibreLayer3.mapLibreMap.getContainer().style.clipPath).toBe('none');
 			});
 		});
 	});
@@ -240,14 +234,12 @@ describe('OlLayerSwipeHandler', () => {
 			const id0 = 'id0';
 			const id1 = 'id1';
 			const id2 = 'id2';
-			const id3 = 'id3';
 			const handler = setup({
 				layers: {
 					active: [
 						{ ...createDefaultLayer(id0), ...{ constraints: { ...createDefaultLayersConstraints, swipeAlignment: SwipeAlignment.NOT_SET } } },
-						{ ...createDefaultLayer(id1), ...{ constraints: { ...createDefaultLayersConstraints, swipeAlignment: SwipeAlignment.BOTH } } },
-						{ ...createDefaultLayer(id2), ...{ constraints: { ...createDefaultLayersConstraints, swipeAlignment: SwipeAlignment.LEFT } } },
-						{ ...createDefaultLayer(id3), ...{ constraints: { ...createDefaultLayersConstraints, swipeAlignment: SwipeAlignment.RIGHT } } }
+						{ ...createDefaultLayer(id1), ...{ constraints: { ...createDefaultLayersConstraints, swipeAlignment: SwipeAlignment.LEFT } } },
+						{ ...createDefaultLayer(id2), ...{ constraints: { ...createDefaultLayersConstraints, swipeAlignment: SwipeAlignment.RIGHT } } }
 					]
 				}
 			});
@@ -258,11 +250,9 @@ describe('OlLayerSwipeHandler', () => {
 			const olLayer0 = new VectorLayer({ id: id0, source: new VectorSource() });
 			const olLayer1 = new VectorLayer({ id: id1, source: new VectorSource() });
 			const olLayer2 = new VectorLayer({ id: id2, source: new VectorSource() });
-			const olLayer3 = new VectorLayer({ id: id3, source: new VectorSource() });
 			map.addLayer(olLayer0);
 			map.addLayer(olLayer1);
 			map.addLayer(olLayer2);
-			map.addLayer(olLayer3);
 
 			const preRenderFn = handler._getPreRenderFn();
 
@@ -270,25 +260,19 @@ describe('OlLayerSwipeHandler', () => {
 			const context0 = get2dContext();
 			const moveToSpy0 = spyOn(context0, 'moveTo').and.callThrough();
 			preRenderFn({ context: context0, target: olLayer0, inversePixelTransform });
-			expect(moveToSpy0).toHaveBeenCalledWith(0, 100);
+			expect(moveToSpy0).not.toHaveBeenCalled();
 
-			// SwipeAlignment.BOTH
+			// SwipeAlignment.LEFT
 			const context1 = get2dContext();
 			const moveToSpy1 = spyOn(context1, 'moveTo').and.callThrough();
 			preRenderFn({ context: context1, target: olLayer1, inversePixelTransform });
-			expect(moveToSpy1).not.toHaveBeenCalled();
+			expect(moveToSpy1).toHaveBeenCalledWith(0, 100);
 
-			// SwipeAlignment.LEFT
+			// SwipeAlignment.RIGHT
 			const context2 = get2dContext();
 			const moveToSpy2 = spyOn(context2, 'moveTo').and.callThrough();
 			preRenderFn({ context: context2, target: olLayer2, inversePixelTransform });
-			expect(moveToSpy2).toHaveBeenCalledWith(0, 100);
-
-			// SwipeAlignment.RIGHT
-			const context3 = get2dContext();
-			const moveToSpy3 = spyOn(context3, 'moveTo').and.callThrough();
-			preRenderFn({ context: context3, target: olLayer3, inversePixelTransform });
-			expect(moveToSpy3).toHaveBeenCalledWith(25, 0);
+			expect(moveToSpy2).toHaveBeenCalledWith(25, 0);
 		});
 	});
 

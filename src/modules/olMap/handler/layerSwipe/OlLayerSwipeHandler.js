@@ -56,7 +56,7 @@ export class OlLayerSwipeHandler extends OlMapHandler {
 		return (event) => {
 			const alignment = this._getAlignment(event.target);
 
-			if (alignment === SwipeAlignment.BOTH) {
+			if (alignment === SwipeAlignment.NOT_SET) {
 				return;
 			}
 
@@ -69,7 +69,6 @@ export class OlLayerSwipeHandler extends OlMapHandler {
 			let bl;
 			let br;
 			switch (alignment) {
-				case SwipeAlignment.NOT_SET:
 				case SwipeAlignment.LEFT:
 					{
 						tl = getRenderPixel(event, [0, mapSize[1]]);
@@ -112,7 +111,6 @@ export class OlLayerSwipeHandler extends OlMapHandler {
 			if (olLayer.mapLibreMap) {
 				const alignment = this._getAlignment(olLayer);
 				switch (alignment) {
-					case SwipeAlignment.NOT_SET:
 					case SwipeAlignment.LEFT:
 						olLayer.mapLibreMap.getContainer().style.clipPath = `polygon(0% 0%, ${this._currentRatio}% 0%, ${this._currentRatio}% 100%, 0% 100%)`;
 						break;
