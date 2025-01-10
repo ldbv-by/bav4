@@ -701,6 +701,36 @@ describe('layersReducer', () => {
 			expect(store.getState().layers.active[2].id).toBe('id1');
 		});
 
+		it("modifies the 'hidden' constraint property of a layer", () => {
+			const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0' };
+			const store = setup({
+				layers: {
+					active: index([layerProperties0])
+				}
+			});
+
+			expect(store.getState().layers.active[0].constraints.hidden).toBeFalse();
+
+			modifyLayer('id0', { hidden: true });
+
+			expect(store.getState().layers.active[0].constraints.hidden).toBeTrue();
+		});
+
+		it("modifies the 'alwaysTop' constraint property of a layer", () => {
+			const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0' };
+			const store = setup({
+				layers: {
+					active: index([layerProperties0])
+				}
+			});
+
+			expect(store.getState().layers.active[0].constraints.alwaysTop).toBeFalse();
+
+			modifyLayer('id0', { alwaysTop: true });
+
+			expect(store.getState().layers.active[0].constraints.alwaysTop).toBeTrue();
+		});
+
 		it("modifies the 'swipeAlignment' constraint property of a layer", () => {
 			const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0' };
 			const store = setup({

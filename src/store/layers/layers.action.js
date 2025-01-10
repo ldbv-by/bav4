@@ -45,11 +45,13 @@ import { GeoResource } from '../../domain/geoResources';
 /**
  * Modifiable options of a {@link Layer}.
  * @typedef {Object} ModifyLayerOptions
- * @property {number} [opacity] The new opacity value (0, 1)
- * @property {boolean} [visible] The new visibility value
- * @property {string} [timestamp] The new timestamp value
- * @property {number} [zIndex] The new index of this layer within the list of active layers
- * @property {SwipeAlignment} [swipeAlignment] The new alignment of the layer is visible if the swipe feature is active
+ * @property {number} [opacity] The new `opacity` value (0, 1)
+ * @property {boolean} [visible] The new `visible` value
+ * @property {string} [timestamp] The new `timestamp `value
+ * @property {number} [zIndex] The new `zIndex` of this layer within the list of active layers
+ * @property {boolean} [hidden] The new `hidden` constraint of the layer
+ * @property {boolean} [alwaysTop] The new `alwaysTop` constraint of the layer
+ * @property {SwipeAlignment} [swipeAlignment] The new `swipeAlignment` constraint of the layer if the swipe feature is active
  */
 
 /**
@@ -106,8 +108,14 @@ const getStore = () => {
  * @param {module:store/layers/layers_action~ModifyLayerOptions} options options
  */
 export const modifyLayer = (id, options = {}) => {
-	const { swipeAlignment, ...properties } = options;
+	const { swipeAlignment, hidden, alwaysTop, ...properties } = options;
 	const constraints = {};
+	if (hidden) {
+		constraints.hidden = hidden;
+	}
+	if (alwaysTop) {
+		constraints.alwaysTop = alwaysTop;
+	}
 	if (swipeAlignment) {
 		constraints.swipeAlignment = swipeAlignment;
 	}
