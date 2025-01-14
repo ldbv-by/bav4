@@ -190,7 +190,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		const projectedLength = olFeature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY);
 		const resolution = olMap.getView().getResolution();
 
-		const delta = projectedLength ? getPartitionDelta(olFeature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY), resolution) : 1;
+		const delta = projectedLength && projectedLength > 1000 ? getPartitionDelta(olFeature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY), resolution) : 1;
 		let partitionIndex = 0;
 		for (let i = delta; i < 1; i += delta, partitionIndex++) {
 			let partition = partitions[partitionIndex] || false;
