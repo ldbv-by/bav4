@@ -6,7 +6,7 @@ import { Injector } from '../../src/injection/core/injector.js';
 describe('injector configuration', () => {
 	it('registers the expected dependencies', () => {
 		expect($injector.isReady()).toBeTrue();
-		expect($injector.count()).toBe(82);
+		expect($injector.count()).toBe(83);
 
 		expect($injector.getScope('ProjectionService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('ConfigService')).toBe(Injector.SCOPE_SINGLETON);
@@ -73,6 +73,7 @@ describe('injector configuration', () => {
 		expect($injector.getScope('ObserveWcAttributesPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('EncodeStatePlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('TimeTravelPlugin')).toBe(Injector.SCOPE_SINGLETON);
+		expect($injector.getScope('ComparePlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('ObserveStateForEncodingPlugin')).toBe(Injector.SCOPE_SINGLETON);
 
 		// map module
