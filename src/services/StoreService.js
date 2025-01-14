@@ -120,6 +120,7 @@ export class StoreService {
 				ObserveWcAttributesPlugin: observeWcAttributesPlugin,
 				EncodeStatePlugin: encodeStatePlugin,
 				TimeTravelPlugin: timeTravelPlugin,
+				ComparePlugin: comparePlugin,
 				ObserveStateForEncodingPlugin: observeStateForEncodingPlugin
 			} = $injector.inject(
 				'GlobalErrorPlugin',
@@ -152,6 +153,7 @@ export class StoreService {
 				'ObserveWcAttributesPlugin',
 				'EncodeStatePlugin',
 				'TimeTravelPlugin',
+				'ComparePlugin',
 				'ObserveStateForEncodingPlugin'
 			);
 
@@ -163,6 +165,7 @@ export class StoreService {
 				await topicsPlugin.register(this._store);
 				await chipsPlugin.register(this._store);
 				await timeTravelPlugin.register(this._store);
+				await comparePlugin.register(this._store);
 				await layersPlugin.register(this._store);
 				await positionPlugin.register(this._store);
 				await measurementPlugin.register(this._store);

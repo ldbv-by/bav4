@@ -103,6 +103,9 @@ describe('StoreService', () => {
 		const timeTravelPluginMock = {
 			register: () => {}
 		};
+		const comparePluginMock = {
+			register: () => {}
+		};
 
 		const setupInjector = () => {
 			$injector
@@ -140,6 +143,7 @@ describe('StoreService', () => {
 				.registerSingleton('EncodeStatePlugin', encodeStatePlugin)
 				.registerSingleton('ObserveStateForEncodingPlugin', observeStateForEncodingPluginMock)
 				.registerSingleton('TimeTravelPlugin', timeTravelPluginMock)
+				.registerSingleton('ComparePlugin', comparePluginMock)
 
 				.ready();
 		};
@@ -219,6 +223,7 @@ describe('StoreService', () => {
 			const historyStatePluginSpy = spyOn(encodeStatePlugin, 'register');
 			const observeStateForEncodingPluginSpy = spyOn(observeStateForEncodingPluginMock, 'register');
 			const timeTravelPluginSpy = spyOn(timeTravelPluginMock, 'register');
+			const comparePluginSpy = spyOn(comparePluginMock, 'register');
 			const instanceUnderTest = new StoreService();
 
 			setupInjector();
@@ -258,6 +263,7 @@ describe('StoreService', () => {
 			expect(historyStatePluginSpy).toHaveBeenCalledWith(store);
 			expect(observeStateForEncodingPluginSpy).toHaveBeenCalledWith(store);
 			expect(timeTravelPluginSpy).toHaveBeenCalledWith(store);
+			expect(comparePluginSpy).toHaveBeenCalledWith(store);
 		});
 	});
 });
