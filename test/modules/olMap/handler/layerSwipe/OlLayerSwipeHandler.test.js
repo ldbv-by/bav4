@@ -145,17 +145,36 @@ describe('OlLayerSwipeHandler', () => {
 		});
 	});
 
+	describe('when a oLayer is added to the olMap', () => {
+		it('calls the correct methods', () => {
+			const map = setupMap();
+			const handler = setup({
+				layerSwipe: {
+					active: true
+				}
+			});
+			handler.register(map);
+			const resetOlLayersSpy = spyOn(handler, '_resetOlLayers');
+			const updateOlLayersSpy = spyOn(handler, '_updateOlLayers');
+
+			map.getLayers().push(new VectorLayer());
+
+			expect(resetOlLayersSpy).not.toHaveBeenCalled();
+			expect(updateOlLayersSpy).toHaveBeenCalledOnceWith(map);
+		});
+	});
+
 	describe('_updateOlLayers() and _resetOlLayers()', () => {
 		describe('default ol layer', () => {
 			it('registers and un-registers a prerender and postrender fn for each real layer once', () => {
 				const map = setupMap();
 				const handler = setup();
-				handler.register(map);
 				const olLayer0 = new VectorLayer({ source: new VectorSource() });
 				const olLayer1 = new VectorLayer({ source: new VectorSource() });
 				const olGroupLayer0 = new LayerGroup({ layers: [olLayer0] });
 				map.addLayer(olGroupLayer0);
 				map.addLayer(olLayer1);
+				handler.register(map);
 				const getPreRenderFnSpy = spyOn(handler, '_getPreRenderFn');
 				const getPostRenderFnSpy = spyOn(handler, '_getPostRenderFn');
 

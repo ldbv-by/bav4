@@ -150,6 +150,15 @@ export class OlLayerSwipeHandler extends OlMapHandler {
 	register(map) {
 		this.#map = map;
 
+		/**
+		 * GeoResourceFutures are resolved asynchronously by replacing a placeholder olLayer by the "real" olLayer after the data are loaded.
+		 * Therefore we have to trigger a re-render for the newly added layer in that case
+		 */
+		map.getLayers().on('add', () => {
+			// triggered when layer added or removed
+			this._updateOlLayers(map);
+		});
+
 		observe(
 			this.#storeService.getStore(),
 			(state) => state.layers.active,
