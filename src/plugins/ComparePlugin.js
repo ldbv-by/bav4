@@ -1,5 +1,5 @@
 /**
- * @module plugins/DrawPlugin
+ * @module plugins/ComparePlugin
  */
 import { observe } from '../utils/storeUtils';
 import { modifyLayer, SwipeAlignment } from '../store/layers/layers.action';
