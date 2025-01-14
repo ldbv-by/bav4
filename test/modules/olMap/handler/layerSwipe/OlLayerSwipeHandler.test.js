@@ -9,6 +9,7 @@ import { initialState, layerSwipeReducer } from '../../../../../src/store/layerS
 import { activate, deactivate, updateRatio } from '../../../../../src/store/layerSwipe/layerSwipe.action';
 import { addLayer, SwipeAlignment } from '../../../../../src/store/layers/layers.action';
 import { MapLibreLayer } from '@geoblocks/ol-maplibre-layer';
+import supported from 'mapbox-gl-supported';
 
 describe('OlLayerSwipeHandler', () => {
 	const setup = (state = {}) => {
@@ -204,40 +205,44 @@ describe('OlLayerSwipeHandler', () => {
 
 		describe('maplibre layer', () => {
 			it('sets the style clipPath for the containing the maplibre map', () => {
-				const map = setupMap();
-				const id0 = 'id0';
-				const id1 = 'id1';
-				const id2 = 'id2';
-				const handler = setup({
-					layers: {
-						active: [
-							{ ...createDefaultLayer(id0), ...{ constraints: { ...createDefaultLayersConstraints, swipeAlignment: SwipeAlignment.NOT_SET } } },
-							{ ...createDefaultLayer(id1), ...{ constraints: { ...createDefaultLayersConstraints, swipeAlignment: SwipeAlignment.LEFT } } },
-							{ ...createDefaultLayer(id2), ...{ constraints: { ...createDefaultLayersConstraints, swipeAlignment: SwipeAlignment.RIGHT } } }
-						]
-					}
-				});
-				handler.register(map);
-				handler._currentRatio = 25;
-				const mapLibreLayer0 = new MapLibreLayer({ id: id0 });
-				const mapLibreLayer1 = new MapLibreLayer({ id: id1 });
-				const mapLibreLayer2 = new MapLibreLayer({ id: id2 });
-				map.addLayer(mapLibreLayer0);
-				map.addLayer(mapLibreLayer1);
-				map.addLayer(mapLibreLayer2);
+				// FF currently throws a WebGL error when running in headless mode, so we first check if it does make sense to perform the test, otherwise, we skip them
+				// See https://bugzilla.mozilla.org/show_bug.cgi?id=1375585#c27 for more information
+				if (supported()) {
+					const map = setupMap();
+					const id0 = 'id0';
+					const id1 = 'id1';
+					const id2 = 'id2';
+					const handler = setup({
+						layers: {
+							active: [
+								{ ...createDefaultLayer(id0), ...{ constraints: { ...createDefaultLayersConstraints, swipeAlignment: SwipeAlignment.NOT_SET } } },
+								{ ...createDefaultLayer(id1), ...{ constraints: { ...createDefaultLayersConstraints, swipeAlignment: SwipeAlignment.LEFT } } },
+								{ ...createDefaultLayer(id2), ...{ constraints: { ...createDefaultLayersConstraints, swipeAlignment: SwipeAlignment.RIGHT } } }
+							]
+						}
+					});
+					handler.register(map);
+					handler._currentRatio = 25;
+					const mapLibreLayer0 = new MapLibreLayer({ id: id0 });
+					const mapLibreLayer1 = new MapLibreLayer({ id: id1 });
+					const mapLibreLayer2 = new MapLibreLayer({ id: id2 });
+					map.addLayer(mapLibreLayer0);
+					map.addLayer(mapLibreLayer1);
+					map.addLayer(mapLibreLayer2);
 
-				handler._updateOlLayers(map);
-				handler._updateOlLayers(map);
+					handler._updateOlLayers(map);
+					handler._updateOlLayers(map);
 
-				expect(mapLibreLayer0.mapLibreMap.getContainer().style.clipPath).toBe('');
-				expect(mapLibreLayer1.mapLibreMap.getContainer().style.clipPath).toBe('polygon(0% 0%, 25% 0%, 25% 100%, 0% 100%)');
-				expect(mapLibreLayer2.mapLibreMap.getContainer().style.clipPath).toBe('polygon(25% 0%, 100% 0%, 100% 100%, 25% 100%)');
+					expect(mapLibreLayer0.mapLibreMap.getContainer().style.clipPath).toBe('');
+					expect(mapLibreLayer1.mapLibreMap.getContainer().style.clipPath).toBe('polygon(0% 0%, 25% 0%, 25% 100%, 0% 100%)');
+					expect(mapLibreLayer2.mapLibreMap.getContainer().style.clipPath).toBe('polygon(25% 0%, 100% 0%, 100% 100%, 25% 100%)');
 
-				handler._resetOlLayers();
+					handler._resetOlLayers();
 
-				expect(mapLibreLayer0.mapLibreMap.getContainer().style.clipPath).toBe('none');
-				expect(mapLibreLayer1.mapLibreMap.getContainer().style.clipPath).toBe('none');
-				expect(mapLibreLayer2.mapLibreMap.getContainer().style.clipPath).toBe('none');
+					expect(mapLibreLayer0.mapLibreMap.getContainer().style.clipPath).toBe('none');
+					expect(mapLibreLayer1.mapLibreMap.getContainer().style.clipPath).toBe('none');
+					expect(mapLibreLayer2.mapLibreMap.getContainer().style.clipPath).toBe('none');
+				}
 			});
 		});
 	});
