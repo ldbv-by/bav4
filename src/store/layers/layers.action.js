@@ -82,6 +82,7 @@ import { GeoResource } from '../../domain/geoResources';
  * @property {number} [opacity=1] Opacity (0, 1)
  * @property {boolean} [visible=true] Visibility
  * @property {string} [timestamp=null] Timestamp
+ * @property {Constraints} [constraints] Constraints of the layer
  */
 
 /**

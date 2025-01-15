@@ -142,6 +142,7 @@ const atomicallyRemoveAndSet = (state, payload) => {
 		geoResourceId: atomicallyAddedLayer.id,
 		...atomicallyAddedLayer,
 		zIndex: index,
+		constraints: { ...createDefaultLayersConstraints(), ...atomicallyAddedLayer.constraints },
 		grChangedFlag: state.active[index]?.id === atomicallyAddedLayer.id ? state.active[index].grChangedFlag : null
 	}));
 
