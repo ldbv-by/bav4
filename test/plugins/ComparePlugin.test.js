@@ -3,19 +3,53 @@ import { setCurrentTool } from '../../src/store/tools/tools.action.js';
 import { toolsReducer } from '../../src/store/tools/tools.reducer.js';
 import { ComparePlugin } from '../../src/plugins/ComparePlugin.js';
 import { createDefaultLayerProperties, layersReducer } from '../../src/store/layers/layers.reducer.js';
-import { layerSwipeReducer } from '../../src/store/layerSwipe/layerSwipe.reducer.js';
+import { layerSwipeReducer, initialState as initialLayerSwipeState } from '../../src/store/layerSwipe/layerSwipe.reducer.js';
 import { Tools } from '../../src/domain/tools.js';
 import { SwipeAlignment } from '../../src/store/layers/layers.action.js';
+import { $injector } from '../../src/injection/index.js';
+import { QueryParameters } from '../../src/domain/queryParameters.js';
 
 describe('ComparePlugin', () => {
+	const environmentService = {
+		getQueryParams: () => new URLSearchParams()
+	};
+
 	const setup = (state) => {
 		const store = TestUtils.setupStoreAndDi(state, {
 			layers: layersReducer,
 			tools: toolsReducer,
 			layerSwipe: layerSwipeReducer
 		});
+		$injector.registerSingleton('EnvironmentService', environmentService);
 		return store;
 	};
+
+	describe('register', () => {
+		it('updates the ratio value of the layerSwipe s-o-s', async () => {
+			const store = setup();
+			const ratio = 0.42;
+			const queryParam = new URLSearchParams(`${QueryParameters.SWIPE_RATIO}=${ratio}`);
+			spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+			const instanceUnderTest = new ComparePlugin();
+
+			await instanceUnderTest.register(store);
+
+			expect(store.getState().layerSwipe.ratio).toBe(ratio * 100);
+		});
+
+		describe('SWIPE_RATIO query parameter is not parsable', () => {
+			it('it does nothing', async () => {
+				const store = setup();
+				const queryParam = new URLSearchParams(`${QueryParameters.SWIPE_RATIO}=foo`);
+				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+				const instanceUnderTest = new ComparePlugin();
+
+				await instanceUnderTest.register(store);
+
+				expect(store.getState().layerSwipe.ratio).toBe(initialLayerSwipeState.ratio);
+			});
+		});
+	});
 
 	describe('when the `toolId` changes', () => {
 		describe('and the COMPARE tool is active', () => {
