@@ -1,6 +1,6 @@
 import { LayersPlugin } from '../../src/plugins/LayersPlugin';
 import { TestUtils } from '../test-utils.js';
-import { layersReducer } from '../../src/store/layers/layers.reducer';
+import { createDefaultLayersConstraints, layersReducer } from '../../src/store/layers/layers.reducer';
 import { $injector } from '../../src/injection';
 import { GeoResourceFuture, XyzGeoResource } from '../../src/domain/geoResources';
 import { QueryParameters } from '../../src/domain/queryParameters';
@@ -366,9 +366,9 @@ describe('LayersPlugin', () => {
 
 				expect(store.getState().layers.active.length).toBe(2);
 				expect(store.getState().layers.active[0].id).toBe('some0_0');
-				expect(store.getState().layers.active[0].constraints.swipeAlignment).toEqual(SwipeAlignment.RIGHT);
+				expect(store.getState().layers.active[0].constraints).toEqual({ ...createDefaultLayersConstraints(), swipeAlignment: SwipeAlignment.RIGHT });
 				expect(store.getState().layers.active[1].id).toBe('some1_0');
-				expect(store.getState().layers.active[1].constraints.swipeAlignment).toEqual(SwipeAlignment.LEFT);
+				expect(store.getState().layers.active[1].constraints).toEqual({ ...createDefaultLayersConstraints(), swipeAlignment: SwipeAlignment.LEFT });
 			});
 
 			it('adds layers considering unusable swipeAlignment params', () => {
@@ -389,9 +389,9 @@ describe('LayersPlugin', () => {
 
 				expect(store.getState().layers.active.length).toBe(2);
 				expect(store.getState().layers.active[0].id).toBe('some0_0');
-				expect(store.getState().layers.active[0].constraints.swipeAlignment).toBeUndefined();
+				expect(store.getState().layers.active[0].constraints).toEqual(createDefaultLayersConstraints());
 				expect(store.getState().layers.active[1].id).toBe('some1_0');
-				expect(store.getState().layers.active[1].constraints.swipeAlignment).toBeUndefined();
+				expect(store.getState().layers.active[1].constraints).toEqual(createDefaultLayersConstraints());
 			});
 
 			it('does NOT add a layer when geoResourceService cannot fulfill', () => {
