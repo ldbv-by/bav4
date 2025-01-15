@@ -10,6 +10,7 @@ import { topicsReducer } from '../../src/store/topics/topics.reducer';
 import { wcAttributeReducer } from '../../src/store/wcAttribute/wcAttribute.reducer';
 import { indicateAttributeChange } from '../../src/store/wcAttribute/wcAttribute.action';
 import { initialState as initialPositionState, positionReducer } from '../../src/store/position/position.reducer.js';
+import { SwipeAlignment } from '../../src/store/layers/layers.action.js';
 
 describe('LayersPlugin', () => {
 	const geoResourceServiceMock = {
@@ -343,6 +344,54 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[0].timestamp).toBeNull();
 				expect(store.getState().layers.active[1].id).toBe('some1_0');
 				expect(store.getState().layers.active[1].timestamp).toBeNull();
+			});
+
+			it('adds layers considering swipeAlignments', () => {
+				const queryParam = new URLSearchParams(
+					`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_SWIPE_ALIGNMENT}=${SwipeAlignment.RIGHT},${SwipeAlignment.LEFT}`
+				);
+				const store = setup();
+				const instanceUnderTest = new LayersPlugin();
+				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+					switch (id) {
+						case 'some0':
+							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
+						case 'some1':
+							return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
+					}
+				});
+
+				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
+
+				expect(store.getState().layers.active.length).toBe(2);
+				expect(store.getState().layers.active[0].id).toBe('some0_0');
+				expect(store.getState().layers.active[0].constraints.swipeAlignment).toEqual(SwipeAlignment.RIGHT);
+				expect(store.getState().layers.active[1].id).toBe('some1_0');
+				expect(store.getState().layers.active[1].constraints.swipeAlignment).toEqual(SwipeAlignment.LEFT);
+			});
+
+			it('adds layers considering unusable swipeAlignment params', () => {
+				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_SWIPE_ALIGNMENT}=,foo`);
+				const store = setup();
+				const instanceUnderTest = new LayersPlugin();
+				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+					switch (id) {
+						case 'some0':
+							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
+						case 'some1':
+							return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
+					}
+				});
+
+				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
+
+				expect(store.getState().layers.active.length).toBe(2);
+				expect(store.getState().layers.active[0].id).toBe('some0_0');
+				expect(store.getState().layers.active[0].constraints.swipeAlignment).toBeUndefined();
+				expect(store.getState().layers.active[1].id).toBe('some1_0');
+				expect(store.getState().layers.active[1].constraints.swipeAlignment).toBeUndefined();
 			});
 
 			it('does NOT add a layer when geoResourceService cannot fulfill', () => {

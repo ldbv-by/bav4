@@ -4,7 +4,7 @@
 import { $injector } from '../injection';
 import { QueryParameters } from '../domain/queryParameters';
 import { BaPlugin } from './BaPlugin';
-import { addLayer, removeAndSetLayers, setReady } from '../store/layers/layers.action';
+import { addLayer, removeAndSetLayers, setReady, SwipeAlignment } from '../store/layers/layers.action';
 import { fitLayer } from '../store/position/position.action';
 import { isNumber } from '../utils/checks';
 import { observe } from '../utils/storeUtils';
@@ -30,11 +30,12 @@ export class LayersPlugin extends BaPlugin {
 	_addLayersFromQueryParams(queryParams) {
 		const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
 
-		const parseLayer = (layerValue, layerVisibilityValue, layerOpacityValue, layerTimestampValue) => {
+		const parseLayer = (layerValue, layerVisibilityValue, layerOpacityValue, layerTimestampValue, layerSwipeAlignmentValue) => {
 			const layer = layerValue.split(',');
 			const layerVisibility = layerVisibilityValue ? layerVisibilityValue.split(',') : [];
 			const layerOpacity = layerOpacityValue ? layerOpacityValue.split(',') : [];
 			const layerTimestamp = layerTimestampValue ? layerTimestampValue.split(',') : [];
+			const layerSwipeAlignment = layerSwipeAlignmentValue ? layerSwipeAlignmentValue.split(',') : [];
 
 			/**
 			 * parseLayer() is called not only initially at application startup time but also dynamically during runtime.
@@ -54,7 +55,7 @@ export class LayersPlugin extends BaPlugin {
 							const layerId = `${id}_${getGrReferenceIndexNumber(id)}`;
 
 							if (geoResource) {
-								const atomicallyAddedLayer = { id: layerId, geoResourceId: geoResource.id };
+								const atomicallyAddedLayer = { id: layerId, geoResourceId: geoResource.id, constraints: {} };
 
 								if (layerVisibility[index] === 'false') {
 									atomicallyAddedLayer.visible = false;
@@ -64,6 +65,9 @@ export class LayersPlugin extends BaPlugin {
 								}
 								if (!!layerTimestamp[index] && geoResource.timestamps.includes(layerTimestamp[index])) {
 									atomicallyAddedLayer.timestamp = layerTimestamp[index];
+								}
+								if (!!layerSwipeAlignment[index] && Object.values(SwipeAlignment).includes(layerSwipeAlignment[index])) {
+									atomicallyAddedLayer.constraints.swipeAlignment = layerSwipeAlignment[index];
 								}
 
 								return atomicallyAddedLayer;
@@ -79,7 +83,8 @@ export class LayersPlugin extends BaPlugin {
 			queryParams.get(QueryParameters.LAYER),
 			queryParams.get(QueryParameters.LAYER_VISIBILITY),
 			queryParams.get(QueryParameters.LAYER_OPACITY),
-			queryParams.get(QueryParameters.LAYER_TIMESTAMP)
+			queryParams.get(QueryParameters.LAYER_TIMESTAMP),
+			queryParams.get(QueryParameters.LAYER_SWIPE_ALIGNMENT)
 		);
 		const zteIndex = parseInt(queryParams.get(QueryParameters.ZOOM_TO_EXTENT));
 		const zoomToExtentLayerIndex = isNumber(zteIndex) ? zteIndex : -1;
