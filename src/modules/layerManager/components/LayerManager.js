@@ -7,6 +7,8 @@ import { repeat } from 'lit-html/directives/repeat.js';
 import { modifyLayer, removeLayer } from './../../../store/layers/layers.action';
 import css from './layerManager.css';
 import { MvuElement } from '../../MvuElement';
+import { setCurrentTool } from '../../../store/tools/tools.action';
+import { Tools } from '../../../domain/tools';
 
 const Update_Draggable_Items = 'update_draggable_items';
 const Update_Collapse_Change = 'update_collapse_change';
@@ -241,6 +243,12 @@ export class LayerManager extends MvuElement {
 						style="border-right: 1px dotted var(--header-background-color);"
 					></ba-button>
 					<ba-button id="button_remove_all" .label=${translate('layerManager_remove_all')} .type=${'secondary'} @click=${removeAll}></ba-button>
+					<ba-button
+						id="button_remove_all"
+						.label=${translate('layerManager_compare')}
+						.type=${'secondary'}
+						@click=${() => setCurrentTool(Tools.COMPARE)}
+					></ba-button>
 					<div></div>
 				</div>`
 			: nothing;
