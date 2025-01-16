@@ -35,6 +35,7 @@ export const deactivate = () => {
 /**
  * Toggles the activity of the layer swipe feature
  * @function
+ * @deprecated
  */
 export const toggle = () => {
 	const {
