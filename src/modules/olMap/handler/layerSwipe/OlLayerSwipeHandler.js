@@ -157,8 +157,10 @@ export class OlLayerSwipeHandler extends OlMapHandler {
 		 * Therefore we have to trigger a re-render for the newly added layer in that case
 		 */
 		map.getLayers().on('add', () => {
-			// triggered when layer added or removed
-			this._updateOlLayers(map);
+			if (this.#storeService.getStore().getState().layerSwipe.active) {
+				// triggered when layer added or removed
+				this._updateOlLayers(map);
+			}
 		});
 
 		observe(

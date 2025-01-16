@@ -147,21 +147,41 @@ describe('OlLayerSwipeHandler', () => {
 	});
 
 	describe('when a oLayer is added to the olMap', () => {
-		it('calls the correct methods', () => {
-			const map = setupMap();
-			const handler = setup({
-				layerSwipe: {
-					active: true
-				}
+		describe('layersSwipe is active', () => {
+			it('calls the correct methods', () => {
+				const map = setupMap();
+				const handler = setup({
+					layerSwipe: {
+						active: true
+					}
+				});
+				handler.register(map);
+				const resetOlLayersSpy = spyOn(handler, '_resetOlLayers');
+				const updateOlLayersSpy = spyOn(handler, '_updateOlLayers');
+
+				map.getLayers().push(new VectorLayer());
+
+				expect(resetOlLayersSpy).not.toHaveBeenCalled();
+				expect(updateOlLayersSpy).toHaveBeenCalledOnceWith(map);
 			});
-			handler.register(map);
-			const resetOlLayersSpy = spyOn(handler, '_resetOlLayers');
-			const updateOlLayersSpy = spyOn(handler, '_updateOlLayers');
+		});
+		describe('layersSwipe is NOT active', () => {
+			it('does nothing', () => {
+				const map = setupMap();
+				const handler = setup({
+					layerSwipe: {
+						active: false
+					}
+				});
+				handler.register(map);
+				const resetOlLayersSpy = spyOn(handler, '_resetOlLayers');
+				const updateOlLayersSpy = spyOn(handler, '_updateOlLayers');
 
-			map.getLayers().push(new VectorLayer());
+				map.getLayers().push(new VectorLayer());
 
-			expect(resetOlLayersSpy).not.toHaveBeenCalled();
-			expect(updateOlLayersSpy).toHaveBeenCalledOnceWith(map);
+				expect(resetOlLayersSpy).not.toHaveBeenCalled();
+				expect(updateOlLayersSpy).not.toHaveBeenCalledOnceWith(map);
+			});
 		});
 	});
 
