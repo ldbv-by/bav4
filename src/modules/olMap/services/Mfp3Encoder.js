@@ -21,6 +21,7 @@ import { BaOverlay, OVERLAY_STYLE_CLASS } from '../components/BaOverlay';
 import { findAllBySelector } from '../../../utils/markup';
 import { setQueryParams } from '../../../utils/urlUtils';
 import { QueryParameters } from '../../../domain/queryParameters';
+import { GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
 
 const UnitsRatio = 39.37; //inches per meter
 const PointsPerInch = 72; // PostScript points 1/72"
@@ -563,7 +564,14 @@ export class BvvMfp3Encoder {
 					if (isGeometryFunction) {
 						const geometry = style.getGeometry()(olFeatureToEncode);
 						if (geometry) {
-							const result = this._encodeFeature(new Feature(geometry), olLayer, styleCache, groupOpacity, [style]);
+							const mfpGeometry = geometry.clone(); // explicit clone, because changes may be added through transformations
+							const geodesicGeometry = olFeatureToEncode.get(GEODESIC_FEATURE_PROPERTY);
+							if (geodesicGeometry) {
+								// if the feature have a geodesic geometry, we have a measurement feature with explicit geodesic styling and
+								// the resulting style geometry must be transformed to mfp projection
+								mfpGeometry.transform(this._mapProjection, this._mfpProjection);
+							}
+							const result = this._encodeFeature(new Feature(mfpGeometry), olLayer, styleCache, groupOpacity, [style]);
 							return result ? { features: [...styleFeatures.features, ...result.features] } : defaultResult;
 						}
 					}
@@ -718,13 +726,14 @@ export class BvvMfp3Encoder {
 
 			if (textStyle.getFont()) {
 				const fontValues = textStyle.getFont().split(' ');
+				const scale = textStyle.getScale() ?? 1;
 				const [weight, size, ...fontFamilyValues] = fontValues;
 				// hint: the fontFamily value relates to all installed font on the server.
 				// If the application use any custom fonts over css-styles which are used
 				// for labels on the map, these fonts must be available as TrueTypeFonts
 				// on the MapFishPrint server
 				encoded.fontFamily = fontFamilyValues.join(' ');
-				encoded.fontSize = BvvMfp3Encoder.adjustDistance(parseInt(size), dpi);
+				encoded.fontSize = scale * BvvMfp3Encoder.adjustDistance(parseInt(size), dpi);
 				encoded.fontWeight = weight;
 			}
 

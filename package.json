@@ -1,12 +1,12 @@
 {
 	"name": "bav4",
 	"dependencies": {
-		"@geoblocks/ol-maplibre-layer": "1.0.2",
+		"@geoblocks/ol-maplibre-layer": "1.0.3",
 		"chart.js": "4.4.7",
 		"dompurify": "3.2.3",
 		"geographiclib-geodesic": "2.1.1",
 		"lit-html": "3.2.1",
-		"maplibre-gl": "5.0.0",
+		"maplibre-gl": "5.0.1",
 		"ol": "^10.3.1",
 		"proj4": "2.15.0",
 		"redux": "4.2.1",
@@ -15,7 +15,7 @@
 	"devDependencies": {
 		"@jsdevtools/coverage-istanbul-loader": "3.0.5",
 		"@playwright/test": "1.48.0",
-		"bundlesize2": "^0.0.31",
+		"bundlesize2": "^0.0.32",
 		"copy-webpack-plugin": "12.0.2",
 		"css-loader": "7.1.2",
 		"docdash": "2.0.2",
@@ -46,7 +46,7 @@
 		"prettier": "3.4.2",
 		"redux-test-utils": "1.0.2",
 		"style-loader": "4.0.0",
-		"stylelint": "16.12.0",
+		"stylelint": "16.13.2",
 		"stylelint-config-recommended": "14.0.1",
 		"to-string-loader": "1.2.0",
 		"webpack": "5.97.1",
