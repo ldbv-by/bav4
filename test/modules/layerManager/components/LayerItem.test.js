@@ -3,6 +3,7 @@ import { ValueSelect } from '../../../../src/modules/commons/components/valueSel
 import { Checkbox } from '../../../../src/modules/commons/components/checkbox/Checkbox';
 import { Icon } from '../../../../src/modules/commons/components/icon/Icon';
 import { layersReducer, createDefaultLayerProperties } from '../../../../src/store/layers/layers.reducer';
+import { layerSwipeReducer } from '../../../../src/store/layerSwipe/layerSwipe.reducer';
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
@@ -78,7 +79,8 @@ describe('LayerItem', () => {
 					layers: layersReducer,
 					modal: modalReducer,
 					media: createNoInitialStateMediaReducer(),
-					timeTravel: timeTravelReducer
+					timeTravel: timeTravelReducer,
+					layerSwipe: layerSwipeReducer
 				}
 			);
 			$injector
@@ -625,7 +627,8 @@ describe('LayerItem', () => {
 			const store = TestUtils.setupStoreAndDi(state, {
 				layers: layersReducer,
 				modal: modalReducer,
-				position: positionReducer
+				position: positionReducer,
+				layerSwipe: layerSwipeReducer
 			});
 			$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
 			return store;
@@ -749,7 +752,7 @@ describe('LayerItem', () => {
 		describe('when user change order of layer in group', () => {
 			let store;
 			const setup = (state) => {
-				store = TestUtils.setupStoreAndDi(state, { layers: layersReducer });
+				store = TestUtils.setupStoreAndDi(state, { layers: layersReducer, layerSwipe: layerSwipeReducer });
 				$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
 				return store;
 			};
@@ -996,7 +999,7 @@ describe('LayerItem', () => {
 			};
 
 			const setup = () => {
-				const store = TestUtils.setupStoreAndDi({}, { layers: layersReducer, modal: modalReducer });
+				const store = TestUtils.setupStoreAndDi({}, { layers: layersReducer, modal: modalReducer, layerSwipe: layerSwipeReducer });
 				$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
 				return store;
 			};

@@ -47,7 +47,7 @@ describe('i18n for layer-manager', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 18;
+		const expectedSize = 19;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

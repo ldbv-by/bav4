@@ -5,6 +5,7 @@ import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { LayerItem } from '../../../../src/modules/layerManager/components/LayerItem';
 import { geoResourceChanged, modifyLayer } from '../../../../src/store/layers/layers.action';
+import { layerSwipeReducer } from '../../../../src/store/layerSwipe/layerSwipe.reducer';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { VectorGeoResource, VectorSourceType } from '../../../../src/domain/geoResources';
 
@@ -26,7 +27,7 @@ describe('LayerManager', () => {
 		getKeywords: () => []
 	};
 	const setup = async (state) => {
-		store = TestUtils.setupStoreAndDi(state, { layers: layersReducer });
+		store = TestUtils.setupStoreAndDi(state, { layers: layersReducer, layerSwipe: layerSwipeReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 		$injector.registerSingleton('EnvironmentService', environmentServiceMock);
 		$injector.registerSingleton('GeoResourceService', geoResourceServiceMock);
