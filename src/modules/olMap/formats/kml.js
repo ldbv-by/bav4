@@ -111,12 +111,17 @@ export const create = (layer, sourceProjection) => {
 			if (styles) {
 				const kmlStyle = sanitizeStyle(styles(clone));
 
-				if (kmlStyle.getText() && clone.get('name')) {
+				if (clone.get('name')) {
 					clone.unset('name');
 				}
 				clone.setStyle(kmlStyle);
 			}
 
+			// explicit check for NULL; if the feature does not have the 'description' property
+			// the get-function resolves to UNDEFINED and the call of unset() is not needed
+			if (clone.get('description') === null) {
+				clone.unset('description');
+			}
 			kmlFeatures.push(clone);
 		});
 
