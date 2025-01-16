@@ -5,12 +5,14 @@ import { html, nothing } from 'lit-html';
 import { $injector } from '../../../injection';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { modifyLayer, removeLayer } from './../../../store/layers/layers.action';
+import { toggle } from './../../../store/layerSwipe/layerSwipe.action';
 import css from './layerManager.css';
 import { MvuElement } from '../../MvuElement';
 
 const Update_Draggable_Items = 'update_draggable_items';
 const Update_Collapse_Change = 'update_collapse_change';
 const Update_Dragged_Item = 'update_dragged_item';
+const Update_Layer_Swipe = 'update_layer_swipe';
 /**
  * Renders a list of layers representing their order on a map and provides
  * actions like reordering, removing and changing visibility and opacity
@@ -44,6 +46,8 @@ export class LayerManager extends MvuElement {
 				return { ...model, draggableItems: model.draggableItems.map((i) => (i.id === data.id ? data : i)) };
 			case Update_Dragged_Item:
 				return { ...model, draggedItem: data };
+			case Update_Layer_Swipe:
+				return { ...model, ...data };
 		}
 	}
 
@@ -51,6 +55,10 @@ export class LayerManager extends MvuElement {
 		this.observe(
 			(store) => store.layers.active,
 			(active) => this._buildDraggableItems(active.filter((l) => !l.constraints.hidden))
+		);
+		this.observe(
+			(state) => state.layerSwipe,
+			(layerSwipe) => this.signal(Update_Layer_Swipe, { isLayerSwipeActive: layerSwipe.active })
 		);
 	}
 
@@ -207,7 +215,7 @@ export class LayerManager extends MvuElement {
 
 	_getButtons(model) {
 		const translate = (key) => this._translationService.translate(key);
-		const { draggableItems } = model;
+		const { draggableItems, isLayerSwipeActive } = model;
 		const expandAll = () => {
 			this.signal(
 				Update_Draggable_Items,
@@ -241,6 +249,12 @@ export class LayerManager extends MvuElement {
 						style="border-right: 1px dotted var(--header-background-color);"
 					></ba-button>
 					<ba-button id="button_remove_all" .label=${translate('layerManager_remove_all')} .type=${'secondary'} @click=${removeAll}></ba-button>
+					<ba-button
+						id="button_remove_all"
+						.label=${translate(isLayerSwipeActive ? 'layerManager_compare_stop' : 'layerManager_compare')}
+						.type=${'secondary'}
+						@click=${toggle}
+					></ba-button>
 					<div></div>
 				</div>`
 			: nothing;
