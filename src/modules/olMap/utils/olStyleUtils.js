@@ -449,8 +449,7 @@ const getRulerStyle = (feature) => {
 export const renderLinearRulerSegments = (pixelCoordinates, state, contextRenderFunction) => {
 	const { MapService: mapService } = $injector.inject('MapService');
 	const geometry = state.geometry.clone();
-	console.log(state.feature?.get('displayoverlays'));
-	const displayOverlays = state.feature.get('displayoverlays') ? state.feature.get('displayoverlays') === 'true' : true;
+	const displayOverlays = state.feature?.get('displayoverlays') ? state.feature.get('displayoverlays') === 'true' : true;
 	const lineString = getLineString(geometry);
 	const resolution = state.resolution;
 	const pixelRatio = state.pixelRatio;
@@ -540,10 +539,7 @@ export const renderLinearRulerSegments = (pixelCoordinates, state, contextRender
 
 export const renderGeodesicRulerSegments = (pixelCoordinates, state, contextRenderFunction, geodesic) => {
 	const geometry = state.geometry.clone();
-
-	console.log(state.feature?.get('displayoverlays'));
-	const displayOverlays = state.feature.get('displayoverlays') ? state.feature.get('displayoverlays') === 'true' : true;
-	console.log({ v: displayOverlays, t: typeof displayOverlays });
+	const displayOverlays = state.feature?.get('displayoverlays') ? state.feature.get('displayoverlays') === 'true' : true;
 	const resolution = state.resolution;
 	const pixelRatio = state.pixelRatio;
 

@@ -746,7 +746,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		 * The stored content will be created/updated after adding/changing and removing features,
 		 * while interacting with the layer.
 		 */
-		console.log(this._storedContent);
 		setData(this._storedContent);
 	}
 
