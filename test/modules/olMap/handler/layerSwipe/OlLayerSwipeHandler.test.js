@@ -247,6 +247,29 @@ describe('OlLayerSwipeHandler', () => {
 		});
 	});
 
+	describe('_getAlignment', () => {
+		it('returns `SwipeAlignment.NOT_SET` as default', () => {
+			const map = setupMap();
+			const id0 = 'id0';
+			const handler = setup({
+				layers: {
+					active: [
+						{ ...createDefaultLayer('tmp_id'), ...{ constraints: { ...createDefaultLayersConstraints, swipeAlignment: SwipeAlignment.NOT_SET } } }
+					]
+				}
+			});
+			handler.register(map);
+			handler._currentRatio = 25;
+
+			const olLayer0 = new VectorLayer({ id: id0, source: new VectorSource() });
+			map.addLayer(olLayer0);
+
+			const alignment = handler._getAlignment(olLayer0);
+
+			expect(alignment).toEqual(SwipeAlignment.NOT_SET);
+		});
+	});
+
 	describe('_getPreRenderFn', () => {
 		const get2dContext = () => {
 			const canvas = document.createElement('canvas');

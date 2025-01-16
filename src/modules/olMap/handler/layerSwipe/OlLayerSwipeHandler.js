@@ -46,10 +46,12 @@ export class OlLayerSwipeHandler extends OlMapHandler {
 
 	_getAlignment(olLayer) {
 		const resolvedOlLayerId = getLayerGroup(this.#map, olLayer)?.get('id') ?? olLayer.get('id');
-		return this.#storeService
-			.getStore()
-			.getState()
-			.layers.active.filter((l) => l.id === resolvedOlLayerId)[0].constraints.swipeAlignment;
+		return (
+			this.#storeService
+				.getStore()
+				.getState()
+				.layers.active.filter((l) => l.id === resolvedOlLayerId)[0]?.constraints.swipeAlignment ?? SwipeAlignment.NOT_SET
+		);
 	}
 
 	_getPreRenderFn() {
