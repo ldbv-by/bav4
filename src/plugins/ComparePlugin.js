@@ -40,13 +40,13 @@ export class ComparePlugin extends BaPlugin {
 			} else {
 				// we activate the tool after another possible active tool was deactivated
 				setTimeout(() => {
-					if (state.layers.active.length > 1) {
+					if (state.layers.active.length > 0) {
 						// adjust swipe alignment of top most layer. If not other specified, it should be placed on the left side
 						if (state.layers.active[state.layers.active.length - 1].constraints.swipeAlignment === SwipeAlignment.NOT_SET) {
 							modifyLayer(state.layers.active[state.layers.active.length - 1].id, { swipeAlignment: SwipeAlignment.LEFT });
 						}
-						activate();
 					}
+					activate();
 				});
 			}
 		};
