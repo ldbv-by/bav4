@@ -58,7 +58,7 @@ export class LayerSwipeSlider extends MvuElement {
 					</style>
 					<div id="line" class="line" style="left:${ratio}%"></div>
 					<div class="layer-swipe">
-						<input id="rangeslider" type="range" min="0" max="100" value="${ratio}" @input=${onChangeSlider} />
+						<input id="rangeslider" type="range" min="0" max="100" title="${translate('ToDo')}" value="${ratio}" @input=${onChangeSlider} />
 					</div>
 				`
 			: nothing;
