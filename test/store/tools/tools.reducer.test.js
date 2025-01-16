@@ -41,11 +41,11 @@ describe('toolContainerReducer', () => {
 			expect(store.getState().tools.current).toBe('bar');
 
 			toggleCurrentTool('bar');
-			
+
 			expect(store.getState().tools.current).toBeNull();
-			
+
 			toggleCurrentTool(null);
-			
+
 			expect(store.getState().tools.current).toBeNull();
 		});
 	});
