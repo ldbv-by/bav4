@@ -46,6 +46,7 @@ export const toggle = () => {
 
 /**
  * Updates the ratio value.
+ * @function
  * @param {number} ratio in percent [0-100]
  */
 export const updateRatio = (ratio) => {
