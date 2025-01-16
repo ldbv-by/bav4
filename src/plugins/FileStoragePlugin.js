@@ -119,6 +119,6 @@ export class FileStoragePlugin extends BaPlugin {
 	}
 
 	static get Debounce_Delay_Ms() {
-		return 1000;
+		return 2000;
 	}
 }

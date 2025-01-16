@@ -466,7 +466,7 @@ describe('layersReducer', () => {
 			const layerProperties1 = { id: 'id1' };
 			const atomicallyAddedLayer2 = { id: 'id2', geoResourceId: 'geoResourceId2' };
 			const atomicallyAddedLayer3 = { id: 'id3', visible: false };
-			const atomicallyAddedLayer4 = { id: 'id4', opacity: 0.5 };
+			const atomicallyAddedLayer4 = { id: 'id4', opacity: 0.5, constraints: { swipeAlignment: SwipeAlignment.RIGHT } };
 			const store = setup({
 				layers: {
 					...initialState,
@@ -484,18 +484,21 @@ describe('layersReducer', () => {
 			expect(store.getState().layers.active[0].visible).toBeTrue();
 			expect(store.getState().layers.active[0].opacity).toBe(1);
 			expect(store.getState().layers.active[0].zIndex).toBe(0);
+			expect(store.getState().layers.active[0].constraints).toEqual(createDefaultLayersConstraints());
 
 			expect(store.getState().layers.active[1].id).toBe('id3');
 			expect(store.getState().layers.active[1].geoResourceId).toBe('id3');
 			expect(store.getState().layers.active[1].visible).toBeFalse();
 			expect(store.getState().layers.active[1].opacity).toBe(1);
 			expect(store.getState().layers.active[1].zIndex).toBe(1);
+			expect(store.getState().layers.active[1].constraints).toEqual(createDefaultLayersConstraints());
 
 			expect(store.getState().layers.active[2].id).toBe('id4');
 			expect(store.getState().layers.active[2].geoResourceId).toBe('id4');
 			expect(store.getState().layers.active[2].visible).toBeTrue();
 			expect(store.getState().layers.active[2].opacity).toBe(0.5);
 			expect(store.getState().layers.active[2].zIndex).toBe(2);
+			expect(store.getState().layers.active[2].constraints).toEqual({ ...createDefaultLayersConstraints(), swipeAlignment: SwipeAlignment.RIGHT });
 
 			expect(store.getState().layers.removed.payload).toEqual([layerProperties0.id, layerProperties1.id]);
 			expect(store.getState().layers.added.payload).toEqual([atomicallyAddedLayer2.id, atomicallyAddedLayer3.id, atomicallyAddedLayer4.id]);
