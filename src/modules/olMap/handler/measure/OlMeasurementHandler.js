@@ -414,7 +414,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			observe(
 				store,
 				(state) => state.measurement.displayOverlays,
-				() => this._updateStyle()
+				(displayOverlays) => this._updateStyle(displayOverlays)
 			)
 		];
 	}
@@ -463,12 +463,14 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._updateMeasureState();
 	}
 
-	_updateStyle() {
+	_updateStyle(displayOverlays) {
 		this._vectorLayer
 			.getSource()
 			.getFeatures()
 			.forEach((f) => {
+				f.set('displayoverlays', `${displayOverlays}`);
 				const measureGeometry = this._createMeasureGeometry(f);
+
 				this._styleService.updateStyle(f, this._map, { geometry: measureGeometry }, StyleTypes.MEASURE);
 			});
 	}
@@ -744,6 +746,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		 * The stored content will be created/updated after adding/changing and removing features,
 		 * while interacting with the layer.
 		 */
+		console.log(this._storedContent);
 		setData(this._storedContent);
 	}
 

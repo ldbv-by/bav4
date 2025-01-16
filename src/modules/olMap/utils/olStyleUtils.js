@@ -449,6 +449,8 @@ const getRulerStyle = (feature) => {
 export const renderLinearRulerSegments = (pixelCoordinates, state, contextRenderFunction) => {
 	const { MapService: mapService } = $injector.inject('MapService');
 	const geometry = state.geometry.clone();
+	console.log(state.feature?.get('displayoverlays'));
+	const displayOverlays = state.feature.get('displayoverlays') ? state.feature.get('displayoverlays') === 'true' : true;
 	const lineString = getLineString(geometry);
 	const resolution = state.resolution;
 	const pixelRatio = state.pixelRatio;
@@ -527,15 +529,21 @@ export const renderLinearRulerSegments = (pixelCoordinates, state, contextRender
 	contextRenderFunction(geometry, fill, baseStroke);
 
 	// per segment
-	const segmentCoordinates = geometry instanceof Polygon || geometry instanceof MultiLineString ? pixelCoordinates[0] : pixelCoordinates;
+	if (displayOverlays) {
+		const segmentCoordinates = geometry instanceof Polygon || geometry instanceof MultiLineString ? pixelCoordinates[0] : pixelCoordinates;
 
-	segmentCoordinates.every((coordinate, index, coordinates) => {
-		return drawTicks(contextRenderFunction, [coordinate, coordinates[index + 1]], residuals[index], partitionTickDistance);
-	});
+		segmentCoordinates.every((coordinate, index, coordinates) => {
+			return drawTicks(contextRenderFunction, [coordinate, coordinates[index + 1]], residuals[index], partitionTickDistance);
+		});
+	}
 };
 
 export const renderGeodesicRulerSegments = (pixelCoordinates, state, contextRenderFunction, geodesic) => {
 	const geometry = state.geometry.clone();
+
+	console.log(state.feature?.get('displayoverlays'));
+	const displayOverlays = state.feature.get('displayoverlays') ? state.feature.get('displayoverlays') === 'true' : true;
+	console.log({ v: displayOverlays, t: typeof displayOverlays });
 	const resolution = state.resolution;
 	const pixelRatio = state.pixelRatio;
 
@@ -570,8 +578,10 @@ export const renderGeodesicRulerSegments = (pixelCoordinates, state, contextRend
 	contextRenderFunction(geometry, fill, baseStroke);
 
 	// ticks
-	const ticks = geodesic.getTicksByDistance(partitionLength);
-	ticks.forEach((t) => drawTick(contextRenderFunction, t));
+	if (displayOverlays) {
+		const ticks = geodesic.getTicksByDistance(partitionLength);
+		ticks.forEach((t) => drawTick(contextRenderFunction, t));
+	}
 };
 
 /**
