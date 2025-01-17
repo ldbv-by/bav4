@@ -7,18 +7,8 @@ import { setCurrent } from '../../../../store/topics/topics.action';
 import css from './topicsContentPanel.css';
 import commonTopicsCss from './assets/topics.css';
 import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
-import { setIndex } from '../../../../store/topicsContentPanel/topicsContentPanel.action';
+import { setIndex, TopicsContentPanelIndex } from '../../../../store/topicsContentPanel/topicsContentPanel.action';
 import { AbstractMvuContentPanel } from '../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
-
-/**
- * @readonly
- * @enum {Number}
- */
-export const TopicsContentPanelIndex = Object.freeze({
-	TOPICS: 0,
-	CATALOG_0: 1,
-	CATALOG_1: 2
-});
 
 const Update_CurrentTopicId = 'update_currentTopicId';
 const Update_TopicsReady = 'update_TopicsReady';

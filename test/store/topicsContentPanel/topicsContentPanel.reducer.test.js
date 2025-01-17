@@ -1,7 +1,6 @@
 import { TestUtils } from '../../test-utils.js';
-import { TopicsContentPanelIndex } from '../../../src/modules/topics/components/menu/TopicsContentPanel.js';
 import { topicsContentPanelReducer } from '../../../src/store/topicsContentPanel/topicsContentPanel.reducer.js';
-import { setIndex } from '../../../src/store/topicsContentPanel/topicsContentPanel.action.js';
+import { setIndex, TopicsContentPanelIndex } from '../../../src/store/topicsContentPanel/topicsContentPanel.action.js';
 
 describe('topicsContentPanelReducer', () => {
 	const setup = (state) => {

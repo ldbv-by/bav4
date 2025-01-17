@@ -1,6 +1,6 @@
 import { $injector } from '../../../../../src/injection';
 import { CatalogContentPanel } from '../../../../../src/modules/topics/components/menu/catalog/CatalogContentPanel';
-import { TopicsContentPanel, TopicsContentPanelIndex } from '../../../../../src/modules/topics/components/menu/TopicsContentPanel';
+import { TopicsContentPanel } from '../../../../../src/modules/topics/components/menu/TopicsContentPanel';
 import { Topic } from '../../../../../src/domain/topic';
 import { setCurrent } from '../../../../../src/store/topics/topics.action';
 import { topicsReducer } from '../../../../../src/store/topics/topics.reducer';
@@ -8,18 +8,9 @@ import { topicsContentPanelReducer } from '../../../../../src/store/topicsConten
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 import { TestUtils } from '../../../../test-utils.js';
 import { AbstractMvuContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel.js';
+import { TopicsContentPanelIndex } from '../../../../../src/store/topicsContentPanel/topicsContentPanel.action.js';
 
 window.customElements.define(TopicsContentPanel.tag, TopicsContentPanel);
-
-describe('TopicsContentPanelIndex', () => {
-	it('is an enum', () => {
-		expect(Object.entries(TopicsContentPanelIndex).length).toBe(3);
-		expect(Object.isFrozen(TopicsContentPanelIndex)).toBeTrue();
-		expect(TopicsContentPanelIndex.TOPICS).toBe(0);
-		expect(TopicsContentPanelIndex.CATALOG_0).toBe(1);
-		expect(TopicsContentPanelIndex.CATALOG_1).toBe(2);
-	});
-});
 
 describe('TopicsContentPanel', () => {
 	const topic0 = new Topic('topic0', 'Topic 0', 'This is Topic 0...', null, [], [], [], { hue: 42, icon: 'icon' });

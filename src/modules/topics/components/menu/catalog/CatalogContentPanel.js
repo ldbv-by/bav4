@@ -4,8 +4,7 @@
 import { html, nothing } from 'lit-html';
 import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
 import { $injector } from '../../../../../injection';
-import { setIndex } from '../../../../../store/topicsContentPanel/topicsContentPanel.action';
-import { TopicsContentPanelIndex } from '../TopicsContentPanel';
+import { setIndex, TopicsContentPanelIndex } from '../../../../../store/topicsContentPanel/topicsContentPanel.action';
 import css from './catalogContentPanel.css';
 import arrowLeftShort from '../assets/arrowLeftShort.svg';
 import { AbstractMvuContentPanel } from '../../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
