@@ -1,10 +1,12 @@
+import { TopicsContentPanelIndex } from './topicsContentPanel.action';
+
 export const INDEX_CHANGED = 'topics/topicsContentPane/index';
 
 export const initialState = {
 	/**
 	 * Current index of active / displayed content
 	 */
-	index: 0
+	index: TopicsContentPanelIndex.TOPICS
 };
 
 export const topicsContentPanelReducer = (state = initialState, action) => {
