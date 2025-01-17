@@ -127,7 +127,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 
 	_displayPartitionOverlays() {
 		const { measurement } = this._storeService.getStore().getState();
-		return measurement.displayOverlays;
+		return measurement.displayRuler;
 	}
 
 	_createDistanceOverlay(olFeature, olMap) {
@@ -174,7 +174,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	}
 
 	_createOrRemovePartitionOverlays(olFeature, olMap, simplifiedGeometry = null) {
-		const displayOverlays = olFeature.get('displayoverlays') ? olFeature.get('displayoverlays') === 'true' : true;
+		const displayRuler = olFeature.get('displayruler') ? olFeature.get('displayruler') === 'true' : true;
 		const getOverlayGeometry = (feature) => {
 			const geodesic = feature.get(GEODESIC_FEATURE_PROPERTY);
 			if (geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE) {
@@ -198,7 +198,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 
 		const delta = projectedLength ? getPartitionDelta(olFeature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY), resolution) : 1;
 		let partitionIndex = 0;
-		if (displayOverlays) {
+		if (displayRuler) {
 			for (let i = delta; i < 1; i += delta, partitionIndex++) {
 				let partition = partitions[partitionIndex] || false;
 				if (partition === false) {

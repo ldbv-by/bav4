@@ -24,7 +24,7 @@ describe('MeasurementOverlayStyle', () => {
 	const initialState = {
 		active: false,
 		statistic: { length: 0, area: 0 },
-		displayOverlays: true,
+		displayRuler: true,
 		selection: [],
 		reset: null
 	};
@@ -107,7 +107,7 @@ describe('MeasurementOverlayStyle', () => {
 							return 200;
 						case 'geodesic':
 							return { getCalculationStatus: () => 'foo' };
-						case 'displayoverlays':
+						case 'displayruler':
 							return undefined;
 						default:
 							return [
@@ -190,7 +190,7 @@ describe('MeasurementOverlayStyle', () => {
 							return 200;
 						case 'geodesic':
 							return geodesicMock;
-						case 'displayoverlays':
+						case 'displayruler':
 							return undefined;
 						default:
 							return [
@@ -616,7 +616,7 @@ describe('MeasurementOverlayStyle', () => {
 							return [overlayMock1, overlayMock2];
 						case PROJECTED_LENGTH_GEOMETRY_PROPERTY:
 							return 200;
-						case 'displayoverlays':
+						case 'displayruler':
 							return undefined;
 						default:
 							return [

@@ -8,7 +8,7 @@ import { unByKey } from 'ol/Observable';
 import { LineString, Polygon } from 'ol/geom';
 import { $injector } from '../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
-import { setStatistic, setMode, setSelection, setDisplayOverlays } from '../../../../store/measurement/measurement.action';
+import { setStatistic, setMode, setSelection, setDisplayRuler } from '../../../../store/measurement/measurement.action';
 import { addLayer, removeLayer } from '../../../../store/layers/layers.action';
 import { createSketchStyleFunction, measureStyleFunction, selectStyleFunction } from '../../utils/olStyleUtils';
 import { getLineString, getStats, PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../utils/olGeometryUtils';
@@ -166,8 +166,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 						this._styleService.addStyle(f, olMap, layer);
 						f.on('change', onFeatureChange);
 					});
-					const displayOverlays = !oldFeatures.some((f) => f.get('displayoverlays') === 'false');
-					setDisplayOverlays(displayOverlays);
+					const displayRuler = !oldFeatures.some((f) => f.get('displayruler') === 'false');
+					setDisplayRuler(displayRuler);
 					const oldLayerId = oldLayer.get('id');
 					this._layerId = oldLayerId;
 					this._layerZIndex = oldLayer.getZIndex();
@@ -415,8 +415,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			),
 			observe(
 				store,
-				(state) => state.measurement.displayOverlays,
-				(displayOverlays) => this._updateStyle(displayOverlays)
+				(state) => state.measurement.displayRuler,
+				(displayRuler) => this._updateStyle(displayRuler)
 			)
 		];
 	}
@@ -465,12 +465,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._updateMeasureState();
 	}
 
-	_updateStyle(displayOverlays) {
+	_updateStyle(displayRuler) {
 		this._vectorLayer
 			.getSource()
 			.getFeatures()
 			.forEach((f) => {
-				f.set('displayoverlays', `${displayOverlays}`);
+				f.set('displayruler', `${displayRuler}`);
 				const measureGeometry = this._createMeasureGeometry(f);
 
 				this._styleService.updateStyle(f, this._map, { geometry: measureGeometry }, StyleTypes.MEASURE);
@@ -508,7 +508,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					? measureGeometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY)
 					: this._mapService.calcLength(getLineString(measureGeometry)?.getCoordinates());
 				if (projectedLength) {
-					feature.set('displayoverlays', `${this._storeService.getStore().getState().measurement.displayOverlays}`);
+					feature.set('displayruler', `${this._storeService.getStore().getState().measurement.displayRuler}`);
 					feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
 					feature.getGeometry().set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
 					measureGeometry.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
@@ -524,7 +524,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 			this._sketchHandler.activate(event.feature, this._map, Tools.MEASURE + '_');
 			event.feature.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(event.feature, this._map, () => !this._sketchHandler.isFinishOnFirstPoint));
-			event.feature.set('displayoverlays', `${this._storeService.getStore().getState().measurement.displayOverlays}`);
+			event.feature.set('displayruler', `${this._storeService.getStore().getState().measurement.displayRuler}`);
 			this._overlayService.add(this._sketchHandler.active, this._map, StyleTypes.MEASURE);
 			this._drawingListeners.push(event.feature.on('change', onFeatureChange));
 			this._drawingListeners.push(this._map.getView().on('change:resolution', onResolutionChange));
@@ -586,7 +586,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				const measureGeometry = this._createMeasureGeometry(event.target);
 				const projectedLength = this._mapService.calcLength(getLineString(measureGeometry)?.getCoordinates());
 				feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
-				feature.set('displayoverlays', `${this._storeService.getStore().getState().measurement.displayOverlays}`);
+				feature.set('displayruler', `${this._storeService.getStore().getState().measurement.displayRuler}`);
 				feature.getGeometry().set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
 				measureGeometry.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
 
@@ -665,7 +665,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			LineString: (feature, resolution) => {
 				if (!feature.get(GEODESIC_FEATURE_PROPERTY)) {
 					feature.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(feature, this._map, () => true));
-					feature.on('change', (e) => e.target.set('displayoverlays', `${this._storeService.getStore().getState().measurement.displayOverlays}`));
+					feature.on('change', (e) => e.target.set('displayruler', `${this._storeService.getStore().getState().measurement.displayRuler}`));
 				}
 				return measureStyleFunction(feature, resolution);
 			}

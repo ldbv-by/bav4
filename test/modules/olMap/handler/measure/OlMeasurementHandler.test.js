@@ -89,7 +89,7 @@ describe('OlMeasurementHandler', () => {
 	const initialMeasureState = {
 		active: false,
 		statistic: { length: 0, area: 0 },
-		displayOverlays: true,
+		displayRuler: true,
 		selection: [],
 		reset: null
 	};

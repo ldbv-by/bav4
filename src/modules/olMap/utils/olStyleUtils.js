@@ -449,7 +449,7 @@ const getRulerStyle = (feature) => {
 export const renderLinearRulerSegments = (pixelCoordinates, state, contextRenderFunction) => {
 	const { MapService: mapService } = $injector.inject('MapService');
 	const geometry = state.geometry.clone();
-	const displayOverlays = state.feature?.get('displayoverlays') ? state.feature.get('displayoverlays') === 'true' : true;
+	const displayRuler = state.feature?.get('displayruler') ? state.feature.get('displayruler') === 'true' : true;
 	const lineString = getLineString(geometry);
 	const resolution = state.resolution;
 	const pixelRatio = state.pixelRatio;
@@ -528,7 +528,7 @@ export const renderLinearRulerSegments = (pixelCoordinates, state, contextRender
 	contextRenderFunction(geometry, fill, baseStroke);
 
 	// per segment
-	if (displayOverlays) {
+	if (displayRuler) {
 		const segmentCoordinates = geometry instanceof Polygon || geometry instanceof MultiLineString ? pixelCoordinates[0] : pixelCoordinates;
 
 		segmentCoordinates.every((coordinate, index, coordinates) => {
@@ -539,7 +539,7 @@ export const renderLinearRulerSegments = (pixelCoordinates, state, contextRender
 
 export const renderGeodesicRulerSegments = (pixelCoordinates, state, contextRenderFunction, geodesic) => {
 	const geometry = state.geometry.clone();
-	const displayOverlays = state.feature?.get('displayoverlays') ? state.feature.get('displayoverlays') === 'true' : true;
+	const displayRuler = state.feature?.get('displayruler') ? state.feature.get('displayruler') === 'true' : true;
 	const resolution = state.resolution;
 	const pixelRatio = state.pixelRatio;
 
@@ -574,7 +574,7 @@ export const renderGeodesicRulerSegments = (pixelCoordinates, state, contextRend
 	contextRenderFunction(geometry, fill, baseStroke);
 
 	// ticks
-	if (displayOverlays) {
+	if (displayRuler) {
 		const ticks = geodesic.getTicksByDistance(partitionLength);
 		ticks.forEach((t) => drawTick(contextRenderFunction, t));
 	}
