@@ -11,7 +11,7 @@ const getStore = () => {
 
 /**
  * Sets the current topic.
- * @param {string} id id of the current topic
+ * @param {string|null} id id of the current topic
  * @function
  */
 export const setCurrent = (id) => {
