@@ -107,6 +107,8 @@ describe('MeasurementOverlayStyle', () => {
 							return 200;
 						case 'geodesic':
 							return { getCalculationStatus: () => 'foo' };
+						case 'displayoverlays':
+							return undefined;
 						default:
 							return [
 								{
@@ -188,6 +190,8 @@ describe('MeasurementOverlayStyle', () => {
 							return 200;
 						case 'geodesic':
 							return geodesicMock;
+						case 'displayoverlays':
+							return undefined;
 						default:
 							return [
 								{
@@ -612,6 +616,8 @@ describe('MeasurementOverlayStyle', () => {
 							return [overlayMock1, overlayMock2];
 						case PROJECTED_LENGTH_GEOMETRY_PROPERTY:
 							return 200;
+						case 'displayoverlays':
+							return undefined;
 						default:
 							return [
 								{
