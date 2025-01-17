@@ -4,6 +4,8 @@ import { $injector } from '../../src/injection';
 import { Topic } from '../../src/domain/topic';
 import { topicsReducer } from '../../src/store/topics/topics.reducer';
 import { QueryParameters } from '../../src/domain/queryParameters';
+import { topicsContentPanelReducer } from '../../src/store/topicsContentPanel/topicsContentPanel.reducer.js';
+import { setIndex, TopicsContentPanelIndex } from '../../src/store/topicsContentPanel/topicsContentPanel.action.js';
 
 describe('TopicsPlugin', () => {
 	const topicsServiceMock = {
@@ -18,6 +20,7 @@ describe('TopicsPlugin', () => {
 
 	const setup = (state) => {
 		const store = TestUtils.setupStoreAndDi(state, {
+			topicsContentPanel: topicsContentPanelReducer,
 			topics: topicsReducer
 		});
 		$injector.registerSingleton('TopicsService', topicsServiceMock).registerSingleton('EnvironmentService', environmentServiceMock);
@@ -39,27 +42,11 @@ describe('TopicsPlugin', () => {
 	});
 
 	describe('_init', () => {
-		it('initializes the TopicsService and calls #_addTopicFromConfig', async () => {
-			const store = setup();
-			const instanceUnderTest = new TopicsPlugin();
-			const addTopicFromQueryParamsSpy = spyOn(instanceUnderTest, '_addTopicFromQueryParams');
-			const addTopicFromConfigSpy = spyOn(instanceUnderTest, '_addTopicFromConfig');
-			const topicServiceSpy = spyOn(topicsServiceMock, 'init').and.returnValue(Promise.resolve());
-
-			await instanceUnderTest._init();
-
-			expect(topicServiceSpy).toHaveBeenCalledTimes(1);
-			expect(addTopicFromQueryParamsSpy).not.toHaveBeenCalled();
-			expect(addTopicFromConfigSpy).toHaveBeenCalledTimes(1);
-			expect(store.getState().topics.ready).toBeTrue();
-		});
-
 		it('initializes the TopicsService and calls #_addTopicFromQueryParams', async () => {
 			const store = setup();
 			const queryParam = new URLSearchParams(QueryParameters.TOPIC + '=some');
 			const instanceUnderTest = new TopicsPlugin();
 			const addTopicFromQueryParamsSpy = spyOn(instanceUnderTest, '_addTopicFromQueryParams');
-			const addTopicFromConfigSpy = spyOn(instanceUnderTest, '_addTopicFromConfig');
 			const topicServiceSpy = spyOn(topicsServiceMock, 'init').and.returnValue(Promise.resolve());
 			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 
@@ -67,52 +54,78 @@ describe('TopicsPlugin', () => {
 
 			expect(topicServiceSpy).toHaveBeenCalledTimes(1);
 			expect(addTopicFromQueryParamsSpy).toHaveBeenCalledOnceWith(new URLSearchParams(queryParam));
-			expect(addTopicFromConfigSpy).not.toHaveBeenCalled();
 			expect(store.getState().topics.ready).toBeTrue();
 		});
 	});
 
-	describe('_addTopicFromConfig', () => {
-		it('initializes the TopicsService and update the store', async () => {
-			const store = setup();
-			const topicId = 'someId';
-			const topic = new Topic(topicId, 'label', 'description');
-			const instanceUnderTest = new TopicsPlugin();
-			spyOn(topicsServiceMock, 'default').and.returnValue(topic);
+	describe('_addTopicFromQueryParams', () => {
+		describe('topic id is available', () => {
+			it('updates current topic', () => {
+				const store = setup();
+				const topicId = 'someId';
+				const queryParam = `${QueryParameters.TOPIC}=${topicId}`;
+				const topic = new Topic(topicId, 'label', 'description');
+				const instanceUnderTest = new TopicsPlugin();
+				const topicServiceSpy = spyOn(topicsServiceMock, 'byId').withArgs(topicId).and.returnValue(topic);
 
-			await instanceUnderTest._addTopicFromConfig();
+				instanceUnderTest._addTopicFromQueryParams(new URLSearchParams(queryParam));
 
-			expect(store.getState().topics.current).toBe(topicId);
+				expect(topicServiceSpy).toHaveBeenCalledTimes(1);
+				expect(store.getState().topics.current).toBe(topicId);
+			});
+		});
+		describe('topic id is NOT available', () => {
+			it('updates current topic', () => {
+				const store = setup();
+				const instanceUnderTest = new TopicsPlugin();
+				const topicServiceSpy = spyOn(topicsServiceMock, 'byId');
+
+				instanceUnderTest._addTopicFromQueryParams(new URLSearchParams());
+
+				expect(topicServiceSpy).not.toHaveBeenCalled();
+				expect(store.getState().topics.current).toBeNull();
+			});
 		});
 	});
 
-	describe('_addTopicFromQueryParams', () => {
-		it('updates current topic', () => {
-			const store = setup();
-			const topicId = 'someId';
-			const queryParam = `${QueryParameters.TOPIC}=${topicId}`;
-			const topic = new Topic(topicId, 'label', 'description');
-			const instanceUnderTest = new TopicsPlugin();
-			const topicServiceSpy = spyOn(topicsServiceMock, 'byId').withArgs(topicId).and.returnValue(topic);
+	describe('topicsContentPanel s-o-s changes', () => {
+		describe('index denotes the topic level', () => {
+			it('set the current topic to `null`', async () => {
+				const store = setup({
+					topics: {
+						current: 'foo'
+					},
+					topicsContentPanel: {
+						index: TopicsContentPanelIndex.CATALOG_0
+					}
+				});
+				const instanceUnderTest = new TopicsPlugin();
 
-			instanceUnderTest._addTopicFromQueryParams(new URLSearchParams(queryParam));
+				await instanceUnderTest.register(store);
 
-			expect(topicServiceSpy).toHaveBeenCalledTimes(1);
-			expect(store.getState().topics.current).toBe(topicId);
+				setIndex(TopicsContentPanelIndex.TOPICS);
+				expect(store.getState().topics.current).toBeNull();
+			});
 		});
 
-		it('updates current topic by calling #_addTopicFromConfig as fallback', () => {
-			setup();
-			const topicId = 'someId';
-			const queryParam = `${QueryParameters.TOPIC}=${topicId}`;
-			const instanceUnderTest = new TopicsPlugin();
-			const topicServiceSpy = spyOn(topicsServiceMock, 'byId').withArgs(topicId).and.returnValue(null);
-			const addTopicFromConfigSpy = spyOn(instanceUnderTest, '_addTopicFromConfig');
+		describe('index does NOT denote the topic level', () => {
+			it('does nothing', async () => {
+				const topicId = 'topicId';
+				const store = setup({
+					topics: {
+						current: topicId
+					},
+					topicsContentPanel: {
+						index: TopicsContentPanelIndex.CATALOG_0
+					}
+				});
+				const instanceUnderTest = new TopicsPlugin();
 
-			instanceUnderTest._addTopicFromQueryParams(new URLSearchParams(queryParam));
+				await instanceUnderTest.register(store);
 
-			expect(topicServiceSpy).toHaveBeenCalledTimes(1);
-			expect(addTopicFromConfigSpy).toHaveBeenCalledTimes(1);
+				setIndex(TopicsContentPanelIndex.CATALOG_1);
+				expect(store.getState().topics.current).toBe(topicId);
+			});
 		});
 	});
 });
