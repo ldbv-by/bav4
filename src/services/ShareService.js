@@ -230,7 +230,10 @@ export class ShareService {
 			topics: { current }
 		} = state;
 
-		extractedState[QueryParameters.TOPIC] = current;
+		if (current) {
+			extractedState[QueryParameters.TOPIC] = current;
+		}
+
 		return extractedState;
 	}
 
