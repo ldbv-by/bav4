@@ -9,7 +9,9 @@ import { TestUtils } from '../test-utils';
 import { setCategory, setWaypoints } from '../../src/store/routing/routing.action';
 import { routingReducer } from '../../src/store/routing/routing.reducer';
 import { toolsReducer } from '../../src/store/tools/tools.reducer';
+import { topicsReducer } from '../../src/store/topics/topics.reducer';
 import { setCurrentTool } from '../../src/store/tools/tools.action';
+import { setCurrent } from '../../src/store/topics/topics.action';
 
 describe('ObserveStateForEncodingPlugin', () => {
 	const shareService = {
@@ -30,6 +32,7 @@ describe('ObserveStateForEncodingPlugin', () => {
 			layers: layersReducer,
 			routing: routingReducer,
 			tools: toolsReducer,
+			topics: topicsReducer,
 			encodedState: stateForEncodingReducer
 		});
 		$injector.registerSingleton('ShareService', shareService).registerSingleton('MapService', mapService);
@@ -133,6 +136,20 @@ describe('ObserveStateForEncodingPlugin', () => {
 		await instanceUnderTest.register(store);
 
 		setCurrentTool('someTool');
+
+		expect(store.getState().encodedState.changed).not.toEqual(initialState.changed);
+	});
+
+	it('registers a topic change listener and indicates its changes', async () => {
+		const store = setup();
+		spyOn(shareService, 'encodeState').and.callFake(() => {
+			// let's return a different state each call
+			return `state_${Math.random()}`;
+		});
+		const instanceUnderTest = new ObserveStateForEncodingPlugin();
+		await instanceUnderTest.register(store);
+
+		setCurrent('someTopic');
 
 		expect(store.getState().encodedState.changed).not.toEqual(initialState.changed);
 	});
