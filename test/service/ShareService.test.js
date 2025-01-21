@@ -17,6 +17,9 @@ import { setCurrentTool } from '../../src/store/tools/tools.action';
 import { highlightReducer } from '../../src/store/highlight/highlight.reducer';
 import { addHighlightFeatures, HighlightFeatureType } from '../../src/store/highlight/highlight.action';
 import { CROSSHAIR_HIGHLIGHT_FEATURE_ID } from '../../src/plugins/HighlightPlugin';
+import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer';
+import { TabIds } from '../../src/domain/mainMenu';
+import { setTab } from '../../src/store/mainMenu/mainMenu.action';
 
 describe('ShareService', () => {
 	const coordinateService = {
@@ -40,13 +43,21 @@ describe('ShareService', () => {
 	};
 
 	const setup = (state) => {
-		const store = TestUtils.setupStoreAndDi(state, {
+		const initialState = {
+			mainMenu: {
+				open: true,
+				tab: TabIds.TOPICS
+			},
+			...state
+		};
+		const store = TestUtils.setupStoreAndDi(initialState, {
 			layers: layersReducer,
 			position: positionReducer,
 			topics: topicsReducer,
 			routing: routingReducer,
 			tools: toolsReducer,
-			highlight: highlightReducer
+			highlight: highlightReducer,
+			mainMenu: createNoInitialStateMainMenuReducer()
 		});
 		$injector
 			.registerSingleton('CoordinateService', coordinateService)
@@ -456,6 +467,19 @@ describe('ShareService', () => {
 			});
 		});
 
+		describe('_extractTool', () => {
+			it('extracts the current tool ', () => {
+				setup({ mainMenu: { tab: null } });
+				const instanceUnderTest = new ShareService();
+
+				expect(instanceUnderTest._extractMainMenu()).toEqual({});
+
+				setTab(TabIds.MISC);
+
+				expect(instanceUnderTest._extractMainMenu()[QueryParameters.MENU_ID]).toBe(TabIds.MISC);
+			});
+		});
+
 		describe('_mergeExtraParams', () => {
 			it('merges an array when key already present', () => {
 				setup();
@@ -553,7 +577,7 @@ describe('ShareService', () => {
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/?')).toBeTrue();
-					expect(queryParams.size).toBe(9);
+					expect(queryParams.size).toBe(10);
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
@@ -563,6 +587,7 @@ describe('ShareService', () => {
 					expect(queryParams.get(QueryParameters.ROUTE_CATEGORY)).toBe('rtCatId');
 					expect(queryParams.get(QueryParameters.TOOL_ID)).toBe('someTool');
 					expect(queryParams.get(QueryParameters.CROSSHAIR)).toBe('true');
+					expect(queryParams.get(QueryParameters.MENU_ID)).toBe('0');
 					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
 				});
 
@@ -579,7 +604,7 @@ describe('ShareService', () => {
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/?')).toBeTrue();
-					expect(queryParams.size).toBe(4);
+					expect(queryParams.size).toBe(5);
 					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
 				});
 
@@ -597,7 +622,7 @@ describe('ShareService', () => {
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/?')).toBeTrue();
-					expect(queryParams.size).toBe(5);
+					expect(queryParams.size).toBe(6);
 
 					expect(queryParams.get('foo')).toBe('bar');
 					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
@@ -616,7 +641,7 @@ describe('ShareService', () => {
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/param0/param1?')).toBeTrue();
-					expect(queryParams.size).toBe(4);
+					expect(queryParams.size).toBe(5);
 				});
 			});
 
@@ -639,13 +664,14 @@ describe('ShareService', () => {
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/app/?')).toBeTrue();
-					expect(queryParams.size).toBe(6);
+					expect(queryParams.size).toBe(7);
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
 					expect(queryParams.get(QueryParameters.ROTATION)).toBe('0.5');
 					expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
 					expect(queryParams.get(QueryParameters.TOOL_ID)).toBe('someTool');
+					expect(queryParams.get(QueryParameters.MENU_ID)).toBe('0');
 					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
 				});
 
@@ -662,7 +688,7 @@ describe('ShareService', () => {
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/app/?')).toBeTrue();
-					expect(queryParams.size).toBe(4);
+					expect(queryParams.size).toBe(5);
 					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
 				});
 
@@ -680,7 +706,7 @@ describe('ShareService', () => {
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/app/?')).toBeTrue();
-					expect(queryParams.size).toBe(5);
+					expect(queryParams.size).toBe(6);
 					expect(queryParams.get('foo')).toBe('bar');
 					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
 				});
@@ -698,7 +724,7 @@ describe('ShareService', () => {
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/app/param0/param1?')).toBeTrue();
-					expect(queryParams.size).toBe(4);
+					expect(queryParams.size).toBe(5);
 				});
 			});
 		});

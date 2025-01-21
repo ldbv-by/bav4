@@ -7,6 +7,7 @@ import { QueryParameters } from '../domain/queryParameters';
 import { GlobalCoordinateRepresentations } from '../domain/coordinateRepresentation';
 import { getOrigin, getPathParams } from '../utils/urlUtils';
 import { CROSSHAIR_HIGHLIGHT_FEATURE_ID } from '../plugins/HighlightPlugin';
+import { isNumber } from '../utils/checks';
 
 /**
  * Options for retrieving parameters.
@@ -114,7 +115,8 @@ export class ShareService {
 				...this._extractTopic(),
 				...this._extractRoute(),
 				...this._extractTool(),
-				...this._extractCrosshair()
+				...this._extractCrosshair(),
+				...this._extractMainMenu()
 			},
 			extraParams
 		);
@@ -277,6 +279,27 @@ export class ShareService {
 
 		if (current) {
 			extractedState[QueryParameters.TOOL_ID] = current;
+		}
+
+		return extractedState;
+	}
+
+	/**
+	 * @private
+	 * @returns {object} extractedState
+	 */
+	_extractMainMenu() {
+		const { StoreService: storeService } = $injector.inject('StoreService');
+
+		const state = storeService.getStore().getState();
+		const extractedState = {};
+
+		const {
+			mainMenu: { tab }
+		} = state;
+
+		if (isNumber(tab)) {
+			extractedState[QueryParameters.MENU_ID] = tab;
 		}
 
 		return extractedState;
