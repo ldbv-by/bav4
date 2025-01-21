@@ -70,10 +70,10 @@ describe('MainMenuPlugin', () => {
 
 				instanceUnderTest._init();
 
-				expect(store.getState().mainMenu.tab).toEqual(TabIds.valueOf(3));
+				expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
 			});
 
-			it('sets the default tab id when param is not parseable', async () => {
+			it('sets the default tab id when param is not parsable', async () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.MENU_ID}=foo`);
 				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 

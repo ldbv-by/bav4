@@ -8,6 +8,7 @@ import { TabIds } from '../domain/mainMenu';
 import { $injector } from '../injection';
 import { QueryParameters } from '../domain/queryParameters';
 import { Tools } from '../domain/tools';
+import { isNumber } from '../utils/checks';
 
 /**
  * @class
@@ -25,8 +26,9 @@ export class MainMenuPlugin extends BaPlugin {
 		const queryParams = environmentService.getQueryParams();
 
 		// check if we have a query parameter defining the tab id
-		const tabId = TabIds.valueOf(parseInt(queryParams.get(QueryParameters.MENU_ID), 10));
-		if (tabId) {
+		const tabId = parseInt(queryParams.get(QueryParameters.MENU_ID), 10);
+		// @ts-ignore
+		if (isNumber(tabId) && Object.values(TabIds).includes(tabId)) {
 			setTab(tabId);
 		} else {
 			// set default tab id
