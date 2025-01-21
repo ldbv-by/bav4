@@ -1,12 +1,12 @@
 .layer-swipe {
-	z-index: calc(var(--z-mapbuttons) - 10);
+	z-index: calc(var(--z-footer) - 10);
 	position: fixed;
 	left: -1em;
 	right: -1em;
 	top: 50%;
 }
 .line {
-	z-index: calc(var(--z-mapbuttons) - 20);
+	z-index: calc(var(--z-footer) - 20);
 	position: fixed;
 	height: 100%;
 	width: 2px;
@@ -32,7 +32,6 @@ input[type='range']::-webkit-slider-thumb {
 	appearance: none;
 	cursor: ew-resize;
 	border: 0.2em solid var(--primary-color);
-
 	border-radius: 50%;
 	background: url('assets/expand.svg') var(--primary-color);
 	width: 2.3rem;
