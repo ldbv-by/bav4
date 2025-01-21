@@ -1,4 +1,5 @@
 export const ACTIVE_CHANGED = 'draw/active';
+export const STATISTIC_CHANGED = 'draw/statistic';
 export const MODE_CHANGED = 'draw/mode';
 export const TYPE_CHANGED = 'draw/type';
 export const GEOMETRY_IS_VALID_CHANGED = 'draw/geometryIsValid';
@@ -24,6 +25,10 @@ export const initialState = {
 	 * @type {boolean}
 	 */
 	active: false,
+	/**
+	 * @type {GeometryStatistic}
+	 */
+	statistic: { length: null, area: null },
 	/**
 	 * @type {Boolean}
 	 */
@@ -79,6 +84,12 @@ export const drawReducer = (state = initialState, action) => {
 				...state,
 				active: active,
 				createPermanentLayer: createPermanentLayer
+			};
+		}
+		case STATISTIC_CHANGED: {
+			return {
+				...state,
+				statistic: payload
 			};
 		}
 		case MODE_CHANGED: {

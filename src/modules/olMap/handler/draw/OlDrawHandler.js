@@ -20,7 +20,15 @@ import { StyleTypes } from '../../services/StyleService';
 import { StyleSizeTypes } from '../../../../domain/styles';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { equals, observe } from '../../../../utils/storeUtils';
-import { setSelectedStyle, setStyle, setType, setGeometryIsValid, setSelection, setDescription } from '../../../../store/draw/draw.action';
+import {
+	setSelectedStyle,
+	setStatistic,
+	setStyle,
+	setType,
+	setGeometryIsValid,
+	setSelection,
+	setDescription
+} from '../../../../store/draw/draw.action';
 import { unByKey } from 'ol/Observable';
 import { create as createKML, KML_EMPTY_CONTENT } from '../../formats/kml';
 import {
@@ -40,7 +48,7 @@ import { addLayer, removeLayer } from '../../../../store/layers/layers.action';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { OlSketchHandler } from '../OlSketchHandler';
 import { setMode } from '../../../../store/draw/draw.action';
-import { isValidGeometry } from '../../utils/olGeometryUtils';
+import { getStats, isValidGeometry } from '../../utils/olGeometryUtils';
 import { acknowledgeTermsOfUse } from '../../../../store/shared/shared.action';
 import { setCurrentTool } from '../../../../store/tools/tools.action';
 import { setSelection as setMeasurementSelection } from '../../../../store/measurement/measurement.action';
@@ -183,6 +191,7 @@ export class OlDrawHandler extends OlLayerHandler {
 						const geometry = event.target.getGeometry();
 						setGeometryIsValid(isValidGeometry(geometry));
 						this._styleService.updateStyle(event.target, olMap);
+						this._setStatistics(event.target);
 					};
 
 					oldFeatures.forEach((f) => {
@@ -250,6 +259,7 @@ export class OlDrawHandler extends OlLayerHandler {
 					const ids = features.map((f) => f.getId());
 					this._setSelection(ids);
 				}
+				this._updateStatistics();
 				this._updateDrawState(coordinate, pixel, dragging);
 			};
 
@@ -355,6 +365,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._keyActionMapper.deactivate();
 
 		setSelection([]);
+		setStatistic({ length: null, area: null });
 
 		// eslint-disable-next-line promise/prefer-await-to-then
 		this._saveAndOptionallyConvertToPermanentLayer().finally(() => {
@@ -443,6 +454,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		}
 
 		this._select.getFeatures().clear();
+		this._updateStatistics();
 		this._draw = this._createDrawByType(type, styleOption);
 
 		// we deactivate the modify-interaction only,
@@ -459,6 +471,7 @@ export class OlDrawHandler extends OlLayerHandler {
 				const onFeatureChange = (event) => {
 					const geometry = event.target.getGeometry();
 					setGeometryIsValid(isValidGeometry(geometry));
+					this._setStatistics(event.target);
 				};
 				this._sketchHandler.activate(event.feature, this._map, Tools.DRAW + '_' + type + '_');
 				const description = this._storeService.getStore().getState().draw.description;
@@ -525,7 +538,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._draw.abortDrawing();
 			this._modify.setActive(false);
 			setSelection([]);
-
+			setStatistic({ length: 0, area: 0 });
 			this._helpTooltip.deactivate();
 			const currentType = this._storeService.getStore().getState().draw.type;
 			this._init(currentType);
@@ -539,7 +552,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._draw.abortDrawing();
 			this._modify.setActive(false);
 			setSelection([]);
-
+			setStatistic({ length: 0, area: 0 });
 			this._helpTooltip.deactivate();
 			setType(null);
 		}
@@ -636,6 +649,11 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._setSelected(feature);
 	}
 
+	_setStatistics(feature) {
+		const stats = getStats(feature.getGeometry());
+		setStatistic({ length: stats.length, area: stats.area });
+	}
+
 	_getStyleOption() {
 		const getDefaultText = () => {
 			const translate = (key) => this._translationService.translate(key);
@@ -685,6 +703,16 @@ export class OlDrawHandler extends OlLayerHandler {
 			return () => styleFunction(styleOption);
 		}
 		return this._styleService.getStyleFunction(StyleTypes.DRAW);
+	}
+
+	_updateStatistics() {
+		const emptyStatistic = { length: null, area: null };
+
+		if (this._select) {
+			const selectedFeature = this._select.getFeatures().getArray()[0];
+
+			setStatistic(selectedFeature ? getStats(selectedFeature.getGeometry()) : emptyStatistic);
+		}
 	}
 
 	_updateDrawState(coordinate, pixel, dragging) {
