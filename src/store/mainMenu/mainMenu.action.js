@@ -48,7 +48,7 @@ export const toggle = () => {
 /**
  * Displays the tab for a given key.
  * @see {@link TabId}
- * @param {string} key
+ * @param {number} key
  */
 export const setTab = (key) => {
 	getStore().dispatch({
