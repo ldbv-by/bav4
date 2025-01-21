@@ -32,13 +32,11 @@ input[type='range']::-webkit-slider-thumb {
 	appearance: none;
 	cursor: ew-resize;
 	border: 0.2em solid var(--primary-color);
-	block-size: var(--thumb-size);
-	inline-size: var(--thumb-size);
-	margin-top: var(--thumb-offset);
+
 	border-radius: 50%;
 	background: url('assets/expand.svg') var(--primary-color);
-	width: 2.3em;
-	height: 2.3em;
+	width: 2.3rem;
+	height: 2.3rem;
 	background-size: 1.9em 1.9em;
 	background-repeat: no-repeat;
 	box-shadow: 0 0 0 var(--thumb-highlight-size) var(--primary-color-lighter);
@@ -49,13 +47,13 @@ input[type='range']::-moz-range-thumb {
 	appearance: none;
 	cursor: ew-resize;
 	border: 0.2em solid var(--primary-color);
-	block-size: 2em;
-	inline-size: 2em;
+	block-size: 2rem;
+	inline-size: 2rem;
 	margin-top: 0;
 	border-radius: 50%;
 	background: url('assets/expand.svg') var(--primary-color);
-	width: 2em;
-	height: 2em;
+	width: 2rem;
+	height: 2rem;
 	background-size: 1.9em 1.9em;
 	background-repeat: no-repeat;
 	box-shadow: 0 0 0 var(--thumb-highlight-size) var(--primary-color-lighter);
