@@ -283,9 +283,24 @@ export class LayerItem extends AbstractMvuContentPanel {
 			return isLayerSwipeActive
 				? html`
 						<div class="compare">
-							<ba-button .type=${direction === SwipeAlignment.LEFT ? 'primary' : 'secondary'} .label=${''} @click=${leftSide}></ba-button>
-							<ba-button .type=${direction === SwipeAlignment.NOT_SET ? 'primary' : 'secondary'} .label=${''} @click=${bothSide}></ba-button>
-							<ba-button .type=${direction === SwipeAlignment.RIGHT ? 'primary' : 'secondary'} .label=${''} @click=${rightSide}></ba-button>
+							<ba-button
+								id="left"
+								.type=${direction === SwipeAlignment.LEFT ? 'primary' : 'secondary'}
+								.label=${translate('layerManager_compare_left')}
+								@click=${leftSide}
+							></ba-button>
+							<ba-button
+								id="both"
+								.type=${direction === SwipeAlignment.NOT_SET ? 'primary' : 'secondary'}
+								.label=${translate('layerManager_compare_both')}
+								@click=${bothSide}
+							></ba-button>
+							<ba-button
+								id="right"
+								.type=${direction === SwipeAlignment.RIGHT ? 'primary' : 'secondary'}
+								.label=${translate('layerManager_compare_right')}
+								@click=${rightSide}
+							></ba-button>
 						</div>
 					`
 				: nothing;

@@ -26,6 +26,8 @@ import cloneSvg from '../../../../src/modules/layerManager/components/assets/clo
 import zoomToExtentSvg from '../../../../src/modules/layerManager/components/assets/zoomToExtent.svg';
 import infoSvg from '../../../../src/modules/layerManager/components/assets/info.svg';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
+import { modifyLayer, SwipeAlignment } from '../../../../src/store/layers/layers.action.js';
+import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
 
 window.customElements.define(LayerItem.tag, LayerItem);
 window.customElements.define(ValueSelect.tag, ValueSelect);
@@ -65,7 +67,7 @@ describe('LayerItem', () => {
 	let store;
 
 	describe('when layer item is rendered', () => {
-		const setup = async (layer) => {
+		const setup = async (layer, layerSwipeActive) => {
 			store = TestUtils.setupStoreAndDi(
 				{
 					layers: {
@@ -73,6 +75,9 @@ describe('LayerItem', () => {
 					},
 					media: {
 						portrait: false
+					},
+					layerSwipe: {
+						active: layerSwipeActive
 					}
 				},
 				{
@@ -80,7 +85,8 @@ describe('LayerItem', () => {
 					modal: modalReducer,
 					media: createNoInitialStateMediaReducer(),
 					timeTravel: timeTravelReducer,
-					layerSwipe: layerSwipeReducer
+					layerSwipe: layerSwipeReducer,
+					tools: toolsReducer
 				}
 			);
 			$injector
@@ -601,6 +607,88 @@ describe('LayerItem', () => {
 
 			expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(0);
 			expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe('label0');
+		});
+
+		it('contains no layerSwipe buttons', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				collapsed: true
+			};
+			const element = await setup(layer, false);
+
+			expect(store.getState().layerSwipe.active).toBe(false);
+
+			expect(element.shadowRoot.querySelectorAll('.compare')).toHaveSize(0);
+		});
+
+		it('contains three layerSwipe buttons', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				collapsed: true
+			};
+			const element = await setup(layer, true);
+
+			expect(store.getState().layerSwipe.active).toBe(true);
+
+			expect(element.shadowRoot.querySelectorAll('.compare')).toHaveSize(1);
+			const swipeButtons = element.shadowRoot.querySelectorAll('.compare ba-button');
+			expect(swipeButtons).toHaveSize(3);
+		});
+
+		it('click on layerSwipe buttons changes the SwipeAlignment of the layer', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				collapsed: true
+			};
+			const element = await setup(layer, true);
+
+			expect(store.getState().layerSwipe.active).toBe(true);
+
+			expect(element.shadowRoot.querySelectorAll('.compare')).toHaveSize(1);
+			const swipeButtons = element.shadowRoot.querySelectorAll('.compare ba-button');
+			expect(swipeButtons).toHaveSize(3);
+
+			expect(layer.constraints.swipeAlignment).toBe(SwipeAlignment.NOT_SET);
+
+			const leftButtons = element.shadowRoot.querySelector('#left');
+			leftButtons.click();
+			modifyLayer(layer.id, { swipeAlignment: SwipeAlignment.LEFT });
+
+			expect(layer.constraints.swipeAlignment).toBe(SwipeAlignment.LEFT);
+
+			const rightButtons = element.shadowRoot.querySelector('#right');
+			rightButtons.click();
+
+			expect(layer.constraints.swipeAlignment).toBe(SwipeAlignment.RIGHT);
+
+			const bothButtons = element.shadowRoot.querySelector('#both');
+			bothButtons.click();
+
+			expect(layer.constraints.swipeAlignment).toBe(SwipeAlignment.NOT_SET);
 		});
 	});
 
