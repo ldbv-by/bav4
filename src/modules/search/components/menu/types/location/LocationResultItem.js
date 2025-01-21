@@ -99,7 +99,9 @@ export class LocationResultItem extends MvuElement {
 			}
 		};
 
-		const onCopyClick = async () => {
+		const onCopyClick = async (e) => {
+			e.preventDefault();
+			e.stopPropagation();
 			try {
 				await this._shareService.copyToClipboard(locationSearchResult.label);
 				emitNotification(
