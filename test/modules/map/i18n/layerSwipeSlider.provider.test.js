@@ -1,22 +1,20 @@
-import { provide } from '../../../../src/modules/map/i18n/mapInteractionButtonContainer.provider';
+import { provide } from '../../../../src/modules/map/i18n/layerSwipeSlider.provider';
 
 describe('i18n for map module', () => {
 	it('provides translation for de', () => {
 		const map = provide('de');
 
-		expect(map.map_interaction_button_container_routing).toBe('Routing abschließen');
-		expect(map.map_interaction_button_container_layerSwipe).toBe('Vergleichen abschließen');
+		expect(map.map_layerSwipeSlider).toBe('Nach links oder rechts verschieben');
 	});
 
 	it('provides translation for en', () => {
 		const map = provide('en');
 
-		expect(map.map_interaction_button_container_routing).toBe('Complete routing');
-		expect(map.map_interaction_button_container_layerSwipe).toBe('Complete compare');
+		expect(map.map_layerSwipeSlider).toBe('Move left or right');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 2;
+		const expectedSize = 1;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
