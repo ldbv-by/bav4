@@ -125,11 +125,6 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		return measurement.active;
 	}
 
-	_displayPartitionOverlays() {
-		const { measurement } = this._storeService.getStore().getState();
-		return measurement.displayRuler;
-	}
-
 	_createDistanceOverlay(olFeature, olMap) {
 		const createNew = () => {
 			const isDraggable = !this._environmentService.isTouch() && this._isActiveMeasurement();
