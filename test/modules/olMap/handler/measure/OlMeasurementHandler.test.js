@@ -15,7 +15,7 @@ import { register } from 'ol/proj/proj4';
 import { MEASUREMENT_LAYER_ID } from '../../../../../src/plugins/MeasurementPlugin';
 import { ModifyEvent } from 'ol/interaction/Modify';
 import { layersReducer } from '../../../../../src/store/layers/layers.reducer';
-import { finish, remove, reset } from '../../../../../src/store/measurement/measurement.action';
+import { finish, remove, reset, setDisplayRuler } from '../../../../../src/store/measurement/measurement.action';
 import { OverlayService } from '../../../../../src/modules/olMap/services/OverlayService';
 import { Stroke, Style } from 'ol/style';
 import { InteractionSnapType, InteractionStateType } from '../../../../../src/modules/olMap/utils/olInteractionUtils';
@@ -735,6 +735,47 @@ describe('OlMeasurementHandler', () => {
 
 			expect(updateOverlaysSpy).toHaveBeenCalledTimes(1);
 		});
+
+		it("updates 'displayruler' property and style of features when store changes", async () => {
+			setup();
+			const classUnderTest = new OlMeasurementHandler();
+			const lastData =
+				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measure_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+			const map = setupMap();
+			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
+
+			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
+			spyOn(fileStorageServiceMock, 'isFileId').and.callFake(() => true);
+			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
+			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
+			const updateOverlaysSpy = spyOn(classUnderTest._styleService, 'updateStyle');
+
+			classUnderTest.activate(map);
+
+			await TestUtils.timeout();
+
+			// store changes
+			setDisplayRuler(false);
+			expect(
+				classUnderTest._vectorLayer
+					.getSource()
+					.getFeatures()
+					.every((f) => f.get('displayruler') === 'false')
+			);
+			expect(updateOverlaysSpy).toHaveBeenCalledTimes(1);
+			updateOverlaysSpy.calls.reset();
+
+			// store changes
+			setDisplayRuler(true);
+
+			expect(
+				classUnderTest._vectorLayer
+					.getSource()
+					.getFeatures()
+					.every((f) => f.get('displayruler') === 'true')
+			);
+			expect(updateOverlaysSpy).toHaveBeenCalledTimes(1);
+		});
 	});
 
 	describe('when deactivated over olMap', () => {
@@ -976,17 +1017,22 @@ describe('OlMeasurementHandler', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const sketchStyleSpy = spyOn(classUnderTest, '_getSketchStyleOptions').and.callThrough();
 			const map = setupMap();
-			const geometry = new LineString([
-				[0, 0],
-				[1, 0]
+			const geometry = new Polygon([
+				[
+					[0, 0],
+					[1, 0],
+					[0, 1]
+				]
 			]);
 			const feature = new Feature({ geometry: geometry });
 
 			classUnderTest.activate(map);
 
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			feature.dispatchEvent('change');
 
 			expect(sketchStyleSpy).toHaveBeenCalled();
+			expect(feature.get('displayruler')).toBe('true');
 		});
 
 		it('positions tooltip content on the end of not closed Polygon', () => {
