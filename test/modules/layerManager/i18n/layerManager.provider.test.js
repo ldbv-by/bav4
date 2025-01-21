@@ -21,6 +21,9 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_time_travel_hint).toBe('Bitte ein Jahr auswählen');
 		expect(map.layerManager_time_travel_slider).toBe('Schieberegler öffnen');
 		expect(map.layerManager_compare).toBe('Vergleichen');
+		expect(map.layerManager_compare_left).toBe('Links');
+		expect(map.layerManager_compare_both).toBe('Beide');
+		expect(map.layerManager_compare_right).toBe('Rechts');
 	});
 
 	it('provides translation for en', () => {
@@ -44,10 +47,13 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_time_travel_hint).toBe('Choose a year');
 		expect(map.layerManager_time_travel_slider).toBe('Open slider');
 		expect(map.layerManager_compare).toBe('compare');
+		expect(map.layerManager_compare_left).toBe('Left');
+		expect(map.layerManager_compare_both).toBe('Both');
+		expect(map.layerManager_compare_right).toBe('Right');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 19;
+		const expectedSize = 22;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
