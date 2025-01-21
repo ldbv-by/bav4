@@ -28,7 +28,7 @@ export class MainMenuPlugin extends BaPlugin {
 		// check if we have a query parameter defining the tab id
 		const tabId = parseInt(queryParams.get(QueryParameters.MENU_ID), 10);
 		// @ts-ignore
-		if (isNumber(tabId) && Object.values(TabIds).includes(tabId)) {
+		if (isNumber(tabId) && Object.values(TabIds).includes(tabId) && tabId !== TabIds.ROUTING) {
 			setTab(tabId);
 		} else {
 			// set default tab id
