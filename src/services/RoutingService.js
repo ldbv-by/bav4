@@ -215,7 +215,7 @@ export class BvvRoutingService {
 	getCategoryById(id) {
 		return (
 			this._categories
-				.map((c) => [c, ...[c.subcategories]])
+				?.map((c) => [c, ...[c.subcategories]])
 				.flat(2)
 				.find((c) => c.id === id) ?? null
 		);
