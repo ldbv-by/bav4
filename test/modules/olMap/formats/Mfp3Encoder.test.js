@@ -22,6 +22,8 @@ import WMTSTileGrid from 'ol/tilegrid/WMTS';
 import LayerGroup from 'ol/layer/Group';
 import TileGrid from 'ol/tilegrid/TileGrid';
 import { AdvWmtsTileGrid } from '../../../../src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid';
+import { Eu25832WmtsTileGrid } from '../../../../src/modules/olMap/ol/tileGrid/Eu25832WmtsTileGrid';
+
 import { BaOverlayTypes } from '../../../../src/modules/olMap/components/BaOverlay';
 import { QueryParameters } from '../../../../src/domain/queryParameters';
 
@@ -3068,8 +3070,28 @@ describe('BvvMfp3Encoder', () => {
 	});
 
 	describe('buildMatrixSets', () => {
-		it('builds a tileMatrixSet', () => {
+		it('builds a adv tileMatrixSet', () => {
 			const tileGrid = new AdvWmtsTileGrid();
+
+			const tileMatrixSet = BvvMfp3Encoder.buildMatrixSets(tileGrid);
+
+			expect(tileMatrixSet.length).toBe(16);
+
+			expect(tileMatrixSet[0].identifier).toBe('0');
+			expect(tileMatrixSet[0].scaleDenominator).toBeCloseTo(17471320.7508974, 5);
+			expect(tileMatrixSet[0].topLeftCorner).toEqual([-46133.17, 6301219.54]);
+			expect(tileMatrixSet[0].tileSize).toEqual([256, 256]);
+			expect(tileMatrixSet[0].matrixSize).toEqual([1, 1]);
+
+			expect(tileMatrixSet[15].identifier).toBe('15');
+			expect(tileMatrixSet[15].scaleDenominator).toBeCloseTo(533.182395962446, 5);
+			expect(tileMatrixSet[15].topLeftCorner).toEqual([-46133.17, 6301219.54]);
+			expect(tileMatrixSet[15].tileSize).toEqual([256, 256]);
+			expect(tileMatrixSet[15].matrixSize).toEqual([32768, 32768]);
+		});
+
+		it('builds a Eu25832 tileMatrixSet', () => {
+			const tileGrid = new Eu25832WmtsTileGrid();
 
 			const tileMatrixSet = BvvMfp3Encoder.buildMatrixSets(tileGrid);
 
