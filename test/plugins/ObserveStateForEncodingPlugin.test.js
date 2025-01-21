@@ -12,6 +12,9 @@ import { toolsReducer } from '../../src/store/tools/tools.reducer';
 import { topicsReducer } from '../../src/store/topics/topics.reducer';
 import { setCurrentTool } from '../../src/store/tools/tools.action';
 import { setCurrent } from '../../src/store/topics/topics.action';
+import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer';
+import { TabIds } from '../../src/domain/mainMenu';
+import { setTab } from '../../src/store/mainMenu/mainMenu.action';
 
 describe('ObserveStateForEncodingPlugin', () => {
 	const shareService = {
@@ -24,7 +27,11 @@ describe('ObserveStateForEncodingPlugin', () => {
 
 	const setup = () => {
 		const state = {
-			encodedState: initialState
+			encodedState: initialState,
+			mainMenu: {
+				open: true,
+				tab: TabIds.TOPICS
+			}
 		};
 
 		const store = TestUtils.setupStoreAndDi(state, {
@@ -33,6 +40,7 @@ describe('ObserveStateForEncodingPlugin', () => {
 			routing: routingReducer,
 			tools: toolsReducer,
 			topics: topicsReducer,
+			mainMenu: createNoInitialStateMainMenuReducer(),
 			encodedState: stateForEncodingReducer
 		});
 		$injector.registerSingleton('ShareService', shareService).registerSingleton('MapService', mapService);
@@ -136,6 +144,20 @@ describe('ObserveStateForEncodingPlugin', () => {
 		await instanceUnderTest.register(store);
 
 		setCurrentTool('someTool');
+
+		expect(store.getState().encodedState.changed).not.toEqual(initialState.changed);
+	});
+
+	it('registers a mainMenu change listener and indicates its changes', async () => {
+		const store = setup();
+		spyOn(shareService, 'encodeState').and.callFake(() => {
+			// let's return a different state each call
+			return `state_${Math.random()}`;
+		});
+		const instanceUnderTest = new ObserveStateForEncodingPlugin();
+		await instanceUnderTest.register(store);
+
+		setTab(TabIds.MAPS);
 
 		expect(store.getState().encodedState.changed).not.toEqual(initialState.changed);
 	});
