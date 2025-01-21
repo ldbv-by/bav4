@@ -5,7 +5,8 @@ import { html, nothing } from 'lit-html';
 import { $injector } from '../../../injection';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { modifyLayer, removeLayer } from './../../../store/layers/layers.action';
-import { toggle } from './../../../store/layerSwipe/layerSwipe.action';
+import { toggleCurrentTool } from './../../../store/tools/tools.action';
+import { Tools } from '../../../domain/tools';
 import css from './layerManager.css';
 import { MvuElement } from '../../MvuElement';
 
@@ -250,10 +251,10 @@ export class LayerManager extends MvuElement {
 					></ba-button>
 					<ba-button id="button_remove_all" .label=${translate('layerManager_remove_all')} .type=${'secondary'} @click=${removeAll}></ba-button>
 					<ba-button
-						id="button_remove_all"
+						id="button_layer_swipe"
 						.label=${translate(isLayerSwipeActive ? 'layerManager_compare_stop' : 'layerManager_compare')}
 						.type=${'secondary'}
-						@click=${toggle}
+						@click=${() => toggleCurrentTool(Tools.COMPARE)}
 					></ba-button>
 					<div></div>
 				</div>`

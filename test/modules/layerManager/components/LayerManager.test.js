@@ -8,6 +8,8 @@ import { geoResourceChanged, modifyLayer } from '../../../../src/store/layers/la
 import { layerSwipeReducer } from '../../../../src/store/layerSwipe/layerSwipe.reducer';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { VectorGeoResource, VectorSourceType } from '../../../../src/domain/geoResources';
+import { Tools } from '../../../../src/domain/tools';
+import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
 
 window.customElements.define(Checkbox.tag, Checkbox);
 window.customElements.define(LayerItem.tag, LayerItem);
@@ -27,7 +29,7 @@ describe('LayerManager', () => {
 		getKeywords: () => []
 	};
 	const setup = async (state) => {
-		store = TestUtils.setupStoreAndDi(state, { layers: layersReducer, layerSwipe: layerSwipeReducer });
+		store = TestUtils.setupStoreAndDi(state, { layers: layersReducer, layerSwipe: layerSwipeReducer, tools: toolsReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 		$injector.registerSingleton('EnvironmentService', environmentServiceMock);
 		$injector.registerSingleton('GeoResourceService', geoResourceServiceMock);
@@ -44,6 +46,7 @@ describe('LayerManager', () => {
 			};
 			const element = await setup(stateEmpty);
 
+			expect(element.shadowRoot.querySelectorAll('.layermanager__actions').length).toBe(0);
 			expect(element.shadowRoot.querySelector('.layer')).toBeFalsy();
 		});
 
@@ -66,6 +69,14 @@ describe('LayerManager', () => {
 			expect(element.shadowRoot.querySelectorAll('.layer').length).toBe(1);
 			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('.layer').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+
+			expect(element.shadowRoot.querySelectorAll('.layermanager__actions').length).toBe(1);
+			expect(element.shadowRoot.querySelectorAll('#button_expand_or_collapse').length).toBe(1);
+			expect(element.shadowRoot.querySelectorAll('.layermanager__expandOrCollapse').length).toBe(1);
+
+			expect(element.shadowRoot.querySelectorAll('#button_remove_all').length).toBe(1);
+
+			expect(element.shadowRoot.querySelectorAll('#button_layer_swipe').length).toBe(1);
 		});
 
 		it('with one not visible layer displays one layer item', async () => {
@@ -590,6 +601,33 @@ describe('LayerManager', () => {
 			buttonRemoveAll.click();
 
 			expect(store.getState().layers.active.length).toBe(0);
+		});
+
+		it("activates and deactivates layer swipe, when button for 'compare' is clicked", async () => {
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				visible: false
+			};
+			const state = {
+				layers: {
+					active: [layer],
+					background: 'bg0'
+				},
+				tools: {
+					current: null
+				}
+			};
+
+			const element = await setup(state);
+			const buttonCompare = element.shadowRoot.querySelector('#button_layer_swipe');
+			expect(store.getState().tools.current).toBe(null);
+
+			buttonCompare.click();
+			expect(store.getState().tools.current).toBe(Tools.COMPARE);
+
+			buttonCompare.click();
+			expect(store.getState().tools.current).toBe(null);
 		});
 	});
 });
