@@ -26,7 +26,7 @@ import cloneSvg from '../../../../src/modules/layerManager/components/assets/clo
 import zoomToExtentSvg from '../../../../src/modules/layerManager/components/assets/zoomToExtent.svg';
 import infoSvg from '../../../../src/modules/layerManager/components/assets/info.svg';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { modifyLayer, SwipeAlignment } from '../../../../src/store/layers/layers.action.js';
+import { SwipeAlignment } from '../../../../src/store/layers/layers.action.js';
 import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
 
 window.customElements.define(LayerItem.tag, LayerItem);
