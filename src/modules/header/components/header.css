@@ -519,3 +519,12 @@ input[type='search']::-webkit-search-results-decoration {
 		opacity: 1;
 	}
 }
+
+/* 
+No header for super small screens 
+*/
+@media only screen and (max-width: 250px) {
+	#headerMobile {
+		display: none;
+	}
+}
