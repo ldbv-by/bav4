@@ -70,12 +70,10 @@ export class VectorLayerService {
 		const {
 			layers: { active }
 		} = storeService.getStore().getState();
-
-		// we check if the layer representing this olLayer is the topmost layer of all unhidden layers
-		const topMostHiddenLayerId = active.filter(({ constraints: { hidden } }) => !hidden).pop()?.id;
 		styleService.updateStyle(olFeature, olMap, {
 			visible: olLayer.getVisible(),
-			top: topMostHiddenLayerId ? topMostHiddenLayerId === olLayer.get('id') : false,
+			// we check if the layer representing this olLayer is the topmost layer of all unhidden layers
+			top: active.filter(({ constraints: { hidden } }) => !hidden).pop()?.id === olLayer.get('id'),
 			opacity: olLayer.getOpacity()
 		});
 	}
