@@ -23,7 +23,7 @@
 	animation-name: stretch;
 	animation-duration: 4s;
 	animation-timing-function: ease-out;
-	animation-delay: 0;
+	animation-delay: 0s;
 	animation-direction: alternate;
 	animation-iteration-count: infinite;
 	animation-fill-mode: none;
