@@ -26,7 +26,7 @@ export const initialState = {
 	 */
 	active: false,
 	/**
-	 * @type {GeometryStatistic}
+	 * @type {module:store/draw/draw_action~DrawStatistic}
 	 */
 	statistic: { length: null, area: null },
 	/**

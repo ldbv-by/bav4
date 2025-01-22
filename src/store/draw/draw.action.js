@@ -37,6 +37,15 @@ import { EventLike } from '../../utils/storeUtils';
  * @property {DrawingStyleOption} style the styleOptions of the selected drawing
  */
 
+/**
+ * Statistic data of a geometry object.
+ * @typedef {Object} DrawStatistic
+ * @property {module:domain/coordinateTypeDef~Coordinate} coordinate the coordinate of the feature
+ * @property {number} azimuth the horizontal angle in degree of the line feature
+ * @property {number} length the length in meter of the feature(s)
+ * @property {number} area the area in squaremeter of the feature(s)
+ */
+
 const getStore = () => {
 	const { StoreService: storeService } = $injector.inject('StoreService');
 	return storeService.getStore();
@@ -67,7 +76,7 @@ export const deactivate = () => {
 /**
  * set the statistic of a drawing.
  * @function
- * @param {GeometryStatistic} stat the measurement-statistic of the current selected feature(s)
+ * @param {DrawStatistic} stat the draw-statistic of the current selected feature(s)
  */
 export const setStatistic = (stat) => {
 	getStore().dispatch({
