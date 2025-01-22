@@ -45,6 +45,13 @@ import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY, GeodesicGeometr
 import { setData } from '../../../../store/fileStorage/fileStorage.action';
 import { createDefaultLayerProperties } from '../../../../store/layers/layers.reducer';
 
+const defaultMeasurementStats = {
+	coordinate: null,
+	azimuth: null,
+	length: null,
+	area: null
+};
+
 /**
  * Handler for measurement-interaction with the map.
  *
@@ -582,9 +589,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			// (snapping from pointer-position to first point) and must be corrected into a valid LineString
 			const measureGeometry = this._createMeasureGeometry(feature);
 			const nonAreaStats = getStats(measureGeometry);
-			setStatistic({ length: nonAreaStats.length, area: stats.area });
+			setStatistic({ ...defaultMeasurementStats, length: nonAreaStats.length, area: stats.area });
 		} else {
-			setStatistic({ length: stats.length, area: stats.area });
+			setStatistic({ ...defaultMeasurementStats, length: stats.length, area: stats.area });
 		}
 	}
 

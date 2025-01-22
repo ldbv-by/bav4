@@ -72,6 +72,13 @@ const defaultStyleOption = {
 	text: null // used by Text, Symbol
 };
 
+const defaultDrawStats = {
+	coordinate: null,
+	azimuth: null,
+	length: null,
+	area: null
+};
+
 /**
  * Handler for draw-interaction with the map
  *
@@ -259,7 +266,6 @@ export class OlDrawHandler extends OlLayerHandler {
 					const ids = features.map((f) => f.getId());
 					this._setSelection(ids);
 				}
-				this._updateStatistics();
 				this._updateDrawState(coordinate, pixel, dragging);
 			};
 
@@ -538,7 +544,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._draw.abortDrawing();
 			this._modify.setActive(false);
 			setSelection([]);
-			setStatistic({ length: 0, area: 0 });
+			setStatistic(defaultDrawStats);
 			this._helpTooltip.deactivate();
 			const currentType = this._storeService.getStore().getState().draw.type;
 			this._init(currentType);
@@ -552,7 +558,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._draw.abortDrawing();
 			this._modify.setActive(false);
 			setSelection([]);
-			setStatistic({ length: 0, area: 0 });
+			setStatistic(defaultDrawStats);
 			this._helpTooltip.deactivate();
 			setType(null);
 		}
@@ -647,11 +653,14 @@ export class OlDrawHandler extends OlLayerHandler {
 		}
 		this._modify.setActive(true);
 		this._setSelected(feature);
+		if (feature) {
+			feature.on('change', () => this._updateStatistics());
+		}
 	}
 
 	_setStatistics(feature) {
 		const stats = getStats(feature.getGeometry());
-		setStatistic({ length: stats.length, area: stats.area });
+		setStatistic({ ...defaultDrawStats, length: stats.length, area: stats.area });
 	}
 
 	_getStyleOption() {
