@@ -63,17 +63,29 @@ describe('MainMenuPlugin', () => {
 	describe('_init', () => {
 		describe('query parameter available', () => {
 			it('sets the requested tab id', async () => {
-				const queryParam = new URLSearchParams(`${QueryParameters.MENU_ID}=3`);
+				const queryParam = new URLSearchParams(`${QueryParameters.MENU_ID}=4`);
 				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 				const store = setup();
 				const instanceUnderTest = new MainMenuPlugin();
 
 				instanceUnderTest._init();
 
-				expect(store.getState().mainMenu.tab).toEqual(TabIds.valueOf(3));
+				expect(store.getState().mainMenu.tab).toEqual(TabIds.valueOf(4));
 			});
 
-			it('sets the default tab id when param is not parseable', async () => {
+			it('sets the default tab id when param denotes the ROUTING tab', async () => {
+				const queryParam = new URLSearchParams(`${QueryParameters.MENU_ID}=3`);
+				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+
+				const store = setup();
+				const instanceUnderTest = new MainMenuPlugin();
+
+				instanceUnderTest._init();
+
+				expect(store.getState().mainMenu.tab).toEqual(defaultTabId);
+			});
+
+			it('sets the default tab id when param is not parsable', async () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.MENU_ID}=foo`);
 				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 
