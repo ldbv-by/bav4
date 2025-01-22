@@ -9,8 +9,6 @@ import { MvuElement } from '../../../MvuElement';
 import { updateRatio } from '../../../../store/layerSwipe/layerSwipe.action';
 import { nothing } from '../../../../../node_modules/ol/pixel';
 
-// ../src/store/layerSwipe/layerSwipe_action.updateRatio';
-
 const Update_Layer_Swipe = 'update_layer_swipe';
 
 /**
