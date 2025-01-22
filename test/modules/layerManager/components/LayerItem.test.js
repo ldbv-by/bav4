@@ -649,6 +649,12 @@ describe('LayerItem', () => {
 			expect(element.shadowRoot.querySelectorAll('.compare')).toHaveSize(1);
 			const swipeButtons = element.shadowRoot.querySelectorAll('.compare ba-button');
 			expect(swipeButtons).toHaveSize(3);
+			expect(swipeButtons[0].type).toBe('secondary');
+			expect(swipeButtons[0].label).toBe('layerManager_compare_left');
+			expect(swipeButtons[1].type).toBe('primary');
+			expect(swipeButtons[1].label).toBe('layerManager_compare_both');
+			expect(swipeButtons[2].type).toBe('secondary');
+			expect(swipeButtons[2].label).toBe('layerManager_compare_right');
 		});
 
 		it('click on layerSwipe buttons changes the SwipeAlignment of the layer', async () => {
