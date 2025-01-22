@@ -672,23 +672,22 @@ describe('LayerItem', () => {
 			const swipeButtons = element.shadowRoot.querySelectorAll('.compare ba-button');
 			expect(swipeButtons).toHaveSize(3);
 
-			expect(layer.constraints.swipeAlignment).toBe(SwipeAlignment.NOT_SET);
+			expect(store.getState().layers.active[0].constraints.swipeAlignment).toBe(SwipeAlignment.NOT_SET);
 
 			const leftButtons = element.shadowRoot.querySelector('#left');
 			leftButtons.click();
-			modifyLayer(layer.id, { swipeAlignment: SwipeAlignment.LEFT });
 
-			expect(layer.constraints.swipeAlignment).toBe(SwipeAlignment.LEFT);
+			expect(store.getState().layers.active[0].constraints.swipeAlignment).toBe(SwipeAlignment.LEFT);
 
 			const rightButtons = element.shadowRoot.querySelector('#right');
 			rightButtons.click();
 
-			expect(layer.constraints.swipeAlignment).toBe(SwipeAlignment.RIGHT);
+			expect(store.getState().layers.active[0].constraints.swipeAlignment).toBe(SwipeAlignment.RIGHT);
 
 			const bothButtons = element.shadowRoot.querySelector('#both');
 			bothButtons.click();
 
-			expect(layer.constraints.swipeAlignment).toBe(SwipeAlignment.NOT_SET);
+			expect(store.getState().layers.active[0].constraints.swipeAlignment).toBe(SwipeAlignment.NOT_SET);
 		});
 	});
 
