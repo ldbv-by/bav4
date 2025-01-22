@@ -38,7 +38,7 @@ import { EventLike } from '../../utils/storeUtils';
  */
 
 /**
- * Statistic data of a geometry object.
+ * Statistic data of a draw geometry.
  * @typedef {Object} DrawStatistic
  * @property {module:domain/coordinateTypeDef~Coordinate} coordinate the coordinate of the feature
  * @property {number} azimuth the horizontal angle in degree of the line feature

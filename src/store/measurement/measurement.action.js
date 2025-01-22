@@ -14,7 +14,7 @@ import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
 
 /**
- * Statistic data of a geometry object.
+ * Statistic data of a measurement geometry.
  * @typedef {Object} MeasurementStatistic
  * @property {module:domain/coordinateTypeDef~Coordinate} coordinate the coordinate of the feature
  * @property {number} azimuth the horizontal angle in degree of the line feature
