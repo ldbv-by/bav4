@@ -12,7 +12,7 @@ export const initialState = {
 	 */
 	active: false,
 	/**
-	 * @type {module:store/measurement/measurement_action~MeasurementStatistic}
+	 * @type {module:domain/geometryStatisticTypeDef~GeometryStatistic}
 	 */
 	statistic: { length: null, area: null },
 	/**

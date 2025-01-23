@@ -361,18 +361,9 @@ export const isValidGeometry = (geometry) => {
 };
 
 /**
- * Contains information for transformation-methods
- * @typedef GeometryStats
- * @property {module:domain/coordinateTypeDef~Coordinate|null} coordinate
- * @property {number|null} azimuth
- * @property {number|null} length
- * @property {number|null} area
- */
-
-/**
  * @function
  * @param {Geometry} geometry ol geometry
- * @returns {module:modules/olMap/utils/olGeometryUtils~GeometryStats}
+ * @returns {module:domain/geometryStatisticTypeDef~GeometryStatistic}
  */
 export const getStats = (geometry) => {
 	const { MapService: mapService } = $injector.inject('MapService');

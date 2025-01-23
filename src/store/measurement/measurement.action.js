@@ -13,15 +13,6 @@ import {
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
 
-/**
- * Statistic data of a measurement geometry.
- * @typedef {Object} MeasurementStatistic
- * @property {module:domain/coordinateTypeDef~Coordinate} coordinate the coordinate of the feature
- * @property {number} azimuth the horizontal angle in degree of the line feature
- * @property {number} length the length in meter of the feature(s)
- * @property {number} area the area in squaremeter of the feature(s)
- */
-
 const getStore = () => {
 	const { StoreService: storeService } = $injector.inject('StoreService');
 	return storeService.getStore();
