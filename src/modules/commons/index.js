@@ -8,3 +8,4 @@ import './components/spinner';
 import './components/overflowMenu';
 import './components/lazy';
 import './components/valueSelect';
+import './components/coordinateInfo';

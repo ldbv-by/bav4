@@ -1,0 +1,27 @@
+.content {
+	list-style-type: none;
+	margin: 0;
+	font-size: 1rem;
+	padding: 0.3em 0 0.6em 0;
+}
+
+.content li {
+	padding-bottom: 0.3em;
+	display: flex;
+	justify-content: flex-start;
+}
+
+.content li .label {
+	min-width: 7em;
+	margin: auto;
+}
+
+.content li .coordinate {
+	flex-grow: 4;
+	margin: auto;
+}
+
+.content li .icon {
+	padding-left: 1em;
+	margin: auto;
+}

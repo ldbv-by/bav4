@@ -152,6 +152,7 @@ export class MapContextMenuContent extends MvuElement {
 										: nothing}`
 							: nothing}
 						${stringifiedCoords.map((strCoord) => html`<li class="r_coordinate">${strCoord}</li>`)}
+						<li><ba-coordinate-info .coordinate=${coordinate}></ba-coordinate-info></li>
 						${elevation
 							? html`<li class="r_elevation">
 									<span class="label">${translate('map_contextMenuContent_elevation_label')}</span><span class="coordinate">${elevation}</span>
