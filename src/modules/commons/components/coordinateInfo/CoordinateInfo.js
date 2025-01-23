@@ -59,7 +59,7 @@ export class CoordinateInfo extends MvuElement {
 						<ba-icon
 							class="close"
 							.icon="${clipboardIcon}"
-							.title=${translate('common_coordinateInfo_copy_icon')}
+							.title=${translate('commons_coordinateInfo_copy_icon')}
 							.size=${1.5}
 							@click=${onClick}
 						></ba-icon>
@@ -85,9 +85,9 @@ export class CoordinateInfo extends MvuElement {
 	async _copyCoordinateToClipboard(stringifiedCoord) {
 		try {
 			await this._shareService.copyToClipboard(stringifiedCoord);
-			emitNotification(`"${stringifiedCoord}" ${this._translationService.translate('common_coordinateInfo_clipboard_success')}`, LevelTypes.INFO);
+			emitNotification(`"${stringifiedCoord}" ${this._translationService.translate('commons_coordinateInfo_clipboard_success')}`, LevelTypes.INFO);
 		} catch {
-			const message = this._translationService.translate('common_coordinateInfo_clipboard_error');
+			const message = this._translationService.translate('commons_coordinateInfo_clipboard_error');
 			emitNotification(message, LevelTypes.WARN);
 			console.warn('Clipboard API not available');
 		}
