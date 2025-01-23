@@ -40,7 +40,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_stats_length).toBe('Länge');
 		expect(map.toolbox_measureTool_stats_area).toBe('Fläche');
 		expect(map.toolbox_measureTool_start_new).toBe('Neue Messung');
-		expect(map.toolbox_measureTool_display_partition_labels).toBe('Beschriftungen anzeigen');
+		expect(map.toolbox_measureTool_display_partition_labels).toBe('Lineal anzeigen');
 		expect(map.toolbox_shareTool_header).toBe('Teilen');
 		expect(map.toolbox_shareTool_embed).toBe('BayernAtlas-IFrame');
 		expect(map.toolbox_shareTool_preview).toBe('Vorschau');
@@ -148,7 +148,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_stats_length).toBe('Length');
 		expect(map.toolbox_measureTool_stats_area).toBe('Area');
 		expect(map.toolbox_measureTool_start_new).toBe('Start New');
-		expect(map.toolbox_measureTool_display_partition_labels).toBe('Display partition labels');
+		expect(map.toolbox_measureTool_display_partition_labels).toBe('Display ruler');
 		expect(map.toolbox_shareTool_header).toBe('Share');
 		expect(map.toolbox_shareTool_embed).toBe('BayernAtlas-IFrame');
 		expect(map.toolbox_shareTool_preview).toBe('Preview');
