@@ -572,6 +572,28 @@ describe('VectorLayerService', () => {
 
 				expect(styleServiceSpy).toHaveBeenCalledWith(olFeature, olMap, updateProperties);
 			});
+
+			it('calls #updateStyle of the underlying StyleService ignoring hidden layers (only one hidden layer present)', () => {
+				const id = 'id';
+				const state = {
+					layers: {
+						active: [
+							{ ...createDefaultLayer('hiddenLayer'), constraints: { hidden: true } } //topmost layer is a hidden layer
+						]
+					}
+				};
+				setup(state);
+				const updateProperties = { visible: false, top: false, opacity: 0.5 };
+				const olMap = new Map();
+				const olFeature = new Feature();
+				const olSource = new VectorSource();
+				const olLayer = new VectorLayer({ id: id, source: olSource, visible: updateProperties.visible, opacity: updateProperties.opacity });
+				const styleServiceSpy = spyOn(styleService, 'updateStyle');
+
+				instanceUnderTest._updateStyle(olFeature, olLayer, olMap);
+
+				expect(styleServiceSpy).toHaveBeenCalledWith(olFeature, olMap, updateProperties);
+			});
 		});
 
 		describe('sanitizeStyles', () => {
