@@ -33,6 +33,7 @@ export class DrawToolContent extends AbstractToolContent {
 			collapsedInfo: null,
 			collapsedStyle: null,
 			description: null,
+			statistic: null,
 			selectedStyle: null,
 			mode: null,
 			validGeometry: null,
