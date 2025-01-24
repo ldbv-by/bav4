@@ -1002,6 +1002,25 @@ describe('OlMap', () => {
 			expect(viewSpy).not.toHaveBeenCalled();
 		});
 
+		it('does nothing when source provides an empty extent', async () => {
+			const element = await setup();
+			const map = element._map;
+			const view = map.getView();
+			const viewSpy = spyOn(view, 'fit').and.callThrough();
+			const extent = [Infinity, Infinity, -Infinity, -Infinity];
+			const olVectorSource = new VectorSource();
+			spyOn(olVectorSource, 'getExtent').and.returnValue(extent);
+			spyOn(layerServiceMock, 'toOlLayer')
+				.withArgs(id0, jasmine.anything(), map)
+				.and.callFake((id) => new VectorLayer({ id: id, source: olVectorSource }));
+			addLayer(id0, { geoResourceId: geoResourceId0 });
+
+			fitLayer(id0);
+
+			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
+			expect(viewSpy).not.toHaveBeenCalled();
+		});
+
 		it('adds an olLayer resolving a GeoResourceFuture', async () => {
 			const element = await setup();
 			const map = element._map;
