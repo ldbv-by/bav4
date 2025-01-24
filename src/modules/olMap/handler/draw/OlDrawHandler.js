@@ -371,7 +371,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._keyActionMapper.deactivate();
 
 		setSelection([]);
-		setStatistic({ length: null, area: null });
+		setStatistic(defaultDrawStats);
 
 		// eslint-disable-next-line promise/prefer-await-to-then
 		this._saveAndOptionallyConvertToPermanentLayer().finally(() => {
@@ -715,12 +715,10 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_updateStatistics() {
-		const emptyStatistic = { length: null, area: null };
-
 		if (this._select) {
 			const selectedFeature = this._select.getFeatures().getArray()[0];
 
-			setStatistic(selectedFeature ? getStats(selectedFeature.getGeometry()) : emptyStatistic);
+			setStatistic(selectedFeature ? getStats(selectedFeature.getGeometry()) : defaultDrawStats);
 		}
 	}
 
