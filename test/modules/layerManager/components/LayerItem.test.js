@@ -1,7 +1,4 @@
 import { LayerItem } from '../../../../src/modules/layerManager/components/LayerItem';
-import { ValueSelect } from '../../../../src/modules/commons/components/valueSelect/ValueSelect';
-import { Checkbox } from '../../../../src/modules/commons/components/checkbox/Checkbox';
-import { Icon } from '../../../../src/modules/commons/components/icon/Icon';
 import { layersReducer, createDefaultLayerProperties } from '../../../../src/store/layers/layers.reducer';
 import { layerSwipeReducer } from '../../../../src/store/layerSwipe/layerSwipe.reducer';
 import { TestUtils } from '../../../test-utils';
@@ -30,9 +27,6 @@ import { SwipeAlignment } from '../../../../src/store/layers/layers.action.js';
 import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
 
 window.customElements.define(LayerItem.tag, LayerItem);
-window.customElements.define(ValueSelect.tag, ValueSelect);
-window.customElements.define(Checkbox.tag, Checkbox);
-window.customElements.define(Icon.tag, Icon);
 
 describe('LayerItem', () => {
 	const environmentService = {
@@ -737,7 +731,7 @@ describe('LayerItem', () => {
 
 			const checkbox = element.shadowRoot.querySelector('ba-checkbox');
 
-			checkbox.click();
+			checkbox.dispatchEvent(new CustomEvent('toggle', { detail: { checked: false } }));
 			const actualLayer = store.getState().layers.active[0];
 			expect(actualLayer.visible).toBeFalse();
 		});
