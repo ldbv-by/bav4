@@ -10,6 +10,7 @@ describe('i18n for context menu', () => {
 		expect(map.map_contextMenuContent_community_label).toBe('Community');
 		expect(map.map_contextMenuContent_district_label).toBe('District');
 		expect(map.map_contextMenuContent_parcel_label).toBe('Parcel');
+		expect(map.map_contextMenuContent_parcel_badge).toBe('Plus');
 		expect(map.map_contextMenuContent_copy_icon).toBe('Copy to clipboard');
 		expect(map.map_contextMenuContent_clipboard_error).toBe('"Copy to clipboard" is not available');
 		expect(map.map_contextMenuContent_clipboard_success).toBe('was copied to clipboard');
@@ -24,6 +25,7 @@ describe('i18n for context menu', () => {
 		expect(map.map_contextMenuContent_community_label).toBe('Gemeinde');
 		expect(map.map_contextMenuContent_district_label).toBe('Gemarkung');
 		expect(map.map_contextMenuContent_parcel_label).toBe('Flurstück');
+		expect(map.map_contextMenuContent_parcel_badge).toBe('Plus');
 		expect(map.map_contextMenuContent_copy_icon).toBe('In die Zwischenablage kopieren');
 		expect(map.map_contextMenuContent_clipboard_error).toBe('"In die Zwischenablage kopieren" steht nicht zur Verfügung');
 		expect(map.map_contextMenuContent_clipboard_success).toBe('wurde in die Zwischenablage kopiert');
