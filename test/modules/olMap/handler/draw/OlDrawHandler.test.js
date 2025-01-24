@@ -644,7 +644,7 @@ describe('OlDrawHandler', () => {
 			});
 
 			it('finishs drawing after finish-request', () => {
-				const store = setup();
+				setup();
 
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
