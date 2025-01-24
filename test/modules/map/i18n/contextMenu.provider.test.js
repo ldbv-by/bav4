@@ -32,7 +32,7 @@ describe('i18n for context menu', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 9;
+		const expectedSize = 10;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
