@@ -5,14 +5,14 @@ describe('i18n for map module', () => {
 		const map = provide('de');
 
 		expect(map.map_interaction_button_container_routing).toBe('Routing abschließen');
-		expect(map.map_interaction_button_container_layerSwipe).toBe('Vergleichen abschließen');
+		expect(map.map_interaction_button_container_layerSwipe).toBe('Vergleichen beenden');
 	});
 
 	it('provides translation for en', () => {
 		const map = provide('en');
 
 		expect(map.map_interaction_button_container_routing).toBe('Complete routing');
-		expect(map.map_interaction_button_container_layerSwipe).toBe('Complete compare');
+		expect(map.map_interaction_button_container_layerSwipe).toBe('Exit comparison tool');
 	});
 
 	it('contains the expected amount of entries', () => {
