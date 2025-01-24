@@ -70,6 +70,7 @@ export class LayerSwipeSlider extends MvuElement {
 				`
 			: nothing;
 	}
+
 	static get tag() {
 		return 'ba-layer-swipe';
 	}

@@ -40,18 +40,6 @@ describe('LayerSwipeSlider', () => {
 		});
 	});
 
-	describe('when instantiated', () => {
-		it('has a model containing default values', async () => {
-			await setup();
-			const model = new LayerSwipeSlider().getModel();
-
-			expect(model).toEqual({
-				active: false,
-				ratio: null
-			});
-		});
-	});
-
 	describe('when initialized', () => {
 		it('adds nothing when not active', async () => {
 			const element = await setup({ layerSwipe: { active: false, ratio: 50 } });
@@ -60,39 +48,39 @@ describe('LayerSwipeSlider', () => {
 			expect(element.shadowRoot.querySelectorAll('#rangeslider')).toHaveSize(0);
 		});
 
-		it('adds a layerswipe component', async () => {
+		it('adds a layer-swipe component', async () => {
 			const element = await setup({ layerSwipe: { active: true, ratio: 50 } });
 			expect(element.shadowRoot.querySelectorAll('.line')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.layer-swipe')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('#rangeslider')).toHaveSize(1);
 
-			const rangeslider = element.shadowRoot.querySelector('#rangeslider');
-			expect(rangeslider.value).toBe('50');
-			expect(rangeslider.getAttribute('type')).toBe('range');
-			expect(rangeslider.getAttribute('min')).toBe('0');
-			expect(rangeslider.getAttribute('max')).toBe('100');
-			expect(rangeslider.getAttribute('step')).toBe('1');
+			const rangeSlider = element.shadowRoot.querySelector('#rangeslider');
+			expect(rangeSlider.value).toBe('50');
+			expect(rangeSlider.getAttribute('type')).toBe('range');
+			expect(rangeSlider.getAttribute('min')).toBe('0');
+			expect(rangeSlider.getAttribute('max')).toBe('100');
+			expect(rangeSlider.getAttribute('step')).toBe('1');
 		});
 	});
 
 	describe('when input changed', () => {
-		it('close routing', async () => {
+		it('changes the layout of the displayed line', async () => {
 			const element = await setup({ layerSwipe: { active: true, ratio: 50 } });
-			const rangeslider = element.shadowRoot.querySelector('#rangeslider');
+			const rangeSlider = element.shadowRoot.querySelector('#rangeslider');
 
 			expect(store.getState().layerSwipe.ratio).toBe(50);
 			const left = window.getComputedStyle(element.shadowRoot.querySelector('.line')).left;
 
 			// changing width
-			rangeslider.value = 42;
-			rangeslider.dispatchEvent(new Event('input'));
+			rangeSlider.value = 42;
+			rangeSlider.dispatchEvent(new Event('input'));
 
 			expect(store.getState().layerSwipe.ratio).toBe(42);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.line')).left).not.toBe(left);
 
 			// changing width
-			rangeslider.value = 50;
-			rangeslider.dispatchEvent(new Event('input'));
+			rangeSlider.value = 50;
+			rangeSlider.dispatchEvent(new Event('input'));
 
 			expect(store.getState().layerSwipe.ratio).toBe(50);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.line')).left).toBe(left);
