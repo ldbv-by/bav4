@@ -99,7 +99,7 @@ describe('BvvFileStorageService', () => {
 			const expectedUrl = backendUrl + 'files';
 			spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			spyOn(httpService, 'post')
-				.withArgs(expectedUrl, data, FileStorageServiceDataTypes.KML, { timeout: 2000 })
+				.withArgs(expectedUrl, data, FileStorageServiceDataTypes.KML, { timeout: 10_000 })
 				.and.returnValue(
 					Promise.resolve(
 						new Response(
@@ -127,7 +127,7 @@ describe('BvvFileStorageService', () => {
 			const expectedUrl = backendUrl + 'files/' + fileId;
 			spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			spyOn(httpService, 'post')
-				.withArgs(expectedUrl, data, FileStorageServiceDataTypes.KML, { timeout: 2000 })
+				.withArgs(expectedUrl, data, FileStorageServiceDataTypes.KML, { timeout: 10_000 })
 				.and.returnValue(
 					Promise.resolve(
 						new Response(
@@ -166,7 +166,7 @@ describe('BvvFileStorageService', () => {
 			const expectedUrl = backendUrl + 'files';
 			spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			spyOn(httpService, 'post')
-				.withArgs(expectedUrl, data, FileStorageServiceDataTypes.KML, { timeout: 2000 })
+				.withArgs(expectedUrl, data, FileStorageServiceDataTypes.KML, { timeout: 10_000 })
 				.and.returnValue(Promise.resolve(new Response(null, { status: 500 })));
 			const instanceUnderTest = new BvvFileStorageService();
 
