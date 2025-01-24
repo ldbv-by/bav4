@@ -5,7 +5,7 @@ describe('i18n for header module', () => {
 	it('provides translation for de', () => {
 		const map = provide('de');
 
-		expect(map.auth_passwordCredentialPanel_title).toBe('Anmelden für:');
+		expect(map.auth_passwordCredentialPanel_title).toBe('Dienst erfordert eine Authentifizierung:');
 		expect(map.auth_passwordCredentialPanel_credential_username).toBe('Kennung');
 		expect(map.auth_passwordCredentialPanel_credential_password).toBe('Passwort');
 		expect(map.auth_passwordCredentialPanel_submit).toBe('Senden');
@@ -31,7 +31,7 @@ describe('i18n for header module', () => {
 	it('provides translation for en', () => {
 		const map = provide('en');
 
-		expect(map.auth_passwordCredentialPanel_title).toBe('Authentication for:');
+		expect(map.auth_passwordCredentialPanel_title).toBe('Authentication is required for this service:');
 		expect(map.auth_passwordCredentialPanel_credential_username).toBe('Username');
 		expect(map.auth_passwordCredentialPanel_credential_password).toBe('Password');
 		expect(map.auth_passwordCredentialPanel_submit).toBe('Submit');
