@@ -25,6 +25,7 @@ describe('CoordinateInfo', () => {
 		translate: (key) => key
 	};
 
+	// eslint-disable-next-line no-unused-vars
 	let store;
 
 	const setup = () => {
