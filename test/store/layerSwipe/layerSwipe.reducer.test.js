@@ -1,6 +1,6 @@
 import { TestUtils } from '../../test-utils.js';
 import { layerSwipeReducer } from '../../../src/store/layerSwipe/layerSwipe.reducer.js';
-import { activate, deactivate, toggle, updateRatio } from '../../../src/store/layerSwipe/layerSwipe.action.js';
+import { activate, deactivate, updateRatio } from '../../../src/store/layerSwipe/layerSwipe.action.js';
 
 describe('layerSwipe reducer', () => {
 	const setup = (state) => {
@@ -23,14 +23,6 @@ describe('layerSwipe reducer', () => {
 		expect(store.getState().layerSwipe.active).toBeTrue();
 
 		deactivate();
-
-		expect(store.getState().layerSwipe.active).toBeFalse();
-
-		toggle();
-
-		expect(store.getState().layerSwipe.active).toBeTrue();
-
-		toggle();
 
 		expect(store.getState().layerSwipe.active).toBeFalse();
 	});

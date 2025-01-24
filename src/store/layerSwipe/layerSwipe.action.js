@@ -33,18 +33,6 @@ export const deactivate = () => {
 };
 
 /**
- * Toggles the activity of the layer swipe feature
- * @function
- * @deprecated
- */
-export const toggle = () => {
-	const {
-		layerSwipe: { active }
-	} = getStore().getState();
-	active ? deactivate() : activate();
-};
-
-/**
  * Updates the ratio value.
  * @function
  * @param {number} ratio in percent [0-100]
