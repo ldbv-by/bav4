@@ -413,6 +413,11 @@ describe('renderLinearRulerSegments', () => {
 		[1, 0]
 	]);
 	const feature = new Feature({ geometry: geometry });
+
+	beforeEach(() => {
+		feature.unset('displayruler');
+	});
+
 	const resolution = 1;
 	it('should call contextRenderer', () => {
 		const contextRenderer = jasmine.createSpy();
@@ -423,6 +428,27 @@ describe('renderLinearRulerSegments', () => {
 		];
 		spyOn(mapServiceMock, 'calcLength').and.returnValue(1);
 
+		renderLinearRulerSegments(pixelCoordinates, stateMock, contextRenderer);
+		expect(contextRenderer).toHaveBeenCalledTimes(1 + 1 + 1); //baseStroke + mainStroke + subStroke
+		expect(contextRenderer).toHaveBeenCalledWith(jasmine.any(Geometry), jasmine.any(Fill), jasmine.any(Stroke));
+	});
+
+	it("should respect 'displayruler' property", () => {
+		const contextRenderer = jasmine.createSpy('contextRenderer');
+		const stateMock = { geometry: feature.getGeometry(), resolution: resolution, feature: feature };
+		const pixelCoordinates = [
+			[0, 0],
+			[0, 1]
+		];
+		feature.set('displayruler', 'false');
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(1);
+
+		renderLinearRulerSegments(pixelCoordinates, stateMock, contextRenderer);
+		expect(contextRenderer).toHaveBeenCalledTimes(1 + 0 + 0); //only baseStroke + NOT(mainStroke) + NOT(subStroke)
+		expect(contextRenderer).toHaveBeenCalledWith(jasmine.any(Geometry), jasmine.any(Fill), jasmine.any(Stroke));
+		contextRenderer.calls.reset();
+
+		feature.set('displayruler', 'true');
 		renderLinearRulerSegments(pixelCoordinates, stateMock, contextRenderer);
 		expect(contextRenderer).toHaveBeenCalledTimes(1 + 1 + 1); //baseStroke + mainStroke + subStroke
 		expect(contextRenderer).toHaveBeenCalledWith(jasmine.any(Geometry), jasmine.any(Fill), jasmine.any(Stroke));
@@ -520,6 +546,27 @@ describe('renderGeodesicRulerSegments', () => {
 			[0, 1]
 		];
 
+		renderGeodesicRulerSegments(pixelCoordinates, stateMock, contextRenderer, geodesic);
+		expect(contextRenderer).toHaveBeenCalledTimes(1 + 1); //baseStroke +  tickStroke
+		expect(contextRenderer).toHaveBeenCalledWith(jasmine.any(Geometry), jasmine.any(Fill), jasmine.any(Stroke));
+	});
+
+	it("should respect 'displayruler' property", () => {
+		const contextRenderer = jasmine.createSpy('contextRenderer');
+		const stateMock = { geometry: feature.getGeometry(), resolution: resolution, feature: feature };
+		const pixelCoordinates = [
+			[0, 0],
+			[0, 1]
+		];
+		feature.set('displayruler', 'false');
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(1);
+
+		renderGeodesicRulerSegments(pixelCoordinates, stateMock, contextRenderer, geodesic);
+		expect(contextRenderer).toHaveBeenCalledTimes(1 + 0); //baseStroke +  NOT(tickStroke)
+		expect(contextRenderer).toHaveBeenCalledWith(jasmine.any(Geometry), jasmine.any(Fill), jasmine.any(Stroke));
+		contextRenderer.calls.reset();
+
+		feature.set('displayruler', 'true');
 		renderGeodesicRulerSegments(pixelCoordinates, stateMock, contextRenderer, geodesic);
 		expect(contextRenderer).toHaveBeenCalledTimes(1 + 1); //baseStroke +  tickStroke
 		expect(contextRenderer).toHaveBeenCalledWith(jasmine.any(Geometry), jasmine.any(Fill), jasmine.any(Stroke));
