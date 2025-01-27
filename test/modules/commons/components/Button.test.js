@@ -32,6 +32,7 @@ describe('Button', () => {
 			expect(button.children.length).toBe(0);
 			expect(element.shadowRoot.styleSheets.length).toBe(2);
 			expect(button.innerText).toBe('label');
+			expect(button.part.contains('button')).toBeTrue();
 		});
 
 		it('automatically appends the "data-test-id" attribute', async () => {
@@ -107,6 +108,7 @@ describe('Button', () => {
 			expect(button.children.length).toBe(1);
 			expect(element.shadowRoot.styleSheets.length).toBe(3);
 			expect(button.children[0].classList.contains('icon')).toBeTrue();
+			expect(button.children[0].part.contains('icon')).toBeTrue();
 			expect(element.shadowRoot.styleSheets[2].cssRules.item(0).cssText).toContain('.icon { mask: url("http://foo');
 
 			element.icon = 'http://bar';
@@ -115,6 +117,7 @@ describe('Button', () => {
 			expect(button.children.length).toBe(1);
 			expect(element.shadowRoot.styleSheets.length).toBe(3);
 			expect(button.children[0].classList.contains('icon')).toBeTrue();
+			expect(button.children[0].part.contains('icon')).toBeTrue();
 			expect(element.shadowRoot.styleSheets[2].cssRules.item(0).cssText).toContain('.icon { mask: url("http://bar');
 		});
 	});
