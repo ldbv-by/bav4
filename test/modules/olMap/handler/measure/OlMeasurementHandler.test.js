@@ -749,7 +749,7 @@ describe('OlMeasurementHandler', () => {
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
 			const updateOverlaysSpy = spyOn(classUnderTest._styleService, 'updateStyle');
-
+			const updateStyleSpy = spyOn(classUnderTest, '_updateStyle').and.callThrough();
 			classUnderTest.activate(map);
 
 			await TestUtils.timeout();
@@ -763,6 +763,7 @@ describe('OlMeasurementHandler', () => {
 					.every((f) => f.get('displayruler') === 'false')
 			);
 			expect(updateOverlaysSpy).toHaveBeenCalledTimes(1);
+			expect(updateStyleSpy).toHaveBeenCalledTimes(1);
 			updateOverlaysSpy.calls.reset();
 
 			// store changes
@@ -775,6 +776,7 @@ describe('OlMeasurementHandler', () => {
 					.every((f) => f.get('displayruler') === 'true')
 			);
 			expect(updateOverlaysSpy).toHaveBeenCalledTimes(1);
+			expect(updateStyleSpy).toHaveBeenCalledTimes(2);
 		});
 	});
 
