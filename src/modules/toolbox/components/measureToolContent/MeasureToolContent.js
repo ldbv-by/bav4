@@ -120,8 +120,8 @@ export class MeasureToolContent extends AbstractToolContent {
 						</ba-icon>
 						</span>			
 					</div>
-					<div class='partition-overlay-toggle'>
-						<ba-switch .title=${translate('toolbox_measureTool_display_partition_labels')} .checked=${displayRuler} @toggle=${onToggleDisplayRuler}><span slot="before">${translate('toolbox_measureTool_display_partition_labels')}</slot></ba-switch>
+					<div class='display-ruler-toggle'>
+						<ba-switch .title=${translate('toolbox_measureTool_display_ruler')} .checked=${displayRuler} @toggle=${onToggleDisplayRuler}><span slot="before">${translate('toolbox_measureTool_display_ruler')}</slot></ba-switch>
 					</div>
 					<div class='sub-text'>${subText}</div>	
 				</div>	

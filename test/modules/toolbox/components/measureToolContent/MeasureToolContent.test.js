@@ -397,7 +397,7 @@ describe('MeasureToolContent', () => {
 
 			expect(store.getState().measurement.displayRuler).toBeTrue();
 
-			const toggleElement = element.shadowRoot.querySelector('.partition-overlay-toggle ba-switch');
+			const toggleElement = element.shadowRoot.querySelector('.display-ruler-toggle ba-switch');
 			toggleElement.click();
 
 			expect(store.getState().measurement.displayRuler).toBeFalse();
