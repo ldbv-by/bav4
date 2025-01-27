@@ -53,7 +53,7 @@
 	text-align: center;
 	min-width: 100%;
 	bottom: 0em;
-	user-select: 0;
+	user-select: none;
 }
 .baselayer__button:hover .baselayer__label,
 .baselayer__button:focus-visible .baselayer__label {

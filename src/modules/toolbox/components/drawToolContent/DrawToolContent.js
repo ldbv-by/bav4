@@ -79,6 +79,7 @@ export class DrawToolContent extends AbstractToolContent {
 					selectedStyle: data.selectedStyle ? data.selectedStyle : null,
 					mode: data.mode ? data.mode : null,
 					validGeometry: data.validGeometry ? data.validGeometry : null,
+					collapsedInfo: (model.mode === 'active' || model.mode === 'draw') && data.mode === 'modify' ? true : model.collapsedInfo,
 					tools: setActiveToolByType(model.tools, data.type)
 				};
 			case Update_Tools:
