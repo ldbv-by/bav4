@@ -983,7 +983,7 @@ export class BvvMfp3Encoder {
 			return {
 				identifier: index.toString(),
 				scaleDenominator: resolutionToScaleDenominator(resolution),
-				topLeftCorner: getTopLeft(tileGrid.getExtent()),
+				topLeftCorner: tileGrid.getOrigin(z),
 				tileSize: [tileSize, tileSize],
 				matrixSize: getMatrixSize(tileGrid, z)
 			};
