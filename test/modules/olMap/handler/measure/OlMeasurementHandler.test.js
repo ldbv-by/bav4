@@ -2200,10 +2200,16 @@ describe('OlMeasurementHandler', () => {
 			setup();
 
 			const classUnderTest = new OlMeasurementHandler();
-			const options = classUnderTest._getSketchStyleOptions();
 
+			const options = classUnderTest._getSketchStyleOptions();
 			expect(classUnderTest._getSketchStyleOptions()).toEqual(jasmine.objectContaining({ LineString: jasmine.any(Function) }));
-			expect(options.LineString(new Feature({ geometry: new LineString([[0, 1]]) }), 1)).toEqual(jasmine.arrayContaining([jasmine.any(Style)]));
+
+			const feature = new Feature({ geometry: new LineString([[0, 1]]) });
+			expect(options.LineString(feature, 1)).toEqual(jasmine.arrayContaining([jasmine.any(Style)]));
+
+			feature.dispatchEvent('change');
+
+			expect(feature.get('displayruler')).toBe('true');
 		});
 	});
 });
