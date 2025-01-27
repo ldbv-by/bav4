@@ -23,7 +23,7 @@
 .ba-list-item__after {
 	display: flex;
 	margin: auto !important;
-	min-width: 5em;
+	min-width: 4em;
 	padding-right: 1em !important;
 	justify-content: flex-end;
 }
