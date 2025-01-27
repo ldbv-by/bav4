@@ -6,6 +6,7 @@ import { CoordinateInfo } from '../../../../src/modules/commons/components/coord
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer.js';
 import { TestUtils } from '../../../test-utils.js';
 import { GlobalCoordinateRepresentations } from '../../../../src/domain/coordinateRepresentation';
+import { LevelTypes } from '../../../../src/store/notifications/notifications.action.js';
 
 window.customElements.define(CoordinateInfo.tag, CoordinateInfo);
 window.customElements.define(Icon.tag, Icon);
@@ -53,6 +54,14 @@ describe('CoordinateInfo', () => {
 			expect(element.getModel()).toEqual({
 				coordinate: null
 			});
+		});
+		it('have a coordinate property', async () => {
+			await setup();
+			const element = new CoordinateInfo();
+
+			element.coordinate = [0, 1];
+
+			expect(element.coordinate).toEqual([0, 1]);
 		});
 	});
 
@@ -102,6 +111,48 @@ describe('CoordinateInfo', () => {
 			expect(stringifyMock).toHaveBeenCalledWith(coordinateMock, GlobalCoordinateRepresentations.WGS84);
 
 			expect(translationServiceSpy).toHaveBeenCalledWith(GlobalCoordinateRepresentations.WGS84.label, [], true);
+		});
+
+		it('copies a coordinate to the clipboard', async () => {
+			const coordinateMock = [1000, 2000];
+			const stringifiedCoord = 'stringified coordinate';
+			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([GlobalCoordinateRepresentations.WGS84]);
+			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
+			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
+			spyOn(coordinateServiceMock, 'stringify').and.returnValue(stringifiedCoord);
+			const element = await setup();
+
+			element.coordinate = [...coordinateMock];
+
+			const copyIcon = element.shadowRoot.querySelector(Icon.tag);
+			copyIcon.click();
+
+			expect(copyToClipboardMock).toHaveBeenCalledWith(stringifiedCoord);
+			await TestUtils.timeout();
+			//check notification
+			expect(store.getState().notifications.latest.payload.content).toBe(`"${stringifiedCoord}" commons_coordinateInfo_clipboard_success`);
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+		});
+
+		it('fires a notification and logs a warn statement when Clipboard API is not available and disables all copyToClipboard buttons', async () => {
+			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([GlobalCoordinateRepresentations.WGS84]);
+			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
+			spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.reject(new Error('something got wrong')));
+			spyOn(coordinateServiceMock, 'stringify').and.returnValue('stringified coordinate');
+			const warnSpy = spyOn(console, 'warn');
+			const element = await setup();
+
+			element.coordinate = [1000, 2000];
+
+			const copyIcon = element.shadowRoot.querySelector(Icon.tag);
+			expect(copyIcon).toBeTruthy();
+
+			copyIcon.click();
+
+			await TestUtils.timeout();
+			expect(store.getState().notifications.latest.payload.content).toBe('commons_coordinateInfo_clipboard_error');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+			expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
 		});
 	});
 });
