@@ -23,5 +23,8 @@ ba-button {
 }
 ba-button::part(button) {
 	background-color: var(--info-color);
-	font-size: 0.9rem;
+	font-size: 0.8rem;
+}
+ba-button::part(icon) {
+	top: 0.2em;
 }
