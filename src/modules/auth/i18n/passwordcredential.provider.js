@@ -5,7 +5,7 @@ export const provide = (lang) => {
 		case 'en':
 			return {
 				//the first part of the snake_case key should be the name of the related module
-				auth_passwordCredentialPanel_title: 'Authentication for:',
+				auth_passwordCredentialPanel_title: 'Authentication is required for this service:',
 				auth_passwordCredentialPanel_credential_username: 'Username',
 				auth_passwordCredentialPanel_credential_password: 'Password',
 				auth_passwordCredentialPanel_submit: 'Submit',
@@ -22,7 +22,7 @@ export const provide = (lang) => {
 		case 'de':
 			return {
 				//the first part of the snake_case key should be the name of the related module
-				auth_passwordCredentialPanel_title: 'Anmelden für:',
+				auth_passwordCredentialPanel_title: 'Dienst erfordert eine Authentifizierung:',
 				auth_passwordCredentialPanel_credential_username: 'Kennung',
 				auth_passwordCredentialPanel_credential_password: 'Passwort',
 				auth_passwordCredentialPanel_submit: 'Senden',
