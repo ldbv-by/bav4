@@ -10,7 +10,10 @@ export const provide = (lang) => {
 				search_menu_importAll_label: 'Import all',
 				search_menu_removeAll_label: 'Remove all',
 				search_result_item_zoom_to_extent: 'Zoom to extent',
-				search_result_item_info: 'Info'
+				search_result_item_info: 'Info',
+				search_result_item_copy: 'Copy to clipboard',
+				search_result_item_clipboard_error: '"Copy to clipboard" is not available',
+				search_result_item_clipboard_success: 'was copied to clipboard'
 			};
 
 		case 'de':
@@ -23,7 +26,10 @@ export const provide = (lang) => {
 				search_menu_importAll_label: 'Alle importieren',
 				search_menu_removeAll_label: 'Alle entfernen',
 				search_result_item_zoom_to_extent: 'Auf Inhalt zoomen',
-				search_result_item_info: 'Info'
+				search_result_item_info: 'Info',
+				search_result_item_copy: 'In die Zwischenablage kopieren',
+				search_result_item_clipboard_error: '"In die Zwischenablage kopieren" steht nicht zur Verfügung',
+				search_result_item_clipboard_success: 'wurde in die Zwischenablage kopiert'
 			};
 
 		default:

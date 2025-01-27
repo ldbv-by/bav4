@@ -227,7 +227,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				// eslint-disable-next-line promise/prefer-await-to-then
 				.finally(() => {
 					this._storedContent = createKML(layer, 'EPSG:3857');
-					this._save();
 					registerListeners(layer);
 				});
 			return layer;

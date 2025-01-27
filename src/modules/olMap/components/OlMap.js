@@ -19,6 +19,7 @@ import { Group as LayerGroup } from 'ol/layer';
 import { GeoResourceFuture, GeoResourceTypes } from '../../../domain/geoResources';
 import { equals } from '../../../utils/storeUtils';
 import { roundCenter, roundRotation, roundZoomLevel } from '../../../utils/mapUtils';
+import { isEmpty } from '../../../../node_modules/ol/extent';
 
 const Update_Position = 'update_position';
 const Update_Layers = 'update_layers';
@@ -377,8 +378,7 @@ export class OlMap extends MvuElement {
 
 		const fit = () => {
 			const extent = getLayerById(this._map, eventLike.payload.id)?.getSource?.()?.getExtent?.() ?? eventLike.payload.extent;
-
-			if (extent) {
+			if (extent && !isEmpty(extent)) {
 				const maxZoom = eventLike.payload.options.maxZoom ?? this._view.getMaxZoom();
 				const viewportPadding = this._mapService.getVisibleViewport(this._map.getTarget());
 				const padding = eventLike.payload.options.useVisibleViewport
