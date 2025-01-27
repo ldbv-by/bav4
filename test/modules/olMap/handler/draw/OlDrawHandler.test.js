@@ -1322,6 +1322,7 @@ describe('OlDrawHandler', () => {
 
 			const map = setupMap();
 			const feature = createFeature();
+			const saveSpy = spyOn(classUnderTest, '_save').and.callThrough();
 			spyOn(fileStorageServiceMock, 'isAdminId').withArgs('f_ooBarId').and.returnValue(true);
 
 			// we add an existing(old) fileStorage related layer
@@ -1329,6 +1330,7 @@ describe('OlDrawHandler', () => {
 
 			classUnderTest.activate(map);
 			await TestUtils.timeout();
+			expect(saveSpy).toHaveBeenCalledTimes(1);
 			expect(classUnderTest._layerId).toBe('a_oldLayer_id');
 			expect(classUnderTest._vectorLayer).toBeTruthy();
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
