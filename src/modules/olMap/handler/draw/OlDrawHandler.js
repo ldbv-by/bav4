@@ -543,8 +543,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		if (this._draw) {
 			this._draw.abortDrawing();
 			this._modify.setActive(false);
-			setSelection([]);
-			setStatistic(defaultDrawStats);
 			this._helpTooltip.deactivate();
 			const currentType = this._storeService.getStore().getState().draw.type;
 			this._init(currentType);
