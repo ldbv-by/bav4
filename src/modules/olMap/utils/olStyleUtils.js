@@ -115,10 +115,9 @@ export const markerScaleToKeyword = (scaleCandidate) => {
 		case 0.75:
 			return 'medium';
 		case 0.5:
-			return 'small';
 		default:
-			// larger or otherwise unrecognized styles are not allowed for bvv-drawings and defaults to 'large'
-			return 'large';
+			// larger styles are not allowed for bvv-drawings and defaults to 'large'
+			return scale > 1 ? 'large' : 'small';
 	}
 };
 

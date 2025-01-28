@@ -129,9 +129,11 @@ describe('markerScaleToKeyword', () => {
 		expect(markerScaleToKeyword(true)).toBe('small');
 		expect(markerScaleToKeyword(false)).toBe('small');
 	});
-	it("should map scale-overflow to default scale ('large')", () => {
-		expect(markerScaleToKeyword(0.04)).toBe('large');
-		expect(markerScaleToKeyword(0.4)).toBe('large');
+
+	it('should map scale-overflow to default scales', () => {
+		expect(markerScaleToKeyword(0.04)).toBe('small');
+		expect(markerScaleToKeyword(0.4)).toBe('small');
+		expect(markerScaleToKeyword(0.8)).toBe('small');
 		expect(markerScaleToKeyword(2)).toBe('large');
 		expect(markerScaleToKeyword(42)).toBe('large');
 		expect(markerScaleToKeyword(420)).toBe('large');
