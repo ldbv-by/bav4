@@ -66,34 +66,31 @@ export class OlLayerSwipeHandler extends OlMapHandler {
 			const mapSize = this.#map.getSize();
 			const width = mapSize[0] * (this._currentRatio / 100);
 
-			let tl;
-			let tr;
-			let bl;
-			let br;
-			switch (alignment) {
-				case SwipeAlignment.LEFT:
-					{
-						tl = getRenderPixel(event, [0, mapSize[1]]);
-						tr = getRenderPixel(event, [width, mapSize[1]]);
-						bl = getRenderPixel(event, [0, 0]);
-						br = getRenderPixel(event, [width, 0]);
-					}
+			const getLeftBox = () => {
+				return {
+					topLeft: getRenderPixel(event, [0, mapSize[1]]),
+					topRight: getRenderPixel(event, [width, mapSize[1]]),
+					bottomLeft: getRenderPixel(event, [0, 0]),
+					bottomRight: getRenderPixel(event, [width, 0])
+				};
+			};
 
-					break;
-				case SwipeAlignment.RIGHT: {
-					tl = getRenderPixel(event, [width, 0]);
-					tr = getRenderPixel(event, [mapSize[0], 0]);
-					bl = getRenderPixel(event, [width, mapSize[1]]);
-					br = getRenderPixel(event, mapSize);
-					break;
-				}
-			}
+			const getRightBox = () => {
+				return {
+					topLeft: getRenderPixel(event, [width, 0]),
+					topRight: getRenderPixel(event, [mapSize[0], 0]),
+					bottomLeft: getRenderPixel(event, [width, mapSize[1]]),
+					bottomRight: getRenderPixel(event, mapSize)
+				};
+			};
+
+			const box = alignment === SwipeAlignment.LEFT ? getLeftBox() : getRightBox();
 			ctx.save();
 			ctx.beginPath();
-			ctx.moveTo(tl[0], tl[1]);
-			ctx.lineTo(bl[0], bl[1]);
-			ctx.lineTo(br[0], br[1]);
-			ctx.lineTo(tr[0], tr[1]);
+			ctx.moveTo(box.topLeft[0], box.topLeft[1]);
+			ctx.lineTo(box.bottomLeft[0], box.bottomLeft[1]);
+			ctx.lineTo(box.bottomRight[0], box.bottomRight[1]);
+			ctx.lineTo(box.topRight[0], box.topRight[1]);
 			ctx.closePath();
 			ctx.clip();
 		};
