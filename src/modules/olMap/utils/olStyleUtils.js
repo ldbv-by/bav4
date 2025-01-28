@@ -20,7 +20,6 @@ import { getContrastColorFrom, hexToRgb, rgbToHex } from '../../../utils/colors'
 import { AssetSourceType, getAssetSource } from '../../../utils/assets';
 import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
 import { MultiLineString } from '../../../../node_modules/ol/geom';
-import { FALLBACK_GEORESOURCE_ID_0 } from '../../../services/GeoResourceService';
 
 const Z_Point = 30;
 const Red_Color = [255, 0, 0];
