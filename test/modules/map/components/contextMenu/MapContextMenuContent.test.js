@@ -118,6 +118,7 @@ describe('MapContextMenuContent', () => {
 			expect(badge.color).toEqual('var(--text3)');
 			expect(badge.background).toEqual('var(--roles-color)');
 			expect(badge.label).toEqual('map_contextMenuContent_parcel_badge');
+			expect(badge.size).toEqual('0.6');
 
 			expect(element.shadowRoot.querySelectorAll('.coordinate')[3].innerText).toBe(stringifiedCoord);
 			expect(element.shadowRoot.querySelectorAll('.coordinate')[4].innerText).toEqual('42');
