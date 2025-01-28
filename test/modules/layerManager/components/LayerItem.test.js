@@ -691,6 +691,8 @@ describe('LayerItem', () => {
 
 			expect(store.getState().layers.active[0].constraints.swipeAlignment).toBe(SwipeAlignment.LEFT);
 
+			element.layer = { ...store.getState().layers.active[0] };
+
 			expect(swipeButtons[0].classList.contains('active')).toBeTrue();
 			expect(swipeButtons[1].classList.contains('active')).toBeFalse();
 			expect(swipeButtons[2].classList.contains('active')).toBeFalse();
@@ -702,6 +704,9 @@ describe('LayerItem', () => {
 			rightButtons.click();
 
 			expect(store.getState().layers.active[0].constraints.swipeAlignment).toBe(SwipeAlignment.RIGHT);
+
+			element.layer = { ...store.getState().layers.active[0] };
+
 			expect(swipeButtons[0].classList.contains('active')).toBeFalse();
 			expect(swipeButtons[1].classList.contains('active')).toBeFalse();
 			expect(swipeButtons[2].classList.contains('active')).toBeTrue();
@@ -713,6 +718,9 @@ describe('LayerItem', () => {
 			bothButtons.click();
 
 			expect(store.getState().layers.active[0].constraints.swipeAlignment).toBe(SwipeAlignment.NOT_SET);
+
+			element.layer = { ...store.getState().layers.active[0] };
+
 			expect(swipeButtons[0].classList.contains('active')).toBeFalse();
 			expect(swipeButtons[1].classList.contains('active')).toBeTrue();
 			expect(swipeButtons[2].classList.contains('active')).toBeFalse();
