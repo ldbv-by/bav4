@@ -32,9 +32,11 @@ export const fileStorageReducer = (state = initialState, action) => {
 	const { type, payload } = action;
 	switch (type) {
 		case ADMIN_ID_CHANGED: {
+			const { adminId, fileId } = payload;
 			return {
 				...state,
-				adminId: payload
+				adminId,
+				fileId
 			};
 		}
 		case DATA_CHANGED: {

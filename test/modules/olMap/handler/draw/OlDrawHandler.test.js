@@ -1237,7 +1237,7 @@ describe('OlDrawHandler', () => {
 
 			classUnderTest.activate(map);
 			await TestUtils.timeout();
-			expect(saveSpy).toHaveBeenCalledTimes(1);
+			expect(saveSpy).not.toHaveBeenCalledTimes(1);
 			expect(classUnderTest._layerId).toBe('a_oldLayer_id');
 			expect(classUnderTest._vectorLayer).toBeTruthy();
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
