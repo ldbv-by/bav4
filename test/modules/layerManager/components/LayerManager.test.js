@@ -10,6 +10,7 @@ import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { VectorGeoResource, VectorSourceType } from '../../../../src/domain/geoResources';
 import { Tools } from '../../../../src/domain/tools';
 import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
+import { activate, deactivate } from '../../../../src/store/layerSwipe/layerSwipe.action';
 
 window.customElements.define(Checkbox.tag, Checkbox);
 window.customElements.define(LayerItem.tag, LayerItem);
@@ -29,7 +30,11 @@ describe('LayerManager', () => {
 		getKeywords: () => []
 	};
 	const setup = async (state) => {
-		store = TestUtils.setupStoreAndDi(state, { layers: layersReducer, layerSwipe: layerSwipeReducer, tools: toolsReducer });
+		store = TestUtils.setupStoreAndDi(state, {
+			layers: layersReducer,
+			layerSwipe: layerSwipeReducer,
+			tools: toolsReducer
+		});
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 		$injector.registerSingleton('EnvironmentService', environmentServiceMock);
 		$injector.registerSingleton('GeoResourceService', geoResourceServiceMock);
@@ -622,12 +627,22 @@ describe('LayerManager', () => {
 			const element = await setup(state);
 			const buttonCompare = element.shadowRoot.querySelector('#button_layer_swipe');
 			expect(store.getState().tools.current).toBe(null);
+			expect(store.getState().layerSwipe.active).toBe(false);
+			expect(buttonCompare.label).toBe('layerManager_compare');
 
 			buttonCompare.click();
 			expect(store.getState().tools.current).toBe(Tools.COMPARE);
 
+			activate();
+			expect(store.getState().layerSwipe.active).toBe(true);
+			expect(buttonCompare.label).toBe('layerManager_compare_stop');
+
 			buttonCompare.click();
 			expect(store.getState().tools.current).toBe(null);
+
+			deactivate();
+			expect(store.getState().layerSwipe.active).toBe(false);
+			expect(buttonCompare.label).toBe('layerManager_compare');
 		});
 	});
 });
