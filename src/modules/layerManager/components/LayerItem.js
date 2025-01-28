@@ -280,27 +280,33 @@ export class LayerItem extends AbstractMvuContentPanel {
 
 		const getLayerSwipe = () => {
 			const direction = layer.constraints.swipeAlignment;
+			const directionClass = {
+				left: direction === SwipeAlignment.LEFT,
+				both: direction === SwipeAlignment.NOT_SET,
+				right: direction === SwipeAlignment.RIGHT
+			};
 			return isLayerSwipeActive
 				? html`
 						<div class="compare">
 							<ba-button
 								id="left"
-								.type=${direction === SwipeAlignment.LEFT ? 'primary' : 'secondary'}
+								class=${direction === SwipeAlignment.LEFT ? 'active' : ''}
 								.label=${translate('layerManager_compare_left')}
 								@click=${leftSide}
 							></ba-button>
 							<ba-button
 								id="both"
-								.type=${direction === SwipeAlignment.NOT_SET ? 'primary' : 'secondary'}
+								class=${direction === SwipeAlignment.NOT_SET ? 'active' : ''}
 								.label=${translate('layerManager_compare_both')}
 								@click=${bothSide}
 							></ba-button>
 							<ba-button
 								id="right"
-								.type=${direction === SwipeAlignment.RIGHT ? 'primary' : 'secondary'}
+								class=${direction === SwipeAlignment.RIGHT ? 'active' : ''}
 								.label=${translate('layerManager_compare_right')}
 								@click=${rightSide}
 							></ba-button>
+							<div class="bar ${classMap(directionClass)}"></div>
 						</div>
 					`
 				: nothing;

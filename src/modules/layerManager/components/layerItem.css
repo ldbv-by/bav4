@@ -70,22 +70,61 @@
 .time-travel-icon {
 	margin-right: 0.5em;
 }
+
 .compare {
 	display: flex;
-	border: 1px solid var(--header-background-color);
 	align-items: stretch;
 	border-radius: 0em;
-	margin: 0.5em 1em 1em 1em;
 	overflow: hidden;
+	position: relative;
+	margin-bottom: 0.1em;
 }
+
 .compare ba-button {
 	display: flex;
 	width: 100%;
 	border-right: 1px dotted var(--primary-color);
 }
+
 .compare ba-button:last-child {
 	border-right: none;
 }
+
 .compare ba-button::part(button) {
-	font-size: 0.7rem !important;
+	font-size: 0.8rem;
+	border-bottom: 0.3em solid var(--header-background-color);
+	padding-bottom: 1em;
+}
+
+.compare ba-button.active:not(:hover)::part(button) {
+	color: var(--primary-color);
+}
+
+.compare ba-button:not(:hover)::part(button) {
+	color: var(--text1);
+}
+
+.bar {
+	font-size: 0.8rem !important;
+	bottom: 0;
+	position: absolute;
+	height: 0.3em;
+	background: var(--primary-color);
+	z-index: 1;
+	transition: all var(--animation-duration-medium-open);
+}
+.left {
+	left: 0;
+	right: 50%;
+	background: var(--primary-color);
+}
+.right {
+	left: 50%;
+	right: 0%;
+	background: var(--primary-color);
+}
+.both {
+	left: 0%;
+	right: 0%;
+	background: var(--primary-color);
 }

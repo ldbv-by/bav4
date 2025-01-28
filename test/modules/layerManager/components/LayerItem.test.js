@@ -637,18 +637,19 @@ describe('LayerItem', () => {
 				collapsed: true
 			};
 			const element = await setup(layer, true);
+			const bar = element.shadowRoot.querySelector('.bar');
 
 			expect(store.getState().layerSwipe.active).toBe(true);
 
 			expect(element.shadowRoot.querySelectorAll('.compare')).toHaveSize(1);
 			const swipeButtons = element.shadowRoot.querySelectorAll('.compare ba-button');
 			expect(swipeButtons).toHaveSize(3);
-			expect(swipeButtons[0].type).toBe('secondary');
-			expect(swipeButtons[0].label).toBe('layerManager_compare_left');
-			expect(swipeButtons[1].type).toBe('primary');
-			expect(swipeButtons[1].label).toBe('layerManager_compare_both');
-			expect(swipeButtons[2].type).toBe('secondary');
-			expect(swipeButtons[2].label).toBe('layerManager_compare_right');
+			expect(swipeButtons[0].classList.contains('active')).toBeFalse();
+			expect(swipeButtons[1].classList.contains('active')).toBeTrue();
+			expect(swipeButtons[2].classList.contains('active')).toBeFalse();
+			expect(bar.classList.contains('left')).toBeFalse();
+			expect(bar.classList.contains('both')).toBeTrue();
+			expect(bar.classList.contains('right')).toBeFalse();
 		});
 
 		it('click on layerSwipe buttons changes the SwipeAlignment of the layer', async () => {
@@ -670,24 +671,54 @@ describe('LayerItem', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.compare')).toHaveSize(1);
 			const swipeButtons = element.shadowRoot.querySelectorAll('.compare ba-button');
+			const bar = element.shadowRoot.querySelector('.bar');
 			expect(swipeButtons).toHaveSize(3);
 
 			expect(store.getState().layers.active[0].constraints.swipeAlignment).toBe(SwipeAlignment.NOT_SET);
+
+			expect(swipeButtons[0].label).toBe('layerManager_compare_left');
+			expect(swipeButtons[1].label).toBe('layerManager_compare_both');
+			expect(swipeButtons[2].label).toBe('layerManager_compare_right');
+			expect(swipeButtons[0].classList.contains('active')).toBeFalse();
+			expect(swipeButtons[1].classList.contains('active')).toBeTrue();
+			expect(swipeButtons[2].classList.contains('active')).toBeFalse();
+			expect(bar.classList.contains('left')).toBeFalse();
+			expect(bar.classList.contains('both')).toBeTrue();
+			expect(bar.classList.contains('right')).toBeFalse();
 
 			const leftButtons = element.shadowRoot.querySelector('#left');
 			leftButtons.click();
 
 			expect(store.getState().layers.active[0].constraints.swipeAlignment).toBe(SwipeAlignment.LEFT);
 
+			expect(swipeButtons[0].classList.contains('active')).toBeTrue();
+			expect(swipeButtons[1].classList.contains('active')).toBeFalse();
+			expect(swipeButtons[2].classList.contains('active')).toBeFalse();
+			expect(bar.classList.contains('left')).toBeTrue();
+			expect(bar.classList.contains('both')).toBeFalse();
+			expect(bar.classList.contains('right')).toBeFalse();
+
 			const rightButtons = element.shadowRoot.querySelector('#right');
 			rightButtons.click();
 
 			expect(store.getState().layers.active[0].constraints.swipeAlignment).toBe(SwipeAlignment.RIGHT);
+			expect(swipeButtons[0].classList.contains('active')).toBeFalse();
+			expect(swipeButtons[1].classList.contains('active')).toBeFalse();
+			expect(swipeButtons[2].classList.contains('active')).toBeTrue();
+			expect(bar.classList.contains('left')).toBeFalse();
+			expect(bar.classList.contains('both')).toBeFalse();
+			expect(bar.classList.contains('right')).toBeTrue();
 
 			const bothButtons = element.shadowRoot.querySelector('#both');
 			bothButtons.click();
 
 			expect(store.getState().layers.active[0].constraints.swipeAlignment).toBe(SwipeAlignment.NOT_SET);
+			expect(swipeButtons[0].classList.contains('active')).toBeFalse();
+			expect(swipeButtons[1].classList.contains('active')).toBeTrue();
+			expect(swipeButtons[2].classList.contains('active')).toBeFalse();
+			expect(bar.classList.contains('left')).toBeFalse();
+			expect(bar.classList.contains('both')).toBeTrue();
+			expect(bar.classList.contains('right')).toBeFalse();
 		});
 	});
 
