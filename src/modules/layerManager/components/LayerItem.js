@@ -79,7 +79,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 			case Update_Layer_Collapsed:
 				return { ...model, layer: { ...model.layer, collapsed: data } };
 			case Update_Layer_Swipe:
-				return { ...model, ...data };
+				return { ...model, isLayerSwipeActive: data.active };
 		}
 	}
 
@@ -89,7 +89,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 	onInitialize() {
 		this.observe(
 			(state) => state.layerSwipe,
-			(layerSwipe) => this.signal(Update_Layer_Swipe, { isLayerSwipeActive: layerSwipe.active })
+			(layerSwipe) => this.signal(Update_Layer_Swipe, layerSwipe)
 		);
 	}
 

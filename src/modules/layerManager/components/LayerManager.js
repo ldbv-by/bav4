@@ -48,7 +48,7 @@ export class LayerManager extends MvuElement {
 			case Update_Dragged_Item:
 				return { ...model, draggedItem: data };
 			case Update_Layer_Swipe:
-				return { ...model, ...data };
+				return { ...model, isLayerSwipeActive: data.active };
 		}
 	}
 
@@ -59,7 +59,7 @@ export class LayerManager extends MvuElement {
 		);
 		this.observe(
 			(state) => state.layerSwipe,
-			(layerSwipe) => this.signal(Update_Layer_Swipe, { isLayerSwipeActive: layerSwipe.active })
+			(layerSwipe) => this.signal(Update_Layer_Swipe, layerSwipe)
 		);
 	}
 

@@ -27,14 +27,14 @@ export class LayerSwipeSlider extends MvuElement {
 	update(type, data, model) {
 		switch (type) {
 			case Update_Layer_Swipe:
-				return { ...model, ...data };
+				return { ...model, active: data.active, ratio: data.ratio };
 		}
 	}
 
 	onInitialize() {
 		this.observe(
 			(state) => state.layerSwipe,
-			(layerSwipe) => this.signal(Update_Layer_Swipe, { active: layerSwipe.active, ratio: layerSwipe.ratio })
+			(layerSwipe) => this.signal(Update_Layer_Swipe, layerSwipe)
 		);
 	}
 
