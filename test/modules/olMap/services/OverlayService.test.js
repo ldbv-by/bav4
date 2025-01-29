@@ -15,6 +15,7 @@ describe('OverlayService', () => {
 	const initialState = {
 		active: false,
 		statistic: { geometryType: null, coordinate: null, azimuth: null, length: null, area: null },
+		displayRuler: true,
 		selection: [],
 		reset: null
 	};

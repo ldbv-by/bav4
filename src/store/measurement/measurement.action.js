@@ -8,7 +8,8 @@ import {
 	RESET_REQUESTED,
 	FINISH_REQUESTED,
 	REMOVE_REQUESTED,
-	SELECTION_CHANGED
+	SELECTION_CHANGED,
+	DISPLAY_RULER_CHANGED
 } from './measurement.reducer';
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
@@ -60,6 +61,17 @@ export const setMode = (mode) => {
 	getStore().dispatch({
 		type: MODE_CHANGED,
 		payload: mode
+	});
+};
+
+/**
+ * activates/deactivates the display of the partition overlays.
+ * @function
+ */
+export const setDisplayRuler = (displayRuler) => {
+	getStore().dispatch({
+		type: DISPLAY_RULER_CHANGED,
+		payload: displayRuler
 	});
 };
 
