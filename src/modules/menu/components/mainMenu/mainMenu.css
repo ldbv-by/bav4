@@ -68,6 +68,11 @@
 .is-open .main-menu {
 	transform: translate(28em, 0);
 }
+
+.is-open.is-open-nav {
+	transform: translate(33.5em, 0);
+}
+
 .is-open .arrow {
 	left: 0;
 	transform: rotate(180deg);

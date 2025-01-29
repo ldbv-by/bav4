@@ -65,7 +65,7 @@ export class ChipsContainer extends MvuElement {
 		);
 		this.observe(
 			(state) => state.mainMenu,
-			(mainMenu) => this.signal(Update_IsOpen_TabIndex, { isOpen: mainMenu.open })
+			(mainMenu) => this.signal(Update_IsOpen_TabIndex, { isOpen: mainMenu.open, isOpenNav: mainMenu.openNav })
 		);
 		this.observe(
 			(state) => state.chips.current,
@@ -112,6 +112,10 @@ export class ChipsContainer extends MvuElement {
 	 */
 	createView(model) {
 		const { isDarkSchema, isPortrait, hasMinWidth, isOpen, isOpenNavigationRail, currentChips } = model;
+
+		const getOverlayTestClass = () => {
+			return isOpenNav ? 'is-open-nav' : '';
+		};
 
 		const scrollLeft = () => {
 			const container = this.shadowRoot.getElementById('chipscontainer');

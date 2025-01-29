@@ -19,6 +19,7 @@ export class Footer extends MvuElement {
 	constructor() {
 		super({
 			isOpen: false,
+			isOpenNav: false,
 			isPortrait: false,
 			hasMinWidth: false,
 			isOpenNavigationRail: false
@@ -34,7 +35,7 @@ export class Footer extends MvuElement {
 	onInitialize() {
 		this.observe(
 			(state) => state.mainMenu,
-			(mainMenu) => this.signal(Update_IsOpen, { isOpen: mainMenu.open })
+			(mainMenu) => this.signal(Update_IsOpen, { isOpen: mainMenu.open, isOpenNav: mainMenu.openNav })
 		);
 		this.observe(
 			(state) => state.media,
