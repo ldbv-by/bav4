@@ -27,6 +27,7 @@ input[type='range'] {
 	background: transparent;
 	outline-offset: 5px;
 	pointer-events: none;
+	height: 0;
 }
 input[type='range']::-webkit-slider-thumb {
 	appearance: none;
