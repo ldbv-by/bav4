@@ -66,6 +66,9 @@ export class MapInteractionButtonContainer extends MvuElement {
 		const getShowRoutingClass = () => {
 			return Tools.ROUTING === toolId ? '' : 'hide';
 		};
+		const getShowLayerSwipeClass = () => {
+			return Tools.COMPARE === toolId ? '' : 'hide';
+		};
 
 		return html`
 			<style>
@@ -75,7 +78,14 @@ export class MapInteractionButtonContainer extends MvuElement {
 				<ba-button
 					class="${getShowRoutingClass()} routing"
 					.icon=${closeSvg}
-					.label=${translate('map_interaction_button_container')}
+					.label=${translate('map_interaction_button_container_routing')}
+					.type=${'primary'}
+					@click=${() => setCurrentTool(null)}
+				></ba-button>
+				<ba-button
+					class="${getShowLayerSwipeClass()} layer-swipe"
+					.icon=${closeSvg}
+					.label=${translate('map_interaction_button_container_layerSwipe')}
 					.type=${'primary'}
 					@click=${() => setCurrentTool(null)}
 				></ba-button>

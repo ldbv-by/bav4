@@ -12,6 +12,9 @@ describe('i18n for search module', () => {
 		expect(map.search_menu_removeAll_label).toBe('Alle entfernen');
 		expect(map.search_result_item_zoom_to_extent).toBe('Auf Inhalt zoomen');
 		expect(map.search_result_item_info).toBe('Info');
+		expect(map.search_result_item_copy).toBe('In die Zwischenablage kopieren');
+		expect(map.search_result_item_clipboard_error).toBe('"In die Zwischenablage kopieren" steht nicht zur Verfügung');
+		expect(map.search_result_item_clipboard_success).toBe('wurde in die Zwischenablage kopiert');
 	});
 
 	it('provides translation for en', () => {
@@ -25,10 +28,13 @@ describe('i18n for search module', () => {
 		expect(map.search_menu_removeAll_label).toBe('Remove all');
 		expect(map.search_result_item_zoom_to_extent).toBe('Zoom to extent');
 		expect(map.search_result_item_info).toBe('Info');
+		expect(map.search_result_item_copy).toBe('Copy to clipboard');
+		expect(map.search_result_item_clipboard_error).toBe('"Copy to clipboard" is not available');
+		expect(map.search_result_item_clipboard_success).toBe('was copied to clipboard');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 8;
+		const expectedSize = 11;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

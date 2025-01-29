@@ -24,7 +24,7 @@
 	width: 0.4em;
 }
 /* fix Windows Firefox scrollbar*/
-@-moz-document url-prefix() {
+@-moz-document url-prefix() /* stylelint-disable-line */ {
 	* {
 		scrollbar-color: var(--secondary-bg-color) var(--primary-bg-color);
 		scrollbar-width: thin;

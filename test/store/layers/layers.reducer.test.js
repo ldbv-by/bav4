@@ -18,7 +18,8 @@ import {
 	removeLayerOf,
 	removeAndSetLayers,
 	addLayerIfNotPresent,
-	cloneAndAddLayer
+	cloneAndAddLayer,
+	SwipeAlignment
 } from '../../../src/store/layers/layers.action';
 import { TestUtils } from '../../test-utils.js';
 import { GeoResourceFuture, XyzGeoResource } from '../../../src/domain/geoResources';
@@ -40,10 +41,12 @@ describe('defaultLayerProperties', () => {
 describe('createDefaultLayersConstraints', () => {
 	it('returns an object containing all layer specific default constraint properties', () => {
 		const defaultLayerConstraints = createDefaultLayersConstraints();
+		expect(Object.keys(defaultLayerConstraints).length).toBe(5);
 		expect(defaultLayerConstraints.alwaysTop).toBeFalse();
 		expect(defaultLayerConstraints.hidden).toBeFalse();
 		expect(defaultLayerConstraints.cloneable).toBeTrue();
 		expect(defaultLayerConstraints.metaData).toBeTrue();
+		expect(defaultLayerConstraints.swipeAlignment).toEqual(SwipeAlignment.NOT_SET);
 	});
 });
 
@@ -163,7 +166,7 @@ describe('layersReducer', () => {
 			expect(store.getState().layers.active[1].geoResourceId).toBe('geoResourceId1');
 			expect(store.getState().layers.active[1].zIndex).toBe(1);
 			expect(store.getState().layers.active[1].constraints.hidden).toBeFalse();
-			expect(Object.keys(store.getState().layers.active[1].constraints).length).toBe(4);
+			expect(Object.keys(store.getState().layers.active[1].constraints).length).toBe(5);
 		});
 
 		it("adds layers regarding a 'z-index' property of 0", () => {
@@ -463,7 +466,7 @@ describe('layersReducer', () => {
 			const layerProperties1 = { id: 'id1' };
 			const atomicallyAddedLayer2 = { id: 'id2', geoResourceId: 'geoResourceId2' };
 			const atomicallyAddedLayer3 = { id: 'id3', visible: false };
-			const atomicallyAddedLayer4 = { id: 'id4', opacity: 0.5 };
+			const atomicallyAddedLayer4 = { id: 'id4', opacity: 0.5, constraints: { swipeAlignment: SwipeAlignment.RIGHT } };
 			const store = setup({
 				layers: {
 					...initialState,
@@ -481,18 +484,21 @@ describe('layersReducer', () => {
 			expect(store.getState().layers.active[0].visible).toBeTrue();
 			expect(store.getState().layers.active[0].opacity).toBe(1);
 			expect(store.getState().layers.active[0].zIndex).toBe(0);
+			expect(store.getState().layers.active[0].constraints).toEqual(createDefaultLayersConstraints());
 
 			expect(store.getState().layers.active[1].id).toBe('id3');
 			expect(store.getState().layers.active[1].geoResourceId).toBe('id3');
 			expect(store.getState().layers.active[1].visible).toBeFalse();
 			expect(store.getState().layers.active[1].opacity).toBe(1);
 			expect(store.getState().layers.active[1].zIndex).toBe(1);
+			expect(store.getState().layers.active[1].constraints).toEqual(createDefaultLayersConstraints());
 
 			expect(store.getState().layers.active[2].id).toBe('id4');
 			expect(store.getState().layers.active[2].geoResourceId).toBe('id4');
 			expect(store.getState().layers.active[2].visible).toBeTrue();
 			expect(store.getState().layers.active[2].opacity).toBe(0.5);
 			expect(store.getState().layers.active[2].zIndex).toBe(2);
+			expect(store.getState().layers.active[2].constraints).toEqual({ ...createDefaultLayersConstraints(), swipeAlignment: SwipeAlignment.RIGHT });
 
 			expect(store.getState().layers.removed.payload).toEqual([layerProperties0.id, layerProperties1.id]);
 			expect(store.getState().layers.added.payload).toEqual([atomicallyAddedLayer2.id, atomicallyAddedLayer3.id, atomicallyAddedLayer4.id]);
@@ -696,6 +702,51 @@ describe('layersReducer', () => {
 			expect(store.getState().layers.active[0].id).toBe('id2');
 			expect(store.getState().layers.active[1].id).toBe('id0');
 			expect(store.getState().layers.active[2].id).toBe('id1');
+		});
+
+		it("modifies the 'hidden' constraint property of a layer", () => {
+			const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0' };
+			const store = setup({
+				layers: {
+					active: index([layerProperties0])
+				}
+			});
+
+			expect(store.getState().layers.active[0].constraints.hidden).toBeFalse();
+
+			modifyLayer('id0', { hidden: true });
+
+			expect(store.getState().layers.active[0].constraints.hidden).toBeTrue();
+		});
+
+		it("modifies the 'alwaysTop' constraint property of a layer", () => {
+			const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0' };
+			const store = setup({
+				layers: {
+					active: index([layerProperties0])
+				}
+			});
+
+			expect(store.getState().layers.active[0].constraints.alwaysTop).toBeFalse();
+
+			modifyLayer('id0', { alwaysTop: true });
+
+			expect(store.getState().layers.active[0].constraints.alwaysTop).toBeTrue();
+		});
+
+		it("modifies the 'swipeAlignment' constraint property of a layer", () => {
+			const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0' };
+			const store = setup({
+				layers: {
+					active: index([layerProperties0])
+				}
+			});
+
+			expect(store.getState().layers.active[0].constraints.swipeAlignment).toEqual(SwipeAlignment.NOT_SET);
+
+			modifyLayer('id0', { swipeAlignment: SwipeAlignment.RIGHT });
+
+			expect(store.getState().layers.active[0].constraints.swipeAlignment).toEqual(SwipeAlignment.RIGHT);
 		});
 
 		it('does nothing when modified layer is not present', () => {

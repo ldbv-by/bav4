@@ -1,6 +1,6 @@
 import { TestUtils } from '../../test-utils.js';
 import { toolsReducer } from '../../../src/store/tools/tools.reducer.js';
-import { setCurrentTool } from '../../../src/store/tools/tools.action.js';
+import { setCurrentTool, toggleCurrentTool } from '../../../src/store/tools/tools.action.js';
 
 describe('toolContainerReducer', () => {
 	const setup = (state) => {
@@ -14,15 +14,39 @@ describe('toolContainerReducer', () => {
 		expect(store.getState().tools.current).toBeNull();
 	});
 
-	it("changes the 'current' property", () => {
-		const store = setup();
+	describe('setCurrentTool', () => {
+		it("changes the 'current' property", () => {
+			const store = setup();
 
-		setCurrentTool('foo');
+			setCurrentTool('foo');
 
-		expect(store.getState().tools.current).toBe('foo');
+			expect(store.getState().tools.current).toBe('foo');
 
-		setCurrentTool(null);
+			setCurrentTool(null);
 
-		expect(store.getState().tools.current).toBeNull();
+			expect(store.getState().tools.current).toBeNull();
+		});
+	});
+
+	describe('toggleCurrentTool', () => {
+		it("changes the 'current' property", () => {
+			const store = setup();
+
+			toggleCurrentTool('foo');
+
+			expect(store.getState().tools.current).toBe('foo');
+
+			toggleCurrentTool('bar');
+
+			expect(store.getState().tools.current).toBe('bar');
+
+			toggleCurrentTool('bar');
+
+			expect(store.getState().tools.current).toBeNull();
+
+			toggleCurrentTool(null);
+
+			expect(store.getState().tools.current).toBeNull();
+		});
 	});
 });

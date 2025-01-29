@@ -13,6 +13,7 @@ import { OlRoutingHandler } from '../handler/routing/OlRoutingHandler';
 import { OlSelectableFeatureHandler } from '../handler/selectableFeature/OlSelectableFeatureHandler';
 import { RtVectorLayerService } from '../services/RtVectorLayerService';
 import { OlOverlayMapHandler } from '../handler/measure/OlOverlayMapHandler';
+import { OlLayerSwipeHandler } from '../handler/layerSwipe/OlLayerSwipeHandler';
 
 export const mapModule = ($injector) => {
 	$injector
@@ -30,5 +31,6 @@ export const mapModule = ($injector) => {
 		.register('OlOverlayMapHandler', OlOverlayMapHandler)
 		.register('OlMfpHandler', OlMfpHandler)
 		.register('OlRoutingHandler', OlRoutingHandler)
-		.register('OlSelectableFeatureHandler', OlSelectableFeatureHandler);
+		.register('OlSelectableFeatureHandler', OlSelectableFeatureHandler)
+		.register('OlLayerSwipeHandler', OlLayerSwipeHandler);
 };

@@ -20,9 +20,11 @@ import { fitLayer } from '../../../store/position/position.action';
 import { GeoResourceFuture, RtVectorGeoResource, VectorGeoResource } from '../../../domain/geoResources';
 import { MenuTypes } from '../../commons/components/overflowMenu/OverflowMenu';
 import { openSlider } from '../../../store/timeTravel/timeTravel.action';
+import { SwipeAlignment } from '../../../store/layers/layers.action';
 
 const Update_Layer = 'update_layer';
 const Update_Layer_Collapsed = 'update_layer_collapsed';
+const Update_Layer_Swipe = 'update_layer_swipe';
 const Default_Extra_Property_Values = {
 	collapsed: true,
 	opacity: 1,
@@ -47,7 +49,8 @@ const Default_Extra_Property_Values = {
 export class LayerItem extends AbstractMvuContentPanel {
 	constructor() {
 		super({
-			layer: null
+			layer: null,
+			isLayerSwipeActive: null
 		});
 		const { TranslationService, GeoResourceService } = $injector.inject('TranslationService', 'GeoResourceService');
 		this._translationService = TranslationService;
@@ -75,7 +78,19 @@ export class LayerItem extends AbstractMvuContentPanel {
 				};
 			case Update_Layer_Collapsed:
 				return { ...model, layer: { ...model.layer, collapsed: data } };
+			case Update_Layer_Swipe:
+				return { ...model, isLayerSwipeActive: data.active };
 		}
+	}
+
+	/**
+	 * @override
+	 */
+	onInitialize() {
+		this.observe(
+			(state) => state.layerSwipe,
+			(layerSwipe) => this.signal(Update_Layer_Swipe, layerSwipe)
+		);
 	}
 
 	/**
@@ -110,7 +125,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 	 */
 	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
-		const { layer } = model;
+		const { layer, isLayerSwipeActive } = model;
 
 		if (!layer) {
 			return nothing;
@@ -253,6 +268,50 @@ export class LayerItem extends AbstractMvuContentPanel {
 			];
 		};
 
+		const leftSide = () => {
+			modifyLayer(layer.id, { swipeAlignment: SwipeAlignment.LEFT });
+		};
+		const bothSide = () => {
+			modifyLayer(layer.id, { swipeAlignment: SwipeAlignment.NOT_SET });
+		};
+		const rightSide = () => {
+			modifyLayer(layer.id, { swipeAlignment: SwipeAlignment.RIGHT });
+		};
+
+		const getLayerSwipe = () => {
+			const direction = layer.constraints.swipeAlignment;
+			const directionClass = {
+				left: direction === SwipeAlignment.LEFT,
+				both: direction === SwipeAlignment.NOT_SET,
+				right: direction === SwipeAlignment.RIGHT
+			};
+			return isLayerSwipeActive
+				? html`
+						<div class="compare">
+							<ba-button
+								id="left"
+								class=${direction === SwipeAlignment.LEFT ? 'active' : ''}
+								.label=${translate('layerManager_compare_left')}
+								@click=${leftSide}
+							></ba-button>
+							<ba-button
+								id="both"
+								class=${direction === SwipeAlignment.NOT_SET ? 'active' : ''}
+								.label=${translate('layerManager_compare_both')}
+								@click=${bothSide}
+							></ba-button>
+							<ba-button
+								id="right"
+								class=${direction === SwipeAlignment.RIGHT ? 'active' : ''}
+								.label=${translate('layerManager_compare_right')}
+								@click=${rightSide}
+							></ba-button>
+							<div class="bar ${classMap(directionClass)}"></div>
+						</div>
+					`
+				: nothing;
+		};
+
 		return html` <style>
 				${css}
 			</style>
@@ -305,6 +364,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 						<ba-overflow-menu .type=${MenuTypes.MEATBALL} .items=${getMenuItems()}></ba-overflow-menu>
 					</div>
 				</div>
+				${getLayerSwipe()}
 			</div>`;
 	}
 
