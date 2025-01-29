@@ -31,6 +31,7 @@ import { Layer } from 'ol/layer';
 import { Tools } from '../../../../../src/domain/tools';
 import { fileStorageReducer } from '../../../../../src/store/fileStorage/fileStorage.reducer.js';
 import { KML_EMPTY_CONTENT } from '../../../../../src/modules/olMap/formats/kml.js';
+import { GeometryType } from '../../../../../src/domain/geometryTypes.js';
 
 describe('OlDrawHandler', () => {
 	class MockClass {
@@ -567,6 +568,7 @@ describe('OlDrawHandler', () => {
 				expect(startNewSpy).toHaveBeenCalled();
 				expect(abortSpy).toHaveBeenCalled();
 				expect(store.getState().draw.statistic).toEqual({
+					geometryType: null,
 					coordinate: null,
 					azimuth: null,
 					length: null,
@@ -769,7 +771,7 @@ describe('OlDrawHandler', () => {
 				]);
 				const feature = new Feature({ geometry: geometry });
 				feature.setId('draw_line_1');
-				const statisticSpy = spyOn(classUnderTest, '_setStatistics').and.callThrough();
+				const statisticSpy = spyOn(classUnderTest, '_setStatistic').and.callThrough();
 
 				classUnderTest.activate(map);
 				setType('line');
@@ -779,8 +781,9 @@ describe('OlDrawHandler', () => {
 
 				expect(statisticSpy).toHaveBeenCalledWith(feature);
 				expect(store.getState().draw.statistic).toEqual({
+					geometryType: GeometryType.LINE,
 					coordinate: null,
-					azimuth: null,
+					azimuth: 90,
 					length: 42,
 					area: null
 				});

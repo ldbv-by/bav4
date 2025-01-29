@@ -39,7 +39,7 @@ describe('DrawToolContent', () => {
 		reset: null
 	};
 
-	const defaultStatistic = { coordinate: null, azimuth: null, length: null, area: null };
+	const defaultStatistic = { geometryType: null, coordinate: null, azimuth: null, length: null, area: null };
 
 	const StyleOptionTemplate = {
 		symbolSrc: null,
@@ -564,7 +564,7 @@ describe('DrawToolContent', () => {
 			geometryInfo = element.shadowRoot.querySelector('ba-geometry-info');
 
 			expect(element.getModel().statistic).toBe(actualStatistic);
-			expect(geometryInfo.statistics).toBe(actualStatistic);
+			expect(geometryInfo.statistic).toBe(actualStatistic);
 		});
 
 		it('sets the style-inputs for symbol-tool', async () => {

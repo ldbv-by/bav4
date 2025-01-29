@@ -73,6 +73,7 @@ const defaultStyleOption = {
 };
 
 const defaultDrawStats = {
+	geometryType: null,
 	coordinate: null,
 	azimuth: null,
 	length: null,
@@ -198,7 +199,7 @@ export class OlDrawHandler extends OlLayerHandler {
 						const geometry = event.target.getGeometry();
 						setGeometryIsValid(isValidGeometry(geometry));
 						this._styleService.updateStyle(event.target, olMap);
-						this._setStatistics(event.target);
+						this._setStatistic(event.target);
 					};
 
 					oldFeatures.forEach((f) => {
@@ -460,7 +461,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		}
 
 		this._select.getFeatures().clear();
-		this._updateStatistics();
+		this._updateStatistic();
 		this._draw = this._createDrawByType(type, styleOption);
 
 		// we deactivate the modify-interaction only,
@@ -477,7 +478,7 @@ export class OlDrawHandler extends OlLayerHandler {
 				const onFeatureChange = (event) => {
 					const geometry = event.target.getGeometry();
 					setGeometryIsValid(isValidGeometry(geometry));
-					this._setStatistics(event.target);
+					this._setStatistic(event.target);
 				};
 				this._sketchHandler.activate(event.feature, this._map, Tools.DRAW + '_' + type + '_');
 				const description = this._storeService.getStore().getState().draw.description;
@@ -652,13 +653,12 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._modify.setActive(true);
 		this._setSelected(feature);
 		if (feature) {
-			feature.on('change', () => this._updateStatistics());
+			feature.on('change', () => this._updateStatistic());
 		}
 	}
 
-	_setStatistics(feature) {
-		const stats = getStats(feature.getGeometry());
-		setStatistic({ ...defaultDrawStats, length: stats.length, area: stats.area });
+	_setStatistic(feature) {
+		setStatistic(getStats(feature.getGeometry()));
 	}
 
 	_getStyleOption() {
@@ -712,7 +712,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		return this._styleService.getStyleFunction(StyleTypes.DRAW);
 	}
 
-	_updateStatistics() {
+	_updateStatistic() {
 		if (this._select) {
 			const selectedFeature = this._select.getFeatures().getArray()[0];
 

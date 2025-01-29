@@ -395,7 +395,7 @@ export class DrawToolContent extends AbstractToolContent {
 													></textarea>
 													<label for="style_desc" class="control-label">${translate('toolbox_drawTool_style_desc')}</label><i class="bar"></i>
 												</div>
-												<ba-geometry-info .statistics=${statistic}></ba-geometry-info>
+												<ba-geometry-info .statistic=${statistic}></ba-geometry-info>
 											</div>
 										</div>
 									</div>
@@ -481,7 +481,7 @@ export class DrawToolContent extends AbstractToolContent {
 													></textarea>
 													<label for="style_desc" class="control-label">${translate('toolbox_drawTool_style_desc')}</label><i class="bar"></i>
 												</div>
-												<ba-geometry-info .statistics=${statistic}></ba-geometry-info>
+												<ba-geometry-info .statistic=${statistic}></ba-geometry-info>
 											</div>
 										</div>
 									</div>
@@ -541,7 +541,7 @@ export class DrawToolContent extends AbstractToolContent {
 													></textarea>
 													<label for="style_desc" class="control-label">${translate('toolbox_drawTool_style_desc')}</label><i class="bar"></i>
 												</div>
-												<ba-geometry-info .statistics=${statistic}></ba-geometry-info>
+												<ba-geometry-info .statistic=${statistic}></ba-geometry-info>
 											</div>
 										</div>
 									</div>
@@ -592,7 +592,7 @@ export class DrawToolContent extends AbstractToolContent {
 													></textarea>
 													<label for="style_desc" class="control-label">${translate('toolbox_drawTool_style_desc')}</label><i class="bar"></i>
 												</div>
-												<ba-geometry-info .statistics=${statistic}></ba-geometry-info>
+												<ba-geometry-info .statistic=${statistic}></ba-geometry-info>
 											</div>
 										</div>
 									</div>

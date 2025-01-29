@@ -664,7 +664,7 @@ describe('OlMeasurementHandler', () => {
 			expect(store.getState().measurement.selection).toEqual(['measure']);
 		});
 
-		it("updates statistics and overlays of features on 'change'", () => {
+		it("updates statistic and overlays of features on 'change'", () => {
 			setup();
 			const map = setupMap();
 			const geometry = new LineString([
@@ -686,7 +686,7 @@ describe('OlMeasurementHandler', () => {
 			// modify is activated after draw ends
 
 			const updateOverlaysSpy = spyOn(classUnderTest._overlayService, 'update');
-			const statsSpy = spyOn(classUnderTest, '_updateStatistics');
+			const statsSpy = spyOn(classUnderTest, '_updateStatistic');
 			feature.getGeometry().dispatchEvent('change');
 
 			expect(statsSpy).toHaveBeenCalledTimes(1);
@@ -2034,7 +2034,7 @@ describe('OlMeasurementHandler', () => {
 			expect(store.getState().tools.current).toBe(Tools.DRAW);
 		});
 
-		it('updates statistics if clickposition is in anyinteract to selected feature', () => {
+		it('updates statistic if clickposition is in anyinteract to selected feature', () => {
 			const store = setup();
 			const geometry = new Polygon([
 				[
@@ -2065,7 +2065,7 @@ describe('OlMeasurementHandler', () => {
 			expect(store.getState().measurement.statistic.area).toBeCloseTo(1, 1);
 		});
 
-		it('updates and sums statistics if clickposition is in anyinteract to selected features', () => {
+		it('updates and sums statistic if clickposition is in anyinteract to selected features', () => {
 			const store = setup();
 			const geometry1 = new Polygon([
 				[

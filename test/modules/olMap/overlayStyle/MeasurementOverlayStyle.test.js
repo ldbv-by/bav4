@@ -23,7 +23,7 @@ describe('MeasurementOverlayStyle', () => {
 	const environmentServiceMock = { isTouch: () => false };
 	const initialState = {
 		active: false,
-		statistic: { length: 0, area: 0 },
+		statistic: { geometryType: null, coordinate: null, azimuth: null, length: null, area: null },
 		selection: [],
 		reset: null
 	};

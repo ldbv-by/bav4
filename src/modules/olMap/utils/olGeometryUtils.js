@@ -4,6 +4,7 @@
 import { Point, LineString, Polygon, LinearRing, MultiLineString, Geometry } from 'ol/geom';
 import { isNumber } from '../../../utils/checks';
 import { $injector } from '../../../injection/index';
+import { GeometryType } from '../../../domain/geometryTypes';
 
 /**
  * Key indicating that its value is a unit of length calculated in a local projection.
@@ -367,7 +368,8 @@ export const isValidGeometry = (geometry) => {
  */
 export const getStats = (geometry) => {
 	const { MapService: mapService } = $injector.inject('MapService');
-	const stats = {
+	const defaultGeometryStatistic = {
+		geometryType: null,
 		coordinate: null,
 		azimuth: null,
 		length: null,
@@ -375,29 +377,32 @@ export const getStats = (geometry) => {
 	};
 
 	if (geometry instanceof Point) {
-		return { ...stats, coordinate: geometry.getCoordinates() };
+		return { ...defaultGeometryStatistic, geometryType: GeometryType.POINT, coordinate: geometry.getCoordinates() };
 	}
 	if (geometry instanceof LineString) {
 		return {
-			...stats,
+			...defaultGeometryStatistic,
+			geometryType: GeometryType.LINE,
 			azimuth: canShowAzimuthCircle(geometry) ? getAzimuth(geometry) : null,
 			length: mapService.calcLength(geometry.getCoordinates())
 		};
 	}
 	if (geometry instanceof MultiLineString) {
 		return {
-			...stats,
+			...defaultGeometryStatistic,
+			geometryType: GeometryType.LINE,
 			length: geometry.getLineStrings().reduce((partialLength, lineString) => partialLength + mapService.calcLength(lineString.getCoordinates()), 0)
 		};
 	}
 	if (geometry instanceof Polygon) {
 		return {
-			...stats,
+			...defaultGeometryStatistic,
+			geometryType: GeometryType.POLYGON,
 			length: mapService.calcLength(getLineString(geometry).getCoordinates()),
 			area: mapService.calcArea(geometry.getCoordinates())
 		};
 	}
-	return stats;
+	return defaultGeometryStatistic;
 };
 
 /**
