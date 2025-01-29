@@ -44,7 +44,7 @@ export const deactivate = () => {
 /**
  * set the statistic of a measurement.
  * @function
- * @param {MeasurementStatistic} stat the measurement-statistic of the current selected feature(s)
+ * @param {module:domain/geometryStatisticTypeDef~GeometryStatistic} stat the measurement-statistic of the current selected feature(s)
  */
 export const setStatistic = (stat) => {
 	getStore().dispatch({
