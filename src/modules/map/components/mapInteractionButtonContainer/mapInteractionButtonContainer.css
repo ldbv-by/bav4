@@ -21,7 +21,10 @@ ba-button {
 	transition: all var(--animation-duration-small-open) var(--animation-easing-open);
 	pointer-events: all;
 }
-ba-button.routing::part(button) {
+ba-button::part(button) {
 	background-color: var(--info-color);
-	font-size: 0.9rem;
+	font-size: 0.8rem;
+}
+ba-button::part(icon) {
+	top: 0.2em;
 }

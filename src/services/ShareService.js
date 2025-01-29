@@ -7,6 +7,7 @@ import { QueryParameters } from '../domain/queryParameters';
 import { GlobalCoordinateRepresentations } from '../domain/coordinateRepresentation';
 import { getOrigin, getPathParams } from '../utils/urlUtils';
 import { CROSSHAIR_HIGHLIGHT_FEATURE_ID } from '../plugins/HighlightPlugin';
+import { Tools } from '../domain/tools';
 
 /**
  * Options for retrieving parameters.
@@ -71,7 +72,8 @@ export class ShareService {
 			...this._extractTopic(),
 			...this._extractRoute(),
 			...this._extractTool(),
-			...this._extractCrosshair()
+			...this._extractCrosshair(),
+			...this._extractSwipeRatio()
 		};
 
 		return new Map(Object.entries(params));
@@ -114,7 +116,8 @@ export class ShareService {
 				...this._extractTopic(),
 				...this._extractRoute(),
 				...this._extractTool(),
-				...this._extractCrosshair()
+				...this._extractCrosshair(),
+				...this._extractSwipeRatio()
 			},
 			extraParams
 		);
@@ -177,12 +180,14 @@ export class ShareService {
 		const extractedState = {};
 
 		const {
-			layers: { active: activeLayers }
+			layers: { active: activeLayers },
+			tools: { current: currentTool }
 		} = state;
 		const geoResourceIds = [];
 		let layer_visibility = [];
 		let layer_opacity = [];
 		let layer_timestamp = [];
+		let layer_swipeAlignment = [];
 		activeLayers
 			.filter((l) => !l.constraints.hidden)
 			.filter((l) => (options.includeHiddenGeoResources ? true : !geoResourceService.byId(l.geoResourceId).hidden))
@@ -191,6 +196,7 @@ export class ShareService {
 				layer_visibility.push(l.visible);
 				layer_opacity.push(l.opacity);
 				layer_timestamp.push(l.timestamp);
+				layer_swipeAlignment.push(l.constraints.swipeAlignment);
 			});
 		//remove if it contains only default values
 		if (!layer_visibility.some((lv) => lv === false)) {
@@ -202,6 +208,9 @@ export class ShareService {
 		if (!layer_timestamp.some((t) => t)) {
 			layer_timestamp = null;
 		}
+		if (currentTool !== Tools.COMPARE) {
+			layer_swipeAlignment = null;
+		}
 		extractedState[QueryParameters.LAYER] = geoResourceIds.map((grId) => encodeURIComponent(grId)); //an GeoResource id may contain also an URL, so we encode it
 		if (layer_visibility) {
 			extractedState[QueryParameters.LAYER_VISIBILITY] = layer_visibility;
@@ -211,6 +220,9 @@ export class ShareService {
 		}
 		if (layer_timestamp) {
 			extractedState[QueryParameters.LAYER_TIMESTAMP] = layer_timestamp.map((t) => (t === null ? '' : t));
+		}
+		if (layer_swipeAlignment) {
+			extractedState[QueryParameters.LAYER_SWIPE_ALIGNMENT] = layer_swipeAlignment;
 		}
 		return extractedState;
 	}
@@ -302,6 +314,27 @@ export class ShareService {
 			const feature = features.find((hf) => hf.id === CROSSHAIR_HIGHLIGHT_FEATURE_ID);
 			const crosshairCoords = feature.data.coordinate.map((n) => n.toFixed(digits));
 			extractedState[QueryParameters.CROSSHAIR] = [true, ...crosshairCoords];
+		}
+
+		return extractedState;
+	}
+
+	/**
+	 * @private
+	 * @returns {object} extractedState
+	 */
+	_extractSwipeRatio() {
+		const { StoreService: storeService } = $injector.inject('StoreService');
+
+		const state = storeService.getStore().getState();
+		const extractedState = {};
+
+		const {
+			layerSwipe: { active, ratio }
+		} = state;
+
+		if (active) {
+			extractedState[QueryParameters.SWIPE_RATIO] = ratio / 100;
 		}
 
 		return extractedState;

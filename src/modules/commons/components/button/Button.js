@@ -88,7 +88,7 @@ export class Button extends MvuElement {
 		};
 
 		const getIcon = () => {
-			return icon ? html`<span class="icon"></span>` : nothing;
+			return icon ? html`<span class="icon" part="icon"></span>` : nothing;
 		};
 
 		return html`

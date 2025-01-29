@@ -73,7 +73,7 @@ test.describe('page', () => {
 			 * }
 			 */
 
-			expect(await page.locator('body > *').count()).toBe(16);
+			expect(await page.locator('body > *').count()).toBe(17);
 
 			expect(await page.locator('ba-header').count()).toBe(1);
 			expect(await page.locator('ba-main-menu').count()).toBe(1);
@@ -91,6 +91,7 @@ test.describe('page', () => {
 			expect(await page.locator('ba-map-context-menu').count()).toBe(1);
 			expect(await page.locator('ba-navigation-rail').count()).toBe(1);
 			expect(await page.locator('ba-map-interaction-button-container').count()).toBe(1);
+			expect(await page.locator('ba-layer-swipe').count()).toBe(1);
 		});
 	});
 });
