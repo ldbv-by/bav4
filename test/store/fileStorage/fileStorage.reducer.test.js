@@ -1,6 +1,6 @@
 import {
 	clear,
-	setAdminId,
+	setAdminAndFileId,
 	setData,
 	setLatestStorageResult,
 	setLatestStorageResultAndAdminAndFileId,
@@ -24,12 +24,23 @@ describe('fileStorageReducer', () => {
 		expect(store.getState().fileStorage.latest.payload).toEqual({ success: false, created: null, lastSaved: null });
 	});
 
-	it('updates the `adminId` property', () => {
+	it('updates the `adminId` and `fileId` property', () => {
 		const store = setup();
 
-		setAdminId('adminId');
+		setAdminAndFileId('adminId');
+
+		expect(store.getState().fileStorage.adminId).toBeNull();
+		expect(store.getState().fileStorage.fileId).toBeNull();
+
+		setAdminAndFileId(null, 'fileId');
+
+		expect(store.getState().fileStorage.adminId).toBeNull();
+		expect(store.getState().fileStorage.fileId).toBeNull();
+
+		setAdminAndFileId('adminId', 'fileId');
 
 		expect(store.getState().fileStorage.adminId).toBe('adminId');
+		expect(store.getState().fileStorage.fileId).toBe('fileId');
 	});
 
 	it('clears the store and resets to initial state', () => {
