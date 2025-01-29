@@ -3,7 +3,7 @@ import { $injector } from '../../../../../src/injection';
 import { DrawToolContent } from '../../../../../src/modules/toolbox/components/drawToolContent/DrawToolContent';
 import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
 import { drawReducer } from '../../../../../src/store/draw/draw.reducer';
-import { setSelectedStyle, setStyle, setType } from '../../../../../src/store/draw/draw.action';
+import { setMode, setSelectedStyle, setStyle, setType } from '../../../../../src/store/draw/draw.action';
 import { EventLike } from '../../../../../src/utils/storeUtils';
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 import { IconResult } from '../../../../../src/services/IconService';
@@ -684,6 +684,72 @@ describe('DrawToolContent', () => {
 			finishButton.click();
 
 			expect(store.getState().draw.finish).toBeInstanceOf(EventLike);
+		});
+
+		it('expands the info collapsible on first modify change', async () => {
+			const style = { ...StyleOptionTemplate, color: '#f00ba3', symbolSrc: 'data:image/svg+xml;base64,foobar' };
+
+			const element = await setup({ ...drawDefaultState, style });
+
+			setType('marker');
+
+			let collapseButton = element.shadowRoot.querySelectorAll('.sub-header');
+			expect(collapseButton.length).toBe(2);
+
+			expect(element.shadowRoot.querySelectorAll('.iscollapse').length).toBe(2);
+			setMode('active');
+			expect(element.shadowRoot.querySelectorAll('.iscollapse').length).toBe(2);
+			setMode('modify');
+
+			expect(element.shadowRoot.querySelectorAll('.collapse-content.iscollapse').length).toBe(1);
+			expect(element.shadowRoot.querySelectorAll('.collapse-content:not(.iscollapse) ').length).toBe(1);
+
+			collapseButton[0].click(); // collapse the properties-form
+
+			setType('text');
+			expect(element.shadowRoot.querySelectorAll('.iscollapse').length).toBe(2);
+			setMode('active');
+			expect(element.shadowRoot.querySelectorAll('.iscollapse').length).toBe(2);
+			setMode('modify');
+
+			expect(element.shadowRoot.querySelectorAll('.collapse-content.iscollapse').length).toBe(1);
+			expect(element.shadowRoot.querySelectorAll('.collapse-content:not(.iscollapse) ').length).toBe(1);
+
+			collapseButton = element.shadowRoot.querySelectorAll('.sub-header');
+			collapseButton[0].click(); // collapse the properties-form
+
+			setType('line');
+			expect(element.shadowRoot.querySelectorAll('.iscollapse').length).toBe(2);
+			expect(element.shadowRoot.querySelectorAll('.iscollapse').length).toBe(2);
+			setMode('draw');
+			expect(element.shadowRoot.querySelectorAll('.iscollapse').length).toBe(2);
+			setMode('modify');
+
+			expect(element.shadowRoot.querySelectorAll('.collapse-content.iscollapse').length).toBe(1);
+			expect(element.shadowRoot.querySelectorAll('.collapse-content:not(.iscollapse) ').length).toBe(1);
+
+			collapseButton = element.shadowRoot.querySelectorAll('.sub-header');
+			collapseButton[0].click(); // collapse the properties-form
+
+			setType('polygon');
+			expect(element.shadowRoot.querySelectorAll('.iscollapse').length).toBe(2);
+			setMode('draw');
+			expect(element.shadowRoot.querySelectorAll('.iscollapse').length).toBe(2);
+			setMode('modify');
+
+			expect(element.shadowRoot.querySelectorAll('.collapse-content.iscollapse').length).toBe(1);
+			expect(element.shadowRoot.querySelectorAll('.collapse-content:not(.iscollapse) ').length).toBe(1);
+
+			collapseButton = element.shadowRoot.querySelectorAll('.sub-header');
+			collapseButton[0].click(); // collapse the properties-form
+
+			//simulate reselect a existing drawing
+			setType('line');
+			expect(element.shadowRoot.querySelectorAll('.iscollapse').length).toBe(2);
+			setMode('modify');
+
+			expect(element.shadowRoot.querySelectorAll('.collapse-content.iscollapse').length).toBe(2);
+			expect(element.shadowRoot.querySelectorAll('.collapse-content:not(.iscollapse) ').length).toBe(0);
 		});
 
 		it('resets the measurement', async () => {

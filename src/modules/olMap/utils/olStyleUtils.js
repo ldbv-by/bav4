@@ -59,7 +59,7 @@ const getTextStyle = (text, color, scale, offsetY = -5) => {
 			offsetY
 		});
 	};
-	return text ? createStyle(text, color, scale) : null;
+	return createStyle(text, color, scale);
 };
 
 const getTextScale = (sizeKeyword) => {
@@ -115,10 +115,9 @@ export const markerScaleToKeyword = (scaleCandidate) => {
 		case 0.75:
 			return 'medium';
 		case 0.5:
-			return 'small';
 		default:
-			// scales greater then 'large' are not allowed for bvv-drawings
-			return scale > 1 ? 1 : scale;
+			// larger styles are not allowed for bvv-drawings and defaults to 'large'
+			return scale > 1 ? 'large' : 'small';
 	}
 };
 
@@ -325,6 +324,7 @@ export const markerStyleFunction = (styleOption = DEFAULT_STYLE_OPTION) => {
 
 	const textScale = getTextScale(styleOption.scale);
 	const offsetY = (getTextScale(styleOption.scale) * 10) / markerAnchor[1];
+
 	return [
 		new Style({
 			image: new Icon(iconOptions),
@@ -421,11 +421,12 @@ const getRulerStyle = (feature) => {
 	return new Style({
 		geometry: (feature) => {
 			const geodesic = feature.get(GEODESIC_FEATURE_PROPERTY);
-			const finishOnFirstPoint = feature.get('finishOnFirstPoint');
+
 			if (geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE) {
 				return geodesic.area ? geodesic.getPolygon() : geodesic.getGeometry();
 			}
 			if (feature.getGeometry() instanceof Polygon) {
+				const finishOnFirstPoint = feature.get('finishOnFirstPoint') ?? true;
 				if (finishOnFirstPoint) {
 					return feature.getGeometry();
 				} else {
@@ -448,6 +449,7 @@ const getRulerStyle = (feature) => {
 export const renderLinearRulerSegments = (pixelCoordinates, state, contextRenderFunction) => {
 	const { MapService: mapService } = $injector.inject('MapService');
 	const geometry = state.geometry.clone();
+	const displayRuler = state.feature?.get('displayruler') ? state.feature.get('displayruler') === 'true' : true;
 	const lineString = getLineString(geometry);
 	const resolution = state.resolution;
 	const pixelRatio = state.pixelRatio;
@@ -526,15 +528,18 @@ export const renderLinearRulerSegments = (pixelCoordinates, state, contextRender
 	contextRenderFunction(geometry, fill, baseStroke);
 
 	// per segment
-	const segmentCoordinates = geometry instanceof Polygon || geometry instanceof MultiLineString ? pixelCoordinates[0] : pixelCoordinates;
+	if (displayRuler) {
+		const segmentCoordinates = geometry instanceof Polygon || geometry instanceof MultiLineString ? pixelCoordinates[0] : pixelCoordinates;
 
-	segmentCoordinates.every((coordinate, index, coordinates) => {
-		return drawTicks(contextRenderFunction, [coordinate, coordinates[index + 1]], residuals[index], partitionTickDistance);
-	});
+		segmentCoordinates.every((coordinate, index, coordinates) => {
+			return drawTicks(contextRenderFunction, [coordinate, coordinates[index + 1]], residuals[index], partitionTickDistance);
+		});
+	}
 };
 
 export const renderGeodesicRulerSegments = (pixelCoordinates, state, contextRenderFunction, geodesic) => {
 	const geometry = state.geometry.clone();
+	const displayRuler = state.feature?.get('displayruler') ? state.feature.get('displayruler') === 'true' : true;
 	const resolution = state.resolution;
 	const pixelRatio = state.pixelRatio;
 
@@ -569,8 +574,10 @@ export const renderGeodesicRulerSegments = (pixelCoordinates, state, contextRend
 	contextRenderFunction(geometry, fill, baseStroke);
 
 	// ticks
-	const ticks = geodesic.getTicksByDistance(partitionLength);
-	ticks.forEach((t) => drawTick(contextRenderFunction, t));
+	if (displayRuler) {
+		const ticks = geodesic.getTicksByDistance(partitionLength);
+		ticks.forEach((t) => drawTick(contextRenderFunction, t));
+	}
 };
 
 /**
@@ -914,7 +921,7 @@ export const getTextFrom = (feature) => {
  * Extracts from the specified feature the size-value if the
  * StyleType is Marker/Text or null for all other StyleTypes.
  * @param {Feature} feature the feature with or without a style
- * @returns {StyleSizeTypes|null} the Size-Value or null
+ * @returns {module:domain/styles~StyleSizeTypes|null} the Size-Value or null
  */
 export const getSizeFrom = (feature) => {
 	if (feature == null) {
