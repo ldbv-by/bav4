@@ -9,7 +9,7 @@ import { OlDrawHandler } from '../../../../../src/modules/olMap/handler/draw/OlD
 import Map from 'ol/Map';
 import View from 'ol/View';
 import { Modify, Select, Snap } from 'ol/interaction';
-import { finish, reset, remove, setType, setStyle, setDescription } from '../../../../../src/store/draw/draw.action';
+import { finish, reset, remove, setType, setStyle, setDescription, setStatistic } from '../../../../../src/store/draw/draw.action';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { ModifyEvent } from 'ol/interaction/Modify';
 import { LineString, Point, Polygon } from 'ol/geom';
@@ -31,6 +31,7 @@ import { Layer } from 'ol/layer';
 import { Tools } from '../../../../../src/domain/tools';
 import { fileStorageReducer } from '../../../../../src/store/fileStorage/fileStorage.reducer.js';
 import { KML_EMPTY_CONTENT } from '../../../../../src/modules/olMap/formats/kml.js';
+import { GeometryType } from '../../../../../src/domain/geometryTypes.js';
 
 describe('OlDrawHandler', () => {
 	class MockClass {
@@ -133,7 +134,13 @@ describe('OlDrawHandler', () => {
 		});
 		$injector
 			.registerSingleton('TranslationService', translationServiceMock)
-			.registerSingleton('MapService', { getSrid: () => 3857, getLocalProjectedSrid: () => 25832, getLocalProjectedSridExtent: () => null })
+			.registerSingleton('MapService', {
+				getSrid: () => 3857,
+				getLocalProjectedSrid: () => 25832,
+				getLocalProjectedSridExtent: () => null,
+				calcLength: () => 42,
+				calcArea: () => 42
+			})
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('FileStorageService', fileStorageServiceMock)
@@ -537,11 +544,18 @@ describe('OlDrawHandler', () => {
 			});
 
 			it('aborts drawing after reset-request', () => {
-				setup();
+				const store = setup();
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
 				map.addInteraction = jasmine.createSpy();
 				const startNewSpy = spyOn(classUnderTest, '_startNew').and.callThrough();
+
+				setStatistic({
+					coordinate: null,
+					azimuth: null,
+					length: 42,
+					area: 21
+				});
 
 				classUnderTest.activate(map);
 				setStyle({ symbolSrc: 'something' });
@@ -553,6 +567,13 @@ describe('OlDrawHandler', () => {
 				reset();
 				expect(startNewSpy).toHaveBeenCalled();
 				expect(abortSpy).toHaveBeenCalled();
+				expect(store.getState().draw.statistic).toEqual({
+					geometryType: null,
+					coordinate: null,
+					azimuth: null,
+					length: null,
+					area: null
+				});
 			});
 
 			it('aborts current drawing after type-change', () => {
@@ -626,6 +647,7 @@ describe('OlDrawHandler', () => {
 
 			it('finishs drawing after finish-request', () => {
 				setup();
+
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
 				map.addInteraction = jasmine.createSpy();
@@ -732,6 +754,39 @@ describe('OlDrawHandler', () => {
 				simulateDrawEvent('drawend', classUnderTest._draw, feature);
 
 				expect(store.getState().draw.description).toEqual('foo');
+			});
+
+			it('updates statistic in store when feature changes', () => {
+				const store = setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const geometry = new LineString([
+					[0, 0],
+					[1, 0]
+				]);
+
+				const changedGeometry = new LineString([
+					[0, 0],
+					[3, 0]
+				]);
+				const feature = new Feature({ geometry: geometry });
+				feature.setId('draw_line_1');
+				const statisticSpy = spyOn(classUnderTest, '_setStatistic').and.callThrough();
+
+				classUnderTest.activate(map);
+				setType('line');
+				simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+				feature.setGeometry(changedGeometry);
+				simulateDrawEvent('drawend', classUnderTest._draw, feature);
+
+				expect(statisticSpy).toHaveBeenCalledWith(feature);
+				expect(store.getState().draw.statistic).toEqual({
+					geometryType: GeometryType.LINE,
+					coordinate: null,
+					azimuth: 90,
+					length: 42,
+					area: null
+				});
 			});
 
 			it('switches to modify after finish-request on not-present sketch', () => {

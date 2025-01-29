@@ -14,7 +14,7 @@ register(proj4);
 describe('OverlayService', () => {
 	const initialState = {
 		active: false,
-		statistic: { length: 0, area: 0 },
+		statistic: { geometryType: null, coordinate: null, azimuth: null, length: null, area: null },
 		displayRuler: true,
 		selection: [],
 		reset: null

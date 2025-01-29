@@ -23,6 +23,7 @@ import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing, MultiLineSt
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { $injector } from '../../../../src/injection';
+import { GeometryType } from '../../../../src/domain/geometryTypes';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -640,6 +641,8 @@ describe('calculatePartitionResidualOfSegments', () => {
 describe('getStats', () => {
 	it('returns a empty statistic-object', () => {
 		const statsForNoGeometry = getStats(null);
+
+		expect(statsForNoGeometry.geometryType).toBeNull();
 		expect(statsForNoGeometry.coordinate).toBeNull();
 		expect(statsForNoGeometry.azimuth).toBeNull();
 		expect(statsForNoGeometry.length).toBeNull();
@@ -648,6 +651,8 @@ describe('getStats', () => {
 
 	it('returns a statistic-object for Point', () => {
 		const statsForPoint = getStats(new Point([42, 42]));
+
+		expect(statsForPoint.geometryType).toBe(GeometryType.POINT);
 		expect(statsForPoint.coordinate).toEqual([42, 42]);
 		expect(statsForPoint.azimuth).toBeNull();
 		expect(statsForPoint.length).toBeNull();
@@ -662,6 +667,8 @@ describe('getStats', () => {
 				[42, 42]
 			])
 		);
+
+		expect(statsForLineString.geometryType).toBe(GeometryType.LINE);
 		expect(statsForLineString.coordinate).toBeNull();
 		expect(statsForLineString.azimuth).toBe(45);
 		expect(statsForLineString.length).toBe(42);
@@ -677,6 +684,8 @@ describe('getStats', () => {
 				[3, 5]
 			])
 		);
+
+		expect(statsForLineString.geometryType).toBe(GeometryType.LINE);
 		expect(statsForLineString.coordinate).toBeNull();
 		expect(statsForLineString.azimuth).toBeNull();
 		expect(statsForLineString.length).toBe(42);
@@ -699,6 +708,8 @@ describe('getStats', () => {
 				])
 			])
 		);
+
+		expect(statsForMultiLineString.geometryType).toBe(GeometryType.LINE);
 		expect(statsForMultiLineString.coordinate).toBeNull();
 		expect(statsForMultiLineString.azimuth).toBeNull();
 		expect(statsForMultiLineString.length).toBe(84);
@@ -708,7 +719,6 @@ describe('getStats', () => {
 	it('returns a statistic-object for Polygon', () => {
 		spyOn(mapServiceMock, 'calcLength').and.returnValue(42);
 		spyOn(mapServiceMock, 'calcArea').and.returnValue(21);
-
 		const statsForPolygon = getStats(
 			new Polygon([
 				[
@@ -718,6 +728,8 @@ describe('getStats', () => {
 				]
 			])
 		);
+
+		expect(statsForPolygon.geometryType).toBe(GeometryType.POLYGON);
 		expect(statsForPolygon.coordinate).toBeNull();
 		expect(statsForPolygon.azimuth).toBeNull();
 		expect(statsForPolygon.length).toBeTruthy();

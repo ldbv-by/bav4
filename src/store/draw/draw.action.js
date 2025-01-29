@@ -3,6 +3,7 @@
  */
 import {
 	ACTIVE_CHANGED,
+	STATISTIC_CHANGED,
 	MODE_CHANGED,
 	TYPE_CHANGED,
 	RESET_REQUESTED,
@@ -60,6 +61,18 @@ export const deactivate = () => {
 	getStore().dispatch({
 		type: ACTIVE_CHANGED,
 		payload: { active: false, createPermanentLayer: true }
+	});
+};
+
+/**
+ * set the statistic of a drawing.
+ * @function
+ * @param {module:domain/geometryStatisticTypeDef~GeometryStatistic} stat the draw-statistic of the current selected feature(s)
+ */
+export const setStatistic = (stat) => {
+	getStore().dispatch({
+		type: STATISTIC_CHANGED,
+		payload: stat
 	});
 };
 
