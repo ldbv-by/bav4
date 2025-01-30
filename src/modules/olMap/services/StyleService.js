@@ -318,7 +318,7 @@ export class StyleService {
 		const { OverlayService: overlayService } = $injector.inject('OverlayService');
 
 		/**
-		 * After each resolution change the measurement features needs updated overlays
+		 * After each resolution change the measurement features need updated overlays
 		 * to be synchronized with the rendered measurement style and the drawn partition ticks.
 		 *
 		 * This must be done before the style is applied for the first time.
