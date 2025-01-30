@@ -26,7 +26,7 @@ export const getBvvFeatureInfo = (olFeature, layerProperties) => {
 		SecurityService: securityService,
 		GeoResourceService: geoResourceService
 	} = $injector.inject('MapService', 'SecurityService', 'GeoResourceService');
-	const stats = getStats(olFeature.getGeometry());
+	const geometryStatistic = getStats(olFeature.getGeometry());
 	const elevationProfileCoordinates = getLineString(olFeature.getGeometry())?.getCoordinates() ?? [];
 	const exportData = new KML().writeFeatures([olFeature], { featureProjection: 'EPSG:' + mapService.getSrid() });
 
@@ -34,7 +34,7 @@ export const getBvvFeatureInfo = (olFeature, layerProperties) => {
 		const descContent = olFeature.get('description') || olFeature.get('desc');
 		const geometryContent = html`
 		</div>
-			<ba-geometry-info .statistics=${stats}></ba-geometry-info>
+			<ba-geometry-info .statistic=${geometryStatistic}></ba-geometry-info>
 			<div class='chips__container'>
 				<ba-profile-chip .coordinates=${elevationProfileCoordinates}></ba-profile-chip>
 				<ba-export-vector-data-chip .exportData=${exportData}></ba-export-vector-data-chip>
