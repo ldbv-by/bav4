@@ -3,7 +3,7 @@ import { $injector } from '../../../../../src/injection';
 import { DrawToolContent } from '../../../../../src/modules/toolbox/components/drawToolContent/DrawToolContent';
 import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
 import { drawReducer } from '../../../../../src/store/draw/draw.reducer';
-import { setMode, setSelectedStyle, setStyle, setType } from '../../../../../src/store/draw/draw.action';
+import { setMode, setSelectedStyle, setStatistic, setStyle, setType } from '../../../../../src/store/draw/draw.action';
 import { EventLike } from '../../../../../src/utils/storeUtils';
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 import { IconResult } from '../../../../../src/services/IconService';
@@ -38,6 +38,8 @@ describe('DrawToolContent', () => {
 		type: null,
 		reset: null
 	};
+
+	const defaultStatistic = { geometryType: null, coordinate: null, azimuth: null, length: null, area: null };
 
 	const StyleOptionTemplate = {
 		symbolSrc: null,
@@ -94,6 +96,7 @@ describe('DrawToolContent', () => {
 				type: null,
 				style: null,
 				description: null,
+				statistic: null,
 				selectedStyle: null,
 				mode: null,
 				validGeometry: null,
@@ -550,6 +553,20 @@ describe('DrawToolContent', () => {
 			expect(sanitizeSpy).toHaveBeenCalled();
 		});
 
+		it('sets the statistics in geometry-info, after statistic changes', async () => {
+			const element = await setup({ ...drawDefaultState, statistic: { defaultStatistic }, style: StyleOptionTemplate });
+			const actualStatistic = { ...defaultStatistic, length: 42 };
+			setType('line');
+			let geometryInfo = element.shadowRoot.querySelector('ba-geometry-info');
+			expect(geometryInfo).toBeTruthy();
+
+			setStatistic(actualStatistic);
+			geometryInfo = element.shadowRoot.querySelector('ba-geometry-info');
+
+			expect(element.getModel().statistic).toBe(actualStatistic);
+			expect(geometryInfo.statistic).toBe(actualStatistic);
+		});
+
 		it('sets the style-inputs for symbol-tool', async () => {
 			const style = { symbolSrc: null, color: '#f00ba3', scale: 'medium' };
 			const element = await setup({ ...drawDefaultState, style });
@@ -752,7 +769,7 @@ describe('DrawToolContent', () => {
 			expect(element.shadowRoot.querySelectorAll('.collapse-content:not(.iscollapse) ').length).toBe(0);
 		});
 
-		it('resets the measurement', async () => {
+		it('resets the drawing', async () => {
 			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'marker' });
 			const resetButton = element.shadowRoot.querySelector('#cancel-button');
 

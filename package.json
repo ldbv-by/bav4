@@ -3,11 +3,11 @@
 	"dependencies": {
 		"@geoblocks/ol-maplibre-layer": "1.0.3",
 		"chart.js": "4.4.7",
-		"dompurify": "3.2.3",
+		"dompurify": "3.2.4",
 		"geographiclib-geodesic": "2.1.1",
 		"lit-html": "3.2.1",
-		"maplibre-gl": "5.0.1",
-		"ol": "^10.3.1",
+		"maplibre-gl": "5.1.0",
+		"ol": "^10.4.0",
 		"proj4": "2.15.0",
 		"redux": "5.0.1",
 		"vanilla-swipe": "2.4.1"
