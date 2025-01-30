@@ -145,6 +145,12 @@ describe('OlMap', () => {
 			return 'olSelectableFeatureHandlerMockId';
 		}
 	};
+	const olLayerSwipeHandlerMock = {
+		register() {},
+		get id() {
+			return 'olLayerSwipeHandlerMockId';
+		}
+	};
 
 	const olOverlayMapHandlerMock = {
 		register() {},
@@ -219,6 +225,7 @@ describe('OlMap', () => {
 			.registerSingleton('OlElevationProfileHandler', olElevationProfileHandlerMock)
 			.registerSingleton('OlOverlayMapHandler', olOverlayMapHandlerMock)
 			.registerSingleton('OlSelectableFeatureHandler', olSelectableFeatureHandlerMock)
+			.registerSingleton('OlLayerSwipeHandler', olLayerSwipeHandlerMock)
 			.registerSingleton('OlMfpHandler', mfpHandlerMock)
 			.registerSingleton('OlRoutingHandler', routingHandlerMock)
 			.registerSingleton('VectorLayerService', vectorLayerServiceMock)
@@ -1485,11 +1492,19 @@ describe('OlMap', () => {
 		});
 	});
 
-	describe('elevationProfile handler', () => {
+	describe('selectableFeature handler', () => {
 		it('registers the handler', async () => {
 			const element = await setup();
 
 			expect(element._mapHandler.get('olSelectableFeatureHandlerMockId')).toEqual(olSelectableFeatureHandlerMock);
+		});
+	});
+
+	describe('layerSwipe handler', () => {
+		it('registers the handler', async () => {
+			const element = await setup();
+
+			expect(element._mapHandler.get('olLayerSwipeHandlerMockId')).toEqual(olLayerSwipeHandlerMock);
 		});
 	});
 });

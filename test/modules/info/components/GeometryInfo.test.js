@@ -1,5 +1,6 @@
+import { GeometryType } from '../../../../src/domain/geometryTypes';
 import { $injector } from '../../../../src/injection';
-import { EMPTY_GEOMETRY_STATISTICS, GeometryInfo } from '../../../../src/modules/info/components/geometryInfo/GeometryInfo';
+import { EMPTY_GEOMETRY_STATISTIC, GeometryInfo } from '../../../../src/modules/info/components/geometryInfo/GeometryInfo';
 import { MvuElement } from '../../../../src/modules/MvuElement';
 import { TestUtils } from '../../../test-utils';
 
@@ -42,7 +43,8 @@ describe('GeometryInfo', () => {
 			const model = new GeometryInfo().getModel();
 
 			expect(model).toEqual({
-				statistics: {
+				statistic: {
+					geometryType: null,
 					coordinate: null,
 					azimuth: null,
 					length: null,
@@ -54,19 +56,19 @@ describe('GeometryInfo', () => {
 
 	describe('when initialized', () => {
 		it('renders nothing for default stats (empty)', async () => {
-			const emptyStats = EMPTY_GEOMETRY_STATISTICS;
+			const emptyStatistic = EMPTY_GEOMETRY_STATISTIC;
 
 			const element = await setup();
-			element.statistics = emptyStats;
+			element.statistic = emptyStatistic;
 
 			expect(element.shadowRoot.querySelector('.stats-container')).toBeFalsy();
 		});
 
 		it('renders point stats', async () => {
-			const pointStats = { coordinate: [21, 42], azimuth: null, length: null, area: null };
+			const pointStatistic = { geometryType: GeometryType.POINT, coordinate: [21, 42], azimuth: null, length: null, area: null };
 
 			const element = await setup();
-			element.statistics = pointStats;
+			element.statistic = pointStatistic;
 
 			expect(element.shadowRoot.querySelector('.stats-container')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.stats-point')).toBeTruthy();
@@ -74,13 +76,13 @@ describe('GeometryInfo', () => {
 
 		it('renders the items with line stats', async () => {
 			const element = await setup();
-			element.statistics = { coordinate: null, azimuth: null, length: 42, area: null };
+			element.statistic = { geometryType: GeometryType.LINE, coordinate: null, azimuth: null, length: 42, area: null };
 
 			expect(element.shadowRoot.querySelector('.stats-container')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.stats-line-azimuth')).toBeFalsy();
 			expect(element.shadowRoot.querySelector('.stats-line-length')).toBeTruthy();
 
-			element.statistics = { coordinate: null, azimuth: 42, length: 42, area: null };
+			element.statistic = { geometryType: GeometryType.LINE, coordinate: null, azimuth: 42, length: 42, area: null };
 
 			expect(element.shadowRoot.querySelector('.stats-container')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.stats-line-azimuth')).toBeTruthy();
@@ -89,7 +91,7 @@ describe('GeometryInfo', () => {
 
 		it('renders the items with polygon stats', async () => {
 			const element = await setup();
-			element.statistics = { coordinate: null, azimuth: null, length: 42, area: 42 };
+			element.statistic = { geometryType: GeometryType.POLYGON, coordinate: null, azimuth: null, length: 42, area: 42 };
 
 			expect(element.shadowRoot.querySelector('.stats-container')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.stats-polygon-length')).toBeTruthy();
@@ -98,7 +100,7 @@ describe('GeometryInfo', () => {
 
 		it('renders the items with smallest polygon stats', async () => {
 			const element = await setup();
-			element.statistics = { coordinate: null, azimuth: null, length: 0.001, area: 0 };
+			element.statistic = { geometryType: GeometryType.POLYGON, coordinate: null, azimuth: null, length: 0.001, area: 0 };
 
 			expect(element.shadowRoot.querySelector('.stats-container')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.stats-polygon-length')).toBeTruthy();

@@ -8,17 +8,11 @@ import {
 	RESET_REQUESTED,
 	FINISH_REQUESTED,
 	REMOVE_REQUESTED,
-	SELECTION_CHANGED
+	SELECTION_CHANGED,
+	DISPLAY_RULER_CHANGED
 } from './measurement.reducer';
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
-
-/**
- * Statistic-data of a measurement.
- * @typedef {Object} MeasureStatistic
- * @property {number} length the length in meter of the feature(s)
- * @property {number} area the area in squaremeter of the feature(s)
- */
 
 const getStore = () => {
 	const { StoreService: storeService } = $injector.inject('StoreService');
@@ -50,7 +44,7 @@ export const deactivate = () => {
 /**
  * set the statistic of a measurement.
  * @function
- * @param {MeasureStatistic} stat the measurement-statistic of the current selected feature(s)
+ * @param {module:domain/geometryStatisticTypeDef~GeometryStatistic} stat the measurement-statistic of the current selected feature(s)
  */
 export const setStatistic = (stat) => {
 	getStore().dispatch({
@@ -67,6 +61,17 @@ export const setMode = (mode) => {
 	getStore().dispatch({
 		type: MODE_CHANGED,
 		payload: mode
+	});
+};
+
+/**
+ * activates/deactivates the display of the partition overlays.
+ * @function
+ */
+export const setDisplayRuler = (displayRuler) => {
+	getStore().dispatch({
+		type: DISPLAY_RULER_CHANGED,
+		payload: displayRuler
 	});
 };
 

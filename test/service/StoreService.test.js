@@ -103,6 +103,9 @@ describe('StoreService', () => {
 		const timeTravelPluginMock = {
 			register: () => {}
 		};
+		const comparePluginMock = {
+			register: () => {}
+		};
 
 		const setupInjector = () => {
 			$injector
@@ -140,6 +143,7 @@ describe('StoreService', () => {
 				.registerSingleton('EncodeStatePlugin', encodeStatePlugin)
 				.registerSingleton('ObserveStateForEncodingPlugin', observeStateForEncodingPluginMock)
 				.registerSingleton('TimeTravelPlugin', timeTravelPluginMock)
+				.registerSingleton('ComparePlugin', comparePluginMock)
 
 				.ready();
 		};
@@ -151,7 +155,7 @@ describe('StoreService', () => {
 			expect(store).toBeDefined();
 
 			const reducerKeys = Object.keys(store.getState());
-			expect(reducerKeys.length).toBe(33);
+			expect(reducerKeys.length).toBe(34);
 			expect(reducerKeys.includes('map')).toBeTrue();
 			expect(reducerKeys.includes('pointer')).toBeTrue();
 			expect(reducerKeys.includes('position')).toBeTrue();
@@ -185,6 +189,7 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('wcAttribute')).toBeTrue();
 			expect(reducerKeys.includes('fileStorage')).toBeTrue();
 			expect(reducerKeys.includes('timeTravel')).toBeTrue();
+			expect(reducerKeys.includes('layerSwipe')).toBeTrue();
 		});
 
 		it('registers all plugins', async () => {
@@ -218,6 +223,7 @@ describe('StoreService', () => {
 			const historyStatePluginSpy = spyOn(encodeStatePlugin, 'register');
 			const observeStateForEncodingPluginSpy = spyOn(observeStateForEncodingPluginMock, 'register');
 			const timeTravelPluginSpy = spyOn(timeTravelPluginMock, 'register');
+			const comparePluginSpy = spyOn(comparePluginMock, 'register');
 			const instanceUnderTest = new StoreService();
 
 			setupInjector();
@@ -257,6 +263,7 @@ describe('StoreService', () => {
 			expect(historyStatePluginSpy).toHaveBeenCalledWith(store);
 			expect(observeStateForEncodingPluginSpy).toHaveBeenCalledWith(store);
 			expect(timeTravelPluginSpy).toHaveBeenCalledWith(store);
+			expect(comparePluginSpy).toHaveBeenCalledWith(store);
 		});
 	});
 });

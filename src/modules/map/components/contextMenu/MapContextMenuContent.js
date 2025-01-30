@@ -147,7 +147,15 @@ export class MapContextMenuContent extends MvuElement {
 									</li>
 									${parcel
 										? html`<li class="r_parcel">
-												<span class="label">${translate('map_contextMenuContent_parcel_label')}</span><span class="coordinate">${parcel}</span>
+												<span class="label"
+													>${translate('map_contextMenuContent_parcel_label')}
+													<ba-badge
+														.color=${'var(--text3)'}
+														.background=${'var(--roles-color)'}
+														.label=${translate('map_contextMenuContent_parcel_badge')}
+														.size=${'0.6'}
+													></ba-badge> </span
+												><span class="coordinate">${parcel}</span>
 											</li>`
 										: nothing}`
 							: nothing}

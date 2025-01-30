@@ -1,5 +1,6 @@
 import { $injector } from '../../injection/index';
 import { EventLike } from '../../utils/storeUtils';
+import { SwipeAlignment } from './layers.action';
 
 export const LAYER_ADDED = 'layer/added';
 export const LAYER_REMOVED = 'layer/removed';
@@ -73,7 +74,7 @@ export const createDefaultLayer = (id, geoResourceId = id) => {
  * @returns Constraints
  */
 export const createDefaultLayersConstraints = () => {
-	return { alwaysTop: false, hidden: false, cloneable: true, metaData: true };
+	return { alwaysTop: false, hidden: false, cloneable: true, metaData: true, swipeAlignment: SwipeAlignment.NOT_SET };
 };
 
 /**
@@ -141,6 +142,7 @@ const atomicallyRemoveAndSet = (state, payload) => {
 		geoResourceId: atomicallyAddedLayer.id,
 		...atomicallyAddedLayer,
 		zIndex: index,
+		constraints: { ...createDefaultLayersConstraints(), ...atomicallyAddedLayer.constraints },
 		grChangedFlag: state.active[index]?.id === atomicallyAddedLayer.id ? state.active[index].grChangedFlag : null
 	}));
 
@@ -172,7 +174,7 @@ const setReady = (state, payload) => {
 };
 
 const modifyLayer = (state, payload) => {
-	const { id, properties } = payload;
+	const { id, properties, constraints } = payload;
 
 	const layer = state.active.find((layer) => layer.id === id);
 	if (layer) {
@@ -184,7 +186,8 @@ const modifyLayer = (state, payload) => {
 
 		const updatedLayer = {
 			...layer,
-			...properties
+			...properties,
+			constraints: { ...layer.constraints, ...constraints }
 		};
 
 		//add updated layer
