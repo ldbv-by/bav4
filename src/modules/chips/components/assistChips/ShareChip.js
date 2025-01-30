@@ -11,7 +11,8 @@ import { AbstractAssistChip } from './AbstractAssistChip';
 import shareIcon from './assets/share.svg';
 import { setQueryParams } from '../../../../utils/urlUtils';
 
-const Update = 'update';
+const Update_Center = 'update_center';
+const Update_Label = 'update_label';
 
 /**
  * A chip to share the current state by a generated URL, optionally centered at a specified position.
@@ -24,7 +25,7 @@ const Update = 'update';
  */
 export class ShareChip extends AbstractAssistChip {
 	constructor() {
-		super({ center: null });
+		super({ center: null, label: null });
 		const {
 			TranslationService: translationService,
 			EnvironmentService: environmentService,
@@ -39,10 +40,15 @@ export class ShareChip extends AbstractAssistChip {
 
 	update(type, data, model) {
 		switch (type) {
-			case Update:
+			case Update_Center:
 				return {
 					...model,
 					center: data
+				};
+			case Update_Label:
+				return {
+					...model,
+					label: data
 				};
 		}
 	}
@@ -52,9 +58,11 @@ export class ShareChip extends AbstractAssistChip {
 	}
 
 	getLabel() {
-		const { center } = this.getModel();
+		const { center, label } = this.getModel();
 		const translate = (key) => this._translationService.translate(key);
-		return center ? translate('chips_assist_chip_share_position_label') : translate('chips_assist_chip_share_state_label');
+		const shareLabel = label ?? translate('chips_assist_chip_share_state_label_default');
+		const sharePositionLabel = translate('chips_assist_chip_share_position_label');
+		return center ? sharePositionLabel : shareLabel;
 	}
 
 	isVisible() {
@@ -65,7 +73,7 @@ export class ShareChip extends AbstractAssistChip {
 		const { center } = this.getModel();
 		const useShareApi = this._environmentService.getWindow().navigator.share ? true : false;
 		const translate = (key) => this._translationService.translate(key);
-		const title = center ? translate('chips_assist_chip_share_position_label') : translate('chips_assist_chip_share_state_label');
+		const title = center ? translate('chips_assist_chip_share_position_label') : translate('chips_assist_chip_share_state_label_default');
 		const url = await this._buildShareUrl(center);
 		const shareAction = useShareApi ? (url) => this._shareUrlWithApi(url) : (url) => this._shareUrlDialog(url, title);
 		shareAction(url);
@@ -111,8 +119,12 @@ export class ShareChip extends AbstractAssistChip {
 
 	set center(value) {
 		if (isCoordinate(value)) {
-			this.signal(Update, value);
+			this.signal(Update_Center, value);
 		}
+	}
+
+	set label(value) {
+		this.signal(Update_Label, value);
 	}
 
 	static get tag() {
