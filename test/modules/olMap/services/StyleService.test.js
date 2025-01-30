@@ -2,7 +2,6 @@ import { Feature } from 'ol';
 import { $injector } from '../../../../src/injection';
 import { TestUtils } from '../../../test-utils.js';
 import { StyleService, StyleTypes } from '../../../../src/modules/olMap/services/StyleService';
-import { OverlayService } from '../../../../src/modules/olMap/services/OverlayService';
 import { Polygon, Point, LineString } from 'ol/geom';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
