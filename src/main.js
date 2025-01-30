@@ -30,3 +30,4 @@ import './modules/share';
 import './modules/feedback';
 import './modules/export';
 import './modules/routing';
+import './modules/info';

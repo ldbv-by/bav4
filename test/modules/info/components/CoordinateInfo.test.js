@@ -1,11 +1,11 @@
 /* eslint-disable no-undef */
 
 import { $injector } from '../../../../src/injection/index.js';
-import { Icon } from '../../../../src/modules/commons/components/icon/Icon';
-import { CoordinateInfo } from '../../../../src/modules/commons/components/coordinateInfo/CoordinateInfo.js';
+import { Icon } from '../../../../src/modules/commons/components/icon/Icon.js';
+import { CoordinateInfo } from '../../../../src/modules/info/components/coordinateInfo/CoordinateInfo.js';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer.js';
 import { TestUtils } from '../../../test-utils.js';
-import { GlobalCoordinateRepresentations } from '../../../../src/domain/coordinateRepresentation';
+import { GlobalCoordinateRepresentations } from '../../../../src/domain/coordinateRepresentation.js';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action.js';
 
 window.customElements.define(CoordinateInfo.tag, CoordinateInfo);
