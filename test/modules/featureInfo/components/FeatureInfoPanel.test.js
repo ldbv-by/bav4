@@ -74,7 +74,7 @@ describe('FeatureInfoPanel', () => {
 
 				expect(element.shadowRoot.querySelectorAll('.info-container')).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll('.info-text')).toHaveSize(1);
-				expect(element.shadowRoot.querySelector('.info-text').innerText).toBe('geometryInfo_info');
+				expect(element.shadowRoot.querySelector('.info-text').innerText).toBe('featureInfo_info');
 				expect(element.shadowRoot.querySelectorAll('.info-icon')).toHaveSize(1);
 			});
 		});

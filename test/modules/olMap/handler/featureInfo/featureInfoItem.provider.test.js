@@ -6,7 +6,7 @@ import { getBvvFeatureInfo } from '../../../../../src/modules/olMap/handler/feat
 import { createDefaultLayer, createDefaultLayerProperties } from '../../../../../src/store/layers/layers.reducer';
 import GeoJSON from 'ol/format/GeoJSON';
 import { $injector } from '../../../../../src/injection';
-import { GeometryInfo } from '../../../../../src/modules/featureInfo/components/geometryInfo/GeometryInfo';
+import { GeometryInfo } from '../../../../../src/modules/info/components/geometryInfo/GeometryInfo';
 import { ExportVectorDataChip } from '../../../../../src/modules/chips/components/assistChips/ExportVectorDataChip';
 import { TestUtils } from '../../../../test-utils';
 import { FeatureInfoGeometryTypes } from '../../../../../src/domain/featureInfo';

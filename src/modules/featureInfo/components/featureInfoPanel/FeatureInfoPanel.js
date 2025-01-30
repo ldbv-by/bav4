@@ -110,7 +110,7 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 				: featureInfoData.length === 0
 					? html`<div class="info-container">
 							<div class="info-icon"></div>
-							<span class="info-text">${unsafeHTML(translate('geometryInfo_info'))} </span>
+							<span class="info-text">${unsafeHTML(translate('featureInfo_info'))} </span>
 						</div>`
 					: nothing;
 		};
