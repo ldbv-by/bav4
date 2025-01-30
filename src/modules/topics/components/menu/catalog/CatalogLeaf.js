@@ -24,7 +24,7 @@ export const LOADING_PREVIEW_DELAY_MS = 500;
 
 /**
  * @class
- * @property {module:domain/catalogTypeDef~CatalogEntry} data The catalog entry for this CatalogLeaf
+ * @property {module:domain/catalogTypeDef~CatalogNode} data The catalog node for this CatalogLeaf
  * @author taulinger
  * @author alsturm
  * @author costa_gi
@@ -47,8 +47,8 @@ export class CatalogLeaf extends AbstractMvuContentPanel {
 		this._timeoutId = null;
 	}
 
-	set data(catalogEntry) {
-		this.signal(Update_GeoResource_Id, catalogEntry.geoResourceId);
+	set data(catalogNode) {
+		this.signal(Update_GeoResource_Id, catalogNode.geoResourceId);
 	}
 
 	onInitialize() {
