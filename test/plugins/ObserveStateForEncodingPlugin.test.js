@@ -17,6 +17,8 @@ import { TabIds } from '../../src/domain/mainMenu';
 import { setTab } from '../../src/store/mainMenu/mainMenu.action';
 import { updateRatio } from '../../src/store/layerSwipe/layerSwipe.action';
 import { layerSwipeReducer } from '../../src/store/layerSwipe/layerSwipe.reducer';
+import { catalogReducer } from '../../src/store/catalog/catalog.reducer';
+import { addOpenNode } from '../../src/store/catalog/catalog.action';
 
 describe('ObserveStateForEncodingPlugin', () => {
 	const shareService = {
@@ -42,6 +44,7 @@ describe('ObserveStateForEncodingPlugin', () => {
 			routing: routingReducer,
 			tools: toolsReducer,
 			topics: topicsReducer,
+			catalog: catalogReducer,
 			mainMenu: createNoInitialStateMainMenuReducer(),
 			layerSwipe: layerSwipeReducer,
 			encodedState: stateForEncodingReducer
@@ -175,6 +178,20 @@ describe('ObserveStateForEncodingPlugin', () => {
 		await instanceUnderTest.register(store);
 
 		setCurrent('someTopic');
+
+		expect(store.getState().encodedState.changed).not.toEqual(initialState.changed);
+	});
+
+	it('registers a catalog change listener and indicates its changes', async () => {
+		const store = setup();
+		spyOn(shareService, 'encodeState').and.callFake(() => {
+			// let's return a different state each call
+			return `state_${Math.random()}`;
+		});
+		const instanceUnderTest = new ObserveStateForEncodingPlugin();
+		await instanceUnderTest.register(store);
+
+		addOpenNode('someNode');
 
 		expect(store.getState().encodedState.changed).not.toEqual(initialState.changed);
 	});

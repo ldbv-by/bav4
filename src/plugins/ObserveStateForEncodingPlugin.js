@@ -35,6 +35,7 @@ export class ObserveStateForEncodingPlugin extends BaPlugin {
 		observe(store, (state) => state.routing.categoryId, updateStore);
 		observe(store, (state) => state.tools.current, updateStore);
 		observe(store, (state) => state.topics.current, updateStore);
+		observe(store, (state) => state.catalog.openNodes, updateStore);
 		observe(store, (state) => state.mainMenu.tab, updateStore);
 		observe(store, (state) => state.layerSwipe.ratio, updateStore);
 		setTimeout(updateStore, 0);
