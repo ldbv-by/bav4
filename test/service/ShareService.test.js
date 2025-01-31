@@ -15,12 +15,14 @@ import { routingReducer } from '../../src/store/routing/routing.reducer';
 import { toolsReducer } from '../../src/store/tools/tools.reducer';
 import { setCurrentTool } from '../../src/store/tools/tools.action';
 import { highlightReducer } from '../../src/store/highlight/highlight.reducer';
+import { catalogReducer } from '../../src/store/catalog/catalog.reducer';
 import { layerSwipeReducer } from '../../src/store/layerSwipe/layerSwipe.reducer';
 import { addHighlightFeatures, HighlightFeatureType } from '../../src/store/highlight/highlight.action';
 import { CROSSHAIR_HIGHLIGHT_FEATURE_ID } from '../../src/plugins/HighlightPlugin';
 import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer';
 import { TabIds } from '../../src/domain/mainMenu';
 import { setTab } from '../../src/store/mainMenu/mainMenu.action';
+import { setOpenNodes } from '../../src/store/catalog/catalog.action';
 import { Tools } from '../../src/domain/tools';
 
 describe('ShareService', () => {
@@ -56,6 +58,7 @@ describe('ShareService', () => {
 			layers: layersReducer,
 			position: positionReducer,
 			topics: topicsReducer,
+			catalog: catalogReducer,
 			routing: routingReducer,
 			tools: toolsReducer,
 			highlight: highlightReducer,
@@ -368,6 +371,27 @@ describe('ShareService', () => {
 			});
 		});
 
+		describe('_extractCatalogNodes', () => {
+			it('extracts the current catalog state', () => {
+				setup();
+				const instanceUnderTest = new ShareService();
+				setOpenNodes(['node0', 'node1']);
+
+				const extract = instanceUnderTest._extractCatalogNodes();
+
+				expect(extract[QueryParameters.CATALOG_NODE_IDS]).toBe('node0,node1');
+			});
+
+			it('does nothing when no catalog nodes are available', () => {
+				setup();
+				const instanceUnderTest = new ShareService();
+
+				const extract = instanceUnderTest._extractCatalogNodes();
+
+				expect(extract[QueryParameters.CATALOG_NODE_IDS]).toBeUndefined();
+			});
+		});
+
 		describe('_extractRoute', () => {
 			it('extracts the current route', () => {
 				setup();
@@ -632,6 +656,7 @@ describe('ShareService', () => {
 						.and.returnValue({ c: [44.123, 88.123], z: 5, r: 0.5 });
 					spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
 					spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
+					spyOn(instanceUnderTest, '_extractCatalogNodes').and.returnValue({ cnids: 'someNode' });
 					spyOn(instanceUnderTest, '_extractRoute').and.returnValue({ rtwp: '1,2', rtc: 'rtCatId' });
 					spyOn(instanceUnderTest, '_extractTool').and.returnValue({ tid: 'someTool' });
 					spyOn(instanceUnderTest, '_extractCrosshair').and.returnValue({ crh: 'true' });
@@ -641,12 +666,13 @@ describe('ShareService', () => {
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/?')).toBeTrue();
-					expect(queryParams.size).toBe(10);
+					expect(queryParams.size).toBe(11);
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
 					expect(queryParams.get(QueryParameters.ROTATION)).toBe('0.5');
 					expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
+					expect(queryParams.get(QueryParameters.CATALOG_NODE_IDS)).toBe('someNode');
 					expect(queryParams.get(QueryParameters.ROUTE_WAYPOINTS)).toBe('1,2');
 					expect(queryParams.get(QueryParameters.ROUTE_CATEGORY)).toBe('rtCatId');
 					expect(queryParams.get(QueryParameters.TOOL_ID)).toBe('someTool');
@@ -721,6 +747,7 @@ describe('ShareService', () => {
 						.and.returnValue({ c: [44.123, 88.123], z: 5, r: 0.5 });
 					spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
 					spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
+					spyOn(instanceUnderTest, '_extractCatalogNodes').and.returnValue({ cnids: 'someNode' });
 					spyOn(instanceUnderTest, '_extractTool').and.returnValue({ tid: 'someTool' });
 					const _mergeExtraParamsSpy = spyOn(instanceUnderTest, '_mergeExtraParams').withArgs(jasmine.anything(), {}).and.callThrough();
 
@@ -728,12 +755,13 @@ describe('ShareService', () => {
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
 					expect(encoded.startsWith('http://frontend.de/app/?')).toBeTrue();
-					expect(queryParams.size).toBe(7);
+					expect(queryParams.size).toBe(8);
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
 					expect(queryParams.get(QueryParameters.ROTATION)).toBe('0.5');
 					expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
+					expect(queryParams.get(QueryParameters.CATALOG_NODE_IDS)).toBe('someNode');
 					expect(queryParams.get(QueryParameters.TOOL_ID)).toBe('someTool');
 					expect(queryParams.get(QueryParameters.MENU_ID)).toBe('0');
 					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
@@ -803,6 +831,7 @@ describe('ShareService', () => {
 				.withArgs({ includeHiddenGeoResources: false })
 				.and.returnValue({ l: ['someLayer', 'anotherLayer'] });
 			spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
+			spyOn(instanceUnderTest, '_extractCatalogNodes').and.returnValue({ cnids: 'someNode' });
 			spyOn(instanceUnderTest, '_extractRoute').and.returnValue({ rtwp: '1,2', rtc: 'rtCatId' });
 			spyOn(instanceUnderTest, '_extractTool').and.returnValue({ tid: 'someTool' });
 			spyOn(instanceUnderTest, '_extractCrosshair').and.returnValue({ crh: 'true' });
@@ -810,12 +839,13 @@ describe('ShareService', () => {
 
 			const params = instanceUnderTest.getParameters();
 
-			expect(params).toHaveSize(10);
+			expect(params).toHaveSize(11);
 			expect(params.get(QueryParameters.LAYER)).toEqual(['someLayer', 'anotherLayer']);
 			expect(params.get(QueryParameters.ZOOM)).toBe(5);
 			expect(params.get(QueryParameters.CENTER)).toEqual([44.123, 88.123]);
 			expect(params.get(QueryParameters.ROTATION)).toBe(0.5);
 			expect(params.get(QueryParameters.TOPIC)).toBe('someTopic');
+			expect(params.get(QueryParameters.CATALOG_NODE_IDS)).toBe('someNode');
 			expect(params.get(QueryParameters.ROUTE_WAYPOINTS)).toBe('1,2');
 			expect(params.get(QueryParameters.ROUTE_CATEGORY)).toBe('rtCatId');
 			expect(params.get(QueryParameters.TOOL_ID)).toBe('someTool');
