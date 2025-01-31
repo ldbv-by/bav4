@@ -1,5 +1,5 @@
 /**
- * @module modules/commons/components/coordinateInfo/CoordinateInfo
+ * @module modules/info/components/coordinateInfo/CoordinateInfo
  */
 import { html, nothing } from 'lit-html';
 import css from './coordinateinfo.css';
