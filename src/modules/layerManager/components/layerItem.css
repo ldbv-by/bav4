@@ -110,7 +110,6 @@
 	position: absolute;
 	height: 0.3em;
 	background: var(--primary-color);
-	z-index: 1;
 	transition: all var(--animation-duration-medium-open);
 }
 .left {
