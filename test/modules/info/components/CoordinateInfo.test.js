@@ -22,6 +22,10 @@ describe('CoordinateInfo', () => {
 	const shareServiceMock = {
 		copyToClipboard() {}
 	};
+
+	const elevationServiceMock = {
+		getElevation() {}
+	};
 	const translationServiceMock = {
 		translate: (key) => key
 	};
@@ -41,6 +45,7 @@ describe('CoordinateInfo', () => {
 			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('CoordinateService', coordinateServiceMock)
 			.registerSingleton('ShareService', shareServiceMock)
+			.registerSingleton('ElevationService', elevationServiceMock)
 			.registerSingleton('TranslationService', translationServiceMock);
 
 		return TestUtils.render(CoordinateInfo.tag);
@@ -52,7 +57,8 @@ describe('CoordinateInfo', () => {
 			const element = new CoordinateInfo();
 
 			expect(element.getModel()).toEqual({
-				coordinate: null
+				coordinate: null,
+				elevation: null
 			});
 		});
 		it('have a coordinate property', async () => {
@@ -71,7 +77,8 @@ describe('CoordinateInfo', () => {
 
 			//model
 			expect(element.getModel()).toEqual({
-				coordinate: null
+				coordinate: null,
+				elevation: null
 			});
 		});
 
@@ -86,6 +93,7 @@ describe('CoordinateInfo', () => {
 		it('renders the full content', async () => {
 			const coordinateMock = [1000, 2000];
 			const stringifiedCoord = 'stringified coordinate';
+			const elevationMock = spyOn(elevationServiceMock, 'getElevation').withArgs(coordinateMock).and.resolveTo(42);
 			const getCoordinateRepresentationsMock = spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([
 				GlobalCoordinateRepresentations.WGS84
 			]);
@@ -100,17 +108,41 @@ describe('CoordinateInfo', () => {
 			expect(element.shadowRoot.querySelectorAll('.container')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.content')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.r_coordinate')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.label')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.r_elevation')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.label')).toHaveSize(2);
 			expect(element.shadowRoot.querySelectorAll('.label')[0].innerText).toBe(GlobalCoordinateRepresentations.WGS84.label);
+			expect(element.shadowRoot.querySelectorAll('.label')[1].innerText).toBe('info_coordinateInfo_elevation_label');
 			expect(element.shadowRoot.querySelectorAll('.coordinate')[0].innerText).toBe(stringifiedCoord);
 
 			const copyIcon = element.shadowRoot.querySelector(Icon.tag);
 			expect(copyIcon).toBeTruthy();
-			expect(copyIcon.title).toBe('commons_coordinateInfo_copy_icon');
+			expect(copyIcon.title).toBe('info_coordinateInfo_copy_icon');
+			expect(elevationMock).toHaveBeenCalledOnceWith(coordinateMock);
 			expect(getCoordinateRepresentationsMock).toHaveBeenCalledWith([1000, 2000]);
 			expect(stringifyMock).toHaveBeenCalledWith(coordinateMock, GlobalCoordinateRepresentations.WGS84);
 
 			expect(translationServiceSpy).toHaveBeenCalledWith(GlobalCoordinateRepresentations.WGS84.label, [], true);
+		});
+
+		it('renders the content when elevation is NOT available', async () => {
+			const coordinateMock = [1000, 2000];
+			const stringifiedCoord = 'stringified coordinate';
+			const getCoordinateRepresentationsMock = spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([
+				GlobalCoordinateRepresentations.WGS84
+			]);
+			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
+			const stringifyMock = spyOn(coordinateServiceMock, 'stringify').and.returnValue(stringifiedCoord);
+
+			spyOn(elevationServiceMock, 'getElevation').withArgs(coordinateMock).and.resolveTo(null);
+			const element = await setup();
+
+			element.coordinate = [...coordinateMock];
+
+			await TestUtils.timeout();
+			expect(element.shadowRoot.querySelectorAll('.r_elevation')).toHaveSize(0);
+			expect(getCoordinateRepresentationsMock).toHaveBeenCalledWith([1000, 2000]);
+			expect(stringifyMock).toHaveBeenCalledWith(coordinateMock, GlobalCoordinateRepresentations.WGS84);
+			expect(element.shadowRoot.querySelectorAll('.r_elevation')).toHaveSize(0);
 		});
 
 		it('copies a coordinate to the clipboard', async () => {
@@ -130,7 +162,7 @@ describe('CoordinateInfo', () => {
 			expect(copyToClipboardMock).toHaveBeenCalledWith(stringifiedCoord);
 			await TestUtils.timeout();
 			//check notification
-			expect(store.getState().notifications.latest.payload.content).toBe(`"${stringifiedCoord}" commons_coordinateInfo_clipboard_success`);
+			expect(store.getState().notifications.latest.payload.content).toBe(`"${stringifiedCoord}" info_coordinateInfo_clipboard_success`);
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 		});
 
@@ -150,9 +182,28 @@ describe('CoordinateInfo', () => {
 			copyIcon.click();
 
 			await TestUtils.timeout();
-			expect(store.getState().notifications.latest.payload.content).toBe('commons_coordinateInfo_clipboard_error');
+			expect(store.getState().notifications.latest.payload.content).toBe('info_coordinateInfo_clipboard_error');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 			expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
+		});
+	});
+
+	describe('ElevationService throws', () => {
+		it('resets the model and re-throws the error', async () => {
+			await setup();
+			const error = new Error('Elevation Error');
+			spyOn(elevationServiceMock, 'getElevation').and.rejectWith(error);
+			const element = new CoordinateInfo({
+				coordinate: null,
+				elevation: 12345
+			});
+
+			await expectAsync(element._getElevation([1000, 2000])).toBeRejectedWith(error);
+
+			expect(element.getModel()).toEqual({
+				coordinate: null,
+				elevation: null
+			});
 		});
 	});
 });

@@ -9,7 +9,6 @@ import { MvuElement } from '../../../MvuElement';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 
 const Update_Coordinate = 'update_coordinate';
-const Update_Elevation = 'update_elevation';
 const Update_Administration = 'update_administration';
 
 const emptyAdministration = {
@@ -30,34 +29,29 @@ export class MapContextMenuContent extends MvuElement {
 		super(
 			model ?? {
 				coordinate: null,
-				elevation: null,
 				administration: { ...emptyAdministration }
 			}
 		);
 
 		const {
 			MapService: mapService,
-			CoordinateService: coordinateService,
+
 			TranslationService: translationService,
 			ShareService: shareService,
-			ElevationService: elevationService,
 			AdministrationService: administrationService
-		} = $injector.inject('MapService', 'CoordinateService', 'TranslationService', 'ShareService', 'ElevationService', 'AdministrationService');
+		} = $injector.inject('MapService', 'TranslationService', 'ShareService', 'AdministrationService');
 
 		this._mapService = mapService;
-		this._coordinateService = coordinateService;
+
 		this._translationService = translationService;
 		this._shareService = shareService;
-		this._elevationService = elevationService;
 		this._administrationService = administrationService;
 	}
 
 	update(type, data, model) {
 		switch (type) {
 			case Update_Coordinate:
-				return { ...model, coordinate: data, administration: { ...emptyAdministration }, elevation: null };
-			case Update_Elevation:
-				return { ...model, elevation: data };
+				return { ...model, coordinate: data, administration: { ...emptyAdministration } };
 			case Update_Administration:
 				return { ...model, administration: data };
 		}
@@ -65,18 +59,7 @@ export class MapContextMenuContent extends MvuElement {
 
 	set coordinate(coordinateInMapSrid) {
 		this.signal(Update_Coordinate, coordinateInMapSrid);
-		this._getElevation(coordinateInMapSrid);
 		this._getAdministration(coordinateInMapSrid);
-	}
-
-	async _getElevation(coordinate) {
-		try {
-			const elevation = await this._elevationService.getElevation(coordinate);
-			this.signal(Update_Elevation, elevation);
-		} catch (e) {
-			this.signal(Update_Elevation, null);
-			throw e;
-		}
 	}
 
 	async _getAdministration(coordinate) {
@@ -89,10 +72,10 @@ export class MapContextMenuContent extends MvuElement {
 		}
 	}
 
-	async _copyCoordinateToClipboard(stringifiedCoord) {
+	async _copyValueToClipboard(value) {
 		try {
-			await this._shareService.copyToClipboard(stringifiedCoord);
-			emitNotification(`"${stringifiedCoord}" ${this._translationService.translate('map_contextMenuContent_clipboard_success')}`, LevelTypes.INFO);
+			await this._shareService.copyToClipboard(value);
+			emitNotification(`"${value}" ${this._translationService.translate('map_contextMenuContent_clipboard_success')}`, LevelTypes.INFO);
 		} catch {
 			const message = this._translationService.translate('map_contextMenuContent_clipboard_error');
 			emitNotification(message, LevelTypes.WARN);
@@ -103,10 +86,18 @@ export class MapContextMenuContent extends MvuElement {
 	createView(model) {
 		const {
 			coordinate,
-			elevation,
 			administration: { community, district, parcel }
 		} = model;
 		const translate = (key) => this._translationService.translate(key);
+		const onClickCommunity = () => {
+			this._copyValueToClipboard(community);
+		};
+		const onClickDistrict = () => {
+			this._copyValueToClipboard(district);
+		};
+		const onClickParcel = () => {
+			this._copyValueToClipboard(parcel);
+		};
 		if (coordinate) {
 			return html`
 				<style>
@@ -124,7 +115,7 @@ export class MapContextMenuContent extends MvuElement {
 												.icon="${clipboardIcon}"
 												.title=${translate('map_contextMenuContent_copy_icon')}
 												.size=${1.5}
-												@click=${() => this._copyCoordinateToClipboard(community)}
+												@click=${onClickCommunity}
 											></ba-icon>
 										</span>
 									</li>
@@ -136,7 +127,7 @@ export class MapContextMenuContent extends MvuElement {
 												.icon="${clipboardIcon}"
 												.title=${translate('map_contextMenuContent_copy_icon')}
 												.size=${1.5}
-												@click=${() => this._copyCoordinateToClipboard(district)}
+												@click=${onClickDistrict}
 											></ba-icon>
 										</span>
 									</li>
@@ -157,18 +148,13 @@ export class MapContextMenuContent extends MvuElement {
 														.icon="${clipboardIcon}"
 														.title=${translate('map_contextMenuContent_copy_icon')}
 														.size=${1.5}
-														@click=${() => this._copyCoordinateToClipboard(parcel)}
+														@click=${onClickParcel}
 													></ba-icon>
 												</span>
 											</li>`
 										: nothing}`
 							: nothing}
 						<li><ba-coordinate-info .coordinate=${coordinate}></ba-coordinate-info></li>
-						${elevation
-							? html`<li class="r_elevation">
-									<span class="label">${translate('map_contextMenuContent_elevation_label')}</span><span class="coordinate">${elevation}</span>
-								</li>`
-							: nothing}
 					</ul>
 					<div class="chips">
 						<ba-share-chip .center=${coordinate}></ba-share-chip>
