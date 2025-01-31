@@ -9,6 +9,7 @@ import { $injector } from '../injection';
 import { QueryParameters } from '../domain/queryParameters';
 import { Tools } from '../domain/tools';
 import { isNumber } from '../utils/checks';
+import { setOpenNodes } from '../store/catalog/catalog.action';
 
 /**
  * @class
@@ -33,6 +34,11 @@ export class MainMenuPlugin extends BaPlugin {
 		} else {
 			// set default tab id
 			setTab(TabIds.MAPS);
+		}
+
+		const catalogNodes = queryParams.get(QueryParameters.CATALOG_NODE_IDS);
+		if (catalogNodes) {
+			setOpenNodes(catalogNodes.split(','));
 		}
 	}
 

@@ -15,6 +15,7 @@ import { toolsReducer } from '../../src/store/tools/tools.reducer.js';
 import { Tools } from '../../src/domain/tools.js';
 import { createNoInitialStateMediaReducer } from '../../src/store/media/media.reducer';
 import { setIsPortrait } from '../../src/store/media/media.action';
+import { catalogReducer } from '../../src/store/catalog/catalog.reducer.js';
 
 describe('MainMenuPlugin', () => {
 	const environmentServiceMock = {
@@ -44,7 +45,8 @@ describe('MainMenuPlugin', () => {
 			media: createNoInitialStateMediaReducer(),
 			featureInfo: featureInfoReducer,
 			search: searchReducer,
-			tools: toolsReducer
+			tools: toolsReducer,
+			catalog: catalogReducer
 		});
 		$injector.registerSingleton('EnvironmentService', environmentServiceMock);
 		return store;
@@ -61,7 +63,7 @@ describe('MainMenuPlugin', () => {
 	});
 
 	describe('_init', () => {
-		describe('query parameter available', () => {
+		describe('`MENU_ID` query parameter available', () => {
 			it('sets the requested tab id', async () => {
 				const queryParam = new URLSearchParams(`${QueryParameters.MENU_ID}=4`);
 				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
@@ -98,7 +100,7 @@ describe('MainMenuPlugin', () => {
 			});
 		});
 
-		describe('query parameter is NOT available', () => {
+		describe('`MENU_ID` query parameter is NOT available', () => {
 			it('sets the default tab id', async () => {
 				const store = setup();
 				const instanceUnderTest = new MainMenuPlugin();
@@ -106,6 +108,32 @@ describe('MainMenuPlugin', () => {
 				instanceUnderTest._init();
 
 				expect(store.getState().mainMenu.tab).toEqual(defaultTabId);
+			});
+		});
+
+		describe('`CATALOG_NODE_IDS` query parameter available', () => {
+			it('sets the catalog node ids', async () => {
+				const queryParam = new URLSearchParams(`${QueryParameters.CATALOG_NODE_IDS}=node0,node1`);
+				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				const store = setup();
+				const instanceUnderTest = new MainMenuPlugin();
+
+				instanceUnderTest._init();
+
+				expect(store.getState().catalog.openNodes).toEqual(['node0', 'node1']);
+			});
+		});
+
+		describe('`CATALOG_NODE_IDS` query parameter is NOT available', () => {
+			it('does nothing', async () => {
+				const queryParam = new URLSearchParams(`${QueryParameters.CATALOG_NODE_IDS}=`);
+				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+				const store = setup();
+				const instanceUnderTest = new MainMenuPlugin();
+
+				instanceUnderTest._init();
+
+				expect(store.getState().catalog.openNodes).toEqual([]);
 			});
 		});
 	});
