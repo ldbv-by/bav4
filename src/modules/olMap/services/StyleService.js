@@ -318,18 +318,12 @@ export class StyleService {
 		const { OverlayService: overlayService } = $injector.inject('OverlayService');
 
 		/**
-		 * Provide a single entrypoint for features without a stored partition_delta,
-		 * to create a best fitting partition-delta after zooming of the map ends.
+		 * After each resolution change the measurement features need updated overlays
+		 * to be synchronized with the rendered measurement style and the drawn partition ticks.
 		 *
 		 * This must be done before the style is applied for the first time.
-		 *
-		 * This fallback is needed, if stored data is loaded in the background, without
-		 * rendering and the initial resolution does not fit to the final zoomed extent
-		 * of the feature.
 		 */
-		if (olFeature.get('partition_delta') == null) {
-			olMap.getView().once('change:resolution', () => olMap.once('moveend', (e) => overlayService.update(olFeature, e.map, StyleTypes.MEASURE)));
-		}
+		olMap.getView().on('change:resolution', () => overlayService.update(olFeature, olMap, StyleTypes.MEASURE));
 
 		if (!olFeature.get(GEODESIC_FEATURE_PROPERTY)) {
 			olFeature.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(olFeature, olMap));
