@@ -107,30 +107,7 @@ export class MapContextMenuContent extends MvuElement {
 			administration: { community, district, parcel }
 		} = model;
 		const translate = (key) => this._translationService.translate(key);
-		const translateSilently = (key) => this._translationService.translate(key, [], true);
-
 		if (coordinate) {
-			const coordinateRepresentations = this._mapService.getCoordinateRepresentations(coordinate);
-			const stringifiedCoords = coordinateRepresentations.map((cr) => {
-				const { label } = cr;
-				const stringifiedCoord = this._coordinateService.stringify(coordinate, cr);
-				const onClick = () => {
-					this._copyCoordinateToClipboard(stringifiedCoord);
-				};
-				return html`
-					<span class="label">${translateSilently(label)}</span><span class="coordinate">${stringifiedCoord}</span>
-					<span class="icon">
-						<ba-icon
-							class="close"
-							.icon="${clipboardIcon}"
-							.title=${translate('map_contextMenuContent_copy_icon')}
-							.size=${1.5}
-							@click=${onClick}
-						></ba-icon>
-					</span>
-				`;
-			});
-
 			return html`
 				<style>
 					${css}
@@ -140,10 +117,28 @@ export class MapContextMenuContent extends MvuElement {
 					<ul class="content selectable">
 						${community && district
 							? html`<li class="r_community">
-										<span class="label">${translate('map_contextMenuContent_community_label')}</span><span class="coordinate">${community}</span>
+										<span class="label">${translate('map_contextMenuContent_community_label')}</span><span class="coordinate">${community}</span
+										><span class="icon">
+											<ba-icon
+												class="close"
+												.icon="${clipboardIcon}"
+												.title=${translate('map_contextMenuContent_copy_icon')}
+												.size=${1.5}
+												@click=${() => this._copyCoordinateToClipboard(community)}
+											></ba-icon>
+										</span>
 									</li>
 									<li class="r_district">
-										<span class="label">${translate('map_contextMenuContent_district_label')}</span><span class="coordinate">${district}</span>
+										<span class="label">${translate('map_contextMenuContent_district_label')}</span><span class="coordinate">${district}</span
+										><span class="icon">
+											<ba-icon
+												class="close"
+												.icon="${clipboardIcon}"
+												.title=${translate('map_contextMenuContent_copy_icon')}
+												.size=${1.5}
+												@click=${() => this._copyCoordinateToClipboard(district)}
+											></ba-icon>
+										</span>
 									</li>
 									${parcel
 										? html`<li class="r_parcel">
@@ -156,10 +151,18 @@ export class MapContextMenuContent extends MvuElement {
 														.size=${'0.6'}
 													></ba-badge> </span
 												><span class="coordinate">${parcel}</span>
+												<span class="icon">
+													<ba-icon
+														class="close"
+														.icon="${clipboardIcon}"
+														.title=${translate('map_contextMenuContent_copy_icon')}
+														.size=${1.5}
+														@click=${() => this._copyCoordinateToClipboard(parcel)}
+													></ba-icon>
+												</span>
 											</li>`
 										: nothing}`
 							: nothing}
-						${stringifiedCoords.map((strCoord) => html`<li class="r_coordinate">${strCoord}</li>`)}
 						<li><ba-coordinate-info .coordinate=${coordinate}></ba-coordinate-info></li>
 						${elevation
 							? html`<li class="r_elevation">
