@@ -129,10 +129,14 @@ describe('markerScaleToKeyword', () => {
 		expect(markerScaleToKeyword(true)).toBe('small');
 		expect(markerScaleToKeyword(false)).toBe('small');
 	});
-	it('should map scale-overflow to standard scale', () => {
-		expect(markerScaleToKeyword(2)).toBe(1);
-		expect(markerScaleToKeyword(42)).toBe(1);
-		expect(markerScaleToKeyword(420)).toBe(1);
+
+	it('should map scale-overflow to default scales', () => {
+		expect(markerScaleToKeyword(0.04)).toBe('small');
+		expect(markerScaleToKeyword(0.4)).toBe('small');
+		expect(markerScaleToKeyword(0.8)).toBe('small');
+		expect(markerScaleToKeyword(2)).toBe('large');
+		expect(markerScaleToKeyword(42)).toBe('large');
+		expect(markerScaleToKeyword(420)).toBe('large');
 	});
 });
 
@@ -413,6 +417,11 @@ describe('renderLinearRulerSegments', () => {
 		[1, 0]
 	]);
 	const feature = new Feature({ geometry: geometry });
+
+	beforeEach(() => {
+		feature.unset('displayruler');
+	});
+
 	const resolution = 1;
 	it('should call contextRenderer', () => {
 		const contextRenderer = jasmine.createSpy();
@@ -423,6 +432,27 @@ describe('renderLinearRulerSegments', () => {
 		];
 		spyOn(mapServiceMock, 'calcLength').and.returnValue(1);
 
+		renderLinearRulerSegments(pixelCoordinates, stateMock, contextRenderer);
+		expect(contextRenderer).toHaveBeenCalledTimes(1 + 1 + 1); //baseStroke + mainStroke + subStroke
+		expect(contextRenderer).toHaveBeenCalledWith(jasmine.any(Geometry), jasmine.any(Fill), jasmine.any(Stroke));
+	});
+
+	it("should respect 'displayruler' property", () => {
+		const contextRenderer = jasmine.createSpy('contextRenderer');
+		const stateMock = { geometry: feature.getGeometry(), resolution: resolution, feature: feature };
+		const pixelCoordinates = [
+			[0, 0],
+			[0, 1]
+		];
+		feature.set('displayruler', 'false');
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(1);
+
+		renderLinearRulerSegments(pixelCoordinates, stateMock, contextRenderer);
+		expect(contextRenderer).toHaveBeenCalledTimes(1 + 0 + 0); //only baseStroke + NOT(mainStroke) + NOT(subStroke)
+		expect(contextRenderer).toHaveBeenCalledWith(jasmine.any(Geometry), jasmine.any(Fill), jasmine.any(Stroke));
+		contextRenderer.calls.reset();
+
+		feature.set('displayruler', 'true');
 		renderLinearRulerSegments(pixelCoordinates, stateMock, contextRenderer);
 		expect(contextRenderer).toHaveBeenCalledTimes(1 + 1 + 1); //baseStroke + mainStroke + subStroke
 		expect(contextRenderer).toHaveBeenCalledWith(jasmine.any(Geometry), jasmine.any(Fill), jasmine.any(Stroke));
@@ -520,6 +550,27 @@ describe('renderGeodesicRulerSegments', () => {
 			[0, 1]
 		];
 
+		renderGeodesicRulerSegments(pixelCoordinates, stateMock, contextRenderer, geodesic);
+		expect(contextRenderer).toHaveBeenCalledTimes(1 + 1); //baseStroke +  tickStroke
+		expect(contextRenderer).toHaveBeenCalledWith(jasmine.any(Geometry), jasmine.any(Fill), jasmine.any(Stroke));
+	});
+
+	it("should respect 'displayruler' property", () => {
+		const contextRenderer = jasmine.createSpy('contextRenderer');
+		const stateMock = { geometry: feature.getGeometry(), resolution: resolution, feature: feature };
+		const pixelCoordinates = [
+			[0, 0],
+			[0, 1]
+		];
+		feature.set('displayruler', 'false');
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(1);
+
+		renderGeodesicRulerSegments(pixelCoordinates, stateMock, contextRenderer, geodesic);
+		expect(contextRenderer).toHaveBeenCalledTimes(1 + 0); //baseStroke +  NOT(tickStroke)
+		expect(contextRenderer).toHaveBeenCalledWith(jasmine.any(Geometry), jasmine.any(Fill), jasmine.any(Stroke));
+		contextRenderer.calls.reset();
+
+		feature.set('displayruler', 'true');
 		renderGeodesicRulerSegments(pixelCoordinates, stateMock, contextRenderer, geodesic);
 		expect(contextRenderer).toHaveBeenCalledTimes(1 + 1); //baseStroke +  tickStroke
 		expect(contextRenderer).toHaveBeenCalledWith(jasmine.any(Geometry), jasmine.any(Fill), jasmine.any(Stroke));
@@ -1671,6 +1722,7 @@ describe('util functions creating a text style', () => {
 		const rgbaColor = [0, 0, 0, 0];
 		const lineStyleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 0.5 };
 		const polygonStyleOption = { symbolSrc: markerIcon, color: '#BEDA55' };
+		const noTextMarkerStyleOption = { color: '#BEDA55', scale: 'small', text: null };
 		const modifyFeatureMock = { get: () => [lineStringFeature] };
 
 		const measureStyles = measureStyleFunction(lineStringFeature, resolution);
@@ -1682,6 +1734,7 @@ describe('util functions creating a text style', () => {
 		const customLineStyles = lineStyleFunction(lineStyleOption);
 		const defaultPolygonStyles = polygonStyleFunction();
 		const customPolygonStyles = polygonStyleFunction(polygonStyleOption);
+		const noTextMarkerStyles = markerStyleFunction(noTextMarkerStyleOption);
 		const modifyStyles = modifyStyleFunction(modifyFeatureMock);
 		const selectStyles = selectStyleFunction()(lineStringFeature);
 		const sketchStyles = createSketchStyleFunction(measureStyleFunction)(lineStringFeature, null);
@@ -1695,6 +1748,7 @@ describe('util functions creating a text style', () => {
 		expect(customLineStyles.some((style) => hasTextStyle(style))).toBeFalse();
 		expect(defaultPolygonStyles.some((style) => hasTextStyle(style))).toBeFalse();
 		expect(customPolygonStyles.some((style) => hasTextStyle(style))).toBeFalse();
+		expect(noTextMarkerStyles.some((style) => hasTextStyle(style))).toBeFalse();
 		expect(modifyStyles.some((style) => hasTextStyle(style))).toBeFalse();
 		expect(selectStyles.some((style) => hasTextStyle(style))).toBeFalse();
 		expect(sketchStyles.some((style) => hasTextStyle(style))).toBeFalse();

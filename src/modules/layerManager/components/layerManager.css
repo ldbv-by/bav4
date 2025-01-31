@@ -54,6 +54,10 @@ li {
 	justify-content: flex-start;
 }
 
+.layermanager__actions ba-button::part(button) {
+	font-size: 0.95rem;
+}
+
 .layermanager__expandOrCollapse {
 	padding-left: 0.8em;
 }

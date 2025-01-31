@@ -71,7 +71,7 @@ describe('kml', () => {
 		return () => [style];
 	};
 
-	const getATextStyleFunction = () => {
+	const getATextStyleFunction = (displayedText = 'someText') => {
 		const fill = new Fill({
 			color: [255, 255, 255, 0.4]
 		});
@@ -81,7 +81,7 @@ describe('kml', () => {
 			width: 1.25
 		});
 		const text = new Text({
-			text: 'Foo',
+			text: displayedText,
 			fill: fill,
 			stroke: stroke
 		});
@@ -122,6 +122,10 @@ describe('kml', () => {
 			aPointFeature.setStyle(null);
 			aPolygonFeature.setStyle(null);
 			aLineStringAsPolygonFeature.setStyle(null);
+
+			aPointFeature.unset('description');
+			aPolygonFeature.unset('description');
+			aLineStringAsPolygonFeature.unset('description');
 		});
 
 		it('creates a kml with Document- and name-tag', () => {
@@ -156,8 +160,23 @@ describe('kml', () => {
 
 			const containsPolygonFeature = actual.includes('<Placemark><Polygon>');
 			const containsPointFeature = actual.includes('<Placemark><Point>');
+
 			expect(containsPolygonFeature).toBeTrue();
 			expect(containsPointFeature).toBeTrue();
+		});
+
+		it('creates a kml with 2 feature without null but empty description', () => {
+			const featureNull = aPointFeature.clone();
+			const featureEmpty = aPointFeature.clone();
+			featureNull.set('description', null);
+			featureEmpty.set('description', '');
+			const features = [featureNull, featureEmpty];
+			const layer = createLayerMock(features);
+
+			const actual = create(layer, projection);
+
+			expect(actual.includes('<description>null</description>')).toBeFalse();
+			expect(actual.includes('<description></description>')).toBeTrue();
 		});
 
 		it('rectifies polygon to linestring before export', () => {
@@ -189,13 +208,28 @@ describe('kml', () => {
 			const feature = aPointFeature.clone();
 			feature.set('name', 'Bar');
 
-			feature.setStyle(getATextStyleFunction());
+			feature.setStyle(getATextStyleFunction('Foo'));
 			const features = [feature];
 
 			const layer = createLayerMock(features);
 
 			const actual = create(layer, projection);
 			const containsTextStyle = actual.includes('IconStyle') && actual.includes('<Placemark><name>Foo</name>');
+			expect(containsTextStyle).toBeTrue();
+		});
+
+		it('overrides existing name-attribute of feature for empty text of text-style', () => {
+			const empty = '';
+			const feature = aPointFeature.clone();
+			feature.set('name', 'Bar');
+
+			feature.setStyle(getATextStyleFunction(empty));
+			const features = [feature];
+
+			const layer = createLayerMock(features);
+
+			const actual = create(layer, projection);
+			const containsTextStyle = actual.includes('IconStyle') && actual.includes('<Placemark><name></name>');
 			expect(containsTextStyle).toBeTrue();
 		});
 

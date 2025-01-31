@@ -14,7 +14,7 @@ import { UnavailableGeoResourceError } from '../domain/errors';
 /**
  *
  * @typedef {Object} ImportVectorDataOptions
- * @property {string} [id] the ID of the created VectorGeoResource. If not set, id will be created
+ * @property {string} [id] the ID of the created VectorGeoResource. If not set, it will be created, or if the VectorGeoResource is imported from a URL, the URL will be taken as the ID.
  * @property {string} [label] the label of the created VectorGeoResource
  * @property {SourceType|VectorSourceType} [sourceType] the source type. Can be either a SourceType or a VectorSourceType instance. If not set it will be tried to detect it
  */
@@ -58,7 +58,8 @@ export class ImportVectorDataService {
 	 * @returns GeoResourceFuture or `null` when given source type is not supported
 	 */
 	forUrl(url, options = {}) {
-		const { id, label, sourceType } = { ...this._newDefaultImportVectorDataOptions(), ...options };
+		// const { id, label, sourceType } = { ...this._newDefaultImportVectorDataOptions(), ...options };
+		const { id, label, sourceType } = { ...this._newDefaultImportVectorDataOptions(), ...options, ...{ id: options.id ?? url } };
 
 		// check if optional sourceType is supported
 		if (sourceType && !this._mapSourceTypeToVectorSourceType(sourceType)) {

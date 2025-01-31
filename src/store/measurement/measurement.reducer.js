@@ -1,6 +1,7 @@
 export const ACTIVE_CHANGED = 'measurement/active';
 export const STATISTIC_CHANGED = 'measurement/statistic';
 export const MODE_CHANGED = 'measurement/mode';
+export const DISPLAY_RULER_CHANGED = 'measurement/displayRuler';
 export const SELECTION_CHANGED = 'measurement/selection';
 export const FINISH_REQUESTED = 'measurement/finish';
 export const RESET_REQUESTED = 'measurement/reset';
@@ -12,13 +13,17 @@ export const initialState = {
 	 */
 	active: false,
 	/**
-	 * @type {MeasureStatistic}
+	 * @type {module:domain/geometryStatisticTypeDef~GeometryStatistic}
 	 */
 	statistic: { length: null, area: null },
 	/**
 	 * @type {String}
 	 */
 	mode: null,
+	/**
+	 * @type {Boolean}
+	 */
+	displayRuler: true,
 	/**
 	 * @type {Array<String>}
 	 */
@@ -56,6 +61,12 @@ export const measurementReducer = (state = initialState, action) => {
 			return {
 				...state,
 				mode: payload
+			};
+		}
+		case DISPLAY_RULER_CHANGED: {
+			return {
+				...state,
+				displayRuler: payload
 			};
 		}
 		case SELECTION_CHANGED: {

@@ -10,6 +10,8 @@ import { setCategory, setWaypoints } from '../../src/store/routing/routing.actio
 import { routingReducer } from '../../src/store/routing/routing.reducer';
 import { toolsReducer } from '../../src/store/tools/tools.reducer';
 import { setCurrentTool } from '../../src/store/tools/tools.action';
+import { updateRatio } from '../../src/store/layerSwipe/layerSwipe.action';
+import { layerSwipeReducer } from '../../src/store/layerSwipe/layerSwipe.reducer';
 
 describe('ObserveStateForEncodingPlugin', () => {
 	const shareService = {
@@ -30,6 +32,7 @@ describe('ObserveStateForEncodingPlugin', () => {
 			layers: layersReducer,
 			routing: routingReducer,
 			tools: toolsReducer,
+			layerSwipe: layerSwipeReducer,
 			encodedState: stateForEncodingReducer
 		});
 		$injector.registerSingleton('ShareService', shareService).registerSingleton('MapService', mapService);
@@ -133,6 +136,20 @@ describe('ObserveStateForEncodingPlugin', () => {
 		await instanceUnderTest.register(store);
 
 		setCurrentTool('someTool');
+
+		expect(store.getState().encodedState.changed).not.toEqual(initialState.changed);
+	});
+
+	it('registers a swipeLayer ratio change listener and indicates its changes', async () => {
+		const store = setup();
+		spyOn(shareService, 'encodeState').and.callFake(() => {
+			// let's return a different state each call
+			return `state_${Math.random()}`;
+		});
+		const instanceUnderTest = new ObserveStateForEncodingPlugin();
+		await instanceUnderTest.register(store);
+
+		updateRatio(42);
 
 		expect(store.getState().encodedState.changed).not.toEqual(initialState.changed);
 	});

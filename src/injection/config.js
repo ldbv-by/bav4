@@ -66,6 +66,7 @@ import { fileStorageServiceFactory } from './factories';
 import { FileStoragePlugin } from '../plugins/FileStoragePlugin';
 import { TimeTravelPlugin } from '../plugins/TimeTravelPlugin';
 import { BvvPredefinedConfigurationService } from '../services/PredefinedConfigurationService';
+import { ComparePlugin } from '../plugins/ComparePlugin';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
@@ -133,6 +134,7 @@ $injector
 	.registerSingleton('ObserveWcAttributesPlugin', new ObserveWcAttributesPlugin())
 	.registerSingleton('EncodeStatePlugin', new EncodeStatePlugin())
 	.registerSingleton('TimeTravelPlugin', new TimeTravelPlugin())
+	.registerSingleton('ComparePlugin', new ComparePlugin())
 	.registerSingleton('ObserveStateForEncodingPlugin', new ObserveStateForEncodingPlugin())
 	.registerModule(mapModule)
 	.registerModule(topicsModule)

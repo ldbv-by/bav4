@@ -81,6 +81,16 @@
 	--animationtime-mainmenu: var(--animation-duration-large-open);
 }
 
+/* 
+Font size for super small screens 
+*/
+@media only screen and (max-width: 320px) {
+	:root,
+	:host {
+		font-size: 0.65em;
+	}
+}
+
 .light-theme,
 :host(.light-theme) {
 	/* brand */

@@ -1,5 +1,5 @@
 import { $injector } from '../../src/injection';
-import { addLayer } from '../../src/store/layers/layers.action';
+import { addLayer, SwipeAlignment } from '../../src/store/layers/layers.action';
 import { setCategory, setWaypoints } from '../../src/store/routing/routing.action';
 import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { changeRotation, changeZoomAndCenter } from '../../src/store/position/position.action';
@@ -15,8 +15,10 @@ import { routingReducer } from '../../src/store/routing/routing.reducer';
 import { toolsReducer } from '../../src/store/tools/tools.reducer';
 import { setCurrentTool } from '../../src/store/tools/tools.action';
 import { highlightReducer } from '../../src/store/highlight/highlight.reducer';
+import { layerSwipeReducer } from '../../src/store/layerSwipe/layerSwipe.reducer';
 import { addHighlightFeatures, HighlightFeatureType } from '../../src/store/highlight/highlight.action';
 import { CROSSHAIR_HIGHLIGHT_FEATURE_ID } from '../../src/plugins/HighlightPlugin';
+import { Tools } from '../../src/domain/tools';
 
 describe('ShareService', () => {
 	const coordinateService = {
@@ -46,7 +48,8 @@ describe('ShareService', () => {
 			topics: topicsReducer,
 			routing: routingReducer,
 			tools: toolsReducer,
-			highlight: highlightReducer
+			highlight: highlightReducer,
+			layerSwipe: layerSwipeReducer
 		});
 		$injector
 			.registerSingleton('CoordinateService', coordinateService)
@@ -113,6 +116,7 @@ describe('ShareService', () => {
 				expect(extract[QueryParameters.LAYER_OPACITY]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_VISIBILITY]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_TIMESTAMP]).not.toBeDefined();
+				expect(extract[QueryParameters.LAYER_SWIPE_ALIGNMENT]).not.toBeDefined();
 			});
 
 			it('extracts the current layers state ignoring hidden layers', () => {
@@ -127,6 +131,7 @@ describe('ShareService', () => {
 				expect(extract[QueryParameters.LAYER_OPACITY]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_VISIBILITY]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_TIMESTAMP]).not.toBeDefined();
+				expect(extract[QueryParameters.LAYER_SWIPE_ALIGNMENT]).not.toBeDefined();
 			});
 
 			it('extracts the current layers state ignoring hidden geoResources', () => {
@@ -143,6 +148,7 @@ describe('ShareService', () => {
 				expect(extract[QueryParameters.LAYER_OPACITY]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_VISIBILITY]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_TIMESTAMP]).not.toBeDefined();
+				expect(extract[QueryParameters.LAYER_SWIPE_ALIGNMENT]).not.toBeDefined();
 			});
 
 			it('extracts the current layers state ignoring including geoResources', () => {
@@ -159,21 +165,45 @@ describe('ShareService', () => {
 				expect(extract[QueryParameters.LAYER_OPACITY]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_VISIBILITY]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_TIMESTAMP]).not.toBeDefined();
+				expect(extract[QueryParameters.LAYER_SWIPE_ALIGNMENT]).not.toBeDefined();
 			});
 
 			it('extracts the current layers state considering non default values', () => {
 				setup();
 				const instanceUnderTest = new ShareService();
 				spyOn(geoResourceService, 'byId').and.returnValue({ hidden: false });
-				addLayer('someLayer', { opacity: 0.5 });
+				addLayer('someLayer', { opacity: 0.5, constraints: { swipeAlignment: SwipeAlignment.LEFT } });
 				addLayer('anotherLayer', { visible: false });
-				addLayer('aThirdLayer', { timestamp: '2000' });
+				addLayer('aThirdLayer', { timestamp: '2000', constraints: { swipeAlignment: SwipeAlignment.RIGHT } });
 
 				const extract = instanceUnderTest._extractLayers();
 				expect(extract[QueryParameters.LAYER]).toEqual(['someLayer', 'anotherLayer', 'aThirdLayer']);
 				expect(extract[QueryParameters.LAYER_OPACITY]).toEqual([0.5, 1.0, 1.0]);
 				expect(extract[QueryParameters.LAYER_VISIBILITY]).toEqual([true, false, true]);
 				expect(extract[QueryParameters.LAYER_TIMESTAMP]).toEqual(['', '', '2000']);
+				expect(extract[QueryParameters.LAYER_SWIPE_ALIGNMENT]).not.toBeDefined();
+			});
+
+			describe('tool `COMPARE` is active', () => {
+				it('extracts the current layers state considering non default values', () => {
+					setup({
+						tools: {
+							current: Tools.COMPARE
+						}
+					});
+					const instanceUnderTest = new ShareService();
+					spyOn(geoResourceService, 'byId').and.returnValue({ hidden: false });
+					addLayer('someLayer', { opacity: 0.5, constraints: { swipeAlignment: SwipeAlignment.LEFT } });
+					addLayer('anotherLayer', { visible: false });
+					addLayer('aThirdLayer', { timestamp: '2000', constraints: { swipeAlignment: SwipeAlignment.RIGHT } });
+
+					const extract = instanceUnderTest._extractLayers();
+					expect(extract[QueryParameters.LAYER]).toEqual(['someLayer', 'anotherLayer', 'aThirdLayer']);
+					expect(extract[QueryParameters.LAYER_OPACITY]).toEqual([0.5, 1.0, 1.0]);
+					expect(extract[QueryParameters.LAYER_VISIBILITY]).toEqual([true, false, true]);
+					expect(extract[QueryParameters.LAYER_TIMESTAMP]).toEqual(['', '', '2000']);
+					expect(extract[QueryParameters.LAYER_SWIPE_ALIGNMENT]).toEqual([SwipeAlignment.LEFT, SwipeAlignment.NOT_SET, SwipeAlignment.RIGHT]);
+				});
 			});
 		});
 
@@ -447,6 +477,40 @@ describe('ShareService', () => {
 			});
 		});
 
+		describe('_extractSwipeRatio', () => {
+			describe('layerSwipe is active', () => {
+				it('sets the swipeRation query parameter', () => {
+					setup({
+						layerSwipe: {
+							active: true,
+							ratio: 42
+						}
+					});
+					const instanceUnderTest = new ShareService();
+
+					const extract = instanceUnderTest._extractSwipeRatio();
+
+					expect(extract[QueryParameters.SWIPE_RATIO]).toBe(0.42);
+				});
+			});
+
+			describe('layerSwipe is NOT active', () => {
+				it('ignores the swipeRation query parameter', () => {
+					setup({
+						layerSwipe: {
+							active: false,
+							ratio: 42
+						}
+					});
+					const instanceUnderTest = new ShareService();
+
+					const extract = instanceUnderTest._extractSwipeRatio();
+
+					expect(extract[QueryParameters.SWIPE_RATIO]).toBeUndefined();
+				});
+			});
+		});
+
 		describe('_mergeExtraParams', () => {
 			it('merges an array when key already present', () => {
 				setup();
@@ -707,10 +771,11 @@ describe('ShareService', () => {
 			spyOn(instanceUnderTest, '_extractRoute').and.returnValue({ rtwp: '1,2', rtc: 'rtCatId' });
 			spyOn(instanceUnderTest, '_extractTool').and.returnValue({ tid: 'someTool' });
 			spyOn(instanceUnderTest, '_extractCrosshair').and.returnValue({ crh: 'true' });
+			spyOn(instanceUnderTest, '_extractSwipeRatio').and.returnValue({ sr: 0.42 });
 
 			const params = instanceUnderTest.getParameters();
 
-			expect(params).toHaveSize(9);
+			expect(params).toHaveSize(10);
 			expect(params.get(QueryParameters.LAYER)).toEqual(['someLayer', 'anotherLayer']);
 			expect(params.get(QueryParameters.ZOOM)).toBe(5);
 			expect(params.get(QueryParameters.CENTER)).toEqual([44.123, 88.123]);
@@ -720,6 +785,7 @@ describe('ShareService', () => {
 			expect(params.get(QueryParameters.ROUTE_CATEGORY)).toBe('rtCatId');
 			expect(params.get(QueryParameters.TOOL_ID)).toBe('someTool');
 			expect(params.get(QueryParameters.CROSSHAIR)).toBe('true');
+			expect(params.get(QueryParameters.SWIPE_RATIO)).toBe(0.42);
 		});
 	});
 });

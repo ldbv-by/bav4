@@ -45,6 +45,41 @@ describe('ImportVectorDataService', () => {
 	});
 
 	describe('forUrl', () => {
+		it('returns a GeoResourceFuture', () => {
+			const instanceUnderTest = setup();
+			const url = 'http://my.url';
+			const options = {
+				label: 'label',
+				sourceType: VectorSourceType.KML
+			};
+			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(addOrReplaceMethodMock);
+
+			const geoResourceFuture = instanceUnderTest.forUrl(url, options);
+
+			expect(geoResourceFuture.id).toBe(url);
+			expect(geoResourceFuture.label).toBeNull();
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceFuture);
+			expect(geoResourceFuture.marker).toBe(handledByGeoResourceServiceMarker);
+		});
+
+		it('returns a GeoResourceFuture for given ID', () => {
+			const instanceUnderTest = setup();
+			const url = 'http://my.url';
+			const options = {
+				id: 'http://my.url||foo||true',
+				label: 'label',
+				sourceType: VectorSourceType.KML
+			};
+			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(addOrReplaceMethodMock);
+
+			const geoResourceFuture = instanceUnderTest.forUrl(url, options);
+
+			expect(geoResourceFuture.id).toBe(options.id);
+			expect(geoResourceFuture.label).toBeNull();
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceFuture);
+			expect(geoResourceFuture.marker).toBe(handledByGeoResourceServiceMarker);
+		});
+
 		it('returns a GeoResourceFuture for given VectorSourceType', () => {
 			const instanceUnderTest = setup();
 			const url = 'http://my.url';

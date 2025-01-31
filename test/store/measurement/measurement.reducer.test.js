@@ -1,4 +1,14 @@
-import { activate, deactivate, setStatistic, reset, remove, setSelection, finish, setMode } from '../../../src/store/measurement/measurement.action';
+import {
+	activate,
+	deactivate,
+	setStatistic,
+	reset,
+	remove,
+	setSelection,
+	finish,
+	setMode,
+	setDisplayRuler
+} from '../../../src/store/measurement/measurement.action';
 import { TestUtils } from '../../test-utils.js';
 import { EventLike } from '../../../src/utils/storeUtils';
 import { measurementReducer } from '../../../src/store/measurement/measurement.reducer';
@@ -72,6 +82,14 @@ describe('measurementReducer', () => {
 
 		expect(store.getState().measurement.selection).not.toBe(selection);
 		expect(store.getState().measurement.selection).toEqual(selection);
+	});
+
+	it('updates the displayRuler property', () => {
+		const store = setup();
+
+		setDisplayRuler(false);
+
+		expect(store.getState().measurement.displayRuler).toBeFalse();
 	});
 
 	it('updates the mode property', () => {

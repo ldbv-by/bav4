@@ -6,10 +6,21 @@ import { highlightReducer } from '../../../../../../../src/store/highlight/highl
 import { createNoInitialStateMediaReducer } from '../../../../../../../src/store/media/media.reducer';
 import { positionReducer } from '../../../../../../../src/store/position/position.reducer';
 import { TestUtils } from '../../../../../../test-utils.js';
+import { $injector } from '../../../../../../../src/injection';
+import { notificationReducer } from '../../../../../../../src/store/notifications/notifications.reducer';
+import { Icon } from '../../../../../../../src/modules/commons/components/icon/Icon';
+import { LevelTypes } from '../../../../../../../src/store/notifications/notifications.action';
 import { SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../../src/plugins/HighlightPlugin';
 window.customElements.define(LocationResultItem.tag, LocationResultItem);
 
 describe('LocationResultItem', () => {
+	const shareServiceMock = {
+		copyToClipboard() {}
+	};
+	const translationServiceMock = {
+		translate: (key) => key
+	};
+
 	let store;
 
 	const setup = (state = {}) => {
@@ -24,8 +35,11 @@ describe('LocationResultItem', () => {
 			highlight: highlightReducer,
 			position: positionReducer,
 			mainMenu: createNoInitialStateMainMenuReducer(),
-			media: createNoInitialStateMediaReducer()
+			media: createNoInitialStateMediaReducer(),
+			notifications: notificationReducer
 		});
+
+		$injector.registerSingleton('ShareService', shareServiceMock).registerSingleton('TranslationService', translationServiceMock);
 
 		return TestUtils.render(LocationResultItem.tag);
 	};
@@ -49,7 +63,9 @@ describe('LocationResultItem', () => {
 
 			element.data = data;
 
-			expect(element.shadowRoot.querySelector('li').innerText).toBe('labelFormatted');
+			expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe('labelFormatted');
+			expect(element.shadowRoot.querySelectorAll('.copy-button')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.copy-button')[0].title).toBe('search_result_item_copy');
 		});
 	});
 
@@ -86,6 +102,45 @@ describe('LocationResultItem', () => {
 				target.dispatchEvent(new Event('mouseleave'));
 
 				expect(store.getState().highlight.features).toHaveSize(0);
+			});
+		});
+
+		it('copies a location to the clipboard', async () => {
+			const coordinate = [21, 42];
+			const data = new LocationSearchResult('label', 'labelFormatted', coordinate);
+			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
+			const element = await setup();
+
+			element.data = data;
+
+			const copyIcon = element.shadowRoot.querySelector(Icon.tag);
+			copyIcon.click();
+
+			expect(copyToClipboardMock).toHaveBeenCalledWith('label');
+			await TestUtils.timeout();
+			//check notification
+			expect(store.getState().notifications.latest.payload.content).toBe(`"${'label'}" search_result_item_clipboard_success`);
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+		});
+
+		describe('Clipboard API is not available', () => {
+			it('fires a notification and logs a warn statement', async () => {
+				const coordinate = [21, 42];
+				const data = new LocationSearchResult('label', 'labelFormatted', coordinate);
+				spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.reject(new Error('something got wrong')));
+				const warnSpy = spyOn(console, 'warn');
+				const element = await setup();
+
+				element.data = data;
+
+				const copyIcon = element.shadowRoot.querySelector(Icon.tag);
+
+				copyIcon.click();
+
+				await TestUtils.timeout();
+				expect(store.getState().notifications.latest.payload.content).toBe('search_result_item_clipboard_error');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
 			});
 		});
 

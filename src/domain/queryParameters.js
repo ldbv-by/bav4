@@ -38,6 +38,14 @@ export const QueryParameters = Object.freeze({
 	 */
 	LAYER_TIMESTAMP: 'l_t',
 	/**
+	 * The swipe alignment of a layer (`string`)
+	 */
+	LAYER_SWIPE_ALIGNMENT: 'l_sa',
+	/**
+	 * The swipe ratio of the map (`number`, 0-1)
+	 */
+	SWIPE_RATIO: 'sr',
+	/**
 	 * Currently not supported. The active topic (`string`)
 	 */
 	TOPIC: 't',

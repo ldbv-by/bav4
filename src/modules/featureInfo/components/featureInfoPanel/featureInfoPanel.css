@@ -77,7 +77,6 @@ th {
 }
 
 a {
-	word-break: break-word;
 	color: var(--text4);
 }
 a:hover {

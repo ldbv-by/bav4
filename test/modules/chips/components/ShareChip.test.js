@@ -61,7 +61,7 @@ describe('ShareChip', () => {
 		it('has a model containing default values', async () => {
 			const element = await setup();
 
-			expect(element.getModel()).toEqual({ center: null });
+			expect(element.getModel()).toEqual({ center: null, label: null });
 		});
 
 		it('properly implements abstract methods', async () => {
@@ -86,7 +86,14 @@ describe('ShareChip', () => {
 			const element = await setup();
 			element.center = invalidCenter;
 
-			expect(element.getLabel()).toBe('chips_assist_chip_share_state_label');
+			expect(element.getLabel()).toBe('chips_assist_chip_share_state_label_default');
+		});
+
+		it('renders the view with given label', async () => {
+			const element = await setup({}, { label: 'Foo label' });
+
+			expect(element.isVisible()).toBeTrue();
+			expect(element.getLabel()).toBe('Foo label');
 		});
 	});
 

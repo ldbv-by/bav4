@@ -12,8 +12,10 @@ import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer';
 import { fileStorageReducer } from '../../../../../src/store/fileStorage/fileStorage.reducer.js';
 import { setData } from '../../../../../src/store/fileStorage/fileStorage.action.js';
+import { Switch } from '../../../../../src/modules/commons/components/switch/Switch';
 
 window.customElements.define(MeasureToolContent.tag, MeasureToolContent);
+window.customElements.define(Switch.tag, Switch);
 
 describe('MeasureToolContent', () => {
 	let store;
@@ -25,6 +27,7 @@ describe('MeasureToolContent', () => {
 		measurement: {
 			active: true,
 			statistic: { length: null, area: null },
+			displayRuler: true,
 			mode: null,
 			reset: null,
 			remove: null
@@ -100,7 +103,7 @@ describe('MeasureToolContent', () => {
 			await setup();
 			const model = new MeasureToolContent().getModel();
 
-			expect(model).toEqual({ statistic: { length: null, area: null }, mode: null, storedContent: null });
+			expect(model).toEqual({ statistic: { length: null, area: null }, displayRuler: null, mode: null, storedContent: null });
 		});
 
 		it('displays the finish-button', async () => {
@@ -387,6 +390,17 @@ describe('MeasureToolContent', () => {
 				'toolbox_measureTool_clipboard_measure_area_notification_text toolbox_clipboard_success'
 			);
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+		});
+
+		it('toggles the ruler style', async () => {
+			const element = await setup();
+
+			expect(store.getState().measurement.displayRuler).toBeTrue();
+
+			const toggleElement = element.shadowRoot.querySelector('.display-ruler-toggle ba-switch');
+			toggleElement.click();
+
+			expect(store.getState().measurement.displayRuler).toBeFalse();
 		});
 
 		it('logs a warning when copyToClipboard fails', async () => {

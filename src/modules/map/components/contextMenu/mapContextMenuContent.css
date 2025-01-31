@@ -33,3 +33,8 @@
 	gap: 0.5em 0.8em;
 	padding: 0.8em 1.3em 1em;
 }
+
+ba-badge {
+	position: relative;
+	top: -0.15em;
+}

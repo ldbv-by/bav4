@@ -309,7 +309,7 @@ describe('OlFeatureInfoHandler', () => {
 			expect(store.getState().featureInfo.current).toHaveSize(2);
 
 			//we modify the second layer so that it is not queryable anymore, but the feature1 has a name property
-			modifyLayer(layerId1, { constraints: { hidden: true } });
+			modifyLayer(layerId1, { hidden: true });
 			abortOrReset();
 			startRequest(matchingCoordinate);
 
