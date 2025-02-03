@@ -268,7 +268,7 @@ export class ShareService {
 		} = state;
 
 		if (openNodes.length > 0) {
-			extractedState[QueryParameters.CATALOG_NODE_IDS] = openNodes.join();
+			extractedState[QueryParameters.CATALOG_NODE_IDS] = openNodes;
 		}
 
 		return extractedState;

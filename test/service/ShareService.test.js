@@ -379,7 +379,7 @@ describe('ShareService', () => {
 
 				const extract = instanceUnderTest._extractCatalogNodes();
 
-				expect(extract[QueryParameters.CATALOG_NODE_IDS]).toBe('node0,node1');
+				expect(extract[QueryParameters.CATALOG_NODE_IDS]).toEqual(['node0', 'node1']);
 			});
 
 			it('does nothing when no catalog nodes are available', () => {
