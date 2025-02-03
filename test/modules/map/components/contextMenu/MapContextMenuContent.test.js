@@ -173,7 +173,7 @@ describe('MapContextMenuContent', () => {
 
 			element.coordinate = [...coordinateMock];
 			await TestUtils.timeout();
-			const copyIcon = element.shadowRoot.querySelector(Icon.tag);
+			const copyIcon = element.shadowRoot.querySelector(`.r_community ${Icon.tag}`);
 			copyIcon.click();
 
 			expect(copyToClipboardMock).toHaveBeenCalledWith('LDBV');
@@ -183,17 +183,57 @@ describe('MapContextMenuContent', () => {
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 		});
 
-		it('fires a notification and logs a warn statement when Clipboard API is not available and disables all copyToClipboard buttons', async () => {
+		it('copies a district value to the clipboard', async () => {
 			const coordinateMock = [1000, 2000];
-			spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.reject(new Error('something got wrong')));
+			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
+			spyOn(administrationServiceMock, 'getAdministration').withArgs(coordinateMock).and.resolveTo({ community: 'LDBV', district: 'Ref42' });
+			const element = await setup();
+
+			element.coordinate = [...coordinateMock];
+			await TestUtils.timeout();
+			const copyIcon = element.shadowRoot.querySelector(`.r_district ${Icon.tag}`);
+			copyIcon.click();
+
+			expect(copyToClipboardMock).toHaveBeenCalledWith('Ref42');
+			await TestUtils.timeout();
+			//check notification
+			expect(store.getState().notifications.latest.payload.content).toBe(`"Ref42" map_contextMenuContent_clipboard_success`);
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+		});
+
+		it('copies a parcel value to the clipboard', async () => {
+			const coordinateMock = [1000, 2000];
+			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
+			spyOn(administrationServiceMock, 'getAdministration')
+				.withArgs(coordinateMock)
+				.and.resolveTo({ community: 'LDBV', district: 'Ref42', parcel: '42/42' });
+			const element = await setup();
+
+			element.coordinate = [...coordinateMock];
+			await TestUtils.timeout();
+			const copyIcon = element.shadowRoot.querySelector(`.r_parcel ${Icon.tag}`);
+			copyIcon.click();
+
+			expect(copyToClipboardMock).toHaveBeenCalledWith('42/42');
+			await TestUtils.timeout();
+			//check notification
+			expect(store.getState().notifications.latest.payload.content).toBe(`"42/42" map_contextMenuContent_clipboard_success`);
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+		});
+
+		xit('fires a notification and logs a warn statement when Clipboard API is not available and disables all copyToClipboard buttons', async () => {
+			const coordinateMock = [1000, 2000];
 			spyOn(administrationServiceMock, 'getAdministration').withArgs(coordinateMock).and.resolveTo({ community: 'LDBV', district: 'Ref42' });
 			const warnSpy = spyOn(console, 'warn');
 			const element = await setup();
 
 			element.coordinate = coordinateMock;
 			await TestUtils.timeout();
+
 			const copyIcon = element.shadowRoot.querySelector(Icon.tag);
 			expect(copyIcon).toBeTruthy();
+
+			spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.reject(new Error('something got wrong')));
 
 			copyIcon.click();
 
@@ -207,16 +247,17 @@ describe('MapContextMenuContent', () => {
 	describe('Clipboard API is not available', () => {
 		it('fires a notification and logs a warn statement and disables all copyToClipboard buttons', async () => {
 			const coordinateMock = [1000, 2000];
-			spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.reject(new Error('something got wrong')));
 			spyOn(administrationServiceMock, 'getAdministration').withArgs(coordinateMock).and.resolveTo({ community: 'LDBV', district: 'Ref42' });
 			const warnSpy = spyOn(console, 'warn');
 			const element = await setup();
 
 			element.coordinate = coordinateMock;
-
 			await TestUtils.timeout();
+
 			const copyIcon = element.shadowRoot.querySelector(Icon.tag);
 			expect(copyIcon).toBeTruthy();
+
+			spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.reject(new Error('something got wrong')));
 
 			copyIcon.click();
 
