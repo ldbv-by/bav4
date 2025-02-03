@@ -24,7 +24,7 @@ export const LOADING_PREVIEW_DELAY_MS = 500;
 
 /**
  * @class
- * @property {module:domain/catalogTypeDef~CatalogNode} data The catalog node for this CatalogLeaf
+ * @property {module:domain/catalogTypeDef~CatalogLeaf} data The catalog node for this CatalogLeaf
  * @author taulinger
  * @author alsturm
  * @author costa_gi
