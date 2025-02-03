@@ -220,28 +220,6 @@ describe('MapContextMenuContent', () => {
 			expect(store.getState().notifications.latest.payload.content).toBe(`"42/42" map_contextMenuContent_clipboard_success`);
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 		});
-
-		xit('fires a notification and logs a warn statement when Clipboard API is not available and disables all copyToClipboard buttons', async () => {
-			const coordinateMock = [1000, 2000];
-			spyOn(administrationServiceMock, 'getAdministration').withArgs(coordinateMock).and.resolveTo({ community: 'LDBV', district: 'Ref42' });
-			const warnSpy = spyOn(console, 'warn');
-			const element = await setup();
-
-			element.coordinate = coordinateMock;
-			await TestUtils.timeout();
-
-			const copyIcon = element.shadowRoot.querySelector(Icon.tag);
-			expect(copyIcon).toBeTruthy();
-
-			spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.reject(new Error('something got wrong')));
-
-			copyIcon.click();
-
-			await TestUtils.timeout();
-			expect(store.getState().notifications.latest.payload.content).toBe('map_contextMenuContent_clipboard_error');
-			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
-			expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
-		});
 	});
 
 	describe('Clipboard API is not available', () => {
