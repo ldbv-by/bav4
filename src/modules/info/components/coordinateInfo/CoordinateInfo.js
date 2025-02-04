@@ -12,13 +12,20 @@ const Update_Coordinate = 'update_coordinate';
 const Update_Elevation = 'update_elevation';
 
 /**
- * @class
+ * Element to display representations of a coordinate and the related elevation.
+ * @class *
+ * @property {module:domain/coordinateTypeDef~Coordinate} coordinate - the coordinate to display
  * @author taulinger
  * @author thiloSchlemmer
  * @author alsturm
- *
  */
 export class CoordinateInfo extends MvuElement {
+	#mapService;
+	#coordinateService;
+	#translationService;
+	#elevationService;
+	#shareService;
+
 	constructor() {
 		super({
 			coordinate: null,
@@ -33,11 +40,11 @@ export class CoordinateInfo extends MvuElement {
 			ShareService: shareService
 		} = $injector.inject('MapService', 'CoordinateService', 'TranslationService', 'ElevationService', 'ShareService');
 
-		this._mapService = mapService;
-		this._coordinateService = coordinateService;
-		this._translationService = translationService;
-		this._elevationService = elevationService;
-		this._shareService = shareService;
+		this.#mapService = mapService;
+		this.#coordinateService = coordinateService;
+		this.#translationService = translationService;
+		this.#elevationService = elevationService;
+		this.#shareService = shareService;
 	}
 
 	update(type, data, model) {
@@ -54,17 +61,21 @@ export class CoordinateInfo extends MvuElement {
 	 * @protected
 	 */
 	createView(model) {
-		const translate = (key) => this._translationService.translate(key);
-		const translateSilently = (key) => this._translationService.translate(key, [], true);
+		const translate = (key) => this.#translationService.translate(key);
+		const translateSilently = (key) => this.#translationService.translate(key, [], true);
 		const { coordinate, elevation } = model;
 
+		const onCopyElevation = () => {
+			this._copyValueToClipboard(elevation);
+		};
+
 		if (coordinate) {
-			const coordinateRepresentations = this._mapService.getCoordinateRepresentations(coordinate);
+			const coordinateRepresentations = this.#mapService.getCoordinateRepresentations(coordinate);
 			const stringifiedCoords = coordinateRepresentations.map((cr) => {
 				const { label } = cr;
-				const stringifiedCoord = this._coordinateService.stringify(coordinate, cr);
-				const onClick = () => {
-					this._copyCoordinateToClipboard(stringifiedCoord);
+				const stringifiedCoord = this.#coordinateService.stringify(coordinate, cr);
+				const onCopyCoordinate = () => {
+					this._copyValueToClipboard(stringifiedCoord);
 				};
 				return html`
 					<span class="label">${translateSilently(label)}</span><span class="coordinate">${stringifiedCoord}</span>
@@ -74,7 +85,7 @@ export class CoordinateInfo extends MvuElement {
 							.icon="${clipboardIcon}"
 							.title=${translate('info_coordinateInfo_copy_icon')}
 							.size=${1.5}
-							@click=${onClick}
+							@click=${onCopyCoordinate}
 						></ba-icon>
 					</span>
 				`;
@@ -91,6 +102,14 @@ export class CoordinateInfo extends MvuElement {
 						${elevation
 							? html`<li class="r_elevation">
 									<span class="label">${translate('info_coordinateInfo_elevation_label')}</span><span class="coordinate">${elevation}</span>
+									<span class="icon">
+						<ba-icon
+							class="close"
+							.icon="${clipboardIcon}"
+							.title=${translate('info_coordinateInfo_copy_icon')}
+							.size=${1.5}
+							@click=${onCopyElevation}
+						></ba-icon>
 								</li>`
 							: nothing}
 					</ul>
@@ -100,12 +119,12 @@ export class CoordinateInfo extends MvuElement {
 		return nothing;
 	}
 
-	async _copyCoordinateToClipboard(stringifiedCoord) {
+	async _copyValueToClipboard(stringifiedCoord) {
 		try {
-			await this._shareService.copyToClipboard(stringifiedCoord);
-			emitNotification(`"${stringifiedCoord}" ${this._translationService.translate('info_coordinateInfo_clipboard_success')}`, LevelTypes.INFO);
+			await this.#shareService.copyToClipboard(stringifiedCoord);
+			emitNotification(`"${stringifiedCoord}" ${this.#translationService.translate('info_coordinateInfo_clipboard_success')}`, LevelTypes.INFO);
 		} catch {
-			const message = this._translationService.translate('info_coordinateInfo_clipboard_error');
+			const message = this.#translationService.translate('info_coordinateInfo_clipboard_error');
 			emitNotification(message, LevelTypes.WARN);
 			console.warn('Clipboard API not available');
 		}
@@ -113,7 +132,7 @@ export class CoordinateInfo extends MvuElement {
 
 	async _getElevation(coordinate) {
 		try {
-			const elevation = await this._elevationService.getElevation(coordinate);
+			const elevation = await this.#elevationService.getElevation(coordinate);
 			this.signal(Update_Elevation, elevation);
 		} catch (e) {
 			this.signal(Update_Elevation, null);
@@ -125,9 +144,6 @@ export class CoordinateInfo extends MvuElement {
 		return 'ba-coordinate-info';
 	}
 
-	/**
-	 * @property {module:domain/coordinateTypeDef~Coordinate} coordinate - the coordinate to display
-	 */
 	set coordinate(coordinateInMapSrid) {
 		this.signal(Update_Coordinate, coordinateInMapSrid);
 		this._getElevation(coordinateInMapSrid);

@@ -61,7 +61,7 @@ describe('CoordinateInfo', () => {
 				elevation: null
 			});
 		});
-		it('have a coordinate property', async () => {
+		it('takes a coordinate property', async () => {
 			await setup();
 			const element = new CoordinateInfo();
 
@@ -163,6 +163,28 @@ describe('CoordinateInfo', () => {
 			await TestUtils.timeout();
 			//check notification
 			expect(store.getState().notifications.latest.payload.content).toBe(`"${stringifiedCoord}" info_coordinateInfo_clipboard_success`);
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+		});
+
+		it('copies the elevation to the clipboard', async () => {
+			const coordinateMock = [1000, 2000];
+			const expectedElevation = 42;
+			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([GlobalCoordinateRepresentations.WGS84]);
+			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
+			spyOn(elevationServiceMock, 'getElevation').withArgs(coordinateMock).and.resolveTo(expectedElevation);
+			const element = await setup();
+
+			element.coordinate = [...coordinateMock];
+
+			await TestUtils.timeout();
+
+			const copyIcon = element.shadowRoot.querySelector(`.r_elevation ${Icon.tag}`);
+			copyIcon.click();
+
+			expect(copyToClipboardMock).toHaveBeenCalledWith(expectedElevation);
+			await TestUtils.timeout();
+			//check notification
+			expect(store.getState().notifications.latest.payload.content).toBe(`"${expectedElevation}" info_coordinateInfo_clipboard_success`);
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 		});
 
