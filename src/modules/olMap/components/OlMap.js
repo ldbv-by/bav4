@@ -20,6 +20,7 @@ import { GeoResourceFuture, GeoResourceTypes } from '../../../domain/geoResource
 import { equals } from '../../../utils/storeUtils';
 import { roundCenter, roundRotation, roundZoomLevel } from '../../../utils/mapUtils';
 import { isEmpty } from '../../../../node_modules/ol/extent';
+import { setMapResolution } from '../../../store/legend/legend.action';
 
 const Update_Position = 'update_position';
 const Update_Layers = 'update_layers';
@@ -233,6 +234,11 @@ export class OlMap extends MvuElement {
 
 		this._mapHandler.forEach((handler) => {
 			handler.register(this._map);
+		});
+
+		setMapResolution(this._view.getResolution());
+		this._view.on('change:resolution', (evt) => {
+			setMapResolution(evt.target.targetResolution_);
 		});
 
 		//register particular observers on our model

@@ -32,6 +32,7 @@ import { createNoInitialStateMediaReducer } from '../../../../src/store/media/me
 import { setIsPortrait } from '../../../../src/store/media/media.action';
 import ImageLayer from 'ol/layer/Image';
 import { ImageWMS } from 'ol/source';
+import { legendReducer } from '../../../../src/store/legend/legend.reducer.js';
 
 window.customElements.define(OlMap.tag, OlMap);
 
@@ -210,7 +211,8 @@ describe('OlMap', () => {
 			layers: layersReducer,
 			measurement: measurementReducer,
 			network: networkReducer,
-			media: createNoInitialStateMediaReducer()
+			media: createNoInitialStateMediaReducer(),
+			legend: legendReducer
 		});
 
 		$injector
@@ -1505,6 +1507,22 @@ describe('OlMap', () => {
 			const element = await setup();
 
 			expect(element._mapHandler.get('olLayerSwipeHandlerMockId')).toEqual(olLayerSwipeHandlerMock);
+		});
+	});
+
+	describe('map resolution handler', () => {
+		it('sets the map resolution', async () => {
+			await setup();
+
+			expect(store.getState().legend.mapResolution).toEqual(152.8740565703525);
+		});
+
+		it('sets the map resolution on zoom change', async () => {
+			await setup();
+
+			changeZoom(10);
+
+			expect(store.getState().legend.mapResolution).toEqual(152.8740565703525);
 		});
 	});
 });

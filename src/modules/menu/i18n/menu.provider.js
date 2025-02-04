@@ -47,7 +47,9 @@ export const provide = (lang) => {
 				menu_navigation_rail_help: 'Help and FAQ',
 				menu_navigation_rail_help_url: 'https://www.ldbv.bayern.de/hilfe-v4.html',
 				menu_navigation_rail_time_travel: 'Time travel',
-				menu_navigation_rail_time_travel_tooltip: 'Open time travel'
+				menu_navigation_rail_time_travel_tooltip: 'Open time travel',
+				menu_navigation_rail_legend: 'Legend',
+				menu_navigation_rail_legend_tooltip: 'Open legend'
 			};
 
 		case 'de':
@@ -97,7 +99,9 @@ export const provide = (lang) => {
 				menu_navigation_rail_help: 'Hilfe und FAQ',
 				menu_navigation_rail_help_url: 'https://www.ldbv.bayern.de/hilfe-v4.html',
 				menu_navigation_rail_time_travel: 'Zeitreise',
-				menu_navigation_rail_time_travel_tooltip: 'Zeitreise öffnen'
+				menu_navigation_rail_time_travel_tooltip: 'Zeitreise öffnen',
+				menu_navigation_rail_legend: 'Legende',
+				menu_navigation_rail_legend_tooltip: 'Legende öffnen'
 			};
 
 		default:

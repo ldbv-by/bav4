@@ -400,8 +400,24 @@ describe('bvvCapabilitiesProvider', () => {
 		expect(wmsGeoResources).toHaveSize(2);
 		expect(wmsGeoResources).toEqual(
 			jasmine.arrayWithExactContents([
-				jasmine.objectContaining({ extraParams: { maxHeight: 2000, maxWidth: 2000 } }),
-				jasmine.objectContaining({ extraParams: { maxHeight: 2000, maxWidth: 2000 } })
+				jasmine.objectContaining({
+					extraParams: {
+						maxHeight: 2000,
+						maxWidth: 2000,
+						legendUrl: 'https://legend.url/0',
+						minResolution: 8192,
+						maxResolution: 0
+					}
+				}),
+				jasmine.objectContaining({
+					extraParams: {
+						maxHeight: 2000,
+						maxWidth: 2000,
+						legendUrl: 'https://legend.url/0',
+						minResolution: 8192,
+						maxResolution: 0
+					}
+				})
 			])
 		);
 	});

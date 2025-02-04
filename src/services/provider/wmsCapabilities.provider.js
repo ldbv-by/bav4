@@ -40,8 +40,15 @@ export const bvvCapabilitiesProvider = async (url, options) => {
 	} = $injector.inject('HttpService', 'ConfigService', 'MapService');
 	const endpoint = configService.getValueAsPath('BACKEND_URL') + 'wms/getCapabilities';
 
-	const getExtraParams = (capabilities) => {
-		return capabilities.maxHeight && capabilities.maxWidth ? { maxHeight: capabilities.maxHeight, maxWidth: capabilities.maxWidth } : {};
+	const getExtraParams = (layer, capabilities) => {
+		const params = {
+			legendUrl: layer.legendUrl,
+			minResolution: layer.minResolution,
+			maxResolution: layer.maxResolution
+		};
+
+		const dimensions = capabilities.maxHeight && capabilities.maxWidth ? { maxHeight: capabilities.maxHeight, maxWidth: capabilities.maxWidth } : {};
+		return { ...dimensions, ...params };
 	};
 
 	const getAuthenticationType = (isBaaAuthenticated) => {
@@ -61,7 +68,7 @@ export const bvvCapabilitiesProvider = async (url, options) => {
 				)
 					.setAuthenticationType(getAuthenticationType(options.isAuthenticated))
 					.setQueryable(layer.queryable)
-					.setExtraParams(getExtraParams(capabilities))
+					.setExtraParams(getExtraParams(layer, capabilities))
 					// WmsGeoResource should be only exportable if capabilities layer supports geodetic SRID
 					.setExportable(layer.referenceSystems.map((refs) => refs.code).includes(mapService.getLocalProjectedSrid()))
 			: null;

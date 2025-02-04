@@ -38,6 +38,7 @@ import { fileStorageReducer } from '../store/fileStorage/fileStorage.reducer';
 import { timeTravelReducer } from '../store/timeTravel/timeTravel.reducer';
 import { layerSwipeReducer } from '../store/layerSwipe/layerSwipe.reducer';
 import { catalogReducer } from '../store/catalog/catalog.reducer';
+import { legendReducer } from '../store/legend/legend.reducer';
 
 /**
  * Service which configures, initializes and holds the redux store.
@@ -85,7 +86,8 @@ export class StoreService {
 			fileStorage: fileStorageReducer,
 			timeTravel: timeTravelReducer,
 			layerSwipe: layerSwipeReducer,
-			catalog: catalogReducer
+			catalog: catalogReducer,
+			legend: legendReducer
 		});
 
 		this._store = createStore(rootReducer);
@@ -123,7 +125,8 @@ export class StoreService {
 				EncodeStatePlugin: encodeStatePlugin,
 				TimeTravelPlugin: timeTravelPlugin,
 				ComparePlugin: comparePlugin,
-				ObserveStateForEncodingPlugin: observeStateForEncodingPlugin
+				ObserveStateForEncodingPlugin: observeStateForEncodingPlugin,
+				LegendPlugin: legendPlugin
 			} = $injector.inject(
 				'GlobalErrorPlugin',
 				'AuthPlugin',
@@ -156,7 +159,8 @@ export class StoreService {
 				'EncodeStatePlugin',
 				'TimeTravelPlugin',
 				'ComparePlugin',
-				'ObserveStateForEncodingPlugin'
+				'ObserveStateForEncodingPlugin',
+				'LegendPlugin'
 			);
 
 			setTimeout(async () => {
@@ -192,6 +196,7 @@ export class StoreService {
 				await iframeGeometryIdPlugin.register(this._store);
 				await observeWcAttributesPlugin.register(this._store);
 				await encodeStatePlugin.register(this._store);
+				await legendPlugin.register(this._store);
 				await observeStateForEncodingPlugin.register(this._store); // should be registered as last plugin
 			});
 		});

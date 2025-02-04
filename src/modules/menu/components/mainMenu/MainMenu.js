@@ -17,6 +17,7 @@ import { RoutingPanel } from './content/routing/RoutingPanel';
 import { MvuElement } from '../../../MvuElement';
 import VanillaSwipe from 'vanilla-swipe';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { LegendContent } from '../../../legend/components/content/LegendContent';
 
 const Update_Main_Menu = 'update_main_menu';
 const Update_Media = 'update_media';
@@ -194,6 +195,8 @@ export class MainMenu extends MvuElement {
 				return html`${unsafeHTML(`<${TopicsContentPanel.tag} data-test-id />`)}`;
 			case TabIds.FEATUREINFO:
 				return html`${unsafeHTML(`<${FeatureInfoPanel.tag} data-test-id />`)}`;
+			case TabIds.LEGEND:
+				return html`${unsafeHTML(`<${LegendContent.tag} data-test-id />`)}`;
 		}
 	}
 
