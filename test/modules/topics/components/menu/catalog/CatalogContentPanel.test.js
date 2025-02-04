@@ -5,13 +5,13 @@ import { CatalogLeaf } from '../../../../../../src/modules/topics/components/men
 import { setCurrent } from '../../../../../../src/store/topics/topics.action';
 import { topicsReducer } from '../../../../../../src/store/topics/topics.reducer';
 import { TestUtils } from '../../../../../test-utils.js';
-import { TopicsContentPanelIndex } from '../../../../../../src/modules/topics/components/menu/TopicsContentPanel';
 import { Topic } from '../../../../../../src/domain/topic';
 import { Spinner } from '../../../../../../src/modules/commons/components/spinner/Spinner';
 import { topicsContentPanelReducer } from '../../../../../../src/store/topicsContentPanel/topicsContentPanel.reducer';
 import { AbstractMvuContentPanel } from '../../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel.js';
 import { notificationReducer } from '../../../../../../src/store/notifications/notifications.reducer.js';
 import { LevelTypes } from '../../../../../../src/store/notifications/notifications.action.js';
+import { TopicsContentPanelIndex } from '../../../../../../src/store/topicsContentPanel/topicsContentPanel.action.js';
 
 window.customElements.define(CatalogContentPanel.tag, CatalogContentPanel);
 

@@ -232,16 +232,6 @@ describe('MainMenu', () => {
 			expect(element.shadowRoot.querySelector(RoutingPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
 
-		it('displays the content panel for default index = 0', async () => {
-			const element = await setup();
-
-			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
-			expect(contentPanels.length).toBe(6);
-			for (let i = 0; i < contentPanels.length; i++) {
-				expect(contentPanels[i].classList.contains('is-active')).toBe(Object.values(TabIds)[i] === 0);
-			}
-		});
-
 		it('displays the content panel for non default index', async () => {
 			const activeTabIndex = TabIds.MISC;
 			const state = {

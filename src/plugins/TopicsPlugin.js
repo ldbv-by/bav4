@@ -5,6 +5,8 @@ import { $injector } from '../injection';
 import { QueryParameters } from '../domain/queryParameters';
 import { BaPlugin } from './BaPlugin';
 import { setCurrent, setReady } from '../store/topics/topics.action';
+import { setIndex, TopicsContentPanelIndex } from '../store/topicsContentPanel/topicsContentPanel.action';
+import { observe } from '../utils/storeUtils';
 
 /**
  * @class
@@ -14,19 +16,11 @@ export class TopicsPlugin extends BaPlugin {
 		const { TopicsService: topicsService } = $injector.inject('TopicsService');
 
 		const topicId = queryParams.get(QueryParameters.TOPIC);
-		if (topicsService.byId(topicId)) {
+		if (topicId && topicsService.byId(topicId)) {
 			setCurrent(topicId);
-		} else {
-			//fallback
-			this._addTopicFromConfig();
+			// when we have a topic we want to display the corresponding catalog
+			setIndex(TopicsContentPanelIndex.CATALOG_0);
 		}
-	}
-
-	_addTopicFromConfig() {
-		const { TopicsService: topicsService } = $injector.inject('TopicsService');
-
-		//update store
-		setCurrent(topicsService.default().id);
 	}
 
 	async _init() {
@@ -39,19 +33,27 @@ export class TopicsPlugin extends BaPlugin {
 		setReady();
 
 		//from query params
-		if (queryParams.has(QueryParameters.TOPIC)) {
-			this._addTopicFromQueryParams(queryParams);
-		}
-		//from config
-		else {
-			this._addTopicFromConfig();
-		}
+		this._addTopicFromQueryParams(queryParams);
 	}
 
 	/**
 	 * @override
 	 */
-	async register() {
-		return await this._init();
+	async register(store) {
+		const result = await this._init();
+		observe(
+			store,
+			(state) => state.topicsContentPanel.index,
+			(index) => {
+				/**
+				 * When we are on the top-level we reset the current topic
+				 */
+				if (index === TopicsContentPanelIndex.TOPICS) {
+					setCurrent(null);
+				}
+			}
+		);
+
+		return result;
 	}
 }

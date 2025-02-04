@@ -62,6 +62,10 @@ export const QueryParameters = Object.freeze({
 	 */
 	MENU_ID: 'mid',
 	/**
+	 * Ids of catalog nodes which should be displayed open (`string`, comma-separated)
+	 */
+	CATALOG_NODE_IDS: 'cnids',
+	/**
 	 * Id (`string`)  of a tool item which should initially active
 	 */
 	TOOL_ID: 'tid',
