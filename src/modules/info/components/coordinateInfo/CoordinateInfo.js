@@ -13,7 +13,7 @@ const Update_Elevation = 'update_elevation';
 
 /**
  * Element to display representations of a coordinate and the related elevation.
- * @class *
+ * @class
  * @property {module:domain/coordinateTypeDef~Coordinate} coordinate - the coordinate to display
  * @author taulinger
  * @author thiloSchlemmer
