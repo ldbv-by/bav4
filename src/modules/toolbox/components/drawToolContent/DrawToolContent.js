@@ -7,7 +7,7 @@ import { repeat } from 'lit-html/directives/repeat.js';
 import { $injector } from '../../../../injection';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import css from './drawToolContent.css';
-import { StyleSizeTypes } from '../../../../domain/styles';
+import { StyleSize } from '../../../../domain/styles';
 import { clearDescription, clearText, finish, remove, reset, setDescription, setStyle, setType } from '../../../../store/draw/draw.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { hexToRgb } from '../../../../utils/colors';
@@ -427,7 +427,7 @@ export class DrawToolContent extends AbstractToolContent {
 													<div class="color-row">
 														<div class="tool-container__style_size" title="${translate('toolbox_drawTool_style_size')}">
 															<select id="style_size" @change=${onChangeScale}>
-																${selectTemplate(Object.values(StyleSizeTypes), style.scale)}
+																${selectTemplate(Object.values(StyleSize), style.scale)}
 															</select>
 														</div>
 													</div>
@@ -510,7 +510,7 @@ export class DrawToolContent extends AbstractToolContent {
 													<div class="color-row">
 														<div class="tool-container__style_size" title="${translate('toolbox_drawTool_style_size')}">
 															<select id="style_size" @change=${onChangeScale}>
-																${selectTemplate(Object.values(StyleSizeTypes), style.scale)}
+																${selectTemplate(Object.values(StyleSize), style.scale)}
 															</select>
 														</div>
 													</div>

@@ -1,11 +1,11 @@
-import { StyleSizeTypes } from '../../src/domain/styles';
+import { StyleSize } from '../../src/domain/styles';
 
-describe('StyleSizeTypes', () => {
+describe('StyleSize', () => {
 	it('is an enum with a value ', () => {
-		expect(Object.entries(StyleSizeTypes).length).toBe(3);
-		expect(Object.isFrozen(StyleSizeTypes)).toBeTrue();
-		expect(StyleSizeTypes.LARGE).toEqual('large');
-		expect(StyleSizeTypes.MEDIUM).toEqual('medium');
-		expect(StyleSizeTypes.SMALL).toEqual('small');
+		expect(Object.entries(StyleSize).length).toBe(3);
+		expect(Object.isFrozen(StyleSize)).toBeTrue();
+		expect(StyleSize.LARGE).toEqual('large');
+		expect(StyleSize.MEDIUM).toEqual('medium');
+		expect(StyleSize.SMALL).toEqual('small');
 	});
 });

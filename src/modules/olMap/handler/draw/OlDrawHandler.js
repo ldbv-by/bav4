@@ -17,7 +17,7 @@ import {
 	selectStyleFunction
 } from '../../utils/olStyleUtils';
 import { StyleTypes } from '../../services/StyleService';
-import { StyleSizeTypes } from '../../../../domain/styles';
+import { StyleSize } from '../../../../domain/styles';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { equals, observe } from '../../../../utils/storeUtils';
 import {
@@ -67,7 +67,7 @@ export const MAX_SELECTION_SIZE = 1;
 
 const defaultStyleOption = {
 	symbolSrc: null, // used by: Symbol
-	scale: StyleSizeTypes.MEDIUM, // used by Symbol
+	scale: StyleSize.MEDIUM, // used by Symbol
 	color: '#FF0000', // used by Symbol, Text, Line, Polygon
 	text: null // used by Text, Symbol
 };
