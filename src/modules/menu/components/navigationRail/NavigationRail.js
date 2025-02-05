@@ -16,7 +16,6 @@ import { close } from '../../../../store/navigationRail/navigationRail.action';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { closeModal, openModal } from '../../../../store/modal/modal.action';
 import { PredefinedConfiguration } from '../../../../services/PredefinedConfigurationService';
-import { activate, deactivate } from '../../../../store/draw/draw.action';
 import { activateLegend, deactivateLegend } from '../../../../store/legend/legend.action';
 
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
