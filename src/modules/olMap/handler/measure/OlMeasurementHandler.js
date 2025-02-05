@@ -176,12 +176,15 @@ export class OlMeasurementHandler extends OlLayerHandler {
 						f.on('change', onFeatureChange);
 					});
 					const displayRuler = !oldFeatures.some((f) => f.get('displayruler') === 'false');
+					const hasMeasurementFeature = oldFeatures.some((f) => f.getId().startsWith(Tools.MEASURE + '_'));
 					setDisplayRuler(displayRuler);
 					const oldLayerId = oldLayer.get('id');
 					this._layerId = oldLayerId;
 					this._layerZIndex = oldLayer.getZIndex();
 					removeLayer(oldLayerId);
-					this._finish();
+					if (hasMeasurementFeature) {
+						this._finish();
+					}
 					this._setSelection(this._storeService.getStore().getState().measurement.selection);
 					this._updateMeasureState();
 				}
