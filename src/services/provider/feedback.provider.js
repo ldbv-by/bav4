@@ -19,16 +19,14 @@ export const bvvFeedbackStorageProvider = async (mapFeedback) => {
 				return await httpService.post(
 					`${configService.getValueAsPath('BACKEND_URL')}feedback/tim/message`,
 					JSON.stringify(mapFeedback),
-					MediaType.JSON,
-					{ timeout: 2000 }
+					MediaType.JSON
 				);
 			}
 			case GeneralFeedback:
 				return await httpService.post(
 					`${configService.getValueAsPath('BACKEND_URL')}feedback/general/message`,
 					JSON.stringify(mapFeedback),
-					MediaType.JSON,
-					{ timeout: 2000 }
+					MediaType.JSON
 				);
 			default:
 				throw new Error(`Feedback could not be stored: Unknown feedback class`);

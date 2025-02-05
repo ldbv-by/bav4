@@ -25,7 +25,7 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 
 	const loadInternal = async (geoResource) => {
 		const url = `${configService.getValueAsPath('BACKEND_URL')}georesource/info/${geoResource.id}`;
-		return httpService.get(url, { timeout: 5000 });
+		return httpService.get(url);
 	};
 
 	const loadExternal = async (geoResource) => {
@@ -52,7 +52,6 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 			url,
 			getPayload(geoResource),
 			MediaType.JSON,
-			{ timeout: 5000 },
 			{
 				response:
 					geoResource.authenticationType === GeoResourceAuthenticationType.BAA

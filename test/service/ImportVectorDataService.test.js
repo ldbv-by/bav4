@@ -129,7 +129,7 @@ describe('ImportVectorDataService', () => {
 				const sourceTypeResult = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.KML));
 				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
 				spyOn(httpService, 'get')
-					.withArgs(url, { timeout: 5000 })
+					.withArgs(url)
 					.and.returnValue(Promise.resolve(new Response(data, { status: 200 })));
 				spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceTypeResult);
 				spyOn(geoResourceService, 'addOrReplace').and.callFake(addOrReplaceMethodMock);
@@ -155,7 +155,7 @@ describe('ImportVectorDataService', () => {
 				spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceTypeResult);
 				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
 				spyOn(httpService, 'get')
-					.withArgs(url, { timeout: 5000 })
+					.withArgs(url)
 					.and.returnValue(
 						Promise.resolve(
 							new Response(data, {
@@ -190,7 +190,7 @@ describe('ImportVectorDataService', () => {
 				spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceTypeResult);
 				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
 				spyOn(httpService, 'get')
-					.withArgs(url, { timeout: 5000 })
+					.withArgs(url)
 					.and.returnValue(
 						Promise.resolve(
 							new Response(data, {
@@ -227,7 +227,7 @@ describe('ImportVectorDataService', () => {
 				};
 				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
 				spyOn(httpService, 'get')
-					.withArgs(url, { timeout: 5000 })
+					.withArgs(url)
 					.and.returnValue(Promise.resolve(new Response(null, { status: status })));
 				spyOn(geoResourceService, 'addOrReplace').and.callFake(addOrReplaceMethodMock);
 				const geoResourceFuture = instanceUnderTest.forUrl(url, options);
@@ -249,7 +249,7 @@ describe('ImportVectorDataService', () => {
 				spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE));
 				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
 				spyOn(httpService, 'get')
-					.withArgs(url, { timeout: 5000 })
+					.withArgs(url)
 					.and.returnValue(Promise.resolve(new Response(data, { status: 200 })));
 				spyOn(geoResourceService, 'addOrReplace').and.callFake(addOrReplaceMethodMock);
 				const geoResourceFuture = instanceUnderTest.forUrl(url, options);
