@@ -1,3 +1,6 @@
+/**
+ * @module services/WmsCapabilitiesService
+ */
 import { SourceType, SourceTypeName } from '../domain/sourceType';
 import { bvvCapabilitiesProvider } from './provider/wmsCapabilities.provider';
 import { sleep } from '../utils/timer';

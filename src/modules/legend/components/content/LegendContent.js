@@ -1,3 +1,6 @@
+/**
+ * @module modules/legend/components/content/LegendContent
+ */
 import { html, nothing } from 'lit-html';
 import css from './legendContent.css';
 import { MvuElement } from '../../../MvuElement';

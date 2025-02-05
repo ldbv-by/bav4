@@ -1,3 +1,6 @@
+/**
+ * @module store/legend/legend_action
+ */
 import { $injector } from '../../injection/index';
 import {
 	ACTIVATE_LEGEND,

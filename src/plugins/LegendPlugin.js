@@ -1,3 +1,6 @@
+/**
+ * @module plugins/LegendPlugin
+ */
 import { BaPlugin } from './BaPlugin';
 import { observe } from '../utils/storeUtils';
 import { setLegendItems } from '../store/legend/legend.action';
