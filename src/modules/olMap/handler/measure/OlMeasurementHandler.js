@@ -44,6 +44,7 @@ import { Tools } from '../../../../domain/tools';
 import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../ol/geodesic/geodesicGeometry';
 import { setData } from '../../../../store/fileStorage/fileStorage.action';
 import { createDefaultLayerProperties } from '../../../../store/layers/layers.reducer';
+import { GeometryType } from '../../../../domain/geometryTypes';
 
 const defaultMeasurementStats = {
 	geometryType: null,
@@ -622,9 +623,22 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const stats = getStats(feature.getGeometry());
 			return before ? { ...before, length: before.length + stats.length, area: before.area + stats.area } : stats;
 		};
+
+		const getStatisticFromSelection = (selectedFeatures) => {
+			if (selectedFeatures.length === 1) {
+				return getStats(selectedFeatures[0].getGeometry());
+			}
+
+			if (selectedFeatures.length > 1) {
+				return { ...selectedFeatures.reduce(sumStatistic, defaultMeasurementStats), geometryType: GeometryType.COLLECTION };
+			}
+			return defaultMeasurementStats;
+		};
+
 		if (this._select) {
 			const features = this._select.getFeatures().getArray();
-			setStatistic(features.reduce(sumStatistic, null));
+			const statistic = getStatisticFromSelection(features);
+			setStatistic(statistic);
 		}
 	}
 

@@ -15,7 +15,7 @@ import { register } from 'ol/proj/proj4';
 import { MEASUREMENT_LAYER_ID } from '../../../../../src/plugins/MeasurementPlugin';
 import { ModifyEvent } from 'ol/interaction/Modify';
 import { layersReducer } from '../../../../../src/store/layers/layers.reducer';
-import { finish, remove, reset, setDisplayRuler } from '../../../../../src/store/measurement/measurement.action';
+import { finish, remove, reset, setDisplayRuler, setStatistic } from '../../../../../src/store/measurement/measurement.action';
 import { OverlayService } from '../../../../../src/modules/olMap/services/OverlayService';
 import { Stroke, Style } from 'ol/style';
 import { InteractionSnapType, InteractionStateType } from '../../../../../src/modules/olMap/utils/olInteractionUtils';
@@ -35,6 +35,7 @@ import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../../../../src/
 import { fileStorageReducer } from '../../../../../src/store/fileStorage/fileStorage.reducer.js';
 import { KML_EMPTY_CONTENT } from '../../../../../src/modules/olMap/formats/kml.js';
 import { PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../../../../src/modules/olMap/utils/olGeometryUtils.js';
+import { GeometryType } from '../../../../../src/domain/geometryTypes.js';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -2241,6 +2242,23 @@ describe('OlMeasurementHandler', () => {
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
 
 			expect(updateMeasureStateSpy).toHaveBeenCalled();
+		});
+
+		it('updates the measureState while pointerclick into nothing', () => {
+			const store = setup();
+
+			const map = setupMap();
+			const classUnderTest = new OlMeasurementHandler();
+			classUnderTest.activate(map);
+			setStatistic({ geometryType: GeometryType.LINE, coordinate: null, azimuth: 5, length: 42, area: null });
+			finish();
+
+			// no selection possible
+			map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake(() => {});
+
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 1, 0);
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
+			expect(store.getState().measurement.statistic).toEqual({ geometryType: null, coordinate: null, azimuth: null, length: null, area: null });
 		});
 	});
 

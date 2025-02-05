@@ -9,5 +9,6 @@
 export const GeometryType = Object.freeze({
 	POINT: 'Point',
 	LINE: 'Line',
-	POLYGON: 'Polygon'
+	POLYGON: 'Polygon',
+	COLLECTION: 'Collection'
 });
