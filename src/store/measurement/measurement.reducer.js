@@ -15,7 +15,7 @@ export const initialState = {
 	/**
 	 * @type {module:domain/geometryStatisticTypeDef~GeometryStatistic}
 	 */
-	statistic: { length: null, area: null },
+	statistic: { geometryType: null, coordinate: null, azimuth: null, length: null, area: null },
 	/**
 	 * @type {String}
 	 */

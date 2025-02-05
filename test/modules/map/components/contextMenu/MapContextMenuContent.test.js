@@ -5,7 +5,6 @@ import { $injector } from '../../../../../src/injection';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
-import { GlobalCoordinateRepresentations } from '../../../../../src/domain/coordinateRepresentation';
 
 window.customElements.define(MapContextMenuContent.tag, MapContextMenuContent);
 
@@ -16,14 +15,9 @@ describe('MapContextMenuContent', () => {
 		getCoordinateRepresentations() {},
 		getSrid() {}
 	};
-	const coordinateServiceMock = {
-		stringify() {}
-	};
+
 	const shareServiceMock = {
 		copyToClipboard() {}
-	};
-	const elevationServiceMock = {
-		getElevation() {}
 	};
 	const administrationServiceMock = {
 		getAdministration() {}
@@ -44,10 +38,8 @@ describe('MapContextMenuContent', () => {
 		store = TestUtils.setupStoreAndDi(state, { notifications: notificationReducer });
 		$injector
 			.registerSingleton('MapService', mapServiceMock)
-			.registerSingleton('CoordinateService', coordinateServiceMock)
 			.registerSingleton('ShareService', shareServiceMock)
 			.registerSingleton('TranslationService', translationServiceMock)
-			.registerSingleton('ElevationService', elevationServiceMock)
 			.registerSingleton('AdministrationService', administrationServiceMock);
 
 		return TestUtils.render(MapContextMenuContent.tag);
@@ -60,7 +52,6 @@ describe('MapContextMenuContent', () => {
 
 			expect(element.getModel()).toEqual({
 				coordinate: null,
-				elevation: null,
 				administration: {
 					community: null,
 					district: null,
@@ -81,17 +72,10 @@ describe('MapContextMenuContent', () => {
 	describe('when screen coordinate available', () => {
 		it('renders the full content', async () => {
 			const coordinateMock = [1000, 2000];
-			const stringifiedCoord = 'stringified coordinate';
-			const getCoordinateRepresentationsMock = spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([
-				GlobalCoordinateRepresentations.WGS84
-			]);
-			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
-			const stringifyMock = spyOn(coordinateServiceMock, 'stringify').and.returnValue(stringifiedCoord);
-			const elevationMock = spyOn(elevationServiceMock, 'getElevation').withArgs(coordinateMock).and.resolveTo(42);
 			const administrationMock = spyOn(administrationServiceMock, 'getAdministration')
 				.withArgs(coordinateMock)
 				.and.resolveTo({ community: 'LDBV', district: 'Ref42', parcel: 'Parcel' });
-			const translationServiceSpy = spyOn(translationServiceMock, 'translate').and.callThrough();
+
 			const element = await setup();
 
 			element.coordinate = [...coordinateMock];
@@ -102,14 +86,11 @@ describe('MapContextMenuContent', () => {
 			expect(element.shadowRoot.querySelectorAll('.r_community')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.r_district')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.r_parcel')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.r_coordinate')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.r_elevation')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.label')).toHaveSize(5);
+			expect(element.shadowRoot.querySelectorAll('ba-coordinate-info')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.label')).toHaveSize(3);
 			expect(element.shadowRoot.querySelectorAll('.label')[0].innerText).toBe('map_contextMenuContent_community_label');
 			expect(element.shadowRoot.querySelectorAll('.label')[1].innerText).toBe('map_contextMenuContent_district_label');
 			expect(element.shadowRoot.querySelectorAll('.label')[2].innerText).toBe('map_contextMenuContent_parcel_label');
-			expect(element.shadowRoot.querySelectorAll('.label')[3].innerText).toBe(GlobalCoordinateRepresentations.WGS84.label);
-			expect(element.shadowRoot.querySelectorAll('.label')[4].innerText).toBe('map_contextMenuContent_elevation_label');
 
 			expect(element.shadowRoot.querySelectorAll('.coordinate')[0].innerText).toEqual('LDBV');
 			expect(element.shadowRoot.querySelectorAll('.coordinate')[1].innerText).toEqual('Ref42');
@@ -120,15 +101,10 @@ describe('MapContextMenuContent', () => {
 			expect(badge.label).toEqual('map_contextMenuContent_parcel_badge');
 			expect(badge.size).toEqual('0.6');
 
-			expect(element.shadowRoot.querySelectorAll('.coordinate')[3].innerText).toBe(stringifiedCoord);
-			expect(element.shadowRoot.querySelectorAll('.coordinate')[4].innerText).toEqual('42');
-
 			const copyIcon = element.shadowRoot.querySelector(Icon.tag);
 			expect(copyIcon).toBeTruthy();
 			expect(copyIcon.title).toBe('map_contextMenuContent_copy_icon');
-			expect(getCoordinateRepresentationsMock).toHaveBeenCalledWith([1000, 2000]);
-			expect(stringifyMock).toHaveBeenCalledWith(coordinateMock, GlobalCoordinateRepresentations.WGS84);
-			expect(elevationMock).toHaveBeenCalledOnceWith(coordinateMock);
+
 			expect(administrationMock).toHaveBeenCalledOnceWith(coordinateMock);
 
 			// assistChips
@@ -140,16 +116,11 @@ describe('MapContextMenuContent', () => {
 
 			expect(element.shadowRoot.querySelectorAll('ba-routing-chip')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('ba-routing-chip')[0].coordinate).toEqual(coordinateMock);
-			expect(translationServiceSpy).toHaveBeenCalledWith(GlobalCoordinateRepresentations.WGS84.label, [], true);
 		});
 
 		it('renders the content when parcel is NOT available', async () => {
 			const coordinateMock = [1000, 2000];
-			const stringifiedCoord = 'stringified coordinate';
-			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([GlobalCoordinateRepresentations.WGS84]);
 			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
-			spyOn(coordinateServiceMock, 'stringify').and.returnValue(stringifiedCoord);
-			spyOn(elevationServiceMock, 'getElevation').withArgs(coordinateMock).and.resolveTo(42);
 			spyOn(administrationServiceMock, 'getAdministration')
 				.withArgs(coordinateMock)
 				.and.resolveTo({ community: 'LDBV', district: 'Ref42', parcel: null });
@@ -162,17 +133,11 @@ describe('MapContextMenuContent', () => {
 			expect(element.shadowRoot.querySelectorAll('.r_community')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.r_district')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.r_parcel')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.r_coordinate')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.r_elevation')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-coordinate-info')).toHaveSize(1);
 		});
 
 		it('renders the content when administration is NOT available', async () => {
 			const coordinateMock = [1000, 2000];
-			const stringifiedCoord = 'stringified coordinate';
-			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([GlobalCoordinateRepresentations.WGS84]);
-			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
-			spyOn(coordinateServiceMock, 'stringify').and.returnValue(stringifiedCoord);
-			spyOn(elevationServiceMock, 'getElevation').withArgs(coordinateMock).and.resolveTo(42);
 			spyOn(administrationServiceMock, 'getAdministration').and.resolveTo(null);
 			const element = await setup();
 
@@ -182,30 +147,7 @@ describe('MapContextMenuContent', () => {
 			expect(element.shadowRoot.querySelectorAll('.r_community')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.r_district')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.r_parcel')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.r_coordinate')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.r_elevation')).toHaveSize(1);
-		});
-
-		it('renders the content when elevation is NOT available', async () => {
-			const coordinateMock = [1000, 2000];
-			const stringifiedCoord = 'stringified coordinate';
-			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([GlobalCoordinateRepresentations.WGS84]);
-			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
-			spyOn(coordinateServiceMock, 'stringify').and.returnValue(stringifiedCoord);
-			spyOn(elevationServiceMock, 'getElevation').withArgs(coordinateMock).and.resolveTo(null);
-			spyOn(administrationServiceMock, 'getAdministration')
-				.withArgs(coordinateMock)
-				.and.resolveTo({ community: 'LDBV', district: 'Ref42', parcel: 'parcel' });
-			const element = await setup();
-
-			element.coordinate = [...coordinateMock];
-
-			await TestUtils.timeout();
-			expect(element.shadowRoot.querySelectorAll('.r_community')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.r_district')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.r_parcel')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.r_coordinate')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.r_elevation')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('ba-coordinate-info')).toHaveSize(1);
 		});
 
 		it('renders selectable content', async () => {
@@ -213,10 +155,6 @@ describe('MapContextMenuContent', () => {
 			// All elements are not selectable by default, but can be activated with the 'selectable' class.
 			const cssClass = 'selectable';
 			const coordinateMock = [1000, 2000];
-			const stringifiedCoord = 'stringified coordinate';
-			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([GlobalCoordinateRepresentations.WGS84]);
-			spyOn(coordinateServiceMock, 'stringify').and.returnValue(stringifiedCoord);
-			spyOn(elevationServiceMock, 'getElevation').withArgs(coordinateMock).and.resolveTo(42);
 			spyOn(administrationServiceMock, 'getAdministration').withArgs(coordinateMock).and.resolveTo({ community: 'LDBV', district: 'Ref42' });
 			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
 			const element = await setup();
@@ -227,64 +165,77 @@ describe('MapContextMenuContent', () => {
 			expect(element.shadowRoot.querySelector('.content').classList.contains(cssClass)).toBeTrue();
 		});
 
-		it('copies a coordinate to the clipboard', async () => {
+		it('copies a community value to the clipboard', async () => {
 			const coordinateMock = [1000, 2000];
-			const stringifiedCoord = 'stringified coordinate';
-			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([GlobalCoordinateRepresentations.WGS84]);
-			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
 			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
-			spyOn(coordinateServiceMock, 'stringify').and.returnValue(stringifiedCoord);
-			spyOn(elevationServiceMock, 'getElevation').withArgs(coordinateMock).and.resolveTo(42);
 			spyOn(administrationServiceMock, 'getAdministration').withArgs(coordinateMock).and.resolveTo({ community: 'LDBV', district: 'Ref42' });
 			const element = await setup();
 
 			element.coordinate = [...coordinateMock];
-
-			const copyIcon = element.shadowRoot.querySelector(Icon.tag);
+			await TestUtils.timeout();
+			const copyIcon = element.shadowRoot.querySelector(`.r_community ${Icon.tag}`);
 			copyIcon.click();
 
-			expect(copyToClipboardMock).toHaveBeenCalledWith(stringifiedCoord);
+			expect(copyToClipboardMock).toHaveBeenCalledWith('LDBV');
 			await TestUtils.timeout();
 			//check notification
-			expect(store.getState().notifications.latest.payload.content).toBe(`"${stringifiedCoord}" map_contextMenuContent_clipboard_success`);
+			expect(store.getState().notifications.latest.payload.content).toBe(`"LDBV" map_contextMenuContent_clipboard_success`);
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 		});
 
-		it('fires a notification and logs a warn statement when Clipboard API is not available and disables all copyToClipboard buttons', async () => {
-			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([GlobalCoordinateRepresentations.WGS84]);
-			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
-			spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.reject(new Error('something got wrong')));
-			spyOn(coordinateServiceMock, 'stringify').and.returnValue('stringified coordinate');
-			const warnSpy = spyOn(console, 'warn');
+		it('copies a district value to the clipboard', async () => {
+			const coordinateMock = [1000, 2000];
+			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
+			spyOn(administrationServiceMock, 'getAdministration').withArgs(coordinateMock).and.resolveTo({ community: 'LDBV', district: 'Ref42' });
 			const element = await setup();
 
-			element.coordinate = [1000, 2000];
-
-			const copyIcon = element.shadowRoot.querySelector(Icon.tag);
-			expect(copyIcon).toBeTruthy();
-
+			element.coordinate = [...coordinateMock];
+			await TestUtils.timeout();
+			const copyIcon = element.shadowRoot.querySelector(`.r_district ${Icon.tag}`);
 			copyIcon.click();
 
+			expect(copyToClipboardMock).toHaveBeenCalledWith('Ref42');
 			await TestUtils.timeout();
-			expect(store.getState().notifications.latest.payload.content).toBe('map_contextMenuContent_clipboard_error');
-			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
-			expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
+			//check notification
+			expect(store.getState().notifications.latest.payload.content).toBe(`"Ref42" map_contextMenuContent_clipboard_success`);
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+		});
+
+		it('copies a parcel value to the clipboard', async () => {
+			const coordinateMock = [1000, 2000];
+			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
+			spyOn(administrationServiceMock, 'getAdministration')
+				.withArgs(coordinateMock)
+				.and.resolveTo({ community: 'LDBV', district: 'Ref42', parcel: '42/42' });
+			const element = await setup();
+
+			element.coordinate = [...coordinateMock];
+			await TestUtils.timeout();
+			const copyIcon = element.shadowRoot.querySelector(`.r_parcel ${Icon.tag}`);
+			copyIcon.click();
+
+			expect(copyToClipboardMock).toHaveBeenCalledWith('42/42');
+			await TestUtils.timeout();
+			//check notification
+			expect(store.getState().notifications.latest.payload.content).toBe(`"42/42" map_contextMenuContent_clipboard_success`);
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 		});
 	});
 
 	describe('Clipboard API is not available', () => {
 		it('fires a notification and logs a warn statement and disables all copyToClipboard buttons', async () => {
-			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([GlobalCoordinateRepresentations.WGS84]);
-			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
-			spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.reject(new Error('something got wrong')));
-			spyOn(coordinateServiceMock, 'stringify').and.returnValue('stringified coordinate');
+			const coordinateMock = [1000, 2000];
+			spyOn(administrationServiceMock, 'getAdministration').withArgs(coordinateMock).and.resolveTo({ community: 'LDBV', district: 'Ref42' });
 			const warnSpy = spyOn(console, 'warn');
 			const element = await setup();
 
-			element.coordinate = [1000, 2000];
+			element.coordinate = coordinateMock;
+			await TestUtils.timeout();
 
 			const copyIcon = element.shadowRoot.querySelector(Icon.tag);
 			expect(copyIcon).toBeTruthy();
+
+			spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.reject(new Error('something got wrong')));
 
 			copyIcon.click();
 
@@ -292,35 +243,6 @@ describe('MapContextMenuContent', () => {
 			expect(store.getState().notifications.latest.payload.content).toBe('map_contextMenuContent_clipboard_error');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 			expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
-		});
-	});
-
-	describe('ElevationService throws', () => {
-		it('resets the model and re-throws the error', async () => {
-			await setup();
-			const error = new Error('Elevation Error');
-			spyOn(elevationServiceMock, 'getElevation').and.rejectWith(error);
-			const element = new MapContextMenuContent({
-				coordinate: null,
-				elevation: 12345,
-				administration: {
-					community: null,
-					district: null,
-					parcel: null
-				}
-			});
-
-			await expectAsync(element._getElevation([1000, 2000])).toBeRejectedWith(error);
-
-			expect(element.getModel()).toEqual({
-				coordinate: null,
-				elevation: null,
-				administration: {
-					community: null,
-					district: null,
-					parcel: null
-				}
-			});
 		});
 	});
 
@@ -331,7 +253,6 @@ describe('MapContextMenuContent', () => {
 			spyOn(administrationServiceMock, 'getAdministration').and.rejectWith(error);
 			const element = new MapContextMenuContent({
 				coordinate: null,
-				elevation: null,
 				administration: {
 					community: 'c',
 					district: 'd',
@@ -343,7 +264,6 @@ describe('MapContextMenuContent', () => {
 
 			expect(element.getModel()).toEqual({
 				coordinate: null,
-				elevation: null,
 				administration: {
 					community: null,
 					district: null,

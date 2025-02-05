@@ -6,13 +6,9 @@
 }
 
 .content li {
-	padding: 0.3em 1.5em;
+	padding-bottom: 0.3em;
 	display: flex;
 	justify-content: flex-start;
-}
-
-.content li ba-coordinate-info {
-	width: 100%;
 }
 
 .content li .label {
@@ -28,17 +24,4 @@
 .content li .icon {
 	padding-left: 1em;
 	margin: auto;
-}
-
-.chips {
-	display: flex;
-	justify-content: start;
-	flex-flow: wrap;
-	gap: 0.5em 0.8em;
-	padding: 0.8em 1.3em 1em;
-}
-
-ba-badge {
-	position: relative;
-	top: -0.15em;
 }

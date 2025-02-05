@@ -1,6 +1,6 @@
 import { GeometryType } from '../../../../src/domain/geometryTypes';
 import { $injector } from '../../../../src/injection';
-import { EMPTY_GEOMETRY_STATISTIC, GeometryInfo } from '../../../../src/modules/featureInfo/components/geometryInfo/GeometryInfo';
+import { EMPTY_GEOMETRY_STATISTIC, GeometryInfo } from '../../../../src/modules/info/components/geometryInfo/GeometryInfo';
 import { MvuElement } from '../../../../src/modules/MvuElement';
 import { TestUtils } from '../../../test-utils';
 
