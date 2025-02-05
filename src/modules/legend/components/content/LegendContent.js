@@ -3,8 +3,8 @@
  */
 import { html, nothing } from 'lit-html';
 import css from './legendContent.css';
-import { MvuElement } from '../../../MvuElement';
 import { $injector } from '../../../../injection/index';
+import { AbstractMvuContentPanel } from '../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 
 const Update_legend_active = 'update_legend_active';
 const Update_resolution = 'update_resolution';
@@ -12,7 +12,7 @@ const Update_legend_items = 'update_legend_items';
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait';
 const Update_ShowSubtitle = 'update_show_subtitle';
 
-export class LegendContent extends MvuElement {
+export class LegendContent extends AbstractMvuContentPanel {
 	constructor() {
 		super({
 			legendActive: true,
