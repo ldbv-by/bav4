@@ -74,7 +74,6 @@ module.exports = {
 		new Dotenv()
 	],
 	devServer: {
-		server: 'https',
 		static: './dist',
 		port: port,
 		client: {
