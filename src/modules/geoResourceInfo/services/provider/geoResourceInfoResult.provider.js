@@ -48,17 +48,12 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 			return JSON.stringify(payload);
 		};
 
-		return httpService.post(
-			url,
-			getPayload(geoResource),
-			MediaType.JSON,
-			{
-				response:
-					geoResource.authenticationType === GeoResourceAuthenticationType.BAA
-						? []
-						: [geoResourceService.getAuthResponseInterceptorForGeoResource(geoResourceId)]
-			}
-		);
+		return httpService.post(url, getPayload(geoResource), MediaType.JSON, {
+			response:
+				geoResource.authenticationType === GeoResourceAuthenticationType.BAA
+					? []
+					: [geoResourceService.getAuthResponseInterceptorForGeoResource(geoResourceId)]
+		});
 	};
 
 	const geoResource = geoResourceService.byId(geoResourceId);
