@@ -403,6 +403,10 @@ describe('MainMenu', () => {
 			setTab(TabIds.MAPS);
 
 			expect(element.shadowRoot.querySelectorAll('.is-full-size .main-menu')).toHaveSize(0);
+
+			setTab(TabIds.LEGEND);
+
+			expect(element.shadowRoot.querySelectorAll('.is-full-size .main-menu')).toHaveSize(1);
 		});
 
 		it('scrolls to top', async () => {

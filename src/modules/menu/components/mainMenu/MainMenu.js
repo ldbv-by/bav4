@@ -135,7 +135,7 @@ export class MainMenu extends MvuElement {
 			'is-open-navigationRail': isOpenNavigationRail && !isPortrait,
 			'is-desktop': hasMinWidth,
 			'is-tablet': !hasMinWidth,
-			'is-full-size': tab === TabIds.FEATUREINFO || tab === TabIds.ROUTING,
+			'is-full-size': tab === TabIds.FEATUREINFO || tab === TabIds.ROUTING || tab === TabIds.LEGEND,
 			'prevent-transition': !observeResponsiveParameter,
 			'is-portrait': isPortrait,
 			'is-landscape': !isPortrait
