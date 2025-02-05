@@ -592,7 +592,7 @@ describe('OlMeasurementHandler', () => {
 			expect(finishSpy).not.toHaveBeenCalled();
 		});
 
-		it('does NOT starts with active drawing, but modify based on old measurement features existing', async () => {
+		it('does NOT start with active drawing, but modify based on old measurement features existing', async () => {
 			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const lastData =
