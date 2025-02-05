@@ -154,7 +154,7 @@ export class MapContextMenuContent extends MvuElement {
 											</li>`
 										: nothing}`
 							: nothing}
-						<li><ba-coordinate-info .coordinate=${coordinate}></ba-coordinate-info></li>
+						<li><ba-coordinate-info .coordinate=${coordinate} .displaySingleRow=${true}></ba-coordinate-info></li>
 					</ul>
 					<div class="chips">
 						<ba-share-chip .center=${coordinate}></ba-share-chip>
