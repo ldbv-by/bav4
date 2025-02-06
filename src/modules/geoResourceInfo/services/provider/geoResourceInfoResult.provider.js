@@ -25,7 +25,7 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 
 	const loadInternal = async (geoResource) => {
 		const url = `${configService.getValueAsPath('BACKEND_URL')}georesource/info/${geoResource.id}`;
-		return httpService.get(url, { timeout: 5000 });
+		return httpService.get(url);
 	};
 
 	const loadExternal = async (geoResource) => {
@@ -48,18 +48,12 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 			return JSON.stringify(payload);
 		};
 
-		return httpService.post(
-			url,
-			getPayload(geoResource),
-			MediaType.JSON,
-			{ timeout: 5000 },
-			{
-				response:
-					geoResource.authenticationType === GeoResourceAuthenticationType.BAA
-						? []
-						: [geoResourceService.getAuthResponseInterceptorForGeoResource(geoResourceId)]
-			}
-		);
+		return httpService.post(url, getPayload(geoResource), MediaType.JSON, {
+			response:
+				geoResource.authenticationType === GeoResourceAuthenticationType.BAA
+					? []
+					: [geoResourceService.getAuthResponseInterceptorForGeoResource(geoResourceId)]
+		});
 	};
 
 	const geoResource = geoResourceService.byId(geoResourceId);
