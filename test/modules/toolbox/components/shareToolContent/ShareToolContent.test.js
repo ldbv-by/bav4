@@ -151,7 +151,6 @@ describe('ShareToolContent', () => {
 
 					await TestUtils.timeout();
 					expect(store.getState().notifications.latest).toBeNull();
-					expect(store.getState().notifications.latest).toBeNull();
 				});
 			});
 		});
