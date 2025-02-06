@@ -258,7 +258,7 @@ describe('GeoResource provider', () => {
 			const data = 'data';
 			spyOn(urlService, 'proxifyInstant').withArgs(vectorDefinition.url).and.returnValue(vectorDefinition.url);
 			spyOn(httpService, 'get')
-				.withArgs(vectorDefinition.url, { timeout: 5000 }, { response: [responseInterceptor] })
+				.withArgs(vectorDefinition.url, { response: [responseInterceptor] })
 				.and.resolveTo(new Response(data));
 			spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
 
@@ -275,7 +275,7 @@ describe('GeoResource provider', () => {
 			const data = 'data';
 			spyOn(urlService, 'proxifyInstant').withArgs(vectorDefinition.url).and.returnValue(vectorDefinitionOptionalProperties.url);
 			spyOn(httpService, 'get')
-				.withArgs(vectorDefinition.url, { timeout: 5000 }, { response: [responseInterceptor] })
+				.withArgs(vectorDefinition.url, { response: [responseInterceptor] })
 				.and.resolveTo(new Response(data));
 			spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
 
@@ -295,7 +295,7 @@ describe('GeoResource provider', () => {
 		it('throws an Error when GeoResourceFuture for a VectorGeoResource cannot be resolved', async () => {
 			spyOn(urlService, 'proxifyInstant').withArgs(vectorDefinition.url).and.returnValue(vectorDefinition.url);
 			spyOn(httpService, 'get')
-				.withArgs(vectorDefinition.url, { timeout: 5000 }, { response: [responseInterceptor] })
+				.withArgs(vectorDefinition.url, { response: [responseInterceptor] })
 				.and.resolveTo(new Response(null, { status: 404 }));
 			spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
 
@@ -451,14 +451,12 @@ describe('GeoResource provider', () => {
 		it('loads GeoResources', async () => {
 			const backendUrl = 'https://backend.url';
 			const expectedArgs0 = `${backendUrl}/georesources/all`;
-			const expectedArgs1 = {
-				timeout: 2000
-			};
+
 			const configServiceSpy = spyOn(configService, 'getValueAsPath')
 				.withArgs('BACKEND_URL')
 				.and.returnValue(backendUrl + '/');
 			const httpServiceSpy = spyOn(httpService, 'get')
-				.withArgs(expectedArgs0, expectedArgs1)
+				.withArgs(expectedArgs0)
 				.and.resolveTo(new Response(JSON.stringify([wmsDefinition, xyzDefinition, vectorDefinition, aggregateDefinition])));
 
 			const geoResources = await loadBvvGeoResources();
@@ -494,12 +492,10 @@ describe('GeoResource provider', () => {
 		it('rejects when backend request cannot be fulfilled', async () => {
 			const backendUrl = 'https://backend.url';
 			const expectedArgs0 = backendUrl + 'georesources/all';
-			const expectedArgs1 = {
-				timeout: 2000
-			};
+
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const httpServiceSpy = spyOn(httpService, 'get')
-				.withArgs(expectedArgs0, expectedArgs1)
+				.withArgs(expectedArgs0)
 				.and.resolveTo(new Response(null, { status: 404 }));
 
 			await expectAsync(loadBvvGeoResources()).toBeRejectedWithError('GeoResources could not be loaded');
@@ -890,7 +886,7 @@ describe('GeoResource provider', () => {
 	describe('getDefaultVectorGeoResourceLoaderForUrl', () => {
 		it('returns an GeoResourceLoader resolving to a VectorGeoResource', async () => {
 			const data = 'data';
-			spyOn(httpService, 'get').withArgs(vectorDefinition.url, { timeout: 5000 }).and.resolveTo(new Response(data));
+			spyOn(httpService, 'get').withArgs(vectorDefinition.url).and.resolveTo(new Response(data));
 			spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
 
 			const vectorGeoResource = await getDefaultVectorGeoResourceLoaderForUrl(
@@ -909,7 +905,7 @@ describe('GeoResource provider', () => {
 
 		it('returns an GeoResourceLoader resolving to a VectorGeoResource', async () => {
 			const data = 'data';
-			spyOn(httpService, 'get').withArgs(vectorDefinition.url, { timeout: 5000 }).and.resolveTo(new Response(data));
+			spyOn(httpService, 'get').withArgs(vectorDefinition.url).and.resolveTo(new Response(data));
 			spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
 
 			const vectorGeoResource = await getDefaultVectorGeoResourceLoaderForUrl(vectorDefinition.url, Symbol.for(vectorDefinition.sourceType))();
@@ -923,7 +919,7 @@ describe('GeoResource provider', () => {
 
 		it('returns an GeoResourceLoader throwing an Error when resource is not available', async () => {
 			spyOn(httpService, 'get')
-				.withArgs(vectorDefinition.url, { timeout: 5000 })
+				.withArgs(vectorDefinition.url)
 				.and.resolveTo(new Response(null, { status: 404 }));
 
 			await expectAsync(getDefaultVectorGeoResourceLoaderForUrl(vectorDefinition.url, vectorDefinition.sourceType)()).toBeRejectedWith(
@@ -936,7 +932,7 @@ describe('GeoResource provider', () => {
 		it('returns an GeoResourceLoader resolving to a VectorGeoResource', async () => {
 			const data = 'data';
 			spyOn(httpService, 'get')
-				.withArgs(vectorDefinition.url, { timeout: 5000 }, { response: [responseInterceptor] })
+				.withArgs(vectorDefinition.url, { response: [responseInterceptor] })
 				.and.resolveTo(new Response(data));
 			const urlServiceSpy = spyOn(urlService, 'proxifyInstant').withArgs(vectorDefinition.url).and.returnValue(vectorDefinition.url);
 
@@ -958,7 +954,7 @@ describe('GeoResource provider', () => {
 
 		it('returns an GeoResourceLoader throwing an Error when resource is not available', async () => {
 			spyOn(httpService, 'get')
-				.withArgs(vectorDefinition.url, { timeout: 5000 }, { response: [responseInterceptor] })
+				.withArgs(vectorDefinition.url, { response: [responseInterceptor] })
 				.and.resolveTo(new Response(null, { status: 404 }));
 			spyOn(urlService, 'proxifyInstant').withArgs(vectorDefinition.url).and.returnValue(vectorDefinition.url);
 

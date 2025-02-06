@@ -86,9 +86,7 @@ export const loadBvvGeoResources = async () => {
 
 	const url = configService.getValueAsPath('BACKEND_URL') + 'georesources/all';
 
-	const result = await httpService.get(url, {
-		timeout: 2000
-	});
+	const result = await httpService.get(url);
 
 	if (result.ok) {
 		const geoResources = [];
@@ -232,7 +230,7 @@ export const loadExternalGeoResource = (urlBasedAsId) => {
 export const getDefaultVectorGeoResourceLoaderForUrl = (url, sourceType, id = createUniqueId().toString(), label = null) => {
 	return async () => {
 		const { HttpService: httpService } = $injector.inject('HttpService');
-		const result = await httpService.get(url, { timeout: 5000 });
+		const result = await httpService.get(url);
 
 		if (result.ok) {
 			const data = await result.text();
@@ -259,11 +257,9 @@ export const getBvvVectorGeoResourceLoaderForUrl = (url, sourceType, id, label) 
 			UrlService: urlService,
 			GeoResourceService: geoResourceService
 		} = $injector.inject('HttpService', 'UrlService', 'GeoResourceService');
-		const result = await httpService.get(
-			urlService.proxifyInstant(url),
-			{ timeout: 5000 },
-			{ response: [geoResourceService.getAuthResponseInterceptorForGeoResource(id)] }
-		);
+		const result = await httpService.get(urlService.proxifyInstant(url), {
+			response: [geoResourceService.getAuthResponseInterceptorForGeoResource(id)]
+		});
 
 		if (result.ok) {
 			const data = await result.text();

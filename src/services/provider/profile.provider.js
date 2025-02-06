@@ -29,9 +29,7 @@ export const getBvvProfile = async (coordinateLikes3857) => {
 	const simplifiedCoordinates = coordinateService.simplify(coordinates3857, CoordinateSimplificationTarget.ELEVATION_PROFILE);
 	const url = configService.getValueAsPath('BACKEND_URL') + 'dem/profile';
 	const requestPayload = { coords: simplifiedCoordinates.map((c) => ({ e: c[0], n: c[1] })) };
-	const result = await httpService.post(url, JSON.stringify(requestPayload), MediaType.JSON, {
-		timeout: 5000
-	});
+	const result = await httpService.post(url, JSON.stringify(requestPayload), MediaType.JSON);
 	const replaceDistance = (profile, distance) => {
 		const { stats, ...rest } = profile;
 		return { ...rest, stats: { ...stats, linearDistance: distance } };
