@@ -280,12 +280,10 @@ export class NavigationRail extends MvuElement {
 	}
 
 	_showLegend() {
-		if (this.#storeService.getStore().getState().legend.active) {
+		if (this.#storeService.getStore().getState().legend.legendActive) {
 			deactivateLegend();
-			this._openTab(TabIds.MAPS);
 		} else {
 			activateLegend();
-			this._openTab(TabIds.LEGEND);
 		}
 	}
 

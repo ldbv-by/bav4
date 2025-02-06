@@ -5,6 +5,9 @@ import { html, nothing } from 'lit-html';
 import css from './legendContent.css';
 import { $injector } from '../../../../injection/index';
 import { AbstractMvuContentPanel } from '../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
+import arrowLeftShortIcon from '../assets/arrowLeftShort.svg';
+import { deactivateLegend } from '../../../../store/legend/legend.action';
+import { open } from '../../../../store/mainMenu/mainMenu.action';
 
 const Update_legend_active = 'update_legend_active';
 const Update_resolution = 'update_resolution';
@@ -23,8 +26,7 @@ export class LegendContent extends AbstractMvuContentPanel {
 			showSubtitle: false
 		});
 
-		const { StoreService, TranslationService, EnvironmentService } = $injector.inject('StoreService', 'TranslationService', 'EnvironmentService');
-		this._storeService = StoreService;
+		const { TranslationService, EnvironmentService } = $injector.inject('TranslationService', 'EnvironmentService');
 		this._translationService = TranslationService;
 		this._environmentService = EnvironmentService;
 	}
@@ -82,14 +84,15 @@ export class LegendContent extends AbstractMvuContentPanel {
 	}
 
 	createView(model) {
-		if (!model.legendActive) {
+		const { legendActive, isPortrait, resolution, legendItems, showSubtitle } = model;
+
+		if (!legendActive) {
 			return nothing;
 		}
 
 		const translate = (key) => this._translationService.translate(key);
 
-		const resolution = model.resolution;
-		const visibleLayers = model.legendItems.filter((l) => resolution > l.maxResolution && resolution < l.minResolution);
+		const visibleLayers = legendItems.filter((l) => resolution > l.maxResolution && resolution < l.minResolution);
 
 		const uniqueVisibleLayers = [...new Map(visibleLayers.map((item) => [item.title, item])).values()];
 
@@ -100,16 +103,40 @@ export class LegendContent extends AbstractMvuContentPanel {
 		`
 		);
 
+		const getOrientationClass = () => {
+			return isPortrait ? 'is-portrait' : 'is-landscape';
+		};
+
+		const onBackButton = () => {
+			deactivateLegend();
+			if (!isPortrait) open();
+		};
+
 		return html`
 			<style>
 				${css}
 			</style>
-			<div class="ea-legend-container ${model.isPortrait ? 'portrait-mode' : ''}">
-				<div class="ea-legend-filler"></div>
-				<div class="ea-legend-content">
-					<div class="ea-legend__title">${translate('ea_legend_title')}</div>
-					<div class="ea-legend__subtitle">${model.showSubtitle ? translate('ea_legend_subtitle') : ''}</div>
-					${content}
+			<div>
+				<div class="container  ${getOrientationClass()}">
+					<ul class="ba-list">
+						<li class="ba-list-item  ba-list-inline ba-list-item__header featureinfo-header">
+							<span class="ba-list-item__pre" style="position:relative;left:-1em;">
+								<ba-icon .icon="${arrowLeftShortIcon}" .size=${4} .title=${translate('featureInfo_close_button')} @click=${onBackButton}></ba-icon>
+							</span>
+							<span class="ba-list-item__text vertical-center">
+								<span class="ba-list-item__main-text" style="position:relative;left:-1em;"> ${translate('ea_legend_title')} </span>
+							</span>
+						</li>
+						<li>
+							<div class="ea-legend-container>
+								<div class="ea-legend-content">
+									<div class="ea-legend__subtitle">${showSubtitle ? translate('ea_legend_subtitle') : ''}</div>
+									${content}
+								</div>
+							</div>
+						</li>
+					</ul>
+					<div></div>
 				</div>
 			</div>
 		`;

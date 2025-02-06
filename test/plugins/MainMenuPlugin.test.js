@@ -16,6 +16,7 @@ import { Tools } from '../../src/domain/tools.js';
 import { createNoInitialStateMediaReducer } from '../../src/store/media/media.reducer';
 import { setIsPortrait } from '../../src/store/media/media.action';
 import { catalogReducer } from '../../src/store/catalog/catalog.reducer.js';
+import { legendReducer } from '../../src/store/legend/legend.reducer.js';
 
 describe('MainMenuPlugin', () => {
 	const environmentServiceMock = {
@@ -46,7 +47,8 @@ describe('MainMenuPlugin', () => {
 			featureInfo: featureInfoReducer,
 			search: searchReducer,
 			tools: toolsReducer,
-			catalog: catalogReducer
+			catalog: catalogReducer,
+			legend: legendReducer
 		});
 		$injector.registerSingleton('EnvironmentService', environmentServiceMock);
 		return store;

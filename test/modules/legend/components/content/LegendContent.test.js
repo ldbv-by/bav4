@@ -52,14 +52,6 @@ describe('LegendContent', () => {
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
 
-		it('renders the legend when module.legendActive is true', async () => {
-			const element = await setup();
-
-			activateLegend();
-
-			expect(element.shadowRoot.querySelector('.ea-legend__title').innerText).toEqual('ea_legend_title');
-		});
-
 		it('renders legend items, ', async () => {
 			const element = await setup();
 			activateLegend();

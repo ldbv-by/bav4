@@ -107,11 +107,22 @@ export class MainMenuPlugin extends BaPlugin {
 			}
 		};
 
+		const onLegendActiveChanged = (isActive) => {
+			if (isActive) {
+				setTab(TabIds.LEGEND);
+				open();
+			} else {
+				setTab(TabIds.MAPS);
+				close();
+			}
+		};
+
 		observe(store, (state) => state.featureInfo.querying, onFeatureInfoQueryingChanged);
 		observe(store, (state) => state.featureInfo.aborted, onFeatureInfoAbortedChanged);
 		observe(store, (state) => state.search.query, onQueryChanged, false);
 		observe(store, (store) => store.mainMenu.tab, onTabChanged, false);
 		observe(store, (state) => state.tools.current, onToolIdChanged, false);
 		observe(store, (state) => state.media.portrait, onOrientationChanged, false);
+		observe(store, (state) => state.legend.legendActive, onLegendActiveChanged);
 	}
 }
