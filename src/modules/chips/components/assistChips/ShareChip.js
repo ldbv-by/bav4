@@ -99,7 +99,9 @@ export class ShareChip extends AbstractAssistChip {
 			};
 			await this._environmentService.getWindow().navigator.share(content);
 		} catch (error) {
-			emitNotification(this._translationService.translate('chips_assist_chip_share_position_api_failed'), LevelTypes.WARN);
+			if (!(error instanceof DOMException && error.name === 'AbortError')) {
+				emitNotification(this._translationService.translate('chips_assist_chip_share_position_api_failed'), LevelTypes.WARN);
+			}
 		}
 	}
 
