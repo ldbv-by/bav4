@@ -58,7 +58,9 @@ describe('CoordinateInfo', () => {
 
 			expect(element.getModel()).toEqual({
 				coordinate: null,
-				elevation: null
+				elevation: null,
+				displaySingleRow: false,
+				selectedCr: null
 			});
 		});
 		it('takes a coordinate property', async () => {
@@ -78,7 +80,9 @@ describe('CoordinateInfo', () => {
 			//model
 			expect(element.getModel()).toEqual({
 				coordinate: null,
-				elevation: null
+				elevation: null,
+				displaySingleRow: false,
+				selectedCr: null
 			});
 		});
 
@@ -224,7 +228,9 @@ describe('CoordinateInfo', () => {
 
 			expect(element.getModel()).toEqual({
 				coordinate: null,
-				elevation: null
+				elevation: null,
+				displaySingleRow: false,
+				selectedCr: null
 			});
 		});
 	});

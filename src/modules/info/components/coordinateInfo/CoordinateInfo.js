@@ -106,24 +106,26 @@ export class CoordinateInfo extends MvuElement {
 		};
 		return html`<div class="content selectable">
 			${coordinate
-				? html`<div class="r_coordinate">
-				<select class="select-cr" @change="${onChange}" title="${translate('info_coordinateInfo_select')}">
-				${coordinateRepresentations.map((cr) => html`<option class="select-coordinate-option" value="${cr.id}">${translateSilently(cr.label)}</option>`)}
-				</select>
-				<span class="coordinate"></span>${stringifiedCoord}</span>
-				<span class="icon">
-					<ba-icon
-						class="close"
-						.icon="${clipboardIcon}"
-						.title=${translate('info_coordinateInfo_copy_icon')}
-						.size=${1.5}
-						@click=${onCopyCoordinate}
-					></ba-icon>
-				</span>
-				</div>`
+				? html`<div class="r_coordinate single_row">
+						<select class="select-cr" @change="${onChange}" title="${translate('info_coordinateInfo_select')}">
+							${coordinateRepresentations.map(
+								(cr) => html`<option class="select-coordinate-option" value="${cr.id}">${translateSilently(cr.label)}</option>`
+							)}
+						</select>
+						<span class="coordinate">${stringifiedCoord}</span>
+						<span class="icon">
+							<ba-icon
+								class="close"
+								.icon="${clipboardIcon}"
+								.title=${translate('info_coordinateInfo_copy_icon')}
+								.size=${1.5}
+								@click=${onCopyCoordinate}
+							></ba-icon>
+						</span>
+					</div>`
 				: nothing}
 			${elevation
-				? html`<div class="r_elevation">
+				? html`<div class="r_elevation single_row">
 						<span class="label">${translate('info_coordinateInfo_elevation_label')}</span><span class="coordinate">${elevation}</span>
 						<span class="icon">
 							<ba-icon
