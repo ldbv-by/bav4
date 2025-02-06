@@ -69,7 +69,7 @@ export class ImportVectorDataService {
 
 		const loader = async (id) => {
 			const proxyfiedUrl = this._urlService.proxifyInstant(url);
-			const result = await this._httpService.get(proxyfiedUrl, { timeout: 5000 });
+			const result = await this._httpService.get(proxyfiedUrl);
 
 			if (result.ok) {
 				const data = await result.text();

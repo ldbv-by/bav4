@@ -24,9 +24,7 @@ export const bvvRouteProvider = async (categories, coordinates3857) => {
 		points: coordinates4326
 	};
 
-	const result = await httpService.post(`${configService.getValueAsPath('BACKEND_URL')}routing/route`, JSON.stringify(payload), MediaType.JSON, {
-		timeout: 2000
-	});
+	const result = await httpService.post(`${configService.getValueAsPath('BACKEND_URL')}routing/route`, JSON.stringify(payload), MediaType.JSON);
 
 	switch (result.status) {
 		case 200:
