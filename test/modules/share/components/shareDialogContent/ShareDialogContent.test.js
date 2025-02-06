@@ -196,6 +196,18 @@ describe('ShareDialogContent', () => {
 		expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 	});
 
+	it('does NOT emit a warn notification on share api canceled', async () => {
+		const element = await setup({}, { share: () => Promise.reject() });
+		element.urls = shareUrls;
+		const shareButton = element.shadowRoot.querySelector('.share_item .share_api');
+		spyOn(windowMock.navigator, 'share').and.returnValue(Promise.reject(new DOMException('message', 'AbortError')));
+
+		shareButton.click();
+
+		await TestUtils.timeout();
+		expect(store.getState().notifications.latest).toBeNull();
+	});
+
 	it('logs a warning and emits a notification when copyToClipboard fails', async () => {
 		const copySpy = spyOn(shareServiceMock, 'copyToClipboard').and.callFake(() => Promise.reject());
 		const warnSpy = spyOn(console, 'warn');
