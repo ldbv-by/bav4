@@ -75,15 +75,16 @@ describe('TopicsPlugin', () => {
 			});
 		});
 		describe('topic id is NOT available', () => {
-			it('updates current topic', () => {
+			it('sets the default topic', () => {
+				const topicId = 'topicId';
+				const topic = new Topic(topicId, 'label', 'description');
 				const store = setup();
 				const instanceUnderTest = new TopicsPlugin();
-				const topicServiceSpy = spyOn(topicsServiceMock, 'byId');
+				spyOn(topicsServiceMock, 'default').and.returnValue(topic);
 
 				instanceUnderTest._addTopicFromQueryParams(new URLSearchParams());
 
-				expect(topicServiceSpy).not.toHaveBeenCalled();
-				expect(store.getState().topics.current).toBeNull();
+				expect(store.getState().topics.current).toEqual(topicId);
 			});
 		});
 	});
@@ -100,6 +101,7 @@ describe('TopicsPlugin', () => {
 					}
 				});
 				const instanceUnderTest = new TopicsPlugin();
+				spyOn(instanceUnderTest, '_addTopicFromQueryParams');
 
 				await instanceUnderTest.register(store);
 
@@ -120,6 +122,7 @@ describe('TopicsPlugin', () => {
 					}
 				});
 				const instanceUnderTest = new TopicsPlugin();
+				spyOn(instanceUnderTest, '_addTopicFromQueryParams');
 
 				await instanceUnderTest.register(store);
 
