@@ -16,7 +16,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_layer_copy).toBe('Kopie');
 		expect(map.layerManager_expand_all).toBe('Alle ausklappen');
 		expect(map.layerManager_collapse_all).toBe('Alle einklappen');
-		expect(map.layerManager_remove_all).toBe('Alle entfernen');
+		expect(map.layerManager_remove_all).toBe('Überlagerungen entfernen');
 		expect(map.layerManager_loading_hint).toBe('Wird geladen');
 		expect(map.layerManager_time_travel_hint).toBe('Bitte ein Jahr auswählen');
 		expect(map.layerManager_time_travel_slider).toBe('Schieberegler öffnen');
@@ -31,19 +31,19 @@ describe('i18n for layer-manager', () => {
 		const map = provide('en');
 
 		expect(map.layerManager_title).toBe('Layers');
-		expect(map.layerManager_change_visibility).toBe('toggle visibility');
+		expect(map.layerManager_change_visibility).toBe('Toggle visibility');
 		expect(map.layerManager_opacity).toBe('Opacity');
-		expect(map.layerManager_collapse).toBe('collapse properties');
-		expect(map.layerManager_expand).toBe('expand properties');
-		expect(map.layerManager_move_up).toBe('move layer up');
-		expect(map.layerManager_move_down).toBe('move layer down');
-		expect(map.layerManager_remove).toBe('remove layer');
+		expect(map.layerManager_collapse).toBe('Collapse properties');
+		expect(map.layerManager_expand).toBe('Expand properties');
+		expect(map.layerManager_move_up).toBe('Move layer up');
+		expect(map.layerManager_move_down).toBe('Move layer down');
+		expect(map.layerManager_remove).toBe('Remove layer');
 		expect(map.layerManager_to_copy).toBe('Copy layer');
 		expect(map.layerManager_zoom_to_extent).toBe('Zoom to extent');
-		expect(map.layerManager_layer_copy).toBe('copy');
-		expect(map.layerManager_expand_all).toBe('expand all');
-		expect(map.layerManager_collapse_all).toBe('collapse all');
-		expect(map.layerManager_remove_all).toBe('remove all');
+		expect(map.layerManager_layer_copy).toBe('Copy');
+		expect(map.layerManager_expand_all).toBe('Expand all');
+		expect(map.layerManager_collapse_all).toBe('Collapse all');
+		expect(map.layerManager_remove_all).toBe('Remove all overlays');
 		expect(map.layerManager_loading_hint).toBe('Loading');
 		expect(map.layerManager_time_travel_hint).toBe('Choose a year');
 		expect(map.layerManager_time_travel_slider).toBe('Open slider');
