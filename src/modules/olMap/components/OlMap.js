@@ -54,6 +54,7 @@ export class OlMap extends MvuElement {
 			OlMfpHandler: olMfpHandler,
 			OlRoutingHandler: olRoutingHandler,
 			OlSelectableFeatureHandler: olSelectableFeatureHandler,
+			TranslationService: translationService,
 			OlLayerSwipeHandler: olLayerSwipeHandler
 		} = $injector.inject(
 			'MapService',
@@ -70,6 +71,7 @@ export class OlMap extends MvuElement {
 			'OlMfpHandler',
 			'OlRoutingHandler',
 			'OlSelectableFeatureHandler',
+			'TranslationService',
 			'OlLayerSwipeHandler'
 		);
 
@@ -92,6 +94,7 @@ export class OlMap extends MvuElement {
 			[olSelectableFeatureHandler.id, olSelectableFeatureHandler],
 			[olLayerSwipeHandler.id, olLayerSwipeHandler]
 		]);
+		this._translationService = translationService;
 	}
 
 	/**
@@ -110,11 +113,24 @@ export class OlMap extends MvuElement {
 	 * @override
 	 */
 	createView() {
+		const translate = (key) => this._translationService.translate(key);
+
+		const getEmbeddedClass = () => {
+			return this._environmentService.isEmbedded() ? 'is-embedded' : '';
+		};
+
 		return html`
 			<style>
 				${olCss + css}
 			</style>
-			<div data-test-id id="ol-map" tabindex="0"></div>
+			<div
+				data-test-id
+				id="ol-map"
+				class="${getEmbeddedClass()}"
+				aria-label="${translate('olMap_map')}"
+				aria-roledescription="${translate('olMap_map')}"
+				tabindex="0"
+			></div>
 		`;
 	}
 

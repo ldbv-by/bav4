@@ -40,6 +40,11 @@
 	transform: scale(1.1);
 }
 
+.button:focus-visible {
+	outline-offset: 0.2em;
+	outline: 0.2em solid var(--secondary-color);
+}
+
 .button:active {
 	transform: scale(1.15);
 }
