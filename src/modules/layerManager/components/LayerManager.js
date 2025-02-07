@@ -232,7 +232,13 @@ export class LayerManager extends MvuElement {
 		};
 
 		const removeAll = () => {
-			draggableItems.filter((i) => !i.isPlaceholder).forEach((i) => removeLayer(i.id));
+			draggableItems
+				.filter((i) => !i.isPlaceholder)
+				.forEach((i, index) => {
+					if (index > 0) {
+						removeLayer(i.id);
+					}
+				});
 		};
 
 		const draggableItemsExpandable = draggableItems.some((i) => i.collapsed);

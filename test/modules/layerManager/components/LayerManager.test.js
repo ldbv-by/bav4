@@ -589,14 +589,19 @@ describe('LayerManager', () => {
 		});
 
 		it("updates draggableItems, when button for 'remove all' is clicked", async () => {
-			const layer = {
+			const layer0 = {
 				...createDefaultLayerProperties(),
 				id: 'id0',
 				visible: false
 			};
+			const layer1 = {
+				...createDefaultLayerProperties(),
+				id: 'id1',
+				visible: false
+			};
 			const state = {
 				layers: {
-					active: [layer],
+					active: [layer0, layer1],
 					background: 'bg0'
 				}
 			};
@@ -605,7 +610,8 @@ describe('LayerManager', () => {
 			const buttonRemoveAll = element.shadowRoot.querySelector('#button_remove_all');
 			buttonRemoveAll.click();
 
-			expect(store.getState().layers.active.length).toBe(0);
+			expect(store.getState().layers.active.length).toBe(1);
+			expect(store.getState().layers.active[0].id).toBe('id0');
 		});
 
 		it("activates and deactivates layer swipe, when button for 'compare' is clicked", async () => {
