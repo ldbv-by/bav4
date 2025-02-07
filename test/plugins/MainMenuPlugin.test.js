@@ -21,7 +21,6 @@ describe('MainMenuPlugin', () => {
 	const environmentServiceMock = {
 		getQueryParams: () => new URLSearchParams()
 	};
-	const defaultTabId = TabIds.MAPS;
 
 	const setup = (state) => {
 		const initialState = {
@@ -51,6 +50,12 @@ describe('MainMenuPlugin', () => {
 		$injector.registerSingleton('EnvironmentService', environmentServiceMock);
 		return store;
 	};
+
+	describe('static properties', () => {
+		it('provides a default tab id', () => {
+			expect(MainMenuPlugin.DEFAULT_TAB_ID).toBe(TabIds.MAPS);
+		});
+	});
 
 	describe('constructor', () => {
 		it('setups local state', () => {
@@ -84,7 +89,7 @@ describe('MainMenuPlugin', () => {
 
 				instanceUnderTest._init();
 
-				expect(store.getState().mainMenu.tab).toEqual(defaultTabId);
+				expect(store.getState().mainMenu.tab).toEqual(MainMenuPlugin.DEFAULT_TAB_ID);
 			});
 
 			it('sets the default tab id when param denoted the ROUTING tab', async () => {
@@ -96,7 +101,7 @@ describe('MainMenuPlugin', () => {
 
 				instanceUnderTest._init();
 
-				expect(store.getState().mainMenu.tab).toEqual(defaultTabId);
+				expect(store.getState().mainMenu.tab).toEqual(MainMenuPlugin.DEFAULT_TAB_ID);
 			});
 		});
 
@@ -107,7 +112,7 @@ describe('MainMenuPlugin', () => {
 
 				instanceUnderTest._init();
 
-				expect(store.getState().mainMenu.tab).toEqual(defaultTabId);
+				expect(store.getState().mainMenu.tab).toEqual(MainMenuPlugin.DEFAULT_TAB_ID);
 			});
 		});
 
@@ -151,7 +156,7 @@ describe('MainMenuPlugin', () => {
 			await instanceUnderTest.register(store);
 
 			expect(instanceUnderTest._open).toBeTrue();
-			expect(instanceUnderTest._previousTab).toBe(defaultTabId);
+			expect(instanceUnderTest._previousTab).toBe(MainMenuPlugin.DEFAULT_TAB_ID);
 			expect(initSpy).toHaveBeenCalled();
 		});
 
@@ -185,7 +190,7 @@ describe('MainMenuPlugin', () => {
 			registerQuery(queryId);
 
 			expect(store.getState().featureInfo.current).toHaveSize(1);
-			expect(store.getState().mainMenu.tab).toBe(defaultTabId);
+			expect(store.getState().mainMenu.tab).toBe(MainMenuPlugin.DEFAULT_TAB_ID);
 			expect(store.getState().mainMenu.open).toBeFalse();
 		});
 
@@ -228,7 +233,7 @@ describe('MainMenuPlugin', () => {
 
 					resolveQuery(queryId);
 
-					expect(store.getState().mainMenu.tab).toBe(defaultTabId);
+					expect(store.getState().mainMenu.tab).toBe(MainMenuPlugin.DEFAULT_TAB_ID);
 					expect(store.getState().mainMenu.open).toBeFalse();
 				});
 			});
@@ -252,42 +257,62 @@ describe('MainMenuPlugin', () => {
 				expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
 				expect(store.getState().mainMenu.open).toBeFalse();
 			});
-		});
 
-		describe('and MainMenu is initially closed', () => {
-			it('restores the previous panel', async () => {
-				const store = setup({
-					mainMenu: {
-						open: false
-					}
+			describe('and MainMenu is initially closed', () => {
+				it('restores the previous panel', async () => {
+					const store = setup({
+						mainMenu: {
+							open: false
+						}
+					});
+					const instanceUnderTest = new MainMenuPlugin();
+					await instanceUnderTest.register(store);
+					setTab(TabIds.FEATUREINFO);
+					close();
+
+					abortOrReset();
+
+					expect(store.getState().mainMenu.tab).toBe(MainMenuPlugin.DEFAULT_TAB_ID);
+					expect(store.getState().mainMenu.open).toBeFalse();
 				});
-				const instanceUnderTest = new MainMenuPlugin();
-				await instanceUnderTest.register(store);
-				setTab(TabIds.FEATUREINFO);
-				close();
+			});
 
-				abortOrReset();
+			describe('and MainMenu is initially open', () => {
+				it('restores the previous panel', async () => {
+					const store = setup({
+						mainMenu: {
+							open: true
+						}
+					});
+					const instanceUnderTest = new MainMenuPlugin();
+					await instanceUnderTest.register(store);
+					setTab(TabIds.FEATUREINFO);
 
-				expect(store.getState().mainMenu.tab).toBe(defaultTabId);
-				expect(store.getState().mainMenu.open).toBeFalse();
+					abortOrReset();
+
+					expect(store.getState().mainMenu.tab).toBe(MainMenuPlugin.DEFAULT_TAB_ID);
+					expect(store.getState().mainMenu.open).toBeTrue();
+				});
 			});
 		});
 
-		describe('and MainMenu is initially open', () => {
-			it('restores the previous panel', async () => {
-				const store = setup({
-					mainMenu: {
-						open: true
-					}
+		describe('current tab is the FeatureInfo tab', () => {
+			describe('and the previous tab is also the FeatureInfo', () => {
+				it('sets the default tab', async () => {
+					const store = setup({
+						mainMenu: {
+							tab: TabIds.FEATUREINFO,
+							open: true
+						}
+					});
+					const instanceUnderTest = new MainMenuPlugin();
+					spyOn(instanceUnderTest, '_init');
+					await instanceUnderTest.register(store);
+
+					abortOrReset();
+
+					expect(store.getState().mainMenu.tab).toBe(MainMenuPlugin.DEFAULT_TAB_ID);
 				});
-				const instanceUnderTest = new MainMenuPlugin();
-				await instanceUnderTest.register(store);
-				setTab(TabIds.FEATUREINFO);
-
-				abortOrReset();
-
-				expect(store.getState().mainMenu.tab).toBe(defaultTabId);
-				expect(store.getState().mainMenu.open).toBeTrue();
 			});
 		});
 	});
