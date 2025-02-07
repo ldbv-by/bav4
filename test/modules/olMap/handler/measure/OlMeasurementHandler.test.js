@@ -35,6 +35,7 @@ import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../../../../src/
 import { fileStorageReducer } from '../../../../../src/store/fileStorage/fileStorage.reducer.js';
 import { KML_EMPTY_CONTENT } from '../../../../../src/modules/olMap/formats/kml.js';
 import { PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../../../../src/modules/olMap/utils/olGeometryUtils.js';
+import { setAdminAndFileId } from '../../../../../src/store/fileStorage/fileStorage.action.js';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -335,6 +336,34 @@ describe('OlMeasurementHandler', () => {
 				expect(classUnderTest._storedContent).toBe(KML_EMPTY_CONTENT);
 				expect(store.getState().fileStorage.data).toBe(KML_EMPTY_CONTENT);
 			});
+
+			it('updates the fileStorage slice-of-state and uses old georesourceId storeId, due to no data-changes', async () => {
+				const store = await setup(initialMeasureState, { ...initialFileStorageState, fileId: null });
+				const classUnderTest = new OlMeasurementHandler();
+				const lastData =
+					'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measurement_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+				const map = setupMap();
+				const vectorGeoResource = new VectorGeoResource('f_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
+
+				map.addLayer(new Layer({ geoResourceId: 'f_lastId', render: () => {} }));
+				spyOn(fileStorageServiceMock, 'isFileId').and.callFake(() => true);
+				spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
+				const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'byId').withArgs('f_lastId').and.returnValue(vectorGeoResource);
+
+				classUnderTest.activate(map);
+
+				await TestUtils.timeout();
+
+				expect(classUnderTest._storeId).toBe('f_lastId');
+				const saveSpy = spyOn(classUnderTest, '_save').and.callThrough();
+
+				geoResourceServiceSpy.calls.reset();
+				classUnderTest._convertToPermanentLayer(); // third and last save
+				await TestUtils.timeout();
+				expect(saveSpy).toHaveBeenCalledTimes(1);
+				expect(geoResourceServiceSpy).toHaveBeenCalled();
+				expect(store.getState().fileStorage.data).toBeTruthy();
+			});
 		});
 
 		describe('uses Interactions', () => {
@@ -475,6 +504,19 @@ describe('OlMeasurementHandler', () => {
 				remove();
 				expect(removeSpy).toHaveBeenCalled();
 			});
+
+			it('register observer for last fileId', () => {
+				setup();
+				const classUnderTest = new OlMeasurementHandler();
+				const map = setupMap();
+				map.addInteraction = jasmine.createSpy();
+				const updateStoreIdSpy = spyOn(classUnderTest, '_updateStoreId').and.callThrough();
+
+				classUnderTest.activate(map);
+				setAdminAndFileId('foo', 'bar');
+				expect(updateStoreIdSpy).toHaveBeenCalledWith('bar');
+				expect(classUnderTest._storeId).toBe('bar');
+			});
 		});
 
 		it('looks for existing measurement-layer and adds the feature for update/copy on save', async () => {
@@ -498,6 +540,28 @@ describe('OlMeasurementHandler', () => {
 			await TestUtils.timeout();
 			expect(geoResourceSpy).toHaveBeenCalledWith('a_lastId');
 			expect(addFeatureSpy).toHaveBeenCalledTimes(1);
+		});
+
+		it('looks for existing measurement-layer and use the geoResourceId as value for storeId', async () => {
+			setup();
+			const classUnderTest = new OlMeasurementHandler();
+			const lastData =
+				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measure_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+			const map = setupMap();
+			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
+			spyOn(fileStorageServiceMock, 'isAdminId').withArgs('a_lastId').and.returnValue(true);
+
+			// we add two fileStorage related layers
+			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
+			map.addLayer(new Layer({ geoResourceId: 'a_notWanted', render: () => {} }));
+			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
+
+			const geoResourceSpy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
+			classUnderTest.activate(map);
+
+			await TestUtils.timeout();
+			expect(geoResourceSpy).toHaveBeenCalledWith('a_lastId');
+			expect(classUnderTest._storeId).toBe('a_lastId');
 		});
 
 		it('looks for measurement-layer and gets no georesource', async () => {
