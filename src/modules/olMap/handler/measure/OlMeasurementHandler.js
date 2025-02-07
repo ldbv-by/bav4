@@ -90,6 +90,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._draw = false;
 
 		this._storedContent = null;
+		this._storeId = null;
 
 		this._sketchHandler = new OlSketchHandler();
 		this._mapListeners = [];
@@ -186,6 +187,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 						this._finish();
 					}
 					this._setSelection(this._storeService.getStore().getState().measurement.selection);
+					this._updateStoreId(oldLayer.get('geoResourceId'));
 					this._updateMeasureState();
 				}
 			}
@@ -366,6 +368,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._convertToPermanentLayer().finally(() => {
 			this._layerId = null;
 			this._layerZIndex = null;
+			this._storedContent = null;
+			this._storeId = null;
 		});
 		this._vectorLayer
 			.getSource()
@@ -428,6 +432,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				store,
 				(state) => state.measurement.displayRuler,
 				(displayRuler) => this._updateStyle(displayRuler)
+			),
+			observe(
+				store,
+				(state) => state.fileStorage.fileId,
+				(fileId) => this._updateStoreId(fileId)
 			)
 		];
 	}
@@ -750,6 +759,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._setMeasureState(measureState);
 	}
 
+	_updateStoreId(storeId) {
+		this._storeId = storeId;
+	}
+
 	_setSelection(ids) {
 		const clear = () => {
 			this._select?.getFeatures().clear();
@@ -771,6 +784,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		/**
 		 * The stored content will be created/updated after adding/changing and removing features,
 		 * while interacting with the layer.
+		 * Every asynchron save (of the storedContent) results in a changed fileId in s-o-s fileStorage
+		 * The changed fileId is observed and tracked via this._storeId
 		 */
 		setData(this._storedContent);
 	}
@@ -782,7 +797,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		await this._save();
 
 		if (this._storedContent) {
-			const id = this._storeService.getStore().getState().fileStorage.fileId;
+			const id = this._storeService.getStore().getState().fileStorage.fileId ?? this._storeId;
 			const getOrCreateVectorGeoResource = () => {
 				const fromService = this._geoResourceService.byId(id);
 				return fromService
