@@ -321,6 +321,17 @@ export class LayerItem extends AbstractMvuContentPanel {
 						>${layer.loading ? html`<ba-spinner .label=${currentLabel}></ba-spinner>` : html`${currentLabel} ${getBadges(layer.keywords)}`}
 					</ba-checkbox>
 					${getTimestampContent()}
+					<div class="ba-list-item__after clear">
+						<ba-icon
+							id="remove"
+							.icon="${removeSvg}"
+							.color=${'var(--primary-color)'}
+							.color_hover=${'var(--text3)'}
+							.size=${1.6}
+							.title=${translate('layerManager_remove')}
+							@click=${remove}
+						></ba-icon>
+					</div>
 					<button id="button-detail" data-test-id class="ba-list-item__after" title="${getCollapseTitle()}" @click="${toggleCollapse}">
 						<i class="icon chevron icon-rotate-90 ${classMap(iconCollapseClass)}"></i>
 					</button>
@@ -348,17 +359,6 @@ export class LayerItem extends AbstractMvuContentPanel {
 								.size=${2.6}
 								.title=${translate('layerManager_move_down')}
 								@click=${decreaseIndex}
-							></ba-icon>
-						</div>
-						<div>
-							<ba-icon
-								id="remove"
-								.icon="${removeSvg}"
-								.color=${'var(--primary-color)'}
-								.color_hover=${'var(--text3)'}
-								.size=${2.6}
-								.title=${translate('layerManager_remove')}
-								@click=${remove}
 							></ba-icon>
 						</div>
 						<ba-overflow-menu .type=${MenuTypes.MEATBALL} .items=${getMenuItems()}></ba-overflow-menu>
