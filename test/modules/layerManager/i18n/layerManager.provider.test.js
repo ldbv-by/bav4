@@ -22,7 +22,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_time_travel_slider).toBe('Schieberegler öffnen');
 		expect(map.layerManager_compare).toBe('Vergleichen starten');
 		expect(map.layerManager_compare_stop).toBe('Vergleichen beenden');
-		expect(map.layerManager_compare_share).toBe('Vergleichen teilen');
+		expect(map.layerManager_compare_share).toBe('Ansicht teilen');
 		expect(map.layerManager_compare_left).toBe('Links');
 		expect(map.layerManager_compare_both).toBe('Beide');
 		expect(map.layerManager_compare_right).toBe('Rechts');
