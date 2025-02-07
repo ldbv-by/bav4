@@ -32,6 +32,7 @@ import { Tools } from '../../../../../src/domain/tools';
 import { fileStorageReducer } from '../../../../../src/store/fileStorage/fileStorage.reducer.js';
 import { KML_EMPTY_CONTENT } from '../../../../../src/modules/olMap/formats/kml.js';
 import { GeometryType } from '../../../../../src/domain/geometryTypes.js';
+import { setAdminAndFileId } from '../../../../../src/store/fileStorage/fileStorage.action.js';
 
 describe('OlDrawHandler', () => {
 	class MockClass {
@@ -503,6 +504,19 @@ describe('OlDrawHandler', () => {
 				classUnderTest.activate(map);
 				remove();
 				expect(removeSpy).toHaveBeenCalled();
+			});
+
+			it('register observer for last fileId', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = jasmine.createSpy();
+				const updateStoreIdSpy = spyOn(classUnderTest, '_updateStoreId').and.callThrough();
+
+				classUnderTest.activate(map);
+				setAdminAndFileId('foo', 'bar');
+				expect(updateStoreIdSpy).toHaveBeenCalledWith('bar');
+				expect(classUnderTest._storeId).toBe('bar');
 			});
 
 			it('starts with a preselected drawType', () => {
@@ -1036,6 +1050,28 @@ describe('OlDrawHandler', () => {
 			await TestUtils.timeout();
 			expect(geoResourceSpy).toHaveBeenCalledWith('a_lastId');
 			expect(addFeatureSpy).toHaveBeenCalledTimes(1);
+		});
+
+		it('looks for an existing drawing-layer and use the geoResourceId as value for storeId', async () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const lastData =
+				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="draw_line_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+			const map = setupMap();
+			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
+			spyOn(fileStorageServiceMock, 'isAdminId').withArgs('a_lastId').and.returnValue(true);
+
+			// we add two fileStorage related layers
+			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
+			map.addLayer(new Layer({ geoResourceId: 'a_notWanted', render: () => {} }));
+			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
+
+			const geoResourceSpy = spyOn(geoResourceServiceMock, 'byId').withArgs('a_lastId').and.returnValue(vectorGeoResource);
+			classUnderTest.activate(map);
+
+			await TestUtils.timeout();
+			expect(geoResourceSpy).toHaveBeenCalledWith('a_lastId');
+			expect(classUnderTest._storeId).toBe('a_lastId');
 		});
 
 		it('looks for an existing drawing-layer and gets no georesource', async () => {
