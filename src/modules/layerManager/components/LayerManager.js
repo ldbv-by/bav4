@@ -241,29 +241,37 @@ export class LayerManager extends MvuElement {
 				});
 		};
 
+		const getShareCompareChip = () => {
+			return isLayerSwipeActive
+				? html` <div class="chips__container">
+						<ba-share-chip .label=${translate('layerManager_compare_share')}></ba-share-chip>
+					</div>`
+				: nothing;
+		};
+
 		const draggableItemsExpandable = draggableItems.some((i) => i.collapsed);
 		const expandOrCollapseLabel = draggableItemsExpandable ? translate('layerManager_expand_all') : translate('layerManager_collapse_all');
 		const expandOrCollapseAction = draggableItemsExpandable ? expandAll : collapseAll;
 
 		return draggableItems.filter((i) => !i.isPlaceholder).length > 0
 			? html`<div class="layermanager__actions">
-					<ba-button
-						id="button_expand_or_collapse"
-						class="layermanager__expandOrCollapse"
-						.label=${expandOrCollapseLabel}
-						.type=${'secondary'}
-						@click=${expandOrCollapseAction}
-						style="border-right: 1px dotted var(--header-background-color);"
-					></ba-button>
-					<ba-button id="button_remove_all" .label=${translate('layerManager_remove_all')} .type=${'secondary'} @click=${removeAll}></ba-button>
-					<ba-button
-						id="button_layer_swipe"
-						.label=${translate(isLayerSwipeActive ? 'layerManager_compare_stop' : 'layerManager_compare')}
-						.type=${'secondary'}
-						@click=${() => toggleCurrentTool(Tools.COMPARE)}
-					></ba-button>
-					<div></div>
-				</div>`
+						<ba-button
+							id="button_expand_or_collapse"
+							class="layermanager__expandOrCollapse"
+							.label=${expandOrCollapseLabel}
+							.type=${'secondary'}
+							@click=${expandOrCollapseAction}
+							style="border-right: 1px dotted var(--header-background-color);"
+						></ba-button>
+						<ba-button id="button_remove_all" .label=${translate('layerManager_remove_all')} .type=${'secondary'} @click=${removeAll}></ba-button>
+						<ba-button
+							id="button_layer_swipe"
+							.label=${translate(isLayerSwipeActive ? 'layerManager_compare_stop' : 'layerManager_compare')}
+							.type=${'secondary'}
+							@click=${() => toggleCurrentTool(Tools.COMPARE)}
+						></ba-button>
+					</div>
+					${getShareCompareChip()} `
 			: nothing;
 	}
 

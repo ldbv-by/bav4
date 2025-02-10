@@ -22,6 +22,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_time_travel_slider).toBe('Schieberegler öffnen');
 		expect(map.layerManager_compare).toBe('Vergleichen starten');
 		expect(map.layerManager_compare_stop).toBe('Vergleichen beenden');
+		expect(map.layerManager_compare_share).toBe('Ansicht teilen');
 		expect(map.layerManager_compare_left).toBe('Links');
 		expect(map.layerManager_compare_both).toBe('Beide');
 		expect(map.layerManager_compare_right).toBe('Rechts');
@@ -49,13 +50,14 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_time_travel_slider).toBe('Open slider');
 		expect(map.layerManager_compare).toBe('Start comparison tool');
 		expect(map.layerManager_compare_stop).toBe('Exit comparison tool');
+		expect(map.layerManager_compare_share).toBe('Share the view');
 		expect(map.layerManager_compare_left).toBe('Left');
 		expect(map.layerManager_compare_both).toBe('Both');
 		expect(map.layerManager_compare_right).toBe('Right');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 22;
+		const expectedSize = 23;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
