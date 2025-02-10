@@ -640,6 +640,7 @@ describe('LayerManager', () => {
 			expect(buttonCompare.label).toBe('layerManager_compare_stop');
 			expect(element.shadowRoot.querySelectorAll('.chips__container').length).toBe(1);
 			expect(element.shadowRoot.querySelectorAll('ba-share-chip').length).toBe(1);
+			expect(element.shadowRoot.querySelector('ba-share-chip').label).toBe('layerManager_compare_share');
 
 			buttonCompare.click();
 			expect(store.getState().tools.current).toBe(null);
