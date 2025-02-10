@@ -12,11 +12,16 @@ describe('GeometryInfo', () => {
 		toLonLat() {}
 	};
 
+	const shareServiceMock = {
+		copyToClipboard() {}
+	};
+
 	const setup = () => {
 		TestUtils.setupStoreAndDi();
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('CoordinateService', coordinateServiceMock)
+			.registerSingleton('ShareService', shareServiceMock)
 			.registerSingleton('UnitsService', {
 				formatDistance: (distance) => {
 					return distance + ' m';

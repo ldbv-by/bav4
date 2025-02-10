@@ -13,3 +13,7 @@
 	min-width: 7em;
 	flex-grow: unset;
 }
+
+.stats-content ba-coordinate-info {
+	width: 100%;
+}
