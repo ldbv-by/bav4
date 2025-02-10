@@ -19,7 +19,7 @@ export const provide = (lang) => {
 				layerManager_remove_all: 'remove all',
 				layerManager_compare: 'Start comparison tool',
 				layerManager_compare_stop: 'Exit comparison tool',
-				layerManager_compare_share: 'Share comparison',
+				layerManager_compare_share: 'Share the view',
 				layerManager_loading_hint: 'Loading',
 				layerManager_time_travel_hint: 'Choose a year',
 				layerManager_time_travel_slider: 'Open slider',

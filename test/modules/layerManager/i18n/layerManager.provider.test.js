@@ -50,7 +50,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_time_travel_slider).toBe('Open slider');
 		expect(map.layerManager_compare).toBe('Start comparison tool');
 		expect(map.layerManager_compare_stop).toBe('Exit comparison tool');
-		expect(map.layerManager_compare_share).toBe('Share comparison');
+		expect(map.layerManager_compare_share).toBe('Share the view');
 		expect(map.layerManager_compare_left).toBe('Left');
 		expect(map.layerManager_compare_both).toBe('Both');
 		expect(map.layerManager_compare_right).toBe('Right');
