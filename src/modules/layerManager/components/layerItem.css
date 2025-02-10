@@ -12,8 +12,24 @@
 	margin: 0 0.3em;
 }
 
+.clear {
+	padding-left: 0;
+}
+
+.clear ba-icon {
+	border-radius: 2em;
+	width: 1.6em;
+	height: 1.6em;
+	display: block;
+	font-size: 1rem;
+}
+
 .collapse-content ba-icon:hover {
 	background: var(--primary-color);
+}
+
+.clear ba-icon:hover {
+	background: var(--error-color);
 }
 
 .collapse-content ba-icon:focus {

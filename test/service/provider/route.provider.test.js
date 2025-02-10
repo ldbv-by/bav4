@@ -43,8 +43,7 @@ describe('Route provider', () => {
 							[13, 14]
 						]
 					}),
-					MediaType.JSON,
-					{ timeout: 2000 }
+					MediaType.JSON
 				)
 				.and.resolveTo(new Response(JSON.stringify(mockResponse)));
 
@@ -75,8 +74,7 @@ describe('Route provider', () => {
 							[13, 14]
 						]
 					}),
-					MediaType.JSON,
-					{ timeout: 2000 }
+					MediaType.JSON
 				)
 				.and.resolveTo(new Response(null, { status: statusCode }));
 
@@ -108,8 +106,7 @@ describe('Route provider', () => {
 							[13, 14]
 						]
 					}),
-					MediaType.JSON,
-					{ timeout: 2000 }
+					MediaType.JSON
 				)
 				.and.resolveTo(new Response(null, { status: statusCode }));
 
@@ -140,8 +137,7 @@ describe('Route provider', () => {
 							[13, 14]
 						]
 					}),
-					MediaType.JSON,
-					{ timeout: 2000 }
+					MediaType.JSON
 				)
 				.and.resolveTo(new Response(null, { status: statusCode }));
 
