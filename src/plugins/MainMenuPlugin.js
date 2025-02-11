@@ -33,7 +33,7 @@ export class MainMenuPlugin extends BaPlugin {
 			setTab(tabId);
 		} else {
 			// set default tab id
-			setTab(TabIds.MAPS);
+			setTab(MainMenuPlugin.DEFAULT_TAB_ID);
 		}
 
 		const catalogNodes = queryParams.get(QueryParameters.CATALOG_NODE_IDS);
@@ -64,7 +64,7 @@ export class MainMenuPlugin extends BaPlugin {
 				if (!this._open) {
 					close();
 				}
-				setTab(this._previousTab);
+				setTab(this._previousTab === TabIds.FEATUREINFO ? MainMenuPlugin.DEFAULT_TAB_ID : this._previousTab);
 			}
 		};
 
@@ -113,5 +113,9 @@ export class MainMenuPlugin extends BaPlugin {
 		observe(store, (store) => store.mainMenu.tab, onTabChanged, false);
 		observe(store, (state) => state.tools.current, onToolIdChanged, false);
 		observe(store, (state) => state.media.portrait, onOrientationChanged, false);
+	}
+
+	static get DEFAULT_TAB_ID() {
+		return TabIds.MAPS;
 	}
 }
