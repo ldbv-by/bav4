@@ -28,6 +28,7 @@ describe('Badge', () => {
 			//view
 			const badge = element.shadowRoot.querySelector('.badge');
 			expect(badge.children.length).toBe(1);
+			expect(badge.getAttribute('part')).toBe('badge');
 			expect(element.shadowRoot.styleSheets.length).toBe(2);
 			const text = element.shadowRoot.querySelector('.text');
 			expect(text.innerText).toBe('');

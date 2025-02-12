@@ -175,7 +175,32 @@ describe('LayerItem', () => {
 			const element = await setup(layer);
 
 			const slider = element.shadowRoot.querySelector('.opacity-slider');
+			expect(slider.type).toBe('range');
+			expect(slider.min).toBe('0');
+			expect(slider.max).toBe('100');
+			expect(slider.title).toBe('layerManager_opacity');
+			expect(slider.draggable).toBe(true);
+
 			expect(slider.value).toBe('55');
+		});
+
+		it('use layer.opacity-property in badge ', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 0.55,
+				collapsed: true
+			};
+			const element = await setup(layer);
+
+			const badge = element.shadowRoot.querySelector('.slider-container ba-badge');
+			expect(badge.label).toBe(55);
 		});
 
 		it('use layer.visible-property in checkbox ', async () => {
@@ -377,14 +402,13 @@ describe('LayerItem', () => {
 			};
 			const element = await setup(layer);
 
-			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
-			const infoMenuItem = menu.items.find((item) => item.label === 'Info');
+			const infoButton = element.shadowRoot.querySelector('#info');
 
-			expect(infoMenuItem).not.toBeNull();
-			expect(infoMenuItem.label).toEqual('Info');
-			expect(infoMenuItem.action).toEqual(jasmine.any(Function));
-			expect(infoMenuItem.disabled).toBeFalse();
-			expect(infoMenuItem.icon).toBe(infoSvg);
+			expect(infoButton).not.toBeNull();
+			expect(infoButton.title).toEqual('layerManager_info');
+			expect(infoButton.click).toEqual(jasmine.any(Function));
+			expect(infoButton.disabled).toBeFalse();
+			expect(infoButton.icon).toBe(infoSvg);
 		});
 
 		it('contains a disabled menu-item for info', async () => {
@@ -403,14 +427,13 @@ describe('LayerItem', () => {
 			};
 			const element = await setup(layer);
 
-			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
-			const infoMenuItem = menu.items.find((item) => item.label === 'Info');
+			const infoButton = element.shadowRoot.querySelector('#info');
 
-			expect(infoMenuItem).not.toBeNull();
-			expect(infoMenuItem.label).toEqual('Info');
-			expect(infoMenuItem.action).toEqual(jasmine.any(Function));
-			expect(infoMenuItem.disabled).toBeTrue();
-			expect(infoMenuItem.icon).toEqual(infoSvg);
+			expect(infoButton).not.toBeNull();
+			expect(infoButton.title).toBe('layerManager_info');
+			expect(infoButton.click).toEqual(jasmine.any(Function));
+			expect(infoButton.disabled).toBeTrue();
+			expect(infoButton.icon).toEqual(infoSvg);
 		});
 
 		it('contains a menu-item for copy', async () => {
@@ -546,10 +569,8 @@ describe('LayerItem', () => {
 			};
 			const element = await setup(layer);
 
-			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
-			const infoMenuItem = menu.items.find((item) => item.label === 'Info');
-
-			infoMenuItem.action();
+			const infoButton = element.shadowRoot.querySelector('#info');
+			infoButton.click();
 
 			expect(store.getState().modal.data.title).toBe('label0');
 			const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
@@ -852,9 +873,8 @@ describe('LayerItem', () => {
 			const element = await TestUtils.render(LayerItem.tag);
 			element.layer = { ...layer };
 
-			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
-			const infoMenuItem = menu.items.find((item) => item.label === 'Info');
-			infoMenuItem.action();
+			const infoButton = element.shadowRoot.querySelector('#info');
+			infoButton.click();
 
 			expect(store.getState().modal.data.title).toBe('label0');
 			expect(isTemplateResult(store.getState().modal.data.content)).toBeTrue();
