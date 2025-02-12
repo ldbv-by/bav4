@@ -69,7 +69,7 @@
 				${c}
 				${l}
 			</style>
-			<span class="badge" title=${s}>
+			<span class="badge" part="badge" title=${s}>
 				${r?o.qy`<span class="icon"></span>`:o.s6}
 				<span class="text">${i}</span>
 			</span>
