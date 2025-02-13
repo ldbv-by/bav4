@@ -22,7 +22,7 @@ export class Feature {
 		this.#properties[key] = value;
 		return this.getProperties();
 	}
-    
+
 	get(key) {
 		return this.getProperties()[key] ?? null;
 	}

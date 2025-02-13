@@ -25,7 +25,7 @@ describe('Feature', () => {
 		const feature = new Feature(geometry);
 
 		feature.id = 'id0';
-		
+
 		expect(feature.id).toBe('id0');
 	});
 
