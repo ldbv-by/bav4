@@ -2,7 +2,7 @@ import { GeometryType } from '../../src/domain/geometryTypes';
 import { Geometry, GeometryDataType } from '../../src/domain/geometry';
 
 describe('Geometry', () => {
-	it('provides a constructor getter for properties', () => {
+	it('provides a constructor and getters for properties', () => {
 		const geometry = new Geometry('data', GeometryType.POINT, GeometryDataType.GEOJSON);
 
 		expect(geometry.data).toBe('data');
