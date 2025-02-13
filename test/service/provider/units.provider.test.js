@@ -3,13 +3,12 @@ import {
 	bvvDistanceUnitsProvider,
 	bvvAreaUnitsProvider,
 	distanceUnitsProvider,
-	areaUnitsProvider
+	areaUnitsProvider,
+	bvvAngleUnitsProvider
 } from '../../../src/services/provider/units.provider';
 
 describe('Units provider', () => {
-	const configService = {
-		getValue: () => {}
-	};
+	const configService = { getValue: () => {} };
 
 	beforeAll(() => {
 		$injector.registerSingleton('ConfigService', configService);
@@ -80,6 +79,17 @@ describe('Units provider', () => {
 		expect(bvvAreaUnitsProvider(1234567891234, 2)).toEqual({ value: '1,234,567.890', unit: 'km²' });
 	});
 
+	it('provides formatted angle for bvv-metric system with de-locales', () => {
+		const configSpy = spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('en');
+
+		expect(bvvAngleUnitsProvider(0, 0)).toEqual({ value: '0', unit: '°' });
+		expect(bvvAngleUnitsProvider(0, 2)).toEqual({ value: '0', unit: '°' });
+		expect(bvvAngleUnitsProvider(42.1, 0)).toEqual({ value: '42.1', unit: '°' });
+		expect(bvvAngleUnitsProvider(42.1, 2)).toEqual({ value: '42.1', unit: '°' });
+
+		expect(configSpy).toHaveBeenCalled();
+	});
+
 	it('provides formatted distance for bvv-metric system with de-locales', () => {
 		spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('de');
 
@@ -112,6 +122,17 @@ describe('Units provider', () => {
 		expect(bvvAreaUnitsProvider(12345, 2)).toEqual({ value: '12.345', unit: 'm²' });
 		expect(bvvAreaUnitsProvider(10000000, 0)).toEqual({ value: '10,000', unit: 'km²' });
 		expect(bvvAreaUnitsProvider(1234567891234, 2)).toEqual({ value: '1.234.567,890', unit: 'km²' });
+	});
+
+	it('provides formatted angle for bvv-metric system with de-locales', () => {
+		const configSpy = spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('de');
+
+		expect(bvvAngleUnitsProvider(0, 0)).toEqual({ value: '0', unit: '°' });
+		expect(bvvAngleUnitsProvider(0, 2)).toEqual({ value: '0', unit: '°' });
+		expect(bvvAngleUnitsProvider(42.1, 0)).toEqual({ value: '42,1', unit: '°' });
+		expect(bvvAngleUnitsProvider(42.1, 2)).toEqual({ value: '42,1', unit: '°' });
+
+		expect(configSpy).toHaveBeenCalled();
 	});
 
 	it('provides formatted distance for bvv-metric system with fallback-locales (en)', () => {
