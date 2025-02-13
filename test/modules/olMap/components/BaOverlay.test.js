@@ -12,11 +12,15 @@ describe('BaOverlay', () => {
 	const unitServiceMock = {
 		// eslint-disable-next-line no-unused-vars
 		formatDistance(distance, decimals) {
-			return 'THE DISTANCE IN m';
+			return { value: 'THE DISTANCE IN', unit: 'm' };
 		},
 		// eslint-disable-next-line no-unused-vars
 		formatArea(area, decimals) {
-			return 'THE AREA IN m²';
+			return { value: 'THE AREA IN', unit: 'm²' };
+		},
+		// eslint-disable-next-line no-unused-vars
+		formatAngle(angle, decimals) {
+			return { value: 'THE ANGLE IN', unit: '°' };
 		}
 	};
 	const mapServiceMock = {
@@ -130,7 +134,7 @@ describe('BaOverlay', () => {
 			expect(div.classList.contains('ba-overlay')).toBeTrue();
 			expect(div.classList.contains('distance')).toBeTrue();
 			expect(div.classList.contains('floating')).toBeTrue();
-			expect(div.innerText).toBe('90.00°/THE DISTANCE IN m');
+			expect(div.innerText).toBe('THE ANGLE IN°/THE DISTANCE IN m');
 			expect(element.type).toBe(BaOverlayTypes.DISTANCE);
 			expect(element.static).toBeFalse();
 			expect(element.getModel().geometryRevision).not.toBeNull();
@@ -281,7 +285,7 @@ describe('BaOverlay', () => {
 			expect(div.classList.contains('distance')).toBeTrue();
 			expect(div.classList.contains('static')).toBeTrue();
 			expect(div.classList.contains('floating')).toBeFalse();
-			expect(div.innerText).toBe('90.00°/THE DISTANCE IN m');
+			expect(div.innerText).toBe('THE ANGLE IN°/THE DISTANCE IN m');
 			expect(element.type).toBe(BaOverlayTypes.DISTANCE);
 		});
 
@@ -297,7 +301,7 @@ describe('BaOverlay', () => {
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
 
-			expect(div.innerText).toBe('90.00°/THE DISTANCE IN m');
+			expect(div.innerText).toBe('THE ANGLE IN°/THE DISTANCE IN m');
 		});
 
 		it('renders formatted area', async () => {

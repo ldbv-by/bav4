@@ -155,11 +155,15 @@ describe('OlMeasurementHandler', () => {
 			.registerSingleton('UnitsService', {
 				// eslint-disable-next-line no-unused-vars
 				formatDistance: (distance, decimals) => {
-					return distance + ' m';
+					return { value: distance, unit: 'm' };
 				},
 				// eslint-disable-next-line no-unused-vars
 				formatArea: (area, decimals) => {
-					return area + ' m²';
+					return { value: area, unit: 'm²' };
+				},
+				// eslint-disable-next-line no-unused-vars
+				formatAngle: (angle, decimals) => {
+					return { value: angle, unit: '°' };
 				}
 			})
 			.register('OverlayService', OverlayService)

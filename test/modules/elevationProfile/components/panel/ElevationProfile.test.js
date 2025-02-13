@@ -226,7 +226,7 @@ describe('ElevationProfile', () => {
 
 	const unitsServiceMock = {
 		formatDistance: (distance) => {
-			return distance > 100 ? (distance / 1000).toFixed(1) + ' km' : distance + ' m';
+			return distance > 100 ? { value: (distance / 1000).toFixed(1), unit: 'km' } : { value: distance, unit: 'm' };
 		}
 	};
 

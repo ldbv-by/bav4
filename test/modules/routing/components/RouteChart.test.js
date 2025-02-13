@@ -11,7 +11,11 @@ describe('RoutingChart', () => {
 		isTouch: () => false
 	};
 
-	const unitsServiceMock = { formatDistance: (value) => value + 'unit' };
+	const unitsServiceMock = {
+		formatDistance: (distance, decimals) => {
+			return { value: distance, unit: 'unit' };
+		}
+	};
 	let store;
 	const setup = (state, properties) => {
 		const initialState = {
@@ -452,9 +456,9 @@ describe('RoutingChart', () => {
 				const title = 'FooBar';
 				const actualChartConfig = element._getChartConfig(routingChartItems, title);
 
-				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 0 })).toBe('8200unit');
-				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 1 })).toBe('4200unit');
-				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 2 })).toBe('21unit');
+				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 0 })).toBe('8200 unit');
+				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 1 })).toBe('4200 unit');
+				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 2 })).toBe('21 unit');
 				expect(store.getState().routing.highlightedSegments.payload.segments).toEqual([[4, 5]]);
 			});
 
@@ -463,7 +467,7 @@ describe('RoutingChart', () => {
 				const title = 'FooBar';
 				const actualChartConfig = element._getChartConfig(routingChartItems, title);
 
-				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 2 })).toBe('21unit');
+				expect(actualChartConfig.options.plugins.tooltip.callbacks.label({ dataIndex: 2 })).toBe('21 unit');
 				expect(store.getState().routing.highlightedSegments.payload.segments).toEqual([[4, 5]]);
 
 				actualChartConfig.options.onHover(new Event('foo'), ['something']);

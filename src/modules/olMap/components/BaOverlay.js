@@ -128,22 +128,28 @@ export class BaOverlay extends MvuElement {
 		const geometry = this.#geometry;
 		const getStaticDistance = () => {
 			const distance = this.#getMeasuredLength(geometry) * value;
-			return this.#unitsService.formatDistance(round(Math.round(distance), -1), 0);
+			const staticDistance = this.#unitsService.formatDistance(round(Math.round(distance), -1), 0);
+			return `${staticDistance.value} ${staticDistance.unit}`;
 		};
 
 		const getDistance = () => {
 			if (canShowAzimuthCircle(geometry)) {
 				// canShowAzimuthCircle() secures that getAzimuth() always returns a valid value except NULL
-				const azimuthValue = getAzimuth(geometry).toFixed(2);
-				const distanceValue = this.#unitsService.formatDistance(this.#getMeasuredLength(geometry), 2);
-				return `${azimuthValue}°/${distanceValue}`;
+				const azimuth = this.#unitsService.formatAngle(getAzimuth(geometry));
+				const distance = this.#unitsService.formatDistance(this.#getMeasuredLength(geometry), 2);
+				return `${azimuth.value}${azimuth.unit}/${distance.value} ${distance.unit}`;
 			}
-			return geometry ? this.#unitsService.formatDistance(this.#getMeasuredLength(geometry), 2) : '';
+			if (geometry) {
+				const distance = this.#unitsService.formatDistance(this.#getMeasuredLength(geometry), 2);
+				return `${distance.value} ${distance.unit}`;
+			}
+			return '';
 		};
 
 		const getArea = () => {
 			if (geometry instanceof Polygon) {
-				return this.#unitsService.formatArea(this.#mapService.calcArea(geometry.getCoordinates()), 2);
+				const area = this.#unitsService.formatArea(this.#mapService.calcArea(geometry.getCoordinates()), 2);
+				return `${area.value} ${area.unit}`;
 			}
 			return '';
 		};

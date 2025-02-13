@@ -100,18 +100,20 @@ export class GeometryInfo extends MvuElement {
 	_getLineContent(lineStatistic) {
 		const translate = (key) => this._translationService.translate(key);
 
+		const formattedDistance = this._unitsService.formatDistance(lineStatistic.length, 2);
+		const formattedAzimuth = this._unitsService.formatAngle(lineStatistic.azimuth, 2);
 		const onCopyAzimuth = () => {
-			this._copyValueToClipboard(lineStatistic.azimuth);
+			this._copyValueToClipboard(formattedAzimuth.value);
 		};
 
 		const onCopyLength = () => {
-			this._copyValueToClipboard(lineStatistic.length);
+			this._copyValueToClipboard(formattedDistance.value);
 		};
 
 		if (lineStatistic.azimuth === null) {
 			const title = translate('info_geometryInfo_title_line_length');
 			return html`<div class="stats-line-length stats-content" title=${title}>
-				<span class="label">${title}:</span><span class="value">${this._unitsService.formatDistance(lineStatistic.length, 2)}</span>
+				<span class="label">${title}:</span><span class="value">${formattedDistance.value} ${formattedDistance.unit}</span>
 				<span class="icon">
 					<ba-icon
 						class="close"
@@ -126,7 +128,7 @@ export class GeometryInfo extends MvuElement {
 		const titleAzimuth = translate('info_geometryInfo_title_azimuth');
 		const titleLength = translate('info_geometryInfo_title_line_length');
 		return html`<div class="stats-line-azimuth stats-content" title=${titleAzimuth}>
-				<span class="label">${titleAzimuth}:</span><span class="value">${lineStatistic.azimuth.toFixed(2)}°</span>
+				<span class="label">${titleAzimuth}:</span><span class="value">${formattedAzimuth.value} ${formattedAzimuth.unit}</span>
 				<span class="icon">
 					<ba-icon
 						class="close"
@@ -138,7 +140,7 @@ export class GeometryInfo extends MvuElement {
 				</span>
 			</div>
 			<div class="stats-line-length stats-content" title=${titleLength}>
-				<span class="label">${titleLength}:</span><span class="value">${this._unitsService.formatDistance(lineStatistic.length, 2)}</span>
+				<span class="label">${titleLength}:</span><span class="value">${formattedDistance.value} ${formattedDistance.unit}</span>
 				<span class="icon">
 					<ba-icon
 						class="close"
@@ -156,16 +158,19 @@ export class GeometryInfo extends MvuElement {
 		const titleArea = translate('info_geometryInfo_title_polygon_area');
 		const titleLength = translate('info_geometryInfo_title_line_length');
 
+		const formattedDistance = this._unitsService.formatDistance(polygonStatistic.length, 2);
+		const formattedArea = this._unitsService.formatArea(polygonStatistic.area, 2);
+
 		const onCopyLength = () => {
-			this._copyValueToClipboard(polygonStatistic.length);
+			this._copyValueToClipboard(formattedDistance.value);
 		};
 
 		const onCopyArea = () => {
-			this._copyValueToClipboard(polygonStatistic.area);
+			this._copyValueToClipboard(formattedArea.value);
 		};
 
 		return html`<div class="stats-polygon-length stats-content" title=${titleLength}>
-				<span class="label">${titleLength}:</span><span class="value">${this._unitsService.formatDistance(polygonStatistic.length, 2)}</span>
+				<span class="label">${titleLength}:</span><span class="value">${formattedDistance.value} ${formattedDistance.unit}</span>
 				<span class="icon">
 					<ba-icon
 						class="close"
@@ -177,7 +182,7 @@ export class GeometryInfo extends MvuElement {
 				</span>
 			</div>
 			<div class="stats-polygon-area stats-content" title=${titleArea}>
-				<span class="label">${titleArea}:</span><span class="value">${unsafeHTML(this._unitsService.formatArea(polygonStatistic.area, 2))}</span>
+				<span class="label">${titleArea}:</span><span class="value">${formattedArea.value} ${unsafeHTML(formattedArea.unit)}</span>
 				<span class="icon">
 					<ba-icon
 						class="close"

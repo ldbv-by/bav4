@@ -197,6 +197,8 @@ export class ElevationProfile extends MvuElement {
 
 		const getMinWidthClass = () => (minWidth ? 'is-desktop' : 'is-tablet');
 
+		const stringifyUnit = (unitsResult) => `${unitsResult.value} ${unitsResult.unit}`;
+
 		return html`
 			<style>
 				${css}
@@ -254,7 +256,9 @@ export class ElevationProfile extends MvuElement {
 						<div class="profile__header">${translate('elevationProfile_linearDistance')}</div>
 						<div class="profile__content">
 							<div class="profile__icon distance"></div>
-							<div class="profile__text" id="route-elevation-chart-footer-linearDistance">${this._unitsService.formatDistance(linearDistance)}</div>
+							<div class="profile__text" id="route-elevation-chart-footer-linearDistance">
+								${stringifyUnit(this._unitsService.formatDistance(linearDistance))}
+							</div>
 						</div>
 					</div>
 				</div>
@@ -325,9 +329,8 @@ export class ElevationProfile extends MvuElement {
 		const from = profile.elevations[0].dist;
 		const to = profile.elevations[profile.elevations.length - 1].dist;
 
-		const dist = this._unitsService.formatDistance(to - from);
-		const distUnit = dist.includes('km') ? 'km' : 'm';
-		return distUnit;
+		const unitsResult = this._unitsService.formatDistance(to - from);
+		return unitsResult.unit;
 	}
 
 	_getChartData(elevationData, newDataLabels, newDataData) {
@@ -597,8 +600,10 @@ export class ElevationProfile extends MvuElement {
 							title: (tooltipItems) => {
 								const tooltipItem = tooltipItems[0];
 								const elevationEntry = getElevationEntry(tooltipItem);
+								const distance = this._unitsService.formatDistance(elevationEntry.dist);
 								this.setCoordinates([elevationEntry.e, elevationEntry.n]);
-								return `${translate('elevationProfile_distance')}: ${this._unitsService.formatDistance(elevationEntry.dist)}`;
+
+								return `${translate('elevationProfile_distance')}: ${distance.value} ${distance.unit}`;
 							},
 							label: (tooltipItem) => {
 								const retArray = [];

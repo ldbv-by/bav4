@@ -60,13 +60,17 @@ describe('MeasureToolContent', () => {
 
 			formatDistance(distance, decimals) {
 				if (isString(distance)) {
-					return distance;
+					return { value: distance, unit: '?' };
 				}
-				return new Intl.NumberFormat('de-DE', { maximumSignificantDigits: decimals }).format(distance) + ' m';
+				return { value: new Intl.NumberFormat('de-DE', { maximumSignificantDigits: decimals }).format(distance), unit: 'm' };
 			}
 
 			formatArea(area, decimals) {
-				return new Intl.NumberFormat('de-DE', { maximumSignificantDigits: decimals }).format(area) + ' m²';
+				return { value: new Intl.NumberFormat('de-DE', { maximumSignificantDigits: decimals }).format(area), unit: 'm²' };
+			}
+
+			formatAngle(angle, decimals) {
+				return { value: new Intl.NumberFormat('de-DE', { maximumSignificantDigits: decimals }).format(angle), unit: '°' };
 			}
 		}
 
@@ -345,27 +349,8 @@ describe('MeasureToolContent', () => {
 			expect(areaElement).toBeFalsy();
 		});
 
-		it('shows question mark on ambiguous unit-strings', async () => {
-			const state = {
-				measurement: {
-					statistic: { length: '42 m m', area: null },
-					reset: null,
-					remove: null
-				}
-			};
-
-			const element = await setup(state);
-			const valueSpans = element.shadowRoot.querySelectorAll('.prime-text-value');
-			const unitSpans = element.shadowRoot.querySelectorAll('.prime-text-unit');
-
-			expect(valueSpans.length).toBe(2);
-			expect(unitSpans.length).toBe(2);
-			expect(valueSpans[0].textContent).toBe('42');
-			expect(unitSpans[0].textContent).toBe('?');
-		});
-
 		it('copies the measurement length value to the clipboard', async () => {
-			const length = '42 m';
+			const length = '42';
 			const state = {
 				measurement: {
 					statistic: { length: 42, area: 2 },
@@ -390,7 +375,7 @@ describe('MeasureToolContent', () => {
 		});
 
 		it('copies the measurement area value to the clipboard', async () => {
-			const area = '2 m²';
+			const area = '2';
 			const state = {
 				measurement: {
 					statistic: { length: 42, area: 2 },
@@ -442,7 +427,7 @@ describe('MeasureToolContent', () => {
 			copyToClipboardButton.click();
 
 			await TestUtils.timeout();
-			expect(copySpy).toHaveBeenCalledWith('42 m');
+			expect(copySpy).toHaveBeenCalledWith('42');
 			//check notification
 			expect(store.getState().notifications.latest.payload.content).toBe('toolbox_clipboard_error');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);

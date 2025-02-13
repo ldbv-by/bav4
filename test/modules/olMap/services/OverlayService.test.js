@@ -32,11 +32,11 @@ describe('OverlayService', () => {
 	const unitsServiceMock = {
 		// eslint-disable-next-line no-unused-vars
 		formatDistance: (distance, decimals) => {
-			return distance + ' m';
+			return { value: distance, unit: 'm' };
 		},
 		// eslint-disable-next-line no-unused-vars
 		formatArea: (area, decimals) => {
-			return area + ' m²';
+			return { value: area, unit: 'm²' };
 		}
 	};
 	beforeAll(() => {

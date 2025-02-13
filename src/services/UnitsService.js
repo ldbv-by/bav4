@@ -1,7 +1,22 @@
 /**
  * @module services/UnitsService
  */
-import { bvvAreaUnitsProvider, bvvDistanceUnitsProvider } from './provider/units.provider';
+import { bvvAngleUnitsProvider, bvvAreaUnitsProvider, bvvDistanceUnitsProvider } from './provider/units.provider';
+
+/**
+ * @typedef {Object} UnitsResult
+ * @property {number} value The formatted value
+ * @property {string} localizedValue The formatted and localized value
+ * @property {string} unit The unit for the corresponding value
+ */
+
+/**
+ * A function that takes a value and returns a @see UnitsResult object.
+ * @param {number}  value
+ * @param {number}  [decimals]
+ * @typedef {Function} unitsProvider
+ * @returns {module:services/UnitsService~UnitsResult} the formatted result
+ */
 
 /**
  *  Service for formatting numbers with their respective unit of measurement
@@ -9,9 +24,20 @@ import { bvvAreaUnitsProvider, bvvDistanceUnitsProvider } from './provider/units
  * @author thiloSchlemmer
  */
 export class UnitsService {
-	constructor(distanceUnitsProvider = bvvDistanceUnitsProvider, areaUnitsProvider = bvvAreaUnitsProvider) {
+	/**
+	 *
+	 * @param {module:services/UnitsService~unitsProvider} [distanceUnitsProvider=bvvDistanceUnitsProvider]
+	 * @param {module:services/UnitsService~unitsProvider} [areaUnitsProvider=bvvAreaUnitsProvider]
+	 * @param {module:services/UnitsService~unitsProvider} [angleUnitsProvider=bvvAngleUnitsProvider]
+	 */
+	constructor(
+		distanceUnitsProvider = bvvDistanceUnitsProvider,
+		areaUnitsProvider = bvvAreaUnitsProvider,
+		angleUnitsProvider = bvvAngleUnitsProvider
+	) {
 		this._distanceUnitsProvider = distanceUnitsProvider;
 		this._areaUnitsProvider = areaUnitsProvider;
+		this._angleUnitsProvider = angleUnitsProvider;
 	}
 
 	/**
@@ -19,19 +45,32 @@ export class UnitsService {
 	 * The current unit of distance is set per config.
 	 * @param {number} distance the distance value
 	 * @param {number} decimals  Optional, the number of digits after the decimal point. Default is 2
-	 * @returns {String} the formatted value
+	 * @returns {module:services/UnitsService~UnitsResult} the formatted value
 	 */
+	// eslint-disable-next-line no-unused-vars
 	formatDistance(distance, decimals = 2) {
-		return this._distanceUnitsProvider(distance, decimals);
+		return this._distanceUnitsProvider(distance ?? 0);
 	}
 
 	/**
 	 * Appends the appropriate areal unit to the specified number
 	 * @param {number} area
 	 * @param {number} decimals Optional, the number of digits after the decimal point. Default is 2
-	 * @returns {String} the formatted value
+	 * @returns {module:services/UnitsService~UnitsResult} the formatted value
 	 */
+	// eslint-disable-next-line no-unused-vars
 	formatArea(area, decimals = 2) {
-		return this._areaUnitsProvider(area, decimals);
+		return this._areaUnitsProvider(area ?? 0);
+	}
+
+	/**
+	 * Appends the appropriate angle unit to the specified number
+	 * @param {number} angle
+	 * @param {number} decimals Optional, the number of digits after the decimal point. Default is 2
+	 * @returns {module:services/UnitsService~UnitsResult} the formatted value
+	 */
+	// eslint-disable-next-line no-unused-vars
+	formatAngle(angle, decimals = 2) {
+		return this._angleUnitsProvider(angle ?? 0);
 	}
 }

@@ -33,12 +33,13 @@ describe('FeatureInfo provider', () => {
 	};
 
 	const unitsServiceMock = {
-		formatDistance: (distance) => {
-			return distance + ' m';
+		// eslint-disable-next-line no-unused-vars
+		formatDistance: (distance, decimals) => {
+			return { value: distance, unit: 'm' };
 		},
-
-		formatArea: (area) => {
-			return area + ' m²';
+		// eslint-disable-next-line no-unused-vars
+		formatArea: (area, decimals) => {
+			return { value: area, unit: 'm²' };
 		}
 	};
 

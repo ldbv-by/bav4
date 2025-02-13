@@ -33,11 +33,14 @@ describe('GeometryInfo', () => {
 			.registerSingleton('ShareService', shareServiceMock)
 			.registerSingleton('UnitsService', {
 				formatDistance: (distance) => {
-					return distance + ' m';
+					return { value: distance, unit: 'm' };
 				},
 
 				formatArea: (area) => {
-					return area + ' m²';
+					return { value: area, unit: ' m²' };
+				},
+				formatAngle: (angle) => {
+					return { value: angle, unit: '°' };
 				}
 			});
 		return TestUtils.render(GeometryInfo.tag);
