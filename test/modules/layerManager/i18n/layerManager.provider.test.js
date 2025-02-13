@@ -7,10 +7,12 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_title).toBe('Ebenen');
 		expect(map.layerManager_change_visibility).toBe('Sichtbarkeit umschalten');
 		expect(map.layerManager_opacity).toBe('Deckkraft');
+		expect(map.layerManager_opacity_badge).toBe('Deckkraft in Prozent');
 		expect(map.layerManager_collapse).toBe('Eigenschaften einklappen');
 		expect(map.layerManager_expand).toBe('Eigenschaften ausklappen');
 		expect(map.layerManager_move_up).toBe('Ebene anheben');
 		expect(map.layerManager_move_down).toBe('Ebene absenken');
+		expect(map.layerManager_info).toBe('Info');
 		expect(map.layerManager_to_copy).toBe('Ebene kopieren');
 		expect(map.layerManager_zoom_to_extent).toBe('Auf Inhalt zoomen');
 		expect(map.layerManager_layer_copy).toBe('Kopie');
@@ -34,10 +36,12 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_title).toBe('Layers');
 		expect(map.layerManager_change_visibility).toBe('Toggle visibility');
 		expect(map.layerManager_opacity).toBe('Opacity');
+		expect(map.layerManager_opacity_badge).toBe('Opacity in percent');
 		expect(map.layerManager_collapse).toBe('Collapse properties');
 		expect(map.layerManager_expand).toBe('Expand properties');
 		expect(map.layerManager_move_up).toBe('Move layer up');
 		expect(map.layerManager_move_down).toBe('Move layer down');
+		expect(map.layerManager_info).toBe('Info');
 		expect(map.layerManager_remove).toBe('Remove layer');
 		expect(map.layerManager_to_copy).toBe('Copy layer');
 		expect(map.layerManager_zoom_to_extent).toBe('Zoom to extent');
@@ -57,7 +61,7 @@ describe('i18n for layer-manager', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 23;
+		const expectedSize = 25;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

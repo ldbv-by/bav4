@@ -91,7 +91,7 @@ export class Badge extends MvuElement {
 				${badgeClass}
 				${customIconClass}
 			</style>
-			<span class="badge" title=${title}>
+			<span class="badge" part="badge" title=${title}>
 				${getIcon()}
 				<span class="text">${label}</span>
 			</span>
