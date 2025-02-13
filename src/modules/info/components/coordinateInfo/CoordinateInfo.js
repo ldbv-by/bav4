@@ -27,11 +27,11 @@ export class CoordinateInfo extends MvuElement {
 	#translationService;
 	#elevationService;
 	#shareService;
+	#displaySingleRow = false;
 
 	constructor() {
 		super({
 			coordinate: null,
-			displaySingleRow: false,
 			elevation: null,
 			selectedCr: null
 		});
@@ -57,8 +57,6 @@ export class CoordinateInfo extends MvuElement {
 				return { ...model, coordinate: data };
 			case Update_Elevation:
 				return { ...model, elevation: data };
-			case Update_Display_Single_Row:
-				return { ...model, displaySingleRow: data };
 			case Update_Selected_Cr:
 				return { ...model, selectedCr: data };
 		}
@@ -69,7 +67,7 @@ export class CoordinateInfo extends MvuElement {
 	 * @protected
 	 */
 	createView(model) {
-		const { coordinate, elevation, displaySingleRow, selectedCr } = model;
+		const { coordinate, elevation, selectedCr } = model;
 
 		if (coordinate) {
 			return html`
@@ -78,7 +76,7 @@ export class CoordinateInfo extends MvuElement {
 				</style>
 
 				<div class="container">
-					${displaySingleRow ? this.getContentAsSingleRow(coordinate, elevation, selectedCr) : this.getContentAsListing(coordinate, elevation)}
+					${this.#displaySingleRow ? this.getContentAsSingleRow(coordinate, elevation, selectedCr) : this.getContentAsListing(coordinate, elevation)}
 				</div>
 			`;
 		}
@@ -104,26 +102,25 @@ export class CoordinateInfo extends MvuElement {
 		const onCopyElevation = () => {
 			this._copyValueToClipboard(elevation);
 		};
+
 		return html`<div class="content selectable">
-			${coordinate
-				? html`<div class="r_coordinate single_row">
-						<select class="select-cr" @change="${onChange}" title="${translate('info_coordinateInfo_select')}">
-							${coordinateRepresentations.map(
-								(cr) => html`<option class="select-coordinate-option" value="${cr.id}">${translateSilently(cr.label)}</option>`
-							)}
-						</select>
-						<span class="coordinate">${stringifiedCoord}</span>
-						<span class="icon">
-							<ba-icon
-								class="close"
-								.icon="${clipboardIcon}"
-								.title=${translate('info_coordinateInfo_copy_icon')}
-								.size=${1.5}
-								@click=${onCopyCoordinate}
-							></ba-icon>
-						</span>
-					</div>`
-				: nothing}
+			${html`<div class="r_coordinate single_row">
+				<select class="select-cr" @change="${onChange}" title="${translate('info_coordinateInfo_select')}">
+					${coordinateRepresentations.map(
+						(cr) => html`<option class="select-coordinate-option" value="${cr.id}">${translateSilently(cr.label)}</option>`
+					)}
+				</select>
+				<span class="coordinate">${stringifiedCoord}</span>
+				<span class="icon">
+					<ba-icon
+						class="close"
+						.icon="${clipboardIcon}"
+						.title=${translate('info_coordinateInfo_copy_icon')}
+						.size=${1.5}
+						@click=${onCopyCoordinate}
+					></ba-icon>
+				</span>
+			</div>`}
 			${elevation
 				? html`<div class="r_elevation single_row">
 						<span class="label">${translate('info_coordinateInfo_elevation_label')}</span><span class="coordinate">${elevation}</span>
@@ -223,6 +220,6 @@ export class CoordinateInfo extends MvuElement {
 	}
 
 	set displaySingleRow(value) {
-		this.signal(Update_Display_Single_Row, value);
+		this.#displaySingleRow = value;
 	}
 }
