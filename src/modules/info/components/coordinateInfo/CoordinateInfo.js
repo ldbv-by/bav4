@@ -10,7 +10,6 @@ import clipboardIcon from './assets/clipboard.svg';
 
 const Update_Coordinate = 'update_coordinate';
 const Update_Elevation = 'update_elevation';
-const Update_Display_Single_Row = 'update_display_single_row';
 const Update_Selected_Cr = 'update_selected_cr';
 
 /**
