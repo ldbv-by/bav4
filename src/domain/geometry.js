@@ -10,9 +10,9 @@ export class Geometry {
 	#geometryType;
 	/**
 	 *
-	 * @param {String} data The data of this source
-	 * @param {GeometryType} geometryType The type of this source
-	 * @param {GeometryDataType} dataType The data of this source
+	 * @param {String} data The data of this geometry
+	 * @param {GeometryType} geometryType The type of this geometry
+	 * @param {GeometryDataType} dataType The data type of this geometry
 	 */
 	constructor(data, geometryType, dataType) {
 		this.#data = data;
