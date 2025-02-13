@@ -38,6 +38,7 @@ import { fileStorageReducer } from '../store/fileStorage/fileStorage.reducer';
 import { timeTravelReducer } from '../store/timeTravel/timeTravel.reducer';
 import { layerSwipeReducer } from '../store/layerSwipe/layerSwipe.reducer';
 import { catalogReducer } from '../store/catalog/catalog.reducer';
+import { featureCollectionReducer } from '../store/featureCollection/featureCollection.reducer';
 
 /**
  * Service which configures, initializes and holds the redux store.
@@ -85,7 +86,8 @@ export class StoreService {
 			fileStorage: fileStorageReducer,
 			timeTravel: timeTravelReducer,
 			layerSwipe: layerSwipeReducer,
-			catalog: catalogReducer
+			catalog: catalogReducer,
+			featureCollection: featureCollectionReducer
 		});
 
 		this._store = createStore(rootReducer);
