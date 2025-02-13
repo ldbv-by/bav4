@@ -304,11 +304,16 @@ export class MapFeedbackPanel extends MvuElement {
 	_encodeFeedbackState(iframeState) {
 		const { mapFeedback } = this.getModel();
 		const iframeParams = new URLSearchParams(iframeState.split('?')[1]);
-		if (mapFeedback.fileId) {
-			const layers = iframeParams.has(QueryParameters.LAYER) ? iframeParams.get(QueryParameters.LAYER).split(',') : [];
-			if (!layers.includes(mapFeedback.fileId)) {
-				iframeParams.set(QueryParameters.LAYER, [...layers, mapFeedback.fileId].join(','));
-			}
+		const layers = iframeParams.has(QueryParameters.LAYER)
+			? iframeParams
+					.get(QueryParameters.LAYER)
+					.split(',')
+					.map((grId) => encodeURIComponent(grId))
+			: [];
+		if (mapFeedback.fileId && !layers.includes(mapFeedback.fileId)) {
+			iframeParams.set(QueryParameters.LAYER, [...layers, mapFeedback.fileId].join(','));
+		} else {
+			iframeParams.set(QueryParameters.LAYER, [...layers].join(','));
 		}
 		return `${this._configService.getValueAsPath('FRONTEND_URL')}?${decodeURIComponent(iframeParams.toString())}`;
 	}

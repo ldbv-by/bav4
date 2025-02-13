@@ -228,7 +228,7 @@ describe('MapFeedbackPanel', () => {
 		it('updates mapFeedback.state', async () => {
 			const frontendUrl = 'http://frontend.url';
 			const iframeUrl = 'http://iframe.url';
-			const searchParams = 'l=foo,bar';
+			const searchParams = 'l=foo,https%3A%2F%2Fwww.geodaten.bayern.de%2Ffreizeitwege%2FKML%2F25483.kml';
 			const element = await setup();
 
 			spyOn(configServiceMock, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(frontendUrl);
@@ -253,8 +253,8 @@ describe('MapFeedbackPanel', () => {
 			const fileId = 'f_id';
 			const frontendUrl = 'http://frontend.url';
 			const iframeUrl = 'http://iframe.url';
-			const searchParams = 'l=foo,bar';
-			const expectedSearchParams = `l=foo,bar,${fileId}`;
+			const searchParams = 'l=foo,https%3A%2F%2Fwww.geodaten.bayern.de%2Ffreizeitwege%2FKML%2F25483.kml';
+			const expectedSearchParams = `l=foo,https%3A%2F%2Fwww.geodaten.bayern.de%2Ffreizeitwege%2FKML%2F25483.kml,${fileId}`;
 			const element = await setup();
 
 			element._updateFileId(fileId);
@@ -271,7 +271,7 @@ describe('MapFeedbackPanel', () => {
 			const fileId = 'f_id';
 			const frontendUrl = 'http://frontend.url';
 			const iframeUrl = 'http://iframe.url';
-			const iframeSearchParams = 'l=foo,f_id,bar';
+			const iframeSearchParams = 'l=foo,f_id,https%3A%2F%2Fwww.geodaten.bayern.de%2Ffreizeitwege%2FKML%2F25483.kml';
 
 			const element = await setup();
 
