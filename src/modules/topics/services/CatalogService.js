@@ -11,12 +11,12 @@ import { FALLBACK_TOPICS_IDS } from '../../../services/TopicsService';
 import { loadBvvCatalog } from './provider/catalog.provider';
 
 /**
- * An async function that provides an array of {@link module:modules/topics/services/CatalogService~CatalogEntry}.
+ * An async function that provides an array of {@link module:modules/topics/services/CatalogService~CatalogNode}.
  *
  * @async
  * @typedef {function} catalogProvider
  * @throws May throw when entries cannot be loaded
- * @return {module:domain/catalogTypeDef~CatalogEntry[]}
+ * @return {module:domain/catalogTypeDef~CatalogNode[]}
  */
 
 /**
@@ -38,7 +38,7 @@ export class CatalogService {
 	 * Returns a catalog definition for an id.
 	 * @public
 	 * @param {string} topicId Id of the desired {@link Catalog}
-	 * @returns {Promise<Array<module:domain/catalogTypeDef~CatalogEntry>|null>}
+	 * @returns {Promise<Array<module:domain/catalogTypeDef~CatalogNode>|null>}
 	 */
 	async byId(topicId) {
 		try {

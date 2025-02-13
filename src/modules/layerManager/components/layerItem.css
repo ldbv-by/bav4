@@ -1,7 +1,17 @@
 .slider-container {
-	width: 50%;
+	width: 55%;
 	padding-top: 1em;
 	display: flex;
+}
+
+.slider-container ba-badge {
+	margin: auto;
+	margin-left: 0.5em;
+}
+.slider-container ba-badge::part(badge) {
+	min-width: 2.8em;
+	display: inline-block;
+	text-align: right;
 }
 
 .collapse-content ba-icon {
@@ -12,8 +22,24 @@
 	margin: 0 0.3em;
 }
 
+.clear {
+	padding-left: 0;
+}
+
+.clear ba-icon {
+	border-radius: 2em;
+	width: 1.6em;
+	height: 1.6em;
+	display: block;
+	font-size: 1rem;
+}
+
 .collapse-content ba-icon:hover {
 	background: var(--primary-color);
+}
+
+.clear ba-icon:hover {
+	background: var(--error-color);
 }
 
 .collapse-content ba-icon:focus {
@@ -127,4 +153,9 @@
 	left: 0%;
 	right: 0%;
 	background: var(--primary-color);
+}
+
+input[type='range']::-moz-range-thumb {
+	width: 1.2em;
+	height: 1.2em;
 }

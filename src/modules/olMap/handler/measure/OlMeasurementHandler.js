@@ -44,6 +44,7 @@ import { Tools } from '../../../../domain/tools';
 import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../ol/geodesic/geodesicGeometry';
 import { setData } from '../../../../store/fileStorage/fileStorage.action';
 import { createDefaultLayerProperties } from '../../../../store/layers/layers.reducer';
+import { GeometryType } from '../../../../domain/geometryTypes';
 
 const defaultMeasurementStats = {
 	geometryType: null,
@@ -89,6 +90,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._draw = false;
 
 		this._storedContent = null;
+		this._storeId = null;
 
 		this._sketchHandler = new OlSketchHandler();
 		this._mapListeners = [];
@@ -175,13 +177,17 @@ export class OlMeasurementHandler extends OlLayerHandler {
 						f.on('change', onFeatureChange);
 					});
 					const displayRuler = !oldFeatures.some((f) => f.get('displayruler') === 'false');
+					const hasMeasurementFeature = oldFeatures.some((f) => f.getId().startsWith(Tools.MEASURE + '_'));
 					setDisplayRuler(displayRuler);
 					const oldLayerId = oldLayer.get('id');
 					this._layerId = oldLayerId;
 					this._layerZIndex = oldLayer.getZIndex();
 					removeLayer(oldLayerId);
-					this._finish();
+					if (hasMeasurementFeature) {
+						this._finish();
+					}
 					this._setSelection(this._storeService.getStore().getState().measurement.selection);
+					this._updateStoreId(oldLayer.get('geoResourceId'));
 					this._updateMeasureState();
 				}
 			}
@@ -362,6 +368,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._convertToPermanentLayer().finally(() => {
 			this._layerId = null;
 			this._layerZIndex = null;
+			this._storedContent = null;
+			this._storeId = null;
 		});
 		this._vectorLayer
 			.getSource()
@@ -424,6 +432,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				store,
 				(state) => state.measurement.displayRuler,
 				(displayRuler) => this._updateStyle(displayRuler)
+			),
+			observe(
+				store,
+				(state) => state.fileStorage.fileId,
+				(fileId) => this._updateStoreId(fileId)
 			)
 		];
 	}
@@ -622,9 +635,22 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const stats = getStats(feature.getGeometry());
 			return before ? { ...before, length: before.length + stats.length, area: before.area + stats.area } : stats;
 		};
+
+		const getStatisticFromSelection = (selectedFeatures) => {
+			if (selectedFeatures.length === 1) {
+				return getStats(selectedFeatures[0].getGeometry());
+			}
+
+			if (selectedFeatures.length > 1) {
+				return { ...selectedFeatures.reduce(sumStatistic, defaultMeasurementStats), geometryType: GeometryType.COLLECTION };
+			}
+			return defaultMeasurementStats;
+		};
+
 		if (this._select) {
 			const features = this._select.getFeatures().getArray();
-			setStatistic(features.reduce(sumStatistic, null));
+			const statistic = getStatisticFromSelection(features);
+			setStatistic(statistic);
 		}
 	}
 
@@ -733,6 +759,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._setMeasureState(measureState);
 	}
 
+	_updateStoreId(storeId) {
+		this._storeId = storeId;
+	}
+
 	_setSelection(ids) {
 		const clear = () => {
 			this._select?.getFeatures().clear();
@@ -754,6 +784,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		/**
 		 * The stored content will be created/updated after adding/changing and removing features,
 		 * while interacting with the layer.
+		 * Every asynchron save (of the storedContent) results in a changed fileId in s-o-s fileStorage
+		 * The changed fileId is observed and tracked via this._storeId
 		 */
 		setData(this._storedContent);
 	}
@@ -765,7 +797,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		await this._save();
 
 		if (this._storedContent) {
-			const id = this._storeService.getStore().getState().fileStorage.fileId;
+			const id = this._storeService.getStore().getState().fileStorage.fileId ?? this._storeId;
 			const getOrCreateVectorGeoResource = () => {
 				const fromService = this._geoResourceService.byId(id);
 				return fromService

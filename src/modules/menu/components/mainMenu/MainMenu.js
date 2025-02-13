@@ -16,7 +16,6 @@ import { BvvMiscContentPanel } from './content/misc/BvvMiscContentPanel';
 import { RoutingPanel } from './content/routing/RoutingPanel';
 import { MvuElement } from '../../../MvuElement';
 import VanillaSwipe from 'vanilla-swipe';
-import { isString } from '../../../../utils/checks';
 import { classMap } from 'lit-html/directives/class-map.js';
 
 const Update_Main_Menu = 'update_main_menu';
@@ -116,9 +115,7 @@ export class MainMenu extends MvuElement {
 	createView(model) {
 		const { isOpen, isOpenNavigationRail, tab, isPortrait, hasMinWidth, observeResponsiveParameter } = model;
 
-		const contentPanels = Object.values(TabIds)
-			.filter((v) => isString(v))
-			.map((v) => this._getContentPanel(v));
+		const contentPanels = Object.values(TabIds).map((v) => this._getContentPanel(v));
 
 		const translate = (key) => this._translationService.translate(key);
 

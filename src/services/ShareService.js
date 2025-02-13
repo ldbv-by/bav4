@@ -7,6 +7,7 @@ import { QueryParameters } from '../domain/queryParameters';
 import { GlobalCoordinateRepresentations } from '../domain/coordinateRepresentation';
 import { getOrigin, getPathParams } from '../utils/urlUtils';
 import { CROSSHAIR_HIGHLIGHT_FEATURE_ID } from '../plugins/HighlightPlugin';
+import { isNumber } from '../utils/checks';
 import { Tools } from '../domain/tools';
 
 /**
@@ -70,6 +71,7 @@ export class ShareService {
 			...this._extractPosition(),
 			...this._extractLayers(options),
 			...this._extractTopic(),
+			...this._extractCatalogNodes(),
 			...this._extractRoute(),
 			...this._extractTool(),
 			...this._extractCrosshair(),
@@ -114,9 +116,11 @@ export class ShareService {
 				...this._extractPosition(center, zoom, rotation),
 				...this._extractLayers({ includeHiddenGeoResources: false }),
 				...this._extractTopic(),
+				...this._extractCatalogNodes(),
 				...this._extractRoute(),
 				...this._extractTool(),
 				...this._extractCrosshair(),
+				...this._extractMainMenu(),
 				...this._extractSwipeRatio()
 			},
 			extraParams
@@ -242,7 +246,31 @@ export class ShareService {
 			topics: { current }
 		} = state;
 
-		extractedState[QueryParameters.TOPIC] = current;
+		if (current) {
+			extractedState[QueryParameters.TOPIC] = current;
+		}
+
+		return extractedState;
+	}
+	/**
+	 * @private
+	 * @returns {object} extractedState
+	 */
+	_extractCatalogNodes() {
+		const { StoreService: storeService } = $injector.inject('StoreService');
+
+		const state = storeService.getStore().getState();
+		const extractedState = {};
+
+		//current topic
+		const {
+			catalog: { openNodes }
+		} = state;
+
+		if (openNodes.length > 0) {
+			extractedState[QueryParameters.CATALOG_NODE_IDS] = openNodes;
+		}
+
 		return extractedState;
 	}
 
@@ -286,6 +314,27 @@ export class ShareService {
 
 		if (current) {
 			extractedState[QueryParameters.TOOL_ID] = current;
+		}
+
+		return extractedState;
+	}
+
+	/**
+	 * @private
+	 * @returns {object} extractedState
+	 */
+	_extractMainMenu() {
+		const { StoreService: storeService } = $injector.inject('StoreService');
+
+		const state = storeService.getStore().getState();
+		const extractedState = {};
+
+		const {
+			mainMenu: { tab }
+		} = state;
+
+		if (isNumber(tab)) {
+			extractedState[QueryParameters.MENU_ID] = tab;
 		}
 
 		return extractedState;

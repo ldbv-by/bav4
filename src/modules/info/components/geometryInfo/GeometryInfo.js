@@ -1,5 +1,5 @@
 /**
- * @module modules/featureInfo/components/geometryInfo/GeometryInfo
+ * @module modules/info/components/geometryInfo/GeometryInfo
  */
 import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';

@@ -31,15 +31,18 @@ export class HttpService {
 	static get DEFAULT_REQUEST_MODE() {
 		return 'cors';
 	}
+	static get DEFAULT_TIMEOUT() {
+		return 10_000;
+	}
 
 	/**
-	 * Wraps a Fetch API fetch call, so that a custom timeout can be set. Default is 1000ms.<br>
+	 * Wraps a Fetch API fetch call, so that a custom timeout can be set. Default is 10s.<br>
 	 * If a timeout occurs, the request is cancelled by an <code>AbortController</code>.<br>
 	 * In that case, a promise with an <code>AbortError</code> is returned.<br>
 	 * Additionally, the request can be made cancelable by a custom <code>AbortController</code><br>
 	 * and can be intercepted by a `HttpServiceInterceptors` configuration (currently, only a response interceptor is supported).
 	 * @param {String} resource url
-	 * @param {Object} [options={}] fetch api options, set timeout via timeout property, default is 1000ms
+	 * @param {Object} [options={}] fetch api options, set timeout via timeout property, default is 10_000 ms
 	 * @param {AbortController} [controller=AbortController] controller which can be used to cancel the request
 	 * @param {module:services/HttpService~HttpServiceInterceptors} [interceptors={ response: [] }] interceptors for this fetch call
 	 * @returns Fetch API response
@@ -47,7 +50,7 @@ export class HttpService {
 	 */
 	async fetch(resource, options = {}, controller = new AbortController(), interceptors = defaultInterceptors) {
 		const doFetch = async () => {
-			const { timeout = 1000 } = options;
+			const { timeout = HttpService.DEFAULT_TIMEOUT } = options;
 
 			const id = setTimeout(() => controller.abort(), timeout);
 

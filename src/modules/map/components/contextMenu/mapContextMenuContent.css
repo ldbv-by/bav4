@@ -11,6 +11,10 @@
 	justify-content: flex-start;
 }
 
+.content li ba-coordinate-info {
+	width: 100%;
+}
+
 .content li .label {
 	min-width: 7em;
 	margin: auto;

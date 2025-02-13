@@ -6,35 +6,51 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import css from './catalogNode.css';
 import { AbstractMvuContentPanel } from '../../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { round } from '../../../../../utils/numberUtils';
+import { addOpenNode, removeOpenNode } from '../../../../../store/catalog/catalog.action';
 
 const Update_Collapsed = 'update_collapsed';
 const Update_Level = 'update_level';
-const Update_CatalogEntry = 'update_catalogEntry';
+const Update_CatalogNode = 'update_catalogNode';
 
 /**
  * @class
- * @property {module:domain/catalogTypeDef~CatalogEntry} data The catalog entry for this CatalogNode
+ * @property {module:domain/catalogTypeDef~CatalogNode} data The catalog entry for this CatalogNode
  * @property {number} level The level of this CatalogNode (integer)
  * @author taulinger
  * @author alsturm
  */
 export class CatalogNode extends AbstractMvuContentPanel {
 	constructor() {
-		super({ level: 0, collapsed: true, catalogEntry: null });
+		super({ level: 0, collapsed: true, catalogNode: null });
 	}
 
-	set data(catalogEntry) {
-		this.signal(Update_CatalogEntry, catalogEntry);
+	set data(catalogNode) {
+		this.signal(Update_CatalogNode, catalogNode);
+		if (catalogNode.open) {
+			addOpenNode(catalogNode.id);
+		}
 	}
 
 	set level(level) {
 		this.signal(Update_Level, round(level));
 	}
 
+	onInitialize() {
+		this.observe(
+			(store) => store.catalog.openNodes,
+			(openNodes) => {
+				if (this.getModel().catalogNode) {
+					const collapsed = !openNodes.includes(this.getModel().catalogNode?.id);
+					this.signal(Update_Collapsed, collapsed);
+				}
+			}
+		);
+	}
+
 	update(type, data, model) {
 		switch (type) {
-			case Update_CatalogEntry:
-				return { ...model, catalogEntry: data, collapsed: !data.open };
+			case Update_CatalogNode:
+				return { ...model, catalogNode: data };
 			case Update_Collapsed:
 				return { ...model, collapsed: data };
 			case Update_Level:
@@ -43,9 +59,9 @@ export class CatalogNode extends AbstractMvuContentPanel {
 	}
 
 	createView(model) {
-		const { level, collapsed, catalogEntry } = model;
+		const { level, collapsed, catalogNode } = model;
 		const toggleCollapse = () => {
-			this.signal(Update_Collapsed, !collapsed);
+			collapsed ? addOpenNode(catalogNode.id) : removeOpenNode(catalogNode.id);
 		};
 
 		const iconCollapseClass = {
@@ -56,8 +72,8 @@ export class CatalogNode extends AbstractMvuContentPanel {
 			iscollapse: collapsed
 		};
 
-		if (catalogEntry) {
-			const { label, children } = catalogEntry;
+		if (catalogNode) {
+			const { label, children } = catalogNode;
 			const childElements = children.map((child) => {
 				//node
 				if (child.children) {

@@ -22,6 +22,7 @@ describe('PrivacyPolicy', () => {
 			expect(element.shadowRoot.querySelectorAll('.privacy-policy-link')[0].target).toBe('_blank');
 			expect(element.shadowRoot.querySelectorAll('.privacy-policy-link')[0].textContent).toBe('footer_privacy_policy_link');
 			expect(element.shadowRoot.querySelectorAll('.privacy-policy-link')[0].title).toBe('footer_privacy_policy_link');
+			expect(element.shadowRoot.querySelectorAll('.privacy-policy-link')[0].getAttribute('aria-label')).toBe('footer_privacy_policy_link');
 		});
 	});
 });

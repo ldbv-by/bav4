@@ -4,31 +4,13 @@
 /**
  * Available menu tabs.
  * @readonly
- * @enum {String}
+ * @enum {number}
  */
 export const TabIds = Object.freeze({
-	TOPICS: 'topics',
-	MAPS: 'maps',
-	MISC: 'misc',
-	ROUTING: 'routing',
-	SEARCH: 'search',
-	FEATUREINFO: 'featureinfo',
-
-	valueOf: (index) => {
-		switch (index) {
-			case 0:
-				return TabIds.TOPICS;
-			case 1:
-				return TabIds.MAPS;
-			case 2:
-				return TabIds.SEARCH;
-			case 3:
-				return TabIds.ROUTING;
-			case 4:
-				return TabIds.MISC;
-			case 5:
-				return TabIds.FEATUREINFO;
-		}
-		return null;
-	}
+	TOPICS: 0,
+	MAPS: 1,
+	SEARCH: 2,
+	ROUTING: 3,
+	MISC: 4,
+	FEATUREINFO: 5
 });

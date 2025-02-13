@@ -519,7 +519,7 @@ describe('GeoResource', () => {
 				const url = 'url';
 				const data = 'data';
 				spyOn(httpServiceMock, 'get')
-					.withArgs(url, { timeout: 5000 })
+					.withArgs(url)
 					.and.returnValue(Promise.resolve(new Response(data, { status: 200 })));
 				spyOn(geoResourceServiceMock, 'addOrReplace').and.callFake((gr) => gr);
 
@@ -540,7 +540,7 @@ describe('GeoResource', () => {
 				const label = 'label';
 				const data = 'data';
 				spyOn(httpServiceMock, 'get')
-					.withArgs(url, { timeout: 5000 })
+					.withArgs(url)
 					.and.returnValue(Promise.resolve(new Response(data, { status: 200 })));
 				spyOn(geoResourceServiceMock, 'addOrReplace').and.callFake((gr) => gr);
 

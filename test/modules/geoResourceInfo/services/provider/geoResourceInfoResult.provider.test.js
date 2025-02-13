@@ -40,7 +40,7 @@ describe('GeoResourceInfo provider', () => {
 		const expectedArgs0 = backendUrl + 'georesource/info/' + geoResourceId;
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const httpServiceSpy = spyOn(httpService, 'get')
-			.withArgs(expectedArgs0, { timeout: 5000 })
+			.withArgs(expectedArgs0)
 			.and.returnValue(Promise.resolve(new Response('<b>hello</b>', { status: 200 })));
 
 		const result = await loadBvvGeoResourceInfo('914c9263-5312-453e-b3eb-5104db1bf788');
@@ -63,7 +63,7 @@ describe('GeoResourceInfo provider', () => {
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const authServiceSpy = spyOn(geoResourceService, 'getAuthResponseInterceptorForGeoResource').and.returnValue(responseInterceptor);
 		const httpServiceSpy = spyOn(httpService, 'post')
-			.withArgs(expectedArgs0, expectedPayLoad, MediaType.JSON, { timeout: 5000 }, { response: [responseInterceptor] })
+			.withArgs(expectedArgs0, expectedPayLoad, MediaType.JSON, { response: [responseInterceptor] })
 			.and.returnValue(Promise.resolve(new Response('<b>hello</b>', { status: 200 })));
 
 		const result = await loadBvvGeoResourceInfo(geoResourceId);
@@ -89,7 +89,7 @@ describe('GeoResourceInfo provider', () => {
 		const expectedPayLoad = '{"url":"http://some.url","layers":["layer"],"username":"username","password":"password"}';
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const httpServiceSpy = spyOn(httpService, 'post')
-			.withArgs(expectedArgs0, expectedPayLoad, MediaType.JSON, { timeout: 5000 }, { response: [] })
+			.withArgs(expectedArgs0, expectedPayLoad, MediaType.JSON, { response: [] })
 			.and.returnValue(Promise.resolve(new Response('<b>hello</b>', { status: 200 })));
 
 		const result = await loadBvvGeoResourceInfo(geoResourceId);
@@ -126,7 +126,7 @@ describe('GeoResourceInfo provider', () => {
 		const expectedArgs0 = backendUrl + 'georesource/info/' + geoResourceId;
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const httpServiceSpy = spyOn(httpService, 'get')
-			.withArgs(expectedArgs0, { timeout: 5000 })
+			.withArgs(expectedArgs0)
 			.and.returnValue(Promise.resolve(new Response(JSON.stringify(), { status: 204 })));
 
 		const result = await loadBvvGeoResourceInfo('914c9263-5312-453e-b3eb-5104db1bf788');
@@ -145,7 +145,7 @@ describe('GeoResourceInfo provider', () => {
 		const expectedArgs0 = backendUrl + 'georesource/info/' + geoResourceId;
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const httpServiceSpy = spyOn(httpService, 'get')
-			.withArgs(expectedArgs0, { timeout: 5000 })
+			.withArgs(expectedArgs0)
 			.and.returnValue(Promise.resolve(new Response(null, { status: 500 })));
 
 		const errorMessage = "GeoResourceInfoResult for '914c9263-5312-453e-b3eb-5104db1bf788' could not be loaded: Http-Status 500";

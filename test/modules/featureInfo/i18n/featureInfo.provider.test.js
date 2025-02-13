@@ -6,12 +6,7 @@ describe('i18n for featureInfo module', () => {
 
 		expect(map.featureInfo_close_button).toBe('Schließen');
 		expect(map.featureInfo_header).toBe('Objekt-Info');
-		expect(map.geometryInfo_title_coordinate).toBe('Koordinate');
-		expect(map.geometryInfo_title_azimuth).toBe('Azimuth-Winkel');
-		expect(map.geometryInfo_title_line_length).toBe('Länge');
-		expect(map.geometryInfo_title_polygon_length).toBe('Umfang');
-		expect(map.geometryInfo_title_polygon_area).toBe('Fläche');
-		expect(map.geometryInfo_info).toBe('Keine Informationen verfügbar.<br>Bitte in die <b>Karte</b> klicken.');
+		expect(map.featureInfo_info).toBe('Keine Informationen verfügbar.<br>Bitte in die <b>Karte</b> klicken.');
 	});
 
 	it('provides translation for en', () => {
@@ -19,16 +14,11 @@ describe('i18n for featureInfo module', () => {
 
 		expect(map.featureInfo_close_button).toBe('Close');
 		expect(map.featureInfo_header).toBe('Object Information');
-		expect(map.geometryInfo_title_coordinate).toBe('Coordinate');
-		expect(map.geometryInfo_title_azimuth).toBe('Azimuth-angle');
-		expect(map.geometryInfo_title_line_length).toBe('Distance');
-		expect(map.geometryInfo_title_polygon_length).toBe('Perimeter');
-		expect(map.geometryInfo_title_polygon_area).toBe('Area');
-		expect(map.geometryInfo_info).toBe('No information available.<br>Please click into the <b>map</b>.');
+		expect(map.featureInfo_info).toBe('No information available.<br>Please click into the <b>map</b>.');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 8;
+		const expectedSize = 3;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

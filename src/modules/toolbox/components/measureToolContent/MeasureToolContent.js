@@ -15,6 +15,7 @@ import { emitNotification, LevelTypes } from '../../../../store/notifications/no
 const Update = 'update';
 const Update_StoredContent = 'update_storedContent';
 
+const Default_Statistic = { length: null, area: null };
 /**
  * @class
  * @author thiloSchlemmer
@@ -23,7 +24,7 @@ const Update_StoredContent = 'update_storedContent';
 export class MeasureToolContent extends AbstractToolContent {
 	constructor() {
 		super({
-			statistic: { length: null, area: null },
+			statistic: Default_Statistic,
 			mode: null,
 			displayRuler: null,
 			storedContent: null
@@ -57,7 +58,7 @@ export class MeasureToolContent extends AbstractToolContent {
 			case Update:
 				return {
 					...model,
-					statistic: data.statistic,
+					statistic: { ...Default_Statistic, ...data.statistic },
 					displayRuler: data.displayRuler,
 					mode: data.mode
 				};

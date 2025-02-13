@@ -10,6 +10,16 @@ const getStore = () => {
 };
 
 /**
+ * @readonly
+ * @enum {Number}
+ */
+export const TopicsContentPanelIndex = Object.freeze({
+	TOPICS: 0,
+	CATALOG_0: 1,
+	CATALOG_1: 2
+});
+
+/**
  *  Sets the index of an content element that should be active / displayed.
  * @param {TopicsContentPanelIndex} index
  * @function

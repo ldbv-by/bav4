@@ -198,7 +198,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 			return html`<div class="slider-container">
 				<input
 					type="range"
-					min="1"
+					min="0"
 					title=${translate('layerManager_opacity')}
 					max="100"
 					value=${layer.opacity * 100}
@@ -208,6 +208,12 @@ export class LayerItem extends AbstractMvuContentPanel {
 					@dragstart=${onPreventDragging}
 					id="opacityRange"
 				/>
+				<ba-badge
+					.background=${'var(--secondary-color)'}
+					.label=${Math.round(layer.opacity * 100)}
+					.color=${'var(--text3)'}
+					.title=${translate('layerManager_opacity_badge')}
+				></ba-badge>
 			</div>`;
 		};
 
@@ -263,8 +269,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 					icon: zoomToExtentSvg,
 					action: zoomToExtent,
 					disabled: !(geoResource instanceof VectorGeoResource || geoResource instanceof RtVectorGeoResource)
-				},
-				{ id: 'info', label: 'Info', icon: infoSvg, action: openGeoResourceInfoPanel, disabled: !layer.constraints?.metaData }
+				}
 			];
 		};
 
@@ -321,6 +326,17 @@ export class LayerItem extends AbstractMvuContentPanel {
 						>${layer.loading ? html`<ba-spinner .label=${currentLabel}></ba-spinner>` : html`${currentLabel} ${getBadges(layer.keywords)}`}
 					</ba-checkbox>
 					${getTimestampContent()}
+					<div class="ba-list-item__after clear">
+						<ba-icon
+							id="remove"
+							.icon="${removeSvg}"
+							.color=${'var(--primary-color)'}
+							.color_hover=${'var(--text3)'}
+							.size=${1.6}
+							.title=${translate('layerManager_remove')}
+							@click=${remove}
+						></ba-icon>
+					</div>
 					<button id="button-detail" data-test-id class="ba-list-item__after" title="${getCollapseTitle()}" @click="${toggleCollapse}">
 						<i class="icon chevron icon-rotate-90 ${classMap(iconCollapseClass)}"></i>
 					</button>
@@ -352,13 +368,14 @@ export class LayerItem extends AbstractMvuContentPanel {
 						</div>
 						<div>
 							<ba-icon
-								id="remove"
-								.icon="${removeSvg}"
+								id="info"
+								.icon="${infoSvg}"
 								.color=${'var(--primary-color)'}
 								.color_hover=${'var(--text3)'}
 								.size=${2.6}
-								.title=${translate('layerManager_remove')}
-								@click=${remove}
+								.title=${translate('layerManager_info')}
+								.disabled=${!layer.constraints?.metaData}
+								@click=${openGeoResourceInfoPanel}
 							></ba-icon>
 						</div>
 						<ba-overflow-menu .type=${MenuTypes.MEATBALL} .items=${getMenuItems()}></ba-overflow-menu>
