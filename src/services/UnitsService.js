@@ -4,14 +4,18 @@
 import { bvvAngleUnitsProvider, bvvAreaUnitsProvider, bvvDistanceUnitsProvider } from './provider/units.provider';
 
 /**
+ * An object containing formatted and localized data to assemble
+ * unit-related representations
  * @typedef {Object} UnitsResult
- * @property {number} value The formatted value
- * @property {string} localizedValue The formatted and localized value
- * @property {string} unit The unit for the corresponding value
+ * @property {number} value The value
+ * @property {string} localizedValue The localized form of the value
+ * @property {string} unit The representation of the unit of measurement for the corresponding localized value
  */
 
 /**
- * A function that takes a value and returns a @see UnitsResult object.
+ * A function that takes a unit related value and returns a @see UnitsResult object.
+ * The function formats and localize the given value to meet the specification
+ * of the selected unit of measurement and the current locale.
  * @param {number}  value
  * @param {number}  [decimals]
  * @typedef {Function} unitsProvider
