@@ -64,18 +64,37 @@ export class CpResultItem extends MvuElement {
 		throw message;
 	}
 
+	_matchGeomType(sourceType) {
+		switch (sourceType.name) {
+			case SourceTypeName.EWKT:
+				return HighlightGeometryType.EWKT;
+			case SourceTypeName.GEOJSON:
+				return HighlightGeometryType.GEOJSON;
+		}
+		this._throwError(`SourceType ${sourceType.name} is currently not supported`);
+	}
+
 	createView(model) {
 		const { isPortrait, cpSearchResult } = model;
+
 		/**
 		 * Uses mouseenter and mouseleave events for adding/removing a temporary highlight feature.
 		 * These events are not fired on touch devices, so there's no extra handling needed.
 		 */
 		const onMouseEnter = (result) => {
-			addHighlightFeatures({
-				id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID,
-				type: HighlightFeatureType.MARKER_TMP,
-				data: { coordinate: [...result.center] }
-			});
+			if (result.data) {
+				addHighlightFeatures({
+					id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID,
+					type: HighlightFeatureType.DEFAULT_TMP,
+					data: { geometry: result.data.geometry, geometryType: this._matchGeomType(result.data.geometryType) }
+				});
+			} else {
+				addHighlightFeatures({
+					id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID,
+					type: HighlightFeatureType.MARKER_TMP,
+					data: { coordinate: [...result.center] }
+				});
+			}
 		};
 		const onMouseLeave = () => {
 			removeHighlightFeaturesById(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
@@ -85,19 +104,10 @@ export class CpResultItem extends MvuElement {
 			removeHighlightFeaturesById([SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_HIGHLIGHT_FEATURE_ID]);
 			fit(extent, { maxZoom: CpResultItem._maxZoomLevel });
 			if (result.data) {
-				const matchGeomType = (sourceType) => {
-					switch (sourceType.name) {
-						case SourceTypeName.EWKT:
-							return HighlightGeometryType.EWKT;
-						case SourceTypeName.GEOJSON:
-							return HighlightGeometryType.GEOJSON;
-					}
-					this._throwError(`SourceType ${sourceType.name} is currently not supported`);
-				};
 				addHighlightFeatures({
 					id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
 					type: HighlightFeatureType.DEFAULT,
-					data: { geometry: result.data.geometry, geometryType: matchGeomType(result.data.geometryType) }
+					data: { geometry: result.data.geometry, geometryType: this._matchGeomType(result.data.geometryType) }
 				});
 			} else if (!result.extent) {
 				addHighlightFeatures({
@@ -125,7 +135,7 @@ export class CpResultItem extends MvuElement {
 					tabindex="0"
 					@click=${() => onClick(cpSearchResult)}
 					@mouseenter=${() => onMouseEnter(cpSearchResult)}
-					@mouseleave=${() => onMouseLeave(cpSearchResult)}
+					@mouseleave=${() => onMouseLeave()}
 				>
 					<span class="ba-list-item__pre ">
 						<span class="ba-list-item__icon"> </span>
