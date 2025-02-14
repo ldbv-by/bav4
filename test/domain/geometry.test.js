@@ -1,20 +1,12 @@
-import { GeometryType } from '../../src/domain/geometryTypes';
-import { Geometry, GeometryDataType } from '../../src/domain/geometry';
+import { VectorSourceType } from '../../src/domain/geoResources';
+import { Geometry } from '../../src/domain/geometry';
 
 describe('Geometry', () => {
 	it('provides a constructor and getters for properties', () => {
-		const geometry = new Geometry('data', GeometryType.POINT, GeometryDataType.GEOJSON);
+		const geometry = new Geometry('data', VectorSourceType.GEOJSON);
 
 		expect(geometry.data).toBe('data');
-		expect(geometry.geometryType).toBe(GeometryType.POINT);
-		expect(geometry.dataType).toBe(GeometryDataType.GEOJSON);
-	});
-});
-
-describe('GeometryDataType', () => {
-	it('provides an enum of all available types', () => {
-		expect(Object.keys(GeometryDataType).length).toBe(1);
-		expect(Object.isFrozen(GeometryDataType)).toBeTrue();
-		expect(GeometryDataType.GEOJSON).toBe(0);
+		expect(geometry.sourceType).toBe(VectorSourceType.GEOJSON);
+		expect(new Geometry('data').sourceType).toBeNull();
 	});
 });
