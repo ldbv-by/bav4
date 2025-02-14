@@ -14,7 +14,7 @@ import { bvvAngleUnitsProvider, bvvAreaUnitsProvider, bvvDistanceUnitsProvider }
 
 /**
  * A function that takes a unit related value and returns a @see UnitsResult object.
- * The function formats and localize the given value to meet the specification
+ * The function formats and localizes the given value so that it meets the specification
  * of the selected unit of measurement and the current locale.
  * @param {number}  value
  * @param {number}  [decimals]
