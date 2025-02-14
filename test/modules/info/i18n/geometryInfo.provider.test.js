@@ -5,7 +5,7 @@ describe('i18n for geometry info', () => {
 		const map = provide('en');
 
 		expect(map.info_geometryInfo_title_coordinate).toBe('Coordinate');
-		expect(map.info_geometryInfo_title_azimuth).toBe('Azimuth-angle');
+		expect(map.info_geometryInfo_title_azimuth).toBe('Azimuth');
 		expect(map.info_geometryInfo_title_line_length).toBe('Distance');
 		expect(map.info_geometryInfo_title_polygon_length).toBe('Perimeter');
 		expect(map.info_geometryInfo_title_polygon_area).toBe('Area');
@@ -15,7 +15,7 @@ describe('i18n for geometry info', () => {
 		const map = provide('de');
 
 		expect(map.info_geometryInfo_title_coordinate).toBe('Koordinate');
-		expect(map.info_geometryInfo_title_azimuth).toBe('Azimuth-Winkel');
+		expect(map.info_geometryInfo_title_azimuth).toBe('Azimut');
 		expect(map.info_geometryInfo_title_line_length).toBe('Länge');
 		expect(map.info_geometryInfo_title_polygon_length).toBe('Umfang');
 		expect(map.info_geometryInfo_title_polygon_area).toBe('Fläche');
