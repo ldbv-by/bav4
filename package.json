@@ -43,7 +43,7 @@
 		"mapbox-gl-supported": "1.2.0",
 		"playwright": "1.50.1",
 		"portfinder-sync": "0.0.2",
-		"prettier": "3.5.0",
+		"prettier": "3.5.1",
 		"style-loader": "4.0.0",
 		"stylelint": "16.14.1",
 		"stylelint-config-recommended": "15.0.0",
