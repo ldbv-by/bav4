@@ -4,21 +4,21 @@ describe('i18n for geometry info', () => {
 	it('provides translation for en', () => {
 		const map = provide('en');
 
-		expect(map.geometryInfo_title_coordinate).toBe('Coordinate');
-		expect(map.geometryInfo_title_azimuth).toBe('Azimuth-angle');
-		expect(map.geometryInfo_title_line_length).toBe('Distance');
-		expect(map.geometryInfo_title_polygon_length).toBe('Perimeter');
-		expect(map.geometryInfo_title_polygon_area).toBe('Area');
+		expect(map.info_geometryInfo_title_coordinate).toBe('Coordinate');
+		expect(map.info_geometryInfo_title_azimuth).toBe('Azimuth');
+		expect(map.info_geometryInfo_title_line_length).toBe('Distance');
+		expect(map.info_geometryInfo_title_polygon_length).toBe('Perimeter');
+		expect(map.info_geometryInfo_title_polygon_area).toBe('Area');
 	});
 
 	it('provides translation for de', () => {
 		const map = provide('de');
 
-		expect(map.geometryInfo_title_coordinate).toBe('Koordinate');
-		expect(map.geometryInfo_title_azimuth).toBe('Azimuth-Winkel');
-		expect(map.geometryInfo_title_line_length).toBe('Länge');
-		expect(map.geometryInfo_title_polygon_length).toBe('Umfang');
-		expect(map.geometryInfo_title_polygon_area).toBe('Fläche');
+		expect(map.info_geometryInfo_title_coordinate).toBe('Koordinate');
+		expect(map.info_geometryInfo_title_azimuth).toBe('Azimut');
+		expect(map.info_geometryInfo_title_line_length).toBe('Länge');
+		expect(map.info_geometryInfo_title_polygon_length).toBe('Umfang');
+		expect(map.info_geometryInfo_title_polygon_area).toBe('Fläche');
 	});
 
 	it('contains the expected amount of entries', () => {
