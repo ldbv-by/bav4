@@ -13,7 +13,7 @@ describe('RoutingChart', () => {
 
 	const unitsServiceMock = {
 		formatDistance: (distance, decimals) => {
-			return { value: distance, unit: 'unit' };
+			return { value: distance, localizedValue: distance, unit: 'unit' };
 		}
 	};
 	let store;

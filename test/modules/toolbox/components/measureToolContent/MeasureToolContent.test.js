@@ -60,17 +60,21 @@ describe('MeasureToolContent', () => {
 
 			formatDistance(distance, decimals) {
 				if (isString(distance)) {
-					return { value: distance, unit: '?' };
+					return { value: distance, localizedValue: distance, unit: '?' };
 				}
-				return { value: new Intl.NumberFormat('de-DE', { maximumSignificantDigits: decimals }).format(distance), unit: 'm' };
+				return {
+					value: distance,
+					localizedValue: new Intl.NumberFormat('de-DE', { maximumSignificantDigits: decimals }).format(distance),
+					unit: 'm'
+				};
 			}
 
 			formatArea(area, decimals) {
-				return { value: new Intl.NumberFormat('de-DE', { maximumSignificantDigits: decimals }).format(area), unit: 'm²' };
+				return { value: area, localizedValue: new Intl.NumberFormat('de-DE', { maximumSignificantDigits: decimals }).format(area), unit: 'm²' };
 			}
 
 			formatAngle(angle, decimals) {
-				return { value: new Intl.NumberFormat('de-DE', { maximumSignificantDigits: decimals }).format(angle), unit: '°' };
+				return { value: angle, localizedValue: new Intl.NumberFormat('de-DE', { maximumSignificantDigits: decimals }).format(angle), unit: '°' };
 			}
 		}
 
@@ -350,7 +354,7 @@ describe('MeasureToolContent', () => {
 		});
 
 		it('copies the measurement length value to the clipboard', async () => {
-			const length = '42';
+			const length = 42;
 			const state = {
 				measurement: {
 					statistic: { length: 42, area: 2 },
@@ -375,7 +379,7 @@ describe('MeasureToolContent', () => {
 		});
 
 		it('copies the measurement area value to the clipboard', async () => {
-			const area = '2';
+			const area = 2;
 			const state = {
 				measurement: {
 					statistic: { length: 42, area: 2 },
@@ -427,7 +431,7 @@ describe('MeasureToolContent', () => {
 			copyToClipboardButton.click();
 
 			await TestUtils.timeout();
-			expect(copySpy).toHaveBeenCalledWith('42');
+			expect(copySpy).toHaveBeenCalledWith(42);
 			//check notification
 			expect(store.getState().notifications.latest.payload.content).toBe('toolbox_clipboard_error');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);

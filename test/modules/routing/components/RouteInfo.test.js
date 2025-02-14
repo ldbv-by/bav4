@@ -240,7 +240,9 @@ describe('RouteInfo', () => {
 
 	const unitsServiceMock = {
 		formatDistance: (distance) => {
-			return distance > 100 ? { value: (distance / 1000).toFixed(2), unit: 'km' } : { value: distance, unit: 'm' };
+			return distance > 100
+				? { value: distance / 1000, localizedValue: (distance / 1000).toFixed(2), unit: 'km' }
+				: { value: distance, localizedValue: distance, unit: 'm' };
 		}
 	};
 

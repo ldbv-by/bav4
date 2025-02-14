@@ -149,11 +149,11 @@ describe('OlDrawHandler', () => {
 			.registerSingleton('UnitsService', {
 				// eslint-disable-next-line no-unused-vars
 				formatDistance: (distance, decimals) => {
-					return { value: distance, unit: 'm' };
+					return { value: distance, localizedValue: distance, unit: 'm' };
 				},
 				// eslint-disable-next-line no-unused-vars
 				formatArea: (area, decimals) => {
-					return { value: area, unit: 'm²' };
+					return { value: area, localizedValue: area, unit: 'm²' };
 				}
 			})
 			.register('OverlayService', OverlayService)

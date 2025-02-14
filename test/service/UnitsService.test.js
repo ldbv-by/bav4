@@ -10,17 +10,17 @@ describe('UnitsService', () => {
 
 	it('provides default formatted distance', () => {
 		const instanceUnderTest = new UnitsService();
-		expect(instanceUnderTest.formatDistance(42.0)).toEqual({ value: '42.0', unit: 'm' });
+		expect(instanceUnderTest.formatDistance(42.0)).toEqual({ value: 42, localizedValue: '42.0', unit: 'm' });
 	});
 
 	it('provides default formatted area', () => {
 		const instanceUnderTest = new UnitsService();
-		expect(instanceUnderTest.formatArea(42)).toEqual({ value: '42', unit: 'm²' });
+		expect(instanceUnderTest.formatArea(42)).toEqual({ value: 42, localizedValue: '42', unit: 'm²' });
 	});
 
 	it('provides default formatted angle', () => {
 		const instanceUnderTest = new UnitsService();
-		expect(instanceUnderTest.formatAngle(42)).toEqual({ value: '42.0', unit: '°' });
+		expect(instanceUnderTest.formatAngle(42)).toEqual({ value: 42, localizedValue: '42.0', unit: '°' });
 	});
 
 	it('provides formatted distance for metric system as default', () => {
@@ -43,15 +43,15 @@ describe('UnitsService', () => {
 
 	it('replaces null or undefined values with 0 before calling UnitsProvider', () => {
 		const distanceUnitsProviderMock = (value) => {
-			return { value: value, unit: 'unit' };
+			return { value: value, localizedValue: value, unit: 'unit' };
 		};
 
 		const areaUnitsProviderMock = (value) => {
-			return { value: value, unit: 'unit' };
+			return { value: value, localizedValue: value, unit: 'unit' };
 		};
 
 		const angleUnitsProviderMock = (value) => {
-			return { value: value, unit: 'unit' };
+			return { value: value, localizedValue: value, unit: 'unit' };
 		};
 
 		const instanceUnderTest = new UnitsService(distanceUnitsProviderMock, areaUnitsProviderMock, angleUnitsProviderMock);

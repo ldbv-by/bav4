@@ -12,15 +12,15 @@ describe('BaOverlay', () => {
 	const unitServiceMock = {
 		// eslint-disable-next-line no-unused-vars
 		formatDistance(distance, decimals) {
-			return { value: 'THE DISTANCE IN', unit: 'm' };
+			return { value: 42, localizedValue: 'THE DISTANCE IN', unit: 'm' };
 		},
 		// eslint-disable-next-line no-unused-vars
 		formatArea(area, decimals) {
-			return { value: 'THE AREA IN', unit: 'm²' };
+			return { value: 42, localizedValue: 'THE AREA IN', unit: 'm²' };
 		},
 		// eslint-disable-next-line no-unused-vars
 		formatAngle(angle, decimals) {
-			return { value: 'THE ANGLE IN', unit: '°' };
+			return { value: 42, localizedValue: 'THE ANGLE IN', unit: '°' };
 		}
 	};
 	const mapServiceMock = {

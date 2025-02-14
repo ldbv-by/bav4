@@ -98,7 +98,7 @@ export class RouteChart extends MvuElement {
 
 		const getLegendValue = (item) => {
 			const distance = this.#unitsService.formatDistance(item.data.absolute);
-			return `${distance.value} ${distance.unit}`;
+			return `${distance.localizedValue} ${distance.unit}`;
 		};
 
 		const onMouseOver = (item) => {
@@ -142,7 +142,7 @@ export class RouteChart extends MvuElement {
 	_getChartConfig(items, title) {
 		const getLegendValue = (item) => {
 			const distance = this.#unitsService.formatDistance(item.data.absolute);
-			return `${distance.value} ${distance.unit}`;
+			return `${distance.localizedValue} ${distance.unit}`;
 		};
 
 		const data = {

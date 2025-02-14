@@ -3,6 +3,8 @@
  */
 import { $injector } from '../../injection';
 
+const Fraction_Digits_For_Meter = 1;
+const Fraction_Digits_For_Angle = 1;
 const Kilometer_In_Meters = 1000;
 const Squaredkilometer_In_Squaredmeters = 1000000;
 const Locales_Fallback = 'en';
@@ -11,6 +13,13 @@ const getLocales = () => {
 	const { ConfigService: configService } = $injector.inject('ConfigService');
 
 	return [configService.getValue('DEFAULT_LANG'), Locales_Fallback];
+};
+
+const getNumberFormatOptions = (fractionDigits) => {
+	return {
+		minimumFractionDigits: fractionDigits,
+		maximumFractionDigits: fractionDigits
+	};
 };
 
 /**
@@ -22,21 +31,20 @@ const getLocales = () => {
  */
 export const bvvDistanceUnitsProvider = (distance) => {
 	const locales = getLocales();
-	const asKilometer = (distanceValue) => {
+	const numberFormatOptions = getNumberFormatOptions(Fraction_Digits_For_Meter);
+	const asKilometer = (rawValue) => {
+		const formatted = Math.round((rawValue / Kilometer_In_Meters) * 10) / 10;
 		return {
-			value: (Math.round((distanceValue / Kilometer_In_Meters) * 100) / 100).toLocaleString(locales, {
-				minimumFractionDigits: 1,
-				maximumFractionDigits: 1
-			}),
+			value: formatted,
+			localizedValue: formatted.toLocaleString(locales, numberFormatOptions),
 			unit: 'km'
 		};
 	};
 	const asMeter = (distanceValue) => {
+		const formatted = distance !== 0 ? Math.round(distanceValue * 100) / 100 : 0;
 		return {
-			value:
-				distance !== 0
-					? (Math.round(distanceValue * 100) / 100).toLocaleString(locales, { minimumFractionDigits: 1, maximumFractionDigits: 1 })
-					: '0',
+			value: formatted,
+			localizedValue: distance !== 0 ? formatted.toLocaleString(locales, numberFormatOptions) : '0',
 			unit: 'm'
 		};
 	};
@@ -52,9 +60,10 @@ export const bvvDistanceUnitsProvider = (distance) => {
  */
 export const bvvAngleUnitsProvider = (angle) => {
 	const locales = getLocales();
-
+	const formatted = angle !== 0 ? Math.round(angle * 10) / 10 : 0;
 	return {
-		value: angle !== 0 ? (Math.round(angle * 100) / 100).toLocaleString(locales, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : '0',
+		value: formatted,
+		localizedValue: angle !== 0 ? formatted.toLocaleString(locales, getNumberFormatOptions(Fraction_Digits_For_Angle)) : '0',
 		unit: '°'
 	};
 };
@@ -67,25 +76,28 @@ export const bvvAngleUnitsProvider = (angle) => {
  * @returns {module:services/UnitsService~UnitsResult} the formatted value
  */
 export const bvvAreaUnitsProvider = (area) => {
+	const fractionDigitsSquaredKilometer = 3;
+	const fractionDigitsSquaredMeter = 0;
 	const locales = getLocales();
+
 	const asSquaredKilometer = (areaValue) => {
+		const formatted = Math.round((areaValue / Squaredkilometer_In_Squaredmeters) * 100) / 100;
 		return {
-			value: (Math.round((areaValue / Squaredkilometer_In_Squaredmeters) * 100) / 100).toLocaleString(locales, {
-				minimumFractionDigits: 3,
-				maximumFractionDigits: 3
-			}),
+			value: formatted,
+			localizedValue: formatted.toLocaleString(locales, getNumberFormatOptions(fractionDigitsSquaredKilometer)),
 			unit: 'km²'
 		};
 	};
 	const asSquaredMeter = (areaValue) => {
+		const formatted = areaValue > 1 ? Math.round(areaValue * 100) / 100 : 1;
 		return {
-			value:
-				areaValue > 1 ? (Math.round(areaValue * 100) / 100).toLocaleString(locales, { minimumFractionDigits: 0, maximumFractionDigits: 0 }) : '1',
+			value: formatted,
+			localizedValue: formatted.toLocaleString(locales, getNumberFormatOptions(fractionDigitsSquaredMeter)),
 			unit: 'm²'
 		};
 	};
 	if (area < 0.5) {
-		return { value: '0', unit: 'm²' };
+		return { value: 0, localizedValue: '0', unit: 'm²' };
 	}
 	return area >= Squaredkilometer_In_Squaredmeters ? asSquaredKilometer(area) : asSquaredMeter(area);
 };
@@ -99,21 +111,15 @@ export const bvvAreaUnitsProvider = (area) => {
  * @returns {module:services/UnitsService~UnitsResult} the formatted value
  */
 export const distanceUnitsProvider = (distance, decimals) => {
-	let formatted;
-	if (distance > Kilometer_In_Meters - 1) {
-		if (decimals) {
-			formatted = { value: (Math.round((distance / Kilometer_In_Meters) * 100) / 100).toFixed(decimals), unit: 'km' };
-		} else {
-			formatted = { value: `${Math.round((distance / Kilometer_In_Meters) * 100) / 100}`, unit: 'km' };
-		}
-	} else {
-		if (decimals) {
-			formatted = { value: distance !== 0 ? (Math.round(distance * 100) / 100).toFixed(decimals) : '0', unit: 'm' };
-		} else {
-			formatted = { value: distance !== 0 ? `${Math.round(distance * 100) / 100}` : '0', unit: 'm' };
-		}
+	if (!distance) {
+		return { value: 0, localizedValue: '0', unit: 'm' };
 	}
-	return formatted;
+	if (distance > Kilometer_In_Meters - 1) {
+		const formatted = Math.round((distance / Kilometer_In_Meters) * 100) / 100;
+		return { value: formatted, localizedValue: decimals ? formatted.toFixed(decimals) : `${formatted}`, unit: 'km' };
+	}
+	const formatted = Math.round(distance * 100) / 100;
+	return { value: formatted, localizedValue: decimals ? formatted.toFixed(decimals) : `${formatted}`, unit: 'm' };
 };
 
 /**
@@ -125,19 +131,10 @@ export const distanceUnitsProvider = (distance, decimals) => {
  * @returns {module:services/UnitsService~UnitsResult} the formatted value
  */
 export const areaUnitsProvider = (area, decimals) => {
-	let formatted;
 	if (area >= Squaredkilometer_In_Squaredmeters) {
-		if (decimals) {
-			formatted = { value: (Math.round((area / Squaredkilometer_In_Squaredmeters) * 100) / 100).toFixed(decimals), unit: 'km²' };
-		} else {
-			formatted = { value: `${Math.round((area / Squaredkilometer_In_Squaredmeters) * 100) / 100}`, unit: 'km²' };
-		}
-	} else {
-		if (decimals) {
-			formatted = { value: (Math.round(area * 100) / 100).toFixed(decimals), unit: 'm²' };
-		} else {
-			formatted = { value: `${Math.round(area * 100) / 100}`, unit: 'm²' };
-		}
+		const formatted = Math.round((area / Squaredkilometer_In_Squaredmeters) * 100) / 100;
+		return { value: formatted, localizedValue: decimals ? formatted.toFixed(decimals) : `${formatted}`, unit: 'km²' };
 	}
-	return formatted;
+	const formatted = Math.round(area * 100) / 100;
+	return { value: formatted, localizedValue: decimals ? formatted.toFixed(decimals) : `${formatted}`, unit: 'm²' };
 };

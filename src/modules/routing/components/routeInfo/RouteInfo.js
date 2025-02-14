@@ -77,7 +77,7 @@ export class RouteInfo extends MvuElement {
 		const getDistance = () => {
 			if (stats?.dist) {
 				const distance = this._unitsService.formatDistance(stats.dist);
-				return `${distance.value} ${distance.unit}`;
+				return `${distance.localizedValue} ${distance.unit}`;
 			}
 			return '-';
 		};
@@ -85,7 +85,7 @@ export class RouteInfo extends MvuElement {
 		const getUphill = () => {
 			if (stats) {
 				const distance = this._unitsService.formatDistance(stats.twoDiff[0]);
-				return `${distance.value} ${distance.unit}`;
+				return `${distance.localizedValue} ${distance.unit}`;
 			}
 			return '-';
 		};
@@ -93,7 +93,7 @@ export class RouteInfo extends MvuElement {
 		const getDownhill = () => {
 			if (stats) {
 				const distance = this._unitsService.formatDistance(stats.twoDiff[1]);
-				return `${distance.value} ${distance.unit}`;
+				return `${distance.localizedValue} ${distance.unit}`;
 			}
 			return '-';
 		};

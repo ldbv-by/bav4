@@ -93,7 +93,7 @@ export class MeasureToolContent extends AbstractToolContent {
 						<span>
 						${translate('toolbox_measureTool_stats_length')}:						
 						</span>						
-						<span id='span-distance-value' data-test-id class='prime-text-value selectable'>${formattedDistance.value}</span>		
+						<span id='span-distance-value' data-test-id class='prime-text-value selectable'>${formattedDistance.localizedValue}</span>		
 						<span id='span-distance-unit' data-test-id class='prime-text-unit'>${formattedDistance.unit}</span>									
 						<span class='copy'>
 							<ba-icon class='close' .icon='${clipboardIcon}' .title=${translate('toolbox_copy_icon')} .size=${1.5} @click=${onCopyDistanceToClipboard}>
@@ -104,7 +104,7 @@ export class MeasureToolContent extends AbstractToolContent {
 						<span>
 							${translate('toolbox_measureTool_stats_area')}:		
 						</span>						
-						<span id='span-area-value' data-test-id class='prime-text-value selectable'>${formattedArea.value}</span>
+						<span id='span-area-value' data-test-id class='prime-text-value selectable'>${formattedArea.localizedValue}</span>
 						<span id='span-area-unit' data-test-id class='prime-text-unit'>${unsafeHTML(formattedArea.unit)}</span>
 						<span class='copy'>
 							<ba-icon class='close' .icon='${clipboardIcon}' .title=${translate('toolbox_copy_icon')} .size=${1.5} @click=${onCopyAreaToClipboard}>

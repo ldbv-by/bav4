@@ -197,7 +197,7 @@ export class ElevationProfile extends MvuElement {
 
 		const getMinWidthClass = () => (minWidth ? 'is-desktop' : 'is-tablet');
 
-		const stringifyUnit = (unitsResult) => `${unitsResult.value} ${unitsResult.unit}`;
+		const stringifyUnit = (unitsResult) => `${unitsResult.localizedValue} ${unitsResult.unit}`;
 
 		return html`
 			<style>
@@ -603,7 +603,7 @@ export class ElevationProfile extends MvuElement {
 								const distance = this._unitsService.formatDistance(elevationEntry.dist);
 								this.setCoordinates([elevationEntry.e, elevationEntry.n]);
 
-								return `${translate('elevationProfile_distance')}: ${distance.value} ${distance.unit}`;
+								return `${translate('elevationProfile_distance')}: ${distance.localizedValue} ${distance.unit}`;
 							},
 							label: (tooltipItem) => {
 								const retArray = [];
