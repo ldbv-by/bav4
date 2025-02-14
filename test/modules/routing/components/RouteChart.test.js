@@ -12,6 +12,7 @@ describe('RoutingChart', () => {
 	};
 
 	const unitsServiceMock = {
+		// eslint-disable-next-line no-unused-vars
 		formatDistance: (distance, decimals) => {
 			return { value: distance, localizedValue: distance, unit: 'unit' };
 		}

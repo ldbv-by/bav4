@@ -197,7 +197,7 @@ export class ElevationProfile extends MvuElement {
 
 		const getMinWidthClass = () => (minWidth ? 'is-desktop' : 'is-tablet');
 
-		const stringifyUnit = (unitsResult) => `${unitsResult.localizedValue} ${unitsResult.unit}`;
+		const stringifyWithUnit = (unitsResult) => `${unitsResult.localizedValue} ${unitsResult.unit}`;
 
 		return html`
 			<style>
@@ -257,7 +257,7 @@ export class ElevationProfile extends MvuElement {
 						<div class="profile__content">
 							<div class="profile__icon distance"></div>
 							<div class="profile__text" id="route-elevation-chart-footer-linearDistance">
-								${stringifyUnit(this._unitsService.formatDistance(linearDistance))}
+								${stringifyWithUnit(this._unitsService.formatDistance(linearDistance))}
 							</div>
 						</div>
 					</div>
