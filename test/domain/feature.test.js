@@ -1,10 +1,9 @@
-import { GeometryType } from '../../src/domain/geometryTypes';
-import { Geometry, GeometryDataType } from '../../src/domain/geometry';
+import { Geometry } from '../../src/domain/geometry';
 import { Feature } from '../../src/domain/feature';
 
 describe('Feature', () => {
 	it('provides a constructor and getters for properties', () => {
-		const geometry = new Geometry('data', GeometryType.POINT, GeometryDataType.GEOJSON);
+		const geometry = new Geometry('data');
 		const feature = new Feature(geometry, 'id');
 
 		expect(feature.geometry).toEqual(geometry);
@@ -12,7 +11,7 @@ describe('Feature', () => {
 	});
 
 	it('provides default values', () => {
-		const geometry = new Geometry('data', GeometryType.POINT, GeometryDataType.GEOJSON);
+		const geometry = new Geometry('data');
 		const feature = new Feature(geometry);
 
 		expect(feature.geometry).toEqual(geometry);
@@ -21,7 +20,7 @@ describe('Feature', () => {
 	});
 
 	it('provides set method for the id', () => {
-		const geometry = new Geometry('data', GeometryType.POINT, GeometryDataType.GEOJSON);
+		const geometry = new Geometry('data');
 		const feature = new Feature(geometry);
 
 		feature.id = 'id0';
@@ -30,7 +29,7 @@ describe('Feature', () => {
 	});
 
 	it('provides set, get and remove methods for properties', () => {
-		const geometry = new Geometry('data', GeometryType.POINT, GeometryDataType.GEOJSON);
+		const geometry = new Geometry('data');
 		const feature = new Feature(geometry);
 
 		feature.set('foo', 'bar');
