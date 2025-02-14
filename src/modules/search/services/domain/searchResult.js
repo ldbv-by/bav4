@@ -86,7 +86,7 @@ export class LocationSearchResult extends SearchResult {
 /**
  * @typedef {Object} CadastralParcelSearchResultGeometry
  * @property {object} geometry
- * @property {SourceType} geometryType
+ * @property {VectorSourceType} geometryType
  */
 export class CadastralParcelSearchResult extends SearchResult {
 	/**

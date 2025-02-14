@@ -14,7 +14,7 @@ import {
 } from '../../../../../../store/highlight/highlight.action';
 import { SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../plugins/HighlightPlugin';
 import { MvuElement } from '../../../../../MvuElement';
-import { SourceTypeName } from '../../../../../../domain/sourceType';
+import { VectorSourceType } from '../../../../../../domain/geoResources';
 
 const Update_IsPortrait = 'update_isPortrait';
 const Update_CpSearchResult = 'update_cpSearchResult';
@@ -65,13 +65,13 @@ export class CpResultItem extends MvuElement {
 	}
 
 	_matchGeomType(sourceType) {
-		switch (sourceType.name) {
-			case SourceTypeName.EWKT:
+		switch (sourceType) {
+			case VectorSourceType.EWKT:
 				return HighlightGeometryType.EWKT;
-			case SourceTypeName.GEOJSON:
+			case VectorSourceType.GEOJSON:
 				return HighlightGeometryType.GEOJSON;
 		}
-		this._throwError(`SourceType ${sourceType.name} is currently not supported`);
+		this._throwError(`SourceType ${sourceType.toString()} is currently not supported`);
 	}
 
 	createView(model) {

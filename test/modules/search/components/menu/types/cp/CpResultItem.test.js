@@ -7,7 +7,7 @@ import { createNoInitialStateMediaReducer } from '../../../../../../../src/store
 import { positionReducer } from '../../../../../../../src/store/position/position.reducer';
 import { TestUtils } from '../../../../../../test-utils.js';
 import { SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../../src/plugins/HighlightPlugin';
-import { SourceType, SourceTypeName } from '../../../../../../../src/domain/sourceType.js';
+import { VectorSourceType } from '../../../../../../../src/domain/geoResources.js';
 window.customElements.define(CpResultItem.tag, CpResultItem);
 
 describe('CpResultItem', () => {
@@ -57,10 +57,10 @@ describe('CpResultItem', () => {
 	describe('_matchGeomType', () => {
 		it('maps a SourceType to a HighlightGeometryType', async () => {
 			const element = await setup();
-			expect(element._matchGeomType(new SourceType(SourceTypeName.EWKT))).toEqual(HighlightGeometryType.EWKT);
-			expect(element._matchGeomType(new SourceType(SourceTypeName.GEOJSON))).toEqual(HighlightGeometryType.GEOJSON);
+			expect(element._matchGeomType(VectorSourceType.EWKT)).toEqual(HighlightGeometryType.EWKT);
+			expect(element._matchGeomType(VectorSourceType.GEOJSON)).toEqual(HighlightGeometryType.GEOJSON);
 
-			expect(() => element._matchGeomType(new SourceType(SourceTypeName.KML))).toThrow('SourceType kml is currently not supported');
+			expect(() => element._matchGeomType(VectorSourceType.KML)).toThrow('SourceType Symbol(kml) is currently not supported');
 		});
 	});
 
@@ -68,8 +68,8 @@ describe('CpResultItem', () => {
 		const previousCoordinate = [1, 2];
 		const coordinate = [21, 42];
 		const extent = [0, 1, 2, 3];
-		const wktData = { geometry: 'POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))', geometryType: new SourceType(SourceTypeName.EWKT, null, 3857) };
-		const geoJsonData = { geometry: { type: 'Point', coordinates: [21, 42, 0] }, geometryType: new SourceType(SourceTypeName.GEOJSON, null, 4326) };
+		const wktData = { geometry: 'POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))', geometryType: VectorSourceType.EWKT };
+		const geoJsonData = { geometry: { type: 'Point', coordinates: [21, 42, 0] }, geometryType: VectorSourceType.GEOJSON };
 
 		const setupOnMouseEnterTests = async (portraitOrientation, extent = null, data = null) => {
 			const cpSearchResult = new CadastralParcelSearchResult('label', 'labelFormatted', coordinate, extent, data);
