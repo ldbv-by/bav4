@@ -16,7 +16,7 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_eMail).toBe('Ihre E-Mail-Adresse');
 		expect(map.feedback_required_field_error).toBe('Pflichtfeld');
 		expect(map.feedback_required_field_helper).toBe('Pflichtfeld');
-		expect(map.feedback_saved_successfully).toBe('Ihr Feedback wurde gespeichert');
+		expect(map.feedback_saved_successfully).toBe('Ihr Feedback ist eingegangen. Vielen Dank!');
 		expect(map.feedback_submit).toBe('Senden');
 		expect(map.feedback_toggleFeedback_generalButton_sub).toBe(
 			'Machen Sie Änderungs- oder Verbesserungsvorschläge oder teilen Sie uns Ihre Meinung mit.'
