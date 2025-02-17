@@ -25,3 +25,28 @@
 	padding-left: 1em;
 	margin: auto;
 }
+
+.content .single_row {
+	display: flex;
+	padding: 0.3em 0em;
+}
+
+.content .single_row .label {
+	min-width: 7em;
+	margin: auto;
+}
+
+.content .single_row select {
+	width: 6em;
+	margin: auto;
+	margin-right: 1em;
+}
+.content .single_row .coordinate {
+	flex-grow: 4;
+	margin: auto;
+}
+
+.content .single_row .icon {
+	padding-left: 1em;
+	margin: auto;
+}

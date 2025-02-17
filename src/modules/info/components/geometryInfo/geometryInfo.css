@@ -5,11 +5,22 @@
 .stats-content {
 	padding: 0.3em 0;
 	display: flex;
-	justify-content: space-between;
-	flex-grow: 4;
 }
 
-.stats-content span {
+.stats-content ba-coordinate-info {
+	width: 100%;
+}
+
+.stats-content .label {
 	min-width: 7em;
-	flex-grow: unset;
+	margin: auto;
+}
+
+.stats-content .value {
+	flex-grow: 4;
+	margin: auto;
+}
+.stats-content .icon {
+	padding-left: 1em;
+	margin: auto;
 }
