@@ -20,6 +20,7 @@ import { getContrastColorFrom, hexToRgb, rgbToHex } from '../../../utils/colors'
 import { AssetSourceType, getAssetSource } from '../../../utils/assets';
 import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
 import { MultiLineString } from '../../../../node_modules/ol/geom';
+import { StyleSize } from '../../../domain/styles';
 
 const Z_Point = 30;
 const Red_Color = [255, 0, 0];
@@ -34,7 +35,7 @@ const Default_Font = 'normal 16px Open Sans';
  * @typedef StyleOption
  * @property {string} [symbolSrc] the URL to the resource of the marker symbol
  * @property {string} [color] the color as hexadecimal rgb value
- * @property {number} [scale] the scale; used to scale text or marker symbols
+ * @property {module:domain/styles~StyleSize|number} [scale] the scale; used to scale text or marker symbols
  * @property {string} [text] the displayed text
  * @property {Array<number>} [anchor] the anchor coordinates of the marker symbol in fractions of 0 to 1
  */
@@ -67,11 +68,11 @@ const getTextScale = (sizeKeyword) => {
 		return sizeKeyword;
 	}
 	switch (sizeKeyword) {
-		case 'large':
+		case StyleSize.LARGE:
 			return 2;
-		case 'medium':
+		case StyleSize.MEDIUM:
 			return 1.5;
-		case 'small':
+		case StyleSize.SMALL:
 		default:
 			return 1;
 	}
@@ -82,12 +83,12 @@ export const textScaleToKeyword = (scaleCandidate) => {
 
 	switch (scale) {
 		case 2:
-			return 'large';
+			return StyleSize.LARGE;
 		case 1.5:
-			return 'medium';
+			return StyleSize.MEDIUM;
 		case 1:
 		default:
-			return 'small';
+			return StyleSize.SMALL;
 	}
 };
 
@@ -96,11 +97,11 @@ const getMarkerScale = (sizeKeyword) => {
 		return sizeKeyword;
 	}
 	switch (sizeKeyword) {
-		case 'large':
+		case StyleSize.LARGE:
 			return 1;
-		case 'medium':
+		case StyleSize.MEDIUM:
 			return 0.75;
-		case 'small':
+		case StyleSize.SMALL:
 		default:
 			return 0.5;
 	}
@@ -111,13 +112,13 @@ export const markerScaleToKeyword = (scaleCandidate) => {
 
 	switch (scale) {
 		case 1:
-			return 'large';
+			return StyleSize.LARGE;
 		case 0.75:
-			return 'medium';
+			return StyleSize.MEDIUM;
 		case 0.5:
 		default:
 			// larger styles are not allowed for bvv-drawings and defaults to 'large'
-			return scale > 1 ? 'large' : 'small';
+			return scale > 1 ? StyleSize.LARGE : StyleSize.SMALL;
 	}
 };
 
@@ -151,9 +152,9 @@ export const geojsonStyleFunction = (feature) => {
 		 * specify the size of the marker. sizes
 		 * can be different pixel sizes in different
 		 * implementations
-		 * @type {('small'|'medium'|'large')}
+		 * @type {module:domain/styles~StyleSize|'small'|'medium'|'large'}
 		 */
-		'marker-size': 'medium',
+		'marker-size': StyleSize.MEDIUM,
 		/**
 		 * the marker's color as rgb-color string
 		 * @type {string}
@@ -194,11 +195,11 @@ export const geojsonStyleFunction = (feature) => {
 			return markerSize;
 		}
 		switch (markerSize) {
-			case 'large':
+			case StyleSize.LARGE:
 				return 7;
-			case 'medium':
+			case StyleSize.MEDIUM:
 				return 5;
-			case 'small':
+			case StyleSize.SMALL:
 			default:
 				return 3;
 		}
@@ -921,7 +922,7 @@ export const getTextFrom = (feature) => {
  * Extracts from the specified feature the size-value if the
  * StyleType is Marker/Text or null for all other StyleTypes.
  * @param {Feature} feature the feature with or without a style
- * @returns {module:domain/styles~StyleSizeTypes|null} the Size-Value or null
+ * @returns {module:domain/styles~StyleSize|null} the Size-Value or null
  */
 export const getSizeFrom = (feature) => {
 	if (feature == null) {

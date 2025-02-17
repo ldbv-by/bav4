@@ -5,7 +5,7 @@
  * @readonly
  * @enum {String}
  */
-export const StyleSizeTypes = Object.freeze({
+export const StyleSize = Object.freeze({
 	SMALL: 'small',
 	MEDIUM: 'medium',
 	LARGE: 'large'

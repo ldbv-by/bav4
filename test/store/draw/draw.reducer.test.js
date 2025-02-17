@@ -17,7 +17,7 @@ import {
 import { TestUtils } from '../../test-utils.js';
 import { EventLike } from '../../../src/utils/storeUtils';
 import { StyleTypes } from '../../../src/modules/olMap/services/StyleService';
-import { StyleSizeTypes } from '../../../src/domain/styles';
+import { StyleSize } from '../../../src/domain/styles';
 import { drawReducer, INITIAL_STYLE } from '../../../src/store/draw/draw.reducer';
 
 describe('drawReducer', () => {
@@ -88,17 +88,17 @@ describe('drawReducer', () => {
 	it('updates the style property', () => {
 		const store = setup();
 
-		const style = { symbolSrc: 'something', color: '#ff0000', scale: StyleSizeTypes.SMALL };
+		const style = { symbolSrc: 'something', color: '#ff0000', scale: StyleSize.SMALL };
 
 		setStyle(style);
 
-		expect(store.getState().draw.style).toEqual({ symbolSrc: 'something', color: '#ff0000', scale: StyleSizeTypes.SMALL });
+		expect(store.getState().draw.style).toEqual({ symbolSrc: 'something', color: '#ff0000', scale: StyleSize.SMALL });
 	});
 
 	it('updates the selectedStyle property', () => {
 		const store = setup();
 
-		const style = { text: 'something', color: '#ff0000', scale: StyleSizeTypes.SMALL };
+		const style = { text: 'something', color: '#ff0000', scale: StyleSize.SMALL };
 		const selectedStyle = { type: StyleTypes.TEXT, style: style };
 		setSelectedStyle(selectedStyle);
 
@@ -161,7 +161,7 @@ describe('drawReducer', () => {
 	it('updates the style.text and selectedStyle.text property', () => {
 		const store = setup();
 
-		const style = { text: 'something', color: '#ff0000', scale: StyleSizeTypes.SMALL };
+		const style = { text: 'something', color: '#ff0000', scale: StyleSize.SMALL };
 		const selectedStyle = { type: StyleTypes.TEXT, style: style };
 		setSelectedStyle(selectedStyle);
 
