@@ -19,11 +19,11 @@ describe('OlOverlayMapHandler', () => {
 			.registerSingleton('UnitsService', {
 				// eslint-disable-next-line no-unused-vars
 				formatDistance: (distance, decimals) => {
-					return distance + ' m';
+					return { value: distance, localizedValue: distance, unit: 'm' };
 				},
 				// eslint-disable-next-line no-unused-vars
 				formatArea: (area, decimals) => {
-					return area + ' m²';
+					return { value: area, localizedValue: area, unit: 'm²' };
 				}
 			})
 			.registerSingleton('MapService', { getSrid: () => 3857, getLocalProjectedSrid: () => 25832, getLocalProjectedSridExtent: () => null });

@@ -96,7 +96,10 @@ export class RouteChart extends MvuElement {
 			return item.bordercolor ? `${style}; border-style:solid;border-width:2px;border-color: ${item.bordercolor}` : style;
 		};
 
-		const getLegendValue = (item) => this.#unitsService.formatDistance(item.data.absolute);
+		const getLegendValue = (item) => {
+			const distance = this.#unitsService.formatDistance(item.data.absolute);
+			return `${distance.localizedValue} ${distance.unit}`;
+		};
 
 		const onMouseOver = (item) => {
 			setHighlightedSegments({ segments: item.data.segments, zoomToExtent: false });
@@ -137,7 +140,10 @@ export class RouteChart extends MvuElement {
 	}
 
 	_getChartConfig(items, title) {
-		const getLegendValue = (item) => this.#unitsService.formatDistance(item.data.absolute);
+		const getLegendValue = (item) => {
+			const distance = this.#unitsService.formatDistance(item.data.absolute);
+			return `${distance.localizedValue} ${distance.unit}`;
+		};
 
 		const data = {
 			labels: items.map((item) => item.label),

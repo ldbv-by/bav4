@@ -75,15 +75,27 @@ export class RouteInfo extends MvuElement {
 		};
 
 		const getDistance = () => {
-			return stats?.dist ? this._unitsService.formatDistance(stats.dist) : '-';
+			if (stats?.dist) {
+				const distance = this._unitsService.formatDistance(stats.dist);
+				return `${distance.localizedValue} ${distance.unit}`;
+			}
+			return '-';
 		};
 
 		const getUphill = () => {
-			return stats ? this._unitsService.formatDistance(stats.twoDiff[0]) : '-';
+			if (stats) {
+				const distance = this._unitsService.formatDistance(stats.twoDiff[0]);
+				return `${distance.localizedValue} ${distance.unit}`;
+			}
+			return '-';
 		};
 
 		const getDownhill = () => {
-			return stats ? this._unitsService.formatDistance(stats.twoDiff[1]) : '-';
+			if (stats) {
+				const distance = this._unitsService.formatDistance(stats.twoDiff[1]);
+				return `${distance.localizedValue} ${distance.unit}`;
+			}
+			return '-';
 		};
 		const getColor = () => {
 			return html`*{--primary-color: ${color}`;
