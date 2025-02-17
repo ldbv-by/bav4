@@ -7,7 +7,7 @@ import { createNoInitialStateMediaReducer } from '../../../../../../../src/store
 import { positionReducer } from '../../../../../../../src/store/position/position.reducer';
 import { TestUtils } from '../../../../../../test-utils.js';
 import { SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../../src/plugins/HighlightPlugin';
-import { SourceType, SourceTypeName } from '../../../../../../../src/domain/sourceType.js';
+import { VectorSourceType } from '../../../../../../../src/domain/geoResources.js';
 window.customElements.define(CpResultItem.tag, CpResultItem);
 
 describe('CpResultItem', () => {
@@ -54,21 +54,108 @@ describe('CpResultItem', () => {
 		});
 	});
 
+	describe('_matchGeomType', () => {
+		it('maps a SourceType to a HighlightGeometryType', async () => {
+			const element = await setup();
+			expect(element._matchGeomType(VectorSourceType.EWKT)).toEqual(HighlightGeometryType.EWKT);
+			expect(element._matchGeomType(VectorSourceType.GEOJSON)).toEqual(HighlightGeometryType.GEOJSON);
+
+			expect(() => element._matchGeomType(VectorSourceType.KML)).toThrow('SourceType Symbol(kml) is currently not supported');
+		});
+	});
+
 	describe('events', () => {
+		const previousCoordinate = [1, 2];
+		const coordinate = [21, 42];
+		const extent = [0, 1, 2, 3];
+		const wktData = { geometry: 'POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))', geometryType: VectorSourceType.EWKT };
+		const geoJsonData = { geometry: { type: 'Point', coordinates: [21, 42, 0] }, geometryType: VectorSourceType.GEOJSON };
+
+		const setupOnMouseEnterTests = async (portraitOrientation, extent = null, data = null) => {
+			const cpSearchResult = new CadastralParcelSearchResult('label', 'labelFormatted', coordinate, extent, data);
+			const element = await setup({
+				highlight: {
+					features: []
+				},
+				mainMenu: {
+					open: true
+				},
+				media: {
+					portrait: portraitOrientation
+				}
+			});
+			element.data = cpSearchResult;
+			return element;
+		};
+
+		const setupOnClickTests = async (portraitOrientation, extent = null, data = null) => {
+			const cpSearchResult = new CadastralParcelSearchResult('label', 'labelFormatted', coordinate, extent, data);
+			const element = await setup({
+				highlight: {
+					features: [
+						{ id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, data: previousCoordinate },
+						{ id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, data: previousCoordinate }
+					]
+				},
+				mainMenu: {
+					open: true
+				},
+				media: {
+					portrait: portraitOrientation
+				}
+			});
+			element.data = cpSearchResult;
+			return element;
+		};
+
 		describe('on mouse enter', () => {
-			it('sets a temporary highlight feature', async () => {
-				const coordinate = [21, 42];
-				const data = new CadastralParcelSearchResult('label', 'labelFormatted', coordinate);
-				const element = await setup();
-				element.data = data;
+			describe('result has data', () => {
+				describe('type WKT', () => {
+					it('sets a temporary highlight feature', async () => {
+						const element = await setupOnMouseEnterTests(false, null, wktData);
 
-				const target = element.shadowRoot.querySelector('li');
-				target.dispatchEvent(new Event('mouseenter'));
+						const target = element.shadowRoot.querySelector('li');
+						target.dispatchEvent(new Event('mouseenter'));
 
-				expect(store.getState().highlight.features).toHaveSize(1);
-				expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
-				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER_TMP);
-				expect(store.getState().highlight.features[0].id).toBe(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
+						expect(store.getState().highlight.features).toHaveSize(1);
+						expect(store.getState().highlight.features[0].id).toEqual(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
+						expect(store.getState().highlight.features[0].data.geometry).toEqual(wktData.geometry);
+						expect(store.getState().highlight.features[0].data.geometryType).toBe(HighlightGeometryType.EWKT);
+						expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.DEFAULT_TMP);
+					});
+				});
+
+				describe('type GEOJSON', () => {
+					it('sets a temporary highlight feature', async () => {
+						const element = await setupOnMouseEnterTests(false, null, geoJsonData);
+
+						const target = element.shadowRoot.querySelector('li');
+						target.dispatchEvent(new Event('mouseenter'));
+
+						expect(store.getState().highlight.features).toHaveSize(1);
+						expect(store.getState().highlight.features[0].id).toEqual(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
+						expect(store.getState().highlight.features[0].data.geometry).toEqual(geoJsonData.geometry);
+						expect(store.getState().highlight.features[0].data.geometryType).toBe(HighlightGeometryType.GEOJSON);
+						expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.DEFAULT_TMP);
+					});
+				});
+			});
+
+			describe('result has a coordinate', () => {
+				it('sets a temporary highlight feature', async () => {
+					const coordinate = [21, 42];
+					const data = new CadastralParcelSearchResult('label', 'labelFormatted', coordinate);
+					const element = await setup();
+					element.data = data;
+
+					const target = element.shadowRoot.querySelector('li');
+					target.dispatchEvent(new Event('mouseenter'));
+
+					expect(store.getState().highlight.features).toHaveSize(1);
+					expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
+					expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER_TMP);
+					expect(store.getState().highlight.features[0].id).toBe(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
+				});
 			});
 		});
 
@@ -100,33 +187,6 @@ describe('CpResultItem', () => {
 		});
 
 		describe('on click', () => {
-			const previousCoordinate = [1, 2];
-			const coordinate = [21, 42];
-			const extent = [0, 1, 2, 3];
-			const wktData = { geometry: 'POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))', geometryType: new SourceType(SourceTypeName.EWKT, null, 3857) };
-			const geoJsonData = { geometry: { type: 'Point', coordinates: [21, 42, 0] }, geometryType: new SourceType(SourceTypeName.GEOJSON, null, 4326) };
-			const kmlData = { geometry: 'kml', geometryType: new SourceType(SourceTypeName.KML, null, 4326) };
-
-			const setupOnClickTests = async (portraitOrientation, extent = null, data = null) => {
-				const cpSearchResult = new CadastralParcelSearchResult('label', 'labelFormatted', coordinate, extent, data);
-				const element = await setup({
-					highlight: {
-						features: [
-							{ id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, data: previousCoordinate },
-							{ id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, data: previousCoordinate }
-						]
-					},
-					mainMenu: {
-						open: true
-					},
-					media: {
-						portrait: portraitOrientation
-					}
-				});
-				element.data = cpSearchResult;
-				return element;
-			};
-
 			describe('result has data', () => {
 				describe('type WKT', () => {
 					it('removes both an existing and temporary highlight feature and set the permanent highlight feature', async () => {
@@ -155,18 +215,6 @@ describe('CpResultItem', () => {
 						expect(store.getState().highlight.features[0].data.geometry).toEqual(geoJsonData.geometry);
 						expect(store.getState().highlight.features[0].data.geometryType).toBe(HighlightGeometryType.GEOJSON);
 						expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.DEFAULT);
-					});
-				});
-
-				describe('type cannot be matched against a HighlightGeometryType', () => {
-					it('throws an error', async () => {
-						const element = await setupOnClickTests(false, null, kmlData);
-						const errorSpy = spyOn(element, '_throwError');
-
-						const target = element.shadowRoot.querySelector('li');
-						target.click();
-
-						expect(errorSpy).toHaveBeenCalledWith('SourceType kml is currently not supported');
 					});
 				});
 

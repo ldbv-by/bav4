@@ -61,7 +61,7 @@ describe('ShareChip', () => {
 		it('has a model containing default values', async () => {
 			const element = await setup();
 
-			expect(element.getModel()).toEqual({ center: null });
+			expect(element.getModel()).toEqual({ center: null, label: null });
 		});
 
 		it('properly implements abstract methods', async () => {
@@ -86,7 +86,14 @@ describe('ShareChip', () => {
 			const element = await setup();
 			element.center = invalidCenter;
 
-			expect(element.getLabel()).toBe('chips_assist_chip_share_state_label');
+			expect(element.getLabel()).toBe('chips_assist_chip_share_state_label_default');
+		});
+
+		it('renders the view with given label', async () => {
+			const element = await setup({}, { label: 'Foo label' });
+
+			expect(element.isVisible()).toBeTrue();
+			expect(element.getLabel()).toBe('Foo label');
 		});
 	});
 
@@ -141,6 +148,25 @@ describe('ShareChip', () => {
 
 				expect(store.getState().notifications.latest.payload.content).toBe('chips_assist_chip_share_position_api_failed');
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+			});
+
+			it('does NOT emit a warn notification on share api canceled', async () => {
+				const element = await setup({ share: () => Promise.resolve(true) }, { center: [42, 21] });
+				const shareServiceSpy = spyOn(shareServiceMock, 'encodeStateForPosition').and.callThrough();
+
+				const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.resolve('http://shorten.foo'));
+				const shareSpy = spyOn(windowMock.navigator, 'share').and.callFake(() => Promise.reject(new DOMException('message', 'AbortError')));
+
+				const button = element.shadowRoot.querySelector('button');
+				button.click();
+
+				await TestUtils.timeout();
+				expect(shortenerSpy).toHaveBeenCalledTimes(1);
+				expect(shareServiceSpy).toHaveBeenCalledTimes(1);
+
+				expect(shareSpy).toHaveBeenCalledWith({ url: 'http://shorten.foo' });
+
+				expect(store.getState().notifications.latest).toBeNull();
 			});
 		});
 

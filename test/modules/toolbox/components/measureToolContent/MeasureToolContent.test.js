@@ -213,6 +213,28 @@ describe('MeasureToolContent', () => {
 			expect(unitSpans[1].textContent).toBe('m²');
 		});
 
+		it('shows the empty measurement statistics', async () => {
+			const state = {
+				measurement: {
+					statistic: null,
+					reset: null,
+					remove: null
+				}
+			};
+			const element = await setup(state);
+			const valueSpans = element.shadowRoot.querySelectorAll('.prime-text-value');
+			const unitSpans = element.shadowRoot.querySelectorAll('.prime-text-unit');
+			const areaElement = element.shadowRoot.querySelector('.is-area');
+
+			expect(valueSpans.length).toBe(2);
+			expect(unitSpans.length).toBe(2);
+			expect(valueSpans[0].textContent).toBe('0');
+			expect(unitSpans[0].textContent).toBe('m');
+			expect(valueSpans[1].textContent).toBe('0');
+			expect(unitSpans[1].textContent).toBe('m²');
+			expect(areaElement).toBeFalsy();
+		});
+
 		it('shows selectable measurement values', async () => {
 			// HINT: the existence of the behavior (user select text) is driven by css-classes specified in main.css and mvuElement.css.
 			// All elements are not selectable by default, but can be activated with the 'selectable' class.

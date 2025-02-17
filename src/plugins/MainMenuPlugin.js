@@ -8,6 +8,8 @@ import { TabIds } from '../domain/mainMenu';
 import { $injector } from '../injection';
 import { QueryParameters } from '../domain/queryParameters';
 import { Tools } from '../domain/tools';
+import { isNumber } from '../utils/checks';
+import { setOpenNodes } from '../store/catalog/catalog.action';
 
 /**
  * @class
@@ -25,12 +27,18 @@ export class MainMenuPlugin extends BaPlugin {
 		const queryParams = environmentService.getQueryParams();
 
 		// check if we have a query parameter defining the tab id
-		const tabId = TabIds.valueOf(parseInt(queryParams.get(QueryParameters.MENU_ID), 10));
-		if (tabId) {
+		const tabId = parseInt(queryParams.get(QueryParameters.MENU_ID), 10);
+		// @ts-ignore
+		if (isNumber(tabId) && Object.values(TabIds).includes(tabId) && tabId !== TabIds.ROUTING) {
 			setTab(tabId);
 		} else {
 			// set default tab id
-			setTab(TabIds.MAPS);
+			setTab(MainMenuPlugin.DEFAULT_TAB_ID);
+		}
+
+		const catalogNodes = queryParams.get(QueryParameters.CATALOG_NODE_IDS);
+		if (catalogNodes) {
+			setOpenNodes(catalogNodes.split(','));
 		}
 	}
 
@@ -56,7 +64,7 @@ export class MainMenuPlugin extends BaPlugin {
 				if (!this._open) {
 					close();
 				}
-				setTab(this._previousTab);
+				setTab(this._previousTab === TabIds.FEATUREINFO ? MainMenuPlugin.DEFAULT_TAB_ID : this._previousTab);
 			}
 		};
 
@@ -105,5 +113,9 @@ export class MainMenuPlugin extends BaPlugin {
 		observe(store, (store) => store.mainMenu.tab, onTabChanged, false);
 		observe(store, (state) => state.tools.current, onToolIdChanged, false);
 		observe(store, (state) => state.media.portrait, onOrientationChanged, false);
+	}
+
+	static get DEFAULT_TAB_ID() {
+		return TabIds.MAPS;
 	}
 }

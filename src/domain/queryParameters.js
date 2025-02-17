@@ -38,6 +38,14 @@ export const QueryParameters = Object.freeze({
 	 */
 	LAYER_TIMESTAMP: 'l_t',
 	/**
+	 * The swipe alignment of a layer (`string`)
+	 */
+	LAYER_SWIPE_ALIGNMENT: 'l_sa',
+	/**
+	 * The swipe ratio of the map (`number`, 0-1)
+	 */
+	SWIPE_RATIO: 'sr',
+	/**
 	 * Currently not supported. The active topic (`string`)
 	 */
 	TOPIC: 't',
@@ -53,6 +61,10 @@ export const QueryParameters = Object.freeze({
 	 * Id (`integer`) of a menu item which should be displayed
 	 */
 	MENU_ID: 'mid',
+	/**
+	 * Ids of catalog nodes which should be displayed open (`string`, comma-separated)
+	 */
+	CATALOG_NODE_IDS: 'cnids',
 	/**
 	 * Id (`string`)  of a tool item which should initially active
 	 */

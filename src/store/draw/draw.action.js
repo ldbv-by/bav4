@@ -3,6 +3,7 @@
  */
 import {
 	ACTIVE_CHANGED,
+	STATISTIC_CHANGED,
 	MODE_CHANGED,
 	TYPE_CHANGED,
 	RESET_REQUESTED,
@@ -23,7 +24,7 @@ import { EventLike } from '../../utils/storeUtils';
  * The Options of a Style-Request
  * @typedef {Object} DrawingStyleOption
  * @property {string} symbolSrc the source of a vector graphic, used by a symbol-drawing
- * @property {'small'|'medium'|'large'} scale the scale-factor of a drawing; used by symbol- and text-drawing
+ * @property {module:domain/styles~StyleSize|number} scale the scale-factor of a drawing; used by symbol- and text-drawing
  * @property {string} color the hex-string representation of a RGB-Color; used by Symbol-, Text-, Line- and Polygon-drawing
  * @property {string} text the text-content of a Text-drawing
  * @property {Array<number>} anchor the anchor of a symbol in fraction of 0 to 1
@@ -60,6 +61,18 @@ export const deactivate = () => {
 	getStore().dispatch({
 		type: ACTIVE_CHANGED,
 		payload: { active: false, createPermanentLayer: true }
+	});
+};
+
+/**
+ * set the statistic of a drawing.
+ * @function
+ * @param {module:domain/geometryStatisticTypeDef~GeometryStatistic} stat the draw-statistic of the current selected feature(s)
+ */
+export const setStatistic = (stat) => {
+	getStore().dispatch({
+		type: STATISTIC_CHANGED,
+		payload: stat
 	});
 };
 

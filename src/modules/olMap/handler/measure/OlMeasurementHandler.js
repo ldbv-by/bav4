@@ -44,6 +44,15 @@ import { Tools } from '../../../../domain/tools';
 import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../ol/geodesic/geodesicGeometry';
 import { setData } from '../../../../store/fileStorage/fileStorage.action';
 import { createDefaultLayerProperties } from '../../../../store/layers/layers.reducer';
+import { GeometryType } from '../../../../domain/geometryTypes';
+
+const defaultMeasurementStats = {
+	geometryType: null,
+	coordinate: null,
+	azimuth: null,
+	length: null,
+	area: null
+};
 
 /**
  * Handler for measurement-interaction with the map.
@@ -81,6 +90,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._draw = false;
 
 		this._storedContent = null;
+		this._storeId = null;
 
 		this._sketchHandler = new OlSketchHandler();
 		this._mapListeners = [];
@@ -154,7 +164,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 						event.target.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
 						measureGeometry.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
 						this._styleService.updateStyle(event.target, olMap, { geometry: measureGeometry }, StyleTypes.MEASURE);
-						this._setStatistics(event.target);
+						this._setStatistic(event.target);
 					};
 					oldFeatures.forEach((f) => {
 						f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
@@ -167,13 +177,17 @@ export class OlMeasurementHandler extends OlLayerHandler {
 						f.on('change', onFeatureChange);
 					});
 					const displayRuler = !oldFeatures.some((f) => f.get('displayruler') === 'false');
+					const hasMeasurementFeature = oldFeatures.some((f) => f.getId().startsWith(Tools.MEASURE + '_'));
 					setDisplayRuler(displayRuler);
 					const oldLayerId = oldLayer.get('id');
 					this._layerId = oldLayerId;
 					this._layerZIndex = oldLayer.getZIndex();
 					removeLayer(oldLayerId);
-					this._finish();
+					if (hasMeasurementFeature) {
+						this._finish();
+					}
 					this._setSelection(this._storeService.getStore().getState().measurement.selection);
+					this._updateStoreId(oldLayer.get('geoResourceId'));
 					this._updateMeasureState();
 				}
 			}
@@ -229,7 +243,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				// eslint-disable-next-line promise/prefer-await-to-then
 				.finally(() => {
 					this._storedContent = createKML(layer, 'EPSG:3857');
-					this._save(); // save content initially to get a valid fileId
 					registerListeners(layer);
 				});
 			return layer;
@@ -248,7 +261,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				if ([InteractionStateType.MODIFY, InteractionStateType.SELECT].includes(this._measureState.type)) {
 					const ids = features.map((f) => f.getId());
 					setSelection(ids);
-					this._updateStatistics();
+					this._updateStatistic();
 					this._updateMeasureState(coordinate, pixel, dragging);
 				}
 			};
@@ -355,13 +368,15 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._convertToPermanentLayer().finally(() => {
 			this._layerId = null;
 			this._layerZIndex = null;
+			this._storedContent = null;
+			this._storeId = null;
 		});
 		this._vectorLayer
 			.getSource()
 			.getFeatures()
 			.forEach((f) => this._overlayService.remove(f, this._map));
 		setSelection([]);
-		setStatistic({ length: null, area: null });
+		setStatistic(defaultMeasurementStats);
 
 		this._draw = false;
 		this._modify = false;
@@ -417,6 +432,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				store,
 				(state) => state.measurement.displayRuler,
 				(displayRuler) => this._updateStyle(displayRuler)
+			),
+			observe(
+				store,
+				(state) => state.fileStorage.fileId,
+				(fileId) => this._updateStoreId(fileId)
 			)
 		];
 	}
@@ -436,7 +456,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const additionalRemoveAction = (f) => this._overlayService.remove(f, this._map);
 			removeSelectedFeatures(this._select.getFeatures(), this._vectorLayer, additionalRemoveAction);
 			this._setSelection([]);
-			this._updateStatistics();
+			this._updateStatistic();
 			this._updateMeasureState();
 		}
 	}
@@ -458,7 +478,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}
 		this._draw.setActive(true);
 		setSelection([]);
-		setStatistic({ length: 0, area: 0 });
+		setStatistic(defaultMeasurementStats);
 		this._modify.setActive(false);
 		this._helpTooltip.deactivate();
 		this._helpTooltip.activate(this._map);
@@ -514,7 +534,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					measureGeometry.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
 				}
 				this._overlayService.update(event.target, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
-				this._setStatistics(event.target);
+				this._setStatistic(event.target);
 			};
 
 			const onResolutionChange = () => {
@@ -544,7 +564,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	_createSelect() {
 		const select = new Select(getSelectOptions(this._vectorLayer));
 		const getResolution = () => this._map.getView().getResolution();
-		select.getFeatures().on('change:length', this._updateStatistics);
+		select.getFeatures().on('change:length', this._updateStatistic);
 		select.getFeatures().on('add', (e) => {
 			const feature = e.element;
 			const styleFunction = selectStyleFunction();
@@ -591,37 +611,46 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				measureGeometry.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
 
 				this._overlayService.update(event.target, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
-				this._updateStatistics();
+				this._updateStatistic();
 			};
 			feature.on('change', onFeatureChange);
 		}
 	}
 
-	_setStatistics(feature) {
+	_setStatistic(feature) {
 		const stats = getStats(feature.getGeometry());
 		if (!this._sketchHandler.isFinishOnFirstPoint) {
 			// As long as the draw-interaction is active, the current geometry is a closed and maybe invalid Polygon
 			// (snapping from pointer-position to first point) and must be corrected into a valid LineString
 			const measureGeometry = this._createMeasureGeometry(feature);
 			const nonAreaStats = getStats(measureGeometry);
-			setStatistic({ length: nonAreaStats.length, area: stats.area });
+			setStatistic({ ...stats, length: nonAreaStats.length });
 		} else {
-			setStatistic({ length: stats.length, area: stats.area });
+			setStatistic(stats);
 		}
 	}
 
-	_updateStatistics() {
-		const startStatistic = { length: null, area: null };
+	_updateStatistic() {
 		const sumStatistic = (before, feature) => {
 			const stats = getStats(feature.getGeometry());
-			return {
-				length: before.length + stats.length,
-				area: before.area + stats.area
-			};
+			return before ? { ...before, length: before.length + stats.length, area: before.area + stats.area } : stats;
 		};
+
+		const getStatisticFromSelection = (selectedFeatures) => {
+			if (selectedFeatures.length === 1) {
+				return getStats(selectedFeatures[0].getGeometry());
+			}
+
+			if (selectedFeatures.length > 1) {
+				return { ...selectedFeatures.reduce(sumStatistic, defaultMeasurementStats), geometryType: GeometryType.COLLECTION };
+			}
+			return defaultMeasurementStats;
+		};
+
 		if (this._select) {
 			const features = this._select.getFeatures().getArray();
-			setStatistic(features.reduce(sumStatistic, startStatistic));
+			const statistic = getStatisticFromSelection(features);
+			setStatistic(statistic);
 		}
 	}
 
@@ -730,6 +759,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._setMeasureState(measureState);
 	}
 
+	_updateStoreId(storeId) {
+		this._storeId = storeId;
+	}
+
 	_setSelection(ids) {
 		const clear = () => {
 			this._select?.getFeatures().clear();
@@ -751,6 +784,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		/**
 		 * The stored content will be created/updated after adding/changing and removing features,
 		 * while interacting with the layer.
+		 * Every asynchron save (of the storedContent) results in a changed fileId in s-o-s fileStorage
+		 * The changed fileId is observed and tracked via this._storeId
 		 */
 		setData(this._storedContent);
 	}
@@ -762,7 +797,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		await this._save();
 
 		if (this._storedContent) {
-			const id = this._storeService.getStore().getState().fileStorage.fileId;
+			const id = this._storeService.getStore().getState().fileStorage.fileId ?? this._storeId;
 			const getOrCreateVectorGeoResource = () => {
 				const fromService = this._geoResourceService.byId(id);
 				return fromService

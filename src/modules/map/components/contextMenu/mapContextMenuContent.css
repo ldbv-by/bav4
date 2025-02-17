@@ -11,6 +11,10 @@
 	justify-content: flex-start;
 }
 
+.content li ba-coordinate-info {
+	width: 100%;
+}
+
 .content li .label {
 	min-width: 7em;
 	margin: auto;
@@ -32,4 +36,9 @@
 	flex-flow: wrap;
 	gap: 0.5em 0.8em;
 	padding: 0.8em 1.3em 1em;
+}
+
+ba-badge {
+	position: relative;
+	top: -0.15em;
 }

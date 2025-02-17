@@ -6,12 +6,10 @@ import { getBvvFeatureInfo } from '../../../../../src/modules/olMap/handler/feat
 import { createDefaultLayer, createDefaultLayerProperties } from '../../../../../src/store/layers/layers.reducer';
 import GeoJSON from 'ol/format/GeoJSON';
 import { $injector } from '../../../../../src/injection';
-import { GeometryInfo } from '../../../../../src/modules/featureInfo/components/geometryInfo/GeometryInfo';
 import { ExportVectorDataChip } from '../../../../../src/modules/chips/components/assistChips/ExportVectorDataChip';
 import { TestUtils } from '../../../../test-utils';
 import { FeatureInfoGeometryTypes } from '../../../../../src/domain/featureInfo';
 
-window.customElements.define(GeometryInfo.tag, GeometryInfo);
 window.customElements.define(ExportVectorDataChip.tag, ExportVectorDataChip);
 
 describe('FeatureInfo provider', () => {
@@ -92,6 +90,13 @@ describe('FeatureInfo provider', () => {
 						geometry: expectedFeatureInfoGeometry
 					});
 					expect(target.querySelector('ba-geometry-info')).toBeTruthy();
+					expect(target.querySelector('ba-geometry-info').statistic).toEqual({
+						geometryType: 'Point',
+						coordinate: jasmine.any(Array),
+						azimuth: null,
+						length: null,
+						area: null
+					});
 					expect(target.querySelector('ba-profile-chip')).toBeTruthy();
 					expect(target.querySelector('ba-export-vector-data-chip')).toBeTruthy();
 
@@ -109,6 +114,13 @@ describe('FeatureInfo provider', () => {
 					});
 					expect(target.querySelector('.content').innerText).toBe('description');
 					expect(target.querySelector('ba-geometry-info')).toBeTruthy();
+					expect(target.querySelector('ba-geometry-info').statistic).toEqual({
+						geometryType: 'Point',
+						coordinate: jasmine.any(Array),
+						azimuth: null,
+						length: null,
+						area: null
+					});
 					expect(target.querySelector('ba-profile-chip')).toBeTruthy();
 					expect(target.querySelector('ba-export-vector-data-chip')).toBeTruthy();
 
@@ -126,6 +138,13 @@ describe('FeatureInfo provider', () => {
 					});
 					expect(target.querySelector('.content').innerText).toBe('desc');
 					expect(target.querySelector('ba-geometry-info')).toBeTruthy();
+					expect(target.querySelector('ba-geometry-info').statistic).toEqual({
+						geometryType: 'Point',
+						coordinate: jasmine.any(Array),
+						azimuth: null,
+						length: null,
+						area: null
+					});
 					expect(target.querySelector('ba-profile-chip')).toBeTruthy();
 					expect(target.querySelector('ba-export-vector-data-chip')).toBeTruthy();
 

@@ -20,9 +20,11 @@ import { fitLayer } from '../../../store/position/position.action';
 import { GeoResourceFuture, RtVectorGeoResource, VectorGeoResource } from '../../../domain/geoResources';
 import { MenuTypes } from '../../commons/components/overflowMenu/OverflowMenu';
 import { openSlider } from '../../../store/timeTravel/timeTravel.action';
+import { SwipeAlignment } from '../../../store/layers/layers.action';
 
 const Update_Layer = 'update_layer';
 const Update_Layer_Collapsed = 'update_layer_collapsed';
+const Update_Layer_Swipe = 'update_layer_swipe';
 const Default_Extra_Property_Values = {
 	collapsed: true,
 	opacity: 1,
@@ -47,7 +49,8 @@ const Default_Extra_Property_Values = {
 export class LayerItem extends AbstractMvuContentPanel {
 	constructor() {
 		super({
-			layer: null
+			layer: null,
+			isLayerSwipeActive: null
 		});
 		const { TranslationService, GeoResourceService } = $injector.inject('TranslationService', 'GeoResourceService');
 		this._translationService = TranslationService;
@@ -75,7 +78,19 @@ export class LayerItem extends AbstractMvuContentPanel {
 				};
 			case Update_Layer_Collapsed:
 				return { ...model, layer: { ...model.layer, collapsed: data } };
+			case Update_Layer_Swipe:
+				return { ...model, isLayerSwipeActive: data.active };
 		}
+	}
+
+	/**
+	 * @override
+	 */
+	onInitialize() {
+		this.observe(
+			(state) => state.layerSwipe,
+			(layerSwipe) => this.signal(Update_Layer_Swipe, layerSwipe)
+		);
 	}
 
 	/**
@@ -110,7 +125,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 	 */
 	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
-		const { layer } = model;
+		const { layer, isLayerSwipeActive } = model;
 
 		if (!layer) {
 			return nothing;
@@ -183,7 +198,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 			return html`<div class="slider-container">
 				<input
 					type="range"
-					min="1"
+					min="0"
 					title=${translate('layerManager_opacity')}
 					max="100"
 					value=${layer.opacity * 100}
@@ -193,6 +208,12 @@ export class LayerItem extends AbstractMvuContentPanel {
 					@dragstart=${onPreventDragging}
 					id="opacityRange"
 				/>
+				<ba-badge
+					.background=${'var(--secondary-color)'}
+					.label=${Math.round(layer.opacity * 100)}
+					.color=${'var(--text3)'}
+					.title=${translate('layerManager_opacity_badge')}
+				></ba-badge>
 			</div>`;
 		};
 
@@ -248,9 +269,52 @@ export class LayerItem extends AbstractMvuContentPanel {
 					icon: zoomToExtentSvg,
 					action: zoomToExtent,
 					disabled: !(geoResource instanceof VectorGeoResource || geoResource instanceof RtVectorGeoResource)
-				},
-				{ id: 'info', label: 'Info', icon: infoSvg, action: openGeoResourceInfoPanel, disabled: !layer.constraints?.metaData }
+				}
 			];
+		};
+
+		const leftSide = () => {
+			modifyLayer(layer.id, { swipeAlignment: SwipeAlignment.LEFT });
+		};
+		const bothSide = () => {
+			modifyLayer(layer.id, { swipeAlignment: SwipeAlignment.NOT_SET });
+		};
+		const rightSide = () => {
+			modifyLayer(layer.id, { swipeAlignment: SwipeAlignment.RIGHT });
+		};
+
+		const getLayerSwipe = () => {
+			const direction = layer.constraints.swipeAlignment;
+			const directionClass = {
+				left: direction === SwipeAlignment.LEFT,
+				both: direction === SwipeAlignment.NOT_SET,
+				right: direction === SwipeAlignment.RIGHT
+			};
+			return isLayerSwipeActive
+				? html`
+						<div class="compare">
+							<ba-button
+								id="left"
+								class=${direction === SwipeAlignment.LEFT ? 'active' : ''}
+								.label=${translate('layerManager_compare_left')}
+								@click=${leftSide}
+							></ba-button>
+							<ba-button
+								id="both"
+								class=${direction === SwipeAlignment.NOT_SET ? 'active' : ''}
+								.label=${translate('layerManager_compare_both')}
+								@click=${bothSide}
+							></ba-button>
+							<ba-button
+								id="right"
+								class=${direction === SwipeAlignment.RIGHT ? 'active' : ''}
+								.label=${translate('layerManager_compare_right')}
+								@click=${rightSide}
+							></ba-button>
+							<div class="bar ${classMap(directionClass)}"></div>
+						</div>
+					`
+				: nothing;
 		};
 
 		return html` <style>
@@ -262,6 +326,17 @@ export class LayerItem extends AbstractMvuContentPanel {
 						>${layer.loading ? html`<ba-spinner .label=${currentLabel}></ba-spinner>` : html`${currentLabel} ${getBadges(layer.keywords)}`}
 					</ba-checkbox>
 					${getTimestampContent()}
+					<div class="ba-list-item__after clear">
+						<ba-icon
+							id="remove"
+							.icon="${removeSvg}"
+							.color=${'var(--primary-color)'}
+							.color_hover=${'var(--text3)'}
+							.size=${1.6}
+							.title=${translate('layerManager_remove')}
+							@click=${remove}
+						></ba-icon>
+					</div>
 					<button id="button-detail" data-test-id class="ba-list-item__after" title="${getCollapseTitle()}" @click="${toggleCollapse}">
 						<i class="icon chevron icon-rotate-90 ${classMap(iconCollapseClass)}"></i>
 					</button>
@@ -293,18 +368,20 @@ export class LayerItem extends AbstractMvuContentPanel {
 						</div>
 						<div>
 							<ba-icon
-								id="remove"
-								.icon="${removeSvg}"
+								id="info"
+								.icon="${infoSvg}"
 								.color=${'var(--primary-color)'}
 								.color_hover=${'var(--text3)'}
 								.size=${2.6}
-								.title=${translate('layerManager_remove')}
-								@click=${remove}
+								.title=${translate('layerManager_info')}
+								.disabled=${!layer.constraints?.metaData}
+								@click=${openGeoResourceInfoPanel}
 							></ba-icon>
 						</div>
 						<ba-overflow-menu .type=${MenuTypes.MEATBALL} .items=${getMenuItems()}></ba-overflow-menu>
 					</div>
 				</div>
+				${getLayerSwipe()}
 			</div>`;
 	}
 

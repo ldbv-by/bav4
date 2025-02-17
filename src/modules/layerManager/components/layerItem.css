@@ -1,7 +1,17 @@
 .slider-container {
-	width: 50%;
+	width: 55%;
 	padding-top: 1em;
 	display: flex;
+}
+
+.slider-container ba-badge {
+	margin: auto;
+	margin-left: 0.5em;
+}
+.slider-container ba-badge::part(badge) {
+	min-width: 2.8em;
+	display: inline-block;
+	text-align: right;
 }
 
 .collapse-content ba-icon {
@@ -12,8 +22,24 @@
 	margin: 0 0.3em;
 }
 
+.clear {
+	padding-left: 0;
+}
+
+.clear ba-icon {
+	border-radius: 2em;
+	width: 1.6em;
+	height: 1.6em;
+	display: block;
+	font-size: 1rem;
+}
+
 .collapse-content ba-icon:hover {
 	background: var(--primary-color);
+}
+
+.clear ba-icon:hover {
+	background: var(--error-color);
 }
 
 .collapse-content ba-icon:focus {
@@ -69,4 +95,67 @@
 
 .time-travel-icon {
 	margin-right: 0.5em;
+}
+
+.compare {
+	display: flex;
+	align-items: stretch;
+	border-radius: 0em;
+	overflow: hidden;
+	position: relative;
+	margin: 0.8em 1.2em;
+	border: 1px solid var(--header-background-color);
+}
+
+.compare ba-button {
+	display: flex;
+	width: 100%;
+	border-right: 1px solid var(--header-background-color);
+}
+
+.compare ba-button:last-child {
+	border-right: none;
+}
+
+.compare ba-button::part(button) {
+	font-size: 0.8rem;
+	border-bottom: 0.3em solid var(--header-background-color);
+	padding-bottom: 1em;
+}
+
+.compare ba-button.active:not(:hover)::part(button) {
+	color: var(--primary-color);
+}
+
+.compare ba-button:not(:hover)::part(button) {
+	color: var(--text1);
+}
+
+.bar {
+	font-size: 0.8rem !important;
+	bottom: 0;
+	position: absolute;
+	height: 0.3em;
+	background: var(--primary-color);
+	transition: all var(--animation-duration-medium-open);
+}
+.left {
+	left: 0;
+	right: 50%;
+	background: var(--primary-color);
+}
+.right {
+	left: 50%;
+	right: 0%;
+	background: var(--primary-color);
+}
+.both {
+	left: 0%;
+	right: 0%;
+	background: var(--primary-color);
+}
+
+input[type='range']::-moz-range-thumb {
+	width: 1.2em;
+	height: 1.2em;
 }

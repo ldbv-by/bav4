@@ -61,16 +61,25 @@ describe('MapInteractionButtonContainer', () => {
 		it('adds a container without buttons', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('.map-interaction-button-container').children).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.map-interaction-button-container').children).toHaveSize(2);
 			expect(element.shadowRoot.querySelectorAll('ba-button.routing.hide')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-button.layer-swipe.hide')).toHaveSize(1);
 		});
 
-		it('adds a container with one button', async () => {
+		it('adds a container with active routing button', async () => {
 			const element = await setup({ tools: { current: Tools.ROUTING } });
-			expect(element.shadowRoot.querySelector('.map-interaction-button-container').children).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-button.routing.hide')).toHaveSize(0);
+			expect(element.shadowRoot.querySelector('.map-interaction-button-container').children).toHaveSize(2);
+			expect(element.shadowRoot.querySelectorAll('ba-button.layer-swipe.hide')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('ba-button.routing')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-button.routing')[0].label).toBe('map_interaction_button_container');
+			expect(element.shadowRoot.querySelectorAll('ba-button.routing')[0].label).toBe('map_interaction_button_container_routing');
+		});
+
+		it('adds a container with active compare button', async () => {
+			const element = await setup({ tools: { current: Tools.COMPARE } });
+			expect(element.shadowRoot.querySelector('.map-interaction-button-container').children).toHaveSize(2);
+			expect(element.shadowRoot.querySelectorAll('ba-button.routing.hide')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-button.layer-swipe')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-button.layer-swipe')[0].label).toBe('map_interaction_button_container_layerSwipe');
 		});
 	});
 
@@ -113,6 +122,18 @@ describe('MapInteractionButtonContainer', () => {
 			closeBtn.click();
 
 			expect(element.shadowRoot.querySelectorAll('ba-button.routing.hide')).toHaveSize(1);
+			expect(store.getState().tools.current).toBeNull();
+		});
+
+		it('close compare', async () => {
+			const element = await setup({ tools: { current: Tools.COMPARE } });
+			expect(element.shadowRoot.querySelectorAll('ba-button.layer-swipe.hide')).toHaveSize(0);
+			expect(store.getState().tools.current).toBe(Tools.COMPARE);
+
+			const closeBtn = element.shadowRoot.querySelector('.layer-swipe');
+			closeBtn.click();
+
+			expect(element.shadowRoot.querySelectorAll('ba-button.layer-swipe.hide')).toHaveSize(1);
 			expect(store.getState().tools.current).toBeNull();
 		});
 	});

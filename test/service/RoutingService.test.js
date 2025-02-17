@@ -96,6 +96,9 @@ describe('BvvRoutingService', () => {
 			const mockCategories = [hike2];
 			const categoriesProvider = jasmine.createSpy().and.resolveTo(mockCategories);
 			const instanceUnderTest = setup(categoriesProvider);
+
+			expect(instanceUnderTest.getCategoryById('hike')).toBeNull();
+
 			await instanceUnderTest.init();
 
 			expect(instanceUnderTest.getCategoryById('hike')).toEqual(hike);

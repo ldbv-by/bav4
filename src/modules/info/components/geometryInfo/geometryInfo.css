@@ -1,0 +1,26 @@
+.stats-container {
+	margin: 0;
+}
+
+.stats-content {
+	padding: 0.3em 0;
+	display: flex;
+}
+
+.stats-content ba-coordinate-info {
+	width: 100%;
+}
+
+.stats-content .label {
+	min-width: 7em;
+	margin: auto;
+}
+
+.stats-content .value {
+	flex-grow: 4;
+	margin: auto;
+}
+.stats-content .icon {
+	padding-left: 1em;
+	margin: auto;
+}

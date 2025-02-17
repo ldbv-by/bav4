@@ -9,7 +9,16 @@ import { TestUtils } from '../test-utils';
 import { setCategory, setWaypoints } from '../../src/store/routing/routing.action';
 import { routingReducer } from '../../src/store/routing/routing.reducer';
 import { toolsReducer } from '../../src/store/tools/tools.reducer';
+import { topicsReducer } from '../../src/store/topics/topics.reducer';
 import { setCurrentTool } from '../../src/store/tools/tools.action';
+import { setCurrent } from '../../src/store/topics/topics.action';
+import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer';
+import { TabIds } from '../../src/domain/mainMenu';
+import { setTab } from '../../src/store/mainMenu/mainMenu.action';
+import { updateRatio } from '../../src/store/layerSwipe/layerSwipe.action';
+import { layerSwipeReducer } from '../../src/store/layerSwipe/layerSwipe.reducer';
+import { catalogReducer } from '../../src/store/catalog/catalog.reducer';
+import { addOpenNode } from '../../src/store/catalog/catalog.action';
 
 describe('ObserveStateForEncodingPlugin', () => {
 	const shareService = {
@@ -22,7 +31,11 @@ describe('ObserveStateForEncodingPlugin', () => {
 
 	const setup = () => {
 		const state = {
-			encodedState: initialState
+			encodedState: initialState,
+			mainMenu: {
+				open: true,
+				tab: TabIds.TOPICS
+			}
 		};
 
 		const store = TestUtils.setupStoreAndDi(state, {
@@ -30,6 +43,10 @@ describe('ObserveStateForEncodingPlugin', () => {
 			layers: layersReducer,
 			routing: routingReducer,
 			tools: toolsReducer,
+			topics: topicsReducer,
+			catalog: catalogReducer,
+			mainMenu: createNoInitialStateMainMenuReducer(),
+			layerSwipe: layerSwipeReducer,
 			encodedState: stateForEncodingReducer
 		});
 		$injector.registerSingleton('ShareService', shareService).registerSingleton('MapService', mapService);
@@ -133,6 +150,62 @@ describe('ObserveStateForEncodingPlugin', () => {
 		await instanceUnderTest.register(store);
 
 		setCurrentTool('someTool');
+
+		expect(store.getState().encodedState.changed).not.toEqual(initialState.changed);
+	});
+
+	it('registers a mainMenu change listener and indicates its changes', async () => {
+		const store = setup();
+		spyOn(shareService, 'encodeState').and.callFake(() => {
+			// let's return a different state each call
+			return `state_${Math.random()}`;
+		});
+		const instanceUnderTest = new ObserveStateForEncodingPlugin();
+		await instanceUnderTest.register(store);
+
+		setTab(TabIds.MAPS);
+
+		expect(store.getState().encodedState.changed).not.toEqual(initialState.changed);
+	});
+
+	it('registers a topic change listener and indicates its changes', async () => {
+		const store = setup();
+		spyOn(shareService, 'encodeState').and.callFake(() => {
+			// let's return a different state each call
+			return `state_${Math.random()}`;
+		});
+		const instanceUnderTest = new ObserveStateForEncodingPlugin();
+		await instanceUnderTest.register(store);
+
+		setCurrent('someTopic');
+
+		expect(store.getState().encodedState.changed).not.toEqual(initialState.changed);
+	});
+
+	it('registers a catalog change listener and indicates its changes', async () => {
+		const store = setup();
+		spyOn(shareService, 'encodeState').and.callFake(() => {
+			// let's return a different state each call
+			return `state_${Math.random()}`;
+		});
+		const instanceUnderTest = new ObserveStateForEncodingPlugin();
+		await instanceUnderTest.register(store);
+
+		addOpenNode('someNode');
+
+		expect(store.getState().encodedState.changed).not.toEqual(initialState.changed);
+	});
+
+	it('registers a swipeLayer ratio change listener and indicates its changes', async () => {
+		const store = setup();
+		spyOn(shareService, 'encodeState').and.callFake(() => {
+			// let's return a different state each call
+			return `state_${Math.random()}`;
+		});
+		const instanceUnderTest = new ObserveStateForEncodingPlugin();
+		await instanceUnderTest.register(store);
+
+		updateRatio(42);
 
 		expect(store.getState().encodedState.changed).not.toEqual(initialState.changed);
 	});

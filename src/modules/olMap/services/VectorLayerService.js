@@ -10,7 +10,7 @@ import { parse } from '../../../utils/ewkt';
 import { Cluster } from 'ol/source';
 import { getOriginAndPathname, getPathParams } from '../../../utils/urlUtils';
 import { UnavailableGeoResourceError } from '../../../domain/errors';
-import { isHttpUrl } from '../../../utils/checks';
+import { isHttpUrl, isString } from '../../../utils/checks';
 
 const getUrlService = () => {
 	const { UrlService: urlService } = $injector.inject('UrlService');
@@ -205,6 +205,10 @@ export class VectorLayerService {
 				.readFeatures(data)
 				.filter((f) => !!f.getGeometry()) // filter out features without a geometry. Todo: let's inform the user
 				.map((f) => {
+					// avoid ol displaying only one feature if ids are an empty string
+					if (isString(f.getId()) && f.getId().trim() === '') {
+						f.setId(undefined);
+					}
 					f.set('showPointNames', geoResource.showPointNames);
 					f.getGeometry().transform('EPSG:' + geoResource.srid, 'EPSG:' + destinationSrid); //Todo: check for unsupported destinationSrid
 					return f;

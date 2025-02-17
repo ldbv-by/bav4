@@ -1,8 +1,6 @@
 import { LayerItem } from '../../../../src/modules/layerManager/components/LayerItem';
-import { ValueSelect } from '../../../../src/modules/commons/components/valueSelect/ValueSelect';
-import { Checkbox } from '../../../../src/modules/commons/components/checkbox/Checkbox';
-import { Icon } from '../../../../src/modules/commons/components/icon/Icon';
 import { layersReducer, createDefaultLayerProperties } from '../../../../src/store/layers/layers.reducer';
+import { layerSwipeReducer } from '../../../../src/store/layerSwipe/layerSwipe.reducer';
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
@@ -25,11 +23,10 @@ import cloneSvg from '../../../../src/modules/layerManager/components/assets/clo
 import zoomToExtentSvg from '../../../../src/modules/layerManager/components/assets/zoomToExtent.svg';
 import infoSvg from '../../../../src/modules/layerManager/components/assets/info.svg';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
+import { SwipeAlignment } from '../../../../src/store/layers/layers.action.js';
+import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
 
 window.customElements.define(LayerItem.tag, LayerItem);
-window.customElements.define(ValueSelect.tag, ValueSelect);
-window.customElements.define(Checkbox.tag, Checkbox);
-window.customElements.define(Icon.tag, Icon);
 
 describe('LayerItem', () => {
 	const environmentService = {
@@ -64,7 +61,7 @@ describe('LayerItem', () => {
 	let store;
 
 	describe('when layer item is rendered', () => {
-		const setup = async (layer) => {
+		const setup = async (layer, layerSwipeActive) => {
 			store = TestUtils.setupStoreAndDi(
 				{
 					layers: {
@@ -72,13 +69,18 @@ describe('LayerItem', () => {
 					},
 					media: {
 						portrait: false
+					},
+					layerSwipe: {
+						active: layerSwipeActive
 					}
 				},
 				{
 					layers: layersReducer,
 					modal: modalReducer,
 					media: createNoInitialStateMediaReducer(),
-					timeTravel: timeTravelReducer
+					timeTravel: timeTravelReducer,
+					layerSwipe: layerSwipeReducer,
+					tools: toolsReducer
 				}
 			);
 			$injector
@@ -173,7 +175,32 @@ describe('LayerItem', () => {
 			const element = await setup(layer);
 
 			const slider = element.shadowRoot.querySelector('.opacity-slider');
+			expect(slider.type).toBe('range');
+			expect(slider.min).toBe('0');
+			expect(slider.max).toBe('100');
+			expect(slider.title).toBe('layerManager_opacity');
+			expect(slider.draggable).toBe(true);
+
 			expect(slider.value).toBe('55');
+		});
+
+		it('use layer.opacity-property in badge ', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 0.55,
+				collapsed: true
+			};
+			const element = await setup(layer);
+
+			const badge = element.shadowRoot.querySelector('.slider-container ba-badge');
+			expect(badge.label).toBe(55);
 		});
 
 		it('use layer.visible-property in checkbox ', async () => {
@@ -375,14 +402,13 @@ describe('LayerItem', () => {
 			};
 			const element = await setup(layer);
 
-			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
-			const infoMenuItem = menu.items.find((item) => item.label === 'Info');
+			const infoButton = element.shadowRoot.querySelector('#info');
 
-			expect(infoMenuItem).not.toBeNull();
-			expect(infoMenuItem.label).toEqual('Info');
-			expect(infoMenuItem.action).toEqual(jasmine.any(Function));
-			expect(infoMenuItem.disabled).toBeFalse();
-			expect(infoMenuItem.icon).toBe(infoSvg);
+			expect(infoButton).not.toBeNull();
+			expect(infoButton.title).toEqual('layerManager_info');
+			expect(infoButton.click).toEqual(jasmine.any(Function));
+			expect(infoButton.disabled).toBeFalse();
+			expect(infoButton.icon).toBe(infoSvg);
 		});
 
 		it('contains a disabled menu-item for info', async () => {
@@ -401,14 +427,13 @@ describe('LayerItem', () => {
 			};
 			const element = await setup(layer);
 
-			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
-			const infoMenuItem = menu.items.find((item) => item.label === 'Info');
+			const infoButton = element.shadowRoot.querySelector('#info');
 
-			expect(infoMenuItem).not.toBeNull();
-			expect(infoMenuItem.label).toEqual('Info');
-			expect(infoMenuItem.action).toEqual(jasmine.any(Function));
-			expect(infoMenuItem.disabled).toBeTrue();
-			expect(infoMenuItem.icon).toEqual(infoSvg);
+			expect(infoButton).not.toBeNull();
+			expect(infoButton.title).toBe('layerManager_info');
+			expect(infoButton.click).toEqual(jasmine.any(Function));
+			expect(infoButton.disabled).toBeTrue();
+			expect(infoButton.icon).toEqual(infoSvg);
 		});
 
 		it('contains a menu-item for copy', async () => {
@@ -544,10 +569,8 @@ describe('LayerItem', () => {
 			};
 			const element = await setup(layer);
 
-			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
-			const infoMenuItem = menu.items.find((item) => item.label === 'Info');
-
-			infoMenuItem.action();
+			const infoButton = element.shadowRoot.querySelector('#info');
+			infoButton.click();
 
 			expect(store.getState().modal.data.title).toBe('label0');
 			const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
@@ -600,6 +623,132 @@ describe('LayerItem', () => {
 			expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(0);
 			expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe('label0');
 		});
+
+		it('contains no layerSwipe buttons', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				collapsed: true
+			};
+			const element = await setup(layer, false);
+
+			expect(store.getState().layerSwipe.active).toBe(false);
+
+			expect(element.shadowRoot.querySelectorAll('.compare')).toHaveSize(0);
+		});
+
+		it('contains three layerSwipe buttons', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				collapsed: true
+			};
+			const element = await setup(layer, true);
+			const bar = element.shadowRoot.querySelector('.bar');
+
+			expect(store.getState().layerSwipe.active).toBe(true);
+
+			expect(element.shadowRoot.querySelectorAll('.compare')).toHaveSize(1);
+			const swipeButtons = element.shadowRoot.querySelectorAll('.compare ba-button');
+			expect(swipeButtons).toHaveSize(3);
+			expect(swipeButtons[0].classList.contains('active')).toBeFalse();
+			expect(swipeButtons[1].classList.contains('active')).toBeTrue();
+			expect(swipeButtons[2].classList.contains('active')).toBeFalse();
+			expect(bar.classList.contains('left')).toBeFalse();
+			expect(bar.classList.contains('both')).toBeTrue();
+			expect(bar.classList.contains('right')).toBeFalse();
+		});
+
+		it('click on layerSwipe buttons changes the SwipeAlignment of the layer', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				collapsed: true
+			};
+			const element = await setup(layer, true);
+
+			expect(store.getState().layerSwipe.active).toBe(true);
+
+			expect(element.shadowRoot.querySelectorAll('.compare')).toHaveSize(1);
+			const swipeButtons = element.shadowRoot.querySelectorAll('.compare ba-button');
+			const bar = element.shadowRoot.querySelector('.bar');
+			expect(swipeButtons).toHaveSize(3);
+
+			expect(store.getState().layers.active[0].constraints.swipeAlignment).toBe(SwipeAlignment.NOT_SET);
+
+			expect(swipeButtons[0].label).toBe('layerManager_compare_left');
+			expect(swipeButtons[1].label).toBe('layerManager_compare_both');
+			expect(swipeButtons[2].label).toBe('layerManager_compare_right');
+			expect(swipeButtons[0].classList.contains('active')).toBeFalse();
+			expect(swipeButtons[1].classList.contains('active')).toBeTrue();
+			expect(swipeButtons[2].classList.contains('active')).toBeFalse();
+			expect(bar.classList.contains('left')).toBeFalse();
+			expect(bar.classList.contains('both')).toBeTrue();
+			expect(bar.classList.contains('right')).toBeFalse();
+
+			const leftButtons = element.shadowRoot.querySelector('#left');
+			leftButtons.click();
+
+			expect(store.getState().layers.active[0].constraints.swipeAlignment).toBe(SwipeAlignment.LEFT);
+
+			element.layer = { ...store.getState().layers.active[0] };
+
+			expect(swipeButtons[0].classList.contains('active')).toBeTrue();
+			expect(swipeButtons[1].classList.contains('active')).toBeFalse();
+			expect(swipeButtons[2].classList.contains('active')).toBeFalse();
+			expect(bar.classList.contains('left')).toBeTrue();
+			expect(bar.classList.contains('both')).toBeFalse();
+			expect(bar.classList.contains('right')).toBeFalse();
+
+			const rightButtons = element.shadowRoot.querySelector('#right');
+			rightButtons.click();
+
+			expect(store.getState().layers.active[0].constraints.swipeAlignment).toBe(SwipeAlignment.RIGHT);
+
+			element.layer = { ...store.getState().layers.active[0] };
+
+			expect(swipeButtons[0].classList.contains('active')).toBeFalse();
+			expect(swipeButtons[1].classList.contains('active')).toBeFalse();
+			expect(swipeButtons[2].classList.contains('active')).toBeTrue();
+			expect(bar.classList.contains('left')).toBeFalse();
+			expect(bar.classList.contains('both')).toBeFalse();
+			expect(bar.classList.contains('right')).toBeTrue();
+
+			const bothButtons = element.shadowRoot.querySelector('#both');
+			bothButtons.click();
+
+			expect(store.getState().layers.active[0].constraints.swipeAlignment).toBe(SwipeAlignment.NOT_SET);
+
+			element.layer = { ...store.getState().layers.active[0] };
+
+			expect(swipeButtons[0].classList.contains('active')).toBeFalse();
+			expect(swipeButtons[1].classList.contains('active')).toBeTrue();
+			expect(swipeButtons[2].classList.contains('active')).toBeFalse();
+			expect(bar.classList.contains('left')).toBeFalse();
+			expect(bar.classList.contains('both')).toBeTrue();
+			expect(bar.classList.contains('right')).toBeFalse();
+		});
 	});
 
 	describe('when user interacts with layer item', () => {
@@ -625,7 +774,8 @@ describe('LayerItem', () => {
 			const store = TestUtils.setupStoreAndDi(state, {
 				layers: layersReducer,
 				modal: modalReducer,
-				position: positionReducer
+				position: positionReducer,
+				layerSwipe: layerSwipeReducer
 			});
 			$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
 			return store;
@@ -641,7 +791,7 @@ describe('LayerItem', () => {
 
 			const checkbox = element.shadowRoot.querySelector('ba-checkbox');
 
-			checkbox.click();
+			checkbox.dispatchEvent(new CustomEvent('toggle', { detail: { checked: false } }));
 			const actualLayer = store.getState().layers.active[0];
 			expect(actualLayer.visible).toBeFalse();
 		});
@@ -723,9 +873,8 @@ describe('LayerItem', () => {
 			const element = await TestUtils.render(LayerItem.tag);
 			element.layer = { ...layer };
 
-			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
-			const infoMenuItem = menu.items.find((item) => item.label === 'Info');
-			infoMenuItem.action();
+			const infoButton = element.shadowRoot.querySelector('#info');
+			infoButton.click();
 
 			expect(store.getState().modal.data.title).toBe('label0');
 			expect(isTemplateResult(store.getState().modal.data.content)).toBeTrue();
@@ -749,7 +898,7 @@ describe('LayerItem', () => {
 		describe('when user change order of layer in group', () => {
 			let store;
 			const setup = (state) => {
-				store = TestUtils.setupStoreAndDi(state, { layers: layersReducer });
+				store = TestUtils.setupStoreAndDi(state, { layers: layersReducer, layerSwipe: layerSwipeReducer });
 				$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
 				return store;
 			};
@@ -996,7 +1145,7 @@ describe('LayerItem', () => {
 			};
 
 			const setup = () => {
-				const store = TestUtils.setupStoreAndDi({}, { layers: layersReducer, modal: modalReducer });
+				const store = TestUtils.setupStoreAndDi({}, { layers: layersReducer, modal: modalReducer, layerSwipe: layerSwipeReducer });
 				$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
 				return store;
 			};

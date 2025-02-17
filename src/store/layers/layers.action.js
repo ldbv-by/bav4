@@ -39,15 +39,19 @@ import { GeoResource } from '../../domain/geoResources';
  * @property {boolean} [alwaysTop=false] Layer always on top
  * @property {boolean} [cloneable=true] Layer is allowed to be cloned
  * @property {boolean} [metaData=true] Layer references meta data that can be viewed
+ * @property {SwipeAlignment} [swipeAlignment=SwipeAlignment.NOT_SET] The alignment of the layer is visible if the swipe feature is active
  */
 
 /**
  * Modifiable options of a {@link Layer}.
  * @typedef {Object} ModifyLayerOptions
- * @property {number} [opacity] The new opacity value (0, 1)
- * @property {boolean} [visible] The new visibility value
- * @property {string} [timestamp] The new timestamp value
- * @property {number} [zIndex] The new index of this layer within the list of active layers
+ * @property {number} [opacity] The new `opacity` value (0, 1)
+ * @property {boolean} [visible] The new `visible` value
+ * @property {string} [timestamp] The new `timestamp `value
+ * @property {number} [zIndex] The new `zIndex` of this layer within the list of active layers
+ * @property {boolean} [hidden] The new `hidden` constraint of the layer
+ * @property {boolean} [alwaysTop] The new `alwaysTop` constraint of the layer
+ * @property {SwipeAlignment} [swipeAlignment] The new `swipeAlignment` constraint of the layer if the swipe feature is active
  */
 
 /**
@@ -78,7 +82,19 @@ import { GeoResource } from '../../domain/geoResources';
  * @property {number} [opacity=1] Opacity (0, 1)
  * @property {boolean} [visible=true] Visibility
  * @property {string} [timestamp=null] Timestamp
+ * @property {Constraints} [constraints] Constraints of the layer
  */
+
+/**
+ * The side a layers is shown if the swipe feature is active
+ * @readonly
+ * @enum {Number}
+ */
+export const SwipeAlignment = Object.freeze({
+	NOT_SET: 'b',
+	LEFT: 'l',
+	RIGHT: 'r'
+});
 
 const getStore = () => {
 	const { StoreService: storeService } = $injector.inject('StoreService');
@@ -92,9 +108,20 @@ const getStore = () => {
  * @param {module:store/layers/layers_action~ModifyLayerOptions} options options
  */
 export const modifyLayer = (id, options = {}) => {
+	const { swipeAlignment, hidden, alwaysTop, ...properties } = options;
+	const constraints = {};
+	if (hidden) {
+		constraints.hidden = hidden;
+	}
+	if (alwaysTop) {
+		constraints.alwaysTop = alwaysTop;
+	}
+	if (swipeAlignment) {
+		constraints.swipeAlignment = swipeAlignment;
+	}
 	getStore().dispatch({
 		type: LAYER_MODIFIED,
-		payload: { id: id, properties: options }
+		payload: { id: id, properties, constraints }
 	});
 };
 

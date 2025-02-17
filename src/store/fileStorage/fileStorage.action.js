@@ -3,6 +3,7 @@
  */
 
 import { $injector } from '../../injection';
+import { isString } from '../../utils/checks';
 import { EventLike } from '../../utils/storeUtils';
 import {
 	ADMIN_ID_CHANGED,
@@ -27,15 +28,18 @@ const getStore = () => {
 };
 
 /**
- * Sets the admin ID.
- * @param {string|null} adminId
+ * Sets the admin and its corresponding file ID.
+ * @param {string} adminId
+ * @param {string} fileId
  * @function
  */
-export const setAdminId = (adminId) => {
-	getStore().dispatch({
-		type: ADMIN_ID_CHANGED,
-		payload: adminId
-	});
+export const setAdminAndFileId = (adminId, fileId) => {
+	if (isString(adminId) && isString(fileId)) {
+		getStore().dispatch({
+			type: ADMIN_ID_CHANGED,
+			payload: { adminId, fileId }
+		});
+	}
 };
 
 /**

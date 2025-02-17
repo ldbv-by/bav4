@@ -17,8 +17,11 @@ describe('HttpService', () => {
 	});
 
 	describe('static properties', () => {
-		it('provides a DefaultRequestMode', () => {
+		it('provides a default request mode', () => {
 			expect(HttpService.DEFAULT_REQUEST_MODE).toBe('cors');
+		});
+		it('provides a default timeout', () => {
+			expect(HttpService.DEFAULT_TIMEOUT).toBe(10_000);
 		});
 	});
 
@@ -102,7 +105,7 @@ describe('HttpService', () => {
 			const controllerSpy = spyOn(controller, 'abort');
 			const fetchSpy = spyOn(window, 'fetch').and.callFake(() => {
 				// we wait 2000ms in order to exceed the default timeout limit
-				jasmine.clock().tick(2000);
+				jasmine.clock().tick(HttpService.DEFAULT_TIMEOUT + 1_000);
 			});
 
 			await httpService.fetch(url, {}, controller);

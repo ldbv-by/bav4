@@ -15,7 +15,8 @@ describe('FileStoragePlugin', () => {
 	};
 	const fileStorageService = {
 		isAdminId() {},
-		save() {}
+		save() {},
+		getFileId() {}
 	};
 	const sourceTypeService = {
 		forData() {}
@@ -66,16 +67,18 @@ describe('FileStoragePlugin', () => {
 				expect(store.getState().fileStorage.adminId).toBe(initialState.adminId);
 			});
 
-			it('sets the admin id when an admin id is detected', async () => {
+			it('sets the admin and file id when an admin id is detected', async () => {
 				const store = setup();
-				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=foo`);
+				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=adminId`);
 				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
 				spyOn(fileStorageService, 'isAdminId').and.returnValue(true);
+				spyOn(fileStorageService, 'getFileId').withArgs('adminId').and.resolveTo('fileId');
 				const instanceUnderTest = new FileStoragePlugin();
 
 				await instanceUnderTest.register(store);
 
-				expect(store.getState().fileStorage.adminId).toBe('foo');
+				expect(store.getState().fileStorage.adminId).toBe('adminId');
+				expect(store.getState().fileStorage.fileId).toBe('fileId');
 			});
 		});
 

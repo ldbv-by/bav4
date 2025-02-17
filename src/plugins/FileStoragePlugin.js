@@ -6,7 +6,7 @@ import { SourceTypeName, SourceTypeResultStatus } from '../domain/sourceType';
 import { $injector } from '../injection';
 import { FileStorageServiceDataTypes } from '../services/FileStorageService';
 import {
-	setAdminId,
+	setAdminAndFileId,
 	setLatestStorageResult,
 	setLatestStorageResultAndAdminAndFileId,
 	setLatestStorageResultAndFileId
@@ -50,13 +50,14 @@ export class FileStoragePlugin extends BaPlugin {
 		const queryParams = this.#environmentService.getQueryParams();
 
 		/**
-		 * Set the admin id if available. We just handle the topmost suitable layer
+		 * Set both the admin and the file ID if the admin id is available. We just handle the topmost suitable layer
 		 */
 		if (queryParams.has(QueryParameters.LAYER)) {
 			const geoResourceIds = queryParams.get(QueryParameters.LAYER).split(',');
 			const adminId = geoResourceIds.reverse().find((grId) => this.#fileStorageService.isAdminId(grId));
 			if (adminId) {
-				setAdminId(adminId);
+				const fileId = await this.#fileStorageService.getFileId(adminId);
+				setAdminAndFileId(adminId, fileId);
 			}
 		}
 

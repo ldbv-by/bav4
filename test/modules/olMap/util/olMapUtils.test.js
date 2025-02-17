@@ -1,6 +1,13 @@
 import BaseLayer from 'ol/layer/Base';
+import LayerGroup from 'ol/layer/Group.js';
 import { Map } from 'ol';
-import { getLayerById, registerLongPressListener, toOlLayerFromHandler, updateOlLayer } from '../../../../src/modules/olMap/utils/olMapUtils';
+import {
+	getLayerById,
+	getLayerGroup,
+	registerLongPressListener,
+	toOlLayerFromHandler,
+	updateOlLayer
+} from '../../../../src/modules/olMap/utils/olMapUtils';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { simulateMapBrowserEvent } from '../mapTestUtils';
 
@@ -202,6 +209,26 @@ describe('olMapUtils', () => {
 			expect(getLayerById(map, 'bar')).toBeNull();
 			expect(getLayerById(map, undefined)).toBeNull();
 			expect(getLayerById(undefined, 'bar')).toBeNull();
+		});
+	});
+
+	describe('getLayerGroup', () => {
+		it('returns the corresponding group layer or null', () => {
+			const map = new Map();
+			const olLayer0 = new BaseLayer({ properties: { id: 'l0' } });
+			const olLayer1 = new BaseLayer({ properties: { id: 'l1' } });
+			const olLayer2 = new BaseLayer({ properties: { id: 'l2' } });
+			const olGroupLayer0 = new LayerGroup({ properties: { id: 'gr0' }, layers: [olLayer0] });
+			const olGroupLayer1 = new LayerGroup({ properties: { id: 'gr1' }, layers: [olLayer1] });
+			map.addLayer(olGroupLayer0);
+			map.addLayer(olGroupLayer1);
+
+			expect(getLayerGroup(map, olLayer0)).toEqual(olGroupLayer0);
+			expect(getLayerGroup(map, olLayer1)).toEqual(olGroupLayer1);
+			expect(getLayerGroup(map, olLayer2)).toBeNull();
+			expect(getLayerGroup(new Map(), olLayer2)).toBeNull();
+			expect(getLayerGroup(map, undefined)).toBeNull();
+			expect(getLayerGroup(undefined, olLayer0)).toBeNull();
 		});
 	});
 });

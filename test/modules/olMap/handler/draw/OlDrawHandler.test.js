@@ -9,7 +9,7 @@ import { OlDrawHandler } from '../../../../../src/modules/olMap/handler/draw/OlD
 import Map from 'ol/Map';
 import View from 'ol/View';
 import { Modify, Select, Snap } from 'ol/interaction';
-import { finish, reset, remove, setType, setStyle, setDescription } from '../../../../../src/store/draw/draw.action';
+import { finish, reset, remove, setType, setStyle, setDescription, setStatistic } from '../../../../../src/store/draw/draw.action';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { ModifyEvent } from 'ol/interaction/Modify';
 import { LineString, Point, Polygon } from 'ol/geom';
@@ -31,6 +31,8 @@ import { Layer } from 'ol/layer';
 import { Tools } from '../../../../../src/domain/tools';
 import { fileStorageReducer } from '../../../../../src/store/fileStorage/fileStorage.reducer.js';
 import { KML_EMPTY_CONTENT } from '../../../../../src/modules/olMap/formats/kml.js';
+import { GeometryType } from '../../../../../src/domain/geometryTypes.js';
+import { setAdminAndFileId } from '../../../../../src/store/fileStorage/fileStorage.action.js';
 
 describe('OlDrawHandler', () => {
 	class MockClass {
@@ -133,7 +135,13 @@ describe('OlDrawHandler', () => {
 		});
 		$injector
 			.registerSingleton('TranslationService', translationServiceMock)
-			.registerSingleton('MapService', { getSrid: () => 3857, getLocalProjectedSrid: () => 25832, getLocalProjectedSridExtent: () => null })
+			.registerSingleton('MapService', {
+				getSrid: () => 3857,
+				getLocalProjectedSrid: () => 25832,
+				getLocalProjectedSridExtent: () => null,
+				calcLength: () => 42,
+				calcArea: () => 42
+			})
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('FileStorageService', fileStorageServiceMock)
@@ -338,6 +346,34 @@ describe('OlDrawHandler', () => {
 				expect(saveSpy).toHaveBeenCalledTimes(3);
 				expect(store.getState().fileStorage.data).toBe(KML_EMPTY_CONTENT);
 			});
+
+			it('updates the fileStorage slice-of-state and uses old georesourceId storeId, due to no data-changes', async () => {
+				const store = await setup(initialDrawState, { ...initialFileStorageState, fileId: null });
+				const classUnderTest = new OlDrawHandler();
+				const lastData =
+					'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measurement_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+				const map = setupMap();
+				const vectorGeoResource = new VectorGeoResource('f_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
+
+				map.addLayer(new Layer({ geoResourceId: 'f_lastId', render: () => {} }));
+				spyOn(fileStorageServiceMock, 'isFileId').and.callFake(() => true);
+				spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
+				const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'byId').withArgs('f_lastId').and.returnValue(vectorGeoResource);
+
+				classUnderTest.activate(map);
+
+				await TestUtils.timeout();
+
+				expect(classUnderTest._storeId).toBe('f_lastId');
+				const saveSpy = spyOn(classUnderTest, '_save').and.callThrough();
+
+				geoResourceServiceSpy.calls.reset();
+				classUnderTest._saveAndOptionallyConvertToPermanentLayer(); // third and last save
+				await TestUtils.timeout();
+				expect(saveSpy).toHaveBeenCalledTimes(1);
+				expect(geoResourceServiceSpy).toHaveBeenCalled();
+				expect(store.getState().fileStorage.data).toBeTruthy();
+			});
 		});
 
 		describe('uses Interactions', () => {
@@ -498,6 +534,19 @@ describe('OlDrawHandler', () => {
 				expect(removeSpy).toHaveBeenCalled();
 			});
 
+			it('register observer for last fileId', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = jasmine.createSpy();
+				const updateStoreIdSpy = spyOn(classUnderTest, '_updateStoreId').and.callThrough();
+
+				classUnderTest.activate(map);
+				setAdminAndFileId('foo', 'bar');
+				expect(updateStoreIdSpy).toHaveBeenCalledWith('bar');
+				expect(classUnderTest._storeId).toBe('bar');
+			});
+
 			it('starts with a preselected drawType', () => {
 				const state = { ...initialDrawState, type: 'marker', style: { symbolSrc: 'something' } };
 				setup(state);
@@ -537,11 +586,18 @@ describe('OlDrawHandler', () => {
 			});
 
 			it('aborts drawing after reset-request', () => {
-				setup();
+				const store = setup();
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
 				map.addInteraction = jasmine.createSpy();
 				const startNewSpy = spyOn(classUnderTest, '_startNew').and.callThrough();
+
+				setStatistic({
+					coordinate: null,
+					azimuth: null,
+					length: 42,
+					area: 21
+				});
 
 				classUnderTest.activate(map);
 				setStyle({ symbolSrc: 'something' });
@@ -553,6 +609,13 @@ describe('OlDrawHandler', () => {
 				reset();
 				expect(startNewSpy).toHaveBeenCalled();
 				expect(abortSpy).toHaveBeenCalled();
+				expect(store.getState().draw.statistic).toEqual({
+					geometryType: null,
+					coordinate: null,
+					azimuth: null,
+					length: null,
+					area: null
+				});
 			});
 
 			it('aborts current drawing after type-change', () => {
@@ -626,6 +689,7 @@ describe('OlDrawHandler', () => {
 
 			it('finishs drawing after finish-request', () => {
 				setup();
+
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
 				map.addInteraction = jasmine.createSpy();
@@ -732,6 +796,39 @@ describe('OlDrawHandler', () => {
 				simulateDrawEvent('drawend', classUnderTest._draw, feature);
 
 				expect(store.getState().draw.description).toEqual('foo');
+			});
+
+			it('updates statistic in store when feature changes', () => {
+				const store = setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const geometry = new LineString([
+					[0, 0],
+					[1, 0]
+				]);
+
+				const changedGeometry = new LineString([
+					[0, 0],
+					[3, 0]
+				]);
+				const feature = new Feature({ geometry: geometry });
+				feature.setId('draw_line_1');
+				const statisticSpy = spyOn(classUnderTest, '_setStatistic').and.callThrough();
+
+				classUnderTest.activate(map);
+				setType('line');
+				simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+				feature.setGeometry(changedGeometry);
+				simulateDrawEvent('drawend', classUnderTest._draw, feature);
+
+				expect(statisticSpy).toHaveBeenCalledWith(feature);
+				expect(store.getState().draw.statistic).toEqual({
+					geometryType: GeometryType.LINE,
+					coordinate: null,
+					azimuth: 90,
+					length: 42,
+					area: null
+				});
 			});
 
 			it('switches to modify after finish-request on not-present sketch', () => {
@@ -981,6 +1078,28 @@ describe('OlDrawHandler', () => {
 			await TestUtils.timeout();
 			expect(geoResourceSpy).toHaveBeenCalledWith('a_lastId');
 			expect(addFeatureSpy).toHaveBeenCalledTimes(1);
+		});
+
+		it('looks for an existing drawing-layer and use the geoResourceId as value for storeId', async () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const lastData =
+				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="draw_line_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+			const map = setupMap();
+			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
+			spyOn(fileStorageServiceMock, 'isAdminId').withArgs('a_lastId').and.returnValue(true);
+
+			// we add two fileStorage related layers
+			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
+			map.addLayer(new Layer({ geoResourceId: 'a_notWanted', render: () => {} }));
+			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
+
+			const geoResourceSpy = spyOn(geoResourceServiceMock, 'byId').withArgs('a_lastId').and.returnValue(vectorGeoResource);
+			classUnderTest.activate(map);
+
+			await TestUtils.timeout();
+			expect(geoResourceSpy).toHaveBeenCalledWith('a_lastId');
+			expect(classUnderTest._storeId).toBe('a_lastId');
 		});
 
 		it('looks for an existing drawing-layer and gets no georesource', async () => {
@@ -1237,7 +1356,7 @@ describe('OlDrawHandler', () => {
 
 			classUnderTest.activate(map);
 			await TestUtils.timeout();
-			expect(saveSpy).toHaveBeenCalledTimes(1);
+			expect(saveSpy).not.toHaveBeenCalledTimes(1);
 			expect(classUnderTest._layerId).toBe('a_oldLayer_id');
 			expect(classUnderTest._vectorLayer).toBeTruthy();
 			classUnderTest._vectorLayer.getSource().addFeature(feature);

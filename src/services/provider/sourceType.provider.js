@@ -44,7 +44,7 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = _create
 			username: credential?.username,
 			password: credential?.password
 		};
-		return await httpService.post(endpointUrl, JSON.stringify(requestPayload), MediaType.JSON, { timeout: 3000 });
+		return await httpService.post(endpointUrl, JSON.stringify(requestPayload), MediaType.JSON);
 	};
 
 	const mapResponseToSourceType = async (result, authenticated) => {

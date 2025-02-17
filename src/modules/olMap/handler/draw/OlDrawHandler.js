@@ -17,10 +17,18 @@ import {
 	selectStyleFunction
 } from '../../utils/olStyleUtils';
 import { StyleTypes } from '../../services/StyleService';
-import { StyleSizeTypes } from '../../../../domain/styles';
+import { StyleSize } from '../../../../domain/styles';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { equals, observe } from '../../../../utils/storeUtils';
-import { setSelectedStyle, setStyle, setType, setGeometryIsValid, setSelection, setDescription } from '../../../../store/draw/draw.action';
+import {
+	setSelectedStyle,
+	setStatistic,
+	setStyle,
+	setType,
+	setGeometryIsValid,
+	setSelection,
+	setDescription
+} from '../../../../store/draw/draw.action';
 import { unByKey } from 'ol/Observable';
 import { create as createKML, KML_EMPTY_CONTENT } from '../../formats/kml';
 import {
@@ -40,7 +48,7 @@ import { addLayer, removeLayer } from '../../../../store/layers/layers.action';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { OlSketchHandler } from '../OlSketchHandler';
 import { setMode } from '../../../../store/draw/draw.action';
-import { isValidGeometry } from '../../utils/olGeometryUtils';
+import { getStats, isValidGeometry } from '../../utils/olGeometryUtils';
 import { acknowledgeTermsOfUse } from '../../../../store/shared/shared.action';
 import { setCurrentTool } from '../../../../store/tools/tools.action';
 import { setSelection as setMeasurementSelection } from '../../../../store/measurement/measurement.action';
@@ -59,9 +67,17 @@ export const MAX_SELECTION_SIZE = 1;
 
 const defaultStyleOption = {
 	symbolSrc: null, // used by: Symbol
-	scale: StyleSizeTypes.MEDIUM, // used by Symbol
+	scale: StyleSize.MEDIUM, // used by Symbol
 	color: '#FF0000', // used by Symbol, Text, Line, Polygon
 	text: null // used by Text, Symbol
+};
+
+const defaultDrawStats = {
+	geometryType: null,
+	coordinate: null,
+	azimuth: null,
+	length: null,
+	area: null
 };
 
 /**
@@ -112,6 +128,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._select = null;
 
 		this._storedContent = null;
+		this._storeId = null;
 
 		this._sketchHandler = new OlSketchHandler();
 		this._mapListeners = [];
@@ -183,6 +200,7 @@ export class OlDrawHandler extends OlLayerHandler {
 						const geometry = event.target.getGeometry();
 						setGeometryIsValid(isValidGeometry(geometry));
 						this._styleService.updateStyle(event.target, olMap);
+						this._setStatistic(event.target);
 					};
 
 					oldFeatures.forEach((f) => {
@@ -201,6 +219,7 @@ export class OlDrawHandler extends OlLayerHandler {
 					removeLayer(oldLayerId);
 					this._init(null);
 					this._setSelection(this._storeService.getStore().getState().draw.selection);
+					this._updateStoreId(oldLayer.get('geoResourceId'));
 				}
 			}
 		};
@@ -230,7 +249,6 @@ export class OlDrawHandler extends OlLayerHandler {
 					// eslint-disable-next-line promise/prefer-await-to-then
 					.finally(() => {
 						this._storedContent = createKML(layer, 'EPSG:3857');
-						this._save(); // save content initially to get a valid fileId
 						registerListeners(layer);
 					});
 			} else {
@@ -355,11 +373,14 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._keyActionMapper.deactivate();
 
 		setSelection([]);
+		setStatistic(defaultDrawStats);
 
 		// eslint-disable-next-line promise/prefer-await-to-then
 		this._saveAndOptionallyConvertToPermanentLayer().finally(() => {
 			this._layerId = null;
 			this._layerZIndex = null;
+			this._storedContent = null;
+			this._storeId = null;
 		});
 		this._vectorLayer
 			.getSource()
@@ -430,6 +451,11 @@ export class OlDrawHandler extends OlLayerHandler {
 				store,
 				(state) => state.draw.description,
 				(description) => this._updateDescription(description)
+			),
+			observe(
+				store,
+				(state) => state.fileStorage.fileId,
+				(fileId) => this._updateStoreId(fileId)
 			)
 		];
 	}
@@ -443,6 +469,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		}
 
 		this._select.getFeatures().clear();
+		this._updateStatistic();
 		this._draw = this._createDrawByType(type, styleOption);
 
 		// we deactivate the modify-interaction only,
@@ -459,6 +486,7 @@ export class OlDrawHandler extends OlLayerHandler {
 				const onFeatureChange = (event) => {
 					const geometry = event.target.getGeometry();
 					setGeometryIsValid(isValidGeometry(geometry));
+					this._setStatistic(event.target);
 				};
 				this._sketchHandler.activate(event.feature, this._map, Tools.DRAW + '_' + type + '_');
 				const description = this._storeService.getStore().getState().draw.description;
@@ -524,8 +552,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		if (this._draw) {
 			this._draw.abortDrawing();
 			this._modify.setActive(false);
-			setSelection([]);
-
 			this._helpTooltip.deactivate();
 			const currentType = this._storeService.getStore().getState().draw.type;
 			this._init(currentType);
@@ -539,7 +565,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._draw.abortDrawing();
 			this._modify.setActive(false);
 			setSelection([]);
-
+			setStatistic(defaultDrawStats);
 			this._helpTooltip.deactivate();
 			setType(null);
 		}
@@ -634,6 +660,13 @@ export class OlDrawHandler extends OlLayerHandler {
 		}
 		this._modify.setActive(true);
 		this._setSelected(feature);
+		if (feature) {
+			feature.on('change', () => this._updateStatistic());
+		}
+	}
+
+	_setStatistic(feature) {
+		setStatistic(getStats(feature.getGeometry()));
 	}
 
 	_getStyleOption() {
@@ -685,6 +718,14 @@ export class OlDrawHandler extends OlLayerHandler {
 			return () => styleFunction(styleOption);
 		}
 		return this._styleService.getStyleFunction(StyleTypes.DRAW);
+	}
+
+	_updateStatistic() {
+		if (this._select) {
+			const selectedFeature = this._select.getFeatures().getArray()[0];
+
+			setStatistic(selectedFeature ? getStats(selectedFeature.getGeometry()) : defaultDrawStats);
+		}
 	}
 
 	_updateDrawState(coordinate, pixel, dragging) {
@@ -789,6 +830,10 @@ export class OlDrawHandler extends OlLayerHandler {
 		}
 	}
 
+	_updateStoreId(storeId) {
+		this._storeId = storeId;
+	}
+
 	_setSelectedStyle(feature) {
 		const currentStyleOption = this._getStyleOption();
 		const featureColor = getColorFrom(feature);
@@ -860,6 +905,8 @@ export class OlDrawHandler extends OlLayerHandler {
 		/**
 		 * The stored content will be created/updated after adding/changing and removing features,
 		 * while interacting with the layer.
+		 * Every asynchron save (of the storedContent) results in a changed fileId in s-o-s fileStorage
+		 * The changed fileId is observed and tracked via this._storeId
 		 */
 		setData(this._storedContent);
 	}
@@ -870,7 +917,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		await this._save();
 		if (this._storeService.getStore().getState().draw.createPermanentLayer && this._storedContent) {
-			const id = this._storeService.getStore().getState().fileStorage.fileId;
+			const id = this._storeService.getStore().getState().fileStorage.fileId ?? this._storeId;
 			const getOrCreateVectorGeoResource = () => {
 				const fromService = this._geoResourceService.byId(id);
 				return fromService

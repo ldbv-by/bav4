@@ -4,17 +4,19 @@ describe('i18n for map module', () => {
 	it('provides translation for de', () => {
 		const map = provide('de');
 
-		expect(map.map_interaction_button_container).toBe('Routing abschließen');
+		expect(map.map_interaction_button_container_routing).toBe('Routing abschließen');
+		expect(map.map_interaction_button_container_layerSwipe).toBe('Vergleichen beenden');
 	});
 
 	it('provides translation for en', () => {
 		const map = provide('en');
 
-		expect(map.map_interaction_button_container).toBe('Complete routing');
+		expect(map.map_interaction_button_container_routing).toBe('Complete routing');
+		expect(map.map_interaction_button_container_layerSwipe).toBe('Exit comparison tool');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 1;
+		const expectedSize = 2;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
