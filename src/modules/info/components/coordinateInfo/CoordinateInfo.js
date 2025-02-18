@@ -10,6 +10,7 @@ import clipboardIcon from './assets/clipboard.svg';
 
 const Update_Coordinate = 'update_coordinate';
 const Update_Elevation = 'update_elevation';
+const Update_Selected_Cr = 'update_selected_cr';
 
 /**
  * Element to display representations of a coordinate and the related elevation.
@@ -25,11 +26,13 @@ export class CoordinateInfo extends MvuElement {
 	#translationService;
 	#elevationService;
 	#shareService;
+	#displaySingleRow = false;
 
 	constructor() {
 		super({
 			coordinate: null,
-			elevation: null
+			elevation: null,
+			selectedCr: null
 		});
 
 		const {
@@ -53,6 +56,8 @@ export class CoordinateInfo extends MvuElement {
 				return { ...model, coordinate: data };
 			case Update_Elevation:
 				return { ...model, elevation: data };
+			case Update_Selected_Cr:
+				return { ...model, selectedCr: data };
 		}
 	}
 
@@ -61,62 +66,122 @@ export class CoordinateInfo extends MvuElement {
 	 * @protected
 	 */
 	createView(model) {
-		const translate = (key) => this.#translationService.translate(key);
-		const translateSilently = (key) => this.#translationService.translate(key, [], true);
-		const { coordinate, elevation } = model;
-
-		const onCopyElevation = () => {
-			this._copyValueToClipboard(elevation);
-		};
+		const { coordinate, elevation, selectedCr } = model;
 
 		if (coordinate) {
-			const coordinateRepresentations = this.#mapService.getCoordinateRepresentations(coordinate);
-			const stringifiedCoords = coordinateRepresentations.map((cr) => {
-				const { label } = cr;
-				const stringifiedCoord = this.#coordinateService.stringify(coordinate, cr);
-				const onCopyCoordinate = () => {
-					this._copyValueToClipboard(stringifiedCoord);
-				};
-				return html`
-					<span class="label">${translateSilently(label)}</span><span class="coordinate">${stringifiedCoord}</span>
-					<span class="icon">
-						<ba-icon
-							class="close"
-							.icon="${clipboardIcon}"
-							.title=${translate('info_coordinateInfo_copy_icon')}
-							.size=${1.5}
-							@click=${onCopyCoordinate}
-						></ba-icon>
-					</span>
-				`;
-			});
-
 			return html`
 				<style>
 					${css}
 				</style>
 
 				<div class="container">
-					<ul class="content selectable">
-						${stringifiedCoords.map((strCoord) => html`<li class="r_coordinate">${strCoord}</li>`)}
-						${elevation
-							? html`<li class="r_elevation">
-									<span class="label">${translate('info_coordinateInfo_elevation_label')}</span><span class="coordinate">${elevation}</span>
-									<span class="icon">
-						<ba-icon
-							class="close"
-							.icon="${clipboardIcon}"
-							.title=${translate('info_coordinateInfo_copy_icon')}
-							.size=${1.5}
-							@click=${onCopyElevation}
-						></ba-icon>
-								</li>`
-							: nothing}
-					</ul>
+					${this.#displaySingleRow ? this.getContentAsSingleRow(coordinate, elevation, selectedCr) : this.getContentAsListing(coordinate, elevation)}
 				</div>
 			`;
 		}
 		return nothing;
+	}
+
+	getContentAsSingleRow(coordinate, elevation, selectedCr) {
+		const translate = (key) => this.#translationService.translate(key);
+		const translateSilently = (key) => this.#translationService.translate(key, [], true);
+
+		const coordinateRepresentations = this.#mapService.getCoordinateRepresentations(coordinate);
+
+		const onChange = (event) => {
+			this.signal(
+				Update_Selected_Cr,
+				coordinateRepresentations.find((cr) => cr.id === event.target.value)
+			);
+		};
+		const stringifiedCoord = this.#coordinateService.stringify(coordinate, selectedCr ?? coordinateRepresentations[0]);
+		const onCopyCoordinate = () => {
+			this._copyValueToClipboard(stringifiedCoord);
+		};
+		const onCopyElevation = () => {
+			this._copyValueToClipboard(elevation);
+		};
+
+		return html`<div class="content selectable">
+			${html`<div class="r_coordinate single_row">
+				<select class="select-cr" @change="${onChange}" title="${translate('info_coordinateInfo_select')}">
+					${coordinateRepresentations.map(
+						(cr) => html`<option class="select-coordinate-option" value="${cr.id}">${translateSilently(cr.label)}</option>`
+					)}
+				</select>
+				<span class="coordinate">${stringifiedCoord}</span>
+				<span class="icon">
+					<ba-icon
+						class="close"
+						.icon="${clipboardIcon}"
+						.title=${translate('info_coordinateInfo_copy_icon')}
+						.size=${1.5}
+						@click=${onCopyCoordinate}
+					></ba-icon>
+				</span>
+			</div>`}
+			${elevation
+				? html`<div class="r_elevation single_row">
+						<span class="label">${translate('info_coordinateInfo_elevation_label')}</span><span class="coordinate">${elevation}</span>
+						<span class="icon">
+							<ba-icon
+								class="close"
+								.icon="${clipboardIcon}"
+								.title=${translate('info_coordinateInfo_copy_icon')}
+								.size=${1.5}
+								@click=${onCopyElevation}
+							></ba-icon>
+						</span>
+					</div> `
+				: nothing}
+		</div>`;
+	}
+
+	getContentAsListing(coordinate, elevation) {
+		const translate = (key) => this.#translationService.translate(key);
+		const translateSilently = (key) => this.#translationService.translate(key, [], true);
+
+		const onCopyElevation = () => {
+			this._copyValueToClipboard(elevation);
+		};
+
+		const coordinateRepresentations = this.#mapService.getCoordinateRepresentations(coordinate);
+		const stringifiedCoords = coordinateRepresentations.map((cr) => {
+			const { label } = cr;
+			const stringifiedCoord = this.#coordinateService.stringify(coordinate, cr);
+			const onCopyCoordinate = () => {
+				this._copyValueToClipboard(stringifiedCoord);
+			};
+			return html`
+				<span class="label">${translateSilently(label)}</span><span class="coordinate">${stringifiedCoord}</span>
+				<span class="icon">
+					<ba-icon
+						class="close"
+						.icon="${clipboardIcon}"
+						.title=${translate('info_coordinateInfo_copy_icon')}
+						.size=${1.5}
+						@click=${onCopyCoordinate}
+					></ba-icon>
+				</span>
+			`;
+		});
+
+		return html` <ul class="content selectable">
+			${stringifiedCoords.map((strCoord) => html`<li class="r_coordinate">${strCoord}</li>`)}
+			${elevation
+				? html`<li class="r_elevation">
+					<span class="label">${translate('info_coordinateInfo_elevation_label')}</span><span class="coordinate">${elevation}</span>
+					<span class="icon">
+		<ba-icon
+			class="close"
+			.icon="${clipboardIcon}"
+			.title=${translate('info_coordinateInfo_copy_icon')}
+			.size=${1.5}
+			@click=${onCopyElevation}
+		></ba-icon>
+				</li>`
+				: nothing}
+		</ul>`;
 	}
 
 	async _copyValueToClipboard(stringifiedCoord) {
@@ -151,5 +216,9 @@ export class CoordinateInfo extends MvuElement {
 
 	get coordinate() {
 		return this.getModel().coordinate;
+	}
+
+	set displaySingleRow(value) {
+		this.#displaySingleRow = value;
 	}
 }

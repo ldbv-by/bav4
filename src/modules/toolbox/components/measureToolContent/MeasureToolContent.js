@@ -74,21 +74,12 @@ export class MeasureToolContent extends AbstractToolContent {
 
 		const buttons = this._getButtons(model);
 		const subText = this._getSubText(model);
-		const buildPackage = (measurement) => {
-			const splitted = measurement.split(' ');
-			if (splitted.length === 2) {
-				return { value: splitted[0], unit: splitted[1] };
-			}
-			return { value: splitted[0], unit: '?' };
-		};
+
 		const formattedDistance = this._unitsService.formatDistance(statistic.length, 2);
-
 		const formattedArea = this._unitsService.formatArea(statistic.area, 2);
-		const formattedDistancePackage = buildPackage(formattedDistance);
-		const formattedAreaPackage = buildPackage(formattedArea);
 
-		const onCopyDistanceToClipboard = async () => this._copyValueToClipboard(formattedDistance, 'distance');
-		const onCopyAreaToClipboard = async () => this._copyValueToClipboard(formattedArea, 'area');
+		const onCopyDistanceToClipboard = async () => this._copyValueToClipboard(formattedDistance.value, 'distance');
+		const onCopyAreaToClipboard = async () => this._copyValueToClipboard(formattedArea.value, 'area');
 		const onToggleDisplayRuler = () => setDisplayRuler(!displayRuler);
 
 		return html`
@@ -102,8 +93,8 @@ export class MeasureToolContent extends AbstractToolContent {
 						<span>
 						${translate('toolbox_measureTool_stats_length')}:						
 						</span>						
-						<span id='span-distance-value' data-test-id class='prime-text-value selectable'>${formattedDistancePackage.value}</span>		
-						<span id='span-distance-unit' data-test-id class='prime-text-unit'>${formattedDistancePackage.unit}</span>									
+						<span id='span-distance-value' data-test-id class='prime-text-value selectable'>${formattedDistance.localizedValue}</span>		
+						<span id='span-distance-unit' data-test-id class='prime-text-unit'>${formattedDistance.unit}</span>									
 						<span class='copy'>
 							<ba-icon class='close' .icon='${clipboardIcon}' .title=${translate('toolbox_copy_icon')} .size=${1.5} @click=${onCopyDistanceToClipboard}>
 							</ba-icon>
@@ -113,8 +104,8 @@ export class MeasureToolContent extends AbstractToolContent {
 						<span>
 							${translate('toolbox_measureTool_stats_area')}:		
 						</span>						
-						<span id='span-area-value' data-test-id class='prime-text-value selectable'>${formattedAreaPackage.value}</span>
-						<span id='span-area-unit' data-test-id class='prime-text-unit'>${unsafeHTML(formattedAreaPackage.unit)}</span>
+						<span id='span-area-value' data-test-id class='prime-text-value selectable'>${formattedArea.localizedValue}</span>
+						<span id='span-area-unit' data-test-id class='prime-text-unit'>${unsafeHTML(formattedArea.unit)}</span>
 						<span class='copy'>
 							<ba-icon class='close' .icon='${clipboardIcon}' .title=${translate('toolbox_copy_icon')} .size=${1.5} @click=${onCopyAreaToClipboard}>
 							</ba-icon>
