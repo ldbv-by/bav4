@@ -68,12 +68,7 @@ describe('featureCollectionReducer', () => {
 		addFeatures(feature);
 
 		expect(store.getState().featureCollection.entries[0].id).toBeInstanceOf(String);
-
-		clearFeatures();
-
-		addFeatures(feature);
-
-		expect(store.getState().featureCollection.entries[0].id).toBeInstanceOf(String);
+		expect(store.getState().featureCollection.entries[0].id.startsWith('featureCollection_feature-')).toBeTrue();
 	});
 
 	it('does NOT modify the feature id if already present', () => {

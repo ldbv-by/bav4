@@ -14,7 +14,7 @@ export const initialState = {
 export const featureCollectionReducer = (state = initialState, action) => {
 	const createIdIfMissing = (features) =>
 		features.map((f) => {
-			f.id = f.id ?? `${createUniqueId()}`;
+			f.id = f.id ?? `featureCollection_feature-${createUniqueId()}`;
 			return f;
 		});
 
