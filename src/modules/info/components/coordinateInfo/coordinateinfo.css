@@ -1,7 +1,7 @@
 .content {
 	list-style-type: none;
 	margin: 0;
-	font-size: 0.9rem;
+	font-size: 1rem;
 	padding: 0.3em 0 0.6em 0;
 }
 
@@ -28,6 +28,7 @@
 
 .content .single_row {
 	display: flex;
+	font-size: 0.8rem;
 }
 
 .content .single_row .label {
@@ -51,5 +52,5 @@
 }
 
 .select-cr {
-	font-size: 0.9rem;
+	font-size: 0.8rem;
 }
