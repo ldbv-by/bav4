@@ -203,7 +203,6 @@ export class RtVectorLayerService {
 
 		const vectorLayer = new VectorLayer({
 			id: id,
-			geoResourceId: rtVectorGeoResource.id,
 			opacity: opacity,
 			minZoom: minZoom ?? undefined,
 			maxZoom: maxZoom ?? undefined

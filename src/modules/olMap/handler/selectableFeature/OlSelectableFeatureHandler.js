@@ -17,12 +17,10 @@ import { OlMapHandler } from '../OlMapHandler';
 export class OlSelectableFeatureHandler extends OlMapHandler {
 	#handleEvent = false;
 	#storeService;
-	#geoResourceService;
 	constructor() {
 		super('SelectableFeature_Handler');
-		const { StoreService, GeoResourceService } = $injector.inject('StoreService', 'GeoResourceService');
+		const { StoreService } = $injector.inject('StoreService');
 		this.#storeService = StoreService;
-		this.#geoResourceService = GeoResourceService;
 	}
 
 	register(map) {
@@ -46,7 +44,7 @@ export class OlSelectableFeatureHandler extends OlMapHandler {
 				pixel,
 				(someFeature) => someFeature, // returns first element
 				{
-					layerFilter: (l) => !!this.#geoResourceService.byId(l.get('geoResourceId'))?.queryable
+					layerFilter: (l) => !!l.get('queryable')
 				}
 			);
 			// change the cursor style
@@ -61,7 +59,7 @@ export class OlSelectableFeatureHandler extends OlMapHandler {
 			.map((l) => (l instanceof LayerGroup ? l.getLayers().getArray() : l)) // resolve group layer
 			.flat()
 			.filter((l) => l.getVisible())
-			.filter((l) => !!this.#geoResourceService.byId(l.get('geoResourceId'))?.queryable)
+			.filter((l) => !!l.get('queryable'))
 			.some((layer) => {
 				const data = layer.getData(pixel);
 				return data && data[3] > 0; // transparent pixels have zero for data[3]
