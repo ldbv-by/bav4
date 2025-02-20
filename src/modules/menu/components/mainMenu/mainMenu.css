@@ -27,7 +27,7 @@
 	border: 0;
 	width: 3.5em;
 	height: 3.5em;
-	left: 29.8em;
+	left: 29em;
 	top: 7.5em;
 	box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
 	text-align: left;
@@ -97,7 +97,7 @@
 	top: 8.5em;
 }
 .is-tablet .main-menu__close-button {
-	top: 5.5em;
+	top: 5em;
 	transform: scale(0.9);
 	margin-left: -0.2em;
 }
@@ -112,7 +112,7 @@
 	padding: 3em 0;
 }
 .is-open.is-open-navigationRail .main-menu {
-	transform: translate(33.5em, 0);
+	transform: translate(33em, 0);
 }
 .is-landscape:not(.is-open) .main-menu,
 .is-landscape:not(.is-full-size) .main-menu {
