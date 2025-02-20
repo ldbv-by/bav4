@@ -66,13 +66,13 @@ export class NotificationItem extends MvuElement {
 		const getLevelText = (level) => {
 			switch (level) {
 				case LevelTypes.INFO:
-					return html`<div id="notification-info" data-test-id class="notification_level">${translate('notifications_item_info')}</div>`;
+					return 'notifications_item_info';
 				case LevelTypes.WARN:
-					return html`<div class="notification_level">${translate('notifications_item_warn')}</div>`;
+					return 'notifications_item_warn';
 				case LevelTypes.ERROR:
-					return html`<div class="notification_level">${translate('notifications_item_error')}</div>`;
+					return 'notifications_item_error';
 				default:
-					return html.nothing;
+					return '';
 			}
 		};
 		const content = notification.content
@@ -84,8 +84,7 @@ export class NotificationItem extends MvuElement {
 			? html` <style>
 						${css}
 					</style>
-					<div class="notification_item ${classMap(levelClass)}">
-						${getLevelText(notification.level)}
+					<div @click=${() => this._hide()} class="notification_item  ${classMap(levelClass)}" title="${translate(getLevelText(notification.level))}">
 						<div class="notification_content">${content}</div>
 					</div>`
 			: nothing;
