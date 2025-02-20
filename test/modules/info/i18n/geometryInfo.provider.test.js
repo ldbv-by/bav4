@@ -9,6 +9,7 @@ describe('i18n for geometry info', () => {
 		expect(map.info_geometryInfo_title_line_length).toBe('Distance');
 		expect(map.info_geometryInfo_title_polygon_length).toBe('Perimeter');
 		expect(map.info_geometryInfo_title_polygon_area).toBe('Area');
+		expect(map.info_geometryInfo_copy_icon).toBe('Copy to clipboard');
 	});
 
 	it('provides translation for de', () => {
@@ -19,10 +20,11 @@ describe('i18n for geometry info', () => {
 		expect(map.info_geometryInfo_title_line_length).toBe('Länge');
 		expect(map.info_geometryInfo_title_polygon_length).toBe('Umfang');
 		expect(map.info_geometryInfo_title_polygon_area).toBe('Fläche');
+		expect(map.info_geometryInfo_copy_icon).toBe('In die Zwischenablage kopieren');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 5;
+		const expectedSize = 6;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

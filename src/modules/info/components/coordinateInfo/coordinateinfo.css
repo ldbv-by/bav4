@@ -28,7 +28,7 @@
 
 .content .single_row {
 	display: flex;
-	padding: 0.3em 0em;
+	font-size: 0.8rem;
 }
 
 .content .single_row .label {
@@ -49,4 +49,8 @@
 .content .single_row .icon {
 	padding-left: 1em;
 	margin: auto;
+}
+
+.select-cr {
+	font-size: 0.8rem;
 }
