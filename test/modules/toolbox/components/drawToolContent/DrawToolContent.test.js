@@ -13,6 +13,7 @@ import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer';
 import { fileStorageReducer } from '../../../../../src/store/fileStorage/fileStorage.reducer.js';
 import { setData } from '../../../../../src/store/fileStorage/fileStorage.action.js';
+import { setIsPortrait } from '../../../../../src/store/media/media.action';
 
 window.customElements.define(DrawToolContent.tag, DrawToolContent);
 window.customElements.define(IconSelect.tag, IconSelect);
@@ -38,6 +39,11 @@ describe('DrawToolContent', () => {
 		type: null,
 		reset: null
 	};
+	const defaultMediaState = {
+		portrait: false,
+		minWidth: true,
+		observeResponsiveParameter: true
+	};
 
 	const defaultStatistic = { geometryType: null, coordinate: null, azimuth: null, length: null, area: null };
 
@@ -51,12 +57,10 @@ describe('DrawToolContent', () => {
 		height: 10,
 		text: ''
 	};
-	const setup = async (drawState = drawDefaultState, config = {}) => {
+	const setup = async (drawState = drawDefaultState, config = {}, mediaState = defaultMediaState) => {
 		const state = {
 			draw: drawState,
-			media: {
-				portrait: false
-			}
+			media: mediaState
 		};
 
 		const { embed = false, isTouch = false } = config;
@@ -252,24 +256,28 @@ describe('DrawToolContent', () => {
 			const collapseButton = element.shadowRoot.querySelectorAll('.sub-header');
 			expect(collapseButton.length).toBe(2);
 
-			const isCollapse = element.shadowRoot.querySelectorAll('.iscollapse');
-			expect(isCollapse.length).toBe(2);
+			expect(element.shadowRoot.querySelectorAll('.collapse-content.iscollapse')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.collapse-content:not(.iscollapse)')).toHaveSize(1);
 
 			collapseButton[0].click();
 
-			const isCollapse1 = element.shadowRoot.querySelectorAll('.iscollapse');
-			expect(isCollapse1.length).toBe(1);
+			expect(element.shadowRoot.querySelectorAll('.collapse-content.iscollapse')).toHaveSize(2);
+			expect(element.shadowRoot.querySelectorAll('.collapse-content:not(.iscollapse)')).toHaveSize(0);
 
 			collapseButton[1].click();
 
-			const isCollapse2 = element.shadowRoot.querySelectorAll('.iscollapse');
-			expect(isCollapse2.length).toBe(0);
+			expect(element.shadowRoot.querySelectorAll('.collapse-content.iscollapse')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.collapse-content:not(.iscollapse)')).toHaveSize(1);
 
 			collapseButton[0].click();
+
+			expect(element.shadowRoot.querySelectorAll('.collapse-content.iscollapse')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.collapse-content:not(.iscollapse)')).toHaveSize(2);
+
 			collapseButton[1].click();
 
-			const isCollapse3 = element.shadowRoot.querySelectorAll('.iscollapse');
-			expect(isCollapse3.length).toBe(2);
+			expect(element.shadowRoot.querySelectorAll('.collapse-content.iscollapse')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.collapse-content:not(.iscollapse)')).toHaveSize(1);
 		});
 
 		it('sets the style, after color changes in ColorPalette (with LOCAL icon-asset)', async () => {
@@ -703,70 +711,19 @@ describe('DrawToolContent', () => {
 			expect(store.getState().draw.finish).toBeInstanceOf(EventLike);
 		});
 
-		it('expands the info collapsible on first modify change', async () => {
+		it('expands the info collapsible in landscape mode', async () => {
 			const style = { ...StyleOptionTemplate, color: '#f00ba3', symbolSrc: 'data:image/svg+xml;base64,foobar' };
 
-			const element = await setup({ ...drawDefaultState, style });
+			const element = await setup({ ...drawDefaultState, style }, {}, { ...defaultMediaState, portrait: true });
 
 			setType('marker');
 
-			let collapseButton = element.shadowRoot.querySelectorAll('.sub-header');
-			expect(collapseButton.length).toBe(2);
+			expect(element.shadowRoot.querySelectorAll('.iscollapse').length).toBe(2);
 
-			expect(element.shadowRoot.querySelectorAll('.iscollapse').length).toBe(2);
-			setMode('active');
-			expect(element.shadowRoot.querySelectorAll('.iscollapse').length).toBe(2);
-			setMode('modify');
+			setIsPortrait(false);
 
 			expect(element.shadowRoot.querySelectorAll('.collapse-content.iscollapse').length).toBe(1);
-			expect(element.shadowRoot.querySelectorAll('.collapse-content:not(.iscollapse) ').length).toBe(1);
-
-			collapseButton[0].click(); // collapse the properties-form
-
-			setType('text');
-			expect(element.shadowRoot.querySelectorAll('.iscollapse').length).toBe(2);
-			setMode('active');
-			expect(element.shadowRoot.querySelectorAll('.iscollapse').length).toBe(2);
-			setMode('modify');
-
-			expect(element.shadowRoot.querySelectorAll('.collapse-content.iscollapse').length).toBe(1);
-			expect(element.shadowRoot.querySelectorAll('.collapse-content:not(.iscollapse) ').length).toBe(1);
-
-			collapseButton = element.shadowRoot.querySelectorAll('.sub-header');
-			collapseButton[0].click(); // collapse the properties-form
-
-			setType('line');
-			expect(element.shadowRoot.querySelectorAll('.iscollapse').length).toBe(2);
-			expect(element.shadowRoot.querySelectorAll('.iscollapse').length).toBe(2);
-			setMode('draw');
-			expect(element.shadowRoot.querySelectorAll('.iscollapse').length).toBe(2);
-			setMode('modify');
-
-			expect(element.shadowRoot.querySelectorAll('.collapse-content.iscollapse').length).toBe(1);
-			expect(element.shadowRoot.querySelectorAll('.collapse-content:not(.iscollapse) ').length).toBe(1);
-
-			collapseButton = element.shadowRoot.querySelectorAll('.sub-header');
-			collapseButton[0].click(); // collapse the properties-form
-
-			setType('polygon');
-			expect(element.shadowRoot.querySelectorAll('.iscollapse').length).toBe(2);
-			setMode('draw');
-			expect(element.shadowRoot.querySelectorAll('.iscollapse').length).toBe(2);
-			setMode('modify');
-
-			expect(element.shadowRoot.querySelectorAll('.collapse-content.iscollapse').length).toBe(1);
-			expect(element.shadowRoot.querySelectorAll('.collapse-content:not(.iscollapse) ').length).toBe(1);
-
-			collapseButton = element.shadowRoot.querySelectorAll('.sub-header');
-			collapseButton[0].click(); // collapse the properties-form
-
-			//simulate reselect a existing drawing
-			setType('line');
-			expect(element.shadowRoot.querySelectorAll('.iscollapse').length).toBe(2);
-			setMode('modify');
-
-			expect(element.shadowRoot.querySelectorAll('.collapse-content.iscollapse').length).toBe(2);
-			expect(element.shadowRoot.querySelectorAll('.collapse-content:not(.iscollapse) ').length).toBe(0);
+			expect(element.shadowRoot.querySelectorAll('.collapse-content:not(.iscollapse)').length).toBe(1);
 		});
 
 		it('resets the drawing', async () => {
