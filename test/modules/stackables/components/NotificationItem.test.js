@@ -4,7 +4,6 @@ import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { html } from 'lit-html';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 
 window.customElements.define(NotificationItem.tag, NotificationItem);
 
