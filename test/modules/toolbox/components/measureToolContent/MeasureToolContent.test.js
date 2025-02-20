@@ -211,14 +211,13 @@ describe('MeasureToolContent', () => {
 			};
 			const element = await setup(state);
 			const valueSpans = element.shadowRoot.querySelectorAll('.prime-text-value');
-			const unitSpans = element.shadowRoot.querySelectorAll('.prime-text-unit');
+			const labelWithUnitSpans = element.shadowRoot.querySelectorAll('.prime-text-label');
 
 			expect(valueSpans.length).toBe(2);
-			expect(unitSpans.length).toBe(2);
 			expect(valueSpans[0].textContent).toBe('42');
-			expect(unitSpans[0].textContent).toBe('m');
+			expect(labelWithUnitSpans[0].textContent.trim()).toBe('toolbox_measureTool_stats_length (m):');
 			expect(valueSpans[1].textContent).toBe('0');
-			expect(unitSpans[1].textContent).toBe('m²');
+			expect(labelWithUnitSpans[1].textContent.trim()).toBe('toolbox_measureTool_stats_area (m²):');
 		});
 
 		it('shows the empty measurement statistics', async () => {
@@ -231,15 +230,15 @@ describe('MeasureToolContent', () => {
 			};
 			const element = await setup(state);
 			const valueSpans = element.shadowRoot.querySelectorAll('.prime-text-value');
-			const unitSpans = element.shadowRoot.querySelectorAll('.prime-text-unit');
+			const labelWithUnitSpans = element.shadowRoot.querySelectorAll('.prime-text-label');
 			const areaElement = element.shadowRoot.querySelector('.is-area');
 
 			expect(valueSpans.length).toBe(2);
-			expect(unitSpans.length).toBe(2);
+			expect(labelWithUnitSpans.length).toBe(2);
 			expect(valueSpans[0].textContent).toBe('0');
-			expect(unitSpans[0].textContent).toBe('m');
+			expect(labelWithUnitSpans[0].textContent.trim()).toBe('toolbox_measureTool_stats_length (m):');
 			expect(valueSpans[1].textContent).toBe('0');
-			expect(unitSpans[1].textContent).toBe('m²');
+			expect(labelWithUnitSpans[1].textContent.trim()).toBe('toolbox_measureTool_stats_area (m²):');
 			expect(areaElement).toBeFalsy();
 		});
 
@@ -271,10 +270,7 @@ describe('MeasureToolContent', () => {
 			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('#span-distance-value').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
-			expect(element.shadowRoot.querySelector('#span-distance-unit').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 			expect(element.shadowRoot.querySelector('#span-area-value').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
-			expect(element.shadowRoot.querySelector('#span-area-unit').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
-			expect(element.shadowRoot.querySelector('#span-area-unit').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 			expect(element.shadowRoot.querySelector('#remove').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
 
@@ -343,13 +339,13 @@ describe('MeasureToolContent', () => {
 			};
 			const element = await setup(state);
 			const valueSpans = element.shadowRoot.querySelectorAll('.prime-text-value');
-			const unitSpans = element.shadowRoot.querySelectorAll('.prime-text-unit');
+			const labelWithUnitSpans = element.shadowRoot.querySelectorAll('.prime-text-label');
 			const areaElement = element.shadowRoot.querySelector('.is-area');
 
 			expect(valueSpans.length).toBe(2);
-			expect(unitSpans.length).toBe(2);
+			expect(labelWithUnitSpans.length).toBe(2);
 			expect(valueSpans[0].textContent).toBe('42');
-			expect(unitSpans[0].textContent).toBe('m');
+			expect(labelWithUnitSpans[0].textContent.trim()).toBe('toolbox_measureTool_stats_length (m):');
 			expect(areaElement).toBeFalsy();
 		});
 

@@ -90,22 +90,20 @@ export class MeasureToolContent extends AbstractToolContent {
                	</div>  
 				<div class="ba-tool-container__content">	
 					<div class='tool-container__text-item'>
-						<span>
-						${translate('toolbox_measureTool_stats_length')}:						
+						<span class='prime-text-label'>
+						${translate('toolbox_measureTool_stats_length')} (${formattedDistance.unit}):						
 						</span>						
-						<span id='span-distance-value' data-test-id class='prime-text-value selectable'>${formattedDistance.localizedValue}</span>		
-						<span id='span-distance-unit' data-test-id class='prime-text-unit'>${formattedDistance.unit}</span>									
+						<span id='span-distance-value' data-test-id class='prime-text-value selectable'>${formattedDistance.localizedValue}</span>													
 						<span class='copy'>
 							<ba-icon class='close' .icon='${clipboardIcon}' .title=${translate('toolbox_copy_icon')} .size=${1.5} @click=${onCopyDistanceToClipboard}>
 							</ba-icon>
 						</span>											
 					</div>														
 					<div class='tool-container__text-item area ${classMap(areaClasses)}'>
-						<span>
-							${translate('toolbox_measureTool_stats_area')}:		
+						<span class='prime-text-label'>
+							${translate('toolbox_measureTool_stats_area')} (${unsafeHTML(formattedArea.unit)}):		
 						</span>						
 						<span id='span-area-value' data-test-id class='prime-text-value selectable'>${formattedArea.localizedValue}</span>
-						<span id='span-area-unit' data-test-id class='prime-text-unit'>${unsafeHTML(formattedArea.unit)}</span>
 						<span class='copy'>
 							<ba-icon class='close' .icon='${clipboardIcon}' .title=${translate('toolbox_copy_icon')} .size=${1.5} @click=${onCopyAreaToClipboard}>
 							</ba-icon>
