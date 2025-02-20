@@ -4,7 +4,7 @@
 import { $injector } from '../../../../injection';
 import { addFeatureInfoItems, registerQuery, resolveQuery } from '../../../../store/featureInfo/featureInfo.action';
 import { observe } from '../../../../utils/storeUtils';
-import { getLayerById } from '../../utils/olMapUtils';
+import { getLayerByFeature, getLayerById } from '../../utils/olMapUtils';
 import { OlMapHandler } from '../OlMapHandler';
 import { getBvvFeatureInfo } from './featureInfoItem.provider';
 import { removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
@@ -50,6 +50,15 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 	register(map) {
 		const queryId = `${createUniqueId()}`;
 		const translate = (key) => this.#translationService.translate(key);
+
+		/**
+		 * This function creates a reference between an olFeature and an olLayer
+		 */
+		const addRealLayerIdToFeature = (map, olFeature) => {
+			olFeature.set('layerId', getLayerByFeature(map, olFeature)?.get('id'));
+			return olFeature;
+		};
+
 		//find ONE closest feature per layer
 		const findOlFeature = (map, pixel, olLayer) => {
 			return (
@@ -58,14 +67,15 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 					(feature) => {
 						// clustered features
 						if (feature.get('features')) {
-							return feature.get('features').length === 1 ? feature.get('features')[0] : null;
+							return feature.get('features').length === 1 ? addRealLayerIdToFeature(map, feature.get('features')[0]) : null;
 						}
 						// un-clustered features
-						return feature;
+						return addRealLayerIdToFeature(map, feature);
 					},
 					{
 						layerFilter: (l) =>
-							this.#geoResourceService.byId(l.get('geoResourceId'))?.queryable &&
+							(this.#geoResourceService.byId(l.get('geoResourceId'))?.queryable ??
+								true) /** < make layer without underlying a GeoResource queryable (e.g. the highlight layer) */ &&
 							(olLayer instanceof LayerGroup ? olLayer.getLayers().getArray().includes(l) : l === olLayer),
 						hitTolerance: OlFeatureInfoHandler_Hit_Tolerance_Px
 					}
