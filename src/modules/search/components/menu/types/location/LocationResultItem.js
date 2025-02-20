@@ -87,7 +87,8 @@ export class LocationResultItem extends MvuElement {
 				addHighlightFeatures({
 					id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
 					type: HighlightFeatureType.MARKER,
-					data: { coordinate: [...result.center] }
+					data: { coordinate: [...result.center] },
+					label: result.label
 				});
 			} else {
 				removeHighlightFeaturesById(SEARCH_RESULT_HIGHLIGHT_FEATURE_ID);
