@@ -105,7 +105,8 @@ export const getLayerGroup = (map, olLayer) => {
 };
 
 /**
- * Finds the layer an ol feature is attached to
+ * Finds the layer an ol feature is attached to.
+ * It always returns the 'real' layer even if the layer is part of a LayerGroup.
  * Returns `null` if there's no corresponding layer.
  * @param {OlMap} map olMap
  * @param {OlLayer} olFeature the olFeature which layer should be found
