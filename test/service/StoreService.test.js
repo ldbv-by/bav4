@@ -106,6 +106,9 @@ describe('StoreService', () => {
 		const comparePluginMock = {
 			register: () => {}
 		};
+		const legendPluginMock = {
+			register: () => {}
+		};
 
 		const setupInjector = () => {
 			$injector
@@ -144,6 +147,7 @@ describe('StoreService', () => {
 				.registerSingleton('ObserveStateForEncodingPlugin', observeStateForEncodingPluginMock)
 				.registerSingleton('TimeTravelPlugin', timeTravelPluginMock)
 				.registerSingleton('ComparePlugin', comparePluginMock)
+				.registerSingleton('LegendPlugin', legendPluginMock)
 
 				.ready();
 		};
@@ -155,7 +159,7 @@ describe('StoreService', () => {
 			expect(store).toBeDefined();
 
 			const reducerKeys = Object.keys(store.getState());
-			expect(reducerKeys.length).toBe(35);
+			expect(reducerKeys.length).toBe(36);
 			expect(reducerKeys.includes('map')).toBeTrue();
 			expect(reducerKeys.includes('pointer')).toBeTrue();
 			expect(reducerKeys.includes('position')).toBeTrue();

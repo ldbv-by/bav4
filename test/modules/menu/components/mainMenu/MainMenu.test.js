@@ -23,6 +23,7 @@ import { BvvMiscContentPanel } from '../../../../../src/modules/menu/components/
 import { RoutingPanel } from '../../../../../src/modules/menu/components/mainMenu/content/routing/RoutingPanel';
 import { REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME, TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 import { AbstractMvuContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
+import { LegendContent } from '../../../../../src/modules/legend/components/content/LegendContent';
 
 window.customElements.define(MainMenu.tag, MainMenu);
 
@@ -45,12 +46,16 @@ class TopicsContentPanelMock extends AbstractMvuContentPanel {
 class FeatureInfoPanelMock extends AbstractMvuContentPanel {
 	createView() {}
 }
+class LegendContentMock extends AbstractMvuContentPanel {
+	createView() {}
+}
 window.customElements.define(MapsContentPanel.tag, MapsContentPanelMock);
 window.customElements.define(BvvMiscContentPanel.tag, BvvMiscContentPanelMock);
 window.customElements.define(RoutingPanel.tag, RoutingPanelMock);
 window.customElements.define(SearchResultsPanel.tag, SearchResultsPanelMock);
 window.customElements.define(TopicsContentPanel.tag, TopicsContentPanelMock);
 window.customElements.define(FeatureInfoPanel.tag, FeatureInfoPanelMock);
+window.customElements.define(LegendContent.tag, LegendContentMock);
 
 describe('MainMenu', () => {
 	const setup = (state = {}, config = {}) => {
@@ -196,7 +201,7 @@ describe('MainMenu', () => {
 			const element = await setup();
 
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
-			expect(contentPanels.length).toBe(6);
+			expect(contentPanels.length).toBe(7);
 			for (let i = 0; i < contentPanels.length; i++) {
 				switch (i) {
 					case TabIds.SEARCH:
@@ -216,6 +221,9 @@ describe('MainMenu', () => {
 						break;
 					case TabIds.RoutingPanel:
 						expect(contentPanels[i].innerHTML.toString().includes(RoutingPanel.tag)).toBeTrue();
+						break;
+					case TabIds.LEGEND:
+						expect(contentPanels[i].innerHTML.toString().includes(LegendContent.tag)).toBeTrue();
 				}
 			}
 		});
@@ -223,13 +231,14 @@ describe('MainMenu', () => {
 		it('contains test-id attributes', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(6);
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(7);
 			expect(element.shadowRoot.querySelector(SearchResultsPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 			expect(element.shadowRoot.querySelector(TopicsContentPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 			expect(element.shadowRoot.querySelector(FeatureInfoPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 			expect(element.shadowRoot.querySelector(MapsContentPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 			expect(element.shadowRoot.querySelector(BvvMiscContentPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 			expect(element.shadowRoot.querySelector(RoutingPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelector(LegendContent.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
 
 		it('displays the content panel for non default index', async () => {
@@ -243,7 +252,7 @@ describe('MainMenu', () => {
 			const element = await setup(state);
 
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
-			expect(contentPanels.length).toBe(6);
+			expect(contentPanels.length).toBe(7);
 			for (let i = 0; i < contentPanels.length; i++) {
 				expect(contentPanels[i].classList.contains('is-active')).toBe(Object.values(TabIds)[i] === activeTabIndex);
 			}
@@ -367,6 +376,9 @@ describe('MainMenu', () => {
 
 			setTab(TabIds.ROUTING);
 			check(TabIds.ROUTING, contentPanels);
+
+			setTab(TabIds.LEGEND);
+			check(TabIds.LEGEND, contentPanels);
 		});
 
 		it('adds or removes a special Css class for the FeatureInfoContentPanel', async () => {
@@ -391,6 +403,10 @@ describe('MainMenu', () => {
 			setTab(TabIds.MAPS);
 
 			expect(element.shadowRoot.querySelectorAll('.is-full-size .main-menu')).toHaveSize(0);
+
+			setTab(TabIds.LEGEND);
+
+			expect(element.shadowRoot.querySelectorAll('.is-full-size .main-menu')).toHaveSize(1);
 		});
 
 		it('scrolls to top', async () => {

@@ -1,0 +1,33 @@
+.ea-legend-container {
+	display: flex;
+	flex-direction: column;
+}
+
+.ea-legend-filler {
+	position: relative;
+	flex-grow: 1;
+}
+
+.ea-legend-content {
+	overflow: auto;
+	background-color: var(--primary-bg-color);
+	box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);
+}
+
+.ea-legend__title {
+	padding: 0.8em 1.5em;
+	font-weight: bold;
+}
+
+.ea-legend__subtitle {
+	padding: 0 0.2em 0.5em 1.5em;
+}
+
+.ea-legend-item__title {
+	padding: 0.5em 0.5em 0.3em 0.5em;
+	font-weight: bold;
+}
+
+img {
+	padding: 0 0.5em 0 0.5em;
+}

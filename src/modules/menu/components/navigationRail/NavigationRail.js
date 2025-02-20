@@ -16,6 +16,7 @@ import { close } from '../../../../store/navigationRail/navigationRail.action';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { closeModal, openModal } from '../../../../store/modal/modal.action';
 import { PredefinedConfiguration } from '../../../../services/PredefinedConfigurationService';
+import { activateLegend, deactivateLegend } from '../../../../store/legend/legend.action';
 
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_IsOpen_NavigationRail = 'update_NavigationRail';
@@ -200,6 +201,15 @@ export class NavigationRail extends MvuElement {
 						<span class="icon "> </span>
 						<span class="text">${translate('menu_navigation_rail_time_travel')}</span>
 					</button>
+					<button
+						title="${translate('menu_navigation_rail_legend_tooltip')}"
+						class="legend"
+						@click="${() => this._showLegend()}"
+						style="order: ${reverseTabIds.length + 2}"
+					>
+						<span class="icon "> </span>
+						<span class="text">${translate('menu_navigation_rail_legend')}</span>
+					</button>
 					<button @click="${increaseZoom}" class="zoom-in">
 						<span class="icon  "> </span>
 						<span class="text">${translate('menu_navigation_rail_zoom_in')}</span>
@@ -266,6 +276,14 @@ export class NavigationRail extends MvuElement {
 			this._openTab(TabIds.MAPS);
 		} else {
 			this.#predefinedConfigurationService.apply(PredefinedConfiguration.DISPLAY_TIME_TRAVEL);
+		}
+	}
+
+	_showLegend() {
+		if (this.#storeService.getStore().getState().legend.legendActive) {
+			deactivateLegend();
+		} else {
+			activateLegend();
 		}
 	}
 

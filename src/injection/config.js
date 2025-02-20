@@ -67,6 +67,8 @@ import { FileStoragePlugin } from '../plugins/FileStoragePlugin';
 import { TimeTravelPlugin } from '../plugins/TimeTravelPlugin';
 import { BvvPredefinedConfigurationService } from '../services/PredefinedConfigurationService';
 import { ComparePlugin } from '../plugins/ComparePlugin';
+import { LegendPlugin } from '../plugins/LegendPlugin';
+import { WmsCapabilitiesService } from '../services/WmsCapabilitiesService';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
@@ -102,6 +104,7 @@ $injector
 	.registerSingleton('ChipsConfigurationService', new ChipsConfigurationService())
 	.registerSingleton('FeedbackService', new FeedbackService())
 	.registerSingleton('RoutingService', new BvvRoutingService())
+	.registerSingleton('WmsCapabilitiesService', new WmsCapabilitiesService())
 	.register('PredefinedConfigurationService', BvvPredefinedConfigurationService)
 
 	.registerSingleton('GlobalErrorPlugin', new GlobalErrorPlugin())
@@ -136,6 +139,7 @@ $injector
 	.registerSingleton('TimeTravelPlugin', new TimeTravelPlugin())
 	.registerSingleton('ComparePlugin', new ComparePlugin())
 	.registerSingleton('ObserveStateForEncodingPlugin', new ObserveStateForEncodingPlugin())
+	.registerSingleton('LegendPlugin', new LegendPlugin())
 	.registerModule(mapModule)
 	.registerModule(topicsModule)
 	.ready();
