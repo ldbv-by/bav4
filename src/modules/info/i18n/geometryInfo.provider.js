@@ -7,7 +7,8 @@ export const provide = (lang) => {
 				info_geometryInfo_title_azimuth: 'Azimuth',
 				info_geometryInfo_title_line_length: 'Distance',
 				info_geometryInfo_title_polygon_length: 'Perimeter',
-				info_geometryInfo_title_polygon_area: 'Area'
+				info_geometryInfo_title_polygon_area: 'Area',
+				info_geometryInfo_copy_icon: 'Copy to clipboard'
 			};
 
 		case 'de':
@@ -17,7 +18,8 @@ export const provide = (lang) => {
 				info_geometryInfo_title_azimuth: 'Azimut',
 				info_geometryInfo_title_line_length: 'Länge',
 				info_geometryInfo_title_polygon_length: 'Umfang',
-				info_geometryInfo_title_polygon_area: 'Fläche'
+				info_geometryInfo_title_polygon_area: 'Fläche',
+				info_geometryInfo_copy_icon: 'In die Zwischenablage kopieren'
 			};
 
 		default:
