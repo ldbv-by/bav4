@@ -318,15 +318,21 @@ describe('RouteInfo', () => {
 				const element = await setup(state);
 
 				setRoute(defaultRoute);
-
+				const routingLabelDuration = element.shadowRoot.querySelectorAll('.routing-info-duration-text');
 				const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
-				expect(routingDuration[0].innerText).toBe('< 1 min.');
+				expect(routingLabelDuration[0].innerText).toBe('routing_info_duration (min)');
+				expect(routingDuration[0].innerText).toBe('< 1');
 
-				const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
-				expect(routingElements).toHaveSize(3);
-				expect(routingElements[0].innerText).toBe('0.33 km');
-				expect(routingElements[1].innerText).toBe('0.11 km');
-				expect(routingElements[2].innerText).toBe('0.22 km');
+				const labelElements = element.shadowRoot.querySelectorAll('.item-header');
+				expect(labelElements[0].innerText).toBe('routing_info_distance (km)');
+				expect(labelElements[1].innerText).toBe('routing_info_uphill (km)');
+				expect(labelElements[2].innerText).toBe('routing_info_downhill (km)');
+				const routingValueElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+
+				expect(routingValueElements).toHaveSize(3);
+				expect(routingValueElements[0].innerText).toBe('0.33');
+				expect(routingValueElements[1].innerText).toBe('0.11');
+				expect(routingValueElements[2].innerText).toBe('0.22');
 			});
 
 			it('renders unknown category', async () => {
@@ -346,9 +352,9 @@ describe('RouteInfo', () => {
 
 				const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
 				expect(routingElements).toHaveSize(3);
-				expect(routingElements[0].innerText).toBe('0.33 km');
-				expect(routingElements[1].innerText).toBe('0.11 km');
-				expect(routingElements[2].innerText).toBe('0.22 km');
+				expect(routingElements[0].innerText).toBe('0.33');
+				expect(routingElements[1].innerText).toBe('0.11');
+				expect(routingElements[2].innerText).toBe('0.22');
 			});
 
 			it('renders missing stats', async () => {
