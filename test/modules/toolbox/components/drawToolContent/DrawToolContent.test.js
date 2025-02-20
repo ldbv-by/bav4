@@ -711,7 +711,7 @@ describe('DrawToolContent', () => {
 			expect(store.getState().draw.finish).toBeInstanceOf(EventLike);
 		});
 
-		it('expands the info collapsible in landscape mode', async () => {
+		it('expands the info collapsible only in landscape mode', async () => {
 			const style = { ...StyleOptionTemplate, color: '#f00ba3', symbolSrc: 'data:image/svg+xml;base64,foobar' };
 
 			const element = await setup({ ...drawDefaultState, style }, {}, { ...defaultMediaState, portrait: true });
@@ -724,6 +724,22 @@ describe('DrawToolContent', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.collapse-content.iscollapse').length).toBe(1);
 			expect(element.shadowRoot.querySelectorAll('.collapse-content:not(.iscollapse)').length).toBe(1);
+		});
+
+		it('sets focus to first input element after first switch to modify', async () => {
+			const style = { ...StyleOptionTemplate, color: '#f00ba3', symbolSrc: 'data:image/svg+xml;base64,foobar' };
+
+			const element = await setup({ ...drawDefaultState, style }, {}, { ...defaultMediaState, portrait: false });
+
+			setType('marker');
+			setMode('active');
+			expect([...element.shadowRoot.querySelectorAll('*:is(input,textarea)')].every((elem) => !elem.matches(':focus'))).toBeTrue();
+
+			setMode('draw');
+			expect([...element.shadowRoot.querySelectorAll('*:is(input,textarea)')].every((elem) => !elem.matches(':focus'))).toBeTrue();
+
+			setMode('modify');
+			expect([...element.shadowRoot.querySelectorAll('*:is(input,textarea)')].some((elem) => elem.matches(':focus'))).toBeTrue();
 		});
 
 		it('resets the drawing', async () => {
