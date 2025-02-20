@@ -6,12 +6,19 @@ import { addFeatureInfoItems, registerQuery, resolveQuery } from '../../../../st
 import { observe } from '../../../../utils/storeUtils';
 import { getLayerByFeature, getLayerById } from '../../utils/olMapUtils';
 import { OlMapHandler } from '../OlMapHandler';
-import { getBvvFeatureInfo } from './featureInfoItem.provider';
+import { bvvFeatureInfoProvider } from './featureInfoItem.provider';
 import { removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
 import { QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../plugins/HighlightPlugin';
 import { createUniqueId } from '../../../../utils/numberUtils';
 import LayerGroup from '../../../../../node_modules/ol/layer/Group';
 
+/**
+ * A function that returns a `FeatureInfo` for an `ol.Feature`
+ * @typedef {Function} featureInfoProvider
+ * @param {ol.Feature} olFeature ol feature
+ * @param {module:store/layers/layers_action~LayerProperties} layerProperties layerProperties
+ * @returns {module:domain/featureInfo~FeatureInfo} featureInfo
+ */
 /**
  * Amount of time (in ms) query resolution should be delayed.
  */
@@ -29,7 +36,11 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 	#storeService;
 	#translationService;
 	#geoResourceService;
-	constructor(featureInfoProvider = getBvvFeatureInfo) {
+	/**
+	 *
+	 * @param {module:modules/olMap/handler/featureInfo/OlFeatureInfoHandler~featureInfoProvider} featureInfoProvider
+	 */
+	constructor(featureInfoProvider = bvvFeatureInfoProvider) {
 		super('Feature_Info_Handler');
 
 		const {

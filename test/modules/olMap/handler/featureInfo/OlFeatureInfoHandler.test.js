@@ -12,7 +12,7 @@ import { TestUtils } from '../../../../test-utils';
 import { abortOrReset, startRequest } from '../../../../../src/store/featureInfo/featureInfo.action';
 import { fromLonLat } from 'ol/proj';
 import { createDefaultLayer, layersReducer } from '../../../../../src/store/layers/layers.reducer';
-import { getBvvFeatureInfo } from '../../../../../src/modules/olMap/handler/featureInfo/featureInfoItem.provider';
+import { bvvFeatureInfoProvider } from '../../../../../src/modules/olMap/handler/featureInfo/featureInfoItem.provider';
 import { modifyLayer } from '../../../../../src/store/layers/layers.action';
 import { highlightReducer } from '../../../../../src/store/highlight/highlight.reducer';
 import { HighlightFeatureType } from '../../../../../src/store/highlight/highlight.action';
@@ -60,7 +60,7 @@ describe('OlFeatureInfoHandler', () => {
 	const notMatchingCoordinate = fromLonLat([5, 12]);
 	let store;
 
-	const setup = (state = {}, featureInfoProvider = getBvvFeatureInfo) => {
+	const setup = (state = {}, featureInfoProvider = bvvFeatureInfoProvider) => {
 		store = TestUtils.setupStoreAndDi(state, { featureInfo: featureInfoReducer, layers: layersReducer, highlight: highlightReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
 		return new OlFeatureInfoHandler(featureInfoProvider);
@@ -91,7 +91,7 @@ describe('OlFeatureInfoHandler', () => {
 
 		it('initializes the service with default provider', async () => {
 			const instanceUnderTest = setup();
-			expect(instanceUnderTest._featureInfoProvider).toEqual(getBvvFeatureInfo);
+			expect(instanceUnderTest._featureInfoProvider).toEqual(bvvFeatureInfoProvider);
 		});
 	});
 
