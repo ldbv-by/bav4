@@ -7,6 +7,8 @@ describe('i18n for featureInfo module', () => {
 		expect(map.featureInfo_close_button).toBe('Schließen');
 		expect(map.featureInfo_header).toBe('Objekt-Info');
 		expect(map.featureInfo_info).toBe('Keine Informationen verfügbar.<br>Bitte in die <b>Karte</b> klicken.');
+		expect(map.featureInfo_featureCollection_add_feature).toBe('Add the feature to the collection');
+		expect(map.featureInfo_featureCollection_remove_feature).toBe('Remove the feature from the collection');
 	});
 
 	it('provides translation for en', () => {
@@ -15,10 +17,12 @@ describe('i18n for featureInfo module', () => {
 		expect(map.featureInfo_close_button).toBe('Close');
 		expect(map.featureInfo_header).toBe('Object Information');
 		expect(map.featureInfo_info).toBe('No information available.<br>Please click into the <b>map</b>.');
+		expect(map.featureInfo_featureCollection_add_feature).toBe('Dieses Feature zur Sammlung hinzufügen');
+		expect(map.featureInfo_featureCollection_remove_feature).toBe('Dieses Feature aus der Sammlung entfernen');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 3;
+		const expectedSize = 5;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
