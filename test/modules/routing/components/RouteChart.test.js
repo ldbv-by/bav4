@@ -121,8 +121,8 @@ describe('RoutingChart', () => {
 			expect(containerElement).toBeTruthy();
 			expect(containerElement.querySelectorAll('.chart_section')).toHaveSize(1);
 			expect(containerElement.querySelectorAll('.highlight')).toHaveSize(2);
-			expect(containerElement.querySelectorAll('.highlight')[0].innerText.replace(/\s/g, '')).toBe('baz:18unit');
-			expect(containerElement.querySelectorAll('.highlight')[1].innerText.replace(/\s/g, '')).toBe('bar:57unit');
+			expect(containerElement.querySelectorAll('.highlight')[0].innerText.replace(/\s/g, '')).toBe('baz18unit');
+			expect(containerElement.querySelectorAll('.highlight')[1].innerText.replace(/\s/g, '')).toBe('bar57unit');
 			expect(containerElement.querySelector('.title').innerText).toBe('foo');
 		});
 
@@ -212,9 +212,9 @@ describe('RoutingChart', () => {
 			const containerElement = element.shadowRoot.querySelector('.container');
 
 			expect(containerElement).toBeTruthy();
-			expect(containerElement.querySelectorAll('.highlight')[0].innerText.replace(/\s/g, '')).toBe('bar:18unit');
-			expect(containerElement.querySelectorAll('.highlight')[1].innerText.replace(/\s/g, '')).toBe('foo:1234unit');
-			expect(containerElement.querySelectorAll('.highlight')[2].innerText.replace(/\s/g, '')).toBe('baz:5678unit');
+			expect(containerElement.querySelectorAll('.highlight')[0].innerText.replace(/\s/g, '')).toBe('bar18unit');
+			expect(containerElement.querySelectorAll('.highlight')[1].innerText.replace(/\s/g, '')).toBe('foo1234unit');
+			expect(containerElement.querySelectorAll('.highlight')[2].innerText.replace(/\s/g, '')).toBe('baz5678unit');
 			expect(unitsServiceSpy).toHaveBeenCalledTimes(3);
 		});
 	});

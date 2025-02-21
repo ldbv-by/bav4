@@ -128,7 +128,7 @@ export class RouteChart extends MvuElement {
 										@mouseout=${() => resetHighlightedSegments()}
 									>
 										<div class="legend_item" style=${getLegendStyle(legendItem)}></div>
-										<span class="legend_item_label">${legendItem.label}:</span>
+										<span class="legend_item_label">${legendItem.label}</span>
 										<span class="legend_item_value">${getLegendValue(legendItem)}</span>
 									</div>
 								`
