@@ -37,7 +37,7 @@ describe('GeometryInfo', () => {
 				},
 
 				formatArea: (area) => {
-					return { value: area, localizedValue: area, unit: ' m²' };
+					return { value: area, localizedValue: area, unit: 'm²' };
 				},
 				formatAngle: (angle) => {
 					return { value: angle, localizedValue: angle, unit: '°' };
@@ -98,13 +98,13 @@ describe('GeometryInfo', () => {
 
 			expect(element.shadowRoot.querySelector('.stats-container')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.stats-line-azimuth')).toBeFalsy();
-			expect(element.shadowRoot.querySelector('.stats-line-length')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.stats-line-length').textContent.trim()).toBe('info_geometryInfo_title_line_length (m):42');
 
-			element.statistic = { geometryType: GeometryType.LINE, coordinate: null, azimuth: 42, length: 42, area: null };
+			element.statistic = { geometryType: GeometryType.LINE, coordinate: null, azimuth: 42, length: 84, area: null };
 
 			expect(element.shadowRoot.querySelector('.stats-container')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.stats-line-azimuth')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.stats-line-length')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.stats-line-azimuth').textContent.trim()).toBe('info_geometryInfo_title_azimuth (°):42');
+			expect(element.shadowRoot.querySelector('.stats-line-length').textContent.trim()).toBe('info_geometryInfo_title_line_length (m):84');
 		});
 
 		it('renders the items with polygon stats', async () => {
@@ -112,8 +112,8 @@ describe('GeometryInfo', () => {
 			element.statistic = { geometryType: GeometryType.POLYGON, coordinate: null, azimuth: null, length: 42, area: 42 };
 
 			expect(element.shadowRoot.querySelector('.stats-container')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.stats-polygon-length')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.stats-polygon-area')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.stats-polygon-length').textContent.trim()).toBe('info_geometryInfo_title_line_length (m):42');
+			expect(element.shadowRoot.querySelector('.stats-polygon-area').textContent.trim()).toBe('info_geometryInfo_title_polygon_area (m²):42');
 		});
 
 		it('renders the items with smallest polygon stats', async () => {
