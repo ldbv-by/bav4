@@ -279,10 +279,10 @@ describe('FeatureInfo provider', () => {
 				const featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 				render(featureInfo.content, target);
 
-				const chipElement = target.querySelector(FeatureCollectionPanel.tag);
+				const panel = target.querySelector(FeatureCollectionPanel.tag);
 
-				expect(chipElement.geometry.data.startsWith('<kml')).toBeTrue();
-				expect(chipElement.featureId).toBe('layerId');
+				expect(panel.feature.geometry.data.startsWith('<kml')).toBeTrue();
+				expect(panel.featureId).toBe('layerId');
 			});
 		});
 	});

@@ -9,6 +9,7 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { KML } from 'ol/format';
 import { FeatureInfoGeometryTypes } from '../../../../domain/featureInfo';
 import { Geometry } from '../../../../domain/geometry';
+import { Feature } from '../../../../domain/feature';
 
 /**
  * BVV specific implementation of {@link module:modules/olMap/handler/featureInfo/OlFeatureInfoHandler~featureInfoProvider}
@@ -37,7 +38,7 @@ export const bvvFeatureInfoProvider = (olFeature, layerProperties) => {
 			<div class='chips__container'>
 				<ba-profile-chip .coordinates=${elevationProfileCoordinates}></ba-profile-chip>
 				<ba-export-vector-data-chip .exportData=${exportData}></ba-export-vector-data-chip>
-				<ba-feature-info-collection-panel .featureId=${olFeature.get('layerId')} .geometry=${new Geometry(exportData)}></ba-feature-info-collection-panel>
+				<ba-feature-info-collection-panel .featureId=${olFeature.get('layerId')} .feature=${new Feature(new Geometry(exportData))}></ba-feature-info-collection-panel>
 			</div>`;
 
 		return descContent
