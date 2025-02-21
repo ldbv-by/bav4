@@ -26,6 +26,7 @@ const Update_CollapsedStyle = 'update_collapsedStyle';
  * @author alsturm
  */
 export class DrawToolContent extends AbstractToolContent {
+	#lastMode = null;
 	constructor() {
 		super({
 			type: null,
@@ -61,6 +62,11 @@ export class DrawToolContent extends AbstractToolContent {
 			(state) => state.fileStorage.data,
 			(data) => this.signal(Update_StoredContent, data)
 		);
+		this.observe(
+			(state) => state.media,
+			(media) => this.signal(Update_CollapsedInfo, !media.portrait)
+		);
+		this.observeModel('mode', (mode) => this._setFocusOnInputsOptionally(mode));
 	}
 
 	update(type, data, model) {
@@ -81,7 +87,7 @@ export class DrawToolContent extends AbstractToolContent {
 					selectedStyle: data.selectedStyle ? data.selectedStyle : null,
 					mode: data.mode ? data.mode : null,
 					validGeometry: data.validGeometry ? data.validGeometry : null,
-					collapsedInfo: (model.mode === 'active' || model.mode === 'draw') && data.mode === 'modify' ? true : model.collapsedInfo,
+					collapsedInfo: model.collapsedInfo ?? true,
 					tools: setActiveToolByType(model.tools, data.type)
 				};
 			case Update_Tools:
@@ -169,6 +175,16 @@ export class DrawToolContent extends AbstractToolContent {
 				}
 			}
 		});
+	}
+
+	_setFocusOnInputsOptionally(mode) {
+		const isDrawingFinishedAndSwitchingToModify = (this.#lastMode === 'active' || this.#lastMode === 'draw') && mode === 'modify' ? true : false;
+
+		if (isDrawingFinishedAndSwitchingToModify) {
+			const bestElementToFocusOn = this._root.querySelector('.collapse-content:not(.iscollapse) *:is(input,textarea)');
+			bestElementToFocusOn?.focus();
+		}
+		this.#lastMode = mode;
 	}
 
 	_getButtons(model) {

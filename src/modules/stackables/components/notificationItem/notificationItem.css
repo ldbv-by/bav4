@@ -12,6 +12,7 @@
 	width: min-content;
 	min-width: 25em;
 	pointer-events: all;
+	font-size: 1.1rem;
 }
 
 .notification_content {
