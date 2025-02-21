@@ -30,16 +30,16 @@ describe('ElevationProfile', () => {
 	};
 
 	const sumUp = 1480.8;
-	const sumUpAfterToLocaleStringEn = '1480.8 m';
+	const sumUpAfterToLocaleStringEn = '1480.8';
 
 	const sumDown = 1668.6;
-	const sumDownAfterToLocaleStringEn = '1668.6 m';
+	const sumDownAfterToLocaleStringEn = '1668.6';
 
-	const verticalHeight = 50;
-	const highestPoint = 50;
-	const lowestPoint = 0;
+	const verticalHeight = 84;
+	const highestPoint = 42;
+	const lowestPoint = -21;
 	const linearDistance = 5000;
-	const linearDistanceAfterUnitsServiceEn = '5.0 km';
+	const linearDistanceAfterUnitsServiceEn = '5.0';
 
 	const _profile = {
 		elevations: [
@@ -354,13 +354,13 @@ describe('ElevationProfile', () => {
 			// config.options.scales.x
 			expect(config.options.scales.x.type).toBe('linear');
 			expect(config.options.scales.x.title.display).toBe(true);
-			expect(config.options.scales.x.title.text).toBe('elevationProfile_distance [m]');
+			expect(config.options.scales.x.title.text).toBe('elevationProfile_distance (m)');
 			expect(config.options.scales.x.title.color).toBe(ElevationProfile.DEFAULT_TEXT_COLOR);
 			expect(config.options.scales.x.ticks.color).toBe(ElevationProfile.DEFAULT_TEXT_COLOR);
 			// config.options.scales.y
 			expect(config.options.scales.y.type).toBe('linear');
 			expect(config.options.scales.y.title.display).toBe(true);
-			expect(config.options.scales.y.title.text).toBe('elevationProfile_alt [m]');
+			expect(config.options.scales.y.title.text).toBe('elevationProfile_alt (m)');
 			expect(config.options.scales.y.title.color).toBe(ElevationProfile.DEFAULT_TEXT_COLOR);
 			expect(config.options.scales.y.ticks.color).toBe(ElevationProfile.DEFAULT_TEXT_COLOR);
 			// config.options.plugins.title
@@ -385,22 +385,22 @@ describe('ElevationProfile', () => {
 			const profile__box = element.shadowRoot.querySelectorAll('.profile__box');
 			const attrs = element.shadowRoot.getElementById('attrs');
 			expect(attrs.value).toBe('alt');
-			expect(profile__box[0].querySelector('.profile__header').innerText).toBe('elevationProfile_sumUp');
+			expect(profile__box[0].querySelector('.profile__header').innerText).toBe('elevationProfile_sumUp (m)');
 			const sumUpElement = element.shadowRoot.getElementById('route-elevation-chart-footer-sumUp');
 			expect(sumUpElement.innerText).toBe(sumUpAfterToLocaleStringEn);
-			expect(profile__box[1].querySelector('.profile__header').innerText).toBe('elevationProfile_sumDown');
+			expect(profile__box[1].querySelector('.profile__header').innerText).toBe('elevationProfile_sumDown (m)');
 			const sumDownElement = element.shadowRoot.getElementById('route-elevation-chart-footer-sumDown');
 			expect(sumDownElement.innerText).toBe(sumDownAfterToLocaleStringEn);
-			expect(profile__box[2].querySelector('.profile__header').innerText).toBe('elevationProfile_highestPoint');
+			expect(profile__box[2].querySelector('.profile__header').innerText).toBe('elevationProfile_highestPoint (m)');
 			const verticalHeightElement = element.shadowRoot.getElementById('route-elevation-chart-footer-verticalHeight');
-			expect(verticalHeightElement.innerText).toBe(verticalHeight + ' m');
-			expect(profile__box[3].querySelector('.profile__header').innerText).toBe('elevationProfile_lowestPoint');
+			expect(verticalHeightElement.innerText).toBe('84');
+			expect(profile__box[3].querySelector('.profile__header').innerText).toBe('elevationProfile_lowestPoint (m)');
 			const highestPointElement = element.shadowRoot.getElementById('route-elevation-chart-footer-highestPoint');
-			expect(highestPointElement.innerText).toBe(highestPoint + ' m');
-			expect(profile__box[4].querySelector('.profile__header').innerText).toBe('elevationProfile_verticalHeight');
+			expect(highestPointElement.innerText).toBe('42');
+			expect(profile__box[4].querySelector('.profile__header').innerText).toBe('elevationProfile_verticalHeight (m)');
 			const lowestPointElement = element.shadowRoot.getElementById('route-elevation-chart-footer-lowestPoint');
-			expect(lowestPointElement.innerText).toBe(lowestPoint + ' m');
-			expect(profile__box[5].querySelector('.profile__header').innerText).toBe('elevationProfile_linearDistance');
+			expect(lowestPointElement.innerText).toBe('-21');
+			expect(profile__box[5].querySelector('.profile__header').innerText).toBe('elevationProfile_linearDistance (km)');
 			const linearDistanceElement = element.shadowRoot.getElementById('route-elevation-chart-footer-linearDistance');
 			expect(linearDistanceElement.innerText).toBe(linearDistanceAfterUnitsServiceEn);
 		});
@@ -446,7 +446,7 @@ describe('ElevationProfile', () => {
 			const titleRet = config.options.plugins.tooltip.callbacks.title(tooltipItems);
 
 			// assert
-			expect(titleRet).toBe('elevationProfile_distance: 1 m');
+			expect(titleRet).toBe('elevationProfile_distance (m): 1');
 		});
 
 		it('calls setCoordinates() with valid coordinates', async () => {
@@ -495,7 +495,7 @@ describe('ElevationProfile', () => {
 			const labelRet = config.options.plugins.tooltip.callbacks.label(tooltipItem);
 
 			// assert
-			expect(labelRet).toBe('elevationProfile_alt: 30 m');
+			expect(labelRet).toBe('elevationProfile_alt (m): 30');
 		});
 	});
 
@@ -524,7 +524,7 @@ describe('ElevationProfile', () => {
 			element._getBorder(chart, elevationData);
 
 			// assert
-			expect(labelRet).toEqual(['elevationProfile_alt: 30 m', 'elevationProfile_slope: ~ 20 %']);
+			expect(labelRet).toEqual(['elevationProfile_alt (m): 30', 'elevationProfile_slope (%): ~ 20']);
 		});
 	});
 
@@ -553,7 +553,7 @@ describe('ElevationProfile', () => {
 			element._getBorder(chart, elevationData);
 
 			// assert
-			expect(labelRet).toEqual(['elevationProfile_alt: 30 m', 'elevationProfile_surface: gravel']);
+			expect(labelRet).toEqual(['elevationProfile_alt (m): 30', 'elevationProfile_surface: gravel']);
 		});
 	});
 
@@ -862,15 +862,15 @@ describe('ElevationProfile', () => {
 		});
 	});
 
-	describe('when _getFooterText(x) is called', () => {
+	describe('when _getLocalizedValue(x) is called', () => {
 		it('should return "x m" for "x" any number', async () => {
 			// arrange
 			const element = await setup();
 
 			// assert
-			expect(element._getFooterText(0)).toBe('0 m');
-			expect(element._getFooterText(1)).toBe('1 m');
-			expect(element._getFooterText(-1)).toBe('-1 m');
+			expect(element._getLocalizedValue(0)).toBe('0');
+			expect(element._getLocalizedValue(1)).toBe('1');
+			expect(element._getLocalizedValue(-1)).toBe('-1');
 		});
 
 		it('should return "-" for "x" undefined or null', async () => {
@@ -878,9 +878,9 @@ describe('ElevationProfile', () => {
 			const element = await setup();
 
 			// assert
-			expect(element._getFooterText()).toBe('-');
-			expect(element._getFooterText(undefined)).toBe('-');
-			expect(element._getFooterText(null)).toBe('-');
+			expect(element._getLocalizedValue()).toBe('-');
+			expect(element._getLocalizedValue(undefined)).toBe('-');
+			expect(element._getLocalizedValue(null)).toBe('-');
 		});
 	});
 
