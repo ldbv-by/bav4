@@ -45,6 +45,7 @@
 .profile__header {
 	font-size: 0.8rem;
 	min-height: 1.7em;
+	text-wrap: balance;
 }
 .profile__content {
 	display: flex;

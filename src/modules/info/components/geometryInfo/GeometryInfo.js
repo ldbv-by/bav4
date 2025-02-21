@@ -113,7 +113,7 @@ export class GeometryInfo extends MvuElement {
 		if (lineStatistic.azimuth === null) {
 			const title = translate('info_geometryInfo_title_line_length');
 			return html`<div class="stats-line-length stats-content" title=${title}>
-				<span class="label">${title}:</span><span class="value">${formattedDistance.localizedValue} ${formattedDistance.unit}</span>
+				<span class="label">${title} (${formattedDistance.unit}):</span><span class="value">${formattedDistance.localizedValue}</span>
 				<span class="icon">
 					<ba-icon
 						class="close"
@@ -128,7 +128,7 @@ export class GeometryInfo extends MvuElement {
 		const titleAzimuth = translate('info_geometryInfo_title_azimuth');
 		const titleLength = translate('info_geometryInfo_title_line_length');
 		return html`<div class="stats-line-azimuth stats-content" title=${titleAzimuth}>
-				<span class="label">${titleAzimuth}:</span><span class="value">${formattedAzimuth.localizedValue} ${formattedAzimuth.unit}</span>
+				<span class="label">${titleAzimuth} (${formattedAzimuth.unit}):</span><span class="value">${formattedAzimuth.localizedValue}</span>
 				<span class="icon">
 					<ba-icon
 						class="close"
@@ -140,7 +140,7 @@ export class GeometryInfo extends MvuElement {
 				</span>
 			</div>
 			<div class="stats-line-length stats-content" title=${titleLength}>
-				<span class="label">${titleLength}:</span><span class="value">${formattedDistance.localizedValue} ${formattedDistance.unit}</span>
+				<span class="label">${titleLength} (${formattedDistance.unit}):</span><span class="value">${formattedDistance.localizedValue}</span>
 				<span class="icon">
 					<ba-icon
 						class="close"
@@ -170,7 +170,7 @@ export class GeometryInfo extends MvuElement {
 		};
 
 		return html`<div class="stats-polygon-length stats-content" title=${titleLength}>
-				<span class="label">${titleLength}:</span><span class="value">${formattedDistance.localizedValue} ${formattedDistance.unit}</span>
+				<span class="label">${titleLength} (${formattedDistance.unit}):</span><span class="value">${formattedDistance.localizedValue}</span>
 				<span class="icon">
 					<ba-icon
 						class="close"
@@ -182,7 +182,7 @@ export class GeometryInfo extends MvuElement {
 				</span>
 			</div>
 			<div class="stats-polygon-area stats-content" title=${titleArea}>
-				<span class="label">${titleArea}:</span><span class="value">${formattedArea.localizedValue} ${unsafeHTML(formattedArea.unit)}</span>
+				<span class="label">${titleArea} (${unsafeHTML(formattedArea.unit)}):</span><span class="value">${formattedArea.localizedValue}</span>
 				<span class="icon">
 					<ba-icon
 						class="close"

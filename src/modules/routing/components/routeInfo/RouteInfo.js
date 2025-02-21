@@ -65,38 +65,42 @@ export class RouteInfo extends MvuElement {
 		const iconSource = category?.style.icon ?? parent?.style.icon;
 
 		const getDuration = () => {
+			if (!stats) {
+				return { localizedValue: '-:-', unit: 'h:min' };
+			}
 			const estimate = stats.time;
 			const seconds = estimate / 1000;
 			if (seconds < Minute_In_Seconds) {
-				return '< 1 min.';
+				return { localizedValue: '< 1', unit: 'min' };
 			}
 
-			return this._formatDuration(seconds);
+			return { localizedValue: this._formatDuration(seconds), unit: 'h:min' };
 		};
+		const durationRepresentation = getDuration();
 
 		const getDistance = () => {
 			if (stats?.dist) {
-				const distance = this._unitsService.formatDistance(stats.dist);
-				return `${distance.localizedValue} ${distance.unit}`;
+				return this._unitsService.formatDistance(stats.dist);
 			}
-			return '-';
+			return { localizedValue: '-', unit: 'm' };
 		};
+		const distanceRepresentation = getDistance();
 
 		const getUphill = () => {
 			if (stats) {
-				const distance = this._unitsService.formatDistance(stats.twoDiff[0]);
-				return `${distance.localizedValue} ${distance.unit}`;
+				return this._unitsService.formatDistance(stats.twoDiff[0]);
 			}
-			return '-';
+			return { localizedValue: '-', unit: 'm' };
 		};
+		const uphillRepresentation = getUphill();
 
 		const getDownhill = () => {
 			if (stats) {
-				const distance = this._unitsService.formatDistance(stats.twoDiff[1]);
-				return `${distance.localizedValue} ${distance.unit}`;
+				return this._unitsService.formatDistance(stats.twoDiff[1]);
 			}
-			return '-';
+			return { localizedValue: '-', unit: 'm' };
 		};
+		const downhillRepresentation = getDownhill();
 		const getColor = () => {
 			return html`*{--primary-color: ${color}`;
 		};
@@ -122,42 +126,42 @@ export class RouteInfo extends MvuElement {
 								<span class=${`header-icon icon-${categoryId}`}> ${renderCategoryIcon(iconSource)} </span>
 							</div>
 							<div class="header-text">
-								<div class="routing-info-duration-text">${translate('routing_info_duration')}</div>
-								<span class="routing-info-duration" title=${translate('routing_info_duration')}> ${stats ? getDuration() : '-:-'} </span>
+								<div class="routing-info-duration-text">${translate('routing_info_duration')} (${durationRepresentation.unit})</div>
+								<span class="routing-info-duration" title=${translate('routing_info_duration')}> ${durationRepresentation.localizedValue} </span>
 								<div>${category.label}</div>
 							</div>
 						</div>
 						<div class="detail">
 							<div class="row">
 								<div class="item">
-									<div class="item-header">${translate('routing_info_distance')}</div>
+									<div class="item-header">${translate('routing_info_distance')} (${distanceRepresentation.unit})</div>
 									<div class="item-content">
 										<div class="col" title=${translate('routing_info_distance')}>
 											<div class="routing-info-icon distance"></div>
 										</div>
-										<div class="routing-info-text">${getDistance()}</div>
+										<div class="routing-info-text">${distanceRepresentation.localizedValue}</div>
 									</div>
 								</div>
 
 								<div class="item">
-									<div class="item-header">${translate('routing_info_uphill')}</div>
+									<div class="item-header">${translate('routing_info_uphill')} (${uphillRepresentation.unit})</div>
 									<div class="item-content">
 										<div class="col" title=${translate('routing_info_uphill')}>
 											<div class="routing-info-icon uphill"></div>
 										</div>
 										<div class="routing-info-text">
-											<span>${getUphill()}</span>
+											<span>${uphillRepresentation.localizedValue}</span>
 										</div>
 									</div>
 								</div>
 								<div class="item">
-									<div class="item-header">${translate('routing_info_downhill')}</div>
+									<div class="item-header">${translate('routing_info_downhill')} (${downhillRepresentation.unit})</div>
 									<div class="item-content">
 										<div class="col" title=${translate('routing_info_downhill')}>
 											<div class="routing-info-icon downhill"></div>
 										</div>
 										<div class="routing-info-text">
-											<span>${getDownhill()}</span>
+											<span>${downhillRepresentation.localizedValue}</span>
 										</div>
 									</div>
 								</div>
