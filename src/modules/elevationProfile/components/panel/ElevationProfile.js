@@ -46,7 +46,8 @@ export const SoterSlopeClasses = Object.freeze([
 	{ type: SlopeType.MODERATELY_STEEP, min: 15, max: 30, color: '#d23600' },
 	{ type: SlopeType.STEEP, min: 30, max: Infinity, color: '#691b00' }
 ]);
-export const Default_Selected_Attribute = 'alt';
+export const Default_Attribute_Id = 'alt';
+export const Default_Attribute = { id: Default_Attribute_Id, unit: 'm' };
 
 export const Empty_Profile_Data = Object.freeze({
 	labels: [],
@@ -74,7 +75,7 @@ export class ElevationProfile extends MvuElement {
 			profile: Empty_Profile_Data,
 			labels: null,
 			data: null,
-			selectedAttribute: Default_Selected_Attribute,
+			selectedAttribute: Default_Attribute_Id,
 			darkSchema: null,
 			distUnit: null,
 			portrait: false,
@@ -316,7 +317,7 @@ export class ElevationProfile extends MvuElement {
 			return attr.id === selectedAttribute;
 		});
 		if (!attribute) {
-			this.signal(Update_Selected_Attribute, Default_Selected_Attribute);
+			this.signal(Update_Selected_Attribute, Default_Attribute_Id);
 		}
 
 		return;
@@ -603,11 +604,6 @@ export class ElevationProfile extends MvuElement {
 								return `${translate('elevationProfile_distance')} (${distance.unit}): ${distance.localizedValue}`;
 							},
 							label: (tooltipItem) => {
-								const defaultAttribute = { id: Default_Selected_Attribute, unit: 'm' };
-
-								const selectedAttributeId = this.getModel().selectedAttribute;
-								const elevationEntry = getElevationEntry(tooltipItem);
-
 								const createLabel = (attribute) => {
 									const name = translate('elevationProfile_' + attribute.id);
 									const nameWithUnit = `${translate('elevationProfile_' + attribute.id)} (${attribute.unit})`;
@@ -617,13 +613,15 @@ export class ElevationProfile extends MvuElement {
 									return `${attribute.unit ? nameWithUnit : name}:${prefix}${typeof value !== 'string' ? toLocaleString(value) : value}`;
 								};
 
+								const selectedAttributeId = this.getModel().selectedAttribute;
+								const elevationEntry = getElevationEntry(tooltipItem);
 								const attribute = elevationData.attrs.find((attr) => {
 									return attr.id === selectedAttributeId;
 								});
 
-								return selectedAttributeId === Default_Selected_Attribute
-									? createLabel(defaultAttribute)
-									: [createLabel(defaultAttribute), createLabel(attribute)];
+								return selectedAttributeId === Default_Attribute_Id
+									? createLabel(Default_Attribute)
+									: [createLabel(Default_Attribute), createLabel(attribute)];
 							}
 						}
 					}
