@@ -27,13 +27,13 @@ describe('FeatureCollectionPanel', () => {
 
 			expect(model).toEqual({
 				featureId: null,
-				geometry: null
+				feature: null
 			});
 		});
 	});
 
 	describe('when initialized', () => {
-		describe('and no featureId or geometry is available', () => {
+		describe('and no featureId or feature is available', () => {
 			it('renders nothing', async () => {
 				const element = await setup();
 
@@ -41,12 +41,12 @@ describe('FeatureCollectionPanel', () => {
 			});
 		});
 
-		describe('and geometry is available', () => {
+		describe('and a feature is available', () => {
 			it('renders a button', async () => {
 				const element = await setup({});
-				const geometry = new Geometry('data');
+				const feature = new Feature(new Geometry('data'));
 
-				element.geometry = geometry;
+				element.feature = feature;
 
 				expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
 				const button = element.shadowRoot.querySelector('ba-icon');
@@ -89,17 +89,17 @@ describe('FeatureCollectionPanel', () => {
 	});
 
 	describe('feature add button is clicked', () => {
-		it('removes the feature from the featureCollection s-o-s', async () => {
+		it('adds the feature to the featureCollection s-o-s', async () => {
 			const element = await setup({});
-			const geometry = new Geometry('data');
+			const feature = new Feature(new Geometry('data'));
 
-			element.geometry = geometry;
+			element.feature = feature;
 			const button = element.shadowRoot.querySelector('ba-icon');
 
 			button.click();
 
 			expect(store.getState().featureCollection.entries).toHaveSize(1);
-			expect(store.getState().featureCollection.entries[0].geometry).toEqual(geometry);
+			expect(store.getState().featureCollection.entries[0]).toEqual(feature);
 		});
 	});
 

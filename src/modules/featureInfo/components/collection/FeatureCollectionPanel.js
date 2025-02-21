@@ -6,17 +6,16 @@ import { $injector } from '../../../../injection/index';
 import { addFeatures, removeFeaturesById } from '../../../../store/featureCollection/featureCollection.action';
 import { clearHighlightFeatures } from '../../../../store/highlight/highlight.action';
 import { MvuElement } from '../../../MvuElement';
-import { Feature } from '../../../../domain/feature';
 import removeFromCollectionButton from '../assets/printer.svg';
 import addToCollectionButton from '../assets/share.svg';
 
 const Update_FeatureId = 'update_featureId';
-const Update_Geometry = 'update_geometry';
+const Update_Feature = 'update_feature';
 /**
  * Component that offers the possibility to interact with selected features
  * @class
- * @property {String|null} featureId - The id of a selected feature
- * @property {Geometry|null} data - The id of a selected feature
+ * @property {String|null} featureId - The id of a feature which can be removed from the collection
+ * @property {Feature|null} feature - A features which can be added to the collection
  */
 export class FeatureCollectionPanel extends MvuElement {
 	#translationService;
@@ -24,7 +23,7 @@ export class FeatureCollectionPanel extends MvuElement {
 	constructor() {
 		super({
 			featureId: null,
-			geometry: null
+			feature: null
 		});
 
 		const { TranslationService: translationService, StoreService: storeService } = $injector.inject('TranslationService', 'StoreService');
@@ -36,14 +35,14 @@ export class FeatureCollectionPanel extends MvuElement {
 		switch (type) {
 			case Update_FeatureId:
 				return { ...model, featureId: data };
-			case Update_Geometry:
-				return { ...model, geometry: data };
+			case Update_Feature:
+				return { ...model, feature: data };
 		}
 	}
 
 	createView(model) {
-		const { featureId, geometry } = model;
-		if (featureId || geometry) {
+		const { featureId, feature } = model;
+		if (featureId || feature) {
 			const translate = (key) => this.#translationService.translate(key);
 			const partOfCollection = this.#storeService
 				.getStore()
@@ -58,7 +57,7 @@ export class FeatureCollectionPanel extends MvuElement {
 
 			const addFeature = () => {
 				clearHighlightFeatures();
-				addFeatures(new Feature(geometry));
+				addFeatures(feature);
 				// setTab(TabIds.SEARCH);
 			};
 
@@ -70,7 +69,7 @@ export class FeatureCollectionPanel extends MvuElement {
 						@click=${removeFeature}
 					></ba-icon>
 				</div>`;
-			} else if (geometry) {
+			} else if (feature) {
 				return html`<div>
 					<ba-icon .title=${translate('featureInfo_featureCollection_add_feature')} .icon="${addToCollectionButton}" @click=${addFeature}></ba-icon>
 				</div>`;
@@ -84,8 +83,8 @@ export class FeatureCollectionPanel extends MvuElement {
 		this.signal(Update_FeatureId, value);
 	}
 
-	set geometry(value) {
-		this.signal(Update_Geometry, value);
+	set feature(value) {
+		this.signal(Update_Feature, value);
 	}
 
 	static get tag() {
