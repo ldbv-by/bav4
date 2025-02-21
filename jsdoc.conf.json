@@ -20,10 +20,10 @@
 		"destination": "docs",
 		"recurse": true,
 		"readme": "README.md",
-		"template": "./node_modules/docdash"
-	},
-	"docdash": {
-		"search": true,
-		"sectionOrder": ["Modules", "Global", "Interfaces"]
+		"template": "node_modules/clean-jsdoc-theme",
+		"theme_opts": {
+			"homepageTitle": "BayernAtlas v4 Docs",
+			"search": true
+		}
 	}
 }
