@@ -116,7 +116,7 @@ describe('AbstractAssistChip', () => {
 		it('takes the model from its child class', async () => {
 			const model = new AssistChipImpl().getModel();
 
-			expect(model).toEqual({ foo: 'bar' });
+			expect(model).toEqual({ foo: 'bar', title: null });
 		});
 	});
 
@@ -143,6 +143,13 @@ describe('AbstractAssistChip', () => {
 			button.click();
 
 			expect(warnSpy).toHaveBeenCalledWith('called AssistChipImpl.onClick');
+		});
+
+		it('renders the view with optional title', async () => {
+			const element = await TestUtils.render(AssistChipImpl.tag, { title: 'FooBar' });
+
+			expect(element.shadowRoot.querySelector('.chips__button').attributes['title'].nodeValue).toBe('FooBar');
+			expect(element.shadowRoot.querySelector('.chips__button').attributes['aria-label'].nodeValue).toBe('FooBar');
 		});
 	});
 });
