@@ -8,6 +8,7 @@ import { clearHighlightFeatures } from '../../../../store/highlight/highlight.ac
 import { MvuElement } from '../../../MvuElement';
 import removeFromCollectionButton from '../assets/printer.svg';
 import addToCollectionButton from '../assets/share.svg';
+import { abortOrReset } from '../../../../store/featureInfo/featureInfo.action';
 
 const Update_FeatureId = 'update_featureId';
 const Update_Feature = 'update_feature';
@@ -53,12 +54,15 @@ export class FeatureCollectionPanel extends MvuElement {
 			const removeFeature = () => {
 				clearHighlightFeatures();
 				removeFeaturesById(featureId);
+				// by calling the abortOrReset action, we restore the previous opened tab of the MainMenu
+				abortOrReset();
 			};
 
 			const addFeature = () => {
 				clearHighlightFeatures();
 				addFeatures(feature);
-				// setTab(TabIds.SEARCH);
+				// by calling the abortOrReset action, we restore the previous opened tab of the MainMenu
+				abortOrReset();
 			};
 
 			if (partOfCollection) {

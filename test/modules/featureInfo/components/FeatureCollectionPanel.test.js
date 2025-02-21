@@ -7,6 +7,8 @@ import { featureCollectionReducer } from '../../../../src/store/featureCollectio
 import removeFromCollectionButton from '../../../../src/modules/featureInfo/components/assets/printer.svg';
 import addToCollectionButton from '../../../../src/modules/featureInfo/components/assets/share.svg';
 import { Feature } from '../../../../src/domain/feature.js';
+import { featureInfoReducer } from '../../../../src/store/featureInfo/featureInfo.reducer.js';
+import { highlightReducer } from '../../../../src/store/highlight/highlight.reducer.js';
 
 window.customElements.define(FeatureCollectionPanel.tag, FeatureCollectionPanel);
 
@@ -14,7 +16,9 @@ describe('FeatureCollectionPanel', () => {
 	let store;
 	const setup = (state) => {
 		store = TestUtils.setupStoreAndDi(state, {
-			featureCollection: featureCollectionReducer
+			featureCollection: featureCollectionReducer,
+			featureInfo: featureInfoReducer,
+			highlight: highlightReducer
 		});
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(FeatureCollectionPanel.tag);
@@ -89,8 +93,15 @@ describe('FeatureCollectionPanel', () => {
 	});
 
 	describe('feature add button is clicked', () => {
-		it('adds the feature to the featureCollection s-o-s', async () => {
-			const element = await setup({});
+		it('adds the feature to the featureCollection s-o-s and resets the highlight and featureInfo s-o-s', async () => {
+			const element = await setup({
+				featureInfo: {
+					querying: true
+				},
+				highlight: {
+					features: [{ foo: 'bar' }]
+				}
+			});
 			const feature = new Feature(new Geometry('data'));
 
 			element.feature = feature;
@@ -100,15 +111,23 @@ describe('FeatureCollectionPanel', () => {
 
 			expect(store.getState().featureCollection.entries).toHaveSize(1);
 			expect(store.getState().featureCollection.entries[0]).toEqual(feature);
+			expect(store.getState().featureInfo.querying).toBeFalse();
+			expect(store.getState().highlight.features).toHaveSize(0);
 		});
 	});
 
 	describe('feature remove button is clicked', () => {
-		it('removes the feature from the featureCollection s-o-s', async () => {
+		it('removes the feature from the featureCollection s-o-s and resets the highlight and featureInfo s-o-s', async () => {
 			const featureId = 'featureId0';
 			const element = await setup({
 				featureCollection: {
 					entries: [new Feature(new Geometry('data'), featureId)]
+				},
+				featureInfo: {
+					querying: true
+				},
+				highlight: {
+					features: [{ foo: 'bar' }]
 				}
 			});
 			element.featureId = featureId;
@@ -117,6 +136,8 @@ describe('FeatureCollectionPanel', () => {
 			button.click();
 
 			expect(store.getState().featureCollection.entries).toHaveSize(0);
+			expect(store.getState().featureInfo.querying).toBeFalse();
+			expect(store.getState().highlight.features).toHaveSize(0);
 		});
 	});
 });
