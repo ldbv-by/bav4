@@ -21,7 +21,7 @@ describe('MapFeedbackChip', () => {
 		it('has a model containing default values', async () => {
 			const element = await setup();
 
-			expect(element.getModel()).toEqual({ center: null });
+			expect(element.getModel()).toEqual({ center: null, title: null });
 		});
 
 		it('properly implements abstract methods', async () => {

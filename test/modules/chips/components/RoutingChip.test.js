@@ -32,7 +32,7 @@ describe('RoutingChip', () => {
 			await setup();
 			const model = new RoutingChip().getModel();
 
-			expect(model).toEqual({ coordinate: [] });
+			expect(model).toEqual({ coordinate: [], title: null });
 		});
 
 		it('properly implements abstract methods', async () => {

@@ -33,7 +33,7 @@ describe('ExportVectorDataChip', () => {
 		it('has a model containing default values', async () => {
 			const element = await setup();
 
-			expect(element.getModel()).toEqual({ data: null });
+			expect(element.getModel()).toEqual({ data: null, title: null });
 		});
 
 		it('properly implements abstract methods', async () => {

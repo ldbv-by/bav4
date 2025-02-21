@@ -45,7 +45,7 @@ describe('ShareDataChip', () => {
 		it('has a model containing default values', async () => {
 			const element = await setup();
 
-			expect(element.getModel()).toEqual({ storedDataAvailable: false, fileId: null, adminId: null });
+			expect(element.getModel()).toEqual({ storedDataAvailable: false, fileId: null, adminId: null, title: null });
 		});
 
 		it('properly implements abstract methods', async () => {

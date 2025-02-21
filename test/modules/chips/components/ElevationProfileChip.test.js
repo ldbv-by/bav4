@@ -37,7 +37,7 @@ describe('ElevationProfileChip', () => {
 			await setup();
 			const model = new ElevationProfileChip().getModel();
 
-			expect(model).toEqual({ profileCoordinates: null, id: null });
+			expect(model).toEqual({ profileCoordinates: null, id: null, title: null });
 		});
 
 		it('properly implements abstract methods', async () => {
