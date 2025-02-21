@@ -1,6 +1,6 @@
 import { $injector } from '../../../../../src/injection/index.js';
 import {
-	Default_Selected_Attribute,
+	Default_Attribute_Id,
 	ElevationProfile,
 	Empty_Profile_Data,
 	SlopeType,
@@ -302,7 +302,7 @@ describe('ElevationProfile', () => {
 				profile: Empty_Profile_Data,
 				labels: null,
 				data: null,
-				selectedAttribute: Default_Selected_Attribute,
+				selectedAttribute: Default_Attribute_Id,
 				darkSchema: null,
 				distUnit: null,
 				portrait: false,
@@ -1351,7 +1351,7 @@ describe('ElevationProfile', () => {
 			expect(enrichProfileDataSpy).toHaveBeenCalledTimes(1);
 
 			const attrsCheck = element.shadowRoot.getElementById('attrs');
-			expect(attrsCheck.value).toBe(Default_Selected_Attribute);
+			expect(attrsCheck.value).toBe(Default_Attribute_Id);
 		});
 	});
 });
