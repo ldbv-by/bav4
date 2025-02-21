@@ -603,42 +603,27 @@ export class ElevationProfile extends MvuElement {
 								return `${translate('elevationProfile_distance')} (${distance.unit}): ${distance.localizedValue}`;
 							},
 							label: (tooltipItem) => {
-								const retArray = [];
-								const selectedAttribute = this.getModel().selectedAttribute;
+								const defaultAttribute = { id: Default_Selected_Attribute, unit: 'm' };
+
+								const selectedAttributeId = this.getModel().selectedAttribute;
 								const elevationEntry = getElevationEntry(tooltipItem);
-								let attributeValue = elevationEntry[selectedAttribute];
-								const selectedAttributeTranslation = translate('elevationProfile_' + selectedAttribute);
 
-								const attribute =
-									selectedAttribute === 'alt'
-										? { id: 'alt', unit: 'm' }
-										: elevationData.attrs.find((attr) => {
-												return attr.id === selectedAttribute;
-											});
+								const createLabel = (attribute) => {
+									const name = translate('elevationProfile_' + attribute.id);
+									const nameWithUnit = `${translate('elevationProfile_' + attribute.id)} (${attribute.unit})`;
+									const prefix = attribute.prefix ? ` ${attribute.prefix} ` : ' ';
+									const value = elevationEntry[attribute.id];
 
-								let selectedLabel = attribute.unit ? `${selectedAttributeTranslation} (${attribute.unit}): ` : `${selectedAttributeTranslation}: `;
+									return `${attribute.unit ? nameWithUnit : name}:${prefix}${typeof value !== 'string' ? toLocaleString(value) : value}`;
+								};
 
-								if (typeof attributeValue !== 'string') {
-									attributeValue = toLocaleString(attributeValue);
-								}
-								if (attribute.prefix) {
-									selectedLabel += attribute.prefix + ' ' + attributeValue;
-								} else {
-									selectedLabel += attributeValue;
-								}
+								const attribute = elevationData.attrs.find((attr) => {
+									return attr.id === selectedAttributeId;
+								});
 
-								if (selectedAttribute === Default_Selected_Attribute) {
-									return selectedLabel;
-								} else {
-									const defaultAttributeTranslation = translate('elevationProfile_' + Default_Selected_Attribute);
-									const defaultAttributeValue = elevationEntry[Default_Selected_Attribute];
-									const defaultLabel = `${defaultAttributeTranslation} (m): ${defaultAttributeValue}`;
-									retArray.push(defaultLabel);
-								}
-
-								retArray.push(selectedLabel);
-
-								return retArray;
+								return selectedAttributeId === Default_Selected_Attribute
+									? createLabel(defaultAttribute)
+									: [createLabel(defaultAttribute), createLabel(attribute)];
 							}
 						}
 					}
