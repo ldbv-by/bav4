@@ -30,7 +30,7 @@ export class AbstractAssistChip extends MvuElement {
 
 	/**
 	 * To update the model with a new title, implementations of @see AbstractAssistChip must
-	 * extent there own update method wit a call of super.update()
+	 * extent their own update method wit a call of super.update()
 	 *
 	 * @example
 	 * update(type, data, model) {
