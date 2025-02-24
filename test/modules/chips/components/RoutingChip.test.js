@@ -64,6 +64,13 @@ describe('RoutingChip', () => {
 
 			expect(element.isVisible()).toBeTrue();
 		});
+
+		it('renders the view with given title ', async () => {
+			const properties = { coordinate: coordinate };
+			const element = await setup(defaultRoutingState, properties);
+
+			expect(element.shadowRoot.querySelector('button').title).toBe('chips_assist_chip_start_routing_here_title');
+		});
 	});
 
 	describe('when chip is clicked', () => {

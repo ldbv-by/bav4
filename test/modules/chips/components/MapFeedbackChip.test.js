@@ -21,7 +21,7 @@ describe('MapFeedbackChip', () => {
 		it('has a model containing default values', async () => {
 			const element = await setup();
 
-			expect(element.getModel()).toEqual({ center: null, title: null });
+			expect(element.getModel()).toEqual({ center: null, title: 'chips_assist_chip_map_feedback_title' });
 		});
 
 		it('properly implements abstract methods', async () => {
@@ -45,6 +45,13 @@ describe('MapFeedbackChip', () => {
 
 			expect(element.isVisible()).toBeFalse();
 		});
+
+		it('renders the view with given title ', async () => {
+			const element = await setup();
+			element.center = [42, 21];
+
+			expect(element.shadowRoot.querySelector('button').title).toBe('chips_assist_chip_map_feedback_title');
+		});
 	});
 
 	describe('when chip is clicked', () => {
@@ -58,7 +65,7 @@ describe('MapFeedbackChip', () => {
 
 			await TestUtils.timeout();
 
-			expect(store.getState().modal.data.title).toBe('chips_assist_chip_map_feedback_title');
+			expect(store.getState().modal.data.title).toBe('chips_assist_chip_map_feedback_modal_title');
 			const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 			expect(wrapperElement.querySelectorAll(ToggleFeedbackPanel.tag)).toHaveSize(1);
 			expect(wrapperElement.querySelector(ToggleFeedbackPanel.tag).onSubmit).toEqual(closeModal);

@@ -25,10 +25,16 @@ export class RoutingChip extends AbstractAssistChip {
 		this._translationService = TranslationService;
 	}
 
+	onInitialize() {
+		this.title = this._translationService.translate('chips_assist_chip_start_routing_here_title');
+	}
+
 	update(type, data, model) {
 		switch (type) {
 			case Update_Coordinate:
 				return { ...model, coordinate: [...data] };
+			default:
+				return super.update(type, data, model);
 		}
 	}
 
