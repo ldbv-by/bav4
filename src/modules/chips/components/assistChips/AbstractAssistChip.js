@@ -109,13 +109,9 @@ export class AbstractAssistChip extends MvuElement {
 	}
 
 	/**
-	 * @property {string} title='' - Title of the Icon
+	 * @property {string} title='' - Title of the Chip
 	 */
 	set title(value) {
 		this.signal(Update_Title, value);
-	}
-
-	get title() {
-		return this.getModel().title;
 	}
 }
