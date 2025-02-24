@@ -51,6 +51,7 @@ describe('MapFeedbackChip', () => {
 			element.center = [42, 21];
 
 			expect(element.shadowRoot.querySelector('button').title).toBe('chips_assist_chip_map_feedback_title');
+			expect(element.shadowRoot.querySelector('button').ariaLabel).toBe('chips_assist_chip_map_feedback_title');
 		});
 	});
 

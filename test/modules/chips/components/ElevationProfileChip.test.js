@@ -111,6 +111,7 @@ describe('ElevationProfileChip', () => {
 			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('button').title).toBe('chips_assist_chip_elevation_profile_title');
+			expect(element.shadowRoot.querySelector('button').ariaLabel).toBe('chips_assist_chip_elevation_profile_title');
 		});
 	});
 

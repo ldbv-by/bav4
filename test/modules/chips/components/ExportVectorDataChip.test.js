@@ -62,6 +62,7 @@ describe('ExportVectorDataChip', () => {
 			const element = await setup('someData');
 
 			expect(element.shadowRoot.querySelector('button').title).toBe('chips_assist_chip_export_title');
+			expect(element.shadowRoot.querySelector('button').ariaLabel).toBe('chips_assist_chip_export_title');
 		});
 	});
 

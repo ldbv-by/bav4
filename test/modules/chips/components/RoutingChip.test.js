@@ -70,6 +70,7 @@ describe('RoutingChip', () => {
 			const element = await setup(defaultRoutingState, properties);
 
 			expect(element.shadowRoot.querySelector('button').title).toBe('chips_assist_chip_start_routing_here_title');
+			expect(element.shadowRoot.querySelector('button').ariaLabel).toBe('chips_assist_chip_start_routing_here_title');
 		});
 	});
 

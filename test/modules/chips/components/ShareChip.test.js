@@ -100,6 +100,7 @@ describe('ShareChip', () => {
 			const element = await setup();
 
 			expect(element.shadowRoot.querySelector('button').title).toBe('chips_assist_chip_share_position_title');
+			expect(element.shadowRoot.querySelector('button').ariaLabel).toBe('chips_assist_chip_share_position_title');
 		});
 	});
 
