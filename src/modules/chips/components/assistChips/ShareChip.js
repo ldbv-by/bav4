@@ -38,6 +38,10 @@ export class ShareChip extends AbstractAssistChip {
 		this._urlService = urlService;
 	}
 
+	onInitialize() {
+		this.title = this._translationService.translate('chips_assist_chip_elevation_profile_title');
+	}
+
 	update(type, data, model) {
 		switch (type) {
 			case Update_Center:
@@ -50,6 +54,8 @@ export class ShareChip extends AbstractAssistChip {
 					...model,
 					label: data
 				};
+			default:
+				return super.update(type, data, model);
 		}
 	}
 
