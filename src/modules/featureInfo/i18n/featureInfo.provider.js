@@ -6,8 +6,8 @@ export const provide = (lang) => {
 				featureInfo_close_button: 'Close',
 				featureInfo_header: 'Object Information',
 				featureInfo_info: 'No information available.<br>Please click into the <b>map</b>.',
-				featureInfo_featureCollection_add_feature: 'Dieses Feature zur Sammlung hinzufügen',
-				featureInfo_featureCollection_remove_feature: 'Dieses Feature aus der Sammlung entfernen'
+				featureInfo_featureCollection_add_feature: 'Dieses Objekt zur Sammlung hinzufügen',
+				featureInfo_featureCollection_remove_feature: 'Dieses Objekt aus der Sammlung entfernen'
 			};
 
 		case 'de':

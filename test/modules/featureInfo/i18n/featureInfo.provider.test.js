@@ -17,8 +17,8 @@ describe('i18n for featureInfo module', () => {
 		expect(map.featureInfo_close_button).toBe('Close');
 		expect(map.featureInfo_header).toBe('Object Information');
 		expect(map.featureInfo_info).toBe('No information available.<br>Please click into the <b>map</b>.');
-		expect(map.featureInfo_featureCollection_add_feature).toBe('Dieses Feature zur Sammlung hinzufügen');
-		expect(map.featureInfo_featureCollection_remove_feature).toBe('Dieses Feature aus der Sammlung entfernen');
+		expect(map.featureInfo_featureCollection_add_feature).toBe('Dieses Objekt zur Sammlung hinzufügen');
+		expect(map.featureInfo_featureCollection_remove_feature).toBe('Dieses Objekt aus der Sammlung entfernen');
 	});
 
 	it('contains the expected amount of entries', () => {
