@@ -4,6 +4,7 @@ export const provide = (lang) => {
 			return {
 				//the first part of the snake_case key should be the name of the related module
 				chips_assist_chip_elevation_profile: 'Elevation Profile',
+				chips_assist_chip_elevation_profile_title: 'Show Elevation Profile',
 				chips_assist_chip_export: 'Export',
 				chips_assist_chip_start_routing_here: 'Plan a route',
 				chips_assist_chip_share_stored_data: 'Share data',
@@ -19,6 +20,7 @@ export const provide = (lang) => {
 			return {
 				//the first part of the snake_case key should be the name of the related module
 				chips_assist_chip_elevation_profile: 'Geländeprofil',
+				chips_assist_chip_elevation_profile_title: 'Geländeprofil anzeigen',
 				chips_assist_chip_export: 'Export',
 				chips_assist_chip_start_routing_here: 'Route planen',
 				chips_assist_chip_share_stored_data: 'Daten teilen',

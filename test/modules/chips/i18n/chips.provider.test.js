@@ -32,7 +32,7 @@ describe('i18n for chips module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 10;
+		const expectedSize = 11;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
