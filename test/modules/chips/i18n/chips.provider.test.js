@@ -6,14 +6,19 @@ describe('i18n for chips module', () => {
 
 		expect(map.chips_assist_chip_elevation_profile).toBe('Geländeprofil');
 		expect(map.chips_assist_chip_export).toBe('Export');
+		expect(map.chips_assist_chip_export_title).toBe('Vektordaten exportieren');
 		expect(map.chips_assist_chip_start_routing_here).toBe('Route planen');
+		expect(map.chips_assist_chip_start_routing_here_title).toBe('Route planen');
 		expect(map.chips_assist_chip_share_stored_data).toBe('Daten teilen');
+		expect(map.chips_assist_chip_share_stored_data_title).toBe('Daten mit Anderen teilen');
 		expect(map.chips_assist_chip_share_position_label).toBe('Position teilen');
+		expect(map.chips_assist_chip_share_position_title).toBe('Position mit Anderen teilen');
 		expect(map.chips_assist_chip_share_position_api_failed).toBe('Teilen der Position ist fehlgeschlagen');
 		expect(map.chips_assist_chip_share_state_label_default).toBe('Teilen');
 		expect(map.chips_assist_chip_share_state_api_failed).toBe('Teilen der Seite ist fehlgeschlagen');
 		expect(map.chips_assist_chip_map_feedback_label).toBe('Karte verbessern');
-		expect(map.chips_assist_chip_map_feedback_title).toBe('Feedback');
+		expect(map.chips_assist_chip_map_feedback_title).toBe('Kartenverbesserungen melden');
+		expect(map.chips_assist_chip_map_feedback_modal_title).toBe('Feedback');
 	});
 
 	it('provides translation for en', () => {
@@ -21,18 +26,23 @@ describe('i18n for chips module', () => {
 
 		expect(map.chips_assist_chip_elevation_profile).toBe('Elevation Profile');
 		expect(map.chips_assist_chip_export).toBe('Export');
+		expect(map.chips_assist_chip_export_title).toBe('Export vector data');
 		expect(map.chips_assist_chip_start_routing_here).toBe('Plan a route');
+		expect(map.chips_assist_chip_start_routing_here_title).toBe('Plan a route');
 		expect(map.chips_assist_chip_share_stored_data).toBe('Share data');
+		expect(map.chips_assist_chip_share_stored_data_title).toBe('Share the data with others');
 		expect(map.chips_assist_chip_share_position_label).toBe('Share position');
+		expect(map.chips_assist_chip_share_position_title).toBe('Share your position with others');
 		expect(map.chips_assist_chip_share_position_api_failed).toBe('Sharing the position has failed');
 		expect(map.chips_assist_chip_share_state_label_default).toBe('Share');
 		expect(map.chips_assist_chip_share_state_api_failed).toBe('Sharing the website has failed');
 		expect(map.chips_assist_chip_map_feedback_label).toBe('Improve map');
-		expect(map.chips_assist_chip_map_feedback_title).toBe('Feedback');
+		expect(map.chips_assist_chip_map_feedback_title).toBe('Give feedback to improve map');
+		expect(map.chips_assist_chip_map_feedback_modal_title).toBe('Feedback');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 11;
+		const expectedSize = 15;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
