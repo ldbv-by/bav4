@@ -132,8 +132,8 @@ export class NavigationRail extends MvuElement {
 			return darkSchema ? 'menu_navigation_rail_light_theme' : 'menu_navigation_rail_dark_theme';
 		};
 
-		const getIsActive = (tabId) => {
-			return tabIndex === tabId && (isOpen || isPortrait) ? 'is-active' : '';
+		const getIsActive = (...tabId) => {
+			return tabId.includes(tabIndex) && (isOpen || isPortrait) ? 'is-active' : '';
 		};
 
 		const getIsVisible = (tabId) => {
@@ -154,7 +154,8 @@ export class NavigationRail extends MvuElement {
 		const classes = {
 			'is-open': isOpenNavigationRail,
 			'is-portrait': isPortrait,
-			'is-landscape': !isPortrait
+			'is-landscape': !isPortrait,
+			'is-open-main-menu': isOpen && !isPortrait
 		};
 
 		const translate = (key) => this.#translationService.translate(key);
@@ -163,11 +164,12 @@ export class NavigationRail extends MvuElement {
 				${css}
 			</style>
 			<div class="${classMap(classes)}">
+				<div class="fallback-background"></div>
 				<div class="navigation-rail__container">
 					<button
 						title="${translate('menu_navigation_rail_home_tooltip')}"
-						class="home ${getIsActive(TabIds.MAPS)}"
-						@click="${() => this._openTab(TabIds.MAPS)}"
+						class="home ${getIsActive(TabIds.MAPS, TabIds.SEARCH, TabIds.MISC, TabIds.TOPICS)}"
+						@click="${() => this._openHomeTab(TabIds.MAPS, TabIds.SEARCH, TabIds.MISC, TabIds.TOPICS)}"
 					>
 						<span class="icon "> </span>
 						<span class="text"> ${translate('menu_navigation_rail_home')} </span>
@@ -259,6 +261,16 @@ export class NavigationRail extends MvuElement {
 		}
 		isPortrait || tabId === tabIndex ? toggle() : open();
 		setTab(tabId);
+	}
+
+	_openHomeTab(...tabId) {
+		const { tabIndex } = this.getModel();
+		if (!tabId.includes(tabIndex)) {
+			setTab(TabIds.MAPS);
+			open();
+		} else {
+			toggle();
+		}
 	}
 
 	_showTimeTravel() {

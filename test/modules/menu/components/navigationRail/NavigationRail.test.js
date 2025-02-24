@@ -111,6 +111,8 @@ describe('NavigationRail', () => {
 			};
 			const element = await setup(state);
 			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-open-main-menu')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.fallback-background')).toHaveSize(1);
 
 			expect(element.shadowRoot.querySelectorAll('.home')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.home')).display).toBe('flex');
@@ -166,6 +168,27 @@ describe('NavigationRail', () => {
 			expect(helpLink.querySelectorAll('.help .icon')).toHaveSize(1);
 		});
 
+		it('adds open navigationRail for landscape mode and closed mainMenu', async () => {
+			const state = {
+				media: {
+					portrait: false,
+					minWidth: false
+				},
+				navigationRail: {
+					open: true,
+					visitedTabIds: []
+				},
+				mainMenu: {
+					open: false,
+					tab: null
+				}
+			};
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-open-main-menu')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.fallback-background')).toHaveSize(1);
+		});
+
 		it('adds closed navigationRail for portrait mode', async () => {
 			const state = {
 				media: {
@@ -175,6 +198,8 @@ describe('NavigationRail', () => {
 			};
 			const element = await setup(state);
 			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-open-main-menu')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.fallback-background')).toHaveSize(1);
 
 			expect(element.shadowRoot.querySelectorAll('.home')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.home')).display).toBe('none');
@@ -240,6 +265,7 @@ describe('NavigationRail', () => {
 			};
 			const element = await setup(state);
 			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-open-main-menu')).toHaveSize(1);
 
 			expect(element.shadowRoot.querySelectorAll('.routing.is-active')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.routing.hide')).toHaveSize(0);
@@ -266,6 +292,7 @@ describe('NavigationRail', () => {
 			};
 			const element = await setup(state);
 			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-open-main-menu')).toHaveSize(1);
 
 			expect(element.shadowRoot.querySelectorAll('.objectinfo.is-active')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.objectinfo')).display).toBe('flex');
@@ -417,14 +444,56 @@ describe('NavigationRail', () => {
 		});
 
 		describe('`home` button', () => {
-			it('calls #_openTab', async () => {
+			it('calls #_openHomeTab', async () => {
 				const element = await setup();
-				const openTabSpy = spyOn(element, '_openTab');
+				const openTabSpy = spyOn(element, '_openHomeTab');
 				const homeButton = element.shadowRoot.querySelector('.home');
 
 				homeButton.click();
 
-				expect(openTabSpy).toHaveBeenCalledWith(TabIds.MAPS);
+				expect(openTabSpy).toHaveBeenCalledWith(TabIds.MAPS, TabIds.SEARCH, TabIds.MISC, TabIds.TOPICS);
+			});
+
+			it('changes to maps tab and opens the main menu', async () => {
+				const state = {
+					media: {
+						portrait: false,
+						minWidth: false
+					},
+					mainMenu: {
+						open: false,
+						tab: TabIds.FEATUREINFO
+					}
+				};
+				const element = await setup(state);
+
+				const homeButton = element.shadowRoot.querySelector('.home');
+
+				homeButton.click();
+
+				expect(store.getState().mainMenu.open).toBeTrue();
+				expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
+			});
+
+			it('stays at the search tab and toggles the main menu', async () => {
+				const state = {
+					media: {
+						portrait: false,
+						minWidth: false
+					},
+					mainMenu: {
+						open: true,
+						tab: TabIds.SEARCH
+					}
+				};
+				const element = await setup(state);
+
+				const homeButton = element.shadowRoot.querySelector('.home');
+
+				homeButton.click();
+
+				expect(store.getState().mainMenu.open).toBeFalse();
+				expect(store.getState().mainMenu.tab).toBe(TabIds.SEARCH);
 			});
 		});
 

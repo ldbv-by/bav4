@@ -5,7 +5,9 @@
 	bottom: 0;
 	top: 0;
 	left: -28em;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+	box-shadow:
+		-5px 0px 0px var(--primary-bg-color),
+		0px 2px 4px rgba(0, 0, 0, 0.5);
 	overflow: visible;
 	transition-property: transform;
 	transition-duration: var(--animation-duration-large-open);
@@ -27,7 +29,7 @@
 	border: 0;
 	width: 3.5em;
 	height: 3.5em;
-	left: 29.8em;
+	left: 29em;
 	top: 7.5em;
 	box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
 	text-align: left;
@@ -97,7 +99,7 @@
 	top: 8.5em;
 }
 .is-tablet .main-menu__close-button {
-	top: 5.5em;
+	top: 5em;
 	transform: scale(0.9);
 	margin-left: -0.2em;
 }
@@ -112,7 +114,7 @@
 	padding: 3em 0;
 }
 .is-open.is-open-navigationRail .main-menu {
-	transform: translate(33.5em, 0);
+	transform: translate(33em, 0);
 }
 .is-landscape:not(.is-open) .main-menu,
 .is-landscape:not(.is-full-size) .main-menu {
