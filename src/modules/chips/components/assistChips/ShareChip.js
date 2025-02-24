@@ -39,7 +39,7 @@ export class ShareChip extends AbstractAssistChip {
 	}
 
 	onInitialize() {
-		this.title = this._translationService.translate('chips_assist_chip_elevation_profile_title');
+		this.title = this._translationService.translate('chips_assist_chip_share_position_title');
 	}
 
 	update(type, data, model) {

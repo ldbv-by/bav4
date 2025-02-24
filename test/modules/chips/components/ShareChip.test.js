@@ -61,7 +61,7 @@ describe('ShareChip', () => {
 		it('has a model containing default values', async () => {
 			const element = await setup();
 
-			expect(element.getModel()).toEqual({ center: null, label: null, title: 'chips_assist_chip_elevation_profile_title' });
+			expect(element.getModel()).toEqual({ center: null, label: null, title: 'chips_assist_chip_share_position_title' });
 		});
 
 		it('properly implements abstract methods', async () => {
@@ -99,7 +99,7 @@ describe('ShareChip', () => {
 		it('renders the view with given title', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('button').title).toBe('chips_assist_chip_elevation_profile_title');
+			expect(element.shadowRoot.querySelector('button').title).toBe('chips_assist_chip_share_position_title');
 		});
 	});
 
