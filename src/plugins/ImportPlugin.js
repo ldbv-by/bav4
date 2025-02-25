@@ -46,7 +46,7 @@ export class ImportPlugin extends BaPlugin {
 
 			const geoResource = url
 				? this._importVectorDataService.forUrl(url, { sourceType: sourceType })
-				: this._importVectorDataService.forData(data, { sourceType: sourceType });
+				: this._importVectorDataService.forData(data, { sourceType: sourceType }, true);
 			if (geoResource) {
 				const { id } = geoResource;
 				//switch to the main menu's maps tab
