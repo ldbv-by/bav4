@@ -5,6 +5,8 @@ import { html, nothing } from 'lit-html';
 import css from './abstractAssistChip.css';
 import { MvuElement } from '../../../MvuElement';
 
+const Update_Title = 'update_title';
+
 /**
  *
  * @abstract
@@ -18,7 +20,7 @@ export class AbstractAssistChip extends MvuElement {
 	 * @param {object} model initial Model of this component
 	 */
 	constructor(model = {}) {
-		super(model);
+		super({ ...model, title: null });
 
 		if (this.constructor === AbstractAssistChip) {
 			// Abstract class can not be constructed.
@@ -27,9 +29,40 @@ export class AbstractAssistChip extends MvuElement {
 	}
 
 	/**
+	 * To update the model with a new title, implementations of @see AbstractAssistChip must
+	 * extent their own update method wit a call of super.update()
+	 *
+	 * @example
+	 * update(type, data, model) {
+	 * 	switch (type) {
+	 * 		case Update_Something:
+	 * 			return {
+	 * 				...model,
+	 * 				something: data
+	 *			};
+	 *		case Update_Something_Mor:
+	 *			return {
+	 *				...model,
+	 *				somethingMore: data
+	 *			};
+	 *		default:
+	 *			return super.update(type, data, model);
+	 * 	}
+	 * }
+	 *	@override
+	 */
+	update(type, data, model) {
+		switch (type) {
+			case Update_Title:
+				return { ...model, title: data };
+		}
+	}
+
+	/**
 	 * @override
 	 */
-	createView(/*eslint-disable no-unused-vars */ model) {
+	createView(model) {
+		const { title } = model;
 		const icon = this.getIcon();
 		const iconClass = `.chips__icon {
 			height: 1.5em;
@@ -48,7 +81,7 @@ export class AbstractAssistChip extends MvuElement {
 						${iconClass}
 							${css}
 					</style>
-					<button class="chips__button" @click=${() => this.onClick()}>
+					<button class="chips__button" title=${title} aria-label=${title} @click=${() => this.onClick()}>
 						<span class="chips__icon"></span>
 						<span class="chips__button-text">${this.getLabel()}</span>
 					</button>`
@@ -96,5 +129,12 @@ export class AbstractAssistChip extends MvuElement {
 	onClick() {
 		// The child has not implemented this method.
 		throw new Error('Please implement abstract method #onClick or do not call super.onClick from child.');
+	}
+
+	/**
+	 * @property {string} title='' - Title of the Chip
+	 */
+	set title(value) {
+		this.signal(Update_Title, value);
 	}
 }

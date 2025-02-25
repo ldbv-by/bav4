@@ -32,7 +32,7 @@ describe('RoutingChip', () => {
 			await setup();
 			const model = new RoutingChip().getModel();
 
-			expect(model).toEqual({ coordinate: [] });
+			expect(model).toEqual({ coordinate: [], title: null });
 		});
 
 		it('properly implements abstract methods', async () => {
@@ -63,6 +63,14 @@ describe('RoutingChip', () => {
 			const element = await setup();
 
 			expect(element.isVisible()).toBeTrue();
+		});
+
+		it('renders the view with given title ', async () => {
+			const properties = { coordinate: coordinate };
+			const element = await setup(defaultRoutingState, properties);
+
+			expect(element.shadowRoot.querySelector('button').title).toBe('chips_assist_chip_start_routing_here_title');
+			expect(element.shadowRoot.querySelector('button').ariaLabel).toBe('chips_assist_chip_start_routing_here_title');
 		});
 	});
 

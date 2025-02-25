@@ -37,7 +37,7 @@ describe('ElevationProfileChip', () => {
 			await setup();
 			const model = new ElevationProfileChip().getModel();
 
-			expect(model).toEqual({ profileCoordinates: null, id: null });
+			expect(model).toEqual({ profileCoordinates: null, id: null, title: null });
 		});
 
 		it('properly implements abstract methods', async () => {
@@ -104,6 +104,14 @@ describe('ElevationProfileChip', () => {
 			const element = await setup();
 
 			expect(element.isVisible()).toBeFalse();
+		});
+
+		it('renders the view with given title ', async () => {
+			const state = { elevationProfile: { active: false, id } };
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelector('button').title).toBe('chips_assist_chip_elevation_profile_title');
+			expect(element.shadowRoot.querySelector('button').ariaLabel).toBe('chips_assist_chip_elevation_profile_title');
 		});
 	});
 

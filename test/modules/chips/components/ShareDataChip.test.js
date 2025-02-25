@@ -45,7 +45,12 @@ describe('ShareDataChip', () => {
 		it('has a model containing default values', async () => {
 			const element = await setup();
 
-			expect(element.getModel()).toEqual({ storedDataAvailable: false, fileId: null, adminId: null });
+			expect(element.getModel()).toEqual({
+				storedDataAvailable: false,
+				fileId: null,
+				adminId: null,
+				title: 'chips_assist_chip_share_stored_data_title'
+			});
 		});
 
 		it('properly implements abstract methods', async () => {
@@ -74,6 +79,14 @@ describe('ShareDataChip', () => {
 			const element = await setup();
 
 			expect(element.isVisible()).toBeFalse();
+		});
+
+		it('renders the view with given title ', async () => {
+			const state = { ...initialState, adminId: 'a_fooBar', fileId: 'f_fooBar', latest: new EventLike({ success: true }) };
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelector('button').title).toBe('chips_assist_chip_share_stored_data_title');
+			expect(element.shadowRoot.querySelector('button').ariaLabel).toBe('chips_assist_chip_share_stored_data_title');
 		});
 	});
 

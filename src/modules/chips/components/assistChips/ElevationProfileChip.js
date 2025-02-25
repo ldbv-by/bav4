@@ -31,12 +31,18 @@ export class ElevationProfileChip extends AbstractAssistChip {
 		);
 	}
 
+	onInitialize() {
+		this.title = this._translationService.translate('chips_assist_chip_elevation_profile_title');
+	}
+
 	update(type, data, model) {
 		switch (type) {
 			case Update_Profile_Coordinates:
 				return { ...model, profileCoordinates: [...data] };
 			case Update_Profile_Id:
 				return { ...model, id: data };
+			default:
+				return super.update(type, data, model);
 		}
 	}
 

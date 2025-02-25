@@ -24,10 +24,16 @@ export class ExportVectorDataChip extends AbstractAssistChip {
 		this._translationService = TranslationService;
 	}
 
+	onInitialize() {
+		this.title = this._translationService.translate('chips_assist_chip_export_title');
+	}
+
 	update(type, data, model) {
 		switch (type) {
 			case Update_Data:
 				return { ...model, data: data };
+			default:
+				return super.update(type, data, model);
 		}
 	}
 

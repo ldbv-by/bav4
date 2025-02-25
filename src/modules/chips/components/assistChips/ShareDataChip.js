@@ -48,6 +48,10 @@ export class ShareDataChip extends AbstractAssistChip {
 		);
 	}
 
+	onInitialize() {
+		this.title = this._translationService.translate('chips_assist_chip_share_stored_data_title');
+	}
+
 	update(type, data, model) {
 		switch (type) {
 			case Update_Latest:
@@ -65,6 +69,8 @@ export class ShareDataChip extends AbstractAssistChip {
 					...model,
 					fileId: data
 				};
+			default:
+				return super.update(type, data, model);
 		}
 	}
 

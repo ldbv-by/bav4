@@ -10,7 +10,7 @@ window.customElements.define(ExportVectorDataChip.tag, ExportVectorDataChip);
 describe('ExportVectorDataChip', () => {
 	let store;
 
-	const setup = async () => {
+	const setup = async (exportData = null) => {
 		const windowMock = { navigator: {}, open() {} };
 		store = TestUtils.setupStoreAndDi(
 			{
@@ -26,14 +26,14 @@ describe('ExportVectorDataChip', () => {
 			})
 			.registerSingleton('TranslationService', { translate: (key) => key });
 
-		return TestUtils.render(ExportVectorDataChip.tag);
+		return TestUtils.render(ExportVectorDataChip.tag, { exportData }, {});
 	};
 
 	describe('when instantiated', () => {
 		it('has a model containing default values', async () => {
 			const element = await setup();
 
-			expect(element.getModel()).toEqual({ data: null });
+			expect(element.getModel()).toEqual({ data: null, title: 'chips_assist_chip_export_title' });
 		});
 
 		it('properly implements abstract methods', async () => {
@@ -56,6 +56,13 @@ describe('ExportVectorDataChip', () => {
 			const element = await setup();
 
 			expect(element.isVisible()).toBeFalse();
+		});
+
+		it('renders the view with given title ', async () => {
+			const element = await setup('someData');
+
+			expect(element.shadowRoot.querySelector('button').title).toBe('chips_assist_chip_export_title');
+			expect(element.shadowRoot.querySelector('button').ariaLabel).toBe('chips_assist_chip_export_title');
 		});
 	});
 

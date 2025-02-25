@@ -25,6 +25,10 @@ export class MapFeedbackChip extends AbstractAssistChip {
 		this._translationService = translationService;
 	}
 
+	onInitialize() {
+		this.title = this._translationService.translate('chips_assist_chip_map_feedback_title');
+	}
+
 	update(type, data, model) {
 		switch (type) {
 			case Update:
@@ -32,6 +36,8 @@ export class MapFeedbackChip extends AbstractAssistChip {
 					...model,
 					center: data
 				};
+			default:
+				return super.update(type, data, model);
 		}
 	}
 
@@ -52,7 +58,7 @@ export class MapFeedbackChip extends AbstractAssistChip {
 	async onClick() {
 		const { center } = this.getModel();
 		const translate = (key) => this._translationService.translate(key);
-		const title = translate('chips_assist_chip_map_feedback_title');
+		const title = translate('chips_assist_chip_map_feedback_modal_title');
 		const content = html`<ba-mvu-togglefeedbackpanel
 			.onSubmit=${closeModal}
 			.type=${FeedbackType.MAP}
