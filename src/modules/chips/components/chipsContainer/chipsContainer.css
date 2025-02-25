@@ -140,8 +140,8 @@ iframe {
 	height: 0;
 }
 .is-open.is-open-navigationRail.chips__container {
-	transform: translate(33.5em, 0);
+	transform: translate(33em, 0);
 }
 .is-open-navigationRail.chips__container {
-	transform: translate(6em, 0);
+	transform: translate(5.5em, 0);
 }
