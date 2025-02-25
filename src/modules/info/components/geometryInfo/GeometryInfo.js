@@ -176,7 +176,7 @@ export class GeometryInfo extends MvuElement {
 						class="close"
 						.icon="${clipboardIcon}"
 						.title=${translate('info_geometryInfo_copy_icon')}
-						.size=${1.5}
+						.size=${1.3}
 						@click=${onCopyLength}
 					></ba-icon>
 				</span>
@@ -188,7 +188,7 @@ export class GeometryInfo extends MvuElement {
 						class="close"
 						.icon="${clipboardIcon}"
 						.title=${translate('info_geometryInfo_copy_icon')}
-						.size=${1.5}
+						.size=${1.3}
 						@click=${onCopyArea}
 					></ba-icon>
 				</span>
