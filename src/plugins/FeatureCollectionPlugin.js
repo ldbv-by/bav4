@@ -47,7 +47,7 @@ export class FeatureCollectionPlugin extends BaPlugin {
 			if (entries.length > 0) {
 				const geoResourceIds = entries.map((feature) => {
 					const geoResourceId = feature.id;
-					this.#importVectorDataService.forData(feature.geometry.data, { id: geoResourceId });
+					this.#importVectorDataService.forData(feature.geometry.data, { id: geoResourceId }, true);
 					return geoResourceId;
 				});
 
