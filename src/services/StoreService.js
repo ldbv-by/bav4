@@ -38,6 +38,7 @@ import { fileStorageReducer } from '../store/fileStorage/fileStorage.reducer';
 import { timeTravelReducer } from '../store/timeTravel/timeTravel.reducer';
 import { layerSwipeReducer } from '../store/layerSwipe/layerSwipe.reducer';
 import { catalogReducer } from '../store/catalog/catalog.reducer';
+import { featureCollectionReducer } from '../store/featureCollection/featureCollection.reducer';
 
 /**
  * Service which configures, initializes and holds the redux store.
@@ -85,7 +86,8 @@ export class StoreService {
 			fileStorage: fileStorageReducer,
 			timeTravel: timeTravelReducer,
 			layerSwipe: layerSwipeReducer,
-			catalog: catalogReducer
+			catalog: catalogReducer,
+			featureCollection: featureCollectionReducer
 		});
 
 		this._store = createStore(rootReducer);
@@ -123,6 +125,7 @@ export class StoreService {
 				EncodeStatePlugin: encodeStatePlugin,
 				TimeTravelPlugin: timeTravelPlugin,
 				ComparePlugin: comparePlugin,
+				FeatureCollectionPlugin: featureCollectionPlugin,
 				ObserveStateForEncodingPlugin: observeStateForEncodingPlugin
 			} = $injector.inject(
 				'GlobalErrorPlugin',
@@ -156,6 +159,7 @@ export class StoreService {
 				'EncodeStatePlugin',
 				'TimeTravelPlugin',
 				'ComparePlugin',
+				'FeatureCollectionPlugin',
 				'ObserveStateForEncodingPlugin'
 			);
 
@@ -168,6 +172,7 @@ export class StoreService {
 				await chipsPlugin.register(this._store);
 				await timeTravelPlugin.register(this._store);
 				await comparePlugin.register(this._store);
+				await featureCollectionPlugin.register(this._store);
 				await layersPlugin.register(this._store);
 				await positionPlugin.register(this._store);
 				await measurementPlugin.register(this._store);

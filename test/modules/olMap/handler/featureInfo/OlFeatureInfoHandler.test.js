@@ -12,7 +12,7 @@ import { TestUtils } from '../../../../test-utils';
 import { abortOrReset, startRequest } from '../../../../../src/store/featureInfo/featureInfo.action';
 import { fromLonLat } from 'ol/proj';
 import { createDefaultLayer, layersReducer } from '../../../../../src/store/layers/layers.reducer';
-import { getBvvFeatureInfo } from '../../../../../src/modules/olMap/handler/featureInfo/featureInfoItem.provider';
+import { bvvFeatureInfoProvider } from '../../../../../src/modules/olMap/handler/featureInfo/featureInfoItem.provider';
 import { modifyLayer } from '../../../../../src/store/layers/layers.action';
 import { highlightReducer } from '../../../../../src/store/highlight/highlight.reducer';
 import { HighlightFeatureType } from '../../../../../src/store/highlight/highlight.action';
@@ -50,6 +50,7 @@ describe('OlFeatureInfoHandler', () => {
 		const geometry = { data: new GeoJSON().writeGeometry(olFeature.getGeometry()), geometryType: FeatureInfoGeometryTypes.GEOJSON };
 		return { title: `${olFeature.get('name')}-${layer.id}`, content: `${olFeature.get('description')}`, geometry: geometry };
 	};
+
 	const mockNullFeatureInfoProvider = () => null;
 
 	const geoResourceService = {
@@ -59,7 +60,7 @@ describe('OlFeatureInfoHandler', () => {
 	const notMatchingCoordinate = fromLonLat([5, 12]);
 	let store;
 
-	const setup = (state = {}, featureInfoProvider = getBvvFeatureInfo) => {
+	const setup = (state = {}, featureInfoProvider = bvvFeatureInfoProvider) => {
 		store = TestUtils.setupStoreAndDi(state, { featureInfo: featureInfoReducer, layers: layersReducer, highlight: highlightReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
 		return new OlFeatureInfoHandler(featureInfoProvider);
@@ -90,7 +91,7 @@ describe('OlFeatureInfoHandler', () => {
 
 		it('initializes the service with default provider', async () => {
 			const instanceUnderTest = setup();
-			expect(instanceUnderTest._featureInfoProvider).toEqual(getBvvFeatureInfo);
+			expect(instanceUnderTest._featureInfoProvider).toEqual(bvvFeatureInfoProvider);
 		});
 	});
 
@@ -108,6 +109,7 @@ describe('OlFeatureInfoHandler', () => {
 		const layerId1 = 'layerId1';
 		const layerId2 = 'layerId2';
 		const layerId3 = 'layerId3';
+		const layerId4 = 'layerId4';
 		const geoResourceId0 = 'geoResourceId0';
 		const geoResourceId1 = 'geoResourceId1';
 		const geoResourceId2 = 'geoResourceId2';
@@ -212,7 +214,8 @@ describe('OlFeatureInfoHandler', () => {
 							createDefaultLayer(layerId0, geoResourceId0),
 							createDefaultLayer(layerId1, geoResourceId1),
 							createDefaultLayer(layerId2, geoResourceId2),
-							createDefaultLayer(layerId3, geoResourceId3)
+							createDefaultLayer(layerId3, geoResourceId3),
+							createDefaultLayer(layerId4)
 						]
 					}
 				},
@@ -260,9 +263,21 @@ describe('OlFeatureInfoHandler', () => {
 			vectorLayer3.setSource(olVectorSource3);
 			map.addLayer(vectorLayer3);
 
-			spyOn(geoResourceService, 'byId').and.callFake((geoResourceId) =>
-				new VectorGeoResource(geoResourceId, '', VectorSourceType.GEOJSON).setQueryable(geoResourceId !== geoResourceId3)
-			);
+			//4. no referenced GeoResource is available (e.g. highlight layer)
+			const olVectorSource4 = new VectorSource();
+			const feature4 = new Feature({ geometry: geometry });
+			feature4.set('name', 'name4');
+			feature4.set('description', 'description4');
+			olVectorSource4.addFeature(feature4);
+			const vectorLayer4 = new VectorLayer({ properties: { id: layerId4 } });
+			vectorLayer4.setSource(olVectorSource4);
+			map.addLayer(vectorLayer4);
+
+			spyOn(geoResourceService, 'byId').and.callFake((geoResourceId) => {
+				return geoResourceId
+					? new VectorGeoResource(geoResourceId, '', VectorSourceType.GEOJSON).setQueryable(geoResourceId !== geoResourceId3)
+					: null;
+			});
 			handler.register(map);
 
 			await renderComplete(map);
@@ -271,19 +286,24 @@ describe('OlFeatureInfoHandler', () => {
 
 			//must be called within a timeout function cause implementation delays call of 'resolveQuery'
 			await TestUtils.timeout(TestDelay);
-			expect(store.getState().featureInfo.current).toHaveSize(3);
+			expect(store.getState().featureInfo.current).toHaveSize(4);
 			// ensure correct order of LayerInfo items -> must correspond to layers.active ordering
 			expect(store.getState().featureInfo.current[0]).toEqual({
+				title: 'name4-layerId4',
+				content: 'description4',
+				geometry: expectedFeatureInfoGeometry
+			});
+			expect(store.getState().featureInfo.current[1]).toEqual({
 				title: 'name2-layerId2',
 				content: 'description2',
 				geometry: expectedFeatureInfoGeometry
 			});
-			expect(store.getState().featureInfo.current[1]).toEqual({
+			expect(store.getState().featureInfo.current[2]).toEqual({
 				title: 'name1-layerId1',
 				content: 'description1',
 				geometry: expectedFeatureInfoGeometry
 			});
-			expect(store.getState().featureInfo.current[2]).toEqual({
+			expect(store.getState().featureInfo.current[3]).toEqual({
 				title: 'name0-layerId0',
 				content: 'description0',
 				geometry: expectedFeatureInfoGeometry
@@ -298,7 +318,7 @@ describe('OlFeatureInfoHandler', () => {
 			startRequest(matchingCoordinate);
 
 			await TestUtils.timeout(TestDelay);
-			expect(store.getState().featureInfo.current).toHaveSize(3);
+			expect(store.getState().featureInfo.current).toHaveSize(4);
 
 			// we modify the first layer so that it is not queryable anymore
 			modifyLayer(layerId0, { visible: false });
@@ -306,7 +326,7 @@ describe('OlFeatureInfoHandler', () => {
 			startRequest(matchingCoordinate);
 
 			await TestUtils.timeout(TestDelay);
-			expect(store.getState().featureInfo.current).toHaveSize(2);
+			expect(store.getState().featureInfo.current).toHaveSize(3);
 
 			//we modify the second layer so that it is not queryable anymore, but the feature1 has a name property
 			modifyLayer(layerId1, { hidden: true });
@@ -314,7 +334,7 @@ describe('OlFeatureInfoHandler', () => {
 			startRequest(matchingCoordinate);
 
 			await TestUtils.timeout(TestDelay);
-			expect(store.getState().featureInfo.current).toHaveSize(2);
+			expect(store.getState().featureInfo.current).toHaveSize(3);
 
 			//we modify feature1 by setting the name property to undefined
 			feature1.set('name', undefined);
@@ -322,7 +342,62 @@ describe('OlFeatureInfoHandler', () => {
 			startRequest(matchingCoordinate);
 
 			await TestUtils.timeout(TestDelay);
+			expect(store.getState().featureInfo.current).toHaveSize(2);
+		});
+
+		it('sets the `layerId` property on each olFeature', async () => {
+			// this provider also returns the `layerId` property of the olFeature as `content? property
+			const mockFeatureInfoProvider = (olFeature, layer) => {
+				const geometry = { data: new GeoJSON().writeGeometry(olFeature.getGeometry()), geometryType: FeatureInfoGeometryTypes.GEOJSON };
+				return {
+					title: `${olFeature.get('name')}-${layer.id}`,
+					content: `${olFeature.get('layerId')}`,
+					geometry: geometry
+				};
+			};
+			const handler = setup(
+				{
+					layers: {
+						active: [
+							createDefaultLayer(layerId0, geoResourceId0),
+							createDefaultLayer(layerId1, geoResourceId1),
+							createDefaultLayer(layerId2, geoResourceId2),
+							createDefaultLayer(layerId3, geoResourceId3)
+						]
+					}
+				},
+				mockFeatureInfoProvider
+			);
+			const map = setupMap();
+			const geometry = new Point(matchingCoordinate);
+			const expectedFeatureInfoGeometry = { data: new GeoJSON().writeGeometry(geometry), geometryType: FeatureInfoGeometryTypes.GEOJSON };
+			// 1. "default" vector layer
+			const olVectorSource0 = new VectorSource();
+			const feature0 = new Feature({ geometry: geometry });
+			feature0.set('name', 'name0');
+			feature0.set('description', 'description0');
+			olVectorSource0.addFeature(feature0);
+			vectorLayer0.setSource(olVectorSource0);
+			map.addLayer(vectorLayer0);
+
+			spyOn(geoResourceService, 'byId').and.callFake((geoResourceId) =>
+				new VectorGeoResource(geoResourceId, '', VectorSourceType.GEOJSON).setQueryable(geoResourceId !== geoResourceId3)
+			);
+			handler.register(map);
+
+			await renderComplete(map);
+			// safe to call map.getPixelFromCoordinate from now on
+			startRequest(matchingCoordinate);
+
+			//must be called within a timeout function cause implementation delays call of 'resolveQuery'
+			await TestUtils.timeout(TestDelay);
 			expect(store.getState().featureInfo.current).toHaveSize(1);
+
+			expect(store.getState().featureInfo.current[0]).toEqual({
+				title: 'name0-layerId0',
+				content: 'layerId0',
+				geometry: expectedFeatureInfoGeometry
+			});
 		});
 
 		it('ignores a clustered feature containing more than one features', async () => {

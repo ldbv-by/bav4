@@ -1,7 +1,8 @@
 import BaseLayer from 'ol/layer/Base';
 import LayerGroup from 'ol/layer/Group.js';
-import { Map } from 'ol';
+import { Feature, Map } from 'ol';
 import {
+	getLayerByFeature,
 	getLayerById,
 	getLayerGroup,
 	registerLongPressListener,
@@ -10,6 +11,10 @@ import {
 } from '../../../../src/modules/olMap/utils/olMapUtils';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { simulateMapBrowserEvent } from '../mapTestUtils';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
+import ImageLayer from 'ol/layer/Image';
+import { ImageWMS } from 'ol/source';
 
 describe('olMapUtils', () => {
 	describe('updateOlLayer', () => {
@@ -229,6 +234,29 @@ describe('olMapUtils', () => {
 			expect(getLayerGroup(new Map(), olLayer2)).toBeNull();
 			expect(getLayerGroup(map, undefined)).toBeNull();
 			expect(getLayerGroup(undefined, olLayer0)).toBeNull();
+		});
+	});
+
+	describe('getLayerByFeature', () => {
+		it('returns the corresponding layer or null', () => {
+			const map = new Map();
+			const feature0 = new Feature();
+			const feature2 = new Feature();
+			const feature3 = new Feature();
+			const olLayer0 = new VectorLayer({ properties: { id: 'l2' }, source: new VectorSource({ features: [feature0] }) });
+			const olLayer1 = new ImageLayer({ properties: { id: 'l1' }, source: new ImageWMS() });
+			const olLayer2 = new VectorLayer({ properties: { id: 'l2' }, source: new VectorSource({ features: [feature2] }) });
+			const olGroupLayer0 = new LayerGroup({ properties: { id: 'gr0' }, layers: [olLayer0] });
+			const olGroupLayer1 = new LayerGroup({ properties: { id: 'gr1' }, layers: [olLayer1] });
+			map.addLayer(olGroupLayer0);
+			map.addLayer(olGroupLayer1);
+			map.addLayer(olLayer2);
+
+			expect(getLayerByFeature(map, feature0)).toEqual(olLayer0);
+			expect(getLayerByFeature(map, feature2)).toEqual(olLayer2);
+			expect(getLayerByFeature(map, feature3)).toBeNull();
+			expect(getLayerByFeature(map, undefined)).toBeNull();
+			expect(getLayerByFeature(undefined, feature0)).toBeNull();
 		});
 	});
 });

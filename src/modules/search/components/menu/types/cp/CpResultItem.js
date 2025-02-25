@@ -107,13 +107,15 @@ export class CpResultItem extends MvuElement {
 				addHighlightFeatures({
 					id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
 					type: HighlightFeatureType.DEFAULT,
-					data: { geometry: result.data.geometry, geometryType: this._matchGeomType(result.data.geometryType) }
+					data: { geometry: result.data.geometry, geometryType: this._matchGeomType(result.data.geometryType) },
+					label: result.label
 				});
 			} else if (!result.extent) {
 				addHighlightFeatures({
 					id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
 					type: HighlightFeatureType.MARKER,
-					data: { coordinate: [...result.center] }
+					data: { coordinate: [...result.center] },
+					label: result.label
 				});
 			} else {
 				removeHighlightFeaturesById(SEARCH_RESULT_HIGHLIGHT_FEATURE_ID);

@@ -8,15 +8,15 @@ import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { KML } from 'ol/format';
 import { FeatureInfoGeometryTypes } from '../../../../domain/featureInfo';
+import { Geometry } from '../../../../domain/geometry';
+import { Feature } from '../../../../domain/feature';
 
 /**
- * BVV strategy for mapping an olFeature to a FeatureInfo item.
+ * BVV specific implementation of {@link module:modules/olMap/handler/featureInfo/OlFeatureInfoHandler~featureInfoProvider}
  * @function
- * @param {Feature} olFeature ol feature
- * @param {module:store/layers/layers_action~LayerProperties} layerProperties layerProperties
- * @returns {module:store/featureInfo/featureInfo_action~FeatureInfo} featureInfo
+ * @type {module:modules/olMap/handler/featureInfo/OlFeatureInfoHandler~featureInfoProvider}
  */
-export const getBvvFeatureInfo = (olFeature, layerProperties) => {
+export const bvvFeatureInfoProvider = (olFeature, layerProperties) => {
 	if (!olFeature.get('name') && !olFeature.get('description') && !olFeature.get('desc') && !olFeature.getGeometry()) {
 		return null;
 	}
@@ -38,6 +38,7 @@ export const getBvvFeatureInfo = (olFeature, layerProperties) => {
 			<div class='chips__container'>
 				<ba-profile-chip .coordinates=${elevationProfileCoordinates}></ba-profile-chip>
 				<ba-export-vector-data-chip .exportData=${exportData}></ba-export-vector-data-chip>
+				<ba-feature-info-collection-panel .featureId=${olFeature.get('layerId')} .feature=${new Feature(new Geometry(exportData))}></ba-feature-info-collection-panel>
 			</div>`;
 
 		return descContent

@@ -80,7 +80,7 @@ export const getLayerById = (map, id) => {
 
 /**
  * Finds the (first) corresponding layer group for an ol layer.
- * Returns `null` if there's no corresponding layer group
+ * Returns `null` if there's no corresponding layer group.
  * @param {OlMap} map olMap
  * @param {OlLayer} olLayer the olLayer which group should be found
  * @returns olLayer or `null`
@@ -100,6 +100,21 @@ export const getLayerGroup = (map, olLayer) => {
 						.find((ol) => ol === olLayer)
 				)[0] ?? null
 		);
+	}
+	return null;
+};
+
+/**
+ * Finds the layer an ol feature is attached to.
+ * It always returns the 'real' layer even if the layer is part of a LayerGroup.
+ * Returns `null` if there's no corresponding layer.
+ * @param {OlMap} map olMap
+ * @param {OlLayer} olFeature the olFeature which layer should be found
+ * @returns olLayer or `null`
+ */
+export const getLayerByFeature = (map, olFeature) => {
+	if (map && olFeature) {
+		return map.getAllLayers().filter((l) => (l.getSource().hasFeature ? l.getSource().hasFeature(olFeature) : false))[0] ?? null;
 	}
 	return null;
 };

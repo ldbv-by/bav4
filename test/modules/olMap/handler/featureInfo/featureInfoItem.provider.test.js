@@ -2,15 +2,16 @@ import { render } from 'lit-html';
 import { Feature } from 'ol';
 import { Point } from 'ol/geom';
 import { fromLonLat } from 'ol/proj';
-import { getBvvFeatureInfo } from '../../../../../src/modules/olMap/handler/featureInfo/featureInfoItem.provider';
+import { bvvFeatureInfoProvider } from '../../../../../src/modules/olMap/handler/featureInfo/featureInfoItem.provider';
+import { FeatureCollectionPanel } from '../../../../../src/modules/featureInfo/components/collection/FeatureCollectionPanel';
+import { ExportVectorDataChip } from '../../../../../src/modules/chips/components/assistChips/ExportVectorDataChip';
+import { ElevationProfileChip } from '../../../../../src/modules/chips/components/assistChips/ElevationProfileChip';
+import { GeometryInfo } from '../../../../../src/modules/info/components/geometryInfo/GeometryInfo';
 import { createDefaultLayer, createDefaultLayerProperties } from '../../../../../src/store/layers/layers.reducer';
 import GeoJSON from 'ol/format/GeoJSON';
 import { $injector } from '../../../../../src/injection';
-import { ExportVectorDataChip } from '../../../../../src/modules/chips/components/assistChips/ExportVectorDataChip';
 import { TestUtils } from '../../../../test-utils';
 import { FeatureInfoGeometryTypes } from '../../../../../src/domain/featureInfo';
-
-window.customElements.define(ExportVectorDataChip.tag, ExportVectorDataChip);
 
 describe('FeatureInfo provider', () => {
 	const mapServiceMock = {
@@ -61,7 +62,7 @@ describe('FeatureInfo provider', () => {
 				const layer = createDefaultLayer('foo');
 				const feature = new Feature({});
 
-				const featureInfo = getBvvFeatureInfo(feature, layer);
+				const featureInfo = bvvFeatureInfoProvider(feature, layer);
 
 				expect(featureInfo).toBeNull();
 			});
@@ -82,7 +83,7 @@ describe('FeatureInfo provider', () => {
 						geometryType: FeatureInfoGeometryTypes.GEOJSON
 					};
 
-					let featureInfo = getBvvFeatureInfo(feature, layerProperties);
+					let featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 					render(featureInfo.content, target);
 
 					expect(featureInfo).toEqual({
@@ -91,22 +92,22 @@ describe('FeatureInfo provider', () => {
 						geometry: expectedFeatureInfoGeometry
 					});
 					expect(target.innerText.trim()).toBe('');
-					expect(target.querySelector('ba-geometry-info')).toBeTruthy();
-					expect(target.querySelector('ba-geometry-info').statistic).toEqual({
+					expect(target.querySelectorAll(GeometryInfo.tag)).toHaveSize(1);
+					expect(target.querySelector(GeometryInfo.tag).statistic).toEqual({
 						geometryType: 'Point',
 						coordinate: jasmine.any(Array),
 						azimuth: null,
 						length: null,
 						area: null
 					});
-					expect(target.querySelector('ba-profile-chip')).toBeTruthy();
-					expect(target.querySelector('ba-export-vector-data-chip')).toBeTruthy();
+					expect(target.querySelectorAll(ElevationProfileChip.tag)).toHaveSize(1);
+					expect(target.querySelectorAll(ExportVectorDataChip.tag)).toHaveSize(1);
 
 					//no name property, but description property
 					feature = new Feature({ geometry: new Point(coordinate) });
 					feature.set('description', 'description');
 
-					featureInfo = getBvvFeatureInfo(feature, layerProperties);
+					featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 					render(featureInfo.content, target);
 
 					expect(featureInfo).toEqual({
@@ -115,22 +116,22 @@ describe('FeatureInfo provider', () => {
 						geometry: expectedFeatureInfoGeometry
 					});
 					expect(target.querySelector('.content').innerText).toBe('description');
-					expect(target.querySelector('ba-geometry-info')).toBeTruthy();
-					expect(target.querySelector('ba-geometry-info').statistic).toEqual({
+					expect(target.querySelectorAll(GeometryInfo.tag)).toHaveSize(1);
+					expect(target.querySelector(GeometryInfo.tag).statistic).toEqual({
 						geometryType: 'Point',
 						coordinate: jasmine.any(Array),
 						azimuth: null,
 						length: null,
 						area: null
 					});
-					expect(target.querySelector('ba-profile-chip')).toBeTruthy();
-					expect(target.querySelector('ba-export-vector-data-chip')).toBeTruthy();
+					expect(target.querySelectorAll(ElevationProfileChip.tag)).toHaveSize(1);
+					expect(target.querySelectorAll(ExportVectorDataChip.tag)).toHaveSize(1);
 
 					//no name property, but desc property
 					feature = new Feature({ geometry: new Point(coordinate) });
 					feature.set('desc', 'desc');
 
-					featureInfo = getBvvFeatureInfo(feature, layerProperties);
+					featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 					render(featureInfo.content, target);
 
 					expect(featureInfo).toEqual({
@@ -139,16 +140,16 @@ describe('FeatureInfo provider', () => {
 						geometry: expectedFeatureInfoGeometry
 					});
 					expect(target.querySelector('.content').innerText).toBe('desc');
-					expect(target.querySelector('ba-geometry-info')).toBeTruthy();
-					expect(target.querySelector('ba-geometry-info').statistic).toEqual({
+					expect(target.querySelectorAll(GeometryInfo.tag)).toHaveSize(1);
+					expect(target.querySelector(GeometryInfo.tag).statistic).toEqual({
 						geometryType: 'Point',
 						coordinate: jasmine.any(Array),
 						azimuth: null,
 						length: null,
 						area: null
 					});
-					expect(target.querySelector('ba-profile-chip')).toBeTruthy();
-					expect(target.querySelector('ba-export-vector-data-chip')).toBeTruthy();
+					expect(target.querySelectorAll(ElevationProfileChip.tag)).toHaveSize(1);
+					expect(target.querySelectorAll(ExportVectorDataChip.tag)).toHaveSize(1);
 				});
 
 				it('should sanitize description content', () => {
@@ -161,7 +162,7 @@ describe('FeatureInfo provider', () => {
 					feature = new Feature({ geometry: new Point(coordinate) });
 					feature.set('description', 'description');
 					const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').withArgs('description').and.callThrough();
-					const featureInfo = getBvvFeatureInfo(feature, layerProperties);
+					const featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 					render(featureInfo.content, target);
 
 					expect(sanitizeSpy).toHaveBeenCalledOnceWith('description');
@@ -177,7 +178,7 @@ describe('FeatureInfo provider', () => {
 					feature = new Feature({ geometry: new Point(coordinate) });
 					feature.set('name', 'name');
 					const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').withArgs('name').and.callThrough();
-					const featureInfo = getBvvFeatureInfo(feature, layerProperties);
+					const featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 					render(featureInfo.content, target);
 
 					expect(sanitizeSpy).toHaveBeenCalledOnceWith('name');
@@ -198,7 +199,7 @@ describe('FeatureInfo provider', () => {
 						geometryType: FeatureInfoGeometryTypes.GEOJSON
 					};
 
-					let featureInfo = getBvvFeatureInfo(feature, layerProperties);
+					let featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 					render(featureInfo.content, target);
 
 					expect(featureInfo).toEqual({
@@ -207,14 +208,15 @@ describe('FeatureInfo provider', () => {
 						geometry: expectedFeatureInfoGeometry
 					});
 					expect(target.innerText.trim()).toBe('');
-					expect(target.querySelector('ba-geometry-info')).toBeTruthy();
-					expect(target.querySelector('ba-profile-chip')).toBeTruthy();
-					expect(target.querySelector('ba-export-vector-data-chip')).toBeTruthy();
+					expect(target.querySelectorAll(GeometryInfo.tag)).toHaveSize(1);
+					expect(target.querySelectorAll(ElevationProfileChip.tag)).toHaveSize(1);
+					expect(target.querySelectorAll(ExportVectorDataChip.tag)).toHaveSize(1);
+					expect(target.querySelectorAll(FeatureCollectionPanel.tag)).toHaveSize(1);
 
 					//no name property
 					feature = new Feature({ geometry: new Point(coordinate) });
 
-					featureInfo = getBvvFeatureInfo(feature, layerProperties);
+					featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 					render(featureInfo.content, target);
 
 					expect(featureInfo).toEqual({
@@ -222,9 +224,10 @@ describe('FeatureInfo provider', () => {
 						content: jasmine.any(Object),
 						geometry: expectedFeatureInfoGeometry
 					});
-					expect(target.querySelector('ba-geometry-info')).toBeTruthy();
-					expect(target.querySelector('ba-profile-chip')).toBeTruthy();
-					expect(target.querySelector('ba-export-vector-data-chip')).toBeTruthy();
+					expect(target.querySelectorAll(GeometryInfo.tag)).toHaveSize(1);
+					expect(target.querySelectorAll(ElevationProfileChip.tag)).toHaveSize(1);
+					expect(target.querySelectorAll(ExportVectorDataChip.tag)).toHaveSize(1);
+					expect(target.querySelectorAll(FeatureCollectionPanel.tag)).toHaveSize(1);
 				});
 
 				it('should sanitize name content', () => {
@@ -237,14 +240,14 @@ describe('FeatureInfo provider', () => {
 					const feature = new Feature({ geometry: geometry });
 					feature.set('name', 'name');
 
-					const featureInfo = getBvvFeatureInfo(feature, layerProperties);
+					const featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 					render(featureInfo.content, target);
 
 					expect(sanitizeSpy).toHaveBeenCalledOnceWith('name');
 				});
 			});
 
-			it('should supply exportVectorDataChip with exportData as KML', () => {
+			it('should supply ExportVectorDataChip with exportData as KML', () => {
 				const target = document.createElement('div');
 				const geoResourceId = 'geoResourceId';
 				spyOn(geoResourceServiceMock, 'byId').withArgs(geoResourceId).and.returnValue({ label: 'foo' } /*fake GeoResource */);
@@ -254,12 +257,32 @@ describe('FeatureInfo provider', () => {
 				feature = new Feature({ geometry: new Point(coordinate) });
 				feature.set('name', 'name');
 
-				const featureInfo = getBvvFeatureInfo(feature, layerProperties);
+				const featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 				render(featureInfo.content, target);
 
-				const chipElement = target.querySelector('ba-export-vector-data-chip');
+				const chipElement = target.querySelector(ExportVectorDataChip.tag);
 
-				expect(chipElement.getModel().data.startsWith('<kml')).toBeTrue();
+				expect(chipElement.exportData.startsWith('<kml')).toBeTrue();
+			});
+
+			it('should supply the FeatureCollectionPanel with a geometry and a featureId', () => {
+				const target = document.createElement('div');
+				const geoResourceId = 'geoResourceId';
+				spyOn(geoResourceServiceMock, 'byId').withArgs(geoResourceId).and.returnValue({ label: 'foo' } /*fake GeoResource */);
+				const layerProperties = { ...createDefaultLayerProperties(), geoResourceId: geoResourceId };
+				const geometry = new Point(coordinate);
+				let feature = new Feature({ geometry: geometry });
+				feature = new Feature({ geometry: new Point(coordinate) });
+				feature.set('name', 'name');
+				feature.set('layerId', 'layerId');
+
+				const featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
+				render(featureInfo.content, target);
+
+				const panel = target.querySelector(FeatureCollectionPanel.tag);
+
+				expect(panel.feature.geometry.data.startsWith('<kml')).toBeTrue();
+				expect(panel.featureId).toBe('layerId');
 			});
 		});
 	});

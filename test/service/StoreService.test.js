@@ -106,6 +106,9 @@ describe('StoreService', () => {
 		const comparePluginMock = {
 			register: () => {}
 		};
+		const featureCollectionPluginMock = {
+			register: () => {}
+		};
 
 		const setupInjector = () => {
 			$injector
@@ -144,6 +147,7 @@ describe('StoreService', () => {
 				.registerSingleton('ObserveStateForEncodingPlugin', observeStateForEncodingPluginMock)
 				.registerSingleton('TimeTravelPlugin', timeTravelPluginMock)
 				.registerSingleton('ComparePlugin', comparePluginMock)
+				.registerSingleton('FeatureCollectionPlugin', featureCollectionPluginMock)
 
 				.ready();
 		};
@@ -155,7 +159,7 @@ describe('StoreService', () => {
 			expect(store).toBeDefined();
 
 			const reducerKeys = Object.keys(store.getState());
-			expect(reducerKeys.length).toBe(35);
+			expect(reducerKeys.length).toBe(36);
 			expect(reducerKeys.includes('map')).toBeTrue();
 			expect(reducerKeys.includes('pointer')).toBeTrue();
 			expect(reducerKeys.includes('position')).toBeTrue();
@@ -191,6 +195,7 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('timeTravel')).toBeTrue();
 			expect(reducerKeys.includes('layerSwipe')).toBeTrue();
 			expect(reducerKeys.includes('catalog')).toBeTrue();
+			expect(reducerKeys.includes('featureCollection')).toBeTrue();
 		});
 
 		it('registers all plugins', async () => {
@@ -225,6 +230,7 @@ describe('StoreService', () => {
 			const observeStateForEncodingPluginSpy = spyOn(observeStateForEncodingPluginMock, 'register');
 			const timeTravelPluginSpy = spyOn(timeTravelPluginMock, 'register');
 			const comparePluginSpy = spyOn(comparePluginMock, 'register');
+			const featureCollectionPluginSpy = spyOn(featureCollectionPluginMock, 'register');
 			const instanceUnderTest = new StoreService();
 
 			setupInjector();
@@ -265,6 +271,7 @@ describe('StoreService', () => {
 			expect(observeStateForEncodingPluginSpy).toHaveBeenCalledWith(store);
 			expect(timeTravelPluginSpy).toHaveBeenCalledWith(store);
 			expect(comparePluginSpy).toHaveBeenCalledWith(store);
+			expect(featureCollectionPluginSpy).toHaveBeenCalledWith(store);
 		});
 	});
 });
