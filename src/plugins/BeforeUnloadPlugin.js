@@ -30,7 +30,7 @@ export class BeforeUnloadPlugin extends BaPlugin {
 			};
 
 			const beforeunloadEventListenerForTools = (e) => beforeunloadEventListener(e);
-			const onToolChanged = async (toolId) => {
+			const onToolChanged = (toolId) => {
 				if (this._getTools().includes(toolId)) {
 					window.addEventListener('beforeunload', beforeunloadEventListenerForTools);
 				} else {
@@ -41,8 +41,7 @@ export class BeforeUnloadPlugin extends BaPlugin {
 			observe(store, (state) => state.tools.current, onToolChanged, false);
 
 			const beforeUnloadEventListenerForLayers = (e) => beforeunloadEventListener(e);
-
-			const olLayersChanged = async (active) => {
+			const olLayersChanged = (active) => {
 				if (
 					active
 						.map((l) => geoResourceService.resolve(geoResourceService.byId(l.geoResourceId)))

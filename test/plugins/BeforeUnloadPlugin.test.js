@@ -73,23 +73,6 @@ describe('BeforeUnloadPlugin', () => {
 					expect(removeEventListenerSpy).toHaveBeenCalledWith('beforeunload', jasmine.any(Function));
 				});
 			});
-			// describe('a tool is inactivated', () => {
-			// 	it('removes an "beforeunload" event listener', async () => {
-			// 		const addEventListenerSpy = spyOn(window, 'addEventListener');
-			// 		const removeEventListenerSpy = spyOn(window, 'removeEventListener');
-			// 		const store = setup();
-			// 		const instanceUnderTest = new BeforeUnloadPlugin();
-			// 		const toolId = 'myTool';
-			// 		spyOn(instanceUnderTest, '_getTools').and.returnValue([toolId]);
-			// 		await instanceUnderTest.register(store);
-
-			// 		setCurrentTool(toolId);
-			// 		setCurrentTool(null);
-
-			// 		expect(addEventListenerSpy).toHaveBeenCalledWith('beforeunload', jasmine.any(Function));
-			// 		expect(removeEventListenerSpy).toHaveBeenCalledWith('beforeunload', jasmine.any(Function));
-			// 	});
-			// });
 		});
 
 		describe('layers', () => {
