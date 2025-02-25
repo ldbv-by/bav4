@@ -35,3 +35,9 @@ svg {
 	height: 2em;
 	width: 2em;
 }
+.catalog-content-panel {
+	position: sticky;
+	top: 0;
+	background: var(--primary-bg-color);
+	z-index: 1;
+}
