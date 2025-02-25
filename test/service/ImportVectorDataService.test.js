@@ -311,6 +311,32 @@ describe('ImportVectorDataService', () => {
 			expect(vgr.label).toBe(options.label);
 			expect(vgr.data).toBe(data);
 			expect(vgr.srid).toBe(4326);
+			expect(vgr.localData).toBeFalse();
+			expect(vgr.hidden).toBeTrue();
+			expect(vgr._attributionProvider).toBe(getAttributionForLocallyImportedOrCreatedGeoResource);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
+			expect(sourceTypeServiceSpy).not.toHaveBeenCalled();
+			expect(vgr.marker).toBe(handledByGeoResourceServiceMarker);
+		});
+
+		it('returns a VectorGeoResource for given VectorSourceType setting the `localData` flag', () => {
+			const instanceUnderTest = setup();
+			const data = 'data';
+			const options = {
+				id: 'id',
+				label: 'label',
+				sourceType: VectorSourceType.KML
+			};
+			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(addOrReplaceMethodMock);
+			const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forData');
+
+			const vgr = instanceUnderTest.forData(data, options, true);
+
+			expect(vgr.id).toBe(options.id);
+			expect(vgr.label).toBe(options.label);
+			expect(vgr.data).toBe(data);
+			expect(vgr.srid).toBe(4326);
+			expect(vgr.localData).toBeTrue();
 			expect(vgr.hidden).toBeTrue();
 			expect(vgr._attributionProvider).toBe(getAttributionForLocallyImportedOrCreatedGeoResource);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
@@ -335,6 +361,7 @@ describe('ImportVectorDataService', () => {
 			expect(vgr.label).toBe(options.label);
 			expect(vgr.data).toBe(data);
 			expect(vgr.srid).toBe(4326);
+			expect(vgr.localData).toBeFalse();
 			expect(vgr.hidden).toBeTrue();
 			expect(vgr._attributionProvider).toBe(getAttributionForLocallyImportedOrCreatedGeoResource);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
@@ -357,6 +384,7 @@ describe('ImportVectorDataService', () => {
 			expect(vgr.id).toEqual(jasmine.any(String));
 			expect(vgr.data).toBe(data);
 			expect(vgr.srid).toBe(4326);
+			expect(vgr.localData).toBeFalse();
 			expect(vgr.hidden).toBeTrue();
 			expect(vgr._attributionProvider).toBe(getAttributionForLocallyImportedOrCreatedGeoResource);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
@@ -381,6 +409,7 @@ describe('ImportVectorDataService', () => {
 			expect(vgr.id).toEqual(jasmine.any(String));
 			expect(vgr.data).toBe(data);
 			expect(vgr.srid).toBe(dataSrid);
+			expect(vgr.localData).toBeFalse();
 			expect(vgr.hidden).toBeTrue();
 			expect(vgr._attributionProvider).toBe(getAttributionForLocallyImportedOrCreatedGeoResource);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
