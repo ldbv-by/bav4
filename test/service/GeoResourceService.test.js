@@ -496,6 +496,25 @@ describe('GeoResourceService', () => {
 		});
 	});
 
+	describe('resolve', () => {
+		it('returns all connected GeoResources', () => {
+			const instanceUnderTest = setup();
+
+			const geoResource0 = new WmsGeoResource('id0', 'label0', 'https://some.url', 'someLayer', 'image/png');
+			const geoResource1 = new WmsGeoResource('id1', 'label1', 'https://some.url', 'someLayer', 'image/png');
+			const geoResource2 = new AggregateGeoResource('id2', 'label2', [geoResource1.id]);
+			const geoResource3 = new AggregateGeoResource('id3', 'label3', [geoResource2.id, 'unknown']);
+			const unregisteredGeoResource = new WmsGeoResource('unregistered', 'label0', 'https://some.url', 'someLayer', 'image/png');
+
+			instanceUnderTest._geoResources = [geoResource0, geoResource1, geoResource2, geoResource3];
+
+			expect(instanceUnderTest.resolve(geoResource3)).toEqual([geoResource1]);
+			expect(instanceUnderTest.resolve(geoResource0)).toEqual([geoResource0]);
+			expect(instanceUnderTest.resolve(null)).toEqual([]);
+			expect(instanceUnderTest.resolve(unregisteredGeoResource)).toEqual([unregisteredGeoResource]);
+		});
+	});
+
 	describe('_proxify', () => {
 		it('returns an observable GeoResource', () => {
 			const instanceUnderTest = setup();
