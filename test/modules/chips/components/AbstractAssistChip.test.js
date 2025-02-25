@@ -151,5 +151,12 @@ describe('AbstractAssistChip', () => {
 			expect(element.shadowRoot.querySelector('.chips__button').attributes['title'].nodeValue).toBe('FooBar');
 			expect(element.shadowRoot.querySelector('.chips__button').attributes['aria-label'].nodeValue).toBe('FooBar');
 		});
+
+		it('renders the view WITHOUT optional title', async () => {
+			const element = await TestUtils.render(AssistChipImpl.tag);
+
+			expect(element.shadowRoot.querySelector('.chips__button').attributes['title'].nodeValue).toBe('');
+			expect(element.shadowRoot.querySelector('.chips__button').attributes['aria-label'].nodeValue).toBe('');
+		});
 	});
 });
