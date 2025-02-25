@@ -550,6 +550,7 @@ export class VectorGeoResource extends GeoResource {
 		this._data = null;
 		this._srid = null;
 		this._showPointNames = true;
+		this._localData = false;
 		this._clusterParams = {};
 	}
 
@@ -638,6 +639,20 @@ export class VectorGeoResource extends GeoResource {
 	 */
 	setShowPointNames(showPointNames) {
 		this._showPointNames = showPointNames;
+		return this;
+	}
+
+	get localData() {
+		return this._localData;
+	}
+
+	/**
+	 * Mark this `VectorGeoResource` as containing local data
+	 * @param {boolean} localData
+	 * @returns `this` for chaining
+	 */
+	markAsLocalData(localData) {
+		this._localData = localData;
 		return this;
 	}
 
