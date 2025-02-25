@@ -141,17 +141,17 @@
 }
 .left {
 	left: 0;
-	right: 50%;
+	right: calc(66.66% + 1px);
 	background: var(--primary-color);
 }
 .right {
-	left: 50%;
-	right: 0%;
+	left: 66.66%;
+	right: 1px;
 	background: var(--primary-color);
 }
 .both {
 	left: 0%;
-	right: 0%;
+	right: 1px;
 	background: var(--primary-color);
 }
 
