@@ -17,7 +17,7 @@ export const provide = (lang) => {
 				chips_assist_chip_share_state_label_default: 'Share',
 				chips_assist_chip_share_state_api_failed: 'Sharing the website has failed',
 				chips_assist_chip_map_feedback_label: 'Improve map',
-				chips_assist_chip_map_feedback_title: 'Give feedback to improve map',
+				chips_assist_chip_map_feedback_title: 'Send us suggestions for corrections to the map content',
 				chips_assist_chip_map_feedback_modal_title: 'Feedback'
 			};
 
@@ -31,14 +31,14 @@ export const provide = (lang) => {
 				chips_assist_chip_start_routing_here: 'Route planen',
 				chips_assist_chip_start_routing_here_title: 'Route planen',
 				chips_assist_chip_share_stored_data: 'Daten teilen',
-				chips_assist_chip_share_stored_data_title: 'Daten mit Anderen teilen',
+				chips_assist_chip_share_stored_data_title: 'Daten mit anderen teilen',
 				chips_assist_chip_share_position_label: 'Position teilen',
-				chips_assist_chip_share_position_title: 'Position mit Anderen teilen',
+				chips_assist_chip_share_position_title: 'Position mit anderen teilen',
 				chips_assist_chip_share_position_api_failed: 'Teilen der Position ist fehlgeschlagen',
 				chips_assist_chip_share_state_label_default: 'Teilen',
 				chips_assist_chip_share_state_api_failed: 'Teilen der Seite ist fehlgeschlagen',
 				chips_assist_chip_map_feedback_label: 'Karte verbessern',
-				chips_assist_chip_map_feedback_title: 'Kartenverbesserungen melden',
+				chips_assist_chip_map_feedback_title: 'Melden Sie uns Korrekturvorschläge zu den Karteninhalten',
 				chips_assist_chip_map_feedback_modal_title: 'Feedback'
 			};
 
