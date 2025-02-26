@@ -497,7 +497,45 @@ describe('MapFeedbackPanel', () => {
 			expect(saveMapFeedbackSpy).toHaveBeenCalledWith(new MapFeedback('Foo', 'Bar', 'description', 'geometryId'));
 		});
 
-		it('all "ba-form-element" elements receive the "userVisited" class', async () => {
+		it('prevents a double submit', async () => {
+			// arrange
+			const element = await setup();
+			const submitButton = element.shadowRoot.querySelector('#button0');
+			spyOn(feedbackServiceMock, 'save').and.callFake(
+				() =>
+					new Promise((_, reject) => {
+						//Submit button should be disabled now
+						expect(submitButton.disabled).toBeTrue();
+						reject();
+					})
+			);
+			spyOn(securityServiceMock, 'sanitizeHtml').and.callFake((value) => value);
+
+			element._updateFileId('geometryId');
+			element._updateState('Foo');
+
+			const categorySelect = element.shadowRoot.querySelector('#category');
+			categorySelect.value = 'Bar';
+			categorySelect.dispatchEvent(new Event('change'));
+
+			const descriptionInput = element.shadowRoot.querySelector('#description');
+			descriptionInput.value = 'description';
+			descriptionInput.dispatchEvent(new Event('input'));
+
+			const emailInput = element.shadowRoot.querySelector('#email');
+			emailInput.value = 'email@some.com';
+			emailInput.dispatchEvent(new Event('input'));
+
+			// act
+			submitButton.click();
+			await TestUtils.timeout();
+
+			// assert
+			//Submit button should be enabled again
+			expect(submitButton.disabled).toBeFalse();
+		});
+
+		it('ensures that all "ba-form-element" elements receive the "userVisited" class', async () => {
 			// arrange
 			const element = await setup();
 			const allBaFormElements = element.shadowRoot.querySelectorAll('.ba-form-element');
