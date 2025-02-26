@@ -15,6 +15,7 @@ export class ProcessEnvConfigService {
 		// eslint-disable-next-line no-undef
 		this._properties.set('RUNTIME_MODE', window?.ba_externalConfigProperties?.NODE_ENV ?? process.env.NODE_ENV);
 		// eslint-disable-next-line no-undef
+		this._properties.set('SOFTWARE_VERSION', '4.4');
 		this._properties.set('SOFTWARE_INFO', window?.ba_externalConfigProperties?.SOFTWARE_INFO ?? process.env.SOFTWARE_INFO);
 		// eslint-disable-next-line no-undef
 		this._properties.set('DEFAULT_LANG', window?.ba_externalConfigProperties?.DEFAULT_LANG ?? process.env.DEFAULT_LANG ?? 'en');

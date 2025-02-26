@@ -39,6 +39,18 @@ describe('tests for ProcessEnvConfigService', () => {
 	});
 
 	describe('getValue()', () => {
+		it('provides the correct set of values', () => {
+			const configService = new ProcessEnvConfigService();
+
+			expect(configService._properties.size).toBe(8);
+		});
+
+		it('provides hardcoded values', () => {
+			const configService = new ProcessEnvConfigService();
+
+			expect(configService.getValue('SOFTWARE_VERSION')).toBe('4.4');
+		});
+
 		it('provides a value for required keys from process.env', () => {
 			const warnSpy = spyOn(console, 'warn');
 			// eslint-disable-next-line no-undef
@@ -53,7 +65,6 @@ describe('tests for ProcessEnvConfigService', () => {
 
 			const configService = new ProcessEnvConfigService();
 
-			expect(configService._properties.size).toBe(7);
 			expect(configService.getValue('RUNTIME_MODE')).toBe('development');
 			expect(configService.getValue('SOFTWARE_INFO')).toBe('SOFTWARE_INFO_value');
 			expect(configService.getValue('DEFAULT_LANG')).toBe('DEFAULT_LANG_value');
@@ -79,7 +90,6 @@ describe('tests for ProcessEnvConfigService', () => {
 
 			const configService = new ProcessEnvConfigService();
 
-			expect(configService._properties.size).toBe(7);
 			expect(configService.getValue('RUNTIME_MODE')).toBe('development');
 			expect(configService.getValue('SOFTWARE_INFO')).toBe('SOFTWARE_INFO_value');
 			expect(configService.getValue('DEFAULT_LANG')).toBe('DEFAULT_LANG_value');

@@ -20,6 +20,10 @@ const authService = {
 	signOut: () => {}
 };
 
+const configService = {
+	getValue: () => {}
+};
+
 describe('MiscContentPanel', () => {
 	let store;
 	const setup = (state = {}) => {
@@ -33,7 +37,10 @@ describe('MiscContentPanel', () => {
 			...state
 		};
 		store = TestUtils.setupStoreAndDi(initialState, { media: createNoInitialStateMediaReducer(), modal: modalReducer, auth: authReducer });
-		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('AuthService', authService);
+		$injector
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('AuthService', authService)
+			.registerSingleton('ConfigService', configService);
 
 		return TestUtils.render(BvvMiscContentPanel.tag);
 	};
@@ -118,7 +125,7 @@ describe('MiscContentPanel', () => {
 			expect(links[8].querySelector('.ba-list-item__secondary-text').innerText).toEqual('menu_misc_content_panel_ea_text');
 		});
 
-		it('have a feedback button', async () => {
+		it('contains a feedback button', async () => {
 			const element = await setup();
 
 			const feedbackButton = element.shadowRoot.querySelector('#feedback');
@@ -126,7 +133,7 @@ describe('MiscContentPanel', () => {
 			expect(feedbackButton.querySelectorAll('.ba-list-item__icon.icon.feedback')).toHaveSize(1);
 		});
 
-		it('has a signIn button', async () => {
+		it('contains a signIn button', async () => {
 			const element = await setup();
 
 			const signedInButton = element.shadowRoot.querySelector('#authButton');
@@ -135,13 +142,21 @@ describe('MiscContentPanel', () => {
 			expect(signedInButton.querySelectorAll('.ba-list-item__icon.icon.person')).toHaveSize(1);
 		});
 
-		it('has a signOut button', async () => {
+		it('contains a signOut button', async () => {
 			const element = await setup({ auth: { signedIn: true } });
 
 			const signedInButton = element.shadowRoot.querySelector('#authButton');
 			expect(signedInButton.querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_logout');
 			expect(signedInButton.classList.contains('logout')).toBeTrue();
 			expect(signedInButton.querySelectorAll('.ba-list-item__icon.icon.person')).toHaveSize(1);
+		});
+
+		it('contains a version information', async () => {
+			spyOn(configService, 'getValue').withArgs('SOFTWARE_VERSION').and.returnValue('42');
+			const element = await setup({ auth: { signedIn: true } });
+
+			const versionInfoContainer = element.shadowRoot.querySelector('.version-info');
+			expect(versionInfoContainer.innerText).toBe('menu_misc_content_panel_software_version 42');
 		});
 
 		it('opens the modal with the toggle-feedback component', async () => {
