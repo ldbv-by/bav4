@@ -4,7 +4,6 @@ import { importReducer } from '../../src/store/import/import.reducer';
 import { setUrl, setData } from '../../src/store/import/import.action';
 import { TestUtils } from '../test-utils';
 import { ImportPlugin, LAYER_ADDING_DELAY_MS } from '../../src/plugins/ImportPlugin';
-import { MediaType } from '../../src/domain/mediaTypes';
 import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { LevelTypes } from '../../src/store/notifications/notifications.action';
 import { SourceType, SourceTypeName } from '../../src/domain/sourceType';
@@ -96,17 +95,20 @@ describe('ImportPlugin', () => {
 		it('adds a layer and set the correct MainMenu tab index', async () => {
 			const store = setup();
 			const geoResourceStub = { id: 'idFoo', label: 'labelBar' };
-			spyOn(importVectorDataServiceMock, 'forData').and.callFake(() => geoResourceStub);
+			const importVectorDataServiceSpy = spyOn(importVectorDataServiceMock, 'forData').and.callFake(() => geoResourceStub);
+			const data = '<kml some=thing></kml>';
+			const sourceType = new SourceType(SourceTypeName.KML);
 			const instanceUnderTest = new ImportPlugin();
 			await instanceUnderTest.register(store);
 
 			expect(store.getState().layers.active.length).toBe(0);
-			setData('<kml some=thing></kml>', MediaType.KML);
+			setData(data, sourceType);
 
 			await TestUtils.timeout(LAYER_ADDING_DELAY_MS + 100);
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.active[0].id).toBe('idFoo');
 			expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
+			expect(importVectorDataServiceSpy).toHaveBeenCalledWith(data, { sourceType }, true);
 		});
 	});
 });

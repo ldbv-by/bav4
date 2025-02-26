@@ -1,23 +1,31 @@
 import { TestUtils } from '../test-utils.js';
 import { $injector } from '../../src/injection/index.js';
 import { toolsReducer } from '../../src/store/tools/tools.reducer.js';
+import { layersReducer } from '../../src/store/layers/layers.reducer.js';
 import { BeforeUnloadPlugin } from '../../src/plugins/BeforeUnloadPlugin.js';
 import { setCurrentTool } from '../../src/store/tools/tools.action.js';
 import { Tools } from '../../src/domain/tools.js';
+import { addLayer } from '../../src/store/layers/layers.action.js';
+import { VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../src/domain/geoResources.js';
 
 describe('BeforeUnloadPlugin', () => {
 	const environmentServiceMock = {
 		isEmbedded: () => false
+	};
+	const geoResourceServiceMock = {
+		resolve: () => [],
+		byId: () => null
 	};
 
 	const setup = () => {
 		const store = TestUtils.setupStoreAndDi(
 			{},
 			{
-				tools: toolsReducer
+				tools: toolsReducer,
+				layers: layersReducer
 			}
 		);
-		$injector.registerSingleton('EnvironmentService', environmentServiceMock);
+		$injector.registerSingleton('EnvironmentService', environmentServiceMock).registerSingleton('GeoResourceService', geoResourceServiceMock);
 
 		return store;
 	};
@@ -33,46 +41,89 @@ describe('BeforeUnloadPlugin', () => {
 	});
 
 	describe('register', () => {
-		describe('one of the relevant tool is activated', () => {
-			it('registers an "beforeunload" event listener', async () => {
-				const spy = spyOn(window, 'addEventListener');
-				const mockEvent = {
-					returnValue: null,
-					preventDefault: () => {}
-				};
-				const preventDefaultSpy = spyOn(mockEvent, 'preventDefault');
-				const store = setup();
-				const instanceUnderTest = new BeforeUnloadPlugin();
-				const toolId = 'myTool';
-				spyOn(instanceUnderTest, '_getTools').and.returnValue([toolId]);
-				await instanceUnderTest.register(store);
+		describe('tools', () => {
+			describe('one of the relevant tool is activated', () => {
+				it('registers an "beforeunload" event listener', async () => {
+					const addEventListenerSpy = spyOn(window, 'addEventListener');
+					const removeEventListenerSpy = spyOn(window, 'removeEventListener');
+					const mockEvent = {
+						returnValue: null,
+						preventDefault: () => {}
+					};
+					const preventDefaultSpy = spyOn(mockEvent, 'preventDefault');
+					const store = setup();
+					const instanceUnderTest = new BeforeUnloadPlugin();
+					const toolId = 'myTool';
+					spyOn(instanceUnderTest, '_getTools').and.returnValue([toolId]);
+					await instanceUnderTest.register(store);
 
-				setCurrentTool(toolId);
+					setCurrentTool(toolId);
 
-				expect(spy).toHaveBeenCalledWith('beforeunload', jasmine.any(Function));
+					expect(addEventListenerSpy).toHaveBeenCalledWith('beforeunload', jasmine.any(Function));
 
-				const beforeunloadFn = spy.calls.argsFor(0)[1];
+					const beforeunloadFn = addEventListenerSpy.calls.argsFor(0)[1];
 
-				beforeunloadFn(mockEvent);
+					beforeunloadFn(mockEvent);
 
-				expect(mockEvent.returnValue).toBe('string');
-				expect(preventDefaultSpy).toHaveBeenCalled();
+					expect(mockEvent.returnValue).toBe('string');
+					expect(preventDefaultSpy).toHaveBeenCalled();
+
+					setCurrentTool(null);
+
+					expect(removeEventListenerSpy).toHaveBeenCalledWith('beforeunload', jasmine.any(Function));
+				});
 			});
 		});
-		describe('a tool is inactivated', () => {
-			it('removes an "beforeunload" event listener', async () => {
-				const spy = spyOn(window, 'removeEventListener');
-				const store = setup();
-				const instanceUnderTest = new BeforeUnloadPlugin();
-				const toolId = 'myTool';
-				spyOn(instanceUnderTest, '_getTools').and.returnValue([toolId]);
-				await instanceUnderTest.register(store);
 
-				setCurrentTool(toolId);
-				setCurrentTool(null);
+		describe('layers', () => {
+			describe('one or more layers references a GeoResource containing local data', () => {
+				it('registers an "beforeunload" event listener', async () => {
+					const addEventListenerSpy = spyOn(window, 'addEventListener');
+					const removeEventListenerSpy = spyOn(window, 'removeEventListener');
+					const mockEvent = {
+						returnValue: null,
+						preventDefault: () => {}
+					};
+					const preventDefaultSpy = spyOn(mockEvent, 'preventDefault');
+					const gr0 = new VectorGeoResource('geoResourceId0', 'label', VectorSourceType.GEOJSON).markAsLocalData(true);
+					const gr1 = new WmsGeoResource('geoResourceId1', 'label', 'https://some.url', 'layer', 'image/png');
+					const store = setup();
+					const instanceUnderTest = new BeforeUnloadPlugin();
+					spyOn(geoResourceServiceMock, 'resolve').and.returnValue([gr0, gr1]);
+					spyOn(geoResourceServiceMock, 'byId').withArgs(gr0.id).and.returnValue(gr0);
+					await instanceUnderTest.register(store);
 
-				expect(spy).toHaveBeenCalledTimes(2);
-				expect(spy).toHaveBeenCalledWith('beforeunload', jasmine.any(Function));
+					addLayer('id0', { geoResourceId: gr0.id });
+
+					expect(addEventListenerSpy).toHaveBeenCalledWith('beforeunload', jasmine.any(Function));
+
+					const beforeunloadFn = addEventListenerSpy.calls.argsFor(0)[1];
+
+					beforeunloadFn(mockEvent);
+
+					expect(mockEvent.returnValue).toBe('string');
+					expect(preventDefaultSpy).toHaveBeenCalled();
+
+					expect(removeEventListenerSpy).toHaveBeenCalledWith('beforeunload', jasmine.any(Function));
+				});
+			});
+
+			describe('no layer references a GeoResource without local data', () => {
+				it('does not add an "beforeunload" event listener', async () => {
+					const addEventListenerSpy = spyOn(window, 'addEventListener');
+					const removeEventListenerSpy = spyOn(window, 'removeEventListener');
+					const gr = new VectorGeoResource('geoResourceId', 'label', VectorSourceType.GEOJSON).markAsLocalData(false);
+					const store = setup();
+					const instanceUnderTest = new BeforeUnloadPlugin();
+					spyOn(geoResourceServiceMock, 'resolve').and.returnValue([gr]);
+					spyOn(geoResourceServiceMock, 'byId').withArgs(gr.id).and.returnValue(gr);
+					await instanceUnderTest.register(store);
+
+					addLayer('id0', { geoResourceId: gr.id });
+
+					expect(removeEventListenerSpy).toHaveBeenCalled();
+					expect(addEventListenerSpy).not.toHaveBeenCalled();
+				});
 			});
 		});
 

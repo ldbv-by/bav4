@@ -17,7 +17,10 @@ export class BeforeUnloadPlugin extends BaPlugin {
 	 * @override
 	 */
 	async register(store) {
-		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
+		const { EnvironmentService: environmentService, GeoResourceService: geoResourceService } = $injector.inject(
+			'EnvironmentService',
+			'GeoResourceService'
+		);
 
 		if (!environmentService.isEmbedded()) {
 			const beforeunloadEventListener = (e) => {
@@ -26,15 +29,33 @@ export class BeforeUnloadPlugin extends BaPlugin {
 				e.preventDefault();
 			};
 
-			const onToolChanged = async (toolId) => {
+			const beforeunloadEventListenerForTools = (e) => beforeunloadEventListener(e);
+			const onToolChanged = (toolId) => {
 				if (this._getTools().includes(toolId)) {
-					window.addEventListener('beforeunload', beforeunloadEventListener);
+					window.addEventListener('beforeunload', beforeunloadEventListenerForTools);
 				} else {
-					window.removeEventListener('beforeunload', beforeunloadEventListener);
+					window.removeEventListener('beforeunload', beforeunloadEventListenerForTools);
 				}
 			};
 
 			observe(store, (state) => state.tools.current, onToolChanged, false);
+
+			const beforeUnloadEventListenerForLayers = (e) => beforeunloadEventListener(e);
+			const olLayersChanged = (active) => {
+				if (
+					active
+						.map((l) => geoResourceService.resolve(geoResourceService.byId(l.geoResourceId)))
+						.flat()
+						.map((gr) => gr?.localData ?? false)
+						.some((v) => v === true)
+				) {
+					window.addEventListener('beforeunload', beforeUnloadEventListenerForLayers);
+				} else {
+					window.removeEventListener('beforeunload', beforeUnloadEventListenerForLayers);
+				}
+			};
+
+			observe(store, (state) => state.layers.active, olLayersChanged, false);
 		}
 	}
 

@@ -96,12 +96,13 @@ export class ImportVectorDataService {
 
 	/**
 	 * Creates a {@link VectorGeoresource} containing the given data.
-	 * The VectorGeoresource is registered on the {@link GeoResourceService}.
+	 * The VectorGeoResource is registered on the {@link GeoResourceService}.
 	 * @param {string} data
 	 * @param {ImportVectorDataOptions} [options]
+	 * @param {boolean} [localData=false] `true` when the data are local data (e.g. imported locally by the user). Default is `false`.
 	 * @returns VectorGeoResource or `null` when no VectorGeoResource could be created
 	 */
-	forData(data, options) {
+	forData(data, options, localData = false) {
 		const { id, label, sourceType } = { ...this._newDefaultImportVectorDataOptions(), ...options };
 
 		const resultingSourceType = sourceType ?? this._sourceTypeService.forData(data).sourceType;
@@ -110,6 +111,7 @@ export class ImportVectorDataService {
 			const vgr = new VectorGeoResource(id, label, vectorSourceType)
 				.setSource(data, resultingSourceType.srid ?? 4326 /**valid for kml, gpx and geoJson**/)
 				.setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource)
+				.markAsLocalData(localData)
 				.setHidden(true);
 			return this._geoResourceService.addOrReplace(vgr);
 		}

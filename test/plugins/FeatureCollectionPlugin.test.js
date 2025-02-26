@@ -68,8 +68,10 @@ describe('FeatureCollectionPlugin', () => {
 			expect(importVectorDataServiceSpy).toHaveBeenCalledTimes(2);
 			expect(importVectorDataServiceSpy.calls.all()[0].args[0]).toBe('data0');
 			expect(importVectorDataServiceSpy.calls.all()[0].args[1]).toEqual({ id: 'id0' });
+			expect(importVectorDataServiceSpy.calls.all()[0].args[2]).toBeTrue();
 			expect(importVectorDataServiceSpy.calls.all()[1].args[0]).toBe('data1');
 			expect(importVectorDataServiceSpy.calls.all()[1].args[1]).toEqual({ id: 'id1' });
+			expect(importVectorDataServiceSpy.calls.all()[1].args[2]).toBeTrue();
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(
 				new AggregateGeoResource(FEATURE_COLLECTION_GEORESOURCE_ID, `global_featureCollection_layer_label (2)`, ['id0', 'id1']).setHidden(true)
 			);

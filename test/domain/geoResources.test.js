@@ -471,6 +471,7 @@ describe('GeoResource', () => {
 
 			expect(vectorGeoResource.clusterParams).toEqual({});
 			expect(vectorGeoResource.showPointNames).toBe(true);
+			expect(vectorGeoResource.localData).toBe(false);
 		});
 
 		it('provides the source type as fallback label', () => {
@@ -500,6 +501,11 @@ describe('GeoResource', () => {
 			it('sets the showPointNames property', () => {
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setShowPointNames(false).showPointNames).toBeFalse();
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setShowPointNames(true).showPointNames).toBeTrue();
+			});
+
+			it('sets the localData property', () => {
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).markAsLocalData(false).localData).toBeFalse();
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).markAsLocalData(true).localData).toBeTrue();
 			});
 
 			it('provides a check for containing a non-default value as clusterParam', () => {

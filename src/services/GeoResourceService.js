@@ -201,6 +201,24 @@ export class GeoResourceService {
 	}
 
 	/**
+	 * Returns all nested `GeoResources` for a {@link AggregateGeoResource} or otherwise the GeoResource itself.
+	 *
+	 * Note: If the `GeoResource` is unregistered it is returned untouched, if the `GeoResource` is `null` or `undefined` an empty array is returned.
+	 * @param {GeoResource} geoResource
+	 * @returns {Array<GeoResource>}
+	 */
+	resolve(geoResource) {
+		return geoResource instanceof AggregateGeoResource
+			? geoResource.geoResourceIds
+					.map((grId) => this.resolve(this.byId(grId)))
+					.flat()
+					.filter((v) => !!v)
+			: geoResource
+				? [geoResource]
+				: [];
+	}
+
+	/**
 	 * Returns a {@link module:services/HttpService~responseInterceptor} suitable authenticating for a given GeoResource.
 	 * @param {string} geoResourceId The id of a GeoResource
 	 * @returns {module:services/HttpService~responseInterceptor}
