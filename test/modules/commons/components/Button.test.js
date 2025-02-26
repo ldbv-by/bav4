@@ -18,7 +18,7 @@ describe('Button', () => {
 			expect(element.getModel()).toEqual({ disabled: false, label: 'label', icon: null, type: 'secondary', title: null });
 		});
 
-		it('have properties with default values from the model', async () => {
+		it('has properties with default values from the model', async () => {
 			const element = await TestUtils.render(Button.tag);
 
 			//properties from model
