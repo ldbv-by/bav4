@@ -14,7 +14,7 @@ import {
 } from '../../../../../../store/highlight/highlight.action';
 import { SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../plugins/HighlightPlugin';
 import { MvuElement } from '../../../../../MvuElement';
-import { VectorSourceType } from '../../../../../../domain/geoResources';
+import { SourceTypeName } from '../../../../../../domain/sourceType';
 
 const Update_IsPortrait = 'update_isPortrait';
 const Update_CpSearchResult = 'update_cpSearchResult';
@@ -65,10 +65,10 @@ export class CpResultItem extends MvuElement {
 	}
 
 	_matchGeomType(sourceType) {
-		switch (sourceType) {
-			case VectorSourceType.EWKT:
+		switch (sourceType.name) {
+			case SourceTypeName.EWKT:
 				return HighlightGeometryType.EWKT;
-			case VectorSourceType.GEOJSON:
+			case SourceTypeName.GEOJSON:
 				return HighlightGeometryType.GEOJSON;
 		}
 		this._throwError(`SourceType ${sourceType.toString()} is currently not supported`);
@@ -82,11 +82,11 @@ export class CpResultItem extends MvuElement {
 		 * These events are not fired on touch devices, so there's no extra handling needed.
 		 */
 		const onMouseEnter = (result) => {
-			if (result.data) {
+			if (result.geometry) {
 				addHighlightFeatures({
 					id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID,
 					type: HighlightFeatureType.DEFAULT_TMP,
-					data: { geometry: result.data.geometry, geometryType: this._matchGeomType(result.data.geometryType) }
+					data: { geometry: result.geometry.data, geometryType: this._matchGeomType(result.geometry.sourceType) }
 				});
 			} else {
 				addHighlightFeatures({
@@ -103,11 +103,11 @@ export class CpResultItem extends MvuElement {
 			const extent = result.extent ? [...result.extent] : [...result.center, ...result.center];
 			removeHighlightFeaturesById([SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_HIGHLIGHT_FEATURE_ID]);
 			fit(extent, { maxZoom: CpResultItem._maxZoomLevel });
-			if (result.data) {
+			if (result.geometry) {
 				addHighlightFeatures({
 					id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
 					type: HighlightFeatureType.DEFAULT,
-					data: { geometry: result.data.geometry, geometryType: this._matchGeomType(result.data.geometryType) },
+					data: { geometry: result.geometry.data, geometryType: this._matchGeomType(result.geometry.sourceType) },
 					label: result.label
 				});
 			} else if (!result.extent) {
