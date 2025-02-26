@@ -10,22 +10,18 @@ import { MediaType } from '../../domain/mediaTypes';
  * @function
  * @type {module:services/FeedbackService~feedbackStorageProvider}
  */
-export const bvvFeedbackStorageProvider = async (mapFeedback) => {
+export const bvvFeedbackStorageProvider = async (feedback) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 
 	const getResult = async () => {
-		switch (mapFeedback.constructor) {
+		switch (feedback.constructor) {
 			case MapFeedback: {
-				return await httpService.post(
-					`${configService.getValueAsPath('BACKEND_URL')}feedback/tim/message`,
-					JSON.stringify(mapFeedback),
-					MediaType.JSON
-				);
+				return await httpService.post(`${configService.getValueAsPath('BACKEND_URL')}feedback/tim/message`, JSON.stringify(feedback), MediaType.JSON);
 			}
 			case GeneralFeedback:
 				return await httpService.post(
 					`${configService.getValueAsPath('BACKEND_URL')}feedback/general/message`,
-					JSON.stringify(mapFeedback),
+					JSON.stringify(feedback),
 					MediaType.JSON
 				);
 			default:
