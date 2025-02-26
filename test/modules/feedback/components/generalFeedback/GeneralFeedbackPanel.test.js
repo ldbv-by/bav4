@@ -78,7 +78,7 @@ const setup = (state = {}) => {
 		.registerSingleton('FeedbackService', feedbackServiceMock)
 		.registerSingleton('SecurityService', securityServiceMock);
 
-	return TestUtils.renderAndLogLifecycle(GeneralFeedbackPanel.tag);
+	return TestUtils.render(GeneralFeedbackPanel.tag);
 };
 
 describe('GeneralFeedbackPanel', () => {
@@ -257,6 +257,33 @@ describe('GeneralFeedbackPanel', () => {
 
 			// assert
 			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith(new GeneralFeedback(categoryValue, descriptionValue, null, ratingValue));
+		});
+
+		it('prevents a double submit', async () => {
+			// arrange
+			spyOn(securityServiceMock, 'sanitizeHtml').and.callFake((value) => value);
+			const element = await setup();
+			const submitButton = element.shadowRoot.querySelector('#button0');
+			spyOn(feedbackServiceMock, 'save').and.callFake(
+				() =>
+					new Promise((_, reject) => {
+						//Submit button should be disabled now
+						expect(submitButton.disabled).toBeTrue();
+						reject();
+					})
+			);
+			fillCategory(element);
+			fillDescription(element);
+			fillEmail(element);
+			fillRating(element);
+
+			// act
+			submitButton.click();
+			await TestUtils.timeout();
+
+			// assert
+			//Submit button should be enabled again
+			expect(submitButton.disabled).toBeFalse();
 		});
 	});
 

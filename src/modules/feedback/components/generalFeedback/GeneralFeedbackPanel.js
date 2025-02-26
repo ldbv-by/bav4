@@ -191,13 +191,19 @@ export class GeneralFeedbackPanel extends MvuElement {
 
 	async _saveGeneralFeedback(generalFeedback) {
 		const translate = (key) => this._translationService.translate(key);
+		const submitButton = this.shadowRoot.getElementById('button0');
 		try {
+			// @ts-ignore
+			submitButton.disabled /**prevent double submit by disabling the button*/ = true;
 			await this._feedbackService.save(generalFeedback);
 			this._onSubmit();
 			emitNotification(translate('feedback_saved_successfully'), LevelTypes.INFO);
 		} catch (e) {
 			console.error(e);
 			emitNotification(translate('feedback_generalFeedback_could_not_save'), LevelTypes.ERROR);
+		} finally {
+			// @ts-ignore
+			submitButton.disabled = false;
 		}
 	}
 
