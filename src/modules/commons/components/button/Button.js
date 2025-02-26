@@ -11,6 +11,7 @@ const Update_Disabled = 'update_disabled';
 const Update_Label = 'update_label';
 const Update_Type = 'update_type';
 const Update_Icon = 'update_icon';
+const Update_Title = 'update_title';
 
 /**
  * Events;
@@ -33,7 +34,8 @@ export class Button extends MvuElement {
 			disabled: false,
 			label: 'label',
 			icon: null,
-			type: 'secondary'
+			type: 'secondary',
+			title: null
 		});
 		this._onClick = () => {};
 	}
@@ -52,6 +54,8 @@ export class Button extends MvuElement {
 				return { ...model, type: data };
 			case Update_Icon:
 				return { ...model, icon: data };
+			case Update_Title:
+				return { ...model, title: data };
 		}
 	}
 
@@ -59,7 +63,7 @@ export class Button extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { disabled, label, icon, type } = model;
+		const { disabled, label, icon, type, title } = model;
 		const onClick = () => {
 			this._onClick();
 		};
@@ -96,7 +100,7 @@ export class Button extends MvuElement {
 				${css}
 			</style>
 			${getIconStyle()}
-			<button class="button ${classMap(classes)}" aria-label=${label} ?disabled=${disabled} @click=${onClick} part="button">
+			<button class="button ${classMap(classes)}" title=${title} aria-label=${title} ?disabled=${disabled} @click=${onClick} part="button">
 				${getIcon()} ${label}
 			</button>
 		`;
@@ -137,6 +141,17 @@ export class Button extends MvuElement {
 
 	get label() {
 		return this.getModel().label;
+	}
+
+	/**
+	 * @property {string} title='' - Title of the Icon
+	 */
+	set title(value) {
+		this.signal(Update_Title, value);
+	}
+
+	get title() {
+		return this.getModel().title;
 	}
 
 	/**

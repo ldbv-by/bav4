@@ -15,6 +15,13 @@ describe('Button', () => {
 			const element = await TestUtils.render(Button.tag);
 
 			//model
+			expect(element.getModel()).toEqual({ disabled: false, label: 'label', icon: null, type: 'secondary', title: null });
+		});
+
+		it('has properties with default values from the model', async () => {
+			const element = await TestUtils.render(Button.tag);
+
+			//properties from model
 			expect(element.disabled).toBeFalse();
 			expect(element.label).toBe('label');
 			expect(element.type).toBe('secondary');
@@ -32,7 +39,25 @@ describe('Button', () => {
 			expect(button.children.length).toBe(0);
 			expect(element.shadowRoot.styleSheets.length).toBe(2);
 			expect(button.innerText).toBe('label');
-			expect(button.getAttribute('aria-label')).toBe('label');
+			expect(button.getAttribute('title')).toBe('');
+			expect(button.getAttribute('aria-label')).toBe('');
+			expect(button.getAttribute('part')).toBe('button');
+			expect(button.part.contains('button')).toBeTrue();
+		});
+
+		it('renders the view with given title', async () => {
+			const element = await TestUtils.render(Button.tag, { title: 'foobar' });
+
+			//view
+			const button = element.shadowRoot.querySelector('button');
+			expect(button.classList.contains('secondary')).toBeTrue();
+			expect(button.classList.contains('disabled')).toBeFalse();
+			expect(button.classList.contains('iconbutton')).toBeFalse();
+			expect(button.children.length).toBe(0);
+			expect(element.shadowRoot.styleSheets.length).toBe(2);
+			expect(button.innerText).toBe('label');
+			expect(button.getAttribute('title')).toBe('foobar');
+			expect(button.getAttribute('aria-label')).toBe('foobar');
 			expect(button.getAttribute('part')).toBe('button');
 			expect(button.part.contains('button')).toBeTrue();
 		});
