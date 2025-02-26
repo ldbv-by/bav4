@@ -8,6 +8,8 @@ import { positionReducer } from '../../../../../../../src/store/position/positio
 import { TestUtils } from '../../../../../../test-utils.js';
 import { SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../../src/plugins/HighlightPlugin';
 import { VectorSourceType } from '../../../../../../../src/domain/geoResources.js';
+import { Geometry } from '../../../../../../../src/domain/geometry.js';
+import { SourceType, SourceTypeName } from '../../../../../../../src/domain/sourceType.js';
 window.customElements.define(CpResultItem.tag, CpResultItem);
 
 describe('CpResultItem', () => {
@@ -57,8 +59,8 @@ describe('CpResultItem', () => {
 	describe('_matchGeomType', () => {
 		it('maps a SourceType to a HighlightGeometryType', async () => {
 			const element = await setup();
-			expect(element._matchGeomType(VectorSourceType.EWKT)).toEqual(HighlightGeometryType.EWKT);
-			expect(element._matchGeomType(VectorSourceType.GEOJSON)).toEqual(HighlightGeometryType.GEOJSON);
+			expect(element._matchGeomType(new SourceType(SourceTypeName.EWKT))).toEqual(HighlightGeometryType.EWKT);
+			expect(element._matchGeomType(new SourceType(SourceTypeName.GEOJSON))).toEqual(HighlightGeometryType.GEOJSON);
 
 			expect(() => element._matchGeomType(VectorSourceType.KML)).toThrow('SourceType Symbol(kml) is currently not supported');
 		});
@@ -68,11 +70,11 @@ describe('CpResultItem', () => {
 		const previousCoordinate = [1, 2];
 		const coordinate = [21, 42];
 		const extent = [0, 1, 2, 3];
-		const wktData = { geometry: 'POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))', geometryType: VectorSourceType.EWKT };
-		const geoJsonData = { geometry: { type: 'Point', coordinates: [21, 42, 0] }, geometryType: VectorSourceType.GEOJSON };
+		const wktGeometry = new Geometry('POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))', new SourceType(SourceTypeName.EWKT));
+		const geoJsonGeometry = new Geometry("{ type: 'Point', coordinates: [21, 42, 0] }", new SourceType(SourceTypeName.GEOJSON));
 
-		const setupOnMouseEnterTests = async (portraitOrientation, extent = null, data = null) => {
-			const cpSearchResult = new CadastralParcelSearchResult('label', 'labelFormatted', coordinate, extent, data);
+		const setupOnMouseEnterTests = async (portraitOrientation, extent = null, geometry = null) => {
+			const cpSearchResult = new CadastralParcelSearchResult('label', 'labelFormatted', coordinate, extent, geometry);
 			const element = await setup({
 				highlight: {
 					features: []
@@ -88,8 +90,8 @@ describe('CpResultItem', () => {
 			return element;
 		};
 
-		const setupOnClickTests = async (portraitOrientation, extent = null, data = null) => {
-			const cpSearchResult = new CadastralParcelSearchResult('label', 'labelFormatted', coordinate, extent, data);
+		const setupOnClickTests = async (portraitOrientation, extent = null, geometry = null) => {
+			const cpSearchResult = new CadastralParcelSearchResult('label', 'labelFormatted', coordinate, extent, geometry);
 			const element = await setup({
 				highlight: {
 					features: [
@@ -112,14 +114,14 @@ describe('CpResultItem', () => {
 			describe('result has data', () => {
 				describe('type WKT', () => {
 					it('sets a temporary highlight feature', async () => {
-						const element = await setupOnMouseEnterTests(false, null, wktData);
+						const element = await setupOnMouseEnterTests(false, null, wktGeometry);
 
 						const target = element.shadowRoot.querySelector('li');
 						target.dispatchEvent(new Event('mouseenter'));
 
 						expect(store.getState().highlight.features).toHaveSize(1);
 						expect(store.getState().highlight.features[0].id).toEqual(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
-						expect(store.getState().highlight.features[0].data.geometry).toEqual(wktData.geometry);
+						expect(store.getState().highlight.features[0].data.geometry).toEqual(wktGeometry.data);
 						expect(store.getState().highlight.features[0].data.geometryType).toBe(HighlightGeometryType.EWKT);
 						expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.DEFAULT_TMP);
 					});
@@ -127,14 +129,14 @@ describe('CpResultItem', () => {
 
 				describe('type GEOJSON', () => {
 					it('sets a temporary highlight feature', async () => {
-						const element = await setupOnMouseEnterTests(false, null, geoJsonData);
+						const element = await setupOnMouseEnterTests(false, null, geoJsonGeometry);
 
 						const target = element.shadowRoot.querySelector('li');
 						target.dispatchEvent(new Event('mouseenter'));
 
 						expect(store.getState().highlight.features).toHaveSize(1);
 						expect(store.getState().highlight.features[0].id).toEqual(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
-						expect(store.getState().highlight.features[0].data.geometry).toEqual(geoJsonData.geometry);
+						expect(store.getState().highlight.features[0].data.geometry).toEqual(geoJsonGeometry.data);
 						expect(store.getState().highlight.features[0].data.geometryType).toBe(HighlightGeometryType.GEOJSON);
 						expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.DEFAULT_TMP);
 					});
@@ -190,14 +192,14 @@ describe('CpResultItem', () => {
 			describe('result has data', () => {
 				describe('type WKT', () => {
 					it('removes both an existing and temporary highlight feature and set the permanent highlight feature', async () => {
-						const element = await setupOnClickTests(false, null, wktData);
+						const element = await setupOnClickTests(false, null, wktGeometry);
 
 						const target = element.shadowRoot.querySelector('li');
 						target.click();
 
 						expect(store.getState().highlight.features).toHaveSize(1);
 						expect(store.getState().highlight.features[0].id).toEqual(SEARCH_RESULT_HIGHLIGHT_FEATURE_ID);
-						expect(store.getState().highlight.features[0].data.geometry).toEqual(wktData.geometry);
+						expect(store.getState().highlight.features[0].data.geometry).toEqual(wktGeometry.data);
 						expect(store.getState().highlight.features[0].data.geometryType).toBe(HighlightGeometryType.EWKT);
 						expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.DEFAULT);
 						expect(store.getState().highlight.features[0].label).toBe('label');
@@ -206,14 +208,14 @@ describe('CpResultItem', () => {
 
 				describe('type GEOJSON', () => {
 					it('removes both an existing and temporary highlight feature and set the permanent highlight feature', async () => {
-						const element = await setupOnClickTests(false, null, geoJsonData);
+						const element = await setupOnClickTests(false, null, geoJsonGeometry);
 
 						const target = element.shadowRoot.querySelector('li');
 						target.click();
 
 						expect(store.getState().highlight.features).toHaveSize(1);
 						expect(store.getState().highlight.features[0].id).toEqual(SEARCH_RESULT_HIGHLIGHT_FEATURE_ID);
-						expect(store.getState().highlight.features[0].data.geometry).toEqual(geoJsonData.geometry);
+						expect(store.getState().highlight.features[0].data.geometry).toEqual(geoJsonGeometry.data);
 						expect(store.getState().highlight.features[0].data.geometryType).toBe(HighlightGeometryType.GEOJSON);
 						expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.DEFAULT);
 						expect(store.getState().highlight.features[0].label).toBe('label');
@@ -221,7 +223,7 @@ describe('CpResultItem', () => {
 				});
 
 				it('fits the map by a coordinate', async () => {
-					const element = await setupOnClickTests(false, null, wktData);
+					const element = await setupOnClickTests(false, null, wktGeometry);
 
 					const target = element.shadowRoot.querySelector('li');
 					target.click();
