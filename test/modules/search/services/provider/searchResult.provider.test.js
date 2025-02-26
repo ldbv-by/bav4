@@ -1,4 +1,3 @@
-import { VectorSourceType } from '../../../../../src/domain/geoResources';
 import { MediaType } from '../../../../../src/domain/mediaTypes';
 import { SourceType, SourceTypeName } from '../../../../../src/domain/sourceType';
 import { $injector } from '../../../../../src/injection';
