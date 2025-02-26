@@ -43,12 +43,14 @@ export class GeneralFeedback {
 	 * @param {String} description The actual message of this feedback message
 	 * @param {String|null} [email] The email address of the editor of this feedback message
 	 * @param {Number|null} [rating] The rating as number
+	 * @param {String|null} [state] The URL-encoded state of the map
 	 */
-	constructor(category, description, email = null, rating = null) {
+	constructor(category, description, email = null, rating = null, state = null) {
 		this.category = category;
 		this.description = description;
 		this.email = email;
 		this.rating = rating;
+		this.state = state;
 	}
 }
 /**

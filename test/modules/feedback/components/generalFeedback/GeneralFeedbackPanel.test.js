@@ -57,6 +57,10 @@ const securityServiceMock = {
 	sanitizeHtml: () => {}
 };
 
+const shareServiceMock = {
+	encodeState: () => {}
+};
+
 let store;
 
 const setup = (state = {}) => {
@@ -76,7 +80,8 @@ const setup = (state = {}) => {
 		.registerSingleton('TranslationService', { translate: (key) => key })
 		.registerSingleton('ConfigService', configServiceMock)
 		.registerSingleton('FeedbackService', feedbackServiceMock)
-		.registerSingleton('SecurityService', securityServiceMock);
+		.registerSingleton('SecurityService', securityServiceMock)
+		.registerSingleton('ShareService', shareServiceMock);
 
 	return TestUtils.renderAndLogLifecycle(GeneralFeedbackPanel.tag);
 };
@@ -92,7 +97,8 @@ describe('GeneralFeedbackPanel', () => {
 					category: null,
 					description: null,
 					email: null,
-					rating: null
+					rating: null,
+					state: null
 				},
 				categoryOptions: []
 			});
@@ -111,7 +117,7 @@ describe('GeneralFeedbackPanel', () => {
 			const element = await setup();
 
 			// assert
-			expect(element.shadowRoot.children.length).toBe(10);
+			expect(element.shadowRoot.children.length).toBe(11);
 			expect(element.shadowRoot.querySelector('#feedbackPanelTitle').textContent).toBe(expectedTitle);
 			const category = element.shadowRoot.querySelector('#category');
 			expect(category.value).toBe(expectedCategory);
