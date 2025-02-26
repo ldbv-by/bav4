@@ -76,11 +76,17 @@ describe('BaseLayerSwitcher', () => {
 
 			const container = element.shadowRoot.querySelector('.baselayer__container');
 			expect(container).toBeTruthy();
+			expect(container.getAttribute('part')).toBe('container');
 			const buttons = element.shadowRoot.querySelectorAll('.baselayer__button');
+			const labels = element.shadowRoot.querySelectorAll('.baselayer__label');
 			expect(buttons.length).toBe(2);
-			expect(buttons[0].children[0].innerText).toBe('someLabel0');
+
+			expect(buttons[0].getAttribute('part')).toBe('button');
+			expect(labels[0].innerText).toBe('someLabel0');
+			expect(labels[0].getAttribute('part')).toBe('label');
 			expect(buttons[0].getAttribute('type')).toBe('secondary');
-			expect(buttons[1].children[0].innerText).toBe('someLabel1');
+
+			expect(labels[1].innerText).toBe('someLabel1');
 			expect(buttons[1].getAttribute('type')).toBe('primary');
 		});
 	});
