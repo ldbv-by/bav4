@@ -82,6 +82,8 @@ describe('BaseLayerSwitcher', () => {
 			expect(buttons.length).toBe(2);
 
 			expect(buttons[0].getAttribute('part')).toBe('button');
+			expect(buttons[0].getAttribute('title')).toBe('someLabel0');
+			expect(buttons[0].getAttribute('aria-label')).toBe('someLabel0');
 			expect(labels[0].innerText).toBe('someLabel0');
 			expect(labels[0].getAttribute('part')).toBe('label');
 			expect(buttons[0].getAttribute('type')).toBe('secondary');
