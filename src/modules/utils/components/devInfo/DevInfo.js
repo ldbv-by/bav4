@@ -25,7 +25,7 @@ export class DevInfo extends MvuElement {
 	}
 
 	createView() {
-		const info = `v${this._configService.getValue('SOFTWARE_VERSION', false)} - ${this._configService.getValue('SOFTWARE_INFO', false)}`;
+		const info = `v${this._configService.getValue('SOFTWARE_VERSION')} - ${this._configService.getValue('SOFTWARE_INFO')}`;
 
 		const onShowcaseButtonClick = () => {
 			openModal('Showcase', html`<ba-showcase></ba-showcase>`);
