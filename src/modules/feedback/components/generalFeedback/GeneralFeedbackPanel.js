@@ -112,7 +112,7 @@ export class GeneralFeedbackPanel extends MvuElement {
 		};
 
 		const onToggleState = () => {
-			this.signal(Update_State, generalFeedback.currentUrl ? null : new URL(this._shareService.encodeState()));
+			this.signal(Update_State, generalFeedback.state ? null : new URL(this._shareService.encodeState()));
 		};
 
 		const onSubmit = () => {
