@@ -46,6 +46,15 @@ const fillEmail = (element, value = emailValue) => {
 	return emailInputElement;
 };
 
+const addState = (element) => {
+	const checkBox = element.shadowRoot.querySelector('ba-checkbox');
+	if (!checkBox.checked) {
+		checkBox.click();
+	}
+
+	return checkBox;
+};
+
 const configServiceMock = {
 	getValueAsPath: () => {}
 };
@@ -252,6 +261,7 @@ describe('GeneralFeedbackPanel', () => {
 		it('calls _saveGeneralFeedback after all fields are filled', async () => {
 			// arrange
 			spyOn(securityServiceMock, 'sanitizeHtml').and.callFake((value) => value);
+			spyOn(shareServiceMock, 'encodeState').and.callFake(() => 'http://foo.bar');
 			const element = await setup();
 			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback').and.callThrough();
 
@@ -259,6 +269,7 @@ describe('GeneralFeedbackPanel', () => {
 			fillDescription(element);
 			fillEmail(element);
 			fillRating(element);
+			addState(element);
 
 			const submitButton = element.shadowRoot.querySelector('#button0');
 
@@ -266,10 +277,12 @@ describe('GeneralFeedbackPanel', () => {
 			submitButton.click();
 
 			// assert
-			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith(new GeneralFeedback(categoryValue, descriptionValue, emailValue, ratingValue));
+			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith(
+				new GeneralFeedback(categoryValue, descriptionValue, emailValue, ratingValue, new URL('http://foo.bar/'))
+			);
 		});
 
-		it('calls FeedbackService.save after all fields besides email are filled', async () => {
+		it('calls FeedbackService.save after all fields besides email and state are filled', async () => {
 			// arrange
 			const saveGeneralFeedbackSpy = spyOn(feedbackServiceMock, 'save');
 			spyOn(securityServiceMock, 'sanitizeHtml').and.callFake((value) => value);
@@ -285,7 +298,7 @@ describe('GeneralFeedbackPanel', () => {
 			submitButton.click();
 
 			// assert
-			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith(new GeneralFeedback(categoryValue, descriptionValue, null, ratingValue));
+			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith(new GeneralFeedback(categoryValue, descriptionValue, null, ratingValue, null));
 		});
 	});
 

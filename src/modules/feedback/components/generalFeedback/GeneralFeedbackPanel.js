@@ -124,7 +124,13 @@ export class GeneralFeedbackPanel extends MvuElement {
 
 			if (categoryElement.reportValidity() && descriptionElement.reportValidity() && emailElement.reportValidity()) {
 				this._saveGeneralFeedback(
-					new GeneralFeedback(generalFeedback.category, generalFeedback.description, generalFeedback.email, generalFeedback.rating)
+					new GeneralFeedback(
+						generalFeedback.category,
+						generalFeedback.description,
+						generalFeedback.email,
+						generalFeedback.rating,
+						generalFeedback.state
+					)
 				);
 			}
 		};
