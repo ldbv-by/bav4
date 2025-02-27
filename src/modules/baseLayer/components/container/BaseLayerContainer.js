@@ -104,7 +104,7 @@ export class BaseLayerContainer extends MvuElement {
 			<style>
 				${css}
 			</style>
-			<div class="title">
+			<div class="title" part="title">
 				${translate('baseLayer_switcher_header')}
 				${isButtonGroupHidden()
 					? nothing
@@ -122,7 +122,10 @@ export class BaseLayerContainer extends MvuElement {
 					([key, value]) =>
 						html`<div id="${key}" class="container ${isActive(key)}">
 							<div>
-								<ba-base-layer-switcher .configuration=${{ all: allBaseGeoResourceIds, managed: value }}></ba-base-layer-switcher>
+								<ba-base-layer-switcher
+									exportparts="container:base-layer-switcher-container,button:base-layer-switcher-button,label:base-layer-switcher-label"
+									.configuration=${{ all: allBaseGeoResourceIds, managed: value }}
+								></ba-base-layer-switcher>
 							</div>
 						</div>`
 				)}
