@@ -7,15 +7,12 @@ import { $injector } from '../../../../injection';
 import { abortOrReset } from '../../../../store/featureInfo/featureInfo.action';
 import css from './featureInfoIframePanel.css';
 import arrowLeftShortIcon from '../assets/arrowLeftShort.svg';
-import {
-	addHighlightFeatures,
-	HighlightFeatureType,
-	HighlightGeometryType,
-	removeHighlightFeaturesById
-} from '../../../../store/highlight/highlight.action';
+import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
 import { createUniqueId } from '../../../../utils/numberUtils';
 import { isTemplateResult } from '../../../../utils/checks';
 import { MvuElement } from '../../../MvuElement';
+import { Geometry } from '../../../../domain/geometry';
+import { SourceType, SourceTypeName } from '../../../../domain/sourceType';
 
 const Update_FeatureInfo_Data = 'update_featureInfo_data';
 export const TEMPORARY_FEATURE_HIGHLIGHT_ID = `highlightedFeatureInfoGeometry_${createUniqueId()}`;
@@ -70,7 +67,7 @@ export class FeatureInfoIframePanel extends MvuElement {
 				addHighlightFeatures({
 					id: TEMPORARY_FEATURE_HIGHLIGHT_ID,
 					type: HighlightFeatureType.MARKER_TMP,
-					data: { geometry: featureInfoGeometry.data, geometryType: HighlightGeometryType.GEOJSON }
+					data: new Geometry(JSON.stringify(featureInfoGeometry.data), new SourceType(SourceTypeName.GEOJSON))
 				});
 			}
 		};
