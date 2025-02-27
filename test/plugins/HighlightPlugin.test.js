@@ -10,12 +10,7 @@ import {
 } from '../../src/plugins/HighlightPlugin';
 import { TestUtils } from '../test-utils.js';
 import { highlightReducer } from '../../src/store/highlight/highlight.reducer';
-import {
-	addHighlightFeatures,
-	clearHighlightFeatures,
-	HighlightFeatureType,
-	HighlightGeometryType
-} from '../../src/store/highlight/highlight.action';
+import { addHighlightFeatures, clearHighlightFeatures, HighlightFeatureType } from '../../src/store/highlight/highlight.action';
 import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { pointerReducer } from '../../src/store/pointer/pointer.reducer';
 import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer';
@@ -31,6 +26,8 @@ import { $injector } from '../../src/injection';
 import { QueryParameters } from '../../src/domain/queryParameters';
 import { positionReducer } from '../../src/store/position/position.reducer';
 import { FeatureInfoGeometryTypes } from '../../src/domain/featureInfo.js';
+import { Geometry } from '../../src/domain/geometry.js';
+import { SourceType, SourceTypeName } from '../../src/domain/sourceType.js';
 
 describe('HighlightPlugin', () => {
 	const environmentServiceMock = {
@@ -121,7 +118,7 @@ describe('HighlightPlugin', () => {
 			const highlightFeature2 = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] }, id: QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID };
 			const highlightFeature3 = {
 				type: HighlightFeatureType.DEFAULT,
-				data: { geometry: geoJson, geometryType: HighlightGeometryType.GEOJSON },
+				data: new Geometry(geoJson, new SourceType(SourceTypeName.GEOJSON)),
 				id: QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID
 			};
 			const store = setup({
@@ -234,7 +231,7 @@ describe('HighlightPlugin', () => {
 			};
 			const highlightFeature1 = {
 				type: HighlightFeatureType.DEFAULT,
-				data: { geometry: geoJson, geometryType: HighlightGeometryType.GEOJSON },
+				data: new Geometry(geoJson, new SourceType(SourceTypeName.GEOJSON)),
 				id: QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID
 			};
 			const store = setup({
@@ -263,6 +260,7 @@ describe('HighlightPlugin', () => {
 		it('adds a success highlight feature both for FeatureInfos owning a geometry and not', async () => {
 			const coordinate = [21, 42];
 			const geoJson = '{"type":"Point","coordinates":[1224514.3987260093,6106854.83488507]}';
+			const geometry = new Geometry(geoJson, new SourceType(SourceTypeName.GEOJSON));
 			const store = setup();
 			const queryId = 'foo';
 			const instanceUnderTest = new HighlightPlugin();
@@ -286,13 +284,14 @@ describe('HighlightPlugin', () => {
 			expect(store.getState().highlight.features[0].data.coordinate).toBe(coordinate);
 			expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.QUERY_SUCCESS);
 			expect(store.getState().highlight.features[1].id).toBe(QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID);
-			expect(store.getState().highlight.features[1].data.geometry).toBe(geoJson);
+			expect(store.getState().highlight.features[1].data).toEqual(geometry);
 			expect(store.getState().highlight.features[1].type).toBe(HighlightFeatureType.DEFAULT);
 		});
 
 		it('does NOT add a success highlight feature when containing solely FeatureInfo objects owning a geometry', async () => {
 			const coordinate = [21, 42];
 			const geoJson = '{"type":"Point","coordinates":[1224514.3987260093,6106854.83488507]}';
+			const geometry = new Geometry(geoJson, new SourceType(SourceTypeName.GEOJSON));
 			const store = setup();
 			const queryId = 'foo';
 			const instanceUnderTest = new HighlightPlugin();
@@ -310,7 +309,7 @@ describe('HighlightPlugin', () => {
 
 			expect(store.getState().highlight.features).toHaveSize(1);
 			expect(store.getState().highlight.features[0].id).toBe(QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID);
-			expect(store.getState().highlight.features[0].data.geometry).toBe(geoJson);
+			expect(store.getState().highlight.features[0].data).toEqual(geometry);
 		});
 	});
 

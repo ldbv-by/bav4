@@ -1,11 +1,6 @@
 import { TestUtils } from '../../../../test-utils';
 import { highlightReducer } from '../../../../../src/store/highlight/highlight.reducer';
-import {
-	addHighlightFeatures,
-	clearHighlightFeatures,
-	HighlightFeatureType,
-	HighlightGeometryType
-} from '../../../../../src/store/highlight/highlight.action';
+import { addHighlightFeatures, clearHighlightFeatures, HighlightFeatureType } from '../../../../../src/store/highlight/highlight.action';
 import Map from 'ol/Map';
 import { fromLonLat } from 'ol/proj';
 import View from 'ol/View';
@@ -22,6 +17,8 @@ import GeoJSON from 'ol/format/GeoJSON';
 import { Point } from 'ol/geom';
 import { Feature } from 'ol';
 import { $injector } from '../../../../../src/injection';
+import { Geometry } from '../../../../../src/domain/geometry';
+import { SourceType, SourceTypeName } from '../../../../../src/domain/sourceType';
 
 describe('OlHighlightLayerHandler', () => {
 	const initialCenter = fromLonLat([11.57245, 48.14021]);
@@ -187,7 +184,7 @@ describe('OlHighlightLayerHandler', () => {
 	});
 
 	describe('_toOlFeature', () => {
-		it('maps features containing data as HighlightCoordinate', () => {
+		it('maps features containing a `Coordinate`', () => {
 			setup();
 			const handler = new OlHighlightLayerHandler();
 			const appendStyleSpy = spyOn(handler, '_appendStyle').withArgs(jasmine.anything(), jasmine.any(Feature)).and.callThrough();
@@ -200,17 +197,17 @@ describe('OlHighlightLayerHandler', () => {
 			expect(appendStyleSpy).toHaveBeenCalledTimes(1);
 		});
 
-		it('maps features containing data as HighlightGeometry', () => {
+		it('maps features containing a `Geometry`', () => {
 			setup();
 			const handler = new OlHighlightLayerHandler();
 			spyOn(mapService, 'getSrid').and.returnValue(3857);
 			const appendStyleSpy = spyOn(handler, '_appendStyle').withArgs(jasmine.anything(), jasmine.any(Feature)).and.callThrough();
 			const highlightGeometryWktFeature = {
-				data: { geometry: `SRID=3857;${new WKT().writeGeometry(new Point([21, 42]))}`, geometryType: HighlightGeometryType.EWKT },
+				data: new Geometry(`SRID=3857;${new WKT().writeGeometry(new Point([21, 42]))}`, new SourceType(SourceTypeName.EWKT)),
 				label: 'WKT'
 			};
 			const highlightGeometryGeoJsonFeature = {
-				data: { geometry: new GeoJSON().writeGeometry(new Point([5, 10])), geometryType: HighlightGeometryType.GEOJSON },
+				data: new Geometry(JSON.stringify(new GeoJSON().writeGeometry(new Point([5, 10]))), new SourceType(SourceTypeName.GEOJSON)),
 				label: 'GeoJSON'
 			};
 
@@ -224,13 +221,13 @@ describe('OlHighlightLayerHandler', () => {
 			expect(appendStyleSpy).toHaveBeenCalledTimes(2);
 		});
 
-		describe('HighlightGeometryType EWKT', () => {
+		describe('SourceType EWKT', () => {
 			it('throws an error when the SRID of the HighlightGeometry is not supported', () => {
 				setup();
 				const handler = new OlHighlightLayerHandler();
 				spyOn(mapService, 'getSrid').and.returnValue(3857);
 				const highlightGeometryWktFeature = {
-					data: { geometry: `SRID=4326;${new WKT().writeGeometry(new Point([21, 42]))}`, geometryType: HighlightGeometryType.EWKT },
+					data: new Geometry(`SRID=4326;${new WKT().writeGeometry(new Point([21, 42]))}`, new SourceType(SourceTypeName.EWKT)),
 					label: 'WKT'
 				};
 
@@ -242,9 +239,11 @@ describe('OlHighlightLayerHandler', () => {
 			setup();
 			const handler = new OlHighlightLayerHandler();
 			const appendStyleSpy = spyOn(handler, '_appendStyle').withArgs(jasmine.anything(), jasmine.any(Feature)).and.callThrough();
-			const unknownHighlightFeatureType = { data: { geometry: new GeoJSON().writeGeometry(new Point([5, 10])), geometryType: -1 } };
+			const unknownHighlightFeatureType = {
+				data: new Geometry(JSON.stringify(new GeoJSON().writeGeometry(new Point([5, 10]))), new SourceType(SourceTypeName.KML))
+			};
 
-			expect(handler._toOlFeature(unknownHighlightFeatureType)).toBeNull();
+			expect(() => handler._toOlFeature(unknownHighlightFeatureType)).toThrow('SourceType "kml" is currently not supported');
 			expect(appendStyleSpy).not.toHaveBeenCalled();
 		});
 	});
@@ -282,11 +281,11 @@ describe('OlHighlightLayerHandler', () => {
 			setup();
 			const handler = new OlHighlightLayerHandler();
 			const highlightGeometryGeoJsonFeature0 = {
-				data: { geometry: new GeoJSON().writeGeometry(olPoint), geometryType: HighlightGeometryType.GEOJSON },
+				data: new Geometry(new GeoJSON().writeGeometry(olPoint), new SourceType(SourceTypeName.GEOJSON)),
 				type: HighlightFeatureType.DEFAULT
 			};
 			const highlightGeometryGeoJsonFeature1 = {
-				data: { geometry: new GeoJSON().writeGeometry(olPoint), geometryType: HighlightGeometryType.GEOJSON },
+				data: new Geometry(new GeoJSON().writeGeometry(olPoint), new SourceType(SourceTypeName.GEOJSON)),
 				type: HighlightFeatureType.DEFAULT_TMP
 			};
 

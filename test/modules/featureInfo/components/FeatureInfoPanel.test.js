@@ -8,8 +8,9 @@ import { html } from 'lit-html';
 import { FeatureInfoGeometryTypes } from '../../../../src/domain/featureInfo.js';
 import { addFeatureInfoItems } from '../../../../src/store/featureInfo/featureInfo.action.js';
 import { highlightReducer } from '../../../../src/store/highlight/highlight.reducer.js';
-import { HighlightFeatureType, HighlightGeometryType } from '../../../../src/store/highlight/highlight.action.js';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
+import { Geometry } from '../../../../src/domain/geometry.js';
+import { SourceType, SourceTypeName } from '../../../../src/domain/sourceType.js';
 
 window.customElements.define(FeatureInfoPanel.tag, FeatureInfoPanel);
 
@@ -278,9 +279,7 @@ describe('FeatureInfoPanel', () => {
 				target.dispatchEvent(new Event('mouseenter'));
 
 				expect(store.getState().highlight.features).toHaveSize(1);
-				expect(store.getState().highlight.features[0].data.geometry).toBe(geoJson);
-				expect(store.getState().highlight.features[0].data.geometryType).toBe(HighlightGeometryType.GEOJSON);
-				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER_TMP);
+				expect(store.getState().highlight.features[0].data).toEqual(new Geometry(geoJson, new SourceType(SourceTypeName.GEOJSON)));
 				expect(store.getState().highlight.features[0].id).toBe(TEMPORARY_FEATURE_HIGHLIGHT_ID);
 				expect(element.shadowRoot.querySelectorAll('.is-geometry')).toHaveSize(1);
 			});
@@ -319,7 +318,8 @@ describe('FeatureInfoPanel', () => {
 						]
 					},
 					highlight: {
-						features: [{ id: TEMPORARY_FEATURE_HIGHLIGHT_ID, data: { geometry: geoJson, geometryType: HighlightGeometryType.GEOJSON } }]
+						// features: [{ id: TEMPORARY_FEATURE_HIGHLIGHT_ID, data: { geometry: geoJson, geometryType: HighlightGeometryType.GEOJSON } }]
+						features: [{ id: TEMPORARY_FEATURE_HIGHLIGHT_ID, data: new Geometry(geoJson, new SourceType(SourceTypeName.GEOJSON)) }]
 					}
 				});
 
