@@ -147,7 +147,7 @@ describe('FeatureInfoIframePanel', () => {
 				target.dispatchEvent(new Event('mouseenter'));
 
 				expect(store.getState().highlight.features).toHaveSize(1);
-				expect(store.getState().highlight.features[0].data).toEqual(new Geometry(JSON.stringify(geoJson), new SourceType(SourceTypeName.GEOJSON)));
+				expect(store.getState().highlight.features[0].data).toEqual(new Geometry(geoJson, new SourceType(SourceTypeName.GEOJSON)));
 				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER_TMP);
 				expect(store.getState().highlight.features[0].id).toBe(TEMPORARY_FEATURE_HIGHLIGHT_ID);
 				expect(element.shadowRoot.querySelectorAll('.is-geometry')).toHaveSize(1);
@@ -187,7 +187,7 @@ describe('FeatureInfoIframePanel', () => {
 						]
 					},
 					highlight: {
-						features: [{ id: TEMPORARY_FEATURE_HIGHLIGHT_ID, data: new Geometry(JSON.stringify(geoJson), new SourceType(SourceTypeName.GEOJSON)) }]
+						features: [{ id: TEMPORARY_FEATURE_HIGHLIGHT_ID, data: new Geometry(geoJson, new SourceType(SourceTypeName.GEOJSON)) }]
 					}
 				});
 
