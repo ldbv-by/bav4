@@ -1,11 +1,6 @@
 import { TestUtils } from '../../../../test-utils';
 import { highlightReducer } from '../../../../../src/store/highlight/highlight.reducer';
-import {
-	addHighlightFeatures,
-	clearHighlightFeatures,
-	HighlightFeatureType,
-	HighlightGeometryType
-} from '../../../../../src/store/highlight/highlight.action';
+import { addHighlightFeatures, clearHighlightFeatures, HighlightFeatureType } from '../../../../../src/store/highlight/highlight.action';
 import Map from 'ol/Map';
 import { fromLonLat } from 'ol/proj';
 import View from 'ol/View';
@@ -286,11 +281,11 @@ describe('OlHighlightLayerHandler', () => {
 			setup();
 			const handler = new OlHighlightLayerHandler();
 			const highlightGeometryGeoJsonFeature0 = {
-				data: { geometry: new GeoJSON().writeGeometry(olPoint), geometryType: HighlightGeometryType.GEOJSON },
+				data: new Geometry(new GeoJSON().writeGeometry(olPoint), new SourceType(SourceTypeName.GEOJSON)),
 				type: HighlightFeatureType.DEFAULT
 			};
 			const highlightGeometryGeoJsonFeature1 = {
-				data: { geometry: new GeoJSON().writeGeometry(olPoint), geometryType: HighlightGeometryType.GEOJSON },
+				data: new Geometry(new GeoJSON().writeGeometry(olPoint), new SourceType(SourceTypeName.GEOJSON)),
 				type: HighlightFeatureType.DEFAULT_TMP
 			};
 
