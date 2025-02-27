@@ -1,13 +1,12 @@
 import { createNoInitialStateMainMenuReducer } from '../../../../../../../src/store/mainMenu/mainMenu.reducer';
 import { CpResultItem } from '../../../../../../../src/modules/search/components/menu/types/cp/CpResultItem';
 import { CadastralParcelSearchResult } from '../../../../../../../src/modules/search/services/domain/searchResult';
-import { HighlightFeatureType, HighlightGeometryType } from '../../../../../../../src/store/highlight/highlight.action';
+import { HighlightFeatureType } from '../../../../../../../src/store/highlight/highlight.action';
 import { highlightReducer } from '../../../../../../../src/store/highlight/highlight.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../../../../src/store/media/media.reducer';
 import { positionReducer } from '../../../../../../../src/store/position/position.reducer';
 import { TestUtils } from '../../../../../../test-utils.js';
 import { SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../../src/plugins/HighlightPlugin';
-import { VectorSourceType } from '../../../../../../../src/domain/geoResources.js';
 import { Geometry } from '../../../../../../../src/domain/geometry.js';
 import { SourceType, SourceTypeName } from '../../../../../../../src/domain/sourceType.js';
 window.customElements.define(CpResultItem.tag, CpResultItem);
@@ -53,16 +52,6 @@ describe('CpResultItem', () => {
 			element.data = data;
 
 			expect(element.shadowRoot.querySelector('li').innerText).toBe('labelFormatted');
-		});
-	});
-
-	describe('_matchGeomType', () => {
-		it('maps a SourceType to a HighlightGeometryType', async () => {
-			const element = await setup();
-			expect(element._matchGeomType(new SourceType(SourceTypeName.EWKT))).toEqual(HighlightGeometryType.EWKT);
-			expect(element._matchGeomType(new SourceType(SourceTypeName.GEOJSON))).toEqual(HighlightGeometryType.GEOJSON);
-
-			expect(() => element._matchGeomType(VectorSourceType.KML)).toThrow('SourceType Symbol(kml) is currently not supported');
 		});
 	});
 
@@ -121,8 +110,7 @@ describe('CpResultItem', () => {
 
 						expect(store.getState().highlight.features).toHaveSize(1);
 						expect(store.getState().highlight.features[0].id).toEqual(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
-						expect(store.getState().highlight.features[0].data.geometry).toEqual(wktGeometry.data);
-						expect(store.getState().highlight.features[0].data.geometryType).toBe(HighlightGeometryType.EWKT);
+						expect(store.getState().highlight.features[0].data).toEqual(wktGeometry);
 						expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.DEFAULT_TMP);
 					});
 				});
@@ -136,8 +124,7 @@ describe('CpResultItem', () => {
 
 						expect(store.getState().highlight.features).toHaveSize(1);
 						expect(store.getState().highlight.features[0].id).toEqual(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
-						expect(store.getState().highlight.features[0].data.geometry).toEqual(geoJsonGeometry.data);
-						expect(store.getState().highlight.features[0].data.geometryType).toBe(HighlightGeometryType.GEOJSON);
+						expect(store.getState().highlight.features[0].data).toEqual(geoJsonGeometry);
 						expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.DEFAULT_TMP);
 					});
 				});
@@ -199,8 +186,7 @@ describe('CpResultItem', () => {
 
 						expect(store.getState().highlight.features).toHaveSize(1);
 						expect(store.getState().highlight.features[0].id).toEqual(SEARCH_RESULT_HIGHLIGHT_FEATURE_ID);
-						expect(store.getState().highlight.features[0].data.geometry).toEqual(wktGeometry.data);
-						expect(store.getState().highlight.features[0].data.geometryType).toBe(HighlightGeometryType.EWKT);
+						expect(store.getState().highlight.features[0].data).toEqual(wktGeometry);
 						expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.DEFAULT);
 						expect(store.getState().highlight.features[0].label).toBe('label');
 					});
@@ -215,8 +201,7 @@ describe('CpResultItem', () => {
 
 						expect(store.getState().highlight.features).toHaveSize(1);
 						expect(store.getState().highlight.features[0].id).toEqual(SEARCH_RESULT_HIGHLIGHT_FEATURE_ID);
-						expect(store.getState().highlight.features[0].data.geometry).toEqual(geoJsonGeometry.data);
-						expect(store.getState().highlight.features[0].data.geometryType).toBe(HighlightGeometryType.GEOJSON);
+						expect(store.getState().highlight.features[0].data).toEqual(geoJsonGeometry);
 						expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.DEFAULT);
 						expect(store.getState().highlight.features[0].label).toBe('label');
 					});
