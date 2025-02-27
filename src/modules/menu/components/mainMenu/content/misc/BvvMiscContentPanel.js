@@ -20,13 +20,19 @@ const Update_Auth = 'update_auth';
 export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 	#translationService;
 	#authService;
+	#configService;
 
 	constructor() {
 		super({ darkSchema: false, signedIn: false });
 
-		const { TranslationService: translationService, AuthService: authService } = $injector.inject('TranslationService', 'AuthService');
+		const {
+			TranslationService: translationService,
+			AuthService: authService,
+			ConfigService: configService
+		} = $injector.inject('TranslationService', 'AuthService', 'ConfigService');
 		this.#translationService = translationService;
 		this.#authService = authService;
+		this.#configService = configService;
 	}
 
 	onInitialize() {
@@ -179,6 +185,9 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 						<span class="ba-list-item__secondary-text">${translate('menu_misc_content_panel_ea_text')}</span>
 					</span>
 				</a>
+				<div class="version-info">
+					${html`${translate('menu_misc_content_panel_software_version')} ${this.#configService.getValue('SOFTWARE_VERSION')}`}
+				</div>
 			</div>
 		`;
 	}

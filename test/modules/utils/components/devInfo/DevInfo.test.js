@@ -11,7 +11,7 @@ describe('DevInfo', () => {
 	let store;
 
 	const setup = (config) => {
-		const { softwareInfo, runtimeMode } = config;
+		const { softwareVersion, softwareInfo, runtimeMode } = config;
 
 		store = TestUtils.setupStoreAndDi(
 			{},
@@ -26,6 +26,8 @@ describe('DevInfo', () => {
 						return runtimeMode;
 					case 'SOFTWARE_INFO':
 						return softwareInfo;
+					case 'SOFTWARE_VERSION':
+						return softwareVersion;
 				}
 			}
 		});
@@ -34,14 +36,15 @@ describe('DevInfo', () => {
 
 	describe('when initialized', () => {
 		it('adds dev-info elements and css classes', async () => {
-			const element = await setup({ softwareInfo: '42', runtimeMode: 'development' });
+			const element = await setup({ softwareVersion: '1.0', softwareInfo: '42', runtimeMode: 'development' });
 
 			expect(element.shadowRoot.querySelectorAll('.container')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.container>ba-button')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.container>ba-button').label).toBe('v1.0 - 42');
 		});
 
 		it('adds nothing when SOFTWARE_INFO property is missing', async () => {
-			const element = await setup({ softwareInfo: undefined, runtimeMode: 'development' });
+			const element = await setup({ softwareVersion: '1.0', softwareInfo: undefined, runtimeMode: 'development' });
 
 			expect(element.shadowRoot.childElementCount).toBe(0);
 		});
@@ -49,7 +52,7 @@ describe('DevInfo', () => {
 
 	describe('when button is clicked', () => {
 		it('shows a modal window containing the showcase', async () => {
-			const element = await setup({ softwareInfo: '42', runtimeMode: 'development' });
+			const element = await setup({ softwareVersion: '1.0', softwareInfo: '42', runtimeMode: 'development' });
 
 			element.shadowRoot.querySelector('ba-button').click();
 
