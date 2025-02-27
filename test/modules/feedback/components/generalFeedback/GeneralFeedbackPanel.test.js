@@ -1,5 +1,6 @@
 import { $injector } from '../../../../../src/injection';
 import { GeneralFeedbackPanel } from '../../../../../src/modules/feedback/components/generalFeedback/GeneralFeedbackPanel';
+import { Checkbox } from '../../../../../src/modules/commons/components/checkbox/Checkbox';
 import { Rating } from '../../../../../src/modules/feedback/components/rating/LikertItemRatingPanel';
 import { GeneralFeedback } from '../../../../../src/services/FeedbackService';
 import { BA_FORM_ELEMENT_VISITED_CLASS } from '../../../../../src/utils/markup';
@@ -8,6 +9,7 @@ import { LevelTypes } from '../../../../../src/store/notifications/notifications
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 
+window.customElements.define(Checkbox.tag, Checkbox);
 window.customElements.define(GeneralFeedbackPanel.tag, GeneralFeedbackPanel);
 
 const ratingValue = Rating.STRONGLY_AGREE;
@@ -44,6 +46,15 @@ const fillEmail = (element, value = emailValue) => {
 	return emailInputElement;
 };
 
+const addState = (element) => {
+	const checkBox = element.shadowRoot.querySelector('ba-checkbox');
+	if (!checkBox.checked) {
+		checkBox.click();
+	}
+
+	return checkBox;
+};
+
 const configServiceMock = {
 	getValueAsPath: () => {}
 };
@@ -55,6 +66,10 @@ const feedbackServiceMock = {
 
 const securityServiceMock = {
 	sanitizeHtml: () => {}
+};
+
+const shareServiceMock = {
+	encodeState: () => {}
 };
 
 let store;
@@ -76,7 +91,8 @@ const setup = (state = {}) => {
 		.registerSingleton('TranslationService', { translate: (key) => key })
 		.registerSingleton('ConfigService', configServiceMock)
 		.registerSingleton('FeedbackService', feedbackServiceMock)
-		.registerSingleton('SecurityService', securityServiceMock);
+		.registerSingleton('SecurityService', securityServiceMock)
+		.registerSingleton('ShareService', shareServiceMock);
 
 	return TestUtils.render(GeneralFeedbackPanel.tag);
 };
@@ -92,7 +108,8 @@ describe('GeneralFeedbackPanel', () => {
 					category: null,
 					description: null,
 					email: null,
-					rating: null
+					rating: null,
+					state: null
 				},
 				categoryOptions: []
 			});
@@ -111,7 +128,7 @@ describe('GeneralFeedbackPanel', () => {
 			const element = await setup();
 
 			// assert
-			expect(element.shadowRoot.children.length).toBe(10);
+			expect(element.shadowRoot.children.length).toBe(11);
 			expect(element.shadowRoot.querySelector('#feedbackPanelTitle').textContent).toBe(expectedTitle);
 			const category = element.shadowRoot.querySelector('#category');
 			expect(category.value).toBe(expectedCategory);
@@ -121,6 +138,7 @@ describe('GeneralFeedbackPanel', () => {
 			expect(element.shadowRoot.querySelector('#email').textContent).toBe(expectedEmail);
 			expect(element.shadowRoot.querySelectorAll('ba-likert-item-rating-panel')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('.feedback-text-container').childElementCount).toBe(2);
+			expect(element.shadowRoot.querySelector('ba-checkbox').textContent.trim()).toBe('feedback_add_current_state_optionally');
 			expect(element.shadowRoot.querySelectorAll('.feedback-text-container span')[0].textContent).toBe('feedback_generalFeedback_rating_scale_5');
 			expect(element.shadowRoot.querySelectorAll('.feedback-text-container span')[1].textContent).toBe('feedback_generalFeedback_rating_scale_0');
 		});
@@ -162,6 +180,26 @@ describe('GeneralFeedbackPanel', () => {
 			element.shadowRoot.querySelectorAll('.ba-form-element').forEach((el) => {
 				expect(el.classList.contains(BA_FORM_ELEMENT_VISITED_CLASS)).toBeFalse();
 			});
+		});
+
+		it('adds the state after checkbox is clicked', async () => {
+			const shareServiceSpy = spyOn(shareServiceMock, 'encodeState').and.callFake(() => 'http://foo.bar');
+			const element = await setup();
+
+			const checkBox = element.shadowRoot.querySelector('ba-checkbox');
+
+			expect(checkBox.checked).toBeFalse();
+
+			checkBox.click();
+
+			expect(shareServiceSpy).toHaveBeenCalled();
+			expect(checkBox.checked).toBeTrue();
+			expect(element.getModel().generalFeedback.state.href).toEqual('http://foo.bar/');
+
+			checkBox.click();
+
+			expect(checkBox.checked).toBeFalse();
+			expect(element.getModel().generalFeedback.state).toBeNull();
 		});
 
 		it('renders a privacy policy disclaimer', async () => {
@@ -223,6 +261,7 @@ describe('GeneralFeedbackPanel', () => {
 		it('calls _saveGeneralFeedback after all fields are filled', async () => {
 			// arrange
 			spyOn(securityServiceMock, 'sanitizeHtml').and.callFake((value) => value);
+			spyOn(shareServiceMock, 'encodeState').and.callFake(() => 'http://foo.bar');
 			const element = await setup();
 			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback').and.callThrough();
 
@@ -230,6 +269,7 @@ describe('GeneralFeedbackPanel', () => {
 			fillDescription(element);
 			fillEmail(element);
 			fillRating(element);
+			addState(element);
 
 			const submitButton = element.shadowRoot.querySelector('#button0');
 
@@ -237,10 +277,12 @@ describe('GeneralFeedbackPanel', () => {
 			submitButton.click();
 
 			// assert
-			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith(new GeneralFeedback(categoryValue, descriptionValue, emailValue, ratingValue));
+			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith(
+				new GeneralFeedback(categoryValue, descriptionValue, emailValue, ratingValue, new URL('http://foo.bar/'))
+			);
 		});
 
-		it('calls FeedbackService.save after all fields besides email are filled', async () => {
+		it('calls FeedbackService.save after all fields besides email and state are filled', async () => {
 			// arrange
 			const saveGeneralFeedbackSpy = spyOn(feedbackServiceMock, 'save');
 			spyOn(securityServiceMock, 'sanitizeHtml').and.callFake((value) => value);
@@ -256,7 +298,7 @@ describe('GeneralFeedbackPanel', () => {
 			submitButton.click();
 
 			// assert
-			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith(new GeneralFeedback(categoryValue, descriptionValue, null, ratingValue));
+			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith(new GeneralFeedback(categoryValue, descriptionValue, null, ratingValue, null));
 		});
 
 		it('prevents a double submit', async () => {

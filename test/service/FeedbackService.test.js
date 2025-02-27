@@ -17,13 +17,16 @@ describe('Entities', () => {
 		expect(new MapFeedback('state', 'category', 'description', 'geometryId').email).toBeNull();
 	});
 	it('GeneralFeedback', async () => {
-		const instanceUnderTest = new GeneralFeedback('category', 'description', 'email', 'rating');
+		const instanceUnderTest = new GeneralFeedback('category', 'description', 'email', 'rating', 'state');
 		expect(instanceUnderTest.category).toBe('category');
 		expect(instanceUnderTest.description).toBe('description');
 		expect(instanceUnderTest.email).toBe('email');
 		expect(instanceUnderTest.rating).toBe('rating');
+		expect(instanceUnderTest.state).toBe('state');
+
 		expect(new GeneralFeedback('category', 'description').email).toBeNull();
 		expect(new GeneralFeedback('category', 'description').rating).toBeNull();
+		expect(new GeneralFeedback('category', 'description').state).toBeNull();
 	});
 });
 

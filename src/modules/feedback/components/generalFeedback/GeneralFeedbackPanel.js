@@ -13,6 +13,7 @@ import { GeneralFeedback } from '../../../../services/FeedbackService';
 const Update_Rating = 'update_rating';
 const Update_Description = 'update_description';
 const Update_EMail = 'update_email';
+const Update_State = 'update_state';
 
 const Update_Category = 'update_category';
 const Update_CategoryOptions = 'update_categoryoptions';
@@ -29,7 +30,8 @@ export class GeneralFeedbackPanel extends MvuElement {
 				category: null,
 				description: null,
 				email: null,
-				rating: null
+				rating: null,
+				state: null
 			},
 			categoryOptions: []
 		});
@@ -38,13 +40,15 @@ export class GeneralFeedbackPanel extends MvuElement {
 			ConfigService: configService,
 			TranslationService: translationService,
 			FeedbackService: feedbackService,
-			SecurityService: securityService
-		} = $injector.inject('ConfigService', 'TranslationService', 'FeedbackService', 'SecurityService');
+			SecurityService: securityService,
+			ShareService: shareService
+		} = $injector.inject('ConfigService', 'TranslationService', 'FeedbackService', 'SecurityService', 'ShareService');
 
 		this._configService = configService;
 		this._translationService = translationService;
 		this._feedbackService = feedbackService;
 		this._securityService = securityService;
+		this._shareService = shareService;
 		this._onSubmit = () => {};
 	}
 
@@ -64,6 +68,8 @@ export class GeneralFeedbackPanel extends MvuElement {
 				return { ...model, generalFeedback: { ...model.generalFeedback, category: data } };
 			case Update_CategoryOptions:
 				return { ...model, categoryOptions: ['', ...data] };
+			case Update_State:
+				return { ...model, generalFeedback: { ...model.generalFeedback, state: data } };
 		}
 	}
 
@@ -105,6 +111,10 @@ export class GeneralFeedbackPanel extends MvuElement {
 			this.signal(Update_Category, this._securityService.sanitizeHtml(selectedCategory));
 		};
 
+		const onToggleState = () => {
+			this.signal(Update_State, generalFeedback.state ? null : new URL(this._shareService.encodeState()));
+		};
+
 		const onSubmit = () => {
 			this.shadowRoot.querySelectorAll('.ba-form-element').forEach((el) => el.classList.add(BA_FORM_ELEMENT_VISITED_CLASS));
 
@@ -114,7 +124,13 @@ export class GeneralFeedbackPanel extends MvuElement {
 
 			if (categoryElement.reportValidity() && descriptionElement.reportValidity() && emailElement.reportValidity()) {
 				this._saveGeneralFeedback(
-					new GeneralFeedback(generalFeedback.category, generalFeedback.description, generalFeedback.email, generalFeedback.rating)
+					new GeneralFeedback(
+						generalFeedback.category,
+						generalFeedback.description,
+						generalFeedback.email,
+						generalFeedback.rating,
+						generalFeedback.state
+					)
 				);
 			}
 		};
@@ -158,6 +174,12 @@ export class GeneralFeedbackPanel extends MvuElement {
 				<i class="icon error"></i>
 				<label class="helper-label">${translate('feedback_eMail_helper')}</label>
 				<label class="error-label">${translate('feedback_eMail_error')}</label>
+			</div>
+
+			<div>
+				<ba-checkbox class="map-feedback__checkbox" tabindex="0" @toggle=${onToggleState} .checked=${!!generalFeedback.state}>
+					<span class="opt-in-text">${translate('feedback_add_current_state_optionally')}</span>
+				</ba-checkbox>
 			</div>
 
 			<div class="feedback-header">${translate('feedback_generalFeedback_rating')}</div>
