@@ -30,7 +30,7 @@ describe('global i18n', () => {
 		expect(map.global_fileStorageService_exception).toBe('The data could not be stored');
 		expect(map.global_cr_global_wgs84).toBe('Lat, Lon');
 		expect(map.global_terms_of_use).toBe('https://www.ldbv.bayern.de/file/pdf/18295/Nutzungsbedingungen_Geoportal_BayernAtlas_BayernAtlasplus.pdf');
-		expect(map.global_featureCollection_layer_label).toBe('My collection');
+		expect(map.global_featureCollection_layer_label).toBe('My temporary collection');
 	});
 
 	it('provides translation for de', () => {
@@ -64,7 +64,7 @@ describe('global i18n', () => {
 		expect(map.global_fileStorageService_exception).toBe('Die Daten konnten nicht gespeichert werden');
 		expect(map.global_cr_global_wgs84).toBe('Breite, Länge');
 		expect(map.global_terms_of_use).toBe('https://www.ldbv.bayern.de/file/pdf/18295/Nutzungsbedingungen_Geoportal_BayernAtlas_BayernAtlasplus.pdf');
-		expect(map.global_featureCollection_layer_label).toBe('Meine Sammlung');
+		expect(map.global_featureCollection_layer_label).toBe('Meine temporäre Sammlung');
 	});
 
 	it('have the expected amount of translations', () => {
