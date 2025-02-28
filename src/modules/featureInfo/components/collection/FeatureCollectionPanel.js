@@ -6,9 +6,8 @@ import { $injector } from '../../../../injection/index';
 import { addFeatures, removeFeaturesById } from '../../../../store/featureCollection/featureCollection.action';
 import { clearHighlightFeatures } from '../../../../store/highlight/highlight.action';
 import { MvuElement } from '../../../MvuElement';
-import removeFromCollectionButton from '../assets/printer.svg';
-import addToCollectionButton from '../assets/share.svg';
 import { abortOrReset } from '../../../../store/featureInfo/featureInfo.action';
+import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 
 const Update_FeatureId = 'update_featureId';
 const Update_Feature = 'update_feature';
@@ -54,6 +53,7 @@ export class FeatureCollectionPanel extends MvuElement {
 			const removeFeature = () => {
 				clearHighlightFeatures();
 				removeFeaturesById(featureId);
+				emitNotification(translate('featureInfo_featureCollection_remove_feature_notification'), LevelTypes.INFO);
 				// by calling the abortOrReset action, we restore the previous opened tab of the MainMenu
 				abortOrReset();
 			};
@@ -61,22 +61,42 @@ export class FeatureCollectionPanel extends MvuElement {
 			const addFeature = () => {
 				clearHighlightFeatures();
 				addFeatures(feature);
+				emitNotification(translate('featureInfo_featureCollection_add_feature_notification'), LevelTypes.INFO);
 				// by calling the abortOrReset action, we restore the previous opened tab of the MainMenu
 				abortOrReset();
 			};
+			const iconRemove = `
+				ba-remove-collection-chip::part(icon){
+					background: var(--error-color);
+				}
+			}`;
+
+			const iconAdd = `
+				ba-add-collection-chip::part(icon){
+					background: var(--success-color);
+				}
+			}`;
 
 			if (partOfCollection) {
-				return html`<div>
-					<ba-icon
-						.title=${translate('featureInfo_featureCollection_remove_feature')}
-						.icon=${removeFromCollectionButton}
+				return html`
+					<style>
+						${iconRemove}
+					</style>
+					<ba-remove-collection-chip
+						.title=${translate('featureInfo_featureCollection_remove_feature_title')}
 						@click=${removeFeature}
-					></ba-icon>
-				</div>`;
+					></ba-remove-collection-chip>
+				`;
 			} else if (feature) {
-				return html`<div>
-					<ba-icon .title=${translate('featureInfo_featureCollection_add_feature')} .icon="${addToCollectionButton}" @click=${addFeature}></ba-icon>
-				</div>`;
+				return html`
+					<style>
+						${iconAdd}
+					</style>
+					<ba-add-collection-chip
+						.title=${translate('featureInfo_featureCollection_add_feature_title')}
+						@click=${addFeature}
+					></ba-add-collection-chip>
+				`;
 			}
 		}
 

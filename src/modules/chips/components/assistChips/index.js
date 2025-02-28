@@ -4,6 +4,8 @@ import { MapFeedbackChip } from './MapFeedbackChip';
 import { RoutingChip } from './RoutingChip';
 import { ShareDataChip } from './ShareDataChip';
 import { ShareChip } from './ShareChip';
+import { AddToCollectionChip } from './AddToCollectionChip';
+import { RemoveFromCollectionChip } from './RemoveFromCollectionChip';
 
 if (!window.customElements.get(ElevationProfileChip.tag)) {
 	window.customElements.define(ElevationProfileChip.tag, ElevationProfileChip);
@@ -27,4 +29,12 @@ if (!window.customElements.get(ShareDataChip.tag)) {
 
 if (!window.customElements.get(ShareChip.tag)) {
 	window.customElements.define(ShareChip.tag, ShareChip);
+}
+
+if (!window.customElements.get(AddToCollectionChip.tag)) {
+	window.customElements.define(AddToCollectionChip.tag, AddToCollectionChip);
+}
+
+if (!window.customElements.get(RemoveFromCollectionChip.tag)) {
+	window.customElements.define(RemoveFromCollectionChip.tag, RemoveFromCollectionChip);
 }

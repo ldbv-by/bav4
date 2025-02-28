@@ -4,8 +4,8 @@ import { $injector } from '../../../../src/injection/index.js';
 import { FeatureCollectionPanel } from '../../../../src/modules/featureInfo/components/collection/FeatureCollectionPanel.js';
 import { Geometry } from '../../../../src/domain/geometry.js';
 import { featureCollectionReducer } from '../../../../src/store/featureCollection/featureCollection.reducer.js';
-import removeFromCollectionButton from '../../../../src/modules/featureInfo/components/assets/printer.svg';
-import addToCollectionButton from '../../../../src/modules/featureInfo/components/assets/share.svg';
+// import removeFromCollectionButton from '../../../../src/modules/featureInfo/components/assets/printer.svg';
+// import addToCollectionButton from '../../../../src/modules/featureInfo/components/assets/share.svg';
 import { Feature } from '../../../../src/domain/feature.js';
 import { featureInfoReducer } from '../../../../src/store/featureInfo/featureInfo.reducer.js';
 import { highlightReducer } from '../../../../src/store/highlight/highlight.reducer.js';
@@ -52,10 +52,10 @@ describe('FeatureCollectionPanel', () => {
 
 				element.feature = feature;
 
-				expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
-				const button = element.shadowRoot.querySelector('ba-icon');
-				expect(button.title).toBe('featureInfo_featureCollection_add_feature');
-				expect(button.icon).toBe(addToCollectionButton);
+				expect(element.shadowRoot.querySelectorAll('ba-add-collection-chip')).toHaveSize(1);
+				const button = element.shadowRoot.querySelector('ba-add-collection-chip');
+				expect(button.title).toBe('featureInfo_featureCollection_add_feature_title');
+				// expect(button.icon).toBe(addToCollectionButton);
 			});
 		});
 
@@ -70,10 +70,10 @@ describe('FeatureCollectionPanel', () => {
 
 				element.featureId = featureId;
 
-				expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
-				const button = element.shadowRoot.querySelector('ba-icon');
-				expect(button.title).toBe('featureInfo_featureCollection_remove_feature');
-				expect(button.icon).toBe(removeFromCollectionButton);
+				expect(element.shadowRoot.querySelectorAll('ba-remove-collection-chip')).toHaveSize(1);
+				const button = element.shadowRoot.querySelector('ba-remove-collection-chip');
+				expect(button.title).toBe('featureInfo_featureCollection_remove_feature_title');
+				// expect(button.icon).toBe(removeFromCollectionButton);
 			});
 		});
 		describe('and featureId denotes a feature which is NOT part of the collection', () => {
@@ -105,7 +105,7 @@ describe('FeatureCollectionPanel', () => {
 			const feature = new Feature(new Geometry('data'));
 
 			element.feature = feature;
-			const button = element.shadowRoot.querySelector('ba-icon');
+			const button = element.shadowRoot.querySelector('ba-add-collection-chip');
 
 			button.click();
 
@@ -131,7 +131,7 @@ describe('FeatureCollectionPanel', () => {
 				}
 			});
 			element.featureId = featureId;
-			const button = element.shadowRoot.querySelector('ba-icon');
+			const button = element.shadowRoot.querySelector('ba-remove-collection-chip');
 
 			button.click();
 
