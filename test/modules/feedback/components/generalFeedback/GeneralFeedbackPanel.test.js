@@ -171,6 +171,7 @@ describe('GeneralFeedbackPanel', () => {
 
 			expect(submitElement.type).toBe('primary');
 			expect(submitElement.label).toBe('feedback_submit');
+			expect(submitElement.title).toBe('feedback_generalFeedback_submit_title');
 		});
 
 		it('contains 4 unvisited ba-form-elements', async () => {
