@@ -84,7 +84,9 @@ describe('BeforeUnloadPlugin', () => {
 					const preventDefaultSpy = spyOn(mockEvent, 'preventDefault');
 					const gr0 = new VectorGeoResource('geoResourceId0', 'label', VectorSourceType.GEOJSON).markAsLocalData(true);
 					const gr1 = new WmsGeoResource('geoResourceId1', 'label', 'https://some.url', 'layer', 'image/png');
-					const store = setup();
+					const store = setup({
+						tools: { current: Tools.COMPARE }
+					});
 					const instanceUnderTest = new BeforeUnloadPlugin();
 					spyOn(geoResourceServiceMock, 'resolve').and.returnValue([gr0, gr1]);
 					spyOn(geoResourceServiceMock, 'byId').withArgs(gr0.id).and.returnValue(gr0);
