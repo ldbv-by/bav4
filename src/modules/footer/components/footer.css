@@ -71,8 +71,10 @@ ba-base-layer-container {
 	overflow: hidden;
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 }
+/* enables scrollIntoView */
 .is-open ba-base-layer-container {
-	height: 0;
+	height: 1px;
+	visibility: hidden;
 }
 ba-base-layer-container::part(title) {
 	display: none;

@@ -13,6 +13,10 @@ describe('BaseLayerContainer', () => {
 		byId() {},
 		default() {}
 	};
+	const environmentService = {
+		getWindow: () => {},
+		isEmbedded: () => {}
+	};
 
 	const baseGeoRs = {
 		raster: ['atkis', 'luftbild_labels', 'tk', 'historisch', 'atkis_sw'],
@@ -21,7 +25,10 @@ describe('BaseLayerContainer', () => {
 	const setup = async (state = {}) => {
 		TestUtils.setupStoreAndDi(state, { topics: topicsReducer });
 
-		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('TopicsService', topicsServiceMock);
+		$injector
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('TopicsService', topicsServiceMock)
+			.registerSingleton('EnvironmentService', environmentService);
 
 		return TestUtils.render(BaseLayerContainer.tag);
 	};
@@ -140,11 +147,38 @@ describe('BaseLayerContainer', () => {
 	describe('when the user changes the category', () => {
 		it('updates the layout', async () => {
 			const topicId = 'topicId';
+
+			const container0 = document.createElement('div');
+			const container1 = document.createElement('div');
+
+			const mock = () => {
+				const mock = document.createElement('div');
+				container0.setAttribute('id', 'vector');
+				container1.setAttribute('id', 'vector');
+				const button0 = document.createElement('div');
+				const button1 = document.createElement('div');
+				button0.setAttribute('id', topicId);
+				button1.setAttribute('id', topicId);
+				mock.appendChild(button0);
+				mock.appendChild(button1);
+				mock.appendChild(container0);
+				mock.appendChild(container1);
+				return mock;
+			};
+
+			const mockWindow = {
+				parent: {
+					document: mock()
+				}
+			};
+			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+
 			spyOn(topicsServiceMock, 'byId')
 				.withArgs(topicId)
 				.and.returnValue(new Topic(topicId, 'label', 'description', baseGeoRs));
 			const element = await setup({ topics: { current: topicId } });
-			const scrollIntoViewSpy = spyOn(element.shadowRoot.querySelector('#vector'), 'scrollIntoView');
+			const scrollIntoViewSpy0 = spyOn(container0, 'scrollIntoView');
+			const scrollIntoViewSpy1 = spyOn(container1, 'scrollIntoView');
 
 			const calculateActiveCategorySpy = spyOn(element, '_calculateActiveCategory');
 			element.shadowRoot.querySelectorAll('button')[1].click();
@@ -152,7 +186,8 @@ describe('BaseLayerContainer', () => {
 			// We can't trigger real scroll events, so we manually dispatch the event
 			element.shadowRoot.querySelector('#section').dispatchEvent(new Event('scroll'));
 
-			expect(scrollIntoViewSpy).toHaveBeenCalled();
+			expect(scrollIntoViewSpy0).toHaveBeenCalled();
+			expect(scrollIntoViewSpy1).toHaveBeenCalled();
 			expect(calculateActiveCategorySpy).toHaveBeenCalled();
 		});
 	});

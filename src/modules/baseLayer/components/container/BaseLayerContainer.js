@@ -18,6 +18,7 @@ const Update_Categories = 'update_categories';
 export class BaseLayerContainer extends MvuElement {
 	#translationService;
 	#topicsService;
+	#environmentService;
 	#throttledCalculateActiveCategoryFn = throttled(BaseLayerContainer.THROTTLE_DELAY_MS, () => this._calculateActiveCategory());
 
 	constructor() {
@@ -26,9 +27,14 @@ export class BaseLayerContainer extends MvuElement {
 			activeCategory: null
 		});
 
-		const { TopicsService: topicsService, TranslationService: translationService } = $injector.inject('TopicsService', 'TranslationService');
+		const {
+			TopicsService: topicsService,
+			TranslationService: translationService,
+			EnvironmentService: environmentService
+		} = $injector.inject('TopicsService', 'TranslationService', 'EnvironmentService');
 		this.#translationService = translationService;
 		this.#topicsService = topicsService;
+		this.#environmentService = environmentService;
 	}
 
 	onInitialize() {
@@ -83,14 +89,20 @@ export class BaseLayerContainer extends MvuElement {
 		}
 	}
 
+	_getDocument() {
+		return this.#environmentService.getWindow().parent.document;
+	}
+
 	createView(model) {
 		const { categories, activeCategory } = model;
 		const allBaseGeoResourceIds = Array.from(new Set(Object.values(categories).flat()));
 		const translate = (key) => this.#translationService.translate(key);
 
 		const onClick = (category) => {
-			const tab = this.shadowRoot.getElementById(category);
-			tab.scrollIntoView({ block: 'nearest' });
+			const categories = findAllBySelector(this._getDocument(), '#' + category);
+			categories.forEach((category) => {
+				category.scrollIntoView({ block: 'nearest' });
+			});
 		};
 
 		const isActive = (category) => {
