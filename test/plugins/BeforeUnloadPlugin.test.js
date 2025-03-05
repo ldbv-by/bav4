@@ -17,14 +17,11 @@ describe('BeforeUnloadPlugin', () => {
 		byId: () => null
 	};
 
-	const setup = () => {
-		const store = TestUtils.setupStoreAndDi(
-			{},
-			{
-				tools: toolsReducer,
-				layers: layersReducer
-			}
-		);
+	const setup = (state = {}) => {
+		const store = TestUtils.setupStoreAndDi(state, {
+			tools: toolsReducer,
+			layers: layersReducer
+		});
 		$injector.registerSingleton('EnvironmentService', environmentServiceMock).registerSingleton('GeoResourceService', geoResourceServiceMock);
 
 		return store;
@@ -105,6 +102,34 @@ describe('BeforeUnloadPlugin', () => {
 					expect(preventDefaultSpy).toHaveBeenCalled();
 
 					expect(removeEventListenerSpy).toHaveBeenCalledWith('beforeunload', jasmine.any(Function));
+				});
+
+				describe('and the EXPORT tool is active', () => {
+					it('does not call the "beforeunload" event listener', async () => {
+						const addEventListenerSpy = spyOn(window, 'addEventListener');
+						const mockEvent = {
+							returnValue: null,
+							preventDefault: () => {}
+						};
+						const preventDefaultSpy = spyOn(mockEvent, 'preventDefault');
+						const gr0 = new VectorGeoResource('geoResourceId0', 'label', VectorSourceType.GEOJSON).markAsLocalData(true);
+						const gr1 = new WmsGeoResource('geoResourceId1', 'label', 'https://some.url', 'layer', 'image/png');
+						const store = setup({
+							tools: { current: Tools.EXPORT }
+						});
+						const instanceUnderTest = new BeforeUnloadPlugin();
+						spyOn(geoResourceServiceMock, 'resolve').and.returnValue([gr0, gr1]);
+						spyOn(geoResourceServiceMock, 'byId').withArgs(gr0.id).and.returnValue(gr0);
+						await instanceUnderTest.register(store);
+
+						addLayer('id0', { geoResourceId: gr0.id });
+
+						const beforeunloadFn = addEventListenerSpy.calls.argsFor(0)[1];
+
+						beforeunloadFn(mockEvent);
+
+						expect(preventDefaultSpy).not.toHaveBeenCalled();
+					});
 				});
 			});
 
