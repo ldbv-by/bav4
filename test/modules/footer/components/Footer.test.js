@@ -73,7 +73,7 @@ describe('Footer', () => {
 			expect(element.shadowRoot.querySelectorAll('ba-map-info')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('ba-attribution-info')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll(BaseLayerContainer.tag)).toHaveSize(1);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).height).toBe('0px');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).height).toBe('1px');
 		});
 
 		it('toggle the main menu shows and hides the BaseLayerContainer', async () => {
@@ -93,7 +93,7 @@ describe('Footer', () => {
 
 			toggleMainMenu();
 
-			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).height).toBe('0px');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).height).toBe('1px');
 
 			toggleMainMenu();
 
@@ -121,7 +121,7 @@ describe('Footer', () => {
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content')).display).toBe('flex');
 			expect(element.shadowRoot.querySelectorAll('ba-map-info')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll(BaseLayerContainer.tag)).toHaveSize(1);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).height).toBe('0px');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).height).toBe('1px');
 		});
 
 		it('layouts with open main menu for portrait mode', async () => {
