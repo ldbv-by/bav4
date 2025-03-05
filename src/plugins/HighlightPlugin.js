@@ -100,7 +100,7 @@ export class HighlightPlugin extends BaPlugin {
 		const onFeatureInfoQueryingChange = (querying, state) => {
 			if (querying) {
 				const coordinate = state.featureInfo.coordinate.payload;
-				addHighlightFeatures({ id: highlightFeatureId, data: { coordinate: coordinate }, type: HighlightFeatureType.QUERY_RUNNING });
+				addHighlightFeatures({ id: highlightFeatureId, data: coordinate, type: HighlightFeatureType.QUERY_RUNNING });
 				removeHighlightFeaturesById([QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID, QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID]);
 			} else {
 				const coordinate = state.featureInfo.coordinate.payload;
@@ -109,7 +109,7 @@ export class HighlightPlugin extends BaPlugin {
 				if (state.featureInfo.current.some((fi) => !fi.geometry)) {
 					addHighlightFeatures({
 						id: QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID,
-						data: { coordinate: coordinate },
+						data: coordinate,
 						type: HighlightFeatureType.QUERY_SUCCESS
 					});
 				}
@@ -140,7 +140,7 @@ export class HighlightPlugin extends BaPlugin {
 					addHighlightFeatures({
 						id: CROSSHAIR_HIGHLIGHT_FEATURE_ID,
 						label: translate('global_marker_symbol_label'),
-						data: { coordinate: crosshairCoordinate },
+						data: crosshairCoordinate,
 						type: HighlightFeatureType.MARKER
 					});
 				}

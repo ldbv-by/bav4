@@ -93,8 +93,8 @@ describe('HighlightPlugin', () => {
 	describe('when pointer.click property changes', () => {
 		it('clears all featureInfo related highlight items', async () => {
 			const coordinate = [11, 22];
-			const highlightFeature0 = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] }, id: QUERY_RUNNING_HIGHLIGHT_FEATURE_ID };
-			const highlightFeature1 = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] }, id: 'foo' };
+			const highlightFeature0 = { type: HighlightFeatureType.DEFAULT, data: [21, 42] , id: QUERY_RUNNING_HIGHLIGHT_FEATURE_ID };
+			const highlightFeature1 = { type: HighlightFeatureType.DEFAULT, data: [21, 42] , id: 'foo' };
 			const store = setup({
 				highlight: {
 					features: [highlightFeature0, highlightFeature1]
@@ -113,9 +113,9 @@ describe('HighlightPlugin', () => {
 	describe('when mainMenu.tab changes', () => {
 		it('clears all featureInfo related highlight items (also initially)', async () => {
 			const geoJson = '{"type":"Point","coordinates":[1224514.3987260093,6106854.83488507]}';
-			const highlightFeature0 = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] }, id: QUERY_RUNNING_HIGHLIGHT_FEATURE_ID };
-			const highlightFeature1 = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] }, id: 'foo' };
-			const highlightFeature2 = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] }, id: QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID };
+			const highlightFeature0 = { type: HighlightFeatureType.DEFAULT, data: [21, 42] , id: QUERY_RUNNING_HIGHLIGHT_FEATURE_ID };
+			const highlightFeature1 = { type: HighlightFeatureType.DEFAULT, data: [21, 42] , id: 'foo' };
+			const highlightFeature2 = { type: HighlightFeatureType.DEFAULT, data: [21, 42] , id: QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID };
 			const highlightFeature3 = {
 				type: HighlightFeatureType.DEFAULT,
 				data: new Geometry(geoJson, new SourceType(SourceTypeName.GEOJSON)),
@@ -158,13 +158,13 @@ describe('HighlightPlugin', () => {
 
 	describe('when search.query is empty', () => {
 		it('clears all searchResult related highlight items', async () => {
-			const highlightFeature0 = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] }, id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID };
+			const highlightFeature0 = { type: HighlightFeatureType.DEFAULT, data: [21, 42] , id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID };
 			const highlightFeature1 = {
 				type: HighlightFeatureType.DEFAULT,
-				data: { coordinate: [21, 42] },
+				data: [21, 42] ,
 				id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID
 			};
-			const highlightFeature2 = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] }, id: 'foo' };
+			const highlightFeature2 = { type: HighlightFeatureType.DEFAULT, data: [21, 42] , id: 'foo' };
 			const store = setup({
 				mainMenu: {
 					tab: TabIds.TOPICS,
@@ -213,7 +213,7 @@ describe('HighlightPlugin', () => {
 			registerQuery(queryId);
 
 			expect(store.getState().highlight.features).toHaveSize(1);
-			expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
+			expect(store.getState().highlight.features[0].data).toEqual(coordinate);
 			expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureType.QUERY_RUNNING);
 
 			resolveQuery(queryId);
@@ -226,7 +226,7 @@ describe('HighlightPlugin', () => {
 			const geoJson = '{"type":"Point","coordinates":[1224514.3987260093,6106854.83488507]}';
 			const highlightFeature0 = {
 				type: HighlightFeatureType.QUERY_SUCCESS,
-				data: { coordinate: coordinate },
+				data: coordinate ,
 				id: QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID
 			};
 			const highlightFeature1 = {
@@ -281,7 +281,7 @@ describe('HighlightPlugin', () => {
 
 			expect(store.getState().highlight.features).toHaveSize(2);
 			expect(store.getState().highlight.features[0].id).toBe(QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID);
-			expect(store.getState().highlight.features[0].data.coordinate).toBe(coordinate);
+			expect(store.getState().highlight.features[0].data).toBe(coordinate);
 			expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.QUERY_SUCCESS);
 			expect(store.getState().highlight.features[1].id).toBe(QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID);
 			expect(store.getState().highlight.features[1].data).toEqual(geometry);
@@ -335,7 +335,7 @@ describe('HighlightPlugin', () => {
 			jasmine.clock().tick(HighlightPlugin.CROSSHAIR_DELAY_MS + 100);
 
 			expect(store.getState().highlight.features).toHaveSize(1);
-			expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
+			expect(store.getState().highlight.features[0].data).toEqual(coordinate);
 			expect(store.getState().highlight.features[0].label).toBe('global_marker_symbol_label');
 			expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureType.MARKER);
 			expect(store.getState().highlight.features[0].id).toBe(CROSSHAIR_HIGHLIGHT_FEATURE_ID);
@@ -356,7 +356,7 @@ describe('HighlightPlugin', () => {
 				jasmine.clock().tick(HighlightPlugin.CROSSHAIR_DELAY_MS + 100);
 
 				expect(store.getState().highlight.features).toHaveSize(1);
-				expect(store.getState().highlight.features[0].data.coordinate).toEqual([42, 21]);
+				expect(store.getState().highlight.features[0].data).toEqual([42, 21]);
 				expect(store.getState().highlight.features[0].label).toBe('global_marker_symbol_label');
 				expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureType.MARKER);
 				expect(store.getState().highlight.features[0].id).toBe(CROSSHAIR_HIGHLIGHT_FEATURE_ID);
