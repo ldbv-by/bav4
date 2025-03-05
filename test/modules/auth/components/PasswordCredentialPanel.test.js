@@ -86,6 +86,14 @@ describe('PasswordCredentialPanel', () => {
 			expect(inputPassword.getAttribute('type')).toBe('password');
 		});
 
+		it('shows a submit button with label and title', async () => {
+			const element = await setup();
+
+			const submitButton = element.shadowRoot.querySelector('#authenticate-credential-button');
+			expect(submitButton.label).toBe('auth_passwordCredentialPanel_submit');
+			expect(submitButton.title).toBe('auth_passwordCredentialPanel_submit_title');
+		});
+
 		it('displays the optional url', async () => {
 			const element = await setup();
 			element.url = 'foo';
