@@ -23,6 +23,7 @@ import GeoJSON from 'ol/format/GeoJSON';
 import { unByKey } from 'ol/Observable';
 import { parse } from '../../../../utils/ewkt';
 import { SourceTypeName } from '../../../../domain/sourceType';
+import { isCoordinate } from '../../../../utils/checks';
 
 /**
  * Handler for displaying highlighted features
@@ -76,9 +77,9 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 			return olFeature;
 		};
 
-		//we have a HighlightCoordinate
-		if (coordOrGeometry.coordinate) {
-			return this._appendStyle(feature, addLabel(new Feature(new Point(coordOrGeometry.coordinate))));
+		//we have a Coordinate
+		if (isCoordinate(coordOrGeometry)) {
+			return this._appendStyle(feature, addLabel(new Feature(new Point(coordOrGeometry))));
 		}
 
 		//we have a HighlightGeometry
@@ -108,8 +109,8 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 
 	_appendStyle(feature, olFeature) {
 		const { data } = feature;
-		//we have a HighlightCoordinate
-		if (data.coordinate) {
+		//we have a Coordinate
+		if (isCoordinate(data)) {
 			switch (feature.type) {
 				case HighlightFeatureType.MARKER:
 					olFeature.setStyle(highlightCoordinateFeatureStyleFunction);

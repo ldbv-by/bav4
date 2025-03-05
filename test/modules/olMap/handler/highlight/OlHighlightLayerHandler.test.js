@@ -102,11 +102,11 @@ describe('OlHighlightLayerHandler', () => {
 		describe('and highlight features are available', () => {
 			it('adds ol features', () => {
 				const highlightFeatures = [
-					{ type: HighlightFeatureType.DEFAULT, data: { coordinate: [1, 0] } },
-					{ type: HighlightFeatureType.DEFAULT, data: { coordinate: [2, 1] } }
+					{ type: HighlightFeatureType.DEFAULT, data: [1, 0] },
+					{ type: HighlightFeatureType.DEFAULT, data: [2, 1] }
 				];
-				const temporaryFeatures = [{ type: HighlightFeatureType.TEMPORARY, data: { coordinate: [3, 4] } }];
-				const animatedFeatures = [{ type: HighlightFeatureType.QUERY_RUNNING, data: { coordinate: [5, 55] } }];
+				const temporaryFeatures = [{ type: HighlightFeatureType.TEMPORARY, data: [3, 4] }];
+				const animatedFeatures = [{ type: HighlightFeatureType.QUERY_RUNNING, data: [5, 55] }];
 				const state = { ...initialState, active: true, features: [...highlightFeatures, ...temporaryFeatures, ...animatedFeatures] };
 				const map = setupMap();
 				setup(state);
@@ -121,16 +121,16 @@ describe('OlHighlightLayerHandler', () => {
 		});
 
 		describe('and highlight features are added', () => {
-			it('add ol features', () => {
+			it('adds ol features', () => {
 				const map = setupMap();
 				setup();
 				const handler = new OlHighlightLayerHandler();
 				const olLayer = handler.activate(map);
 
 				addHighlightFeatures([
-					{ type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] } },
-					{ type: HighlightFeatureType.DEFAULT, data: { coordinate: [38, 57] } },
-					{ type: HighlightFeatureType.QUERY_RUNNING, data: { coordinate: [5, 55] } }
+					{ type: HighlightFeatureType.DEFAULT, data: [21, 42] },
+					{ type: HighlightFeatureType.DEFAULT, data: [38, 57] },
+					{ type: HighlightFeatureType.QUERY_RUNNING, data: [5, 55] }
 				]);
 
 				const olFeatures = olLayer.getSource().getFeatures();
@@ -141,7 +141,7 @@ describe('OlHighlightLayerHandler', () => {
 
 		describe('and highlight features are removed', () => {
 			it('removes ol features', () => {
-				const highlightFeature = { type: HighlightFeatureType.QUERY_RUNNING, data: { coordinate: [1, 0] } };
+				const highlightFeature = { type: HighlightFeatureType.QUERY_RUNNING, data: [1, 0] };
 				const state = { ...initialState, active: true, features: [highlightFeature], temporaryFeatures: [] };
 				const map = setupMap();
 				setup(state);
@@ -188,11 +188,11 @@ describe('OlHighlightLayerHandler', () => {
 			setup();
 			const handler = new OlHighlightLayerHandler();
 			const appendStyleSpy = spyOn(handler, '_appendStyle').withArgs(jasmine.anything(), jasmine.any(Feature)).and.callThrough();
-			const highlightCoordinateFeature = { data: { coordinate: [1, 0] }, label: 'label' };
+			const highlightCoordinateFeature = { data: [1, 0], label: 'label' };
 
 			const olFeature = handler._toOlFeature(highlightCoordinateFeature);
 
-			expect(olFeature.getGeometry().getCoordinates()).toEqual(highlightCoordinateFeature.data.coordinate);
+			expect(olFeature.getGeometry().getCoordinates()).toEqual(highlightCoordinateFeature.data);
 			expect(olFeature.get('name')).toBe('label');
 			expect(appendStyleSpy).toHaveBeenCalledTimes(1);
 		});
@@ -254,12 +254,12 @@ describe('OlHighlightLayerHandler', () => {
 			const animatedFeature = new Feature(new Point([22, 44]));
 			const handler = new OlHighlightLayerHandler();
 			const animatePointFeatureSyp = spyOn(handler, '_animatePointFeature');
-			const highlightCoordinateFeature0 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.MARKER };
-			const highlightCoordinateFeature1 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.MARKER_TMP };
-			const highlightCoordinateFeature2 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.QUERY_RUNNING };
-			const highlightCoordinateFeature3 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.QUERY_SUCCESS };
-			const highlightCoordinateFeature4 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.DEFAULT };
-			const highlightCoordinateFeature5 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.DEFAULT_TMP };
+			const highlightCoordinateFeature0 = { data: [1, 0], type: HighlightFeatureType.MARKER };
+			const highlightCoordinateFeature1 = { data: [1, 0], type: HighlightFeatureType.MARKER_TMP };
+			const highlightCoordinateFeature2 = { data: [1, 0], type: HighlightFeatureType.QUERY_RUNNING };
+			const highlightCoordinateFeature3 = { data: [1, 0], type: HighlightFeatureType.QUERY_SUCCESS };
+			const highlightCoordinateFeature4 = { data: [1, 0], type: HighlightFeatureType.DEFAULT };
+			const highlightCoordinateFeature5 = { data: [1, 0], type: HighlightFeatureType.DEFAULT_TMP };
 
 			const styledFeature0 = handler._appendStyle(highlightCoordinateFeature0, new Feature(new Point([5, 10])));
 			const styledFeature1 = handler._appendStyle(highlightCoordinateFeature1, new Feature(new Point([5, 10])));
@@ -299,7 +299,7 @@ describe('OlHighlightLayerHandler', () => {
 		it('sets NO style when feature type is missing', () => {
 			setup();
 			const handler = new OlHighlightLayerHandler();
-			const highlightCoordinateFeature0 = { data: { coordinate: [1, 0] } };
+			const highlightCoordinateFeature0 = { data: [1, 0] };
 
 			const styledFeature0 = handler._appendStyle(highlightCoordinateFeature0, new Feature(new Point([5, 10])));
 
