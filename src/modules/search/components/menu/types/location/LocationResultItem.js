@@ -73,7 +73,7 @@ export class LocationResultItem extends MvuElement {
 			addHighlightFeatures({
 				id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID,
 				type: HighlightFeatureType.MARKER_TMP,
-				data: { coordinate: [...result.center] }
+				data: [...result.center]
 			});
 		};
 		const onMouseLeave = () => {
@@ -87,7 +87,7 @@ export class LocationResultItem extends MvuElement {
 				addHighlightFeatures({
 					id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
 					type: HighlightFeatureType.MARKER,
-					data: { coordinate: [...result.center] },
+					data: [...result.center],
 					label: result.label
 				});
 			} else {
