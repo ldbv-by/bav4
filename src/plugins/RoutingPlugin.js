@@ -156,7 +156,7 @@ export class RoutingPlugin extends BaPlugin {
 				type: [CoordinateProposalType.EXISTING_INTERMEDIATE, CoordinateProposalType.EXISTING_START_OR_DESTINATION].includes(proposalType)
 					? HighlightFeatureType.DEFAULT
 					: HighlightFeatureType.MARKER_TMP,
-				data: { coordinate: [...coord] }
+				data: [...coord]
 			});
 			const content = html`<ba-proposal-context-content></ba-proposal-context-content>`;
 			openBottomSheet(content, INTERACTION_BOTTOM_SHEET_ID);
