@@ -26,6 +26,8 @@ describe('i18n for iframe module', () => {
 		expect(map.iframe_drawTool_finish).toBe('Fertig');
 		expect(map.iframe_drawTool_delete_point).toBe('letzten Punkt löschen');
 		expect(map.iframe_drawTool_delete_drawing).toBe('Zeichnung löschen');
+		expect(map.iframe_drawTool_cancel_title).toBe('Zeichnung abbrechen');
+		expect(map.iframe_drawTool_finish_title).toBe('Zeichnung fertigstellen');
 	});
 
 	it('provides translation for en', () => {
@@ -53,10 +55,12 @@ describe('i18n for iframe module', () => {
 		expect(map.iframe_drawTool_finish).toBe('Finish');
 		expect(map.iframe_drawTool_delete_point).toBe('Remove point');
 		expect(map.iframe_drawTool_delete_drawing).toBe('Remove drawing');
+		expect(map.iframe_drawTool_cancel_title).toBe('Cancel drawing');
+		expect(map.iframe_drawTool_finish_title).toBe('Finish drawing');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 22;
+		const expectedSize = 24;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

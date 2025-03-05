@@ -24,7 +24,9 @@ export const provide = (lang) => {
 				iframe_drawTool_cancel: 'Cancel',
 				iframe_drawTool_finish: 'Finish',
 				iframe_drawTool_delete_point: 'Remove point',
-				iframe_drawTool_delete_drawing: 'Remove drawing'
+				iframe_drawTool_delete_drawing: 'Remove drawing',
+				iframe_drawTool_cancel_title: 'Cancel drawing',
+				iframe_drawTool_finish_title: 'Finish drawing'
 			};
 
 		case 'de':
@@ -51,7 +53,9 @@ export const provide = (lang) => {
 				iframe_drawTool_cancel: 'Abbrechen',
 				iframe_drawTool_finish: 'Fertig',
 				iframe_drawTool_delete_point: 'letzten Punkt löschen',
-				iframe_drawTool_delete_drawing: 'Zeichnung löschen'
+				iframe_drawTool_delete_drawing: 'Zeichnung löschen',
+				iframe_drawTool_cancel_title: 'Zeichnung abbrechen',
+				iframe_drawTool_finish_title: 'Zeichnung fertigstellen'
 			};
 
 		default:
