@@ -1,19 +1,7 @@
 import { Geometry } from '../../src/domain/geometry';
-import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../src/domain/sourceType';
-import { $injector } from '../../src/injection';
-import { TestUtils } from '../test-utils';
+import { SourceType, SourceTypeName } from '../../src/domain/sourceType';
 
 describe('Geometry', () => {
-	const sourceTypeServiceMock = {
-		forData() {}
-	};
-
-	const setup = (state = {}) => {
-		const store = TestUtils.setupStoreAndDi(state);
-		$injector.registerSingleton('SourceTypeService', sourceTypeServiceMock);
-		return store;
-	};
-
 	it('provides a constructor and getters for properties', () => {
 		const geometry = new Geometry('data', new SourceType(SourceTypeName.GPX));
 
