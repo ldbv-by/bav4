@@ -52,10 +52,11 @@ describe('FeatureCollectionPanel', () => {
 
 				element.feature = feature;
 
-				expect(element.shadowRoot.querySelectorAll('ba-add-collection-chip')).toHaveSize(1);
-				const button = element.shadowRoot.querySelector('ba-add-collection-chip');
+				expect(element.shadowRoot.querySelectorAll('.chips__button.add')).toHaveSize(1);
+				const button = element.shadowRoot.querySelector('.chips__button.add');
 				expect(button.title).toBe('featureInfo_featureCollection_add_feature_title');
-				// expect(button.icon).toBe(addToCollectionButton);
+				expect(element.shadowRoot.querySelectorAll('.chips__button.add .chips__icon')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.chips__button.add .chips__button-text')).toHaveSize(1);
 			});
 		});
 
@@ -70,10 +71,11 @@ describe('FeatureCollectionPanel', () => {
 
 				element.featureId = featureId;
 
-				expect(element.shadowRoot.querySelectorAll('ba-remove-collection-chip')).toHaveSize(1);
-				const button = element.shadowRoot.querySelector('ba-remove-collection-chip');
+				expect(element.shadowRoot.querySelectorAll('.chips__button.remove')).toHaveSize(1);
+				const button = element.shadowRoot.querySelector('.chips__button.remove');
 				expect(button.title).toBe('featureInfo_featureCollection_remove_feature_title');
-				// expect(button.icon).toBe(removeFromCollectionButton);
+				expect(element.shadowRoot.querySelectorAll('.chips__button.remove .chips__icon')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.chips__button.remove .chips__button-text')).toHaveSize(1);
 			});
 		});
 		describe('and featureId denotes a feature which is NOT part of the collection', () => {
@@ -105,7 +107,7 @@ describe('FeatureCollectionPanel', () => {
 			const feature = new Feature(new Geometry('data'));
 
 			element.feature = feature;
-			const button = element.shadowRoot.querySelector('ba-add-collection-chip');
+			const button = element.shadowRoot.querySelector('.chips__button.add');
 
 			button.click();
 
@@ -131,7 +133,7 @@ describe('FeatureCollectionPanel', () => {
 				}
 			});
 			element.featureId = featureId;
-			const button = element.shadowRoot.querySelector('ba-remove-collection-chip');
+			const button = element.shadowRoot.querySelector('.chips__button.remove');
 
 			button.click();
 

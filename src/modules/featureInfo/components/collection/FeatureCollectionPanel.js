@@ -8,6 +8,8 @@ import { clearHighlightFeatures } from '../../../../store/highlight/highlight.ac
 import { MvuElement } from '../../../MvuElement';
 import { abortOrReset } from '../../../../store/featureInfo/featureInfo.action';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import starSvg from './../assets/star.svg';
+import css from './featureCollectionPanel.css';
 
 const Update_FeatureId = 'update_featureId';
 const Update_Feature = 'update_feature';
@@ -65,37 +67,26 @@ export class FeatureCollectionPanel extends MvuElement {
 				// by calling the abortOrReset action, we restore the previous opened tab of the MainMenu
 				abortOrReset();
 			};
-			const iconRemove = `
-				ba-remove-collection-chip::part(icon){
-					background: var(--error-color);
-				}
-			}`;
-
-			const iconAdd = `
-				ba-add-collection-chip::part(icon){
-					background: var(--success-color);
-				}
-			}`;
 
 			if (partOfCollection) {
 				return html`
 					<style>
-						${iconRemove}
+						${css}
 					</style>
-					<ba-remove-collection-chip
-						.title=${translate('featureInfo_featureCollection_remove_feature_title')}
-						@click=${removeFeature}
-					></ba-remove-collection-chip>
+					<button class="chips__button remove" .title=${translate('featureInfo_featureCollection_remove_feature_title')} @click=${removeFeature}>
+						<span class="chips__icon"></span>
+						<span class="chips__button-text">${translate('featureInfo_featureCollection_remove_feature')}</span>
+					</button>
 				`;
 			} else if (feature) {
 				return html`
 					<style>
-						${iconAdd}
+						${css}
 					</style>
-					<ba-add-collection-chip
-						.title=${translate('featureInfo_featureCollection_add_feature_title')}
-						@click=${addFeature}
-					></ba-add-collection-chip>
+					<button class="chips__button add" .title=${translate('featureInfo_featureCollection_add_feature_title')} @click=${addFeature}>
+						<span class="chips__icon"></span>
+						<span class="chips__button-text">${translate('featureInfo_featureCollection_add_feature')}</span>
+					</button>
 				`;
 			}
 		}
