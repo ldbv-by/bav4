@@ -8,15 +8,9 @@ import { $injector } from '../../injection';
  * Contains information for highlighting a position or an area in a map.
  * @typedef {Object} HighlightFeature
  * @property {HighlightFeatureType} type  The type of this feature.
- * @property {HighlightCoordinate|Geometry} data The data which can be a coordinate or a geometry
+ * @property {module:domain/coordinateTypeDef~Coordinate|Geometry} data The data which can be a coordinate or a geometry
  * @property {string} [id] Optional id. If not present, the reducer will create one.
  * @property {string} [label] Optional text
- */
-
-/**
- * Coordinate data for a {@link HighlightFeature}
- * @typedef {Object} HighlightCoordinate
- * @property {Coordinate} coordinate
  */
 
 /**
