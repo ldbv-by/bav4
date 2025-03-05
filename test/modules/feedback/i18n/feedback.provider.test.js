@@ -29,6 +29,7 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_generalFeedback_rating_scale_0).toBe('Sehr wahrscheinlich');
 		expect(map.feedback_generalFeedback_rating_scale_5).toBe('Sehr unwahrscheinlich');
 		expect(map.feedback_generalFeedback).toBe('Allgemeines Feedback');
+		expect(map.feedback_mapFeedback_submit_title).toBe('Feedback zur Karte senden');
 		expect(map.feedback_mapFeedback_could_not_save).toBe('Ihr Feedback konnte nicht gespeichert werden');
 		expect(map.feedback_mapFeedback_geometry_missing).toBe('Bitte digitalisieren Sie mindestens einen Punkt als Ortsangabe für Ihre Meldung.');
 		expect(map.feedback_privacyPolicy).toBe('Hinweis zum Datenschutz');
@@ -66,6 +67,7 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_generalFeedback_rating_scale_0).toBe('Very unlikely');
 		expect(map.feedback_generalFeedback_rating_scale_5).toBe('Very likely');
 		expect(map.feedback_generalFeedback).toBe('General - Feedback');
+		expect(map.feedback_mapFeedback_submit_title).toBe('Submit your map feedback');
 		expect(map.feedback_mapFeedback_could_not_save).toBe('Your feedback could not be saved');
 		expect(map.feedback_mapFeedback_geometry_missing).toBe('Please draw at least one Point to mark the location of your feedback');
 		expect(map.feedback_privacyPolicy).toBe('Privacy Policy');
@@ -78,7 +80,7 @@ describe('i18n for feedback module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 28;
+		const expectedSize = 29;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
