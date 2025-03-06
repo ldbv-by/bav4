@@ -55,6 +55,23 @@ describe('FeatureCollectionPlugin', () => {
 			expect(store.getState().layers.active).toHaveSize(0);
 		});
 
+		it('preserves existing features', async () => {
+			const store = setup({
+				featureCollection: {
+					entries: [new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)), 'id0')]
+				}
+			});
+			const instanceUnderTest = new FeatureCollectionPlugin();
+			await instanceUnderTest.register(store);
+
+			addFeatures([
+				new Feature(new Geometry('data0', new SourceType(SourceTypeName.EWKT)), 'id1'),
+				new Feature(new Geometry('data1', new SourceType(SourceTypeName.EWKT)), 'id2')
+			]);
+
+			expect(store.getState().featureCollection.entries).toHaveSize(3);
+		});
+
 		it('adds a GeoResource for each feature and adds the feature-collection layer', async () => {
 			const store = setup({});
 			const instanceUnderTest = new FeatureCollectionPlugin();

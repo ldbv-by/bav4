@@ -42,8 +42,9 @@ export class FeatureCollectionPlugin extends BaPlugin {
 	 */
 	async register(store) {
 		const translate = (key) => this.#translationService.translate(key);
-
+		let ignoreLayerRemoval = false;
 		const onEntriesChanged = (entries) => {
+			ignoreLayerRemoval = true;
 			removeLayer(FEATURE_COLLECTION_LAYER_ID);
 			if (entries.length > 0) {
 				const geoResourceIds = entries.map((feature) => {
@@ -59,12 +60,13 @@ export class FeatureCollectionPlugin extends BaPlugin {
 				);
 				addLayer(FEATURE_COLLECTION_LAYER_ID, { geoResourceId: FEATURE_COLLECTION_GEORESOURCE_ID });
 			}
+			ignoreLayerRemoval = false;
 		};
 
 		observe(store, (state) => state.featureCollection.entries, onEntriesChanged);
 
 		const onLayerRemoved = (eventLike) => {
-			if ([FEATURE_COLLECTION_LAYER_ID].some((id) => eventLike.payload.includes(id))) {
+			if ([FEATURE_COLLECTION_LAYER_ID].some((id) => eventLike.payload.includes(id)) && !ignoreLayerRemoval) {
 				clearFeatures();
 			}
 		};
