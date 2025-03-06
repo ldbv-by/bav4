@@ -183,6 +183,7 @@ describe('MeasureToolContent', () => {
 
 			removeButton.click();
 			expect(removeButton.label).toBe('toolbox_measureTool_delete_measure');
+			expect(removeButton.title).toBe('');
 			expect(store.getState().measurement.remove).toBeInstanceOf(EventLike);
 		});
 
@@ -200,6 +201,7 @@ describe('MeasureToolContent', () => {
 
 			removeButton.click();
 			expect(removeButton.label).toBe('toolbox_measureTool_delete_point');
+			expect(removeButton.title).toBe('');
 			expect(store.getState().measurement.remove).toBeInstanceOf(EventLike);
 		});
 
