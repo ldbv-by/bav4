@@ -128,7 +128,8 @@ describe('MeasureToolContent', () => {
 			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('#finish')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('#finish').label).toBe('toolbox_drawTool_finish');
+			expect(element.shadowRoot.querySelector('#finish').label).toBe('toolbox_measureTool_finish');
+			expect(element.shadowRoot.querySelector('#finish').title).toBe('toolbox_measureTool_finish_title');
 		});
 
 		it('finishes the measurement', async () => {
@@ -164,6 +165,7 @@ describe('MeasureToolContent', () => {
 
 			resetButton.click();
 			expect(resetButton.label).toBe('toolbox_measureTool_start_new');
+			expect(resetButton.title).toBe('toolbox_measureTool_start_new_title');
 			expect(store.getState().measurement.reset).toBeInstanceOf(EventLike);
 		});
 

@@ -55,6 +55,8 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_shareTool_share_link_readonly).toBe('Link zum teilen des BayernAtlas');
 		expect(map.toolbox_shareTool_share_api_failed).toBe('Das Teilen ist fehlgeschlagen');
 		expect(map.toolbox_shareTool_link).toBe('Link');
+		expect(map.toolbox_measureTool_finish).toBe('Fertig');
+		expect(map.toolbox_measureTool_finish_title).toBe('Messung fertigstellen');
 		expect(map.toolbox_measureTool_delete_point).toBe('letzten Punkt löschen');
 		expect(map.toolbox_measureTool_delete_measure).toBe('Messung löschen');
 		expect(map.toolbox_measureTool_measure_active).toBe('In die Karte tippen, um die Messung zu beginnen');
@@ -153,6 +155,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_stats_length).toBe('Length');
 		expect(map.toolbox_measureTool_stats_area).toBe('Area');
 		expect(map.toolbox_measureTool_start_new).toBe('Start New');
+		expect(map.toolbox_measureTool_start_new_title).toBe('Start new measurement');
 		expect(map.toolbox_measureTool_display_ruler).toBe('Display ruler');
 		expect(map.toolbox_shareTool_header).toBe('Share');
 		expect(map.toolbox_shareTool_embed).toBe('BayernAtlas-IFrame');
@@ -165,6 +168,8 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_shareTool_share_link_readonly).toBe('Link to share BayernAtlas');
 		expect(map.toolbox_shareTool_share_api_failed).toBe('Sharing has failed');
 		expect(map.toolbox_shareTool_link).toBe('Link');
+		expect(map.toolbox_measureTool_finish).toBe('Finish');
+		expect(map.toolbox_measureTool_finish_title).toBe('Finish measurement');
 		expect(map.toolbox_measureTool_delete_point).toBe('Delete last point');
 		expect(map.toolbox_measureTool_delete_measure).toBe('Delete measure');
 		expect(map.toolbox_measureTool_measure_active).toBe('Tap on the map to start measurement');
@@ -227,7 +232,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 104;
+		const expectedSize = 107;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
