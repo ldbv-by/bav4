@@ -7,11 +7,19 @@ describe('Geometry', () => {
 
 		expect(geometry.data).toBe('data');
 		expect(geometry.sourceType).toEqual(new SourceType(SourceTypeName.GPX));
-		expect(new Geometry('data').sourceType).toBeNull();
+	});
+
+	it('provides a constructor that stringifies a GeoJSON', () => {
+		const json = { foo: 'bar' };
+		const geometry = new Geometry(json, new SourceType(SourceTypeName.GEOJSON));
+
+		expect(geometry.data).toBe(JSON.stringify(json));
+		expect(geometry.sourceType).toEqual(new SourceType(SourceTypeName.GEOJSON));
 	});
 
 	it('check the constructors arguments', () => {
-		expect(() => new Geometry('data', 'Foo')).toThrowError('Unsupported source type: Foo');
+		expect(() => new Geometry('data', new SourceType(SourceTypeName.WMS))).toThrowError('Unsupported source type: wms');
+		expect(() => new Geometry('data')).toThrowError('<sourceType> must be a SourceType');
 		expect(() => new Geometry(123, new SourceType(SourceTypeName.GPX))).toThrowError('<data> must be a String');
 	});
 });

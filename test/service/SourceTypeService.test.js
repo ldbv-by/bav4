@@ -1,4 +1,4 @@
-import { SourceType, SourceTypeResult, SourceTypeResultStatus } from '../../src/domain/sourceType';
+import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../src/domain/sourceType';
 import {
 	bvvUrlSourceTypeProvider,
 	defaultDataSourceTypeProvider,
@@ -79,6 +79,28 @@ describe('SourceTypeService', () => {
 
 			expect(() => instanceUnderTest.forData(data)).toThrowError(TypeError, 'Parameter <data> must be a String');
 			expect(providerSpy).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('toGeometry', () => {
+		it('detects the source type and returns a `Geometry`', () => {
+			const instanceUnderTest = setup();
+			const sourceType = new SourceType(SourceTypeName.EWKT);
+			const data = 'data';
+			spyOn(instanceUnderTest, 'forData').withArgs(data).and.returnValue(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+
+			const geometry = instanceUnderTest.toGeometry(data);
+
+			expect(geometry.data).toBe(data);
+			expect(geometry.sourceType).toEqual(sourceType);
+		});
+
+		it('returns `null` if the source type cannot be detected`', () => {
+			const instanceUnderTest = setup();
+			const sourceType = new SourceType(SourceTypeName.EWKT);
+			spyOn(instanceUnderTest, 'forData').withArgs('data').and.returnValue(new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE, sourceType));
+
+			expect(instanceUnderTest.toGeometry('data')).toBeNull();
 		});
 	});
 

@@ -48,6 +48,7 @@ describe('ContextClickPlugin', () => {
 
 				expect(isTemplateResult(store.getState().bottomSheet.data[0].content)).toBeTrue();
 				expect(store.getState().highlight.features).toHaveSize(1);
+				expect(store.getState().highlight.features[0].data).toEqual([2121, 4242]);
 				expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureType.QUERY_SUCCESS);
 
 				//let's call it again
@@ -55,6 +56,7 @@ describe('ContextClickPlugin', () => {
 
 				expect(isTemplateResult(store.getState().bottomSheet.data[0].content)).toBeTrue();
 				expect(store.getState().highlight.features).toHaveSize(1);
+				expect(store.getState().highlight.features[0].data).toEqual([21210, 42420]);
 				expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureType.QUERY_SUCCESS);
 			});
 
@@ -66,6 +68,7 @@ describe('ContextClickPlugin', () => {
 					setContextClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 
 					expect(store.getState().highlight.features).toHaveSize(1);
+					expect(store.getState().highlight.features[0].data).toEqual([2121, 4242]);
 					expect(store.getState().bottomSheet.active).toEqual([INTERACTION_BOTTOM_SHEET_ID]);
 
 					setMoveStart();
@@ -83,6 +86,7 @@ describe('ContextClickPlugin', () => {
 					setContextClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 
 					expect(store.getState().highlight.features).toHaveSize(1);
+					expect(store.getState().highlight.features[0].data).toEqual([2121, 4242]);
 					expect(store.getState().bottomSheet.active).toEqual([INTERACTION_BOTTOM_SHEET_ID]);
 
 					setClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });

@@ -10,14 +10,11 @@ import css from './featureInfoPanel.css';
 import arrowLeftShortIcon from '../assets/arrowLeftShort.svg';
 import shareIcon from '../assets/share.svg';
 import printerIcon from '../assets/printer.svg';
-import {
-	addHighlightFeatures,
-	HighlightFeatureType,
-	HighlightGeometryType,
-	removeHighlightFeaturesById
-} from '../../../../store/highlight/highlight.action';
+import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
 import { createUniqueId } from '../../../../utils/numberUtils';
 import { isTemplateResult } from '../../../../utils/checks';
+import { Geometry } from '../../../../domain/geometry';
+import { SourceType, SourceTypeName } from '../../../../domain/sourceType';
 
 const Update_FeatureInfo_Data = 'update_featureInfo_data';
 const Update_IsPortrait = 'update_isPortrait_hasMinWidth';
@@ -88,7 +85,7 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 				addHighlightFeatures({
 					id: TEMPORARY_FEATURE_HIGHLIGHT_ID,
 					type: HighlightFeatureType.MARKER_TMP,
-					data: { geometry: featureInfoGeometry.data, geometryType: HighlightGeometryType.GEOJSON }
+					data: new Geometry(featureInfoGeometry.data, new SourceType(SourceTypeName.GEOJSON))
 				});
 			}
 		};

@@ -9,6 +9,7 @@ import addToCollectionButton from '../../../../src/modules/featureInfo/component
 import { Feature } from '../../../../src/domain/feature.js';
 import { featureInfoReducer } from '../../../../src/store/featureInfo/featureInfo.reducer.js';
 import { highlightReducer } from '../../../../src/store/highlight/highlight.reducer.js';
+import { SourceType, SourceTypeName } from '../../../../src/domain/sourceType.js';
 
 window.customElements.define(FeatureCollectionPanel.tag, FeatureCollectionPanel);
 
@@ -48,7 +49,7 @@ describe('FeatureCollectionPanel', () => {
 		describe('and a feature is available', () => {
 			it('renders a button', async () => {
 				const element = await setup({});
-				const feature = new Feature(new Geometry('data'));
+				const feature = new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)));
 
 				element.feature = feature;
 
@@ -64,7 +65,7 @@ describe('FeatureCollectionPanel', () => {
 				const featureId = 'featureId0';
 				const element = await setup({
 					featureCollection: {
-						entries: [new Feature(new Geometry('data'), featureId)]
+						entries: [new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)), featureId)]
 					}
 				});
 
@@ -81,7 +82,7 @@ describe('FeatureCollectionPanel', () => {
 				const featureId = 'featureId0';
 				const element = await setup({
 					featureCollection: {
-						entries: [new Feature(new Geometry('data'), 'someFeatureId')]
+						entries: [new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)), 'someFeatureId')]
 					}
 				});
 
@@ -102,7 +103,7 @@ describe('FeatureCollectionPanel', () => {
 					features: [{ foo: 'bar' }]
 				}
 			});
-			const feature = new Feature(new Geometry('data'));
+			const feature = new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)));
 
 			element.feature = feature;
 			const button = element.shadowRoot.querySelector('ba-icon');
@@ -121,7 +122,7 @@ describe('FeatureCollectionPanel', () => {
 			const featureId = 'featureId0';
 			const element = await setup({
 				featureCollection: {
-					entries: [new Feature(new Geometry('data'), featureId)]
+					entries: [new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)), featureId)]
 				},
 				featureInfo: {
 					querying: true

@@ -17,11 +17,13 @@ import {
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { Point } from 'ol/geom';
-import { HighlightFeatureType, HighlightGeometryType } from '../../../../store/highlight/highlight.action';
+import { HighlightFeatureType } from '../../../../store/highlight/highlight.action';
 import WKT from 'ol/format/WKT';
 import GeoJSON from 'ol/format/GeoJSON';
 import { unByKey } from 'ol/Observable';
 import { parse } from '../../../../utils/ewkt';
+import { SourceTypeName } from '../../../../domain/sourceType';
+import { isCoordinate } from '../../../../utils/checks';
 
 /**
  * Handler for displaying highlighted features
@@ -68,31 +70,33 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 	}
 
 	_toOlFeature(feature) {
-		const { data, label } = feature;
+		const { data: coordOrGeometry, label } = feature;
 
 		const addLabel = (olFeature) => {
 			olFeature.set('name', label);
 			return olFeature;
 		};
 
-		//we have a HighlightCoordinate
-		if (data.coordinate) {
-			return this._appendStyle(feature, addLabel(new Feature(new Point(data.coordinate))));
+		//we have a Coordinate
+		if (isCoordinate(coordOrGeometry)) {
+			return this._appendStyle(feature, addLabel(new Feature(new Point(coordOrGeometry))));
 		}
 
 		//we have a HighlightGeometry
-		switch (data.geometryType) {
-			case HighlightGeometryType.EWKT: {
-				const ewkt = parse(data.geometry);
+		switch (coordOrGeometry.sourceType.name) {
+			case SourceTypeName.EWKT: {
+				const ewkt = parse(coordOrGeometry.data);
 				if (ewkt.srid !== this._mapService.getSrid()) {
 					throw new Error('Unsupported SRID ' + ewkt.srid);
 				}
 				return this._appendStyle(feature, addLabel(new WKT().readFeature(ewkt.wkt)));
 			}
-			case HighlightGeometryType.GEOJSON:
-				return this._appendStyle(feature, addLabel(new GeoJSON().readFeature(data.geometry)));
+			case SourceTypeName.GEOJSON:
+				return this._appendStyle(feature, addLabel(new GeoJSON().readFeature(JSON.parse(coordOrGeometry.data))));
+			default: {
+				throw `SourceType "${coordOrGeometry.sourceType.name}" is currently not supported`;
+			}
 		}
-		return null;
 	}
 
 	_animatePointFeature(olFeature, olMap = this._olMap, olLayer = this._olLayer) {
@@ -105,8 +109,8 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 
 	_appendStyle(feature, olFeature) {
 		const { data } = feature;
-		//we have a HighlightCoordinate
-		if (data.coordinate) {
+		//we have a Coordinate
+		if (isCoordinate(data)) {
 			switch (feature.type) {
 				case HighlightFeatureType.MARKER:
 					olFeature.setStyle(highlightCoordinateFeatureStyleFunction);

@@ -1,9 +1,10 @@
 import { Geometry } from '../../src/domain/geometry';
 import { Feature } from '../../src/domain/feature';
+import { SourceType, SourceTypeName } from '../../src/domain/sourceType';
 
 describe('Feature', () => {
 	it('provides a constructor and getters for properties', () => {
-		const geometry = new Geometry('data');
+		const geometry = new Geometry('data', new SourceType(SourceTypeName.EWKT));
 		const feature = new Feature(geometry, 'id');
 
 		expect(feature.geometry).toEqual(geometry);
@@ -11,7 +12,7 @@ describe('Feature', () => {
 	});
 
 	it('provides default values', () => {
-		const geometry = new Geometry('data');
+		const geometry = new Geometry('data', new SourceType(SourceTypeName.EWKT));
 		const feature = new Feature(geometry);
 
 		expect(feature.geometry).toEqual(geometry);
@@ -20,7 +21,7 @@ describe('Feature', () => {
 	});
 
 	it('provides set method for the id', () => {
-		const geometry = new Geometry('data');
+		const geometry = new Geometry('data', new SourceType(SourceTypeName.EWKT));
 		const feature = new Feature(geometry);
 
 		feature.id = 'id0';
@@ -29,7 +30,7 @@ describe('Feature', () => {
 	});
 
 	it('provides set, get and remove methods for properties', () => {
-		const geometry = new Geometry('data');
+		const geometry = new Geometry('data', new SourceType(SourceTypeName.EWKT));
 		const feature = new Feature(geometry);
 
 		feature.set('foo', 'bar');

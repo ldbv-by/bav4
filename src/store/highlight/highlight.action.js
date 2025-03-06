@@ -8,22 +8,9 @@ import { $injector } from '../../injection';
  * Contains information for highlighting a position or an area in a map.
  * @typedef {Object} HighlightFeature
  * @property {HighlightFeatureType} type  The type of this feature.
- * @property {HighlightCoordinate|HighlightGeometry} data The data which can be a coordinate or a geometry
+ * @property {module:domain/coordinateTypeDef~Coordinate|Geometry} data The data which can be a coordinate or a geometry
  * @property {string} [id] Optional id. If not present, the reducer will create one.
  * @property {string} [label] Optional text
- */
-
-/**
- * Coordinate data for a {@link HighlightFeature}
- * @typedef {Object} HighlightCoordinate
- * @property {Coordinate} coordinate
- */
-
-/**
- * Geometry data for a {@link HighlightFeature}
- * @typedef {Object} HighlightGeometry
- * @property {object|string} geometry Geometry (e.g. geoJson, WKT)
- * @property {HighlightGeometryType} geometryType the type of the geometry
  */
 
 /**
@@ -55,16 +42,6 @@ export const HighlightFeatureType = Object.freeze({
 	 * Highlights a coordinate or a feature expressing a temporary meaning
 	 */
 	DEFAULT_TMP: 5
-});
-
-/**
- * Type of a {@link HighlightGeometry}
- * @readonly
- * @enum {Number}
- */
-export const HighlightGeometryType = Object.freeze({
-	GEOJSON: 0,
-	EWKT: 1
 });
 
 const getStore = () => {
