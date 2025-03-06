@@ -50,7 +50,7 @@ describe('FeatureCollectionPanel', () => {
 			describe('containing feature that is not part of the feature collection', () => {
 				it('renders an ADD button', async () => {
 					const element = await setup({});
-					const feature = new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)), "id");
+					const feature = new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)), 'id');
 
 					element.configuration = { feature, geoResourceId: null };
 
@@ -63,7 +63,7 @@ describe('FeatureCollectionPanel', () => {
 
 			describe('containing feature that is already a part of the feature collection and its corresponding GeoResource is NOT the FEATURE_COLLECTION_GEORESOURCE', () => {
 				it('renders nothing', async () => {
-					const feature = new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)), "id");
+					const feature = new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)), 'id');
 					const element = await setup({
 						featureCollection: {
 							entries: [feature]
@@ -78,7 +78,7 @@ describe('FeatureCollectionPanel', () => {
 
 			describe('containing feature that is already a part of the feature collection and its corresponding GeoResource is the FEATURE_COLLECTION_GEORESOURCE', () => {
 				it('renders a REMOVE button', async () => {
-					const feature = new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)), "id");
+					const feature = new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)), 'id');
 					const element = await setup({
 						featureCollection: {
 							entries: [feature]
