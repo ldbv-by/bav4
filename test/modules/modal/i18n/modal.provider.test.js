@@ -5,16 +5,18 @@ describe('i18n for modal module', () => {
 		const modal = provide('de');
 
 		expect(modal.modal_close_button).toBe('Schließen');
+		expect(modal.modal_close_button_title).toBe('Fenster schließen');
 	});
 
 	it('provides translation for en', () => {
 		const modal = provide('en');
 
 		expect(modal.modal_close_button).toBe('Close');
+		expect(modal.modal_close_button_title).toBe('Close modal');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 1;
+		const expectedSize = 2;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

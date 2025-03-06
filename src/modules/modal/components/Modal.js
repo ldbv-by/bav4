@@ -121,7 +121,13 @@ export class Modal extends MvuElement {
 						</div>
 						<div class="modal__content">${content}</div>
 						<div class="modal__actions">
-							<ba-button id="close_button" data-test-id .label=${translate('modal_close_button')} @click=${hide}></ba-button>
+							<ba-button
+								id="close_button"
+								data-test-id
+								.label=${translate('modal_close_button')}
+								.title=${translate('modal_close_button_title')}
+								@click=${hide}
+							></ba-button>
 						</div>
 					</div>
 				</div>
