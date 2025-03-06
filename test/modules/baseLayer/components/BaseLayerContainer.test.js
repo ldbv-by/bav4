@@ -167,9 +167,7 @@ describe('BaseLayerContainer', () => {
 			};
 
 			const mockWindow = {
-				parent: {
-					document: mock()
-				}
+				document: mock()
 			};
 			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
 
