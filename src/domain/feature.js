@@ -50,10 +50,6 @@ export class Feature {
 		return this.#id;
 	}
 
-	// set id(id) {
-	// 	this.#id = id;
-	// }
-
 	get geometry() {
 		return this.#geometry;
 	}
