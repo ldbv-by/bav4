@@ -190,6 +190,18 @@ describe('LayerManager', () => {
 			expect(placeholderElements.length).toBe(4);
 			expect(nonDraggablePlaceholderElements.length).toBe(4);
 		});
+
+		it('renders util elements', () => {
+			const buttonExpandOrCollapse = element.shadowRoot.querySelector('#button_expand_or_collapse');
+
+			expect(buttonExpandOrCollapse.label).toBe('layerManager_expand_all');
+			expect(buttonExpandOrCollapse.title).toBe('layerManager_expand_all_title');
+
+			buttonExpandOrCollapse.click();
+
+			expect(buttonExpandOrCollapse.label).toBe('layerManager_collapse_all');
+			expect(buttonExpandOrCollapse.title).toBe('layerManager_collapse_all_title');
+		});
 	});
 
 	describe('when layer items dragged', () => {
