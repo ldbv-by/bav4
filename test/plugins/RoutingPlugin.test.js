@@ -379,7 +379,7 @@ describe('RoutingPlugin', () => {
 			expect(wrapperElement.querySelectorAll(ProposalContextContent.tag)).toHaveSize(1);
 			expect(store.getState().bottomSheet.active).toEqual([INTERACTION_BOTTOM_SHEET_ID]);
 			expect(store.getState().highlight.features).toHaveSize(1);
-			expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
+			expect(store.getState().highlight.features[0].data).toEqual(coordinate);
 			expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER_TMP);
 			expect(store.getState().highlight.features[0].id).toBe(RoutingPlugin.HIGHLIGHT_FEATURE_ID);
 			const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetUnsubscribeFn');
@@ -412,7 +412,7 @@ describe('RoutingPlugin', () => {
 			setProposal(coordinate, CoordinateProposalType.EXISTING_START_OR_DESTINATION);
 
 			expect(store.getState().highlight.features).toHaveSize(1);
-			expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
+			expect(store.getState().highlight.features[0].data).toEqual(coordinate);
 			expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.DEFAULT);
 			expect(store.getState().highlight.features[0].id).toBe(RoutingPlugin.HIGHLIGHT_FEATURE_ID);
 		});

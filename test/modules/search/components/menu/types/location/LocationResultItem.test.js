@@ -81,7 +81,7 @@ describe('LocationResultItem', () => {
 				target.dispatchEvent(new Event('mouseenter'));
 
 				expect(store.getState().highlight.features).toHaveSize(1);
-				expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
+				expect(store.getState().highlight.features[0].data).toEqual(coordinate);
 				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER_TMP);
 				expect(store.getState().highlight.features[0].id).toBe(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
 			});
@@ -178,7 +178,7 @@ describe('LocationResultItem', () => {
 
 					expect(store.getState().highlight.features).toHaveSize(1);
 					expect(store.getState().highlight.features[0].id).toEqual(SEARCH_RESULT_HIGHLIGHT_FEATURE_ID);
-					expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
+					expect(store.getState().highlight.features[0].data).toEqual(coordinate);
 					expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER);
 					expect(store.getState().highlight.features[0].label).toBe('label');
 				});

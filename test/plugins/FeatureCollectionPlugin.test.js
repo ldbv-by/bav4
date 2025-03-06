@@ -11,6 +11,7 @@ import { Feature } from '../../src/domain/feature.js';
 import { addFeatures, clearFeatures } from '../../src/store/featureCollection/featureCollection.action.js';
 import { Geometry } from '../../src/domain/geometry.js';
 import { AggregateGeoResource } from '../../src/domain/geoResources.js';
+import { SourceType, SourceTypeName } from '../../src/domain/sourceType.js';
 
 describe('FeatureCollectionPlugin', () => {
 	const geoResourceService = {
@@ -40,7 +41,7 @@ describe('FeatureCollectionPlugin', () => {
 					active: [createDefaultLayer(FEATURE_COLLECTION_LAYER_ID)]
 				},
 				featureCollection: {
-					entries: [new Feature(new Geometry('data'), 'id')]
+					entries: [new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)), 'id')]
 				}
 			});
 			const instanceUnderTest = new FeatureCollectionPlugin();
@@ -61,7 +62,10 @@ describe('FeatureCollectionPlugin', () => {
 			const importVectorDataServiceSpy = spyOn(importVectorDataService, 'forData');
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
 
-			addFeatures([new Feature(new Geometry('data0'), 'id0'), new Feature(new Geometry('data1'), 'id1')]);
+			addFeatures([
+				new Feature(new Geometry('data0', new SourceType(SourceTypeName.EWKT)), 'id0'),
+				new Feature(new Geometry('data1', new SourceType(SourceTypeName.EWKT)), 'id1')
+			]);
 
 			expect(store.getState().layers.active).toHaveSize(1);
 			expect(store.getState().layers.active[0].id).toBe(FEATURE_COLLECTION_LAYER_ID);

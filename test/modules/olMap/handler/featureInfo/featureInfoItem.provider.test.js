@@ -12,6 +12,7 @@ import GeoJSON from 'ol/format/GeoJSON';
 import { $injector } from '../../../../../src/injection';
 import { TestUtils } from '../../../../test-utils';
 import { FeatureInfoGeometryTypes } from '../../../../../src/domain/featureInfo';
+import { SourceType, SourceTypeName } from '../../../../../src/domain/sourceType';
 
 describe('FeatureInfo provider', () => {
 	const mapServiceMock = {
@@ -282,6 +283,7 @@ describe('FeatureInfo provider', () => {
 				const panel = target.querySelector(FeatureCollectionPanel.tag);
 
 				expect(panel.feature.geometry.data.startsWith('<kml')).toBeTrue();
+				expect(panel.feature.geometry.sourceType).toEqual(new SourceType(SourceTypeName.KML));
 				expect(panel.featureId).toBe('layerId');
 			});
 		});
