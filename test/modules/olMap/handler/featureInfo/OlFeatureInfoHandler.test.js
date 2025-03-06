@@ -345,13 +345,13 @@ describe('OlFeatureInfoHandler', () => {
 			expect(store.getState().featureInfo.current).toHaveSize(2);
 		});
 
-		it('sets the `layerId` property on each olFeature', async () => {
-			// this provider also returns the `layerId` property of the olFeature as `content? property
+		it('sets the `id` property on each olFeature when missing', async () => {
+			// this provider also returns the `id` property of the olFeature as `content` property
 			const mockFeatureInfoProvider = (olFeature, layer) => {
 				const geometry = { data: new GeoJSON().writeGeometry(olFeature.getGeometry()), geometryType: FeatureInfoGeometryTypes.GEOJSON };
 				return {
 					title: `${olFeature.get('name')}-${layer.id}`,
-					content: `${olFeature.get('layerId')}`,
+					content: `${olFeature.getId()}`,
 					geometry: geometry
 				};
 			};
@@ -392,10 +392,10 @@ describe('OlFeatureInfoHandler', () => {
 			//must be called within a timeout function cause implementation delays call of 'resolveQuery'
 			await TestUtils.timeout(TestDelay);
 			expect(store.getState().featureInfo.current).toHaveSize(1);
-
+			expect(feature0.getId()).toBeInstanceOf(String);
 			expect(store.getState().featureInfo.current[0]).toEqual({
 				title: 'name0-layerId0',
-				content: 'layerId0',
+				content: feature0.getId(),
 				geometry: expectedFeatureInfoGeometry
 			});
 		});
