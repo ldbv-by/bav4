@@ -6,6 +6,7 @@ import { $injector } from '../../../injection';
 import css from './footer.css';
 import { MvuElement } from '../../MvuElement';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { nothing } from '../../../../node_modules/ol/pixel';
 
 const Update_IsOpen = 'update_isOpen_tabIndex';
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
@@ -91,6 +92,10 @@ export class Footer extends MvuElement {
 			'is-embedded': this._environmentService.isEmbedded()
 		};
 
+		const getBaseLayerContainer = () => {
+			return !isPortrait && !this._environmentService.isEmbedded() ? html`<ba-base-layer-container></ba-base-layer-container> ` : nothing;
+		};
+
 		return html`
 			<style>
 				${css}
@@ -98,8 +103,11 @@ export class Footer extends MvuElement {
 			<div class="preload">
 				<div class="${classMap(classes)}">
 					<div class="footer">
-						<div class="scale" part="scale"></div>
-						<ba-attribution-info></ba-attribution-info>
+						<div>
+							<div class="scale" part="scale"></div>
+							${getBaseLayerContainer()}
+							<ba-attribution-info></ba-attribution-info>
+						</div>
 						<div class="content">${createChildrenView()}</div>
 					</div>
 				</div>

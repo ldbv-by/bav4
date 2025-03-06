@@ -6,6 +6,8 @@ import { $injector } from '../../../../src/injection';
 import { createNoInitialStateMainMenuReducer } from '../../../../src/store/mainMenu/mainMenu.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { createNoInitialStateNavigationRailReducer } from '../../../../src/store/navigationRail/navigationRail.reducer';
+import { BaseLayerContainer } from '../../../../src/modules/baseLayer/components/container/BaseLayerContainer';
+import { toggle as toggleMainMenu } from '../../../../src/store/mainMenu/mainMenu.action';
 
 window.customElements.define(Footer.tag, Footer);
 
@@ -70,6 +72,32 @@ describe('Footer', () => {
 			expect(element.shadowRoot.querySelector(`.scale`).getAttribute('part')).toBe('scale');
 			expect(element.shadowRoot.querySelectorAll('ba-map-info')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('ba-attribution-info')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll(BaseLayerContainer.tag)).toHaveSize(1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).height).toBe('1px');
+		});
+
+		it('toggle the main menu shows and hides the BaseLayerContainer', async () => {
+			const state = {
+				mainMenu: {
+					open: false
+				},
+				media: {
+					portrait: false,
+					minWidth: true
+				}
+			};
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelectorAll(BaseLayerContainer.tag)).toHaveSize(1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).height).toBe('56px');
+
+			toggleMainMenu();
+
+			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).height).toBe('1px');
+
+			toggleMainMenu();
+
+			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).height).toBe('56px');
 		});
 	});
 
@@ -92,6 +120,8 @@ describe('Footer', () => {
 			expect(element.shadowRoot.querySelectorAll('.content')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content')).display).toBe('flex');
 			expect(element.shadowRoot.querySelectorAll('ba-map-info')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll(BaseLayerContainer.tag)).toHaveSize(1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector(BaseLayerContainer.tag)).height).toBe('1px');
 		});
 
 		it('layouts with open main menu for portrait mode', async () => {
@@ -113,6 +143,7 @@ describe('Footer', () => {
 			expect(element.shadowRoot.querySelectorAll('.content')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content')).display).toBe('none');
 			expect(element.shadowRoot.querySelectorAll('ba-map-info')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll(BaseLayerContainer.tag)).toHaveSize(0);
 		});
 
 		it('layouts with open main menu for tablet mode', async () => {
@@ -134,6 +165,7 @@ describe('Footer', () => {
 			expect(element.shadowRoot.querySelectorAll('.content')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content')).display).toBe('none');
 			expect(element.shadowRoot.querySelectorAll('ba-map-info')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll(BaseLayerContainer.tag)).toHaveSize(1);
 		});
 
 		it('layouts with open navigation rail for portrait mode', async () => {
@@ -173,6 +205,7 @@ describe('Footer', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-embedded')).toHaveSize(0);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content')).display).toBe('flex');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content ba-privacy-policy')).display).toBe('none');
+			expect(element.shadowRoot.querySelectorAll(BaseLayerContainer.tag)).toHaveSize(1);
 		});
 
 		it('layouts for embedded mode', async () => {
@@ -188,6 +221,7 @@ describe('Footer', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.is-embedded')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll(BaseLayerContainer.tag)).toHaveSize(0);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content')).display).toBe('flex');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content ba-map-info')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content ba-privacy-policy')).display).toBe('block');
