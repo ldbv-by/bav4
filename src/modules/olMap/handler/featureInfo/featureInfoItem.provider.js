@@ -39,7 +39,7 @@ export const bvvFeatureInfoProvider = (olFeature, layerProperties) => {
 			<div class='chips__container'>
 				<ba-profile-chip .coordinates=${elevationProfileCoordinates}></ba-profile-chip>
 				<ba-export-vector-data-chip .exportData=${exportDataAsKML}></ba-export-vector-data-chip>
-				<ba-feature-info-collection-panel .featureId=${olFeature.get('layerId')} .feature=${new Feature(new Geometry(exportDataAsKML, new SourceType(SourceTypeName.KML)))}></ba-feature-info-collection-panel>
+				<ba-feature-info-collection-panel .configuration=${{ feature: new Feature(new Geometry(exportDataAsKML, new SourceType(SourceTypeName.KML)), olFeature.getId()), geoResourceId: geoRes?.id ?? null }}></ba-feature-info-collection-panel>
 			</div>`;
 
 		return descContent
