@@ -17,7 +17,9 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_zoom_to_extent).toBe('Auf Inhalt zoomen');
 		expect(map.layerManager_layer_copy).toBe('Kopie');
 		expect(map.layerManager_expand_all).toBe('Alle ausklappen');
+		expect(map.layerManager_expand_all_title).toBe('Alle Ebenen ausklappen');
 		expect(map.layerManager_collapse_all).toBe('Alle einklappen');
+		expect(map.layerManager_collapse_all_title).toBe('Alle Ebenen einklappen');
 		expect(map.layerManager_remove_all).toBe('Überlagerungen entfernen');
 		expect(map.layerManager_loading_hint).toBe('Wird geladen');
 		expect(map.layerManager_time_travel_hint).toBe('Bitte ein Jahr auswählen');
@@ -50,7 +52,9 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_zoom_to_extent).toBe('Zoom to extent');
 		expect(map.layerManager_layer_copy).toBe('Copy');
 		expect(map.layerManager_expand_all).toBe('Expand all');
+		expect(map.layerManager_expand_all_title).toBe('Expand all layers');
 		expect(map.layerManager_collapse_all).toBe('Collapse all');
+		expect(map.layerManager_collapse_all_title).toBe('Collapse all layers');
 		expect(map.layerManager_remove_all).toBe('Remove all overlays');
 		expect(map.layerManager_loading_hint).toBe('Loading');
 		expect(map.layerManager_time_travel_hint).toBe('Choose a year');
@@ -67,7 +71,7 @@ describe('i18n for layer-manager', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 28;
+		const expectedSize = 30;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
