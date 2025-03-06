@@ -8,7 +8,6 @@ import { clearHighlightFeatures } from '../../../../store/highlight/highlight.ac
 import { MvuElement } from '../../../MvuElement';
 import { abortOrReset } from '../../../../store/featureInfo/featureInfo.action';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
-import starSvg from './../assets/star.svg';
 import css from './featureCollectionPanel.css';
 
 const Update_FeatureId = 'update_featureId';
