@@ -14,6 +14,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_share).toBe('Teilen');
 		expect(map.toolbox_drawTool_save).toBe('Speichern');
 		expect(map.toolbox_drawTool_cancel).toBe('Abbrechen');
+		expect(map.toolbox_drawTool_cancel_title).toBe('Zeichnung abbrechen');
 		expect(map.toolbox_drawTool_delete_point).toBe('letzten Punkt löschen');
 		expect(map.toolbox_drawTool_delete_drawing).toBe('Zeichnung löschen');
 		expect(map.toolbox_drawTool_info).toBe(
@@ -64,6 +65,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_measure_select).toBe('Eine bestehende Messung auswählen oder eine neue Messung beginnen');
 		expect(map.toolbox_measureTool_share).toBe('Teilen');
 		expect(map.toolbox_drawTool_finish).toBe('Fertig');
+		expect(map.toolbox_drawTool_finish_title).toBe('Zeichnung fertigstellen');
 		expect(map.toolbox_prevent_switching_tool).toBe('Bitte zuerst das aktuelle Werkzeug schließen/beenden');
 		expect(map.toolbox_toolbar_draw_button).toBe('Zeichnen');
 		expect(map.toolbox_toolbar_share_button).toBe('Teilen');
@@ -124,6 +126,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_share).toBe('Share');
 		expect(map.toolbox_drawTool_save).toBe('Save');
 		expect(map.toolbox_drawTool_cancel).toBe('Cancel');
+		expect(map.toolbox_drawTool_cancel_title).toBe('Cancel drawing');
 		expect(map.toolbox_drawTool_delete_point).toBe('Delete last point');
 		expect(map.toolbox_drawTool_delete_drawing).toBe('Delete drawing');
 		expect(map.toolbox_drawTool_info).toBe('Your drawing will be automatically saved. By using this service you agree to the terms of use.');
@@ -170,6 +173,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_measure_select).toBe('Select an existing measurement or start a new one');
 		expect(map.toolbox_measureTool_share).toBe('Share');
 		expect(map.toolbox_drawTool_finish).toBe('Finish');
+		expect(map.toolbox_drawTool_finish_title).toBe('Finish drawing');
 		expect(map.toolbox_prevent_switching_tool).toBe('Please close the current tool first');
 		expect(map.toolbox_toolbar_draw_button).toBe('Draw');
 		expect(map.toolbox_toolbar_share_button).toBe('Share');
@@ -219,7 +223,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 100;
+		const expectedSize = 102;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
