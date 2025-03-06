@@ -176,7 +176,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 						<span class="ba-list-item__secondary-text">${translate('menu_misc_content_panel_gp_text')}</span>
 					</span>
 				</a>
-				<a class="ba-list-item" href="https://www.energieatlas.bayern.de/" target="_blank">
+				<a class="ba-list-item divider" href="https://www.energieatlas.bayern.de/" target="_blank">
 					<span class="ba-list-item__pre ">
 						<span class="ba-list-item__image image ea"> </span>
 					</span>
@@ -185,8 +185,10 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 						<span class="ba-list-item__secondary-text">${translate('menu_misc_content_panel_ea_text')}</span>
 					</span>
 				</a>
-				<div class="version-info">
-					${html`${translate('menu_misc_content_panel_software_version')} ${this.#configService.getValue('SOFTWARE_VERSION')}`}
+				<div class="version-info ba-list-item  ">
+					<span class="ba-list-item__text">
+						${html`${translate('menu_misc_content_panel_software_version')} ${this.#configService.getValue('SOFTWARE_VERSION')}`}
+					</span>
 				</div>
 			</div>
 		`;
