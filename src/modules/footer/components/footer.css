@@ -91,3 +91,6 @@ ba-base-layer-container::part(base-layer-switcher-container) {
 	padding: 0 1em 0.5em 0;
 	overflow: hidden;
 }
+ba-base-layer-container::part(scroll-button) {
+	display: none;
+}

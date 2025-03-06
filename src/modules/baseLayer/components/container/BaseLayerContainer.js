@@ -112,6 +112,18 @@ export class BaseLayerContainer extends MvuElement {
 			return Object.keys(categories).length < 2;
 		};
 
+		const getScrollButtonLeft = (categories, index) => {
+			return Object.entries(categories)[index - 1]
+				? html` <button @click=${() => onClick(Object.entries(categories)[index - 1][0])} class="scroll-left-button" part="scroll-button"></button> `
+				: nothing;
+		};
+
+		const getScrollButtonRight = (categories, index) => {
+			return Object.entries(categories)[index + 1]
+				? html` <button @click=${() => onClick(Object.entries(categories)[index + 1][0])} class="scroll-right-button" part="scroll-button"></button> `
+				: nothing;
+		};
+
 		return html`
 			<style>
 				${css}
@@ -131,14 +143,16 @@ export class BaseLayerContainer extends MvuElement {
 			</div>
 			<div id="section" class="section scroll-snap-x">
 				${Object.entries(categories).map(
-					([key, value]) =>
+					([key, value], index) =>
 						html`<div id="${key}" class="container ${isActive(key)}">
+							${getScrollButtonLeft(categories, index)}
 							<div>
 								<ba-base-layer-switcher
 									exportparts="container:base-layer-switcher-container,button:base-layer-switcher-button,label:base-layer-switcher-label"
 									.configuration=${{ all: allBaseGeoResourceIds, managed: value }}
 								></ba-base-layer-switcher>
 							</div>
+							${getScrollButtonRight(categories, index)}
 						</div>`
 				)}
 			</div>
