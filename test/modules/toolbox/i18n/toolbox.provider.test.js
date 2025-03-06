@@ -101,7 +101,9 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_scale_decrease).toBe('Ausschnitt verkleinern');
 		expect(map.toolbox_exportMfp_scale_increase).toBe('Ausschnitt vergrößern');
 		expect(map.toolbox_exportMfp_submit).toBe('PDF erzeugen');
+		expect(map.toolbox_exportMfp_submit_title).toBe('Von der Karte ein PDF erzeugen');
 		expect(map.toolbox_exportMfp_cancel).toBe('Abbrechen');
+		expect(map.toolbox_exportMfp_cancel_title).toBe('PDF-Erzeugung abbrechen');
 		expect(map.toolbox_exportMfp_select_option).toBe('auswählen...');
 		expect(map.toolbox_exportMfp_id_a4_landscape).toBe('A4 Querformat');
 		expect(map.toolbox_exportMfp_id_a4_portrait).toBe('A4 Hochformat');
@@ -209,7 +211,9 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_scale_decrease).toBe('Decrease scale');
 		expect(map.toolbox_exportMfp_scale_increase).toBe('Increase scale');
 		expect(map.toolbox_exportMfp_submit).toBe('Create PDF');
+		expect(map.toolbox_exportMfp_submit_title).toBe('Create PDF from map');
 		expect(map.toolbox_exportMfp_cancel).toBe('Cancel');
+		expect(map.toolbox_exportMfp_cancel_title).toBe('Cancel PDF creation');
 		expect(map.toolbox_exportMfp_select_option).toBe('select...');
 		expect(map.toolbox_exportMfp_id_a4_landscape).toBe('A4 landscape');
 		expect(map.toolbox_exportMfp_id_a4_portrait).toBe('A4 portrait');
@@ -223,7 +227,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 102;
+		const expectedSize = 104;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
