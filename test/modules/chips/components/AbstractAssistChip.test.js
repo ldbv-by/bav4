@@ -125,8 +125,11 @@ describe('AbstractAssistChip', () => {
 			const element = await TestUtils.render(AssistChipImpl.tag);
 
 			expect(element.shadowRoot.querySelector('.chips__button').innerHTML.includes('foo')).toBeTrue();
+			expect(element.shadowRoot.querySelector('.chips__button').attributes['part'].nodeValue).toBe('button');
 			expect(element.shadowRoot.querySelector('.chips__button-text').innerHTML.includes('foo')).toBeTrue();
+			expect(element.shadowRoot.querySelector('.chips__button-text').attributes['part'].nodeValue).toBe('label');
 			expect(element.shadowRoot.querySelectorAll('.chips__icon')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.chips__icon').attributes['part'].nodeValue).toBe('icon');
 		});
 
 		it('renders nothing when getVisible is false', async () => {

@@ -27,7 +27,7 @@ export const provide = (lang) => {
 				global_fileStorageService_exception: 'The data could not be stored',
 				global_cr_global_wgs84: 'Lat, Lon',
 				global_terms_of_use: 'https://www.ldbv.bayern.de/file/pdf/18295/Nutzungsbedingungen_Geoportal_BayernAtlas_BayernAtlasplus.pdf',
-				global_featureCollection_layer_label: 'My collection'
+				global_featureCollection_layer_label: 'My temporary collection'
 			};
 
 		case 'de':
@@ -58,7 +58,7 @@ export const provide = (lang) => {
 				global_fileStorageService_exception: 'Die Daten konnten nicht gespeichert werden',
 				global_cr_global_wgs84: 'Breite, Länge',
 				global_terms_of_use: 'https://www.ldbv.bayern.de/file/pdf/18295/Nutzungsbedingungen_Geoportal_BayernAtlas_BayernAtlasplus.pdf',
-				global_featureCollection_layer_label: 'Meine Sammlung'
+				global_featureCollection_layer_label: 'Meine temporäre Sammlung'
 			};
 
 		default:
