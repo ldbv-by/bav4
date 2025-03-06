@@ -90,7 +90,7 @@ export class BaseLayerContainer extends MvuElement {
 	}
 
 	_getDocument() {
-		return this.#environmentService.getWindow().parent.document;
+		return this.#environmentService.getWindow().document;
 	}
 
 	createView(model) {
