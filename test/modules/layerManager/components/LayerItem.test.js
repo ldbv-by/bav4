@@ -698,8 +698,11 @@ describe('LayerItem', () => {
 			expect(store.getState().layers.active[0].constraints.swipeAlignment).toBe(SwipeAlignment.NOT_SET);
 
 			expect(swipeButtons[0].label).toBe('layerManager_compare_left');
+			expect(swipeButtons[0].title).toBe('layerManager_compare_left_title');
 			expect(swipeButtons[1].label).toBe('layerManager_compare_both');
+			expect(swipeButtons[1].title).toBe('layerManager_compare_both_title');
 			expect(swipeButtons[2].label).toBe('layerManager_compare_right');
+			expect(swipeButtons[2].title).toBe('layerManager_compare_right_title');
 			expect(swipeButtons[0].classList.contains('active')).toBeFalse();
 			expect(swipeButtons[1].classList.contains('active')).toBeTrue();
 			expect(swipeButtons[2].classList.contains('active')).toBeFalse();

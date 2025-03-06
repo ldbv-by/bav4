@@ -26,8 +26,11 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_compare_stop).toBe('Vergleichen beenden');
 		expect(map.layerManager_compare_share).toBe('Ansicht teilen');
 		expect(map.layerManager_compare_left).toBe('Links');
+		expect(map.layerManager_compare_left_title).toBe('Ebene auf die linke Seite setzen');
 		expect(map.layerManager_compare_both).toBe('Beide');
+		expect(map.layerManager_compare_both_title).toBe('Ebene auf beide Seiten setzen');
 		expect(map.layerManager_compare_right).toBe('Rechts');
+		expect(map.layerManager_compare_right_title).toBe('Ebene auf die rechte Seite setzen');
 	});
 
 	it('provides translation for en', () => {
@@ -56,12 +59,15 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_compare_stop).toBe('Exit comparison tool');
 		expect(map.layerManager_compare_share).toBe('Share the view');
 		expect(map.layerManager_compare_left).toBe('Left');
+		expect(map.layerManager_compare_left_title).toBe('Set layer on left side');
 		expect(map.layerManager_compare_both).toBe('Both');
+		expect(map.layerManager_compare_both_title).toBe('Set layer on both sides');
 		expect(map.layerManager_compare_right).toBe('Right');
+		expect(map.layerManager_compare_right_title).toBe('Set layer on right side');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 25;
+		const expectedSize = 28;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
