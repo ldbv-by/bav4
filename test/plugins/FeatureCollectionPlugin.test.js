@@ -12,6 +12,7 @@ import { addFeatures, clearFeatures } from '../../src/store/featureCollection/fe
 import { Geometry } from '../../src/domain/geometry.js';
 import { AggregateGeoResource } from '../../src/domain/geoResources.js';
 import { SourceType, SourceTypeName } from '../../src/domain/sourceType.js';
+import { removeLayer } from '../../src/store/layers/layers.action.js';
 
 describe('FeatureCollectionPlugin', () => {
 	const geoResourceService = {
@@ -79,6 +80,49 @@ describe('FeatureCollectionPlugin', () => {
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(
 				new AggregateGeoResource(FEATURE_COLLECTION_GEORESOURCE_ID, `global_featureCollection_layer_label (2)`, ['id0', 'id1']).setHidden(true)
 			);
+		});
+	});
+
+	describe('when layers `removed` property changes', () => {
+		describe('and the feature collection layer is removed', () => {
+			it('clears the feature collection', async () => {
+				const store = setup({});
+				const instanceUnderTest = new FeatureCollectionPlugin();
+				await instanceUnderTest.register(store);
+				addFeatures([
+					new Feature(new Geometry('data0', new SourceType(SourceTypeName.EWKT)), 'id0'),
+					new Feature(new Geometry('data1', new SourceType(SourceTypeName.EWKT)), 'id1')
+				]);
+
+				expect(store.getState().featureCollection.entries).toHaveSize(2);
+
+				removeLayer(FEATURE_COLLECTION_LAYER_ID);
+
+				expect(store.getState().featureCollection.entries).toHaveSize(0);
+			});
+		});
+
+		describe('and any other layer is removed', () => {
+			it('does nothing', async () => {
+				const layerId = 'someLayer';
+				const store = setup({
+					layers: {
+						active: [createDefaultLayer(layerId)]
+					}
+				});
+				const instanceUnderTest = new FeatureCollectionPlugin();
+				await instanceUnderTest.register(store);
+				addFeatures([
+					new Feature(new Geometry('data0', new SourceType(SourceTypeName.EWKT)), 'id0'),
+					new Feature(new Geometry('data1', new SourceType(SourceTypeName.EWKT)), 'id1')
+				]);
+
+				expect(store.getState().featureCollection.entries).toHaveSize(2);
+
+				removeLayer(layerId);
+
+				expect(store.getState().featureCollection.entries).toHaveSize(2);
+			});
 		});
 	});
 });

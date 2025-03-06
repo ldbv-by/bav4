@@ -6,6 +6,7 @@ import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { BaPlugin } from './BaPlugin';
 import { $injector } from '../injection/index';
 import { AggregateGeoResource } from '../domain/geoResources';
+import { clearFeatures } from '../store/featureCollection/featureCollection.action';
 /**
  * Id of the layer used for the visualization of a feature collection
  */
@@ -61,5 +62,17 @@ export class FeatureCollectionPlugin extends BaPlugin {
 		};
 
 		observe(store, (state) => state.featureCollection.entries, onEntriesChanged);
+
+		const onLayerRemoved = (eventLike) => {
+			if ([FEATURE_COLLECTION_LAYER_ID].some((id) => eventLike.payload.includes(id))) {
+				clearFeatures();
+			}
+		};
+
+		observe(
+			store,
+			(state) => state.layers.removed,
+			(eventLike) => onLayerRemoved(eventLike)
+		);
 	}
 }
