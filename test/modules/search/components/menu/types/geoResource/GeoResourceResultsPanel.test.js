@@ -289,8 +289,11 @@ describe('GeoResourceResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('#import-all').classList).toContain('hidden');
 		});
 
-		xit('shows the remove-all-layers button if all layers are already imported', async () => {
-			const results = Array.from({ length: 1 }, (_, i) => new GeoResourceSearchResult(`labelGeoResource${i}`, `labelGeoResourceFormatted${i}`));
+		it('shows the remove-all-layers button if all layers are already imported', async () => {
+			const results = Array.from(
+				{ length: GeoResourceResultsPanel.Default_Result_Item_Length },
+				(_, i) => new GeoResourceSearchResult(`labelGeoResource${i}`, `labelGeoResourceFormatted${i}`)
+			);
 			const query = 'foo';
 			const initialState = {
 				search: {
@@ -298,10 +301,15 @@ describe('GeoResourceResultsPanel', () => {
 				}
 			};
 			spyOn(searchResultServiceMock, 'geoResourcesByTerm').and.resolveTo(results);
-
+			spyOn(geoResourceService, 'byId').withArgs(jasmine.any(String)).and.returnValue({ opacity: 0.5 });
 			const element = await setup(initialState);
 
 			await TestUtils.timeout(GeoResourceResultsPanel.Debounce_Delay + 100);
+
+			// first import them all
+			const button = element.shadowRoot.querySelector('#import-all');
+			button.click();
+
 			expect(element.shadowRoot.querySelector('#import-all')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('#import-all').label).toBe('search_menu_removeAll_label');
 			expect(element.shadowRoot.querySelector('#import-all').title).toBe('search_menu_removeAll_title');
