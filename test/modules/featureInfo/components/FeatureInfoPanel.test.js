@@ -5,7 +5,6 @@ import { FeatureInfoPanel, TEMPORARY_FEATURE_HIGHLIGHT_ID } from '../../../../sr
 import { featureInfoReducer } from '../../../../src/store/featureInfo/featureInfo.reducer';
 import { AbstractMvuContentPanel } from '../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel.js';
 import { html } from 'lit-html';
-import { FeatureInfoGeometryTypes } from '../../../../src/domain/featureInfo.js';
 import { addFeatureInfoItems } from '../../../../src/store/featureInfo/featureInfo.action.js';
 import { highlightReducer } from '../../../../src/store/highlight/highlight.reducer.js';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
@@ -269,7 +268,7 @@ describe('FeatureInfoPanel', () => {
 							{
 								title: 'title0',
 								content: 'content0',
-								geometry: { data: geoJson, geometryType: FeatureInfoGeometryTypes.GEOJSON }
+								geometry: new Geometry(geoJson, new SourceType(SourceTypeName.GEOJSON))
 							}
 						]
 					}
@@ -313,7 +312,7 @@ describe('FeatureInfoPanel', () => {
 							{
 								title: 'title0',
 								content: 'content0',
-								geometry: { data: geoJson, geometryType: FeatureInfoGeometryTypes.GEOJSON }
+								geometry: new Geometry(geoJson, new SourceType(SourceTypeName.GEOJSON))
 							}
 						]
 					},
