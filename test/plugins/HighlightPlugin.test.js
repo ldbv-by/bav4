@@ -10,7 +10,7 @@ import {
 } from '../../src/plugins/HighlightPlugin';
 import { TestUtils } from '../test-utils.js';
 import { highlightReducer } from '../../src/store/highlight/highlight.reducer';
-import { addHighlightFeatures, clearHighlightFeatures, HighlightFeatureType } from '../../src/store/highlight/highlight.action';
+import { addHighlightFeatures, clearHighlightFeatures } from '../../src/store/highlight/highlight.action';
 import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { pointerReducer } from '../../src/store/pointer/pointer.reducer';
 import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer';
@@ -28,6 +28,7 @@ import { positionReducer } from '../../src/store/position/position.reducer';
 import { FeatureInfoGeometryTypes } from '../../src/domain/featureInfo.js';
 import { Geometry } from '../../src/domain/geometry.js';
 import { SourceType, SourceTypeName } from '../../src/domain/sourceType.js';
+import { HighlightFeatureType } from '../../src/domain/highlightFeature.js';
 
 describe('HighlightPlugin', () => {
 	const environmentServiceMock = {

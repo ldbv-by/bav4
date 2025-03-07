@@ -1,7 +1,6 @@
 import { createNoInitialStateMainMenuReducer } from '../../../../../../../src/store/mainMenu/mainMenu.reducer';
 import { CpResultItem } from '../../../../../../../src/modules/search/components/menu/types/cp/CpResultItem';
 import { CadastralParcelSearchResult } from '../../../../../../../src/modules/search/services/domain/searchResult';
-import { HighlightFeatureType } from '../../../../../../../src/store/highlight/highlight.action';
 import { highlightReducer } from '../../../../../../../src/store/highlight/highlight.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../../../../src/store/media/media.reducer';
 import { positionReducer } from '../../../../../../../src/store/position/position.reducer';
@@ -9,6 +8,7 @@ import { TestUtils } from '../../../../../../test-utils.js';
 import { SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../../src/plugins/HighlightPlugin';
 import { Geometry } from '../../../../../../../src/domain/geometry.js';
 import { SourceType, SourceTypeName } from '../../../../../../../src/domain/sourceType.js';
+import { HighlightFeatureType } from '../../../../../../../src/domain/highlightFeature.js';
 window.customElements.define(CpResultItem.tag, CpResultItem);
 
 describe('CpResultItem', () => {

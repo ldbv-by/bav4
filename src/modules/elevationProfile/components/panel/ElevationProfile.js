@@ -8,9 +8,10 @@ import Chart from 'chart.js/auto'; // Todo: Import single dependencies for tree 
 import { $injector } from '../../../../injection';
 
 import { SurfaceType } from '../../utils/elevationProfileAttributeTypes';
-import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
+import { addHighlightFeatures, removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
 import { toLocaleString } from '../../../../utils/numberUtils';
 import { isNumber } from '../../../../utils/checks';
+import { HighlightFeatureType } from '../../../../domain/highlightFeature';
 
 const Update_Schema = 'update_schema';
 const Update_Selected_Attribute = 'update_selected_attribute';

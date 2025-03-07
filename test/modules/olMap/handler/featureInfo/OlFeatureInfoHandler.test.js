@@ -15,7 +15,6 @@ import { createDefaultLayer, layersReducer } from '../../../../../src/store/laye
 import { bvvFeatureInfoProvider } from '../../../../../src/modules/olMap/handler/featureInfo/featureInfoItem.provider';
 import { modifyLayer } from '../../../../../src/store/layers/layers.action';
 import { highlightReducer } from '../../../../../src/store/highlight/highlight.reducer';
-import { HighlightFeatureType } from '../../../../../src/store/highlight/highlight.action';
 import GeoJSON from 'ol/format/GeoJSON';
 import { $injector } from '../../../../../src/injection';
 import { QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../../src/plugins/HighlightPlugin';
@@ -23,6 +22,7 @@ import { Cluster } from 'ol/source';
 import { FeatureInfoGeometryTypes } from '../../../../../src/domain/featureInfo';
 import LayerGroup from 'ol/layer/Group';
 import { VectorGeoResource, VectorSourceType } from '../../../../../src/domain/geoResources';
+import { HighlightFeatureType } from '../../../../../src/domain/highlightFeature';
 
 describe('OlFeatureInfoHandler_Query_Resolution_Delay', () => {
 	it('determines amount of time query resolution delayed', async () => {

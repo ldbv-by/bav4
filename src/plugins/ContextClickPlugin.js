@@ -7,9 +7,10 @@ import { html } from 'lit-html';
 import { closeContextMenu, openContextMenu } from '../store/mapContextMenu/mapContextMenu.action';
 import { $injector } from '../injection';
 import { createUniqueId } from '../utils/numberUtils';
-import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
+import { addHighlightFeatures, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
 import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
 import { INTERACTION_BOTTOM_SHEET_ID } from '../store/bottomSheet/bottomSheet.reducer';
+import { HighlightFeatureType } from '../domain/highlightFeature';
 
 /**
  * Plugin for context-click related slice-of-state management.
