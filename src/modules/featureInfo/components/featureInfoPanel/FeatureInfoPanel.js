@@ -14,7 +14,6 @@ import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById
 import { createUniqueId } from '../../../../utils/numberUtils';
 import { isTemplateResult } from '../../../../utils/checks';
 import { Geometry } from '../../../../domain/geometry';
-import { SourceType, SourceTypeName } from '../../../../domain/sourceType';
 
 const Update_FeatureInfo_Data = 'update_featureInfo_data';
 const Update_IsPortrait = 'update_isPortrait_hasMinWidth';
