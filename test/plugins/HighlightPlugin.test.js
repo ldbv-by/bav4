@@ -25,7 +25,6 @@ import { setQuery } from '../../src/store/search/search.action';
 import { $injector } from '../../src/injection';
 import { QueryParameters } from '../../src/domain/queryParameters';
 import { positionReducer } from '../../src/store/position/position.reducer';
-import { FeatureInfoGeometryTypes } from '../../src/domain/featureInfo.js';
 import { Geometry } from '../../src/domain/geometry.js';
 import { SourceType, SourceTypeName } from '../../src/domain/sourceType.js';
 
@@ -274,7 +273,7 @@ describe('HighlightPlugin', () => {
 				{
 					title: 'title1',
 					content: 'content1',
-					geometry: { data: geoJson, geometryType: FeatureInfoGeometryTypes.GEOJSON }
+					geometry: new Geometry(geoJson, new SourceType(SourceTypeName.GEOJSON))
 				}
 			]);
 			resolveQuery(queryId);
@@ -303,7 +302,7 @@ describe('HighlightPlugin', () => {
 			addFeatureInfoItems({
 				title: 'title1',
 				content: 'content1',
-				geometry: { data: geoJson, geometryType: FeatureInfoGeometryTypes.GEOJSON }
+				geometry: new Geometry(geoJson, new SourceType(SourceTypeName.GEOJSON))
 			});
 			resolveQuery(queryId);
 
