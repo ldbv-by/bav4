@@ -85,7 +85,7 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 				addHighlightFeatures({
 					id: TEMPORARY_FEATURE_HIGHLIGHT_ID,
 					type: HighlightFeatureType.MARKER_TMP,
-					data: new Geometry(featureInfoGeometry.data, new SourceType(SourceTypeName.GEOJSON))
+					data: new Geometry(featureInfoGeometry.data, featureInfoGeometry.sourceType)
 				});
 			}
 		};
