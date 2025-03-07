@@ -12,10 +12,10 @@ import { createNoInitialStateMediaReducer } from '../../../../../src/store/media
 
 import { TestUtils } from '../../../../test-utils.js';
 import { setIsDarkSchema } from '../../../../../src/store/media/media.action.js';
-import { HighlightFeatureType } from '../../../../../src/store/highlight/highlight.action.js';
 import { highlightReducer } from '../../../../../src/store/highlight/highlight.reducer.js';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer.js';
 import { Chart } from 'chart.js';
+import { HighlightFeatureType } from '../../../../../src/domain/highlightFeature.js';
 
 window.customElements.define(ElevationProfile.tag, ElevationProfile);
 

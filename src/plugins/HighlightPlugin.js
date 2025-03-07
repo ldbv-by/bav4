@@ -4,7 +4,7 @@
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
-import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
+import { addHighlightFeatures, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
 import { TabIds } from '../domain/mainMenu';
 import { createUniqueId } from '../utils/numberUtils';
 import { $injector } from '../injection/index';
@@ -12,6 +12,7 @@ import { QueryParameters } from '../domain/queryParameters';
 import { isCoordinate } from '../utils/checks';
 import { Geometry } from '../domain/geometry';
 import { SourceType, SourceTypeName } from '../domain/sourceType';
+import { HighlightFeatureType } from '../domain/highlightFeature';
 
 /**
  * Id of the layer used for highlight visualization.

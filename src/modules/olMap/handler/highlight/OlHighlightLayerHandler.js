@@ -17,13 +17,13 @@ import {
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { Point } from 'ol/geom';
-import { HighlightFeatureType } from '../../../../store/highlight/highlight.action';
 import WKT from 'ol/format/WKT';
 import GeoJSON from 'ol/format/GeoJSON';
 import { unByKey } from 'ol/Observable';
 import { parse } from '../../../../utils/ewkt';
 import { SourceTypeName } from '../../../../domain/sourceType';
 import { isCoordinate } from '../../../../utils/checks';
+import { HighlightFeatureType } from '../../../../domain/highlightFeature';
 
 /**
  * Handler for displaying highlighted features
