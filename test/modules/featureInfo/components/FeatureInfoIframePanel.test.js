@@ -3,7 +3,6 @@ import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
 import { featureInfoReducer } from '../../../../src/store/featureInfo/featureInfo.reducer';
 import { html } from 'lit-html';
-import { FeatureInfoGeometryTypes } from '../../../../src/domain/featureInfo.js';
 import { highlightReducer } from '../../../../src/store/highlight/highlight.reducer.js';
 import { HighlightFeatureType } from '../../../../src/store/highlight/highlight.action.js';
 import {
@@ -137,7 +136,7 @@ describe('FeatureInfoIframePanel', () => {
 							{
 								title: 'title0',
 								content: 'content0',
-								geometry: { data: geoJson, geometryType: FeatureInfoGeometryTypes.GEOJSON }
+								geometry: new Geometry(geoJson, new SourceType(SourceTypeName.GEOJSON))
 							}
 						]
 					}
@@ -182,7 +181,7 @@ describe('FeatureInfoIframePanel', () => {
 							{
 								title: 'title0',
 								content: 'content0',
-								geometry: { data: geoJson, geometryType: FeatureInfoGeometryTypes.GEOJSON }
+								geometry: new Geometry(geoJson, new SourceType(SourceTypeName.GEOJSON))
 							}
 						]
 					},
