@@ -11,7 +11,7 @@ const getStore = () => {
 
 /**
  * Adds (appends) a single or an array of {@link HighlightFeature}.
- * @param {Array.<HighlightFeature>|HighlightFeature} features
+ * @param {Array.<module:domain/highlightFeature~HighlightFeature>|module:domain/highlightFeature~HighlightFeature} features
  * @function
  */
 export const addHighlightFeatures = (features) => {
