@@ -127,7 +127,7 @@ export class LocationResultItem extends MvuElement {
 					tabindex="0"
 					@click=${() => onClick(locationSearchResult)}
 					@mouseenter=${() => onMouseEnter(locationSearchResult)}
-					@mouseleave=${() => onMouseLeave(locationSearchResult)}
+					@mouseleave=${() => onMouseLeave()}
 				>
 					<span class="ba-list-item__pre ">
 						<span class="ba-list-item__icon"> </span>

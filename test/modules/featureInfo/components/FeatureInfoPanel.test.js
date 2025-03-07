@@ -5,12 +5,12 @@ import { FeatureInfoPanel, TEMPORARY_FEATURE_HIGHLIGHT_ID } from '../../../../sr
 import { featureInfoReducer } from '../../../../src/store/featureInfo/featureInfo.reducer';
 import { AbstractMvuContentPanel } from '../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel.js';
 import { html } from 'lit-html';
-import { FeatureInfoGeometryTypes } from '../../../../src/domain/featureInfo.js';
 import { addFeatureInfoItems } from '../../../../src/store/featureInfo/featureInfo.action.js';
 import { highlightReducer } from '../../../../src/store/highlight/highlight.reducer.js';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { Geometry } from '../../../../src/domain/geometry.js';
 import { SourceType, SourceTypeName } from '../../../../src/domain/sourceType.js';
+import { HighlightFeatureType } from '../../../../src/domain/highlightFeature.js';
 
 window.customElements.define(FeatureInfoPanel.tag, FeatureInfoPanel);
 
@@ -269,7 +269,7 @@ describe('FeatureInfoPanel', () => {
 							{
 								title: 'title0',
 								content: 'content0',
-								geometry: { data: geoJson, geometryType: FeatureInfoGeometryTypes.GEOJSON }
+								geometry: new Geometry(geoJson, new SourceType(SourceTypeName.GEOJSON))
 							}
 						]
 					}
@@ -279,6 +279,7 @@ describe('FeatureInfoPanel', () => {
 				target.dispatchEvent(new Event('mouseenter'));
 
 				expect(store.getState().highlight.features).toHaveSize(1);
+				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.DEFAULT_TMP);
 				expect(store.getState().highlight.features[0].data).toEqual(new Geometry(geoJson, new SourceType(SourceTypeName.GEOJSON)));
 				expect(store.getState().highlight.features[0].id).toBe(TEMPORARY_FEATURE_HIGHLIGHT_ID);
 				expect(element.shadowRoot.querySelectorAll('.is-geometry')).toHaveSize(1);
@@ -313,7 +314,7 @@ describe('FeatureInfoPanel', () => {
 							{
 								title: 'title0',
 								content: 'content0',
-								geometry: { data: geoJson, geometryType: FeatureInfoGeometryTypes.GEOJSON }
+								geometry: new Geometry(geoJson, new SourceType(SourceTypeName.GEOJSON))
 							}
 						]
 					},

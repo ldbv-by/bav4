@@ -12,7 +12,6 @@ import { createUniqueId } from '../../../../utils/numberUtils';
 import { isTemplateResult } from '../../../../utils/checks';
 import { MvuElement } from '../../../MvuElement';
 import { Geometry } from '../../../../domain/geometry';
-import { SourceType, SourceTypeName } from '../../../../domain/sourceType';
 import { HighlightFeatureType } from '../../../../domain/highlightFeature';
 
 const Update_FeatureInfo_Data = 'update_featureInfo_data';
@@ -68,7 +67,7 @@ export class FeatureInfoIframePanel extends MvuElement {
 				addHighlightFeatures({
 					id: TEMPORARY_FEATURE_HIGHLIGHT_ID,
 					type: HighlightFeatureType.MARKER_TMP,
-					data: new Geometry(featureInfoGeometry.data, new SourceType(SourceTypeName.GEOJSON))
+					data: new Geometry(featureInfoGeometry.data, featureInfoGeometry.sourceType)
 				});
 			}
 		};
@@ -101,7 +100,7 @@ export class FeatureInfoIframePanel extends MvuElement {
 									<button
 										class="ba-list-item ba-list-item__header ${getGeometryClass(item.geometry)}"
 										@mouseenter=${() => onMouseEnter(item.geometry)}
-										@mouseleave=${() => onMouseLeave(item.geometry)}
+										@mouseleave=${() => onMouseLeave()}
 									>
 										<span class="ba-list-item__text  ba-list-item__primary-text">${item.title}</span>
 										<span class="ba-list-item__after">
