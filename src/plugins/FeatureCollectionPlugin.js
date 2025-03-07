@@ -44,6 +44,10 @@ export class FeatureCollectionPlugin extends BaPlugin {
 		const translate = (key) => this.#translationService.translate(key);
 		let ignoreLayerRemoval = false;
 		const onEntriesChanged = (entries) => {
+			/**
+			 * Currently an (aggregated) ol Layer (LayerGroup) won't be update when the backing GeoResource changed.
+			 * Therefore we update the map by removing and re-adding the layer,
+			 */
 			ignoreLayerRemoval = true;
 			removeLayer(FEATURE_COLLECTION_LAYER_ID);
 			if (entries.length > 0) {
