@@ -1,6 +1,6 @@
-import { HighlightFeatureType } from '../../../src/store/highlight/highlight.action';
+import { HighlightFeatureType } from '../../src/domain/highlightFeature';
 
-describe('highlightAction', () => {
+describe('HighlightFeature', () => {
 	it('exports a enum for HighlightFeatureTypes', () => {
 		expect(Object.keys(HighlightFeatureType).length).toBe(6);
 		expect(HighlightFeatureType.MARKER).toBe(0);
