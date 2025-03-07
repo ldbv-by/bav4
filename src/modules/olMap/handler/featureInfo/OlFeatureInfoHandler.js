@@ -4,13 +4,14 @@
 import { $injector } from '../../../../injection';
 import { addFeatureInfoItems, registerQuery, resolveQuery } from '../../../../store/featureInfo/featureInfo.action';
 import { observe } from '../../../../utils/storeUtils';
-import { getLayerByFeature, getLayerById } from '../../utils/olMapUtils';
+import { getLayerById } from '../../utils/olMapUtils';
 import { OlMapHandler } from '../OlMapHandler';
 import { bvvFeatureInfoProvider } from './featureInfoItem.provider';
 import { removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
 import { QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../plugins/HighlightPlugin';
 import { createUniqueId } from '../../../../utils/numberUtils';
 import LayerGroup from '../../../../../node_modules/ol/layer/Group';
+import { hashCode } from '../../../../utils/hashCode';
 
 /**
  * A function that returns a `FeatureInfo` for an `ol.Feature`
@@ -63,10 +64,12 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 		const translate = (key) => this.#translationService.translate(key);
 
 		/**
-		 * This function creates a reference between an olFeature and an olLayer
+		 * Ensure an ol feature owns unique ID. This is needed for further processing, e.g. the managing the feature collection
 		 */
-		const addRealLayerIdToFeature = (map, olFeature) => {
-			olFeature.set('layerId', getLayerByFeature(map, olFeature)?.get('id'));
+		const generateFeatureIdIfMissing = (map, olFeature) => {
+			if (!olFeature.getId()) {
+				olFeature.setId(`${hashCode(olFeature)}`);
+			}
 			return olFeature;
 		};
 
@@ -78,10 +81,10 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 					(feature) => {
 						// clustered features
 						if (feature.get('features')) {
-							return feature.get('features').length === 1 ? addRealLayerIdToFeature(map, feature.get('features')[0]) : null;
+							return feature.get('features').length === 1 ? generateFeatureIdIfMissing(map, feature.get('features')[0]) : null;
 						}
 						// un-clustered features
-						return addRealLayerIdToFeature(map, feature);
+						return generateFeatureIdIfMissing(map, feature);
 					},
 					{
 						layerFilter: (l) =>

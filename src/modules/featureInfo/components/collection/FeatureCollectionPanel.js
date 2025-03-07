@@ -9,22 +9,26 @@ import { MvuElement } from '../../../MvuElement';
 import removeFromCollectionButton from '../assets/printer.svg';
 import addToCollectionButton from '../assets/share.svg';
 import { abortOrReset } from '../../../../store/featureInfo/featureInfo.action';
+import { FEATURE_COLLECTION_GEORESOURCE_ID } from '../../../../plugins/FeatureCollectionPlugin';
 
-const Update_FeatureId = 'update_featureId';
-const Update_Feature = 'update_feature';
+/**
+ * @typedef {Object} FeatureCollectionPanelConfig
+ * @property {Feature} feature The feature
+ * @property {string|null} geoResourceId The id of the corresponding GeoResource of the feature of `null`
+ */
+
+const Update_Configuration = 'update_configuration';
 /**
  * Component that offers the possibility to interact with selected features
  * @class
- * @property {String|null} featureId - The id of a feature which can be removed from the collection
- * @property {Feature|null} feature - A features which can be added to the collection
+ * @property {module:modules/featureInfo/components/collection/FeatureCollectionPanel~FeatureCollectionPanelConfig} configuration
  */
 export class FeatureCollectionPanel extends MvuElement {
 	#translationService;
 	#storeService;
 	constructor() {
 		super({
-			featureId: null,
-			feature: null
+			configuration: null
 		});
 
 		const { TranslationService: translationService, StoreService: storeService } = $injector.inject('TranslationService', 'StoreService');
@@ -34,26 +38,26 @@ export class FeatureCollectionPanel extends MvuElement {
 
 	update(type, data, model) {
 		switch (type) {
-			case Update_FeatureId:
-				return { ...model, featureId: data };
-			case Update_Feature:
-				return { ...model, feature: data };
+			case Update_Configuration:
+				return { ...model, configuration: data };
 		}
 	}
 
 	createView(model) {
-		const { featureId, feature } = model;
-		if (featureId || feature) {
+		const { configuration } = model;
+
+		if (configuration) {
+			const { feature, geoResourceId } = configuration;
 			const translate = (key) => this.#translationService.translate(key);
 			const partOfCollection = this.#storeService
 				.getStore()
 				.getState()
 				.featureCollection.entries.map((f) => f.id)
-				.includes(featureId);
+				.includes(feature.id);
 
 			const removeFeature = () => {
 				clearHighlightFeatures();
-				removeFeaturesById(featureId);
+				removeFeaturesById(feature.id);
 				// by calling the abortOrReset action, we restore the previous opened tab of the MainMenu
 				abortOrReset();
 			};
@@ -65,7 +69,7 @@ export class FeatureCollectionPanel extends MvuElement {
 				abortOrReset();
 			};
 
-			if (partOfCollection) {
+			if (partOfCollection && geoResourceId === FEATURE_COLLECTION_GEORESOURCE_ID) {
 				return html`<div>
 					<ba-icon
 						.title=${translate('featureInfo_featureCollection_remove_feature')}
@@ -73,7 +77,7 @@ export class FeatureCollectionPanel extends MvuElement {
 						@click=${removeFeature}
 					></ba-icon>
 				</div>`;
-			} else if (feature) {
+			} else if (!partOfCollection) {
 				return html`<div>
 					<ba-icon .title=${translate('featureInfo_featureCollection_add_feature')} .icon="${addToCollectionButton}" @click=${addFeature}></ba-icon>
 				</div>`;
@@ -83,12 +87,8 @@ export class FeatureCollectionPanel extends MvuElement {
 		return nothing;
 	}
 
-	set featureId(value) {
-		this.signal(Update_FeatureId, value);
-	}
-
-	set feature(value) {
-		this.signal(Update_Feature, value);
+	set configuration(value) {
+		this.signal(Update_Configuration, value);
 	}
 
 	static get tag() {

@@ -11,27 +11,14 @@ describe('Feature', () => {
 		expect(feature.id).toBe('id');
 	});
 
-	it('provides default values', () => {
-		const geometry = new Geometry('data', new SourceType(SourceTypeName.EWKT));
-		const feature = new Feature(geometry);
-
-		expect(feature.geometry).toEqual(geometry);
-		expect(feature.id).toBeNull();
-		expect(feature.getProperties()).toEqual({});
-	});
-
-	it('provides set method for the id', () => {
-		const geometry = new Geometry('data', new SourceType(SourceTypeName.EWKT));
-		const feature = new Feature(geometry);
-
-		feature.id = 'id0';
-
-		expect(feature.id).toBe('id0');
+	it('check the constructors arguments', () => {
+		expect(() => new Feature('data')).toThrowError('<geometry> must be a Geometry');
+		expect(() => new Feature(new Geometry('data', new SourceType(SourceTypeName.GPX)))).toThrowError('<id> must be a String');
 	});
 
 	it('provides set, get and remove methods for properties', () => {
 		const geometry = new Geometry('data', new SourceType(SourceTypeName.EWKT));
-		const feature = new Feature(geometry);
+		const feature = new Feature(geometry, 'id');
 
 		feature.set('foo', 'bar');
 		feature.set('foo', 'bar1');

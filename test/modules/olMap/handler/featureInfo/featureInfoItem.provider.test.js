@@ -79,6 +79,7 @@ describe('FeatureInfo provider', () => {
 					const geometry = new Point(coordinate);
 					let feature = new Feature({ geometry: geometry });
 					feature.set('name', 'name');
+					feature.setId('id');
 					const expectedFeatureInfoGeometry = {
 						data: new GeoJSON().writeGeometry(geometry),
 						geometryType: FeatureInfoGeometryTypes.GEOJSON
@@ -107,6 +108,7 @@ describe('FeatureInfo provider', () => {
 					//no name property, but description property
 					feature = new Feature({ geometry: new Point(coordinate) });
 					feature.set('description', 'description');
+					feature.setId('id');
 
 					featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 					render(featureInfo.content, target);
@@ -131,6 +133,7 @@ describe('FeatureInfo provider', () => {
 					//no name property, but desc property
 					feature = new Feature({ geometry: new Point(coordinate) });
 					feature.set('desc', 'desc');
+					feature.setId('id');
 
 					featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 					render(featureInfo.content, target);
@@ -162,6 +165,7 @@ describe('FeatureInfo provider', () => {
 					let feature = new Feature({ geometry: geometry });
 					feature = new Feature({ geometry: new Point(coordinate) });
 					feature.set('description', 'description');
+					feature.setId('id');
 					const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').withArgs('description').and.callThrough();
 					const featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 					render(featureInfo.content, target);
@@ -178,6 +182,7 @@ describe('FeatureInfo provider', () => {
 					let feature = new Feature({ geometry: geometry });
 					feature = new Feature({ geometry: new Point(coordinate) });
 					feature.set('name', 'name');
+					feature.setId('id');
 					const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').withArgs('name').and.callThrough();
 					const featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 					render(featureInfo.content, target);
@@ -195,6 +200,7 @@ describe('FeatureInfo provider', () => {
 					const geometry = new Point(coordinate);
 					let feature = new Feature({ geometry: geometry });
 					feature.set('name', 'name');
+					feature.setId('id');
 					const expectedFeatureInfoGeometry = {
 						data: new GeoJSON().writeGeometry(geometry),
 						geometryType: FeatureInfoGeometryTypes.GEOJSON
@@ -216,6 +222,7 @@ describe('FeatureInfo provider', () => {
 
 					//no name property
 					feature = new Feature({ geometry: new Point(coordinate) });
+					feature.setId('id');
 
 					featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 					render(featureInfo.content, target);
@@ -240,6 +247,7 @@ describe('FeatureInfo provider', () => {
 					const geometry = new Point(coordinate);
 					const feature = new Feature({ geometry: geometry });
 					feature.set('name', 'name');
+					feature.setId('id');
 
 					const featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 					render(featureInfo.content, target);
@@ -256,6 +264,7 @@ describe('FeatureInfo provider', () => {
 				const geometry = new Point(coordinate);
 				let feature = new Feature({ geometry: geometry });
 				feature = new Feature({ geometry: new Point(coordinate) });
+				feature.setId('id');
 				feature.set('name', 'name');
 
 				const featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
@@ -269,22 +278,22 @@ describe('FeatureInfo provider', () => {
 			it('should supply the FeatureCollectionPanel with a geometry and a featureId', () => {
 				const target = document.createElement('div');
 				const geoResourceId = 'geoResourceId';
-				spyOn(geoResourceServiceMock, 'byId').withArgs(geoResourceId).and.returnValue({ label: 'foo' } /*fake GeoResource */);
-				const layerProperties = { ...createDefaultLayerProperties(), geoResourceId: geoResourceId };
+				spyOn(geoResourceServiceMock, 'byId').withArgs(geoResourceId).and.returnValue({ label: 'foo', id: geoResourceId } /*fake GeoResource */);
+				const layerProperties = { ...createDefaultLayerProperties(), geoResourceId };
 				const geometry = new Point(coordinate);
 				let feature = new Feature({ geometry: geometry });
 				feature = new Feature({ geometry: new Point(coordinate) });
 				feature.set('name', 'name');
-				feature.set('layerId', 'layerId');
+				feature.setId('id');
 
 				const featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 				render(featureInfo.content, target);
 
 				const panel = target.querySelector(FeatureCollectionPanel.tag);
 
-				expect(panel.feature.geometry.data.startsWith('<kml')).toBeTrue();
-				expect(panel.feature.geometry.sourceType).toEqual(new SourceType(SourceTypeName.KML));
-				expect(panel.featureId).toBe('layerId');
+				expect(panel.configuration.feature.geometry.data.startsWith('<kml')).toBeTrue();
+				expect(panel.configuration.feature.geometry.sourceType).toEqual(new SourceType(SourceTypeName.KML));
+				expect(panel.configuration.geoResourceId).toBe(geoResourceId);
 			});
 		});
 	});
