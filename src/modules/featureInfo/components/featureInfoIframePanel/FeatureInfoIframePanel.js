@@ -99,7 +99,7 @@ export class FeatureInfoIframePanel extends MvuElement {
 									<button
 										class="ba-list-item ba-list-item__header ${getGeometryClass(item.geometry)}"
 										@mouseenter=${() => onMouseEnter(item.geometry)}
-										@mouseleave=${() => onMouseLeave(item.geometry)}
+										@mouseleave=${() => onMouseLeave()}
 									>
 										<span class="ba-list-item__text  ba-list-item__primary-text">${item.title}</span>
 										<span class="ba-list-item__after">
