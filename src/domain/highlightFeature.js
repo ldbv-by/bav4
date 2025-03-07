@@ -1,4 +1,7 @@
 /**
+ * @module domain/highlightFeature
+ */
+/**
  * Contains information for highlighting a position or an area in a map.
  * @typedef {Object} HighlightFeature
  * @property {HighlightFeatureType} type  The type of this feature.
