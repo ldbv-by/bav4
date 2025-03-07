@@ -4,7 +4,6 @@ import { $injector } from '../../../../src/injection';
 import { featureInfoReducer } from '../../../../src/store/featureInfo/featureInfo.reducer';
 import { html } from 'lit-html';
 import { highlightReducer } from '../../../../src/store/highlight/highlight.reducer.js';
-import { HighlightFeatureType } from '../../../../src/store/highlight/highlight.action.js';
 import {
 	FeatureInfoIframePanel,
 	TEMPORARY_FEATURE_HIGHLIGHT_ID
@@ -12,6 +11,7 @@ import {
 import { addFeatureInfoItems } from '../../../../src/store/featureInfo/featureInfo.action.js';
 import { SourceType, SourceTypeName } from '../../../../src/domain/sourceType.js';
 import { Geometry } from '../../../../src/domain/geometry.js';
+import { HighlightFeatureType } from '../../../../src/domain/highlightFeature.js';
 
 window.customElements.define(FeatureInfoIframePanel.tag, FeatureInfoIframePanel);
 

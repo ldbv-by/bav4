@@ -1,11 +1,7 @@
 import { highlightReducer } from '../../../src/store/highlight/highlight.reducer';
-import {
-	clearHighlightFeatures,
-	HighlightFeatureType,
-	addHighlightFeatures,
-	removeHighlightFeaturesById
-} from '../../../src/store/highlight/highlight.action';
+import { clearHighlightFeatures, addHighlightFeatures, removeHighlightFeaturesById } from '../../../src/store/highlight/highlight.action';
 import { TestUtils } from '../../test-utils.js';
+import { HighlightFeatureType } from '../../../src/domain/highlightFeature.js';
 
 describe('highlightReducer', () => {
 	const setup = (state) => {

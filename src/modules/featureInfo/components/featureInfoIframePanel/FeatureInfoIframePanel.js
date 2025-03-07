@@ -7,11 +7,12 @@ import { $injector } from '../../../../injection';
 import { abortOrReset } from '../../../../store/featureInfo/featureInfo.action';
 import css from './featureInfoIframePanel.css';
 import arrowLeftShortIcon from '../assets/arrowLeftShort.svg';
-import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
+import { addHighlightFeatures, removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
 import { createUniqueId } from '../../../../utils/numberUtils';
 import { isTemplateResult } from '../../../../utils/checks';
 import { MvuElement } from '../../../MvuElement';
 import { Geometry } from '../../../../domain/geometry';
+import { HighlightFeatureType } from '../../../../domain/highlightFeature';
 
 const Update_FeatureInfo_Data = 'update_featureInfo_data';
 export const TEMPORARY_FEATURE_HIGHLIGHT_ID = `highlightedFeatureInfoGeometry_${createUniqueId()}`;

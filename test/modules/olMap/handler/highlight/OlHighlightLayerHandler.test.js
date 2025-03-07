@@ -1,6 +1,6 @@
 import { TestUtils } from '../../../../test-utils';
 import { highlightReducer } from '../../../../../src/store/highlight/highlight.reducer';
-import { addHighlightFeatures, clearHighlightFeatures, HighlightFeatureType } from '../../../../../src/store/highlight/highlight.action';
+import { addHighlightFeatures, clearHighlightFeatures } from '../../../../../src/store/highlight/highlight.action';
 import Map from 'ol/Map';
 import { fromLonLat } from 'ol/proj';
 import View from 'ol/View';
@@ -19,6 +19,7 @@ import { Feature } from 'ol';
 import { $injector } from '../../../../../src/injection';
 import { Geometry } from '../../../../../src/domain/geometry';
 import { SourceType, SourceTypeName } from '../../../../../src/domain/sourceType';
+import { HighlightFeatureType } from '../../../../../src/domain/highlightFeature';
 
 describe('OlHighlightLayerHandler', () => {
 	const initialCenter = fromLonLat([11.57245, 48.14021]);

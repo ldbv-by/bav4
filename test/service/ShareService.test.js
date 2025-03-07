@@ -17,13 +17,14 @@ import { setCurrentTool } from '../../src/store/tools/tools.action';
 import { highlightReducer } from '../../src/store/highlight/highlight.reducer';
 import { catalogReducer } from '../../src/store/catalog/catalog.reducer';
 import { layerSwipeReducer } from '../../src/store/layerSwipe/layerSwipe.reducer';
-import { addHighlightFeatures, HighlightFeatureType } from '../../src/store/highlight/highlight.action';
+import { addHighlightFeatures } from '../../src/store/highlight/highlight.action';
 import { CROSSHAIR_HIGHLIGHT_FEATURE_ID } from '../../src/plugins/HighlightPlugin';
 import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer';
 import { TabIds } from '../../src/domain/mainMenu';
 import { setTab } from '../../src/store/mainMenu/mainMenu.action';
 import { setOpenNodes } from '../../src/store/catalog/catalog.action';
 import { Tools } from '../../src/domain/tools';
+import { HighlightFeatureType } from '../../src/domain/highlightFeature';
 
 describe('ShareService', () => {
 	const coordinateService = {

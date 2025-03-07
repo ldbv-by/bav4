@@ -6,7 +6,7 @@ export const REMOVE_FEATURE_BY_ID = 'highlight/remove/id';
 
 export const initialState = {
 	/**
-	 * @property {Array<HighlightFeature>}
+	 * @property {Array<module:module:domain/highlightFeature~HighlightFeature>}
 	 */
 	features: [],
 	/**

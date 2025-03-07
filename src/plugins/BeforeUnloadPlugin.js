@@ -40,7 +40,11 @@ export class BeforeUnloadPlugin extends BaPlugin {
 
 			observe(store, (state) => state.tools.current, onToolChanged, false);
 
-			const beforeUnloadEventListenerForLayers = (e) => beforeunloadEventListener(e);
+			const beforeUnloadEventListenerForLayers = (e) => {
+				if (store.getState().tools.current !== Tools.EXPORT) {
+					beforeunloadEventListener(e);
+				}
+			};
 			const olLayersChanged = (active) => {
 				if (
 					active

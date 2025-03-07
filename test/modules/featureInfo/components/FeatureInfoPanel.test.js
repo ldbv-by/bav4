@@ -10,7 +10,7 @@ import { highlightReducer } from '../../../../src/store/highlight/highlight.redu
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { Geometry } from '../../../../src/domain/geometry.js';
 import { SourceType, SourceTypeName } from '../../../../src/domain/sourceType.js';
-import { HighlightFeatureType } from '../../../../src/store/highlight/highlight.action.js';
+import { HighlightFeatureType } from '../../../../src/domain/highlightFeature.js';
 
 window.customElements.define(FeatureInfoPanel.tag, FeatureInfoPanel);
 
