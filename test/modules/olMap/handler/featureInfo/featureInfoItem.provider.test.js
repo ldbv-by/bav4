@@ -11,8 +11,8 @@ import { createDefaultLayer, createDefaultLayerProperties } from '../../../../..
 import GeoJSON from 'ol/format/GeoJSON';
 import { $injector } from '../../../../../src/injection';
 import { TestUtils } from '../../../../test-utils';
-import { FeatureInfoGeometryTypes } from '../../../../../src/domain/featureInfo';
 import { SourceType, SourceTypeName } from '../../../../../src/domain/sourceType';
+import { Geometry } from '../../../../../src/domain/geometry';
 
 describe('FeatureInfo provider', () => {
 	const mapServiceMock = {
@@ -80,10 +80,7 @@ describe('FeatureInfo provider', () => {
 					let feature = new Feature({ geometry: geometry });
 					feature.set('name', 'name');
 					feature.setId('id');
-					const expectedFeatureInfoGeometry = {
-						data: new GeoJSON().writeGeometry(geometry),
-						geometryType: FeatureInfoGeometryTypes.GEOJSON
-					};
+					const expectedFeatureInfoGeometry = new Geometry(new GeoJSON().writeGeometry(geometry), new SourceType(SourceTypeName.GEOJSON));
 
 					let featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 					render(featureInfo.content, target);
@@ -201,10 +198,7 @@ describe('FeatureInfo provider', () => {
 					let feature = new Feature({ geometry: geometry });
 					feature.set('name', 'name');
 					feature.setId('id');
-					const expectedFeatureInfoGeometry = {
-						data: new GeoJSON().writeGeometry(geometry),
-						geometryType: FeatureInfoGeometryTypes.GEOJSON
-					};
+					const expectedFeatureInfoGeometry = new Geometry(new GeoJSON().writeGeometry(geometry), new SourceType(SourceTypeName.GEOJSON));
 
 					let featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 					render(featureInfo.content, target);

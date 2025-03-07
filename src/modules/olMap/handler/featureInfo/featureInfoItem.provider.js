@@ -7,7 +7,6 @@ import { $injector } from '../../../../injection';
 import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { KML } from 'ol/format';
-import { FeatureInfoGeometryTypes } from '../../../../domain/featureInfo';
 import { Geometry } from '../../../../domain/geometry';
 import { Feature } from '../../../../domain/feature';
 import { SourceType, SourceTypeName } from '../../../../domain/sourceType';
@@ -55,6 +54,6 @@ export const bvvFeatureInfoProvider = (olFeature, layerProperties) => {
 			: `${geoRes.label}`
 		: `${securityService.sanitizeHtml(olFeature.get('name') ?? '')}`;
 	const content = getContent();
-	const geometry = { data: new GeoJSON().writeGeometry(olFeature.getGeometry()), geometryType: FeatureInfoGeometryTypes.GEOJSON };
-	return { title: name, content: content, geometry: geometry };
+	const geometry = new Geometry(new GeoJSON().writeGeometry(olFeature.getGeometry()), new SourceType(SourceTypeName.GEOJSON));
+	return { title: name, content, geometry };
 };
