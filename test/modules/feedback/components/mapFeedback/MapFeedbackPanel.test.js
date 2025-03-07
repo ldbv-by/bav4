@@ -132,6 +132,7 @@ describe('MapFeedbackPanel', () => {
 			const categoryElement = element.shadowRoot.querySelector('#category');
 			const descriptionElement = element.shadowRoot.querySelector('#description');
 			const emailElement = element.shadowRoot.querySelector('#email');
+			const submitElement = element.shadowRoot.querySelector('#button0');
 
 			// assert
 			expect(categoryElement.type).toBe('select-one');
@@ -147,6 +148,10 @@ describe('MapFeedbackPanel', () => {
 			expect(emailElement.type).toBe('email');
 			expect(emailElement.hasAttribute('placeholder')).toBeTrue();
 			expect(emailElement.parentElement.querySelector('label').innerText).toBe('feedback_eMail');
+
+			expect(submitElement.type).toBe('primary');
+			expect(submitElement.label).toBe('feedback_submit');
+			expect(submitElement.title).toBe('feedback_mapFeedback_submit_title');
 		});
 
 		it('contains 4 unvisited ba-form-elements', async () => {

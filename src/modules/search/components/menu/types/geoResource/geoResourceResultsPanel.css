@@ -59,7 +59,7 @@
 	-webkit-transform: rotate(270deg);
 	transform: rotate(270deg);
 }
-.iscollaps {
+.iscollapsed {
 	max-height: 0;
 	display: none;
 }

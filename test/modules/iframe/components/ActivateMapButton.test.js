@@ -44,6 +44,10 @@ describe('ActivateMapButton', () => {
 					expect(element.shadowRoot.querySelectorAll('.active-map__button')).toHaveSize(1);
 					expect(element.shadowRoot.querySelectorAll('ba-button')).toHaveSize(1);
 
+					const button = element.shadowRoot.querySelector('ba-button');
+					expect(button.label).toBe('iframe_activate_map_button');
+					expect(button.title).toBe('iframe_activate_map_button_title');
+
 					expect(document.querySelectorAll(`#${ActivateMapButton.STYLE_ID}`)).toHaveSize(1);
 					expect(document.querySelectorAll(`#${ActivateMapButton.STYLE_ID}`)[0].innerText).toContain(ActivateMapButton.tag);
 					expect(document.querySelectorAll(`#${ActivateMapButton.STYLE_ID}`)[0].innerText).toContain(OlMap.tag);

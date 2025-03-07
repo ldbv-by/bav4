@@ -135,28 +135,35 @@ export class MeasureToolContent extends AbstractToolContent {
 		const finishAllowed = (this._environmentService.isTouch() ? statistic.length > 0 : statistic.area > 0) && mode === 'draw';
 		const removeAllowed = mode === 'draw' ? (this._environmentService.isTouch() ? statistic.length > 0 : statistic.area > 0) : statistic.length > 0;
 
-		const getButton = (id, title, onClick) => {
-			return html`<ba-button id=${id} data-test-id class="tool-container__button" .label=${title} @click=${onClick}></ba-button>`;
+		const getButton = (id, label, title, onClick) => {
+			return html`<ba-button
+				id=${id}
+				data-test-id
+				class="tool-container__button"
+				.label=${label}
+				.title=${title ?? ''}
+				@click=${onClick}
+			></ba-button>`;
 		};
 
 		const getStartNew = () => {
 			return startNewCompliantModes.includes(mode) && finishAllowed
 				? nothing
-				: getButton('startnew', translate('toolbox_measureTool_start_new'), () => reset());
+				: getButton('startnew', translate('toolbox_measureTool_start_new'), translate('toolbox_measureTool_start_new_title'), () => reset());
 		};
 
 		const getFinish = () => {
 			return startNewCompliantModes.includes(mode) && finishAllowed
-				? getButton('finish', translate('toolbox_drawTool_finish'), () => finish())
+				? getButton('finish', translate('toolbox_measureTool_finish'), translate('toolbox_measureTool_finish_title'), () => finish())
 				: nothing;
 		};
 
 		const getRemovePoint = () => {
-			return mode === 'draw' && removeAllowed ? getButton('remove', translate('toolbox_measureTool_delete_point'), () => remove()) : nothing;
+			return mode === 'draw' && removeAllowed ? getButton('remove', translate('toolbox_measureTool_delete_point'), '', () => remove()) : nothing;
 		};
 
 		const getRemoveMeasure = () => {
-			return mode !== 'draw' && removeAllowed ? getButton('remove', translate('toolbox_measureTool_delete_measure'), () => remove()) : nothing;
+			return mode !== 'draw' && removeAllowed ? getButton('remove', translate('toolbox_measureTool_delete_measure'), '', () => remove()) : nothing;
 		};
 
 		return html`${getStartNew()}${getFinish()}${getRemovePoint()}${getRemoveMeasure()}`;

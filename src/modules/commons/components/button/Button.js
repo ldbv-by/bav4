@@ -144,10 +144,10 @@ export class Button extends MvuElement {
 	}
 
 	/**
-	 * @property {string} title='' - Title of the Icon
+	 * @property {string} title=null - Title of the Icon
 	 */
 	set title(value) {
-		this.signal(Update_Title, value);
+		this.signal(Update_Title, value ? value : null);
 	}
 
 	get title() {

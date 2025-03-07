@@ -18,7 +18,9 @@ describe('i18n for dynamically loaded parts of the routing module', () => {
 		expect(map.routing_waypoints_as_destination).toBe('Ziel');
 		expect(map.routing_waypoints_title).toBe('Wegpunkte');
 		expect(map.routing_waypoints_remove_all).toBe('Alle entfernen');
+		expect(map.routing_waypoints_remove_all_title).toBe('Alle Wegpunkte entfernen');
 		expect(map.routing_waypoints_reverse).toBe('Reihenfolge umkehren');
+		expect(map.routing_waypoints_reverse_title).toBe('Reihenfolge der Wegpunkte umkehren');
 		expect(map.routing_waypoints_hide).toBe('Wegpunkte verbergen');
 		expect(map.routing_waypoint_move_down).toBe('nach hinten');
 		expect(map.routing_waypoint_move_up).toBe('nach vorne');
@@ -46,7 +48,9 @@ describe('i18n for dynamically loaded parts of the routing module', () => {
 		expect(map.routing_waypoints_as_destination).toBe('destination');
 		expect(map.routing_waypoints_title).toBe('Waypoints');
 		expect(map.routing_waypoints_remove_all).toBe('Remove all');
+		expect(map.routing_waypoints_remove_all_title).toBe('Remove all waypoints');
 		expect(map.routing_waypoints_reverse).toBe('Reverse');
+		expect(map.routing_waypoints_reverse_title).toBe('Reverse order of waypoints');
 		expect(map.routing_waypoints_hide).toBe('Hide waypoints');
 		expect(map.routing_waypoint_move_down).toBe('move forward');
 		expect(map.routing_waypoint_move_up).toBe('move backward');
@@ -58,7 +62,7 @@ describe('i18n for dynamically loaded parts of the routing module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 28;
+		const expectedSize = 30;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

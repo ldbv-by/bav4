@@ -192,8 +192,15 @@ export class DrawToolContent extends AbstractToolContent {
 		const translate = (key) => this._translationService.translate(key);
 		const { mode, validGeometry } = model;
 
-		const getButton = (id, title, onClick) => {
-			return html`<ba-button id=${id + '-button'} data-test-id class="tool-container__button" .label=${title} @click=${onClick}></ba-button>`;
+		const getButton = (id, label, title, onClick) => {
+			return html`<ba-button
+				id=${id + '-button'}
+				data-test-id
+				class="tool-container__button"
+				.label=${label}
+				.title=${title}
+				@click=${onClick}
+			></ba-button>`;
 		};
 
 		const activeTool = this._getActiveTool(model);
@@ -204,28 +211,34 @@ export class DrawToolContent extends AbstractToolContent {
 			const getButtonOptions = () => {
 				if (validGeometry) {
 					// alternate Finish-Button
-					return { id: 'finish', title: translate('toolbox_drawTool_finish'), onClick: () => finish() };
+					return {
+						id: 'finish',
+						label: translate('toolbox_drawTool_finish'),
+						title: translate('toolbox_drawTool_finish_title'),
+						onClick: () => finish()
+					};
 				}
 				return {
 					id: 'cancel',
-					title: translate('toolbox_drawTool_cancel'),
+					label: translate('toolbox_drawTool_cancel'),
+					title: translate('toolbox_drawTool_cancel_title'),
 					onClick: () => reset()
 				};
 			};
 			const options = getButtonOptions();
 
-			buttons.push(getButton(options.id, options.title, options.onClick));
+			buttons.push(getButton(options.id, options.label, options.title, options.onClick));
 		}
 		// Remove-Button
 		const removeAllowed = ['draw', 'modify'].includes(mode);
 		if (removeAllowed) {
 			const id = 'remove';
-			const title =
+			const label =
 				mode === 'draw' && ['polygon', 'line'].includes(activeToolName) && validGeometry
 					? translate('toolbox_drawTool_delete_point')
 					: translate('toolbox_drawTool_delete_drawing');
 			const onClick = () => remove();
-			buttons.push(getButton(id, title, onClick));
+			buttons.push(getButton(id, label, '', onClick));
 		}
 
 		return buttons;

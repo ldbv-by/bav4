@@ -159,6 +159,8 @@ describe('Modal', () => {
 			openModal('title', 'content');
 
 			const closeBtn = element.shadowRoot.querySelector('ba-button');
+			expect(closeBtn.label).toBe('modal_close_button');
+			expect(closeBtn.title).toBe('modal_close_button_title');
 			closeBtn.click();
 
 			const elementModal = element.shadowRoot.querySelector('.modal__container');

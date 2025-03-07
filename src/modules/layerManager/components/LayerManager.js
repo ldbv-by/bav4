@@ -251,6 +251,9 @@ export class LayerManager extends MvuElement {
 
 		const draggableItemsExpandable = draggableItems.some((i) => i.collapsed);
 		const expandOrCollapseLabel = draggableItemsExpandable ? translate('layerManager_expand_all') : translate('layerManager_collapse_all');
+		const expandOrCollapseTitle = draggableItemsExpandable
+			? translate('layerManager_expand_all_title')
+			: translate('layerManager_collapse_all_title');
 		const expandOrCollapseAction = draggableItemsExpandable ? expandAll : collapseAll;
 
 		return draggableItems.filter((i) => !i.isPlaceholder).length > 0
@@ -259,6 +262,7 @@ export class LayerManager extends MvuElement {
 							id="button_expand_or_collapse"
 							class="layermanager__expandOrCollapse"
 							.label=${expandOrCollapseLabel}
+							.title=${expandOrCollapseTitle}
 							.type=${'secondary'}
 							@click=${expandOrCollapseAction}
 							style="border-right: 1px dotted var(--header-background-color);"

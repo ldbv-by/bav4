@@ -14,6 +14,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_share).toBe('Teilen');
 		expect(map.toolbox_drawTool_save).toBe('Speichern');
 		expect(map.toolbox_drawTool_cancel).toBe('Abbrechen');
+		expect(map.toolbox_drawTool_cancel_title).toBe('Zeichnung abbrechen');
 		expect(map.toolbox_drawTool_delete_point).toBe('letzten Punkt löschen');
 		expect(map.toolbox_drawTool_delete_drawing).toBe('Zeichnung löschen');
 		expect(map.toolbox_drawTool_info).toBe(
@@ -54,6 +55,8 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_shareTool_share_link_readonly).toBe('Link zum teilen des BayernAtlas');
 		expect(map.toolbox_shareTool_share_api_failed).toBe('Das Teilen ist fehlgeschlagen');
 		expect(map.toolbox_shareTool_link).toBe('Link');
+		expect(map.toolbox_measureTool_finish).toBe('Fertig');
+		expect(map.toolbox_measureTool_finish_title).toBe('Messung fertigstellen');
 		expect(map.toolbox_measureTool_delete_point).toBe('letzten Punkt löschen');
 		expect(map.toolbox_measureTool_delete_measure).toBe('Messung löschen');
 		expect(map.toolbox_measureTool_measure_active).toBe('In die Karte tippen, um die Messung zu beginnen');
@@ -64,6 +67,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_measure_select).toBe('Eine bestehende Messung auswählen oder eine neue Messung beginnen');
 		expect(map.toolbox_measureTool_share).toBe('Teilen');
 		expect(map.toolbox_drawTool_finish).toBe('Fertig');
+		expect(map.toolbox_drawTool_finish_title).toBe('Zeichnung fertigstellen');
 		expect(map.toolbox_prevent_switching_tool).toBe('Bitte zuerst das aktuelle Werkzeug schließen/beenden');
 		expect(map.toolbox_toolbar_draw_button).toBe('Zeichnen');
 		expect(map.toolbox_toolbar_share_button).toBe('Teilen');
@@ -99,7 +103,9 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_scale_decrease).toBe('Ausschnitt verkleinern');
 		expect(map.toolbox_exportMfp_scale_increase).toBe('Ausschnitt vergrößern');
 		expect(map.toolbox_exportMfp_submit).toBe('PDF erzeugen');
+		expect(map.toolbox_exportMfp_submit_title).toBe('Von der Karte ein PDF erzeugen');
 		expect(map.toolbox_exportMfp_cancel).toBe('Abbrechen');
+		expect(map.toolbox_exportMfp_cancel_title).toBe('PDF-Erzeugung abbrechen');
 		expect(map.toolbox_exportMfp_select_option).toBe('auswählen...');
 		expect(map.toolbox_exportMfp_id_a4_landscape).toBe('A4 Querformat');
 		expect(map.toolbox_exportMfp_id_a4_portrait).toBe('A4 Hochformat');
@@ -124,6 +130,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_share).toBe('Share');
 		expect(map.toolbox_drawTool_save).toBe('Save');
 		expect(map.toolbox_drawTool_cancel).toBe('Cancel');
+		expect(map.toolbox_drawTool_cancel_title).toBe('Cancel drawing');
 		expect(map.toolbox_drawTool_delete_point).toBe('Delete last point');
 		expect(map.toolbox_drawTool_delete_drawing).toBe('Delete drawing');
 		expect(map.toolbox_drawTool_info).toBe('Your drawing will be automatically saved. By using this service you agree to the terms of use.');
@@ -148,6 +155,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_stats_length).toBe('Length');
 		expect(map.toolbox_measureTool_stats_area).toBe('Area');
 		expect(map.toolbox_measureTool_start_new).toBe('Start New');
+		expect(map.toolbox_measureTool_start_new_title).toBe('Start new measurement');
 		expect(map.toolbox_measureTool_display_ruler).toBe('Display ruler');
 		expect(map.toolbox_shareTool_header).toBe('Share');
 		expect(map.toolbox_shareTool_embed).toBe('BayernAtlas-IFrame');
@@ -160,6 +168,8 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_shareTool_share_link_readonly).toBe('Link to share BayernAtlas');
 		expect(map.toolbox_shareTool_share_api_failed).toBe('Sharing has failed');
 		expect(map.toolbox_shareTool_link).toBe('Link');
+		expect(map.toolbox_measureTool_finish).toBe('Finish');
+		expect(map.toolbox_measureTool_finish_title).toBe('Finish measurement');
 		expect(map.toolbox_measureTool_delete_point).toBe('Delete last point');
 		expect(map.toolbox_measureTool_delete_measure).toBe('Delete measure');
 		expect(map.toolbox_measureTool_measure_active).toBe('Tap on the map to start measurement');
@@ -170,6 +180,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_measure_select).toBe('Select an existing measurement or start a new one');
 		expect(map.toolbox_measureTool_share).toBe('Share');
 		expect(map.toolbox_drawTool_finish).toBe('Finish');
+		expect(map.toolbox_drawTool_finish_title).toBe('Finish drawing');
 		expect(map.toolbox_prevent_switching_tool).toBe('Please close the current tool first');
 		expect(map.toolbox_toolbar_draw_button).toBe('Draw');
 		expect(map.toolbox_toolbar_share_button).toBe('Share');
@@ -205,7 +216,9 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_scale_decrease).toBe('Decrease scale');
 		expect(map.toolbox_exportMfp_scale_increase).toBe('Increase scale');
 		expect(map.toolbox_exportMfp_submit).toBe('Create PDF');
+		expect(map.toolbox_exportMfp_submit_title).toBe('Create PDF from map');
 		expect(map.toolbox_exportMfp_cancel).toBe('Cancel');
+		expect(map.toolbox_exportMfp_cancel_title).toBe('Cancel PDF creation');
 		expect(map.toolbox_exportMfp_select_option).toBe('select...');
 		expect(map.toolbox_exportMfp_id_a4_landscape).toBe('A4 landscape');
 		expect(map.toolbox_exportMfp_id_a4_portrait).toBe('A4 portrait');
@@ -219,7 +232,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 100;
+		const expectedSize = 107;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

@@ -9,6 +9,7 @@ describe('i18n for header module', () => {
 		expect(map.auth_passwordCredentialPanel_credential_username).toBe('Kennung');
 		expect(map.auth_passwordCredentialPanel_credential_password).toBe('Passwort');
 		expect(map.auth_passwordCredentialPanel_submit).toBe('Senden');
+		expect(map.auth_passwordCredentialPanel_submit_title).toBe('Anmeldeinformationen senden');
 		expect(map.auth_passwordCredentialPanel_credential_failed).toBe('Anmeldung fehlgeschlagen. Name oder Passwort ungültig!');
 		expect(map.auth_passwordCredentialPanel_credential_rejected).toBe('Anmeldung fehlgeschlagen. Es ist ein technisches Problem aufgetreten!');
 		expect(map.auth_passwordCredentialPanel_authenticate).toBe('Anmeldung läuft...');
@@ -35,6 +36,7 @@ describe('i18n for header module', () => {
 		expect(map.auth_passwordCredentialPanel_credential_username).toBe('Username');
 		expect(map.auth_passwordCredentialPanel_credential_password).toBe('Password');
 		expect(map.auth_passwordCredentialPanel_submit).toBe('Submit');
+		expect(map.auth_passwordCredentialPanel_submit_title).toBe('Submit authentication info');
 		expect(map.auth_passwordCredentialPanel_credential_failed).toBe('Sign in failed. Invalid username or password!');
 		expect(map.auth_passwordCredentialPanel_credential_rejected).toBe('Sign in failed. Something got wrong!');
 		expect(map.auth_passwordCredentialPanel_authenticate).toBe('Authenticating...');
@@ -55,7 +57,7 @@ describe('i18n for header module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 11;
+		const expectedSize = 12;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

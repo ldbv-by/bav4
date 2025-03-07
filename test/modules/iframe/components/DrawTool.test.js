@@ -338,7 +338,8 @@ describe('DrawTool', () => {
 
 					expect(element.shadowRoot.querySelectorAll('#cancel_icon')).toHaveSize(0);
 					expect(element.shadowRoot.querySelectorAll('#finish_icon')).toHaveSize(1);
-					expect(element.shadowRoot.querySelector('#finish_icon').title).toBe('iframe_drawTool_finish');
+					expect(element.shadowRoot.querySelector('#finish_icon').label).toBe('iframe_drawTool_finish');
+					expect(element.shadowRoot.querySelector('#finish_icon').title).toBe('iframe_drawTool_finish_title');
 				});
 
 				it('displays the finish-button disabled for marker', async () => {
@@ -363,7 +364,8 @@ describe('DrawTool', () => {
 
 					resetIcon.click();
 
-					expect(resetIcon.title).toBe('iframe_drawTool_cancel');
+					expect(resetIcon.label).toBe('iframe_drawTool_cancel');
+					expect(resetIcon.title).toBe('iframe_drawTool_cancel_title');
 					expect(store.getState().draw.reset).toBeInstanceOf(EventLike);
 				});
 
@@ -372,7 +374,8 @@ describe('DrawTool', () => {
 					const removeIcon = element.shadowRoot.querySelector('#remove_icon');
 
 					removeIcon.click();
-					expect(removeIcon.title).toBe('iframe_drawTool_delete_drawing');
+					expect(removeIcon.label).toBe('iframe_drawTool_delete_drawing');
+					expect(removeIcon.title).toBe('');
 					expect(store.getState().draw.remove).toBeInstanceOf(EventLike);
 				});
 
@@ -381,7 +384,8 @@ describe('DrawTool', () => {
 					const undoIcon = element.shadowRoot.querySelector('#undo_icon');
 
 					undoIcon.click();
-					expect(undoIcon.title).toBe('iframe_drawTool_delete_point');
+					expect(undoIcon.label).toBe('iframe_drawTool_delete_point');
+					expect(undoIcon.title).toBe('');
 					expect(store.getState().draw.remove).toBeInstanceOf(EventLike);
 				});
 
@@ -390,7 +394,7 @@ describe('DrawTool', () => {
 					const undoIcon = element.shadowRoot.querySelector('#undo_icon');
 
 					undoIcon.click();
-					expect(undoIcon.title).toBe('iframe_drawTool_delete_point');
+					expect(undoIcon.label).toBe('iframe_drawTool_delete_point');
 					expect(store.getState().draw.remove).toBeInstanceOf(EventLike);
 				});
 			});

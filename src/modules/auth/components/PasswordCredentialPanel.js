@@ -245,6 +245,7 @@ export class PasswordCredentialPanel extends MvuElement {
 				id="authenticate-credential-button"
 				class="credential_footer__button"
 				.label=${translate('auth_passwordCredentialPanel_submit')}
+				.title=${translate('auth_passwordCredentialPanel_submit_title')}
 				.type=${'primary'}
 				@click=${authenticate}
 			></ba-button>`;

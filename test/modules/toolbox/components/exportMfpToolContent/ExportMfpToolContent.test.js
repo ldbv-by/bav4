@@ -103,6 +103,7 @@ describe('ExportMfpToolContent', () => {
 
 			expect(element.shadowRoot.querySelectorAll('ba-spinner')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('#btn_submit').label).toBe('toolbox_exportMfp_submit');
+			expect(element.shadowRoot.querySelector('#btn_submit').title).toBe('toolbox_exportMfp_submit_title');
 			expect(element.shadowRoot.querySelector('#btn_submit').disabled).toBeTrue();
 		});
 
@@ -113,6 +114,7 @@ describe('ExportMfpToolContent', () => {
 			expect(element.shadowRoot.querySelectorAll('.layout-button')).toHaveSize(2);
 			expect(element.shadowRoot.querySelectorAll('#select_scale')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('#btn_submit').label).toBe('toolbox_exportMfp_submit');
+			expect(element.shadowRoot.querySelector('#btn_submit').title).toBe('toolbox_exportMfp_submit_title');
 			expect(element.shadowRoot.querySelector('#btn_submit').disabled).toBeFalse();
 			expect(element.shadowRoot.querySelector('#showgrid').checked).toBeFalse();
 			expect(element.shadowRoot.querySelector('#showgrid').title).toBe('toolbox_exportMfp_show_grid_title');
@@ -343,6 +345,8 @@ describe('ExportMfpToolContent', () => {
 			startJob({});
 
 			expect(element.shadowRoot.querySelectorAll('#btn_cancel')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('#btn_cancel').label).toBe('toolbox_exportMfp_cancel');
+			expect(element.shadowRoot.querySelector('#btn_cancel').title).toBe('toolbox_exportMfp_cancel_title');
 			expect(element.shadowRoot.querySelectorAll('#btn_submit')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('#btn_cancel')[0].type).toBe('loading');
 		});

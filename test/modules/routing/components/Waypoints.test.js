@@ -96,10 +96,12 @@ describe('Waypoints', () => {
 			const reverseButton = element.shadowRoot.querySelector('#button_reverse');
 			expect(reverseButton).toBeDefined();
 			expect(reverseButton.label).toBe('routing_waypoints_reverse');
+			expect(reverseButton.title).toBe('routing_waypoints_reverse_title');
 
 			const clearButton = element.shadowRoot.querySelector('#button_clear');
 			expect(clearButton).toBeDefined();
 			expect(clearButton.label).toBe('routing_waypoints_remove_all');
+			expect(clearButton.title).toBe('routing_waypoints_remove_all_title');
 		});
 
 		it('when clear button is clicked', async () => {

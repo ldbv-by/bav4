@@ -232,25 +232,35 @@ export class DrawTool extends MvuElement {
 
 		const getActiveIconTypes = () => {
 			const iconTypes = {
-				finish: { id: 'finish', icon: finishSvg, title: translate('iframe_drawTool_finish'), onClick: () => finish(), disabled: mode !== 'draw' },
+				finish: {
+					id: 'finish',
+					icon: finishSvg,
+					label: translate('iframe_drawTool_finish'),
+					title: translate('iframe_drawTool_finish_title'),
+					onClick: () => finish(),
+					disabled: mode !== 'draw'
+				},
 				cancel: {
 					id: 'cancel',
 					icon: cancelSvg,
-					title: translate('iframe_drawTool_cancel'),
+					label: translate('iframe_drawTool_cancel'),
+					title: translate('iframe_drawTool_cancel_title'),
 					onClick: () => reset(),
 					disabled: mode !== 'draw'
 				},
 				undo: {
 					id: 'undo',
 					icon: undoSvg,
-					title: translate('iframe_drawTool_delete_point'),
+					label: translate('iframe_drawTool_delete_point'),
+					title: null,
 					onClick: () => remove(),
 					disabled: !removeAllowed
 				},
 				remove: {
 					id: 'remove',
 					icon: cancelSvg,
-					title: translate('iframe_drawTool_delete_drawing'),
+					label: translate('iframe_drawTool_delete_drawing'),
+					title: null,
 					onClick: () => remove(),
 					disabled: !removeAllowed
 				}
@@ -259,19 +269,19 @@ export class DrawTool extends MvuElement {
 			return [validGeometry ? iconTypes.finish : iconTypes.cancel, unfinishedLine ? iconTypes.undo : iconTypes.remove];
 		};
 
-		const getIcon = (id, title, onClick, disabled) => {
+		const getIcon = (id, label, title, onClick, disabled) => {
 			const classes = { 'is-disabled': disabled };
 			return html`<ba-button
 				id=${id + '_icon'}
 				class=${classMap(classes)}
-				.title=${title}
-				.label=${title}
+				.title=${title ?? ''}
+				.label=${label}
 				.disabled=${disabled}
 				@click=${onClick}
 			></ba-button>`;
 		};
 
-		return getActiveIconTypes().map((iconType) => getIcon(iconType.id, iconType.title, iconType.onClick, iconType.disabled));
+		return getActiveIconTypes().map((iconType) => getIcon(iconType.id, iconType.label, iconType.title, iconType.onClick, iconType.disabled));
 	}
 
 	static get tag() {

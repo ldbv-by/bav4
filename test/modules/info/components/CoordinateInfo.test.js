@@ -147,6 +147,7 @@ describe('CoordinateInfo', () => {
 				expect(element.shadowRoot.querySelectorAll('.r_coordinate.single_row')).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll('.r_elevation.single_row')).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll('.select-cr')).toHaveSize(1);
+				expect(element.shadowRoot.querySelector('.select-cr').title).toBe('info_coordinateInfo_select');
 				expect(element.shadowRoot.querySelectorAll('.coordinate')[0].innerText).toBe(stringifiedCoord);
 
 				const copyIcon = element.shadowRoot.querySelector(Icon.tag);
