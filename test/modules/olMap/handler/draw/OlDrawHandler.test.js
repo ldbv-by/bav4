@@ -2036,6 +2036,44 @@ describe('OlDrawHandler', () => {
 			expect(store.getState().draw.selectedStyle.style.text).toBe('');
 		});
 
+		it('updates the drawState while pointer click a measurement geometry', () => {
+			setup();
+			const feature = new Feature({
+				geometry: new Polygon([
+					[
+						[0, 0],
+						[1, 0],
+						[1, 1],
+						[0, 1],
+						[0, 1]
+					]
+				])
+			});
+			const map = setupMap();
+			const classUnderTest = new OlDrawHandler();
+			const layer = classUnderTest.activate(map);
+			layer.getSource().addFeature(feature);
+
+			const updateDrawStateSpy = spyOn(classUnderTest, '_updateDrawState');
+
+			// initial Phase: the drawing will be activated after this click-event
+			classUnderTest._sketchHandler.activate(feature, map);
+			classUnderTest._drawState.type = InteractionStateType.ACTIVE;
+
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
+
+			expect(updateDrawStateSpy).toHaveBeenCalled();
+			updateDrawStateSpy.calls.reset();
+
+			// Phase 2: the drawing will be end after this click-event
+			classUnderTest._sketchHandler.deactivate();
+			classUnderTest._drawState.type = InteractionStateType.DRAW;
+
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
+
+			expect(updateDrawStateSpy).toHaveBeenCalled();
+		});
+
 		it('switch to measure-tool, if clickposition is in anyinteract to selected measure-feature', () => {
 			const store = setup();
 
