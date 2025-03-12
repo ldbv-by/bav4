@@ -114,13 +114,27 @@ export class BaseLayerContainer extends MvuElement {
 
 		const getScrollButtonLeft = (categories, index) => {
 			return Object.entries(categories)[index - 1]
-				? html` <button @click=${() => onClick(Object.entries(categories)[index - 1][0])} class="scroll-left-button" part="scroll-button"></button> `
+				? html`
+						<button
+							@click=${() => onClick(Object.entries(categories)[index - 1][0])}
+							class="scroll-left-button"
+							part="scroll-button"
+							title="${translate('baseLayer_container_scroll_button_left')}"
+						></button>
+					`
 				: nothing;
 		};
 
 		const getScrollButtonRight = (categories, index) => {
 			return Object.entries(categories)[index + 1]
-				? html` <button @click=${() => onClick(Object.entries(categories)[index + 1][0])} class="scroll-right-button" part="scroll-button"></button> `
+				? html`
+						<button
+							@click=${() => onClick(Object.entries(categories)[index + 1][0])}
+							class="scroll-right-button"
+							part="scroll-button"
+							title="${translate('baseLayer_container_scroll_button_right')}"
+						></button>
+					`
 				: nothing;
 		};
 
