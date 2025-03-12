@@ -27,9 +27,9 @@ describe('i18n for search module', () => {
 		expect(map.search_menu_cpResultsPanel_label).toBe('Cadastral parcel');
 		expect(map.search_menu_showAll_label).toBe('Show more...');
 		expect(map.search_menu_importAll_label).toBe('Import all');
-		expect(map.search_menu_importAll_title).toBe('Import all georesources');
+		expect(map.search_menu_importAll_title).toBe('Import all GeoResources');
 		expect(map.search_menu_removeAll_label).toBe('Remove all');
-		expect(map.search_menu_removeAll_title).toBe('Remove all georesources');
+		expect(map.search_menu_removeAll_title).toBe('Remove all GeoResources');
 		expect(map.search_result_item_zoom_to_extent).toBe('Zoom to extent');
 		expect(map.search_result_item_info).toBe('Info');
 		expect(map.search_result_item_copy).toBe('Copy to clipboard');
