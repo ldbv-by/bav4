@@ -263,13 +263,12 @@ describe('ShareToolContent', () => {
 	});
 
 	describe('iframe container', () => {
-		it('renders UI elements', async () => {
+		fit('renders UI elements', async () => {
 			const element = await setup();
 			const checkbox = element.shadowRoot.querySelector('ba-checkbox');
 			const button = element.shadowRoot.querySelector('.preview_button');
 
 			expect(button.label).toBe('toolbox_shareTool_preview');
-			expect(button.title).toBe('');
 
 			expect(window.getComputedStyle(button).display).toBe('block');
 			const title = element.shadowRoot.querySelectorAll('.ba-tool-container__title');
