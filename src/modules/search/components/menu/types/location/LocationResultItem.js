@@ -6,12 +6,13 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import css from './locationResultItem.css';
 import { close as closeMainMenu } from '../../../../../../store/mainMenu/mainMenu.action';
 import { fit } from '../../../../../../store/position/position.action';
-import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../../../../../../store/highlight/highlight.action';
+import { addHighlightFeatures, removeHighlightFeaturesById } from '../../../../../../store/highlight/highlight.action';
 import { SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../plugins/HighlightPlugin';
 import { MvuElement } from '../../../../../MvuElement';
 import clipboardSvg from '../../assets/clipboard.svg';
 import { $injector } from '../../../../../../injection';
 import { emitNotification, LevelTypes } from '../../../../../../store/notifications/notifications.action';
+import { HighlightFeatureType } from '../../../../../../domain/highlightFeature';
 
 const Update_IsPortrait = 'update_isPortrait';
 const Update_LocationSearchResult = 'update_locationSearchResult';
@@ -73,7 +74,7 @@ export class LocationResultItem extends MvuElement {
 			addHighlightFeatures({
 				id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID,
 				type: HighlightFeatureType.MARKER_TMP,
-				data: { coordinate: [...result.center] }
+				data: [...result.center]
 			});
 		};
 		const onMouseLeave = () => {
@@ -87,7 +88,7 @@ export class LocationResultItem extends MvuElement {
 				addHighlightFeatures({
 					id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
 					type: HighlightFeatureType.MARKER,
-					data: { coordinate: [...result.center] },
+					data: [...result.center],
 					label: result.label
 				});
 			} else {
@@ -126,7 +127,7 @@ export class LocationResultItem extends MvuElement {
 					tabindex="0"
 					@click=${() => onClick(locationSearchResult)}
 					@mouseenter=${() => onMouseEnter(locationSearchResult)}
-					@mouseleave=${() => onMouseLeave(locationSearchResult)}
+					@mouseleave=${() => onMouseLeave()}
 				>
 					<span class="ba-list-item__pre ">
 						<span class="ba-list-item__icon"> </span>

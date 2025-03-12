@@ -52,6 +52,7 @@ li {
 .layermanager__actions {
 	display: flex;
 	justify-content: flex-start;
+	flex-direction: column;
 }
 
 .layermanager__actions ba-button::part(button) {

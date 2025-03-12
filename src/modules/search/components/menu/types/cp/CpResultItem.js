@@ -6,15 +6,10 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import css from './cpResultItem.css';
 import { close as closeMainMenu } from '../../../../../../store/mainMenu/mainMenu.action';
 import { fit } from '../../../../../../store/position/position.action';
-import {
-	addHighlightFeatures,
-	HighlightFeatureType,
-	HighlightGeometryType,
-	removeHighlightFeaturesById
-} from '../../../../../../store/highlight/highlight.action';
+import { addHighlightFeatures, removeHighlightFeaturesById } from '../../../../../../store/highlight/highlight.action';
 import { SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../plugins/HighlightPlugin';
 import { MvuElement } from '../../../../../MvuElement';
-import { SourceTypeName } from '../../../../../../domain/sourceType';
+import { HighlightFeatureType } from '../../../../../../domain/highlightFeature';
 
 const Update_IsPortrait = 'update_isPortrait';
 const Update_CpSearchResult = 'update_cpSearchResult';
@@ -64,16 +59,6 @@ export class CpResultItem extends MvuElement {
 		throw message;
 	}
 
-	_matchGeomType(sourceType) {
-		switch (sourceType.name) {
-			case SourceTypeName.EWKT:
-				return HighlightGeometryType.EWKT;
-			case SourceTypeName.GEOJSON:
-				return HighlightGeometryType.GEOJSON;
-		}
-		this._throwError(`SourceType ${sourceType.toString()} is currently not supported`);
-	}
-
 	createView(model) {
 		const { isPortrait, cpSearchResult } = model;
 
@@ -86,13 +71,13 @@ export class CpResultItem extends MvuElement {
 				addHighlightFeatures({
 					id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID,
 					type: HighlightFeatureType.DEFAULT_TMP,
-					data: { geometry: result.geometry.data, geometryType: this._matchGeomType(result.geometry.sourceType) }
+					data: result.geometry
 				});
 			} else {
 				addHighlightFeatures({
 					id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID,
 					type: HighlightFeatureType.MARKER_TMP,
-					data: { coordinate: [...result.center] }
+					data: [...result.center]
 				});
 			}
 		};
@@ -107,14 +92,14 @@ export class CpResultItem extends MvuElement {
 				addHighlightFeatures({
 					id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
 					type: HighlightFeatureType.DEFAULT,
-					data: { geometry: result.geometry.data, geometryType: this._matchGeomType(result.geometry.sourceType) },
+					data: result.geometry,
 					label: result.label
 				});
 			} else if (!result.extent) {
 				addHighlightFeatures({
 					id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
 					type: HighlightFeatureType.MARKER,
-					data: { coordinate: [...result.center] },
+					data: [...result.center],
 					label: result.label
 				});
 			} else {

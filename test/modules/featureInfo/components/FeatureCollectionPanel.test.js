@@ -4,11 +4,11 @@ import { $injector } from '../../../../src/injection/index.js';
 import { FeatureCollectionPanel } from '../../../../src/modules/featureInfo/components/collection/FeatureCollectionPanel.js';
 import { Geometry } from '../../../../src/domain/geometry.js';
 import { featureCollectionReducer } from '../../../../src/store/featureCollection/featureCollection.reducer.js';
-// import removeFromCollectionButton from '../../../../src/modules/featureInfo/components/assets/printer.svg';
-// import addToCollectionButton from '../../../../src/modules/featureInfo/components/assets/share.svg';
 import { Feature } from '../../../../src/domain/feature.js';
 import { featureInfoReducer } from '../../../../src/store/featureInfo/featureInfo.reducer.js';
 import { highlightReducer } from '../../../../src/store/highlight/highlight.reducer.js';
+import { SourceType, SourceTypeName } from '../../../../src/domain/sourceType.js';
+import { FEATURE_COLLECTION_GEORESOURCE_ID } from '../../../../src/plugins/FeatureCollectionPlugin.js';
 
 window.customElements.define(FeatureCollectionPanel.tag, FeatureCollectionPanel);
 
@@ -30,14 +30,13 @@ describe('FeatureCollectionPanel', () => {
 			const model = new FeatureCollectionPanel().getModel();
 
 			expect(model).toEqual({
-				featureId: null,
-				feature: null
+				configuration: null
 			});
 		});
 	});
 
 	describe('when initialized', () => {
-		describe('and no featureId or feature is available', () => {
+		describe('and no configuration is available', () => {
 			it('renders nothing', async () => {
 				const element = await setup();
 
@@ -45,56 +44,59 @@ describe('FeatureCollectionPanel', () => {
 			});
 		});
 
-		describe('and a feature is available', () => {
-			it('renders a button', async () => {
-				const element = await setup({});
-				const feature = new Feature(new Geometry('data'));
+		describe('and a configuration is available', () => {
+			describe('containing feature that is not part of the feature collection', () => {
+				it('renders an ADD button', async () => {
+					const element = await setup({});
+					const feature = new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)), 'id');
 
-				element.feature = feature;
+					element.configuration = { feature, geoResourceId: null };
 
-				expect(element.shadowRoot.querySelectorAll('.chips__button.add')).toHaveSize(1);
-				const button = element.shadowRoot.querySelector('.chips__button.add');
-				expect(button.title).toBe('featureInfo_featureCollection_add_feature_title');
-				expect(element.shadowRoot.querySelectorAll('.chips__button.add .chips__icon')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('.chips__button.add .chips__button-text')).toHaveSize(1);
-			});
-		});
-
-		describe('and featureId denotes a feature which is part of the collection', () => {
-			it('renders a button', async () => {
-				const featureId = 'featureId0';
-				const element = await setup({
-					featureCollection: {
-						entries: [new Feature(new Geometry('data'), featureId)]
-					}
+					expect(element.shadowRoot.querySelectorAll('.chips__button.add')).toHaveSize(1);
+					const button = element.shadowRoot.querySelector('.chips__button.add');
+					expect(button.title).toBe('featureInfo_featureCollection_add_feature_title');
+					expect(element.shadowRoot.querySelectorAll('.chips__button.add .chips__icon')).toHaveSize(1);
+					expect(element.shadowRoot.querySelectorAll('.chips__button.add .chips__button-text')).toHaveSize(1);
 				});
-
-				element.featureId = featureId;
-
-				expect(element.shadowRoot.querySelectorAll('.chips__button.remove')).toHaveSize(1);
-				const button = element.shadowRoot.querySelector('.chips__button.remove');
-				expect(button.title).toBe('featureInfo_featureCollection_remove_feature_title');
-				expect(element.shadowRoot.querySelectorAll('.chips__button.remove .chips__icon')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('.chips__button.remove .chips__button-text')).toHaveSize(1);
 			});
-		});
-		describe('and featureId denotes a feature which is NOT part of the collection', () => {
-			it('renders noting', async () => {
-				const featureId = 'featureId0';
-				const element = await setup({
-					featureCollection: {
-						entries: [new Feature(new Geometry('data'), 'someFeatureId')]
-					}
+
+			describe('containing feature that is already a part of the feature collection and its corresponding GeoResource is NOT the FEATURE_COLLECTION_GEORESOURCE', () => {
+				it('renders nothing', async () => {
+					const feature = new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)), 'id');
+					const element = await setup({
+						featureCollection: {
+							entries: [feature]
+						}
+					});
+
+					element.configuration = { feature, geoResourceId: null };
+
+					expect(element.shadowRoot.children.length).toBe(0);
 				});
+			});
 
-				element.featureId = featureId;
+			describe('containing feature that is already a part of the feature collection and its corresponding GeoResource is the FEATURE_COLLECTION_GEORESOURCE', () => {
+				it('renders a REMOVE button', async () => {
+					const feature = new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)), 'id');
+					const element = await setup({
+						featureCollection: {
+							entries: [feature]
+						}
+					});
 
-				expect(element.shadowRoot.children.length).toBe(0);
+					element.configuration = { feature, geoResourceId: FEATURE_COLLECTION_GEORESOURCE_ID };
+
+					expect(element.shadowRoot.querySelectorAll('.chips__button.remove')).toHaveSize(1);
+					const button = element.shadowRoot.querySelector('.chips__button.remove');
+					expect(button.title).toBe('featureInfo_featureCollection_remove_feature_title');
+					expect(element.shadowRoot.querySelectorAll('.chips__button.remove .chips__icon')).toHaveSize(1);
+					expect(element.shadowRoot.querySelectorAll('.chips__button.remove .chips__button-text')).toHaveSize(1);
+				});
 			});
 		});
 	});
 
-	describe('feature add button is clicked', () => {
+	describe('ADD button is clicked', () => {
 		it('adds the feature to the featureCollection s-o-s and resets the highlight and featureInfo s-o-s', async () => {
 			const element = await setup({
 				featureInfo: {
@@ -104,9 +106,9 @@ describe('FeatureCollectionPanel', () => {
 					features: [{ foo: 'bar' }]
 				}
 			});
-			const feature = new Feature(new Geometry('data'));
+			const feature = new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)), 'id');
 
-			element.feature = feature;
+			element.configuration = { feature };
 			const button = element.shadowRoot.querySelector('.chips__button.add');
 
 			button.click();
@@ -118,12 +120,13 @@ describe('FeatureCollectionPanel', () => {
 		});
 	});
 
-	describe('feature remove button is clicked', () => {
+	describe('REMOVE button is clicked', () => {
 		it('removes the feature from the featureCollection s-o-s and resets the highlight and featureInfo s-o-s', async () => {
 			const featureId = 'featureId0';
+			const feature = new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)), featureId);
 			const element = await setup({
 				featureCollection: {
-					entries: [new Feature(new Geometry('data'), featureId)]
+					entries: [feature]
 				},
 				featureInfo: {
 					querying: true
@@ -132,7 +135,7 @@ describe('FeatureCollectionPanel', () => {
 					features: [{ foo: 'bar' }]
 				}
 			});
-			element.featureId = featureId;
+			element.configuration = { feature, geoResourceId: FEATURE_COLLECTION_GEORESOURCE_ID };
 			const button = element.shadowRoot.querySelector('.chips__button.remove');
 
 			button.click();

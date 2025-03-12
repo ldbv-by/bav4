@@ -1,11 +1,6 @@
 import { TestUtils } from '../../../../test-utils';
 import { highlightReducer } from '../../../../../src/store/highlight/highlight.reducer';
-import {
-	addHighlightFeatures,
-	clearHighlightFeatures,
-	HighlightFeatureType,
-	HighlightGeometryType
-} from '../../../../../src/store/highlight/highlight.action';
+import { addHighlightFeatures, clearHighlightFeatures } from '../../../../../src/store/highlight/highlight.action';
 import Map from 'ol/Map';
 import { fromLonLat } from 'ol/proj';
 import View from 'ol/View';
@@ -22,6 +17,9 @@ import GeoJSON from 'ol/format/GeoJSON';
 import { Point } from 'ol/geom';
 import { Feature } from 'ol';
 import { $injector } from '../../../../../src/injection';
+import { Geometry } from '../../../../../src/domain/geometry';
+import { SourceType, SourceTypeName } from '../../../../../src/domain/sourceType';
+import { HighlightFeatureType } from '../../../../../src/domain/highlightFeature';
 
 describe('OlHighlightLayerHandler', () => {
 	const initialCenter = fromLonLat([11.57245, 48.14021]);
@@ -105,11 +103,11 @@ describe('OlHighlightLayerHandler', () => {
 		describe('and highlight features are available', () => {
 			it('adds ol features', () => {
 				const highlightFeatures = [
-					{ type: HighlightFeatureType.DEFAULT, data: { coordinate: [1, 0] } },
-					{ type: HighlightFeatureType.DEFAULT, data: { coordinate: [2, 1] } }
+					{ type: HighlightFeatureType.DEFAULT, data: [1, 0] },
+					{ type: HighlightFeatureType.DEFAULT, data: [2, 1] }
 				];
-				const temporaryFeatures = [{ type: HighlightFeatureType.TEMPORARY, data: { coordinate: [3, 4] } }];
-				const animatedFeatures = [{ type: HighlightFeatureType.QUERY_RUNNING, data: { coordinate: [5, 55] } }];
+				const temporaryFeatures = [{ type: HighlightFeatureType.TEMPORARY, data: [3, 4] }];
+				const animatedFeatures = [{ type: HighlightFeatureType.QUERY_RUNNING, data: [5, 55] }];
 				const state = { ...initialState, active: true, features: [...highlightFeatures, ...temporaryFeatures, ...animatedFeatures] };
 				const map = setupMap();
 				setup(state);
@@ -124,16 +122,16 @@ describe('OlHighlightLayerHandler', () => {
 		});
 
 		describe('and highlight features are added', () => {
-			it('add ol features', () => {
+			it('adds ol features', () => {
 				const map = setupMap();
 				setup();
 				const handler = new OlHighlightLayerHandler();
 				const olLayer = handler.activate(map);
 
 				addHighlightFeatures([
-					{ type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] } },
-					{ type: HighlightFeatureType.DEFAULT, data: { coordinate: [38, 57] } },
-					{ type: HighlightFeatureType.QUERY_RUNNING, data: { coordinate: [5, 55] } }
+					{ type: HighlightFeatureType.DEFAULT, data: [21, 42] },
+					{ type: HighlightFeatureType.DEFAULT, data: [38, 57] },
+					{ type: HighlightFeatureType.QUERY_RUNNING, data: [5, 55] }
 				]);
 
 				const olFeatures = olLayer.getSource().getFeatures();
@@ -144,7 +142,7 @@ describe('OlHighlightLayerHandler', () => {
 
 		describe('and highlight features are removed', () => {
 			it('removes ol features', () => {
-				const highlightFeature = { type: HighlightFeatureType.QUERY_RUNNING, data: { coordinate: [1, 0] } };
+				const highlightFeature = { type: HighlightFeatureType.QUERY_RUNNING, data: [1, 0] };
 				const state = { ...initialState, active: true, features: [highlightFeature], temporaryFeatures: [] };
 				const map = setupMap();
 				setup(state);
@@ -187,30 +185,30 @@ describe('OlHighlightLayerHandler', () => {
 	});
 
 	describe('_toOlFeature', () => {
-		it('maps features containing data as HighlightCoordinate', () => {
+		it('maps features containing a `Coordinate`', () => {
 			setup();
 			const handler = new OlHighlightLayerHandler();
 			const appendStyleSpy = spyOn(handler, '_appendStyle').withArgs(jasmine.anything(), jasmine.any(Feature)).and.callThrough();
-			const highlightCoordinateFeature = { data: { coordinate: [1, 0] }, label: 'label' };
+			const highlightCoordinateFeature = { data: [1, 0], label: 'label' };
 
 			const olFeature = handler._toOlFeature(highlightCoordinateFeature);
 
-			expect(olFeature.getGeometry().getCoordinates()).toEqual(highlightCoordinateFeature.data.coordinate);
+			expect(olFeature.getGeometry().getCoordinates()).toEqual(highlightCoordinateFeature.data);
 			expect(olFeature.get('name')).toBe('label');
 			expect(appendStyleSpy).toHaveBeenCalledTimes(1);
 		});
 
-		it('maps features containing data as HighlightGeometry', () => {
+		it('maps features containing a `Geometry`', () => {
 			setup();
 			const handler = new OlHighlightLayerHandler();
 			spyOn(mapService, 'getSrid').and.returnValue(3857);
 			const appendStyleSpy = spyOn(handler, '_appendStyle').withArgs(jasmine.anything(), jasmine.any(Feature)).and.callThrough();
 			const highlightGeometryWktFeature = {
-				data: { geometry: `SRID=3857;${new WKT().writeGeometry(new Point([21, 42]))}`, geometryType: HighlightGeometryType.EWKT },
+				data: new Geometry(`SRID=3857;${new WKT().writeGeometry(new Point([21, 42]))}`, new SourceType(SourceTypeName.EWKT)),
 				label: 'WKT'
 			};
 			const highlightGeometryGeoJsonFeature = {
-				data: { geometry: new GeoJSON().writeGeometry(new Point([5, 10])), geometryType: HighlightGeometryType.GEOJSON },
+				data: new Geometry(JSON.stringify(new GeoJSON().writeGeometry(new Point([5, 10]))), new SourceType(SourceTypeName.GEOJSON)),
 				label: 'GeoJSON'
 			};
 
@@ -224,13 +222,13 @@ describe('OlHighlightLayerHandler', () => {
 			expect(appendStyleSpy).toHaveBeenCalledTimes(2);
 		});
 
-		describe('HighlightGeometryType EWKT', () => {
+		describe('SourceType EWKT', () => {
 			it('throws an error when the SRID of the HighlightGeometry is not supported', () => {
 				setup();
 				const handler = new OlHighlightLayerHandler();
 				spyOn(mapService, 'getSrid').and.returnValue(3857);
 				const highlightGeometryWktFeature = {
-					data: { geometry: `SRID=4326;${new WKT().writeGeometry(new Point([21, 42]))}`, geometryType: HighlightGeometryType.EWKT },
+					data: new Geometry(`SRID=4326;${new WKT().writeGeometry(new Point([21, 42]))}`, new SourceType(SourceTypeName.EWKT)),
 					label: 'WKT'
 				};
 
@@ -242,9 +240,11 @@ describe('OlHighlightLayerHandler', () => {
 			setup();
 			const handler = new OlHighlightLayerHandler();
 			const appendStyleSpy = spyOn(handler, '_appendStyle').withArgs(jasmine.anything(), jasmine.any(Feature)).and.callThrough();
-			const unknownHighlightFeatureType = { data: { geometry: new GeoJSON().writeGeometry(new Point([5, 10])), geometryType: -1 } };
+			const unknownHighlightFeatureType = {
+				data: new Geometry(JSON.stringify(new GeoJSON().writeGeometry(new Point([5, 10]))), new SourceType(SourceTypeName.KML))
+			};
 
-			expect(handler._toOlFeature(unknownHighlightFeatureType)).toBeNull();
+			expect(() => handler._toOlFeature(unknownHighlightFeatureType)).toThrow('SourceType "kml" is currently not supported');
 			expect(appendStyleSpy).not.toHaveBeenCalled();
 		});
 	});
@@ -255,12 +255,12 @@ describe('OlHighlightLayerHandler', () => {
 			const animatedFeature = new Feature(new Point([22, 44]));
 			const handler = new OlHighlightLayerHandler();
 			const animatePointFeatureSyp = spyOn(handler, '_animatePointFeature');
-			const highlightCoordinateFeature0 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.MARKER };
-			const highlightCoordinateFeature1 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.MARKER_TMP };
-			const highlightCoordinateFeature2 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.QUERY_RUNNING };
-			const highlightCoordinateFeature3 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.QUERY_SUCCESS };
-			const highlightCoordinateFeature4 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.DEFAULT };
-			const highlightCoordinateFeature5 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.DEFAULT_TMP };
+			const highlightCoordinateFeature0 = { data: [1, 0], type: HighlightFeatureType.MARKER };
+			const highlightCoordinateFeature1 = { data: [1, 0], type: HighlightFeatureType.MARKER_TMP };
+			const highlightCoordinateFeature2 = { data: [1, 0], type: HighlightFeatureType.QUERY_RUNNING };
+			const highlightCoordinateFeature3 = { data: [1, 0], type: HighlightFeatureType.QUERY_SUCCESS };
+			const highlightCoordinateFeature4 = { data: [1, 0], type: HighlightFeatureType.DEFAULT };
+			const highlightCoordinateFeature5 = { data: [1, 0], type: HighlightFeatureType.DEFAULT_TMP };
 
 			const styledFeature0 = handler._appendStyle(highlightCoordinateFeature0, new Feature(new Point([5, 10])));
 			const styledFeature1 = handler._appendStyle(highlightCoordinateFeature1, new Feature(new Point([5, 10])));
@@ -282,11 +282,11 @@ describe('OlHighlightLayerHandler', () => {
 			setup();
 			const handler = new OlHighlightLayerHandler();
 			const highlightGeometryGeoJsonFeature0 = {
-				data: { geometry: new GeoJSON().writeGeometry(olPoint), geometryType: HighlightGeometryType.GEOJSON },
+				data: new Geometry(new GeoJSON().writeGeometry(olPoint), new SourceType(SourceTypeName.GEOJSON)),
 				type: HighlightFeatureType.DEFAULT
 			};
 			const highlightGeometryGeoJsonFeature1 = {
-				data: { geometry: new GeoJSON().writeGeometry(olPoint), geometryType: HighlightGeometryType.GEOJSON },
+				data: new Geometry(new GeoJSON().writeGeometry(olPoint), new SourceType(SourceTypeName.GEOJSON)),
 				type: HighlightFeatureType.DEFAULT_TMP
 			};
 
@@ -300,7 +300,7 @@ describe('OlHighlightLayerHandler', () => {
 		it('sets NO style when feature type is missing', () => {
 			setup();
 			const handler = new OlHighlightLayerHandler();
-			const highlightCoordinateFeature0 = { data: { coordinate: [1, 0] } };
+			const highlightCoordinateFeature0 = { data: [1, 0] };
 
 			const styledFeature0 = handler._appendStyle(highlightCoordinateFeature0, new Feature(new Point([5, 10])));
 

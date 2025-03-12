@@ -11,7 +11,7 @@ import { LevelTypes, emitNotification } from '../store/notifications/notificatio
 import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
 import { html } from '../../node_modules/lit-html/lit-html';
 import { CoordinateProposalType, RoutingStatusCodes } from '../domain/routing';
-import { HighlightFeatureType, addHighlightFeatures, clearHighlightFeatures, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
+import { addHighlightFeatures, clearHighlightFeatures, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
 import { setCurrentTool } from '../store/tools/tools.action';
 import { closeContextMenu } from '../store/mapContextMenu/mapContextMenu.action';
 import { QueryParameters } from '../domain/queryParameters';
@@ -19,6 +19,7 @@ import { setTab } from '../store/mainMenu/mainMenu.action';
 import { TabIds } from '../domain/mainMenu';
 import { isCoordinate } from '../utils/checks';
 import { INTERACTION_BOTTOM_SHEET_ID } from '../store/bottomSheet/bottomSheet.reducer';
+import { HighlightFeatureType } from '../domain/highlightFeature';
 
 /**
  * Id of the temporary layer used for routing interaction when the tool is activated.
@@ -156,7 +157,7 @@ export class RoutingPlugin extends BaPlugin {
 				type: [CoordinateProposalType.EXISTING_INTERMEDIATE, CoordinateProposalType.EXISTING_START_OR_DESTINATION].includes(proposalType)
 					? HighlightFeatureType.DEFAULT
 					: HighlightFeatureType.MARKER_TMP,
-				data: { coordinate: [...coord] }
+				data: [...coord]
 			});
 			const content = html`<ba-proposal-context-content></ba-proposal-context-content>`;
 			openBottomSheet(content, INTERACTION_BOTTOM_SHEET_ID);

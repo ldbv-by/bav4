@@ -1,6 +1,8 @@
 /**
  * @module services/SourceTypeService
  */
+import { Geometry } from '../domain/geometry';
+import { SourceTypeResultStatus } from '../domain/sourceType';
 import { isHttpUrl, isString } from '../utils/checks';
 import { PromiseQueue } from '../utils/PromiseQueue';
 import { bvvUrlSourceTypeProvider, defaultDataSourceTypeProvider, defaultMediaSourceTypeProvider } from './provider/sourceType.provider';
@@ -75,6 +77,20 @@ export class SourceTypeService {
 			throw new TypeError('Parameter <data> must be a String');
 		}
 		return this._dataSourceTypeProvider(data);
+	}
+
+	/**
+	 * Creates a geometry by detecting the `SourceType` of the given data.
+	 * Returns `null` if the source type cannot be detected.
+	 * @param {String|object} data The data of this geometry (Note type `object' is only allowed in case of sourceType GeoJSON)
+	 * @returns  {Geometry|null}
+	 */
+	toGeometry(data) {
+		const result = this.forData(data);
+		if (result.status === SourceTypeResultStatus.OK) {
+			return new Geometry(data, result.sourceType);
+		}
+		return null;
 	}
 
 	/**

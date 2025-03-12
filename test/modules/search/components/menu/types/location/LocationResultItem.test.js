@@ -1,7 +1,6 @@
 import { createNoInitialStateMainMenuReducer } from '../../../../../../../src/store/mainMenu/mainMenu.reducer';
 import { LocationResultItem } from '../../../../../../../src/modules/search/components/menu/types/location/LocationResultItem';
 import { LocationSearchResult } from '../../../../../../../src/modules/search/services/domain/searchResult';
-import { HighlightFeatureType } from '../../../../../../../src/store/highlight/highlight.action';
 import { highlightReducer } from '../../../../../../../src/store/highlight/highlight.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../../../../src/store/media/media.reducer';
 import { positionReducer } from '../../../../../../../src/store/position/position.reducer';
@@ -11,6 +10,7 @@ import { notificationReducer } from '../../../../../../../src/store/notification
 import { Icon } from '../../../../../../../src/modules/commons/components/icon/Icon';
 import { LevelTypes } from '../../../../../../../src/store/notifications/notifications.action';
 import { SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../../src/plugins/HighlightPlugin';
+import { HighlightFeatureType } from '../../../../../../../src/domain/highlightFeature.js';
 window.customElements.define(LocationResultItem.tag, LocationResultItem);
 
 describe('LocationResultItem', () => {
@@ -81,7 +81,7 @@ describe('LocationResultItem', () => {
 				target.dispatchEvent(new Event('mouseenter'));
 
 				expect(store.getState().highlight.features).toHaveSize(1);
-				expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
+				expect(store.getState().highlight.features[0].data).toEqual(coordinate);
 				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER_TMP);
 				expect(store.getState().highlight.features[0].id).toBe(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
 			});
@@ -178,7 +178,7 @@ describe('LocationResultItem', () => {
 
 					expect(store.getState().highlight.features).toHaveSize(1);
 					expect(store.getState().highlight.features[0].id).toEqual(SEARCH_RESULT_HIGHLIGHT_FEATURE_ID);
-					expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
+					expect(store.getState().highlight.features[0].data).toEqual(coordinate);
 					expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER);
 					expect(store.getState().highlight.features[0].label).toBe('label');
 				});

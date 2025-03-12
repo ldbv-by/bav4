@@ -102,7 +102,7 @@ export class LayersPlugin extends BaPlugin {
 
 	_addLayersFromConfig() {
 		const {
-			GeoResourceService: geoResourceService,
+			GeoResourceService: georesourceService,
 			TopicsService: topicsService,
 			StoreService: storeService
 		} = $injector.inject('GeoResourceService', 'TopicsService', 'StoreService');
@@ -113,19 +113,19 @@ export class LayersPlugin extends BaPlugin {
 			} = storeService.getStore().getState();
 			//we take the bg layer from the topic configuration
 			const { defaultBaseGeoR } = topicsService.byId(current) || topicsService.default();
-			return defaultBaseGeoR;
+			return this._replaceForRetinaDisplays(defaultBaseGeoR);
 		};
 
 		const defaultBaseGeoR = getDefaultBaseGeoR();
 
-		const geoResources = geoResourceService.all();
+		const geoResources = georesourceService.all();
 
-		const bgGeoResources = geoResources.filter((geoResource) => geoResource.id === defaultBaseGeoR);
+		const bgGeoresources = geoResources.filter((geoResource) => geoResource.id === defaultBaseGeoR);
 		//fallback: add the first available GeoResource as bg
-		if (bgGeoResources.length === 0) {
-			bgGeoResources.push(geoResources[0]);
+		if (bgGeoresources.length === 0) {
+			bgGeoresources.push(geoResources[0]);
 		}
-		addLayer(bgGeoResources[0].id);
+		addLayer(bgGeoresources[0].id);
 	}
 
 	/**
@@ -163,6 +163,31 @@ export class LayersPlugin extends BaPlugin {
 				}
 			);
 		}
+	}
+
+	/**
+	 * Current strategy to replace the default raster GeoResource with its VT pendant.
+	 * @param {string} baseGeoRId
+	 * @returns the id of the determined VTGeoResource or the unchanged argument
+	 */
+	_replaceForRetinaDisplays(baseGeoRId) {
+		const {
+			EnvironmentService: environmentService,
+			TopicsService: topicsService,
+			StoreService: storeService
+		} = $injector.inject('EnvironmentService', 'TopicsService', 'StoreService');
+
+		if (environmentService.isRetinaDisplay()) {
+			const {
+				topics: { current }
+			} = storeService.getStore().getState();
+			const baseGeoRs = topicsService.byId(current)?.baseGeoRs ?? topicsService.default()?.baseGeoRs;
+			const { raster, vector } = baseGeoRs;
+			if (Array.isArray(raster) && Array.isArray(vector) && raster.indexOf(baseGeoRId) === 0) {
+				return vector[0];
+			}
+		}
+		return baseGeoRId;
 	}
 
 	/**

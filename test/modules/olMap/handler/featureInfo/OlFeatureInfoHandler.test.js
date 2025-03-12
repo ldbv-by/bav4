@@ -15,14 +15,15 @@ import { createDefaultLayer, layersReducer } from '../../../../../src/store/laye
 import { bvvFeatureInfoProvider } from '../../../../../src/modules/olMap/handler/featureInfo/featureInfoItem.provider';
 import { modifyLayer } from '../../../../../src/store/layers/layers.action';
 import { highlightReducer } from '../../../../../src/store/highlight/highlight.reducer';
-import { HighlightFeatureType } from '../../../../../src/store/highlight/highlight.action';
 import GeoJSON from 'ol/format/GeoJSON';
 import { $injector } from '../../../../../src/injection';
 import { QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../../src/plugins/HighlightPlugin';
 import { Cluster } from 'ol/source';
-import { FeatureInfoGeometryTypes } from '../../../../../src/domain/featureInfo';
 import LayerGroup from 'ol/layer/Group';
 import { VectorGeoResource, VectorSourceType } from '../../../../../src/domain/geoResources';
+import { Geometry } from '../../../../../src/domain/geometry';
+import { SourceType, SourceTypeName } from '../../../../../src/domain/sourceType';
+import { HighlightFeatureType } from '../../../../../src/domain/highlightFeature';
 
 describe('OlFeatureInfoHandler_Query_Resolution_Delay', () => {
 	it('determines amount of time query resolution delayed', async () => {
@@ -47,8 +48,8 @@ describe('OlFeatureInfoHandler', () => {
 	};
 
 	const mockFeatureInfoProvider = (olFeature, layer) => {
-		const geometry = { data: new GeoJSON().writeGeometry(olFeature.getGeometry()), geometryType: FeatureInfoGeometryTypes.GEOJSON };
-		return { title: `${olFeature.get('name')}-${layer.id}`, content: `${olFeature.get('description')}`, geometry: geometry };
+		const geometry = new Geometry(new GeoJSON().writeGeometry(olFeature.getGeometry()), new SourceType(SourceTypeName.GEOJSON));
+		return { title: `${olFeature.get('name')}-${layer.id}`, content: `${olFeature.get('description')}`, geometry };
 	};
 
 	const mockNullFeatureInfoProvider = () => null;
@@ -223,7 +224,7 @@ describe('OlFeatureInfoHandler', () => {
 			);
 			const map = setupMap();
 			const geometry = new Point(matchingCoordinate);
-			const expectedFeatureInfoGeometry = { data: new GeoJSON().writeGeometry(geometry), geometryType: FeatureInfoGeometryTypes.GEOJSON };
+			const expectedFeatureInfoGeometry = new Geometry(new GeoJSON().writeGeometry(geometry), new SourceType(SourceTypeName.GEOJSON));
 			// 1. "default" vector layer
 			const olVectorSource0 = new VectorSource();
 			const feature0 = new Feature({ geometry: geometry });
@@ -345,13 +346,13 @@ describe('OlFeatureInfoHandler', () => {
 			expect(store.getState().featureInfo.current).toHaveSize(2);
 		});
 
-		it('sets the `layerId` property on each olFeature', async () => {
-			// this provider also returns the `layerId` property of the olFeature as `content? property
+		it('sets the `id` property on each olFeature when missing', async () => {
+			// this provider also returns the `id` property of the olFeature as `content` property
 			const mockFeatureInfoProvider = (olFeature, layer) => {
-				const geometry = { data: new GeoJSON().writeGeometry(olFeature.getGeometry()), geometryType: FeatureInfoGeometryTypes.GEOJSON };
+				const geometry = new Geometry(new GeoJSON().writeGeometry(olFeature.getGeometry()), new SourceType(SourceTypeName.GEOJSON));
 				return {
 					title: `${olFeature.get('name')}-${layer.id}`,
-					content: `${olFeature.get('layerId')}`,
+					content: `${olFeature.getId()}`,
 					geometry: geometry
 				};
 			};
@@ -370,7 +371,7 @@ describe('OlFeatureInfoHandler', () => {
 			);
 			const map = setupMap();
 			const geometry = new Point(matchingCoordinate);
-			const expectedFeatureInfoGeometry = { data: new GeoJSON().writeGeometry(geometry), geometryType: FeatureInfoGeometryTypes.GEOJSON };
+			const expectedFeatureInfoGeometry = new Geometry(new GeoJSON().writeGeometry(geometry), new SourceType(SourceTypeName.GEOJSON));
 			// 1. "default" vector layer
 			const olVectorSource0 = new VectorSource();
 			const feature0 = new Feature({ geometry: geometry });
@@ -392,10 +393,10 @@ describe('OlFeatureInfoHandler', () => {
 			//must be called within a timeout function cause implementation delays call of 'resolveQuery'
 			await TestUtils.timeout(TestDelay);
 			expect(store.getState().featureInfo.current).toHaveSize(1);
-
+			expect(feature0.getId()).toBeInstanceOf(String);
 			expect(store.getState().featureInfo.current[0]).toEqual({
 				title: 'name0-layerId0',
-				content: 'layerId0',
+				content: feature0.getId(),
 				geometry: expectedFeatureInfoGeometry
 			});
 		});

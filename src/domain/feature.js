@@ -1,6 +1,10 @@
 /**
  * @module domain/feature
  */
+
+import { isString } from '../utils/checks';
+import { Geometry } from './geometry';
+
 /**
  * A feature.
  */
@@ -13,7 +17,13 @@ export class Feature {
 	 * @param {Geometry} geometry The geometry of this feature
 	 * @param {String} id The id of this feature
 	 */
-	constructor(geometry, id = null) {
+	constructor(geometry, id) {
+		if (!(geometry instanceof Geometry)) {
+			throw new Error('<geometry> must be a Geometry');
+		}
+		if (!isString(id)) {
+			throw new Error('<id> must be a String');
+		}
 		this.#id = id;
 		this.#geometry = geometry;
 	}
@@ -38,10 +48,6 @@ export class Feature {
 
 	get id() {
 		return this.#id;
-	}
-
-	set id(id) {
-		this.#id = id;
 	}
 
 	get geometry() {

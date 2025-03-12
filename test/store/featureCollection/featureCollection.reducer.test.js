@@ -1,8 +1,9 @@
-import { Geometry } from 'ol/geom.js';
 import { Feature } from '../../../src/domain/feature.js';
 import { featureCollectionReducer } from '../../../src/store/featureCollection/featureCollection.reducer.js';
 import { addFeatures, clearFeatures, removeFeaturesById } from '../../../src/store/featureCollection/featureCollection.action.js';
 import { TestUtils } from '../../test-utils.js';
+import { Geometry } from '../../../src/domain/geometry.js';
+import { SourceType, SourceTypeName } from '../../../src/domain/sourceType.js';
 
 describe('featureCollectionReducer', () => {
 	const setup = (state) => {
@@ -18,7 +19,7 @@ describe('featureCollectionReducer', () => {
 
 	it("changes the 'entries' property by adding and removing features", () => {
 		const store = setup();
-		const feature = new Feature(new Geometry('data'));
+		const feature = new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)), 'id');
 
 		addFeatures([]);
 
@@ -50,7 +51,7 @@ describe('featureCollectionReducer', () => {
 
 	it("changes the 'entries` property by clearing all features", () => {
 		const store = setup();
-		const feature = new Feature(new Geometry('data'));
+		const feature = new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)), 'id');
 
 		addFeatures(feature);
 
@@ -61,19 +62,9 @@ describe('featureCollectionReducer', () => {
 		expect(store.getState().featureCollection.entries).toHaveSize(0);
 	});
 
-	it('sets an feature id if missing', () => {
-		const store = setup();
-		const feature = new Feature(new Geometry('data'));
-
-		addFeatures(feature);
-
-		expect(store.getState().featureCollection.entries[0].id).toBeInstanceOf(String);
-		expect(store.getState().featureCollection.entries[0].id.startsWith('featureCollection_feature-')).toBeTrue();
-	});
-
 	it('does NOT modify the feature id if already present', () => {
 		const store = setup();
-		const feature = new Feature(new Geometry('data'), 'id');
+		const feature = new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)), 'id');
 
 		addFeatures(feature);
 
@@ -83,9 +74,9 @@ describe('featureCollectionReducer', () => {
 	it("changes the 'entries' property by removing a features by its id", () => {
 		const id = 'foo';
 		const store = setup();
-		const feature0 = new Feature(new Geometry('data'), id);
+		const feature0 = new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)), id);
 		//a second feature with the same id
-		const feature1 = new Feature(new Geometry('data'), id);
+		const feature1 = new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)), id);
 
 		addFeatures(feature0);
 
@@ -94,7 +85,7 @@ describe('featureCollectionReducer', () => {
 		expect(store.getState().featureCollection.entries).toHaveSize(0);
 
 		addFeatures([feature0, feature1]);
-		addFeatures(new Feature(new Geometry('data')));
+		addFeatures(new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)), 'id'));
 
 		removeFeaturesById(id);
 
@@ -103,7 +94,7 @@ describe('featureCollectionReducer', () => {
 
 		clearFeatures();
 		addFeatures([feature0, feature1]);
-		addFeatures(new Feature(new Geometry('data'), 'bar'));
+		addFeatures(new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)), 'bar'));
 
 		removeFeaturesById([id, 'bar']);
 

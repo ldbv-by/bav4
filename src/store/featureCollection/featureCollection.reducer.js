@@ -1,5 +1,3 @@
-import { createUniqueId } from '../../utils/numberUtils';
-
 export const FEATURE_ADD = 'featureCollection/entry/add';
 export const CLEAR_FEATURES = 'featureCollection/clear';
 export const REMOVE_FEATURE_BY_ID = 'featureCollection/remove/id';
@@ -12,16 +10,10 @@ export const initialState = {
 };
 
 export const featureCollectionReducer = (state = initialState, action) => {
-	const createIdIfMissing = (features) =>
-		features.map((f) => {
-			f.id = f.id ?? `featureCollection_feature-${createUniqueId()}`;
-			return f;
-		});
-
 	const { type, payload } = action;
 	switch (type) {
 		case FEATURE_ADD: {
-			const entries = [...state.entries, ...createIdIfMissing(payload)];
+			const entries = [...state.entries, ...payload];
 
 			return {
 				...state,

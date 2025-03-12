@@ -20,13 +20,13 @@ import { CoordinateProposalType, RoutingStatusCodes } from '../../src/domain/rou
 import { bottomSheetReducer, INTERACTION_BOTTOM_SHEET_ID } from '../../src/store/bottomSheet/bottomSheet.reducer.js';
 import { ProposalContextContent } from '../../src/modules/routing/components/contextMenu/ProposalContextContent.js';
 import { highlightReducer } from '../../src/store/highlight/highlight.reducer.js';
-import { HighlightFeatureType } from '../../src/store/highlight/highlight.action.js';
 import { closeBottomSheet } from '../../src/store/bottomSheet/bottomSheet.action.js';
 import { mapContextMenuReducer } from '../../src/store/mapContextMenu/mapContextMenu.reducer.js';
 import { QueryParameters } from '../../src/domain/queryParameters.js';
 import { removeLayer } from '../../src/store/layers/layers.action.js';
 import { TabIds } from '../../src/domain/mainMenu.js';
 import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer.js';
+import { HighlightFeatureType } from '../../src/domain/highlightFeature.js';
 
 describe('RoutingPlugin', () => {
 	const routingService = {
@@ -379,7 +379,7 @@ describe('RoutingPlugin', () => {
 			expect(wrapperElement.querySelectorAll(ProposalContextContent.tag)).toHaveSize(1);
 			expect(store.getState().bottomSheet.active).toEqual([INTERACTION_BOTTOM_SHEET_ID]);
 			expect(store.getState().highlight.features).toHaveSize(1);
-			expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
+			expect(store.getState().highlight.features[0].data).toEqual(coordinate);
 			expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER_TMP);
 			expect(store.getState().highlight.features[0].id).toBe(RoutingPlugin.HIGHLIGHT_FEATURE_ID);
 			const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetUnsubscribeFn');
@@ -412,7 +412,7 @@ describe('RoutingPlugin', () => {
 			setProposal(coordinate, CoordinateProposalType.EXISTING_START_OR_DESTINATION);
 
 			expect(store.getState().highlight.features).toHaveSize(1);
-			expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
+			expect(store.getState().highlight.features[0].data).toEqual(coordinate);
 			expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.DEFAULT);
 			expect(store.getState().highlight.features[0].id).toBe(RoutingPlugin.HIGHLIGHT_FEATURE_ID);
 		});

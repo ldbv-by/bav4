@@ -35,7 +35,7 @@ export const clearFeatures = () => {
 /**
  * Removes a (permanent or temporary) feature by its id.
  * If two or more feature have the same id, all of them are removed.
- * @param {Array.<String>|String} id HighlightFeature id
+ * @param {Array.<String>|String} id The id of a feature
  * @function
  */
 export const removeFeaturesById = (id) => {

@@ -13,6 +13,10 @@ describe('BaseLayerContainer', () => {
 		byId() {},
 		default() {}
 	};
+	const environmentService = {
+		getWindow: () => {},
+		isEmbedded: () => {}
+	};
 
 	const baseGeoRs = {
 		raster: ['atkis', 'luftbild_labels', 'tk', 'historisch', 'atkis_sw'],
@@ -21,7 +25,10 @@ describe('BaseLayerContainer', () => {
 	const setup = async (state = {}) => {
 		TestUtils.setupStoreAndDi(state, { topics: topicsReducer });
 
-		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('TopicsService', topicsServiceMock);
+		$injector
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('TopicsService', topicsServiceMock)
+			.registerSingleton('EnvironmentService', environmentService);
 
 		return TestUtils.render(BaseLayerContainer.tag);
 	};
@@ -67,7 +74,11 @@ describe('BaseLayerContainer', () => {
 						const scrollToActiveButtonSpy = spyOn(element, '_scrollToActiveButton');
 
 						expect(element.shadowRoot.querySelectorAll('.button-group')).toHaveSize(1);
-						expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)).toHaveSize(2);
+						const baseLayerSwitcher = element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag);
+						expect(baseLayerSwitcher).toHaveSize(2);
+						expect(baseLayerSwitcher[0].getAttribute('exportparts')).toBe(
+							'container:base-layer-switcher-container,button:base-layer-switcher-button,label:base-layer-switcher-label'
+						);
 						expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)[0].configuration).toEqual({
 							managed: baseGeoRs.raster,
 							all: [...baseGeoRs.raster, ...baseGeoRs.vector]
@@ -77,6 +88,7 @@ describe('BaseLayerContainer', () => {
 							all: [...baseGeoRs.raster, ...baseGeoRs.vector]
 						});
 						expect(element.shadowRoot.querySelector('.title').innerText).toContain('baseLayer_switcher_header');
+						expect(element.shadowRoot.querySelector('.title').getAttribute('part')).toBe('title');
 						expect(element.shadowRoot.querySelectorAll('button')[0].innerText).toBe('baseLayer_container_category_raster');
 						expect(element.shadowRoot.querySelectorAll('button')[1].innerText).toBe('baseLayer_container_category_vector');
 
@@ -135,11 +147,36 @@ describe('BaseLayerContainer', () => {
 	describe('when the user changes the category', () => {
 		it('updates the layout', async () => {
 			const topicId = 'topicId';
+
+			const container0 = document.createElement('div');
+			const container1 = document.createElement('div');
+
+			const mock = () => {
+				const mock = document.createElement('div');
+				container0.setAttribute('id', 'vector');
+				container1.setAttribute('id', 'vector');
+				const button0 = document.createElement('div');
+				const button1 = document.createElement('div');
+				button0.setAttribute('id', topicId);
+				button1.setAttribute('id', topicId);
+				mock.appendChild(button0);
+				mock.appendChild(button1);
+				mock.appendChild(container0);
+				mock.appendChild(container1);
+				return mock;
+			};
+
+			const mockWindow = {
+				document: mock()
+			};
+			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+
 			spyOn(topicsServiceMock, 'byId')
 				.withArgs(topicId)
 				.and.returnValue(new Topic(topicId, 'label', 'description', baseGeoRs));
 			const element = await setup({ topics: { current: topicId } });
-			const scrollIntoViewSpy = spyOn(element.shadowRoot.querySelector('#vector'), 'scrollIntoView');
+			const scrollIntoViewSpy0 = spyOn(container0, 'scrollIntoView');
+			const scrollIntoViewSpy1 = spyOn(container1, 'scrollIntoView');
 
 			const calculateActiveCategorySpy = spyOn(element, '_calculateActiveCategory');
 			element.shadowRoot.querySelectorAll('button')[1].click();
@@ -147,7 +184,8 @@ describe('BaseLayerContainer', () => {
 			// We can't trigger real scroll events, so we manually dispatch the event
 			element.shadowRoot.querySelector('#section').dispatchEvent(new Event('scroll'));
 
-			expect(scrollIntoViewSpy).toHaveBeenCalled();
+			expect(scrollIntoViewSpy0).toHaveBeenCalled();
+			expect(scrollIntoViewSpy1).toHaveBeenCalled();
 			expect(calculateActiveCategorySpy).toHaveBeenCalled();
 		});
 	});

@@ -4,12 +4,15 @@
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
-import { addHighlightFeatures, HighlightFeatureType, HighlightGeometryType, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
+import { addHighlightFeatures, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
 import { TabIds } from '../domain/mainMenu';
 import { createUniqueId } from '../utils/numberUtils';
 import { $injector } from '../injection/index';
 import { QueryParameters } from '../domain/queryParameters';
 import { isCoordinate } from '../utils/checks';
+import { Geometry } from '../domain/geometry';
+import { SourceType, SourceTypeName } from '../domain/sourceType';
+import { HighlightFeatureType } from '../domain/highlightFeature';
 
 /**
  * Id of the layer used for highlight visualization.
@@ -98,7 +101,7 @@ export class HighlightPlugin extends BaPlugin {
 		const onFeatureInfoQueryingChange = (querying, state) => {
 			if (querying) {
 				const coordinate = state.featureInfo.coordinate.payload;
-				addHighlightFeatures({ id: highlightFeatureId, data: { coordinate: coordinate }, type: HighlightFeatureType.QUERY_RUNNING });
+				addHighlightFeatures({ id: highlightFeatureId, data: coordinate, type: HighlightFeatureType.QUERY_RUNNING });
 				removeHighlightFeaturesById([QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID, QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID]);
 			} else {
 				const coordinate = state.featureInfo.coordinate.payload;
@@ -107,7 +110,7 @@ export class HighlightPlugin extends BaPlugin {
 				if (state.featureInfo.current.some((fi) => !fi.geometry)) {
 					addHighlightFeatures({
 						id: QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID,
-						data: { coordinate: coordinate },
+						data: coordinate,
 						type: HighlightFeatureType.QUERY_SUCCESS
 					});
 				}
@@ -116,7 +119,7 @@ export class HighlightPlugin extends BaPlugin {
 					.map((featureInfo) => ({
 						id: QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID,
 						type: HighlightFeatureType.DEFAULT,
-						data: { geometry: featureInfo.geometry.data, geometryType: HighlightGeometryType.GEOJSON }
+						data: new Geometry(featureInfo.geometry.data, new SourceType(SourceTypeName.GEOJSON))
 					}));
 				addHighlightFeatures(highlightFeatures);
 			}
@@ -138,7 +141,7 @@ export class HighlightPlugin extends BaPlugin {
 					addHighlightFeatures({
 						id: CROSSHAIR_HIGHLIGHT_FEATURE_ID,
 						label: translate('global_marker_symbol_label'),
-						data: { coordinate: crosshairCoordinate },
+						data: crosshairCoordinate,
 						type: HighlightFeatureType.MARKER
 					});
 				}

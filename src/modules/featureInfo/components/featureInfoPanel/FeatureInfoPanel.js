@@ -10,14 +10,11 @@ import css from './featureInfoPanel.css';
 import arrowLeftShortIcon from '../assets/arrowLeftShort.svg';
 import shareIcon from '../assets/share.svg';
 import printerIcon from '../assets/printer.svg';
-import {
-	addHighlightFeatures,
-	HighlightFeatureType,
-	HighlightGeometryType,
-	removeHighlightFeaturesById
-} from '../../../../store/highlight/highlight.action';
+import { addHighlightFeatures, removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
 import { createUniqueId } from '../../../../utils/numberUtils';
 import { isTemplateResult } from '../../../../utils/checks';
+import { Geometry } from '../../../../domain/geometry';
+import { HighlightFeatureType } from '../../../../domain/highlightFeature';
 
 const Update_FeatureInfo_Data = 'update_featureInfo_data';
 const Update_IsPortrait = 'update_isPortrait_hasMinWidth';
@@ -87,8 +84,8 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 			if (featureInfoGeometry) {
 				addHighlightFeatures({
 					id: TEMPORARY_FEATURE_HIGHLIGHT_ID,
-					type: HighlightFeatureType.MARKER_TMP,
-					data: { geometry: featureInfoGeometry.data, geometryType: HighlightGeometryType.GEOJSON }
+					type: HighlightFeatureType.DEFAULT_TMP,
+					data: new Geometry(featureInfoGeometry.data, featureInfoGeometry.sourceType)
 				});
 			}
 		};
@@ -143,7 +140,7 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 									<button
 										class="ba-list-item ba-list-item__header ${getGeometryClass(item.geometry)}"
 										@mouseenter=${() => onMouseEnter(item.geometry)}
-										@mouseleave=${() => onMouseLeave(item.geometry)}
+										@mouseleave=${() => onMouseLeave()}
 									>
 										<span class="ba-list-item__text  ba-list-item__primary-text">${item.title}</span>
 										<span class="ba-list-item__after">

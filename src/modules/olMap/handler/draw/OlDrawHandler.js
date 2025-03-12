@@ -263,6 +263,11 @@ export class OlDrawHandler extends OlLayerHandler {
 			const dragging = event.dragging;
 			const pixel = event.pixel;
 
+			if (this._sketchHandler.isActive || this._drawState.type === InteractionStateType.DRAW) {
+				this._updateDrawState(coordinate, pixel, dragging);
+				return;
+			}
+
 			const addToSelection = (features) => {
 				if ([InteractionStateType.MODIFY, InteractionStateType.SELECT].includes(this._drawState.type)) {
 					const ids = features.map((f) => f.getId());
