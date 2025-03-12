@@ -9,9 +9,9 @@ describe('i18n for search module', () => {
 		expect(map.search_menu_cpResultsPanel_label).toBe('Flurstücke');
 		expect(map.search_menu_showAll_label).toBe('Mehr...');
 		expect(map.search_menu_importAll_label).toBe('Alle importieren');
-		expect(map.search_menu_importAll_title).toBe('Alle Georesourcen importieren');
+		expect(map.search_menu_importAll_title).toBe('Alle Georessourcen importieren');
 		expect(map.search_menu_removeAll_label).toBe('Alle entfernen');
-		expect(map.search_menu_removeAll_title).toBe('Alle Georesourcen entfernen');
+		expect(map.search_menu_removeAll_title).toBe('Alle Georessourcen entfernen');
 		expect(map.search_result_item_zoom_to_extent).toBe('Auf Inhalt zoomen');
 		expect(map.search_result_item_info).toBe('Info');
 		expect(map.search_result_item_copy).toBe('In die Zwischenablage kopieren');
