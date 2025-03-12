@@ -13,6 +13,7 @@ export const provide = (lang) => {
 				iframe_generator_toggle_title: 'Embedded map will expand to fit the width of its container.',
 				iframe_generator_copy_icon: 'Copy to clipboard',
 				iframe_activate_map_button: 'Activate map',
+				iframe_activate_map_button_title: 'Activate map interaction',
 				iframe_view_larger_map_chip: 'View in BayernAtlas',
 				iframe_drawTool_label: 'Drawing',
 				iframe_drawTool_enable: 'Enable the drawing tool',
@@ -23,7 +24,9 @@ export const provide = (lang) => {
 				iframe_drawTool_cancel: 'Cancel',
 				iframe_drawTool_finish: 'Finish',
 				iframe_drawTool_delete_point: 'Remove point',
-				iframe_drawTool_delete_drawing: 'Remove drawing'
+				iframe_drawTool_delete_drawing: 'Remove drawing',
+				iframe_drawTool_cancel_title: 'Cancel drawing',
+				iframe_drawTool_finish_title: 'Finish drawing'
 			};
 
 		case 'de':
@@ -39,6 +42,7 @@ export const provide = (lang) => {
 				iframe_generator_toggle_title: 'Eingebettete Karte wird sich erweitern, um sich der Breite Ihres Containers anzupassen.',
 				iframe_generator_copy_icon: 'In die Zwischenablage kopieren',
 				iframe_activate_map_button: 'Karte aktivieren',
+				iframe_activate_map_button_title: 'Karteninteraktion aktivieren',
 				iframe_view_larger_map_chip: 'Im BayernAtlas ansehen',
 				iframe_drawTool_label: 'Zeichnen',
 				iframe_drawTool_enable: 'Zeichnen aktivieren',
@@ -49,7 +53,9 @@ export const provide = (lang) => {
 				iframe_drawTool_cancel: 'Abbrechen',
 				iframe_drawTool_finish: 'Fertig',
 				iframe_drawTool_delete_point: 'letzten Punkt löschen',
-				iframe_drawTool_delete_drawing: 'Zeichnung löschen'
+				iframe_drawTool_delete_drawing: 'Zeichnung löschen',
+				iframe_drawTool_cancel_title: 'Zeichnung abbrechen',
+				iframe_drawTool_finish_title: 'Zeichnung fertigstellen'
 			};
 
 		default:

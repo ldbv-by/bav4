@@ -297,18 +297,21 @@ export class LayerItem extends AbstractMvuContentPanel {
 								id="left"
 								class=${direction === SwipeAlignment.LEFT ? 'active' : ''}
 								.label=${translate('layerManager_compare_left')}
+								.title=${translate('layerManager_compare_left_title')}
 								@click=${leftSide}
 							></ba-button>
 							<ba-button
 								id="both"
 								class=${direction === SwipeAlignment.NOT_SET ? 'active' : ''}
 								.label=${translate('layerManager_compare_both')}
+								.title=${translate('layerManager_compare_both_title')}
 								@click=${bothSide}
 							></ba-button>
 							<ba-button
 								id="right"
 								class=${direction === SwipeAlignment.RIGHT ? 'active' : ''}
 								.label=${translate('layerManager_compare_right')}
+								.title=${translate('layerManager_compare_right_title')}
 								@click=${rightSide}
 							></ba-button>
 							<div class="bar ${classMap(directionClass)}"></div>

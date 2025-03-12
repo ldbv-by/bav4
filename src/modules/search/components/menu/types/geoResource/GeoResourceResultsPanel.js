@@ -109,7 +109,7 @@ export class GeoResourceResultsPanel extends MvuElement {
 		};
 
 		const bodyCollapseClass = {
-			iscollaps: collapsed
+			iscollapsed: collapsed
 		};
 
 		const showAllButton = {
@@ -164,6 +164,7 @@ export class GeoResourceResultsPanel extends MvuElement {
 						id="import-all"
 						class="${classMap(importAllButton)}"
 						.label=${allLayersActive ? translate('search_menu_removeAll_label') : translate('search_menu_importAll_label')}
+						.title=${allLayersActive ? translate('search_menu_removeAll_title') : translate('search_menu_importAll_title')}
 						@click=${allLayersActive ? removeAll : importAll}
 					></ba-button>
 				</div>

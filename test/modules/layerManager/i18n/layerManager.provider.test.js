@@ -17,7 +17,9 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_zoom_to_extent).toBe('Auf Inhalt zoomen');
 		expect(map.layerManager_layer_copy).toBe('Kopie');
 		expect(map.layerManager_expand_all).toBe('Alle ausklappen');
+		expect(map.layerManager_expand_all_title).toBe('Alle Ebenen ausklappen');
 		expect(map.layerManager_collapse_all).toBe('Alle einklappen');
+		expect(map.layerManager_collapse_all_title).toBe('Alle Ebenen einklappen');
 		expect(map.layerManager_remove_all).toBe('Überlagerungen entfernen');
 		expect(map.layerManager_loading_hint).toBe('Wird geladen');
 		expect(map.layerManager_time_travel_hint).toBe('Bitte ein Jahr auswählen');
@@ -26,8 +28,11 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_compare_stop).toBe('Vergleichen beenden');
 		expect(map.layerManager_compare_share).toBe('Ansicht teilen');
 		expect(map.layerManager_compare_left).toBe('Links');
+		expect(map.layerManager_compare_left_title).toBe('Ebene auf die linke Seite setzen');
 		expect(map.layerManager_compare_both).toBe('Beide');
+		expect(map.layerManager_compare_both_title).toBe('Ebene auf beide Seiten setzen');
 		expect(map.layerManager_compare_right).toBe('Rechts');
+		expect(map.layerManager_compare_right_title).toBe('Ebene auf die rechte Seite setzen');
 	});
 
 	it('provides translation for en', () => {
@@ -47,7 +52,9 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_zoom_to_extent).toBe('Zoom to extent');
 		expect(map.layerManager_layer_copy).toBe('Copy');
 		expect(map.layerManager_expand_all).toBe('Expand all');
+		expect(map.layerManager_expand_all_title).toBe('Expand all layers');
 		expect(map.layerManager_collapse_all).toBe('Collapse all');
+		expect(map.layerManager_collapse_all_title).toBe('Collapse all layers');
 		expect(map.layerManager_remove_all).toBe('Remove all overlays');
 		expect(map.layerManager_loading_hint).toBe('Loading');
 		expect(map.layerManager_time_travel_hint).toBe('Choose a year');
@@ -56,12 +63,15 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_compare_stop).toBe('Exit comparison tool');
 		expect(map.layerManager_compare_share).toBe('Share the view');
 		expect(map.layerManager_compare_left).toBe('Left');
+		expect(map.layerManager_compare_left_title).toBe('Set layer on left side');
 		expect(map.layerManager_compare_both).toBe('Both');
+		expect(map.layerManager_compare_both_title).toBe('Set layer on both sides');
 		expect(map.layerManager_compare_right).toBe('Right');
+		expect(map.layerManager_compare_right_title).toBe('Set layer on right side');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 25;
+		const expectedSize = 30;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

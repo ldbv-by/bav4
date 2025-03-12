@@ -644,6 +644,7 @@ describe('DrawToolContent', () => {
 			expect(element.shadowRoot.querySelector('#cancel-button')).toBeFalsy();
 			expect(element.shadowRoot.querySelector('#finish-button')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('#finish-button').label).toBe('toolbox_drawTool_finish');
+			expect(element.shadowRoot.querySelector('#finish-button').title).toBe('toolbox_drawTool_finish_title');
 		});
 
 		it('displays the finish-button for line', async () => {
@@ -652,6 +653,7 @@ describe('DrawToolContent', () => {
 			expect(element.shadowRoot.querySelector('#cancel-button')).toBeFalsy();
 			expect(element.shadowRoot.querySelector('#finish-button')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('#finish-button').label).toBe('toolbox_drawTool_finish');
+			expect(element.shadowRoot.querySelector('#finish-button').title).toBe('toolbox_drawTool_finish_title');
 		});
 
 		it('displays NOT the finish-button for marker', async () => {
@@ -660,6 +662,7 @@ describe('DrawToolContent', () => {
 			expect(element.shadowRoot.querySelector('#cancel-button')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('#finish-button')).toBeFalsy();
 			expect(element.shadowRoot.querySelector('#cancel-button').label).toBe('toolbox_drawTool_cancel');
+			expect(element.shadowRoot.querySelector('#cancel-button').title).toBe('toolbox_drawTool_cancel_title');
 		});
 
 		it('displays NOT the finish-button for text', async () => {
@@ -668,6 +671,7 @@ describe('DrawToolContent', () => {
 			expect(element.shadowRoot.querySelector('#cancel-button')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('#finish-button')).toBeFalsy();
 			expect(element.shadowRoot.querySelector('#cancel-button').label).toBe('toolbox_drawTool_cancel');
+			expect(element.shadowRoot.querySelector('#cancel-button').title).toBe('toolbox_drawTool_cancel_title');
 		});
 
 		it('displays the elevation profile chip', async () => {
@@ -748,6 +752,7 @@ describe('DrawToolContent', () => {
 
 			resetButton.click();
 			expect(resetButton.label).toBe('toolbox_drawTool_cancel');
+			expect(resetButton.title).toBe('toolbox_drawTool_cancel_title');
 			expect(store.getState().draw.reset).toBeInstanceOf(EventLike);
 		});
 
@@ -757,6 +762,7 @@ describe('DrawToolContent', () => {
 
 			removeButton.click();
 			expect(removeButton.label).toBe('toolbox_drawTool_delete_drawing');
+			expect(removeButton.title).toBe('');
 			expect(store.getState().draw.remove).toBeInstanceOf(EventLike);
 		});
 

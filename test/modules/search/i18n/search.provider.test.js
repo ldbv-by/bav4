@@ -9,7 +9,9 @@ describe('i18n for search module', () => {
 		expect(map.search_menu_cpResultsPanel_label).toBe('Flurstücke');
 		expect(map.search_menu_showAll_label).toBe('Mehr...');
 		expect(map.search_menu_importAll_label).toBe('Alle importieren');
+		expect(map.search_menu_importAll_title).toBe('Alle Georessourcen importieren');
 		expect(map.search_menu_removeAll_label).toBe('Alle entfernen');
+		expect(map.search_menu_removeAll_title).toBe('Alle Georessourcen entfernen');
 		expect(map.search_result_item_zoom_to_extent).toBe('Auf Inhalt zoomen');
 		expect(map.search_result_item_info).toBe('Info');
 		expect(map.search_result_item_copy).toBe('In die Zwischenablage kopieren');
@@ -25,7 +27,9 @@ describe('i18n for search module', () => {
 		expect(map.search_menu_cpResultsPanel_label).toBe('Cadastral parcel');
 		expect(map.search_menu_showAll_label).toBe('Show more...');
 		expect(map.search_menu_importAll_label).toBe('Import all');
+		expect(map.search_menu_importAll_title).toBe('Import all GeoResources');
 		expect(map.search_menu_removeAll_label).toBe('Remove all');
+		expect(map.search_menu_removeAll_title).toBe('Remove all GeoResources');
 		expect(map.search_result_item_zoom_to_extent).toBe('Zoom to extent');
 		expect(map.search_result_item_info).toBe('Info');
 		expect(map.search_result_item_copy).toBe('Copy to clipboard');
@@ -34,7 +38,7 @@ describe('i18n for search module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 11;
+		const expectedSize = 13;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

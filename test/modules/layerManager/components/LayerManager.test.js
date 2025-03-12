@@ -190,6 +190,27 @@ describe('LayerManager', () => {
 			expect(placeholderElements.length).toBe(4);
 			expect(nonDraggablePlaceholderElements.length).toBe(4);
 		});
+
+		it('renders util elements', () => {
+			const buttonExpandOrCollapse = element.shadowRoot.querySelector('#button_expand_or_collapse');
+			const buttonLayerSwipe = element.shadowRoot.querySelector('#button_layer_swipe');
+			const buttonRemoveAll = element.shadowRoot.querySelector('#button_remove_all');
+
+			expect(buttonRemoveAll.label).toBe('layerManager_remove_all');
+
+			expect(buttonExpandOrCollapse.label).toBe('layerManager_expand_all');
+			expect(buttonExpandOrCollapse.title).toBe('layerManager_expand_all_title');
+			expect(buttonLayerSwipe.label).toBe('layerManager_compare');
+			expect(buttonLayerSwipe.title).toBe('');
+
+			buttonExpandOrCollapse.click();
+			activate(); // activate compare tool manually
+
+			expect(buttonExpandOrCollapse.label).toBe('layerManager_collapse_all');
+			expect(buttonExpandOrCollapse.title).toBe('layerManager_collapse_all_title');
+			expect(buttonLayerSwipe.label).toBe('layerManager_compare_stop');
+			expect(buttonLayerSwipe.title).toBe('');
+		});
 	});
 
 	describe('when layer items dragged', () => {

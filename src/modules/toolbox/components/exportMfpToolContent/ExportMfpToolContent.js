@@ -94,6 +94,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 
 		const onClickAction = isJobStarted ? () => cancelJob() : () => requestJob();
 		const btnLabel = isJobStarted ? translate('toolbox_exportMfp_cancel') : translate('toolbox_exportMfp_submit');
+		const btnTitle = isJobStarted ? translate('toolbox_exportMfp_cancel_title') : translate('toolbox_exportMfp_submit_title');
 		const btnType = isJobStarted ? 'loading' : 'primary';
 		const btnId = isJobStarted ? 'btn_cancel' : 'btn_submit';
 		const areSettingsComplete = capabilities && scale && id;
@@ -103,6 +104,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 				id="${btnId}"
 				class="tool-container__button preview_button"
 				.label=${btnLabel}
+				.title=${btnTitle}
 				@click=${onClickAction}
 				.type=${btnType}
 				.disabled=${!areSettingsComplete}

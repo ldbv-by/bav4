@@ -72,6 +72,7 @@ describe('MapInteractionButtonContainer', () => {
 			expect(element.shadowRoot.querySelectorAll('ba-button.layer-swipe.hide')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('ba-button.routing')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('ba-button.routing')[0].label).toBe('map_interaction_button_container_routing');
+			expect(element.shadowRoot.querySelectorAll('ba-button.routing')[0].title).toBe('');
 		});
 
 		it('adds a container with active compare button', async () => {
@@ -80,6 +81,7 @@ describe('MapInteractionButtonContainer', () => {
 			expect(element.shadowRoot.querySelectorAll('ba-button.routing.hide')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('ba-button.layer-swipe')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('ba-button.layer-swipe')[0].label).toBe('map_interaction_button_container_layerSwipe');
+			expect(element.shadowRoot.querySelectorAll('ba-button.layer-swipe')[0].title).toBe('');
 		});
 	});
 

@@ -89,7 +89,12 @@ export class ActivateMapButton extends MvuElement {
 			</style>
 			<div id="background" class="active-map__background">
 				<div class="active-map__button">
-					<ba-button .type=${'primary'} .label=${translate('iframe_activate_map_button')} @click=${close}></ba-button>
+					<ba-button
+						.type=${'primary'}
+						.label=${translate('iframe_activate_map_button')}
+						.title=${translate('iframe_activate_map_button_title')}
+						@click=${close}
+					></ba-button>
 				</div>
 			</div>
 		`;
