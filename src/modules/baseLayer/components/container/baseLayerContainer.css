@@ -54,11 +54,11 @@
 }
 
 .scroll-right-button {
-	height: 5.5em;
+	height: 100%;
 	width: 1.5em;
 	background: var(--primary-bg-color);
 	position: absolute;
-	top: 0.5em;
+	top: 0;
 	right: 0;
 	border: 0;
 	background-image: url('./assets/arrowbarright.svg');
@@ -68,11 +68,11 @@
 	background-size: 1.3em auto;
 }
 .scroll-left-button {
-	height: 5.5em;
+	height: 100%;
 	width: 1.5em;
 	background: var(--primary-bg-color);
 	position: absolute;
-	top: 0.5em;
+	top: 0;
 	left: 0;
 	border: 0;
 	background-image: url('./assets/arrowBarLeft.svg');
