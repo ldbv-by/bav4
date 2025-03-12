@@ -21,7 +21,6 @@ const Update_Title = 'update_title';
  * @property {string|null} icon=null - The Data-URI of a Base64-encoded SVG resource.
  * @property {'primary'| 'secondary'| 'loading'} type=secondary - The type of the button.
  * @property {string|null} title=null - The title of the button. The value is also used for the aria-label attribute.
- * @property {function} onClick - The callback function for the click-event.
  * @fires onClick The onClick event fires when the button is clicked.
  *
  * @class
