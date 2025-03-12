@@ -9,6 +9,8 @@ import { featureInfoReducer } from '../../../../src/store/featureInfo/featureInf
 import { highlightReducer } from '../../../../src/store/highlight/highlight.reducer.js';
 import { SourceType, SourceTypeName } from '../../../../src/domain/sourceType.js';
 import { FEATURE_COLLECTION_GEORESOURCE_ID } from '../../../../src/plugins/FeatureCollectionPlugin.js';
+import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
+import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 
 window.customElements.define(FeatureCollectionPanel.tag, FeatureCollectionPanel);
 
@@ -18,7 +20,8 @@ describe('FeatureCollectionPanel', () => {
 		store = TestUtils.setupStoreAndDi(state, {
 			featureCollection: featureCollectionReducer,
 			featureInfo: featureInfoReducer,
-			highlight: highlightReducer
+			highlight: highlightReducer,
+			notifications: notificationReducer
 		});
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(FeatureCollectionPanel.tag);
@@ -113,6 +116,9 @@ describe('FeatureCollectionPanel', () => {
 
 			button.click();
 
+			expect(store.getState().notifications.latest.payload.content).toBe('featureInfo_featureCollection_add_feature_notification');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+
 			expect(store.getState().featureCollection.entries).toHaveSize(1);
 			expect(store.getState().featureCollection.entries[0]).toEqual(feature);
 			expect(store.getState().featureInfo.querying).toBeFalse();
@@ -139,6 +145,9 @@ describe('FeatureCollectionPanel', () => {
 			const button = element.shadowRoot.querySelector('.chips__button.remove');
 
 			button.click();
+
+			expect(store.getState().notifications.latest.payload.content).toBe('featureInfo_featureCollection_remove_feature_notification');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 
 			expect(store.getState().featureCollection.entries).toHaveSize(0);
 			expect(store.getState().featureInfo.querying).toBeFalse();
