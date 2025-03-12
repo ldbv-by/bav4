@@ -4,13 +4,13 @@ import { $injector } from '../../../../src/injection/index.js';
 import { FeatureCollectionPanel } from '../../../../src/modules/featureInfo/components/collection/FeatureCollectionPanel.js';
 import { Geometry } from '../../../../src/domain/geometry.js';
 import { featureCollectionReducer } from '../../../../src/store/featureCollection/featureCollection.reducer.js';
-import removeFromCollectionButton from '../../../../src/modules/featureInfo/components/assets/printer.svg';
-import addToCollectionButton from '../../../../src/modules/featureInfo/components/assets/share.svg';
 import { Feature } from '../../../../src/domain/feature.js';
 import { featureInfoReducer } from '../../../../src/store/featureInfo/featureInfo.reducer.js';
 import { highlightReducer } from '../../../../src/store/highlight/highlight.reducer.js';
 import { SourceType, SourceTypeName } from '../../../../src/domain/sourceType.js';
 import { FEATURE_COLLECTION_GEORESOURCE_ID } from '../../../../src/plugins/FeatureCollectionPlugin.js';
+import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
+import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 
 window.customElements.define(FeatureCollectionPanel.tag, FeatureCollectionPanel);
 
@@ -20,7 +20,8 @@ describe('FeatureCollectionPanel', () => {
 		store = TestUtils.setupStoreAndDi(state, {
 			featureCollection: featureCollectionReducer,
 			featureInfo: featureInfoReducer,
-			highlight: highlightReducer
+			highlight: highlightReducer,
+			notifications: notificationReducer
 		});
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(FeatureCollectionPanel.tag);
@@ -54,10 +55,11 @@ describe('FeatureCollectionPanel', () => {
 
 					element.configuration = { feature, geoResourceId: null };
 
-					expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
-					const button = element.shadowRoot.querySelector('ba-icon');
-					expect(button.title).toBe('featureInfo_featureCollection_add_feature');
-					expect(button.icon).toBe(addToCollectionButton);
+					expect(element.shadowRoot.querySelectorAll('.chips__button.add')).toHaveSize(1);
+					const button = element.shadowRoot.querySelector('.chips__button.add');
+					expect(button.title).toBe('featureInfo_featureCollection_add_feature_title');
+					expect(element.shadowRoot.querySelectorAll('.chips__button.add .chips__icon')).toHaveSize(1);
+					expect(element.shadowRoot.querySelectorAll('.chips__button.add .chips__button-text')).toHaveSize(1);
 				});
 			});
 
@@ -87,10 +89,11 @@ describe('FeatureCollectionPanel', () => {
 
 					element.configuration = { feature, geoResourceId: FEATURE_COLLECTION_GEORESOURCE_ID };
 
-					expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
-					const button = element.shadowRoot.querySelector('ba-icon');
-					expect(button.title).toBe('featureInfo_featureCollection_remove_feature');
-					expect(button.icon).toBe(removeFromCollectionButton);
+					expect(element.shadowRoot.querySelectorAll('.chips__button.remove')).toHaveSize(1);
+					const button = element.shadowRoot.querySelector('.chips__button.remove');
+					expect(button.title).toBe('featureInfo_featureCollection_remove_feature_title');
+					expect(element.shadowRoot.querySelectorAll('.chips__button.remove .chips__icon')).toHaveSize(1);
+					expect(element.shadowRoot.querySelectorAll('.chips__button.remove .chips__button-text')).toHaveSize(1);
 				});
 			});
 		});
@@ -109,9 +112,12 @@ describe('FeatureCollectionPanel', () => {
 			const feature = new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)), 'id');
 
 			element.configuration = { feature };
-			const button = element.shadowRoot.querySelector('ba-icon');
+			const button = element.shadowRoot.querySelector('.chips__button.add');
 
 			button.click();
+
+			expect(store.getState().notifications.latest.payload.content).toBe('featureInfo_featureCollection_add_feature_notification');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 
 			expect(store.getState().featureCollection.entries).toHaveSize(1);
 			expect(store.getState().featureCollection.entries[0]).toEqual(feature);
@@ -136,9 +142,12 @@ describe('FeatureCollectionPanel', () => {
 				}
 			});
 			element.configuration = { feature, geoResourceId: FEATURE_COLLECTION_GEORESOURCE_ID };
-			const button = element.shadowRoot.querySelector('ba-icon');
+			const button = element.shadowRoot.querySelector('.chips__button.remove');
 
 			button.click();
+
+			expect(store.getState().notifications.latest.payload.content).toBe('featureInfo_featureCollection_remove_feature_notification');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 
 			expect(store.getState().featureCollection.entries).toHaveSize(0);
 			expect(store.getState().featureInfo.querying).toBeFalse();

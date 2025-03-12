@@ -81,9 +81,9 @@ export class AbstractAssistChip extends MvuElement {
 						${iconClass}
 							${css}
 					</style>
-					<button class="chips__button" title=${title} aria-label=${title} @click=${() => this.onClick()}>
-						<span class="chips__icon"></span>
-						<span class="chips__button-text">${this.getLabel()}</span>
+					<button class="chips__button" title=${title} aria-label=${title} @click=${() => this.onClick()} part="button">
+						<span class="chips__icon" part="icon"></span>
+						<span class="chips__button-text" part="label">${this.getLabel()}</span>
 					</button>`
 			: nothing;
 	}

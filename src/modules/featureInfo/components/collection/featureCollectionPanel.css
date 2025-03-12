@@ -1,0 +1,47 @@
+.chips__button {
+	background: var(--primary-bg-color);
+	border: 1px solid var(--text2);
+	display: flex;
+	margin-left: 0;
+	z-index: calc(var(--z-header) + 20);
+	border-radius: 2em;
+	padding: 0.5em 0.9em;
+	cursor: pointer;
+	text-decoration: none;
+	flex-shrink: 0;
+	font-size: 0.75rem;
+}
+.chips__button:focus {
+	box-shadow: 0 0 0 0.2em var(--primary-color-lighter);
+}
+.chips__button-text {
+	color: var(--text1);
+	font-weight: bold;
+	margin: auto 0.5em;
+}
+.chips__button:hover {
+	border: 1px solid var(--secondary-color);
+}
+.chips__button:hover .chips__button-text {
+	color: var(--text4);
+}
+.chips__icon {
+	height: 1.5em;
+	width: 1.5em;
+	position: relative;
+	top: -0.1em;
+	mask-size: cover;
+	background: var(--text4);
+}
+.add .chips__icon {
+	background: var(--success-color);
+	mask: url('../assets/star.svg');
+	-webkit-mask-image: url('../assets/star.svg');
+	-webkit-mask-size: cover;
+}
+.remove .chips__icon {
+	background: var(--error-color);
+	mask: url('../assets/starfilled.svg');
+	-webkit-mask-image: url('../assets/starfilled.svg');
+	-webkit-mask-size: cover;
+}

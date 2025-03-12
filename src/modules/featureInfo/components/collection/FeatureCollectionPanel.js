@@ -6,9 +6,9 @@ import { $injector } from '../../../../injection/index';
 import { addFeatures, removeFeaturesById } from '../../../../store/featureCollection/featureCollection.action';
 import { clearHighlightFeatures } from '../../../../store/highlight/highlight.action';
 import { MvuElement } from '../../../MvuElement';
-import removeFromCollectionButton from '../assets/printer.svg';
-import addToCollectionButton from '../assets/share.svg';
 import { abortOrReset } from '../../../../store/featureInfo/featureInfo.action';
+import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import css from './featureCollectionPanel.css';
 import { FEATURE_COLLECTION_GEORESOURCE_ID } from '../../../../plugins/FeatureCollectionPlugin';
 
 /**
@@ -58,6 +58,7 @@ export class FeatureCollectionPanel extends MvuElement {
 			const removeFeature = () => {
 				clearHighlightFeatures();
 				removeFeaturesById(feature.id);
+				emitNotification(translate('featureInfo_featureCollection_remove_feature_notification'), LevelTypes.INFO);
 				// by calling the abortOrReset action, we restore the previous opened tab of the MainMenu
 				abortOrReset();
 			};
@@ -65,22 +66,27 @@ export class FeatureCollectionPanel extends MvuElement {
 			const addFeature = () => {
 				clearHighlightFeatures();
 				addFeatures(feature);
+				emitNotification(translate('featureInfo_featureCollection_add_feature_notification'), LevelTypes.INFO);
 				// by calling the abortOrReset action, we restore the previous opened tab of the MainMenu
 				abortOrReset();
 			};
 
 			if (partOfCollection && geoResourceId === FEATURE_COLLECTION_GEORESOURCE_ID) {
-				return html`<div>
-					<ba-icon
-						.title=${translate('featureInfo_featureCollection_remove_feature')}
-						.icon=${removeFromCollectionButton}
-						@click=${removeFeature}
-					></ba-icon>
-				</div>`;
+				return html`<style>
+						${css}
+					</style>
+					<button class="chips__button remove" .title=${translate('featureInfo_featureCollection_remove_feature_title')} @click=${removeFeature}>
+						<span class="chips__icon"></span>
+						<span class="chips__button-text">${translate('featureInfo_featureCollection_remove_feature')}</span>
+					</button>`;
 			} else if (!partOfCollection) {
-				return html`<div>
-					<ba-icon .title=${translate('featureInfo_featureCollection_add_feature')} .icon="${addToCollectionButton}" @click=${addFeature}></ba-icon>
-				</div>`;
+				return html`<style>
+						${css}
+					</style>
+					<button class="chips__button add" .title=${translate('featureInfo_featureCollection_add_feature_title')} @click=${addFeature}>
+						<span class="chips__icon"></span>
+						<span class="chips__button-text">${translate('featureInfo_featureCollection_add_feature')}</span>
+					</button>`;
 			}
 		}
 
