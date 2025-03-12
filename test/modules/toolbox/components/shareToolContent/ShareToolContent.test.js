@@ -263,7 +263,7 @@ describe('ShareToolContent', () => {
 	});
 
 	describe('iframe container', () => {
-		fit('renders UI elements', async () => {
+		it('renders UI elements', async () => {
 			const element = await setup();
 			const checkbox = element.shadowRoot.querySelector('ba-checkbox');
 			const button = element.shadowRoot.querySelector('.preview_button');
