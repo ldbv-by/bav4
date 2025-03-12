@@ -24,7 +24,7 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_toggleFeedback_mapButton_sub).toBe('Melden Sie uns Korrekturvorschläge zu den Karteninhalten.');
 		expect(map.feedback_generalFeedback_could_not_save).toBe('Ihr Feedback konnte nicht gespeichert werden');
 		expect(map.feedback_add_current_state_optionally).toBe('Für bessere Nachvollziehbarkeit aktuelle URL des BayernAtlas hinzufügen');
-		expect(map.feedback_generalFeedback_submit_title).toBe('Allgemeines Feedback senden');
+		expect(map.feedback_generalFeedback_submit_title).toBe('Feedback senden');
 		expect(map.feedback_generalFeedback_rating).toBe('Würden Sie den BayernAtlas weiterempfehlen?');
 		expect(map.feedback_generalFeedback_rating_scale_0).toBe('Sehr wahrscheinlich');
 		expect(map.feedback_generalFeedback_rating_scale_5).toBe('Sehr unwahrscheinlich');
@@ -62,7 +62,7 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_toggleFeedback_mapButton_sub).toBe('Send us suggestions for corrections to the map content.');
 		expect(map.feedback_generalFeedback_could_not_save).toBe('Your feedback could not be saved');
 		expect(map.feedback_add_current_state_optionally).toBe('Add current URL of the BayernAtlas for better traceability');
-		expect(map.feedback_generalFeedback_submit_title).toBe('Submit your general feedback');
+		expect(map.feedback_generalFeedback_submit_title).toBe('Submit your feedback');
 		expect(map.feedback_generalFeedback_rating).toBe('Would you recommend the BayernAtlas?');
 		expect(map.feedback_generalFeedback_rating_scale_0).toBe('Very unlikely');
 		expect(map.feedback_generalFeedback_rating_scale_5).toBe('Very likely');
