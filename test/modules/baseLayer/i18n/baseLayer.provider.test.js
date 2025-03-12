@@ -7,6 +7,8 @@ describe('i18n for header module', () => {
 		expect(map.baseLayer_switcher_header).toBe('Basiskarten');
 		expect(map.baseLayer_container_category_raster).toBe('Raster');
 		expect(map.baseLayer_container_category_vector).toBe('Vektor');
+		expect(map.baseLayer_container_scroll_button_left).toBe('nach links scrollen');
+		expect(map.baseLayer_container_scroll_button_right).toBe('nach rechts scrollen');
 	});
 
 	it('provides translation for en', () => {
@@ -15,10 +17,12 @@ describe('i18n for header module', () => {
 		expect(map.baseLayer_switcher_header).toBe('Base maps');
 		expect(map.baseLayer_container_category_raster).toBe('Raster');
 		expect(map.baseLayer_container_category_vector).toBe('Vector');
+		expect(map.baseLayer_container_scroll_button_left).toBe('scroll to left');
+		expect(map.baseLayer_container_scroll_button_right).toBe('scroll to right');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 3;
+		const expectedSize = 5;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

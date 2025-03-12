@@ -36,8 +36,8 @@
 }
 
 .container {
+	position: relative;
 	scroll-snap-align: start;
-
 	overflow-y: auto;
 	overscroll-behavior-y: contain;
 }
@@ -51,4 +51,33 @@
 .scroll-snap-x::-webkit-scrollbar {
 	width: 0;
 	height: 0;
+}
+
+.scroll-right-button {
+	height: 100%;
+	width: 1.5em;
+	background: var(--primary-bg-color);
+	position: absolute;
+	top: 0;
+	right: 0;
+	border: 0;
+	background-image: url('./assets/arrowbarright.svg');
+	background-repeat: no-repeat;
+	background-position-y: center;
+	background-position-x: center;
+	background-size: 1.3em auto;
+}
+.scroll-left-button {
+	height: 100%;
+	width: 1.5em;
+	background: var(--primary-bg-color);
+	position: absolute;
+	top: 0;
+	left: 0;
+	border: 0;
+	background-image: url('./assets/arrowBarLeft.svg');
+	background-repeat: no-repeat;
+	background-position-y: center;
+	background-position-x: center;
+	background-size: 1.3em auto;
 }
