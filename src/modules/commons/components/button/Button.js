@@ -14,21 +14,21 @@ const Update_Icon = 'update_icon';
 const Update_Title = 'update_title';
 
 /**
- * Events;
- * - `onClick()`
+ * Basic button component, to combine standard use-cases (button with icon, with text...etc) in a general component.
  *
- *
- * Properties:
- * - `label`
- * - `disabled`
- * - `icon`
- * - `type`
- *
+ * @property {string} label='' - The label of the button.
+ * @property {boolean} disabled=false - The button react on user interactions or not.
+ * @property {string|null} icon=null - The Data-URI of a Base64-encoded SVG resource.
+ * @property {'primary'| 'secondary'| 'loading'} type=secondary - The type of the button.
+ * @property {string|null} title=null - The title of the button. The value is also used for the aria-label attribute.
+ * @property {function} onClick - The callback function for the click-event.
+ * @fires onClick The onClick event fires when the button is clicked.
  *
  * @class
  * @author taulinger
  */
 export class Button extends MvuElement {
+	#onClick = () => {};
 	constructor() {
 		super({
 			disabled: false,
@@ -37,7 +37,6 @@ export class Button extends MvuElement {
 			type: 'secondary',
 			title: null
 		});
-		this._onClick = () => {};
 	}
 
 	onInitialize() {
@@ -65,7 +64,7 @@ export class Button extends MvuElement {
 	createView(model) {
 		const { disabled, label, icon, type, title } = model;
 		const onClick = () => {
-			this._onClick();
+			this.#onClick();
 		};
 
 		const classes = {
@@ -110,9 +109,6 @@ export class Button extends MvuElement {
 		return 'ba-button';
 	}
 
-	/**
-	 * @property {boolean} disabled=false - Button clickable?
-	 */
 	set disabled(value) {
 		this.signal(Update_Disabled, value);
 	}
@@ -121,9 +117,6 @@ export class Button extends MvuElement {
 		return this.getModel().disabled;
 	}
 
-	/**
-	 * @property {string} type=secondary - Type of the button. One of 'primary', 'secondary', 'loading'
-	 */
 	set type(value) {
 		this.signal(Update_Type, value);
 	}
@@ -132,9 +125,6 @@ export class Button extends MvuElement {
 		return this.getModel().type;
 	}
 
-	/**
-	 * @property {string} label='' - Label of the button
-	 */
 	set label(value) {
 		this.signal(Update_Label, value);
 	}
@@ -143,20 +133,14 @@ export class Button extends MvuElement {
 		return this.getModel().label;
 	}
 
-	/**
-	 * @property {string} title=null - Title of the Icon
-	 */
 	set title(value) {
-		this.signal(Update_Title, value ? value : null);
+		this.signal(Update_Title, value);
 	}
 
 	get title() {
 		return this.getModel().title;
 	}
 
-	/**
-	 * @property {string} icon='null' - Data-URI of Base64 encoded SVG
-	 */
 	set icon(value) {
 		this.signal(Update_Icon, value);
 	}
@@ -165,14 +149,11 @@ export class Button extends MvuElement {
 		return this.getModel().icon;
 	}
 
-	/**
-	 * @property {function} onClick - Callback function
-	 */
 	set onClick(callback) {
-		this._onClick = callback;
+		this.#onClick = callback;
 	}
 
 	get onClick() {
-		return this._onClick;
+		return this.#onClick;
 	}
 }
