@@ -8,7 +8,7 @@ import { openModal } from '../../../../store/modal/modal.action';
 import { MvuElement } from '../../../MvuElement';
 
 /**
- * Displays the SOFTWARE_INFO value, which should
+ * Displays the `SOFTWARE_VERSION` and `SOFTWARE_INFO` value, which should
  * contain development information like build number, date, ...
  * @class
  * @author taulinger
@@ -25,7 +25,7 @@ export class DevInfo extends MvuElement {
 	}
 
 	createView() {
-		const info = this._configService.getValue('SOFTWARE_INFO', false);
+		const info = `v${this._configService.getValue('SOFTWARE_VERSION')} - ${this._configService.getValue('SOFTWARE_INFO')}`;
 
 		const onShowcaseButtonClick = () => {
 			openModal('Showcase', html`<ba-showcase></ba-showcase>`);
