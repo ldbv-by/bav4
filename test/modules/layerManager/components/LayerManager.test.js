@@ -197,11 +197,12 @@ describe('LayerManager', () => {
 			const buttonRemoveAll = element.shadowRoot.querySelector('#button_remove_all');
 
 			expect(buttonRemoveAll.label).toBe('layerManager_remove_all');
+			expect(buttonRemoveAll.title).toBe('layerManager_remove_all_title');
 
 			expect(buttonExpandOrCollapse.label).toBe('layerManager_expand_all');
 			expect(buttonExpandOrCollapse.title).toBe('layerManager_expand_all_title');
 			expect(buttonLayerSwipe.label).toBe('layerManager_compare');
-			expect(buttonLayerSwipe.title).toBe('');
+			expect(buttonLayerSwipe.title).toBe('layerManager_compare_title');
 
 			buttonExpandOrCollapse.click();
 			activate(); // activate compare tool manually
@@ -209,7 +210,7 @@ describe('LayerManager', () => {
 			expect(buttonExpandOrCollapse.label).toBe('layerManager_collapse_all');
 			expect(buttonExpandOrCollapse.title).toBe('layerManager_collapse_all_title');
 			expect(buttonLayerSwipe.label).toBe('layerManager_compare_stop');
-			expect(buttonLayerSwipe.title).toBe('');
+			expect(buttonLayerSwipe.title).toBe('layerManager_compare_stop_title');
 		});
 	});
 
