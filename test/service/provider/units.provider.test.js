@@ -54,12 +54,12 @@ describe('Units provider', () => {
 		expect(bvvDistanceUnitsProvider(42, 0)).toBe('42.0 m');
 		expect(bvvDistanceUnitsProvider(42, 2)).toBe('42.0 m');
 		expect(bvvDistanceUnitsProvider(999, 0)).toBe('999.0 m');
-		expect(bvvDistanceUnitsProvider(1000, 0)).toBe('1.0 km');
-		expect(bvvDistanceUnitsProvider(1000, 2)).toBe('1.0 km');
-		expect(bvvDistanceUnitsProvider(1234, 0)).toBe('1.2 km');
-		expect(bvvDistanceUnitsProvider(1234, 2)).toBe('1.2 km');
-		expect(bvvDistanceUnitsProvider(10000, 0)).toBe('10.0 km');
-		expect(bvvDistanceUnitsProvider(10000, 2)).toBe('10.0 km');
+		expect(bvvDistanceUnitsProvider(1000, 0)).toBe('1.00 km');
+		expect(bvvDistanceUnitsProvider(1000, 2)).toBe('1.00 km');
+		expect(bvvDistanceUnitsProvider(1234, 0)).toBe('1.23 km');
+		expect(bvvDistanceUnitsProvider(1234, 2)).toBe('1.23 km');
+		expect(bvvDistanceUnitsProvider(10000, 0)).toBe('10.00 km');
+		expect(bvvDistanceUnitsProvider(10000, 2)).toBe('10.00 km');
 	});
 
 	it('provides formatted area for bvv-metric system with default-locales (en)', () => {
@@ -88,12 +88,12 @@ describe('Units provider', () => {
 		expect(bvvDistanceUnitsProvider(42, 0)).toBe('42,0 m');
 		expect(bvvDistanceUnitsProvider(42, 2)).toBe('42,0 m');
 		expect(bvvDistanceUnitsProvider(999, 0)).toBe('999,0 m');
-		expect(bvvDistanceUnitsProvider(1000, 0)).toBe('1,0 km');
-		expect(bvvDistanceUnitsProvider(1000, 2)).toBe('1,0 km');
-		expect(bvvDistanceUnitsProvider(1234, 0)).toBe('1,2 km');
-		expect(bvvDistanceUnitsProvider(1234, 2)).toBe('1,2 km');
-		expect(bvvDistanceUnitsProvider(10000, 0)).toBe('10,0 km');
-		expect(bvvDistanceUnitsProvider(10000, 2)).toBe('10,0 km');
+		expect(bvvDistanceUnitsProvider(1000, 0)).toBe('1,00 km');
+		expect(bvvDistanceUnitsProvider(1000, 2)).toBe('1,00 km');
+		expect(bvvDistanceUnitsProvider(1234, 0)).toBe('1,23 km');
+		expect(bvvDistanceUnitsProvider(1234, 2)).toBe('1,23 km');
+		expect(bvvDistanceUnitsProvider(10000, 0)).toBe('10,00 km');
+		expect(bvvDistanceUnitsProvider(10000, 2)).toBe('10,00 km');
 	});
 
 	it('provides formatted area for bvv-metric system with de-locales', () => {
@@ -117,7 +117,7 @@ describe('Units provider', () => {
 	it('provides formatted distance for bvv-metric system with fallback-locales (en)', () => {
 		spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('xx');
 
-		expect(bvvDistanceUnitsProvider(10000, 2)).toBe('10.0 km');
+		expect(bvvDistanceUnitsProvider(10000, 2)).toBe('10.00 km');
 	});
 
 	it('provides formatted area for bvv-metric system with fallback-locales (en)', () => {
