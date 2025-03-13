@@ -12,6 +12,9 @@
 .ba-list-item:hover {
 	background: var(--header-background-color);
 }
+.ba-list-item_hover {
+	background: var(--header-background-color);
+}
 .ba-list-item > * {
 	padding-top: 0.8em;
 	padding-bottom: 0.8em;
