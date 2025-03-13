@@ -53,12 +53,12 @@ describe('Units provider', () => {
 		expect(bvvDistanceUnitsProvider(42, 0)).toEqual({ value: 42, localizedValue: '42.0', unit: 'm' });
 		expect(bvvDistanceUnitsProvider(42, 2)).toEqual({ value: 42, localizedValue: '42.0', unit: 'm' });
 		expect(bvvDistanceUnitsProvider(999, 0)).toEqual({ value: 999, localizedValue: '999.0', unit: 'm' });
-		expect(bvvDistanceUnitsProvider(1000, 0)).toEqual({ value: 1, localizedValue: '1.0', unit: 'km' });
-		expect(bvvDistanceUnitsProvider(1000, 2)).toEqual({ value: 1, localizedValue: '1.0', unit: 'km' });
-		expect(bvvDistanceUnitsProvider(1234, 0)).toEqual({ value: 1.2, localizedValue: '1.2', unit: 'km' });
-		expect(bvvDistanceUnitsProvider(1234, 2)).toEqual({ value: 1.2, localizedValue: '1.2', unit: 'km' });
-		expect(bvvDistanceUnitsProvider(10000, 0)).toEqual({ value: 10, localizedValue: '10.0', unit: 'km' });
-		expect(bvvDistanceUnitsProvider(10000, 2)).toEqual({ value: 10, localizedValue: '10.0', unit: 'km' });
+		expect(bvvDistanceUnitsProvider(1000, 0)).toEqual({ value: 1, localizedValue: '1.00', unit: 'km' });
+		expect(bvvDistanceUnitsProvider(1000, 2)).toEqual({ value: 1, localizedValue: '1.00', unit: 'km' });
+		expect(bvvDistanceUnitsProvider(1234, 0)).toEqual({ value: 1.23, localizedValue: '1.23', unit: 'km' });
+		expect(bvvDistanceUnitsProvider(1234, 2)).toEqual({ value: 1.23, localizedValue: '1.23', unit: 'km' });
+		expect(bvvDistanceUnitsProvider(10000, 0)).toEqual({ value: 10, localizedValue: '10.00', unit: 'km' });
+		expect(bvvDistanceUnitsProvider(10000, 2)).toEqual({ value: 10, localizedValue: '10.00', unit: 'km' });
 	});
 
 	it('provides formatted area for bvv-metric system with default-locales (en)', () => {
@@ -98,12 +98,12 @@ describe('Units provider', () => {
 		expect(bvvDistanceUnitsProvider(42, 0)).toEqual({ value: 42, localizedValue: '42,0', unit: 'm' });
 		expect(bvvDistanceUnitsProvider(42, 2)).toEqual({ value: 42, localizedValue: '42,0', unit: 'm' });
 		expect(bvvDistanceUnitsProvider(999, 0)).toEqual({ value: 999, localizedValue: '999,0', unit: 'm' });
-		expect(bvvDistanceUnitsProvider(1000, 0)).toEqual({ value: 1, localizedValue: '1,0', unit: 'km' });
-		expect(bvvDistanceUnitsProvider(1000, 2)).toEqual({ value: 1, localizedValue: '1,0', unit: 'km' });
-		expect(bvvDistanceUnitsProvider(1234, 0)).toEqual({ value: 1.2, localizedValue: '1,2', unit: 'km' });
-		expect(bvvDistanceUnitsProvider(1234, 2)).toEqual({ value: 1.2, localizedValue: '1,2', unit: 'km' });
-		expect(bvvDistanceUnitsProvider(10000, 0)).toEqual({ value: 10, localizedValue: '10,0', unit: 'km' });
-		expect(bvvDistanceUnitsProvider(10000, 2)).toEqual({ value: 10, localizedValue: '10,0', unit: 'km' });
+		expect(bvvDistanceUnitsProvider(1000, 0)).toEqual({ value: 1, localizedValue: '1,00', unit: 'km' });
+		expect(bvvDistanceUnitsProvider(1000, 2)).toEqual({ value: 1, localizedValue: '1,00', unit: 'km' });
+		expect(bvvDistanceUnitsProvider(1234, 0)).toEqual({ value: 1.23, localizedValue: '1,23', unit: 'km' });
+		expect(bvvDistanceUnitsProvider(1234, 2)).toEqual({ value: 1.23, localizedValue: '1,23', unit: 'km' });
+		expect(bvvDistanceUnitsProvider(10000, 0)).toEqual({ value: 10, localizedValue: '10,00', unit: 'km' });
+		expect(bvvDistanceUnitsProvider(10000, 2)).toEqual({ value: 10, localizedValue: '10,00', unit: 'km' });
 	});
 
 	it('provides formatted area for bvv-metric system with de-locales', () => {
@@ -138,7 +138,7 @@ describe('Units provider', () => {
 	it('provides formatted distance for bvv-metric system with fallback-locales (en)', () => {
 		spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('xx');
 
-		expect(bvvDistanceUnitsProvider(10000, 2)).toEqual({ value: 10, localizedValue: '10.0', unit: 'km' });
+		expect(bvvDistanceUnitsProvider(10000, 2)).toEqual({ value: 10, localizedValue: '10.00', unit: 'km' });
 	});
 
 	it('provides formatted area for bvv-metric system with fallback-locales (en)', () => {
