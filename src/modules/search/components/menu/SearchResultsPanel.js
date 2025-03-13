@@ -8,7 +8,6 @@ import { GeoResourceResultsPanel } from './types/geoResource/GeoResourceResultsP
 import { AbstractMvuContentPanel } from '../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { CpResultsPanel } from './types/cp/CpResultsPanel';
 import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
-import { MvuElement } from '../../../MvuElement';
 import { findAllBySelector } from '../../../../utils/markup';
 
 /**
