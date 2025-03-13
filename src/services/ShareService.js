@@ -361,7 +361,7 @@ export class ShareService {
 			// crosshair coordinate should be rounded according to the internal projection of the map
 			const { digits } = Object.values(GlobalCoordinateRepresentations).filter((cr) => cr.code === mapService.getSrid())[0];
 			const feature = features.find((hf) => hf.id === CROSSHAIR_HIGHLIGHT_FEATURE_ID);
-			const crosshairCoords = feature.data.coordinate.map((n) => n.toFixed(digits));
+			const crosshairCoords = feature.data.map((n) => n.toFixed(digits));
 			extractedState[QueryParameters.CROSSHAIR] = [true, ...crosshairCoords];
 		}
 

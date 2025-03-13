@@ -443,12 +443,12 @@ describe('ShareService', () => {
 						{
 							id: CROSSHAIR_HIGHLIGHT_FEATURE_ID,
 							type: HighlightFeatureType.MARKER,
-							data: { coordinate: [42, 21] }
+							data: [42, 21]
 						},
 						{
 							id: 'hf_id1',
 							type: HighlightFeatureType.DEFAULT,
-							data: { coordinate: [77, 55] }
+							data: [77, 55]
 						}
 					]);
 
