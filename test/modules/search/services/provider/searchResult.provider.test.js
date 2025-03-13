@@ -53,7 +53,7 @@ describe('SearchResult provider', () => {
 			const term = 'term?/foo';
 			const termReplacedAndEncoded = 'term%3F%20foo';
 			const backendUrl = 'https://backend.url';
-			const expectedArgs0 = `${backendUrl}/search/type/layers/searchText/${termReplacedAndEncoded}`;
+			const expectedArgs0 = `${backendUrl}/search/type/georesource/searchText/${termReplacedAndEncoded}`;
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
 			const httpServiceSpy = spyOn(httpService, 'get')
 				.withArgs(expectedArgs0)
@@ -76,7 +76,7 @@ describe('SearchResult provider', () => {
 		it('returns an empty array when response is empty', async () => {
 			const term = 'term';
 			const backendUrl = 'https://backend.url';
-			const expectedArgs0 = `${backendUrl}/search/type/layers/searchText/${term}`;
+			const expectedArgs0 = `${backendUrl}/search/type/georesource/searchText/${term}`;
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
 			const httpServiceSpy = spyOn(httpService, 'get')
 				.withArgs(expectedArgs0)
@@ -92,7 +92,7 @@ describe('SearchResult provider', () => {
 		it('rejects when backend request cannot be fulfilled', async () => {
 			const term = 'term';
 			const backendUrl = 'https://backend.url';
-			const expectedArgs0 = `${backendUrl}/search/type/layers/searchText/${term}`;
+			const expectedArgs0 = `${backendUrl}/search/type/georesource/searchText/${term}`;
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
 			const httpServiceSpy = spyOn(httpService, 'get')
 				.withArgs(expectedArgs0)
@@ -126,7 +126,7 @@ describe('SearchResult provider', () => {
 			const term = 'term?/foo';
 			const backendUrl = 'https://backend.url';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
-			const expectedUrl = `${backendUrl}/search/type/locations/searchText`;
+			const expectedUrl = `${backendUrl}/search/type/location/searchText`;
 			const payload = { term };
 			const httpServiceSpy = spyOn(httpService, 'post')
 				.withArgs(expectedUrl, JSON.stringify(payload), MediaType.JSON)
@@ -155,7 +155,7 @@ describe('SearchResult provider', () => {
 			const term = 'term';
 			const backendUrl = 'https://backend.url';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
-			const expectedUrl = `${backendUrl}/search/type/locations/searchText`;
+			const expectedUrl = `${backendUrl}/search/type/location/searchText`;
 			const payload = { term };
 			const httpServiceSpy = spyOn(httpService, 'post')
 				.withArgs(expectedUrl, JSON.stringify(payload), MediaType.JSON)
@@ -172,7 +172,7 @@ describe('SearchResult provider', () => {
 			const term = 'term';
 			const backendUrl = 'https://backend.url';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
-			const expectedUrl = `${backendUrl}/search/type/locations/searchText`;
+			const expectedUrl = `${backendUrl}/search/type/location/searchText`;
 			const payload = { term };
 			const httpServiceSpy = spyOn(httpService, 'post')
 				.withArgs(expectedUrl, JSON.stringify(payload), MediaType.JSON)

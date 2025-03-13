@@ -30,7 +30,7 @@ const removeHtml = (htmlLabel) => {
 export const loadBvvGeoResourceSearchResults = async (query) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 
-	const url = configService.getValueAsPath('BACKEND_URL') + 'search/type/layers/searchText';
+	const url = configService.getValueAsPath('BACKEND_URL') + 'search/type/georesource/searchText';
 
 	const result = await httpService.get(`${url}/${encodeURIComponent(query.replace(/\//g, ' '))}`);
 
@@ -47,7 +47,7 @@ export const loadBvvGeoResourceSearchResults = async (query) => {
 export const loadBvvLocationSearchResults = async (query) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 
-	const url = configService.getValueAsPath('BACKEND_URL') + 'search/type/locations/searchText';
+	const url = configService.getValueAsPath('BACKEND_URL') + 'search/type/location/searchText';
 
 	const requestPayload = { term: query };
 
