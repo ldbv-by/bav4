@@ -28,18 +28,36 @@ export class Feature {
 		this.#geometry = geometry;
 	}
 
+	/**
+	 * Sets a property
+	 * @param {string} key
+	 * @param {*} value
+	 * @returns `this` for chaining
+	 */
 	set(key, value) {
-		this.#properties[key] = value;
-		return this.getProperties();
+		if (isString(key)) {
+			this.#properties[key] = value;
+		}
+		return this;
 	}
 
+	/**
+	 * Returns a property
+	 * @param {string} key
+	 * @returns the property or `null`
+	 */
 	get(key) {
 		return this.getProperties()[key] ?? null;
 	}
 
+	/**
+	 * Removes a property
+	 * @param {string} key
+	 * @returns `this` for chaining
+	 */
 	remove(key) {
 		delete this.#properties[key];
-		return this.getProperties();
+		return this;
 	}
 
 	getProperties() {
