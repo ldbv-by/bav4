@@ -20,14 +20,14 @@ describe('Feature', () => {
 		const geometry = new Geometry('data', new SourceType(SourceTypeName.EWKT));
 		const feature = new Feature(geometry, 'id');
 
-		feature.set('foo', 'bar');
-		feature.set('foo', 'bar1');
+		feature.set('foo', 'bar').set('foo', 'bar1').set(123, 123);
 
 		expect(feature.get('foo')).toBe('bar1');
 		expect(feature.get('unknown')).toBeNull();
+		expect(feature.get(123)).toBeNull();
 		expect(feature.getProperties()).toEqual({ foo: 'bar1' });
 
-		feature.remove('foo');
+		feature.remove('foo').remove(123);
 		expect(feature.getProperties()).toEqual({});
 	});
 });

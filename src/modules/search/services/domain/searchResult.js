@@ -2,6 +2,9 @@
  * @module modules/search/services/domain/searchResult
  */
 
+import { isString } from '../../../../utils/checks';
+import { hashCode } from '../../../../utils/hashCode';
+
 /**
  * @readonly
  * @enum {String}
@@ -64,6 +67,7 @@ export class SearchResult {
 }
 
 export class LocationSearchResult extends SearchResult {
+	#id;
 	constructor(label, labelFormatted, center = null, extent = null) {
 		super(label, labelFormatted);
 		this._center = center;
@@ -78,12 +82,28 @@ export class LocationSearchResult extends SearchResult {
 		return this._extent;
 	}
 
+	get id() {
+		return this.#id ?? hashCode(this).toString();
+	}
+
+	/**
+	 * Sets the id of this `CadastralParcelSearchResult`
+	 * @param {string} id
+	 */
+	setId(id) {
+		if (isString(id)) {
+			this.#id = id;
+		}
+		return this;
+	}
+
 	getType() {
 		return SearchResultTypes.LOCATION;
 	}
 }
 
 export class CadastralParcelSearchResult extends SearchResult {
+	#id;
 	/**
 	 *
 	 * @param {string} label the label (plain text)
@@ -109,6 +129,21 @@ export class CadastralParcelSearchResult extends SearchResult {
 
 	get geometry() {
 		return this._geometry;
+	}
+
+	get id() {
+		return this.#id ?? hashCode(this).toString();
+	}
+
+	/**
+	 * Sets the id of this `CadastralParcelSearchResult`
+	 * @param {string} id
+	 */
+	setId(id) {
+		if (isString(id)) {
+			this.#id = id;
+		}
+		return this;
 	}
 
 	getType() {
