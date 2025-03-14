@@ -16,6 +16,7 @@ import {
 import { $injector } from '../../src/injection';
 import { getDefaultAttribution, getMinimalAttribution } from '../../src/services/provider/attribution.provider';
 import { TestUtils } from '../test-utils';
+import { StyleHint } from '../../src/domain/styles';
 
 describe('GeoResource', () => {
 	const geoResourceServiceMock = {
@@ -472,6 +473,7 @@ describe('GeoResource', () => {
 			expect(vectorGeoResource.clusterParams).toEqual({});
 			expect(vectorGeoResource.showPointNames).toBe(true);
 			expect(vectorGeoResource.localData).toBe(false);
+			expect(vectorGeoResource.styleHint).toBeNull();
 		});
 
 		it('provides the source type as fallback label', () => {
@@ -512,6 +514,12 @@ describe('GeoResource', () => {
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).isClustered()).toBeFalse();
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setClusterParams(null).isClustered()).toBeFalse();
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setClusterParams({ foo: 'bar' }).isClustered()).toBeTrue();
+			});
+
+			it('provides a check for containing a non-default value as styleHint', () => {
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).hasStyleHint()).toBeFalse();
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setStyleHint(null).hasStyleHint()).toBeFalse();
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setStyleHint(StyleHint.HIGHLIGHT).hasStyleHint()).toBeTrue();
 			});
 
 			it('provides a check for containing a non-default value as label', () => {
@@ -579,6 +587,7 @@ describe('GeoResource', () => {
 			const rtVectorGeoResource = new RtVectorGeoResource('id', 'label', VectorSourceType.KML);
 
 			expect(rtVectorGeoResource.clusterParams).toEqual({});
+			expect(rtVectorGeoResource.styleHint).toBeNull();
 		});
 
 		describe('methods', () => {
@@ -586,6 +595,12 @@ describe('GeoResource', () => {
 				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).isClustered()).toBeFalse();
 				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).setClusterParams(null).isClustered()).toBeFalse();
 				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).setClusterParams({ foo: 'bar' }).isClustered()).toBeTrue();
+			});
+
+			it('provides a check for containing a non-default value as styleHint', () => {
+				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).hasStyleHint()).toBeFalse();
+				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).setStyleHint(null).hasStyleHint()).toBeFalse();
+				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).setStyleHint(StyleHint.HIGHLIGHT).hasStyleHint()).toBeTrue();
 			});
 
 			it('sets the showPointNames property', () => {

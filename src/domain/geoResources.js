@@ -552,6 +552,7 @@ export class VectorGeoResource extends GeoResource {
 		this._showPointNames = true;
 		this._localData = false;
 		this._clusterParams = {};
+		this._styleHint = null;
 	}
 
 	/**
@@ -623,6 +624,29 @@ export class VectorGeoResource extends GeoResource {
 	setClusterParams(clusterParams) {
 		if (clusterParams) {
 			this._clusterParams = { ...clusterParams };
+		}
+		return this;
+	}
+
+	/**
+	 * @returns `true` if this VectorGeoResource has specific style hint
+	 */
+	hasStyleHint() {
+		return !!this._styleHint;
+	}
+
+	get styleHint() {
+		return this._styleHint;
+	}
+
+	/**
+	 * Set the styleHint for this `VectorGeoResource`
+	 * @param {StyleHint} styleHint
+	 * @returns {VectorGeoResource}
+	 */
+	setStyleHint(styleHint) {
+		if (styleHint) {
+			this._styleHint = styleHint;
 		}
 		return this;
 	}
@@ -699,6 +723,7 @@ export class RtVectorGeoResource extends GeoResource {
 		this._sourceType = sourceType;
 		this._clusterParams = {};
 		this._showPointNames = true;
+		this._styleHint = null;
 	}
 
 	get url() {
@@ -716,6 +741,29 @@ export class RtVectorGeoResource extends GeoResource {
 	setClusterParams(clusterParams) {
 		if (clusterParams) {
 			this._clusterParams = { ...clusterParams };
+		}
+		return this;
+	}
+
+	/**
+	 * @returns `true` if this VectorGeoResource has specific style hint
+	 */
+	hasStyleHint() {
+		return !!this._styleHint;
+	}
+
+	get styleHint() {
+		return this._styleHint;
+	}
+
+	/**
+	 * Set the styleHint for this `VectorGeoResource`
+	 * @param {StyleHint} styleHint
+	 * @returns {VectorGeoResource}
+	 */
+	setStyleHint(styleHint) {
+		if (styleHint) {
+			this._styleHint = styleHint;
 		}
 		return this;
 	}
