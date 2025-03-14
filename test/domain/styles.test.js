@@ -1,4 +1,4 @@
-import { StyleSize } from '../../src/domain/styles';
+import { StyleHint, StyleSize } from '../../src/domain/styles';
 
 describe('StyleSize', () => {
 	it('is an enum with a value ', () => {
@@ -7,5 +7,12 @@ describe('StyleSize', () => {
 		expect(StyleSize.LARGE).toEqual('large');
 		expect(StyleSize.MEDIUM).toEqual('medium');
 		expect(StyleSize.SMALL).toEqual('small');
+	});
+});
+describe('StyleHint', () => {
+	it('is an enum with a value ', () => {
+		expect(Object.entries(StyleHint).length).toBe(1);
+		expect(Object.isFrozen(StyleHint)).toBeTrue();
+		expect(StyleHint.HIGHLIGHT).toEqual('highlight');
 	});
 });

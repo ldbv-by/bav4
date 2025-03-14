@@ -10,3 +10,12 @@ export const StyleSize = Object.freeze({
 	MEDIUM: 'medium',
 	LARGE: 'large'
 });
+
+/**
+ * StyleHint e.g. of a `VectorGeoResource` a `RtVectorGeoResource` or a `Feature`
+ * @readonly
+ * @enum {string}
+ */
+export const StyleHint = Object.freeze({
+	HIGHLIGHT: 'highlight'
+});
