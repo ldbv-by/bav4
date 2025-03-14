@@ -24,6 +24,8 @@ import { GeometryCollection, MultiPoint, Point } from '../../../../node_modules/
 import { Stroke, Style, Text } from '../../../../node_modules/ol/style';
 import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../ol/geodesic/geodesicGeometry';
 import { VectorSourceType } from '../../../domain/geoResources';
+import { StyleHint } from '../../../domain/styles';
+import { highlightGeometryOrCoordinateFeatureStyleFunction } from '../handler/highlight/styleUtils';
 
 /**
  * Enumeration of predefined types of style
@@ -123,11 +125,21 @@ export class StyleService {
 	}
 
 	/**
-	 * Adds a cluster style to the specified {@link ol.layer.vector.VectorLayer}.
-	 * @param {ol.layer.vector.VectorLayer} olVectorLayer the vector layer with the clustered features
+	 * Applies the style according to the given `StyleHint`
+	 * @param {StyleHint} styleHint
+	 * @param {ol.layer.Vector} olVectorLayer
+	 * @returns {ol.layer.Vector}
 	 */
-	addClusterStyle(olVectorLayer) {
-		olVectorLayer.setStyle(defaultClusterStyleFunction());
+	applyStyleHint(styleHint, olVectorLayer) {
+		switch (styleHint) {
+			case StyleHint.CLUSTER:
+				olVectorLayer.setStyle(defaultClusterStyleFunction());
+				break;
+			case StyleHint.HIGHLIGHT:
+				olVectorLayer.setStyle(highlightGeometryOrCoordinateFeatureStyleFunction());
+				break;
+		}
+		return olVectorLayer;
 	}
 
 	/**
