@@ -17,5 +17,6 @@ export const StyleSize = Object.freeze({
  * @enum {string}
  */
 export const StyleHint = Object.freeze({
-	HIGHLIGHT: 'highlight'
+	HIGHLIGHT: 'highlight',
+	CLUSTER: 'cluster'
 });
