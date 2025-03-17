@@ -286,7 +286,7 @@ describe('FeatureInfo provider', () => {
 				const panel = target.querySelector(FeatureCollectionPanel.tag);
 
 				expect(panel.configuration.feature.geometry.data.startsWith('<kml')).toBeTrue();
-				expect(panel.configuration.feature.geometry.sourceType).toEqual(new SourceType(SourceTypeName.KML));
+				expect(panel.configuration.feature.geometry.sourceType).toEqual(SourceType.forKml());
 				expect(panel.configuration.geoResourceId).toBe(geoResourceId);
 			});
 		});
