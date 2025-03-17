@@ -13,6 +13,7 @@ import VectorLayer from 'ol/layer/Vector';
 import { TestUtils } from '../../../test-utils';
 import { createDefaultLayer, layersReducer } from '../../../../src/store/layers/layers.reducer';
 import { UnavailableGeoResourceError } from '../../../../src/domain/errors';
+import { StyleHint } from '../../../../src/domain/styles';
 
 describe('VectorLayerService', () => {
 	const urlService = {
@@ -32,8 +33,8 @@ describe('VectorLayerService', () => {
 		removeStyle: () => {},
 		updateStyle: () => {},
 		isStyleRequired: () => {},
-		addClusterStyle: () => {},
-		sanitizeStyle: () => {}
+		sanitizeStyle: () => {},
+		applyStyleHint: () => {}
 	};
 
 	beforeEach(() => {
@@ -139,111 +140,19 @@ describe('VectorLayerService', () => {
 				const sourceAsString = 'kml';
 				const olMap = new Map();
 				const olSource = new VectorSource();
-				const vectorGeoresource = new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326);
-				spyOn(instanceUnderTest, '_vectorSourceForData').withArgs(vectorGeoresource).and.returnValue(olSource);
-				const sanitizeSpy = spyOn(instanceUnderTest, 'sanitizeStyles')
-					.withArgs(jasmine.any(VectorLayer))
-					.and.callFake(() => {});
+				const vectorGeoResource = new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326);
+				spyOn(instanceUnderTest, '_vectorSourceForData').withArgs(vectorGeoResource).and.returnValue(olSource);
+				spyOn(instanceUnderTest, 'applyStyle')
+					.withArgs(vectorGeoResource, jasmine.anything(), olMap)
+					.and.callFake((vrg, olLayer) => olLayer);
 
-				spyOn(instanceUnderTest, 'applyStyles')
-					.withArgs(jasmine.anything(), olMap)
-					.and.callFake((layer) => layer);
-
-				const olVectorLayer = instanceUnderTest.createLayer(id, vectorGeoresource, olMap);
-
-				expect(sanitizeSpy).toHaveBeenCalledWith(olVectorLayer);
+				const olVectorLayer = instanceUnderTest.createLayer(id, vectorGeoResource, olMap);
 
 				expect(olVectorLayer.get('id')).toBe(id);
 				expect(olVectorLayer.get('geoResourceId')).toBe(geoResourceId);
 				expect(olVectorLayer.getMinZoom()).toBeNegativeInfinity();
 				expect(olVectorLayer.getMaxZoom()).toBePositiveInfinity();
 
-				expect(olVectorLayer.constructor.name).toBe('VectorLayer');
-				expect(olVectorLayer.getSource()).toEqual(olSource);
-			});
-
-			it('returns an ol vector layer for a clustered data based VectorGeoResource', () => {
-				setup();
-				const id = 'id';
-				const geoResourceId = 'geoResourceId';
-				const geoResourceLabel = 'geoResourceLabel';
-				const sourceAsString = 'kml';
-				const olMap = new Map();
-				const olSource = new VectorSource();
-				const vectorGeoresource = new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML)
-					.setSource(sourceAsString, 4326)
-					.setClusterParams({ foo: 'bar' });
-				spyOn(instanceUnderTest, '_vectorSourceForData').withArgs(vectorGeoresource).and.returnValue(olSource);
-				spyOn(instanceUnderTest, 'applyClusterStyle')
-					.withArgs(jasmine.anything())
-					.and.callFake((layer) => layer);
-
-				const olVectorLayer = instanceUnderTest.createLayer(id, vectorGeoresource, olMap);
-
-				expect(olVectorLayer.get('id')).toBe(id);
-				expect(olVectorLayer.get('geoResourceId')).toBe(geoResourceId);
-				expect(olVectorLayer.getMinZoom()).toBeNegativeInfinity();
-				expect(olVectorLayer.getMaxZoom()).toBePositiveInfinity();
-
-				expect(olVectorLayer.constructor.name).toBe('VectorLayer');
-				expect(olVectorLayer.getSource()).toEqual(olSource);
-			});
-
-			it('returns an ol vector layer for a data based VectorGeoResource containing optional properties', () => {
-				setup();
-				const id = 'id';
-				const geoResourceId = 'geoResourceId';
-				const geoResourceLabel = 'geoResourceLabel';
-				const sourceAsString = 'kml';
-				const olMap = new Map();
-				const olSource = new VectorSource();
-				const vectorGeoResource = new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML)
-					.setSource(sourceAsString, 4326)
-					.setOpacity(0.5)
-					.setMinZoom(5)
-					.setMaxZoom(19);
-				spyOn(instanceUnderTest, '_vectorSourceForData').withArgs(vectorGeoResource).and.returnValue(olSource);
-				spyOn(instanceUnderTest, 'applyStyles')
-					.withArgs(jasmine.anything(), olMap)
-					.and.callFake((layer) => layer);
-
-				const olVectorLayer = instanceUnderTest.createLayer(id, vectorGeoResource, olMap);
-
-				expect(olVectorLayer.get('id')).toBe(id);
-				expect(olVectorLayer.get('geoResourceId')).toBe(geoResourceId);
-				expect(olVectorLayer.getOpacity()).toBe(0.5);
-				expect(olVectorLayer.getMinZoom()).toBe(5);
-				expect(olVectorLayer.getMaxZoom()).toBe(19);
-				expect(olVectorLayer.constructor.name).toBe('VectorLayer');
-				expect(olVectorLayer.getSource()).toEqual(olSource);
-			});
-
-			it('returns an ol vector layer for a clustered data based VectorGeoResource containing optional properties', () => {
-				setup();
-				const id = 'id';
-				const geoResourceId = 'geoResourceId';
-				const geoResourceLabel = 'geoResourceLabel';
-				const sourceAsString = 'kml';
-				const olMap = new Map();
-				const olSource = new VectorSource();
-				const vectorGeoResource = new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML)
-					.setSource(sourceAsString, 4326)
-					.setOpacity(0.5)
-					.setMinZoom(5)
-					.setMaxZoom(19)
-					.setClusterParams({ foo: 'bar' });
-				spyOn(instanceUnderTest, '_vectorSourceForData').withArgs(vectorGeoResource).and.returnValue(olSource);
-				spyOn(instanceUnderTest, 'applyClusterStyle')
-					.withArgs(jasmine.anything())
-					.and.callFake((layer) => layer);
-
-				const olVectorLayer = instanceUnderTest.createLayer(id, vectorGeoResource, olMap);
-
-				expect(olVectorLayer.get('id')).toBe(id);
-				expect(olVectorLayer.get('geoResourceId')).toBe(geoResourceId);
-				expect(olVectorLayer.getOpacity()).toBe(0.5);
-				expect(olVectorLayer.getMinZoom()).toBe(5);
-				expect(olVectorLayer.getMaxZoom()).toBe(19);
 				expect(olVectorLayer.constructor.name).toBe('VectorLayer');
 				expect(olVectorLayer.getSource()).toEqual(olSource);
 			});
@@ -624,20 +533,20 @@ describe('VectorLayerService', () => {
 					.withArgs(jasmine.any(Feature))
 					.and.callFake(() => {});
 
-				instanceUnderTest.sanitizeStyles(olLayer);
+				instanceUnderTest._sanitizeStyles(olLayer);
 
 				expect(spy).toHaveBeenCalledTimes(2);
 			});
 		});
 
-		describe('applyStyles', () => {
+		describe('_applyFeatureSpecificStyles', () => {
 			it('returns the olLayer ', () => {
 				setup();
 				const olMap = new Map();
 				const olSource = new VectorSource();
 				const olLayer = new VectorLayer({ source: olSource });
 
-				const result = instanceUnderTest.applyStyles(olLayer, olMap);
+				const result = instanceUnderTest._applyFeatureSpecificStyles(olLayer, olMap);
 
 				expect(result).toBe(olLayer);
 			});
@@ -653,7 +562,7 @@ describe('VectorLayerService', () => {
 					const registerStyleEventListenersSpy = spyOn(instanceUnderTest, '_registerStyleEventListeners');
 					const styleServiceAddSpy = spyOn(styleService, 'addStyle');
 
-					instanceUnderTest.applyStyles(olLayer, olMap);
+					instanceUnderTest._applyFeatureSpecificStyles(olLayer, olMap);
 					olSource.dispatchEvent(new VectorSourceEvent('addfeature', olFeature));
 
 					expect(styleServiceAddSpy).not.toHaveBeenCalledWith(olFeature, olMap, olLayer);
@@ -674,7 +583,7 @@ describe('VectorLayerService', () => {
 					const styleServiceAddSpy = spyOn(styleService, 'addStyle');
 					const updateStyleSpy = spyOn(instanceUnderTest, '_updateStyle');
 
-					instanceUnderTest.applyStyles(olLayer, olMap);
+					instanceUnderTest._applyFeatureSpecificStyles(olLayer, olMap);
 
 					expect(styleServiceAddSpy).toHaveBeenCalledWith(olFeature0, olMap, olLayer);
 					expect(styleServiceAddSpy).toHaveBeenCalledWith(olFeature1, olMap, olLayer);
@@ -695,7 +604,7 @@ describe('VectorLayerService', () => {
 					const styleServiceAddSpy = spyOn(styleService, 'addStyle');
 					const updateStyleSpy = spyOn(instanceUnderTest, '_updateStyle');
 
-					instanceUnderTest.applyStyles(olLayer, olMap);
+					instanceUnderTest._applyFeatureSpecificStyles(olLayer, olMap);
 
 					expect(styleServiceAddSpy).not.toHaveBeenCalled();
 					expect(updateStyleSpy).not.toHaveBeenCalled();
@@ -721,7 +630,7 @@ describe('VectorLayerService', () => {
 					const styleServiceAddSpy = spyOn(styleService, 'addStyle');
 					const updateStyleSpy = spyOn(instanceUnderTest, '_updateStyle');
 
-					instanceUnderTest.applyStyles(olLayer, olMap);
+					instanceUnderTest._applyFeatureSpecificStyles(olLayer, olMap);
 
 					expect(styleServiceAddSpy).not.toHaveBeenCalled();
 					expect(updateStyleSpy).not.toHaveBeenCalled();
@@ -730,16 +639,53 @@ describe('VectorLayerService', () => {
 			});
 		});
 
-		describe('applyClusterStyle', () => {
-			it('calls the StyleService and returns the olLayer ', () => {
+		describe('applyStyle', () => {
+			it('calls _sanitizeStyles', () => {
 				setup();
-				const olSource = new VectorSource();
-				const olLayer = new VectorLayer({ source: olSource });
-				spyOn(styleService, 'addClusterStyle').and.returnValue(olLayer);
+				const olLayer = new VectorLayer({ source: new VectorSource() });
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML);
+				const olMap = new Map();
+				const sanitizeStylesSpy = spyOn(instanceUnderTest, '_sanitizeStyles');
 
-				const result = instanceUnderTest.applyClusterStyle(olLayer);
+				instanceUnderTest.applyStyle(vectorGeoResource, olLayer, olMap);
 
-				expect(result).toBe(olLayer);
+				expect(sanitizeStylesSpy).toHaveBeenCalledWith(olLayer);
+			});
+
+			it('handles a clustered VectorGeoResource', () => {
+				setup();
+				const olLayer = new VectorLayer({ source: new VectorSource() });
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setClusterParams({ foo: 'bar' });
+				const olMap = new Map();
+				const styleServiceSpy = spyOn(styleService, 'applyStyleHint');
+
+				instanceUnderTest.applyStyle(vectorGeoResource, olLayer, olMap);
+
+				expect(styleServiceSpy).toHaveBeenCalledWith(StyleHint.CLUSTER, olLayer);
+			});
+
+			it('handles a VectorGeoResource containing a StyleHint', () => {
+				setup();
+				const olLayer = new VectorLayer({ source: new VectorSource() });
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setStyleHint(StyleHint.HIGHLIGHT);
+				const olMap = new Map();
+				const styleServiceSpy = spyOn(styleService, 'applyStyleHint');
+
+				instanceUnderTest.applyStyle(vectorGeoResource, olLayer, olMap);
+
+				expect(styleServiceSpy).toHaveBeenCalledWith(StyleHint.HIGHLIGHT, olLayer);
+			});
+
+			it('handles a VectorGeoResource without any StyleHints', () => {
+				setup();
+				const olLayer = new VectorLayer({ source: new VectorSource() });
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML);
+				const applyFeatureSpecificStylesSpy = spyOn(instanceUnderTest, '_applyFeatureSpecificStyles');
+				const olMap = new Map();
+
+				instanceUnderTest.applyStyle(vectorGeoResource, olLayer, olMap);
+
+				expect(applyFeatureSpecificStylesSpy).toHaveBeenCalledWith(olLayer, olMap);
 			});
 		});
 	});

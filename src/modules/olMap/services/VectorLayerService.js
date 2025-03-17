@@ -11,6 +11,7 @@ import { Cluster } from 'ol/source';
 import { getOriginAndPathname, getPathParams } from '../../../utils/urlUtils';
 import { UnavailableGeoResourceError } from '../../../domain/errors';
 import { isHttpUrl, isString } from '../../../utils/checks';
+import { StyleHint } from '../../../domain/styles';
 
 const getUrlService = () => {
 	const { UrlService: urlService } = $injector.inject('UrlService');
@@ -110,13 +111,7 @@ export class VectorLayerService {
 		return { addFeatureListenerKey, removeFeatureListenerKey, clearFeaturesListenerKey, layerChangeListenerKey, layerListChangedListenerKey };
 	}
 
-	/**
-	 * If needed, adds specific stylings (and overlays) for this vector layer
-	 * @param {ol.layer.Vector} olVectorLayer
-	 * @param {ol.Map} olMap
-	 * @returns olVectorLayer
-	 */
-	applyStyles(olVectorLayer, olMap) {
+	_applyFeatureSpecificStyles(olVectorLayer, olMap) {
 		/**
 		 * We check if an currently present and possible future features needs a specific styling.
 		 * If so, we apply the style and register an event listeners in order to keep the style (and overlays)
@@ -145,22 +140,28 @@ export class VectorLayerService {
 	 * ol context.
 	 * @param {ol.layer.Vector} olVectorLayer
 	 */
-	sanitizeStyles(olVectorLayer) {
+	_sanitizeStyles(olVectorLayer) {
 		const { StyleService: styleService } = $injector.inject('StyleService');
 		const olVectorSource = olVectorLayer.getSource();
 		olVectorSource.getFeatures().forEach((feature) => styleService.sanitizeStyle(feature));
 	}
 
 	/**
-	 * Adds a specific or a default cluster styling for this vector layer
+	 * If needed adds specific stylings (and overlays) for a vector layer
+	 * @param {VectorGeoResource|RtVectorGeoResource} vectorGeoResource
 	 * @param {ol.layer.Vector} olVectorLayer
-	 * @returns olVectorLayer
+	 * @param {ol.Map} olMap
+	 * @returns {ol.layer.Vector}
 	 */
-	applyClusterStyle(olVectorLayer) {
+	applyStyle(vectorGeoResource, olVectorLayer, olMap) {
 		const { StyleService: styleService } = $injector.inject('StyleService');
-		styleService.addClusterStyle(olVectorLayer);
-
-		return olVectorLayer;
+		this._sanitizeStyles(olVectorLayer);
+		if (vectorGeoResource.isClustered()) {
+			return styleService.applyStyleHint(StyleHint.CLUSTER, olVectorLayer);
+		} else if (vectorGeoResource.hasStyleHint()) {
+			return styleService.applyStyleHint(vectorGeoResource.styleHint, olVectorLayer);
+		}
+		return this._applyFeatureSpecificStyles(olVectorLayer, olMap);
 	}
 
 	/**
@@ -183,9 +184,7 @@ export class VectorLayerService {
 		const vectorSource = this._vectorSourceForData(vectorGeoResource);
 		vectorLayer.setSource(vectorSource);
 
-		this.sanitizeStyles(vectorLayer);
-
-		return vectorGeoResource.isClustered() ? this.applyClusterStyle(vectorLayer) : this.applyStyles(vectorLayer, olMap);
+		return this.applyStyle(vectorGeoResource, vectorLayer, olMap);
 	}
 
 	/**
