@@ -32,6 +32,30 @@ export class SourceType {
 	get srid() {
 		return this._srid;
 	}
+
+	/**
+	 *
+	 * @returns {SourceType} SourceType for KML
+	 */
+	static forKml() {
+		return new SourceType(SourceTypeName.KML, null, 4326);
+	}
+
+	/**
+	 *
+	 * @returns {SourceType} SourceType for GPX
+	 */
+	static forGpx() {
+		return new SourceType(SourceTypeName.GPX, null, 4326);
+	}
+
+	/**
+	 *
+	 * @returns {SourceType} SourceType for GeoJson
+	 */
+	static forGeoJSON() {
+		return new SourceType(SourceTypeName.GEOJSON, null, 4326);
+	}
 }
 
 /**

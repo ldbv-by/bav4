@@ -23,6 +23,12 @@ describe('SourceType', () => {
 		expect(sourceType.version).toBeNull();
 		expect(sourceType.srid).toBeNull();
 	});
+
+	it('provides static convenience methods', () => {
+		expect(SourceType.forKml()).toEqual(new SourceType(SourceTypeName.KML, null, 4326));
+		expect(SourceType.forGpx()).toEqual(new SourceType(SourceTypeName.GPX, null, 4326));
+		expect(SourceType.forGeoJSON()).toEqual(new SourceType(SourceTypeName.GEOJSON, null, 4326));
+	});
 });
 
 describe('SourceTypeResult', () => {
