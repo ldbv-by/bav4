@@ -45,7 +45,7 @@ export const provide = (lang) => {
 				menu_navigation_rail_login: 'Login BayernAtlas-plus',
 				menu_navigation_rail_logout: 'Logout',
 				menu_navigation_rail_help: 'Help and FAQ',
-				menu_navigation_rail_help_url: 'https://www.ldbv.bayern.de/hilfe-v4.html',
+				menu_navigation_rail_help_url: 'https://www.ldbv.bayern.de/produkte/dienste/ba_hilfe/index.html',
 				menu_navigation_rail_time_travel: 'Time travel',
 				menu_navigation_rail_time_travel_tooltip: 'Open time travel'
 			};
@@ -95,7 +95,7 @@ export const provide = (lang) => {
 				menu_navigation_rail_login: 'Login BayernAtlas-plus',
 				menu_navigation_rail_logout: 'Logout',
 				menu_navigation_rail_help: 'Hilfe und FAQ',
-				menu_navigation_rail_help_url: 'https://www.ldbv.bayern.de/hilfe-v4.html',
+				menu_navigation_rail_help_url: 'https://www.ldbv.bayern.de/produkte/dienste/ba_hilfe/index.html',
 				menu_navigation_rail_time_travel: 'Zeitreise',
 				menu_navigation_rail_time_travel_tooltip: 'Zeitreise öffnen'
 			};
