@@ -1,7 +1,7 @@
 /**
  * @module modules/olMap/services/VectorLayerService
  */
-import { VectorSourceType } from '../../../domain/geoResources';
+import { VectorSourceType, VTGeoResource } from '../../../domain/geoResources';
 import VectorSource from 'ol/source/Vector';
 import { $injector } from '../../../injection';
 import { KML, GPX, GeoJSON, WKT } from 'ol/format';
@@ -171,7 +171,7 @@ export class VectorLayerService {
 	/**
 	 * Builds an ol VectorLayer from an VectorGeoResource
 	 * @param {string} id layerId
-	 * @param {VectorGeoResource} vectorGeoResource
+	 * @param {VectorGeoResource|VTGeoResource} vectorGeoResource
 	 * @param {OlMap} olMap
 	 * @throws UnavailableGeoResourceError
 	 * @returns olVectorLayer
