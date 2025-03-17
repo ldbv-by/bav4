@@ -640,7 +640,7 @@ export class VectorGeoResource extends GeoResource {
 	}
 
 	/**
-	 * Set the styleHint for this `VectorGeoResource`
+	 * Set the style hint for this `VectorGeoResource`
 	 * @param {StyleHint} styleHint
 	 * @returns {VectorGeoResource}
 	 */
@@ -757,9 +757,9 @@ export class RtVectorGeoResource extends GeoResource {
 	}
 
 	/**
-	 * Set the styleHint for this `VectorGeoResource`
+	 * Set the style hint for this `RtVectorGeoResource`
 	 * @param {StyleHint} styleHint
-	 * @returns {VectorGeoResource}
+	 * @returns {RtVectorGeoResource}
 	 */
 	setStyleHint(styleHint) {
 		if (styleHint) {
