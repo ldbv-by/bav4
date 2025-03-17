@@ -119,7 +119,7 @@ export class HighlightPlugin extends BaPlugin {
 					.map((featureInfo) => ({
 						id: QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID,
 						type: HighlightFeatureType.DEFAULT,
-						data: new Geometry(featureInfo.geometry.data, new SourceType(SourceTypeName.GEOJSON))
+						data: featureInfo.geometry
 					}));
 				addHighlightFeatures(highlightFeatures);
 			}
