@@ -82,7 +82,7 @@ export class SourceTypeService {
 	/**
 	 * Creates a geometry by detecting the `SourceType` of the given data.
 	 * Returns `null` if the source type cannot be detected.
-	 * @param {String|object} data The data of this geometry (Note type `object' is only allowed in case of sourceType GeoJSON)
+	 * @param {String|object} data The data of this geometry (Note: type `object` is only allowed in case of sourceType == `SourceType.GeoJSON`)
 	 * @returns  {Geometry|null}
 	 */
 	toGeometry(data) {

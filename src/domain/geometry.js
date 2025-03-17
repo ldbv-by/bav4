@@ -13,7 +13,7 @@ export class Geometry {
 	#sourceType;
 	/**
 	 *
-	 * @param {String|object} data The data of this geometry (Note type `object` is only allowed in case of sourceType == `SourceType.GeoJSON`)
+	 * @param {String|object} data The data of this geometry (Note: type `object` is only allowed in case of sourceType == `SourceType.GeoJSON`)
 	 * @param {SourceType} sourceType The source type of this geometry.
 	 */
 	constructor(data, sourceType) {
