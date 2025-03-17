@@ -7,6 +7,7 @@ import { BaPlugin } from './BaPlugin';
 import { $injector } from '../injection/index';
 import { AggregateGeoResource } from '../domain/geoResources';
 import { clearFeatures } from '../store/featureCollection/featureCollection.action';
+import { StyleHint } from '../domain/styles';
 /**
  * Id of the layer used for the visualization of a feature collection
  */
@@ -54,6 +55,7 @@ export class FeatureCollectionPlugin extends BaPlugin {
 				const geoResourceIds = entries.map((feature) => {
 					const geoResourceId = feature.id;
 					this.#importVectorDataService.forData(feature.geometry.data, { id: geoResourceId }, true);
+					this.#geoResourceService.byId(geoResourceId).setStyleHint(StyleHint.HIGHLIGHT);
 					return geoResourceId;
 				});
 

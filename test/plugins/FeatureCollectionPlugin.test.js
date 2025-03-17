@@ -13,10 +13,12 @@ import { Geometry } from '../../src/domain/geometry.js';
 import { AggregateGeoResource } from '../../src/domain/geoResources.js';
 import { SourceType, SourceTypeName } from '../../src/domain/sourceType.js';
 import { removeLayer } from '../../src/store/layers/layers.action.js';
+import { StyleHint } from '../../src/domain/styles.js';
 
 describe('FeatureCollectionPlugin', () => {
 	const geoResourceService = {
-		addOrReplace: () => {}
+		addOrReplace: () => {},
+		byId: () => {}
 	};
 
 	const importVectorDataService = {
@@ -76,9 +78,12 @@ describe('FeatureCollectionPlugin', () => {
 			const store = setup({});
 			const instanceUnderTest = new FeatureCollectionPlugin();
 			await instanceUnderTest.register(store);
+			const mockGeoResource = { setStyleHint: () => {} };
+			const setStyleHintSpy = spyOn(mockGeoResource, 'setStyleHint');
 
 			const importVectorDataServiceSpy = spyOn(importVectorDataService, 'forData');
-			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
+			const geoResourceServiceAddOrReplaceSpy = spyOn(geoResourceService, 'addOrReplace');
+			spyOn(geoResourceService, 'byId').and.returnValue(mockGeoResource);
 
 			addFeatures([
 				new Feature(new Geometry('data0', new SourceType(SourceTypeName.EWKT)), 'id0'),
@@ -94,9 +99,11 @@ describe('FeatureCollectionPlugin', () => {
 			expect(importVectorDataServiceSpy.calls.all()[1].args[0]).toBe('data1');
 			expect(importVectorDataServiceSpy.calls.all()[1].args[1]).toEqual({ id: 'id1' });
 			expect(importVectorDataServiceSpy.calls.all()[1].args[2]).toBeTrue();
-			expect(geoResourceServiceSpy).toHaveBeenCalledWith(
+			expect(geoResourceServiceAddOrReplaceSpy).toHaveBeenCalledWith(
 				new AggregateGeoResource(FEATURE_COLLECTION_GEORESOURCE_ID, `global_featureCollection_layer_label (2)`, ['id0', 'id1']).setHidden(true)
 			);
+			expect(setStyleHintSpy).toHaveBeenCalledTimes(2);
+			expect(setStyleHintSpy).toHaveBeenCalledWith(StyleHint.HIGHLIGHT);
 		});
 	});
 
