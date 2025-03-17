@@ -275,7 +275,7 @@ describe('FeatureInfoResult provider', () => {
 				expect(featureInfoResult.content).toBe(content);
 				expect(featureInfoResult.title).toBe(title);
 				expect(featureInfoResult.geometry.data).toBe(geoJson);
-				expect(featureInfoResult.geometry.sourceType).toEqual(new SourceType(SourceTypeName.GEOJSON));
+				expect(featureInfoResult.geometry.sourceType).toEqual(SourceType.forGeoJSON());
 			});
 
 			it('loads a FeatureInfoResult without a geometry', async () => {

@@ -97,7 +97,7 @@ const loadTimeTravelFeatureInfo = async (geoResource, coordinate3857, timestamp)
 	switch (result.status) {
 		case 200: {
 			const { title, content, geometry: geoJson } = await result.json();
-			const geometry = geoJson ? new Geometry(geoJson, new SourceType(SourceTypeName.GEOJSON)) : null;
+			const geometry = geoJson ? new Geometry(geoJson, SourceType.forGeoJSON()) : null;
 			return { content, title, geometry };
 		}
 		case 204: {
