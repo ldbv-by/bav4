@@ -143,8 +143,8 @@ describe('VectorLayerService', () => {
 				const vectorGeoResource = new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326);
 				spyOn(instanceUnderTest, '_vectorSourceForData').withArgs(vectorGeoResource).and.returnValue(olSource);
 				spyOn(instanceUnderTest, 'applyStyle')
-					.withArgs(vectorGeoResource, jasmine.anything(), olMap)
-					.and.callFake((vrg, olLayer) => olLayer);
+					.withArgs(jasmine.anything(), olMap, vectorGeoResource)
+					.and.callFake((olLayer) => olLayer);
 
 				const olVectorLayer = instanceUnderTest.createLayer(id, vectorGeoResource, olMap);
 
@@ -640,6 +640,16 @@ describe('VectorLayerService', () => {
 		});
 
 		describe('applyStyle', () => {
+			it('calls return the ol.Layer', () => {
+				setup();
+				const olLayer = new VectorLayer({ source: new VectorSource() });
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML);
+				const olMap = new Map();
+
+				const result = instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
+
+				expect(result).toEqual(olLayer);
+			});
 			it('calls _sanitizeStyles', () => {
 				setup();
 				const olLayer = new VectorLayer({ source: new VectorSource() });
@@ -647,7 +657,7 @@ describe('VectorLayerService', () => {
 				const olMap = new Map();
 				const sanitizeStylesSpy = spyOn(instanceUnderTest, '_sanitizeStyles');
 
-				instanceUnderTest.applyStyle(vectorGeoResource, olLayer, olMap);
+				instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
 
 				expect(sanitizeStylesSpy).toHaveBeenCalledWith(olLayer);
 			});
@@ -659,7 +669,7 @@ describe('VectorLayerService', () => {
 				const olMap = new Map();
 				const styleServiceSpy = spyOn(styleService, 'applyStyleHint');
 
-				instanceUnderTest.applyStyle(vectorGeoResource, olLayer, olMap);
+				instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
 
 				expect(styleServiceSpy).toHaveBeenCalledWith(StyleHint.CLUSTER, olLayer);
 			});
@@ -671,7 +681,7 @@ describe('VectorLayerService', () => {
 				const olMap = new Map();
 				const styleServiceSpy = spyOn(styleService, 'applyStyleHint');
 
-				instanceUnderTest.applyStyle(vectorGeoResource, olLayer, olMap);
+				instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
 
 				expect(styleServiceSpy).toHaveBeenCalledWith(StyleHint.HIGHLIGHT, olLayer);
 			});
@@ -683,7 +693,7 @@ describe('VectorLayerService', () => {
 				const applyFeatureSpecificStylesSpy = spyOn(instanceUnderTest, '_applyFeatureSpecificStyles');
 				const olMap = new Map();
 
-				instanceUnderTest.applyStyle(vectorGeoResource, olLayer, olMap);
+				instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
 
 				expect(applyFeatureSpecificStylesSpy).toHaveBeenCalledWith(olLayer, olMap);
 			});

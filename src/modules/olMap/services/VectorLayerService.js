@@ -148,12 +148,12 @@ export class VectorLayerService {
 
 	/**
 	 * If needed adds specific stylings (and overlays) for a vector layer
-	 * @param {VectorGeoResource|RtVectorGeoResource} vectorGeoResource
 	 * @param {ol.layer.Vector} olVectorLayer
 	 * @param {ol.Map} olMap
+	 * @param {VectorGeoResource|RtVectorGeoResource} vectorGeoResource
 	 * @returns {ol.layer.Vector}
 	 */
-	applyStyle(vectorGeoResource, olVectorLayer, olMap) {
+	applyStyle(olVectorLayer, olMap, vectorGeoResource) {
 		const { StyleService: styleService } = $injector.inject('StyleService');
 		this._sanitizeStyles(olVectorLayer);
 		if (vectorGeoResource.isClustered()) {
@@ -184,7 +184,7 @@ export class VectorLayerService {
 		const vectorSource = this._vectorSourceForData(vectorGeoResource);
 		vectorLayer.setSource(vectorSource);
 
-		return this.applyStyle(vectorGeoResource, vectorLayer, olMap);
+		return this.applyStyle(vectorLayer, olMap, vectorGeoResource);
 	}
 
 	/**
