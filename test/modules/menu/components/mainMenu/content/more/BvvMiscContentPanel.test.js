@@ -78,15 +78,15 @@ describe('MiscContentPanel', () => {
 
 			const links = element.shadowRoot.querySelectorAll('a');
 
-			expect(links[0].href).toEqual('https://www.ldbv.bayern.de/hilfe-v4.html');
+			expect(links[0].href).toEqual('https://www.ldbv.bayern.de/produkte/dienste/ba_hilfe/index.html');
 			expect(links[0].target).toEqual('_blank');
 			expect(links[0].querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_help');
 
-			expect(links[1].href).toEqual('https://www.ldbv.bayern.de/service/kontakt.html');
+			expect(links[1].href).toEqual('https://www.ldbv.bayern.de/service/kontakt');
 			expect(links[1].target).toEqual('_blank');
 			expect(links[1].querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_Contact');
 
-			expect(links[2].href).toEqual('https://www.ldbv.bayern.de/file/pdf/18295/Nutzungsbedingungen_Geoportal_BayernAtlas_BayernAtlasplus.pdf');
+			expect(links[2].href).toEqual('https://www.ldbv.bayern.de/mam/ldbv/dateien/nutzungsbedingungen_geoportal_bayernatlas_bayernatlasplus.pdf');
 			expect(links[2].target).toEqual('_blank');
 			expect(links[2].querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_terms_of_use');
 
@@ -98,7 +98,7 @@ describe('MiscContentPanel', () => {
 			expect(links[4].target).toEqual('_blank');
 			expect(links[4].querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_imprint');
 
-			expect(links[5].href).toEqual('https://www.ldbv.bayern.de/digitalisierung/itdlz/barrierefreiheit/barrierefreiheit_ba.html');
+			expect(links[5].href).toEqual('https://www.ldbv.bayern.de/digitalisierung/bitv/index.html');
 			expect(links[5].target).toEqual('_blank');
 			expect(links[5].querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_accessibility');
 
