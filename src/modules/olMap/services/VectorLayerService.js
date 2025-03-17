@@ -147,7 +147,11 @@ export class VectorLayerService {
 	}
 
 	/**
-	 * If needed adds specific stylings (and overlays) for a vector layer
+	 * Adds specific stylings (and overlays) for a vector layer.
+	 * The effective styling is determined in the following order;
+	 * 1. If the GeoResource is clustered we set the cluster style
+	 * 2. If the GeoResource has a style hint we set its corresponding style
+	 * 3. Otherwise we take the style information of the features
 	 * @param {ol.layer.Vector} olVectorLayer
 	 * @param {ol.Map} olMap
 	 * @param {VectorGeoResource|RtVectorGeoResource} vectorGeoResource
