@@ -15,9 +15,7 @@ describe('RtVectorLayerService', () => {
 	};
 
 	const vectorLayerService = {
-		applyStyles: () => {},
-		applyClusterStyle: () => {},
-		sanitizeStyles: () => {}
+		applyStyle: () => {}
 	};
 
 	describe('utils', () => {
@@ -177,10 +175,7 @@ describe('RtVectorLayerService', () => {
 				const olVectorLayer = instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
 				spyOn(olMap, 'getView').and.returnValue({ calculateExtent: () => [] });
 				const processSpy = spyOn(instanceUnderTest, '_processMessage').and.callThrough();
-				const sanitizeStyleSpy = spyOn(vectorLayerService, 'sanitizeStyles').and.callFake(() => {});
-				const applyStyleSpy = spyOn(vectorLayerService, 'applyStyles')
-					.withArgs(olVectorLayer, olMap)
-					.and.callFake(() => {});
+				const applyStyleSpy = spyOn(vectorLayerService, 'applyStyle').and.callFake(() => {});
 				const fitViewSpy = spyOn(instanceUnderTest, '_centerViewOptionally').and.callThrough();
 				expect(olVectorLayer.getSource().getFeatures().length).toBe(0);
 
@@ -189,8 +184,7 @@ describe('RtVectorLayerService', () => {
 				expect(olVectorLayer.getSource().getFeatures().length).toBe(1);
 				expect(olVectorLayer.getSource().getFeatures()[0].get('showPointNames')).toBeTrue();
 				expect(processSpy).toHaveBeenCalled();
-				expect(sanitizeStyleSpy).toHaveBeenCalled();
-				expect(applyStyleSpy).toHaveBeenCalled();
+				expect(applyStyleSpy).toHaveBeenCalledWith(olVectorLayer, olMap, rtVectorGeoResource);
 				expect(fitViewSpy).toHaveBeenCalled();
 				expect(store.getState().position.fitRequest.payload.extent).toEqual(olVectorLayer.getSource().getExtent());
 			});
@@ -211,11 +205,8 @@ describe('RtVectorLayerService', () => {
 				const olVectorLayer = instanceUnderTest.createLayer(id, clusteredRtVectorGeoResource, olMap);
 				const processSpy = spyOn(instanceUnderTest, '_processMessage').and.callThrough();
 				spyOn(olMap, 'getView').and.callFake(() => viewMock);
-				const sanitizeStyleSpy = spyOn(vectorLayerService, 'sanitizeStyles').and.callFake(() => {});
 
-				const applyStyleSpy = spyOn(vectorLayerService, 'applyClusterStyle')
-					.withArgs(olVectorLayer)
-					.and.callFake(() => {});
+				const applyStyleSpy = spyOn(vectorLayerService, 'applyStyle').and.callFake(() => {});
 				const fitViewSpy = spyOn(instanceUnderTest, '_centerViewOptionally').and.callThrough();
 				expect(olVectorLayer.getSource().getFeatures().length).toBe(0);
 
@@ -224,13 +215,12 @@ describe('RtVectorLayerService', () => {
 				expect(olVectorLayer.getSource().getFeatures().length).toBe(1);
 				expect(olVectorLayer.getSource().getFeatures()[0].get('showPointNames')).toBeTrue();
 				expect(processSpy).toHaveBeenCalled();
-				expect(sanitizeStyleSpy).toHaveBeenCalled();
-				expect(applyStyleSpy).toHaveBeenCalled();
+				expect(applyStyleSpy).toHaveBeenCalledWith(olVectorLayer, olMap, clusteredRtVectorGeoResource);
 				expect(fitViewSpy).toHaveBeenCalled();
 				expect(store.getState().position.fitRequest.payload.extent).toEqual(olVectorLayer.getSource().getExtent());
 			});
 
-			it('makes a fit request for the first features only', () => {
+			it('fires a fit request for the first features only', () => {
 				const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0' };
 				const state = {
 					layers: {
@@ -246,10 +236,7 @@ describe('RtVectorLayerService', () => {
 				const olVectorLayer = instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
 				spyOn(olMap, 'getView').and.returnValue(viewMock);
 				spyOn(instanceUnderTest, '_processMessage').and.callThrough();
-				spyOn(vectorLayerService, 'sanitizeStyles').and.callFake(() => {});
-				spyOn(vectorLayerService, 'applyStyles')
-					.withArgs(olVectorLayer, olMap)
-					.and.callFake(() => {});
+				spyOn(vectorLayerService, 'applyStyle').and.callFake(() => {});
 				const fitViewSpy = spyOn(instanceUnderTest, '_centerViewOptionally')
 					.withArgs(olVectorLayer, olMap, true)
 					.and.callThrough()
@@ -270,7 +257,7 @@ describe('RtVectorLayerService', () => {
 				expect(store.getState().position.center).not.toEqual(initialCenter);
 			});
 
-			it('does NOT makes a fit request for already containing extent in the view', () => {
+			it('does NOT fire a fit request for already containing extent in the view', () => {
 				const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0' };
 				const state = {
 					layers: {
@@ -285,9 +272,7 @@ describe('RtVectorLayerService', () => {
 
 				spyOn(olMap, 'getView').and.returnValue(viewMock);
 				spyOn(instanceUnderTest, '_processMessage').and.callThrough();
-				spyOn(vectorLayerService, 'sanitizeStyles').and.callFake(() => {});
-				spyOn(vectorLayerService, 'applyStyles')
-					.withArgs(olVectorLayer, olMap)
+				spyOn(vectorLayerService, 'applyStyle')
 					.and.callFake(() => {});
 				const fitViewSpy = spyOn(instanceUnderTest, '_centerViewOptionally').and.callThrough();
 				expect(olVectorLayer.getSource().getFeatures().length).toBe(0);
