@@ -85,7 +85,7 @@ describe('MiscContentPanel', () => {
 
 			const links = element.shadowRoot.querySelectorAll('a');
 
-			expect(links[0].href).toEqual('https://www.ldbv.bayern.de/hilfe-v4.html');
+			expect(links[0].href).toEqual('https://www.ldbv.bayern.de/produkte/dienste/ba_hilfe/index.html');
 			expect(links[0].target).toEqual('_blank');
 			expect(links[0].querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_help');
 
@@ -156,7 +156,7 @@ describe('MiscContentPanel', () => {
 			const element = await setup({ auth: { signedIn: true } });
 
 			const versionInfoAnchor = element.shadowRoot.querySelector('.version-info');
-			expect(versionInfoAnchor.href).toEqual('https://www.ldbv.bayern.de/hilfe-v4.html#neues_im_bayernatlas');
+			expect(versionInfoAnchor.href).toEqual('https://www.ldbv.bayern.de/produkte/dienste/ba_hilfe/ueberblick/neuigkeiten.html');
 			expect(versionInfoAnchor.target).toEqual('_blank');
 			expect(versionInfoAnchor.innerText).toBe('menu_misc_content_panel_software_version 42');
 		});

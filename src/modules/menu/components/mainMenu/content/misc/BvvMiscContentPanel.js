@@ -107,7 +107,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 						<span class="ba-list-item__primary-text">${translate('menu_misc_content_panel_information')}</span>
 					</span>
 				</div>
-				<a class="ba-list-item" href="https://www.ldbv.bayern.de/hilfe-v4.html" target="_blank">
+				<a class="ba-list-item" href="https://www.ldbv.bayern.de/produkte/dienste/ba_hilfe/index.html" target="_blank">
 					<span class="ba-list-item__pre">
 						<span class="ba-list-item__icon icon help"> </span>
 					</span>
@@ -185,7 +185,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 						<span class="ba-list-item__secondary-text">${translate('menu_misc_content_panel_ea_text')}</span>
 					</span>
 				</a>
-				<a class="version-info ba-list-item" href="https://www.ldbv.bayern.de/hilfe-v4.html#neues_im_bayernatlas" target="_blank">
+				<a class="version-info ba-list-item" href="https://www.ldbv.bayern.de/produkte/dienste/ba_hilfe/ueberblick/neuigkeiten.html" target="_blank">
 					<span class="ba-list-item__text">
 						${html`${translate('menu_misc_content_panel_software_version')} ${this.#configService.getValue('SOFTWARE_VERSION')}`}
 					</span>
