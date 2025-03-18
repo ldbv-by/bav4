@@ -272,8 +272,7 @@ describe('RtVectorLayerService', () => {
 
 				spyOn(olMap, 'getView').and.returnValue(viewMock);
 				spyOn(instanceUnderTest, '_processMessage').and.callThrough();
-				spyOn(vectorLayerService, 'applyStyle')
-					.and.callFake(() => {});
+				spyOn(vectorLayerService, 'applyStyle').and.callFake(() => {});
 				const fitViewSpy = spyOn(instanceUnderTest, '_centerViewOptionally').and.callThrough();
 				expect(olVectorLayer.getSource().getFeatures().length).toBe(0);
 				expect(store.getState().position.fitRequest.payload).toBeNull();
