@@ -10,19 +10,13 @@ import { createDefaultLayer, layersReducer } from '../../src/store/layers/layers
 import { Feature } from '../../src/domain/feature.js';
 import { addFeatures, clearFeatures } from '../../src/store/featureCollection/featureCollection.action.js';
 import { Geometry } from '../../src/domain/geometry.js';
-import { AggregateGeoResource } from '../../src/domain/geoResources.js';
-import { SourceType, SourceTypeName } from '../../src/domain/sourceType.js';
+import { VectorGeoResource } from '../../src/domain/geoResources.js';
+import { SourceType } from '../../src/domain/sourceType.js';
 import { removeLayer } from '../../src/store/layers/layers.action.js';
-import { StyleHint } from '../../src/domain/styles.js';
 
 describe('FeatureCollectionPlugin', () => {
 	const geoResourceService = {
-		addOrReplace: () => {},
-		byId: () => {}
-	};
-
-	const importVectorDataService = {
-		forData: () => {}
+		addOrReplace: () => {}
 	};
 
 	const setup = (state) => {
@@ -30,10 +24,7 @@ describe('FeatureCollectionPlugin', () => {
 			featureCollection: featureCollectionReducer,
 			layers: layersReducer
 		});
-		$injector
-			.registerSingleton('GeoResourceService', geoResourceService)
-			.registerSingleton('ImportVectorDataService', importVectorDataService)
-			.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('GeoResourceService', geoResourceService).registerSingleton('TranslationService', { translate: (key) => key });
 		return store;
 	};
 
@@ -44,7 +35,7 @@ describe('FeatureCollectionPlugin', () => {
 					active: [createDefaultLayer(FEATURE_COLLECTION_LAYER_ID)]
 				},
 				featureCollection: {
-					entries: [new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)), 'id')]
+					entries: [new Feature(new Geometry('data', SourceType.forGpx()), 'id')]
 				}
 			});
 			const instanceUnderTest = new FeatureCollectionPlugin();
@@ -60,16 +51,13 @@ describe('FeatureCollectionPlugin', () => {
 		it('preserves existing features', async () => {
 			const store = setup({
 				featureCollection: {
-					entries: [new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)), 'id0')]
+					entries: [new Feature(new Geometry('data', SourceType.forGpx()), 'id0')]
 				}
 			});
 			const instanceUnderTest = new FeatureCollectionPlugin();
 			await instanceUnderTest.register(store);
 
-			addFeatures([
-				new Feature(new Geometry('data0', new SourceType(SourceTypeName.EWKT)), 'id1'),
-				new Feature(new Geometry('data1', new SourceType(SourceTypeName.EWKT)), 'id2')
-			]);
+			addFeatures([new Feature(new Geometry('data0', SourceType.forGpx()), 'id1'), new Feature(new Geometry('data1', SourceType.forGpx()), 'id2')]);
 
 			expect(store.getState().featureCollection.entries).toHaveSize(3);
 		});
@@ -78,32 +66,19 @@ describe('FeatureCollectionPlugin', () => {
 			const store = setup({});
 			const instanceUnderTest = new FeatureCollectionPlugin();
 			await instanceUnderTest.register(store);
-			const mockGeoResource = { setStyleHint: () => {} };
-			const setStyleHintSpy = spyOn(mockGeoResource, 'setStyleHint');
-
-			const importVectorDataServiceSpy = spyOn(importVectorDataService, 'forData');
+			const feature0 = new Feature(new Geometry('data0', SourceType.forGpx()), 'id0');
+			const feature1 = new Feature(new Geometry('data1', SourceType.forGpx()), 'id1');
 			const geoResourceServiceAddOrReplaceSpy = spyOn(geoResourceService, 'addOrReplace');
-			spyOn(geoResourceService, 'byId').and.returnValue(mockGeoResource);
 
-			addFeatures([
-				new Feature(new Geometry('data0', new SourceType(SourceTypeName.EWKT)), 'id0'),
-				new Feature(new Geometry('data1', new SourceType(SourceTypeName.EWKT)), 'id1')
-			]);
+			addFeatures([feature0, feature1]);
 
 			expect(store.getState().layers.active).toHaveSize(1);
 			expect(store.getState().layers.active[0].id).toBe(FEATURE_COLLECTION_LAYER_ID);
-			expect(importVectorDataServiceSpy).toHaveBeenCalledTimes(2);
-			expect(importVectorDataServiceSpy.calls.all()[0].args[0]).toBe('data0');
-			expect(importVectorDataServiceSpy.calls.all()[0].args[1]).toEqual({ id: 'id0' });
-			expect(importVectorDataServiceSpy.calls.all()[0].args[2]).toBeTrue();
-			expect(importVectorDataServiceSpy.calls.all()[1].args[0]).toBe('data1');
-			expect(importVectorDataServiceSpy.calls.all()[1].args[1]).toEqual({ id: 'id1' });
-			expect(importVectorDataServiceSpy.calls.all()[1].args[2]).toBeTrue();
 			expect(geoResourceServiceAddOrReplaceSpy).toHaveBeenCalledWith(
-				new AggregateGeoResource(FEATURE_COLLECTION_GEORESOURCE_ID, `global_featureCollection_layer_label (2)`, ['id0', 'id1']).setHidden(true)
+				new VectorGeoResource(FEATURE_COLLECTION_GEORESOURCE_ID, `global_featureCollection_layer_label (2)`)
+					.setFeatures([feature0, feature1])
+					.setHidden(true)
 			);
-			expect(setStyleHintSpy).toHaveBeenCalledTimes(2);
-			expect(setStyleHintSpy).toHaveBeenCalledWith(StyleHint.HIGHLIGHT);
 		});
 	});
 
@@ -113,10 +88,7 @@ describe('FeatureCollectionPlugin', () => {
 				const store = setup({});
 				const instanceUnderTest = new FeatureCollectionPlugin();
 				await instanceUnderTest.register(store);
-				addFeatures([
-					new Feature(new Geometry('data0', new SourceType(SourceTypeName.EWKT)), 'id0'),
-					new Feature(new Geometry('data1', new SourceType(SourceTypeName.EWKT)), 'id1')
-				]);
+				addFeatures([new Feature(new Geometry('data0', SourceType.forGpx()), 'id0'), new Feature(new Geometry('data1', SourceType.forGpx()), 'id1')]);
 
 				expect(store.getState().featureCollection.entries).toHaveSize(2);
 
@@ -136,10 +108,7 @@ describe('FeatureCollectionPlugin', () => {
 				});
 				const instanceUnderTest = new FeatureCollectionPlugin();
 				await instanceUnderTest.register(store);
-				addFeatures([
-					new Feature(new Geometry('data0', new SourceType(SourceTypeName.EWKT)), 'id0'),
-					new Feature(new Geometry('data1', new SourceType(SourceTypeName.EWKT)), 'id1')
-				]);
+				addFeatures([new Feature(new Geometry('data0', SourceType.forGpx()), 'id0'), new Feature(new Geometry('data1', SourceType.forGpx()), 'id1')]);
 
 				expect(store.getState().featureCollection.entries).toHaveSize(2);
 
