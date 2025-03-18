@@ -29,7 +29,7 @@ describe('global i18n', () => {
 		expect(map.global_signOut_success).toBe('Signed out successfully');
 		expect(map.global_fileStorageService_exception).toBe('The data could not be stored');
 		expect(map.global_cr_global_wgs84).toBe('Lat, Lon');
-		expect(map.global_terms_of_use).toBe('https://www.ldbv.bayern.de/file/pdf/18295/Nutzungsbedingungen_Geoportal_BayernAtlas_BayernAtlasplus.pdf');
+		expect(map.global_terms_of_use).toBe('https://www.ldbv.bayern.de/mam/ldbv/dateien/nutzungsbedingungen_geoportal_bayernatlas_bayernatlasplus.pdf');
 		expect(map.global_featureCollection_layer_label).toBe('My temporary collection');
 	});
 
@@ -63,7 +63,7 @@ describe('global i18n', () => {
 		expect(map.global_signOut_success).toBe('Sie haben sich erfolgreich abgemeldet');
 		expect(map.global_fileStorageService_exception).toBe('Die Daten konnten nicht gespeichert werden');
 		expect(map.global_cr_global_wgs84).toBe('Breite, Länge');
-		expect(map.global_terms_of_use).toBe('https://www.ldbv.bayern.de/file/pdf/18295/Nutzungsbedingungen_Geoportal_BayernAtlas_BayernAtlasplus.pdf');
+		expect(map.global_terms_of_use).toBe('https://www.ldbv.bayern.de/mam/ldbv/dateien/nutzungsbedingungen_geoportal_bayernatlas_bayernatlasplus.pdf');
 		expect(map.global_featureCollection_layer_label).toBe('Meine temporäre Sammlung');
 	});
 
