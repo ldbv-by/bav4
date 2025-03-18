@@ -58,6 +58,8 @@ describe('Units provider', () => {
 		expect(bvvDistanceUnitsProvider(1000, 2)).toBe('1.00 km');
 		expect(bvvDistanceUnitsProvider(1234, 0)).toBe('1.23 km');
 		expect(bvvDistanceUnitsProvider(1234, 2)).toBe('1.23 km');
+		expect(bvvDistanceUnitsProvider(1236, 0)).toBe('1.24 km');
+		expect(bvvDistanceUnitsProvider(1236, 2)).toBe('1.24 km');
 		expect(bvvDistanceUnitsProvider(10000, 0)).toBe('10.00 km');
 		expect(bvvDistanceUnitsProvider(10000, 2)).toBe('10.00 km');
 	});
@@ -92,6 +94,8 @@ describe('Units provider', () => {
 		expect(bvvDistanceUnitsProvider(1000, 2)).toBe('1,00 km');
 		expect(bvvDistanceUnitsProvider(1234, 0)).toBe('1,23 km');
 		expect(bvvDistanceUnitsProvider(1234, 2)).toBe('1,23 km');
+		expect(bvvDistanceUnitsProvider(1236, 0)).toBe('1,24 km');
+		expect(bvvDistanceUnitsProvider(1236, 2)).toBe('1,24 km');
 		expect(bvvDistanceUnitsProvider(10000, 0)).toBe('10,00 km');
 		expect(bvvDistanceUnitsProvider(10000, 2)).toBe('10,00 km');
 	});
