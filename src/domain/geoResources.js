@@ -200,26 +200,51 @@ export class GeoResource {
 		return this._attributionProvider;
 	}
 
+	/**
+	 *
+	 * @param {string} label
+	 * @returns {GeoResource} `this` for chaining
+	 */
 	setLabel(label) {
 		this._label = label;
 		return this;
 	}
 
+	/**
+	 *
+	 * @param {number} opacity
+	 * @returns {GeoResource} `this` for chaining
+	 */
 	setOpacity(opacity) {
 		this._opacity = opacity;
 		return this;
 	}
 
+	/**
+	 *
+	 * @param {number} minZoom
+	 * @returns {GeoResource} `this` for chaining
+	 */
 	setMinZoom(minZoom) {
 		this._minZoom = minZoom;
 		return this;
 	}
 
+	/**
+	 *
+	 * @param {number} maxZoom
+	 * @returns {GeoResource} `this` for chaining
+	 */
 	setMaxZoom(maxZoom) {
 		this._maxZoom = maxZoom;
 		return this;
 	}
 
+	/**
+	 *
+	 * @param {boolean} hidden
+	 * @returns {GeoResource} `this` for chaining
+	 */
 	setHidden(hidden) {
 		this._hidden = hidden;
 		return this;
@@ -228,7 +253,7 @@ export class GeoResource {
 	/**
 	 * Sets the attribution for this GeoResource.
 	 * @param {Attribution|Array<Attribution>|string|null} attribution
-	 * @returns `this` for chaining
+	 * @returns {GeoResource} `this` for chaining
 	 */
 	setAttribution(attribution) {
 		this._attribution = attribution;
@@ -238,23 +263,38 @@ export class GeoResource {
 	/**
 	 * Sets the attribution provider for this GeoResource.
 	 * @param {attributionProvider} provider
-	 * @returns `this` for chaining
+	 * @returns {GeoResource} `this` for chaining
 	 */
 	setAttributionProvider(provider) {
 		this._attributionProvider = provider;
 		return this;
 	}
 
+	/**
+	 *
+	 * @param {string} type
+	 * @returns {GeoResource} `this` for chaining
+	 */
 	setAuthenticationType(type) {
 		this._authenticationType = type;
 		return this;
 	}
 
+	/**
+	 *
+	 * @param {boolean} queryable
+	 * @returns {GeoResource} `this` for chaining
+	 */
 	setQueryable(queryable) {
 		this._queryable = queryable;
 		return this;
 	}
 
+	/**
+	 *
+	 * @param {boolean} exportable
+	 * @returns {GeoResource} `this` for chaining
+	 */
 	setExportable(exportable) {
 		this._exportable = exportable;
 		return this;
@@ -263,7 +303,7 @@ export class GeoResource {
 	/**
 	 * Set the timestamps of this GeoResource
 	 * @param {Array<string>} timestamps Timestamps of this GeoResource
-	 * @returns `this` for chaining
+	 * @returns {GeoResource} `this` for chaining
 	 */
 	setTimestamps(timestamps) {
 		if (timestamps) {
@@ -276,7 +316,7 @@ export class GeoResource {
 	 * Set the roles for authentication/authorization of this GeoResource
 	 * and updates its authentication type.
 	 * @param {Array<string>} roles Roles of this GeoResource
-	 * @returns `this` for chaining
+	 * @returns {GeoResource} `this` for chaining
 	 */
 	setAuthRoles(roles) {
 		if (roles) {
@@ -290,7 +330,7 @@ export class GeoResource {
 
 	/**
 	 * Checks if this GeoResource contains a non-default value as label
-	 * @returns `true` if the label is a non-default value
+	 * @returns {boolean} `true` if the label is a non-default value
 	 */
 	hasLabel() {
 		return !!this._label;
@@ -298,7 +338,7 @@ export class GeoResource {
 
 	/**
 	 * Checks if this GeoResource contains one or more timestamps
-	 * @returns `true` if it contains one or more timestamps
+	 * @returns {boolean}`true` if it contains one or more timestamps
 	 */
 	hasTimestamps() {
 		return this._timestamps.length > 0;
@@ -307,6 +347,7 @@ export class GeoResource {
 	/**
 	 * Checks if this GeoResource has an HTTP based id
 	 * which means it denotes an (imported) external resource.
+	 * @returns {boolean}`true` if it an external GeoResource
 	 */
 	isExternal() {
 		return isExternalGeoResourceId(this.id);
@@ -467,6 +508,11 @@ export class WmsGeoResource extends GeoResource {
 		return this._maxSize ? [...this._maxSize] : null;
 	}
 
+	/**
+	 *
+	 * @param {object} extraParams
+	 * @returns {WmsGeoResource} `this` for chaining
+	 */
 	setExtraParams(extraParams) {
 		if (extraParams) {
 			this._extraParams = { ...extraParams };
@@ -474,6 +520,11 @@ export class WmsGeoResource extends GeoResource {
 		return this;
 	}
 
+	/**
+	 *
+	 * @param {number[]} maxSize
+	 * @returns  {WmsGeoResource} `this` for chaining
+	 */
 	setMaxSize(maxSize) {
 		if (maxSize) {
 			this._maxSize = [...maxSize];
@@ -515,6 +566,11 @@ export class XyzGeoResource extends GeoResource {
 		return this._tileGridId;
 	}
 
+	/**
+	 *
+	 * @param {string} tileGridId
+	 * @returns {XyzGeoResource} `this` for chaining
+	 */
 	setTileGridId(tileGridId) {
 		this._tileGridId = tileGridId;
 		return this;
@@ -541,6 +597,7 @@ export const VectorSourceType = Object.freeze({
 
 /**
  * GeoResource for vector data.
+ * The data are hold either as string (together with a SRID) or by one or more `BaFeatures`.
  * @class
  */
 export class VectorGeoResource extends GeoResource {
@@ -553,6 +610,7 @@ export class VectorGeoResource extends GeoResource {
 		this._localData = false;
 		this._clusterParams = {};
 		this._styleHint = null;
+		this._features = [];
 	}
 
 	/**
@@ -590,11 +648,15 @@ export class VectorGeoResource extends GeoResource {
 		return this._srid;
 	}
 
+	get features() {
+		return [...this._features];
+	}
+
 	/**
-	 * Sets the source of this  GeoResource.
+	 * Sets the source of this `VectorGeoResource`.
 	 * @param {string} data
 	 * @param {number} srid of the data
-	 * @returns `this` for chaining
+	 * @returns {VectorGeoResource} `this` for chaining
 	 */
 	setSource(data, srid) {
 		this._data = data;
@@ -603,15 +665,44 @@ export class VectorGeoResource extends GeoResource {
 	}
 
 	/**
+	 * Sets the features of this `VectorGeoResource`.
+	 * Existing features will be replaced.
+	 * @param {Feature[]} features
+	 * @returns {VectorGeoResource} `this` for chaining
+	 */
+	setFeatures(features) {
+		this._features = [...features];
+		return this;
+	}
+
+	/**
+	 * Adds a features to the existing features.
+	 * @param {Feature} feature
+	 * @returns {VectorGeoResource} `this` for chaining
+	 */
+	addFeature(feature) {
+		this._features.push(feature);
+		return this;
+	}
+
+	/**
+	 *
+	 * @returns {boolean} `true` if this `VectorGeoResource` contains features
+	 */
+	hasFeatures() {
+		return this._features.length > 0;
+	}
+
+	/**
 	 * @override
-	 * @returns `true` if this GeoResource contains an non empty string and no fallback as label
+	 * @returns {boolean} `true` if this `VectorGeoResource` contains an non empty string and no fallback as label
 	 */
 	hasLabel() {
 		return !!this._label || this.label !== this._getFallbackLabel();
 	}
 
 	/**
-	 * @returns `true` if this VectorGeoResource should be displayed clustered
+	 * @returns {boolean} `true` if this `VectorGeoResource` should be displayed clustered
 	 */
 	isClustered() {
 		return !!Object.keys(this._clusterParams).length;
@@ -659,7 +750,7 @@ export class VectorGeoResource extends GeoResource {
 	 * Currently effective only for KML:
 	 * Show names as labels for placemarks which contain points.
 	 * @param {boolean} showPointNames
-	 * @returns `this` for chaining
+	 * @returns {VectorGeoResource} `this` for chaining
 	 */
 	setShowPointNames(showPointNames) {
 		this._showPointNames = showPointNames;
@@ -673,7 +764,7 @@ export class VectorGeoResource extends GeoResource {
 	/**
 	 * Mark this `VectorGeoResource` as containing local data
 	 * @param {boolean} localData
-	 * @returns `this` for chaining
+	 * @returns {VectorGeoResource} `this` for chaining
 	 */
 	markAsLocalData(localData) {
 		this._localData = localData;
@@ -738,6 +829,11 @@ export class RtVectorGeoResource extends GeoResource {
 		return { ...this._clusterParams };
 	}
 
+	/**
+	 *
+	 * @param {object} clusterParams
+	 * @returns {RtVectorGeoResource} `this` for chaining
+	 */
 	setClusterParams(clusterParams) {
 		if (clusterParams) {
 			this._clusterParams = { ...clusterParams };
@@ -746,7 +842,7 @@ export class RtVectorGeoResource extends GeoResource {
 	}
 
 	/**
-	 * @returns `true` if this VectorGeoResource has specific style hint
+	 * @returns {boolean}`true` if this VectorGeoResource has specific style hint
 	 */
 	hasStyleHint() {
 		return !!this._styleHint;
@@ -776,7 +872,7 @@ export class RtVectorGeoResource extends GeoResource {
 	 * Currently effective only for KML:
 	 * Show names as labels for placemarks which contain points.
 	 * @param {boolean} showPointNames
-	 * @returns `this` for chaining
+	 * @returns {RtVectorGeoResource} `this` for chaining
 	 */
 	setShowPointNames(showPointNames) {
 		this._showPointNames = showPointNames;
@@ -784,7 +880,7 @@ export class RtVectorGeoResource extends GeoResource {
 	}
 
 	/**
-	 * @returns `true` if this RtVectorGeoResource should be displayed clustered
+	 * @returns {boolean} `true` if this RtVectorGeoResource should be displayed clustered
 	 */
 	isClustered() {
 		return !!Object.keys(this._clusterParams).length;

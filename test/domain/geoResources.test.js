@@ -17,6 +17,9 @@ import { $injector } from '../../src/injection';
 import { getDefaultAttribution, getMinimalAttribution } from '../../src/services/provider/attribution.provider';
 import { TestUtils } from '../test-utils';
 import { StyleHint } from '../../src/domain/styles';
+import { Feature } from '../../src/domain/feature';
+import { Geometry } from '../../src/domain/geometry';
+import { SourceType } from '../../src/domain/sourceType';
 
 describe('GeoResource', () => {
 	const geoResourceServiceMock = {
@@ -465,6 +468,7 @@ describe('GeoResource', () => {
 			expect(vectorGeoResource.srid).toBeNull();
 			expect(vectorGeoResource.sourceType).toEqual(VectorSourceType.KML);
 			expect(vectorGeoResource.data).toBeNull();
+			expect(vectorGeoResource.features).toEqual([]);
 		});
 
 		it('provides default properties', () => {
@@ -492,6 +496,14 @@ describe('GeoResource', () => {
 			expect(vectorGeoResource.srid).toBe(1234);
 		});
 
+		it('sets the source of an internal VectorGeoResource by an array o features', () => {
+			const feat0 = new Feature(new Geometry('data', SourceType.forGpx()), 'id0');
+			const feat1 = new Feature(new Geometry('data', SourceType.forGpx()), 'id1');
+			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setFeatures([feat0]).addFeature(feat1);
+
+			expect(vectorGeoResource.features).toEqual([feat0, feat1]);
+		});
+
 		describe('methods', () => {
 			it('sets the source of an internal VectorGeoResource by a string', () => {
 				const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setSource('someData', 1234);
@@ -514,6 +526,12 @@ describe('GeoResource', () => {
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).isClustered()).toBeFalse();
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setClusterParams(null).isClustered()).toBeFalse();
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setClusterParams({ foo: 'bar' }).isClustered()).toBeTrue();
+			});
+
+			it('provides a check for containing features', () => {
+				const feat0 = new Feature(new Geometry('data', SourceType.forGpx()), 'id0');
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).hasFeatures()).toBeFalse();
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).addFeature(feat0).hasFeatures()).toBeTrue();
 			});
 
 			it('provides a check for containing a non-default value as styleHint', () => {
