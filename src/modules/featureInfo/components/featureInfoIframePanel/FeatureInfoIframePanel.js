@@ -11,7 +11,6 @@ import { addHighlightFeatures, removeHighlightFeaturesById } from '../../../../s
 import { createUniqueId } from '../../../../utils/numberUtils';
 import { isTemplateResult } from '../../../../utils/checks';
 import { MvuElement } from '../../../MvuElement';
-import { Geometry } from '../../../../domain/geometry';
 import { HighlightFeatureType } from '../../../../domain/highlightFeature';
 
 const Update_FeatureInfo_Data = 'update_featureInfo_data';
