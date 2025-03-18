@@ -110,7 +110,7 @@ export class CadastralParcelSearchResult extends SearchResult {
 	 * @param {string} labelFormatted  the label (html formatted)
 	 * @param {module:domain/coordinateTypeDef~Coordinate} center
 	 * @param {module:domain/extentTypeDef~Extent} extent
-	 * @param {Geometry} geometry
+	 * @param {BaGeometry} geometry
 	 */
 	constructor(label, labelFormatted, center = null, extent = null, geometry = null) {
 		super(label, labelFormatted);
