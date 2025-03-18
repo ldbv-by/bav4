@@ -6,7 +6,7 @@ import { GeoResourceAuthenticationType, WmsGeoResource } from '../../domain/geoR
 import { MediaType } from '../../domain/mediaTypes';
 import { isHttpUrl } from '../../utils/checks';
 import { Geometry } from '../../domain/geometry';
-import { SourceType, SourceTypeName } from '../../domain/sourceType';
+import { SourceType } from '../../domain/sourceType';
 
 const throwError = (geoResourceId, reason) => {
 	throw new Error(`FeatureInfoResult for '${geoResourceId}' could not be loaded: ${reason}`);
