@@ -5,7 +5,7 @@ import { $injector } from '../../injection';
 import { GeoResourceAuthenticationType, WmsGeoResource } from '../../domain/geoResources';
 import { MediaType } from '../../domain/mediaTypes';
 import { isHttpUrl } from '../../utils/checks';
-import { Geometry } from '../../domain/geometry';
+import { BaGeometry } from '../../domain/geometry';
 import { SourceType } from '../../domain/sourceType';
 
 const throwError = (geoResourceId, reason) => {
@@ -97,7 +97,7 @@ const loadTimeTravelFeatureInfo = async (geoResource, coordinate3857, timestamp)
 	switch (result.status) {
 		case 200: {
 			const { title, content, geometry: geoJson } = await result.json();
-			const geometry = geoJson ? new Geometry(geoJson, SourceType.forGeoJSON()) : null;
+			const geometry = geoJson ? new BaGeometry(geoJson, SourceType.forGeoJSON()) : null;
 			return { content, title, geometry };
 		}
 		case 204: {

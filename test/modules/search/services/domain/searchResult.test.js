@@ -6,7 +6,7 @@ import {
 	SearchResultTypes
 } from '../../../../../src/modules/search/services/domain/searchResult';
 import { SourceType, SourceTypeName } from '../../../../../src/domain/sourceType';
-import { Geometry } from '../../../../../src/domain/geometry';
+import { BaGeometry } from '../../../../../src/domain/geometry';
 import { hashCode } from '../../../../../src/utils/hashCode';
 
 describe('searchResult', () => {
@@ -163,7 +163,7 @@ describe('CadastralParcelSearchResult', () => {
 		const labelFormatted = 'labelFormatted';
 		const center = [1, 2];
 		const extent = [3, 4, 5, 6];
-		const geometry = new Geometry('ewkt', new SourceType(SourceTypeName.EWKT));
+		const geometry = new BaGeometry('ewkt', new SourceType(SourceTypeName.EWKT));
 
 		const cadastralParcelSearchResult = new CadastralParcelSearchResult(label, labelFormatted, center, extent, geometry);
 

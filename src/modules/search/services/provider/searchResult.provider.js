@@ -5,7 +5,7 @@ import { CadastralParcelSearchResult, GeoResourceSearchResult, LocationSearchRes
 import { $injector } from '../../../../injection';
 import { MediaType } from '../../../../domain/mediaTypes';
 import { SourceType, SourceTypeName } from '../../../../domain/sourceType';
-import { Geometry } from '../../../../domain/geometry';
+import { BaGeometry } from '../../../../domain/geometry';
 
 /**
  *A async function that returns a promise with an array of SearchResults with type LOCATION.
@@ -78,7 +78,7 @@ export const loadBvvCadastralParcelSearchResults = async (query) => {
 				o.attrs.label,
 				o.attrs.coordinate,
 				o.attrs.extent ? o.attrs.extent : null,
-				o.attrs.ewkt ? new Geometry(o.attrs.ewkt, new SourceType(SourceTypeName.EWKT, null, 3857)) : null
+				o.attrs.ewkt ? new BaGeometry(o.attrs.ewkt, new SourceType(SourceTypeName.EWKT, null, 3857)) : null
 			);
 		});
 		return data;

@@ -15,7 +15,7 @@ import { TestUtils } from '../../../test-utils';
 import { createDefaultLayer, layersReducer } from '../../../../src/store/layers/layers.reducer';
 import { UnavailableGeoResourceError } from '../../../../src/domain/errors';
 import { StyleHint } from '../../../../src/domain/styles';
-import { Geometry as BaGeometry } from '../../../../src/domain/geometry';
+import { BaGeometry } from '../../../../src/domain/geometry';
 import { BaFeature } from '../../../../src/domain/feature';
 import { SourceType } from '../../../../src/domain/sourceType';
 

@@ -3,7 +3,7 @@
  */
 
 import { isString } from '../utils/checks';
-import { Geometry } from './geometry';
+import { BaGeometry } from './geometry';
 
 /**
  * A feature.
@@ -15,11 +15,11 @@ export class BaFeature {
 	#properties = {};
 	/**
 	 *
-	 * @param {Geometry} geometry The geometry of this feature
+	 * @param {BaGeometry} geometry The geometry of this feature
 	 * @param {String} id The id of this feature
 	 */
 	constructor(geometry, id) {
-		if (!(geometry instanceof Geometry)) {
+		if (!(geometry instanceof BaGeometry)) {
 			throw new Error('<geometry> must be a Geometry');
 		}
 		if (!isString(id)) {

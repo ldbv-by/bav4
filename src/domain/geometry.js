@@ -8,7 +8,7 @@ import { SourceType, SourceTypeName, SupportedVectorSourceTypes } from './source
 /**
  * A geometry. The actual geometry is encoded as the specified SourceType or `null` if it is unknown (in that case a consumer can use the `SourceTypeService`  for determination).
  */
-export class Geometry {
+export class BaGeometry {
 	#data;
 	#sourceType;
 	/**
