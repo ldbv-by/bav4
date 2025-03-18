@@ -122,6 +122,15 @@ export class StyleService {
 				console.warn('Could not provide a style for unknown style-type');
 				break;
 		}
+
+		const styleHint = olFeature.get('styleHint');
+		if (styleHint) {
+			switch (styleHint) {
+				case StyleHint.HIGHLIGHT:
+					olFeature.setStyle(highlightGeometryOrCoordinateFeatureStyleFunction()); // TODO: move highlightGeometryOrCoordinateFeatureStyleFunction to src/modules/olMap/utils/olStyleUtils.js
+					break;
+			}
+		}
 	}
 
 	/**
@@ -136,7 +145,7 @@ export class StyleService {
 				olVectorLayer.setStyle(defaultClusterStyleFunction());
 				break;
 			case StyleHint.HIGHLIGHT:
-				olVectorLayer.setStyle(highlightGeometryOrCoordinateFeatureStyleFunction());
+				olVectorLayer.setStyle(highlightGeometryOrCoordinateFeatureStyleFunction()); // TODO: move highlightGeometryOrCoordinateFeatureStyleFunction to src/modules/olMap/utils/olStyleUtils.js
 				break;
 		}
 		return olVectorLayer;

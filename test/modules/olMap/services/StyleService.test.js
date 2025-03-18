@@ -895,6 +895,27 @@ describe('StyleService', () => {
 
 			expect(updateSpy).toHaveBeenCalledWith(feature, mapMock, 'measure');
 		});
+
+		describe('checks the `styleHint` property of an ol.Feature', () => {
+			it('does nothing when a StyleHint is not available', () => {
+				const olFeature = new Feature({ geometry: new Point([0, 0]) });
+				spyOn(instanceUnderTest, '_detectStyleType').and.returnValue(null);
+
+				instanceUnderTest.addStyle(olFeature, {}, {});
+
+				expect(olFeature.getStyle()).toBeNull();
+			});
+
+			it('sets the correct style for `StyleHint.HIGHLIGHT`', () => {
+				const olFeature = new Feature({ geometry: new Point([0, 0]) });
+				olFeature.set('styleHint', StyleHint.HIGHLIGHT);
+				spyOn(instanceUnderTest, '_detectStyleType').and.returnValue(null);
+
+				instanceUnderTest.addStyle(olFeature, {}, {});
+
+				expect(olFeature.getStyle()).toEqual(highlightGeometryOrCoordinateFeatureStyleFunction());
+			});
+		});
 	});
 
 	describe('add cluster style', () => {
