@@ -4,7 +4,7 @@ import { MediaType } from '../../../src/domain/mediaTypes';
 import { loadBvvFeatureInfo } from '../../../src/services/provider/featureInfo.provider';
 import { TestUtils } from '../../test-utils';
 import { positionReducer } from '../../../src/store/position/position.reducer';
-import { SourceType, SourceTypeName } from '../../../src/domain/sourceType';
+import { SourceType } from '../../../src/domain/sourceType';
 
 describe('FeatureInfoResult provider', () => {
 	describe('Bvv FeatureInfoResult provider', () => {
