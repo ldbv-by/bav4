@@ -479,6 +479,14 @@ export class GeoResourceFuture extends GeoResource {
  * @class
  */
 export class WmsGeoResource extends GeoResource {
+	/**
+	 *
+	 * @param {string} id
+	 * @param {string} label
+	 * @param {string} url
+	 * @param {string} layers
+	 * @param {string} format
+	 */
 	constructor(id, label, url, layers, format) {
 		super(id, label);
 		this._url = url;
@@ -544,6 +552,12 @@ export class WmsGeoResource extends GeoResource {
  * @class
  */
 export class XyzGeoResource extends GeoResource {
+	/**
+	 *
+	 * @param {string} id
+	 * @param {string} label
+	 * @param {string} url
+	 */
 	constructor(id, label, url) {
 		super(id, label);
 		this._urls = url;
@@ -601,9 +615,15 @@ export const VectorSourceType = Object.freeze({
  * @class
  */
 export class VectorGeoResource extends GeoResource {
-	constructor(id, label, sourceType) {
+	/**
+	 *
+	 * @param {string} id
+	 * @param {String} label
+	 * @param {VectorSourceType} [vectorSourceType] The type of the internal vector data. Only required if the data are hold as `string`.
+	 */
+	constructor(id, label, vectorSourceType = null) {
 		super(id, label);
-		this._sourceType = sourceType;
+		this._sourceType = vectorSourceType;
 		this._data = null;
 		this._srid = null;
 		this._showPointNames = true;
@@ -898,6 +918,12 @@ export class RtVectorGeoResource extends GeoResource {
  * @class
  */
 export class AggregateGeoResource extends GeoResource {
+	/**
+	 *
+	 * @param {string} id
+	 * @param {string} label
+	 * @param {string[]} geoResourceIds
+	 */
 	constructor(id, label, geoResourceIds) {
 		super(id, label);
 		this._geoResourceIds = [...geoResourceIds];
@@ -916,6 +942,12 @@ export class AggregateGeoResource extends GeoResource {
 }
 
 export class VTGeoResource extends GeoResource {
+	/**
+	 *
+	 * @param {string} id
+	 * @param {string} label
+	 * @param {string} styleUrl
+	 */
 	constructor(id, label, styleUrl) {
 		super(id, label);
 		this._styleUrl = styleUrl;

@@ -469,6 +469,7 @@ describe('GeoResource', () => {
 			expect(vectorGeoResource.sourceType).toEqual(VectorSourceType.KML);
 			expect(vectorGeoResource.data).toBeNull();
 			expect(vectorGeoResource.features).toEqual([]);
+			expect(new VectorGeoResource('id', 'label').sourceType).toBeNull();
 		});
 
 		it('provides default properties', () => {
