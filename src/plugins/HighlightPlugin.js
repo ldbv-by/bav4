@@ -10,8 +10,6 @@ import { createUniqueId } from '../utils/numberUtils';
 import { $injector } from '../injection/index';
 import { QueryParameters } from '../domain/queryParameters';
 import { isCoordinate } from '../utils/checks';
-import { Geometry } from '../domain/geometry';
-import { SourceType, SourceTypeName } from '../domain/sourceType';
 import { HighlightFeatureType } from '../domain/highlightFeature';
 
 /**
