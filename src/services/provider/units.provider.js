@@ -3,6 +3,7 @@
  */
 import { $injector } from '../../injection';
 
+const Fraction_Digits_For_Kilometer = 2;
 const Fraction_Digits_For_Meter = 1;
 const Fraction_Digits_For_Angle = 1;
 const Kilometer_In_Meters = 1000;
@@ -31,9 +32,10 @@ const getNumberFormatOptions = (fractionDigits) => {
  */
 export const bvvDistanceUnitsProvider = (distance) => {
 	const locales = getLocales();
-	const numberFormatOptions = getNumberFormatOptions(Fraction_Digits_For_Meter);
+
 	const asKilometer = (rawValue) => {
-		const formatted = Math.round((rawValue / Kilometer_In_Meters) * 10) / 10;
+		const numberFormatOptions = getNumberFormatOptions(Fraction_Digits_For_Kilometer);
+		const formatted = Math.round((rawValue / Kilometer_In_Meters) * 100) / 100;
 		return {
 			value: formatted,
 			localizedValue: formatted.toLocaleString(locales, numberFormatOptions),
@@ -41,6 +43,7 @@ export const bvvDistanceUnitsProvider = (distance) => {
 		};
 	};
 	const asMeter = (distanceValue) => {
+		const numberFormatOptions = getNumberFormatOptions(Fraction_Digits_For_Meter);
 		const formatted = distance !== 0 ? Math.round(distanceValue * 100) / 100 : 0;
 		return {
 			value: formatted,
