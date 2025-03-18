@@ -318,17 +318,21 @@ describe('NavigationRail', () => {
 		});
 
 		describe('timeTravel is active', () => {
-			it('calls #_openTab', async () => {
+			it('opens set map tab and opens main menu', async () => {
 				const element = await setup({
+					mainMenu: {
+						open: false,
+						tab: TabIds.MISC
+					},
 					timeTravel: {
 						active: true
 					}
 				});
-				const openTabSpy = spyOn(element, '_openTab');
 
 				element._showTimeTravel();
 
-				expect(openTabSpy).toHaveBeenCalledOnceWith(TabIds.MAPS);
+				expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
+				expect(store.getState().mainMenu.open).toBe(true);
 			});
 		});
 	});
