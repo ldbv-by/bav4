@@ -89,7 +89,7 @@ describe('MiscContentPanel', () => {
 			expect(links[0].target).toEqual('_blank');
 			expect(links[0].querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_help');
 
-			expect(links[1].href).toEqual('https://www.ldbv.bayern.de/service/kontakt.html');
+			expect(links[1].href).toEqual('https://www.ldbv.bayern.de/service/kontakt/');
 			expect(links[1].target).toEqual('_blank');
 			expect(links[1].querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_Contact');
 
