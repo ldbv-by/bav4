@@ -23,8 +23,8 @@ export const bvvDistanceUnitsProvider = (distance) => {
 	const asKilometer = (distanceValue) => {
 		return (
 			(Math.round((distanceValue / Kilometer_In_Meters) * 100) / 100).toLocaleString(locales, {
-				minimumFractionDigits: 1,
-				maximumFractionDigits: 1
+				minimumFractionDigits: 2,
+				maximumFractionDigits: 2
 			}) +
 			' ' +
 			'km'
