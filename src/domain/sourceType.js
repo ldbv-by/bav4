@@ -56,6 +56,15 @@ export class SourceType {
 	static forGeoJSON() {
 		return new SourceType(SourceTypeName.GEOJSON, null, 4326);
 	}
+
+	/**
+	 *
+	 * @param {number} srid The SRID of the EWKT
+	 * @returns {SourceType} SourceType for WKT
+	 */
+	static forEwkt(srid) {
+		return new SourceType(SourceTypeName.EWKT, null, srid);
+	}
 }
 
 /**
