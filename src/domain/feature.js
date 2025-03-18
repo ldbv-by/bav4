@@ -11,6 +11,7 @@ import { Geometry } from './geometry';
 export class Feature {
 	#id;
 	#geometry;
+	#styleHint;
 	#properties = {};
 	/**
 	 *
@@ -62,6 +63,28 @@ export class Feature {
 
 	getProperties() {
 		return { ...this.#properties };
+	}
+
+	/**
+	 * Set the style hint for this `VectorGeoResource`
+	 * @param {StyleHint} styleHint
+	 * @returns {Feature}
+	 */
+	setStyleHint(styleHint) {
+		if (styleHint) {
+			this.#styleHint = styleHint;
+		}
+		return this;
+	}
+	/**
+	 * @returns `true` if this Feature has specific style hint
+	 */
+	hasStyleHint() {
+		return !!this.#styleHint;
+	}
+
+	get styleHint() {
+		return this.#styleHint ?? null;
 	}
 
 	get id() {
