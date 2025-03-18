@@ -16,7 +16,7 @@ import { createDefaultLayer, layersReducer } from '../../../../src/store/layers/
 import { UnavailableGeoResourceError } from '../../../../src/domain/errors';
 import { StyleHint } from '../../../../src/domain/styles';
 import { Geometry as BaGeometry } from '../../../../src/domain/geometry';
-import { Feature as BaFeature } from '../../../../src/domain/feature';
+import { BaFeature } from '../../../../src/domain/feature';
 import { SourceType } from '../../../../src/domain/sourceType';
 
 describe('VectorLayerService', () => {

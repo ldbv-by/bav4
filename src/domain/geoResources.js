@@ -687,7 +687,7 @@ export class VectorGeoResource extends GeoResource {
 	/**
 	 * Sets the features of this `VectorGeoResource`.
 	 * Existing features will be replaced.
-	 * @param {Feature[]} features
+	 * @param {BaFeature[]} features
 	 * @returns {VectorGeoResource} `this` for chaining
 	 */
 	setFeatures(features) {
@@ -697,7 +697,7 @@ export class VectorGeoResource extends GeoResource {
 
 	/**
 	 * Adds a features to the existing features.
-	 * @param {Feature} feature
+	 * @param {BaFeature} feature
 	 * @returns {VectorGeoResource} `this` for chaining
 	 */
 	addFeature(feature) {

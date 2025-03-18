@@ -8,7 +8,7 @@ import { Geometry } from './geometry';
 /**
  * A feature.
  */
-export class Feature {
+export class BaFeature {
 	#id;
 	#geometry;
 	#styleHint;
@@ -68,7 +68,7 @@ export class Feature {
 	/**
 	 * Set the style hint for this `VectorGeoResource`
 	 * @param {StyleHint} styleHint
-	 * @returns {Feature}
+	 * @returns {BaFeature}
 	 */
 	setStyleHint(styleHint) {
 		if (styleHint) {

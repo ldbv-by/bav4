@@ -17,7 +17,7 @@ import { $injector } from '../../src/injection';
 import { getDefaultAttribution, getMinimalAttribution } from '../../src/services/provider/attribution.provider';
 import { TestUtils } from '../test-utils';
 import { StyleHint } from '../../src/domain/styles';
-import { Feature } from '../../src/domain/feature';
+import { BaFeature } from '../../src/domain/feature';
 import { Geometry } from '../../src/domain/geometry';
 import { SourceType } from '../../src/domain/sourceType';
 
@@ -498,8 +498,8 @@ describe('GeoResource', () => {
 		});
 
 		it('sets the source of an internal VectorGeoResource by an array o features', () => {
-			const feat0 = new Feature(new Geometry('data', SourceType.forGpx()), 'id0');
-			const feat1 = new Feature(new Geometry('data', SourceType.forGpx()), 'id1');
+			const feat0 = new BaFeature(new Geometry('data', SourceType.forGpx()), 'id0');
+			const feat1 = new BaFeature(new Geometry('data', SourceType.forGpx()), 'id1');
 			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setFeatures([feat0]).addFeature(feat1);
 
 			expect(vectorGeoResource.features).toEqual([feat0, feat1]);
@@ -530,7 +530,7 @@ describe('GeoResource', () => {
 			});
 
 			it('provides a check for containing features', () => {
-				const feat0 = new Feature(new Geometry('data', SourceType.forGpx()), 'id0');
+				const feat0 = new BaFeature(new Geometry('data', SourceType.forGpx()), 'id0');
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).hasFeatures()).toBeFalse();
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).addFeature(feat0).hasFeatures()).toBeTrue();
 			});

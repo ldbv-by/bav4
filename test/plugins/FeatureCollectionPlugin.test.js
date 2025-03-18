@@ -7,7 +7,7 @@ import {
 	FeatureCollectionPlugin
 } from '../../src/plugins/FeatureCollectionPlugin.js';
 import { createDefaultLayer, layersReducer } from '../../src/store/layers/layers.reducer.js';
-import { Feature } from '../../src/domain/feature.js';
+import { BaFeature } from '../../src/domain/feature.js';
 import { addFeatures, clearFeatures } from '../../src/store/featureCollection/featureCollection.action.js';
 import { Geometry } from '../../src/domain/geometry.js';
 import { VectorGeoResource } from '../../src/domain/geoResources.js';
@@ -35,7 +35,7 @@ describe('FeatureCollectionPlugin', () => {
 					active: [createDefaultLayer(FEATURE_COLLECTION_LAYER_ID)]
 				},
 				featureCollection: {
-					entries: [new Feature(new Geometry('data', SourceType.forGpx()), 'id')]
+					entries: [new BaFeature(new Geometry('data', SourceType.forGpx()), 'id')]
 				}
 			});
 			const instanceUnderTest = new FeatureCollectionPlugin();
@@ -51,13 +51,16 @@ describe('FeatureCollectionPlugin', () => {
 		it('preserves existing features', async () => {
 			const store = setup({
 				featureCollection: {
-					entries: [new Feature(new Geometry('data', SourceType.forGpx()), 'id0')]
+					entries: [new BaFeature(new Geometry('data', SourceType.forGpx()), 'id0')]
 				}
 			});
 			const instanceUnderTest = new FeatureCollectionPlugin();
 			await instanceUnderTest.register(store);
 
-			addFeatures([new Feature(new Geometry('data0', SourceType.forGpx()), 'id1'), new Feature(new Geometry('data1', SourceType.forGpx()), 'id2')]);
+			addFeatures([
+				new BaFeature(new Geometry('data0', SourceType.forGpx()), 'id1'),
+				new BaFeature(new Geometry('data1', SourceType.forGpx()), 'id2')
+			]);
 
 			expect(store.getState().featureCollection.entries).toHaveSize(3);
 		});
@@ -66,8 +69,8 @@ describe('FeatureCollectionPlugin', () => {
 			const store = setup({});
 			const instanceUnderTest = new FeatureCollectionPlugin();
 			await instanceUnderTest.register(store);
-			const feature0 = new Feature(new Geometry('data0', SourceType.forGpx()), 'id0');
-			const feature1 = new Feature(new Geometry('data1', SourceType.forGpx()), 'id1');
+			const feature0 = new BaFeature(new Geometry('data0', SourceType.forGpx()), 'id0');
+			const feature1 = new BaFeature(new Geometry('data1', SourceType.forGpx()), 'id1');
 			const geoResourceServiceAddOrReplaceSpy = spyOn(geoResourceService, 'addOrReplace');
 
 			addFeatures([feature0, feature1]);
@@ -88,7 +91,10 @@ describe('FeatureCollectionPlugin', () => {
 				const store = setup({});
 				const instanceUnderTest = new FeatureCollectionPlugin();
 				await instanceUnderTest.register(store);
-				addFeatures([new Feature(new Geometry('data0', SourceType.forGpx()), 'id0'), new Feature(new Geometry('data1', SourceType.forGpx()), 'id1')]);
+				addFeatures([
+					new BaFeature(new Geometry('data0', SourceType.forGpx()), 'id0'),
+					new BaFeature(new Geometry('data1', SourceType.forGpx()), 'id1')
+				]);
 
 				expect(store.getState().featureCollection.entries).toHaveSize(2);
 
@@ -108,7 +114,10 @@ describe('FeatureCollectionPlugin', () => {
 				});
 				const instanceUnderTest = new FeatureCollectionPlugin();
 				await instanceUnderTest.register(store);
-				addFeatures([new Feature(new Geometry('data0', SourceType.forGpx()), 'id0'), new Feature(new Geometry('data1', SourceType.forGpx()), 'id1')]);
+				addFeatures([
+					new BaFeature(new Geometry('data0', SourceType.forGpx()), 'id0'),
+					new BaFeature(new Geometry('data1', SourceType.forGpx()), 'id1')
+				]);
 
 				expect(store.getState().featureCollection.entries).toHaveSize(2);
 

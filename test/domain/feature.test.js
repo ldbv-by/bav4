@@ -1,12 +1,12 @@
 import { Geometry } from '../../src/domain/geometry';
-import { Feature } from '../../src/domain/feature';
+import { BaFeature } from '../../src/domain/feature';
 import { StyleHint } from '../../src/domain/styles';
 import { SourceType, SourceTypeName } from '../../src/domain/sourceType';
 
 describe('Feature', () => {
 	it('provides a constructor and getters for properties', () => {
 		const geometry = new Geometry('data', new SourceType(SourceTypeName.EWKT));
-		const feature = new Feature(geometry, 'id');
+		const feature = new BaFeature(geometry, 'id');
 
 		expect(feature.geometry).toEqual(geometry);
 		expect(feature.id).toBe('id');
@@ -14,13 +14,13 @@ describe('Feature', () => {
 	});
 
 	it('check the constructors arguments', () => {
-		expect(() => new Feature('data')).toThrowError('<geometry> must be a Geometry');
-		expect(() => new Feature(new Geometry('data', new SourceType(SourceTypeName.GPX)))).toThrowError('<id> must be a String');
+		expect(() => new BaFeature('data')).toThrowError('<geometry> must be a Geometry');
+		expect(() => new BaFeature(new Geometry('data', new SourceType(SourceTypeName.GPX)))).toThrowError('<id> must be a String');
 	});
 
 	it('provides set, get and remove methods for properties', () => {
 		const geometry = new Geometry('data', new SourceType(SourceTypeName.EWKT));
-		const feature = new Feature(geometry, 'id');
+		const feature = new BaFeature(geometry, 'id');
 
 		expect(feature.getProperties()).toEqual({});
 
@@ -37,7 +37,7 @@ describe('Feature', () => {
 
 	it('provides set, get and check methods for a StyleHint', () => {
 		const geometry = new Geometry('data', new SourceType(SourceTypeName.EWKT));
-		const feature = new Feature(geometry, 'id');
+		const feature = new BaFeature(geometry, 'id');
 
 		expect(feature.hasStyleHint()).toBeFalse();
 
