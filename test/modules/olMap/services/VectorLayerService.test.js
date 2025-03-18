@@ -3,6 +3,7 @@ import { VectorGeoResource, VectorSourceType } from '../../../../src/domain/geoR
 import {
 	bvvIconUrlFunction,
 	iconUrlFunction,
+	mapSourceTypeToFormat,
 	mapVectorSourceTypeToFormat,
 	VectorLayerService
 } from '../../../../src/modules/olMap/services/VectorLayerService';
@@ -14,6 +15,9 @@ import { TestUtils } from '../../../test-utils';
 import { createDefaultLayer, layersReducer } from '../../../../src/store/layers/layers.reducer';
 import { UnavailableGeoResourceError } from '../../../../src/domain/errors';
 import { StyleHint } from '../../../../src/domain/styles';
+import { Geometry as BaGeometry } from '../../../../src/domain/geometry';
+import { Feature as BaFeature } from '../../../../src/domain/feature';
+import { SourceType } from '../../../../src/domain/sourceType';
 
 describe('VectorLayerService', () => {
 	const urlService = {
@@ -51,7 +55,7 @@ describe('VectorLayerService', () => {
 
 	describe('utils', () => {
 		describe('mapVectorSourceTypeToFormat', () => {
-			it('maps vectorSourceType to olFormats', () => {
+			it('maps a `VectorSourceType` to olFormats', () => {
 				expect(mapVectorSourceTypeToFormat(new VectorGeoResource('id', 'label', VectorSourceType.KML)).constructor.name).toBe('KML');
 				expect(
 					mapVectorSourceTypeToFormat(new VectorGeoResource('id', 'label', VectorSourceType.KML).setShowPointNames(false)).showPointNames_
@@ -62,6 +66,21 @@ describe('VectorLayerService', () => {
 				expect(() => {
 					mapVectorSourceTypeToFormat({ sourceType: 'unknown' });
 				}).toThrowError(/unknown currently not supported/);
+			});
+		});
+
+		describe('mapSourceTypeToFormat', () => {
+			it('maps a `SourceType` to olFormats', () => {
+				expect(mapSourceTypeToFormat(SourceType.forKml()).constructor.name).toBe('KML');
+				expect(mapSourceTypeToFormat(SourceType.forKml(), false).showPointNames_).toBeFalse();
+				expect(mapSourceTypeToFormat(SourceType.forKml(), true).showPointNames_).toBeTrue();
+				expect(mapSourceTypeToFormat(SourceType.forKml()).showPointNames_).toBeTrue();
+				expect(mapSourceTypeToFormat(SourceType.forGpx()).constructor.name).toBe('GPX');
+				expect(mapSourceTypeToFormat(SourceType.forGeoJSON()).constructor.name).toBe('GeoJSON');
+				expect(mapSourceTypeToFormat(SourceType.forEwkt(12345)).constructor.name).toBe('WKT');
+				expect(() => {
+					mapSourceTypeToFormat(new SourceType('Foo'));
+				}).toThrowError(/Foo currently not supported/);
 			});
 		});
 
@@ -294,6 +313,75 @@ describe('VectorLayerService', () => {
 
 					expect(olVectorSource.getFeatures().length).toBe(1);
 					expect(olVectorSource.getFeatures()[0].getId()).toBeUndefined();
+				});
+			});
+
+			describe('VectorGeoResource holds ist data as `BaFeature`', () => {
+				describe('exactly one feature', () => {
+					it('builds an olVectorSource for an VectorGeoResource', async () => {
+						setup();
+						const kmlName = 'kmlName';
+						const featureId = 'featureIO';
+						const data = `<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name>${kmlName}</name><Placemark id=" "><ExtendedData><Data name="type"><value>line</value></Data></ExtendedData><description></description><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>10.713458946685412,49.70007647302964 11.714932179089468,48.34411758499924</coordinates></LineString></Placemark></Document></kml>`;
+						const baGeometry = new BaGeometry(data, SourceType.forKml());
+						const baFeature = new BaFeature(baGeometry, featureId).setStyleHint(StyleHint.HIGHLIGHT).set('foo', 'bar');
+						const destinationSrid = 3857;
+						const geoResourceLabel = 'geoResourceLabel';
+						const expectedTypeValue = 'line';
+						spyOn(mapService, 'getSrid').and.returnValue(destinationSrid);
+						const vectorGeoResource = new VectorGeoResource('someId', geoResourceLabel).addFeature(baFeature).setShowPointNames(false);
+
+						const olVectorSource = instanceUnderTest._vectorSourceForData(vectorGeoResource);
+
+						expect(olVectorSource.constructor.name).toBe('VectorSource');
+						expect(olVectorSource.getFeatures().length).toBe(1);
+						expect(olVectorSource.getFeatures()[0].getId()).toBe(featureId);
+						expect(olVectorSource.getFeatures()[0].get('type')).toBe(expectedTypeValue);
+						expect(olVectorSource.getFeatures()[0].get('showPointNames')).toBeFalse();
+						expect(olVectorSource.getFeatures()[0].get('styleHint')).toBe(StyleHint.HIGHLIGHT);
+						expect(olVectorSource.getFeatures()[0].get('foo')).toBe('bar');
+					});
+				});
+
+				describe('more than one feature', () => {
+					it('builds an olVectorSource for an VectorGeoResource', async () => {
+						setup();
+						const kmlName = 'kmlName';
+						const data = `<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name>${kmlName}</name><Placemark id=" "><ExtendedData><Data name="type"><value>line</value></Data></ExtendedData><description></description><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>10.713458946685412,49.70007647302964 11.714932179089468,48.34411758499924</coordinates></LineString></Placemark></Document></kml>`;
+						const baGeometry = new BaGeometry(data, SourceType.forKml());
+						const baFeatureO = new BaFeature(baGeometry, 'featureIdO');
+						const baFeature1 = new BaFeature(baGeometry, 'featureId1');
+						const destinationSrid = 3857;
+						const geoResourceLabel = 'geoResourceLabel';
+						const expectedTypeValue = 'line';
+						spyOn(mapService, 'getSrid').and.returnValue(destinationSrid);
+						const vectorGeoResource = new VectorGeoResource('someId', geoResourceLabel).setFeatures([baFeatureO, baFeature1]);
+
+						const olVectorSource = instanceUnderTest._vectorSourceForData(vectorGeoResource);
+
+						expect(olVectorSource.constructor.name).toBe('VectorSource');
+						expect(olVectorSource.getFeatures().length).toBe(2);
+						expect(olVectorSource.getFeatures()[1].get('type')).toBe(expectedTypeValue);
+						expect(olVectorSource.getFeatures()[1].get('showPointNames')).toBeTrue();
+					});
+				});
+				describe('the feature`s Geometry contains EWKT data', () => {
+					it('builds an olVectorSource for an internal VectorGeoResource', () => {
+						setup();
+						const sourceSrid = 4326;
+						const destinationSrid = 3857;
+						const geoResourceLabel = 'geoResourceLabel';
+						const data = `SRID=${sourceSrid};POINT(11 49)`;
+						const baGeometry = new BaGeometry(data, SourceType.forEwkt(sourceSrid));
+						const baFeature = new BaFeature(baGeometry, 'featureId');
+						spyOn(mapService, 'getSrid').and.returnValue(destinationSrid);
+						const vectorGeoResource = new VectorGeoResource('someId', geoResourceLabel, VectorSourceType.EWKT).addFeature(baFeature);
+
+						const olVectorSource = instanceUnderTest._vectorSourceForData(vectorGeoResource);
+
+						expect(olVectorSource.constructor.name).toBe('VectorSource');
+						expect(olVectorSource.getFeatures().length).toBe(1);
+					});
 				});
 			});
 		});

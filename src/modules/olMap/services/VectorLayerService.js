@@ -1,7 +1,7 @@
 /**
  * @module modules/olMap/services/VectorLayerService
  */
-import { VectorSourceType, VTGeoResource } from '../../../domain/geoResources';
+import { VectorSourceType } from '../../../domain/geoResources';
 import VectorSource from 'ol/source/Vector';
 import { $injector } from '../../../injection';
 import { KML, GPX, GeoJSON, WKT } from 'ol/format';
@@ -12,6 +12,7 @@ import { getOriginAndPathname, getPathParams } from '../../../utils/urlUtils';
 import { UnavailableGeoResourceError } from '../../../domain/errors';
 import { isHttpUrl, isString } from '../../../utils/checks';
 import { StyleHint } from '../../../domain/styles';
+import { SourceTypeName } from '../../../domain/sourceType';
 
 const getUrlService = () => {
 	const { UrlService: urlService } = $injector.inject('UrlService');
@@ -57,6 +58,23 @@ export const mapVectorSourceTypeToFormat = (geoResource) => {
 			return new WKT();
 	}
 	throw new Error(geoResource?.sourceType + ' currently not supported');
+};
+
+export const mapSourceTypeToFormat = (sourceType, showPointNames = true) => {
+	switch (sourceType.name) {
+		case SourceTypeName.KML:
+			return new KML({ iconUrlFunction: bvvIconUrlFunction, showPointNames });
+
+		case SourceTypeName.GPX:
+			return new GPX();
+
+		case SourceTypeName.GEOJSON:
+			return new GeoJSON();
+
+		case SourceTypeName.EWKT:
+			return new WKT();
+	}
+	throw new Error(sourceType?.name + ' currently not supported');
 };
 
 /**
@@ -203,35 +221,57 @@ export class VectorLayerService {
 			const destinationSrid = mapService.getSrid();
 			const vectorSource = new VectorSource();
 
-			const data = geoResource.sourceType === VectorSourceType.EWKT ? parse(geoResource.data).wkt : geoResource.data;
-			const format = mapVectorSourceTypeToFormat(geoResource);
-			const features = format
-				.readFeatures(data)
-				.filter((f) => !!f.getGeometry()) // filter out features without a geometry. Todo: let's inform the user
-				.map((f) => {
-					// avoid ol displaying only one feature if ids are an empty string
-					if (isString(f.getId()) && f.getId().trim() === '') {
-						f.setId(undefined);
-					}
-					f.set('showPointNames', geoResource.showPointNames);
-					f.getGeometry().transform('EPSG:' + geoResource.srid, 'EPSG:' + destinationSrid); //Todo: check for unsupported destinationSrid
-					return f;
-				});
-			vectorSource.addFeatures(features);
+			const prepareFeatures = (olFormat, data, sourceSrid) => {
+				return olFormat
+					.readFeatures(data)
+					.filter((f) => !!f.getGeometry()) // filter out features without a geometry. Todo: let's inform the user
+					.map((f) => {
+						// avoid ol displaying only one feature if ids are an empty string
+						if (isString(f.getId()) && f.getId().trim() === '') {
+							f.setId(undefined);
+						}
+						f.set('showPointNames', geoResource.showPointNames);
+						f.getGeometry().transform('EPSG:' + sourceSrid, 'EPSG:' + destinationSrid); //Todo: check for unsupported destinationSrid
+						return f;
+					});
+			};
 
-			/**
-			 * If we know a name for the GeoResource now, we update the geoResource's label.
-			 * At this moment an olLayer and its source are about to be added to the map.
-			 * To avoid conflicts, we have to delay the update of the GeoResource (and subsequent possible modifications of the connected layer).
-			 */
-			if (!geoResource.hasLabel()) {
-				switch (geoResource.sourceType) {
-					case VectorSourceType.KML:
-						setTimeout(() => {
-							geoResource.setLabel(format.readName(data));
-						});
-						break;
+			if (!geoResource.hasFeatures()) {
+				const data = geoResource.sourceType === VectorSourceType.EWKT ? parse(geoResource.data).wkt : geoResource.data;
+				const olFormat = mapVectorSourceTypeToFormat(geoResource);
+				vectorSource.addFeatures(prepareFeatures(olFormat, data, geoResource.srid));
+
+				/**
+				 * If we know a name for the GeoResource now, we update the geoResource's label.
+				 * At this moment an olLayer and its source are about to be added to the map.
+				 * To avoid conflicts, we have to delay the update of the GeoResource (and subsequent possible modifications of the connected layer).
+				 */
+				if (!geoResource.hasLabel()) {
+					switch (geoResource.sourceType) {
+						case VectorSourceType.KML:
+							setTimeout(() => {
+								geoResource.setLabel(olFormat.readName(data));
+							});
+							break;
+					}
 				}
+			} else {
+				geoResource.features.forEach((baFeature) => {
+					const data = baFeature.geometry.sourceType.name === SourceTypeName.EWKT ? parse(baFeature.geometry.data).wkt : baFeature.geometry.data;
+					const olFeatures = prepareFeatures(
+						mapSourceTypeToFormat(baFeature.geometry.sourceType, geoResource.showPointNames),
+						data,
+						baFeature.geometry.sourceType.srid
+					);
+					if (olFeatures.length === 1) {
+						olFeatures[0].setId(baFeature.id);
+						olFeatures[0].set('styleHint', baFeature.styleHint ?? null);
+						for (const [key, value] of Object.entries(baFeature.getProperties())) {
+							olFeatures[0].set(key, value);
+						}
+					}
+					vectorSource.addFeatures(olFeatures);
+				});
 			}
 			return geoResource.isClustered()
 				? new Cluster({
