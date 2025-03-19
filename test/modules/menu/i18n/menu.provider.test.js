@@ -49,7 +49,7 @@ describe('i18n for menu module', () => {
 		expect(map.menu_navigation_rail_login).toBe('Login BayernAtlas-plus');
 		expect(map.menu_navigation_rail_logout).toBe('Logout');
 		expect(map.menu_navigation_rail_help).toBe('Hilfe und FAQ');
-		expect(map.menu_navigation_rail_help_url).toBe('https://www.ldbv.bayern.de/hilfe-v4.html');
+		expect(map.menu_navigation_rail_help_url).toBe('https://www.ldbv.bayern.de/produkte/dienste/ba_hilfe/index.html');
 		expect(map.menu_navigation_rail_time_travel).toBe('Zeitreise');
 		expect(map.menu_navigation_rail_time_travel_tooltip).toBe('Zeitreise öffnen');
 	});
@@ -100,7 +100,7 @@ describe('i18n for menu module', () => {
 		expect(map.menu_navigation_rail_login).toBe('Login BayernAtlas-plus');
 		expect(map.menu_navigation_rail_logout).toBe('Logout');
 		expect(map.menu_navigation_rail_help).toBe('Help and FAQ');
-		expect(map.menu_navigation_rail_help_url).toBe('https://www.ldbv.bayern.de/hilfe-v4.html');
+		expect(map.menu_navigation_rail_help_url).toBe('https://www.ldbv.bayern.de/produkte/dienste/ba_hilfe/index.html');
 		expect(map.menu_navigation_rail_time_travel).toBe('Time travel');
 		expect(map.menu_navigation_rail_time_travel_tooltip).toBe('Open time travel');
 	});
