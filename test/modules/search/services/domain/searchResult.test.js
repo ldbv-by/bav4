@@ -6,7 +6,8 @@ import {
 	SearchResultTypes
 } from '../../../../../src/modules/search/services/domain/searchResult';
 import { SourceType, SourceTypeName } from '../../../../../src/domain/sourceType';
-import { Geometry } from '../../../../../src/domain/geometry';
+import { BaGeometry } from '../../../../../src/domain/geometry';
+import { hashCode } from '../../../../../src/utils/hashCode';
 
 describe('searchResult', () => {
 	describe('SearchResultTypes', () => {
@@ -74,8 +75,8 @@ describe('LocationSearchResult', () => {
 	it('instantiates a LocationSearchResult', () => {
 		const label = 'label';
 		const labelFormatted = 'labelFormatted';
-		const center = [1, 2],
-			extent = [3, 4, 5, 6];
+		const center = [1, 2];
+		const extent = [3, 4, 5, 6];
 
 		const locationSearchResult = new LocationSearchResult(label, labelFormatted, center, extent);
 
@@ -112,6 +113,18 @@ describe('LocationSearchResult', () => {
 		expect(locationSearchResult.labelFormatted).toBe(labelFormatted);
 		expect(locationSearchResult.center).toEqual(center);
 		expect(locationSearchResult.extent).toEqual(extent);
+	});
+
+	it('provides a setter and getter for the `id`', () => {
+		const label = 'label';
+		const labelFormatted = 'labelFormatted';
+		const center = [1, 2];
+		const extent = [3, 4, 5, 6];
+
+		const locationSearchResult = new LocationSearchResult(label, labelFormatted, center, extent);
+
+		expect(locationSearchResult.setId(123).id).toBe(hashCode(locationSearchResult).toString());
+		expect(locationSearchResult.setId('123').id).toBe('123');
 	});
 });
 
@@ -150,7 +163,7 @@ describe('CadastralParcelSearchResult', () => {
 		const labelFormatted = 'labelFormatted';
 		const center = [1, 2];
 		const extent = [3, 4, 5, 6];
-		const geometry = new Geometry('ewkt', new SourceType(SourceTypeName.EWKT));
+		const geometry = new BaGeometry('ewkt', new SourceType(SourceTypeName.EWKT));
 
 		const cadastralParcelSearchResult = new CadastralParcelSearchResult(label, labelFormatted, center, extent, geometry);
 
@@ -160,6 +173,16 @@ describe('CadastralParcelSearchResult', () => {
 		expect(cadastralParcelSearchResult.center).toEqual(center);
 		expect(cadastralParcelSearchResult.extent).toEqual(extent);
 		expect(cadastralParcelSearchResult.geometry).toEqual(geometry);
+	});
+
+	it('provides a setter and getter for the `id`', () => {
+		const label = 'label';
+		const labelFormatted = 'labelFormatted';
+
+		const cadastralParcelSearchResult = new CadastralParcelSearchResult(label, labelFormatted);
+
+		expect(cadastralParcelSearchResult.setId(123).id).toBe(hashCode(cadastralParcelSearchResult).toString());
+		expect(cadastralParcelSearchResult.setId('123').id).toBe('123');
 	});
 });
 

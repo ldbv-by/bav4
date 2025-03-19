@@ -21,7 +21,7 @@ import { QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../../src/plugins/H
 import { Cluster } from 'ol/source';
 import LayerGroup from 'ol/layer/Group';
 import { VectorGeoResource, VectorSourceType } from '../../../../../src/domain/geoResources';
-import { Geometry } from '../../../../../src/domain/geometry';
+import { BaGeometry } from '../../../../../src/domain/geometry';
 import { SourceType, SourceTypeName } from '../../../../../src/domain/sourceType';
 import { HighlightFeatureType } from '../../../../../src/domain/highlightFeature';
 
@@ -48,7 +48,7 @@ describe('OlFeatureInfoHandler', () => {
 	};
 
 	const mockFeatureInfoProvider = (olFeature, layer) => {
-		const geometry = new Geometry(new GeoJSON().writeGeometry(olFeature.getGeometry()), new SourceType(SourceTypeName.GEOJSON));
+		const geometry = new BaGeometry(new GeoJSON().writeGeometry(olFeature.getGeometry()), new SourceType(SourceTypeName.GEOJSON));
 		return { title: `${olFeature.get('name')}-${layer.id}`, content: `${olFeature.get('description')}`, geometry };
 	};
 
@@ -224,7 +224,7 @@ describe('OlFeatureInfoHandler', () => {
 			);
 			const map = setupMap();
 			const geometry = new Point(matchingCoordinate);
-			const expectedFeatureInfoGeometry = new Geometry(new GeoJSON().writeGeometry(geometry), new SourceType(SourceTypeName.GEOJSON));
+			const expectedFeatureInfoGeometry = new BaGeometry(new GeoJSON().writeGeometry(geometry), new SourceType(SourceTypeName.GEOJSON));
 			// 1. "default" vector layer
 			const olVectorSource0 = new VectorSource();
 			const feature0 = new Feature({ geometry: geometry });
@@ -349,7 +349,7 @@ describe('OlFeatureInfoHandler', () => {
 		it('sets the `id` property on each olFeature when missing', async () => {
 			// this provider also returns the `id` property of the olFeature as `content` property
 			const mockFeatureInfoProvider = (olFeature, layer) => {
-				const geometry = new Geometry(new GeoJSON().writeGeometry(olFeature.getGeometry()), new SourceType(SourceTypeName.GEOJSON));
+				const geometry = new BaGeometry(new GeoJSON().writeGeometry(olFeature.getGeometry()), new SourceType(SourceTypeName.GEOJSON));
 				return {
 					title: `${olFeature.get('name')}-${layer.id}`,
 					content: `${olFeature.getId()}`,
@@ -371,7 +371,7 @@ describe('OlFeatureInfoHandler', () => {
 			);
 			const map = setupMap();
 			const geometry = new Point(matchingCoordinate);
-			const expectedFeatureInfoGeometry = new Geometry(new GeoJSON().writeGeometry(geometry), new SourceType(SourceTypeName.GEOJSON));
+			const expectedFeatureInfoGeometry = new BaGeometry(new GeoJSON().writeGeometry(geometry), new SourceType(SourceTypeName.GEOJSON));
 			// 1. "default" vector layer
 			const olVectorSource0 = new VectorSource();
 			const feature0 = new Feature({ geometry: geometry });
