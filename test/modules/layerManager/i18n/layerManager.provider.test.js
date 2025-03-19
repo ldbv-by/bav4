@@ -21,11 +21,14 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_collapse_all).toBe('Alle einklappen');
 		expect(map.layerManager_collapse_all_title).toBe('Alle Ebenen einklappen');
 		expect(map.layerManager_remove_all).toBe('Überlagerungen entfernen');
+		expect(map.layerManager_remove_all_title).toBe('Alle Ebenen löschen außer die Basiskarte');
 		expect(map.layerManager_loading_hint).toBe('Wird geladen');
 		expect(map.layerManager_time_travel_hint).toBe('Bitte ein Jahr auswählen');
 		expect(map.layerManager_time_travel_slider).toBe('Schieberegler öffnen');
 		expect(map.layerManager_compare).toBe('Vergleichen starten');
+		expect(map.layerManager_compare_title).toBe('Vergleichen starten');
 		expect(map.layerManager_compare_stop).toBe('Vergleichen beenden');
+		expect(map.layerManager_compare_stop_title).toBe('Vergleichen beenden, zur normalen Ansicht zurückkehren');
 		expect(map.layerManager_compare_share).toBe('Ansicht teilen');
 		expect(map.layerManager_compare_left).toBe('Links');
 		expect(map.layerManager_compare_left_title).toBe('Ebene auf die linke Seite setzen');
@@ -56,11 +59,14 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_collapse_all).toBe('Collapse all');
 		expect(map.layerManager_collapse_all_title).toBe('Collapse all layers');
 		expect(map.layerManager_remove_all).toBe('Remove all overlays');
+		expect(map.layerManager_remove_all_title).toBe('Remove all layers except for the basemap');
 		expect(map.layerManager_loading_hint).toBe('Loading');
 		expect(map.layerManager_time_travel_hint).toBe('Choose a year');
 		expect(map.layerManager_time_travel_slider).toBe('Open slider');
 		expect(map.layerManager_compare).toBe('Start comparison tool');
+		expect(map.layerManager_compare_title).toBe('Start comparison tool');
 		expect(map.layerManager_compare_stop).toBe('Exit comparison tool');
+		expect(map.layerManager_compare_stop_title).toBe('Exit comparison tool, return to normal view');
 		expect(map.layerManager_compare_share).toBe('Share the view');
 		expect(map.layerManager_compare_left).toBe('Left');
 		expect(map.layerManager_compare_left_title).toBe('Set layer on left side');
@@ -71,7 +77,7 @@ describe('i18n for layer-manager', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 30;
+		const expectedSize = 33;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
