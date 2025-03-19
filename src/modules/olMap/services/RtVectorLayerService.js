@@ -133,13 +133,7 @@ export class RtVectorLayerService {
 			if (isUpdateNeeded(messageData)) {
 				this._processMessage(messageData, olVectorLayer, featureReader);
 
-				vectorLayerService.sanitizeStyles(olVectorLayer);
-				if (rtVectorGeoResource.isClustered()) {
-					vectorLayerService.applyClusterStyle(olVectorLayer);
-				} else {
-					vectorLayerService.applyStyles(olVectorLayer, olMap);
-				}
-
+				vectorLayerService.applyStyle(olVectorLayer, olMap, rtVectorGeoResource);
 				/**
 				 * We use the fit only with the first call, to leave the control over the zoom level by the user
 				 * and to help the user in the special case, that the data of the layer is outside the view, at the beginning.

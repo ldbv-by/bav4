@@ -11,6 +11,9 @@ import VectorLayer from 'ol/layer/Vector';
 import CircleStyle from 'ol/style/Circle.js';
 import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../../../src/modules/olMap/ol/geodesic/geodesicGeometry.js';
 import { VectorSourceType } from '../../../../src/domain/geoResources.js';
+import { StyleHint } from '../../../../src/domain/styles.js';
+import { defaultClusterStyleFunction } from '../../../../src/modules/olMap/utils/olStyleUtils.js';
+import { highlightGeometryOrCoordinateFeatureStyleFunction } from '../../../../src/modules/olMap/handler/highlight/styleUtils.js';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -892,16 +895,40 @@ describe('StyleService', () => {
 
 			expect(updateSpy).toHaveBeenCalledWith(feature, mapMock, 'measure');
 		});
+
+		describe('checks the `styleHint` property of an ol.Feature', () => {
+			it('does nothing when a StyleHint is not available', () => {
+				const olFeature = new Feature({ geometry: new Point([0, 0]) });
+				spyOn(instanceUnderTest, '_detectStyleType').and.returnValue(null);
+
+				instanceUnderTest.addStyle(olFeature, {}, {});
+
+				expect(olFeature.getStyle()).toBeNull();
+			});
+
+			it('sets the correct style for `StyleHint.HIGHLIGHT`', () => {
+				const olFeature = new Feature({ geometry: new Point([0, 0]) });
+				olFeature.set('styleHint', StyleHint.HIGHLIGHT);
+				spyOn(instanceUnderTest, '_detectStyleType').and.returnValue(null);
+
+				instanceUnderTest.addStyle(olFeature, {}, {});
+
+				expect(olFeature.getStyle()).toEqual(highlightGeometryOrCoordinateFeatureStyleFunction());
+			});
+		});
 	});
 
 	describe('add cluster style', () => {
 		it('adds a style function to the cluster layer', () => {
-			const clusterLayer = new VectorLayer({ id: 'foo' });
-			const styleSpy = spyOn(clusterLayer, 'setStyle').and.callThrough();
+			const layer = new VectorLayer({ id: 'foo' });
+			const feature1 = new Feature({ geometry: new Point([0, 0]) });
+			const feature2 = new Feature({ geometry: new Point([0, 0]) });
+			const clusterFeature = new Feature({ geometry: new Point([0, 0]), features: [feature1, feature2] });
 
-			instanceUnderTest.addClusterStyle(clusterLayer);
-
-			expect(styleSpy).toHaveBeenCalledWith(jasmine.any(Function));
+			expect(instanceUnderTest.applyStyleHint(StyleHint.CLUSTER, layer).getStyle()(clusterFeature)).toEqual(
+				defaultClusterStyleFunction()(clusterFeature)
+			);
+			expect(instanceUnderTest.applyStyleHint(StyleHint.HIGHLIGHT, layer).getStyle()).toEqual(highlightGeometryOrCoordinateFeatureStyleFunction());
 		});
 	});
 

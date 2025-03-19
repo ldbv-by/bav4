@@ -262,7 +262,7 @@ describe('SearchResult provider', () => {
 			expect(searchResult0.center).toEqual([10.270116669125855, 48.44638557638974]);
 			expect(searchResult0.extent).toEqual([0, 1, 2, 3]);
 			expect(searchResult0.geometry.data).toBe('SRID=3857;POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))');
-			expect(searchResult0.geometry.sourceType).toEqual(new SourceType(SourceTypeName.EWKT));
+			expect(searchResult0.geometry.sourceType).toEqual(new SourceType(SourceTypeName.EWKT, null, 3857));
 		});
 
 		it('returns an empty array when response is empty', async () => {

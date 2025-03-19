@@ -8,7 +8,7 @@ import { html } from 'lit-html';
 import { addFeatureInfoItems } from '../../../../src/store/featureInfo/featureInfo.action.js';
 import { highlightReducer } from '../../../../src/store/highlight/highlight.reducer.js';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { Geometry } from '../../../../src/domain/geometry.js';
+import { BaGeometry } from '../../../../src/domain/geometry.js';
 import { SourceType, SourceTypeName } from '../../../../src/domain/sourceType.js';
 import { HighlightFeatureType } from '../../../../src/domain/highlightFeature.js';
 
@@ -269,7 +269,7 @@ describe('FeatureInfoPanel', () => {
 							{
 								title: 'title0',
 								content: 'content0',
-								geometry: new Geometry(geoJson, new SourceType(SourceTypeName.GEOJSON))
+								geometry: new BaGeometry(geoJson, new SourceType(SourceTypeName.GEOJSON))
 							}
 						]
 					}
@@ -280,7 +280,7 @@ describe('FeatureInfoPanel', () => {
 
 				expect(store.getState().highlight.features).toHaveSize(1);
 				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.DEFAULT_TMP);
-				expect(store.getState().highlight.features[0].data).toEqual(new Geometry(geoJson, new SourceType(SourceTypeName.GEOJSON)));
+				expect(store.getState().highlight.features[0].data).toEqual(new BaGeometry(geoJson, new SourceType(SourceTypeName.GEOJSON)));
 				expect(store.getState().highlight.features[0].id).toBe(TEMPORARY_FEATURE_HIGHLIGHT_ID);
 				expect(element.shadowRoot.querySelectorAll('.is-geometry')).toHaveSize(1);
 			});
@@ -314,13 +314,13 @@ describe('FeatureInfoPanel', () => {
 							{
 								title: 'title0',
 								content: 'content0',
-								geometry: new Geometry(geoJson, new SourceType(SourceTypeName.GEOJSON))
+								geometry: new BaGeometry(geoJson, new SourceType(SourceTypeName.GEOJSON))
 							}
 						]
 					},
 					highlight: {
 						// features: [{ id: TEMPORARY_FEATURE_HIGHLIGHT_ID, data: { geometry: geoJson, geometryType: HighlightGeometryType.GEOJSON } }]
-						features: [{ id: TEMPORARY_FEATURE_HIGHLIGHT_ID, data: new Geometry(geoJson, new SourceType(SourceTypeName.GEOJSON)) }]
+						features: [{ id: TEMPORARY_FEATURE_HIGHLIGHT_ID, data: new BaGeometry(geoJson, new SourceType(SourceTypeName.GEOJSON)) }]
 					}
 				});
 

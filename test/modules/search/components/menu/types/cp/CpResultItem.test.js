@@ -6,7 +6,7 @@ import { createNoInitialStateMediaReducer } from '../../../../../../../src/store
 import { positionReducer } from '../../../../../../../src/store/position/position.reducer';
 import { TestUtils } from '../../../../../../test-utils.js';
 import { SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../../src/plugins/HighlightPlugin';
-import { Geometry } from '../../../../../../../src/domain/geometry.js';
+import { BaGeometry } from '../../../../../../../src/domain/geometry.js';
 import { SourceType, SourceTypeName } from '../../../../../../../src/domain/sourceType.js';
 import { HighlightFeatureType } from '../../../../../../../src/domain/highlightFeature.js';
 window.customElements.define(CpResultItem.tag, CpResultItem);
@@ -59,8 +59,8 @@ describe('CpResultItem', () => {
 		const previousCoordinate = [1, 2];
 		const coordinate = [21, 42];
 		const extent = [0, 1, 2, 3];
-		const wktGeometry = new Geometry('POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))', new SourceType(SourceTypeName.EWKT));
-		const geoJsonGeometry = new Geometry("{ type: 'Point', coordinates: [21, 42, 0] }", new SourceType(SourceTypeName.GEOJSON));
+		const wktGeometry = new BaGeometry('POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))', new SourceType(SourceTypeName.EWKT));
+		const geoJsonGeometry = new BaGeometry("{ type: 'Point', coordinates: [21, 42, 0] }", new SourceType(SourceTypeName.GEOJSON));
 
 		const setupOnMouseEnterTests = async (portraitOrientation, extent = null, geometry = null) => {
 			const cpSearchResult = new CadastralParcelSearchResult('label', 'labelFormatted', coordinate, extent, geometry);

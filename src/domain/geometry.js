@@ -6,15 +6,16 @@ import { isString } from '../utils/checks';
 import { SourceType, SourceTypeName, SupportedVectorSourceTypes } from './sourceType';
 
 /**
- * A geometry. The actual geometry is encoded as the specified SourceType or `null` if it is unknown (in that case a consumer can use the `SourceTypeService`  for determination).
+ * A "framework-neutral" geometry in the BA context.
+ * The actual geometry is encoded as the specified SourceType or `null` if it is unknown (in that case a consumer can use the `SourceTypeService`  for determination).
  */
-export class Geometry {
+export class BaGeometry {
 	#data;
 	#sourceType;
 	/**
 	 *
-	 * @param {String|object} data The data of this geometry (Note type `object' is only allowed in case of sourceType GeoJSON)
-	 * @param {SourceType} sourceType The source type of this geometry. If unknown use {@link Geometry.forData}
+	 * @param {String|object} data The data of this geometry (Note: type `object` is only allowed in case of sourceType == `SourceType.GeoJSON`)
+	 * @param {SourceType} sourceType The source type of this geometry.
 	 */
 	constructor(data, sourceType) {
 		if (!(sourceType instanceof SourceType)) {
