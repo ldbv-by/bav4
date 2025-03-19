@@ -6,7 +6,7 @@ import { isString } from '../utils/checks';
 import { BaGeometry } from './geometry';
 
 /**
- * A feature.
+ * A "framework-neutral" feature in the BA context.
  */
 export class BaFeature {
 	#id;
