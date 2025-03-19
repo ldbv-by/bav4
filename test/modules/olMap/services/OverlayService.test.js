@@ -58,7 +58,8 @@ describe('OverlayService', () => {
 	const viewMock = {
 		getResolution() {
 			return 50;
-		}
+		},
+		on: () => {}
 	};
 	const mapMock = {
 		getView: () => viewMock,
@@ -85,6 +86,9 @@ describe('OverlayService', () => {
 			});
 			feature.setId('measure_123');
 			const addOverlaySpy = jasmine.createSpy();
+			const addListenerSpy = spyOn(viewMock, 'on')
+				.withArgs('change:resolution', jasmine.any(Function))
+				.and.callThrough(() => {});
 			const propertySetterSpy = spyOn(feature, 'set');
 			mapMock.addOverlay = addOverlaySpy;
 
@@ -93,6 +97,7 @@ describe('OverlayService', () => {
 
 			expect(propertySetterSpy).toHaveBeenCalledWith('overlays', jasmine.any(Object));
 			expect(addOverlaySpy).toHaveBeenCalledTimes(2);
+			expect(addListenerSpy).toHaveBeenCalled();
 		});
 
 		it('adding overlays to feature with unknown style-type fails', () => {

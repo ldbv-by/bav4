@@ -15,11 +15,6 @@ proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0
 register(proj4);
 
 describe('MeasurementOverlayStyle', () => {
-	const mapServiceMock = {
-		getSrid: () => 3857,
-		getLocalProjectedSrid: () => 25832,
-		calcLength: () => {}
-	};
 	const environmentServiceMock = { isTouch: () => false };
 	const initialState = {
 		active: false,
@@ -35,7 +30,7 @@ describe('MeasurementOverlayStyle', () => {
 		TestUtils.setupStoreAndDi(measurementState, { measurement: measurementReducer });
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('MapService', mapServiceMock)
+
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('UnitsService', {
 				// eslint-disable-next-line no-unused-vars
@@ -65,10 +60,16 @@ describe('MeasurementOverlayStyle', () => {
 	};
 	describe('adds overlays', () => {
 		it('calls all create-methods', () => {
-			const featureMock = {};
-			const mapMock = {};
+			const featureMock = { get: () => {}, set: () => {} };
+			const viewMock = { getResolution: () => 1, on: () => {} };
+			const mapMock = {
+				getView: () => viewMock
+			};
 			setup();
 			const classUnderTest = new MeasurementOverlayStyle();
+			const addListenerSpy = spyOn(viewMock, 'on')
+				.withArgs('change:resolution', jasmine.any(Function))
+				.and.callThrough(() => {});
 			const createDistanceOverlaySpy = spyOn(classUnderTest, '_createDistanceOverlay')
 				.withArgs(featureMock, mapMock)
 				.and.callFake(() => {});
@@ -84,6 +85,7 @@ describe('MeasurementOverlayStyle', () => {
 
 			classUnderTest.add(featureMock, mapMock);
 
+			expect(addListenerSpy).toHaveBeenCalled();
 			expect(createDistanceOverlaySpy).toHaveBeenCalled();
 			expect(createOrRemoveAreaOverlaySpy).toHaveBeenCalled();
 			expect(createOrRemovePartitionOverlaysSpy).toHaveBeenCalled();
@@ -130,13 +132,12 @@ describe('MeasurementOverlayStyle', () => {
 					]),
 				set: () => {}
 			};
+			const viewMock = { getResolution: () => 1, on: () => {} };
 			const mapMock = {
 				addOverlay: () => {},
 				removeOverlay: () => {},
 				getSize: () => [100, 100],
-				getView: () => {
-					return { getResolution: () => 1 };
-				}
+				getView: () => viewMock
 			};
 			setup();
 			const classUnderTest = new MeasurementOverlayStyle();
@@ -144,6 +145,9 @@ describe('MeasurementOverlayStyle', () => {
 			const removeSpy = spyOn(classUnderTest, '_remove')
 				.withArgs(jasmine.any(Object), featureMock, mapMock)
 				.and.callFake(() => {});
+			const addListenerSpy = spyOn(viewMock, 'on')
+				.withArgs('change:resolution', jasmine.any(Function))
+				.and.callThrough(() => {});
 			spyOn(classUnderTest, '_createDistanceOverlay')
 				.withArgs(featureMock, mapMock)
 				.and.callFake(() => {});
@@ -155,6 +159,7 @@ describe('MeasurementOverlayStyle', () => {
 				.and.callFake(() => {});
 
 			classUnderTest.add(featureMock, mapMock);
+			expect(addListenerSpy).toHaveBeenCalled();
 			expect(removeSpy).toHaveBeenCalledTimes(2);
 			expect(addOverlaySpy).toHaveBeenCalledTimes(1);
 		});
@@ -213,13 +218,12 @@ describe('MeasurementOverlayStyle', () => {
 					]),
 				set: () => {}
 			};
+			const viewMock = { getResolution: () => 1, on: () => {} };
 			const mapMock = {
 				addOverlay: () => {},
 				removeOverlay: () => {},
 				getSize: () => [100, 100],
-				getView: () => {
-					return { getResolution: () => 1 };
-				}
+				getView: () => viewMock
 			};
 			setup();
 			const classUnderTest = new MeasurementOverlayStyle();
@@ -227,6 +231,9 @@ describe('MeasurementOverlayStyle', () => {
 			const removeSpy = spyOn(classUnderTest, '_remove')
 				.withArgs(jasmine.any(Object), featureMock, mapMock)
 				.and.callFake(() => {});
+			const addListenerSpy = spyOn(viewMock, 'on')
+				.withArgs('change:resolution', jasmine.any(Function))
+				.and.callThrough(() => {});
 			spyOn(classUnderTest, '_createDistanceOverlay')
 				.withArgs(featureMock, mapMock)
 				.and.callFake(() => {});
@@ -242,6 +249,7 @@ describe('MeasurementOverlayStyle', () => {
 			classUnderTest.add(featureMock, mapMock);
 			expect(removeSpy).toHaveBeenCalledTimes(2);
 			expect(addOverlaySpy).toHaveBeenCalledTimes(1);
+			expect(addListenerSpy).toHaveBeenCalled();
 			expect(geodesicSpy).toHaveBeenCalled();
 		});
 
@@ -288,13 +296,12 @@ describe('MeasurementOverlayStyle', () => {
 					]),
 				set: () => {}
 			};
+			const viewMock = { getResolution: () => 1, on: () => {} };
 			const mapMock = {
 				addOverlay: () => {},
 				removeOverlay: () => {},
 				getSize: () => [100, 100],
-				getView: () => {
-					return { getResolution: () => 1 };
-				}
+				getView: () => viewMock
 			};
 			setup();
 			const classUnderTest = new MeasurementOverlayStyle();
@@ -302,6 +309,9 @@ describe('MeasurementOverlayStyle', () => {
 			const removeSpy = spyOn(classUnderTest, '_remove')
 				.withArgs(jasmine.any(Object), featureMock, mapMock)
 				.and.callFake(() => {});
+			const listenerSpy = spyOn(viewMock, 'on')
+				.withArgs('change:resolution', jasmine.any(Function))
+				.and.callThrough(() => {});
 			spyOn(classUnderTest, '_createDistanceOverlay')
 				.withArgs(featureMock, mapMock)
 				.and.callFake(() => {});
@@ -314,6 +324,7 @@ describe('MeasurementOverlayStyle', () => {
 
 			classUnderTest.add(featureMock, mapMock);
 			expect(removeSpy).toHaveBeenCalledTimes(2);
+			expect(listenerSpy).toHaveBeenCalled();
 			expect(addOverlaySpy).not.toHaveBeenCalled();
 		});
 
@@ -360,13 +371,12 @@ describe('MeasurementOverlayStyle', () => {
 					]),
 				set: () => {}
 			};
+			const viewMock = { getResolution: () => 1, on: () => {} };
 			const mapMock = {
 				addOverlay: () => {},
 				removeOverlay: () => {},
 				getSize: () => [100, 100],
-				getView: () => {
-					return { getResolution: () => 1 };
-				}
+				getView: () => viewMock
 			};
 			setup();
 			const classUnderTest = new MeasurementOverlayStyle();
@@ -374,6 +384,9 @@ describe('MeasurementOverlayStyle', () => {
 			const removeSpy = spyOn(classUnderTest, '_remove')
 				.withArgs(jasmine.any(Object), featureMock, mapMock)
 				.and.callFake(() => {});
+			const listenerSpy = spyOn(viewMock, 'on')
+				.withArgs('change:resolution', jasmine.any(Function))
+				.and.callThrough(() => {});
 			spyOn(classUnderTest, '_createDistanceOverlay')
 				.withArgs(featureMock, mapMock)
 				.and.callFake(() => {});
@@ -386,6 +399,7 @@ describe('MeasurementOverlayStyle', () => {
 
 			classUnderTest.add(featureMock, mapMock);
 			expect(removeSpy).toHaveBeenCalledTimes(2);
+			expect(listenerSpy).toHaveBeenCalled();
 			expect(addOverlaySpy).toHaveBeenCalledTimes(1);
 		});
 	});

@@ -193,16 +193,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			}
 		};
 
-		const onResolutionChange = (olLayer) => {
-			olLayer
-				.getSource()
-				.getFeatures()
-				.forEach((f) => {
-					const measureGeometry = this._createMeasureGeometry(f);
-					this._styleService.updateStyle(f, olMap, { geometry: measureGeometry }, StyleTypes.MEASURE);
-				});
-		};
-
 		const getOrCreateLayer = () => {
 			const oldLayer = getOldLayer(this._map);
 			const layer = createLayer();
@@ -236,7 +226,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 						updateContent();
 					})
 				);
-				this._mapListeners.push(this._map.getView().on('change:resolution', () => onResolutionChange(layer)));
 			};
 			// eslint-disable-next-line promise/prefer-await-to-then
 			addOldFeatures(layer, oldLayer)
@@ -374,7 +363,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._vectorLayer
 			.getSource()
 			.getFeatures()
-			.forEach((f) => this._overlayService.remove(f, this._map));
+			.forEach((f) => this._overlayService.remove(f, this._map, StyleTypes.MEASURE));
 		setSelection([]);
 		setStatistic(defaultMeasurementStats);
 
@@ -453,7 +442,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}
 
 		if (this._modify && this._modify.getActive()) {
-			const additionalRemoveAction = (f) => this._overlayService.remove(f, this._map);
+			const additionalRemoveAction = (f) => this._overlayService.remove(f, this._map, StyleTypes.MEASURE);
 			removeSelectedFeatures(this._select.getFeatures(), this._vectorLayer, additionalRemoveAction);
 			this._setSelection([]);
 			this._updateStatistic();
@@ -550,7 +539,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._drawingListeners.push(this._map.getView().on('change:resolution', onResolutionChange));
 		});
 
-		draw.on('drawabort', (event) => this._overlayService.remove(event.feature, this._map));
+		draw.on('drawabort', (event) => this._overlayService.remove(event.feature, this._map, StyleTypes.MEASURE));
 
 		draw.on('drawend', (event) => {
 			finishDistanceOverlay(event);
