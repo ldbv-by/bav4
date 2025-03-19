@@ -497,7 +497,7 @@ describe('GeoResource', () => {
 			expect(vectorGeoResource.srid).toBe(1234);
 		});
 
-		it('sets the source of an internal VectorGeoResource by an array o features', () => {
+		it('sets the source of an internal VectorGeoResource by an array of features', () => {
 			const feat0 = new BaFeature(new BaGeometry('data', SourceType.forGpx()), 'id0');
 			const feat1 = new BaFeature(new BaGeometry('data', SourceType.forGpx()), 'id1');
 			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setFeatures([feat0]).addFeature(feat1);
