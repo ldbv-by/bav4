@@ -883,6 +883,49 @@ describe('MeasurementOverlayStyle', () => {
 
 			expect(geodesicSpy).toHaveBeenCalled();
 		});
+
+		it('after view changes resolution (zoom changes)', () => {
+			const featureMock = { get: () => {}, set: () => {} };
+			const viewMock = { getResolution: () => 1, on: () => {} };
+			const mapMock = {
+				getView: () => viewMock
+			};
+			setup();
+			const listeners = [];
+
+			const classUnderTest = new MeasurementOverlayStyle();
+			const addListenerSpy = spyOn(viewMock, 'on')
+				.withArgs('change:resolution', jasmine.any(Function))
+				.and.callFake((type, fn) => {
+					listeners.push(fn);
+				});
+			spyOn(classUnderTest, '_createDistanceOverlay')
+				.withArgs(featureMock, mapMock)
+				.and.callFake(() => {});
+			spyOn(classUnderTest, '_createOrRemoveAreaOverlay')
+				.withArgs(featureMock, mapMock)
+				.and.callFake(() => {});
+			spyOn(classUnderTest, '_createOrRemovePartitionOverlays')
+				.withArgs(featureMock, mapMock)
+				.and.callFake(() => {});
+			spyOn(classUnderTest, '_restoreManualOverlayPosition')
+				.withArgs(featureMock, mapMock)
+				.and.callFake(() => {});
+
+			classUnderTest.add(featureMock, mapMock);
+
+			expect(addListenerSpy).toHaveBeenCalled();
+			expect(listeners.length).toBe(1);
+
+			const updateSpy = spyOn(classUnderTest, 'update')
+				.withArgs(featureMock, mapMock)
+				.and.callFake(() => {});
+
+			// mocking 'change:resolution'-event by calling the saved listener
+			listeners[0]();
+
+			expect(updateSpy).toHaveBeenCalled();
+		});
 	});
 
 	it('removes all overlays from feature', () => {
@@ -890,9 +933,14 @@ describe('MeasurementOverlayStyle', () => {
 		const removeSpy = jasmine.createSpy();
 		const mapMock = { removeOverlay: removeSpy };
 		const feature = createFeature();
+		const listenerStub = jasmine.createSpy();
+
+		feature.set('measurement_style_listeners', [listenerStub]);
+		const unsetSpy = spyOn(feature, 'unset').withArgs('measurement_style_listeners').and.callThrough();
 
 		const classUnderTest = new MeasurementOverlayStyle();
 		classUnderTest.remove(feature, mapMock);
+		expect(unsetSpy).toHaveBeenCalled();
 		expect(removeSpy).toHaveBeenCalledTimes(4);
 		expect(feature.get('measurement')).toBeNull();
 		expect(feature.get('area')).toBeNull();
