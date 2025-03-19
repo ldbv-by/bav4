@@ -17,7 +17,7 @@ import GeoJSON from 'ol/format/GeoJSON';
 import { Point } from 'ol/geom';
 import { Feature } from 'ol';
 import { $injector } from '../../../../../src/injection';
-import { Geometry } from '../../../../../src/domain/geometry';
+import { BaGeometry } from '../../../../../src/domain/geometry';
 import { SourceType, SourceTypeName } from '../../../../../src/domain/sourceType';
 import { HighlightFeatureType } from '../../../../../src/domain/highlightFeature';
 
@@ -204,11 +204,11 @@ describe('OlHighlightLayerHandler', () => {
 			spyOn(mapService, 'getSrid').and.returnValue(3857);
 			const appendStyleSpy = spyOn(handler, '_appendStyle').withArgs(jasmine.anything(), jasmine.any(Feature)).and.callThrough();
 			const highlightGeometryWktFeature = {
-				data: new Geometry(`SRID=3857;${new WKT().writeGeometry(new Point([21, 42]))}`, new SourceType(SourceTypeName.EWKT)),
+				data: new BaGeometry(`SRID=3857;${new WKT().writeGeometry(new Point([21, 42]))}`, new SourceType(SourceTypeName.EWKT)),
 				label: 'WKT'
 			};
 			const highlightGeometryGeoJsonFeature = {
-				data: new Geometry(JSON.stringify(new GeoJSON().writeGeometry(new Point([5, 10]))), new SourceType(SourceTypeName.GEOJSON)),
+				data: new BaGeometry(JSON.stringify(new GeoJSON().writeGeometry(new Point([5, 10]))), new SourceType(SourceTypeName.GEOJSON)),
 				label: 'GeoJSON'
 			};
 
@@ -228,7 +228,7 @@ describe('OlHighlightLayerHandler', () => {
 				const handler = new OlHighlightLayerHandler();
 				spyOn(mapService, 'getSrid').and.returnValue(3857);
 				const highlightGeometryWktFeature = {
-					data: new Geometry(`SRID=4326;${new WKT().writeGeometry(new Point([21, 42]))}`, new SourceType(SourceTypeName.EWKT)),
+					data: new BaGeometry(`SRID=4326;${new WKT().writeGeometry(new Point([21, 42]))}`, new SourceType(SourceTypeName.EWKT)),
 					label: 'WKT'
 				};
 
@@ -241,7 +241,7 @@ describe('OlHighlightLayerHandler', () => {
 			const handler = new OlHighlightLayerHandler();
 			const appendStyleSpy = spyOn(handler, '_appendStyle').withArgs(jasmine.anything(), jasmine.any(Feature)).and.callThrough();
 			const unknownHighlightFeatureType = {
-				data: new Geometry(JSON.stringify(new GeoJSON().writeGeometry(new Point([5, 10]))), new SourceType(SourceTypeName.KML))
+				data: new BaGeometry(JSON.stringify(new GeoJSON().writeGeometry(new Point([5, 10]))), new SourceType(SourceTypeName.KML))
 			};
 
 			expect(() => handler._toOlFeature(unknownHighlightFeatureType)).toThrow('SourceType "kml" is currently not supported');
@@ -282,11 +282,11 @@ describe('OlHighlightLayerHandler', () => {
 			setup();
 			const handler = new OlHighlightLayerHandler();
 			const highlightGeometryGeoJsonFeature0 = {
-				data: new Geometry(new GeoJSON().writeGeometry(olPoint), new SourceType(SourceTypeName.GEOJSON)),
+				data: new BaGeometry(new GeoJSON().writeGeometry(olPoint), new SourceType(SourceTypeName.GEOJSON)),
 				type: HighlightFeatureType.DEFAULT
 			};
 			const highlightGeometryGeoJsonFeature1 = {
-				data: new Geometry(new GeoJSON().writeGeometry(olPoint), new SourceType(SourceTypeName.GEOJSON)),
+				data: new BaGeometry(new GeoJSON().writeGeometry(olPoint), new SourceType(SourceTypeName.GEOJSON)),
 				type: HighlightFeatureType.DEFAULT_TMP
 			};
 

@@ -141,7 +141,7 @@ export const nullStyleFunction = () => [new Style({})];
  * If no or incomplete styling-information found on the feature, default values will be used.
  *
  * 'marker-symbol'-property is currently not supported
- * @param {Feature} feature the olFeature to be styled
+ * @param {ol.Feature} feature the olFeature to be styled
  * @returns {Array<Style>}
  */
 export const geojsonStyleFunction = (feature) => {
@@ -585,7 +585,7 @@ export const renderGeodesicRulerSegments = (pixelCoordinates, state, contextRend
  * StyleFunction for measurement-feature
  *
  * Inspired by example from https://stackoverflow.com/questions/57421223/openlayers-3-offset-stroke-style
- * @param {Feature} feature the feature to be styled
+ * @param {ol.Feature} feature the feature to be styled
  * @param {number} resolution the resolution of the Map-View
  * @returns {Array<Style>} the measurement styles for the specified feature
  */
@@ -837,7 +837,7 @@ export const getIconUrl = (iconId, color = [255, 255, 255]) => {
 
 /**
  * extracts the color-value (as hex representation) or null from a feature
- * @param {Feature} feature the feature with or without a style
+ * @param {ol.Feature} feature the feature with or without a style
  * @returns {string|null} the color-value
  */
 export const getColorFrom = (feature) => {
@@ -876,7 +876,7 @@ export const getColorFrom = (feature) => {
 
 /**
  * extracts the symbolSrc-value or null from a feature
- * @param {Feature} feature the feature with or without a style
+ * @param {ol.Feature} feature the feature with or without a style
  * @returns {string|null} the symbolSrc-Value or null
  */
 export const getSymbolFrom = (feature) => {
@@ -898,7 +898,7 @@ export const getSymbolFrom = (feature) => {
 
 /**
  * extracts the symbolSrc-value or null from a feature
- * @param {Feature} feature the feature with or without a style
+ * @param {ol.Feature} feature the feature with or without a style
  * @returns {string|null} the symbolSrc-Value or null
  */
 export const getTextFrom = (feature) => {
@@ -921,7 +921,7 @@ export const getTextFrom = (feature) => {
 /**
  * Extracts from the specified feature the size-value if the
  * StyleType is Marker/Text or null for all other StyleTypes.
- * @param {Feature} feature the feature with or without a style
+ * @param {ol.Feature} feature the feature with or without a style
  * @returns {module:domain/styles~StyleSize|null} the Size-Value or null
  */
 export const getSizeFrom = (feature) => {
@@ -951,7 +951,7 @@ export const getSizeFrom = (feature) => {
  * Returns the drawingtype of a feature. If the featue is created with the application itself,
  * the drawingType is part of the featureId and follows the convention id(feature)-> [measure|draw]_[drawingType]_[creationTime]
  * if the feature is not created with this application and the id follows not the before mentioned convention, NULL is returning.
- * @param {Feature} feature the feature
+ * @param {ol.Feature} feature the feature
  * @returns {string|null}
  */
 export const getDrawingTypeFrom = (feature) => {

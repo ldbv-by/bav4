@@ -343,7 +343,7 @@ const createRouteWarnings = (vehicleType, roadClassDetails, surfaceDetails, lang
 /**
  * Converts a polyline formatted geometry to a {@link ol.Geometry}
  * @param {string} polyline the polyline formatted geometry
- * @returns {Geometry} the ol geometry
+ * @returns {ol.Geometry} the ol geometry
  */
 const polylineToGeometry = (polyline) => {
 	const polylineFormat = new Polyline();

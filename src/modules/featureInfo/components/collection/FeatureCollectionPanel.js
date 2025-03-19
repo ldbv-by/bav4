@@ -13,7 +13,7 @@ import { FEATURE_COLLECTION_GEORESOURCE_ID } from '../../../../plugins/FeatureCo
 
 /**
  * @typedef {Object} FeatureCollectionPanelConfig
- * @property {Feature} feature The feature
+ * @property {BaFeature} feature The feature
  * @property {string|null} geoResourceId The id of the corresponding GeoResource of the feature of `null`
  */
 

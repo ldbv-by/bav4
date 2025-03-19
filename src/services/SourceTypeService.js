@@ -1,7 +1,7 @@
 /**
  * @module services/SourceTypeService
  */
-import { Geometry } from '../domain/geometry';
+import { BaGeometry } from '../domain/geometry';
 import { SourceTypeResultStatus } from '../domain/sourceType';
 import { isHttpUrl, isString } from '../utils/checks';
 import { PromiseQueue } from '../utils/PromiseQueue';
@@ -82,13 +82,13 @@ export class SourceTypeService {
 	/**
 	 * Creates a geometry by detecting the `SourceType` of the given data.
 	 * Returns `null` if the source type cannot be detected.
-	 * @param {String|object} data The data of this geometry (Note type `object' is only allowed in case of sourceType GeoJSON)
-	 * @returns  {Geometry|null}
+	 * @param {String|object} data The data of this geometry (Note: type `object` is only allowed in case of sourceType == `SourceType.GeoJSON`)
+	 * @returns  {BaGeometry|null}
 	 */
 	toGeometry(data) {
 		const result = this.forData(data);
 		if (result.status === SourceTypeResultStatus.OK) {
-			return new Geometry(data, result.sourceType);
+			return new BaGeometry(data, result.sourceType);
 		}
 		return null;
 	}

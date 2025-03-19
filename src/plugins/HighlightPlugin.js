@@ -10,8 +10,6 @@ import { createUniqueId } from '../utils/numberUtils';
 import { $injector } from '../injection/index';
 import { QueryParameters } from '../domain/queryParameters';
 import { isCoordinate } from '../utils/checks';
-import { Geometry } from '../domain/geometry';
-import { SourceType, SourceTypeName } from '../domain/sourceType';
 import { HighlightFeatureType } from '../domain/highlightFeature';
 
 /**
@@ -119,7 +117,7 @@ export class HighlightPlugin extends BaPlugin {
 					.map((featureInfo) => ({
 						id: QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID,
 						type: HighlightFeatureType.DEFAULT,
-						data: new Geometry(featureInfo.geometry.data, new SourceType(SourceTypeName.GEOJSON))
+						data: featureInfo.geometry
 					}));
 				addHighlightFeatures(highlightFeatures);
 			}

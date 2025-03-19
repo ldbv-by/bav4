@@ -25,7 +25,7 @@ import { setQuery } from '../../src/store/search/search.action';
 import { $injector } from '../../src/injection';
 import { QueryParameters } from '../../src/domain/queryParameters';
 import { positionReducer } from '../../src/store/position/position.reducer';
-import { Geometry } from '../../src/domain/geometry.js';
+import { BaGeometry } from '../../src/domain/geometry.js';
 import { SourceType, SourceTypeName } from '../../src/domain/sourceType.js';
 import { HighlightFeatureType } from '../../src/domain/highlightFeature.js';
 
@@ -118,7 +118,7 @@ describe('HighlightPlugin', () => {
 			const highlightFeature2 = { type: HighlightFeatureType.DEFAULT, data: [21, 42], id: QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID };
 			const highlightFeature3 = {
 				type: HighlightFeatureType.DEFAULT,
-				data: new Geometry(geoJson, new SourceType(SourceTypeName.GEOJSON)),
+				data: new BaGeometry(geoJson, new SourceType(SourceTypeName.GEOJSON)),
 				id: QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID
 			};
 			const store = setup({
@@ -231,7 +231,7 @@ describe('HighlightPlugin', () => {
 			};
 			const highlightFeature1 = {
 				type: HighlightFeatureType.DEFAULT,
-				data: new Geometry(geoJson, new SourceType(SourceTypeName.GEOJSON)),
+				data: new BaGeometry(geoJson, new SourceType(SourceTypeName.GEOJSON)),
 				id: QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID
 			};
 			const store = setup({
@@ -260,7 +260,7 @@ describe('HighlightPlugin', () => {
 		it('adds a success highlight feature both for FeatureInfos owning a geometry and not', async () => {
 			const coordinate = [21, 42];
 			const geoJson = '{"type":"Point","coordinates":[1224514.3987260093,6106854.83488507]}';
-			const geometry = new Geometry(geoJson, new SourceType(SourceTypeName.GEOJSON));
+			const geometry = new BaGeometry(geoJson, new SourceType(SourceTypeName.GEOJSON));
 			const store = setup();
 			const queryId = 'foo';
 			const instanceUnderTest = new HighlightPlugin();
@@ -274,7 +274,7 @@ describe('HighlightPlugin', () => {
 				{
 					title: 'title1',
 					content: 'content1',
-					geometry: new Geometry(geoJson, new SourceType(SourceTypeName.GEOJSON))
+					geometry: new BaGeometry(geoJson, new SourceType(SourceTypeName.GEOJSON))
 				}
 			]);
 			resolveQuery(queryId);
@@ -291,7 +291,7 @@ describe('HighlightPlugin', () => {
 		it('does NOT add a success highlight feature when containing solely FeatureInfo objects owning a geometry', async () => {
 			const coordinate = [21, 42];
 			const geoJson = '{"type":"Point","coordinates":[1224514.3987260093,6106854.83488507]}';
-			const geometry = new Geometry(geoJson, new SourceType(SourceTypeName.GEOJSON));
+			const geometry = new BaGeometry(geoJson, new SourceType(SourceTypeName.GEOJSON));
 			const store = setup();
 			const queryId = 'foo';
 			const instanceUnderTest = new HighlightPlugin();
@@ -303,7 +303,7 @@ describe('HighlightPlugin', () => {
 			addFeatureInfoItems({
 				title: 'title1',
 				content: 'content1',
-				geometry: new Geometry(geoJson, new SourceType(SourceTypeName.GEOJSON))
+				geometry: new BaGeometry(geoJson, new SourceType(SourceTypeName.GEOJSON))
 			});
 			resolveQuery(queryId);
 

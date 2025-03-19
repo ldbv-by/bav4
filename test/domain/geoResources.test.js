@@ -16,6 +16,10 @@ import {
 import { $injector } from '../../src/injection';
 import { getDefaultAttribution, getMinimalAttribution } from '../../src/services/provider/attribution.provider';
 import { TestUtils } from '../test-utils';
+import { StyleHint } from '../../src/domain/styles';
+import { BaFeature } from '../../src/domain/feature';
+import { BaGeometry } from '../../src/domain/geometry';
+import { SourceType } from '../../src/domain/sourceType';
 
 describe('GeoResource', () => {
 	const geoResourceServiceMock = {
@@ -464,6 +468,8 @@ describe('GeoResource', () => {
 			expect(vectorGeoResource.srid).toBeNull();
 			expect(vectorGeoResource.sourceType).toEqual(VectorSourceType.KML);
 			expect(vectorGeoResource.data).toBeNull();
+			expect(vectorGeoResource.features).toEqual([]);
+			expect(new VectorGeoResource('id', 'label').sourceType).toBeNull();
 		});
 
 		it('provides default properties', () => {
@@ -472,6 +478,7 @@ describe('GeoResource', () => {
 			expect(vectorGeoResource.clusterParams).toEqual({});
 			expect(vectorGeoResource.showPointNames).toBe(true);
 			expect(vectorGeoResource.localData).toBe(false);
+			expect(vectorGeoResource.styleHint).toBeNull();
 		});
 
 		it('provides the source type as fallback label', () => {
@@ -488,6 +495,14 @@ describe('GeoResource', () => {
 
 			expect(vectorGeoResource.data).toBe('someData');
 			expect(vectorGeoResource.srid).toBe(1234);
+		});
+
+		it('sets the source of an internal VectorGeoResource by an array of features', () => {
+			const feat0 = new BaFeature(new BaGeometry('data', SourceType.forGpx()), 'id0');
+			const feat1 = new BaFeature(new BaGeometry('data', SourceType.forGpx()), 'id1');
+			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setFeatures([feat0]).addFeature(feat1);
+
+			expect(vectorGeoResource.features).toEqual([feat0, feat1]);
 		});
 
 		describe('methods', () => {
@@ -512,6 +527,18 @@ describe('GeoResource', () => {
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).isClustered()).toBeFalse();
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setClusterParams(null).isClustered()).toBeFalse();
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setClusterParams({ foo: 'bar' }).isClustered()).toBeTrue();
+			});
+
+			it('provides a check for containing features', () => {
+				const feat0 = new BaFeature(new BaGeometry('data', SourceType.forGpx()), 'id0');
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).hasFeatures()).toBeFalse();
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).addFeature(feat0).hasFeatures()).toBeTrue();
+			});
+
+			it('provides a check for containing a non-default value as styleHint', () => {
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).hasStyleHint()).toBeFalse();
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setStyleHint(null).hasStyleHint()).toBeFalse();
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setStyleHint(StyleHint.HIGHLIGHT).hasStyleHint()).toBeTrue();
 			});
 
 			it('provides a check for containing a non-default value as label', () => {
@@ -579,6 +606,7 @@ describe('GeoResource', () => {
 			const rtVectorGeoResource = new RtVectorGeoResource('id', 'label', VectorSourceType.KML);
 
 			expect(rtVectorGeoResource.clusterParams).toEqual({});
+			expect(rtVectorGeoResource.styleHint).toBeNull();
 		});
 
 		describe('methods', () => {
@@ -586,6 +614,12 @@ describe('GeoResource', () => {
 				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).isClustered()).toBeFalse();
 				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).setClusterParams(null).isClustered()).toBeFalse();
 				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).setClusterParams({ foo: 'bar' }).isClustered()).toBeTrue();
+			});
+
+			it('provides a check for containing a non-default value as styleHint', () => {
+				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).hasStyleHint()).toBeFalse();
+				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).setStyleHint(null).hasStyleHint()).toBeFalse();
+				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).setStyleHint(StyleHint.HIGHLIGHT).hasStyleHint()).toBeTrue();
 			});
 
 			it('sets the showPointNames property', () => {
