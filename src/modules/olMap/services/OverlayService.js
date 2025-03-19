@@ -67,10 +67,10 @@ export class OverlayService {
 			case StyleTypes.MEASURE:
 				return new MeasurementOverlayStyle();
 			case StyleTypes.DEFAULT:
-				return null;
+				return new OverlayStyle();
 			default:
 				console.warn('Could not provide a style for unknown style-type:', styleType);
-				break;
+				return null;
 		}
 	}
 }
