@@ -316,9 +316,9 @@ describe('VectorLayerService', () => {
 				});
 			});
 
-			describe('VectorGeoResource holds ist data as `BaFeature`', () => {
+			describe('VectorGeoResource holds its data as `BaFeature`', () => {
 				describe('exactly one feature', () => {
-					it('builds an olVectorSource for an VectorGeoResource', async () => {
+					it('builds an olVectorSource for a VectorGeoResource', async () => {
 						setup();
 						const kmlName = 'kmlName';
 						const featureId = 'featureIO';
@@ -344,7 +344,7 @@ describe('VectorLayerService', () => {
 				});
 
 				describe('more than one feature', () => {
-					it('builds an olVectorSource for an VectorGeoResource', async () => {
+					it('builds an olVectorSource for a VectorGeoResource', async () => {
 						setup();
 						const kmlName = 'kmlName';
 						const data = `<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name>${kmlName}</name><Placemark id=" "><ExtendedData><Data name="type"><value>line</value></Data></ExtendedData><description></description><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>10.713458946685412,49.70007647302964 11.714932179089468,48.34411758499924</coordinates></LineString></Placemark></Document></kml>`;
