@@ -274,9 +274,9 @@ export class NavigationRail extends MvuElement {
 	}
 
 	_showTimeTravel() {
-		if (this.#storeService.getStore().getState().timeTravel.active) {
-			this._openTab(TabIds.MAPS);
-		} else {
+		setTab(TabIds.MAPS);
+		open();
+		if (!this.#storeService.getStore().getState().timeTravel.active) {
 			this.#predefinedConfigurationService.apply(PredefinedConfiguration.DISPLAY_TIME_TRAVEL);
 		}
 	}

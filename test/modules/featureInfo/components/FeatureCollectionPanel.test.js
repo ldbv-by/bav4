@@ -2,9 +2,9 @@
 import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection/index.js';
 import { FeatureCollectionPanel } from '../../../../src/modules/featureInfo/components/collection/FeatureCollectionPanel.js';
-import { Geometry } from '../../../../src/domain/geometry.js';
+import { BaGeometry } from '../../../../src/domain/geometry.js';
 import { featureCollectionReducer } from '../../../../src/store/featureCollection/featureCollection.reducer.js';
-import { Feature } from '../../../../src/domain/feature.js';
+import { BaFeature } from '../../../../src/domain/feature.js';
 import { featureInfoReducer } from '../../../../src/store/featureInfo/featureInfo.reducer.js';
 import { highlightReducer } from '../../../../src/store/highlight/highlight.reducer.js';
 import { SourceType, SourceTypeName } from '../../../../src/domain/sourceType.js';
@@ -51,7 +51,7 @@ describe('FeatureCollectionPanel', () => {
 			describe('containing feature that is not part of the feature collection', () => {
 				it('renders an ADD button', async () => {
 					const element = await setup({});
-					const feature = new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)), 'id');
+					const feature = new BaFeature(new BaGeometry('data', new SourceType(SourceTypeName.EWKT)), 'id');
 
 					element.configuration = { feature, geoResourceId: null };
 
@@ -65,7 +65,7 @@ describe('FeatureCollectionPanel', () => {
 
 			describe('containing feature that is already a part of the feature collection and its corresponding GeoResource is NOT the FEATURE_COLLECTION_GEORESOURCE', () => {
 				it('renders nothing', async () => {
-					const feature = new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)), 'id');
+					const feature = new BaFeature(new BaGeometry('data', new SourceType(SourceTypeName.EWKT)), 'id');
 					const element = await setup({
 						featureCollection: {
 							entries: [feature]
@@ -80,7 +80,7 @@ describe('FeatureCollectionPanel', () => {
 
 			describe('containing feature that is already a part of the feature collection and its corresponding GeoResource is the FEATURE_COLLECTION_GEORESOURCE', () => {
 				it('renders a REMOVE button', async () => {
-					const feature = new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)), 'id');
+					const feature = new BaFeature(new BaGeometry('data', new SourceType(SourceTypeName.EWKT)), 'id');
 					const element = await setup({
 						featureCollection: {
 							entries: [feature]
@@ -109,7 +109,7 @@ describe('FeatureCollectionPanel', () => {
 					features: [{ foo: 'bar' }]
 				}
 			});
-			const feature = new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)), 'id');
+			const feature = new BaFeature(new BaGeometry('data', new SourceType(SourceTypeName.EWKT)), 'id');
 
 			element.configuration = { feature };
 			const button = element.shadowRoot.querySelector('.chips__button.add');
@@ -129,7 +129,7 @@ describe('FeatureCollectionPanel', () => {
 	describe('REMOVE button is clicked', () => {
 		it('removes the feature from the featureCollection s-o-s and resets the highlight and featureInfo s-o-s', async () => {
 			const featureId = 'featureId0';
-			const feature = new Feature(new Geometry('data', new SourceType(SourceTypeName.EWKT)), featureId);
+			const feature = new BaFeature(new BaGeometry('data', new SourceType(SourceTypeName.EWKT)), featureId);
 			const element = await setup({
 				featureCollection: {
 					entries: [feature]

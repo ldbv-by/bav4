@@ -5,7 +5,7 @@ import { CadastralParcelSearchResult, GeoResourceSearchResult, LocationSearchRes
 import { $injector } from '../../../../injection';
 import { MediaType } from '../../../../domain/mediaTypes';
 import { SourceType, SourceTypeName } from '../../../../domain/sourceType';
-import { Geometry } from '../../../../domain/geometry';
+import { BaGeometry } from '../../../../domain/geometry';
 
 /**
  *A async function that returns a promise with an array of SearchResults with type LOCATION.
@@ -30,7 +30,7 @@ const removeHtml = (htmlLabel) => {
 export const loadBvvGeoResourceSearchResults = async (query) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 
-	const url = configService.getValueAsPath('BACKEND_URL') + 'search/type/layers/searchText';
+	const url = configService.getValueAsPath('BACKEND_URL') + 'search/type/georesource/searchText';
 
 	const result = await httpService.get(`${url}/${encodeURIComponent(query.replace(/\//g, ' '))}`);
 
@@ -47,7 +47,7 @@ export const loadBvvGeoResourceSearchResults = async (query) => {
 export const loadBvvLocationSearchResults = async (query) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 
-	const url = configService.getValueAsPath('BACKEND_URL') + 'search/type/locations/searchText';
+	const url = configService.getValueAsPath('BACKEND_URL') + 'search/type/location/searchText';
 
 	const requestPayload = { term: query };
 
@@ -78,7 +78,7 @@ export const loadBvvCadastralParcelSearchResults = async (query) => {
 				o.attrs.label,
 				o.attrs.coordinate,
 				o.attrs.extent ? o.attrs.extent : null,
-				o.attrs.ewkt ? new Geometry(o.attrs.ewkt, new SourceType(SourceTypeName.EWKT)) : null
+				o.attrs.ewkt ? new BaGeometry(o.attrs.ewkt, new SourceType(SourceTypeName.EWKT, null, 3857)) : null
 			);
 		});
 		return data;

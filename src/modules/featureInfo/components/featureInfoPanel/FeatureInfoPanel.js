@@ -13,7 +13,7 @@ import printerIcon from '../assets/printer.svg';
 import { addHighlightFeatures, removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
 import { createUniqueId } from '../../../../utils/numberUtils';
 import { isTemplateResult } from '../../../../utils/checks';
-import { Geometry } from '../../../../domain/geometry';
+import { BaGeometry } from '../../../../domain/geometry';
 import { HighlightFeatureType } from '../../../../domain/highlightFeature';
 
 const Update_FeatureInfo_Data = 'update_featureInfo_data';
@@ -85,7 +85,7 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 				addHighlightFeatures({
 					id: TEMPORARY_FEATURE_HIGHLIGHT_ID,
 					type: HighlightFeatureType.DEFAULT_TMP,
-					data: new Geometry(featureInfoGeometry.data, featureInfoGeometry.sourceType)
+					data: new BaGeometry(featureInfoGeometry.data, featureInfoGeometry.sourceType)
 				});
 			}
 		};

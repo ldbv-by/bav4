@@ -3,22 +3,23 @@
  */
 
 import { isString } from '../utils/checks';
-import { Geometry } from './geometry';
+import { BaGeometry } from './geometry';
 
 /**
- * A feature.
+ * A "framework-neutral" feature in the BA context.
  */
-export class Feature {
+export class BaFeature {
 	#id;
 	#geometry;
+	#styleHint;
 	#properties = {};
 	/**
 	 *
-	 * @param {Geometry} geometry The geometry of this feature
+	 * @param {BaGeometry} geometry The geometry of this feature
 	 * @param {String} id The id of this feature
 	 */
 	constructor(geometry, id) {
-		if (!(geometry instanceof Geometry)) {
+		if (!(geometry instanceof BaGeometry)) {
 			throw new Error('<geometry> must be a Geometry');
 		}
 		if (!isString(id)) {
@@ -28,22 +29,62 @@ export class Feature {
 		this.#geometry = geometry;
 	}
 
+	/**
+	 * Sets a property
+	 * @param {string} key
+	 * @param {*} value
+	 * @returns `this` for chaining
+	 */
 	set(key, value) {
-		this.#properties[key] = value;
-		return this.getProperties();
+		if (isString(key)) {
+			this.#properties[key] = value;
+		}
+		return this;
 	}
 
+	/**
+	 * Returns a property
+	 * @param {string} key
+	 * @returns the property or `null`
+	 */
 	get(key) {
 		return this.getProperties()[key] ?? null;
 	}
 
+	/**
+	 * Removes a property
+	 * @param {string} key
+	 * @returns `this` for chaining
+	 */
 	remove(key) {
 		delete this.#properties[key];
-		return this.getProperties();
+		return this;
 	}
 
 	getProperties() {
 		return { ...this.#properties };
+	}
+
+	/**
+	 * Set the style hint for this `VectorGeoResource`
+	 * @param {StyleHint} styleHint
+	 * @returns {BaFeature}
+	 */
+	setStyleHint(styleHint) {
+		if (styleHint) {
+			this.#styleHint = styleHint;
+		}
+		return this;
+	}
+	/**
+	 * @returns `true` if this Feature has specific style hint
+	 */
+	hasStyleHint() {
+		return !!this.#styleHint;
+	}
+
+	get styleHint() {
+		return this.#styleHint ?? null;
 	}
 
 	get id() {

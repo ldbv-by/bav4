@@ -11,7 +11,6 @@ import { addHighlightFeatures, removeHighlightFeaturesById } from '../../../../s
 import { createUniqueId } from '../../../../utils/numberUtils';
 import { isTemplateResult } from '../../../../utils/checks';
 import { MvuElement } from '../../../MvuElement';
-import { Geometry } from '../../../../domain/geometry';
 import { HighlightFeatureType } from '../../../../domain/highlightFeature';
 
 const Update_FeatureInfo_Data = 'update_featureInfo_data';
@@ -67,7 +66,7 @@ export class FeatureInfoIframePanel extends MvuElement {
 				addHighlightFeatures({
 					id: TEMPORARY_FEATURE_HIGHLIGHT_ID,
 					type: HighlightFeatureType.MARKER_TMP,
-					data: new Geometry(featureInfoGeometry.data, featureInfoGeometry.sourceType)
+					data: featureInfoGeometry
 				});
 			}
 		};

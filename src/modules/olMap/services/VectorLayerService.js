@@ -11,6 +11,8 @@ import { Cluster } from 'ol/source';
 import { getOriginAndPathname, getPathParams } from '../../../utils/urlUtils';
 import { UnavailableGeoResourceError } from '../../../domain/errors';
 import { isHttpUrl, isString } from '../../../utils/checks';
+import { StyleHint } from '../../../domain/styles';
+import { SourceTypeName } from '../../../domain/sourceType';
 
 const getUrlService = () => {
 	const { UrlService: urlService } = $injector.inject('UrlService');
@@ -56,6 +58,23 @@ export const mapVectorSourceTypeToFormat = (geoResource) => {
 			return new WKT();
 	}
 	throw new Error(geoResource?.sourceType + ' currently not supported');
+};
+
+export const mapSourceTypeToFormat = (sourceType, showPointNames = true) => {
+	switch (sourceType.name) {
+		case SourceTypeName.KML:
+			return new KML({ iconUrlFunction: bvvIconUrlFunction, showPointNames });
+
+		case SourceTypeName.GPX:
+			return new GPX();
+
+		case SourceTypeName.GEOJSON:
+			return new GeoJSON();
+
+		case SourceTypeName.EWKT:
+			return new WKT();
+	}
+	throw new Error(sourceType?.name + ' currently not supported');
 };
 
 /**
@@ -110,13 +129,7 @@ export class VectorLayerService {
 		return { addFeatureListenerKey, removeFeatureListenerKey, clearFeaturesListenerKey, layerChangeListenerKey, layerListChangedListenerKey };
 	}
 
-	/**
-	 * If needed, adds specific stylings (and overlays) for this vector layer
-	 * @param {ol.layer.Vector} olVectorLayer
-	 * @param {ol.Map} olMap
-	 * @returns olVectorLayer
-	 */
-	applyStyles(olVectorLayer, olMap) {
+	_applyFeatureSpecificStyles(olVectorLayer, olMap) {
 		/**
 		 * We check if an currently present and possible future features needs a specific styling.
 		 * If so, we apply the style and register an event listeners in order to keep the style (and overlays)
@@ -145,28 +158,38 @@ export class VectorLayerService {
 	 * ol context.
 	 * @param {ol.layer.Vector} olVectorLayer
 	 */
-	sanitizeStyles(olVectorLayer) {
+	_sanitizeStyles(olVectorLayer) {
 		const { StyleService: styleService } = $injector.inject('StyleService');
 		const olVectorSource = olVectorLayer.getSource();
 		olVectorSource.getFeatures().forEach((feature) => styleService.sanitizeStyle(feature));
 	}
 
 	/**
-	 * Adds a specific or a default cluster styling for this vector layer
+	 * Adds specific stylings (and overlays) for a vector layer.
+	 * The effective styling is determined in the following order;
+	 * 1. If the GeoResource is clustered we set the cluster style
+	 * 2. If the GeoResource has a style hint we set its corresponding style
+	 * 3. Otherwise we take the style information of the features
 	 * @param {ol.layer.Vector} olVectorLayer
-	 * @returns olVectorLayer
+	 * @param {ol.Map} olMap
+	 * @param {VectorGeoResource|RtVectorGeoResource} vectorGeoResource
+	 * @returns {ol.layer.Vector}
 	 */
-	applyClusterStyle(olVectorLayer) {
+	applyStyle(olVectorLayer, olMap, vectorGeoResource) {
 		const { StyleService: styleService } = $injector.inject('StyleService');
-		styleService.addClusterStyle(olVectorLayer);
-
-		return olVectorLayer;
+		this._sanitizeStyles(olVectorLayer);
+		if (vectorGeoResource.isClustered()) {
+			return styleService.applyStyleHint(StyleHint.CLUSTER, olVectorLayer);
+		} else if (vectorGeoResource.hasStyleHint()) {
+			return styleService.applyStyleHint(vectorGeoResource.styleHint, olVectorLayer);
+		}
+		return this._applyFeatureSpecificStyles(olVectorLayer, olMap);
 	}
 
 	/**
 	 * Builds an ol VectorLayer from an VectorGeoResource
 	 * @param {string} id layerId
-	 * @param {VectorGeoResource} vectorGeoResource
+	 * @param {VectorGeoResource|VTGeoResource} vectorGeoResource
 	 * @param {OlMap} olMap
 	 * @throws UnavailableGeoResourceError
 	 * @returns olVectorLayer
@@ -183,9 +206,7 @@ export class VectorLayerService {
 		const vectorSource = this._vectorSourceForData(vectorGeoResource);
 		vectorLayer.setSource(vectorSource);
 
-		this.sanitizeStyles(vectorLayer);
-
-		return vectorGeoResource.isClustered() ? this.applyClusterStyle(vectorLayer) : this.applyStyles(vectorLayer, olMap);
+		return this.applyStyle(vectorLayer, olMap, vectorGeoResource);
 	}
 
 	/**
@@ -200,35 +221,57 @@ export class VectorLayerService {
 			const destinationSrid = mapService.getSrid();
 			const vectorSource = new VectorSource();
 
-			const data = geoResource.sourceType === VectorSourceType.EWKT ? parse(geoResource.data).wkt : geoResource.data;
-			const format = mapVectorSourceTypeToFormat(geoResource);
-			const features = format
-				.readFeatures(data)
-				.filter((f) => !!f.getGeometry()) // filter out features without a geometry. Todo: let's inform the user
-				.map((f) => {
-					// avoid ol displaying only one feature if ids are an empty string
-					if (isString(f.getId()) && f.getId().trim() === '') {
-						f.setId(undefined);
-					}
-					f.set('showPointNames', geoResource.showPointNames);
-					f.getGeometry().transform('EPSG:' + geoResource.srid, 'EPSG:' + destinationSrid); //Todo: check for unsupported destinationSrid
-					return f;
-				});
-			vectorSource.addFeatures(features);
+			const prepareFeatures = (olFormat, data, sourceSrid) => {
+				return olFormat
+					.readFeatures(data)
+					.filter((f) => !!f.getGeometry()) // filter out features without a geometry. Todo: let's inform the user
+					.map((f) => {
+						// avoid ol displaying only one feature if ids are an empty string
+						if (isString(f.getId()) && f.getId().trim() === '') {
+							f.setId(undefined);
+						}
+						f.set('showPointNames', geoResource.showPointNames);
+						f.getGeometry().transform('EPSG:' + sourceSrid, 'EPSG:' + destinationSrid); //Todo: check for unsupported destinationSrid
+						return f;
+					});
+			};
 
-			/**
-			 * If we know a name for the GeoResource now, we update the geoResource's label.
-			 * At this moment an olLayer and its source are about to be added to the map.
-			 * To avoid conflicts, we have to delay the update of the GeoResource (and subsequent possible modifications of the connected layer).
-			 */
-			if (!geoResource.hasLabel()) {
-				switch (geoResource.sourceType) {
-					case VectorSourceType.KML:
-						setTimeout(() => {
-							geoResource.setLabel(format.readName(data));
-						});
-						break;
+			if (!geoResource.hasFeatures()) {
+				const data = geoResource.sourceType === VectorSourceType.EWKT ? parse(geoResource.data).wkt : geoResource.data;
+				const olFormat = mapVectorSourceTypeToFormat(geoResource);
+				vectorSource.addFeatures(prepareFeatures(olFormat, data, geoResource.srid));
+
+				/**
+				 * If we know a name for the GeoResource now, we update the geoResource's label.
+				 * At this moment an olLayer and its source are about to be added to the map.
+				 * To avoid conflicts, we have to delay the update of the GeoResource (and subsequent possible modifications of the connected layer).
+				 */
+				if (!geoResource.hasLabel()) {
+					switch (geoResource.sourceType) {
+						case VectorSourceType.KML:
+							setTimeout(() => {
+								geoResource.setLabel(olFormat.readName(data));
+							});
+							break;
+					}
 				}
+			} else {
+				geoResource.features.forEach((baFeature) => {
+					const data = baFeature.geometry.sourceType.name === SourceTypeName.EWKT ? parse(baFeature.geometry.data).wkt : baFeature.geometry.data;
+					const olFeatures = prepareFeatures(
+						mapSourceTypeToFormat(baFeature.geometry.sourceType, geoResource.showPointNames),
+						data,
+						baFeature.geometry.sourceType.srid
+					);
+					if (olFeatures.length === 1) {
+						olFeatures[0].setId(baFeature.id);
+						olFeatures[0].set('styleHint', baFeature.styleHint ?? null);
+						for (const [key, value] of Object.entries(baFeature.getProperties())) {
+							olFeatures[0].set(key, value);
+						}
+					}
+					vectorSource.addFeatures(olFeatures);
+				});
 			}
 			return geoResource.isClustered()
 				? new Cluster({

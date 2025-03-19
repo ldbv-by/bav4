@@ -10,8 +10,8 @@ const getStore = () => {
 };
 
 /**
- * Adds (appends) a single or an array of {@link Feature}.
- * @param {Array.<Feature>|Feature} features
+ * Adds (appends) a single or an array of {@link BaFeature}.
+ * @param {Array.<BaFeature>|BaFeature} features
  * @function
  */
 export const addFeatures = (features) => {
@@ -23,7 +23,7 @@ export const addFeatures = (features) => {
 };
 
 /**
- * Removes all {@link Feature}s.
+ * Removes all {@link BaFeature}s.
  * @function
  */
 export const clearFeatures = () => {

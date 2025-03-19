@@ -23,8 +23,8 @@ export const AZIMUTH_GEOMETRY_PROPERTY = 'azimuth';
  * Coerce the provided geometry to a LineString or null,
  * if the geometry is not a LineString,LinearRing or Polygon
  * @function
- * @param {Geometry} geometry the geometry to coerce to LineString
- * @returns {Geometry | null} the coerced LineString or null
+ * @param {ol.Geometry geometry the geometry to coerce to LineString
+ * @returns {ol.Geometry | null} the coerced LineString or null
  */
 export const getLineString = (geometry) => {
 	if (geometry instanceof LineString) {
@@ -48,7 +48,7 @@ export const getLineString = (geometry) => {
  *
  * @function
  * @param {MultiLineString} multiLineString
- * @returns {Geometry | null} the coerced LineString or null
+ * @returns {ol.Geometry | null} the coerced LineString or null
  */
 export const multiLineStringToLineString = (multiLineString) => {
 	if (!(multiLineString instanceof MultiLineString)) {
@@ -82,7 +82,7 @@ export const multiLineStringToLineString = (multiLineString) => {
  * Creates a polygon from an extent
  * @function
  * @param {Extent} extent the extent, which should be converted to a Polygon
- * @returns {Geometry|null} the polygon representing the extent or `null`
+ * @returns {ol.Geometry|null} the polygon representing the extent or `null`
  */
 export const getPolygonFrom = (extent) => {
 	if (!Array.isArray(extent) || extent.length !== 4) {
@@ -131,7 +131,7 @@ export const getBoundingBoxFrom = (centerCoordinate, size) => {
  * Return the coordinate at the provided fraction along the linear geometry or along the boundary of a area-like geometry.
  * The fraction is a number between 0 and 1, where 0 is the start (first coordinate) of the geometry and 1 is the end (last coordinate). *
  * @function
- * @param {Geometry} geometry
+ * @param {ol.Geometry geometry
  * @param {number} fraction
  * @returns {Array.<number>} the calculated coordinate or null if the geometry is not linear or area-like
  */
@@ -147,7 +147,7 @@ export const getCoordinateAt = (geometry, fraction) => {
 /**
  * Determines whether or not the geometry has the property of a azimuth-angle
  * @function
- * @param {Geometry} geometry the geometry
+ * @param {ol.Geometry geometry the geometry
  * @returns {boolean}
  */
 export const canShowAzimuthCircle = (geometry) => {
@@ -168,7 +168,7 @@ export const canShowAzimuthCircle = (geometry) => {
 /**
  * Calculates the azimuth-angle between the start(first coordinate) and end(last coordinate) of the geometry
  * @function
- * @param {Geometry} geometry
+ * @param {ol.Geometry geometry
  * @returns {number} the azimuth-angle as degree of arc with a value between 0 and 360
  */
 export const getAzimuth = (geometry) => {
@@ -259,7 +259,7 @@ export const getPartitionDelta = (geometryLength, resolution = 1) => {
 /**
  * Tests whether the vertex candidate is part of the geometry vertices
  * @function
- * @param {Geometry} geometry the geometry
+ * @param {ol.Geometry geometry the geometry
  * @param {Point} vertexCandidate the candidate point to test against the geometry. If candidate is other than
  * `Point`, it returns immediately false
  * @returns {boolean}
@@ -315,7 +315,7 @@ export const polarStakeOut = (fromCoordinate, angle, distance) => {
 /**
  * Calculates the residuals that occurs when the partitions are distributed over the individual segments of the geometry
  * @function
- * @param {Geometry} geometry the source geometry
+ * @param {ol.Geometry geometry the source geometry
  * @param {number} partitionDelta the delta-value of the partition
  * @returns {Array<number>} the residuals for all segments of the geometry
  */
@@ -339,7 +339,7 @@ export const calculatePartitionResidualOfSegments = (geometry, partitionDelta) =
 /**
  * Checks whether or not the geometry is valid for mapping purposes
  * @function
- * @param {Geometry|null} geometry the geometry supported GeometryTypes are Point, LineString, Polygon
+ * @param {ol.Geometry|null} geometry the geometry supported GeometryTypes are Point, LineString, Polygon
  * @returns {boolean}
  */
 export const isValidGeometry = (geometry) => {
@@ -363,7 +363,7 @@ export const isValidGeometry = (geometry) => {
 
 /**
  * @function
- * @param {Geometry} geometry ol geometry
+ * @param {ol.Geometry geometry ol geometry
  * @returns {module:domain/geometryStatisticTypeDef~GeometryStatistic}
  */
 export const getStats = (geometry) => {
@@ -423,10 +423,10 @@ export const PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES = 1000;
  * For LineStrings it uses the Douglas-Peucker algorithm.
  * For Polygons, a quantization-based simplification is used to preserve topology.
  * @function
- * @param {Geometry} geometry ol geometry
+ * @param {ol.Geometry} geometry ol geometry
  * @param {number} maxCount max. count of coordinates on which the geometry won't be simplified
  * @param {number} tolerance the tolerance distance for simplification (in map units)
- * @returns {Geometry} A new, simplified version of the original geometry
+ * @returns {ol.Geometry} A new, simplified version of the original geometry
  */
 export const simplify = (geometry, maxCount, tolerance) => {
 	if (geometry instanceof Geometry && maxCount && tolerance && geometry?.getCoordinates().length > maxCount) {
@@ -438,7 +438,7 @@ export const simplify = (geometry, maxCount, tolerance) => {
 /**
  * Returns an array of coordinates suitable for calculating an elevation profile.
  * @function
- * @param {Geometry} geometry ol geometry
+ * @param {ol.Geometry} geometry ol geometry
  * @returns {Array<module:domain/coordinateTypeDef~Coordinate>} the coordinates
  */
 export const getCoordinatesForElevationProfile = (geometry) => {
