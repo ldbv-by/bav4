@@ -27,7 +27,9 @@ export const provide = (lang) => {
 				global_fileStorageService_exception: 'The data could not be stored',
 				global_cr_global_wgs84: 'Lat, Lon',
 				global_terms_of_use: 'https://www.ldbv.bayern.de/mam/ldbv/dateien/nutzungsbedingungen_geoportal_bayernatlas_bayernatlasplus.pdf',
-				global_featureCollection_layer_label: 'My temporary collection'
+				global_featureCollection_layer_label: 'My temporary collection',
+				global_featureCollection_add_feature_notification: 'Object was added to “My temporary collection”',
+				global_featureCollection_remove_feature_notification: 'Object has been removed from “My temporary collection”'
 			};
 
 		case 'de':
@@ -58,7 +60,9 @@ export const provide = (lang) => {
 				global_fileStorageService_exception: 'Die Daten konnten nicht gespeichert werden',
 				global_cr_global_wgs84: 'Breite, Länge',
 				global_terms_of_use: 'https://www.ldbv.bayern.de/mam/ldbv/dateien/nutzungsbedingungen_geoportal_bayernatlas_bayernatlasplus.pdf',
-				global_featureCollection_layer_label: 'Meine temporäre Sammlung'
+				global_featureCollection_layer_label: 'Meine temporäre Sammlung',
+				global_featureCollection_add_feature_notification: 'Objekt wurde zu "Meine temporäre Sammlung" hinzugefügt',
+				global_featureCollection_remove_feature_notification: 'Objekt wurde aus "Meine temporäre Sammlung" entfernt'
 			};
 
 		default:

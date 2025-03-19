@@ -11,8 +11,6 @@ describe('i18n for featureInfo module', () => {
 		expect(map.featureInfo_featureCollection_remove_feature).toBe('Aus Sammlung entfernen');
 		expect(map.featureInfo_featureCollection_add_feature_title).toBe('Dieses Objekt zu "Meine temporäre Sammlung" hinzufügen');
 		expect(map.featureInfo_featureCollection_remove_feature_title).toBe('Dieses Objekt aus "Meine temporäre Sammlung" entfernen');
-		expect(map.featureInfo_featureCollection_add_feature_notification).toBe('Objekt wurde zu "Meine temporäre Sammlung" hinzugefügt');
-		expect(map.featureInfo_featureCollection_remove_feature_notification).toBe('Objekt wurde aus "Meine temporäre Sammlung" entfernt');
 	});
 
 	it('provides translation for en', () => {
@@ -25,12 +23,10 @@ describe('i18n for featureInfo module', () => {
 		expect(map.featureInfo_featureCollection_remove_feature).toBe('Remove from collection');
 		expect(map.featureInfo_featureCollection_add_feature_title).toBe('Add this object to “My temporary collection”');
 		expect(map.featureInfo_featureCollection_remove_feature_title).toBe('Remove this object from “My temporary collection”');
-		expect(map.featureInfo_featureCollection_add_feature_notification).toBe('Object was added to “My temporary collection”');
-		expect(map.featureInfo_featureCollection_remove_feature_notification).toBe('Object has been removed from “My temporary collection”');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 9;
+		const expectedSize = 7;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
