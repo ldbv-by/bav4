@@ -59,12 +59,12 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_collapse_all).toBe('Collapse all');
 		expect(map.layerManager_collapse_all_title).toBe('Collapse all layers');
 		expect(map.layerManager_remove_all).toBe('Remove all overlays');
-		expect(map.layerManager_remove_all_title).toBe('Remove all overlay layers except for the basemap');
+		expect(map.layerManager_remove_all_title).toBe('Remove all layers except for the basemap');
 		expect(map.layerManager_loading_hint).toBe('Loading');
 		expect(map.layerManager_time_travel_hint).toBe('Choose a year');
 		expect(map.layerManager_time_travel_slider).toBe('Open slider');
 		expect(map.layerManager_compare).toBe('Start comparison tool');
-		expect(map.layerManager_compare_title).toBe('Start comparison tool with current layers');
+		expect(map.layerManager_compare_title).toBe('Start comparison tool');
 		expect(map.layerManager_compare_stop).toBe('Exit comparison tool');
 		expect(map.layerManager_compare_stop_title).toBe('Exit comparison tool, return to normal view');
 		expect(map.layerManager_compare_share).toBe('Share the view');
