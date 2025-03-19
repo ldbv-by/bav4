@@ -21,12 +21,12 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_collapse_all).toBe('Alle einklappen');
 		expect(map.layerManager_collapse_all_title).toBe('Alle Ebenen einklappen');
 		expect(map.layerManager_remove_all).toBe('Überlagerungen entfernen');
-		expect(map.layerManager_remove_all_title).toBe('Alle Überlagerungen entfernen, bis auf die Basiskarte');
+		expect(map.layerManager_remove_all_title).toBe('Alle Ebenen löschen außer die Basiskarte');
 		expect(map.layerManager_loading_hint).toBe('Wird geladen');
 		expect(map.layerManager_time_travel_hint).toBe('Bitte ein Jahr auswählen');
 		expect(map.layerManager_time_travel_slider).toBe('Schieberegler öffnen');
 		expect(map.layerManager_compare).toBe('Vergleichen starten');
-		expect(map.layerManager_compare_title).toBe('Vergleichen starten mit den aktuellen Ebenen');
+		expect(map.layerManager_compare_title).toBe('Vergleichen starten');
 		expect(map.layerManager_compare_stop).toBe('Vergleichen beenden');
 		expect(map.layerManager_compare_stop_title).toBe('Vergleichen beenden, zur normalen Ansicht zurückkehren');
 		expect(map.layerManager_compare_share).toBe('Ansicht teilen');
