@@ -6,7 +6,7 @@ import { isString } from '../utils/checks';
 import { SourceType, SourceTypeName, SupportedVectorSourceTypes } from './sourceType';
 
 /**
- * A "framework-neutral" feature in the BA context.
+ * A "framework-neutral" geometry in the BA context.
  * The actual geometry is encoded as the specified SourceType or `null` if it is unknown (in that case a consumer can use the `SourceTypeService`  for determination).
  */
 export class BaGeometry {
