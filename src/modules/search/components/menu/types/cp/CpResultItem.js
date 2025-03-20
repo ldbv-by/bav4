@@ -10,6 +10,7 @@ import { addHighlightFeatures, removeHighlightFeaturesById } from '../../../../.
 import { SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../plugins/HighlightPlugin';
 import { MvuElement } from '../../../../../MvuElement';
 import { HighlightFeatureType } from '../../../../../../domain/highlightFeature';
+import { AbstractResultItem } from '../../AbstractSearchResultItem';
 
 const Update_IsPortrait = 'update_isPortrait';
 const Update_CpSearchResult = 'update_cpSearchResult';
@@ -23,7 +24,7 @@ const Update_CpSearchResult = 'update_cpSearchResult';
  * @class
  * @author costa_gi
  */
-export class CpResultItem extends MvuElement {
+export class CpResultItem extends AbstractResultItem {
 	constructor() {
 		super({
 			cpSearchResult: null,
@@ -59,31 +60,68 @@ export class CpResultItem extends MvuElement {
 		throw message;
 	}
 
-	createView(model) {
-		const { isPortrait, cpSearchResult } = model;
+	/**
+	 * @override
+	 */
+	selectResult() {
+		const { isPortrait, cpSearchResult } = this.getModel();
+		const extent = cpSearchResult.extent ? [...cpSearchResult.extent] : [...cpSearchResult.center, ...cpSearchResult.center];
+		removeHighlightFeaturesById([SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_HIGHLIGHT_FEATURE_ID]);
+		fit(extent, { maxZoom: CpResultItem._maxZoomLevel });
+		if (cpSearchResult.geometry) {
+			addHighlightFeatures({
+				id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
+				type: HighlightFeatureType.DEFAULT,
+				data: cpSearchResult.geometry,
+				label: cpSearchResult.label
+			});
+		} else if (!cpSearchResult.extent) {
+			addHighlightFeatures({
+				id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
+				type: HighlightFeatureType.MARKER,
+				data: [...cpSearchResult.center],
+				label: cpSearchResult.label
+			});
+		} else {
+			removeHighlightFeaturesById(SEARCH_RESULT_HIGHLIGHT_FEATURE_ID);
+		}
 
-		/**
-		 * Uses mouseenter and mouseleave events for adding/removing a temporary highlight feature.
-		 * These events are not fired on touch devices, so there's no extra handling needed.
-		 */
-		const onMouseEnter = (result) => {
-			if (result.geometry) {
+		if (isPortrait) {
+			//close the main menu
+			closeMainMenu();
+		}
+	}
+
+	/**
+	 * @override
+	 */
+	highlightResult(highlighted) {
+		const { cpSearchResult } = this.getModel();
+		if (highlighted) {
+			this.shadowRoot.querySelector('.ba-list-item')?.focus();
+			if (cpSearchResult.geometry) {
 				addHighlightFeatures({
 					id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID,
 					type: HighlightFeatureType.DEFAULT_TMP,
-					data: result.geometry
+					data: cpSearchResult.geometry
 				});
 			} else {
 				addHighlightFeatures({
 					id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID,
 					type: HighlightFeatureType.MARKER_TMP,
-					data: [...result.center]
+					data: [...cpSearchResult.center],
+					label: cpSearchResult.label
 				});
 			}
-		};
-		const onMouseLeave = () => {
+		} else {
+			this.shadowRoot.querySelector('.ba-list-item')?.blur();
 			removeHighlightFeaturesById(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
-		};
+		}
+	}
+
+	createView(model) {
+		const { isPortrait, cpSearchResult } = model;
+
 		const onClick = (result) => {
 			const extent = result.extent ? [...result.extent] : [...result.center, ...result.center];
 			removeHighlightFeaturesById([SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_HIGHLIGHT_FEATURE_ID]);
@@ -113,6 +151,10 @@ export class CpResultItem extends MvuElement {
 		};
 
 		if (cpSearchResult) {
+			/**
+			 * Uses mouseenter and mouseleave events for adding/removing a temporary highlight feature.
+			 * These events are not fired on touch devices, so there's no extra handling needed.
+			 */
 			return html`
 				<style>
 					${css}
@@ -120,9 +162,9 @@ export class CpResultItem extends MvuElement {
 				<li
 					class="ba-list-item ba-key-nav-item"
 					tabindex="0"
-					@click=${() => onClick(cpSearchResult)}
-					@mouseenter=${() => onMouseEnter(cpSearchResult)}
-					@mouseleave=${() => onMouseLeave()}
+					@click=${() => this.selectResult()}
+					@mouseenter=${() => this.highlightResult(true)}
+					@mouseleave=${() => this.highlightResult(false)}
 				>
 					<span class="ba-list-item__pre ">
 						<span class="ba-list-item__icon"> </span>

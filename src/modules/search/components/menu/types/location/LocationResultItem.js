@@ -13,6 +13,7 @@ import clipboardSvg from '../../assets/clipboard.svg';
 import { $injector } from '../../../../../../injection';
 import { emitNotification, LevelTypes } from '../../../../../../store/notifications/notifications.action';
 import { HighlightFeatureType } from '../../../../../../domain/highlightFeature';
+import { AbstractResultItem } from '../../AbstractSearchResultItem';
 
 const Update_IsPortrait = 'update_isPortrait';
 const Update_LocationSearchResult = 'update_locationSearchResult';
@@ -25,8 +26,9 @@ const Update_LocationSearchResult = 'update_locationSearchResult';
  *
  * @class
  * @author taulinger
+ * @author thiloSchlemmer
  */
-export class LocationResultItem extends MvuElement {
+export class LocationResultItem extends AbstractResultItem {
 	#translationService;
 	#shareService;
 	constructor() {
@@ -65,43 +67,52 @@ export class LocationResultItem extends MvuElement {
 		this.signal(Update_LocationSearchResult, locationSearchResult);
 	}
 
-	createView(model) {
-		const { isPortrait, locationSearchResult } = model;
-		const translate = (key) => this.#translationService.translate(key);
-		/**
-		 * Uses mouseenter and mouseleave events for adding/removing a temporary highlight feature.
-		 * These events are not fired on touch devices, so there's no extra handling needed.
-		 */
-		const onMouseEnter = (result) => {
+	/**
+	 * @override
+	 */
+	highlightResult(highlighted) {
+		const { locationSearchResult } = this.getModel();
+		if (highlighted) {
+			this.shadowRoot.querySelector('.ba-list-item')?.focus();
 			addHighlightFeatures({
 				id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID,
 				type: HighlightFeatureType.MARKER_TMP,
-				data: [...result.center]
+				data: [...locationSearchResult.center]
 			});
-		};
-		const onMouseLeave = () => {
+		} else {
+			this.shadowRoot.querySelector('.ba-list-item')?.blur();
 			removeHighlightFeaturesById(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
-		};
-		const onClick = (result) => {
-			const extent = result.extent ? [...result.extent] : [...result.center, ...result.center];
-			removeHighlightFeaturesById([SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_HIGHLIGHT_FEATURE_ID]);
-			fit(extent, { maxZoom: LocationResultItem._maxZoomLevel });
-			if (!result.extent) {
-				addHighlightFeatures({
-					id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
-					type: HighlightFeatureType.MARKER,
-					data: [...result.center],
-					label: result.label
-				});
-			} else {
-				removeHighlightFeaturesById(SEARCH_RESULT_HIGHLIGHT_FEATURE_ID);
-			}
+		}
+	}
 
-			if (isPortrait) {
-				//close the main menu
-				closeMainMenu();
-			}
-		};
+	/**
+	 * @override
+	 */
+	selectResult() {
+		const { isPortrait, locationSearchResult } = this.getModel();
+		const extent = locationSearchResult.extent ? [...locationSearchResult.extent] : [...locationSearchResult.center, ...locationSearchResult.center];
+		removeHighlightFeaturesById([SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_HIGHLIGHT_FEATURE_ID]);
+		fit(extent, { maxZoom: LocationResultItem._maxZoomLevel });
+		if (!locationSearchResult.extent) {
+			addHighlightFeatures({
+				id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
+				type: HighlightFeatureType.MARKER,
+				data: [...locationSearchResult.center],
+				label: locationSearchResult.label
+			});
+		} else {
+			removeHighlightFeaturesById(SEARCH_RESULT_HIGHLIGHT_FEATURE_ID);
+		}
+
+		if (isPortrait) {
+			//close the main menu
+			closeMainMenu();
+		}
+	}
+
+	createView(model) {
+		const { locationSearchResult } = model;
+		const translate = (key) => this.#translationService.translate(key);
 
 		const onCopyClick = async (e) => {
 			e.preventDefault();
@@ -120,6 +131,10 @@ export class LocationResultItem extends MvuElement {
 		};
 
 		if (locationSearchResult) {
+			/**
+			 * Uses mouseenter and mouseleave events for adding/removing a temporary highlight feature.
+			 * These events are not fired on touch devices, so there's no extra handling needed.
+			 */
 			return html`
 				<style>
 					${css}
@@ -127,9 +142,9 @@ export class LocationResultItem extends MvuElement {
 				<li
 					class="ba-list-item ba-key-nav-item"
 					tabindex="0"
-					@click=${() => onClick(locationSearchResult)}
-					@mouseenter=${() => onMouseEnter(locationSearchResult)}
-					@mouseleave=${() => onMouseLeave()}
+					@click=${() => this.selectResult()}
+					@mouseenter=${() => this.highlightResult(true)}
+					@mouseleave=${() => this.highlightResult(false)}
 				>
 					<span class="ba-list-item__pre ">
 						<span class="ba-list-item__icon"> </span>
