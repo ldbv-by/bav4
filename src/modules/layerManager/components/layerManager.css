@@ -59,9 +59,6 @@ li {
 	font-size: 0.95rem;
 }
 
-.layermanager__expandOrCollapse {
-	padding-left: 0.8em;
-}
 .chips__container {
 	display: flex;
 	justify-content: center;
