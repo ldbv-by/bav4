@@ -72,7 +72,7 @@ describe('OverlayService', () => {
 	};
 
 	describe('add overlays', () => {
-		it('adds measure-overlays to feature ', () => {
+		it('adds measure-overlays to a feature ', () => {
 			const feature = new Feature({
 				geometry: new Polygon([
 					[
@@ -100,7 +100,7 @@ describe('OverlayService', () => {
 			expect(addListenerSpy).toHaveBeenCalled();
 		});
 
-		it('adding overlays to feature with unknown style-type fails', () => {
+		it('adds overlays to a feature with unknown style-type fails', () => {
 			const feature = new Feature({
 				geometry: new Polygon([
 					[
@@ -180,7 +180,7 @@ describe('OverlayService', () => {
 		});
 	});
 	describe('remove overlays', () => {
-		it('remove overlays from feature', () => {
+		it('removes overlays from a feature', () => {
 			const feature = new Feature({
 				geometry: new Polygon([
 					[
@@ -213,7 +213,7 @@ describe('OverlayService', () => {
 			expect(removeOverlaySpy).toHaveBeenCalledTimes(2);
 		});
 
-		it('remove overlays from feature with default style', () => {
+		it('removes overlays from a feature with default style', () => {
 			const feature = new Feature({
 				geometry: new Polygon([
 					[
@@ -246,7 +246,7 @@ describe('OverlayService', () => {
 			expect(removeOverlaySpy).toHaveBeenCalledTimes(2);
 		});
 
-		it('remove overlays from feature with unknown style', () => {
+		it('removes overlays from a feature with unknown style', () => {
 			const feature = new Feature({
 				geometry: new Polygon([
 					[
@@ -279,7 +279,7 @@ describe('OverlayService', () => {
 			expect(removeOverlaySpy).toHaveBeenCalledTimes(0);
 		});
 
-		it('remove overlays from measurement feature', () => {
+		it('removes overlays from a measurement feature', () => {
 			const feature = new Feature({
 				geometry: new Polygon([
 					[
