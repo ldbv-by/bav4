@@ -215,12 +215,12 @@ describe('Header', () => {
 
 			expect(element.shadowRoot.querySelector('.header__button-container').children[2].innerText).toBe('header_tab_misc_button');
 			expect(element.shadowRoot.querySelector('.header__button-container').children[2].classList.contains('is-active')).toBeFalse();
-			expect(element.shadowRoot.querySelector('.header__button-container').title).toBe('header_search_title');
 
 			expect(element.shadowRoot.querySelectorAll('#inputFocusButton')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('#inputFocusButton').title).toBe('header_search_title');
 
 			expect(element.shadowRoot.querySelector('.header__search').getAttribute('placeholder')).toBe('header_search_placeholder');
+			expect(element.shadowRoot.querySelector('.header__search').title).toBe('header_search_title');
 
 			expect(element.shadowRoot.querySelectorAll('#clear')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('#clear').title).toBe('header_search_clear_button');
