@@ -317,8 +317,8 @@ export class Header extends MvuElement {
 						</button> 
 						<div class="header__background">
 						</div>
-						<div class='header__search-container'>
-							<button id="inputFocusButton" @click="${onButtonClick}" class="open-search-button" title="${translate('header_search_placeholder')}">
+						<div class='header__search-container' title="${translate('header_search_title')}">
+							<button id="inputFocusButton" @click="${onButtonClick}" class="open-search-button" title="${translate('header_search_title')}">
 								<span class="button_search_icon"></span>					
 							</button>
 							<input id='input' data-test-id placeholder='${translate(
