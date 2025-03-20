@@ -1,7 +1,7 @@
 /**
  * @module store/highlight/highlight_action
  */
-import { CLEAR_FEATURES, FEATURE_ADD, REMOVE_FEATURE_BY_ID } from './highlight.reducer';
+import { CLEAR_FEATURES, FEATURE_ADD, REMOVE_FEATURE_BY_ID, REMOVE_FEATURE_BY_CATEGORY } from './highlight.reducer';
 import { $injector } from '../../injection';
 
 const getStore = () => {
@@ -42,6 +42,20 @@ export const removeHighlightFeaturesById = (id) => {
 	const idsAsArray = Array.isArray(id) ? [...id] : [id];
 	getStore().dispatch({
 		type: REMOVE_FEATURE_BY_ID,
+		payload: idsAsArray
+	});
+};
+
+/**
+ * Removes a (permanent or temporary) feature by its id.
+ * If two or more feature have the same id, all of them are removed.
+ * @param {Array.<String>|String} category HighlightFeature id
+ * @function
+ */
+export const removeHighlightFeaturesByCategory = (category) => {
+	const idsAsArray = Array.isArray(category) ? [...category] : [category];
+	getStore().dispatch({
+		type: REMOVE_FEATURE_BY_CATEGORY,
 		payload: idsAsArray
 	});
 };

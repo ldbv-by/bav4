@@ -1,5 +1,10 @@
 import { highlightReducer } from '../../../src/store/highlight/highlight.reducer';
-import { clearHighlightFeatures, addHighlightFeatures, removeHighlightFeaturesById } from '../../../src/store/highlight/highlight.action';
+import {
+	clearHighlightFeatures,
+	addHighlightFeatures,
+	removeHighlightFeaturesById,
+	removeHighlightFeaturesByCategory
+} from '../../../src/store/highlight/highlight.action';
 import { TestUtils } from '../../test-utils.js';
 import { HighlightFeatureType } from '../../../src/domain/highlightFeature.js';
 
@@ -80,7 +85,7 @@ describe('highlightReducer', () => {
 		expect(store.getState().highlight.features[0].id).toBeInstanceOf(Number);
 	});
 
-	it("changes the 'features' and 'active' property by removing a features by id", () => {
+	it("changes the 'features' and 'active' property by removing a features by `id`", () => {
 		const id = 'foo';
 		const store = setup();
 		const highlightFeature0 = { type: HighlightFeatureType.DEFAULT, data: [21, 42], id: id };
@@ -108,6 +113,38 @@ describe('highlightReducer', () => {
 		addHighlightFeatures({ id: 'bar', type: HighlightFeatureType.DEFAULT, data: [21, 42] });
 
 		removeHighlightFeaturesById([id, 'bar']);
+
+		expect(store.getState().highlight.features).toHaveSize(0);
+	});
+
+	it("changes the 'features' and 'active' property by removing a features by `category`", () => {
+		const category = 'foo';
+		const store = setup();
+		const highlightFeature0 = { type: HighlightFeatureType.DEFAULT, data: [21, 42], category };
+		//a second feature with the same id
+		const highlightFeature1 = { type: HighlightFeatureType.DEFAULT, data: [44, 55], category };
+
+		addHighlightFeatures(highlightFeature0);
+
+		removeHighlightFeaturesByCategory(category);
+
+		expect(store.getState().highlight.features).toHaveSize(0);
+		expect(store.getState().highlight.active).toBeFalse();
+
+		addHighlightFeatures([highlightFeature0, highlightFeature1]);
+		addHighlightFeatures({ type: HighlightFeatureType.DEFAULT, data: [21, 42] });
+
+		removeHighlightFeaturesByCategory(category);
+
+		expect(store.getState().highlight.features).toHaveSize(1);
+		expect(store.getState().highlight.features[0].id).not.toBe(category);
+		expect(store.getState().highlight.active).toBeTrue();
+
+		clearHighlightFeatures();
+		addHighlightFeatures([highlightFeature0, highlightFeature1]);
+		addHighlightFeatures({ category: 'bar', type: HighlightFeatureType.DEFAULT, data: [21, 42] });
+
+		removeHighlightFeaturesByCategory([category, 'bar']);
 
 		expect(store.getState().highlight.features).toHaveSize(0);
 	});
