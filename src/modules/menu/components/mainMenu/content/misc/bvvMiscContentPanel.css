@@ -2,8 +2,8 @@
 	mask-size: cover;
 	-webkit-mask-size: cover;
 	background: var(--text1);
-	width: 2em;
-	height: 2em;
+	width: 1.5em;
+	height: 1.5em;
 	border-radius: 0;
 }
 .image {
@@ -15,8 +15,9 @@
 }
 .themeToggle {
 	width: 100%;
+	padding-top: 0.4em;
+	padding-bottom: 0.4em;
 }
-
 .help {
 	mask-image: url('assets/help.svg');
 	-webkit-mask-image: url('assets/help.svg');
@@ -69,11 +70,24 @@
 	background: linear-gradient(90deg, rgba(8, 131, 181, 1) 0%, rgba(43, 91, 148, 1) 100%);
 }
 .person {
-	background: var(--text2);
 	mask-size: cover;
 	-webkit-mask-size: cover;
 	mask-image: url('assets/person.svg');
 	-webkit-mask-image: url('assets/person.svg');
+}
+
+.sun {
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	mask-image: url('assets/sun.svg');
+	-webkit-mask-image: url('assets/sun.svg');
+}
+
+.moon {
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	mask-image: url('assets/moon.svg');
+	-webkit-mask-image: url('assets/moon.svg');
 }
 
 .settings {
