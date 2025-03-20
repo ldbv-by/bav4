@@ -12,6 +12,10 @@ import { Tools } from '../../../../src/domain/tools';
 import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
 import { activate, deactivate } from '../../../../src/store/layerSwipe/layerSwipe.action';
 
+import expandSvg from '../../../../src/modules/layerManager/components/assets/expand.svg';
+import clearSvg from '../../../../src/modules/layerManager/components/assets/x-square.svg';
+import chevronSvg from '../../../../src/modules/layerManager/components/assets/chevron.svg';
+
 window.customElements.define(Checkbox.tag, Checkbox);
 window.customElements.define(LayerItem.tag, LayerItem);
 window.customElements.define(LayerManager.tag, LayerManager);
@@ -198,17 +202,21 @@ describe('LayerManager', () => {
 
 			expect(buttonRemoveAll.label).toBe('layerManager_remove_all');
 			expect(buttonRemoveAll.title).toBe('layerManager_remove_all_title');
+			expect(buttonRemoveAll.icon).toBe(clearSvg);
 
 			expect(buttonExpandOrCollapse.label).toBe('layerManager_expand_all');
 			expect(buttonExpandOrCollapse.title).toBe('layerManager_expand_all_title');
 			expect(buttonLayerSwipe.label).toBe('layerManager_compare');
 			expect(buttonLayerSwipe.title).toBe('layerManager_compare_title');
+			expect(buttonLayerSwipe.icon).toBe(expandSvg);
 
 			buttonExpandOrCollapse.click();
 			activate(); // activate compare tool manually
 
 			expect(buttonExpandOrCollapse.label).toBe('layerManager_collapse_all');
 			expect(buttonExpandOrCollapse.title).toBe('layerManager_collapse_all_title');
+			expect(buttonExpandOrCollapse.icon).toBe(chevronSvg);
+
 			expect(buttonLayerSwipe.label).toBe('layerManager_compare_stop');
 			expect(buttonLayerSwipe.title).toBe('layerManager_compare_stop_title');
 		});

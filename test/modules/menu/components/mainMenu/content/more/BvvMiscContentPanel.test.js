@@ -75,7 +75,7 @@ describe('MiscContentPanel', () => {
 
 		it('checks the list ', async () => {
 			const element = await setup();
-			expect(element.shadowRoot.querySelectorAll('.ba-list-item__header').length).toBe(3);
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item__header').length).toBe(2);
 			expect(element.shadowRoot.querySelectorAll('a').length).toBe(10);
 			expect(element.shadowRoot.querySelectorAll('[href]').length).toBe(10);
 		});
@@ -179,10 +179,14 @@ describe('MiscContentPanel', () => {
 			const themeSwitch = element.shadowRoot.querySelector('#themeToggle');
 
 			expect(store.getState().media.darkSchema).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll('.sun')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.moon')).toHaveSize(0);
 
 			themeSwitch.click();
 
 			expect(store.getState().media.darkSchema).toBeFalse();
+			expect(element.shadowRoot.querySelectorAll('.sun')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.moon')).toHaveSize(1);
 		});
 	});
 

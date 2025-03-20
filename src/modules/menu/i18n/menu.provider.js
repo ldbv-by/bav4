@@ -5,7 +5,6 @@ export const provide = (lang) => {
 				//the first part of the snake_case key should be the name of the related module
 				menu_main_open_button: 'Open Menu',
 				menu_content_panel_close_button: 'Close',
-				menu_misc_content_panel_settings: 'Appearance',
 				menu_misc_content_panel_dark_mode: 'Dark theme',
 				menu_misc_content_panel_fullscreen: 'Fullscreen',
 				menu_misc_content_panel_language: 'Language',
@@ -56,7 +55,6 @@ export const provide = (lang) => {
 				//the first part of the snake_case key should be the name of the related module
 				menu_main_open_button: 'Menü öffnen',
 				menu_content_panel_close_button: 'Schließen',
-				menu_misc_content_panel_settings: 'Darstellung',
 				menu_misc_content_panel_dark_mode: 'Dunkles Design',
 				menu_misc_content_panel_fullscreen: 'Vollbild',
 				menu_misc_content_panel_language: 'Sprache',

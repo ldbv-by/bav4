@@ -6,7 +6,6 @@ describe('i18n for menu module', () => {
 
 		expect(map.menu_main_open_button).toBe('Menü öffnen');
 		expect(map.menu_content_panel_close_button).toBe('Schließen');
-		expect(map.menu_misc_content_panel_settings).toBe('Darstellung');
 		expect(map.menu_misc_content_panel_dark_mode).toBe('Dunkles Design');
 		expect(map.menu_misc_content_panel_fullscreen).toBe('Vollbild');
 		expect(map.menu_misc_content_panel_language).toBe('Sprache');
@@ -59,7 +58,6 @@ describe('i18n for menu module', () => {
 
 		expect(map.menu_main_open_button).toBe('Open Menu');
 		expect(map.menu_content_panel_close_button).toBe('Close');
-		expect(map.menu_misc_content_panel_settings).toBe('Appearance');
 		expect(map.menu_misc_content_panel_dark_mode).toBe('Dark theme');
 		expect(map.menu_misc_content_panel_fullscreen).toBe('Fullscreen');
 		expect(map.menu_misc_content_panel_language).toBe('Language');
@@ -106,7 +104,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 45;
+		const expectedSize = 44;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
