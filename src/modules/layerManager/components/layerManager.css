@@ -55,10 +55,6 @@ li {
 	flex-direction: column;
 }
 
-.layermanager__actions ba-button::part(button) {
-	font-size: 0.95rem;
-}
-
 .chips__container {
 	display: flex;
 	justify-content: center;
