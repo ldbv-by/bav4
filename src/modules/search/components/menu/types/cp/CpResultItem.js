@@ -6,7 +6,7 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import css from './cpResultItem.css';
 import { close as closeMainMenu } from '../../../../../../store/mainMenu/mainMenu.action';
 import { fit } from '../../../../../../store/position/position.action';
-import { addHighlightFeatures, removeHighlightFeaturesById } from '../../../../../../store/highlight/highlight.action';
+import { addHighlightFeatures, removeHighlightFeaturesByCategory } from '../../../../../../store/highlight/highlight.action';
 import { SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../plugins/HighlightPlugin';
 import { MvuElement } from '../../../../../MvuElement';
 import { HighlightFeatureType } from '../../../../../../domain/highlightFeature';
@@ -69,41 +69,43 @@ export class CpResultItem extends MvuElement {
 		const onMouseEnter = (result) => {
 			if (result.geometry) {
 				addHighlightFeatures({
-					id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID,
+					id: result.id,
+					category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID,
 					type: HighlightFeatureType.DEFAULT_TMP,
 					data: result.geometry
 				});
 			} else {
 				addHighlightFeatures({
-					id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID,
+					id: result.id,
+					category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID,
 					type: HighlightFeatureType.MARKER_TMP,
 					data: [...result.center]
 				});
 			}
 		};
 		const onMouseLeave = () => {
-			removeHighlightFeaturesById(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
+			removeHighlightFeaturesByCategory(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
 		};
 		const onClick = (result) => {
 			const extent = result.extent ? [...result.extent] : [...result.center, ...result.center];
-			removeHighlightFeaturesById([SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_HIGHLIGHT_FEATURE_ID]);
+			removeHighlightFeaturesByCategory([SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_HIGHLIGHT_FEATURE_ID]);
 			fit(extent, { maxZoom: CpResultItem._maxZoomLevel });
 			if (result.geometry) {
 				addHighlightFeatures({
-					id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
+					id: result.id,
+					category: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
 					type: HighlightFeatureType.DEFAULT,
 					data: result.geometry,
 					label: result.label
 				});
 			} else if (!result.extent) {
 				addHighlightFeatures({
-					id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
+					id: result.id,
+					category: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
 					type: HighlightFeatureType.MARKER,
 					data: [...result.center],
 					label: result.label
 				});
-			} else {
-				removeHighlightFeaturesById(SEARCH_RESULT_HIGHLIGHT_FEATURE_ID);
 			}
 
 			if (isPortrait) {

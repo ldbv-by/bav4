@@ -83,7 +83,8 @@ describe('LocationResultItem', () => {
 				expect(store.getState().highlight.features).toHaveSize(1);
 				expect(store.getState().highlight.features[0].data).toEqual(coordinate);
 				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER_TMP);
-				expect(store.getState().highlight.features[0].id).toBe(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
+				expect(store.getState().highlight.features[0].category).toBe(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
+				expect(store.getState().highlight.features[0].id).toBeInstanceOf(String);
 			});
 		});
 
@@ -93,7 +94,7 @@ describe('LocationResultItem', () => {
 				const data = new LocationSearchResult('label', 'labelFormatted', coordinate);
 				const element = await setup({
 					highlight: {
-						features: [{ id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, data: coordinate }]
+						features: [{ category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, data: coordinate }]
 					}
 				});
 				element.data = data;
@@ -154,8 +155,8 @@ describe('LocationResultItem', () => {
 				const element = await setup({
 					highlight: {
 						features: [
-							{ id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, data: previousCoordinate },
-							{ id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, data: previousCoordinate }
+							{ category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, data: previousCoordinate },
+							{ category: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, data: previousCoordinate }
 						]
 					},
 					mainMenu: {
@@ -177,10 +178,11 @@ describe('LocationResultItem', () => {
 					target.click();
 
 					expect(store.getState().highlight.features).toHaveSize(1);
-					expect(store.getState().highlight.features[0].id).toEqual(SEARCH_RESULT_HIGHLIGHT_FEATURE_ID);
+					expect(store.getState().highlight.features[0].category).toEqual(SEARCH_RESULT_HIGHLIGHT_FEATURE_ID);
 					expect(store.getState().highlight.features[0].data).toEqual(coordinate);
 					expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER);
 					expect(store.getState().highlight.features[0].label).toBe('label');
+					expect(store.getState().highlight.features[0].id).toBeInstanceOf(String);
 				});
 
 				it('fits the map by a coordinate', async () => {
