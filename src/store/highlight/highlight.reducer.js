@@ -3,6 +3,7 @@ import { createUniqueId } from '../../utils/numberUtils';
 export const FEATURE_ADD = 'highlight/feature/add';
 export const CLEAR_FEATURES = 'highlight/clear';
 export const REMOVE_FEATURE_BY_ID = 'highlight/remove/id';
+export const REMOVE_FEATURE_BY_CATEGORY = 'highlight/remove/category';
 
 export const initialState = {
 	/**
@@ -45,6 +46,16 @@ export const highlightReducer = (state = initialState, action) => {
 		}
 		case REMOVE_FEATURE_BY_ID: {
 			const features = state.features.filter((f) => !payload.includes(f.id));
+			const active = !!features.length;
+
+			return {
+				...state,
+				features: features,
+				active: active
+			};
+		}
+		case REMOVE_FEATURE_BY_CATEGORY: {
+			const features = state.features.filter((f) => !payload.includes(f.category));
 			const active = !!features.length;
 
 			return {

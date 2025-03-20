@@ -8,6 +8,7 @@
  * @property {module:domain/coordinateTypeDef~Coordinate|Geometry} data The data which can be a coordinate or a geometry
  * @property {string} [id] Optional id. If not present, the reducer will create one.
  * @property {string} [label] Optional text
+ * @property {string} [category] Optional category
  */
 
 /**

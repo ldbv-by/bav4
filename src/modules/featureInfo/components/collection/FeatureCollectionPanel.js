@@ -58,7 +58,7 @@ export class FeatureCollectionPanel extends MvuElement {
 			const removeFeature = () => {
 				clearHighlightFeatures();
 				removeFeaturesById(feature.id);
-				emitNotification(translate('featureInfo_featureCollection_remove_feature_notification'), LevelTypes.INFO);
+				emitNotification(translate('global_featureCollection_remove_feature_notification'), LevelTypes.INFO);
 				// by calling the abortOrReset action, we restore the previous opened tab of the MainMenu
 				abortOrReset();
 			};
@@ -66,7 +66,7 @@ export class FeatureCollectionPanel extends MvuElement {
 			const addFeature = () => {
 				clearHighlightFeatures();
 				addFeatures(feature);
-				emitNotification(translate('featureInfo_featureCollection_add_feature_notification'), LevelTypes.INFO);
+				emitNotification(translate('global_featureCollection_add_feature_notification'), LevelTypes.INFO);
 				// by calling the abortOrReset action, we restore the previous opened tab of the MainMenu
 				abortOrReset();
 			};
@@ -75,17 +75,17 @@ export class FeatureCollectionPanel extends MvuElement {
 				return html`<style>
 						${css}
 					</style>
-					<button class="chips__button remove" .title=${translate('featureInfo_featureCollection_remove_feature_title')} @click=${removeFeature}>
+					<button class="chips__button remove" .title=${translate('global_featureCollection_remove_feature_title')} @click=${removeFeature}>
 						<span class="chips__icon"></span>
-						<span class="chips__button-text">${translate('featureInfo_featureCollection_remove_feature')}</span>
+						<span class="chips__button-text">${translate('global_featureCollection_remove_feature')}</span>
 					</button>`;
 			} else if (!partOfCollection) {
 				return html`<style>
 						${css}
 					</style>
-					<button class="chips__button add" .title=${translate('featureInfo_featureCollection_add_feature_title')} @click=${addFeature}>
+					<button class="chips__button add" .title=${translate('global_featureCollection_add_feature_title')} @click=${addFeature}>
 						<span class="chips__icon"></span>
-						<span class="chips__button-text">${translate('featureInfo_featureCollection_add_feature')}</span>
+						<span class="chips__button-text">${translate('global_featureCollection_add_feature')}</span>
 					</button>`;
 			}
 		}

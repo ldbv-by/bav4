@@ -31,13 +31,13 @@ export const QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID = 'querySuccessHighlightFeatureI
  */
 export const QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID = 'querySuccessWithGeometryHighlightFeatureId';
 /**
- *ID for SearchResult related highlight features
+ *Category for SearchResult related highlight features
  */
-export const SEARCH_RESULT_HIGHLIGHT_FEATURE_ID = 'searchResultHighlightFeatureId';
+export const SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY = 'searchResultHighlightFeatureCategory';
 /**
- *ID for SearchResult related temporary highlight features
+ *Category for SearchResult related temporary highlight features
  */
-export const SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID = 'searchResultTemporaryHighlightFeatureId';
+export const SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY = 'searchResultTemporaryHighlightFeatureCategory';
 
 /**
  *ID for a highlight feature a query is running
@@ -92,7 +92,7 @@ export class HighlightPlugin extends BaPlugin {
 
 		const onQueryChanged = (query) => {
 			if (!query.payload) {
-				removeHighlightFeaturesById([SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID]);
+				removeHighlightFeaturesById([SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY]);
 			}
 		};
 

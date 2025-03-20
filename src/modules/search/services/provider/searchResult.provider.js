@@ -6,6 +6,7 @@ import { $injector } from '../../../../injection';
 import { MediaType } from '../../../../domain/mediaTypes';
 import { SourceType, SourceTypeName } from '../../../../domain/sourceType';
 import { BaGeometry } from '../../../../domain/geometry';
+import { hashCode } from '../../../../utils/hashCode';
 
 /**
  *A async function that returns a promise with an array of SearchResults with type LOCATION.
@@ -56,7 +57,9 @@ export const loadBvvLocationSearchResults = async (query) => {
 	if (result.ok) {
 		const raw = await result.json();
 		const data = raw.map((o) => {
-			return new LocationSearchResult(removeHtml(o.attrs.label), o.attrs.label, o.attrs.coordinate, o.attrs.extent ?? null);
+			return new LocationSearchResult(removeHtml(o.attrs.label), o.attrs.label, o.attrs.coordinate, o.attrs.extent ?? null).setId(
+				hashCode(o).toString()
+			);
 		});
 		return data;
 	}
@@ -79,7 +82,7 @@ export const loadBvvCadastralParcelSearchResults = async (query) => {
 				o.attrs.coordinate,
 				o.attrs.extent ? o.attrs.extent : null,
 				o.attrs.ewkt ? new BaGeometry(o.attrs.ewkt, new SourceType(SourceTypeName.EWKT, null, 3857)) : null
-			);
+			).setId(hashCode(o).toString());
 		});
 		return data;
 	}

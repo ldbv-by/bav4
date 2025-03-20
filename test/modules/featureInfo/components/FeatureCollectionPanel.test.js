@@ -57,7 +57,7 @@ describe('FeatureCollectionPanel', () => {
 
 					expect(element.shadowRoot.querySelectorAll('.chips__button.add')).toHaveSize(1);
 					const button = element.shadowRoot.querySelector('.chips__button.add');
-					expect(button.title).toBe('featureInfo_featureCollection_add_feature_title');
+					expect(button.title).toBe('global_featureCollection_add_feature_title');
 					expect(element.shadowRoot.querySelectorAll('.chips__button.add .chips__icon')).toHaveSize(1);
 					expect(element.shadowRoot.querySelectorAll('.chips__button.add .chips__button-text')).toHaveSize(1);
 				});
@@ -91,7 +91,7 @@ describe('FeatureCollectionPanel', () => {
 
 					expect(element.shadowRoot.querySelectorAll('.chips__button.remove')).toHaveSize(1);
 					const button = element.shadowRoot.querySelector('.chips__button.remove');
-					expect(button.title).toBe('featureInfo_featureCollection_remove_feature_title');
+					expect(button.title).toBe('global_featureCollection_remove_feature_title');
 					expect(element.shadowRoot.querySelectorAll('.chips__button.remove .chips__icon')).toHaveSize(1);
 					expect(element.shadowRoot.querySelectorAll('.chips__button.remove .chips__button-text')).toHaveSize(1);
 				});
@@ -116,7 +116,7 @@ describe('FeatureCollectionPanel', () => {
 
 			button.click();
 
-			expect(store.getState().notifications.latest.payload.content).toBe('featureInfo_featureCollection_add_feature_notification');
+			expect(store.getState().notifications.latest.payload.content).toBe('global_featureCollection_add_feature_notification');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 
 			expect(store.getState().featureCollection.entries).toHaveSize(1);
@@ -146,7 +146,7 @@ describe('FeatureCollectionPanel', () => {
 
 			button.click();
 
-			expect(store.getState().notifications.latest.payload.content).toBe('featureInfo_featureCollection_remove_feature_notification');
+			expect(store.getState().notifications.latest.payload.content).toBe('global_featureCollection_remove_feature_notification');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 
 			expect(store.getState().featureCollection.entries).toHaveSize(0);

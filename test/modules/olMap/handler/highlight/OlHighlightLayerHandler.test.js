@@ -189,12 +189,13 @@ describe('OlHighlightLayerHandler', () => {
 			setup();
 			const handler = new OlHighlightLayerHandler();
 			const appendStyleSpy = spyOn(handler, '_appendStyle').withArgs(jasmine.anything(), jasmine.any(Feature)).and.callThrough();
-			const highlightCoordinateFeature = { data: [1, 0], label: 'label' };
+			const highlightCoordinateFeature = { id: 'id', data: [1, 0], label: 'label' };
 
 			const olFeature = handler._toOlFeature(highlightCoordinateFeature);
 
 			expect(olFeature.getGeometry().getCoordinates()).toEqual(highlightCoordinateFeature.data);
 			expect(olFeature.get('name')).toBe('label');
+			expect(olFeature.getId()).toBe('id');
 			expect(appendStyleSpy).toHaveBeenCalledTimes(1);
 		});
 
@@ -204,10 +205,12 @@ describe('OlHighlightLayerHandler', () => {
 			spyOn(mapService, 'getSrid').and.returnValue(3857);
 			const appendStyleSpy = spyOn(handler, '_appendStyle').withArgs(jasmine.anything(), jasmine.any(Feature)).and.callThrough();
 			const highlightGeometryWktFeature = {
+				id: 'id0',
 				data: new BaGeometry(`SRID=3857;${new WKT().writeGeometry(new Point([21, 42]))}`, new SourceType(SourceTypeName.EWKT)),
 				label: 'WKT'
 			};
 			const highlightGeometryGeoJsonFeature = {
+				id: 'id1',
 				data: new BaGeometry(JSON.stringify(new GeoJSON().writeGeometry(new Point([5, 10]))), new SourceType(SourceTypeName.GEOJSON)),
 				label: 'GeoJSON'
 			};
@@ -216,8 +219,10 @@ describe('OlHighlightLayerHandler', () => {
 			const olFeature1 = handler._toOlFeature(highlightGeometryGeoJsonFeature);
 
 			expect(olFeature0.getGeometry().getCoordinates()).toEqual([21, 42]);
+			expect(olFeature0.getId()).toBe('id0');
 			expect(olFeature0.get('name')).toBe('WKT');
 			expect(olFeature1.getGeometry().getCoordinates()).toEqual([5, 10]);
+			expect(olFeature1.getId()).toBe('id1');
 			expect(olFeature1.get('name')).toBe('GeoJSON');
 			expect(appendStyleSpy).toHaveBeenCalledTimes(2);
 		});

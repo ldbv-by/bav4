@@ -31,6 +31,12 @@ describe('global i18n', () => {
 		expect(map.global_cr_global_wgs84).toBe('Lat, Lon');
 		expect(map.global_terms_of_use).toBe('https://www.ldbv.bayern.de/mam/ldbv/dateien/nutzungsbedingungen_geoportal_bayernatlas_bayernatlasplus.pdf');
 		expect(map.global_featureCollection_layer_label).toBe('My temporary collection');
+		expect(map.global_featureCollection_add_feature_notification).toBe('Object was added to “My temporary collection”');
+		expect(map.global_featureCollection_remove_feature_notification).toBe('Object has been removed from “My temporary collection”');
+		expect(map.global_featureCollection_add_feature).toBe('Add to collection');
+		expect(map.global_featureCollection_remove_feature).toBe('Remove from collection');
+		expect(map.global_featureCollection_add_feature_title).toBe('Add this object to “My temporary collection”');
+		expect(map.global_featureCollection_remove_feature_title).toBe('Remove this object from “My temporary collection”');
 	});
 
 	it('provides translation for de', () => {
@@ -65,10 +71,16 @@ describe('global i18n', () => {
 		expect(map.global_cr_global_wgs84).toBe('Breite, Länge');
 		expect(map.global_terms_of_use).toBe('https://www.ldbv.bayern.de/mam/ldbv/dateien/nutzungsbedingungen_geoportal_bayernatlas_bayernatlasplus.pdf');
 		expect(map.global_featureCollection_layer_label).toBe('Meine temporäre Sammlung');
+		expect(map.global_featureCollection_add_feature_notification).toBe('Objekt wurde zu "Meine temporäre Sammlung" hinzugefügt');
+		expect(map.global_featureCollection_remove_feature_notification).toBe('Objekt wurde aus "Meine temporäre Sammlung" entfernt');
+		expect(map.global_featureCollection_add_feature).toBe('Zur Sammlung hinzufügen');
+		expect(map.global_featureCollection_remove_feature).toBe('Aus Sammlung entfernen');
+		expect(map.global_featureCollection_add_feature_title).toBe('Dieses Objekt zu "Meine temporäre Sammlung" hinzufügen');
+		expect(map.global_featureCollection_remove_feature_title).toBe('Dieses Objekt aus "Meine temporäre Sammlung" entfernen');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 24;
+		const expectedSize = 30;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
