@@ -5,7 +5,6 @@ import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
 import css from './geoResourceResultItem.css';
-import { MvuElement } from '../../../../../MvuElement';
 import { $injector } from '../../../../../../injection';
 import { createUniqueId } from '../../../../../../utils/numberUtils';
 import { fitLayer } from '../../../../../../store/position/position.action';
@@ -160,23 +159,6 @@ export class GeoResourceResultItem extends AbstractResultItem {
 				this._timeoutId = null;
 			}
 			this.signal(Update_LoadingPreviewFlag, false);
-		};
-
-		const onClick = (result) => {
-			if (isGeoResourceActive(result.geoResourceId)) {
-				activeLayers.filter((l) => l.geoResourceId === result.geoResourceId).forEach((l) => removeLayer(l.id));
-			} else {
-				//remove the preview layer
-				removeLayer(GeoResourceResultItem._tmpLayerId(result.geoResourceId));
-				//add the "real" layer after some delay, which gives the user a better feedback
-				const geoR = this.#geoResourceService.byId(result.geoResourceId);
-				/* istanbul ignore else */
-				if (geoR) {
-					const id = `${result.geoResourceId}_${createUniqueId()}`;
-					const opacity = geoR.opacity;
-					addLayer(id, { geoResourceId: result.geoResourceId, opacity });
-				}
-			}
 		};
 
 		const onClickZoomToExtent = (e, result) => {

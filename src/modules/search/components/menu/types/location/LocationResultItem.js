@@ -8,7 +8,6 @@ import { close as closeMainMenu } from '../../../../../../store/mainMenu/mainMen
 import { fit } from '../../../../../../store/position/position.action';
 import { addHighlightFeatures, removeHighlightFeaturesById } from '../../../../../../store/highlight/highlight.action';
 import { SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../plugins/HighlightPlugin';
-import { MvuElement } from '../../../../../MvuElement';
 import clipboardSvg from '../../assets/clipboard.svg';
 import { $injector } from '../../../../../../injection';
 import { emitNotification, LevelTypes } from '../../../../../../store/notifications/notifications.action';

@@ -8,7 +8,6 @@ import { close as closeMainMenu } from '../../../../../../store/mainMenu/mainMen
 import { fit } from '../../../../../../store/position/position.action';
 import { addHighlightFeatures, removeHighlightFeaturesById } from '../../../../../../store/highlight/highlight.action';
 import { SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../plugins/HighlightPlugin';
-import { MvuElement } from '../../../../../MvuElement';
 import { HighlightFeatureType } from '../../../../../../domain/highlightFeature';
 import { AbstractResultItem } from '../../AbstractSearchResultItem';
 
@@ -120,35 +119,7 @@ export class CpResultItem extends AbstractResultItem {
 	}
 
 	createView(model) {
-		const { isPortrait, cpSearchResult } = model;
-
-		const onClick = (result) => {
-			const extent = result.extent ? [...result.extent] : [...result.center, ...result.center];
-			removeHighlightFeaturesById([SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_HIGHLIGHT_FEATURE_ID]);
-			fit(extent, { maxZoom: CpResultItem._maxZoomLevel });
-			if (result.geometry) {
-				addHighlightFeatures({
-					id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
-					type: HighlightFeatureType.DEFAULT,
-					data: result.geometry,
-					label: result.label
-				});
-			} else if (!result.extent) {
-				addHighlightFeatures({
-					id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
-					type: HighlightFeatureType.MARKER,
-					data: [...result.center],
-					label: result.label
-				});
-			} else {
-				removeHighlightFeaturesById(SEARCH_RESULT_HIGHLIGHT_FEATURE_ID);
-			}
-
-			if (isPortrait) {
-				//close the main menu
-				closeMainMenu();
-			}
-		};
+		const { cpSearchResult } = model;
 
 		if (cpSearchResult) {
 			/**
