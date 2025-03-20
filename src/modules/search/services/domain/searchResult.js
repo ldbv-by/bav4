@@ -87,8 +87,9 @@ export class LocationSearchResult extends SearchResult {
 	}
 
 	/**
-	 * Sets the id of this `CadastralParcelSearchResult`
+	 * Sets the id of this `LocationSearchResult`
 	 * @param {string} id
+	 * @returns {LocationSearchResult}
 	 */
 	setId(id) {
 		if (isString(id)) {
@@ -138,6 +139,7 @@ export class CadastralParcelSearchResult extends SearchResult {
 	/**
 	 * Sets the id of this `CadastralParcelSearchResult`
 	 * @param {string} id
+	 * @returns {CadastralParcelSearchResult}
 	 */
 	setId(id) {
 		if (isString(id)) {
