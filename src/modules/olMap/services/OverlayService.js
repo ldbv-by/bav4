@@ -14,7 +14,7 @@ export class OverlayService {
 	 * Adds explicit named overlays (OverlayStyle by StyleType) to the specified feature.
 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style will be added
 	 * @param {ol.Feature} olFeature the feature to be styled
-	 * @param {StyleType} styleType the styletype, if no matching to known styleTypes exists,
+	 * @param {StyleType} styleType the styleType, if no matching to known styleTypes exists,
 	 * no overlays will be added.
 	 */
 	add(olFeature, olMap, styleType) {
@@ -37,7 +37,7 @@ export class OverlayService {
 	 * Updates overlays (added by OverlayStyle-classes) on the map and the feature
 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style exists
 	 * @param {ol.Feature} olFeature the feature
-	 * @param {StyleType} styleType the styletype, if no matching to known styleTypes exists, no overlays will be updated.
+	 * @param {StyleType} styleType the styleType, if no matching to known styleTypes exists, no overlays will be updated.
 	 * @param {UpdateProperties} properties the optional properties, which are used for additional style updates;
 	 * any possible implications of a combination of defined UpdateProperties (i.e. visible=true && top=false) are handled by the current
 	 * implementation of the OverlayService
@@ -53,20 +53,24 @@ export class OverlayService {
 	 * Removes overlays (added by OverlayStyle-classes) from the map and the feature
 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style exists
 	 * @param {ol.Feature} olFeature the feature
+	 * @param {module:domain/StyleTypes|null} styleType=null The styleType, if null, all overlays are removed, if given styleType does not match to known styleTypes, no overlays will be removed.
 	 */
-	remove(olFeature, olMap) {
-		const overlayStyle = new OverlayStyle();
-		overlayStyle.remove(olFeature, olMap);
+	remove(olFeature, olMap, styleType = null) {
+		const overlayStyle = styleType ? this._getOverlayStyleByType(styleType) : new OverlayStyle();
+		if (overlayStyle) {
+			overlayStyle.remove(olFeature, olMap);
+		}
 	}
 
 	_getOverlayStyleByType(styleType) {
 		switch (styleType) {
 			case StyleTypes.MEASURE:
 				return new MeasurementOverlayStyle();
+			case StyleTypes.DEFAULT:
+				return new OverlayStyle();
 			default:
 				console.warn('Could not provide a style for unknown style-type:', styleType);
-				break;
+				return null;
 		}
-		return null;
 	}
 }
