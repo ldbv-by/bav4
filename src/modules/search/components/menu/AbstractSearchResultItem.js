@@ -1,3 +1,6 @@
+/**
+ * @module modules/search/components/menu/AbstractSearchResultItem
+ */
 import { MvuElement } from '../../../MvuElement';
 
 /**
