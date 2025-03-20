@@ -11,7 +11,6 @@ import {
 	loadBvvGeoResourceSearchResults,
 	loadBvvLocationSearchResults
 } from '../../../../../src/modules/search/services/provider/searchResult.provider';
-import { hashCode } from '../../../../../src/utils/hashCode';
 
 describe('SearchResult provider', () => {
 	const configService = {
