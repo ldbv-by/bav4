@@ -72,14 +72,15 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 	_toOlFeature(feature) {
 		const { data: coordOrGeometry, label } = feature;
 
-		const addLabel = (olFeature) => {
+		const prepareFeatureLabel = (olFeature) => {
+			olFeature.setId(feature.id);
 			olFeature.set('name', label);
 			return olFeature;
 		};
 
 		//we have a Coordinate
 		if (isCoordinate(coordOrGeometry)) {
-			return this._appendStyle(feature, addLabel(new Feature(new Point(coordOrGeometry))));
+			return this._appendStyle(feature, prepareFeatureLabel(new Feature(new Point(coordOrGeometry))));
 		}
 
 		//we have a HighlightGeometry
@@ -89,10 +90,10 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 				if (ewkt.srid !== this._mapService.getSrid()) {
 					throw new Error('Unsupported SRID ' + ewkt.srid);
 				}
-				return this._appendStyle(feature, addLabel(new WKT().readFeature(ewkt.wkt)));
+				return this._appendStyle(feature, prepareFeatureLabel(new WKT().readFeature(ewkt.wkt)));
 			}
 			case SourceTypeName.GEOJSON:
-				return this._appendStyle(feature, addLabel(new GeoJSON().readFeature(JSON.parse(coordOrGeometry.data))));
+				return this._appendStyle(feature, prepareFeatureLabel(new GeoJSON().readFeature(JSON.parse(coordOrGeometry.data))));
 			default: {
 				throw `SourceType "${coordOrGeometry.sourceType.name}" is currently not supported`;
 			}
