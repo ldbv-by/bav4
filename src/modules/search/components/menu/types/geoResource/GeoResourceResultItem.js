@@ -203,7 +203,7 @@ export class GeoResourceResultItem extends MvuElement {
 					${css}
 				</style>
 				<li
-					class="ba-list-item ${getActivePreviewClass()} ${getPreviewClass(geoResourceSearchResult)}"
+					class="ba-list-item ba-key-nav-item ${getActivePreviewClass()} ${getPreviewClass(geoResourceSearchResult)}"
 					tabindex="0"
 					@mouseenter=${() => onMouseEnter(geoResourceSearchResult)}
 					@mouseleave=${() => onMouseLeave(geoResourceSearchResult)}
@@ -211,7 +211,7 @@ export class GeoResourceResultItem extends MvuElement {
 					<span class="ba-list-item__pre ">
 						<ba-checkbox
 							id="toggle_layer"
-							class="ba-list-item__text"							
+							class="ba-list-item__text ba-key-nav-action"							
 							@toggle=${() => onClick(geoResourceSearchResult)}
 							.disabled=${!geoResourceSearchResult}
 							.checked=${isGeoResourceActive(geoResourceSearchResult.geoResourceId)}

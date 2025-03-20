@@ -118,7 +118,7 @@ export class CpResultItem extends MvuElement {
 					${css}
 				</style>
 				<li
-					class="ba-list-item"
+					class="ba-list-item ba-key-nav-item"
 					tabindex="0"
 					@click=${() => onClick(cpSearchResult)}
 					@mouseenter=${() => onMouseEnter(cpSearchResult)}

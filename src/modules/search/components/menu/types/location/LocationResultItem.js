@@ -27,6 +27,8 @@ const Update_LocationSearchResult = 'update_locationSearchResult';
  * @author taulinger
  */
 export class LocationResultItem extends MvuElement {
+	#translationService;
+	#shareService;
 	constructor() {
 		super({
 			locationSearchResult: null,
@@ -35,8 +37,8 @@ export class LocationResultItem extends MvuElement {
 
 		const { TranslationService: translationService, ShareService: shareService } = $injector.inject('TranslationService', 'ShareService');
 
-		this._translationService = translationService;
-		this._shareService = shareService;
+		this.#translationService = translationService;
+		this.#shareService = shareService;
 	}
 
 	static get _maxZoomLevel() {
@@ -65,7 +67,7 @@ export class LocationResultItem extends MvuElement {
 
 	createView(model) {
 		const { isPortrait, locationSearchResult } = model;
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key) => this.#translationService.translate(key);
 		/**
 		 * Uses mouseenter and mouseleave events for adding/removing a temporary highlight feature.
 		 * These events are not fired on touch devices, so there's no extra handling needed.
@@ -105,13 +107,13 @@ export class LocationResultItem extends MvuElement {
 			e.preventDefault();
 			e.stopPropagation();
 			try {
-				await this._shareService.copyToClipboard(locationSearchResult.label);
+				await this.#shareService.copyToClipboard(locationSearchResult.label);
 				emitNotification(
-					`"${locationSearchResult.label}" ${this._translationService.translate('search_result_item_clipboard_success')}`,
+					`"${locationSearchResult.label}" ${this.#translationService.translate('search_result_item_clipboard_success')}`,
 					LevelTypes.INFO
 				);
 			} catch {
-				const message = this._translationService.translate('search_result_item_clipboard_error');
+				const message = this.#translationService.translate('search_result_item_clipboard_error');
 				emitNotification(message, LevelTypes.WARN);
 				console.warn('Clipboard API not available');
 			}
@@ -123,7 +125,7 @@ export class LocationResultItem extends MvuElement {
 					${css}
 				</style>
 				<li
-					class="ba-list-item"
+					class="ba-list-item ba-key-nav-item"
 					tabindex="0"
 					@click=${() => onClick(locationSearchResult)}
 					@mouseenter=${() => onMouseEnter(locationSearchResult)}

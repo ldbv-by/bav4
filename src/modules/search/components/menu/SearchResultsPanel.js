@@ -15,6 +15,7 @@ import { findAllBySelector } from '../../../../utils/markup';
  * @class
  * @author taulinger
  * @author costa_gi
+ * @author thiloSchlemmer
  */
 export class SearchResultsPanel extends AbstractMvuContentPanel {
 	#keyActionMapper = new KeyActionMapper(document)
@@ -54,15 +55,15 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 	}
 
 	_reset() {
-		const items = findAllBySelector(this, '.ba-list-item');
-		const indexOfFocusedItem = items.findIndex((element) => element.matches('.ba-list-item_hover'));
+		const items = findAllBySelector(this, '.ba-key-nav-item');
+		const indexOfFocusedItem = items.findIndex((element) => element.matches('.ba-key-nav-item_select'));
 		this.#hoverIndex = -1;
 		this._changeHoveredElement(items[indexOfFocusedItem], null);
 	}
 
 	_arrowDown() {
-		const items = findAllBySelector(this, '.ba-list-item');
-		const indexOfPreviousItem = items.findIndex((element) => element.matches('.ba-list-item_hover'));
+		const items = findAllBySelector(this, '.ba-key-nav-item');
+		const indexOfPreviousItem = items.findIndex((element) => element.matches('.ba-key-nav-item_select'));
 
 		this.#hoverIndex = this.#hoverIndex === null ? (indexOfPreviousItem < 0 ? 0 : indexOfPreviousItem + 1) : this.#hoverIndex + 1;
 
@@ -70,8 +71,8 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 	}
 
 	_arrowUp() {
-		const items = findAllBySelector(this, '.ba-list-item');
-		const indexOfPreviousItem = items.findIndex((element) => element.matches('.ba-list-item_hover'));
+		const items = findAllBySelector(this, '.ba-key-nav-item');
+		const indexOfPreviousItem = items.findIndex((element) => element.matches('.ba-key-nav-item_select'));
 
 		this.#hoverIndex = this.#hoverIndex === null ? (indexOfPreviousItem < 0 ? indexOfPreviousItem : indexOfPreviousItem - 1) : this.#hoverIndex - 1;
 
@@ -80,21 +81,26 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 
 	_changeHoveredElement(previous, nextItem) {
 		if (previous) {
-			previous.dispatchEvent(new Event('mouseleave'));
-			previous.classList.remove('ba-list-item_hover');
+			previous.blur();
+			previous.classList.remove('ba-key-nav-item_select');
 		}
 		if (nextItem) {
-			nextItem.dispatchEvent(new Event('mouseenter'));
-			nextItem.classList.add('ba-list-item_hover');
+			nextItem.focus();
+			nextItem.classList.add('ba-key-nav-item_select');
 		}
 	}
 
 	_enter() {
-		const items = findAllBySelector(this, '.ba-list-item');
-		const indexOfSelectedItem = items.findIndex((element) => element.matches('.ba-list-item_hover'));
+		const items = findAllBySelector(this, '.ba-key-nav-item');
+		const indexOfSelectedItem = items.findIndex((element) => element.matches('.ba-key-nav-item_select'));
 
 		const selectedItem = items[indexOfSelectedItem] ?? { click: () => {} };
-		selectedItem.click();
+		const optionalActionItems = findAllBySelector(selectedItem, '.ba-key-nav-action');
+		if (optionalActionItems.length > 0) {
+			optionalActionItems[0].click();
+		} else {
+			selectedItem.click();
+		}
 	}
 
 	static get tag() {
