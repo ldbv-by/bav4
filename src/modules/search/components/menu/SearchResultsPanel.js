@@ -9,12 +9,10 @@ import { AbstractMvuContentPanel } from '../../../menu/components/mainMenu/conte
 import { CpResultsPanel } from './types/cp/CpResultsPanel';
 import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
 import { findAllBySelector } from '../../../../utils/markup';
-import { AbstractResultItem } from './AbstractSearchResultItem';
 import { LocationResultItem } from './types/location/LocationResultItem';
 import { GeoResourceResultItem } from './types/geoResource/GeoResourceResultItem';
 
-const Navigatable_Result_Items = [LocationResultItem, GeoResourceResultItem]; // TODO: CpResultItem currently excluded, waiting for other PR updates
-const ResultItem_Selector = `:is(${Navigatable_Result_Items.map((i) => i.tag).join(',')})`;
+export const Navigatable_Result_Item_Class = [LocationResultItem, GeoResourceResultItem]; // TODO: CpResultItem currently excluded, waiting for other PR updates
 
 const Selected_Item_Class = 'ba-key-nav-item_select';
 const Selected_Item_Class_Selector = `.${Selected_Item_Class}`;
@@ -32,6 +30,8 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 		.addForKeyUp('ArrowUp', () => this._arrowUp())
 		.addForKeyUp('Enter', () => this._enter());
 	#selectedIndex = null;
+	#resultItemClasses = Navigatable_Result_Item_Class;
+	#resultItemSelector = `:is(${this.#resultItemClasses.map((i) => i.tag).join(',')})`;
 
 	/**
 	 * @override
@@ -64,23 +64,22 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 	}
 
 	_reset() {
-		const items = findAllBySelector(this, ResultItem_Selector);
+		const items = findAllBySelector(this, this.#resultItemSelector);
 		const indexOfSelectedItem = items.findIndex((element) => element.matches(Selected_Item_Class_Selector));
 		this.#selectedIndex = -1;
 		this._changeSelectedElement(items[indexOfSelectedItem], null);
 	}
 
 	_arrowDown() {
-		const items = findAllBySelector(this, ResultItem_Selector);
+		const items = findAllBySelector(this, this.#resultItemSelector);
 		const indexOfPreviousItem = items.findIndex((element) => element.matches(Selected_Item_Class_Selector));
-
 		const nextIndex = this.#selectedIndex === null ? (indexOfPreviousItem < 0 ? 0 : indexOfPreviousItem + 1) : this.#selectedIndex + 1;
 		this.#selectedIndex = nextIndex < items.length ? nextIndex : indexOfPreviousItem;
 		this._changeSelectedElement(items[indexOfPreviousItem], items[this.#selectedIndex]);
 	}
 
 	_arrowUp() {
-		const items = findAllBySelector(this, ResultItem_Selector);
+		const items = findAllBySelector(this, this.#resultItemSelector);
 		const indexOfPreviousItem = items.findIndex((element) => element.matches(Selected_Item_Class_Selector));
 
 		const nextIndex =
@@ -91,11 +90,11 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 	}
 
 	_enter() {
-		const items = findAllBySelector(this, ResultItem_Selector);
+		const items = findAllBySelector(this, this.#resultItemSelector);
 		const indexOfSelectedItem = items.findIndex((element) => element.matches(Selected_Item_Class_Selector));
 
 		const selectedItem = items[indexOfSelectedItem] ?? null;
-		if (selectedItem && selectedItem instanceof AbstractResultItem) {
+		if (selectedItem) {
 			selectedItem.selectResult();
 		}
 	}
@@ -106,15 +105,18 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 		}
 		if (previous) {
 			previous.classList.remove(Selected_Item_Class);
-			if (previous instanceof AbstractResultItem) {
-				previous.highlightResult(false);
-			}
+			previous.highlightResult(false);
 		}
 		if (next) {
 			next.classList.add(Selected_Item_Class);
-			if (next instanceof AbstractResultItem) {
-				next.highlightResult(true);
-			}
+			next.highlightResult(true);
+		}
+	}
+
+	set ResultItemClasses(values) {
+		if (Array.isArray(values)) {
+			this.#resultItemClasses = values;
+			this.#resultItemSelector = `:is(${this.#resultItemClasses.map((i) => i.tag).join(',')})`;
 		}
 	}
 
