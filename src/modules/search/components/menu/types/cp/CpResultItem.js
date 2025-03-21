@@ -131,7 +131,7 @@ export class CpResultItem extends AbstractResultItem {
 					${css}
 				</style>
 				<li
-					class="ba-list-item ba-key-nav-item"
+					class="ba-list-item"
 					tabindex="0"
 					@click=${() => this.selectResult()}
 					@mouseenter=${() => this.highlightResult(true)}
