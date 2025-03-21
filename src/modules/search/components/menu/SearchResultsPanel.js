@@ -17,6 +17,9 @@ import { CpResultItem } from './types/cp/CpResultItem';
 const Navigatable_Result_Items = [LocationResultItem, GeoResourceResultItem, CpResultItem];
 const ResultItem_Selector = `:is(${Navigatable_Result_Items.map((i) => i.tag).join(',')})`;
 
+const Selected_Item_Class = 'ba-key-nav-item_select';
+const Selected_Item_Class_Selector = `.${Selected_Item_Class}`;
+
 /**
  * Container for different types of search result panels.
  * @class
@@ -63,14 +66,14 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 
 	_reset() {
 		const items = findAllBySelector(this, ResultItem_Selector);
-		const indexOfSelectedItem = items.findIndex((element) => element.matches('.ba-key-nav-item_select'));
+		const indexOfSelectedItem = items.findIndex((element) => element.matches(Selected_Item_Class_Selector));
 		this.#selectedIndex = -1;
 		this._changeSelectedElement(items[indexOfSelectedItem], null);
 	}
 
 	_arrowDown() {
 		const items = findAllBySelector(this, ResultItem_Selector);
-		const indexOfPreviousItem = items.findIndex((element) => element.matches('.ba-key-nav-item_select'));
+		const indexOfPreviousItem = items.findIndex((element) => element.matches(Selected_Item_Class_Selector));
 
 		const nextIndex = this.#selectedIndex === null ? (indexOfPreviousItem < 0 ? 0 : indexOfPreviousItem + 1) : this.#selectedIndex + 1;
 		this.#selectedIndex = nextIndex < items.length ? nextIndex : indexOfPreviousItem;
@@ -79,7 +82,7 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 
 	_arrowUp() {
 		const items = findAllBySelector(this, ResultItem_Selector);
-		const indexOfPreviousItem = items.findIndex((element) => element.matches('.ba-key-nav-item_select'));
+		const indexOfPreviousItem = items.findIndex((element) => element.matches(Selected_Item_Class_Selector));
 
 		const nextIndex =
 			this.#selectedIndex === null ? (indexOfPreviousItem < 0 ? indexOfPreviousItem : indexOfPreviousItem - 1) : this.#selectedIndex - 1;
@@ -90,7 +93,7 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 
 	_enter() {
 		const items = findAllBySelector(this, ResultItem_Selector);
-		const indexOfSelectedItem = items.findIndex((element) => element.matches('.ba-key-nav-item_select'));
+		const indexOfSelectedItem = items.findIndex((element) => element.matches(Selected_Item_Class_Selector));
 
 		const selectedItem = items[indexOfSelectedItem] ?? null;
 		if (selectedItem && selectedItem instanceof AbstractResultItem) {
@@ -103,13 +106,13 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 			return;
 		}
 		if (previous) {
-			previous.classList.remove('ba-key-nav-item_select');
+			previous.classList.remove(Selected_Item_Class);
 			if (previous instanceof AbstractResultItem) {
 				previous.highlightResult(false);
 			}
 		}
 		if (next) {
-			next.classList.add('ba-key-nav-item_select');
+			next.classList.add(Selected_Item_Class);
 			if (next instanceof AbstractResultItem) {
 				next.highlightResult(true);
 			}
