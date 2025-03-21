@@ -1,6 +1,6 @@
 import { TestUtils } from '../../test-utils.js';
 import { createMainMenuReducer, createNoInitialStateMainMenuReducer } from '../../../src/store/mainMenu/mainMenu.reducer';
-import { open, close, toggle, setTab } from '../../../src/store/mainMenu/mainMenu.action';
+import { open, close, toggle, setTab, focusSearchField } from '../../../src/store/mainMenu/mainMenu.action';
 import { TabIds } from '../../../src/domain/mainMenu';
 
 describe('mainMenuReducer', () => {
@@ -16,20 +16,22 @@ describe('mainMenuReducer', () => {
 
 	describe('createMainMenuReducer', () => {
 		describe('returns a reducer function', () => {
-			it("initiales the store by media query for ORIENTATION 'portrait'", () => {
+			it("initializes the store by media query for ORIENTATION 'portrait'", () => {
 				spyOn(windowMock, 'matchMedia').withArgs('(max-width: 80em) or (orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true));
 				const store = setup(createMainMenuReducer(windowMock));
 
 				expect(store.getState().mainMenu.open).toBeFalse();
 				expect(store.getState().mainMenu.tab).toBeNull();
+				expect(store.getState().mainMenu.focusSearchField.payload).toBeNull();
 			});
 
-			it("initiales the store by media query for ORIENTATION 'landscape'", () => {
+			it("initializes the store by media query for ORIENTATION 'landscape'", () => {
 				spyOn(windowMock, 'matchMedia').withArgs('(max-width: 80em) or (orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(false));
 				const store = setup(createMainMenuReducer(windowMock));
 
 				expect(store.getState().mainMenu.open).toBeTrue();
 				expect(store.getState().mainMenu.tab).toBeNull();
+				expect(store.getState().mainMenu.focusSearchField.payload).toBeNull();
 			});
 
 			it('uses the real window as default argument', () => {
@@ -37,6 +39,7 @@ describe('mainMenuReducer', () => {
 
 				expect(store.getState().mainMenu.open).toMatch(/true|false/);
 				expect(store.getState().mainMenu.tab).toBeNull();
+				expect(store.getState().mainMenu.focusSearchField.payload).toBeNull();
 			});
 		});
 	});
@@ -93,6 +96,18 @@ describe('mainMenuReducer', () => {
 			expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
 			setTab(TabIds.MISC);
 			expect(store.getState().mainMenu.tab).toBe(TabIds.MISC);
+		});
+	});
+
+	describe("changes the 'focusSearchField' property", () => {
+		it('sets a ne EventLike', () => {
+			const store = setup(createNoInitialStateMainMenuReducer());
+
+			expect(store.getState().mainMenu).toBeNull();
+
+			focusSearchField();
+
+			expect(store.getState().mainMenu.focusSearchField).not.toBeNull();
 		});
 	});
 });

@@ -19,6 +19,7 @@ import { authReducer } from '../../../../src/store/auth/auth.reducer';
 import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
 import { Tools } from '../../../../src/domain/tools';
 import { setSignedIn, setSignedOut } from '../../../../src/store/auth/auth.action';
+import { focusSearchField } from '../../../../src/store/mainMenu/mainMenu.action.js';
 
 window.customElements.define(Header.tag, Header);
 
@@ -911,6 +912,34 @@ describe('Header', () => {
 					expect(logo.classList.contains('fadein')).toBeTrue();
 				});
 			});
+		});
+	});
+
+	describe('when mainMenu.focusSearchField property changes', () => {
+		it('sets the focus on the input field', async () => {
+			const element = await setup();
+			const inputEl = element.shadowRoot.querySelector('#input');
+
+			expect(inputEl.matches(':focus')).toBeFalse();
+
+			focusSearchField();
+
+			expect(inputEl.matches(':focus')).toBeTrue();
+		});
+
+		it('does nothing when the mainMenu is closed', async () => {
+			const element = await setup({
+				mainMenu: {
+					open: false
+				}
+			});
+			const inputEl = element.shadowRoot.querySelector('#input');
+
+			expect(inputEl.matches(':focus')).toBeFalse();
+
+			focusSearchField();
+
+			expect(inputEl.matches(':focus')).toBeFalse();
 		});
 	});
 
