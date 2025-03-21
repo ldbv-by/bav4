@@ -12,9 +12,8 @@ import { findAllBySelector } from '../../../../utils/markup';
 import { AbstractResultItem } from './AbstractSearchResultItem';
 import { LocationResultItem } from './types/location/LocationResultItem';
 import { GeoResourceResultItem } from './types/geoResource/GeoResourceResultItem';
-import { CpResultItem } from './types/cp/CpResultItem';
 
-const Navigatable_Result_Items = [LocationResultItem, GeoResourceResultItem, CpResultItem];
+const Navigatable_Result_Items = [LocationResultItem, GeoResourceResultItem]; // TODO: CpResultItem currently excluded, waiting for other PR updates
 const ResultItem_Selector = `:is(${Navigatable_Result_Items.map((i) => i.tag).join(',')})`;
 
 const Selected_Item_Class = 'ba-key-nav-item_select';

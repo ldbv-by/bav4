@@ -8,8 +8,8 @@ import { close as closeMainMenu } from '../../../../../../store/mainMenu/mainMen
 import { fit } from '../../../../../../store/position/position.action';
 import { addHighlightFeatures, removeHighlightFeaturesById } from '../../../../../../store/highlight/highlight.action';
 import { SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../plugins/HighlightPlugin';
+import { MvuElement } from '../../../../../MvuElement';
 import { HighlightFeatureType } from '../../../../../../domain/highlightFeature';
-import { AbstractResultItem } from '../../AbstractSearchResultItem';
 
 const Update_IsPortrait = 'update_isPortrait';
 const Update_CpSearchResult = 'update_cpSearchResult';
@@ -23,7 +23,7 @@ const Update_CpSearchResult = 'update_cpSearchResult';
  * @class
  * @author costa_gi
  */
-export class CpResultItem extends AbstractResultItem {
+export class CpResultItem extends MvuElement {
 	constructor() {
 		super({
 			cpSearchResult: null,
@@ -59,73 +59,60 @@ export class CpResultItem extends AbstractResultItem {
 		throw message;
 	}
 
-	/**
-	 * @override
-	 */
-	selectResult() {
-		const { isPortrait, cpSearchResult } = this.getModel();
-		const extent = cpSearchResult.extent ? [...cpSearchResult.extent] : [...cpSearchResult.center, ...cpSearchResult.center];
-		removeHighlightFeaturesById([SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_HIGHLIGHT_FEATURE_ID]);
-		fit(extent, { maxZoom: CpResultItem._maxZoomLevel });
-		if (cpSearchResult.geometry) {
-			addHighlightFeatures({
-				id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
-				type: HighlightFeatureType.DEFAULT,
-				data: cpSearchResult.geometry,
-				label: cpSearchResult.label
-			});
-		} else if (!cpSearchResult.extent) {
-			addHighlightFeatures({
-				id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
-				type: HighlightFeatureType.MARKER,
-				data: [...cpSearchResult.center],
-				label: cpSearchResult.label
-			});
-		} else {
-			removeHighlightFeaturesById(SEARCH_RESULT_HIGHLIGHT_FEATURE_ID);
-		}
+	createView(model) {
+		const { isPortrait, cpSearchResult } = model;
 
-		if (isPortrait) {
-			//close the main menu
-			closeMainMenu();
-		}
-	}
-
-	/**
-	 * @override
-	 */
-	highlightResult(highlighted) {
-		const { cpSearchResult } = this.getModel();
-		if (highlighted) {
-			this.shadowRoot.querySelector('.ba-list-item')?.focus();
-			if (cpSearchResult.geometry) {
+		/**
+		 * Uses mouseenter and mouseleave events for adding/removing a temporary highlight feature.
+		 * These events are not fired on touch devices, so there's no extra handling needed.
+		 */
+		const onMouseEnter = (result) => {
+			if (result.geometry) {
 				addHighlightFeatures({
 					id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID,
 					type: HighlightFeatureType.DEFAULT_TMP,
-					data: cpSearchResult.geometry
+					data: result.geometry
 				});
 			} else {
 				addHighlightFeatures({
 					id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID,
 					type: HighlightFeatureType.MARKER_TMP,
-					data: [...cpSearchResult.center],
-					label: cpSearchResult.label
+					data: [...result.center]
 				});
 			}
-		} else {
-			this.shadowRoot.querySelector('.ba-list-item')?.blur();
+		};
+		const onMouseLeave = () => {
 			removeHighlightFeaturesById(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
-		}
-	}
+		};
+		const onClick = (result) => {
+			const extent = result.extent ? [...result.extent] : [...result.center, ...result.center];
+			removeHighlightFeaturesById([SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_HIGHLIGHT_FEATURE_ID]);
+			fit(extent, { maxZoom: CpResultItem._maxZoomLevel });
+			if (result.geometry) {
+				addHighlightFeatures({
+					id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
+					type: HighlightFeatureType.DEFAULT,
+					data: result.geometry,
+					label: result.label
+				});
+			} else if (!result.extent) {
+				addHighlightFeatures({
+					id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
+					type: HighlightFeatureType.MARKER,
+					data: [...result.center],
+					label: result.label
+				});
+			} else {
+				removeHighlightFeaturesById(SEARCH_RESULT_HIGHLIGHT_FEATURE_ID);
+			}
 
-	createView(model) {
-		const { cpSearchResult } = model;
+			if (isPortrait) {
+				//close the main menu
+				closeMainMenu();
+			}
+		};
 
 		if (cpSearchResult) {
-			/**
-			 * Uses mouseenter and mouseleave events for adding/removing a temporary highlight feature.
-			 * These events are not fired on touch devices, so there's no extra handling needed.
-			 */
 			return html`
 				<style>
 					${css}
@@ -133,9 +120,9 @@ export class CpResultItem extends AbstractResultItem {
 				<li
 					class="ba-list-item"
 					tabindex="0"
-					@click=${() => this.selectResult()}
-					@mouseenter=${() => this.highlightResult(true)}
-					@mouseleave=${() => this.highlightResult(false)}
+					@click=${() => onClick(cpSearchResult)}
+					@mouseenter=${() => onMouseEnter(cpSearchResult)}
+					@mouseleave=${() => onMouseLeave()}
 				>
 					<span class="ba-list-item__pre ">
 						<span class="ba-list-item__icon"> </span>
