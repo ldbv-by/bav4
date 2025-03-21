@@ -18,7 +18,7 @@ export class AbstractResultItem extends MvuElement {
 	}
 
 	/**
-	 * selects the result
+	 * Selects the result
 	 * @abstract
 	 */
 	selectResult() {
@@ -27,7 +27,7 @@ export class AbstractResultItem extends MvuElement {
 	}
 
 	/**
-	 * highlights the result
+	 * Highlights the result
 	 * @abstract
 	 * @property {boolean} highlighted whether or not the result is highlighted
 	 */
