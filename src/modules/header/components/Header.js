@@ -84,6 +84,15 @@ export class Header extends MvuElement {
 			(mainMenu) => this.signal(Update_IsOpen_TabIndex, { isOpen: mainMenu.open, tabIndex: mainMenu.tab })
 		);
 		this.observe(
+			(state) => state.mainMenu.focusSearchField,
+			(_, state) => {
+				if (state.mainMenu.open) {
+					this.shadowRoot.querySelector('#input')?.focus();
+				}
+			},
+			false
+		);
+		this.observe(
 			(state) => state.network.fetching,
 			(fetching) => this.signal(Update_Fetching, fetching)
 		);
@@ -145,6 +154,13 @@ export class Header extends MvuElement {
 
 	createView(model) {
 		const { isOpen, isOpenNavigationRail, tabIndex, isFetching, layers, isPortrait, hasMinWidth, searchTerm, signedIn } = model;
+
+		// if (isOpen) {
+		// 	const input = this.shadowRoot.querySelector('#input');
+		// 	if (input) {
+		// 		input.focus();
+		// 	}
+		// }
 
 		const getAnimatedBorderClass = () => {
 			return isFetching ? 'animated-action-button__border__running' : '';
