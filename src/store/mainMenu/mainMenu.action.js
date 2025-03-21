@@ -1,8 +1,9 @@
 /**
  * @module store/mainMenu/mainMenu_action
  */
-import { OPEN_CLOSED_CHANGED, TAB_CHANGED } from './mainMenu.reducer';
+import { FOCUS_SEARCH_FIELD, OPEN_CLOSED_CHANGED, TAB_CHANGED } from './mainMenu.reducer';
 import { $injector } from '../../injection';
+import { EventLike } from '../../utils/storeUtils';
 
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');
@@ -54,5 +55,15 @@ export const setTab = (key) => {
 	getStore().dispatch({
 		type: TAB_CHANGED,
 		payload: key
+	});
+};
+
+/**
+ * Sets the focus on the input field of the MainMenu
+ */
+export const focusSearchField = () => {
+	getStore().dispatch({
+		type: FOCUS_SEARCH_FIELD,
+		payload: new EventLike()
 	});
 };
