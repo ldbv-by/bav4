@@ -1,6 +1,6 @@
 import { TestUtils } from '../../test-utils.js';
 import { createMainMenuReducer, createNoInitialStateMainMenuReducer } from '../../../src/store/mainMenu/mainMenu.reducer';
-import { open, close, toggle, setTab } from '../../../src/store/mainMenu/mainMenu.action';
+import { open, close, toggle, setTab, focusSearchField } from '../../../src/store/mainMenu/mainMenu.action';
 import { TabIds } from '../../../src/domain/mainMenu';
 
 describe('mainMenuReducer', () => {
@@ -100,10 +100,12 @@ describe('mainMenuReducer', () => {
 	});
 
 	describe("changes the 'focusSearchField' property", () => {
-		it('set the tab index', () => {
+		it('sets a ne EventLike', () => {
 			const store = setup(createNoInitialStateMainMenuReducer());
 
 			expect(store.getState().mainMenu).toBeNull();
+
+			focusSearchField();
 
 			expect(store.getState().mainMenu.focusSearchField).not.toBeNull();
 		});
