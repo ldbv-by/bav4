@@ -29,7 +29,7 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 		.addForKeyUp('ArrowDown', () => this._arrowDown())
 		.addForKeyUp('ArrowUp', () => this._arrowUp())
 		.addForKeyUp('Enter', () => this._enter());
-	#hoverIndex = null;
+	#selectedIndex = null;
 
 	/**
 	 * @override
@@ -63,42 +63,29 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 
 	_reset() {
 		const items = findAllBySelector(this, ResultItem_Selector);
-		const indexOfFocusedItem = items.findIndex((element) => element.matches('.ba-key-nav-item_select'));
-		this.#hoverIndex = -1;
-		this._changeHoveredElement(items[indexOfFocusedItem], null);
+		const indexOfSelectedItem = items.findIndex((element) => element.matches('.ba-key-nav-item_select'));
+		this.#selectedIndex = -1;
+		this._changeSelectedElement(items[indexOfSelectedItem], null);
 	}
 
 	_arrowDown() {
 		const items = findAllBySelector(this, ResultItem_Selector);
 		const indexOfPreviousItem = items.findIndex((element) => element.matches('.ba-key-nav-item_select'));
 
-		this.#hoverIndex = this.#hoverIndex === null ? (indexOfPreviousItem < 0 ? 0 : indexOfPreviousItem + 1) : this.#hoverIndex + 1;
-
-		this._changeHoveredElement(items[indexOfPreviousItem], items[this.#hoverIndex]);
+		const nextIndex = this.#selectedIndex === null ? (indexOfPreviousItem < 0 ? 0 : indexOfPreviousItem + 1) : this.#selectedIndex + 1;
+		this.#selectedIndex = nextIndex < items.length ? nextIndex : indexOfPreviousItem;
+		this._changeSelectedElement(items[indexOfPreviousItem], items[this.#selectedIndex]);
 	}
 
 	_arrowUp() {
 		const items = findAllBySelector(this, ResultItem_Selector);
 		const indexOfPreviousItem = items.findIndex((element) => element.matches('.ba-key-nav-item_select'));
 
-		this.#hoverIndex = this.#hoverIndex === null ? (indexOfPreviousItem < 0 ? indexOfPreviousItem : indexOfPreviousItem - 1) : this.#hoverIndex - 1;
+		const nextIndex =
+			this.#selectedIndex === null ? (indexOfPreviousItem < 0 ? indexOfPreviousItem : indexOfPreviousItem - 1) : this.#selectedIndex - 1;
+		this.#selectedIndex = nextIndex < 0 ? indexOfPreviousItem : nextIndex;
 
-		this._changeHoveredElement(items[indexOfPreviousItem], items[this.#hoverIndex]);
-	}
-
-	_changeHoveredElement(previous, nextItem) {
-		if (previous) {
-			previous.classList.remove('ba-key-nav-item_select');
-			if (previous instanceof AbstractResultItem) {
-				previous.highlightResult(false);
-			}
-		}
-		if (nextItem) {
-			nextItem.classList.add('ba-key-nav-item_select');
-			if (nextItem instanceof AbstractResultItem) {
-				nextItem.highlightResult(true);
-			}
-		}
+		this._changeSelectedElement(items[indexOfPreviousItem], items[this.#selectedIndex]);
 	}
 
 	_enter() {
@@ -108,6 +95,24 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 		const selectedItem = items[indexOfSelectedItem] ?? null;
 		if (selectedItem && selectedItem instanceof AbstractResultItem) {
 			selectedItem.selectResult();
+		}
+	}
+
+	_changeSelectedElement(previous, next) {
+		if (previous === next) {
+			return;
+		}
+		if (previous) {
+			previous.classList.remove('ba-key-nav-item_select');
+			if (previous instanceof AbstractResultItem) {
+				previous.highlightResult(false);
+			}
+		}
+		if (next) {
+			next.classList.add('ba-key-nav-item_select');
+			if (next instanceof AbstractResultItem) {
+				next.highlightResult(true);
+			}
 		}
 	}
 
