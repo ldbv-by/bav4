@@ -155,13 +155,6 @@ export class Header extends MvuElement {
 	createView(model) {
 		const { isOpen, isOpenNavigationRail, tabIndex, isFetching, layers, isPortrait, hasMinWidth, searchTerm, signedIn } = model;
 
-		// if (isOpen) {
-		// 	const input = this.shadowRoot.querySelector('#input');
-		// 	if (input) {
-		// 		input.focus();
-		// 	}
-		// }
-
 		const getAnimatedBorderClass = () => {
 			return isFetching ? 'animated-action-button__border__running' : '';
 		};
