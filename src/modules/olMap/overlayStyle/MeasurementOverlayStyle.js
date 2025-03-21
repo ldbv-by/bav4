@@ -11,6 +11,7 @@ import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { DragPan } from 'ol/interaction';
 import { BaOverlay } from '../components/BaOverlay';
 import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
+import { unByKey } from 'ol/Observable';
 
 export const saveManualOverlayPosition = (feature) => {
 	const draggableOverlayTypes = ['area', 'measurement'];
@@ -25,6 +26,8 @@ export const saveManualOverlayPosition = (feature) => {
 	});
 };
 
+export const STYLE_LISTENERS = 'measurement_style_listeners';
+
 const SectorsOfPlacement = [
 	{ name: 'top', isSector: (angle) => angle <= 60 || 300 < angle },
 	{ name: 'right', isSector: (angle) => 60 < angle && angle <= 120 },
@@ -36,12 +39,13 @@ const SectorsOfPlacement = [
  * @author thiloSchlemmer
  */
 export class MeasurementOverlayStyle extends OverlayStyle {
+	#environmentService;
+	#storeService;
 	constructor() {
 		super();
-		const { MapService, EnvironmentService, StoreService } = $injector.inject('MapService', 'EnvironmentService', 'StoreService');
-		this._mapService = MapService;
-		this._environmentService = EnvironmentService;
-		this._storeService = StoreService;
+		const { EnvironmentService, StoreService } = $injector.inject('EnvironmentService', 'StoreService');
+		this.#environmentService = EnvironmentService;
+		this.#storeService = StoreService;
 	}
 
 	/**
@@ -50,6 +54,24 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	 * @param {ol.map} olMap
 	 */
 	add(olFeature, olMap) {
+		/**
+		 * After each resolution change the measurement features need updated overlays
+		 * to be synchronized with the rendered measurement style and the drawn partition ticks.
+		 *
+		 * This must be done while the style is applied for the first time.
+		 */
+
+		const existingListeners = olFeature.get(STYLE_LISTENERS);
+		if (existingListeners) {
+			// possible existing listeners, created in the drawing phase should be replaced to prevent broken references
+			unByKey(existingListeners);
+		}
+
+		const listener = olMap.getView().on('change:resolution', () => {
+			this.update(olFeature, olMap);
+		});
+		olFeature.set(STYLE_LISTENERS, [listener]);
+
 		this._createDistanceOverlay(olFeature, olMap);
 		this._createOrRemoveAreaOverlay(olFeature, olMap);
 		this._createOrRemovePartitionOverlays(olFeature, olMap);
@@ -112,6 +134,12 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	 * @param {ol.map} olMap
 	 */
 	remove(olFeature, olMap) {
+		const styleListeners = olFeature.get(STYLE_LISTENERS);
+		if (styleListeners?.length) {
+			unByKey(styleListeners);
+			olFeature.unset(STYLE_LISTENERS);
+		}
+
 		const featureOverlays = olFeature.get('overlays') || [];
 		featureOverlays.forEach((o) => olMap.removeOverlay(o));
 		olFeature.set('measurement', null);
@@ -121,13 +149,13 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	}
 
 	_isActiveMeasurement() {
-		const { measurement } = this._storeService.getStore().getState();
+		const { measurement } = this.#storeService.getStore().getState();
 		return measurement.active;
 	}
 
 	_createDistanceOverlay(olFeature, olMap) {
 		const createNew = () => {
-			const isDraggable = !this._environmentService.isTouch() && this._isActiveMeasurement();
+			const isDraggable = !this.#environmentService.isTouch() && this._isActiveMeasurement();
 			const overlay = this._createOlOverlay(olMap, { offset: [0, -15], positioning: 'bottom-center' }, BaOverlayTypes.DISTANCE, isDraggable);
 			olFeature.set('measurement', overlay);
 			this._add(overlay, olFeature, olMap);
@@ -146,7 +174,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		let areaOverlay = olFeature.get('area');
 		if (olFeature.getGeometry() instanceof Polygon) {
 			if (olFeature.getGeometry().getArea()) {
-				const isDraggable = !this._environmentService.isTouch() && this._isActiveMeasurement();
+				const isDraggable = !this.#environmentService.isTouch() && this._isActiveMeasurement();
 
 				if (!areaOverlay) {
 					areaOverlay = this._createOlOverlay(olMap, { positioning: 'top-center' }, BaOverlayTypes.AREA, isDraggable);

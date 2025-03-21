@@ -185,8 +185,9 @@ export class StyleService {
 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style exists
 	 */
 	removeStyle(olFeature, olMap) {
+		const usingStyleType = this._detectStyleType(olFeature);
 		const { OverlayService: overlayService } = $injector.inject('OverlayService');
-		overlayService.remove(olFeature, olMap);
+		overlayService.remove(olFeature, olMap, usingStyleType);
 	}
 
 	/**
@@ -337,14 +338,6 @@ export class StyleService {
 
 	_addMeasureStyle(olFeature, olMap) {
 		const { OverlayService: overlayService } = $injector.inject('OverlayService');
-
-		/**
-		 * After each resolution change the measurement features need updated overlays
-		 * to be synchronized with the rendered measurement style and the drawn partition ticks.
-		 *
-		 * This must be done before the style is applied for the first time.
-		 */
-		olMap.getView().on('change:resolution', () => overlayService.update(olFeature, olMap, StyleTypes.MEASURE));
 
 		if (!olFeature.get(GEODESIC_FEATURE_PROPERTY)) {
 			olFeature.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(olFeature, olMap));
