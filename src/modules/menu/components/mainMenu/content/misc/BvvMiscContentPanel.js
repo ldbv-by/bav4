@@ -73,6 +73,10 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 			this.#authService.signOut();
 		};
 
+		const getThemeIcon = () => {
+			return darkSchema ? 'sun' : 'moon';
+		};
+
 		return html`
 			<style>
 				${css}
@@ -86,18 +90,16 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 						>${translate(signedIn ? 'menu_misc_content_panel_logout' : 'menu_misc_content_panel_login')}</span
 					>
 				</button>
-				<button id="feedback" class="ba-list-item divider" @click=${openFeedbackDialog}>
+				<button id="feedback" class="ba-list-item" @click=${openFeedbackDialog}>
 					<span class="ba-list-item__pre">
 						<span class="ba-list-item__icon icon feedback"> </span>
 					</span>
 					<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_feedback_title')}</span>
 				</button>
-				<div class="ba-list-item  ba-list-item__header ">
-					<span class="ba-list-item__text ">
-						<span class="ba-list-item__primary-text">${translate('menu_misc_content_panel_settings')}</span>
+				<div class="ba-list-item divider">
+					<span class="ba-list-item__pre">
+						<span class="ba-list-item__icon icon  ${getThemeIcon()}"> </span>
 					</span>
-				</div>
-				<div class="ba-list-item divider ">
 					<ba-switch class="themeToggle" id="themeToggle" .checked=${darkSchema} @toggle=${toggleSchema}>
 						<span slot="before" class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_dark_mode')}</span>
 					</ba-switch>
