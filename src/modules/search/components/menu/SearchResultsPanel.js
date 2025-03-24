@@ -11,11 +11,13 @@ import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
 import { findAllBySelector } from '../../../../utils/markup';
 import { LocationResultItem } from './types/location/LocationResultItem';
 import { GeoResourceResultItem } from './types/geoResource/GeoResourceResultItem';
+import { focusSearchField } from '../../../../store/mainMenu/mainMenu.action';
 
 export const Navigatable_Result_Item_Class = [LocationResultItem, GeoResourceResultItem]; // TODO: CpResultItem currently excluded, waiting for other PR updates
 
 const Selected_Item_Class = 'ba-key-nav-item_select';
 const Selected_Item_Class_Selector = `.${Selected_Item_Class}`;
+const Search_Field_Index = -1;
 
 /**
  * Container for different types of search result panels.
@@ -95,7 +97,11 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 
 		const nextIndex =
 			this.#selectedIndex === null ? (indexOfPreviousItem < 0 ? indexOfPreviousItem : indexOfPreviousItem - 1) : this.#selectedIndex - 1;
-		this.#selectedIndex = nextIndex < 0 ? indexOfPreviousItem : nextIndex;
+		this.#selectedIndex = nextIndex < 0 ? Search_Field_Index : nextIndex;
+
+		if (this.#selectedIndex === Search_Field_Index) {
+			focusSearchField();
+		}
 
 		this._changeSelectedElement(items[indexOfPreviousItem], items[this.#selectedIndex]);
 	}

@@ -6,6 +6,8 @@ import { AbstractMvuContentPanel } from '../../../../../src/modules/menu/compone
 import { CpResultsPanel } from '../../../../../src/modules/search/components/menu/types/cp/CpResultsPanel';
 import { AbstractResultItem } from '../../../../../src/modules/search/components/menu/AbstractResultItem.js';
 import { html } from 'lit-html';
+import { TabIds } from '../../../../../src/domain/mainMenu.js';
+import { createNoInitialStateMainMenuReducer } from '../../../../../src/store/mainMenu/mainMenu.reducer.js';
 window.customElements.define(SearchResultsPanel.tag, SearchResultsPanel);
 
 class AbstractResultItemImpl extends AbstractResultItem {
@@ -33,9 +35,15 @@ describe('SearchResultsPanel', () => {
 				.keys()
 				.map((key) => TestUtils.renderTemplateResult(html`<ba-test-abstract-result-item-impl>${key}</ba-test-abstract-result-item-impl>`))
 		);
-
+	let store;
 	const setup = () => {
-		TestUtils.setupStoreAndDi();
+		const initialState = {
+			mainMenu: {
+				open: true,
+				tab: TabIds.TOPICS
+			}
+		};
+		store = TestUtils.setupStoreAndDi(initialState, { mainMenu: createNoInitialStateMainMenuReducer() });
 		return TestUtils.render(SearchResultsPanel.tag);
 	};
 
@@ -207,6 +215,36 @@ describe('SearchResultsPanel', () => {
 			expect(highlightResult4Spy).toHaveBeenCalledTimes(1); // [previous]
 			expect(highlightResult3Spy).toHaveBeenCalledTimes(2); // [next] + [previous]
 			expect(highlightResult2Spy).toHaveBeenCalledTimes(1); // [next]
+		});
+
+		it('when keyup event is fired focus search after "arrowUp"', async () => {
+			const element = await setup();
+			element.ResultItemClasses = [AbstractResultItemImpl];
+			const arrowDownSpy = spyOn(element, '_arrowUp').and.callThrough();
+			const changeSelectedElementSpy = spyOn(element, '_changeSelectedElement').and.callThrough();
+
+			const testResultItems = createResultItems(5);
+			testResultItems.forEach((child) => element.shadowRoot.querySelector('div').appendChild(child));
+
+			// we set the flag-class manually to indicate a currently selected resultItem
+			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[1].classList.add('ba-key-nav-item_select');
+			const highlightResult1Spy = jasmine.createSpy('highlightResult_1');
+			const highlightResult0Spy = jasmine.createSpy('highlightResult_0');
+
+			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[1].highlightResult = highlightResult1Spy;
+			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[0].highlightResult = highlightResult0Spy;
+
+			document.dispatchEvent(getKeyEvent(keyCodes.ArrowUp));
+			document.dispatchEvent(getKeyEvent(keyCodes.ArrowUp));
+
+			const resultItems = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
+
+			expect(arrowDownSpy).toHaveBeenCalledTimes(2);
+			expect(changeSelectedElementSpy).toHaveBeenCalledWith(resultItems[1], resultItems[0]);
+			expect(changeSelectedElementSpy).toHaveBeenCalledWith(resultItems[0], undefined);
+			expect(highlightResult1Spy).toHaveBeenCalledTimes(1); // [previous]
+			expect(highlightResult0Spy).toHaveBeenCalledTimes(2); // [next] + [previous]
+			expect(store.getState().mainMenu.focusSearchField).not.toBeNull();
 		});
 
 		it('when keyup event is fired selects the next resultItem for "enter"', async () => {
