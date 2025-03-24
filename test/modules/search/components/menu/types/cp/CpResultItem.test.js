@@ -90,7 +90,6 @@ describe('CpResultItem', () => {
 				expect(element.shadowRoot.querySelectorAll('button.chips__button.remove')).toHaveSize(0);
 				expect(element.shadowRoot.querySelectorAll('button.chips__button.add')).toHaveSize(1);
 				expect(element.shadowRoot.querySelector('button.chips__button.add').title).toBe('global_featureCollection_add_feature_title');
-				expect(element.shadowRoot.querySelector('.chips__button-text').innerText).toBe('global_featureCollection_add_feature');
 			});
 		});
 
@@ -109,7 +108,6 @@ describe('CpResultItem', () => {
 				expect(element.shadowRoot.querySelectorAll('button.chips__button.add')).toHaveSize(0);
 				expect(element.shadowRoot.querySelectorAll('button.chips__button.remove')).toHaveSize(1);
 				expect(element.shadowRoot.querySelector('button.chips__button.remove').title).toBe('global_featureCollection_remove_feature_title');
-				expect(element.shadowRoot.querySelector('.chips__button-text').innerText).toBe('global_featureCollection_remove_feature');
 			});
 		});
 	});

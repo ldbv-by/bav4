@@ -160,19 +160,25 @@ export class CpResultItem extends MvuElement {
 					return html`<button
 						class="chips__button remove"
 						title=${translate('global_featureCollection_remove_feature_title')}
-						@click=${() => removeFeature(result)}
+						@click=${(e) => {
+							e.preventDefault();
+							e.stopPropagation();
+							removeFeature(result);
+						}}
 					>
 						<span class="chips__icon"></span>
-						<span class="chips__button-text">${translate('global_featureCollection_remove_feature')}</span>
 					</button>`;
 				}
 				return html`<button
 					class="chips__button add"
 					title=${translate('global_featureCollection_add_feature_title')}
-					@click=${() => addFeature(result)}
+					@click=${(e) => {
+						e.preventDefault();
+						e.stopPropagation();
+						addFeature(result);
+					}}
 				>
 					<span class="chips__icon"></span>
-					<span class="chips__button-text">${translate('global_featureCollection_add_feature')}</span>
 				</button>`;
 			}
 
@@ -195,8 +201,8 @@ export class CpResultItem extends MvuElement {
 						<span class="ba-list-item__icon"> </span>
 					</span>
 					<span class="ba-list-item__text "> ${unsafeHTML(cpSearchResult.labelFormatted)} </span>
+					${getFeatureCollectionActionButton(cpSearchResult)}
 				</li>
-				${getFeatureCollectionActionButton(cpSearchResult)}
 			`;
 		}
 		return nothing;
