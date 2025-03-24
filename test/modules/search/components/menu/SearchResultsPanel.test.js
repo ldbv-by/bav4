@@ -47,6 +47,20 @@ describe('SearchResultsPanel', () => {
 		});
 	});
 
+	describe('when instantiated', () => {
+		it('configures keyActionMapper', () => {
+			TestUtils.setupStoreAndDi();
+			const keyActionMapperMock = { addForKeyUp: () => {} };
+			const addForKeyUpSpy = spyOn(keyActionMapperMock, 'addForKeyUp').and.callFake(() => keyActionMapperMock);
+
+			new SearchResultsPanel(keyActionMapperMock);
+
+			expect(addForKeyUpSpy).toHaveBeenCalledWith('ArrowDown', jasmine.any(Function));
+			expect(addForKeyUpSpy).toHaveBeenCalledWith('ArrowUp', jasmine.any(Function));
+			expect(addForKeyUpSpy).toHaveBeenCalledWith('Enter', jasmine.any(Function));
+		});
+	});
+
 	describe('when initialized', () => {
 		const getKeyEvent = (key) => {
 			return new KeyboardEvent('keyup', { key: key });
@@ -62,6 +76,8 @@ describe('SearchResultsPanel', () => {
 		});
 
 		it('activates key mappings', async () => {
+			const keyActionMapperSpy = spyOn(document, 'addEventListener').and.callThrough();
+
 			const element = await setup();
 			const arrowDownSpy = spyOn(element, '_arrowDown').and.callFake(() => {});
 			const arrowUpSpy = spyOn(element, '_arrowUp').and.callFake(() => {});
@@ -74,15 +90,35 @@ describe('SearchResultsPanel', () => {
 			expect(arrowDownSpy).toHaveBeenCalled();
 			expect(arrowUpSpy).toHaveBeenCalled();
 			expect(enterSpy).toHaveBeenCalled();
+
+			// KeyActionMapper is activated
+			expect(keyActionMapperSpy).toHaveBeenCalledWith('keyup', jasmine.any(Function));
+			expect(keyActionMapperSpy).toHaveBeenCalledWith('keydown', jasmine.any(Function));
 		});
 
 		it('when mouse enters element resets key navigation', async () => {
+			const keyActionMapperSpy = spyOn(document, 'removeEventListener').and.callThrough();
 			const element = await setup();
 			const resetSpy = spyOn(element, '_reset').and.callThrough();
 
 			element.shadowRoot.querySelector('div').dispatchEvent(new Event('mouseenter'));
 
 			expect(resetSpy).toHaveBeenCalled();
+			// KeyActionMapper is deactivated
+			expect(keyActionMapperSpy).toHaveBeenCalledWith('keyup', jasmine.any(Function));
+			expect(keyActionMapperSpy).toHaveBeenCalledWith('keydown', jasmine.any(Function));
+		});
+
+		it('when mouse leaves element reactivates key navigation', async () => {
+			const keyActionMapperSpy = spyOn(document, 'addEventListener').and.callThrough();
+
+			const element = await setup();
+
+			element.shadowRoot.querySelector('div').dispatchEvent(new Event('mouseleave'));
+
+			// KeyActionMapper is activated
+			expect(keyActionMapperSpy).toHaveBeenCalledWith('keyup', jasmine.any(Function));
+			expect(keyActionMapperSpy).toHaveBeenCalledWith('keydown', jasmine.any(Function));
 		});
 
 		it('when keyup event is fired highlights the next resultItem for "arrowDown"', async () => {
@@ -110,6 +146,35 @@ describe('SearchResultsPanel', () => {
 			expect(changeSelectedElementSpy).toHaveBeenCalledWith(resultItems[0], resultItems[1]);
 			expect(highlightResult0Spy).toHaveBeenCalledTimes(2); // [next] + [previous]
 			expect(highlightResult1Spy).toHaveBeenCalledTimes(1); // [next]
+		});
+
+		it('when keyup event is fired highlights the last resultItem for "arrowDown"', async () => {
+			const element = await setup();
+			element.ResultItemClasses = [AbstractResultItemImpl];
+			const arrowDownSpy = spyOn(element, '_arrowDown').and.callThrough();
+			const changeSelectedElementSpy = spyOn(element, '_changeSelectedElement').and.callThrough();
+
+			const testResultItems = createResultItems(5);
+			testResultItems.forEach((child) => element.shadowRoot.querySelector('div').appendChild(child));
+
+			// we set the flag-class manually to indicate a currently selected resultItem
+			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[3].classList.add('ba-key-nav-item_select');
+			const highlightResult3Spy = jasmine.createSpy('highlightResult_3');
+			const highlightResult4Spy = jasmine.createSpy('highlightResult_4');
+
+			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[3].highlightResult = highlightResult3Spy;
+			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[4].highlightResult = highlightResult4Spy;
+
+			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown)); // 3 -> 4
+			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown)); // 4 -> 4
+
+			const resultItems = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
+
+			expect(arrowDownSpy).toHaveBeenCalledTimes(2);
+			expect(changeSelectedElementSpy).toHaveBeenCalledWith(resultItems[3], resultItems[4]);
+			expect(changeSelectedElementSpy).toHaveBeenCalledWith(resultItems[4], resultItems[4]);
+			expect(highlightResult3Spy).toHaveBeenCalledTimes(1); // [next] + [previous]
+			expect(highlightResult4Spy).toHaveBeenCalledTimes(1); // [next] + [previous]
 		});
 
 		it('when keyup event is fired highlights the next resultItem for "arrowUp"', async () => {
@@ -147,7 +212,7 @@ describe('SearchResultsPanel', () => {
 		it('when keyup event is fired selects the next resultItem for "enter"', async () => {
 			const element = await setup();
 			element.ResultItemClasses = [AbstractResultItemImpl];
-			const arrowDownSpy = spyOn(element, '_arrowUp').and.callThrough();
+			const arrowUpSpy = spyOn(element, '_arrowUp').and.callThrough();
 			const enterSpy = spyOn(element, '_enter').and.callThrough();
 			const changeSelectedElementSpy = spyOn(element, '_changeSelectedElement').and.callThrough();
 
@@ -168,10 +233,66 @@ describe('SearchResultsPanel', () => {
 
 			const resultItems = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
 
-			expect(arrowDownSpy).toHaveBeenCalledTimes(1);
+			expect(arrowUpSpy).toHaveBeenCalledTimes(1);
 			expect(enterSpy).toHaveBeenCalledTimes(1);
 			expect(changeSelectedElementSpy).toHaveBeenCalledWith(resultItems[4], resultItems[3]);
 			expect(selectResult3Spy).toHaveBeenCalled();
+		});
+
+		it('when keyup event is fired selects the second resultItem for "enter"', async () => {
+			const element = await setup();
+			element.ResultItemClasses = [AbstractResultItemImpl];
+			const arrowDownSpy = spyOn(element, '_arrowDown').and.callThrough();
+			const enterSpy = spyOn(element, '_enter').and.callThrough();
+			const changeSelectedElementSpy = spyOn(element, '_changeSelectedElement').and.callThrough();
+
+			const testResultItems = createResultItems(5);
+			testResultItems.forEach((child) => element.shadowRoot.querySelector('div').appendChild(child));
+
+			const selectResultSpy = jasmine.createSpy('selectResult');
+
+			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[0].highlightResult = jasmine.createSpy();
+			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[1].highlightResult = jasmine.createSpy();
+			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[1].selectResult = selectResultSpy;
+
+			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
+			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
+			document.dispatchEvent(getKeyEvent(keyCodes.Enter));
+
+			const resultItems = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
+
+			expect(resultItems.length).toBe(5);
+			expect(arrowDownSpy).toHaveBeenCalledTimes(2);
+			expect(enterSpy).toHaveBeenCalledTimes(1);
+			expect(changeSelectedElementSpy).toHaveBeenCalledWith(undefined, resultItems[0]);
+			expect(changeSelectedElementSpy).toHaveBeenCalledWith(resultItems[0], resultItems[1]);
+			expect(selectResultSpy).toHaveBeenCalled();
+		});
+
+		it('when keyup event is fired does NOT selects the next resultItem for "enter"', async () => {
+			const element = await setup();
+			element.ResultItemClasses = [AbstractResultItemImpl];
+			const arrowUpSpy = spyOn(element, '_arrowUp').and.callThrough();
+			const enterSpy = spyOn(element, '_enter').and.callThrough();
+			const changeSelectedElementSpy = spyOn(element, '_changeSelectedElement').and.callThrough();
+
+			const testResultItems = createResultItems(5);
+			testResultItems.forEach((child) => element.shadowRoot.querySelector('div').appendChild(child));
+
+			const selectResultSpy = jasmine.createSpy('selectResult');
+
+			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl').forEach((element) => (element.selectResult = selectResultSpy));
+
+			document.dispatchEvent(getKeyEvent(keyCodes.ArrowUp));
+			document.dispatchEvent(getKeyEvent(keyCodes.Enter));
+
+			const resultItems = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
+
+			expect(resultItems.length).toBe(5);
+			expect(arrowUpSpy).toHaveBeenCalledTimes(1);
+			expect(enterSpy).toHaveBeenCalledTimes(1);
+			expect(changeSelectedElementSpy).toHaveBeenCalledWith(undefined, undefined);
+			expect(selectResultSpy).not.toHaveBeenCalled();
 		});
 	});
 });

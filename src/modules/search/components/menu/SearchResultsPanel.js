@@ -20,18 +20,29 @@ const Selected_Item_Class_Selector = `.${Selected_Item_Class}`;
 /**
  * Container for different types of search result panels.
  * @class
+ * @property {Array<class>} ResultItemClasses The ResultItemClasses which are used to define the query selector for all navigatable ResultItems. The classes must extend the @see {@link AbstractResultItem} class.
  * @author taulinger
  * @author costa_gi
  * @author thiloSchlemmer
  */
 export class SearchResultsPanel extends AbstractMvuContentPanel {
-	#keyActionMapper = new KeyActionMapper(document)
-		.addForKeyUp('ArrowDown', () => this._arrowDown())
-		.addForKeyUp('ArrowUp', () => this._arrowUp())
-		.addForKeyUp('Enter', () => this._enter());
-	#selectedIndex = null;
-	#resultItemClasses = Navigatable_Result_Item_Class;
-	#resultItemSelector = `:is(${this.#resultItemClasses.map((i) => i.tag).join(',')})`;
+	#keyActionMapper;
+	#selectedIndex;
+	#resultItemClasses;
+	#resultItemSelector;
+
+	constructor(keyActionMapper = new KeyActionMapper(document)) {
+		super({});
+		this.#keyActionMapper = keyActionMapper;
+		this.#keyActionMapper
+			.addForKeyUp('ArrowDown', () => this._arrowDown())
+			.addForKeyUp('ArrowUp', () => this._arrowUp())
+			.addForKeyUp('Enter', () => this._enter());
+
+		this.#selectedIndex = null;
+		this.#resultItemClasses = Navigatable_Result_Item_Class;
+		this.#resultItemSelector = `:is(${this.#resultItemClasses.map((i) => i.tag).join(',')})`;
+	}
 
 	/**
 	 * @override
@@ -65,14 +76,14 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 
 	_reset() {
 		const items = findAllBySelector(this, this.#resultItemSelector);
-		const indexOfSelectedItem = items.findIndex((element) => element.matches(Selected_Item_Class_Selector));
+		const indexOfSelectedItem = this._findSelectedIndex(items);
 		this.#selectedIndex = -1;
 		this._changeSelectedElement(items[indexOfSelectedItem], null);
 	}
 
 	_arrowDown() {
 		const items = findAllBySelector(this, this.#resultItemSelector);
-		const indexOfPreviousItem = items.findIndex((element) => element.matches(Selected_Item_Class_Selector));
+		const indexOfPreviousItem = this._findSelectedIndex(items);
 		const nextIndex = this.#selectedIndex === null ? (indexOfPreviousItem < 0 ? 0 : indexOfPreviousItem + 1) : this.#selectedIndex + 1;
 		this.#selectedIndex = nextIndex < items.length ? nextIndex : indexOfPreviousItem;
 		this._changeSelectedElement(items[indexOfPreviousItem], items[this.#selectedIndex]);
@@ -80,7 +91,7 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 
 	_arrowUp() {
 		const items = findAllBySelector(this, this.#resultItemSelector);
-		const indexOfPreviousItem = items.findIndex((element) => element.matches(Selected_Item_Class_Selector));
+		const indexOfPreviousItem = this._findSelectedIndex(items);
 
 		const nextIndex =
 			this.#selectedIndex === null ? (indexOfPreviousItem < 0 ? indexOfPreviousItem : indexOfPreviousItem - 1) : this.#selectedIndex - 1;
@@ -91,7 +102,7 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 
 	_enter() {
 		const items = findAllBySelector(this, this.#resultItemSelector);
-		const indexOfSelectedItem = items.findIndex((element) => element.matches(Selected_Item_Class_Selector));
+		const indexOfSelectedItem = this._findSelectedIndex(items);
 
 		const selectedItem = items[indexOfSelectedItem] ?? null;
 		if (selectedItem) {
@@ -113,11 +124,13 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 		}
 	}
 
+	_findSelectedIndex(items) {
+		return items.findIndex((element) => element.matches(Selected_Item_Class_Selector));
+	}
+
 	set ResultItemClasses(values) {
-		if (Array.isArray(values)) {
-			this.#resultItemClasses = values;
-			this.#resultItemSelector = `:is(${this.#resultItemClasses.map((i) => i.tag).join(',')})`;
-		}
+		this.#resultItemClasses = values;
+		this.#resultItemSelector = `:is(${this.#resultItemClasses.map((i) => i.tag).join(',')})`;
 	}
 
 	static get tag() {
