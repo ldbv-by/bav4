@@ -11,6 +11,7 @@ import { Icon } from '../../../../../../../src/modules/commons/components/icon/I
 import { LevelTypes } from '../../../../../../../src/store/notifications/notifications.action';
 import { SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../../src/plugins/HighlightPlugin';
 import { HighlightFeatureType } from '../../../../../../../src/domain/highlightFeature.js';
+import { AbstractResultItem } from '../../../../../../../src/modules/search/components/menu/AbstractResultItem.js';
 window.customElements.define(LocationResultItem.tag, LocationResultItem);
 
 describe('LocationResultItem', () => {
@@ -43,6 +44,16 @@ describe('LocationResultItem', () => {
 
 		return TestUtils.render(LocationResultItem.tag);
 	};
+
+	describe('class', () => {
+		it('inherits from AbstractResultItem', async () => {
+			const element = await setup();
+
+			expect(element instanceof AbstractResultItem).toBeTrue();
+			expect(element.selectResult).toEqual(jasmine.any(Function));
+			expect(element.highlightResult).toEqual(jasmine.any(Function));
+		});
+	});
 
 	describe('static properties', () => {
 		it('_maxZoomValue', async () => {
