@@ -841,61 +841,6 @@ describe('StyleService', () => {
 			expect(warnSpy).toHaveBeenCalledWith('Could not provide a style for unknown style-type');
 		});
 
-		it('registers initial styling events for measure-feature', () => {
-			const feature = new Feature({
-				geometry: new Polygon([
-					[
-						[0, 0],
-						[1, 0],
-						[1, 1],
-						[0, 1],
-						[0, 0]
-					]
-				])
-			});
-			feature.setId('measure_12345678');
-			const addOverlaySpy = jasmine.createSpy();
-			const styleSetterSpy = spyOn(feature, 'setStyle');
-			const addSpy = spyOn(overlayServiceMock, 'add');
-			const updateSpy = spyOn(overlayServiceMock, 'update');
-
-			let registeredCallback;
-			const viewMock = {
-				getResolution() {
-					return 50;
-				},
-				on(eventName, callback) {
-					registeredCallback = callback;
-				}
-			};
-			const onViewSpy = spyOn(viewMock, 'on').and.callThrough();
-
-			const mapMock = {
-				getView: () => viewMock,
-				addOverlay: addOverlaySpy,
-				getOverlays() {
-					return [];
-				},
-				getInteractions() {
-					return { getArray: () => [] };
-				}
-			};
-
-			const layerMock = {};
-			spyOn(mapServiceMock, 'calcLength').and.returnValue(1);
-
-			instanceUnderTest.addStyle(feature, mapMock, layerMock);
-
-			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
-			expect(onViewSpy).toHaveBeenCalledWith('change:resolution', jasmine.any(Function));
-			expect(addSpy).toHaveBeenCalledWith(feature, mapMock, 'measure');
-			expect(updateSpy).not.toHaveBeenCalled();
-
-			registeredCallback();
-
-			expect(updateSpy).toHaveBeenCalledWith(feature, mapMock, 'measure');
-		});
-
 		describe('checks the `styleHint` property of an ol.Feature', () => {
 			it('does nothing when a StyleHint is not available', () => {
 				const olFeature = new Feature({ geometry: new Point([0, 0]) });
@@ -1304,6 +1249,37 @@ describe('StyleService', () => {
 	});
 
 	describe('removes styles', () => {
+		it('removes a style from measure feature', () => {
+			const feature = new Feature({
+				geometry: new Polygon([
+					[
+						[0, 0],
+						[1, 0],
+						[1, 1],
+						[0, 1],
+						[0, 0]
+					]
+				])
+			});
+			feature.setId('measure_123');
+			const viewMock = {
+				getResolution() {
+					return 50;
+				}
+			};
+			const mapMock = {
+				getView: () => viewMock,
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+			const removeSpy = spyOn(overlayServiceMock, 'remove');
+
+			instanceUnderTest.removeStyle(feature, mapMock);
+
+			expect(removeSpy).toHaveBeenCalledWith(feature, mapMock, 'measure');
+		});
+
 		it('removes a style from feature', () => {
 			const feature = new Feature({
 				geometry: new Polygon([
@@ -1331,7 +1307,7 @@ describe('StyleService', () => {
 
 			instanceUnderTest.removeStyle(feature, mapMock);
 
-			expect(removeSpy).toHaveBeenCalledWith(feature, mapMock);
+			expect(removeSpy).toHaveBeenCalledWith(feature, mapMock, 'default');
 		});
 	});
 

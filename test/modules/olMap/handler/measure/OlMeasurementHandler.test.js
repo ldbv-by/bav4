@@ -784,27 +784,6 @@ describe('OlMeasurementHandler', () => {
 			expect(measureGeometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY)).toBe(1);
 		});
 
-		it("updates overlays of old features on 'change:Resolution'", async () => {
-			setup();
-			const classUnderTest = new OlMeasurementHandler();
-			const lastData =
-				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measure_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
-			const map = setupMap();
-			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
-
-			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
-			spyOn(fileStorageServiceMock, 'isFileId').and.callFake(() => true);
-			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
-			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
-			const updateOverlaysSpy = spyOn(classUnderTest._styleService, 'updateStyle');
-
-			classUnderTest.activate(map);
-
-			await TestUtils.timeout();
-			map.getView().dispatchEvent('change:resolution');
-			expect(updateOverlaysSpy).toHaveBeenCalledTimes(1);
-		});
-
 		it('adds a drawn feature to the selection, after adding to layer (on addFeature)', async () => {
 			const geometry = new LineString([
 				[0, 0],
@@ -875,6 +854,30 @@ describe('OlMeasurementHandler', () => {
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 
 			expect(feature.get(GEODESIC_FEATURE_PROPERTY)).toEqual(jasmine.any(GeodesicGeometry));
+		});
+
+		it("updates overlays while drawing on 'change:Resolution'", async () => {
+			setup();
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+
+			const updateOverlaysSpy = spyOn(classUnderTest._overlayService, 'update');
+			const geometry = new LineString([
+				[0, 0],
+				[500, 0],
+				[550, 550],
+				[0, 500],
+				[0, 500]
+			]);
+			const feature = new Feature({ geometry: geometry });
+			feature.setId('measure');
+
+			classUnderTest.activate(map);
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+
+			await TestUtils.timeout();
+			map.getView().dispatchEvent('change:resolution');
+			expect(updateOverlaysSpy).toHaveBeenCalledTimes(1);
 		});
 
 		it("removes overlays of features on 'drawabort'", () => {
