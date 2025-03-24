@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { argv } = require('node:process');
 
 const Resource_Extension = ['.svg', '.png'];
 const Code_Extension = ['.js', '.css'];
@@ -10,7 +11,7 @@ function* lineReaderSync(file) {
 		const fileContent = fs.readFileSync(file, 'utf-8');
 		let index = 0;
 		for (const line of fileContent.split(EOL_RegEx)) {
-			yield { content: line, index: index };
+			yield { content: line, index: index++ };
 		}
 	} catch (err) {
 		console.error(err);
@@ -27,22 +28,24 @@ const hashCode = (value) => {
 	return h;
 };
 
-const findResourceWithExtensionInDir = (dir, extensionList) => {
+const findResourceWithExtensionInDir = (dir, excludePattern, extensionList) => {
 	const fileList = [];
 	const files = fs.readdirSync(dir);
 
 	files.forEach((file) => {
 		const filePath = path.join(dir, file);
-		const fileStat = fs.lstatSync(filePath);
+		const isExcluded = excludePattern ? excludePattern.test(filePath) : false;
+		if (!isExcluded) {
+			const fileStat = fs.lstatSync(filePath);
+			if (fileStat.isDirectory()) {
+				findResourceWithExtensionInDir(filePath, excludePattern, extensionList).forEach((item) => fileList.push(item));
+			} else {
+				const fileContent = fs.readFileSync(filePath, 'utf8');
+				const hash = hashCode(fileContent);
+				const fileSize = fs.statSync(filePath).size;
 
-		if (fileStat.isDirectory()) {
-			findResourceWithExtensionInDir(filePath, extensionList).forEach((item) => fileList.push(item));
-		} else {
-			const fileContent = fs.readFileSync(filePath, 'utf8');
-			const hash = hashCode(fileContent);
-			const fileSize = fs.statSync(filePath).size;
-
-			fileList.push({ filePath, file, hash, fileSize });
+				fileList.push({ filePath, file, hash, fileSize });
+			}
 		}
 	});
 
@@ -129,23 +132,20 @@ const findCodeUsageInDir = (dir, resourcesByName, extensionList) => {
 	});
 };
 
-const calculateRating = (resourcesByName) => {
+const summarize = (resourcesByName) => {
 	// values -> resourceInfosByHash, key -> fileName
 	const rating = [];
 	resourcesByName.forEach((value, key, m) => {
-		const cardinality = value.size;
-		const sumRating = Array.from(value).reduce(
-			(sum, resourceInfo) => sum + (resourceInfo.filePaths.length * Math.pow(10, resourceInfo.usage.length)) / cardinality,
-			0
-		);
 		const fileSizeInfo = Array.from(value).map((resourceInfo, index) => {
-			return `[${index}] fileSize/Sum in Bytes: ${resourceInfo.fileSize}/${resourceInfo.fileSize * resourceInfo.filePaths.length} `;
+			return `[${index}] ${resourceInfo.fileSize}/${resourceInfo.fileSize * resourceInfo.filePaths.length}`;
 		});
 		const resources = Array.from(value).flatMap((resourceInfo, index) => {
-			return [resourceInfo.filePaths.map((fp) => `[${index}] hash:${resourceInfo.hash} -> ${fp} `)];
+			return resourceInfo.filePaths.map((fp) => `[${index}] -> ${fp} `);
 		});
 
-		const usages = Array.from(value).flatMap((resourceInfo, index) => resourceInfo.usage.map((u) => `[${index}]  ${u.sourcefile}`));
+		const usages = Array.from(value).flatMap((resourceInfo, index) =>
+			resourceInfo.usage.map((u) => `[${index}]  ${u.sourcefile} line: ${u.lineOfCode}`)
+		);
 
 		const orphanedResources = Array.from(value)
 			.filter((resourceInfo) => !resourceInfo.usage.length)
@@ -153,11 +153,11 @@ const calculateRating = (resourcesByName) => {
 		const tags = [
 			...Array.from(value).flatMap((resourceInfo) => resourceInfo.tags),
 			value.size > 1 ? 'ambiguous name' : [],
-			orphanedResources.length != 0 ? 'orphaned' : []
+			orphanedResources.length !== 0 ? 'orphaned' : [],
+			usages.length === 0 ? 'no usage at all' : []
 		];
 		rating.push({
 			file: key,
-			rating: sumRating,
 			fileSize: fileSizeInfo,
 			resources,
 			usages: usages,
@@ -168,17 +168,52 @@ const calculateRating = (resourcesByName) => {
 	return rating;
 };
 
-const resources = findResourceWithExtensionInDir('./src', Resource_Extension);
+const categorizeByTag = (summarizedResults) => {
+	const orphaned = summarizedResults
+		.filter((r) => r.tags.includes('orphaned'))
+		.map((o) => {
+			return { category: 'orphaned', file: o.file, orphaned: o.orphaned };
+		});
+	const ambiguous = summarizedResults
+		.filter((r) => r.tags.includes('ambiguous name'))
+		.map((o) => {
+			return { category: 'ambiguous name', file: o.file, resources: o.resources.length };
+		});
+
+	const duplicated = summarizedResults
+		.filter((r) => r.tags.includes('duplicated'))
+		.map((o) => {
+			return { category: 'duplicated', file: o.file, resources: o.resources.length };
+		});
+	return [...orphaned, ...ambiguous, ...duplicated];
+};
+
+const args = {};
+for (let i = 2; i < argv.length; i = i + 2) {
+	const arg = argv[i];
+	if (arg.startsWith('--')) {
+		args[arg] = argv[i + 1];
+	}
+}
+const dirToAnalyze = args['--input'] ?? './src';
+const excludePattern = args['--exclude'] ? new RegExp(args['--exclude']) : null;
+const detail = args['--detail'] ?? null;
+const resources = findResourceWithExtensionInDir(dirToAnalyze, excludePattern, Resource_Extension);
 
 const resourcesByHash = getResourcesByHash(resources);
 const resourcesByName = getResourcesByName(resources, resourcesByHash);
 
-findCodeUsageInDir('./src', resourcesByName, Code_Extension);
+findCodeUsageInDir(dirToAnalyze, resourcesByName, Code_Extension);
 
-const ratingResult = calculateRating(resourcesByName);
-// ratingResult.forEach((r) => console.log(r));
-const sortedRating = [...ratingResult].sort((a, b) => a.rating - b.rating);
-sortedRating.forEach((r) => console.log(r));
-// - iterate recursive through src-folder
-// - find bundle resources defined by an extension-list from config
-// - list all resources ordered by count, occurance in code (line of code, link)
+const summarizedResults = summarize(resourcesByName);
+const finalResult = JSON.stringify(summarizedResults, null, '\t');
+fs.writeFileSync('./test-results/analyzeBundleResources.json', finalResult);
+
+if (detail) {
+	console.log(summarizedResults.filter((r) => r.file === detail));
+} else {
+	const categorizedByTag = categorizeByTag(summarizedResults);
+	console.table(categorizedByTag);
+}
+
+//console.table([{ a: 'foo', b: ['bar'], c: 'baz' }]);
