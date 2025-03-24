@@ -11,6 +11,7 @@ import { positionReducer } from '../../../../../../../src/store/position/positio
 import { TestUtils } from '../../../../../../test-utils.js';
 import { GeoResourceInfoPanel } from '../../../../../../../src/modules/geoResourceInfo/components/GeoResourceInfoPanel';
 import { modalReducer } from '../../../../../../../src/store/modal/modal.reducer';
+import { AbstractResultItem } from '../../../../../../../src/modules/search/components/menu/AbstractResultItem.js';
 
 window.customElements.define(GeoResourceResultItem.tag, GeoResourceResultItem);
 
@@ -45,6 +46,16 @@ describe('GeoResourceResultItem', () => {
 	describe('static methods', () => {
 		it('generates an id for a temporary layer', async () => {
 			expect(GeoResourceResultItem._tmpLayerId('foo')).toBe('tmp_GeoResourceResultItem_foo');
+		});
+	});
+
+	describe('class', () => {
+		it('inherits from AbstractResultItem', async () => {
+			const element = await setup();
+
+			expect(element instanceof AbstractResultItem).toBeTrue();
+			expect(element.selectResult).toEqual(jasmine.any(Function));
+			expect(element.highlightResult).toEqual(jasmine.any(Function));
 		});
 	});
 
