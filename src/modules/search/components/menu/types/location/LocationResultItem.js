@@ -12,7 +12,7 @@ import clipboardSvg from '../../assets/clipboard.svg';
 import { $injector } from '../../../../../../injection';
 import { emitNotification, LevelTypes } from '../../../../../../store/notifications/notifications.action';
 import { HighlightFeatureType } from '../../../../../../domain/highlightFeature';
-import { AbstractResultItem } from '../../AbstractSearchResultItem';
+import { AbstractResultItem } from '../../AbstractResultItem';
 
 const Update_IsPortrait = 'update_isPortrait';
 const Update_LocationSearchResult = 'update_locationSearchResult';

@@ -4,7 +4,7 @@ import { SearchResultsPanel } from '../../../../../src/modules/search/components
 import { TestUtils } from '../../../../test-utils.js';
 import { AbstractMvuContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { CpResultsPanel } from '../../../../../src/modules/search/components/menu/types/cp/CpResultsPanel';
-import { AbstractResultItem } from '../../../../../src/modules/search/components/menu/AbstractSearchResultItem.js';
+import { AbstractResultItem } from '../../../../../src/modules/search/components/menu/AbstractResultItem.js';
 import { html } from 'lit-html';
 window.customElements.define(SearchResultsPanel.tag, SearchResultsPanel);
 

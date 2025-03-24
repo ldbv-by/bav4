@@ -12,7 +12,7 @@ import { GeoResourceFuture, VectorGeoResource } from '../../../../../../domain/g
 import zoomToExtentSvg from '../../assets/zoomToExtent.svg';
 import infoSvg from '../../assets/info.svg';
 import { openModal } from '../../../../../../store/modal/modal.action';
-import { AbstractResultItem } from '../../AbstractSearchResultItem';
+import { AbstractResultItem } from '../../AbstractResultItem';
 
 const Update_GeoResourceSearchResult = 'update_geoResourceSearchResult';
 const Update_LoadingPreviewFlag = 'update_loadingPreviewFlag';

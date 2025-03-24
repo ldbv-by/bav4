@@ -1,5 +1,5 @@
 /**
- * @module modules/search/components/menu/AbstractSearchResultItem
+ * @module modules/search/components/menu/AbstractResultItem
  */
 import { MvuElement } from '../../../MvuElement';
 
@@ -23,7 +23,7 @@ export class AbstractResultItem extends MvuElement {
 	 */
 	selectResult() {
 		// The child has not implemented this method.
-		throw new Error('Please implement abstract method selectResult or do not call super.selectResult from child.');
+		throw new TypeError('Please implement abstract method selectResult or do not call super.selectResult from child.');
 	}
 
 	/**
@@ -33,6 +33,6 @@ export class AbstractResultItem extends MvuElement {
 	 */
 	highlightResult(/*eslint-disable no-unused-vars*/ highlighted) {
 		// The child has not implemented this method.
-		throw new Error('Please implement abstract method highlightResult or do not call super.highlightResult from child.');
+		throw new TypeError('Please implement abstract method highlightResult or do not call super.highlightResult from child.');
 	}
 }
