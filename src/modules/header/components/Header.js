@@ -84,6 +84,15 @@ export class Header extends MvuElement {
 			(mainMenu) => this.signal(Update_IsOpen_TabIndex, { isOpen: mainMenu.open, tabIndex: mainMenu.tab })
 		);
 		this.observe(
+			(state) => state.mainMenu.focusSearchField,
+			(_, state) => {
+				if (state.mainMenu.open) {
+					this.shadowRoot.querySelector('#input')?.focus();
+				}
+			},
+			false
+		);
+		this.observe(
 			(state) => state.network.fetching,
 			(fetching) => this.signal(Update_Fetching, fetching)
 		);
