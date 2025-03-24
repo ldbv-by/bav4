@@ -26,7 +26,8 @@ describe('MainMenuPlugin', () => {
 		const initialState = {
 			mainMenu: {
 				open: false,
-				tab: null
+				tab: null,
+				focusSearchField: new EventLike()
 			},
 			search: {
 				query: new EventLike(null)
@@ -54,6 +55,7 @@ describe('MainMenuPlugin', () => {
 	describe('static properties', () => {
 		it('provides a default tab id', () => {
 			expect(MainMenuPlugin.DEFAULT_TAB_ID).toBe(TabIds.MAPS);
+			expect(MainMenuPlugin.FOCUS_SEARCHFIELD_DELAY_MS).toBe(1000);
 		});
 	});
 
@@ -102,6 +104,27 @@ describe('MainMenuPlugin', () => {
 				instanceUnderTest._init();
 
 				expect(store.getState().mainMenu.tab).toEqual(MainMenuPlugin.DEFAULT_TAB_ID);
+			});
+
+			describe('prepare UI', () => {
+				beforeEach(() => {
+					jasmine.clock().install();
+				});
+
+				afterEach(() => {
+					jasmine.clock().uninstall();
+				});
+
+				it('sets the focus on the search field of the MainMenu', async () => {
+					const store = setup();
+					const instanceUnderTest = new MainMenuPlugin();
+					const initialValue = store.getState().mainMenu.focusSearchField;
+					instanceUnderTest._init();
+
+					jasmine.clock().tick(MainMenuPlugin.FOCUS_SEARCHFIELD_DELAY_MS + 100);
+
+					expect(initialValue).not.toEqual(store.getState().mainMenu.focusSearchField);
+				});
 			});
 		});
 
