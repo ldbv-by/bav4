@@ -15,7 +15,8 @@ export const provide = (lang) => {
 				header_logo_badge_standalone: 'Demo',
 				header_emblem_title_standalone: 'bav4 on github',
 				header_emblem_link_standalone: 'https://github.com/ldbv-by/bav4/',
-				header_search_placeholder: 'Places, geodata, cadastral parcels',
+				header_search_placeholder: 'Search for places, geodata, cadastral parcels',
+				header_search_title: 'Search for places, addresses, geodata, parcel coordinates, points of interest ...',
 				header_search_clear_button: 'Clear',
 				header_logo_title_open: 'Show navigation rail',
 				header_logo_title_close: 'Hide navigation rail'
@@ -36,7 +37,8 @@ export const provide = (lang) => {
 				header_logo_badge_standalone: 'Demo',
 				header_emblem_title_standalone: 'bav4 auf github',
 				header_emblem_link_standalone: 'https://github.com/ldbv-by/bav4/',
-				header_search_placeholder: 'Orte, Geodaten, Flurstücke',
+				header_search_placeholder: 'Suche nach Orte, Geodaten, Flurstücke...',
+				header_search_title: 'Suche nach Orte, Adressen, Geodaten, Flurstücke Koordinaten, Point of Interest ...',
 				header_search_clear_button: 'Löschen',
 				header_logo_title_open: 'Navigationsleiste einblenden',
 				header_logo_title_close: 'Navigationsleiste ausblenden'
