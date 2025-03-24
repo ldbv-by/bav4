@@ -32,7 +32,7 @@ export class SearchResult {
 			// Abstract class can not be constructed.
 			throw new TypeError('Can not construct abstract class.');
 		}
-		this.checkDefined(label, 'label');
+		this._checkDefined(label, 'label');
 
 		this._label = label;
 		this._labelFormatted = labelFormatted;
@@ -43,7 +43,7 @@ export class SearchResult {
 	 * @param {*} value
 	 * @param {*} name
 	 */
-	checkDefined(value, name) {
+	_checkDefined(value, name) {
 		if (!value) {
 			throw new TypeError(name + ' must not be undefined');
 		}
@@ -83,12 +83,16 @@ export class LocationSearchResult extends SearchResult {
 	}
 
 	get id() {
-		return this.#id ?? hashCode(this).toString();
+		if (!this.#id) {
+			this.setId(hashCode(this).toString());
+		}
+		return this.#id;
 	}
 
 	/**
-	 * Sets the id of this `CadastralParcelSearchResult`
+	 * Sets the id of this `LocationSearchResult`
 	 * @param {string} id
+	 * @returns {LocationSearchResult}
 	 */
 	setId(id) {
 		if (isString(id)) {
@@ -132,12 +136,16 @@ export class CadastralParcelSearchResult extends SearchResult {
 	}
 
 	get id() {
-		return this.#id ?? hashCode(this).toString();
+		if (!this.#id) {
+			this.setId(hashCode(this).toString());
+		}
+		return this.#id;
 	}
 
 	/**
 	 * Sets the id of this `CadastralParcelSearchResult`
 	 * @param {string} id
+	 * @returns {CadastralParcelSearchResult}
 	 */
 	setId(id) {
 		if (isString(id)) {
