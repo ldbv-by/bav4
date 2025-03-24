@@ -19,6 +19,7 @@ import { authReducer } from '../../../../src/store/auth/auth.reducer';
 import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
 import { Tools } from '../../../../src/domain/tools';
 import { setSignedIn, setSignedOut } from '../../../../src/store/auth/auth.action';
+import { focusSearchField } from '../../../../src/store/mainMenu/mainMenu.action.js';
 
 window.customElements.define(Header.tag, Header);
 
@@ -217,9 +218,10 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelector('.header__button-container').children[2].classList.contains('is-active')).toBeFalse();
 
 			expect(element.shadowRoot.querySelectorAll('#inputFocusButton')).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('#inputFocusButton').title).toBe('header_search_placeholder');
+			expect(element.shadowRoot.querySelector('#inputFocusButton').title).toBe('header_search_title');
 
 			expect(element.shadowRoot.querySelector('.header__search').getAttribute('placeholder')).toBe('header_search_placeholder');
+			expect(element.shadowRoot.querySelector('.header__search').title).toBe('header_search_title');
 
 			expect(element.shadowRoot.querySelectorAll('#clear')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('#clear').title).toBe('header_search_clear_button');
@@ -911,6 +913,34 @@ describe('Header', () => {
 					expect(logo.classList.contains('fadein')).toBeTrue();
 				});
 			});
+		});
+	});
+
+	describe('when mainMenu.focusSearchField property changes', () => {
+		it('sets the focus on the input field', async () => {
+			const element = await setup();
+			const inputEl = element.shadowRoot.querySelector('#input');
+
+			expect(inputEl.matches(':focus')).toBeFalse();
+
+			focusSearchField();
+
+			expect(inputEl.matches(':focus')).toBeTrue();
+		});
+
+		it('does nothing when the mainMenu is closed', async () => {
+			const element = await setup({
+				mainMenu: {
+					open: false
+				}
+			});
+			const inputEl = element.shadowRoot.querySelector('#input');
+
+			expect(inputEl.matches(':focus')).toBeFalse();
+
+			focusSearchField();
+
+			expect(inputEl.matches(':focus')).toBeFalse();
 		});
 	});
 

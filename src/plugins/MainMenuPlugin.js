@@ -3,7 +3,7 @@
  */
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from '../plugins/BaPlugin';
-import { close, open, setTab } from '../store/mainMenu/mainMenu.action';
+import { close, focusSearchField, open, setTab } from '../store/mainMenu/mainMenu.action';
 import { TabIds } from '../domain/mainMenu';
 import { $injector } from '../injection';
 import { QueryParameters } from '../domain/queryParameters';
@@ -40,6 +40,10 @@ export class MainMenuPlugin extends BaPlugin {
 		if (catalogNodes) {
 			setOpenNodes(catalogNodes.split(','));
 		}
+
+		setTimeout(() => {
+			focusSearchField();
+		}, MainMenuPlugin.FOCUS_SEARCHFIELD_DELAY_MS);
 	}
 
 	/**
@@ -117,5 +121,9 @@ export class MainMenuPlugin extends BaPlugin {
 
 	static get DEFAULT_TAB_ID() {
 		return TabIds.MAPS;
+	}
+
+	static get FOCUS_SEARCHFIELD_DELAY_MS() {
+		return 1000;
 	}
 }

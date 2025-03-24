@@ -84,6 +84,15 @@ export class Header extends MvuElement {
 			(mainMenu) => this.signal(Update_IsOpen_TabIndex, { isOpen: mainMenu.open, tabIndex: mainMenu.tab })
 		);
 		this.observe(
+			(state) => state.mainMenu.focusSearchField,
+			(_, state) => {
+				if (state.mainMenu.open) {
+					this.shadowRoot.querySelector('#input')?.focus();
+				}
+			},
+			false
+		);
+		this.observe(
 			(state) => state.network.fetching,
 			(fetching) => this.signal(Update_Fetching, fetching)
 		);
@@ -318,10 +327,10 @@ export class Header extends MvuElement {
 						<div class="header__background">
 						</div>
 						<div class='header__search-container'>
-							<button id="inputFocusButton" @click="${onButtonClick}" class="open-search-button" title="${translate('header_search_placeholder')}">
+							<button id="inputFocusButton" @click="${onButtonClick}" class="open-search-button" title="${translate('header_search_title')}">
 								<span class="button_search_icon"></span>					
 							</button>
-							<input id='input' data-test-id placeholder='${translate(
+							<input id='input' data-test-id title="${translate('header_search_title')}" placeholder='${translate(
 								'header_search_placeholder'
 							)}' value="${searchTerm}" @focus="${onInputFocus}" @blur="${onInputBlur}" @input="${onInput}" class='header__search' type="search" placeholder="" />          		
 							<button id="clear" class="header__search-clear ${getIsClearClass()}" @click="${clearSearchInput}" title="${translate('header_search_clear_button')}">   

@@ -159,3 +159,6 @@ input[type='range']::-moz-range-thumb {
 	width: 1.2em;
 	height: 1.2em;
 }
+ba-value-select {
+	margin-right: 0.8em;
+}

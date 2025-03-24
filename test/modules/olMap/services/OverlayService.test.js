@@ -58,7 +58,8 @@ describe('OverlayService', () => {
 	const viewMock = {
 		getResolution() {
 			return 50;
-		}
+		},
+		on: () => {}
 	};
 	const mapMock = {
 		getView: () => viewMock,
@@ -71,7 +72,7 @@ describe('OverlayService', () => {
 	};
 
 	describe('add overlays', () => {
-		it('adds measure-overlays to feature ', () => {
+		it('adds measure-overlays to a feature ', () => {
 			const feature = new Feature({
 				geometry: new Polygon([
 					[
@@ -85,6 +86,9 @@ describe('OverlayService', () => {
 			});
 			feature.setId('measure_123');
 			const addOverlaySpy = jasmine.createSpy();
+			const addListenerSpy = spyOn(viewMock, 'on')
+				.withArgs('change:resolution', jasmine.any(Function))
+				.and.callThrough(() => {});
 			const propertySetterSpy = spyOn(feature, 'set');
 			mapMock.addOverlay = addOverlaySpy;
 
@@ -93,9 +97,10 @@ describe('OverlayService', () => {
 
 			expect(propertySetterSpy).toHaveBeenCalledWith('overlays', jasmine.any(Object));
 			expect(addOverlaySpy).toHaveBeenCalledTimes(2);
+			expect(addListenerSpy).toHaveBeenCalled();
 		});
 
-		it('adding overlays to feature with unknown style-type fails', () => {
+		it('adds overlays to a feature with unknown style-type fails', () => {
 			const feature = new Feature({
 				geometry: new Polygon([
 					[
@@ -175,7 +180,7 @@ describe('OverlayService', () => {
 		});
 	});
 	describe('remove overlays', () => {
-		it('remove overlays from feature', () => {
+		it('removes overlays from a feature', () => {
 			const feature = new Feature({
 				geometry: new Polygon([
 					[
@@ -206,6 +211,111 @@ describe('OverlayService', () => {
 			instanceUnderTest.remove(feature, mapMock);
 
 			expect(removeOverlaySpy).toHaveBeenCalledTimes(2);
+		});
+
+		it('removes overlays from a feature with default style', () => {
+			const feature = new Feature({
+				geometry: new Polygon([
+					[
+						[0, 0],
+						[1, 0],
+						[1, 1],
+						[0, 1],
+						[0, 0]
+					]
+				])
+			});
+			feature.set('overlays', [{}, {}]);
+			const removeOverlaySpy = jasmine.createSpy();
+			const viewMock = {
+				getResolution() {
+					return 50;
+				}
+			};
+			const mapMock = {
+				getView: () => viewMock,
+				removeOverlay: removeOverlaySpy,
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+
+			instanceUnderTest = new OverlayService();
+			instanceUnderTest.remove(feature, mapMock, StyleTypes.DEFAULT);
+
+			expect(removeOverlaySpy).toHaveBeenCalledTimes(2);
+		});
+
+		it('removes overlays from a feature with unknown style', () => {
+			const feature = new Feature({
+				geometry: new Polygon([
+					[
+						[0, 0],
+						[1, 0],
+						[1, 1],
+						[0, 1],
+						[0, 0]
+					]
+				])
+			});
+			feature.set('overlays', [{}, {}]);
+			const removeOverlaySpy = jasmine.createSpy();
+			const viewMock = {
+				getResolution() {
+					return 50;
+				}
+			};
+			const mapMock = {
+				getView: () => viewMock,
+				removeOverlay: removeOverlaySpy,
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+
+			instanceUnderTest = new OverlayService();
+			instanceUnderTest.remove(feature, mapMock, 'some');
+
+			expect(removeOverlaySpy).toHaveBeenCalledTimes(0);
+		});
+
+		it('removes overlays from a measurement feature', () => {
+			const feature = new Feature({
+				geometry: new Polygon([
+					[
+						[0, 0],
+						[1, 0],
+						[1, 1],
+						[0, 1],
+						[0, 0]
+					]
+				])
+			});
+			feature.setId('measure_123');
+			feature.set('overlays', [{}, {}]);
+			feature.set('measurement_style_listeners', [jasmine.createSpy()]);
+			const removeOverlaySpy = jasmine.createSpy();
+			const unsetSpy = spyOn(feature, 'unset')
+				.withArgs('measurement_style_listeners')
+				.and.callFake(() => {});
+			const viewMock = {
+				getResolution() {
+					return 50;
+				}
+			};
+			const mapMock = {
+				getView: () => viewMock,
+				removeOverlay: removeOverlaySpy,
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+
+			instanceUnderTest = new OverlayService();
+			instanceUnderTest.remove(feature, mapMock, StyleTypes.MEASURE);
+
+			expect(removeOverlaySpy).toHaveBeenCalledTimes(2);
+			expect(unsetSpy).toHaveBeenCalled();
 		});
 	});
 });
