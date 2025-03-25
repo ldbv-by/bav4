@@ -1,13 +1,12 @@
 /**
  * @module modules/olMap/handler/highlight/styleUtils
  */
-import Point from 'ol/geom/Point';
 import { getVectorContext } from 'ol/render';
+import { toContext as toCanvasContext } from 'ol/render';
 import { easeIn, easeOut } from 'ol/easing';
 import { Style, Icon, Stroke, Fill } from 'ol/style';
 import CircleStyle from 'ol/style/Circle';
 import { $injector } from '../../../../injection/index';
-import { GeometryCollection } from '../../../../../node_modules/ol/geom';
 
 export const highlightCoordinateFeatureStyleFunction = () => {
 	const { IconService: iconService } = $injector.inject('IconService');
@@ -60,7 +59,7 @@ export const highlightGeometryOrCoordinateFeatureStyleFunction = () => {
 	return [selectStyle];
 };
 
-export const highlightTemporaryGeometryOrCoordinateFeatureStyleFunction = (feature, resolution) => {
+export const highlightTemporaryGeometryOrCoordinateFeatureStyleFunction = () => {
 	const hlStroke = new Stroke({
 		color: [255, 128, 0, 1],
 		width: 6
@@ -80,32 +79,49 @@ export const highlightTemporaryGeometryOrCoordinateFeatureStyleFunction = (featu
 		})
 	});
 
-	const isValidForResolution = (geometry, resolution) => {
-		const minimumPixelDistance = 10;
-		if (geometry instanceof Point) {
-			return true;
+	return new Style({
+		geometry: (feature) => feature.getGeometry(),
+		renderer: (pixelCoordinates, state) => {
+			const getCanvasContextRenderFunction = (state) => {
+				const renderContext = toCanvasContext(state.context, { pixelRatio: 1 });
+				return (geometry, fill, stroke) => {
+					renderContext.setFillStrokeStyle(fill, stroke);
+					renderContext.drawGeometry(geometry);
+				};
+			};
+			const getContextRenderFunction = (state) =>
+				state.customContextRenderFunction ? state.customContextRenderFunction : getCanvasContextRenderFunction(state);
+			renderHighlightFeature(pixelCoordinates, state, getContextRenderFunction(state));
 		}
+	});
+};
 
-		const extent = geometry.getExtent();
-		const a = (extent[2] - extent[0]) / resolution;
-		const b = (extent[3] - extent[1]) / resolution;
-		return a > minimumPixelDistance && b > minimumPixelDistance;
-	};
-	const geometryFunction = (feature) => {
-		const geometry = feature.getGeometry();
-		if (geometry instanceof GeometryCollection) {
-			return new Point(geometry.getGeometries()[0].getFirstCoordinate());
-		}
-		return new Point(geometry.getFirstCoordinate());
-	};
-	const geometry = feature.getGeometry();
-	if (isValidForResolution(geometry, resolution)) {
-		return hlStyle;
-	} else {
-		const [style] = highlightTemporaryCoordinateFeatureStyleFunction();
-		style.setGeometry(geometryFunction);
-		return style;
-	}
+export const renderHighlightFeature = (pixelCoordinates, state, contextRenderFunction) => {
+	const geometry = state.geometry.clone();
+	const pixelRatio = state.pixelRatio;
+	const pixelBox = pixelCoordinates.reduce(
+		(acc, cur) => {
+			return [
+				acc[0] === null ? cur[0] : Math.min(acc[0], cur[0]),
+				acc[1] === null ? cur[1] : Math.min(acc[1], cur[1]),
+				acc[2] === null ? cur[0] : Math.max(acc[2], cur[0]),
+				acc[3] === null ? cur[1] : Math.max(acc[3], cur[1])
+			];
+		},
+		[null, null, null, null]
+	);
+	const a = pixelBox[2] - pixelBox[0];
+	const b = pixelBox[1] - pixelBox[3];
+
+	const fill = new Fill({ color: [255, 255, 0, 0.3] });
+	const stroke = new Stroke({
+		color: [255, 128, 0, 1],
+		width: 6 * pixelRatio
+	});
+
+	// baseLine
+	geometry.setCoordinates(pixelCoordinates);
+	contextRenderFunction(geometry, fill, stroke);
 };
 
 export const highlightAnimatedCoordinateFeatureStyleFunction = () => {
