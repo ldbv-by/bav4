@@ -1,11 +1,13 @@
 /**
  * @module modules/olMap/handler/highlight/styleUtils
  */
+import Point from 'ol/geom/Point';
 import { getVectorContext } from 'ol/render';
 import { easeIn, easeOut } from 'ol/easing';
 import { Style, Icon, Stroke, Fill } from 'ol/style';
 import CircleStyle from 'ol/style/Circle';
 import { $injector } from '../../../../injection/index';
+import { GeometryCollection } from '../../../../../node_modules/ol/geom';
 
 export const highlightCoordinateFeatureStyleFunction = () => {
 	const { IconService: iconService } = $injector.inject('IconService');
@@ -58,7 +60,7 @@ export const highlightGeometryOrCoordinateFeatureStyleFunction = () => {
 	return [selectStyle];
 };
 
-export const highlightTemporaryGeometryOrCoordinateFeatureStyleFunction = () => {
+export const highlightTemporaryGeometryOrCoordinateFeatureStyleFunction = (feature, resolution) => {
 	const hlStroke = new Stroke({
 		color: [255, 128, 0, 1],
 		width: 6
@@ -78,7 +80,32 @@ export const highlightTemporaryGeometryOrCoordinateFeatureStyleFunction = () => 
 		})
 	});
 
-	return [hlStyle];
+	const isValidForResolution = (geometry, resolution) => {
+		const minimumPixelDistance = 10;
+		if (geometry instanceof Point) {
+			return true;
+		}
+
+		const extent = geometry.getExtent();
+		const a = (extent[2] - extent[0]) / resolution;
+		const b = (extent[3] - extent[1]) / resolution;
+		return a > minimumPixelDistance && b > minimumPixelDistance;
+	};
+	const geometryFunction = (feature) => {
+		const geometry = feature.getGeometry();
+		if (geometry instanceof GeometryCollection) {
+			return new Point(geometry.getGeometries()[0].getFirstCoordinate());
+		}
+		return new Point(geometry.getFirstCoordinate());
+	};
+	const geometry = feature.getGeometry();
+	if (isValidForResolution(geometry, resolution)) {
+		return hlStyle;
+	} else {
+		const [style] = highlightTemporaryCoordinateFeatureStyleFunction();
+		style.setGeometry(geometryFunction);
+		return style;
+	}
 };
 
 export const highlightAnimatedCoordinateFeatureStyleFunction = () => {
