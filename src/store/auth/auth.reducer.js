@@ -2,7 +2,7 @@ export const AUTH_STATUS_CHANGED = 'auth/statusChanged';
 
 export const initialState = {
 	/**
-	 * @param {boolen} signedIn The current status, `true if the User is authenticated
+	 * @param {boolean} signedIn The current status, `true if the User is authenticated
 	 */
 	signedIn: false,
 	/**
