@@ -11,7 +11,6 @@ import {
 	SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
 	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
 } from '../../../../../../plugins/HighlightPlugin';
-import { MvuElement } from '../../../../../MvuElement';
 import clipboardSvg from '../../assets/clipboard.svg';
 import { $injector } from '../../../../../../injection';
 import { emitNotification, LevelTypes } from '../../../../../../store/notifications/notifications.action';
@@ -78,7 +77,7 @@ export class LocationResultItem extends AbstractResultItem {
 		if (highlighted) {
 			this.shadowRoot.querySelector('.ba-list-item')?.focus();
 			addHighlightFeatures({
-				id: result.id,
+				id: locationSearchResult.id,
 				category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY,
 				type: HighlightFeatureType.MARKER_TMP,
 				data: [...locationSearchResult.center]
@@ -99,7 +98,8 @@ export class LocationResultItem extends AbstractResultItem {
 		fit(extent, { maxZoom: LocationResultItem._maxZoomLevel });
 		if (!locationSearchResult.extent) {
 			addHighlightFeatures({
-				id: SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
+				id: locationSearchResult.id,
+				category: SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
 				type: HighlightFeatureType.MARKER,
 				data: [...locationSearchResult.center],
 				label: locationSearchResult.label
