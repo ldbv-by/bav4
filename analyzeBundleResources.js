@@ -172,32 +172,45 @@ const categorizeByTag = (summarizedResults) => {
 	const orphaned = summarizedResults
 		.filter((r) => r.tags.includes('orphaned'))
 		.map((o) => {
-			return { category: 'orphaned', file: o.file, orphaned: o.orphaned };
+			return { category: 'orphaned', file: o.file, resources: o.resources.length, orphaned: o.orphaned.length };
 		});
 	const ambiguous = summarizedResults
 		.filter((r) => r.tags.includes('ambiguous name'))
 		.map((o) => {
-			return { category: 'ambiguous name', file: o.file, resources: o.resources.length };
+			return { category: 'ambiguous name', file: o.file, resources: o.resources.length, orphaned: o.orphaned.length };
 		});
 
 	const duplicated = summarizedResults
 		.filter((r) => r.tags.includes('duplicated'))
 		.map((o) => {
-			return { category: 'duplicated', file: o.file, resources: o.resources.length };
+			return { category: 'duplicated', file: o.file, resources: o.resources.length, orphaned: o.orphaned.length };
 		});
 	return [...orphaned, ...ambiguous, ...duplicated];
 };
 
-const args = {};
-for (let i = 2; i < argv.length; i = i + 2) {
-	const arg = argv[i];
-	if (arg.startsWith('--')) {
-		args[arg] = argv[i + 1];
+const parseArgs = (rawArguments) => {
+	const parsedArguments = {};
+	const Arg_Flag = '--';
+	for (let i = 2; i < rawArguments.length; i = i + 2) {
+		const argument = rawArguments[i];
+		if (argument.startsWith(Arg_Flag)) {
+			const valueCandidate = rawArguments[i + 1] ?? 'true';
+			if (valueCandidate?.startsWith(Arg_Flag)) {
+				parsedArguments[argument] = true; // its a conditional arg and must be set to true;
+			} else {
+				parsedArguments[argument] = valueCandidate;
+			}
+		}
 	}
-}
+	return parsedArguments;
+};
+
+const args = parseArgs(argv);
 const dirToAnalyze = args['--input'] ?? './src';
 const excludePattern = args['--exclude'] ? new RegExp(args['--exclude']) : null;
 const detail = args['--detail'] ?? null;
+const help = args['--help'] ?? false;
+const logAll = args['--log'] ?? false;
 const resources = findResourceWithExtensionInDir(dirToAnalyze, excludePattern, Resource_Extension);
 
 const resourcesByHash = getResourcesByHash(resources);
@@ -207,13 +220,38 @@ findCodeUsageInDir(dirToAnalyze, resourcesByName, Code_Extension);
 
 const summarizedResults = summarize(resourcesByName);
 const finalResult = JSON.stringify(summarizedResults, null, '\t');
-fs.writeFileSync('./test-results/analyzeBundleResources.json', finalResult);
 
-if (detail) {
+/* eslint-disable no-console */
+if (logAll) {
+	fs.writeFileSync('./test-results/analyzeBundleResources.json', finalResult);
+}
+
+if (help) {
+	console.log(`
+NAME
+		analyzeBundleResources.js - Analyzing the graphic assets of the project.
+
+DESCRIPTION
+		Looking for orphaned or duplicated resource files and resources with ambiguous names.
+		
+EXAMPLE
+
+	analyze the project (excluding favicon assets):
+		node analyzeBundleResources.js --input './src' --exclude 'src/assets/favicon'
+		
+	get detail of a specific resource:
+		node analyzeBundleResources.js --input './src' --exclude 'src/assets/favicon' --detail 'status-500.svg'
+
+	log the result (saved as ./test-results/analyzeBundleResources.json):
+		node analyzeBundleResources.js --input './src' --
+
+	get this help:
+		node analyzeBundleResources.js --help
+		`);
+} else if (detail) {
 	console.log(summarizedResults.filter((r) => r.file === detail));
 } else {
 	const categorizedByTag = categorizeByTag(summarizedResults);
 	console.table(categorizedByTag);
 }
-
-//console.table([{ a: 'foo', b: ['bar'], c: 'baz' }]);
+/* eslint-enable no-console */
