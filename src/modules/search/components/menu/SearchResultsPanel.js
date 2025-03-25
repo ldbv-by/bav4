@@ -52,6 +52,12 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 	 */
 	onInitialize() {
 		this.#keyActionMapper.activate();
+
+		this.observe(
+			(state) => state.search.query,
+			() => this._reset(),
+			false
+		);
 	}
 
 	/**

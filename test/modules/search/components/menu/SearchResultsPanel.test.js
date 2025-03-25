@@ -8,6 +8,9 @@ import { AbstractResultItem } from '../../../../../src/modules/search/components
 import { html } from 'lit-html';
 import { TabIds } from '../../../../../src/domain/mainMenu.js';
 import { createNoInitialStateMainMenuReducer } from '../../../../../src/store/mainMenu/mainMenu.reducer.js';
+import { setQuery } from '../../../../../src/store/search/search.action.js';
+import { EventLike } from '../../../../../src/utils/storeUtils.js';
+import { searchReducer } from '../../../../../src/store/search/search.reducer.js';
 window.customElements.define(SearchResultsPanel.tag, SearchResultsPanel);
 
 class AbstractResultItemImpl extends AbstractResultItem {
@@ -41,9 +44,12 @@ describe('SearchResultsPanel', () => {
 			mainMenu: {
 				open: true,
 				tab: TabIds.TOPICS
+			},
+			search: {
+				query: new EventLike(null)
 			}
 		};
-		store = TestUtils.setupStoreAndDi(initialState, { mainMenu: createNoInitialStateMainMenuReducer() });
+		store = TestUtils.setupStoreAndDi(initialState, { mainMenu: createNoInitialStateMainMenuReducer(), search: searchReducer });
 		return TestUtils.render(SearchResultsPanel.tag);
 	};
 
@@ -102,6 +108,41 @@ describe('SearchResultsPanel', () => {
 			// KeyActionMapper is activated
 			expect(keyActionMapperSpy).toHaveBeenCalledWith('keyup', jasmine.any(Function));
 			expect(keyActionMapperSpy).toHaveBeenCalledWith('keydown', jasmine.any(Function));
+		});
+
+		it('when store changes resets key navigation', async () => {
+			const element = await setup();
+			element.ResultItemClasses = [AbstractResultItemImpl];
+			const resetSpy = spyOn(element, '_reset').and.callThrough();
+
+			const testResultItems = createResultItems(5);
+			testResultItems.forEach((child) => element.shadowRoot.querySelector('div').appendChild(child));
+
+			const highlightResult0Spy = jasmine.createSpy('highlightResult_0');
+			const highlightResult1Spy = jasmine.createSpy('highlightResult_1');
+			const highlightResult2Spy = jasmine.createSpy('highlightResult_2');
+
+			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[0].highlightResult = highlightResult0Spy;
+			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[1].highlightResult = highlightResult1Spy;
+			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[2].highlightResult = highlightResult2Spy;
+
+			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
+			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
+
+			setQuery('f');
+			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
+			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
+			setQuery('fo');
+			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
+			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
+			setQuery('foo');
+			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
+			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
+
+			expect(resetSpy).toHaveBeenCalledTimes(3);
+			expect(highlightResult0Spy).toHaveBeenCalledTimes(8); // 4*[next] + 4*[previous]
+			expect(highlightResult1Spy).toHaveBeenCalledTimes(7); // 4*[next] + 3*[reset]
+			expect(highlightResult2Spy).not.toHaveBeenCalled(); // --
 		});
 
 		it('when mouse enters element resets key navigation', async () => {
