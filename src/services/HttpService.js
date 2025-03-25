@@ -3,7 +3,7 @@
  */
 import { setFetching } from '../store/network/network.action';
 import { $injector } from '../injection';
-import { bvvHttpServiceIgnore401PathProvider } from './provider/auth.provider';
+import { bvvAuthRoleDowngradeHeaderInterceptorProvider, bvvHttpServiceIgnore401PathProvider } from './provider/auth.provider';
 /**
  * A function that takes and returns a Fetch API `Response`.
  * @async
@@ -242,6 +242,6 @@ export class BvvHttpService extends AuthInvalidatingAfter401HttpService {
 		const fetchOptions = resource.trim().startsWith(this.#configService.getValueAsPath('BACKEND_URL'))
 			? { credentials: 'include', ...options }
 			: { ...options };
-		return super.fetch(resource, fetchOptions, controller, interceptors);
+		return super.fetch(resource, fetchOptions, controller, { response: [...interceptors.response, bvvAuthRoleDowngradeHeaderInterceptorProvider()] });
 	}
 }

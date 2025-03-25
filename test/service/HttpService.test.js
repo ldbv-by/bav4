@@ -623,7 +623,8 @@ describe('BvvHttpService', () => {
 					return Promise.resolve({
 						text: () => {
 							return 42;
-						}
+						},
+						headers: new Headers()
 					});
 				});
 				const parentFetchSpy = spyOn(AuthInvalidatingAfter401HttpService.prototype, 'fetch').and.callThrough();
@@ -632,7 +633,9 @@ describe('BvvHttpService', () => {
 				const result = await instanceUnderTest.fetch(url);
 
 				expect(result.text()).toBe(42);
-				expect(parentFetchSpy).toHaveBeenCalledWith(url, { credentials: 'include' }, jasmine.any(AbortController), defaultInterceptors);
+				expect(parentFetchSpy).toHaveBeenCalledWith(url, { credentials: 'include' }, jasmine.any(AbortController), {
+					response: [...defaultInterceptors.response, jasmine.any(Function)]
+				});
 			});
 		});
 
@@ -644,7 +647,8 @@ describe('BvvHttpService', () => {
 					return Promise.resolve({
 						text: () => {
 							return 42;
-						}
+						},
+						headers: new Headers()
 					});
 				});
 				const parentFetchSpy = spyOn(AuthInvalidatingAfter401HttpService.prototype, 'fetch').and.callThrough();
@@ -653,7 +657,9 @@ describe('BvvHttpService', () => {
 				const result = await instanceUnderTest.fetch(url);
 
 				expect(result.text()).toBe(42);
-				expect(parentFetchSpy).toHaveBeenCalledWith(url, {}, jasmine.any(AbortController), defaultInterceptors);
+				expect(parentFetchSpy).toHaveBeenCalledWith(url, {}, jasmine.any(AbortController), {
+					response: [...defaultInterceptors.response, jasmine.any(Function)]
+				});
 			});
 		});
 
@@ -664,7 +670,8 @@ describe('BvvHttpService', () => {
 				return Promise.resolve({
 					text: () => {
 						return 42;
-					}
+					},
+					headers: new Headers()
 				});
 			});
 			const parentFetchSpy = spyOn(AuthInvalidatingAfter401HttpService.prototype, 'fetch').and.callThrough();
@@ -672,7 +679,9 @@ describe('BvvHttpService', () => {
 			const result = await instanceUnderTest.fetch(url, { credentials: 'omit' });
 
 			expect(result.text()).toBe(42);
-			expect(parentFetchSpy).toHaveBeenCalledWith(url, { credentials: 'omit' }, jasmine.any(AbortController), defaultInterceptors);
+			expect(parentFetchSpy).toHaveBeenCalledWith(url, { credentials: 'omit' }, jasmine.any(AbortController), {
+				response: [...defaultInterceptors.response, jasmine.any(Function)]
+			});
 		});
 	});
 });
