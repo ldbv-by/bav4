@@ -158,7 +158,7 @@ export class CpResultItem extends AbstractResultItem {
 		};
 
 		const addFeature = (result) => {
-			const feature = new BaFeature(result.geometry, result.id).setStyleHint(StyleTypes.HIGHLIGHT);
+			const feature = new BaFeature(result.geometry, result.id).setStyleHint(StyleTypes.HIGHLIGHT).set('name', result.label);
 			removeHighlightFeaturesByCategory([SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY]);
 			addFeatures(feature);
 			emitNotification(translate('global_featureCollection_add_feature_notification'), LevelTypes.INFO);

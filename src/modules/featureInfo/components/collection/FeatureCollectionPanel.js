@@ -4,12 +4,13 @@
 import { html, nothing } from 'lit-html';
 import { $injector } from '../../../../injection/index';
 import { addFeatures, removeFeaturesById } from '../../../../store/featureCollection/featureCollection.action';
-import { clearHighlightFeatures } from '../../../../store/highlight/highlight.action';
+import { removeHighlightFeaturesByCategory } from '../../../../store/highlight/highlight.action';
 import { MvuElement } from '../../../MvuElement';
 import { abortOrReset } from '../../../../store/featureInfo/featureInfo.action';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import css from './featureCollectionPanel.css';
 import { FEATURE_COLLECTION_GEORESOURCE_ID } from '../../../../plugins/FeatureCollectionPlugin';
+import { SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY } from '../../../../plugins/HighlightPlugin';
 
 /**
  * @typedef {Object} FeatureCollectionPanelConfig
@@ -56,7 +57,6 @@ export class FeatureCollectionPanel extends MvuElement {
 				.includes(feature.id);
 
 			const removeFeature = () => {
-				clearHighlightFeatures();
 				removeFeaturesById(feature.id);
 				emitNotification(translate('global_featureCollection_remove_feature_notification'), LevelTypes.INFO);
 				// by calling the abortOrReset action, we restore the previous opened tab of the MainMenu
@@ -64,7 +64,7 @@ export class FeatureCollectionPanel extends MvuElement {
 			};
 
 			const addFeature = () => {
-				clearHighlightFeatures();
+				removeHighlightFeaturesByCategory([SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY]);
 				addFeatures(feature);
 				emitNotification(translate('global_featureCollection_add_feature_notification'), LevelTypes.INFO);
 				// by calling the abortOrReset action, we restore the previous opened tab of the MainMenu
