@@ -2,7 +2,7 @@ import { $injector } from '../../../src/injection';
 import { MediaType } from '../../../src/domain/mediaTypes';
 import {
 	bvvSignInProvider,
-	bvvAuthResponseInterceptorProvider,
+	bvv401InterceptorProvider,
 	bvvSignOutProvider,
 	bvvHttpServiceIgnore401PathProvider,
 	BvvCredentialPanelIntervalMs,
@@ -586,7 +586,7 @@ describe('reSignInWithFetchRetry', () => {
 	});
 });
 
-describe('bvvAuthResponseInterceptorProvider', () => {
+describe('bvv401InterceptorProvider', () => {
 	describe('provides a response interceptor', () => {
 		describe('response status code other than 401', () => {
 			it('returns the original response', async () => {
@@ -594,7 +594,7 @@ describe('bvvAuthResponseInterceptorProvider', () => {
 				const mockResponse = { status: 200 };
 				const url = 'http://foo.bar';
 
-				await expectAsync(bvvAuthResponseInterceptorProvider()(mockResponse, retTryFetchFn, url)).toBeResolvedTo(mockResponse);
+				await expectAsync(bvv401InterceptorProvider()(mockResponse, retTryFetchFn, url)).toBeResolvedTo(mockResponse);
 			});
 		});
 
@@ -608,12 +608,7 @@ describe('bvvAuthResponseInterceptorProvider', () => {
 				const interval = 0;
 				const retTryFetchFn = jasmine.createSpy();
 				const reSignInWithFetchRetry = jasmine.createSpy().and.resolveTo(retryResponse);
-				const responsePromise = bvvAuthResponseInterceptorProvider(
-					roles,
-					identifier,
-					interval,
-					reSignInWithFetchRetry
-				)(mockResponse, retTryFetchFn, url);
+				const responsePromise = bvv401InterceptorProvider(roles, identifier, interval, reSignInWithFetchRetry)(mockResponse, retTryFetchFn, url);
 				await TestUtils.timeout(); /**promise queue execution */
 
 				await expectAsync(responsePromise).toBeResolvedTo(retryResponse);

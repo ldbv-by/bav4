@@ -138,7 +138,7 @@ export const BvvCredentialPanelIntervalMs = 10_000;
  * @param {string[]} roles
  * @param {string} [identifier=null]
  */
-export const bvvAuthResponseInterceptorProvider = (
+export const bvv401InterceptorProvider = (
 	roles = [],
 	identifier = null,
 	credentialPanelInterval = BvvCredentialPanelIntervalMs,
