@@ -223,7 +223,7 @@ const finalResult = JSON.stringify(summarizedResults, null, '\t');
 
 /* eslint-disable no-console */
 if (logAll) {
-	fs.writeFileSync('./test-results/analyzeBundleResources.json', finalResult);
+	fs.writeFileSync('./analyzeBundleResources.json', finalResult);
 }
 
 if (help) {
@@ -242,7 +242,7 @@ EXAMPLE
 	get detail of a specific resource:
 		node analyzeBundleResources.js --input './src' --exclude 'src/assets/favicon' --detail 'status-500.svg'
 
-	log the result (saved as ./test-results/analyzeBundleResources.json):
+	log the result (saved as ./analyzeBundleResources.json):
 		node analyzeBundleResources.js --input './src' --
 
 	get this help:
