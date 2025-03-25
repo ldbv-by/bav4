@@ -11,6 +11,10 @@ import { SourceType, SourceTypeName } from '../../../../src/domain/sourceType.js
 import { FEATURE_COLLECTION_GEORESOURCE_ID } from '../../../../src/plugins/FeatureCollectionPlugin.js';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
+import {
+	SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
+	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
+} from '../../../../src/plugins/HighlightPlugin.js';
 
 window.customElements.define(FeatureCollectionPanel.tag, FeatureCollectionPanel);
 
@@ -106,7 +110,11 @@ describe('FeatureCollectionPanel', () => {
 					querying: true
 				},
 				highlight: {
-					features: [{ foo: 'bar' }]
+					features: [
+						{ category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY },
+						{ category: SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY },
+						{ category: 'foo' }
+					]
 				}
 			});
 			const feature = new BaFeature(new BaGeometry('data', new SourceType(SourceTypeName.EWKT)), 'id');
@@ -122,7 +130,8 @@ describe('FeatureCollectionPanel', () => {
 			expect(store.getState().featureCollection.entries).toHaveSize(1);
 			expect(store.getState().featureCollection.entries[0]).toEqual(feature);
 			expect(store.getState().featureInfo.querying).toBeFalse();
-			expect(store.getState().highlight.features).toHaveSize(0);
+			expect(store.getState().highlight.features).toHaveSize(2);
+			expect(store.getState().highlight.features.map((hf) => hf.category)).not.toContain(SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY);
 		});
 	});
 
@@ -136,9 +145,6 @@ describe('FeatureCollectionPanel', () => {
 				},
 				featureInfo: {
 					querying: true
-				},
-				highlight: {
-					features: [{ foo: 'bar' }]
 				}
 			});
 			element.configuration = { feature, geoResourceId: FEATURE_COLLECTION_GEORESOURCE_ID };
@@ -151,7 +157,6 @@ describe('FeatureCollectionPanel', () => {
 
 			expect(store.getState().featureCollection.entries).toHaveSize(0);
 			expect(store.getState().featureInfo.querying).toBeFalse();
-			expect(store.getState().highlight.features).toHaveSize(0);
 		});
 	});
 });
