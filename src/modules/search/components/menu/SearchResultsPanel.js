@@ -12,8 +12,9 @@ import { findAllBySelector } from '../../../../utils/markup';
 import { LocationResultItem } from './types/location/LocationResultItem';
 import { GeoResourceResultItem } from './types/geoResource/GeoResourceResultItem';
 import { focusSearchField } from '../../../../store/mainMenu/mainMenu.action';
+import { CpResultItem } from './types/cp/CpResultItem';
 
-export const Navigatable_Result_Item_Class = [LocationResultItem, GeoResourceResultItem]; // TODO: CpResultItem currently excluded, waiting for other PR updates
+export const Navigatable_Result_Item_Class = [LocationResultItem, GeoResourceResultItem, CpResultItem];
 
 const Selected_Item_Class = 'ba-key-nav-item_select';
 const Selected_Item_Class_Selector = `.${Selected_Item_Class}`;
