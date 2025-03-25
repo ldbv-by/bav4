@@ -50,3 +50,41 @@
 .ba-list-item__text {
 	flex-grow: 1;
 }
+.chips__button {
+	background: transparent;
+	border: none;
+	display: flex;
+	padding: 0.5em 1em;
+	cursor: pointer;
+	text-decoration: none;
+	flex-shrink: 0;
+	font-size: 0.75rem;
+	justify-content: center;
+	align-items: center;
+}
+.chips__icon {
+	height: 1.5em;
+	width: 1.5em;
+	position: relative;
+	top: -0.1em;
+	mask-size: cover;
+	background: var(--text4);
+}
+.add .chips__icon {
+	background: var(--success-color);
+	mask: url('../../assets/star.svg');
+	-webkit-mask-image: url('../../assets/star.svg');
+	-webkit-mask-size: cover;
+}
+.remove .chips__icon {
+	background: var(--error-color);
+	mask: url('../../assets/starfilled.svg');
+	-webkit-mask-image: url('../../assets/starfilled.svg');
+	-webkit-mask-size: cover;
+}
+.chips__button.add:hover .chips__icon {
+	background: var(--success-color);
+	mask: url('../../assets/starfilled.svg');
+	-webkit-mask-image: url('../../assets/starfilled.svg');
+	-webkit-mask-size: cover;
+}

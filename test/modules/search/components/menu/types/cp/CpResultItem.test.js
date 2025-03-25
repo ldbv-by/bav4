@@ -5,13 +5,25 @@ import { highlightReducer } from '../../../../../../../src/store/highlight/highl
 import { createNoInitialStateMediaReducer } from '../../../../../../../src/store/media/media.reducer';
 import { positionReducer } from '../../../../../../../src/store/position/position.reducer';
 import { TestUtils } from '../../../../../../test-utils.js';
-import { SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../../src/plugins/HighlightPlugin';
+import {
+	SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
+	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
+} from '../../../../../../../src/plugins/HighlightPlugin';
 import { BaGeometry } from '../../../../../../../src/domain/geometry.js';
 import { SourceType, SourceTypeName } from '../../../../../../../src/domain/sourceType.js';
 import { HighlightFeatureType } from '../../../../../../../src/domain/highlightFeature.js';
+import { $injector } from '../../../../../../../src/injection/index.js';
+import { featureCollectionReducer } from '../../../../../../../src/store/featureCollection/featureCollection.reducer.js';
+import { BaFeature } from '../../../../../../../src/domain/feature.js';
+import { notificationReducer } from '../../../../../../../src/store/notifications/notifications.reducer.js';
+import { LevelTypes } from '../../../../../../../src/store/notifications/notifications.action.js';
 window.customElements.define(CpResultItem.tag, CpResultItem);
 
 describe('CpResultItem', () => {
+	const coordinate = [21, 42];
+	const extent = [0, 1, 2, 3];
+	const ewktGeometry = new BaGeometry('SRID=12345;POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))', new SourceType(SourceTypeName.EWKT));
+	const geoJsonGeometry = new BaGeometry("{ type: 'Point', coordinates: [21, 42, 0] }", new SourceType(SourceTypeName.GEOJSON));
 	let store;
 
 	const setup = (state = {}) => {
@@ -26,8 +38,12 @@ describe('CpResultItem', () => {
 			highlight: highlightReducer,
 			position: positionReducer,
 			mainMenu: createNoInitialStateMainMenuReducer(),
-			media: createNoInitialStateMediaReducer()
+			media: createNoInitialStateMediaReducer(),
+			featureCollection: featureCollectionReducer,
+			notifications: notificationReducer
 		});
+
+		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 
 		return TestUtils.render(CpResultItem.tag);
 	};
@@ -53,14 +69,51 @@ describe('CpResultItem', () => {
 
 			expect(element.shadowRoot.querySelector('li').innerText).toBe('labelFormatted');
 		});
+
+		it('renders the view', async () => {
+			const data = new CadastralParcelSearchResult('label', 'labelFormatted');
+			const element = await setup();
+
+			element.data = data;
+
+			expect(element.shadowRoot.querySelector('li').innerText).toBe('labelFormatted');
+			expect(element.shadowRoot.querySelectorAll('.chips__button')).toHaveSize(0);
+		});
+
+		describe('when CadastralParcelSearchResult is NOT part of the feature collection', () => {
+			it('renders an `add-to-FeatureCollection` button', async () => {
+				const element = await setup();
+				const cpSearchResult = new CadastralParcelSearchResult('label', 'labelFormatted', coordinate, extent, ewktGeometry);
+
+				element.data = cpSearchResult;
+
+				expect(element.shadowRoot.querySelectorAll('button.chips__button.remove')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('button.chips__button.add')).toHaveSize(1);
+				expect(element.shadowRoot.querySelector('button.chips__button.add').title).toBe('global_featureCollection_add_feature_title');
+			});
+		});
+
+		describe('when CadastralParcelSearchResult is part of the feature collection', () => {
+			it('renders a `remove-from-FeatureCollection` button', async () => {
+				const id = 'id';
+				const element = await setup({
+					featureCollection: {
+						entries: [new BaFeature(ewktGeometry, id)]
+					}
+				});
+				const cpSearchResult = new CadastralParcelSearchResult('label', 'labelFormatted', coordinate, extent, ewktGeometry).setId(id);
+
+				element.data = cpSearchResult;
+
+				expect(element.shadowRoot.querySelectorAll('button.chips__button.add')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('button.chips__button.remove')).toHaveSize(1);
+				expect(element.shadowRoot.querySelector('button.chips__button.remove').title).toBe('global_featureCollection_remove_feature_title');
+			});
+		});
 	});
 
 	describe('events', () => {
 		const previousCoordinate = [1, 2];
-		const coordinate = [21, 42];
-		const extent = [0, 1, 2, 3];
-		const wktGeometry = new BaGeometry('POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))', new SourceType(SourceTypeName.EWKT));
-		const geoJsonGeometry = new BaGeometry("{ type: 'Point', coordinates: [21, 42, 0] }", new SourceType(SourceTypeName.GEOJSON));
 
 		const setupOnMouseEnterTests = async (portraitOrientation, extent = null, geometry = null) => {
 			const cpSearchResult = new CadastralParcelSearchResult('label', 'labelFormatted', coordinate, extent, geometry);
@@ -84,8 +137,8 @@ describe('CpResultItem', () => {
 			const element = await setup({
 				highlight: {
 					features: [
-						{ id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, data: previousCoordinate },
-						{ id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, data: previousCoordinate }
+						{ category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY, data: previousCoordinate },
+						{ category: SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY, data: previousCoordinate }
 					]
 				},
 				mainMenu: {
@@ -99,19 +152,68 @@ describe('CpResultItem', () => {
 			return element;
 		};
 
+		describe('`add-to-FeatureCollection` button is clicked', () => {
+			it('adds the HighlightFeature to the feature collection, removes an existing HighlighFeature and emits a notification', async () => {
+				const id = 'id';
+				const element = await setup({
+					highlight: {
+						features: [
+							{ category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY, data: coordinate },
+							{ category: SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY, data: coordinate }
+						]
+					}
+				});
+
+				const cpSearchResult = new CadastralParcelSearchResult('label', 'labelFormatted', coordinate, extent, ewktGeometry).setId(id);
+				element.data = cpSearchResult;
+
+				element.shadowRoot.querySelector('button.chips__button.add').click();
+
+				expect(store.getState().featureCollection.entries).toContain(new BaFeature(ewktGeometry, id));
+				expect(store.getState().highlight.features).toEqual([{ category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY, data: coordinate }]);
+				expect(store.getState().notifications.latest.payload.content).toBe('global_featureCollection_add_feature_notification');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+			});
+		});
+
+		describe('`remove-from-FeatureCollection` button is clicked', () => {
+			it('removes the feature from feature collection, removes an existing HighlighFeature and emits a notification', async () => {
+				const id = 'id';
+				const element = await setup({
+					featureCollection: {
+						entries: [new BaFeature(ewktGeometry, id)]
+					},
+					features: [
+						{ category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY, data: coordinate },
+						{ category: SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY, data: coordinate }
+					]
+				});
+				const cpSearchResult = new CadastralParcelSearchResult('label', 'labelFormatted', coordinate, extent, ewktGeometry).setId(id);
+				element.data = cpSearchResult;
+
+				element.shadowRoot.querySelector('button.chips__button.remove').click();
+
+				expect(store.getState().featureCollection.entries).toHaveSize(0);
+				expect(store.getState().highlight.features.filter((hf) => hf.category === SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY)).toHaveSize(0);
+				expect(store.getState().notifications.latest.payload.content).toBe('global_featureCollection_remove_feature_notification');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+			});
+		});
+
 		describe('on mouse enter', () => {
 			describe('result has data', () => {
 				describe('type WKT', () => {
 					it('sets a temporary highlight feature', async () => {
-						const element = await setupOnMouseEnterTests(false, null, wktGeometry);
+						const element = await setupOnMouseEnterTests(false, null, ewktGeometry);
 
 						const target = element.shadowRoot.querySelector('li');
 						target.dispatchEvent(new Event('mouseenter'));
 
 						expect(store.getState().highlight.features).toHaveSize(1);
-						expect(store.getState().highlight.features[0].id).toEqual(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
-						expect(store.getState().highlight.features[0].data).toEqual(wktGeometry);
+						expect(store.getState().highlight.features[0].category).toEqual(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY);
+						expect(store.getState().highlight.features[0].data).toEqual(ewktGeometry);
 						expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.DEFAULT_TMP);
+						expect(store.getState().highlight.features[0].id).toBeInstanceOf(String);
 					});
 				});
 
@@ -123,9 +225,10 @@ describe('CpResultItem', () => {
 						target.dispatchEvent(new Event('mouseenter'));
 
 						expect(store.getState().highlight.features).toHaveSize(1);
-						expect(store.getState().highlight.features[0].id).toEqual(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
+						expect(store.getState().highlight.features[0].category).toEqual(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY);
 						expect(store.getState().highlight.features[0].data).toEqual(geoJsonGeometry);
 						expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.DEFAULT_TMP);
+						expect(store.getState().highlight.features[0].id).toBeInstanceOf(String);
 					});
 				});
 			});
@@ -143,7 +246,8 @@ describe('CpResultItem', () => {
 					expect(store.getState().highlight.features).toHaveSize(1);
 					expect(store.getState().highlight.features[0].data).toEqual(coordinate);
 					expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER_TMP);
-					expect(store.getState().highlight.features[0].id).toBe(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
+					expect(store.getState().highlight.features[0].category).toBe(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY);
+					expect(store.getState().highlight.features[0].id).toBeInstanceOf(String);
 				});
 			});
 		});
@@ -154,7 +258,7 @@ describe('CpResultItem', () => {
 				const data = new CadastralParcelSearchResult('label', 'labelFormatted', coordinate);
 				const element = await setup({
 					highlight: {
-						features: [{ id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, data: coordinate }]
+						features: [{ category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY, data: coordinate }]
 					}
 				});
 				element.data = data;
@@ -179,14 +283,14 @@ describe('CpResultItem', () => {
 			describe('result has data', () => {
 				describe('type WKT', () => {
 					it('removes both an existing and temporary highlight feature and set the permanent highlight feature', async () => {
-						const element = await setupOnClickTests(false, null, wktGeometry);
+						const element = await setupOnClickTests(false, null, ewktGeometry);
 
 						const target = element.shadowRoot.querySelector('li');
 						target.click();
 
 						expect(store.getState().highlight.features).toHaveSize(1);
-						expect(store.getState().highlight.features[0].id).toEqual(SEARCH_RESULT_HIGHLIGHT_FEATURE_ID);
-						expect(store.getState().highlight.features[0].data).toEqual(wktGeometry);
+						expect(store.getState().highlight.features[0].category).toEqual(SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY);
+						expect(store.getState().highlight.features[0].data).toEqual(ewktGeometry);
 						expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.DEFAULT);
 						expect(store.getState().highlight.features[0].label).toBe('label');
 					});
@@ -200,7 +304,7 @@ describe('CpResultItem', () => {
 						target.click();
 
 						expect(store.getState().highlight.features).toHaveSize(1);
-						expect(store.getState().highlight.features[0].id).toEqual(SEARCH_RESULT_HIGHLIGHT_FEATURE_ID);
+						expect(store.getState().highlight.features[0].category).toEqual(SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY);
 						expect(store.getState().highlight.features[0].data).toEqual(geoJsonGeometry);
 						expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.DEFAULT);
 						expect(store.getState().highlight.features[0].label).toBe('label');
@@ -208,7 +312,7 @@ describe('CpResultItem', () => {
 				});
 
 				it('fits the map by a coordinate', async () => {
-					const element = await setupOnClickTests(false, null, wktGeometry);
+					const element = await setupOnClickTests(false, null, ewktGeometry);
 
 					const target = element.shadowRoot.querySelector('li');
 					target.click();
@@ -226,7 +330,7 @@ describe('CpResultItem', () => {
 					target.click();
 
 					expect(store.getState().highlight.features).toHaveSize(1);
-					expect(store.getState().highlight.features[0].id).toEqual(SEARCH_RESULT_HIGHLIGHT_FEATURE_ID);
+					expect(store.getState().highlight.features[0].category).toEqual(SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY);
 					expect(store.getState().highlight.features[0].data).toEqual(coordinate);
 					expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER);
 					expect(store.getState().highlight.features[0].label).toBe('label');

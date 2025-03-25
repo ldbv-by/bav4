@@ -7,12 +7,6 @@ describe('i18n for featureInfo module', () => {
 		expect(map.featureInfo_close_button).toBe('Schließen');
 		expect(map.featureInfo_header).toBe('Objekt-Info');
 		expect(map.featureInfo_info).toBe('Keine Informationen verfügbar.<br>Bitte in die <b>Karte</b> klicken.');
-		expect(map.featureInfo_featureCollection_add_feature).toBe('Zur Sammlung hinzufügen');
-		expect(map.featureInfo_featureCollection_remove_feature).toBe('Aus Sammlung entfernen');
-		expect(map.featureInfo_featureCollection_add_feature_title).toBe('Dieses Objekt zu "Meine temporäre Sammlung" hinzufügen');
-		expect(map.featureInfo_featureCollection_remove_feature_title).toBe('Dieses Objekt aus "Meine temporäre Sammlung" entfernen');
-		expect(map.featureInfo_featureCollection_add_feature_notification).toBe('Objekt wurde zu "Meine temporäre Sammlung" hinzugefügt');
-		expect(map.featureInfo_featureCollection_remove_feature_notification).toBe('Objekt wurde aus "Meine temporäre Sammlung" entfernt');
 	});
 
 	it('provides translation for en', () => {
@@ -21,16 +15,10 @@ describe('i18n for featureInfo module', () => {
 		expect(map.featureInfo_close_button).toBe('Close');
 		expect(map.featureInfo_header).toBe('Object Information');
 		expect(map.featureInfo_info).toBe('No information available.<br>Please click into the <b>map</b>.');
-		expect(map.featureInfo_featureCollection_add_feature).toBe('Add to collection');
-		expect(map.featureInfo_featureCollection_remove_feature).toBe('Remove from collection');
-		expect(map.featureInfo_featureCollection_add_feature_title).toBe('Add this object to “My temporary collection”');
-		expect(map.featureInfo_featureCollection_remove_feature_title).toBe('Remove this object from “My temporary collection”');
-		expect(map.featureInfo_featureCollection_add_feature_notification).toBe('Object was added to “My temporary collection”');
-		expect(map.featureInfo_featureCollection_remove_feature_notification).toBe('Object has been removed from “My temporary collection”');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 9;
+		const expectedSize = 3;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

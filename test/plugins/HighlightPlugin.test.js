@@ -3,8 +3,8 @@ import {
 	QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID,
 	HighlightPlugin,
 	HIGHLIGHT_LAYER_ID,
-	SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
-	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID,
+	SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
+	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY,
 	CROSSHAIR_HIGHLIGHT_FEATURE_ID,
 	QUERY_SUCCESS_WITH_GEOMETRY_HIGHLIGHT_FEATURE_ID
 } from '../../src/plugins/HighlightPlugin';
@@ -158,11 +158,11 @@ describe('HighlightPlugin', () => {
 
 	describe('when search.query is empty', () => {
 		it('clears all searchResult related highlight items', async () => {
-			const highlightFeature0 = { type: HighlightFeatureType.DEFAULT, data: [21, 42], id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID };
+			const highlightFeature0 = { type: HighlightFeatureType.DEFAULT, data: [21, 42], id: SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY };
 			const highlightFeature1 = {
 				type: HighlightFeatureType.DEFAULT,
 				data: [21, 42],
-				id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID
+				id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
 			};
 			const highlightFeature2 = { type: HighlightFeatureType.DEFAULT, data: [21, 42], id: 'foo' };
 			const store = setup({
