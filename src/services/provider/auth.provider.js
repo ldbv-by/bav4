@@ -148,7 +148,6 @@ export const bvv401InterceptorProvider = (
 		switch (response.status) {
 			// in that case we open the credential ui as modal window
 			case 401: {
-				// return await promiseQueue.add(handler401);
 				return await promiseQueue.add(() => reSignInWithFetchRetryProvider(response, doFetch, roles, identifier, credentialPanelInterval));
 			}
 		}
