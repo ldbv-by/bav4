@@ -22,7 +22,7 @@ Next-generation web-map viewer based on web standards ([`live example`](https://
 5. [Best Practices](#best-practices)
 6. [Links](#links)
 
-## Concept
+## Concept 📋
 
 - Use of web standards as far as possible
   - Modern JavaScript (ECMAScript 2023), no transpiler
@@ -42,7 +42,7 @@ Next-generation web-map viewer based on web standards ([`live example`](https://
   - [jasmin](https://jasmine.github.io/)/[karma](https://karma-runner.github.io/latest/index.html): Tests
   - [playwright](https://playwright.dev/) E2E Tests
 
-## Setup
+## Setup 🚀
 
 ### Prerequisites
 
@@ -117,7 +117,7 @@ Currently used properties are:
 | `/embed.html`     | Serves a page that can be embedded via an iframe                                                                          |
 | `/embed/wrapper`  | Serves a wrapper page for the embed.html. Useful for dev and testing purposes (passes its query parameters to embed.html) |
 
-## Structure
+## Structure 🏢
 
 The project's source code is under `src`, and unit, component and e2e tests are under `test`.
 
@@ -198,7 +198,7 @@ Here's an overview of what the project folder structure looks like:
     + -- test # test code
 ```
 
-## Details
+## Details 🔬
 
 ### Global State
 
@@ -230,7 +230,7 @@ For example, they could be responsible for setting an initial state or reacting 
 
 - Avoid adding huge objects or arrays to the Redux store (e.g. large arrays of coordinates). Detecting changes can be expensive in that case. Instead, try to reference them by an identifier and push this identifier to the store.
 
-## Links
+## Links 🔗
 
 ### Various topics relating to Web Components
 
