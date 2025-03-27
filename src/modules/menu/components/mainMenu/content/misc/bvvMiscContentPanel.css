@@ -42,9 +42,9 @@
 	-webkit-mask-image: url('assets/lock.svg');
 	transform: scale(0.7);
 }
-.hash {
-	mask-image: url('assets/hash.svg');
-	-webkit-mask-image: url('assets/hash.svg');
+.speaker {
+	mask-image: url('assets/speaker.svg');
+	-webkit-mask-image: url('assets/speaker.svg');
 	transform: scale(0.7);
 }
 .imprint {
