@@ -163,7 +163,7 @@ describe('MiscContentPanel', () => {
 			expect(versionInfoAnchor.querySelectorAll('.ba-list-item__icon.icon.hash')).toHaveSize(1);
 			expect(versionInfoAnchor.href).toEqual('https://www.ldbv.bayern.de/produkte/dienste/ba_hilfe/ueberblick/neuigkeiten.html');
 			expect(versionInfoAnchor.target).toEqual('_blank');
-			expect(versionInfoAnchor.innerText).toBe('menu_misc_content_panel_software_version 42');
+			expect(versionInfoAnchor.querySelector('.ba-list-item__text').innerText).toBe('menu_misc_content_panel_software_version 42');
 		});
 
 		it('opens the modal with the toggle-feedback component', async () => {
