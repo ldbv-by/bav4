@@ -109,20 +109,24 @@ describe('MiscContentPanel', () => {
 			expect(links[5].target).toEqual('_blank');
 			expect(links[5].querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_accessibility');
 
-			expect(links[6].href).toEqual('https://geodatenonline.bayern.de/geodatenonline');
+			expect(links[6].href).toEqual('https://www.ldbv.bayern.de/produkte/dienste/ba_hilfe/ueberblick/neuigkeiten.html');
 			expect(links[6].target).toEqual('_blank');
-			expect(links[6].querySelector('.ba-list-item__primary-text').innerText).toEqual('menu_misc_content_panel_gdo_header');
-			expect(links[6].querySelector('.ba-list-item__secondary-text').innerText).toEqual('menu_misc_content_panel_gdo_text');
+			expect(links[6].querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_software_version');
 
-			expect(links[7].href).toEqual('https://www.geoportal.bayern.de/geoportalbayern');
+			expect(links[7].href).toEqual('https://geodatenonline.bayern.de/geodatenonline');
 			expect(links[7].target).toEqual('_blank');
-			expect(links[7].querySelector('.ba-list-item__primary-text').innerText).toEqual('menu_misc_content_panel_gp_header');
-			expect(links[7].querySelector('.ba-list-item__secondary-text').innerText).toEqual('menu_misc_content_panel_gp_text');
+			expect(links[7].querySelector('.ba-list-item__primary-text').innerText).toEqual('menu_misc_content_panel_gdo_header');
+			expect(links[7].querySelector('.ba-list-item__secondary-text').innerText).toEqual('menu_misc_content_panel_gdo_text');
 
-			expect(links[8].href).toEqual('https://www.energieatlas.bayern.de/');
+			expect(links[8].href).toEqual('https://www.geoportal.bayern.de/geoportalbayern');
 			expect(links[8].target).toEqual('_blank');
-			expect(links[8].querySelector('.ba-list-item__primary-text').innerText).toEqual('menu_misc_content_panel_ea_header');
-			expect(links[8].querySelector('.ba-list-item__secondary-text').innerText).toEqual('menu_misc_content_panel_ea_text');
+			expect(links[8].querySelector('.ba-list-item__primary-text').innerText).toEqual('menu_misc_content_panel_gp_header');
+			expect(links[8].querySelector('.ba-list-item__secondary-text').innerText).toEqual('menu_misc_content_panel_gp_text');
+
+			expect(links[9].href).toEqual('https://www.energieatlas.bayern.de/');
+			expect(links[9].target).toEqual('_blank');
+			expect(links[9].querySelector('.ba-list-item__primary-text').innerText).toEqual('menu_misc_content_panel_ea_header');
+			expect(links[9].querySelector('.ba-list-item__secondary-text').innerText).toEqual('menu_misc_content_panel_ea_text');
 		});
 
 		it('contains a feedback button', async () => {
@@ -156,9 +160,10 @@ describe('MiscContentPanel', () => {
 			const element = await setup({ auth: { signedIn: true } });
 
 			const versionInfoAnchor = element.shadowRoot.querySelector('.version-info');
+			expect(versionInfoAnchor.querySelectorAll('.ba-list-item__icon.icon.speaker')).toHaveSize(1);
 			expect(versionInfoAnchor.href).toEqual('https://www.ldbv.bayern.de/produkte/dienste/ba_hilfe/ueberblick/neuigkeiten.html');
 			expect(versionInfoAnchor.target).toEqual('_blank');
-			expect(versionInfoAnchor.innerText).toBe('menu_misc_content_panel_software_version 42');
+			expect(versionInfoAnchor.querySelector('.ba-list-item__text').innerText).toBe('menu_misc_content_panel_software_version 42');
 		});
 
 		it('opens the modal with the toggle-feedback component', async () => {
