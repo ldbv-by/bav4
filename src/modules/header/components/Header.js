@@ -194,7 +194,10 @@ export class Header extends MvuElement {
 
 		const onInputFocus = () => {
 			disableResponsiveParameterObservation();
-			setTab(TabIds.SEARCH);
+			const value = this.shadowRoot.querySelector('#input').value;
+			if (value.length > 0) {
+				setTab(TabIds.SEARCH);
+			}
 
 			if (this.#timeoutId) clearTimeout(this.#timeoutId);
 
@@ -212,7 +215,6 @@ export class Header extends MvuElement {
 
 			//in portrait mode we open the main menu to display existing results
 			if (isPortrait) {
-				const value = this.shadowRoot.querySelector('#input').value;
 				if (value.length > 0) {
 					openMainMenu();
 				}

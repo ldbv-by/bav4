@@ -77,7 +77,7 @@ describe('MainMenuPlugin', () => {
 				const store = setup();
 				const instanceUnderTest = new MainMenuPlugin();
 
-				instanceUnderTest._init(store);
+				instanceUnderTest._init();
 
 				expect(store.getState().mainMenu.tab).toBe(TabIds.MISC);
 			});
@@ -89,7 +89,7 @@ describe('MainMenuPlugin', () => {
 				const store = setup();
 				const instanceUnderTest = new MainMenuPlugin();
 
-				instanceUnderTest._init(store);
+				instanceUnderTest._init();
 
 				expect(store.getState().mainMenu.tab).toEqual(MainMenuPlugin.DEFAULT_TAB_ID);
 			});
@@ -101,7 +101,7 @@ describe('MainMenuPlugin', () => {
 				const store = setup();
 				const instanceUnderTest = new MainMenuPlugin();
 
-				instanceUnderTest._init(store);
+				instanceUnderTest._init();
 
 				expect(store.getState().mainMenu.tab).toEqual(MainMenuPlugin.DEFAULT_TAB_ID);
 			});
@@ -115,32 +115,15 @@ describe('MainMenuPlugin', () => {
 					jasmine.clock().uninstall();
 				});
 
-				describe('the `SEARCH` tab is active', () => {
-					it('sets the focus on the search field of the MainMenu', async () => {
-						const queryParam = new URLSearchParams(`${QueryParameters.MENU_ID}=${TabIds.SEARCH}`);
-						spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
-						const store = setup();
-						const instanceUnderTest = new MainMenuPlugin();
-						const initialValue = store.getState().mainMenu.focusSearchField;
-						instanceUnderTest._init(store);
+				it('sets the focus on the search field of the MainMenu', async () => {
+					const store = setup();
+					const instanceUnderTest = new MainMenuPlugin();
+					const initialValue = store.getState().mainMenu.focusSearchField;
+					instanceUnderTest._init();
 
-						jasmine.clock().tick(MainMenuPlugin.FOCUS_SEARCHFIELD_DELAY_MS + 100);
+					jasmine.clock().tick(MainMenuPlugin.FOCUS_SEARCHFIELD_DELAY_MS + 100);
 
-						expect(initialValue).not.toEqual(store.getState().mainMenu.focusSearchField);
-					});
-				});
-
-				describe('any other tab is active', () => {
-					it('does nothing', async () => {
-						const store = setup();
-						const instanceUnderTest = new MainMenuPlugin();
-						const initialValue = store.getState().mainMenu.focusSearchField;
-						instanceUnderTest._init(store);
-
-						jasmine.clock().tick(MainMenuPlugin.FOCUS_SEARCHFIELD_DELAY_MS + 100);
-
-						expect(initialValue).toEqual(store.getState().mainMenu.focusSearchField);
-					});
+					expect(initialValue).not.toEqual(store.getState().mainMenu.focusSearchField);
 				});
 			});
 		});
@@ -150,7 +133,7 @@ describe('MainMenuPlugin', () => {
 				const store = setup();
 				const instanceUnderTest = new MainMenuPlugin();
 
-				instanceUnderTest._init(store);
+				instanceUnderTest._init();
 
 				expect(store.getState().mainMenu.tab).toEqual(MainMenuPlugin.DEFAULT_TAB_ID);
 			});
@@ -163,7 +146,7 @@ describe('MainMenuPlugin', () => {
 				const store = setup();
 				const instanceUnderTest = new MainMenuPlugin();
 
-				instanceUnderTest._init(store);
+				instanceUnderTest._init();
 
 				expect(store.getState().catalog.openNodes).toEqual(['node0', 'node1']);
 			});
@@ -176,7 +159,7 @@ describe('MainMenuPlugin', () => {
 				const store = setup();
 				const instanceUnderTest = new MainMenuPlugin();
 
-				instanceUnderTest._init(store);
+				instanceUnderTest._init();
 
 				expect(store.getState().catalog.openNodes).toEqual([]);
 			});

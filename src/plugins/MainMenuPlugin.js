@@ -22,7 +22,7 @@ export class MainMenuPlugin extends BaPlugin {
 		this._open = null;
 	}
 
-	_init(store) {
+	_init() {
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 		const queryParams = environmentService.getQueryParams();
 
@@ -41,11 +41,9 @@ export class MainMenuPlugin extends BaPlugin {
 			setOpenNodes(catalogNodes.split(','));
 		}
 
-		if ([TabIds.SEARCH].includes(store.getState().mainMenu.tab)) {
-			setTimeout(() => {
-				focusSearchField();
-			}, MainMenuPlugin.FOCUS_SEARCHFIELD_DELAY_MS);
-		}
+		setTimeout(() => {
+			focusSearchField();
+		}, MainMenuPlugin.FOCUS_SEARCHFIELD_DELAY_MS);
 	}
 
 	/**
@@ -53,7 +51,7 @@ export class MainMenuPlugin extends BaPlugin {
 	 * @param {Store} store
 	 */
 	async register(store) {
-		this._init(store);
+		this._init();
 
 		this._open = store.getState().mainMenu.open;
 		this._previousTab = store.getState().mainMenu.tab;

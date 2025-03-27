@@ -802,9 +802,11 @@ describe('Header', () => {
 			});
 
 			it('sets the correct tab index for the search-content-panel', async () => {
+				const initialTab = TabIds.MISC;
 				const state = {
 					mainMenu: {
-						open: false
+						open: false,
+						tab: initialTab
 					},
 					media: {
 						portrait: true,
@@ -812,7 +814,15 @@ describe('Header', () => {
 					}
 				};
 				const element = await setup(state);
-				element.shadowRoot.querySelector('#input').focus();
+				const inputEl = element.shadowRoot.querySelector('#input');
+
+				inputEl.focus();
+
+				expect(store.getState().mainMenu.tab).toBe(initialTab);
+
+				inputEl.blur();
+				inputEl.value = 'foo';
+				inputEl.focus();
 
 				expect(store.getState().mainMenu.tab).toBe(TabIds.SEARCH);
 			});
