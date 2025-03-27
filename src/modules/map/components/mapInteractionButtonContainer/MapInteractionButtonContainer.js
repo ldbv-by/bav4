@@ -2,15 +2,21 @@
  * @module modules/map/components/mapInteractionButtonContainer/MapInteractionButtonContainer
  */
 import { html } from 'lit-html';
-import { $injector } from '../../../../injection';
-import { MvuElement } from '../../../MvuElement';
-import css from './mapInteractionButtonContainer.css';
-import { setCurrentTool } from '../../../../store/tools/tools.action';
 import { Tools } from '../../../../domain/tools';
+import { $injector } from '../../../../injection';
+import { setCurrentTool } from '../../../../store/tools/tools.action';
+import { findAllBySelector } from '../../../../utils/markup';
+import { MvuElement } from '../../../MvuElement';
 import closeSvg from './assets/close.svg';
+import css from './mapInteractionButtonContainer.css';
+import { classMap } from 'lit-html/directives/class-map.js';
 
+const BottomSheet_Open_Close_Time = 10;
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
 const Update_ToolId = 'update_tooId';
+const Update_Bottom_Sheet = 'update_bottom_sheet';
+const Update_Main_Menu = 'update_main_menu';
+const Update_IsOpen_NavigationRail = 'update_isOpen_NavigationRail';
 
 /**
  * Container for map interaction buttons.
@@ -23,8 +29,11 @@ export class MapInteractionButtonContainer extends MvuElement {
 	#translationService;
 	constructor() {
 		super({
+			toolId: null,
+			isOpen: false,
 			isPortrait: false,
-			toolId: null
+			hasMinWidth: false,
+			isOpenNavigationRail: false
 		});
 
 		const { TranslationService } = $injector.inject('TranslationService');
@@ -38,6 +47,12 @@ export class MapInteractionButtonContainer extends MvuElement {
 				return { ...model, ...data };
 			case Update_ToolId:
 				return { ...model, toolId: data };
+			case Update_Bottom_Sheet:
+				return { ...model, active: data };
+			case Update_Main_Menu:
+				return { ...model, ...data };
+			case Update_IsOpen_NavigationRail:
+				return { ...model, ...data };
 		}
 	}
 
@@ -50,6 +65,33 @@ export class MapInteractionButtonContainer extends MvuElement {
 			(state) => state.tools.current,
 			(current) => this.signal(Update_ToolId, current)
 		);
+		this.observe(
+			(state) => state.bottomSheet.active,
+			(active) => this.signal(Update_Bottom_Sheet, active)
+		);
+		this.observe(
+			(state) => state.mainMenu,
+			(mainMenu) => this.signal(Update_Main_Menu, { isOpen: mainMenu.open, tab: mainMenu.tab })
+		);
+		this.observe(
+			(state) => state.navigationRail,
+			(navigationRail) => this.signal(Update_IsOpen_NavigationRail, { isOpenNavigationRail: navigationRail.open })
+		);
+	}
+
+	/**
+	 * @override
+	 */
+	onAfterRender() {
+		setTimeout(() => {
+			const mapInteractionButtonContainer = this.shadowRoot.getElementById('mapInteractionButtonContainer');
+			const bottomSheet = findAllBySelector(document, `ba-bottom-sheet`);
+			if (bottomSheet[0]) {
+				mapInteractionButtonContainer.style.bottom = bottomSheet[0].offsetHeight + 10 + 'px';
+			} else {
+				mapInteractionButtonContainer.style.bottom = '4.3em';
+			}
+		}, BottomSheet_Open_Close_Time);
 	}
 
 	/**
@@ -57,10 +99,15 @@ export class MapInteractionButtonContainer extends MvuElement {
 	 */
 	createView(model) {
 		const translate = (key) => this.#translationService.translate(key);
-		const { isPortrait, toolId } = model;
+		const { toolId, isOpen, isOpenNavigationRail, isPortrait, hasMinWidth } = model;
 
-		const getOrientationClass = () => {
-			return isPortrait ? 'is-portrait' : 'is-landscape';
+		const classes = {
+			'is-open': isOpen,
+			'is-open-navigationRail': isOpenNavigationRail && !isPortrait,
+			'is-desktop': hasMinWidth,
+			'is-tablet': !hasMinWidth && !isPortrait,
+			'is-portrait': isPortrait,
+			'is-landscape': !isPortrait
 		};
 
 		const getShowRoutingClass = () => {
@@ -74,7 +121,7 @@ export class MapInteractionButtonContainer extends MvuElement {
 			<style>
 				${css}
 			</style>
-			<div class="map-interaction-button-container ${getOrientationClass()}">
+			<div id="mapInteractionButtonContainer" class="map-interaction-button-container ${classMap(classes)}">
 				<ba-button
 					class="${getShowRoutingClass()} routing"
 					.icon=${closeSvg}

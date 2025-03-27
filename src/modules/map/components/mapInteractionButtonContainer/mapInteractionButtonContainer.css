@@ -9,6 +9,7 @@
 	pointer-events: none;
 	row-gap: 0.5em;
 	column-gap: 0.3em;
+	transition: all var(--animation-duration-large-open) var(--animation-easing-open);
 }
 .is-portrait.map-interaction-button-container {
 	flex-direction: column;
@@ -27,4 +28,18 @@ ba-button::part(button) {
 }
 ba-button::part(icon) {
 	top: 0.2em;
+}
+
+.is-tablet.is-open-navigationRail,
+.is-landscape.is-open-navigationRail {
+	padding-left: 5em;
+}
+
+.is-tablet.is-open,
+.is-landscape.is-ope {
+	padding-left: 28em;
+}
+.is-tablet.is-open.is-open-navigationRail,
+.is-landscape.is-open.is-open-navigationRail {
+	padding-left: 33em;
 }
