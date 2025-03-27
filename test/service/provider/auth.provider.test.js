@@ -644,9 +644,9 @@ describe('bvvAuthRoleDowngradeHeaderInterceptorProvider', () => {
 		describe('`x-auth-role-downgrade` response header is NOT available', () => {
 			it('calls the `reSignInWithFetchRetry` fn', async () => {
 				const invalidateSpy = spyOn(authService, 'invalidate');
-				const role = 'role';
+				const roles = 'role0,role1';
 				const headers = new Headers();
-				headers.set('x-auth-role-downgrade', role);
+				headers.set('x-auth-role-downgrade', roles);
 				const mockResponse = { status: 200, headers };
 				const retryResponse = { status: 200 };
 				const interval = 0;
@@ -656,7 +656,13 @@ describe('bvvAuthRoleDowngradeHeaderInterceptorProvider', () => {
 				await TestUtils.timeout(); /**promise queue execution */
 
 				await expectAsync(responsePromise).toBeResolvedTo(retryResponse);
-				expect(reSignInWithFetchRetry).toHaveBeenCalledWith(mockResponse, retTryFetchFn, [role], 'bvvAuthRoleDowngradeInterceptorProvider', interval);
+				expect(reSignInWithFetchRetry).toHaveBeenCalledWith(
+					mockResponse,
+					retTryFetchFn,
+					roles.split(','),
+					'bvvAuthRoleDowngradeInterceptorProvider',
+					interval
+				);
 				expect(invalidateSpy).toHaveBeenCalled();
 			});
 		});

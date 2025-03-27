@@ -167,13 +167,15 @@ export const bvvAuthRoleDowngradeHeaderInterceptorProvider = (
 	reSignInWithFetchRetryProvider = reSignInWithFetchRetry
 ) => {
 	const bvvAuthResponseInterceptor = async (response, doFetch) => {
-		const downgradedRole = response.headers.get('x-auth-role-downgrade');
+		const downgradedRoles = response.headers.get('x-auth-role-downgrade');
 		const identifier = 'bvvAuthRoleDowngradeInterceptorProvider';
 		const { AuthService: authService } = $injector.inject('AuthService');
 
-		if (downgradedRole) {
+		if (downgradedRoles) {
 			authService.invalidate();
-			return await promiseQueue.add(() => reSignInWithFetchRetryProvider(response, doFetch, [downgradedRole], identifier, credentialPanelInterval));
+			return await promiseQueue.add(() =>
+				reSignInWithFetchRetryProvider(response, doFetch, downgradedRoles.split(','), identifier, credentialPanelInterval)
+			);
 		}
 		return response;
 	};
