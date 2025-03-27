@@ -145,11 +145,23 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 					</span>
 					<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_imprint')}</span>
 				</a>
-				<a class="ba-list-item divider" href="https://www.ldbv.bayern.de/digitalisierung/bitv/index.html" target="_blank">
+				<a class="ba-list-item" href="https://www.ldbv.bayern.de/digitalisierung/bitv/index.html" target="_blank">
 					<span class="ba-list-item__pre">
 						<span class="ba-list-item__icon icon accessibility"> </span>
 					</span>
 					<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_accessibility')}</span>
+				</a>
+				<a
+					class="version-info ba-list-item divider"
+					href="https://www.ldbv.bayern.de/produkte/dienste/ba_hilfe/ueberblick/neuigkeiten.html"
+					target="_blank"
+				>
+					<span class="ba-list-item__pre">
+						<span class="ba-list-item__icon icon hash"> </span>
+					</span>
+					<span class="ba-list-item__text">
+						${html`${translate('menu_misc_content_panel_software_version')} ${this.#configService.getValue('SOFTWARE_VERSION')}`}
+					</span>
 				</a>
 				<div class="ba-list-item  ba-list-item__header">
 					<span class="ba-list-item__text ">
@@ -181,11 +193,6 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 					<span class="ba-list-item__text ">
 						<span class="ba-list-item__primary-text">${translate('menu_misc_content_panel_ea_header')}</span>
 						<span class="ba-list-item__secondary-text">${translate('menu_misc_content_panel_ea_text')}</span>
-					</span>
-				</a>
-				<a class="version-info ba-list-item" href="https://www.ldbv.bayern.de/produkte/dienste/ba_hilfe/ueberblick/neuigkeiten.html" target="_blank">
-					<span class="ba-list-item__text">
-						${html`${translate('menu_misc_content_panel_software_version')} ${this.#configService.getValue('SOFTWARE_VERSION')}`}
 					</span>
 				</a>
 			</div>

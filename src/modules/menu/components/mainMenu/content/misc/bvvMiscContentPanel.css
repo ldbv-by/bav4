@@ -42,6 +42,11 @@
 	-webkit-mask-image: url('assets/lock.svg');
 	transform: scale(0.7);
 }
+.hash {
+	mask-image: url('assets/hash.svg');
+	-webkit-mask-image: url('assets/hash.svg');
+	transform: scale(0.7);
+}
 .imprint {
 	mask-image: url('assets/imprint.svg');
 	-webkit-mask-image: url('assets/imprint.svg');
