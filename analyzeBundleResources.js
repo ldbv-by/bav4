@@ -5,6 +5,7 @@ const { argv } = require('node:process');
 const Resource_Extension = ['.svg', '.png'];
 const Code_Extension = ['.js', '.css'];
 const EOL_RegEx = /\r?\n/;
+const Current_Directory_Prefix = './';
 
 function* lineReaderSync(file) {
 	try {
@@ -57,7 +58,9 @@ const getRelativePathForResourceName = (relativePathSource, resourceName) => {
 		const leftOfResourceName = relativePathSource.split(resourceName)[0];
 		const leftIndex = leftOfResourceName.lastIndexOf("'");
 		const rightIndex = relativePathSource.indexOf(resourceName);
-		return relativePathSource.substring(leftIndex + 1, rightIndex + resourceName.length);
+		const relativePath = relativePathSource.substring(leftIndex + 1, rightIndex + resourceName.length);
+
+		return relativePath.startsWith(Current_Directory_Prefix) ? relativePath.replace(Current_Directory_Prefix, '') : relativePath;
 	}
 	return null;
 };
