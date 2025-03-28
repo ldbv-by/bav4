@@ -10,7 +10,7 @@ const Current_Directory_Prefix = './';
 function* lineReaderSync(file) {
 	try {
 		const fileContent = fs.readFileSync(file, 'utf-8');
-		let index = 0;
+		let index = 1;
 		for (const line of fileContent.split(EOL_RegEx)) {
 			yield { content: line, index: index++ };
 		}
@@ -143,12 +143,10 @@ const summarize = (resourcesByName) => {
 			return `[${index}] ${resourceInfo.fileSize}/${resourceInfo.fileSize * resourceInfo.filePaths.length}`;
 		});
 		const resources = Array.from(value).flatMap((resourceInfo, index) => {
-			return resourceInfo.filePaths.map((fp) => `[${index}] -> ${fp} `);
+			return resourceInfo.filePaths.map((fp) => `[${index}] -> ${fp}`);
 		});
 
-		const usages = Array.from(value).flatMap((resourceInfo, index) =>
-			resourceInfo.usage.map((u) => `[${index}]  ${u.sourcefile} line: ${u.lineOfCode}`)
-		);
+		const usages = Array.from(value).flatMap((resourceInfo, index) => resourceInfo.usage.map((u) => `[${index}]  ${u.sourcefile} ${u.lineOfCode}`));
 
 		const orphanedResources = Array.from(value)
 			.filter((resourceInfo) => !resourceInfo.usage.length)
