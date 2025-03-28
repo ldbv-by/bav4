@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { argv } = require('node:process');
 
-const Resource_Extension = ['.svg', '.png'];
+const Resource_Extension = ['.svg', '.png', '.webp'];
 const Code_Extension = ['.js', '.css'];
 const EOL_RegEx = /\r?\n/;
 const Current_Directory_Prefix = './';
@@ -213,7 +213,6 @@ const detail = args['--detail'] ?? null;
 const help = args['--help'] ?? false;
 const logAll = args['--log'] ?? false;
 const resources = findResourceWithExtensionInDir(dirToAnalyze, excludePattern, Resource_Extension);
-
 const resourcesByHash = getResourcesByHash(resources);
 const resourcesByName = getResourcesByName(resources, resourcesByHash);
 
@@ -244,7 +243,7 @@ EXAMPLE
 		node analyzeBundleResources.js --input './src' --exclude 'src/assets/favicon' --detail 'status-500.svg'
 
 	log the result (saved as ./analyzeBundleResources.json):
-		node analyzeBundleResources.js --input './src' --
+		node analyzeBundleResources.js --input './src' --log
 
 	get this help:
 		node analyzeBundleResources.js --help
@@ -254,5 +253,8 @@ EXAMPLE
 } else {
 	const categorizedByTag = categorizeByTag(summarizedResults);
 	console.table(categorizedByTag);
+
+	const assetsWithoutAnyTag = summarizedResults.filter((r) => r.tags.length === 0).length;
+	console.log(`\r\n${assetsWithoutAnyTag} assets without any tag.`);
 }
 /* eslint-enable no-console */
