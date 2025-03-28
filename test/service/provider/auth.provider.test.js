@@ -570,7 +570,7 @@ describe('reSignInWithFetchRetry', () => {
 		expect(reTryFetchFn).not.toHaveBeenCalled();
 		expect(store.getState().modal.active).toBeFalse();
 
-		// this time the no modal should be shown and the original response returned
+		// this time no modal should be shown and the original response returned
 		const secondResponsePromise = reSignInWithFetchRetry(mockResponse, reTryFetchFn, [], identifier, credentialPanelInterval);
 		await TestUtils.timeout(); /**promise queue execution */
 		expect(store.getState().modal.active).toBeFalse();
