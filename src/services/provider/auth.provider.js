@@ -132,93 +132,132 @@ const resourcesInQueue = new Set();
  */
 export const BvvCredentialPanelIntervalMs = 10_000;
 /**
- * BVV specific implementation of {@link module:services/AuthService~authResponseInterceptorProvider}.
+ * BVV specific implementation of {@link module:services/AuthService~authResponseInterceptorProvider} that handles the `401` status code
  * @function
  * @type {module:services/AuthService~authResponseInterceptorProvider}
  * @param {string[]} roles
  * @param {string} [identifier=null]
  */
-export const bvvAuthResponseInterceptorProvider = (roles = [], identifier = null, credentialPanelInterval = BvvCredentialPanelIntervalMs) => {
+export const bvv401InterceptorProvider = (
+	roles = [],
+	identifier = null,
+	credentialPanelInterval = BvvCredentialPanelIntervalMs,
+	reSignInWithFetchRetryProvider = reSignInWithFetchRetry
+) => {
 	const bvvAuthResponseInterceptor = async (response, doFetch) => {
 		switch (response.status) {
 			// in that case we open the credential ui as modal window
 			case 401: {
-				const handler401 = () => {
-					return new Promise((resolve) => {
-						const { StoreService: storeService, AuthService: authService } = $injector.inject('StoreService', 'AuthService');
-
-						const authenticate = async (credential) => {
-							const authenticated = await authService.signIn(credential);
-							if (authenticated) {
-								return true;
-							}
-
-							return false;
-						};
-
-						// in case of aborting the authentication-process by closing the modal we call the onClose callback
-						const resolveBeforeClosing = ({ active }) => {
-							if (!active) {
-								onClose(null);
-							}
-						};
-
-						const unsubscribe = observe(
-							storeService.getStore(),
-							(state) => state.modal,
-							(modal) => resolveBeforeClosing(modal)
-						);
-
-						// onClose-callback is called with a verified credential object and the result object or simply null
-						const onClose = async (credential, currentResponse) => {
-							unsubscribe();
-							closeModal();
-							if (credential && currentResponse) {
-								// re-try the original fetch call
-								const reTryResponse = await doFetch();
-								resolve(reTryResponse);
-							} else {
-								// resolve with the original response
-								resolve(response);
-							}
-						};
-
-						// if we are signed-in in the meantime (e.g. when multiple restricted GeoResources are requested) we re-try the original call
-						if (authService.isSignedIn()) {
-							// re-try the original fetch call
-							resolve(doFetch());
-						}
-						// let's open the credential panel for that case
-						else if (!resourcesInQueue.has(identifier)) {
-							/**
-							 * Needed for resources which trigger multiple requests at once (e.g. XyZGeoResources).
-							 * To avoid showing the credential panel for the same resource in quick succession we synchronize by a Set.
-							 * The resource is represented by its identifier.
-							 * After the given amount of time the identifier will be removed from the Set.
-							 */
-							if (identifier) {
-								resourcesInQueue.add(identifier);
-								setTimeout(() => {
-									resourcesInQueue.delete(identifier);
-								}, credentialPanelInterval);
-							}
-
-							// prepare the modal
-							openModal(createCredentialModalTitle(roles), createCredentialPanel(authenticate, onClose, roles));
-						}
-						// return the original response
-						else {
-							resolve(response);
-						}
-					});
-				};
-				return await promiseQueue.add(handler401);
+				return await promiseQueue.add(() => reSignInWithFetchRetryProvider(response, doFetch, roles, identifier, credentialPanelInterval));
 			}
 		}
 		return response;
 	};
 
 	return bvvAuthResponseInterceptor;
+};
+
+/**
+ * BVV specific implementation of {@link module:services/AuthService~authResponseInterceptorProvider} that handles the `x-auth-role-downgrade` response header
+ * @function
+ * @type {module:services/AuthService~authResponseInterceptorProvider}
+ */
+export const bvvAuthRoleDowngradeHeaderInterceptorProvider = (
+	credentialPanelInterval = BvvCredentialPanelIntervalMs,
+	reSignInWithFetchRetryProvider = reSignInWithFetchRetry
+) => {
+	const bvvAuthResponseInterceptor = async (response, doFetch) => {
+		const downgradedRoles = response.headers.get('x-auth-role-downgrade');
+		const identifier = 'bvvAuthRoleDowngradeInterceptorProvider';
+		const { AuthService: authService } = $injector.inject('AuthService');
+
+		if (downgradedRoles) {
+			authService.invalidate();
+			return await promiseQueue.add(() =>
+				reSignInWithFetchRetryProvider(response, doFetch, downgradedRoles.split(','), identifier, credentialPanelInterval)
+			);
+		}
+		return response;
+	};
+
+	return bvvAuthResponseInterceptor;
+};
+
+/**
+ * Returns a `Promise` which resolves after a user has registered again and re-fetches the intercepted request afterwards.
+ *
+ * Ensures that the the Sign-In modal is only shown once during a given interval and identifier.
+ *
+ * @returns {Promise}
+ */
+export const reSignInWithFetchRetry = (response, doFetch, roles = [], identifier = null, credentialPanelInterval = BvvCredentialPanelIntervalMs) => {
+	return new Promise((resolve) => {
+		const { StoreService: storeService, AuthService: authService } = $injector.inject('StoreService', 'AuthService');
+
+		const authenticate = async (credential) => {
+			const authenticated = await authService.signIn(credential);
+			if (authenticated) {
+				return true;
+			}
+
+			return false;
+		};
+
+		// in case of aborting the authentication-process by closing the modal we call the onClose callback
+		const resolveBeforeClosing = ({ active }) => {
+			if (!active) {
+				onClose(null);
+			}
+		};
+
+		const unsubscribe = observe(
+			storeService.getStore(),
+			(state) => state.modal,
+			(modal) => resolveBeforeClosing(modal)
+		);
+
+		// onClose-callback is called with a verified credential object and the result object or simply null
+		const onClose = async (credential, currentResponse) => {
+			unsubscribe();
+			closeModal();
+			if (credential && currentResponse) {
+				// re-try the original fetch call
+				const reTryResponse = await doFetch();
+				resolve(reTryResponse);
+			} else {
+				// resolve with the original response
+				resolve(response);
+			}
+		};
+
+		// if we are signed-in in the meantime (e.g. when multiple restricted GeoResources are requested) we re-try the original call
+		if (authService.isSignedIn()) {
+			// re-try the original fetch call
+			resolve(doFetch());
+		}
+		// let's open the credential panel for that case
+		else if (!resourcesInQueue.has(identifier)) {
+			/**
+			 * Needed for resources which trigger multiple requests at once (e.g. XyZGeoResources).
+			 * To avoid showing the credential panel for the same resource in quick succession we synchronize by a Set.
+			 * The resource is represented by its identifier.
+			 * After the given amount of time the identifier will be removed from the Set.
+			 */
+			if (identifier) {
+				resourcesInQueue.add(identifier);
+				setTimeout(() => {
+					resourcesInQueue.delete(identifier);
+				}, credentialPanelInterval);
+			}
+
+			// prepare the modal
+			openModal(createCredentialModalTitle(roles), createCredentialPanel(authenticate, onClose, roles));
+		}
+		// return the original response
+		else {
+			resolve(response);
+		}
+	});
 };
 
 /**

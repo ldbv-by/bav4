@@ -23,7 +23,7 @@ import { $injector } from '../../src/injection';
 import { loadBvvFileStorageResourceById } from '../../src/services/provider/fileStorage.provider';
 import { TestUtils } from '../test-utils';
 import { createDefaultLayerProperties, layersReducer } from '../../src/store/layers/layers.reducer';
-import { bvvAuthResponseInterceptorProvider } from '../../src/services/provider/auth.provider';
+import { bvv401InterceptorProvider } from '../../src/services/provider/auth.provider';
 
 describe('GeoResourceService', () => {
 	const loadExampleGeoResources = async () => {
@@ -96,7 +96,7 @@ describe('GeoResourceService', () => {
 			const instanceUnderTest = new GeoResourceService();
 			expect(instanceUnderTest._provider).toEqual(loadBvvGeoResources);
 			expect(instanceUnderTest._byIdProvider).toEqual([loadExternalGeoResource, loadBvvFileStorageResourceById, loadBvvGeoResourceById]);
-			expect(instanceUnderTest._authResponseInterceptorProvider).toEqual(bvvAuthResponseInterceptorProvider);
+			expect(instanceUnderTest._authResponseInterceptorProvider).toEqual(bvv401InterceptorProvider);
 		});
 
 		it('initializes the service with custom providers', async () => {
