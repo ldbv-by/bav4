@@ -17,6 +17,7 @@ import { featureCollectionReducer } from '../../../../../../../src/store/feature
 import { BaFeature } from '../../../../../../../src/domain/feature.js';
 import { notificationReducer } from '../../../../../../../src/store/notifications/notifications.reducer.js';
 import { LevelTypes } from '../../../../../../../src/store/notifications/notifications.action.js';
+import { AbstractResultItem } from '../../../../../../../src/modules/search/components/menu/AbstractResultItem.js';
 window.customElements.define(CpResultItem.tag, CpResultItem);
 
 describe('CpResultItem', () => {
@@ -47,6 +48,16 @@ describe('CpResultItem', () => {
 
 		return TestUtils.render(CpResultItem.tag);
 	};
+
+	describe('class', () => {
+		it('inherits from AbstractResultItem', async () => {
+			const element = await setup();
+
+			expect(element instanceof AbstractResultItem).toBeTrue();
+			expect(element.selectResult).toEqual(jasmine.any(Function));
+			expect(element.highlightResult).toEqual(jasmine.any(Function));
+		});
+	});
 
 	describe('static properties', () => {
 		it('_maxZoomValue', async () => {
