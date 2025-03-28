@@ -110,9 +110,9 @@ describe('SearchResultsPanel', () => {
 			expect(keyActionMapperSpy).toHaveBeenCalledWith('keydown', jasmine.any(Function));
 		});
 
-		it('when store changes resets key navigation', async () => {
+		it('resets key navigation when store changes', async () => {
 			const element = await setup();
-			element.ResultItemClasses = [AbstractResultItemImpl];
+			element.resultItemClasses = [AbstractResultItemImpl];
 			const resetSpy = spyOn(element, '_reset').and.callThrough();
 
 			const testResultItems = createResultItems(5);
@@ -145,7 +145,7 @@ describe('SearchResultsPanel', () => {
 			expect(highlightResult2Spy).not.toHaveBeenCalled(); // --
 		});
 
-		it('when mouse enters element resets key navigation', async () => {
+		it('resets key navigation when mouse enters element', async () => {
 			const keyActionMapperSpy = spyOn(document, 'removeEventListener').and.callThrough();
 			const element = await setup();
 			const resetSpy = spyOn(element, '_reset').and.callThrough();
@@ -158,7 +158,7 @@ describe('SearchResultsPanel', () => {
 			expect(keyActionMapperSpy).toHaveBeenCalledWith('keydown', jasmine.any(Function));
 		});
 
-		it('when mouse leaves element reactivates key navigation', async () => {
+		it('reactivates key navigation when mouse leaves element', async () => {
 			const keyActionMapperSpy = spyOn(document, 'addEventListener').and.callThrough();
 
 			const element = await setup();
@@ -170,9 +170,9 @@ describe('SearchResultsPanel', () => {
 			expect(keyActionMapperSpy).toHaveBeenCalledWith('keydown', jasmine.any(Function));
 		});
 
-		it('when keyup event is fired highlights the next resultItem for "arrowDown"', async () => {
+		it('highlights the next resultItem for "arrowDown" when keyup event is fired', async () => {
 			const element = await setup();
-			element.ResultItemClasses = [AbstractResultItemImpl];
+			element.resultItemClasses = [AbstractResultItemImpl];
 			const arrowDownSpy = spyOn(element, '_arrowDown').and.callThrough();
 			const changeSelectedElementSpy = spyOn(element, '_changeSelectedElement').and.callThrough();
 
@@ -197,9 +197,9 @@ describe('SearchResultsPanel', () => {
 			expect(highlightResult1Spy).toHaveBeenCalledTimes(1); // [next]
 		});
 
-		it('when keyup event is fired highlights the last resultItem for "arrowDown"', async () => {
+		it('highlights the last resultItem for "arrowDown" when keyup event is fired', async () => {
 			const element = await setup();
-			element.ResultItemClasses = [AbstractResultItemImpl];
+			element.resultItemClasses = [AbstractResultItemImpl];
 			const arrowDownSpy = spyOn(element, '_arrowDown').and.callThrough();
 			const changeSelectedElementSpy = spyOn(element, '_changeSelectedElement').and.callThrough();
 
@@ -226,9 +226,9 @@ describe('SearchResultsPanel', () => {
 			expect(highlightResult4Spy).toHaveBeenCalledTimes(1); // [next] + [previous]
 		});
 
-		it('when keyup event is fired highlights the next resultItem for "arrowUp"', async () => {
+		it('highlights the next resultItem for "arrowUp" when keyup event is fired', async () => {
 			const element = await setup();
-			element.ResultItemClasses = [AbstractResultItemImpl];
+			element.resultItemClasses = [AbstractResultItemImpl];
 			const arrowDownSpy = spyOn(element, '_arrowUp').and.callThrough();
 			const changeSelectedElementSpy = spyOn(element, '_changeSelectedElement').and.callThrough();
 
@@ -258,9 +258,9 @@ describe('SearchResultsPanel', () => {
 			expect(highlightResult2Spy).toHaveBeenCalledTimes(1); // [next]
 		});
 
-		it('when keyup event is fired focus search after "arrowUp"', async () => {
+		it('focus search after "arrowUp" when keyup event is fired', async () => {
 			const element = await setup();
-			element.ResultItemClasses = [AbstractResultItemImpl];
+			element.resultItemClasses = [AbstractResultItemImpl];
 			const arrowDownSpy = spyOn(element, '_arrowUp').and.callThrough();
 			const changeSelectedElementSpy = spyOn(element, '_changeSelectedElement').and.callThrough();
 
@@ -288,9 +288,9 @@ describe('SearchResultsPanel', () => {
 			expect(store.getState().mainMenu.focusSearchField).not.toBeNull();
 		});
 
-		it('when keyup event is fired selects the next resultItem for "enter"', async () => {
+		it('selects the next resultItem for "enter" when keyup event is fired', async () => {
 			const element = await setup();
-			element.ResultItemClasses = [AbstractResultItemImpl];
+			element.resultItemClasses = [AbstractResultItemImpl];
 			const arrowUpSpy = spyOn(element, '_arrowUp').and.callThrough();
 			const enterSpy = spyOn(element, '_enter').and.callThrough();
 			const changeSelectedElementSpy = spyOn(element, '_changeSelectedElement').and.callThrough();
@@ -318,9 +318,9 @@ describe('SearchResultsPanel', () => {
 			expect(selectResult3Spy).toHaveBeenCalled();
 		});
 
-		it('when keyup event is fired selects the second resultItem for "enter"', async () => {
+		it('selects the second resultItem for "enter" when keyup event is fired', async () => {
 			const element = await setup();
-			element.ResultItemClasses = [AbstractResultItemImpl];
+			element.resultItemClasses = [AbstractResultItemImpl];
 			const arrowDownSpy = spyOn(element, '_arrowDown').and.callThrough();
 			const enterSpy = spyOn(element, '_enter').and.callThrough();
 			const changeSelectedElementSpy = spyOn(element, '_changeSelectedElement').and.callThrough();
@@ -348,9 +348,9 @@ describe('SearchResultsPanel', () => {
 			expect(selectResultSpy).toHaveBeenCalled();
 		});
 
-		it('when keyup event is fired does NOT selects the next resultItem for "enter"', async () => {
+		it('does NOT selects the next resultItem for "enter" when keyup event is fired', async () => {
 			const element = await setup();
-			element.ResultItemClasses = [AbstractResultItemImpl];
+			element.resultItemClasses = [AbstractResultItemImpl];
 			const arrowUpSpy = spyOn(element, '_arrowUp').and.callThrough();
 			const enterSpy = spyOn(element, '_enter').and.callThrough();
 			const changeSelectedElementSpy = spyOn(element, '_changeSelectedElement').and.callThrough();

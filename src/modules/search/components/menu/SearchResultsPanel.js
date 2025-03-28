@@ -23,7 +23,7 @@ const Search_Field_Index = -1;
 /**
  * Container for different types of search result panels.
  * @class
- * @property {Array<class>} ResultItemClasses The ResultItemClasses which are used to define the query selector for all navigatable ResultItems. The classes must extend the @see {@link AbstractResultItem} class.
+ * @property {Array<AbstractResultItem>} resultItemClasses The ResultItemClasses which are used to define the query selector for all navigatable ResultItems.
  * @author taulinger
  * @author costa_gi
  * @author thiloSchlemmer
@@ -141,7 +141,7 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 		return items.findIndex((element) => element.matches(Selected_Item_Class_Selector));
 	}
 
-	set ResultItemClasses(values) {
+	set resultItemClasses(values) {
 		this.#resultItemClasses = values;
 		this.#resultItemSelector = `:is(${this.#resultItemClasses.map((i) => i.tag).join(',')})`;
 	}
