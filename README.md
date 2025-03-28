@@ -97,17 +97,19 @@ Currently used properties are:
 | `npm run e2e` | Runs E2E tests against all available browsers. A single browser can be individually specified by the `--browser` option |
 | `npx playwright test --help` | Shows information about all options |
 
-| Other                    |                                                                            |
-| ------------------------ | -------------------------------------------------------------------------- |
-| `npm run lint`           | Lints and fixes js and css files                                           |
-| `npm run prettier`       | Formats all code files                                                     |
-| `npm run es-check`       | Checks if js files use only allowed es-version language features           |
-| `npm run doc`            | Generates jsdoc files (see: `./docs`)                                      |
-| `npm run doc:check`      | Checks if all required JSDoc module names exists                           |
-| `npm run doc:apply`      | Adds or updates the JSDoc module names                                     |
-| `npm run bundlesize`     | Checks the bundle size of the webpack compiled chunks                      |
-| `npm run analyze-bundle` | Visualize the size of webpack chunks with an interactive zoomable tree map |
-| `npm run optimize-svg`   | Optimize all SVG vector graphics files                                     |
+| Other                                     |                                                                                                                                     |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run lint`                            | Lints and fixes js and css files                                                                                                    |
+| `npm run prettier`                        | Formats all code files                                                                                                              |
+| `npm run es-check`                        | Checks if js files use only allowed es-version language features                                                                    |
+| `npm run doc`                             | Generates jsdoc files (see: `./docs`)                                                                                               |
+| `npm run doc:check`                       | Checks if all required JSDoc module names exists                                                                                    |
+| `npm run doc:apply`                       | Adds or updates the JSDoc module names                                                                                              |
+| `npm run bundlesize`                      | Checks the bundle size of the webpack compiled chunks                                                                               |
+| `npm run analyze-bundle`                  | Visualize the size of webpack chunks with an interactive zoomable tree map                                                          |
+| `npm run analyze-bundle-resources`        | Analyzes and list all bundle resources by its usage in the bundle and finds orphands, duplicates or resources with ambiguous names. |
+| `npm run analyze-bundle-resources:detail` | Gives detailed usage information of the resource. Usage `npm run analyze-bundle-resources:detail --name=ResourceName.svg`.          |
+| `npm run optimize-svg`                    | Optimize all SVG vector graphics files                                                                                              |
 
 ### Available Pages
 

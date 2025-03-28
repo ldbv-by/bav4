@@ -74,6 +74,8 @@
 		"es-check": "es-check es2023 \"./src/**/*.js\" --module",
 		"bundlesize": "npm run build:prod && npx bundlesize2",
 		"analyze-bundle": "webpack --stats=detailed --json > stats.json && webpack-bundle-analyzer ./stats.json",
+		"analyze-bundle-resources": "node analyzeBundleResources.js --input './src' --exclude 'src/assets/favicon'",
+		"analyze-bundle-resources:detail": "node analyzeBundleResources.js --input './src' --exclude 'src/assets/favicon' --detail $npm_config_name",
 		"optimize-svg": "npx svgo -r -f src/ --config svgo.config.js --final-newline --multipass",
 		"gh-pages": "rm -rf node_modules/.cache/gh-pages && rm -rf dist && npm run build:prod && NODE_DEBUG=gh-pages gh-pages -d dist"
 	}
