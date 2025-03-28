@@ -11,7 +11,7 @@
 			"compression": "none"
 		},
 		{
-			"path": "./dist/wc.*.js",
+			"path": "./dist/wc.js",
 			"maxSize": "100 KB",
 			"compression": "none"
 		}
