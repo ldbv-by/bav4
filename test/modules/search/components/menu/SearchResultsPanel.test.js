@@ -110,7 +110,7 @@ describe('SearchResultsPanel', () => {
 			expect(keyActionMapperSpy).toHaveBeenCalledWith('keydown', jasmine.any(Function));
 		});
 
-		it('resets key navigation when store changes', async () => {
+		it('resets the key navigation when store changes', async () => {
 			const element = await setup();
 			element.resultItemClasses = [AbstractResultItemImpl];
 			const resetSpy = spyOn(element, '_reset').and.callThrough();
@@ -145,7 +145,7 @@ describe('SearchResultsPanel', () => {
 			expect(highlightResult2Spy).not.toHaveBeenCalled(); // --
 		});
 
-		it('resets key navigation when mouse enters element', async () => {
+		it('resets the key navigation when mouse enters element', async () => {
 			const keyActionMapperSpy = spyOn(document, 'removeEventListener').and.callThrough();
 			const element = await setup();
 			const resetSpy = spyOn(element, '_reset').and.callThrough();
@@ -158,7 +158,7 @@ describe('SearchResultsPanel', () => {
 			expect(keyActionMapperSpy).toHaveBeenCalledWith('keydown', jasmine.any(Function));
 		});
 
-		it('reactivates key navigation when mouse leaves element', async () => {
+		it('reactivates the key navigation when mouse leaves element', async () => {
 			const keyActionMapperSpy = spyOn(document, 'addEventListener').and.callThrough();
 
 			const element = await setup();
@@ -258,7 +258,7 @@ describe('SearchResultsPanel', () => {
 			expect(highlightResult2Spy).toHaveBeenCalledTimes(1); // [next]
 		});
 
-		it('focus search after "arrowUp" when keyup event is fired', async () => {
+		it('focuses the search after "arrowUp" when keyup event is fired', async () => {
 			const element = await setup();
 			element.resultItemClasses = [AbstractResultItemImpl];
 			const arrowDownSpy = spyOn(element, '_arrowUp').and.callThrough();
@@ -348,7 +348,7 @@ describe('SearchResultsPanel', () => {
 			expect(selectResultSpy).toHaveBeenCalled();
 		});
 
-		it('does NOT selects the next resultItem for "enter" when keyup event is fired', async () => {
+		it('does NOT select the next resultItem for "enter" when keyup event is fired', async () => {
 			const element = await setup();
 			element.resultItemClasses = [AbstractResultItemImpl];
 			const arrowUpSpy = spyOn(element, '_arrowUp').and.callThrough();
