@@ -11,13 +11,13 @@ import {
 	SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
 	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
 } from '../../../../../../plugins/HighlightPlugin';
-import { MvuElement } from '../../../../../MvuElement';
 import { HighlightFeatureType } from '../../../../../../domain/highlightFeature';
 import { addFeatures, removeFeaturesById } from '../../../../../../store/featureCollection/featureCollection.action';
 import { emitNotification, LevelTypes } from '../../../../../../store/notifications/notifications.action';
 import { BaFeature } from '../../../../../../domain/feature';
 import { StyleTypes } from '../../../../../olMap/services/StyleService';
 import { $injector } from '../../../../../../injection/index';
+import { AbstractResultItem } from '../../AbstractResultItem';
 
 const Update_IsPortrait = 'update_isPortrait';
 const Update_CpSearchResult = 'update_cpSearchResult';
@@ -31,8 +31,10 @@ const Update_FeatureIds = 'update_featureIds';
  *
  * @class
  * @author costa_gi
+ * @author taulinger
+ * @author thiloSchlemmer
  */
-export class CpResultItem extends MvuElement {
+export class CpResultItem extends AbstractResultItem {
 	#translationService;
 	constructor() {
 		super({
@@ -84,62 +86,70 @@ export class CpResultItem extends MvuElement {
 		throw message;
 	}
 
-	createView(model) {
-		const { isPortrait, cpSearchResult, featureIds } = model;
-
-		const translate = (key) => this.#translationService.translate(key);
-
-		/**
-		 * Uses mouseenter and mouseleave events for adding/removing a temporary highlight feature.
-		 * These events are not fired on touch devices, so there's no extra handling needed.
-		 */
-		const onMouseEnter = (result) => {
-			if (result.geometry) {
+	/**
+	 * @override
+	 */
+	highlightResult(highlighted) {
+		const { cpSearchResult } = this.getModel();
+		if (highlighted) {
+			this.shadowRoot.querySelector('.ba-list-item')?.focus();
+			if (cpSearchResult.geometry) {
 				addHighlightFeatures({
-					id: result.id,
+					id: cpSearchResult.id,
 					category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY,
 					type: HighlightFeatureType.DEFAULT_TMP,
-					data: result.geometry
+					data: cpSearchResult.geometry
 				});
 			} else {
 				addHighlightFeatures({
-					id: result.id,
+					id: cpSearchResult.id,
 					category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY,
 					type: HighlightFeatureType.MARKER_TMP,
-					data: [...result.center]
+					data: [...cpSearchResult.center]
 				});
 			}
-		};
-		const onMouseLeave = () => {
+		} else {
+			this.shadowRoot.querySelector('.ba-list-item')?.blur();
 			removeHighlightFeaturesByCategory(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY);
-		};
-		const onClick = (result) => {
-			const extent = result.extent ? [...result.extent] : [...result.center, ...result.center];
-			removeHighlightFeaturesByCategory([SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY, SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY]);
-			fit(extent, { maxZoom: CpResultItem._maxZoomLevel });
-			if (result.geometry) {
-				addHighlightFeatures({
-					id: result.id,
-					category: SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
-					type: HighlightFeatureType.DEFAULT,
-					data: result.geometry,
-					label: result.label
-				});
-			} else if (!result.extent) {
-				addHighlightFeatures({
-					id: result.id,
-					category: SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
-					type: HighlightFeatureType.MARKER,
-					data: [...result.center],
-					label: result.label
-				});
-			}
+		}
+	}
 
-			if (isPortrait) {
-				//close the main menu
-				closeMainMenu();
-			}
-		};
+	/**
+	 * @override
+	 */
+	selectResult() {
+		const { isPortrait, cpSearchResult } = this.getModel();
+		const extent = cpSearchResult.extent ? [...cpSearchResult.extent] : [...cpSearchResult.center, ...cpSearchResult.center];
+		removeHighlightFeaturesByCategory([SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY, SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY]);
+		fit(extent, { maxZoom: CpResultItem._maxZoomLevel });
+		if (cpSearchResult.geometry) {
+			addHighlightFeatures({
+				id: cpSearchResult.id,
+				category: SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
+				type: HighlightFeatureType.DEFAULT,
+				data: cpSearchResult.geometry,
+				label: cpSearchResult.label
+			});
+		} else if (!cpSearchResult.extent) {
+			addHighlightFeatures({
+				id: cpSearchResult.id,
+				category: SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
+				type: HighlightFeatureType.MARKER,
+				data: [...cpSearchResult.center],
+				label: cpSearchResult.label
+			});
+		}
+
+		if (isPortrait) {
+			//close the main menu
+			closeMainMenu();
+		}
+	}
+
+	createView(model) {
+		const { cpSearchResult, featureIds } = model;
+
+		const translate = (key) => this.#translationService.translate(key);
 
 		const removeFeature = (result) => {
 			removeHighlightFeaturesByCategory([SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY]);
@@ -148,7 +158,7 @@ export class CpResultItem extends MvuElement {
 		};
 
 		const addFeature = (result) => {
-			const feature = new BaFeature(result.geometry, result.id).setStyleHint(StyleTypes.HIGHLIGHT);
+			const feature = new BaFeature(result.geometry, result.id).setStyleHint(StyleTypes.HIGHLIGHT).set('name', result.label);
 			removeHighlightFeaturesByCategory([SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY]);
 			addFeatures(feature);
 			emitNotification(translate('global_featureCollection_add_feature_notification'), LevelTypes.INFO);
@@ -186,6 +196,10 @@ export class CpResultItem extends MvuElement {
 		};
 
 		if (cpSearchResult) {
+			/**
+			 * Uses mouseenter and mouseleave events for adding/removing a temporary highlight feature.
+			 * These events are not fired on touch devices, so there's no extra handling needed.
+			 */
 			return html`
 				<style>
 					${css}
@@ -193,9 +207,9 @@ export class CpResultItem extends MvuElement {
 				<li
 					class="ba-list-item"
 					tabindex="0"
-					@click=${() => onClick(cpSearchResult)}
-					@mouseenter=${() => onMouseEnter(cpSearchResult)}
-					@mouseleave=${() => onMouseLeave()}
+					@click=${() => this.selectResult()}
+					@mouseenter=${() => this.highlightResult(true)}
+					@mouseleave=${() => this.highlightResult(false)}
 				>
 					<span class="ba-list-item__pre ">
 						<span class="ba-list-item__icon"> </span>

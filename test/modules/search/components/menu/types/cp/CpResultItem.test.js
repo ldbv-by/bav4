@@ -17,6 +17,7 @@ import { featureCollectionReducer } from '../../../../../../../src/store/feature
 import { BaFeature } from '../../../../../../../src/domain/feature.js';
 import { notificationReducer } from '../../../../../../../src/store/notifications/notifications.reducer.js';
 import { LevelTypes } from '../../../../../../../src/store/notifications/notifications.action.js';
+import { AbstractResultItem } from '../../../../../../../src/modules/search/components/menu/AbstractResultItem.js';
 window.customElements.define(CpResultItem.tag, CpResultItem);
 
 describe('CpResultItem', () => {
@@ -47,6 +48,16 @@ describe('CpResultItem', () => {
 
 		return TestUtils.render(CpResultItem.tag);
 	};
+
+	describe('class', () => {
+		it('inherits from AbstractResultItem', async () => {
+			const element = await setup();
+
+			expect(element instanceof AbstractResultItem).toBeTrue();
+			expect(element.selectResult).toEqual(jasmine.any(Function));
+			expect(element.highlightResult).toEqual(jasmine.any(Function));
+		});
+	});
 
 	describe('static properties', () => {
 		it('_maxZoomValue', async () => {
@@ -169,7 +180,10 @@ describe('CpResultItem', () => {
 
 				element.shadowRoot.querySelector('button.chips__button.add').click();
 
-				expect(store.getState().featureCollection.entries).toContain(new BaFeature(ewktGeometry, id));
+				expect(store.getState().featureCollection.entries).toHaveSize(1);
+				expect(store.getState().featureCollection.entries[0].geometry).toEqual(ewktGeometry);
+				expect(store.getState().featureCollection.entries[0].id).toBe(id);
+				expect(store.getState().featureCollection.entries[0].get('name')).toBe(cpSearchResult.label);
 				expect(store.getState().highlight.features).toEqual([{ category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY, data: coordinate }]);
 				expect(store.getState().notifications.latest.payload.content).toBe('global_featureCollection_add_feature_notification');
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
