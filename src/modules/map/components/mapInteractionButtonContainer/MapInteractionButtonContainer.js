@@ -96,7 +96,7 @@ export class MapInteractionButtonContainer extends MvuElement {
 	 */
 	createView(model) {
 		const translate = (key) => this.#translationService.translate(key);
-		const { toolId, isOpen, isOpenNavigationRail, isPortrait, hasMinWidth } = model;
+		const { toolId, isOpen, isOpenNavigationRail, isPortrait } = model;
 
 		const classes = {
 			'is-open': isOpen,
