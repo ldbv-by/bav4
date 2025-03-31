@@ -21,7 +21,7 @@ import { AggregateGeoResource, observable, VTGeoResource, XyzGeoResource } from 
 import { loadBvvFileStorageResourceById } from './provider/fileStorage.provider';
 import { loadBvvGeoResourceById, loadBvvGeoResources, loadExternalGeoResource } from './provider/geoResource.provider';
 import { geoResourceChanged } from '../store/layers/layers.action';
-import { bvvAuthResponseInterceptorProvider } from './provider/auth.provider';
+import { bvv401InterceptorProvider } from './provider/auth.provider';
 
 export const FALLBACK_GEORESOURCE_ID_0 = 'tpo';
 export const FALLBACK_GEORESOURCE_ID_1 = 'tpo_mono';
@@ -54,7 +54,7 @@ export class GeoResourceService {
 	constructor(
 		provider = loadBvvGeoResources,
 		byIdProvider = [loadExternalGeoResource, loadBvvFileStorageResourceById, loadBvvGeoResourceById],
-		authResponseInterceptorProvider = bvvAuthResponseInterceptorProvider
+		authResponseInterceptorProvider = bvv401InterceptorProvider
 	) {
 		this._provider = provider;
 		this._byIdProvider = byIdProvider;

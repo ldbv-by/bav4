@@ -23,7 +23,12 @@ module.exports = {
 	},
 	output: {
 		path: path.resolve(__dirname, 'dist'),
-		filename: hashFilenames ? '[name].[contenthash].js' : '[name].js',
+		filename: (chunkData) => {
+			if (['config'].includes(chunkData.chunk.name)) {
+				return '[name].js';
+			}
+			return hashFilenames ? '[name].[contenthash].js' : '[name].js';
+		},
 		clean: true
 	},
 	module: {

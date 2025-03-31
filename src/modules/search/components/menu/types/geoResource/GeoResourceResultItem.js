@@ -5,7 +5,6 @@ import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
 import css from './geoResourceResultItem.css';
-import { MvuElement } from '../../../../../MvuElement';
 import { $injector } from '../../../../../../injection';
 import { createUniqueId } from '../../../../../../utils/numberUtils';
 import { fitLayer } from '../../../../../../store/position/position.action';
@@ -13,6 +12,7 @@ import { GeoResourceFuture, VectorGeoResource } from '../../../../../../domain/g
 import zoomToExtentSvg from '../../assets/zoomToExtent.svg';
 import infoSvg from '../../assets/info.svg';
 import { openModal } from '../../../../../../store/modal/modal.action';
+import { AbstractResultItem } from '../../AbstractResultItem';
 
 const Update_GeoResourceSearchResult = 'update_geoResourceSearchResult';
 const Update_LoadingPreviewFlag = 'update_loadingPreviewFlag';
@@ -32,7 +32,7 @@ export const LOADING_PREVIEW_DELAY_MS = 500;
  * @class
  * @author taulinger
  */
-export class GeoResourceResultItem extends MvuElement {
+export class GeoResourceResultItem extends AbstractResultItem {
 	#geoResourceService;
 	constructor() {
 		super({
@@ -78,6 +78,43 @@ export class GeoResourceResultItem extends MvuElement {
 		return `tmp_${GeoResourceResultItem.name}_${id}`;
 	}
 
+	/**
+	 * @override
+	 */
+	highlightResult(highlighted) {
+		if (highlighted) {
+			this.shadowRoot.querySelector('.ba-list-item')?.focus();
+		} else {
+			this.shadowRoot.querySelector('.ba-list-item')?.blur();
+		}
+	}
+
+	/**
+	 * override
+	 */
+	selectResult() {
+		const { geoResourceSearchResult, activeLayers } = this.getModel();
+
+		const isGeoResourceActive = (geoResourceId) => {
+			return activeLayers.filter((l) => l.id !== GeoResourceResultItem._tmpLayerId(geoResourceId)).some((l) => l.geoResourceId === geoResourceId);
+		};
+
+		if (isGeoResourceActive(geoResourceSearchResult.geoResourceId)) {
+			activeLayers.filter((l) => l.geoResourceId === geoResourceSearchResult.geoResourceId).forEach((l) => removeLayer(l.id));
+		} else {
+			//remove the preview layer
+			removeLayer(GeoResourceResultItem._tmpLayerId(geoResourceSearchResult.geoResourceId));
+			//add the "real" layer after some delay, which gives the user a better feedback
+			const geoR = this.#geoResourceService.byId(geoResourceSearchResult.geoResourceId);
+			/* istanbul ignore else */
+			if (geoR) {
+				const id = `${geoResourceSearchResult.geoResourceId}_${createUniqueId()}`;
+				const opacity = geoR.opacity;
+				addLayer(id, { geoResourceId: geoResourceSearchResult.geoResourceId, opacity });
+			}
+		}
+	}
+
 	createView(model) {
 		const { geoResourceSearchResult, loadingPreview, activeLayers } = model;
 		const translate = (key) => this._translationService.translate(key);
@@ -95,6 +132,7 @@ export class GeoResourceResultItem extends MvuElement {
 		 * These events are not fired on touch devices, so there's no extra handling needed.
 		 */
 		const onMouseEnter = (result) => {
+			this.highlightResult(true);
 			if (isGeoResourceActive(result.geoResourceId)) return;
 
 			//add a preview layer if GeoResource is accessible
@@ -113,6 +151,7 @@ export class GeoResourceResultItem extends MvuElement {
 		};
 
 		const onMouseLeave = (result) => {
+			this.highlightResult(false);
 			//remove the preview layer
 			removeLayer(GeoResourceResultItem._tmpLayerId(result.geoResourceId));
 			if (this._timeoutId) {
@@ -120,23 +159,6 @@ export class GeoResourceResultItem extends MvuElement {
 				this._timeoutId = null;
 			}
 			this.signal(Update_LoadingPreviewFlag, false);
-		};
-
-		const onClick = (result) => {
-			if (isGeoResourceActive(result.geoResourceId)) {
-				activeLayers.filter((l) => l.geoResourceId === result.geoResourceId).forEach((l) => removeLayer(l.id));
-			} else {
-				//remove the preview layer
-				removeLayer(GeoResourceResultItem._tmpLayerId(result.geoResourceId));
-				//add the "real" layer after some delay, which gives the user a better feedback
-				const geoR = this.#geoResourceService.byId(result.geoResourceId);
-				/* istanbul ignore else */
-				if (geoR) {
-					const id = `${result.geoResourceId}_${createUniqueId()}`;
-					const opacity = geoR.opacity;
-					addLayer(id, { geoResourceId: result.geoResourceId, opacity });
-				}
-			}
 		};
 
 		const onClickZoomToExtent = (e, result) => {
@@ -203,7 +225,7 @@ export class GeoResourceResultItem extends MvuElement {
 					${css}
 				</style>
 				<li
-					class="ba-list-item ${getActivePreviewClass()} ${getPreviewClass(geoResourceSearchResult)}"
+					class="ba-list-item ba-key-nav-item ${getActivePreviewClass()} ${getPreviewClass(geoResourceSearchResult)}"
 					tabindex="0"
 					@mouseenter=${() => onMouseEnter(geoResourceSearchResult)}
 					@mouseleave=${() => onMouseLeave(geoResourceSearchResult)}
@@ -211,8 +233,8 @@ export class GeoResourceResultItem extends MvuElement {
 					<span class="ba-list-item__pre ">
 						<ba-checkbox
 							id="toggle_layer"
-							class="ba-list-item__text"							
-							@toggle=${() => onClick(geoResourceSearchResult)}
+							class="ba-list-item__text ba-key-nav-action"							
+							@toggle=${() => this.selectResult()}
 							.disabled=${!geoResourceSearchResult}
 							.checked=${isGeoResourceActive(geoResourceSearchResult.geoResourceId)}
 							tabindex="0"
