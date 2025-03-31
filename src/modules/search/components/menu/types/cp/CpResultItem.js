@@ -95,14 +95,12 @@ export class CpResultItem extends AbstractResultItem {
 			this.shadowRoot.querySelector('.ba-list-item')?.focus();
 			if (cpSearchResult.geometry) {
 				addHighlightFeatures({
-					id: cpSearchResult.id,
 					category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY,
 					type: HighlightFeatureType.DEFAULT_TMP,
 					data: cpSearchResult.geometry
 				});
 			} else {
 				addHighlightFeatures({
-					id: cpSearchResult.id,
 					category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY,
 					type: HighlightFeatureType.MARKER_TMP,
 					data: [...cpSearchResult.center]
