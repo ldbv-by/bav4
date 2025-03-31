@@ -10,8 +10,8 @@ import { MvuElement } from '../../../MvuElement';
 import closeSvg from './assets/close.svg';
 import css from './mapInteractionButtonContainer.css';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { BottomSheet } from '../../../stackables/components/bottomSheet/BottomSheet';
 
-const BottomSheet_Open_Close_Time = 10;
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
 const Update_ToolId = 'update_tooId';
 const Update_Bottom_Sheet = 'update_bottom_sheet';
@@ -32,7 +32,6 @@ export class MapInteractionButtonContainer extends MvuElement {
 			toolId: null,
 			isOpen: false,
 			isPortrait: false,
-			hasMinWidth: false,
 			isOpenNavigationRail: false
 		});
 
@@ -85,13 +84,11 @@ export class MapInteractionButtonContainer extends MvuElement {
 	onAfterRender() {
 		setTimeout(() => {
 			const mapInteractionButtonContainer = this.shadowRoot.getElementById('mapInteractionButtonContainer');
-			const bottomSheet = findAllBySelector(document, `ba-bottom-sheet`);
-			if (bottomSheet[0]) {
-				mapInteractionButtonContainer.style.bottom = bottomSheet[0].offsetHeight + 10 + 'px';
-			} else {
-				mapInteractionButtonContainer.style.bottom = '4.3em';
-			}
-		}, BottomSheet_Open_Close_Time);
+			const bottomSheet = findAllBySelector(document, BottomSheet.tag);
+			bottomSheet[0]
+				? (mapInteractionButtonContainer.style.bottom = bottomSheet[0].offsetHeight + 10 + 'px')
+				: (mapInteractionButtonContainer.style.bottom = 'var(--map-interaction-container-bottom)');
+		});
 	}
 
 	/**
@@ -103,9 +100,7 @@ export class MapInteractionButtonContainer extends MvuElement {
 
 		const classes = {
 			'is-open': isOpen,
-			'is-open-navigationRail': isOpenNavigationRail && !isPortrait,
-			'is-desktop': hasMinWidth,
-			'is-tablet': !hasMinWidth && !isPortrait,
+			'is-open-navigationRail': isOpenNavigationRail,
 			'is-portrait': isPortrait,
 			'is-landscape': !isPortrait
 		};
@@ -123,7 +118,7 @@ export class MapInteractionButtonContainer extends MvuElement {
 			</style>
 			<div id="mapInteractionButtonContainer" class="map-interaction-button-container ${classMap(classes)}">
 				<ba-button
-					class="${getShowRoutingClass()} routing"
+					class="${getShowRoutingClass()} routing ui-center"
 					.icon=${closeSvg}
 					.label=${translate('map_interaction_button_container_routing')}
 					.type=${'primary'}

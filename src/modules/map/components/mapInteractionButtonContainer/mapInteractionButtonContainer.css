@@ -1,7 +1,11 @@
+:root,
+:host {
+	--map-interaction-container-bottom: 2.8em;
+}
 .map-interaction-button-container {
 	position: fixed;
 	z-index: var(--z-mapbuttons);
-	bottom: 4.3em;
+	bottom: var(--map-interaction-container-bottom);
 	width: 100%;
 	display: flex;
 	justify-content: center;
@@ -19,8 +23,8 @@ ba-button {
 	border-radius: 2em;
 	overflow: hidden;
 	width: 16em;
-	transition: all var(--animation-duration-small-open) var(--animation-easing-open);
 	pointer-events: all;
+	transition: all var(--animation-duration-large-open) var(--animation-easing-open);
 }
 ba-button::part(button) {
 	background-color: var(--info-color);
@@ -30,16 +34,14 @@ ba-button::part(icon) {
 	top: 0.2em;
 }
 
-.is-tablet.is-open-navigationRail,
-.is-landscape.is-open-navigationRail {
-	padding-left: 5em;
+.is-landscape.is-open-navigationRail ba-button.ui-center {
+	margin-left: 5em;
 }
 
-.is-tablet.is-open,
-.is-landscape.is-ope {
-	padding-left: 28em;
+.is-landscape.is-ope ba-button.ui-center {
+	margin-left: 28em;
 }
-.is-tablet.is-open.is-open-navigationRail,
-.is-landscape.is-open.is-open-navigationRail {
-	padding-left: 33em;
+
+.is-landscape.is-open.is-open-navigationRail ba-button.ui-center {
+	margin-left: 33em;
 }

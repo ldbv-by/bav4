@@ -4,8 +4,13 @@ import { $injector } from '../../../../../src/injection/index.js';
 import { Tools } from '../../../../../src/domain/tools';
 import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer.js';
+import { BottomSheet } from '../../../../../src/modules/stackables/components/bottomSheet/BottomSheet';
+import { bottomSheetReducer } from '../../../../../src/store/bottomSheet/bottomSheet.reducer';
+import { createNoInitialStateMainMenuReducer } from '../../../../../src/store/mainMenu/mainMenu.reducer';
+import { createNoInitialStateNavigationRailReducer } from '../../../../../src/store/navigationRail/navigationRail.reducer';
 
 window.customElements.define(MapInteractionButtonContainer.tag, MapInteractionButtonContainer);
+window.customElements.define(BottomSheet.tag, BottomSheet);
 
 describe('MapInteractionButtonContainer', () => {
 	let store;
@@ -18,12 +23,22 @@ describe('MapInteractionButtonContainer', () => {
 			tools: {
 				current: false
 			},
+			mainMenu: {
+				open: true,
+				tab: null
+			},
+			navigationRail: {
+				open: true
+			},
 			...state
 		};
 
 		store = TestUtils.setupStoreAndDi(initialState, {
 			tools: toolsReducer,
-			media: createNoInitialStateMediaReducer()
+			media: createNoInitialStateMediaReducer(),
+			bottomSheet: bottomSheetReducer,
+			mainMenu: createNoInitialStateMainMenuReducer(),
+			navigationRail: createNoInitialStateNavigationRailReducer()
 		});
 
 		$injector.registerSingleton('EnvironmentService', {
@@ -39,8 +54,10 @@ describe('MapInteractionButtonContainer', () => {
 			const element = new MapInteractionButtonContainer();
 
 			expect(element.getModel()).toEqual({
+				toolId: null,
 				isPortrait: false,
-				toolId: null
+				isOpen: false,
+				isOpenNavigationRail: false
 			});
 		});
 	});
@@ -51,8 +68,10 @@ describe('MapInteractionButtonContainer', () => {
 			const model = new MapInteractionButtonContainer().getModel();
 
 			expect(model).toEqual({
+				toolId: null,
 				isPortrait: false,
-				toolId: null
+				isOpen: false,
+				isOpenNavigationRail: false
 			});
 		});
 	});
@@ -62,6 +81,7 @@ describe('MapInteractionButtonContainer', () => {
 			const element = await setup();
 
 			expect(element.shadowRoot.querySelector('.map-interaction-button-container').children).toHaveSize(2);
+			expect(element.shadowRoot.querySelectorAll('ba-button.routing.ui-center')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('ba-button.routing.hide')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('ba-button.layer-swipe.hide')).toHaveSize(1);
 		});
@@ -70,7 +90,7 @@ describe('MapInteractionButtonContainer', () => {
 			const element = await setup({ tools: { current: Tools.ROUTING } });
 			expect(element.shadowRoot.querySelector('.map-interaction-button-container').children).toHaveSize(2);
 			expect(element.shadowRoot.querySelectorAll('ba-button.layer-swipe.hide')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-button.routing')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-button.routing.ui-center')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('ba-button.routing')[0].label).toBe('map_interaction_button_container_routing');
 			expect(element.shadowRoot.querySelectorAll('ba-button.routing')[0].title).toBe('');
 		});
@@ -111,6 +131,60 @@ describe('MapInteractionButtonContainer', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(0);
+		});
+
+		it('layouts with open navigation rail', async () => {
+			const state = {
+				media: {
+					portrait: false
+				},
+				navigationRail: {
+					open: true
+				}
+			};
+
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(1);
+		});
+
+		it('layouts with closed navigation rail', async () => {
+			const state = {
+				media: {
+					portrait: false
+				},
+				navigationRail: {
+					open: false
+				}
+			};
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelectorAll('.is-open-navigationRail')).toHaveSize(0);
+		});
+
+		it('layouts with open main menu', async () => {
+			const state = {
+				media: {
+					portrait: false
+				},
+				mainMenu: {
+					open: true
+				}
+			};
+
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(1);
+		});
+
+		it('layouts with closed main menu', async () => {
+			const state = {
+				media: {
+					portrait: false
+				},
+				mainMenu: {
+					open: false
+				}
+			};
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(0);
 		});
 	});
 
