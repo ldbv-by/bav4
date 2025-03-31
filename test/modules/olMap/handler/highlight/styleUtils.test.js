@@ -17,8 +17,7 @@ import Point from 'ol/geom/Point';
 import { sleep } from '../../../../../src/utils/timer';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
-import { Geometry, GeometryCollection, LineString, MultiLineString, MultiPoint, MultiPolygon, Polygon } from 'ol/geom';
-import { getCenter } from 'ol/extent';
+import { GeometryCollection, LineString, MultiLineString, MultiPoint, MultiPolygon, Polygon } from 'ol/geom';
 
 const baHighlightIconMock = 'data:image/svg+xml;base64,foo';
 const iconServiceMock = { getIconResult: () => {} };
