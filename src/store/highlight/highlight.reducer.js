@@ -20,7 +20,7 @@ export const highlightReducer = (state = initialState, action) => {
 	const createIdIfMissing = (features) =>
 		features.map((f) => {
 			if (!f.id) {
-				f.id = createUniqueId();
+				f.id = createUniqueId().toString();
 			}
 			return f;
 		});

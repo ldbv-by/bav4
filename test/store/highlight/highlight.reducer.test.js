@@ -76,13 +76,13 @@ describe('highlightReducer', () => {
 
 		addHighlightFeatures(highlightFeature);
 
-		expect(store.getState().highlight.features[0].id).toBeInstanceOf(Number);
+		expect(store.getState().highlight.features[0].id).toBeInstanceOf(String);
 
 		clearHighlightFeatures();
 
 		addHighlightFeatures(highlightFeature);
 
-		expect(store.getState().highlight.features[0].id).toBeInstanceOf(Number);
+		expect(store.getState().highlight.features[0].id).toBeInstanceOf(String);
 	});
 
 	it("changes the 'features' and 'active' property by removing a features by `id`", () => {
