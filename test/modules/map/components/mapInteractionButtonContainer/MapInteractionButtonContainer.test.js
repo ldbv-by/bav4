@@ -8,7 +8,6 @@ import { BottomSheet } from '../../../../../src/modules/stackables/components/bo
 import { bottomSheetReducer } from '../../../../../src/store/bottomSheet/bottomSheet.reducer';
 import { createNoInitialStateMainMenuReducer } from '../../../../../src/store/mainMenu/mainMenu.reducer';
 import { createNoInitialStateNavigationRailReducer } from '../../../../../src/store/navigationRail/navigationRail.reducer';
-import { openBottomSheet, closeBottomSheet } from '../../../../../src/store/bottomSheet/bottomSheet.action';
 import { html } from 'lit-html';
 
 window.customElements.define(MapInteractionButtonContainer.tag, MapInteractionButtonContainer);
