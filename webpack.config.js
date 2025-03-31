@@ -24,7 +24,7 @@ module.exports = {
 	output: {
 		path: path.resolve(__dirname, 'dist'),
 		filename: (chunkData) => {
-			if (['config'].includes(chunkData.chunk.name)) {
+			if (['wc', 'config'].includes(chunkData.chunk.name)) {
 				return '[name].js';
 			}
 			return hashFilenames ? '[name].[contenthash].js' : '[name].js';
@@ -71,7 +71,7 @@ module.exports = {
 		new HtmlWebpackPlugin({
 			filename: 'wc/wrapper/index.html',
 			template: 'src/wcWrapper.html',
-			chunks: []
+			chunks: ['wc']
 		}),
 		new CopyPlugin({
 			patterns: [{ from: path.resolve(__dirname, './src/assets/favicon'), to: path.join('assets') }]
