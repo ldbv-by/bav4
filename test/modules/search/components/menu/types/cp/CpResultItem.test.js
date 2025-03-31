@@ -164,13 +164,14 @@ describe('CpResultItem', () => {
 		};
 
 		describe('`add-to-FeatureCollection` button is clicked', () => {
-			it('adds the HighlightFeature to the feature collection, removes an existing HighlighFeature and emits a notification', async () => {
+			it('adds the HighlightFeature to the feature collection, removes an existing HighlighFeature (permanent and temp.) and emits a notification', async () => {
 				const id = 'id';
 				const element = await setup({
 					highlight: {
 						features: [
 							{ category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY, data: coordinate },
-							{ category: SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY, data: coordinate }
+							{ category: SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY, data: coordinate },
+							{ category: 'fooCat', data: coordinate }
 						]
 					}
 				});
@@ -184,23 +185,26 @@ describe('CpResultItem', () => {
 				expect(store.getState().featureCollection.entries[0].geometry).toEqual(ewktGeometry);
 				expect(store.getState().featureCollection.entries[0].id).toBe(id);
 				expect(store.getState().featureCollection.entries[0].get('name')).toBe(cpSearchResult.label);
-				expect(store.getState().highlight.features).toEqual([{ category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY, data: coordinate }]);
+				expect(store.getState().highlight.features).toEqual([{ category: 'fooCat', data: coordinate }]);
 				expect(store.getState().notifications.latest.payload.content).toBe('global_featureCollection_add_feature_notification');
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 			});
 		});
 
 		describe('`remove-from-FeatureCollection` button is clicked', () => {
-			it('removes the feature from feature collection, removes an existing HighlighFeature and emits a notification', async () => {
+			it('removes the feature from feature collection, removes an existing HighlighFeature permanent and temp.) and emits a notification', async () => {
 				const id = 'id';
 				const element = await setup({
 					featureCollection: {
 						entries: [new BaFeature(ewktGeometry, id)]
 					},
-					features: [
-						{ category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY, data: coordinate },
-						{ category: SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY, data: coordinate }
-					]
+					highlight: {
+						features: [
+							{ category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY, data: coordinate },
+							{ category: SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY, data: coordinate },
+							{ category: 'fooCat', data: coordinate }
+						]
+					}
 				});
 				const cpSearchResult = new CadastralParcelSearchResult('label', 'labelFormatted', coordinate, extent, ewktGeometry).setId(id);
 				element.data = cpSearchResult;
@@ -208,7 +212,7 @@ describe('CpResultItem', () => {
 				element.shadowRoot.querySelector('button.chips__button.remove').click();
 
 				expect(store.getState().featureCollection.entries).toHaveSize(0);
-				expect(store.getState().highlight.features.filter((hf) => hf.category === SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY)).toHaveSize(0);
+				expect(store.getState().highlight.features).toEqual([{ category: 'fooCat', data: coordinate }]);
 				expect(store.getState().notifications.latest.payload.content).toBe('global_featureCollection_remove_feature_notification');
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 			});
