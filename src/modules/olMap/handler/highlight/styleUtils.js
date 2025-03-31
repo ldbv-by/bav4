@@ -2,12 +2,11 @@
  * @module modules/olMap/handler/highlight/styleUtils
  */
 import { getVectorContext } from 'ol/render';
-import { toContext as toCanvasContext } from 'ol/render';
 import { easeIn, easeOut } from 'ol/easing';
 import { Style, Icon, Stroke, Fill } from 'ol/style';
 import CircleStyle from 'ol/style/Circle';
 import { $injector } from '../../../../injection/index';
-import { MultiPolygon, Point, Polygon, SimpleGeometry } from '../../../../../node_modules/ol/geom';
+import { GeometryCollection, MultiLineString, MultiPoint, MultiPolygon, Point, Polygon, SimpleGeometry } from '../../../../../node_modules/ol/geom';
 import { getCenter } from '../../../../../node_modules/ol/extent';
 
 export const highlightCoordinateFeatureStyleFunction = () => {
@@ -64,22 +63,38 @@ export const highlightGeometryOrCoordinateFeatureStyleFunction = () => {
 const withResolutionFallback = (feature, resolution, styles, fallbackStyles) => {
 	const geometry = feature.getGeometry();
 	const getPixelBoxSize = (geometry) => {
-		if (geometry instanceof Polygon || geometry instanceof MultiPolygon) {
-			const extent = geometry.getExtent();
+		const getSize = (extent) => {
 			const a = extent[2] - extent[0];
 			const b = extent[3] - extent[1];
 			const size = Math.min(a, b) / resolution;
 			return size;
+		};
+
+		if (geometry instanceof GeometryCollection) {
+			return geometry.getGeometries().reduce((sum, cur) => sum + getSize(cur.getExtent()), 0);
+		}
+
+		if (geometry instanceof SimpleGeometry) {
+			return getSize(geometry.getExtent());
 		}
 		return null;
 	};
 
 	const getCenterPoint = (geometry) => {
-		if (geometry instanceof SimpleGeometry) {
-			return new Point(getCenter(geometry.getExtent()));
+		if (geometry instanceof GeometryCollection) {
+			return new MultiPoint(geometry.getGeometries().map((l) => getCenter(l.getExtent())));
 		}
 
-		return geometry;
+		if (geometry instanceof MultiLineString) {
+			return new MultiPoint(geometry.getLineStrings().map((l) => getCenter(l.getExtent())));
+		}
+
+		if (geometry instanceof MultiPolygon) {
+			return new MultiPoint(geometry.getPolygons().map((l) => getCenter(l.getExtent())));
+		}
+
+		// everything else should be a SimpleGeometry
+		return new Point(getCenter(geometry.getExtent()));
 	};
 
 	const Minimum_Visible_Pixelbox_Size = 10;
