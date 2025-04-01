@@ -95,14 +95,12 @@ export class CpResultItem extends AbstractResultItem {
 			this.shadowRoot.querySelector('.ba-list-item')?.focus();
 			if (cpSearchResult.geometry) {
 				addHighlightFeatures({
-					id: cpSearchResult.id,
 					category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY,
 					type: HighlightFeatureType.DEFAULT_TMP,
 					data: cpSearchResult.geometry
 				});
 			} else {
 				addHighlightFeatures({
-					id: cpSearchResult.id,
 					category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY,
 					type: HighlightFeatureType.MARKER_TMP,
 					data: [...cpSearchResult.center]
@@ -152,14 +150,14 @@ export class CpResultItem extends AbstractResultItem {
 		const translate = (key) => this.#translationService.translate(key);
 
 		const removeFeature = (result) => {
-			removeHighlightFeaturesByCategory([SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY]);
+			removeHighlightFeaturesByCategory([SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY]);
 			removeFeaturesById(result.id);
 			emitNotification(translate('global_featureCollection_remove_feature_notification'), LevelTypes.INFO);
 		};
 
 		const addFeature = (result) => {
 			const feature = new BaFeature(result.geometry, result.id).setStyleHint(StyleTypes.HIGHLIGHT).set('name', result.label);
-			removeHighlightFeaturesByCategory([SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY]);
+			removeHighlightFeaturesByCategory([SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY]);
 			addFeatures(feature);
 			emitNotification(translate('global_featureCollection_add_feature_notification'), LevelTypes.INFO);
 		};
