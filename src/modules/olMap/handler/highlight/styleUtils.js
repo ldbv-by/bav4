@@ -6,6 +6,8 @@ import { easeIn, easeOut } from 'ol/easing';
 import { Style, Icon, Stroke, Fill } from 'ol/style';
 import CircleStyle from 'ol/style/Circle';
 import { $injector } from '../../../../injection/index';
+import { GeometryCollection, MultiLineString, MultiPoint, MultiPolygon, Point, SimpleGeometry } from '../../../../../node_modules/ol/geom';
+import { getCenter } from '../../../../../node_modules/ol/extent';
 
 export const highlightCoordinateFeatureStyleFunction = () => {
 	const { IconService: iconService } = $injector.inject('IconService');
@@ -58,7 +60,53 @@ export const highlightGeometryOrCoordinateFeatureStyleFunction = () => {
 	return [selectStyle];
 };
 
-export const highlightTemporaryGeometryOrCoordinateFeatureStyleFunction = () => {
+const withResolutionFallback = (feature, resolution, styles, fallbackStyles) => {
+	const geometry = feature.getGeometry();
+	const getPixelBoxSize = (geometry) => {
+		const getSize = (extent) => {
+			const a = extent[2] - extent[0];
+			const b = extent[3] - extent[1];
+			const size = Math.min(a, b) / resolution;
+			return size;
+		};
+
+		if (geometry instanceof GeometryCollection) {
+			return geometry.getGeometries().reduce((sum, cur) => sum + getSize(cur.getExtent()), 0);
+		}
+
+		if (geometry instanceof SimpleGeometry) {
+			return getSize(geometry.getExtent());
+		}
+		return null;
+	};
+
+	const getCenterPoint = (geometry) => {
+		if (geometry instanceof GeometryCollection) {
+			return new MultiPoint(geometry.getGeometries().map((l) => getCenter(l.getExtent())));
+		}
+
+		if (geometry instanceof MultiLineString) {
+			return new MultiPoint(geometry.getLineStrings().map((l) => getCenter(l.getExtent())));
+		}
+
+		if (geometry instanceof MultiPolygon) {
+			return new MultiPoint(geometry.getPolygons().map((l) => getCenter(l.getExtent())));
+		}
+
+		// everything else should be a SimpleGeometry
+		return new Point(getCenter(geometry.getExtent()));
+	};
+
+	const Minimum_Visible_Pixelbox_Size = 10;
+	const pixelBoxSize = getPixelBoxSize(feature.getGeometry()) ?? Infinity;
+	if (Minimum_Visible_Pixelbox_Size > pixelBoxSize) {
+		const baseStyle = fallbackStyles[0];
+		return [new Style({ geometry: getCenterPoint(geometry), image: baseStyle.getImage() })];
+	}
+	return styles;
+};
+
+export const highlightTemporaryGeometryOrCoordinateFeatureStyleFunction = (feature, resolution) => {
 	const hlStroke = new Stroke({
 		color: [255, 128, 0, 1],
 		width: 6
@@ -78,9 +126,8 @@ export const highlightTemporaryGeometryOrCoordinateFeatureStyleFunction = () => 
 		})
 	});
 
-	return [hlStyle];
+	return withResolutionFallback(feature, resolution, [hlStyle], highlightTemporaryCoordinateFeatureStyleFunction());
 };
-
 export const highlightAnimatedCoordinateFeatureStyleFunction = () => {
 	const selectStroke = new Stroke({
 		color: [255, 255, 255, 1],
