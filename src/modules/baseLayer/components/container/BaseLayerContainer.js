@@ -155,10 +155,10 @@ export class BaseLayerContainer extends MvuElement {
 							)}
 						</div>`}
 			</div>
-			<div id="section" class="section scroll-snap-x">
+			<div id="section" class="section scroll-snap-x" part="section">
 				${Object.entries(categories).map(
 					([key, value], index) =>
-						html`<div id="${key}" class="container ${isActive(key)}">
+						html`<div id="${key}" class="container ${isActive(key)}" part="container">
 							${getScrollButtonLeft(categories, index)}
 							<div>
 								<ba-base-layer-switcher

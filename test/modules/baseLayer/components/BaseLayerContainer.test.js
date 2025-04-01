@@ -76,6 +76,11 @@ describe('BaseLayerContainer', () => {
 						expect(element.shadowRoot.querySelectorAll('.button-group')).toHaveSize(1);
 						expect(element.shadowRoot.querySelectorAll('.scroll-left-button')).toHaveSize(1);
 						expect(element.shadowRoot.querySelectorAll('.scroll-right-button')).toHaveSize(1);
+
+						expect(element.shadowRoot.querySelectorAll('.section.scroll-snap-x')).toHaveSize(1);
+						expect(element.shadowRoot.querySelector('.section.scroll-snap-x').getAttribute('part')).toBe('section');
+						expect(element.shadowRoot.querySelector('.container').getAttribute('part')).toBe('container');
+
 						const baseLayerSwitcher = element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag);
 						expect(baseLayerSwitcher).toHaveSize(2);
 						expect(baseLayerSwitcher[0].getAttribute('exportparts')).toBe(
