@@ -82,9 +82,11 @@
 	-webkit-mask-image: url('../../assets/starfilled.svg');
 	-webkit-mask-size: cover;
 }
-.chips__button.add:hover .chips__icon {
-	background: var(--success-color);
-	mask: url('../../assets/starfilled.svg');
-	-webkit-mask-image: url('../../assets/starfilled.svg');
-	-webkit-mask-size: cover;
+@media (hover: hover) {
+	.chips__button.add:hover .chips__icon {
+		background: var(--success-color);
+		mask: url('../../assets/starfilled.svg');
+		-webkit-mask-image: url('../../assets/starfilled.svg');
+		-webkit-mask-size: cover;
+	}
 }
