@@ -8,6 +8,7 @@ import CircleStyle from 'ol/style/Circle';
 import { $injector } from '../../../../injection/index';
 import { GeometryCollection, MultiLineString, MultiPoint, MultiPolygon, Point, SimpleGeometry } from '../../../../../node_modules/ol/geom';
 import { getCenter } from '../../../../../node_modules/ol/extent';
+import { round } from '../../../../utils/numberUtils';
 
 export const highlightCoordinateFeatureStyleFunction = () => {
 	const { IconService: iconService } = $injector.inject('IconService');
@@ -162,7 +163,7 @@ export const createAnimation = (map, feature) => {
 		const elapsedRatio = (elapsed >= 0 ? elapsed : 0) / state.duration;
 		// radius will be 3 at start and 20 at end.
 		const radius = easeOut(elapsedRatio) * 50 + 10;
-		const opacity = easeIn(1 - elapsedRatio);
+		const opacity = round(easeIn(1 - elapsedRatio), 1);
 
 		const getStyles = (radius, opacity, index) => {
 			const style = new Style({
