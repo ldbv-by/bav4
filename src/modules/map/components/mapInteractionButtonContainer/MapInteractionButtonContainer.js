@@ -27,17 +27,19 @@ const Update_IsOpen_NavigationRail = 'update_isOpen_NavigationRail';
 
 export class MapInteractionButtonContainer extends MvuElement {
 	#translationService;
+	#environmentService;
 	constructor() {
 		super({
 			toolId: null,
-			isOpen: false,
+			isOpenMainMenu: false,
 			isPortrait: false,
 			isOpenNavigationRail: false
 		});
 
-		const { TranslationService } = $injector.inject('TranslationService');
+		const { TranslationService, EnvironmentService } = $injector.inject('TranslationService', 'EnvironmentService');
 
 		this.#translationService = TranslationService;
+		this.#environmentService = EnvironmentService;
 	}
 
 	update(type, data, model) {
@@ -70,7 +72,7 @@ export class MapInteractionButtonContainer extends MvuElement {
 		);
 		this.observe(
 			(state) => state.mainMenu,
-			(mainMenu) => this.signal(Update_Main_Menu, { isOpen: mainMenu.open, tab: mainMenu.tab })
+			(mainMenu) => this.signal(Update_Main_Menu, { isOpenMainMenu: mainMenu.open, tab: mainMenu.tab })
 		);
 		this.observe(
 			(state) => state.navigationRail,
@@ -84,7 +86,7 @@ export class MapInteractionButtonContainer extends MvuElement {
 	onAfterRender() {
 		setTimeout(() => {
 			const mapInteractionButtonContainer = this.shadowRoot.getElementById('mapInteractionButtonContainer');
-			const bottomSheet = findAllBySelector(document, BottomSheet.tag);
+			const bottomSheet = findAllBySelector(this.#environmentService.getWindow().document, BottomSheet.tag);
 			bottomSheet[0]
 				? (mapInteractionButtonContainer.style.bottom = bottomSheet[0].offsetHeight + 10 + 'px')
 				: (mapInteractionButtonContainer.style.bottom = 'var(--map-interaction-container-bottom)');
@@ -96,10 +98,10 @@ export class MapInteractionButtonContainer extends MvuElement {
 	 */
 	createView(model) {
 		const translate = (key) => this.#translationService.translate(key);
-		const { toolId, isOpen, isOpenNavigationRail, isPortrait } = model;
+		const { toolId, isOpenMainMenu, isOpenNavigationRail, isPortrait } = model;
 
 		const classes = {
-			'is-open': isOpen,
+			'is-open': isOpenMainMenu,
 			'is-open-navigationRail': isOpenNavigationRail,
 			'is-portrait': isPortrait,
 			'is-landscape': !isPortrait

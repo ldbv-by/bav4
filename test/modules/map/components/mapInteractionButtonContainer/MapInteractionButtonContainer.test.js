@@ -4,19 +4,16 @@ import { $injector } from '../../../../../src/injection/index.js';
 import { Tools } from '../../../../../src/domain/tools';
 import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer.js';
-import { BottomSheet } from '../../../../../src/modules/stackables/components/bottomSheet/BottomSheet';
 import { bottomSheetReducer } from '../../../../../src/store/bottomSheet/bottomSheet.reducer';
 import { createNoInitialStateMainMenuReducer } from '../../../../../src/store/mainMenu/mainMenu.reducer';
 import { createNoInitialStateNavigationRailReducer } from '../../../../../src/store/navigationRail/navigationRail.reducer';
 import { html } from 'lit-html';
 
 window.customElements.define(MapInteractionButtonContainer.tag, MapInteractionButtonContainer);
-window.customElements.define(BottomSheet.tag, BottomSheet);
 
 describe('MapInteractionButtonContainer', () => {
 	let store;
-	const setup = (state = {}, config = {}) => {
-		const { embed = false } = config;
+	const setup = (state = {}) => {
 		const initialState = {
 			media: {
 				portrait: false
@@ -43,7 +40,7 @@ describe('MapInteractionButtonContainer', () => {
 		});
 
 		$injector.registerSingleton('EnvironmentService', {
-			isEmbedded: () => embed
+			getWindow: () => window
 		});
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(MapInteractionButtonContainer.tag);
@@ -57,7 +54,7 @@ describe('MapInteractionButtonContainer', () => {
 			expect(element.getModel()).toEqual({
 				toolId: null,
 				isPortrait: false,
-				isOpen: false,
+				isOpenMainMenu: false,
 				isOpenNavigationRail: false
 			});
 		});
@@ -71,7 +68,7 @@ describe('MapInteractionButtonContainer', () => {
 			expect(model).toEqual({
 				toolId: null,
 				isPortrait: false,
-				isOpen: false,
+				isOpenMainMenu: false,
 				isOpenNavigationRail: false
 			});
 		});
@@ -192,14 +189,14 @@ describe('MapInteractionButtonContainer', () => {
 	describe('reacts to bottom sheet', () => {
 		it('sets bottom value to 110px', async () => {
 			const element = await setup({ tools: { current: Tools.ROUTING } });
+			const bottomSheetContainer = TestUtils.renderTemplateResult(
+				html`<ba-bottom-sheet style="display: block;height: 100px;"><div>TEST</div></ba-bottom-sheet>`
+			);
+			document.body.appendChild(bottomSheetContainer);
 			const container = element.shadowRoot.querySelector('#mapInteractionButtonContainer');
 			expect(element.shadowRoot.querySelectorAll('#mapInteractionButtonContainer')).toHaveSize(1);
 			expect(container.style.getPropertyValue('bottom')).toBe('');
 
-			const mock1 = TestUtils.renderTemplateResult(html`<ba-bottom-sheet style="display: block;height: 100px;"><div>TEST</div></ba-bottom-sheet>`);
-			element.shadowRoot.appendChild(mock1);
-
-			expect(element.shadowRoot.querySelectorAll(BottomSheet.tag)).toHaveSize(1);
 			await TestUtils.timeout();
 
 			expect(container.style.getPropertyValue('bottom')).toBe('110px');
@@ -211,7 +208,6 @@ describe('MapInteractionButtonContainer', () => {
 			expect(element.shadowRoot.querySelectorAll('#mapInteractionButtonContainer')).toHaveSize(1);
 			expect(container.style.getPropertyValue('bottom')).toBe('');
 
-			expect(element.shadowRoot.querySelectorAll(BottomSheet.tag)).toHaveSize(0);
 			await TestUtils.timeout();
 
 			expect(container.style.getPropertyValue('bottom')).toBe('var(--map-interaction-container-bottom)');
