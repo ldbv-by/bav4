@@ -239,3 +239,11 @@
 	order: 0 !important;
 	display: flex !important;
 }
+/* 
+No sub buttons for super small screens 
+*/
+@media (max-height: 450px) {
+	.sub-button-container {
+		display: none;
+	}
+}
