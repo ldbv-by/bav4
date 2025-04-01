@@ -107,7 +107,8 @@ describe('TimeTravel', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.header')).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('.header').textContent).toBe('timeTravel_title');
+			expect(element.shadowRoot.querySelectorAll('.header .icon')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.header .text').textContent).toBe('timeTravel_title');
 
 			expect(element.shadowRoot.querySelectorAll('.base')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.actions')).toHaveSize(1);
@@ -175,7 +176,8 @@ describe('TimeTravel', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.header')).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('.header').textContent).toBe('timeTravel_title');
+			expect(element.shadowRoot.querySelectorAll('.header .icon')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.header .text').textContent).toBe('timeTravel_title');
 
 			expect(element.shadowRoot.querySelectorAll('#timestampInput')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('#timestampInput').getAttribute('type')).toBe('number');
