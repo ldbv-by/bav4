@@ -97,10 +97,12 @@ export class MainMenuPlugin extends BaPlugin {
 				}
 			}
 
-			// open routing Tab
-			if (toolId === Tools.ROUTING) {
-				setTab(TabIds.ROUTING);
-				open();
+			if (!state.media.portrait) {
+				// open routing Tab
+				if (toolId === Tools.ROUTING) {
+					setTab(TabIds.ROUTING);
+					open();
+				}
 			}
 		};
 

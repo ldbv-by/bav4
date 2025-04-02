@@ -393,50 +393,56 @@ describe('MainMenuPlugin', () => {
 	});
 
 	describe('when toolId changes', () => {
-		it('opens and closes the routing panel and restores the previous panel on landscape layout', async () => {
-			const store = setup({
-				mainMenu: {
-					open: false
-				},
-				media: {
-					portrait: false
-				}
+		describe('on landscape layout', () => {
+			it('opens and closes the routing panel and restores the previous panel', async () => {
+				const store = setup({
+					mainMenu: {
+						open: false
+					},
+					media: {
+						portrait: false
+					}
+				});
+				const instanceUnderTest = new MainMenuPlugin();
+				await instanceUnderTest.register(store);
+
+				setCurrentTool(Tools.ROUTING);
+
+				expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
+				expect(store.getState().mainMenu.open).toBeTrue();
+
+				setCurrentTool(null);
+
+				expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
+				expect(store.getState().mainMenu.open).toBeTrue();
 			});
-			const instanceUnderTest = new MainMenuPlugin();
-			await instanceUnderTest.register(store);
-
-			setCurrentTool(Tools.ROUTING);
-
-			expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
-			expect(store.getState().mainMenu.open).toBeTrue();
-
-			setCurrentTool(null);
-
-			expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
-			expect(store.getState().mainMenu.open).toBeTrue();
 		});
 
-		it('opens and closes the routing panel and restores the previous panel on portrait layout', async () => {
-			const store = setup({
-				mainMenu: {
-					open: false
-				},
-				media: {
-					portrait: true
-				}
+		describe('on portrait layout', () => {
+			it('restores the previous panel', async () => {
+				const store = setup({
+					mainMenu: {
+						open: true,
+						tab: TabIds.MAPS
+					},
+					media: {
+						portrait: true
+					}
+				});
+				const instanceUnderTest = new MainMenuPlugin();
+				await instanceUnderTest.register(store);
+
+				setCurrentTool(Tools.ROUTING);
+				setTab(TabIds.ROUTING);
+
+				expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
+				expect(store.getState().mainMenu.open).toBeTrue();
+
+				setCurrentTool(null);
+
+				expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
+				expect(store.getState().mainMenu.open).toBeFalse();
 			});
-			const instanceUnderTest = new MainMenuPlugin();
-			await instanceUnderTest.register(store);
-
-			setCurrentTool(Tools.ROUTING);
-
-			expect(store.getState().mainMenu.tab).toBe(TabIds.ROUTING);
-			expect(store.getState().mainMenu.open).toBeTrue();
-
-			setCurrentTool(null);
-
-			expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
-			expect(store.getState().mainMenu.open).toBeFalse();
 		});
 	});
 
