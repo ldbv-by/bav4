@@ -169,7 +169,6 @@
 .navigation-rail__container a .icon {
 	height: 1.8em;
 	width: 1.8em;
-	background: var(--text2);
 	background: linear-gradient(to top, var(--text4) 0%, var(--primary-color) 50%);
 	margin: auto;
 	margin-bottom: 0;
