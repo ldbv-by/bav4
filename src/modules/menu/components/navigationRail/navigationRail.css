@@ -210,7 +210,7 @@
 	background: var(--primary-bg-color);
 	width: 5.5em;
 	position: absolute;
-	height: 100%;
+	height: 101%;
 	z-index: var(--z-footer);
 }
 
