@@ -107,21 +107,13 @@ describe('MainMenuPlugin', () => {
 			});
 
 			describe('prepare UI', () => {
-				beforeEach(() => {
-					jasmine.clock().install();
-				});
-
-				afterEach(() => {
-					jasmine.clock().uninstall();
-				});
-
 				it('sets the focus on the search field of the MainMenu', async () => {
 					const store = setup();
 					const instanceUnderTest = new MainMenuPlugin();
 					const initialValue = store.getState().mainMenu.focusSearchField;
 					instanceUnderTest._init();
 
-					jasmine.clock().tick(MainMenuPlugin.FOCUS_SEARCHFIELD_DELAY_MS + 100);
+					await TestUtils.timeout();
 
 					expect(initialValue).not.toEqual(store.getState().mainMenu.focusSearchField);
 				});
