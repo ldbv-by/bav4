@@ -55,7 +55,7 @@ describe('MainMenuPlugin', () => {
 	describe('static properties', () => {
 		it('provides a default tab id', () => {
 			expect(MainMenuPlugin.DEFAULT_TAB_ID).toBe(TabIds.MAPS);
-			expect(MainMenuPlugin.FOCUS_SEARCHFIELD_DELAY_MS).toBe(1000);
+			expect(MainMenuPlugin.FOCUS_SEARCHFIELD_DELAY_MS).toBe(0);
 		});
 	});
 
