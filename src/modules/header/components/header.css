@@ -513,6 +513,13 @@ input[type='search']::-webkit-search-results-decoration {
 	display: none;
 }
 
+#input:-webkit-autofill,
+#input:-webkit-autofill:hover,
+#input:-webkit-autofill:focus-visible {
+	-webkit-text-fill-color: var(--text1);
+	-webkit-box-shadow: 0 0 0px 40rem var(--secondary-bg-color) inset;
+}
+
 .fadein {
 	animation-name: fadein;
 	animation-duration: var(--animation-duration-large-open);
