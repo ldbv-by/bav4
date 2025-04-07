@@ -21,7 +21,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_collapse_all).toBe('Alle einklappen');
 		expect(map.layerManager_collapse_all_title).toBe('Alle Ebenen einklappen');
 		expect(map.layerManager_remove_all).toBe('Überlagerungen entfernen');
-		expect(map.layerManager_remove_all_title).toBe('Alle Ebenen löschen außer die Basiskarte');
+		expect(map.layerManager_remove_all_title).toBe('Alle Ebenen löschen außer der Basiskarte');
 		expect(map.layerManager_loading_hint).toBe('Wird geladen');
 		expect(map.layerManager_time_travel_hint).toBe('Bitte ein Jahr auswählen');
 		expect(map.layerManager_time_travel_slider).toBe('Schieberegler öffnen');

@@ -59,7 +59,7 @@ export const provide = (lang) => {
 				layerManager_collapse_all: 'Alle einklappen',
 				layerManager_collapse_all_title: 'Alle Ebenen einklappen',
 				layerManager_remove_all: 'Überlagerungen entfernen',
-				layerManager_remove_all_title: 'Alle Ebenen löschen außer die Basiskarte',
+				layerManager_remove_all_title: 'Alle Ebenen löschen außer der Basiskarte',
 				layerManager_compare: 'Vergleichen starten',
 				layerManager_compare_title: 'Vergleichen starten',
 				layerManager_compare_stop: 'Vergleichen beenden',
