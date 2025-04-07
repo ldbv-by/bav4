@@ -125,6 +125,24 @@ export const findAllBySelector = (element, selector) => {
 };
 
 /**
+ * Basically the same as `Element.closest()` but working with custom elements.
+ * @param {HTMLElement} element
+ * @param {string} selector CSS selector
+ * @returns {HTMLElement|null}
+ */
+export const findClosest = (element, selector) => {
+	const getNext = (el) => {
+		if (el instanceof Window || el instanceof Document || !el) {
+			return null;
+		}
+		const next = el.closest(selector);
+		return next ? next : getNext(el.getRootNode()?.host);
+	};
+
+	return getNext(element);
+};
+
+/**
  * Decodes the given htmlValue
  * @param {string} htmlValue the encoded html
  * @returns {string} the decoded htmlValue
