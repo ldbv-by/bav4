@@ -89,9 +89,9 @@ describe('KeyActionMapper', () => {
 				document.dispatchEvent(getKeyEvent(keyCodes.F11));
 				instanceUnderTest.deactivate();
 
-				expect(backspaceSpy).toHaveBeenCalled();
-				expect(escapeSpy).toHaveBeenCalled();
-				expect(deleteSpy).toHaveBeenCalled();
+				expect(backspaceSpy).toHaveBeenCalledWith(jasmine.any(KeyboardEvent));
+				expect(escapeSpy).toHaveBeenCalledWith(jasmine.any(KeyboardEvent));
+				expect(deleteSpy).toHaveBeenCalledWith(jasmine.any(KeyboardEvent));
 				expect(notMappedF11Spy).not.toHaveBeenCalled();
 			});
 
@@ -134,9 +134,9 @@ describe('KeyActionMapper', () => {
 				document.dispatchEvent(getKeyEvent(keyCodes.F11));
 				instanceUnderTest.deactivate();
 
-				expect(backspaceSpy).toHaveBeenCalled();
-				expect(escapeSpy).toHaveBeenCalled();
-				expect(deleteSpy).toHaveBeenCalled();
+				expect(backspaceSpy).toHaveBeenCalledWith(jasmine.any(KeyboardEvent));
+				expect(escapeSpy).toHaveBeenCalledWith(jasmine.any(KeyboardEvent));
+				expect(deleteSpy).toHaveBeenCalledWith(jasmine.any(KeyboardEvent));
 				expect(notMappedF11Spy).not.toHaveBeenCalled();
 			});
 

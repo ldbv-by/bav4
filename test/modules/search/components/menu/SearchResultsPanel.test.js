@@ -373,5 +373,37 @@ describe('SearchResultsPanel', () => {
 			expect(changeSelectedElementSpy).toHaveBeenCalledWith(undefined, undefined);
 			expect(selectResultSpy).not.toHaveBeenCalled();
 		});
+
+		const getKeyUpEvent = (keyCode, target) => {
+			const event = new KeyboardEvent('keyup', { code: keyCode, key: keyCode });
+			spyOnProperty(event, 'target', 'get').and.returnValue(target);
+			return event;
+		};
+
+		it('does nothing when keyup event is fired on OlMap element', async () => {
+			const element = await setup();
+
+			const arrowDownSpy = spyOn(element, '_arrowDown').and.callFake(() => {});
+			const arrowUpSpy = spyOn(element, '_arrowUp').and.callFake(() => {});
+			const enterSpy = spyOn(element, '_enter').and.callFake(() => {});
+
+			const olMapMock = { localName: 'ba-ol-map', nodeName: 'ba-ol-map' };
+
+			document.dispatchEvent(getKeyUpEvent(keyCodes.ArrowDown, olMapMock));
+			document.dispatchEvent(getKeyUpEvent(keyCodes.ArrowUp, olMapMock));
+			document.dispatchEvent(getKeyUpEvent(keyCodes.Enter, olMapMock));
+
+			expect(arrowDownSpy).not.toHaveBeenCalled();
+			expect(arrowUpSpy).not.toHaveBeenCalled();
+			expect(enterSpy).not.toHaveBeenCalled();
+
+			document.dispatchEvent(getKeyUpEvent(keyCodes.ArrowDown, element.parentElement));
+			document.dispatchEvent(getKeyUpEvent(keyCodes.ArrowUp, element.parentElement));
+			document.dispatchEvent(getKeyUpEvent(keyCodes.Enter, element.parentElement));
+
+			expect(arrowDownSpy).toHaveBeenCalledWith();
+			expect(arrowUpSpy).toHaveBeenCalled();
+			expect(enterSpy).toHaveBeenCalled();
+		});
 	});
 });

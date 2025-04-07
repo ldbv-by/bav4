@@ -13,12 +13,14 @@ import { LocationResultItem } from './types/location/LocationResultItem';
 import { GeoResourceResultItem } from './types/geoResource/GeoResourceResultItem';
 import { focusSearchField } from '../../../../store/mainMenu/mainMenu.action';
 import { CpResultItem } from './types/cp/CpResultItem';
+import { OlMap } from '../../../olMap/components/OlMap';
 
 export const Navigatable_Result_Item_Class = [LocationResultItem, GeoResourceResultItem, CpResultItem];
 
 const Selected_Item_Class = 'ba-key-nav-item_select';
 const Selected_Item_Class_Selector = `.${Selected_Item_Class}`;
 const Search_Field_Index = -1;
+const No_Op = () => {};
 
 /**
  * Container for different types of search result panels.
@@ -38,9 +40,9 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 		super({});
 		this.#keyActionMapper = keyActionMapper;
 		this.#keyActionMapper
-			.addForKeyUp('ArrowDown', () => this._arrowDown())
-			.addForKeyUp('ArrowUp', () => this._arrowUp())
-			.addForKeyUp('Enter', () => this._enter());
+			.addForKeyUp('ArrowDown', (e) => (e.target.localName === OlMap.tag ? No_Op() : this._arrowDown()))
+			.addForKeyUp('ArrowUp', (e) => (e.target.localName === OlMap.tag ? No_Op() : this._arrowUp()))
+			.addForKeyUp('Enter', (e) => (e.target.localName === OlMap.tag ? No_Op() : this._enter()));
 
 		this.#selectedIndex = null;
 		this.#resultItemClasses = Navigatable_Result_Item_Class;
