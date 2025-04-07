@@ -13,7 +13,8 @@ import { LocationResultItem } from './types/location/LocationResultItem';
 import { GeoResourceResultItem } from './types/geoResource/GeoResourceResultItem';
 import { focusSearchField } from '../../../../store/mainMenu/mainMenu.action';
 import { CpResultItem } from './types/cp/CpResultItem';
-import { OlMap } from '../../../olMap/components/OlMap';
+import { Header } from '../../../header/components/Header';
+import { MainMenu } from '../../../menu/components/mainMenu/MainMenu';
 
 export const Navigatable_Result_Item_Class = [LocationResultItem, GeoResourceResultItem, CpResultItem];
 
@@ -39,10 +40,6 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 	constructor(keyActionMapper = new KeyActionMapper(document)) {
 		super({});
 		this.#keyActionMapper = keyActionMapper;
-		this.#keyActionMapper
-			.addForKeyUp('ArrowDown', (e) => (e.target.localName === OlMap.tag ? No_Op() : this._arrowDown()))
-			.addForKeyUp('ArrowUp', (e) => (e.target.localName === OlMap.tag ? No_Op() : this._arrowUp()))
-			.addForKeyUp('Enter', (e) => (e.target.localName === OlMap.tag ? No_Op() : this._enter()));
 
 		this.#selectedIndex = null;
 		this.#resultItemClasses = Navigatable_Result_Item_Class;
@@ -53,6 +50,12 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 	 * @override
 	 */
 	onInitialize() {
+		const componentsAcceptingKeyboardEvents = [Header.tag, MainMenu.tag, SearchResultsPanel.tag];
+		this.#keyActionMapper
+			.addForKeyUp('ArrowDown', (e) => (this._isRootOrChildOf(componentsAcceptingKeyboardEvents, e.target) ? this._arrowDown() : No_Op()))
+			.addForKeyUp('ArrowUp', (e) => (this._isRootOrChildOf(componentsAcceptingKeyboardEvents, e.target) ? this._arrowUp() : No_Op()))
+			.addForKeyUp('Enter', (e) => (this._isRootOrChildOf(componentsAcceptingKeyboardEvents, e.target) ? this._enter() : No_Op()));
+
 		this.#keyActionMapper.activate();
 
 		this.observe(
@@ -146,6 +149,28 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 	set resultItemClasses(values) {
 		this.#resultItemClasses = values;
 		this.#resultItemSelector = `:is(${this.#resultItemClasses.map((i) => i.tag).join(',')})`;
+	}
+
+	/**
+	 *
+	 * @param {Array<String>} rootNames
+	 * @param {HTMLElement} childCandidate
+	 */
+	_isRootOrChildOf(rootNames, childCandidate, level = 0) {
+		const nodeName = childCandidate?.localName;
+
+		if (nodeName === 'body') {
+			return level === 0;
+		}
+
+		while (nodeName) {
+			if (rootNames.includes(nodeName)) {
+				return true;
+			}
+			return this._isRootOrChildOf(rootNames, childCandidate.parentElement, level + 1);
+		}
+		// otherwise is already toplevel and root
+		return true;
 	}
 
 	static get tag() {
