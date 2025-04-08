@@ -157,14 +157,15 @@ describe('HighlightPlugin', () => {
 	});
 
 	describe('when search.query is empty', () => {
-		it('clears all searchResult related highlight items', async () => {
-			const highlightFeature0 = { type: HighlightFeatureType.DEFAULT, data: [21, 42], id: SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY };
+		fit('clears all searchResult related highlight items', async () => {
+			const highlightFeature0 = { type: HighlightFeatureType.DEFAULT, data: [21, 42], id: 'id0', category: SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY };
 			const highlightFeature1 = {
 				type: HighlightFeatureType.DEFAULT,
 				data: [21, 42],
-				id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
+				id: 'id1',
+				category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
 			};
-			const highlightFeature2 = { type: HighlightFeatureType.DEFAULT, data: [21, 42], id: 'foo' };
+			const highlightFeature2 = { type: HighlightFeatureType.DEFAULT, data: [21, 42], id: 'id2', category: 'foo' };
 			const store = setup({
 				mainMenu: {
 					tab: TabIds.TOPICS,
@@ -183,7 +184,7 @@ describe('HighlightPlugin', () => {
 			setQuery(null);
 
 			expect(store.getState().highlight.features).toHaveSize(1);
-			expect(store.getState().highlight.features[0].id).toBe('foo');
+			expect(store.getState().highlight.features[0].id).toBe('id2');
 
 			clearHighlightFeatures();
 			addHighlightFeatures([highlightFeature0, highlightFeature1, highlightFeature2]);
@@ -197,7 +198,7 @@ describe('HighlightPlugin', () => {
 			setQuery('');
 
 			expect(store.getState().highlight.features).toHaveSize(1);
-			expect(store.getState().highlight.features[0].id).toBe('foo');
+			expect(store.getState().highlight.features[0].id).toBe('id2');
 		});
 	});
 
