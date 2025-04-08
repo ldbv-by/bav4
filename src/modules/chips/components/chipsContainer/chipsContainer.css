@@ -7,6 +7,7 @@
 	overflow: hidden;
 	-ms-overflow-style: none;
 	scrollbar-width: none;
+	z-index: calc(var(--z-header) + 20);
 }
 .chips__button {
 	pointer-events: all;
@@ -15,7 +16,6 @@
 	margin: 0.8em 0.5em 0 0;
 	display: flex;
 	margin-left: 0;
-	z-index: calc(var(--z-header) + 20);
 	border-radius: 2em;
 	padding: 0.5em 0.9em;
 	cursor: pointer;
