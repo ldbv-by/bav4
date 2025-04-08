@@ -209,8 +209,10 @@
 	background: var(--primary-bg-color);
 	width: 5.5em;
 	position: absolute;
-	height: 101%;
+	top: 0;
+	bottom: 0;
 	z-index: var(--z-footer);
+	overflow: clip;
 }
 
 .is-open .navigation-rail__container {
