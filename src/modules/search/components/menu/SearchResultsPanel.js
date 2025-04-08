@@ -8,17 +8,20 @@ import { GeoResourceResultsPanel } from './types/geoResource/GeoResourceResultsP
 import { AbstractMvuContentPanel } from '../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { CpResultsPanel } from './types/cp/CpResultsPanel';
 import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
-import { findAllBySelector } from '../../../../utils/markup';
+import { findAllBySelector, findClosest } from '../../../../utils/markup';
 import { LocationResultItem } from './types/location/LocationResultItem';
 import { GeoResourceResultItem } from './types/geoResource/GeoResourceResultItem';
 import { focusSearchField } from '../../../../store/mainMenu/mainMenu.action';
 import { CpResultItem } from './types/cp/CpResultItem';
+import { Header } from '../../../header/components/Header';
+import { MainMenu } from '../../../menu/components/mainMenu/MainMenu';
 
 export const Navigatable_Result_Item_Class = [LocationResultItem, GeoResourceResultItem, CpResultItem];
 
 const Selected_Item_Class = 'ba-key-nav-item_select';
 const Selected_Item_Class_Selector = `.${Selected_Item_Class}`;
 const Search_Field_Index = -1;
+const No_Op = () => {};
 
 /**
  * Container for different types of search result panels.
@@ -37,10 +40,6 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 	constructor(keyActionMapper = new KeyActionMapper(document)) {
 		super({});
 		this.#keyActionMapper = keyActionMapper;
-		this.#keyActionMapper
-			.addForKeyUp('ArrowDown', () => this._arrowDown())
-			.addForKeyUp('ArrowUp', () => this._arrowUp())
-			.addForKeyUp('Enter', () => this._enter());
 
 		this.#selectedIndex = null;
 		this.#resultItemClasses = Navigatable_Result_Item_Class;
@@ -51,6 +50,16 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 	 * @override
 	 */
 	onInitialize() {
+		const selectorAcceptingKeyboardEvents = `:is(${[Header, MainMenu, SearchResultsPanel].map((i) => i.tag).join(',')})`;
+
+		const isBodyOrCloseToComponents = (element) => {
+			return document.body === element || document === element || !!findClosest(element, selectorAcceptingKeyboardEvents);
+		};
+		this.#keyActionMapper
+			.addForKeyUp('ArrowDown', (e) => (isBodyOrCloseToComponents(e.target) ? this._arrowDown() : No_Op()))
+			.addForKeyUp('ArrowUp', (e) => (isBodyOrCloseToComponents(e.target) ? this._arrowUp() : No_Op()))
+			.addForKeyUp('Enter', (e) => (isBodyOrCloseToComponents(e.target) ? this._enter() : No_Op()));
+
 		this.#keyActionMapper.activate();
 
 		this.observe(

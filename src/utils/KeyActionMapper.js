@@ -70,12 +70,12 @@ export class KeyActionMapper {
 
 	_onKeyUp(event) {
 		const action = this._isInputElement(event.target) ? No_Op : this._mapToAction(event.key, 'keyup');
-		action();
+		action(event);
 	}
 
 	_onKeyDown(event) {
 		const action = this._isInputElement(event.target) ? No_Op : this._mapToAction(event.key, 'keydown');
-		action();
+		action(event);
 	}
 
 	_mapToAction(key, eventType) {

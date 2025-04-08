@@ -61,20 +61,6 @@ describe('SearchResultsPanel', () => {
 		});
 	});
 
-	describe('when instantiated', () => {
-		it('configures keyActionMapper', () => {
-			TestUtils.setupStoreAndDi();
-			const keyActionMapperMock = { addForKeyUp: () => {} };
-			const addForKeyUpSpy = spyOn(keyActionMapperMock, 'addForKeyUp').and.callFake(() => keyActionMapperMock);
-
-			new SearchResultsPanel(keyActionMapperMock);
-
-			expect(addForKeyUpSpy).toHaveBeenCalledWith('ArrowDown', jasmine.any(Function));
-			expect(addForKeyUpSpy).toHaveBeenCalledWith('ArrowUp', jasmine.any(Function));
-			expect(addForKeyUpSpy).toHaveBeenCalledWith('Enter', jasmine.any(Function));
-		});
-	});
-
 	describe('when initialized', () => {
 		const getKeyEvent = (key) => {
 			return new KeyboardEvent('keyup', { key: key });
@@ -372,6 +358,72 @@ describe('SearchResultsPanel', () => {
 			expect(enterSpy).toHaveBeenCalledTimes(1);
 			expect(changeSelectedElementSpy).toHaveBeenCalledWith(undefined, undefined);
 			expect(selectResultSpy).not.toHaveBeenCalled();
+		});
+
+		const getKeyUpEvent = (keyCode, target) => {
+			const event = new KeyboardEvent('keyup', { code: keyCode, key: keyCode });
+			spyOnProperty(event, 'target', 'get').and.returnValue(target);
+			return event;
+		};
+
+		it('does nothing when keyup event is fired on other element then specified', async () => {
+			const element = await setup();
+
+			const otherElement = TestUtils.renderTemplateResult(html`<ba-foo>$</ba-foo>`).querySelector('ba-foo');
+			const headerElement = TestUtils.renderTemplateResult(html`<ba-header>$</ba-header>`).querySelector('ba-header');
+			const mainMenuElement = TestUtils.renderTemplateResult(html`<ba-main-menu>$</ba-main-menu>`).querySelector('ba-main-menu');
+
+			const arrowDownSpy = spyOn(element, '_arrowDown').and.callFake(() => {});
+			const arrowUpSpy = spyOn(element, '_arrowUp').and.callFake(() => {});
+			const enterSpy = spyOn(element, '_enter').and.callFake(() => {});
+
+			document.dispatchEvent(getKeyUpEvent(keyCodes.ArrowDown, otherElement));
+			document.dispatchEvent(getKeyUpEvent(keyCodes.ArrowUp, otherElement));
+			document.dispatchEvent(getKeyUpEvent(keyCodes.Enter, otherElement));
+
+			expect(arrowDownSpy).not.toHaveBeenCalled();
+			expect(arrowUpSpy).not.toHaveBeenCalled();
+			expect(enterSpy).not.toHaveBeenCalled();
+
+			document.dispatchEvent(getKeyUpEvent(keyCodes.ArrowDown, element));
+			document.dispatchEvent(getKeyUpEvent(keyCodes.ArrowUp, element));
+			document.dispatchEvent(getKeyUpEvent(keyCodes.Enter, element));
+
+			expect(arrowDownSpy).toHaveBeenCalledTimes(1);
+			expect(arrowUpSpy).toHaveBeenCalledTimes(1);
+			expect(enterSpy).toHaveBeenCalledTimes(1);
+
+			document.dispatchEvent(getKeyUpEvent(keyCodes.ArrowDown, element.parentElement));
+			document.dispatchEvent(getKeyUpEvent(keyCodes.ArrowUp, element.parentElement));
+			document.dispatchEvent(getKeyUpEvent(keyCodes.Enter, element.parentElement));
+
+			expect(arrowDownSpy).toHaveBeenCalledTimes(2);
+			expect(arrowUpSpy).toHaveBeenCalledTimes(2);
+			expect(enterSpy).toHaveBeenCalledTimes(2);
+
+			document.dispatchEvent(getKeyUpEvent(keyCodes.ArrowDown, document));
+			document.dispatchEvent(getKeyUpEvent(keyCodes.ArrowUp, document));
+			document.dispatchEvent(getKeyUpEvent(keyCodes.Enter, document));
+
+			expect(arrowDownSpy).toHaveBeenCalledTimes(3);
+			expect(arrowUpSpy).toHaveBeenCalledTimes(3);
+			expect(enterSpy).toHaveBeenCalledTimes(3);
+
+			document.dispatchEvent(getKeyUpEvent(keyCodes.ArrowDown, headerElement));
+			document.dispatchEvent(getKeyUpEvent(keyCodes.ArrowUp, headerElement));
+			document.dispatchEvent(getKeyUpEvent(keyCodes.Enter, headerElement));
+
+			expect(arrowDownSpy).toHaveBeenCalledTimes(4);
+			expect(arrowUpSpy).toHaveBeenCalledTimes(4);
+			expect(enterSpy).toHaveBeenCalledTimes(4);
+
+			document.dispatchEvent(getKeyUpEvent(keyCodes.ArrowDown, mainMenuElement));
+			document.dispatchEvent(getKeyUpEvent(keyCodes.ArrowUp, mainMenuElement));
+			document.dispatchEvent(getKeyUpEvent(keyCodes.Enter, mainMenuElement));
+
+			expect(arrowDownSpy).toHaveBeenCalledTimes(5);
+			expect(arrowUpSpy).toHaveBeenCalledTimes(5);
+			expect(enterSpy).toHaveBeenCalledTimes(5);
 		});
 	});
 });
