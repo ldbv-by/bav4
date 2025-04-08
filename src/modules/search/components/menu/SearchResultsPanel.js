@@ -8,7 +8,7 @@ import { GeoResourceResultsPanel } from './types/geoResource/GeoResourceResultsP
 import { AbstractMvuContentPanel } from '../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { CpResultsPanel } from './types/cp/CpResultsPanel';
 import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
-import { findAllBySelector } from '../../../../utils/markup';
+import { findAllBySelector, findClosest } from '../../../../utils/markup';
 import { LocationResultItem } from './types/location/LocationResultItem';
 import { GeoResourceResultItem } from './types/geoResource/GeoResourceResultItem';
 import { focusSearchField } from '../../../../store/mainMenu/mainMenu.action';
@@ -50,11 +50,26 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 	 * @override
 	 */
 	onInitialize() {
-		const componentsAcceptingKeyboardEvents = [Header.tag, MainMenu.tag, SearchResultsPanel.tag];
+		const selectorAcceptingKeyboardEvents = `:is(${[Header, MainMenu, SearchResultsPanel].map((i) => i.tag).join(',')})`;
+		const findClosest = (element, selector) => {
+			// HINT: temporary fn to be replaces by future markup.js~findClosest
+			const getNext = (el) => {
+				if (el instanceof Window || el instanceof Document || !el) {
+					return null;
+				}
+				const next = el.closest(selector);
+				return next ? next : getNext(el.getRootNode()?.host);
+			};
+
+			return getNext(element);
+		};
+		const isBodyOrCloseToComponents = (element) => {
+			return document.body === element || document === element || !!findClosest(element, selectorAcceptingKeyboardEvents);
+		};
 		this.#keyActionMapper
-			.addForKeyUp('ArrowDown', (e) => (this._isRootOrChildOf(componentsAcceptingKeyboardEvents, e.target) ? this._arrowDown() : No_Op()))
-			.addForKeyUp('ArrowUp', (e) => (this._isRootOrChildOf(componentsAcceptingKeyboardEvents, e.target) ? this._arrowUp() : No_Op()))
-			.addForKeyUp('Enter', (e) => (this._isRootOrChildOf(componentsAcceptingKeyboardEvents, e.target) ? this._enter() : No_Op()));
+			.addForKeyUp('ArrowDown', (e) => (isBodyOrCloseToComponents(e.target) ? this._arrowDown() : No_Op()))
+			.addForKeyUp('ArrowUp', (e) => (isBodyOrCloseToComponents(e.target) ? this._arrowUp() : No_Op()))
+			.addForKeyUp('Enter', (e) => (isBodyOrCloseToComponents(e.target) ? this._enter() : No_Op()));
 
 		this.#keyActionMapper.activate();
 
@@ -149,28 +164,6 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 	set resultItemClasses(values) {
 		this.#resultItemClasses = values;
 		this.#resultItemSelector = `:is(${this.#resultItemClasses.map((i) => i.tag).join(',')})`;
-	}
-
-	/**
-	 *
-	 * @param {Array<String>} rootNames
-	 * @param {HTMLElement} childCandidate
-	 */
-	_isRootOrChildOf(rootNames, childCandidate, level = 0) {
-		const nodeName = childCandidate?.localName;
-
-		if (nodeName === 'body') {
-			return level === 0;
-		}
-
-		while (nodeName) {
-			if (rootNames.includes(nodeName)) {
-				return true;
-			}
-			return this._isRootOrChildOf(rootNames, childCandidate.parentElement, level + 1);
-		}
-		// otherwise is already toplevel and root
-		return true;
 	}
 
 	static get tag() {
