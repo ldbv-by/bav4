@@ -126,6 +126,6 @@ export class MainMenuPlugin extends BaPlugin {
 	}
 
 	static get FOCUS_SEARCHFIELD_DELAY_MS() {
-		return 1000;
+		return 0;
 	}
 }

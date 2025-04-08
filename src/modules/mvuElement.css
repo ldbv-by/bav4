@@ -40,6 +40,10 @@
 	color: var(--text3);
 	background: var(--secondary-color);
 }
+input:-webkit-autofill:focus-visible::selection {
+	-webkit-text-fill-color: var(--text3);
+	-webkit-box-shadow: 0 0 0px 40rem var(--secondary-color) inset;
+}
 
 /* 
    tags
