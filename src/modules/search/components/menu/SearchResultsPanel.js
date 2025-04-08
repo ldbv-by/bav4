@@ -51,8 +51,9 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 	 */
 	onInitialize() {
 		const selectorAcceptingKeyboardEvents = `:is(${[Header, MainMenu, SearchResultsPanel].map((i) => i.tag).join(',')})`;
+
+		// HINT: temporary fn to be replaces by future markup.js~findClosest
 		const findClosest = (element, selector) => {
-			// HINT: temporary fn to be replaces by future markup.js~findClosest
 			const getNext = (el) => {
 				if (el instanceof Window || el instanceof Document || !el) {
 					return null;
@@ -63,6 +64,7 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 
 			return getNext(element);
 		};
+
 		const isBodyOrCloseToComponents = (element) => {
 			return document.body === element || document === element || !!findClosest(element, selectorAcceptingKeyboardEvents);
 		};
