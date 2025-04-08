@@ -8,7 +8,7 @@ import { GeoResourceResultsPanel } from './types/geoResource/GeoResourceResultsP
 import { AbstractMvuContentPanel } from '../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { CpResultsPanel } from './types/cp/CpResultsPanel';
 import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
-import { findAllBySelector } from '../../../../utils/markup';
+import { findAllBySelector, findClosest } from '../../../../utils/markup';
 import { LocationResultItem } from './types/location/LocationResultItem';
 import { GeoResourceResultItem } from './types/geoResource/GeoResourceResultItem';
 import { focusSearchField } from '../../../../store/mainMenu/mainMenu.action';
@@ -51,19 +51,6 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 	 */
 	onInitialize() {
 		const selectorAcceptingKeyboardEvents = `:is(${[Header, MainMenu, SearchResultsPanel].map((i) => i.tag).join(',')})`;
-
-		// HINT: temporary fn to be replaces by future markup.js~findClosest
-		const findClosest = (element, selector) => {
-			const getNext = (el) => {
-				if (el instanceof Window || el instanceof Document || !el) {
-					return null;
-				}
-				const next = el.closest(selector);
-				return next ? next : getNext(el.getRootNode()?.host);
-			};
-
-			return getNext(element);
-		};
 
 		const isBodyOrCloseToComponents = (element) => {
 			return document.body === element || document === element || !!findClosest(element, selectorAcceptingKeyboardEvents);
