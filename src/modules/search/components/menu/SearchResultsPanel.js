@@ -8,7 +8,7 @@ import { GeoResourceResultsPanel } from './types/geoResource/GeoResourceResultsP
 import { AbstractMvuContentPanel } from '../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { CpResultsPanel } from './types/cp/CpResultsPanel';
 import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
-import { findAllBySelector, findClosest } from '../../../../utils/markup';
+import { findAllBySelector } from '../../../../utils/markup';
 import { LocationResultItem } from './types/location/LocationResultItem';
 import { GeoResourceResultItem } from './types/geoResource/GeoResourceResultItem';
 import { focusSearchField } from '../../../../store/mainMenu/mainMenu.action';
