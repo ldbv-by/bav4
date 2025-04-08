@@ -4,6 +4,7 @@ import {
 	BA_FORM_ELEMENT_VISITED_CLASS,
 	decodeHtmlEntities,
 	findAllBySelector,
+	findClosest,
 	forEachBySelector,
 	IFRAME_ENCODED_STATE,
 	IFRAME_GEOMETRY_REFERENCE_ID,
@@ -176,6 +177,29 @@ describe('markup utils', () => {
 			expect(result).toHaveSize(8);
 			expect(result[0].tagName).toBe('DIV');
 			expect(result[3].tagName).toBe('MVU-ELEMENT-CHILD');
+		});
+	});
+
+	describe('findClosest', () => {
+		beforeEach(() => {
+			TestUtils.setupStoreAndDi();
+		});
+
+		afterEach(() => {
+			window.ba_enableTestIds = undefined;
+		});
+
+		it('finds the closest element matching a specific selector', async () => {
+			// we reuse the data-test-id MvuElement classes for our test
+			window.ba_enableTestIds = true;
+			spyOn(console, 'warn');
+			const element = await TestUtils.render(MvuElementParent.tag);
+
+			expect(findClosest(element.shadowRoot.querySelector(MvuElementChild.tag), MvuElementParent.tag)).toEqual(element);
+			expect(findClosest(element.shadowRoot.querySelector(MvuElementParent.tag), MvuElementParent.tag)).toBeNull();
+			expect(findClosest(null, MvuElementParent.tag)).toBeNull();
+			expect(findClosest(document, MvuElementParent.tag)).toBeNull();
+			expect(findClosest(window, MvuElementParent.tag)).toBeNull();
 		});
 	});
 });
