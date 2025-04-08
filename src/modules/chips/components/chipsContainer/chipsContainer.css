@@ -41,10 +41,8 @@
 .chips__button:hover .chips__button-text {
 	color: var(--chip-color);
 }
-
 .is-desktop.is-open.chips__container {
 	position: fixed;
-	right: 38em;
 	margin-left: 1em;
 	transform: translate(28em, 0);
 	left: 0;
@@ -53,7 +51,7 @@
 	white-space: nowrap;
 }
 .is-tablet.is-open.chips__container {
-	right: 29em;
+	position: fixed;
 	margin-left: 1em;
 	transform: translate(28em, 0);
 	left: 0;
