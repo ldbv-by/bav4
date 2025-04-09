@@ -48,6 +48,56 @@
 	background: var(--text2);
 	margin-right: 0.5em;
 }
+
+.ba-list-item__icon.lake {
+	mask: url('../../assets/lake.svg');
+	-webkit-mask-image: url('../../assets/lake.svg');
+	-webkit-mask-repeat: no-repeat;
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	transform: scale(1.3);
+}
+.ba-list-item__icon.school {
+	mask: url('../../assets/school.svg');
+	-webkit-mask-image: url('../../assets/school.svg');
+	-webkit-mask-repeat: no-repeat;
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	transform: scale(1.3);
+}
+.ba-list-item__icon.mountain {
+	mask: url('../../assets/mountain.svg');
+	-webkit-mask-image: url('../../assets/mountain.svg');
+	-webkit-mask-repeat: no-repeat;
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	transform: scale(1.3);
+}
+.ba-list-item__icon.wood {
+	mask: url('../../assets/wood.svg');
+	-webkit-mask-image: url('../../assets/wood.svg');
+	-webkit-mask-repeat: no-repeat;
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	transform: scale(1.3);
+}
+.ba-list-item__icon.hut {
+	mask: url('../../assets/hut.svg');
+	-webkit-mask-image: url('../../assets/hut.svg');
+	-webkit-mask-repeat: no-repeat;
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	transform: scale(1.3);
+}
+.ba-list-item__icon.street {
+	mask: url('../../assets/street.svg');
+	-webkit-mask-image: url('../../assets/street.svg');
+	-webkit-mask-repeat: no-repeat;
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	transform: scale(1.3);
+}
+
 .ba-list-item:hover .ba-list-item__icon {
 	background: var(--primary-color);
 }
