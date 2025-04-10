@@ -48,7 +48,7 @@ export const loadBvvGeoResourceSearchResults = async (query) => {
 export const mapBvvLocationSearchResultTypeToCategory = (type) => {
 	switch (type) {
 		case 'fliessgewaesser':
-		case 'see:':
+		case 'see':
 			return LocationSearchResultCategory.Waters;
 		case 'schule':
 			return LocationSearchResultCategory.School;

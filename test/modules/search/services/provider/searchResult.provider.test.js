@@ -115,6 +115,7 @@ describe('SearchResult provider', () => {
 		it('maps Bvv location types to a LocationSearchResultCategory', async () => {
 			expect(mapBvvLocationSearchResultTypeToCategory()).toBeNull();
 			expect(mapBvvLocationSearchResultTypeToCategory('fliessgewaesser')).toBe(LocationSearchResultCategory.Waters);
+			expect(mapBvvLocationSearchResultTypeToCategory('see')).toBe(LocationSearchResultCategory.Waters);
 			expect(mapBvvLocationSearchResultTypeToCategory('schule')).toBe(LocationSearchResultCategory.School);
 			expect(mapBvvLocationSearchResultTypeToCategory('wald')).toBe(LocationSearchResultCategory.Forest);
 			expect(mapBvvLocationSearchResultTypeToCategory('berg')).toBe(LocationSearchResultCategory.Mountain);
