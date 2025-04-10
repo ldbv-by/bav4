@@ -83,16 +83,18 @@ describe('LocationResultItem', () => {
 			expect(element.shadowRoot.querySelectorAll('.copy-button')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.copy-button')[0].title).toBe('search_result_item_copy');
 		});
-		
+
 		it('renders the view containing an category icon', async () => {
 			const data = new LocationSearchResult('label', 'labelFormatted').setCategory(LocationSearchResultCategory.School);
 			const element = await setup();
-			
+
 			element.data = data;
-			
+
 			expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe('labelFormatted');
 			expect(element.shadowRoot.querySelectorAll(`.ba-list-item__icon.${LocationSearchResultCategory.School}`)).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.ba-list-item__icon')[0].title).toBe(`search_result_item_category_title_${LocationSearchResultCategory.School}`);
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item__icon')[0].title).toBe(
+				`search_result_item_category_title_${LocationSearchResultCategory.School}`
+			);
 			expect(element.shadowRoot.querySelectorAll('.copy-button')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.copy-button')[0].title).toBe('search_result_item_copy');
 		});
