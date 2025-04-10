@@ -49,9 +49,9 @@
 	margin-right: 0.5em;
 }
 
-.ba-list-item__icon.lake {
-	mask: url('../../assets/lake.svg');
-	-webkit-mask-image: url('../../assets/lake.svg');
+.ba-list-item__icon.waters {
+	mask: url('../../assets/waters.svg');
+	-webkit-mask-image: url('../../assets/waters.svg');
 	-webkit-mask-repeat: no-repeat;
 	mask-size: cover;
 	-webkit-mask-size: cover;
@@ -73,9 +73,17 @@
 	-webkit-mask-size: cover;
 	transform: scale(1.3);
 }
-.ba-list-item__icon.wood {
-	mask: url('../../assets/wood.svg');
-	-webkit-mask-image: url('../../assets/wood.svg');
+.ba-list-item__icon.forest {
+	mask: url('../../assets/forest.svg');
+	-webkit-mask-image: url('../../assets/forest.svg');
+	-webkit-mask-repeat: no-repeat;
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	transform: scale(1.3);
+}
+.ba-list-item__icon.landscape {
+	mask: url('../../assets/landscape.svg');
+	-webkit-mask-image: url('../../assets/landscape.svg');
 	-webkit-mask-repeat: no-repeat;
 	mask-size: cover;
 	-webkit-mask-size: cover;
