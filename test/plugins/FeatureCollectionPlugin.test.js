@@ -13,6 +13,7 @@ import { BaGeometry } from '../../src/domain/geometry.js';
 import { VectorGeoResource } from '../../src/domain/geoResources.js';
 import { SourceType } from '../../src/domain/sourceType.js';
 import { removeLayer } from '../../src/store/layers/layers.action.js';
+import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../src/services/provider/attribution.provider.js';
 
 describe('FeatureCollectionPlugin', () => {
 	const geoResourceService = {
@@ -81,6 +82,7 @@ describe('FeatureCollectionPlugin', () => {
 				new VectorGeoResource(FEATURE_COLLECTION_GEORESOURCE_ID, `global_featureCollection_layer_label (2)`)
 					.setFeatures([feature0, feature1])
 					.setHidden(true)
+					.setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource)
 			);
 		});
 	});
