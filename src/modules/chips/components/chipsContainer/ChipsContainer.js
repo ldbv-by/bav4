@@ -35,7 +35,6 @@ export class ChipsContainer extends MvuElement {
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 
 		this._environmentService = environmentService;
-		this._resizeObserver = null;
 	}
 
 	/**
@@ -80,48 +79,8 @@ export class ChipsContainer extends MvuElement {
 	/**
 	 * @override
 	 */
-	onAfterRender(firsttime) {
-		const showOrHideScrollButtons = (container) => {
-			const isScrollable = container.scrollWidth > container.clientWidth ? true : false;
-			isScrollable ? container.classList.add('show') : container.classList.remove('show');
-		};
-		const scrollElement = this.shadowRoot.getElementById('chipscontainer');
-		showOrHideScrollButtons(scrollElement);
-
-		this._resizeObserver = new (this._environmentService.getWindow().ResizeObserver)((entries) => {
-			for (const entry of entries) {
-				showOrHideScrollButtons(entry.target);
-			}
-		});
-
-		if (firsttime) {
-			const chipsContainer = this.shadowRoot.getElementById('chipscontainer');
-			this._resizeObserver.observe(chipsContainer);
-		}
-	}
-
-	/**
-	 * @override
-	 */
-	onDisconnect() {
-		this._resizeObserver?.disconnect();
-	}
-
-	/**
-	 * @override
-	 */
 	createView(model) {
 		const { isDarkSchema, isPortrait, hasMinWidth, isOpen, isOpenNavigationRail, currentChips } = model;
-
-		const scrollLeft = () => {
-			const container = this.shadowRoot.getElementById('chipscontainer');
-			container.scrollLeft += container.clientWidth;
-		};
-
-		const scrollRight = () => {
-			const container = this.shadowRoot.getElementById('chipscontainer');
-			container.scrollLeft -= container.clientWidth;
-		};
 
 		const openButtonModal = (chip) => {
 			openModal(
@@ -219,13 +178,7 @@ export class ChipsContainer extends MvuElement {
 				${css}
 			</style>
 			<div id="chipscontainer" class="${classMap(classes)} chips__container">
-				<button class="chips__scroll-button chips__scroll-button-left" @click="${scrollRight}">
-					<span class="icon"> </span>
-				</button>
 				${currentChips.length === 0 ? nothing : getLayoutChips(currentChips)}
-				<button class="chips__scroll-button chips__scroll-button-right" @click="${scrollLeft}">
-					<span class="icon"> </span>
-				</button>
 			</div>
 		`;
 	}
