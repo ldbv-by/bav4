@@ -14,8 +14,6 @@ import { layersReducer } from '../../../../src/store/layers/layers.reducer';
 window.customElements.define(ChipsContainer.tag, ChipsContainer);
 
 describe('ChipsContainer', () => {
-	const animationTimeout = 200;
-
 	const geoResourceId1 = 'geoResourceId1';
 	const geoResourceId2 = 'geoResourceId2';
 
@@ -346,9 +344,6 @@ describe('ChipsContainer', () => {
 			const element = await setup({ chips: { current: chipsConfiguration1 } });
 			expect(element.shadowRoot.querySelectorAll('#chipscontainer')).toHaveSize(1);
 
-			const scrollButtons = element.shadowRoot.querySelectorAll('.chips__scroll-button');
-			expect(scrollButtons).toHaveSize(2);
-
 			expect(element.shadowRoot.querySelectorAll('.chips__button')).toHaveSize(5);
 			expect(element.shadowRoot.querySelectorAll('button.chips__button')).toHaveSize(2);
 			expect(element.shadowRoot.querySelectorAll('a.chips__button')).toHaveSize(3);
@@ -381,47 +376,6 @@ describe('ChipsContainer', () => {
 
 			expect(chips[4].classList.contains('chips__ID5')).toBeTrue();
 			expect(chips[4].querySelector('.chips__button-text').innerText).toEqual('Internal');
-		});
-
-		it('does not show scroll buttons', async () => {
-			const element = await setup();
-			const container = element.shadowRoot.querySelectorAll('#chipscontainer')[0];
-			const scrollButton = element.shadowRoot.querySelectorAll('.chips__scroll-button');
-
-			expect(container.classList.contains('show')).toBeFalse();
-			expect(scrollButton).toHaveSize(2);
-			expect(window.getComputedStyle(scrollButton[0]).display).toBe('none');
-			expect(window.getComputedStyle(scrollButton[1]).display).toBe('none');
-		});
-
-		it('does not show scroll buttons in portrait layout', async () => {
-			const element = await setup({ media: { portrait: true }, chips: { current: chipsConfiguration1 } });
-			const container = element.shadowRoot.querySelectorAll('#chipscontainer')[0];
-
-			// let's make the scroll buttons visible by minimizing the containers width
-			container.style.width = '1px';
-			await TestUtils.timeout(animationTimeout /** give the browser some time */);
-
-			expect(container.classList.contains('show')).toBeTrue();
-			const scrollButton = element.shadowRoot.querySelectorAll('.chips__scroll-button');
-			expect(scrollButton).toHaveSize(2);
-			expect(window.getComputedStyle(scrollButton[0]).display).toBe('none');
-			expect(window.getComputedStyle(scrollButton[1]).display).toBe('none');
-		});
-
-		it('shows two scroll buttons on shortage of space in desktop layout', async () => {
-			const element = await setup({ media: { portrait: false }, chips: { current: chipsConfiguration1 } });
-			const container = element.shadowRoot.querySelectorAll('#chipscontainer')[0];
-
-			// let's make the scroll buttons visible by minimizing the containers width
-			container.style.width = '1px';
-			await TestUtils.timeout(animationTimeout /** give the browser some time */);
-
-			expect(container.classList.contains('show')).toBeTrue();
-			const scrollButton = element.shadowRoot.querySelectorAll('.chips__scroll-button');
-			expect(scrollButton).toHaveSize(2);
-			expect(window.getComputedStyle(scrollButton[0]).display).toBe('block');
-			expect(window.getComputedStyle(scrollButton[1]).display).toBe('block');
 		});
 
 		it('contains only non-draggable chips', async () => {
@@ -461,30 +415,11 @@ describe('ChipsContainer', () => {
 		});
 	});
 
-	describe('when disconnected', () => {
-		it('removes all observers', async () => {
-			class ResizeObserver {
-				observe() {}
-
-				disconnect() {}
-			}
-			const windowMock = {
-				ResizeObserver
-			};
-			const element = await setup({}, { windowMock: windowMock });
-			const spy = spyOn(element._resizeObserver, 'disconnect');
-
-			element.onDisconnect(); // we have to call onDisconnect manually
-			expect(spy).toHaveBeenCalled();
-		});
-	});
-
 	describe('when chips state change', () => {
 		it('updates the displayed chips', async () => {
 			const element = await setup({ chips: { current: chipsConfiguration1 } });
 
 			expect(element.shadowRoot.querySelectorAll('#chipscontainer')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.chips__scroll-button')).toHaveSize(2);
 			expect(element.shadowRoot.querySelectorAll('.chips__button')).toHaveSize(5);
 			expect(element.shadowRoot.querySelectorAll('button.chips__button')).toHaveSize(2);
 			expect(element.shadowRoot.querySelectorAll('a.chips__button')).toHaveSize(3);
@@ -584,57 +519,6 @@ describe('ChipsContainer', () => {
 			expect(store.getState().layers.active[0].geoResourceId).toBe(geoResourceId1);
 			expect(store.getState().layers.active[1].id.startsWith(geoResourceId2)).toBeTrue();
 			expect(store.getState().layers.active[1].geoResourceId).toBe(geoResourceId2);
-		});
-	});
-
-	describe('when scroll buttons are clicked', () => {
-		const greaterThan = (number) => {
-			return {
-				asymmetricMatch: function (compareTo) {
-					return compareTo > number;
-				},
-
-				jasmineToString: function () {
-					return '<greater then: ' + number + '>';
-				}
-			};
-		};
-
-		const lessThan = (number) => {
-			return {
-				asymmetricMatch: function (compareTo) {
-					return compareTo < number;
-				},
-
-				jasmineToString: function () {
-					return '<greater then: ' + number + '>';
-				}
-			};
-		};
-
-		it('scrolls the container in the right and in the left direction', async () => {
-			const element = await setup({ chips: { current: chipsConfiguration1 } });
-			const container = element.shadowRoot.querySelectorAll('#chipscontainer')[0];
-			// let's make the scroll buttons visible by minimizing the containers width
-			container.style.width = '1px';
-
-			// fake the property and use a spy to observe the relative left/right changes
-			const scrollLeftSpy = spyOnProperty(container, 'scrollLeft', 'set').and.callThrough();
-			spyOnProperty(container, 'scrollLeft', 'get').and.returnValue(0);
-
-			await TestUtils.timeout(animationTimeout /** give the browser some time */);
-			expect(container.classList.contains('show')).toBeTrue();
-			const scrollButton = element.shadowRoot.querySelectorAll('.chips__scroll-button');
-			// scroll right
-			scrollButton[1].click();
-
-			expect(scrollLeftSpy).toHaveBeenCalledWith(greaterThan(0));
-			scrollLeftSpy.calls.reset();
-
-			// scroll left
-			scrollButton[0].click();
-
-			expect(scrollLeftSpy).toHaveBeenCalledWith(lessThan(0));
 		});
 	});
 

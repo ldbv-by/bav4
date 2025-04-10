@@ -7,6 +7,7 @@ import { BaPlugin } from './BaPlugin';
 import { $injector } from '../injection/index';
 import { VectorGeoResource } from '../domain/geoResources';
 import { clearFeatures } from '../store/featureCollection/featureCollection.action';
+import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../services/provider/attribution.provider';
 /**
  * Id of the layer used for the visualization of a feature collection
  */
@@ -49,6 +50,7 @@ export class FeatureCollectionPlugin extends BaPlugin {
 					new VectorGeoResource(FEATURE_COLLECTION_GEORESOURCE_ID, `${translate('global_featureCollection_layer_label')} (${entries.length})`)
 						.setFeatures(entries)
 						.setHidden(true)
+						.setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource)
 				);
 				addLayer(FEATURE_COLLECTION_LAYER_ID, { geoResourceId: FEATURE_COLLECTION_GEORESOURCE_ID });
 			}
