@@ -4,12 +4,14 @@ import { $injector } from '../../../../../src/injection';
 import {
 	CadastralParcelSearchResult,
 	GeoResourceSearchResult,
-	LocationSearchResult
+	LocationSearchResult,
+	LocationSearchResultCategory
 } from '../../../../../src/modules/search/services/domain/searchResult';
 import {
 	loadBvvCadastralParcelSearchResults,
 	loadBvvGeoResourceSearchResults,
-	loadBvvLocationSearchResults
+	loadBvvLocationSearchResults,
+	mapBvvLocationSearchResultTypeToCategory
 } from '../../../../../src/modules/search/services/provider/searchResult.provider';
 
 describe('SearchResult provider', () => {
@@ -109,6 +111,19 @@ describe('SearchResult provider', () => {
 		});
 	});
 
+	describe('mapBvvLocationSearchResultTypeToCategory', () => {
+		it('maps Bvv location types to a LocationSearchResultCategory', async () => {
+			expect(mapBvvLocationSearchResultTypeToCategory()).toBeNull();
+			expect(mapBvvLocationSearchResultTypeToCategory('fliessgewaesser')).toBe(LocationSearchResultCategory.Waters);
+			expect(mapBvvLocationSearchResultTypeToCategory('schule')).toBe(LocationSearchResultCategory.School);
+			expect(mapBvvLocationSearchResultTypeToCategory('wald')).toBe(LocationSearchResultCategory.Forest);
+			expect(mapBvvLocationSearchResultTypeToCategory('berg')).toBe(LocationSearchResultCategory.Mountain);
+			expect(mapBvvLocationSearchResultTypeToCategory('huette')).toBe(LocationSearchResultCategory.Hut);
+			expect(mapBvvLocationSearchResultTypeToCategory('strasse_platz')).toBe(LocationSearchResultCategory.Street);
+			expect(mapBvvLocationSearchResultTypeToCategory('flurname')).toBe(LocationSearchResultCategory.Landscape);
+		});
+	});
+
 	describe('Bvv SearchResult provider for locations', () => {
 		const mockResponse = [
 			{
@@ -116,7 +131,8 @@ describe('SearchResult provider', () => {
 				attrs: {
 					extent: [10.268321055918932, 48.441788353957236, 10.271912282332778, 48.450982798822224],
 					coordinate: [10.270116669125855, 48.44638557638974],
-					label: '<b>Wasserburger</b> <b>Weg</b>, Günzburg'
+					label: '<b>Wasserburger</b> <b>Weg</b>, Günzburg',
+					type: 'strasse_platz'
 				}
 			},
 			{ id: 'id1', attrs: { coordinate: [10.257489331997931, 48.436180253047496], label: '<b>Wasserburger</b> <b>Weg</b>, Bubesheim' } }
@@ -145,12 +161,14 @@ describe('SearchResult provider', () => {
 			expect(searchResult0.center).toEqual([10.270116669125855, 48.44638557638974]);
 			expect(searchResult0.extent).toEqual([10.268321055918932, 48.441788353957236, 10.271912282332778, 48.450982798822224]);
 			expect(searchResult0.id).not.toBeNull();
+			expect(searchResult0.category).toBe(LocationSearchResultCategory.Street);
 
 			const searchResult1 = searchResults[1];
 
 			expect(searchResult1.center).toEqual([10.257489331997931, 48.436180253047496]);
 			expect(searchResult1.extent).toBeNull();
 			expect(searchResult1.id).not.toBeNull();
+			expect(searchResult1.category).toBeNull();
 		});
 
 		it('returns an empty array when response is empty', async () => {
