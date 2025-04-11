@@ -4,7 +4,7 @@
 }
 
 .icon {
-	background: var(--text1);
+	background: var(--text3,);
 	mask-size: cover;
 	-webkit-mask-size: cover;
 	cursor: pointer;
@@ -15,7 +15,7 @@
 }
 
 .rotation-button {
-	background-color: var(--primary-bg-color);
+	background-color: var(--primary-color);
 	display: inline-block;
 	height: 2.5em;
 	width: 2.5em;
