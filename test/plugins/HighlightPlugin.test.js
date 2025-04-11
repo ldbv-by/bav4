@@ -157,7 +157,7 @@ describe('HighlightPlugin', () => {
 	});
 
 	describe('when search.query is empty', () => {
-		fit('clears all searchResult related highlight items', async () => {
+		it('clears all searchResult related highlight items', async () => {
 			const highlightFeature0 = { type: HighlightFeatureType.DEFAULT, data: [21, 42], id: 'id0', category: SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY };
 			const highlightFeature1 = {
 				type: HighlightFeatureType.DEFAULT,

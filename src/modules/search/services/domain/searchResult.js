@@ -66,8 +66,24 @@ export class SearchResult {
 	}
 }
 
+/**
+ * Enum of all supported LocationSearchResult categories
+ * @readonly
+ * @enum {String}
+ */
+export const LocationSearchResultCategory = Object.freeze({
+	Forest: 'forest',
+	Waters: 'waters',
+	Mountain: 'mountain',
+	School: 'school',
+	Street: 'street',
+	Hut: 'hut',
+	Landscape: 'landscape'
+});
+
 export class LocationSearchResult extends SearchResult {
 	#id;
+	#category;
 	constructor(label, labelFormatted, center = null, extent = null) {
 		super(label, labelFormatted);
 		this._center = center;
@@ -89,6 +105,10 @@ export class LocationSearchResult extends SearchResult {
 		return this.#id;
 	}
 
+	get category() {
+		return this.#category ?? null;
+	}
+
 	/**
 	 * Sets the id of this `LocationSearchResult`
 	 * @param {string} id
@@ -98,6 +118,16 @@ export class LocationSearchResult extends SearchResult {
 		if (isString(id)) {
 			this.#id = id;
 		}
+		return this;
+	}
+
+	/**
+	 * Sets the category of this `LocationSearchResult`
+	 * @param {string} category
+	 * @returns {LocationSearchResult}
+	 */
+	setCategory(category) {
+		this.#category = category;
 		return this;
 	}
 

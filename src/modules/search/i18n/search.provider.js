@@ -15,7 +15,15 @@ export const provide = (lang) => {
 				search_result_item_info: 'Info',
 				search_result_item_copy: 'Copy to clipboard',
 				search_result_item_clipboard_error: '"Copy to clipboard" is not available',
-				search_result_item_clipboard_success: 'was copied to clipboard'
+				search_result_item_clipboard_success: 'was copied to clipboard',
+				search_result_item_category_title_default: 'Place/Address',
+				search_result_item_category_title_forest: 'Forest',
+				search_result_item_category_title_waters: 'Waters',
+				search_result_item_category_title_school: 'School',
+				search_result_item_category_title_street: 'Street/Place',
+				search_result_item_category_title_hut: 'Hut',
+				search_result_item_category_title_landscape: 'Landscape',
+				search_result_item_category_title_mountain: 'Mountain'
 			};
 
 		case 'de':
@@ -33,7 +41,15 @@ export const provide = (lang) => {
 				search_result_item_info: 'Info',
 				search_result_item_copy: 'In die Zwischenablage kopieren',
 				search_result_item_clipboard_error: '"In die Zwischenablage kopieren" steht nicht zur Verfügung',
-				search_result_item_clipboard_success: 'wurde in die Zwischenablage kopiert'
+				search_result_item_clipboard_success: 'wurde in die Zwischenablage kopiert',
+				search_result_item_category_title_default: 'Ort/Adresse',
+				search_result_item_category_title_forest: 'Wald',
+				search_result_item_category_title_waters: 'Gewässer',
+				search_result_item_category_title_school: 'Schule',
+				search_result_item_category_title_street: 'Straße/Platz',
+				search_result_item_category_title_hut: 'Hütte',
+				search_result_item_category_title_landscape: 'Flurname',
+				search_result_item_category_title_mountain: 'Berg'
 			};
 
 		default:

@@ -2,6 +2,7 @@ import {
 	CadastralParcelSearchResult,
 	GeoResourceSearchResult,
 	LocationSearchResult,
+	LocationSearchResultCategory,
 	SearchResult,
 	SearchResultTypes
 } from '../../../../../src/modules/search/services/domain/searchResult';
@@ -71,6 +72,20 @@ describe('abstract SearchResult', () => {
 	});
 });
 
+describe('LocationSearchResultCategory', () => {
+	it('provides an enum of all available types', () => {
+		expect(Object.entries(LocationSearchResultCategory).length).toBe(7);
+		expect(Object.isFrozen(LocationSearchResultCategory)).toBeTrue();
+		expect(LocationSearchResultCategory.Forest).toBe('forest');
+		expect(LocationSearchResultCategory.Waters).toBe('waters');
+		expect(LocationSearchResultCategory.Mountain).toBe('mountain');
+		expect(LocationSearchResultCategory.School).toBe('school');
+		expect(LocationSearchResultCategory.Street).toBe('street');
+		expect(LocationSearchResultCategory.Hut).toBe('hut');
+		expect(LocationSearchResultCategory.Landscape).toBe('landscape');
+	});
+});
+
 describe('LocationSearchResult', () => {
 	it('instantiates a LocationSearchResult', () => {
 		const label = 'label';
@@ -125,6 +140,17 @@ describe('LocationSearchResult', () => {
 
 		expect(locationSearchResult.setId(123).id).toBe(hashCode(locationSearchResult).toString());
 		expect(locationSearchResult.setId('123').id).toBe('123');
+	});
+
+	it('provides a setter and getter for the `category`', () => {
+		const label = 'label';
+		const labelFormatted = 'labelFormatted';
+		const center = [1, 2];
+		const extent = [3, 4, 5, 6];
+
+		const locationSearchResult = new LocationSearchResult(label, labelFormatted, center, extent);
+
+		expect(locationSearchResult.setCategory('cat').category).toBe('cat');
 	});
 });
 
