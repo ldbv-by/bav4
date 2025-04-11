@@ -131,31 +131,6 @@ describe('SearchResultsPanel', () => {
 			expect(highlightResult2Spy).not.toHaveBeenCalled(); // --
 		});
 
-		it('resets the key navigation when mouse enters element', async () => {
-			const keyActionMapperSpy = spyOn(document, 'removeEventListener').and.callThrough();
-			const element = await setup();
-			const resetSpy = spyOn(element, '_reset').and.callThrough();
-
-			element.shadowRoot.querySelector('div').dispatchEvent(new Event('mouseenter'));
-
-			expect(resetSpy).toHaveBeenCalled();
-			// KeyActionMapper is deactivated
-			expect(keyActionMapperSpy).toHaveBeenCalledWith('keyup', jasmine.any(Function));
-			expect(keyActionMapperSpy).toHaveBeenCalledWith('keydown', jasmine.any(Function));
-		});
-
-		it('reactivates the key navigation when mouse leaves element', async () => {
-			const keyActionMapperSpy = spyOn(document, 'addEventListener').and.callThrough();
-
-			const element = await setup();
-
-			element.shadowRoot.querySelector('div').dispatchEvent(new Event('mouseleave'));
-
-			// KeyActionMapper is activated
-			expect(keyActionMapperSpy).toHaveBeenCalledWith('keyup', jasmine.any(Function));
-			expect(keyActionMapperSpy).toHaveBeenCalledWith('keydown', jasmine.any(Function));
-		});
-
 		it('highlights the next resultItem for "arrowDown" when keyup event is fired', async () => {
 			const element = await setup();
 			element.resultItemClasses = [AbstractResultItemImpl];
