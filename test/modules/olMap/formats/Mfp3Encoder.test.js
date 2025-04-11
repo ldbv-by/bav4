@@ -24,7 +24,6 @@ import TileGrid from 'ol/tilegrid/TileGrid';
 import { AdvWmtsTileGrid } from '../../../../src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid';
 import { BaOverlayTypes } from '../../../../src/modules/olMap/components/BaOverlay';
 import { QueryParameters } from '../../../../src/domain/queryParameters';
-import { visit } from 'maplibre-gl';
 
 describe('BvvMfp3Encoder', () => {
 	const viewMock = { getCenter: () => [50, 50], calculateExtent: () => [0, 0, 100, 100], getResolution: () => 10, getZoomForResolution: () => 21 };
