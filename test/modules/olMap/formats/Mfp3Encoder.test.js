@@ -24,6 +24,7 @@ import TileGrid from 'ol/tilegrid/TileGrid';
 import { AdvWmtsTileGrid } from '../../../../src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid';
 import { BaOverlayTypes } from '../../../../src/modules/olMap/components/BaOverlay';
 import { QueryParameters } from '../../../../src/domain/queryParameters';
+import { visit } from 'maplibre-gl';
 
 describe('BvvMfp3Encoder', () => {
 	const viewMock = { getCenter: () => [50, 50], calculateExtent: () => [0, 0, 100, 100], getResolution: () => 10, getZoomForResolution: () => 21 };
@@ -2774,7 +2775,8 @@ describe('BvvMfp3Encoder', () => {
 					return {
 						tagName: 'ba-map-overlay',
 						placement: { offset: [0.4, 2], positioning: 'top-center' },
-						childNodes: [{ innerText: 'foo bar baz', matches: (selector) => selector === '.ba-overlay', childNodes: [] }]
+						childNodes: [{ innerText: 'foo bar baz', matches: (selector) => selector === '.ba-overlay', childNodes: [] }],
+						style: { display: 'inherit' }
 					};
 				},
 				getPosition: () => [42, 21]
@@ -2785,7 +2787,8 @@ describe('BvvMfp3Encoder', () => {
 						tagName: 'ba-map-overlay',
 						type: BaOverlayTypes.DISTANCE_PARTITION,
 						placement: { offset: [0.4, 2], positioning: 'top-center' },
-						childNodes: [{ innerText: 'foo bar', matches: (selector) => selector === '.ba-overlay', childNodes: [] }]
+						childNodes: [{ innerText: 'foo bar', matches: (selector) => selector === '.ba-overlay', childNodes: [] }],
+						style: null
 					};
 				},
 				getPosition: () => [42, 21]
@@ -2887,10 +2890,39 @@ describe('BvvMfp3Encoder', () => {
 			});
 		});
 
+		it("does NOT resolve invisible overlays to a mfp 'geojson' spec", () => {
+			const distanceOverlayMock = {
+				getElement: () => {
+					return {
+						tagName: 'ba-map-overlay',
+						placement: { offset: [0.4, 2], positioning: 'top-center' },
+						childNodes: [{ innerText: 'foo bar baz', matches: (selector) => selector === '.ba-overlay', childNodes: [] }],
+						style: { display: 'none' }
+					};
+				},
+				getPosition: () => [42, 21]
+			};
+			const partitionDistanceOverlayMock = {
+				getElement: () => {
+					return {
+						tagName: 'ba-map-overlay',
+						type: BaOverlayTypes.DISTANCE_PARTITION,
+						placement: { offset: [0.4, 2], positioning: 'top-center' },
+						childNodes: [{ innerText: 'foo bar', matches: (selector) => selector === '.ba-overlay', childNodes: [] }],
+						style: { display: 'none' }
+					};
+				},
+				getPosition: () => [42, 21]
+			};
+			const encoder = setup();
+			const specs = encoder._encodeOverlays([distanceOverlayMock, partitionDistanceOverlayMock]);
+			expect(specs).toHaveSize(0);
+		});
+
 		it("does NOT resolve overlay with invalid element to a mfp 'geojson' spec", () => {
 			const overlayMock = {
 				getElement: () => {
-					return { tagName: 'something', innerText: 'foo bar baz', placement: { offset: [0.4, 2] } };
+					return { tagName: 'something', innerText: 'foo bar baz', placement: { offset: [0.4, 2] }, style: null };
 				},
 				getPosition: () => [42, 21]
 			};
