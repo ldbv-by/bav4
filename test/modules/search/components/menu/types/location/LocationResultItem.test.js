@@ -14,7 +14,7 @@ import {
 	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
 } from '../../../../../../../src/plugins/HighlightPlugin';
 import { HighlightFeatureType } from '../../../../../../../src/domain/highlightFeature.js';
-import { AbstractResultItem, Selected_Item_Class } from '../../../../../../../src/modules/search/components/menu/AbstractResultItem.js';
+import { AbstractResultItem, Highlight_Item_Class } from '../../../../../../../src/modules/search/components/menu/AbstractResultItem.js';
 window.customElements.define(LocationResultItem.tag, LocationResultItem);
 
 describe('LocationResultItem', () => {
@@ -99,7 +99,7 @@ describe('LocationResultItem', () => {
 				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.MARKER_TMP);
 				expect(store.getState().highlight.features[0].category).toBe(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY);
 				expect(store.getState().highlight.features[0].id).toBeInstanceOf(String);
-				expect(element.classList.contains(Selected_Item_Class)).toBeTrue();
+				expect(element.classList.contains(Highlight_Item_Class)).toBeTrue();
 			});
 		});
 
@@ -113,13 +113,13 @@ describe('LocationResultItem', () => {
 					}
 				});
 				element.data = data;
-				element.classList.add(Selected_Item_Class);
+				element.classList.add(Highlight_Item_Class);
 
 				const target = element.shadowRoot.querySelector('li');
 				target.dispatchEvent(new Event('mouseleave'));
 
 				expect(store.getState().highlight.features).toHaveSize(0);
-				expect(element.classList.contains(Selected_Item_Class)).toBeFalse();
+				expect(element.classList.contains(Highlight_Item_Class)).toBeFalse();
 			});
 		});
 

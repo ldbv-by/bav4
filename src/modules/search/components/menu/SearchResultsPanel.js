@@ -15,10 +15,11 @@ import { focusSearchField } from '../../../../store/mainMenu/mainMenu.action';
 import { CpResultItem } from './types/cp/CpResultItem';
 import { Header } from '../../../header/components/Header';
 import { MainMenu } from '../../../menu/components/mainMenu/MainMenu';
-import { Selected_Item_Class } from './AbstractResultItem';
+import { Selected_Item_Class, Highlight_Item_Class } from './AbstractResultItem';
 
 export const Navigatable_Result_Item_Class = [LocationResultItem, GeoResourceResultItem, CpResultItem];
 
+const Highlighted_Item_Class_Selector = `.${Highlight_Item_Class}`;
 const Selected_Item_Class_Selector = `.${Selected_Item_Class}`;
 const Search_Field_Index = -1;
 const No_Op = () => {};
@@ -91,7 +92,7 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 		const items = findAllBySelector(this, this.#resultItemSelector);
 		const indexOfSelectedItem = this._findSelectedIndex(items);
 		this.#selectedIndex = -1;
-		this._changeSelectedElement(items[indexOfSelectedItem], null);
+		this._changeSelectedElement(indexOfSelectedItem, -1, items);
 	}
 
 	_arrowDown() {
@@ -100,7 +101,7 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 		const nextIndex = indexOfPreviousItem < 0 ? 0 : indexOfPreviousItem + 1;
 		this.#selectedIndex = nextIndex < items.length ? nextIndex : indexOfPreviousItem;
 
-		this._changeSelectedElement(items[indexOfPreviousItem], items[this.#selectedIndex]);
+		this._changeSelectedElement(indexOfPreviousItem, this.#selectedIndex, items);
 	}
 
 	_arrowUp() {
@@ -113,7 +114,7 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 			focusSearchField();
 		}
 
-		this._changeSelectedElement(items[indexOfPreviousItem], items[this.#selectedIndex]);
+		this._changeSelectedElement(indexOfPreviousItem, this.#selectedIndex, items);
 	}
 
 	_enter() {
@@ -126,22 +127,24 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 		}
 	}
 
-	_changeSelectedElement(previous, next) {
-		if (previous === next) {
+	_changeSelectedElement(previousIndex, nextIndex, items) {
+		if (previousIndex === nextIndex) {
 			return;
 		}
-		if (previous) {
-			previous.classList.remove(Selected_Item_Class);
-			previous.highlightResult(false);
+		if (previousIndex >= 0) {
+			items.forEach((i) => i.highlightResult(false));
 		}
-		if (next) {
-			next.classList.add(Selected_Item_Class);
-			next.highlightResult(true);
+		if (nextIndex >= 0) {
+			items[nextIndex].highlightResult(true);
 		}
 	}
 
 	_findSelectedIndex(items) {
-		return items.findIndex((element) => element.matches(Selected_Item_Class_Selector));
+		const mouseSelectedIndex = items.findIndex((element) => element.matches(Selected_Item_Class_Selector));
+		const keyboardSelectedIndex = items.findIndex((element) => element.matches(Highlighted_Item_Class_Selector));
+
+		// prefer by mouse selected items
+		return mouseSelectedIndex < 0 ? keyboardSelectedIndex : mouseSelectedIndex;
 	}
 
 	set resultItemClasses(values) {

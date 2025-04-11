@@ -11,7 +11,7 @@ import { positionReducer } from '../../../../../../../src/store/position/positio
 import { TestUtils } from '../../../../../../test-utils.js';
 import { GeoResourceInfoPanel } from '../../../../../../../src/modules/geoResourceInfo/components/GeoResourceInfoPanel';
 import { modalReducer } from '../../../../../../../src/store/modal/modal.reducer';
-import { AbstractResultItem, Selected_Item_Class } from '../../../../../../../src/modules/search/components/menu/AbstractResultItem.js';
+import { AbstractResultItem, Highlight_Item_Class } from '../../../../../../../src/modules/search/components/menu/AbstractResultItem.js';
 
 window.customElements.define(GeoResourceResultItem.tag, GeoResourceResultItem);
 
@@ -248,7 +248,7 @@ describe('GeoResourceResultItem', () => {
 				const target = element.shadowRoot.querySelector('li');
 				target.dispatchEvent(new Event('mouseenter'));
 
-				expect(element.classList.contains(Selected_Item_Class)).toBeTrue();
+				expect(element.classList.contains(Highlight_Item_Class)).toBeTrue();
 			});
 		});
 
@@ -296,12 +296,12 @@ describe('GeoResourceResultItem', () => {
 				const element = await setup();
 				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResFuture);
 				element.data = data;
-				element.classList.add(Selected_Item_Class);
+				element.classList.add(Highlight_Item_Class);
 
 				const target = element.shadowRoot.querySelector('li');
 				target.dispatchEvent(new Event('mouseleave'));
 
-				expect(element.classList.contains(Selected_Item_Class)).toBeFalse();
+				expect(element.classList.contains(Highlight_Item_Class)).toBeFalse();
 			});
 		});
 

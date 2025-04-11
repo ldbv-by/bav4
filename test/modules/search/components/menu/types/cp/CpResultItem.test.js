@@ -17,7 +17,7 @@ import { featureCollectionReducer } from '../../../../../../../src/store/feature
 import { BaFeature } from '../../../../../../../src/domain/feature.js';
 import { notificationReducer } from '../../../../../../../src/store/notifications/notifications.reducer.js';
 import { LevelTypes } from '../../../../../../../src/store/notifications/notifications.action.js';
-import { AbstractResultItem, Selected_Item_Class } from '../../../../../../../src/modules/search/components/menu/AbstractResultItem.js';
+import { AbstractResultItem, Highlight_Item_Class } from '../../../../../../../src/modules/search/components/menu/AbstractResultItem.js';
 window.customElements.define(CpResultItem.tag, CpResultItem);
 
 describe('CpResultItem', () => {
@@ -232,7 +232,7 @@ describe('CpResultItem', () => {
 						expect(store.getState().highlight.features[0].data).toEqual(ewktGeometry);
 						expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.DEFAULT_TMP);
 						expect(store.getState().highlight.features[0].id).toBeInstanceOf(String);
-						expect(element.classList.contains(Selected_Item_Class)).toBeTrue();
+						expect(element.classList.contains(Highlight_Item_Class)).toBeTrue();
 					});
 				});
 
@@ -281,13 +281,13 @@ describe('CpResultItem', () => {
 					}
 				});
 				element.data = data;
-				element.classList.add(Selected_Item_Class);
+				element.classList.add(Highlight_Item_Class);
 
 				const target = element.shadowRoot.querySelector('li');
 				target.dispatchEvent(new Event('mouseleave'));
 
 				expect(store.getState().highlight.features).toHaveSize(0);
-				expect(element.classList.contains(Selected_Item_Class)).toBeFalse();
+				expect(element.classList.contains(Highlight_Item_Class)).toBeFalse();
 			});
 		});
 

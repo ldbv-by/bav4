@@ -3,7 +3,8 @@
  */
 import { MvuElement } from '../../../MvuElement';
 
-export const Selected_Item_Class = 'ba-key-nav-item_select';
+export const Highlight_Item_Class = 'ba-key-nav-item_highlight';
+export const Selected_Item_Class = 'ba-mouse-nav-item_select';
 
 /**
  * @abstract
