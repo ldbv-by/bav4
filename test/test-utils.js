@@ -3,6 +3,8 @@ import { combineReducers, createStore } from 'redux';
 import { $injector } from '../src/injection';
 import { isTemplateResult } from '../src/utils/checks';
 import { LOG_LIFECYLE_ATTRIBUTE_NAME } from '../src/utils/markup';
+import { fixture, html, unsafeStatic } from '@open-wc/testing-helpers';
+import { literal } from 'lit-html/static.js';
 
 class TestableBlob extends Blob {
 	constructor(data, mimeType, size) {
@@ -35,6 +37,7 @@ export class TestUtils {
 	 * @returns {Promise<HTMLElement>}
 	 */
 	static async render(tag, properties = {}, attributes = {}, slotContent = '') {
+		tag = literal`${unsafeStatic(tag)}`;
 		window.ba_fireConnectedEvent = true;
 		const connectedListener = (e) => {
 			const element = e.detail;
@@ -44,7 +47,7 @@ export class TestUtils {
 		};
 		document.addEventListener('connected', connectedListener);
 		TestUtils._renderToDocument(tag, attributes, slotContent);
-		const element = await TestUtils._waitForComponentToRender(tag);
+		const element = await fixture(html`<${tag} ${attributes}>${slotContent}</${tag}>`);
 		window.ba_fireConnectedCallbackEvent = false;
 		document.removeEventListener('connected', connectedListener);
 		return element;
