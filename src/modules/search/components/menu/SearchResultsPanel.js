@@ -15,10 +15,10 @@ import { focusSearchField } from '../../../../store/mainMenu/mainMenu.action';
 import { CpResultItem } from './types/cp/CpResultItem';
 import { Header } from '../../../header/components/Header';
 import { MainMenu } from '../../../menu/components/mainMenu/MainMenu';
+import { Selected_Item_Class } from './AbstractResultItem';
 
 export const Navigatable_Result_Item_Class = [LocationResultItem, GeoResourceResultItem, CpResultItem];
 
-const Selected_Item_Class = 'ba-key-nav-item_select';
 const Selected_Item_Class_Selector = `.${Selected_Item_Class}`;
 const Search_Field_Index = -1;
 const No_Op = () => {};
@@ -73,13 +73,8 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 	 *
 	 */
 	createView() {
-		const onMouseEnter = () => {
-			this._reset();
-			this.#keyActionMapper.deactivate();
-		};
-		const onMouseLeave = () => this.#keyActionMapper.activate();
 		return html`
-			<div class="search-results-panel" @mouseenter=${() => onMouseEnter()} @mouseleave=${() => onMouseLeave()}>
+			<div class="search-results-panel">
 				${unsafeHTML(`<${LocationResultsPanel.tag}/>`)} ${unsafeHTML(`<${GeoResourceResultsPanel.tag}/>`)} ${unsafeHTML(`<${CpResultsPanel.tag}/>`)}
 			</div>
 		`;
@@ -102,17 +97,16 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 	_arrowDown() {
 		const items = findAllBySelector(this, this.#resultItemSelector);
 		const indexOfPreviousItem = this._findSelectedIndex(items);
-		const nextIndex = this.#selectedIndex === null ? (indexOfPreviousItem < 0 ? 0 : indexOfPreviousItem + 1) : this.#selectedIndex + 1;
+		const nextIndex = indexOfPreviousItem < 0 ? 0 : indexOfPreviousItem + 1;
 		this.#selectedIndex = nextIndex < items.length ? nextIndex : indexOfPreviousItem;
+
 		this._changeSelectedElement(items[indexOfPreviousItem], items[this.#selectedIndex]);
 	}
 
 	_arrowUp() {
 		const items = findAllBySelector(this, this.#resultItemSelector);
 		const indexOfPreviousItem = this._findSelectedIndex(items);
-
-		const nextIndex =
-			this.#selectedIndex === null ? (indexOfPreviousItem < 0 ? indexOfPreviousItem : indexOfPreviousItem - 1) : this.#selectedIndex - 1;
+		const nextIndex = indexOfPreviousItem < 0 ? indexOfPreviousItem : indexOfPreviousItem - 1;
 		this.#selectedIndex = nextIndex < 0 ? Search_Field_Index : nextIndex;
 
 		if (this.#selectedIndex === Search_Field_Index) {

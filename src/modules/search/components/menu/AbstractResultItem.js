@@ -3,6 +3,8 @@
  */
 import { MvuElement } from '../../../MvuElement';
 
+export const Selected_Item_Class = 'ba-key-nav-item_select';
+
 /**
  * @abstract
  * @class
