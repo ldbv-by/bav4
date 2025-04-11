@@ -21,7 +21,7 @@ export const provide = (lang) => {
 				search_result_item_category_title_waters: 'Waters',
 				search_result_item_category_title_school: 'School',
 				search_result_item_category_title_street: 'Street/Place',
-				search_result_item_category_title_hut: 'Hut',
+				search_result_item_category_title_hut: 'Inn/Hut',
 				search_result_item_category_title_landscape: 'Landscape',
 				search_result_item_category_title_mountain: 'Mountain'
 			};
@@ -47,7 +47,7 @@ export const provide = (lang) => {
 				search_result_item_category_title_waters: 'Gewässer',
 				search_result_item_category_title_school: 'Schule',
 				search_result_item_category_title_street: 'Straße/Platz',
-				search_result_item_category_title_hut: 'Hütte',
+				search_result_item_category_title_hut: 'Gasthaus/Hütte',
 				search_result_item_category_title_landscape: 'Flurname',
 				search_result_item_category_title_mountain: 'Berg'
 			};
