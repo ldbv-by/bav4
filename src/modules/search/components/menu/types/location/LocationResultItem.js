@@ -150,8 +150,14 @@ export class LocationResultItem extends AbstractResultItem {
 					@mouseenter=${() => this.highlightResult(true)}
 					@mouseleave=${() => this.highlightResult(false)}
 				>
-					<span class="ba-list-item__pre ">
-						<span class="ba-list-item__icon"> </span>
+					<span class="ba-list-item__pre">
+						<span
+							class="ba-list-item__icon ${locationSearchResult.category ?? ''}"
+							title="${locationSearchResult.category
+								? translate(`search_result_item_category_title_${locationSearchResult.category}`)
+								: translate(`search_result_item_category_title_default`)}"
+						>
+						</span>
 					</span>
 					<span class="ba-list-item__text ">${unsafeHTML(locationSearchResult.labelFormatted)}</span>
 					<div class="ba-list-item__after separator">

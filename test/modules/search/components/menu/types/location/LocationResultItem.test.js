@@ -1,6 +1,6 @@
 import { createNoInitialStateMainMenuReducer } from '../../../../../../../src/store/mainMenu/mainMenu.reducer';
 import { LocationResultItem } from '../../../../../../../src/modules/search/components/menu/types/location/LocationResultItem';
-import { LocationSearchResult } from '../../../../../../../src/modules/search/services/domain/searchResult';
+import { LocationSearchResult, LocationSearchResultCategory } from '../../../../../../../src/modules/search/services/domain/searchResult';
 import { highlightReducer } from '../../../../../../../src/store/highlight/highlight.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../../../../src/store/media/media.reducer';
 import { positionReducer } from '../../../../../../../src/store/position/position.reducer';
@@ -78,6 +78,23 @@ describe('LocationResultItem', () => {
 			element.data = data;
 
 			expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe('labelFormatted');
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item__icon')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item__icon')[0].title).toBe('search_result_item_category_title_default');
+			expect(element.shadowRoot.querySelectorAll('.copy-button')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.copy-button')[0].title).toBe('search_result_item_copy');
+		});
+
+		it('renders the view containing an category icon', async () => {
+			const data = new LocationSearchResult('label', 'labelFormatted').setCategory(LocationSearchResultCategory.School);
+			const element = await setup();
+
+			element.data = data;
+
+			expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe('labelFormatted');
+			expect(element.shadowRoot.querySelectorAll(`.ba-list-item__icon.${LocationSearchResultCategory.School}`)).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item__icon')[0].title).toBe(
+				`search_result_item_category_title_${LocationSearchResultCategory.School}`
+			);
 			expect(element.shadowRoot.querySelectorAll('.copy-button')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.copy-button')[0].title).toBe('search_result_item_copy');
 		});

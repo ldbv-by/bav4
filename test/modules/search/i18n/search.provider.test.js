@@ -17,6 +17,14 @@ describe('i18n for search module', () => {
 		expect(map.search_result_item_copy).toBe('In die Zwischenablage kopieren');
 		expect(map.search_result_item_clipboard_error).toBe('"In die Zwischenablage kopieren" steht nicht zur Verfügung');
 		expect(map.search_result_item_clipboard_success).toBe('wurde in die Zwischenablage kopiert');
+		expect(map.search_result_item_category_title_default).toBe('Ort/Adresse');
+		expect(map.search_result_item_category_title_forest).toBe('Wald');
+		expect(map.search_result_item_category_title_waters).toBe('Gewässer');
+		expect(map.search_result_item_category_title_school).toBe('Schule');
+		expect(map.search_result_item_category_title_street).toBe('Straße/Platz');
+		expect(map.search_result_item_category_title_hut).toBe('Hütte');
+		expect(map.search_result_item_category_title_landscape).toBe('Flurname');
+		expect(map.search_result_item_category_title_mountain).toBe('Berg');
 	});
 
 	it('provides translation for en', () => {
@@ -35,10 +43,18 @@ describe('i18n for search module', () => {
 		expect(map.search_result_item_copy).toBe('Copy to clipboard');
 		expect(map.search_result_item_clipboard_error).toBe('"Copy to clipboard" is not available');
 		expect(map.search_result_item_clipboard_success).toBe('was copied to clipboard');
+		expect(map.search_result_item_category_title_default).toBe('Place/Address');
+		expect(map.search_result_item_category_title_forest).toBe('Forest');
+		expect(map.search_result_item_category_title_waters).toBe('Waters');
+		expect(map.search_result_item_category_title_school).toBe('School');
+		expect(map.search_result_item_category_title_street).toBe('Street/Place');
+		expect(map.search_result_item_category_title_hut).toBe('Hut');
+		expect(map.search_result_item_category_title_landscape).toBe('Landscape');
+		expect(map.search_result_item_category_title_mountain).toBe('Mountain');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 13;
+		const expectedSize = 21;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
