@@ -243,6 +243,12 @@ export class BvvMfp3Encoder {
 		 * - WMTS/XYZ layers are defined for a specific projection. If the application projection and the print projection differs, the layer must be replaced.
 		 */
 		const encodableLayer = this._getSubstitutionLayerOptional(layer);
+
+		/**
+		 * Highlight features are not stored in a 'normal' geoResource and does not have a 'geoResourceId',
+		 * due to the temporary nature of the highlight feature.
+		 * As a workaround for this limitation we 'fake' a geoResource tailored to the relevant information.
+		 */
 		const geoResource =
 			layer.get('id') === HIGHLIGHT_LAYER_ID
 				? { exportable: true, getType: () => GeoResourceTypes.VECTOR }
