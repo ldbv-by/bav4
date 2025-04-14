@@ -27,14 +27,20 @@ const Update_Configuration = 'update_configuration';
 export class FeatureCollectionPanel extends MvuElement {
 	#translationService;
 	#storeService;
+	#environmentService;
 	constructor() {
 		super({
 			configuration: null
 		});
 
-		const { TranslationService: translationService, StoreService: storeService } = $injector.inject('TranslationService', 'StoreService');
+		const {
+			TranslationService: translationService,
+			StoreService: storeService,
+			EnvironmentService: environmentService
+		} = $injector.inject('TranslationService', 'StoreService', 'EnvironmentService');
 		this.#translationService = translationService;
 		this.#storeService = storeService;
+		this.#environmentService = environmentService;
 	}
 
 	update(type, data, model) {
@@ -47,7 +53,7 @@ export class FeatureCollectionPanel extends MvuElement {
 	createView(model) {
 		const { configuration } = model;
 
-		if (configuration) {
+		if (configuration && !this.#environmentService.isEmbeddedAsIframe()) {
 			const { feature, geoResourceId } = configuration;
 			const translate = (key) => this.#translationService.translate(key);
 			const partOfCollection = this.#storeService

@@ -3,7 +3,7 @@
 	display: flex;
 	transition: all var(--animation-duration-large-open) var(--animation-easing-linear);
 	z-index: calc(var(--z-header) + 20);
-	overflow: scroll;
+	overflow: auto;
 	width: fit-content;
 	white-space: nowrap;
 	padding: 0 1em 0.5em;

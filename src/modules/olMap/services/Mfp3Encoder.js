@@ -799,7 +799,11 @@ export class BvvMfp3Encoder {
 				}
 			};
 		};
-		const overlayFeatures = overlays.map((o) => toFeatureWithOverlayProperties(o)).filter((f) => f !== null);
+
+		const overlayFeatures = overlays
+			.filter((o) => (o.getElement().style ? o.getElement().style.display !== 'none' : true))
+			.map((o) => toFeatureWithOverlayProperties(o))
+			.filter((f) => f !== null);
 
 		return overlayFeatures.length === 0
 			? []

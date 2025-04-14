@@ -1,7 +1,7 @@
 /**
  * @module modules/search/services/provider/searchResult_provider
  */
-import { CadastralParcelSearchResult, GeoResourceSearchResult, LocationSearchResult } from '../domain/searchResult';
+import { CadastralParcelSearchResult, GeoResourceSearchResult, LocationSearchResult, LocationSearchResultCategory } from '../domain/searchResult';
 import { $injector } from '../../../../injection';
 import { MediaType } from '../../../../domain/mediaTypes';
 import { SourceType, SourceTypeName } from '../../../../domain/sourceType';
@@ -45,6 +45,27 @@ export const loadBvvGeoResourceSearchResults = async (query) => {
 	throw new Error('SearchResults for GeoResources could not be retrieved');
 };
 
+export const mapBvvLocationSearchResultTypeToCategory = (type) => {
+	switch (type) {
+		case 'fliessgewaesser':
+		case 'see':
+			return LocationSearchResultCategory.Waters;
+		case 'schule':
+			return LocationSearchResultCategory.School;
+		case 'wald':
+			return LocationSearchResultCategory.Forest;
+		case 'berg':
+			return LocationSearchResultCategory.Mountain;
+		case 'huette':
+			return LocationSearchResultCategory.Hut;
+		case 'strasse_platz':
+			return LocationSearchResultCategory.Street;
+		case 'flurname':
+			return LocationSearchResultCategory.Landscape;
+	}
+	return null;
+};
+
 export const loadBvvLocationSearchResults = async (query) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 
@@ -57,9 +78,9 @@ export const loadBvvLocationSearchResults = async (query) => {
 	if (result.ok) {
 		const raw = await result.json();
 		const data = raw.map((o) => {
-			return new LocationSearchResult(removeHtml(o.attrs.label), o.attrs.label, o.attrs.coordinate, o.attrs.extent ?? null).setId(
-				hashCode(o).toString()
-			);
+			return new LocationSearchResult(removeHtml(o.attrs.label), o.attrs.label, o.attrs.coordinate, o.attrs.extent ?? null)
+				.setId(hashCode(o).toString())
+				.setCategory(mapBvvLocationSearchResultTypeToCategory(o.attrs.type));
 		});
 		return data;
 	}
