@@ -18,6 +18,10 @@ import {
 
 window.customElements.define(FeatureCollectionPanel.tag, FeatureCollectionPanel);
 
+const environmentService = {
+	isEmbeddedAsIframe: () => false
+};
+
 describe('FeatureCollectionPanel', () => {
 	let store;
 	const setup = (state) => {
@@ -27,7 +31,7 @@ describe('FeatureCollectionPanel', () => {
 			highlight: highlightReducer,
 			notifications: notificationReducer
 		});
-		$injector.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('EnvironmentService', environmentService);
 		return TestUtils.render(FeatureCollectionPanel.tag);
 	};
 
@@ -45,6 +49,15 @@ describe('FeatureCollectionPanel', () => {
 	describe('when initialized', () => {
 		describe('and no configuration is available', () => {
 			it('renders nothing', async () => {
+				const element = await setup();
+
+				expect(element.shadowRoot.children.length).toBe(0);
+			});
+		});
+
+		describe('and the app is embedded as iframe', () => {
+			it('renders nothing', async () => {
+				spyOn(environmentService, 'isEmbeddedAsIframe').and.returnValue(true);
 				const element = await setup();
 
 				expect(element.shadowRoot.children.length).toBe(0);
