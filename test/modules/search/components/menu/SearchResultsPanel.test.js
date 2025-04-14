@@ -4,7 +4,7 @@ import { SearchResultsPanel } from '../../../../../src/modules/search/components
 import { TestUtils } from '../../../../test-utils.js';
 import { AbstractMvuContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { CpResultsPanel } from '../../../../../src/modules/search/components/menu/types/cp/CpResultsPanel';
-import { AbstractResultItem } from '../../../../../src/modules/search/components/menu/AbstractResultItem.js';
+import { AbstractResultItem, Highlight_Item_Class } from '../../../../../src/modules/search/components/menu/AbstractResultItem.js';
 import { html } from 'lit-html';
 import { TabIds } from '../../../../../src/domain/mainMenu.js';
 import { createNoInitialStateMainMenuReducer } from '../../../../../src/store/mainMenu/mainMenu.reducer.js';
@@ -14,6 +14,10 @@ import { searchReducer } from '../../../../../src/store/search/search.reducer.js
 window.customElements.define(SearchResultsPanel.tag, SearchResultsPanel);
 
 class AbstractResultItemImpl extends AbstractResultItem {
+	createView() {
+		return html`<div></div>`;
+	}
+
 	/**
 	 * @override
 	 */
@@ -22,12 +26,19 @@ class AbstractResultItemImpl extends AbstractResultItem {
 	/**
 	 * @override
 	 */
-	highlightResult() {}
+	highlightResult(highlighted) {
+		if (highlighted) {
+			this.classList.add(Highlight_Item_Class);
+		} else {
+			this.classList.remove(Highlight_Item_Class);
+		}
+	}
 
 	static get tag() {
 		return 'ba-test-abstract-result-item-impl';
 	}
 }
+window.customElements.define(AbstractResultItemImpl.tag, AbstractResultItemImpl);
 
 describe('SearchResultsPanel', () => {
 	const keyCodes = { ArrowDown: 'ArrowDown', ArrowUp: 'ArrowUp', Enter: 'Enter' };
@@ -104,15 +115,11 @@ describe('SearchResultsPanel', () => {
 			const testResultItems = createResultItems(5);
 			testResultItems.forEach((child) => element.shadowRoot.querySelector('div').appendChild(child));
 
-			const highlightResult0Spy = jasmine.createSpy('highlightResult_0');
-			const highlightResult1Spy = jasmine.createSpy('highlightResult_1');
-			const highlightResult2Spy = jasmine.createSpy('highlightResult_2');
+			const resultElements = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
+			const highlightResult0Spy = spyOn(resultElements[0], 'highlightResult').withArgs(jasmine.any(Boolean)).and.callThrough();
+			const highlightResult1Spy = spyOn(resultElements[1], 'highlightResult').withArgs(jasmine.any(Boolean)).and.callThrough();
+			const highlightResult2Spy = spyOn(resultElements[2], 'highlightResult').withArgs(false).and.callThrough();
 
-			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[0].highlightResult = highlightResult0Spy;
-			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[1].highlightResult = highlightResult1Spy;
-			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[2].highlightResult = highlightResult2Spy;
-
-			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
 
 			setQuery('f');
@@ -126,9 +133,9 @@ describe('SearchResultsPanel', () => {
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
 
 			expect(resetSpy).toHaveBeenCalledTimes(3);
-			expect(highlightResult0Spy).toHaveBeenCalledTimes(8); // 4*[next] + 4*[previous]
-			expect(highlightResult1Spy).toHaveBeenCalledTimes(7); // 4*[next] + 3*[reset]
-			expect(highlightResult2Spy).not.toHaveBeenCalled(); // --
+			expect(highlightResult0Spy).toHaveBeenCalledTimes(10);
+			expect(highlightResult1Spy).toHaveBeenCalledTimes(9);
+			expect(highlightResult2Spy).toHaveBeenCalledTimes(6);
 		});
 
 		it('highlights the next resultItem for "arrowDown" when keyup event is fired', async () => {
@@ -140,22 +147,20 @@ describe('SearchResultsPanel', () => {
 			const testResultItems = createResultItems(5);
 			testResultItems.forEach((child) => element.shadowRoot.querySelector('div').appendChild(child));
 
-			const highlightResult0Spy = jasmine.createSpy('highlightResult_0');
-			const highlightResult1Spy = jasmine.createSpy('highlightResult_1');
-
-			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[0].highlightResult = highlightResult0Spy;
-			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[1].highlightResult = highlightResult1Spy;
+			const resultElements = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
+			const highlightResult0Spy = spyOn(resultElements[0], 'highlightResult').and.callThrough();
+			const highlightResult1Spy = spyOn(resultElements[1], 'highlightResult').and.callThrough();
 
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
 
-			const resultItems = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
+			const resultItems = [...element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')];
 
 			expect(arrowDownSpy).toHaveBeenCalledTimes(2);
-			expect(changeSelectedElementSpy).toHaveBeenCalledWith(undefined, resultItems[0]);
-			expect(changeSelectedElementSpy).toHaveBeenCalledWith(resultItems[0], resultItems[1]);
-			expect(highlightResult0Spy).toHaveBeenCalledTimes(2); // [next] + [previous]
-			expect(highlightResult1Spy).toHaveBeenCalledTimes(1); // [next]
+			expect(changeSelectedElementSpy).toHaveBeenCalledWith(-1, 0, resultItems);
+			expect(changeSelectedElementSpy).toHaveBeenCalledWith(0, 1, resultItems);
+			expect(highlightResult0Spy).toHaveBeenCalledTimes(2);
+			expect(highlightResult1Spy).toHaveBeenCalledTimes(2);
 		});
 
 		it('highlights the last resultItem for "arrowDown" when keyup event is fired', async () => {
@@ -167,24 +172,22 @@ describe('SearchResultsPanel', () => {
 			const testResultItems = createResultItems(5);
 			testResultItems.forEach((child) => element.shadowRoot.querySelector('div').appendChild(child));
 
+			const resultElements = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
 			// we set the flag-class manually to indicate a currently selected resultItem
-			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[3].classList.add('ba-key-nav-item_select');
-			const highlightResult3Spy = jasmine.createSpy('highlightResult_3');
-			const highlightResult4Spy = jasmine.createSpy('highlightResult_4');
-
-			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[3].highlightResult = highlightResult3Spy;
-			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[4].highlightResult = highlightResult4Spy;
+			resultElements[3].highlightResult(true);
+			const highlightResult3Spy = spyOn(resultElements[3], 'highlightResult').and.callThrough();
+			const highlightResult4Spy = spyOn(resultElements[4], 'highlightResult').and.callThrough();
 
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown)); // 3 -> 4
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown)); // 4 -> 4
 
-			const resultItems = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
+			const resultItems = [...element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')];
 
 			expect(arrowDownSpy).toHaveBeenCalledTimes(2);
-			expect(changeSelectedElementSpy).toHaveBeenCalledWith(resultItems[3], resultItems[4]);
-			expect(changeSelectedElementSpy).toHaveBeenCalledWith(resultItems[4], resultItems[4]);
+			expect(changeSelectedElementSpy).toHaveBeenCalledWith(3, 4, resultItems);
+			expect(changeSelectedElementSpy).toHaveBeenCalledWith(4, 4, resultItems);
 			expect(highlightResult3Spy).toHaveBeenCalledTimes(1); // [next] + [previous]
-			expect(highlightResult4Spy).toHaveBeenCalledTimes(1); // [next] + [previous]
+			expect(highlightResult4Spy).toHaveBeenCalledTimes(2); // [next] + [previous]
 		});
 
 		it('highlights the next resultItem for "arrowUp" when keyup event is fired', async () => {
@@ -196,27 +199,25 @@ describe('SearchResultsPanel', () => {
 			const testResultItems = createResultItems(5);
 			testResultItems.forEach((child) => element.shadowRoot.querySelector('div').appendChild(child));
 
+			const resultElements = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
 			// we set the flag-class manually to indicate a currently selected resultItem
-			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[4].classList.add('ba-key-nav-item_select');
-			const highlightResult4Spy = jasmine.createSpy('highlightResult_4');
-			const highlightResult3Spy = jasmine.createSpy('highlightResult_3');
-			const highlightResult2Spy = jasmine.createSpy('highlightResult_2');
+			resultElements[4].highlightResult(true);
 
-			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[4].highlightResult = highlightResult4Spy;
-			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[3].highlightResult = highlightResult3Spy;
-			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[2].highlightResult = highlightResult2Spy;
+			const highlightResult4Spy = spyOn(resultElements[4], 'highlightResult').and.callThrough();
+			const highlightResult3Spy = spyOn(resultElements[3], 'highlightResult').and.callThrough();
+			const highlightResult2Spy = spyOn(resultElements[2], 'highlightResult').and.callThrough();
 
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowUp));
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowUp));
 
-			const resultItems = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
+			const resultItems = [...element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')];
 
 			expect(arrowDownSpy).toHaveBeenCalledTimes(2);
-			expect(changeSelectedElementSpy).toHaveBeenCalledWith(resultItems[4], resultItems[3]);
-			expect(changeSelectedElementSpy).toHaveBeenCalledWith(resultItems[3], resultItems[2]);
-			expect(highlightResult4Spy).toHaveBeenCalledTimes(1); // [previous]
-			expect(highlightResult3Spy).toHaveBeenCalledTimes(2); // [next] + [previous]
-			expect(highlightResult2Spy).toHaveBeenCalledTimes(1); // [next]
+			expect(changeSelectedElementSpy).toHaveBeenCalledWith(4, 3, resultItems);
+			expect(changeSelectedElementSpy).toHaveBeenCalledWith(3, 2, resultItems);
+			expect(highlightResult4Spy).toHaveBeenCalledTimes(2);
+			expect(highlightResult3Spy).toHaveBeenCalledTimes(3);
+			expect(highlightResult2Spy).toHaveBeenCalledTimes(3);
 		});
 
 		it('focuses the search after "arrowUp" when keyup event is fired', async () => {
@@ -228,24 +229,22 @@ describe('SearchResultsPanel', () => {
 			const testResultItems = createResultItems(5);
 			testResultItems.forEach((child) => element.shadowRoot.querySelector('div').appendChild(child));
 
+			const resultElements = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
 			// we set the flag-class manually to indicate a currently selected resultItem
-			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[1].classList.add('ba-key-nav-item_select');
-			const highlightResult1Spy = jasmine.createSpy('highlightResult_1');
-			const highlightResult0Spy = jasmine.createSpy('highlightResult_0');
-
-			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[1].highlightResult = highlightResult1Spy;
-			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[0].highlightResult = highlightResult0Spy;
+			resultElements[1].highlightResult(true);
+			const highlightResult1Spy = spyOn(resultElements[1], 'highlightResult').and.callThrough();
+			const highlightResult0Spy = spyOn(resultElements[0], 'highlightResult').and.callThrough();
 
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowUp));
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowUp));
 
-			const resultItems = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
+			const resultItems = [...element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')];
 
 			expect(arrowDownSpy).toHaveBeenCalledTimes(2);
-			expect(changeSelectedElementSpy).toHaveBeenCalledWith(resultItems[1], resultItems[0]);
-			expect(changeSelectedElementSpy).toHaveBeenCalledWith(resultItems[0], undefined);
-			expect(highlightResult1Spy).toHaveBeenCalledTimes(1); // [previous]
-			expect(highlightResult0Spy).toHaveBeenCalledTimes(2); // [next] + [previous]
+			expect(changeSelectedElementSpy).toHaveBeenCalledWith(1, 0, resultItems);
+			expect(changeSelectedElementSpy).toHaveBeenCalledWith(0, -1, resultItems);
+			expect(highlightResult1Spy).toHaveBeenCalledTimes(2); // [previous]
+			expect(highlightResult0Spy).toHaveBeenCalledTimes(3); // [next] + [previous]
 			expect(store.getState().mainMenu.focusSearchField).not.toBeNull();
 		});
 
@@ -259,23 +258,19 @@ describe('SearchResultsPanel', () => {
 			const testResultItems = createResultItems(5);
 			testResultItems.forEach((child) => element.shadowRoot.querySelector('div').appendChild(child));
 
+			const resultElements = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
 			// we set the flag-class manually to indicate a currently selected resultItem
-			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[4].classList.add('ba-key-nav-item_select');
-
-			const selectResult3Spy = jasmine.createSpy('selectResult_3');
-
-			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[4].highlightResult = jasmine.createSpy();
-			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[3].highlightResult = jasmine.createSpy();
-			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[3].selectResult = selectResult3Spy;
+			resultElements[4].highlightResult(true);
+			const selectResult3Spy = spyOn(resultElements[3], 'selectResult').and.callThrough();
 
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowUp));
 			document.dispatchEvent(getKeyEvent(keyCodes.Enter));
 
-			const resultItems = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
+			const resultItems = [...element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')];
 
 			expect(arrowUpSpy).toHaveBeenCalledTimes(1);
 			expect(enterSpy).toHaveBeenCalledTimes(1);
-			expect(changeSelectedElementSpy).toHaveBeenCalledWith(resultItems[4], resultItems[3]);
+			expect(changeSelectedElementSpy).toHaveBeenCalledWith(4, 3, resultItems);
 			expect(selectResult3Spy).toHaveBeenCalled();
 		});
 
@@ -289,23 +284,20 @@ describe('SearchResultsPanel', () => {
 			const testResultItems = createResultItems(5);
 			testResultItems.forEach((child) => element.shadowRoot.querySelector('div').appendChild(child));
 
-			const selectResultSpy = jasmine.createSpy('selectResult');
-
-			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[0].highlightResult = jasmine.createSpy();
-			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[1].highlightResult = jasmine.createSpy();
-			element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')[1].selectResult = selectResultSpy;
+			const resultElements = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
+			const selectResultSpy = spyOn(resultElements[1], 'selectResult').and.callThrough();
 
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
 			document.dispatchEvent(getKeyEvent(keyCodes.Enter));
 
-			const resultItems = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
+			const resultItems = [...element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')];
 
 			expect(resultItems.length).toBe(5);
 			expect(arrowDownSpy).toHaveBeenCalledTimes(2);
 			expect(enterSpy).toHaveBeenCalledTimes(1);
-			expect(changeSelectedElementSpy).toHaveBeenCalledWith(undefined, resultItems[0]);
-			expect(changeSelectedElementSpy).toHaveBeenCalledWith(resultItems[0], resultItems[1]);
+			expect(changeSelectedElementSpy).toHaveBeenCalledWith(-1, 0, resultItems);
+			expect(changeSelectedElementSpy).toHaveBeenCalledWith(0, 1, resultItems);
 			expect(selectResultSpy).toHaveBeenCalled();
 		});
 
@@ -326,12 +318,12 @@ describe('SearchResultsPanel', () => {
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowUp));
 			document.dispatchEvent(getKeyEvent(keyCodes.Enter));
 
-			const resultItems = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
+			const resultItems = [...element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')];
 
 			expect(resultItems.length).toBe(5);
 			expect(arrowUpSpy).toHaveBeenCalledTimes(1);
 			expect(enterSpy).toHaveBeenCalledTimes(1);
-			expect(changeSelectedElementSpy).toHaveBeenCalledWith(undefined, undefined);
+			expect(changeSelectedElementSpy).toHaveBeenCalledWith(-1, -1, resultItems);
 			expect(selectResultSpy).not.toHaveBeenCalled();
 		});
 
