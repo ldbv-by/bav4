@@ -45,9 +45,6 @@
 	}
 }
 
-.denied {
-	background: var(--secondary-bg-color);
-}
 .geolocation-button {
 	background-color: var(--primary-color);
 	display: inline-block;
@@ -57,6 +54,9 @@
 	border: none;
 	outline: none;
 	padding-top: 0.2em;
+}
+.geolocation-button.denied {
+	background-color: var(--modal-background-color);
 }
 .geolocation-button:hover,
 .geolocation-button:focus {
