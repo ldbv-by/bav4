@@ -12,7 +12,7 @@ import { GeoResourceFuture, VectorGeoResource } from '../../../../../../domain/g
 import zoomToExtentSvg from '../../assets/zoomToExtent.svg';
 import infoSvg from '../../assets/info.svg';
 import { openModal } from '../../../../../../store/modal/modal.action';
-import { AbstractResultItem } from '../../AbstractResultItem';
+import { AbstractResultItem, Selected_Item_Class, Highlight_Item_Class } from '../../AbstractResultItem';
 
 const Update_GeoResourceSearchResult = 'update_geoResourceSearchResult';
 const Update_LoadingPreviewFlag = 'update_loadingPreviewFlag';
@@ -84,8 +84,11 @@ export class GeoResourceResultItem extends AbstractResultItem {
 	highlightResult(highlighted) {
 		if (highlighted) {
 			this.shadowRoot.querySelector('.ba-list-item')?.focus();
+			this.classList.add(Highlight_Item_Class);
 		} else {
 			this.shadowRoot.querySelector('.ba-list-item')?.blur();
+			this.classList.remove(Highlight_Item_Class);
+			this.classList.remove(Selected_Item_Class);
 		}
 	}
 
@@ -99,6 +102,7 @@ export class GeoResourceResultItem extends AbstractResultItem {
 			return activeLayers.filter((l) => l.id !== GeoResourceResultItem._tmpLayerId(geoResourceId)).some((l) => l.geoResourceId === geoResourceId);
 		};
 
+		this.classList.add(Selected_Item_Class);
 		if (isGeoResourceActive(geoResourceSearchResult.geoResourceId)) {
 			activeLayers.filter((l) => l.geoResourceId === geoResourceSearchResult.geoResourceId).forEach((l) => removeLayer(l.id));
 		} else {

@@ -15,7 +15,7 @@ import clipboardSvg from '../../assets/clipboard.svg';
 import { $injector } from '../../../../../../injection';
 import { emitNotification, LevelTypes } from '../../../../../../store/notifications/notifications.action';
 import { HighlightFeatureType } from '../../../../../../domain/highlightFeature';
-import { AbstractResultItem } from '../../AbstractResultItem';
+import { AbstractResultItem, Highlight_Item_Class, Selected_Item_Class } from '../../AbstractResultItem';
 
 const Update_IsPortrait = 'update_isPortrait';
 const Update_LocationSearchResult = 'update_locationSearchResult';
@@ -76,6 +76,7 @@ export class LocationResultItem extends AbstractResultItem {
 		const { locationSearchResult } = this.getModel();
 		if (highlighted) {
 			this.shadowRoot.querySelector('.ba-list-item')?.focus();
+			this.classList.add(Highlight_Item_Class);
 			addHighlightFeatures({
 				id: locationSearchResult.id,
 				category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY,
@@ -84,6 +85,8 @@ export class LocationResultItem extends AbstractResultItem {
 			});
 		} else {
 			this.shadowRoot.querySelector('.ba-list-item')?.blur();
+			this.classList.remove(Highlight_Item_Class);
+			this.classList.remove(Selected_Item_Class);
 			removeHighlightFeaturesByCategory(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY);
 		}
 	}
@@ -95,6 +98,7 @@ export class LocationResultItem extends AbstractResultItem {
 		const { isPortrait, locationSearchResult } = this.getModel();
 		const extent = locationSearchResult.extent ? [...locationSearchResult.extent] : [...locationSearchResult.center, ...locationSearchResult.center];
 		removeHighlightFeaturesByCategory([SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY, SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY]);
+		this.classList.add(Selected_Item_Class);
 		fit(extent, { maxZoom: LocationResultItem._maxZoomLevel });
 		if (!locationSearchResult.extent) {
 			addHighlightFeatures({

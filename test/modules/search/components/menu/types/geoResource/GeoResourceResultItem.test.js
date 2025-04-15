@@ -11,7 +11,7 @@ import { positionReducer } from '../../../../../../../src/store/position/positio
 import { TestUtils } from '../../../../../../test-utils.js';
 import { GeoResourceInfoPanel } from '../../../../../../../src/modules/geoResourceInfo/components/GeoResourceInfoPanel';
 import { modalReducer } from '../../../../../../../src/store/modal/modal.reducer';
-import { AbstractResultItem } from '../../../../../../../src/modules/search/components/menu/AbstractResultItem.js';
+import { AbstractResultItem, Highlight_Item_Class } from '../../../../../../../src/modules/search/components/menu/AbstractResultItem.js';
 
 window.customElements.define(GeoResourceResultItem.tag, GeoResourceResultItem);
 
@@ -236,6 +236,20 @@ describe('GeoResourceResultItem', () => {
 				expect(target.classList.contains('preview')).toBeTrue();
 				expect(element.shadowRoot.querySelector('li .ba-list-item__text').innerText).toBe('labelFormatted');
 			});
+
+			it('adds the css class for highlighted resultItems', async () => {
+				const geoResFuture = new GeoResourceFuture('geoResourceId0', async () => ({ label: 'updatedLabel' }));
+				const geoResourceId = 'geoResourceId';
+				const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
+				const element = await setup();
+				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResFuture);
+				element.data = data;
+
+				const target = element.shadowRoot.querySelector('li');
+				target.dispatchEvent(new Event('mouseenter'));
+
+				expect(element.classList.contains(Highlight_Item_Class)).toBeTrue();
+			});
 		});
 
 		describe('on mouse leave', () => {
@@ -273,6 +287,21 @@ describe('GeoResourceResultItem', () => {
 				target.dispatchEvent(new Event('mouseleave'));
 
 				expect(element._timeoutId).toBeNull();
+			});
+
+			it('removes the css class for highlighted resultItems', async () => {
+				const geoResFuture = new GeoResourceFuture('geoResourceId0', async () => ({ label: 'updatedLabel' }));
+				const geoResourceId = 'geoResourceId';
+				const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
+				const element = await setup();
+				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResFuture);
+				element.data = data;
+				element.classList.add(Highlight_Item_Class);
+
+				const target = element.shadowRoot.querySelector('li');
+				target.dispatchEvent(new Event('mouseleave'));
+
+				expect(element.classList.contains(Highlight_Item_Class)).toBeFalse();
 			});
 		});
 

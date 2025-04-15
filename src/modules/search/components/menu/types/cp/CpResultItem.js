@@ -17,7 +17,7 @@ import { emitNotification, LevelTypes } from '../../../../../../store/notificati
 import { BaFeature } from '../../../../../../domain/feature';
 import { StyleTypes } from '../../../../../olMap/services/StyleService';
 import { $injector } from '../../../../../../injection/index';
-import { AbstractResultItem } from '../../AbstractResultItem';
+import { AbstractResultItem, Highlight_Item_Class, Selected_Item_Class } from '../../AbstractResultItem';
 
 const Update_IsPortrait = 'update_isPortrait';
 const Update_CpSearchResult = 'update_cpSearchResult';
@@ -93,6 +93,7 @@ export class CpResultItem extends AbstractResultItem {
 		const { cpSearchResult } = this.getModel();
 		if (highlighted) {
 			this.shadowRoot.querySelector('.ba-list-item')?.focus();
+			this.classList.add(Highlight_Item_Class);
 			if (cpSearchResult.geometry) {
 				addHighlightFeatures({
 					category: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY,
@@ -108,6 +109,8 @@ export class CpResultItem extends AbstractResultItem {
 			}
 		} else {
 			this.shadowRoot.querySelector('.ba-list-item')?.blur();
+			this.classList.remove(Highlight_Item_Class);
+			this.classList.remove(Selected_Item_Class);
 			removeHighlightFeaturesByCategory(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY);
 		}
 	}
@@ -118,6 +121,7 @@ export class CpResultItem extends AbstractResultItem {
 	selectResult() {
 		const { isPortrait, cpSearchResult } = this.getModel();
 		const extent = cpSearchResult.extent ? [...cpSearchResult.extent] : [...cpSearchResult.center, ...cpSearchResult.center];
+		this.classList.add(Selected_Item_Class);
 		removeHighlightFeaturesByCategory([SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY, SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY]);
 		fit(extent, { maxZoom: CpResultItem._maxZoomLevel });
 		if (cpSearchResult.geometry) {
