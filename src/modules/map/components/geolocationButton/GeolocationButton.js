@@ -19,10 +19,11 @@ const Update_Denied = 'update_denied';
  */
 
 export class GeolocationButton extends MvuElement {
+	#translationService;
 	constructor() {
 		super({ active: false, denied: false });
 		const { TranslationService } = $injector.inject('TranslationService');
-		this._translationService = TranslationService;
+		this.#translationService = TranslationService;
 	}
 
 	onInitialize() {
@@ -47,7 +48,7 @@ export class GeolocationButton extends MvuElement {
 
 	createView(model) {
 		const { active, denied } = model;
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key) => this.#translationService.translate(key);
 		const onClick = () => {
 			if (active) {
 				deactivate();
@@ -57,11 +58,11 @@ export class GeolocationButton extends MvuElement {
 		};
 
 		const getTitle = () => {
-			if (active) {
-				return translate('map_geolocationButton_title_deactivate');
-			}
 			if (denied) {
 				return translate('map_geolocationButton_title_denied');
+			}
+			if (active) {
+				return translate('map_geolocationButton_title_deactivate');
 			}
 			return translate('map_geolocationButton_title_activate');
 		};
