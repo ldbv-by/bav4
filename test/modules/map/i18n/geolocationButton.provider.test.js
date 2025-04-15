@@ -4,9 +4,9 @@ describe('i18n for map module', () => {
 	it('provides translation for de', () => {
 		const map = provide('de');
 
-		expect(map.map_geolocationButton_title_activate).toBe('Ortung einschalten');
-		expect(map.map_geolocationButton_title_deactivate).toBe('Ortung ausschalten');
-		expect(map.map_geolocationButton_title_denied).toBe('Ortung nicht erlaubt oder nicht möglich');
+		expect(map.map_geolocationButton_title_activate).toBe('Standort anzeigen');
+		expect(map.map_geolocationButton_title_deactivate).toBe('Standortanzeige ausschalten');
+		expect(map.map_geolocationButton_title_denied).toBe('Standortanzeige nicht erlaubt oder nicht möglich');
 	});
 
 	it('provides translation for en', () => {

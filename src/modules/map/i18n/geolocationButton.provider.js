@@ -11,9 +11,9 @@ export const provide = (lang) => {
 		case 'de':
 			return {
 				//the first part of the snake_case key should be the name of the related module
-				map_geolocationButton_title_activate: 'Ortung einschalten',
-				map_geolocationButton_title_deactivate: 'Ortung ausschalten',
-				map_geolocationButton_title_denied: 'Ortung nicht erlaubt oder nicht möglich'
+				map_geolocationButton_title_activate: 'Standort anzeigen',
+				map_geolocationButton_title_deactivate: 'Standortanzeige ausschalten',
+				map_geolocationButton_title_denied: 'Standortanzeige nicht erlaubt oder nicht möglich'
 			};
 
 		default:
