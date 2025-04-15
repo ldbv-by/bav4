@@ -78,8 +78,8 @@ export class MeasureToolContent extends AbstractToolContent {
 		const formattedDistance = this._unitsService.formatDistance(statistic.length, 2);
 		const formattedArea = this._unitsService.formatArea(statistic.area, 2);
 
-		const onCopyDistanceToClipboard = async () => this._copyValueToClipboard(formattedDistance.value, 'distance');
-		const onCopyAreaToClipboard = async () => this._copyValueToClipboard(formattedArea.value, 'area');
+		const onCopyDistanceToClipboard = async () => this._copyValueToClipboard(formattedDistance.localizedValue, 'distance');
+		const onCopyAreaToClipboard = async () => this._copyValueToClipboard(formattedArea.localizedValue, 'area');
 		const onToggleDisplayRuler = () => setDisplayRuler(!displayRuler);
 
 		return html`
