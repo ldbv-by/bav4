@@ -61,7 +61,7 @@ describe('GeolocationButton', () => {
 		});
 
 		it('shows geolocation button in denied state', async () => {
-			const element = await setup({ ...defaultState, denied: true });
+			const element = await setup({ ...defaultState, active: true, denied: true });
 
 			expect(element.shadowRoot.querySelector('.geolocation')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.geolocation-button').title).toBe('map_geolocationButton_title_denied');
