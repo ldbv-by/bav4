@@ -103,11 +103,11 @@ export class GeometryInfo extends MvuElement {
 		const formattedDistance = this._unitsService.formatDistance(lineStatistic.length, 2);
 		const formattedAzimuth = this._unitsService.formatAngle(lineStatistic.azimuth, 2);
 		const onCopyAzimuth = () => {
-			this._copyValueToClipboard(formattedAzimuth.value);
+			this._copyValueToClipboard(formattedAzimuth.localizedValue);
 		};
 
 		const onCopyLength = () => {
-			this._copyValueToClipboard(formattedDistance.value);
+			this._copyValueToClipboard(formattedDistance.localizedValue);
 		};
 
 		if (lineStatistic.azimuth === null) {
@@ -162,11 +162,11 @@ export class GeometryInfo extends MvuElement {
 		const formattedArea = this._unitsService.formatArea(polygonStatistic.area, 2);
 
 		const onCopyLength = () => {
-			this._copyValueToClipboard(formattedDistance.value);
+			this._copyValueToClipboard(formattedDistance.localizedValue);
 		};
 
 		const onCopyArea = () => {
-			this._copyValueToClipboard(formattedArea.value);
+			this._copyValueToClipboard(formattedArea.localizedValue);
 		};
 
 		return html`<div class="stats-polygon-length stats-content" title=${titleLength}>

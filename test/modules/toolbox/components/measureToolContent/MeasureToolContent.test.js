@@ -60,21 +60,29 @@ describe('MeasureToolContent', () => {
 
 			formatDistance(distance, decimals) {
 				if (isString(distance)) {
-					return { value: distance, localizedValue: distance, unit: '?' };
+					return { value: distance, localizedValue: `localized_${distance}`, unit: '?' };
 				}
 				return {
 					value: distance,
-					localizedValue: new Intl.NumberFormat('de-DE', { maximumSignificantDigits: decimals }).format(distance),
+					localizedValue: `localized_${new Intl.NumberFormat('de-DE', { maximumSignificantDigits: decimals }).format(distance)}`,
 					unit: 'm'
 				};
 			}
 
 			formatArea(area, decimals) {
-				return { value: area, localizedValue: new Intl.NumberFormat('de-DE', { maximumSignificantDigits: decimals }).format(area), unit: 'm²' };
+				return {
+					value: area,
+					localizedValue: `localized_${new Intl.NumberFormat('de-DE', { maximumSignificantDigits: decimals }).format(area)}`,
+					unit: 'm²'
+				};
 			}
 
 			formatAngle(angle, decimals) {
-				return { value: angle, localizedValue: new Intl.NumberFormat('de-DE', { maximumSignificantDigits: decimals }).format(angle), unit: '°' };
+				return {
+					value: angle,
+					localizedValue: `localized_${new Intl.NumberFormat('de-DE', { maximumSignificantDigits: decimals }).format(angle)}`,
+					unit: '°'
+				};
 			}
 		}
 
@@ -218,9 +226,9 @@ describe('MeasureToolContent', () => {
 			const labelWithUnitSpans = element.shadowRoot.querySelectorAll('.prime-text-label');
 
 			expect(valueSpans.length).toBe(2);
-			expect(valueSpans[0].textContent).toBe('42');
+			expect(valueSpans[0].textContent).toBe('localized_42');
 			expect(labelWithUnitSpans[0].textContent.trim()).toBe('toolbox_measureTool_stats_length (m):');
-			expect(valueSpans[1].textContent).toBe('0');
+			expect(valueSpans[1].textContent).toBe('localized_0');
 			expect(labelWithUnitSpans[1].textContent.trim()).toBe('toolbox_measureTool_stats_area (m²):');
 		});
 
@@ -239,9 +247,9 @@ describe('MeasureToolContent', () => {
 
 			expect(valueSpans.length).toBe(2);
 			expect(labelWithUnitSpans.length).toBe(2);
-			expect(valueSpans[0].textContent).toBe('0');
+			expect(valueSpans[0].textContent).toBe('localized_0');
 			expect(labelWithUnitSpans[0].textContent.trim()).toBe('toolbox_measureTool_stats_length (m):');
-			expect(valueSpans[1].textContent).toBe('0');
+			expect(valueSpans[1].textContent).toBe('localized_0');
 			expect(labelWithUnitSpans[1].textContent.trim()).toBe('toolbox_measureTool_stats_area (m²):');
 			expect(areaElement).toBeFalsy();
 		});
@@ -348,13 +356,13 @@ describe('MeasureToolContent', () => {
 
 			expect(valueSpans.length).toBe(2);
 			expect(labelWithUnitSpans.length).toBe(2);
-			expect(valueSpans[0].textContent).toBe('42');
+			expect(valueSpans[0].textContent).toBe('localized_42');
 			expect(labelWithUnitSpans[0].textContent.trim()).toBe('toolbox_measureTool_stats_length (m):');
 			expect(areaElement).toBeFalsy();
 		});
 
 		it('copies the measurement length value to the clipboard', async () => {
-			const length = 42;
+			const localizedLength = 'localized_42';
 			const state = {
 				measurement: {
 					statistic: { length: 42, area: 2 },
@@ -363,14 +371,14 @@ describe('MeasureToolContent', () => {
 				}
 			};
 			const element = await setup(state);
-			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').withArgs(length).and.returnValue(Promise.resolve());
+			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').withArgs(localizedLength).and.returnValue(Promise.resolve());
 
 			const copyDistanceElement = element.shadowRoot.querySelector('.tool-container__text-item .close');
 			copyDistanceElement.click();
 
 			await TestUtils.timeout();
 			expect(copyDistanceElement).toBeTruthy();
-			expect(copyToClipboardMock).toHaveBeenCalledWith(length);
+			expect(copyToClipboardMock).toHaveBeenCalledWith(localizedLength);
 			//check notification
 			expect(store.getState().notifications.latest.payload.content).toBe(
 				'toolbox_measureTool_clipboard_measure_distance_notification_text toolbox_clipboard_success'
@@ -379,7 +387,7 @@ describe('MeasureToolContent', () => {
 		});
 
 		it('copies the measurement area value to the clipboard', async () => {
-			const area = 2;
+			const localizedArea = 'localized_2';
 			const state = {
 				measurement: {
 					statistic: { length: 42, area: 2 },
@@ -388,14 +396,14 @@ describe('MeasureToolContent', () => {
 				}
 			};
 			const element = await setup(state);
-			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').withArgs(area).and.returnValue(Promise.resolve());
+			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').withArgs(localizedArea).and.returnValue(Promise.resolve());
 
 			const copyAreaElement = element.shadowRoot.querySelector('.tool-container__text-item.area.is-area .close');
 			copyAreaElement.click();
 
 			await TestUtils.timeout();
 			expect(copyAreaElement).toBeTruthy();
-			expect(copyToClipboardMock).toHaveBeenCalledWith(area);
+			expect(copyToClipboardMock).toHaveBeenCalledWith(localizedArea);
 			//check notification
 			expect(store.getState().notifications.latest.payload.content).toBe(
 				'toolbox_measureTool_clipboard_measure_area_notification_text toolbox_clipboard_success'
@@ -431,7 +439,7 @@ describe('MeasureToolContent', () => {
 			copyToClipboardButton.click();
 
 			await TestUtils.timeout();
-			expect(copySpy).toHaveBeenCalledWith(42);
+			expect(copySpy).toHaveBeenCalledWith('localized_42');
 			//check notification
 			expect(store.getState().notifications.latest.payload.content).toBe('toolbox_clipboard_error');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);

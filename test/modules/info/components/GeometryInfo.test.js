@@ -33,14 +33,14 @@ describe('GeometryInfo', () => {
 			.registerSingleton('ShareService', shareServiceMock)
 			.registerSingleton('UnitsService', {
 				formatDistance: (distance) => {
-					return { value: distance, localizedValue: distance, unit: 'm' };
+					return { value: distance, localizedValue: `localized_${distance}`, unit: 'm' };
 				},
 
 				formatArea: (area) => {
-					return { value: area, localizedValue: area, unit: 'm²' };
+					return { value: area, localizedValue: `localized_${area}`, unit: 'm²' };
 				},
 				formatAngle: (angle) => {
-					return { value: angle, localizedValue: angle, unit: '°' };
+					return { value: angle, localizedValue: `localized_${angle}`, unit: '°' };
 				}
 			});
 		return TestUtils.render(GeometryInfo.tag);
@@ -98,13 +98,13 @@ describe('GeometryInfo', () => {
 
 			expect(element.shadowRoot.querySelector('.stats-container')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.stats-line-azimuth')).toBeFalsy();
-			expect(element.shadowRoot.querySelector('.stats-line-length').textContent.trim()).toBe('info_geometryInfo_title_line_length (m):42');
+			expect(element.shadowRoot.querySelector('.stats-line-length').textContent.trim()).toBe('info_geometryInfo_title_line_length (m):localized_42');
 
 			element.statistic = { geometryType: GeometryType.LINE, coordinate: null, azimuth: 42, length: 84, area: null };
 
 			expect(element.shadowRoot.querySelector('.stats-container')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.stats-line-azimuth').textContent.trim()).toBe('info_geometryInfo_title_azimuth (°):42');
-			expect(element.shadowRoot.querySelector('.stats-line-length').textContent.trim()).toBe('info_geometryInfo_title_line_length (m):84');
+			expect(element.shadowRoot.querySelector('.stats-line-azimuth').textContent.trim()).toBe('info_geometryInfo_title_azimuth (°):localized_42');
+			expect(element.shadowRoot.querySelector('.stats-line-length').textContent.trim()).toBe('info_geometryInfo_title_line_length (m):localized_84');
 		});
 
 		it('renders the items with polygon stats', async () => {
@@ -112,8 +112,12 @@ describe('GeometryInfo', () => {
 			element.statistic = { geometryType: GeometryType.POLYGON, coordinate: null, azimuth: null, length: 42, area: 42 };
 
 			expect(element.shadowRoot.querySelector('.stats-container')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.stats-polygon-length').textContent.trim()).toBe('info_geometryInfo_title_line_length (m):42');
-			expect(element.shadowRoot.querySelector('.stats-polygon-area').textContent.trim()).toBe('info_geometryInfo_title_polygon_area (m²):42');
+			expect(element.shadowRoot.querySelector('.stats-polygon-length').textContent.trim()).toBe(
+				'info_geometryInfo_title_line_length (m):localized_42'
+			);
+			expect(element.shadowRoot.querySelector('.stats-polygon-area').textContent.trim()).toBe(
+				'info_geometryInfo_title_polygon_area (m²):localized_42'
+			);
 		});
 
 		it('renders the items with smallest polygon stats', async () => {
@@ -133,10 +137,10 @@ describe('GeometryInfo', () => {
 			const copyIcon = element.shadowRoot.querySelector(`.stats-line-azimuth ${Icon.tag}`);
 			copyIcon.click();
 
-			expect(copyToClipboardMock).toHaveBeenCalledWith(84);
+			expect(copyToClipboardMock).toHaveBeenCalledWith('localized_84');
 			await TestUtils.timeout();
 			//check notification
-			expect(store.getState().notifications.latest.payload.content).toBe(`"${84}" info_coordinateInfo_clipboard_success`);
+			expect(store.getState().notifications.latest.payload.content).toBe(`"localized_84" info_coordinateInfo_clipboard_success`);
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 		});
 
@@ -148,10 +152,10 @@ describe('GeometryInfo', () => {
 			const copyIcon = element.shadowRoot.querySelector(`.stats-line-length ${Icon.tag}`);
 			copyIcon.click();
 
-			expect(copyToClipboardMock).toHaveBeenCalledWith(42);
+			expect(copyToClipboardMock).toHaveBeenCalledWith('localized_42');
 			await TestUtils.timeout();
 			//check notification
-			expect(store.getState().notifications.latest.payload.content).toBe(`"${42}" info_coordinateInfo_clipboard_success`);
+			expect(store.getState().notifications.latest.payload.content).toBe(`"localized_42" info_coordinateInfo_clipboard_success`);
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 		});
 
@@ -163,10 +167,10 @@ describe('GeometryInfo', () => {
 			const copyIcon = element.shadowRoot.querySelector(`.stats-polygon-length ${Icon.tag}`);
 			copyIcon.click();
 
-			expect(copyToClipboardMock).toHaveBeenCalledWith(42);
+			expect(copyToClipboardMock).toHaveBeenCalledWith('localized_42');
 			await TestUtils.timeout();
 			//check notification
-			expect(store.getState().notifications.latest.payload.content).toBe(`"${42}" info_coordinateInfo_clipboard_success`);
+			expect(store.getState().notifications.latest.payload.content).toBe(`"localized_42" info_coordinateInfo_clipboard_success`);
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 		});
 
@@ -178,10 +182,10 @@ describe('GeometryInfo', () => {
 			const copyIcon = element.shadowRoot.querySelector(`.stats-polygon-area ${Icon.tag}`);
 			copyIcon.click();
 
-			expect(copyToClipboardMock).toHaveBeenCalledWith(21);
+			expect(copyToClipboardMock).toHaveBeenCalledWith('localized_21');
 			await TestUtils.timeout();
 			//check notification
-			expect(store.getState().notifications.latest.payload.content).toBe(`"${21}" info_coordinateInfo_clipboard_success`);
+			expect(store.getState().notifications.latest.payload.content).toBe(`"localized_21" info_coordinateInfo_clipboard_success`);
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 		});
 
