@@ -14,10 +14,6 @@
 .inactive {
 	background: var(--text3);
 }
-.active {
-	background: var(--error-color) !important;
-}
-
 .active .geolocation-icon {
 	background: var(--text3);
 	animation-name: stretch;
@@ -29,7 +25,9 @@
 	animation-fill-mode: none;
 	animation-play-state: running;
 }
-
+.denied.active .geolocation-icon {
+	animation-name: none;
+}
 @keyframes stretch {
 	0% {
 		transform: scale(1);
@@ -44,9 +42,8 @@
 		transform: scale(1);
 	}
 }
-
 .geolocation-button {
-	background-color: var(--primary-color);
+	background: var(--primary-color);
 	display: inline-block;
 	height: 2.5em;
 	width: 2.5em;
@@ -55,8 +52,11 @@
 	outline: none;
 	padding-top: 0.2em;
 }
-.geolocation-button.denied {
-	background-color: var(--modal-background-color);
+.geolocation-button.active {
+	background: var(--error-color);
+}
+.geolocation-button.active.denied {
+	background: var(--surface5-dark);
 }
 .geolocation-button:hover,
 .geolocation-button:focus {
