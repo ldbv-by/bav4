@@ -362,7 +362,7 @@ describe('MeasureToolContent', () => {
 		});
 
 		it('copies the measurement length value to the clipboard', async () => {
-			const length = 42;
+			const localizedLength = 'localized_42';
 			const state = {
 				measurement: {
 					statistic: { length: 42, area: 2 },
@@ -371,14 +371,14 @@ describe('MeasureToolContent', () => {
 				}
 			};
 			const element = await setup(state);
-			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').withArgs('localized_42').and.returnValue(Promise.resolve());
+			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').withArgs(localizedLength).and.returnValue(Promise.resolve());
 
 			const copyDistanceElement = element.shadowRoot.querySelector('.tool-container__text-item .close');
 			copyDistanceElement.click();
 
 			await TestUtils.timeout();
 			expect(copyDistanceElement).toBeTruthy();
-			expect(copyToClipboardMock).toHaveBeenCalledWith('localized_42');
+			expect(copyToClipboardMock).toHaveBeenCalledWith(localizedLength);
 			//check notification
 			expect(store.getState().notifications.latest.payload.content).toBe(
 				'toolbox_measureTool_clipboard_measure_distance_notification_text toolbox_clipboard_success'
@@ -387,7 +387,7 @@ describe('MeasureToolContent', () => {
 		});
 
 		it('copies the measurement area value to the clipboard', async () => {
-			const area = 2;
+			const localizedArea = 'localized_2';
 			const state = {
 				measurement: {
 					statistic: { length: 42, area: 2 },
@@ -396,14 +396,14 @@ describe('MeasureToolContent', () => {
 				}
 			};
 			const element = await setup(state);
-			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').withArgs('localized_2').and.returnValue(Promise.resolve());
+			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').withArgs(localizedArea).and.returnValue(Promise.resolve());
 
 			const copyAreaElement = element.shadowRoot.querySelector('.tool-container__text-item.area.is-area .close');
 			copyAreaElement.click();
 
 			await TestUtils.timeout();
 			expect(copyAreaElement).toBeTruthy();
-			expect(copyToClipboardMock).toHaveBeenCalledWith('localized_2');
+			expect(copyToClipboardMock).toHaveBeenCalledWith(localizedArea);
 			//check notification
 			expect(store.getState().notifications.latest.payload.content).toBe(
 				'toolbox_measureTool_clipboard_measure_area_notification_text toolbox_clipboard_success'
