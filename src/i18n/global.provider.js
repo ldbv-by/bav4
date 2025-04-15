@@ -45,8 +45,8 @@ export const provide = (lang) => {
 				global_mfpService_createJob_exception: 'PDF konnte nicht erstellt werden',
 				global_featureInfoService_exception: 'FeatureInfo Abfrage schlug fehl',
 				global_geolocation_denied:
-					'Es ist keine Standortbestimmung möglich, da Ihre Browsereinstellungen dies nicht zulassen. Erlauben Sie die Standortbestimmung und deaktivieren Sie den "Privat" Modus des Browsers.',
-				global_geolocation_not_available: 'Es ist keine Standortbestimmung möglich',
+					'Es ist keine Standortanzeige möglich, da Ihre Browsereinstellungen dies nicht zulassen. Erlauben Sie die Standortbestimmung und deaktivieren Sie den "Privat" Modus des Browsers.',
+				global_geolocation_not_available: 'Es ist keine Standortanzeige möglich',
 				global_import_data_failed: 'Import der Daten schlug fehl',
 				global_import_unsupported_sourceType: 'Daten-Typ konnte nicht erkannt werden oder wird nicht unterstützt',
 				global_import_authenticationModal_title: 'Anmeldung',
