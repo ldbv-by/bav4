@@ -21,6 +21,7 @@ export const Navigatable_Result_Item_Class = [LocationResultItem, GeoResourceRes
 
 const Highlighted_Item_Class_Selector = `.${Highlight_Item_Class}`;
 const Selected_Item_Class_Selector = `.${Selected_Item_Class}`;
+const Hover_Selector = `:is(:hover)`;
 const Search_Field_Index = -1;
 const No_Op = () => {};
 
@@ -140,11 +141,24 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 	}
 
 	_findSelectedIndex(items) {
-		const mouseSelectedIndex = items.findIndex((element) => element.matches(Selected_Item_Class_Selector));
-		const keyboardSelectedIndex = items.findIndex((element) => element.matches(Highlighted_Item_Class_Selector));
+		/**
+		 * Mouse and keyboard input can be mixed in the process of highlighting and
+		 * selecting a result element.
+		 * We favour selected results over highlighted results and mouse-highlighted
+		 * results over keyboard-highlighted results.
+		 */
+		const getHighlightIndex = () => {
+			const hoverIndex = items.findIndex((element) => element.matches(Hover_Selector));
+			const allHighlightIndices = items.flatMap((element, i) => (element.matches(Highlighted_Item_Class_Selector) ? i : []));
 
-		// prefer by mouse selected items
-		return mouseSelectedIndex < 0 ? keyboardSelectedIndex : mouseSelectedIndex;
+			if (allHighlightIndices.length > 1 && allHighlightIndices.includes(hoverIndex)) {
+				return hoverIndex;
+			}
+			return allHighlightIndices[0] ?? -1;
+		};
+		const selectIndex = items.findIndex((element) => element.matches(Selected_Item_Class_Selector));
+
+		return selectIndex < 0 ? getHighlightIndex() : selectIndex;
 	}
 
 	set resultItemClasses(values) {

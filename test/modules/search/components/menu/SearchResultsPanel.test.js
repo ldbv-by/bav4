@@ -293,6 +293,92 @@ describe('SearchResultsPanel', () => {
 			});
 		});
 
+		describe('when mouse and key events mixed', () => {
+			it('highlights the next resultItem for "arrowUp" when keyup event is fired', async () => {
+				const element = await setup();
+				element.resultItemClasses = [AbstractResultItemImpl];
+				const arrowDownSpy = spyOn(element, '_arrowUp').and.callThrough();
+				const changeSelectedElementSpy = spyOn(element, '_changeSelectedElement').and.callThrough();
+
+				const testResultItems = createResultItems(5);
+				testResultItems.forEach((child) => element.shadowRoot.querySelector('div').appendChild(child));
+
+				const resultElements = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
+				// we set the flag-class manually to indicate a currently selected resultItem
+				resultElements[4].highlightResult(true);
+
+				document.dispatchEvent(getKeyEvent(keyCodes.ArrowUp));
+				document.dispatchEvent(getKeyEvent(keyCodes.ArrowUp));
+
+				resultElements[2].highlightResult(true);
+				spyOn(resultElements[4], 'matches')
+					.withArgs(':is(:hover)')
+					.and.returnValue(true)
+					.withArgs('.ba-key-nav-item_highlight')
+					.and.returnValue(true)
+					.withArgs(':is(ba-test-abstract-result-item-impl)')
+					.and.callThrough()
+					.withArgs('.ba-mouse-nav-item_select')
+					.and.callThrough();
+
+				document.dispatchEvent(getKeyEvent(keyCodes.ArrowUp));
+				document.dispatchEvent(getKeyEvent(keyCodes.ArrowUp));
+
+				const resultItems = [...element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')];
+
+				expect(arrowDownSpy).toHaveBeenCalledTimes(4);
+				expect(changeSelectedElementSpy).toHaveBeenCalledWith(4, 3, resultItems);
+				expect(changeSelectedElementSpy).toHaveBeenCalledWith(3, 2, resultItems);
+				expect(changeSelectedElementSpy).toHaveBeenCalledWith(4, 3, resultItems);
+				expect(changeSelectedElementSpy).toHaveBeenCalledWith(3, 2, resultItems);
+
+				expect(changeSelectedElementSpy).not.toHaveBeenCalledWith(2, 1, resultItems);
+				expect(changeSelectedElementSpy).not.toHaveBeenCalledWith(1, 0, resultItems);
+			});
+
+			it('highlights the next resultItem for "arrowDown" when keyup event is fired', async () => {
+				const element = await setup();
+				element.resultItemClasses = [AbstractResultItemImpl];
+				const arrowDownSpy = spyOn(element, '_arrowDown').and.callThrough();
+				const changeSelectedElementSpy = spyOn(element, '_changeSelectedElement').and.callThrough();
+
+				const testResultItems = createResultItems(5);
+				testResultItems.forEach((child) => element.shadowRoot.querySelector('div').appendChild(child));
+
+				const resultElements = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
+				// we set the flag-class manually to indicate a currently selected resultItem
+				resultElements[0].highlightResult(true);
+
+				document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
+				document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
+
+				resultElements[2].highlightResult(true);
+				spyOn(resultElements[0], 'matches')
+					.withArgs(':is(:hover)')
+					.and.returnValue(true)
+					.withArgs('.ba-key-nav-item_highlight')
+					.and.returnValue(true)
+					.withArgs(':is(ba-test-abstract-result-item-impl)')
+					.and.callThrough()
+					.withArgs('.ba-mouse-nav-item_select')
+					.and.callThrough();
+
+				document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
+				document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
+
+				const resultItems = [...element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl')];
+
+				expect(arrowDownSpy).toHaveBeenCalledTimes(4);
+				expect(changeSelectedElementSpy).toHaveBeenCalledWith(0, 1, resultItems);
+				expect(changeSelectedElementSpy).toHaveBeenCalledWith(1, 2, resultItems);
+				expect(changeSelectedElementSpy).toHaveBeenCalledWith(0, 1, resultItems);
+				expect(changeSelectedElementSpy).toHaveBeenCalledWith(1, 2, resultItems);
+
+				expect(changeSelectedElementSpy).not.toHaveBeenCalledWith(2, 3, resultItems);
+				expect(changeSelectedElementSpy).not.toHaveBeenCalledWith(3, 4, resultItems);
+			});
+		});
+
 		it('focuses the search after "arrowUp" when keyup event is fired', async () => {
 			const element = await setup();
 			element.resultItemClasses = [AbstractResultItemImpl];
