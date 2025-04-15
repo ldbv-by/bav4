@@ -68,7 +68,16 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		}
 
 		const listener = olMap.getView().on('change:resolution', () => {
-			this.update(olFeature, olMap);
+			const overlays = olFeature.get('overlays');
+			// current display/opacity property for all overlays of the feature are the same, therefore
+			// it is sufficient to only look at the first one
+			const currentProperties = overlays
+				? {
+						visible: overlays[0].getElement().style.display === 'inherit',
+						opacity: overlays[0].getElement().style.opacity
+					}
+				: {};
+			this.update(olFeature, olMap, currentProperties);
 		});
 		olFeature.set(STYLE_LISTENERS, [listener]);
 
