@@ -165,6 +165,9 @@
 .sub-button-container .icon {
 	margin: 0 !important;
 }
+.theme-toggle .icon {
+	height: 1.82em !important;
+}
 .navigation-rail__container button .icon,
 .navigation-rail__container a .icon {
 	height: 1.8em;
