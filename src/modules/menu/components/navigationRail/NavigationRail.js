@@ -202,6 +202,15 @@ export class NavigationRail extends MvuElement {
 						<span class="icon "> </span>
 						<span class="text">${translate('menu_navigation_rail_time_travel')}</span>
 					</button>
+					<button
+						title="${translate('menu_navigation_rail_layer_swipe_tooltip')}"
+						class="layerSwipe"
+						@click="${() => this._startLayerSwipe()}"
+						style="order: ${reverseTabIds.length + 2}"
+					>
+						<span class="icon "> </span>
+						<span class="text">${translate('menu_navigation_rail_layer_swipe')}</span>
+					</button>
 					<button @click="${increaseZoom}" class="zoom-in">
 						<span class="icon  "> </span>
 						<span class="text">${translate('menu_navigation_rail_zoom_in')}</span>
@@ -279,6 +288,12 @@ export class NavigationRail extends MvuElement {
 		if (!this.#storeService.getStore().getState().timeTravel.active) {
 			this.#predefinedConfigurationService.apply(PredefinedConfiguration.DISPLAY_TIME_TRAVEL);
 		}
+	}
+
+	_startLayerSwipe() {
+		setTab(TabIds.MAPS);
+		open();
+		setCurrentTool(Tools.COMPARE);
 	}
 
 	static get tag() {
