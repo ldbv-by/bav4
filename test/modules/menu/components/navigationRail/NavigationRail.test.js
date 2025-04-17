@@ -337,6 +337,27 @@ describe('NavigationRail', () => {
 		});
 	});
 
+	describe('_startLayerSwipe', () => {
+		it('starts the layer swipe tool and opens main menu', async () => {
+			const element = await setup({
+				mainMenu: {
+					open: false,
+					tab: TabIds.MISC
+				},
+				timeTravel: {
+					active: true
+				}
+			});
+
+			expect(store.getState().tools.current).toBeNull();
+			element._startLayerSwipe();
+
+			expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
+			expect(store.getState().mainMenu.open).toBe(true);
+			expect(store.getState().tools.current).toBe(Tools.COMPARE);
+		});
+	});
+
 	describe('_openTab', () => {
 		describe('orientation is `landscape`', () => {
 			it('sets the correct tab id and toggles the main menu', async () => {
@@ -534,6 +555,18 @@ describe('NavigationRail', () => {
 				timeTravelButton.click();
 
 				expect(showTimeTravelSpy).toHaveBeenCalled();
+			});
+		});
+
+		describe('`layerSwipe` button', () => {
+			it('calls #_startLayerSwipe', async () => {
+				const element = await setup();
+				const showLayerSwipeSpy = spyOn(element, '_startLayerSwipe');
+				const layerSwipeButton = element.shadowRoot.querySelector('.layerSwipe');
+
+				layerSwipeButton.click();
+
+				expect(showLayerSwipeSpy).toHaveBeenCalled();
 			});
 		});
 

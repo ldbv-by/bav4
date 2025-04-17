@@ -76,6 +76,12 @@
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
+.layerSwipe .icon {
+	mask: url('assets/expand.svg');
+	-webkit-mask: url('assets/expand.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
 .objectinfo .icon {
 	mask: url('assets/objektinfo.svg');
 	-webkit-mask: url('assets/objektinfo.svg');
@@ -230,6 +236,7 @@
 .is-portrait .routing,
 .is-portrait .objectinfo,
 .is-portrait .timeTravel,
+.is-portrait .layerSwipe,
 .is-portrait .sub-button-container {
 	display: none;
 }
