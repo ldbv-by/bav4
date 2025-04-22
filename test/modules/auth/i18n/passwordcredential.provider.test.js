@@ -10,7 +10,7 @@ describe('i18n for header module', () => {
 		expect(map.auth_passwordCredentialPanel_credential_password).toBe('Passwort');
 		expect(map.auth_passwordCredentialPanel_submit).toBe('Senden');
 		expect(map.auth_passwordCredentialPanel_submit_title).toBe('Anmeldeinformationen senden');
-		expect(map.auth_passwordCredentialPanel_credential_failed).toBe('Anmeldung fehlgeschlagen. Name oder Passwort ungültig!');
+		expect(map.auth_passwordCredentialPanel_credential_failed).toBe('Anmeldung fehlgeschlagen. Kennung oder Passwort ungültig!');
 		expect(map.auth_passwordCredentialPanel_credential_rejected).toBe('Anmeldung fehlgeschlagen. Es ist ein technisches Problem aufgetreten!');
 		expect(map.auth_passwordCredentialPanel_authenticate).toBe('Anmeldung läuft...');
 		expect(TestUtils.renderTemplateResult(map.auth_passwordCredentialPanel_footer_register_for_role(['foo'])).textContent).toBe(

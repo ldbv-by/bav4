@@ -28,7 +28,7 @@ export const provide = (lang) => {
 				auth_passwordCredentialPanel_credential_password: 'Passwort',
 				auth_passwordCredentialPanel_submit: 'Senden',
 				auth_passwordCredentialPanel_submit_title: 'Anmeldeinformationen senden',
-				auth_passwordCredentialPanel_credential_failed: 'Anmeldung fehlgeschlagen. Name oder Passwort ungültig!',
+				auth_passwordCredentialPanel_credential_failed: 'Anmeldung fehlgeschlagen. Kennung oder Passwort ungültig!',
 				auth_passwordCredentialPanel_credential_rejected: 'Anmeldung fehlgeschlagen. Es ist ein technisches Problem aufgetreten!',
 				auth_passwordCredentialPanel_authenticate: 'Anmeldung läuft...',
 				auth_passwordCredentialPanel_footer_register_for_role: (params) => html`Noch kein registrierter ${params[0]} Kunde?`,

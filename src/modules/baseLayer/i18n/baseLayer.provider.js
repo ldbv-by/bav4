@@ -16,8 +16,8 @@ export const provide = (lang) => {
 				baseLayer_switcher_header: 'Basiskarten',
 				baseLayer_container_category_raster: 'Raster',
 				baseLayer_container_category_vector: 'Vektor',
-				baseLayer_container_scroll_button_left: 'nach links scrollen',
-				baseLayer_container_scroll_button_right: 'nach rechts scrollen'
+				baseLayer_container_scroll_button_left: 'zu den Rasterkarten',
+				baseLayer_container_scroll_button_right: 'zu den Vektorkarten'
 			};
 
 		default:
