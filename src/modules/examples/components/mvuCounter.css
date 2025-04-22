@@ -1,0 +1,42 @@
+ba-button {
+	width: 200px;
+	padding: 10px;
+	display: block;
+}
+
+.mvuCounterWrapper {
+	font: 1.2em sans-serif;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 40px;
+}
+
+.mvuCounterItem {
+	border: 2px solid rgb(95 97 110);
+	border-radius: 0.5em;
+	padding: 20px;
+	width: 600px;
+}
+
+#counterTitle {
+	color: #555;
+	text-align: center;
+}
+
+.btnGroupWrapper {
+	padding: 10px;
+	display: flex;
+	flex-grow: 1;
+	justify-content: center;
+}
+
+#counterValue,
+#currentTopic {
+	text-align: center;
+}
+
+#counterValue {
+	font-size: 36px;
+	font-weight: 600;
+}
