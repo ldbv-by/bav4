@@ -4,6 +4,7 @@
 import { html } from 'lit-html';
 import { setCurrent } from './../../../store/topics/topics.action';
 import { MvuElement } from './../../MvuElement';
+import css from './mvuCounter.css';
 
 const Update_Counter = 'update_counter';
 const Update_Topic = 'update_topic';
@@ -57,23 +58,46 @@ export class MvuCounter extends MvuElement {
 		};
 
 		return html`
-			<h2 id="counterTitle">Model-View-Update</h2>
-			<div id="currentTopic">${current}</div>
-			<div id="counterValue">${counter}</div>
-			<button id="incrementBtn" @click=${() => this.signal(Update_Counter, model.counter + 1)}>+1</button>
-			<button id="decrementBtn" @click=${decrement}>-1</button>
-			<button id="resetBtn" @click=${() => this.signal(Update_Counter, 0)}>Reset</button>
-			<button id="updateTopicBtn" @click=${() => setCurrent(`topic${model.counter}`)}>Update Topic</button>
-			<div id="errorMessageId">${message}</div>
-			<details>
-				<summary>Overview</summary>
+			<style>
+				${css}
+			</style>
+			<div class="mvuCounterWrapper">
+				<div class="mvuCounterItem">
+					<h2 id="counterTitle">Model-View-Update</h2>
+					<div id="currentTopic">${current}</div>
+					<div id="counterValue">${counter}</div>
+					<div>
+						<div class="btnGroupWrapper">
+							<ba-button
+								id="incrementBtn"
+								.label=${`+1`}
+								.type=${'primary'}
+								@click=${() => this.signal(Update_Counter, model.counter + 1)}
+							></ba-button>
+							<ba-button id="decrementBtn" .label=${`-1`} .type=${'primary'} @click=${decrement}></ba-button>
+						</div>
+						<div class="btnGroupWrapper">
+							<ba-button id="resetBtn" .label=${`Reset`} .type=${'primary'} @click=${() => this.signal(Update_Counter, 0)}></ba-button>
+							<ba-button
+								id="updateTopicBtn"
+								.label=${`Update Topic`}
+								.type=${'primary'}
+								@click=${() => setCurrent(`topic${model.counter}`)}
+							></ba-button>
+						</div>
+						<div id="errorMessageId">${message}</div>
+						<details>
+							<summary>Overview</summary>
 
-				<div><img src="https://cloud.githubusercontent.com/assets/194400/25773775/b6a4b850-327b-11e7-9857-79b6972b49c3.png" width="500" /></div>
-				<div><img src="https://elmprogramming.com/images/chapter-5/5.2-model-view-update-part-1/model-view-update.svg" width="500" /></div>
-				<div>
-					<img src="https://elmprogramming.com/images/chapter-5/5.2-model-view-update-part-1/model-view-update-interaction-1.svg" width="500" />
+							<div><img src="https://cloud.githubusercontent.com/assets/194400/25773775/b6a4b850-327b-11e7-9857-79b6972b49c3.png" width="500" /></div>
+							<div><img src="https://elmprogramming.com/images/chapter-5/5.2-model-view-update-part-1/model-view-update.svg" width="500" /></div>
+							<div>
+								<img src="https://elmprogramming.com/images/chapter-5/5.2-model-view-update-part-1/model-view-update-interaction-1.svg" width="500" />
+							</div>
+						</details>
+					</div>
 				</div>
-			</details>
+			</div>
 		`;
 	}
 
