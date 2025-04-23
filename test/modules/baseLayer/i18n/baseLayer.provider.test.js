@@ -7,8 +7,8 @@ describe('i18n for header module', () => {
 		expect(map.baseLayer_switcher_header).toBe('Basiskarten');
 		expect(map.baseLayer_container_category_raster).toBe('Raster');
 		expect(map.baseLayer_container_category_vector).toBe('Vektor');
-		expect(map.baseLayer_container_scroll_button_left).toBe('zu den Rasterkarten');
-		expect(map.baseLayer_container_scroll_button_right).toBe('zu den Vektorkarten');
+		expect(map.baseLayer_container_scroll_button_raster).toBe('zu den Rasterkarten');
+		expect(map.baseLayer_container_scroll_button_vector).toBe('zu den Vektorkarten');
 	});
 
 	it('provides translation for en', () => {
@@ -17,8 +17,8 @@ describe('i18n for header module', () => {
 		expect(map.baseLayer_switcher_header).toBe('Base maps');
 		expect(map.baseLayer_container_category_raster).toBe('Raster');
 		expect(map.baseLayer_container_category_vector).toBe('Vector');
-		expect(map.baseLayer_container_scroll_button_left).toBe('scroll to left');
-		expect(map.baseLayer_container_scroll_button_right).toBe('scroll to right');
+		expect(map.baseLayer_container_scroll_button_raster).toBe('scroll to raster maps');
+		expect(map.baseLayer_container_scroll_button_vector).toBe('scroll to vector maps');
 	});
 
 	it('contains the expected amount of entries', () => {

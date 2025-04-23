@@ -6,8 +6,8 @@ export const provide = (lang) => {
 				baseLayer_switcher_header: 'Base maps',
 				baseLayer_container_category_raster: 'Raster',
 				baseLayer_container_category_vector: 'Vector',
-				baseLayer_container_scroll_button_left: 'scroll to left',
-				baseLayer_container_scroll_button_right: 'scroll to right'
+				baseLayer_container_scroll_button_raster: 'scroll to raster maps',
+				baseLayer_container_scroll_button_vector: 'scroll to vector maps'
 			};
 
 		case 'de':
@@ -16,8 +16,8 @@ export const provide = (lang) => {
 				baseLayer_switcher_header: 'Basiskarten',
 				baseLayer_container_category_raster: 'Raster',
 				baseLayer_container_category_vector: 'Vektor',
-				baseLayer_container_scroll_button_left: 'zu den Rasterkarten',
-				baseLayer_container_scroll_button_right: 'zu den Vektorkarten'
+				baseLayer_container_scroll_button_raster: 'zu den Rasterkarten',
+				baseLayer_container_scroll_button_vector: 'zu den Vektorkarten'
 			};
 
 		default:
