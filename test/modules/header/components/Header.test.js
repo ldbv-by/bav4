@@ -203,7 +203,7 @@ describe('Header', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.header')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.header__routing-button')).toHaveSize(1);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__routing-button')).display).toBe('block');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__routing-button')).display).toBe('none');
 
 			expect(element.shadowRoot.querySelectorAll('.header__button-container')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('.header__button-container').children.length).toBe(3);
