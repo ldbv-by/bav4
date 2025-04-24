@@ -75,7 +75,9 @@ describe('BaseLayerContainer', () => {
 
 						expect(element.shadowRoot.querySelectorAll('.button-group')).toHaveSize(1);
 						expect(element.shadowRoot.querySelectorAll('.scroll-left-button')).toHaveSize(1);
+						expect(element.shadowRoot.querySelectorAll('.scroll-left-button')[0].title).toBe('baseLayer_container_scroll_button_raster');
 						expect(element.shadowRoot.querySelectorAll('.scroll-right-button')).toHaveSize(1);
+						expect(element.shadowRoot.querySelector('.scroll-right-button').title).toBe('baseLayer_container_scroll_button_vector');
 
 						expect(element.shadowRoot.querySelectorAll('.section.scroll-snap-x')).toHaveSize(1);
 						expect(element.shadowRoot.querySelector('.section.scroll-snap-x').getAttribute('part')).toBe('section');
@@ -97,7 +99,9 @@ describe('BaseLayerContainer', () => {
 						expect(element.shadowRoot.querySelector('.title').innerText).toContain('baseLayer_switcher_header');
 						expect(element.shadowRoot.querySelector('.title').getAttribute('part')).toBe('title');
 						expect(element.shadowRoot.querySelectorAll('button')[0].innerText).toBe('baseLayer_container_category_raster');
+						expect(element.shadowRoot.querySelectorAll('button')[0].title).toBe('baseLayer_container_scroll_button_raster');
 						expect(element.shadowRoot.querySelectorAll('button')[1].innerText).toBe('baseLayer_container_category_vector');
+						expect(element.shadowRoot.querySelectorAll('button')[1].title).toBe('baseLayer_container_scroll_button_vector');
 
 						await TestUtils.timeout(BaseLayerContainer.INITIAL_SCROLL_INTO_VIEW_DELAY_MS + 100);
 						// Note: Unfortunately #scrollIntoView() seem not to work in this test setup.
