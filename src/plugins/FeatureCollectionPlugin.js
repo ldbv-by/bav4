@@ -49,10 +49,11 @@ export class FeatureCollectionPlugin extends BaPlugin {
 				this.#geoResourceService.addOrReplace(
 					new VectorGeoResource(FEATURE_COLLECTION_GEORESOURCE_ID, `${translate('global_featureCollection_layer_label')} (${entries.length})`)
 						.setFeatures(entries)
+						.markAsLocalData(true)
 						.setHidden(true)
 						.setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource)
 				);
-				addLayer(FEATURE_COLLECTION_LAYER_ID, { geoResourceId: FEATURE_COLLECTION_GEORESOURCE_ID });
+				addLayer(FEATURE_COLLECTION_LAYER_ID, { geoResourceId: FEATURE_COLLECTION_GEORESOURCE_ID, constraints: { cloneable: false } });
 			}
 			ignoreLayerRemoval = false;
 		};
