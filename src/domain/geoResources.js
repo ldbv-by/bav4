@@ -291,7 +291,7 @@ export class GeoResource {
 	}
 
 	/**
-	 * Set ti `true` if this GeoResource is allowed to be exported
+	 * Set to `true` if this GeoResource is allowed to be exported
 	 * @param {boolean} exportable
 	 * @returns {GeoResource} `this` for chaining
 	 */
