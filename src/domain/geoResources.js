@@ -241,7 +241,7 @@ export class GeoResource {
 	}
 
 	/**
-	 *
+	 * Set to `true` if this GeoResource should not or cannot be exposed externally and is therefore not available for some use cases (e.g. sharing)
 	 * @param {boolean} hidden
 	 * @returns {GeoResource} `this` for chaining
 	 */
@@ -281,7 +281,7 @@ export class GeoResource {
 	}
 
 	/**
-	 *
+	 * Set to `true` if this GeoResource is allowed to be listed as a result for a query
 	 * @param {boolean} queryable
 	 * @returns {GeoResource} `this` for chaining
 	 */
@@ -291,7 +291,7 @@ export class GeoResource {
 	}
 
 	/**
-	 *
+	 * Set ti `true` if this GeoResource is allowed to be exported
 	 * @param {boolean} exportable
 	 * @returns {GeoResource} `this` for chaining
 	 */
