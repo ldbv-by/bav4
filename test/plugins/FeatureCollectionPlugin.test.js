@@ -78,6 +78,7 @@ describe('FeatureCollectionPlugin', () => {
 
 			expect(store.getState().layers.active).toHaveSize(1);
 			expect(store.getState().layers.active[0].id).toBe(FEATURE_COLLECTION_LAYER_ID);
+			expect(store.getState().layers.active[0].constraints.cloneable).toBeFalse();
 			expect(geoResourceServiceAddOrReplaceSpy).toHaveBeenCalledWith(
 				new VectorGeoResource(FEATURE_COLLECTION_GEORESOURCE_ID, `global_featureCollection_layer_label (2)`)
 					.setFeatures([feature0, feature1])

@@ -53,7 +53,7 @@ export class FeatureCollectionPlugin extends BaPlugin {
 						.setHidden(true)
 						.setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource)
 				);
-				addLayer(FEATURE_COLLECTION_LAYER_ID, { geoResourceId: FEATURE_COLLECTION_GEORESOURCE_ID });
+				addLayer(FEATURE_COLLECTION_LAYER_ID, { geoResourceId: FEATURE_COLLECTION_GEORESOURCE_ID, constraints: { cloneable: false } });
 			}
 			ignoreLayerRemoval = false;
 		};
