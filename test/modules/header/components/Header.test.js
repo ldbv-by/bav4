@@ -576,17 +576,20 @@ describe('Header', () => {
 				};
 				const element = await setup(state);
 
+				const searchContainerElement = element.shadowRoot.querySelector('.header__search-container');
 				const inputElement = element.shadowRoot.querySelector('#input');
 				const clearButton = element.shadowRoot.querySelector('#clear');
 				inputElement.value = 'foo';
 				inputElement.dispatchEvent(new Event('input'));
 
-				expect(clearButton.classList.contains('is-clear-visible')).toBeTrue();
+				expect(searchContainerElement.classList.contains('is-clear-visible')).toBeTrue();
+				expect(window.getComputedStyle(clearButton).display).toBe('flex');
 
 				inputElement.value = '';
 				inputElement.dispatchEvent(new Event('input'));
 
-				expect(clearButton.classList.contains('is-clear-visible')).toBeFalse();
+				expect(searchContainerElement.classList.contains('is-clear-visible')).toBeFalse();
+				expect(window.getComputedStyle(clearButton).display).toBe('none');
 			});
 		});
 
@@ -701,30 +704,31 @@ describe('Header', () => {
 						}
 					};
 					const element = await setup(state);
+					const searchContainerElement = element.shadowRoot.querySelector('.header__search-container');
 					const input = element.shadowRoot.querySelector('#input');
 					const inputFocusButton = element.shadowRoot.querySelector('#inputFocusButton');
 					const clearButton = element.shadowRoot.querySelector('#clear');
 
 					expect(window.getComputedStyle(clearButton).display).toBe('none');
-					expect(clearButton.classList.contains('is-clear-visible')).toBeFalse();
+					expect(searchContainerElement.classList.contains('is-clear-visible')).toBeFalse();
 
 					inputFocusButton.click();
 					input.value = 'foo';
 					input.dispatchEvent(new Event('input'));
 
 					expect(window.getComputedStyle(clearButton).display).toBe('flex');
-					expect(clearButton.classList.contains('is-clear-visible')).toBeTrue();
+					expect(searchContainerElement.classList.contains('is-clear-visible')).toBeTrue();
 
 					input.blur();
 					jasmine.clock().tick(Header.TIME_INTERVAL_MS + 100);
 
 					expect(window.getComputedStyle(clearButton).display).toBe('none');
-					expect(clearButton.classList.contains('is-clear-visible')).toBeFalse();
+					expect(searchContainerElement.classList.contains('is-clear-visible')).toBeFalse();
 
 					inputFocusButton.click();
 
 					expect(window.getComputedStyle(clearButton).display).toBe('flex');
-					expect(clearButton.classList.contains('is-clear-visible')).toBeTrue();
+					expect(searchContainerElement.classList.contains('is-clear-visible')).toBeTrue();
 				});
 			});
 
@@ -774,30 +778,31 @@ describe('Header', () => {
 						}
 					};
 					const element = await setup(state);
+					const searchContainerElement = element.shadowRoot.querySelector('.header__search-container');
 					const input = element.shadowRoot.querySelector('#input');
 					const inputFocusButton = element.shadowRoot.querySelector('#inputFocusButton');
 					const clearButton = element.shadowRoot.querySelector('#clear');
 
 					expect(window.getComputedStyle(clearButton).display).toBe('none');
-					expect(clearButton.classList.contains('is-clear-visible')).toBeFalse();
+					expect(searchContainerElement.classList.contains('is-clear-visible')).toBeFalse();
 
 					inputFocusButton.click();
 					input.value = 'foo';
 					input.dispatchEvent(new Event('input'));
 
 					expect(window.getComputedStyle(clearButton).display).toBe('flex');
-					expect(clearButton.classList.contains('is-clear-visible')).toBeTrue();
+					expect(searchContainerElement.classList.contains('is-clear-visible')).toBeTrue();
 
 					input.blur();
 					jasmine.clock().tick(Header.TIME_INTERVAL_MS + 100);
 
 					expect(window.getComputedStyle(clearButton).display).toBe('none');
-					expect(clearButton.classList.contains('is-clear-visible')).toBeFalse();
+					expect(searchContainerElement.classList.contains('is-clear-visible')).toBeFalse();
 
 					inputFocusButton.click();
 
 					expect(window.getComputedStyle(clearButton).display).toBe('flex');
-					expect(clearButton.classList.contains('is-clear-visible')).toBeTrue();
+					expect(searchContainerElement.classList.contains('is-clear-visible')).toBeTrue();
 				});
 			});
 
