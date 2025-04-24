@@ -119,7 +119,7 @@ export class BaseLayerContainer extends MvuElement {
 							@click=${() => onClick(Object.entries(categories)[index - 1][0])}
 							class="scroll-left-button"
 							part="scroll-button"
-							title="${translate('baseLayer_container_scroll_button_left')}"
+							title="${translate(`baseLayer_container_scroll_button_${Object.entries(categories)[index - 1][0]}`)}"
 						></button>
 					`
 				: nothing;
@@ -132,7 +132,7 @@ export class BaseLayerContainer extends MvuElement {
 							@click=${() => onClick(Object.entries(categories)[index + 1][0])}
 							class="scroll-right-button"
 							part="scroll-button"
-							title="${translate('baseLayer_container_scroll_button_right')}"
+							title="${translate(`baseLayer_container_scroll_button_${Object.entries(categories)[index + 1][0]}`)}"
 						></button>
 					`
 				: nothing;
@@ -149,7 +149,11 @@ export class BaseLayerContainer extends MvuElement {
 					: html`<div class="button-group">
 							${Object.entries(categories).map(
 								([key]) =>
-									html`<button @click=${() => onClick(key)} class="title ${isActive(key)}">
+									html`<button
+										@click=${() => onClick(key)}
+										title="${translate(`baseLayer_container_scroll_button_${key}`)}"
+										class="title ${isActive(key)}"
+									>
 										${translate(`baseLayer_container_category_${key}`)}
 									</button>`
 							)}
