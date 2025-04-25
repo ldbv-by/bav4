@@ -204,7 +204,7 @@ export class Header extends MvuElement {
 			if (isPortrait || !hasMinWidth) {
 				const header = this.shadowRoot.getElementById('headerMobile');
 				const logo = this.shadowRoot.getElementById('headerLogo');
-				const clear = this.shadowRoot.getElementById('clear');
+				const clear = this.shadowRoot.getElementById('headerSearchContainer');
 
 				header.classList.add('hide');
 				logo.classList.add('hide');
@@ -237,7 +237,7 @@ export class Header extends MvuElement {
 			if (isPortrait || !hasMinWidth) {
 				const header = this.shadowRoot.getElementById('headerMobile');
 				const logo = this.shadowRoot.getElementById('headerLogo');
-				const clear = this.shadowRoot.getElementById('clear');
+				const clear = this.shadowRoot.getElementById('headerSearchContainer');
 
 				this.#timeoutId = setTimeout(() => {
 					header.classList.remove('hide');
@@ -328,18 +328,20 @@ export class Header extends MvuElement {
 						</button> 
 						<div class="header__background">
 						</div>
-						<div class='header__search-container'>
+						<div  class="header__container">
+						<div id="headerSearchContainer" class='header__search-container ${getIsClearClass()}'>
 							<button id="inputFocusButton" @click="${onButtonClick}" class="open-search-button" title="${translate('header_search_title')}">
 								<span class="button_search_icon"></span>					
 							</button>
 							<input id='input' data-test-id title="${translate('header_search_title')}" placeholder='${translate(
 								'header_search_placeholder'
 							)}' value="${searchTerm}" @focus="${onInputFocus}" @blur="${onInputBlur}" @input="${onInput}" class='header__search' type="search" placeholder="" />          		
-							<button id="clear" class="header__search-clear ${getIsClearClass()}" @click="${clearSearchInput}" title="${translate('header_search_clear_button')}">   
+							<button id="clear" class="header__search-clear" @click="${clearSearchInput}" title="${translate('header_search_clear_button')}">   
 								<span class="border">
 									<span class="icon"> </icon>   							
 								</span>
 							</button>       
+						</div>
 							<button @click="${openRoutingTab}" class="header__routing-button" title="${translate('header_tab_routing_button')}">
 								<span class="routing-icon"></span>
 							</button>

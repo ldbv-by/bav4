@@ -308,7 +308,7 @@
 	z-index: 2;
 	background: var(--secondary-bg-color);
 	border: none;
-	border-radius: 0;
+	border-radius: 0 var(--border-radius-button) var(--border-radius-button) 0;
 }
 .header__search::placeholder {
 	color: var(--text2);
@@ -323,10 +323,12 @@
 	right: 3em;
 	background: var(--secondary-bg-color);
 	z-index: 1;
+	border-radius: 0 var(--border-radius-button) var(--border-radius-button) 0;
 }
 .header__search-clear .icon {
 	height: 1.5em;
 	width: 1.5em;
+	margin-right: 0.3em;
 	mask: url('assets/clear.svg');
 	-webkit-mask: url('assets/clear.svg');
 	mask-size: cover;
@@ -345,15 +347,18 @@
 .header__search-clear:hover .icon {
 	background: var(--text4);
 }
-.is-clear-visible {
+.is-clear-visible .header__search {
+	border-radius: 0;
+}
+.is-clear-visible .header__search-clear {
 	display: flex;
 }
 .header__routing-button {
 	flex-shrink: 1;
 	height: inherit;
-	margin: 0;
-	width: 3em;
-	border-radius: 0 var(--border-radius-button) var(--border-radius-button) 0;
+	margin: 0 0 0 0.5em;
+	width: 2.6em;
+	border-radius: var(--border-radius-button);
 	background: var(--primary-color);
 	color: var(--text2);
 	cursor: pointer;
@@ -364,6 +369,15 @@
 	border: 0.5em solid var(--primary-color);
 	z-index: 0;
 }
+.is-landscape .header__routing-button {
+	display: none;
+}
+
+.is-portrait .header__routing-button,
+.is-tablet .header__routing-button {
+	width: 2.9em;
+}
+
 .routing-icon {
 	display: block;
 	opacity: 0.8;
@@ -410,10 +424,15 @@
 .is-tablet .header {
 	padding: 2em 1em 2em 1em;
 }
-.header__search-container {
+.header__container {
 	display: flex;
 	position: relative;
 	justify-content: flex-end;
+}
+.header__search-container {
+	display: flex;
+	justify-content: flex-end;
+	flex-grow: 1;
 	border-radius: var(--border-radius-button);
 	box-shadow: 0px 0px 0px 1px var(--tertiary-bg-color);
 	transition: all var(--animation-duration-small-open) var(--animation-easing-linear);
@@ -421,9 +440,11 @@
 .is-portrait .header__search-container {
 	font-size: 1.1rem;
 	box-shadow: none;
+	overflow: hidden;
 }
 .is-tablet .header__search-container {
 	box-shadow: none;
+	overflow: hidden;
 }
 .header__text-mobile {
 	z-index: calc(var(--z-header) + 10);
@@ -448,7 +469,7 @@
 .is-tablet .header__search {
 	width: 0;
 	padding: 0.5em 0 0.5em 0;
-	transition: all var(--animation-duration-large-open) var(--animation-easing-linear);
+	transition: width var(--animation-duration-large-open) var(--animation-easing-linear);
 }
 .is-portrait .header__search:focus,
 .is-tablet .header__search:focus {
