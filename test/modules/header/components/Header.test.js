@@ -783,6 +783,7 @@ describe('Header', () => {
 					const inputFocusButton = element.shadowRoot.querySelector('#inputFocusButton');
 					const clearButton = element.shadowRoot.querySelector('#clear');
 
+					expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__routing-button')).display).toBe('none');
 					expect(window.getComputedStyle(clearButton).display).toBe('none');
 					expect(searchContainerElement.classList.contains('is-clear-visible')).toBeFalse();
 
@@ -851,6 +852,8 @@ describe('Header', () => {
 
 					const element = await setup(state);
 
+					expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__routing-button')).display).toBe('block');
+
 					const header = element.shadowRoot.querySelector('#headerMobile');
 					expect(header.classList.contains('hide')).toBeFalse();
 					expect(header.classList.contains('fadein')).toBeFalse();
@@ -894,6 +897,8 @@ describe('Header', () => {
 					};
 
 					const element = await setup(state);
+
+					expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__routing-button')).display).toBe('none');
 
 					const header = element.shadowRoot.querySelector('#headerMobile');
 					const logo = element.shadowRoot.querySelector('#headerLogo');
