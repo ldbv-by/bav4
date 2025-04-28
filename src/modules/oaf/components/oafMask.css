@@ -1,0 +1,11 @@
+.grid-container {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	max-height: 250px;
+	min-height: 180px;
+	overflow-y: auto;
+}
+
+.container {
+	padding: 30px;
+}

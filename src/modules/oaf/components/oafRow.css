@@ -1,0 +1,17 @@
+.ogc-filter-row {
+	padding: 20px;
+}
+
+.flex-container {
+	display: flex;
+	flex-grow: 1;
+	justify-content: center;
+}
+
+.column {
+	flex-direction: column;
+}
+
+.row {
+	flex-direction: row;
+}
