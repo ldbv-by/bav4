@@ -5,6 +5,7 @@ import { $injector } from '../../../injection';
 import TileState from 'ol/TileState.js';
 import { UnavailableGeoResourceError } from '../../../domain/errors';
 import { FailureCounter } from '../../../utils/FailureCounter';
+import { isString } from '../../../utils/checks';
 
 const handleUnexpectedStatusCode = (geoResourceId, response) => {
 	// we have to throw the UnavailableGeoResourceError in a asynchronous manner, otherwise it would be caught by ol and not be  propagated to the window (see GlobalErrorPlugin)
@@ -148,6 +149,72 @@ export const getBvvTileLoadFunction = (geoResourceId, olLayer, failureCounterPro
 		} catch (error) {
 			tile.setState(TileState.ERROR);
 			failureCounter.indicateFailure();
+		}
+	};
+};
+
+/**
+ * BVV specific implementation of {@link module:modules/olMap/services/VectorLayerService~oafFunctionProvider}.
+ * @function
+ * @type {module:modules/olMap/services/VectorLayerService~oafFunctionProvider}
+ */
+export const getBvvOafLoadFunction = (geoResourceId) => {
+	const { HttpService: httpService, GeoResourceService: geoResourceService } = $injector.inject('HttpService', 'GeoResourceService');
+
+	return async function (extent, resolution, projection, success, failure) {
+		const timeout = 15_000;
+		// see https://openlayers.org/en/latest/apidoc/module-ol_source_Vector-VectorSource.html
+		const srid = projection.getCode().split(':')[1];
+		const crs = `http://www.opengis.net/def/crs/EPSG/0/${srid}`;
+		try {
+			const geoResource = geoResourceService.byId(geoResourceId);
+
+			const options = {};
+			options['f'] = 'json';
+			options['crs'] = crs;
+			if (geoResource.limit) {
+				options['limit'] = geoResource.limit;
+			}
+			options['bbox'] = `${extent.join(',')}`;
+			options['bbox-crs'] = crs;
+
+			const searchParams = new URLSearchParams({ ...options });
+			const url = `${geoResource.url}${geoResource.url.endsWith('/') ? '' : '/'}collections/${geoResource.collectionId}/items?${decodeURIComponent(searchParams.toString())}`;
+
+			const getFeaturesWithAuthInterceptor = async (url) => {
+				const response = await httpService.get(
+					url,
+					{
+						timeout
+					},
+					{ response: [geoResourceService.getAuthResponseInterceptorForGeoResource(geoResourceId)] }
+				);
+				switch (response.status) {
+					case 200: {
+						const features = this.getFormat()
+							.readFeatures(await response.json())
+							.map((f) => {
+								// avoid ol displaying only one feature if ids are an empty string
+								if (isString(f.getId()) && f.getId().trim() === '') {
+									f.setId(undefined);
+								}
+								return f;
+							});
+						this.addFeatures(features);
+						success(features);
+						break;
+					}
+					default: {
+						this.removeLoadedExtent(extent);
+						failure();
+					}
+				}
+			};
+			return await getFeaturesWithAuthInterceptor(url);
+		} catch (error) {
+			this.removeLoadedExtent(extent);
+			failure();
+			throw new UnavailableGeoResourceError(error.message, geoResourceId);
 		}
 	};
 };
