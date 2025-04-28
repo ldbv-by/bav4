@@ -1,7 +1,7 @@
 /**
  * @module modules/olMap/services/VectorLayerService
  */
-import { VectorSourceType } from '../../../domain/geoResources';
+import { OafGeoResource, VectorSourceType } from '../../../domain/geoResources';
 import VectorSource from 'ol/source/Vector';
 import { $injector } from '../../../injection';
 import { KML, GPX, GeoJSON, WKT } from 'ol/format';
@@ -13,6 +13,16 @@ import { UnavailableGeoResourceError } from '../../../domain/errors';
 import { isHttpUrl, isString } from '../../../utils/checks';
 import { StyleHint } from '../../../domain/styles';
 import { SourceTypeName } from '../../../domain/sourceType';
+import { bbox } from 'ol/loadingstrategy.js';
+import { getBvvOafLoadFunction } from '../utils/olLoadFunction.provider';
+
+/**
+ * A function that returns a `ol.featureloader.FeatureLoader` for OGC API Features service.
+ * @typedef {Function} oafLoadFunctionProvider
+ * @param {string} geoResourceId The id of the corresponding GeoResource
+ * @param {ol.layer.Layer} olLayer The the corresponding ol layer
+ * @returns {Function} ol.featureloader.FeatureLoader
+ */
 
 const getUrlService = () => {
 	const { UrlService: urlService } = $injector.inject('UrlService');
@@ -84,6 +94,10 @@ export const mapSourceTypeToFormat = (sourceType, showPointNames = true) => {
  * @author taulinger
  */
 export class VectorLayerService {
+	constructor(oafLoadFunctionProvider = getBvvOafLoadFunction) {
+		this._oafLoadFunctionProvider = oafLoadFunctionProvider;
+	}
+
 	_updateStyle(olFeature, olLayer, olMap) {
 		const { StyleService: styleService, StoreService: storeService } = $injector.inject('StyleService', 'StoreService');
 		const {
@@ -178,9 +192,9 @@ export class VectorLayerService {
 	applyStyle(olVectorLayer, olMap, vectorGeoResource) {
 		const { StyleService: styleService } = $injector.inject('StyleService');
 		this._sanitizeStyles(olVectorLayer);
-		if (vectorGeoResource.isClustered()) {
+		if (vectorGeoResource.isClustered?.()) {
 			return styleService.applyStyleHint(StyleHint.CLUSTER, olVectorLayer);
-		} else if (vectorGeoResource.hasStyleHint()) {
+		} else if (vectorGeoResource.hasStyleHint?.()) {
 			return styleService.applyStyleHint(vectorGeoResource.styleHint, olVectorLayer);
 		}
 		return this._applyFeatureSpecificStyles(olVectorLayer, olMap);
@@ -203,18 +217,26 @@ export class VectorLayerService {
 			minZoom: minZoom ?? undefined,
 			maxZoom: maxZoom ?? undefined
 		});
-		const vectorSource = this._vectorSourceForData(vectorGeoResource);
+		const vectorSource = this._vectorSourceForData(vectorGeoResource, vectorLayer);
 		vectorLayer.setSource(vectorSource);
 
 		return this.applyStyle(vectorLayer, olMap, vectorGeoResource);
 	}
 
 	/**
-	 * Builds an ol VectorSource from an VectorGeoResource
-	 * @param {VectorGeoResource} geoResource
+	 * Builds an ol VectorSource from an VectorGeoResource or OafGeoResource
+	 * @param {VectorGeoResource|OafGeoResource} geoResource
+	 * @param {OlCoordinateService.layer.Vector} olVectorLayer
 	 * @returns olVectorSource
 	 */
-	_vectorSourceForData(geoResource) {
+	_vectorSourceForData(geoResource, olVectorLayer) {
+		if (geoResource instanceof OafGeoResource) {
+			return new VectorSource({
+				strategy: bbox,
+				loader: this._oafLoadFunctionProvider(geoResource.id, olVectorLayer)
+			});
+		}
+
 		try {
 			const { MapService: mapService } = $injector.inject('MapService');
 
@@ -273,7 +295,7 @@ export class VectorLayerService {
 					vectorSource.addFeatures(olFeatures);
 				});
 			}
-			return geoResource.isClustered()
+			return geoResource.isClustered?.()
 				? new Cluster({
 						source: vectorSource,
 						distance: geoResource.clusterParams.distance,

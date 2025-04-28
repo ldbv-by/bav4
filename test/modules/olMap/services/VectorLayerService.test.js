@@ -1,5 +1,5 @@
 import { $injector } from '../../../../src/injection';
-import { VectorGeoResource, VectorSourceType } from '../../../../src/domain/geoResources';
+import { OafGeoResource, VectorGeoResource, VectorSourceType } from '../../../../src/domain/geoResources';
 import {
 	bvvIconUrlFunction,
 	iconUrlFunction,
@@ -18,6 +18,8 @@ import { StyleHint } from '../../../../src/domain/styles';
 import { BaGeometry } from '../../../../src/domain/geometry';
 import { BaFeature } from '../../../../src/domain/feature';
 import { SourceType } from '../../../../src/domain/sourceType';
+import { getBvvOafLoadFunction } from '../../../../src/modules/olMap/utils/olLoadFunction.provider';
+import { bbox } from 'ol/loadingstrategy.js';
 
 describe('VectorLayerService', () => {
 	const urlService = {
@@ -137,9 +139,9 @@ describe('VectorLayerService', () => {
 		});
 	});
 
-	describe('service methods', () => {
+	describe('VectorLayerService', () => {
 		let instanceUnderTest;
-		const setup = (state = {}) => {
+		const setup = (state = {}, oafLoadFunctionProvider) => {
 			TestUtils.setupStoreAndDi(state, {
 				layers: layersReducer
 			});
@@ -147,8 +149,21 @@ describe('VectorLayerService', () => {
 				.registerSingleton('UrlService', urlService)
 				.registerSingleton('MapService', mapService)
 				.registerSingleton('StyleService', styleService);
-			instanceUnderTest = new VectorLayerService();
+			instanceUnderTest = new VectorLayerService(oafLoadFunctionProvider);
 		};
+
+		describe('constructor', () => {
+			it('initializes the service with default providers', () => {
+				const instanceUnderTest = new VectorLayerService();
+				expect(instanceUnderTest._oafLoadFunctionProvider).toEqual(getBvvOafLoadFunction);
+			});
+
+			it('initializes the service with custom provider', () => {
+				const getBvvOafLoadFunctionCustomProvider = () => {};
+				setup(undefined, getBvvOafLoadFunctionCustomProvider);
+				expect(instanceUnderTest._oafLoadFunctionProvider).toEqual(getBvvOafLoadFunctionCustomProvider);
+			});
+		});
 
 		describe('createLayer', () => {
 			it('returns an ol vector layer for a data based VectorGeoResource', () => {
@@ -160,7 +175,7 @@ describe('VectorLayerService', () => {
 				const olMap = new Map();
 				const olSource = new VectorSource();
 				const vectorGeoResource = new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326);
-				spyOn(instanceUnderTest, '_vectorSourceForData').withArgs(vectorGeoResource).and.returnValue(olSource);
+				spyOn(instanceUnderTest, '_vectorSourceForData').withArgs(vectorGeoResource, jasmine.any(VectorLayer)).and.returnValue(olSource);
 				spyOn(instanceUnderTest, 'applyStyle')
 					.withArgs(jasmine.anything(), olMap, vectorGeoResource)
 					.and.callFake((olLayer) => olLayer);
@@ -178,6 +193,22 @@ describe('VectorLayerService', () => {
 		});
 
 		describe('_vectorSourceForData', () => {
+			it('builds an olVectorSource for a OafGeoResource', async () => {
+				const getBvvOafLoadFunctionCustomProviderSpy = jasmine.createSpy().and.returnValue('loaded');
+				setup(undefined, getBvvOafLoadFunctionCustomProviderSpy);
+				const destinationSrid = 3857;
+				spyOn(mapService, 'getSrid').and.returnValue(destinationSrid);
+				const olVectorLayer = new VectorLayer();
+				const vectorGeoResource = new OafGeoResource('someId', 'label', 'https://oaf.foo', 'collectionId');
+
+				const olVectorSource = instanceUnderTest._vectorSourceForData(vectorGeoResource, olVectorLayer);
+
+				expect(olVectorSource.constructor.name).toBe('VectorSource');
+				expect(olVectorSource.loader_).toBe(getBvvOafLoadFunctionCustomProviderSpy());
+				expect(olVectorSource.strategy_).toEqual(bbox);
+				expect(getBvvOafLoadFunctionCustomProviderSpy).toHaveBeenCalledWith(vectorGeoResource.id, olVectorLayer);
+			});
+
 			it('builds an olVectorSource for an internal VectorGeoResource', async () => {
 				setup();
 				const sourceSrid = 4326;
