@@ -4,7 +4,7 @@
 import { $injector } from '../injection';
 import { getDefaultAttribution } from '../services/provider/attribution.provider';
 import { getDefaultVectorGeoResourceLoaderForUrl } from '../services/provider/geoResource.provider';
-import { isExternalGeoResourceId } from '../utils/checks';
+import { isExternalGeoResourceId, isNumber } from '../utils/checks';
 
 /**
  * Attribution data of a GeoResource.
@@ -37,6 +37,7 @@ export const GeoResourceTypes = Object.freeze({
 	WMS: Symbol.for('wms'),
 	XYZ: Symbol.for('xyz'),
 	VECTOR: Symbol.for('vector'),
+	OAF: Symbol.for('oaf'),
 	RT_VECTOR: Symbol.for('rtvector'),
 	VT: Symbol.for('vt'),
 	AGGREGATE: Symbol.for('aggregate'),
@@ -991,3 +992,93 @@ export const observable = (geoResource, onChanged, identifier = null) => {
 		}
 	});
 };
+
+/**
+ * Represents an OCG Api Feature Collection
+ */
+export class OafGeoResource extends GeoResource {
+	// export class FeaturesGeoResource extends GeoResource {
+	/**
+	 *
+	 * @param {string} id
+	 * @param {string} label
+	 * @param {string} url
+	 * @param {string} collectionId
+	 */
+	constructor(id, label, url, collectionId) {
+		super(id, label);
+		this._url = url;
+		this._collectionId = collectionId;
+		this._capabilities = null;
+		this._limit = null;
+	}
+
+	get collectionId() {
+		return this._collectionId;
+	}
+
+	get url() {
+		return this._url;
+	}
+
+	get capabilities() {
+		return this._capabilities ? { ...this._capabilities } : null;
+	}
+
+	get limit() {
+		return this._limit;
+	}
+
+	/**
+	 * Sets the `OafCapabilities`
+	 * @param {OafCapabilities} capabilities
+	 * @returns {OafGeoResource} `this` for chaining
+	 */
+	setCapabilities(capabilities) {
+		this._capabilities = capabilities;
+		return this;
+	}
+
+	hasCapabilities() {
+		return !!this._capabilities;
+	}
+	/**
+	 * Sets the limit parameter
+	 * @param {number} limit
+	 * @returns {OafGeoResource} `this` for chaining
+	 */
+	setLimit(limit) {
+		if (isNumber(limit)) {
+			this._limit = limit;
+		}
+		return this;
+	}
+
+	hasLimit() {
+		return !!this._limit;
+	}
+
+	/**
+	 * @override
+	 */
+	getType() {
+		return GeoResourceTypes.OAF;
+	}
+}
+
+/**
+ * Capabilities of a {@link OafGeoResource}
+ * @typedef OafCapabilities
+ * @property {number} totalNumberOfItems
+ * @property {boolean} sampled Some meta data are bases on a a sample
+ * @property {Array<OafQueryable>} queryables List of possible `OafQueryable`
+ */
+
+/**
+ * A queryable property of a {@link OafGeoResource}
+ * @typedef OafQueryable
+ * @property {string} name The name of this queryable property
+ * @property {object} type The type of this queryable property
+ * @property {Array<Object>} [values] The values of this queryable property
+ * @property {boolean} [finalized] The values of this queryable property are final
+ */

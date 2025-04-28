@@ -11,7 +11,8 @@ import {
 	observable,
 	GeoResourceAuthenticationType,
 	VTGeoResource,
-	RtVectorGeoResource
+	RtVectorGeoResource,
+	OafGeoResource
 } from '../../src/domain/geoResources';
 import { $injector } from '../../src/injection';
 import { getDefaultAttribution, getMinimalAttribution } from '../../src/services/provider/attribution.provider';
@@ -43,12 +44,13 @@ describe('GeoResource', () => {
 
 	describe('GeoResourceTypes', () => {
 		it('provides an enum of all available types', () => {
-			expect(Object.entries(GeoResourceTypes).length).toBe(7);
+			expect(Object.entries(GeoResourceTypes).length).toBe(8);
 			expect(Object.isFrozen(GeoResourceTypes)).toBeTrue();
 			expect(GeoResourceTypes.WMS.description).toBe('wms');
 			expect(GeoResourceTypes.XYZ.description).toBe('xyz');
 			expect(GeoResourceTypes.VECTOR.description).toBe('vector');
 			expect(GeoResourceTypes.RT_VECTOR.description).toBe('rtvector');
+			expect(GeoResourceTypes.OAF.description).toBe('oaf');
 			expect(GeoResourceTypes.VT.description).toBe('vt');
 			expect(GeoResourceTypes.AGGREGATE.description).toBe('aggregate');
 			expect(GeoResourceTypes.FUTURE.description).toBe('future');
@@ -625,6 +627,42 @@ describe('GeoResource', () => {
 			it('sets the showPointNames property', () => {
 				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).setShowPointNames(false).showPointNames).toBeFalse();
 				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).setShowPointNames(true).showPointNames).toBeTrue();
+			});
+		});
+	});
+
+	describe('OafGeoResource', () => {
+		it('instantiates a OafGeoResource', () => {
+			const oafGeoResource = new OafGeoResource('id', 'label', 'url', 'collectionId');
+
+			expect(oafGeoResource.getType()).toEqual(GeoResourceTypes.OAF);
+			expect(oafGeoResource.id).toBe('id');
+			expect(oafGeoResource.label).toBe('label');
+			expect(oafGeoResource.url).toBe('url');
+			expect(oafGeoResource.collectionId).toBe('collectionId');
+		});
+
+		it('provides default properties', () => {
+			const oafGeoResource = new OafGeoResource('id', 'label', 'url', 'collectionId');
+
+			expect(oafGeoResource.limit).toBeNull();
+			expect(oafGeoResource.capabilities).toBeNull();
+		});
+
+		describe('methods', () => {
+			it('sets the limit', () => {
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').hasLimit()).toBeFalse();
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setLimit('1000')).toBeNull;
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setLimit(1000).hasLimit()).toBeTrue();
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setLimit(1000).limit).toBe(1000);
+			});
+
+			it('sets the capabilities', () => {
+				const capabilities = {
+					foo: 'bar'
+				};
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').hasCapabilities()).toBeFalse();
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setCapabilities(capabilities).capabilities).toEqual(capabilities);
 			});
 		});
 	});
