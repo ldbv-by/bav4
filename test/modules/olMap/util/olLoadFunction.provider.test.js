@@ -13,7 +13,6 @@ import VectorLayer from 'ol/layer/Vector.js';
 import Projection from 'ol/proj/Projection.js';
 import VectorSource from 'ol/source/Vector.js';
 import { OafGeoResource } from '../../../../src/domain/geoResources.js';
-import GeoJSON from 'ol/format/GeoJSON';
 
 describe('olLoadFunction.provider', () => {
 	describe('getBvvBaaImageLoadFunction', () => {
@@ -460,7 +459,7 @@ describe('olLoadFunction.provider', () => {
 
 		it('adds the features to the source', async () => {
 			const geoResourceId = 'geoResourceId';
-			const olSource = new VectorSource({ format: new GeoJSON() });
+			const olSource = new VectorSource();
 			const olLayer = new VectorLayer({ source: olSource });
 			const extent = [0, 1, 2, 3];
 			const resolution = 42.42;
@@ -496,7 +495,7 @@ describe('olLoadFunction.provider', () => {
 
 		it('includes the `limit` query parameter if requested', async () => {
 			const geoResourceId = 'geoResourceId';
-			const olSource = new VectorSource({ format: new GeoJSON() });
+			const olSource = new VectorSource();
 			const olLayer = new VectorLayer({ source: olSource });
 			const extent = [0, 1, 2, 3];
 			const resolution = 42.42;

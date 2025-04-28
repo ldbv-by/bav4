@@ -6,6 +6,7 @@ import TileState from 'ol/TileState.js';
 import { UnavailableGeoResourceError } from '../../../domain/errors';
 import { FailureCounter } from '../../../utils/FailureCounter';
 import { isString } from '../../../utils/checks';
+import GeoJSON from 'ol/format/GeoJSON';
 
 const handleUnexpectedStatusCode = (geoResourceId, response) => {
 	// we have to throw the UnavailableGeoResourceError in a asynchronous manner, otherwise it would be caught by ol and not be  propagated to the window (see GlobalErrorPlugin)
@@ -191,15 +192,13 @@ export const getBvvOafLoadFunction = (geoResourceId) => {
 				);
 				switch (response.status) {
 					case 200: {
-						const features = this.getFormat()
-							.readFeatures(await response.json())
-							.map((f) => {
-								// avoid ol displaying only one feature if ids are an empty string
-								if (isString(f.getId()) && f.getId().trim() === '') {
-									f.setId(undefined);
-								}
-								return f;
-							});
+						const features = new GeoJSON().readFeatures(await response.json()).map((f) => {
+							// avoid ol displaying only one feature if ids are an empty string
+							if (isString(f.getId()) && f.getId().trim() === '') {
+								f.setId(undefined);
+							}
+							return f;
+						});
 						this.addFeatures(features);
 						success(features);
 						break;
