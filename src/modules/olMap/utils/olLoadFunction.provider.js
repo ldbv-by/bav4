@@ -154,9 +154,9 @@ export const getBvvTileLoadFunction = (geoResourceId, olLayer, failureCounterPro
 };
 
 /**
- * BVV specific implementation of {@link module:modules/olMap/services/VectorLayerService~oafFunctionProvider}.
+ * BVV specific implementation of {@link module:modules/olMap/services/VectorLayerService~oafLoadFunctionProvider}.
  * @function
- * @type {module:modules/olMap/services/VectorLayerService~oafFunctionProvider}
+ * @type {module:modules/olMap/services/VectorLayerService~oafLoadFunctionProvider}
  */
 export const getBvvOafLoadFunction = (geoResourceId) => {
 	const { HttpService: httpService, GeoResourceService: geoResourceService } = $injector.inject('HttpService', 'GeoResourceService');
