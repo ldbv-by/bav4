@@ -5,7 +5,7 @@
  * Capabilities of a {@link OafGeoResource}
  * @typedef OafCapabilities
  * @property {number} totalNumberOfItems
- * @property {boolean} sampled Some meta data are bases on a a sample
+ * @property {boolean} sampled Some meta data are based on a sample
  * @property {Array<OafQueryable>} queryables List of possible `OafQueryable`
  */
 
