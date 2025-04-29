@@ -1031,7 +1031,7 @@ export class OafGeoResource extends GeoResource {
 
 	/**
 	 * Sets the `OafCapabilities`
-	 * @param {OafCapabilities} capabilities
+	 * @param {module:domain/oaf~OafCapabilities} capabilities
 	 * @returns {OafGeoResource} `this` for chaining
 	 */
 	setCapabilities(capabilities) {
@@ -1065,20 +1065,3 @@ export class OafGeoResource extends GeoResource {
 		return GeoResourceTypes.OAF;
 	}
 }
-
-/**
- * Capabilities of a {@link OafGeoResource}
- * @typedef OafCapabilities
- * @property {number} totalNumberOfItems
- * @property {boolean} sampled Some meta data are bases on a a sample
- * @property {Array<OafQueryable>} queryables List of possible `OafQueryable`
- */
-
-/**
- * A queryable property of a {@link OafGeoResource}
- * @typedef OafQueryable
- * @property {string} name The name of this queryable property
- * @property {object} type The type of this queryable property
- * @property {Array<Object>} [values] The values of this queryable property
- * @property {boolean} [finalized] The values of this queryable property are final
- */
