@@ -3,6 +3,7 @@ import {
 	AggregateGeoResource,
 	GeoResourceAuthenticationType,
 	GeoResourceFuture,
+	OafGeoResource,
 	RtVectorGeoResource,
 	VectorGeoResource,
 	VectorSourceType,
@@ -98,6 +99,21 @@ describe('LayerService', () => {
 				instanceUnderTest.toOlLayer(id, vectorGeoResource, olMap);
 
 				expect(vectorLayerServiceSpy).toHaveBeenCalledWith(id, vectorGeoResource, olMap);
+			});
+		});
+
+		describe('OafGeoResource', () => {
+			it('calls the VectorLayerService', () => {
+				const instanceUnderTest = setup();
+				const id = 'id';
+				const olMap = new Map();
+				const olLayer = new VectorLayer();
+				const oafGeoResource = new OafGeoResource('geoResourceId', 'label', 'url', 'collectionId');
+				const vectorLayerServiceSpy = spyOn(vectorLayerService, 'createLayer').and.returnValue(olLayer);
+
+				instanceUnderTest.toOlLayer(id, oafGeoResource, olMap);
+
+				expect(vectorLayerServiceSpy).toHaveBeenCalledWith(id, oafGeoResource, olMap);
 			});
 		});
 

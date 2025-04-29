@@ -163,7 +163,8 @@ export class LayerService {
 				return tileLayer;
 			}
 
-			case GeoResourceTypes.VECTOR: {
+			case GeoResourceTypes.VECTOR:
+			case GeoResourceTypes.OAF: {
 				return vectorLayerService.createLayer(id, geoResource, olMap);
 			}
 			case GeoResourceTypes.RT_VECTOR: {
