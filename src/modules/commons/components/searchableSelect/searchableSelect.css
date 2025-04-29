@@ -1,0 +1,49 @@
+.hidden {
+	display: none;
+}
+
+.visible {
+	display: block;
+}
+
+.searchable-select {
+	cursor: pointer;
+	overflow-wrap: anywhere;
+	position: relative;
+}
+
+.option {
+	background-color: var(--primary-bg-color);
+	border-bottom: 1px solid var(--text1);
+	min-height: 20px;
+	padding: 8px 15px;
+}
+
+.option:hover {
+	background-color: #ddd;
+}
+
+.caret-fill-down {
+	mask: url('./assets/caret-down-fill.svg');
+	-webkit-mask: url('./assets/caret-down-fill.svg');
+	background-color: blue;
+	width: 16px;
+	height: 16px;
+	border: none;
+}
+
+.search-input-container input {
+	border: none;
+}
+
+.search-input-container {
+	display: flex;
+	flex-direction: row;
+	border: 1px solid var(--text2);
+	padding: 3px 8px;
+}
+
+.select-items-container {
+	position: absolute;
+	width: 100%;
+}
