@@ -26,7 +26,7 @@
 .caret-fill-down {
 	mask: url('./assets/caret-down-fill.svg');
 	-webkit-mask: url('./assets/caret-down-fill.svg');
-	background-color: blue;
+	background-color: var(--primary-color);
 	width: 16px;
 	height: 16px;
 	border: none;
@@ -39,7 +39,7 @@
 .search-input-container {
 	display: flex;
 	flex-direction: row;
-	border: 1px solid var(--text2);
+	border: 1px solid var(--primary-color);
 	padding: 3px 8px;
 }
 
