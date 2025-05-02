@@ -159,7 +159,7 @@ export const getBvvTileLoadFunction = (geoResourceId, olLayer, failureCounterPro
  * @function
  * @type {module:modules/olMap/services/VectorLayerService~oafLoadFunctionProvider}
  */
-export const getBvvOafLoadFunction = (geoResourceId) => {
+export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null) => {
 	const { HttpService: httpService, GeoResourceService: geoResourceService } = $injector.inject('HttpService', 'GeoResourceService');
 
 	return async function (extent, resolution, projection, success, failure) {
@@ -182,14 +182,7 @@ export const getBvvOafLoadFunction = (geoResourceId) => {
 			const searchParams = new URLSearchParams({ ...options });
 			const url = `${geoResource.url}${geoResource.url.endsWith('/') ? '' : '/'}collections/${geoResource.collectionId}/items?${decodeURIComponent(searchParams.toString())}`;
 
-			const getFeaturesWithAuthInterceptor = async (url) => {
-				const response = await httpService.get(
-					url,
-					{
-						timeout
-					},
-					{ response: [geoResourceService.getAuthResponseInterceptorForGeoResource(geoResourceId)] }
-				);
+			const handleResponse = async (response, vectorSource) => {
 				switch (response.status) {
 					case 200: {
 						const features = new GeoJSON().readFeatures(await response.json()).map((f) => {
@@ -199,7 +192,7 @@ export const getBvvOafLoadFunction = (geoResourceId) => {
 							}
 							return f;
 						});
-						this.addFeatures(features);
+						vectorSource.addFeatures(features);
 						success(features);
 						break;
 					}
@@ -210,7 +203,26 @@ export const getBvvOafLoadFunction = (geoResourceId) => {
 					}
 				}
 			};
-			return await getFeaturesWithAuthInterceptor(url);
+
+			const getFeatures = async (url) => {
+				const response = credential
+					? await httpService.get(url, {
+							timeout,
+							headers: new Headers({
+								Authorization: `Basic ${btoa(`${credential.username}:${credential.password}`)}`
+							})
+						})
+					: await httpService.get(
+							url,
+							{
+								timeout
+							},
+							{ response: [geoResourceService.getAuthResponseInterceptorForGeoResource(geoResourceId)] }
+						);
+
+				return handleResponse(response, this);
+			};
+			return await getFeatures(url);
 		} catch (error) {
 			this.removeLoadedExtent(extent);
 			failure();

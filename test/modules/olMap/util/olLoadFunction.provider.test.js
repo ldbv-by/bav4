@@ -571,5 +571,43 @@ describe('olLoadFunction.provider', () => {
 			expect(failureCbSpy).toHaveBeenCalled();
 			expect(removeLoadedExtentSpy).toHaveBeenCalledWith(extent);
 		});
+
+		describe('BAA is required', () => {
+			it('adds the features to the source', async () => {
+				const geoResourceId = 'geoResourceId';
+				const olSource = new VectorSource();
+				const olLayer = new VectorLayer({ source: olSource });
+				const extent = [0, 1, 2, 3];
+				const resolution = 42.42;
+				const projection = new Projection({ code: 'EPSG:3857' });
+				const response = new Response(mockResponsePayload);
+				const expectedUrl =
+					'https://url.de/collections/collectionId/items?f=json&crs=http://www.opengis.net/def/crs/EPSG/0/3857&bbox=0,1,2,3&bbox-crs=http://www.opengis.net/def/crs/EPSG/0/3857';
+				const successCbSpy = jasmine.createSpy();
+				const failureCbSpy = jasmine.createSpy();
+				const geoResource = new OafGeoResource('id', 'label', 'https://url.de/', 'collectionId');
+				const credential = { username: 'username', password: 'password' };
+				spyOn(geoResourceService, 'byId').and.returnValue(geoResource);
+				spyOn(httpService, 'get')
+					.withArgs(expectedUrl, {
+						timeout: 15_000,
+						headers: new Headers({
+							Authorization: `Basic ${btoa(`${credential.username}:${credential.password}`)}`
+						})
+					})
+					.and.resolveTo(response);
+				const oafLoadFunction = getBvvOafLoadFunction(geoResourceId, olLayer, credential)./*Usually done by the ol.source */ bind(olSource);
+
+				await oafLoadFunction(extent, resolution, projection, successCbSpy, failureCbSpy);
+
+				expect(successCbSpy).toHaveBeenCalled();
+				expect(failureCbSpy).not.toHaveBeenCalled();
+				expect(olSource.getFeatures()).toHaveSize(10);
+
+				olSource.getFeatures().forEach((f) => {
+					expect(f.getId()).not.toBe('');
+				});
+			});
+		});
 	});
 });
