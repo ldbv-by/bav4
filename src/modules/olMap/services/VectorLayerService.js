@@ -1,7 +1,7 @@
 /**
  * @module modules/olMap/services/VectorLayerService
  */
-import { OafGeoResource, VectorSourceType } from '../../../domain/geoResources';
+import { GeoResourceAuthenticationType, OafGeoResource, VectorSourceType } from '../../../domain/geoResources';
 import VectorSource from 'ol/source/Vector';
 import { $injector } from '../../../injection';
 import { KML, GPX, GeoJSON, WKT } from 'ol/format';
@@ -21,6 +21,7 @@ import { getBvvOafLoadFunction } from '../utils/olLoadFunction.provider';
  * @typedef {Function} oafLoadFunctionProvider
  * @param {string} geoResourceId The id of the corresponding GeoResource
  * @param {ol.layer.Layer} olLayer The the corresponding ol layer
+ * @param {module:domain/credentialDef~Credential|null} [credential] The credential for basic access authentication (when BAA is requested) or `null` or `undefined`
  * @returns {Function} ol.featureloader.FeatureLoader
  */
 
@@ -94,8 +95,12 @@ export const mapSourceTypeToFormat = (sourceType, showPointNames = true) => {
  * @author taulinger
  */
 export class VectorLayerService {
+	#baaCredentialService;
 	constructor(oafLoadFunctionProvider = getBvvOafLoadFunction) {
 		this._oafLoadFunctionProvider = oafLoadFunctionProvider;
+
+		const { BaaCredentialService: baaCredentialService } = $injector.inject('BaaCredentialService');
+		this.#baaCredentialService = baaCredentialService;
 	}
 
 	_updateStyle(olFeature, olLayer, olMap) {
@@ -231,10 +236,21 @@ export class VectorLayerService {
 	 */
 	_vectorSourceForData(geoResource, olVectorLayer) {
 		if (geoResource instanceof OafGeoResource) {
-			return new VectorSource({
-				strategy: bbox,
-				loader: this._oafLoadFunctionProvider(geoResource.id, olVectorLayer)
+			const vs = new VectorSource({
+				strategy: bbox
 			});
+			switch (geoResource.authenticationType) {
+				case GeoResourceAuthenticationType.BAA: {
+					const credential = this.#baaCredentialService.get(geoResource.url);
+					vs.setLoader(this._oafLoadFunctionProvider(geoResource.id, olVectorLayer, credential));
+					break;
+				}
+				default: {
+					vs.setLoader(this._oafLoadFunctionProvider(geoResource.id, olVectorLayer));
+				}
+			}
+
+			return vs;
 		}
 
 		try {
