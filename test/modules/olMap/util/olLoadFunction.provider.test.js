@@ -539,7 +539,9 @@ describe('olLoadFunction.provider', () => {
 			spyOn(httpService, 'get').and.resolveTo(response);
 			const oafLoadFunction = getBvvOafLoadFunction(geoResourceId, olLayer)./*Usually done by the ol.source */ bind(olSource);
 
-			await oafLoadFunction(extent, resolution, projection, successCbSpy, failureCbSpy);
+			await expectAsync(oafLoadFunction(extent, resolution, projection, successCbSpy, failureCbSpy)).toBeRejectedWith(
+				new UnavailableGeoResourceError(`Unexpected network status`, geoResourceId, 404)
+			);
 
 			expect(successCbSpy).not.toHaveBeenCalled();
 			expect(failureCbSpy).toHaveBeenCalled();

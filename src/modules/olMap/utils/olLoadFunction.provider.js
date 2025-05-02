@@ -206,6 +206,7 @@ export const getBvvOafLoadFunction = (geoResourceId) => {
 					default: {
 						this.removeLoadedExtent(extent);
 						failure();
+						throw new UnavailableGeoResourceError(`Unexpected network status`, geoResourceId, response?.status);
 					}
 				}
 			};
