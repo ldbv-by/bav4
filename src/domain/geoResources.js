@@ -1009,7 +1009,7 @@ export class OafGeoResource extends GeoResource {
 		super(id, label);
 		this._url = url;
 		this._collectionId = collectionId;
-		this._capabilities = null;
+		this._filterCapabilities = null;
 		this._limit = null;
 	}
 
@@ -1021,8 +1021,8 @@ export class OafGeoResource extends GeoResource {
 		return this._url;
 	}
 
-	get capabilities() {
-		return this._capabilities ? { ...this._capabilities } : null;
+	get filterCapabilities() {
+		return this._filterCapabilities ? { ...this._filterCapabilities } : null;
 	}
 
 	get limit() {
@@ -1030,17 +1030,17 @@ export class OafGeoResource extends GeoResource {
 	}
 
 	/**
-	 * Sets the `OafCapabilities`
-	 * @param {module:domain/oaf~OafCapabilities} capabilities
+	 * Sets the `OafFilterCapabilities`
+	 * @param {module:domain/oaf~OafFilterCapabilities} capabilities
 	 * @returns {OafGeoResource} `this` for chaining
 	 */
-	setCapabilities(capabilities) {
-		this._capabilities = capabilities;
+	setFilterCapabilities(capabilities) {
+		this._filterCapabilities = capabilities;
 		return this;
 	}
 
-	hasCapabilities() {
-		return !!this._capabilities;
+	hasFilterCapabilities() {
+		return !!this._filterCapabilities;
 	}
 	/**
 	 * Sets the limit parameter

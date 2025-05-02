@@ -646,7 +646,7 @@ describe('GeoResource', () => {
 			const oafGeoResource = new OafGeoResource('id', 'label', 'url', 'collectionId');
 
 			expect(oafGeoResource.limit).toBeNull();
-			expect(oafGeoResource.capabilities).toBeNull();
+			expect(oafGeoResource.filterCapabilities).toBeNull();
 		});
 
 		describe('methods', () => {
@@ -661,8 +661,8 @@ describe('GeoResource', () => {
 				const capabilities = {
 					foo: 'bar'
 				};
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').hasCapabilities()).toBeFalse();
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setCapabilities(capabilities).capabilities).toEqual(capabilities);
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').hasFilterCapabilities()).toBeFalse();
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setFilterCapabilities(capabilities).filterCapabilities).toEqual(capabilities);
 			});
 		});
 	});
