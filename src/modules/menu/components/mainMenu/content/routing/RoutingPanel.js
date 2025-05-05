@@ -5,7 +5,7 @@ import { html } from 'lit-html';
 import { AbstractMvuContentPanel } from '../AbstractMvuContentPanel';
 import css from './routingPanel.css';
 import { $injector } from '../../../../../../injection';
-import svg from './assets/arrowLeftShort.svg';
+import svg from '../../../../../../assets/icons/arrowLeftShort.svg';
 import { nothing } from '../../../../../../../node_modules/lit-html/lit-html';
 import { setCurrentTool } from '../../../../../../store/tools/tools.action';
 
