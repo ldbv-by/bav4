@@ -71,8 +71,8 @@
 	-webkit-mask-size: cover;
 }
 .timeTravel .icon {
-	mask: url('assets/time.svg');
-	-webkit-mask: url('assets/time.svg');
+	mask: url('../../../../assets/icons/time.svg');
+	-webkit-mask: url('../../../../assets/icons/time.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
