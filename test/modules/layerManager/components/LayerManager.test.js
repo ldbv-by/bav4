@@ -12,7 +12,7 @@ import { Tools } from '../../../../src/domain/tools';
 import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
 import { activate, deactivate } from '../../../../src/store/layerSwipe/layerSwipe.action';
 
-import expandSvg from '../../../../src/modules/layerManager/components/assets/expand.svg';
+import expandSvg from '../../../../src/assets/icons/expand.svg';
 import clearSvg from '../../../../src/modules/layerManager/components/assets/x-square.svg';
 import chevronSvg from '../../../../src/modules/layerManager/components/assets/chevron.svg';
 

@@ -9,7 +9,7 @@ import { toggleCurrentTool } from './../../../store/tools/tools.action';
 import { Tools } from '../../../domain/tools';
 import css from './layerManager.css';
 import { MvuElement } from '../../MvuElement';
-import expandSvg from './assets/expand.svg';
+import expandSvg from '../../../assets/icons/expand.svg';
 import clearSvg from './assets/x-square.svg';
 import chevronSvg from './assets/chevron.svg';
 

@@ -235,7 +235,7 @@ input[type='range']::-webkit-slider-thumb {
 	inline-size: var(--thumb-size);
 	margin-top: var(--thumb-offset);
 	border-radius: 50%;
-	background: url('assets/expand.svg') var(--secondary-color);
+	background: url('../../../../assets/icons/expand.svg') var(--secondary-color);
 	width: 2.3em;
 	height: 2.3em;
 	background-size: 1.9em 1.9em;
@@ -252,7 +252,7 @@ input[type='range']::-moz-range-thumb {
 	inline-size: 2em;
 	margin-top: 0;
 	border-radius: 50%;
-	background: url('assets/expand.svg') var(--secondary-color);
+	background: url('../../../../assets/icons/expand.svg') var(--secondary-color);
 	width: 2em;
 	height: 2em;
 	background-size: 1.9em 1.9em;
