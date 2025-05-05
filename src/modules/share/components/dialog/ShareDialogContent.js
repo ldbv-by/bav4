@@ -3,7 +3,7 @@
  */
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
-import clipboardIcon from './assets/clipboard.svg';
+import clipboardIcon from '../../../../assets/icons/clipboard.svg';
 import shareIcon from './assets/share.svg';
 import css from './shareDialogContent.css';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
