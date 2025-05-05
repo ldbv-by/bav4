@@ -1,4 +1,7 @@
 /**
+ * @module services/provider/oaf_provider
+ */
+/**
  * BVV specific implementation of {@link module:services/ImportOafService~oafGeoResourceProvider}
  * @function
  * @type {module:services/ImportOafService~oafGeoResourceProvider}
