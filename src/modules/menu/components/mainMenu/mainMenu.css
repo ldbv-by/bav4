@@ -395,8 +395,8 @@ input[type='range']:focus {
 	height: 2em;
 	width: 1.2em;
 	background: var(--primary-color);
-	mask: url('assets/chevron-right.svg');
-	-webkit-mask: url('assets/chevron-right.svg');
+	mask: url('../../../../assets/icons/chevron-right.svg');
+	-webkit-mask: url('../../../../assets/icons/chevron-right.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
