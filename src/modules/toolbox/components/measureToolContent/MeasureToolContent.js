@@ -5,7 +5,7 @@ import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { $injector } from '../../../../injection';
-import clipboardIcon from './assets/clipboard.svg';
+import clipboardIcon from '../../../../assets/icons/clipboard.svg';
 import { finish, remove, reset, setDisplayRuler } from '../../../../store/measurement/measurement.action';
 
 import css from './measureToolContent.css';
