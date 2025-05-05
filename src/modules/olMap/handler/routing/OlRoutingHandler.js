@@ -614,7 +614,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 			const route = {
 				data: new KmlFormat().writeFeatures([routeFeature]),
-				type: new SourceType(SourceTypeName.KML)
+				type: SourceType.forKml()
 			};
 			setRouteAndStats(route, routeStats);
 		} catch (e) {
