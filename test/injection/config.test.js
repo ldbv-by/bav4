@@ -6,7 +6,7 @@ import { Injector } from '../../src/injection/core/injector.js';
 describe('injector configuration', () => {
 	it('registers the expected dependencies', () => {
 		expect($injector.isReady()).toBeTrue();
-		expect($injector.count()).toBe(84);
+		expect($injector.count()).toBe(85);
 
 		expect($injector.getScope('ProjectionService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('ConfigService')).toBe(Injector.SCOPE_SINGLETON);
@@ -32,6 +32,7 @@ describe('injector configuration', () => {
 		expect($injector.getScope('ImportVectorDataService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('ExportVectorDataService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('ImportWmsService')).toBe(Injector.SCOPE_PERLOOKUP);
+		expect($injector.getScope('ImportOafService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('SourceTypeService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('Mfp3Encoder')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('SecurityService')).toBe(Injector.SCOPE_SINGLETON);
