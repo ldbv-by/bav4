@@ -5,7 +5,7 @@ import { html, nothing } from 'lit-html';
 import css from './catalogLeaf.css';
 import { $injector } from '../../../../../injection';
 import { addLayer, removeLayerOf } from '../../../../../store/layers/layers.action';
-import infoSvg from '../assets/info.svg';
+import infoSvg from '../../../../../assets/icons/info.svg';
 import { openModal } from '../../../../../store/modal/modal.action';
 import { createUniqueId } from '../../../../../utils/numberUtils';
 import { AbstractMvuContentPanel } from '../../../../menu/components/mainMenu/content/AbstractMvuContentPanel';

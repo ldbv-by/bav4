@@ -343,7 +343,7 @@ input[type='range']:focus {
 }
 .ba-list-item__icon-info {
 	background-repeat: no-repeat;
-	background-image: url('assets/info.svg');
+	background-image: url('../../../../assets/icons/info.svg');
 	margin: auto;
 	height: 2em;
 	width: 2em;
