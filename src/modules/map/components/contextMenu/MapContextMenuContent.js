@@ -4,7 +4,7 @@
 import { html, nothing } from 'lit-html';
 import css from './mapContextMenuContent.css';
 import { $injector } from '../../../../injection';
-import clipboardIcon from './assets/clipboard.svg';
+import clipboardIcon from '../../../../assets/icons/clipboard.svg';
 import { MvuElement } from '../../../MvuElement';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 
