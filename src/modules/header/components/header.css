@@ -259,7 +259,7 @@
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: 5.4em 5.4em;
-	background-image: url('assets/ba.svg');
+	background-image: url('../../../assets/icons/ba.svg');
 }
 .animated-action-button__border {
 	background: linear-gradient(to right, rgb(58, 132, 195) 0%, rgb(65, 154, 214) 50%, rgb(75, 184, 240) 51%, rgb(58, 139, 194) 100%);
