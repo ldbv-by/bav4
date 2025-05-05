@@ -9,7 +9,7 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { KML } from 'ol/format';
 import { BaGeometry } from '../../../../domain/geometry';
 import { BaFeature } from '../../../../domain/feature';
-import { SourceType, SourceTypeName } from '../../../../domain/sourceType';
+import { SourceType } from '../../../../domain/sourceType';
 
 /**
  * BVV specific implementation of {@link module:modules/olMap/handler/featureInfo/OlFeatureInfoHandler~featureInfoProvider}
