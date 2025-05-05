@@ -11,7 +11,7 @@ import {
 	SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY,
 	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY
 } from '../../../../../../plugins/HighlightPlugin';
-import clipboardSvg from '../../assets/clipboard.svg';
+import clipboardSvg from '../../../../../../assets/icons/clipboard.svg';
 import { $injector } from '../../../../../../injection';
 import { emitNotification, LevelTypes } from '../../../../../../store/notifications/notifications.action';
 import { HighlightFeatureType } from '../../../../../../domain/highlightFeature';
