@@ -3,6 +3,7 @@
  * @function
  * @type {module:services/ImportOafService~oafGeoResourceProvider}
  */
+// eslint-disable-next-line no-unused-vars
 export const bvvOafFilterCapabilitiesProvider = async (url, options) => {
 	return [
 		{
@@ -18,6 +19,7 @@ export const bvvOafFilterCapabilitiesProvider = async (url, options) => {
  * @function
  * @type {module:services/ImportOafService~oafFilterCapabilitiesProvider}
  */
+// eslint-disable-next-line no-unused-vars
 export const bvvOafGeoResourceProvider = async (oafGeoResource) => {
 	return {
 		title: 'biergarten',
