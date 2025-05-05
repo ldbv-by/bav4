@@ -36,7 +36,7 @@ import { CoordinateProposalType, RouteCalculationErrors, RoutingStatusCodes } fr
 import { fit } from '../../../../store/position/position.action';
 import { equals } from '../../../../../node_modules/ol/coordinate';
 import { KML as KmlFormat } from 'ol/format';
-import { SourceType, SourceTypeName } from '../../../../domain/sourceType';
+import { SourceType } from '../../../../domain/sourceType';
 import { bvvRouteStatsProvider } from './routeStats.provider';
 import { clearHighlightFeatures } from '../../../../store/highlight/highlight.action';
 import { closeBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
