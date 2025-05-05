@@ -82,13 +82,6 @@ export const SourceTypeName = Object.freeze({
 });
 
 /**
- * Array of all supported vector source type names.
- * @readonly
- * @type {Array<SourceTypeName>}
- */
-export const SupportedVectorSourceTypes = Object.freeze([SourceTypeName.EWKT, SourceTypeName.GEOJSON, SourceTypeName.GPX, SourceTypeName.KML]);
-
-/**
  * Result of a request for a SourceType.
  * Contains a status flag ({@link SourceTypeResultStatus})
  * and, if the request was successful, the actual {@link SourceType}.

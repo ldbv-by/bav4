@@ -1,11 +1,4 @@
-import {
-	SourceType,
-	SourceTypeMaxFileSize,
-	SourceTypeName,
-	SourceTypeResult,
-	SourceTypeResultStatus,
-	SupportedVectorSourceTypes
-} from '../../src/domain/sourceType';
+import { SourceType, SourceTypeMaxFileSize, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../src/domain/sourceType';
 
 describe('SourceType', () => {
 	it('provides getter for properties', () => {
@@ -73,13 +66,6 @@ describe('SourceTypeResultStatus', () => {
 		expect(SourceTypeResultStatus.BAA_AUTHENTICATED).toBe(4);
 		expect(SourceTypeResultStatus.RESTRICTED).toBe(5);
 		expect(SourceTypeResultStatus.UNSUPPORTED_SRID).toBe(6);
-	});
-});
-
-describe('SupportedVectorSourceTypes', () => {
-	it('provides an array of all supported vector SourceTypeName', () => {
-		expect(Object.isFrozen(SupportedVectorSourceTypes)).toBeTrue();
-		expect(SupportedVectorSourceTypes).toEqual([SourceTypeName.EWKT, SourceTypeName.GEOJSON, SourceTypeName.GPX, SourceTypeName.KML]);
 	});
 });
 
