@@ -94,8 +94,8 @@
 }
 
 .share {
-	mask-image: url('assets/share.svg');
-	-webkit-mask-image: url('assets/share.svg');
+	mask-image: url('../../../../assets/icons/share.svg');
+	-webkit-mask-image: url('../../../../assets/icons/share.svg');
 }
 
 .import {

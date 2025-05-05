@@ -8,7 +8,7 @@ import { abortOrReset } from '../../../../store/featureInfo/featureInfo.action';
 import { AbstractMvuContentPanel } from '../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 import css from './featureInfoPanel.css';
 import arrowLeftShortIcon from '../../../../assets/icons/arrowLeftShort.svg';
-import shareIcon from '../assets/share.svg';
+import shareIcon from '../../../../assets/icons/share.svg';
 import printerIcon from '../assets/printer.svg';
 import { addHighlightFeatures, removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
 import { createUniqueId } from '../../../../utils/numberUtils';

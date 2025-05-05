@@ -1,7 +1,7 @@
 import { QueryParameters } from '../../../../src/domain/queryParameters';
 import { $injector } from '../../../../src/injection';
 import { ShareChip } from '../../../../src/modules/chips/components/assistChips/ShareChip';
-import shareSvg from '../../../../src/modules/chips/components/assistChips/assets/share.svg';
+import shareSvg from '../../../../src/assets/icons/share.svg';
 import { ShareDialogContent } from '../../../../src/modules/share/components/dialog/ShareDialogContent';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
