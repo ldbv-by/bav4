@@ -160,7 +160,8 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 						<span class="ba-list-item__icon icon speaker"> </span>
 					</span>
 					<span class="ba-list-item__text"
-						>${html`${translate('menu_misc_content_panel_software_version')} ${this.#configService.getValue('SOFTWARE_VERSION')}`}</span
+						>${html`${translate('menu_misc_content_panel_software_version')} ${this.#configService.getValue('SOFTWARE_VERSION')} /
+						${translate('menu_misc_content_panel_news')}`}</span
 					>
 				</a>
 				<div class="ba-list-item  ba-list-item__header">
