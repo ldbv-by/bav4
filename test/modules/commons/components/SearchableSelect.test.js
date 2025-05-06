@@ -24,6 +24,12 @@ describe('SearchableSelect', () => {
 			expect(element.selected).toBeNull();
 			expect(element.search).toBe('');
 			expect(element.options).toHaveSize(0);
+			expect(element.hasPointer).toBeFalse();
+		});
+
+		it('has class hidden on dropdown', async () => {
+			const element = await TestUtils.renderAndLogLifecycle(SearchableSelect.tag);
+			expect(element.shadowRoot.querySelector('.dropdown.hidden')).not.toBeNull();
 		});
 	});
 
@@ -66,12 +72,12 @@ describe('SearchableSelect', () => {
 	describe('when property "options" changes', () => {
 		it('updates the view', async () => {
 			const element = await TestUtils.renderAndLogLifecycle(SearchableSelect.tag);
-			let htmlOptions = Array.from(element.shadowRoot.querySelectorAll('.select-items-container > .option'));
+			let htmlOptions = Array.from(element.shadowRoot.querySelectorAll('.dropdown > .option'));
 
 			expect(htmlOptions).toHaveSize(0);
 
 			element.options = ['foo', 'bar', 'baz'];
-			htmlOptions = Array.from(element.shadowRoot.querySelectorAll('.select-items-container > .option'));
+			htmlOptions = Array.from(element.shadowRoot.querySelectorAll('.dropdown > .option'));
 
 			expect(htmlOptions).toHaveSize(3);
 			expect(htmlOptions[0].innerText).toBe('foo');
@@ -80,35 +86,88 @@ describe('SearchableSelect', () => {
 		});
 	});
 
-	describe('events and callbacks', () => {
-		it('calls the onChange callback via property binding', async () => {
+	describe('when search input changed', () => {
+		it('calls onChange callback', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
+			const selectInput = element.shadowRoot.getElementById('search-input');
+			element.onChange = jasmine.createSpy();
+
+			selectInput.value = 'any';
+			selectInput.dispatchEvent(new Event('input'));
+
+			expect(element.onChange).toHaveBeenCalled();
+		});
+
+		it('fires change event', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			const selectInput = element.shadowRoot.getElementById('search-input');
 			const spy = jasmine.createSpy();
 			element.addEventListener('change', spy);
-			const selectInput = element.shadowRoot.getElementById('search-input');
-			selectInput.value = 'any input';
+
+			selectInput.value = 'any';
 			selectInput.dispatchEvent(new Event('input'));
+
 			expect(spy).toHaveBeenCalled();
 		});
+	});
 
-		it('sets property "selected" when a rendered option was clicked', async () => {
+	describe('when clicked', () => {
+		it('it renders dropdown', async () => {
+			const element = await TestUtils.renderAndLogLifecycle(SearchableSelect.tag);
+			expect(element.shadowRoot.querySelector('.dropdown.hidden')).not.toBeNull();
+
+			const searchable = element.shadowRoot.querySelector('.searchable-select');
+			searchable.dispatchEvent(new MouseEvent('click'));
+			expect(element.shadowRoot.querySelector('.dropdown.hidden')).toBeNull();
+		});
+
+		it('on a rendered option in sets property "selected"', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = ['foo', 'bar', 'baz'];
-			const htmlOption = element.shadowRoot.querySelector('.select-items-container > .option:nth-child(2)');
+			const htmlOption = element.shadowRoot.querySelector('.dropdown > .option:nth-child(2)');
 
 			htmlOption.click();
 
 			expect(element.selected).toBe('bar');
 		});
 
-		/*
-        it('resets property "selected" when select was cancelled', async () => {
+		it('outside of input field it resets property "search"', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = ['foo', 'bar', 'baz'];
-			
-			htmlOption.click();
+			element.search = 'bar';
 
+			document.querySelector('body').click();
+			expect(element.search).toBe('');
+		});
+
+		it('outside of input field it keeps value of property "selected"', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			element.options = ['foo', 'bar', 'baz'];
+			element.selected = 'bar';
+
+			document.querySelector('body').click();
 			expect(element.selected).toBe('bar');
-		}); */
+		});
+	});
+
+	describe('when pointerenter fired', () => {
+		it('sets property hasPointer to true', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			const searchable = element.shadowRoot.querySelector('.searchable-select');
+
+			searchable.dispatchEvent(new Event('pointerenter'));
+			expect(element.hasPointer).toBeTrue();
+		});
+	});
+
+	describe('when pointerleave fired', () => {
+		it('sets property hasPointer to false', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			const searchable = element.shadowRoot.querySelector('.searchable-select');
+
+			searchable.dispatchEvent(new Event('pointerenter'));
+			searchable.dispatchEvent(new Event('pointerleave'));
+			expect(element.hasPointer).toBeFalse();
+		});
 	});
 });

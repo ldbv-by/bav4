@@ -1,15 +1,15 @@
+.searchable-select {
+	cursor: pointer;
+	overflow-wrap: anywhere;
+	position: relative;
+}
+
 .hidden {
 	display: none;
 }
 
 .visible {
 	display: block;
-}
-
-.searchable-select {
-	cursor: pointer;
-	overflow-wrap: anywhere;
-	position: relative;
 }
 
 .option {
@@ -43,7 +43,7 @@
 	padding: 3px 8px;
 }
 
-.select-items-container {
+.dropdown {
 	position: absolute;
 	width: 100%;
 }

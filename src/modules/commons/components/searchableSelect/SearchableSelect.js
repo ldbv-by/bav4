@@ -27,6 +27,7 @@ const Update_Search = 'update_search';
  * @author herrmutig
  */
 export class SearchableSelect extends MvuElement {
+	#hasPointer = false;
 	#availableOptions = [];
 	#onChange = (data) => {};
 
@@ -41,8 +42,11 @@ export class SearchableSelect extends MvuElement {
 
 	onInitialize() {
 		document.addEventListener('click', () => {
-			// Cancel Action
+			if (this.#hasPointer) return;
+
+			// Cancels Action
 			this.#hideDropdown();
+
 			if (!this.selected) {
 				this.signal(Update_Search, '');
 			}
@@ -54,13 +58,7 @@ export class SearchableSelect extends MvuElement {
 			case Update_Placeholder:
 				return { ...model, placeholder: data };
 			case Update_Selected:
-				let selected;
-				if (isNumber(data)) {
-					selected = isNumber(data) ? this.#availableOptions[Math.max(data, 0)] : null;
-				} else {
-					selected = data;
-				}
-
+				let selected = isNumber(data) ? this.#availableOptions[Math.max(data, 0)] : data;
 				return { ...model, selected: selected, search: selected };
 			case Update_Options:
 				return this.#updateOptionsFiltering({ ...model, options: [...data] });
@@ -97,13 +95,16 @@ export class SearchableSelect extends MvuElement {
 			this.signal(Update_Selected, evt.target.value);
 		};
 
-		const onSearchInputClicked = (evt) => {
-			evt.stopPropagation();
-			const searchInput = this.shadowRoot.getElementById('search-input');
+		const onSearchInputClicked = () => {
+			this.#showDropdown();
+		};
 
-			if (searchInput !== evt.target) {
-				searchInput.focus();
-			}
+		const OnPointerEnter = () => {
+			this.#hasPointer = true;
+		};
+
+		const OnPointerLeave = () => {
+			this.#hasPointer = false;
 		};
 
 		const onSearchInputChange = (evt) => {
@@ -116,20 +117,12 @@ export class SearchableSelect extends MvuElement {
 				${css}
 			</style>
 
-			<div class="searchable-select" @click=${onSearchInputClicked}>
+			<div class="searchable-select" @pointerenter=${OnPointerEnter} @pointerleave=${OnPointerLeave} @click=${onSearchInputClicked}>
 				<div class="search-input-container">
-					<input
-						id="search-input"
-						type="text"
-						.placeholder=${placeholder}
-						.value=${search}
-						@click=${onSearchInputClicked}
-						@input=${onSearchInputChange}
-						@focus=${() => this.#showDropdown()}
-					/>
+					<input id="search-input" type="text" .placeholder=${placeholder} .value=${search} @input=${onSearchInputChange} />
 					<div class="caret-fill-down"></div>
 				</div>
-				<div class="select-items-container hidden">
+				<div class="dropdown hidden">
 					${availableOptions.map((item, index) => html`<div class="option" .value=${index} @click=${onSelectableItemChosen}>${item}</div>`)}
 				</div>
 			</div>
@@ -152,19 +145,15 @@ export class SearchableSelect extends MvuElement {
 	}
 
 	#hideDropdown() {
-		if (this.shadowRoot) {
-			const itemsContainer = this.shadowRoot.querySelector('.select-items-container');
-			itemsContainer.classList.remove('visible');
-			itemsContainer.classList.add('hidden');
-		}
+		const itemsContainer = this.shadowRoot.querySelector('.dropdown');
+		itemsContainer.classList.remove('visible');
+		itemsContainer.classList.add('hidden');
 	}
 
 	#showDropdown() {
-		if (this.shadowRoot) {
-			const itemsContainer = this.shadowRoot.querySelector('.select-items-container');
-			itemsContainer.classList.add('visible');
-			itemsContainer.classList.remove('hidden');
-		}
+		const itemsContainer = this.shadowRoot.querySelector('.dropdown');
+		itemsContainer.classList.add('visible');
+		itemsContainer.classList.remove('hidden');
 	}
 
 	get placeholder() {
@@ -205,6 +194,10 @@ export class SearchableSelect extends MvuElement {
 
 	get onChange() {
 		return this.#onChange;
+	}
+
+	get hasPointer() {
+		return this.#hasPointer;
 	}
 
 	static get tag() {
