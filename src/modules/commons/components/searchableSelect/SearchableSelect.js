@@ -1,7 +1,13 @@
-// TODO: Select Option with arrow key
-// TODO: Enter should behave like a select click
-// TODO: Esc should behave like a cancel action
-// TODO Rework selected update (and datatype ???)
+/**
+ * @module modules/commons/components/searchableSelect/SearchableSelect
+ */
+
+/* TODO:
+ - Select Option with arrow key
+ - Enter should behave like a select click
+ - Esc should behave like a cancel action
+ - Rework selected update (and datatype ???)
+*/
 
 import { html } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
@@ -16,12 +22,12 @@ const Update_Search = 'update_search';
 /**
  * General purpose implementation of a select-like component with integrated filtering.
  *
- * @property {string} placeholder='' - The placeholder to show when search field is empty.
- * @property {Array<String>} options=[] - Unfiltered options the user can choose from
+ * @property {string} placeholder='' - The placeholder to show when the search field is empty.
  * @property {string|null} selected=null - The currently selected option.
  * @property {string} search='' - The search term to filter through the provided options
- *
- * @fires onChange Fires every time the user changed it's search or selects an option
+ * @property {Array<String>} options - Unfiltered options the user can choose from
+ * @property {function(changedState)} onChange - The Change callback function when the search input changes or an option is selected
+ * @fires onChange Fires when the search input changes or an option is selected
  *
  * @class
  * @author herrmutig
@@ -29,7 +35,9 @@ const Update_Search = 'update_search';
 export class SearchableSelect extends MvuElement {
 	#hasPointer = false;
 	#availableOptions = [];
-	#onChange = (data) => {};
+
+	// eslint-disable-next-line no-unused-vars
+	#onChange = (changedState) => {};
 
 	constructor() {
 		super({
@@ -57,9 +65,10 @@ export class SearchableSelect extends MvuElement {
 		switch (type) {
 			case Update_Placeholder:
 				return { ...model, placeholder: data };
-			case Update_Selected:
-				let selected = isNumber(data) ? this.#availableOptions[Math.max(data, 0)] : data;
+			case Update_Selected: {
+				const selected = isNumber(data) ? this.#availableOptions[Math.max(data, 0)] : data;
 				return { ...model, selected: selected, search: selected };
+			}
 			case Update_Options:
 				return this.#updateOptionsFiltering({ ...model, options: [...data] });
 			case Update_Search:
@@ -134,7 +143,7 @@ export class SearchableSelect extends MvuElement {
 		const ucSearchTerm = search.toUpperCase();
 		const filteredOptions = [];
 
-		for (let option of options) {
+		for (const option of options) {
 			if (option.toUpperCase().indexOf(ucSearchTerm) > -1) {
 				filteredOptions.push(option);
 			}
@@ -196,6 +205,10 @@ export class SearchableSelect extends MvuElement {
 		return this.#onChange;
 	}
 
+	/**
+	 * Returns true when a pointer entered the component. False when a pointer leaves the component.
+	 * @readonly
+	 */
 	get hasPointer() {
 		return this.#hasPointer;
 	}
