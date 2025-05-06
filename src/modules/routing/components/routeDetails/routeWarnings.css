@@ -91,7 +91,7 @@ button {
 .hint_icon::before {
 	content: '';
 	mask: url('../assets/warning.svg');
-	-webkit-mask-image: url('../assets/info.svg');
+	-webkit-mask-image: url('../assets/info-square-fill.svg');
 	background: var(--info-color);
 	mask-size: cover;
 	-webkit-mask-size: cover;
