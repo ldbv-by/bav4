@@ -6,8 +6,11 @@
  * @function
  * @type {module:services/ImportOafService~oafGeoResourceProvider}
  */
+
+import { OafGeoResource } from '../../domain/geoResources';
+
 // eslint-disable-next-line no-unused-vars
-export const bvvOafFilterCapabilitiesProvider = async (url, options) => {
+export const bvvOafFilterCapabilitiesProvider = async (oafGeoResource) => {
 	return {
 		totalNumberOfItems: 1000,
 		crs: [
@@ -133,12 +136,15 @@ export const bvvOafFilterCapabilitiesProvider = async (url, options) => {
  * @type {module:services/ImportOafService~oafFilterCapabilitiesProvider}
  */
 // eslint-disable-next-line no-unused-vars
-export const bvvOafGeoResourceProvider = async (oafGeoResource) => {
+export const bvvOafGeoResourceProvider = async (url, options) => {
 	return [
 		{
-			id: 'id',
-			title: 'title',
+			id: 'biergarten',
+			title: 'Biergarten Test',
+			url: "https://...",
+			description: 'Test der OGC API anhand von ldproxy und Daten über Biergärten',
+			itemCount: 1000,
 			crs: ['http://www.opengis.net/def/crs/EPSG/0/3857']
 		}
-	];
+	].map((oaf, index) => new OafGeoResource(options.ids[index] ?? `${url}||${oaf.id}`, oaf.title, url, oaf.id).setLimit(oaf.limit));
 };
