@@ -11,7 +11,7 @@ describe('i18n for menu module', () => {
 		expect(map.menu_misc_content_panel_language).toBe('Sprache');
 		expect(map.menu_misc_content_panel_information).toBe('Information');
 		expect(map.menu_misc_content_panel_software_version).toBe('Version');
-		expect(map.menu_misc_content_panel_news).toBe('/ Neuigkeiten');
+		expect(map.menu_misc_content_panel_news).toBe('Neuigkeiten');
 		expect(map.menu_misc_content_panel_help).toBe('Hilfe und FAQ');
 		expect(map.menu_misc_content_panel_Contact).toBe('Kontakt');
 		expect(map.menu_misc_content_panel_terms_of_use).toBe('Nutzungsbedingungen');
@@ -66,7 +66,7 @@ describe('i18n for menu module', () => {
 		expect(map.menu_misc_content_panel_language).toBe('Language');
 		expect(map.menu_misc_content_panel_information).toBe('Information');
 		expect(map.menu_misc_content_panel_software_version).toBe('Version');
-		expect(map.menu_misc_content_panel_news).toBe('/ News');
+		expect(map.menu_misc_content_panel_news).toBe('News');
 		expect(map.menu_misc_content_panel_help).toBe('Help and FAQ');
 		expect(map.menu_misc_content_panel_Contact).toBe('Contact');
 		expect(map.menu_misc_content_panel_terms_of_use).toBe('Terms of Use');

@@ -112,7 +112,7 @@ describe('MiscContentPanel', () => {
 			expect(links[6].href).toEqual('https://www.ldbv.bayern.de/produkte/dienste/ba_hilfe/ueberblick/neuigkeiten.html');
 			expect(links[6].target).toEqual('_blank');
 			expect(links[6].querySelector('.ba-list-item__text').innerText).toEqual(
-				'menu_misc_content_panel_software_version menu_misc_content_panel_news'
+				'menu_misc_content_panel_software_version / menu_misc_content_panel_news'
 			);
 
 			expect(links[7].href).toEqual('https://geodatenonline.bayern.de/geodatenonline');
@@ -166,7 +166,7 @@ describe('MiscContentPanel', () => {
 			expect(versionInfoAnchor.href).toEqual('https://www.ldbv.bayern.de/produkte/dienste/ba_hilfe/ueberblick/neuigkeiten.html');
 			expect(versionInfoAnchor.target).toEqual('_blank');
 			expect(versionInfoAnchor.querySelector('.ba-list-item__text').innerText).toBe(
-				'menu_misc_content_panel_software_version 42 menu_misc_content_panel_news'
+				'menu_misc_content_panel_software_version 42 / menu_misc_content_panel_news'
 			);
 		});
 
