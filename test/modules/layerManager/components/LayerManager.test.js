@@ -13,7 +13,7 @@ import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
 import { activate, deactivate } from '../../../../src/store/layerSwipe/layerSwipe.action';
 
 import expandSvg from '../../../../src/assets/icons/expand.svg';
-import clearSvg from '../../../../src/modules/layerManager/components/assets/x-square.svg';
+import clearSvg from '../../../../src/assets/icons/x-square.svg';
 import chevronSvg from '../../../../src/modules/layerManager/components/assets/chevron.svg';
 
 window.customElements.define(Checkbox.tag, Checkbox);

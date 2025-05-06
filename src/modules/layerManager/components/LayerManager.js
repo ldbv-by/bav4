@@ -10,7 +10,7 @@ import { Tools } from '../../../domain/tools';
 import css from './layerManager.css';
 import { MvuElement } from '../../MvuElement';
 import expandSvg from '../../../assets/icons/expand.svg';
-import clearSvg from './assets/x-square.svg';
+import clearSvg from '../../../assets/icons/x-square.svg';
 import chevronSvg from './assets/chevron.svg';
 
 const Update_Draggable_Items = 'update_draggable_items';

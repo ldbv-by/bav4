@@ -10,7 +10,7 @@ import { ImportToolContent } from '../importToolContent/ImportToolContent';
 import css from './toolContainer.css';
 import { setCurrentTool } from '../../../../store/tools/tools.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import closeIcon from './assets/x-square.svg';
+import closeIcon from '../../../../assets/icons/x-square.svg';
 import { MvuElement } from '../../../MvuElement';
 import { ExportMfpToolContent } from '../exportMfpToolContent/ExportMfpToolContent';
 import { Tools } from '../../../../domain/tools';
