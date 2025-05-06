@@ -363,8 +363,8 @@
 }
 
 .is-portrait .hide-button .wrench {
-	mask-image: url('assets/close.svg');
-	-webkit-mask-image: url('assets/close.svg');
+	mask-image: url('../../../../assets/icons/x-square.svg');
+	-webkit-mask-image: url('../../../../assets/icons/x-square.svg');
 	transform: rotate(90deg);
 }
 

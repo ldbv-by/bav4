@@ -150,8 +150,8 @@
 	height: 2em;
 	width: 2.1em;
 	margin: 0.2em;
-	mask: url('assets/clear.svg');
-	-webkit-mask: url('assets/clear.svg');
+	mask: url('../../../assets/icons/x-square.svg');
+	-webkit-mask: url('../../../assets/icons/x-square.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
@@ -329,8 +329,8 @@
 	height: 1.5em;
 	width: 1.5em;
 	margin-right: 0.3em;
-	mask: url('assets/clear.svg');
-	-webkit-mask: url('assets/clear.svg');
+	mask: url('../../../assets/icons/x-square.svg');
+	-webkit-mask: url('../../../assets/icons/x-square.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
 	background: var(--text1);
