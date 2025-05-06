@@ -8,24 +8,7 @@
  */
 // eslint-disable-next-line no-unused-vars
 export const bvvOafFilterCapabilitiesProvider = async (url, options) => {
-	return [
-		{
-			id: 'id',
-			title: 'title',
-			crs: ['http://www.opengis.net/def/crs/EPSG/0/3857']
-		}
-	];
-};
-
-/**
- * BVV specific implementation of {@link module:services/ImportOafService~oafFilterCapabilitiesProvider}
- * @function
- * @type {module:services/ImportOafService~oafFilterCapabilitiesProvider}
- */
-// eslint-disable-next-line no-unused-vars
-export const bvvOafGeoResourceProvider = async (oafGeoResource) => {
 	return {
-		title: 'biergarten',
 		totalNumberOfItems: 1000,
 		crs: [
 			'http://www.opengis.net/def/crs/OGC/1.3/CRS84',
@@ -142,4 +125,20 @@ export const bvvOafGeoResourceProvider = async (oafGeoResource) => {
 			}
 		]
 	};
+};
+
+/**
+ * BVV specific implementation of {@link module:services/ImportOafService~oafFilterCapabilitiesProvider}
+ * @function
+ * @type {module:services/ImportOafService~oafFilterCapabilitiesProvider}
+ */
+// eslint-disable-next-line no-unused-vars
+export const bvvOafGeoResourceProvider = async (oafGeoResource) => {
+	return [
+		{
+			id: 'id',
+			title: 'title',
+			crs: ['http://www.opengis.net/def/crs/EPSG/0/3857']
+		}
+	];
 };
