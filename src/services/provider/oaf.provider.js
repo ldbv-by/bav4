@@ -141,10 +141,10 @@ export const bvvOafGeoResourceProvider = async (url, options) => {
 		{
 			id: 'biergarten',
 			title: 'Biergarten Test',
-			url: "https://...",
+			url: 'https://...',
 			description: 'Test der OGC API anhand von ldproxy und Daten über Biergärten',
 			itemCount: 1000,
 			crs: ['http://www.opengis.net/def/crs/EPSG/0/3857']
 		}
-	].map((oaf, index) => new OafGeoResource(options.ids[index] ?? `${url}||${oaf.id}`, oaf.title, url, oaf.id).setLimit(oaf.limit));
+	].map((oaf, index) => new OafGeoResource(options.ids[index] ?? `${oaf.url}||${oaf.id}`, oaf.title, oaf.url, oaf.id).setLimit(oaf.itemCount));
 };
