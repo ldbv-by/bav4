@@ -34,7 +34,7 @@ const Update_Search = 'update_search';
  */
 export class SearchableSelect extends MvuElement {
 	#hasPointer = false;
-	#availableOptions = [];
+	#cancelActionListener;
 
 	// eslint-disable-next-line no-unused-vars
 	#onChange = (changedState) => {};
@@ -44,12 +44,11 @@ export class SearchableSelect extends MvuElement {
 			placeholder: 'Search...',
 			selected: null,
 			search: '',
-			options: []
+			options: [],
+			availableOptions: []
 		});
-	}
 
-	onInitialize() {
-		document.addEventListener('click', () => {
+		this.#cancelActionListener = () => {
 			if (this.#hasPointer) return;
 
 			// Cancels Action
@@ -58,7 +57,15 @@ export class SearchableSelect extends MvuElement {
 			if (!this.selected) {
 				this.signal(Update_Search, '');
 			}
-		});
+		};
+	}
+
+	onInitialize() {
+		document.addEventListener('click', this.#cancelActionListener);
+	}
+
+	onDisconnect() {
+		document.removeEventListener('click', this.#cancelActionListener);
 	}
 
 	update(type, data, model) {
@@ -66,7 +73,7 @@ export class SearchableSelect extends MvuElement {
 			case Update_Placeholder:
 				return { ...model, placeholder: data };
 			case Update_Selected: {
-				const selected = isNumber(data) ? this.#availableOptions[Math.max(data, 0)] : data;
+				const selected = isNumber(data) ? model.availableOptions[Math.max(data, 0)] : data;
 				return { ...model, selected: selected, search: selected };
 			}
 			case Update_Options:
@@ -79,10 +86,10 @@ export class SearchableSelect extends MvuElement {
 	onAfterRender(isInitial) {
 		if (isInitial) return;
 
-		const model = this.getModel();
+		const { selected, availableOptions } = this.getModel();
 		const eventData = {
-			availableOptions: this.#availableOptions,
-			selected: model.selected
+			availableOptions: availableOptions,
+			selected: selected
 		};
 
 		this.dispatchEvent(
@@ -94,8 +101,7 @@ export class SearchableSelect extends MvuElement {
 	}
 
 	createView(model) {
-		const { search, placeholder } = model;
-		const availableOptions = this.#availableOptions;
+		const { search, placeholder, availableOptions } = model;
 
 		const onSelectableItemChosen = (evt) => {
 			// Prevents global click handler to trigger s. onInitialize()
@@ -108,11 +114,11 @@ export class SearchableSelect extends MvuElement {
 			this.#showDropdown();
 		};
 
-		const OnPointerEnter = () => {
+		const onPointerEnter = () => {
 			this.#hasPointer = true;
 		};
 
-		const OnPointerLeave = () => {
+		const onPointerLeave = () => {
 			this.#hasPointer = false;
 		};
 
@@ -126,7 +132,7 @@ export class SearchableSelect extends MvuElement {
 				${css}
 			</style>
 
-			<div class="searchable-select" @pointerenter=${OnPointerEnter} @pointerleave=${OnPointerLeave} @click=${onSearchInputClicked}>
+			<div class="searchable-select" @pointerenter=${onPointerEnter} @pointerleave=${onPointerLeave} @click=${onSearchInputClicked}>
 				<div class="search-input-container">
 					<input id="search-input" type="text" .placeholder=${placeholder} .value=${search} @input=${onSearchInputChange} />
 					<div class="caret-fill-down"></div>
@@ -149,8 +155,7 @@ export class SearchableSelect extends MvuElement {
 			}
 		}
 
-		this.#availableOptions = filteredOptions;
-		return { ...model };
+		return { ...model, availableOptions: filteredOptions };
 	}
 
 	#hideDropdown() {

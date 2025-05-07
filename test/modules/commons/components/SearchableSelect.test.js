@@ -13,7 +13,13 @@ describe('SearchableSelect', () => {
 	describe('when initialized', () => {
 		it('contains default values in the model', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
-			expect(element.getModel()).toEqual({ placeholder: 'Search...', selected: null, search: '', options: [] });
+			expect(element.getModel()).toEqual({
+				placeholder: 'Search...',
+				selected: null,
+				search: '',
+				options: [],
+				availableOptions: []
+			});
 		});
 
 		it('has properties with default values from the model', async () => {
@@ -72,12 +78,12 @@ describe('SearchableSelect', () => {
 	describe('when property "options" changes', () => {
 		it('updates the view', async () => {
 			const element = await TestUtils.renderAndLogLifecycle(SearchableSelect.tag);
-			let htmlOptions = Array.from(element.shadowRoot.querySelectorAll('.dropdown > .option'));
+			let htmlOptions = element.shadowRoot.querySelectorAll('.dropdown > .option');
 
 			expect(htmlOptions).toHaveSize(0);
 
 			element.options = ['foo', 'bar', 'baz'];
-			htmlOptions = Array.from(element.shadowRoot.querySelectorAll('.dropdown > .option'));
+			htmlOptions = element.shadowRoot.querySelectorAll('.dropdown > .option');
 
 			expect(htmlOptions).toHaveSize(3);
 			expect(htmlOptions[0].innerText).toBe('foo');
