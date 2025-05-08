@@ -53,12 +53,26 @@ describe('BaseLayerContainer', () => {
 	});
 
 	describe('when initialized ', () => {
-		describe('and no current topic available ', () => {
+		describe('and the topic s-o-s is not ready ', () => {
 			it('renders nothing', async () => {
-				const element = await setup();
+				const topicId = 'topicId';
+				const element = await setup({ topics: { ready: false, current: topicId } });
 
 				expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)).toHaveSize(0);
 				expect(element.shadowRoot.querySelector('.title').innerText).toBe('baseLayer_switcher_header');
+			});
+		});
+		describe('and the topic s-o-s is ready ', () => {
+			describe('and no current topic available', () => {
+				it('renders accordingly to the default topic', async () => {
+					const defaultTopic = new Topic('default', 'label', 'description', baseGeoRs);
+
+					spyOn(topicsServiceMock, 'byId').withArgs(null).and.returnValue(null);
+					spyOn(topicsServiceMock, 'default').and.returnValue(defaultTopic);
+					const element = await setup({ topics: { ready: true, current: null } });
+
+					expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)).toHaveSize(2);
+				});
 			});
 		});
 
@@ -70,7 +84,7 @@ describe('BaseLayerContainer', () => {
 						spyOn(topicsServiceMock, 'byId')
 							.withArgs(topicId)
 							.and.returnValue(new Topic(topicId, 'label', 'description', baseGeoRs));
-						const element = await setup({ topics: { current: topicId } });
+						const element = await setup({ topics: { ready: true, current: topicId } });
 						const scrollToActiveButtonSpy = spyOn(element, '_scrollToActiveButton');
 
 						expect(element.shadowRoot.querySelectorAll('.button-group')).toHaveSize(1);
@@ -120,7 +134,7 @@ describe('BaseLayerContainer', () => {
 						spyOn(topicsServiceMock, 'byId')
 							.withArgs(topicId)
 							.and.returnValue(new Topic(topicId, 'label', 'description', { raster: baseGeoRs.raster }));
-						const element = await setup({ topics: { current: topicId } });
+						const element = await setup({ topics: { ready: true, current: topicId } });
 
 						expect(element.shadowRoot.querySelectorAll('.button-group')).toHaveSize(0);
 						expect(element.shadowRoot.querySelectorAll('.scroll-left-button')).toHaveSize(0);
@@ -149,7 +163,7 @@ describe('BaseLayerContainer', () => {
 						}
 					});
 					spyOn(topicsServiceMock, 'default').and.returnValue(defaultTopic);
-					const element = await setup({ topics: { current: topicId } });
+					const element = await setup({ topics: { ready: true, current: topicId } });
 
 					expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)).toHaveSize(2);
 				});
@@ -187,7 +201,7 @@ describe('BaseLayerContainer', () => {
 			spyOn(topicsServiceMock, 'byId')
 				.withArgs(topicId)
 				.and.returnValue(new Topic(topicId, 'label', 'description', baseGeoRs));
-			const element = await setup({ topics: { current: topicId } });
+			const element = await setup({ topics: { ready: true, current: topicId } });
 			const scrollIntoViewSpy0 = spyOn(container0, 'scrollIntoView');
 			const scrollIntoViewSpy1 = spyOn(container1, 'scrollIntoView');
 
@@ -225,7 +239,7 @@ describe('BaseLayerContainer', () => {
 			spyOn(topicsServiceMock, 'byId')
 				.withArgs(topicId)
 				.and.returnValue(new Topic(topicId, 'label', 'description', baseGeoRs));
-			const element = await setup({ topics: { current: topicId } });
+			const element = await setup({ topics: { ready: true, current: topicId } });
 
 			const baseLayerSwitcher = element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag);
 			expect(baseLayerSwitcher).toHaveSize(2);
@@ -262,7 +276,7 @@ describe('BaseLayerContainer', () => {
 			spyOn(topicsServiceMock, 'byId')
 				.withArgs(topicId2)
 				.and.returnValue(new Topic(topicId2, 'label', 'description', baseGeoRs));
-			const element = await setup({ topics: { current: topicId2 } });
+			const element = await setup({ topics: { ready: true, current: topicId2 } });
 
 			const baseLayerSwitcher = element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag);
 			expect(baseLayerSwitcher).toHaveSize(2);
@@ -290,7 +304,7 @@ describe('BaseLayerContainer', () => {
 						return vectorTopic;
 				}
 			});
-			const element = await setup({ topics: { current: rasterTopic.id } });
+			const element = await setup({ topics: { ready: true, current: rasterTopic.id } });
 
 			expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)[0].configuration).toEqual({
