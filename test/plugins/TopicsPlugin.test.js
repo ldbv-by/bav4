@@ -10,7 +10,6 @@ import { setIndex, TopicsContentPanelIndex } from '../../src/store/topicsContent
 describe('TopicsPlugin', () => {
 	const topicsServiceMock = {
 		async init() {},
-		default() {},
 		byId() {}
 	};
 
@@ -75,16 +74,13 @@ describe('TopicsPlugin', () => {
 			});
 		});
 		describe('topic id is NOT available', () => {
-			it('sets the default topic', () => {
-				const topicId = 'topicId';
-				const topic = new Topic(topicId, 'label', 'description');
+			it('does nothing', () => {
 				const store = setup();
 				const instanceUnderTest = new TopicsPlugin();
-				spyOn(topicsServiceMock, 'default').and.returnValue(topic);
 
 				instanceUnderTest._addTopicFromQueryParams(new URLSearchParams());
 
-				expect(store.getState().topics.current).toEqual(topicId);
+				expect(store.getState().topics.current).toBeNull();
 			});
 		});
 	});
