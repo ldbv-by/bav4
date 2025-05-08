@@ -326,8 +326,8 @@
 	border-radius: 0 var(--border-radius-button) var(--border-radius-button) 0;
 }
 .header__search-clear .icon {
-	height: 1.5em;
-	width: 1.5em;
+	height: 1.2em;
+	width: 1.2em;
 	margin-right: 0.3em;
 	mask: url('../../../assets/icons/x-square.svg');
 	-webkit-mask: url('../../../assets/icons/x-square.svg');
