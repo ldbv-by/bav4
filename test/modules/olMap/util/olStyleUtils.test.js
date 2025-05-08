@@ -382,30 +382,6 @@ describe('measureStyleFunction', () => {
 
 		expect(contextMoveToSpy).toHaveBeenCalled();
 	});
-	const isSegmentMatcher = (segmentStart, segmentEnd) => {
-		return {
-			asymmetricMatch: (compareTo) => {
-				if (compareTo instanceof LineString) {
-					console.log(compareTo.getCoordinates());
-					const compareStart = compareTo.getCoordinates()[0];
-					const compareEnd = compareTo.getCoordinates()[1];
-					if (
-						segmentStart[0] === compareStart[0] &&
-						segmentStart[1] === compareStart[1] &&
-						segmentEnd[0] === compareEnd[0] &&
-						segmentEnd[1] === compareEnd[1]
-					) {
-						return true;
-					}
-				}
-				return false;
-			},
-
-			jasmineToString: () => {
-				return `<isSegment: ${segmentStart} | ${segmentEnd} >`;
-			}
-		};
-	};
 
 	it('should draw clockwise geometry in reversed order to context with linear ruler-style', () => {
 		const contextRenderer = jasmine.createSpy('contextRenderer');
