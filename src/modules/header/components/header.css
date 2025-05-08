@@ -147,9 +147,9 @@
 .resize-icon {
 	background: var(--text2);
 	display: block;
-	height: 2em;
-	width: 2.1em;
-	margin: 0.2em;
+	height: 1.7em;
+	width: 1.7em;
+	margin: auto;
 	mask: url('../../../assets/icons/x-square.svg');
 	-webkit-mask: url('../../../assets/icons/x-square.svg');
 	mask-size: cover;
