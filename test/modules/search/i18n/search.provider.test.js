@@ -22,7 +22,7 @@ describe('i18n for search module', () => {
 		expect(map.search_result_item_category_title_waters).toBe('Gewässer');
 		expect(map.search_result_item_category_title_school).toBe('Schule');
 		expect(map.search_result_item_category_title_street).toBe('Straße/Platz');
-		expect(map.search_result_item_category_title_hut).toBe('Hütte');
+		expect(map.search_result_item_category_title_hut).toBe('Gasthaus/Hütte');
 		expect(map.search_result_item_category_title_landscape).toBe('Flurname');
 		expect(map.search_result_item_category_title_mountain).toBe('Berg');
 	});
@@ -48,7 +48,7 @@ describe('i18n for search module', () => {
 		expect(map.search_result_item_category_title_waters).toBe('Waters');
 		expect(map.search_result_item_category_title_school).toBe('School');
 		expect(map.search_result_item_category_title_street).toBe('Street/Place');
-		expect(map.search_result_item_category_title_hut).toBe('Hut');
+		expect(map.search_result_item_category_title_hut).toBe('Inn/Hut');
 		expect(map.search_result_item_category_title_landscape).toBe('Landscape');
 		expect(map.search_result_item_category_title_mountain).toBe('Mountain');
 	});
