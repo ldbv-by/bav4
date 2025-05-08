@@ -1,5 +1,5 @@
 /**
- * @module modules/examples/ogc/components/OgcFeatureRow
+ * @module modules/examples/ogc/components/OafRow
  */
 import { html } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
@@ -11,7 +11,7 @@ const Update_Filter = 'update_filter';
  * UX prototype implementation for ogc feature api filtering.
  *
  * @class
- * @author badeniji
+ * @author herrmutig
  */
 export class OafRow extends MvuElement {
 	constructor() {
