@@ -610,12 +610,86 @@ export const VectorSourceType = Object.freeze({
 	EWKT: Symbol.for('ewkt')
 });
 
+export class AbstractVectorGeoResource extends GeoResource {
+	constructor(id, label) {
+		super(id, label);
+		if (this.constructor === AbstractVectorGeoResource) {
+			// Abstract class can not be constructed.
+			throw new Error('Can not construct abstract class.');
+		}
+		this._showPointNames = true;
+		this._clusterParams = {};
+		this._styleHint = null;
+	}
+
+	/**
+	 * @returns {boolean} `true` if this `VectorGeoResource` should be displayed clustered
+	 */
+	isClustered() {
+		return !!Object.keys(this._clusterParams).length;
+	}
+
+	get clusterParams() {
+		return { ...this._clusterParams };
+	}
+
+	/**
+	 *
+	 * @param {object} clusterParams
+	 * @returns {AbstractVectorGeoResource} `this` for chaining
+	 */
+	setClusterParams(clusterParams) {
+		if (clusterParams) {
+			this._clusterParams = { ...clusterParams };
+		}
+		return this;
+	}
+
+	/**
+	 * @returns {boolean}`true` if this VectorGeoResource has specific style hint
+	 */
+	hasStyleHint() {
+		return !!this._styleHint;
+	}
+
+	get styleHint() {
+		return this._styleHint;
+	}
+
+	/**
+	 * Set the style hint for this `RtVectorGeoResource`
+	 * @param {StyleHint} styleHint
+	 * @returns {AbstractVectorGeoResource}
+	 */
+	setStyleHint(styleHint) {
+		if (styleHint) {
+			this._styleHint = styleHint;
+		}
+		return this;
+	}
+
+	get showPointNames() {
+		return this._showPointNames;
+	}
+
+	/**
+	 * Currently effective only for KML:
+	 * Show names as labels for placemarks which contain points.
+	 * @param {boolean} showPointNames
+	 * @returns {AbstractVectorGeoResource} `this` for chaining
+	 */
+	setShowPointNames(showPointNames) {
+		this._showPointNames = showPointNames;
+		return this;
+	}
+}
+
 /**
  * GeoResource for vector data.
  * The data are hold either as string (together with a SRID) or by one or more `BaFeatures`.
  * @class
  */
-export class VectorGeoResource extends GeoResource {
+export class VectorGeoResource extends AbstractVectorGeoResource {
 	/**
 	 *
 	 * @param {string} id
@@ -627,10 +701,7 @@ export class VectorGeoResource extends GeoResource {
 		this._sourceType = vectorSourceType;
 		this._data = null;
 		this._srid = null;
-		this._showPointNames = true;
 		this._localData = false;
-		this._clusterParams = {};
-		this._styleHint = null;
 		this._features = [];
 	}
 
@@ -722,62 +793,6 @@ export class VectorGeoResource extends GeoResource {
 		return !!this._label || this.label !== this._getFallbackLabel();
 	}
 
-	/**
-	 * @returns {boolean} `true` if this `VectorGeoResource` should be displayed clustered
-	 */
-	isClustered() {
-		return !!Object.keys(this._clusterParams).length;
-	}
-
-	get clusterParams() {
-		return { ...this._clusterParams };
-	}
-
-	setClusterParams(clusterParams) {
-		if (clusterParams) {
-			this._clusterParams = { ...clusterParams };
-		}
-		return this;
-	}
-
-	/**
-	 * @returns `true` if this VectorGeoResource has specific style hint
-	 */
-	hasStyleHint() {
-		return !!this._styleHint;
-	}
-
-	get styleHint() {
-		return this._styleHint;
-	}
-
-	/**
-	 * Set the style hint for this `VectorGeoResource`
-	 * @param {StyleHint} styleHint
-	 * @returns {VectorGeoResource}
-	 */
-	setStyleHint(styleHint) {
-		if (styleHint) {
-			this._styleHint = styleHint;
-		}
-		return this;
-	}
-
-	get showPointNames() {
-		return this._showPointNames;
-	}
-
-	/**
-	 * Currently effective only for KML:
-	 * Show names as labels for placemarks which contain points.
-	 * @param {boolean} showPointNames
-	 * @returns {VectorGeoResource} `this` for chaining
-	 */
-	setShowPointNames(showPointNames) {
-		this._showPointNames = showPointNames;
-		return this;
-	}
-
 	get localData() {
 		return this._localData;
 	}
@@ -822,7 +837,7 @@ export class VectorGeoResource extends GeoResource {
  * GeoResource for real-time vector data.
  * @class
  */
-export class RtVectorGeoResource extends GeoResource {
+export class RtVectorGeoResource extends AbstractVectorGeoResource {
 	/**
 	 * @param {string} id
 	 * @param {String} label
@@ -846,72 +861,65 @@ export class RtVectorGeoResource extends GeoResource {
 		return this._sourceType;
 	}
 
-	get clusterParams() {
-		return { ...this._clusterParams };
+	/**
+	 * @override
+	 */
+	getType() {
+		return GeoResourceTypes.RT_VECTOR;
 	}
+}
 
+/**
+ * Represents an OCG Api Feature Collection
+ */
+export class OafGeoResource extends AbstractVectorGeoResource {
 	/**
 	 *
-	 * @param {object} clusterParams
-	 * @returns {RtVectorGeoResource} `this` for chaining
+	 * @param {string} id
+	 * @param {string} label
+	 * @param {string} url
+	 * @param {string} collectionId
 	 */
-	setClusterParams(clusterParams) {
-		if (clusterParams) {
-			this._clusterParams = { ...clusterParams };
+	constructor(id, label, url, collectionId) {
+		super(id, label);
+		this._url = url;
+		this._collectionId = collectionId;
+		this._limit = null;
+	}
+
+	get collectionId() {
+		return this._collectionId;
+	}
+
+	get url() {
+		return this._url;
+	}
+
+	get limit() {
+		return this._limit;
+	}
+
+	/**
+	 * Sets the limit parameter
+	 * @param {number} limit
+	 * @returns {OafGeoResource} `this` for chaining
+	 */
+	setLimit(limit) {
+		if (isNumber(limit)) {
+			this._limit = limit;
 		}
 		return this;
 	}
 
-	/**
-	 * @returns {boolean}`true` if this VectorGeoResource has specific style hint
-	 */
-	hasStyleHint() {
-		return !!this._styleHint;
-	}
-
-	get styleHint() {
-		return this._styleHint;
-	}
-
-	/**
-	 * Set the style hint for this `RtVectorGeoResource`
-	 * @param {StyleHint} styleHint
-	 * @returns {RtVectorGeoResource}
-	 */
-	setStyleHint(styleHint) {
-		if (styleHint) {
-			this._styleHint = styleHint;
-		}
-		return this;
-	}
-
-	get showPointNames() {
-		return this._showPointNames;
-	}
-
-	/**
-	 * Currently effective only for KML:
-	 * Show names as labels for placemarks which contain points.
-	 * @param {boolean} showPointNames
-	 * @returns {RtVectorGeoResource} `this` for chaining
-	 */
-	setShowPointNames(showPointNames) {
-		this._showPointNames = showPointNames;
-		return this;
-	}
-
-	/**
-	 * @returns {boolean} `true` if this RtVectorGeoResource should be displayed clustered
-	 */
-	isClustered() {
-		return !!Object.keys(this._clusterParams).length;
+	hasLimit() {
+		return !!this._limit;
 	}
 
 	/**
 	 * @override
 	 */
 	getType() {
-		return GeoResourceTypes.RT_VECTOR;
+		return GeoResourceTypes.OAF;
 	}
 }
 
@@ -992,76 +1000,3 @@ export const observable = (geoResource, onChanged, identifier = null) => {
 		}
 	});
 };
-
-/**
- * Represents an OCG Api Feature Collection
- */
-export class OafGeoResource extends GeoResource {
-	// export class FeaturesGeoResource extends GeoResource {
-	/**
-	 *
-	 * @param {string} id
-	 * @param {string} label
-	 * @param {string} url
-	 * @param {string} collectionId
-	 */
-	constructor(id, label, url, collectionId) {
-		super(id, label);
-		this._url = url;
-		this._collectionId = collectionId;
-		this._filterCapabilities = null;
-		this._limit = null;
-	}
-
-	get collectionId() {
-		return this._collectionId;
-	}
-
-	get url() {
-		return this._url;
-	}
-
-	get filterCapabilities() {
-		return this._filterCapabilities ? { ...this._filterCapabilities } : null;
-	}
-
-	get limit() {
-		return this._limit;
-	}
-
-	/**
-	 * Sets the `OafFilterCapabilities`
-	 * @param {module:domain/oaf~OafFilterCapabilities} capabilities
-	 * @returns {OafGeoResource} `this` for chaining
-	 */
-	setFilterCapabilities(capabilities) {
-		this._filterCapabilities = capabilities;
-		return this;
-	}
-
-	hasFilterCapabilities() {
-		return !!this._filterCapabilities;
-	}
-	/**
-	 * Sets the limit parameter
-	 * @param {number} limit
-	 * @returns {OafGeoResource} `this` for chaining
-	 */
-	setLimit(limit) {
-		if (isNumber(limit)) {
-			this._limit = limit;
-		}
-		return this;
-	}
-
-	hasLimit() {
-		return !!this._limit;
-	}
-
-	/**
-	 * @override
-	 */
-	getType() {
-		return GeoResourceTypes.OAF;
-	}
-}

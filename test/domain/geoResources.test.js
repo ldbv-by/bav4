@@ -12,7 +12,8 @@ import {
 	GeoResourceAuthenticationType,
 	VTGeoResource,
 	RtVectorGeoResource,
-	OafGeoResource
+	OafGeoResource,
+	AbstractVectorGeoResource
 } from '../../src/domain/geoResources';
 import { $injector } from '../../src/injection';
 import { getDefaultAttribution, getMinimalAttribution } from '../../src/services/provider/attribution.provider';
@@ -452,6 +453,53 @@ describe('GeoResource', () => {
 		});
 	});
 
+	describe('AbstractVectorGeoResource', () => {
+		class TestVectorGeoResource extends AbstractVectorGeoResource {
+			constructor(id, label) {
+				super(id, label);
+			}
+		}
+		describe('constructor', () => {
+			it('throws exception when instantiated without inheritance', () => {
+				expect(() => new AbstractVectorGeoResource('id', 'label')).toThrowError(Error, 'Can not construct abstract class.');
+			});
+		});
+
+		it('instantiates a RtVectorGeoResource', () => {
+			const testVectorGeoResource = new TestVectorGeoResource('id', 'label');
+
+			expect(testVectorGeoResource.id).toBe('id');
+			expect(testVectorGeoResource.label).toBe('label');
+		});
+
+		it('provides default properties', () => {
+			const testVectorGeoResource = new TestVectorGeoResource('id', 'label');
+
+			expect(testVectorGeoResource.showPointNames).toBeTrue();
+			expect(testVectorGeoResource.clusterParams).toEqual({});
+			expect(testVectorGeoResource.styleHint).toBeNull();
+		});
+
+		describe('methods', () => {
+			it('provides a check for containing a non-default value as clusterParam', () => {
+				expect(new TestVectorGeoResource('id', 'label').isClustered()).toBeFalse();
+				expect(new TestVectorGeoResource('id', 'label').setClusterParams(null).isClustered()).toBeFalse();
+				expect(new TestVectorGeoResource('id', 'label').setClusterParams({ foo: 'bar' }).isClustered()).toBeTrue();
+			});
+
+			it('provides a check for containing a non-default value as styleHint', () => {
+				expect(new TestVectorGeoResource('id', 'label').hasStyleHint()).toBeFalse();
+				expect(new TestVectorGeoResource('id', 'label').setStyleHint(null).hasStyleHint()).toBeFalse();
+				expect(new TestVectorGeoResource('id', 'label').setStyleHint(StyleHint.HIGHLIGHT).hasStyleHint()).toBeTrue();
+			});
+
+			it('sets the showPointNames property', () => {
+				expect(new TestVectorGeoResource('id', 'label').setShowPointNames(false).showPointNames).toBeFalse();
+				expect(new TestVectorGeoResource('id', 'label').setShowPointNames(true).showPointNames).toBeTrue();
+			});
+		});
+	});
+
 	it('provides an enum of all available vector source types', () => {
 		expect(Object.keys(VectorSourceType).length).toBe(4);
 		expect(VectorSourceType.KML).toBeTruthy();
@@ -464,6 +512,7 @@ describe('GeoResource', () => {
 		it('instantiates a VectorGeoResource', () => {
 			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML);
 
+			expect(vectorGeoResource).toBeInstanceOf(AbstractVectorGeoResource);
 			expect(vectorGeoResource.getType()).toEqual(GeoResourceTypes.VECTOR);
 			expect(vectorGeoResource.id).toBe('id');
 			expect(vectorGeoResource.label).toBe('label');
@@ -477,10 +526,7 @@ describe('GeoResource', () => {
 		it('provides default properties', () => {
 			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML);
 
-			expect(vectorGeoResource.clusterParams).toEqual({});
-			expect(vectorGeoResource.showPointNames).toBe(true);
 			expect(vectorGeoResource.localData).toBe(false);
-			expect(vectorGeoResource.styleHint).toBeNull();
 		});
 
 		it('provides the source type as fallback label', () => {
@@ -515,32 +561,15 @@ describe('GeoResource', () => {
 				expect(vectorGeoResource.srid).toBe(1234);
 			});
 
-			it('sets the showPointNames property', () => {
-				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setShowPointNames(false).showPointNames).toBeFalse();
-				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setShowPointNames(true).showPointNames).toBeTrue();
-			});
-
 			it('sets the localData property', () => {
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).markAsLocalData(false).localData).toBeFalse();
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).markAsLocalData(true).localData).toBeTrue();
-			});
-
-			it('provides a check for containing a non-default value as clusterParam', () => {
-				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).isClustered()).toBeFalse();
-				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setClusterParams(null).isClustered()).toBeFalse();
-				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setClusterParams({ foo: 'bar' }).isClustered()).toBeTrue();
 			});
 
 			it('provides a check for containing features', () => {
 				const feat0 = new BaFeature(new BaGeometry('data', SourceType.forGpx()), 'id0');
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).hasFeatures()).toBeFalse();
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).addFeature(feat0).hasFeatures()).toBeTrue();
-			});
-
-			it('provides a check for containing a non-default value as styleHint', () => {
-				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).hasStyleHint()).toBeFalse();
-				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setStyleHint(null).hasStyleHint()).toBeFalse();
-				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setStyleHint(StyleHint.HIGHLIGHT).hasStyleHint()).toBeTrue();
 			});
 
 			it('provides a check for containing a non-default value as label', () => {
@@ -596,38 +625,12 @@ describe('GeoResource', () => {
 		it('instantiates a RtVectorGeoResource', () => {
 			const rtVectorGeoResource = new RtVectorGeoResource('id', 'label', 'url', VectorSourceType.KML);
 
+			expect(rtVectorGeoResource).toBeInstanceOf(AbstractVectorGeoResource);
 			expect(rtVectorGeoResource.getType()).toEqual(GeoResourceTypes.RT_VECTOR);
 			expect(rtVectorGeoResource.id).toBe('id');
 			expect(rtVectorGeoResource.label).toBe('label');
 			expect(rtVectorGeoResource.url).toBe('url');
-			expect(rtVectorGeoResource.showPointNames).toBeTrue();
 			expect(rtVectorGeoResource.sourceType).toEqual(VectorSourceType.KML);
-		});
-
-		it('provides default properties', () => {
-			const rtVectorGeoResource = new RtVectorGeoResource('id', 'label', VectorSourceType.KML);
-
-			expect(rtVectorGeoResource.clusterParams).toEqual({});
-			expect(rtVectorGeoResource.styleHint).toBeNull();
-		});
-
-		describe('methods', () => {
-			it('provides a check for containing a non-default value as clusterParam', () => {
-				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).isClustered()).toBeFalse();
-				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).setClusterParams(null).isClustered()).toBeFalse();
-				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).setClusterParams({ foo: 'bar' }).isClustered()).toBeTrue();
-			});
-
-			it('provides a check for containing a non-default value as styleHint', () => {
-				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).hasStyleHint()).toBeFalse();
-				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).setStyleHint(null).hasStyleHint()).toBeFalse();
-				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).setStyleHint(StyleHint.HIGHLIGHT).hasStyleHint()).toBeTrue();
-			});
-
-			it('sets the showPointNames property', () => {
-				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).setShowPointNames(false).showPointNames).toBeFalse();
-				expect(new RtVectorGeoResource('id', 'label', VectorSourceType.KML).setShowPointNames(true).showPointNames).toBeTrue();
-			});
 		});
 	});
 
@@ -635,6 +638,7 @@ describe('GeoResource', () => {
 		it('instantiates a OafGeoResource', () => {
 			const oafGeoResource = new OafGeoResource('id', 'label', 'url', 'collectionId');
 
+			expect(oafGeoResource).toBeInstanceOf(AbstractVectorGeoResource);
 			expect(oafGeoResource.getType()).toEqual(GeoResourceTypes.OAF);
 			expect(oafGeoResource.id).toBe('id');
 			expect(oafGeoResource.label).toBe('label');
@@ -646,7 +650,6 @@ describe('GeoResource', () => {
 			const oafGeoResource = new OafGeoResource('id', 'label', 'url', 'collectionId');
 
 			expect(oafGeoResource.limit).toBeNull();
-			expect(oafGeoResource.filterCapabilities).toBeNull();
 		});
 
 		describe('methods', () => {
@@ -655,14 +658,6 @@ describe('GeoResource', () => {
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setLimit('1000')).toBeNull;
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setLimit(1000).hasLimit()).toBeTrue();
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setLimit(1000).limit).toBe(1000);
-			});
-
-			it('sets the capabilities', () => {
-				const capabilities = {
-					foo: 'bar'
-				};
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').hasFilterCapabilities()).toBeFalse();
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setFilterCapabilities(capabilities).filterCapabilities).toEqual(capabilities);
 			});
 		});
 	});

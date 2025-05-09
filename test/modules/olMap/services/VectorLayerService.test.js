@@ -172,7 +172,7 @@ describe('VectorLayerService', () => {
 		});
 
 		describe('createLayer', () => {
-			it('returns an ol vector layer for a data based VectorGeoResource', () => {
+			it('returns an ol vector layer for a VectorGeoResource', () => {
 				setup();
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
@@ -181,7 +181,31 @@ describe('VectorLayerService', () => {
 				const olMap = new Map();
 				const olSource = new VectorSource();
 				const vectorGeoResource = new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326);
-				spyOn(instanceUnderTest, '_vectorSourceForData').withArgs(vectorGeoResource, jasmine.any(VectorLayer)).and.returnValue(olSource);
+				spyOn(instanceUnderTest, '_vectorSourceForData').withArgs(vectorGeoResource).and.returnValue(olSource);
+				spyOn(instanceUnderTest, 'applyStyle')
+					.withArgs(jasmine.anything(), olMap, vectorGeoResource)
+					.and.callFake((olLayer) => olLayer);
+
+				const olVectorLayer = instanceUnderTest.createLayer(id, vectorGeoResource, olMap);
+
+				expect(olVectorLayer.get('id')).toBe(id);
+				expect(olVectorLayer.get('geoResourceId')).toBe(geoResourceId);
+				expect(olVectorLayer.getMinZoom()).toBeNegativeInfinity();
+				expect(olVectorLayer.getMaxZoom()).toBePositiveInfinity();
+
+				expect(olVectorLayer.constructor.name).toBe('VectorLayer');
+				expect(olVectorLayer.getSource()).toEqual(olSource);
+			});
+
+			it('returns an ol vector layer for a OafVectorGeoResource', () => {
+				setup();
+				const id = 'id';
+				const geoResourceId = 'geoResourceId';
+				const geoResourceLabel = 'geoResourceLabel';
+				const olMap = new Map();
+				const olSource = new VectorSource();
+				const vectorGeoResource = new OafGeoResource(geoResourceId, geoResourceLabel, 'url', 'collectionId');
+				spyOn(instanceUnderTest, '_vectorSourceForOaf').withArgs(vectorGeoResource, jasmine.any(VectorLayer)).and.returnValue(olSource);
 				spyOn(instanceUnderTest, 'applyStyle')
 					.withArgs(jasmine.anything(), olMap, vectorGeoResource)
 					.and.callFake((olLayer) => olLayer);
@@ -198,7 +222,7 @@ describe('VectorLayerService', () => {
 			});
 		});
 
-		describe('_vectorSourceForData', () => {
+		describe('_vectorSourceForOaf', () => {
 			it('builds an olVectorSource for a OafGeoResource', async () => {
 				const getBvvOafLoadFunctionCustomProviderSpy = jasmine.createSpy().and.returnValue('loaded');
 				setup(undefined, getBvvOafLoadFunctionCustomProviderSpy);
@@ -207,7 +231,7 @@ describe('VectorLayerService', () => {
 				const olVectorLayer = new VectorLayer();
 				const vectorGeoResource = new OafGeoResource('someId', 'label', 'https://oaf.foo', 'collectionId');
 
-				const olVectorSource = instanceUnderTest._vectorSourceForData(vectorGeoResource, olVectorLayer);
+				const olVectorSource = instanceUnderTest._vectorSourceForOaf(vectorGeoResource, olVectorLayer);
 
 				expect(olVectorSource.constructor.name).toBe('VectorSource');
 				expect(olVectorSource.loader_).toBe(getBvvOafLoadFunctionCustomProviderSpy());
@@ -226,14 +250,16 @@ describe('VectorLayerService', () => {
 				const olVectorLayer = new VectorLayer();
 				const vectorGeoResource = new OafGeoResource('someId', 'label', url, 'collectionId').setAuthenticationType(GeoResourceAuthenticationType.BAA);
 
-				const olVectorSource = instanceUnderTest._vectorSourceForData(vectorGeoResource, olVectorLayer);
+				const olVectorSource = instanceUnderTest._vectorSourceForOaf(vectorGeoResource, olVectorLayer);
 
 				expect(olVectorSource.constructor.name).toBe('VectorSource');
 				expect(olVectorSource.loader_).toBe(getBvvOafLoadFunctionCustomProviderSpy());
 				expect(olVectorSource.strategy_).toEqual(bbox);
 				expect(getBvvOafLoadFunctionCustomProviderSpy).toHaveBeenCalledWith(vectorGeoResource.id, olVectorLayer, credential);
 			});
+		});
 
+		describe('_vectorSourceForData', () => {
 			it('builds an olVectorSource for an internal VectorGeoResource', async () => {
 				setup();
 				const sourceSrid = 4326;

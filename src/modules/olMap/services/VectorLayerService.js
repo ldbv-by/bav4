@@ -1,7 +1,7 @@
 /**
  * @module modules/olMap/services/VectorLayerService
  */
-import { GeoResourceAuthenticationType, OafGeoResource, VectorSourceType } from '../../../domain/geoResources';
+import { GeoResourceAuthenticationType, VectorGeoResource, VectorSourceType } from '../../../domain/geoResources';
 import VectorSource from 'ol/source/Vector';
 import { $injector } from '../../../injection';
 import { KML, GPX, GeoJSON, WKT } from 'ol/format';
@@ -191,7 +191,7 @@ export class VectorLayerService {
 	 * 3. Otherwise we take the style information of the features
 	 * @param {ol.layer.Vector} olVectorLayer
 	 * @param {ol.Map} olMap
-	 * @param {VectorGeoResource|RtVectorGeoResource} vectorGeoResource
+	 * @param {AbstractVectorGeoResource} vectorGeoResource
 	 * @returns {ol.layer.Vector}
 	 */
 	applyStyle(olVectorLayer, olMap, vectorGeoResource) {
@@ -208,7 +208,7 @@ export class VectorLayerService {
 	/**
 	 * Builds an ol VectorLayer from an VectorGeoResource
 	 * @param {string} id layerId
-	 * @param {VectorGeoResource|VTGeoResource} vectorGeoResource
+	 * @param {VectorGeoResource|OafGeoResource} vectorGeoResource
 	 * @param {OlMap} olMap
 	 * @throws UnavailableGeoResourceError
 	 * @returns olVectorLayer
@@ -222,37 +222,45 @@ export class VectorLayerService {
 			minZoom: minZoom ?? undefined,
 			maxZoom: maxZoom ?? undefined
 		});
-		const vectorSource = this._vectorSourceForData(vectorGeoResource, vectorLayer);
+		const vectorSource =
+			vectorGeoResource instanceof VectorGeoResource
+				? this._vectorSourceForData(vectorGeoResource)
+				: this._vectorSourceForOaf(vectorGeoResource, vectorLayer);
 		vectorLayer.setSource(vectorSource);
 
 		return this.applyStyle(vectorLayer, olMap, vectorGeoResource);
 	}
 
 	/**
-	 * Builds an ol VectorSource from an VectorGeoResource or OafGeoResource
-	 * @param {VectorGeoResource|OafGeoResource} geoResource
-	 * @param {OlCoordinateService.layer.Vector} olVectorLayer
+	 * Builds an ol.VectorSource from a OafGeoResource
+	 * @param {OafGeoResource} geoResource
+	 * @param {ol.layer.Vector} olVectorLayer
 	 * @returns olVectorSource
 	 */
-	_vectorSourceForData(geoResource, olVectorLayer) {
-		if (geoResource instanceof OafGeoResource) {
-			const vs = new VectorSource({
-				strategy: bbox
-			});
-			switch (geoResource.authenticationType) {
-				case GeoResourceAuthenticationType.BAA: {
-					const credential = this.#baaCredentialService.get(geoResource.url);
-					vs.setLoader(this._oafLoadFunctionProvider(geoResource.id, olVectorLayer, credential));
-					break;
-				}
-				default: {
-					vs.setLoader(this._oafLoadFunctionProvider(geoResource.id, olVectorLayer));
-				}
+	_vectorSourceForOaf(geoResource, olVectorLayer) {
+		const vs = new VectorSource({
+			strategy: bbox
+		});
+		switch (geoResource.authenticationType) {
+			case GeoResourceAuthenticationType.BAA: {
+				const credential = this.#baaCredentialService.get(geoResource.url);
+				vs.setLoader(this._oafLoadFunctionProvider(geoResource.id, olVectorLayer, credential));
+				break;
 			}
-
-			return vs;
+			default: {
+				vs.setLoader(this._oafLoadFunctionProvider(geoResource.id, olVectorLayer));
+			}
 		}
 
+		return vs;
+	}
+
+	/**
+	 * Builds an ol.VectorSource from a VectorGeoResource
+	 * @param {VectorGeoResource} geoResource
+	 * @returns olVectorSource
+	 */
+	_vectorSourceForData(geoResource) {
 		try {
 			const { MapService: mapService } = $injector.inject('MapService');
 
