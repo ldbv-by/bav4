@@ -36,7 +36,7 @@ import { CoordinateProposalType, RouteCalculationErrors, RoutingStatusCodes } fr
 import { fit } from '../../../../store/position/position.action';
 import { equals } from '../../../../../node_modules/ol/coordinate';
 import { KML as KmlFormat } from 'ol/format';
-import { SourceType, SourceTypeName } from '../../../../domain/sourceType';
+import { SourceType } from '../../../../domain/sourceType';
 import { bvvRouteStatsProvider } from './routeStats.provider';
 import { clearHighlightFeatures } from '../../../../store/highlight/highlight.action';
 import { closeBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
@@ -47,7 +47,6 @@ import {
 	getBvvAttributionForRoutingResult,
 	getAttributionForLocallyImportedOrCreatedGeoResource
 } from '../../../../services/provider/attribution.provider';
-import { StyleTypes } from '../../services/StyleService';
 import { createUniqueId } from '../../../../utils/numberUtils';
 import { INTERACTION_BOTTOM_SHEET_ID } from '../../../../store/bottomSheet/bottomSheet.reducer';
 
@@ -378,7 +377,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 		iconFeature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.INTERMEDIATE);
 
 		iconFeature.set(ROUTING_FEATURE_INDEX, index);
-		iconFeature.setId(`${StyleTypes.ROUTING}_${createUniqueId()}`);
+		iconFeature.setId(`routing_${createUniqueId()}`);
 		iconFeature.setStyle(getRoutingStyleFunction());
 
 		this._interactionLayer.getSource().addFeature(iconFeature);
@@ -614,7 +613,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 			const route = {
 				data: new KmlFormat().writeFeatures([routeFeature]),
-				type: new SourceType(SourceTypeName.KML)
+				type: SourceType.forKml()
 			};
 			setRouteAndStats(route, routeStats);
 		} catch (e) {

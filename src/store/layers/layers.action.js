@@ -39,6 +39,7 @@ import { GeoResource } from '../../domain/geoResources';
  * @property {boolean} [alwaysTop=false] Layer always on top
  * @property {boolean} [cloneable=true] Layer is allowed to be cloned
  * @property {boolean} [metaData=true] Layer references meta data that can be viewed
+ * @property {string} [filter=null] Filter expression for this layer
  * @property {SwipeAlignment} [swipeAlignment=SwipeAlignment.NOT_SET] The alignment of the layer is visible if the swipe feature is active
  */
 
@@ -51,6 +52,7 @@ import { GeoResource } from '../../domain/geoResources';
  * @property {number} [zIndex] The new `zIndex` of this layer within the list of active layers
  * @property {boolean} [hidden] The new `hidden` constraint of the layer
  * @property {boolean} [alwaysTop] The new `alwaysTop` constraint of the layer
+ * @property {string} [filter] The new `filter` constraint of the layer
  * @property {SwipeAlignment} [swipeAlignment] The new `swipeAlignment` constraint of the layer if the swipe feature is active
  */
 
@@ -108,7 +110,7 @@ const getStore = () => {
  * @param {module:store/layers/layers_action~ModifyLayerOptions} options options
  */
 export const modifyLayer = (id, options = {}) => {
-	const { swipeAlignment, hidden, alwaysTop, ...properties } = options;
+	const { swipeAlignment, hidden, alwaysTop, filter, ...properties } = options;
 	const constraints = {};
 	if (hidden) {
 		constraints.hidden = hidden;
@@ -118,6 +120,9 @@ export const modifyLayer = (id, options = {}) => {
 	}
 	if (swipeAlignment) {
 		constraints.swipeAlignment = swipeAlignment;
+	}
+	if (filter) {
+		constraints.filter = filter;
 	}
 	getStore().dispatch({
 		type: LAYER_MODIFIED,

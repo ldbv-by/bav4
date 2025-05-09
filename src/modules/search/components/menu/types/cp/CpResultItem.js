@@ -15,9 +15,9 @@ import { HighlightFeatureType } from '../../../../../../domain/highlightFeature'
 import { addFeatures, removeFeaturesById } from '../../../../../../store/featureCollection/featureCollection.action';
 import { emitNotification, LevelTypes } from '../../../../../../store/notifications/notifications.action';
 import { BaFeature } from '../../../../../../domain/feature';
-import { StyleTypes } from '../../../../../olMap/services/StyleService';
 import { $injector } from '../../../../../../injection/index';
 import { AbstractResultItem, Highlight_Item_Class, Selected_Item_Class } from '../../AbstractResultItem';
+import { StyleHint } from '../../../../../../domain/styles';
 
 const Update_IsPortrait = 'update_isPortrait';
 const Update_CpSearchResult = 'update_cpSearchResult';
@@ -160,7 +160,7 @@ export class CpResultItem extends AbstractResultItem {
 		};
 
 		const addFeature = (result) => {
-			const feature = new BaFeature(result.geometry, result.id).setStyleHint(StyleTypes.HIGHLIGHT).set('name', result.label);
+			const feature = new BaFeature(result.geometry, result.id).setStyleHint(StyleHint.HIGHLIGHT).set('name', result.label);
 			removeHighlightFeaturesByCategory([SEARCH_RESULT_HIGHLIGHT_FEATURE_CATEGORY, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY]);
 			addFeatures(feature);
 			emitNotification(translate('global_featureCollection_add_feature_notification'), LevelTypes.INFO);

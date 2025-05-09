@@ -3,7 +3,7 @@
  */
 
 import { isString } from '../utils/checks';
-import { SourceType, SourceTypeName, SupportedVectorSourceTypes } from './sourceType';
+import { SourceType, SourceTypeName } from './sourceType';
 
 /**
  * A "framework-neutral" geometry in the BA context.
@@ -21,7 +21,7 @@ export class BaGeometry {
 		if (!(sourceType instanceof SourceType)) {
 			throw new Error('<sourceType> must be a SourceType');
 		}
-		if (sourceType && !SupportedVectorSourceTypes.includes(sourceType.name)) {
+		if (sourceType && !BaGeometry.SupportedVectorSourceTypes.includes(sourceType.name)) {
 			throw new Error(`Unsupported source type: ${sourceType.name.toString()}`);
 		}
 		if (!isString(data) && sourceType.name !== SourceTypeName.GEOJSON) {
@@ -37,5 +37,13 @@ export class BaGeometry {
 
 	get sourceType() {
 		return this.#sourceType;
+	}
+
+	/**
+	 * Returns an Array of all supported vector source type names.
+	 * @return {Readonly<Array<SourceTypeName>>}
+	 */
+	static get SupportedVectorSourceTypes() {
+		return Object.freeze([SourceTypeName.EWKT, SourceTypeName.GEOJSON, SourceTypeName.GPX, SourceTypeName.KML]);
 	}
 }

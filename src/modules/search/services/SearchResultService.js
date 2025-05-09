@@ -37,12 +37,14 @@ export class SearchResultService {
 			EnvironmentService: environmentService,
 			SourceTypeService: sourceTypeService,
 			ImportVectorDataService: importVectorDataService,
-			ImportWmsService: importWmsService
-		} = $injector.inject('EnvironmentService', 'SourceTypeService', 'ImportVectorDataService', 'ImportWmsService');
+			ImportWmsService: importWmsService,
+			ImportOafService: importOafService
+		} = $injector.inject('EnvironmentService', 'SourceTypeService', 'ImportVectorDataService', 'ImportWmsService', 'ImportOafService');
 		this._environmentService = environmentService;
 		this._sourceTypeService = sourceTypeService;
 		this._importVectorDataService = importVectorDataService;
 		this._importWmsService = importWmsService;
+		this._importOafService = importOafService;
 	}
 
 	_mapSourceTypeToLabel(sourceType) {
@@ -75,6 +77,14 @@ export class SearchResultService {
 				}
 				case SourceTypeName.WMS: {
 					const geoResources = await this._importWmsService.forUrl(url, {
+						sourceType: sourceType,
+						isAuthenticated: status === SourceTypeResultStatus.BAA_AUTHENTICATED
+					});
+					// in this case the geoResourceId is a random number provided by the importWmsService.
+					return geoResources.length ? geoResources.map((gr) => new GeoResourceSearchResult(gr.id, gr.label)) : [];
+				}
+				case SourceTypeName.OAF: {
+					const geoResources = await this._importOafService.forUrl(url, {
 						sourceType: sourceType,
 						isAuthenticated: status === SourceTypeResultStatus.BAA_AUTHENTICATED
 					});

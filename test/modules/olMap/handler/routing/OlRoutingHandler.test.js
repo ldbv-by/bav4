@@ -44,7 +44,6 @@ import {
 import { layersReducer } from '../../../../../src/store/layers/layers.reducer';
 import { VectorGeoResource, VectorSourceType } from '../../../../../src/domain/geoResources';
 import { PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID, PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID } from '../../../../../src/plugins/RoutingPlugin';
-import { StyleTypes } from '../../../../../src/modules/olMap/services/StyleService';
 import { simulateMapBrowserEvent } from '../../mapTestUtils';
 
 describe('constants and enums', () => {
@@ -1223,7 +1222,7 @@ describe('OlRoutingHandler', () => {
 				const feature = instanceUnderTest._interactionLayer.getSource().getFeatures()[0];
 				expect(feature.get(ROUTING_FEATURE_TYPE)).toBe(RoutingFeatureTypes.INTERMEDIATE);
 				expect(feature.get(ROUTING_FEATURE_INDEX)).toBe(42);
-				expect(feature.getId().startsWith(`${StyleTypes.ROUTING}_`)).toBeTrue();
+				expect(feature.getId().startsWith(`routing_`)).toBeTrue();
 				expect(feature.getGeometry()).toBeInstanceOf(Point);
 				expect(feature.getGeometry().getFirstCoordinate()).toEqual(coordinate);
 				expect(feature.getStyle()(feature)).toEqual(getRoutingStyleFunction()(feature));
