@@ -7,7 +7,7 @@ import { $injector } from '../../../../injection';
 import { setCurrentTool } from '../../../../store/tools/tools.action';
 import { findAllBySelector } from '../../../../utils/markup';
 import { MvuElement } from '../../../MvuElement';
-import closeSvg from './assets/close.svg';
+import closeSvg from '../../../../assets/icons/x-square.svg';
 import css from './mapInteractionButtonContainer.css';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { BottomSheet } from '../../../stackables/components/bottomSheet/BottomSheet';

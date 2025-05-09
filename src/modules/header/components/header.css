@@ -147,11 +147,11 @@
 .resize-icon {
 	background: var(--text2);
 	display: block;
-	height: 2em;
-	width: 2.1em;
-	margin: 0.2em;
-	mask: url('assets/clear.svg');
-	-webkit-mask: url('assets/clear.svg');
+	height: 1.7em;
+	width: 1.7em;
+	margin: auto;
+	mask: url('../../../assets/icons/x-square.svg');
+	-webkit-mask: url('../../../assets/icons/x-square.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
@@ -259,7 +259,7 @@
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: 5.4em 5.4em;
-	background-image: url('assets/ba.svg');
+	background-image: url('../../../assets/icons/ba.svg');
 }
 .animated-action-button__border {
 	background: linear-gradient(to right, rgb(58, 132, 195) 0%, rgb(65, 154, 214) 50%, rgb(75, 184, 240) 51%, rgb(58, 139, 194) 100%);
@@ -326,11 +326,11 @@
 	border-radius: 0 var(--border-radius-button) var(--border-radius-button) 0;
 }
 .header__search-clear .icon {
-	height: 1.5em;
-	width: 1.5em;
+	height: 1.2em;
+	width: 1.2em;
 	margin-right: 0.3em;
-	mask: url('assets/clear.svg');
-	-webkit-mask: url('assets/clear.svg');
+	mask: url('../../../assets/icons/x-square.svg');
+	-webkit-mask: url('../../../assets/icons/x-square.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
 	background: var(--text1);
