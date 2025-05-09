@@ -623,7 +623,7 @@ export class AbstractVectorGeoResource extends GeoResource {
 	}
 
 	/**
-	 * @returns {boolean} `true` if this `VectorGeoResource` should be displayed clustered
+	 * @returns {boolean} `true` if this `AbstractVectorGeoResource` should be displayed clustered
 	 */
 	isClustered() {
 		return !!Object.keys(this._clusterParams).length;
@@ -646,7 +646,7 @@ export class AbstractVectorGeoResource extends GeoResource {
 	}
 
 	/**
-	 * @returns {boolean}`true` if this VectorGeoResource has specific style hint
+	 * @returns {boolean}`true` if this AbstractVectorGeoResource has specific style hint
 	 */
 	hasStyleHint() {
 		return !!this._styleHint;
@@ -657,7 +657,7 @@ export class AbstractVectorGeoResource extends GeoResource {
 	}
 
 	/**
-	 * Set the style hint for this `RtVectorGeoResource`
+	 * Set the style hint for this `AbstractVectorGeoResource`
 	 * @param {StyleHint} styleHint
 	 * @returns {AbstractVectorGeoResource}
 	 */
