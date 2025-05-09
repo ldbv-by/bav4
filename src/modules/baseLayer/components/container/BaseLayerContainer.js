@@ -39,11 +39,13 @@ export class BaseLayerContainer extends MvuElement {
 
 	onInitialize() {
 		this.observe(
-			(store) => store.topics.current,
-			(current) => {
-				if (current) {
-					// if the current topic has no baseGeoRs definition, we take it form the default topic
-					const categories = this.#topicsService.byId(current)?.baseGeoRs ?? this.#topicsService.byId(this.#topicsService.default().id).baseGeoRs;
+			(store) => store.topics,
+			(topics) => {
+				const { current, ready } = topics;
+				if (ready) {
+					const categories =
+						// if the current topic has no baseGeoRs definition, we take it form the default topic
+						this.#topicsService.byId(current)?.baseGeoRs ?? this.#topicsService.default().baseGeoRs;
 					this.signal(Update_Categories, categories);
 				}
 			}
