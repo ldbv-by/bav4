@@ -17,7 +17,8 @@ import {
 	getLineString,
 	multiLineStringToLineString,
 	getCoordinatesForElevationProfile,
-	polarStakeOut
+	polarStakeOut,
+	isClockwise
 } from '../../../../src/modules/olMap/utils/olGeometryUtils';
 import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing, MultiLineString, MultiPolygon } from 'ol/geom';
 import proj4 from 'proj4';
@@ -638,6 +639,7 @@ describe('calculatePartitionResidualOfSegments', () => {
 		).toEqual([0, 0.05]);
 	});
 });
+
 describe('getStats', () => {
 	it('returns a empty statistic-object', () => {
 		const statsForNoGeometry = getStats(null);
@@ -1084,5 +1086,55 @@ describe('getBoundingBoxFrom', () => {
 
 			expect(getCoordinatesForElevationProfile(geometry)).toEqual([]);
 		});
+	});
+});
+
+describe('isClockwise', () => {
+	it('determines the clockwise orientation of a simple polygon', () => {
+		const clockwiseCoordinates = [
+			[1, 0],
+			[1, 5],
+			[4, 5],
+			[6, 4],
+			[5, 0]
+		];
+
+		const counterClockwiseCoordinates = [
+			[5, 0],
+			[6, 4],
+			[4, 5],
+			[1, 5],
+			[1, 0]
+		];
+
+		expect(isClockwise(clockwiseCoordinates)).toBeTrue();
+		expect(isClockwise(clockwiseCoordinates.toReversed())).toBeFalse();
+
+		expect(isClockwise(counterClockwiseCoordinates)).toBeFalse();
+		expect(isClockwise(counterClockwiseCoordinates.toReversed())).toBeTrue();
+	});
+
+	it('does NOT determine an orientation for co-linear coordinates', () => {
+		const colinearCoordinates = [
+			[0, 0],
+			[0, 1],
+			[0, 2],
+			[0, 3],
+			[0, 4]
+		];
+
+		expect(isClockwise(colinearCoordinates)).toBeUndefined();
+	});
+
+	it('does NOT determine an orientation for invalid (lineString?) coordinates', () => {
+		const lineStringCoordinates = [
+			[0, 0],
+			[42, 21]
+		];
+
+		expect(isClockwise(lineStringCoordinates)).toBeUndefined();
+		expect(isClockwise([])).toBeUndefined();
+		expect(isClockwise([[]])).toBeUndefined();
+		expect(isClockwise([[0, 0]])).toBeUndefined();
 	});
 });
