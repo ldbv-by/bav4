@@ -1,0 +1,49 @@
+.searchable-select {
+	cursor: pointer;
+	overflow-wrap: anywhere;
+	position: relative;
+}
+
+.hidden {
+	display: none;
+}
+
+.visible {
+	display: block;
+}
+
+.option {
+	background-color: var(--primary-bg-color);
+	border-bottom: 1px solid var(--text1);
+	min-height: 20px;
+	padding: 8px 15px;
+}
+
+.option:hover {
+	background-color: #ddd;
+}
+
+.caret-fill-down {
+	mask: url('./assets/caret-down-fill.svg');
+	-webkit-mask: url('./assets/caret-down-fill.svg');
+	background-color: var(--primary-color);
+	width: 16px;
+	height: 16px;
+	border: none;
+}
+
+.search-input-container input {
+	border: none;
+}
+
+.search-input-container {
+	display: flex;
+	flex-direction: row;
+	border: 1px solid var(--primary-color);
+	padding: 3px 8px;
+}
+
+.dropdown {
+	position: absolute;
+	width: 100%;
+}
