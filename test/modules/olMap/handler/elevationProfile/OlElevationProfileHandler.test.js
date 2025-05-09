@@ -435,9 +435,9 @@ describe('OlElevationProfileHandler', () => {
 			expect(updateCoordinatesSpy).toHaveBeenCalled();
 			expect(elevationServiceSpy).toHaveBeenCalledOnceWith([
 				[0, 0],
-				[0, 1],
-				[1, 1],
 				[1, 0],
+				[1, 1],
+				[0, 1],
 				[0, 0]
 			]);
 		});
@@ -633,9 +633,9 @@ describe('OlElevationProfileHandler', () => {
 			expect(updateCoordinatesSpy).toHaveBeenCalled();
 			expect(elevationServiceSpy).toHaveBeenCalledWith([
 				[0, 0],
-				[0, 1],
-				[1, 1],
 				[1, 0],
+				[1, 1],
+				[0, 1],
 				[0, 0]
 			]);
 		});

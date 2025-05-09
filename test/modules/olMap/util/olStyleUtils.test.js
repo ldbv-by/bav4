@@ -40,6 +40,7 @@ import { $injector } from '../../../../src/injection';
 import CircleStyle from 'ol/style/Circle';
 import { hexToRgb } from '../../../../src/utils/colors';
 import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../../../src/modules/olMap/ol/geodesic/geodesicGeometry';
+import { isClockwise } from '../../../../src/modules/olMap/utils/olGeometryUtils';
 
 const Rgb_Black = [0, 0, 0];
 const Expected_Text_Font = 'normal 16px Open Sans';
@@ -380,6 +381,77 @@ describe('measureStyleFunction', () => {
 		customRenderer(pixelCoordinates, stateMock);
 
 		expect(contextMoveToSpy).toHaveBeenCalled();
+	});
+
+	it('should draw clockwise geometry in reversed order to context with linear ruler-style', () => {
+		const contextRenderer = jasmine.createSpy('contextRenderer');
+		const segments = [];
+		contextRenderer.and.callFake((segment, fill, stroke) =>
+			stroke.getWidth() === 8 ? segment.getCoordinates().forEach((c) => segments.push(c)) : () => {}
+		);
+		const clockwiseGeometry = new Polygon([
+			[
+				[5, 0],
+				[5, 5],
+				[4, 5],
+				[1, 5],
+				[1, 0]
+			]
+		]);
+		const clockwiseFeature = new Feature({ geometry: clockwiseGeometry });
+
+		// openlayers ensures that pixelCoordinates for polygons(outerBoundary) are always counter-clockwise for a
+		// top-left coordinate system (like canvas) -> !isClockwise()
+		const counterclockwisePixelCoordinates = [
+			[
+				[50, 0],
+				[50, 50],
+				[40, 50],
+				[10, 50],
+				[10, 0]
+			]
+		];
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(1);
+		const stateMock = { geometry: clockwiseFeature.getGeometry(), resolution: resolution, feature: clockwiseFeature, pixelRatio: 1 };
+
+		renderLinearRulerSegments(counterclockwisePixelCoordinates, stateMock, contextRenderer);
+		expect(isClockwise(segments)).toBeTrue();
+	});
+
+	it('should draw counter-clockwise geometry in standard order to context with linear ruler-style', () => {
+		const contextRenderer = jasmine.createSpy();
+		const segments = [];
+		contextRenderer.and.callFake((segment, fill, stroke) =>
+			stroke.getWidth() === 8 ? segment.getCoordinates().forEach((c) => segments.push(c)) : () => {}
+		);
+
+		const counterclockwiseGeometry = new Polygon([
+			[
+				[1, 0],
+				[1, 5],
+				[4, 5],
+				[5, 5],
+				[5, 0]
+			]
+		]);
+		const counterclockwiseFeature = new Feature({ geometry: counterclockwiseGeometry });
+
+		// openlayers ensures that pixelCoordinates for polygons(outerBoundary) are always counter-clockwise for a
+		// top-left coordinate system (like canvas) -> !isClockwise()
+		const counterclockwisePixelCoordinates = [
+			[
+				[50, 0],
+				[50, 50],
+				[40, 50],
+				[10, 50],
+				[10, 0]
+			]
+		];
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(1);
+		const stateMock = { geometry: counterclockwiseFeature.getGeometry(), resolution: resolution, feature: counterclockwiseFeature, pixelRatio: 1 };
+
+		renderLinearRulerSegments(counterclockwisePixelCoordinates, stateMock, contextRenderer);
+		expect(isClockwise(segments)).toBeFalse();
 	});
 
 	it('should draw to context with geodetic ruler-style', () => {
