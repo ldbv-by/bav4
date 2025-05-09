@@ -8,7 +8,8 @@ import {
 	moveParallel,
 	getLineString,
 	PROJECTED_LENGTH_GEOMETRY_PROPERTY,
-	polarStakeOut
+	polarStakeOut,
+	isClockwise
 } from './olGeometryUtils';
 import { toContext as toCanvasContext } from 'ol/render';
 import { Fill, Stroke, Style, Circle as CircleStyle, Icon, Text as TextStyle } from 'ol/style';
@@ -530,8 +531,17 @@ export const renderLinearRulerSegments = (pixelCoordinates, state, contextRender
 
 	// per segment
 	if (displayRuler) {
-		const segmentCoordinates = geometry instanceof Polygon || geometry instanceof MultiLineString ? pixelCoordinates[0] : pixelCoordinates;
-
+		const getCoordinatesInDigitizedOrder = (coordinates) => {
+			// PixelCoordinates bases on a top-left coordinate system(canvas), so the isClockwise() value must be inverted.
+			// The geometry from state.geometry is in the coordinate system of the map projection and should be bottom-right oriented.
+			// When state.geometry.getCoordinates() is called(without 'right-handed'-parameter), the coordinates are in the same order as they were when the polygon was created.
+			if (isClockwise(state.geometry.getCoordinates()[0]) === isClockwise(coordinates)) {
+				return coordinates.toReversed();
+			}
+			return coordinates;
+		};
+		const segmentCoordinates =
+			geometry instanceof Polygon || geometry instanceof MultiLineString ? getCoordinatesInDigitizedOrder(pixelCoordinates[0]) : pixelCoordinates;
 		segmentCoordinates.every((coordinate, index, coordinates) => {
 			return drawTicks(contextRenderFunction, [coordinate, coordinates[index + 1]], residuals[index], partitionTickDistance);
 		});
