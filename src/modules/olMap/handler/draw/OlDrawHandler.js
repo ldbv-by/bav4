@@ -8,13 +8,18 @@ import { Vector as VectorLayer } from 'ol/layer';
 import { $injector } from '../../../../injection';
 import { Draw, Modify, Select, Snap } from 'ol/interaction';
 import {
-	createSketchStyleFunction,
+	getSketchStyleFunction,
 	getColorFrom,
 	getDrawingTypeFrom,
 	getSizeFrom,
 	getSymbolFrom,
 	getTextFrom,
-	selectStyleFunction
+	getLineStyleArray,
+	getMarkerStyleArray,
+	getNullStyleArray,
+	getPolygonStyleArray,
+	getSelectStyleFunction,
+	getTextStyleArray
 } from '../../utils/olStyleUtils';
 import { StyleTypes } from '../../services/StyleService';
 import { StyleSize } from '../../../../domain/styles';
@@ -499,8 +504,7 @@ export class OlDrawHandler extends OlLayerHandler {
 				if (description) {
 					this._sketchHandler.active.set('description', description);
 				}
-				const styleFunction = this._getStyleFunctionByDrawType(type, this._getStyleOption());
-				const styles = styleFunction(this._sketchHandler.active);
+				const styles = this._getStyleFunctionByDrawType(type, this._getStyleOption());
 				this._sketchHandler.active.setStyle(styles);
 				this._drawingListeners.push(event.feature.on('change', onFeatureChange));
 			});
@@ -608,7 +612,7 @@ export class OlDrawHandler extends OlLayerHandler {
 					source: source,
 					type: 'LineString',
 					snapTolerance: snapTolerance,
-					style: createSketchStyleFunction(this._getStyleFunctionByDrawType('line', styleOption)),
+					style: getSketchStyleFunction(this._getStyleFunctionByDrawType('line', styleOption)),
 					wrapX: true
 				});
 			case StyleTypes.POLYGON:
@@ -617,7 +621,7 @@ export class OlDrawHandler extends OlLayerHandler {
 					type: 'Polygon',
 					minPoints: 3,
 					snapTolerance: snapTolerance,
-					style: createSketchStyleFunction(this._getStyleFunctionByDrawType('polygon', styleOption)),
+					style: getSketchStyleFunction(this._getStyleFunctionByDrawType('polygon', styleOption)),
 					wrapX: true
 				});
 			default:
@@ -629,7 +633,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		const select = new Select(getSelectOptions(this._vectorLayer));
 		select.getFeatures().on('add', (e) => {
 			const feature = e.element;
-			const styleFunction = selectStyleFunction();
+			const styleFunction = getSelectStyleFunction();
 			const styles = styleFunction(feature);
 			e.element.setStyle(styles);
 		});
@@ -717,12 +721,19 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_getStyleFunctionByDrawType(drawType, styleOption) {
-		const drawTypes = [StyleTypes.POINT, StyleTypes.MARKER, StyleTypes.TEXT, StyleTypes.LINE, StyleTypes.POLYGON];
-		if (drawTypes.includes(drawType)) {
-			const styleFunction = this._styleService.getStyleFunction(drawType);
-			return () => styleFunction(styleOption);
+		switch (drawType) {
+			case StyleTypes.LINE:
+				return getLineStyleArray(styleOption);
+			case StyleTypes.POLYGON:
+				return getPolygonStyleArray(styleOption);
+			case StyleTypes.POINT:
+			case StyleTypes.MARKER:
+				return getMarkerStyleArray(styleOption);
+			case StyleTypes.TEXT:
+				return getTextStyleArray(styleOption);
+			default:
+				return getNullStyleArray();
 		}
-		return this._styleService.getStyleFunction(StyleTypes.DRAW);
 	}
 
 	_updateStatistic() {
@@ -791,8 +802,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		if (this._drawState.type === InteractionStateType.MODIFY && this._select.getFeatures().getLength() > 0) {
 			const feature = this._select.getFeatures().item(0);
 
-			const styleFunction = this._getStyleFunctionFrom(feature);
-			const newStyles = styleFunction(feature);
+			const newStyles = this._getStyleFunctionFrom(feature);
 
 			feature.setStyle([newStyles[0], ...feature.getStyle().slice(1)]);
 			this._setSelected(feature);
@@ -800,8 +810,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		if (this._drawState.type === InteractionStateType.DRAW) {
 			if (this._sketchHandler.isActive) {
-				const styleFunction = this._getStyleFunctionFrom(this._sketchHandler.active);
-				const newStyles = styleFunction(this._sketchHandler.active);
+				const newStyles = this._getStyleFunctionFrom(this._sketchHandler.active);
 				this._sketchHandler.active.setStyle(newStyles);
 			}
 		}

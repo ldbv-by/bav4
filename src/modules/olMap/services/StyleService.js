@@ -6,19 +6,15 @@ import { $injector } from '../../../injection';
 import { getContrastColorFrom, rgbToHex } from '../../../utils/colors';
 import {
 	measureStyleFunction,
-	nullStyleFunction,
-	lineStyleFunction,
-	polygonStyleFunction,
-	textStyleFunction,
+	getTextStyleArray,
 	markerScaleToKeyword,
 	getStyleArray,
-	geojsonStyleFunction,
-	defaultStyleFunction,
+	getGeojsonStyleArray,
+	getDefaultStyleFunction,
 	defaultClusterStyleFunction,
-	markerStyleFunction,
+	getMarkerStyleArray,
 	getTransparentImageStyle
 } from '../utils/olStyleUtils';
-import { isFunction } from '../../../utils/checks';
 import { getRoutingStyleFunction } from '../handler/routing/styleUtils';
 import { GeometryCollection, MultiPoint, Point } from '../../../../node_modules/ol/geom';
 import { Stroke, Style, Text } from '../../../../node_modules/ol/style';
@@ -191,49 +187,6 @@ export class StyleService {
 	}
 
 	/**
-	 * Returns a {@link ol.style.StyleFunction} for the specified {@link StyleTypes}
-	 * @param {StyleTypes} styleType
-	 * @returns {Function} the {@link ol.style.StyleFunction}, used by ol to render a feature
-	 */
-	getStyleFunction(styleType) {
-		switch (styleType) {
-			case StyleTypes.NULL:
-				return nullStyleFunction;
-			case StyleTypes.MEASURE:
-				return measureStyleFunction;
-			case StyleTypes.LINE:
-				return lineStyleFunction;
-			case StyleTypes.POLYGON:
-				return polygonStyleFunction;
-			case StyleTypes.POINT:
-			case StyleTypes.MARKER:
-				return markerStyleFunction;
-			case StyleTypes.TEXT:
-				return textStyleFunction;
-			case StyleTypes.DRAW:
-				return nullStyleFunction;
-			case StyleTypes.GEOJSON:
-				return geojsonStyleFunction;
-			case StyleTypes.DEFAULT:
-				return defaultStyleFunction;
-			default:
-				console.warn('Could not provide a style for unknown style-type:', styleType);
-		}
-	}
-
-	/**
-	 * Returns a {@link ol.style.StyleFunction} for a specified {@link StyleTypes}
-	 * @param {StyleTypes} styleType
-	 * @returns {Function|null} the {@link ol.style.StyleFunction} or `null`
-	 */
-	getFeatureStyleFunction(styleType) {
-		return (feature, resolution) => {
-			const result = this.getStyleFunction(styleType);
-			return isFunction(result) ? result(feature, resolution) : result;
-		};
-	}
-
-	/**
 	 * Tests if the specified {@link ol.Feature} needs to be styled
 	 * @param {ol.Feature} olFeature the style-candidate {@link ol.Feature}
 	 * @returns {Boolean} whether or not the specified feature requires a style
@@ -348,7 +301,7 @@ export class StyleService {
 	}
 
 	_addGeoJSONStyle(olFeature) {
-		olFeature.setStyle(geojsonStyleFunction);
+		olFeature.setStyle(getGeojsonStyleArray);
 	}
 
 	_addTextStyle(olFeature) {
@@ -368,7 +321,7 @@ export class StyleService {
 			return styles ? fromStyle(styles[0]) : fromAttribute(olFeature);
 		};
 
-		const newStyle = textStyleFunction(getStyleOption());
+		const newStyle = getTextStyleArray(getStyleOption());
 
 		olFeature.setStyle(() => newStyle);
 	}
@@ -402,7 +355,7 @@ export class StyleService {
 			return styles ? fromStyle(styles[0]) : fromAttribute(olFeature);
 		};
 
-		const newStyle = markerStyleFunction(getStyleOption(olFeature));
+		const newStyle = getMarkerStyleArray(getStyleOption(olFeature));
 
 		olFeature.setStyle(() => newStyle);
 	}
@@ -427,7 +380,7 @@ export class StyleService {
 		};
 
 		const color = olLayer && !isGPX(olLayer) ? getColorByLayerId(olLayer) : this._nextColor();
-		olFeature.setStyle(defaultStyleFunction(color));
+		olFeature.setStyle(getDefaultStyleFunction(color));
 	}
 
 	_detectStyleType(olFeature) {
