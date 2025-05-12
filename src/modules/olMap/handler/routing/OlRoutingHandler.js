@@ -47,6 +47,7 @@ import {
 	getBvvAttributionForRoutingResult,
 	getAttributionForLocallyImportedOrCreatedGeoResource
 } from '../../../../services/provider/attribution.provider';
+import { StyleTypes } from '../../services/StyleService';
 import { createUniqueId } from '../../../../utils/numberUtils';
 import { INTERACTION_BOTTOM_SHEET_ID } from '../../../../store/bottomSheet/bottomSheet.reducer';
 
@@ -377,7 +378,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 		iconFeature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.INTERMEDIATE);
 
 		iconFeature.set(ROUTING_FEATURE_INDEX, index);
-		iconFeature.setId(`routing_${createUniqueId()}`);
+		iconFeature.setId(`${StyleTypes.ROUTING}_${createUniqueId()}`);
 		iconFeature.setStyle(getRoutingStyleFunction());
 
 		this._interactionLayer.getSource().addFeature(iconFeature);
