@@ -186,6 +186,7 @@ describe('MiscContentPanel', () => {
 		it('changes the theme with the theme-switch', async () => {
 			const element = await setup();
 			const themeSwitch = element.shadowRoot.querySelector('#themeToggle');
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item-toggle')).toHaveSize(1);
 
 			expect(store.getState().media.darkSchema).toBeTrue();
 			expect(element.shadowRoot.querySelectorAll('.sun')).toHaveSize(1);
