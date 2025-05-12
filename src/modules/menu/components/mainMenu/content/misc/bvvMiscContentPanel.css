@@ -95,6 +95,10 @@
 	-webkit-mask-image: url('assets/moon.svg');
 }
 
+.ba-list-item-toggle {
+	font-size: 1rem;
+}
+
 .settings {
 	mask-size: cover;
 	-webkit-mask-size: cover;
