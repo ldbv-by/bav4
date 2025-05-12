@@ -44,6 +44,7 @@ import {
 import { layersReducer } from '../../../../../src/store/layers/layers.reducer';
 import { VectorGeoResource, VectorSourceType } from '../../../../../src/domain/geoResources';
 import { PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID, PERMANENT_WP_LAYER_OR_GEO_RESOURCE_ID } from '../../../../../src/plugins/RoutingPlugin';
+import { StyleTypes } from '../../../../../src/modules/olMap/services/StyleService';
 import { simulateMapBrowserEvent } from '../../mapTestUtils';
 
 describe('constants and enums', () => {
