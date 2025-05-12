@@ -134,8 +134,10 @@ export const getMarkerSrc = (symbolSrc = null, symbolColor = '#ffffff') => {
 	return getIconUrl(Default_Symbol);
 };
 
+// TODO: --> no StyleFunction!
 export const nullStyleFunction = () => [new Style({})];
 
+// TODO: --> no StyleFunction!
 /**
  * A StyleFunction which returns styles based on styling properties of the feature
  * according to {@see https://github.com/mapbox/simplestyle-spec/tree/master/1.1.0| simpleStyle spec 1.1.0}.
@@ -293,6 +295,7 @@ export const defaultClusterStyleFunction = () => {
 	};
 };
 
+// TODO: --> no StyleFunction!
 /**
  * Function to style a marker symbol
  * @param {null|StyleOption} styleOption the styleOption
@@ -335,6 +338,7 @@ export const markerStyleFunction = (styleOption = DEFAULT_STYLE_OPTION) => {
 	];
 };
 
+// TODO: --> no StyleFunction!
 /**
  * Function to style a text symbol
  * @param {StyleOption} styleOption the styleOption
@@ -353,6 +357,7 @@ export const textStyleFunction = (styleOption = DEFAULT_STYLE_OPTION) => {
 	];
 };
 
+// TODO: --> no StyleFunction!
 /**
  * Function to style a line geometry
  * @param {StyleOption} styleOption the styleOption
@@ -668,6 +673,7 @@ export const modifyStyleFunction = (feature) => {
 	];
 };
 
+// TODO: --> no StyleFunction!
 export const selectStyleFunction = () => {
 	const constructionStroke = new Stroke({
 		color: Black_Color.concat([1]),
@@ -727,6 +733,7 @@ export const selectStyleFunction = () => {
 	};
 };
 
+// TODO: --> no StyleFunction!
 /**
  * returns the default styleFunction, based on the specified color
  * @param {Array<number>} color the rgba-color An Array of numbers, defining a RGBA-Color with [Red{0,255},Green{0,255},Blue{0,255},Alpha{0,1}]

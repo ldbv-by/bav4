@@ -6,9 +6,6 @@ import { $injector } from '../../../injection';
 import { getContrastColorFrom, rgbToHex } from '../../../utils/colors';
 import {
 	measureStyleFunction,
-	nullStyleFunction,
-	lineStyleFunction,
-	polygonStyleFunction,
 	textStyleFunction,
 	markerScaleToKeyword,
 	getStyleArray,
@@ -18,7 +15,6 @@ import {
 	markerStyleFunction,
 	getTransparentImageStyle
 } from '../utils/olStyleUtils';
-import { isFunction } from '../../../utils/checks';
 import { getRoutingStyleFunction } from '../handler/routing/styleUtils';
 import { GeometryCollection, MultiPoint, Point } from '../../../../node_modules/ol/geom';
 import { Stroke, Style, Text } from '../../../../node_modules/ol/style';
@@ -188,49 +184,6 @@ export class StyleService {
 		const usingStyleType = this._detectStyleType(olFeature);
 		const { OverlayService: overlayService } = $injector.inject('OverlayService');
 		overlayService.remove(olFeature, olMap, usingStyleType);
-	}
-
-	/**
-	 * Returns a {@link ol.style.StyleFunction} for the specified {@link StyleTypes}
-	 * @param {StyleTypes} styleType
-	 * @returns {Function} the {@link ol.style.StyleFunction}, used by ol to render a feature
-	 */
-	getStyleFunction(styleType) {
-		switch (styleType) {
-			case StyleTypes.NULL:
-				return nullStyleFunction;
-			case StyleTypes.MEASURE:
-				return measureStyleFunction;
-			case StyleTypes.LINE:
-				return lineStyleFunction;
-			case StyleTypes.POLYGON:
-				return polygonStyleFunction;
-			case StyleTypes.POINT:
-			case StyleTypes.MARKER:
-				return markerStyleFunction;
-			case StyleTypes.TEXT:
-				return textStyleFunction;
-			case StyleTypes.DRAW:
-				return nullStyleFunction;
-			case StyleTypes.GEOJSON:
-				return geojsonStyleFunction;
-			case StyleTypes.DEFAULT:
-				return defaultStyleFunction;
-			default:
-				console.warn('Could not provide a style for unknown style-type:', styleType);
-		}
-	}
-
-	/**
-	 * Returns a {@link ol.style.StyleFunction} for a specified {@link StyleTypes}
-	 * @param {StyleTypes} styleType
-	 * @returns {Function|null} the {@link ol.style.StyleFunction} or `null`
-	 */
-	getFeatureStyleFunction(styleType) {
-		return (feature, resolution) => {
-			const result = this.getStyleFunction(styleType);
-			return isFunction(result) ? result(feature, resolution) : result;
-		};
 	}
 
 	/**

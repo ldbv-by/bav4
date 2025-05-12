@@ -142,7 +142,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const source = new VectorSource({ wrapX: true, useSpatialIndex: false });
 			const layer = new VectorLayer({
 				source: source,
-				style: this._styleService.getStyleFunction(StyleTypes.MEASURE)
+				style: measureStyleFunction
 			});
 			layer.label = translate('olMap_handler_draw_layer_label');
 			return layer;
@@ -487,13 +487,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_createDraw(source) {
-		const measureFeatureStyleFunction = this._styleService.getStyleFunction(StyleTypes.MEASURE);
 		const draw = new Draw({
 			source: source,
 			type: 'Polygon',
 			minPoints: 2,
 			snapTolerance: getSnapTolerancePerDevice(),
-			style: createSketchStyleFunction(measureFeatureStyleFunction, this._getSketchStyleOptions()),
+			style: createSketchStyleFunction(measureStyleFunction, this._getSketchStyleOptions()),
 			wrapX: true
 		});
 

@@ -1194,60 +1194,6 @@ describe('StyleService', () => {
 		});
 	});
 
-	describe('getStyleFunction', () => {
-		it('returns a StyleFunction for a valid StyleType', () => {
-			expect(instanceUnderTest.getStyleFunction(StyleTypes.NULL)).toEqual(jasmine.any(Function));
-			expect(instanceUnderTest.getStyleFunction(StyleTypes.MEASURE)).toEqual(jasmine.any(Function));
-			expect(instanceUnderTest.getStyleFunction(StyleTypes.POINT)).toEqual(jasmine.any(Function));
-			expect(instanceUnderTest.getStyleFunction(StyleTypes.MARKER)).toEqual(jasmine.any(Function));
-			expect(instanceUnderTest.getStyleFunction(StyleTypes.TEXT)).toEqual(jasmine.any(Function));
-			expect(instanceUnderTest.getStyleFunction(StyleTypes.LINE)).toEqual(jasmine.any(Function));
-			expect(instanceUnderTest.getStyleFunction(StyleTypes.POLYGON)).toEqual(jasmine.any(Function));
-			expect(instanceUnderTest.getStyleFunction(StyleTypes.DRAW)).toEqual(jasmine.any(Function));
-			expect(instanceUnderTest.getStyleFunction(StyleTypes.DEFAULT)).toEqual(jasmine.any(Function));
-			expect(instanceUnderTest.getStyleFunction(StyleTypes.GEOJSON)).toEqual(jasmine.any(Function));
-		});
-
-		it('fails for a invalid StyleType', () => {
-			const warnSpy = spyOn(console, 'warn');
-
-			const styleFunction = instanceUnderTest.getStyleFunction('unknown');
-
-			expect(styleFunction).toBeUndefined();
-			expect(warnSpy).toHaveBeenCalledWith('Could not provide a style for unknown style-type:', 'unknown');
-		});
-	});
-
-	describe('getFeatureStyleFunction', () => {
-		describe('#getStyle returns a style function', () => {
-			it('returns a style function', () => {
-				const style = new Style();
-				const feature = new Feature();
-				const resolution = 42;
-				const spy = jasmine.createSpy().and.returnValue(style);
-				spyOn(instanceUnderTest, 'getStyleFunction').withArgs(StyleTypes.ROUTING).and.returnValue(spy);
-
-				const result = instanceUnderTest.getFeatureStyleFunction(StyleTypes.ROUTING)(feature, resolution);
-
-				expect(spy).toHaveBeenCalledOnceWith(feature, resolution);
-				expect(result).toEqual(style);
-			});
-		});
-
-		describe('#getStyle returns a style', () => {
-			it('returns a style function', () => {
-				const style = new Style();
-				const feature = new Feature();
-				const resolution = 42;
-				spyOn(instanceUnderTest, 'getStyleFunction').withArgs(StyleTypes.ROUTING).and.returnValue(style);
-
-				const result = instanceUnderTest.getFeatureStyleFunction(StyleTypes.ROUTING)(feature, resolution);
-
-				expect(result).toEqual(style);
-			});
-		});
-	});
-
 	describe('removes styles', () => {
 		it('removes a style from measure feature', () => {
 			const feature = new Feature({
