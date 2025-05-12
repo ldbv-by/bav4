@@ -96,7 +96,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 					</span>
 					<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_feedback_title')}</span>
 				</button>
-				<div class="ba-list-item divider">
+				<div class="ba-list-item divider ba-list-item-toggle">
 					<span class="ba-list-item__pre">
 						<span class="ba-list-item__icon icon  ${getThemeIcon()}"> </span>
 					</span>
