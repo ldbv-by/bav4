@@ -1,0 +1,56 @@
+.ogc-filter-row {
+	padding: 10px;
+	border: 1px solid var(--primary-color);
+	background: #ddd;
+}
+
+.flex-container {
+	display: flex;
+	flex-grow: 1;
+	justify-content: center;
+}
+
+.column {
+	flex-direction: column;
+}
+
+.row {
+	flex-direction: row;
+}
+
+.grid-row {
+	display: grid;
+	grid-template-rows: 1fr 1fr;
+	gap: 4px;
+}
+
+.grid-column {
+	display: grid;
+	grid-template-columns: 0.75fr 1fr;
+	gap: 5px;
+}
+
+.grid-column-header {
+	display: grid;
+	grid-template-columns: 1fr 50px;
+}
+
+.input-filter {
+	display: flex;
+	align-self: center;
+	font-weight: 600;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.input-operator select {
+	padding: 10px;
+}
+
+.input-value input {
+	padding: 5px;
+}
+
+select {
+	background-color: white;
+}

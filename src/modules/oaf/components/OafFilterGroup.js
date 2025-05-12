@@ -63,14 +63,15 @@ export class OafFilterGroup extends MvuElement {
 				${css}
 			</style>
 			<div class="filter-group">
-				<h2>OGC Filter</h2>
+				<h2 style="padding: 10px 0;">Filtergruppe</h2>
 				<select id="queryable-select" @change=${onAddFilter}>
+					<option selected>Select Filter...</option>
 					${queryables
 						.filter((queryable) => !activeFilters.includes(queryable))
 						.map((queryable) => html`<option .value=${queryable.name}>${queryable.name}</option>`)}
 				</select>
 				<div class="">
-					${activeFilters.map((filter) => html`<ba-oaf-row .filter=${filter} @removeRow=${onRemoveFilter}></ba-oaf-row>`)}
+					${activeFilters.map((filter) => html`<ba-oaf-filter .filter=${filter} @removeRow=${onRemoveFilter}></ba-oaf-filter>`)}
 					<div class="ogc-filter-navigation"></div>
 				</div>
 			</div>

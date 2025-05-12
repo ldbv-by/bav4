@@ -8,7 +8,31 @@
 	max-height: 350px;
 	min-height: 350px;
 	overflow-y: auto;
-	gap: 20px;
+}
+.seperator-container {
+	display: grid;
+	grid-template-rows: 1fr 1fr 1fr;
+	gap: 10px;
+}
+
+.grid-filter-group-container {
+	display: grid;
+	grid-template-columns: 1fr 0.4fr;
+}
+
+.seperator {
+	display: flex;
+	align-self: center;
+	justify-self: center;
+	background: #222;
+	width: 1px;
+	height: 100%;
+}
+
+.seperator-content {
+	display: flex;
+	align-self: center;
+	justify-self: center;
 }
 
 .sticky-container {
