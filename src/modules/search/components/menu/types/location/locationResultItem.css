@@ -122,6 +122,9 @@ ba-icon {
 	display: block;
 	font-size: 1rem;
 }
+.copy-button::part(icon) {
+	transform: scale(0.6);
+}
 ba-icon:hover {
 	background: var(--primary-color);
 }
