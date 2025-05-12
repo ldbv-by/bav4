@@ -8,18 +8,18 @@ import { Vector as VectorLayer } from 'ol/layer';
 import { $injector } from '../../../../injection';
 import { Draw, Modify, Select, Snap } from 'ol/interaction';
 import {
-	createSketchStyleFunction,
+	getSketchStyleFunction,
 	getColorFrom,
 	getDrawingTypeFrom,
 	getSizeFrom,
 	getSymbolFrom,
 	getTextFrom,
-	lineStyleFunction,
-	markerStyleFunction,
-	nullStyleFunction,
-	polygonStyleFunction,
-	selectStyleFunction,
-	textStyleFunction
+	getLineStyleArray,
+	getMarkerStyleArray,
+	getNullStyleArray,
+	getPolygonStyleArray,
+	getSelectStyleFunction,
+	getTextStyleArray
 } from '../../utils/olStyleUtils';
 import { StyleTypes } from '../../services/StyleService';
 import { StyleSize } from '../../../../domain/styles';
@@ -612,7 +612,7 @@ export class OlDrawHandler extends OlLayerHandler {
 					source: source,
 					type: 'LineString',
 					snapTolerance: snapTolerance,
-					style: createSketchStyleFunction(this._getStyleFunctionByDrawType('line', styleOption)),
+					style: getSketchStyleFunction(this._getStyleFunctionByDrawType('line', styleOption)),
 					wrapX: true
 				});
 			case StyleTypes.POLYGON:
@@ -621,7 +621,7 @@ export class OlDrawHandler extends OlLayerHandler {
 					type: 'Polygon',
 					minPoints: 3,
 					snapTolerance: snapTolerance,
-					style: createSketchStyleFunction(this._getStyleFunctionByDrawType('polygon', styleOption)),
+					style: getSketchStyleFunction(this._getStyleFunctionByDrawType('polygon', styleOption)),
 					wrapX: true
 				});
 			default:
@@ -633,7 +633,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		const select = new Select(getSelectOptions(this._vectorLayer));
 		select.getFeatures().on('add', (e) => {
 			const feature = e.element;
-			const styleFunction = selectStyleFunction();
+			const styleFunction = getSelectStyleFunction();
 			const styles = styleFunction(feature);
 			e.element.setStyle(styles);
 		});
@@ -723,16 +723,16 @@ export class OlDrawHandler extends OlLayerHandler {
 	_getStyleFunctionByDrawType(drawType, styleOption) {
 		switch (drawType) {
 			case StyleTypes.LINE:
-				return lineStyleFunction(styleOption);
+				return getLineStyleArray(styleOption);
 			case StyleTypes.POLYGON:
-				return polygonStyleFunction(styleOption);
+				return getPolygonStyleArray(styleOption);
 			case StyleTypes.POINT:
 			case StyleTypes.MARKER:
-				return markerStyleFunction(styleOption);
+				return getMarkerStyleArray(styleOption);
 			case StyleTypes.TEXT:
-				return textStyleFunction(styleOption);
+				return getTextStyleArray(styleOption);
 			default:
-				return nullStyleFunction();
+				return getNullStyleArray();
 		}
 	}
 

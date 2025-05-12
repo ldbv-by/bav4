@@ -134,10 +134,8 @@ export const getMarkerSrc = (symbolSrc = null, symbolColor = '#ffffff') => {
 	return getIconUrl(Default_Symbol);
 };
 
-// TODO: --> no StyleFunction!
-export const nullStyleFunction = () => [new Style({})];
+export const getNullStyleArray = () => [new Style({})];
 
-// TODO: --> no StyleFunction!
 /**
  * A StyleFunction which returns styles based on styling properties of the feature
  * according to {@see https://github.com/mapbox/simplestyle-spec/tree/master/1.1.0| simpleStyle spec 1.1.0}.
@@ -147,7 +145,7 @@ export const nullStyleFunction = () => [new Style({})];
  * @param {ol.Feature} feature the olFeature to be styled
  * @returns {Array<Style>}
  */
-export const geojsonStyleFunction = (feature) => {
+export const getGeojsonStyleArray = (feature) => {
 	// default style properties based on simpleStyle spec
 	// hint: 'marker-symbol' is currently not supported
 	const defaultStyleProperties = {
@@ -295,13 +293,12 @@ export const defaultClusterStyleFunction = () => {
 	};
 };
 
-// TODO: --> no StyleFunction!
 /**
  * Function to style a marker symbol
  * @param {null|StyleOption} styleOption the styleOption
  * @returns {Array<Style>} the resulting array of marker styles
  */
-export const markerStyleFunction = (styleOption = DEFAULT_STYLE_OPTION) => {
+export const getMarkerStyleArray = (styleOption = DEFAULT_STYLE_OPTION) => {
 	const markerColor = styleOption.color ? styleOption.color : '#ff0000';
 	const markerAnchor = styleOption.anchor ? styleOption.anchor : [0.5, 0.5];
 	const rasterIconOptions = {
@@ -338,13 +335,12 @@ export const markerStyleFunction = (styleOption = DEFAULT_STYLE_OPTION) => {
 	];
 };
 
-// TODO: --> no StyleFunction!
 /**
  * Function to style a text symbol
  * @param {StyleOption} styleOption the styleOption
  * @returns {Array<Style>}  the resulting array of text styles
  */
-export const textStyleFunction = (styleOption = DEFAULT_STYLE_OPTION) => {
+export const getTextStyleArray = (styleOption = DEFAULT_STYLE_OPTION) => {
 	const strokeColor = styleOption.color ? styleOption.color : '#ff0000';
 	const textContent = isString(styleOption.text) ? styleOption.text : DEFAULT_TEXT;
 
@@ -357,13 +353,12 @@ export const textStyleFunction = (styleOption = DEFAULT_STYLE_OPTION) => {
 	];
 };
 
-// TODO: --> no StyleFunction!
 /**
  * Function to style a line geometry
  * @param {StyleOption} styleOption the styleOption
  * @returns the resulting array of line styles
  */
-export const lineStyleFunction = (styleOption = DEFAULT_STYLE_OPTION) => {
+export const getLineStyleArray = (styleOption = DEFAULT_STYLE_OPTION) => {
 	const strokeColor = styleOption.color ? hexToRgb(styleOption.color) : hexToRgb('#ff0000');
 	const strokeWidth = 3;
 	// TODO: activate TextStyle with:
@@ -385,7 +380,7 @@ export const lineStyleFunction = (styleOption = DEFAULT_STYLE_OPTION) => {
  * @param {StyleOption} styleOption the styleOption
  * @returns the resulting array of polygon styles
  */
-export const polygonStyleFunction = (styleOption = DEFAULT_STYLE_OPTION) => {
+export const getPolygonStyleArray = (styleOption = DEFAULT_STYLE_OPTION) => {
 	const strokeColor = styleOption.color ? hexToRgb(styleOption.color) : hexToRgb('#ff0000');
 	const strokeWidth = 3;
 	// TODO: activate TextStyle with:
@@ -673,8 +668,7 @@ export const modifyStyleFunction = (feature) => {
 	];
 };
 
-// TODO: --> no StyleFunction!
-export const selectStyleFunction = () => {
+export const getSelectStyleFunction = () => {
 	const constructionStroke = new Stroke({
 		color: Black_Color.concat([1]),
 		width: 1,
@@ -733,13 +727,12 @@ export const selectStyleFunction = () => {
 	};
 };
 
-// TODO: --> no StyleFunction!
 /**
  * returns the default styleFunction, based on the specified color
  * @param {Array<number>} color the rgba-color An Array of numbers, defining a RGBA-Color with [Red{0,255},Green{0,255},Blue{0,255},Alpha{0,1}]
  * @returns {Function} the default styleFunction
  */
-export const defaultStyleFunction = (color) => {
+export const getDefaultStyleFunction = (color) => {
 	const colorRGBA = color;
 	const colorRGB = color.slice(0, -1);
 
@@ -812,7 +805,7 @@ export const getTransparentImageStyle = () => {
 	});
 };
 
-export const createSketchStyleFunction = (featureStyleFunction, sketchStyleFunctionsByGeometry = {}) => {
+export const getSketchStyleFunction = (featureStyleFunction, sketchStyleFunctionsByGeometry = {}) => {
 	const defaultSketchStyles = {
 		Point: () => [
 			new Style({

@@ -6,13 +6,13 @@ import { $injector } from '../../../injection';
 import { getContrastColorFrom, rgbToHex } from '../../../utils/colors';
 import {
 	measureStyleFunction,
-	textStyleFunction,
+	getTextStyleArray,
 	markerScaleToKeyword,
 	getStyleArray,
-	geojsonStyleFunction,
-	defaultStyleFunction,
+	getGeojsonStyleArray,
+	getDefaultStyleFunction,
 	defaultClusterStyleFunction,
-	markerStyleFunction,
+	getMarkerStyleArray,
 	getTransparentImageStyle
 } from '../utils/olStyleUtils';
 import { getRoutingStyleFunction } from '../handler/routing/styleUtils';
@@ -301,7 +301,7 @@ export class StyleService {
 	}
 
 	_addGeoJSONStyle(olFeature) {
-		olFeature.setStyle(geojsonStyleFunction);
+		olFeature.setStyle(getGeojsonStyleArray);
 	}
 
 	_addTextStyle(olFeature) {
@@ -321,7 +321,7 @@ export class StyleService {
 			return styles ? fromStyle(styles[0]) : fromAttribute(olFeature);
 		};
 
-		const newStyle = textStyleFunction(getStyleOption());
+		const newStyle = getTextStyleArray(getStyleOption());
 
 		olFeature.setStyle(() => newStyle);
 	}
@@ -355,7 +355,7 @@ export class StyleService {
 			return styles ? fromStyle(styles[0]) : fromAttribute(olFeature);
 		};
 
-		const newStyle = markerStyleFunction(getStyleOption(olFeature));
+		const newStyle = getMarkerStyleArray(getStyleOption(olFeature));
 
 		olFeature.setStyle(() => newStyle);
 	}
@@ -380,7 +380,7 @@ export class StyleService {
 		};
 
 		const color = olLayer && !isGPX(olLayer) ? getColorByLayerId(olLayer) : this._nextColor();
-		olFeature.setStyle(defaultStyleFunction(color));
+		olFeature.setStyle(getDefaultStyleFunction(color));
 	}
 
 	_detectStyleType(olFeature) {
