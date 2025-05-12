@@ -8,7 +8,7 @@ import { openModal } from '../../../../store/modal/modal.action';
 import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
 import { isCoordinate } from '../../../../utils/checks';
 import { AbstractAssistChip } from './AbstractAssistChip';
-import shareIcon from './assets/share.svg';
+import shareIcon from '../../../..//assets/icons/share.svg';
 import { setQueryParams } from '../../../../utils/urlUtils';
 
 const Update_Center = 'update_center';

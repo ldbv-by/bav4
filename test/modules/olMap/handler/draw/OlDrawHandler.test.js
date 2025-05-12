@@ -72,7 +72,7 @@ describe('OlDrawHandler', () => {
 
 	const translationServiceMock = { translate: (key, params = []) => `${key}${params.length ? ` [${params.join(',')}]` : ''}` };
 	const environmentServiceMock = { isTouch: () => false, isStandalone: () => false, isEmbedded: () => false };
-	const iconServiceMock = { getDefault: () => new IconResult('foo', 'bar') };
+	const iconServiceMock = { getDefault: () => new IconResult('foo', 'bar'), decodeColor: () => {} };
 
 	const initialDrawState = {
 		active: false,
@@ -1038,7 +1038,7 @@ describe('OlDrawHandler', () => {
 				);
 				spyOn(classUnderTest, '_getStyleFunctionFrom')
 					.withArgs(feature)
-					.and.callFake(() => () => [newStyle]);
+					.and.callFake(() => [newStyle]);
 				feature.setId('draw_Symbol_1234');
 				feature.setStyle([oldStyle1, oldStyle2]);
 				const drawStateFake = {
@@ -1267,12 +1267,12 @@ describe('OlDrawHandler', () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
 
-				expect(classUnderTest._getStyleFunctionByDrawType('point', defaultStyleOption)()).toContain(jasmine.any(Style));
-				expect(classUnderTest._getStyleFunctionByDrawType('marker', defaultStyleOption)()).toContain(jasmine.any(Style));
-				expect(classUnderTest._getStyleFunctionByDrawType('text', defaultStyleOption)()).toContain(jasmine.any(Style));
-				expect(classUnderTest._getStyleFunctionByDrawType('line', defaultStyleOption)()).toContain(jasmine.any(Style));
-				expect(classUnderTest._getStyleFunctionByDrawType('polygon', defaultStyleOption)()).toContain(jasmine.any(Style));
-				expect(classUnderTest._getStyleFunctionByDrawType('foo', defaultStyleOption)()).toContain(jasmine.any(Style));
+				expect(classUnderTest._getStyleFunctionByDrawType('point', defaultStyleOption)).toContain(jasmine.any(Style));
+				expect(classUnderTest._getStyleFunctionByDrawType('marker', defaultStyleOption)).toContain(jasmine.any(Style));
+				expect(classUnderTest._getStyleFunctionByDrawType('text', defaultStyleOption)).toContain(jasmine.any(Style));
+				expect(classUnderTest._getStyleFunctionByDrawType('line', defaultStyleOption)).toContain(jasmine.any(Style));
+				expect(classUnderTest._getStyleFunctionByDrawType('polygon', defaultStyleOption)).toContain(jasmine.any(Style));
+				expect(classUnderTest._getStyleFunctionByDrawType('foo', defaultStyleOption)).toContain(jasmine.any(Style));
 			});
 		});
 	});

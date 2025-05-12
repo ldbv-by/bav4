@@ -1,14 +1,7 @@
 import {
 	measureStyleFunction,
-	createSketchStyleFunction,
 	modifyStyleFunction,
-	nullStyleFunction,
-	markerStyleFunction,
-	selectStyleFunction,
 	getColorFrom,
-	lineStyleFunction,
-	polygonStyleFunction,
-	textStyleFunction,
 	getIconUrl,
 	getMarkerSrc,
 	getDrawingTypeFrom,
@@ -17,14 +10,21 @@ import {
 	getTextFrom,
 	getStyleArray,
 	renderLinearRulerSegments,
-	defaultStyleFunction,
 	defaultClusterStyleFunction,
-	geojsonStyleFunction,
 	DEFAULT_TEXT,
 	getSizeFrom,
 	textScaleToKeyword,
 	getTransparentImageStyle,
-	renderGeodesicRulerSegments
+	renderGeodesicRulerSegments,
+	getNullStyleArray,
+	getGeojsonStyleArray,
+	getDefaultStyleFunction,
+	getMarkerStyleArray,
+	getTextStyleArray,
+	getLineStyleArray,
+	getPolygonStyleArray,
+	getSelectStyleFunction,
+	getSketchStyleFunction
 } from '../../../../src/modules/olMap/utils/olStyleUtils';
 import { Point, LineString, Polygon, Geometry, MultiLineString, MultiPolygon } from 'ol/geom';
 import { Feature } from 'ol';
@@ -40,6 +40,7 @@ import { $injector } from '../../../../src/injection';
 import CircleStyle from 'ol/style/Circle';
 import { hexToRgb } from '../../../../src/utils/colors';
 import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../../../src/modules/olMap/ol/geodesic/geodesicGeometry';
+import { isClockwise } from '../../../../src/modules/olMap/utils/olGeometryUtils';
 
 const Rgb_Black = [0, 0, 0];
 const Expected_Text_Font = 'normal 16px Open Sans';
@@ -382,6 +383,77 @@ describe('measureStyleFunction', () => {
 		expect(contextMoveToSpy).toHaveBeenCalled();
 	});
 
+	it('should draw clockwise geometry in reversed order to context with linear ruler-style', () => {
+		const contextRenderer = jasmine.createSpy('contextRenderer');
+		const segments = [];
+		contextRenderer.and.callFake((segment, fill, stroke) =>
+			stroke.getWidth() === 8 ? segment.getCoordinates().forEach((c) => segments.push(c)) : () => {}
+		);
+		const clockwiseGeometry = new Polygon([
+			[
+				[5, 0],
+				[5, 5],
+				[4, 5],
+				[1, 5],
+				[1, 0]
+			]
+		]);
+		const clockwiseFeature = new Feature({ geometry: clockwiseGeometry });
+
+		// openlayers ensures that pixelCoordinates for polygons(outerBoundary) are always counter-clockwise for a
+		// top-left coordinate system (like canvas) -> !isClockwise()
+		const counterclockwisePixelCoordinates = [
+			[
+				[50, 0],
+				[50, 50],
+				[40, 50],
+				[10, 50],
+				[10, 0]
+			]
+		];
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(1);
+		const stateMock = { geometry: clockwiseFeature.getGeometry(), resolution: resolution, feature: clockwiseFeature, pixelRatio: 1 };
+
+		renderLinearRulerSegments(counterclockwisePixelCoordinates, stateMock, contextRenderer);
+		expect(isClockwise(segments)).toBeTrue();
+	});
+
+	it('should draw counter-clockwise geometry in standard order to context with linear ruler-style', () => {
+		const contextRenderer = jasmine.createSpy();
+		const segments = [];
+		contextRenderer.and.callFake((segment, fill, stroke) =>
+			stroke.getWidth() === 8 ? segment.getCoordinates().forEach((c) => segments.push(c)) : () => {}
+		);
+
+		const counterclockwiseGeometry = new Polygon([
+			[
+				[1, 0],
+				[1, 5],
+				[4, 5],
+				[5, 5],
+				[5, 0]
+			]
+		]);
+		const counterclockwiseFeature = new Feature({ geometry: counterclockwiseGeometry });
+
+		// openlayers ensures that pixelCoordinates for polygons(outerBoundary) are always counter-clockwise for a
+		// top-left coordinate system (like canvas) -> !isClockwise()
+		const counterclockwisePixelCoordinates = [
+			[
+				[50, 0],
+				[50, 50],
+				[40, 50],
+				[10, 50],
+				[10, 0]
+			]
+		];
+		spyOn(mapServiceMock, 'calcLength').and.returnValue(1);
+		const stateMock = { geometry: counterclockwiseFeature.getGeometry(), resolution: resolution, feature: counterclockwiseFeature, pixelRatio: 1 };
+
+		renderLinearRulerSegments(counterclockwisePixelCoordinates, stateMock, contextRenderer);
+		expect(isClockwise(segments)).toBeFalse();
+	});
+
 	it('should draw to context with geodetic ruler-style', () => {
 		const pixelCoordinates = [
 			[0, 0],
@@ -596,18 +668,18 @@ describe('renderGeodesicRulerSegments', () => {
 	});
 });
 
-describe('nullStyleFunction', () => {
+describe('getNullStyleArray', () => {
 	it('should return a style', () => {
-		const styles = nullStyleFunction();
+		const styles = getNullStyleArray();
 
 		expect(styles).toBeDefined();
 		expect(styles.length).toBe(1);
 	});
 });
 
-describe('geojsonStyleFunction', () => {
+describe('getGeojsonStyleArray', () => {
 	it('should return a default style', () => {
-		const styles = geojsonStyleFunction();
+		const styles = getGeojsonStyleArray();
 
 		expect(styles).toBeDefined();
 		expect(styles.length).toBe(1);
@@ -624,10 +696,10 @@ describe('geojsonStyleFunction', () => {
 		const largePointFeature = getFeatureWithProperties({ 'marker-size': 'large', 'marker-color': '#0000ff' });
 		const numberMarkerSizePointFeature = getFeatureWithProperties({ 'marker-size': 42, 'marker-color': '#0000ff' });
 
-		const smallPointStyles = geojsonStyleFunction(smallPointFeature);
-		const mediumPointStyles = geojsonStyleFunction(mediumPointFeature);
-		const largePointStyles = geojsonStyleFunction(largePointFeature);
-		const numberMarkerSizePointStyle = geojsonStyleFunction(numberMarkerSizePointFeature);
+		const smallPointStyles = getGeojsonStyleArray(smallPointFeature);
+		const mediumPointStyles = getGeojsonStyleArray(mediumPointFeature);
+		const largePointStyles = getGeojsonStyleArray(largePointFeature);
+		const numberMarkerSizePointStyle = getGeojsonStyleArray(numberMarkerSizePointFeature);
 
 		expect(smallPointStyles).toBeDefined();
 		expect(smallPointStyles.length).toBe(1);
@@ -653,7 +725,7 @@ describe('geojsonStyleFunction', () => {
 	it('should return a stroke style', () => {
 		const lineFeature = getFeatureWithProperties({ 'stroke-opacity': 0.42, stroke: '#ffff00', 'stroke-width': 4 });
 
-		const lineStyles = geojsonStyleFunction(lineFeature);
+		const lineStyles = getGeojsonStyleArray(lineFeature);
 
 		expect(lineStyles).toBeDefined();
 		expect(lineStyles.length).toBe(1);
@@ -664,7 +736,7 @@ describe('geojsonStyleFunction', () => {
 	it('should return a fill style', () => {
 		const lineFeature = getFeatureWithProperties({ 'fill-opacity': 0.21, fill: '#00ff00' });
 
-		const lineStyles = geojsonStyleFunction(lineFeature);
+		const lineStyles = getGeojsonStyleArray(lineFeature);
 
 		expect(lineStyles).toBeDefined();
 		expect(lineStyles.length).toBe(1);
@@ -672,9 +744,9 @@ describe('geojsonStyleFunction', () => {
 	});
 });
 
-describe('defaultStyleFunction', () => {
+describe('getDefaultStyleFunction', () => {
 	it('should return a style with color', () => {
-		const styleFunction = defaultStyleFunction([0, 0, 0, 0]);
+		const styleFunction = getDefaultStyleFunction([0, 0, 0, 0]);
 		const getFeatureMock = (geometryType) => {
 			const geometryMock = { getType: () => geometryType };
 			return { getGeometry: () => geometryMock };
@@ -706,9 +778,9 @@ describe('defaultStyleFunction', () => {
 	});
 });
 
-describe('markerStyleFunction', () => {
+describe('getMarkerStyleArray', () => {
 	it('should return a style', () => {
-		const styles = markerStyleFunction();
+		const styles = getMarkerStyleArray();
 
 		expect(styles).toBeDefined();
 		expect(styles.length).toBe(1);
@@ -716,7 +788,7 @@ describe('markerStyleFunction', () => {
 
 	it('should return a style with a default Image for offline-modus', () => {
 		spyOn(environmentService, 'isStandalone').and.returnValue(true);
-		const styles = markerStyleFunction();
+		const styles = getMarkerStyleArray();
 
 		expect(styles).toBeDefined();
 		expect(styles[0].getImage().getSrc()).toBe(markerIcon);
@@ -725,7 +797,7 @@ describe('markerStyleFunction', () => {
 	it('should return a style with a default Image', () => {
 		const styleOption = { color: '#BEDA55', scale: 'small' };
 		spyOn(environmentService, 'isStandalone').and.returnValue(() => true);
-		const styles = markerStyleFunction(styleOption);
+		const styles = getMarkerStyleArray(styleOption);
 
 		expect(styles).toBeDefined();
 		const image = styles[0].getImage();
@@ -739,7 +811,7 @@ describe('markerStyleFunction', () => {
 	it('should return a style with a Text', () => {
 		const styleOption = { color: '#BEDA55', scale: 'small', text: 'foo' };
 		spyOn(environmentService, 'isStandalone').and.returnValue(() => true);
-		const styles = markerStyleFunction(styleOption);
+		const styles = getMarkerStyleArray(styleOption);
 
 		expect(styles).toBeDefined();
 		expect(styles[0].getText().getText()).toBe('foo');
@@ -750,7 +822,7 @@ describe('markerStyleFunction', () => {
 	it('should return a style WITHOUT a Text', () => {
 		const styleOption = { color: '#BEDA55', scale: 'small' };
 		spyOn(environmentService, 'isStandalone').and.returnValue(() => true);
-		const styles = markerStyleFunction(styleOption);
+		const styles = getMarkerStyleArray(styleOption);
 
 		expect(styles).toBeDefined();
 		expect(styles[0].getText()).toBeNull();
@@ -758,7 +830,7 @@ describe('markerStyleFunction', () => {
 
 	it('should return a style specified by styleOption; small image', () => {
 		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 'small' };
-		const styles = markerStyleFunction(styleOption);
+		const styles = getMarkerStyleArray(styleOption);
 
 		expect(styles).toBeDefined();
 		const image = styles[0].getImage();
@@ -770,7 +842,7 @@ describe('markerStyleFunction', () => {
 
 	it('should return a style specified by styleOption with a Text; small image', () => {
 		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 'small', text: 'foo' };
-		const styles = markerStyleFunction(styleOption);
+		const styles = getMarkerStyleArray(styleOption);
 
 		expect(styles).toBeDefined();
 		const image = styles[0].getImage();
@@ -784,7 +856,7 @@ describe('markerStyleFunction', () => {
 
 	it('should return a style specified by styleOption; medium image', () => {
 		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 'medium' };
-		const styles = markerStyleFunction(styleOption);
+		const styles = getMarkerStyleArray(styleOption);
 
 		expect(styles).toBeDefined();
 		const image = styles[0].getImage();
@@ -796,7 +868,7 @@ describe('markerStyleFunction', () => {
 
 	it('should return a style specified by styleOption with a Text; medium image', () => {
 		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 'medium', text: 'foo' };
-		const styles = markerStyleFunction(styleOption);
+		const styles = getMarkerStyleArray(styleOption);
 
 		expect(styles).toBeDefined();
 		const image = styles[0].getImage();
@@ -810,7 +882,7 @@ describe('markerStyleFunction', () => {
 
 	it('should return a style specified by styleOption; large image', () => {
 		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 'large' };
-		const styles = markerStyleFunction(styleOption);
+		const styles = getMarkerStyleArray(styleOption);
 
 		expect(styles).toBeDefined();
 		const image = styles[0].getImage();
@@ -822,7 +894,7 @@ describe('markerStyleFunction', () => {
 
 	it('should return a style specified by styleOption with a Text; large image', () => {
 		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 'large', text: 'foo' };
-		const styles = markerStyleFunction(styleOption);
+		const styles = getMarkerStyleArray(styleOption);
 
 		expect(styles).toBeDefined();
 		const image = styles[0].getImage();
@@ -836,7 +908,7 @@ describe('markerStyleFunction', () => {
 
 	it('should return a style specified by styleOption; scale value as number', () => {
 		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 0.75 };
-		const styles = markerStyleFunction(styleOption);
+		const styles = getMarkerStyleArray(styleOption);
 
 		expect(styles).toBeDefined();
 		const image = styles[0].getImage();
@@ -848,7 +920,7 @@ describe('markerStyleFunction', () => {
 
 	it('should return a style specified as remote raster icon', () => {
 		const styleOption = { symbolSrc: 'http://url.to/raster.resource', color: '#BEDA55', scale: 0.75 };
-		const styles = markerStyleFunction(styleOption);
+		const styles = getMarkerStyleArray(styleOption);
 
 		expect(styles).toBeDefined();
 		const image = styles[0].getImage();
@@ -858,16 +930,16 @@ describe('markerStyleFunction', () => {
 	});
 });
 
-describe('textStyleFunction', () => {
+describe('getTextStyleArray', () => {
 	it('should return a style', () => {
-		const styles = textStyleFunction();
+		const styles = getTextStyleArray();
 
 		expect(styles).toBeDefined();
 		expect(styles.length).toBe(1);
 	});
 
 	it('should return a style with a default Text', () => {
-		const styles = textStyleFunction();
+		const styles = getTextStyleArray();
 
 		expect(styles).toBeDefined();
 		expect(styles[0].getText().getText()).toBe(DEFAULT_TEXT);
@@ -876,7 +948,7 @@ describe('textStyleFunction', () => {
 
 	it('should return a style specified by styleOption; large text', () => {
 		const styleOption = { color: '#BEDA55', scale: 'large', text: 'Foo' };
-		const styles = textStyleFunction(styleOption);
+		const styles = getTextStyleArray(styleOption);
 
 		expect(styles).toBeDefined();
 		const textStyle = styles[0].getText();
@@ -888,7 +960,7 @@ describe('textStyleFunction', () => {
 
 	it('should return a style specified by styleOption; medium text', () => {
 		const styleOption = { color: '#BEDA55', scale: 'medium', text: 'Bar' };
-		const styles = textStyleFunction(styleOption);
+		const styles = getTextStyleArray(styleOption);
 
 		expect(styles).toBeDefined();
 		const textStyle = styles[0].getText();
@@ -900,7 +972,7 @@ describe('textStyleFunction', () => {
 
 	it('should return a style specified by styleOption; small text', () => {
 		const styleOption = { color: '#BEDA55', scale: 'small', text: 'Bar' };
-		const styles = textStyleFunction(styleOption);
+		const styles = getTextStyleArray(styleOption);
 
 		expect(styles).toBeDefined();
 		const textStyle = styles[0].getText();
@@ -912,7 +984,7 @@ describe('textStyleFunction', () => {
 
 	it('should return a style specified by styleOption; text scale as number ', () => {
 		const styleOption = { color: '#BEDA55', scale: 2, text: 'Foo' };
-		const styles = textStyleFunction(styleOption);
+		const styles = getTextStyleArray(styleOption);
 
 		expect(styles).toBeDefined();
 		const textStyle = styles[0].getText();
@@ -923,16 +995,16 @@ describe('textStyleFunction', () => {
 	});
 });
 
-describe('lineStyleFunction', () => {
+describe('getLineStyleArray', () => {
 	it('should return a style', () => {
-		const styles = lineStyleFunction();
+		const styles = getLineStyleArray();
 
 		expect(styles).toBeDefined();
 		expect(styles.length).toBe(1);
 	});
 
 	it('should return a style with a default Stroke', () => {
-		const styles = lineStyleFunction();
+		const styles = getLineStyleArray();
 
 		expect(styles).toBeDefined();
 		expect(styles[0].getStroke().getWidth()).toBe(3);
@@ -940,7 +1012,7 @@ describe('lineStyleFunction', () => {
 
 	it('should return a style specified by styleOption', () => {
 		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 0.5 };
-		const styles = lineStyleFunction(styleOption);
+		const styles = getLineStyleArray(styleOption);
 
 		expect(styles).toBeDefined();
 		const stroke = styles[0].getStroke();
@@ -951,16 +1023,16 @@ describe('lineStyleFunction', () => {
 	});
 });
 
-describe('polygonStyleFunction', () => {
+describe('getPolygonStyleArray', () => {
 	it('should return a style', () => {
-		const styles = polygonStyleFunction();
+		const styles = getPolygonStyleArray();
 
 		expect(styles).toBeDefined();
 		expect(styles.length).toBe(1);
 	});
 
 	it('should return a style with a default Stroke', () => {
-		const styles = polygonStyleFunction();
+		const styles = getPolygonStyleArray();
 
 		expect(styles).toBeDefined();
 		expect(styles[0].getStroke().getWidth()).toBe(3);
@@ -968,7 +1040,7 @@ describe('polygonStyleFunction', () => {
 
 	it('should return a style specified by styleOption', () => {
 		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55' };
-		const styles = polygonStyleFunction(styleOption);
+		const styles = getPolygonStyleArray(styleOption);
 
 		expect(styles).toBeDefined();
 		const stroke = styles[0].getStroke();
@@ -1075,9 +1147,9 @@ describe('modifyStyleFunction', () => {
 	});
 });
 
-describe('selectStyleFunction', () => {
+describe('getSelectStyleFunction', () => {
 	it('should create a styleFunction', () => {
-		const styleFunction = selectStyleFunction();
+		const styleFunction = getSelectStyleFunction();
 
 		expect(styleFunction).toBeDefined();
 	});
@@ -1088,11 +1160,11 @@ describe('selectStyleFunction', () => {
 			[1, 0]
 		]);
 		const featureWithStyle = new Feature({ geometry: geometry });
-		featureWithStyle.setStyle(defaultStyleFunction([0, 0, 0, 0]));
+		featureWithStyle.setStyle(getDefaultStyleFunction([0, 0, 0, 0]));
 		const featureWithEmptyFirstStyle = new Feature({ geometry: geometry });
 		const featureWithoutStyles = new Feature({ geometry: geometry });
 		featureWithEmptyFirstStyle.setStyle(() => []);
-		const styleFunction = selectStyleFunction();
+		const styleFunction = getSelectStyleFunction();
 
 		expect(styleFunction(featureWithStyle).length).toBe(2);
 		expect(styleFunction(featureWithEmptyFirstStyle).length).toBe(2);
@@ -1105,8 +1177,8 @@ describe('selectStyleFunction', () => {
 			[1, 0]
 		]);
 		const feature = new Feature({ geometry: geometry });
-		feature.setStyle(nullStyleFunction);
-		const styleFunction = selectStyleFunction();
+		feature.setStyle(getNullStyleArray);
+		const styleFunction = getSelectStyleFunction();
 		const styles = styleFunction(feature);
 
 		const vertexStyle = styles[1];
@@ -1137,11 +1209,11 @@ describe('selectStyleFunction', () => {
 			[1, 0]
 		]);
 		const featureWithStyle = new Feature({ geometry: geometry });
-		featureWithStyle.setStyle(defaultStyleFunction([0, 0, 0, 0]));
+		featureWithStyle.setStyle(getDefaultStyleFunction([0, 0, 0, 0]));
 		const featureWithEmptyFirstStyle = new Feature({ geometry: geometry });
 		const featureWithoutStyles = new Feature({ geometry: geometry });
 		featureWithEmptyFirstStyle.setStyle(() => []);
-		const styleFunction = selectStyleFunction();
+		const styleFunction = getSelectStyleFunction();
 		featureWithStyle.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(featureWithStyle));
 		featureWithEmptyFirstStyle.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(featureWithEmptyFirstStyle));
 		featureWithoutStyles.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(featureWithoutStyles));
@@ -1279,9 +1351,9 @@ describe('defaultClusterStyleFunction', () => {
 	});
 });
 
-describe('createSketchStyleFunction', () => {
+describe('getSketchStyleFunction', () => {
 	it('should create a style function', () => {
-		const styleFunction = createSketchStyleFunction(measureStyleFunction);
+		const styleFunction = getSketchStyleFunction(measureStyleFunction);
 
 		expect(styleFunction).toBeDefined();
 	});
@@ -1294,7 +1366,7 @@ describe('createSketchStyleFunction', () => {
 		const feature = new Feature({ geometry: geometry });
 		const geometrySpy = spyOn(feature, 'getGeometry').and.returnValue(geometry);
 
-		const styleFunction = createSketchStyleFunction(measureStyleFunction);
+		const styleFunction = getSketchStyleFunction(measureStyleFunction);
 		const styles = styleFunction(feature, null);
 
 		expect(styles).toBeTruthy();
@@ -1311,7 +1383,7 @@ describe('createSketchStyleFunction', () => {
 		const idSpy = spyOn(feature, 'getId').and.returnValue('foo');
 		const featureStyleFunction = jasmine.createSpy();
 
-		const styleFunction = createSketchStyleFunction(featureStyleFunction);
+		const styleFunction = getSketchStyleFunction(featureStyleFunction);
 		styleFunction(feature, resolution);
 
 		expect(idSpy).toHaveBeenCalled();
@@ -1330,7 +1402,7 @@ describe('createSketchStyleFunction', () => {
 		]);
 		const feature = new Feature({ geometry: geometry });
 
-		const styleFunction = createSketchStyleFunction(measureStyleFunction);
+		const styleFunction = getSketchStyleFunction(measureStyleFunction);
 		const styles = styleFunction(feature, null);
 
 		expect(styles).toBeTruthy();
@@ -1349,7 +1421,7 @@ describe('createSketchStyleFunction', () => {
 		]);
 		const feature = new Feature({ geometry: geometry });
 
-		const styleFunction = createSketchStyleFunction(measureStyleFunction);
+		const styleFunction = getSketchStyleFunction(measureStyleFunction);
 		const styles = styleFunction(feature, null);
 
 		expect(styles).toBeTruthy();
@@ -1363,7 +1435,7 @@ describe('createSketchStyleFunction', () => {
 		const geometry = new Point([0, 0]);
 		const feature = new Feature({ geometry: geometry });
 
-		const styleFunction = createSketchStyleFunction(measureStyleFunction);
+		const styleFunction = getSketchStyleFunction(measureStyleFunction);
 		const styles = styleFunction(feature, null);
 
 		expect(styles).toBeTruthy();
@@ -1707,9 +1779,9 @@ describe('util functions creating a text style', () => {
 		const textStyleOption = { color: '#BEDA55', scale: 'large', text: 'Foo' };
 		const clusterFeature = getClusterFeature();
 
-		const markerStyles = markerStyleFunction(markerStyleOption);
-		const defaultTextStyles = textStyleFunction();
-		const customTextStyles = textStyleFunction(textStyleOption);
+		const markerStyles = getMarkerStyleArray(markerStyleOption);
+		const defaultTextStyles = getTextStyleArray();
+		const customTextStyles = getTextStyleArray(textStyleOption);
 		const clusterStyles = defaultClusterStyleFunction()(clusterFeature, null);
 
 		expect(markerStyles.some((style) => hasTextStyle(style))).toBeTrue();
@@ -1726,18 +1798,18 @@ describe('util functions creating a text style', () => {
 		const modifyFeatureMock = { get: () => [lineStringFeature] };
 
 		const measureStyles = measureStyleFunction(lineStringFeature, resolution);
-		const nullStyles = nullStyleFunction();
-		const defaultStyles = defaultStyleFunction(rgbaColor)(lineStringFeature);
-		const defaultGeoJsonStyles = geojsonStyleFunction();
-		const customGeoJsonStyles = geojsonStyleFunction(geojsonLineStringFeature);
-		const defaultLineStyles = lineStyleFunction();
-		const customLineStyles = lineStyleFunction(lineStyleOption);
-		const defaultPolygonStyles = polygonStyleFunction();
-		const customPolygonStyles = polygonStyleFunction(polygonStyleOption);
-		const noTextMarkerStyles = markerStyleFunction(noTextMarkerStyleOption);
+		const nullStyles = getNullStyleArray();
+		const defaultStyles = getDefaultStyleFunction(rgbaColor)(lineStringFeature);
+		const defaultGeoJsonStyles = getGeojsonStyleArray();
+		const customGeoJsonStyles = getGeojsonStyleArray(geojsonLineStringFeature);
+		const defaultLineStyles = getLineStyleArray();
+		const customLineStyles = getLineStyleArray(lineStyleOption);
+		const defaultPolygonStyles = getPolygonStyleArray();
+		const customPolygonStyles = getPolygonStyleArray(polygonStyleOption);
+		const noTextMarkerStyles = getMarkerStyleArray(noTextMarkerStyleOption);
 		const modifyStyles = modifyStyleFunction(modifyFeatureMock);
-		const selectStyles = selectStyleFunction()(lineStringFeature);
-		const sketchStyles = createSketchStyleFunction(measureStyleFunction)(lineStringFeature, null);
+		const selectStyles = getSelectStyleFunction()(lineStringFeature);
+		const sketchStyles = getSketchStyleFunction(measureStyleFunction)(lineStringFeature, null);
 
 		expect(measureStyles.some((style) => hasTextStyle(style))).toBeFalse();
 		expect(nullStyles.some((style) => hasTextStyle(style))).toBeFalse();
