@@ -4,7 +4,7 @@
 /**
  * BVV specific implementation of {@link module:services/ImportOafService~oafGeoResourceProvider}
  * @function
- * @type {module:services/ImportOafService~oafGeoResourceProvider}
+ * @type {module:services/ImportOafService~oafFilterCapabilitiesProvider}
  */
 
 import { OafGeoResource } from '../../domain/geoResources';
@@ -133,7 +133,7 @@ export const bvvOafFilterCapabilitiesProvider = async (oafGeoResource) => {
 /**
  * BVV specific implementation of {@link module:services/ImportOafService~oafFilterCapabilitiesProvider}
  * @function
- * @type {module:services/ImportOafService~oafFilterCapabilitiesProvider}
+ * @type {module:services/ImportOafService~oafGeoResourceProvider}
  */
 // eslint-disable-next-line no-unused-vars
 export const bvvOafGeoResourceProvider = async (url, options) => {
