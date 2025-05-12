@@ -19,7 +19,8 @@
 	padding: 8px 15px;
 }
 
-.option:hover {
+.option.hovered,
+.option.hovered:hover {
 	background-color: #ddd;
 }
 

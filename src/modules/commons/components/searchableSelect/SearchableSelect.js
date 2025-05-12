@@ -2,27 +2,28 @@
  * @module modules/commons/components/searchableSelect/SearchableSelect
  */
 
-/* TODO:
- - Select Option with arrow key
- - Enter should behave like a select click
- - Esc should behave like a cancel action
- - Rework selected update (and datatype ???)
-*/
+/* TODO
+ * - fix: Dropdown renders behind select when 2 selects are underneath each other
+ * - feature: evaluate scrollable?
+ */
 
 import { html } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
 import css from './searchableSelect.css';
 import { isNumber } from '../../../../utils/checks';
+import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
 
 const Update_Placeholder = 'update_placeholder';
 const Update_Options = 'update_options';
 const Update_Selected = 'update_selected';
 const Update_Search = 'update_search';
+const Update_MaxEntries = 'update_maxEntries';
 
 /**
  * General purpose implementation of a select-like component with integrated filtering.
  *
  * @property {string} placeholder='' - The placeholder to show when the search field is empty.
+ * @property {number} maxEntries=10 - The maximum amount of entries to show in the select field.
  * @property {string|null} selected=null - The currently selected option.
  * @property {string} search='' - The search term to filter through the provided options
  * @property {Array<String>} options - Unfiltered options the user can choose from
@@ -33,8 +34,13 @@ const Update_Search = 'update_search';
  * @author herrmutig
  */
 export class SearchableSelect extends MvuElement {
-	#hasPointer = false;
-	#cancelActionListener;
+	#hasPointer;
+	#keyActionMapper;
+
+	#onPointerCancelActionListener = () => {
+		if (this.#hasPointer) return;
+		this.#cancelAction();
+	};
 
 	// eslint-disable-next-line no-unused-vars
 	#onChange = (changedState) => {};
@@ -42,30 +48,26 @@ export class SearchableSelect extends MvuElement {
 	constructor() {
 		super({
 			placeholder: 'Search...',
+			maxEntries: 10,
 			selected: null,
 			search: '',
 			options: [],
 			availableOptions: []
 		});
 
-		this.#cancelActionListener = () => {
-			if (this.#hasPointer) return;
-
-			// Cancels Action
-			this.#hideDropdown();
-
-			if (!this.selected) {
-				this.signal(Update_Search, '');
-			}
-		};
+		this.#hasPointer = false;
 	}
 
 	onInitialize() {
-		document.addEventListener('click', this.#cancelActionListener);
+		document.addEventListener('click', this.#onPointerCancelActionListener);
+
+		this.#keyActionMapper = new KeyActionMapper(document);
+		this.#keyActionMapper.deactivate();
 	}
 
 	onDisconnect() {
-		document.removeEventListener('click', this.#cancelActionListener);
+		document.removeEventListener('click', this.#onPointerCancelActionListener);
+		this.#keyActionMapper.deactivate();
 	}
 
 	update(type, data, model) {
@@ -74,12 +76,14 @@ export class SearchableSelect extends MvuElement {
 				return { ...model, placeholder: data };
 			case Update_Selected: {
 				const selected = isNumber(data) ? model.availableOptions[Math.max(data, 0)] : data;
-				return { ...model, selected: selected, search: selected };
+				return this.#updateOptionsFiltering({ ...model, selected: selected, search: selected });
 			}
 			case Update_Options:
 				return this.#updateOptionsFiltering({ ...model, options: [...data] });
 			case Update_Search:
 				return this.#updateOptionsFiltering({ ...model, search: data, selected: null });
+			case Update_MaxEntries:
+				return { ...model, maxEntries: data };
 		}
 	}
 
@@ -101,14 +105,7 @@ export class SearchableSelect extends MvuElement {
 	}
 
 	createView(model) {
-		const { search, placeholder, availableOptions } = model;
-
-		const onSelectableItemChosen = (evt) => {
-			// Prevents global click handler to trigger s. onInitialize()
-			evt.stopPropagation();
-			this.#hideDropdown();
-			this.signal(Update_Selected, evt.target.value);
-		};
+		const { search, placeholder, availableOptions, maxEntries } = model;
 
 		const onSearchInputClicked = () => {
 			this.#showDropdown();
@@ -127,6 +124,21 @@ export class SearchableSelect extends MvuElement {
 			this.signal(Update_Search, evt.target.value);
 		};
 
+		const onPointerEnterOption = (evt) => {
+			this.#hoverOption(evt.target);
+		};
+
+		const onPointerLeaveOption = (evt) => {
+			evt.target.classList.remove('hovered');
+		};
+
+		const onOptionChosen = (evt) => {
+			// Prevents global click handler to trigger s. onInitialize()
+			evt.stopPropagation();
+			this.#hoverOption(evt.target);
+			this.#confirmAction();
+		};
+
 		return html`
 			<style>
 				${css}
@@ -138,10 +150,27 @@ export class SearchableSelect extends MvuElement {
 					<div class="caret-fill-down"></div>
 				</div>
 				<div class="dropdown hidden">
-					${availableOptions.map((item, index) => html`<div class="option" .value=${index} @click=${onSelectableItemChosen}>${item}</div>`)}
+					${availableOptions.slice(0, maxEntries).map(
+						(item, index) =>
+							html`<div
+								class="option"
+								@click=${onOptionChosen}
+								@pointerenter=${onPointerEnterOption}
+								@pointerleave=${onPointerLeaveOption}
+								.value=${index}
+							>
+								<span>${item}</span>
+							</div>`
+					)}
 				</div>
 			</div>
 		`;
+	}
+
+	#hoverOption(target) {
+		// Due to keyboard events, multiple options can be hovered. The following line prevents it.
+		this.shadowRoot.querySelectorAll('.option.hovered').forEach((option) => option.classList.remove('hovered'));
+		target.classList.add('hovered');
 	}
 
 	#updateOptionsFiltering(model) {
@@ -162,12 +191,59 @@ export class SearchableSelect extends MvuElement {
 		const itemsContainer = this.shadowRoot.querySelector('.dropdown');
 		itemsContainer.classList.remove('visible');
 		itemsContainer.classList.add('hidden');
+
+		this.#keyActionMapper.deactivate();
 	}
 
 	#showDropdown() {
 		const itemsContainer = this.shadowRoot.querySelector('.dropdown');
 		itemsContainer.classList.add('visible');
 		itemsContainer.classList.remove('hidden');
+
+		// Duplicate event safety
+		this.#keyActionMapper.deactivate();
+		this.#keyActionMapper
+			.addForKeyUp('Escape', () => this.#cancelAction())
+			.addForKeyUp('Enter', () => this.#confirmAction())
+			.addForKeyUp('ArrowUp', () => this.#chooseNextOption(true))
+			.addForKeyUp('ArrowDown', () => this.#chooseNextOption());
+
+		this.#keyActionMapper.activate();
+	}
+
+	#cancelAction() {
+		this.#hideDropdown();
+
+		if (!this.selected) {
+			this.signal(Update_Search, '');
+		}
+	}
+
+	#confirmAction() {
+		const hoveredOption = this.shadowRoot.querySelector('.option.hovered');
+		this.#hideDropdown();
+		// @ts-ignore
+		this.signal(Update_Selected, hoveredOption.value);
+	}
+
+	#chooseNextOption(invert = false) {
+		const options = Array.from(this.shadowRoot.querySelectorAll('.option'));
+
+		if (options.length < 1) return;
+
+		const hoveredOption = this.shadowRoot.querySelector('.option.hovered');
+		let nextHoveredOptionIndex = 0;
+
+		if (hoveredOption) {
+			const hoveredOptionIndex = options.indexOf(hoveredOption);
+			const previous = () => (hoveredOptionIndex > 0 ? hoveredOptionIndex - 1 : options.length - 1);
+			const next = () => (hoveredOptionIndex < options.length - 1 ? hoveredOptionIndex + 1 : 0);
+
+			hoveredOption.classList.remove('hovered');
+			nextHoveredOptionIndex = invert ? previous() : next();
+		}
+
+		options[nextHoveredOptionIndex].classList.add('hovered');
 	}
 
 	get placeholder() {
@@ -200,6 +276,14 @@ export class SearchableSelect extends MvuElement {
 
 	set options(value) {
 		this.signal(Update_Options, value);
+	}
+
+	get maxEntries() {
+		return this.getModel().maxEntries;
+	}
+
+	set maxEntries(value) {
+		this.signal(Update_MaxEntries, value);
 	}
 
 	set onChange(callback) {
