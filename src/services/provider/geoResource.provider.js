@@ -153,7 +153,8 @@ export const loadBvvGeoResourceById = (id) => {
  *
  * WMS: `{url}||{layer}||[{label}]`
  *
- * OAF: `{url}||{collectionId}`
+ * OAF: `{url}||{collectionId}||[{label}]`
+ *
  * @function
  * @param {string} urlBasedAsId URL-based ID of the requested GeoResource
  * @type {module:services/GeoResourceService~geoResourceByIdProvider}
