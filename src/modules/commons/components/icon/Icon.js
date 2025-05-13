@@ -135,8 +135,8 @@ export class Icon extends MvuElement {
 				${anchorClass}
 				${anchorClassFocus}
 			</style>
-			<button class="anchor" aria-label=${title} title=${title}>
-				<span class="icon icon-custom ${classMap(classes)}"></span>
+			<button part="button" class="anchor" aria-label=${title} title=${title}>
+				<span part="icon" class="icon icon-custom ${classMap(classes)}"></span>
 			</button>
 		`;
 	}

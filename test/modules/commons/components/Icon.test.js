@@ -28,8 +28,10 @@ describe('Icon', () => {
 			const element = await TestUtils.render(Icon.tag);
 
 			const anchor = element.shadowRoot.querySelector('.anchor');
+			expect(anchor.getAttribute('part')).toBe('button');
 			expect(anchor.title).toBe('');
 			const span = element.shadowRoot.querySelector('.icon.icon-custom');
+			expect(span.getAttribute('part')).toBe('icon');
 			expect(span.classList.contains('disabled')).toBeFalse();
 			//stylesheets
 			//iconClass
