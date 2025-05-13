@@ -22,4 +22,11 @@ describe('Geometry', () => {
 		expect(() => new BaGeometry('data')).toThrowError('<sourceType> must be a SourceType');
 		expect(() => new BaGeometry(123, new SourceType(SourceTypeName.GPX))).toThrowError('<data> must be a String');
 	});
+
+	describe('static SupportedVectorSourceTypes', () => {
+		it('provides an array of all supported vector SourceTypeName', () => {
+			expect(Object.isFrozen(BaGeometry.SupportedVectorSourceTypes)).toBeTrue();
+			expect(BaGeometry.SupportedVectorSourceTypes).toEqual([SourceTypeName.EWKT, SourceTypeName.GEOJSON, SourceTypeName.GPX, SourceTypeName.KML]);
+		});
+	});
 });

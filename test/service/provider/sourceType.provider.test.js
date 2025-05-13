@@ -168,6 +168,32 @@ describe('sourceType provider', () => {
 			expect(baaCredentialServiceSpy).toHaveBeenCalled();
 		});
 
+		it('returns a SourceTypeServiceResult for OAF', async () => {
+			const srid = 4326;
+			spyOn(projectionService, 'getProjections').and.returnValue([srid]);
+			const backendUrl = 'https://backend.url/';
+			const url = 'http://foo.bar';
+			const version = 'version';
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const payload = JSON.stringify({ url: url });
+			const sourceTypeResultPayload = { name: 'OAF', version: 'version', srid: srid };
+			const baaCredentialServiceSpy = spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
+			const httpServiceSpy = spyOn(httpService, 'post')
+				.withArgs(backendUrl + 'sourceType', payload, MediaType.JSON)
+				.and.returnValue(Promise.resolve(new Response(JSON.stringify(sourceTypeResultPayload))));
+
+			const { status, sourceType } = await bvvUrlSourceTypeProvider(url);
+
+			expect(configServiceSpy).toHaveBeenCalled();
+			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(sourceType).toBeInstanceOf(SourceType);
+			expect(sourceType.name).toBe(SourceTypeName.OAF);
+			expect(sourceType.version).toBe(version);
+			expect(sourceType.srid).toBe(srid);
+			expect(status).toEqual(SourceTypeResultStatus.OK);
+			expect(baaCredentialServiceSpy).toHaveBeenCalled();
+		});
+
 		it('returns UNSUPPORTED_SRID when data have an unsupported SRID', async () => {
 			spyOn(projectionService, 'getProjections').and.returnValue([4326]);
 			const backendUrl = 'https://backend.url/';

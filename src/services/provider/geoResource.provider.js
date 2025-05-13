@@ -152,6 +152,9 @@ export const loadBvvGeoResourceById = (id) => {
  * GPX,GEOJSON,EWKT: `{url}||[{label}]`
  *
  * WMS: `{url}||{layer}||[{label}]`
+ *
+ * OAF: `{url}||{collectionId}||[{label}]`
+ *
  * @function
  * @param {string} urlBasedAsId URL-based ID of the requested GeoResource
  * @type {module:services/GeoResourceService~geoResourceByIdProvider}
@@ -162,8 +165,9 @@ export const loadExternalGeoResource = (urlBasedAsId) => {
 		const {
 			SourceTypeService: sourceTypeService,
 			ImportVectorDataService: importVectorDataService,
-			ImportWmsService: importWmsService
-		} = $injector.inject('SourceTypeService', 'ImportVectorDataService', 'ImportWmsService');
+			ImportWmsService: importWmsService,
+			ImportOafService: importOafService
+		} = $injector.inject('SourceTypeService', 'ImportVectorDataService', 'ImportWmsService', 'ImportOafService');
 
 		const loader = async () => {
 			const url = parts[0];
@@ -200,6 +204,20 @@ export const loadExternalGeoResource = (urlBasedAsId) => {
 							importWmsOptions.isAuthenticated = status === SourceTypeResultStatus.BAA_AUTHENTICATED;
 							const geoResources = await importWmsService.forUrl(url, importWmsOptions);
 							const geoResource = geoResources[0] ?? throwWmsImportError();
+							return label?.length ? geoResource.setLabel(label) : geoResource;
+						}
+						case SourceTypeName.OAF: {
+							const throwOafImportError = () => {
+								throw new Error(`Unsupported OAF: '${url}'`);
+							};
+							const collectionId = parts[1];
+							const label = parts[2];
+							const importOafOptions = collectionId
+								? { sourceType: sourceType, collections: [collectionId], ids: [urlBasedAsId] }
+								: { sourceType: sourceType, collections: [], ids: [urlBasedAsId] };
+							importOafOptions.isAuthenticated = status === SourceTypeResultStatus.BAA_AUTHENTICATED;
+							const geoResources = await importOafService.forUrl(url, importOafOptions);
+							const geoResource = geoResources[0] ?? throwOafImportError();
 							return label?.length ? geoResource.setLabel(label) : geoResource;
 						}
 						default:

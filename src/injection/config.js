@@ -68,6 +68,7 @@ import { TimeTravelPlugin } from '../plugins/TimeTravelPlugin';
 import { BvvPredefinedConfigurationService } from '../services/PredefinedConfigurationService';
 import { ComparePlugin } from '../plugins/ComparePlugin';
 import { FeatureCollectionPlugin } from '../plugins/FeatureCollectionPlugin';
+import { ImportOafService } from '../services/ImportOafService';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
@@ -95,6 +96,7 @@ $injector
 	.register('ImportVectorDataService', ImportVectorDataService)
 	.register('ExportVectorDataService', OlExportVectorDataService)
 	.register('ImportWmsService', ImportWmsService)
+	.register('ImportOafService', ImportOafService)
 	.registerSingleton('SourceTypeService', new SourceTypeService())
 	.register('Mfp3Encoder', BvvMfp3Encoder)
 	.registerSingleton('SecurityService', new SecurityService())

@@ -41,11 +41,12 @@ describe('defaultLayerProperties', () => {
 describe('createDefaultLayersConstraints', () => {
 	it('returns an object containing all layer specific default constraint properties', () => {
 		const defaultLayerConstraints = createDefaultLayersConstraints();
-		expect(Object.keys(defaultLayerConstraints).length).toBe(5);
+		expect(Object.keys(defaultLayerConstraints).length).toBe(6);
 		expect(defaultLayerConstraints.alwaysTop).toBeFalse();
 		expect(defaultLayerConstraints.hidden).toBeFalse();
 		expect(defaultLayerConstraints.cloneable).toBeTrue();
 		expect(defaultLayerConstraints.metaData).toBeTrue();
+		expect(defaultLayerConstraints.filter).toBeNull();
 		expect(defaultLayerConstraints.swipeAlignment).toEqual(SwipeAlignment.NOT_SET);
 	});
 });
@@ -166,7 +167,7 @@ describe('layersReducer', () => {
 			expect(store.getState().layers.active[1].geoResourceId).toBe('geoResourceId1');
 			expect(store.getState().layers.active[1].zIndex).toBe(1);
 			expect(store.getState().layers.active[1].constraints.hidden).toBeFalse();
-			expect(Object.keys(store.getState().layers.active[1].constraints).length).toBe(5);
+			expect(Object.keys(store.getState().layers.active[1].constraints).length).toBe(6);
 		});
 
 		it("adds layers regarding a 'z-index' property of 0", () => {
@@ -747,6 +748,21 @@ describe('layersReducer', () => {
 			modifyLayer('id0', { swipeAlignment: SwipeAlignment.RIGHT });
 
 			expect(store.getState().layers.active[0].constraints.swipeAlignment).toEqual(SwipeAlignment.RIGHT);
+		});
+
+		it("modifies the 'filter' constraint property of a layer", () => {
+			const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0' };
+			const store = setup({
+				layers: {
+					active: index([layerProperties0])
+				}
+			});
+
+			expect(store.getState().layers.active[0].constraints.filter).toBeNull();
+
+			modifyLayer('id0', { filter: 'cql' });
+
+			expect(store.getState().layers.active[0].constraints.filter).toBe('cql');
 		});
 
 		it('does nothing when modified layer is not present', () => {
