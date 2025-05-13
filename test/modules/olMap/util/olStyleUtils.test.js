@@ -17,7 +17,7 @@ import {
 	getTransparentImageStyle,
 	renderGeodesicRulerSegments,
 	getNullStyleArray,
-	getGeojsonStyleArray,
+	geojsonStyleFunction,
 	getDefaultStyleFunction,
 	getMarkerStyleArray,
 	getTextStyleArray,
@@ -677,9 +677,9 @@ describe('getNullStyleArray', () => {
 	});
 });
 
-describe('getGeojsonStyleArray', () => {
+describe('geojsonStyleFunction', () => {
 	it('should return a default style', () => {
-		const styles = getGeojsonStyleArray();
+		const styles = geojsonStyleFunction();
 
 		expect(styles).toBeDefined();
 		expect(styles.length).toBe(1);
@@ -696,10 +696,10 @@ describe('getGeojsonStyleArray', () => {
 		const largePointFeature = getFeatureWithProperties({ 'marker-size': 'large', 'marker-color': '#0000ff' });
 		const numberMarkerSizePointFeature = getFeatureWithProperties({ 'marker-size': 42, 'marker-color': '#0000ff' });
 
-		const smallPointStyles = getGeojsonStyleArray(smallPointFeature);
-		const mediumPointStyles = getGeojsonStyleArray(mediumPointFeature);
-		const largePointStyles = getGeojsonStyleArray(largePointFeature);
-		const numberMarkerSizePointStyle = getGeojsonStyleArray(numberMarkerSizePointFeature);
+		const smallPointStyles = geojsonStyleFunction(smallPointFeature);
+		const mediumPointStyles = geojsonStyleFunction(mediumPointFeature);
+		const largePointStyles = geojsonStyleFunction(largePointFeature);
+		const numberMarkerSizePointStyle = geojsonStyleFunction(numberMarkerSizePointFeature);
 
 		expect(smallPointStyles).toBeDefined();
 		expect(smallPointStyles.length).toBe(1);
@@ -725,7 +725,7 @@ describe('getGeojsonStyleArray', () => {
 	it('should return a stroke style', () => {
 		const lineFeature = getFeatureWithProperties({ 'stroke-opacity': 0.42, stroke: '#ffff00', 'stroke-width': 4 });
 
-		const lineStyles = getGeojsonStyleArray(lineFeature);
+		const lineStyles = geojsonStyleFunction(lineFeature);
 
 		expect(lineStyles).toBeDefined();
 		expect(lineStyles.length).toBe(1);
@@ -736,7 +736,7 @@ describe('getGeojsonStyleArray', () => {
 	it('should return a fill style', () => {
 		const lineFeature = getFeatureWithProperties({ 'fill-opacity': 0.21, fill: '#00ff00' });
 
-		const lineStyles = getGeojsonStyleArray(lineFeature);
+		const lineStyles = geojsonStyleFunction(lineFeature);
 
 		expect(lineStyles).toBeDefined();
 		expect(lineStyles.length).toBe(1);
@@ -1800,8 +1800,8 @@ describe('util functions creating a text style', () => {
 		const measureStyles = measureStyleFunction(lineStringFeature, resolution);
 		const nullStyles = getNullStyleArray();
 		const defaultStyles = getDefaultStyleFunction(rgbaColor)(lineStringFeature);
-		const defaultGeoJsonStyles = getGeojsonStyleArray();
-		const customGeoJsonStyles = getGeojsonStyleArray(geojsonLineStringFeature);
+		const defaultGeoJsonStyles = geojsonStyleFunction();
+		const customGeoJsonStyles = geojsonStyleFunction(geojsonLineStringFeature);
 		const defaultLineStyles = getLineStyleArray();
 		const customLineStyles = getLineStyleArray(lineStyleOption);
 		const defaultPolygonStyles = getPolygonStyleArray();

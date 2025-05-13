@@ -1,39 +1,39 @@
 /**
  * @module modules/olMap/services/StyleService
  */
+
 import { getUid } from 'ol';
-import { $injector } from '../../../injection';
-import { getContrastColorFrom, rgbToHex } from '../../../utils/colors';
-import {
-	measureStyleFunction,
-	getTextStyleArray,
-	markerScaleToKeyword,
-	getStyleArray,
-	geojsonStyleFunction,
-	getDefaultStyleFunction,
-	defaultClusterStyleFunction,
-	getMarkerStyleArray,
-	getTransparentImageStyle
-} from '../utils/olStyleUtils';
-import { getRoutingStyleFunction } from '../handler/routing/styleUtils';
-import { GeometryCollection, MultiPoint, Point } from '../../../../node_modules/ol/geom';
-import { Stroke, Style, Text } from '../../../../node_modules/ol/style';
-import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../ol/geodesic/geodesicGeometry';
 import { VectorSourceType } from '../../../domain/geoResources';
 import { StyleHint } from '../../../domain/styles';
+import { $injector } from '../../../injection/index';
+import { getContrastColorFrom, rgbToHex } from '../../../utils/colors';
 import { highlightGeometryOrCoordinateFeatureStyleFunction } from '../handler/highlight/styleUtils';
+import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../ol/geodesic/geodesicGeometry';
+import {
+	defaultClusterStyleFunction,
+	geojsonStyleFunction,
+	getDefaultStyleFunction,
+	getMarkerStyleArray,
+	getStyleArray,
+	getTextStyleArray,
+	getTransparentImageStyle,
+	markerScaleToKeyword,
+	measureStyleFunction
+} from '../utils/olStyleUtils';
+import { getRoutingStyleFunction } from '../handler/routing/styleUtils';
+import { Stroke, Style, Text } from '../../../../node_modules/ol/style';
+import { GeometryCollection, MultiPoint, Point } from '../../../../node_modules/ol/geom';
+import TileSource from '../../../../node_modules/ol/source/Tile';
 
 /**
- * Enumeration of predefined types of style
+ * Enumeration of predefined and internal used types of style
  * @readonly
  * @enum {String}
  */
-export const StyleTypes = Object.freeze({
+export const OlFeatureStyleTypes = Object.freeze({
 	NULL: 'null',
 	DEFAULT: 'default',
 	MEASURE: 'measure',
-	HIGHLIGHT: 'highlight',
-	HIGHLIGHT_TEMP: 'highlight_temp',
 	DRAW: 'draw',
 	MARKER: 'marker',
 	POINT: 'point',
@@ -58,29 +58,13 @@ const Default_Colors = [
 const GeoJSON_SimpleStyle_Keys = ['marker-symbol', 'marker-size', 'marker-color', 'stroke', 'stroke-opacity', 'stroke-width', 'fill', 'fill-opacity'];
 
 /**
- * Adds or removes styles and overlays to {@link ol.feature}.
+ * Provides style operations for vector layer({@link ol.layer.Vector}) and features ({@link ol.feature}).
  * @class
  * @author thiloSchlemmer
  */
 export class StyleService {
-	constructor() {
-		this._defaultColorIndex = 0;
-		this._defaultColorByLayerId = {};
-	}
-
-	_nextColor() {
-		const getColor = (index) => Default_Colors[index];
-
-		const restart = () => {
-			this._defaultColorIndex = 0;
-			return this._defaultColorIndex;
-		};
-		const next = () => {
-			return this._defaultColorIndex++;
-		};
-
-		return this._defaultColorIndex === Default_Colors.length ? getColor(restart()) : getColor(next());
-	}
+	#defaultColorIndex = 0;
+	#defaultColorByLayerId = {};
 
 	/**
 	 * Adds (explicit or implicit) specified styles and overlays ({@link OverlayStyle}) to the specified feature.
@@ -88,30 +72,30 @@ export class StyleService {
 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style will be added
 	 * @param {ol.Layer} olLayer the layer of the feature, used for layer-wide color in the default style
 	 */
-	addStyle(olFeature, olMap, olLayer) {
+	addFeatureStyle(olFeature, olMap, olLayer) {
 		const styleType = this._detectStyleType(olFeature);
 		switch (styleType) {
-			case StyleTypes.MEASURE:
+			case OlFeatureStyleTypes.MEASURE:
 				this._addMeasureStyle(olFeature, olMap);
 				break;
-			case StyleTypes.ANNOTATION:
-			case StyleTypes.TEXT:
+			case OlFeatureStyleTypes.ANNOTATION:
+			case OlFeatureStyleTypes.TEXT:
 				this._addTextStyle(olFeature);
 				break;
-			case StyleTypes.MARKER:
+			case OlFeatureStyleTypes.MARKER:
 				this._addMarkerStyle(olFeature);
 				break;
-			case StyleTypes.POLYGON:
-			case StyleTypes.LINE:
+			case OlFeatureStyleTypes.POLYGON:
+			case OlFeatureStyleTypes.LINE:
 				// Polygons and Lines comes with already defined styles (by KML etc.), no need to extra define a style
 				break;
-			case StyleTypes.GEOJSON:
+			case OlFeatureStyleTypes.GEOJSON:
 				this._addGeoJSONStyle(olFeature);
 				break;
-			case StyleTypes.DEFAULT:
+			case OlFeatureStyleTypes.DEFAULT:
 				this._addDefaultStyle(olFeature, olLayer);
 				break;
-			case StyleTypes.ROUTING:
+			case OlFeatureStyleTypes.ROUTING:
 				this._addRoutingStyle(olFeature);
 				break;
 			default:
@@ -130,12 +114,66 @@ export class StyleService {
 	}
 
 	/**
+	 * A Container-Object for optional properties related to an update of feature-style or -overlays
+	 * @typedef {Object} UpdateProperties
+	 * @param {Number} [opacity] the opacity (0-1), may or may not given, to update the opacity of the specified feature, based on
+	 * the style type ({@link OlFeatureStyleTypes}) belonging to the feature
+	 * @param {Boolean} [top] the top-flag (true/false),  may or may not given, whether or not to update the behavior of being in the
+	 * topmost layer
+	 * @param {Boolean} [visible] the visible-flag (true/false), may or may not given, whether or not to update the visibility of the
+	 * specified feature, based on the style type ({@link OlFeatureStyleTypes}) belonging to the feature
+	 */
+
+	/**
+	 * Updates (explicit or implicit) specified styles and overlays ({@link OverlayStyle}) to the specified feature.
+	 * @param {ol.Feature} olFeature the feature to be styled
+	 * @param {ol.Map} olMap the map, where overlays related to the feature-style will be updated
+	 * @param {module:modules/olMap/services/OlStyleService~UpdateProperties} properties the optional properties, which are used for additional style updates;
+	 * any possible implications of a combination of defined UpdateProperties (i.e. visible=true && top=false) are handled by the current
+	 * implementation of the StyleService
+	 * @param {OlFeatureStyleTypes} [styleType] the {@link OlFeatureStyleTypes}, which should be used for the update
+	 */
+	updateFeatureStyle(olFeature, olMap, properties, styleType = null) {
+		const usingStyleType = styleType ? styleType : this._detectStyleType(olFeature);
+		const { OverlayService: overlayService } = $injector.inject('OverlayService');
+		if (usingStyleType === OlFeatureStyleTypes.MEASURE) {
+			overlayService.update(olFeature, olMap, usingStyleType, properties);
+		}
+	}
+
+	/**
+	 * Removes overlays (added by OverlayStyle-classes) from the map and the feature
+	 * @param {ol.Feature} olFeature the feature
+	 * @param {ol.Map} olMap the map, where overlays related to the feature-style exists
+	 */
+	removeFeatureStyle(olFeature, olMap) {
+		const usingStyleType = this._detectStyleType(olFeature);
+		const { OverlayService: overlayService } = $injector.inject('OverlayService');
+		overlayService.remove(olFeature, olMap, usingStyleType);
+	}
+
+	/**
+	 * Adds specific stylings (and overlays) for a vector layer.
+	 * @param {ol.layer.Vector} olVectorLayer
+	 * @param {ol.Map} olMap
+	 * @param {AbstractVectorGeoResource} vectorGeoResource
+	 * @returns {ol.layer.Vector}
+	 */
+	applyStyle(olVectorLayer, olMap, vectorGeoResource) {
+		this._sanitizeStyles(olVectorLayer);
+		if (vectorGeoResource.hasStyleHint?.()) {
+			return this._applyStyleHint(vectorGeoResource.styleHint, olVectorLayer);
+		}
+		return this._applyFeatureSpecificStyles(olVectorLayer, olMap);
+	}
+
+	/**
 	 * Applies the style according to the given `StyleHint`
 	 * @param {StyleHint} styleHint
 	 * @param {ol.layer.Vector} olVectorLayer
 	 * @returns {ol.layer.Vector}
 	 */
-	applyStyleHint(styleHint, olVectorLayer) {
+	_applyStyleHint(styleHint, olVectorLayer) {
 		switch (styleHint) {
 			case StyleHint.CLUSTER:
 				olVectorLayer.setStyle(defaultClusterStyleFunction());
@@ -147,52 +185,84 @@ export class StyleService {
 		return olVectorLayer;
 	}
 
-	/**
-	 * A Container-Object for optional properties related to a update of feature-style or -overlays
-	 * @typedef {Object} UpdateProperties
-	 * @param {Number} [opacity] the opacity (0-1), may or may not given, to update the opacity of the specified feature, based on
-	 * the style type ({@link StyleTypes}) belonging to the feature
-	 * @param {Boolean} [top] the top-flag (true/false),  may or may not given, whether or not to update the behavior of being in the
-	 * topmost layer
-	 * @param {Boolean} [visible] the visible-flag (true/false), may or may not given, whether or not to update the visibility of the
-	 * specified feature, based on the style type ({@link StyleTypes}) belonging to the feature
-	 */
+	_applyFeatureSpecificStyles(olVectorLayer, olMap) {
+		const isStyleRequired = (olFeature) => this._detectStyleType(olFeature) !== null;
+		/**
+		 * We check if an currently present and possible future features needs a specific styling.
+		 * If so, we apply the style and register an event listeners in order to keep the style (and overlays)
+		 * up-to-date with the layer.
+		 */
 
-	/**
-	 * Updates (explicit or implicit) specified styles and overlays ({@link OverlayStyle}) to the specified feature.
-	 * @param {ol.Feature} olFeature the feature to be styled
-	 * @param {ol.Map} olMap the map, where overlays related to the feature-style will be updated
-	 * @param {module:modules/olMap/services/StyleService~UpdateProperties} properties the optional properties, which are used for additional style updates;
-	 * any possible implications of a combination of defined UpdateProperties (i.e. visible=true && top=false) are handled by the current
-	 * implementation of the StyleService
-	 * @param {StyleTypes} [styleType] the {@link StyleTypes}, which should be used for the update
-	 */
-	updateStyle(olFeature, olMap, properties, styleType = null) {
-		const usingStyleType = styleType ? styleType : this._detectStyleType(olFeature);
-		const { OverlayService: overlayService } = $injector.inject('OverlayService');
-		if (usingStyleType === StyleTypes.MEASURE) {
-			overlayService.update(olFeature, olMap, usingStyleType, properties);
+		const olVectorSource = olVectorLayer.getSource();
+
+		if (olVectorSource.getFeatures().some((feature) => isStyleRequired(feature))) {
+			// if we have at least one style requiring feature, we register the styleEvent listener once
+			// and apply the style for all currently present features
+			this._registerStyleEventListeners(olVectorSource, olVectorLayer, olMap);
+
+			olVectorSource.getFeatures().forEach((feature) => {
+				if (isStyleRequired(feature)) {
+					this.addFeatureStyle(feature, olMap, olVectorLayer);
+					this.updateFeatureStyle(feature, olMap, this._mapToStyleProperties(olVectorLayer));
+				}
+			});
 		}
+
+		return olVectorLayer;
+	}
+
+	_mapToStyleProperties(olLayer) {
+		const { StoreService: storeService } = $injector.inject('StoreService');
+		const {
+			layers: { active }
+		} = storeService.getStore().getState();
+		return {
+			visible: olLayer.getVisible(),
+			// we check if the layer representing this olLayer is the topmost layer of all unhidden layers
+			top: active.filter(({ constraints: { hidden } }) => !hidden).pop()?.id === olLayer.get('id'),
+			opacity: olLayer.getOpacity()
+		};
+	}
+
+	_registerStyleEventListeners(olVectorSource, olLayer, olMap) {
+		const addFeatureListenerKey = olVectorSource.on('addfeature', (event) => {
+			this.addFeatureStyle(event.feature, olMap, olLayer);
+			this.updateFeatureStyle(event.feature, olMap, this._mapToStyleProperties(olLayer));
+		});
+		const removeFeatureListenerKey = olVectorSource.on('removefeature', (event) => {
+			this.removeFeatureStyle(event.feature, olMap);
+		});
+		const clearFeaturesListenerKey = olVectorSource.on('clear', () => {
+			olVectorSource.getFeatures().forEach((f) => this.removeFeatureStyle(f, olMap));
+		});
+
+		/**
+		 * Changes in the list of layers, should have impact on style properties of the vectorLayer (e.g. related overlays),
+		 * which are not tracked by OpenLayers
+		 */
+		const layerListChangedListenerKey = olMap.getLayers().on(['add', 'remove'], () => {
+			olVectorSource.getFeatures().forEach((f) => this.updateFeatureStyle(f, olMap, this._mapToStyleProperties(olLayer)));
+		});
+
+		/**
+		 * Track layer changes of visibility, opacity and z-index
+		 */
+		const layerChangeListenerKey = olLayer.on(['change:zIndex', 'change:visible', 'change:opacity'], () => {
+			olVectorSource.getFeatures().forEach((f) => this.updateFeatureStyle(f, olMap, this._mapToStyleProperties(olLayer)));
+		});
+
+		return { addFeatureListenerKey, removeFeatureListenerKey, clearFeaturesListenerKey, layerChangeListenerKey, layerListChangedListenerKey };
 	}
 
 	/**
-	 * Removes overlays (added by OverlayStyle-classes) from the map and the feature
-	 * @param {ol.Feature} olFeature the feature
-	 * @param {ol.Map} olMap the map, where overlays related to the feature-style exists
+	 * Sanitizes the style of the present features of the vector layer.
+	 * The sanitizing prepares features with incompatible styling for the rendering in the
+	 * ol context.
+	 * @param {ol.layer.Vector} olVectorLayer
 	 */
-	removeStyle(olFeature, olMap) {
-		const usingStyleType = this._detectStyleType(olFeature);
-		const { OverlayService: overlayService } = $injector.inject('OverlayService');
-		overlayService.remove(olFeature, olMap, usingStyleType);
-	}
-
-	/**
-	 * Tests if the specified {@link ol.Feature} needs to be styled
-	 * @param {ol.Feature} olFeature the style-candidate {@link ol.Feature}
-	 * @returns {Boolean} whether or not the specified feature requires a style
-	 */
-	isStyleRequired(olFeature) {
-		return this._detectStyleType(olFeature) !== null;
+	_sanitizeStyles(olVectorLayer) {
+		const olVectorSource = olVectorLayer.getSource();
+		olVectorSource.getFeatures().forEach((feature) => this._sanitizeStyleFor(feature));
 	}
 
 	/**
@@ -203,7 +273,7 @@ export class StyleService {
 	 * TODO: handling of GeometryCollection
 	 * @param {ol.Feature} olFeature
 	 */
-	sanitizeStyle(olFeature) {
+	_sanitizeStyleFor(olFeature) {
 		const getStyles = (feature) => {
 			const styleFunction = feature.getStyleFunction();
 			const stylesCandidate = !styleFunction || !styleFunction(feature) ? null : styleFunction(feature);
@@ -289,41 +359,30 @@ export class StyleService {
 		}
 	}
 
-	_addMeasureStyle(olFeature, olMap) {
-		const { OverlayService: overlayService } = $injector.inject('OverlayService');
-
-		if (!olFeature.get(GEODESIC_FEATURE_PROPERTY)) {
-			olFeature.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(olFeature, olMap));
-		}
-
-		olFeature.setStyle(measureStyleFunction);
-		overlayService.add(olFeature, olMap, StyleTypes.MEASURE);
+	_addRoutingStyle(olFeature) {
+		const styleFunction = getRoutingStyleFunction();
+		olFeature.setStyle(styleFunction);
 	}
 
-	_addGeoJSONStyle(olFeature) {
-		olFeature.setStyle(geojsonStyleFunction);
-	}
-
-	_addTextStyle(olFeature) {
-		const getStyleOption = () => {
-			const fromStyle = (style) => {
-				const currentColor = style.getText()?.getFill().getColor();
-				const currentText = style.getText()?.getText();
-				const currentScale = style.getText()?.getScale();
-				return { color: Array.isArray(currentColor) ? rgbToHex(currentColor) : currentColor, scale: currentScale, text: currentText };
-			};
-
-			const fromAttribute = (feature) => {
-				return { text: feature.get('name') };
-			};
-
-			const styles = getStyleArray(olFeature);
-			return styles ? fromStyle(styles[0]) : fromAttribute(olFeature);
+	_addDefaultStyle(olFeature, olLayer) {
+		const isGPX = (layer) => {
+			const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
+			return geoResourceService.byId(layer.get('geoResourceId'))?.sourceType === VectorSourceType.GPX;
 		};
 
-		const newStyle = getTextStyleArray(getStyleOption());
+		const getColorByLayerId = (layer) => {
+			const id = getUid(layer);
+			if (this.#defaultColorByLayerId[id] === undefined) {
+				this.#defaultColorByLayerId[id] = this._nextColor();
+			}
+			return [...this.#defaultColorByLayerId[id]];
+		};
 
-		olFeature.setStyle(() => newStyle);
+		const color = olLayer && !isGPX(olLayer) ? getColorByLayerId(olLayer) : this._nextColor();
+		olFeature.setStyle(getDefaultStyleFunction(color));
+	}
+	_addGeoJSONStyle(olFeature) {
+		olFeature.setStyle(geojsonStyleFunction);
 	}
 
 	_addMarkerStyle(olFeature) {
@@ -360,27 +419,51 @@ export class StyleService {
 		olFeature.setStyle(() => newStyle);
 	}
 
-	_addRoutingStyle(olFeature) {
-		const styleFunction = getRoutingStyleFunction();
-		olFeature.setStyle(styleFunction);
+	_addTextStyle(olFeature) {
+		const getStyleOption = () => {
+			const fromStyle = (style) => {
+				const currentColor = style.getText()?.getFill().getColor();
+				const currentText = style.getText()?.getText();
+				const currentScale = style.getText()?.getScale();
+				return { color: Array.isArray(currentColor) ? rgbToHex(currentColor) : currentColor, scale: currentScale, text: currentText };
+			};
+
+			const fromAttribute = (feature) => {
+				return { text: feature.get('name') };
+			};
+
+			const styles = getStyleArray(olFeature);
+			return styles ? fromStyle(styles[0]) : fromAttribute(olFeature);
+		};
+
+		const newStyle = getTextStyleArray(getStyleOption());
+
+		olFeature.setStyle(() => newStyle);
 	}
 
-	_addDefaultStyle(olFeature, olLayer = null) {
-		const isGPX = (layer) => {
-			const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
-			return geoResourceService.byId(layer.get('geoResourceId'))?.sourceType === VectorSourceType.GPX;
+	_addMeasureStyle(olFeature, olMap) {
+		const { OverlayService: overlayService } = $injector.inject('OverlayService');
+
+		if (!olFeature.get(GEODESIC_FEATURE_PROPERTY)) {
+			olFeature.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(olFeature, olMap));
+		}
+
+		olFeature.setStyle(measureStyleFunction);
+		overlayService.add(olFeature, olMap, OlFeatureStyleTypes.MEASURE);
+	}
+
+	_nextColor() {
+		const getColor = (index) => Default_Colors[index];
+
+		const restart = () => {
+			this.#defaultColorIndex = 0;
+			return this.#defaultColorIndex;
+		};
+		const next = () => {
+			return this.#defaultColorIndex++;
 		};
 
-		const getColorByLayerId = (layer) => {
-			const id = getUid(layer);
-			if (this._defaultColorByLayerId[id] === undefined) {
-				this._defaultColorByLayerId[id] = this._nextColor();
-			}
-			return [...this._defaultColorByLayerId[id]];
-		};
-
-		const color = olLayer && !isGPX(olLayer) ? getColorByLayerId(olLayer) : this._nextColor();
-		olFeature.setStyle(getDefaultStyleFunction(color));
+		return this.#defaultColorIndex === Default_Colors.length ? getColor(restart()) : getColor(next());
 	}
 
 	_detectStyleType(olFeature) {

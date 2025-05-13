@@ -145,7 +145,7 @@ export const getNullStyleArray = () => [new Style({})];
  * @param {ol.Feature} feature the olFeature to be styled
  * @returns {Array<Style>}
  */
-export const getGeojsonStyleArray = (feature) => {
+export const geojsonStyleFunction = (feature) => {
 	// default style properties based on simpleStyle spec
 	// hint: 'marker-symbol' is currently not supported
 	const defaultStyleProperties = {
