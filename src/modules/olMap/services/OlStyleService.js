@@ -23,7 +23,6 @@ import {
 import { getRoutingStyleFunction } from '../handler/routing/styleUtils';
 import { Stroke, Style, Text } from '../../../../node_modules/ol/style';
 import { GeometryCollection, MultiPoint, Point } from '../../../../node_modules/ol/geom';
-import TileSource from '../../../../node_modules/ol/source/Tile';
 
 /**
  * Enumeration of predefined and internal used types of style
@@ -480,29 +479,29 @@ export class StyleService {
 			const featurePropertyKeys = olFeature.getKeys();
 			const hasGeoJSONSimpleStyleProperties = featurePropertyKeys.some((k) => GeoJSON_SimpleStyle_Keys.includes(k));
 
-			return hasGeoJSONSimpleStyleProperties ? StyleTypes.GEOJSON : null;
+			return hasGeoJSONSimpleStyleProperties ? OlFeatureStyleTypes.GEOJSON : null;
 		};
 
 		const getStyleTypeFromId = (olFeature) => {
 			const id = olFeature.getId();
-			const drawingType = Object.keys(StyleTypes).find((key) => isDrawingStyleType(StyleTypes[key], id));
+			const drawingType = Object.keys(OlFeatureStyleTypes).find((key) => isDrawingStyleType(OlFeatureStyleTypes[key], id));
 			if (drawingType) {
-				return StyleTypes[drawingType];
+				return OlFeatureStyleTypes[drawingType];
 			}
-			const otherType = Object.keys(StyleTypes).find((key) => isStyleType(StyleTypes[key], id));
+			const otherType = Object.keys(OlFeatureStyleTypes).find((key) => isStyleType(OlFeatureStyleTypes[key], id));
 			if (otherType) {
-				return StyleTypes[otherType];
+				return OlFeatureStyleTypes[otherType];
 			}
 			return null;
 		};
 
 		const getStyleTypeFromTypeAttribute = (olFeature) => {
 			const typeAttribute = olFeature.get('type');
-			const styleType = Object.values(StyleTypes).find((typeValue) => typeValue === typeAttribute);
+			const styleType = Object.values(OlFeatureStyleTypes).find((typeValue) => typeValue === typeAttribute);
 			return styleType ?? null;
 		};
 
-		const defaultOrNull = (olFeature) => (olFeature.getStyle() === null ? StyleTypes.DEFAULT : null);
+		const defaultOrNull = (olFeature) => (olFeature.getStyle() === null ? OlFeatureStyleTypes.DEFAULT : null);
 
 		if (olFeature) {
 			for (const styleTypeFunction of [getStyleTypeFromId, getStyleTypeFromProperties, getStyleTypeFromTypeAttribute, defaultOrNull]) {
