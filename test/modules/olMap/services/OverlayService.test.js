@@ -100,7 +100,33 @@ describe('OverlayService', () => {
 			expect(addListenerSpy).toHaveBeenCalled();
 		});
 
-		it('adds overlays to a feature with unknown style-type fails', () => {
+		it('does NOT add overlays to a feature with draw specific style-type', () => {
+			const drawSpecificStyleTypes = ['draw', 'point', 'line', 'polygon', 'marker', 'text'];
+			const feature = new Feature({
+				geometry: new Polygon([
+					[
+						[0, 0],
+						[1, 0],
+						[1, 1],
+						[0, 1],
+						[0, 0]
+					]
+				])
+			});
+			feature.setId('measure_123');
+			const warnSpy = spyOn(console, 'warn');
+			const addOverlaySpy = jasmine.createSpy();
+			const propertySetterSpy = spyOn(feature, 'set');
+			mapMock.addOverlay = addOverlaySpy;
+
+			drawSpecificStyleTypes.forEach((t) => instanceUnderTest.add(feature, mapMock, t));
+
+			expect(propertySetterSpy).not.toHaveBeenCalledWith('overlays', jasmine.any(Object));
+			expect(addOverlaySpy).not.toHaveBeenCalled();
+			expect(warnSpy).not.toHaveBeenCalled();
+		});
+
+		it('adding overlays to a feature with unknown style-type fails', () => {
 			const feature = new Feature({
 				geometry: new Polygon([
 					[
