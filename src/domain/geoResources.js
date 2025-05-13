@@ -663,7 +663,7 @@ export class AbstractVectorGeoResource extends GeoResource {
 	/**
 	 * Set the style hint for this `AbstractVectorGeoResource`
 	 * @param {StyleHint} styleHint
-	 * @returns {AbstractVectorGeoResource}
+	 * @returns {AbstractVectorGeoResource} `this` for chaining
 	 */
 	setStyleHint(styleHint) {
 		if (styleHint) {
