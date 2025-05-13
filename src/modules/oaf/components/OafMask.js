@@ -3,9 +3,11 @@
  */
 import { html } from 'lit-html';
 import { when } from 'lit-html/directives/when.js';
+import { repeat } from 'lit-html/directives/repeat.js';
 import { MvuElement } from '../../MvuElement';
 import { $injector } from '../../../injection';
 import css from './oafMask.css';
+import { createUniqueId } from '../../../utils/numberUtils';
 
 const Update_Capabilities = 'update_capabilities';
 const Update_Filter_Group = 'update_filter_group';
@@ -22,7 +24,7 @@ export class OafMask extends MvuElement {
 
 	constructor() {
 		super({
-			filterGroups: [],
+			filterGroupIds: [],
 			capabilities: []
 		});
 
@@ -41,17 +43,23 @@ export class OafMask extends MvuElement {
 			case Update_Capabilities:
 				return { ...model, capabilities: data };
 			case Update_Filter_Group:
-				return { ...model, filterGroups: [...model.filterGroups, {}] };
+				return { ...model, filterGroupIds: [...data] };
 		}
 	}
 
 	createView(model) {
 		const onAddFilterGroup = (evt) => {
-			this.signal(Update_Filter_Group);
+			const groups = this.getModel().filterGroupIds;
+			this.signal(Update_Filter_Group, [...groups, createUniqueId()]);
 		};
 
 		const onShowCqlConsole = (evt) => {
 			console.log('Show Cql Console');
+		};
+
+		const removeFilterGroup = (evt) => {
+			const groups = this.getModel().filterGroupIds;
+			this.signal(Update_Filter_Group, this._removeFilterGroup(evt.target.getAttribute('group-id')));
 		};
 
 		const orSeperatorHtml = html`
@@ -62,7 +70,7 @@ export class OafMask extends MvuElement {
 			</div>
 		`;
 
-		const { capabilities, filterGroups } = model;
+		const { capabilities, filterGroupIds } = model;
 
 		return html`
 			<style>
@@ -83,22 +91,29 @@ export class OafMask extends MvuElement {
 						@click=${onShowCqlConsole}
 					></ba-button>
 				</div>
-				<div class="grid-container">
-					${filterGroups.map(
-						(group, index) => html`
-							<div class="grid-filter-group-container">
-								<ba-oaf-filter-group .queryables=${capabilities.queryables}></ba-oaf-filter-group>
+				<div class="flex-hscroll-container">
+					${repeat(
+						filterGroupIds,
+						(groupId) => groupId,
+						(groupId, index) =>
+							html` <div class="filter-group-container">
+								<ba-oaf-filter-group group-id=${groupId} @remove=${removeFilterGroup} .queryables=${capabilities.queryables}></ba-oaf-filter-group>
 								${when(
-									index < filterGroups.length - 1,
+									index < filterGroupIds.length - 1,
 									() => orSeperatorHtml,
 									() => html`<div></div>`
 								)}
-							</div>
-						`
+							</div>`
 					)}
 				</div>
 			</div>
 		`;
+	}
+
+	_removeFilterGroup(idToRemove) {
+		return this.getModel().filterGroupIds.filter((id) => {
+			return id != idToRemove;
+		});
 	}
 
 	async _requestFilterCapabilities() {

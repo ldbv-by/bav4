@@ -1,5 +1,5 @@
 /**
- * @module modules/examples/ogc/components/OafRow
+ * @module modules/examples/ogc/components/OafFilter
  */
 import { html } from 'lit-html';
 import { when } from 'lit-html/directives/when.js';
@@ -15,39 +15,38 @@ const Update_Operator = 'update_operator';
  * @class
  * @author herrmutig
  */
-export class OafRow extends MvuElement {
+export class OafFilter extends MvuElement {
 	constructor() {
 		super({
-			filter: {},
-			operator: 'equals'
+			queryable: {},
+			operator: 'equals',
+			value: null
 		});
 	}
 
 	update(type, data, model) {
 		switch (type) {
 			case Update_Filter:
-				return { ...model, filter: data };
+				return { ...model, queryable: data };
 			case Update_Operator:
 				return { ...model, operator: data };
 		}
 	}
 
 	createView(model) {
-		const { name, type, values, finalList } = model.filter;
+		const { name, type, values, finalList } = model.queryable;
+		const operators = this._getOperators(type);
 		const operator = model.operator;
-
-		const onRemoveRow = (evt) => {
-			evt.preventDefault();
-			evt.stopPropagation();
-
-			this.dispatchEvent(new CustomEvent('removeRow', { detail: model.filter }));
-		};
 
 		const onOperatorSelect = (evt) => {
 			this.signal(Update_Operator, evt.target.value);
+			this.dispatchEvent(new CustomEvent('change'));
 		};
 
-		const operators = this._getOperators(type);
+		const onRemove = () => {
+			this.dispatchEvent(new CustomEvent('remove', { detail: model.queryable }));
+		};
+
 		const getInputHTML = () => {
 			const content = () => {
 				const step = type == 'integer' ? '1' : '0.1';
@@ -106,7 +105,7 @@ export class OafRow extends MvuElement {
 				<div class="grid-row">
 					<div class="grid-column-header">
 						<div class="input-filter"><span>${name}</span></div>
-						<button @click=${onRemoveRow}>X</button>
+						<button @click=${onRemove}>X</button>
 					</div>
 					<div class="grid-column">
 							<div class="input-operator">
@@ -122,8 +121,16 @@ export class OafRow extends MvuElement {
 		`;
 	}
 
-	set filter(value) {
+	get queryable() {
+		return this.getModel().queryable;
+	}
+
+	set queryable(value) {
 		this.signal(Update_Filter, value);
+	}
+
+	get operator() {
+		return this.getModel().operator;
 	}
 
 	_getOperators(type) {

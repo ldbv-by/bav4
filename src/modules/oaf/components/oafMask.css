@@ -2,6 +2,16 @@
 	padding: 30px;
 }
 
+.flex-hscroll-container {
+	display: flex;
+	flex-wrap: nowrap;
+	overflow-x: auto;
+
+	.card {
+		flex: 0 0 auto;
+	}
+}
+
 .grid-container {
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr;
@@ -15,8 +25,9 @@
 	gap: 10px;
 }
 
-.grid-filter-group-container {
+.filter-group-container {
 	display: grid;
+	flex: 0 0 auto;
 	grid-template-columns: 1fr 0.4fr;
 }
 
