@@ -64,6 +64,9 @@ export class LayerService {
 
 		const { minZoom, maxZoom, opacity } = geoResource;
 
+		/**
+		 * Here we just check if a BAA-authenticated GeoResource can access its credentials
+		 */
 		if (geoResource.authenticationType === GeoResourceAuthenticationType.BAA && geoResource.url) {
 			const credential = baaCredentialService.get(geoResource.url);
 			if (!credential) {
