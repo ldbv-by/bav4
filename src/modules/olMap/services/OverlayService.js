@@ -68,6 +68,13 @@ export class OverlayService {
 				return new MeasurementOverlayStyle();
 			case StyleTypes.DEFAULT:
 				return new OverlayStyle();
+			case StyleTypes.DRAW:
+			case StyleTypes.MARKER:
+			case StyleTypes.LINE:
+			case StyleTypes.POINT:
+			case StyleTypes.POLYGON:
+			case StyleTypes.TEXT:
+				return null;
 			default:
 				console.warn('Could not provide a style for unknown style-type:', styleType);
 				return null;
