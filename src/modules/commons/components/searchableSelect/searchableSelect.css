@@ -46,5 +46,6 @@
 
 .dropdown {
 	position: absolute;
+	z-index: var(--z-mapbuttons);
 	width: 100%;
 }
