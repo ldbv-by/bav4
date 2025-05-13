@@ -813,8 +813,8 @@
 				${g}
 				${h}
 			</style>
-			<button class="anchor" aria-label=${s} title=${s}>
-				<span class="icon icon-custom ${(0,c.H)(p)}"></span>
+			<button part="button" class="anchor" aria-label=${s} title=${s}>
+				<span part="icon" class="icon icon-custom ${(0,c.H)(p)}"></span>
 			</button>
 		`}static get tag(){return"ba-icon"}set onClick(e){this._onClick=e}get onClick(){return this._onClick}set disabled(e){this.signal(B,e)}get disabled(){return this.getModel().disabled}set icon(e){this.signal(V,e)}get icon(){return this.getModel().icon}set size(e){this.signal(W,e)}get size(){return this.getModel().size}set color(e){this.signal(Z,e)}get color(){return this.getModel().color}set color_hover(e){this.signal(Q,e)}get color_hover(){return this.getModel().color_hover}set title(e){this.signal(q,e)}get title(){return this.getModel().title}}window.customElements.get(K.tag)||window.customElements.define(K.tag,K);var X=n(47644),J=n.n(X);const ee="update_label";class te extends l.T{constructor(){super({label:null});const{TranslationService:e}=r.z.inject("TranslationService");this._translationService=e}onInitialize(){this.setAttribute(d.QE,"")}update(e,t,n){if(e===ee)return{...n,label:t}}createView(e){const{label:t}=e,n=t||(()=>this._translationService.translate("commons_spinner_text"))();return o.qy`
 			<style>
