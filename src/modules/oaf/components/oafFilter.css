@@ -32,7 +32,8 @@
 
 .grid-column-header {
 	display: grid;
-	grid-template-columns: 1fr 50px;
+	grid-template-columns: 1fr 50px 50px;
+	gap: 5px;
 }
 
 .input-filter {
@@ -43,8 +44,13 @@
 	padding-right: 10px;
 }
 
-.input-operator select {
-	padding: 10px;
+.input-operator,
+.input-value {
+	align-self: center;
+
+	select {
+		padding: 10px;
+	}
 }
 
 .input-value input {
@@ -53,4 +59,25 @@
 
 select {
 	background-color: white;
+}
+
+.not-button {
+	background-color: var(--primary-color);
+	color: #eee;
+	font-weight: 600;
+}
+
+.remove-button {
+	background-color: red;
+	color: #eee;
+	font-weight: 600;
+}
+
+.not-button.active {
+	background-color: green;
+}
+
+button {
+	border: none;
+	outline: none;
 }

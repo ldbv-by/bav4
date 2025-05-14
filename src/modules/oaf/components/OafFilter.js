@@ -53,11 +53,24 @@ export class OafFilter extends MvuElement {
 
 				if (finalList) {
 					switch (type) {
-						case 'string': {
+						case 'string':
+						case 'time': {
 							return html`
-								<select>
-									${values.map((value) => html`<option value="${value}">${value}</option>`)}
-								</select>
+								${when(
+									operator == 'between',
+									() => html`
+										<select>
+											${values.map((value) => html`<option value="${value}">${value}</option>`)}
+										</select>
+										<select>
+											${values.map((value) => html`<option value="${value}">${value}</option>`)}
+										</select>
+									`,
+									() =>
+										html` <select>
+											${values.map((value) => html`<option value="${value}">${value}</option>`)}
+										</select>`
+								)}
 							`;
 						}
 					}
@@ -97,6 +110,10 @@ export class OafFilter extends MvuElement {
 			return html`${content()}`;
 		};
 
+		const toggleActiveButtonClass = (evt) => {
+			evt.target.classList.toggle('active');
+		};
+
 		return html`
 			<style>
 				${css}
@@ -105,7 +122,8 @@ export class OafFilter extends MvuElement {
 				<div class="grid-row">
 					<div class="grid-column-header">
 						<div class="input-filter"><span>${name}</span></div>
-						<button @click=${onRemove}>X</button>
+						<button class="not-button" @click=${toggleActiveButtonClass}>NOT</button>
+						<button class="remove-button" @click=${onRemove}>X</button>
 					</div>
 					<div class="grid-column">
 							<div class="input-operator">
@@ -137,10 +155,13 @@ export class OafFilter extends MvuElement {
 		const defaultOps = ['equals', 'not equals'];
 
 		switch (type) {
+			case 'time':
 			case 'float':
 			case 'integer': {
 				return [...defaultOps, 'greater', 'lesser', 'between'];
 			}
+			case 'string':
+				return [...defaultOps, 'contains'];
 		}
 
 		return defaultOps;

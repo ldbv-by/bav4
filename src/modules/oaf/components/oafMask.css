@@ -1,5 +1,6 @@
 .container {
 	padding: 30px;
+	min-height: 250px;
 }
 
 .flex-hscroll-container {
@@ -48,4 +49,28 @@
 
 .sticky-container {
 	position: sticky;
+}
+
+.btn-bar {
+	display: flex;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	* {
+		margin-right: 10px;
+	}
+}
+
+.console {
+	background-color: #333;
+	color: #22ee11;
+	letter-spacing: 0.23em;
+	min-height: 250px;
+	min-width: 100%;
+	max-width: 100%;
+	padding: 30px;
+}
+
+.console-flex-container {
+	display: flex;
+	flex-direction: column;
 }

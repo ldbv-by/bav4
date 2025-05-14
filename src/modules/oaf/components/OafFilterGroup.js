@@ -5,6 +5,7 @@ import { html } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
 import css from './oafFilterGroup.css';
 
+const Update_Conditional_Label = 'update_conditional_label';
 const Update_Queryables = 'update_queryables';
 const Update_Filter = 'update_filter';
 
@@ -18,7 +19,8 @@ export class OafFilterGroup extends MvuElement {
 	constructor() {
 		super({
 			activeQueryables: [],
-			queryables: []
+			queryables: [],
+			conditionalLabel: 'UND'
 		});
 	}
 
@@ -28,6 +30,8 @@ export class OafFilterGroup extends MvuElement {
 				return { ...model, queryables: [...data] };
 			case Update_Filter:
 				return { ...model, activeQueryables: [...data] };
+			case Update_Conditional_Label:
+				return { ...model, conditionalLabel: data };
 		}
 		return model;
 	}
@@ -46,7 +50,7 @@ export class OafFilterGroup extends MvuElement {
 	}
 
 	createView(model) {
-		const { queryables, activeQueryables } = model;
+		const { queryables, activeQueryables, conditionalLabel } = model;
 
 		const onAddFilter = (evt) => {
 			const queryableSelectValue = evt.target.value;
@@ -66,6 +70,15 @@ export class OafFilterGroup extends MvuElement {
 			this.dispatchEvent(new CustomEvent('remove'));
 		};
 
+		// Just for showcase
+		const onToggleGroupCondition = () => {
+			if (conditionalLabel == 'UND') {
+				this.signal(Update_Conditional_Label, 'ODER');
+			} else {
+				this.signal(Update_Conditional_Label, 'UND');
+			}
+		};
+
 		return html`
 			<style>
 				${css}
@@ -73,7 +86,11 @@ export class OafFilterGroup extends MvuElement {
 
 			<div class="filter-group">
 				<h2 style="padding: 10px 0;">Filtergruppe</h2>
-				<ba-button .type=${'primary'} .label=${'X'} @click=${onRemoveGroup}></ba-button>
+				<div class="btn-bar">
+					<ba-button .type=${'primary'} .label=${conditionalLabel} @click=${onToggleGroupCondition}></ba-button>
+					<ba-button .type=${'primary'} .label=${'DUP'}></ba-button>
+					<ba-button .type=${'primary'} class="remove-button" .label=${'X'} @click=${onRemoveGroup}></ba-button>
+				</div>
 				<select id="queryable-select" @change=${onAddFilter}>
 					<option selected>Select Filter...</option>
 					${queryables

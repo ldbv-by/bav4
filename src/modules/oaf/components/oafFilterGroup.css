@@ -12,3 +12,18 @@
 	padding: 10px;
 	background-color: white;
 }
+
+.btn-bar {
+	display: flex;
+	align-items: flex-end;
+	justify-content: right;
+	margin-bottom: 10px;
+	ba-button {
+		margin-left: 10px;
+	}
+}
+
+.remove-button::part(button) {
+	background-color: red;
+	color: #fff;
+}

@@ -11,6 +11,7 @@ import { createUniqueId } from '../../../utils/numberUtils';
 
 const Update_Capabilities = 'update_capabilities';
 const Update_Filter_Group = 'update_filter_group';
+const Update_Show_Console = 'update_show_console';
 
 /**
  * Displays and allows filtering for OGC Feature API capabilities
@@ -25,7 +26,8 @@ export class OafMask extends MvuElement {
 	constructor() {
 		super({
 			filterGroupIds: [],
-			capabilities: []
+			capabilities: [],
+			showConsole: false
 		});
 
 		const { GeoResourceService: geoResourceService, ImportOafService: importOafService } = $injector.inject('GeoResourceService', 'ImportOafService');
@@ -44,17 +46,19 @@ export class OafMask extends MvuElement {
 				return { ...model, capabilities: data };
 			case Update_Filter_Group:
 				return { ...model, filterGroupIds: [...data] };
+			case Update_Show_Console:
+				return { ...model, showConsole: data };
 		}
 	}
 
 	createView(model) {
-		const onAddFilterGroup = (evt) => {
+		const onAddFilterGroup = () => {
 			const groups = this.getModel().filterGroupIds;
 			this.signal(Update_Filter_Group, [...groups, createUniqueId()]);
 		};
 
-		const onShowCqlConsole = (evt) => {
-			console.log('Show Cql Console');
+		const onShowCqlConsole = () => {
+			this.signal(Update_Show_Console, !showConsole);
 		};
 
 		const removeFilterGroup = (evt) => {
@@ -70,42 +74,68 @@ export class OafMask extends MvuElement {
 			</div>
 		`;
 
-		const { capabilities, filterGroupIds } = model;
+		const { capabilities, filterGroupIds, showConsole } = model;
 
 		return html`
 			<style>
 				${css}
 			</style>
 			<div class="container">
-				<div class="sticky-container">
-					<ba-button
-						style="width:200px; display:inline-block; padding: 20px 0px;"
-						.label=${'Neue Filtergruppe'}
-						.type=${'primary'}
-						@click=${onAddFilterGroup}
-					></ba-button>
-					<ba-button
-						style="width:200px; display:inline-block;padding: 20px 0px;"
-						.label=${'Expertenmodus'}
-						.type=${'primary'}
-						@click=${onShowCqlConsole}
-					></ba-button>
-				</div>
-				<div class="flex-hscroll-container">
-					${repeat(
-						filterGroupIds,
-						(groupId) => groupId,
-						(groupId, index) =>
-							html` <div class="filter-group-container">
-								<ba-oaf-filter-group group-id=${groupId} @remove=${removeFilterGroup} .queryables=${capabilities.queryables}></ba-oaf-filter-group>
-								${when(
-									index < filterGroupIds.length - 1,
-									() => orSeperatorHtml,
-									() => html`<div></div>`
-								)}
+				${showConsole
+					? html`<div class="sticky-container">
+								<ba-button
+									style="width:200px; display:inline-block;padding: 20px 0px;"
+									.label=${'Normaler Modus'}
+									.type=${'primary'}
+									@click=${onShowCqlConsole}
+								></ba-button>
+							</div>
+							<div class="console-flex-container">
+								<div class="btn-bar">
+									<ba-button .type=${'primary'} .label=${'Größer Gleich'}></ba-button>
+									<ba-button .type=${'primary'} .label=${'Kleiner Gleich'}></ba-button>
+									<ba-button .type=${'primary'} .label=${'Größer'}></ba-button>
+									<ba-button .type=${'primary'} .label=${'Kleiner'}></ba-button>
+									<ba-button .type=${'primary'} .label=${'Gleich'}></ba-button>
+									<ba-button .type=${'primary'} .label=${'Ungleich'}></ba-button>
+									<ba-button .type=${'primary'} .label=${'Enthält'}></ba-button>
+								</div>
+								<textarea class="console"></textarea>
+								<ba-button .type=${'primary'} .label=${'Anwenden'}></ba-button>
 							</div>`
-					)}
-				</div>
+					: html`<div class="sticky-container">
+								<ba-button
+									style="width:200px; display:inline-block; padding: 20px 0px;"
+									.label=${'Neue Filtergruppe'}
+									.type=${'primary'}
+									@click=${onAddFilterGroup}
+								></ba-button>
+								<ba-button
+									style="width:200px; display:inline-block;padding: 20px 0px;"
+									.label=${'Expertenmodus'}
+									.type=${'primary'}
+									@click=${onShowCqlConsole}
+								></ba-button>
+							</div>
+							<div class="flex-hscroll-container">
+								${repeat(
+									filterGroupIds,
+									(groupId) => groupId,
+									(groupId, index) =>
+										html` <div class="filter-group-container">
+											<ba-oaf-filter-group
+												group-id=${groupId}
+												@remove=${removeFilterGroup}
+												.queryables=${capabilities.queryables}
+											></ba-oaf-filter-group>
+											${when(
+												index < filterGroupIds.length - 1,
+												() => orSeperatorHtml,
+												() => html`<div></div>`
+											)}
+										</div>`
+								)}
+							</div>`}
 			</div>
 		`;
 	}
