@@ -248,7 +248,9 @@ describe('VectorLayerService', () => {
 				const credential = { username: 'u', password: 'p' };
 				spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(credential);
 				const olVectorLayer = new VectorLayer();
-				const vectorGeoResource = new OafGeoResource('someId', 'label', url, 'collectionId', 12345).setAuthenticationType(GeoResourceAuthenticationType.BAA);
+				const vectorGeoResource = new OafGeoResource('someId', 'label', url, 'collectionId', 12345).setAuthenticationType(
+					GeoResourceAuthenticationType.BAA
+				);
 
 				const olVectorSource = instanceUnderTest._vectorSourceForOaf(vectorGeoResource, olVectorLayer);
 
