@@ -2,7 +2,6 @@
  * @module services/ImportOafService
  */
 import { $injector } from '../injection';
-import { SourceType, SourceTypeName } from '../domain/sourceType';
 
 import { getAttributionProviderForGeoResourceImportedByUrl } from './provider/attribution.provider';
 import { bvvOafFilterCapabilitiesProvider, bvvOafGeoResourceProvider } from './provider/oaf.provider';
@@ -12,7 +11,7 @@ import { bvvOafFilterCapabilitiesProvider, bvvOafGeoResourceProvider } from './p
  * @async
  * @typedef {Function} oafGeoResourceProvider
  * @param {string} url
- * @param {module:services/ImportOafService~ImportOafOptions} options
+ * @param {module:services/ImportOafService~ImportOafOptions} [options]
  * @returns {Promise<Array<OafGeoResource>>} available categories
  */
 
@@ -29,7 +28,7 @@ import { bvvOafFilterCapabilitiesProvider, bvvOafGeoResourceProvider } from './p
  *
  * @typedef {Object} ImportOafOptions
  * @property {boolean} [isAuthenticated] Whether or not the OAF service needs a authentication.
- * @property {Array<String>} [collections] Return only OafGeoResources matching the given collection names.
+ * @property {Array<String>} [collections] Return only OafGeoResources matching the given collection ids.
  * @property {Array<String>} [ids] Desired ids of the created OafGeoResources. If not set, ids will be created automatically.
  */
 
@@ -58,7 +57,6 @@ export class ImportOafService {
 	_newDefaultImportOafOptions() {
 		return {
 			isAuthenticated: false,
-			sourceType: new SourceType(SourceTypeName.OAF, null, 3857),
 			collections: [],
 			ids: []
 		};
