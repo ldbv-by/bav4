@@ -883,22 +883,40 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 	 * @param {string} label
 	 * @param {string} url
 	 * @param {string} collectionId
+	 * @param {number} srid
 	 */
-	constructor(id, label, url, collectionId) {
+	constructor(id, label, url, collectionId, srid) {
 		super(id, label);
 		this._url = url;
 		this._collectionId = collectionId;
 		this._limit = null;
+		this._srid = srid;
 	}
 
+	/**
+	 * The id of the referenced collections
+	 */
 	get collectionId() {
 		return this._collectionId;
 	}
 
+	/**
+	 * The base url of the OCG Api Feature service
+	 */
 	get url() {
 		return this._url;
 	}
 
+	/**
+	 * The supported SRID of the OCG Api Feature Collection
+	 */
+	get srid() {
+		return this._srid;
+	}
+
+	/**
+	 * The max. number of features that should be requested
+	 */
 	get limit() {
 		return this._limit;
 	}
