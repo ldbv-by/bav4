@@ -1,5 +1,5 @@
 /**
- * @module modules/olMap/services/StyleService
+ * @module modules/olMap/services/OlStyleService
  */
 
 import { getUid } from 'ol';
@@ -21,7 +21,7 @@ import {
 	measureStyleFunction
 } from '../utils/olStyleUtils';
 import { getRoutingStyleFunction } from '../handler/routing/styleUtils';
-import { Stroke, Style, Text } from '../../../../node_modules/ol/style';
+import { Stroke, Style, Text } from 'ol/style';
 import { GeometryCollection, MultiPoint, Point } from '../../../../node_modules/ol/geom';
 
 /**
