@@ -144,7 +144,7 @@ export const bvvOafGeoResourceProvider = async (url, options) => {
 		ConfigService: configService,
 		ProjectionService: projectionService
 	} = $injector.inject('HttpService', 'ConfigService', 'ProjectionService');
-	const endpoint = configService.getValueAsPath('BACKEND_URL') + 'oaf/getCollections';
+	const endpointUrl = configService.getValueAsPath('BACKEND_URL') + 'oaf/getCollections';
 
 	const getAuthenticationType = (isBaaAuthenticated) => {
 		return isBaaAuthenticated ? GeoResourceAuthenticationType.BAA : null;
@@ -185,7 +185,7 @@ export const bvvOafGeoResourceProvider = async (url, options) => {
 	};
 
 	const data = isAuthenticated ? { url: url, ...getCredentialOrFail(url) } : { url: url };
-	const result = await httpService.post(endpoint, JSON.stringify(data), MediaType.JSON);
+	const result = await httpService.post(endpointUrl, JSON.stringify(data), MediaType.JSON);
 	switch (result.status) {
 		case 200:
 			return readCollections(await result.json());
