@@ -57,11 +57,11 @@ const Default_Colors = [
 const GeoJSON_SimpleStyle_Keys = ['marker-symbol', 'marker-size', 'marker-color', 'stroke', 'stroke-opacity', 'stroke-width', 'fill', 'fill-opacity'];
 
 /**
- * Provides style operations for vector layer({@link ol.layer.Vector}) and features ({@link ol.feature}).
+ * Provides style operations for vector layers({@link ol.layer.Vector}) and features ({@link ol.feature}).
  * @class
  * @author thiloSchlemmer
  */
-export class StyleService {
+export class OlStyleService {
 	#defaultColorIndex = 0;
 	#defaultColorByLayerId = {};
 
@@ -380,6 +380,7 @@ export class StyleService {
 		const color = olLayer && !isGPX(olLayer) ? getColorByLayerId(olLayer) : this._nextColor();
 		olFeature.setStyle(getDefaultStyleFunction(color));
 	}
+
 	_addGeoJSONStyle(olFeature) {
 		olFeature.setStyle(geojsonStyleFunction);
 	}
