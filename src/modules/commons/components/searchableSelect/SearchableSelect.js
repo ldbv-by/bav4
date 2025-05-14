@@ -2,14 +2,9 @@
  * @module modules/commons/components/searchableSelect/SearchableSelect
  */
 
-/* TODO
- * - fix: Dropdown renders behind select when 2 selects are underneath each other
- * - feature: evaluate scrollable?
- */
-
+import css from './searchableSelect.css';
 import { html } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
-import css from './searchableSelect.css';
 import { isNumber } from '../../../../utils/checks';
 import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
 
@@ -63,6 +58,8 @@ export class SearchableSelect extends MvuElement {
 
 		this.#keyActionMapper = new KeyActionMapper(document);
 		this.#keyActionMapper.deactivate();
+
+		this.observeModel(['selected', 'search'], () => this.#dispatchChangeEvents());
 	}
 
 	onDisconnect() {
@@ -85,23 +82,6 @@ export class SearchableSelect extends MvuElement {
 			case Update_MaxEntries:
 				return { ...model, maxEntries: data };
 		}
-	}
-
-	onAfterRender(isInitial) {
-		if (isInitial) return;
-
-		const { selected, availableOptions } = this.getModel();
-		const eventData = {
-			availableOptions: availableOptions,
-			selected: selected
-		};
-
-		this.dispatchEvent(
-			new CustomEvent('change', {
-				detail: eventData
-			})
-		);
-		this.#onChange(eventData);
 	}
 
 	createView(model) {
@@ -205,8 +185,8 @@ export class SearchableSelect extends MvuElement {
 		this.#keyActionMapper
 			.addForKeyUp('Escape', () => this.#cancelAction())
 			.addForKeyUp('Enter', () => this.#confirmAction())
-			.addForKeyUp('ArrowUp', () => this.#chooseNextOption(true))
-			.addForKeyUp('ArrowDown', () => this.#chooseNextOption());
+			.addForKeyUp('ArrowUp', () => this._chooseNextOption(true))
+			.addForKeyUp('ArrowDown', () => this._chooseNextOption());
 
 		this.#keyActionMapper.activate();
 	}
@@ -221,18 +201,35 @@ export class SearchableSelect extends MvuElement {
 
 	#confirmAction() {
 		const hoveredOption = this.shadowRoot.querySelector('.option.hovered');
+		if (!hoveredOption) return;
+
 		this.#hideDropdown();
 		// @ts-ignore
 		this.signal(Update_Selected, hoveredOption.value);
 	}
 
-	#chooseNextOption(invert = false) {
+	#dispatchChangeEvents() {
+		const { selected, availableOptions } = this.getModel();
+		const eventData = {
+			availableOptions: availableOptions,
+			selected: selected
+		};
+
+		this.dispatchEvent(
+			new CustomEvent('change', {
+				detail: eventData
+			})
+		);
+
+		this.#onChange(eventData);
+	}
+
+	_chooseNextOption(invert = false) {
 		const options = Array.from(this.shadowRoot.querySelectorAll('.option'));
-
-		if (options.length < 1) return;
-
 		const hoveredOption = this.shadowRoot.querySelector('.option.hovered');
 		let nextHoveredOptionIndex = 0;
+
+		if (options.length < 1) return;
 
 		if (hoveredOption) {
 			const hoveredOptionIndex = options.indexOf(hoveredOption);
@@ -275,6 +272,8 @@ export class SearchableSelect extends MvuElement {
 	}
 
 	set options(value) {
+		if (value === null || value === undefined) value = [];
+
 		this.signal(Update_Options, value);
 	}
 
@@ -288,10 +287,6 @@ export class SearchableSelect extends MvuElement {
 
 	set onChange(callback) {
 		this.#onChange = callback;
-	}
-
-	get onChange() {
-		return this.#onChange;
 	}
 
 	/**

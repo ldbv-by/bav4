@@ -40,17 +40,15 @@ describe('SearchableSelect', () => {
 			expect(element.hasPointer).toBeFalse();
 		});
 
-		it('has class hidden on dropdown', async () => {
+		it('ensures property options is an empty array when set to undefined or null', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
-			expect(element.shadowRoot.querySelector('.dropdown.hidden')).not.toBeNull();
+			element.options = null;
+			expect(element.options).toHaveSize(0);
 		});
 
-		it('No option contains the class ".hovered"', async () => {
+		it('resolves choosing on empty property "options"', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
-			element.options = ['foo', 'bar', 'baz'];
-
-			expect(element.shadowRoot.querySelectorAll('.dropdown > .option')).toHaveSize(3);
-			expect(element.shadowRoot.querySelectorAll('.dropdown > .option.hovered')).toHaveSize(0);
+			expect(() => element._chooseNextOption()).not.toThrow();
 		});
 	});
 
@@ -90,6 +88,21 @@ describe('SearchableSelect', () => {
 		});
 	});
 
+	describe('when view renders', () => {
+		it('has class hidden on dropdown', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			expect(element.shadowRoot.querySelector('.dropdown.hidden')).not.toBeNull();
+		});
+
+		it('No option contains the class ".hovered"', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			element.options = ['foo', 'bar', 'baz'];
+
+			expect(element.shadowRoot.querySelectorAll('.dropdown > .option')).toHaveSize(3);
+			expect(element.shadowRoot.querySelectorAll('.dropdown > .option.hovered')).toHaveSize(0);
+		});
+	});
+
 	describe('when property "maxEntries" changes', () => {
 		it('updates the view', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
@@ -126,30 +139,31 @@ describe('SearchableSelect', () => {
 	describe('when search input changed', () => {
 		it('calls onChange callback', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
-			const selectInput = element.shadowRoot.getElementById('search-input');
-			element.onChange = jasmine.createSpy();
+			const searchInput = element.shadowRoot.getElementById('search-input');
+			const spy = jasmine.createSpy();
+			element.onChange = spy;
 
-			selectInput.value = 'any';
-			selectInput.dispatchEvent(new Event('input'));
+			searchInput.value = 'any';
+			searchInput.dispatchEvent(new Event('input'));
 
-			expect(element.onChange).toHaveBeenCalled();
+			expect(spy).toHaveBeenCalled();
 		});
 
 		it('fires change event', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
-			const selectInput = element.shadowRoot.getElementById('search-input');
+			const searchInput = element.shadowRoot.getElementById('search-input');
 			const spy = jasmine.createSpy();
 			element.addEventListener('change', spy);
 
-			selectInput.value = 'any';
-			selectInput.dispatchEvent(new Event('input'));
+			searchInput.value = 'any';
+			searchInput.dispatchEvent(new Event('input'));
 
 			expect(spy).toHaveBeenCalled();
 		});
 	});
 
 	describe('when clicked', () => {
-		it('it renders dropdown', async () => {
+		it('renders the dropdown', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			expect(element.shadowRoot.querySelector('.dropdown.hidden')).not.toBeNull();
 
@@ -158,7 +172,21 @@ describe('SearchableSelect', () => {
 			expect(element.shadowRoot.querySelector('.dropdown.hidden')).toBeNull();
 		});
 
-		it('on a rendered option in sets property "selected"', async () => {
+		it('does not hide dropdown when property "hasPointer" is true', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			const searchable = element.shadowRoot.querySelector('.searchable-select');
+
+			// marks hasPointer to true
+			searchable.dispatchEvent(new Event('pointerenter'));
+			// open dropdown
+			searchable.dispatchEvent(new MouseEvent('click'));
+			// try to cancel action
+			document.querySelector('body').click();
+
+			expect(element.shadowRoot.querySelector('.dropdown.hidden')).toBeNull();
+		});
+
+		it('sets on a rendered option the property "selected"', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = ['foo', 'bar', 'baz'];
 			const htmlOption = element.shadowRoot.querySelector('.dropdown > .option:nth-child(2)');
@@ -168,7 +196,7 @@ describe('SearchableSelect', () => {
 			expect(element.selected).toBe('bar');
 		});
 
-		it('outside of input field it resets property "search"', async () => {
+		it('resets the property "search" outside of an input field', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = ['foo', 'bar', 'baz'];
 			element.search = 'bar';
@@ -177,7 +205,7 @@ describe('SearchableSelect', () => {
 			expect(element.search).toBe('');
 		});
 
-		it('outside of input field it keeps value of property "selected"', async () => {
+		it('keeps the value of property "selected" outside of an input field', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = ['foo', 'bar', 'baz'];
 			element.selected = 'bar';
@@ -205,7 +233,7 @@ describe('SearchableSelect', () => {
 			expect(htmlOption.classList).toContain('hovered');
 		});
 
-		it('It adds the class ".hovered" to the pointed option and removes it from other options', async () => {
+		it('adds the class ".hovered" to the pointed option and removes it from other options', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = ['foo', 'bar', 'baz'];
 			const htmlOptions = element.shadowRoot.querySelectorAll('.option');
@@ -230,7 +258,7 @@ describe('SearchableSelect', () => {
 			expect(element.hasPointer).toBeFalse();
 		});
 
-		it('removes the class ".hovered" from the left option', async () => {
+		it('removes the class ".hovered" from the option being left', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = ['foo'];
 			const htmlOption = element.shadowRoot.querySelector('.option');
@@ -243,7 +271,7 @@ describe('SearchableSelect', () => {
 	});
 
 	describe('when Esc keypress fired', () => {
-		it('closes dropdown', async () => {
+		it('closes the dropdown', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 
 			// open dropdown to enable key events
@@ -256,7 +284,7 @@ describe('SearchableSelect', () => {
 	});
 
 	describe('when Enter keypress fired', () => {
-		it('selects hovered option', async () => {
+		it('selects option with class ".hovered"', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = ['foo'];
 			const htmlOption = element.shadowRoot.querySelector('.option:nth-child(1)');
@@ -270,10 +298,23 @@ describe('SearchableSelect', () => {
 			expect(element.shadowRoot.querySelector('.dropdown.hidden')).not.toBeNull();
 			expect(htmlOption.querySelector('span').innerText).toBe('foo');
 		});
+
+		it('does not update property selected when class ".hovered" is missing', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			element.options = ['foo', 'bar'];
+			element.selected = 'bar';
+
+			// open dropdown to enable key events
+			const searchable = element.shadowRoot.querySelector('.searchable-select');
+			searchable.dispatchEvent(new MouseEvent('click'));
+			document.dispatchEvent(getKeyEvent(keyCodes.Enter));
+
+			expect(element.selected).toBe('bar');
+		});
 	});
 
 	describe('when ArrowUp keypress fired', () => {
-		it('selects previous option', async () => {
+		it('hovers previous option', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = ['foo', 'bar'];
 			const htmlOptions = element.shadowRoot.querySelectorAll('.option');
@@ -288,7 +329,7 @@ describe('SearchableSelect', () => {
 			expect(htmlOptions[1].classList).not.toContain('hovered');
 		});
 
-		it('selects last option in list when first option is hovered"', async () => {
+		it('hovers last option in list when first option is hovered', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = ['foo', 'bar', 'baz'];
 			const htmlOptions = element.shadowRoot.querySelectorAll('.option');
@@ -303,10 +344,23 @@ describe('SearchableSelect', () => {
 			expect(htmlOptions[1].classList).not.toContain('hovered');
 			expect(htmlOptions[2].classList).toContain('hovered');
 		});
+
+		it('hovers first option in list when nothing is hovered', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			element.options = ['foo', 'bar', 'baz'];
+			const htmlOptions = element.shadowRoot.querySelectorAll('.option');
+
+			// open dropdown to enable key events
+			const searchable = element.shadowRoot.querySelector('.searchable-select');
+			searchable.dispatchEvent(new MouseEvent('click'));
+			document.dispatchEvent(getKeyEvent(keyCodes.ArrowUp));
+
+			expect(htmlOptions[0].classList).toContain('hovered');
+		});
 	});
 
 	describe('when ArrowDown keypress fired', () => {
-		it('selects next option', async () => {
+		it('hovers next option', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = ['foo', 'bar'];
 			const htmlOptions = element.shadowRoot.querySelectorAll('.option');
@@ -321,7 +375,7 @@ describe('SearchableSelect', () => {
 			expect(htmlOptions[1].classList).toContain('hovered');
 		});
 
-		it('selects first option in list when last option is hovered"', async () => {
+		it('hovers first option in list when last option is hovered"', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = ['foo', 'bar', 'baz'];
 			const htmlOptions = element.shadowRoot.querySelectorAll('.option');
@@ -335,6 +389,19 @@ describe('SearchableSelect', () => {
 			expect(htmlOptions[0].classList).toContain('hovered');
 			expect(htmlOptions[1].classList).not.toContain('hovered');
 			expect(htmlOptions[2].classList).not.toContain('hovered');
+		});
+
+		it('hovers first option in list when nothing is hovered', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			element.options = ['foo', 'bar', 'baz'];
+			const htmlOptions = element.shadowRoot.querySelectorAll('.option');
+
+			// open dropdown to enable key events
+			const searchable = element.shadowRoot.querySelector('.searchable-select');
+			searchable.dispatchEvent(new MouseEvent('click'));
+			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
+
+			expect(htmlOptions[0].classList).toContain('hovered');
 		});
 	});
 });
