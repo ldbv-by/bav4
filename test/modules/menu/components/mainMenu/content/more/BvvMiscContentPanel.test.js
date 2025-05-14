@@ -111,7 +111,9 @@ describe('MiscContentPanel', () => {
 
 			expect(links[6].href).toEqual('https://www.ldbv.bayern.de/produkte/dienste/ba_hilfe/ueberblick/neuigkeiten.html');
 			expect(links[6].target).toEqual('_blank');
-			expect(links[6].querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_software_version');
+			expect(links[6].querySelector('.ba-list-item__text').innerText).toEqual(
+				'menu_misc_content_panel_software_version / menu_misc_content_panel_news'
+			);
 
 			expect(links[7].href).toEqual('https://geodatenonline.bayern.de/geodatenonline');
 			expect(links[7].target).toEqual('_blank');
@@ -163,7 +165,9 @@ describe('MiscContentPanel', () => {
 			expect(versionInfoAnchor.querySelectorAll('.ba-list-item__icon.icon.speaker')).toHaveSize(1);
 			expect(versionInfoAnchor.href).toEqual('https://www.ldbv.bayern.de/produkte/dienste/ba_hilfe/ueberblick/neuigkeiten.html');
 			expect(versionInfoAnchor.target).toEqual('_blank');
-			expect(versionInfoAnchor.querySelector('.ba-list-item__text').innerText).toBe('menu_misc_content_panel_software_version 42');
+			expect(versionInfoAnchor.querySelector('.ba-list-item__text').innerText).toBe(
+				'menu_misc_content_panel_software_version 42 / menu_misc_content_panel_news'
+			);
 		});
 
 		it('opens the modal with the toggle-feedback component', async () => {
@@ -182,6 +186,7 @@ describe('MiscContentPanel', () => {
 		it('changes the theme with the theme-switch', async () => {
 			const element = await setup();
 			const themeSwitch = element.shadowRoot.querySelector('#themeToggle');
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item-toggle')).toHaveSize(1);
 
 			expect(store.getState().media.darkSchema).toBeTrue();
 			expect(element.shadowRoot.querySelectorAll('.sun')).toHaveSize(1);

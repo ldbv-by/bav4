@@ -71,14 +71,14 @@
 	-webkit-mask-size: cover;
 }
 .timeTravel .icon {
-	mask: url('assets/time.svg');
-	-webkit-mask: url('assets/time.svg');
+	mask: url('../../../../assets/icons/time.svg');
+	-webkit-mask: url('../../../../assets/icons/time.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
 .layerSwipe .icon {
-	mask: url('assets/expand.svg');
-	-webkit-mask: url('assets/expand.svg');
+	mask: url('../../../../assets/icons/expand.svg');
+	-webkit-mask: url('../../../../assets/icons/expand.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }

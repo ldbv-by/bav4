@@ -10,7 +10,7 @@ import { createUniqueId } from '../../../../../../utils/numberUtils';
 import { fitLayer } from '../../../../../../store/position/position.action';
 import { GeoResourceFuture, VectorGeoResource } from '../../../../../../domain/geoResources';
 import zoomToExtentSvg from '../../assets/zoomToExtent.svg';
-import infoSvg from '../../assets/info.svg';
+import infoSvg from '../../../../../../assets/icons/info.svg';
 import { openModal } from '../../../../../../store/modal/modal.action';
 import { AbstractResultItem, Selected_Item_Class, Highlight_Item_Class } from '../../AbstractResultItem';
 

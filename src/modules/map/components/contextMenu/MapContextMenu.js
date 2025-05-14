@@ -7,7 +7,7 @@ import { MvuElement } from '../../../MvuElement';
 import css from './mapContextMenu.css';
 import { $injector } from '../../../../injection';
 import { closeContextMenu } from '../../../../store/mapContextMenu/mapContextMenu.action';
-import closeIcon from './assets/x-square.svg';
+import closeIcon from '../../../../assets/icons/x-square.svg';
 
 const Update = 'update';
 

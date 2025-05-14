@@ -11,13 +11,13 @@ import arrowDownSvg from './assets/arrow-down-short.svg';
 import cloneSvg from './assets/clone.svg';
 import zoomToExtentSvg from './assets/zoomToExtent.svg';
 import removeSvg from './assets/trash.svg';
-import infoSvg from './assets/info.svg';
-import timeSvg from './assets/time.svg';
+import infoSvg from '../../../assets/icons/info.svg';
+import timeSvg from '../../../assets/icons/time.svg';
 import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { openModal } from '../../../../src/store/modal/modal.action';
 import { createUniqueId } from '../../../utils/numberUtils';
 import { fitLayer } from '../../../store/position/position.action';
-import { GeoResourceFuture, RtVectorGeoResource, VectorGeoResource } from '../../../domain/geoResources';
+import { GeoResourceFuture, GeoResourceTypes } from '../../../domain/geoResources';
 import { MenuTypes } from '../../commons/components/overflowMenu/OverflowMenu';
 import { openSlider } from '../../../store/timeTravel/timeTravel.action';
 import { SwipeAlignment } from '../../../store/layers/layers.action';
@@ -268,7 +268,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 					label: translate('layerManager_zoom_to_extent'),
 					icon: zoomToExtentSvg,
 					action: zoomToExtent,
-					disabled: !(geoResource instanceof VectorGeoResource || geoResource instanceof RtVectorGeoResource)
+					disabled: !LayerItem._getZoomToExtentCapableGeoResources().includes(geoResource.getType())
 				}
 			];
 		};
@@ -423,5 +423,9 @@ export class LayerItem extends AbstractMvuContentPanel {
 
 	static get tag() {
 		return 'ba-layer-item';
+	}
+
+	static _getZoomToExtentCapableGeoResources() {
+		return [GeoResourceTypes.VECTOR, GeoResourceTypes.RT_VECTOR, GeoResourceTypes.OAF];
 	}
 }

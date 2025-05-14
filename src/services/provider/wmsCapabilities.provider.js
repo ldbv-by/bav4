@@ -28,8 +28,9 @@ export const _determinePreferredFormat = (arr) => {
 };
 
 /**
- * @implements wmsCapabilitiesProvider
- * @returns {Array<WmsGeoResource>}
+ * BVV specific implementation of {@link module:services/ImportWmsService~wmsCapabilitiesProvider}
+ * @function
+ * @type {module:services/ImportWmsService~wmsCapabilitiesProvider}
  */
 export const bvvCapabilitiesProvider = async (url, options) => {
 	const { isAuthenticated } = options;

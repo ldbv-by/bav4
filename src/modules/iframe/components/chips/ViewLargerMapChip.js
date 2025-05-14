@@ -3,7 +3,7 @@
  */
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
-import baSvg from './assets/ba.svg';
+import baSvg from './assets/ba-filled.svg';
 import { html, nothing } from 'lit-html';
 import css from './viewLargerMapChip.css';
 import { QueryParameters } from '../../../../domain/queryParameters';

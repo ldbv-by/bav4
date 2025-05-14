@@ -11,7 +11,7 @@ import {
 	loadBvvCadastralParcelSearchResults
 } from '../../../../src/modules/search/services/provider/searchResult.provider';
 import { MAX_QUERY_TERM_LENGTH, SearchResultService } from '../../../../src/modules/search/services/SearchResultService';
-import { GeoResourceFuture, WmsGeoResource } from '../../../../src/domain/geoResources';
+import { GeoResourceFuture, OafGeoResource, WmsGeoResource } from '../../../../src/domain/geoResources';
 import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../../../src/domain/sourceType';
 
 describe('MAX_QUERY_TERM_LENGTH', () => {
@@ -39,12 +39,17 @@ describe('SearchResultService', () => {
 		forUrl: () => {}
 	};
 
+	const importOafService = {
+		forUrl: () => {}
+	};
+
 	beforeAll(() => {
 		$injector
 			.registerSingleton('EnvironmentService', environmentService)
 			.registerSingleton('SourceTypeService', sourceTypeService)
 			.registerSingleton('ImportVectorDataService', importVectorDataService)
-			.registerSingleton('ImportWmsService', importWmsService);
+			.registerSingleton('ImportWmsService', importWmsService)
+			.registerSingleton('ImportOafService', importOafService);
 	});
 
 	const setup = (locationSearchResultProvider = () => {}, geoResourceSearchResultProvider = () => {}, cadastralParcelResultProvider = () => {}) => {
@@ -210,6 +215,58 @@ describe('SearchResultService', () => {
 			const url = 'http://foo.bar';
 			spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
 			spyOn(importWmsService, 'forUrl').withArgs(url, { sourceType: sourceType, isAuthenticated: false }).and.resolveTo([]);
+			const instanceUnderTest = setup();
+
+			const results = await instanceUnderTest._getGeoResourcesForUrl(url);
+
+			expect(results).toHaveSize(0);
+		});
+
+		it('returns search results for OAF source type', async () => {
+			const sourceType = new SourceType(SourceTypeName.OAF);
+			const url = 'http://foo.bar';
+			const geoResourceId = 'id';
+			const label = 'label';
+			spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+			spyOn(importOafService, 'forUrl')
+				.withArgs(url, { sourceType: sourceType, isAuthenticated: false })
+				.and.resolveTo([new OafGeoResource('id', label, 'url', 'collectionId')]);
+			const instanceUnderTest = setup();
+
+			const results = await instanceUnderTest._getGeoResourcesForUrl(url);
+
+			expect(results).toHaveSize(1);
+			expect(results[0].geoResourceId).toBe(geoResourceId);
+			expect(results[0].label).toBe(label);
+			expect(results[0].labelFormatted).toBe(label);
+			expect(results[0] instanceof GeoResourceSearchResult).toBeTrue();
+		});
+
+		it('returns search results for baa authenticated OAF source type', async () => {
+			const sourceType = new SourceType(SourceTypeName.OAF);
+			const url = 'http://foo.bar';
+			const geoResourceId = 'id';
+			const label = 'label';
+			spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.BAA_AUTHENTICATED, sourceType));
+			spyOn(importOafService, 'forUrl')
+				.withArgs(url, { sourceType: sourceType, isAuthenticated: true })
+				.and.resolveTo([new OafGeoResource('id', label, 'url', 'collectionId')]);
+			const instanceUnderTest = setup();
+
+			const results = await instanceUnderTest._getGeoResourcesForUrl(url);
+
+			expect(results).toHaveSize(1);
+			expect(results[0].geoResourceId).toBe(geoResourceId);
+			expect(results[0].label).toBe(label);
+			expect(results[0].labelFormatted).toBe(label);
+			expect(results[0] instanceof GeoResourceSearchResult).toBeTrue();
+		});
+
+		it('returns an empty array as result for a OAF source type when georesource cannot be created', async () => {
+			const sourceType = new SourceType(SourceTypeName.OAF);
+			const url = 'http://foo.bar';
+			spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+			spyOn(importOafService, 'forUrl').withArgs(url, { sourceType: sourceType, isAuthenticated: false }).and.resolveTo([]);
 			const instanceUnderTest = setup();
 
 			const results = await instanceUnderTest._getGeoResourcesForUrl(url);

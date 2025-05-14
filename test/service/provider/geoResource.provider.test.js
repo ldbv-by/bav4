@@ -1,5 +1,5 @@
 import { UnavailableGeoResourceError } from '../../../src/domain/errors';
-import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../src/domain/geoResources';
+import { GeoResourceFuture, OafGeoResource, VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../src/domain/geoResources';
 import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../../src/domain/sourceType';
 import { $injector } from '../../../src/injection';
 import { getBvvAttribution } from '../../../src/services/provider/attribution.provider';
@@ -35,6 +35,9 @@ describe('GeoResource provider', () => {
 	const importWmsService = {
 		async forUrl() {}
 	};
+	const importOafService = {
+		async forUrl() {}
+	};
 	const urlService = {
 		proxifyInstant() {}
 	};
@@ -48,6 +51,7 @@ describe('GeoResource provider', () => {
 			.registerSingleton('SourceTypeService', sourceTypeService)
 			.registerSingleton('ImportVectorDataService', importVectorDataService)
 			.registerSingleton('ImportWmsService', importWmsService)
+			.registerSingleton('ImportOafService', importOafService)
 			.registerSingleton('UrlService', urlService);
 	});
 
@@ -832,6 +836,132 @@ describe('GeoResource provider', () => {
 				const future = loadExternalGeoResource(geoResourceId);
 
 				await expectAsync(future.get()).toBeRejectedWithError("Unsupported WMS: 'http://foo.bar'");
+			});
+		});
+
+		describe('OAF Url', () => {
+			it('loads a OAF GeoResource', async () => {
+				const label = 'label';
+				const collectionId = 'collectionId';
+				const url = 'http://foo.bar';
+				const sourceType = new SourceType(SourceTypeName.OAF);
+				const geoResourceId = `${url}||${collectionId}`;
+				const geoResource = new OafGeoResource(geoResourceId, label, url, collectionId);
+				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl')
+					.withArgs(url)
+					.and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
+				const importOafServiceSpy = spyOn(importOafService, 'forUrl')
+					.withArgs(url, { sourceType: sourceType, collections: [collectionId], ids: [geoResourceId], isAuthenticated: false })
+					.and.returnValue([geoResource]);
+
+				const future = loadExternalGeoResource(geoResourceId);
+				const resolvedGeoResource = await future.get();
+
+				expect(future.id).toBe(geoResourceId);
+				expect(future.label).toBeNull();
+				expect(resolvedGeoResource).toEqual(geoResource);
+				expect(resolvedGeoResource.id).toBe(geoResourceId);
+				expect(resolvedGeoResource.label).toBe(label);
+				expect(sourceTypeServiceSpy).toHaveBeenCalled();
+				expect(importOafServiceSpy).toHaveBeenCalled();
+				expect(geoResourceServiceSpy).toHaveBeenCalled();
+			});
+
+			it('loads an authenticated OAF GeoResource', async () => {
+				const label = 'label';
+				const collectionId = 'collectionId';
+				const url = 'http://foo.bar';
+				const sourceType = new SourceType(SourceTypeName.OAF);
+				const geoResourceId = `${url}||${collectionId}`;
+				const geoResource = new OafGeoResource(geoResourceId, label, url, collectionId);
+				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl')
+					.withArgs(url)
+					.and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.BAA_AUTHENTICATED, sourceType));
+				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
+				const importOafServiceSpy = spyOn(importOafService, 'forUrl')
+					.withArgs(url, { sourceType: sourceType, collections: [collectionId], ids: [geoResourceId], isAuthenticated: true })
+					.and.returnValue([geoResource]);
+
+				const future = loadExternalGeoResource(geoResourceId);
+				const resolvedGeoResource = await future.get();
+
+				expect(future.id).toBe(geoResourceId);
+				expect(future.label).toBeNull();
+				expect(resolvedGeoResource).toEqual(geoResource);
+				expect(resolvedGeoResource.id).toBe(geoResourceId);
+				expect(resolvedGeoResource.label).toBe(label);
+				expect(sourceTypeServiceSpy).toHaveBeenCalled();
+				expect(importOafServiceSpy).toHaveBeenCalled();
+				expect(geoResourceServiceSpy).toHaveBeenCalled();
+			});
+
+			it('returns the first GeoResource provided by the ImportService when no collectionId is available', async () => {
+				const label = 'label';
+				const collectionId = 'collectionId';
+				const url = 'http://foo.bar';
+				const sourceType = new SourceType(SourceTypeName.OAF);
+				const geoResourceId = `${url}`;
+				const geoResource0 = new OafGeoResource(geoResourceId, label, url, collectionId, 'image/png');
+				const geoResource1 = new OafGeoResource('otherGeoResourceId', label, url, 'otherCollectionId');
+				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl')
+					.withArgs(url)
+					.and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
+				const importWmsServiceSpy = spyOn(importOafService, 'forUrl')
+					.withArgs(url, { sourceType: sourceType, collections: [], ids: [geoResourceId], isAuthenticated: false })
+					.and.returnValue([geoResource0, geoResource1]);
+
+				const future = loadExternalGeoResource(geoResourceId);
+				const resolvedGeoResource = await future.get();
+
+				expect(future.id).toBe(geoResourceId);
+				expect(future.label).toBeNull();
+				expect(resolvedGeoResource).toEqual(geoResource0);
+				expect(resolvedGeoResource.id).toBe(geoResourceId);
+				expect(resolvedGeoResource.label).toBe(label);
+				expect(sourceTypeServiceSpy).toHaveBeenCalled();
+				expect(importWmsServiceSpy).toHaveBeenCalled();
+				expect(geoResourceServiceSpy).toHaveBeenCalled();
+			});
+
+			it('sets the GeoResource label when provided', async () => {
+				const label = 'label';
+				const collectionId = 'collectionId';
+				const url = 'http://foo.bar';
+				const sourceType = new SourceType(SourceTypeName.OAF);
+				const geoResourceId = `${url}||${collectionId}||${label}`;
+				const geoResource = new WmsGeoResource(geoResourceId, 'some label', url, collectionId, 'image/png');
+				spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
+				spyOn(importOafService, 'forUrl')
+					.withArgs(url, { sourceType: sourceType, collections: [collectionId], ids: [geoResourceId], isAuthenticated: false })
+					.and.returnValue([geoResource]);
+
+				const future = loadExternalGeoResource(geoResourceId);
+				const resolvedGeoResource = await future.get();
+
+				expect(future.id).toBe(geoResourceId);
+				expect(future.label).toBeNull();
+				expect(resolvedGeoResource).toEqual(geoResource);
+				expect(resolvedGeoResource.id).toBe(geoResourceId);
+				expect(resolvedGeoResource.label).toBe(label);
+			});
+
+			it('throws an error when no OafGeoResource was created', async () => {
+				const collectionId = 'collectionId';
+				const url = 'http://foo.bar';
+				const sourceType = new SourceType(SourceTypeName.OAF);
+				const geoResourceId = `${url}||${collectionId}`;
+				spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
+				spyOn(importOafService, 'forUrl')
+					.withArgs(url, { sourceType: sourceType, collections: [collectionId], ids: [geoResourceId], isAuthenticated: false })
+					.and.returnValue([]);
+
+				const future = loadExternalGeoResource(geoResourceId);
+
+				await expectAsync(future.get()).toBeRejectedWithError("Unsupported OAF: 'http://foo.bar'");
 			});
 		});
 

@@ -2,7 +2,7 @@ import { $injector } from '../../../../src/injection';
 import { ShareDataChip } from '../../../../src/modules/chips/components/assistChips/ShareDataChip';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 import { TestUtils } from '../../../test-utils';
-import shareSvg from '../../../../src/modules/chips/components/assistChips/assets/share.svg';
+import shareSvg from '../../../../src/assets/icons/share.svg';
 import { sharedReducer } from '../../../../src/store/shared/shared.reducer';
 import { fileStorageReducer, initialState } from '../../../../src/store/fileStorage/fileStorage.reducer';
 import { ShareDialogContent } from '../../../../src/modules/share/components/dialog/ShareDialogContent';

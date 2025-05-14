@@ -6,7 +6,7 @@ import css from './coordinateinfo.css';
 import { $injector } from '../../../../injection/index';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { MvuElement } from '../../../MvuElement';
-import clipboardIcon from './assets/clipboard.svg';
+import clipboardIcon from '../../../../assets/icons/clipboard.svg';
 
 const Update_Coordinate = 'update_coordinate';
 const Update_Elevation = 'update_elevation';

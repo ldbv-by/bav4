@@ -46,8 +46,8 @@
 	-webkit-mask-image: url('assets/qrcode-solid.svg');
 }
 .share {
-	mask-image: url('assets/share.svg');
-	-webkit-mask-image: url('assets/share.svg');
+	mask-image: url('../../../../assets/icons/share.svg');
+	-webkit-mask-image: url('../../../../assets/icons/share.svg');
 }
 .link {
 	mask-image: url('assets/link.svg');

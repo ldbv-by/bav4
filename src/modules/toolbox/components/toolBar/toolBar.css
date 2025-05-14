@@ -94,8 +94,8 @@
 }
 
 .share {
-	mask-image: url('assets/share.svg');
-	-webkit-mask-image: url('assets/share.svg');
+	mask-image: url('assets/shareToolBar.svg');
+	-webkit-mask-image: url('assets/shareToolBar.svg');
 }
 
 .import {
@@ -235,7 +235,7 @@
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: 5.4em 5.4em;
-	background-image: url('assets/ba.svg');
+	background-image: url('../../../../assets/icons/ba.svg');
 }
 
 .animated-action-button__border {
@@ -363,8 +363,8 @@
 }
 
 .is-portrait .hide-button .wrench {
-	mask-image: url('assets/close.svg');
-	-webkit-mask-image: url('assets/close.svg');
+	mask-image: url('../../../../assets/icons/x-square.svg');
+	-webkit-mask-image: url('../../../../assets/icons/x-square.svg');
 	transform: rotate(90deg);
 }
 

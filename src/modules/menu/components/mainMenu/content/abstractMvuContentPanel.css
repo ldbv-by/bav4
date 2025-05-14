@@ -99,9 +99,9 @@
 }
 .chevron {
 	position: relative;
-	mask: url('../assets/chevron-right.svg');
-	-webkit-mask-image: url('../assets/chevron-right.svg');
-	mask-image: url('../assets/chevron-right.svg');
+	mask: url('../../../../../assets/icons/chevron-right.svg');
+	-webkit-mask-image: url('../../../../../assets/icons/chevron-right.svg');
+	mask-image: url('../../../../../assets/icons/chevron-right.svg');
 }
 .close {
 	position: relative;

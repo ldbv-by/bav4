@@ -20,8 +20,6 @@ export class TopicsPlugin extends BaPlugin {
 			setCurrent(topicId);
 			// when we have a topic we want to display the corresponding catalog
 			setIndex(TopicsContentPanelIndex.CATALOG_0);
-		} else {
-			setCurrent(topicsService.default().id);
 		}
 	}
 

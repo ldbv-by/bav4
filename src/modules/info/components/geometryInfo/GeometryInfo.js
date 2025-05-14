@@ -7,7 +7,7 @@ import { $injector } from '../../../../injection';
 import css from './geometryInfo.css';
 import { MvuElement } from '../../../MvuElement';
 import { GeometryType } from '../../../../domain/geometryTypes';
-import clipboardIcon from './assets/clipboard.svg';
+import clipboardIcon from '../../../../assets/icons/clipboard.svg';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 
 const Update_Statistic = 'update_statistic';

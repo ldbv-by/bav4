@@ -8,7 +8,8 @@ import {
 	moveParallel,
 	getLineString,
 	PROJECTED_LENGTH_GEOMETRY_PROPERTY,
-	polarStakeOut
+	polarStakeOut,
+	isClockwise
 } from './olGeometryUtils';
 import { toContext as toCanvasContext } from 'ol/render';
 import { Fill, Stroke, Style, Circle as CircleStyle, Icon, Text as TextStyle } from 'ol/style';
@@ -133,7 +134,7 @@ export const getMarkerSrc = (symbolSrc = null, symbolColor = '#ffffff') => {
 	return getIconUrl(Default_Symbol);
 };
 
-export const nullStyleFunction = () => [new Style({})];
+export const getNullStyleArray = () => [new Style({})];
 
 /**
  * A StyleFunction which returns styles based on styling properties of the feature
@@ -144,7 +145,7 @@ export const nullStyleFunction = () => [new Style({})];
  * @param {ol.Feature} feature the olFeature to be styled
  * @returns {Array<Style>}
  */
-export const geojsonStyleFunction = (feature) => {
+export const getGeojsonStyleArray = (feature) => {
 	// default style properties based on simpleStyle spec
 	// hint: 'marker-symbol' is currently not supported
 	const defaultStyleProperties = {
@@ -297,7 +298,7 @@ export const defaultClusterStyleFunction = () => {
  * @param {null|StyleOption} styleOption the styleOption
  * @returns {Array<Style>} the resulting array of marker styles
  */
-export const markerStyleFunction = (styleOption = DEFAULT_STYLE_OPTION) => {
+export const getMarkerStyleArray = (styleOption = DEFAULT_STYLE_OPTION) => {
 	const markerColor = styleOption.color ? styleOption.color : '#ff0000';
 	const markerAnchor = styleOption.anchor ? styleOption.anchor : [0.5, 0.5];
 	const rasterIconOptions = {
@@ -339,7 +340,7 @@ export const markerStyleFunction = (styleOption = DEFAULT_STYLE_OPTION) => {
  * @param {StyleOption} styleOption the styleOption
  * @returns {Array<Style>}  the resulting array of text styles
  */
-export const textStyleFunction = (styleOption = DEFAULT_STYLE_OPTION) => {
+export const getTextStyleArray = (styleOption = DEFAULT_STYLE_OPTION) => {
 	const strokeColor = styleOption.color ? styleOption.color : '#ff0000';
 	const textContent = isString(styleOption.text) ? styleOption.text : DEFAULT_TEXT;
 
@@ -357,7 +358,7 @@ export const textStyleFunction = (styleOption = DEFAULT_STYLE_OPTION) => {
  * @param {StyleOption} styleOption the styleOption
  * @returns the resulting array of line styles
  */
-export const lineStyleFunction = (styleOption = DEFAULT_STYLE_OPTION) => {
+export const getLineStyleArray = (styleOption = DEFAULT_STYLE_OPTION) => {
 	const strokeColor = styleOption.color ? hexToRgb(styleOption.color) : hexToRgb('#ff0000');
 	const strokeWidth = 3;
 	// TODO: activate TextStyle with:
@@ -379,7 +380,7 @@ export const lineStyleFunction = (styleOption = DEFAULT_STYLE_OPTION) => {
  * @param {StyleOption} styleOption the styleOption
  * @returns the resulting array of polygon styles
  */
-export const polygonStyleFunction = (styleOption = DEFAULT_STYLE_OPTION) => {
+export const getPolygonStyleArray = (styleOption = DEFAULT_STYLE_OPTION) => {
 	const strokeColor = styleOption.color ? hexToRgb(styleOption.color) : hexToRgb('#ff0000');
 	const strokeWidth = 3;
 	// TODO: activate TextStyle with:
@@ -530,8 +531,17 @@ export const renderLinearRulerSegments = (pixelCoordinates, state, contextRender
 
 	// per segment
 	if (displayRuler) {
-		const segmentCoordinates = geometry instanceof Polygon || geometry instanceof MultiLineString ? pixelCoordinates[0] : pixelCoordinates;
-
+		const getCoordinatesInDigitizedOrder = (coordinates) => {
+			// PixelCoordinates bases on a top-left coordinate system(canvas), so the isClockwise() value must be inverted.
+			// The geometry from state.geometry is in the coordinate system of the map projection and should be bottom-right oriented.
+			// When state.geometry.getCoordinates() is called(without 'right-handed'-parameter), the coordinates are in the same order as they were when the polygon was created.
+			if (isClockwise(state.geometry.getCoordinates()[0]) === isClockwise(coordinates)) {
+				return coordinates.toReversed();
+			}
+			return coordinates;
+		};
+		const segmentCoordinates =
+			geometry instanceof Polygon || geometry instanceof MultiLineString ? getCoordinatesInDigitizedOrder(pixelCoordinates[0]) : pixelCoordinates;
 		segmentCoordinates.every((coordinate, index, coordinates) => {
 			return drawTicks(contextRenderFunction, [coordinate, coordinates[index + 1]], residuals[index], partitionTickDistance);
 		});
@@ -658,7 +668,7 @@ export const modifyStyleFunction = (feature) => {
 	];
 };
 
-export const selectStyleFunction = () => {
+export const getSelectStyleFunction = () => {
 	const constructionStroke = new Stroke({
 		color: Black_Color.concat([1]),
 		width: 1,
@@ -722,7 +732,7 @@ export const selectStyleFunction = () => {
  * @param {Array<number>} color the rgba-color An Array of numbers, defining a RGBA-Color with [Red{0,255},Green{0,255},Blue{0,255},Alpha{0,1}]
  * @returns {Function} the default styleFunction
  */
-export const defaultStyleFunction = (color) => {
+export const getDefaultStyleFunction = (color) => {
 	const colorRGBA = color;
 	const colorRGB = color.slice(0, -1);
 
@@ -795,7 +805,7 @@ export const getTransparentImageStyle = () => {
 	});
 };
 
-export const createSketchStyleFunction = (featureStyleFunction, sketchStyleFunctionsByGeometry = {}) => {
+export const getSketchStyleFunction = (featureStyleFunction, sketchStyleFunctionsByGeometry = {}) => {
 	const defaultSketchStyles = {
 		Point: () => [
 			new Style({

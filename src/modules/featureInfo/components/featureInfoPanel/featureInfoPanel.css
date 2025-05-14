@@ -42,7 +42,7 @@
 	background-size: contain;
 	background-color: transparent;
 	margin: 3em auto 1em;
-	background-image: url('../assets/info.svg');
+	background-image: url('../assets/feature-info.svg');
 	display: flex;
 }
 .info-text {
