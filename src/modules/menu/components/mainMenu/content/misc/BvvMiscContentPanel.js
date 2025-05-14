@@ -96,7 +96,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 					</span>
 					<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_feedback_title')}</span>
 				</button>
-				<div class="ba-list-item divider">
+				<div class="ba-list-item divider ba-list-item-toggle">
 					<span class="ba-list-item__pre">
 						<span class="ba-list-item__icon icon  ${getThemeIcon()}"> </span>
 					</span>
@@ -160,7 +160,8 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 						<span class="ba-list-item__icon icon speaker"> </span>
 					</span>
 					<span class="ba-list-item__text"
-						>${html`${translate('menu_misc_content_panel_software_version')} ${this.#configService.getValue('SOFTWARE_VERSION')}`}</span
+						>${html`${translate('menu_misc_content_panel_software_version')} ${this.#configService.getValue('SOFTWARE_VERSION')} /
+						${translate('menu_misc_content_panel_news')}`}</span
 					>
 				</a>
 				<div class="ba-list-item  ba-list-item__header">

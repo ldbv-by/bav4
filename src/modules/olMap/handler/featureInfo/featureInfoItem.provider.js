@@ -9,7 +9,7 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { KML } from 'ol/format';
 import { BaGeometry } from '../../../../domain/geometry';
 import { BaFeature } from '../../../../domain/feature';
-import { SourceType, SourceTypeName } from '../../../../domain/sourceType';
+import { SourceType } from '../../../../domain/sourceType';
 
 /**
  * BVV specific implementation of {@link module:modules/olMap/handler/featureInfo/OlFeatureInfoHandler~featureInfoProvider}
@@ -38,7 +38,7 @@ export const bvvFeatureInfoProvider = (olFeature, layerProperties) => {
 			<div class='chips__container'>
 				<ba-profile-chip .coordinates=${elevationProfileCoordinates}></ba-profile-chip>
 				<ba-export-vector-data-chip .exportData=${exportDataAsKML}></ba-export-vector-data-chip>
-				<ba-feature-info-collection-panel .configuration=${{ feature: new BaFeature(new BaGeometry(exportDataAsKML, SourceType.forKml()), olFeature.getId()), geoResourceId: geoRes?.id ?? null }}></ba-feature-info-collection-panel>
+				<ba-feature-info-collection-panel .configuration=${{ feature: new BaFeature(new BaGeometry(exportDataAsKML, SourceType.forKml()), olFeature.getId().toString()), geoResourceId: geoRes?.id ?? null }}></ba-feature-info-collection-panel>
 			</div>`;
 
 		return descContent
@@ -54,6 +54,6 @@ export const bvvFeatureInfoProvider = (olFeature, layerProperties) => {
 			: `${geoRes.label}`
 		: `${securityService.sanitizeHtml(olFeature.get('name') ?? '')}`;
 	const content = getContent();
-	const geometry = new BaGeometry(new GeoJSON().writeGeometry(olFeature.getGeometry()), new SourceType(SourceTypeName.GEOJSON));
+	const geometry = new BaGeometry(new GeoJSON().writeGeometry(olFeature.getGeometry()), SourceType.forGeoJSON());
 	return { title: name, content, geometry };
 };

@@ -955,6 +955,8 @@ describe('MeasurementOverlayStyle', () => {
 			];
 			const featureWithInvisibleOverlays = { get: (key) => (key === 'overlays' ? invisibleOverlays : {}), set: () => {} };
 			const featureWithVisibleOverlays = { get: (key) => (key === 'overlays' ? visibleOverlays : {}), set: () => {} };
+			const featureWithoutOverlays = { get: (key) => (key === 'overlays' ? [] : {}), set: () => {} };
+
 			const viewMock = { getResolution: () => 1, on: () => {} };
 			const mapMock = {
 				getView: () => viewMock
@@ -972,39 +974,50 @@ describe('MeasurementOverlayStyle', () => {
 				.withArgs(featureWithVisibleOverlays, mapMock)
 				.and.callFake(() => {})
 				.withArgs(featureWithInvisibleOverlays, mapMock)
+				.and.callFake(() => {})
+				.withArgs(featureWithoutOverlays, mapMock)
 				.and.callFake(() => {});
 			spyOn(classUnderTest, '_createOrRemoveAreaOverlay')
 				.withArgs(featureWithVisibleOverlays, mapMock)
 				.and.callFake(() => {})
 				.withArgs(featureWithInvisibleOverlays, mapMock)
+				.and.callFake(() => {})
+				.withArgs(featureWithoutOverlays, mapMock)
 				.and.callFake(() => {});
 			spyOn(classUnderTest, '_createOrRemovePartitionOverlays')
 				.withArgs(featureWithVisibleOverlays, mapMock)
 				.and.callFake(() => {})
 				.withArgs(featureWithInvisibleOverlays, mapMock)
+				.and.callFake(() => {})
+				.withArgs(featureWithoutOverlays, mapMock)
 				.and.callFake(() => {});
 			spyOn(classUnderTest, '_restoreManualOverlayPosition')
 				.withArgs(featureWithVisibleOverlays, mapMock)
 				.and.callFake(() => {})
 				.withArgs(featureWithInvisibleOverlays, mapMock)
+				.and.callFake(() => {})
+				.withArgs(featureWithoutOverlays, mapMock)
 				.and.callFake(() => {});
 
 			classUnderTest.add(featureWithVisibleOverlays, mapMock);
 			classUnderTest.add(featureWithInvisibleOverlays, mapMock);
+			classUnderTest.add(featureWithoutOverlays, mapMock);
 
 			expect(addListenerSpy).toHaveBeenCalled();
-			expect(listeners.length).toBe(2);
+			expect(listeners.length).toBe(3);
 
 			const updateSpy = spyOn(classUnderTest, 'update')
 				.withArgs(featureWithInvisibleOverlays, mapMock, jasmine.objectContaining({ visible: false, opacity: 0 }))
 				.and.callFake(() => {})
 				.withArgs(featureWithVisibleOverlays, mapMock, jasmine.objectContaining({ visible: true, opacity: 0.4 }))
+				.and.callFake(() => {})
+				.withArgs(featureWithoutOverlays, mapMock, jasmine.objectContaining({}))
 				.and.callFake(() => {});
 
 			// mocking 'change:resolution'-event by calling the saved listener
 			listeners.forEach((l) => l());
 
-			expect(updateSpy).toHaveBeenCalledTimes(2);
+			expect(updateSpy).toHaveBeenCalledTimes(3);
 		});
 	});
 

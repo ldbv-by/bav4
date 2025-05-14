@@ -278,13 +278,14 @@ describe('FeatureInfo provider', () => {
 				let feature = new Feature({ geometry: geometry });
 				feature = new Feature({ geometry: new Point(coordinate) });
 				feature.set('name', 'name');
-				feature.setId('id');
+				feature.setId(12345);
 
 				const featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 				render(featureInfo.content, target);
 
 				const panel = target.querySelector(FeatureCollectionPanel.tag);
 
+				expect(panel.configuration.feature.id).toBe('12345');
 				expect(panel.configuration.feature.geometry.data.startsWith('<kml')).toBeTrue();
 				expect(panel.configuration.feature.geometry.sourceType).toEqual(SourceType.forKml());
 				expect(panel.configuration.geoResourceId).toBe(geoResourceId);

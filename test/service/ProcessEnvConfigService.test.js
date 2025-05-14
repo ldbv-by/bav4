@@ -48,7 +48,7 @@ describe('tests for ProcessEnvConfigService', () => {
 		it('provides hardcoded values', () => {
 			const configService = new ProcessEnvConfigService();
 
-			expect(configService.getValue('SOFTWARE_VERSION')).toBe('4.4');
+			expect(configService.getValue('SOFTWARE_VERSION')).toBe('4.5');
 		});
 
 		it('provides a value for required keys from process.env', () => {

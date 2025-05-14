@@ -34,7 +34,7 @@ input[type='range']::-webkit-slider-thumb {
 	cursor: ew-resize;
 	border: 0.2em solid var(--primary-color);
 	border-radius: 50%;
-	background: url('assets/expand.svg') var(--primary-color);
+	background: url('../../../../assets/icons/expand.svg') var(--primary-color);
 	width: 2.3rem;
 	height: 2.3rem;
 	background-size: 1.9em 1.9em;
@@ -51,7 +51,7 @@ input[type='range']::-moz-range-thumb {
 	inline-size: 2rem;
 	margin-top: 0;
 	border-radius: 50%;
-	background: url('assets/expand.svg') var(--primary-color);
+	background: url('../../../../assets/icons/expand.svg') var(--primary-color);
 	width: 2rem;
 	height: 2rem;
 	background-size: 1.9em 1.9em;

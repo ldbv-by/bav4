@@ -64,6 +64,20 @@ export class LayerService {
 
 		const { minZoom, maxZoom, opacity } = geoResource;
 
+		/**
+		 * Here we just check if a BA-authenticated GeoResource can access its credentials.
+		 * Note: This does not mean that the concrete loader of the GeoResource actually supports BAA.
+		 */
+		if (geoResource.authenticationType === GeoResourceAuthenticationType.BAA && geoResource.url) {
+			const credential = baaCredentialService.get(geoResource.url);
+			if (!credential) {
+				throw new UnavailableGeoResourceError(
+					`No credential available for GeoResource with id '${geoResource.id}' and url '${geoResource.url}'`,
+					geoResource.id
+				);
+			}
+		}
+
 		switch (geoResource.getType()) {
 			case GeoResourceTypes.FUTURE: {
 				// in that case we return a placeholder layer
@@ -85,14 +99,9 @@ export class LayerService {
 
 				switch (geoResource.authenticationType) {
 					case GeoResourceAuthenticationType.BAA: {
-						const credential = baaCredentialService.get(geoResource.url);
-						if (!credential) {
-							throw new UnavailableGeoResourceError(
-								`No credential available for GeoResource with id '${geoResource.id}' and url '${geoResource.url}'`,
-								geoResource.id
-							);
-						}
-						imageWmsSource.setImageLoadFunction(this._imageLoadFunctionProvider(geoResource.id, credential, geoResource.maxSize));
+						imageWmsSource.setImageLoadFunction(
+							this._imageLoadFunctionProvider(geoResource.id, baaCredentialService.get(geoResource.url), geoResource.maxSize)
+						);
 						break;
 					}
 					default: {
@@ -163,7 +172,8 @@ export class LayerService {
 				return tileLayer;
 			}
 
-			case GeoResourceTypes.VECTOR: {
+			case GeoResourceTypes.VECTOR:
+			case GeoResourceTypes.OAF: {
 				return vectorLayerService.createLayer(id, geoResource, olMap);
 			}
 			case GeoResourceTypes.RT_VECTOR: {

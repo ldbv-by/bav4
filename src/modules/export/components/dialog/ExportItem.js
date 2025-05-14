@@ -9,7 +9,7 @@ import css from './exportItem.css';
 // @ts-ignore
 import downloadSvg from './assets/download.svg';
 // @ts-ignore
-import clipboardSvg from './assets/clipboard.svg';
+import clipboardSvg from './assets/clipboard-code.svg';
 import { SourceType } from '../../../../domain/sourceType';
 import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
 

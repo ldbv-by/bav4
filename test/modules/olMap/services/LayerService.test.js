@@ -3,6 +3,7 @@ import {
 	AggregateGeoResource,
 	GeoResourceAuthenticationType,
 	GeoResourceFuture,
+	OafGeoResource,
 	RtVectorGeoResource,
 	VectorGeoResource,
 	VectorSourceType,
@@ -68,6 +69,33 @@ describe('LayerService', () => {
 	});
 
 	describe('toOlLayer', () => {
+		describe('GeoResource requires a BAA Authentication', () => {
+			it('logs an error statement when credential is not available', () => {
+				const url = 'https://some.url';
+				const credential = null;
+				const mockImageLoadFunction = () => {};
+				const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
+				spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(credential);
+				const instanceUnderTest = setup(providerSpy);
+				const id = 'id';
+				const geoResourceId = 'geoResourceId';
+				const wmsGeoResource = new WmsGeoResource(geoResourceId, 'label', url, 'layer', 'image/png').setAuthenticationType(
+					GeoResourceAuthenticationType.BAA
+				);
+
+				expect(providerSpy).not.toHaveBeenCalled();
+				expect(() => {
+					instanceUnderTest.toOlLayer(id, wmsGeoResource);
+				}).toThrowMatching((t) => {
+					return (
+						t.message === `No credential available for GeoResource with id '${wmsGeoResource.id}' and url '${wmsGeoResource.url}'` &&
+						t instanceof UnavailableGeoResourceError &&
+						t.geoResourceId === geoResourceId
+					);
+				});
+			});
+		});
+
 		describe('GeoResourceFuture', () => {
 			it('converts a GeoResourceFuture to a placeholder olLayer', () => {
 				const instanceUnderTest = setup();
@@ -98,6 +126,21 @@ describe('LayerService', () => {
 				instanceUnderTest.toOlLayer(id, vectorGeoResource, olMap);
 
 				expect(vectorLayerServiceSpy).toHaveBeenCalledWith(id, vectorGeoResource, olMap);
+			});
+		});
+
+		describe('OafGeoResource', () => {
+			it('calls the VectorLayerService', () => {
+				const instanceUnderTest = setup();
+				const id = 'id';
+				const olMap = new Map();
+				const olLayer = new VectorLayer();
+				const oafGeoResource = new OafGeoResource('geoResourceId', 'label', 'url', 'collectionId');
+				const vectorLayerServiceSpy = spyOn(vectorLayerService, 'createLayer').and.returnValue(olLayer);
+
+				instanceUnderTest.toOlLayer(id, oafGeoResource, olMap);
+
+				expect(vectorLayerServiceSpy).toHaveBeenCalledWith(id, oafGeoResource, olMap);
 			});
 		});
 
@@ -192,31 +235,6 @@ describe('LayerService', () => {
 
 					expect(providerSpy).toHaveBeenCalledWith(geoResourceId, credential, null);
 					expect(wmsOlLayer.getSource().getImageLoadFunction()).toBe(mockImageLoadFunction);
-				});
-
-				it('logs an error statement when credential is not available', () => {
-					const url = 'https://some.url';
-					const credential = null;
-					const mockImageLoadFunction = () => {};
-					const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
-					spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(credential);
-					const instanceUnderTest = setup(providerSpy);
-					const id = 'id';
-					const geoResourceId = 'geoResourceId';
-					const wmsGeoResource = new WmsGeoResource(geoResourceId, 'label', url, 'layer', 'image/png').setAuthenticationType(
-						GeoResourceAuthenticationType.BAA
-					);
-
-					expect(providerSpy).not.toHaveBeenCalled();
-					expect(() => {
-						instanceUnderTest.toOlLayer(id, wmsGeoResource);
-					}).toThrowMatching((t) => {
-						return (
-							t.message === `No credential available for GeoResource with id '${wmsGeoResource.id}' and url '${wmsGeoResource.url}'` &&
-							t instanceof UnavailableGeoResourceError &&
-							t.geoResourceId === geoResourceId
-						);
-					});
 				});
 			});
 		});

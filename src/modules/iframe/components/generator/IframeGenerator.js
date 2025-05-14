@@ -6,7 +6,7 @@ import { $injector } from '../../../../injection';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { MvuElement } from '../../../MvuElement';
 import { PathParameters } from '../../../../domain/pathParameters';
-import clipboardIcon from './assets/clipboard.svg';
+import clipboardIcon from '../../../../assets/icons/clipboard.svg';
 import css from './iframegenerator.css';
 import { IFRAME_ENCODED_STATE } from '../../../../utils/markup';
 import { QueryParameters } from '../../../../domain/queryParameters';

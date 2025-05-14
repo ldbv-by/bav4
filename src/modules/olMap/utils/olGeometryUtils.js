@@ -23,7 +23,7 @@ export const AZIMUTH_GEOMETRY_PROPERTY = 'azimuth';
  * Coerce the provided geometry to a LineString or null,
  * if the geometry is not a LineString,LinearRing or Polygon
  * @function
- * @param {ol.Geometry geometry the geometry to coerce to LineString
+ * @param {ol.Geometry} geometry the geometry to coerce to LineString
  * @returns {ol.Geometry | null} the coerced LineString or null
  */
 export const getLineString = (geometry) => {
@@ -32,11 +32,36 @@ export const getLineString = (geometry) => {
 	} else if (geometry instanceof LinearRing) {
 		return new LineString(geometry.getCoordinates());
 	} else if (geometry instanceof Polygon) {
-		return new LineString(geometry.getCoordinates(false)[0]);
+		return new LineString(geometry.getCoordinates()[0]);
 	} else if (geometry instanceof MultiLineString) {
 		return geometry.getLineStrings().length === 1 ? geometry.getLineStrings()[0] : multiLineStringToLineString(geometry);
 	}
 	return null;
+};
+
+/**
+ * Checks the orientation of a polygon.
+ *
+ * The calculation of the orientation assumes a bottom-right coordinate system.
+ * Coordinates from a top-left coordinate system should invert the result.
+ *
+ * @param {Array<Coordinate>} polygonCoordinates The coordinates of a polygon.
+ * @returns {boolean | undefined} Whether or not the orientation of the polygon is clockwise or not. If the coordinates are colinear (on the same straight line), @see {undefined} will be returned.
+ */
+export const isClockwise = (polygonCoordinates) => {
+	let sum = 0;
+
+	if (polygonCoordinates.length < 3) {
+		return undefined;
+	}
+
+	for (let index = 0; index < polygonCoordinates.length - 1; index += 1) {
+		const p1 = polygonCoordinates[index];
+		const p2 = polygonCoordinates[(index + 1) % polygonCoordinates.length];
+		sum += (p2[0] - p1[0]) * (p2[1] + p1[1]);
+	}
+
+	return sum === 0 ? undefined : sum > 0;
 };
 
 /**
@@ -131,7 +156,7 @@ export const getBoundingBoxFrom = (centerCoordinate, size) => {
  * Return the coordinate at the provided fraction along the linear geometry or along the boundary of a area-like geometry.
  * The fraction is a number between 0 and 1, where 0 is the start (first coordinate) of the geometry and 1 is the end (last coordinate). *
  * @function
- * @param {ol.Geometry geometry
+ * @param {ol.Geometry} geometry
  * @param {number} fraction
  * @returns {Array.<number>} the calculated coordinate or null if the geometry is not linear or area-like
  */
@@ -147,7 +172,7 @@ export const getCoordinateAt = (geometry, fraction) => {
 /**
  * Determines whether or not the geometry has the property of a azimuth-angle
  * @function
- * @param {ol.Geometry geometry the geometry
+ * @param {ol.Geometry} geometry the geometry
  * @returns {boolean}
  */
 export const canShowAzimuthCircle = (geometry) => {
@@ -168,7 +193,7 @@ export const canShowAzimuthCircle = (geometry) => {
 /**
  * Calculates the azimuth-angle between the start(first coordinate) and end(last coordinate) of the geometry
  * @function
- * @param {ol.Geometry geometry
+ * @param {ol.Geometry} geometry
  * @returns {number} the azimuth-angle as degree of arc with a value between 0 and 360
  */
 export const getAzimuth = (geometry) => {
@@ -259,7 +284,7 @@ export const getPartitionDelta = (geometryLength, resolution = 1) => {
 /**
  * Tests whether the vertex candidate is part of the geometry vertices
  * @function
- * @param {ol.Geometry geometry the geometry
+ * @param {ol.Geometry} geometry the geometry
  * @param {Point} vertexCandidate the candidate point to test against the geometry. If candidate is other than
  * `Point`, it returns immediately false
  * @returns {boolean}
@@ -315,7 +340,7 @@ export const polarStakeOut = (fromCoordinate, angle, distance) => {
 /**
  * Calculates the residuals that occurs when the partitions are distributed over the individual segments of the geometry
  * @function
- * @param {ol.Geometry geometry the source geometry
+ * @param {ol.Geometry} geometry the source geometry
  * @param {number} partitionDelta the delta-value of the partition
  * @returns {Array<number>} the residuals for all segments of the geometry
  */
@@ -363,7 +388,7 @@ export const isValidGeometry = (geometry) => {
 
 /**
  * @function
- * @param {ol.Geometry geometry ol geometry
+ * @param {ol.Geometry} geometry ol geometry
  * @returns {module:domain/geometryStatisticTypeDef~GeometryStatistic}
  */
 export const getStats = (geometry) => {

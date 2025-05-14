@@ -6,7 +6,7 @@ import { QueryParameters } from '../../../../domain/queryParameters';
 import { $injector } from '../../../../injection/index';
 import { openModal } from '../../../../store/modal/modal.action';
 import { AbstractAssistChip } from './AbstractAssistChip';
-import shareIcon from './assets/share.svg';
+import shareIcon from '../../../..//assets/icons/share.svg';
 import { setQueryParams } from '../../../../utils/urlUtils';
 
 const Update_Latest = 'update_latest';

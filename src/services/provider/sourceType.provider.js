@@ -64,6 +64,8 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = _create
 							return SourceTypeName.WMS;
 						case 'EWKT':
 							return SourceTypeName.EWKT;
+						case 'OAF':
+							return SourceTypeName.OAF;
 					}
 				};
 				const sourceTypeName = sourceTypeNameFor(name);

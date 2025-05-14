@@ -10,7 +10,7 @@ import { EventLike } from '../../../../src/utils/storeUtils';
 import { positionReducer } from '../../../../src/store/position/position.reducer';
 import {
 	GeoResourceFuture,
-	RtVectorGeoResource,
+	GeoResourceTypes,
 	VectorGeoResource,
 	VectorSourceType,
 	WmsGeoResource,
@@ -21,7 +21,7 @@ import { timeTravelReducer } from '../../../../src/store/timeTravel/timeTravel.r
 import { GeoResourceInfoPanel } from '../../../../src/modules/geoResourceInfo/components/GeoResourceInfoPanel';
 import cloneSvg from '../../../../src/modules/layerManager/components/assets/clone.svg';
 import zoomToExtentSvg from '../../../../src/modules/layerManager/components/assets/zoomToExtent.svg';
-import infoSvg from '../../../../src/modules/layerManager/components/assets/info.svg';
+import infoSvg from '../../../../src/assets/icons/info.svg';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { SwipeAlignment } from '../../../../src/store/layers/layers.action.js';
 import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
@@ -60,40 +60,46 @@ describe('LayerItem', () => {
 
 	let store;
 
-	describe('when layer item is rendered', () => {
-		const setup = async (layer, layerSwipeActive) => {
-			store = TestUtils.setupStoreAndDi(
-				{
-					layers: {
-						active: [layer]
-					},
-					media: {
-						portrait: false
-					},
-					layerSwipe: {
-						active: layerSwipeActive
-					}
+	const setup = async (layer, layerSwipeActive) => {
+		store = TestUtils.setupStoreAndDi(
+			{
+				layers: {
+					active: [layer]
 				},
-				{
-					layers: layersReducer,
-					modal: modalReducer,
-					media: createNoInitialStateMediaReducer(),
-					timeTravel: timeTravelReducer,
-					layerSwipe: layerSwipeReducer,
-					tools: toolsReducer
+				media: {
+					portrait: false
+				},
+				layerSwipe: {
+					active: layerSwipeActive
 				}
-			);
-			$injector
-				.registerSingleton('TranslationService', { translate: (key) => key })
-				.registerSingleton('GeoResourceService', geoResourceService)
-				.registerSingleton('EnvironmentService', environmentService);
-			const element = await TestUtils.render(LayerItem.tag);
-			if (layer) {
-				element.layer = layer;
+			},
+			{
+				layers: layersReducer,
+				modal: modalReducer,
+				media: createNoInitialStateMediaReducer(),
+				timeTravel: timeTravelReducer,
+				layerSwipe: layerSwipeReducer,
+				tools: toolsReducer
 			}
-			return element;
-		};
+		);
+		$injector
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('GeoResourceService', geoResourceService)
+			.registerSingleton('EnvironmentService', environmentService);
+		const element = await TestUtils.render(LayerItem.tag);
+		if (layer) {
+			element.layer = layer;
+		}
+		return element;
+	};
 
+	describe('_showZoomToExtentMenuItem', () => {
+		it('returns a list of zoom-to-extent capable GeoResources', async () => {
+			expect(LayerItem._getZoomToExtentCapableGeoResources()).toEqual([GeoResourceTypes.VECTOR, GeoResourceTypes.RT_VECTOR, GeoResourceTypes.OAF]);
+		});
+	});
+
+	describe('when layer item is rendered', () => {
 		it('displays nothing for null', async () => {
 			const element = await setup(null);
 
@@ -491,31 +497,6 @@ describe('LayerItem', () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
 				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
-			const layer = {
-				...createDefaultLayerProperties(),
-				id: 'id0',
-				geoResourceId: 'geoResourceId0',
-				visible: true,
-				zIndex: 0,
-				opacity: 1,
-				collapsed: true
-			};
-			const element = await setup(layer);
-
-			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
-			const zoomToExtentMenuItem = menu.items.find((item) => item.label === 'layerManager_zoom_to_extent');
-
-			expect(zoomToExtentMenuItem).not.toBeNull();
-			expect(zoomToExtentMenuItem.label).toEqual('layerManager_zoom_to_extent');
-			expect(zoomToExtentMenuItem.action).toEqual(jasmine.any(Function));
-			expect(zoomToExtentMenuItem.disabled).toBeFalse();
-			expect(zoomToExtentMenuItem.icon).toBe(zoomToExtentSvg);
-		});
-
-		it('contains a menu-item for zoomToExtent to a RtVectorGeoResource', async () => {
-			spyOn(geoResourceService, 'byId')
-				.withArgs('geoResourceId0')
-				.and.returnValue(new RtVectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
 			const layer = {
 				...createDefaultLayerProperties(),
 				id: 'id0',

@@ -10,7 +10,7 @@ import { $injector } from '../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { setStatistic, setMode, setSelection, setDisplayRuler } from '../../../../store/measurement/measurement.action';
 import { addLayer, removeLayer } from '../../../../store/layers/layers.action';
-import { createSketchStyleFunction, measureStyleFunction, selectStyleFunction } from '../../utils/olStyleUtils';
+import { getSketchStyleFunction, measureStyleFunction, getSelectStyleFunction } from '../../utils/olStyleUtils';
 import { getLineString, getStats, PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../utils/olGeometryUtils';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { observe } from '../../../../utils/storeUtils';
@@ -142,7 +142,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const source = new VectorSource({ wrapX: true, useSpatialIndex: false });
 			const layer = new VectorLayer({
 				source: source,
-				style: this._styleService.getStyleFunction(StyleTypes.MEASURE)
+				style: measureStyleFunction
 			});
 			layer.label = translate('olMap_handler_draw_layer_label');
 			return layer;
@@ -487,13 +487,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_createDraw(source) {
-		const measureFeatureStyleFunction = this._styleService.getStyleFunction(StyleTypes.MEASURE);
 		const draw = new Draw({
 			source: source,
 			type: 'Polygon',
 			minPoints: 2,
 			snapTolerance: getSnapTolerancePerDevice(),
-			style: createSketchStyleFunction(measureFeatureStyleFunction, this._getSketchStyleOptions()),
+			style: getSketchStyleFunction(measureStyleFunction, this._getSketchStyleOptions()),
 			wrapX: true
 		});
 
@@ -556,7 +555,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		select.getFeatures().on('change:length', this._updateStatistic);
 		select.getFeatures().on('add', (e) => {
 			const feature = e.element;
-			const styleFunction = selectStyleFunction();
+			const styleFunction = getSelectStyleFunction();
 			const styles = styleFunction(feature, getResolution());
 			e.element.setStyle(styles);
 		});
