@@ -135,7 +135,7 @@ describe('LayerService', () => {
 				const id = 'id';
 				const olMap = new Map();
 				const olLayer = new VectorLayer();
-				const oafGeoResource = new OafGeoResource('geoResourceId', 'label', 'url', 'collectionId');
+				const oafGeoResource = new OafGeoResource('geoResourceId', 'label', 'url', 'collectionId',12345);
 				const vectorLayerServiceSpy = spyOn(vectorLayerService, 'createLayer').and.returnValue(olLayer);
 
 				instanceUnderTest.toOlLayer(id, oafGeoResource, olMap);

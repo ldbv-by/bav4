@@ -65,7 +65,7 @@ describe('ImportOafService', () => {
 		it('registers the OafGeoResources', async () => {
 			const url = 'https://some.url/oaf?preserve=me';
 			const options = getCompleteOptions();
-			const resultMock = [new OafGeoResource('id0', 'label0', 'url0', 'collectionId0'), new OafGeoResource('id1', 'label1', 'url1', 'collectionId1')];
+			const resultMock = [new OafGeoResource('id0', 'label0', 'url0', 'collectionId0', 12345), new OafGeoResource('id1', 'label1', 'url1', 'collectionId1', 12345)];
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(addOrReplaceMethodMock);
 			const instanceUnderTest = new ImportOafService(async () => {
 				return resultMock;
@@ -114,7 +114,7 @@ describe('ImportOafService', () => {
 
 	describe('getFilterCapabilities', () => {
 		it('calls the oafFilterCapabilitiesProvider', async () => {
-			const oafGeoResource = new OafGeoResource('id0', 'label0', 'url0', 'collectionId0');
+			const oafGeoResource = new OafGeoResource('id0', 'label0', 'url0', 'collectionId0', 12345);
 			const mockOafFilterCapabilities = { foo: 'bar' };
 			const oafFilterCapabilitiesProviderSpy = jasmine.createSpy().withArgs(oafGeoResource).and.resolveTo(mockOafFilterCapabilities);
 			const instanceUnderTest = new ImportOafService(null, oafFilterCapabilitiesProviderSpy);
@@ -127,7 +127,7 @@ describe('ImportOafService', () => {
 
 		it('passes the error of the underlying provider', async () => {
 			const msg = 'Something got wrong';
-			const oafGeoResource = new OafGeoResource('id0', 'label0', 'url0', 'collectionId0');
+			const oafGeoResource = new OafGeoResource('id0', 'label0', 'url0', 'collectionId0', 12345);
 			const oafFilterCapabilitiesProviderSpy = jasmine.createSpy().and.throwError(msg);
 			const instanceUnderTest = new ImportOafService(null, oafFilterCapabilitiesProviderSpy);
 
