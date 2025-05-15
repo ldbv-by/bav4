@@ -3,7 +3,7 @@
  */
 
 import css from './searchableSelect.css';
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
 import { isNumber } from '../../../../utils/checks';
 import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
@@ -12,7 +12,8 @@ const Update_Placeholder = 'update_placeholder';
 const Update_Options = 'update_options';
 const Update_Selected = 'update_selected';
 const Update_Search = 'update_search';
-const Update_MaxEntries = 'update_maxEntries';
+const Update_Max_Entries = 'update_max_entries';
+const Update_Show_Caret = 'update_show_caret';
 
 /**
  * General purpose implementation of a select-like component with integrated filtering.
@@ -21,9 +22,12 @@ const Update_MaxEntries = 'update_maxEntries';
  * @property {number} maxEntries=10 - The maximum amount of entries to show in the select field.
  * @property {string|null} selected=null - The currently selected option.
  * @property {string} search='' - The search term to filter through the provided options
+ * @property {boolean} showCaret=true - Shows a caret on the search field
  * @property {Array<String>} options - Unfiltered options the user can choose from
- * @property {function(changedState)} onChange - The Change callback function when the search input changes or an option is selected
- * @fires onChange Fires when the search input changes or an option is selected
+ * @property {function(changedState)} onChange - The Change callback function when the search input changes
+ * @property {function(selectedState)} onSelect - The Selected callback function when the user chose an option from the dropdown
+ * @fires onChange Fires when the search input changes
+ * @fires onSelect Fires when the selected value changes
  *
  * @class
  * @author herrmutig
@@ -39,6 +43,8 @@ export class SearchableSelect extends MvuElement {
 
 	// eslint-disable-next-line no-unused-vars
 	#onChange = (changedState) => {};
+	// eslint-disable-next-line no-unused-vars
+	#onSelect = (selectState) => {};
 
 	constructor() {
 		super({
@@ -47,7 +53,8 @@ export class SearchableSelect extends MvuElement {
 			selected: null,
 			search: '',
 			options: [],
-			availableOptions: []
+			filteredOptions: [],
+			showCaret: true
 		});
 
 		this.#hasPointer = false;
@@ -59,7 +66,8 @@ export class SearchableSelect extends MvuElement {
 		this.#keyActionMapper = new KeyActionMapper(document);
 		this.#keyActionMapper.deactivate();
 
-		this.observeModel(['selected', 'search'], () => this.#dispatchChangeEvents());
+		this.observeModel('search', () => this.#dispatchChangeEvents());
+		this.observeModel('selected', () => this.#dispatchSelectEvents());
 	}
 
 	onDisconnect() {
@@ -72,20 +80,22 @@ export class SearchableSelect extends MvuElement {
 			case Update_Placeholder:
 				return { ...model, placeholder: data };
 			case Update_Selected: {
-				const selected = isNumber(data) ? model.availableOptions[Math.max(data, 0)] : data;
+				const selected = isNumber(data) ? model.filteredOptions[Math.max(data, 0)] : data;
 				return this.#updateOptionsFiltering({ ...model, selected: selected, search: selected });
 			}
 			case Update_Options:
 				return this.#updateOptionsFiltering({ ...model, options: [...data] });
 			case Update_Search:
 				return this.#updateOptionsFiltering({ ...model, search: data, selected: null });
-			case Update_MaxEntries:
+			case Update_Max_Entries:
 				return { ...model, maxEntries: data };
+			case Update_Show_Caret:
+				return { ...model, showCaret: data };
 		}
 	}
 
 	createView(model) {
-		const { search, placeholder, availableOptions, maxEntries } = model;
+		const { search, showCaret, placeholder, filteredOptions, maxEntries } = model;
 
 		const onSearchInputClicked = () => {
 			this.#showDropdown();
@@ -138,12 +148,14 @@ export class SearchableSelect extends MvuElement {
 			<div class="searchable-select" @pointerenter=${onPointerEnter} @pointerleave=${onPointerLeave} @click=${onSearchInputClicked}>
 				<div class="search-input-container">
 					<input id="search-input" type="text" .placeholder=${placeholder} .value=${search} @input=${onSearchInputChange} />
-					<div id="search-input-toggler" @click=${onSearchInputTogglerClicked}>
-						<span class="caret-fill-down"></span>
-					</div>
+					${showCaret
+						? html`<div id="search-input-toggler" @click=${onSearchInputTogglerClicked}>
+								<span class="caret-fill-down"></span>
+							</div> `
+						: nothing}
 				</div>
 				<div class="dropdown hidden">
-					${availableOptions.slice(0, maxEntries).map(
+					${filteredOptions.slice(0, maxEntries).map(
 						(item, index) =>
 							html`<div
 								class="option"
@@ -169,15 +181,15 @@ export class SearchableSelect extends MvuElement {
 	#updateOptionsFiltering(model) {
 		const { search, options } = model;
 		const ucSearchTerm = search.toUpperCase();
-		const filteredOptions = [];
+		const matchingOptions = [];
 
 		for (const option of options) {
 			if (option.toUpperCase().indexOf(ucSearchTerm) > -1) {
-				filteredOptions.push(option);
+				matchingOptions.push(option);
 			}
 		}
 
-		return { ...model, availableOptions: filteredOptions };
+		return { ...model, filteredOptions: matchingOptions };
 	}
 
 	#hideDropdown() {
@@ -222,10 +234,9 @@ export class SearchableSelect extends MvuElement {
 	}
 
 	#dispatchChangeEvents() {
-		const { selected, availableOptions } = this.getModel();
+		const { filteredOptions } = this.getModel();
 		const eventData = {
-			availableOptions: availableOptions,
-			selected: selected
+			filteredOptions: filteredOptions
 		};
 
 		this.dispatchEvent(
@@ -235,6 +246,21 @@ export class SearchableSelect extends MvuElement {
 		);
 
 		this.#onChange(eventData);
+	}
+
+	#dispatchSelectEvents() {
+		const { selected } = this.getModel();
+		const eventData = {
+			selected: selected
+		};
+
+		this.dispatchEvent(
+			new CustomEvent('select', {
+				detail: eventData
+			})
+		);
+
+		this.#onSelect(eventData);
 	}
 
 	_chooseNextOption(invert = false) {
@@ -295,11 +321,19 @@ export class SearchableSelect extends MvuElement {
 	}
 
 	set maxEntries(value) {
-		this.signal(Update_MaxEntries, value);
+		this.signal(Update_Max_Entries, value);
 	}
 
 	set onChange(callback) {
 		this.#onChange = callback;
+	}
+
+	set onSelect(callback) {
+		this.#onSelect = callback;
+	}
+
+	set showCaret(value) {
+		this.signal(Update_Show_Caret, value === true);
 	}
 
 	/**

@@ -24,7 +24,8 @@ describe('SearchableSelect', () => {
 				selected: null,
 				search: '',
 				options: [],
-				availableOptions: []
+				filteredOptions: [],
+				showCaret: true
 			});
 		});
 
@@ -52,6 +53,19 @@ describe('SearchableSelect', () => {
 		});
 	});
 
+	describe('when disconnected', () => {
+		it('removes all event listeners', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			const removeEventListenerSpy = spyOn(document, 'removeEventListener').and.callThrough();
+
+			element.onDisconnect();
+
+			expect(removeEventListenerSpy).toHaveBeenCalledWith('click', jasmine.anything());
+			expect(removeEventListenerSpy).toHaveBeenCalledWith('keyup', jasmine.anything());
+			expect(removeEventListenerSpy).toHaveBeenCalledWith('keydown', jasmine.anything());
+		});
+	});
+
 	describe('when property "placeholder" changes', () => {
 		it('updates the view', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
@@ -59,6 +73,16 @@ describe('SearchableSelect', () => {
 			expect(searchInput.placeholder).toBe('Search...');
 			element.placeholder = 'foo';
 			expect(searchInput.placeholder).toBe('foo');
+		});
+	});
+
+	describe('when property "showCaret" changes', () => {
+		it('removes caret from view', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			expect(element.shadowRoot.getElementById('search-input-toggler')).not.toBeNull();
+
+			element.showCaret = false;
+			expect(element.shadowRoot.getElementById('search-input-toggler')).toBeNull();
 		});
 	});
 
@@ -71,6 +95,26 @@ describe('SearchableSelect', () => {
 			element.selected = 'foo';
 			expect(element.selected).toBe('foo');
 			expect(searchInput.value).toBe('foo');
+		});
+
+		it('calls onSelect callback', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			const spy = jasmine.createSpy();
+			element.onSelect = spy;
+
+			element.selected = 'foo';
+
+			expect(spy).toHaveBeenCalled();
+		});
+
+		it('fires select event', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			const spy = jasmine.createSpy();
+			element.addEventListener('select', spy);
+
+			element.selected = 'foo';
+
+			expect(spy).toHaveBeenCalled();
 		});
 	});
 
@@ -85,6 +129,26 @@ describe('SearchableSelect', () => {
 			expect(element.selected).toBeNull();
 			expect(element.search).toBe('foo');
 			expect(searchInput.value).toBe('foo');
+		});
+
+		it('calls onChange callback', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			const spy = jasmine.createSpy();
+			element.onChange = spy;
+
+			element.search = 'foo';
+
+			expect(spy).toHaveBeenCalled();
+		});
+
+		it('fires change event', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			const spy = jasmine.createSpy();
+			element.addEventListener('change', spy);
+
+			element.search = 'foo';
+
+			expect(spy).toHaveBeenCalled();
 		});
 	});
 
