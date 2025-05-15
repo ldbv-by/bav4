@@ -142,8 +142,9 @@ export const bvvOafGeoResourceProvider = async (url, options) => {
 	const {
 		HttpService: httpService,
 		ConfigService: configService,
-		ProjectionService: projectionService
-	} = $injector.inject('HttpService', 'ConfigService', 'ProjectionService');
+		ProjectionService: projectionService,
+		BaaCredentialService: baaCredentialService
+	} = $injector.inject('HttpService', 'ConfigService', 'ProjectionService', 'BaaCredentialService');
 	const endpointUrl = configService.getValueAsPath('BACKEND_URL') + 'oaf/getCollections';
 
 	const getAuthenticationType = (isBaaAuthenticated) => {
@@ -179,12 +180,11 @@ export const bvvOafGeoResourceProvider = async (url, options) => {
 			throw new Error(`Import of OAF service failed. Credential for '${url}' not found`);
 		};
 
-		const { BaaCredentialService: baaCredentialService } = $injector.inject('BaaCredentialService');
 		const credential = baaCredentialService.get(url);
 		return credential ? { username: credential.username, password: credential.password } : failed();
 	};
 
-	const data = isAuthenticated ? { url: url, ...getCredentialOrFail(url) } : { url: url };
+	const data = isAuthenticated ? { url, ...getCredentialOrFail(url) } : { url };
 	const result = await httpService.post(endpointUrl, JSON.stringify(data), MediaType.JSON);
 	switch (result.status) {
 		case 200:
