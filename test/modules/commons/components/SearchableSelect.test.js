@@ -466,7 +466,7 @@ describe('SearchableSelect', () => {
 			expect(htmlOptions[1].classList).toContain('hovered');
 		});
 
-		it('hovers first option in list when last option is hovered"', async () => {
+		it('hovers first option in list when last option is hovered', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = ['foo', 'bar', 'baz'];
 			const htmlOptions = element.shadowRoot.querySelectorAll('.option');
