@@ -91,7 +91,9 @@ describe('SearchableSelect', () => {
 	describe('when view renders', () => {
 		it('has class hidden on dropdown', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
-			expect(element.shadowRoot.querySelector('.dropdown.hidden')).not.toBeNull();
+
+			expect(element.shadowRoot.querySelector('.dropdown.hidden')).toBeDefined();
+			expect(element.shadowRoot.querySelector('.dropdown.visible')).toBeNull();
 		});
 
 		it('No option contains the class ".hovered"', async () => {
@@ -165,11 +167,36 @@ describe('SearchableSelect', () => {
 	describe('when clicked', () => {
 		it('renders the dropdown', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
-			expect(element.shadowRoot.querySelector('.dropdown.hidden')).not.toBeNull();
-
 			const searchable = element.shadowRoot.querySelector('.searchable-select');
+
 			searchable.dispatchEvent(new MouseEvent('click'));
+
 			expect(element.shadowRoot.querySelector('.dropdown.hidden')).toBeNull();
+			expect(element.shadowRoot.querySelector('.dropdown.visible')).toBeDefined();
+		});
+
+		it('closes the visible dropdown if click target was "#search-input-toggler"', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			const toggler = element.shadowRoot.querySelector('#search-input-toggler');
+			const dropdown = element.shadowRoot.querySelector('.dropdown');
+
+			dropdown.classList.add('visible');
+			dropdown.classList.remove('hidden');
+
+			toggler.dispatchEvent(new MouseEvent('click'));
+
+			expect(element.shadowRoot.querySelector('.dropdown.hidden')).toBeDefined();
+			expect(element.shadowRoot.querySelector('.dropdown.visible')).toBeNull();
+		});
+
+		it('opens the hidden dropdown if click target was "#search-input-toggler"', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			const toggler = element.shadowRoot.querySelector('#search-input-toggler');
+
+			toggler.dispatchEvent(new MouseEvent('click'));
+
+			expect(element.shadowRoot.querySelector('.dropdown.hidden')).toBeNull();
+			expect(element.shadowRoot.querySelector('.dropdown.visible')).toBeDefined();
 		});
 
 		it('does not hide dropdown when property "hasPointer" is true', async () => {

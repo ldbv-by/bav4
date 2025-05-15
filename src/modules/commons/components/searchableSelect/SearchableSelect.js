@@ -91,6 +91,17 @@ export class SearchableSelect extends MvuElement {
 			this.#showDropdown();
 		};
 
+		const onSearchInputTogglerClicked = (evt) => {
+			evt.stopPropagation();
+
+			const isDropdownVisible = this.shadowRoot.querySelector('.dropdown.visible') !== null;
+			if (isDropdownVisible) {
+				this.#cancelAction();
+			} else {
+				this.#showDropdown();
+			}
+		};
+
 		const onPointerEnter = () => {
 			this.#hasPointer = true;
 		};
@@ -127,7 +138,9 @@ export class SearchableSelect extends MvuElement {
 			<div class="searchable-select" @pointerenter=${onPointerEnter} @pointerleave=${onPointerLeave} @click=${onSearchInputClicked}>
 				<div class="search-input-container">
 					<input id="search-input" type="text" .placeholder=${placeholder} .value=${search} @input=${onSearchInputChange} />
-					<div class="caret-fill-down"></div>
+					<div id="search-input-toggler" @click=${onSearchInputTogglerClicked}>
+						<span class="caret-fill-down"></span>
+					</div>
 				</div>
 				<div class="dropdown hidden">
 					${availableOptions.slice(0, maxEntries).map(
