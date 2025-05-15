@@ -5,9 +5,8 @@ import { html } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
 import css from './oafFilterGroup.css';
 
-const Update_Conditional_Label = 'update_conditional_label';
 const Update_Queryables = 'update_queryables';
-const Update_Filter = 'update_filter';
+const Update_Filters = 'update_filters';
 
 /**
  * UX prototype implementation for ogc feature api filtering.
@@ -18,9 +17,8 @@ const Update_Filter = 'update_filter';
 export class OafFilterGroup extends MvuElement {
 	constructor() {
 		super({
-			activeQueryables: [],
 			queryables: [],
-			conditionalLabel: 'UND'
+			oafFilters: []
 		});
 	}
 
@@ -28,55 +26,29 @@ export class OafFilterGroup extends MvuElement {
 		switch (type) {
 			case Update_Queryables:
 				return { ...model, queryables: [...data] };
-			case Update_Filter:
-				return { ...model, activeQueryables: [...data] };
-			case Update_Conditional_Label:
-				return { ...model, conditionalLabel: data };
+			case Update_Filters:
+				return { ...model, oafFilters: [...data] };
 		}
 		return model;
 	}
 
-	_addFilter(newQueryable) {
-		const activeQueryables = this.getModel().activeQueryables;
-		if (!activeQueryables.includes((queryable) => queryable === newQueryable)) {
-			return [...activeQueryables, newQueryable];
-		}
-
-		return [...activeQueryables];
-	}
-
-	_removeFilter(activeQueryableToRemove) {
-		return this.getModel().activeQueryables.filter((queryable) => queryable !== activeQueryableToRemove);
-	}
-
 	createView(model) {
-		const { queryables, activeQueryables, conditionalLabel } = model;
+		const { queryables, oafFilters } = model;
 
 		const onAddFilter = (evt) => {
-			const queryableSelectValue = evt.target.value;
-			const queryableToAdd = queryables.find((queryable) => queryable.name == queryableSelectValue);
-			this.signal(Update_Filter, this._addFilter(queryableToAdd));
+			this._addFilter(evt.target.value);
 		};
 
 		const onChangeFilter = (evt) => {
-			console.log(this.oafFilters);
+			this.dispatchEvent(new CustomEvent('change'));
 		};
 
 		const onRemoveFilter = (evt) => {
-			this.signal(Update_Filter, this._removeFilter(evt.target.queryable));
+			this.signal(Update_Filters, this._removeFilter(evt.target.queryable.name));
 		};
 
 		const onRemoveGroup = () => {
 			this.dispatchEvent(new CustomEvent('remove'));
-		};
-
-		// Just for showcase
-		const onToggleGroupCondition = () => {
-			if (conditionalLabel == 'UND') {
-				this.signal(Update_Conditional_Label, 'ODER');
-			} else {
-				this.signal(Update_Conditional_Label, 'UND');
-			}
 		};
 
 		return html`
@@ -87,19 +59,25 @@ export class OafFilterGroup extends MvuElement {
 			<div class="filter-group">
 				<h2 style="padding: 10px 0;">Filtergruppe</h2>
 				<div class="btn-bar">
-					<ba-button .type=${'primary'} .label=${conditionalLabel} @click=${onToggleGroupCondition}></ba-button>
 					<ba-button .type=${'primary'} .label=${'DUP'}></ba-button>
 					<ba-button .type=${'primary'} class="remove-button" .label=${'X'} @click=${onRemoveGroup}></ba-button>
 				</div>
 				<select id="queryable-select" @change=${onAddFilter}>
 					<option selected>Select Filter...</option>
 					${queryables
-						.filter((queryable) => !activeQueryables.includes(queryable))
+						.filter((queryable) => !oafFilters.includes((oafFilter) => oafFilter.queryable === queryable))
 						.map((queryable) => html`<option .value=${queryable.name}>${queryable.name}</option>`)}
 				</select>
 				<div class="">
-					${activeQueryables.map(
-						(queryable) => html`<ba-oaf-filter .queryable=${queryable} @change=${onChangeFilter} @remove=${onRemoveFilter}></ba-oaf-filter>`
+					${oafFilters.map(
+						(oafFilter) =>
+							html`<ba-oaf-filter
+								.operator=${oafFilter.operator}
+								.value=${oafFilter.value}
+								.queryable=${oafFilter.queryable}
+								@change=${onChangeFilter}
+								@remove=${onRemoveFilter}
+							></ba-oaf-filter>`
 					)}
 					<div class="ogc-filter-navigation"></div>
 				</div>
@@ -107,12 +85,37 @@ export class OafFilterGroup extends MvuElement {
 		`;
 	}
 
+	_addFilter(queryableName) {
+		const { queryables, oafFilters } = this.getModel();
+		const queryableToAdd = queryables.find((queryable) => queryable.name == queryableName);
+
+		if (oafFilters.includes((queryable) => queryable === queryableToAdd)) {
+			return;
+		}
+
+		this.signal(Update_Filters, [
+			...oafFilters,
+			{
+				value: null,
+				operator: null,
+				queryable: queryableToAdd
+			}
+		]);
+	}
+
+	_removeFilter(queryableName) {
+		return this.getModel().oafFilters.filter((oafFilter) => oafFilter.queryable.name !== queryableName);
+	}
+
 	set queryables(value) {
 		this.signal(Update_Queryables, value);
 	}
 
+	set oafFilters(value) {
+		this.signal(Update_Filters, value);
+	}
 	get oafFilters() {
-		return Array.from(this.shadowRoot.querySelectorAll('ba-oaf-filter'));
+		return this.getModel().oafFilters;
 	}
 
 	static get tag() {

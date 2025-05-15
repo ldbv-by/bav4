@@ -1,16 +1,15 @@
 /**
  * @module modules/examples/ogc/components/OgcFeaturesMask
  */
+import css from './oafMask.css';
 import { html } from 'lit-html';
-import { when } from 'lit-html/directives/when.js';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { MvuElement } from '../../MvuElement';
 import { $injector } from '../../../injection';
-import css from './oafMask.css';
 import { createUniqueId } from '../../../utils/numberUtils';
 
 const Update_Capabilities = 'update_capabilities';
-const Update_Filter_Group = 'update_filter_group';
+const Update_Filter_Groups = 'update_filter_groups';
 const Update_Show_Console = 'update_show_console';
 
 /**
@@ -25,7 +24,7 @@ export class OafMask extends MvuElement {
 
 	constructor() {
 		super({
-			filterGroupIds: [],
+			filterGroups: [],
 			capabilities: [],
 			showConsole: false
 		});
@@ -44,8 +43,8 @@ export class OafMask extends MvuElement {
 		switch (type) {
 			case Update_Capabilities:
 				return { ...model, capabilities: data };
-			case Update_Filter_Group:
-				return { ...model, filterGroupIds: [...data] };
+			case Update_Filter_Groups:
+				return { ...model, filterGroups: [...data] };
 			case Update_Show_Console:
 				return { ...model, showConsole: data };
 		}
@@ -53,96 +52,103 @@ export class OafMask extends MvuElement {
 
 	createView(model) {
 		const onAddFilterGroup = () => {
-			const groups = this.getModel().filterGroupIds;
-			this.signal(Update_Filter_Group, [...groups, createUniqueId()]);
+			const groups = this.getModel().filterGroups;
+			this.signal(Update_Filter_Groups, [...groups, { id: createUniqueId(), oafFilters: [] }]);
 		};
 
 		const onShowCqlConsole = () => {
 			this.signal(Update_Show_Console, !showConsole);
 		};
 
-		const removeFilterGroup = (evt) => {
-			const groups = this.getModel().filterGroupIds;
-			this.signal(Update_Filter_Group, this._removeFilterGroup(evt.target.getAttribute('group-id')));
+		const onRemoveFilterGroup = (evt) => {
+			const groups = this.getModel().filterGroups;
+			this.signal(Update_Filter_Groups, this._removeFilterGroup(evt.target.getAttribute('group-id')));
 		};
 
-		const orSeperatorHtml = html`
-			<div class="seperator-container">
-				<div class="seperator"></div>
-				<div class="seperator-content">ODER</div>
-				<div class="seperator"></div>
+		const onFilterGroupChanged = (evt) => {
+			const groups = this.getModel().filterGroups;
+			const targetGroup = this._findFilterGroupById(evt.target.getAttribute('group-id'));
+			targetGroup.oafFilters = evt.target.oafFilters;
+
+			console.log(groups);
+			this.signal(Update_Filter_Groups, [...groups]);
+		};
+
+		const { capabilities, filterGroups, showConsole } = model;
+
+		const contentHeaderButtonsHtml = () =>
+			showConsole
+				? html` <ba-button
+						style="width:200px; display:inline-block;padding: 20px 0px;"
+						.label=${'Normaler Modus'}
+						.type=${'primary'}
+						@click=${onShowCqlConsole}
+					></ba-button>`
+				: html` <ba-button
+							style="width:200px; display:inline-block; padding: 20px 0px;"
+							.label=${'Neue Filtergruppe'}
+							.type=${'primary'}
+							@click=${onAddFilterGroup}
+						></ba-button>
+						<ba-button
+							style="width:200px; display:inline-block;padding: 20px 0px;"
+							.label=${'Expertenmodus'}
+							.type=${'primary'}
+							@click=${onShowCqlConsole}
+						></ba-button>`;
+
+		const orSeparatorHtml = () => html`
+			<div class="separator-container">
+				<div class="separator"></div>
+				<div class="separator-content">ODER</div>
+				<div class="separator"></div>
 			</div>
 		`;
 
-		const { capabilities, filterGroupIds, showConsole } = model;
+		const uiModeHtml = () =>
+			html` <div class="flex-hscroll-container">
+				${repeat(
+					filterGroups,
+					(group) => group.id,
+					(group, index) =>
+						html` <div class="filter-group-container">
+							<ba-oaf-filter-group
+								group-id=${group.id}
+								@remove=${onRemoveFilterGroup}
+								.queryables=${capabilities.queryables}
+								.oafFilters=${group.oafFilters}
+								@change=${onFilterGroupChanged}
+							></ba-oaf-filter-group>
+							${index < filterGroups.length - 1 ? orSeparatorHtml() : html`<div></div>`}
+						</div>`
+				)}
+			</div>`;
+
+		const consoleModeHtml = () =>
+			html` <div class="console-flex-container">
+				<div class="btn-bar">${this.oparatorDefinitions.map((oparator) => html`<ba-button .type=${'primary'} .label=${oparator}></ba-button>`)}</div>
+				<textarea class="console"></textarea>
+				<ba-button .type=${'primary'} .label=${'Anwenden'}></ba-button>
+			</div>`;
 
 		return html`
 			<style>
 				${css}
 			</style>
-			<div class="container">
-				${showConsole
-					? html`<div class="sticky-container">
-								<ba-button
-									style="width:200px; display:inline-block;padding: 20px 0px;"
-									.label=${'Normaler Modus'}
-									.type=${'primary'}
-									@click=${onShowCqlConsole}
-								></ba-button>
-							</div>
-							<div class="console-flex-container">
-								<div class="btn-bar">
-									<ba-button .type=${'primary'} .label=${'Größer Gleich'}></ba-button>
-									<ba-button .type=${'primary'} .label=${'Kleiner Gleich'}></ba-button>
-									<ba-button .type=${'primary'} .label=${'Größer'}></ba-button>
-									<ba-button .type=${'primary'} .label=${'Kleiner'}></ba-button>
-									<ba-button .type=${'primary'} .label=${'Gleich'}></ba-button>
-									<ba-button .type=${'primary'} .label=${'Ungleich'}></ba-button>
-									<ba-button .type=${'primary'} .label=${'Enthält'}></ba-button>
-								</div>
-								<textarea class="console"></textarea>
-								<ba-button .type=${'primary'} .label=${'Anwenden'}></ba-button>
-							</div>`
-					: html`<div class="sticky-container">
-								<ba-button
-									style="width:200px; display:inline-block; padding: 20px 0px;"
-									.label=${'Neue Filtergruppe'}
-									.type=${'primary'}
-									@click=${onAddFilterGroup}
-								></ba-button>
-								<ba-button
-									style="width:200px; display:inline-block;padding: 20px 0px;"
-									.label=${'Expertenmodus'}
-									.type=${'primary'}
-									@click=${onShowCqlConsole}
-								></ba-button>
-							</div>
-							<div class="flex-hscroll-container">
-								${repeat(
-									filterGroupIds,
-									(groupId) => groupId,
-									(groupId, index) =>
-										html` <div class="filter-group-container">
-											<ba-oaf-filter-group
-												group-id=${groupId}
-												@remove=${removeFilterGroup}
-												.queryables=${capabilities.queryables}
-											></ba-oaf-filter-group>
-											${when(
-												index < filterGroupIds.length - 1,
-												() => orSeperatorHtml,
-												() => html`<div></div>`
-											)}
-										</div>`
-								)}
-							</div>`}
-			</div>
+			<div class="sticky-container">${contentHeaderButtonsHtml()}</div>
+			<div class="container">${showConsole ? consoleModeHtml() : uiModeHtml()}</div>
 		`;
 	}
 
 	_removeFilterGroup(idToRemove) {
-		return this.getModel().filterGroupIds.filter((id) => {
+		return this.getModel().filterGroups.filter((id) => {
 			return id != idToRemove;
+		});
+	}
+
+	_findFilterGroupById(id) {
+		return this.getModel().filterGroups.find((group) => {
+			return id == group.id;
 		});
 	}
 
@@ -151,6 +157,10 @@ export class OafMask extends MvuElement {
 		const capabilities = await this.#importOafService.getFilterCapabilities(geoResource);
 
 		this.signal(Update_Capabilities, capabilities);
+	}
+
+	get oparatorDefinitions() {
+		return ['equals', 'between', 'greater', 'lesser'];
 	}
 
 	static get tag() {

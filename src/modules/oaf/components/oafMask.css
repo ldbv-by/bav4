@@ -20,7 +20,7 @@
 	min-height: 350px;
 	overflow-y: auto;
 }
-.seperator-container {
+.separator-container {
 	display: grid;
 	grid-template-rows: 1fr 1fr 1fr;
 	gap: 10px;
@@ -32,7 +32,7 @@
 	grid-template-columns: 1fr 0.4fr;
 }
 
-.seperator {
+.separator {
 	display: flex;
 	align-self: center;
 	justify-self: center;
@@ -41,7 +41,7 @@
 	height: 100%;
 }
 
-.seperator-content {
+.separator-content {
 	display: flex;
 	align-self: center;
 	justify-self: center;

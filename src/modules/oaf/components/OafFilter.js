@@ -151,6 +151,10 @@ export class OafFilter extends MvuElement {
 		return this.getModel().operator;
 	}
 
+	set operator(value) {
+		this.signal(Update_Operator, value);
+	}
+
 	_getOperators(type) {
 		const defaultOps = ['equals', 'not equals'];
 
