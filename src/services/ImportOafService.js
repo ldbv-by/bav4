@@ -20,8 +20,7 @@ import { bvvOafFilterCapabilitiesProvider, bvvOafGeoResourceProvider } from './p
  * @async
  * @typedef {Function} oafFilterCapabilitiesProvider
  * @param {OafGeoResource} oafGeoResource
- * @param {module:domain/credentialDef~Credential} [credential]
- * @returns {Promise<Array<OafGeoResource>>} available categories
+ * @returns {Promise<Array<module:domain/oaf~OafFilterCapabilities>>} available categories
  */
 
 /**
