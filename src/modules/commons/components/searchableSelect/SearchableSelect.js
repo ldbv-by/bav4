@@ -122,21 +122,21 @@ export class SearchableSelect extends MvuElement {
 
 		const onSearchInputChange = (evt) => {
 			this.#showDropdown();
-			this.signal(Update_Search, evt.target.value);
+			this.signal(Update_Search, evt.currentTarget.value);
 		};
 
 		const onPointerEnterOption = (evt) => {
-			this.#hoverOption(evt.target);
+			this.#hoverOption(evt.currentTarget);
 		};
 
 		const onPointerLeaveOption = (evt) => {
-			evt.target.classList.remove('hovered');
+			evt.currentTarget.classList.remove('hovered');
 		};
 
 		const onOptionChosen = (evt) => {
 			// Prevents global click handler to trigger s. onInitialize()
 			evt.stopPropagation();
-			this.#hoverOption(evt.target);
+			this.#hoverOption(evt.currentTarget);
 			this.#confirmAction();
 		};
 
@@ -225,6 +225,7 @@ export class SearchableSelect extends MvuElement {
 
 	#confirmAction() {
 		const hoveredOption = this.shadowRoot.querySelector('.option.hovered');
+
 		if (!hoveredOption) return;
 
 		this.#hideDropdown();
