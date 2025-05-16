@@ -176,7 +176,7 @@ describe('bvvOafGeoResourceProvider', () => {
 			description: 'description0',
 			url: 'http://url0/collections/id0',
 			totalNumberOfItems: 21,
-			crs: 3857
+			srid: 3857
 		},
 		{
 			id: 'id1',
@@ -184,7 +184,7 @@ describe('bvvOafGeoResourceProvider', () => {
 			description: 'description1',
 			url: 'http://url1/collections/id1',
 			totalNumberOfItems: 42,
-			crs: 4326
+			srid: 4326
 		},
 		{
 			id: 'id2',
@@ -192,7 +192,7 @@ describe('bvvOafGeoResourceProvider', () => {
 			description: 'description2',
 			url: 'http://url2/collections/id2',
 			totalNumberOfItems: 42,
-			crs: 55555
+			srid: 55555
 		}
 	];
 

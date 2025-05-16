@@ -73,7 +73,7 @@ export const bvvOafGeoResourceProvider = async (url, options) => {
 			oafCollection.title,
 			oafUrl,
 			oafCollection.id,
-			oafCollection.crs
+			oafCollection.srid
 		)
 			.setLimit(oafCollection.totalNumberOfItems)
 			.setAuthenticationType(getAuthenticationType(options.isAuthenticated));
@@ -82,7 +82,7 @@ export const bvvOafGeoResourceProvider = async (url, options) => {
 	const readCollections = (oafCollections) => {
 		return (
 			oafCollections
-				.filter((collection) => projectionService.getProjections().includes(collection.crs))
+				.filter((collection) => projectionService.getProjections().includes(collection.srid))
 				// we filter unwanted layers (if defined by OafImportOptions)
 				.filter((collection) => (options.collections.length ? options.collections.includes(collection.id) : true))
 				.map((collection, index) => toOafGeoResource(collection, index))
