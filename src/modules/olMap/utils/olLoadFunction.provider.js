@@ -178,6 +178,9 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 			}
 			options['bbox'] = `${extent.join(',')}`;
 			options['bbox-crs'] = crs;
+			if (olLayer.get('filter')) {
+				options['filter'] = olLayer.get('filter');
+			}
 
 			const searchParams = new URLSearchParams({ ...options });
 			const url = `${geoResource.url}${geoResource.url.endsWith('/') ? '' : '/'}collections/${geoResource.collectionId}/items?${decodeURIComponent(searchParams.toString())}`;
