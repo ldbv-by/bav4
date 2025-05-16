@@ -21,7 +21,7 @@ import {
 	getSelectStyleFunction,
 	getTextStyleArray
 } from '../../utils/olStyleUtils';
-import { StyleTypes } from '../../services/StyleService';
+import { OlFeatureStyleTypes } from '../../services/OlStyleService';
 import { StyleSize } from '../../../../domain/styles';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { equals, observe } from '../../../../utils/storeUtils';
@@ -586,7 +586,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			return null;
 		}
 
-		if (type === StyleTypes.MARKER && !styleOption.symbolSrc) {
+		if (type === OlFeatureStyleTypes.MARKER && !styleOption.symbolSrc) {
 			return null;
 		}
 
@@ -596,9 +596,9 @@ export class OlDrawHandler extends OlLayerHandler {
 		const source = this._vectorLayer.getSource();
 		const snapTolerance = getSnapTolerancePerDevice();
 		switch (type) {
-			case StyleTypes.POINT:
-			case StyleTypes.MARKER:
-			case StyleTypes.TEXT:
+			case OlFeatureStyleTypes.POINT:
+			case OlFeatureStyleTypes.MARKER:
+			case OlFeatureStyleTypes.TEXT:
 				return new Draw({
 					source: source,
 					type: 'Point',
@@ -607,7 +607,7 @@ export class OlDrawHandler extends OlLayerHandler {
 					style: this._getStyleFunctionByDrawType(type, styleOption),
 					wrapX: true
 				});
-			case StyleTypes.LINE:
+			case OlFeatureStyleTypes.LINE:
 				return new Draw({
 					source: source,
 					type: 'LineString',
@@ -615,7 +615,7 @@ export class OlDrawHandler extends OlLayerHandler {
 					style: getSketchStyleFunction(this._getStyleFunctionByDrawType('line', styleOption)),
 					wrapX: true
 				});
-			case StyleTypes.POLYGON:
+			case OlFeatureStyleTypes.POLYGON:
 				return new Draw({
 					source: source,
 					type: 'Polygon',
@@ -686,9 +686,9 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		const getDefaultTextByType = (type) => {
 			switch (type) {
-				case StyleTypes.TEXT:
+				case OlFeatureStyleTypes.TEXT:
 					return getDefaultText();
-				case StyleTypes.MARKER:
+				case OlFeatureStyleTypes.MARKER:
 					return '';
 				default:
 					return null;
@@ -706,9 +706,9 @@ export class OlDrawHandler extends OlLayerHandler {
 				text: getDefaultTextByType(type),
 				anchor: this._iconService.getDefault().anchor
 			});
-		} else if (type === StyleTypes.TEXT && !isString(style.text)) {
+		} else if (type === OlFeatureStyleTypes.TEXT && !isString(style.text)) {
 			setStyle({ ...style, text: getDefaultText() });
-		} else if (type === StyleTypes.MARKER && !isString(style.text)) {
+		} else if (type === OlFeatureStyleTypes.MARKER && !isString(style.text)) {
 			setStyle({ ...style, text: '' });
 		}
 
@@ -722,14 +722,14 @@ export class OlDrawHandler extends OlLayerHandler {
 
 	_getStyleFunctionByDrawType(drawType, styleOption) {
 		switch (drawType) {
-			case StyleTypes.LINE:
+			case OlFeatureStyleTypes.LINE:
 				return getLineStyleArray(styleOption);
-			case StyleTypes.POLYGON:
+			case OlFeatureStyleTypes.POLYGON:
 				return getPolygonStyleArray(styleOption);
-			case StyleTypes.POINT:
-			case StyleTypes.MARKER:
+			case OlFeatureStyleTypes.POINT:
+			case OlFeatureStyleTypes.MARKER:
 				return getMarkerStyleArray(styleOption);
-			case StyleTypes.TEXT:
+			case OlFeatureStyleTypes.TEXT:
 				return getTextStyleArray(styleOption);
 			default:
 				return getNullStyleArray();
