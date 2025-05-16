@@ -14,7 +14,7 @@ describe('RtVectorLayerService', () => {
 		getSrid: () => 3857
 	};
 
-	const vectorLayerService = {
+	const styleService = {
 		applyStyle: () => {}
 	};
 
@@ -53,7 +53,7 @@ describe('RtVectorLayerService', () => {
 				layers: layersReducer,
 				position: positionReducer
 			});
-			$injector.registerSingleton('MapService', mapService).registerSingleton('VectorLayerService', vectorLayerService);
+			$injector.registerSingleton('MapService', mapService).registerSingleton('StyleService', styleService);
 			instanceUnderTest = new RtVectorLayerService();
 			return store;
 		};
@@ -175,7 +175,7 @@ describe('RtVectorLayerService', () => {
 				const olVectorLayer = instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
 				spyOn(olMap, 'getView').and.returnValue({ calculateExtent: () => [] });
 				const processSpy = spyOn(instanceUnderTest, '_processMessage').and.callThrough();
-				const applyStyleSpy = spyOn(vectorLayerService, 'applyStyle').and.callFake(() => {});
+				const applyStyleSpy = spyOn(styleService, 'applyStyle').and.callFake(() => {});
 				const fitViewSpy = spyOn(instanceUnderTest, '_centerViewOptionally').and.callThrough();
 				expect(olVectorLayer.getSource().getFeatures().length).toBe(0);
 
@@ -206,7 +206,7 @@ describe('RtVectorLayerService', () => {
 				const processSpy = spyOn(instanceUnderTest, '_processMessage').and.callThrough();
 				spyOn(olMap, 'getView').and.callFake(() => viewMock);
 
-				const applyStyleSpy = spyOn(vectorLayerService, 'applyStyle').and.callFake(() => {});
+				const applyStyleSpy = spyOn(styleService, 'applyStyle').and.callFake(() => {});
 				const fitViewSpy = spyOn(instanceUnderTest, '_centerViewOptionally').and.callThrough();
 				expect(olVectorLayer.getSource().getFeatures().length).toBe(0);
 
@@ -236,7 +236,7 @@ describe('RtVectorLayerService', () => {
 				const olVectorLayer = instanceUnderTest.createLayer(id, rtVectorGeoResource, olMap);
 				spyOn(olMap, 'getView').and.returnValue(viewMock);
 				spyOn(instanceUnderTest, '_processMessage').and.callThrough();
-				spyOn(vectorLayerService, 'applyStyle').and.callFake(() => {});
+				spyOn(styleService, 'applyStyle').and.callFake(() => {});
 				const fitViewSpy = spyOn(instanceUnderTest, '_centerViewOptionally')
 					.withArgs(olVectorLayer, olMap, true)
 					.and.callThrough()
@@ -272,7 +272,7 @@ describe('RtVectorLayerService', () => {
 
 				spyOn(olMap, 'getView').and.returnValue(viewMock);
 				spyOn(instanceUnderTest, '_processMessage').and.callThrough();
-				spyOn(vectorLayerService, 'applyStyle').and.callFake(() => {});
+				spyOn(styleService, 'applyStyle').and.callFake(() => {});
 				const fitViewSpy = spyOn(instanceUnderTest, '_centerViewOptionally').and.callThrough();
 				expect(olVectorLayer.getSource().getFeatures().length).toBe(0);
 				expect(store.getState().position.fitRequest.payload).toBeNull();
