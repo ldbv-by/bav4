@@ -19,11 +19,6 @@ export const bvvOafFilterCapabilitiesProvider = async (oafGeoResource) => {
 	} = $injector.inject('HttpService', 'ConfigService', 'BaaCredentialService');
 	const endpointUrl = configService.getValueAsPath('BACKEND_URL') + 'oaf/getFilterCapabilities';
 
-	const readFilterCapabilities = (oafFilterCapabilities) => {
-		// here we can do possible mapping in the future
-		return oafFilterCapabilities;
-	};
-
 	const getCredentialOrFail = (url) => {
 		const failed = () => {
 			throw new Error(`Fetching of filter capabilities failed. Credential for '${url}' not found`);
@@ -40,7 +35,7 @@ export const bvvOafFilterCapabilitiesProvider = async (oafGeoResource) => {
 	const result = await httpService.post(endpointUrl, JSON.stringify(data), MediaType.JSON);
 	switch (result.status) {
 		case 200:
-			return readFilterCapabilities(await result.json());
+			return await result.json();
 		default:
 			throw new Error(`Filter capabilities for '${oafGeoResource.url}' could not be loaded: Http-Status ${result.status}`);
 	}
