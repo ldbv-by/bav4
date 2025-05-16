@@ -7,12 +7,11 @@ import {
 	mapVectorSourceTypeToFormat,
 	VectorLayerService
 } from '../../../../src/modules/olMap/services/VectorLayerService';
-import VectorSource, { VectorSourceEvent } from 'ol/source/Vector';
-import { Feature, Map } from 'ol';
-import { CollectionEvent } from 'ol/Collection';
+import VectorSource from 'ol/source/Vector';
+import { Map } from 'ol';
 import VectorLayer from 'ol/layer/Vector';
 import { TestUtils } from '../../../test-utils';
-import { createDefaultLayer, layersReducer } from '../../../../src/store/layers/layers.reducer';
+import { layersReducer } from '../../../../src/store/layers/layers.reducer';
 import { UnavailableGeoResourceError } from '../../../../src/domain/errors';
 import { StyleHint } from '../../../../src/domain/styles';
 import { BaGeometry } from '../../../../src/domain/geometry';
