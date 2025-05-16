@@ -3,7 +3,6 @@ import { OlGeolocationHandler } from '../handler/geolocation/OlGeolocationHandle
 import { OlHighlightLayerHandler } from '../handler/highlight/OlHighlightLayerHandler';
 import { VectorLayerService } from '../services/VectorLayerService';
 import { LayerService } from '../services/LayerService';
-import { StyleService } from '../services/StyleService';
 import { OverlayService } from '../services/OverlayService';
 import { OlDrawHandler } from '../handler/draw/OlDrawHandler';
 import { OlFeatureInfoHandler } from '../handler/featureInfo/OlFeatureInfoHandler';
@@ -14,10 +13,11 @@ import { OlSelectableFeatureHandler } from '../handler/selectableFeature/OlSelec
 import { RtVectorLayerService } from '../services/RtVectorLayerService';
 import { OlOverlayMapHandler } from '../handler/measure/OlOverlayMapHandler';
 import { OlLayerSwipeHandler } from '../handler/layerSwipe/OlLayerSwipeHandler';
+import { OlStyleService } from '../services/OlStyleService';
 
 export const mapModule = ($injector) => {
 	$injector
-		.registerSingleton('StyleService', new StyleService())
+		.registerSingleton('StyleService', new OlStyleService())
 		.register('OlMeasurementHandler', OlMeasurementHandler)
 		.register('OlDrawHandler', OlDrawHandler)
 		.register('OlGeolocationHandler', OlGeolocationHandler)

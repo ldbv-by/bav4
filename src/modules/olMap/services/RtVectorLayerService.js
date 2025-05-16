@@ -119,7 +119,7 @@ export class RtVectorLayerService {
 	}
 
 	_startWebSocket(rtVectorGeoResource, olVectorLayer, olMap, port) {
-		const { VectorLayerService: vectorLayerService } = $injector.inject('VectorLayerService');
+		const { StyleService: styleService } = $injector.inject('StyleService');
 
 		const featureReader = this._getFeatureReader(rtVectorGeoResource);
 
@@ -133,7 +133,7 @@ export class RtVectorLayerService {
 			if (isUpdateNeeded(messageData)) {
 				this._processMessage(messageData, olVectorLayer, featureReader);
 
-				vectorLayerService.applyStyle(olVectorLayer, olMap, rtVectorGeoResource);
+				styleService.applyStyle(olVectorLayer, olMap, rtVectorGeoResource);
 				/**
 				 * We use the fit only with the first call, to leave the control over the zoom level by the user
 				 * and to help the user in the special case, that the data of the layer is outside the view, at the beginning.

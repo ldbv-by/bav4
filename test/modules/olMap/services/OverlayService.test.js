@@ -3,7 +3,7 @@ import { $injector } from '../../../../src/injection';
 import { TestUtils } from '../../../test-utils.js';
 import { Feature } from 'ol';
 import { Polygon } from 'ol/geom';
-import { StyleTypes } from '../../../../src/modules/olMap/services/StyleService';
+import { OlFeatureStyleTypes } from '../../../../src/modules/olMap/services/OlStyleService.js';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { measurementReducer } from '../../../../src/store/measurement/measurement.reducer';
@@ -93,7 +93,7 @@ describe('OverlayService', () => {
 			mapMock.addOverlay = addOverlaySpy;
 
 			instanceUnderTest = new OverlayService();
-			instanceUnderTest.add(feature, mapMock, StyleTypes.MEASURE);
+			instanceUnderTest.add(feature, mapMock, OlFeatureStyleTypes.MEASURE);
 
 			expect(propertySetterSpy).toHaveBeenCalledWith('overlays', jasmine.any(Object));
 			expect(addOverlaySpy).toHaveBeenCalledTimes(2);
@@ -178,7 +178,7 @@ describe('OverlayService', () => {
 			mapMock.removeOverlay = removeOverlaySpy;
 
 			instanceUnderTest = new OverlayService();
-			instanceUnderTest.update(feature, mapMock, StyleTypes.MEASURE);
+			instanceUnderTest.update(feature, mapMock, OlFeatureStyleTypes.MEASURE);
 			expect(propertySetterSpy).toHaveBeenCalledWith('area', mockOverlay);
 		});
 
@@ -201,7 +201,7 @@ describe('OverlayService', () => {
 
 			instanceUnderTest = new OverlayService();
 			spyOn(instanceUnderTest, '_getOverlayStyleByType').and.returnValue(null);
-			instanceUnderTest.update(feature, mapMock, StyleTypes.MEASURE);
+			instanceUnderTest.update(feature, mapMock, OlFeatureStyleTypes.MEASURE);
 			expect(propertySetterSpy).not.toHaveBeenCalled();
 		});
 	});
@@ -267,7 +267,7 @@ describe('OverlayService', () => {
 			};
 
 			instanceUnderTest = new OverlayService();
-			instanceUnderTest.remove(feature, mapMock, StyleTypes.DEFAULT);
+			instanceUnderTest.remove(feature, mapMock, OlFeatureStyleTypes.DEFAULT);
 
 			expect(removeOverlaySpy).toHaveBeenCalledTimes(2);
 		});
@@ -338,7 +338,7 @@ describe('OverlayService', () => {
 			};
 
 			instanceUnderTest = new OverlayService();
-			instanceUnderTest.remove(feature, mapMock, StyleTypes.MEASURE);
+			instanceUnderTest.remove(feature, mapMock, OlFeatureStyleTypes.MEASURE);
 
 			expect(removeOverlaySpy).toHaveBeenCalledTimes(2);
 			expect(unsetSpy).toHaveBeenCalled();

@@ -11,7 +11,6 @@ import { Cluster } from 'ol/source';
 import { getOriginAndPathname, getPathParams } from '../../../utils/urlUtils';
 import { UnavailableGeoResourceError } from '../../../domain/errors';
 import { isHttpUrl, isString } from '../../../utils/checks';
-import { StyleHint } from '../../../domain/styles';
 import { SourceTypeName } from '../../../domain/sourceType';
 import { bbox } from 'ol/loadingstrategy.js';
 import { getBvvOafLoadFunction } from '../utils/olLoadFunction.provider';
@@ -103,108 +102,6 @@ export class VectorLayerService {
 		this.#baaCredentialService = baaCredentialService;
 	}
 
-	_updateStyle(olFeature, olLayer, olMap) {
-		const { StyleService: styleService, StoreService: storeService } = $injector.inject('StyleService', 'StoreService');
-		const {
-			layers: { active }
-		} = storeService.getStore().getState();
-		styleService.updateStyle(olFeature, olMap, {
-			visible: olLayer.getVisible(),
-			// we check if the layer representing this olLayer is the topmost layer of all unhidden layers
-			top: active.filter(({ constraints: { hidden } }) => !hidden).pop()?.id === olLayer.get('id'),
-			opacity: olLayer.getOpacity()
-		});
-	}
-
-	_registerStyleEventListeners(olVectorSource, olLayer, olMap) {
-		const { StyleService: styleService } = $injector.inject('StyleService');
-
-		const addFeatureListenerKey = olVectorSource.on('addfeature', (event) => {
-			styleService.addStyle(event.feature, olMap, olLayer);
-			this._updateStyle(event.feature, olLayer, olMap);
-		});
-		const removeFeatureListenerKey = olVectorSource.on('removefeature', (event) => {
-			styleService.removeStyle(event.feature, olMap);
-		});
-		const clearFeaturesListenerKey = olVectorSource.on('clear', () => {
-			olVectorSource.getFeatures().forEach((f) => styleService.removeStyle(f, olMap));
-		});
-
-		/**
-		 * Changes in the list of layers, should have impact on style properties of the vectorLayer (e.g. related overlays),
-		 * which are not tracked by OpenLayers
-		 */
-		const layerListChangedListenerKey = olMap.getLayers().on(['add', 'remove'], () => {
-			olVectorSource.getFeatures().forEach((f) => this._updateStyle(f, olLayer, olMap));
-		});
-
-		/**
-		 * Track layer changes of visibility, opacity and z-index
-		 */
-		const layerChangeListenerKey = olLayer.on(['change:zIndex', 'change:visible', 'change:opacity'], () => {
-			olVectorSource.getFeatures().forEach((f) => this._updateStyle(f, olLayer, olMap));
-		});
-
-		return { addFeatureListenerKey, removeFeatureListenerKey, clearFeaturesListenerKey, layerChangeListenerKey, layerListChangedListenerKey };
-	}
-
-	_applyFeatureSpecificStyles(olVectorLayer, olMap) {
-		/**
-		 * We check if an currently present and possible future features needs a specific styling.
-		 * If so, we apply the style and register an event listeners in order to keep the style (and overlays)
-		 * up-to-date with the layer.
-		 */
-		const { StyleService: styleService } = $injector.inject('StyleService');
-		const olVectorSource = olVectorLayer.getSource();
-		if (olVectorSource.getFeatures().some((feature) => styleService.isStyleRequired(feature))) {
-			// if we have at least one style requiring feature, we register the styleEvent listener once
-			// and apply the style for all currently present features
-			this._registerStyleEventListeners(olVectorSource, olVectorLayer, olMap);
-			olVectorSource.getFeatures().forEach((feature) => {
-				if (styleService.isStyleRequired(feature)) {
-					styleService.addStyle(feature, olMap, olVectorLayer);
-					this._updateStyle(feature, olVectorLayer, olMap);
-				}
-			});
-		}
-
-		return olVectorLayer;
-	}
-
-	/**
-	 * Sanitizes the style of the present features of the vector layer.
-	 * The sanitizing prepares features with incompatible styling for the rendering in the
-	 * ol context.
-	 * @param {ol.layer.Vector} olVectorLayer
-	 */
-	_sanitizeStyles(olVectorLayer) {
-		const { StyleService: styleService } = $injector.inject('StyleService');
-		const olVectorSource = olVectorLayer.getSource();
-		olVectorSource.getFeatures().forEach((feature) => styleService.sanitizeStyle(feature));
-	}
-
-	/**
-	 * Adds specific stylings (and overlays) for a vector layer.
-	 * The effective styling is determined in the following order;
-	 * 1. If the GeoResource is clustered we set the cluster style
-	 * 2. If the GeoResource has a style hint we set its corresponding style
-	 * 3. Otherwise we take the style information of the features
-	 * @param {ol.layer.Vector} olVectorLayer
-	 * @param {ol.Map} olMap
-	 * @param {AbstractVectorGeoResource} vectorGeoResource
-	 * @returns {ol.layer.Vector}
-	 */
-	applyStyle(olVectorLayer, olMap, vectorGeoResource) {
-		const { StyleService: styleService } = $injector.inject('StyleService');
-		this._sanitizeStyles(olVectorLayer);
-		if (vectorGeoResource.isClustered?.()) {
-			return styleService.applyStyleHint(StyleHint.CLUSTER, olVectorLayer);
-		} else if (vectorGeoResource.hasStyleHint?.()) {
-			return styleService.applyStyleHint(vectorGeoResource.styleHint, olVectorLayer);
-		}
-		return this._applyFeatureSpecificStyles(olVectorLayer, olMap);
-	}
-
 	/**
 	 * Builds an ol VectorLayer from an VectorGeoResource
 	 * @param {string} id layerId
@@ -214,6 +111,7 @@ export class VectorLayerService {
 	 * @returns olVectorLayer
 	 */
 	createLayer(id, vectorGeoResource, olMap) {
+		const { StyleService: styleService } = $injector.inject('StyleService');
 		const { minZoom, maxZoom, opacity } = vectorGeoResource;
 		const vectorLayer = new VectorLayer({
 			id: id,
@@ -228,7 +126,7 @@ export class VectorLayerService {
 				: this._vectorSourceForOaf(vectorGeoResource, vectorLayer);
 		vectorLayer.setSource(vectorSource);
 
-		return this.applyStyle(vectorLayer, olMap, vectorGeoResource);
+		return styleService.applyStyle(vectorLayer, olMap, vectorGeoResource);
 	}
 
 	/**

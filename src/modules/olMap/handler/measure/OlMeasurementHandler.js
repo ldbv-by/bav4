@@ -20,7 +20,7 @@ import { create as createKML, KML_EMPTY_CONTENT } from '../../formats/kml';
 import { VectorGeoResource, VectorSourceType } from '../../../../domain/geoResources';
 import { saveManualOverlayPosition } from '../../overlayStyle/MeasurementOverlayStyle';
 import { getOverlays } from '../../overlayStyle/OverlayStyle';
-import { StyleTypes } from '../../services/StyleService';
+import { OlFeatureStyleTypes } from '../../services/OlStyleService';
 import {
 	getModifyOptions,
 	getSelectableFeatures,
@@ -163,7 +163,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 						const projectedLength = this._mapService.calcLength(getLineString(measureGeometry)?.getCoordinates());
 						event.target.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
 						measureGeometry.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
-						this._styleService.updateStyle(event.target, olMap, { geometry: measureGeometry }, StyleTypes.MEASURE);
+						this._styleService.updateFeatureStyle(event.target, olMap, { geometry: measureGeometry }, OlFeatureStyleTypes.MEASURE);
 						this._setStatistic(event.target);
 					};
 					oldFeatures.forEach((f) => {
@@ -172,8 +172,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 						if (f.getId().startsWith(Tools.MEASURE)) {
 							f.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(f, olMap));
 						}
-						this._styleService.removeStyle(f, olMap);
-						this._styleService.addStyle(f, olMap, layer);
+						this._styleService.removeFeatureStyle(f, olMap);
+						this._styleService.addFeatureStyle(f, olMap, layer);
 						f.on('change', onFeatureChange);
 					});
 					const displayRuler = !oldFeatures.some((f) => f.get('displayruler') === 'false');
@@ -363,7 +363,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._vectorLayer
 			.getSource()
 			.getFeatures()
-			.forEach((f) => this._overlayService.remove(f, this._map, StyleTypes.MEASURE));
+			.forEach((f) => this._overlayService.remove(f, this._map, OlFeatureStyleTypes.MEASURE));
 		setSelection([]);
 		setStatistic(defaultMeasurementStats);
 
@@ -442,7 +442,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}
 
 		if (this._modify && this._modify.getActive()) {
-			const additionalRemoveAction = (f) => this._overlayService.remove(f, this._map, StyleTypes.MEASURE);
+			const additionalRemoveAction = (f) => this._overlayService.remove(f, this._map, OlFeatureStyleTypes.MEASURE);
 			removeSelectedFeatures(this._select.getFeatures(), this._vectorLayer, additionalRemoveAction);
 			this._setSelection([]);
 			this._updateStatistic();
@@ -482,7 +482,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				f.set('displayruler', `${displayRuler}`);
 				const measureGeometry = this._createMeasureGeometry(f);
 
-				this._styleService.updateStyle(f, this._map, { geometry: measureGeometry }, StyleTypes.MEASURE);
+				this._styleService.updateFeatureStyle(f, this._map, { geometry: measureGeometry }, OlFeatureStyleTypes.MEASURE);
 			});
 	}
 
@@ -521,28 +521,28 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					feature.getGeometry().set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
 					measureGeometry.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
 				}
-				this._overlayService.update(event.target, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
+				this._overlayService.update(event.target, this._map, OlFeatureStyleTypes.MEASURE, { geometry: measureGeometry });
 				this._setStatistic(event.target);
 			};
 
 			const onResolutionChange = () => {
 				const measureGeometry = this._createMeasureGeometry(this._sketchHandler.active);
-				this._overlayService.update(this._sketchHandler.active, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
+				this._overlayService.update(this._sketchHandler.active, this._map, OlFeatureStyleTypes.MEASURE, { geometry: measureGeometry });
 			};
 
 			this._sketchHandler.activate(event.feature, this._map, Tools.MEASURE + '_');
 			event.feature.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(event.feature, this._map, () => !this._sketchHandler.isFinishOnFirstPoint));
 			event.feature.set('displayruler', `${this._storeService.getStore().getState().measurement.displayRuler}`);
-			this._overlayService.add(this._sketchHandler.active, this._map, StyleTypes.MEASURE);
+			this._overlayService.add(this._sketchHandler.active, this._map, OlFeatureStyleTypes.MEASURE);
 			this._drawingListeners.push(event.feature.on('change', onFeatureChange));
 			this._drawingListeners.push(this._map.getView().on('change:resolution', onResolutionChange));
 		});
 
-		draw.on('drawabort', (event) => this._overlayService.remove(event.feature, this._map, StyleTypes.MEASURE));
+		draw.on('drawabort', (event) => this._overlayService.remove(event.feature, this._map, OlFeatureStyleTypes.MEASURE));
 
 		draw.on('drawend', (event) => {
 			finishDistanceOverlay(event);
-			this._styleService.addStyle(event.feature, this._map, this._vectorLayer);
+			this._styleService.addFeatureStyle(event.feature, this._map, this._vectorLayer);
 			this._activateModify(event.feature);
 		});
 
@@ -598,7 +598,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				feature.getGeometry().set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
 				measureGeometry.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
 
-				this._overlayService.update(event.target, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
+				this._overlayService.update(event.target, this._map, OlFeatureStyleTypes.MEASURE, { geometry: measureGeometry });
 				this._updateStatistic();
 			};
 			feature.on('change', onFeatureChange);

@@ -16,7 +16,7 @@ import {
 } from '../../../src/store/draw/draw.action';
 import { TestUtils } from '../../test-utils.js';
 import { EventLike } from '../../../src/utils/storeUtils';
-import { StyleTypes } from '../../../src/modules/olMap/services/StyleService';
+import { OlFeatureStyleTypes } from '../../../src/modules/olMap/services/OlStyleService.js';
 import { StyleSize } from '../../../src/domain/styles';
 import { drawReducer, INITIAL_STYLE } from '../../../src/store/draw/draw.reducer';
 
@@ -99,7 +99,7 @@ describe('drawReducer', () => {
 		const store = setup();
 
 		const style = { text: 'something', color: '#ff0000', scale: StyleSize.SMALL };
-		const selectedStyle = { type: StyleTypes.TEXT, style: style };
+		const selectedStyle = { type: OlFeatureStyleTypes.TEXT, style: style };
 		setSelectedStyle(selectedStyle);
 
 		expect(store.getState().draw.selectedStyle).toEqual(selectedStyle);
@@ -162,7 +162,7 @@ describe('drawReducer', () => {
 		const store = setup();
 
 		const style = { text: 'something', color: '#ff0000', scale: StyleSize.SMALL };
-		const selectedStyle = { type: StyleTypes.TEXT, style: style };
+		const selectedStyle = { type: OlFeatureStyleTypes.TEXT, style: style };
 		setSelectedStyle(selectedStyle);
 
 		expect(store.getState().draw.selectedStyle).toEqual(selectedStyle);
