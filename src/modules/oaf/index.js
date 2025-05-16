@@ -1,8 +1,13 @@
+import { OafFilter } from './components/OafFilter';
+import { OafFilterGroup } from './components/OafFilterGroup';
 import { OafMask } from './components/OafMask';
-import { OafRow } from './components/OafRow';
 
-if (!window.customElements.get(OafRow.tag)) {
-	window.customElements.define(OafRow.tag, OafRow);
+if (!window.customElements.get(OafFilter.tag)) {
+	window.customElements.define(OafFilter.tag, OafFilter);
+}
+
+if (!window.customElements.get(OafFilterGroup.tag)) {
+	window.customElements.define(OafFilterGroup.tag, OafFilterGroup);
 }
 
 if (!window.customElements.get(OafMask.tag)) {

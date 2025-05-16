@@ -40,7 +40,17 @@ export class OafFilterGroup extends MvuElement {
 		};
 
 		const onChangeFilter = (evt) => {
+			const oafFilters = this.oafFilters;
+			const changedFilterIndex = oafFilters.indexOf((oafFilter) => oafFilter.queryable.name === evt.target.queryable.name);
+
+			oafFilters[changedFilterIndex] = { ...evt.target.getModel() };
+
+			console.log(oafFilters[changedFilterIndex]);
+
+			this.signal(Update_Filters, [...oafFilters]);
 			this.dispatchEvent(new CustomEvent('change'));
+
+			console.log(evt.target.value);
 		};
 
 		const onRemoveFilter = (evt) => {
@@ -96,8 +106,7 @@ export class OafFilterGroup extends MvuElement {
 		this.signal(Update_Filters, [
 			...oafFilters,
 			{
-				value: null,
-				operator: null,
+				...this._createOafFilterModel(),
 				queryable: queryableToAdd
 			}
 		]);
@@ -105,6 +114,16 @@ export class OafFilterGroup extends MvuElement {
 
 	_removeFilter(queryableName) {
 		return this.getModel().oafFilters.filter((oafFilter) => oafFilter.queryable.name !== queryableName);
+	}
+
+	_createOafFilterModel() {
+		return {
+			value: null,
+			minValue: null,
+			maxValue: null,
+			operator: null,
+			queryable: null
+		};
 	}
 
 	set queryables(value) {

@@ -2,12 +2,14 @@
  * @module modules/examples/ogc/components/OafFilter
  */
 import { html } from 'lit-html';
-import { when } from 'lit-html/directives/when.js';
 import { MvuElement } from '../../MvuElement';
 import css from './oafFilter.css';
 
-const Update_Filter = 'update_filter';
+const Update_Queryable = 'update_queryable';
 const Update_Operator = 'update_operator';
+const Update_Value = 'update_value';
+const Update_Min_Value = 'update_min_value';
+const Update_Max_Value = 'update_max_value';
 
 /**
  * UX prototype implementation for ogc feature api filtering.
@@ -20,23 +22,47 @@ export class OafFilter extends MvuElement {
 		super({
 			queryable: {},
 			operator: 'equals',
-			value: null
+			value: null,
+			minValue: null,
+			maxValue: null
 		});
 	}
 
 	update(type, data, model) {
 		switch (type) {
-			case Update_Filter:
+			case Update_Queryable:
 				return { ...model, queryable: data };
 			case Update_Operator:
 				return { ...model, operator: data };
+			case Update_Value:
+				return { ...model, value: data };
+			case Update_Min_Value:
+				return { ...model, minValue: data };
+			case Update_Max_Value:
+				return { ...model, maxValue: data };
 		}
 	}
 
 	createView(model) {
-		const { name, type, values, finalList } = model.queryable;
+		const { minValue, maxValue, value, operator } = model;
+		const { name, type, values: queryableValues, finalList } = model.queryable;
 		const operators = this._getOperators(type);
-		const operator = model.operator;
+
+		const onMinValueChanged = (evt, val) => {
+			this.signal(Update_Min_Value, val);
+			this.dispatchEvent(new CustomEvent('change'));
+		};
+
+		const onMaxValueChanged = (evt, val) => {
+			this.signal(Update_Max_Value, val);
+			this.dispatchEvent(new CustomEvent('change'));
+		};
+
+		const onValueChanged = (evt, val) => {
+			console.log(val);
+			this.signal(Update_Value, val);
+			this.dispatchEvent(new CustomEvent('change'));
+		};
 
 		const onOperatorSelect = (evt) => {
 			this.signal(Update_Operator, evt.target.value);
@@ -51,59 +77,20 @@ export class OafFilter extends MvuElement {
 			const content = () => {
 				const step = type == 'integer' ? '1' : '0.1';
 
-				if (finalList) {
-					switch (type) {
-						case 'string':
-						case 'time': {
-							return html`
-								${when(
-									operator == 'between',
-									() => html`
-										<select>
-											${values.map((value) => html`<option value="${value}">${value}</option>`)}
-										</select>
-										<select>
-											${values.map((value) => html`<option value="${value}">${value}</option>`)}
-										</select>
-									`,
-									() =>
-										html` <select>
-											${values.map((value) => html`<option value="${value}">${value}</option>`)}
-										</select>`
-								)}
-							`;
-						}
-					}
-				}
-
 				switch (type) {
-					case 'boolean': {
+					case 'string':
+					case 'time': {
 						return html`
-							<div class="flex-container row">
-								<input type="checkbox" />
-							</div>
-						`;
-					}
-					case 'string': {
-						return html` <input type="text" /> `;
-					}
-					case 'float':
-					case 'integer': {
-						return html`
-							<div class="flex-container row">
-								${when(
-									operator == 'between',
-									() => html`
-										<input type="number" .step=${step} min="0" max="3000" value="0" />
-										<input type="number" .step=${step} min="0" max="3000" value="3000" />
-									`,
-									() => html`<input type="number" .step=${step} value="3000" />`
-								)}
-							</div>
+							${operator == 'between'
+								? html`<ba-searchable-select @select=${(evt) => onMinValueChanged(evt, evt.target.selected)} .options=${queryableValues}>
+										</ba-searchable-select>
+										<ba-searchable-select @select=${(evt) => onMaxValueChanged(evt, evt.target.selected)} .options=${queryableValues}>
+										</ba-searchable-select> `
+								: html`<ba-searchable-select @select=${(evt) => onValueChanged(evt, evt.target.selected)} .options=${queryableValues}>
+									</ba-searchable-select>`}
 						`;
 					}
 				}
-
 				return html``;
 			};
 
@@ -139,12 +126,35 @@ export class OafFilter extends MvuElement {
 		`;
 	}
 
+	set value(value) {
+		this.signal(Update_Value, value);
+	}
+
+	get value() {
+		return this.getModel().value;
+	}
+
+	set maxValue(value) {
+		this.signal(Update_Max_Value, value);
+	}
+
+	get maxValue() {
+		return this.getModel().maxValue;
+	}
+	set minValue(value) {
+		this.signal(Update_Min_Value, value);
+	}
+
+	get minValue() {
+		return this.getModel().minValue;
+	}
+
 	get queryable() {
 		return this.getModel().queryable;
 	}
 
 	set queryable(value) {
-		this.signal(Update_Filter, value);
+		this.signal(Update_Queryable, value);
 	}
 
 	get operator() {

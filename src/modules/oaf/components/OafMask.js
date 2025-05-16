@@ -70,7 +70,6 @@ export class OafMask extends MvuElement {
 			const targetGroup = this._findFilterGroupById(evt.target.getAttribute('group-id'));
 			targetGroup.oafFilters = evt.target.oafFilters;
 
-			console.log(groups);
 			this.signal(Update_Filter_Groups, [...groups]);
 		};
 
