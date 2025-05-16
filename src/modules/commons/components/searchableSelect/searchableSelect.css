@@ -50,7 +50,6 @@
 }
 
 .dropdown {
-	position: absolute;
+	position: fixed;
 	z-index: var(--z-mapbuttons);
-	width: 100%;
 }

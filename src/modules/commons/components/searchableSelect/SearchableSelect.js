@@ -122,21 +122,21 @@ export class SearchableSelect extends MvuElement {
 
 		const onSearchInputChange = (evt) => {
 			this.#showDropdown();
-			this.signal(Update_Search, evt.target.value);
+			this.signal(Update_Search, evt.currentTarget.value);
 		};
 
 		const onPointerEnterOption = (evt) => {
-			this.#hoverOption(evt.target);
+			this.#hoverOption(evt.currentTarget);
 		};
 
 		const onPointerLeaveOption = (evt) => {
-			evt.target.classList.remove('hovered');
+			evt.currentTarget.classList.remove('hovered');
 		};
 
 		const onOptionChosen = (evt) => {
 			// Prevents global click handler to trigger s. onInitialize()
 			evt.stopPropagation();
-			this.#hoverOption(evt.target);
+			this.#hoverOption(evt.currentTarget);
 			this.#confirmAction();
 		};
 
@@ -146,7 +146,7 @@ export class SearchableSelect extends MvuElement {
 			</style>
 			<div class="searchable-select" @pointerenter=${onPointerEnter} @pointerleave=${onPointerLeave} @click=${onSearchInputClicked}>
 				<div class="search-input-container">
-					<input id="search-input" type="text" .placeholder=${placeholder} .value=${search} @input=${onSearchInputChange} />
+					<input id="search-input" type="text" autocomplete="off" .placeholder=${placeholder} .value=${search} @input=${onSearchInputChange} />
 					${showCaret
 						? html`<div id="search-input-toggler" @click=${onSearchInputTogglerClicked}>
 								<span class="caret-fill-down"></span>
@@ -225,6 +225,7 @@ export class SearchableSelect extends MvuElement {
 
 	#confirmAction() {
 		const hoveredOption = this.shadowRoot.querySelector('.option.hovered');
+
 		if (!hoveredOption) return;
 
 		this.#hideDropdown();
