@@ -26,8 +26,8 @@ const Update_Show_Caret = 'update_show_caret';
  * @property {Array<String>} options - Unfiltered options the user can choose from
  * @property {function(changedState)} onChange - The Change callback function when the search input changes
  * @property {function(selectedState)} onSelect - The Selected callback function when the user chose an option from the dropdown
- * @fires onChange Fires when the search input changes
- * @fires onSelect Fires when the selected value changes
+ * @fires change Fires when the search input changes
+ * @fires select Fires when the selected value changes
  *
  * @class
  * @author herrmutig
@@ -144,7 +144,6 @@ export class SearchableSelect extends MvuElement {
 			<style>
 				${css}
 			</style>
-
 			<div class="searchable-select" @pointerenter=${onPointerEnter} @pointerleave=${onPointerLeave} @click=${onSearchInputClicked}>
 				<div class="search-input-container">
 					<input id="search-input" type="text" .placeholder=${placeholder} .value=${search} @input=${onSearchInputChange} />

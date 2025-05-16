@@ -104,7 +104,7 @@ describe('SearchableSelect', () => {
 
 			element.selected = 'foo';
 
-			expect(spy).toHaveBeenCalled();
+			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ selected: 'foo' }));
 		});
 
 		it('fires select event', async () => {
@@ -113,8 +113,7 @@ describe('SearchableSelect', () => {
 			element.addEventListener('select', spy);
 
 			element.selected = 'foo';
-
-			expect(spy).toHaveBeenCalled();
+			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: { selected: 'foo' } }));
 		});
 	});
 
@@ -133,22 +132,24 @@ describe('SearchableSelect', () => {
 
 		it('calls onChange callback', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
+			element.options = ['foo', 'boo', 'bar'];
 			const spy = jasmine.createSpy();
 			element.onChange = spy;
 
-			element.search = 'foo';
+			element.search = 'oo';
 
-			expect(spy).toHaveBeenCalled();
+			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ filteredOptions: ['foo', 'boo'] }));
 		});
 
 		it('fires change event', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
+			element.options = ['foo', 'boo', 'bar'];
 			const spy = jasmine.createSpy();
 			element.addEventListener('change', spy);
 
-			element.search = 'foo';
+			element.search = 'b';
 
-			expect(spy).toHaveBeenCalled();
+			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: { filteredOptions: ['boo', 'bar'] } }));
 		});
 	});
 
@@ -212,7 +213,7 @@ describe('SearchableSelect', () => {
 			searchInput.value = 'any';
 			searchInput.dispatchEvent(new Event('input'));
 
-			expect(spy).toHaveBeenCalled();
+			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ filteredOptions: [] }));
 		});
 
 		it('fires change event', async () => {
@@ -224,7 +225,7 @@ describe('SearchableSelect', () => {
 			searchInput.value = 'any';
 			searchInput.dispatchEvent(new Event('input'));
 
-			expect(spy).toHaveBeenCalled();
+			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: { filteredOptions: [] } }));
 		});
 	});
 
