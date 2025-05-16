@@ -874,7 +874,7 @@ export class RtVectorGeoResource extends AbstractVectorGeoResource {
 }
 
 /**
- * Represents an OCG Api Feature Collection
+ * Represents an OCG Api Feature collection
  */
 export class OafGeoResource extends AbstractVectorGeoResource {
 	/**
@@ -908,7 +908,7 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 	}
 
 	/**
-	 * The supported SRID of the OCG Api Feature Collection
+	 * The supported SRID of the OCG Api Feature collection
 	 */
 	get srid() {
 		return this._srid;
@@ -922,7 +922,7 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 	}
 
 	/**
-	 * Sets the limit parameter
+	 * Sets the max. number of features that should be requested
 	 * @param {number} limit
 	 * @returns {OafGeoResource} `this` for chaining
 	 */
@@ -933,6 +933,10 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 		return this;
 	}
 
+	/**
+	 *
+	 * @returns {boolean} true if a max. number of features is set
+	 */
 	hasLimit() {
 		return !!this._limit;
 	}
