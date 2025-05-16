@@ -21,7 +21,7 @@ const Update_IsPortrait_Value = 'update_isportrait_value';
  * @property {string} title='' - The title of the button
  * @property {Array<number>} color the color as rgb color array
  * @property {function(module:services/IconService~IconResult)} onSelect The select callback function when the select state of the element is changed.
- * @fires onSelect The select event fires when the select state of the element is changed
+ * @fires select The select event fires when the select state of the element is changed
  *
  * @class
  * @author thiloSchlemmer
