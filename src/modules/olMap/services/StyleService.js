@@ -9,7 +9,7 @@ import {
 	getTextStyleArray,
 	markerScaleToKeyword,
 	getStyleArray,
-	getGeojsonStyleArray,
+	geojsonStyleFunction,
 	getDefaultStyleFunction,
 	defaultClusterStyleFunction,
 	getMarkerStyleArray,
@@ -301,7 +301,7 @@ export class StyleService {
 	}
 
 	_addGeoJSONStyle(olFeature) {
-		olFeature.setStyle(getGeojsonStyleArray);
+		olFeature.setStyle(geojsonStyleFunction);
 	}
 
 	_addTextStyle(olFeature) {
