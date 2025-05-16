@@ -168,9 +168,8 @@ export class OlStyleService {
 	 */
 	applyStyle(olVectorLayer, olMap, vectorGeoResource) {
 		this._sanitizeStyles(olVectorLayer);
-		if (vectorGeoResource.hasStyleHint?.()) {
-			return this._applyStyleHint(vectorGeoResource.styleHint, olVectorLayer);
-		}
+		this._applyStyleHint(vectorGeoResource.styleHint, olVectorLayer);
+
 		return this._applyFeatureSpecificStyles(olVectorLayer, olMap);
 	}
 

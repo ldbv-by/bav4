@@ -1017,16 +1017,31 @@ describe('OlStyleService', () => {
 			const olLayer = new VectorLayer({ source: new VectorSource() });
 			const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setStyleHint(StyleHint.HIGHLIGHT);
 			const olMap = new Map();
-			const applyStyleHintSpy = spyOn(instanceUnderTest, '_applyStyleHint');
+			const applyStyleHintSpy = spyOn(instanceUnderTest, '_applyStyleHint').and.callThrough();
+			const setLayerStyleSpy = spyOn(olLayer, 'setStyle');
 
 			instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
 
 			expect(applyStyleHintSpy).toHaveBeenCalledWith(StyleHint.HIGHLIGHT, olLayer);
+			expect(setLayerStyleSpy).toHaveBeenCalledWith(highlightGeometryOrCoordinateFeatureStyleFunction());
 		});
 
 		it('handles a VectorGeoResource without any StyleHints', () => {
 			const olLayer = new VectorLayer({ source: new VectorSource() });
 			const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML);
+			const applyStyleHintSpy = spyOn(instanceUnderTest, '_applyStyleHint').and.callThrough();
+			const setLayerStyleSpy = spyOn(olLayer, 'setStyle');
+			const olMap = new Map();
+
+			instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
+
+			expect(applyStyleHintSpy).toHaveBeenCalledWith(null, olLayer);
+			expect(setLayerStyleSpy).not.toHaveBeenCalled();
+		});
+
+		it('handles the feature specific styles of the VectorGeoResource containing a StyleHint', () => {
+			const olLayer = new VectorLayer({ source: new VectorSource() });
+			const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setStyleHint(StyleHint.HIGHLIGHT);
 			const applyFeatureSpecificStylesSpy = spyOn(instanceUnderTest, '_applyFeatureSpecificStyles').and.callThrough();
 			const olMap = new Map();
 
