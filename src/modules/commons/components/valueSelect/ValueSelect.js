@@ -24,7 +24,7 @@ const Value_Select_Empty = html`<div class="valueselect__container">
  * @property {string} selected the selected value
  * @property {string} title='' - The title of the button
  * @property {function(string)} onSelect The select callback function when the select state of the element is changed.
- * @fires onSelect The select event fires when the select state of the element is changed
+ * @fires select The select event fires when the select state of the element is changed
  *
  * @class
  * @author thiloSchlemmer
