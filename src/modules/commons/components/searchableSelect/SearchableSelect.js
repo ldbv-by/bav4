@@ -146,7 +146,7 @@ export class SearchableSelect extends MvuElement {
 			</style>
 			<div class="searchable-select" @pointerenter=${onPointerEnter} @pointerleave=${onPointerLeave} @click=${onSearchInputClicked}>
 				<div class="search-input-container">
-					<input id="search-input" type="text" .placeholder=${placeholder} .value=${search} @input=${onSearchInputChange} />
+					<input id="search-input" type="text" autocomplete="off" .placeholder=${placeholder} .value=${search} @input=${onSearchInputChange} />
 					${showCaret
 						? html`<div id="search-input-toggler" @click=${onSearchInputTogglerClicked}>
 								<span class="caret-fill-down"></span>
