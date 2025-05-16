@@ -846,7 +846,7 @@ describe('GeoResource provider', () => {
 				const url = 'http://foo.bar';
 				const sourceType = new SourceType(SourceTypeName.OAF);
 				const geoResourceId = `${url}||${collectionId}`;
-				const geoResource = new OafGeoResource(geoResourceId, label, url, collectionId);
+				const geoResource = new OafGeoResource(geoResourceId, label, url, collectionId, 12345);
 				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl')
 					.withArgs(url)
 					.and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
@@ -874,7 +874,7 @@ describe('GeoResource provider', () => {
 				const url = 'http://foo.bar';
 				const sourceType = new SourceType(SourceTypeName.OAF);
 				const geoResourceId = `${url}||${collectionId}`;
-				const geoResource = new OafGeoResource(geoResourceId, label, url, collectionId);
+				const geoResource = new OafGeoResource(geoResourceId, label, url, collectionId, 12345);
 				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl')
 					.withArgs(url)
 					.and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.BAA_AUTHENTICATED, sourceType));
@@ -902,8 +902,8 @@ describe('GeoResource provider', () => {
 				const url = 'http://foo.bar';
 				const sourceType = new SourceType(SourceTypeName.OAF);
 				const geoResourceId = `${url}`;
-				const geoResource0 = new OafGeoResource(geoResourceId, label, url, collectionId, 'image/png');
-				const geoResource1 = new OafGeoResource('otherGeoResourceId', label, url, 'otherCollectionId');
+				const geoResource0 = new OafGeoResource(geoResourceId, label, url, collectionId, 12345);
+				const geoResource1 = new OafGeoResource('otherGeoResourceId', label, url, 'otherCollectionId', 12345);
 				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl')
 					.withArgs(url)
 					.and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));

@@ -10,6 +10,7 @@ export const updateOlLayer = (olLayer, layer) => {
 	olLayer.setVisible(layer.visible);
 	olLayer.setOpacity(layer.opacity);
 	olLayer.set('timestamp', layer.timestamp);
+	olLayer.set('filter', layer.constraints.filter);
 	return olLayer;
 };
 

@@ -90,7 +90,7 @@ export const FileStorageServiceDataTypes = Object.freeze({
  * BVV service for persisting and loading ASCII based geo-data using a RESTful endpoint.
  * @class
  * @author taulinger
- * @implements {FileStorageService}
+ * @implements {module:services/FileStorageService~FileStorageService}
  */
 export class BvvFileStorageService {
 	constructor() {
