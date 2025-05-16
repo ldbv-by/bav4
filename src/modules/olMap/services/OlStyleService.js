@@ -25,7 +25,7 @@ import { Stroke, Style, Text } from 'ol/style';
 import { GeometryCollection, MultiPoint, Point } from '../../../../node_modules/ol/geom';
 
 /**
- * Enumeration of predefined and internal used types of style
+ * Enumeration of predefined and internal used (within `olMap` module only) types of style
  * @readonly
  * @enum {String}
  */
@@ -67,6 +67,8 @@ export class OlStyleService {
 
 	/**
 	 * Adds (explicit or implicit) specified styles and overlays ({@link OverlayStyle}) to the specified feature.
+	 *
+	 * Note: Use only within `olMap` module
 	 * @param {ol.Feature} olFeature the feature to be styled
 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style will be added
 	 * @param {ol.Layer} olLayer the layer of the feature, used for layer-wide color in the default style
@@ -125,6 +127,8 @@ export class OlStyleService {
 
 	/**
 	 * Updates (explicit or implicit) specified styles and overlays ({@link OverlayStyle}) to the specified feature.
+	 *
+	 * Note: Use only within `olMap` module
 	 * @param {ol.Feature} olFeature the feature to be styled
 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style will be updated
 	 * @param {module:modules/olMap/services/OlStyleService~UpdateProperties} properties the optional properties, which are used for additional style updates;
@@ -141,7 +145,9 @@ export class OlStyleService {
 	}
 
 	/**
-	 * Removes overlays (added by OverlayStyle-classes) from the map and the feature
+	 * Removes overlays (added by OverlayStyle-classes) from the map and the feature.
+	 *
+	 * Note: Use only within  `olMap` module
 	 * @param {ol.Feature} olFeature the feature
 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style exists
 	 */
@@ -152,7 +158,9 @@ export class OlStyleService {
 	}
 
 	/**
-	 * Adds specific stylings (and overlays) for a vector layer.
+	 * Adds specific stylings (and overlays) for a vector layer in the following manner:
+	 * 1. The {@link StyleHint} of the GeoResource is applied on the `olVectorLayer`
+	 * 2. If the `olVectorLayer` contains features, the feature specific styling is applied (internal StyleTypes and the public {@link StyleHint})
 	 * @param {ol.layer.Vector} olVectorLayer
 	 * @param {ol.Map} olMap
 	 * @param {AbstractVectorGeoResource} vectorGeoResource
