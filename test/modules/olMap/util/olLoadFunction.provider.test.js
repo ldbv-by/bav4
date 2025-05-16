@@ -469,7 +469,7 @@ describe('olLoadFunction.provider', () => {
 				'https://url.de/collections/collectionId/items?f=json&crs=http://www.opengis.net/def/crs/EPSG/0/3857&bbox=0,1,2,3&bbox-crs=http://www.opengis.net/def/crs/EPSG/0/3857';
 			const successCbSpy = jasmine.createSpy();
 			const failureCbSpy = jasmine.createSpy();
-			const geoResource = new OafGeoResource('id', 'label', 'https://url.de/', 'collectionId');
+			const geoResource = new OafGeoResource('id', 'label', 'https://url.de/', 'collectionId', 12345);
 			spyOn(geoResourceService, 'byId').and.returnValue(geoResource);
 			spyOn(httpService, 'get')
 				.withArgs(
@@ -505,7 +505,7 @@ describe('olLoadFunction.provider', () => {
 				'https://url.de/collections/collectionId/items?f=json&crs=http://www.opengis.net/def/crs/EPSG/0/3857&limit=10&bbox=0,1,2,3&bbox-crs=http://www.opengis.net/def/crs/EPSG/0/3857';
 			const successCbSpy = jasmine.createSpy();
 			const failureCbSpy = jasmine.createSpy();
-			const geoResource = new OafGeoResource('id', 'label', 'https://url.de', 'collectionId').setLimit(10);
+			const geoResource = new OafGeoResource('id', 'label', 'https://url.de', 'collectionId', 12345).setLimit(10);
 			spyOn(geoResourceService, 'byId').and.returnValue(geoResource);
 			spyOn(httpService, 'get')
 				.withArgs(
@@ -534,7 +534,7 @@ describe('olLoadFunction.provider', () => {
 			const response = new Response(null, { status: 404 });
 			const successCbSpy = jasmine.createSpy();
 			const failureCbSpy = jasmine.createSpy();
-			const geoResource = new OafGeoResource('id', 'label', 'https://url.de', 'collectionId');
+			const geoResource = new OafGeoResource('id', 'label', 'https://url.de', 'collectionId', 12345);
 			spyOn(geoResourceService, 'byId').and.returnValue(geoResource);
 			spyOn(httpService, 'get').and.resolveTo(response);
 			const oafLoadFunction = getBvvOafLoadFunction(geoResourceId, olLayer)./*Usually done by the ol.source */ bind(olSource);
@@ -558,7 +558,7 @@ describe('olLoadFunction.provider', () => {
 			const projection = new Projection({ code: 'EPSG:3857' });
 			const successCbSpy = jasmine.createSpy();
 			const failureCbSpy = jasmine.createSpy();
-			const geoResource = new OafGeoResource('id', 'label', 'https://url.de', 'collectionId');
+			const geoResource = new OafGeoResource('id', 'label', 'https://url.de', 'collectionId', 12345);
 			spyOn(geoResourceService, 'byId').and.returnValue(geoResource);
 			spyOn(httpService, 'get').and.rejectWith(new DOMException('aborted'));
 			const oafLoadFunction = getBvvOafLoadFunction(geoResourceId, olLayer)./*Usually done by the ol.source */ bind(olSource);
@@ -585,7 +585,7 @@ describe('olLoadFunction.provider', () => {
 					'https://url.de/collections/collectionId/items?f=json&crs=http://www.opengis.net/def/crs/EPSG/0/3857&bbox=0,1,2,3&bbox-crs=http://www.opengis.net/def/crs/EPSG/0/3857';
 				const successCbSpy = jasmine.createSpy();
 				const failureCbSpy = jasmine.createSpy();
-				const geoResource = new OafGeoResource('id', 'label', 'https://url.de/', 'collectionId');
+				const geoResource = new OafGeoResource('id', 'label', 'https://url.de/', 'collectionId', 12345);
 				const credential = { username: 'username', password: 'password' };
 				spyOn(geoResourceService, 'byId').and.returnValue(geoResource);
 				spyOn(httpService, 'get')
