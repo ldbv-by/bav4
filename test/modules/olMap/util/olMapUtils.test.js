@@ -15,18 +15,25 @@ import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import ImageLayer from 'ol/layer/Image';
 import { ImageWMS } from 'ol/source';
+import { createDefaultLayersConstraints } from '../../../../src/store/layers/layers.reducer';
 
 describe('olMapUtils', () => {
 	describe('updateOlLayer', () => {
 		it('updates the properties of a olLayer', () => {
 			const olLayer = new BaseLayer({});
-			const layer = { visible: false, opacity: 0.5, timestamp: '20001231' };
+			const layer = {
+				visible: false,
+				opacity: 0.5,
+				timestamp: '20001231',
+				constraints: { ...createDefaultLayersConstraints(), filter: 'filterExpr' }
+			};
 
 			updateOlLayer(olLayer, layer);
 
 			expect(olLayer.getVisible()).toBeFalse();
 			expect(olLayer.getOpacity()).toBe(0.5);
 			expect(olLayer.get('timestamp')).toBe('20001231');
+			expect(olLayer.get('filter')).toBe('filterExpr');
 		});
 	});
 
