@@ -41,16 +41,10 @@ export class OafFilterGroup extends MvuElement {
 
 		const onChangeFilter = (evt) => {
 			const oafFilters = this.oafFilters;
-			const changedFilterIndex = oafFilters.indexOf((oafFilter) => oafFilter.queryable.name === evt.target.queryable.name);
-
+			const changedFilterIndex = oafFilters.findIndex((oafFilter) => oafFilter.queryable.name === evt.target.queryable.name);
 			oafFilters[changedFilterIndex] = { ...evt.target.getModel() };
-
-			console.log(oafFilters[changedFilterIndex]);
-
 			this.signal(Update_Filters, [...oafFilters]);
 			this.dispatchEvent(new CustomEvent('change'));
-
-			console.log(evt.target.value);
 		};
 
 		const onRemoveFilter = (evt) => {
@@ -84,6 +78,8 @@ export class OafFilterGroup extends MvuElement {
 							html`<ba-oaf-filter
 								.operator=${oafFilter.operator}
 								.value=${oafFilter.value}
+								.maxValue=${oafFilter.maxValue}
+								.minValue=${oafFilter.minValue}
 								.queryable=${oafFilter.queryable}
 								@change=${onChangeFilter}
 								@remove=${onRemoveFilter}

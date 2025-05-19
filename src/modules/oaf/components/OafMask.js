@@ -69,7 +69,6 @@ export class OafMask extends MvuElement {
 			const groups = this.getModel().filterGroups;
 			const targetGroup = this._findFilterGroupById(evt.target.getAttribute('group-id'));
 			targetGroup.oafFilters = evt.target.oafFilters;
-
 			this.signal(Update_Filter_Groups, [...groups]);
 		};
 

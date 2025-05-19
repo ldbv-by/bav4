@@ -59,7 +59,6 @@ export class OafFilter extends MvuElement {
 		};
 
 		const onValueChanged = (evt, val) => {
-			console.log(val);
 			this.signal(Update_Value, val);
 			this.dispatchEvent(new CustomEvent('change'));
 		};
@@ -82,11 +81,23 @@ export class OafFilter extends MvuElement {
 					case 'time': {
 						return html`
 							${operator == 'between'
-								? html`<ba-searchable-select @select=${(evt) => onMinValueChanged(evt, evt.target.selected)} .options=${queryableValues}>
+								? html`<ba-searchable-select
+											@select=${(evt) => onMinValueChanged(evt, evt.target.selected)}
+											.selected=${minValue}
+											.options=${queryableValues}
+										>
 										</ba-searchable-select>
-										<ba-searchable-select @select=${(evt) => onMaxValueChanged(evt, evt.target.selected)} .options=${queryableValues}>
+										<ba-searchable-select
+											@select=${(evt) => onMaxValueChanged(evt, evt.target.selected)}
+											.selected=${maxValue}
+											.options=${queryableValues}
+										>
 										</ba-searchable-select> `
-								: html`<ba-searchable-select @select=${(evt) => onValueChanged(evt, evt.target.selected)} .options=${queryableValues}>
+								: html`<ba-searchable-select
+										@select=${(evt) => onValueChanged(evt, evt.target.selected)}
+										.selected=${value}
+										.options=${queryableValues}
+									>
 									</ba-searchable-select>`}
 						`;
 					}
