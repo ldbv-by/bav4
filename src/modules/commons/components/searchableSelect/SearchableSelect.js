@@ -81,12 +81,12 @@ export class SearchableSelect extends MvuElement {
 				return { ...model, placeholder: data };
 			case Update_Selected: {
 				const selected = isNumber(data) ? model.filteredOptions[Math.max(data, 0)] : data;
-				return this.#updateOptionsFiltering({ ...model, selected: selected, search: selected });
+				return this._updateOptionsFiltering({ ...model, selected: selected, search: selected });
 			}
 			case Update_Options:
-				return this.#updateOptionsFiltering({ ...model, options: [...data] });
+				return this._updateOptionsFiltering({ ...model, options: [...data] });
 			case Update_Search:
-				return this.#updateOptionsFiltering({ ...model, search: data, selected: null });
+				return this._updateOptionsFiltering({ ...model, search: data, selected: null });
 			case Update_Max_Entries:
 				return { ...model, maxEntries: data };
 			case Update_Show_Caret:
@@ -177,18 +177,20 @@ export class SearchableSelect extends MvuElement {
 		target.classList.add('hovered');
 	}
 
-	#updateOptionsFiltering(model) {
-		const { search, options } = model;
-		const ucSearchTerm = search.toUpperCase();
+	_updateOptionsFiltering(model) {
+		const options = model.options;
+		const search = model.search ?? '';
+		const ucSearch = search.toUpperCase();
+
 		const matchingOptions = [];
 
 		for (const option of options) {
-			if (option.toUpperCase().indexOf(ucSearchTerm) > -1) {
+			if (option.toUpperCase().indexOf(ucSearch) > -1) {
 				matchingOptions.push(option);
 			}
 		}
 
-		return { ...model, filteredOptions: matchingOptions };
+		return { ...model, filteredOptions: matchingOptions, search: search };
 	}
 
 	#hideDropdown() {

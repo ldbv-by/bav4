@@ -46,10 +46,17 @@ describe('SearchableSelect', () => {
 			element.options = null;
 			expect(element.options).toHaveSize(0);
 		});
+	});
 
+	describe('when internal methods called', () => {
 		it('resolves choosing on empty property "options"', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			expect(() => element._chooseNextOption()).not.toThrow();
+		});
+
+		it('returns an empty string when search is null', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			expect(element._updateOptionsFiltering({ ...element.getModel(), search: null })).toEqual(jasmine.objectContaining({ search: '' }));
 		});
 	});
 
