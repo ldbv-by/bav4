@@ -32,7 +32,7 @@ export const PredefinedConfiguration = Object.freeze({
 /**
  * BVV implementation of{@link PredefinedConfigurationService}
  * @class
- * @implements {PredefinedConfigurationService}
+ * @implements {module:services/PredefinedConfigurationService~PredefinedConfigurationService}
  */
 export class BvvPredefinedConfigurationService {
 	#storeService;

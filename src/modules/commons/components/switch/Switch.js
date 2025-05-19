@@ -39,7 +39,7 @@ export const PAD_RELEASE_TIMEOUT = 300;
  * @property {string} title='' - The title of the button.
  * @property {boolean} disabled=false - The checkbox react on user interactions or not.
  * @property {function(checked)} onToggle - The toggle callback function when the checked state of a Switch element is toggled.
- * @fires onToggle The toggle event fires when the checked state of a Switch element is toggled
+ * @fires toggle The toggle event fires when the checked state of a Switch element is toggled
  */
 export class Switch extends MvuElement {
 	#switch = {};

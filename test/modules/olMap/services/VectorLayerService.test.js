@@ -201,7 +201,7 @@ describe('VectorLayerService', () => {
 				const geoResourceLabel = 'geoResourceLabel';
 				const olMap = new Map();
 				const olSource = new VectorSource();
-				const vectorGeoResource = new OafGeoResource(geoResourceId, geoResourceLabel, 'url', 'collectionId');
+				const vectorGeoResource = new OafGeoResource(geoResourceId, geoResourceLabel, 'url', 'collectionId', 12345);
 				spyOn(instanceUnderTest, '_vectorSourceForOaf').withArgs(vectorGeoResource, jasmine.any(VectorLayer)).and.returnValue(olSource);
 				spyOn(styleService, 'applyStyle')
 					.withArgs(jasmine.anything(), olMap, vectorGeoResource)
@@ -226,7 +226,7 @@ describe('VectorLayerService', () => {
 				const destinationSrid = 3857;
 				spyOn(mapService, 'getSrid').and.returnValue(destinationSrid);
 				const olVectorLayer = new VectorLayer();
-				const vectorGeoResource = new OafGeoResource('someId', 'label', 'https://oaf.foo', 'collectionId');
+				const vectorGeoResource = new OafGeoResource('someId', 'label', 'https://oaf.foo', 'collectionId', 12345);
 
 				const olVectorSource = instanceUnderTest._vectorSourceForOaf(vectorGeoResource, olVectorLayer);
 
@@ -245,7 +245,9 @@ describe('VectorLayerService', () => {
 				const credential = { username: 'u', password: 'p' };
 				spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(credential);
 				const olVectorLayer = new VectorLayer();
-				const vectorGeoResource = new OafGeoResource('someId', 'label', url, 'collectionId').setAuthenticationType(GeoResourceAuthenticationType.BAA);
+				const vectorGeoResource = new OafGeoResource('someId', 'label', url, 'collectionId', 12345).setAuthenticationType(
+					GeoResourceAuthenticationType.BAA
+				);
 
 				const olVectorSource = instanceUnderTest._vectorSourceForOaf(vectorGeoResource, olVectorLayer);
 

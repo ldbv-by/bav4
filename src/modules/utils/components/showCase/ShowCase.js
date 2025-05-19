@@ -545,6 +545,18 @@ export class ShowCase extends MvuElement {
 						</select>
 					</div>
 
+					<h3>searchable-select</h3>
+					<div class="example row">
+						<ba-searchable-select
+							.options=${['Red', 'Green', 'Blue', 'Yellow', 'Orange', 'Purple', 'Pink', 'Brown', 'Black', 'White', 'Gray', 'Cyan', 'Magenta']}
+						></ba-searchable-select>
+						<ba-searchable-select
+							.placeholder=${'Without caret...'}
+							.showCaret=${false}
+							.options=${['Red', 'Green', 'Blue', 'Yellow', 'Orange', 'Purple', 'Pink', 'Brown', 'Black', 'White', 'Gray', 'Cyan', 'Magenta']}
+						></ba-searchable-select>
+					</div>
+
 					<h3>ba-form-element</h3>
 					<div class="example row">
 						<div class="column" style="width:40em;">
