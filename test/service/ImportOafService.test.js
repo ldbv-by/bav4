@@ -1,6 +1,5 @@
 import { $injector } from '../../src/injection';
 import { OafGeoResource } from '../../src/domain/geoResources';
-import { SourceType, SourceTypeName } from '../../src/domain/sourceType';
 import { ImportOafService } from '../../src/services/ImportOafService';
 import { getAttributionProviderForGeoResourceImportedByUrl } from '../../src/services/provider/attribution.provider';
 import { bvvOafFilterCapabilitiesProvider, bvvOafGeoResourceProvider } from '../../src/services/provider/oaf.provider';
@@ -37,11 +36,9 @@ describe('ImportOafService', () => {
 	});
 
 	describe('forUrl', () => {
-		const sourceType = new SourceType(SourceTypeName.OAF, null, 3857);
 		const getCompleteOptions = () => {
 			return {
 				isAuthenticated: false,
-				sourceType,
 				collections: [],
 				ids: []
 			};
@@ -50,7 +47,7 @@ describe('ImportOafService', () => {
 		it('calls the provider with the whole set of options', async () => {
 			const url = 'https://some.url/oaf?preserve=me';
 			const subSetOfOptions = {
-				sourceType
+				isAuthenticated: false
 			};
 			const resultMock = [];
 			const oafGeoResourceProviderSpy = jasmine.createSpy().withArgs(url, getCompleteOptions()).and.resolveTo(resultMock);
@@ -65,7 +62,10 @@ describe('ImportOafService', () => {
 		it('registers the OafGeoResources', async () => {
 			const url = 'https://some.url/oaf?preserve=me';
 			const options = getCompleteOptions();
-			const resultMock = [new OafGeoResource('id0', 'label0', 'url0', 'collectionId0'), new OafGeoResource('id1', 'label1', 'url1', 'collectionId1')];
+			const resultMock = [
+				new OafGeoResource('id0', 'label0', 'url0', 'collectionId0', 12345),
+				new OafGeoResource('id1', 'label1', 'url1', 'collectionId1', 12345)
+			];
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(addOrReplaceMethodMock);
 			const instanceUnderTest = new ImportOafService(async () => {
 				return resultMock;
@@ -98,7 +98,6 @@ describe('ImportOafService', () => {
 				.withArgs(url, {
 					// the default options
 					isAuthenticated: false,
-					sourceType,
 					collections: [],
 					ids: []
 				})
@@ -114,7 +113,7 @@ describe('ImportOafService', () => {
 
 	describe('getFilterCapabilities', () => {
 		it('calls the oafFilterCapabilitiesProvider', async () => {
-			const oafGeoResource = new OafGeoResource('id0', 'label0', 'url0', 'collectionId0');
+			const oafGeoResource = new OafGeoResource('id0', 'label0', 'url0', 'collectionId0', 12345);
 			const mockOafFilterCapabilities = { foo: 'bar' };
 			const oafFilterCapabilitiesProviderSpy = jasmine.createSpy().withArgs(oafGeoResource).and.resolveTo(mockOafFilterCapabilities);
 			const instanceUnderTest = new ImportOafService(null, oafFilterCapabilitiesProviderSpy);
@@ -127,7 +126,7 @@ describe('ImportOafService', () => {
 
 		it('passes the error of the underlying provider', async () => {
 			const msg = 'Something got wrong';
-			const oafGeoResource = new OafGeoResource('id0', 'label0', 'url0', 'collectionId0');
+			const oafGeoResource = new OafGeoResource('id0', 'label0', 'url0', 'collectionId0', 12345);
 			const oafFilterCapabilitiesProviderSpy = jasmine.createSpy().and.throwError(msg);
 			const instanceUnderTest = new ImportOafService(null, oafFilterCapabilitiesProviderSpy);
 
