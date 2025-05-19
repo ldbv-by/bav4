@@ -50,10 +50,10 @@ export class OverlayStyle {
 	/**
 	 * A Container-Object for optional properties related to a update of feature-overlays
 	 * @typedef {Object} UpdateProperties
-	 * @param {Number} [opacity] the opacity (0-1), may or may not given, to update the opacity of the specified feature, based on the styletype belonging to the feature
+	 * @param {Number} [opacity] the opacity (0-1), may or may not given, to update the opacity of the specified feature, based on the OlFeatureStyleType ({@link OlFeatureStyleTypes}) belonging to the feature
 	 * @param {Boolean} [top] the top-flag (true/false),  may or may not given, whether or not to update the behavior of being in the topmost layer
-	 * @param {Boolean} [visible] the visible-flag (true/false), may or may not given, whether or not to update the visibility of the specified feature, based on the styletype belonging to the feature
-	 * @param {ol.Geometry} [geometry] the geometry, may or may not given, to update the geometry-based style of the specified feature, based on the styletype belonging to the feature
+	 * @param {Boolean} [visible] the visible-flag (true/false), may or may not given, whether or not to update the visibility of the specified feature, based on the OlFeatureStyleType({@link OlFeatureStyleTypes}) belonging to the feature
+	 * @param {ol.Geometry} [geometry] the geometry, may or may not given, to update the geometry-based style of the specified feature, based on the OlFeatureStyleType({@link OlFeatureStyleTypes}) belonging to the feature
 
 	/**
 	 * Updates overlays (added by OverlayStyle-classes) on the map and the feature
