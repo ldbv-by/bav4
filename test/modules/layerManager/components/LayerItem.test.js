@@ -60,7 +60,7 @@ describe('LayerItem', () => {
 
 	let store;
 
-	const setup = async (layer, layerSwipeActive) => {
+	const setup = async (layer, layerItemProperties = {}, layerSwipeActive = null) => {
 		store = TestUtils.setupStoreAndDi(
 			{
 				layers: {
@@ -89,6 +89,9 @@ describe('LayerItem', () => {
 		const element = await TestUtils.render(LayerItem.tag);
 		if (layer) {
 			element.layer = layer;
+		}
+		if (layerItemProperties) {
+			element.collapsed = layerItemProperties.collapsed;
 		}
 		return element;
 	};
@@ -330,16 +333,16 @@ describe('LayerItem', () => {
 				geoResourceId: 'geoResourceId0',
 				visible: true,
 				zIndex: 0,
-				opacity: 1,
-				collapsed: false
+				opacity: 1
 			};
-			const element = await setup(layer);
+			const element = await setup(layer, { collapsed: false });
 			const layerBody = element.shadowRoot.querySelector('.collapse-content');
 			const collapseButton = element.shadowRoot.querySelector('.ba-list-item button');
 
 			expect(layerBody.classList.contains('iscollapse')).toBeFalse();
 
 			element.signal('update_layer_collapsed', true);
+
 			expect(layerBody.classList.contains('iscollapse')).toBeTrue();
 			expect(collapseButton.classList.contains('iconexpand')).toBeFalse();
 		});
@@ -644,7 +647,7 @@ describe('LayerItem', () => {
 				opacity: 1,
 				collapsed: true
 			};
-			const element = await setup(layer, false);
+			const element = await setup(layer, null, false);
 
 			expect(store.getState().layerSwipe.active).toBe(false);
 
@@ -664,7 +667,7 @@ describe('LayerItem', () => {
 				opacity: 1,
 				collapsed: true
 			};
-			const element = await setup(layer, true);
+			const element = await setup(layer, null, true);
 			const bar = element.shadowRoot.querySelector('.bar');
 
 			expect(store.getState().layerSwipe.active).toBe(true);
@@ -693,7 +696,7 @@ describe('LayerItem', () => {
 				opacity: 1,
 				collapsed: true
 			};
-			const element = await setup(layer, true);
+			const element = await setup(layer, null, true);
 
 			expect(store.getState().layerSwipe.active).toBe(true);
 
@@ -867,12 +870,12 @@ describe('LayerItem', () => {
 				.withArgs('geoResourceId0')
 				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
 			const element = await TestUtils.render(LayerItem.tag);
-			element.layer = { ...layer, collapsed: true };
-
+			element.layer = { ...layer };
+			element.collapsed = true;
 			const collapseButton = element.shadowRoot.querySelector('button');
 			collapseButton.click();
 
-			expect(element.getModel().layer.collapsed).toBeFalse();
+			expect(element.getModel().layerItemProperties.collapsed).toBeFalse();
 		});
 
 		it('click on info icon show georesourceinfo panel as modal', async () => {
@@ -1183,28 +1186,7 @@ describe('LayerItem', () => {
 							}
 						})
 					);
-					expect(element.getModel().layer.collapsed).toBeFalse();
-				});
-
-				it('calls the onCollapse callback via property callback', async () => {
-					setup();
-					spyOn(geoResourceService, 'byId')
-						.withArgs('geoResourceId0')
-						.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
-					const element = await TestUtils.render(LayerItem.tag);
-
-					element.layer = { ...layer }; // collapsed = true is initialized
-					element.onCollapse = jasmine.createSpy();
-					const collapseButton = element.shadowRoot.querySelector('button');
-
-					collapseButton.click();
-
-					expect(element.getModel().layer.collapsed).toBeFalse();
-
-					collapseButton.click();
-
-					expect(element.getModel().layer.collapsed).toBeTrue();
-					expect(element._onCollapse).toHaveBeenCalledTimes(2);
+					expect(element.getModel().layerItemProperties.collapsed).toBeFalse();
 				});
 			});
 		});
