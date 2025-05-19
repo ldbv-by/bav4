@@ -642,7 +642,7 @@ describe('GeoResource', () => {
 
 	describe('OafGeoResource', () => {
 		it('instantiates a OafGeoResource', () => {
-			const oafGeoResource = new OafGeoResource('id', 'label', 'url', 'collectionId');
+			const oafGeoResource = new OafGeoResource('id', 'label', 'url', 'collectionId', 12345);
 
 			expect(oafGeoResource).toBeInstanceOf(AbstractVectorGeoResource);
 			expect(oafGeoResource.getType()).toEqual(GeoResourceTypes.OAF);
@@ -650,20 +650,21 @@ describe('GeoResource', () => {
 			expect(oafGeoResource.label).toBe('label');
 			expect(oafGeoResource.url).toBe('url');
 			expect(oafGeoResource.collectionId).toBe('collectionId');
+			expect(oafGeoResource.srid).toBe(12345);
 		});
 
 		it('provides default properties', () => {
-			const oafGeoResource = new OafGeoResource('id', 'label', 'url', 'collectionId');
+			const oafGeoResource = new OafGeoResource('id', 'label', 'url', 'collectionId', 12345);
 
 			expect(oafGeoResource.limit).toBeNull();
 		});
 
 		describe('methods', () => {
 			it('sets the limit', () => {
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').hasLimit()).toBeFalse();
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setLimit('1000')).toBeNull;
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setLimit(1000).hasLimit()).toBeTrue();
-				expect(new OafGeoResource('id', 'label', 'url', 'collectionId').setLimit(1000).limit).toBe(1000);
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).hasLimit()).toBeFalse();
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setLimit('1000')).toBeNull;
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setLimit(1000).hasLimit()).toBeTrue();
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setLimit(1000).limit).toBe(1000);
 			});
 		});
 	});
