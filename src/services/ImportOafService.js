@@ -32,7 +32,7 @@ import { bvvOafFilterCapabilitiesProvider, bvvOafGeoResourceProvider } from './p
  */
 
 /**
- * Service for importing OCG API Feature services. Usually returns an array of {@link OafGeoResource}.
+ * Service for importing OGC API Feature services. Usually returns an array of {@link OafGeoResource}.
  * @class
  * @author taulinger
  */
