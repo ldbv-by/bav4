@@ -1172,7 +1172,6 @@ describe('LayerItem', () => {
 					const element = await TestUtils.render(LayerItem.tag);
 
 					element.layer = { ...layer }; // collapsed = true is initialized
-					element.onCollapse = jasmine.createSpy();
 					const collapseButton = element.shadowRoot.querySelector('button');
 					const spy = jasmine.createSpy();
 					element.addEventListener('collapse', spy);
@@ -1182,7 +1181,8 @@ describe('LayerItem', () => {
 					expect(spy).toHaveBeenCalledOnceWith(
 						jasmine.objectContaining({
 							detail: {
-								layer: jasmine.objectContaining({ ...layer, collapsed: false })
+								layer: jasmine.objectContaining({ ...layer }),
+								collapsed: false
 							}
 						})
 					);

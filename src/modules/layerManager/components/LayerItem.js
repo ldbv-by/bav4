@@ -34,9 +34,24 @@ const Default_Layer_Item_Properties = {
 };
 
 /**
- * Child element of the LayerManager. Represents one layer and its state.
+ * Collapse event
  *
- * @property {Layer} layer the {@link Layer}
+ * @event collapse
+ * @type {object}
+ * @property {module:modules/layerManager/components/LayerItem~CollapseDetail} detail The {@link CollapseDetail}
+ */
+
+/**
+ * @typedef CollapseDetail
+ * @property {module:store/layers/layer_action~Layer} layer The {@link Layer} related to this {@link LayerItem} event.
+ * @property {boolean} collapsed Whether or not the {@link LayerItem} should be collapsed or not.
+ */
+
+/**
+ * Child element of the {@link LayerManager}. Represents one layer and its state.
+ *
+ * @property {module:store/layers/layer_action~Layer} layer The {@link Layer}.
+ * @property {boolean} collapsed Whether or not the LayerItem is collapsed
  * @fires collapse Fires when the collapse value changes
  *
  * @class
@@ -150,7 +165,8 @@ export class LayerItem extends AbstractMvuContentPanel {
 			this.dispatchEvent(
 				new CustomEvent('collapse', {
 					detail: {
-						layer: { ...layer, collapsed: collapsed }
+						layer: { ...layer },
+						collapsed: collapsed
 					}
 				})
 			);
