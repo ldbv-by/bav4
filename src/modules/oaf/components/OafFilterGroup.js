@@ -37,6 +37,7 @@ export class OafFilterGroup extends MvuElement {
 
 		const onAddFilter = (evt) => {
 			this._addFilter(evt.target.value);
+			this.dispatchEvent(new CustomEvent('change'));
 		};
 
 		const onChangeFilter = (evt) => {

@@ -61,7 +61,6 @@ export class OafMask extends MvuElement {
 		};
 
 		const onRemoveFilterGroup = (evt) => {
-			const groups = this.getModel().filterGroups;
 			this.signal(Update_Filter_Groups, this._removeFilterGroup(evt.target.getAttribute('group-id')));
 		};
 
@@ -139,8 +138,8 @@ export class OafMask extends MvuElement {
 	}
 
 	_removeFilterGroup(idToRemove) {
-		return this.getModel().filterGroups.filter((id) => {
-			return id != idToRemove;
+		return this.getModel().filterGroups.filter((group) => {
+			return group.id != idToRemove;
 		});
 	}
 
