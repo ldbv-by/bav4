@@ -874,7 +874,7 @@ export class RtVectorGeoResource extends AbstractVectorGeoResource {
 }
 
 /**
- * Represents an OCG Api Feature collection
+ * Represents an OGC Api Feature collection
  */
 export class OafGeoResource extends AbstractVectorGeoResource {
 	/**
@@ -901,14 +901,14 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 	}
 
 	/**
-	 * The base url of the OCG Api Feature service
+	 * The base url of the OGC Api Feature service
 	 */
 	get url() {
 		return this._url;
 	}
 
 	/**
-	 * The supported SRID of the OCG Api Feature collection
+	 * The supported SRID of the OGC Api Feature collection
 	 */
 	get srid() {
 		return this._srid;
