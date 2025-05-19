@@ -193,6 +193,7 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 							if (isString(f.getId()) && f.getId().trim() === '') {
 								f.setId(undefined);
 							}
+							f.getGeometry().transform('EPSG:' + geoResource.srid, projection);
 							return f;
 						});
 						vectorSource.addFeatures(features);
