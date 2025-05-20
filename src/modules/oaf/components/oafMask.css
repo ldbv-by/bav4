@@ -3,16 +3,6 @@
 	min-height: 250px;
 }
 
-.flex-hscroll-container {
-	display: flex;
-	flex-wrap: nowrap;
-	overflow-x: auto;
-
-	.card {
-		flex: 0 0 auto;
-	}
-}
-
 .grid-container {
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr;

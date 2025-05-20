@@ -10,6 +10,7 @@ import { createUniqueId } from '../../../utils/numberUtils';
 
 const Update_Capabilities = 'update_capabilities';
 const Update_Filter_Groups = 'update_filter_groups';
+const Update_Layer_Id = 'update_layer_id';
 const Update_Show_Console = 'update_show_console';
 
 /**
@@ -26,6 +27,7 @@ export class OafMask extends MvuElement {
 		super({
 			filterGroups: [],
 			capabilities: [],
+			labelId: -1,
 			showConsole: false
 		});
 
@@ -36,6 +38,7 @@ export class OafMask extends MvuElement {
 	}
 
 	onInitialize() {
+		console.log(this.getModel());
 		this._requestFilterCapabilities();
 	}
 
@@ -47,6 +50,8 @@ export class OafMask extends MvuElement {
 				return { ...model, filterGroups: [...data] };
 			case Update_Show_Console:
 				return { ...model, showConsole: data };
+			case Update_Layer_Id:
+				return { ...model, layerId: data };
 		}
 	}
 
@@ -103,21 +108,20 @@ export class OafMask extends MvuElement {
 		`;
 
 		const uiModeHtml = () =>
-			html` <div class="flex-hscroll-container">
+			html` <div>
 				${repeat(
 					filterGroups,
 					(group) => group.id,
-					(group, index) =>
-						html` <div class="filter-group-container">
-							<ba-oaf-filter-group
-								group-id=${group.id}
-								@remove=${onRemoveFilterGroup}
-								.queryables=${capabilities.queryables}
-								.oafFilters=${group.oafFilters}
-								@change=${onFilterGroupChanged}
-							></ba-oaf-filter-group>
-							${index < filterGroups.length - 1 ? orSeparatorHtml() : html`<div></div>`}
-						</div>`
+					(group, index) => html`
+						<ba-oaf-filter-group
+							group-id=${group.id}
+							@remove=${onRemoveFilterGroup}
+							.queryables=${capabilities.queryables}
+							.oafFilters=${group.oafFilters}
+							@change=${onFilterGroupChanged}
+						></ba-oaf-filter-group>
+						${index < filterGroups.length - 1 ? orSeparatorHtml() : html`<div></div>`}
+					`
 				)}
 			</div>`;
 
@@ -154,6 +158,10 @@ export class OafMask extends MvuElement {
 		const capabilities = await this.#importOafService.getFilterCapabilities(geoResource);
 
 		this.signal(Update_Capabilities, capabilities);
+	}
+
+	set labelId(value) {
+		this.signal(Update_Layer_Id, value);
 	}
 
 	get oparatorDefinitions() {

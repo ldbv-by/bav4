@@ -73,7 +73,7 @@ export class OafFilterGroup extends MvuElement {
 						.filter((queryable) => !oafFilters.includes((oafFilter) => oafFilter.queryable === queryable))
 						.map((queryable) => html`<option .value=${queryable.name}>${queryable.name}</option>`)}
 				</select>
-				<div class="">
+				<div class="filter-container">
 					${oafFilters.map(
 						(oafFilter) =>
 							html`<ba-oaf-filter

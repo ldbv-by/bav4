@@ -2,8 +2,7 @@
 	background: #eee;
 	border: 1px solid #333;
 	padding: 20px;
-	width: 325px;
-	min-height: 200px;
+	min-height: 150px;
 }
 
 #queryable-select {
@@ -26,4 +25,13 @@
 .remove-button::part(button) {
 	background-color: red;
 	color: #fff;
+}
+.filter-container {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+ba-oaf-filter {
+	flex: 0 1 calc(20% - 4px);
+	margin: 2px;
 }
