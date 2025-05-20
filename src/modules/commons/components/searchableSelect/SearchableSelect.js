@@ -98,7 +98,7 @@ export class SearchableSelect extends MvuElement {
 		const { search, showCaret, placeholder, filteredOptions, maxEntries } = model;
 
 		const onSearchInputClicked = () => {
-			this.#showDropdown();
+			this._showDropdown(document.documentElement.clientHeight);
 		};
 
 		const onSearchInputTogglerClicked = (evt) => {
@@ -108,7 +108,7 @@ export class SearchableSelect extends MvuElement {
 			if (isDropdownVisible) {
 				this.#cancelAction();
 			} else {
-				this.#showDropdown();
+				this._showDropdown(document.documentElement.clientHeight);
 			}
 		};
 
@@ -121,8 +121,8 @@ export class SearchableSelect extends MvuElement {
 		};
 
 		const onSearchInputChange = (evt) => {
-			this.#showDropdown();
 			this.signal(Update_Search, evt.currentTarget.value);
+			this._showDropdown(document.documentElement.clientHeight);
 		};
 
 		const onPointerEnterOption = (evt) => {
@@ -194,17 +194,28 @@ export class SearchableSelect extends MvuElement {
 	}
 
 	#hideDropdown() {
-		const itemsContainer = this.shadowRoot.querySelector('.dropdown');
-		itemsContainer.classList.remove('visible');
-		itemsContainer.classList.add('hidden');
+		const dropdown = this.shadowRoot.querySelector('.dropdown');
+		dropdown.classList.remove('visible');
+		dropdown.classList.add('hidden');
 
 		this.#keyActionMapper.deactivate();
 	}
 
-	#showDropdown() {
-		const itemsContainer = this.shadowRoot.querySelector('.dropdown');
-		itemsContainer.classList.add('visible');
-		itemsContainer.classList.remove('hidden');
+	_showDropdown(viewportHeight) {
+		const dropdown = this.shadowRoot.querySelector('.dropdown');
+		const dropdownAncestorRect = this.shadowRoot.querySelector('.searchable-select').getBoundingClientRect();
+
+		dropdown.classList.add('visible');
+		dropdown.classList.remove('hidden');
+
+		// Calculate foldout direction of dropdown
+		const foldoutUpwards = 0 > viewportHeight - (dropdown.clientHeight + dropdownAncestorRect.y + dropdownAncestorRect.height);
+
+		if (foldoutUpwards) {
+			dropdown.style.bottom = dropdownAncestorRect.height + 'px';
+		} else {
+			dropdown.style.removeProperty('bottom');
+		}
 
 		// Duplicate event safety
 		this.#keyActionMapper.deactivate();

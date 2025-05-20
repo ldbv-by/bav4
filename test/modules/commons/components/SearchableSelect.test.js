@@ -58,6 +58,26 @@ describe('SearchableSelect', () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			expect(element._updateOptionsFiltering({ ...element.getModel(), search: null })).toEqual(jasmine.objectContaining({ search: '' }));
 		});
+
+		it('foldout the dropdown upwards when not enough space in viewport', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			const dropdown = element.shadowRoot.querySelector('.dropdown');
+			dropdown.style.height = '300px';
+
+			element._showDropdown(300);
+
+			expect(dropdown.style.bottom.length).toBeGreaterThan(0);
+		});
+
+		it('foldout the dropdown downwards when enough space in viewport', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			const dropdown = element.shadowRoot.querySelector('.dropdown');
+			dropdown.style.height = '300px';
+
+			element._showDropdown(350);
+
+			expect(dropdown.style.bottom).toBe('');
+		});
 	});
 
 	describe('when disconnected', () => {
