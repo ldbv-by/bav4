@@ -151,7 +151,8 @@ export class GeoResource {
 	}
 
 	/**
-	 *  @type {Attribution|Array<Attribution>|string|null}
+	 * The attribution of this GeoResource
+	 * @type {Attribution|Array<Attribution>|string|null}
 	 */
 	get attribution() {
 		return this._attribution;
@@ -166,7 +167,7 @@ export class GeoResource {
 	}
 
 	/**
-	 * `true` if this GeoResource is allowed to be listed as a result for a query.
+	 * `true` if this GeoResource is allowed to be listed as a result for a query (e.g. FeatureInfo)
 	 *  @type {boolean}
 	 */
 	get queryable() {
@@ -174,7 +175,7 @@ export class GeoResource {
 	}
 
 	/**
-	 * `true` if this GeoResource is allowed to be exported.
+	 * `true` if this GeoResource is allowed to be exported (e.g. to PDF)
 	 *  @type {boolean}
 	 */
 	get exportable() {
@@ -182,7 +183,7 @@ export class GeoResource {
 	}
 
 	/**
-	 * Returns a list of timestamps for this GeoResource.
+	 * Returns a list of timestamps for this GeoResource
 	 *  @type {Array<String>}
 	 */
 	get timestamps() {
