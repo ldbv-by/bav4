@@ -579,8 +579,8 @@ describe('LayerManager', () => {
 
 			const model = element.getModel();
 			const actualDraggableItems = model.draggableItems;
-			expect(spy).toHaveBeenCalledWith('update_collapse_change', jasmine.objectContaining({ collapsed: false }), jasmine.anything());
-			expect(actualDraggableItems).toEqual(jasmine.arrayContaining([jasmine.objectContaining({ collapsed: false })]));
+			expect(spy).toHaveBeenCalledWith('update_collapse_change', jasmine.objectContaining({ id: 'id0' }), jasmine.anything());
+			expect(actualDraggableItems).toEqual(jasmine.arrayContaining([jasmine.objectContaining({ id: 'id0' })]));
 		});
 
 		it("updates draggableItems, when button for 'expand or collapse' is clicked", async () => {
