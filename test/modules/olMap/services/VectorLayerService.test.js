@@ -256,6 +256,26 @@ describe('VectorLayerService', () => {
 				expect(olVectorSource.strategy_).toEqual(bbox);
 				expect(getBvvOafLoadFunctionCustomProviderSpy).toHaveBeenCalledWith(vectorGeoResource.id, olVectorLayer, credential);
 			});
+
+			it('registers a listener that calls `refresh` of the ol.source when the `filter` property changes', () => {
+				const getBvvOafLoadFunctionCustomProviderSpy = jasmine.createSpy().and.returnValue('loaded');
+				setup(undefined, getBvvOafLoadFunctionCustomProviderSpy);
+				const destinationSrid = 3857;
+				spyOn(mapService, 'getSrid').and.returnValue(destinationSrid);
+				const olVectorLayer = new VectorLayer();
+				const vectorGeoResource = new OafGeoResource('someId', 'label', 'https://oaf.foo', 'collectionId', 12345);
+				const olVectorSource = instanceUnderTest._vectorSourceForOaf(vectorGeoResource, olVectorLayer);
+				const olSourceSpy = spyOn(olVectorSource, 'refresh');
+
+				olVectorLayer.set('foo', 'bar');
+
+				expect(olSourceSpy).not.toHaveBeenCalled();
+
+				olVectorLayer.set('filter', 'foo=bar');
+				olVectorLayer.set('filter', 'foo=bar');
+
+				expect(olSourceSpy).toHaveBeenCalledTimes(1);
+			});
 		});
 
 		describe('_vectorSourceForData', () => {

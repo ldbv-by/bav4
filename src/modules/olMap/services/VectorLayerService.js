@@ -150,6 +150,13 @@ export class VectorLayerService {
 			}
 		}
 
+		olVectorLayer.on('propertychange', (event) => {
+			const property = event.key;
+			if (property === 'filter' && olVectorLayer.get('filter') !== event.oldValue) {
+				vs.refresh();
+			}
+		});
+
 		return vs;
 	}
 
