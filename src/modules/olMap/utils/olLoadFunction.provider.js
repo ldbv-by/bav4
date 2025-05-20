@@ -7,6 +7,7 @@ import { UnavailableGeoResourceError } from '../../../domain/errors';
 import { FailureCounter } from '../../../utils/FailureCounter';
 import { isString } from '../../../utils/checks';
 import GeoJSON from 'ol/format/GeoJSON';
+import { setFetching } from '../../../store/network/network.action';
 
 const handleUnexpectedStatusCode = (geoResourceId, response) => {
 	// we have to throw the UnavailableGeoResourceError in a asynchronous manner, otherwise it would be caught by ol and not be  propagated to the window (see GlobalErrorPlugin)
@@ -186,25 +187,36 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 			const url = `${geoResource.url}${geoResource.url.endsWith('/') ? '' : '/'}collections/${geoResource.collectionId}/items?${decodeURIComponent(searchParams.toString())}`;
 
 			const handleResponse = async (response, vectorSource) => {
-				switch (response.status) {
-					case 200: {
-						const features = new GeoJSON().readFeatures(await response.json()).map((f) => {
-							// avoid ol displaying only one feature if ids are an empty string
-							if (isString(f.getId()) && f.getId().trim() === '') {
-								f.setId(undefined);
-							}
-							f.getGeometry().transform('EPSG:' + geoResource.srid, projection);
-							return f;
-						});
-						vectorSource.addFeatures(features);
-						success(features);
-						break;
+				try {
+					/**
+					 * Loading a large feature collection in ol takes some time,
+					 * in order to to give some feedback to the user we "include" the processing of the features
+					 * in the loading process and therefore manually set the fetching property
+					 *
+					 */
+					setFetching(true);
+					switch (response.status) {
+						case 200: {
+							const features = new GeoJSON().readFeatures(await response.json()).map((f) => {
+								// avoid ol displaying only one feature if ids are an empty string
+								if (isString(f.getId()) && f.getId().trim() === '') {
+									f.setId(undefined);
+								}
+								f.getGeometry().transform('EPSG:' + geoResource.srid, projection);
+								return f;
+							});
+							vectorSource.addFeatures(features);
+							success(features);
+							break;
+						}
+						default: {
+							this.removeLoadedExtent(extent);
+							failure();
+							throw new UnavailableGeoResourceError(`Unexpected network status`, geoResourceId, response?.status);
+						}
 					}
-					default: {
-						this.removeLoadedExtent(extent);
-						failure();
-						throw new UnavailableGeoResourceError(`Unexpected network status`, geoResourceId, response?.status);
-					}
+				} finally {
+					setFetching(false);
 				}
 			};
 
