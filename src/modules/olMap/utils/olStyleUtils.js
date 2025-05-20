@@ -930,7 +930,7 @@ export const getTextFrom = (feature) => {
 
 /**
  * Extracts from the specified feature the size-value if the
- * StyleType is Marker/Text or null for all other StyleTypes.
+ * OlFeatureStyleType is Marker/Text or null for all other {@link OlFeatureStyleTypes}.
  * @param {ol.Feature} feature the feature with or without a style
  * @returns {module:domain/styles~StyleSize|null} the Size-Value or null
  */
@@ -958,7 +958,7 @@ export const getSizeFrom = (feature) => {
 };
 
 /***
- * Returns the drawingtype of a feature. If the featue is created with the application itself,
+ * Returns the drawingtype of a feature. If the feature is created with the application itself,
  * the drawingType is part of the featureId and follows the convention id(feature)-> [measure|draw]_[drawingType]_[creationTime]
  * if the feature is not created with this application and the id follows not the before mentioned convention, NULL is returning.
  * @param {ol.Feature} feature the feature
