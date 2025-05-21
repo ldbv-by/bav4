@@ -81,12 +81,12 @@ export class SearchableSelect extends MvuElement {
 				return { ...model, placeholder: data };
 			case Update_Selected: {
 				const selected = isNumber(data) ? model.filteredOptions[Math.max(data, 0)] : data;
-				return this.#updateOptionsFiltering({ ...model, selected: selected, search: selected });
+				return this._updateOptionsFiltering({ ...model, selected: selected, search: selected });
 			}
 			case Update_Options:
-				return this.#updateOptionsFiltering({ ...model, options: [...data] });
+				return this._updateOptionsFiltering({ ...model, options: [...data] });
 			case Update_Search:
-				return this.#updateOptionsFiltering({ ...model, search: data, selected: null });
+				return this._updateOptionsFiltering({ ...model, search: data, selected: null });
 			case Update_Max_Entries:
 				return { ...model, maxEntries: data };
 			case Update_Show_Caret:
@@ -98,7 +98,7 @@ export class SearchableSelect extends MvuElement {
 		const { search, showCaret, placeholder, filteredOptions, maxEntries } = model;
 
 		const onSearchInputClicked = () => {
-			this.#showDropdown();
+			this._showDropdown(document.documentElement.clientHeight);
 		};
 
 		const onSearchInputTogglerClicked = (evt) => {
@@ -108,7 +108,7 @@ export class SearchableSelect extends MvuElement {
 			if (isDropdownVisible) {
 				this.#cancelAction();
 			} else {
-				this.#showDropdown();
+				this._showDropdown(document.documentElement.clientHeight);
 			}
 		};
 
@@ -121,22 +121,22 @@ export class SearchableSelect extends MvuElement {
 		};
 
 		const onSearchInputChange = (evt) => {
-			this.#showDropdown();
-			this.signal(Update_Search, evt.target.value);
+			this.signal(Update_Search, evt.currentTarget.value);
+			this._showDropdown(document.documentElement.clientHeight);
 		};
 
 		const onPointerEnterOption = (evt) => {
-			this.#hoverOption(evt.target);
+			this.#hoverOption(evt.currentTarget);
 		};
 
 		const onPointerLeaveOption = (evt) => {
-			evt.target.classList.remove('hovered');
+			evt.currentTarget.classList.remove('hovered');
 		};
 
 		const onOptionChosen = (evt) => {
 			// Prevents global click handler to trigger s. onInitialize()
 			evt.stopPropagation();
-			this.#hoverOption(evt.target);
+			this.#hoverOption(evt.currentTarget);
 			this.#confirmAction();
 		};
 
@@ -146,7 +146,7 @@ export class SearchableSelect extends MvuElement {
 			</style>
 			<div class="searchable-select" @pointerenter=${onPointerEnter} @pointerleave=${onPointerLeave} @click=${onSearchInputClicked}>
 				<div class="search-input-container">
-					<input id="search-input" type="text" .placeholder=${placeholder} .value=${search} @input=${onSearchInputChange} />
+					<input id="search-input" type="text" autocomplete="off" .placeholder=${placeholder} .value=${search} @input=${onSearchInputChange} />
 					${showCaret
 						? html`<div id="search-input-toggler" @click=${onSearchInputTogglerClicked}>
 								<span class="caret-fill-down"></span>
@@ -177,32 +177,45 @@ export class SearchableSelect extends MvuElement {
 		target.classList.add('hovered');
 	}
 
-	#updateOptionsFiltering(model) {
-		const { search, options } = model;
-		const ucSearchTerm = search.toUpperCase();
+	_updateOptionsFiltering(model) {
+		const options = model.options;
+		const search = model.search ?? '';
+		const ucSearch = search.toUpperCase();
+
 		const matchingOptions = [];
 
 		for (const option of options) {
-			if (option.toUpperCase().indexOf(ucSearchTerm) > -1) {
+			if (option.toUpperCase().indexOf(ucSearch) > -1) {
 				matchingOptions.push(option);
 			}
 		}
 
-		return { ...model, filteredOptions: matchingOptions };
+		return { ...model, filteredOptions: matchingOptions, search: search };
 	}
 
 	#hideDropdown() {
-		const itemsContainer = this.shadowRoot.querySelector('.dropdown');
-		itemsContainer.classList.remove('visible');
-		itemsContainer.classList.add('hidden');
+		const dropdown = this.shadowRoot.querySelector('.dropdown');
+		dropdown.classList.remove('visible');
+		dropdown.classList.add('hidden');
 
 		this.#keyActionMapper.deactivate();
 	}
 
-	#showDropdown() {
-		const itemsContainer = this.shadowRoot.querySelector('.dropdown');
-		itemsContainer.classList.add('visible');
-		itemsContainer.classList.remove('hidden');
+	_showDropdown(viewportHeight) {
+		const dropdown = this.shadowRoot.querySelector('.dropdown');
+		const dropdownAncestorRect = this.shadowRoot.querySelector('.searchable-select').getBoundingClientRect();
+
+		dropdown.classList.add('visible');
+		dropdown.classList.remove('hidden');
+
+		// Calculate foldout direction of dropdown
+		const foldoutUpwards = 0 > viewportHeight - (dropdown.clientHeight + dropdownAncestorRect.y + dropdownAncestorRect.height);
+
+		if (foldoutUpwards) {
+			dropdown.style.bottom = dropdownAncestorRect.height + 'px';
+		} else {
+			dropdown.style.removeProperty('bottom');
+		}
 
 		// Duplicate event safety
 		this.#keyActionMapper.deactivate();
@@ -225,6 +238,7 @@ export class SearchableSelect extends MvuElement {
 
 	#confirmAction() {
 		const hoveredOption = this.shadowRoot.querySelector('.option.hovered');
+
 		if (!hoveredOption) return;
 
 		this.#hideDropdown();
