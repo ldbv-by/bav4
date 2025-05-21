@@ -1185,27 +1185,6 @@ describe('LayerItem', () => {
 					);
 					expect(element.getModel().layer.collapsed).toBeFalse();
 				});
-
-				it('calls the onCollapse callback via property callback', async () => {
-					setup();
-					spyOn(geoResourceService, 'byId')
-						.withArgs('geoResourceId0')
-						.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
-					const element = await TestUtils.render(LayerItem.tag);
-
-					element.layer = { ...layer }; // collapsed = true is initialized
-					element.onCollapse = jasmine.createSpy();
-					const collapseButton = element.shadowRoot.querySelector('button');
-
-					collapseButton.click();
-
-					expect(element.getModel().layer.collapsed).toBeFalse();
-
-					collapseButton.click();
-
-					expect(element.getModel().layer.collapsed).toBeTrue();
-					expect(element._onCollapse).toHaveBeenCalledTimes(2);
-				});
 			});
 		});
 	});

@@ -34,7 +34,6 @@ const Default_Extra_Property_Values = {
 /**
  * Child element of the LayerManager. Represents one layer and its state.
  * Events:
- * - onCollapse()
  *
  * Properties:
  * - `layer`
@@ -55,8 +54,6 @@ export class LayerItem extends AbstractMvuContentPanel {
 		const { TranslationService, GeoResourceService } = $injector.inject('TranslationService', 'GeoResourceService');
 		this._translationService = TranslationService;
 		this._geoResourceService = GeoResourceService;
-
-		this._onCollapse = () => {};
 	}
 
 	/**
@@ -162,7 +159,6 @@ export class LayerItem extends AbstractMvuContentPanel {
 					}
 				})
 			);
-			this._onCollapse(e);
 		};
 		const increaseIndex = () => {
 			//state store change -> implicit call of #render()
@@ -412,13 +408,6 @@ export class LayerItem extends AbstractMvuContentPanel {
 			loading: geoResource instanceof GeoResourceFuture,
 			keywords: keywords
 		});
-	}
-
-	/**
-	 * @property {function} onCollapse - Callback function
-	 */
-	set onCollapse(callback) {
-		this._onCollapse = callback;
 	}
 
 	static get tag() {
