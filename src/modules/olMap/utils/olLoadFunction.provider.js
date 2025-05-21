@@ -8,6 +8,7 @@ import { FailureCounter } from '../../../utils/FailureCounter';
 import { isString } from '../../../utils/checks';
 import GeoJSON from 'ol/format/GeoJSON';
 import { setFetching } from '../../../store/network/network.action';
+import { LayerState, modifyLayer } from '../../../store/layers/layers.action';
 
 const handleUnexpectedStatusCode = (geoResourceId, response) => {
 	// we have to throw the UnavailableGeoResourceError in a asynchronous manner, otherwise it would be caught by ol and not be  propagated to the window (see GlobalErrorPlugin)
@@ -197,7 +198,13 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 					setFetching(true);
 					switch (response.status) {
 						case 200: {
-							const features = new GeoJSON().readFeatures(await response.json()).map((f) => {
+							const geoJson = await response.json();
+							if (geoJson.numberReturned < geoJson.numberMatched) {
+								modifyLayer(olLayer.get('id'), { state: LayerState.INCOMPLETE_DATA });
+							} else {
+								modifyLayer(olLayer.get('id'), { state: LayerState.OK });
+							}
+							const features = new GeoJSON().readFeatures(geoJson).map((f) => {
 								// avoid ol displaying only one feature if ids are an empty string
 								if (isString(f.getId()) && f.getId().trim() === '') {
 									f.setId(undefined);

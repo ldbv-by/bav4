@@ -15,6 +15,8 @@ import VectorSource from 'ol/source/Vector.js';
 import { OafGeoResource } from '../../../../src/domain/geoResources.js';
 import { networkReducer } from '../../../../src/store/network/network.reducer.js';
 import { observe } from '../../../../src/utils/storeUtils.js';
+import { layersReducer } from '../../../../src/store/layers/layers.reducer.js';
+import { addLayer, LayerState } from '../../../../src/store/layers/layers.action.js';
 
 describe('olLoadFunction.provider', () => {
 	describe('getBvvBaaImageLoadFunction', () => {
@@ -451,7 +453,7 @@ describe('olLoadFunction.provider', () => {
 		};
 
 		beforeEach(() => {
-			store = TestUtils.setupStoreAndDi({}, { network: networkReducer });
+			store = TestUtils.setupStoreAndDi({}, { network: networkReducer, layers: layersReducer });
 			$injector.registerSingleton('HttpService', httpService).registerSingleton('GeoResourceService', geoResourceService);
 		});
 		afterEach(() => {
@@ -459,8 +461,9 @@ describe('olLoadFunction.provider', () => {
 		});
 		// Note: The id of the fist feature is explicitly set to en empty string
 		const mockResponsePayload = `{"type":"FeatureCollection","numberReturned":10,"numberMatched":1000,"timeStamp":"2025-04-28T16:05:04Z","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[13.7753984,48.8278005]},"properties":{"node_id":11967522304,"name":"Gasthof Pension Strohmaier","strasse":"Nebelhornstraße 16","plz":"81247","ort":"München","outdoor_seating":false,"open":"11:30:00","close":"21:30:00"},"id":""},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.6072725,48.7139666]},"properties":{"node_id":4360236409,"name":"Haller-Alm","strasse":"Jamnitzerstraße 5","plz":"81247","ort":"München","outdoor_seating":false,"open":"09:30:00","close":"22:00:00"},"id":2},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.4656242,48.9258759]},"properties":{"node_id":3248029033,"name":"Am Guldensteig","strasse":"Lusenstraße 48","plz":"94556","ort":"Neuschönau","outdoor_seating":false,"open":"10:30:00","close":"22:30:00"},"id":3},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.4257844,48.9549047]},"properties":{"node_id":573609734,"name":"Racheldiensthütte","strasse":"Nawiaskystraße 18","plz":"81247","ort":"München","outdoor_seating":false,"open":"10:00:00","close":"21:30:00"},"id":4},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.1955355,49.0909754]},"properties":{"node_id":4248151958,"name":"Baggerloch","strasse":"Tegernseer Platz 12","plz":"81247","ort":"München","outdoor_seating":false,"open":"09:30:00","close":"21:30:00"},"id":5},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.3310682,48.7215136]},"properties":{"node_id":6232769394,"name":"Gasthof zur Post","strasse":"Abacostraße 11","plz":"81247","ort":"München","outdoor_seating":false,"open":"09:00:00","close":"20:00:00"},"id":6},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.4708263,48.8140697]},"properties":{"node_id":1056815204,"name":"Dorfbiergarten Stark","strasse":"Dorfstraße 22","plz":"94160","ort":"Ringelai","outdoor_seating":true,"open":"11:00:00","close":"23:00:00"},"id":7},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.4601728,48.7874714]},"properties":{"node_id":454981390,"name":"Waldheim","strasse":"Tegelbergstraße 2","plz":"81247","ort":"München","outdoor_seating":false,"open":"09:00:00","close":"23:30:00"},"id":8},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.4832899,48.6180897]},"properties":{"node_id":456024788,"name":"Lutzgarten","strasse":"Aberlestraße 15","plz":"81247","ort":"München","outdoor_seating":false,"open":"09:30:00","close":"20:00:00"},"id":9},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.4730729,48.5702767]},"properties":{"node_id":6288301886,"name":"Zur Schnecke","strasse":"Jakob-Klar-Straße 1","plz":"81247","ort":"München","outdoor_seating":false,"open":"11:00:00","close":"23:30:00"},"id":10}],"links":[{"href":"http://geotest3.bvv.bayern.de:7080/biergarten/collections/biergarten/items?f=json","rel":"self","type":"application/geo+json","title":"This document"},{"href":"http://geotest3.bvv.bayern.de:7080/biergarten/collections/biergarten/items?f=html","rel":"alternate","type":"text/html","title":"This document as HTML"},{"href":"http://geotest3.bvv.bayern.de:7080/biergarten/collections/biergarten/items?f=json&offset=10","rel":"next","type":"application/geo+json","title":"Next page"},{"href":"http://www.opengis.net/def/profile/ogc/0/rel-as-link","rel":"profile","title":"Profile used in the response"}]}`;
+		const mockResponsePayload_AllFeatures = `{"type":"FeatureCollection","numberReturned":1000,"numberMatched":1000,"timeStamp":"2025-04-28T16:05:04Z","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[13.7753984,48.8278005]},"properties":{"node_id":11967522304,"name":"Gasthof Pension Strohmaier","strasse":"Nebelhornstraße 16","plz":"81247","ort":"München","outdoor_seating":false,"open":"11:30:00","close":"21:30:00"},"id":""},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.6072725,48.7139666]},"properties":{"node_id":4360236409,"name":"Haller-Alm","strasse":"Jamnitzerstraße 5","plz":"81247","ort":"München","outdoor_seating":false,"open":"09:30:00","close":"22:00:00"},"id":2},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.4656242,48.9258759]},"properties":{"node_id":3248029033,"name":"Am Guldensteig","strasse":"Lusenstraße 48","plz":"94556","ort":"Neuschönau","outdoor_seating":false,"open":"10:30:00","close":"22:30:00"},"id":3},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.4257844,48.9549047]},"properties":{"node_id":573609734,"name":"Racheldiensthütte","strasse":"Nawiaskystraße 18","plz":"81247","ort":"München","outdoor_seating":false,"open":"10:00:00","close":"21:30:00"},"id":4},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.1955355,49.0909754]},"properties":{"node_id":4248151958,"name":"Baggerloch","strasse":"Tegernseer Platz 12","plz":"81247","ort":"München","outdoor_seating":false,"open":"09:30:00","close":"21:30:00"},"id":5},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.3310682,48.7215136]},"properties":{"node_id":6232769394,"name":"Gasthof zur Post","strasse":"Abacostraße 11","plz":"81247","ort":"München","outdoor_seating":false,"open":"09:00:00","close":"20:00:00"},"id":6},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.4708263,48.8140697]},"properties":{"node_id":1056815204,"name":"Dorfbiergarten Stark","strasse":"Dorfstraße 22","plz":"94160","ort":"Ringelai","outdoor_seating":true,"open":"11:00:00","close":"23:00:00"},"id":7},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.4601728,48.7874714]},"properties":{"node_id":454981390,"name":"Waldheim","strasse":"Tegelbergstraße 2","plz":"81247","ort":"München","outdoor_seating":false,"open":"09:00:00","close":"23:30:00"},"id":8},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.4832899,48.6180897]},"properties":{"node_id":456024788,"name":"Lutzgarten","strasse":"Aberlestraße 15","plz":"81247","ort":"München","outdoor_seating":false,"open":"09:30:00","close":"20:00:00"},"id":9},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.4730729,48.5702767]},"properties":{"node_id":6288301886,"name":"Zur Schnecke","strasse":"Jakob-Klar-Straße 1","plz":"81247","ort":"München","outdoor_seating":false,"open":"11:00:00","close":"23:30:00"},"id":10}],"links":[{"href":"http://geotest3.bvv.bayern.de:7080/biergarten/collections/biergarten/items?f=json","rel":"self","type":"application/geo+json","title":"This document"},{"href":"http://geotest3.bvv.bayern.de:7080/biergarten/collections/biergarten/items?f=html","rel":"alternate","type":"text/html","title":"This document as HTML"},{"href":"http://geotest3.bvv.bayern.de:7080/biergarten/collections/biergarten/items?f=json&offset=10","rel":"next","type":"application/geo+json","title":"Next page"},{"href":"http://www.opengis.net/def/profile/ogc/0/rel-as-link","rel":"profile","title":"Profile used in the response"}]}`;
 
-		it('adds the features to the source and update the network s-o-s', async () => {
+		it('adds the features to the source and updates the `fetching` property of the network s-o-s', async () => {
 			const geoResourceId = 'geoResourceId';
 			const olSource = new VectorSource();
 			const olLayer = new VectorLayer({ source: olSource });
@@ -498,6 +501,32 @@ describe('olLoadFunction.provider', () => {
 			olSource.getFeatures().forEach((f) => {
 				expect(f.getId()).not.toBe('');
 			});
+		});
+
+		it('updates the `state` property of the corresponding layers', async () => {
+			const geoResourceId = 'geoResourceId';
+			const olSource = new VectorSource();
+			const layerId = 'layerId';
+			const olLayer = new VectorLayer({ id: layerId, source: olSource });
+			addLayer(layerId, { geoResourceId });
+			const extent = [0, 1, 2, 3];
+			const resolution = 42.42;
+			const projection = new Projection({ code: 'EPSG:3857' });
+			const geoResource = new OafGeoResource('id', 'label', 'https://url.de/', 'collectionId', 4326);
+			spyOn(geoResourceService, 'byId').and.returnValue(geoResource);
+			const oafLoadFunction = getBvvOafLoadFunction(geoResourceId, olLayer)./*Usually done by the ol.source */ bind(olSource);
+			spyOn(httpService, 'get').and.returnValues(
+				Promise.resolve(new Response(mockResponsePayload)),
+				Promise.resolve(new Response(mockResponsePayload_AllFeatures))
+			);
+
+			await oafLoadFunction(extent, resolution, projection, jasmine.createSpy(), jasmine.createSpy());
+
+			expect(store.getState().layers.active[0].state).toBe(LayerState.INCOMPLETE_DATA);
+
+			await oafLoadFunction(extent, resolution, projection, jasmine.createSpy(), jasmine.createSpy());
+
+			expect(store.getState().layers.active[0].state).toBe(LayerState.OK);
 		});
 
 		it('includes the `limit` query parameter if requested', async () => {
