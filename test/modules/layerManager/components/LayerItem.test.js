@@ -872,7 +872,7 @@ describe('LayerItem', () => {
 			const collapseButton = element.shadowRoot.querySelector('button');
 			collapseButton.click();
 
-			expect(element.getModel().layer.collapsed).toBeFalse();
+			expect(element.getModel().layerItemProperties.collapsed).toBeFalse();
 		});
 
 		it('click on info icon show georesourceinfo panel as modal', async () => {
@@ -1192,7 +1192,7 @@ describe('LayerItem', () => {
 							}
 						})
 					);
-					expect(element.getModel().layer.collapsed).toBeFalse();
+					expect(element.getModel().layerItemProperties.collapsed).toBeFalse();
 				});
 			});
 		});

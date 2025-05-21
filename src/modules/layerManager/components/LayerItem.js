@@ -49,7 +49,6 @@ export class LayerItem extends AbstractMvuContentPanel {
 	#geoResourceService;
 	constructor() {
 		super({
-			layer: null,
 			layerProperties: null,
 			layerItemProperties: null,
 			isLayerSwipeActive: null
@@ -67,19 +66,11 @@ export class LayerItem extends AbstractMvuContentPanel {
 			case Update_Layer:
 				return {
 					...model,
-					layer: {
-						...data,
-						visible: data.visible,
-						collapsed: data.collapsed,
-						opacity: data.opacity,
-						loading: data.loading,
-						keywords: data.keywords
-					},
 					layerProperties: data.layerProperties,
 					layerItemProperties: data.layerItemProperties
 				};
 			case Update_Layer_Collapsed:
-				return { ...model, layer: { ...model.layer, collapsed: data }, layerItemProperties: { ...model.layerItemProperties, collapsed: data } };
+				return { ...model, layerItemProperties: { ...model.layerItemProperties, collapsed: data } };
 			case Update_Layer_Swipe:
 				return { ...model, isLayerSwipeActive: data.active };
 		}
@@ -257,7 +248,8 @@ export class LayerItem extends AbstractMvuContentPanel {
 
 		const openGeoResourceInfoPanel = () => {
 			const {
-				layer: { label, geoResourceId }
+				layerProperties: { geoResourceId },
+				layerItemProperties: { label }
 			} = this.getModel();
 			openModal(label, html`<ba-georesourceinfo-panel .geoResourceId=${geoResourceId}></ba-georesourceinfo-panel>`);
 		};
