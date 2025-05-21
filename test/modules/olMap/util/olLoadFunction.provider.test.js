@@ -559,7 +559,37 @@ describe('olLoadFunction.provider', () => {
 			expect(olSource.getFeatures()).toHaveSize(10);
 		});
 
-		it('includes the `filter` query parameter if requested', async () => {
+		it('includes the `filter` query parameter of the OafGeoResource', async () => {
+			const geoResourceId = 'geoResourceId';
+			const olSource = new VectorSource();
+			const olLayer = new VectorLayer({ source: olSource });
+			const extent = [0, 1, 2, 3];
+			const resolution = 42.42;
+			const projection = new Projection({ code: 'EPSG:3857' });
+			const response = new Response(mockResponsePayload);
+			const expectedUrl =
+				'https://url.de/collections/collectionId/items?f=json&crs=http://www.opengis.net/def/crs/EPSG/0/3857&bbox=0,1,2,3&bbox-crs=http://www.opengis.net/def/crs/EPSG/0/3857&filter=filterExpr';
+			const successCbSpy = jasmine.createSpy();
+			const failureCbSpy = jasmine.createSpy();
+			const geoResource = new OafGeoResource('id', 'label', 'https://url.de', 'collectionId', 4326).setFilter('filterExpr');
+			spyOn(geoResourceService, 'byId').and.returnValue(geoResource);
+			spyOn(httpService, 'get')
+				.withArgs(
+					expectedUrl,
+					{
+						timeout: 15_000
+					},
+					{ response: [responseInterceptor] }
+				)
+				.and.resolveTo(response);
+			const oafLoadFunction = getBvvOafLoadFunction(geoResourceId, olLayer)./*Usually done by the ol.source */ bind(olSource);
+
+			await oafLoadFunction(extent, resolution, projection, successCbSpy, failureCbSpy);
+
+			expect(olSource.getFeatures()).toHaveSize(10);
+		});
+
+		it('includes the `filter` query parameter of the olLayer', async () => {
 			const geoResourceId = 'geoResourceId';
 			const olSource = new VectorSource();
 			const olLayer = new VectorLayer({ source: olSource, properties: { filter: 'filterExpr' } });
@@ -571,7 +601,7 @@ describe('olLoadFunction.provider', () => {
 				'https://url.de/collections/collectionId/items?f=json&crs=http://www.opengis.net/def/crs/EPSG/0/3857&bbox=0,1,2,3&bbox-crs=http://www.opengis.net/def/crs/EPSG/0/3857&filter=filterExpr';
 			const successCbSpy = jasmine.createSpy();
 			const failureCbSpy = jasmine.createSpy();
-			const geoResource = new OafGeoResource('id', 'label', 'https://url.de', 'collectionId', 4326);
+			const geoResource = new OafGeoResource('id', 'label', 'https://url.de', 'collectionId', 4326).setFilter('filterExprFromGeoResource');
 			spyOn(geoResourceService, 'byId').and.returnValue(geoResource);
 			spyOn(httpService, 'get')
 				.withArgs(

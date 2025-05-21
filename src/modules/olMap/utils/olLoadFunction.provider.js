@@ -164,28 +164,31 @@ export const getBvvTileLoadFunction = (geoResourceId, olLayer, failureCounterPro
 export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null) => {
 	const { HttpService: httpService, GeoResourceService: geoResourceService } = $injector.inject('HttpService', 'GeoResourceService');
 
+	// see https://openlayers.org/en/latest/apidoc/module-ol_source_Vector-VectorSource.html
 	return async function (extent, resolution, projection, success, failure) {
 		const timeout = 15_000;
-		// see https://openlayers.org/en/latest/apidoc/module-ol_source_Vector-VectorSource.html
 		const srid = projection.getCode().split(':')[1];
 		const crs = `http://www.opengis.net/def/crs/EPSG/0/${srid}`;
 		try {
-			const geoResource = geoResourceService.byId(geoResourceId);
+			const oafGeoResource = geoResourceService.byId(geoResourceId);
 
 			const options = {};
 			options['f'] = 'json';
 			options['crs'] = crs;
-			if (geoResource.limit) {
-				options['limit'] = geoResource.limit;
+			if (oafGeoResource.limit) {
+				options['limit'] = oafGeoResource.limit;
 			}
 			options['bbox'] = `${extent.join(',')}`;
 			options['bbox-crs'] = crs;
+			if (oafGeoResource.hasFilter()) {
+				options['filter'] = oafGeoResource.filter;
+			}
 			if (olLayer.get('filter')) {
 				options['filter'] = olLayer.get('filter');
 			}
 
 			const searchParams = new URLSearchParams({ ...options });
-			const url = `${geoResource.url}${geoResource.url.endsWith('/') ? '' : '/'}collections/${geoResource.collectionId}/items?${decodeURIComponent(searchParams.toString())}`;
+			const url = `${oafGeoResource.url}${oafGeoResource.url.endsWith('/') ? '' : '/'}collections/${oafGeoResource.collectionId}/items?${decodeURIComponent(searchParams.toString())}`;
 
 			const handleResponse = async (response, vectorSource) => {
 				try {
@@ -209,7 +212,7 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 								if (isString(f.getId()) && f.getId().trim() === '') {
 									f.setId(undefined);
 								}
-								f.getGeometry().transform('EPSG:' + geoResource.srid, projection);
+								f.getGeometry().transform('EPSG:' + oafGeoResource.srid, projection);
 								return f;
 							});
 							vectorSource.addFeatures(features);
