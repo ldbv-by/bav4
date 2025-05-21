@@ -4,7 +4,7 @@
 import { $injector } from '../injection';
 import { getDefaultAttribution } from '../services/provider/attribution.provider';
 import { getDefaultVectorGeoResourceLoaderForUrl } from '../services/provider/geoResource.provider';
-import { isExternalGeoResourceId, isNumber } from '../utils/checks';
+import { isExternalGeoResourceId, isNumber, isString } from '../utils/checks';
 import { StyleHint } from './styles';
 
 /**
@@ -892,6 +892,7 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 		this._collectionId = collectionId;
 		this._limit = null;
 		this._srid = srid;
+		this._filter = null;
 	}
 
 	/**
@@ -923,6 +924,13 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 	}
 
 	/**
+	 * The default filter expression for this `OafGeoResource`
+	 */
+	get filter() {
+		return this._filter;
+	}
+
+	/**
 	 * Sets the max. number of features that should be requested
 	 * @param {number} limit
 	 * @returns {OafGeoResource} `this` for chaining
@@ -932,6 +940,25 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 			this._limit = limit;
 		}
 		return this;
+	}
+	/**
+	 * Sets the default filter expression for this `OafGeoResource`
+	 * @param {string} filter
+	 * @returns {OafGeoResource} `this` for chaining
+	 */
+	setFilter(filter) {
+		if (isString(filter)) {
+			this._filter = filter;
+		}
+		return this;
+	}
+
+	/**
+	 *
+	 * @returns {boolean} true if a default filter expression is set for this `OafGeoResource`
+	 */
+	hasFilter() {
+		return !!this._filter;
 	}
 
 	/**
