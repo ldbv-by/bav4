@@ -150,7 +150,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 			//state store change -> implicit call of #render()
 			modifyLayer(layer.id, { visible: event.detail.checked });
 		};
-		const toggleCollapse = (e) => {
+		const toggleCollapse = () => {
 			const collapsed = !layer.collapsed;
 			this.signal(Update_Layer_Collapsed, collapsed);
 			this.dispatchEvent(
@@ -385,16 +385,16 @@ export class LayerItem extends AbstractMvuContentPanel {
 			</div>`;
 	}
 
-	set layer(value) {
+	set layer(layerItemProperties) {
 		const translate = (key) => this.#translationService.translate(key);
-		const geoResource = this.#geoResourceService.byId(value.geoResourceId);
-		const keywords = [...this.#geoResourceService.getKeywords(value.geoResourceId)];
+		const geoResource = this.#geoResourceService.byId(layerItemProperties.geoResourceId);
+		const keywords = [...this.#geoResourceService.getKeywords(layerItemProperties.geoResourceId)];
 
 		if (geoResource instanceof GeoResourceFuture) {
 			geoResource.onResolve((resolvedGeoR) => {
 				this.signal(Update_Layer, {
 					...Default_Extra_Property_Values,
-					...value,
+					...layerItemProperties,
 					label: resolvedGeoR.label,
 					loading: false,
 					keywords: keywords
@@ -404,7 +404,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 
 		this.signal(Update_Layer, {
 			...Default_Extra_Property_Values,
-			...value,
+			...layerItemProperties,
 			label: geoResource instanceof GeoResourceFuture ? translate('layerManager_loading_hint') : geoResource.label,
 			loading: geoResource instanceof GeoResourceFuture,
 			keywords: keywords

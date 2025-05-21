@@ -17,6 +17,17 @@ const Update_Draggable_Items = 'update_draggable_items';
 const Update_Collapse_Change = 'update_collapse_change';
 const Update_Dragged_Item = 'update_dragged_item';
 const Update_Layer_Swipe = 'update_layer_swipe';
+
+/**
+ * @typedef DraggableItem
+ * @property {string} id
+ * @property {number} zIndex
+ * @property {number} listIndex
+ * @property {boolean} isPlaceholder
+ * @property {boolean} isDraggable
+ * @property {boolean} collapse
+ */
+
 /**
  * Renders a list of layers representing their order on a map and provides
  * actions like reordering, removing and changing visibility and opacity
@@ -47,7 +58,15 @@ export class LayerManager extends MvuElement {
 					draggableItems: [...data]
 				};
 			case Update_Collapse_Change:
-				return { ...model, draggableItems: model.draggableItems.map((i) => (i.id === data.id ? data : i)) };
+				return {
+					...model,
+					draggableItems: model.draggableItems.map((draggableItem) => {
+						if (draggableItem.id === data.id) {
+							draggableItem.collapsed = data.collapsed;
+						}
+						return draggableItem;
+					})
+				};
 			case Update_Dragged_Item:
 				return { ...model, draggedItem: data };
 			case Update_Layer_Swipe:
@@ -110,33 +129,33 @@ export class LayerManager extends MvuElement {
 			this.signal(Update_Collapse_Change, e.detail.layer);
 		};
 
-		const createLayerElement = (layerItem) => {
-			return html`<ba-layer-item .layer=${layerItem} class="layer" draggable data-test-id @collapse=${onCollapseChanged}> </ba-layer-item>`;
+		const createLayerElement = (draggableItem) => {
+			return html`<ba-layer-item .layer=${draggableItem} class="layer" draggable data-test-id @collapse=${onCollapseChanged}> </ba-layer-item>`;
 		};
 
-		const createPlaceholderElement = (layerItem) => {
-			return html`<div id=${'placeholder_' + layerItem.listIndex} class="placeholder"></div>`;
+		const createPlaceholderElement = (draggableItem) => {
+			return html`<div id=${'placeholder_' + draggableItem.listIndex} class="placeholder"></div>`;
 		};
 
-		const createIndexNumberForPlaceholder = (listIndex, layerItem) => {
-			const isHigherThenDrag = layerItem.listIndex >= listIndex ? 1 : 0;
+		const createIndexNumberForPlaceholder = (listIndex, draggableItem) => {
+			const isHigherThenDrag = draggableItem.listIndex >= listIndex ? 1 : 0;
 			return listIndex / 2 + isHigherThenDrag;
 		};
 
-		const onDragStart = (e, layerItem) => {
+		const onDragStart = (e, draggableItem) => {
 			if (this._environmentService.isTouch()) {
 				return;
 			}
 
-			this.signal(Update_Dragged_Item, layerItem);
+			this.signal(Update_Dragged_Item, draggableItem);
 
 			e.target.classList.add('isdragged');
 			e.dataTransfer.dropEffect = 'move';
 			e.dataTransfer.effectAllowed = 'move';
 			this.shadowRoot.querySelectorAll('.placeholder').forEach((p) => {
 				const listIndex = Number.parseFloat(p.id.replace('placeholder_', ''));
-				p.innerHTML = createIndexNumberForPlaceholder(listIndex, layerItem);
-				if (!isNeighbour(listIndex, layerItem.listIndex)) {
+				p.innerHTML = createIndexNumberForPlaceholder(listIndex, draggableItem);
+				if (!isNeighbour(listIndex, draggableItem.listIndex)) {
 					p.classList.add('placeholder-active');
 				}
 			});
@@ -148,31 +167,31 @@ export class LayerManager extends MvuElement {
 			this.shadowRoot.querySelectorAll('.placeholder').forEach((p) => p.classList.remove('placeholder-active'));
 		};
 
-		const onDrop = (e, layerItem) => {
+		const onDrop = (e, draggableItem) => {
 			const getNewZIndex = (oldZIndex) => (oldZIndex === this._layerCount - 1 ? oldZIndex - 1 : oldZIndex);
 
-			if (layerItem.isPlaceholder && draggedItem) {
-				modifyLayer(draggedItem.id, { zIndex: getNewZIndex(layerItem.zIndex) });
+			if (draggableItem.isPlaceholder && draggedItem) {
+				modifyLayer(draggedItem.id, { zIndex: getNewZIndex(draggableItem.zIndex) });
 			}
 			if (e.target.classList.contains('placeholder')) {
 				e.target.classList.remove('over');
 			}
 			this.signal(Update_Dragged_Item, false);
 		};
-		const onDragOver = (e, layerItem) => {
+		const onDragOver = (e, draggableItem) => {
 			e.preventDefault();
 			const defaultDropEffect = 'none';
 
 			const getDropEffectFor = (draggedItem) => {
-				return isValidDropTarget(draggedItem, layerItem) ? 'all' : defaultDropEffect;
+				return isValidDropTarget(draggedItem, draggableItem) ? 'all' : defaultDropEffect;
 			};
 
 			e.dataTransfer.dropEffect = draggedItem ? getDropEffectFor(draggedItem) : defaultDropEffect;
 		};
 
-		const onDragEnter = (e, layerItem) => {
+		const onDragEnter = (e, draggableItem) => {
 			const doNothing = () => {};
-			const addClassName = () => (isValidDropTarget(draggedItem, layerItem) ? e.target.classList.add('over') : doNothing());
+			const addClassName = () => (isValidDropTarget(draggedItem, draggableItem) ? e.target.classList.add('over') : doNothing());
 			const dragEnterAction = draggedItem ? addClassName : doNothing;
 			dragEnterAction();
 		};
@@ -195,20 +214,20 @@ export class LayerManager extends MvuElement {
 				<ul class="layers">
 					${repeat(
 						draggableItems,
-						(layerItem) => layerItem.listIndex + '_' + layerItem.id,
-						(layerItem, index) =>
+						(draggableItem) => draggableItem.listIndex + '_' + draggableItem.id,
+						(draggableItem, index) =>
 							html` <li
-								draggable=${layerItem.isDraggable}
-								@dragstart=${(e) => onDragStart(e, layerItem)}
+								draggable=${draggableItem.isDraggable}
+								@dragstart=${(e) => onDragStart(e, draggableItem)}
 								@dragend=${onDragEnd}
-								@drop=${(e) => onDrop(e, layerItem)}
-								@dragover=${(e) => onDragOver(e, layerItem)}
-								@dragenter=${(e) => onDragEnter(e, layerItem)}
+								@drop=${(e) => onDrop(e, draggableItem)}
+								@dragover=${(e) => onDragOver(e, draggableItem)}
+								@dragenter=${(e) => onDragEnter(e, draggableItem)}
 								@dragleave=${onDragLeave}
 								index=${index}
 								class="draggable"
 							>
-								${layerItem.isPlaceholder ? createPlaceholderElement(layerItem) : createLayerElement(layerItem)}
+								${draggableItem.isPlaceholder ? createPlaceholderElement(draggableItem) : createLayerElement(draggableItem)}
 							</li>`
 					)}
 				</ul>
@@ -252,14 +271,14 @@ export class LayerManager extends MvuElement {
 				: nothing;
 		};
 
-		const draggableItemsExpandable = draggableItems.some((i) => i.collapsed);
+		const draggableItemsExpandable = draggableItems.some((draggableItem) => draggableItem.collapsed);
 		const expandOrCollapseLabel = draggableItemsExpandable ? translate('layerManager_expand_all') : translate('layerManager_collapse_all');
 		const expandOrCollapseTitle = draggableItemsExpandable
 			? translate('layerManager_expand_all_title')
 			: translate('layerManager_collapse_all_title');
 		const expandOrCollapseAction = draggableItemsExpandable ? expandAll : collapseAll;
 
-		return draggableItems.filter((i) => !i.isPlaceholder).length > 0
+		return draggableItems.filter((draggableItem) => !draggableItem.isPlaceholder).length > 0
 			? html`<div class="layermanager__actions">
 						<ba-button
 							id="button_expand_or_collapse"
