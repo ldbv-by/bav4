@@ -35,9 +35,8 @@ const Default_Extra_Property_Values = {
  * Child element of the LayerManager. Represents one layer and its state.
  * Events:
  *
- * Properties:
- * - `layer`
- *
+ * @property {module:store/layers/layer_action~Layer} layer The {@link Layer}.
+ * @fires collapse Fires when the collapse value changes
  *
  * @class
  * @author thiloSchlemmer
@@ -46,14 +45,16 @@ const Default_Extra_Property_Values = {
  * @author costa_gi
  */
 export class LayerItem extends AbstractMvuContentPanel {
+	#translationService;
+	#geoResourceService;
 	constructor() {
 		super({
 			layer: null,
 			isLayerSwipeActive: null
 		});
 		const { TranslationService, GeoResourceService } = $injector.inject('TranslationService', 'GeoResourceService');
-		this._translationService = TranslationService;
-		this._geoResourceService = GeoResourceService;
+		this.#translationService = TranslationService;
+		this.#geoResourceService = GeoResourceService;
 	}
 
 	/**
@@ -121,13 +122,13 @@ export class LayerItem extends AbstractMvuContentPanel {
 	 * @override
 	 */
 	createView(model) {
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key) => this.#translationService.translate(key);
 		const { layer, isLayerSwipeActive } = model;
 
 		if (!layer) {
 			return nothing;
 		}
-		const geoResource = this._geoResourceService.byId(layer.geoResourceId);
+		const geoResource = this.#geoResourceService.byId(layer.geoResourceId);
 		const currentLabel = layer.label;
 
 		const getCollapseTitle = () => {
@@ -385,9 +386,9 @@ export class LayerItem extends AbstractMvuContentPanel {
 	}
 
 	set layer(value) {
-		const translate = (key) => this._translationService.translate(key);
-		const geoResource = this._geoResourceService.byId(value.geoResourceId);
-		const keywords = [...this._geoResourceService.getKeywords(value.geoResourceId)];
+		const translate = (key) => this.#translationService.translate(key);
+		const geoResource = this.#geoResourceService.byId(value.geoResourceId);
+		const keywords = [...this.#geoResourceService.getKeywords(value.geoResourceId)];
 
 		if (geoResource instanceof GeoResourceFuture) {
 			geoResource.onResolve((resolvedGeoR) => {
