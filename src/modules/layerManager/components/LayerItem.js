@@ -156,7 +156,8 @@ export class LayerItem extends AbstractMvuContentPanel {
 			this.dispatchEvent(
 				new CustomEvent('collapse', {
 					detail: {
-						layer: { ...layer, collapsed: collapsed }
+						layerId: layer.id,
+						collapsed: collapsed
 					}
 				})
 			);

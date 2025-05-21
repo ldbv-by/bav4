@@ -1179,7 +1179,8 @@ describe('LayerItem', () => {
 					expect(spy).toHaveBeenCalledOnceWith(
 						jasmine.objectContaining({
 							detail: {
-								layer: jasmine.objectContaining({ ...layer, collapsed: false })
+								layerId: layer.id,
+								collapsed: false
 							}
 						})
 					);

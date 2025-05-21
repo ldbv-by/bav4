@@ -61,7 +61,7 @@ export class LayerManager extends MvuElement {
 				return {
 					...model,
 					draggableItems: model.draggableItems.map((draggableItem) => {
-						if (draggableItem.id === data.id) {
+						if (draggableItem.id === data.layerId) {
 							draggableItem.collapsed = data.collapsed;
 						}
 						return draggableItem;
@@ -126,7 +126,7 @@ export class LayerManager extends MvuElement {
 		};
 
 		const onCollapseChanged = (e) => {
-			this.signal(Update_Collapse_Change, e.detail.layer);
+			this.signal(Update_Collapse_Change, e.detail);
 		};
 
 		const createLayerElement = (draggableItem) => {
