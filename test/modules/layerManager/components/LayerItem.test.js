@@ -1154,18 +1154,26 @@ describe('LayerItem', () => {
 				collapsed: true
 			};
 
-			const setup = () => {
-				const store = TestUtils.setupStoreAndDi({}, { layers: layersReducer, modal: modalReducer, layerSwipe: layerSwipeReducer });
+			const setup = (state) => {
+				const store = TestUtils.setupStoreAndDi(state, { layers: layersReducer, modal: modalReducer, layerSwipe: layerSwipeReducer });
 				$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
 				return store;
 			};
 
 			describe('on collapse', () => {
 				it('fires a "collapse" event', async () => {
-					setup();
+					const state = {
+						layers: {
+							active: [layer],
+							background: 'bg0'
+						}
+					};
+
+					setup(state);
 					spyOn(geoResourceService, 'byId')
 						.withArgs('geoResourceId0')
 						.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+
 					const element = await TestUtils.render(LayerItem.tag);
 
 					element.layer = { ...layer }; // collapsed = true is initialized

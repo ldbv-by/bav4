@@ -572,15 +572,17 @@ describe('LayerManager', () => {
 			};
 
 			const element = await setup(state);
-			const spy = spyOn(element, 'update').and.callThrough();
+			const updateSpy = spyOn(element, 'update').and.callThrough();
+			const viewSpy = spyOn(element, 'createView').and.callThrough();
 			const layerItem = element.shadowRoot.querySelector('ba-layer-item');
 			const detailButton = layerItem.shadowRoot.querySelector('#button-detail');
 			detailButton.click();
 
 			const model = element.getModel();
 			const actualDraggableItems = model.draggableItems;
-			expect(spy).toHaveBeenCalledWith('update_collapse_change', jasmine.objectContaining({ collapsed: false }), jasmine.anything());
+			expect(updateSpy).toHaveBeenCalledWith('update_collapse_change', jasmine.objectContaining({ collapsed: false }), jasmine.anything());
 			expect(actualDraggableItems).toEqual(jasmine.arrayContaining([jasmine.objectContaining({ collapsed: false })]));
+			expect(viewSpy).toHaveBeenCalled();
 		});
 
 		it("updates draggableItems, when button for 'expand or collapse' is clicked", async () => {

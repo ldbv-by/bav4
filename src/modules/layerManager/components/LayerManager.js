@@ -62,7 +62,7 @@ export class LayerManager extends MvuElement {
 					...model,
 					draggableItems: model.draggableItems.map((draggableItem) => {
 						if (draggableItem.id === data.layerId) {
-							draggableItem.collapsed = data.collapsed;
+							return { ...draggableItem, collapsed: data.collapsed };
 						}
 						return draggableItem;
 					})
