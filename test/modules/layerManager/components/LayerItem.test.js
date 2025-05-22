@@ -60,7 +60,7 @@ describe('LayerItem', () => {
 
 	let store;
 
-	const setup = async (layer, layerSwipeActive) => {
+	const setup = async (layer = null, collapsed = true, layerSwipeActive) => {
 		store = TestUtils.setupStoreAndDi(
 			{
 				layers: {
@@ -86,10 +86,8 @@ describe('LayerItem', () => {
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('GeoResourceService', geoResourceService)
 			.registerSingleton('EnvironmentService', environmentService);
-		const element = await TestUtils.render(LayerItem.tag);
-		if (layer) {
-			element.layer = layer;
-		}
+		const layerOptions = layer ? { id: layer.id } : null;
+		const element = await TestUtils.render(LayerItem.tag, { layer: layerOptions, collapsed: collapsed });
 		return element;
 	};
 
@@ -137,8 +135,7 @@ describe('LayerItem', () => {
 				geoResourceId: 'geoResourceId0',
 				visible: true,
 				zIndex: 0,
-				opacity: 1,
-				collapsed: true
+				opacity: 1
 			};
 			const element = await setup(layer);
 			const badge = element.shadowRoot.querySelector('ba-badge');
@@ -156,8 +153,7 @@ describe('LayerItem', () => {
 				geoResourceId: 'geoResourceId0',
 				visible: true,
 				zIndex: 0,
-				opacity: 1,
-				collapsed: true
+				opacity: 1
 			};
 			const element = await setup(layer);
 			const toggle = element.shadowRoot.querySelector('ba-checkbox');
@@ -175,8 +171,7 @@ describe('LayerItem', () => {
 				geoResourceId: 'geoResourceId0',
 				visible: true,
 				zIndex: 0,
-				opacity: 0.55,
-				collapsed: true
+				opacity: 0.55
 			};
 			const element = await setup(layer);
 
@@ -200,8 +195,7 @@ describe('LayerItem', () => {
 				geoResourceId: 'geoResourceId0',
 				visible: true,
 				zIndex: 0,
-				opacity: 0.55,
-				collapsed: true
+				opacity: 0.55
 			};
 			const element = await setup(layer);
 
@@ -219,8 +213,7 @@ describe('LayerItem', () => {
 				geoResourceId: 'geoResourceId0',
 				visible: false,
 				zIndex: 0,
-				opacity: 1,
-				collapsed: true
+				opacity: 1
 			};
 			const element = await setup(layer);
 			const toggle = element.shadowRoot.querySelector('ba-checkbox');
@@ -238,8 +231,7 @@ describe('LayerItem', () => {
 				geoResourceId: 'geoResourceIdWithTimestamps',
 				visible: false,
 				zIndex: 0,
-				opacity: 1,
-				collapsed: true
+				opacity: 1
 			};
 
 			const element = await setup(layer);
@@ -261,8 +253,7 @@ describe('LayerItem', () => {
 				geoResourceId: 'geoResourceId_Without_Timestamp',
 				visible: false,
 				zIndex: 0,
-				opacity: 1,
-				collapsed: true
+				opacity: 1
 			};
 
 			const element = await setup(layer);
@@ -281,8 +272,7 @@ describe('LayerItem', () => {
 				geoResourceId: 'geoResourceIdWithTimestamps',
 				visible: true,
 				zIndex: 0,
-				opacity: 1,
-				collapsed: true
+				opacity: 1
 			};
 			const element = await setup(layer);
 			const timestampIcon = element.shadowRoot.querySelector('.time-travel-icon');
@@ -304,8 +294,7 @@ describe('LayerItem', () => {
 				geoResourceId: 'geoResourceIdWithTimestamps',
 				visible: false,
 				zIndex: 0,
-				opacity: 1,
-				collapsed: true
+				opacity: 1
 			};
 			const element = await setup(layer);
 			const timestampSelect = element.shadowRoot.querySelector('ba-value-select');
@@ -330,10 +319,9 @@ describe('LayerItem', () => {
 				geoResourceId: 'geoResourceId0',
 				visible: true,
 				zIndex: 0,
-				opacity: 1,
-				collapsed: false
+				opacity: 1
 			};
-			const element = await setup(layer);
+			const element = await setup(layer, false);
 			const layerBody = element.shadowRoot.querySelector('.collapse-content');
 			const collapseButton = element.shadowRoot.querySelector('.ba-list-item button');
 
@@ -354,10 +342,9 @@ describe('LayerItem', () => {
 				geoResourceId: 'geoResourceId0',
 				visible: true,
 				zIndex: 0,
-				opacity: 1,
-				collapsed: false
+				opacity: 1
 			};
-			const element = await setup(layer);
+			const element = await setup(layer, false);
 
 			const slider = element.shadowRoot.querySelector('.opacity-slider');
 			const sliderContainer = element.shadowRoot.querySelector('.slider-container');
@@ -385,8 +372,7 @@ describe('LayerItem', () => {
 				geoResourceId: 'geoResourceId0',
 				visible: true,
 				zIndex: 0,
-				opacity: 1,
-				collapsed: true
+				opacity: 1
 			};
 			const element = await setup(layer);
 
@@ -403,8 +389,7 @@ describe('LayerItem', () => {
 				geoResourceId: 'geoResourceId0',
 				visible: true,
 				zIndex: 0,
-				opacity: 1,
-				collapsed: true
+				opacity: 1
 			};
 			const element = await setup(layer);
 
@@ -428,7 +413,6 @@ describe('LayerItem', () => {
 				visible: true,
 				zIndex: 0,
 				opacity: 1,
-				collapsed: true,
 				constraints: { metaData: false }
 			};
 			const element = await setup(layer);
@@ -452,8 +436,7 @@ describe('LayerItem', () => {
 				geoResourceId: 'geoResourceId0',
 				visible: true,
 				zIndex: 0,
-				opacity: 1,
-				collapsed: true
+				opacity: 1
 			};
 			const element = await setup(layer);
 
@@ -478,8 +461,7 @@ describe('LayerItem', () => {
 				geoResourceId: 'geoResourceId0',
 				visible: true,
 				zIndex: 0,
-				opacity: 1,
-				collapsed: true
+				opacity: 1
 			};
 			const element = await setup(layer);
 
@@ -503,8 +485,7 @@ describe('LayerItem', () => {
 				geoResourceId: 'geoResourceId0',
 				visible: true,
 				zIndex: 0,
-				opacity: 1,
-				collapsed: true
+				opacity: 1
 			};
 			const element = await setup(layer);
 
@@ -525,8 +506,7 @@ describe('LayerItem', () => {
 				geoResourceId: 'geoResourceId0',
 				visible: true,
 				zIndex: 0,
-				opacity: 1,
-				collapsed: true
+				opacity: 1
 			};
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
@@ -553,8 +533,7 @@ describe('LayerItem', () => {
 				geoResourceId: 'geoResourceId0',
 				visible: true,
 				zIndex: 0,
-				opacity: 1,
-				collapsed: true
+				opacity: 1
 			};
 			const element = await setup(layer);
 
@@ -571,8 +550,7 @@ describe('LayerItem', () => {
 				geoResourceId: 'geoResourceId0',
 				visible: true,
 				zIndex: 0,
-				opacity: 1,
-				collapsed: true
+				opacity: 1
 			};
 			const element = await setup(layer);
 
@@ -596,8 +574,7 @@ describe('LayerItem', () => {
 				geoResourceId: geoResourceId,
 				visible: true,
 				zIndex: 0,
-				opacity: 1,
-				collapsed: true
+				opacity: 1
 			};
 			const element = await setup(layer);
 
@@ -617,8 +594,7 @@ describe('LayerItem', () => {
 				geoResourceId: geoResourceId,
 				visible: true,
 				zIndex: 0,
-				opacity: 1,
-				collapsed: true
+				opacity: 1
 			};
 			const element = await setup(layer);
 
@@ -641,10 +617,9 @@ describe('LayerItem', () => {
 				geoResourceId: 'geoResourceId0',
 				visible: true,
 				zIndex: 0,
-				opacity: 1,
-				collapsed: true
+				opacity: 1
 			};
-			const element = await setup(layer, false);
+			const element = await setup(layer, true, false);
 
 			expect(store.getState().layerSwipe.active).toBe(false);
 
@@ -661,10 +636,9 @@ describe('LayerItem', () => {
 				geoResourceId: 'geoResourceId0',
 				visible: true,
 				zIndex: 0,
-				opacity: 1,
-				collapsed: true
+				opacity: 1
 			};
-			const element = await setup(layer, true);
+			const element = await setup(layer, true, true);
 			const bar = element.shadowRoot.querySelector('.bar');
 
 			expect(store.getState().layerSwipe.active).toBe(true);
@@ -690,10 +664,9 @@ describe('LayerItem', () => {
 				geoResourceId: 'geoResourceId0',
 				visible: true,
 				zIndex: 0,
-				opacity: 1,
-				collapsed: true
+				opacity: 1
 			};
-			const element = await setup(layer, true);
+			const element = await setup(layer, true, true);
 
 			expect(store.getState().layerSwipe.active).toBe(true);
 
@@ -771,7 +744,7 @@ describe('LayerItem', () => {
 			opacity: 1
 		};
 
-		const setup = () => {
+		const setupStore = () => {
 			const state = {
 				layers: {
 					active: [layer],
@@ -792,7 +765,7 @@ describe('LayerItem', () => {
 		};
 
 		it('click on layer toggle change state in store', async () => {
-			const store = setup();
+			const store = setupStore();
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
 				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
@@ -807,7 +780,7 @@ describe('LayerItem', () => {
 		});
 
 		it('click on opacity slider change state in store', async () => {
-			const store = setup();
+			const store = setupStore();
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
 				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
@@ -823,7 +796,7 @@ describe('LayerItem', () => {
 		});
 
 		it('click on opacity slider change style-property', async () => {
-			setup();
+			setupStore();
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
 				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
@@ -842,7 +815,7 @@ describe('LayerItem', () => {
 		});
 
 		it("click on opacity slider without 'max'-attribute change style-property", async () => {
-			setup();
+			setupStore();
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
 				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
@@ -862,7 +835,7 @@ describe('LayerItem', () => {
 		});
 
 		it('click on layer collapse button change collapsed property', async () => {
-			setup();
+			setupStore();
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
 				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
@@ -876,7 +849,7 @@ describe('LayerItem', () => {
 		});
 
 		it('click on info icon show georesourceinfo panel as modal', async () => {
-			const store = setup();
+			const store = setupStore();
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
 				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
@@ -891,7 +864,7 @@ describe('LayerItem', () => {
 		});
 
 		it('click on zoomToExtent icon changes state in store', async () => {
-			const store = setup();
+			const store = setupStore();
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
 				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
@@ -907,7 +880,7 @@ describe('LayerItem', () => {
 
 		describe('when user change order of layer in group', () => {
 			let store;
-			const setup = (state) => {
+			const setupStore = (state) => {
 				store = TestUtils.setupStoreAndDi(state, { layers: layersReducer, layerSwipe: layerSwipeReducer });
 				$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
 				return store;
@@ -947,7 +920,7 @@ describe('LayerItem', () => {
 						background: 'bg0'
 					}
 				};
-				const store = setup(state);
+				const store = setupStore(state);
 				const element = await TestUtils.render(LayerItem.tag);
 				element.layer = { ...layer0 };
 
@@ -996,7 +969,7 @@ describe('LayerItem', () => {
 						background: 'bg0'
 					}
 				};
-				const store = setup(state);
+				const store = setupStore(state);
 				const element = await TestUtils.render(LayerItem.tag);
 				element.layer = { ...layer2 };
 
@@ -1045,7 +1018,7 @@ describe('LayerItem', () => {
 						background: 'bg0'
 					}
 				};
-				const store = setup(state);
+				const store = setupStore(state);
 				const element = await TestUtils.render(LayerItem.tag);
 				element.layer = { ...layer0 };
 
@@ -1079,7 +1052,7 @@ describe('LayerItem', () => {
 						background: 'bg0'
 					}
 				};
-				const store = setup(state);
+				const store = setupStore(state);
 				const element = await TestUtils.render(LayerItem.tag);
 				element.layer = { ...layer0 };
 
@@ -1128,7 +1101,7 @@ describe('LayerItem', () => {
 						background: 'bg0'
 					}
 				};
-				const store = setup(state);
+				const store = setupStore(state);
 				const element = await TestUtils.render(LayerItem.tag);
 				element.layer = { ...layer0 };
 

@@ -404,6 +404,10 @@ export class LayerItem extends AbstractMvuContentPanel {
 			return candidates.length ? candidates[0] : null;
 		};
 
+		if (!layerOptions) {
+			return;
+		}
+
 		const layerId = layerOptions.id;
 		const layerProperties = getLayerProperties(layerId);
 
@@ -419,8 +423,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 						...Default_Extra_Property_Values,
 						label: resolvedGeoR.label,
 						loading: false,
-						keywords: keywords,
-						collapsed: layerOptions.collapsed ?? true
+						keywords: keywords
 					}
 				});
 			});
@@ -432,10 +435,13 @@ export class LayerItem extends AbstractMvuContentPanel {
 				...Default_Extra_Property_Values,
 				label: geoResource instanceof GeoResourceFuture ? translate('layerManager_loading_hint') : geoResource.label,
 				loading: geoResource instanceof GeoResourceFuture,
-				keywords: keywords,
-				collapsed: layerOptions.collapsed ?? true
+				keywords: keywords
 			}
 		});
+	}
+
+	set collapsed(collapsed) {
+		this.signal(Update_Layer_Collapsed, collapsed);
 	}
 
 	static get tag() {

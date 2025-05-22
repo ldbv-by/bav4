@@ -134,7 +134,16 @@ export class LayerManager extends MvuElement {
 
 		const createLayerElement = (draggableItem) => {
 			const layerOptions = { id: draggableItem.id, collapsed: draggableItem.collapsed };
-			return html`<ba-layer-item .layer=${layerOptions} class="layer" draggable data-test-id @collapse=${onCollapseChanged}> </ba-layer-item>`;
+
+			return html`<ba-layer-item
+				.layer=${layerOptions}
+				.collapsed=${draggableItem.collapsed}
+				class="layer"
+				draggable
+				data-test-id
+				@collapse=${onCollapseChanged}
+			>
+			</ba-layer-item>`;
 		};
 
 		const createPlaceholderElement = (draggableItem) => {
