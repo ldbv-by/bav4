@@ -204,8 +204,10 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 							const geoJson = await response.json();
 							if (geoJson.numberReturned < geoJson.numberMatched) {
 								modifyLayer(olLayer.get('id'), { state: LayerState.INCOMPLETE_DATA });
+								this.set('incomplete_data', true);
 							} else {
 								modifyLayer(olLayer.get('id'), { state: LayerState.OK });
+								this.unset('incomplete_data', true);
 							}
 							const features = new GeoJSON().readFeatures(geoJson).map((f) => {
 								// avoid ol displaying only one feature if ids are an empty string

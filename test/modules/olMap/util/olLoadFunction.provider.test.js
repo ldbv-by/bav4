@@ -523,10 +523,12 @@ describe('olLoadFunction.provider', () => {
 			await oafLoadFunction(extent, resolution, projection, jasmine.createSpy(), jasmine.createSpy());
 
 			expect(store.getState().layers.active[0].state).toBe(LayerState.INCOMPLETE_DATA);
+			expect(olSource.get('incomplete_data')).toBeTrue();
 
 			await oafLoadFunction(extent, resolution, projection, jasmine.createSpy(), jasmine.createSpy());
 
 			expect(store.getState().layers.active[0].state).toBe(LayerState.OK);
+			expect(olSource.get('incomplete_data')).not.toBeDefined();
 		});
 
 		it('includes the `limit` query parameter if requested', async () => {
