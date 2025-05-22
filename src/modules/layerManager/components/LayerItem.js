@@ -25,17 +25,13 @@ import { SwipeAlignment } from '../../../store/layers/layers.action';
 const Update_Layer = 'update_layer';
 const Update_Layer_Collapsed = 'update_layer_collapsed';
 const Update_Layer_Swipe = 'update_layer_swipe';
-const Default_Extra_Property_Values = {
-	collapsed: true,
-	opacity: 1,
-	loading: false
-};
 
 /**
  * Child element of the LayerManager. Represents one layer and its state.
  * Events:
  *
  * @property {module:store/layers/layer_action~Layer} layer The {@link Layer}.
+ * @property {boolean} collapsed Whether or not the {@link LayerItem} should be collapsed or not.
  * @fires collapse Fires when the collapse value changes
  *
  * @class
@@ -50,7 +46,10 @@ export class LayerItem extends AbstractMvuContentPanel {
 	constructor() {
 		super({
 			layerProperties: null,
-			layerItemProperties: null,
+			layerItemProperties: {
+				collapsed: true,
+				loading: false
+			},
 			isLayerSwipeActive: null
 		});
 		const { TranslationService, GeoResourceService } = $injector.inject('TranslationService', 'GeoResourceService');
@@ -67,7 +66,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 				return {
 					...model,
 					layerProperties: data.layerProperties,
-					layerItemProperties: data.layerItemProperties
+					layerItemProperties: { ...model.layerItemProperties, ...data.layerItemProperties }
 				};
 			case Update_Layer_Collapsed:
 				return { ...model, layerItemProperties: { ...model.layerItemProperties, collapsed: data } };
@@ -420,7 +419,6 @@ export class LayerItem extends AbstractMvuContentPanel {
 				this.signal(Update_Layer, {
 					layerProperties: layerProperties,
 					layerItemProperties: {
-						...Default_Extra_Property_Values,
 						label: resolvedGeoR.label,
 						loading: false,
 						keywords: keywords
@@ -432,7 +430,6 @@ export class LayerItem extends AbstractMvuContentPanel {
 		this.signal(Update_Layer, {
 			layerProperties: layerProperties,
 			layerItemProperties: {
-				...Default_Extra_Property_Values,
 				label: geoResource instanceof GeoResourceFuture ? translate('layerManager_loading_hint') : geoResource.label,
 				loading: geoResource instanceof GeoResourceFuture,
 				keywords: keywords
