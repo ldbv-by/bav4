@@ -21,6 +21,7 @@ const Update_Layer_Swipe = 'update_layer_swipe';
 /**
  * @typedef DraggableItem
  * @property {string} id
+ * @property {Layer} layer
  * @property {number} zIndex
  * @property {number} listIndex
  * @property {boolean} isPlaceholder
@@ -97,14 +98,16 @@ export class LayerManager extends MvuElement {
 		for (let i = 0; i < layers.length; i++) {
 			const layer = layers[i];
 			const old = this.getModel().draggableItems.filter((item) => item.id === layer.id)[0];
-			const displayProperties = {
-				collapsed: true,
-				visible: layer.visible
-			};
-			if (old) {
-				displayProperties.collapsed = old.collapsed;
-			}
-			draggableItems.push({ ...layer, isPlaceholder: false, listIndex: j + 1, isDraggable: true, ...displayProperties });
+
+			draggableItems.push({
+				id: layer.id,
+				layer: layer,
+				zIndex: layer.zIndex,
+				isPlaceholder: false,
+				listIndex: j + 1,
+				isDraggable: true,
+				collapsed: old ? old.collapsed : true
+			});
 			draggableItems.push({ zIndex: layer.zIndex + 1, isPlaceholder: true, listIndex: j + 2, isDraggable: false });
 			j += 2;
 		}
