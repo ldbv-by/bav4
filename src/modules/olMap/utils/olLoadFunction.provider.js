@@ -194,7 +194,7 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 				try {
 					/**
 					 * Loading a large feature collection in ol takes some time,
-					 * in order to to give some feedback to the user we "include" the processing of the features
+					 * in order to give some feedback to the user we "include" the processing of the features
 					 * in the loading process and therefore manually set the fetching property
 					 *
 					 */
