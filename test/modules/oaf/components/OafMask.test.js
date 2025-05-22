@@ -7,8 +7,6 @@ import { addLayer } from '../../../../src/store/layers/layers.action';
 window.customElements.define(OafMask.tag, OafMask);
 
 describe('OafMask', () => {
-	let store = {};
-
 	const importOafServiceMock = {
 		getFilterCapabilities: async () => []
 	};
@@ -18,7 +16,7 @@ describe('OafMask', () => {
 	};
 
 	const setup = async (state = {}) => {
-		store = TestUtils.setupStoreAndDi(state, { layers: layersReducer });
+		TestUtils.setupStoreAndDi(state, { layers: layersReducer });
 		$injector.registerSingleton('GeoResourceService', geoResourceServiceMock).registerSingleton('ImportOafService', importOafServiceMock);
 
 		addLayer(-1, { geoResourceId: 'dummy' });

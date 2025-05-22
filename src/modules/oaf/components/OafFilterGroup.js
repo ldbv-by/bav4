@@ -1,5 +1,5 @@
 /**
- * @module modules/examples/ogc/components/OafFilter
+ * @module modules/oaf/components/OafFilterGroup
  */
 import { html } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
@@ -94,7 +94,7 @@ export class OafFilterGroup extends MvuElement {
 
 	_addFilter(queryableName) {
 		const { queryables, oafFilters } = this.getModel();
-		const queryableToAdd = queryables.find((queryable) => queryable.name == queryableName);
+		const queryableToAdd = queryables.find((queryable) => queryable.name === queryableName);
 
 		if (oafFilters.includes((queryable) => queryable === queryableToAdd)) {
 			return;

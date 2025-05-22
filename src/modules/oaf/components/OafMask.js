@@ -1,5 +1,5 @@
 /**
- * @module modules/examples/ogc/components/OgcFeaturesMask
+ * @module modules/oaf/components/OafMask
  */
 import css from './oafMask.css';
 import { html, nothing } from 'lit-html';
@@ -156,13 +156,13 @@ export class OafMask extends MvuElement {
 
 	_removeFilterGroup(idToRemove) {
 		return this.getModel().filterGroups.filter((group) => {
-			return group.id != idToRemove;
+			return group.id !== Number(idToRemove);
 		});
 	}
 
 	_findFilterGroupById(id) {
 		return this.getModel().filterGroups.find((group) => {
-			return id == group.id;
+			return id === group.id;
 		});
 	}
 
@@ -178,7 +178,6 @@ export class OafMask extends MvuElement {
 		const geoResource = this.#geoResourceService.byId(layer.geoResourceId);
 		const capabilities = await this.#importOafService.getFilterCapabilities(geoResource);
 
-		console.log(capabilities);
 		this.signal(Update_Capabilities, capabilities);
 	}
 

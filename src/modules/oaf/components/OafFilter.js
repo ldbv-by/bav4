@@ -1,5 +1,5 @@
 /**
- * @module modules/examples/ogc/components/OafFilter
+ * @module modules/oaf/components/OafFilter
  */
 import { html } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
@@ -45,7 +45,7 @@ export class OafFilter extends MvuElement {
 
 	createView(model) {
 		const { minValue, maxValue, value, operator } = model;
-		const { name, type, values: queryableValues, finalList } = model.queryable;
+		const { name, type, values: queryableValues } = model.queryable;
 		const operators = this._getOperators(type);
 
 		const onMinValueChanged = (evt, val) => {
@@ -72,34 +72,41 @@ export class OafFilter extends MvuElement {
 			this.dispatchEvent(new CustomEvent('remove', { detail: model.queryable }));
 		};
 
-		const getInputHTML = () => {
-			const content = () => {
-				const step = type == 'integer' ? '1' : '0.1';
+		const getStringInputHtml = () => {
+			html`<ba-searchable-select @select=${(evt) => onValueChanged(evt, evt.target.selected)} .selected=${value} .options=${queryableValues}>
+			</ba-searchable-select>`;
+		};
 
+		const getTimeInputHtml = () => {
+			html`
+				${operator === 'between'
+					? html`<ba-searchable-select
+								@select=${(evt) => onMinValueChanged(evt, evt.target.selected)}
+								.selected=${minValue}
+								.options=${queryableValues}
+							>
+							</ba-searchable-select>
+							<ba-searchable-select @select=${(evt) => onMaxValueChanged(evt, evt.target.selected)} .selected=${maxValue} .options=${queryableValues}>
+							</ba-searchable-select> `
+					: html`<ba-searchable-select @select=${(evt) => onValueChanged(evt, evt.target.selected)} .selected=${value} .options=${queryableValues}>
+						</ba-searchable-select>`}
+			`;
+		};
+
+		const getNumberInputHtml = () => {
+			return html``;
+		};
+
+		const getInputHtml = () => {
+			const content = () => {
 				switch (type) {
 					case 'string':
+						return getStringInputHtml();
 					case 'time': {
-						return html`
-							${operator == 'between'
-								? html`<ba-searchable-select
-											@select=${(evt) => onMinValueChanged(evt, evt.target.selected)}
-											.selected=${minValue}
-											.options=${queryableValues}
-										>
-										</ba-searchable-select>
-										<ba-searchable-select
-											@select=${(evt) => onMaxValueChanged(evt, evt.target.selected)}
-											.selected=${maxValue}
-											.options=${queryableValues}
-										>
-										</ba-searchable-select> `
-								: html`<ba-searchable-select
-										@select=${(evt) => onValueChanged(evt, evt.target.selected)}
-										.selected=${value}
-										.options=${queryableValues}
-									>
-									</ba-searchable-select>`}
-						`;
+						return getTimeInputHtml();
+					}
+					case 'integer': {
+						return getNumberInputHtml();
 					}
 				}
 				return html``;
@@ -126,10 +133,10 @@ export class OafFilter extends MvuElement {
 					<div class="grid-column">
 							<div class="input-operator">
 								<select @change=${onOperatorSelect}>
-									${operators.map((op) => html`<option .selected=${op == operator} .value=${op}>${op}</option>`)}
+									${operators.map((op) => html`<option .selected=${op === operator} .value=${op}>${op}</option>`)}
 								</select>
 							</div>
-							<div class="input-value">${getInputHTML()}</div>
+							<div class="input-value">${getInputHtml()}</div>
 						</div>
 					</div>
 				</div>

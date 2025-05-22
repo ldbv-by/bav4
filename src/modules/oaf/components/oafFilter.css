@@ -44,6 +44,10 @@
 	padding-right: 10px;
 }
 
+select {
+	background-color: white;
+}
+
 .input-operator,
 .input-value {
 	align-self: center;
@@ -55,10 +59,6 @@
 
 .input-value input {
 	padding: 5px;
-}
-
-select {
-	background-color: white;
 }
 
 .not-button {
