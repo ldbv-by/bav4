@@ -2,7 +2,7 @@
  * @module modules/examples/ogc/components/OgcFeaturesMask
  */
 import css from './oafMask.css';
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { MvuElement } from '../../MvuElement';
 import { $injector } from '../../../injection';
@@ -20,6 +20,7 @@ const Update_Show_Console = 'update_show_console';
  * @author herrmutig
  */
 export class OafMask extends MvuElement {
+	#storeService;
 	#geoResourceService;
 	#importOafService;
 
@@ -27,18 +28,22 @@ export class OafMask extends MvuElement {
 		super({
 			filterGroups: [],
 			capabilities: [],
-			labelId: -1,
+			layerId: -1,
 			showConsole: false
 		});
 
-		const { GeoResourceService: geoResourceService, ImportOafService: importOafService } = $injector.inject('GeoResourceService', 'ImportOafService');
+		const {
+			StoreService: storeService,
+			GeoResourceService: geoResourceService,
+			ImportOafService: importOafService
+		} = $injector.inject('StoreService', 'GeoResourceService', 'ImportOafService');
 
+		this.#storeService = storeService;
 		this.#geoResourceService = geoResourceService;
 		this.#importOafService = importOafService;
 	}
 
 	onInitialize() {
-		console.log(this.getModel());
 		this._requestFilterCapabilities();
 	}
 
@@ -78,26 +83,34 @@ export class OafMask extends MvuElement {
 
 		const { capabilities, filterGroups, showConsole } = model;
 
-		const contentHeaderButtonsHtml = () =>
-			showConsole
+		const contentHeaderButtonsHtml = () => {
+			if (capabilities.length < 1) {
+				return nothing;
+			}
+
+			return showConsole
 				? html` <ba-button
 						style="width:200px; display:inline-block;padding: 20px 0px;"
+						id="btn-normal-mode"
 						.label=${'Normaler Modus'}
 						.type=${'primary'}
 						@click=${onShowCqlConsole}
 					></ba-button>`
 				: html` <ba-button
+							id="btn-add-filter-group"
 							style="width:200px; display:inline-block; padding: 20px 0px;"
 							.label=${'Neue Filtergruppe'}
 							.type=${'primary'}
 							@click=${onAddFilterGroup}
 						></ba-button>
 						<ba-button
+							id="btn-expert-mode"
 							style="width:200px; display:inline-block;padding: 20px 0px;"
 							.label=${'Expertenmodus'}
 							.type=${'primary'}
 							@click=${onShowCqlConsole}
 						></ba-button>`;
+		};
 
 		const orSeparatorHtml = () => html`
 			<div class="separator-container">
@@ -108,7 +121,7 @@ export class OafMask extends MvuElement {
 		`;
 
 		const uiModeHtml = () =>
-			html` <div>
+			html` <div id="filter-groups">
 				${repeat(
 					filterGroups,
 					(group) => group.id,
@@ -126,7 +139,7 @@ export class OafMask extends MvuElement {
 			</div>`;
 
 		const consoleModeHtml = () =>
-			html` <div class="console-flex-container">
+			html` <div id="console" class="console-flex-container">
 				<div class="btn-bar">${this.oparatorDefinitions.map((oparator) => html`<ba-button .type=${'primary'} .label=${oparator}></ba-button>`)}</div>
 				<textarea class="console"></textarea>
 				<ba-button .type=${'primary'} .label=${'Anwenden'}></ba-button>
@@ -153,15 +166,36 @@ export class OafMask extends MvuElement {
 		});
 	}
 
+	_getLayer() {
+		return this.#storeService
+			.getStore()
+			.getState()
+			.layers.active.find((l) => l.id === this.layerId);
+	}
+
 	async _requestFilterCapabilities() {
-		const geoResource = this.#geoResourceService.byId('');
+		const layer = this._getLayer();
+		const geoResource = this.#geoResourceService.byId(layer.geoResourceId);
 		const capabilities = await this.#importOafService.getFilterCapabilities(geoResource);
 
+		console.log(capabilities);
 		this.signal(Update_Capabilities, capabilities);
 	}
 
-	set labelId(value) {
+	get layerId() {
+		return this.getModel().layerId;
+	}
+
+	set layerId(value) {
 		this.signal(Update_Layer_Id, value);
+	}
+
+	get showConsole() {
+		return this.getModel().showConsole;
+	}
+
+	set showConsole(value) {
+		this.signal(Update_Show_Console, value);
 	}
 
 	get oparatorDefinitions() {
