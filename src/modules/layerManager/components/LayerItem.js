@@ -414,11 +414,6 @@ export class LayerItem extends AbstractMvuContentPanel {
 		if (geoResource instanceof GeoResourceFuture) {
 			geoResource.onResolve((resolvedGeoR) => {
 				this.signal(Update_Layer, {
-					...Default_Extra_Property_Values,
-					...layerOptions,
-					label: resolvedGeoR.label,
-					loading: false,
-					keywords: keywords,
 					layerProperties: layerProperties,
 					layerItemProperties: {
 						...Default_Extra_Property_Values,
@@ -432,11 +427,6 @@ export class LayerItem extends AbstractMvuContentPanel {
 		}
 
 		this.signal(Update_Layer, {
-			...Default_Extra_Property_Values,
-			...layerOptions,
-			label: geoResource instanceof GeoResourceFuture ? translate('layerManager_loading_hint') : geoResource.label,
-			loading: geoResource instanceof GeoResourceFuture,
-			keywords: keywords,
 			layerProperties: layerProperties,
 			layerItemProperties: {
 				...Default_Extra_Property_Values,
