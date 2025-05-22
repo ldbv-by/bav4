@@ -202,7 +202,7 @@ describe('VectorLayerService', () => {
 				const olMap = new Map();
 				const olSource = new VectorSource();
 				const vectorGeoResource = new OafGeoResource(geoResourceId, geoResourceLabel, 'url', 'collectionId', 12345);
-				spyOn(instanceUnderTest, '_vectorSourceForOaf').withArgs(vectorGeoResource, jasmine.any(VectorLayer)).and.returnValue(olSource);
+				spyOn(instanceUnderTest, '_vectorSourceForOaf').withArgs(vectorGeoResource, jasmine.any(VectorLayer), olMap).and.returnValue(olSource);
 				spyOn(styleService, 'applyStyle')
 					.withArgs(jasmine.anything(), olMap, vectorGeoResource)
 					.and.callFake((olLayer) => olLayer);
@@ -227,8 +227,9 @@ describe('VectorLayerService', () => {
 				spyOn(mapService, 'getSrid').and.returnValue(destinationSrid);
 				const olVectorLayer = new VectorLayer();
 				const vectorGeoResource = new OafGeoResource('someId', 'label', 'https://oaf.foo', 'collectionId', 12345);
+				const olMap = new Map();
 
-				const olVectorSource = instanceUnderTest._vectorSourceForOaf(vectorGeoResource, olVectorLayer);
+				const olVectorSource = instanceUnderTest._vectorSourceForOaf(vectorGeoResource, olVectorLayer, olMap);
 
 				expect(olVectorSource.constructor.name).toBe('VectorSource');
 				expect(olVectorSource.loader_).toBe(getBvvOafLoadFunctionCustomProviderSpy());
@@ -248,8 +249,9 @@ describe('VectorLayerService', () => {
 				const vectorGeoResource = new OafGeoResource('someId', 'label', url, 'collectionId', 12345).setAuthenticationType(
 					GeoResourceAuthenticationType.BAA
 				);
+				const olMap = new Map();
 
-				const olVectorSource = instanceUnderTest._vectorSourceForOaf(vectorGeoResource, olVectorLayer);
+				const olVectorSource = instanceUnderTest._vectorSourceForOaf(vectorGeoResource, olVectorLayer, olMap);
 
 				expect(olVectorSource.constructor.name).toBe('VectorSource');
 				expect(olVectorSource.loader_).toBe(getBvvOafLoadFunctionCustomProviderSpy());
@@ -257,14 +259,15 @@ describe('VectorLayerService', () => {
 				expect(getBvvOafLoadFunctionCustomProviderSpy).toHaveBeenCalledWith(vectorGeoResource.id, olVectorLayer, credential);
 			});
 
-			it('registers a listener that calls `refresh` of the ol.source when the `filter` property changes', () => {
+			it('registers a propertychange listener that calls `refresh` of the ol.source when the `filter` property changes', () => {
 				const getBvvOafLoadFunctionCustomProviderSpy = jasmine.createSpy().and.returnValue('loaded');
 				setup(undefined, getBvvOafLoadFunctionCustomProviderSpy);
 				const destinationSrid = 3857;
 				spyOn(mapService, 'getSrid').and.returnValue(destinationSrid);
 				const olVectorLayer = new VectorLayer();
 				const vectorGeoResource = new OafGeoResource('someId', 'label', 'https://oaf.foo', 'collectionId', 12345);
-				const olVectorSource = instanceUnderTest._vectorSourceForOaf(vectorGeoResource, olVectorLayer);
+				const olMap = new Map();
+				const olVectorSource = instanceUnderTest._vectorSourceForOaf(vectorGeoResource, olVectorLayer, olMap);
 				const olSourceSpy = spyOn(olVectorSource, 'refresh');
 
 				olVectorLayer.set('foo', 'bar');
@@ -275,6 +278,47 @@ describe('VectorLayerService', () => {
 				olVectorLayer.set('filter', 'foo=bar');
 
 				expect(olSourceSpy).toHaveBeenCalledTimes(1);
+			});
+
+			it('registers a change:resolution listener that calls `refresh` of the ol.source when the data of the source are incomplete', () => {
+				const getBvvOafLoadFunctionCustomProviderSpy = jasmine.createSpy().and.returnValue('loaded');
+				setup(undefined, getBvvOafLoadFunctionCustomProviderSpy);
+				const destinationSrid = 3857;
+				spyOn(mapService, 'getSrid').and.returnValue(destinationSrid);
+				const olVectorLayer = new VectorLayer();
+				const olMap = new Map();
+				olMap.getLayers().push(olVectorLayer);
+				const vectorGeoResource = new OafGeoResource('someId', 'label', 'https://oaf.foo', 'collectionId', 12345);
+				const olVectorSource = instanceUnderTest._vectorSourceForOaf(vectorGeoResource, olVectorLayer, olMap);
+				const olSourceSpy = spyOn(olVectorSource, 'refresh');
+
+				olMap.getView().dispatchEvent('change:resolution');
+
+				expect(olSourceSpy).not.toHaveBeenCalled();
+
+				olVectorSource.set('incomplete_data', true);
+
+				olMap.getView().dispatchEvent('change:resolution');
+
+				expect(olSourceSpy).toHaveBeenCalledTimes(1);
+			});
+
+			it('unregisters a change:resolution listener when the layer is not attached to the map', () => {
+				const getBvvOafLoadFunctionCustomProviderSpy = jasmine.createSpy().and.returnValue('loaded');
+				setup(undefined, getBvvOafLoadFunctionCustomProviderSpy);
+				const destinationSrid = 3857;
+				spyOn(mapService, 'getSrid').and.returnValue(destinationSrid);
+				const olVectorLayer = new VectorLayer();
+				const olMap = new Map();
+				const vectorGeoResource = new OafGeoResource('someId', 'label', 'https://oaf.foo', 'collectionId', 12345);
+				const olVectorSource = instanceUnderTest._vectorSourceForOaf(vectorGeoResource, olVectorLayer, olMap);
+				const olSourceSpy = spyOn(olVectorSource, 'refresh');
+				const unRegisterSpy = spyOn(instanceUnderTest, '_unregisterOlListener').and.callThrough();
+
+				olMap.getView().dispatchEvent('change:resolution');
+
+				expect(unRegisterSpy).toHaveBeenCalledWith(jasmine.anything());
+				expect(olSourceSpy).not.toHaveBeenCalled();
 			});
 		});
 
