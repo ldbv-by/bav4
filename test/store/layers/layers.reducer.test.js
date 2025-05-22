@@ -330,7 +330,7 @@ describe('layersReducer', () => {
 				const opacity = 0.5;
 				const visible = false;
 				const timestamp = '1900';
-				const state = LayerState.UNLOADABLE;
+				const state = LayerState.INCOMPLETE_DATA;
 				const constraints = { ...createDefaultLayersConstraints(), hidden: true };
 				addLayer('id0', { geoResourceId, opacity, visible, timestamp, state, constraints });
 
