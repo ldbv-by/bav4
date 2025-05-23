@@ -217,6 +217,29 @@ describe('VectorLayerService', () => {
 				expect(olVectorLayer.constructor.name).toBe('VectorLayer');
 				expect(olVectorLayer.getSource()).toEqual(olSource);
 			});
+
+			it('registers a `featuresloadend` listener that calls the StyleService', () => {
+				setup();
+				const id = 'id';
+				const geoResourceId = 'geoResourceId';
+				const geoResourceLabel = 'geoResourceLabel';
+				const sourceAsString = 'kml';
+				const olMap = new Map();
+				const olSource = new VectorSource();
+				const vectorGeoResource = new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326);
+				spyOn(instanceUnderTest, '_vectorSourceForData').withArgs(vectorGeoResource).and.returnValue(olSource);
+				const applyStyleSpy = spyOn(styleService, 'applyStyle')
+					.withArgs(jasmine.anything(), olMap, vectorGeoResource)
+					.and.callFake((olLayer) => olLayer);
+
+				instanceUnderTest.createLayer(id, vectorGeoResource, olMap);
+
+				expect(applyStyleSpy).toHaveBeenCalledTimes(1);
+
+				olSource.dispatchEvent('featuresloadend');
+
+				expect(applyStyleSpy).toHaveBeenCalledTimes(2);
+			});
 		});
 
 		describe('_vectorSourceForOaf', () => {
