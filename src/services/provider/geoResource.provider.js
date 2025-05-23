@@ -51,6 +51,7 @@ export const _definitionToGeoResource = (definition) => {
 					getBvvVectorGeoResourceLoaderForUrl(def.url, Symbol.for(def.sourceType), def.id, def.label),
 					def.label
 				).onResolve((resolved) => {
+					// @ts-ignore
 					setPropertiesAndProviders(resolved.setClusterParams(def.clusterParams ?? {}).setBaseColor(def.baseColor));
 				});
 			}
