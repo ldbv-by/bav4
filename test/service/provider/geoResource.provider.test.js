@@ -129,6 +129,8 @@ describe('GeoResource provider', () => {
 		timestamps: ['20001231'],
 		limit: 4242,
 		filter: 'filterExpr',
+		clusterParams: { foo: 'bar' },
+		baseColor: '#ff0000',
 		...oafDefinition
 	};
 	const vectorDefinition = {
@@ -141,6 +143,7 @@ describe('GeoResource provider', () => {
 	};
 	const vectorDefinitionOptionalProperties = {
 		clusterParams: { foo: 'bar' },
+		baseColor: '#ff0000',
 		background: true,
 		opacity: 0.5,
 		hidden: true,
@@ -162,6 +165,7 @@ describe('GeoResource provider', () => {
 	};
 	const rtVectorDefinitionOptionalProperties = {
 		clusterParams: { foo: 'bar' },
+		baseColor: '#ff0000',
 		background: true,
 		opacity: 0.5,
 		hidden: true,
@@ -302,6 +306,8 @@ describe('GeoResource provider', () => {
 			expect(oafGeoResource.timestamps).toEqual(['20001231']);
 			expect(oafGeoResource.filter).toBe('filterExpr');
 			expect(oafGeoResource.limit).toBe(4242);
+			expect(oafGeoResource.clusterParams).toEqual({ foo: 'bar' });
+			expect(oafGeoResource.baseColor).toBe('#ff0000');
 		});
 
 		it('maps a VectorFile BVV definition to a corresponding GeoResource instance', async () => {
@@ -336,6 +342,7 @@ describe('GeoResource provider', () => {
 			expect(vectorGeoResource.minZoom).toBe(5);
 			expect(vectorGeoResource.maxZoom).toBe(19);
 			expect(vectorGeoResource.clusterParams).toEqual({ foo: 'bar' });
+			expect(vectorGeoResource.baseColor).toBe('#ff0000');
 			expect(vectorGeoResource.queryable).toBeFalse();
 			expect(vectorGeoResource.exportable).toBeFalse();
 			expect(vectorGeoResource.authRoles).toEqual(['TEST']);
@@ -372,6 +379,7 @@ describe('GeoResource provider', () => {
 			expect(rtVectorGeoResource.minZoom).toBe(5);
 			expect(rtVectorGeoResource.maxZoom).toBe(19);
 			expect(rtVectorGeoResource.clusterParams).toEqual({ foo: 'bar' });
+			expect(rtVectorGeoResource.baseColor).toBe('#ff0000');
 			expect(rtVectorGeoResource.queryable).toBeFalse();
 			expect(rtVectorGeoResource.exportable).toBeFalse();
 			expect(rtVectorGeoResource.authRoles).toEqual(['TEST']);

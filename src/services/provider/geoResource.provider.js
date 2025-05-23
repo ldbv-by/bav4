@@ -40,8 +40,10 @@ export const _definitionToGeoResource = (definition) => {
 				return (
 					new OafGeoResource(def.id, def.label, def.url, def.collectionId, def.srid ?? 3857)
 						//set specific optional values
-						.setLimit(def.limit ?? null)
-						.setFilter(def.filter ?? null)
+						.setLimit(def.limit)
+						.setFilter(def.filter)
+						.setClusterParams(def.clusterParams ?? {})
+						.setBaseColor(def.baseColor)
 				);
 			case 'vector': {
 				return new GeoResourceFuture(
@@ -49,7 +51,7 @@ export const _definitionToGeoResource = (definition) => {
 					getBvvVectorGeoResourceLoaderForUrl(def.url, Symbol.for(def.sourceType), def.id, def.label),
 					def.label
 				).onResolve((resolved) => {
-					setPropertiesAndProviders(resolved.setClusterParams(def.clusterParams ?? {}));
+					setPropertiesAndProviders(resolved.setClusterParams(def.clusterParams ?? {}).setBaseColor(def.baseColor));
 				});
 			}
 			case 'rtvector': {
@@ -57,6 +59,7 @@ export const _definitionToGeoResource = (definition) => {
 					new RtVectorGeoResource(def.id, def.label, def.url, Symbol.for(def.sourceType))
 						//set specific optional values
 						.setClusterParams(def.clusterParams ?? {})
+						.setBaseColor(def.baseColor)
 				);
 			}
 			case 'aggregate':
