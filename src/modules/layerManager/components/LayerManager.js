@@ -47,14 +47,17 @@ const Update_Layer_Swipe = 'update_layer_swipe';
  * @author alsturm
  */
 export class LayerManager extends MvuElement {
+	#translationService;
+	#environmentService;
+
 	constructor() {
 		super({
 			stackItems: [],
 			draggedItem: false /* instead of using e.dataTransfer.get/setData() using internal State to get access for dragged object  */
 		});
 		const { TranslationService, EnvironmentService } = $injector.inject('TranslationService', 'EnvironmentService');
-		this._translationService = TranslationService;
-		this._environmentService = EnvironmentService;
+		this.#translationService = TranslationService;
+		this.#environmentService = EnvironmentService;
 	}
 
 	/**
@@ -128,7 +131,7 @@ export class LayerManager extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key) => this.#translationService.translate(key);
 		const { stackItems, draggedItem } = model;
 		const isNeighbour = (index, otherIndex) => {
 			return index === otherIndex || index - 1 === otherIndex || index + 1 === otherIndex;
@@ -165,7 +168,7 @@ export class LayerManager extends MvuElement {
 		};
 
 		const onDragStart = (e, stackItem) => {
-			if (this._environmentService.isTouch()) {
+			if (this.#environmentService.isTouch()) {
 				return;
 			}
 
@@ -259,7 +262,7 @@ export class LayerManager extends MvuElement {
 	}
 
 	_getButtons(model) {
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key) => this.#translationService.translate(key);
 		const { stackItems, isLayerSwipeActive } = model;
 		const expandAll = () => {
 			this.signal(
