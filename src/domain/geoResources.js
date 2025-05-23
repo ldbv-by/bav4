@@ -4,7 +4,7 @@
 import { $injector } from '../injection';
 import { getDefaultAttribution } from '../services/provider/attribution.provider';
 import { getDefaultVectorGeoResourceLoaderForUrl } from '../services/provider/geoResource.provider';
-import { isExternalGeoResourceId, isNumber, isString } from '../utils/checks';
+import { isExternalGeoResourceId, isHexColor, isNumber, isString } from '../utils/checks';
 import { StyleHint } from './styles';
 
 /**
@@ -622,6 +622,7 @@ export class AbstractVectorGeoResource extends GeoResource {
 		this._showPointNames = true;
 		this._clusterParams = {};
 		this._styleHint = null;
+		this._baseColor = null;
 	}
 
 	/**
@@ -686,6 +687,23 @@ export class AbstractVectorGeoResource extends GeoResource {
 	setShowPointNames(showPointNames) {
 		this._showPointNames = showPointNames;
 		return this;
+	}
+
+	/**
+	 * Sets the base color for this `AbstractVectorGeoResource`.
+	 * Only effective if no more specific styling is available.
+	 * @param {string} baseColor (seven-character hexadecimal notation)
+	 * @returns {AbstractVectorGeoResource} `this` for chaining
+	 */
+	setBaseColor(baseColor) {
+		if (isHexColor(baseColor)) {
+			this._baseColor = baseColor;
+		}
+		return this;
+	}
+
+	get baseColor() {
+		return this._baseColor;
 	}
 }
 
