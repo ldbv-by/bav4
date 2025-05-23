@@ -43,10 +43,11 @@ describe('provides checks for commons types', () => {
 		expect(isHexColor({})).toBeFalse();
 		expect(isHexColor([])).toBeFalse();
 
-		expect(isString('#ff00')).toBeFalse();
-		expect(isString('#ff0000')).toBeTrue();
-		expect(isString('#ff0000CC')).toBeFalse();
-		expect(isString('#ff0000CC', true)).toBeTrue();
+		expect(isHexColor('#ff00')).toBeFalse();
+		expect(isHexColor('#ff0000')).toBeTrue();
+		expect(isHexColor('#ff0000CC')).toBeFalse();
+		expect(isHexColor('#ff0000CC', false)).toBeFalse();
+		expect(isHexColor('#ff0000CC', true)).toBeTrue();
 	});
 
 	it('checks for a function', () => {
