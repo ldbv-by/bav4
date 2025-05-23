@@ -77,6 +77,7 @@ export class OafMask extends MvuElement {
 		const onFilterGroupChanged = (evt) => {
 			const groups = this.getModel().filterGroups;
 			const targetGroup = this._findFilterGroupById(evt.target.getAttribute('group-id'));
+
 			targetGroup.oafFilters = evt.target.oafFilters;
 			this.signal(Update_Filter_Groups, [...groups]);
 		};
@@ -162,7 +163,7 @@ export class OafMask extends MvuElement {
 
 	_findFilterGroupById(id) {
 		return this.getModel().filterGroups.find((group) => {
-			return id === group.id;
+			return Number(id) === group.id;
 		});
 	}
 

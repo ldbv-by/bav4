@@ -72,7 +72,7 @@ describe('OafMask', () => {
 	});
 
 	describe('when the ui renders with default', () => {
-		it('has no filter groups', async () => {
+		it('does not render filter groups', async () => {
 			const element = await setup();
 			expect(element.shadowRoot.querySelectorAll('ba-oaf-filter-group')).toHaveSize(0);
 		});
@@ -99,7 +99,7 @@ describe('OafMask', () => {
 		});
 
 		describe('in normal mode', () => {
-			it('has no filter groups', async () => {
+			it('does not render filter groups', async () => {
 				const element = await setup();
 				expect(element.shadowRoot.querySelectorAll('ba-oaf-filter-group')).toHaveSize(0);
 			});

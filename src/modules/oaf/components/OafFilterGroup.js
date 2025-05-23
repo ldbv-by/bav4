@@ -29,7 +29,6 @@ export class OafFilterGroup extends MvuElement {
 			case Update_Filters:
 				return { ...model, oafFilters: [...data] };
 		}
-		return model;
 	}
 
 	createView(model) {
@@ -37,7 +36,6 @@ export class OafFilterGroup extends MvuElement {
 
 		const onAddFilter = (evt) => {
 			this._addFilter(evt.target.value);
-			this.dispatchEvent(new CustomEvent('change'));
 		};
 
 		const onChangeFilter = (evt) => {
@@ -65,12 +63,12 @@ export class OafFilterGroup extends MvuElement {
 				<h2 style="padding: 10px 0;">Filtergruppe</h2>
 				<div class="btn-bar">
 					<ba-button .type=${'primary'} .label=${'DUP'}></ba-button>
-					<ba-button .type=${'primary'} class="remove-button" .label=${'X'} @click=${onRemoveGroup}></ba-button>
+					<ba-button id="btn-remove-group" .type=${'primary'} class="remove-button" .label=${'X'} @click=${onRemoveGroup}></ba-button>
 				</div>
 				<select id="queryable-select" @change=${onAddFilter}>
 					<option selected>Select Filter...</option>
 					${queryables
-						.filter((queryable) => !oafFilters.includes((oafFilter) => oafFilter.queryable === queryable))
+						.filter((queryable) => !oafFilters.find((oafFilter) => oafFilter.queryable.name === queryable.name))
 						.map((queryable) => html`<option .value=${queryable.name}>${queryable.name}</option>`)}
 				</select>
 				<div class="filter-container">
@@ -86,7 +84,6 @@ export class OafFilterGroup extends MvuElement {
 								@remove=${onRemoveFilter}
 							></ba-oaf-filter>`
 					)}
-					<div class="ogc-filter-navigation"></div>
 				</div>
 			</div>
 		`;
@@ -96,24 +93,26 @@ export class OafFilterGroup extends MvuElement {
 		const { queryables, oafFilters } = this.getModel();
 		const queryableToAdd = queryables.find((queryable) => queryable.name === queryableName);
 
-		if (oafFilters.includes((queryable) => queryable === queryableToAdd)) {
+		if (queryableToAdd === undefined) {
 			return;
 		}
 
 		this.signal(Update_Filters, [
 			...oafFilters,
 			{
-				...this._createOafFilterModel(),
+				...this._createDefaultOafFilter(),
 				queryable: queryableToAdd
 			}
 		]);
+
+		this.dispatchEvent(new CustomEvent('change'));
 	}
 
 	_removeFilter(queryableName) {
 		return this.getModel().oafFilters.filter((oafFilter) => oafFilter.queryable.name !== queryableName);
 	}
 
-	_createOafFilterModel() {
+	_createDefaultOafFilter() {
 		return {
 			value: null,
 			minValue: null,
