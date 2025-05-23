@@ -252,7 +252,6 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 			};
 			return await getFeatures(url);
 		} catch (error) {
-			this.removeLoadedExtent(extent);
 			failure();
 			throw new UnavailableGeoResourceError(error.message, geoResourceId);
 		}
