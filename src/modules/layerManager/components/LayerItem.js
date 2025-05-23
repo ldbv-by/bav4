@@ -397,18 +397,16 @@ export class LayerItem extends AbstractMvuContentPanel {
 	set layer(layerOptions) {
 		const getLayerProperties = (layerId) => {
 			const { StoreService } = $injector.inject('StoreService');
-			const candidates = StoreService.getStore()
+			return StoreService.getStore()
 				.getState()
-				.layers.active.filter((l) => l.id === layerId);
-			return candidates.length ? candidates[0] : null;
+				.layers.active.find((l) => l.id === layerId);
 		};
 
 		if (!layerOptions) {
 			return;
 		}
 
-		const layerId = layerOptions.id;
-		const layerProperties = getLayerProperties(layerId);
+		const layerProperties = getLayerProperties(layerOptions.id);
 
 		const translate = (key) => this.#translationService.translate(key);
 		const geoResource = this.#geoResourceService.byId(layerProperties.geoResourceId);
