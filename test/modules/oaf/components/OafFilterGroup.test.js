@@ -1,7 +1,9 @@
+import { OafFilter } from '../../../../src/modules/oaf/components/OafFilter';
 import { OafFilterGroup } from '../../../../src/modules/oaf/components/OafFilterGroup';
 import { TestUtils } from '../../../test-utils';
 
 window.customElements.define(OafFilterGroup.tag, OafFilterGroup);
+window.customElements.define(OafFilter.tag, OafFilter);
 
 describe('OafFilterGroup', () => {
 	const setup = async () => {
@@ -159,6 +161,15 @@ describe('OafFilterGroup', () => {
 
 				expect(select.options).not.toContain(jasmine.objectContaining({ value: 'StringQueryable' }));
 			});
+		});
+	});
+
+	describe('Member Methods', () => {
+		it('"_createDefaultOafFilter" creates a default oafFilter Model', async () => {
+			const groupElement = await setup();
+			const oafFilterElement = await TestUtils.render(OafFilter.tag);
+
+			expect(groupElement._createDefaultOafFilter()).toEqual(oafFilterElement.getModel());
 		});
 	});
 });

@@ -114,11 +114,11 @@ export class OafFilterGroup extends MvuElement {
 
 	_createDefaultOafFilter() {
 		return {
+			queryable: {},
+			operator: 'equals',
 			value: null,
 			minValue: null,
-			maxValue: null,
-			operator: null,
-			queryable: null
+			maxValue: null
 		};
 	}
 

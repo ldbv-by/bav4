@@ -1,7 +1,7 @@
 /**
  * @module modules/oaf/components/OafFilter
  */
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
 import css from './oafFilter.css';
 
@@ -73,28 +73,47 @@ export class OafFilter extends MvuElement {
 		};
 
 		const getStringInputHtml = () => {
-			html`<ba-searchable-select @select=${(evt) => onValueChanged(evt, evt.target.selected)} .selected=${value} .options=${queryableValues}>
-			</ba-searchable-select>`;
+			return html`<div data-type="string">
+				<ba-searchable-select
+					class="value-input"
+					@select=${(evt) => onValueChanged(evt, evt.target.selected)}
+					.selected=${value}
+					.options=${queryableValues}
+				>
+				</ba-searchable-select>
+			</div>`;
 		};
 
 		const getTimeInputHtml = () => {
-			html`
+			return html`<div data-type="time">
 				${operator === 'between'
 					? html`<ba-searchable-select
+								class="min-value-input"
 								@select=${(evt) => onMinValueChanged(evt, evt.target.selected)}
 								.selected=${minValue}
 								.options=${queryableValues}
 							>
 							</ba-searchable-select>
-							<ba-searchable-select @select=${(evt) => onMaxValueChanged(evt, evt.target.selected)} .selected=${maxValue} .options=${queryableValues}>
+							<ba-searchable-select
+								class="max-value-input"
+								@select=${(evt) => onMaxValueChanged(evt, evt.target.selected)}
+								.selected=${maxValue}
+								.options=${queryableValues}
+							>
 							</ba-searchable-select> `
-					: html`<ba-searchable-select @select=${(evt) => onValueChanged(evt, evt.target.selected)} .selected=${value} .options=${queryableValues}>
+					: html`<ba-searchable-select
+							class="value-input"
+							@select=${(evt) => onValueChanged(evt, evt.target.selected)}
+							.selected=${value}
+							.options=${queryableValues}
+						>
 						</ba-searchable-select>`}
-			`;
+			</div>`;
 		};
 
-		const getNumberInputHtml = () => {
-			return html``;
+		// TODO
+		const getNumberInputHtml = (type) => {
+			return type === 'integer' ? html`<div data-type="integer"></div>` : html`<div data-type="float"></div>`;
 		};
 
 		const getInputHtml = () => {
@@ -102,17 +121,17 @@ export class OafFilter extends MvuElement {
 				switch (type) {
 					case 'string':
 						return getStringInputHtml();
-					case 'time': {
+					case 'time':
 						return getTimeInputHtml();
-					}
-					case 'integer': {
-						return getNumberInputHtml();
-					}
+					case 'integer':
+					case 'float':
+						return getNumberInputHtml(type);
+					case 'date':
+						return html`<div data-type="date"></div>`;
 				}
-				return html``;
+				return nothing;
 			};
-
-			return html`${content()}`;
+			return html`<div>${content()}</div>`;
 		};
 
 		const toggleActiveButtonClass = (evt) => {
@@ -132,7 +151,7 @@ export class OafFilter extends MvuElement {
 					</div>
 					<div class="grid-column">
 							<div class="input-operator">
-								<select @change=${onOperatorSelect}>
+								<select id="select-operator" @change=${onOperatorSelect}>
 									${operators.map((op) => html`<option .selected=${op === operator} .value=${op}>${op}</option>`)}
 								</select>
 							</div>
