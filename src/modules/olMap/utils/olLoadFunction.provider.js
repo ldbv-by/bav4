@@ -7,6 +7,8 @@ import { UnavailableGeoResourceError } from '../../../domain/errors';
 import { FailureCounter } from '../../../utils/FailureCounter';
 import { isString } from '../../../utils/checks';
 import GeoJSON from 'ol/format/GeoJSON';
+import { setFetching } from '../../../store/network/network.action';
+import { LayerState, modifyLayer } from '../../../store/layers/layers.action';
 
 const handleUnexpectedStatusCode = (geoResourceId, response) => {
 	// we have to throw the UnavailableGeoResourceError in a asynchronous manner, otherwise it would be caught by ol and not be  propagated to the window (see GlobalErrorPlugin)
@@ -162,49 +164,71 @@ export const getBvvTileLoadFunction = (geoResourceId, olLayer, failureCounterPro
 export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null) => {
 	const { HttpService: httpService, GeoResourceService: geoResourceService } = $injector.inject('HttpService', 'GeoResourceService');
 
+	// see https://openlayers.org/en/latest/apidoc/module-ol_source_Vector-VectorSource.html
 	return async function (extent, resolution, projection, success, failure) {
 		const timeout = 15_000;
-		// see https://openlayers.org/en/latest/apidoc/module-ol_source_Vector-VectorSource.html
 		const srid = projection.getCode().split(':')[1];
 		const crs = `http://www.opengis.net/def/crs/EPSG/0/${srid}`;
 		try {
-			const geoResource = geoResourceService.byId(geoResourceId);
+			const oafGeoResource = geoResourceService.byId(geoResourceId);
 
 			const options = {};
 			options['f'] = 'json';
 			options['crs'] = crs;
-			if (geoResource.limit) {
-				options['limit'] = geoResource.limit;
+			if (oafGeoResource.limit) {
+				options['limit'] = oafGeoResource.limit;
 			}
 			options['bbox'] = `${extent.join(',')}`;
 			options['bbox-crs'] = crs;
+			if (oafGeoResource.hasFilter()) {
+				options['filter'] = oafGeoResource.filter;
+			}
 			if (olLayer.get('filter')) {
 				options['filter'] = olLayer.get('filter');
 			}
 
 			const searchParams = new URLSearchParams({ ...options });
-			const url = `${geoResource.url}${geoResource.url.endsWith('/') ? '' : '/'}collections/${geoResource.collectionId}/items?${decodeURIComponent(searchParams.toString())}`;
+			const url = `${oafGeoResource.url}${oafGeoResource.url.endsWith('/') ? '' : '/'}collections/${oafGeoResource.collectionId}/items?${decodeURIComponent(searchParams.toString())}`;
 
 			const handleResponse = async (response, vectorSource) => {
-				switch (response.status) {
-					case 200: {
-						const features = new GeoJSON().readFeatures(await response.json()).map((f) => {
-							// avoid ol displaying only one feature if ids are an empty string
-							if (isString(f.getId()) && f.getId().trim() === '') {
-								f.setId(undefined);
+				try {
+					/**
+					 * Loading a large feature collection in ol takes some time,
+					 * in order to give some feedback to the user we "include" the processing of the features
+					 * in the loading process and therefore manually set the fetching property
+					 *
+					 */
+					setFetching(true);
+					switch (response.status) {
+						case 200: {
+							const geoJson = await response.json();
+							if (geoJson.numberReturned < geoJson.numberMatched) {
+								modifyLayer(olLayer.get('id'), { state: LayerState.INCOMPLETE_DATA });
+								this.set('incomplete_data', true);
+							} else {
+								modifyLayer(olLayer.get('id'), { state: LayerState.OK });
+								this.unset('incomplete_data', true);
 							}
-							f.getGeometry().transform('EPSG:' + geoResource.srid, projection);
-							return f;
-						});
-						vectorSource.addFeatures(features);
-						success(features);
-						break;
+							const features = new GeoJSON().readFeatures(geoJson).map((f) => {
+								// avoid ol displaying only one feature if ids are an empty string
+								if (isString(f.getId()) && f.getId().trim() === '') {
+									f.setId(undefined);
+								}
+								f.getGeometry().transform('EPSG:' + oafGeoResource.srid, projection);
+								return f;
+							});
+							vectorSource.addFeatures(features);
+							success(features);
+							break;
+						}
+						default: {
+							this.removeLoadedExtent(extent);
+							failure();
+							throw new UnavailableGeoResourceError(`Unexpected network status`, geoResourceId, response?.status);
+						}
 					}
-					default: {
-						this.removeLoadedExtent(extent);
-						failure();
-						throw new UnavailableGeoResourceError(`Unexpected network status`, geoResourceId, response?.status);
-					}
+				} finally {
+					setFetching(false);
 				}
 			};
 

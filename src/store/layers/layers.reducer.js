@@ -1,6 +1,6 @@
 import { $injector } from '../../injection/index';
 import { EventLike } from '../../utils/storeUtils';
-import { SwipeAlignment } from './layers.action';
+import { LayerState, SwipeAlignment } from './layers.action';
 
 export const LAYER_ADDED = 'layer/added';
 export const LAYER_REMOVED = 'layer/removed';
@@ -86,6 +86,7 @@ export const createDefaultLayerProperties = () => ({
 	zIndex: -1,
 	opacity: 1,
 	timestamp: null,
+	state: LayerState.OK,
 	constraints: createDefaultLayersConstraints(),
 	grChangedFlag: null
 });
