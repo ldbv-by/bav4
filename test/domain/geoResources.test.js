@@ -666,6 +666,13 @@ describe('GeoResource', () => {
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setLimit(1000).hasLimit()).toBeTrue();
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setLimit(1000).limit).toBe(1000);
 			});
+
+			it('sets the filter', () => {
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).hasFilter()).toBeFalse();
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setFilter(1000)).toBeNull;
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setFilter('filterExpr').hasFilter()).toBeTrue();
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setFilter('filterExpr').filter).toBe('filterExpr');
+			});
 		});
 	});
 

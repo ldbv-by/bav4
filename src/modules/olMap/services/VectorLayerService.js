@@ -14,6 +14,7 @@ import { isHttpUrl, isString } from '../../../utils/checks';
 import { SourceTypeName } from '../../../domain/sourceType';
 import { bbox } from 'ol/loadingstrategy.js';
 import { getBvvOafLoadFunction } from '../utils/olLoadFunction.provider';
+import { unByKey } from '../../../../node_modules/ol/Observable';
 
 /**
  * A function that returns a `ol.featureloader.FeatureLoader` for OGC API Features service.
@@ -123,7 +124,7 @@ export class VectorLayerService {
 		const vectorSource =
 			vectorGeoResource instanceof VectorGeoResource
 				? this._vectorSourceForData(vectorGeoResource)
-				: this._vectorSourceForOaf(vectorGeoResource, vectorLayer);
+				: this._vectorSourceForOaf(vectorGeoResource, vectorLayer, olMap);
 		vectorLayer.setSource(vectorSource);
 
 		return styleService.applyStyle(vectorLayer, olMap, vectorGeoResource);
@@ -135,7 +136,7 @@ export class VectorLayerService {
 	 * @param {ol.layer.Vector} olVectorLayer
 	 * @returns olVectorSource
 	 */
-	_vectorSourceForOaf(geoResource, olVectorLayer) {
+	_vectorSourceForOaf(geoResource, olVectorLayer, olMap) {
 		const vs = new VectorSource({
 			strategy: bbox
 		});
@@ -157,7 +158,25 @@ export class VectorLayerService {
 			}
 		});
 
+		/**
+		 * The bbox strategy prevents the loading of an extent that lies within the previously loaded extent when a higher resolution is requested.
+		 * If not all possible features have been loaded yet, a reload of the features is forced.
+		 */
+		const key = olMap.getView().on('change:resolution', () => {
+			if (olMap.getLayers().getArray().includes(olVectorLayer)) {
+				if (vs.get('incomplete_data')) {
+					vs.refresh();
+				}
+			} else {
+				this._unregisterOlListener(key);
+			}
+		});
+
 		return vs;
+	}
+
+	_unregisterOlListener(key) {
+		unByKey(key);
 	}
 
 	/**

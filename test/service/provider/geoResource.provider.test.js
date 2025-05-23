@@ -109,6 +109,28 @@ describe('GeoResource provider', () => {
 		timestamps: ['20001231'],
 		...vtDefinition
 	};
+	const oafDefinition = {
+		id: 'oafId',
+		label: 'oafLabel',
+		url: 'oafUrl',
+		collectionId: 'oafCollectionId',
+		type: 'oaf',
+		attribution: basicAttribution
+	};
+	const oafDefinitionOptionalProperties = {
+		background: true,
+		opacity: 0.5,
+		hidden: true,
+		minZoom: 5,
+		maxZoom: 19,
+		queryable: false,
+		exportable: false,
+		authRoles: ['TEST'],
+		timestamps: ['20001231'],
+		limit: 4242,
+		filter: 'filterExpr',
+		...oafDefinition
+	};
 	const vectorDefinition = {
 		id: 'vectorId',
 		label: 'vectorLabel',
@@ -256,6 +278,30 @@ describe('GeoResource provider', () => {
 			expect(vtGeoResource.exportable).toBeFalse();
 			expect(vtGeoResource.authRoles).toEqual(['TEST']);
 			expect(vtGeoResource.timestamps).toEqual(['20001231']);
+		});
+
+		it('maps a OAF BVV definition to a corresponding GeoResource instance', () => {
+			const oafGeoResource = _definitionToGeoResource(oafDefinition);
+
+			validateGeoResourceProperties(oafGeoResource, oafDefinition);
+			expect(oafGeoResource.collectionId).toBe('oafCollectionId');
+			expect(oafGeoResource._attributionProvider).toBe(getBvvAttribution);
+			expect(oafGeoResource._attribution).not.toBeNull();
+		});
+
+		it('maps a OAF BVV definition with optional properties to a corresponding GeoResource instance', () => {
+			const oafGeoResource = _definitionToGeoResource(oafDefinitionOptionalProperties);
+
+			expect(oafGeoResource.opacity).toBe(0.5);
+			expect(oafGeoResource.hidden).toBeTrue();
+			expect(oafGeoResource.minZoom).toBe(5);
+			expect(oafGeoResource.maxZoom).toBe(19);
+			expect(oafGeoResource.queryable).toBeFalse();
+			expect(oafGeoResource.exportable).toBeFalse();
+			expect(oafGeoResource.authRoles).toEqual(['TEST']);
+			expect(oafGeoResource.timestamps).toEqual(['20001231']);
+			expect(oafGeoResource.filter).toBe('filterExpr');
+			expect(oafGeoResource.limit).toBe(4242);
 		});
 
 		it('maps a VectorFile BVV definition to a corresponding GeoResource instance', async () => {

@@ -19,7 +19,8 @@ import {
 	removeAndSetLayers,
 	addLayerIfNotPresent,
 	cloneAndAddLayer,
-	SwipeAlignment
+	SwipeAlignment,
+	LayerState
 } from '../../../src/store/layers/layers.action';
 import { TestUtils } from '../../test-utils.js';
 import { GeoResourceFuture, XyzGeoResource } from '../../../src/domain/geoResources';
@@ -60,6 +61,7 @@ describe('createDefaultLayer', () => {
 		expect(layer.visible).toBeTrue();
 		expect(layer.opacity).toBe(1);
 		expect(layer.zIndex).toBe(-1);
+		expect(layer.state).toEqual(LayerState.OK);
 		expect(layer.grChangedFlag).toBeNull();
 		expect(layer.timestamp).toBeNull();
 		expect(layer.constraints).toEqual(createDefaultLayersConstraints());
@@ -73,6 +75,7 @@ describe('createDefaultLayer', () => {
 		expect(layer.visible).toBeTrue();
 		expect(layer.opacity).toBe(1);
 		expect(layer.zIndex).toBe(-1);
+		expect(layer.state).toEqual(LayerState.OK);
 		expect(layer.timestamp).toBeNull();
 		expect(layer.grChangedFlag).toBeNull();
 		expect(layer.constraints).toEqual(createDefaultLayersConstraints());
@@ -161,6 +164,7 @@ describe('layersReducer', () => {
 			expect(store.getState().layers.active[0].visible).toBeTrue();
 			expect(store.getState().layers.active[0].opacity).toBe(1);
 			expect(store.getState().layers.active[0].timestamp).toBeNull();
+			expect(store.getState().layers.active[0].state).toEqual(LayerState.OK);
 			expect(store.getState().layers.active[0].constraints).toEqual(createDefaultLayersConstraints());
 
 			expect(store.getState().layers.active[1].id).toBe('id1');
@@ -326,8 +330,9 @@ describe('layersReducer', () => {
 				const opacity = 0.5;
 				const visible = false;
 				const timestamp = '1900';
+				const state = LayerState.INCOMPLETE_DATA;
 				const constraints = { ...createDefaultLayersConstraints(), hidden: true };
-				addLayer('id0', { geoResourceId, opacity, visible, timestamp, constraints });
+				addLayer('id0', { geoResourceId, opacity, visible, timestamp, state, constraints });
 
 				cloneAndAddLayer('id0', 'id0Clone');
 
@@ -340,6 +345,7 @@ describe('layersReducer', () => {
 				expect(store.getState().layers.active[1].opacity).toBe(opacity);
 				expect(store.getState().layers.active[1].visible).toBe(visible);
 				expect(store.getState().layers.active[1].timestamp).toBe(timestamp);
+				expect(store.getState().layers.active[1].state).toBe(state);
 				expect(store.getState().layers.active[1].constraints).toEqual(constraints);
 			});
 		});
@@ -367,6 +373,7 @@ describe('layersReducer', () => {
 				expect(store.getState().layers.active[0].opacity).toBe(opacity);
 				expect(store.getState().layers.active[0].visible).toBe(visible);
 				expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
+				expect(store.getState().layers.active[0].state).toBe(LayerState.OK);
 				expect(store.getState().layers.active[0].constraints).toEqual(constraints);
 			});
 		});
@@ -652,6 +659,21 @@ describe('layersReducer', () => {
 			modifyLayer('id0', { timestamp: 20241231 });
 
 			expect(store.getState().layers.active[0].timestamp).toBe(20241231);
+		});
+
+		it("modifies the 'state' property of a layer", () => {
+			const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', state: LayerState.INCOMPLETE_DATA };
+			const store = setup({
+				layers: {
+					active: index([layerProperties0])
+				}
+			});
+
+			expect(store.getState().layers.active[0].state).toBe(LayerState.INCOMPLETE_DATA);
+
+			modifyLayer('id0', { state: LayerState.OK });
+
+			expect(store.getState().layers.active[0].state).toBe(LayerState.OK);
 		});
 
 		it("modifies the 'zIndex' property of a layer", () => {
