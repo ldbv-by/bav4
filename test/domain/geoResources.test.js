@@ -508,6 +508,7 @@ describe('GeoResource', () => {
 			it('sets the `baseColor` property', () => {
 				expect(new TestVectorGeoResource('id', 'label').setBaseColor('#foo').baseColor).toBeNull();
 				expect(new TestVectorGeoResource('id', 'label').setBaseColor('#ff0000').baseColor).toBe('#ff0000');
+				expect(new TestVectorGeoResource('id', 'label').setBaseColor('#ff0000').setBaseColor(null).baseColor).toBeNull();
 			});
 		});
 	});

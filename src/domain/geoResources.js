@@ -692,16 +692,20 @@ export class AbstractVectorGeoResource extends GeoResource {
 	/**
 	 * Sets the base color for this `AbstractVectorGeoResource`.
 	 * Only effective if no more specific styling is available.
-	 * @param {string} baseColor (seven-character hexadecimal notation)
+	 * @param {string|null} baseColor (seven-character hexadecimal notation) or `null`
 	 * @returns {AbstractVectorGeoResource} `this` for chaining
 	 */
 	setBaseColor(baseColor) {
-		if (isHexColor(baseColor)) {
+		if (baseColor === null || isHexColor(baseColor)) {
 			this._baseColor = baseColor;
 		}
 		return this;
 	}
 
+	/**
+	 * The base color of this `AbstractVectorGeoResource`.
+	 *  @type {string|null}
+	 */
 	get baseColor() {
 		return this._baseColor;
 	}
