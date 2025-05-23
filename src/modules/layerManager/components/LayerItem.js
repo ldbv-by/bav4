@@ -27,10 +27,29 @@ const Update_Layer_Collapsed = 'update_layer_collapsed';
 const Update_Layer_Swipe = 'update_layer_swipe';
 
 /**
+ * Collapse event
+ * @event collapse
+ * @type {object}
+ * @property {module:modules/layerManager/components/LayerItem~CollapseDetail} detail The {@link CollapseDetail}
+ */
+
+/**
+ * @typedef CollapseDetail
+ * @property {module:store/layers/layer_action~Layer} layerId The id of the {@link Layer} related to this {@link LayerItem} event.
+ * @property {boolean} collapsed Whether or not the {@link LayerItem} should be collapsed or not.
+ */
+
+/**
+ * Option container to initialize layer properties for the {@link LayerItem}
+ * @typedef LayerOptions
+ * @property {string} id The id of the {@link Layer} related to this {@link LayerItem}.
+ */
+
+/**
  * Child element of the LayerManager. Represents one layer and its state.
  * Events:
  *
- * @property {module:store/layers/layer_action~Layer} layer The {@link Layer}.
+ * @property {LayerOptions} layer The {@link Layer}.
  * @property {boolean} collapsed Whether or not the {@link LayerItem} should be collapsed or not.
  * @fires collapse Fires when the collapse value changes
  *
