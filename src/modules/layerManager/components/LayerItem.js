@@ -47,9 +47,8 @@ const Update_Layer_Swipe = 'update_layer_swipe';
 
 /**
  * Child element of the LayerManager. Represents one layer and its state.
- * Events:
  *
- * @property {LayerOptions} layer The {@link Layer}.
+ * @property {LayerOptions} layer The {@link module:modules/layerManager/components/LayerItem~LayerOptions}.
  * @property {boolean} collapsed Whether or not the {@link LayerItem} should be collapsed or not.
  * @fires collapse Fires when the collapse value changes
  *
