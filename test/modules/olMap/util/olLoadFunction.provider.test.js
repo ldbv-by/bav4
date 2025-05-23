@@ -672,7 +672,7 @@ describe('olLoadFunction.provider', () => {
 
 			expect(successCbSpy).not.toHaveBeenCalled();
 			expect(failureCbSpy).toHaveBeenCalled();
-			expect(removeLoadedExtentSpy).toHaveBeenCalledWith(extent);
+			expect(removeLoadedExtentSpy).not.toHaveBeenCalledWith(extent);
 		});
 
 		describe('BAA is required', () => {
