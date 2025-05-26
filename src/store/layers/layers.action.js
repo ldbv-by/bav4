@@ -28,6 +28,7 @@ import { GeoResource } from '../../domain/geoResources';
  * @property {boolean} [visible=true] Visibility
  * @property {string} [timestamp=null] Timestamp
  * @property {number} [zIndex]  Index of this layer within the list of active layers. When not set, the layer will be appended at the end
+ * @property {LayerState} [state=LayerState.OK]  The current state of the layer
  * @property {Constraints} [constraints] Constraints of the layer
  * @property {module:utils/storeUtils.EventLike<String|null>} [grChangedFlag] Flag that indicates a change of the linked GeoResource
  */
@@ -50,6 +51,7 @@ import { GeoResource } from '../../domain/geoResources';
  * @property {boolean} [visible] The new `visible` value
  * @property {string} [timestamp] The new `timestamp `value
  * @property {number} [zIndex] The new `zIndex` of this layer within the list of active layers
+ * @property {LayerState} [state] The new `state` of the layer
  * @property {boolean} [hidden] The new `hidden` constraint of the layer
  * @property {boolean} [alwaysTop] The new `alwaysTop` constraint of the layer
  * @property {string} [filter] The new `filter` constraint of the layer
@@ -73,6 +75,7 @@ import { GeoResource } from '../../domain/geoResources';
  * @property {boolean} [visible=true] Visibility
  * @property {string} [timestamp=null] Timestamp
  * @property {number} [zIndex]  Index of this layer within the list of active layers. When not set, the layer will be appended at the end
+ * @property {LayerState} [state] The `state` of the layer
  * @property {Constraints} [constraints] Constraints of the layer
  */
 
@@ -96,6 +99,16 @@ export const SwipeAlignment = Object.freeze({
 	NOT_SET: 'b',
 	LEFT: 'l',
 	RIGHT: 'r'
+});
+
+/**
+ * The state of a layer.
+ * @readonly
+ * @enum {Number}
+ */
+export const LayerState = Object.freeze({
+	OK: 'ok',
+	INCOMPLETE_DATA: 'incomplete_data'
 });
 
 const getStore = () => {
@@ -178,6 +191,7 @@ export const cloneAndAddLayer = (id, clonedId, options = {}) => {
 				opacity: layer.opacity,
 				visible: layer.visible,
 				timestamp: layer.timestamp,
+				state: layer.state,
 				zIndex: createDefaultLayerProperties().zIndex,
 				constraints: { ...layer.constraints }
 			},

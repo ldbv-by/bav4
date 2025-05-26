@@ -9,7 +9,8 @@ import {
 	XyzGeoResource,
 	GeoResourceFuture,
 	VTGeoResource,
-	RtVectorGeoResource
+	RtVectorGeoResource,
+	OafGeoResource
 } from '../../domain/geoResources';
 import { SourceTypeName, SourceTypeResultStatus } from '../../domain/sourceType';
 import { $injector } from '../../injection';
@@ -35,6 +36,13 @@ export const _definitionToGeoResource = (definition) => {
 				);
 			case 'vt':
 				return new VTGeoResource(def.id, def.label, def.url);
+			case 'oaf':
+				return (
+					new OafGeoResource(def.id, def.label, def.url, def.collectionId, def.srid ?? 3857)
+						//set specific optional values
+						.setLimit(def.limit ?? null)
+						.setFilter(def.filter ?? null)
+				);
 			case 'vector': {
 				return new GeoResourceFuture(
 					def.id,
