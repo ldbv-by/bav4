@@ -525,14 +525,6 @@ describe('LayerManager', () => {
 
 		it('renders changed label', async () => {
 			const updatedGeoResourceLabel = 'updatedLabel';
-			const spy = spyOn(geoResourceServiceMock, 'byId')
-				.withArgs(geoResourceId)
-				.and.callFake(() => {
-					if (spy.calls.count() > 1) {
-						return new VectorGeoResource(geoResourceId, updatedGeoResourceLabel, VectorSourceType.KML);
-					}
-					return new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML);
-				});
 			const layer = {
 				...createDefaultLayerProperties(),
 				id: 'id0',
@@ -543,11 +535,16 @@ describe('LayerManager', () => {
 					active: [layer]
 				}
 			};
+			const spy = spyOn(geoResourceServiceMock, 'byId')
+				.withArgs(geoResourceId)
+				.and.callFake(() => new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML));
 			const element = await setup(state);
 			const layerItem = element.shadowRoot.querySelector('ba-layer-item');
 			let label = layerItem.shadowRoot.querySelector('ba-checkbox').innerText;
 
 			expect(label).toBe(geoResourceLabel);
+
+			spy.withArgs(geoResourceId).and.callFake(() => new VectorGeoResource(geoResourceId, updatedGeoResourceLabel, VectorSourceType.KML));
 
 			geoResourceChanged(geoResourceId);
 

@@ -146,9 +146,8 @@ export class LayerManager extends MvuElement {
 		};
 
 		const createLayerElement = (stackItem) => {
-			const layerOptions = { id: stackItem.layer.id };
 			return html`<ba-layer-item
-				.layer=${layerOptions}
+				.layerId=${stackItem.layer.id}
 				.collapsed=${stackItem.collapsed}
 				class="layer"
 				draggable

@@ -22,7 +22,7 @@ import { MenuTypes } from '../../commons/components/overflowMenu/OverflowMenu';
 import { openSlider } from '../../../store/timeTravel/timeTravel.action';
 import { SwipeAlignment } from '../../../store/layers/layers.action';
 
-const Update_Layer = 'update_layer';
+const Update_Layer_And_LayerItem = 'update_layer_and_layerItem';
 const Update_Layer_Collapsed = 'update_layer_collapsed';
 const Update_Layer_Swipe = 'update_layer_swipe';
 
@@ -40,15 +40,9 @@ const Update_Layer_Swipe = 'update_layer_swipe';
  */
 
 /**
- * Option container to initialize layer properties for the {@link LayerItem}
- * @typedef LayerOptions
- * @property {string} id The id of the {@link Layer} related to this {@link LayerItem}.
- */
-
-/**
  * Child element of the LayerManager. Represents one layer and its state.
  *
- * @property {LayerOptions} layer The {@link module:modules/layerManager/components/LayerItem~LayerOptions}.
+ * @property {string} layerId The id of the {@link Layer} relating to this {@link LayerItem}.
  * @property {boolean} collapsed Whether or not the {@link LayerItem} should be collapsed or not.
  * @fires collapse Fires when the collapse value changes
  *
@@ -80,7 +74,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 	 */
 	update(type, data, model) {
 		switch (type) {
-			case Update_Layer:
+			case Update_Layer_And_LayerItem:
 				return {
 					...model,
 					layerProperties: data.layerProperties,
@@ -97,6 +91,17 @@ export class LayerItem extends AbstractMvuContentPanel {
 	 * @override
 	 */
 	onInitialize() {
+		const updateLayerProperties = (layers) => {
+			const { layerProperties } = this.getModel();
+
+			if (layerProperties?.id) {
+				layers.filter((layer) => layer.id === layerProperties.id).forEach((layerProperties) => this._updateWithLayerProperties(layerProperties));
+			}
+		};
+		this.observe(
+			(store) => store.layers.active,
+			(active) => updateLayerProperties(active.filter((l) => !l.constraints.hidden))
+		);
 		this.observe(
 			(state) => state.layerSwipe,
 			(layerSwipe) => this.signal(Update_Layer_Swipe, layerSwipe)
@@ -412,27 +417,17 @@ export class LayerItem extends AbstractMvuContentPanel {
 			</div>`;
 	}
 
-	set layer(layerOptions) {
-		const getLayerProperties = (layerId) => {
-			const { StoreService } = $injector.inject('StoreService');
-			return StoreService.getStore()
-				.getState()
-				.layers.active.find((l) => l.id === layerId);
-		};
-
-		if (!layerOptions) {
+	_updateWithLayerProperties(layerProperties) {
+		if (!layerProperties) {
 			return;
 		}
-
-		const layerProperties = getLayerProperties(layerOptions.id);
-
 		const translate = (key) => this.#translationService.translate(key);
 		const geoResource = this.#geoResourceService.byId(layerProperties.geoResourceId);
 		const keywords = [...this.#geoResourceService.getKeywords(layerProperties.geoResourceId)];
 
 		if (geoResource instanceof GeoResourceFuture) {
 			geoResource.onResolve((resolvedGeoR) => {
-				this.signal(Update_Layer, {
+				this.signal(Update_Layer_And_LayerItem, {
 					layerProperties: layerProperties,
 					layerItemProperties: {
 						label: resolvedGeoR.label,
@@ -443,7 +438,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 			});
 		}
 
-		this.signal(Update_Layer, {
+		this.signal(Update_Layer_And_LayerItem, {
 			layerProperties: layerProperties,
 			layerItemProperties: {
 				label: geoResource instanceof GeoResourceFuture ? translate('layerManager_loading_hint') : geoResource.label,
@@ -451,6 +446,19 @@ export class LayerItem extends AbstractMvuContentPanel {
 				keywords: keywords
 			}
 		});
+	}
+
+	set layerId(layerId) {
+		if (layerId) {
+			const getLayerProperties = (layerId) => {
+				const { StoreService } = $injector.inject('StoreService');
+				return StoreService.getStore()
+					.getState()
+					.layers.active.find((l) => l.id === layerId);
+			};
+
+			this._updateWithLayerProperties(getLayerProperties(layerId));
+		}
 	}
 
 	set collapsed(collapsed) {
