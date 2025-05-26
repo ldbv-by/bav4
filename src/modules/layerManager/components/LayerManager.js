@@ -27,7 +27,7 @@ const Update_Layer_Swipe = 'update_layer_swipe';
  */
 
 /**
- * An element representing a ui-element in a stack like container,
+ * An element representing a UI-element in a stack like container
  * to enable user interaction like drag&drop or collapse/expand
  *
  * @typedef StackItem
@@ -133,12 +133,12 @@ export class LayerManager extends MvuElement {
 	createView(model) {
 		const translate = (key) => this.#translationService.translate(key);
 		const { stackItems, draggedItem } = model;
-		const isNeighbour = (index, otherIndex) => {
+		const isNeighbor = (index, otherIndex) => {
 			return index === otherIndex || index - 1 === otherIndex || index + 1 === otherIndex;
 		};
 
 		const isValidDropTarget = (draggedItem, dropItemCandidate) => {
-			return dropItemCandidate.isPlaceholder && !isNeighbour(dropItemCandidate.listIndex, draggedItem.listIndex);
+			return dropItemCandidate.isPlaceholder && !isNeighbor(dropItemCandidate.listIndex, draggedItem.listIndex);
 		};
 
 		const onCollapseChanged = (e) => {
@@ -179,7 +179,7 @@ export class LayerManager extends MvuElement {
 			this.shadowRoot.querySelectorAll('.placeholder').forEach((p) => {
 				const listIndex = Number.parseFloat(p.id.replace('placeholder_', ''));
 				p.innerHTML = createIndexNumberForPlaceholder(listIndex, stackItem);
-				if (!isNeighbour(listIndex, stackItem.listIndex)) {
+				if (!isNeighbor(listIndex, stackItem.listIndex)) {
 					p.classList.add('placeholder-active');
 				}
 			});
