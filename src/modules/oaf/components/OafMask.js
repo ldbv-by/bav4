@@ -178,7 +178,6 @@ export class OafMask extends MvuElement {
 		const layer = this._getLayer();
 		const geoResource = this.#geoResourceService.byId(layer.geoResourceId);
 		const capabilities = await this.#importOafService.getFilterCapabilities(geoResource);
-
 		this.signal(Update_Capabilities, capabilities);
 	}
 

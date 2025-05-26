@@ -49,18 +49,15 @@ export class OafFilter extends MvuElement {
 		const operators = this._getOperators(type);
 
 		const onMinValueChanged = (evt, val) => {
-			this.signal(Update_Min_Value, val);
-			this.dispatchEvent(new CustomEvent('change'));
+			evt.target.value = this._changeValue(minValue, val, type, Update_Min_Value);
 		};
 
 		const onMaxValueChanged = (evt, val) => {
-			this.signal(Update_Max_Value, val);
-			this.dispatchEvent(new CustomEvent('change'));
+			evt.target.value = this._changeValue(maxValue, val, type, Update_Max_Value);
 		};
 
 		const onValueChanged = (evt, val) => {
-			this.signal(Update_Value, val);
-			this.dispatchEvent(new CustomEvent('change'));
+			evt.target.value = this._changeValue(value, val, type, Update_Value);
 		};
 
 		const onOperatorSelect = (evt) => {
@@ -111,9 +108,58 @@ export class OafFilter extends MvuElement {
 			</div>`;
 		};
 
-		// TODO
-		const getNumberInputHtml = (type) => {
-			return type === 'integer' ? html`<div data-type="integer"></div>` : html`<div data-type="float"></div>`;
+		const getNumberInputHtml = () => {
+			const step = type === 'integer' ? '1' : '0.1';
+			const minRange = model.queryable.minValue;
+			const maxRange = model.queryable.maxValue;
+
+			const content = () => {
+				if (operator === 'between') {
+					return html`
+						<input
+							type="text"
+							placeholder="0"
+							class="min-value-input"
+							.value=${minValue}
+							step=${step}
+							min=${minRange}
+							max=${maxRange}
+							@input=${(evt) => onMinValueChanged(evt, evt.target.value)}
+						/>
+						<input
+							type="text"
+							placeholder="0"
+							class="max-value-input"
+							.value=${maxValue}
+							step=${step}
+							min=${minRange}
+							max=${maxRange}
+							@input=${(evt) => onMaxValueChanged(evt, evt.target.value)}
+						/>
+					`;
+				}
+
+				return html`
+					<input
+						type="text"
+						placeholder="0"
+						.value=${value}
+						step=${step}
+						min=${minRange}
+						max=${maxRange}
+						@input=${(evt) => onValueChanged(evt, evt.target.value)}
+					/>
+				`;
+			};
+
+			return html`<div class="flex row" data-type=${type}>${content()}</div>`;
+		};
+
+		const getBooleanInputHtml = () => {
+			return html`<select id="select-operator" data-type="boolean" @change=${onOperatorSelect}>
+				<option selected value="true">Ja</option>
+				<option selected value="false">Nein</option>
+			</select>`;
 		};
 
 		const getInputHtml = () => {
@@ -125,13 +171,25 @@ export class OafFilter extends MvuElement {
 						return getTimeInputHtml();
 					case 'integer':
 					case 'float':
-						return getNumberInputHtml(type);
+						return getNumberInputHtml();
+					case 'boolean':
+						return getBooleanInputHtml();
 					case 'date':
 						return html`<div data-type="date"></div>`;
 				}
 				return nothing;
 			};
 			return html`<div>${content()}</div>`;
+		};
+
+		const getOperatorHtml = () => {
+			return html`
+				<div class="input-operator">
+					<select id="select-operator" @change=${onOperatorSelect}>
+						${operators.map((op) => html`<option .selected=${op === operator} .value=${op}>${op}</option>`)}
+					</select>
+				</div>
+			`;
 		};
 
 		const toggleActiveButtonClass = (evt) => {
@@ -142,19 +200,16 @@ export class OafFilter extends MvuElement {
 			<style>
 				${css}
 			</style>
-			<div class="ogc-filter-row">
+			<div class="oaf-filter">
 				<div class="grid-row">
+
+						<div class="filter-title-container"><span class="title">${name}</span></div>
 					<div class="grid-column-header">
-						<div class="input-filter"><span>${name}</span></div>
+						${getOperatorHtml()}
 						<button class="not-button" @click=${toggleActiveButtonClass}>NOT</button>
 						<button class="remove-button" @click=${onRemove}>X</button>
 					</div>
 					<div class="grid-column">
-							<div class="input-operator">
-								<select id="select-operator" @change=${onOperatorSelect}>
-									${operators.map((op) => html`<option .selected=${op === operator} .value=${op}>${op}</option>`)}
-								</select>
-							</div>
 							<div class="input-value">${getInputHtml()}</div>
 						</div>
 					</div>
@@ -203,7 +258,7 @@ export class OafFilter extends MvuElement {
 	}
 
 	_getOperators(type) {
-		const defaultOps = ['equals', 'not equals'];
+		const defaultOps = ['equals'];
 
 		switch (type) {
 			case 'time':
@@ -216,6 +271,31 @@ export class OafFilter extends MvuElement {
 		}
 
 		return defaultOps;
+	}
+
+	_changeValue(oldVal, val, type, signal) {
+		const parsedValue = this._parseValue(val, type, oldVal);
+
+		if (oldVal !== parsedValue) {
+			this.signal(signal, parsedValue);
+			this.dispatchEvent(new CustomEvent('change'));
+		}
+
+		return parsedValue;
+	}
+
+	_parseValue(val, type, fallback = null) {
+		if (type === 'integer') {
+			val = parseInt(val);
+			return !isNaN(val) ? val : fallback;
+		}
+
+		if (type === 'float') {
+			val = parseFloat(val);
+			return !isNaN(val) ? val : fallback;
+		}
+
+		return val;
 	}
 
 	static get tag() {

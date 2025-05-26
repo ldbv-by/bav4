@@ -60,10 +60,12 @@ export class OafFilterGroup extends MvuElement {
 			</style>
 
 			<div class="filter-group">
-				<h2 style="padding: 10px 0;">Filtergruppe</h2>
-				<div class="btn-bar">
-					<ba-button .type=${'primary'} .label=${'DUP'}></ba-button>
-					<ba-button id="btn-remove-group" .type=${'primary'} class="remove-button" .label=${'X'} @click=${onRemoveGroup}></ba-button>
+				<div class="title-bar">
+					<h2 class="title">Filtergruppe</h2>
+					<div class="btn-bar">
+						<ba-button .type=${'primary'} .label=${'DUP'}></ba-button>
+						<ba-button id="btn-remove-group" .type=${'primary'} class="remove-button" .label=${'X'} @click=${onRemoveGroup}></ba-button>
+					</div>
 				</div>
 				<select id="queryable-select" @change=${onAddFilter}>
 					<option selected>Select Filter...</option>

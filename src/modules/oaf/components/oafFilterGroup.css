@@ -1,24 +1,36 @@
 .filter-group {
-	background: #eee;
-	border: 1px solid #333;
-	padding: 20px;
+	background: #444;
+	border: 2px solid #222;
+	padding: 10px 20px;
 	min-height: 150px;
 }
 
 #queryable-select {
-	border-bottom: 1px solid black;
+	border-bottom: 1px solid;
 	margin-bottom: 10px;
 	padding: 10px;
-	background-color: white;
+	background-color: #777;
+}
+
+.title-bar {
+	display: flex;
+	align-items: center;
+	margin-bottom: 8px;
+}
+
+.title {
+	flex-grow: 1;
 }
 
 .btn-bar {
 	display: flex;
-	align-items: flex-end;
+	align-items: center;
 	justify-content: right;
-	margin-bottom: 10px;
 	ba-button {
 		margin-left: 10px;
+	}
+	ba-button::part(button) {
+		padding: 6px 10px;
 	}
 }
 
