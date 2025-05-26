@@ -43,7 +43,7 @@ const Update_Layer_Swipe = 'update_layer_swipe';
  * Child element of the LayerManager. Represents one layer and its state.
  *
  * @property {string} layerId The id of the {@link Layer} relating to this {@link LayerItem}.
- * @property {boolean} collapsed Whether or not the {@link LayerItem} should be collapsed or not.
+ * @property {boolean} collapsed Whether or not the {@link LayerItem} should be collapsed.
  * @fires collapse Fires when the collapse value changes
  *
  * @class
