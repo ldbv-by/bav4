@@ -7,8 +7,7 @@
 
 #queryable-select {
 	border-bottom: 1px solid;
-	margin-bottom: 10px;
-	padding: 10px;
+	padding-bottom: 5px;
 	background-color: #777;
 }
 
@@ -24,14 +23,20 @@
 
 .btn-bar {
 	display: flex;
+	flex: 1.25;
 	align-items: center;
 	justify-content: right;
 	ba-button {
 		margin-left: 10px;
 	}
-	ba-button::part(button) {
+	ba-button::part(button),
+	select {
 		padding: 6px 10px;
 	}
+}
+
+.duplicate-button {
+	width: 80px;
 }
 
 .remove-button::part(button) {

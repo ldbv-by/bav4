@@ -63,16 +63,16 @@ export class OafFilterGroup extends MvuElement {
 				<div class="title-bar">
 					<h2 class="title">Filtergruppe</h2>
 					<div class="btn-bar">
-						<ba-button .type=${'primary'} .label=${'DUP'}></ba-button>
+						<select id="queryable-select" @change=${onAddFilter}>
+							<option selected>Select Filter...</option>
+							${queryables
+								.filter((queryable) => !oafFilters.find((oafFilter) => oafFilter.queryable.name === queryable.name))
+								.map((queryable) => html`<option .value=${queryable.name}>${queryable.name}</option>`)}
+						</select>
+						<ba-button .type=${'primary'} class="duplicate-button" .label=${'DUP'}></ba-button>
 						<ba-button id="btn-remove-group" .type=${'primary'} class="remove-button" .label=${'X'} @click=${onRemoveGroup}></ba-button>
 					</div>
 				</div>
-				<select id="queryable-select" @change=${onAddFilter}>
-					<option selected>Select Filter...</option>
-					${queryables
-						.filter((queryable) => !oafFilters.find((oafFilter) => oafFilter.queryable.name === queryable.name))
-						.map((queryable) => html`<option .value=${queryable.name}>${queryable.name}</option>`)}
-				</select>
 				<div class="filter-container">
 					${oafFilters.map(
 						(oafFilter) =>
