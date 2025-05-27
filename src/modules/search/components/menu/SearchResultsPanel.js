@@ -101,11 +101,19 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 		const indexOfPreviousItem = this._findSelectedIndex(items);
 		const nextIndex = indexOfPreviousItem < 0 ? 0 : indexOfPreviousItem + 1;
 		this.#selectedIndex = nextIndex < items.length ? nextIndex : indexOfPreviousItem;
-
 		this._changeSelectedElement(indexOfPreviousItem, this.#selectedIndex, items);
+		//scroll to item if needed
+		if (items[this.#selectedIndex]) {
+			items[this.#selectedIndex].scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'end' });
+		}
 	}
 
 	_arrowUp() {
+		//set input cursor
+		const input = findAllBySelector(document.querySelector(Header.tag), 'input')[0];
+		const length = input.value.length;
+		input.setSelectionRange(length, length);
+
 		const items = findAllBySelector(this, this.#resultItemSelector);
 		const indexOfPreviousItem = this._findSelectedIndex(items);
 		const nextIndex = indexOfPreviousItem < 0 ? indexOfPreviousItem : indexOfPreviousItem - 1;
@@ -116,6 +124,10 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 		}
 
 		this._changeSelectedElement(indexOfPreviousItem, this.#selectedIndex, items);
+		//scroll to item if needed
+		if (items[this.#selectedIndex]) {
+			items[this.#selectedIndex].scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'start' });
+		}
 	}
 
 	_enter() {
