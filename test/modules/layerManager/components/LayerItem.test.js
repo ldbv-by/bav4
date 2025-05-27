@@ -11,6 +11,7 @@ import { positionReducer } from '../../../../src/store/position/position.reducer
 import {
 	GeoResourceFuture,
 	GeoResourceTypes,
+	OafGeoResource,
 	VectorGeoResource,
 	VectorSourceType,
 	WmsGeoResource,
@@ -25,6 +26,7 @@ import infoSvg from '../../../../src/assets/icons/info.svg';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { SwipeAlignment } from '../../../../src/store/layers/layers.action.js';
 import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
+import { bottomSheetReducer } from '../../../../src/store/bottomSheet/bottomSheet.reducer.js';
 
 window.customElements.define(LayerItem.tag, LayerItem);
 
@@ -76,6 +78,7 @@ describe('LayerItem', () => {
 			{
 				layers: layersReducer,
 				modal: modalReducer,
+				bottomSheet: bottomSheetReducer,
 				media: createNoInitialStateMediaReducer(),
 				timeTravel: timeTravelReducer,
 				layerSwipe: layerSwipeReducer,
@@ -360,6 +363,47 @@ describe('LayerItem', () => {
 
 			expect(dragstartSliderSpy).toHaveBeenCalled();
 			expect(dragstartContainerSpy).not.toHaveBeenCalled();
+		});
+
+		it('queries georesource property to render the oaf-filter component ', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('oafGeoResource')
+				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId', 3857).setFilter('cql'));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'oafGeoResource',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+
+			const element = await setup(layer);
+			const oafSettingsElement = element.shadowRoot.querySelectorAll('ba-icon.oaf-settings-icon');
+
+			expect(oafSettingsElement).toHaveSize(1);
+
+			expect(oafSettingsElement[0].title).toBe('layerManager_oaf_settings');
+		});
+
+		it('opens the bottomSheet for the oaf-filter component ', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('oafGeoResource')
+				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId', 3857).setFilter('cql'));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'oafGeoResource',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+
+			const element = await setup(layer);
+			const oafSettingsElement = element.shadowRoot.querySelectorAll('ba-icon.oaf-settings-icon');
+			oafSettingsElement[0].click();
+
+			expect(isTemplateResult(store.getState().bottomSheet.data[0].content)).toBeTrue();
 		});
 
 		it('displays a overflow-menu', async () => {

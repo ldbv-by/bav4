@@ -13,14 +13,16 @@ import zoomToExtentSvg from './assets/zoomToExtent.svg';
 import removeSvg from './assets/trash.svg';
 import infoSvg from '../../../assets/icons/info.svg';
 import timeSvg from '../../../assets/icons/time.svg';
+import OafSettingsSvg from './assets/oafSetting.svg';
 import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { openModal } from '../../../../src/store/modal/modal.action';
 import { createUniqueId } from '../../../utils/numberUtils';
 import { fitLayer } from '../../../store/position/position.action';
-import { GeoResourceFuture, GeoResourceTypes } from '../../../domain/geoResources';
+import { GeoResourceFuture, GeoResourceTypes, OafGeoResource } from '../../../domain/geoResources';
 import { MenuTypes } from '../../commons/components/overflowMenu/OverflowMenu';
 import { openSlider } from '../../../store/timeTravel/timeTravel.action';
 import { SwipeAlignment } from '../../../store/layers/layers.action';
+import { openBottomSheet } from '../../../store/bottomSheet/bottomSheet.action';
 
 const Update_Layer_And_LayerItem = 'update_layer_and_layerItem';
 const Update_Layer_Collapsed = 'update_layer_collapsed';
@@ -256,6 +258,19 @@ export class LayerItem extends AbstractMvuContentPanel {
 			return geoResource.hasTimestamps() ? getTimestampControl() : nothing;
 		};
 
+		const getOafContent = () => {
+			const oafSettingsContent = html`<div>OAF Settings</div>`;
+			return geoResource instanceof OafGeoResource
+				? html`<ba-icon
+						.icon="${OafSettingsSvg}"
+						.title=${translate('layerManager_oaf_settings')}
+						.color=${'var(--secondary-color)'}
+						@click=${() => openBottomSheet(oafSettingsContent)}
+						class="oaf-settings-icon"
+					></ba-icon>`
+				: nothing;
+		};
+
 		const getVisibilityTitle = () => {
 			return layerItemProperties.label + ' - ' + translate('layerManager_change_visibility');
 		};
@@ -357,7 +372,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 							? html`<ba-spinner .label=${currentLabel}></ba-spinner>`
 							: html`${currentLabel} ${getBadges(layerItemProperties.keywords)}`}
 					</ba-checkbox>
-					${getTimestampContent()}
+					${getOafContent()} ${getTimestampContent()}
 					<div class="ba-list-item__after clear">
 						<ba-icon
 							id="remove"
