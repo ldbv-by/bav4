@@ -40,7 +40,6 @@ describe('OafFilterGroup', () => {
 		it('has properties with default values from the model', async () => {
 			const element = await setup();
 
-			//properties from modelba-oaf-filter
 			expect(element.oafFilters).toHaveSize(0);
 			expect(element.queryables).toBeUndefined();
 		});
@@ -152,7 +151,7 @@ describe('OafFilterGroup', () => {
 				expect(element.oafFilters).toHaveSize(1);
 			});
 
-			it('renders queryable options that are not used by oafFilters', async () => {
+			it('renders only unused queryable options', async () => {
 				const element = await setup();
 
 				element.queryables = testQueryables;
@@ -161,15 +160,60 @@ describe('OafFilterGroup', () => {
 
 				expect(select.options).not.toContain(jasmine.objectContaining({ value: 'StringQueryable' }));
 			});
+
+			it('updates oafFilters when an oafFilter changes internally', async () => {
+				const element = await setup();
+				element.queryables = testQueryables;
+
+				element._addFilter('IntegerQueryable');
+				element._addFilter('StringQueryable');
+
+				const oafFilter = element.shadowRoot.querySelector('ba-oaf-filter:nth-child(2)');
+				oafFilter.value = 'B';
+
+				expect(element.oafFilters[1]).toEqual(jasmine.objectContaining({ value: 'B' }));
+			});
 		});
 	});
 
-	describe('Member Methods', () => {
-		it('"_createDefaultOafFilter" creates a default oafFilter Model', async () => {
+	describe('when internal methods invoked', () => {
+		it('creates a default oafFilter Model with "_createDefaultOafFilter"', async () => {
 			const groupElement = await setup();
 			const oafFilterElement = await TestUtils.render(OafFilter.tag);
 
 			expect(groupElement._createDefaultOafFilter()).toEqual(oafFilterElement.getModel());
+		});
+
+		it('adds an "oafFilter" and a filled queryable to model with "_addFilter"', async () => {
+			const element = await setup();
+			element.queryables = testQueryables;
+
+			element._addFilter('IntegerQueryable');
+
+			expect(element.oafFilters).toHaveSize(1);
+			expect(element.oafFilters[0]).toEqual(
+				jasmine.objectContaining({
+					queryable: {
+						name: 'IntegerQueryable',
+						type: 'integer',
+						min: jasmine.anything(),
+						max: jasmine.anything(),
+						values: jasmine.any(Array),
+						finalList: jasmine.any(Boolean)
+					}
+				})
+			);
+		});
+
+		it('invokes a change event with "_addFilter"', async () => {
+			const element = await setup();
+			element.queryables = testQueryables;
+			const spy = jasmine.createSpy();
+
+			element.addEventListener('change', spy);
+			element._addFilter('IntegerQueryable');
+
+			expect(spy).toHaveBeenCalledOnceWith(jasmine.anything());
 		});
 	});
 });

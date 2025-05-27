@@ -11,6 +11,8 @@ const Update_Value = 'update_value';
 const Update_Min_Value = 'update_min_value';
 const Update_Max_Value = 'update_max_value';
 
+// TODO: observe model to invoke change events. (Same for OafFilterGroup)
+
 /**
  * UX prototype implementation for ogc feature api filtering.
  *
@@ -220,6 +222,7 @@ export class OafFilter extends MvuElement {
 
 	set value(value) {
 		this.signal(Update_Value, value);
+		this.dispatchEvent(new CustomEvent('change'));
 	}
 
 	get value() {

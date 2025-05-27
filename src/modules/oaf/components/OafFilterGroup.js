@@ -39,10 +39,10 @@ export class OafFilterGroup extends MvuElement {
 		};
 
 		const onChangeFilter = (evt) => {
-			const oafFilters = this.oafFilters;
-			const changedFilterIndex = oafFilters.findIndex((oafFilter) => oafFilter.queryable.name === evt.target.queryable.name);
-			oafFilters[changedFilterIndex] = { ...evt.target.getModel() };
-			this.signal(Update_Filters, [...oafFilters]);
+			const filters = this.oafFilters;
+			const changedFilterIndex = filters.findIndex((oafFilter) => oafFilter.queryable.name === evt.target.queryable.name);
+			filters[changedFilterIndex] = { ...evt.target.getModel() };
+			this.signal(Update_Filters, [...filters]);
 			this.dispatchEvent(new CustomEvent('change'));
 		};
 
