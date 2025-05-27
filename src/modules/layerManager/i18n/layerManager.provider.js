@@ -36,7 +36,8 @@ export const provide = (lang) => {
 				layerManager_compare_both: 'Both',
 				layerManager_compare_both_title: 'Set layer on both sides',
 				layerManager_compare_right: 'Right',
-				layerManager_compare_right_title: 'Set layer on right side'
+				layerManager_compare_right_title: 'Set layer on right side',
+				layerManager_title_layerState_incomplete_data: 'Data loaded incomplete'
 			};
 
 		case 'de':
@@ -75,7 +76,8 @@ export const provide = (lang) => {
 				layerManager_compare_both: 'Beide',
 				layerManager_compare_both_title: 'Ebene auf beide Seiten setzen',
 				layerManager_compare_right: 'Rechts',
-				layerManager_compare_right_title: 'Ebene auf die rechte Seite setzen'
+				layerManager_compare_right_title: 'Ebene auf die rechte Seite setzen',
+				layerManager_title_layerState_incomplete_data: 'Daten wurden nur teilweise geladen'
 			};
 
 		default:

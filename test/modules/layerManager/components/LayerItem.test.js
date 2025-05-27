@@ -24,7 +24,7 @@ import cloneSvg from '../../../../src/modules/layerManager/components/assets/clo
 import zoomToExtentSvg from '../../../../src/modules/layerManager/components/assets/zoomToExtent.svg';
 import infoSvg from '../../../../src/assets/icons/info.svg';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { SwipeAlignment } from '../../../../src/store/layers/layers.action.js';
+import { LayerState, SwipeAlignment } from '../../../../src/store/layers/layers.action.js';
 import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
 import { bottomSheetReducer } from '../../../../src/store/bottomSheet/bottomSheet.reducer.js';
 
@@ -144,6 +144,27 @@ describe('LayerItem', () => {
 			const badge = element.shadowRoot.querySelector('ba-badge');
 
 			expect(badge.label).toBe('keyword0');
+		});
+
+		it('displays layer.state with a notify-icon (exclamationTriangel)', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			spyOn(geoResourceService, 'getKeywords').withArgs('geoResourceId0').and.returnValue(['keyword0']);
+
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				state: LayerState.INCOMPLETE_DATA
+			};
+			const element = await setup(layer);
+			const iconElement = element.shadowRoot.querySelector('ba-icon.layer-state-icon');
+
+			expect(iconElement.title).toBe('layerManager_title_layerState_incomplete_data');
 		});
 
 		it('use layer.label property in checkbox-title ', async () => {

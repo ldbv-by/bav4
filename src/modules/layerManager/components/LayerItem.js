@@ -5,12 +5,13 @@ import { html, nothing } from 'lit-html';
 import css from './layerItem.css';
 import { $injector } from '../../../injection';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { cloneAndAddLayer, modifyLayer, removeLayer } from './../../../store/layers/layers.action';
+import { cloneAndAddLayer, LayerState, modifyLayer, removeLayer } from './../../../store/layers/layers.action';
 import arrowUpSvg from './assets/arrow-up-short.svg';
 import arrowDownSvg from './assets/arrow-down-short.svg';
 import cloneSvg from './assets/clone.svg';
 import zoomToExtentSvg from './assets/zoomToExtent.svg';
 import removeSvg from './assets/trash.svg';
+import exclamationTriangleSvg from './assets/exclamation-triangle-fill.svg';
 import infoSvg from '../../../assets/icons/info.svg';
 import timeSvg from '../../../assets/icons/time.svg';
 import OafSettingsSvg from './assets/oafSetting.svg';
@@ -159,6 +160,19 @@ export class LayerItem extends AbstractMvuContentPanel {
 				keywords.map((keyword) => html`<ba-badge .color=${'var(--text3)'} .background=${'var(--roles-color)'} .label=${keyword}></ba-badge>`);
 
 			return keywords.length === 0 ? nothing : toBadges(keywords);
+		};
+
+		const getStateHint = (layerState) => {
+			const title = translate(`layerManager_title_layerState_${layerState}`);
+			return layerState !== LayerState.OK
+				? html`<ba-icon
+						.icon="${exclamationTriangleSvg}"
+						.title=${title}
+						.size=${'1'}
+						.color=${'var(--secondary-color)'}
+						class="layer-state-icon"
+					></ba-icon>`
+				: nothing;
 		};
 
 		const changeOpacity = (event) => {
@@ -370,7 +384,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 						@toggle=${toggleVisibility}
 						>${layerItemProperties.loading
 							? html`<ba-spinner .label=${currentLabel}></ba-spinner>`
-							: html`${currentLabel} ${getBadges(layerItemProperties.keywords)}`}
+							: html`${currentLabel}${getBadges(layerItemProperties.keywords)} ${getStateHint(layerProperties.state)}`}
 					</ba-checkbox>
 					${getOafContent()} ${getTimestampContent()}
 					<div class="ba-list-item__after clear">
