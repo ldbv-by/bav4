@@ -90,3 +90,6 @@ ba-button {
 	max-height: 0;
 	display: none;
 }
+.ba-key-nav-item_highlight::part(background) {
+	background: var(--header-background-color);
+}
