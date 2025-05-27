@@ -288,6 +288,20 @@ describe('BvvMfp3Encoder', () => {
 			expect(encodingSpy).toHaveBeenCalled();
 		});
 
+		it('encodes a oaf vector layer', async () => {
+			spyOn(geoResourceServiceMock, 'byId')
+				.withArgs('foo')
+				.and.callFake(() => new TestGeoResource(GeoResourceTypes.OAF, 'vector'));
+			const encoder = new BvvMfp3Encoder();
+			const encodingSpy = spyOn(encoder, '_encodeVector').and.callFake(() => {
+				return {};
+			});
+
+			await encoder.encode(mapMock, getProperties());
+
+			expect(encodingSpy).toHaveBeenCalled();
+		});
+
 		it('encodes a WMTS layer with XYZ GeoResource', async () => {
 			spyOn(geoResourceServiceMock, 'byId').and.callFake(() => new TestGeoResource(GeoResourceTypes.XYZ, 'xyz'));
 			const encoder = new BvvMfp3Encoder();
