@@ -109,11 +109,6 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 	}
 
 	_arrowUp() {
-		//set input cursor
-		const input = findAllBySelector(document.querySelector(Header.tag), 'input')[0];
-		const length = input.value.length;
-		input.setSelectionRange(length, length);
-
 		const items = findAllBySelector(this, this.#resultItemSelector);
 		const indexOfPreviousItem = this._findSelectedIndex(items);
 		const nextIndex = indexOfPreviousItem < 0 ? indexOfPreviousItem : indexOfPreviousItem - 1;

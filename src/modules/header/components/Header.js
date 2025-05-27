@@ -15,6 +15,8 @@ import { setCurrentTool } from '../../../store/tools/tools.action';
 import { Tools } from '../../../domain/tools';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { nothing } from '../../../../node_modules/ol/pixel';
+import { findAllBySelector } from '../../../utils/markup';
+import { Highlight_Item_Class } from '../../search/components/menu/AbstractResultItem';
 
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_Fetching = 'update_fetching';
@@ -226,6 +228,14 @@ export class Header extends MvuElement {
 			input.focus();
 		};
 
+		//sets the input cursor on key arrow up only if no search result exists
+		const onKeyDown = (evt) => {
+			const highlightItems = findAllBySelector(document, '.' + Highlight_Item_Class);
+			if (evt.which === 38 && highlightItems.length !== 0) {
+				evt.preventDefault();
+			}
+		};
+
 		const onInput = (evt) => {
 			const term = evt.target.value;
 			openMainMenu();
@@ -335,7 +345,7 @@ export class Header extends MvuElement {
 							</button>
 							<input id='input' data-test-id title="${translate('header_search_title')}" placeholder='${translate(
 								'header_search_placeholder'
-							)}' value="${searchTerm}" @focus="${onInputFocus}" @blur="${onInputBlur}" @input="${onInput}" class='header__search' type="search" placeholder="" />          		
+							)}' value="${searchTerm}" @focus="${onInputFocus}" @blur="${onInputBlur}" @keydown="${onKeyDown}" @input="${onInput}" class='header__search' type="search" placeholder="" />          		
 							<button id="clear" class="header__search-clear" @click="${clearSearchInput}" title="${translate('header_search_clear_button')}">   
 								<span class="border">
 									<span class="icon"> </icon>   							
