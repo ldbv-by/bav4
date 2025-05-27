@@ -37,6 +37,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_compare_both_title).toBe('Ebene auf beide Seiten setzen');
 		expect(map.layerManager_compare_right).toBe('Rechts');
 		expect(map.layerManager_compare_right_title).toBe('Ebene auf die rechte Seite setzen');
+		expect(map.layerManager_title_layerState_incomplete_data).toBe('Daten wurden nur teilweise geladen');
 	});
 
 	it('provides translation for en', () => {
@@ -76,10 +77,11 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_compare_both_title).toBe('Set layer on both sides');
 		expect(map.layerManager_compare_right).toBe('Right');
 		expect(map.layerManager_compare_right_title).toBe('Set layer on right side');
+		expect(map.layerManager_title_layerState_incomplete_data).toBe('Data loaded incomplete');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 34;
+		const expectedSize = 35;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
