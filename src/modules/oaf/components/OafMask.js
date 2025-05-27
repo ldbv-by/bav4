@@ -141,7 +141,7 @@ export class OafMask extends MvuElement {
 
 		const consoleModeHtml = () =>
 			html` <div id="console" class="console-flex-container">
-				<div class="btn-bar">${this.oparatorDefinitions.map((oparator) => html`<ba-button .type=${'primary'} .label=${oparator}></ba-button>`)}</div>
+				<div class="btn-bar">${this.operatorDefinitions.map((operator) => html`<ba-button .type=${'primary'} .label=${operator}></ba-button>`)}</div>
 				<textarea class="console"></textarea>
 				<ba-button .type=${'primary'} .label=${'Anwenden'}></ba-button>
 			</div>`;
@@ -197,7 +197,7 @@ export class OafMask extends MvuElement {
 		this.signal(Update_Show_Console, value);
 	}
 
-	get oparatorDefinitions() {
+	get operatorDefinitions() {
 		return ['equals', 'between', 'greater', 'lesser'];
 	}
 

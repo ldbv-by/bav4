@@ -1,10 +1,12 @@
 import { OafMask } from '../../../../src/modules/oaf/components/OafMask';
+import { OafFilterGroup } from '../../../../src/modules/oaf/components/OafFilterGroup';
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { layersReducer } from '../../../../src/store/layers/layers.reducer';
 import { addLayer } from '../../../../src/store/layers/layers.action';
 
 window.customElements.define(OafMask.tag, OafMask);
+window.customElements.define(OafFilterGroup.tag, OafFilterGroup);
 
 describe('OafMask', () => {
 	const importOafServiceMock = {
@@ -15,29 +17,35 @@ describe('OafMask', () => {
 		byId: () => {}
 	};
 
-	const setup = async (state = {}) => {
+	const setup = async (state = {}, properties = {}) => {
 		TestUtils.setupStoreAndDi(state, { layers: layersReducer });
 		$injector.registerSingleton('GeoResourceService', geoResourceServiceMock).registerSingleton('ImportOafService', importOafServiceMock);
 
-		addLayer(-1, { geoResourceId: 'dummy' });
-		return TestUtils.render(OafMask.tag);
+		const layerId = properties.layerId !== undefined ? properties.layerId : -1;
+		addLayer(layerId, { geoResourceId: `dummy ${layerId}` });
+
+		return TestUtils.render(OafMask.tag, properties);
 	};
 
 	const fillImportOafServiceMock = (
-		capabilities = [
-			{
-				name: 'foo',
-				type: 'integer',
-				values: [],
-				finalList: false
-			},
-			{
-				name: 'bar',
-				type: 'string',
-				values: ['A'],
-				finalList: true
-			}
-		]
+		capabilities = {
+			sampled: false,
+			totalNumberOfItems: 1,
+			queryables: [
+				{
+					name: 'foo',
+					type: 'integer',
+					values: [],
+					finalList: false
+				},
+				{
+					name: 'bar',
+					type: 'string',
+					values: ['A'],
+					finalList: true
+				}
+			]
+		}
 	) => {
 		spyOn(importOafServiceMock, 'getFilterCapabilities').and.returnValue(capabilities);
 	};
@@ -58,6 +66,14 @@ describe('OafMask', () => {
 
 			//properties from model
 			expect(element.layerId).toBe(-1);
+			expect(element.showConsole).toBe(false);
+			expect(element.operatorDefinitions).toEqual(['equals', 'between', 'greater', 'lesser']);
+		});
+
+		it('updates layerId', async () => {
+			const element = await setup({}, { layerId: 10 });
+
+			expect(element.layerId).toBe(10);
 		});
 	});
 
@@ -126,6 +142,24 @@ describe('OafMask', () => {
 				expect(element.shadowRoot.querySelectorAll('ba-oaf-filter-group')).toHaveSize(1);
 			});
 
+			it('adds a filter-group to model when "Add Filter Group" Button clicked', async () => {
+				const element = await setup();
+				const addFilterGroupbtn = element.shadowRoot.querySelector('#btn-add-filter-group');
+				addFilterGroupbtn.click();
+				expect(element.getModel().filterGroups).toHaveSize(1);
+				expect(element.getModel().filterGroups[0]).toEqual(jasmine.objectContaining({ id: jasmine.any(Number), oafFilters: [] }));
+			});
+
+			it('renders "Expert Mode" when "Expert Mode" Button clicked', async () => {
+				const element = await setup();
+				const expertModeBtn = element.shadowRoot.querySelector('#btn-expert-mode');
+				expertModeBtn.click();
+
+				expect(element.showConsole).toBeTrue();
+				expect(element.shadowRoot.querySelector('#console')).not.toBeNull();
+				expect(element.shadowRoot.querySelector('#btn-expert-mode')).toBeNull();
+			});
+
 			it('removes filter-group when "remove" Event received from filter-group', async () => {
 				const element = await setup();
 				const addFilterGroupbtn = element.shadowRoot.querySelector('#btn-add-filter-group');
@@ -133,13 +167,56 @@ describe('OafMask', () => {
 				addFilterGroupbtn.click();
 				addFilterGroupbtn.click();
 
-				const groupdBeforeRemove = element.shadowRoot.querySelectorAll('ba-oaf-filter-group');
-				groupdBeforeRemove[1].dispatchEvent(new CustomEvent('remove'));
+				const groupsBeforeRemove = element.shadowRoot.querySelectorAll('ba-oaf-filter-group');
+				groupsBeforeRemove[1].dispatchEvent(new CustomEvent('remove'));
 				const groupsAfterRemove = element.shadowRoot.querySelectorAll('ba-oaf-filter-group');
 
 				expect(groupsAfterRemove).toHaveSize(2);
-				expect(groupsAfterRemove[0]).toBe(groupdBeforeRemove[0]);
-				expect(groupsAfterRemove[1]).toBe(groupdBeforeRemove[2]);
+				expect(groupsAfterRemove[0]).toBe(groupsBeforeRemove[0]);
+				expect(groupsAfterRemove[1]).toBe(groupsBeforeRemove[2]);
+			});
+
+			it('removes filter-group from model when "remove" Event received from filter-group', async () => {
+				const element = await setup();
+				const addFilterGroupbtn = element.shadowRoot.querySelector('#btn-add-filter-group');
+				addFilterGroupbtn.click();
+				addFilterGroupbtn.click();
+
+				const filtersBeforeRemove = element.getModel().filterGroups;
+				element.shadowRoot.querySelectorAll('ba-oaf-filter-group')[1].dispatchEvent(new CustomEvent('remove'));
+
+				expect(filtersBeforeRemove).toHaveSize(2);
+				expect(element.getModel().filterGroups).toHaveSize(1);
+				expect(element.getModel().filterGroups[0]).toEqual(filtersBeforeRemove[0]);
+			});
+
+			it('it updates filter-groups when a filter-group changes', async () => {
+				const element = await setup();
+				const addFilterGroupbtn = element.shadowRoot.querySelector('#btn-add-filter-group');
+				addFilterGroupbtn.click();
+				addFilterGroupbtn.click();
+
+				const groups = element.shadowRoot.querySelectorAll('ba-oaf-filter-group');
+				const groupToChange = groups[1];
+
+				// assume method of oaf filter group invokes change event
+				groupToChange._addFilter('foo');
+
+				const maskModel = element.getModel();
+				expect(maskModel.filterGroups[0].oafFilters).toHaveSize(0);
+				expect(maskModel.filterGroups[1].oafFilters[0]).toEqual(
+					jasmine.objectContaining({
+						queryable: {
+							name: 'foo',
+							type: jasmine.any(String),
+							values: jasmine.any(Array),
+							finalList: jasmine.any(Boolean)
+						},
+						minValue: null,
+						maxValue: null,
+						value: null
+					})
+				);
 			});
 		});
 
