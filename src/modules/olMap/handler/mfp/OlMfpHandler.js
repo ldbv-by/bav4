@@ -397,7 +397,9 @@ export class OlMfpHandler extends OlLayerHandler {
 		const encodingResult = await this._encoder.encode(this._map, encodingProperties);
 
 		startJob(encodingResult.specs);
-		const encodingErrors = encodingResult.errors.filter((e) => e.type === MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE);
+		const encodingErrors = encodingResult.errors.filter(
+			(e) => e.type === MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE || e.type === MFP_ENCODING_ERROR_TYPE.MAXIMUM_ENCODING_LIMIT_REACHED
+		);
 		const notify = encodingErrors.length > 0 ? () => this._notifyAboutEncodingErrors(encodingErrors) : () => {};
 		notify();
 	}

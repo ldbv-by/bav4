@@ -28,13 +28,15 @@ const UnitsRatio = 39.37; //inches per meter
 const PointsPerInch = 72; // PostScript points 1/72"
 const PixelSizeInMeter = 0.00028; // based on https://www.adv-online.de/AdV-Produkte/Standards-und-Produktblaetter/AdV-Profile/binarywriterservlet?imgUid=36060b99-b8c4-0a41-ba3c-cdd1072e13d6&uBasVariant=11111111-1111-1111-1111-111111111111  and the calculations of a specific scaleDenominator (p.22)
 
+export const MAX_ENCODABLE_VECTOR_COORDINATES = 100_000;
 /**
  * @readonly
  * @enum {String}
  */
 export const MFP_ENCODING_ERROR_TYPE = Object.freeze({
 	MISSING_GEORESOURCE: 'missing_georesource',
-	NOT_EXPORTABLE: 'not_exportable'
+	NOT_EXPORTABLE: 'not_exportable',
+	MAXIMUM_ENCODING_LIMIT_REACHED: 'maximum encoding limit reached'
 });
 
 /**
@@ -92,13 +94,15 @@ export class BvvMfp3Encoder {
 			GeoResourceService: geoResourceService,
 			UrlService: urlService,
 			ShareService: shareService,
-			MfpService: mfpService
-		} = $injector.inject('MapService', 'GeoResourceService', 'UrlService', 'ShareService', 'MfpService');
+			MfpService: mfpService,
+			ConfigService: configService
+		} = $injector.inject('MapService', 'GeoResourceService', 'UrlService', 'ShareService', 'MfpService', 'ConfigService');
 		this._mapService = mapService;
 		this._geoResourceService = geoResourceService;
 		this._urlService = urlService;
 		this._shareService = shareService;
 		this._mfpService = mfpService;
+		this._configService = configService;
 		this._pageExtent = null;
 		this._geometryEncodingFormat = new GeoJSONFormat();
 		this._mapProjection = `EPSG:${this._mapService.getSrid()}`;
@@ -267,7 +271,7 @@ export class BvvMfp3Encoder {
 		switch (geoResource.getType()) {
 			case GeoResourceTypes.OAF:
 			case GeoResourceTypes.VECTOR:
-				return this._encodeVector(encodableLayer, groupOpacity);
+				return this._encodeVector(encodableLayer, encodingErrorCallback, groupOpacity);
 			case GeoResourceTypes.XYZ:
 				return this._encodeWMTS(encodableLayer, groupOpacity);
 			case GeoResourceTypes.WMS:
@@ -347,7 +351,7 @@ export class BvvMfp3Encoder {
 		};
 	}
 
-	_encodeVector(olVectorLayer, groupOpacity) {
+	_encodeVector(olVectorLayer, encodingErrorCallback, groupOpacity) {
 		// todo: refactor to utils
 		// adopted/adapted from {@link https://dmitripavlutin.com/javascript-array-group/#:~:text=must%20be%20inserted.-,array.,provided%20by%20core%2Djs%20library. | Array Grouping in JavaScript}
 		const groupBy = (elementsToGroup, groupByFunction) =>
@@ -388,13 +392,15 @@ export class BvvMfp3Encoder {
 			return mfpFeature;
 		};
 
-		const startResult = { features: [] };
+		const startResult = { features: [], size: 0 };
 		// todo: find a better implementation then this mix of feature aggregation (reducer) and style aggregation (cache)
 		const aggregateResults = (encoded, feature) => {
 			const result = this._encodeFeature(feature, olVectorLayer, styleCache, groupOpacity);
+
 			return result
 				? {
-						features: [...encoded.features, ...result.features]
+						features: [...encoded.features, ...result.features],
+						size: encoded.size + result.size
 					}
 				: encoded;
 		};
@@ -407,6 +413,12 @@ export class BvvMfp3Encoder {
 			.map((f) => transformForMfp(f))
 			.filter((f) => f.getGeometry().intersectsExtent(mfpPageExtent))
 			.reduce(aggregateResults, startResult);
+
+		const maximumEncodableVectorCoordinates = this._configService.getValue('MAX_ENCODABLE_VECTOR_COORDINATES', MAX_ENCODABLE_VECTOR_COORDINATES);
+		if (encodingResults.size > maximumEncodableVectorCoordinates) {
+			encodingErrorCallback(`[${olVectorLayer.get('id')}]`, MFP_ENCODING_ERROR_TYPE.MAXIMUM_ENCODING_LIMIT_REACHED);
+			return false;
+		}
 
 		const styleObjectFrom = (styles) => {
 			const styleObjectV2 = {
@@ -437,7 +449,7 @@ export class BvvMfp3Encoder {
 	}
 
 	_encodeFeature(olFeature, olLayer, styleCache, groupOpacity, presetStyles = []) {
-		const defaultResult = { features: [] };
+		const defaultResult = { features: [], size: 0 };
 		const resolution = this._mfpProperties.scale / UnitsRatio / PointsPerInch;
 
 		const getOlStyles = (feature, layer, resolution) => {
@@ -506,6 +518,26 @@ export class BvvMfp3Encoder {
 
 		const initEncodedStyle = () => {
 			return { id: this._encodingStyleId++ };
+		};
+
+		const countCoordinates = (olFeature) => {
+			const getFlatten = (coordinates) => {
+				// we assume that the coordinates per geometry are always in the same shape
+				// the geometry is provided from openlayers and should be in a consistent shape (per feature/geometry)
+				const flatten = coordinates.flat();
+				if (flatten.every((c) => Array.isArray(c))) {
+					return getFlatten(flatten);
+				}
+
+				return { coordinates: flatten, dims: coordinates[0].length };
+			};
+
+			const geometry = olFeature.getGeometry();
+			if (geometry instanceof Point) {
+				return 1;
+			}
+			const flattenCoordinates = getFlatten(geometry.getCoordinates());
+			return flattenCoordinates.coordinates.length / flattenCoordinates.dims;
 		};
 
 		const olStyles = presetStyles.length > 0 ? presetStyles : getOlStyles(olFeature, olLayer, resolution);
@@ -583,17 +615,18 @@ export class BvvMfp3Encoder {
 								mfpGeometry.transform(this._mapProjection, this._mfpProjection);
 							}
 							const result = this._encodeFeature(new Feature(mfpGeometry), olLayer, styleCache, groupOpacity, [style]);
-							return result ? { features: [...styleFeatures.features, ...result.features] } : defaultResult;
+							return result ? { features: [...styleFeatures.features, ...result.features], size: styleFeatures.size + result.size } : defaultResult;
 						}
 					}
 					return styleFeatures;
 				}, defaultResult)
-			: { features: [] };
+			: { features: [], size: 0 };
 
 		const encodedFeature = this._geometryEncodingFormat.writeFeatureObject(olFeatureToEncode);
 		encodedFeature.properties = { _gx_style: encodedStyleId };
 		return {
-			features: [encodedFeature, ...advancedStyleFeatures.features]
+			features: [encodedFeature, ...advancedStyleFeatures.features],
+			size: countCoordinates(olFeatureToEncode) + advancedStyleFeatures.size
 		};
 	}
 
