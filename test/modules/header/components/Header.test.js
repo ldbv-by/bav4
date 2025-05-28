@@ -20,6 +20,7 @@ import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
 import { Tools } from '../../../../src/domain/tools';
 import { setSignedIn, setSignedOut } from '../../../../src/store/auth/auth.action';
 import { focusSearchField } from '../../../../src/store/mainMenu/mainMenu.action.js';
+import { Highlight_Item_Class } from '../../../../src/modules/search/components/menu/AbstractResultItem.js';
 
 window.customElements.define(Header.tag, Header);
 
@@ -590,6 +591,34 @@ describe('Header', () => {
 
 				expect(searchContainerElement.classList.contains('is-clear-visible')).toBeFalse();
 				expect(window.getComputedStyle(clearButton).display).toBe('none');
+			});
+
+			it('prevents the cursor to flip around the query term on ArrowUp', async () => {
+				const searchResultsCount = 5;
+				const state = {
+					media: {
+						minWidth: true
+					}
+				};
+				const element = await setup(state);
+				for (let index = 0; index < searchResultsCount; index++) {
+					const divElement = document.createElement('div');
+					divElement.classList.add(Highlight_Item_Class);
+					document.body.appendChild(divElement);
+				}
+				const arrowUpEvent = new KeyboardEvent('keydown', { key: 'ArrowUp' });
+				const arrowDownEvent = new KeyboardEvent('keydown', { key: 'ArrowDown' });
+				const arrowUpSpy = spyOn(arrowUpEvent, 'preventDefault').and.callThrough();
+				const arrowDownSpy = spyOn(arrowDownEvent, 'preventDefault').and.callThrough();
+
+				const inputElement = element.shadowRoot.querySelector('#input');
+
+				inputElement.value = 'foo';
+				inputElement.dispatchEvent(arrowUpEvent);
+				inputElement.dispatchEvent(arrowDownEvent);
+
+				expect(arrowUpSpy).toHaveBeenCalled();
+				expect(arrowDownSpy).not.toHaveBeenCalled();
 			});
 		});
 

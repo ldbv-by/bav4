@@ -228,10 +228,13 @@ export class Header extends MvuElement {
 			input.focus();
 		};
 
-		//sets the input cursor on key arrow up only if no search result exists
 		const onKeyDown = (evt) => {
+			/** Sets the input cursor on key 'arrow up' only if no search result exists.
+			 * 	This prevents the cursor to flip around the query term, while the user is
+			 * 	navigating through the results (up & down).
+			 */
 			const highlightItems = findAllBySelector(document, '.' + Highlight_Item_Class);
-			if (evt.which === 38 && highlightItems.length !== 0) {
+			if (evt.key === 'ArrowUp' && highlightItems.length !== 0) {
 				evt.preventDefault();
 			}
 		};
