@@ -40,6 +40,7 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_mfp_id_a4_portrait).toBe('DIN A4 Hochformat');
 		expect(map.olMap_handler_mfp_id_a3_landscape).toBe('DIN A3 Querformat');
 		expect(map.olMap_handler_mfp_id_a3_portrait).toBe('DIN A3 Hochformat');
+		expect(map.olMap_handler_mfp_encoder_max_specs_limit_reached).toBe('Die zu exportierende Karte überschreitet die Größenbegrenzung.');
 		expect(map.olMap_handler_mfp_encoder_layer_not_exportable).toBe('Die folgenden Ebenen können nicht exportiert werden:');
 		expect(map.olMap_handler_routing_choose_alternative_route(['label'])).toBe('label');
 		expect(map.olMap_handler_routing_modify_segment).toBe('Ändern der Route: klicken und ziehen');
@@ -90,6 +91,7 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_mfp_id_a4_portrait).toBe('DIN A4 portrait');
 		expect(map.olMap_handler_mfp_id_a3_landscape).toBe('DIN A3 landscape');
 		expect(map.olMap_handler_mfp_id_a3_portrait).toBe('DIN A3 portrait');
+		expect(map.olMap_handler_mfp_encoder_max_specs_limit_reached).toBe('The exported map document exceeds size limit.');
 		expect(map.olMap_handler_mfp_encoder_layer_not_exportable).toBe('The following layers cannot be exported:');
 		expect(map.olMap_handler_routing_choose_alternative_route(['label'])).toBe('label');
 		expect(map.olMap_handler_routing_modify_segment).toBe('Modify route: click and pull');
@@ -107,7 +109,7 @@ describe('i18n for map module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 41;
+		const expectedSize = 42;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
