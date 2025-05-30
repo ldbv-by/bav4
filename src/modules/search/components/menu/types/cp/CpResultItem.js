@@ -92,7 +92,6 @@ export class CpResultItem extends AbstractResultItem {
 	highlightResult(highlighted) {
 		const { cpSearchResult } = this.getModel();
 		if (highlighted) {
-			this.shadowRoot.querySelector('.ba-list-item')?.focus();
 			this.classList.add(Highlight_Item_Class);
 			if (cpSearchResult.geometry) {
 				addHighlightFeatures({
@@ -108,7 +107,6 @@ export class CpResultItem extends AbstractResultItem {
 				});
 			}
 		} else {
-			this.shadowRoot.querySelector('.ba-list-item')?.blur();
 			this.classList.remove(Highlight_Item_Class);
 			this.classList.remove(Selected_Item_Class);
 			removeHighlightFeaturesByCategory(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY);
@@ -207,6 +205,7 @@ export class CpResultItem extends AbstractResultItem {
 					${css}
 				</style>
 				<li
+					part="background"
 					class="ba-list-item"
 					tabindex="0"
 					@click=${() => this.selectResult()}

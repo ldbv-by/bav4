@@ -81,3 +81,6 @@
 .show-all:focus-visible {
 	box-shadow: Inset 0 0 0 0.2em var(--primary-color-lighter);
 }
+.ba-key-nav-item_highlight::part(background) {
+	background: var(--header-background-color);
+}

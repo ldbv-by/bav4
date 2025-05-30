@@ -75,7 +75,6 @@ export class LocationResultItem extends AbstractResultItem {
 	highlightResult(highlighted) {
 		const { locationSearchResult } = this.getModel();
 		if (highlighted) {
-			this.shadowRoot.querySelector('.ba-list-item')?.focus();
 			this.classList.add(Highlight_Item_Class);
 			addHighlightFeatures({
 				id: locationSearchResult.id,
@@ -84,7 +83,6 @@ export class LocationResultItem extends AbstractResultItem {
 				data: [...locationSearchResult.center]
 			});
 		} else {
-			this.shadowRoot.querySelector('.ba-list-item')?.blur();
 			this.classList.remove(Highlight_Item_Class);
 			this.classList.remove(Selected_Item_Class);
 			removeHighlightFeaturesByCategory(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_CATEGORY);
@@ -148,6 +146,7 @@ export class LocationResultItem extends AbstractResultItem {
 					${css}
 				</style>
 				<li
+					part="background"
 					class="ba-list-item"
 					tabindex="0"
 					@click=${() => this.selectResult()}
