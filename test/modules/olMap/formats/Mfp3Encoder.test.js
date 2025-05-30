@@ -3,7 +3,7 @@ import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 
 import { $injector } from '../../../../src/injection';
-import { BvvMfp3Encoder, MAX_ENCODABLE_VECTOR_COORDINATES, MFP_ENCODING_ERROR_TYPE } from '../../../../src/modules/olMap/services/Mfp3Encoder';
+import { BvvMfp3Encoder, MFP_ENCODING_ERROR_TYPE } from '../../../../src/modules/olMap/services/Mfp3Encoder';
 
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
@@ -58,10 +58,6 @@ describe('BvvMfp3Encoder', () => {
 		qrCode: () => 'http://url.to/shorten.png'
 	};
 
-	const configServiceMock = {
-		getValue: (key, defaultValue) => defaultValue
-	};
-
 	const shareServiceMock = {
 		encodeState: () => `http://foo?${QueryParameters.TOOL_ID}=someTool`,
 		copyToClipboard() {}
@@ -102,8 +98,7 @@ describe('BvvMfp3Encoder', () => {
 		.registerSingleton('MfpService', mfpServiceMock)
 		.registerSingleton('LayerService', layerServiceMock)
 		.registerSingleton('IconService', iconServiceMock)
-		.registerSingleton('CoordinateService', coordinateServiceMock)
-		.registerSingleton('ConfigService', configServiceMock);
+		.registerSingleton('CoordinateService', coordinateServiceMock);
 	proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 	register(proj4);
 	const setup = (initProperties) => {
@@ -2806,118 +2801,6 @@ describe('BvvMfp3Encoder', () => {
 				encoder._pageExtent = [20, 20, 50, 50];
 				const actualSpec = encoder._encodeVector(vectorLayer, NO_OP, groupOpacity);
 				expect(actualSpec.geoJson.features).toHaveSize(3);
-			});
-
-			it('throws error with geoResource label, while it does NOT writes features exceeding MAX_ENCODABLE_VECTOR_COORDINATES', () => {
-				const createFeatures = (featureCount) => {
-					const features = [];
-					for (let index = 0; index < featureCount; index++) {
-						const feature = new Feature({
-							geometry: new Polygon([
-								[
-									[30, 30],
-									[40, 40],
-									[40, 30],
-									[30, 30]
-								]
-							])
-						});
-						feature.setStyle(getStrokeStyle());
-						features.push(feature);
-					}
-					return features;
-				};
-
-				const features = createFeatures(MAX_ENCODABLE_VECTOR_COORDINATES / 4 + 1);
-				const errorCallback = jasmine.createSpy();
-				const vectorSource = new VectorSource({ wrapX: false, features: features });
-				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
-				const groupOpacity = 1;
-				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
-				const geoResourceMock = getGeoResourceMock();
-				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
-				const encoder = setup();
-				encoder._pageExtent = [20, 20, 50, 50];
-				const actualSpec = encoder._encodeVector(vectorLayer, errorCallback, groupOpacity);
-
-				expect(actualSpec).toBeFalse();
-				expect(errorCallback).toHaveBeenCalledWith('[foo_label]', MFP_ENCODING_ERROR_TYPE.MAXIMUM_ENCODING_LIMIT_REACHED);
-			});
-
-			it('throws error with layer id while it does NOT writes features exceeding MAX_ENCODABLE_VECTOR_COORDINATES', () => {
-				const createFeatures = (featureCount) => {
-					const features = [];
-					for (let index = 0; index < featureCount; index++) {
-						const feature = new Feature({
-							geometry: new Polygon([
-								[
-									[30, 30],
-									[40, 40],
-									[40, 30],
-									[30, 30]
-								]
-							])
-						});
-						feature.setStyle(getStrokeStyle());
-						features.push(feature);
-					}
-					return features;
-				};
-
-				const features = createFeatures(MAX_ENCODABLE_VECTOR_COORDINATES / 4 + 1);
-				const errorCallback = jasmine.createSpy();
-				const vectorSource = new VectorSource({ wrapX: false, features: features });
-				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
-				const groupOpacity = 1;
-				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
-				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => undefined);
-				const encoder = setup();
-				encoder._pageExtent = [20, 20, 50, 50];
-				const actualSpec = encoder._encodeVector(vectorLayer, errorCallback, groupOpacity);
-
-				expect(actualSpec).toBeFalse();
-				expect(errorCallback).toHaveBeenCalledWith('[foo]', MFP_ENCODING_ERROR_TYPE.MAXIMUM_ENCODING_LIMIT_REACHED);
-			});
-
-			it('throws error while it does NOT writes features exceeding MAX_ENCODABLE_VECTOR_COORDINATES using configService', () => {
-				const configValue = 40;
-				const createFeatures = (featureCount) => {
-					const features = [];
-					for (let index = 0; index < featureCount; index++) {
-						const feature = new Feature({
-							geometry: new Polygon([
-								[
-									[30, 30],
-									[40, 40],
-									[40, 30],
-									[30, 30]
-								]
-							])
-						});
-						feature.setStyle(getStrokeStyle());
-						features.push(feature);
-					}
-					return features;
-				};
-				const configServiceSpy = spyOn(configServiceMock, 'getValue')
-					.withArgs('MAX_ENCODABLE_VECTOR_COORDINATES', MAX_ENCODABLE_VECTOR_COORDINATES)
-					.and.returnValue(configValue);
-
-				const features = createFeatures(configValue / 4 + 1);
-				const errorCallback = jasmine.createSpy();
-				const vectorSource = new VectorSource({ wrapX: false, features: features });
-				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
-				const groupOpacity = 1;
-				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
-				const geoResourceMock = getGeoResourceMock();
-				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
-				const encoder = setup();
-				encoder._pageExtent = [20, 20, 50, 50];
-				const actualSpec = encoder._encodeVector(vectorLayer, errorCallback, groupOpacity);
-
-				expect(actualSpec).toBeFalse();
-				expect(errorCallback).toHaveBeenCalledWith('[foo_label]', MFP_ENCODING_ERROR_TYPE.MAXIMUM_ENCODING_LIMIT_REACHED);
-				expect(configServiceSpy).toHaveBeenCalled();
 			});
 		});
 

@@ -17,7 +17,7 @@ import { equals, getIntersection, containsCoordinate } from 'ol/extent';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { unByKey } from 'ol/Observable';
 import { html } from 'lit-html';
-import { MFP_ENCODING_ERROR_TYPE } from '../../services/Mfp3Encoder';
+import { MAX_MFP_SPEC_SIZE_DEFAULT, MFP_ENCODING_ERROR_TYPE } from '../../services/Mfp3Encoder';
 
 const Points_Per_Inch = 72; // PostScript points 1/72"
 const MM_Per_Inches = 25.4;
@@ -37,13 +37,15 @@ export class OlMfpHandler extends OlLayerHandler {
 			TranslationService: translationService,
 			MapService: mapService,
 			MfpService: mfpService,
-			Mfp3Encoder: mfp3Encoder
-		} = $injector.inject('StoreService', 'TranslationService', 'MapService', 'MfpService', 'Mfp3Encoder');
+			Mfp3Encoder: mfp3Encoder,
+			ConfigService: configService
+		} = $injector.inject('StoreService', 'TranslationService', 'MapService', 'MfpService', 'Mfp3Encoder', 'ConfigService');
 
 		this._storeService = storeService;
 		this._translationService = translationService;
 		this._mapService = mapService;
 		this._mfpService = mfpService;
+		this._configService = configService;
 		this._encoder = mfp3Encoder;
 		this._mfpLayer = null;
 		this._mapListener = null;
@@ -395,13 +397,23 @@ export class OlMfpHandler extends OlLayerHandler {
 			showGrid: showGrid && gridSupported
 		};
 		const encodingResult = await this._encoder.encode(this._map, encodingProperties);
-
-		startJob(encodingResult.specs);
-		const encodingErrors = encodingResult.errors.filter(
-			(e) => e.type === MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE || e.type === MFP_ENCODING_ERROR_TYPE.MAXIMUM_ENCODING_LIMIT_REACHED
-		);
-		const notify = encodingErrors.length > 0 ? () => this._notifyAboutEncodingErrors(encodingErrors) : () => {};
-		notify();
+		const specSize = JSON.stringify(encodingResult.specs ?? '').length;
+		const maxMfpSpecSize = this._configService.getValue('MAX_MFP_SPEC_SIZE', MAX_MFP_SPEC_SIZE_DEFAULT);
+		if (specSize < maxMfpSpecSize) {
+			startJob(encodingResult.specs);
+			const encodingErrors = encodingResult.errors.filter(
+				(e) => e.type === MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE || e.type === MFP_ENCODING_ERROR_TYPE.MAXIMUM_ENCODING_LIMIT_REACHED
+			);
+			const notify = encodingErrors.length > 0 ? () => this._notifyAboutEncodingErrors(encodingErrors) : () => {};
+			notify();
+		} else {
+			this._notifyAboutEncodingErrors([
+				{
+					type: MFP_ENCODING_ERROR_TYPE.MAXIMUM_ENCODING_LIMIT_REACHED,
+					label: this._translationService.translate('olMap_handler_mfp_encoder_max_specs_limit_reached')
+				}
+			]);
+		}
 	}
 
 	_notifyAboutEncodingErrors(encodingErrors) {
