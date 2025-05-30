@@ -14,7 +14,7 @@
  * @typedef OafQueryable
  * @property {string} name The name of this queryable property
  * @property {OafQueryableType} type The type of this queryable property
- * @property {boolean} finalized The list of values of this queryable property is final (is an enumeration)
+ * @property {boolean} finalized Indicates whether the property values represents a complete list (enumeration) or is based on a sample
  * @property {Array<Object>} values The values of this queryable property. If the property `finalized` is `true`, these values represent an enumeration. Otherwise, a list with example entries.
  * @property {number} [minValue] The min. value of all values
  * @property {number} [maxValue] The max. values of all values
