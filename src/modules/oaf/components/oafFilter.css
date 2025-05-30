@@ -1,0 +1,86 @@
+select {
+	border: 1px white;
+	background-color: #777;
+	padding: 1px 10px;
+	height: 20px;
+}
+
+button {
+	border: none;
+	outline: none;
+}
+
+.value-input,
+.min-value-input,
+.max-value-input {
+	input,
+	ba-searchable-select,
+	select {
+		height: 25px;
+	}
+}
+
+.oaf-filter {
+	padding: 10px;
+	border: 1px solid #222;
+	background: #555;
+}
+
+.flex {
+	display: flex;
+}
+
+.column {
+	flex-direction: column;
+}
+
+.row {
+	flex-direction: row;
+}
+
+.title {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.grid-row {
+	display: grid;
+	grid-template-rows: 1fr 1fr;
+	gap: 4px;
+}
+
+.grid-column {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 5px;
+}
+
+.grid-column-header {
+	display: grid;
+	grid-template-columns: 1fr 50px 25px;
+	gap: 5px;
+}
+
+.filter-title-container {
+	display: flex;
+	font-weight: 600;
+}
+
+.not-button {
+	height: 20px;
+	background-color: var(--primary-color);
+	color: #eee;
+	font-weight: 600;
+}
+
+.remove-button {
+	height: 20px;
+	background-color: red;
+	color: #eee;
+	font-weight: 600;
+}
+
+.not-button.active {
+	background-color: green;
+}
