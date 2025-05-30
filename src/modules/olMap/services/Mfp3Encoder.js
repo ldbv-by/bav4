@@ -270,7 +270,7 @@ export class BvvMfp3Encoder {
 		switch (geoResource.getType()) {
 			case GeoResourceTypes.OAF:
 			case GeoResourceTypes.VECTOR:
-				return this._encodeVector(encodableLayer, encodingErrorCallback, groupOpacity);
+				return this._encodeVector(encodableLayer, groupOpacity);
 			case GeoResourceTypes.XYZ:
 				return this._encodeWMTS(encodableLayer, groupOpacity);
 			case GeoResourceTypes.WMS:
@@ -350,7 +350,7 @@ export class BvvMfp3Encoder {
 		};
 	}
 
-	_encodeVector(olVectorLayer, encodingErrorCallback, groupOpacity) {
+	_encodeVector(olVectorLayer, groupOpacity) {
 		// todo: refactor to utils
 		// adopted/adapted from {@link https://dmitripavlutin.com/javascript-array-group/#:~:text=must%20be%20inserted.-,array.,provided%20by%20core%2Djs%20library. | Array Grouping in JavaScript}
 		const groupBy = (elementsToGroup, groupByFunction) =>
