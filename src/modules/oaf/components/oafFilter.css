@@ -10,7 +10,9 @@ button {
 	outline: none;
 }
 
-.input-value {
+.value-input,
+.min-value-input,
+.max-value-input {
 	input,
 	ba-searchable-select,
 	select {

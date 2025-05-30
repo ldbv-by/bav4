@@ -45,30 +45,36 @@ export class OafFilter extends MvuElement {
 		}
 	}
 
+	onInitialize() {
+		this.observeModel('operator', () => this.dispatchEvent(new CustomEvent('change')));
+		this.observeModel('minValue', () => this.dispatchEvent(new CustomEvent('change')));
+		this.observeModel('maxValue', () => this.dispatchEvent(new CustomEvent('change')));
+		this.observeModel('value', () => this.dispatchEvent(new CustomEvent('change')));
+	}
+
 	createView(model) {
 		const { minValue, maxValue, value, operator } = model;
 		const { name, type, values: queryableValues } = model.queryable;
 		const operators = this._getOperators(type);
 
-		const onMinValueChanged = (evt, val) => {
-			evt.target.value = this._changeValue(minValue, val, type, Update_Min_Value);
+		const onMinValueChanged = (evt, newValue) => {
+			evt.target.value = this._updateValue(newValue, minValue, Update_Min_Value);
 		};
 
-		const onMaxValueChanged = (evt, val) => {
-			evt.target.value = this._changeValue(maxValue, val, type, Update_Max_Value);
+		const onMaxValueChanged = (evt, newValue) => {
+			evt.target.value = this._updateValue(newValue, maxValue, Update_Max_Value);
 		};
 
-		const onValueChanged = (evt, val) => {
-			evt.target.value = this._changeValue(value, val, type, Update_Value);
+		const onValueChanged = (evt, newValue) => {
+			evt.target.value = this._updateValue(newValue, value, Update_Value);
 		};
 
 		const onOperatorSelect = (evt) => {
 			this.signal(Update_Operator, evt.target.value);
-			this.dispatchEvent(new CustomEvent('change'));
 		};
 
 		const onRemove = () => {
-			this.dispatchEvent(new CustomEvent('remove', { detail: model.queryable }));
+			this.dispatchEvent(new CustomEvent('remove'));
 		};
 
 		const getStringInputHtml = () => {
@@ -145,6 +151,7 @@ export class OafFilter extends MvuElement {
 					<input
 						type="text"
 						placeholder="0"
+						class="value-input"
 						.value=${value}
 						step=${step}
 						min=${minRange}
@@ -158,7 +165,7 @@ export class OafFilter extends MvuElement {
 		};
 
 		const getBooleanInputHtml = () => {
-			return html`<select id="select-operator" data-type="boolean" @change=${onOperatorSelect}>
+			return html`<select data-type="boolean" @change=${onOperatorSelect}>
 				<option selected value="true">Ja</option>
 				<option selected value="false">Nein</option>
 			</select>`;
@@ -194,21 +201,16 @@ export class OafFilter extends MvuElement {
 			`;
 		};
 
-		const toggleActiveButtonClass = (evt) => {
-			evt.target.classList.toggle('active');
-		};
-
 		return html`
 			<style>
 				${css}
 			</style>
 			<div class="oaf-filter">
 				<div class="grid-row">
-
 						<div class="filter-title-container"><span class="title">${name}</span></div>
 					<div class="grid-column-header">
 						${getOperatorHtml()}
-						<button class="not-button" @click=${toggleActiveButtonClass}>NOT</button>
+						<button class="not-button">NOT</button>
 						<button class="remove-button" @click=${onRemove}>X</button>
 					</div>
 					<div class="grid-column">
@@ -221,8 +223,7 @@ export class OafFilter extends MvuElement {
 	}
 
 	set value(value) {
-		this.signal(Update_Value, value);
-		this.dispatchEvent(new CustomEvent('change'));
+		this._updateValue(value, this.value, Update_Value);
 	}
 
 	get value() {
@@ -230,14 +231,14 @@ export class OafFilter extends MvuElement {
 	}
 
 	set maxValue(value) {
-		this.signal(Update_Max_Value, value);
+		this._updateValue(value, this.value, Update_Max_Value);
 	}
 
 	get maxValue() {
 		return this.getModel().maxValue;
 	}
 	set minValue(value) {
-		this.signal(Update_Min_Value, value);
+		this._updateValue(value, this.value, Update_Min_Value);
 	}
 
 	get minValue() {
@@ -276,29 +277,26 @@ export class OafFilter extends MvuElement {
 		return defaultOps;
 	}
 
-	_changeValue(oldVal, val, type, signal) {
-		const parsedValue = this._parseValue(val, type, oldVal);
-
-		if (oldVal !== parsedValue) {
-			this.signal(signal, parsedValue);
-			this.dispatchEvent(new CustomEvent('change'));
-		}
-
+	_updateValue(newValue, oldValue, signal) {
+		const parsedValue = this._parseValue(newValue, oldValue);
+		this.signal(signal, parsedValue);
 		return parsedValue;
 	}
 
-	_parseValue(val, type, fallback = null) {
+	_parseValue(value, fallback = null) {
+		const type = this.queryable.type;
+
 		if (type === 'integer') {
-			val = parseInt(val);
-			return !isNaN(val) ? val : fallback;
+			value = parseInt(value);
+			return !isNaN(value) ? value : fallback;
 		}
 
 		if (type === 'float') {
-			val = parseFloat(val);
-			return !isNaN(val) ? val : fallback;
+			value = parseFloat(value);
+			return !isNaN(value) ? value : fallback;
 		}
 
-		return val;
+		return value;
 	}
 
 	static get tag() {
