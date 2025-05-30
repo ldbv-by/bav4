@@ -125,6 +125,13 @@ export class VectorLayerService {
 			vectorGeoResource instanceof VectorGeoResource
 				? this._vectorSourceForData(vectorGeoResource)
 				: this._vectorSourceForOaf(vectorGeoResource, vectorLayer, olMap);
+
+		/**
+		 * Features that are added later must also be styled
+		 */
+		vectorSource.on('featuresloadend', () => {
+			styleService.applyStyle(vectorLayer, olMap, vectorGeoResource);
+		});
 		vectorLayer.setSource(vectorSource);
 
 		return styleService.applyStyle(vectorLayer, olMap, vectorGeoResource);

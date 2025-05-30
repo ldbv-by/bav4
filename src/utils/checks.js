@@ -2,7 +2,7 @@
  * @module utils/checks
  */
 /**
- * Checks if a value is a Object.
+ * Checks if a value is a `Object`.
  * @function
  * @param {*} val
  * @returns {boolean} true if it is a object
@@ -12,7 +12,7 @@ export const isObject = (val) => {
 };
 
 /**
- * Checks if a value is a string (primitive or object).
+ * Checks if a value is a `String` (primitive or object).
  * @function
  * @param {*} val
  * @returns {boolean} `true` if it is a string
@@ -22,7 +22,18 @@ export const isString = (val) => {
 };
 
 /**
- * Checks if a value is a function
+ * Checks if a string is a valid hex color representation.
+ * @function
+ * @param {*} val
+ * @param {boolean} supportTransparency `true` id a transparent color should be supported
+ * @returns {boolean} `true` if it is a string
+ */
+export const isHexColor = (val, supportTransparency = false) => {
+	return supportTransparency ? /^#[0-9A-F]{6}[0-9a-f]{0,2}$/i.test(val) : /^#[0-9A-F]{6}$/i.test(val);
+};
+
+/**
+ * Checks if a value is a `function`.
  * @function
  * @param {*} val
  * @returns {boolean} `true` if it is a function
@@ -32,7 +43,7 @@ export const isFunction = (val) => {
 };
 
 /**
- * Checks if a value is a string (primitive or object).
+ * Checks if a value is a `Number`.
  * @function
  * @param {*} val
  * @param {boolean} [strict=true] false if strings representing a number should be allowed
@@ -66,7 +77,7 @@ export const isCoordinateLike = (val) => {
 };
 
 /**
- * Checks if a value is a Promise.
+ * Checks if a value is a `Promise`.
  * @function
  * @param {*} val
  * @returns {boolean} `true` if it is a Promise
@@ -77,7 +88,7 @@ export const isPromise = (val) => {
 };
 
 /**
- * Checks if a value is a lit-html TemplateResult.
+ * Checks if a value is a lit-html `TemplateResult`.
  * @function
  * @param {*} val
  * @returns {boolean} `true` if it is a TemplateResult
@@ -87,7 +98,7 @@ export const isTemplateResult = (val) => {
 };
 
 /**
- * Checks if a value is a string and represents an HTTP URL.
+ * Checks if a value is a string and represents an HTTP `URL`.
  * based on https://stackoverflow.com/a/43467144
  * @function
  * @param {*} val
