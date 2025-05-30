@@ -97,6 +97,10 @@
 	margin-right: 0.5em;
 }
 
+.oaf-settings-icon {
+	margin: auto 1em auto 0;
+}
+
 .compare {
 	display: flex;
 	align-items: stretch;
