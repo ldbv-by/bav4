@@ -20,7 +20,7 @@ import { setBeingMoved, setMoveStart as setMapMoveStart, setMoveEnd as setMapMov
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { observe } from '../../../../../src/utils/storeUtils';
 import { simulateMapEvent } from '../../mapTestUtils';
-import { MFP_ENCODING_ERROR_TYPE } from '../../../../../src/modules/olMap/services/Mfp3Encoder';
+import { MAX_MFP_SPEC_SIZE_DEFAULT, MFP_ENCODING_ERROR_TYPE } from '../../../../../src/modules/olMap/services/Mfp3Encoder';
 import { isTemplateResult } from '../../../../../src/utils/checks';
 
 describe('OlMfpHandler', () => {
@@ -529,6 +529,32 @@ describe('OlMfpHandler', () => {
 			expect(notifySpy).toHaveBeenCalledWith([
 				{ label: 'foo', type: MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE },
 				{ label: 'bar', type: MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE }
+			]);
+		});
+
+		it('warns about encoding errors for encoding specs reaching max limit', async () => {
+			setup();
+			const map = setupMap();
+			const largeSpecsReachingEncodingLimit = { foo: 'bar', baz: 'something large' };
+			const encodingResult = {
+				specs: largeSpecsReachingEncodingLimit,
+				errors: []
+			};
+			const limitFromConfig = JSON.stringify(largeSpecsReachingEncodingLimit).length - 10;
+			const configSpy = spyOn(configService, 'getValue').and.callFake(() => limitFromConfig);
+
+			const handler = new OlMfpHandler();
+
+			const notifySpy = spyOn(handler, '_notifyAboutEncodingErrors').and.callThrough();
+			spyOn(mfpEncoderMock, 'encode').and.resolveTo(encodingResult);
+
+			handler.activate(map);
+			requestJob();
+
+			await TestUtils.timeout();
+			expect(configSpy).toHaveBeenCalledOnceWith('MAX_MFP_SPEC_SIZE', MAX_MFP_SPEC_SIZE_DEFAULT);
+			expect(notifySpy).toHaveBeenCalledWith([
+				{ label: 'olMap_handler_mfp_encoder_max_specs_limit_reached', type: MFP_ENCODING_ERROR_TYPE.MAXIMUM_ENCODING_LIMIT_REACHED }
 			]);
 		});
 

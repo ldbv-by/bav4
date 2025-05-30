@@ -28,13 +28,16 @@ const UnitsRatio = 39.37; //inches per meter
 const PointsPerInch = 72; // PostScript points 1/72"
 const PixelSizeInMeter = 0.00028; // based on https://www.adv-online.de/AdV-Produkte/Standards-und-Produktblaetter/AdV-Profile/binarywriterservlet?imgUid=36060b99-b8c4-0a41-ba3c-cdd1072e13d6&uBasVariant=11111111-1111-1111-1111-111111111111  and the calculations of a specific scaleDenominator (p.22)
 
+export const MAX_MFP_SPEC_SIZE_DEFAULT = 10_000_000; // ca. 10 MByte
+export const MAX_ENCODABLE_VECTOR_COORDINATES_DEFAULT = 100_000;
 /**
  * @readonly
  * @enum {String}
  */
 export const MFP_ENCODING_ERROR_TYPE = Object.freeze({
 	MISSING_GEORESOURCE: 'missing_georesource',
-	NOT_EXPORTABLE: 'not_exportable'
+	NOT_EXPORTABLE: 'not_exportable',
+	MAXIMUM_ENCODING_LIMIT_REACHED: 'maximum encoding limit reached'
 });
 
 /**
@@ -265,6 +268,7 @@ export class BvvMfp3Encoder {
 		}
 
 		switch (geoResource.getType()) {
+			case GeoResourceTypes.OAF:
 			case GeoResourceTypes.VECTOR:
 				return this._encodeVector(encodableLayer, groupOpacity);
 			case GeoResourceTypes.XYZ:
@@ -391,6 +395,7 @@ export class BvvMfp3Encoder {
 		// todo: find a better implementation then this mix of feature aggregation (reducer) and style aggregation (cache)
 		const aggregateResults = (encoded, feature) => {
 			const result = this._encodeFeature(feature, olVectorLayer, styleCache, groupOpacity);
+
 			return result
 				? {
 						features: [...encoded.features, ...result.features]
