@@ -1099,7 +1099,8 @@ describe('BvvMfp3Encoder', () => {
 			const getGeoResourceMock = () => {
 				return {
 					id: 'foo',
-					importedByUser: false
+					importedByUser: false,
+					label: 'foo_label'
 				};
 			};
 
@@ -2807,7 +2808,7 @@ describe('BvvMfp3Encoder', () => {
 				expect(actualSpec.geoJson.features).toHaveSize(3);
 			});
 
-			it('does NOT writes features exceeding MAX_ENCODABLE_VECTOR_COORDINATES', () => {
+			it('throws error with geoResource label, while it does NOT writes features exceeding MAX_ENCODABLE_VECTOR_COORDINATES', () => {
 				const createFeatures = (featureCount) => {
 					const features = [];
 					for (let index = 0; index < featureCount; index++) {
@@ -2840,10 +2841,45 @@ describe('BvvMfp3Encoder', () => {
 				const actualSpec = encoder._encodeVector(vectorLayer, errorCallback, groupOpacity);
 
 				expect(actualSpec).toBeFalse();
+				expect(errorCallback).toHaveBeenCalledWith('[foo_label]', MFP_ENCODING_ERROR_TYPE.MAXIMUM_ENCODING_LIMIT_REACHED);
+			});
+
+			it('throws error with layer id while it does NOT writes features exceeding MAX_ENCODABLE_VECTOR_COORDINATES', () => {
+				const createFeatures = (featureCount) => {
+					const features = [];
+					for (let index = 0; index < featureCount; index++) {
+						const feature = new Feature({
+							geometry: new Polygon([
+								[
+									[30, 30],
+									[40, 40],
+									[40, 30],
+									[30, 30]
+								]
+							])
+						});
+						feature.setStyle(getStrokeStyle());
+						features.push(feature);
+					}
+					return features;
+				};
+
+				const features = createFeatures(MAX_ENCODABLE_VECTOR_COORDINATES / 4 + 1);
+				const errorCallback = jasmine.createSpy();
+				const vectorSource = new VectorSource({ wrapX: false, features: features });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
+				const groupOpacity = 1;
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => undefined);
+				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
+				const actualSpec = encoder._encodeVector(vectorLayer, errorCallback, groupOpacity);
+
+				expect(actualSpec).toBeFalse();
 				expect(errorCallback).toHaveBeenCalledWith('[foo]', MFP_ENCODING_ERROR_TYPE.MAXIMUM_ENCODING_LIMIT_REACHED);
 			});
 
-			it('does NOT writes features exceeding MAX_ENCODABLE_VECTOR_COORDINATES using configService', () => {
+			it('throws error while it does NOT writes features exceeding MAX_ENCODABLE_VECTOR_COORDINATES using configService', () => {
 				const configValue = 40;
 				const createFeatures = (featureCount) => {
 					const features = [];
@@ -2880,7 +2916,7 @@ describe('BvvMfp3Encoder', () => {
 				const actualSpec = encoder._encodeVector(vectorLayer, errorCallback, groupOpacity);
 
 				expect(actualSpec).toBeFalse();
-				expect(errorCallback).toHaveBeenCalledWith('[foo]', MFP_ENCODING_ERROR_TYPE.MAXIMUM_ENCODING_LIMIT_REACHED);
+				expect(errorCallback).toHaveBeenCalledWith('[foo_label]', MFP_ENCODING_ERROR_TYPE.MAXIMUM_ENCODING_LIMIT_REACHED);
 				expect(configServiceSpy).toHaveBeenCalled();
 			});
 		});

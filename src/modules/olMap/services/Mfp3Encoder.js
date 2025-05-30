@@ -416,7 +416,8 @@ export class BvvMfp3Encoder {
 
 		const maximumEncodableVectorCoordinates = this._configService.getValue('MAX_ENCODABLE_VECTOR_COORDINATES', MAX_ENCODABLE_VECTOR_COORDINATES);
 		if (encodingResults.size > maximumEncodableVectorCoordinates) {
-			encodingErrorCallback(`[${olVectorLayer.get('id')}]`, MFP_ENCODING_ERROR_TYPE.MAXIMUM_ENCODING_LIMIT_REACHED);
+			const layerLabel = this._geoResourceService.byId(olVectorLayer.get('geoResourceId'))?.label ?? olVectorLayer.get('id');
+			encodingErrorCallback(`[${layerLabel}]`, MFP_ENCODING_ERROR_TYPE.MAXIMUM_ENCODING_LIMIT_REACHED);
 			return false;
 		}
 
