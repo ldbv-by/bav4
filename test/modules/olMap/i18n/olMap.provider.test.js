@@ -91,7 +91,7 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_mfp_id_a4_portrait).toBe('DIN A4 portrait');
 		expect(map.olMap_handler_mfp_id_a3_landscape).toBe('DIN A3 landscape');
 		expect(map.olMap_handler_mfp_id_a3_portrait).toBe('DIN A3 portrait');
-		expect(map.olMap_handler_mfp_encoder_max_specs_limit_reached).toBe('The exported map document exceeds size limit.');
+		expect(map.olMap_handler_mfp_encoder_max_specs_limit_reached).toBe('The map to be exported exceeds the size limit.');
 		expect(map.olMap_handler_mfp_encoder_layer_not_exportable).toBe('The following layers cannot be exported:');
 		expect(map.olMap_handler_routing_choose_alternative_route(['label'])).toBe('label');
 		expect(map.olMap_handler_routing_modify_segment).toBe('Modify route: click and pull');

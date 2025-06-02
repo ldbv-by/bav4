@@ -35,7 +35,7 @@ export const provide = (lang) => {
 				olMap_handler_mfp_id_a4_portrait: 'DIN A4 portrait',
 				olMap_handler_mfp_id_a3_landscape: 'DIN A3 landscape',
 				olMap_handler_mfp_id_a3_portrait: 'DIN A3 portrait',
-				olMap_handler_mfp_encoder_max_specs_limit_reached: 'The exported map document exceeds size limit.',
+				olMap_handler_mfp_encoder_max_specs_limit_reached: 'The map to be exported exceeds the size limit.',
 				olMap_handler_mfp_encoder_layer_not_exportable: 'The following layers cannot be exported:',
 				olMap_handler_routing_choose_alternative_route: (params) => `${params[0]}`,
 				olMap_handler_routing_modify_segment: 'Modify route: click and pull',
