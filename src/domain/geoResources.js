@@ -653,7 +653,7 @@ export class AbstractVectorGeoResource extends GeoResource {
 	}
 
 	/**
-	 * @returns {boolean}`true` if this AbstractVectorGeoResource has specific style hint
+	 * @returns {boolean}`true` if this AbstractVectorGeoResource has specific `StyleHint`
 	 */
 	hasStyleHint() {
 		return this.isClustered() ? true : !!this._styleHint;
@@ -707,11 +707,18 @@ export class AbstractVectorGeoResource extends GeoResource {
 	}
 
 	/**
-	 * The base color of this `AbstractVectorGeoResource`.
-	 *  @type {string|null}
+	 * The style of this `AbstractVectorGeoResource`.
+	 *  @type {module:domain/styles~Style|null}
 	 */
 	get style() {
 		return this._style;
+	}
+
+	/**
+	 * @returns {boolean}`true` if this AbstractVectorGeoResource has specific `Style`
+	 */
+	hasStyle() {
+		return !!this._style;
 	}
 }
 

@@ -490,8 +490,9 @@ describe('GeoResource', () => {
 
 			it('provides a check for containing a non-default value as `styleHint`', () => {
 				expect(new TestVectorGeoResource('id', 'label').hasStyleHint()).toBeFalse();
-				expect(new TestVectorGeoResource('id', 'label').setStyleHint(null).hasStyleHint()).toBeFalse();
+				expect(new TestVectorGeoResource('id', 'label').setStyleHint(undefined).hasStyleHint()).toBeFalse();
 				expect(new TestVectorGeoResource('id', 'label').setClusterParams({ foo: 'bar' }).hasStyleHint()).toBeTrue();
+				expect(new TestVectorGeoResource('id', 'label').setStyleHint(StyleHint.HIGHLIGHT).setStyleHint(null).styleHint).toBeNull();
 				expect(new TestVectorGeoResource('id', 'label').setStyleHint(StyleHint.HIGHLIGHT).hasStyleHint()).toBeTrue();
 			});
 
@@ -508,8 +509,10 @@ describe('GeoResource', () => {
 
 			it('sets the `style` property', () => {
 				expect(new TestVectorGeoResource('id', 'label').setStyle(undefined).style).toBeNull();
+				expect(new TestVectorGeoResource('id', 'label').setStyle(undefined).hasStyle()).toBeFalse();
 				expect(new TestVectorGeoResource('id', 'label').setStyle({ baseColor: '#ff0000' }).style).toEqual({ baseColor: '#ff0000' });
 				expect(new TestVectorGeoResource('id', 'label').setStyle({ baseColor: '#ff0000' }).setStyle(null).style).toBeNull();
+				expect(new TestVectorGeoResource('id', 'label').setStyle({ baseColor: '#ff0000' }).hasStyle()).toBeTrue();
 			});
 		});
 	});
