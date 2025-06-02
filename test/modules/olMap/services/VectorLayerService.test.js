@@ -240,6 +240,33 @@ describe('VectorLayerService', () => {
 
 				expect(applyStyleSpy).toHaveBeenCalledTimes(2);
 			});
+
+			it('registers a `propertychange` listener that that calls the StyleService', () => {
+				setup();
+				const id = 'id';
+				const geoResourceId = 'geoResourceId';
+				const geoResourceLabel = 'geoResourceLabel';
+				const sourceAsString = 'kml';
+				const olMap = new Map();
+				const olSource = new VectorSource();
+				const vectorGeoResource = new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326);
+				spyOn(instanceUnderTest, '_vectorSourceForData').withArgs(vectorGeoResource).and.returnValue(olSource);
+				const applyStyleSpy = spyOn(styleService, 'applyStyle')
+					.withArgs(jasmine.anything(), olMap, vectorGeoResource)
+					.and.callFake((olLayer) => olLayer);
+
+				const olLayer = instanceUnderTest.createLayer(id, vectorGeoResource, olMap);
+
+				expect(applyStyleSpy).toHaveBeenCalledTimes(1);
+
+				olLayer.set('foo', 'bar');
+
+				expect(applyStyleSpy).toHaveBeenCalledTimes(1);
+
+				olLayer.set('style', { baseColor: '#34ebcd' });
+
+				expect(applyStyleSpy).toHaveBeenCalledTimes(2);
+			});
 		});
 
 		describe('_vectorSourceForOaf', () => {

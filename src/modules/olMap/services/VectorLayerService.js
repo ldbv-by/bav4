@@ -134,6 +134,13 @@ export class VectorLayerService {
 		});
 		vectorLayer.setSource(vectorSource);
 
+		vectorLayer.on('propertychange', (event) => {
+			const property = event.key;
+			if (property === 'style' && vectorLayer.get('style') !== event.oldValue) {
+				styleService.applyStyle(vectorLayer, olMap, vectorGeoResource);
+			}
+		});
+
 		return styleService.applyStyle(vectorLayer, olMap, vectorGeoResource);
 	}
 
