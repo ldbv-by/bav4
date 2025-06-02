@@ -17,7 +17,7 @@ import { equals, getIntersection, containsCoordinate } from 'ol/extent';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { unByKey } from 'ol/Observable';
 import { html } from 'lit-html';
-import { MAX_MFP_SPEC_SIZE_DEFAULT, MFP_ENCODING_ERROR_TYPE } from '../../services/Mfp3Encoder';
+import { DEFAULT_MAX_MFP_SPEC_SIZE_BYTES, MFP_ENCODING_ERROR_TYPE } from '../../services/Mfp3Encoder';
 
 const Points_Per_Inch = 72; // PostScript points 1/72"
 const MM_Per_Inches = 25.4;
@@ -397,8 +397,8 @@ export class OlMfpHandler extends OlLayerHandler {
 			showGrid: showGrid && gridSupported
 		};
 		const encodingResult = await this._encoder.encode(this._map, encodingProperties);
-		const specSize = JSON.stringify(encodingResult.specs ?? '').length;
-		const maxMfpSpecSize = this._configService.getValue('MAX_MFP_SPEC_SIZE', MAX_MFP_SPEC_SIZE_DEFAULT);
+		const specSize = new TextEncoder().encode(JSON.stringify(encodingResult.specs ?? '')).length;
+		const maxMfpSpecSize = this._configService.getValue('MAX_MFP_SPEC_SIZE', DEFAULT_MAX_MFP_SPEC_SIZE_BYTES);
 		if (specSize < maxMfpSpecSize) {
 			startJob(encodingResult.specs);
 			const encodingErrors = encodingResult.errors.filter(

@@ -20,7 +20,7 @@ import { setBeingMoved, setMoveStart as setMapMoveStart, setMoveEnd as setMapMov
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { observe } from '../../../../../src/utils/storeUtils';
 import { simulateMapEvent } from '../../mapTestUtils';
-import { MAX_MFP_SPEC_SIZE_DEFAULT, MFP_ENCODING_ERROR_TYPE } from '../../../../../src/modules/olMap/services/Mfp3Encoder';
+import { DEFAULT_MAX_MFP_SPEC_SIZE_BYTES, MFP_ENCODING_ERROR_TYPE } from '../../../../../src/modules/olMap/services/Mfp3Encoder';
 import { isTemplateResult } from '../../../../../src/utils/checks';
 
 describe('OlMfpHandler', () => {
@@ -552,7 +552,7 @@ describe('OlMfpHandler', () => {
 			requestJob();
 
 			await TestUtils.timeout();
-			expect(configSpy).toHaveBeenCalledOnceWith('MAX_MFP_SPEC_SIZE', MAX_MFP_SPEC_SIZE_DEFAULT);
+			expect(configSpy).toHaveBeenCalledOnceWith('MAX_MFP_SPEC_SIZE', DEFAULT_MAX_MFP_SPEC_SIZE_BYTES);
 			expect(notifySpy).toHaveBeenCalledWith([
 				{ label: 'olMap_handler_mfp_encoder_max_specs_limit_reached', type: MFP_ENCODING_ERROR_TYPE.MAXIMUM_ENCODING_LIMIT_REACHED }
 			]);
