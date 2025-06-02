@@ -679,7 +679,7 @@ describe('layersReducer', () => {
 
 			expect(store.getState().layers.active[0].style.baseColor).toBe('#eb4034');
 
-			modifyLayer('id0', { style: { baseColor: '#5eeb34' }  });
+			modifyLayer('id0', { style: { baseColor: '#5eeb34' } });
 
 			expect(store.getState().layers.active[0].style.baseColor).toBe('#5eeb34');
 		});
