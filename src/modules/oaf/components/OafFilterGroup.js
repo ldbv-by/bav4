@@ -1,25 +1,38 @@
 /**
  * @module modules/oaf/components/OafFilterGroup
  */
+
 import { html } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
 import css from './oafFilterGroup.css';
+import { $injector } from '../../../injection';
 
 const Update_Queryables = 'update_queryables';
 const Update_Filters = 'update_filters';
 
 /**
- * UX prototype implementation for ogc feature api filtering.
+ * A Container for OGC Feature API specific filters that are "AND" connected with each other
+ *
+ * @property {Array<Object>} oafFilters The Collection of filters that were added onto this group
+ * @property {Array<OafQueryable>} queryables The OafQueryable to create oafFilters for this group
+ *
+ * @fires change Fires when this component or one of it's filters changes
+ * @fires remove Fires when the filter group informs it's parent that it wants to be removed
  *
  * @class
  * @author herrmutig
  */
 export class OafFilterGroup extends MvuElement {
+	#translationService;
+
 	constructor() {
 		super({
 			queryables: [],
 			oafFilters: []
 		});
+
+		const { TranslationService: translationService } = $injector.inject('TranslationService');
+		this.#translationService = translationService;
 	}
 
 	update(type, data, model) {
@@ -32,6 +45,7 @@ export class OafFilterGroup extends MvuElement {
 	}
 
 	createView(model) {
+		const translate = (key) => this.#translationService.translate(key);
 		const { queryables, oafFilters } = model;
 
 		const onAddFilter = (evt) => {
@@ -48,6 +62,7 @@ export class OafFilterGroup extends MvuElement {
 
 		const onRemoveFilter = (evt) => {
 			this.signal(Update_Filters, this._removeFilter(evt.target.queryable.name));
+			//		this.dispatchEvent(new CustomEvent('change')); TODO create test for
 		};
 
 		const onRemoveGroup = () => {
@@ -61,10 +76,10 @@ export class OafFilterGroup extends MvuElement {
 
 			<div class="filter-group">
 				<div class="title-bar">
-					<h2 class="title">Filtergruppe</h2>
+					<h2 class="title">${translate('oaf_group_title')}</h2>
 					<div class="btn-bar">
 						<select id="queryable-select" @change=${onAddFilter}>
-							<option selected>Select Filter...</option>
+							<option selected>${translate('oaf_group_select_filter')}</option>
 							${queryables
 								.filter((queryable) => !oafFilters.find((oafFilter) => oafFilter.queryable.name === queryable.name))
 								.map((queryable) => html`<option .value=${queryable.name}>${queryable.name}</option>`)}
@@ -131,6 +146,7 @@ export class OafFilterGroup extends MvuElement {
 	set oafFilters(value) {
 		this.signal(Update_Filters, value);
 	}
+
 	get oafFilters() {
 		return this.getModel().oafFilters;
 	}

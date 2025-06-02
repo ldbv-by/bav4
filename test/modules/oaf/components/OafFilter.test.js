@@ -1,6 +1,7 @@
 import { OafFilter } from '../../../../src/modules/oaf/components/OafFilter';
 import { SearchableSelect } from '../../../../src/modules/commons/components/searchableSelect/SearchableSelect';
 import { TestUtils } from '../../../test-utils';
+import { $injector } from '../../../../src/injection';
 
 window.customElements.define(OafFilter.tag, OafFilter);
 window.customElements.define(SearchableSelect.tag, SearchableSelect);
@@ -15,6 +16,8 @@ describe('OafFilter', () => {
 
 	const setup = async () => {
 		TestUtils.setupStoreAndDi({});
+		$injector.registerSingleton('TranslationService', { translate: (key) => key });
+
 		return TestUtils.render(OafFilter.tag);
 	};
 
@@ -522,7 +525,7 @@ describe('OafFilter', () => {
 				expect(element.shadowRoot.querySelector(`[data-type="${T_Boolean}"]`)).not.toBeNull();
 			});
 
-			it(`renders operator field with default operator "equals"`, async () => {
+			it(`renders operator-field with default operator "equals"`, async () => {
 				const element = await setup();
 				element.queryable = createQueryable('foo', T_Boolean);
 

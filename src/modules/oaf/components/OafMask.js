@@ -14,15 +14,19 @@ const Update_Layer_Id = 'update_layer_id';
 const Update_Show_Console = 'update_show_console';
 
 /**
- * Displays and allows filtering for OGC Feature API capabilities
+ * Displays and allows filtering for OGC Feature API capabilities.
+ *
+ * @property {string} layerId=-1 The layerId identifies what layer this mask gets and what filter capabilities are applied
+ * @property {string} showConsole=false Shows the CQL Console when "true". Otherwise, the normal UI Mode of this mask.
  *
  * @class
  * @author herrmutig
  */
 export class OafMask extends MvuElement {
 	#storeService;
-	#geoResourceService;
 	#importOafService;
+	#translationService;
+	#geoResourceService;
 
 	constructor() {
 		super({
@@ -34,13 +38,15 @@ export class OafMask extends MvuElement {
 
 		const {
 			StoreService: storeService,
-			GeoResourceService: geoResourceService,
-			ImportOafService: importOafService
-		} = $injector.inject('StoreService', 'GeoResourceService', 'ImportOafService');
+			ImportOafService: importOafService,
+			TranslationService: translationService,
+			GeoResourceService: geoResourceService
+		} = $injector.inject('StoreService', 'ImportOafService', 'TranslationService', 'GeoResourceService');
 
 		this.#storeService = storeService;
-		this.#geoResourceService = geoResourceService;
 		this.#importOafService = importOafService;
+		this.#translationService = translationService;
+		this.#geoResourceService = geoResourceService;
 	}
 
 	onInitialize() {
@@ -61,6 +67,8 @@ export class OafMask extends MvuElement {
 	}
 
 	createView(model) {
+		const translate = (key) => this.#translationService.translate(key);
+
 		const onAddFilterGroup = () => {
 			const groups = this.getModel().filterGroups;
 			this.signal(Update_Filter_Groups, [...groups, { id: createUniqueId(), oafFilters: [] }]);
@@ -93,21 +101,21 @@ export class OafMask extends MvuElement {
 				? html` <ba-button
 						style="width:200px; display:inline-block;padding: 20px 0px;"
 						id="btn-normal-mode"
-						.label=${'Normaler Modus'}
+						.label=${translate('oaf_mask_ui_mode')}
 						.type=${'primary'}
 						@click=${onShowCqlConsole}
 					></ba-button>`
 				: html` <ba-button
 							id="btn-add-filter-group"
 							style="width:200px; display:inline-block; padding: 20px 0px;"
-							.label=${'Neue Filtergruppe'}
+							.label=${translate('oaf_mask_add_filter_group')}
 							.type=${'primary'}
 							@click=${onAddFilterGroup}
 						></ba-button>
 						<ba-button
 							id="btn-expert-mode"
 							style="width:200px; display:inline-block;padding: 20px 0px;"
-							.label=${'Expertenmodus'}
+							.label=${translate('oaf_mask_console_mode')}
 							.type=${'primary'}
 							@click=${onShowCqlConsole}
 						></ba-button>`;
@@ -116,7 +124,7 @@ export class OafMask extends MvuElement {
 		const orSeparatorHtml = () => html`
 			<div class="separator-container">
 				<div class="separator"></div>
-				<div class="separator-content">ODER</div>
+				<div class="separator-content">${translate('oaf_mask_or')}</div>
 				<div class="separator"></div>
 			</div>
 		`;
@@ -141,7 +149,9 @@ export class OafMask extends MvuElement {
 
 		const consoleModeHtml = () =>
 			html` <div id="console" class="console-flex-container">
-				<div class="btn-bar">${this.operatorDefinitions.map((operator) => html`<ba-button .type=${'primary'} .label=${operator}></ba-button>`)}</div>
+				<div class="btn-bar">
+					${OafMask.OPERATOR_DEFINITIONS.map((operator) => html`<ba-button .type=${'primary'} .label=${operator}></ba-button>`)}
+				</div>
 				<textarea class="console"></textarea>
 				<ba-button .type=${'primary'} .label=${'Anwenden'}></ba-button>
 			</div>`;
@@ -197,7 +207,7 @@ export class OafMask extends MvuElement {
 		this.signal(Update_Show_Console, value);
 	}
 
-	get operatorDefinitions() {
+	static get OPERATOR_DEFINITIONS() {
 		return ['equals', 'between', 'greater', 'lesser'];
 	}
 

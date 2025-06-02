@@ -19,7 +19,10 @@ describe('OafMask', () => {
 
 	const setup = async (state = {}, properties = {}) => {
 		TestUtils.setupStoreAndDi(state, { layers: layersReducer });
-		$injector.registerSingleton('GeoResourceService', geoResourceServiceMock).registerSingleton('ImportOafService', importOafServiceMock);
+		$injector
+			.registerSingleton('GeoResourceService', geoResourceServiceMock)
+			.registerSingleton('ImportOafService', importOafServiceMock)
+			.registerSingleton('TranslationService', { translate: (key) => key });
 
 		const layerId = properties.layerId !== undefined ? properties.layerId : -1;
 		addLayer(layerId, { geoResourceId: `dummy ${layerId}` });
@@ -67,7 +70,7 @@ describe('OafMask', () => {
 			//properties from model
 			expect(element.layerId).toBe(-1);
 			expect(element.showConsole).toBe(false);
-			expect(element.operatorDefinitions).toEqual(['equals', 'between', 'greater', 'lesser']);
+			expect(OafMask.OPERATOR_DEFINITIONS).toEqual(['equals', 'between', 'greater', 'lesser']);
 		});
 
 		it('updates layerId', async () => {

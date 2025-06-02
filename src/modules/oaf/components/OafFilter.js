@@ -1,6 +1,7 @@
 /**
  * @module modules/oaf/components/OafFilter
  */
+import { $injector } from '../../../injection';
 import { html, nothing } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
 import css from './oafFilter.css';
@@ -11,15 +12,24 @@ const Update_Value = 'update_value';
 const Update_Min_Value = 'update_min_value';
 const Update_Max_Value = 'update_max_value';
 
-// TODO: observe model to invoke change events. (Same for OafFilterGroup)
-
 /**
- * UX prototype implementation for ogc feature api filtering.
+ * A Filter for the OGC Feature API which filters a provided queryable
+ *
+ * @property {OafQueryable} queryable={} The queryable for this filter. Provides necessary definitions for the filter's display
+ * @property {string} operator=equals The operator for this filter. Defines how the filter will be applied
+ * @property {string|number|null} value=null The value of this filter.
+ * @property {number|null} minValue=null The minValue of this filter. Optional, only used when available in provided queryable
+ * @property {number|null} maxValue=null The maxValue of this filter. Optional, only used when available in provided queryable
+ *
+ * @fires change Fires when the component's operator or value changes
+ * @fires remove Fires when the component informs it's parent that it wants to be removed
  *
  * @class
  * @author herrmutig
  */
 export class OafFilter extends MvuElement {
+	#translationService;
+
 	constructor() {
 		super({
 			queryable: {},
@@ -28,6 +38,9 @@ export class OafFilter extends MvuElement {
 			minValue: null,
 			maxValue: null
 		});
+
+		const { TranslationService: translationService } = $injector.inject('TranslationService');
+		this.#translationService = translationService;
 	}
 
 	update(type, data, model) {
@@ -53,6 +66,7 @@ export class OafFilter extends MvuElement {
 	}
 
 	createView(model) {
+		const translate = (key) => this.#translationService.translate(key);
 		const { minValue, maxValue, value, operator } = model;
 		const { name, type, values: queryableValues } = model.queryable;
 		const operators = this._getOperators(type);
@@ -166,8 +180,8 @@ export class OafFilter extends MvuElement {
 
 		const getBooleanInputHtml = () => {
 			return html`<select data-type="boolean" @change=${onOperatorSelect}>
-				<option selected value="true">Ja</option>
-				<option selected value="false">Nein</option>
+				<option selected value="true">${translate('oaf_filter_yes')}</option>
+				<option selected value="false">${translate('oaf_filter_no')}</option>
 			</select>`;
 		};
 
@@ -283,7 +297,7 @@ export class OafFilter extends MvuElement {
 		return parsedValue;
 	}
 
-	_parseValue(value, fallback = null) {
+	_parseValue(value, fallback) {
 		const type = this.queryable.type;
 
 		if (type === 'integer') {

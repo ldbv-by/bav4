@@ -1,5 +1,6 @@
 import { OafFilter } from '../../../../src/modules/oaf/components/OafFilter';
 import { OafFilterGroup } from '../../../../src/modules/oaf/components/OafFilterGroup';
+import { $injector } from '../../../../src/injection';
 import { TestUtils } from '../../../test-utils';
 
 window.customElements.define(OafFilterGroup.tag, OafFilterGroup);
@@ -8,6 +9,7 @@ window.customElements.define(OafFilter.tag, OafFilter);
 describe('OafFilterGroup', () => {
 	const setup = async () => {
 		TestUtils.setupStoreAndDi({});
+		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(OafFilterGroup.tag);
 	};
 
