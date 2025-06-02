@@ -29,6 +29,7 @@ import { GeoResource } from '../../domain/geoResources';
  * @property {string} [timestamp=null] Timestamp
  * @property {number} [zIndex]  Index of this layer within the list of active layers. When not set, the layer will be appended at the end
  * @property {LayerState} [state=LayerState.OK]  The current state of the layer
+ * @property {LayerStyle} [style=null]  The current style of the layer
  * @property {Constraints} [constraints] Constraints of the layer
  * @property {module:utils/storeUtils.EventLike<String|null>} [grChangedFlag] Flag that indicates a change of the linked GeoResource
  */
@@ -52,6 +53,7 @@ import { GeoResource } from '../../domain/geoResources';
  * @property {string} [timestamp] The new `timestamp `value
  * @property {number} [zIndex] The new `zIndex` of this layer within the list of active layers
  * @property {LayerState} [state] The new `state` of the layer
+ * @property {LayerStyle} [style] The new `style` of the layer
  * @property {boolean} [hidden] The new `hidden` constraint of the layer
  * @property {boolean} [alwaysTop] The new `alwaysTop` constraint of the layer
  * @property {string} [filter] The new `filter` constraint of the layer
@@ -76,6 +78,7 @@ import { GeoResource } from '../../domain/geoResources';
  * @property {string} [timestamp=null] Timestamp
  * @property {number} [zIndex]  Index of this layer within the list of active layers. When not set, the layer will be appended at the end
  * @property {LayerState} [state] The `state` of the layer
+ * @property {LayerStyle} [style] The `style` of the layer
  * @property {Constraints} [constraints] Constraints of the layer
  */
 
@@ -110,6 +113,12 @@ export const LayerState = Object.freeze({
 	OK: 'ok',
 	INCOMPLETE_DATA: 'incomplete_data'
 });
+
+/**
+ * Style of a {@link Layer}.
+ * @typedef {Object} LayerStyle
+ * @property {string} [baseColor=null] A simple base color as style for this layer
+ */
 
 const getStore = () => {
 	const { StoreService: storeService } = $injector.inject('StoreService');
@@ -192,6 +201,7 @@ export const cloneAndAddLayer = (id, clonedId, options = {}) => {
 				visible: layer.visible,
 				timestamp: layer.timestamp,
 				state: layer.state,
+				style: { ...layer.style },
 				zIndex: createDefaultLayerProperties().zIndex,
 				constraints: { ...layer.constraints }
 			},
