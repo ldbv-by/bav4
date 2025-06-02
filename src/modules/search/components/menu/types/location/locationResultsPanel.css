@@ -84,3 +84,6 @@
 .ba-key-nav-item_highlight::part(background) {
 	background: var(--header-background-color);
 }
+.ba-key-nav-item_highlight {
+	display: block;
+}
