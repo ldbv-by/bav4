@@ -694,8 +694,7 @@ export class AbstractVectorGeoResource extends GeoResource {
 	}
 
 	/**
-	 * Sets the base color for this `AbstractVectorGeoResource`.
-	 * Only effective if no more specific styling is available.
+	 * Sets the `Style` for this `AbstractVectorGeoResource`.
 	 * @param {module:domain/styles~Style|null} style the style
 	 * @returns {AbstractVectorGeoResource} `this` for chaining
 	 */
