@@ -307,7 +307,7 @@ describe('GeoResource provider', () => {
 			expect(oafGeoResource.filter).toBe('filterExpr');
 			expect(oafGeoResource.limit).toBe(4242);
 			expect(oafGeoResource.clusterParams).toEqual({ foo: 'bar' });
-			expect(oafGeoResource.baseColor).toBe('#ff0000');
+			expect(oafGeoResource.style.baseColor).toBe('#ff0000');
 		});
 
 		it('maps a VectorFile BVV definition to a corresponding GeoResource instance', async () => {
@@ -342,7 +342,7 @@ describe('GeoResource provider', () => {
 			expect(vectorGeoResource.minZoom).toBe(5);
 			expect(vectorGeoResource.maxZoom).toBe(19);
 			expect(vectorGeoResource.clusterParams).toEqual({ foo: 'bar' });
-			expect(vectorGeoResource.baseColor).toBe('#ff0000');
+			expect(vectorGeoResource.style.baseColor).toBe('#ff0000');
 			expect(vectorGeoResource.queryable).toBeFalse();
 			expect(vectorGeoResource.exportable).toBeFalse();
 			expect(vectorGeoResource.authRoles).toEqual(['TEST']);
@@ -379,7 +379,7 @@ describe('GeoResource provider', () => {
 			expect(rtVectorGeoResource.minZoom).toBe(5);
 			expect(rtVectorGeoResource.maxZoom).toBe(19);
 			expect(rtVectorGeoResource.clusterParams).toEqual({ foo: 'bar' });
-			expect(rtVectorGeoResource.baseColor).toBe('#ff0000');
+			expect(rtVectorGeoResource.style.baseColor).toBe('#ff0000');
 			expect(rtVectorGeoResource.queryable).toBeFalse();
 			expect(rtVectorGeoResource.exportable).toBeFalse();
 			expect(rtVectorGeoResource.authRoles).toEqual(['TEST']);

@@ -43,7 +43,7 @@ export const _definitionToGeoResource = (definition) => {
 						.setLimit(def.limit)
 						.setFilter(def.filter)
 						.setClusterParams(def.clusterParams ?? {})
-						.setBaseColor(def.baseColor)
+						.setStyle(def.baseColor ? { baseColor: def.baseColor } : null)
 				);
 			case 'vector': {
 				return new GeoResourceFuture(
@@ -52,7 +52,7 @@ export const _definitionToGeoResource = (definition) => {
 					def.label
 				).onResolve((resolved) => {
 					// @ts-ignore
-					setPropertiesAndProviders(resolved.setClusterParams(def.clusterParams ?? {}).setBaseColor(def.baseColor));
+					setPropertiesAndProviders(resolved.setClusterParams(def.clusterParams ?? {}).setStyle(def.baseColor ? { baseColor: def.baseColor } : null));
 				});
 			}
 			case 'rtvector': {
@@ -60,7 +60,7 @@ export const _definitionToGeoResource = (definition) => {
 					new RtVectorGeoResource(def.id, def.label, def.url, Symbol.for(def.sourceType))
 						//set specific optional values
 						.setClusterParams(def.clusterParams ?? {})
-						.setBaseColor(def.baseColor)
+						.setStyle(def.baseColor ? { baseColor: def.baseColor } : null)
 				);
 			}
 			case 'aggregate':
