@@ -478,7 +478,7 @@ describe('GeoResource', () => {
 			expect(testVectorGeoResource.showPointNames).toBeTrue();
 			expect(testVectorGeoResource.clusterParams).toEqual({});
 			expect(testVectorGeoResource.styleHint).toBeNull();
-			expect(testVectorGeoResource.baseColor).toBeNull();
+			expect(testVectorGeoResource.style).toBeNull();
 		});
 
 		describe('methods', () => {
@@ -503,12 +503,13 @@ describe('GeoResource', () => {
 			it('sets the `styleHint` property', () => {
 				expect(new TestVectorGeoResource('id', 'label').setClusterParams({ foo: 'bar' }).styleHint).toBe(StyleHint.CLUSTER);
 				expect(new TestVectorGeoResource('id', 'label').setStyleHint(StyleHint.HIGHLIGHT).styleHint).toBe(StyleHint.HIGHLIGHT);
+				expect(new TestVectorGeoResource('id', 'label').setStyleHint(StyleHint.HIGHLIGHT).setStyleHint(null).styleHint).toBeNull();
 			});
 
-			it('sets the `baseColor` property', () => {
-				expect(new TestVectorGeoResource('id', 'label').setBaseColor('#foo').baseColor).toBeNull();
-				expect(new TestVectorGeoResource('id', 'label').setBaseColor('#ff0000').baseColor).toBe('#ff0000');
-				expect(new TestVectorGeoResource('id', 'label').setBaseColor('#ff0000').setBaseColor(null).baseColor).toBeNull();
+			it('sets the `style` property', () => {
+				expect(new TestVectorGeoResource('id', 'label').setStyle(undefined).style).toBeNull();
+				expect(new TestVectorGeoResource('id', 'label').setStyle({ baseColor: '#ff0000' }).style).toEqual({ baseColor: '#ff0000' });
+				expect(new TestVectorGeoResource('id', 'label').setStyle({ baseColor: '#ff0000' }).setStyle(null).style).toBeNull();
 			});
 		});
 	});

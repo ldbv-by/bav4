@@ -612,6 +612,10 @@ export const VectorSourceType = Object.freeze({
 	EWKT: Symbol.for('ewkt')
 });
 
+/**
+ * Base class for vector data.
+ * @class
+ */
 export class AbstractVectorGeoResource extends GeoResource {
 	constructor(id, label) {
 		super(id, label);
@@ -622,7 +626,7 @@ export class AbstractVectorGeoResource extends GeoResource {
 		this._showPointNames = true;
 		this._clusterParams = {};
 		this._styleHint = null;
-		this._baseColor = null;
+		this._style = null;
 	}
 
 	/**
@@ -664,11 +668,11 @@ export class AbstractVectorGeoResource extends GeoResource {
 
 	/**
 	 * Set the style hint for this `AbstractVectorGeoResource`
-	 * @param {StyleHint} styleHint
+	 * @param {StyleHint|null} styleHint
 	 * @returns {AbstractVectorGeoResource} `this` for chaining
 	 */
 	setStyleHint(styleHint) {
-		if (styleHint) {
+		if (styleHint || styleHint === null) {
 			this._styleHint = styleHint;
 		}
 		return this;
@@ -692,12 +696,12 @@ export class AbstractVectorGeoResource extends GeoResource {
 	/**
 	 * Sets the base color for this `AbstractVectorGeoResource`.
 	 * Only effective if no more specific styling is available.
-	 * @param {string|null} baseColor (seven-character hexadecimal notation) or `null`
+	 * @param {module:domain/styles~Style|null} style the style
 	 * @returns {AbstractVectorGeoResource} `this` for chaining
 	 */
-	setBaseColor(baseColor) {
-		if (baseColor === null || isHexColor(baseColor)) {
-			this._baseColor = baseColor;
+	setStyle(style) {
+		if (style || style === null) {
+			this._style = style;
 		}
 		return this;
 	}
@@ -706,8 +710,8 @@ export class AbstractVectorGeoResource extends GeoResource {
 	 * The base color of this `AbstractVectorGeoResource`.
 	 *  @type {string|null}
 	 */
-	get baseColor() {
-		return this._baseColor;
+	get style() {
+		return this._style;
 	}
 }
 
