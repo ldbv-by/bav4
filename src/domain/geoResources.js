@@ -4,7 +4,7 @@
 import { $injector } from '../injection';
 import { getDefaultAttribution } from '../services/provider/attribution.provider';
 import { getDefaultVectorGeoResourceLoaderForUrl } from '../services/provider/geoResource.provider';
-import { isExternalGeoResourceId, isHexColor, isNumber, isString } from '../utils/checks';
+import { isExternalGeoResourceId, isNumber, isString } from '../utils/checks';
 import { StyleHint } from './styles';
 
 /**
