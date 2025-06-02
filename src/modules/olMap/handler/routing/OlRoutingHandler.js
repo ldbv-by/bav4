@@ -530,6 +530,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 		const iconFeature = new Feature({
 			geometry: new Point(coordinate3857)
 		});
+		console.log('iconFeature.setStyle(getRoutingStyleFunction())');
 		iconFeature.setStyle(getRoutingStyleFunction());
 		iconFeature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.START);
 		iconFeature.set(ROUTING_FEATURE_INDEX, 0);
@@ -541,7 +542,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 		const iconFeature = new Feature({
 			geometry: new Point(coordinate3857)
 		});
-
+		console.log('iconFeature.setStyle(getRoutingStyleFunction())');
 		iconFeature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.DESTINATION);
 		iconFeature.set(ROUTING_FEATURE_INDEX, index);
 		iconFeature.setStyle(getRoutingStyleFunction());
@@ -550,6 +551,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 	}
 
 	async _requestRouteFromCoordinates(coordinates3857, status) {
+		console.log('begin _requestRouteFromCoordinates', { resolution: this._map.getView().getResolution(), view: this._map.getView() });
 		this._resetStore();
 		this._clearAllFeatures();
 		if (coordinates3857.length > 0) {
@@ -558,15 +560,19 @@ export class OlRoutingHandler extends OlLayerHandler {
 			if (coordinates3857.length === 1) {
 				switch (status) {
 					case RoutingStatusCodes.Destination_Missing:
+						console.log('this._addStartInteractionFeature');
 						this._addStartInteractionFeature(coords[0]);
 						break;
 					case RoutingStatusCodes.Start_Missing:
+						console.log('this._addDestinationInteractionFeature');
 						this._addDestinationInteractionFeature(coords[0], 0);
 						break;
 				}
 			} else {
 				// add interaction features
+				console.log('this._addStartInteractionFeature');
 				this._addStartInteractionFeature(coords.shift());
+				console.log('this._addDestinationInteractionFeature');
 				this._addDestinationInteractionFeature(coords.pop(), coordinates3857.length - 1);
 				coords.forEach((c, index) => {
 					this._addIntermediateInteractionFeature(c, index + 1);
@@ -590,6 +596,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 			}
 			// enable interaction also if request failed
 			this._setInteractionsActive(true);
+			console.log('finish _requestRouteFromCoordinates', { resolution: this._map.getView().getResolution(), view: this._map.getView() });
 		}
 	}
 
@@ -728,6 +735,9 @@ export class OlRoutingHandler extends OlLayerHandler {
 			// let's ensure each request is executed one after each other
 			this._promiseQueue.add(async () => {
 				this._catId = catId;
+				console.log('adding to promiseQueue', this._map.getView().getResolution());
+				// setTimeout(() => this._requestRouteFromCoordinates([...coordinates3857.map((c) => [...c])], status), 0);
+
 				await this._requestRouteFromCoordinates([...coordinates3857.map((c) => [...c])], status);
 			});
 		};

@@ -7,7 +7,9 @@ import { $injector } from '../../../../injection/index';
 
 export const getRoutingStyleFunction = () => {
 	const { IconService: iconService } = $injector.inject('IconService');
-	return (feature) => {
+	return (feature, resolution) => {
+		console.log({ featureType: feature.get(ROUTING_FEATURE_TYPE), resolution });
+
 		switch (feature.get(ROUTING_FEATURE_TYPE)) {
 			case RoutingFeatureTypes.START:
 				return [
