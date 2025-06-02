@@ -14,7 +14,7 @@ import removeSvg from './assets/trash.svg';
 import exclamationTriangleSvg from './assets/exclamation-triangle-fill.svg';
 import infoSvg from '../../../assets/icons/info.svg';
 import timeSvg from '../../../assets/icons/time.svg';
-import OafSettingsSvg from './assets/oafSetting.svg';
+import oafSettingsSvg from './assets/oafSetting.svg';
 import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { openModal } from '../../../../src/store/modal/modal.action';
 import { createUniqueId } from '../../../utils/numberUtils';
@@ -276,7 +276,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 			const oafSettingsContent = html`<div>OAF Settings</div>`;
 			return geoResource instanceof OafGeoResource
 				? html`<ba-icon
-						.icon="${OafSettingsSvg}"
+						.icon="${oafSettingsSvg}"
 						.title=${translate('layerManager_oaf_settings')}
 						.color=${'var(--secondary-color)'}
 						@click=${() => openBottomSheet(oafSettingsContent)}

@@ -146,7 +146,7 @@ describe('LayerItem', () => {
 			expect(badge.label).toBe('keyword0');
 		});
 
-		it('displays layer.state with a notify-icon (exclamationTriangel)', async () => {
+		it('displays the layer.state by a notify-icon', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
 				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
@@ -386,7 +386,7 @@ describe('LayerItem', () => {
 			expect(dragstartContainerSpy).not.toHaveBeenCalled();
 		});
 
-		it('queries georesource property to render the oaf-filter component ', async () => {
+		it('checks the type of the georesource to determine whether the settings icon should be displayed', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('oafGeoResource')
 				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId', 3857).setFilter('cql'));
@@ -407,7 +407,7 @@ describe('LayerItem', () => {
 			expect(oafSettingsElement[0].title).toBe('layerManager_oaf_settings');
 		});
 
-		it('opens the bottomSheet for the oaf-filter component ', async () => {
+		it('opens the bottomSheet for the oaf-filter component', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('oafGeoResource')
 				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId', 3857).setFilter('cql'));
