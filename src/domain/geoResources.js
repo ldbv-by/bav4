@@ -875,9 +875,6 @@ export class RtVectorGeoResource extends AbstractVectorGeoResource {
 		super(id, label);
 		this._url = url;
 		this._sourceType = sourceType;
-		this._clusterParams = {};
-		this._showPointNames = true;
-		this._styleHint = null;
 	}
 
 	get url() {
