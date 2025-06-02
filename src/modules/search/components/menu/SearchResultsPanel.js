@@ -159,7 +159,7 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 			const allHighlightIndices = items.flatMap((element, i) => (element.matches(Highlighted_Item_Class_Selector) ? i : []));
 
 			if (allHighlightIndices.length > 1 && allHighlightIndices.includes(hoverIndex)) {
-				return hoverIndex;
+				return allHighlightIndices[0] === hoverIndex ? allHighlightIndices[1] : allHighlightIndices[0];
 			}
 			return allHighlightIndices[0] ?? -1;
 		};

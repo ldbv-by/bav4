@@ -329,11 +329,8 @@ describe('SearchResultsPanel', () => {
 				expect(arrowDownSpy).toHaveBeenCalledTimes(4);
 				expect(changeSelectedElementSpy).toHaveBeenCalledWith(4, 3, resultItems);
 				expect(changeSelectedElementSpy).toHaveBeenCalledWith(3, 2, resultItems);
-				expect(changeSelectedElementSpy).toHaveBeenCalledWith(4, 3, resultItems);
-				expect(changeSelectedElementSpy).toHaveBeenCalledWith(3, 2, resultItems);
-
-				expect(changeSelectedElementSpy).not.toHaveBeenCalledWith(2, 1, resultItems);
-				expect(changeSelectedElementSpy).not.toHaveBeenCalledWith(1, 0, resultItems);
+				expect(changeSelectedElementSpy).toHaveBeenCalledWith(2, 1, resultItems);
+				expect(changeSelectedElementSpy).toHaveBeenCalledWith(1, 0, resultItems);
 			});
 
 			it('highlights the next resultItem for "arrowDown" when keyup event is fired', async () => {
@@ -371,11 +368,8 @@ describe('SearchResultsPanel', () => {
 				expect(arrowDownSpy).toHaveBeenCalledTimes(4);
 				expect(changeSelectedElementSpy).toHaveBeenCalledWith(0, 1, resultItems);
 				expect(changeSelectedElementSpy).toHaveBeenCalledWith(1, 2, resultItems);
-				expect(changeSelectedElementSpy).toHaveBeenCalledWith(0, 1, resultItems);
-				expect(changeSelectedElementSpy).toHaveBeenCalledWith(1, 2, resultItems);
-
-				expect(changeSelectedElementSpy).not.toHaveBeenCalledWith(2, 3, resultItems);
-				expect(changeSelectedElementSpy).not.toHaveBeenCalledWith(3, 4, resultItems);
+				expect(changeSelectedElementSpy).toHaveBeenCalledWith(2, 3, resultItems);
+				expect(changeSelectedElementSpy).toHaveBeenCalledWith(3, 4, resultItems);
 			});
 		});
 
