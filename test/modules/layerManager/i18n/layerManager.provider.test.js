@@ -25,6 +25,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_loading_hint).toBe('Wird geladen');
 		expect(map.layerManager_time_travel_hint).toBe('Bitte ein Jahr auswählen');
 		expect(map.layerManager_time_travel_slider).toBe('Schieberegler öffnen');
+		expect(map.layerManager_oaf_settings).toBe('Einstellungen');
 		expect(map.layerManager_compare).toBe('Vergleichen starten');
 		expect(map.layerManager_compare_title).toBe('Vergleichen starten');
 		expect(map.layerManager_compare_stop).toBe('Vergleichen beenden');
@@ -36,6 +37,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_compare_both_title).toBe('Ebene auf beide Seiten setzen');
 		expect(map.layerManager_compare_right).toBe('Rechts');
 		expect(map.layerManager_compare_right_title).toBe('Ebene auf die rechte Seite setzen');
+		expect(map.layerManager_title_layerState_incomplete_data).toBe('Daten wurden nur teilweise geladen');
 	});
 
 	it('provides translation for en', () => {
@@ -63,6 +65,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_loading_hint).toBe('Loading');
 		expect(map.layerManager_time_travel_hint).toBe('Choose a year');
 		expect(map.layerManager_time_travel_slider).toBe('Open slider');
+		expect(map.layerManager_oaf_settings).toBe('Settings');
 		expect(map.layerManager_compare).toBe('Start comparison tool');
 		expect(map.layerManager_compare_title).toBe('Start comparison tool');
 		expect(map.layerManager_compare_stop).toBe('Exit comparison tool');
@@ -74,10 +77,11 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_compare_both_title).toBe('Set layer on both sides');
 		expect(map.layerManager_compare_right).toBe('Right');
 		expect(map.layerManager_compare_right_title).toBe('Set layer on right side');
+		expect(map.layerManager_title_layerState_incomplete_data).toBe('Data loaded incomplete');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 33;
+		const expectedSize = 35;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
