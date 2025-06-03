@@ -102,6 +102,7 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 		const nextIndex = indexOfPreviousItem < 0 ? 0 : indexOfPreviousItem + 1;
 		this.#selectedIndex = nextIndex < items.length ? nextIndex : indexOfPreviousItem;
 		this._changeSelectedElement(indexOfPreviousItem, this.#selectedIndex, items);
+
 		//scroll to item if needed
 		if (items[this.#selectedIndex]) {
 			items[this.#selectedIndex].scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'end' });
@@ -119,6 +120,7 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 		}
 
 		this._changeSelectedElement(indexOfPreviousItem, this.#selectedIndex, items);
+
 		//scroll to item if needed
 		if (items[this.#selectedIndex]) {
 			items[this.#selectedIndex].scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'start' });
