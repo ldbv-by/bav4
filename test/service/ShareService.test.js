@@ -132,6 +132,7 @@ describe('ShareService', () => {
 				expect(extract[QueryParameters.LAYER_VISIBILITY]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_TIMESTAMP]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_SWIPE_ALIGNMENT]).not.toBeDefined();
+				expect(extract[QueryParameters.LAYER_STYLE]).not.toBeDefined();
 			});
 
 			it('extracts the current layers state ignoring hidden layers', () => {
@@ -147,6 +148,7 @@ describe('ShareService', () => {
 				expect(extract[QueryParameters.LAYER_VISIBILITY]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_TIMESTAMP]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_SWIPE_ALIGNMENT]).not.toBeDefined();
+				expect(extract[QueryParameters.LAYER_STYLE]).not.toBeDefined();
 			});
 
 			it('extracts the current layers state ignoring hidden geoResources', () => {
@@ -164,6 +166,7 @@ describe('ShareService', () => {
 				expect(extract[QueryParameters.LAYER_VISIBILITY]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_TIMESTAMP]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_SWIPE_ALIGNMENT]).not.toBeDefined();
+				expect(extract[QueryParameters.LAYER_STYLE]).not.toBeDefined();
 			});
 
 			it('extracts the current layers state ignoring including geoResources', () => {
@@ -181,6 +184,7 @@ describe('ShareService', () => {
 				expect(extract[QueryParameters.LAYER_VISIBILITY]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_TIMESTAMP]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_SWIPE_ALIGNMENT]).not.toBeDefined();
+				expect(extract[QueryParameters.LAYER_STYLE]).not.toBeDefined();
 			});
 
 			it('extracts the current layers state considering non default values', () => {
@@ -189,7 +193,7 @@ describe('ShareService', () => {
 				spyOn(geoResourceService, 'byId').and.returnValue({ hidden: false });
 				addLayer('someLayer', { opacity: 0.5, constraints: { swipeAlignment: SwipeAlignment.LEFT } });
 				addLayer('anotherLayer', { visible: false });
-				addLayer('aThirdLayer', { timestamp: '2000', constraints: { swipeAlignment: SwipeAlignment.RIGHT } });
+				addLayer('aThirdLayer', { timestamp: '2000', style: { baseColor: '#fcba03' }, constraints: { swipeAlignment: SwipeAlignment.RIGHT } });
 
 				const extract = instanceUnderTest._extractLayers();
 				expect(extract[QueryParameters.LAYER]).toEqual(['someLayer', 'anotherLayer', 'aThirdLayer']);
@@ -197,6 +201,7 @@ describe('ShareService', () => {
 				expect(extract[QueryParameters.LAYER_VISIBILITY]).toEqual([true, false, true]);
 				expect(extract[QueryParameters.LAYER_TIMESTAMP]).toEqual(['', '', '2000']);
 				expect(extract[QueryParameters.LAYER_SWIPE_ALIGNMENT]).not.toBeDefined();
+				expect(extract[QueryParameters.LAYER_STYLE]).toEqual(['', '', '#fcba03']);
 			});
 
 			describe('tool `COMPARE` is active', () => {
