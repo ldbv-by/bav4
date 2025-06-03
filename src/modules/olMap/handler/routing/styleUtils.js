@@ -7,6 +7,24 @@ import { $injector } from '../../../../injection/index';
 
 export const getRoutingStyleFunction = () => {
 	const { IconService: iconService } = $injector.inject('IconService');
+	const startIcon = new Icon({
+		anchor: [0.5, 1],
+		anchorXUnits: 'fraction',
+		anchorYUnits: 'fraction',
+		src: iconService.getIconResult('rt_start').base64
+	});
+	const destinationIcon = new Icon({
+		anchor: [0.5, 1],
+		anchorXUnits: 'fraction',
+		anchorYUnits: 'fraction',
+		src: iconService.getIconResult('rt_destination').base64
+	});
+	const intermediateIcon = new Icon({
+		anchor: [0.5, 0.5],
+		anchorXUnits: 'fraction',
+		anchorYUnits: 'fraction',
+		src: iconService.getIconResult('rt_intermediate').base64
+	});
 	return (feature, resolution) => {
 		console.log({ featureType: feature.get(ROUTING_FEATURE_TYPE), resolution });
 
@@ -14,23 +32,13 @@ export const getRoutingStyleFunction = () => {
 			case RoutingFeatureTypes.START:
 				return [
 					new Style({
-						image: new Icon({
-							anchor: [0.5, 1],
-							anchorXUnits: 'fraction',
-							anchorYUnits: 'fraction',
-							src: iconService.getIconResult('rt_start').base64
-						})
+						image: startIcon
 					})
 				];
 			case RoutingFeatureTypes.DESTINATION:
 				return [
 					new Style({
-						image: new Icon({
-							anchor: [0.5, 1],
-							anchorXUnits: 'fraction',
-							anchorYUnits: 'fraction',
-							src: iconService.getIconResult('rt_destination').base64
-						})
+						image: destinationIcon
 					})
 				];
 			case RoutingFeatureTypes.INTERMEDIATE: {
@@ -49,12 +57,7 @@ export const getRoutingStyleFunction = () => {
 
 				return [
 					new Style({
-						image: new Icon({
-							anchor: [0.5, 0.5],
-							anchorXUnits: 'fraction',
-							anchorYUnits: 'fraction',
-							src: iconService.getIconResult('rt_intermediate').base64
-						}),
+						image: intermediateIcon,
 						text: textStyle
 					})
 				];

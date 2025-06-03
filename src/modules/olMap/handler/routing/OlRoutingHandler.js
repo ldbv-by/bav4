@@ -137,7 +137,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 		this._routeLayerCopy = this._createLayer(RoutingLayerIds.ROUTE_COPY);
 		this._highlightLayer = this._createLayer(RoutingLayerIds.HIGHLIGHT);
 		this._interactionLayer = this._createLayer(RoutingLayerIds.INTERACTION);
-
+		this._interactionLayer.setStyle(getRoutingStyleFunction());
 		this._routingLayerGroup = new LayerGroup({
 			layers: [this._alternativeRouteLayer, this._routeLayer, this._routeLayerCopy, this._highlightLayer, this._interactionLayer]
 		});
@@ -379,7 +379,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 		iconFeature.set(ROUTING_FEATURE_INDEX, index);
 		iconFeature.setId(`${OlFeatureStyleTypes.ROUTING}_${createUniqueId()}`);
-		iconFeature.setStyle(getRoutingStyleFunction());
+		// iconFeature.setStyle(getRoutingStyleFunction());
 
 		this._interactionLayer.getSource().addFeature(iconFeature);
 	}
@@ -530,8 +530,8 @@ export class OlRoutingHandler extends OlLayerHandler {
 		const iconFeature = new Feature({
 			geometry: new Point(coordinate3857)
 		});
-		console.log('iconFeature.setStyle(getRoutingStyleFunction())');
-		iconFeature.setStyle(getRoutingStyleFunction());
+		// console.log('iconFeature.setStyle(getRoutingStyleFunction())');
+		// iconFeature.setStyle(getRoutingStyleFunction());
 		iconFeature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.START);
 		iconFeature.set(ROUTING_FEATURE_INDEX, 0);
 
@@ -542,10 +542,10 @@ export class OlRoutingHandler extends OlLayerHandler {
 		const iconFeature = new Feature({
 			geometry: new Point(coordinate3857)
 		});
-		console.log('iconFeature.setStyle(getRoutingStyleFunction())');
+		// console.log('iconFeature.setStyle(getRoutingStyleFunction())');
 		iconFeature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.DESTINATION);
 		iconFeature.set(ROUTING_FEATURE_INDEX, index);
-		iconFeature.setStyle(getRoutingStyleFunction());
+		// iconFeature.setStyle(getRoutingStyleFunction());
 
 		this._interactionLayer.getSource().addFeature(iconFeature);
 	}
