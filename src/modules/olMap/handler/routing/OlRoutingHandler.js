@@ -736,9 +736,10 @@ export class OlRoutingHandler extends OlLayerHandler {
 			this._promiseQueue.add(async () => {
 				this._catId = catId;
 				console.log('adding to promiseQueue', this._map.getView().getResolution());
-				// setTimeout(() => this._requestRouteFromCoordinates([...coordinates3857.map((c) => [...c])], status), 0);
-
-				await this._requestRouteFromCoordinates([...coordinates3857.map((c) => [...c])], status);
+				this._map.once('rendercomplete', () => {
+					this._requestRouteFromCoordinates([...coordinates3857.map((c) => [...c])], status);
+					console.log('rendercomplete once');
+				});
 			});
 		};
 		const addIntermediatePointAndRequestRoute = (coordinate3857) => {
