@@ -180,8 +180,8 @@ export class OafFilter extends MvuElement {
 
 		const getBooleanInputHtml = () => {
 			return html`<select data-type="boolean" @change=${onOperatorSelect}>
-				<option selected value="true">${translate('oaf_filter_yes')}</option>
-				<option selected value="false">${translate('oaf_filter_no')}</option>
+				<option selected value="true">${translate('oafUi_filter_yes')}</option>
+				<option selected value="false">${translate('oafUi_filter_no')}</option>
 			</select>`;
 		};
 
