@@ -1,3 +1,4 @@
+import './i18n';
 import { OafFilter } from './components/OafFilter';
 import { OafFilterGroup } from './components/OafFilterGroup';
 import { OafMask } from './components/OafMask';
