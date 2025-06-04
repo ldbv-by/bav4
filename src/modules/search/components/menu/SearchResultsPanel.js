@@ -58,8 +58,8 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 			return document.body === element || document === element || !!findClosest(element, selectorAcceptingKeyboardEvents);
 		};
 		this.#keyActionMapper
-			.addForKeyUp('ArrowDown', (e) => (isBodyOrCloseToComponents(e.target) ? this._arrowDown() : No_Op()))
-			.addForKeyUp('ArrowUp', (e) => (isBodyOrCloseToComponents(e.target) ? this._arrowUp() : No_Op()))
+			.addForKeyUp('ArrowDown', (e) => (isBodyOrCloseToComponents(e.target) ? this._arrowDown(e) : No_Op()))
+			.addForKeyUp('ArrowUp', (e) => (isBodyOrCloseToComponents(e.target) ? this._arrowUp(e) : No_Op()))
 			.addForKeyUp('Enter', (e) => (isBodyOrCloseToComponents(e.target) ? this._enter() : No_Op()));
 
 		this.#keyActionMapper.activate();
@@ -96,7 +96,10 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 		this._changeSelectedElement(indexOfSelectedItem, -1, items);
 	}
 
-	_arrowDown() {
+	_arrowDown(e) {
+		if (e.shiftKey) {
+			return;
+		}
 		const items = findAllBySelector(this, this.#resultItemSelector);
 		const indexOfPreviousItem = this._findSelectedIndex(items);
 		const nextIndex = indexOfPreviousItem < 0 ? 0 : indexOfPreviousItem + 1;
@@ -109,7 +112,10 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 		}
 	}
 
-	_arrowUp() {
+	_arrowUp(e) {
+		if (e.shiftKey) {
+			return;
+		}
 		const items = findAllBySelector(this, this.#resultItemSelector);
 		const indexOfPreviousItem = this._findSelectedIndex(items);
 		const nextIndex = indexOfPreviousItem < 0 ? indexOfPreviousItem : indexOfPreviousItem - 1;
