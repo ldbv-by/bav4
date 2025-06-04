@@ -174,7 +174,7 @@ describe('SearchResultsPanel', () => {
 			expect(scrollIntoView1Spy).toHaveBeenCalledWith(jasmine.objectContaining({ behavior: 'auto', block: 'nearest', inline: 'start' }));
 		});
 
-		it('does NOT highlights the next resultItem for "arrowDown" when keyup event along with ShiftKey is fired', async () => {
+		it('does NOT highlight the next resultItem for "arrowDown" when keyup event along with ShiftKey is fired', async () => {
 			const element = await setup();
 			element.resultItemClasses = [AbstractResultItemImpl];
 			const arrowDownSpy = spyOn(element, '_arrowDown').and.callThrough();
@@ -257,7 +257,7 @@ describe('SearchResultsPanel', () => {
 			expect(highlightResult2Spy).toHaveBeenCalledTimes(3);
 		});
 
-		it('does NOT highlights the next resultItem for "arrowUp" when keyup event along with ShiftKey is fired', async () => {
+		it('does NOT highlight the next resultItem for "arrowUp" when keyup event along with ShiftKey is fired', async () => {
 			const element = await setup();
 			element.resultItemClasses = [AbstractResultItemImpl];
 			const arrowDownSpy = spyOn(element, '_arrowUp').and.callThrough();
