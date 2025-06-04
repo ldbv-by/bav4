@@ -533,7 +533,7 @@ describe('OlMfpHandler', () => {
 		});
 
 		it('warns about encoding errors for encoding specs reaching max limit', async () => {
-			setup();
+			const store = setup();
 			const map = setupMap();
 			const largeSpecsReachingEncodingLimit = { foo: 'bar', baz: 'something large' };
 			const encodingResult = {
@@ -545,7 +545,6 @@ describe('OlMfpHandler', () => {
 
 			const handler = new OlMfpHandler();
 
-			const notifySpy = spyOn(handler, '_notifyAboutEncodingErrors').and.callThrough();
 			spyOn(mfpEncoderMock, 'encode').and.resolveTo(encodingResult);
 
 			handler.activate(map);
@@ -553,9 +552,8 @@ describe('OlMfpHandler', () => {
 
 			await TestUtils.timeout();
 			expect(configSpy).toHaveBeenCalledOnceWith('MAX_MFP_SPEC_SIZE', DEFAULT_MAX_MFP_SPEC_SIZE_BYTES);
-			expect(notifySpy).toHaveBeenCalledWith([
-				{ label: 'olMap_handler_mfp_encoder_max_specs_limit_reached', type: MFP_ENCODING_ERROR_TYPE.MAXIMUM_ENCODING_LIMIT_REACHED }
-			]);
+
+			expect(store.getState().notifications.latest.payload.content).toBe('olMap_handler_mfp_encoder_max_specs_limit_reached');
 		});
 
 		it('sets the encodingProperties properly', async () => {

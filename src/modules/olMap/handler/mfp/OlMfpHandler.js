@@ -407,12 +407,7 @@ export class OlMfpHandler extends OlLayerHandler {
 			const notify = encodingErrors.length > 0 ? () => this._notifyAboutEncodingErrors(encodingErrors) : () => {};
 			notify();
 		} else {
-			this._notifyAboutEncodingErrors([
-				{
-					type: MFP_ENCODING_ERROR_TYPE.MAXIMUM_ENCODING_LIMIT_REACHED,
-					label: this._translationService.translate('olMap_handler_mfp_encoder_max_specs_limit_reached')
-				}
-			]);
+			emitNotification(this._translationService.translate('olMap_handler_mfp_encoder_max_specs_limit_reached'), LevelTypes.WARN);
 		}
 	}
 
