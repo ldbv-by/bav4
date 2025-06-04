@@ -728,6 +728,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 			// let's ensure each request is executed one after each other
 			this._promiseQueue.add(async () => {
 				this._catId = catId;
+				// to be synchronized with the initial map render process, we wait for the next completed rendering
 				this._map.once('rendercomplete', () => {
 					this._requestRouteFromCoordinates([...coordinates3857.map((c) => [...c])], status);
 				});
