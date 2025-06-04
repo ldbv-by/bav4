@@ -530,7 +530,6 @@ export class OlRoutingHandler extends OlLayerHandler {
 		const iconFeature = new Feature({
 			geometry: new Point(coordinate3857)
 		});
-
 		iconFeature.setStyle(getRoutingStyleFunction());
 		iconFeature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.START);
 		iconFeature.set(ROUTING_FEATURE_INDEX, 0);
