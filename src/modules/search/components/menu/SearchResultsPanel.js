@@ -104,12 +104,8 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 		const indexOfPreviousItem = this._findSelectedIndex(items);
 		const nextIndex = indexOfPreviousItem < 0 ? 0 : indexOfPreviousItem + 1;
 		this.#selectedIndex = nextIndex < items.length ? nextIndex : indexOfPreviousItem;
-		this._changeSelectedElement(indexOfPreviousItem, this.#selectedIndex, items);
 
-		//scroll to item if needed
-		if (items[this.#selectedIndex]) {
-			items[this.#selectedIndex].scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'end' });
-		}
+		this._changeSelectedElement(indexOfPreviousItem, this.#selectedIndex, items);
 	}
 
 	_arrowUp(e) {
@@ -126,11 +122,6 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 		}
 
 		this._changeSelectedElement(indexOfPreviousItem, this.#selectedIndex, items);
-
-		//scroll to item if needed
-		if (items[this.#selectedIndex]) {
-			items[this.#selectedIndex].scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'start' });
-		}
 	}
 
 	_enter() {
@@ -151,7 +142,9 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 			items.forEach((i) => i.highlightResult(false));
 		}
 		if (nextIndex >= 0) {
+			// highlight the selected item and scroll it into the view, if needed
 			items[nextIndex].highlightResult(true);
+			items[nextIndex].scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'start' });
 		}
 	}
 

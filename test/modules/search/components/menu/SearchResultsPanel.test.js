@@ -156,6 +156,8 @@ describe('SearchResultsPanel', () => {
 			const resultElements = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
 			const highlightResult0Spy = spyOn(resultElements[0], 'highlightResult').and.callThrough();
 			const highlightResult1Spy = spyOn(resultElements[1], 'highlightResult').and.callThrough();
+			const scrollIntoView0Spy = spyOn(resultElements[0], 'scrollIntoView').and.callThrough();
+			const scrollIntoView1Spy = spyOn(resultElements[1], 'scrollIntoView').and.callThrough();
 
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
@@ -167,6 +169,9 @@ describe('SearchResultsPanel', () => {
 			expect(changeSelectedElementSpy).toHaveBeenCalledWith(0, 1, resultItems);
 			expect(highlightResult0Spy).toHaveBeenCalledTimes(2);
 			expect(highlightResult1Spy).toHaveBeenCalledTimes(2);
+
+			expect(scrollIntoView0Spy).toHaveBeenCalledWith(jasmine.objectContaining({ behavior: 'auto', block: 'nearest', inline: 'start' }));
+			expect(scrollIntoView1Spy).toHaveBeenCalledWith(jasmine.objectContaining({ behavior: 'auto', block: 'nearest', inline: 'start' }));
 		});
 
 		it('does NOT highlights the next resultItem for "arrowDown" when keyup event along with ShiftKey is fired', async () => {
@@ -206,6 +211,8 @@ describe('SearchResultsPanel', () => {
 			const highlightResult3Spy = spyOn(resultElements[3], 'highlightResult').and.callThrough();
 			const highlightResult4Spy = spyOn(resultElements[4], 'highlightResult').and.callThrough();
 
+			const scrollIntoView4Spy = spyOn(resultElements[4], 'scrollIntoView').and.callThrough();
+
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown)); // 3 -> 4
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown)); // 4 -> 4
 
@@ -216,6 +223,8 @@ describe('SearchResultsPanel', () => {
 			expect(changeSelectedElementSpy).toHaveBeenCalledWith(4, 4, resultItems);
 			expect(highlightResult3Spy).toHaveBeenCalledTimes(1); // [next] + [previous]
 			expect(highlightResult4Spy).toHaveBeenCalledTimes(2); // [next] + [previous]
+
+			expect(scrollIntoView4Spy).toHaveBeenCalledWith(jasmine.objectContaining({ behavior: 'auto', block: 'nearest', inline: 'start' }));
 		});
 
 		it('highlights the next resultItem for "arrowUp" when keyup event is fired', async () => {
