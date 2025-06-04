@@ -47,7 +47,7 @@ import { PERMANENT_ROUTE_LAYER_OR_GEO_RESOURCE_ID, PERMANENT_WP_LAYER_OR_GEO_RES
 import { OlFeatureStyleTypes } from '../../../../../src/modules/olMap/services/OlStyleService';
 import { simulateMapBrowserEvent } from '../../mapTestUtils';
 
-xdescribe('constants and enums', () => {
+describe('constants and enums', () => {
 	it('provides an enum of all valid RoutingFeatureTypes', () => {
 		expect(Object.keys(RoutingFeatureTypes).length).toBe(8);
 		expect(Object.isFrozen(RoutingFeatureTypes)).toBeTrue();
@@ -408,12 +408,13 @@ describe('OlRoutingHandler', () => {
 					[44, 55]
 				];
 				const catId = 'catId';
-				const { instanceUnderTest } = await newTestInstance();
+				const { map, instanceUnderTest } = await newTestInstance();
 				const requestRouteFromCoordinatesSpy = spyOn(instanceUnderTest, '_requestRouteFromCoordinates');
 
 				setCategory(catId);
 				await TestUtils.timeout();
 				expect(instanceUnderTest._catId).toBe(catId);
+				map.dispatchEvent(new MapEvent('rendercomplete', map, null));
 				expect(requestRouteFromCoordinatesSpy).toHaveBeenCalledWith([], RoutingStatusCodes.Start_Destination_Missing);
 
 				requestRouteFromCoordinatesSpy.calls.reset();
@@ -421,6 +422,7 @@ describe('OlRoutingHandler', () => {
 				setWaypoints(coordinates);
 				await TestUtils.timeout();
 				expect(instanceUnderTest._catId).toBe(catId);
+				map.dispatchEvent(new MapEvent('rendercomplete', map, null));
 				expect(requestRouteFromCoordinatesSpy).toHaveBeenCalledWith(coordinates, RoutingStatusCodes.Ok);
 			});
 		});
@@ -1818,7 +1820,6 @@ describe('OlRoutingHandler', () => {
 				});
 				const { instanceUnderTest, map, store } = await newTestInstance();
 				instanceUnderTest.activate(map);
-				map.dispatchEvent(new MapEvent('rendercomplete', map, null));
 				instanceUnderTest._routeLayerCopy.getSource().addFeature(featureRoute);
 				instanceUnderTest._interactionLayer.getSource().addFeature(featureWaypoint);
 				spyOn(geoResourceServiceMock, 'byId').and.returnValue(null);
