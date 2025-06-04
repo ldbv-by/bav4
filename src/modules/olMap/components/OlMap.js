@@ -208,7 +208,6 @@ export class OlMap extends MvuElement {
 			setMoveEnd();
 			setBeingMoved(false);
 		});
-		this._map.on('rendercomplete', () => console.log('rendercomplete', this._map.getView().getResolution()));
 
 		const singleClickOrShortPressHandler = (evt) => {
 			//when no layer handler is currently active or active handler does not prevent click handling
