@@ -58,8 +58,8 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 			return document.body === element || document === element || !!findClosest(element, selectorAcceptingKeyboardEvents);
 		};
 		this.#keyActionMapper
-			.addForKeyUp('ArrowDown', (e) => (isBodyOrCloseToComponents(e.target) ? this._arrowDown() : No_Op()))
-			.addForKeyUp('ArrowUp', (e) => (isBodyOrCloseToComponents(e.target) ? this._arrowUp() : No_Op()))
+			.addForKeyUp('ArrowDown', (e) => (isBodyOrCloseToComponents(e.target) ? this._arrowDown(e) : No_Op()))
+			.addForKeyUp('ArrowUp', (e) => (isBodyOrCloseToComponents(e.target) ? this._arrowUp(e) : No_Op()))
 			.addForKeyUp('Enter', (e) => (isBodyOrCloseToComponents(e.target) ? this._enter() : No_Op()));
 
 		this.#keyActionMapper.activate();
@@ -96,7 +96,10 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 		this._changeSelectedElement(indexOfSelectedItem, -1, items);
 	}
 
-	_arrowDown() {
+	_arrowDown(e) {
+		if (e.shiftKey) {
+			return;
+		}
 		const items = findAllBySelector(this, this.#resultItemSelector);
 		const indexOfPreviousItem = this._findSelectedIndex(items);
 		const nextIndex = indexOfPreviousItem < 0 ? 0 : indexOfPreviousItem + 1;
@@ -105,7 +108,10 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 		this._changeSelectedElement(indexOfPreviousItem, this.#selectedIndex, items);
 	}
 
-	_arrowUp() {
+	_arrowUp(e) {
+		if (e.shiftKey) {
+			return;
+		}
 		const items = findAllBySelector(this, this.#resultItemSelector);
 		const indexOfPreviousItem = this._findSelectedIndex(items);
 		const nextIndex = indexOfPreviousItem < 0 ? indexOfPreviousItem : indexOfPreviousItem - 1;
@@ -136,7 +142,9 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 			items.forEach((i) => i.highlightResult(false));
 		}
 		if (nextIndex >= 0) {
+			// highlight the selected item and scroll it into the view, if needed
 			items[nextIndex].highlightResult(true);
+			items[nextIndex].scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'start' });
 		}
 	}
 
@@ -152,7 +160,7 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 			const allHighlightIndices = items.flatMap((element, i) => (element.matches(Highlighted_Item_Class_Selector) ? i : []));
 
 			if (allHighlightIndices.length > 1 && allHighlightIndices.includes(hoverIndex)) {
-				return hoverIndex;
+				return allHighlightIndices[0] === hoverIndex ? allHighlightIndices[1] : allHighlightIndices[0];
 			}
 			return allHighlightIndices[0] ?? -1;
 		};

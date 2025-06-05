@@ -83,10 +83,8 @@ export class GeoResourceResultItem extends AbstractResultItem {
 	 */
 	highlightResult(highlighted) {
 		if (highlighted) {
-			this.shadowRoot.querySelector('.ba-list-item')?.focus();
 			this.classList.add(Highlight_Item_Class);
 		} else {
-			this.shadowRoot.querySelector('.ba-list-item')?.blur();
 			this.classList.remove(Highlight_Item_Class);
 			this.classList.remove(Selected_Item_Class);
 		}
@@ -229,6 +227,7 @@ export class GeoResourceResultItem extends AbstractResultItem {
 					${css}
 				</style>
 				<li
+					part="background"
 					class="ba-list-item ba-key-nav-item ${getActivePreviewClass()} ${getPreviewClass(geoResourceSearchResult)}"
 					tabindex="0"
 					@mouseenter=${() => onMouseEnter(geoResourceSearchResult)}
