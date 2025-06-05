@@ -2,7 +2,7 @@ import {
 	COMMON_UNWANTED_PROPERTY_KEYS,
 	isInternalProperty,
 	LEGACY_INTERNAL_PROPERTY_KEYS,
-	markAsInternalProperty
+	asInternalProperty
 } from '../../src/utils/propertyUtils.js';
 
 describe('propertyUtils', () => {
@@ -33,11 +33,11 @@ describe('propertyUtils', () => {
 		});
 	});
 
-	describe('markAsInternalProperty', () => {
+	describe('asInternalProperty', () => {
 		it('prepends a key with the internal-property prefix', () => {
-			expect(markAsInternalProperty('key')).toBe('_ba_key');
-			expect(markAsInternalProperty('_ba_key')).toBe('_ba_key');
-			expect(markAsInternalProperty(21)).toBeNull();
+			expect(asInternalProperty('key')).toBe('_ba_key');
+			expect(asInternalProperty('_ba_key')).toBe('_ba_key');
+			expect(asInternalProperty(21)).toBeNull();
 		});
 	});
 

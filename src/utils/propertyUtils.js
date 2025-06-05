@@ -10,7 +10,7 @@ const INTERNAL_PROPERTY_PREFIX = '_ba_';
  * @param {string} propertyKey
  * @returns {string} the key prepended with the internal-property prefix or `null` if the given key is not a string
  */
-export const markAsInternalProperty = (propertyKey) => {
+export const asInternalProperty = (propertyKey) => {
 	if (isString(propertyKey)) {
 		return isInternalProperty(propertyKey) ? propertyKey : `${INTERNAL_PROPERTY_PREFIX}${propertyKey}`;
 	}
