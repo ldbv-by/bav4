@@ -165,17 +165,19 @@ export class LayerItem extends AbstractMvuContentPanel {
 
 		const getStateHint = (layerState) => {
 			const title = translate(`layerManager_title_layerState_${layerState}`);
-			return html`<ba-icon
-				.icon="${exclamationTriangleSvg}"
-				.title=${title}
-				.size=${'1.2'}
-				.color=${'var(--secondary-color)'}
-				@click=${(e) => onClickEmitWarning(e, title)}
-				class="layer-state-icon"
-			></ba-icon>`;
+			return layerState !== LayerState.OK
+				? html`<ba-icon
+						.icon="${exclamationTriangleSvg}"
+						.title=${title}
+						.size=${'1'}
+						.color=${'var(--secondary-color)'}
+						@click=${(e) => onClickStateHint(e, title)}
+						class="layer-state-icon"
+					></ba-icon>`
+				: nothing;
 		};
 
-		const onClickEmitWarning = (e, title) => {
+		const onClickStateHint = (e, title) => {
 			e.preventDefault();
 			e.stopPropagation();
 			emitNotification(title, LevelTypes.WARN);
