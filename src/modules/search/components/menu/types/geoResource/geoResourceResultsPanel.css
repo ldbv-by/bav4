@@ -92,6 +92,7 @@ ba-button {
 }
 .ba-key-nav-item_highlight::part(background) {
 	background: var(--header-background-color);
+	box-shadow: Inset 0 0 0 0.2em var(--primary-color-lighter);
 }
 .ba-key-nav-item_highlight {
 	display: block;
