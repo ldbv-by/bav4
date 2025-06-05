@@ -192,6 +192,7 @@ export class ShareService {
 		let layer_opacity = [];
 		let layer_timestamp = [];
 		let layer_swipeAlignment = [];
+		let layer_style = [];
 		activeLayers
 			.filter((l) => !l.constraints.hidden)
 			.filter((l) => (options.includeHiddenGeoResources ? true : !geoResourceService.byId(l.geoResourceId).hidden))
@@ -201,6 +202,7 @@ export class ShareService {
 				layer_opacity.push(l.opacity);
 				layer_timestamp.push(l.timestamp);
 				layer_swipeAlignment.push(l.constraints.swipeAlignment);
+				layer_style.push(l.style?.baseColor);
 			});
 		//remove if it contains only default values
 		if (!layer_visibility.some((lv) => lv === false)) {
@@ -215,6 +217,9 @@ export class ShareService {
 		if (currentTool !== Tools.COMPARE) {
 			layer_swipeAlignment = null;
 		}
+		if (!layer_style.some((v) => v)) {
+			layer_style = null;
+		}
 		extractedState[QueryParameters.LAYER] = geoResourceIds.map((grId) => encodeURIComponent(grId)); //an GeoResource id may contain also an URL, so we encode it
 		if (layer_visibility) {
 			extractedState[QueryParameters.LAYER_VISIBILITY] = layer_visibility;
@@ -227,6 +232,9 @@ export class ShareService {
 		}
 		if (layer_swipeAlignment) {
 			extractedState[QueryParameters.LAYER_SWIPE_ALIGNMENT] = layer_swipeAlignment;
+		}
+		if (layer_style) {
+			extractedState[QueryParameters.LAYER_STYLE] = layer_style.map((s) => s ?? '');
 		}
 		return extractedState;
 	}

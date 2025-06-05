@@ -25,6 +25,7 @@ describe('olMapUtils', () => {
 				visible: false,
 				opacity: 0.5,
 				timestamp: '20001231',
+				style: { baseColor: '#5eeb34' },
 				constraints: { ...createDefaultLayersConstraints(), filter: 'filterExpr' }
 			};
 
@@ -34,6 +35,7 @@ describe('olMapUtils', () => {
 			expect(olLayer.getOpacity()).toBe(0.5);
 			expect(olLayer.get('timestamp')).toBe('20001231');
 			expect(olLayer.get('filter')).toBe('filterExpr');
+			expect(olLayer.get('style')).toEqual({ baseColor: '#5eeb34' });
 		});
 	});
 

@@ -612,6 +612,10 @@ export const VectorSourceType = Object.freeze({
 	EWKT: Symbol.for('ewkt')
 });
 
+/**
+ * Base class for vector data.
+ * @class
+ */
 export class AbstractVectorGeoResource extends GeoResource {
 	constructor(id, label) {
 		super(id, label);
@@ -622,6 +626,7 @@ export class AbstractVectorGeoResource extends GeoResource {
 		this._showPointNames = true;
 		this._clusterParams = {};
 		this._styleHint = null;
+		this._style = null;
 	}
 
 	/**
@@ -648,7 +653,7 @@ export class AbstractVectorGeoResource extends GeoResource {
 	}
 
 	/**
-	 * @returns {boolean}`true` if this AbstractVectorGeoResource has specific style hint
+	 * @returns {boolean}`true` if this AbstractVectorGeoResource has specific `StyleHint`
 	 */
 	hasStyleHint() {
 		return this.isClustered() ? true : !!this._styleHint;
@@ -663,11 +668,11 @@ export class AbstractVectorGeoResource extends GeoResource {
 
 	/**
 	 * Set the style hint for this `AbstractVectorGeoResource`
-	 * @param {StyleHint} styleHint
+	 * @param {StyleHint|null} styleHint
 	 * @returns {AbstractVectorGeoResource} `this` for chaining
 	 */
 	setStyleHint(styleHint) {
-		if (styleHint) {
+		if (styleHint || styleHint === null) {
 			this._styleHint = styleHint;
 		}
 		return this;
@@ -686,6 +691,33 @@ export class AbstractVectorGeoResource extends GeoResource {
 	setShowPointNames(showPointNames) {
 		this._showPointNames = showPointNames;
 		return this;
+	}
+
+	/**
+	 * Sets the `Style` for this `AbstractVectorGeoResource`.
+	 * @param {module:domain/styles~Style|null} style the style
+	 * @returns {AbstractVectorGeoResource} `this` for chaining
+	 */
+	setStyle(style) {
+		if (style || style === null) {
+			this._style = style;
+		}
+		return this;
+	}
+
+	/**
+	 * The style of this `AbstractVectorGeoResource`.
+	 *  @type {module:domain/styles~Style|null}
+	 */
+	get style() {
+		return this._style;
+	}
+
+	/**
+	 * @returns {boolean}`true` if this AbstractVectorGeoResource has specific `Style`
+	 */
+	hasStyle() {
+		return !!this._style;
 	}
 }
 
@@ -853,9 +885,6 @@ export class RtVectorGeoResource extends AbstractVectorGeoResource {
 		super(id, label);
 		this._url = url;
 		this._sourceType = sourceType;
-		this._clusterParams = {};
-		this._showPointNames = true;
-		this._styleHint = null;
 	}
 
 	get url() {

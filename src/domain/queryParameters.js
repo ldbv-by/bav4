@@ -42,6 +42,10 @@ export const QueryParameters = Object.freeze({
 	 */
 	LAYER_SWIPE_ALIGNMENT: 'l_sa',
 	/**
+	 * The style of a layer (`string`)
+	 */
+	LAYER_STYLE: 'l_st',
+	/**
 	 * The swipe ratio of the map (`number`, 0-1)
 	 */
 	SWIPE_RATIO: 'sr',

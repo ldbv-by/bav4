@@ -49,5 +49,29 @@ describe('Feature', () => {
 
 		expect(feature.hasStyleHint()).toBeTrue();
 		expect(feature.styleHint).toBe(StyleHint.HIGHLIGHT);
+
+		feature.setStyleHint(undefined);
+
+		expect(feature.styleHint).toBe(StyleHint.HIGHLIGHT);
+	});
+
+	it('provides set, get and check methods for a Style', () => {
+		const geometry = new BaGeometry('data', new SourceType(SourceTypeName.EWKT));
+		const feature = new BaFeature(geometry, 'id');
+
+		expect(feature.hasStyle()).toBeFalse();
+
+		feature.setStyle(null);
+
+		expect(feature.hasStyle()).toBeFalse();
+
+		feature.setStyle({ baseColor: '#ff0000' });
+
+		expect(feature.hasStyle()).toBeTrue();
+		expect(feature.style).toEqual({ baseColor: '#ff0000' });
+
+		feature.setStyle(undefined);
+
+		expect(feature.style).toEqual({ baseColor: '#ff0000' });
 	});
 });

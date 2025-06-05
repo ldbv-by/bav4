@@ -12,6 +12,7 @@ export class BaFeature {
 	#id;
 	#geometry;
 	#styleHint;
+	#style;
 	#properties = {};
 	/**
 	 *
@@ -67,11 +68,11 @@ export class BaFeature {
 
 	/**
 	 * Set the style hint for this `VectorGeoResource`
-	 * @param {StyleHint} styleHint
+	 * @param {module:domain/styles~StyleHint|null} styleHint
 	 * @returns {BaFeature}
 	 */
 	setStyleHint(styleHint) {
-		if (styleHint) {
+		if (styleHint || styleHint === null) {
 			this.#styleHint = styleHint;
 		}
 		return this;
@@ -85,6 +86,33 @@ export class BaFeature {
 
 	get styleHint() {
 		return this.#styleHint ?? null;
+	}
+
+	/**
+	 * Sets the `Style` for this `BaFeature`.
+	 * @param {module:domain/styles~Style|null} style the style
+	 * @returns {BaFeature} `this` for chaining
+	 */
+	setStyle(style) {
+		if (style || style === null) {
+			this.#style = style;
+		}
+		return this;
+	}
+
+	/**
+	 * The style of this `AbstractVectorGeoResource`.
+	 *  @type {module:domain/styles~Style|null}
+	 */
+	get style() {
+		return this.#style;
+	}
+
+	/**
+	 * @returns {boolean}`true` if this `BaFeature` has specific `Style`
+	 */
+	hasStyle() {
+		return !!this.#style;
 	}
 
 	get id() {

@@ -12,7 +12,7 @@ export const StyleSize = Object.freeze({
 });
 
 /**
- * StyleHint e.g. of a `VectorGeoResource` a `RtVectorGeoResource` or a `BaFeature`
+ * StyleHint (styling theme) of a {@link AbstractVectorGeoResource} or a {@link BaFeature}
  * @readonly
  * @enum {string}
  */
@@ -20,3 +20,9 @@ export const StyleHint = Object.freeze({
 	HIGHLIGHT: 'highlight',
 	CLUSTER: 'cluster'
 });
+
+/**
+ * Style of a {@link Layer }, a  {@link AbstractVectorGeoResource} or a {@link BaFeature}
+ * @typedef {Object} Style
+ * @property {string} [baseColor=null] A simple base color as style for this layer (seven-character hexadecimal notation) or `null`
+ */
