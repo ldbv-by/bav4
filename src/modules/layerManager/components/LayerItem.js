@@ -24,6 +24,7 @@ import { MenuTypes } from '../../commons/components/overflowMenu/OverflowMenu';
 import { openSlider } from '../../../store/timeTravel/timeTravel.action';
 import { SwipeAlignment } from '../../../store/layers/layers.action';
 import { openBottomSheet } from '../../../store/bottomSheet/bottomSheet.action';
+import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 
 const Update_Layer_And_LayerItem = 'update_layer_and_layerItem';
 const Update_Layer_Collapsed = 'update_layer_collapsed';
@@ -164,17 +165,21 @@ export class LayerItem extends AbstractMvuContentPanel {
 
 		const getStateHint = (layerState) => {
 			const title = translate(`layerManager_title_layerState_${layerState}`);
-			return layerState !== LayerState.OK
-				? html`<ba-icon
-						.icon="${exclamationTriangleSvg}"
-						.title=${title}
-						.size=${'1'}
-						.color=${'var(--secondary-color)'}
-						class="layer-state-icon"
-					></ba-icon>`
-				: nothing;
+			return html`<ba-icon
+				.icon="${exclamationTriangleSvg}"
+				.title=${title}
+				.size=${'1.2'}
+				.color=${'var(--secondary-color)'}
+				@click=${(e) => onClickEmitWarning(e, title)}
+				class="layer-state-icon"
+			></ba-icon>`;
 		};
 
+		const onClickEmitWarning = (e, title) => {
+			e.preventDefault();
+			e.stopPropagation();
+			emitNotification(title, LevelTypes.WARN);
+		};
 		const changeOpacity = (event) => {
 			//state store change -> implicit call of #render()
 			modifyLayer(layerProperties.id, { opacity: parseInt(event.target.value) / 100 });

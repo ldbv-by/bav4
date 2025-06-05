@@ -166,3 +166,8 @@ input[type='range']::-moz-range-thumb {
 ba-value-select {
 	margin-right: 0.8em;
 }
+.layer-state-icon::part(icon) {
+	background: var(--warning-color);
+	position: relative;
+	top: 0.3em;
+}
