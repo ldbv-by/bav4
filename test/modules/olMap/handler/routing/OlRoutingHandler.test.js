@@ -19,7 +19,7 @@ import { Vector } from 'ol/layer';
 import { Modify, Select, Translate } from 'ol/interaction';
 import { setCategory, setHighlightedSegments, setIntermediate, setWaypoints } from '../../../../../src/store/routing/routing.action';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
-import { Feature, MapBrowserEvent } from 'ol';
+import { Feature, MapBrowserEvent, MapEvent } from 'ol';
 import Event from 'ol/events/Event';
 import { LineString, Point } from 'ol/geom';
 import { ModifyEvent } from 'ol/interaction/Modify';
@@ -170,6 +170,7 @@ describe('OlRoutingHandler', () => {
 		const getModifyOptionsSpy = spyOn(instanceUnderTest, '_getModifyOptions').and.callThrough();
 		const layer = instanceUnderTest.activate(map);
 		await TestUtils.timeout();
+		map.dispatchEvent(new MapEvent('rendercomplete', map, null));
 		return { map, instanceUnderTest, store, layer, getSelectOptionsSpy, getModifyOptionsSpy };
 	};
 
@@ -319,6 +320,7 @@ describe('OlRoutingHandler', () => {
 
 				await TestUtils.timeout();
 				expect(instanceUnderTest._catId).toBe(catId);
+				map.dispatchEvent(new MapEvent('rendercomplete', map, null));
 				expect(requestRouteFromCoordinatesSpy).toHaveBeenCalledWith(coordinates, RoutingStatusCodes.Ok);
 			});
 		});
@@ -406,12 +408,13 @@ describe('OlRoutingHandler', () => {
 					[44, 55]
 				];
 				const catId = 'catId';
-				const { instanceUnderTest } = await newTestInstance();
+				const { map, instanceUnderTest } = await newTestInstance();
 				const requestRouteFromCoordinatesSpy = spyOn(instanceUnderTest, '_requestRouteFromCoordinates');
 
 				setCategory(catId);
 				await TestUtils.timeout();
 				expect(instanceUnderTest._catId).toBe(catId);
+				map.dispatchEvent(new MapEvent('rendercomplete', map, null));
 				expect(requestRouteFromCoordinatesSpy).toHaveBeenCalledWith([], RoutingStatusCodes.Start_Destination_Missing);
 
 				requestRouteFromCoordinatesSpy.calls.reset();
@@ -419,6 +422,7 @@ describe('OlRoutingHandler', () => {
 				setWaypoints(coordinates);
 				await TestUtils.timeout();
 				expect(instanceUnderTest._catId).toBe(catId);
+				map.dispatchEvent(new MapEvent('rendercomplete', map, null));
 				expect(requestRouteFromCoordinatesSpy).toHaveBeenCalledWith(coordinates, RoutingStatusCodes.Ok);
 			});
 		});
@@ -449,7 +453,7 @@ describe('OlRoutingHandler', () => {
 					[22, 55],
 					[33, 66]
 				];
-				const { instanceUnderTest } = await newTestInstance({
+				const { map, instanceUnderTest } = await newTestInstance({
 					status: RoutingStatusCodes.Ok
 				});
 				const addIntermediateSpy = spyOn(instanceUnderTest, '_addIntermediate').and.returnValue(coordinates);
@@ -457,6 +461,7 @@ describe('OlRoutingHandler', () => {
 
 				setIntermediate([22, 55]);
 				await TestUtils.timeout();
+				map.dispatchEvent(new MapEvent('rendercomplete', map, null));
 				expect(addIntermediateSpy).toHaveBeenCalledWith([22, 55], instanceUnderTest._routeLayerCopy);
 				expect(requestRouteFromCoordinatesSpy).toHaveBeenCalledWith(coordinates, RoutingStatusCodes.Ok);
 			});
