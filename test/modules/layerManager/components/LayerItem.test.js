@@ -27,6 +27,8 @@ import { createNoInitialStateMediaReducer } from '../../../../src/store/media/me
 import { LayerState, SwipeAlignment } from '../../../../src/store/layers/layers.action.js';
 import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
 import { bottomSheetReducer } from '../../../../src/store/bottomSheet/bottomSheet.reducer.js';
+import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
+import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 
 window.customElements.define(LayerItem.tag, LayerItem);
 
@@ -82,7 +84,8 @@ describe('LayerItem', () => {
 				media: createNoInitialStateMediaReducer(),
 				timeTravel: timeTravelReducer,
 				layerSwipe: layerSwipeReducer,
-				tools: toolsReducer
+				tools: toolsReducer,
+				notifications: notificationReducer
 			}
 		);
 		$injector
@@ -165,6 +168,18 @@ describe('LayerItem', () => {
 			const iconElement = element.shadowRoot.querySelector('ba-icon.layer-state-icon');
 
 			expect(iconElement.title).toBe('layerManager_title_layerState_incomplete_data');
+
+			const event = new Event('click');
+			const preventDefaultSpy = spyOn(event, 'preventDefault');
+			const stopPropagationSpy = spyOn(event, 'stopPropagation');
+
+			iconElement.dispatchEvent(event);
+
+			expect(preventDefaultSpy).toHaveBeenCalled();
+			expect(stopPropagationSpy).toHaveBeenCalled();
+			//check notification
+			expect(store.getState().notifications.latest.payload.content).toBe(iconElement.title);
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 		});
 
 		it('use layer.label property in checkbox-title ', async () => {
