@@ -1,3 +1,6 @@
+/**
+ * @module utils/propertyUtils
+ */
 import { isString } from './checks';
 
 const INTERNAL_PROPERTY_PREFIX = '_ba_';
