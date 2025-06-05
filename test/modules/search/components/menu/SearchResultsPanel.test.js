@@ -79,8 +79,8 @@ describe('SearchResultsPanel', () => {
 	});
 
 	describe('when initialized', () => {
-		const getKeyEvent = (key) => {
-			return new KeyboardEvent('keyup', { key: key });
+		const getKeyEvent = (key, options = {}) => {
+			return new KeyboardEvent('keyup', { key: key, ...options });
 		};
 
 		it('renders the view', async () => {
@@ -156,6 +156,8 @@ describe('SearchResultsPanel', () => {
 			const resultElements = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
 			const highlightResult0Spy = spyOn(resultElements[0], 'highlightResult').and.callThrough();
 			const highlightResult1Spy = spyOn(resultElements[1], 'highlightResult').and.callThrough();
+			const scrollIntoView0Spy = spyOn(resultElements[0], 'scrollIntoView').and.callThrough();
+			const scrollIntoView1Spy = spyOn(resultElements[1], 'scrollIntoView').and.callThrough();
 
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown));
@@ -167,6 +169,31 @@ describe('SearchResultsPanel', () => {
 			expect(changeSelectedElementSpy).toHaveBeenCalledWith(0, 1, resultItems);
 			expect(highlightResult0Spy).toHaveBeenCalledTimes(2);
 			expect(highlightResult1Spy).toHaveBeenCalledTimes(2);
+
+			expect(scrollIntoView0Spy).toHaveBeenCalledWith(jasmine.objectContaining({ behavior: 'auto', block: 'nearest', inline: 'start' }));
+			expect(scrollIntoView1Spy).toHaveBeenCalledWith(jasmine.objectContaining({ behavior: 'auto', block: 'nearest', inline: 'start' }));
+		});
+
+		it('does NOT highlight the next resultItem for "arrowDown" when keyup event along with ShiftKey is fired', async () => {
+			const element = await setup();
+			element.resultItemClasses = [AbstractResultItemImpl];
+			const arrowDownSpy = spyOn(element, '_arrowDown').and.callThrough();
+			const changeSelectedElementSpy = spyOn(element, '_changeSelectedElement').and.callThrough();
+
+			const testResultItems = createResultItems(5);
+			testResultItems.forEach((child) => element.shadowRoot.querySelector('div').appendChild(child));
+
+			const resultElements = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
+			const highlightResult0Spy = spyOn(resultElements[0], 'highlightResult').and.callThrough();
+			const highlightResult1Spy = spyOn(resultElements[1], 'highlightResult').and.callThrough();
+
+			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown, { shiftKey: true }));
+			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown, { shiftKey: true }));
+
+			expect(arrowDownSpy).toHaveBeenCalledTimes(2);
+			expect(changeSelectedElementSpy).not.toHaveBeenCalled();
+			expect(highlightResult0Spy).not.toHaveBeenCalled();
+			expect(highlightResult1Spy).not.toHaveBeenCalled();
 		});
 
 		it('highlights the last resultItem for "arrowDown" when keyup event is fired', async () => {
@@ -184,6 +211,8 @@ describe('SearchResultsPanel', () => {
 			const highlightResult3Spy = spyOn(resultElements[3], 'highlightResult').and.callThrough();
 			const highlightResult4Spy = spyOn(resultElements[4], 'highlightResult').and.callThrough();
 
+			const scrollIntoView4Spy = spyOn(resultElements[4], 'scrollIntoView').and.callThrough();
+
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown)); // 3 -> 4
 			document.dispatchEvent(getKeyEvent(keyCodes.ArrowDown)); // 4 -> 4
 
@@ -194,6 +223,8 @@ describe('SearchResultsPanel', () => {
 			expect(changeSelectedElementSpy).toHaveBeenCalledWith(4, 4, resultItems);
 			expect(highlightResult3Spy).toHaveBeenCalledTimes(1); // [next] + [previous]
 			expect(highlightResult4Spy).toHaveBeenCalledTimes(2); // [next] + [previous]
+
+			expect(scrollIntoView4Spy).toHaveBeenCalledWith(jasmine.objectContaining({ behavior: 'auto', block: 'nearest', inline: 'start' }));
 		});
 
 		it('highlights the next resultItem for "arrowUp" when keyup event is fired', async () => {
@@ -224,6 +255,33 @@ describe('SearchResultsPanel', () => {
 			expect(highlightResult4Spy).toHaveBeenCalledTimes(2);
 			expect(highlightResult3Spy).toHaveBeenCalledTimes(3);
 			expect(highlightResult2Spy).toHaveBeenCalledTimes(3);
+		});
+
+		it('does NOT highlight the next resultItem for "arrowUp" when keyup event along with ShiftKey is fired', async () => {
+			const element = await setup();
+			element.resultItemClasses = [AbstractResultItemImpl];
+			const arrowDownSpy = spyOn(element, '_arrowUp').and.callThrough();
+			const changeSelectedElementSpy = spyOn(element, '_changeSelectedElement').and.callThrough();
+
+			const testResultItems = createResultItems(5);
+			testResultItems.forEach((child) => element.shadowRoot.querySelector('div').appendChild(child));
+
+			const resultElements = element.shadowRoot.querySelectorAll('ba-test-abstract-result-item-impl');
+			// we set the flag-class manually to indicate a currently selected resultItem
+			resultElements[4].highlightResult(true);
+
+			const highlightResult4Spy = spyOn(resultElements[4], 'highlightResult').and.callThrough();
+			const highlightResult3Spy = spyOn(resultElements[3], 'highlightResult').and.callThrough();
+			const highlightResult2Spy = spyOn(resultElements[2], 'highlightResult').and.callThrough();
+
+			document.dispatchEvent(getKeyEvent(keyCodes.ArrowUp, { shiftKey: true }));
+			document.dispatchEvent(getKeyEvent(keyCodes.ArrowUp, { shiftKey: true }));
+
+			expect(arrowDownSpy).toHaveBeenCalledTimes(2);
+			expect(changeSelectedElementSpy).not.toHaveBeenCalled();
+			expect(highlightResult4Spy).not.toHaveBeenCalled();
+			expect(highlightResult3Spy).not.toHaveBeenCalled();
+			expect(highlightResult2Spy).not.toHaveBeenCalled();
 		});
 		describe('when resultItem is selected by mouse', () => {
 			it('highlights the next resultItem for "arrowUp" when keyup event is fired', async () => {
@@ -329,11 +387,8 @@ describe('SearchResultsPanel', () => {
 				expect(arrowDownSpy).toHaveBeenCalledTimes(4);
 				expect(changeSelectedElementSpy).toHaveBeenCalledWith(4, 3, resultItems);
 				expect(changeSelectedElementSpy).toHaveBeenCalledWith(3, 2, resultItems);
-				expect(changeSelectedElementSpy).toHaveBeenCalledWith(4, 3, resultItems);
-				expect(changeSelectedElementSpy).toHaveBeenCalledWith(3, 2, resultItems);
-
-				expect(changeSelectedElementSpy).not.toHaveBeenCalledWith(2, 1, resultItems);
-				expect(changeSelectedElementSpy).not.toHaveBeenCalledWith(1, 0, resultItems);
+				expect(changeSelectedElementSpy).toHaveBeenCalledWith(2, 1, resultItems);
+				expect(changeSelectedElementSpy).toHaveBeenCalledWith(1, 0, resultItems);
 			});
 
 			it('highlights the next resultItem for "arrowDown" when keyup event is fired', async () => {
@@ -371,11 +426,8 @@ describe('SearchResultsPanel', () => {
 				expect(arrowDownSpy).toHaveBeenCalledTimes(4);
 				expect(changeSelectedElementSpy).toHaveBeenCalledWith(0, 1, resultItems);
 				expect(changeSelectedElementSpy).toHaveBeenCalledWith(1, 2, resultItems);
-				expect(changeSelectedElementSpy).toHaveBeenCalledWith(0, 1, resultItems);
-				expect(changeSelectedElementSpy).toHaveBeenCalledWith(1, 2, resultItems);
-
-				expect(changeSelectedElementSpy).not.toHaveBeenCalledWith(2, 3, resultItems);
-				expect(changeSelectedElementSpy).not.toHaveBeenCalledWith(3, 4, resultItems);
+				expect(changeSelectedElementSpy).toHaveBeenCalledWith(2, 3, resultItems);
+				expect(changeSelectedElementSpy).toHaveBeenCalledWith(3, 4, resultItems);
 			});
 		});
 
