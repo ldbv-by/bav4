@@ -47,6 +47,7 @@ export const provide = (lang) => {
 				olMap_handler_routing_routingService_exception: 'Due to a technical error no route could be created',
 				olMap_handler_routing_routingService_improper_waypoints:
 					'No route could be created based on the given points. Please adjust one ore more points.',
+				olMap_handler_featureInfo_feature_properties: 'Properties',
 				olMap_vectorLayerService_default_layer_name_vector: 'Data',
 				olMap_map: 'Interactive map'
 			};
@@ -98,6 +99,7 @@ export const provide = (lang) => {
 				olMap_handler_routing_routingService_exception: 'Aufgrund eines technischen Fehlers konnte keine Route erstellt werden',
 				olMap_handler_routing_routingService_improper_waypoints:
 					'Anhand der angegebenen Punkte konnte keine Route erstellt werden. Bitte passen Sie einen oder mehrere Punkte an.',
+				olMap_handler_featureInfo_feature_properties: 'Attribute',
 				olMap_vectorLayerService_default_layer_name_vector: 'Daten',
 				olMap_map: 'Interaktive Karte'
 			};
