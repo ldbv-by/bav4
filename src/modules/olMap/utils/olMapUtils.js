@@ -11,6 +11,7 @@ export const updateOlLayer = (olLayer, layer) => {
 	olLayer.setOpacity(layer.opacity);
 	olLayer.set('timestamp', layer.timestamp);
 	olLayer.set('filter', layer.constraints.filter);
+	olLayer.set('style', layer.style);
 	return olLayer;
 };
 

@@ -6,7 +6,7 @@ import { QueryParameters } from '../domain/queryParameters';
 import { BaPlugin } from './BaPlugin';
 import { addLayer, removeAndSetLayers, setReady, SwipeAlignment } from '../store/layers/layers.action';
 import { fitLayer } from '../store/position/position.action';
-import { isNumber } from '../utils/checks';
+import { isHexColor, isNumber } from '../utils/checks';
 import { observe } from '../utils/storeUtils';
 
 /**
@@ -30,12 +30,13 @@ export class LayersPlugin extends BaPlugin {
 	_addLayersFromQueryParams(queryParams) {
 		const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
 
-		const parseLayer = (layerValue, layerVisibilityValue, layerOpacityValue, layerTimestampValue, layerSwipeAlignmentValue) => {
+		const parseLayer = (layerValue, layerVisibilityValue, layerOpacityValue, layerTimestampValue, layerSwipeAlignmentValue, layerStyleValue) => {
 			const layer = layerValue.split(',');
 			const layerVisibility = layerVisibilityValue ? layerVisibilityValue.split(',') : [];
 			const layerOpacity = layerOpacityValue ? layerOpacityValue.split(',') : [];
 			const layerTimestamp = layerTimestampValue ? layerTimestampValue.split(',') : [];
 			const layerSwipeAlignment = layerSwipeAlignmentValue ? layerSwipeAlignmentValue.split(',') : [];
+			const layerStyle = layerStyleValue ? layerStyleValue.split(',') : [];
 
 			/**
 			 * parseLayer() is called not only initially at application startup time but also dynamically during runtime.
@@ -69,6 +70,9 @@ export class LayersPlugin extends BaPlugin {
 								if (!!layerSwipeAlignment[index] && Object.values(SwipeAlignment).includes(layerSwipeAlignment[index])) {
 									atomicallyAddedLayer.constraints.swipeAlignment = layerSwipeAlignment[index];
 								}
+								if (!!layerStyle[index] && isHexColor(layerStyle[index])) {
+									atomicallyAddedLayer.style = { baseColor: layerStyle[index] };
+								}
 
 								return atomicallyAddedLayer;
 							}
@@ -84,7 +88,8 @@ export class LayersPlugin extends BaPlugin {
 			queryParams.get(QueryParameters.LAYER_VISIBILITY),
 			queryParams.get(QueryParameters.LAYER_OPACITY),
 			queryParams.get(QueryParameters.LAYER_TIMESTAMP),
-			queryParams.get(QueryParameters.LAYER_SWIPE_ALIGNMENT)
+			queryParams.get(QueryParameters.LAYER_SWIPE_ALIGNMENT),
+			queryParams.get(QueryParameters.LAYER_STYLE)
 		);
 		const zteIndex = parseInt(queryParams.get(QueryParameters.ZOOM_TO_EXTENT));
 		const zoomToExtentLayerIndex = isNumber(zteIndex) ? zteIndex : -1;

@@ -13,10 +13,31 @@ import expandSvg from '../../../assets/icons/expand.svg';
 import clearSvg from '../../../assets/icons/x-square.svg';
 import chevronSvg from './assets/chevron.svg';
 
-const Update_Draggable_Items = 'update_draggable_items';
+const Update_Stack_Items = 'update_stack_items';
 const Update_Collapse_Change = 'update_collapse_change';
 const Update_Dragged_Item = 'update_dragged_item';
 const Update_Layer_Swipe = 'update_layer_swipe';
+
+/**
+ * An Object with an id and zIndex property, representing a layer.
+ *
+ * @typedef LayerLike
+ * @property {string} id
+ * @property {number} zIndex
+ */
+
+/**
+ * An element representing a UI-element in a stack like container
+ * to enable user interaction like drag&drop or collapse/expand
+ *
+ * @typedef StackItem
+ * @property {LayerLike| Layer} layer
+ * @property {number} listIndex
+ * @property {boolean} isPlaceholder
+ * @property {boolean} isDraggable
+ * @property {boolean} collapse
+ */
+
 /**
  * Renders a list of layers representing their order on a map and provides
  * actions like reordering, removing and changing visibility and opacity
@@ -26,14 +47,17 @@ const Update_Layer_Swipe = 'update_layer_swipe';
  * @author alsturm
  */
 export class LayerManager extends MvuElement {
+	#translationService;
+	#environmentService;
+
 	constructor() {
 		super({
-			draggableItems: [],
+			stackItems: [],
 			draggedItem: false /* instead of using e.dataTransfer.get/setData() using internal State to get access for dragged object  */
 		});
 		const { TranslationService, EnvironmentService } = $injector.inject('TranslationService', 'EnvironmentService');
-		this._translationService = TranslationService;
-		this._environmentService = EnvironmentService;
+		this.#translationService = TranslationService;
+		this.#environmentService = EnvironmentService;
 	}
 
 	/**
@@ -41,13 +65,21 @@ export class LayerManager extends MvuElement {
 	 */
 	update(type, data, model) {
 		switch (type) {
-			case Update_Draggable_Items:
+			case Update_Stack_Items:
 				return {
 					...model,
-					draggableItems: [...data]
+					stackItems: [...data]
 				};
 			case Update_Collapse_Change:
-				return { ...model, draggableItems: model.draggableItems.map((i) => (i.id === data.id ? data : i)) };
+				return {
+					...model,
+					stackItems: model.stackItems.map((stackItem) => {
+						if (stackItem.layer.id === data.layerId) {
+							return { ...stackItem, collapsed: data.collapsed };
+						}
+						return stackItem;
+					})
+				};
 			case Update_Dragged_Item:
 				return { ...model, draggedItem: data };
 			case Update_Layer_Swipe:
@@ -58,7 +90,7 @@ export class LayerManager extends MvuElement {
 	onInitialize() {
 		this.observe(
 			(store) => store.layers.active,
-			(active) => this._buildDraggableItems(active.filter((l) => !l.constraints.hidden))
+			(active) => this._createStackItems(active.filter((l) => !l.constraints.hidden))
 		);
 		this.observe(
 			(state) => state.layerSwipe,
@@ -69,74 +101,85 @@ export class LayerManager extends MvuElement {
 	/**
 	 * @private
 	 */
-	_buildDraggableItems(layers) {
-		const draggableItems = [{ zIndex: 0, isPlaceholder: true, listIndex: 0, isDraggable: false }];
+	_createStackItems(layers) {
+		const createPlaceholder = (zIndex, listIndex) => {
+			return { layer: { id: null, zIndex: zIndex }, isPlaceholder: true, listIndex: listIndex, isDraggable: false };
+		};
+		const stackItems = [createPlaceholder(0, 0)];
 		this._layerCount = layers.length;
 		this.signal(Update_Dragged_Item, false);
 
 		let j = 0;
 		for (let i = 0; i < layers.length; i++) {
 			const layer = layers[i];
-			const old = this.getModel().draggableItems.filter((item) => item.id === layer.id)[0];
-			const displayProperties = {
-				collapsed: true,
-				visible: layer.visible
-			};
-			if (old) {
-				displayProperties.collapsed = old.collapsed;
-			}
-			draggableItems.push({ ...layer, isPlaceholder: false, listIndex: j + 1, isDraggable: true, ...displayProperties });
-			draggableItems.push({ zIndex: layer.zIndex + 1, isPlaceholder: true, listIndex: j + 2, isDraggable: false });
+			const old = this.getModel().stackItems.filter((item) => item.layer.id === layer.id)[0];
+
+			stackItems.push({
+				layer: layer,
+				isPlaceholder: false,
+				listIndex: j + 1,
+				isDraggable: true,
+				collapsed: old ? old.collapsed : true
+			});
+			stackItems.push(createPlaceholder(layer.zIndex + 1, j + 2));
 			j += 2;
 		}
-		this.signal(Update_Draggable_Items, draggableItems);
+		this.signal(Update_Stack_Items, stackItems);
 	}
 
 	/**
 	 * @override
 	 */
 	createView(model) {
-		const translate = (key) => this._translationService.translate(key);
-		const { draggableItems, draggedItem } = model;
-		const isNeighbour = (index, otherIndex) => {
+		const translate = (key) => this.#translationService.translate(key);
+		const { stackItems, draggedItem } = model;
+		const isNeighbor = (index, otherIndex) => {
 			return index === otherIndex || index - 1 === otherIndex || index + 1 === otherIndex;
 		};
 
 		const isValidDropTarget = (draggedItem, dropItemCandidate) => {
-			return dropItemCandidate.isPlaceholder && !isNeighbour(dropItemCandidate.listIndex, draggedItem.listIndex);
+			return dropItemCandidate.isPlaceholder && !isNeighbor(dropItemCandidate.listIndex, draggedItem.listIndex);
 		};
 
 		const onCollapseChanged = (e) => {
-			this.signal(Update_Collapse_Change, e.detail.layer);
+			this.signal(Update_Collapse_Change, e.detail);
 		};
 
-		const createLayerElement = (layerItem) => {
-			return html`<ba-layer-item .layer=${layerItem} class="layer" draggable data-test-id @collapse=${onCollapseChanged}> </ba-layer-item>`;
+		const createLayerElement = (stackItem) => {
+			return html`<ba-layer-item
+				.layerId=${stackItem.layer.id}
+				.collapsed=${stackItem.collapsed}
+				class="layer"
+				draggable
+				data-test-id
+				@collapse=${onCollapseChanged}
+			>
+			</ba-layer-item>`;
 		};
 
-		const createPlaceholderElement = (layerItem) => {
-			return html`<div id=${'placeholder_' + layerItem.listIndex} class="placeholder"></div>`;
+		const createPlaceholderElement = (stackItem) => {
+			return html`<div id=${'placeholder_' + stackItem.listIndex} class="placeholder"></div>`;
 		};
 
-		const createIndexNumberForPlaceholder = (listIndex, layerItem) => {
-			const isHigherThenDrag = layerItem.listIndex >= listIndex ? 1 : 0;
+		const createIndexNumberForPlaceholder = (listIndex, stackItem) => {
+			const isHigherThenDrag = stackItem.listIndex >= listIndex ? 1 : 0;
 			return listIndex / 2 + isHigherThenDrag;
 		};
 
-		const onDragStart = (e, layerItem) => {
-			if (this._environmentService.isTouch()) {
+		const onDragStart = (e, stackItem) => {
+			if (this.#environmentService.isTouch()) {
 				return;
 			}
 
-			this.signal(Update_Dragged_Item, layerItem);
+			this.signal(Update_Dragged_Item, stackItem);
 
 			e.target.classList.add('isdragged');
 			e.dataTransfer.dropEffect = 'move';
 			e.dataTransfer.effectAllowed = 'move';
 			this.shadowRoot.querySelectorAll('.placeholder').forEach((p) => {
 				const listIndex = Number.parseFloat(p.id.replace('placeholder_', ''));
-				p.innerHTML = createIndexNumberForPlaceholder(listIndex, layerItem);
-				if (!isNeighbour(listIndex, layerItem.listIndex)) {
+				p.innerHTML = createIndexNumberForPlaceholder(listIndex, stackItem);
+				if (!isNeighbor(listIndex, stackItem.listIndex)) {
 					p.classList.add('placeholder-active');
 				}
 			});
@@ -148,31 +191,31 @@ export class LayerManager extends MvuElement {
 			this.shadowRoot.querySelectorAll('.placeholder').forEach((p) => p.classList.remove('placeholder-active'));
 		};
 
-		const onDrop = (e, layerItem) => {
+		const onDrop = (e, stackItem) => {
 			const getNewZIndex = (oldZIndex) => (oldZIndex === this._layerCount - 1 ? oldZIndex - 1 : oldZIndex);
 
-			if (layerItem.isPlaceholder && draggedItem) {
-				modifyLayer(draggedItem.id, { zIndex: getNewZIndex(layerItem.zIndex) });
+			if (stackItem.isPlaceholder && draggedItem) {
+				modifyLayer(draggedItem.layer.id, { zIndex: getNewZIndex(stackItem.layer.zIndex) });
 			}
 			if (e.target.classList.contains('placeholder')) {
 				e.target.classList.remove('over');
 			}
 			this.signal(Update_Dragged_Item, false);
 		};
-		const onDragOver = (e, layerItem) => {
+		const onDragOver = (e, stackItem) => {
 			e.preventDefault();
 			const defaultDropEffect = 'none';
 
 			const getDropEffectFor = (draggedItem) => {
-				return isValidDropTarget(draggedItem, layerItem) ? 'all' : defaultDropEffect;
+				return isValidDropTarget(draggedItem, stackItem) ? 'all' : defaultDropEffect;
 			};
 
 			e.dataTransfer.dropEffect = draggedItem ? getDropEffectFor(draggedItem) : defaultDropEffect;
 		};
 
-		const onDragEnter = (e, layerItem) => {
+		const onDragEnter = (e, stackItem) => {
 			const doNothing = () => {};
-			const addClassName = () => (isValidDropTarget(draggedItem, layerItem) ? e.target.classList.add('over') : doNothing());
+			const addClassName = () => (isValidDropTarget(draggedItem, stackItem) ? e.target.classList.add('over') : doNothing());
 			const dragEnterAction = draggedItem ? addClassName : doNothing;
 			dragEnterAction();
 		};
@@ -194,21 +237,21 @@ export class LayerManager extends MvuElement {
 				<div class="title">${translate('layerManager_title')}</div>
 				<ul class="layers">
 					${repeat(
-						draggableItems,
-						(layerItem) => layerItem.listIndex + '_' + layerItem.id,
-						(layerItem, index) =>
+						stackItems,
+						(stackItem) => stackItem.listIndex + '_' + stackItem.layer.id,
+						(stackItem, index) =>
 							html` <li
-								draggable=${layerItem.isDraggable}
-								@dragstart=${(e) => onDragStart(e, layerItem)}
+								draggable=${stackItem.isDraggable}
+								@dragstart=${(e) => onDragStart(e, stackItem)}
 								@dragend=${onDragEnd}
-								@drop=${(e) => onDrop(e, layerItem)}
-								@dragover=${(e) => onDragOver(e, layerItem)}
-								@dragenter=${(e) => onDragEnter(e, layerItem)}
+								@drop=${(e) => onDrop(e, stackItem)}
+								@dragover=${(e) => onDragOver(e, stackItem)}
+								@dragenter=${(e) => onDragEnter(e, stackItem)}
 								@dragleave=${onDragLeave}
 								index=${index}
 								class="draggable"
 							>
-								${layerItem.isPlaceholder ? createPlaceholderElement(layerItem) : createLayerElement(layerItem)}
+								${stackItem.isPlaceholder ? createPlaceholderElement(stackItem) : createLayerElement(stackItem)}
 							</li>`
 					)}
 				</ul>
@@ -218,28 +261,28 @@ export class LayerManager extends MvuElement {
 	}
 
 	_getButtons(model) {
-		const translate = (key) => this._translationService.translate(key);
-		const { draggableItems, isLayerSwipeActive } = model;
+		const translate = (key) => this.#translationService.translate(key);
+		const { stackItems, isLayerSwipeActive } = model;
 		const expandAll = () => {
 			this.signal(
-				Update_Draggable_Items,
-				draggableItems.map((i) => (i.isPlaceholder ? i : { ...i, collapsed: false }))
+				Update_Stack_Items,
+				stackItems.map((i) => (i.isPlaceholder ? i : { ...i, collapsed: false }))
 			);
 		};
 
 		const collapseAll = () => {
 			this.signal(
-				Update_Draggable_Items,
-				draggableItems.map((i) => (i.isPlaceholder ? i : { ...i, collapsed: true }))
+				Update_Stack_Items,
+				stackItems.map((i) => (i.isPlaceholder ? i : { ...i, collapsed: true }))
 			);
 		};
 
 		const removeAll = () => {
-			draggableItems
-				.filter((i) => !i.isPlaceholder)
-				.forEach((i, index) => {
+			stackItems
+				.filter((stackItem) => !stackItem.isPlaceholder)
+				.forEach((stackItem, index) => {
 					if (index > 0) {
-						removeLayer(i.id);
+						removeLayer(stackItem.layer.id);
 					}
 				});
 		};
@@ -252,14 +295,12 @@ export class LayerManager extends MvuElement {
 				: nothing;
 		};
 
-		const draggableItemsExpandable = draggableItems.some((i) => i.collapsed);
-		const expandOrCollapseLabel = draggableItemsExpandable ? translate('layerManager_expand_all') : translate('layerManager_collapse_all');
-		const expandOrCollapseTitle = draggableItemsExpandable
-			? translate('layerManager_expand_all_title')
-			: translate('layerManager_collapse_all_title');
-		const expandOrCollapseAction = draggableItemsExpandable ? expandAll : collapseAll;
+		const stackItemsExpandable = stackItems.some((stackItem) => stackItem.collapsed);
+		const expandOrCollapseLabel = stackItemsExpandable ? translate('layerManager_expand_all') : translate('layerManager_collapse_all');
+		const expandOrCollapseTitle = stackItemsExpandable ? translate('layerManager_expand_all_title') : translate('layerManager_collapse_all_title');
+		const expandOrCollapseAction = stackItemsExpandable ? expandAll : collapseAll;
 
-		return draggableItems.filter((i) => !i.isPlaceholder).length > 0
+		return stackItems.filter((stackItem) => !stackItem.isPlaceholder).length > 0
 			? html`<div class="layermanager__actions">
 						<ba-button
 							id="button_expand_or_collapse"

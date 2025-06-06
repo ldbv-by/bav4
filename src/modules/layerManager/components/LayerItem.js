@@ -5,40 +5,50 @@ import { html, nothing } from 'lit-html';
 import css from './layerItem.css';
 import { $injector } from '../../../injection';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { cloneAndAddLayer, modifyLayer, removeLayer } from './../../../store/layers/layers.action';
+import { cloneAndAddLayer, LayerState, modifyLayer, removeLayer } from './../../../store/layers/layers.action';
 import arrowUpSvg from './assets/arrow-up-short.svg';
 import arrowDownSvg from './assets/arrow-down-short.svg';
 import cloneSvg from './assets/clone.svg';
 import zoomToExtentSvg from './assets/zoomToExtent.svg';
 import removeSvg from './assets/trash.svg';
+import exclamationTriangleSvg from './assets/exclamation-triangle-fill.svg';
 import infoSvg from '../../../assets/icons/info.svg';
 import timeSvg from '../../../assets/icons/time.svg';
+import oafSettingsSvg from './assets/oafSetting.svg';
 import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { openModal } from '../../../../src/store/modal/modal.action';
 import { createUniqueId } from '../../../utils/numberUtils';
 import { fitLayer } from '../../../store/position/position.action';
-import { GeoResourceFuture, GeoResourceTypes } from '../../../domain/geoResources';
+import { GeoResourceFuture, GeoResourceTypes, OafGeoResource } from '../../../domain/geoResources';
 import { MenuTypes } from '../../commons/components/overflowMenu/OverflowMenu';
 import { openSlider } from '../../../store/timeTravel/timeTravel.action';
 import { SwipeAlignment } from '../../../store/layers/layers.action';
+import { openBottomSheet } from '../../../store/bottomSheet/bottomSheet.action';
+import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 
-const Update_Layer = 'update_layer';
+const Update_Layer_And_LayerItem = 'update_layer_and_layerItem';
 const Update_Layer_Collapsed = 'update_layer_collapsed';
 const Update_Layer_Swipe = 'update_layer_swipe';
-const Default_Extra_Property_Values = {
-	collapsed: true,
-	opacity: 1,
-	loading: false
-};
+
+/**
+ * Collapse event
+ * @event collapse
+ * @type {object}
+ * @property {module:modules/layerManager/components/LayerItem~CollapseDetail} detail The {@link CollapseDetail}
+ */
+
+/**
+ * @typedef CollapseDetail
+ * @property {module:store/layers/layer_action~Layer} layerId The id of the {@link Layer} related to this {@link LayerItem} event.
+ * @property {boolean} collapsed Whether or not the {@link LayerItem} should be collapsed or not.
+ */
 
 /**
  * Child element of the LayerManager. Represents one layer and its state.
- * Events:
- * - onCollapse()
  *
- * Properties:
- * - `layer`
- *
+ * @property {string} layerId The id of the {@link Layer} relating to this {@link LayerItem}.
+ * @property {boolean} collapsed Whether or not the {@link LayerItem} should be collapsed.
+ * @fires collapse Fires when the collapse value changes
  *
  * @class
  * @author thiloSchlemmer
@@ -47,16 +57,20 @@ const Default_Extra_Property_Values = {
  * @author costa_gi
  */
 export class LayerItem extends AbstractMvuContentPanel {
+	#translationService;
+	#geoResourceService;
 	constructor() {
 		super({
-			layer: null,
+			layerProperties: null,
+			layerItemProperties: {
+				collapsed: true,
+				loading: false
+			},
 			isLayerSwipeActive: null
 		});
 		const { TranslationService, GeoResourceService } = $injector.inject('TranslationService', 'GeoResourceService');
-		this._translationService = TranslationService;
-		this._geoResourceService = GeoResourceService;
-
-		this._onCollapse = () => {};
+		this.#translationService = TranslationService;
+		this.#geoResourceService = GeoResourceService;
 	}
 
 	/**
@@ -64,20 +78,14 @@ export class LayerItem extends AbstractMvuContentPanel {
 	 */
 	update(type, data, model) {
 		switch (type) {
-			case Update_Layer:
+			case Update_Layer_And_LayerItem:
 				return {
 					...model,
-					layer: {
-						...data,
-						visible: data.visible,
-						collapsed: data.collapsed,
-						opacity: data.opacity,
-						loading: data.loading,
-						keywords: data.keywords
-					}
+					layerProperties: data.layerProperties,
+					layerItemProperties: { ...model.layerItemProperties, ...data.layerItemProperties }
 				};
 			case Update_Layer_Collapsed:
-				return { ...model, layer: { ...model.layer, collapsed: data } };
+				return { ...model, layerItemProperties: { ...model.layerItemProperties, collapsed: data } };
 			case Update_Layer_Swipe:
 				return { ...model, isLayerSwipeActive: data.active };
 		}
@@ -87,6 +95,17 @@ export class LayerItem extends AbstractMvuContentPanel {
 	 * @override
 	 */
 	onInitialize() {
+		const updateLayerProperties = (layers) => {
+			const { layerProperties } = this.getModel();
+
+			if (layerProperties?.id) {
+				layers.filter((layer) => layer.id === layerProperties.id).forEach((layerProperties) => this._updateWithLayerProperties(layerProperties));
+			}
+		};
+		this.observe(
+			(store) => store.layers.active,
+			(active) => updateLayerProperties(active.filter((l) => !l.constraints.hidden))
+		);
 		this.observe(
 			(state) => state.layerSwipe,
 			(layerSwipe) => this.signal(Update_Layer_Swipe, layerSwipe)
@@ -124,17 +143,17 @@ export class LayerItem extends AbstractMvuContentPanel {
 	 * @override
 	 */
 	createView(model) {
-		const translate = (key) => this._translationService.translate(key);
-		const { layer, isLayerSwipeActive } = model;
+		const translate = (key) => this.#translationService.translate(key);
+		const { layerProperties, layerItemProperties, isLayerSwipeActive } = model;
 
-		if (!layer) {
+		if (!layerProperties) {
 			return nothing;
 		}
-		const geoResource = this._geoResourceService.byId(layer.geoResourceId);
-		const currentLabel = layer.label;
+		const geoResource = this.#geoResourceService.byId(layerProperties.geoResourceId);
+		const currentLabel = layerItemProperties.label;
 
 		const getCollapseTitle = () => {
-			return layer.collapsed ? translate('layerManager_expand') : translate('layerManager_collapse');
+			return layerItemProperties.collapsed ? translate('layerManager_expand') : translate('layerManager_collapse');
 		};
 
 		const getBadges = (keywords) => {
@@ -144,49 +163,68 @@ export class LayerItem extends AbstractMvuContentPanel {
 			return keywords.length === 0 ? nothing : toBadges(keywords);
 		};
 
+		const getStateHint = (layerState) => {
+			const title = translate(`layerManager_title_layerState_${layerState}`);
+			return layerState !== LayerState.OK
+				? html`<ba-icon
+						.icon="${exclamationTriangleSvg}"
+						.title=${title}
+						.size=${'1'}
+						.color=${'var(--secondary-color)'}
+						@click=${(e) => onClickStateHint(e, title)}
+						class="layer-state-icon"
+					></ba-icon>`
+				: nothing;
+		};
+
+		const onClickStateHint = (e, title) => {
+			e.preventDefault();
+			e.stopPropagation();
+			emitNotification(title, LevelTypes.WARN);
+		};
 		const changeOpacity = (event) => {
 			//state store change -> implicit call of #render()
-			modifyLayer(layer.id, { opacity: parseInt(event.target.value) / 100 });
+			modifyLayer(layerProperties.id, { opacity: parseInt(event.target.value) / 100 });
 		};
 		const toggleVisibility = (event) => {
 			//state store change -> implicit call of #render()
-			modifyLayer(layer.id, { visible: event.detail.checked });
+			modifyLayer(layerProperties.id, { visible: event.detail.checked });
 		};
-		const toggleCollapse = (e) => {
-			const collapsed = !layer.collapsed;
+		const toggleCollapse = () => {
+			const collapsed = !layerItemProperties.collapsed;
 			this.signal(Update_Layer_Collapsed, collapsed);
 			this.dispatchEvent(
 				new CustomEvent('collapse', {
 					detail: {
-						layer: { ...layer, collapsed: collapsed }
+						layerId: layerProperties.id,
+						collapsed: collapsed
 					}
 				})
 			);
-			this._onCollapse(e);
 		};
 		const increaseIndex = () => {
 			//state store change -> implicit call of #render()
-			modifyLayer(layer.id, { zIndex: layer.zIndex + 1 });
+			modifyLayer(layerProperties.id, { zIndex: layerProperties.zIndex + 1 });
 		};
 		const decreaseIndex = () => {
 			//state store change -> implicit call of #render()
-			if (layer.zIndex - 1 >= 0) {
-				modifyLayer(layer.id, { zIndex: layer.zIndex - 1 });
+			if (layerProperties.zIndex - 1 >= 0) {
+				modifyLayer(layerProperties.id, { zIndex: layerProperties.zIndex - 1 });
 			}
 		};
 
 		const cloneLayer = () => {
 			//state store change -> implicit call of #render()
-			cloneAndAddLayer(layer.id, `${layer.geoResourceId}_${createUniqueId()}`, { zIndex: layer.zIndex + 1 });
+			cloneAndAddLayer(layerProperties.id, `${layerProperties.geoResourceId}_${createUniqueId()}`, { zIndex: layerProperties.zIndex + 1 });
 		};
 
 		const zoomToExtent = () => {
-			fitLayer(layer.id);
+			fitLayer(layerProperties.id);
 		};
 
 		const remove = () => {
 			//state store change -> implicit call of #render()
-			removeLayer(layer.id);
+			removeLayer(layerProperties.id);
 		};
 
 		const getSlider = () => {
@@ -201,7 +239,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 					min="0"
 					title=${translate('layerManager_opacity')}
 					max="100"
-					value=${layer.opacity * 100}
+					value=${layerProperties.opacity * 100}
 					class="opacity-slider"
 					draggable="true"
 					@input=${changeOpacity}
@@ -210,7 +248,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 				/>
 				<ba-badge
 					.background=${'var(--secondary-color)'}
-					.label=${Math.round(layer.opacity * 100)}
+					.label=${Math.round(layerProperties.opacity * 100)}
 					.color=${'var(--text3)'}
 					.title=${translate('layerManager_opacity_badge')}
 				></ba-badge>
@@ -221,9 +259,9 @@ export class LayerItem extends AbstractMvuContentPanel {
 			const getTimestampControl = () => {
 				const onTimestampChange = (event) => {
 					const timestamp = event.detail.selected;
-					modifyLayer(layer.id, { timestamp });
+					modifyLayer(layerProperties.id, { timestamp });
 				};
-				const selected = layer.timestamp ?? geoResource.timestamps[0];
+				const selected = layerProperties.timestamp ?? geoResource.timestamps[0];
 				return html`<ba-icon
 						.icon="${timeSvg}"
 						.title=${translate('layerManager_time_travel_slider')}
@@ -241,28 +279,47 @@ export class LayerItem extends AbstractMvuContentPanel {
 			return geoResource.hasTimestamps() ? getTimestampControl() : nothing;
 		};
 
+		const getOafContent = () => {
+			return geoResource instanceof OafGeoResource
+				? html`<ba-icon
+						.icon="${oafSettingsSvg}"
+						.title=${translate('layerManager_oaf_settings')}
+						.color=${'var(--secondary-color)'}
+						@click=${() => openBottomSheet(html`<div><ba-oaf-mask .layerId=${layerProperties.id}></ba-oaf-mask></div>`)}
+						class="oaf-settings-icon"
+					></ba-icon>`
+				: nothing;
+		};
+
 		const getVisibilityTitle = () => {
-			return layer.label + ' - ' + translate('layerManager_change_visibility');
+			return layerItemProperties.label + ' - ' + translate('layerManager_change_visibility');
 		};
 
 		const iconCollapseClass = {
-			iconexpand: !layer.collapsed
+			iconexpand: !layerItemProperties.collapsed
 		};
 
 		const bodyCollapseClass = {
-			iscollapse: layer.collapsed
+			iscollapse: layerItemProperties.collapsed
 		};
 
 		const openGeoResourceInfoPanel = () => {
 			const {
-				layer: { label, geoResourceId }
+				layerProperties: { geoResourceId },
+				layerItemProperties: { label }
 			} = this.getModel();
 			openModal(label, html`<ba-georesourceinfo-panel .geoResourceId=${geoResourceId}></ba-georesourceinfo-panel>`);
 		};
 
 		const getMenuItems = () => {
 			return [
-				{ id: 'copy', label: translate('layerManager_to_copy'), icon: cloneSvg, action: cloneLayer, disabled: !layer.constraints.cloneable },
+				{
+					id: 'copy',
+					label: translate('layerManager_to_copy'),
+					icon: cloneSvg,
+					action: cloneLayer,
+					disabled: !layerProperties.constraints.cloneable
+				},
 				{
 					id: 'zoomToExtent',
 					label: translate('layerManager_zoom_to_extent'),
@@ -274,17 +331,17 @@ export class LayerItem extends AbstractMvuContentPanel {
 		};
 
 		const leftSide = () => {
-			modifyLayer(layer.id, { swipeAlignment: SwipeAlignment.LEFT });
+			modifyLayer(layerProperties.id, { swipeAlignment: SwipeAlignment.LEFT });
 		};
 		const bothSide = () => {
-			modifyLayer(layer.id, { swipeAlignment: SwipeAlignment.NOT_SET });
+			modifyLayer(layerProperties.id, { swipeAlignment: SwipeAlignment.NOT_SET });
 		};
 		const rightSide = () => {
-			modifyLayer(layer.id, { swipeAlignment: SwipeAlignment.RIGHT });
+			modifyLayer(layerProperties.id, { swipeAlignment: SwipeAlignment.RIGHT });
 		};
 
 		const getLayerSwipe = () => {
-			const direction = layer.constraints.swipeAlignment;
+			const direction = layerProperties.constraints.swipeAlignment;
 			const directionClass = {
 				left: direction === SwipeAlignment.LEFT,
 				both: direction === SwipeAlignment.NOT_SET,
@@ -325,10 +382,17 @@ export class LayerItem extends AbstractMvuContentPanel {
 			</style>
 			<div class="ba-section divider">
 				<div class="ba-list-item">
-					<ba-checkbox .title="${getVisibilityTitle()}" class="ba-list-item__text" tabindex="0" .checked=${layer.visible} @toggle=${toggleVisibility}
-						>${layer.loading ? html`<ba-spinner .label=${currentLabel}></ba-spinner>` : html`${currentLabel} ${getBadges(layer.keywords)}`}
+					<ba-checkbox
+						.title="${getVisibilityTitle()}"
+						class="ba-list-item__text"
+						tabindex="0"
+						.checked=${layerProperties.visible}
+						@toggle=${toggleVisibility}
+						>${layerItemProperties.loading
+							? html`<ba-spinner .label=${currentLabel}></ba-spinner>`
+							: html`${currentLabel}${getBadges(layerItemProperties.keywords)} ${getStateHint(layerProperties.state)}`}
 					</ba-checkbox>
-					${getTimestampContent()}
+					${getOafContent()} ${getTimestampContent()}
 					<div class="ba-list-item__after clear">
 						<ba-icon
 							id="remove"
@@ -377,7 +441,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 								.color_hover=${'var(--text3)'}
 								.size=${2.6}
 								.title=${translate('layerManager_info')}
-								.disabled=${!layer.constraints?.metaData}
+								.disabled=${!layerProperties.constraints?.metaData}
 								@click=${openGeoResourceInfoPanel}
 							></ba-icon>
 						</div>
@@ -388,37 +452,52 @@ export class LayerItem extends AbstractMvuContentPanel {
 			</div>`;
 	}
 
-	set layer(value) {
-		const translate = (key) => this._translationService.translate(key);
-		const geoResource = this._geoResourceService.byId(value.geoResourceId);
-		const keywords = [...this._geoResourceService.getKeywords(value.geoResourceId)];
+	_updateWithLayerProperties(layerProperties) {
+		if (!layerProperties) {
+			return;
+		}
+		const translate = (key) => this.#translationService.translate(key);
+		const geoResource = this.#geoResourceService.byId(layerProperties.geoResourceId);
+		const keywords = [...this.#geoResourceService.getKeywords(layerProperties.geoResourceId)];
 
 		if (geoResource instanceof GeoResourceFuture) {
 			geoResource.onResolve((resolvedGeoR) => {
-				this.signal(Update_Layer, {
-					...Default_Extra_Property_Values,
-					...value,
-					label: resolvedGeoR.label,
-					loading: false,
-					keywords: keywords
+				this.signal(Update_Layer_And_LayerItem, {
+					layerProperties: layerProperties,
+					layerItemProperties: {
+						label: resolvedGeoR.label,
+						loading: false,
+						keywords: keywords
+					}
 				});
 			});
 		}
 
-		this.signal(Update_Layer, {
-			...Default_Extra_Property_Values,
-			...value,
-			label: geoResource instanceof GeoResourceFuture ? translate('layerManager_loading_hint') : geoResource.label,
-			loading: geoResource instanceof GeoResourceFuture,
-			keywords: keywords
+		this.signal(Update_Layer_And_LayerItem, {
+			layerProperties: layerProperties,
+			layerItemProperties: {
+				label: geoResource instanceof GeoResourceFuture ? translate('layerManager_loading_hint') : geoResource.label,
+				loading: geoResource instanceof GeoResourceFuture,
+				keywords: keywords
+			}
 		});
 	}
 
-	/**
-	 * @property {function} onCollapse - Callback function
-	 */
-	set onCollapse(callback) {
-		this._onCollapse = callback;
+	set layerId(layerId) {
+		if (layerId) {
+			const getLayerProperties = (layerId) => {
+				const { StoreService } = $injector.inject('StoreService');
+				return StoreService.getStore()
+					.getState()
+					.layers.active.find((l) => l.id === layerId);
+			};
+
+			this._updateWithLayerProperties(getLayerProperties(layerId));
+		}
+	}
+
+	set collapsed(collapsed) {
+		this.signal(Update_Layer_Collapsed, collapsed);
 	}
 
 	static get tag() {

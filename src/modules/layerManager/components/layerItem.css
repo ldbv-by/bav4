@@ -97,6 +97,10 @@
 	margin-right: 0.5em;
 }
 
+.oaf-settings-icon {
+	margin: auto 1em auto 0;
+}
+
 .compare {
 	display: flex;
 	align-items: stretch;
@@ -161,4 +165,9 @@ input[type='range']::-moz-range-thumb {
 }
 ba-value-select {
 	margin-right: 0.8em;
+}
+.layer-state-icon::part(icon) {
+	background: var(--warning-color);
+	position: relative;
+	top: 0.3em;
 }
