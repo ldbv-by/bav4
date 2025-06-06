@@ -280,13 +280,12 @@ export class LayerItem extends AbstractMvuContentPanel {
 		};
 
 		const getOafContent = () => {
-			const oafSettingsContent = html`<div>OAF Settings</div>`;
 			return geoResource instanceof OafGeoResource
 				? html`<ba-icon
 						.icon="${oafSettingsSvg}"
 						.title=${translate('layerManager_oaf_settings')}
 						.color=${'var(--secondary-color)'}
-						@click=${() => openBottomSheet(oafSettingsContent)}
+						@click=${() => openBottomSheet(html`<div><ba-oaf-mask .layerId=${layerProperties.id}></ba-oaf-mask></div>`)}
 						class="oaf-settings-icon"
 					></ba-icon>`
 				: nothing;
