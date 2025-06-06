@@ -203,18 +203,25 @@ export class SearchableSelect extends MvuElement {
 
 	_showDropdown(viewportHeight) {
 		const dropdown = this.shadowRoot.querySelector('.dropdown');
-		const dropdownAncestorRect = this.shadowRoot.querySelector('.searchable-select').getBoundingClientRect();
+		const dropdownAncestor = this.shadowRoot.querySelector('.searchable-select');
+		const dropdownAncestorRect = dropdownAncestor.getBoundingClientRect();
 
 		dropdown.classList.add('visible');
 		dropdown.classList.remove('hidden');
+		dropdown.style.width = dropdownAncestorRect.width + 'px';
 
 		// Calculate foldout direction of dropdown
 		const foldoutUpwards = 0 > viewportHeight - (dropdown.clientHeight + dropdownAncestorRect.y + dropdownAncestorRect.height);
+		const dropdownOffset = dropdownAncestorRect.height + 'px';
 
 		if (foldoutUpwards) {
-			dropdown.style.bottom = dropdownAncestorRect.height + 'px';
+			dropdown.style.marginBottom = dropdownOffset;
+			dropdown.style.removeProperty('margin-top');
+			dropdownAncestor.classList.add('fold-up');
 		} else {
-			dropdown.style.removeProperty('bottom');
+			dropdown.style.marginTop = dropdownOffset;
+			dropdown.style.removeProperty('margin-bottom');
+			dropdownAncestor.classList.remove('fold-up');
 		}
 
 		// Duplicate event safety

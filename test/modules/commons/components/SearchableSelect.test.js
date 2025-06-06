@@ -62,21 +62,21 @@ describe('SearchableSelect', () => {
 		it('foldout the dropdown upwards when not enough space in viewport', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			const dropdown = element.shadowRoot.querySelector('.dropdown');
-			dropdown.style.height = '300px';
 
+			dropdown.style.height = '300px';
 			element._showDropdown(300);
 
-			expect(dropdown.style.bottom.length).toBeGreaterThan(0);
+			expect(element.shadowRoot.querySelector('.searchable-select').classList).toContain('fold-up');
 		});
 
 		it('foldout the dropdown downwards when enough space in viewport', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			const dropdown = element.shadowRoot.querySelector('.dropdown');
-			dropdown.style.height = '300px';
 
+			dropdown.style.height = '300px';
 			element._showDropdown(350);
 
-			expect(dropdown.style.bottom).toBe('');
+			expect(element.shadowRoot.querySelector('.searchable-select').classList).not.toContain('fold-up');
 		});
 	});
 
