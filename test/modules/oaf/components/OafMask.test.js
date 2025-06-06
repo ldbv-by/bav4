@@ -53,6 +53,12 @@ describe('OafMask', () => {
 		spyOn(importOafServiceMock, 'getFilterCapabilities').and.returnValue(capabilities);
 	};
 
+	describe('static properties', () => {
+		it('returns operator definitions', async () => {
+			expect(OafMask.OPERATOR_DEFINITIONS).toEqual(['equals', 'between', 'greater', 'lesser']);
+		});
+	});
+
 	describe('when initialized', () => {
 		it('contains default values in the model', async () => {
 			const element = await setup();
@@ -70,7 +76,6 @@ describe('OafMask', () => {
 			//properties from model
 			expect(element.layerId).toBe(-1);
 			expect(element.showConsole).toBe(false);
-			expect(OafMask.OPERATOR_DEFINITIONS).toEqual(['equals', 'between', 'greater', 'lesser']);
 		});
 
 		it('updates layerId', async () => {
@@ -101,7 +106,7 @@ describe('OafMask', () => {
 			expect(element.shadowRoot.querySelector('#btn-add-filter-group')).toBeNull();
 		});
 
-		it('does not render the "Expert Mode" Button', async () => {
+		it('does not render the "Console Mode" Button', async () => {
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('#btn-expert-mode')).toBeNull();
 		});
@@ -130,12 +135,17 @@ describe('OafMask', () => {
 
 			it('renders the "Add Filter Group" Button', async () => {
 				const element = await setup();
-				expect(element.shadowRoot.querySelector('#btn-add-filter-group')).not.toBeNull();
+				const addButton = element.shadowRoot.querySelector('#btn-add-filter-group');
+				expect(addButton).not.toBeNull();
+				expect(addButton.label).toBe('oaf_mask_add_filter_group');
 			});
 
-			it('renders the "Expert Mode" Button', async () => {
+			it('renders the "Console Mode" Button', async () => {
 				const element = await setup();
-				expect(element.shadowRoot.querySelector('#btn-expert-mode')).not.toBeNull();
+
+				const consoleButton = element.shadowRoot.querySelector('#btn-expert-mode');
+				expect(consoleButton).not.toBeNull();
+				expect(consoleButton.label).toBe('oaf_mask_console_mode');
 			});
 
 			it('renders a filter-group when "Add Filter Group" Button clicked', async () => {
@@ -153,7 +163,7 @@ describe('OafMask', () => {
 				expect(element.getModel().filterGroups[0]).toEqual(jasmine.objectContaining({ id: jasmine.any(Number), oafFilters: [] }));
 			});
 
-			it('renders "Expert Mode" when "Expert Mode" Button clicked', async () => {
+			it('renders "Console Mode" when "Console Mode" Button clicked', async () => {
 				const element = await setup();
 				const expertModeBtn = element.shadowRoot.querySelector('#btn-expert-mode');
 				expertModeBtn.click();
@@ -227,11 +237,12 @@ describe('OafMask', () => {
 			it('renders the "Normal Mode" Button', async () => {
 				const element = await setup();
 				element.showConsole = true;
-
-				expect(element.shadowRoot.querySelector('#btn-normal-mode')).not.toBeNull();
+				const normalModeBtn = element.shadowRoot.querySelector('#btn-normal-mode');
+				expect(normalModeBtn).not.toBeNull();
+				expect(normalModeBtn.label).toBe('oaf_mask_ui_mode');
 			});
 
-			it('does not render the "Expert Mode" Button', async () => {
+			it('does not render the "Console Mode" Button', async () => {
 				const element = await setup();
 				element.showConsole = true;
 

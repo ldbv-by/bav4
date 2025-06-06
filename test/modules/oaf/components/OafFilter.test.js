@@ -521,8 +521,11 @@ describe('OafFilter', () => {
 			it(`renders field with data-type attribute "${T_Boolean}"`, async () => {
 				const element = await setup();
 				element.queryable = createQueryable('foo', T_Boolean);
-
-				expect(element.shadowRoot.querySelector(`[data-type="${T_Boolean}"]`)).not.toBeNull();
+				const selectField = element.shadowRoot.querySelector(`[data-type="${T_Boolean}"]`);
+				expect(selectField).not.toBeNull();
+				expect(selectField.options).toHaveSize(2);
+				expect(selectField.options[0].innerText).toBe('oaf_filter_yes');
+				expect(selectField.options[1].innerText).toBe('oaf_filter_no');
 			});
 
 			it(`renders operator-field with default operator "equals"`, async () => {

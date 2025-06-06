@@ -76,10 +76,10 @@ export class OafFilterGroup extends MvuElement {
 
 			<div class="filter-group">
 				<div class="title-bar">
-					<h2 class="title">${translate('oafUi_group_title')}</h2>
+					<h2 class="title">${translate('oaf_group_title')}</h2>
 					<div class="btn-bar">
 						<select id="queryable-select" @change=${onAddFilter}>
-							<option selected>${translate('oafUi_group_select_filter')}</option>
+							<option selected>${translate('oaf_group_select_filter')}</option>
 							${queryables
 								.filter((queryable) => !oafFilters.find((oafFilter) => oafFilter.queryable.name === queryable.name))
 								.map((queryable) => html`<option .value=${queryable.name}>${queryable.name}</option>`)}

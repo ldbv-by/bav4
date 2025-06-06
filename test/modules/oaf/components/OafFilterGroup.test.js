@@ -45,6 +45,11 @@ describe('OafFilterGroup', () => {
 			expect(element.oafFilters).toHaveSize(0);
 			expect(element.queryables).toBeUndefined();
 		});
+
+		it('renders title', async () => {
+			const element = await setup();
+			expect(element.shadowRoot.querySelector('.title').innerText).toBe('oaf_group_title');
+		});
 	});
 
 	describe('when property', () => {
@@ -90,7 +95,9 @@ describe('OafFilterGroup', () => {
 
 			it('renders queryable select without options', async () => {
 				const element = await setup();
-				expect(element.shadowRoot.querySelectorAll('#queryable-select option')).toHaveSize(1);
+				const select = element.shadowRoot.querySelector('#queryable-select');
+				expect(select.options).toHaveSize(1);
+				expect(select.options[0].innerText).toBe('oaf_group_select_filter');
 			});
 		});
 

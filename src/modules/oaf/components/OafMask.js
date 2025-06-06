@@ -101,21 +101,21 @@ export class OafMask extends MvuElement {
 				? html` <ba-button
 						style="width:200px; display:inline-block;padding: 20px 0px;"
 						id="btn-normal-mode"
-						.label=${translate('oafUi_mask_ui_mode')}
+						.label=${translate('oaf_mask_ui_mode')}
 						.type=${'primary'}
 						@click=${onShowCqlConsole}
 					></ba-button>`
 				: html` <ba-button
 							id="btn-add-filter-group"
 							style="width:200px; display:inline-block; padding: 20px 0px;"
-							.label=${translate('oafUi_mask_add_filter_group')}
+							.label=${translate('oaf_mask_add_filter_group')}
 							.type=${'primary'}
 							@click=${onAddFilterGroup}
 						></ba-button>
 						<ba-button
 							id="btn-expert-mode"
 							style="width:200px; display:inline-block;padding: 20px 0px;"
-							.label=${translate('oafUi_mask_console_mode')}
+							.label=${translate('oaf_mask_console_mode')}
 							.type=${'primary'}
 							@click=${onShowCqlConsole}
 						></ba-button>`;
@@ -124,7 +124,7 @@ export class OafMask extends MvuElement {
 		const orSeparatorHtml = () => html`
 			<div class="separator-container">
 				<div class="separator"></div>
-				<div class="separator-content">${translate('oafUi_mask_or')}</div>
+				<div class="separator-content">${translate('oaf_mask_or')}</div>
 				<div class="separator"></div>
 			</div>
 		`;
@@ -153,7 +153,7 @@ export class OafMask extends MvuElement {
 					${OafMask.OPERATOR_DEFINITIONS.map((operator) => html`<ba-button .type=${'primary'} .label=${operator}></ba-button>`)}
 				</div>
 				<textarea class="console"></textarea>
-				<ba-button .type=${'primary'} .label=${'Anwenden'}></ba-button>
+				<ba-button .type=${'primary'} .label=${translate('oaf_mask_button_apply')}></ba-button>
 			</div>`;
 
 		return html`
@@ -208,6 +208,10 @@ export class OafMask extends MvuElement {
 	}
 
 	static get OPERATOR_DEFINITIONS() {
+		/*
+		
+	*/
+
 		return ['equals', 'between', 'greater', 'lesser'];
 	}
 
