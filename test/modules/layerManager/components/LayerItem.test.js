@@ -11,6 +11,7 @@ import { positionReducer } from '../../../../src/store/position/position.reducer
 import {
 	GeoResourceFuture,
 	GeoResourceTypes,
+	OafGeoResource,
 	VectorGeoResource,
 	VectorSourceType,
 	WmsGeoResource,
@@ -23,8 +24,11 @@ import cloneSvg from '../../../../src/modules/layerManager/components/assets/clo
 import zoomToExtentSvg from '../../../../src/modules/layerManager/components/assets/zoomToExtent.svg';
 import infoSvg from '../../../../src/assets/icons/info.svg';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { SwipeAlignment } from '../../../../src/store/layers/layers.action.js';
+import { LayerState, SwipeAlignment } from '../../../../src/store/layers/layers.action.js';
 import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
+import { bottomSheetReducer } from '../../../../src/store/bottomSheet/bottomSheet.reducer.js';
+import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
+import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 
 window.customElements.define(LayerItem.tag, LayerItem);
 
@@ -76,10 +80,12 @@ describe('LayerItem', () => {
 			{
 				layers: layersReducer,
 				modal: modalReducer,
+				bottomSheet: bottomSheetReducer,
 				media: createNoInitialStateMediaReducer(),
 				timeTravel: timeTravelReducer,
 				layerSwipe: layerSwipeReducer,
-				tools: toolsReducer
+				tools: toolsReducer,
+				notifications: notificationReducer
 			}
 		);
 		$injector
@@ -141,6 +147,39 @@ describe('LayerItem', () => {
 			const badge = element.shadowRoot.querySelector('ba-badge');
 
 			expect(badge.label).toBe('keyword0');
+		});
+
+		it('displays the layer.state by a notify-icon', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			spyOn(geoResourceService, 'getKeywords').withArgs('geoResourceId0').and.returnValue(['keyword0']);
+
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				state: LayerState.INCOMPLETE_DATA
+			};
+			const element = await setup(layer);
+			const iconElement = element.shadowRoot.querySelector('ba-icon.layer-state-icon');
+
+			expect(iconElement.title).toBe('layerManager_title_layerState_incomplete_data');
+
+			const event = new Event('click');
+			const preventDefaultSpy = spyOn(event, 'preventDefault');
+			const stopPropagationSpy = spyOn(event, 'stopPropagation');
+
+			iconElement.dispatchEvent(event);
+
+			expect(preventDefaultSpy).toHaveBeenCalled();
+			expect(stopPropagationSpy).toHaveBeenCalled();
+			//check notification
+			expect(store.getState().notifications.latest.payload.content).toBe(iconElement.title);
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 		});
 
 		it('use layer.label property in checkbox-title ', async () => {
@@ -360,6 +399,47 @@ describe('LayerItem', () => {
 
 			expect(dragstartSliderSpy).toHaveBeenCalled();
 			expect(dragstartContainerSpy).not.toHaveBeenCalled();
+		});
+
+		it('checks the type of the georesource to determine whether the settings icon should be displayed', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('oafGeoResource')
+				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId', 3857).setFilter('cql'));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'oafGeoResource',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+
+			const element = await setup(layer);
+			const oafSettingsElement = element.shadowRoot.querySelectorAll('ba-icon.oaf-settings-icon');
+
+			expect(oafSettingsElement).toHaveSize(1);
+
+			expect(oafSettingsElement[0].title).toBe('layerManager_oaf_settings');
+		});
+
+		it('opens the bottomSheet for the oaf-filter component', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('oafGeoResource')
+				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId', 3857).setFilter('cql'));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'oafGeoResource',
+				visible: true,
+				zIndex: 0,
+				opacity: 1
+			};
+
+			const element = await setup(layer);
+			const oafSettingsElement = element.shadowRoot.querySelectorAll('ba-icon.oaf-settings-icon');
+			oafSettingsElement[0].click();
+
+			expect(isTemplateResult(store.getState().bottomSheet.data[0].content)).toBeTrue();
 		});
 
 		it('displays a overflow-menu', async () => {

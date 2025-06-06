@@ -2,7 +2,7 @@ import { LayersPlugin } from '../../src/plugins/LayersPlugin';
 import { TestUtils } from '../test-utils.js';
 import { createDefaultLayersConstraints, layersReducer } from '../../src/store/layers/layers.reducer';
 import { $injector } from '../../src/injection';
-import { GeoResourceFuture, XyzGeoResource } from '../../src/domain/geoResources';
+import { GeoResourceFuture, OafGeoResource, XyzGeoResource } from '../../src/domain/geoResources';
 import { QueryParameters } from '../../src/domain/queryParameters';
 import { Topic } from '../../src/domain/topic';
 import { setCurrent } from '../../src/store/topics/topics.action';
@@ -467,6 +467,52 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[0].constraints).toEqual(createDefaultLayersConstraints());
 				expect(store.getState().layers.active[1].id).toBe('some1_0');
 				expect(store.getState().layers.active[1].constraints).toEqual(createDefaultLayersConstraints());
+			});
+
+			it('adds layers considering style params', () => {
+				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_STYLE}=notAHexColor,#fcba03`);
+				const store = setup();
+				const instanceUnderTest = new LayersPlugin();
+				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+					switch (id) {
+						case 'some0':
+							return new OafGeoResource(id, 'someLabel0', 'someUrl0', 'someCollectionId0', 3857);
+						case 'some1':
+							return new XyzGeoResource(id, 'someLabel1', 'someUrl1', 'someCollectionId1', 3857);
+					}
+				});
+
+				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
+
+				expect(store.getState().layers.active.length).toBe(2);
+				expect(store.getState().layers.active[0].id).toBe('some0_0');
+				expect(store.getState().layers.active[0].style).toBeNull();
+				expect(store.getState().layers.active[1].id).toBe('some1_0');
+				expect(store.getState().layers.active[1].style).toEqual({ baseColor: '#fcba03' });
+			});
+
+			it('adds layers considering unusable style params', () => {
+				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_STYLE}=,foo`);
+				const store = setup();
+				const instanceUnderTest = new LayersPlugin();
+				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
+				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+					switch (id) {
+						case 'some0':
+							return new XyzGeoResource(id, 'someLabel0', 'someUrl0');
+						case 'some1':
+							return new XyzGeoResource(id, 'someLabel1', 'someUrl1');
+					}
+				});
+
+				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
+
+				expect(store.getState().layers.active.length).toBe(2);
+				expect(store.getState().layers.active[0].id).toBe('some0_0');
+				expect(store.getState().layers.active[0].style).toBeNull();
+				expect(store.getState().layers.active[1].id).toBe('some1_0');
+				expect(store.getState().layers.active[0].style).toBeNull();
 			});
 
 			it('does NOT add a layer when geoResourceService cannot fulfill', () => {

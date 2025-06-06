@@ -728,7 +728,17 @@ export class OlRoutingHandler extends OlLayerHandler {
 			// let's ensure each request is executed one after each other
 			this._promiseQueue.add(async () => {
 				this._catId = catId;
-				await this._requestRouteFromCoordinates([...coordinates3857.map((c) => [...c])], status);
+				this._map.once('rendercomplete', () => {
+					/**
+					 * To prevent graphic issues due to a incomplete rendering process, we synchronize
+					 * our actions with the ol map render lifecycle. We wait for the next completed rendering
+					 * to give openLayers time to build the complete environment (after the initialization phase,
+					 * mostly the first render loop).
+					 * Otherwise the rendering uses occasionally incomplete style results, when the timing is bad,
+					 * which leads to large icons and uncalled styleFunctions.
+					 */
+					this._requestRouteFromCoordinates([...coordinates3857.map((c) => [...c])], status);
+				});
 			});
 		};
 		const addIntermediatePointAndRequestRoute = (coordinate3857) => {
