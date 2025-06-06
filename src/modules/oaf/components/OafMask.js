@@ -1,0 +1,221 @@
+/**
+ * @module modules/oaf/components/OafMask
+ */
+import css from './oafMask.css';
+import { html, nothing } from 'lit-html';
+import { repeat } from 'lit-html/directives/repeat.js';
+import { MvuElement } from '../../MvuElement';
+import { $injector } from '../../../injection';
+import { createUniqueId } from '../../../utils/numberUtils';
+
+const Update_Capabilities = 'update_capabilities';
+const Update_Filter_Groups = 'update_filter_groups';
+const Update_Layer_Id = 'update_layer_id';
+const Update_Show_Console = 'update_show_console';
+
+/**
+ * Displays and allows filtering for OGC Feature API capabilities.
+ *
+ * @property {string} layerId=-1 The layerId identifies what layer this mask gets and what filter capabilities are applied
+ * @property {string} showConsole=false Shows the CQL Console when "true". Otherwise, the normal UI Mode of this mask.
+ *
+ * @class
+ * @author herrmutig
+ */
+export class OafMask extends MvuElement {
+	#storeService;
+	#importOafService;
+	#translationService;
+	#geoResourceService;
+
+	constructor() {
+		super({
+			filterGroups: [],
+			capabilities: [],
+			layerId: -1,
+			showConsole: false
+		});
+
+		const {
+			StoreService: storeService,
+			ImportOafService: importOafService,
+			TranslationService: translationService,
+			GeoResourceService: geoResourceService
+		} = $injector.inject('StoreService', 'ImportOafService', 'TranslationService', 'GeoResourceService');
+
+		this.#storeService = storeService;
+		this.#importOafService = importOafService;
+		this.#translationService = translationService;
+		this.#geoResourceService = geoResourceService;
+	}
+
+	onInitialize() {
+		this._requestFilterCapabilities();
+	}
+
+	update(type, data, model) {
+		switch (type) {
+			case Update_Capabilities:
+				return { ...model, capabilities: data };
+			case Update_Filter_Groups:
+				return { ...model, filterGroups: [...data] };
+			case Update_Show_Console:
+				return { ...model, showConsole: data };
+			case Update_Layer_Id:
+				return { ...model, layerId: data };
+		}
+	}
+
+	createView(model) {
+		const translate = (key) => this.#translationService.translate(key);
+
+		const onAddFilterGroup = () => {
+			const groups = this.getModel().filterGroups;
+			this.signal(Update_Filter_Groups, [...groups, { id: createUniqueId(), oafFilters: [] }]);
+		};
+
+		const onShowCqlConsole = () => {
+			this.signal(Update_Show_Console, !showConsole);
+		};
+
+		const onRemoveFilterGroup = (evt) => {
+			this.signal(Update_Filter_Groups, this._removeFilterGroup(evt.target.getAttribute('group-id')));
+		};
+
+		const onFilterGroupChanged = (evt) => {
+			const groups = this.getModel().filterGroups;
+			const targetGroup = this._findFilterGroupById(evt.target.getAttribute('group-id'));
+
+			targetGroup.oafFilters = evt.target.oafFilters;
+			this.signal(Update_Filter_Groups, [...groups]);
+		};
+
+		const { capabilities, filterGroups, showConsole } = model;
+
+		const contentHeaderButtonsHtml = () => {
+			if (capabilities.length < 1) {
+				return nothing;
+			}
+
+			return showConsole
+				? html` <ba-button
+						style="width:200px; display:inline-block;padding: 20px 0px;"
+						id="btn-normal-mode"
+						.label=${translate('oaf_mask_ui_mode')}
+						.type=${'primary'}
+						@click=${onShowCqlConsole}
+					></ba-button>`
+				: html` <ba-button
+							id="btn-add-filter-group"
+							style="width:200px; display:inline-block; padding: 20px 0px;"
+							.label=${translate('oaf_mask_add_filter_group')}
+							.type=${'primary'}
+							@click=${onAddFilterGroup}
+						></ba-button>
+						<ba-button
+							id="btn-expert-mode"
+							style="width:200px; display:inline-block;padding: 20px 0px;"
+							.label=${translate('oaf_mask_console_mode')}
+							.type=${'primary'}
+							@click=${onShowCqlConsole}
+						></ba-button>`;
+		};
+
+		const orSeparatorHtml = () => html`
+			<div class="separator-container">
+				<div class="separator"></div>
+				<div class="separator-content">${translate('oaf_mask_or')}</div>
+				<div class="separator"></div>
+			</div>
+		`;
+
+		const uiModeHtml = () =>
+			html` <div id="filter-groups">
+				${repeat(
+					filterGroups,
+					(group) => group.id,
+					(group, index) => html`
+						<ba-oaf-filter-group
+							group-id=${group.id}
+							@remove=${onRemoveFilterGroup}
+							.queryables=${capabilities.queryables}
+							.oafFilters=${group.oafFilters}
+							@change=${onFilterGroupChanged}
+						></ba-oaf-filter-group>
+						${index < filterGroups.length - 1 ? orSeparatorHtml() : html`<div></div>`}
+					`
+				)}
+			</div>`;
+
+		const consoleModeHtml = () =>
+			html` <div id="console" class="console-flex-container">
+				<div class="btn-bar">
+					${OafMask.OPERATOR_DEFINITIONS.map((operator) => html`<ba-button .type=${'primary'} .label=${operator}></ba-button>`)}
+				</div>
+				<textarea class="console"></textarea>
+				<ba-button .type=${'primary'} .label=${translate('oaf_mask_button_apply')}></ba-button>
+			</div>`;
+
+		return html`
+			<style>
+				${css}
+			</style>
+			<div class="sticky-container">${contentHeaderButtonsHtml()}</div>
+			<div class="container">${showConsole ? consoleModeHtml() : uiModeHtml()}</div>
+		`;
+	}
+
+	_removeFilterGroup(idToRemove) {
+		return this.getModel().filterGroups.filter((group) => {
+			return group.id !== Number(idToRemove);
+		});
+	}
+
+	_findFilterGroupById(id) {
+		return this.getModel().filterGroups.find((group) => {
+			return Number(id) === group.id;
+		});
+	}
+
+	_getLayer() {
+		return this.#storeService
+			.getStore()
+			.getState()
+			.layers.active.find((l) => l.id === this.layerId);
+	}
+
+	async _requestFilterCapabilities() {
+		const layer = this._getLayer();
+		const geoResource = this.#geoResourceService.byId(layer.geoResourceId);
+		const capabilities = await this.#importOafService.getFilterCapabilities(geoResource);
+		this.signal(Update_Capabilities, capabilities);
+	}
+
+	get layerId() {
+		return this.getModel().layerId;
+	}
+
+	set layerId(value) {
+		this.signal(Update_Layer_Id, value);
+	}
+
+	get showConsole() {
+		return this.getModel().showConsole;
+	}
+
+	set showConsole(value) {
+		this.signal(Update_Show_Console, value);
+	}
+
+	static get OPERATOR_DEFINITIONS() {
+		/*
+		
+	*/
+
+		return ['equals', 'between', 'greater', 'lesser'];
+	}
+
+	static get tag() {
+		return 'ba-oaf-mask';
+	}
+}
