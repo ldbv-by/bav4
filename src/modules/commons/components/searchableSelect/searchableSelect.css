@@ -1,17 +1,15 @@
-.searchable-select,
-.search-input-container {
-	min-width: inherit;
-	max-width: inherit;
-	min-height: inherit;
-	max-height: inherit;
-	width: inherit;
-	height: inherit;
+:host {
+	width: 100%;
 }
 
 .searchable-select {
+	display: flex;
 	cursor: pointer;
-	overflow-wrap: anywhere;
-	position: relative;
+	width: inherit;
+}
+
+.fold-up {
+	align-items: self-end;
 }
 
 .hidden {
@@ -48,6 +46,7 @@
 	display: flex;
 	flex-direction: row;
 	border-bottom: 1px solid #fff;
+	width: inherit;
 
 	input {
 		padding: 3px 0px 3px 8px;
@@ -61,7 +60,7 @@
 }
 
 .dropdown {
+	/* width is controlled in js to fit parent container's width (see _showDropdown(viewportHeight)) */
 	position: absolute;
 	z-index: var(--z-mapbuttons);
-	width: 100%;
 }
