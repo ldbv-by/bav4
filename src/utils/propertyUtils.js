@@ -50,4 +50,4 @@ export const LEGACY_INTERNAL_PROPERTY_KEYS = Object.freeze([
 /**
  * Defines a list of common properties that should not be displayed in an UI or exported
  */
-export const COMMON_UNWANTED_PROPERTY_KEYS = Object.freeze(['geometry' /*ol*/, 'styleUrl' /*KML*/]);
+export const EXCLUDED_COMMON_PROPERTY_KEYS = Object.freeze(['geometry' /*ol*/, 'styleUrl' /*KML*/]);

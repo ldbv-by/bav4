@@ -1,5 +1,5 @@
 import {
-	COMMON_UNWANTED_PROPERTY_KEYS,
+	EXCLUDED_COMMON_PROPERTY_KEYS,
 	isInternalProperty,
 	LEGACY_INTERNAL_PROPERTY_KEYS,
 	asInternalProperty
@@ -26,10 +26,10 @@ describe('propertyUtils', () => {
 		});
 	});
 
-	describe('COMMON_UNWANTED_PROPERTY_KEYS', () => {
+	describe('EXCLUDED_COMMON_PROPERTY_KEYS', () => {
 		it('defines a list of internally used legacy property keys', () => {
-			expect(Object.isFrozen(COMMON_UNWANTED_PROPERTY_KEYS)).toBeTrue();
-			expect(COMMON_UNWANTED_PROPERTY_KEYS).toEqual(['geometry', 'styleUrl']);
+			expect(Object.isFrozen(EXCLUDED_COMMON_PROPERTY_KEYS)).toBeTrue();
+			expect(EXCLUDED_COMMON_PROPERTY_KEYS).toEqual(['geometry', 'styleUrl']);
 		});
 	});
 
