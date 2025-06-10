@@ -38,6 +38,8 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_compare_right).toBe('Rechts');
 		expect(map.layerManager_compare_right_title).toBe('Ebene auf die rechte Seite setzen');
 		expect(map.layerManager_title_layerState_incomplete_data).toBe('Daten wurden nur teilweise geladen');
+		expect(map.layerManager_title_layerState_loading).toBe('Daten werden geladen...');
+		expect(map.layerManager_title_layerState_error).toBe('Daten konnten nicht geladen werden');
 	});
 
 	it('provides translation for en', () => {
@@ -78,10 +80,12 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_compare_right).toBe('Right');
 		expect(map.layerManager_compare_right_title).toBe('Set layer on right side');
 		expect(map.layerManager_title_layerState_incomplete_data).toBe('Data loaded incomplete');
+		expect(map.layerManager_title_layerState_loading).toBe('Data loading...');
+		expect(map.layerManager_title_layerState_error).toBe('Data could not be loaded');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 35;
+		const expectedSize = 37;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
