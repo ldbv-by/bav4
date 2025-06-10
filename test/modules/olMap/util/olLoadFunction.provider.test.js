@@ -463,10 +463,12 @@ describe('olLoadFunction.provider', () => {
 		const mockResponsePayload = `{"type":"FeatureCollection","numberReturned":10,"numberMatched":1000,"timeStamp":"2025-04-28T16:05:04Z","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[13.7753984,48.8278005]},"properties":{"node_id":11967522304,"name":"Gasthof Pension Strohmaier","strasse":"Nebelhornstraße 16","plz":"81247","ort":"München","outdoor_seating":false,"open":"11:30:00","close":"21:30:00"},"id":""},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.6072725,48.7139666]},"properties":{"node_id":4360236409,"name":"Haller-Alm","strasse":"Jamnitzerstraße 5","plz":"81247","ort":"München","outdoor_seating":false,"open":"09:30:00","close":"22:00:00"},"id":2},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.4656242,48.9258759]},"properties":{"node_id":3248029033,"name":"Am Guldensteig","strasse":"Lusenstraße 48","plz":"94556","ort":"Neuschönau","outdoor_seating":false,"open":"10:30:00","close":"22:30:00"},"id":3},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.4257844,48.9549047]},"properties":{"node_id":573609734,"name":"Racheldiensthütte","strasse":"Nawiaskystraße 18","plz":"81247","ort":"München","outdoor_seating":false,"open":"10:00:00","close":"21:30:00"},"id":4},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.1955355,49.0909754]},"properties":{"node_id":4248151958,"name":"Baggerloch","strasse":"Tegernseer Platz 12","plz":"81247","ort":"München","outdoor_seating":false,"open":"09:30:00","close":"21:30:00"},"id":5},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.3310682,48.7215136]},"properties":{"node_id":6232769394,"name":"Gasthof zur Post","strasse":"Abacostraße 11","plz":"81247","ort":"München","outdoor_seating":false,"open":"09:00:00","close":"20:00:00"},"id":6},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.4708263,48.8140697]},"properties":{"node_id":1056815204,"name":"Dorfbiergarten Stark","strasse":"Dorfstraße 22","plz":"94160","ort":"Ringelai","outdoor_seating":true,"open":"11:00:00","close":"23:00:00"},"id":7},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.4601728,48.7874714]},"properties":{"node_id":454981390,"name":"Waldheim","strasse":"Tegelbergstraße 2","plz":"81247","ort":"München","outdoor_seating":false,"open":"09:00:00","close":"23:30:00"},"id":8},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.4832899,48.6180897]},"properties":{"node_id":456024788,"name":"Lutzgarten","strasse":"Aberlestraße 15","plz":"81247","ort":"München","outdoor_seating":false,"open":"09:30:00","close":"20:00:00"},"id":9},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.4730729,48.5702767]},"properties":{"node_id":6288301886,"name":"Zur Schnecke","strasse":"Jakob-Klar-Straße 1","plz":"81247","ort":"München","outdoor_seating":false,"open":"11:00:00","close":"23:30:00"},"id":10}],"links":[{"href":"http://geotest3.bvv.bayern.de:7080/biergarten/collections/biergarten/items?f=json","rel":"self","type":"application/geo+json","title":"This document"},{"href":"http://geotest3.bvv.bayern.de:7080/biergarten/collections/biergarten/items?f=html","rel":"alternate","type":"text/html","title":"This document as HTML"},{"href":"http://geotest3.bvv.bayern.de:7080/biergarten/collections/biergarten/items?f=json&offset=10","rel":"next","type":"application/geo+json","title":"Next page"},{"href":"http://www.opengis.net/def/profile/ogc/0/rel-as-link","rel":"profile","title":"Profile used in the response"}]}`;
 		const mockResponsePayload_AllFeatures = `{"type":"FeatureCollection","numberReturned":1000,"numberMatched":1000,"timeStamp":"2025-04-28T16:05:04Z","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[13.7753984,48.8278005]},"properties":{"node_id":11967522304,"name":"Gasthof Pension Strohmaier","strasse":"Nebelhornstraße 16","plz":"81247","ort":"München","outdoor_seating":false,"open":"11:30:00","close":"21:30:00"},"id":""},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.6072725,48.7139666]},"properties":{"node_id":4360236409,"name":"Haller-Alm","strasse":"Jamnitzerstraße 5","plz":"81247","ort":"München","outdoor_seating":false,"open":"09:30:00","close":"22:00:00"},"id":2},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.4656242,48.9258759]},"properties":{"node_id":3248029033,"name":"Am Guldensteig","strasse":"Lusenstraße 48","plz":"94556","ort":"Neuschönau","outdoor_seating":false,"open":"10:30:00","close":"22:30:00"},"id":3},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.4257844,48.9549047]},"properties":{"node_id":573609734,"name":"Racheldiensthütte","strasse":"Nawiaskystraße 18","plz":"81247","ort":"München","outdoor_seating":false,"open":"10:00:00","close":"21:30:00"},"id":4},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.1955355,49.0909754]},"properties":{"node_id":4248151958,"name":"Baggerloch","strasse":"Tegernseer Platz 12","plz":"81247","ort":"München","outdoor_seating":false,"open":"09:30:00","close":"21:30:00"},"id":5},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.3310682,48.7215136]},"properties":{"node_id":6232769394,"name":"Gasthof zur Post","strasse":"Abacostraße 11","plz":"81247","ort":"München","outdoor_seating":false,"open":"09:00:00","close":"20:00:00"},"id":6},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.4708263,48.8140697]},"properties":{"node_id":1056815204,"name":"Dorfbiergarten Stark","strasse":"Dorfstraße 22","plz":"94160","ort":"Ringelai","outdoor_seating":true,"open":"11:00:00","close":"23:00:00"},"id":7},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.4601728,48.7874714]},"properties":{"node_id":454981390,"name":"Waldheim","strasse":"Tegelbergstraße 2","plz":"81247","ort":"München","outdoor_seating":false,"open":"09:00:00","close":"23:30:00"},"id":8},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.4832899,48.6180897]},"properties":{"node_id":456024788,"name":"Lutzgarten","strasse":"Aberlestraße 15","plz":"81247","ort":"München","outdoor_seating":false,"open":"09:30:00","close":"20:00:00"},"id":9},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.4730729,48.5702767]},"properties":{"node_id":6288301886,"name":"Zur Schnecke","strasse":"Jakob-Klar-Straße 1","plz":"81247","ort":"München","outdoor_seating":false,"open":"11:00:00","close":"23:30:00"},"id":10}],"links":[{"href":"http://geotest3.bvv.bayern.de:7080/biergarten/collections/biergarten/items?f=json","rel":"self","type":"application/geo+json","title":"This document"},{"href":"http://geotest3.bvv.bayern.de:7080/biergarten/collections/biergarten/items?f=html","rel":"alternate","type":"text/html","title":"This document as HTML"},{"href":"http://geotest3.bvv.bayern.de:7080/biergarten/collections/biergarten/items?f=json&offset=10","rel":"next","type":"application/geo+json","title":"Next page"},{"href":"http://www.opengis.net/def/profile/ogc/0/rel-as-link","rel":"profile","title":"Profile used in the response"}]}`;
 
-		it('adds the features to the source and updates the `fetching` property of the network s-o-s', async () => {
+		it('adds the features to the source and updates the `state` property of the layer and the `fetching` property of the network s-o-s', async () => {
 			const geoResourceId = 'geoResourceId';
 			const olSource = new VectorSource();
-			const olLayer = new VectorLayer({ source: olSource });
+			const layerId = 'layerId';
+			const olLayer = new VectorLayer({ id: layerId, source: olSource });
+			addLayer(layerId, { geoResourceId });
 			const extent = [0, 1, 2, 3];
 			const resolution = 42.42;
 			const projection = new Projection({ code: 'EPSG:3857' });
@@ -490,8 +492,12 @@ describe('olLoadFunction.provider', () => {
 			const fetchingSpy = jasmine.createSpy();
 			observe(store, (state) => state.network.fetching, fetchingSpy);
 
-			await oafLoadFunction(extent, resolution, projection, successCbSpy, failureCbSpy);
+			const promise = oafLoadFunction(extent, resolution, projection, successCbSpy, failureCbSpy);
+			expect(store.getState().layers.active[0].state).toBe(LayerState.LOADING);
 
+			await promise;
+
+			expect(store.getState().layers.active[0].state).not.toBe(LayerState.LOADING);
 			expect(successCbSpy).toHaveBeenCalled();
 			expect(failureCbSpy).not.toHaveBeenCalled();
 			expect(olSource.getFeatures()).toHaveSize(10);
@@ -624,7 +630,9 @@ describe('olLoadFunction.provider', () => {
 		it('calls the failureCallback when http status is other than 200', async () => {
 			const geoResourceId = 'geoResourceId';
 			const olSource = new VectorSource();
-			const olLayer = new VectorLayer({ source: olSource });
+			const layerId = 'layerId';
+			const olLayer = new VectorLayer({ id: layerId, source: olSource });
+			addLayer(layerId, { geoResourceId });
 			const removeLoadedExtentSpy = spyOn(olSource, 'removeLoadedExtent');
 			const extent = [0, 1, 2, 3];
 			const resolution = 42.42;
@@ -643,6 +651,7 @@ describe('olLoadFunction.provider', () => {
 				new UnavailableGeoResourceError(`Unexpected network status`, geoResourceId, 404)
 			);
 
+			expect(store.getState().layers.active[0].state).toBe(LayerState.ERROR);
 			expect(successCbSpy).not.toHaveBeenCalled();
 			expect(failureCbSpy).toHaveBeenCalled();
 			expect(removeLoadedExtentSpy).toHaveBeenCalledWith(extent);
@@ -654,7 +663,9 @@ describe('olLoadFunction.provider', () => {
 		it('rejects with an UnavailableGeoResourceError when a request was aborted', async () => {
 			const geoResourceId = 'geoResourceId';
 			const olSource = new VectorSource();
-			const olLayer = new VectorLayer({ source: olSource });
+			const layerId = 'layerId';
+			const olLayer = new VectorLayer({ id: layerId, source: olSource });
+			addLayer(layerId, { geoResourceId });
 			const removeLoadedExtentSpy = spyOn(olSource, 'removeLoadedExtent');
 			const extent = [0, 1, 2, 3];
 			const resolution = 42.42;
@@ -670,6 +681,7 @@ describe('olLoadFunction.provider', () => {
 				new UnavailableGeoResourceError(`aborted`, geoResourceId)
 			);
 
+			expect(store.getState().layers.active[0].state).toBe(LayerState.ERROR);
 			expect(successCbSpy).not.toHaveBeenCalled();
 			expect(failureCbSpy).toHaveBeenCalled();
 			expect(removeLoadedExtentSpy).not.toHaveBeenCalledWith(extent);
