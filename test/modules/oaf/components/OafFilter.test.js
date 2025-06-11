@@ -2,6 +2,7 @@ import { OafFilter } from '../../../../src/modules/oaf/components/OafFilter';
 import { SearchableSelect } from '../../../../src/modules/commons/components/searchableSelect/SearchableSelect';
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
+import { getOperatorByName } from '../../../../src/modules/oaf/components/oafUtils';
 
 window.customElements.define(OafFilter.tag, OafFilter);
 window.customElements.define(SearchableSelect.tag, SearchableSelect);
@@ -35,10 +36,11 @@ describe('OafFilter', () => {
 			const element = await setup();
 			expect(element.getModel()).toEqual({
 				queryable: {},
-				operator: 'equals',
+				operator: getOperatorByName('equals'),
 				value: null,
 				minValue: null,
-				maxValue: null
+				maxValue: null,
+				expression: ''
 			});
 		});
 
@@ -47,10 +49,11 @@ describe('OafFilter', () => {
 
 			//properties from model
 			expect(element.queryable).toEqual({});
-			expect(element.operator).toBe('equals');
+			expect(element.operator).toBe(getOperatorByName('equals'));
 			expect(element.value).toBeNull();
 			expect(element.maxValue).toBeNull();
 			expect(element.minValue).toBeNull();
+			expect(element.expression).toBe('');
 		});
 	});
 
@@ -75,7 +78,7 @@ describe('OafFilter', () => {
 			it('renders operator-field with "operator" default', async () => {
 				const element = await setup();
 				element.queryable = createQueryable('foo', T_Integer);
-				expect(element.shadowRoot.querySelector('#select-operator').value).toEqual(element.operator);
+				expect(element.shadowRoot.querySelector('#select-operator').value).toEqual(element.operator.name);
 			});
 
 			it('updates operator-field when "operator" changes', async () => {
@@ -95,7 +98,7 @@ describe('OafFilter', () => {
 				operatorField.value = 'between';
 				operatorField.dispatchEvent(new Event('change'));
 
-				expect(element.operator).toEqual('between');
+				expect(element.operator).toEqual(getOperatorByName('between'));
 			});
 		});
 

@@ -4,6 +4,7 @@
 
 import { html } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
+import { createDefaultOafFilter } from './oafUtils';
 import css from './oafFilterGroup.css';
 import { $injector } from '../../../injection';
 
@@ -57,12 +58,13 @@ export class OafFilterGroup extends MvuElement {
 			const changedFilterIndex = filters.findIndex((oafFilter) => oafFilter.queryable.name === evt.target.queryable.name);
 			filters[changedFilterIndex] = { ...evt.target.getModel() };
 			this.signal(Update_Filters, [...filters]);
+
 			this.dispatchEvent(new CustomEvent('change'));
 		};
 
 		const onRemoveFilter = (evt) => {
 			this.signal(Update_Filters, this._removeFilter(evt.target.queryable.name));
-			//		this.dispatchEvent(new CustomEvent('change')); TODO create test for
+			this.dispatchEvent(new CustomEvent('change'));
 		};
 
 		const onRemoveGroup = () => {
@@ -117,7 +119,7 @@ export class OafFilterGroup extends MvuElement {
 		this.signal(Update_Filters, [
 			...oafFilters,
 			{
-				...this._createDefaultOafFilter(),
+				...createDefaultOafFilter(),
 				queryable: queryableToAdd
 			}
 		]);
@@ -127,16 +129,6 @@ export class OafFilterGroup extends MvuElement {
 
 	_removeFilter(queryableName) {
 		return this.getModel().oafFilters.filter((oafFilter) => oafFilter.queryable.name !== queryableName);
-	}
-
-	_createDefaultOafFilter() {
-		return {
-			queryable: {},
-			operator: 'equals',
-			value: null,
-			minValue: null,
-			maxValue: null
-		};
 	}
 
 	set queryables(value) {

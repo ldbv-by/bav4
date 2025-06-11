@@ -5,13 +5,15 @@ import { $injector } from '../../../injection';
 import { html, nothing } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
 import css from './oafFilter.css';
+import { isString } from '../../../utils/checks';
+import { getOperatorDefinitions, getOperatorByName, createExpression } from './oafUtils';
 
 const Update_Queryable = 'update_queryable';
 const Update_Operator = 'update_operator';
 const Update_Value = 'update_value';
 const Update_Min_Value = 'update_min_value';
 const Update_Max_Value = 'update_max_value';
-
+const Update_Expression = 'update_expression';
 /**
  * A Filter for the OGC Feature API which filters a provided queryable
  *
@@ -33,10 +35,11 @@ export class OafFilter extends MvuElement {
 	constructor() {
 		super({
 			queryable: {},
-			operator: 'equals',
+			operator: null,
 			value: null,
 			minValue: null,
-			maxValue: null
+			maxValue: null,
+			expression: ''
 		});
 
 		const { TranslationService: translationService } = $injector.inject('TranslationService');
@@ -55,21 +58,29 @@ export class OafFilter extends MvuElement {
 				return { ...model, minValue: data };
 			case Update_Max_Value:
 				return { ...model, maxValue: data };
+			case Update_Expression:
+				return { ...model, expression: createExpression(model) };
 		}
 	}
 
 	onInitialize() {
-		this.observeModel('operator', () => this.dispatchEvent(new CustomEvent('change')));
-		this.observeModel('minValue', () => this.dispatchEvent(new CustomEvent('change')));
-		this.observeModel('maxValue', () => this.dispatchEvent(new CustomEvent('change')));
-		this.observeModel('value', () => this.dispatchEvent(new CustomEvent('change')));
+		if (this.operator === null) {
+			this.operator = 'equals';
+		} else {
+			this.signal(Update_Operator, this.operator);
+		}
+
+		this.observeModel('operator', () => this._onModelChange());
+		this.observeModel('minValue', () => this._onModelChange());
+		this.observeModel('maxValue', () => this._onModelChange());
+		this.observeModel('value', () => this._onModelChange());
 	}
 
 	createView(model) {
 		const translate = (key) => this.#translationService.translate(key);
 		const { minValue, maxValue, value, operator } = model;
 		const { name, type, values: queryableValues } = model.queryable;
-		const operators = this._getOperators(type);
+		const operators = getOperatorDefinitions(type);
 
 		const onMinValueChanged = (evt, newValue) => {
 			evt.target.value = this._updateValue(newValue, minValue, Update_Min_Value);
@@ -84,7 +95,7 @@ export class OafFilter extends MvuElement {
 		};
 
 		const onOperatorSelect = (evt) => {
-			this.signal(Update_Operator, evt.target.value);
+			this.signal(Update_Operator, getOperatorByName(evt.target.value));
 		};
 
 		const onRemove = () => {
@@ -105,7 +116,7 @@ export class OafFilter extends MvuElement {
 
 		const getTimeInputHtml = () => {
 			return html`<div data-type="time">
-				${operator === 'between'
+				${operator.name === 'between'
 					? html`<ba-searchable-select
 								class="min-value-input"
 								@select=${(evt) => onMinValueChanged(evt, evt.target.selected)}
@@ -136,7 +147,7 @@ export class OafFilter extends MvuElement {
 			const maxRange = model.queryable.maxValue;
 
 			const content = () => {
-				if (operator === 'between') {
+				if (operator.name === 'between') {
 					return html`
 						<input
 							type="text"
@@ -179,7 +190,7 @@ export class OafFilter extends MvuElement {
 		};
 
 		const getBooleanInputHtml = () => {
-			return html`<select data-type="boolean" @change=${onOperatorSelect}>
+			return html`<select data-type="boolean" @change=${(evt) => onValueChanged(evt, evt.target.value)}>
 				<option selected value="true">${translate('oaf_filter_yes')}</option>
 				<option selected value="false">${translate('oaf_filter_no')}</option>
 			</select>`;
@@ -209,7 +220,7 @@ export class OafFilter extends MvuElement {
 			return html`
 				<div class="input-operator">
 					<select id="select-operator" @change=${onOperatorSelect}>
-						${operators.map((op) => html`<option .selected=${op === operator} .value=${op}>${op}</option>`)}
+						${operators.map((op) => html`<option .selected=${op === operator} .value=${op.name}>${op.name}</option>`)}
 					</select>
 				</div>
 			`;
@@ -272,23 +283,20 @@ export class OafFilter extends MvuElement {
 	}
 
 	set operator(value) {
-		this.signal(Update_Operator, value);
+		if (isString(value)) {
+			this.signal(Update_Operator, getOperatorByName(value));
+		} else {
+			this.signal(Update_Operator, value);
+		}
 	}
 
-	_getOperators(type) {
-		const defaultOps = ['equals'];
+	get expression() {
+		return this.getModel().expression;
+	}
 
-		switch (type) {
-			case 'time':
-			case 'float':
-			case 'integer': {
-				return [...defaultOps, 'greater', 'lesser', 'between'];
-			}
-			case 'string':
-				return [...defaultOps, 'contains'];
-		}
-
-		return defaultOps;
+	_onModelChange() {
+		this.signal(Update_Expression);
+		this.dispatchEvent(new CustomEvent('change'));
 	}
 
 	_updateValue(newValue, oldValue, signal) {

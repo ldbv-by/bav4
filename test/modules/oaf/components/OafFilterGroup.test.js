@@ -2,6 +2,7 @@ import { OafFilter } from '../../../../src/modules/oaf/components/OafFilter';
 import { OafFilterGroup } from '../../../../src/modules/oaf/components/OafFilterGroup';
 import { $injector } from '../../../../src/injection';
 import { TestUtils } from '../../../test-utils';
+import { createDefaultOafFilter } from '../../../../src/modules/oaf/components/oafUtils';
 
 window.customElements.define(OafFilterGroup.tag, OafFilterGroup);
 window.customElements.define(OafFilter.tag, OafFilter);
@@ -65,7 +66,7 @@ describe('OafFilterGroup', () => {
 		describe('oafFilters', () => {
 			it('has values it renders filters', async () => {
 				const element = await setup();
-				element.oafFilters = [element._createDefaultOafFilter(), element._createDefaultOafFilter()];
+				element.oafFilters = [createDefaultOafFilter(), createDefaultOafFilter()];
 
 				expect(element.shadowRoot.querySelectorAll('ba-oaf-filter')).toHaveSize(2);
 			});
@@ -164,7 +165,7 @@ describe('OafFilterGroup', () => {
 				const element = await setup();
 
 				element.queryables = testQueryables;
-				element.oafFilters = [{ ...element._createDefaultOafFilter(), queryable: { name: 'StringQueryable' } }];
+				element.oafFilters = [{ ...createDefaultOafFilter(), queryable: { name: 'StringQueryable' } }];
 				const select = element.shadowRoot.querySelector('#queryable-select');
 
 				expect(select.options).not.toContain(jasmine.objectContaining({ value: 'StringQueryable' }));
@@ -186,13 +187,6 @@ describe('OafFilterGroup', () => {
 	});
 
 	describe('when internal methods invoked', () => {
-		it('creates a default oafFilter Model with "_createDefaultOafFilter"', async () => {
-			const groupElement = await setup();
-			const oafFilterElement = await TestUtils.render(OafFilter.tag);
-
-			expect(groupElement._createDefaultOafFilter()).toEqual(oafFilterElement.getModel());
-		});
-
 		it('adds an "oafFilter" and a filled queryable to model with "_addFilter"', async () => {
 			const element = await setup();
 			element.queryables = testQueryables;

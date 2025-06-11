@@ -53,12 +53,6 @@ describe('OafMask', () => {
 		spyOn(importOafServiceMock, 'getFilterCapabilities').and.returnValue(capabilities);
 	};
 
-	describe('static properties', () => {
-		it('returns operator definitions', async () => {
-			expect(OafMask.OPERATOR_DEFINITIONS).toEqual(['equals', 'between', 'greater', 'lesser']);
-		});
-	});
-
 	describe('when initialized', () => {
 		it('contains default values in the model', async () => {
 			const element = await setup();

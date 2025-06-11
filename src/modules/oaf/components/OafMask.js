@@ -2,11 +2,13 @@
  * @module modules/oaf/components/OafMask
  */
 import css from './oafMask.css';
+import { getOperatorDefinitions } from './oafUtils';
 import { html, nothing } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { MvuElement } from '../../MvuElement';
 import { $injector } from '../../../injection';
 import { createUniqueId } from '../../../utils/numberUtils';
+import { modifyLayer } from './../../../store/layers/layers.action';
 
 const Update_Capabilities = 'update_capabilities';
 const Update_Filter_Groups = 'update_filter_groups';
@@ -68,10 +70,9 @@ export class OafMask extends MvuElement {
 
 	createView(model) {
 		const translate = (key) => this.#translationService.translate(key);
-
 		const onAddFilterGroup = () => {
 			const groups = this.getModel().filterGroups;
-			this.signal(Update_Filter_Groups, [...groups, { id: createUniqueId(), oafFilters: [] }]);
+			this.signal(Update_Filter_Groups, [...groups, this._createDefaultFilterGroup()]);
 		};
 
 		const onShowCqlConsole = () => {
@@ -85,9 +86,10 @@ export class OafMask extends MvuElement {
 		const onFilterGroupChanged = (evt) => {
 			const groups = this.getModel().filterGroups;
 			const targetGroup = this._findFilterGroupById(evt.target.getAttribute('group-id'));
-
 			targetGroup.oafFilters = evt.target.oafFilters;
 			this.signal(Update_Filter_Groups, [...groups]);
+
+			modifyLayer(this.layerId, { filter: this._createExpression() });
 		};
 
 		const { capabilities, filterGroups, showConsole } = model;
@@ -150,7 +152,7 @@ export class OafMask extends MvuElement {
 		const consoleModeHtml = () =>
 			html` <div id="console" class="console-flex-container">
 				<div class="btn-bar">
-					${OafMask.OPERATOR_DEFINITIONS.map((operator) => html`<ba-button .type=${'primary'} .label=${operator}></ba-button>`)}
+					${getOperatorDefinitions(null).map((operator) => html`<ba-button .type=${'primary'} .label=${operator.name}></ba-button>`)}
 				</div>
 				<textarea class="console"></textarea>
 				<ba-button .type=${'primary'} .label=${translate('oaf_mask_button_apply')}></ba-button>
@@ -163,6 +165,44 @@ export class OafMask extends MvuElement {
 			<div class="sticky-container">${contentHeaderButtonsHtml()}</div>
 			<div class="container">${showConsole ? consoleModeHtml() : uiModeHtml()}</div>
 		`;
+	}
+
+	_createExpression() {
+		const groups = this.getModel().filterGroups;
+		let finalExpression = '';
+		for (let i = 0; i < groups.length; i++) {
+			const group = groups[i];
+
+			let groupExpression = '';
+
+			for (let j = 0; j < group.oafFilters.length; j++) {
+				const filter = group.oafFilters[j];
+				if (filter.expression === '') continue;
+
+				if (groupExpression !== '') {
+					groupExpression += ' AND ';
+				}
+
+				groupExpression += filter.expression;
+			}
+
+			if (groupExpression === '') continue;
+
+			if (finalExpression === '') {
+				finalExpression = '(' + groupExpression + ')';
+			} else {
+				finalExpression += ' OR ' + '(' + groupExpression + ')';
+			}
+		}
+
+		if (finalExpression !== '') {
+			finalExpression = '(' + finalExpression + ')';
+		}
+		return finalExpression;
+	}
+
+	_createDefaultFilterGroup() {
+		return { id: createUniqueId(), oafFilters: [] };
 	}
 
 	_removeFilterGroup(idToRemove) {
@@ -188,6 +228,7 @@ export class OafMask extends MvuElement {
 		const layer = this._getLayer();
 		const geoResource = this.#geoResourceService.byId(layer.geoResourceId);
 		const capabilities = await this.#importOafService.getFilterCapabilities(geoResource);
+
 		this.signal(Update_Capabilities, capabilities);
 	}
 
@@ -205,14 +246,6 @@ export class OafMask extends MvuElement {
 
 	set showConsole(value) {
 		this.signal(Update_Show_Console, value);
-	}
-
-	static get OPERATOR_DEFINITIONS() {
-		/*
-		
-	*/
-
-		return ['equals', 'between', 'greater', 'lesser'];
 	}
 
 	static get tag() {
