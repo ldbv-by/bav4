@@ -794,6 +794,10 @@ describe('layersReducer', () => {
 
 			expect(store.getState().layers.active[0].constraints.filter).toBe('cql');
 
+			modifyLayer('id0', { filter: '' });
+
+			expect(store.getState().layers.active[0].constraints.filter).toBe('');
+
 			modifyLayer('id0', { filter: null });
 
 			expect(store.getState().layers.active[0].constraints.filter).toBeNull();
