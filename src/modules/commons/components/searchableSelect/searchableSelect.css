@@ -1,7 +1,15 @@
+:host {
+	width: 100%;
+}
+
 .searchable-select {
+	display: flex;
 	cursor: pointer;
-	overflow-wrap: anywhere;
-	position: relative;
+	width: inherit;
+}
+
+.fold-up {
+	align-items: self-end;
 }
 
 .hidden {
@@ -21,7 +29,7 @@
 
 .option.hovered,
 .option.hovered:hover {
-	background-color: #ddd;
+	background-color: var(--header-background-color);
 }
 
 .caret-fill-down {
@@ -29,15 +37,18 @@
 	mask: url('./assets/caret-down-fill.svg');
 	-webkit-mask: url('./assets/caret-down-fill.svg');
 	background-color: var(--primary-color);
-	width: 16px;
-	height: 16px;
+	width: 1em;
+	height: 1em;
+	position: relative;
+	top: 0.3em;
 	border: none;
 }
 
 .search-input-container {
 	display: flex;
 	flex-direction: row;
-	border: 1px solid var(--primary-color);
+	border-bottom: 1px solid var(--text1);
+	width: inherit;
 
 	input {
 		padding: 3px 0px 3px 8px;
@@ -46,11 +57,12 @@
 
 	#search-input-toggler {
 		padding: 3px 8px;
+		background-color: var(--primary-bg-color);
 	}
 }
 
 .dropdown {
+	/* width is controlled in js to fit parent container's width (see _showDropdown(viewportHeight)) */
 	position: absolute;
 	z-index: var(--z-mapbuttons);
-	width: 100%;
 }
