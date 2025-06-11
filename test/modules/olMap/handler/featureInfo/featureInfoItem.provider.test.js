@@ -13,6 +13,7 @@ import { $injector } from '../../../../../src/injection';
 import { TestUtils } from '../../../../test-utils';
 import { SourceType, SourceTypeName } from '../../../../../src/domain/sourceType';
 import { BaGeometry } from '../../../../../src/domain/geometry';
+import { asInternalProperty, EXCLUDED_COMMON_PROPERTY_KEYS, LEGACY_INTERNAL_PROPERTY_KEYS } from '../../../../../src/utils/propertyUtils';
 
 describe('FeatureInfo provider', () => {
 	const mapServiceMock = {
@@ -90,7 +91,6 @@ describe('FeatureInfo provider', () => {
 						content: jasmine.any(Object),
 						geometry: expectedFeatureInfoGeometry
 					});
-					expect(target.innerText.trim()).toBe('');
 					expect(target.querySelectorAll(GeometryInfo.tag)).toHaveSize(1);
 					expect(target.querySelector(GeometryInfo.tag).statistic).toEqual({
 						geometryType: 'Point',
@@ -167,7 +167,8 @@ describe('FeatureInfo provider', () => {
 					const featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 					render(featureInfo.content, target);
 
-					expect(sanitizeSpy).toHaveBeenCalledOnceWith('description');
+					expect(sanitizeSpy).toHaveBeenCalledWith('description');
+					expect(sanitizeSpy).toHaveBeenCalledTimes(2);
 				});
 
 				it('should sanitize name content', () => {
@@ -184,7 +185,8 @@ describe('FeatureInfo provider', () => {
 					const featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 					render(featureInfo.content, target);
 
-					expect(sanitizeSpy).toHaveBeenCalledOnceWith('name');
+					expect(sanitizeSpy).toHaveBeenCalledWith('name');
+					expect(sanitizeSpy).toHaveBeenCalledTimes(2);
 				});
 			});
 
@@ -208,7 +210,6 @@ describe('FeatureInfo provider', () => {
 						content: jasmine.any(Object),
 						geometry: expectedFeatureInfoGeometry
 					});
-					expect(target.innerText.trim()).toBe('');
 					expect(target.querySelectorAll(GeometryInfo.tag)).toHaveSize(1);
 					expect(target.querySelectorAll(ElevationProfileChip.tag)).toHaveSize(1);
 					expect(target.querySelectorAll(ExportVectorDataChip.tag)).toHaveSize(1);
@@ -246,7 +247,8 @@ describe('FeatureInfo provider', () => {
 					const featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 					render(featureInfo.content, target);
 
-					expect(sanitizeSpy).toHaveBeenCalledOnceWith('name');
+					expect(sanitizeSpy).toHaveBeenCalledWith('name');
+					expect(sanitizeSpy).toHaveBeenCalledTimes(2);
 				});
 			});
 
@@ -289,6 +291,57 @@ describe('FeatureInfo provider', () => {
 				expect(panel.configuration.feature.geometry.data.startsWith('<kml')).toBeTrue();
 				expect(panel.configuration.feature.geometry.sourceType).toEqual(SourceType.forKml());
 				expect(panel.configuration.geoResourceId).toBe(geoResourceId);
+			});
+
+			describe('property table', () => {
+				it('displays a table for all properties filtering unwanted one', () => {
+					const geoResourceId = 'geoResourceId';
+					spyOn(geoResourceServiceMock, 'byId').withArgs(geoResourceId).and.returnValue(null);
+					const layerProperties = { ...createDefaultLayerProperties(), geoResourceId: geoResourceId };
+					const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
+					const geometry = new Point(coordinate);
+					const feature = new Feature({ geometry: geometry });
+					feature.setId('id');
+					feature.set('foo', 'bar');
+					feature.set('some', 'thing');
+					//the following kind of properties are expected to be filtered out
+					feature.set(asInternalProperty('myProp'), 'should_not_be_displayed');
+					feature.set(LEGACY_INTERNAL_PROPERTY_KEYS[0], 'should_not_be_displayed');
+					feature.set(EXCLUDED_COMMON_PROPERTY_KEYS[1], 'should_not_be_displayed');
+
+					const featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
+					const wrapperElement = TestUtils.renderTemplateResult(featureInfo.content);
+
+					expect(wrapperElement.querySelectorAll('.props-table')).toHaveSize(1);
+					expect(wrapperElement.querySelector('.props-table thead').innerText).toBe('olMap_handler_featureInfo_feature_properties');
+					expect(wrapperElement.querySelectorAll('.props-table tr')).toHaveSize(2);
+					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(1) td:nth-child(1)').innerText).toBe('foo');
+					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(1) td:nth-child(2)').innerText).toBe('bar');
+					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(2) td:nth-child(1)').innerText).toBe('some');
+					expect(wrapperElement.querySelector('.props-table tbody tr:nth-child(2) td:nth-child(2)').innerText).toBe('thing');
+					expect(sanitizeSpy).toHaveBeenCalledTimes(3);
+					expect(sanitizeSpy.calls.all()[0].args[0]).toBe('');
+					expect(sanitizeSpy.calls.all()[1].args[0]).toBe('bar');
+					expect(sanitizeSpy.calls.all()[2].args[0]).toBe('thing');
+				});
+
+				it('displays nothing when no valid properties are available', () => {
+					const geoResourceId = 'geoResourceId';
+					spyOn(geoResourceServiceMock, 'byId').withArgs(geoResourceId).and.returnValue(null);
+					const layerProperties = { ...createDefaultLayerProperties(), geoResourceId: geoResourceId };
+					const geometry = new Point(coordinate);
+					const feature = new Feature({ geometry: geometry });
+					feature.setId('id');
+					//the following kind of properties are expected to be filtered out
+					feature.set(asInternalProperty('myProp'), 'should_not_be_displayed');
+					feature.set(LEGACY_INTERNAL_PROPERTY_KEYS[0], 'should_not_be_displayed');
+					feature.set(EXCLUDED_COMMON_PROPERTY_KEYS[1], 'should_not_be_displayed');
+
+					const featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
+					const wrapperElement = TestUtils.renderTemplateResult(featureInfo.content);
+
+					expect(wrapperElement.querySelectorAll('.props-table')).toHaveSize(0);
+				});
 			});
 		});
 	});

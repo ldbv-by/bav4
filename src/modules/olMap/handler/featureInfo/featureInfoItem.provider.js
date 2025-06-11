@@ -10,6 +10,8 @@ import { KML } from 'ol/format';
 import { BaGeometry } from '../../../../domain/geometry';
 import { BaFeature } from '../../../../domain/feature';
 import { SourceType } from '../../../../domain/sourceType';
+import { EXCLUDED_COMMON_PROPERTY_KEYS, isInternalProperty, LEGACY_INTERNAL_PROPERTY_KEYS } from '../../../../utils/propertyUtils';
+import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 
 /**
  * BVV specific implementation of {@link module:modules/olMap/handler/featureInfo/OlFeatureInfoHandler~featureInfoProvider}
@@ -24,14 +26,42 @@ export const bvvFeatureInfoProvider = (olFeature, layerProperties) => {
 	const {
 		MapService: mapService,
 		SecurityService: securityService,
-		GeoResourceService: geoResourceService
-	} = $injector.inject('MapService', 'SecurityService', 'GeoResourceService');
+		GeoResourceService: geoResourceService,
+		TranslationService: translationService
+	} = $injector.inject('MapService', 'SecurityService', 'GeoResourceService', 'TranslationService');
+	const translate = (key) => translationService.translate(key);
 	const geometryStatistic = getStats(olFeature.getGeometry());
 	const elevationProfileCoordinates = getLineString(olFeature.getGeometry())?.getCoordinates() ?? [];
 	const exportDataAsKML = new KML().writeFeatures([olFeature], { featureProjection: 'EPSG:' + mapService.getSrid() });
 
+	const getPropertiesTable = (props) => {
+		const entries = Object.entries(props)
+			.filter((entry) => !isInternalProperty(entry[0]))
+			.filter((entry) => !LEGACY_INTERNAL_PROPERTY_KEYS.includes(entry[0]))
+			.filter((entry) => !EXCLUDED_COMMON_PROPERTY_KEYS.includes(entry[0]));
+		return entries.length
+			? html`
+					<table class="props-table">
+						<thead>
+							${translate('olMap_handler_featureInfo_feature_properties')}
+						</thead>
+						<tbody>
+							${entries.map((entry) => {
+								const [key, value] = entry;
+								return html`<tr>
+									<td>${key}</td>
+									<td>${unsafeHTML(securityService.sanitizeHtml(value))}</td>
+								</tr>`;
+							})}
+						</tbody>
+					</table>
+				`
+			: nothing;
+	};
+
 	const getContent = () => {
 		const descContent = olFeature.get('description') || olFeature.get('desc');
+		const propertiesTable = getPropertiesTable(olFeature.getProperties());
 		const geometryContent = html`
 		</div>
 			<ba-geometry-info .statistic=${geometryStatistic}></ba-geometry-info>
@@ -43,8 +73,8 @@ export const bvvFeatureInfoProvider = (olFeature, layerProperties) => {
 
 		return descContent
 			? html`<div class="content">${unsafeHTML(securityService.sanitizeHtml(descContent))}</div>
-					${geometryContent}`
-			: html`${geometryContent}`;
+					${geometryContent} ${propertiesTable}`
+			: html`${geometryContent} ${propertiesTable}`;
 	};
 
 	const geoRes = geoResourceService.byId(layerProperties.geoResourceId);
