@@ -21,7 +21,10 @@ describe('propertyUtils', () => {
 				'partition_delta',
 				'overlays',
 				'manualPositioning',
-				'dragging'
+				'dragging',
+				'geodesic',
+				'measurement_style_listeners',
+				'projectedLength'
 			]);
 		});
 	});

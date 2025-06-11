@@ -44,7 +44,10 @@ export const LEGACY_INTERNAL_PROPERTY_KEYS = Object.freeze([
 	'partition_delta',
 	'overlays',
 	'manualPositioning',
-	'dragging'
+	'dragging',
+	'geodesic',
+	'measurement_style_listeners',
+	'projectedLength'
 ]);
 
 /**
