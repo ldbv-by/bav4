@@ -12,6 +12,7 @@ import {
 } from './layers.reducer';
 import { $injector } from '../../injection';
 import { GeoResource } from '../../domain/geoResources';
+import { isString } from '../../utils/checks';
 
 /**
  * Represents a layer on a map or globe.
@@ -56,7 +57,7 @@ import { GeoResource } from '../../domain/geoResources';
  * @property {module:domain/styles/Style} [style] The new `style` of the layer
  * @property {boolean} [hidden] The new `hidden` constraint of the layer
  * @property {boolean} [alwaysTop] The new `alwaysTop` constraint of the layer
- * @property {string} [filter] The new `filter` constraint of the layer
+ * @property {string|null} [filter] The new `filter` constraint of the layer or `null` to reset the filter
  * @property {SwipeAlignment} [swipeAlignment] The new `swipeAlignment` constraint of the layer if the swipe feature is active
  */
 
@@ -137,7 +138,7 @@ export const modifyLayer = (id, options = {}) => {
 	if (swipeAlignment) {
 		constraints.swipeAlignment = swipeAlignment;
 	}
-	if (filter) {
+	if (isString(filter) || filter === null) {
 		constraints.filter = filter;
 	}
 	getStore().dispatch({
