@@ -793,7 +793,7 @@ describe('OlStyleService', () => {
 
 			it('sets the correct style for `StyleHint.HIGHLIGHT`', () => {
 				const olFeature = new Feature({ geometry: new Point([0, 0]) });
-				olFeature.set('styleHint', StyleHint.HIGHLIGHT);
+				olFeature.set(asInternalProperty('styleHint'), StyleHint.HIGHLIGHT);
 				spyOn(instanceUnderTest, '_detectStyleType').and.returnValue(null);
 
 				instanceUnderTest.addFeatureStyle(olFeature, {}, {});

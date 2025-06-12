@@ -105,7 +105,7 @@ export class OlStyleService {
 				break;
 		}
 
-		const styleHint = olFeature.get('styleHint');
+		const styleHint = olFeature.get(asInternalProperty('styleHint'));
 		if (styleHint) {
 			switch (styleHint) {
 				case StyleHint.HIGHLIGHT:
