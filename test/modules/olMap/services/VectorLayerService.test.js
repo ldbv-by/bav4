@@ -519,7 +519,7 @@ describe('VectorLayerService', () => {
 						const featureId = 'featureIO';
 						const data = `<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name>${kmlName}</name><Placemark id=" "><ExtendedData><Data name="type"><value>line</value></Data></ExtendedData><description></description><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>10.713458946685412,49.70007647302964 11.714932179089468,48.34411758499924</coordinates></LineString></Placemark></Document></kml>`;
 						const baGeometry = new BaGeometry(data, SourceType.forKml());
-						const baFeature = new BaFeature(baGeometry, featureId).setStyleHint(StyleHint.HIGHLIGHT).set('foo', 'bar');
+						const baFeature = new BaFeature(baGeometry, featureId).setStyleHint(StyleHint.HIGHLIGHT).setStyle('myStyle').set('foo', 'bar');
 						const destinationSrid = 3857;
 						const geoResourceLabel = 'geoResourceLabel';
 						const expectedTypeValue = 'line';
@@ -534,6 +534,7 @@ describe('VectorLayerService', () => {
 						expect(olVectorSource.getFeatures()[0].get('type')).toBe(expectedTypeValue);
 						expect(olVectorSource.getFeatures()[0].get('showPointNames')).toBeFalse();
 						expect(olVectorSource.getFeatures()[0].get('styleHint')).toBe(StyleHint.HIGHLIGHT);
+						expect(olVectorSource.getFeatures()[0].get('style')).toBe('myStyle');
 						expect(olVectorSource.getFeatures()[0].get('foo')).toBe('bar');
 					});
 				});
