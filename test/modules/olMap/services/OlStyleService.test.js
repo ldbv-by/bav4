@@ -15,6 +15,7 @@ import CircleStyle from 'ol/style/Circle';
 import VectorSource, { VectorSourceEvent } from 'ol/source/Vector';
 import { createDefaultLayer, layersReducer } from '../../../../src/store/layers/layers.reducer';
 import { CollectionEvent } from 'ol/Collection';
+import { asInternalProperty } from '../../../../src/utils/propertyUtils';
 
 describe('OlFeatureStyleTypes', () => {
 	it('provides an enum of all valid OlFeatureStyleTypes', () => {
@@ -1493,7 +1494,7 @@ describe('OlStyleService', () => {
 
 		it("sanitizes/removes the text style for point feature with feature property 'showPointNames'", () => {
 			const feature = new Feature({ geometry: new Point([0, 0]) });
-			feature.set('showPointNames', false);
+			feature.set(asInternalProperty('showPointNames'), false);
 			const style = new Style({
 				image: new Icon({
 					size: [42, 42],

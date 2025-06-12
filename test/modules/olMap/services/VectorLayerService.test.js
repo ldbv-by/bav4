@@ -19,6 +19,7 @@ import { BaFeature } from '../../../../src/domain/feature';
 import { SourceType } from '../../../../src/domain/sourceType';
 import { getBvvOafLoadFunction } from '../../../../src/modules/olMap/utils/olLoadFunction.provider';
 import { bbox } from 'ol/loadingstrategy.js';
+import { asInternalProperty } from '../../../../src/utils/propertyUtils';
 
 describe('VectorLayerService', () => {
 	const urlService = {
@@ -391,7 +392,7 @@ describe('VectorLayerService', () => {
 				expect(olVectorSource.constructor.name).toBe('VectorSource');
 				expect(olVectorSource.getFeatures().length).toBe(1);
 				expect(olVectorSource.getFeatures()[0].get('type')).toBe(expectedTypeValue);
-				expect(olVectorSource.getFeatures()[0].get('showPointNames')).toBeFalse();
+				expect(olVectorSource.getFeatures()[0].get(asInternalProperty('showPointNames'))).toBeFalse();
 
 				await TestUtils.timeout();
 				expect(vectorGeoResource.label).toBe(geoResourceLabel);
@@ -418,7 +419,7 @@ describe('VectorLayerService', () => {
 				expect(olVectorSource.getSource().constructor.name).toBe('VectorSource');
 				expect(olVectorSource.getSource().getFeatures().length).toBe(1);
 				expect(olVectorSource.getSource().getFeatures()[0].get('type')).toBe(expectedTypeValue);
-				expect(olVectorSource.getSource().getFeatures()[0].get('showPointNames')).toBeTrue();
+				expect(olVectorSource.getSource().getFeatures()[0].get(asInternalProperty('showPointNames'))).toBeTrue();
 
 				await TestUtils.timeout();
 				expect(vectorGeoResource.label).toBe(geoResourceLabel);
@@ -532,7 +533,7 @@ describe('VectorLayerService', () => {
 						expect(olVectorSource.getFeatures().length).toBe(1);
 						expect(olVectorSource.getFeatures()[0].getId()).toBe(featureId);
 						expect(olVectorSource.getFeatures()[0].get('type')).toBe(expectedTypeValue);
-						expect(olVectorSource.getFeatures()[0].get('showPointNames')).toBeFalse();
+						expect(olVectorSource.getFeatures()[0].get(asInternalProperty('showPointNames'))).toBeFalse();
 						expect(olVectorSource.getFeatures()[0].get('styleHint')).toBe(StyleHint.HIGHLIGHT);
 						expect(olVectorSource.getFeatures()[0].get('foo')).toBe('bar');
 					});
@@ -557,7 +558,7 @@ describe('VectorLayerService', () => {
 						expect(olVectorSource.constructor.name).toBe('VectorSource');
 						expect(olVectorSource.getFeatures().length).toBe(2);
 						expect(olVectorSource.getFeatures()[1].get('type')).toBe(expectedTypeValue);
-						expect(olVectorSource.getFeatures()[1].get('showPointNames')).toBeTrue();
+						expect(olVectorSource.getFeatures()[1].get(asInternalProperty('showPointNames'))).toBeTrue();
 					});
 				});
 				describe('the feature`s Geometry contains EWKT data', () => {

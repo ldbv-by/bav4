@@ -15,6 +15,7 @@ import { SourceTypeName } from '../../../domain/sourceType';
 import { bbox } from 'ol/loadingstrategy.js';
 import { getBvvOafLoadFunction } from '../utils/olLoadFunction.provider';
 import { unByKey } from '../../../../node_modules/ol/Observable';
+import { asInternalProperty } from '../../../utils/propertyUtils';
 
 /**
  * A function that returns a `ol.featureloader.FeatureLoader` for OGC API Features service.
@@ -214,7 +215,7 @@ export class VectorLayerService {
 						if (isString(f.getId()) && f.getId().trim() === '') {
 							f.setId(undefined);
 						}
-						f.set('showPointNames', geoResource.showPointNames);
+						f.set(asInternalProperty('showPointNames'), geoResource.showPointNames);
 						f.getGeometry().transform('EPSG:' + sourceSrid, 'EPSG:' + destinationSrid); //Todo: check for unsupported destinationSrid
 						return f;
 					});
