@@ -535,7 +535,7 @@ describe('VectorLayerService', () => {
 						expect(olVectorSource.getFeatures()[0].get('type')).toBe(expectedTypeValue);
 						expect(olVectorSource.getFeatures()[0].get(asInternalProperty('showPointNames'))).toBeFalse();
 						expect(olVectorSource.getFeatures()[0].get('styleHint')).toBe(StyleHint.HIGHLIGHT);
-						expect(olVectorSource.getFeatures()[0].get('style')).toBe('myStyle');
+						expect(olVectorSource.getFeatures()[0].get(asInternalProperty('style'))).toBe('myStyle');
 						expect(olVectorSource.getFeatures()[0].get('foo')).toBe('bar');
 					});
 				});
