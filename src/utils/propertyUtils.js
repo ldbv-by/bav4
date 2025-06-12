@@ -30,9 +30,9 @@ export const isInternalProperty = (propertyKey) => {
 };
 
 /**
- * Defines a list of internally used legacy property keys for filtering that should not be displayed in an UI or exported
+ * Defines a list of internally used legacy feature property keys that should not be displayed in an UI or exported
  */
-export const LEGACY_INTERNAL_PROPERTY_KEYS = Object.freeze([
+export const LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS = Object.freeze([
 	'style',
 	'styleHint',
 	'showPointNames',
@@ -51,6 +51,6 @@ export const LEGACY_INTERNAL_PROPERTY_KEYS = Object.freeze([
 ]);
 
 /**
- * Defines a list of common properties that should not be displayed in an UI or exported
+ * Defines a list of common feature properties that should not be displayed in an UI or exported
  */
-export const EXCLUDED_COMMON_PROPERTY_KEYS = Object.freeze(['geometry' /*ol*/, 'styleUrl' /*KML*/]);
+export const EXCLUDED_COMMON_FEATURE_PROPERTY_KEYS = Object.freeze(['geometry' /*ol*/, 'styleUrl' /*KML*/]);

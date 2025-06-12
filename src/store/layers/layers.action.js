@@ -112,7 +112,9 @@ export const SwipeAlignment = Object.freeze({
  */
 export const LayerState = Object.freeze({
 	OK: 'ok',
-	INCOMPLETE_DATA: 'incomplete_data'
+	LOADING: 'loading',
+	INCOMPLETE_DATA: 'incomplete_data',
+	ERROR: 'error'
 });
 
 const getStore = () => {

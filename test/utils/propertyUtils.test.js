@@ -1,15 +1,15 @@
 import {
-	EXCLUDED_COMMON_PROPERTY_KEYS,
+	EXCLUDED_COMMON_FEATURE_PROPERTY_KEYS,
 	isInternalProperty,
-	LEGACY_INTERNAL_PROPERTY_KEYS,
+	LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS,
 	asInternalProperty
 } from '../../src/utils/propertyUtils.js';
 
 describe('propertyUtils', () => {
-	describe('LEGACY_INTERNAL_PROPERTY_KEYS)', () => {
+	describe('LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS)', () => {
 		it('defines a list of internally used legacy property keys', () => {
-			expect(Object.isFrozen(LEGACY_INTERNAL_PROPERTY_KEYS)).toBeTrue();
-			expect(LEGACY_INTERNAL_PROPERTY_KEYS).toEqual([
+			expect(Object.isFrozen(LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS)).toBeTrue();
+			expect(LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS).toEqual([
 				'style',
 				'styleHint',
 				'showPointNames',
@@ -31,8 +31,8 @@ describe('propertyUtils', () => {
 
 	describe('EXCLUDED_COMMON_PROPERTY_KEYS', () => {
 		it('defines a list of internally used legacy property keys', () => {
-			expect(Object.isFrozen(EXCLUDED_COMMON_PROPERTY_KEYS)).toBeTrue();
-			expect(EXCLUDED_COMMON_PROPERTY_KEYS).toEqual(['geometry', 'styleUrl']);
+			expect(Object.isFrozen(EXCLUDED_COMMON_FEATURE_PROPERTY_KEYS)).toBeTrue();
+			expect(EXCLUDED_COMMON_FEATURE_PROPERTY_KEYS).toEqual(['geometry', 'styleUrl']);
 		});
 	});
 

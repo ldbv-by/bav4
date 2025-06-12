@@ -251,6 +251,7 @@ export class VectorLayerService {
 					if (olFeatures.length === 1) {
 						olFeatures[0].setId(baFeature.id);
 						olFeatures[0].set('styleHint', baFeature.styleHint ?? null);
+						olFeatures[0].set('style', baFeature.style ?? null);
 						for (const [key, value] of Object.entries(baFeature.getProperties())) {
 							olFeatures[0].set(key, value);
 						}

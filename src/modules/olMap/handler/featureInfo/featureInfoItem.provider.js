@@ -10,7 +10,7 @@ import { KML } from 'ol/format';
 import { BaGeometry } from '../../../../domain/geometry';
 import { BaFeature } from '../../../../domain/feature';
 import { SourceType } from '../../../../domain/sourceType';
-import { EXCLUDED_COMMON_PROPERTY_KEYS, isInternalProperty, LEGACY_INTERNAL_PROPERTY_KEYS } from '../../../../utils/propertyUtils';
+import { EXCLUDED_COMMON_FEATURE_PROPERTY_KEYS, isInternalProperty, LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS } from '../../../../utils/propertyUtils';
 import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 
 /**
@@ -37,8 +37,8 @@ export const bvvFeatureInfoProvider = (olFeature, layerProperties) => {
 	const getPropertiesTable = (props) => {
 		const entries = Object.entries(props)
 			.filter((entry) => !isInternalProperty(entry[0]))
-			.filter((entry) => !LEGACY_INTERNAL_PROPERTY_KEYS.includes(entry[0]))
-			.filter((entry) => !EXCLUDED_COMMON_PROPERTY_KEYS.includes(entry[0]));
+			.filter((entry) => !LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS.includes(entry[0]))
+			.filter((entry) => !EXCLUDED_COMMON_FEATURE_PROPERTY_KEYS.includes(entry[0]));
 		return entries.length
 			? html`
 					<table class="props-table">
