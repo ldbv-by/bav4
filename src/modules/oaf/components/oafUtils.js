@@ -31,9 +31,9 @@ const operators = Object.freeze([
 ]);
 
 /**
- * @function
  * Gets all Operator Definitions
- * @param {string} type Optionally, filter definitions by a type constraint
+ * @function
+ * @param {string} [type] filters definitions by a type constraint
  * @returns {Array<object>} List of operator definitions
  */
 export const getOperatorDefinitions = (type = null) => {
@@ -50,8 +50,8 @@ export const getOperatorDefinitions = (type = null) => {
 };
 
 /**
- * @function
  * Gets a operator definition by the operator's name
+ * @function
  * @param {string} name - Name of the operator to get.
  *
  * @returns {object} The operator definition or undefined if not found
@@ -61,8 +61,8 @@ export const getOperatorByName = (name) => {
 };
 
 /**
- * @function
  * Generates a full CQL-2 Text expression from a list of filter groups.
+ * @function
  * @param {Array<object>} oafFilterGroups - An array of filter group objects, each containing precomputed CQL-2 expressions within there corresponding oafFilters.
  *
  * @returns {string} A combined CQL-2 Text expression representing all provided filter groups and filters.
@@ -101,8 +101,8 @@ export const createOafExpression = (oafFilterGroups) => {
 };
 
 /**
- * @function
  * Generates a CQL-2 Text expression for a provided OafFilter model.
+ * @function
  * @param {object} oafFilter - Model of a oafFilter.
  *
  * @returns {string} A CQL-2 Text expression for the provided OafFilter model.
@@ -153,16 +153,16 @@ export const createOafFilterExpression = (oafFilter) => {
 };
 
 /**
- * @function
  * Creates a default model representing an oafFilterGroup
+ * @function
  */
 export const createDefaultFilterGroup = () => {
 	return { id: createUniqueId(), oafFilters: [] };
 };
 
 /**
- * @function
  * Creates a default model representing an oafFilter
+ * @function
  *
  */
 export const createDefaultOafFilter = () => {
