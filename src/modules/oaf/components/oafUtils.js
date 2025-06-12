@@ -31,11 +31,12 @@ const operators = Object.freeze([
 ]);
 
 /**
+ * @function
  * Gets all Operator Definitions
  * @param {string} type Optionally, filter definitions by a type constraint
  * @returns {Array<object>} List of operator definitions
  */
-export function getOperatorDefinitions(type = null) {
+export const getOperatorDefinitions = (type = null) => {
 	if (type === null) return [...operators];
 
 	return operators.filter((op) => {
@@ -46,26 +47,27 @@ export function getOperatorDefinitions(type = null) {
 		}
 		return true;
 	});
-}
+};
 
 /**
+ * @function
  * Gets a operator definition by the operator's name
  * @param {string} name - Name of the operator to get.
  *
  * @returns {object} The operator definition or undefined if not found
  */
-export function getOperatorByName(name) {
+export const getOperatorByName = (name) => {
 	return getOperatorDefinitions().find((op) => op.name === name);
-}
+};
 
 /**
+ * @function
  * Generates a full CQL-2 Text expression from a list of filter groups.
- * @param {Array<object>} oafFilterGroups - An array of filter group objects, each containing precomputed CQL-2 expressions
- *                                          within there corresponding oafFilters.
+ * @param {Array<object>} oafFilterGroups - An array of filter group objects, each containing precomputed CQL-2 expressions within there corresponding oafFilters.
  *
  * @returns {string} A combined CQL-2 Text expression representing all provided filter groups and filters.
  */
-export function createOafExpression(oafFilterGroups) {
+export const createOafExpression = (oafFilterGroups) => {
 	let finalExpression = '';
 	for (let i = 0; i < oafFilterGroups.length; i++) {
 		const group = oafFilterGroups[i];
@@ -96,15 +98,16 @@ export function createOafExpression(oafFilterGroups) {
 		finalExpression = '(' + finalExpression + ')';
 	}
 	return finalExpression;
-}
+};
 
 /**
+ * @function
  * Generates a CQL-2 Text expression for a provided OafFilter model.
  * @param {object} oafFilter - Model of a oafFilter.
  *
  * @returns {string} A CQL-2 Text expression for the provided OafFilter model.
  */
-export function createOafFilterExpression(oafFilter) {
+export const createOafFilterExpression = (oafFilter) => {
 	const { operator } = oafFilter;
 	const { type, name } = oafFilter.queryable;
 	const isString = type === 'date' || type === 'time' || type === 'string';
@@ -147,9 +150,10 @@ export function createOafFilterExpression(oafFilter) {
 	}
 
 	return '';
-}
+};
 
 /**
+ * @function
  * Creates a default model representing an oafFilterGroup
  */
 export const createDefaultFilterGroup = () => {
@@ -157,6 +161,7 @@ export const createDefaultFilterGroup = () => {
 };
 
 /**
+ * @function
  * Creates a default model representing an oafFilter
  *
  */

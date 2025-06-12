@@ -35,7 +35,7 @@ export class OafFilter extends MvuElement {
 	constructor() {
 		super({
 			queryable: {},
-			operator: null,
+			operator: getOperatorByName('equals'),
 			value: null,
 			minValue: null,
 			maxValue: null,
@@ -64,12 +64,6 @@ export class OafFilter extends MvuElement {
 	}
 
 	onInitialize() {
-		if (this.operator === null) {
-			this.operator = 'equals';
-		} else {
-			this.signal(Update_Operator, this.operator);
-		}
-
 		this.observeModel('operator', () => this._onModelChange());
 		this.observeModel('minValue', () => this._onModelChange());
 		this.observeModel('maxValue', () => this._onModelChange());
@@ -190,7 +184,7 @@ export class OafFilter extends MvuElement {
 		};
 
 		const getBooleanInputHtml = () => {
-			return html`<select data-type="boolean" @change=${(evt) => onValueChanged(evt, evt.target.value)}>
+			return html`<select class="value-input" data-type="boolean" @change=${(evt) => onValueChanged(evt, evt.target.value)}>
 				<option selected value="true">${translate('oaf_filter_yes')}</option>
 				<option selected value="false">${translate('oaf_filter_no')}</option>
 			</select>`;
@@ -220,7 +214,7 @@ export class OafFilter extends MvuElement {
 			return html`
 				<div class="input-operator">
 					<select id="select-operator" @change=${onOperatorSelect}>
-						${operators.map((op) => html`<option .selected=${op === operator} .value=${op.name}>${op.name}</option>`)}
+						${operators.map((op) => html`<option .selected=${op === operator} .value=${op.name}>${translate(op.key)}</option>`)}
 					</select>
 				</div>
 			`;

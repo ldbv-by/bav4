@@ -2,7 +2,7 @@ import { OafFilter } from '../../../../src/modules/oaf/components/OafFilter';
 import { SearchableSelect } from '../../../../src/modules/commons/components/searchableSelect/SearchableSelect';
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
-import { getOperatorByName } from '../../../../src/modules/oaf/components/oafUtils';
+import { getOperatorByName, getOperatorDefinitions } from '../../../../src/modules/oaf/components/oafUtils';
 
 window.customElements.define(OafFilter.tag, OafFilter);
 window.customElements.define(SearchableSelect.tag, SearchableSelect);
@@ -15,10 +15,13 @@ describe('OafFilter', () => {
 	const T_Time = 'time';
 	const T_Boolean = 'boolean';
 
-	const setup = async () => {
-		TestUtils.setupStoreAndDi({});
+	const setupStoreAndDi = (state = {}) => {
+		TestUtils.setupStoreAndDi(state);
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
+	};
 
+	const setup = async (state = {}) => {
+		setupStoreAndDi(state);
 		return TestUtils.render(OafFilter.tag);
 	};
 
@@ -82,11 +85,20 @@ describe('OafFilter', () => {
 			});
 
 			it('updates operator-field when "operator" changes', async () => {
-				const element = await setup();
-				element.queryable = createQueryable('foo', T_Integer);
-				element.operator = 'between';
+				setupStoreAndDi();
 
-				expect(element.shadowRoot.querySelector('#select-operator').value).toEqual('between');
+				// Pass operator as string
+				const elementA = await TestUtils.render(OafFilter.tag);
+				elementA.queryable = createQueryable('foo', T_Integer);
+				elementA.operator = 'between';
+
+				// Pass operator as object
+				const elementB = await TestUtils.render(OafFilter.tag);
+				elementB.queryable = createQueryable('foo', T_Integer);
+				elementB.operator = getOperatorByName('between');
+
+				expect(elementA.shadowRoot.querySelector('#select-operator').value).toEqual('between');
+				expect(elementB.shadowRoot.querySelector('#select-operator').value).toEqual('between');
 			});
 
 			it('updates "operator" when operator-field changes', async () => {
@@ -99,6 +111,19 @@ describe('OafFilter', () => {
 				operatorField.dispatchEvent(new Event('change'));
 
 				expect(element.operator).toEqual(getOperatorByName('between'));
+			});
+
+			it('translates operator-field with correct key', async () => {
+				const element = await setup();
+				element.queryable = createQueryable('foo', null);
+
+				const operators = getOperatorDefinitions();
+				const operatorField = element.shadowRoot.querySelector('#select-operator');
+
+				for (const operator of operators) {
+					element.operator = operator;
+					expect(operatorField.selectedOptions[0].innerText).toBe(operator.key);
+				}
 			});
 		});
 
@@ -113,10 +138,10 @@ describe('OafFilter', () => {
 
 			it('invokes change event when "value" changes', async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_String);
-
 				const spy = jasmine.createSpy();
+
 				element.addEventListener('change', spy);
+				element.queryable = createQueryable('foo', T_String);
 				element.value = 'foo';
 
 				expect(spy).toHaveBeenCalledOnceWith(jasmine.anything());
@@ -521,6 +546,16 @@ describe('OafFilter', () => {
 		});
 
 		describe(`"queryable.type": "${T_Boolean}"`, () => {
+			it('updates property "value" when field changes', async () => {
+				const element = await setup();
+				element.queryable = createQueryable('foo', T_Boolean);
+				const select = element.shadowRoot.querySelector('.value-input');
+				select.value = true;
+				select.dispatchEvent(new Event('change'));
+
+				expect(element.value).toEqual('true');
+			});
+
 			it(`renders field with data-type attribute "${T_Boolean}"`, async () => {
 				const element = await setup();
 				element.queryable = createQueryable('foo', T_Boolean);
