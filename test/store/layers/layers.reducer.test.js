@@ -793,6 +793,14 @@ describe('layersReducer', () => {
 			modifyLayer('id0', { filter: 'cql' });
 
 			expect(store.getState().layers.active[0].constraints.filter).toBe('cql');
+
+			modifyLayer('id0', { filter: '' });
+
+			expect(store.getState().layers.active[0].constraints.filter).toBe('');
+
+			modifyLayer('id0', { filter: null });
+
+			expect(store.getState().layers.active[0].constraints.filter).toBeNull();
 		});
 
 		it('does nothing when modified layer is not present', () => {

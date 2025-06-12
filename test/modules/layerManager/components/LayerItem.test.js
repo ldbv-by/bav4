@@ -423,6 +423,7 @@ describe('LayerItem', () => {
 		});
 
 		it('opens the bottomSheet for the oaf-filter component', async () => {
+			const expectedTag = 'ba-oaf-mask';
 			spyOn(geoResourceService, 'byId')
 				.withArgs('oafGeoResource')
 				.and.returnValue(new OafGeoResource('oafGeoResource', 'someLabel0', 'someUrl0', 'someCollectionId', 3857).setFilter('cql'));
@@ -439,7 +440,9 @@ describe('LayerItem', () => {
 			const oafSettingsElement = element.shadowRoot.querySelectorAll('ba-icon.oaf-settings-icon');
 			oafSettingsElement[0].click();
 
-			expect(isTemplateResult(store.getState().bottomSheet.data[0].content)).toBeTrue();
+			const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data[0].content);
+			expect(wrapperElement.querySelectorAll(expectedTag)).toHaveSize(1);
+			expect(wrapperElement.querySelector(expectedTag).layerId).toBe(layer.id);
 		});
 
 		it('displays a overflow-menu', async () => {
