@@ -11,8 +11,10 @@ describe('layersAction', () => {
 
 	it('exports a enum for LayerState', () => {
 		expect(Object.isFrozen(LayerState)).toBeTrue();
-		expect(Object.keys(LayerState).length).toBe(2);
+		expect(Object.keys(LayerState).length).toBe(4);
 		expect(LayerState.OK).toBe('ok');
+		expect(LayerState.ERROR).toBe('error');
+		expect(LayerState.LOADING).toBe('loading');
 		expect(LayerState.INCOMPLETE_DATA).toBe('incomplete_data');
 	});
 });

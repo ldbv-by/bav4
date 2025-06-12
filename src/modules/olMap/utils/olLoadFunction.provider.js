@@ -222,6 +222,7 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 							break;
 						}
 						default: {
+							modifyLayer(olLayer.get('id'), { state: LayerState.ERROR });
 							this.removeLoadedExtent(extent);
 							failure();
 							throw new UnavailableGeoResourceError(`Unexpected network status`, geoResourceId, response?.status);
@@ -250,8 +251,10 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 
 				return handleResponse(response, this);
 			};
+			modifyLayer(olLayer.get('id'), { state: LayerState.LOADING });
 			return await getFeatures(url);
 		} catch (error) {
+			modifyLayer(olLayer.get('id'), { state: LayerState.ERROR });
 			failure();
 			throw new UnavailableGeoResourceError(error.message, geoResourceId);
 		}
