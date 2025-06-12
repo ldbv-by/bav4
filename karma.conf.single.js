@@ -29,7 +29,7 @@ if (files.length < 1) {
 } else if (files.length > 1) {
 	// eslint-disable-next-line no-undef
 	throw new Error(
-		`More than one test file found for '${testFile}'. Try specifying the desired test file by prepending (a part of) the path. For example: highlight/styleUtils.test.js.`
+		`More than one test file found for '${testFile}'. Try specifying the desired test file by prepending (a part of) the path. For example: highlight/styleUtils.test.js`
 	);
 }
 
