@@ -13,7 +13,11 @@ import { $injector } from '../../../../../src/injection';
 import { TestUtils } from '../../../../test-utils';
 import { SourceType, SourceTypeName } from '../../../../../src/domain/sourceType';
 import { BaGeometry } from '../../../../../src/domain/geometry';
-import { asInternalProperty, EXCLUDED_COMMON_PROPERTY_KEYS, LEGACY_INTERNAL_PROPERTY_KEYS } from '../../../../../src/utils/propertyUtils';
+import {
+	asInternalProperty,
+	EXCLUDED_COMMON_FEATURE_PROPERTY_KEYS,
+	LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS
+} from '../../../../../src/utils/propertyUtils';
 
 describe('FeatureInfo provider', () => {
 	const mapServiceMock = {
@@ -306,8 +310,8 @@ describe('FeatureInfo provider', () => {
 					feature.set('some', 'thing');
 					//the following kind of properties are expected to be filtered out
 					feature.set(asInternalProperty('myProp'), 'should_not_be_displayed');
-					feature.set(LEGACY_INTERNAL_PROPERTY_KEYS[0], 'should_not_be_displayed');
-					feature.set(EXCLUDED_COMMON_PROPERTY_KEYS[1], 'should_not_be_displayed');
+					feature.set(LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS[0], 'should_not_be_displayed');
+					feature.set(EXCLUDED_COMMON_FEATURE_PROPERTY_KEYS[1], 'should_not_be_displayed');
 
 					const featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 					const wrapperElement = TestUtils.renderTemplateResult(featureInfo.content);
@@ -334,8 +338,8 @@ describe('FeatureInfo provider', () => {
 					feature.setId('id');
 					//the following kind of properties are expected to be filtered out
 					feature.set(asInternalProperty('myProp'), 'should_not_be_displayed');
-					feature.set(LEGACY_INTERNAL_PROPERTY_KEYS[0], 'should_not_be_displayed');
-					feature.set(EXCLUDED_COMMON_PROPERTY_KEYS[1], 'should_not_be_displayed');
+					feature.set(LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS[0], 'should_not_be_displayed');
+					feature.set(EXCLUDED_COMMON_FEATURE_PROPERTY_KEYS[1], 'should_not_be_displayed');
 
 					const featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 					const wrapperElement = TestUtils.renderTemplateResult(featureInfo.content);
