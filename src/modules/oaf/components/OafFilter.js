@@ -6,7 +6,7 @@ import { html, nothing } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
 import css from './oafFilter.css';
 import { isString } from '../../../utils/checks';
-import { getOperatorDefinitions, getOperatorByName, createExpression } from './oafUtils';
+import { getOperatorDefinitions, getOperatorByName, createOafFilterExpression } from './oafUtils';
 
 const Update_Queryable = 'update_queryable';
 const Update_Operator = 'update_operator';
@@ -59,7 +59,7 @@ export class OafFilter extends MvuElement {
 			case Update_Max_Value:
 				return { ...model, maxValue: data };
 			case Update_Expression:
-				return { ...model, expression: createExpression(model) };
+				return { ...model, expression: createOafFilterExpression(model) };
 		}
 	}
 

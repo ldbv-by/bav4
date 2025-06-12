@@ -2,12 +2,11 @@
  * @module modules/oaf/components/OafMask
  */
 import css from './oafMask.css';
-import { getOperatorDefinitions } from './oafUtils';
+import { getOperatorDefinitions, createDefaultFilterGroup, createOafExpression } from './oafUtils';
 import { html, nothing } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { MvuElement } from '../../MvuElement';
 import { $injector } from '../../../injection';
-import { createUniqueId } from '../../../utils/numberUtils';
 import { modifyLayer } from './../../../store/layers/layers.action';
 
 const Update_Capabilities = 'update_capabilities';
@@ -72,7 +71,7 @@ export class OafMask extends MvuElement {
 		const translate = (key) => this.#translationService.translate(key);
 		const onAddFilterGroup = () => {
 			const groups = this.getModel().filterGroups;
-			this.signal(Update_Filter_Groups, [...groups, this._createDefaultFilterGroup()]);
+			this.signal(Update_Filter_Groups, [...groups, createDefaultFilterGroup()]);
 		};
 
 		const onShowCqlConsole = () => {
@@ -89,7 +88,8 @@ export class OafMask extends MvuElement {
 			targetGroup.oafFilters = evt.target.oafFilters;
 			this.signal(Update_Filter_Groups, [...groups]);
 
-			modifyLayer(this.layerId, { filter: this._createExpression() });
+			const expression = createOafExpression(filterGroups);
+			modifyLayer(this.layerId, { filter: expression === '' ? null : expression });
 		};
 
 		const { capabilities, filterGroups, showConsole } = model;
@@ -165,44 +165,6 @@ export class OafMask extends MvuElement {
 			<div class="sticky-container">${contentHeaderButtonsHtml()}</div>
 			<div class="container">${showConsole ? consoleModeHtml() : uiModeHtml()}</div>
 		`;
-	}
-
-	_createExpression() {
-		const groups = this.getModel().filterGroups;
-		let finalExpression = '';
-		for (let i = 0; i < groups.length; i++) {
-			const group = groups[i];
-
-			let groupExpression = '';
-
-			for (let j = 0; j < group.oafFilters.length; j++) {
-				const filter = group.oafFilters[j];
-				if (filter.expression === '') continue;
-
-				if (groupExpression !== '') {
-					groupExpression += ' AND ';
-				}
-
-				groupExpression += filter.expression;
-			}
-
-			if (groupExpression === '') continue;
-
-			if (finalExpression === '') {
-				finalExpression = '(' + groupExpression + ')';
-			} else {
-				finalExpression += ' OR ' + '(' + groupExpression + ')';
-			}
-		}
-
-		if (finalExpression !== '') {
-			finalExpression = '(' + finalExpression + ')';
-		}
-		return finalExpression;
-	}
-
-	_createDefaultFilterGroup() {
-		return { id: createUniqueId(), oafFilters: [] };
 	}
 
 	_removeFilterGroup(idToRemove) {

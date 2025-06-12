@@ -1,5 +1,6 @@
 import { OafMask } from '../../../../src/modules/oaf/components/OafMask';
 import { OafFilterGroup } from '../../../../src/modules/oaf/components/OafFilterGroup';
+import { OafFilter } from '../../../../src/modules/oaf/components/OafFilter';
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { layersReducer } from '../../../../src/store/layers/layers.reducer';
@@ -7,8 +8,11 @@ import { addLayer } from '../../../../src/store/layers/layers.action';
 
 window.customElements.define(OafMask.tag, OafMask);
 window.customElements.define(OafFilterGroup.tag, OafFilterGroup);
+window.customElements.define(OafFilter.tag, OafFilter);
 
 describe('OafMask', () => {
+	let store;
+
 	const importOafServiceMock = {
 		getFilterCapabilities: async () => []
 	};
@@ -18,7 +22,7 @@ describe('OafMask', () => {
 	};
 
 	const setup = async (state = {}, properties = {}) => {
-		TestUtils.setupStoreAndDi(state, { layers: layersReducer });
+		store = TestUtils.setupStoreAndDi(state, { layers: layersReducer });
 		$injector
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('ImportOafService', importOafServiceMock)
@@ -195,6 +199,19 @@ describe('OafMask', () => {
 				expect(filtersBeforeRemove).toHaveSize(2);
 				expect(element.getModel().filterGroups).toHaveSize(1);
 				expect(element.getModel().filterGroups[0]).toEqual(filtersBeforeRemove[0]);
+			});
+
+			it("it updates active layer's filter constraint when a filter-group changes", async () => {
+				const element = await setup();
+				element.shadowRoot.querySelector('#btn-add-filter-group').click();
+				const group = element.shadowRoot.querySelector('ba-oaf-filter-group');
+				group._addFilter('foo');
+
+				const oafFilter = group.shadowRoot.querySelector('ba-oaf-filter');
+				oafFilter.value = 24;
+
+				const layer = store.getState().layers.active.find((l) => l.id === -1);
+				expect(layer.constraints).toEqual(jasmine.objectContaining({ filter: '(((foo = 24)))' }));
 			});
 
 			it('it updates filter-groups when a filter-group changes', async () => {
