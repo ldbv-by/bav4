@@ -12,6 +12,11 @@ describe('i18n for header module', () => {
 		expect(map.oaf_mask_or).toBe('ODER');
 		expect(map.oaf_filter_yes).toBe('Ja');
 		expect(map.oaf_filter_no).toBe('Nein');
+		expect(map.oaf_operator_equals).toBe('Ist gleich');
+		expect(map.oaf_operator_like).toBe('Enthält');
+		expect(map.oaf_operator_greater).toBe('Größer als');
+		expect(map.oaf_operator_lesser).toBe('Kleiner als');
+		expect(map.oaf_operator_between).toBe('Zwischen');
 	});
 
 	it('provides translation for en', () => {
@@ -25,10 +30,15 @@ describe('i18n for header module', () => {
 		expect(map.oaf_mask_or).toBe('OR');
 		expect(map.oaf_filter_yes).toBe('Yes');
 		expect(map.oaf_filter_no).toBe('No');
+		expect(map.oaf_operator_equals).toBe('Equals');
+		expect(map.oaf_operator_like).toBe('Like');
+		expect(map.oaf_operator_greater).toBe('Greater Than');
+		expect(map.oaf_operator_lesser).toBe('Less Than');
+		expect(map.oaf_operator_between).toBe('Between');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 8;
+		const expectedSize = 13;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
