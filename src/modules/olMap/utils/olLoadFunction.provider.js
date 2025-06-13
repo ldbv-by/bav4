@@ -187,9 +187,9 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 				options['filter'] = olLayer.get('filter');
 			}
 
+			// Note: URLSearchParams.toString() encodes the string itself
 			const searchParams = new URLSearchParams({ ...options });
-			const url = `${oafGeoResource.url}${oafGeoResource.url.endsWith('/') ? '' : '/'}collections/${oafGeoResource.collectionId}/items?${decodeURIComponent(searchParams.toString())}`;
-
+			const url = `${oafGeoResource.url}${oafGeoResource.url.endsWith('/') ? '' : '/'}collections/${oafGeoResource.collectionId}/items?${searchParams.toString()}`;
 			const handleResponse = async (response, vectorSource) => {
 				try {
 					/**
