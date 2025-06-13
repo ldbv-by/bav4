@@ -6,14 +6,14 @@ import { html, nothing } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
 import css from './oafFilter.css';
 import { isString } from '../../../utils/checks';
-import { getOperatorDefinitions, getOperatorByName, createOafFilterExpression } from './oafUtils';
+import { getOperatorDefinitions, getOperatorByName, createCqlFilterExpression, CqlOperator } from './oafUtils';
 
 const Update_Queryable = 'update_queryable';
 const Update_Operator = 'update_operator';
 const Update_Value = 'update_value';
 const Update_Min_Value = 'update_min_value';
 const Update_Max_Value = 'update_max_value';
-const Update_Expression = 'update_expression';
+
 /**
  * A Filter for the OGC Feature API which filters a provided queryable
  *
@@ -35,11 +35,10 @@ export class OafFilter extends MvuElement {
 	constructor() {
 		super({
 			queryable: {},
-			operator: getOperatorByName('equals'),
+			operator: getOperatorByName(CqlOperator.EQUALS),
 			value: null,
 			minValue: null,
-			maxValue: null,
-			expression: ''
+			maxValue: null
 		});
 
 		const { TranslationService: translationService } = $injector.inject('TranslationService');
@@ -58,16 +57,11 @@ export class OafFilter extends MvuElement {
 				return { ...model, minValue: data };
 			case Update_Max_Value:
 				return { ...model, maxValue: data };
-			case Update_Expression:
-				return { ...model, expression: createOafFilterExpression(model) };
 		}
 	}
 
 	onInitialize() {
-		this.observeModel('operator', () => this._onModelChange());
-		this.observeModel('minValue', () => this._onModelChange());
-		this.observeModel('maxValue', () => this._onModelChange());
-		this.observeModel('value', () => this._onModelChange());
+		this.observeModel(['operator', 'minValue', 'maxValue', 'value'], () => this.dispatchEvent(new CustomEvent('change')));
 	}
 
 	createView(model) {
@@ -285,12 +279,7 @@ export class OafFilter extends MvuElement {
 	}
 
 	get expression() {
-		return this.getModel().expression;
-	}
-
-	_onModelChange() {
-		this.signal(Update_Expression);
-		this.dispatchEvent(new CustomEvent('change'));
+		return createCqlFilterExpression(this.getModel());
 	}
 
 	_updateValue(newValue, oldValue, signal) {

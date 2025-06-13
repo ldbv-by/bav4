@@ -2,31 +2,45 @@
  * @module modules/oaf/components/oafUtils
  */
 import { createUniqueId } from '../../../utils/numberUtils';
+import { OafQueryableType } from '../../../domain/oaf';
+
+/**
+ * Enum representing operator names
+ * @readonly
+ * @enum {String}
+ */
+export const CqlOperator = Object.freeze({
+	EQUALS: 'equals',
+	LIKE: 'like',
+	GREATER: 'greater',
+	LESSER: 'lesser',
+	BETWEEN: 'between'
+});
 
 const operators = Object.freeze([
 	{
-		name: 'equals',
+		name: CqlOperator.EQUALS,
 		key: 'oaf_operator_equals'
 	},
 	{
-		name: 'like',
+		name: CqlOperator.LIKE,
 		key: 'oaf_operator_like',
-		typeConstraints: ['string']
+		typeConstraints: [OafQueryableType.STRING]
 	},
 	{
-		name: 'greater',
+		name: CqlOperator.GREATER,
 		key: 'oaf_operator_greater',
-		typeConstraints: ['integer', 'float']
+		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT]
 	},
 	{
-		name: 'lesser',
+		name: CqlOperator.LESSER,
 		key: 'oaf_operator_lesser',
-		typeConstraints: ['integer', 'float']
+		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT]
 	},
 	{
-		name: 'between',
+		name: CqlOperator.BETWEEN,
 		key: 'oaf_operator_between',
-		typeConstraints: ['integer', 'float']
+		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT]
 	}
 ]);
 
@@ -34,6 +48,7 @@ const operators = Object.freeze([
  * Gets all Operator Definitions
  * @function
  * @param {string} [type] filters definitions by a type constraint
+ *
  * @returns {Array<object>} List of operator definitions
  */
 export const getOperatorDefinitions = (type = null) => {
@@ -52,7 +67,7 @@ export const getOperatorDefinitions = (type = null) => {
 /**
  * Gets a operator definition by the operator's name
  * @function
- * @param {string} name - Name of the operator to get.
+ * @param {string|CqlOperator} name - Name of the operator to get.
  *
  * @returns {object} The operator definition or undefined if not found
  */
@@ -67,7 +82,7 @@ export const getOperatorByName = (name) => {
  *
  * @returns {string} A combined CQL-2 Text expression representing all provided filter groups and filters.
  */
-export const createOafExpression = (oafFilterGroups) => {
+export const createCqlExpression = (oafFilterGroups) => {
 	let finalExpression = '';
 	for (let i = 0; i < oafFilterGroups.length; i++) {
 		const group = oafFilterGroups[i];
@@ -101,13 +116,13 @@ export const createOafExpression = (oafFilterGroups) => {
 };
 
 /**
- * Generates a CQL-2 Text expression for a provided OafFilter model.
+ * Generates a CQL-2 Text expression for the provided OafFilter properties.
  * @function
- * @param {object} oafFilter - Model of a oafFilter.
+ * @param {object} oafFilter - Properties of a oafFilter.
  *
- * @returns {string} A CQL-2 Text expression for the provided OafFilter model.
+ * @returns {string} A CQL-2 Text expression for the provided OafFilter properties.
  */
-export const createOafFilterExpression = (oafFilter) => {
+export const createCqlFilterExpression = (oafFilter) => {
 	const { operator } = oafFilter;
 	const { type, name } = oafFilter.queryable;
 	const isString = type === 'date' || type === 'time' || type === 'string';
@@ -153,22 +168,25 @@ export const createOafFilterExpression = (oafFilter) => {
 };
 
 /**
- * Creates a default model representing an oafFilterGroup
+ * Creates a default representation an oafFilterGroup
  * @function
+ *
+ * @returns {object} properties of an oafFilterGroup
  */
 export const createDefaultFilterGroup = () => {
 	return { id: createUniqueId(), oafFilters: [] };
 };
 
 /**
- * Creates a default model representing an oafFilter
+ * Creates a default representation an oafFilter
  * @function
  *
+ * @returns {object} properties of an oafFilter
  */
 export const createDefaultOafFilter = () => {
 	return {
 		queryable: {},
-		operator: getOperatorByName('equals'),
+		operator: getOperatorByName(CqlOperator.EQUALS),
 		value: null,
 		minValue: null,
 		maxValue: null,

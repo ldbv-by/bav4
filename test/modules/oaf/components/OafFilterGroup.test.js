@@ -171,7 +171,7 @@ describe('OafFilterGroup', () => {
 				expect(select.options).not.toContain(jasmine.objectContaining({ value: 'StringQueryable' }));
 			});
 
-			it('updates oafFilters when an oafFilter changes internally', async () => {
+			it('updates oafFilters when an oafFilter changes', async () => {
 				const element = await setup();
 				element.queryables = testQueryables;
 
@@ -208,13 +208,25 @@ describe('OafFilterGroup', () => {
 			);
 		});
 
-		it('invokes a change event with "_addFilter"', async () => {
+		it('invokes a change event when "_addFilter" is called', async () => {
 			const element = await setup();
 			element.queryables = testQueryables;
 			const spy = jasmine.createSpy();
 
 			element.addEventListener('change', spy);
 			element._addFilter('IntegerQueryable');
+
+			expect(spy).toHaveBeenCalledOnceWith(jasmine.anything());
+		});
+
+		it('invokes a change event with "_removeFilter" is called', async () => {
+			const element = await setup();
+			element.queryables = testQueryables;
+			const spy = jasmine.createSpy();
+
+			element._addFilter('IntegerQueryable');
+			element.addEventListener('change', spy);
+			element._removeFilter('IntegerQueryable');
 
 			expect(spy).toHaveBeenCalledOnceWith(jasmine.anything());
 		});

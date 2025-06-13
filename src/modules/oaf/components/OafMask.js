@@ -2,7 +2,7 @@
  * @module modules/oaf/components/OafMask
  */
 import css from './oafMask.css';
-import { getOperatorDefinitions, createDefaultFilterGroup, createOafExpression } from './oafUtils';
+import { getOperatorDefinitions, createDefaultFilterGroup, createCqlExpression } from './oafUtils';
 import { html, nothing } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { MvuElement } from '../../MvuElement';
@@ -88,7 +88,7 @@ export class OafMask extends MvuElement {
 			targetGroup.oafFilters = evt.target.oafFilters;
 			this.signal(Update_Filter_Groups, [...groups]);
 
-			const expression = createOafExpression(filterGroups);
+			const expression = createCqlExpression(filterGroups);
 			modifyLayer(this.layerId, { filter: expression === '' ? null : expression });
 		};
 
