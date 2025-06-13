@@ -31,6 +31,27 @@ describe('oafUtils', () => {
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 	});
 
+	describe('Enum CqlOperator', () => {
+		it('provides an enum of all known CqlOperator types', () => {
+			expect(Object.keys(CqlOperator).length).toBe(5);
+			expect(Object.isFrozen(CqlOperator)).toBeTrue();
+
+			expect(CqlOperator.EQUALS).toBe('equals');
+			expect(CqlOperator.LIKE).toBe('like');
+			expect(CqlOperator.GREATER).toBe('greater');
+			expect(CqlOperator.LESSER).toBe('lesser');
+			expect(CqlOperator.BETWEEN).toBe('between');
+		});
+
+		it('has a operator definition for every CqlOperator types', () => {
+			expect(getOperatorByName(CqlOperator.EQUALS)).toEqual(jasmine.objectContaining({ name: CqlOperator.EQUALS }));
+			expect(getOperatorByName(CqlOperator.LIKE)).toEqual(jasmine.objectContaining({ name: CqlOperator.LIKE }));
+			expect(getOperatorByName(CqlOperator.GREATER)).toEqual(jasmine.objectContaining({ name: CqlOperator.GREATER }));
+			expect(getOperatorByName(CqlOperator.LESSER)).toEqual(jasmine.objectContaining({ name: CqlOperator.LESSER }));
+			expect(getOperatorByName(CqlOperator.BETWEEN)).toEqual(jasmine.objectContaining({ name: CqlOperator.BETWEEN }));
+		});
+	});
+
 	describe('createDefaultOafFilter', () => {
 		it('creates a default oafFilter representation', async () => {
 			const oafFilterElement = await TestUtils.render(OafFilter.tag);
