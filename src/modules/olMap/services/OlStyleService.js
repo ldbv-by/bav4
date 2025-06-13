@@ -23,6 +23,7 @@ import {
 import { getRoutingStyleFunction } from '../handler/routing/styleUtils';
 import { Stroke, Style, Text } from 'ol/style';
 import { GeometryCollection, MultiPoint, Point } from '../../../../node_modules/ol/geom';
+import { asInternalProperty } from '../../../utils/propertyUtils';
 
 /**
  * Enumeration of predefined and internal used (within `olMap` module only) types of style
@@ -104,7 +105,7 @@ export class OlStyleService {
 				break;
 		}
 
-		const styleHint = olFeature.get('styleHint');
+		const styleHint = olFeature.get(asInternalProperty('styleHint'));
 		if (styleHint) {
 			switch (styleHint) {
 				case StyleHint.HIGHLIGHT:
@@ -342,7 +343,7 @@ export class OlStyleService {
 					fill: sanitizedText ? undefined : style.getFill(),
 					stroke: sanitizedText ? undefined : sanitizedStroke,
 					image: sanitizedText ? sanitizedImage : image,
-					text: olFeature.get('showPointNames') === false ? undefined : sanitizedText,
+					text: olFeature.get(asInternalProperty('showPointNames')) === false ? undefined : sanitizedText,
 					zIndex: style.getZIndex()
 				})
 			];

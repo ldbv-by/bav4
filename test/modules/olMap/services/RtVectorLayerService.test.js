@@ -8,6 +8,7 @@ import VectorLayer from 'ol/layer/Vector';
 import { UnavailableGeoResourceError } from '../../../../src/domain/errors';
 import { positionReducer } from '../../../../src/store/position/position.reducer';
 import { modifyLayer, removeLayer } from '../../../../src/store/layers/layers.action';
+import { asInternalProperty } from '../../../../src/utils/propertyUtils';
 
 describe('RtVectorLayerService', () => {
 	const mapService = {
@@ -182,7 +183,7 @@ describe('RtVectorLayerService', () => {
 				mockServer.emit('message', kmlData);
 
 				expect(olVectorLayer.getSource().getFeatures().length).toBe(1);
-				expect(olVectorLayer.getSource().getFeatures()[0].get('showPointNames')).toBeTrue();
+				expect(olVectorLayer.getSource().getFeatures()[0].get(asInternalProperty('showPointNames'))).toBeTrue();
 				expect(processSpy).toHaveBeenCalled();
 				expect(applyStyleSpy).toHaveBeenCalledWith(olVectorLayer, olMap, rtVectorGeoResource);
 				expect(fitViewSpy).toHaveBeenCalled();
@@ -213,7 +214,7 @@ describe('RtVectorLayerService', () => {
 				mockServer.emit('message', kmlData);
 
 				expect(olVectorLayer.getSource().getFeatures().length).toBe(1);
-				expect(olVectorLayer.getSource().getFeatures()[0].get('showPointNames')).toBeTrue();
+				expect(olVectorLayer.getSource().getFeatures()[0].get(asInternalProperty('showPointNames'))).toBeTrue();
 				expect(processSpy).toHaveBeenCalled();
 				expect(applyStyleSpy).toHaveBeenCalledWith(olVectorLayer, olMap, clusteredRtVectorGeoResource);
 				expect(fitViewSpy).toHaveBeenCalled();

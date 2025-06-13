@@ -11,6 +11,7 @@ import { parse } from '../../../utils/ewkt';
 import { changeCenter, fit } from '../../../store/position/position.action';
 import { containsExtent, getCenter } from '../../../../node_modules/ol/extent';
 import { observe } from '../../../utils/storeUtils';
+import { asInternalProperty } from '../../../utils/propertyUtils';
 
 export const WebSocket_Message_Keep_Alive = 'keep-alive';
 export const WebSocket_Ports = [80, 443];
@@ -77,7 +78,7 @@ export class RtVectorLayerService {
 						.readFeatures(eWkt.wkt)
 						.filter((f) => !!f.getGeometry())
 						.map((f) => {
-							f.set('showPointNames', rtVectorGeoResource.showPointNames);
+							f.set(asInternalProperty('showPointNames'), rtVectorGeoResource.showPointNames);
 							f.getGeometry().transform('EPSG:' + eWkt.srid, 'EPSG:' + destinationSrid);
 							return f;
 						});
@@ -87,7 +88,7 @@ export class RtVectorLayerService {
 						.readFeatures(data)
 						.filter((f) => !!f.getGeometry())
 						.map((f) => {
-							f.set('showPointNames', rtVectorGeoResource.showPointNames);
+							f.set(asInternalProperty('showPointNames'), rtVectorGeoResource.showPointNames);
 							f.getGeometry().transform('EPSG:4326', 'EPSG:' + destinationSrid);
 							return f;
 						});
