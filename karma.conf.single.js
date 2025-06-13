@@ -18,18 +18,18 @@ function findInDir(dir, filter, fileList = []) {
 
 	return fileList;
 }
-
+const testFile = process.env.KARMA_SPEC.endsWith('.test.js') ? process.env.KARMA_SPEC : `${process.env.KARMA_SPEC}.test.js`;
 const files = findInDir('./test', /\.test.js$/).filter((file) => {
 	// eslint-disable-next-line no-undef
-	return file.endsWith(process.env.KARMA_SPEC);
+	return file.endsWith(testFile);
 });
 if (files.length < 1) {
 	// eslint-disable-next-line no-undef
-	throw new Error(`Designated test file ${process.env.KARMA_SPEC} not found`);
+	throw new Error(`Designated test file '${testFile}' not found`);
 } else if (files.length > 1) {
 	// eslint-disable-next-line no-undef
 	throw new Error(
-		`More than one test file found for ${process.env.KARMA_SPEC}. Try specifying the desired test file by prepending (a part of) the path. For example: highlight/styleUtils.test.js.`
+		`More than one test file found for '${testFile}'. Try specifying the desired test file by prepending (a part of) the path. For example: highlight/styleUtils.test.js`
 	);
 }
 
