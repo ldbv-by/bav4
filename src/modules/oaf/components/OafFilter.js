@@ -1,12 +1,13 @@
 /**
  * @module modules/oaf/components/OafFilter
  */
+import css from './oafFilter.css';
 import { $injector } from '../../../injection';
 import { html, nothing } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
-import css from './oafFilter.css';
 import { isString } from '../../../utils/checks';
 import { getOperatorDefinitions, getOperatorByName, createCqlFilterExpression, CqlOperator } from './oafUtils';
+import { OafQueryableType } from '../../../domain/oaf';
 
 const Update_Queryable = 'update_queryable';
 const Update_Operator = 'update_operator';
@@ -61,6 +62,8 @@ export class OafFilter extends MvuElement {
 	}
 
 	onInitialize() {
+		// Creation of a filter is considered a change
+		this.dispatchEvent(new CustomEvent('change'));
 		this.observeModel(['operator', 'minValue', 'maxValue', 'value'], () => this.dispatchEvent(new CustomEvent('change')));
 	}
 
@@ -91,7 +94,7 @@ export class OafFilter extends MvuElement {
 		};
 
 		const getStringInputHtml = () => {
-			return html`<div data-type="string">
+			return html`<div data-type="${OafQueryableType.STRING}">
 				<ba-searchable-select
 					class="value-input"
 					@select=${(evt) => onValueChanged(evt, evt.target.selected)}
@@ -180,7 +183,7 @@ export class OafFilter extends MvuElement {
 		};
 
 		const getBooleanInputHtml = () => {
-			return html`<select class="value-input" data-type="boolean" @change=${(evt) => onValueChanged(evt, evt.target.value)}>
+			return html`<select class="value-input" data-type="${OafQueryableType.BOOLEAN}" @change=${(evt) => onValueChanged(evt, evt.target.value)}>
 				<option selected value="true">${translate('oaf_filter_yes')}</option>
 				<option selected value="false">${translate('oaf_filter_no')}</option>
 			</select>`;
@@ -189,17 +192,17 @@ export class OafFilter extends MvuElement {
 		const getInputHtml = () => {
 			const content = () => {
 				switch (type) {
-					case 'string':
+					case OafQueryableType.STRING:
 						return getStringInputHtml();
+					case OafQueryableType.INTEGER:
+					case OafQueryableType.FLOAT:
+						return getNumberInputHtml();
+					case OafQueryableType.BOOLEAN:
+						return getBooleanInputHtml();
+					case OafQueryableType.DATE:
+						return html`<div data-type="${OafQueryableType.DATE}"></div>`;
 					case 'time':
 						return getTimeInputHtml();
-					case 'integer':
-					case 'float':
-						return getNumberInputHtml();
-					case 'boolean':
-						return getBooleanInputHtml();
-					case 'date':
-						return html`<div data-type="date"></div>`;
 				}
 				return nothing;
 			};
@@ -293,14 +296,18 @@ export class OafFilter extends MvuElement {
 	_parseValue(value, fallback) {
 		const type = this.queryable.type;
 
-		if (type === 'integer') {
+		if (type === OafQueryableType.INTEGER) {
 			value = parseInt(value);
 			return !isNaN(value) ? value : fallback;
 		}
 
-		if (type === 'float') {
+		if (type === OafQueryableType.FLOAT) {
 			value = parseFloat(value);
 			return !isNaN(value) ? value : fallback;
+		}
+
+		if (type === OafQueryableType.BOOLEAN) {
+			value = value ?? false;
 		}
 
 		return value;

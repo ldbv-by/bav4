@@ -56,7 +56,7 @@ export class OafFilterGroup extends MvuElement {
 			evt.target.selectedIndex = 0;
 		};
 
-		const onChangeFilter = (evt) => {
+		const onFilterChanged = (evt) => {
 			const changedOafFilter = evt.target;
 			const filters = this.oafFilters;
 			const changedFilterIndex = filters.findIndex((oafFilter) => oafFilter.queryable.name === evt.target.queryable.name);
@@ -67,7 +67,6 @@ export class OafFilterGroup extends MvuElement {
 			};
 
 			this.signal(Update_Filters, filters);
-
 			this.dispatchEvent(new CustomEvent('change'));
 		};
 
@@ -107,7 +106,7 @@ export class OafFilterGroup extends MvuElement {
 								.maxValue=${oafFilter.maxValue}
 								.minValue=${oafFilter.minValue}
 								.queryable=${oafFilter.queryable}
-								@change=${onChangeFilter}
+								@change=${onFilterChanged}
 								@remove=${onRemoveFilter}
 							></ba-oaf-filter>`
 					)}
@@ -124,6 +123,7 @@ export class OafFilterGroup extends MvuElement {
 			return;
 		}
 
+		// A newly created filter will invoke a change event initially (see oafFilter.js, onInitialize())
 		this.signal(Update_Filters, [
 			...oafFilters,
 			{
@@ -131,8 +131,6 @@ export class OafFilterGroup extends MvuElement {
 				queryable: queryableToAdd
 			}
 		]);
-
-		this.dispatchEvent(new CustomEvent('change'));
 	}
 
 	_removeFilter(queryableName) {

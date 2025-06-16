@@ -2,27 +2,23 @@ import { OafFilter } from '../../../../src/modules/oaf/components/OafFilter';
 import { SearchableSelect } from '../../../../src/modules/commons/components/searchableSelect/SearchableSelect';
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
+import { OafQueryableType } from '../../../../src/domain/oaf';
 import { getOperatorByName, getOperatorDefinitions, CqlOperator } from '../../../../src/modules/oaf/components/oafUtils';
 
 window.customElements.define(OafFilter.tag, OafFilter);
 window.customElements.define(SearchableSelect.tag, SearchableSelect);
 
 describe('OafFilter', () => {
-	const T_String = 'string';
-	const T_Integer = 'integer';
-	const T_Float = 'float';
-	const T_Date = 'date';
 	const T_Time = 'time';
-	const T_Boolean = 'boolean';
 
 	const setupStoreAndDi = (state = {}) => {
 		TestUtils.setupStoreAndDi(state);
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 	};
 
-	const setup = async (state = {}) => {
+	const setup = async (state = {}, properties = {}) => {
 		setupStoreAndDi(state);
-		return TestUtils.render(OafFilter.tag);
+		return TestUtils.render(OafFilter.tag, properties);
 	};
 
 	const createQueryable = (name, type) => {
@@ -79,7 +75,7 @@ describe('OafFilter', () => {
 		describe('"operator"', () => {
 			it('renders operator-field with "operator" default', async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_Integer);
+				element.queryable = createQueryable('foo', OafQueryableType.INTEGER);
 				expect(element.shadowRoot.querySelector('#select-operator').value).toEqual(element.operator.name);
 			});
 
@@ -88,12 +84,12 @@ describe('OafFilter', () => {
 
 				// Pass operator as string
 				const elementA = await TestUtils.render(OafFilter.tag);
-				elementA.queryable = createQueryable('foo', T_Integer);
+				elementA.queryable = createQueryable('foo', OafQueryableType.INTEGER);
 				elementA.operator = 'between';
 
 				// Pass operator as object
 				const elementB = await TestUtils.render(OafFilter.tag);
-				elementB.queryable = createQueryable('foo', T_Integer);
+				elementB.queryable = createQueryable('foo', OafQueryableType.INTEGER);
 				elementB.operator = getOperatorByName(CqlOperator.BETWEEN);
 
 				expect(elementA.shadowRoot.querySelector('#select-operator').value).toEqual('between');
@@ -102,7 +98,7 @@ describe('OafFilter', () => {
 
 			it('updates "operator" when operator-field changes', async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_Integer);
+				element.queryable = createQueryable('foo', OafQueryableType.INTEGER);
 				const operatorField = element.shadowRoot.querySelector('#select-operator');
 
 				// calling change manually because html-select only invokes events on user input.
@@ -129,7 +125,7 @@ describe('OafFilter', () => {
 		describe('"value"', () => {
 			it('updates field when "value" changes', async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_String);
+				element.queryable = createQueryable('foo', OafQueryableType.STRING);
 				element.value = 'foo';
 
 				expect(element.shadowRoot.querySelector('.value-input').selected).toEqual('foo');
@@ -140,7 +136,7 @@ describe('OafFilter', () => {
 				const spy = jasmine.createSpy();
 
 				element.addEventListener('change', spy);
-				element.queryable = createQueryable('foo', T_String);
+				element.queryable = createQueryable('foo', OafQueryableType.STRING);
 				element.value = 'foo';
 
 				expect(spy).toHaveBeenCalledOnceWith(jasmine.anything());
@@ -150,7 +146,7 @@ describe('OafFilter', () => {
 		describe('"minValue"', () => {
 			it('updates field when "minValue" changes', async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_Integer);
+				element.queryable = createQueryable('foo', OafQueryableType.INTEGER);
 				element.operator = 'between';
 				element.minValue = 1;
 
@@ -159,7 +155,7 @@ describe('OafFilter', () => {
 
 			it('invokes change event when "minValue" changes', async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_Integer);
+				element.queryable = createQueryable('foo', OafQueryableType.INTEGER);
 				element.operator = 'between';
 
 				const spy = jasmine.createSpy();
@@ -173,7 +169,7 @@ describe('OafFilter', () => {
 		describe('"maxValue"', () => {
 			it('updates field when "maxValue" changes', async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_Integer);
+				element.queryable = createQueryable('foo', OafQueryableType.INTEGER);
 				element.operator = 'between';
 				element.maxValue = 1;
 
@@ -182,7 +178,7 @@ describe('OafFilter', () => {
 
 			it('invokes change event when "maxValue" changes', async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_Integer);
+				element.queryable = createQueryable('foo', OafQueryableType.INTEGER);
 				element.operator = 'between';
 
 				const spy = jasmine.createSpy();
@@ -193,31 +189,31 @@ describe('OafFilter', () => {
 			});
 		});
 
-		describe(`"queryable.type": "${T_String}"`, () => {
-			it(`renders field with data-type attribute "${T_String}"`, async () => {
+		describe(`"queryable.type": "${OafQueryableType.STRING}"`, () => {
+			it(`renders field with data-type attribute "${OafQueryableType.STRING}"`, async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_String);
+				element.queryable = createQueryable('foo', OafQueryableType.STRING);
 
-				expect(element.shadowRoot.querySelector(`[data-type="${T_String}"]`)).not.toBeNull();
+				expect(element.shadowRoot.querySelector(`[data-type="${OafQueryableType.STRING}"]`)).not.toBeNull();
 			});
 
 			it(`renders operator field with default operator "equals"`, async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_String);
+				element.queryable = createQueryable('foo', OafQueryableType.STRING);
 
 				expect(element.shadowRoot.querySelector('#select-operator').value).toEqual('equals');
 			});
 
 			it('renders field with default value of "null"', async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_String);
+				element.queryable = createQueryable('foo', OafQueryableType.STRING);
 
 				expect(element.shadowRoot.querySelector('.value-input').selected).toBeNull();
 			});
 
 			it("updates properties when field's value changes", async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_String);
+				element.queryable = createQueryable('foo', OafQueryableType.STRING);
 				element.shadowRoot.querySelector('.value-input').selected = 'foo-val';
 
 				expect(element.value).toEqual('foo-val');
@@ -225,7 +221,7 @@ describe('OafFilter', () => {
 
 			it('does not render dropdown-header when queryable is finalized', async () => {
 				const element = await setup();
-				element.queryable = { ...createQueryable('foo', T_String), finalized: true };
+				element.queryable = { ...createQueryable('foo', OafQueryableType.STRING), finalized: true };
 				const searchableSelect = element.shadowRoot.querySelector('.value-input');
 				const dropdownHeader = searchableSelect.shadowRoot.querySelector('.dropdown-header');
 
@@ -234,7 +230,7 @@ describe('OafFilter', () => {
 
 			it('renders a dropdown-header when queryable is not finalized', async () => {
 				const element = await setup();
-				element.queryable = { ...createQueryable('foo', T_String), finalized: false };
+				element.queryable = { ...createQueryable('foo', OafQueryableType.STRING), finalized: false };
 				const searchableSelect = element.shadowRoot.querySelector('.value-input');
 				const dropdownHeader = searchableSelect.shadowRoot.querySelector('.dropdown-header');
 
@@ -243,12 +239,12 @@ describe('OafFilter', () => {
 			});
 		});
 
-		describe(`"queryable.type": "${T_Integer}"`, () => {
+		describe(`"queryable.type": "${OafQueryableType.INTEGER}"`, () => {
 			const testCases = [-42, '-10', 0, '12', 44];
 
 			it(`updates property "value" on field-input`, async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_Integer);
+				element.queryable = createQueryable('foo', OafQueryableType.INTEGER);
 				const inputField = element.shadowRoot.querySelector('.value-input');
 
 				testCases.forEach((valueToTest) => {
@@ -261,7 +257,7 @@ describe('OafFilter', () => {
 
 			it(`updates value-field on field-input`, async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_Integer);
+				element.queryable = createQueryable('foo', OafQueryableType.INTEGER);
 				const inputField = element.shadowRoot.querySelector('.value-input');
 
 				testCases.forEach((valueToTest) => {
@@ -274,7 +270,7 @@ describe('OafFilter', () => {
 
 			it(`updates property "minValue" on field-input`, async () => {
 				const element = await setup();
-				element.queryable = { ...createQueryable('foo', T_Integer) };
+				element.queryable = { ...createQueryable('foo', OafQueryableType.INTEGER) };
 				element.operator = 'between';
 
 				const inputField = element.shadowRoot.querySelector('.min-value-input');
@@ -289,7 +285,7 @@ describe('OafFilter', () => {
 
 			it(`updates min-value-field on field-input`, async () => {
 				const element = await setup();
-				element.queryable = { ...createQueryable('foo', T_Integer) };
+				element.queryable = { ...createQueryable('foo', OafQueryableType.INTEGER) };
 				element.operator = 'between';
 				const inputField = element.shadowRoot.querySelector('.min-value-input');
 
@@ -303,7 +299,7 @@ describe('OafFilter', () => {
 
 			it(`updates property "maxValue" on field-input`, async () => {
 				const element = await setup();
-				element.queryable = { ...createQueryable('foo', T_Integer) };
+				element.queryable = { ...createQueryable('foo', OafQueryableType.INTEGER) };
 				element.operator = 'between';
 
 				const inputField = element.shadowRoot.querySelector('.max-value-input');
@@ -318,7 +314,7 @@ describe('OafFilter', () => {
 
 			it(`updates max-value-field on field-input`, async () => {
 				const element = await setup();
-				element.queryable = { ...createQueryable('foo', T_Integer) };
+				element.queryable = { ...createQueryable('foo', OafQueryableType.INTEGER) };
 				element.operator = 'between';
 				const inputField = element.shadowRoot.querySelector('.max-value-input');
 
@@ -330,30 +326,30 @@ describe('OafFilter', () => {
 				});
 			});
 
-			it(`renders filter with data-type attribute "${T_Integer}"`, async () => {
+			it(`renders filter with data-type attribute "${OafQueryableType.INTEGER}"`, async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_Integer);
+				element.queryable = createQueryable('foo', OafQueryableType.INTEGER);
 
-				expect(element.shadowRoot.querySelector(`[data-type="${T_Integer}"]`)).not.toBeNull();
+				expect(element.shadowRoot.querySelector(`[data-type="${OafQueryableType.INTEGER}"]`)).not.toBeNull();
 			});
 
 			it(`renders operator field with default operator "equals"`, async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_Integer);
+				element.queryable = createQueryable('foo', OafQueryableType.INTEGER);
 
 				expect(element.shadowRoot.querySelector('#select-operator').value).toEqual('equals');
 			});
 
 			it('renders field default value as empty string', async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_Integer);
+				element.queryable = createQueryable('foo', OafQueryableType.INTEGER);
 
 				expect(element.shadowRoot.querySelector('.value-input').value).toEqual('');
 			});
 
 			it('does not update field on invalid field input', async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_Integer);
+				element.queryable = createQueryable('foo', OafQueryableType.INTEGER);
 				const inputField = element.shadowRoot.querySelector('.value-input');
 
 				inputField.value = 'invalid because I am a string';
@@ -364,7 +360,7 @@ describe('OafFilter', () => {
 
 			it('does not update property "value" on invalid field input', async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_Integer);
+				element.queryable = createQueryable('foo', OafQueryableType.INTEGER);
 				const inputField = element.shadowRoot.querySelector('.value-input');
 
 				inputField.value = 'invalid because I am a string';
@@ -374,12 +370,12 @@ describe('OafFilter', () => {
 			});
 		});
 
-		describe(`"queryable.type": "${T_Float}"`, () => {
+		describe(`"queryable.type": "${OafQueryableType.FLOAT}"`, () => {
 			const testCases = [-42, -42.124, '-10', 0, '12', '12.241', 44, 44.12];
 
 			it(`updates property "value" on field-input`, async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_Float);
+				element.queryable = createQueryable('foo', OafQueryableType.FLOAT);
 				const inputField = element.shadowRoot.querySelector('.value-input');
 
 				testCases.forEach((valueToTest) => {
@@ -392,7 +388,7 @@ describe('OafFilter', () => {
 
 			it(`updates value-field on field-input`, async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_Float);
+				element.queryable = createQueryable('foo', OafQueryableType.FLOAT);
 				const inputField = element.shadowRoot.querySelector('.value-input');
 
 				testCases.forEach((valueToTest) => {
@@ -405,7 +401,7 @@ describe('OafFilter', () => {
 
 			it(`updates property "minValue" on field-input`, async () => {
 				const element = await setup();
-				element.queryable = { ...createQueryable('foo', T_Float) };
+				element.queryable = { ...createQueryable('foo', OafQueryableType.FLOAT) };
 				element.operator = 'between';
 
 				const inputField = element.shadowRoot.querySelector('.min-value-input');
@@ -420,7 +416,7 @@ describe('OafFilter', () => {
 
 			it(`updates min-value-field on field-input`, async () => {
 				const element = await setup();
-				element.queryable = { ...createQueryable('foo', T_Float) };
+				element.queryable = { ...createQueryable('foo', OafQueryableType.FLOAT) };
 				element.operator = 'between';
 				const inputField = element.shadowRoot.querySelector('.min-value-input');
 
@@ -434,7 +430,7 @@ describe('OafFilter', () => {
 
 			it(`updates property "maxValue" on field-input`, async () => {
 				const element = await setup();
-				element.queryable = { ...createQueryable('foo', T_Float) };
+				element.queryable = { ...createQueryable('foo', OafQueryableType.FLOAT) };
 				element.operator = 'between';
 
 				const inputField = element.shadowRoot.querySelector('.max-value-input');
@@ -449,7 +445,7 @@ describe('OafFilter', () => {
 
 			it(`updates max-value-field on field-input`, async () => {
 				const element = await setup();
-				element.queryable = { ...createQueryable('foo', T_Float) };
+				element.queryable = { ...createQueryable('foo', OafQueryableType.FLOAT) };
 				element.operator = 'between';
 				const inputField = element.shadowRoot.querySelector('.max-value-input');
 
@@ -461,23 +457,23 @@ describe('OafFilter', () => {
 				});
 			});
 
-			it(`renders field with data-type attribute "${T_Float}"`, async () => {
+			it(`renders field with data-type attribute "${OafQueryableType.FLOAT}"`, async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_Float);
+				element.queryable = createQueryable('foo', OafQueryableType.FLOAT);
 
-				expect(element.shadowRoot.querySelector(`[data-type="${T_Float}"]`)).not.toBeNull();
+				expect(element.shadowRoot.querySelector(`[data-type="${OafQueryableType.FLOAT}"]`)).not.toBeNull();
 			});
 
 			it(`renders operator field with default operator "equals"`, async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_Float);
+				element.queryable = createQueryable('foo', OafQueryableType.FLOAT);
 
 				expect(element.shadowRoot.querySelector('#select-operator').value).toEqual('equals');
 			});
 
 			it('does not update field on invalid field input', async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_Float);
+				element.queryable = createQueryable('foo', OafQueryableType.FLOAT);
 				const inputField = element.shadowRoot.querySelector('.value-input');
 
 				inputField.value = 'invalid because I am a string';
@@ -488,7 +484,7 @@ describe('OafFilter', () => {
 
 			it('does not update property "value" on invalid field input', async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_Float);
+				element.queryable = createQueryable('foo', OafQueryableType.FLOAT);
 				const inputField = element.shadowRoot.querySelector('.value-input');
 
 				inputField.value = 'invalid because I am a string';
@@ -498,17 +494,17 @@ describe('OafFilter', () => {
 			});
 		});
 
-		describe(`"queryable.type": "${T_Date}"`, () => {
-			it(`renders field with data-type attribute "${T_Date}"`, async () => {
+		describe(`"queryable.type": "${OafQueryableType.DATE}"`, () => {
+			it(`renders field with data-type attribute "${OafQueryableType.DATE}"`, async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_Date);
+				element.queryable = createQueryable('foo', OafQueryableType.DATE);
 
-				expect(element.shadowRoot.querySelector(`[data-type="${T_Date}"]`)).not.toBeNull();
+				expect(element.shadowRoot.querySelector(`[data-type="${OafQueryableType.DATE}"]`)).not.toBeNull();
 			});
 
 			it(`renders operator field with default operator "equals"`, async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_Date);
+				element.queryable = createQueryable('foo', OafQueryableType.DATE);
 
 				expect(element.shadowRoot.querySelector('#select-operator').value).toEqual('equals');
 			});
@@ -563,10 +559,10 @@ describe('OafFilter', () => {
 			});
 		});
 
-		describe(`"queryable.type": "${T_Boolean}"`, () => {
+		describe(`"queryable.type": "${OafQueryableType.BOOLEAN}"`, () => {
 			it('updates property "value" when field changes', async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_Boolean);
+				element.queryable = createQueryable('foo', OafQueryableType.BOOLEAN);
 				const select = element.shadowRoot.querySelector('.value-input');
 				select.value = true;
 				select.dispatchEvent(new Event('change'));
@@ -574,10 +570,10 @@ describe('OafFilter', () => {
 				expect(element.value).toEqual('true');
 			});
 
-			it(`renders field with data-type attribute "${T_Boolean}"`, async () => {
+			it(`renders field with data-type attribute "${OafQueryableType.BOOLEAN}"`, async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_Boolean);
-				const selectField = element.shadowRoot.querySelector(`[data-type="${T_Boolean}"]`);
+				element.queryable = createQueryable('foo', OafQueryableType.BOOLEAN);
+				const selectField = element.shadowRoot.querySelector(`[data-type="${OafQueryableType.BOOLEAN}"]`);
 				expect(selectField).not.toBeNull();
 				expect(selectField.options).toHaveSize(2);
 				expect(selectField.options[0].innerText).toBe('oaf_filter_yes');
@@ -586,7 +582,7 @@ describe('OafFilter', () => {
 
 			it(`renders operator-field with default operator "equals"`, async () => {
 				const element = await setup();
-				element.queryable = createQueryable('foo', T_Boolean);
+				element.queryable = createQueryable('foo', OafQueryableType.BOOLEAN);
 
 				expect(element.shadowRoot.querySelector('#select-operator').value).toEqual('equals');
 			});
