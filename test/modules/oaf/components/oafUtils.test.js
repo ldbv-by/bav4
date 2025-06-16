@@ -43,7 +43,8 @@ describe('oafUtils', () => {
 			expect(CqlOperator.BETWEEN).toBe('between');
 		});
 
-		it('has a operator definition for every CqlOperator types', () => {
+		it('has a operator definition for every CqlOperator type', () => {
+			expect(Object.keys(CqlOperator).length).toBe(getOperatorDefinitions().length);
 			expect(getOperatorByName(CqlOperator.EQUALS)).toEqual(jasmine.objectContaining({ name: CqlOperator.EQUALS }));
 			expect(getOperatorByName(CqlOperator.LIKE)).toEqual(jasmine.objectContaining({ name: CqlOperator.LIKE }));
 			expect(getOperatorByName(CqlOperator.GREATER)).toEqual(jasmine.objectContaining({ name: CqlOperator.GREATER }));

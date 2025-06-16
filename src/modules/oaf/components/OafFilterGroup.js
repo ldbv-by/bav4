@@ -63,7 +63,7 @@ export class OafFilterGroup extends MvuElement {
 				expression: changedOafFilter.expression
 			};
 
-			this.signal(Update_Filters, [...filters]);
+			this.signal(Update_Filters, filters);
 
 			this.dispatchEvent(new CustomEvent('change'));
 		};

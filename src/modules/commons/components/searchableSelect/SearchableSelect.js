@@ -15,6 +15,10 @@ const Update_Search = 'update_search';
 const Update_Max_Entries = 'update_max_entries';
 const Update_Show_Caret = 'update_show_caret';
 
+// TODO
+// - Add missing tests for free-text
+// - Evaluate if renaming selected to value is reasonable
+// - Add Scrollable behaviour
 /**
  * General purpose implementation of a select-like component with integrated filtering.
  *
@@ -35,6 +39,7 @@ const Update_Show_Caret = 'update_show_caret';
 export class SearchableSelect extends MvuElement {
 	#hasPointer;
 	#keyActionMapper;
+	#allowFreeText;
 
 	#onPointerCancelActionListener = () => {
 		if (this.#hasPointer) return;
@@ -58,6 +63,7 @@ export class SearchableSelect extends MvuElement {
 		});
 
 		this.#hasPointer = false;
+		this.#allowFreeText = false;
 	}
 
 	onInitialize() {
@@ -86,7 +92,7 @@ export class SearchableSelect extends MvuElement {
 			case Update_Options:
 				return this._updateOptionsFiltering({ ...model, options: [...data] });
 			case Update_Search:
-				return this._updateOptionsFiltering({ ...model, search: data, selected: null });
+				return this._updateOptionsFiltering({ ...model, search: data ?? '' });
 			case Update_Max_Entries:
 				return { ...model, maxEntries: data };
 			case Update_Show_Caret:
@@ -197,7 +203,6 @@ export class SearchableSelect extends MvuElement {
 		const dropdown = this.shadowRoot.querySelector('.dropdown');
 		dropdown.classList.remove('visible');
 		dropdown.classList.add('hidden');
-
 		this.#keyActionMapper.deactivate();
 	}
 
@@ -229,28 +234,39 @@ export class SearchableSelect extends MvuElement {
 		this.#keyActionMapper
 			.addForKeyUp('Escape', () => this.#cancelAction())
 			.addForKeyUp('Enter', () => this.#confirmAction())
-			.addForKeyUp('ArrowUp', () => this._chooseNextOption(true))
-			.addForKeyUp('ArrowDown', () => this._chooseNextOption());
+			.addForKeyUp('ArrowUp', () => this._hoverNextOption(true))
+			.addForKeyUp('ArrowDown', () => this._hoverNextOption());
 
 		this.#keyActionMapper.activate();
+		Array.from(this.shadowRoot.querySelectorAll('.option')).forEach((el) => el.classList.remove('hovered'));
 	}
 
 	#cancelAction() {
 		this.#hideDropdown();
 
-		if (!this.selected) {
-			this.signal(Update_Search, '');
+		if (this.#allowFreeText) {
+			this.signal(Update_Selected, this.search);
+		} else {
+			this.signal(Update_Search, this.selected);
 		}
 	}
 
 	#confirmAction() {
 		const hoveredOption = this.shadowRoot.querySelector('.option.hovered');
 
-		if (!hoveredOption) return;
+		if (!hoveredOption) {
+			if (this.#allowFreeText) {
+				this.signal(Update_Selected, this.search);
+			} else {
+				// If no option found it should reset search to last selected.
+				this.signal(Update_Search, this.selected);
+			}
+		} else {
+			// @ts-ignore
+			this.signal(Update_Selected, hoveredOption.value);
+		}
 
 		this.#hideDropdown();
-		// @ts-ignore
-		this.signal(Update_Selected, hoveredOption.value);
 	}
 
 	#dispatchChangeEvents() {
@@ -270,6 +286,7 @@ export class SearchableSelect extends MvuElement {
 
 	#dispatchSelectEvents() {
 		const { selected } = this.getModel();
+
 		const eventData = {
 			selected: selected
 		};
@@ -283,7 +300,7 @@ export class SearchableSelect extends MvuElement {
 		this.#onSelect(eventData);
 	}
 
-	_chooseNextOption(invert = false) {
+	_hoverNextOption(invert = false) {
 		const options = Array.from(this.shadowRoot.querySelectorAll('.option'));
 		const hoveredOption = this.shadowRoot.querySelector('.option.hovered');
 		let nextHoveredOptionIndex = 0;
@@ -300,6 +317,14 @@ export class SearchableSelect extends MvuElement {
 		}
 
 		options[nextHoveredOptionIndex].classList.add('hovered');
+	}
+
+	get allowFreeText() {
+		return this.#allowFreeText;
+	}
+
+	set allowFreeText(value) {
+		this.#allowFreeText = value === true;
 	}
 
 	get placeholder() {

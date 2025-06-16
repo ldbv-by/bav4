@@ -7,7 +7,7 @@ import { OafQueryableType } from '../../../domain/oaf';
 /**
  * Enum representing operator names
  * @readonly
- * @enum {String}
+ * @enum {string}
  */
 export const CqlOperator = Object.freeze({
 	EQUALS: 'equals',
