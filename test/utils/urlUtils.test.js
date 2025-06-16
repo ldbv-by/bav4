@@ -83,7 +83,7 @@ describe('urlUtils', () => {
 	describe('queryParamsToString', () => {
 		it('builds a query string from query parameters', () => {
 			expect(queryParamsToString({ one: 42, two: '(((plz+=+12345)))', three: ['a', 'b'] })).toBe(
-				encodeURIComponent('one=42&two=(((plz+=+12345)))&three=a,b')
+				`one=42&two=${encodeURIComponent('(((plz+=+12345)))')}&three=${encodeURIComponent('a,b')}`
 			);
 		});
 	});
