@@ -206,7 +206,7 @@ describe('ShareService', () => {
 				expect(extract[QueryParameters.LAYER_TIMESTAMP]).toEqual(['', '', '2000']);
 				expect(extract[QueryParameters.LAYER_SWIPE_ALIGNMENT]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_STYLE]).toEqual(['', '', '#fcba03']);
-				expect(extract[QueryParameters.LAYER_FILTER]).toEqual(['', '(((plz+=+12345)))', '']);
+				expect(extract[QueryParameters.LAYER_FILTER]).toEqual(['', encodeURIComponent('(((plz+=+12345)))'), '']);
 			});
 
 			describe('tool `COMPARE` is active', () => {

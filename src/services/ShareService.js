@@ -242,7 +242,7 @@ export class ShareService {
 			extractedState[QueryParameters.LAYER_STYLE] = layer_style.map((s) => s ?? '');
 		}
 		if (layer_filter) {
-			extractedState[QueryParameters.LAYER_FILTER] = layer_filter.map((f) => f ?? '');
+			extractedState[QueryParameters.LAYER_FILTER] = layer_filter.map((f) => (f ? encodeURIComponent(f) : ''));
 		}
 		return extractedState;
 	}
