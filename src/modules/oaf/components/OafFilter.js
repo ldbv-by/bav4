@@ -67,7 +67,7 @@ export class OafFilter extends MvuElement {
 	createView(model) {
 		const translate = (key) => this.#translationService.translate(key);
 		const { minValue, maxValue, value, operator } = model;
-		const { name, type, values: queryableValues } = model.queryable;
+		const { name, type, values: queryableValues, finalized } = model.queryable;
 		const operators = getOperatorDefinitions(type);
 
 		const onMinValueChanged = (evt, newValue) => {
@@ -97,6 +97,8 @@ export class OafFilter extends MvuElement {
 					@select=${(evt) => onValueChanged(evt, evt.target.selected)}
 					.selected=${value}
 					.options=${queryableValues}
+					.allowFreeText=${!finalized}
+					.dropdownHeader=${finalized ? null : translate('oaf_filter_dropdown_header_title')}
 				>
 				</ba-searchable-select>
 			</div>`;

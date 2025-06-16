@@ -51,6 +51,9 @@ export class OafFilterGroup extends MvuElement {
 
 		const onAddFilter = (evt) => {
 			this._addFilter(evt.target.value);
+
+			// Resets select to "Choose Filter..." Option
+			evt.target.selectedIndex = 0;
 		};
 
 		const onChangeFilter = (evt) => {

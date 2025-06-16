@@ -222,6 +222,25 @@ describe('OafFilter', () => {
 
 				expect(element.value).toEqual('foo-val');
 			});
+
+			it('does not render dropdown-header when queryable is finalized', async () => {
+				const element = await setup();
+				element.queryable = { ...createQueryable('foo', T_String), finalized: true };
+				const searchableSelect = element.shadowRoot.querySelector('.value-input');
+				const dropdownHeader = searchableSelect.shadowRoot.querySelector('.dropdown-header');
+
+				expect(dropdownHeader).toBeNull();
+			});
+
+			it('renders a dropdown-header when queryable is not finalized', async () => {
+				const element = await setup();
+				element.queryable = { ...createQueryable('foo', T_String), finalized: false };
+				const searchableSelect = element.shadowRoot.querySelector('.value-input');
+				const dropdownHeader = searchableSelect.shadowRoot.querySelector('.dropdown-header');
+
+				expect(dropdownHeader).not.toBeNull();
+				expect(dropdownHeader.innerText).toEqual('oaf_filter_dropdown_header_title');
+			});
 		});
 
 		describe(`"queryable.type": "${T_Integer}"`, () => {

@@ -25,7 +25,8 @@ describe('SearchableSelect', () => {
 				search: '',
 				options: [],
 				filteredOptions: [],
-				showCaret: true
+				showCaret: true,
+				dropdownHeader: null
 			});
 		});
 
@@ -39,6 +40,8 @@ describe('SearchableSelect', () => {
 			expect(element.search).toBe('');
 			expect(element.options).toHaveSize(0);
 			expect(element.hasPointer).toBeFalse();
+			expect(element.dropdownHeader).toBeNull();
+			expect(element.allowFreeText).toBeFalse();
 		});
 
 		it('ensures property options is an empty array when set to undefined or null', async () => {
@@ -82,9 +85,8 @@ describe('SearchableSelect', () => {
 		it('removes ".hovered" class when dropdown opens', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = ['foo', 'bar', 'baz'];
-			const dropdown = element.shadowRoot.querySelector('.dropdown');
 
-			const htmlOptions = element.shadowRoot.querySelectorAll('.option');
+			const htmlOptions = element.shadowRoot.querySelectorAll('.dropdown-content .option');
 			htmlOptions[0].classList.add('hovered');
 
 			element._showDropdown();
@@ -102,6 +104,17 @@ describe('SearchableSelect', () => {
 			expect(removeEventListenerSpy).toHaveBeenCalledWith('click', jasmine.anything());
 			expect(removeEventListenerSpy).toHaveBeenCalledWith('keyup', jasmine.anything());
 			expect(removeEventListenerSpy).toHaveBeenCalledWith('keydown', jasmine.anything());
+		});
+	});
+
+	describe('when property "dropdownHeader" changes', () => {
+		it('does render dropdown-header', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			element.dropdownHeader = 'My Dropdown Header';
+			const dropdownHeader = element.shadowRoot.querySelector('.dropdown-header');
+
+			expect(dropdownHeader).not.toBeNull();
+			expect(dropdownHeader.innerText).toBe('My Dropdown Header');
 		});
 	});
 
@@ -204,8 +217,16 @@ describe('SearchableSelect', () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = ['foo', 'bar', 'baz'];
 
-			expect(element.shadowRoot.querySelectorAll('.dropdown > .option')).toHaveSize(3);
-			expect(element.shadowRoot.querySelectorAll('.dropdown > .option.hovered')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.dropdown-content > .option')).toHaveSize(3);
+			expect(element.shadowRoot.querySelectorAll('.dropdown-content > .option.hovered')).toHaveSize(0);
+		});
+
+		describe('when property "dropdownHeader" changes it shows dropdownHeader', () => {
+			it('does not render dropdown-header', async () => {
+				const element = await TestUtils.render(SearchableSelect.tag);
+				const dropdownHeader = element.shadowRoot.querySelector('.dropdown-header');
+				expect(dropdownHeader).toBeNull();
+			});
 		});
 	});
 
@@ -214,12 +235,12 @@ describe('SearchableSelect', () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = ['foo', 'bar', 'baz', 'fo', 'ba'];
 
-			let htmlOptions = element.shadowRoot.querySelectorAll('.dropdown > .option > span');
+			let htmlOptions = element.shadowRoot.querySelectorAll('.dropdown-content > .option > span');
 
 			expect(htmlOptions).toHaveSize(5);
 
 			element.maxEntries = 4;
-			htmlOptions = element.shadowRoot.querySelectorAll('.dropdown > .option > span');
+			htmlOptions = element.shadowRoot.querySelectorAll('.dropdown-content > .option > span');
 			expect(htmlOptions).toHaveSize(4);
 		});
 	});
@@ -227,12 +248,12 @@ describe('SearchableSelect', () => {
 	describe('when property "options" changes', () => {
 		it('updates the view', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
-			let htmlOptions = element.shadowRoot.querySelectorAll('.dropdown > .option > span');
+			let htmlOptions = element.shadowRoot.querySelectorAll('.dropdown-content > .option > span');
 
 			expect(htmlOptions).toHaveSize(0);
 
 			element.options = ['foo', 'bar', 'baz'];
-			htmlOptions = element.shadowRoot.querySelectorAll('.dropdown > .option > span');
+			htmlOptions = element.shadowRoot.querySelectorAll('.dropdown-content > .option > span');
 
 			expect(htmlOptions).toHaveSize(3);
 
@@ -320,7 +341,7 @@ describe('SearchableSelect', () => {
 		it('sets on a rendered option the property "selected"', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = ['foo', 'bar', 'baz'];
-			const htmlOption = element.shadowRoot.querySelector('.dropdown > .option:nth-child(2)');
+			const htmlOption = element.shadowRoot.querySelector('.dropdown-content > .option:nth-child(2)');
 
 			htmlOption.click();
 

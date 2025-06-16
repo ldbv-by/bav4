@@ -14,14 +14,13 @@ const Update_Selected = 'update_selected';
 const Update_Search = 'update_search';
 const Update_Max_Entries = 'update_max_entries';
 const Update_Show_Caret = 'update_show_caret';
+const Update_Dropdown_Header = 'update_dropdown_header';
 
-// TODO
-// - Add missing tests for free-text
-// - Evaluate if renaming selected to value is reasonable
-// - Add Scrollable behaviour
 /**
  * General purpose implementation of a select-like component with integrated filtering.
  *
+ * @property {boolean} allowFreeText=false - True: The user can write any text in the field. False: The user can only choose from the options available.
+ * @property {string} dropdownHeader=null - The dropdownHeader to show when the dropdown opens (null hides the header).
  * @property {string} placeholder='' - The placeholder to show when the search field is empty.
  * @property {number} maxEntries=10 - The maximum amount of entries to show in the select field.
  * @property {string|null} selected=null - The currently selected option.
@@ -59,7 +58,8 @@ export class SearchableSelect extends MvuElement {
 			search: '',
 			options: [],
 			filteredOptions: [],
-			showCaret: true
+			showCaret: true,
+			dropdownHeader: null
 		});
 
 		this.#hasPointer = false;
@@ -83,6 +83,8 @@ export class SearchableSelect extends MvuElement {
 
 	update(type, data, model) {
 		switch (type) {
+			case Update_Dropdown_Header:
+				return { ...model, dropdownHeader: data };
 			case Update_Placeholder:
 				return { ...model, placeholder: data };
 			case Update_Selected: {
@@ -101,7 +103,7 @@ export class SearchableSelect extends MvuElement {
 	}
 
 	createView(model) {
-		const { search, showCaret, placeholder, filteredOptions, maxEntries } = model;
+		const { search, showCaret, placeholder, filteredOptions, maxEntries, dropdownHeader } = model;
 
 		const onSearchInputClicked = () => {
 			this._showDropdown(document.documentElement.clientHeight);
@@ -159,19 +161,24 @@ export class SearchableSelect extends MvuElement {
 							</div> `
 						: nothing}
 				</div>
+
 				<div class="dropdown hidden">
-					${filteredOptions.slice(0, maxEntries).map(
-						(item, index) =>
-							html`<div
-								class="option"
-								@click=${onOptionChosen}
-								@pointerenter=${onPointerEnterOption}
-								@pointerleave=${onPointerLeaveOption}
-								.value=${index}
-							>
-								<span>${item}</span>
-							</div>`
-					)}
+					${dropdownHeader !== null ? html`<div class="dropdown-header">${dropdownHeader}</div>` : nothing}
+
+					<div class="dropdown-content">
+						${filteredOptions.slice(0, maxEntries).map(
+							(item, index) =>
+								html`<div
+									class="option"
+									@click=${onOptionChosen}
+									@pointerenter=${onPointerEnterOption}
+									@pointerleave=${onPointerLeaveOption}
+									.value=${index}
+								>
+									<span>${item}</span>
+								</div>`
+						)}
+					</div>
 				</div>
 			</div>
 		`;
@@ -325,6 +332,14 @@ export class SearchableSelect extends MvuElement {
 
 	set allowFreeText(value) {
 		this.#allowFreeText = value === true;
+	}
+
+	get dropdownHeader() {
+		return this.getModel().dropdownHeader;
+	}
+
+	set dropdownHeader(value) {
+		this.signal(Update_Dropdown_Header, value);
 	}
 
 	get placeholder() {

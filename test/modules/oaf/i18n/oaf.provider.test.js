@@ -17,6 +17,7 @@ describe('i18n for header module', () => {
 		expect(map.oaf_operator_greater).toBe('Größer als');
 		expect(map.oaf_operator_lesser).toBe('Kleiner als');
 		expect(map.oaf_operator_between).toBe('Zwischen');
+		expect(map.oaf_filter_dropdown_header_title).toBe('Beispiele');
 	});
 
 	it('provides translation for en', () => {
@@ -35,10 +36,11 @@ describe('i18n for header module', () => {
 		expect(map.oaf_operator_greater).toBe('Greater Than');
 		expect(map.oaf_operator_lesser).toBe('Less Than');
 		expect(map.oaf_operator_between).toBe('Between');
+		expect(map.oaf_filter_dropdown_header_title).toBe('Examples');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 13;
+		const expectedSize = 14;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
