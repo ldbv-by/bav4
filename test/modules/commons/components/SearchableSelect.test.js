@@ -48,10 +48,10 @@ describe('SearchableSelect', () => {
 		});
 	});
 
-	describe('when internal methods called', () => {
+	describe('when member methods called', () => {
 		it('resolves choosing on empty property "options"', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
-			expect(() => element._chooseNextOption()).not.toThrow();
+			expect(() => element._hoverNextOption()).not.toThrow();
 		});
 
 		it('returns an empty string when search is null', async () => {
@@ -77,6 +77,18 @@ describe('SearchableSelect', () => {
 			element._showDropdown(350);
 
 			expect(element.shadowRoot.querySelector('.searchable-select').classList).not.toContain('fold-up');
+		});
+
+		it('removes ".hovered" class when dropdown opens', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			element.options = ['foo', 'bar', 'baz'];
+			const dropdown = element.shadowRoot.querySelector('.dropdown');
+
+			const htmlOptions = element.shadowRoot.querySelectorAll('.option');
+			htmlOptions[0].classList.add('hovered');
+
+			element._showDropdown();
+			expect(htmlOptions[0].classList.contains('hovered')).toBeFalse();
 		});
 	});
 
@@ -429,6 +441,35 @@ describe('SearchableSelect', () => {
 			document.dispatchEvent(getKeyEvent(keyCodes.Enter));
 
 			expect(element.selected).toBe('bar');
+		});
+
+		it('keeps value of property selected when search is incomplete', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			element.options = ['foo', 'bar'];
+			element.selected = 'bar';
+			element.search = 'ba';
+
+			// open dropdown to enable key events
+			const searchable = element.shadowRoot.querySelector('.searchable-select');
+			searchable.dispatchEvent(new MouseEvent('click'));
+			document.dispatchEvent(getKeyEvent(keyCodes.Enter));
+
+			expect(element.selected).toBe('bar');
+		});
+
+		it('updates value of property selected when free-text is allowed', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			element.options = ['foo', 'bar'];
+			element.allowFreeText = true;
+			element.selected = 'bar';
+			element.search = 'ba';
+
+			// open dropdown to enable key events
+			const searchable = element.shadowRoot.querySelector('.searchable-select');
+			searchable.dispatchEvent(new MouseEvent('click'));
+			document.dispatchEvent(getKeyEvent(keyCodes.Enter));
+
+			expect(element.selected).toBe('ba');
 		});
 	});
 
