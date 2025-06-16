@@ -76,13 +76,13 @@ export class LayersPlugin extends BaPlugin {
 								if (!!layerTimestamp[index] && geoResource.timestamps.includes(layerTimestamp[index])) {
 									atomicallyAddedLayer.timestamp = layerTimestamp[index];
 								}
-								if (!!layerSwipeAlignment[index] && Object.values(SwipeAlignment).includes(layerSwipeAlignment[index])) {
+								if (Object.values(SwipeAlignment).includes(layerSwipeAlignment[index])) {
 									atomicallyAddedLayer.constraints.swipeAlignment = layerSwipeAlignment[index];
 								}
-								if (!!layerStyle[index] && isHexColor(layerStyle[index])) {
+								if (isHexColor(layerStyle[index])) {
 									atomicallyAddedLayer.style = { baseColor: layerStyle[index] };
 								}
-								if (!!layerFilter[index] && isString(layerFilter[index]) && layerFilter[index].length) {
+								if (isString(layerFilter[index]) && layerFilter[index].length) {
 									atomicallyAddedLayer.constraints.filter = layerFilter[index];
 								}
 
