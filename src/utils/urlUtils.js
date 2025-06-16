@@ -83,9 +83,8 @@ export const setQueryParams = (url, params = {}) => {
  * Returns a query parameter string without a leading "?".
  *
  * Note:
- * It provides an alternative for `URLSearchParams`.
- * URLSearchParams uses `application/x-www-form-urlencoded` format.
- * While it's suitable for decoding URL queries, for encoding it can lead to unexpected results such as spaces being encoded as `+` and extra characters such as `~` being percent-encoded.
+ * It provides an alternative for `URLSearchParams`, because it uses `application/x-www-form-urlencoded` format.
+ * While URLSearchParams is suitable for decoding URL queries, for encoding it can lead to unexpected results such as spaces being encoded as `+` and extra characters such as `~` being percent-encoded.
  * Therefore, this method encodes each entry by calling `encodeURIComponent`.
  *
  * @param {object} queryParameters The query parameters for that query string
