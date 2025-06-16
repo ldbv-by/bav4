@@ -1,4 +1,4 @@
-import { appendQueryParams, getOrigin, getOriginAndPathname, getPathParams, setQueryParams } from '../../src/utils/urlUtils';
+import { appendQueryParams, getOrigin, getOriginAndPathname, getPathParams, queryParamsToString, setQueryParams } from '../../src/utils/urlUtils';
 
 describe('urlUtils', () => {
 	describe('getOriginAndPathname', () => {
@@ -77,6 +77,14 @@ describe('urlUtils', () => {
 
 		it('throws a TypeError when parameter is not valid', () => {
 			expect(() => setQueryParams('foo')).toThrowError(TypeError);
+		});
+	});
+
+	describe('queryParamsToString', () => {
+		it('builds a query string from query parameters', () => {
+			expect(queryParamsToString({ one: 42, two: '(((plz+=+12345)))', three: ['a', 'b'] })).toBe(
+				encodeURIComponent('one=42&two=(((plz+=+12345)))&three=a,b')
+			);
 		});
 	});
 });
