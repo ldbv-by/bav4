@@ -58,7 +58,7 @@ const sanitizeStyle = (styles) => {
 		return firstStyle ?? new Style();
 	};
 
-	const style = getFirstOrDefault(styles ?? []);
+	const style = getFirstOrDefault(styles);
 	const kmlStyleProperties = toKmlStyleProperties(style);
 
 	if (kmlStyleProperties.image instanceof CircleStyle) {
