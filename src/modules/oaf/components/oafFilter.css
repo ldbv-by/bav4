@@ -82,5 +82,5 @@ button {
 }
 
 .not-button.active {
-	background-color: green;
+	background-color: red;
 }

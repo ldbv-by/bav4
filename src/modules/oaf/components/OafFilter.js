@@ -14,7 +14,7 @@ const Update_Operator = 'update_operator';
 const Update_Value = 'update_value';
 const Update_Min_Value = 'update_min_value';
 const Update_Max_Value = 'update_max_value';
-
+const Update_Use_Negation = 'update_use_negation';
 /**
  * A Filter for the OGC Feature API which filters a provided queryable
  *
@@ -39,7 +39,8 @@ export class OafFilter extends MvuElement {
 			operator: getOperatorByName(CqlOperator.EQUALS),
 			value: null,
 			minValue: null,
-			maxValue: null
+			maxValue: null,
+			useNegation: false
 		});
 
 		const { TranslationService: translationService } = $injector.inject('TranslationService');
@@ -58,6 +59,8 @@ export class OafFilter extends MvuElement {
 				return { ...model, minValue: data };
 			case Update_Max_Value:
 				return { ...model, maxValue: data };
+			case Update_Use_Negation:
+				return { ...model, useNegation: data };
 		}
 	}
 
@@ -75,12 +78,12 @@ export class OafFilter extends MvuElement {
 			this.dispatchEvent(new CustomEvent('change'));
 		}
 
-		this.observeModel(['operator', 'minValue', 'maxValue', 'value'], () => this.dispatchEvent(new CustomEvent('change')));
+		this.observeModel(['operator', 'useNegation', 'minValue', 'maxValue', 'value'], () => this.dispatchEvent(new CustomEvent('change')));
 	}
 
 	createView(model) {
 		const translate = (key) => this.#translationService.translate(key);
-		const { minValue, maxValue, value, operator } = model;
+		const { minValue, maxValue, value, operator, useNegation } = model;
 		const { name, type, values: queryableValues, finalized } = model.queryable;
 		const operators = getOperatorDefinitions(type);
 
@@ -104,6 +107,10 @@ export class OafFilter extends MvuElement {
 			this.dispatchEvent(new CustomEvent('remove'));
 		};
 
+		const onNegateButtonClicked = () => {
+			this.useNegation = !this.useNegation;
+		};
+
 		const getStringInputHtml = () => {
 			return html`<div data-type="${OafQueryableType.STRING}">
 				<ba-searchable-select
@@ -121,7 +128,7 @@ export class OafFilter extends MvuElement {
 
 		const getTimeInputHtml = () => {
 			return html`<div data-type="time">
-				${operator.name === 'between'
+				${operator.name === CqlOperator.BETWEEN
 					? html`<ba-searchable-select
 								class="min-value-input"
 								@select=${(evt) => onMinValueChanged(evt, evt.target.selected)}
@@ -155,7 +162,7 @@ export class OafFilter extends MvuElement {
 			const maxRange = model.queryable.maxValue;
 
 			const content = () => {
-				if (operator.name === 'between') {
+				if (operator.name === CqlOperator.BETWEEN) {
 					return html`
 						<input
 							type="text"
@@ -228,7 +235,7 @@ export class OafFilter extends MvuElement {
 			return html`
 				<div class="input-operator">
 					<select id="select-operator" @change=${onOperatorSelect}>
-						${operators.map((op) => html`<option .selected=${op === operator} .value=${op.name}>${translate(op.key)}</option>`)}
+						${operators.map((op) => html`<option .selected=${op === operator} .value=${op.name}>${translate(op.translationKey)}</option>`)}
 					</select>
 				</div>
 			`;
@@ -243,7 +250,7 @@ export class OafFilter extends MvuElement {
 						<div class="filter-title-container"><span class="title">${name}</span></div>
 					<div class="grid-column-header">
 						${getOperatorHtml()}
-						<button class="not-button">NOT</button>
+						<button class="not-button ${useNegation ? 'active' : ''}" @click=${onNegateButtonClicked}>${translate('oaf_filter_not_button')}</button>
 						<button class="remove-button" @click=${onRemove}>X</button>
 					</div>
 					<div class="grid-column">
@@ -300,6 +307,14 @@ export class OafFilter extends MvuElement {
 		} else {
 			this.signal(Update_Operator, value);
 		}
+	}
+
+	get useNegation() {
+		return this.getModel().useNegation;
+	}
+
+	set useNegation(value) {
+		this.signal(Update_Use_Negation, value === true);
 	}
 
 	get expression() {

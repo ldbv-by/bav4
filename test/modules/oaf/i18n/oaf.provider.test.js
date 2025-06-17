@@ -19,6 +19,7 @@ describe('i18n for header module', () => {
 		expect(map.oaf_operator_between).toBe('Between');
 		expect(map.oaf_filter_dropdown_header_title).toBe('Examples');
 		expect(map.oaf_filter_input_placeholder).toBe('Filter by...');
+		expect(map.oaf_filter_not_button).toBe('NOT');
 	});
 
 	it('provides translation for de', () => {
@@ -39,10 +40,11 @@ describe('i18n for header module', () => {
 		expect(map.oaf_operator_between).toBe('Zwischen');
 		expect(map.oaf_filter_dropdown_header_title).toBe('Beispiele');
 		expect(map.oaf_filter_input_placeholder).toBe('Filtern nach...');
+		expect(map.oaf_filter_not_button).toBe('NICHT');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 15;
+		const expectedSize = 16;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
