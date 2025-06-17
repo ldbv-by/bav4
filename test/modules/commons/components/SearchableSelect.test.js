@@ -353,6 +353,10 @@ describe('SearchableSelect', () => {
 			element.options = ['foo', 'bar', 'baz'];
 			element.search = 'bar';
 
+			// open dropdown to enable body click listener
+			const searchable = element.shadowRoot.querySelector('.searchable-select');
+			searchable.dispatchEvent(new MouseEvent('click'));
+
 			document.querySelector('body').click();
 			expect(element.search).toBe('');
 		});

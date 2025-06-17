@@ -62,8 +62,19 @@ export class OafFilter extends MvuElement {
 	}
 
 	onInitialize() {
-		// Creation of a filter is considered a change
-		this.dispatchEvent(new CustomEvent('change'));
+		const { queryable, minValue, maxValue, value } = this.getModel();
+
+		// Ensures values are set correctly when 'queryable' is missing.
+		// This can happen if 'queryable' is set after the value properties in 'OafFilterGroup'.
+		if (queryable.type !== undefined) {
+			this.value = value;
+			this.maxValue = maxValue;
+			this.minValue = minValue;
+
+			// The creation of a filter is considered a change
+			this.dispatchEvent(new CustomEvent('change'));
+		}
+
 		this.observeModel(['operator', 'minValue', 'maxValue', 'value'], () => this.dispatchEvent(new CustomEvent('change')));
 	}
 
@@ -99,6 +110,7 @@ export class OafFilter extends MvuElement {
 					class="value-input"
 					@select=${(evt) => onValueChanged(evt, evt.target.selected)}
 					.selected=${value}
+					.placeholder=${translate('oaf_filter_input_placeholder')}
 					.options=${queryableValues}
 					.allowFreeText=${!finalized}
 					.dropdownHeader=${finalized ? null : translate('oaf_filter_dropdown_header_title')}
@@ -115,6 +127,7 @@ export class OafFilter extends MvuElement {
 								@select=${(evt) => onMinValueChanged(evt, evt.target.selected)}
 								.selected=${minValue}
 								.options=${queryableValues}
+								.placeholder=${translate('oaf_filter_input_placeholder')}
 							>
 							</ba-searchable-select>
 							<ba-searchable-select
@@ -122,6 +135,7 @@ export class OafFilter extends MvuElement {
 								@select=${(evt) => onMaxValueChanged(evt, evt.target.selected)}
 								.selected=${maxValue}
 								.options=${queryableValues}
+								.placeholder=${translate('oaf_filter_input_placeholder')}
 							>
 							</ba-searchable-select> `
 					: html`<ba-searchable-select
@@ -129,6 +143,7 @@ export class OafFilter extends MvuElement {
 							@select=${(evt) => onValueChanged(evt, evt.target.selected)}
 							.selected=${value}
 							.options=${queryableValues}
+							.placeholder=${translate('oaf_filter_input_placeholder')}
 						>
 						</ba-searchable-select>`}
 			</div>`;
@@ -144,7 +159,7 @@ export class OafFilter extends MvuElement {
 					return html`
 						<input
 							type="text"
-							placeholder="0"
+							.placeholder=${translate('oaf_filter_input_placeholder')}
 							class="min-value-input"
 							.value=${minValue}
 							step=${step}
@@ -154,7 +169,7 @@ export class OafFilter extends MvuElement {
 						/>
 						<input
 							type="text"
-							placeholder="0"
+							.placeholder=${translate('oaf_filter_input_placeholder')}
 							class="max-value-input"
 							.value=${maxValue}
 							step=${step}
@@ -168,7 +183,7 @@ export class OafFilter extends MvuElement {
 				return html`
 					<input
 						type="text"
-						placeholder="0"
+						.placeholder=${translate('oaf_filter_input_placeholder')}
 						class="value-input"
 						.value=${value}
 						step=${step}
@@ -241,26 +256,30 @@ export class OafFilter extends MvuElement {
 	}
 
 	set value(value) {
-		this._updateValue(value, this.value, Update_Value);
+		this._updateValue(value, this.getModel().value, Update_Value);
 	}
 
 	get value() {
-		return this.getModel().value;
+		const value = this.getModel().value;
+		return this._parseValue(value, null);
 	}
 
 	set maxValue(value) {
-		this._updateValue(value, this.value, Update_Max_Value);
+		this._updateValue(value, this.getModel().maxValue, Update_Max_Value);
 	}
 
 	get maxValue() {
-		return this.getModel().maxValue;
+		const maxValue = this.getModel().maxValue;
+		return this._parseValue(maxValue, null);
 	}
+
 	set minValue(value) {
-		this._updateValue(value, this.value, Update_Min_Value);
+		this._updateValue(value, this.getModel().minValue, Update_Min_Value);
 	}
 
 	get minValue() {
-		return this.getModel().minValue;
+		const minValue = this.getModel().minValue;
+		return this._parseValue(minValue, null);
 	}
 
 	get queryable() {
@@ -296,21 +315,24 @@ export class OafFilter extends MvuElement {
 	_parseValue(value, fallback) {
 		const type = this.queryable.type;
 
-		if (type === OafQueryableType.INTEGER) {
-			value = parseInt(value);
-			return !isNaN(value) ? value : fallback;
-		}
+		switch (type) {
+			case OafQueryableType.INTEGER:
+				value = parseInt(value);
+				return !isNaN(value) ? value : fallback;
 
-		if (type === OafQueryableType.FLOAT) {
-			value = parseFloat(value);
-			return !isNaN(value) ? value : fallback;
-		}
+			case OafQueryableType.FLOAT:
+				value = parseFloat(value);
+				return !isNaN(value) ? value : fallback;
 
-		if (type === OafQueryableType.BOOLEAN) {
-			value = value ?? false;
-		}
+			case OafQueryableType.BOOLEAN:
+				return value ?? false;
 
-		return value;
+			case OafQueryableType.STRING:
+				return isString(value) ? value : '';
+
+			default:
+				return value;
+		}
 	}
 
 	static get tag() {

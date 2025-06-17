@@ -113,6 +113,11 @@ describe('OafMask', () => {
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('#btn-normal-mode')).toBeNull();
 		});
+
+		it('renders a loading spinner', async () => {
+			const element = await setup();
+			expect(element.shadowRoot.querySelector('ba-spinner')).not.toBeNull();
+		});
 	});
 
 	describe('when the ui renders with filter capabilities', () => {
@@ -121,6 +126,11 @@ describe('OafMask', () => {
 		});
 
 		describe('in normal mode', () => {
+			it('does not render a loading spinner', async () => {
+				const element = await setup();
+				expect(element.shadowRoot.querySelector('ba-spinner')).toBeNull();
+			});
+
 			it('does not render filter groups', async () => {
 				const element = await setup();
 				expect(element.shadowRoot.querySelectorAll('ba-oaf-filter-group')).toHaveSize(0);
@@ -245,6 +255,11 @@ describe('OafMask', () => {
 		});
 
 		describe('in expert mode', () => {
+			it('does not render a loading spinner', async () => {
+				const element = await setup();
+				expect(element.shadowRoot.querySelector('ba-spinner')).toBeNull();
+			});
+
 			it('renders the "Normal Mode" Button', async () => {
 				const element = await setup();
 				element.showConsole = true;

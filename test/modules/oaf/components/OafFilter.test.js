@@ -53,6 +53,17 @@ describe('OafFilter', () => {
 			expect(element.minValue).toBeNull();
 			expect(element.expression).toBe('');
 		});
+
+		it('updates values in model when initialized with queryable property as last', async () => {
+			const element = await setup(
+				{},
+				{ value: null, minValue: null, maxValue: null, queryable: createQueryable('StringQueryable', OafQueryableType.STRING) }
+			);
+
+			expect(element.getModel().value).toBe('');
+			expect(element.getModel().minValue).toBe('');
+			expect(element.getModel().maxValue).toBe('');
+		});
 	});
 
 	describe('when the ui renders', () => {
@@ -194,6 +205,7 @@ describe('OafFilter', () => {
 				const element = await setup();
 				element.queryable = createQueryable('foo', OafQueryableType.STRING);
 
+				expect(element.shadowRoot.querySelector('.value-input').placeholder).toBe('oaf_filter_input_placeholder');
 				expect(element.shadowRoot.querySelector(`[data-type="${OafQueryableType.STRING}"]`)).not.toBeNull();
 			});
 
@@ -266,6 +278,8 @@ describe('OafFilter', () => {
 
 					expect(inputField.value).toBe(`${valueToTest}`);
 				});
+
+				expect(inputField.placeholder).toBe('oaf_filter_input_placeholder');
 			});
 
 			it(`updates property "minValue" on field-input`, async () => {
@@ -287,6 +301,7 @@ describe('OafFilter', () => {
 				const element = await setup();
 				element.queryable = { ...createQueryable('foo', OafQueryableType.INTEGER) };
 				element.operator = 'between';
+
 				const inputField = element.shadowRoot.querySelector('.min-value-input');
 
 				testCases.forEach((valueToTest) => {
@@ -295,6 +310,8 @@ describe('OafFilter', () => {
 
 					expect(inputField.value).toBe(`${valueToTest}`);
 				});
+
+				expect(inputField.placeholder).toBe('oaf_filter_input_placeholder');
 			});
 
 			it(`updates property "maxValue" on field-input`, async () => {
@@ -324,6 +341,8 @@ describe('OafFilter', () => {
 
 					expect(inputField.value).toBe(`${valueToTest}`);
 				});
+
+				expect(inputField.placeholder).toBe('oaf_filter_input_placeholder');
 			});
 
 			it(`renders filter with data-type attribute "${OafQueryableType.INTEGER}"`, async () => {
@@ -397,6 +416,8 @@ describe('OafFilter', () => {
 
 					expect(inputField.value).toBe(`${valueToTest}`);
 				});
+
+				expect(inputField.placeholder).toBe('oaf_filter_input_placeholder');
 			});
 
 			it(`updates property "minValue" on field-input`, async () => {
@@ -426,6 +447,8 @@ describe('OafFilter', () => {
 
 					expect(inputField.value).toBe(`${valueToTest}`);
 				});
+
+				expect(inputField.placeholder).toBe('oaf_filter_input_placeholder');
 			});
 
 			it(`updates property "maxValue" on field-input`, async () => {
@@ -455,6 +478,8 @@ describe('OafFilter', () => {
 
 					expect(inputField.value).toBe(`${valueToTest}`);
 				});
+
+				expect(inputField.placeholder).toBe('oaf_filter_input_placeholder');
 			});
 
 			it(`renders field with data-type attribute "${OafQueryableType.FLOAT}"`, async () => {

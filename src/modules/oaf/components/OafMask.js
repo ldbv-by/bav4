@@ -28,6 +28,7 @@ export class OafMask extends MvuElement {
 	#importOafService;
 	#translationService;
 	#geoResourceService;
+	#capabilitiesLoaded;
 
 	constructor() {
 		super({
@@ -95,6 +96,10 @@ export class OafMask extends MvuElement {
 		const { capabilities, filterGroups, showConsole } = model;
 
 		const contentHeaderButtonsHtml = () => {
+			if (!this.#capabilitiesLoaded) {
+				return html`<ba-spinner></ba-spinner>`;
+			}
+
 			if (capabilities.length < 1) {
 				return nothing;
 			}
@@ -187,10 +192,11 @@ export class OafMask extends MvuElement {
 	}
 
 	async _requestFilterCapabilities() {
+		this.#capabilitiesLoaded = false;
 		const layer = this._getLayer();
 		const geoResource = this.#geoResourceService.byId(layer.geoResourceId);
 		const capabilities = await this.#importOafService.getFilterCapabilities(geoResource);
-
+		this.#capabilitiesLoaded = true;
 		this.signal(Update_Capabilities, capabilities);
 	}
 

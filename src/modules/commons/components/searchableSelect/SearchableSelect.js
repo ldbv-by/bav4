@@ -62,16 +62,12 @@ export class SearchableSelect extends MvuElement {
 			dropdownHeader: null
 		});
 
+		this.#keyActionMapper = new KeyActionMapper(document);
 		this.#hasPointer = false;
 		this.#allowFreeText = false;
 	}
 
 	onInitialize() {
-		document.addEventListener('click', this.#onPointerCancelActionListener);
-
-		this.#keyActionMapper = new KeyActionMapper(document);
-		this.#keyActionMapper.deactivate();
-
 		this.observeModel('search', () => this.#dispatchChangeEvents());
 		this.observeModel('selected', () => this.#dispatchSelectEvents());
 	}
@@ -202,7 +198,6 @@ export class SearchableSelect extends MvuElement {
 				matchingOptions.push(option);
 			}
 		}
-
 		return { ...model, filteredOptions: matchingOptions, search: search };
 	}
 
@@ -210,7 +205,9 @@ export class SearchableSelect extends MvuElement {
 		const dropdown = this.shadowRoot.querySelector('.dropdown');
 		dropdown.classList.remove('visible');
 		dropdown.classList.add('hidden');
+
 		this.#keyActionMapper.deactivate();
+		document.removeEventListener('click', this.#onPointerCancelActionListener);
 	}
 
 	_showDropdown(viewportHeight) {
@@ -237,6 +234,7 @@ export class SearchableSelect extends MvuElement {
 		}
 
 		// Duplicate event safety
+		document.removeEventListener('click', this.#onPointerCancelActionListener);
 		this.#keyActionMapper.deactivate();
 		this.#keyActionMapper
 			.addForKeyUp('Escape', () => this.#cancelAction())
@@ -245,6 +243,7 @@ export class SearchableSelect extends MvuElement {
 			.addForKeyUp('ArrowDown', () => this._hoverNextOption());
 
 		this.#keyActionMapper.activate();
+		document.addEventListener('click', this.#onPointerCancelActionListener);
 		Array.from(this.shadowRoot.querySelectorAll('.option')).forEach((el) => el.classList.remove('hovered'));
 	}
 
