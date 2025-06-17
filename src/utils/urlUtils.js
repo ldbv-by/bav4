@@ -4,6 +4,7 @@
 /**
  * Extracts the origin of a URL following by its pathname.
  * If the URL has no pathname the result is the same like it would be calling {@link UrlService#origin}
+ * @function
  * @param {string} url
  * @returns {string} origin and pathname
  * @throws TypeError
@@ -15,6 +16,7 @@ export const getOriginAndPathname = (url) => {
 
 /**
  * Extracts the origin of a URL.
+ * @function
  * @param {string} url
  * @returns {string} origin
  * @throws TypeError
@@ -26,6 +28,7 @@ export const getOrigin = (url) => {
 
 /**
  * Extracts the path parameters of a URL.
+ * @function
  * @param {string} url
  * @returns {string[]} path parameters
  * @throws TypeError
@@ -37,6 +40,7 @@ export const getPathParams = (url) => {
 
 /**
  * Appends query parameters to a given URL. Existing parameters will leave untouched.
+ * @function
  * @param {string} url The URL
  * @param {object} params The query parameters that should be appended
  * @returns the complemented URL
@@ -58,6 +62,7 @@ export const appendQueryParams = (url, params = {}) => {
  * Sets query parameters to a given URL. Existing parameters containing the same key will be removed.
  *
  * If the value for a query parameter is `null`, existing parameters containing the same key will be removed.
+ * @function
  * @param {string} url The URL
  * @param {object} params The query parameters that should be appended
  * @returns the complemented URL
@@ -77,4 +82,23 @@ export const setQueryParams = (url, params = {}) => {
 	}
 
 	return `${urlWithoutQP}?${searchParams.toString()}`;
+};
+
+/**
+ * Returns a query parameter string without a leading "?".
+ *
+ * Note:
+ * It provides an alternative for `URLSearchParams`.
+ *
+ * While URLSearchParams is suitable for decoding URL queries, for encoding it can lead to unexpected results such as spaces being encoded as `+` and extra characters such as `~` being percent-encoded (it uses `application/x-www-form-urlencoded`).
+ * Therefore, this method encodes each entry of the the given query parameters by calling `encodeURIComponent`.
+ *
+ * @function
+ * @param {object} queryParameters The query parameters for that query string
+ * @returns {string} the query parameters string
+ */
+export const queryParamsToString = (queryParameters) => {
+	return Object.entries(queryParameters)
+		.map((pair) => pair.map(encodeURIComponent).join('='))
+		.join('&');
 };
