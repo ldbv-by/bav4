@@ -110,6 +110,13 @@ describe('oafUtils', () => {
 			oafFilter.operator = getOperatorByName(CqlOperator.EQUALS);
 			oafFilter.value = 'bar';
 
+			oafFilter.queryable = createQueryable('', OafQueryableType.STRING);
+			expect(createCqlFilterExpression(oafFilter)).toBe('');
+
+			oafFilter.queryable = createQueryable(' ', OafQueryableType.STRING);
+			expect(createCqlFilterExpression(oafFilter)).toBe('');
+
+			oafFilter.queryable = createQueryable(null, OafQueryableType.STRING);
 			expect(createCqlFilterExpression(oafFilter)).toBe('');
 		});
 
@@ -132,24 +139,65 @@ describe('oafUtils', () => {
 			expect(createCqlFilterExpression({ ...oafFilter, useNegation: true })).toBe("NOT(foo = 'bar')");
 		});
 
+		it('creates a "equals" CQL expression with empty value for a string type', () => {
+			const oafFilter = createDefaultOafFilter();
+			oafFilter.operator = getOperatorByName(CqlOperator.EQUALS);
+			oafFilter.queryable = createQueryable('foo', OafQueryableType.STRING);
+
+			oafFilter.value = null;
+			expect(createCqlFilterExpression(oafFilter)).toBe("(foo = '')");
+			expect(createCqlFilterExpression({ ...oafFilter, useNegation: true })).toBe("NOT(foo = '')");
+
+			oafFilter.value = '';
+			expect(createCqlFilterExpression(oafFilter)).toBe("(foo = '')");
+			expect(createCqlFilterExpression({ ...oafFilter, useNegation: true })).toBe("NOT(foo = '')");
+		});
+
 		it('creates a "equals" CQL expression for a number type', () => {
 			const oafFilter = createDefaultOafFilter();
 			oafFilter.operator = getOperatorByName(CqlOperator.EQUALS);
 			oafFilter.queryable = createQueryable('foo', OafQueryableType.FLOAT);
-			oafFilter.value = 0.25;
 
+			oafFilter.value = 0.25;
 			expect(createCqlFilterExpression(oafFilter)).toBe('(foo = 0.25)');
 			expect(createCqlFilterExpression({ ...oafFilter, useNegation: true })).toBe('NOT(foo = 0.25)');
+		});
+
+		it('creates an empty "equals" CQL expression for a number type', () => {
+			const oafFilter = createDefaultOafFilter();
+			oafFilter.operator = getOperatorByName(CqlOperator.EQUALS);
+			oafFilter.queryable = createQueryable('foo', OafQueryableType.FLOAT);
+
+			oafFilter.value = null;
+			expect(createCqlFilterExpression(oafFilter)).toBe('');
+			expect(createCqlFilterExpression({ ...oafFilter, useNegation: true })).toBe('');
+
+			oafFilter.value = '';
+			expect(createCqlFilterExpression(oafFilter)).toBe('');
+			expect(createCqlFilterExpression({ ...oafFilter, useNegation: true })).toBe('');
 		});
 
 		it('creates a "like" CQL expression', () => {
 			const oafFilter = createDefaultOafFilter();
 			oafFilter.operator = getOperatorByName(CqlOperator.LIKE);
 			oafFilter.queryable = createQueryable('foo', OafQueryableType.STRING);
-			oafFilter.value = 'bar';
 
+			oafFilter.value = 'bar';
 			expect(createCqlFilterExpression(oafFilter)).toBe("(foo LIKE '%bar%')");
 			expect(createCqlFilterExpression({ ...oafFilter, useNegation: true })).toBe("NOT(foo LIKE '%bar%')");
+		});
+
+		it('creates a "like" CQL expression with empty value', () => {
+			const oafFilter = createDefaultOafFilter();
+			oafFilter.operator = getOperatorByName(CqlOperator.LIKE);
+			oafFilter.queryable = createQueryable('foo', OafQueryableType.STRING);
+			oafFilter.value = null;
+			expect(createCqlFilterExpression(oafFilter)).toBe("(foo LIKE '%%')");
+			expect(createCqlFilterExpression({ ...oafFilter, useNegation: true })).toBe("NOT(foo LIKE '%%')");
+
+			oafFilter.value = '';
+			expect(createCqlFilterExpression(oafFilter)).toBe("(foo LIKE '%%')");
+			expect(createCqlFilterExpression({ ...oafFilter, useNegation: true })).toBe("NOT(foo LIKE '%%')");
 		});
 
 		it('creates a "between" CQL expression', () => {
@@ -200,9 +248,14 @@ describe('oafUtils', () => {
 			const oafFilter = createDefaultOafFilter();
 			oafFilter.operator = getOperatorByName(CqlOperator.BETWEEN);
 			oafFilter.queryable = createQueryable('foo', OafQueryableType.INTEGER);
+
 			oafFilter.minValue = null;
 			oafFilter.maxValue = null;
+			expect(createCqlFilterExpression(oafFilter)).toBe('');
+			expect(createCqlFilterExpression({ ...oafFilter, useNegation: true })).toBe('');
 
+			oafFilter.minValue = '';
+			oafFilter.maxValue = '';
 			expect(createCqlFilterExpression(oafFilter)).toBe('');
 			expect(createCqlFilterExpression({ ...oafFilter, useNegation: true })).toBe('');
 		});
@@ -217,6 +270,20 @@ describe('oafUtils', () => {
 			expect(createCqlFilterExpression({ ...oafFilter, useNegation: true })).toBe('NOT(foo > 10)');
 		});
 
+		it('creates an empty "greater" CQL expression', () => {
+			const oafFilter = createDefaultOafFilter();
+			oafFilter.operator = getOperatorByName(CqlOperator.GREATER);
+			oafFilter.queryable = createQueryable('foo', OafQueryableType.INTEGER);
+
+			oafFilter.value = null;
+			expect(createCqlFilterExpression(oafFilter)).toBe('');
+			expect(createCqlFilterExpression({ ...oafFilter, useNegation: true })).toBe('');
+
+			oafFilter.value = '';
+			expect(createCqlFilterExpression(oafFilter)).toBe('');
+			expect(createCqlFilterExpression({ ...oafFilter, useNegation: true })).toBe('');
+		});
+
 		it('creates a "lesser" CQL expression', () => {
 			const oafFilter = createDefaultOafFilter();
 			oafFilter.operator = getOperatorByName(CqlOperator.LESSER);
@@ -225,6 +292,20 @@ describe('oafUtils', () => {
 
 			expect(createCqlFilterExpression(oafFilter)).toBe('(foo < 10)');
 			expect(createCqlFilterExpression({ ...oafFilter, useNegation: true })).toBe('NOT(foo < 10)');
+		});
+
+		it('creates an empty "lesser" CQL expression', () => {
+			const oafFilter = createDefaultOafFilter();
+			oafFilter.operator = getOperatorByName(CqlOperator.LESSER);
+			oafFilter.queryable = createQueryable('foo', OafQueryableType.INTEGER);
+
+			oafFilter.value = null;
+			expect(createCqlFilterExpression(oafFilter)).toBe('');
+			expect(createCqlFilterExpression({ ...oafFilter, useNegation: true })).toBe('');
+
+			oafFilter.value = '';
+			expect(createCqlFilterExpression(oafFilter)).toBe('');
+			expect(createCqlFilterExpression({ ...oafFilter, useNegation: true })).toBe('');
 		});
 
 		it('creates an empty CQL expression when operator is not defined', () => {

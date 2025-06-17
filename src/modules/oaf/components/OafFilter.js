@@ -5,7 +5,7 @@ import css from './oafFilter.css';
 import { $injector } from '../../../injection';
 import { html, nothing } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
-import { isString } from '../../../utils/checks';
+import { isNumber, isString } from '../../../utils/checks';
 import { getOperatorDefinitions, getOperatorByName, createCqlFilterExpression, CqlOperator } from './oafUtils';
 import { OafQueryableType } from '../../../domain/oaf';
 
@@ -332,12 +332,18 @@ export class OafFilter extends MvuElement {
 
 		switch (type) {
 			case OafQueryableType.INTEGER:
+				if (value === '') {
+					return '';
+				}
 				value = parseInt(value);
-				return !isNaN(value) ? value : fallback;
+				return isNumber(value) ? value : fallback;
 
 			case OafQueryableType.FLOAT:
+				if (value === '') {
+					return '';
+				}
 				value = parseFloat(value);
-				return !isNaN(value) ? value : fallback;
+				return isNumber(value) ? value : fallback;
 
 			case OafQueryableType.BOOLEAN:
 				if (isString(value)) {

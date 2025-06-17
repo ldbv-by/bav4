@@ -295,20 +295,24 @@ describe('OafFilter', () => {
 
 					expect(element.value).toBe(Number(valueToTest));
 				});
+
+				inputField.value = '';
+				inputField.dispatchEvent(new Event('input'));
+				expect(element.value).toBe('');
 			});
 
-			it(`updates value-field on field-input`, async () => {
+			it(`updates field-input when property "value" changes`, async () => {
 				const element = await setup();
 				element.queryable = createQueryable('foo', OafQueryableType.INTEGER);
 				const inputField = element.shadowRoot.querySelector('.value-input');
 
 				testCases.forEach((valueToTest) => {
-					inputField.value = valueToTest;
-					inputField.dispatchEvent(new Event('input'));
-
+					element.value = valueToTest;
 					expect(inputField.value).toBe(`${valueToTest}`);
 				});
 
+				element.value = '';
+				expect(inputField.value).toBe('');
 				expect(inputField.placeholder).toBe('oaf_filter_input_placeholder');
 			});
 
@@ -325,9 +329,13 @@ describe('OafFilter', () => {
 
 					expect(element.minValue).toBe(Number(valueToTest));
 				});
+
+				inputField.value = '';
+				inputField.dispatchEvent(new Event('input'));
+				expect(element.minValue).toBe('');
 			});
 
-			it(`updates min-value-field on field-input`, async () => {
+			it(`updates field-input when property "minValue" changes`, async () => {
 				const element = await setup();
 				element.queryable = { ...createQueryable('foo', OafQueryableType.INTEGER) };
 				element.operator = 'between';
@@ -335,12 +343,12 @@ describe('OafFilter', () => {
 				const inputField = element.shadowRoot.querySelector('.min-value-input');
 
 				testCases.forEach((valueToTest) => {
-					inputField.value = valueToTest;
-					inputField.dispatchEvent(new Event('input'));
-
+					element.minValue = valueToTest;
 					expect(inputField.value).toBe(`${valueToTest}`);
 				});
 
+				element.minValue = '';
+				expect(inputField.value).toBe('');
 				expect(inputField.placeholder).toBe('oaf_filter_input_placeholder');
 			});
 
@@ -357,21 +365,25 @@ describe('OafFilter', () => {
 
 					expect(element.maxValue).toBe(Number(valueToTest));
 				});
+
+				inputField.value = '';
+				inputField.dispatchEvent(new Event('input'));
+				expect(element.maxValue).toBe('');
 			});
 
-			it(`updates max-value-field on field-input`, async () => {
+			it(`updates field-input when property "maxValue" changes`, async () => {
 				const element = await setup();
 				element.queryable = { ...createQueryable('foo', OafQueryableType.INTEGER) };
 				element.operator = 'between';
 				const inputField = element.shadowRoot.querySelector('.max-value-input');
 
 				testCases.forEach((valueToTest) => {
-					inputField.value = valueToTest;
-					inputField.dispatchEvent(new Event('input'));
-
+					element.maxValue = valueToTest;
 					expect(inputField.value).toBe(`${valueToTest}`);
 				});
 
+				element.maxValue = '';
+				expect(inputField.value).toBe('');
 				expect(inputField.placeholder).toBe('oaf_filter_input_placeholder');
 			});
 
@@ -430,23 +442,26 @@ describe('OafFilter', () => {
 				testCases.forEach((valueToTest) => {
 					inputField.value = valueToTest;
 					inputField.dispatchEvent(new Event('input'));
-
 					expect(element.value).toBe(Number(valueToTest));
 				});
+
+				inputField.value = '';
+				inputField.dispatchEvent(new Event('input'));
+				expect(element.value).toBe('');
 			});
 
-			it(`updates value-field on field-input`, async () => {
+			it(`updates field-input when property "value" changes`, async () => {
 				const element = await setup();
 				element.queryable = createQueryable('foo', OafQueryableType.FLOAT);
 				const inputField = element.shadowRoot.querySelector('.value-input');
 
 				testCases.forEach((valueToTest) => {
-					inputField.value = valueToTest;
-					inputField.dispatchEvent(new Event('input'));
-
+					element.value = valueToTest;
 					expect(inputField.value).toBe(`${valueToTest}`);
 				});
 
+				element.value = '';
+				expect(inputField.value).toBe('');
 				expect(inputField.placeholder).toBe('oaf_filter_input_placeholder');
 			});
 
@@ -460,24 +475,27 @@ describe('OafFilter', () => {
 				testCases.forEach((valueToTest) => {
 					inputField.value = valueToTest;
 					inputField.dispatchEvent(new Event('input'));
-
 					expect(element.minValue).toBe(Number(valueToTest));
 				});
+
+				inputField.value = '';
+				inputField.dispatchEvent(new Event('input'));
+				expect(element.minValue).toBe('');
 			});
 
-			it(`updates min-value-field on field-input`, async () => {
+			it(`updates field-input when property "minValue" changes`, async () => {
 				const element = await setup();
 				element.queryable = { ...createQueryable('foo', OafQueryableType.FLOAT) };
 				element.operator = 'between';
 				const inputField = element.shadowRoot.querySelector('.min-value-input');
 
 				testCases.forEach((valueToTest) => {
-					inputField.value = valueToTest;
-					inputField.dispatchEvent(new Event('input'));
-
+					element.minValue = valueToTest;
 					expect(inputField.value).toBe(`${valueToTest}`);
 				});
 
+				element.minValue = '';
+				expect(inputField.value).toBe('');
 				expect(inputField.placeholder).toBe('oaf_filter_input_placeholder');
 			});
 
@@ -491,24 +509,27 @@ describe('OafFilter', () => {
 				testCases.forEach((valueToTest) => {
 					inputField.value = valueToTest;
 					inputField.dispatchEvent(new Event('input'));
-
 					expect(element.maxValue).toBe(Number(valueToTest));
 				});
+
+				inputField.value = '';
+				inputField.dispatchEvent(new Event('input'));
+				expect(element.maxValue).toBe('');
 			});
 
-			it(`updates max-value-field on field-input`, async () => {
+			it(`updates field-input when property "maxValue" changes`, async () => {
 				const element = await setup();
 				element.queryable = { ...createQueryable('foo', OafQueryableType.FLOAT) };
 				element.operator = 'between';
 				const inputField = element.shadowRoot.querySelector('.max-value-input');
 
 				testCases.forEach((valueToTest) => {
-					inputField.value = valueToTest;
-					inputField.dispatchEvent(new Event('input'));
-
+					element.maxValue = valueToTest;
 					expect(inputField.value).toBe(`${valueToTest}`);
 				});
 
+				element.maxValue = '';
+				expect(inputField.value).toBe('');
 				expect(inputField.placeholder).toBe('oaf_filter_input_placeholder');
 			});
 

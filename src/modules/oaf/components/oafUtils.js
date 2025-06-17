@@ -3,7 +3,7 @@
  */
 import { createUniqueId } from '../../../utils/numberUtils';
 import { OafQueryableType } from '../../../domain/oaf';
-import { isString } from '../../../utils/checks';
+import { isNumber, isString } from '../../../utils/checks';
 
 /**
  * Enum representing operator names
@@ -132,12 +132,17 @@ export const createCqlFilterExpression = (oafFilter) => {
 		return '';
 	}
 
-	if (!isString(name)) {
+	if (!isString(name) || name.trim() === '') {
 		return '';
 	}
 
 	const equalOp = () => {
 		const exprValue = value ?? '';
+
+		if (!useQuotes && !isNumber(exprValue)) {
+			return '';
+		}
+
 		const expression = useQuotes ? `${name} = '${exprValue}'` : `${name} = ${exprValue}`;
 		return useNegation ? `NOT(${expression})` : `(${expression})`;
 	};
@@ -149,7 +154,7 @@ export const createCqlFilterExpression = (oafFilter) => {
 	};
 
 	const greaterOp = () => {
-		if (isNaN(value)) {
+		if (!isNumber(value)) {
 			return '';
 		}
 
@@ -158,7 +163,7 @@ export const createCqlFilterExpression = (oafFilter) => {
 	};
 
 	const lesserOp = () => {
-		if (isNaN(value)) {
+		if (!isNumber(value)) {
 			return '';
 		}
 
@@ -167,8 +172,8 @@ export const createCqlFilterExpression = (oafFilter) => {
 	};
 
 	const betweenOp = () => {
-		let exprMinValue = minValue;
-		let exprMaxValue = maxValue;
+		let exprMinValue = minValue === '' ? null : minValue;
+		let exprMaxValue = maxValue === '' ? null : maxValue;
 		let expression = null;
 
 		if (exprMinValue !== null) {
