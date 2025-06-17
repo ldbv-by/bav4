@@ -112,7 +112,7 @@ export class OafFilter extends MvuElement {
 		};
 
 		const getStringInputHtml = () => {
-			return html`<div data-type="${OafQueryableType.STRING}">
+			return html`<div data-type=${OafQueryableType.STRING}>
 				<ba-searchable-select
 					class="value-input"
 					@select=${(evt) => onValueChanged(evt, evt.target.selected)}
@@ -205,9 +205,9 @@ export class OafFilter extends MvuElement {
 		};
 
 		const getBooleanInputHtml = () => {
-			return html`<select class="value-input" data-type="${OafQueryableType.BOOLEAN}" @change=${(evt) => onValueChanged(evt, evt.target.value)}>
-				<option selected value="true">${translate('oaf_filter_yes')}</option>
-				<option selected value="false">${translate('oaf_filter_no')}</option>
+			return html`<select class="value-input" data-type=${OafQueryableType.BOOLEAN} @change=${(evt) => onValueChanged(evt, evt.target.value)}>
+				<option ?selected=${value === true} value="true">${translate('oaf_filter_yes')}</option>
+				<option ?selected=${value !== true} value="false">${translate('oaf_filter_no')}</option>
 			</select>`;
 		};
 
@@ -222,7 +222,7 @@ export class OafFilter extends MvuElement {
 					case OafQueryableType.BOOLEAN:
 						return getBooleanInputHtml();
 					case OafQueryableType.DATE:
-						return html`<div data-type="${OafQueryableType.DATE}"></div>`;
+						return html`<div data-type=${OafQueryableType.DATE}></div>`;
 					case 'time':
 						return getTimeInputHtml();
 				}
@@ -340,7 +340,11 @@ export class OafFilter extends MvuElement {
 				return !isNaN(value) ? value : fallback;
 
 			case OafQueryableType.BOOLEAN:
-				return value ?? false;
+				if (isString(value)) {
+					return value.toLowerCase() === 'true';
+				}
+
+				return value === true;
 
 			case OafQueryableType.STRING:
 				return isString(value) ? value : '';

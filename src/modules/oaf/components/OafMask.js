@@ -80,17 +80,17 @@ export class OafMask extends MvuElement {
 		};
 
 		const onRemoveFilterGroup = (evt) => {
-			this.signal(Update_Filter_Groups, this._removeFilterGroup(evt.target.getAttribute('group-id')));
+			const groups = this._removeFilterGroup(evt.target.getAttribute('group-id'));
+			this.signal(Update_Filter_Groups, groups);
+			this._updateLayer(groups);
 		};
 
 		const onFilterGroupChanged = (evt) => {
 			const groups = this.getModel().filterGroups;
 			const targetGroup = this._findFilterGroupById(evt.target.getAttribute('group-id'));
 			targetGroup.oafFilters = evt.target.oafFilters;
-			this.signal(Update_Filter_Groups, [...groups]);
-
-			const expression = createCqlExpression(filterGroups);
-			modifyLayer(this.layerId, { filter: expression === '' ? null : expression });
+			this.signal(Update_Filter_Groups, groups);
+			this._updateLayer(groups);
 		};
 
 		const { capabilities, filterGroups, showConsole } = model;
@@ -170,6 +170,11 @@ export class OafMask extends MvuElement {
 			<div class="sticky-container">${contentHeaderButtonsHtml()}</div>
 			<div class="container">${showConsole ? consoleModeHtml() : uiModeHtml()}</div>
 		`;
+	}
+
+	_updateLayer(filterGroups) {
+		const expression = createCqlExpression(filterGroups);
+		modifyLayer(this.layerId, { filter: expression === '' ? null : expression });
 	}
 
 	_removeFilterGroup(idToRemove) {

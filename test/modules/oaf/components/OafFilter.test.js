@@ -622,7 +622,7 @@ describe('OafFilter', () => {
 				select.value = true;
 				select.dispatchEvent(new Event('change'));
 
-				expect(element.value).toEqual('true');
+				expect(element.value).toEqual(true);
 			});
 
 			it(`renders field with data-type attribute "${OafQueryableType.BOOLEAN}"`, async () => {

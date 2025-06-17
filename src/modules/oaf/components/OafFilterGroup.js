@@ -7,6 +7,7 @@ import { MvuElement } from '../../MvuElement';
 import { createDefaultOafFilter } from './oafUtils';
 import css from './oafFilterGroup.css';
 import { $injector } from '../../../injection';
+import { repeat } from 'lit-html/directives/repeat.js';
 
 const Update_Queryables = 'update_queryables';
 const Update_Filters = 'update_filters';
@@ -98,7 +99,9 @@ export class OafFilterGroup extends MvuElement {
 					</div>
 				</div>
 				<div class="filter-container">
-					${oafFilters.map(
+					${repeat(
+						oafFilters,
+						(oafFilter) => oafFilter.queryable.name,
 						(oafFilter) =>
 							html`<ba-oaf-filter
 								.operator=${oafFilter.operator}
