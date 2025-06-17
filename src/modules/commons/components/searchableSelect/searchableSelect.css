@@ -65,4 +65,11 @@
 	/* width is controlled in js to fit parent container's width (see _showDropdown(viewportHeight)) */
 	position: absolute;
 	z-index: var(--z-mapbuttons);
+
+	.dropdown-header {
+		cursor: default;
+		background-color: black;
+		height: 40px;
+		padding: 10px;
+	}
 }

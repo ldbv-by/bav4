@@ -25,7 +25,8 @@ describe('SearchableSelect', () => {
 				search: '',
 				options: [],
 				filteredOptions: [],
-				showCaret: true
+				showCaret: true,
+				dropdownHeader: null
 			});
 		});
 
@@ -39,6 +40,8 @@ describe('SearchableSelect', () => {
 			expect(element.search).toBe('');
 			expect(element.options).toHaveSize(0);
 			expect(element.hasPointer).toBeFalse();
+			expect(element.dropdownHeader).toBeNull();
+			expect(element.allowFreeText).toBeFalse();
 		});
 
 		it('ensures property options is an empty array when set to undefined or null', async () => {
@@ -48,10 +51,10 @@ describe('SearchableSelect', () => {
 		});
 	});
 
-	describe('when internal methods called', () => {
+	describe('when member methods called', () => {
 		it('resolves choosing on empty property "options"', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
-			expect(() => element._chooseNextOption()).not.toThrow();
+			expect(() => element._hoverNextOption()).not.toThrow();
 		});
 
 		it('returns an empty string when search is null', async () => {
@@ -78,6 +81,17 @@ describe('SearchableSelect', () => {
 
 			expect(element.shadowRoot.querySelector('.searchable-select').classList).not.toContain('fold-up');
 		});
+
+		it('removes ".hovered" class when dropdown opens', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			element.options = ['foo', 'bar', 'baz'];
+
+			const htmlOptions = element.shadowRoot.querySelectorAll('.dropdown-content .option');
+			htmlOptions[0].classList.add('hovered');
+
+			element._showDropdown();
+			expect(htmlOptions[0].classList.contains('hovered')).toBeFalse();
+		});
 	});
 
 	describe('when disconnected', () => {
@@ -90,6 +104,17 @@ describe('SearchableSelect', () => {
 			expect(removeEventListenerSpy).toHaveBeenCalledWith('click', jasmine.anything());
 			expect(removeEventListenerSpy).toHaveBeenCalledWith('keyup', jasmine.anything());
 			expect(removeEventListenerSpy).toHaveBeenCalledWith('keydown', jasmine.anything());
+		});
+	});
+
+	describe('when property "dropdownHeader" changes', () => {
+		it('does render dropdown-header', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			element.dropdownHeader = 'My Dropdown Header';
+			const dropdownHeader = element.shadowRoot.querySelector('.dropdown-header');
+
+			expect(dropdownHeader).not.toBeNull();
+			expect(dropdownHeader.innerText).toBe('My Dropdown Header');
 		});
 	});
 
@@ -192,8 +217,16 @@ describe('SearchableSelect', () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = ['foo', 'bar', 'baz'];
 
-			expect(element.shadowRoot.querySelectorAll('.dropdown > .option')).toHaveSize(3);
-			expect(element.shadowRoot.querySelectorAll('.dropdown > .option.hovered')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.dropdown-content > .option')).toHaveSize(3);
+			expect(element.shadowRoot.querySelectorAll('.dropdown-content > .option.hovered')).toHaveSize(0);
+		});
+
+		describe('when property "dropdownHeader" changes it shows dropdownHeader', () => {
+			it('does not render dropdown-header', async () => {
+				const element = await TestUtils.render(SearchableSelect.tag);
+				const dropdownHeader = element.shadowRoot.querySelector('.dropdown-header');
+				expect(dropdownHeader).toBeNull();
+			});
 		});
 	});
 
@@ -202,12 +235,12 @@ describe('SearchableSelect', () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = ['foo', 'bar', 'baz', 'fo', 'ba'];
 
-			let htmlOptions = element.shadowRoot.querySelectorAll('.dropdown > .option > span');
+			let htmlOptions = element.shadowRoot.querySelectorAll('.dropdown-content > .option > span');
 
 			expect(htmlOptions).toHaveSize(5);
 
 			element.maxEntries = 4;
-			htmlOptions = element.shadowRoot.querySelectorAll('.dropdown > .option > span');
+			htmlOptions = element.shadowRoot.querySelectorAll('.dropdown-content > .option > span');
 			expect(htmlOptions).toHaveSize(4);
 		});
 	});
@@ -215,12 +248,12 @@ describe('SearchableSelect', () => {
 	describe('when property "options" changes', () => {
 		it('updates the view', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
-			let htmlOptions = element.shadowRoot.querySelectorAll('.dropdown > .option > span');
+			let htmlOptions = element.shadowRoot.querySelectorAll('.dropdown-content > .option > span');
 
 			expect(htmlOptions).toHaveSize(0);
 
 			element.options = ['foo', 'bar', 'baz'];
-			htmlOptions = element.shadowRoot.querySelectorAll('.dropdown > .option > span');
+			htmlOptions = element.shadowRoot.querySelectorAll('.dropdown-content > .option > span');
 
 			expect(htmlOptions).toHaveSize(3);
 
@@ -308,7 +341,7 @@ describe('SearchableSelect', () => {
 		it('sets on a rendered option the property "selected"', async () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = ['foo', 'bar', 'baz'];
-			const htmlOption = element.shadowRoot.querySelector('.dropdown > .option:nth-child(2)');
+			const htmlOption = element.shadowRoot.querySelector('.dropdown-content > .option:nth-child(2)');
 
 			htmlOption.click();
 
@@ -319,6 +352,10 @@ describe('SearchableSelect', () => {
 			const element = await TestUtils.render(SearchableSelect.tag);
 			element.options = ['foo', 'bar', 'baz'];
 			element.search = 'bar';
+
+			// open dropdown to enable body click listener
+			const searchable = element.shadowRoot.querySelector('.searchable-select');
+			searchable.dispatchEvent(new MouseEvent('click'));
 
 			document.querySelector('body').click();
 			expect(element.search).toBe('');
@@ -429,6 +466,35 @@ describe('SearchableSelect', () => {
 			document.dispatchEvent(getKeyEvent(keyCodes.Enter));
 
 			expect(element.selected).toBe('bar');
+		});
+
+		it('keeps value of property selected when search is incomplete', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			element.options = ['foo', 'bar'];
+			element.selected = 'bar';
+			element.search = 'ba';
+
+			// open dropdown to enable key events
+			const searchable = element.shadowRoot.querySelector('.searchable-select');
+			searchable.dispatchEvent(new MouseEvent('click'));
+			document.dispatchEvent(getKeyEvent(keyCodes.Enter));
+
+			expect(element.selected).toBe('bar');
+		});
+
+		it('updates value of property selected when free-text is allowed', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			element.options = ['foo', 'bar'];
+			element.allowFreeText = true;
+			element.selected = 'bar';
+			element.search = 'ba';
+
+			// open dropdown to enable key events
+			const searchable = element.shadowRoot.querySelector('.searchable-select');
+			searchable.dispatchEvent(new MouseEvent('click'));
+			document.dispatchEvent(getKeyEvent(keyCodes.Enter));
+
+			expect(element.selected).toBe('ba');
 		});
 	});
 
