@@ -133,6 +133,7 @@ describe('ShareService', () => {
 				expect(extract[QueryParameters.LAYER_TIMESTAMP]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_SWIPE_ALIGNMENT]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_STYLE]).not.toBeDefined();
+				expect(extract[QueryParameters.LAYER_FILTER]).not.toBeDefined();
 			});
 
 			it('extracts the current layers state ignoring hidden layers', () => {
@@ -149,6 +150,7 @@ describe('ShareService', () => {
 				expect(extract[QueryParameters.LAYER_TIMESTAMP]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_SWIPE_ALIGNMENT]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_STYLE]).not.toBeDefined();
+				expect(extract[QueryParameters.LAYER_FILTER]).not.toBeDefined();
 			});
 
 			it('extracts the current layers state ignoring hidden geoResources', () => {
@@ -167,6 +169,7 @@ describe('ShareService', () => {
 				expect(extract[QueryParameters.LAYER_TIMESTAMP]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_SWIPE_ALIGNMENT]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_STYLE]).not.toBeDefined();
+				expect(extract[QueryParameters.LAYER_FILTER]).not.toBeDefined();
 			});
 
 			it('extracts the current layers state ignoring including geoResources', () => {
@@ -185,6 +188,7 @@ describe('ShareService', () => {
 				expect(extract[QueryParameters.LAYER_TIMESTAMP]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_SWIPE_ALIGNMENT]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_STYLE]).not.toBeDefined();
+				expect(extract[QueryParameters.LAYER_FILTER]).not.toBeDefined();
 			});
 
 			it('extracts the current layers state considering non default values', () => {
@@ -192,7 +196,7 @@ describe('ShareService', () => {
 				const instanceUnderTest = new ShareService();
 				spyOn(geoResourceService, 'byId').and.returnValue({ hidden: false });
 				addLayer('someLayer', { opacity: 0.5, constraints: { swipeAlignment: SwipeAlignment.LEFT } });
-				addLayer('anotherLayer', { visible: false });
+				addLayer('anotherLayer', { visible: false, constraints: { filter: '(((plz+=+12345)))' } });
 				addLayer('aThirdLayer', { timestamp: '2000', style: { baseColor: '#fcba03' }, constraints: { swipeAlignment: SwipeAlignment.RIGHT } });
 
 				const extract = instanceUnderTest._extractLayers();
@@ -202,6 +206,7 @@ describe('ShareService', () => {
 				expect(extract[QueryParameters.LAYER_TIMESTAMP]).toEqual(['', '', '2000']);
 				expect(extract[QueryParameters.LAYER_SWIPE_ALIGNMENT]).not.toBeDefined();
 				expect(extract[QueryParameters.LAYER_STYLE]).toEqual(['', '', '#fcba03']);
+				expect(extract[QueryParameters.LAYER_FILTER]).toEqual(['', encodeURIComponent('(((plz+=+12345)))'), '']);
 			});
 
 			describe('tool `COMPARE` is active', () => {
