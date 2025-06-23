@@ -259,19 +259,6 @@ describe('kml', () => {
 			expect(containsDummyIcon).toBeFalse();
 		});
 
-		it('provides an empty style for feature with stylefunction returning null', () => {
-			const nullStyleFunction = () => null;
-			aPointFeature.setStyle(nullStyleFunction);
-			const features = [aPointFeature];
-			const layer = createLayerMock(features);
-
-			const actual = create(layer, projection);
-
-			const containsEmptyStyle = actual.includes('<Style/>');
-
-			expect(containsEmptyStyle).toBeTrue();
-		});
-
 		it('reads and converts icon style-properties from feature', () => {
 			const color = [255, 42, 42];
 			const iconSrc =

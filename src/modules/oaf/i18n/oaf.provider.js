@@ -10,7 +10,12 @@ export const provide = (lang) => {
 				oaf_group_select_filter: 'Select Filter...',
 				oaf_mask_or: 'OR',
 				oaf_filter_yes: 'Yes',
-				oaf_filter_no: 'No'
+				oaf_filter_no: 'No',
+				oaf_operator_equals: 'Equals',
+				oaf_operator_like: 'Like',
+				oaf_operator_greater: 'Greater Than',
+				oaf_operator_lesser: 'Less Than',
+				oaf_operator_between: 'Between'
 			};
 		case 'de':
 			return {
@@ -22,7 +27,12 @@ export const provide = (lang) => {
 				oaf_group_select_filter: 'Wähle Filter...',
 				oaf_mask_or: 'ODER',
 				oaf_filter_yes: 'Ja',
-				oaf_filter_no: 'Nein'
+				oaf_filter_no: 'Nein',
+				oaf_operator_equals: 'Ist gleich',
+				oaf_operator_like: 'Enthält',
+				oaf_operator_greater: 'Größer als',
+				oaf_operator_lesser: 'Kleiner als',
+				oaf_operator_between: 'Zwischen'
 			};
 		default:
 			return {};

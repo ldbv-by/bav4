@@ -9,6 +9,7 @@ import { isString } from '../../../utils/checks';
 import GeoJSON from 'ol/format/GeoJSON';
 import { setFetching } from '../../../store/network/network.action';
 import { LayerState, modifyLayer } from '../../../store/layers/layers.action';
+import { queryParamsToString } from '../../../utils/urlUtils';
 
 const handleUnexpectedStatusCode = (geoResourceId, response) => {
 	// we have to throw the UnavailableGeoResourceError in a asynchronous manner, otherwise it would be caught by ol and not be  propagated to the window (see GlobalErrorPlugin)
@@ -187,9 +188,7 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 				options['filter'] = olLayer.get('filter');
 			}
 
-			const searchParams = new URLSearchParams({ ...options });
-			const url = `${oafGeoResource.url}${oafGeoResource.url.endsWith('/') ? '' : '/'}collections/${oafGeoResource.collectionId}/items?${decodeURIComponent(searchParams.toString())}`;
-
+			const url = `${oafGeoResource.url}${oafGeoResource.url.endsWith('/') ? '' : '/'}collections/${oafGeoResource.collectionId}/items?${queryParamsToString(options)}`;
 			const handleResponse = async (response, vectorSource) => {
 				try {
 					/**

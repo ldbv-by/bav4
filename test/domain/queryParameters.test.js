@@ -2,7 +2,7 @@ import { QueryParameters } from '../../src/domain/queryParameters';
 
 describe('QueryParameters', () => {
 	it('provides an enum of all valid query parameters', () => {
-		expect(Object.keys(QueryParameters).length).toBe(24);
+		expect(Object.keys(QueryParameters).length).toBe(25);
 
 		expect(QueryParameters.CENTER).toBe('c');
 		expect(QueryParameters.ZOOM).toBe('z');
@@ -13,6 +13,7 @@ describe('QueryParameters', () => {
 		expect(QueryParameters.LAYER_TIMESTAMP).toBe('l_t');
 		expect(QueryParameters.LAYER_SWIPE_ALIGNMENT).toBe('l_sa');
 		expect(QueryParameters.LAYER_STYLE).toBe('l_st');
+		expect(QueryParameters.LAYER_FILTER).toBe('l_f');
 		expect(QueryParameters.SWIPE_RATIO).toBe('sr');
 		expect(QueryParameters.TOPIC).toBe('t');
 		expect(QueryParameters.CATALOG_NODE_IDS).toBe('cnids');

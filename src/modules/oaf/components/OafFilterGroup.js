@@ -4,6 +4,7 @@
 
 import { html } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
+import { createDefaultOafFilter } from './oafUtils';
 import css from './oafFilterGroup.css';
 import { $injector } from '../../../injection';
 import closeSvg from '../../../assets/icons/x-square.svg';
@@ -56,16 +57,22 @@ export class OafFilterGroup extends MvuElement {
 		};
 
 		const onChangeFilter = (evt) => {
+			const changedOafFilter = evt.target;
 			const filters = this.oafFilters;
 			const changedFilterIndex = filters.findIndex((oafFilter) => oafFilter.queryable.name === evt.target.queryable.name);
-			filters[changedFilterIndex] = { ...evt.target.getModel() };
+
+			filters[changedFilterIndex] = {
+				...changedOafFilter.getModel(),
+				expression: changedOafFilter.expression
+			};
+
 			this.signal(Update_Filters, [...filters]);
+
 			this.dispatchEvent(new CustomEvent('change'));
 		};
 
 		const onRemoveFilter = (evt) => {
-			this.signal(Update_Filters, this._removeFilter(evt.target.queryable.name));
-			//		this.dispatchEvent(new CustomEvent('change')); TODO create test for
+			this._removeFilter(evt.target.queryable.name);
 		};
 
 		const onRemoveGroup = () => {
@@ -121,7 +128,7 @@ export class OafFilterGroup extends MvuElement {
 		this.signal(Update_Filters, [
 			...oafFilters,
 			{
-				...this._createDefaultOafFilter(),
+				...createDefaultOafFilter(),
 				queryable: queryableToAdd
 			}
 		]);
@@ -130,17 +137,9 @@ export class OafFilterGroup extends MvuElement {
 	}
 
 	_removeFilter(queryableName) {
-		return this.getModel().oafFilters.filter((oafFilter) => oafFilter.queryable.name !== queryableName);
-	}
-
-	_createDefaultOafFilter() {
-		return {
-			queryable: {},
-			operator: 'equals',
-			value: null,
-			minValue: null,
-			maxValue: null
-		};
+		const changedFilters = this.getModel().oafFilters.filter((oafFilter) => oafFilter.queryable.name !== queryableName);
+		this.signal(Update_Filters, changedFilters);
+		this.dispatchEvent(new CustomEvent('change'));
 	}
 
 	set queryables(value) {
