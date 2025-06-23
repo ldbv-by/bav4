@@ -14,7 +14,6 @@ select {
 .oaf-filter {
 	min-width: 20em;
 	border: 1px solid var(--primary-color);
-	align-items: center;
 	background: var(--header-background-color);
 	border-radius: 2em;
 	align-items: center;
@@ -30,7 +29,6 @@ select {
 }
 
 .input-operator {
-	width: 0;
 	transition: transform var(--animation-duration-large-open) var(--animation-easing-linear);
 	border-radius: 2em;
 	overflow: hidden;
@@ -43,7 +41,6 @@ select {
 	height: 2em;
 	font-weight: bold;
 	color: var(--primary-color);
-	padding-right: 1.5em;
 	padding: 0.1em 1.5em 0.1em 0.5em;
 	width: auto;
 	min-width: 6em;
