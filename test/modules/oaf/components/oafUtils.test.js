@@ -105,7 +105,7 @@ describe('oafUtils', () => {
 	});
 
 	describe('createCqlFilterExpression', () => {
-		it('returns empty string when queryable name is missing', () => {
+		it('returns an empty string when queryable name is missing', () => {
 			const oafFilter = createDefaultOafFilter();
 			oafFilter.operator = getOperatorByName(CqlOperator.EQUALS);
 			oafFilter.value = 'bar';
@@ -120,7 +120,7 @@ describe('oafUtils', () => {
 			expect(createCqlFilterExpression(oafFilter)).toBe('');
 		});
 
-		it('returns empty string when OafQueryableType is unknown', () => {
+		it('returns an empty string when OafQueryableType is unknown', () => {
 			const oafFilter = createDefaultOafFilter();
 			oafFilter.operator = getOperatorByName(CqlOperator.EQUALS);
 			oafFilter.queryable = createQueryable('foo', 'unknown type');
