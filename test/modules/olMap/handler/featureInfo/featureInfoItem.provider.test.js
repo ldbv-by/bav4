@@ -79,7 +79,7 @@ describe('FeatureInfo provider', () => {
 					const geometry = new Point(coordinate);
 					let feature = new Feature({ geometry: geometry });
 					feature.set('name', 'name');
-					feature.setId('id');
+					feature.setId(1234);
 					const expectedFeatureInfoGeometry = new BaGeometry(new GeoJSON().writeGeometry(geometry), new SourceType(SourceTypeName.GEOJSON));
 
 					let featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
@@ -105,7 +105,7 @@ describe('FeatureInfo provider', () => {
 					//no name property, but description property
 					feature = new Feature({ geometry: new Point(coordinate) });
 					feature.set('description', 'description');
-					feature.setId('id');
+					feature.setId(1234);
 
 					featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 					render(featureInfo.content, target);
@@ -130,7 +130,7 @@ describe('FeatureInfo provider', () => {
 					//no name property, but desc property
 					feature = new Feature({ geometry: new Point(coordinate) });
 					feature.set('desc', 'desc');
-					feature.setId('id');
+					feature.setId(1234);
 
 					featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 					render(featureInfo.content, target);
@@ -162,7 +162,7 @@ describe('FeatureInfo provider', () => {
 					let feature = new Feature({ geometry: geometry });
 					feature = new Feature({ geometry: new Point(coordinate) });
 					feature.set('description', 'description');
-					feature.setId('id');
+					feature.setId(1234);
 					const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').withArgs('description').and.callThrough();
 					const featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 					render(featureInfo.content, target);
@@ -179,7 +179,7 @@ describe('FeatureInfo provider', () => {
 					let feature = new Feature({ geometry: geometry });
 					feature = new Feature({ geometry: new Point(coordinate) });
 					feature.set('name', 'name');
-					feature.setId('id');
+					feature.setId(1234);
 					const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').withArgs('name').and.callThrough();
 					const featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 					render(featureInfo.content, target);
@@ -197,7 +197,7 @@ describe('FeatureInfo provider', () => {
 					const geometry = new Point(coordinate);
 					let feature = new Feature({ geometry: geometry });
 					feature.set('name', 'name');
-					feature.setId('id');
+					feature.setId(1234);
 					const expectedFeatureInfoGeometry = new BaGeometry(new GeoJSON().writeGeometry(geometry), new SourceType(SourceTypeName.GEOJSON));
 
 					let featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
@@ -216,7 +216,7 @@ describe('FeatureInfo provider', () => {
 
 					//no name property
 					feature = new Feature({ geometry: new Point(coordinate) });
-					feature.setId('id');
+					feature.setId(1234);
 
 					featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 					render(featureInfo.content, target);
@@ -241,7 +241,7 @@ describe('FeatureInfo provider', () => {
 					const geometry = new Point(coordinate);
 					const feature = new Feature({ geometry: geometry });
 					feature.set('name', 'name');
-					feature.setId('id');
+					feature.setId(1234);
 
 					const featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
 					render(featureInfo.content, target);
@@ -258,7 +258,7 @@ describe('FeatureInfo provider', () => {
 				const geometry = new Point(coordinate);
 				let feature = new Feature({ geometry: geometry });
 				feature = new Feature({ geometry: new Point(coordinate) });
-				feature.setId('id');
+				feature.setId(1234);
 				feature.set('name', 'name');
 
 				const featureInfo = bvvFeatureInfoProvider(feature, layerProperties);
