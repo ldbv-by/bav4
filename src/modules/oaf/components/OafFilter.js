@@ -5,6 +5,7 @@ import { $injector } from '../../../injection';
 import { html, nothing } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
 import css from './oafFilter.css';
+import closeSvg from './assets/clear.svg';
 
 const Update_Queryable = 'update_queryable';
 const Update_Operator = 'update_operator';
@@ -219,19 +220,16 @@ export class OafFilter extends MvuElement {
 			<style>
 				${css}
 			</style>
-			<div class="oaf-filter">
-				<div class="grid-row">
-						<div class="filter-title-container"><span class="title">${name}</span></div>
-					<div class="grid-column-header">
-						${getOperatorHtml()}
-						<button class="not-button">NOT</button>
-						<button class="remove-button" @click=${onRemove}>X</button>
-					</div>
-					<div class="grid-column">
-							<div class="input-value">${getInputHtml()}</div>
-						</div>
-					</div>
+			<div class="oaf-filter">				
+				<div class="flex">
+					<span class="title">${name}</span>
 				</div>
+				${getOperatorHtml()}											
+				<div>
+					<div class="input-value">${getInputHtml()}</div>
+				</div>
+					<ba-icon class="remove-button" .icon=${closeSvg} .color=${'var(--primary-color)'} .color_hover=${'var(--error-color)'}  .size=${1.6} @click=${onRemove}></ba-icon>
+				</div>				
 			</div>
 		`;
 	}

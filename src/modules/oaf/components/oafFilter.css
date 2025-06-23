@@ -1,86 +1,87 @@
 select {
-	border: 1px white;
-	background-color: #777;
-	padding: 1px 10px;
-	height: 20px;
-}
-
-button {
-	border: none;
-	outline: none;
-}
-
-.value-input,
-.min-value-input,
-.max-value-input {
-	input,
-	ba-searchable-select,
-	select {
-		height: 25px;
-	}
-}
-
-.oaf-filter {
-	padding: 10px;
-	border: 1px solid #222;
-	background: #555;
+	width: auto;
+	min-width: 6em;
 }
 
 .flex {
 	display: flex;
 }
 
-.column {
-	flex-direction: column;
-}
-
 .row {
 	flex-direction: row;
+}
+
+.oaf-filter {
+	min-width: 20em;
+	border: 1px solid var(--primary-color);
+	align-items: center;
+	background: var(--header-background-color);
+	border-radius: 2em;
+	align-items: center;
+	padding: 0.3em;
+	display: flex;
 }
 
 .title {
 	text-overflow: ellipsis;
 	white-space: nowrap;
+	padding: 0 0.3em 0 1em;
+	font-size: 1.1rem;
+}
+
+.input-operator {
+	width: 0;
+	transition: transform var(--animation-duration-large-open) var(--animation-easing-linear);
+	border-radius: 2em;
 	overflow: hidden;
+	display: block;
+	width: auto;
+	margin: 0 0.5em;
 }
 
-.grid-row {
-	display: grid;
-	grid-template-rows: 1fr 1fr;
-	gap: 4px;
+#select-operator {
+	height: 2em;
+	font-weight: bold;
+	color: var(--primary-color);
+	padding-right: 1.5em;
+	padding: 0.1em 1.5em 0.1em 0.5em;
+	width: auto;
+	min-width: 6em;
+	border: none;
 }
 
-.grid-column {
-	display: grid;
-	grid-template-columns: 1fr;
-	gap: 5px;
+.input-value {
+	background: var(--primary-bg-color);
 }
 
-.grid-column-header {
-	display: grid;
-	grid-template-columns: 1fr 50px 25px;
-	gap: 5px;
+.input-value select {
+	padding: 0.4em 0.5em;
 }
 
-.filter-title-container {
-	display: flex;
-	font-weight: 600;
+.min-value-input {
+	border-right: none;
 }
 
-.not-button {
-	height: 20px;
-	background-color: var(--primary-color);
-	color: #eee;
-	font-weight: 600;
+.max-value-input {
+	border-left: 1px dotted var(--text1);
+}
+
+.value-input {
+	border: none;
+	height: 2em;
+}
+
+.value-input[type='text'] {
+	background: var(--primary-bg-color);
+	border: 1px solid var(--text2);
 }
 
 .remove-button {
-	height: 20px;
-	background-color: red;
-	color: #eee;
-	font-weight: 600;
+	padding: 0.3em;
+	position: relative;
+	top: 0.1em;
 }
 
-.not-button.active {
-	background-color: green;
+.remove-button::part(button) {
+	border-radius: 2em;
 }

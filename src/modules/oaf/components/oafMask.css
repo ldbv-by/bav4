@@ -1,32 +1,68 @@
 .container {
-	padding: 30px 0px;
-	min-height: 250px;
+	display: flex;
+	position: sticky;
 }
 
-.grid-container {
-	display: grid;
-	grid-template-columns: 1fr 1fr 1fr;
-	max-height: 350px;
-	min-height: 350px;
-	overflow-y: auto;
+.header {
+	position: absolute;
+	left: 0;
+	padding: 0.5em 2.1em 0.5em 3.5em;
+	background: var(--primary-bg-color);
+	top: -2.2em;
+	border-radius: 0 2em 0 0;
+	box-shadow: 2px -2px 2px rgb(0 0 0 / 15%);
+	color: var(--text1);
 }
+
+.header .icon {
+	left: 1.3em;
+	top: 0.45em;
+	height: 1.4em;
+	width: 1.4em;
+	display: inline-block;
+	position: absolute;
+	background: var(--text1);
+	mask: url('./assets/oafSetting.svg');
+	-webkit-mask-image: url('./assets/oafSetting.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+
+#btn-normal-mode,
+#btn-expert-mode {
+	position: absolute;
+	width: 13em;
+	top: -3.3em;
+	left: 8.5em;
+	border-radius: 2em 2em 0 0;
+	overflow: hidden;
+	background: var(--primary-bg-color);
+	box-shadow: 2px -2px 2px rgb(0 0 0 / 15%);
+}
+
+#btn-expert-mode::part(button),
+#btn-normal-mode::part(button) {
+	font-size: 0.9rem;
+	box-shadow: rgba(0, 0, 0, 0.1) 0px -5px 3px -2px inset;
+}
+
+.container-filter-groups {
+	width: 100%;
+	margin-right: 2em;
+}
+
 .separator-container {
 	display: grid;
 	grid-template-rows: 1fr 1fr 1fr;
-	gap: 10px;
-}
-
-.filter-group-container {
-	display: grid;
-	flex: 0 0 auto;
-	grid-template-columns: 1fr 0.4fr;
+	position: absolute;
+	left: 0.5em;
 }
 
 .separator {
 	display: flex;
 	align-self: center;
 	justify-self: center;
-	background: #222;
+	background: var(--header-background-color);
 	width: 1px;
 	height: 100%;
 }
@@ -37,16 +73,12 @@
 	justify-self: center;
 }
 
-.sticky-container {
-	position: sticky;
-}
-
 .btn-bar {
 	display: flex;
-	margin-top: 10px;
-	margin-bottom: 10px;
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
 	* {
-		margin-right: 10px;
+		margin-right: 0.5em;
 	}
 }
 
@@ -63,4 +95,30 @@
 .console-flex-container {
 	display: flex;
 	flex-direction: column;
+}
+
+#btn-add-filter-group {
+	position: relative;
+	top: 0.2em;
+}
+
+#btn-add-filter-group.no-group::part(button) {
+	width: 15em;
+	height: 3.8em;
+}
+
+#btn-add-filter-group.group::part(button) {
+	height: 3.8em;
+	width: auto;
+}
+
+#btn-add-filter-group.group {
+	margin-right: 0.5em;
+}
+
+#btn-add-filter-group::part(icon) {
+	height: 1.3em;
+	width: 1.3em;
+	top: 0.5em;
+	margin-left: 0.1em;
 }
