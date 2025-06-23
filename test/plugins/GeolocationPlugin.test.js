@@ -7,6 +7,7 @@ import { positionReducer } from '../../src/store/position/position.reducer';
 import { geolocationReducer } from '../../src/store/geolocation/geolocation.reducer';
 import { pointerReducer } from '../../src/store/pointer/pointer.reducer';
 import { setBeingDragged } from '../../src/store/pointer/pointer.action';
+import { QueryParameters } from '../../src/domain/queryParameters.js';
 
 describe('GeolocationPlugin', () => {
 	const coordinateServiceMock = {
@@ -21,8 +22,11 @@ describe('GeolocationPlugin', () => {
 	};
 
 	const translationService = {
-		register() {},
 		translate: (key) => key
+	};
+
+	const environmentService = {
+		getQueryParams: () => new URLSearchParams()
 	};
 
 	const setup = (state) => {
@@ -35,7 +39,8 @@ describe('GeolocationPlugin', () => {
 		$injector
 			.registerSingleton('CoordinateService', coordinateServiceMock)
 			.registerSingleton('MapService', mapServiceMock)
-			.registerSingleton('TranslationService', translationService);
+			.registerSingleton('TranslationService', translationService)
+			.registerSingleton('EnvironmentService', environmentService);
 
 		return store;
 	};
@@ -105,6 +110,38 @@ describe('GeolocationPlugin', () => {
 			setBeingDragged(true);
 
 			expect(store.getState().geolocation.tracking).toBeFalse();
+		});
+
+		describe('when geolocation related query params is available', () => {
+			describe('and its value is `true`', () => {
+				it('activates the geolocation', async () => {
+					const store = setup();
+					const queryParams = new URLSearchParams(`${QueryParameters.GEOLOCATION}=true`);
+					spyOn(environmentService, 'getQueryParams').and.returnValue(queryParams);
+					const instanceUnderTest = new GeolocationPlugin();
+					spyOn(instanceUnderTest, '_activate');
+
+					await instanceUnderTest.register(store);
+					await TestUtils.timeout();
+
+					expect(store.getState().geolocation.active).toBeTrue();
+				});
+			});
+
+			describe('and its value is NOT `true`', () => {
+				it('does nothing', async () => {
+					const store = setup();
+					const queryParams = new URLSearchParams(`${QueryParameters.GEOLOCATION}=some`);
+					spyOn(environmentService, 'getQueryParams').and.returnValue(queryParams);
+					const instanceUnderTest = new GeolocationPlugin();
+					spyOn(instanceUnderTest, '_activate');
+
+					await instanceUnderTest.register(store);
+					await TestUtils.timeout();
+
+					expect(store.getState().geolocation.active).toBeFalse();
+				});
+			});
 		});
 	});
 
