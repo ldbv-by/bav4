@@ -122,3 +122,10 @@
 	top: 0.5em;
 	margin-left: 0.1em;
 }
+
+ba-spinner {
+	display: flex;
+	width: 8em;
+	align-items: center;
+	height: 3.6em;
+}
