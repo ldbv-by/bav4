@@ -60,6 +60,7 @@ const Update_Layer_Swipe = 'update_layer_swipe';
 export class LayerItem extends AbstractMvuContentPanel {
 	#translationService;
 	#geoResourceService;
+	#settingsBottomSheetActive = false; /** flag to avoid re-opening of an already open Settings-BottomSheet */
 	constructor() {
 		super({
 			layerProperties: null,
@@ -111,6 +112,18 @@ export class LayerItem extends AbstractMvuContentPanel {
 			(state) => state.layerSwipe,
 			(layerSwipe) => this.signal(Update_Layer_Swipe, layerSwipe)
 		);
+		this.observe(
+			(state) => state.bottomSheet.active,
+			(active) => {
+				/**
+				 * Ensure resetting our flag when LAYER_ITEM_BOTTOM_SHEET was closed by the user
+				 */
+				if (!active.includes(LAYER_ITEM_BOTTOM_SHEET_ID)) {
+					this.#settingsBottomSheetActive = false;
+				}
+			},
+			false
+		);
 	}
 
 	/**
@@ -138,6 +151,12 @@ export class LayerItem extends AbstractMvuContentPanel {
 				});
 			});
 		}
+	}
+
+	_openSettingsBottomSheet(layerId) {
+		closeBottomSheet(LAYER_ITEM_BOTTOM_SHEET_ID);
+		this.#settingsBottomSheetActive = true;
+		openBottomSheet(html`<div><ba-oaf-mask .layerId=${layerId}></ba-oaf-mask></div>`, LAYER_ITEM_BOTTOM_SHEET_ID);
 	}
 
 	/**
@@ -286,10 +305,11 @@ export class LayerItem extends AbstractMvuContentPanel {
 						.icon="${oafSettingsSvg}"
 						.title=${translate('layerManager_oaf_settings')}
 						.color=${'var(--secondary-color)'}
-						@click=${() => (
-							closeBottomSheet(LAYER_ITEM_BOTTOM_SHEET_ID),
-							openBottomSheet(html`<div><ba-oaf-mask .layerId=${layerProperties.id}></ba-oaf-mask></div>`, LAYER_ITEM_BOTTOM_SHEET_ID)
-						)}
+						@click=${() => {
+							if (!this.#settingsBottomSheetActive) {
+								this._openSettingsBottomSheet(layerProperties.id);
+							}
+						}}
 						class="oaf-settings-icon"
 					></ba-icon>`
 				: nothing;

@@ -423,7 +423,7 @@ describe('LayerItem', () => {
 			expect(oafSettingsElement[0].title).toBe('layerManager_oaf_settings');
 		});
 
-		it('closes and opens the bottomSheet for the oaf-filter component', async () => {
+		it('opens the Setting-BottomSheet once', async () => {
 			const expectedTag = 'ba-oaf-mask';
 			spyOn(geoResourceService, 'byId')
 				.withArgs('oafGeoResource')
@@ -438,6 +438,7 @@ describe('LayerItem', () => {
 			};
 
 			const element = await setup(layer);
+			const openSettingsBottomSheetSpy = spyOn(element, '_openSettingsBottomSheet').and.callThrough();
 			const oafSettingsElement = element.shadowRoot.querySelectorAll('ba-icon.oaf-settings-icon');
 			// open a BottomSheet for the id = LAYER_ITEM_BOTTOM_SHEET_ID which should be replaced
 			openBottomSheet('foo', LAYER_ITEM_BOTTOM_SHEET_ID);
@@ -452,6 +453,12 @@ describe('LayerItem', () => {
 			const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data[0].content);
 			expect(wrapperElement.querySelectorAll(expectedTag)).toHaveSize(1);
 			expect(wrapperElement.querySelector(expectedTag).layerId).toBe(layer.id);
+			expect(openSettingsBottomSheetSpy).toHaveBeenCalledOnceWith(layer.id);
+
+			// try to re-open it again
+			oafSettingsElement[0].click();
+
+			expect(openSettingsBottomSheetSpy).toHaveBeenCalledOnceWith(layer.id);
 		});
 
 		it('displays a overflow-menu', async () => {
@@ -850,7 +857,8 @@ describe('LayerItem', () => {
 				layers: layersReducer,
 				modal: modalReducer,
 				position: positionReducer,
-				layerSwipe: layerSwipeReducer
+				layerSwipe: layerSwipeReducer,
+				bottomSheet: bottomSheetReducer
 			});
 			$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
 			return store;
@@ -973,7 +981,7 @@ describe('LayerItem', () => {
 		describe('when user change order of layer in group', () => {
 			let store;
 			const setupStore = (state) => {
-				store = TestUtils.setupStoreAndDi(state, { layers: layersReducer, layerSwipe: layerSwipeReducer });
+				store = TestUtils.setupStoreAndDi(state, { layers: layersReducer, layerSwipe: layerSwipeReducer, bottomSheet: bottomSheetReducer });
 				$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
 				return store;
 			};
@@ -1220,7 +1228,12 @@ describe('LayerItem', () => {
 			};
 
 			const setup = (state) => {
-				const store = TestUtils.setupStoreAndDi(state, { layers: layersReducer, modal: modalReducer, layerSwipe: layerSwipeReducer });
+				const store = TestUtils.setupStoreAndDi(state, {
+					layers: layersReducer,
+					modal: modalReducer,
+					layerSwipe: layerSwipeReducer,
+					bottomSheet: bottomSheetReducer
+				});
 				$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
 				return store;
 			};
