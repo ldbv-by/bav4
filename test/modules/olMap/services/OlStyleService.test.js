@@ -992,51 +992,41 @@ describe('OlStyleService', () => {
 
 			expect(result).toEqual(olLayer);
 		});
-		it('calls _sanitizeStyles', () => {
-			const olLayer = new VectorLayer({ source: new VectorSource() });
-			const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML);
-			const olMap = new Map();
-			const sanitizeStylesSpy = spyOn(instanceUnderTest, '_sanitizeStyles');
-
-			instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
-
-			expect(sanitizeStylesSpy).toHaveBeenCalledWith(olLayer);
-		});
 
 		it('handles a clustered VectorGeoResource', () => {
 			const olLayer = new VectorLayer({ source: new VectorSource() });
 			const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setClusterParams({ foo: 'bar' });
 			const olMap = new Map();
-			const applyStyleHintSpy = spyOn(instanceUnderTest, '_applyStyleHint');
+			const applyLayerSpecificStylesSpy = spyOn(instanceUnderTest, '_applyLayerSpecificStyles');
 
 			instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
 
-			expect(applyStyleHintSpy).toHaveBeenCalledWith(StyleHint.CLUSTER, olLayer);
+			expect(applyLayerSpecificStylesSpy).toHaveBeenCalledWith(vectorGeoResource, olLayer);
 		});
 
 		it('handles a VectorGeoResource containing a StyleHint', () => {
 			const olLayer = new VectorLayer({ source: new VectorSource() });
 			const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setStyleHint(StyleHint.HIGHLIGHT);
 			const olMap = new Map();
-			const applyStyleHintSpy = spyOn(instanceUnderTest, '_applyStyleHint').and.callThrough();
+			const applyLayerSpecificStylesSpy = spyOn(instanceUnderTest, '_applyLayerSpecificStyles').and.callThrough();
 			const setLayerStyleSpy = spyOn(olLayer, 'setStyle');
 
 			instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
 
-			expect(applyStyleHintSpy).toHaveBeenCalledWith(StyleHint.HIGHLIGHT, olLayer);
+			expect(applyLayerSpecificStylesSpy).toHaveBeenCalledWith(vectorGeoResource, olLayer);
 			expect(setLayerStyleSpy).toHaveBeenCalledWith(highlightGeometryOrCoordinateFeatureStyleFunction());
 		});
 
 		it('handles a VectorGeoResource without any StyleHints', () => {
 			const olLayer = new VectorLayer({ source: new VectorSource() });
 			const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML);
-			const applyStyleHintSpy = spyOn(instanceUnderTest, '_applyStyleHint').and.callThrough();
+			const applyLayerSpecificStylesSpy = spyOn(instanceUnderTest, '_applyLayerSpecificStyles').and.callThrough();
 			const setLayerStyleSpy = spyOn(olLayer, 'setStyle');
 			const olMap = new Map();
 
 			instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
 
-			expect(applyStyleHintSpy).toHaveBeenCalledWith(null, olLayer);
+			expect(applyLayerSpecificStylesSpy).toHaveBeenCalledWith(vectorGeoResource, olLayer);
 			expect(setLayerStyleSpy).not.toHaveBeenCalled();
 		});
 
@@ -1089,7 +1079,7 @@ describe('OlStyleService', () => {
 				const olSource = new VectorSource({ features: [olFeature0, olFeature1] });
 				const olLayer = new VectorLayer({ source: olSource });
 				spyOn(instanceUnderTest, '_detectStyleType').and.returnValue(OlFeatureStyleTypes.NULL);
-				const registerStyleEventListenersSpy = spyOn(instanceUnderTest, '_registerStyleEventListeners');
+				const registerStyleEventListenersSpy = spyOn(instanceUnderTest, '_registerStyleEventListeners').and.callFake(() => ['foo']);
 				const addFeatureStyleSpy = spyOn(instanceUnderTest, 'addFeatureStyle');
 				const updateFeatureStyleSpy = spyOn(instanceUnderTest, 'updateFeatureStyle');
 
@@ -1142,14 +1132,14 @@ describe('OlStyleService', () => {
 					}
 					return null;
 				});
-				const registerStyleEventListenersSpy = spyOn(instanceUnderTest, '_registerStyleEventListeners');
+				const registerStyleEventListenersSpy = spyOn(instanceUnderTest, '_registerStyleEventListeners').and.returnValue(['foo']);
 				const addFeatureStyleSpy = spyOn(instanceUnderTest, 'addFeatureStyle');
 				const updateFeatureStyleSpy = spyOn(instanceUnderTest, 'updateFeatureStyle');
 
 				instanceUnderTest._applyFeatureSpecificStyles(olLayer, olMap);
 
-				expect(addFeatureStyleSpy).not.toHaveBeenCalled();
-				expect(updateFeatureStyleSpy).not.toHaveBeenCalled();
+				expect(addFeatureStyleSpy).toHaveBeenCalledTimes(1);
+				expect(updateFeatureStyleSpy).toHaveBeenCalledTimes(1);
 				expect(registerStyleEventListenersSpy).toHaveBeenCalledOnceWith(olSource, olLayer, olMap);
 			});
 		});
@@ -1302,10 +1292,12 @@ describe('OlStyleService', () => {
 			const feature2 = new Feature({ geometry: new Point([0, 0]) });
 			const clusterFeature = new Feature({ geometry: new Point([0, 0]), features: [feature1, feature2] });
 
-			expect(instanceUnderTest._applyStyleHint(StyleHint.CLUSTER, layer).getStyle()(clusterFeature)).toEqual(
+			expect(instanceUnderTest._applyLayerSpecificStyles({ styleHint: StyleHint.CLUSTER }, layer).getStyle()(clusterFeature)).toEqual(
 				defaultClusterStyleFunction()(clusterFeature)
 			);
-			expect(instanceUnderTest._applyStyleHint(StyleHint.HIGHLIGHT, layer).getStyle()).toEqual(highlightGeometryOrCoordinateFeatureStyleFunction());
+			expect(instanceUnderTest._applyLayerSpecificStyles({ styleHint: StyleHint.HIGHLIGHT }, layer).getStyle()).toEqual(
+				highlightGeometryOrCoordinateFeatureStyleFunction()
+			);
 		});
 	});
 
@@ -1390,8 +1382,9 @@ describe('OlStyleService', () => {
 			const spy = spyOn(instanceUnderTest, '_sanitizeStyleFor')
 				.withArgs(jasmine.any(Feature))
 				.and.callFake(() => {});
+			spyOn(instanceUnderTest, '_registerStyleEventListeners').and.callFake(() => ['foo']);
 
-			instanceUnderTest._sanitizeStyles(olLayer);
+			instanceUnderTest._applyFeatureSpecificStyles(olLayer);
 
 			expect(spy).toHaveBeenCalledTimes(2);
 		});
