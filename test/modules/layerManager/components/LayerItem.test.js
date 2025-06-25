@@ -26,9 +26,10 @@ import infoSvg from '../../../../src/assets/icons/info.svg';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { LayerState, SwipeAlignment } from '../../../../src/store/layers/layers.action.js';
 import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
-import { bottomSheetReducer } from '../../../../src/store/bottomSheet/bottomSheet.reducer.js';
+import { bottomSheetReducer, LAYER_ITEM_BOTTOM_SHEET_ID } from '../../../../src/store/bottomSheet/bottomSheet.reducer.js';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
+import { openBottomSheet } from '../../../../src/store/bottomSheet/bottomSheet.action.js';
 
 window.customElements.define(LayerItem.tag, LayerItem);
 
@@ -422,7 +423,7 @@ describe('LayerItem', () => {
 			expect(oafSettingsElement[0].title).toBe('layerManager_oaf_settings');
 		});
 
-		it('opens the bottomSheet for the oaf-filter component', async () => {
+		it('closes and opens the bottomSheet for the oaf-filter component', async () => {
 			const expectedTag = 'ba-oaf-mask';
 			spyOn(geoResourceService, 'byId')
 				.withArgs('oafGeoResource')
@@ -438,8 +439,16 @@ describe('LayerItem', () => {
 
 			const element = await setup(layer);
 			const oafSettingsElement = element.shadowRoot.querySelectorAll('ba-icon.oaf-settings-icon');
+			// open a BottomSheet for the id = LAYER_ITEM_BOTTOM_SHEET_ID which should be replaced
+			openBottomSheet('foo', LAYER_ITEM_BOTTOM_SHEET_ID);
+			expect(store.getState().bottomSheet.data).toHaveSize(1);
+			expect(store.getState().bottomSheet.data[0].id).toBe(LAYER_ITEM_BOTTOM_SHEET_ID);
+			expect(store.getState().bottomSheet.data[0].content).toBe('foo');
+
+			// open our expected BottomSheet
 			oafSettingsElement[0].click();
 
+			expect(store.getState().bottomSheet.data[0].id).toBe(LAYER_ITEM_BOTTOM_SHEET_ID);
 			const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data[0].content);
 			expect(wrapperElement.querySelectorAll(expectedTag)).toHaveSize(1);
 			expect(wrapperElement.querySelector(expectedTag).layerId).toBe(layer.id);

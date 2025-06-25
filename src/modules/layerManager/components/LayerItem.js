@@ -23,8 +23,9 @@ import { GeoResourceFuture, GeoResourceTypes, OafGeoResource } from '../../../do
 import { MenuTypes } from '../../commons/components/overflowMenu/OverflowMenu';
 import { openSlider } from '../../../store/timeTravel/timeTravel.action';
 import { SwipeAlignment } from '../../../store/layers/layers.action';
-import { openBottomSheet } from '../../../store/bottomSheet/bottomSheet.action';
+import { closeBottomSheet, openBottomSheet } from '../../../store/bottomSheet/bottomSheet.action';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
+import { LAYER_ITEM_BOTTOM_SHEET_ID } from '../../../store/bottomSheet/bottomSheet.reducer';
 
 const Update_Layer_And_LayerItem = 'update_layer_and_layerItem';
 const Update_Layer_Collapsed = 'update_layer_collapsed';
@@ -285,7 +286,10 @@ export class LayerItem extends AbstractMvuContentPanel {
 						.icon="${oafSettingsSvg}"
 						.title=${translate('layerManager_oaf_settings')}
 						.color=${'var(--secondary-color)'}
-						@click=${() => openBottomSheet(html`<div><ba-oaf-mask .layerId=${layerProperties.id}></ba-oaf-mask></div>`)}
+						@click=${() => (
+							closeBottomSheet(LAYER_ITEM_BOTTOM_SHEET_ID),
+							openBottomSheet(html`<div><ba-oaf-mask .layerId=${layerProperties.id}></ba-oaf-mask></div>`, LAYER_ITEM_BOTTOM_SHEET_ID)
+						)}
 						class="oaf-settings-icon"
 					></ba-icon>`
 				: nothing;
