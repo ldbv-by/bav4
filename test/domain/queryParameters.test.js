@@ -2,7 +2,7 @@ import { QueryParameters } from '../../src/domain/queryParameters';
 
 describe('QueryParameters', () => {
 	it('provides an enum of all valid query parameters', () => {
-		expect(Object.keys(QueryParameters).length).toBe(25);
+		expect(Object.keys(QueryParameters).length).toBe(26);
 
 		expect(QueryParameters.CENTER).toBe('c');
 		expect(QueryParameters.ZOOM).toBe('z');
@@ -25,6 +25,7 @@ describe('QueryParameters', () => {
 		expect(QueryParameters.ZOOM_TO_EXTENT).toBe('zte');
 		expect(QueryParameters.ROUTE_WAYPOINTS).toBe('rtwp');
 		expect(QueryParameters.ROUTE_CATEGORY).toBe('rtc');
+		expect(QueryParameters.GEOLOCATION).toBe('gl');
 
 		expect(QueryParameters.EC_DRAW_TOOL).toBe('ec_draw_tool');
 		expect(QueryParameters.EC_MAP_ACTIVATION).toBe('ec_map_activation');
