@@ -202,7 +202,7 @@ export class OafFilter extends MvuElement {
 		};
 
 		const getBooleanInputHtml = () => {
-			return html`<select class="value-input" data-type=${OafQueryableType.BOOLEAN} @change=${(evt) => onValueChanged(evt, evt.target.value)}>
+			return html`<select data-type=${OafQueryableType.BOOLEAN} @change=${(evt) => onValueChanged(evt, evt.target.value)}>
 				<option ?selected=${value === true} value="true">${translate('oaf_filter_yes')}</option>
 				<option ?selected=${value !== true} value="false">${translate('oaf_filter_no')}</option>
 			</select>`;
