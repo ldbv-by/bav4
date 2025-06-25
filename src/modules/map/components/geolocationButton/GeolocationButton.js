@@ -30,11 +30,11 @@ export class GeolocationButton extends MvuElement {
 		this.observe(
 			(store) => store.geolocation.active,
 			(active) => this.signal(Update_Active, active)
-		),
-			this.observe(
-				(store) => store.geolocation.denied,
-				(denied) => this.signal(Update_Denied, denied)
-			);
+		);
+		this.observe(
+			(store) => store.geolocation.denied,
+			(denied) => this.signal(Update_Denied, denied)
+		);
 	}
 
 	update(type, data, model) {
