@@ -82,14 +82,6 @@ describe('OafFilter', () => {
 
 			expect(spy).toHaveBeenCalledTimes(1);
 		});
-
-		it('renders "Negate Filter" Button', async () => {
-			const element = await setup();
-
-			expect(element.shadowRoot.querySelector('.not-button.active')).toBeNull();
-			expect(element.shadowRoot.querySelector('.not-button')).not.toBeNull();
-			expect(element.shadowRoot.querySelector('.not-button').innerText).toBe('oaf_filter_not_button');
-		});
 	});
 
 	describe('when the ui renders with property', () => {
@@ -207,26 +199,6 @@ describe('OafFilter', () => {
 				element.maxValue = 1;
 
 				expect(spy).toHaveBeenCalledOnceWith(jasmine.anything());
-			});
-		});
-
-		describe('"useNegation"', () => {
-			it('renders "Negate Filter" Button with class active when useNegation is true', async () => {
-				const element = await setup();
-				element.useNegation = true;
-
-				expect(element.shadowRoot.querySelector('.not-button.active')).not.toBeNull();
-			});
-
-			it('toggles property when "Negate Filter" button was clicked', async () => {
-				const element = await setup();
-				const button = element.shadowRoot.querySelector('.not-button');
-
-				expect(element.useNegation).toBeFalse();
-				button.click();
-				expect(element.useNegation).toBeTrue();
-				button.click();
-				expect(element.useNegation).toBeFalse();
 			});
 		});
 

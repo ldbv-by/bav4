@@ -5,9 +5,7 @@ import css from './oafFilter.css';
 import { $injector } from '../../../injection';
 import { html, nothing } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
-import css from './oafFilter.css';
 import closeSvg from './assets/clear.svg';
-import { isString } from '../../../utils/checks';
 import { isNumber, isString } from '../../../utils/checks';
 import { getOperatorDefinitions, getOperatorByName, createCqlFilterExpression, CqlOperator } from './oafUtils';
 import { OafQueryableType } from '../../../domain/oaf';
@@ -108,10 +106,6 @@ export class OafFilter extends MvuElement {
 
 		const onRemove = () => {
 			this.dispatchEvent(new CustomEvent('remove'));
-		};
-
-		const onNegateButtonClicked = () => {
-			this.useNegation = !this.useNegation;
 		};
 
 		const getStringInputHtml = () => {

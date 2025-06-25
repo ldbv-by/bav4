@@ -17,8 +17,7 @@ export const provide = (lang) => {
 				oaf_operator_lesser: 'Less Than',
 				oaf_operator_between: 'Between',
 				oaf_filter_dropdown_header_title: 'Examples',
-				oaf_filter_input_placeholder: 'Filter by...',
-				oaf_filter_not_button: 'NOT'
+				oaf_filter_input_placeholder: 'Filter by...'
 			};
 		case 'de':
 			return {
@@ -37,8 +36,7 @@ export const provide = (lang) => {
 				oaf_operator_lesser: 'Kleiner als',
 				oaf_operator_between: 'Zwischen',
 				oaf_filter_dropdown_header_title: 'Beispiele',
-				oaf_filter_input_placeholder: 'Filtern nach...',
-				oaf_filter_not_button: 'NICHT'
+				oaf_filter_input_placeholder: 'Filtern nach...'
 			};
 		default:
 			return {};
