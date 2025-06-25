@@ -121,6 +121,18 @@ describe('OafFilterGroup', () => {
 				expect(element.shadowRoot.querySelectorAll('ba-oaf-filter')).toHaveSize(1);
 			});
 
+			it('blurs filter-select when a filter was added', async () => {
+				const element = await setup();
+				element.queryables = testQueryables;
+				const select = element.shadowRoot.querySelector('#queryable-select');
+				const blurSpy = spyOn(select, 'blur');
+
+				select.options[1].selected = true;
+				select.dispatchEvent(new Event('change'));
+
+				expect(blurSpy).toHaveBeenCalled();
+			});
+
 			it('removes filter from view when its remove event triggered', async () => {
 				const element = await setup();
 				element.queryables = testQueryables;

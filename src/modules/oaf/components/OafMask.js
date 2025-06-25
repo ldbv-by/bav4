@@ -29,6 +29,7 @@ export class OafMask extends MvuElement {
 	#importOafService;
 	#translationService;
 	#geoResourceService;
+	#capabilitiesLoaded;
 
 	constructor() {
 		super({
@@ -80,17 +81,17 @@ export class OafMask extends MvuElement {
 		};
 
 		const onRemoveFilterGroup = (evt) => {
-			this.signal(Update_Filter_Groups, this._removeFilterGroup(evt.target.getAttribute('group-id')));
+			const groups = this._removeFilterGroup(evt.target.getAttribute('group-id'));
+			this.signal(Update_Filter_Groups, groups);
+			this._updateLayer(groups);
 		};
 
 		const onFilterGroupChanged = (evt) => {
 			const groups = this.getModel().filterGroups;
 			const targetGroup = this._findFilterGroupById(evt.target.getAttribute('group-id'));
 			targetGroup.oafFilters = evt.target.oafFilters;
-			this.signal(Update_Filter_Groups, [...groups]);
-
-			const expression = createCqlExpression(filterGroups);
-			modifyLayer(this.layerId, { filter: expression === '' ? null : expression });
+			this.signal(Update_Filter_Groups, groups);
+			this._updateLayer(groups);
 		};
 
 		const { capabilities, filterGroups, showConsole } = model;
@@ -104,6 +105,10 @@ export class OafMask extends MvuElement {
 		};
 
 		const contentHeaderButtonsHtml = () => {
+			if (!this.#capabilitiesLoaded) {
+				return html`<ba-spinner></ba-spinner>`;
+			}
+
 			if (capabilities.length < 1) {
 				return nothing;
 			}
@@ -172,6 +177,11 @@ export class OafMask extends MvuElement {
 		`;
 	}
 
+	_updateLayer(filterGroups) {
+		const expression = createCqlExpression(filterGroups);
+		modifyLayer(this.layerId, { filter: expression === '' ? null : expression });
+	}
+
 	_removeFilterGroup(idToRemove) {
 		return this.getModel().filterGroups.filter((group) => {
 			return group.id !== Number(idToRemove);
@@ -192,10 +202,11 @@ export class OafMask extends MvuElement {
 	}
 
 	async _requestFilterCapabilities() {
+		this.#capabilitiesLoaded = false;
 		const layer = this._getLayer();
 		const geoResource = this.#geoResourceService.byId(layer.geoResourceId);
 		const capabilities = await this.#importOafService.getFilterCapabilities(geoResource);
-
+		this.#capabilitiesLoaded = true;
 		this.signal(Update_Capabilities, capabilities);
 	}
 

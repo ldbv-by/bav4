@@ -9,6 +9,7 @@ import css from './oafFilterGroup.css';
 import { $injector } from '../../../injection';
 import closeSvg from '../../../assets/icons/x-square.svg';
 import cloneSvg from './assets/clone.svg';
+import { repeat } from 'lit-html/directives/repeat.js';
 
 const Update_Queryables = 'update_queryables';
 const Update_Filters = 'update_filters';
@@ -53,10 +54,13 @@ export class OafFilterGroup extends MvuElement {
 
 		const onAddFilter = (evt) => {
 			this._addFilter(evt.target.value);
-			evt.target.value = '';
+
+			// Resets select to "Choose Filter..." Option
+			evt.target.selectedIndex = 0;
+			evt.target.blur();
 		};
 
-		const onChangeFilter = (evt) => {
+		const onFilterChanged = (evt) => {
 			const changedOafFilter = evt.target;
 			const filters = this.oafFilters;
 			const changedFilterIndex = filters.findIndex((oafFilter) => oafFilter.queryable.name === evt.target.queryable.name);
@@ -66,8 +70,7 @@ export class OafFilterGroup extends MvuElement {
 				expression: changedOafFilter.expression
 			};
 
-			this.signal(Update_Filters, [...filters]);
-
+			this.signal(Update_Filters, filters);
 			this.dispatchEvent(new CustomEvent('change'));
 		};
 
@@ -96,7 +99,9 @@ export class OafFilterGroup extends MvuElement {
 					</div>
 				</div>
 				<div class="filter-container">
-					${oafFilters.map(
+					${repeat(
+						oafFilters,
+						(oafFilter) => oafFilter.queryable.name,
 						(oafFilter) =>
 							html`<ba-oaf-filter
 								.operator=${oafFilter.operator}
@@ -104,7 +109,7 @@ export class OafFilterGroup extends MvuElement {
 								.maxValue=${oafFilter.maxValue}
 								.minValue=${oafFilter.minValue}
 								.queryable=${oafFilter.queryable}
-								@change=${onChangeFilter}
+								@change=${onFilterChanged}
 								@remove=${onRemoveFilter}
 							></ba-oaf-filter>`
 					)}
@@ -125,6 +130,7 @@ export class OafFilterGroup extends MvuElement {
 			return;
 		}
 
+		// A newly created filter will invoke a change event initially (see oafFilter.js, onInitialize())
 		this.signal(Update_Filters, [
 			...oafFilters,
 			{
@@ -132,8 +138,6 @@ export class OafFilterGroup extends MvuElement {
 				queryable: queryableToAdd
 			}
 		]);
-
-		this.dispatchEvent(new CustomEvent('change'));
 	}
 
 	_removeFilter(queryableName) {

@@ -82,3 +82,6 @@ select {
 .remove-button::part(button) {
 	border-radius: 2em;
 }
+.not-button.active {
+	background-color: red;
+}

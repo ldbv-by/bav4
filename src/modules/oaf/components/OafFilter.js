@@ -1,20 +1,23 @@
 /**
  * @module modules/oaf/components/OafFilter
  */
+import css from './oafFilter.css';
 import { $injector } from '../../../injection';
 import { html, nothing } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
 import css from './oafFilter.css';
 import closeSvg from './assets/clear.svg';
 import { isString } from '../../../utils/checks';
+import { isNumber, isString } from '../../../utils/checks';
 import { getOperatorDefinitions, getOperatorByName, createCqlFilterExpression, CqlOperator } from './oafUtils';
+import { OafQueryableType } from '../../../domain/oaf';
 
 const Update_Queryable = 'update_queryable';
 const Update_Operator = 'update_operator';
 const Update_Value = 'update_value';
 const Update_Min_Value = 'update_min_value';
 const Update_Max_Value = 'update_max_value';
-
+const Update_Use_Negation = 'update_use_negation';
 /**
  * A Filter for the OGC Feature API which filters a provided queryable
  *
@@ -39,7 +42,8 @@ export class OafFilter extends MvuElement {
 			operator: getOperatorByName(CqlOperator.EQUALS),
 			value: null,
 			minValue: null,
-			maxValue: null
+			maxValue: null,
+			useNegation: false
 		});
 
 		const { TranslationService: translationService } = $injector.inject('TranslationService');
@@ -58,17 +62,32 @@ export class OafFilter extends MvuElement {
 				return { ...model, minValue: data };
 			case Update_Max_Value:
 				return { ...model, maxValue: data };
+			case Update_Use_Negation:
+				return { ...model, useNegation: data };
 		}
 	}
 
 	onInitialize() {
-		this.observeModel(['operator', 'minValue', 'maxValue', 'value'], () => this.dispatchEvent(new CustomEvent('change')));
+		const { queryable, minValue, maxValue, value } = this.getModel();
+
+		// Ensures values are set correctly when 'queryable' is missing.
+		// This can happen if 'queryable' is set after the value properties in 'OafFilterGroup'.
+		if (queryable.type !== undefined) {
+			this.value = value;
+			this.maxValue = maxValue;
+			this.minValue = minValue;
+
+			// The creation of a filter is considered a change
+			this.dispatchEvent(new CustomEvent('change'));
+		}
+
+		this.observeModel(['operator', 'useNegation', 'minValue', 'maxValue', 'value'], () => this.dispatchEvent(new CustomEvent('change')));
 	}
 
 	createView(model) {
 		const translate = (key) => this.#translationService.translate(key);
-		const { minValue, maxValue, value, operator } = model;
-		const { name, type, values: queryableValues } = model.queryable;
+		const { minValue, maxValue, value, operator, useNegation } = model;
+		const { name, type, values: queryableValues, finalized } = model.queryable;
 		const operators = getOperatorDefinitions(type);
 
 		const onMinValueChanged = (evt, newValue) => {
@@ -91,13 +110,20 @@ export class OafFilter extends MvuElement {
 			this.dispatchEvent(new CustomEvent('remove'));
 		};
 
+		const onNegateButtonClicked = () => {
+			this.useNegation = !this.useNegation;
+		};
+
 		const getStringInputHtml = () => {
-			return html`<div data-type="string">
+			return html`<div data-type=${OafQueryableType.STRING}>
 				<ba-searchable-select
 					class="value-input"
 					@select=${(evt) => onValueChanged(evt, evt.target.selected)}
 					.selected=${value}
+					.placeholder=${translate('oaf_filter_input_placeholder')}
 					.options=${queryableValues}
+					.allowFreeText=${!finalized}
+					.dropdownHeader=${finalized ? null : translate('oaf_filter_dropdown_header_title')}
 				>
 				</ba-searchable-select>
 			</div>`;
@@ -105,12 +131,13 @@ export class OafFilter extends MvuElement {
 
 		const getTimeInputHtml = () => {
 			return html`<div data-type="time">
-				${operator.name === 'between'
+				${operator.name === CqlOperator.BETWEEN
 					? html`<ba-searchable-select
 								class="min-value-input"
 								@select=${(evt) => onMinValueChanged(evt, evt.target.selected)}
 								.selected=${minValue}
 								.options=${queryableValues}
+								.placeholder=${translate('oaf_filter_input_placeholder')}
 							>
 							</ba-searchable-select>
 							<ba-searchable-select
@@ -118,6 +145,7 @@ export class OafFilter extends MvuElement {
 								@select=${(evt) => onMaxValueChanged(evt, evt.target.selected)}
 								.selected=${maxValue}
 								.options=${queryableValues}
+								.placeholder=${translate('oaf_filter_input_placeholder')}
 							>
 							</ba-searchable-select> `
 					: html`<ba-searchable-select
@@ -125,6 +153,7 @@ export class OafFilter extends MvuElement {
 							@select=${(evt) => onValueChanged(evt, evt.target.selected)}
 							.selected=${value}
 							.options=${queryableValues}
+							.placeholder=${translate('oaf_filter_input_placeholder')}
 						>
 						</ba-searchable-select>`}
 			</div>`;
@@ -136,11 +165,11 @@ export class OafFilter extends MvuElement {
 			const maxRange = model.queryable.maxValue;
 
 			const content = () => {
-				if (operator.name === 'between') {
+				if (operator.name === CqlOperator.BETWEEN) {
 					return html`
 						<input
 							type="text"
-							placeholder="0"
+							.placeholder=${translate('oaf_filter_input_placeholder')}
 							class="min-value-input"
 							.value=${minValue}
 							step=${step}
@@ -150,7 +179,7 @@ export class OafFilter extends MvuElement {
 						/>
 						<input
 							type="text"
-							placeholder="0"
+							.placeholder=${translate('oaf_filter_input_placeholder')}
 							class="max-value-input"
 							.value=${maxValue}
 							step=${step}
@@ -164,7 +193,7 @@ export class OafFilter extends MvuElement {
 				return html`
 					<input
 						type="text"
-						placeholder="0"
+						.placeholder=${translate('oaf_filter_input_placeholder')}
 						class="value-input"
 						.value=${value}
 						step=${step}
@@ -179,26 +208,26 @@ export class OafFilter extends MvuElement {
 		};
 
 		const getBooleanInputHtml = () => {
-			return html`<select class="value-input" data-type="boolean" @change=${(evt) => onValueChanged(evt, evt.target.value)}>
-				<option selected value="true">${translate('oaf_filter_yes')}</option>
-				<option selected value="false">${translate('oaf_filter_no')}</option>
+			return html`<select class="value-input" data-type=${OafQueryableType.BOOLEAN} @change=${(evt) => onValueChanged(evt, evt.target.value)}>
+				<option ?selected=${value === true} value="true">${translate('oaf_filter_yes')}</option>
+				<option ?selected=${value !== true} value="false">${translate('oaf_filter_no')}</option>
 			</select>`;
 		};
 
 		const getInputHtml = () => {
 			const content = () => {
 				switch (type) {
-					case 'string':
+					case OafQueryableType.STRING:
 						return getStringInputHtml();
+					case OafQueryableType.INTEGER:
+					case OafQueryableType.FLOAT:
+						return getNumberInputHtml();
+					case OafQueryableType.BOOLEAN:
+						return getBooleanInputHtml();
+					case OafQueryableType.DATE:
+						return html`<div data-type=${OafQueryableType.DATE}></div>`;
 					case 'time':
 						return getTimeInputHtml();
-					case 'integer':
-					case 'float':
-						return getNumberInputHtml();
-					case 'boolean':
-						return getBooleanInputHtml();
-					case 'date':
-						return html`<div data-type="date"></div>`;
 				}
 				return nothing;
 			};
@@ -209,7 +238,7 @@ export class OafFilter extends MvuElement {
 			return html`
 				<div class="input-operator">
 					<select id="select-operator" @change=${onOperatorSelect}>
-						${operators.map((op) => html`<option .selected=${op === operator} .value=${op.name}>${translate(op.key)}</option>`)}
+						${operators.map((op) => html`<option .selected=${op === operator} .value=${op.name}>${translate(op.translationKey)}</option>`)}
 					</select>
 				</div>
 			`;
@@ -234,26 +263,30 @@ export class OafFilter extends MvuElement {
 	}
 
 	set value(value) {
-		this._updateValue(value, this.value, Update_Value);
+		this._updateValue(value, this.getModel().value, Update_Value);
 	}
 
 	get value() {
-		return this.getModel().value;
+		const value = this.getModel().value;
+		return this._parseValue(value, null);
 	}
 
 	set maxValue(value) {
-		this._updateValue(value, this.value, Update_Max_Value);
+		this._updateValue(value, this.getModel().maxValue, Update_Max_Value);
 	}
 
 	get maxValue() {
-		return this.getModel().maxValue;
+		const maxValue = this.getModel().maxValue;
+		return this._parseValue(maxValue, null);
 	}
+
 	set minValue(value) {
-		this._updateValue(value, this.value, Update_Min_Value);
+		this._updateValue(value, this.getModel().minValue, Update_Min_Value);
 	}
 
 	get minValue() {
-		return this.getModel().minValue;
+		const minValue = this.getModel().minValue;
+		return this._parseValue(minValue, null);
 	}
 
 	get queryable() {
@@ -276,6 +309,14 @@ export class OafFilter extends MvuElement {
 		}
 	}
 
+	get useNegation() {
+		return this.getModel().useNegation;
+	}
+
+	set useNegation(value) {
+		this.signal(Update_Use_Negation, value === true);
+	}
+
 	get expression() {
 		return createCqlFilterExpression(this.getModel());
 	}
@@ -289,17 +330,34 @@ export class OafFilter extends MvuElement {
 	_parseValue(value, fallback) {
 		const type = this.queryable.type;
 
-		if (type === 'integer') {
-			value = parseInt(value);
-			return !isNaN(value) ? value : fallback;
-		}
+		switch (type) {
+			case OafQueryableType.INTEGER:
+				if (value === '') {
+					return '';
+				}
+				value = parseInt(value);
+				return isNumber(value) ? value : fallback;
 
-		if (type === 'float') {
-			value = parseFloat(value);
-			return !isNaN(value) ? value : fallback;
-		}
+			case OafQueryableType.FLOAT:
+				if (value === '') {
+					return '';
+				}
+				value = parseFloat(value);
+				return isNumber(value) ? value : fallback;
 
-		return value;
+			case OafQueryableType.BOOLEAN:
+				if (isString(value)) {
+					return value.toLowerCase() === 'true';
+				}
+
+				return value === true;
+
+			case OafQueryableType.STRING:
+				return isString(value) ? value : '';
+
+			default:
+				return value;
+		}
 	}
 
 	static get tag() {

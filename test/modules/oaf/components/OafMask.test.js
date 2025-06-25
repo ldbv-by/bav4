@@ -113,6 +113,11 @@ describe('OafMask', () => {
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('#btn-normal-mode')).toBeNull();
 		});
+
+		it('renders a loading spinner', async () => {
+			const element = await setup();
+			expect(element.shadowRoot.querySelector('ba-spinner')).not.toBeNull();
+		});
 	});
 
 	describe('when the ui renders with filter capabilities', () => {
@@ -121,6 +126,11 @@ describe('OafMask', () => {
 		});
 
 		describe('in normal mode', () => {
+			it('does not render a loading spinner', async () => {
+				const element = await setup();
+				expect(element.shadowRoot.querySelector('ba-spinner')).toBeNull();
+			});
+
 			it('does not render filter groups', async () => {
 				const element = await setup();
 				expect(element.shadowRoot.querySelectorAll('ba-oaf-filter-group')).toHaveSize(0);
@@ -208,6 +218,21 @@ describe('OafMask', () => {
 				expect(element.getModel().filterGroups[0]).toEqual(filtersBeforeRemove[0]);
 			});
 
+			it("it updates active layer's filter constraint when a filter-group is removed", async () => {
+				const element = await setup();
+				element.shadowRoot.querySelector('#btn-add-filter-group').click();
+				const group = element.shadowRoot.querySelector('ba-oaf-filter-group');
+				group._addFilter('foo');
+
+				const oafFilter = group.shadowRoot.querySelector('ba-oaf-filter');
+				oafFilter.value = 24;
+
+				group.dispatchEvent(new CustomEvent('remove'));
+
+				const layer = store.getState().layers.active.find((l) => l.id === -1);
+				expect(layer.constraints).toEqual(jasmine.objectContaining({ filter: null }));
+			});
+
 			it("it updates active layer's filter constraint when a filter-group changes", async () => {
 				const element = await setup();
 				element.shadowRoot.querySelector('#btn-add-filter-group').click();
@@ -252,6 +277,11 @@ describe('OafMask', () => {
 		});
 
 		describe('in expert mode', () => {
+			it('does not render a loading spinner', async () => {
+				const element = await setup();
+				expect(element.shadowRoot.querySelector('ba-spinner')).toBeNull();
+			});
+
 			it('renders the "Normal Mode" Button', async () => {
 				const element = await setup();
 				element.showConsole = true;
