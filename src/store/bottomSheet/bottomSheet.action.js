@@ -10,9 +10,11 @@ const getStore = () => {
 };
 
 /**
+ *
  * Opens the bottom sheet.
- * @param {string|TemplateResult} content  The content of the bottom sheet. Could either be a a plain string or a lit-html TemplateResult.
  * @function
+ * @param {string|TemplateResult} content  The content of the bottom sheet. Could either be a a plain string or a lit-html TemplateResult.
+ * @param {string} [id] The identifier of a specific BottomSheet
  */
 export const openBottomSheet = (content, id = DEFAULT_BOTTOM_SHEET_ID) => {
 	getStore().dispatch({
@@ -23,6 +25,7 @@ export const openBottomSheet = (content, id = DEFAULT_BOTTOM_SHEET_ID) => {
 
 /**
  * Closes the bottom sheet.
+ * @param {string} [id] The identifier of a specific BottomSheet
  * @function
  */
 export const closeBottomSheet = (id = DEFAULT_BOTTOM_SHEET_ID) => {
