@@ -191,8 +191,9 @@ export class OlStyleService {
 		const style = olVectorLayer.get('style') ?? vectorGeoResource.style;
 		const styleHint = vectorGeoResource.styleHint;
 		if (style?.baseColor) {
-			olVectorLayer.setStyle(getDefaultStyleFunction(hexToRgb(style.baseColor)));
+			this._setDefaultColorForLayer(olVectorLayer, hexToRgb(style.baseColor));
 		}
+
 		if (styleHint) {
 			switch (styleHint) {
 				case StyleHint.CLUSTER:
@@ -277,7 +278,7 @@ export class OlStyleService {
 			olVectorSource.getFeatures().forEach((f) => this.updateFeatureStyle(f, olMap, this._mapToStyleProperties(olLayer)));
 		});
 
-		return { addFeatureListenerKey, removeFeatureListenerKey, clearFeaturesListenerKey, layerChangeListenerKey, layerListChangedListenerKey };
+		return [addFeatureListenerKey, removeFeatureListenerKey, clearFeaturesListenerKey, layerChangeListenerKey, layerListChangedListenerKey];
 	}
 
 	/**
@@ -408,6 +409,11 @@ export class OlStyleService {
 		olFeature.setStyle(getDefaultStyleFunction(color));
 	}
 
+	_setDefaultColorForLayer(olLayer, color) {
+		const id = getUid(olLayer);
+		this.#defaultColorByLayerId[id] = color;
+	}
+
 	_addGeoJSONStyle(olFeature) {
 		olFeature.setStyle(geojsonStyleFunction);
 	}
@@ -529,7 +535,15 @@ export class OlStyleService {
 			return styleType ?? null;
 		};
 
-		const defaultOrNull = (olFeature) => (olFeature.getStyle() === null ? OlFeatureStyleTypes.DEFAULT : null);
+		const defaultOrNull = (olFeature) => {
+			if (olFeature.getStyle() === null) {
+				// no Style required, if we have a styleHint or style as property
+				const baStyleHint = olFeature.get(asInternalProperty('styleHint'));
+				const baStyle = olFeature.get(asInternalProperty('style'));
+				return !baStyleHint && !baStyle ? OlFeatureStyleTypes.DEFAULT : null;
+			}
+			return null;
+		};
 
 		if (olFeature) {
 			for (const styleTypeFunction of [getStyleTypeFromId, getStyleTypeFromProperties, getStyleTypeFromTypeAttribute, defaultOrNull]) {
