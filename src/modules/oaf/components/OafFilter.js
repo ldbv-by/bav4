@@ -15,7 +15,6 @@ const Update_Operator = 'update_operator';
 const Update_Value = 'update_value';
 const Update_Min_Value = 'update_min_value';
 const Update_Max_Value = 'update_max_value';
-const Update_Use_Negation = 'update_use_negation';
 /**
  * A Filter for the OGC Feature API which filters a provided queryable
  *
@@ -40,8 +39,7 @@ export class OafFilter extends MvuElement {
 			operator: getOperatorByName(CqlOperator.EQUALS),
 			value: null,
 			minValue: null,
-			maxValue: null,
-			useNegation: false
+			maxValue: null
 		});
 
 		const { TranslationService: translationService } = $injector.inject('TranslationService');
@@ -60,8 +58,6 @@ export class OafFilter extends MvuElement {
 				return { ...model, minValue: data };
 			case Update_Max_Value:
 				return { ...model, maxValue: data };
-			case Update_Use_Negation:
-				return { ...model, useNegation: data };
 		}
 	}
 
@@ -79,12 +75,12 @@ export class OafFilter extends MvuElement {
 			this.dispatchEvent(new CustomEvent('change'));
 		}
 
-		this.observeModel(['operator', 'useNegation', 'minValue', 'maxValue', 'value'], () => this.dispatchEvent(new CustomEvent('change')));
+		this.observeModel(['operator', 'minValue', 'maxValue', 'value'], () => this.dispatchEvent(new CustomEvent('change')));
 	}
 
 	createView(model) {
 		const translate = (key) => this.#translationService.translate(key);
-		const { minValue, maxValue, value, operator, useNegation } = model;
+		const { minValue, maxValue, value, operator } = model;
 		const { name, type, values: queryableValues, finalized } = model.queryable;
 		const operators = getOperatorDefinitions(type);
 
@@ -202,7 +198,7 @@ export class OafFilter extends MvuElement {
 		};
 
 		const getBooleanInputHtml = () => {
-			return html`<select data-type=${OafQueryableType.BOOLEAN} @change=${(evt) => onValueChanged(evt, evt.target.value)}>
+			return html`<select class="value-input" data-type=${OafQueryableType.BOOLEAN} @change=${(evt) => onValueChanged(evt, evt.target.value)}>
 				<option ?selected=${value === true} value="true">${translate('oaf_filter_yes')}</option>
 				<option ?selected=${value !== true} value="false">${translate('oaf_filter_no')}</option>
 			</select>`;
@@ -301,14 +297,6 @@ export class OafFilter extends MvuElement {
 		} else {
 			this.signal(Update_Operator, value);
 		}
-	}
-
-	get useNegation() {
-		return this.getModel().useNegation;
-	}
-
-	set useNegation(value) {
-		this.signal(Update_Use_Negation, value === true);
 	}
 
 	get expression() {

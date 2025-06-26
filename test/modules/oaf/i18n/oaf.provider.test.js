@@ -13,10 +13,13 @@ describe('i18n for header module', () => {
 		expect(map.oaf_filter_yes).toBe('Yes');
 		expect(map.oaf_filter_no).toBe('No');
 		expect(map.oaf_operator_equals).toBe('Equals');
+		expect(map.oaf_operator_not_equals).toBe('Not equals');
 		expect(map.oaf_operator_like).toBe('Like');
-		expect(map.oaf_operator_greater).toBe('Greater Than');
-		expect(map.oaf_operator_lesser).toBe('Less Than');
+		expect(map.oaf_operator_not_like).toBe('Not like');
+		expect(map.oaf_operator_greater).toBe('Greater than');
+		expect(map.oaf_operator_less).toBe('Less than');
 		expect(map.oaf_operator_between).toBe('Between');
+		expect(map.oaf_operator_not_between).toBe('Outside');
 		expect(map.oaf_filter_dropdown_header_title).toBe('Examples');
 		expect(map.oaf_filter_input_placeholder).toBe('Filter by...');
 	});
@@ -35,14 +38,15 @@ describe('i18n for header module', () => {
 		expect(map.oaf_operator_equals).toBe('Ist gleich');
 		expect(map.oaf_operator_like).toBe('Enthält');
 		expect(map.oaf_operator_greater).toBe('Größer als');
-		expect(map.oaf_operator_lesser).toBe('Kleiner als');
+		expect(map.oaf_operator_less).toBe('Kleiner als');
 		expect(map.oaf_operator_between).toBe('Zwischen');
+		expect(map.oaf_operator_not_between).toBe('Außerhalb');
 		expect(map.oaf_filter_dropdown_header_title).toBe('Beispiele');
 		expect(map.oaf_filter_input_placeholder).toBe('Filtern nach...');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 15;
+		const expectedSize = 18;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

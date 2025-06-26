@@ -38,8 +38,7 @@ describe('OafFilter', () => {
 				operator: getOperatorByName(CqlOperator.EQUALS),
 				value: null,
 				minValue: null,
-				maxValue: null,
-				useNegation: false
+				maxValue: null
 			});
 		});
 
@@ -53,7 +52,6 @@ describe('OafFilter', () => {
 			expect(element.maxValue).toBeNull();
 			expect(element.minValue).toBeNull();
 			expect(element.expression).toBe('');
-			expect(element.useNegation).toBeFalse();
 		});
 
 		it('updates values in model when initialized with queryable property as last', async () => {

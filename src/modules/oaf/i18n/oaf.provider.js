@@ -12,10 +12,13 @@ export const provide = (lang) => {
 				oaf_filter_yes: 'Yes',
 				oaf_filter_no: 'No',
 				oaf_operator_equals: 'Equals',
+				oaf_operator_not_equals: 'Not equals',
 				oaf_operator_like: 'Like',
-				oaf_operator_greater: 'Greater Than',
-				oaf_operator_lesser: 'Less Than',
+				oaf_operator_not_like: 'Not like',
+				oaf_operator_greater: 'Greater than',
+				oaf_operator_less: 'Less than',
 				oaf_operator_between: 'Between',
+				oaf_operator_not_between: 'Outside',
 				oaf_filter_dropdown_header_title: 'Examples',
 				oaf_filter_input_placeholder: 'Filter by...'
 			};
@@ -31,10 +34,13 @@ export const provide = (lang) => {
 				oaf_filter_yes: 'Ja',
 				oaf_filter_no: 'Nein',
 				oaf_operator_equals: 'Ist gleich',
+				oaf_operator_not_equals: 'Ist ungleich',
 				oaf_operator_like: 'Enthält',
+				oaf_operator_not_like: 'Enthält nicht',
 				oaf_operator_greater: 'Größer als',
-				oaf_operator_lesser: 'Kleiner als',
+				oaf_operator_less: 'Kleiner als',
 				oaf_operator_between: 'Zwischen',
+				oaf_operator_not_between: 'Außerhalb',
 				oaf_filter_dropdown_header_title: 'Beispiele',
 				oaf_filter_input_placeholder: 'Filtern nach...'
 			};
