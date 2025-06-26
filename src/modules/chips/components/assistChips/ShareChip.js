@@ -112,7 +112,7 @@ export class ShareChip extends AbstractAssistChip {
 			};
 			await this._environmentService.getWindow().navigator.share(content);
 		} catch (error) {
-			// In some rare cases we need a fallback. this happens when the webbrowser can basically
+			// In some rare cases we need a fallback. This happens when the webbrowser can basically
 			// use the share-API but enterprise policies on operating system level rejects the calls,
 			// due to missing user privileges.
 			if (!(error instanceof DOMException && error.name === 'AbortError')) {
