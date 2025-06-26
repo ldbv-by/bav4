@@ -6,7 +6,6 @@ import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 import { IframeGenerator } from '../../../../../src/modules/iframe/components/generator/IframeGenerator';
 import { ShareDialogContent } from '../../../../../src/modules/share/components/dialog/ShareDialogContent';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
-import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 import { QueryParameters } from '../../../../../src/domain/queryParameters';
 
 window.customElements.define(ShareDialogContent.tag, ShareDialogContent);

@@ -7,7 +7,6 @@ import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import { $injector } from '../../../../injection';
 import css from './shareToolContent.css';
 import { openModal } from '../../../../store/modal/modal.action';
-import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
 import { setQueryParams } from '../../../../utils/urlUtils';
 import { QueryParameters } from '../../../../domain/queryParameters';
 
