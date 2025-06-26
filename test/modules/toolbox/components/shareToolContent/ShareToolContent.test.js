@@ -114,7 +114,7 @@ describe('ShareToolContent', () => {
 					expect(windowShareSpy).toHaveBeenCalledWith(mockShareData);
 				});
 
-				it('emits a warn statement on share api reject', async () => {
+				it('uses dialog on share api reject as fallback', async () => {
 					const mockShortUrl = 'https://short/url';
 					const mockErrorMsg = 'something got wrong';
 					const windowMock = {
@@ -131,11 +131,14 @@ describe('ShareToolContent', () => {
 					shareButton.click();
 
 					await TestUtils.timeout();
-					expect(store.getState().notifications.latest.payload.content).toBe('toolbox_shareTool_share_api_failed');
-					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+					expect(store.getState().modal.data.title).toBe('toolbox_shareTool_share');
+
+					const contentElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
+					const shareDialogContentElement = contentElement.querySelector('ba-share-content');
+					expect(shareDialogContentElement.shadowRoot.querySelector('input').value).toBe('https://short/url');
 				});
 
-				it('does NOT emit a warn statement on share api canceled', async () => {
+				it('does NOT opens fallback dialog on share api canceled', async () => {
 					const mockShortUrl = 'https://short/url';
 					const windowMock = {
 						navigator: {
@@ -151,7 +154,7 @@ describe('ShareToolContent', () => {
 					shareButton.click();
 
 					await TestUtils.timeout();
-					expect(store.getState().notifications.latest).toBeNull();
+					expect(store.getState().modal.data).toBeNull();
 				});
 			});
 		});

@@ -114,32 +114,33 @@ export class ShareToolContent extends AbstractToolContent {
 			`;
 
 			const getOnClickFunction = () => {
-				if (tool.name === 'share-api') {
-					if (this._isShareApiAvailable()) {
-						return async () => {
-							try {
-								const shortUrl = await this._generateShortUrl();
-
-								const shareData = {
-									// title-property is absent; browser automatically creates a meaningful title
-									url: shortUrl
-								};
-
-								await this._window.navigator.share(shareData);
-							} catch (e) {
-								if (!(e instanceof DOMException && e.name === 'AbortError')) {
-									emitNotification(translate('toolbox_shareTool_share_api_failed'), LevelTypes.WARN);
-								}
-							}
+				const shareUrlWithDialog = async () => {
+					const shortUrl = await this._generateShortUrl();
+					const title = translate('toolbox_shareTool_share');
+					const content = html`<ba-share-content .urls=${shortUrl}></ba-share-content>`;
+					openModal(title, content);
+				};
+				const shareUrlWithAPI = async () => {
+					try {
+						const shortUrl = await this._generateShortUrl();
+						const shareData = {
+							// title-property is absent; browser automatically creates a meaningful title
+							url: shortUrl
 						};
-					} else {
-						return async () => {
-							const shortUrl = await this._generateShortUrl();
-							const title = translate('toolbox_shareTool_share');
-							const content = html`<ba-share-content .urls=${shortUrl}></ba-share-content>`;
-							openModal(title, content);
-						};
+
+						await this._window.navigator.share(shareData);
+					} catch (e) {
+						// In some rare cases we need a fallback. this happens when the webbrowser can basically
+						// use the share-API but enterprise policies on operating system level rejects the calls,
+						// due to missing user privileges.
+						if (!(e instanceof DOMException && e.name === 'AbortError')) {
+							shareUrlWithDialog();
+						}
 					}
+				};
+
+				if (tool.name === 'share-api') {
+					return this._isShareApiAvailable() ? shareUrlWithAPI : shareUrlWithDialog;
 				} else {
 					return async () => {
 						try {
