@@ -4,7 +4,6 @@ import { ShareChip } from '../../../../src/modules/chips/components/assistChips/
 import shareSvg from '../../../../src/modules/chips/components/assistChips/assets/share.svg';
 import { ShareDialogContent } from '../../../../src/modules/share/components/dialog/ShareDialogContent';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
-import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { TestUtils } from '../../../test-utils';
 

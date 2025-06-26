@@ -5,7 +5,6 @@ import { html } from 'lit-html';
 import { QueryParameters } from '../../../../domain/queryParameters';
 import { $injector } from '../../../../injection/index';
 import { openModal } from '../../../../store/modal/modal.action';
-import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
 import { isCoordinate } from '../../../../utils/checks';
 import { AbstractAssistChip } from './AbstractAssistChip';
 import shareIcon from './assets/share.svg';
