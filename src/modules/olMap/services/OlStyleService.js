@@ -282,17 +282,6 @@ export class OlStyleService {
 	}
 
 	/**
-	 * Sanitizes the style of the present features of the vector layer.
-	 * The sanitizing prepares features with incompatible styling for the rendering in the
-	 * ol context.
-	 * @param {ol.layer.Vector} olVectorLayer
-	 */
-	_sanitizeStyles(olVectorLayer) {
-		const olVectorSource = olVectorLayer.getSource();
-		olVectorSource.getFeatures().forEach((feature) => this._sanitizeStyleFor(feature));
-	}
-
-	/**
 	 * Sanitize the style of a feature, to prevent unwanted renderings
 	 * and to enable display behavior of point features as interactive label,
 	 * similar to Google Earth (Desktop Application), to support user-created
