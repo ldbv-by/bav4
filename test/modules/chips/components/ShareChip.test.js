@@ -4,7 +4,6 @@ import { ShareChip } from '../../../../src/modules/chips/components/assistChips/
 import shareSvg from '../../../../src/assets/icons/share.svg';
 import { ShareDialogContent } from '../../../../src/modules/share/components/dialog/ShareDialogContent';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
-import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { TestUtils } from '../../../test-utils';
 
@@ -137,7 +136,7 @@ describe('ShareChip', () => {
 				expect(shareSpy).toHaveBeenCalledWith({ url: 'http://shorten.foo' });
 			});
 
-			it('emits a warn notification when shareApi fails', async () => {
+			it('uses a dialog as fallback on share api reject', async () => {
 				const element = await setup({ share: () => Promise.resolve(true) }, { center: [42, 21] });
 				const shareServiceSpy = spyOn(shareServiceMock, 'encodeStateForPosition').and.callThrough();
 
@@ -153,11 +152,14 @@ describe('ShareChip', () => {
 
 				expect(shareSpy).toHaveBeenCalledWith({ url: 'http://shorten.foo' });
 
-				expect(store.getState().notifications.latest.payload.content).toBe('chips_assist_chip_share_position_api_failed');
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				expect(store.getState().modal.data.title).toBe('chips_assist_chip_share_position_label');
+
+				const contentElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
+				const shareDialogContentElement = contentElement.querySelector('ba-share-content');
+				expect(shareDialogContentElement.shadowRoot.querySelector('input').value).toBe('http://shorten.foo');
 			});
 
-			it('does NOT emit a warn notification on share api canceled', async () => {
+			it('does NOT open the fallback dialog on share api canceled', async () => {
 				const element = await setup({ share: () => Promise.resolve(true) }, { center: [42, 21] });
 				const shareServiceSpy = spyOn(shareServiceMock, 'encodeStateForPosition').and.callThrough();
 
@@ -173,7 +175,7 @@ describe('ShareChip', () => {
 
 				expect(shareSpy).toHaveBeenCalledWith({ url: 'http://shorten.foo' });
 
-				expect(store.getState().notifications.latest).toBeNull();
+				expect(store.getState().modal.data).toBeNull();
 			});
 		});
 
