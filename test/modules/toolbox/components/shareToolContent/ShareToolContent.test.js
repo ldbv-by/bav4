@@ -6,7 +6,6 @@ import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 import { IframeGenerator } from '../../../../../src/modules/iframe/components/generator/IframeGenerator';
 import { ShareDialogContent } from '../../../../../src/modules/share/components/dialog/ShareDialogContent';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
-import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 import { QueryParameters } from '../../../../../src/domain/queryParameters';
 
 window.customElements.define(ShareDialogContent.tag, ShareDialogContent);
@@ -114,7 +113,7 @@ describe('ShareToolContent', () => {
 					expect(windowShareSpy).toHaveBeenCalledWith(mockShareData);
 				});
 
-				it('emits a warn statement on share api reject', async () => {
+				it('uses a dialog as fallback on share api reject', async () => {
 					const mockShortUrl = 'https://short/url';
 					const mockErrorMsg = 'something got wrong';
 					const windowMock = {
@@ -131,11 +130,14 @@ describe('ShareToolContent', () => {
 					shareButton.click();
 
 					await TestUtils.timeout();
-					expect(store.getState().notifications.latest.payload.content).toBe('toolbox_shareTool_share_api_failed');
-					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+					expect(store.getState().modal.data.title).toBe('toolbox_shareTool_share');
+
+					const contentElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
+					const shareDialogContentElement = contentElement.querySelector('ba-share-content');
+					expect(shareDialogContentElement.shadowRoot.querySelector('input').value).toBe('https://short/url');
 				});
 
-				it('does NOT emit a warn statement on share api canceled', async () => {
+				it('does NOT open the fallback dialog on share api canceled', async () => {
 					const mockShortUrl = 'https://short/url';
 					const windowMock = {
 						navigator: {
@@ -151,7 +153,7 @@ describe('ShareToolContent', () => {
 					shareButton.click();
 
 					await TestUtils.timeout();
-					expect(store.getState().notifications.latest).toBeNull();
+					expect(store.getState().modal.data).toBeNull();
 				});
 			});
 		});
