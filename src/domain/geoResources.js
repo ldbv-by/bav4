@@ -94,6 +94,7 @@ export class GeoResource {
 		this._exportable = true;
 		this._authRoles = [];
 		this._timestamps = [];
+		this._updateInterval = null;
 	}
 
 	checkDefined(value, name) {
@@ -190,6 +191,13 @@ export class GeoResource {
 		return [...this._timestamps];
 	}
 
+	/**
+	 * The update interval in seconds for this GeoResource
+	 * @type {number}
+	 */
+	get updateInterval() {
+		return this._updateInterval;
+	}
 	/**
 	 * Returns a list of roles which are allowed to access this GeoResource.
 	 * An empty array means any user can access this GeoResource.
@@ -316,6 +324,16 @@ export class GeoResource {
 	}
 
 	/**
+	 * Sets the update interval in seconds for this GeoResource
+	 * @param {number|null} updateInterval
+	 * @returns {GeoResource} `this` for chaining
+	 */
+	setUpdateInterval(updateInterval) {
+		this._updateInterval = updateInterval;
+		return this;
+	}
+
+	/**
 	 * Set the roles for authentication/authorization of this GeoResource
 	 * and updates its authentication type.
 	 * @param {Array<string>} roles Roles of this GeoResource
@@ -345,6 +363,14 @@ export class GeoResource {
 	 */
 	hasTimestamps() {
 		return this._timestamps.length > 0;
+	}
+
+	/**
+	 * Checks if this GeoResource has an update interval.
+	 * @returns {boolean}`true` if has an update interval
+	 */
+	hasUpdateInterval() {
+		return !!this._updateInterval;
 	}
 
 	/**
@@ -398,6 +424,7 @@ export class GeoResource {
 			.setQueryable(geoResource.queryable)
 			.setExportable(geoResource.exportable)
 			.setTimestamps(geoResource.timestamps)
+			.setUpdateInterval(geoResource.updateInterval)
 			.setAuthRoles(geoResource.authRoles)
 			.setAuthenticationType(geoResource.authenticationType);
 	}

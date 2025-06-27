@@ -117,6 +117,12 @@ describe('GeoResource', () => {
 				expect(new GeoResourceImpl('id').setTimestamps(['0']).hasTimestamps()).toBeTrue();
 			});
 
+			it('provides a check for containing an update interval', () => {
+				expect(new GeoResourceImpl('id').hasUpdateInterval()).toBeFalse();
+				expect(new GeoResourceImpl('id').setUpdateInterval(null).hasUpdateInterval()).toBeFalse();
+				expect(new GeoResourceImpl('id').setUpdateInterval(100).hasUpdateInterval()).toBeTrue();
+			});
+
 			it('sets the attribution provider', () => {
 				const provider = jasmine.createSpy();
 				const grs = new GeoResourceImpl('id');
@@ -215,7 +221,8 @@ describe('GeoResource', () => {
 					.setExportable(false)
 					.setAuthRoles(roles)
 					.setAuthenticationType(GeoResourceAuthenticationType.BAA)
-					.setTimestamps(timestamps);
+					.setTimestamps(timestamps)
+					.setUpdateInterval(100);
 				const geoResource1 = new GeoResourceNoImpl('id1');
 
 				geoResource1.copyPropertiesFrom(geoResource0);
@@ -233,6 +240,7 @@ describe('GeoResource', () => {
 				expect(geoResource1.authRoles).toEqual(roles);
 				expect(geoResource1.authRoles === roles).toBeFalse(); //must be a shallow copy
 				expect(geoResource1.timestamps).toEqual(timestamps);
+				expect(geoResource1.updateInterval).toBe(100);
 			});
 
 			describe('setAuthRoles', () => {
@@ -278,6 +286,7 @@ describe('GeoResource', () => {
 				expect(geoResource.exportable).toBeTrue();
 				expect(geoResource.authRoles).toEqual([]);
 				expect(geoResource.timestamps).toEqual([]);
+				expect(geoResource.updateInterval).toBeNull();
 			});
 
 			it('provides set methods and getters', () => {
@@ -297,7 +306,8 @@ describe('GeoResource', () => {
 					.setExportable(false)
 					.setAuthRoles(roles)
 					.setAuthenticationType(GeoResourceAuthenticationType.BAA)
-					.setTimestamps(timestamps);
+					.setTimestamps(timestamps)
+					.setUpdateInterval(100);
 
 				expect(geoResource.hidden).toBeTrue();
 				expect(geoResource.opacity).toBe(0.5);
@@ -311,6 +321,7 @@ describe('GeoResource', () => {
 				expect(geoResource.authRoles).toEqual(roles);
 				expect(geoResource.authRoles === roles).toBeFalse(); //must be a shallow copy
 				expect(geoResource.timestamps).toEqual(timestamps);
+				expect(geoResource.updateInterval).toBe(100);
 			});
 		});
 	});
