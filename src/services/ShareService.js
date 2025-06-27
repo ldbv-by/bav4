@@ -75,7 +75,9 @@ export class ShareService {
 			...this._extractRoute(),
 			...this._extractTool(),
 			...this._extractCrosshair(),
-			...this._extractSwipeRatio()
+			...this._extractMainMenu(),
+			...this._extractSwipeRatio(),
+			...this._extractGeolocation()
 		};
 
 		return new Map(Object.entries(params));
@@ -121,7 +123,8 @@ export class ShareService {
 				...this._extractTool(),
 				...this._extractCrosshair(),
 				...this._extractMainMenu(),
-				...this._extractSwipeRatio()
+				...this._extractSwipeRatio(),
+				...this._extractGeolocation()
 			},
 			extraParams
 		);
@@ -379,6 +382,26 @@ export class ShareService {
 			const feature = features.find((hf) => hf.id === CROSSHAIR_HIGHLIGHT_FEATURE_ID);
 			const crosshairCoords = feature.data.map((n) => n.toFixed(digits));
 			extractedState[QueryParameters.CROSSHAIR] = [true, ...crosshairCoords];
+		}
+
+		return extractedState;
+	}
+	/**
+	 * @private
+	 * @returns {object} extractedState
+	 */
+	_extractGeolocation() {
+		const { StoreService: storeService } = $injector.inject('StoreService');
+
+		const state = storeService.getStore().getState();
+		const extractedState = {};
+
+		const {
+			geolocation: { active }
+		} = state;
+
+		if (active) {
+			extractedState[QueryParameters.GEOLOCATION] = true;
 		}
 
 		return extractedState;

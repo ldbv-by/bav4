@@ -152,7 +152,6 @@ Modules meet the following conventions:
 2. Each module must be registered within the `main.js`.
 
 3. Each module may contain further directories:
-
    - `/components` : Components and all of their dependencies like CSS, assets (see [Components](#components))
    - `/services` : service, provider, and domain classes of the module
    - `/i18n` : i18n provider and loader for this module
@@ -224,7 +223,6 @@ For example, they could be responsible for setting an initial state or reacting 
   ("At the same moment" means the phase when parts of the application react to an event, e.g. user interaction, initial setup)
 
 - Common places for updating the global state are:
-
   - `MvuElement` based components
   - `BaPlugin` implementations
 

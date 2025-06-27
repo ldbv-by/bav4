@@ -93,6 +93,10 @@ export const QueryParameters = Object.freeze({
 	 * The category (vehicle) of a route (`string`)
 	 */
 	ROUTE_CATEGORY: 'rtc',
+	/**
+	 * Activated geolocation (`boolean`)
+	 */
+	GEOLOCATION: 'gl',
 
 	/**
 	 * EMBED MODE CONFIGURATION PARAMETERS

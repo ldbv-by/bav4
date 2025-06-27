@@ -33,15 +33,15 @@ export class RouteInfo extends MvuElement {
 		this.observe(
 			(store) => store.routing.status,
 			(status) => this.signal(Update_Status, status)
-		),
-			this.observe(
-				(store) => store.routing.stats,
-				(stats) => this.signal(Update_Route_Stats, stats)
-			),
-			this.observe(
-				(state) => state.routing.categoryId,
-				(categoryId) => this.signal(Update_Category, categoryId)
-			);
+		);
+		this.observe(
+			(store) => store.routing.stats,
+			(stats) => this.signal(Update_Route_Stats, stats)
+		);
+		this.observe(
+			(state) => state.routing.categoryId,
+			(categoryId) => this.signal(Update_Category, categoryId)
+		);
 	}
 
 	update(type, data, model) {

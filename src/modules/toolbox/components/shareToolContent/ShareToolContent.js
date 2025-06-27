@@ -7,7 +7,6 @@ import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import { $injector } from '../../../../injection';
 import css from './shareToolContent.css';
 import { openModal } from '../../../../store/modal/modal.action';
-import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
 import { setQueryParams } from '../../../../utils/urlUtils';
 import { QueryParameters } from '../../../../domain/queryParameters';
 
@@ -114,32 +113,34 @@ export class ShareToolContent extends AbstractToolContent {
 			`;
 
 			const getOnClickFunction = () => {
-				if (tool.name === 'share-api') {
-					if (this._isShareApiAvailable()) {
-						return async () => {
-							try {
-								const shortUrl = await this._generateShortUrl();
-
-								const shareData = {
-									// title-property is absent; browser automatically creates a meaningful title
-									url: shortUrl
-								};
-
-								await this._window.navigator.share(shareData);
-							} catch (e) {
-								if (!(e instanceof DOMException && e.name === 'AbortError')) {
-									emitNotification(translate('toolbox_shareTool_share_api_failed'), LevelTypes.WARN);
-								}
-							}
+				const shareUrlWithDialog = async () => {
+					const shortUrl = await this._generateShortUrl();
+					const title = translate('toolbox_shareTool_share');
+					const content = html`<ba-share-content .urls=${shortUrl}></ba-share-content>`;
+					openModal(title, content);
+				};
+				const shareUrlWithAPI = async () => {
+					try {
+						const shortUrl = await this._generateShortUrl();
+						const shareData = {
+							// title-property is absent; browser automatically creates a meaningful title
+							url: shortUrl
 						};
-					} else {
-						return async () => {
-							const shortUrl = await this._generateShortUrl();
-							const title = translate('toolbox_shareTool_share');
-							const content = html`<ba-share-content .urls=${shortUrl}></ba-share-content>`;
-							openModal(title, content);
-						};
+
+						await this._window.navigator.share(shareData);
+					} catch (e) {
+						/**
+						 * In some rare cases, we need a fallback. This occurs when the web browser can use the Share-API,
+						 * but enterprise policies at the operating system level reject the call due to a lack of user privileges.
+						 */
+						if (!(e instanceof DOMException && e.name === 'AbortError')) {
+							shareUrlWithDialog();
+						}
 					}
+				};
+
+				if (tool.name === 'share-api') {
+					return this._isShareApiAvailable() ? shareUrlWithAPI : shareUrlWithDialog;
 				} else {
 					return async () => {
 						try {

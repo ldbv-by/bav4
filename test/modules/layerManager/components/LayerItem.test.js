@@ -26,9 +26,10 @@ import infoSvg from '../../../../src/assets/icons/info.svg';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { LayerState, SwipeAlignment } from '../../../../src/store/layers/layers.action.js';
 import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
-import { bottomSheetReducer } from '../../../../src/store/bottomSheet/bottomSheet.reducer.js';
+import { bottomSheetReducer, LAYER_ITEM_BOTTOM_SHEET_ID } from '../../../../src/store/bottomSheet/bottomSheet.reducer.js';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
+import { openBottomSheet } from '../../../../src/store/bottomSheet/bottomSheet.action.js';
 
 window.customElements.define(LayerItem.tag, LayerItem);
 
@@ -422,7 +423,7 @@ describe('LayerItem', () => {
 			expect(oafSettingsElement[0].title).toBe('layerManager_oaf_settings');
 		});
 
-		it('opens the bottomSheet for the oaf-filter component', async () => {
+		it('opens the Setting-BottomSheet once', async () => {
 			const expectedTag = 'ba-oaf-mask';
 			spyOn(geoResourceService, 'byId')
 				.withArgs('oafGeoResource')
@@ -437,12 +438,27 @@ describe('LayerItem', () => {
 			};
 
 			const element = await setup(layer);
+			const openSettingsBottomSheetSpy = spyOn(element, '_openSettingsBottomSheet').and.callThrough();
 			const oafSettingsElement = element.shadowRoot.querySelectorAll('ba-icon.oaf-settings-icon');
+			// open a BottomSheet for the id = LAYER_ITEM_BOTTOM_SHEET_ID which should be replaced
+			openBottomSheet('foo', LAYER_ITEM_BOTTOM_SHEET_ID);
+			expect(store.getState().bottomSheet.data).toHaveSize(1);
+			expect(store.getState().bottomSheet.data[0].id).toBe(LAYER_ITEM_BOTTOM_SHEET_ID);
+			expect(store.getState().bottomSheet.data[0].content).toBe('foo');
+
+			// open our expected BottomSheet
 			oafSettingsElement[0].click();
 
+			expect(store.getState().bottomSheet.data[0].id).toBe(LAYER_ITEM_BOTTOM_SHEET_ID);
 			const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data[0].content);
 			expect(wrapperElement.querySelectorAll(expectedTag)).toHaveSize(1);
 			expect(wrapperElement.querySelector(expectedTag).layerId).toBe(layer.id);
+			expect(openSettingsBottomSheetSpy).toHaveBeenCalledOnceWith(layer.id);
+
+			// try to re-open it again
+			oafSettingsElement[0].click();
+
+			expect(openSettingsBottomSheetSpy).toHaveBeenCalledOnceWith(layer.id);
 		});
 
 		it('displays a overflow-menu', async () => {
@@ -841,7 +857,8 @@ describe('LayerItem', () => {
 				layers: layersReducer,
 				modal: modalReducer,
 				position: positionReducer,
-				layerSwipe: layerSwipeReducer
+				layerSwipe: layerSwipeReducer,
+				bottomSheet: bottomSheetReducer
 			});
 			$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
 			return store;
@@ -964,7 +981,7 @@ describe('LayerItem', () => {
 		describe('when user change order of layer in group', () => {
 			let store;
 			const setupStore = (state) => {
-				store = TestUtils.setupStoreAndDi(state, { layers: layersReducer, layerSwipe: layerSwipeReducer });
+				store = TestUtils.setupStoreAndDi(state, { layers: layersReducer, layerSwipe: layerSwipeReducer, bottomSheet: bottomSheetReducer });
 				$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
 				return store;
 			};
@@ -1211,7 +1228,12 @@ describe('LayerItem', () => {
 			};
 
 			const setup = (state) => {
-				const store = TestUtils.setupStoreAndDi(state, { layers: layersReducer, modal: modalReducer, layerSwipe: layerSwipeReducer });
+				const store = TestUtils.setupStoreAndDi(state, {
+					layers: layersReducer,
+					modal: modalReducer,
+					layerSwipe: layerSwipeReducer,
+					bottomSheet: bottomSheetReducer
+				});
 				$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
 				return store;
 			};

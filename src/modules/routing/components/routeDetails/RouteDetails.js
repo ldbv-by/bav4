@@ -27,11 +27,11 @@ export class RouteDetails extends MvuElement {
 		this.observe(
 			(store) => store.routing.status,
 			(status) => this.signal(Update_Status, status)
-		),
-			this.observe(
-				(store) => store.routing.stats,
-				(stats) => this.signal(Update_Route_Stats, stats)
-			);
+		);
+		this.observe(
+			(store) => store.routing.stats,
+			(stats) => this.signal(Update_Route_Stats, stats)
+		);
 	}
 
 	update(type, data, model) {
