@@ -79,6 +79,7 @@ describe('GeoResource provider', () => {
 		exportable: false,
 		authRoles: ['TEST'],
 		timestamps: ['20001231'],
+		updateInterval: 100,
 		maxSize: [210, 420],
 		...wmsDefinition
 	};
@@ -94,6 +95,7 @@ describe('GeoResource provider', () => {
 		tileGridId: 'tileGridId',
 		authRoles: ['TEST'],
 		timestamps: ['20001231'],
+		updateInterval: 100,
 		...xyzDefinition
 	};
 	const vtDefinition = { id: 'vtId', label: 'vtLabel', url: 'vtStyleUrl', type: 'vt', attribution: basicAttribution };
@@ -107,6 +109,7 @@ describe('GeoResource provider', () => {
 		exportable: false,
 		authRoles: ['TEST'],
 		timestamps: ['20001231'],
+		updateInterval: 100,
 		...vtDefinition
 	};
 	const oafDefinition = {
@@ -127,6 +130,7 @@ describe('GeoResource provider', () => {
 		exportable: false,
 		authRoles: ['TEST'],
 		timestamps: ['20001231'],
+		updateInterval: 100,
 		limit: 4242,
 		filter: 'filterExpr',
 		clusterParams: { foo: 'bar' },
@@ -153,6 +157,7 @@ describe('GeoResource provider', () => {
 		exportable: false,
 		authRoles: ['TEST'],
 		timestamps: ['20001231'],
+		updateInterval: 100,
 		...vectorDefinition
 	};
 	const rtVectorDefinition = {
@@ -237,6 +242,7 @@ describe('GeoResource provider', () => {
 			expect(wmsGeoResource.maxSize).toEqual([210, 420]);
 			expect(wmsGeoResource.authRoles).toEqual(['TEST']);
 			expect(wmsGeoResource.timestamps).toEqual(['20001231']);
+			expect(wmsGeoResource.updateInterval).toBe(100);
 		});
 
 		it('maps a XYZ BVV definition to a corresponding GeoResource instance', () => {
@@ -260,6 +266,7 @@ describe('GeoResource provider', () => {
 			expect(xyzGeoResource.tileGridId).toBe('tileGridId');
 			expect(xyzGeoResource.authRoles).toEqual(['TEST']);
 			expect(xyzGeoResource.timestamps).toEqual(['20001231']);
+			expect(xyzGeoResource.updateInterval).toBe(100);
 		});
 
 		it('maps a VT BVV definition to a corresponding GeoResource instance', () => {
@@ -282,6 +289,7 @@ describe('GeoResource provider', () => {
 			expect(vtGeoResource.exportable).toBeFalse();
 			expect(vtGeoResource.authRoles).toEqual(['TEST']);
 			expect(vtGeoResource.timestamps).toEqual(['20001231']);
+			expect(vtGeoResource.updateInterval).toBe(100);
 		});
 
 		it('maps a OAF BVV definition to a corresponding GeoResource instance', () => {
@@ -304,6 +312,7 @@ describe('GeoResource provider', () => {
 			expect(oafGeoResource.exportable).toBeFalse();
 			expect(oafGeoResource.authRoles).toEqual(['TEST']);
 			expect(oafGeoResource.timestamps).toEqual(['20001231']);
+			expect(oafGeoResource.updateInterval).toBe(100);
 			expect(oafGeoResource.filter).toBe('filterExpr');
 			expect(oafGeoResource.limit).toBe(4242);
 			expect(oafGeoResource.clusterParams).toEqual({ foo: 'bar' });
@@ -347,6 +356,7 @@ describe('GeoResource provider', () => {
 			expect(vectorGeoResource.exportable).toBeFalse();
 			expect(vectorGeoResource.authRoles).toEqual(['TEST']);
 			expect(vectorGeoResource.timestamps).toEqual(['20001231']);
+			expect(vectorGeoResource.updateInterval).toBe(100);
 		});
 
 		it('throws an Error when GeoResourceFuture for a VectorGeoResource cannot be resolved', async () => {
