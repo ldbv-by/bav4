@@ -186,6 +186,7 @@ describe('OafMask', () => {
 				expect(element.showConsole).toBeTrue();
 				expect(element.shadowRoot.querySelector('#console')).not.toBeNull();
 				expect(element.shadowRoot.querySelector('#btn-expert-mode')).toBeNull();
+				expect(element.shadowRoot.querySelector('#console-btn-apply').label).toBe('oaf_mask_button_apply');
 			});
 
 			it('removes filter-group when "remove" Event received from filter-group', async () => {

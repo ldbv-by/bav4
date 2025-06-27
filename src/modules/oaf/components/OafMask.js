@@ -159,7 +159,7 @@ export class OafMask extends MvuElement {
 					${getOperatorDefinitions(null).map((operator) => html`<ba-button .type=${'primary'} .label=${operator.name}></ba-button>`)}
 				</div>
 				<textarea class="console"></textarea>
-				<ba-button .type=${'primary'} .label=${translate('oaf_mask_button_apply')}></ba-button>
+				<ba-button id="console-btn-apply" .type=${'primary'} .label=${translate('oaf_mask_button_apply')}></ba-button>
 			</div>`;
 
 		return html`
