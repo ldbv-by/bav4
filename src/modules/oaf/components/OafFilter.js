@@ -5,6 +5,7 @@ import css from './oafFilter.css';
 import { $injector } from '../../../injection';
 import { html, nothing } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
+import closeSvg from './assets/clear.svg';
 import { isNumber, isString } from '../../../utils/checks';
 import { getOperatorDefinitions, getOperatorByName, createCqlFilterExpression, CqlOperator } from './oafUtils';
 import { OafQueryableType } from '../../../domain/oaf';
@@ -14,7 +15,6 @@ const Update_Operator = 'update_operator';
 const Update_Value = 'update_value';
 const Update_Min_Value = 'update_min_value';
 const Update_Max_Value = 'update_max_value';
-const Update_Use_Negation = 'update_use_negation';
 /**
  * A Filter for the OGC Feature API which filters a provided queryable
  *
@@ -39,8 +39,7 @@ export class OafFilter extends MvuElement {
 			operator: getOperatorByName(CqlOperator.EQUALS),
 			value: null,
 			minValue: null,
-			maxValue: null,
-			useNegation: false
+			maxValue: null
 		});
 
 		const { TranslationService: translationService } = $injector.inject('TranslationService');
@@ -59,8 +58,6 @@ export class OafFilter extends MvuElement {
 				return { ...model, minValue: data };
 			case Update_Max_Value:
 				return { ...model, maxValue: data };
-			case Update_Use_Negation:
-				return { ...model, useNegation: data };
 		}
 	}
 
@@ -78,12 +75,12 @@ export class OafFilter extends MvuElement {
 			this.dispatchEvent(new CustomEvent('change'));
 		}
 
-		this.observeModel(['operator', 'useNegation', 'minValue', 'maxValue', 'value'], () => this.dispatchEvent(new CustomEvent('change')));
+		this.observeModel(['operator', 'minValue', 'maxValue', 'value'], () => this.dispatchEvent(new CustomEvent('change')));
 	}
 
 	createView(model) {
 		const translate = (key) => this.#translationService.translate(key);
-		const { minValue, maxValue, value, operator, useNegation } = model;
+		const { minValue, maxValue, value, operator } = model;
 		const { name, type, values: queryableValues, finalized } = model.queryable;
 		const operators = getOperatorDefinitions(type);
 
@@ -105,10 +102,6 @@ export class OafFilter extends MvuElement {
 
 		const onRemove = () => {
 			this.dispatchEvent(new CustomEvent('remove'));
-		};
-
-		const onNegateButtonClicked = () => {
-			this.useNegation = !this.useNegation;
 		};
 
 		const getStringInputHtml = () => {
@@ -245,19 +238,16 @@ export class OafFilter extends MvuElement {
 			<style>
 				${css}
 			</style>
-			<div class="oaf-filter">
-				<div class="grid-row">
-						<div class="filter-title-container"><span class="title">${name}</span></div>
-					<div class="grid-column-header">
-						${getOperatorHtml()}
-						<button class="not-button ${useNegation ? 'active' : ''}" @click=${onNegateButtonClicked}>${translate('oaf_filter_not_button')}</button>
-						<button class="remove-button" @click=${onRemove}>X</button>
-					</div>
-					<div class="grid-column">
-							<div class="input-value">${getInputHtml()}</div>
-						</div>
-					</div>
+			<div class="oaf-filter">				
+				<div class="flex">
+					<span class="title">${name}</span>
 				</div>
+				${getOperatorHtml()}											
+				<div>
+					<div class="input-value">${getInputHtml()}</div>
+				</div>
+					<ba-icon class="remove-button" .icon=${closeSvg} .color=${'var(--primary-color)'} .color_hover=${'var(--error-color)'}  .size=${1.6} @click=${onRemove}></ba-icon>
+				</div>				
 			</div>
 		`;
 	}
@@ -307,14 +297,6 @@ export class OafFilter extends MvuElement {
 		} else {
 			this.signal(Update_Operator, value);
 		}
-	}
-
-	get useNegation() {
-		return this.getModel().useNegation;
-	}
-
-	set useNegation(value) {
-		this.signal(Update_Use_Negation, value === true);
 	}
 
 	get expression() {

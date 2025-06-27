@@ -7,6 +7,7 @@ import { html, nothing } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { MvuElement } from '../../MvuElement';
 import { $injector } from '../../../injection';
+import addSvg from './assets/add.svg';
 import { modifyLayer } from './../../../store/layers/layers.action';
 
 const Update_Capabilities = 'update_capabilities';
@@ -95,6 +96,14 @@ export class OafMask extends MvuElement {
 
 		const { capabilities, filterGroups, showConsole } = model;
 
+		const getFilterGroupLabel = () => {
+			return this.getModel().filterGroups.length === 0 ? translate('oaf_mask_add_filter_group') : '';
+		};
+
+		const getFilterClasses = () => {
+			return this.getModel().filterGroups.length === 0 ? 'no-group' : 'group';
+		};
+
 		const contentHeaderButtonsHtml = () => {
 			if (!this.#capabilitiesLoaded) {
 				return html`<ba-spinner></ba-spinner>`;
@@ -105,27 +114,17 @@ export class OafMask extends MvuElement {
 			}
 
 			return showConsole
-				? html` <ba-button
-						style="width:200px; display:inline-block;padding: 20px 0px;"
-						id="btn-normal-mode"
-						.label=${translate('oaf_mask_ui_mode')}
-						.type=${'primary'}
-						@click=${onShowCqlConsole}
-					></ba-button>`
+				? html` <ba-button id="btn-normal-mode" .label=${translate('oaf_mask_ui_mode')} .type=${'secondary'} @click=${onShowCqlConsole}></ba-button>`
 				: html` <ba-button
 							id="btn-add-filter-group"
-							style="width:200px; display:inline-block; padding: 20px 0px;"
-							.label=${translate('oaf_mask_add_filter_group')}
+							.title=${translate('oaf_mask_add_filter_group')}
+							.label=${getFilterGroupLabel()}
 							.type=${'primary'}
+							.icon=${addSvg}
 							@click=${onAddFilterGroup}
+							class=${getFilterClasses()}
 						></ba-button>
-						<ba-button
-							id="btn-expert-mode"
-							style="width:200px; display:inline-block;padding: 20px 0px;"
-							.label=${translate('oaf_mask_console_mode')}
-							.type=${'primary'}
-							@click=${onShowCqlConsole}
-						></ba-button>`;
+						<ba-button id="btn-expert-mode" .label=${translate('oaf_mask_console_mode')} c @click=${onShowCqlConsole}></ba-button>`;
 		};
 
 		const orSeparatorHtml = () => html`
@@ -160,15 +159,21 @@ export class OafMask extends MvuElement {
 					${getOperatorDefinitions(null).map((operator) => html`<ba-button .type=${'primary'} .label=${operator.name}></ba-button>`)}
 				</div>
 				<textarea class="console"></textarea>
-				<ba-button .type=${'primary'} .label=${translate('oaf_mask_button_apply')}></ba-button>
+				<ba-button id="console-btn-apply" .type=${'primary'} .label=${translate('oaf_mask_button_apply')}></ba-button>
 			</div>`;
 
 		return html`
 			<style>
 				${css}
 			</style>
-			<div class="sticky-container">${contentHeaderButtonsHtml()}</div>
-			<div class="container">${showConsole ? consoleModeHtml() : uiModeHtml()}</div>
+			<h3 class="header">
+				<span class="icon"> </span>
+				<span class="text">${translate('oaf_mask_title')}</span>
+			</h3>
+			<div class="container">
+				<div>${contentHeaderButtonsHtml()}</div>
+				<div class="container-filter-groups">${showConsole ? consoleModeHtml() : uiModeHtml()}</div>
+			</div>
 		`;
 	}
 

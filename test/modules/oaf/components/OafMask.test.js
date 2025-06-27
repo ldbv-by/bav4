@@ -166,9 +166,16 @@ describe('OafMask', () => {
 			it('adds a filter-group to model when "Add Filter Group" Button clicked', async () => {
 				const element = await setup();
 				const addFilterGroupbtn = element.shadowRoot.querySelector('#btn-add-filter-group');
+				expect(addFilterGroupbtn.label).toBe('oaf_mask_add_filter_group');
+				expect(element.shadowRoot.querySelectorAll('.no-group')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.group')).toHaveSize(0);
+
 				addFilterGroupbtn.click();
 				expect(element.getModel().filterGroups).toHaveSize(1);
 				expect(element.getModel().filterGroups[0]).toEqual(jasmine.objectContaining({ id: jasmine.any(Number), oafFilters: [] }));
+				expect(addFilterGroupbtn.label).toBe('');
+				expect(element.shadowRoot.querySelectorAll('.no-group')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.group')).toHaveSize(1);
 			});
 
 			it('renders "Console Mode" when "Console Mode" Button clicked', async () => {
@@ -179,6 +186,7 @@ describe('OafMask', () => {
 				expect(element.showConsole).toBeTrue();
 				expect(element.shadowRoot.querySelector('#console')).not.toBeNull();
 				expect(element.shadowRoot.querySelector('#btn-expert-mode')).toBeNull();
+				expect(element.shadowRoot.querySelector('#console-btn-apply').label).toBe('oaf_mask_button_apply');
 			});
 
 			it('removes filter-group when "remove" Event received from filter-group', async () => {
