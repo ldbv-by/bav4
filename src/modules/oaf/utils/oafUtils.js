@@ -1,5 +1,5 @@
 /**
- * @module modules/oaf/components/oafUtils
+ * @module modules/oaf/utils/oafUtils
  */
 import { createUniqueId } from '../../../utils/numberUtils';
 import { OafQueryableType } from '../../../domain/oaf';
