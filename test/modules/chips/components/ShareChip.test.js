@@ -136,7 +136,7 @@ describe('ShareChip', () => {
 				expect(shareSpy).toHaveBeenCalledWith({ url: 'http://shorten.foo' });
 			});
 
-			it('uses dialog on share api reject as fallback', async () => {
+			it('uses a dialog as fallback on share api reject', async () => {
 				const element = await setup({ share: () => Promise.resolve(true) }, { center: [42, 21] });
 				const shareServiceSpy = spyOn(shareServiceMock, 'encodeStateForPosition').and.callThrough();
 
@@ -159,7 +159,7 @@ describe('ShareChip', () => {
 				expect(shareDialogContentElement.shadowRoot.querySelector('input').value).toBe('http://shorten.foo');
 			});
 
-			it('does NOT opens fallback dialog on share api canceled', async () => {
+			it('does NOT open the fallback dialog on share api canceled', async () => {
 				const element = await setup({ share: () => Promise.resolve(true) }, { center: [42, 21] });
 				const shareServiceSpy = spyOn(shareServiceMock, 'encodeStateForPosition').and.callThrough();
 

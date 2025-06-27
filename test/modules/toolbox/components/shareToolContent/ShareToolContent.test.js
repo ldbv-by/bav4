@@ -113,7 +113,7 @@ describe('ShareToolContent', () => {
 					expect(windowShareSpy).toHaveBeenCalledWith(mockShareData);
 				});
 
-				it('uses dialog on share api reject as fallback', async () => {
+				it('uses a dialog as fallback on share api reject', async () => {
 					const mockShortUrl = 'https://short/url';
 					const mockErrorMsg = 'something got wrong';
 					const windowMock = {
@@ -137,7 +137,7 @@ describe('ShareToolContent', () => {
 					expect(shareDialogContentElement.shadowRoot.querySelector('input').value).toBe('https://short/url');
 				});
 
-				it('does NOT opens fallback dialog on share api canceled', async () => {
+				it('does NOT open the fallback dialog on share api canceled', async () => {
 					const mockShortUrl = 'https://short/url';
 					const windowMock = {
 						navigator: {
