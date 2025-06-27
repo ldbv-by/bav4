@@ -6,7 +6,7 @@ import { getUid } from 'ol';
 import { VectorSourceType } from '../../../domain/geoResources';
 import { StyleHint } from '../../../domain/styles';
 import { $injector } from '../../../injection/index';
-import { getContrastColorFrom, rgbToHex } from '../../../utils/colors';
+import { getContrastColorFrom, hexToRgb, rgbToHex } from '../../../utils/colors';
 import { highlightGeometryOrCoordinateFeatureStyleFunction } from '../handler/highlight/styleUtils';
 import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../ol/geodesic/geodesicGeometry';
 import {
@@ -76,6 +76,7 @@ export class OlStyleService {
 	 */
 	addFeatureStyle(olFeature, olMap, olLayer) {
 		const styleType = this._detectStyleType(olFeature);
+
 		switch (styleType) {
 			case OlFeatureStyleTypes.MEASURE:
 				this._addMeasureStyle(olFeature, olMap);
@@ -105,13 +106,18 @@ export class OlStyleService {
 				break;
 		}
 
-		const styleHint = olFeature.get(asInternalProperty('styleHint'));
-		if (styleHint) {
-			switch (styleHint) {
+		const baStyleHint = olFeature.get(asInternalProperty('styleHint'));
+		const baStyle = olFeature.get(asInternalProperty('style'));
+
+		if (baStyleHint) {
+			switch (baStyleHint) {
 				case StyleHint.HIGHLIGHT:
 					olFeature.setStyle(highlightGeometryOrCoordinateFeatureStyleFunction()); // TODO: move highlightGeometryOrCoordinateFeatureStyleFunction to src/modules/olMap/utils/olStyleUtils.js
 					break;
 			}
+		}
+		if (baStyle?.baseColor) {
+			olFeature.setStyle(getDefaultStyleFunction(hexToRgb(baStyle.baseColor)));
 		}
 	}
 
@@ -160,60 +166,74 @@ export class OlStyleService {
 
 	/**
 	 * Adds specific stylings (and overlays) for a vector layer in the following manner:
-	 * 1. The {@link StyleHint} of the GeoResource is applied on the `olVectorLayer`
-	 * 2. If the `olVectorLayer` contains features, the feature specific styling is applied (internal StyleTypes and the public {@link StyleHint})
+	 * 1. The {@link module:domain/styles~Style} of the {@link AbstractVectorGeoResource} or the {@link module:store/layers/layers_action~Layer} is applied on the `olVectorLayer`
+	 * 2. The {@link StyleHint} of {@link AbstractVectorGeoResource} is applied on the `olVectorLayer`
+	 * 3. If the `olVectorLayer` contains features, the feature specific styling is applied in the following order:
+	 * 	internal StyleTypes -> {@link module:domain/styles~Style} property of the feature -> {@link module:domain/styles~StyleHint} property of the feature -> the default style
 	 * @param {ol.layer.Vector} olVectorLayer
 	 * @param {ol.Map} olMap
-	 * @param {AbstractVectorGeoResource} vectorGeoResource
+	 * @param {module:domain/geoResources~AbstractVectorGeoResource} vectorGeoResource
 	 * @returns {ol.layer.Vector}
 	 */
 	applyStyle(olVectorLayer, olMap, vectorGeoResource) {
-		this._sanitizeStyles(olVectorLayer);
-		this._applyStyleHint(vectorGeoResource.styleHint, olVectorLayer);
+		this._applyLayerSpecificStyles(vectorGeoResource, olVectorLayer);
 
 		return this._applyFeatureSpecificStyles(olVectorLayer, olMap);
 	}
 
 	/**
-	 * Applies the style according to the given `StyleHint`
-	 * @param {StyleHint} styleHint
+	 * Applies the style according to the given {@link module:domain/styles~Style} or {@link module:domain/styles~StyleHint}
+	 * @param {module:domain/geoResources~AbstractVectorGeoResource} vectorGeoResource
 	 * @param {ol.layer.Vector} olVectorLayer
 	 * @returns {ol.layer.Vector}
 	 */
-	_applyStyleHint(styleHint, olVectorLayer) {
-		switch (styleHint) {
-			case StyleHint.CLUSTER:
-				olVectorLayer.setStyle(defaultClusterStyleFunction());
-				break;
-			case StyleHint.HIGHLIGHT:
-				olVectorLayer.setStyle(highlightGeometryOrCoordinateFeatureStyleFunction()); // TODO: move highlightGeometryOrCoordinateFeatureStyleFunction to src/modules/olMap/utils/olStyleUtils.js
-				break;
+	_applyLayerSpecificStyles(vectorGeoResource, olVectorLayer) {
+		const style = olVectorLayer.get('style') ?? vectorGeoResource.style;
+		const styleHint = vectorGeoResource.styleHint;
+		if (style?.baseColor) {
+			this._setDefaultColorForLayer(olVectorLayer, hexToRgb(style.baseColor));
 		}
+
+		if (styleHint) {
+			switch (styleHint) {
+				case StyleHint.CLUSTER:
+					olVectorLayer.setStyle(defaultClusterStyleFunction());
+					break;
+				case StyleHint.HIGHLIGHT:
+					olVectorLayer.setStyle(highlightGeometryOrCoordinateFeatureStyleFunction()); // TODO: move highlightGeometryOrCoordinateFeatureStyleFunction to src/modules/olMap/utils/olStyleUtils.js
+					break;
+			}
+		}
+
 		return olVectorLayer;
 	}
 
 	_applyFeatureSpecificStyles(olVectorLayer, olMap) {
-		const isStyleRequired = (olFeature) => this._detectStyleType(olFeature) !== null;
-		/**
-		 * We check if an currently present and possible future features needs a specific styling.
-		 * If so, we apply the style and register an event listeners in order to keep the style (and overlays)
-		 * up-to-date with the layer.
-		 */
-
+		const styleListeners = [];
 		const olVectorSource = olVectorLayer.getSource();
 
-		if (olVectorSource.getFeatures().some((feature) => isStyleRequired(feature))) {
-			// if we have at least one style requiring feature, we register the styleEvent listener once
-			// and apply the style for all currently present features
-			this._registerStyleEventListeners(olVectorSource, olVectorLayer, olMap);
+		const isStyleRequired = (olFeature) => this._detectStyleType(olFeature) !== null;
+		const applyStyles = (feature) => {
+			this._sanitizeStyleFor(feature);
 
-			olVectorSource.getFeatures().forEach((feature) => {
-				if (isStyleRequired(feature)) {
-					this.addFeatureStyle(feature, olMap, olVectorLayer);
-					this.updateFeatureStyle(feature, olMap, this._mapToStyleProperties(olVectorLayer));
+			/**
+			 * We check if an currently present and possible future features needs a specific styling.
+			 * If so, we apply the style and register an event listeners in order to keep the style (and overlays)
+			 * up-to-date with the layer.
+			 */
+			if (isStyleRequired(feature)) {
+				this.addFeatureStyle(feature, olMap, olVectorLayer);
+				this.updateFeatureStyle(feature, olMap, this._mapToStyleProperties(olVectorLayer));
+
+				// if we have at least one style requiring feature, we register the styleEvent listener once
+				// and apply the style for all currently present features
+				if (styleListeners.length === 0) {
+					this._registerStyleEventListeners(olVectorSource, olVectorLayer, olMap).forEach((l) => styleListeners.push(l));
 				}
-			});
-		}
+			}
+		};
+
+		olVectorSource.getFeatures().forEach((f) => applyStyles(f));
 
 		return olVectorLayer;
 	}
@@ -258,18 +278,7 @@ export class OlStyleService {
 			olVectorSource.getFeatures().forEach((f) => this.updateFeatureStyle(f, olMap, this._mapToStyleProperties(olLayer)));
 		});
 
-		return { addFeatureListenerKey, removeFeatureListenerKey, clearFeaturesListenerKey, layerChangeListenerKey, layerListChangedListenerKey };
-	}
-
-	/**
-	 * Sanitizes the style of the present features of the vector layer.
-	 * The sanitizing prepares features with incompatible styling for the rendering in the
-	 * ol context.
-	 * @param {ol.layer.Vector} olVectorLayer
-	 */
-	_sanitizeStyles(olVectorLayer) {
-		const olVectorSource = olVectorLayer.getSource();
-		olVectorSource.getFeatures().forEach((feature) => this._sanitizeStyleFor(feature));
+		return [addFeatureListenerKey, removeFeatureListenerKey, clearFeaturesListenerKey, layerChangeListenerKey, layerListChangedListenerKey];
 	}
 
 	/**
@@ -387,6 +396,11 @@ export class OlStyleService {
 
 		const color = olLayer && !isGPX(olLayer) ? getColorByLayerId(olLayer) : this._nextColor();
 		olFeature.setStyle(getDefaultStyleFunction(color));
+	}
+
+	_setDefaultColorForLayer(olLayer, color) {
+		const id = getUid(olLayer);
+		this.#defaultColorByLayerId[id] = color;
 	}
 
 	_addGeoJSONStyle(olFeature) {
@@ -510,7 +524,15 @@ export class OlStyleService {
 			return styleType ?? null;
 		};
 
-		const defaultOrNull = (olFeature) => (olFeature.getStyle() === null ? OlFeatureStyleTypes.DEFAULT : null);
+		const defaultOrNull = (olFeature) => {
+			if (olFeature.getStyle() === null) {
+				// no Style required, if we have a styleHint or style as property
+				const baStyleHint = olFeature.get(asInternalProperty('styleHint'));
+				const baStyle = olFeature.get(asInternalProperty('style'));
+				return !baStyleHint && !baStyle ? OlFeatureStyleTypes.DEFAULT : null;
+			}
+			return null;
+		};
 
 		if (olFeature) {
 			for (const styleTypeFunction of [getStyleTypeFromId, getStyleTypeFromProperties, getStyleTypeFromTypeAttribute, defaultOrNull]) {
