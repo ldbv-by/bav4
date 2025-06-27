@@ -5,7 +5,6 @@ import { html } from 'lit-html';
 import { QueryParameters } from '../../../../domain/queryParameters';
 import { $injector } from '../../../../injection/index';
 import { openModal } from '../../../../store/modal/modal.action';
-import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
 import { isCoordinate } from '../../../../utils/checks';
 import { AbstractAssistChip } from './AbstractAssistChip';
 import shareIcon from '../../../..//assets/icons/share.svg';
@@ -81,7 +80,7 @@ export class ShareChip extends AbstractAssistChip {
 		const translate = (key) => this._translationService.translate(key);
 		const title = center ? translate('chips_assist_chip_share_position_label') : translate('chips_assist_chip_share_state_label_default');
 		const url = await this._buildShareUrl(center);
-		const shareAction = useShareApi ? (url) => this._shareUrlWithApi(url) : (url) => this._shareUrlDialog(url, title);
+		const shareAction = useShareApi ? (url) => this._shareUrlWithApi(url, title) : (url) => this._shareUrlDialog(url, title);
 		shareAction(url);
 	}
 
@@ -105,7 +104,7 @@ export class ShareChip extends AbstractAssistChip {
 		}
 	}
 
-	async _shareUrlWithApi(url) {
+	async _shareUrlWithApi(url, title) {
 		try {
 			const content = {
 				// title-property is absent; browser automatically creates a meaningful title
@@ -113,8 +112,12 @@ export class ShareChip extends AbstractAssistChip {
 			};
 			await this._environmentService.getWindow().navigator.share(content);
 		} catch (error) {
+			/**
+			 * In some rare cases, we need a fallback. This occurs when the web browser can use the Share-API,
+			 * but enterprise policies at the operating system level reject the call due to a lack of user privileges.
+			 */
 			if (!(error instanceof DOMException && error.name === 'AbortError')) {
-				emitNotification(this._translationService.translate('chips_assist_chip_share_position_api_failed'), LevelTypes.WARN);
+				this._shareUrlDialog(url, title);
 			}
 		}
 	}
