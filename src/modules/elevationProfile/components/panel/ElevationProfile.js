@@ -118,16 +118,16 @@ export class ElevationProfile extends MvuElement {
 		this.observe(
 			(state) => state.media.darkSchema,
 			(darkSchema) => this.signal(Update_Schema, darkSchema)
-		),
-			this.observe(
-				(state) => state.elevationProfile.id,
-				(id) => this._getElevationProfile(id)
-			),
-			this.observe(
-				(state) => state.media,
-				(data) => this.signal(Update_Media, data),
-				true
-			);
+		);
+		this.observe(
+			(state) => state.elevationProfile.id,
+			(id) => this._getElevationProfile(id)
+		);
+		this.observe(
+			(state) => state.media,
+			(data) => this.signal(Update_Media, data),
+			true
+		);
 	}
 
 	/**

@@ -23,8 +23,9 @@ import { GeoResourceFuture, GeoResourceTypes, OafGeoResource } from '../../../do
 import { MenuTypes } from '../../commons/components/overflowMenu/OverflowMenu';
 import { openSlider } from '../../../store/timeTravel/timeTravel.action';
 import { SwipeAlignment } from '../../../store/layers/layers.action';
-import { openBottomSheet } from '../../../store/bottomSheet/bottomSheet.action';
+import { closeBottomSheet, openBottomSheet } from '../../../store/bottomSheet/bottomSheet.action';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
+import { LAYER_ITEM_BOTTOM_SHEET_ID } from '../../../store/bottomSheet/bottomSheet.reducer';
 
 const Update_Layer_And_LayerItem = 'update_layer_and_layerItem';
 const Update_Layer_Collapsed = 'update_layer_collapsed';
@@ -59,6 +60,7 @@ const Update_Layer_Swipe = 'update_layer_swipe';
 export class LayerItem extends AbstractMvuContentPanel {
 	#translationService;
 	#geoResourceService;
+	#settingsBottomSheetActive = false; /** flag to avoid re-opening of an already open Settings-BottomSheet */
 	constructor() {
 		super({
 			layerProperties: null,
@@ -110,6 +112,18 @@ export class LayerItem extends AbstractMvuContentPanel {
 			(state) => state.layerSwipe,
 			(layerSwipe) => this.signal(Update_Layer_Swipe, layerSwipe)
 		);
+		this.observe(
+			(state) => state.bottomSheet.active,
+			(active) => {
+				/**
+				 * Ensure resetting our flag when LAYER_ITEM_BOTTOM_SHEET was closed by the user
+				 */
+				if (!active.includes(LAYER_ITEM_BOTTOM_SHEET_ID)) {
+					this.#settingsBottomSheetActive = false;
+				}
+			},
+			false
+		);
 	}
 
 	/**
@@ -137,6 +151,12 @@ export class LayerItem extends AbstractMvuContentPanel {
 				});
 			});
 		}
+	}
+
+	_openSettingsBottomSheet(layerId) {
+		closeBottomSheet(LAYER_ITEM_BOTTOM_SHEET_ID);
+		this.#settingsBottomSheetActive = true;
+		openBottomSheet(html`<div><ba-oaf-mask .layerId=${layerId}></ba-oaf-mask></div>`, LAYER_ITEM_BOTTOM_SHEET_ID);
 	}
 
 	/**
@@ -285,7 +305,11 @@ export class LayerItem extends AbstractMvuContentPanel {
 						.icon="${oafSettingsSvg}"
 						.title=${translate('layerManager_oaf_settings')}
 						.color=${'var(--secondary-color)'}
-						@click=${() => openBottomSheet(html`<div><ba-oaf-mask .layerId=${layerProperties.id}></ba-oaf-mask></div>`)}
+						@click=${() => {
+							if (!this.#settingsBottomSheetActive) {
+								this._openSettingsBottomSheet(layerProperties.id);
+							}
+						}}
 						class="oaf-settings-icon"
 					></ba-icon>`
 				: nothing;

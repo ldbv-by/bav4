@@ -15,6 +15,7 @@ import { activate, deactivate } from '../../../../src/store/layerSwipe/layerSwip
 import expandSvg from '../../../../src/assets/icons/expand.svg';
 import clearSvg from '../../../../src/assets/icons/x-square.svg';
 import chevronSvg from '../../../../src/modules/layerManager/components/assets/chevron.svg';
+import { bottomSheetReducer } from '../../../../src/store/bottomSheet/bottomSheet.reducer';
 
 window.customElements.define(Checkbox.tag, Checkbox);
 window.customElements.define(LayerItem.tag, LayerItem);
@@ -37,7 +38,8 @@ describe('LayerManager', () => {
 		store = TestUtils.setupStoreAndDi(state, {
 			layers: layersReducer,
 			layerSwipe: layerSwipeReducer,
-			tools: toolsReducer
+			tools: toolsReducer,
+			bottomSheet: bottomSheetReducer
 		});
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 		$injector.registerSingleton('EnvironmentService', environmentServiceMock);

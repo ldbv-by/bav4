@@ -33,16 +33,16 @@ export class BottomSheet extends MvuElement {
 			(state) => state.mainMenu,
 			(data) => this.signal(Update_Main_Menu, data),
 			true
-		),
-			this.observe(
-				(state) => state.media,
-				(data) => this.signal(Update_Media, data),
-				true
-			),
-			this.observe(
-				(state) => state.navigationRail,
-				(navigationRail) => this.signal(Update_IsOpen_NavigationRail, { isOpenNavigationRail: navigationRail.open })
-			);
+		);
+		this.observe(
+			(state) => state.media,
+			(data) => this.signal(Update_Media, data),
+			true
+		);
+		this.observe(
+			(state) => state.navigationRail,
+			(navigationRail) => this.signal(Update_IsOpen_NavigationRail, { isOpenNavigationRail: navigationRail.open })
+		);
 	}
 
 	update(type, data, model) {

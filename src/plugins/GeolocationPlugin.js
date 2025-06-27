@@ -3,10 +3,11 @@
  */
 import { observe } from '../utils/storeUtils';
 import { $injector } from '../injection';
-import { setPosition, setAccuracy, setDenied, setTracking } from '../store/geolocation/geolocation.action';
+import { setPosition, setAccuracy, setDenied, setTracking, activate } from '../store/geolocation/geolocation.action';
 import { changeCenter, fit } from '../store/position/position.action';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { BaPlugin } from '../plugins/BaPlugin';
+import { QueryParameters } from '../domain/queryParameters';
 
 /**
  * Id of the layer used for geolocation visualization
@@ -20,8 +21,12 @@ export class GeolocationPlugin extends BaPlugin {
 		super();
 		this._firstTimeActivatingGeolocation = true;
 		this._geolocationWatcherId = null;
-		const { TranslationService: translationService } = $injector.inject('TranslationService');
+		const { TranslationService: translationService, EnvironmentService: environmentService } = $injector.inject(
+			'TranslationService',
+			'EnvironmentService'
+		);
 		this._translationService = translationService;
+		this._environmentService = environmentService;
 	}
 
 	_handlePositionError(error) {
@@ -131,5 +136,11 @@ export class GeolocationPlugin extends BaPlugin {
 				}
 			}
 		);
+
+		if (this._environmentService.getQueryParams().get(QueryParameters.GEOLOCATION) === 'true') {
+			setTimeout(() => {
+				activate();
+			});
+		}
 	}
 }
