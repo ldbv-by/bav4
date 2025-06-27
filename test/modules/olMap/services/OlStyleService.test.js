@@ -1149,7 +1149,7 @@ describe('OlStyleService', () => {
 		it('adds five listeners', () => {
 			const map = new Map();
 			spyOn(map, 'getLayers').and.returnValue(new Collection([new VectorLayer()]));
-			const { addFeatureListenerKey, removeFeatureListenerKey, clearFeaturesListenerKey, layerChangeListenerKey, layerListChangedListenerKey } =
+			const [addFeatureListenerKey, removeFeatureListenerKey, clearFeaturesListenerKey, layerChangeListenerKey, layerListChangedListenerKey] =
 				instanceUnderTest._registerStyleEventListeners(new VectorSource(), new VectorLayer(), map);
 
 			expect(addFeatureListenerKey).toBeDefined();
