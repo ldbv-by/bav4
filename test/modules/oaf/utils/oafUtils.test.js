@@ -18,9 +18,9 @@ describe('oafUtils', () => {
 	const allOperators = ['equals', 'not_equals', 'like', 'not_like', 'greater', 'less', 'between', 'not_between'];
 	const numberOperators = ['equals', 'not_equals', 'greater', 'less', 'between', 'not_between'];
 
-	const createQueryable = (name, type) => {
+	const createQueryable = (id, type) => {
 		return {
-			name: name,
+			id: id,
 			type: type,
 			values: [],
 			finalList: false

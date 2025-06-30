@@ -10,9 +10,9 @@
 }
 .header .icon {
 	left: 1.3em;
-	top: 0.45em;
-	height: 1.4em;
-	width: 1.4em;
+	top: 0.3em;
+	height: 1.5em;
+	width: 1.5em;
 	display: inline-block;
 	position: absolute;
 	background: var(--text1);

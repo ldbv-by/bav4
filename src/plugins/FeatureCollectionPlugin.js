@@ -8,6 +8,7 @@ import { $injector } from '../injection/index';
 import { VectorGeoResource } from '../domain/geoResources';
 import { clearFeatures } from '../store/featureCollection/featureCollection.action';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../services/provider/attribution.provider';
+
 /**
  * Id of the layer used for the visualization of a feature collection
  */

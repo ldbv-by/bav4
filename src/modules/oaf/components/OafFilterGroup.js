@@ -63,7 +63,7 @@ export class OafFilterGroup extends MvuElement {
 		const onFilterChanged = (evt) => {
 			const changedOafFilter = evt.target;
 			const filters = this.oafFilters;
-			const changedFilterIndex = filters.findIndex((oafFilter) => oafFilter.queryable.name === evt.target.queryable.name);
+			const changedFilterIndex = filters.findIndex((oafFilter) => oafFilter.queryable.id === evt.target.queryable.id);
 
 			filters[changedFilterIndex] = {
 				...changedOafFilter.getModel(),
@@ -75,7 +75,7 @@ export class OafFilterGroup extends MvuElement {
 		};
 
 		const onRemoveFilter = (evt) => {
-			this._removeFilter(evt.target.queryable.name);
+			this._removeFilter(evt.target.queryable.id);
 		};
 
 		const onRemoveGroup = () => {
@@ -92,8 +92,8 @@ export class OafFilterGroup extends MvuElement {
 						<select id="queryable-select" required="" @change=${onAddFilter}>
 							<option selected="selected"></option>
 							${queryables
-								.filter((queryable) => !oafFilters.find((oafFilter) => oafFilter.queryable.name === queryable.name))
-								.map((queryable) => html`<option .value=${queryable.name}>${queryable.name}</option>`)}
+								.filter((queryable) => !oafFilters.find((oafFilter) => oafFilter.queryable.id === queryable.id))
+								.map((queryable) => html`<option .value=${queryable.id}>${queryable.title ? queryable.title : queryable.id}</option>`)}
 						</select>
 						<label id="queryable-label" for="select" class="control-label">${translate('oaf_group_select_filter')}</label><i class="bar"></i>
 					</div>
@@ -101,7 +101,7 @@ export class OafFilterGroup extends MvuElement {
 				<div class="filter-container">
 					${repeat(
 						oafFilters,
-						(oafFilter) => oafFilter.queryable.name,
+						(oafFilter) => oafFilter.queryable.id,
 						(oafFilter) =>
 							html`<ba-oaf-filter
 								.operator=${oafFilter.operator}
@@ -122,9 +122,9 @@ export class OafFilterGroup extends MvuElement {
 		`;
 	}
 
-	_addFilter(queryableName) {
+	_addFilter(queryableId) {
 		const { queryables, oafFilters } = this.getModel();
-		const queryableToAdd = queryables.find((queryable) => queryable.name === queryableName);
+		const queryableToAdd = queryables.find((queryable) => queryable.id === queryableId);
 
 		if (queryableToAdd === undefined) {
 			return;
@@ -140,8 +140,8 @@ export class OafFilterGroup extends MvuElement {
 		]);
 	}
 
-	_removeFilter(queryableName) {
-		const changedFilters = this.getModel().oafFilters.filter((oafFilter) => oafFilter.queryable.name !== queryableName);
+	_removeFilter(queryableId) {
+		const changedFilters = this.getModel().oafFilters.filter((oafFilter) => oafFilter.queryable.id !== queryableId);
 		this.signal(Update_Filters, changedFilters);
 		this.dispatchEvent(new CustomEvent('change'));
 	}

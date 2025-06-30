@@ -154,14 +154,14 @@ export const createCqlExpression = (oafFilterGroups) => {
  */
 export const createCqlFilterExpression = (oafFilter) => {
 	const { value, minValue, maxValue, operator } = oafFilter;
-	const { type, name } = oafFilter.queryable;
+	const { type, id } = oafFilter.queryable;
 	const useQuotes = type === OafQueryableType.DATE || type === OafQueryableType.STRING;
 
 	if (!Object.values(OafQueryableType).includes(type)) {
 		return '';
 	}
 
-	if (!isString(name) || name.trim() === '') {
+	if (!isString(id) || id.trim() === '') {
 		return '';
 	}
 
@@ -173,13 +173,13 @@ export const createCqlFilterExpression = (oafFilter) => {
 		}
 
 		const operator = negate ? '<>' : '=';
-		const expression = useQuotes ? `${name} ${operator} '${exprValue}'` : `${name} ${operator} ${exprValue}`;
+		const expression = useQuotes ? `${id} ${operator} '${exprValue}'` : `${id} ${operator} ${exprValue}`;
 		return `(${expression})`;
 	};
 
 	const likeOp = (negate) => {
 		const exprValue = value ?? '';
-		const expression = `${name} LIKE '%${exprValue}%'`;
+		const expression = `${id} LIKE '%${exprValue}%'`;
 		return negate ? `NOT(${expression})` : `(${expression})`;
 	};
 
@@ -188,7 +188,7 @@ export const createCqlFilterExpression = (oafFilter) => {
 			return '';
 		}
 
-		return `(${name} > ${value})`;
+		return `(${id} > ${value})`;
 	};
 
 	const lessOp = () => {
@@ -196,7 +196,7 @@ export const createCqlFilterExpression = (oafFilter) => {
 			return '';
 		}
 
-		return `(${name} < ${value})`;
+		return `(${id} < ${value})`;
 	};
 
 	const betweenOp = (negate) => {
@@ -213,11 +213,11 @@ export const createCqlFilterExpression = (oafFilter) => {
 		}
 
 		if (exprMinValue !== null && exprMaxValue !== null) {
-			expression = `${name} <= ${exprMinValue} AND ${name} >= ${exprMaxValue}`;
+			expression = `${id} <= ${exprMinValue} AND ${id} >= ${exprMaxValue}`;
 		} else if (exprMinValue !== null) {
-			expression = `${name} <= ${exprMinValue}`;
+			expression = `${id} <= ${exprMinValue}`;
 		} else if (exprMaxValue !== null) {
-			expression = `${name} >= ${exprMaxValue}`;
+			expression = `${id} >= ${exprMaxValue}`;
 		}
 
 		if (expression !== null) {

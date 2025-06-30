@@ -94,11 +94,13 @@
 }
 
 .time-travel-icon {
-	margin-right: 0.5em;
+	margin: auto 0.5em auto 0;
 }
 
 .oaf-settings-icon {
 	margin: auto 1em auto 0;
+	position: relative;
+	top: 0.15em;
 }
 
 .compare {
@@ -166,8 +168,13 @@ input[type='range']::-moz-range-thumb {
 ba-value-select {
 	margin-right: 0.8em;
 }
+.layer-state-icon {
+	position: absolute;
+	margin-left: 0.5em;
+}
+
 .layer-state-icon::part(icon) {
 	background: var(--warning-color);
 	position: relative;
-	top: 0.3em;
+	top: 0.1em;
 }

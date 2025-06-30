@@ -75,6 +75,8 @@
 	-webkit-mask: url('../../../../assets/icons/time.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
+	height: 2.2em !important;
+	width: 2.2em !important;
 }
 .layerSwipe .icon {
 	mask: url('../../../../assets/icons/expand.svg');
