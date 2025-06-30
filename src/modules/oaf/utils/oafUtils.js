@@ -18,7 +18,9 @@ export const CqlOperator = Object.freeze({
 	BETWEEN: 'between',
 	NOT_BETWEEN: 'not_between',
 	GREATER: 'greater',
-	LESS: 'less'
+	GREATER_EQUALS: 'greater_equals',
+	LESS: 'less',
+	LESS_EQUALS: 'less_equals'
 });
 
 const operators = Object.freeze([
@@ -56,8 +58,18 @@ const operators = Object.freeze([
 		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT]
 	},
 	{
+		name: CqlOperator.GREATER_EQUALS,
+		translationKey: 'oaf_operator_greater_equals',
+		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT]
+	},
+	{
 		name: CqlOperator.LESS,
 		translationKey: 'oaf_operator_less',
+		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT]
+	},
+	{
+		name: CqlOperator.LESS_EQUALS,
+		translationKey: 'oaf_operator_less_equals',
 		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT]
 	}
 ]);

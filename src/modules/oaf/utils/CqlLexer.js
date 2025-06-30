@@ -2,6 +2,8 @@
  * @module modules/oaf/utils/CqlTokenizer
  */
 
+import { CqlOperator } from './oafUtils';
+
 export const CqlTokenType = Object.freeze({
 	ComparisonOperator: 'ComparisonOperator',
 	BinaryOperator: 'BinaryOperator',
@@ -33,37 +35,44 @@ export const CqlTokenSpecification = Object.freeze([
 	{
 		regex: /=/,
 		type: CqlTokenType.BinaryOperator,
-		getValue: () => '='
+		getValue: () => '=',
+		operatorName: CqlOperator.EQUALS
 	},
 	{
 		regex: /<=/,
 		type: CqlTokenType.BinaryOperator,
-		getValue: () => '<='
+		getValue: () => '<=',
+		operatorName: CqlOperator.LESS_EQUALS
 	},
 	{
 		regex: />=/,
 		type: CqlTokenType.BinaryOperator,
-		getValue: () => '>='
+		getValue: () => '>=',
+		operatorName: CqlOperator.GREATER_EQUALS
 	},
 	{
 		regex: />/,
 		type: CqlTokenType.BinaryOperator,
-		getValue: () => '>'
+		getValue: () => '>',
+		operatorName: CqlOperator.GREATER
 	},
 	{
 		regex: /</,
 		type: CqlTokenType.BinaryOperator,
-		getValue: () => '<'
+		getValue: () => '<',
+		operatorName: CqlOperator.LESS
 	},
 	{
 		regex: /\bLIKE\b/i,
 		type: CqlTokenType.BinaryOperator,
-		getValue: () => 'LIKE'
+		getValue: () => 'LIKE',
+		operatorName: CqlOperator.LIKE
 	},
 	{
 		regex: /\bBETWEEN\b/i,
 		type: CqlTokenType.ComparisonOperator,
-		getValue: () => 'BETWEEN'
+		getValue: () => 'BETWEEN',
+		operatorName: CqlOperator.BETWEEN
 	},
 	{
 		regex: /\bAND\b/i,
@@ -131,24 +140,18 @@ export class CqlLexer {
 					type: token.type,
 					value: token.getValue(matchedValue),
 					startsAt: cursor,
-					endsAt: cursor + matchedValue.length
+					endsAt: cursor + matchedValue.length,
+					operatorName: token.operatorName ?? null
 				};
 			}
 
-			// TODO Throw if we have no match with regular expressions
-			return null;
+			throw new Error(`Unrecognized token at position ${cursor}: "${tokenString}"`);
 		};
 
 		const tokens = [];
 
 		while (hasTokensLeft(cursor)) {
 			const token = getNextToken(cursor);
-			if (token === null) {
-				// THROW????
-				console.log(`TOKEN in ${tokenString} WAS NOT RECOGNIZED`);
-				break;
-			}
-
 			cursor = token.endsAt;
 			tokens.push(token);
 		}
