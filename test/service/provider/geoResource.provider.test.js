@@ -266,7 +266,7 @@ describe('GeoResource provider', () => {
 			expect(xyzGeoResource.tileGridId).toBe('tileGridId');
 			expect(xyzGeoResource.authRoles).toEqual(['TEST']);
 			expect(xyzGeoResource.timestamps).toEqual(['20001231']);
-			expect(xyzGeoResource.updateInterval).toBe(100);
+			expect(xyzGeoResource.updateInterval).toBeNull();
 		});
 
 		it('maps a VT BVV definition to a corresponding GeoResource instance', () => {
@@ -289,7 +289,7 @@ describe('GeoResource provider', () => {
 			expect(vtGeoResource.exportable).toBeFalse();
 			expect(vtGeoResource.authRoles).toEqual(['TEST']);
 			expect(vtGeoResource.timestamps).toEqual(['20001231']);
-			expect(vtGeoResource.updateInterval).toBe(100);
+			expect(vtGeoResource.updateInterval).toBeNull();
 		});
 
 		it('maps a OAF BVV definition to a corresponding GeoResource instance', () => {
