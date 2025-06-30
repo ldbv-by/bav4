@@ -32,7 +32,9 @@ describe('bvvOafFilterCapabilitiesProvider', () => {
 		sampled: true,
 		queryables: [
 			{
-				name: 'h_id',
+				id: 'h_id',
+				title: 'ID',
+				description: 'The identifier',
 				type: 'integer',
 				values: [5, 36, 37],
 				finalized: false,
@@ -40,19 +42,19 @@ describe('bvvOafFilterCapabilitiesProvider', () => {
 				maxValue: 1007029
 			},
 			{
-				name: 'datum',
+				id: 'datum',
 				type: 'date',
 				values: ['1992-01-15', '2000-01-01', '1998-09-14'],
 				finalized: false
 			},
 			{
-				name: 'gemeinde_code',
+				id: 'gemeinde_code',
 				type: 'string',
 				values: ['671139', '674147'],
 				finalized: false
 			},
 			{
-				name: 'gemeinde_name',
+				id: 'gemeinde_name',
 				type: 'string',
 				values: ['Laufach', 'Haßfurt', 'Schweinfurt'],
 				finalized: false
