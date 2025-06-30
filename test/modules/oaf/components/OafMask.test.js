@@ -40,13 +40,13 @@ describe('OafMask', () => {
 			totalNumberOfItems: 1,
 			queryables: [
 				{
-					name: 'foo',
+					id: 'foo',
 					type: 'integer',
 					values: [],
 					finalList: false
 				},
 				{
-					name: 'bar',
+					id: 'bar',
 					type: 'string',
 					values: ['A'],
 					finalList: true
@@ -264,7 +264,7 @@ describe('OafMask', () => {
 				expect(maskModel.filterGroups[1].oafFilters[0]).toEqual(
 					jasmine.objectContaining({
 						queryable: {
-							name: 'foo',
+							id: 'foo',
 							type: jasmine.any(String),
 							values: jasmine.any(Array),
 							finalList: jasmine.any(Boolean)

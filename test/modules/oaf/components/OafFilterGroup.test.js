@@ -3,6 +3,7 @@ import { OafFilterGroup } from '../../../../src/modules/oaf/components/OafFilter
 import { $injector } from '../../../../src/injection';
 import { TestUtils } from '../../../test-utils';
 import { createDefaultOafFilter } from '../../../../src/modules/oaf/components/oafUtils';
+import { OafQueryableType } from '../../../../src/domain/oaf';
 
 window.customElements.define(OafFilterGroup.tag, OafFilterGroup);
 window.customElements.define(OafFilter.tag, OafFilter);
@@ -14,15 +15,25 @@ describe('OafFilterGroup', () => {
 		return TestUtils.render(OafFilterGroup.tag);
 	};
 
+	const createQueryable = (id, type) => {
+		return {
+			id: id,
+			type: type,
+			values: [],
+			finalList: false
+		};
+	};
+
 	const testQueryables = [
 		{
-			name: 'StringQueryable',
+			id: 'StringQueryable',
+			title: 'String Title',
 			type: 'string',
 			values: ['A', 'B', 'C'],
 			finalList: true
 		},
 		{
-			name: 'IntegerQueryable',
+			id: 'IntegerQueryable',
 			type: 'integer',
 			min: 20,
 			max: 150,
@@ -121,6 +132,26 @@ describe('OafFilterGroup', () => {
 				expect(element.shadowRoot.querySelectorAll('ba-oaf-filter')).toHaveSize(1);
 			});
 
+			it('shows queryable title at queryable select', async () => {
+				const element = await setup();
+				element.queryables = [{ ...createQueryable('foo', OafQueryableType.STRING), title: 'BAR' }];
+				// first child is an empty option -> skip
+				const option = element.shadowRoot.querySelector('#queryable-select option:nth-child(2)');
+				expect(option.innerText).toBe('BAR');
+			});
+
+			it('shows queryable id when title is missing', async () => {
+				const element = await setup();
+				element.queryables = [{ ...createQueryable('foo', OafQueryableType.STRING) }];
+				const option = element.shadowRoot.querySelector('#queryable-select option:nth-child(2)');
+
+				expect(option.innerText).toBe('foo');
+				element.queryable = { ...createQueryable('foo', OafQueryableType.STRING), title: null };
+				expect(option.innerText).toBe('foo');
+				element.queryable = { ...createQueryable('foo', OafQueryableType.STRING), title: '' };
+				expect(option.innerText).toBe('foo');
+			});
+
 			it('blurs filter-select when a filter was added', async () => {
 				const element = await setup();
 				element.queryables = testQueryables;
@@ -174,7 +205,7 @@ describe('OafFilterGroup', () => {
 				const element = await setup();
 
 				element.queryables = testQueryables;
-				element.oafFilters = [{ ...createDefaultOafFilter(), queryable: { name: 'StringQueryable' } }];
+				element.oafFilters = [{ ...createDefaultOafFilter(), queryable: { id: 'StringQueryable' } }];
 				const select = element.shadowRoot.querySelector('#queryable-select');
 
 				expect(select.options).not.toContain(jasmine.objectContaining({ value: 'StringQueryable' }));
@@ -206,7 +237,7 @@ describe('OafFilterGroup', () => {
 			expect(element.oafFilters[0]).toEqual(
 				jasmine.objectContaining({
 					queryable: {
-						name: 'IntegerQueryable',
+						id: 'IntegerQueryable',
 						type: 'integer',
 						min: jasmine.anything(),
 						max: jasmine.anything(),

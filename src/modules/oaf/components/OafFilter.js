@@ -81,7 +81,7 @@ export class OafFilter extends MvuElement {
 	createView(model) {
 		const translate = (key) => this.#translationService.translate(key);
 		const { minValue, maxValue, value, operator } = model;
-		const { name, type, values: queryableValues, finalized } = model.queryable;
+		const { id, title, type, values: queryableValues, finalized } = model.queryable;
 		const operators = getOperatorDefinitions(type);
 
 		const onMinValueChanged = (evt, newValue) => {
@@ -240,7 +240,7 @@ export class OafFilter extends MvuElement {
 			</style>
 			<div class="oaf-filter">				
 				<div class="flex">
-					<span class="title">${name}</span>
+					<span class="title">${title ? title : id}</span>
 				</div>
 				${getOperatorHtml()}											
 				<div>

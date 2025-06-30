@@ -21,9 +21,9 @@ describe('OafFilter', () => {
 		return TestUtils.render(OafFilter.tag, properties);
 	};
 
-	const createQueryable = (name, type) => {
+	const createQueryable = (id, type) => {
 		return {
-			name: name,
+			id: id,
 			type: type,
 			values: [],
 			finalList: false
@@ -130,6 +130,23 @@ describe('OafFilter', () => {
 					element.operator = operator;
 					expect(operatorField.selectedOptions[0].innerText).toBe(operator.translationKey);
 				}
+			});
+
+			it('shows queryable title', async () => {
+				const element = await setup();
+				element.queryable = { ...createQueryable('foo', OafQueryableType.STRING), title: 'BAR' };
+				expect(element.shadowRoot.querySelector('.title').innerText).toBe('BAR');
+			});
+
+			it('shows queryable id when title is missing', async () => {
+				const element = await setup();
+				element.queryable = { ...createQueryable('foo', OafQueryableType.STRING) };
+
+				expect(element.shadowRoot.querySelector('.title').innerText).toBe('foo');
+				element.queryable = { ...createQueryable('foo', OafQueryableType.STRING), title: null };
+				expect(element.shadowRoot.querySelector('.title').innerText).toBe('foo');
+				element.queryable = { ...createQueryable('foo', OafQueryableType.STRING), title: '' };
+				expect(element.shadowRoot.querySelector('.title').innerText).toBe('foo');
 			});
 		});
 
