@@ -13,6 +13,14 @@ window.customElements.define(OafFilter.tag, OafFilter);
 describe('OafMask', () => {
 	let store;
 
+	class OafMaskParserMock {
+		constructor() {}
+
+		parse(string) {
+			return [];
+		}
+	}
+
 	const importOafServiceMock = {
 		getFilterCapabilities: async () => []
 	};
@@ -26,7 +34,8 @@ describe('OafMask', () => {
 		$injector
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('ImportOafService', importOafServiceMock)
-			.registerSingleton('TranslationService', { translate: (key) => key });
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.register('OafMaskParserService', OafMaskParserMock);
 
 		const layerId = properties.layerId !== undefined ? properties.layerId : -1;
 		addLayer(layerId, { geoResourceId: `dummy ${layerId}` });

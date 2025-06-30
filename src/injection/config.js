@@ -13,6 +13,7 @@ import { UrlService } from '../services/UrlService';
 import { IconService } from '../services/IconService';
 import { MapService } from '../services/MapService';
 import { mapModule } from '../modules/olMap/injection';
+import { oafModule } from '../modules/oaf/injection';
 import { AdministrationService } from '../services/AdministrationService';
 import { TopicsService } from '../services/TopicsService';
 import { topicsModule } from '../modules/topics/injection';
@@ -142,6 +143,7 @@ $injector
 	.registerSingleton('ObserveStateForEncodingPlugin', new ObserveStateForEncodingPlugin())
 	.registerModule(mapModule)
 	.registerModule(topicsModule)
+	.registerModule(oafModule)
 	.ready();
 
 export const init = true;

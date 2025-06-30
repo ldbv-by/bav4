@@ -2,7 +2,7 @@ import { OafFilter } from '../../../../src/modules/oaf/components/OafFilter';
 import { OafFilterGroup } from '../../../../src/modules/oaf/components/OafFilterGroup';
 import { $injector } from '../../../../src/injection';
 import { TestUtils } from '../../../test-utils';
-import { createDefaultOafFilter } from '../../../../src/modules/oaf/components/oafUtils';
+import { createDefaultOafFilter } from '../../../../src/modules/oaf/utils/oafUtils';
 
 window.customElements.define(OafFilterGroup.tag, OafFilterGroup);
 window.customElements.define(OafFilter.tag, OafFilter);

@@ -8,7 +8,7 @@ import {
 	getOperatorByName,
 	getOperatorDefinitions,
 	CqlOperator
-} from '../../../../src/modules/oaf/components/oafUtils';
+} from '../../../../src/modules/oaf/utils/oafUtils';
 import { $injector } from '../../../../src/injection';
 import { OafQueryableType } from '../../../../src/domain/oaf';
 
