@@ -145,7 +145,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 					</span>
 					<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_imprint')}</span>
 				</a>
-				<a class="ba-list-item" href="https://www.ldbv.bayern.de/digitalisierung/bitv/index.html" target="_blank">
+				<a class="ba-list-item" href="https://ldbv.bayern.de/service/barrierefreiheit_erklaerung/barrierefreiheit_ba.html" target="_blank">
 					<span class="ba-list-item__pre">
 						<span class="ba-list-item__icon icon accessibility"> </span>
 					</span>
