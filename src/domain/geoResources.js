@@ -324,12 +324,15 @@ export class GeoResource {
 	}
 
 	/**
-	 * Sets the update interval in seconds for this GeoResource
+	 * Sets the update interval in seconds for this GeoResource if the GeoResource can be updated by an interval.
+	 * @see {GeoResource#isUpdatableByInterval}
 	 * @param {number|null} updateInterval
 	 * @returns {GeoResource} `this` for chaining
 	 */
 	setUpdateInterval(updateInterval) {
-		this._updateInterval = updateInterval;
+		if (this.isUpdatableByInterval()) {
+			this._updateInterval = updateInterval;
+		}
 		return this;
 	}
 
@@ -371,6 +374,15 @@ export class GeoResource {
 	 */
 	hasUpdateInterval() {
 		return !!this._updateInterval;
+	}
+
+	/**
+	 * Checks if this GeoResource is updatable by an interval. Default is `false`.
+	 * Child classes that should be updatable should override this method.
+	 * @returns {boolean} `true` if it is updatable by an interval
+	 */
+	isUpdatableByInterval() {
+		return false;
 	}
 
 	/**
@@ -568,6 +580,13 @@ export class WmsGeoResource extends GeoResource {
 			this._maxSize = [...maxSize];
 		}
 		return this;
+	}
+
+	/**
+	 * @override
+	 */
+	isUpdatableByInterval() {
+		return true;
 	}
 
 	/**
@@ -857,6 +876,10 @@ export class VectorGeoResource extends AbstractVectorGeoResource {
 		return !!this._label || this.label !== this._getFallbackLabel();
 	}
 
+	/**
+	 *
+	 * @returns {boolean} `true` when the data are local data (e.g. imported locally by the user)
+	 */
 	get localData() {
 		return this._localData;
 	}
@@ -869,6 +892,13 @@ export class VectorGeoResource extends AbstractVectorGeoResource {
 	markAsLocalData(localData) {
 		this._localData = localData;
 		return this;
+	}
+
+	/**
+	 * @override
+	 */
+	isUpdatableByInterval() {
+		return !this.localData;
 	}
 
 	/**
@@ -1023,6 +1053,13 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 	 */
 	hasLimit() {
 		return !!this._limit;
+	}
+
+	/**
+	 * @override
+	 */
+	isUpdatableByInterval() {
+		return true;
 	}
 
 	/**
