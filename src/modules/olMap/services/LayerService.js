@@ -14,6 +14,8 @@ import { UnavailableGeoResourceError } from '../../../domain/errors';
 import { BvvGk4WmtsTileGrid } from '../ol/tileGrid/BvvGk4WmtsTileGrid';
 import { RefreshableXYZ } from '../ol/source/RefreshableXYZ';
 import { Eu25832WmtsTileGrid } from '../ol/tileGrid/Eu25832WmtsTileGrid';
+import { asInternalProperty } from '../../../utils/propertyUtils';
+import { getLayerById, getLayerGroup } from '../utils/olMapUtils';
 
 /**
  * A function that returns a `ol.image.LoadFunction` for loading also restricted images via basic access authentication
@@ -33,17 +35,77 @@ import { Eu25832WmtsTileGrid } from '../ol/tileGrid/Eu25832WmtsTileGrid';
  */
 
 /**
+ * Lowest possible update interval of a layer in seconds
+ */
+export const DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS = 5;
+
+/**
  * Converts a GeoResource to a ol layer instance.
  * @class
  * @author taulinger
  */
 export class LayerService {
+	#configService;
+
 	/**
 	 * @param {module:modules/olMap/services/LayerService~imageLoadFunctionProvider} [imageLoadFunctionProvider=getBvvBaaImageLoadFunction]
 	 */
 	constructor(imageLoadFunctionProvider = getBvvBaaImageLoadFunction, tileLoadFunctionProvider = getBvvTileLoadFunction) {
 		this._imageLoadFunctionProvider = imageLoadFunctionProvider;
 		this._tileLoadFunctionProvider = tileLoadFunctionProvider;
+
+		const { ConfigService: configService } = $injector.inject('ConfigService');
+
+		this.#configService = configService;
+	}
+
+	_registerUpdateIntervalHandler(olLayer, geoResource, olMap) {
+		const refreshSource = () => {
+			if (!getLayerById(olMap, olLayer.get('id')) && !getLayerGroup(olMap, olLayer)) {
+				//if the layer is not attached to the map anymore we remove the interval
+				clearInterval(olLayer.getSource().get(asInternalProperty('updateIntervalId')));
+			} else {
+				/**
+				 *Currently supported GeoResources
+				 */
+				switch (geoResource.getType()) {
+					case GeoResourceTypes.WMS: {
+						const params = olLayer.getSource().getParams();
+						olLayer.getSource().updateParams(params);
+						break;
+					}
+					case GeoResourceTypes.VECTOR:
+					case GeoResourceTypes.OAF: {
+						olLayer.getSource().refresh();
+						break;
+					}
+				}
+			}
+		};
+
+		const setUpdateIntervalForLayer = (intervalInSeconds) => {
+			if (intervalInSeconds >= this.#configService.getValue('MIN_LAYER_UPDATE_INTERVAL_SECONDS', DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS)) {
+				const intervalId = setInterval(refreshSource, intervalInSeconds * 1_000);
+				olLayer.getSource().set(asInternalProperty('updateIntervalId'), intervalId);
+			}
+		};
+
+		// handle update interval on ba-Layer-level
+		olLayer.on('propertychange', (event) => {
+			const property = event.key;
+			if (property === 'updateInterval' && olLayer.get('updateInterval') && olLayer.get('updateInterval') !== event.oldValue) {
+				// we remove an possible existing interval
+				clearInterval(olLayer.getSource().get(asInternalProperty('updateIntervalId')));
+				// and register a new one
+				setUpdateIntervalForLayer(olLayer.get('updateInterval'));
+			}
+		});
+
+		// handle update interval on ba-GeoResource-level
+		if (geoResource.hasUpdateInterval()) {
+			setUpdateIntervalForLayer(geoResource.updateInterval);
+		}
+		return olLayer;
 	}
 
 	/**
@@ -117,7 +179,7 @@ export class LayerService {
 					minZoom: minZoom ?? undefined,
 					maxZoom: maxZoom ?? undefined
 				});
-				return layer;
+				return this._registerUpdateIntervalHandler(layer, geoResource, olMap);
 			}
 
 			case GeoResourceTypes.XYZ: {
@@ -174,7 +236,8 @@ export class LayerService {
 
 			case GeoResourceTypes.VECTOR:
 			case GeoResourceTypes.OAF: {
-				return vectorLayerService.createLayer(id, geoResource, olMap);
+				const vectorLayer = vectorLayerService.createLayer(id, geoResource, olMap);
+				return this._registerUpdateIntervalHandler(vectorLayer, geoResource, olMap);
 			}
 			case GeoResourceTypes.RT_VECTOR: {
 				return rtVectorLayerService.createLayer(id, geoResource, olMap);

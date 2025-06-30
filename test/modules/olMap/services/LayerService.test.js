@@ -11,7 +11,7 @@ import {
 	WmsGeoResource,
 	XyzGeoResource
 } from '../../../../src/domain/geoResources';
-import { LayerService } from '../../../../src/modules/olMap/services/LayerService';
+import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS, LayerService } from '../../../../src/modules/olMap/services/LayerService';
 import { Map } from 'ol';
 import VectorLayer from 'ol/layer/Vector';
 import { TestUtils } from '../../../test-utils';
@@ -24,6 +24,8 @@ import { UnavailableGeoResourceError } from '../../../../src/domain/errors';
 import TileLayer from 'ol/layer/Tile';
 import { BvvGk4WmtsTileGrid } from '../../../../src/modules/olMap/ol/tileGrid/BvvGk4WmtsTileGrid';
 import { Eu25832WmtsTileGrid } from '../../../../src/modules/olMap/ol/tileGrid/Eu25832WmtsTileGrid';
+import ImageLayer from 'ol/layer/Image';
+import { ImageWMS, Vector } from 'ol/source';
 
 describe('LayerService', () => {
 	const vectorLayerService = {
@@ -38,6 +40,9 @@ describe('LayerService', () => {
 	const baaCredentialService = {
 		get: () => {}
 	};
+	const configServiceMock = {
+		getValue: () => {}
+	};
 
 	const setup = (imageLoadFunctionProvider, tileLoadFunctionProvider) => {
 		return new LayerService(imageLoadFunctionProvider, tileLoadFunctionProvider);
@@ -49,7 +54,8 @@ describe('LayerService', () => {
 			.registerSingleton('VectorLayerService', vectorLayerService)
 			.registerSingleton('RtVectorLayerService', rtVectorLayerService)
 			.registerSingleton('GeoResourceService', geoResourceService)
-			.registerSingleton('BaaCredentialService', baaCredentialService);
+			.registerSingleton('BaaCredentialService', baaCredentialService)
+			.registerSingleton('ConfigService', configServiceMock);
 	});
 
 	describe('constructor', () => {
@@ -130,17 +136,19 @@ describe('LayerService', () => {
 		});
 
 		describe('OafGeoResource', () => {
-			it('calls the VectorLayerService', () => {
+			it('calls the VectorLayerService and "_registerUpdateIntervalHandler"', () => {
 				const instanceUnderTest = setup();
 				const id = 'id';
 				const olMap = new Map();
 				const olLayer = new VectorLayer();
 				const oafGeoResource = new OafGeoResource('geoResourceId', 'label', 'url', 'collectionId', 12345);
 				const vectorLayerServiceSpy = spyOn(vectorLayerService, 'createLayer').and.returnValue(olLayer);
+				const registerUpdateIntervalHandlerSpy = spyOn(instanceUnderTest, '_registerUpdateIntervalHandler').and.returnValue(olLayer);
 
 				instanceUnderTest.toOlLayer(id, oafGeoResource, olMap);
 
 				expect(vectorLayerServiceSpy).toHaveBeenCalledWith(id, oafGeoResource, olMap);
+				expect(registerUpdateIntervalHandlerSpy).toHaveBeenCalledWith(olLayer, oafGeoResource, olMap);
 			});
 		});
 
@@ -215,6 +223,21 @@ describe('LayerService', () => {
 				expect(wmsSource.getParams().STYLES).toBe('some');
 				expect(providerSpy).toHaveBeenCalledWith(geoResourceId, null, null);
 				expect(wmsOlLayer.getSource().getImageLoadFunction()).toBe(mockImageLoadFunction);
+			});
+
+			it('calls "_registerUpdateIntervalHandler"', () => {
+				const mockImageLoadFunction = () => {};
+				const providerSpy = jasmine.createSpy().and.returnValue(mockImageLoadFunction);
+				const instanceUnderTest = setup(providerSpy);
+				const olMap = new Map();
+				const id = 'id';
+				const geoResourceId = 'geoResourceId';
+				const wmsGeoResource = new WmsGeoResource(geoResourceId, 'label', 'https://some.url', 'layer', 'image/png');
+				const registerUpdateIntervalHandlerSpy = spyOn(instanceUnderTest, '_registerUpdateIntervalHandler').and.callFake((olLayer) => olLayer);
+
+				instanceUnderTest.toOlLayer(id, wmsGeoResource, olMap);
+
+				expect(registerUpdateIntervalHandlerSpy).toHaveBeenCalledWith(jasmine.any(ImageLayer), wmsGeoResource, olMap);
 			});
 
 			describe('BAA Authentication', () => {
@@ -556,6 +579,218 @@ describe('LayerService', () => {
 					}
 				});
 			}).toThrowError('GeoResource type "Unknown" currently not supported');
+		});
+	});
+
+	describe('_registerUpdateIntervalHandler', () => {
+		beforeEach(function () {
+			jasmine.clock().install();
+		});
+
+		afterEach(function () {
+			jasmine.clock().uninstall();
+		});
+
+		it('does nothing when the `updateInterval` is beyond the threshold', async () => {
+			const instanceUnderTest = setup();
+			const updateIntervalInSeconds = 1;
+			const updateIntervalThresholdInSeconds = 2;
+			const layerId = 'layerId';
+			const wmsGeoResource = new WmsGeoResource('geoResourceId', 'label', 'https://some.url', 'layer', 'image/png').setUpdateInterval(
+				updateIntervalInSeconds
+			);
+			const params = {};
+			const olSource = new ImageWMS();
+			const olLayer = new ImageLayer({ id: layerId, source: olSource });
+			const olMap = new Map({ layers: [olLayer] });
+			spyOn(configServiceMock, 'getValue')
+				.withArgs('MIN_LAYER_UPDATE_INTERVAL_SECONDS', DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS)
+				.and.returnValue(updateIntervalThresholdInSeconds);
+			spyOn(olSource, 'getParams').and.returnValue(params);
+			const updateParamsSpy = spyOn(olSource, 'updateParams').and.callThrough();
+
+			instanceUnderTest._registerUpdateIntervalHandler(olLayer, wmsGeoResource, olMap);
+
+			jasmine.clock().tick(updateIntervalThresholdInSeconds * 1000 + 100);
+
+			expect(updateParamsSpy).not.toHaveBeenCalled();
+		});
+
+		describe('WmsGeoResource', () => {
+			it('handles an `updateInterval` on GeoResource-level', async () => {
+				const instanceUnderTest = setup();
+				const updateIntervalInSeconds = 1;
+				const layerId = 'layerId';
+				const wmsGeoResource = new WmsGeoResource('geoResourceId', 'label', 'https://some.url', 'layer', 'image/png').setUpdateInterval(
+					updateIntervalInSeconds
+				);
+				const params = {};
+				const olSource = new ImageWMS();
+				const olLayer = new ImageLayer({ id: layerId, source: olSource });
+				const olMap = new Map({ layers: [olLayer] });
+				spyOn(configServiceMock, 'getValue')
+					.withArgs('MIN_LAYER_UPDATE_INTERVAL_SECONDS', DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS)
+					.and.returnValue(updateIntervalInSeconds);
+				spyOn(olSource, 'getParams').and.returnValue(params);
+				const updateParamsSpy = spyOn(olSource, 'updateParams').and.callThrough();
+
+				instanceUnderTest._registerUpdateIntervalHandler(olLayer, wmsGeoResource, olMap);
+
+				jasmine.clock().tick(updateIntervalInSeconds * 1000 + 100);
+
+				expect(updateParamsSpy).toHaveBeenCalledOnceWith(params);
+
+				//we remove the layer to trigger a removal of the interval
+				olMap.removeLayer(olLayer);
+
+				jasmine.clock().tick(updateIntervalInSeconds * 1000 + 100);
+
+				expect(updateParamsSpy).toHaveBeenCalledOnceWith(params);
+			});
+
+			it('handles an `updateInterval` on the Layer-level', async () => {
+				const instanceUnderTest = setup();
+				const updateIntervalInSeconds = 1;
+				const layerId = 'layerId';
+				const wmsGeoResource = new WmsGeoResource('geoResourceId', 'label', 'https://some.url', 'layer', 'image/png');
+				const params = {};
+				const olSource = new ImageWMS();
+				const olLayer = new ImageLayer({ id: layerId, source: olSource });
+				const olMap = new Map({ layers: [olLayer] });
+				spyOn(configServiceMock, 'getValue')
+					.withArgs('MIN_LAYER_UPDATE_INTERVAL_SECONDS', DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS)
+					.and.returnValue(updateIntervalInSeconds);
+				spyOn(olSource, 'getParams').and.returnValue(params);
+				const updateParamsSpy = spyOn(olSource, 'updateParams').and.callThrough();
+				instanceUnderTest._registerUpdateIntervalHandler(olLayer, wmsGeoResource, olMap);
+
+				olLayer.set('updateInterval', updateIntervalInSeconds);
+
+				jasmine.clock().tick(updateIntervalInSeconds * 1000 + 100);
+
+				expect(updateParamsSpy).toHaveBeenCalledOnceWith(params);
+
+				//we remove the layer to trigger a removal of the interval
+				olMap.removeLayer(olLayer);
+
+				jasmine.clock().tick(updateIntervalInSeconds * 1000 + 100);
+
+				expect(updateParamsSpy).toHaveBeenCalledOnceWith(params);
+			});
+		});
+
+		describe('OafGeoResource', () => {
+			it('handles an `updateInterval` on GeoResource-level', async () => {
+				const instanceUnderTest = setup();
+				const updateIntervalInSeconds = 1;
+				const layerId = 'layerId';
+				const oafGeoResource = new OafGeoResource('geoResourceId', 'label', 'url', 'collectionId', 12345).setUpdateInterval(updateIntervalInSeconds);
+				const olSource = new Vector();
+				const olLayer = new VectorLayer({ id: layerId, source: olSource });
+				const olMap = new Map({ layers: [olLayer] });
+				spyOn(configServiceMock, 'getValue')
+					.withArgs('MIN_LAYER_UPDATE_INTERVAL_SECONDS', DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS)
+					.and.returnValue(updateIntervalInSeconds);
+				const refreshSpy = spyOn(olSource, 'refresh').and.callThrough();
+
+				instanceUnderTest._registerUpdateIntervalHandler(olLayer, oafGeoResource, olMap);
+
+				jasmine.clock().tick(updateIntervalInSeconds * 1000 + 100);
+
+				expect(refreshSpy).toHaveBeenCalledTimes(1);
+
+				//we remove the layer to trigger a removal of the interval
+				olMap.removeLayer(olLayer);
+
+				jasmine.clock().tick(updateIntervalInSeconds * 1000 + 100);
+
+				expect(refreshSpy).toHaveBeenCalledTimes(1);
+			});
+
+			it('handles an `updateInterval` on the Layer-level', async () => {
+				const instanceUnderTest = setup();
+				const updateIntervalInSeconds = 1;
+				const layerId = 'layerId';
+				const oafGeoResource = new OafGeoResource('geoResourceId', 'label', 'url', 'collectionId', 12345);
+				const olSource = new Vector();
+				const olLayer = new VectorLayer({ id: layerId, source: olSource });
+				const olMap = new Map({ layers: [olLayer] });
+				spyOn(configServiceMock, 'getValue')
+					.withArgs('MIN_LAYER_UPDATE_INTERVAL_SECONDS', DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS)
+					.and.returnValue(updateIntervalInSeconds);
+				const refreshSpy = spyOn(olSource, 'refresh').and.callThrough();
+				instanceUnderTest._registerUpdateIntervalHandler(olLayer, oafGeoResource, olMap);
+
+				olLayer.set('updateInterval', updateIntervalInSeconds);
+
+				jasmine.clock().tick(updateIntervalInSeconds * 1000 + 100);
+
+				expect(refreshSpy).toHaveBeenCalledTimes(1);
+
+				//we remove the layer to trigger a removal of the interval
+				olMap.removeLayer(olLayer);
+
+				jasmine.clock().tick(updateIntervalInSeconds * 1000 + 100);
+
+				expect(refreshSpy).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('VectorResource', () => {
+			it('handles an `updateInterval` on GeoResource-level', async () => {
+				const instanceUnderTest = setup();
+				const updateIntervalInSeconds = 1;
+				const layerId = 'layerId';
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'label', VectorSourceType.KML).setUpdateInterval(updateIntervalInSeconds);
+				const olSource = new Vector();
+				const olLayer = new VectorLayer({ id: layerId, source: olSource });
+				const olMap = new Map({ layers: [olLayer] });
+				spyOn(configServiceMock, 'getValue')
+					.withArgs('MIN_LAYER_UPDATE_INTERVAL_SECONDS', DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS)
+					.and.returnValue(updateIntervalInSeconds);
+				const refreshSpy = spyOn(olSource, 'refresh').and.callThrough();
+
+				instanceUnderTest._registerUpdateIntervalHandler(olLayer, vectorGeoResource, olMap);
+
+				jasmine.clock().tick(updateIntervalInSeconds * 1000 + 100);
+
+				expect(refreshSpy).toHaveBeenCalledTimes(1);
+
+				//we remove the layer to trigger a removal of the interval
+				olMap.removeLayer(olLayer);
+
+				jasmine.clock().tick(updateIntervalInSeconds * 1000 + 100);
+
+				expect(refreshSpy).toHaveBeenCalledTimes(1);
+			});
+
+			it('handles an `updateInterval` on the Layer-level', async () => {
+				const instanceUnderTest = setup();
+				const updateIntervalInSeconds = 1;
+				const layerId = 'layerId';
+				const oafGeoResource = new VectorGeoResource('geoResourceId', 'label', VectorSourceType.KML);
+				const olSource = new Vector();
+				const olLayer = new VectorLayer({ id: layerId, source: olSource });
+				const olMap = new Map({ layers: [olLayer] });
+				spyOn(configServiceMock, 'getValue')
+					.withArgs('MIN_LAYER_UPDATE_INTERVAL_SECONDS', DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS)
+					.and.returnValue(updateIntervalInSeconds);
+				const refreshSpy = spyOn(olSource, 'refresh').and.callThrough();
+				instanceUnderTest._registerUpdateIntervalHandler(olLayer, oafGeoResource, olMap);
+
+				olLayer.set('updateInterval', updateIntervalInSeconds);
+
+				jasmine.clock().tick(updateIntervalInSeconds * 1000 + 100);
+
+				expect(refreshSpy).toHaveBeenCalledTimes(1);
+
+				//we remove the layer to trigger a removal of the interval
+				olMap.removeLayer(olLayer);
+
+				jasmine.clock().tick(updateIntervalInSeconds * 1000 + 100);
+
+				expect(refreshSpy).toHaveBeenCalledTimes(1);
+			});
 		});
 	});
 });
