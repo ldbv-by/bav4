@@ -455,7 +455,7 @@ describe('GeoResource', () => {
 				expect(new WmsGeoResource('id', 'label', 'url', 'layers', 'format').isUpdatableByInterval()).toBeTrue();
 			});
 
-			it('set the `maxSize`', () => {
+			it('sets the `maxSize`', () => {
 				const wmsGeoResource = new WmsGeoResource('id', 'label', 'url', 'layers', 'format').setMaxSize(null);
 
 				expect(wmsGeoResource.maxSize).toBeNull();
@@ -465,7 +465,7 @@ describe('GeoResource', () => {
 				expect(wmsGeoResource.maxSize).toEqual([21, 42]);
 			});
 
-			it('set `extraParams`', () => {
+			it('sets `extraParams`', () => {
 				const wmsGeoResource = new WmsGeoResource('id', 'label', 'url', 'layers', 'format').setExtraParams(null);
 
 				expect(wmsGeoResource.extraParams).toEqual({});
