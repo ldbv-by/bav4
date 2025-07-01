@@ -11,7 +11,7 @@ import {
 	WmsGeoResource,
 	XyzGeoResource
 } from '../../../../src/domain/geoResources';
-import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS, LayerService } from '../../../../src/modules/olMap/services/LayerService';
+import { LayerService } from '../../../../src/modules/olMap/services/LayerService';
 import { Map } from 'ol';
 import VectorLayer from 'ol/layer/Vector';
 import { TestUtils } from '../../../test-utils';
@@ -26,6 +26,7 @@ import { BvvGk4WmtsTileGrid } from '../../../../src/modules/olMap/ol/tileGrid/Bv
 import { Eu25832WmtsTileGrid } from '../../../../src/modules/olMap/ol/tileGrid/Eu25832WmtsTileGrid';
 import ImageLayer from 'ol/layer/Image';
 import { ImageWMS, Vector } from 'ol/source';
+import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '../../../../src/domain/layer';
 
 describe('LayerService', () => {
 	const vectorLayerService = {

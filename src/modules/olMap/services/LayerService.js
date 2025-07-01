@@ -16,6 +16,7 @@ import { RefreshableXYZ } from '../ol/source/RefreshableXYZ';
 import { Eu25832WmtsTileGrid } from '../ol/tileGrid/Eu25832WmtsTileGrid';
 import { asInternalProperty } from '../../../utils/propertyUtils';
 import { getLayerById, getLayerGroup } from '../utils/olMapUtils';
+import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '../../../domain/layer';
 
 /**
  * A function that returns a `ol.image.LoadFunction` for loading also restricted images via basic access authentication
@@ -33,11 +34,6 @@ import { getLayerById, getLayerGroup } from '../utils/olMapUtils';
  * @param {ol.layer.Layer} olLayer The the corresponding ol layer
  * @returns {Function} ol.tile.LoadFunction
  */
-
-/**
- * Lowest possible update interval of a layer in seconds
- */
-export const DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS = 5;
 
 /**
  * Converts a GeoResource to a ol layer instance.
