@@ -20,7 +20,8 @@ import {
 	addLayerIfNotPresent,
 	cloneAndAddLayer,
 	SwipeAlignment,
-	LayerState
+	LayerState,
+	modifyLayerProps
 } from '../../../src/store/layers/layers.action';
 import { TestUtils } from '../../test-utils.js';
 import { GeoResourceFuture, XyzGeoResource } from '../../../src/domain/geoResources';
@@ -854,6 +855,47 @@ describe('layersReducer', () => {
 
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.active[0].visible).toBe(true);
+		});
+	});
+
+	describe('modifyLayerProps', () => {
+		it("modifies the 'props' property of a layer", () => {
+			const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', props: { featureCount: 21, foo: 'bar' } };
+			const store = setup({
+				layers: {
+					active: index([layerProperties0])
+				}
+			});
+
+			expect(store.getState().layers.active[0].props).toEqual({ featureCount: 21, foo: 'bar' });
+
+			modifyLayerProps('id0', {});
+
+			expect(store.getState().layers.active[0].props).toEqual({ featureCount: 21, foo: 'bar' });
+
+			modifyLayerProps('id0', { featureCount: 42 });
+
+			expect(store.getState().layers.active[0].props).toEqual({ featureCount: 42, foo: 'bar' });
+
+			modifyLayerProps('id0', { featureCount: 55 }, true);
+
+			expect(store.getState().layers.active[0].props).toEqual({ featureCount: 55 });
+		});
+
+		it('does nothing when layer is not present', () => {
+			const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', props: { featureCount: 21, foo: 'bar' } };
+			const store = setup({
+				layers: {
+					active: index([layerProperties0])
+				}
+			});
+
+			expect(store.getState().layers.active[0].props).toEqual({ featureCount: 21, foo: 'bar' });
+
+			modifyLayerProps('id1', {}, true);
+
+			expect(store.getState().layers.active.length).toBe(1);
+			expect(store.getState().layers.active[0].props).toEqual({ featureCount: 21, foo: 'bar' });
 		});
 	});
 

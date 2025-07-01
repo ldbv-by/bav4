@@ -8,7 +8,8 @@ import {
 	LAYER_RESOURCES_READY,
 	LAYER_GEORESOURCE_CHANGED,
 	LAYER_REMOVE_AND_SET,
-	createDefaultLayerProperties
+	createDefaultLayerProperties,
+	LAYER_PROPS_MODIFIED
 } from './layers.reducer';
 import { $injector } from '../../injection';
 import { GeoResource } from '../../domain/geoResources';
@@ -150,6 +151,19 @@ export const modifyLayer = (id, options = {}) => {
 	getStore().dispatch({
 		type: LAYER_MODIFIED,
 		payload: { id: id, properties, constraints }
+	});
+};
+
+/**
+ * Updates the `props` of a {@link Layer}.
+ * @param {string} id Id of the layer
+ * @param {module:store/layers/layers_action~LayerProps} props
+ * @param {boolean} [replace=true] `true` if all existing properties should be replaced by the new `props` object. Default is `false` which means a partial update
+ */
+export const modifyLayerProps = (id, props, replace = false) => {
+	getStore().dispatch({
+		type: LAYER_PROPS_MODIFIED,
+		payload: { id: id, props, replace }
 	});
 };
 
