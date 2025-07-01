@@ -85,9 +85,18 @@ describe('ShareToolContent', () => {
 
 				const element = await setup(config);
 
-				expect(element.shadowRoot.querySelector('.tool-container__buttons').childElementCount).toBe(1);
+				expect(element.shadowRoot.querySelector('.tool-container__buttons').childElementCount).toBe(4);
 				expect(element.shadowRoot.querySelector('.tool-container__button-text').innerText).toBe('toolbox_shareTool_share');
 				expect(element.shadowRoot.querySelector('.tool-container__icon').classList).toContain('share');
+
+				expect(element.shadowRoot.querySelectorAll('.tool-container__button-text')[0].innerText).toBe('toolbox_shareTool_share');
+				expect(element.shadowRoot.querySelectorAll('.tool-container__button-text')[1].innerText).toBe('toolbox_shareTool_link');
+				expect(element.shadowRoot.querySelectorAll('.tool-container__button-text')[2].innerText).toBe('toolbox_shareTool_mail');
+				expect(element.shadowRoot.querySelectorAll('.tool-container__button-text')[3].innerText).toBe('toolbox_shareTool_qr');
+				expect(element.shadowRoot.querySelectorAll('.tool-container__icon')[0].classList).toContain('share');
+				expect(element.shadowRoot.querySelectorAll('.tool-container__icon')[1].classList).toContain('link');
+				expect(element.shadowRoot.querySelectorAll('.tool-container__icon')[2].classList).toContain('mail');
+				expect(element.shadowRoot.querySelectorAll('.tool-container__icon')[3].classList).toContain('qr');
 			});
 
 			describe('on share button click', () => {
@@ -187,11 +196,13 @@ describe('ShareToolContent', () => {
 
 					const element = await setup(config);
 
-					expect(element.shadowRoot.querySelector('.tool-container__buttons').childElementCount).toBe(2);
-					expect(element.shadowRoot.querySelectorAll('.tool-container__button-text')[0].innerText).toBe('toolbox_shareTool_link');
-					expect(element.shadowRoot.querySelectorAll('.tool-container__button-text')[1].innerText).toBe('toolbox_shareTool_mail');
-					expect(element.shadowRoot.querySelectorAll('.tool-container__icon')[0].classList).toContain('link');
-					expect(element.shadowRoot.querySelectorAll('.tool-container__icon')[1].classList).toContain('mail');
+					expect(element.shadowRoot.querySelector('.tool-container__buttons').childElementCount).toBe(3);
+					expect(element.shadowRoot.querySelectorAll('.tool-container__button-text')[0].innerText).toBe('toolbox_shareTool_share');
+					expect(element.shadowRoot.querySelectorAll('.tool-container__button-text')[1].innerText).toBe('toolbox_shareTool_link');
+					expect(element.shadowRoot.querySelectorAll('.tool-container__button-text')[2].innerText).toBe('toolbox_shareTool_mail');
+					expect(element.shadowRoot.querySelectorAll('.tool-container__icon')[0].classList).toContain('share');
+					expect(element.shadowRoot.querySelectorAll('.tool-container__icon')[1].classList).toContain('link');
+					expect(element.shadowRoot.querySelectorAll('.tool-container__icon')[2].classList).toContain('mail');
 				});
 			});
 
@@ -203,7 +214,6 @@ describe('ShareToolContent', () => {
 					const config = { windowMock };
 					const element = await setup(config);
 					spyOn(element, '_generateShortUrl').and.returnValue('https://short/url');
-
 					element.shadowRoot.querySelectorAll('.tool-container__button')[0].click();
 
 					await TestUtils.timeout();
