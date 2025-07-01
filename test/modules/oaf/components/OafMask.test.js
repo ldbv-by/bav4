@@ -15,7 +15,7 @@ describe('OafMask', () => {
 
 	class OafMaskParserMock {
 		constructor() {}
-
+		// eslint-disable-next-line no-unused-vars
 		parse(string) {
 			return [];
 		}

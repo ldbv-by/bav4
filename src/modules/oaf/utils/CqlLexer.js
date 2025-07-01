@@ -5,16 +5,16 @@
 import { CqlOperator } from './oafUtils';
 
 export const CqlTokenType = Object.freeze({
-	ComparisonOperator: 'ComparisonOperator',
-	BinaryOperator: 'BinaryOperator',
-	OpenBracket: 'OpenBracket',
-	ClosedBracket: 'ClosedBracket',
-	Symbol: 'Symbol',
-	String: 'String',
-	Number: 'Number',
-	Boolean: 'Boolean',
-	And: 'And',
-	Or: 'Or'
+	ComparisonOperator: 'comparison_operator',
+	BinaryOperator: 'binary_operator',
+	OpenBracket: 'open_bracket',
+	ClosedBracket: 'closed_bracket',
+	Symbol: 'symbol',
+	String: 'string',
+	Number: 'number',
+	Boolean: 'boolean',
+	And: 'and',
+	Or: 'or'
 });
 
 export const CqlTokenSpecification = Object.freeze([
@@ -37,6 +37,12 @@ export const CqlTokenSpecification = Object.freeze([
 		type: CqlTokenType.BinaryOperator,
 		getValue: () => '=',
 		operatorName: CqlOperator.EQUALS
+	},
+	{
+		regex: /<>/,
+		type: CqlTokenType.BinaryOperator,
+		getValue: () => '<>',
+		operatorName: CqlOperator.NOT_EQUALS
 	},
 	{
 		regex: /<=/,
@@ -98,7 +104,10 @@ export const CqlTokenSpecification = Object.freeze([
 	{
 		regex: /'[^']*'/,
 		type: CqlTokenType.String,
-		getValue: (tokenValue) => tokenValue.slice(1, -1) // Remove quotes
+		getValue: (tokenValue, lastToken) => {
+			// LIKE => remove '%...%' otherwise => remove quotes only.
+			return lastToken?.operatorName === CqlOperator.LIKE ? tokenValue.slice(2, -2) : tokenValue.slice(1, -1);
+		}
 	},
 	{
 		regex: /\b[a-zA-Z_][a-zA-Z0-9_]+\b/,
@@ -111,6 +120,7 @@ export class CqlLexer {
 	constructor() {}
 
 	tokenize(string) {
+		let lastToken = null;
 		let cursor = 0;
 		let tokenString = '';
 		const hasTokensLeft = (cursor) => {
@@ -130,19 +140,21 @@ export class CqlLexer {
 					continue;
 				}
 
-				//
 				if (token.type === null) {
 					// Skip this token
 					return getNextToken(cursor + matchedValue.length);
 				}
 
-				return {
+				const resultToken = {
 					type: token.type,
-					value: token.getValue(matchedValue),
+					value: token.getValue(matchedValue, lastToken),
 					startsAt: cursor,
 					endsAt: cursor + matchedValue.length,
 					operatorName: token.operatorName ?? null
 				};
+
+				lastToken = resultToken;
+				return resultToken;
 			}
 
 			throw new Error(`Unrecognized token at position ${cursor}: "${tokenString}"`);

@@ -16,8 +16,6 @@ export class OafMaskParserService {
 	 * @returns
 	 */
 	parse(string, queryables) {
-		console.log(string);
-		console.log(queryables);
 		const connectionTokenTypes = [CqlTokenType.And, CqlTokenType.Or];
 
 		const unconsumedTokens = this.#cqlLexer.tokenize(string);
@@ -46,12 +44,10 @@ export class OafMaskParserService {
 					throw new Error('Closing bracket found without matching opening bracket.');
 				}
 			}
-
-			return bracketDepth === 0;
 		};
 
-		const findQueryableByName = (name) => {
-			return queryables.find((q) => q.name === name);
+		const findQueryableById = (id) => {
+			return queryables.find((q) => q.id === id);
 		};
 
 		const peek = (index) => {
@@ -184,7 +180,7 @@ export class OafMaskParserService {
 		};
 
 		const convertExpressionToOafFilter = (expression) => {
-			const queryable = findQueryableByName(expression.symbol.value);
+			const queryable = findQueryableById(expression.symbol.value);
 
 			if (queryable === undefined) {
 				return null;
@@ -194,26 +190,23 @@ export class OafMaskParserService {
 					return {
 						...createDefaultOafFilter(),
 						operator: getOperatorByName(expression.operator.operatorName),
-						queryable: expression,
+						queryable: queryable,
 						value: expression.literal.value
 					};
 				case CqlTokenType.ComparisonOperator:
 					return {
 						...createDefaultOafFilter(),
 						operator: getOperatorByName(expression.operator.operatorName),
-						queryable: expression,
+						queryable: queryable,
 						minValue: expression.leftLiteral.value,
 						maxValue: expression.rightLiteral.value
 					};
 				default:
-					throw new Error(`Can not convert Expression to OafFilter - Unsupported operator of type: "${singleExpr.operator.type}"`);
+					throw new Error(`Can not convert Expression to OafFilter - Unsupported operator of type: "${expression.operator.type}"`);
 			}
 		};
 
-		if (!validateBrackets()) {
-			return [];
-		}
-
+		validateBrackets();
 		// skip root, since it always is an array with 1 entry.
 		const filterGroupExpressions = parseUnconsumedTokens();
 		const result = [];
@@ -232,7 +225,6 @@ export class OafMaskParserService {
 			result.push(filterGroup);
 		}
 
-		console.log(result);
 		return result;
 	}
 }

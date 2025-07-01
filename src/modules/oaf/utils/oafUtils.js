@@ -121,7 +121,11 @@ export const createCqlExpression = (oafFilterGroups) => {
 
 		for (let j = 0; j < group.oafFilters.length; j++) {
 			const filter = group.oafFilters[j];
-			if (filter.expression === '' || filter.expression === null) continue;
+			filter.expression = createCqlFilterExpression(filter);
+
+			if (filter.expression === '' || filter.expression === null) {
+				continue;
+			}
 
 			if (groupExpression !== '') {
 				groupExpression += ' AND ';
@@ -183,20 +187,20 @@ export const createCqlFilterExpression = (oafFilter) => {
 		return negate ? `NOT(${expression})` : `(${expression})`;
 	};
 
-	const greaterOp = () => {
+	const greaterOp = (withEquals) => {
 		if (!isNumber(value)) {
 			return '';
 		}
 
-		return `(${id} > ${value})`;
+		return `(${id} ${withEquals ? '>=' : '>'} ${value})`;
 	};
 
-	const lessOp = () => {
+	const lessOp = (withEquals) => {
 		if (!isNumber(value)) {
 			return '';
 		}
 
-		return `(${id} < ${value})`;
+		return `(${id} ${withEquals ? '<=' : '<'} ${value})`;
 	};
 
 	const betweenOp = (negate) => {
@@ -213,11 +217,11 @@ export const createCqlFilterExpression = (oafFilter) => {
 		}
 
 		if (exprMinValue !== null && exprMaxValue !== null) {
-			expression = `${id} <= ${exprMinValue} AND ${id} >= ${exprMaxValue}`;
+			expression = `${id} >= ${exprMinValue} AND ${id} <= ${exprMaxValue}`;
 		} else if (exprMinValue !== null) {
-			expression = `${id} <= ${exprMinValue}`;
+			expression = `${id} >= ${exprMinValue}`;
 		} else if (exprMaxValue !== null) {
-			expression = `${id} >= ${exprMaxValue}`;
+			expression = `${id} <= ${exprMaxValue}`;
 		}
 
 		if (expression !== null) {
@@ -237,9 +241,13 @@ export const createCqlFilterExpression = (oafFilter) => {
 		case CqlOperator.NOT_LIKE:
 			return likeOp(true);
 		case CqlOperator.GREATER:
-			return greaterOp();
+			return greaterOp(false);
+		case CqlOperator.GREATER_EQUALS:
+			return greaterOp(true);
 		case CqlOperator.LESS:
-			return lessOp();
+			return lessOp(false);
+		case CqlOperator.LESS_EQUALS:
+			return lessOp(true);
 		case CqlOperator.BETWEEN:
 			return betweenOp(false);
 		case CqlOperator.NOT_BETWEEN:
