@@ -62,7 +62,7 @@ export class LayerService {
 				clearInterval(olLayer.getSource().get(asInternalProperty('updateIntervalId')));
 			} else {
 				/**
-				 *Currently supported GeoResources
+				 * Switch over currently supported GeoResources
 				 */
 				switch (geoResource.getType()) {
 					case GeoResourceTypes.WMS: {
@@ -86,7 +86,7 @@ export class LayerService {
 			}
 		};
 
-		// handle update interval on ba-Layer-level
+		// handle update interval on ba-Layer level
 		olLayer.on('propertychange', (event) => {
 			const property = event.key;
 			if (property === 'updateInterval' && olLayer.get('updateInterval') && olLayer.get('updateInterval') !== event.oldValue) {
@@ -97,7 +97,7 @@ export class LayerService {
 			}
 		});
 
-		// handle update interval on ba-GeoResource-level
+		// handle update interval on ba-GeoResource level
 		if (geoResource.hasUpdateInterval()) {
 			setUpdateIntervalForLayer(geoResource.updateInterval);
 		}
