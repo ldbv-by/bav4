@@ -72,9 +72,8 @@ export class OlStyleService {
 	 * Note: Use only within `olMap` module
 	 * @param {ol.Feature} olFeature the feature to be styled
 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style will be added
-	 * @param {ol.Layer} olLayer the layer of the feature, used for layer-wide color in the default style
 	 */
-	addFeatureStyle(olFeature, olMap, olLayer) {
+	addFeatureStyle(olFeature, olMap) {
 		const styleType = this._detectStyleType(olFeature);
 
 		switch (styleType) {
@@ -94,9 +93,6 @@ export class OlStyleService {
 				break;
 			case OlFeatureStyleTypes.GEOJSON:
 				this._addGeoJSONStyle(olFeature);
-				break;
-			case OlFeatureStyleTypes.DEFAULT:
-				this._addDefaultStyle(olFeature, olLayer);
 				break;
 			case OlFeatureStyleTypes.ROUTING:
 				this._addRoutingStyle(olFeature);
@@ -168,8 +164,9 @@ export class OlStyleService {
 	 * Adds specific stylings (and overlays) for a vector layer in the following manner:
 	 * 1. The {@link module:domain/styles~Style} of the {@link AbstractVectorGeoResource} or the {@link module:store/layers/layers_action~Layer} is applied on the `olVectorLayer`
 	 * 2. The {@link StyleHint} of {@link AbstractVectorGeoResource} is applied on the `olVectorLayer`
+	 * 3. A DefaultStyle is applied to the {@link module:store/layers/layers_action~Layer} if the layer and ANY containing features does not have a style.
 	 * 3. If the `olVectorLayer` contains features, the feature specific styling is applied in the following order:
-	 * 	internal StyleTypes -> {@link module:domain/styles~Style} property of the feature -> {@link module:domain/styles~StyleHint} property of the feature -> the default style
+	 * 	a) internal StyleTypes -> b) {@link module:domain/styles~Style} property of the feature -> c) {@link module:domain/styles~StyleHint} property of the feature
 	 * @param {ol.layer.Vector} olVectorLayer
 	 * @param {ol.Map} olMap
 	 * @param {module:domain/geoResources~AbstractVectorGeoResource} vectorGeoResource
@@ -178,24 +175,24 @@ export class OlStyleService {
 	applyStyle(olVectorLayer, olMap, vectorGeoResource) {
 		this._applyLayerSpecificStyles(vectorGeoResource, olVectorLayer);
 
+		this._applyDefaultStyleOptionally(vectorGeoResource, olVectorLayer);
+
 		return this._applyFeatureSpecificStyles(olVectorLayer, olMap);
 	}
 
-	/**
-	 * Applies the style according to the given {@link module:domain/styles~Style} or {@link module:domain/styles~StyleHint}
-	 * @param {module:domain/geoResources~AbstractVectorGeoResource} vectorGeoResource
-	 * @param {ol.layer.Vector} olVectorLayer
-	 * @returns {ol.layer.Vector}
-	 */
 	_applyLayerSpecificStyles(vectorGeoResource, olVectorLayer) {
 		const style = olVectorLayer.get('style') ?? vectorGeoResource.style;
-		const styleHint = vectorGeoResource.styleHint;
 		if (style?.baseColor) {
-			this._setDefaultColorForLayer(olVectorLayer, hexToRgb(style.baseColor));
+			olVectorLayer
+				.getSource()
+				.getFeatures()
+				.forEach((f) => f.setStyle(null));
+
+			this._setBaseColorForLayer(olVectorLayer, [...hexToRgb(style.baseColor), 0.8]);
 		}
 
-		if (styleHint) {
-			switch (styleHint) {
+		if (vectorGeoResource.hasStyleHint()) {
+			switch (vectorGeoResource.styleHint) {
 				case StyleHint.CLUSTER:
 					olVectorLayer.setStyle(defaultClusterStyleFunction());
 					break;
@@ -208,11 +205,38 @@ export class OlStyleService {
 		return olVectorLayer;
 	}
 
+	_applyDefaultStyleOptionally(vectorGeoResource, olVectorLayer) {
+		const style = olVectorLayer.get('style') ?? vectorGeoResource.style;
+
+		const isLayerStyleDefined = style?.baseColor || vectorGeoResource.hasStyleHint();
+		if (
+			olVectorLayer
+				.getSource()
+				.getFeatures()
+				.some((f) => !f.getStyle()) &&
+			!isLayerStyleDefined
+		) {
+			const color = vectorGeoResource?.sourceType === VectorSourceType.GPX ? this._nextColor() : this._getColorByLayerId(olVectorLayer);
+			olVectorLayer.setStyle(getDefaultStyleFunction(color));
+		}
+		return olVectorLayer;
+	}
+
 	_applyFeatureSpecificStyles(olVectorLayer, olMap) {
 		const styleListeners = [];
 		const olVectorSource = olVectorLayer.getSource();
 
-		const isStyleRequired = (olFeature) => this._detectStyleType(olFeature) !== null;
+		const isStyleRequired = (olFeature) => {
+			const baStyleHint = olFeature.get(asInternalProperty('styleHint'));
+			const baStyle = olFeature.get(asInternalProperty('style'));
+			// no Style required, if we have a styleHint or style as property
+
+			if (!!baStyleHint || !!baStyle) {
+				return false;
+			}
+			return this._detectStyleType(olFeature) !== null;
+		};
+
 		const applyStyles = (feature) => {
 			this._sanitizeStyleFor(feature);
 
@@ -222,7 +246,7 @@ export class OlStyleService {
 			 * up-to-date with the layer.
 			 */
 			if (isStyleRequired(feature)) {
-				this.addFeatureStyle(feature, olMap, olVectorLayer);
+				this.addFeatureStyle(feature, olMap);
 				this.updateFeatureStyle(feature, olMap, this._mapToStyleProperties(olVectorLayer));
 
 				// if we have at least one style requiring feature, we register the styleEvent listener once
@@ -253,7 +277,7 @@ export class OlStyleService {
 
 	_registerStyleEventListeners(olVectorSource, olLayer, olMap) {
 		const addFeatureListenerKey = olVectorSource.on('addfeature', (event) => {
-			this.addFeatureStyle(event.feature, olMap, olLayer);
+			this.addFeatureStyle(event.feature, olMap);
 			this.updateFeatureStyle(event.feature, olMap, this._mapToStyleProperties(olLayer));
 		});
 		const removeFeatureListenerKey = olVectorSource.on('removefeature', (event) => {
@@ -380,27 +404,17 @@ export class OlStyleService {
 		olFeature.setStyle(styleFunction);
 	}
 
-	_addDefaultStyle(olFeature, olLayer) {
-		const isGPX = (layer) => {
-			const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
-			return geoResourceService.byId(layer.get('geoResourceId'))?.sourceType === VectorSourceType.GPX;
-		};
+	_getColorByLayerId(layer) {
+		const id = getUid(layer);
+		if (this.#defaultColorByLayerId[id] === undefined) {
+			this.#defaultColorByLayerId[id] = this._nextColor();
+		}
 
-		const getColorByLayerId = (layer) => {
-			const id = getUid(layer);
-			if (this.#defaultColorByLayerId[id] === undefined) {
-				this.#defaultColorByLayerId[id] = this._nextColor();
-			}
-			return [...this.#defaultColorByLayerId[id]];
-		};
-
-		const color = olLayer && !isGPX(olLayer) ? getColorByLayerId(olLayer) : this._nextColor();
-		olFeature.setStyle(getDefaultStyleFunction(color));
+		return [...this.#defaultColorByLayerId[id]];
 	}
 
-	_setDefaultColorForLayer(olLayer, color) {
-		const id = getUid(olLayer);
-		this.#defaultColorByLayerId[id] = color;
+	_setBaseColorForLayer(olLayer, color) {
+		olLayer.setStyle(getDefaultStyleFunction(color));
 	}
 
 	_addGeoJSONStyle(olFeature) {
@@ -524,18 +538,8 @@ export class OlStyleService {
 			return styleType ?? null;
 		};
 
-		const defaultOrNull = (olFeature) => {
-			if (olFeature.getStyle() === null) {
-				// no Style required, if we have a styleHint or style as property
-				const baStyleHint = olFeature.get(asInternalProperty('styleHint'));
-				const baStyle = olFeature.get(asInternalProperty('style'));
-				return !baStyleHint && !baStyle ? OlFeatureStyleTypes.DEFAULT : null;
-			}
-			return null;
-		};
-
 		if (olFeature) {
-			for (const styleTypeFunction of [getStyleTypeFromId, getStyleTypeFromProperties, getStyleTypeFromTypeAttribute, defaultOrNull]) {
+			for (const styleTypeFunction of [getStyleTypeFromId, getStyleTypeFromProperties, getStyleTypeFromTypeAttribute]) {
 				const styleType = styleTypeFunction(olFeature);
 				if (styleType) {
 					return styleType;
