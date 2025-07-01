@@ -30,10 +30,12 @@ import { $injector } from '../../../src/injection/index.js';
 describe('defaultLayerProperties', () => {
 	it('returns an object containing default layer properties', () => {
 		const defaultLayerProperties = createDefaultLayerProperties();
+		expect(Object.keys(defaultLayerProperties).length).toBe(9);
 		expect(defaultLayerProperties.visible).toBeTrue();
 		expect(defaultLayerProperties.opacity).toBe(1);
 		expect(defaultLayerProperties.zIndex).toBe(-1);
 		expect(defaultLayerProperties.state).toEqual(LayerState.OK);
+		expect(defaultLayerProperties.props).toEqual({});
 		expect(defaultLayerProperties.style).toBeNull();
 		expect(defaultLayerProperties.timestamp).toBeNull();
 		expect(defaultLayerProperties.grChangedFlag).toBeNull();
@@ -155,6 +157,7 @@ describe('layersReducer', () => {
 			expect(store.getState().layers.active[0].opacity).toBe(1);
 			expect(store.getState().layers.active[0].timestamp).toBeNull();
 			expect(store.getState().layers.active[0].state).toEqual(LayerState.OK);
+			expect(store.getState().layers.active[0].props).toEqual({});
 			expect(store.getState().layers.active[0].style).toBeNull();
 			expect(store.getState().layers.active[0].constraints).toEqual(createDefaultLayersConstraints());
 
@@ -322,9 +325,10 @@ describe('layersReducer', () => {
 				const visible = false;
 				const timestamp = '1900';
 				const state = LayerState.INCOMPLETE_DATA;
+				const props = { featureCount: 5 };
 				const style = { baseColor: '#4287f5' };
 				const constraints = { ...createDefaultLayersConstraints(), hidden: true };
-				addLayer('id0', { geoResourceId, opacity, visible, timestamp, state, style, constraints });
+				addLayer('id0', { geoResourceId, opacity, visible, timestamp, state, style, props, constraints });
 
 				cloneAndAddLayer('id0', 'id0Clone');
 
@@ -338,6 +342,7 @@ describe('layersReducer', () => {
 				expect(store.getState().layers.active[1].visible).toBe(visible);
 				expect(store.getState().layers.active[1].timestamp).toBe(timestamp);
 				expect(store.getState().layers.active[1].state).toBe(state);
+				expect(store.getState().layers.active[1].props).toEqual(props);
 				expect(store.getState().layers.active[1].style).toEqual(style);
 				expect(store.getState().layers.active[1].constraints).toEqual(constraints);
 			});
@@ -367,6 +372,7 @@ describe('layersReducer', () => {
 				expect(store.getState().layers.active[0].visible).toBe(visible);
 				expect(store.getState().layers.active[0].timestamp).toBe(timestamp);
 				expect(store.getState().layers.active[0].state).toBe(LayerState.OK);
+				expect(store.getState().layers.active[0].props).toEqual({});
 				expect(store.getState().layers.active[0].constraints).toEqual(constraints);
 			});
 		});
@@ -667,6 +673,21 @@ describe('layersReducer', () => {
 			modifyLayer('id0', { state: LayerState.OK });
 
 			expect(store.getState().layers.active[0].state).toBe(LayerState.OK);
+		});
+
+		it("modifies the 'props' property of a layer", () => {
+			const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', props: { featureCount: 7 } };
+			const store = setup({
+				layers: {
+					active: index([layerProperties0])
+				}
+			});
+
+			expect(store.getState().layers.active[0].props.featureCount).toBe(7);
+
+			modifyLayer('id0', { props: { featureCount: 3 } });
+
+			expect(store.getState().layers.active[0].props.featureCount).toBe(3);
 		});
 
 		it("modifies the 'style' property of a layer", () => {

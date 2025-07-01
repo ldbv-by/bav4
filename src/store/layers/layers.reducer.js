@@ -87,6 +87,7 @@ export const createDefaultLayerProperties = () => ({
 	opacity: 1,
 	timestamp: null,
 	state: LayerState.OK,
+	props: {},
 	style: null,
 	constraints: createDefaultLayersConstraints(),
 	grChangedFlag: null

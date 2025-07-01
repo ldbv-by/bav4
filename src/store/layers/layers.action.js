@@ -16,13 +16,8 @@ import { isString } from '../../utils/checks';
 
 /**
  * Represents a layer on a map or globe.
- * See {@link LayerProperties} for its properties.
+ *
  * @typedef {Object} Layer
- */
-
-/**
- * Properties of a {@link Layer}.
- * @typedef {Object} LayerProperties
  * @property {string} id Id of this layer
  * @property {string} geoResourceId  Id of the linked GeoResource. If not set, it will take the Id of this layer as value
  * @property {number} [opacity=1] Opacity (0, 1)
@@ -30,8 +25,9 @@ import { isString } from '../../utils/checks';
  * @property {string} [timestamp=null] Timestamp
  * @property {number} [zIndex]  Index of this layer within the list of active layers. When not set, the layer will be appended at the end
  * @property {LayerState} [state=LayerState.OK]  The current state of the layer
+ * @property {module:store/layers/layers_action~LayerProps} [props={}] Optional properties of the layer
  * @property {module:domain/styles/Style} [style=null]  The current style of the layer
- * @property {Constraints} [constraints] Constraints of the layer
+ * @property {module:store/layers/layers_action~Constraints} [constraints] Constraints of the layer
  * @property {module:utils/storeUtils.EventLike<String|null>} [grChangedFlag] Flag that indicates a change of the linked GeoResource
  */
 
@@ -47,6 +43,12 @@ import { isString } from '../../utils/checks';
  */
 
 /**
+ * Optional properties of a {@link Layer}.
+ * @typedef {Object} LayerProps
+ * @property {number} [featureCount] Number of features this layer contains
+ */
+
+/**
  * Modifiable options of a {@link Layer}.
  * @typedef {Object} ModifyLayerOptions
  * @property {number} [opacity] The new `opacity` value (0, 1)
@@ -54,6 +56,7 @@ import { isString } from '../../utils/checks';
  * @property {string} [timestamp] The new `timestamp `value
  * @property {number} [zIndex] The new `zIndex` of this layer within the list of active layers
  * @property {LayerState} [state] The new `state` of the layer
+ * @property {LayerProps} [props] The new `properties` of the layer
  * @property {module:domain/styles/Style} [style] The new `style` of the layer
  * @property {boolean} [hidden] The new `hidden` constraint of the layer
  * @property {boolean} [alwaysTop] The new `alwaysTop` constraint of the layer
@@ -79,6 +82,7 @@ import { isString } from '../../utils/checks';
  * @property {string} [timestamp=null] Timestamp
  * @property {number} [zIndex]  Index of this layer within the list of active layers. When not set, the layer will be appended at the end
  * @property {LayerState} [state] The `state` of the layer
+ * @property {LayerProps} [props] The properties of the layer
  * @property {module:domain/styles/Style} [style] The `style` of the layer
  * @property {Constraints} [constraints] Constraints of the layer
  */
@@ -198,6 +202,7 @@ export const cloneAndAddLayer = (id, clonedId, options = {}) => {
 				visible: layer.visible,
 				timestamp: layer.timestamp,
 				state: layer.state,
+				props: { ...layer.props },
 				style: { ...layer.style },
 				zIndex: createDefaultLayerProperties().zIndex,
 				constraints: { ...layer.constraints }
