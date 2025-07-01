@@ -324,7 +324,7 @@ export class GeoResource {
 	}
 
 	/**
-	 * Sets the update interval in seconds for this GeoResource if the GeoResource can be updated by an interval.
+	 * Sets the update interval in seconds for this GeoResource but only if the GeoResource can be updated by an interval.
 	 * @see {GeoResource#isUpdatableByInterval}
 	 * @param {number|null} updateInterval
 	 * @returns {GeoResource} `this` for chaining
@@ -370,7 +370,7 @@ export class GeoResource {
 
 	/**
 	 * Checks if this GeoResource has an update interval.
-	 * @returns {boolean}`true` if has an update interval
+	 * @returns {boolean}`true` if it has an update interval
 	 */
 	hasUpdateInterval() {
 		return !!this._updateInterval;
@@ -378,7 +378,7 @@ export class GeoResource {
 
 	/**
 	 * Checks if this GeoResource is updatable by an interval. Default is `false`.
-	 * Child classes that should be updatable should override this method.
+	 * Child classes that should be updatable must override this method.
 	 * @returns {boolean} `true` if it is updatable by an interval
 	 */
 	isUpdatableByInterval() {
