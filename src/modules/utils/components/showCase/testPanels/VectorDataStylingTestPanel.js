@@ -30,9 +30,7 @@ export class VectorDataStylingTestPanel extends MvuElement {
 		const layerStyle = { baseColor: '#57C785' };
 		const featureStyle = { baseColor: '#2A7B9B' };
 
-		const newFeature = () => {
-			return new BaFeature(new BaGeometry(ewkt, SourceType.forEwkt(3857)), `${createUniqueId()}`);
-		};
+		const newFeature = () => new BaFeature(new BaGeometry(ewkt, SourceType.forEwkt(3857)), `${createUniqueId()}`);
 
 		const addWithoutStyle = () => {
 			const vgr_noStyle = new VectorGeoResource(`${createUniqueId()}`, 'No Style at all').addFeature(newFeature()).setHidden(true);
