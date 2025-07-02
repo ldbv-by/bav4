@@ -14,7 +14,8 @@ export const CqlTokenType = Object.freeze({
 	Number: 'number',
 	Boolean: 'boolean',
 	And: 'and',
-	Or: 'or'
+	Or: 'or',
+	Not: 'not'
 });
 
 export const CqlTokenSpecification = Object.freeze([
@@ -81,6 +82,11 @@ export const CqlTokenSpecification = Object.freeze([
 		operatorName: CqlOperator.BETWEEN
 	},
 	{
+		regex: /\bNOT\b/i,
+		type: CqlTokenType.Not,
+		getValue: () => 'NOT'
+	},
+	{
 		regex: /\bAND\b/i,
 		type: CqlTokenType.And,
 		getValue: () => 'AND'
@@ -97,20 +103,17 @@ export const CqlTokenSpecification = Object.freeze([
 		getValue: (tokenValue) => tokenValue.toLowerCase() === 'true'
 	},
 	{
-		regex: /\d+/,
+		regex: /\b\d+\b/,
 		type: CqlTokenType.Number,
 		getValue: (tokenValue) => Number(tokenValue)
 	},
 	{
 		regex: /'[^']*'/,
 		type: CqlTokenType.String,
-		getValue: (tokenValue, lastToken) => {
-			// LIKE => remove '%...%' otherwise => remove quotes only.
-			return lastToken?.operatorName === CqlOperator.LIKE ? tokenValue.slice(2, -2) : tokenValue.slice(1, -1);
-		}
+		getValue: (tokenValue) => tokenValue.slice(1, -1)
 	},
 	{
-		regex: /\b[a-zA-Z_][a-zA-Z0-9_]+\b/,
+		regex: /\b[a-zA-Z_][a-zA-Z0-9_]*\b/,
 		type: CqlTokenType.Symbol,
 		getValue: (tokenValue) => tokenValue
 	}
@@ -120,7 +123,6 @@ export class CqlLexer {
 	constructor() {}
 
 	tokenize(string) {
-		let lastToken = null;
 		let cursor = 0;
 		let tokenString = '';
 		const hasTokensLeft = (cursor) => {
@@ -129,6 +131,10 @@ export class CqlLexer {
 
 		const getNextToken = (cursor) => {
 			tokenString = string.slice(cursor);
+
+			if (!hasTokensLeft(cursor)) {
+				return null;
+			}
 
 			for (const token of CqlTokenSpecification) {
 				const match = token.regex.exec(tokenString);
@@ -147,13 +153,12 @@ export class CqlLexer {
 
 				const resultToken = {
 					type: token.type,
-					value: token.getValue(matchedValue, lastToken),
+					value: token.getValue(matchedValue),
 					startsAt: cursor,
 					endsAt: cursor + matchedValue.length,
 					operatorName: token.operatorName ?? null
 				};
 
-				lastToken = resultToken;
 				return resultToken;
 			}
 
@@ -161,11 +166,10 @@ export class CqlLexer {
 		};
 
 		const tokens = [];
-
-		while (hasTokensLeft(cursor)) {
-			const token = getNextToken(cursor);
-			cursor = token.endsAt;
-			tokens.push(token);
+		let currentToken;
+		while ((currentToken = getNextToken(cursor)) !== null) {
+			cursor = currentToken.endsAt;
+			tokens.push(currentToken);
 		}
 
 		return tokens;

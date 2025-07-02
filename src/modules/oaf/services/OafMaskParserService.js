@@ -17,7 +17,6 @@ export class OafMaskParserService {
 	 */
 	parse(string, queryables) {
 		const connectionTokenTypes = [CqlTokenType.And, CqlTokenType.Or];
-
 		const unconsumedTokens = this.#cqlLexer.tokenize(string);
 		if (unconsumedTokens.length === 0) {
 			return [];
@@ -44,6 +43,10 @@ export class OafMaskParserService {
 					throw new Error('Closing bracket found without matching opening bracket.');
 				}
 			}
+
+			if (bracketDepth !== 0) {
+				throw new Error('Brackets are not balanced. There are more opening brackets than closing brackets.');
+			}
 		};
 
 		const findQueryableById = (id) => {
@@ -51,7 +54,7 @@ export class OafMaskParserService {
 		};
 
 		const peek = (index) => {
-			return index < unconsumedTokens.length ? unconsumedTokens[index] : null;
+			return unconsumedTokens[index];
 		};
 
 		const consume = () => {
@@ -68,14 +71,6 @@ export class OafMaskParserService {
 			return symbol;
 		};
 
-		const consumeOperator = () => {
-			const operator = consume();
-			if (![CqlTokenType.BinaryOperator, CqlTokenType.ComparisonOperator].includes(operator.type)) {
-				throw new Error(`Expected an operator type but got "${operator.type}".`);
-			}
-			return operator;
-		};
-
 		const consumeLiteral = () => {
 			const literal = consume();
 			if (![CqlTokenType.String, CqlTokenType.Number, CqlTokenType.Boolean].includes(literal.type)) {
@@ -84,8 +79,19 @@ export class OafMaskParserService {
 			return literal;
 		};
 
+		const consumeNotIfPresent = () => {
+			const not = peek(0);
+			if (not.type === CqlTokenType.Not) {
+				consume(); // Consume not
+				consume(); // Consume open bracket
+				return not;
+			}
+
+			return null;
+		};
+
 		const parseBinaryExpression = () => {
-			const expr = { symbol: consumeSymbol(), operator: consumeOperator(), literal: consumeLiteral() };
+			const expr = { symbol: consumeSymbol(), operator: consume(), literal: consumeLiteral() };
 
 			if (peek(1).type === CqlTokenType.Symbol && peek(2).type === CqlTokenType.BinaryOperator) {
 				const andToken = consume(); // Ignore AND/OR token
@@ -94,11 +100,11 @@ export class OafMaskParserService {
 				}
 
 				const secondSymbol = consumeSymbol();
-				const secondOperator = consumeOperator();
+				const secondOperator = consume();
 				const secondLiteral = consumeLiteral();
 
 				if (expr.symbol.value !== secondSymbol.value) {
-					throw new Error(`Expected symbol "${expr.symbol.value}" but got "${secondSymbol.value}".`);
+					throw new Error(`Expected a symbol named "${expr.symbol.value}" but got "${secondSymbol.value}".`);
 				}
 
 				const operatorCombinationString = expr.operator.value + secondOperator.value;
@@ -121,7 +127,7 @@ export class OafMaskParserService {
 
 		const parseComparisonExpression = () => {
 			const symbol = consumeSymbol();
-			const operator = consumeOperator();
+			const operator = consume();
 			const literal = consumeLiteral();
 
 			const andToken = consume();
@@ -134,15 +140,16 @@ export class OafMaskParserService {
 		};
 
 		const parseExpression = () => {
+			const not = consumeNotIfPresent();
 			const peekedOperator = peek(1);
 
 			if (peekedOperator.type === CqlTokenType.BinaryOperator) {
-				return parseBinaryExpression();
+				return { not: not, ...parseBinaryExpression() };
 			} else if (peekedOperator.type === CqlTokenType.ComparisonOperator) {
-				return parseComparisonExpression();
+				return { not: not, ...parseComparisonExpression() };
 			}
 
-			throw new Error(`Unable to parse Expression. Operator of type "${peekedOperator.type}" is not supported.`);
+			throw new Error(`Expected an operator type but got "${peekedOperator.type}".`);
 		};
 
 		const parseUnconsumedTokens = () => {
@@ -175,32 +182,47 @@ export class OafMaskParserService {
 				}
 			}
 
-			// return recursion root (contains 1 element otherwise can not build UI from it).
-			return group.length < 1 ? [] : group[0];
+			// return root (contains 1 element holding filter groups and expressions).
+			return group[0];
 		};
 
 		const convertExpressionToOafFilter = (expression) => {
 			const queryable = findQueryableById(expression.symbol.value);
+			const operatorName = expression.not !== null ? CqlOperator.NOT + expression.operator.operatorName : expression.operator.operatorName;
 
 			if (queryable === undefined) {
 				return null;
 			}
+
 			switch (expression.operator.type) {
-				case CqlTokenType.BinaryOperator:
-					return {
+				case CqlTokenType.BinaryOperator: {
+					const oafFilter = {
 						...createDefaultOafFilter(),
-						operator: getOperatorByName(expression.operator.operatorName),
+						operator: getOperatorByName(operatorName),
 						queryable: queryable,
 						value: expression.literal.value
 					};
-				case CqlTokenType.ComparisonOperator:
+
+					// Special Case "Contains" instead of "LIKE" as Operator.
+					if (
+						expression.operator.operatorName === CqlOperator.LIKE &&
+						oafFilter.value.charAt(0) === '%' &&
+						oafFilter.value.charAt(oafFilter.length - 1)
+					) {
+						oafFilter.value = oafFilter.value.slice(1, -1);
+					}
+
+					return oafFilter;
+				}
+				case CqlTokenType.ComparisonOperator: {
 					return {
 						...createDefaultOafFilter(),
-						operator: getOperatorByName(expression.operator.operatorName),
+						operator: getOperatorByName(operatorName),
 						queryable: queryable,
 						minValue: expression.leftLiteral.value,
 						maxValue: expression.rightLiteral.value
 					};
+				}
 				default:
 					throw new Error(`Can not convert Expression to OafFilter - Unsupported operator of type: "${expression.operator.type}"`);
 			}

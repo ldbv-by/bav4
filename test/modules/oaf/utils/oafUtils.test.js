@@ -15,8 +15,17 @@ import { OafQueryableType } from '../../../../src/domain/oaf';
 window.customElements.define(OafFilter.tag, OafFilter);
 
 describe('oafUtils', () => {
-	const allOperators = ['equals', 'not_equals', 'like', 'not_like', 'greater', 'greater_equals', 'less', 'less_equals', 'between', 'not_between'];
-	const numberOperators = ['equals', 'not_equals', 'greater', 'greater_equals', 'less', 'less_equals', 'between', 'not_between'];
+	const allOperators = Object.values(CqlOperator).filter((o) => o !== CqlOperator.NOT);
+	const numberOperators = [
+		CqlOperator.EQUALS,
+		CqlOperator.NOT_EQUALS,
+		CqlOperator.GREATER,
+		CqlOperator.GREATER_EQUALS,
+		CqlOperator.LESS,
+		CqlOperator.LESS_EQUALS,
+		CqlOperator.BETWEEN,
+		CqlOperator.NOT_BETWEEN
+	];
 
 	const createQueryable = (id, type) => {
 		return {
@@ -34,7 +43,7 @@ describe('oafUtils', () => {
 
 	describe('Enum CqlOperator', () => {
 		it('provides an enum of all known CqlOperator types', () => {
-			expect(Object.keys(CqlOperator).length).toBe(10);
+			expect(Object.keys(CqlOperator).length).toBe(11);
 			expect(Object.isFrozen(CqlOperator)).toBeTrue();
 
 			expect(CqlOperator.EQUALS).toBe('equals');
@@ -49,10 +58,11 @@ describe('oafUtils', () => {
 
 			expect(CqlOperator.BETWEEN).toBe('between');
 			expect(CqlOperator.NOT_BETWEEN).toBe('not_between');
+			expect(CqlOperator.NOT).toBe('not_');
 		});
 
 		it('has a operator definition for every CqlOperator type', () => {
-			expect(Object.keys(CqlOperator).length).toBe(getOperatorDefinitions().length);
+			expect(allOperators.length).toBe(getOperatorDefinitions().length);
 			expect(getOperatorByName(CqlOperator.EQUALS)).toEqual(jasmine.objectContaining({ name: CqlOperator.EQUALS }));
 			expect(getOperatorByName(CqlOperator.NOT_EQUALS)).toEqual(jasmine.objectContaining({ name: CqlOperator.NOT_EQUALS }));
 			expect(getOperatorByName(CqlOperator.LIKE)).toEqual(jasmine.objectContaining({ name: CqlOperator.LIKE }));

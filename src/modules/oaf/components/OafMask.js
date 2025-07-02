@@ -209,12 +209,15 @@ export class OafMask extends MvuElement {
 		const layer = this._getLayer();
 		const geoResource = this.#geoResourceService.byId(layer.geoResourceId);
 		const capabilities = await this.#importOafService.getFilterCapabilities(geoResource);
+		const cqlString = layer.constraints.filter;
+
 		this.#capabilitiesLoaded = true;
-		console.log(layer);
-		const testCql =
-			"(((name LIKE '%Lutzgarte%') AND (plz <= 214 AND plz >= 1222) AND (outdoor_seating = false) AND (open = '11:30:00')) OR ((outdoor_seating = true) AND (open = '09:00:00') AND (plz < 242)))";
-		this.#parserService.parse(testCql);
 		this.signal(Update_Capabilities, capabilities);
+
+		if (cqlString && capabilities.queryables.length > 0) {
+			const parsedFilterGroups = this.#parserService.parse(cqlString, capabilities.queryables);
+			this.signal(Update_Filter_Groups, parsedFilterGroups);
+		}
 	}
 
 	get layerId() {

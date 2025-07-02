@@ -20,7 +20,8 @@ export const CqlOperator = Object.freeze({
 	GREATER: 'greater',
 	GREATER_EQUALS: 'greater_equals',
 	LESS: 'less',
-	LESS_EQUALS: 'less_equals'
+	LESS_EQUALS: 'less_equals',
+	NOT: 'not_'
 });
 
 const operators = Object.freeze([
