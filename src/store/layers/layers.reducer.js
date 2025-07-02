@@ -74,7 +74,15 @@ export const createDefaultLayer = (id, geoResourceId = id) => {
  * @returns Constraints
  */
 export const createDefaultLayersConstraints = () => {
-	return { alwaysTop: false, hidden: false, cloneable: true, metaData: true, filter: null, swipeAlignment: SwipeAlignment.NOT_SET };
+	return {
+		alwaysTop: false,
+		hidden: false,
+		cloneable: true,
+		metaData: true,
+		filter: null,
+		swipeAlignment: SwipeAlignment.NOT_SET,
+		updateInterval: null
+	};
 };
 
 /**

@@ -94,6 +94,7 @@ export class GeoResource {
 		this._exportable = true;
 		this._authRoles = [];
 		this._timestamps = [];
+		this._updateInterval = null;
 	}
 
 	checkDefined(value, name) {
@@ -190,6 +191,13 @@ export class GeoResource {
 		return [...this._timestamps];
 	}
 
+	/**
+	 * The update interval in seconds for this GeoResource
+	 * @type {number}
+	 */
+	get updateInterval() {
+		return this._updateInterval;
+	}
 	/**
 	 * Returns a list of roles which are allowed to access this GeoResource.
 	 * An empty array means any user can access this GeoResource.
@@ -316,6 +324,19 @@ export class GeoResource {
 	}
 
 	/**
+	 * Sets the update interval in seconds for this GeoResource but only if the GeoResource can be updated by an interval.
+	 * @see {GeoResource#isUpdatableByInterval}
+	 * @param {number|null} updateInterval
+	 * @returns {GeoResource} `this` for chaining
+	 */
+	setUpdateInterval(updateInterval) {
+		if (this.isUpdatableByInterval()) {
+			this._updateInterval = updateInterval;
+		}
+		return this;
+	}
+
+	/**
 	 * Set the roles for authentication/authorization of this GeoResource
 	 * and updates its authentication type.
 	 * @param {Array<string>} roles Roles of this GeoResource
@@ -345,6 +366,23 @@ export class GeoResource {
 	 */
 	hasTimestamps() {
 		return this._timestamps.length > 0;
+	}
+
+	/**
+	 * Checks if this GeoResource has an update interval.
+	 * @returns {boolean}`true` if it has an update interval
+	 */
+	hasUpdateInterval() {
+		return !!this._updateInterval;
+	}
+
+	/**
+	 * Checks if this GeoResource is updatable by an interval. Default is `false`.
+	 * Child classes that should be updatable must override this method.
+	 * @returns {boolean} `true` if it is updatable by an interval
+	 */
+	isUpdatableByInterval() {
+		return false;
 	}
 
 	/**
@@ -398,6 +436,7 @@ export class GeoResource {
 			.setQueryable(geoResource.queryable)
 			.setExportable(geoResource.exportable)
 			.setTimestamps(geoResource.timestamps)
+			.setUpdateInterval(geoResource.updateInterval)
 			.setAuthRoles(geoResource.authRoles)
 			.setAuthenticationType(geoResource.authenticationType);
 	}
@@ -541,6 +580,13 @@ export class WmsGeoResource extends GeoResource {
 			this._maxSize = [...maxSize];
 		}
 		return this;
+	}
+
+	/**
+	 * @override
+	 */
+	isUpdatableByInterval() {
+		return true;
 	}
 
 	/**
@@ -830,6 +876,10 @@ export class VectorGeoResource extends AbstractVectorGeoResource {
 		return !!this._label || this.label !== this._getFallbackLabel();
 	}
 
+	/**
+	 *
+	 * @returns {boolean} `true` when the data are local data (e.g. imported locally by the user)
+	 */
 	get localData() {
 		return this._localData;
 	}
@@ -842,6 +892,13 @@ export class VectorGeoResource extends AbstractVectorGeoResource {
 	markAsLocalData(localData) {
 		this._localData = localData;
 		return this;
+	}
+
+	/**
+	 * @override
+	 */
+	isUpdatableByInterval() {
+		return !this.localData;
 	}
 
 	/**
@@ -996,6 +1053,13 @@ export class OafGeoResource extends AbstractVectorGeoResource {
 	 */
 	hasLimit() {
 		return !!this._limit;
+	}
+
+	/**
+	 * @override
+	 */
+	isUpdatableByInterval() {
+		return true;
 	}
 
 	/**

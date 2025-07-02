@@ -117,6 +117,27 @@ describe('GeoResource', () => {
 				expect(new GeoResourceImpl('id').setTimestamps(['0']).hasTimestamps()).toBeTrue();
 			});
 
+			it('provides a check for containing an update interval', () => {
+				class UpdatableGeoResourceImpl extends GeoResource {
+					constructor(id, label) {
+						super(id, label);
+					}
+
+					isUpdatableByInterval() {
+						return true;
+					}
+				}
+
+				expect(new GeoResourceImpl('id').hasUpdateInterval()).toBeFalse();
+				expect(new GeoResourceImpl('id').setUpdateInterval(null).hasUpdateInterval()).toBeFalse();
+				expect(new GeoResourceImpl('id').setUpdateInterval(100).hasUpdateInterval()).toBeFalse();
+				expect(new UpdatableGeoResourceImpl('id').setUpdateInterval(100).hasUpdateInterval()).toBeTrue();
+			});
+
+			it('provides a check if it is upgradable by an interval', () => {
+				expect(new GeoResourceImpl('id').isUpdatableByInterval()).toBeFalse();
+			});
+
 			it('sets the attribution provider', () => {
 				const provider = jasmine.createSpy();
 				const grs = new GeoResourceImpl('id');
@@ -199,10 +220,19 @@ describe('GeoResource', () => {
 			});
 
 			it('copies the properties from another GeoResource', () => {
+				class UpdatableGeoResourceImpl extends GeoResource {
+					constructor(id, label) {
+						super(id, label);
+					}
+
+					isUpdatableByInterval() {
+						return true;
+					}
+				}
 				const attributionProvider = () => {};
 				const roles = ['TEST'];
 				const timestamps = ['2001231'];
-				const geoResource0 = new GeoResourceNoImpl('id0');
+				const geoResource0 = new UpdatableGeoResourceImpl('id0');
 				geoResource0
 					.setOpacity(0.5)
 					.setMinZoom(5)
@@ -215,8 +245,9 @@ describe('GeoResource', () => {
 					.setExportable(false)
 					.setAuthRoles(roles)
 					.setAuthenticationType(GeoResourceAuthenticationType.BAA)
-					.setTimestamps(timestamps);
-				const geoResource1 = new GeoResourceNoImpl('id1');
+					.setTimestamps(timestamps)
+					.setUpdateInterval(100);
+				const geoResource1 = new UpdatableGeoResourceImpl('id1');
 
 				geoResource1.copyPropertiesFrom(geoResource0);
 
@@ -233,6 +264,7 @@ describe('GeoResource', () => {
 				expect(geoResource1.authRoles).toEqual(roles);
 				expect(geoResource1.authRoles === roles).toBeFalse(); //must be a shallow copy
 				expect(geoResource1.timestamps).toEqual(timestamps);
+				expect(geoResource1.updateInterval).toBe(100);
 			});
 
 			describe('setAuthRoles', () => {
@@ -278,6 +310,7 @@ describe('GeoResource', () => {
 				expect(geoResource.exportable).toBeTrue();
 				expect(geoResource.authRoles).toEqual([]);
 				expect(geoResource.timestamps).toEqual([]);
+				expect(geoResource.updateInterval).toBeNull();
 			});
 
 			it('provides set methods and getters', () => {
@@ -417,16 +450,30 @@ describe('GeoResource', () => {
 			expect(wmsGeoResource.maxSize).toBeNull();
 		});
 
-		it('provides set methods and getters', () => {
-			const wmsGeoResource = new WmsGeoResource('id', 'label', 'url', 'layers', 'format').setExtraParams(null).setMaxSize(null);
+		describe('methods', () => {
+			it('checks if it is updatable by an interval', () => {
+				expect(new WmsGeoResource('id', 'label', 'url', 'layers', 'format').isUpdatableByInterval()).toBeTrue();
+			});
 
-			expect(wmsGeoResource.extraParams).toEqual({});
-			expect(wmsGeoResource.maxSize).toBeNull();
+			it('sets the `maxSize`', () => {
+				const wmsGeoResource = new WmsGeoResource('id', 'label', 'url', 'layers', 'format').setMaxSize(null);
 
-			wmsGeoResource.setExtraParams({ foo: 'bar' }).setMaxSize([21, 42]);
+				expect(wmsGeoResource.maxSize).toBeNull();
 
-			expect(wmsGeoResource.extraParams).toEqual({ foo: 'bar' });
-			expect(wmsGeoResource.maxSize).toEqual([21, 42]);
+				wmsGeoResource.setMaxSize([21, 42]);
+
+				expect(wmsGeoResource.maxSize).toEqual([21, 42]);
+			});
+
+			it('sets `extraParams`', () => {
+				const wmsGeoResource = new WmsGeoResource('id', 'label', 'url', 'layers', 'format').setExtraParams(null);
+
+				expect(wmsGeoResource.extraParams).toEqual({});
+
+				wmsGeoResource.setExtraParams({ foo: 'bar' });
+
+				expect(wmsGeoResource.extraParams).toEqual({ foo: 'bar' });
+			});
 		});
 	});
 
@@ -571,6 +618,11 @@ describe('GeoResource', () => {
 		});
 
 		describe('methods', () => {
+			it('checks if it is updatable by an interval', () => {
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).isUpdatableByInterval()).toBeTrue();
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).markAsLocalData(true).isUpdatableByInterval()).toBeFalse();
+			});
+
 			it('sets the source of an internal VectorGeoResource by a string', () => {
 				const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setSource('someData', 1234);
 
@@ -671,6 +723,10 @@ describe('GeoResource', () => {
 		});
 
 		describe('methods', () => {
+			it('checks if it is updatable by an interval', () => {
+				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).isUpdatableByInterval()).toBeTrue();
+			});
+
 			it('sets the limit', () => {
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).hasLimit()).toBeFalse();
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).setLimit('1000')).toBeNull;
