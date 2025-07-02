@@ -1,9 +1,14 @@
 /**
- * @module modules/oaf/utils/CqlTokenizer
+ * @module modules/oaf/utils/CqlLexer
  */
 
 import { CqlOperator } from './oafUtils';
 
+/**
+ * Available Token Types the lexer can interpret
+ * @readonly
+ * @enum {string}
+ */
 export const CqlTokenType = Object.freeze({
 	ComparisonOperator: 'comparison_operator',
 	BinaryOperator: 'binary_operator',
@@ -18,7 +23,7 @@ export const CqlTokenType = Object.freeze({
 	Not: 'not'
 });
 
-export const CqlTokenSpecification = Object.freeze([
+const CqlTokenSpecification = Object.freeze([
 	{
 		regex: /\s+/,
 		type: null // Null types are skipped in tokenizer
@@ -119,6 +124,11 @@ export const CqlTokenSpecification = Object.freeze([
 	}
 ]);
 
+/**
+ * Tokenizes a given cql string
+ * @class
+ * @author herrmutig
+ */
 export class CqlLexer {
 	constructor() {}
 

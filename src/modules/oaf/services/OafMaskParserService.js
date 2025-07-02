@@ -1,6 +1,14 @@
+/**
+ * @module modules/oaf/services/OafMaskParserService
+ */
 import { CqlLexer, CqlTokenType } from '../utils/CqlLexer';
 import { CqlOperator, createDefaultFilterGroup, createDefaultOafFilter, getOperatorByName } from '../utils/oafUtils';
 
+/**
+ * Service to parse cql strings and convert them to a filter array, consumable by {@link OafMask}.
+ * @class
+ * @author herrmutig
+ */
 export class OafMaskParserService {
 	#cqlLexer;
 
@@ -9,11 +17,10 @@ export class OafMaskParserService {
 	}
 
 	/**
-	 * parses a cql string with the schema: ( ( () AND (
-	 * ) ) OR (...) )
-	 * and returns a ui filter object that can be consumed by OafMask component
-	 * @param {*} string
-	 * @returns
+	 * parses a cql string with the schema ([group([expression] AND [expression])] OR [group([expression] AND [expression])]).
+	 *
+	 * @param {string} string the cql string to parse
+	 * @returns {Array} An array of filters that can be consumed by {@link OafMask}
 	 */
 	parse(string, queryables) {
 		const connectionTokenTypes = [CqlTokenType.And, CqlTokenType.Or];
