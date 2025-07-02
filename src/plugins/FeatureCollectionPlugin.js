@@ -48,7 +48,7 @@ export class FeatureCollectionPlugin extends BaPlugin {
 			removeLayer(FEATURE_COLLECTION_LAYER_ID);
 			if (entries.length > 0) {
 				this.#geoResourceService.addOrReplace(
-					new VectorGeoResource(FEATURE_COLLECTION_GEORESOURCE_ID, `${translate('global_featureCollection_layer_label')} (${entries.length})`)
+					new VectorGeoResource(FEATURE_COLLECTION_GEORESOURCE_ID, `${translate('global_featureCollection_layer_label')}`)
 						.setFeatures(entries)
 						.markAsLocalData(true)
 						.setHidden(true)
