@@ -132,6 +132,11 @@ const CqlTokenSpecification = Object.freeze([
 export class CqlLexer {
 	constructor() {}
 
+	/**
+	 * tokenizes/lexes a given cql string.
+	 * @param {string} string
+	 * @returns { Array }
+	 */
 	tokenize(string) {
 		let cursor = 0;
 		let tokenString = '';

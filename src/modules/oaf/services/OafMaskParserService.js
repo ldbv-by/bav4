@@ -166,7 +166,6 @@ export class OafMaskParserService {
 				let token = peek(0);
 
 				while (unconsumedTokens.length > 0 && token.type !== CqlTokenType.OpenBracket && token.type !== CqlTokenType.ClosedBracket) {
-					// Skip Ands and Ors because the resulting data is structured to distinguish between them.
 					if (connectionTokenTypes.includes(peek(0).type)) {
 						consume();
 						token = peek(0);
