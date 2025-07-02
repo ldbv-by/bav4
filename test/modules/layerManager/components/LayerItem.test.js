@@ -150,7 +150,7 @@ describe('LayerItem', () => {
 			expect(badge.label).toBe('keyword0');
 		});
 
-		it('displays the layer.state by a notify-icon', async () => {
+		it('displays the layer.state for INCOMPLETE_DATA by a notify-icon', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
 				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
@@ -169,6 +169,7 @@ describe('LayerItem', () => {
 			const iconElement = element.shadowRoot.querySelector('ba-icon.layer-state-icon');
 
 			expect(iconElement.title).toBe('layerManager_title_layerState_incomplete_data');
+			expect(iconElement.color).toBe('var(--warning-color)');
 
 			const event = new Event('click');
 			const preventDefaultSpy = spyOn(event, 'preventDefault');
@@ -181,6 +182,95 @@ describe('LayerItem', () => {
 			//check notification
 			expect(store.getState().notifications.latest.payload.content).toBe(iconElement.title);
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+		});
+
+		it('displays the layer.state for ERROR by a notify-icon', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			spyOn(geoResourceService, 'getKeywords').withArgs('geoResourceId0').and.returnValue(['keyword0']);
+
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				state: LayerState.ERROR
+			};
+			const element = await setup(layer);
+			const iconElement = element.shadowRoot.querySelector('ba-icon.layer-state-icon');
+
+			expect(iconElement.title).toBe('layerManager_title_layerState_error');
+			expect(iconElement.color).toBe('var(--error-color)');
+
+			const event = new Event('click');
+			const preventDefaultSpy = spyOn(event, 'preventDefault');
+			const stopPropagationSpy = spyOn(event, 'stopPropagation');
+
+			iconElement.dispatchEvent(event);
+
+			expect(preventDefaultSpy).toHaveBeenCalled();
+			expect(stopPropagationSpy).toHaveBeenCalled();
+			//check notification
+			expect(store.getState().notifications.latest.payload.content).toBe(iconElement.title);
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+		});
+
+		it('displays the layer.state for LOADING by a notify-icon', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			spyOn(geoResourceService, 'getKeywords').withArgs('geoResourceId0').and.returnValue(['keyword0']);
+
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				state: LayerState.LOADING
+			};
+			const element = await setup(layer);
+			const iconElement = element.shadowRoot.querySelector('ba-icon.layer-state-icon');
+
+			expect(iconElement.title).toBe('layerManager_title_layerState_loading');
+			expect(iconElement.color).toBe('var(--primary-color)');
+
+			const event = new Event('click');
+			const preventDefaultSpy = spyOn(event, 'preventDefault');
+			const stopPropagationSpy = spyOn(event, 'stopPropagation');
+
+			iconElement.dispatchEvent(event);
+
+			expect(preventDefaultSpy).toHaveBeenCalled();
+			expect(stopPropagationSpy).toHaveBeenCalled();
+			//check notification
+			expect(store.getState().notifications.latest.payload.content).toBe(iconElement.title);
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+		});
+
+		it('does NOT displays the layer.state for LayerState.OK by a notify-icon', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			spyOn(geoResourceService, 'getKeywords').withArgs('geoResourceId0').and.returnValue(['keyword0']);
+
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				state: LayerState.OK
+			};
+			const element = await setup(layer);
+			const iconElement = element.shadowRoot.querySelector('ba-icon.layer-state-icon');
+
+			expect(iconElement).toBeNull();
 		});
 
 		it('use layer.label property in checkbox-title ', async () => {

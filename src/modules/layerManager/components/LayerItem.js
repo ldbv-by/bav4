@@ -12,6 +12,7 @@ import cloneSvg from './assets/clone.svg';
 import zoomToExtentSvg from './assets/zoomToExtent.svg';
 import removeSvg from './assets/trash.svg';
 import exclamationTriangleSvg from './assets/exclamation-triangle-fill.svg';
+import loadingSvg from './assets/loading.svg';
 import infoSvg from '../../../assets/icons/info.svg';
 import timeSvg from '../../../assets/icons/time.svg';
 import oafSettingsSvg from './assets/oafSetting.svg';
@@ -183,25 +184,54 @@ export class LayerItem extends AbstractMvuContentPanel {
 			return keywords.length === 0 ? nothing : toBadges(keywords);
 		};
 
+		const onClickStateHint = (e, stateProperties) => {
+			e.preventDefault();
+			e.stopPropagation();
+			emitNotification(stateProperties.title, stateProperties.level);
+		};
+
+		const getStateProperties = (state) => {
+			switch (state) {
+				case LayerState.ERROR:
+					return {
+						icon: exclamationTriangleSvg,
+						color: 'var(--error-color)',
+						title: translate(`layerManager_title_layerState_${state}`),
+						level: LevelTypes.ERROR
+					};
+				case LayerState.INCOMPLETE_DATA:
+					return {
+						icon: exclamationTriangleSvg,
+						color: 'var(--warning-color)',
+						title: translate(`layerManager_title_layerState_${state}`),
+						level: LevelTypes.WARN
+					};
+				case LayerState.LOADING:
+					return {
+						icon: loadingSvg,
+						color: 'var(--primary-color)',
+						title: translate(`layerManager_title_layerState_${state}`),
+						level: LevelTypes.INFO
+					};
+				case LayerState.OK:
+					return null;
+			}
+		};
+
 		const getStateHint = (layerState) => {
-			const title = translate(`layerManager_title_layerState_${layerState}`);
-			return layerState !== LayerState.OK
+			const stateProperties = getStateProperties(layerState);
+			return stateProperties
 				? html`<ba-icon
-						.icon="${exclamationTriangleSvg}"
-						.title=${title}
+						.icon="${stateProperties.icon}"
+						.title="${stateProperties.title}"
 						.size=${'1.2'}
-						.color=${'var(--secondary-color)'}
-						@click=${(e) => onClickStateHint(e, title)}
+						.color="${stateProperties.color}"
+						@click=${(e) => onClickStateHint(e, stateProperties)}
 						class="layer-state-icon"
 					></ba-icon>`
 				: nothing;
 		};
 
-		const onClickStateHint = (e, title) => {
-			e.preventDefault();
-			e.stopPropagation();
-			emitNotification(title, LevelTypes.WARN);
-		};
 		const changeOpacity = (event) => {
 			//state store change -> implicit call of #render()
 			modifyLayer(layerProperties.id, { opacity: parseInt(event.target.value) / 100 });
