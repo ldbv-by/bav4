@@ -451,7 +451,7 @@ describe('GeoResource', () => {
 		});
 
 		describe('methods', () => {
-			it('checks if it updatable by an interval', () => {
+			it('checks if it is updatable by an interval', () => {
 				expect(new WmsGeoResource('id', 'label', 'url', 'layers', 'format').isUpdatableByInterval()).toBeTrue();
 			});
 
@@ -618,7 +618,7 @@ describe('GeoResource', () => {
 		});
 
 		describe('methods', () => {
-			it('checks if it updatable by an interval', () => {
+			it('checks if it is updatable by an interval', () => {
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).isUpdatableByInterval()).toBeTrue();
 				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).markAsLocalData(true).isUpdatableByInterval()).toBeFalse();
 			});
@@ -723,7 +723,7 @@ describe('GeoResource', () => {
 		});
 
 		describe('methods', () => {
-			it('checks if it updatable by an interval', () => {
+			it('checks if it is updatable by an interval', () => {
 				expect(new OafGeoResource('id', 'label', 'url', 'collectionId', 12345).isUpdatableByInterval()).toBeTrue();
 			});
 
