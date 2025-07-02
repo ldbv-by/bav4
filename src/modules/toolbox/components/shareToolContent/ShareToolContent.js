@@ -38,8 +38,15 @@ export class ShareToolContent extends AbstractToolContent {
 		const shareApi = {
 			id: 1,
 			name: 'share-api',
-			title: this._isShareApiAvailable() ? translate('toolbox_shareTool_share') : translate('toolbox_shareTool_link'),
-			icon: this._isShareApiAvailable() ? 'share' : 'link'
+			title: translate('toolbox_shareTool_share'),
+			icon: 'share'
+		};
+
+		const link = {
+			id: 4,
+			name: 'link',
+			title: translate('toolbox_shareTool_link'),
+			icon: 'link'
 		};
 
 		const mail = {
@@ -59,12 +66,12 @@ export class ShareToolContent extends AbstractToolContent {
 		};
 
 		if (this._isShareApiAvailable()) {
-			return [shareApi];
+			return [shareApi, link, mail, qrCode];
 		} else {
 			if (this._environmentService.isStandalone()) {
-				return [shareApi, mail];
+				return [shareApi, link, mail];
 			}
-			return [shareApi, mail, qrCode];
+			return [link, mail, qrCode];
 		}
 	}
 
@@ -139,20 +146,23 @@ export class ShareToolContent extends AbstractToolContent {
 					}
 				};
 
-				if (tool.name === 'share-api') {
-					return this._isShareApiAvailable() ? shareUrlWithAPI : shareUrlWithDialog;
-				} else {
-					return async () => {
-						try {
-							const shortUrl = await this._generateShortUrl();
+				switch (tool.name) {
+					case 'share-api':
+						return shareUrlWithAPI;
+					case 'link':
+						return shareUrlWithDialog;
+					default:
+						return async () => {
+							try {
+								const shortUrl = await this._generateShortUrl();
 
-							if (this._window.open(tool.href(shortUrl)) === null) {
-								throw new Error('Could not open window');
+								if (this._window.open(tool.href(shortUrl)) === null) {
+									throw new Error('Could not open window');
+								}
+							} catch (e) {
+								console.warn('Could not share content: ' + e);
 							}
-						} catch (e) {
-							console.warn('Could not share content: ' + e);
-						}
-					};
+						};
 				}
 			};
 
