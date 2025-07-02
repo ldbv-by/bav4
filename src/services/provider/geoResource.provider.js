@@ -83,6 +83,7 @@ export const _definitionToGeoResource = (definition) => {
 					.setExportable(definition.exportable ?? true)
 					.setAuthRoles(definition.authRoles ?? [])
 					.setTimestamps(definition.timestamps ?? [])
+					.setUpdateInterval(definition.updateInterval ?? null)
 			: null;
 	};
 	return setPropertiesAndProviders(toGeoResource(definition));
