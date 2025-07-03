@@ -73,7 +73,7 @@ export class OlStyleService {
 	 * @param {ol.Feature} olFeature the feature to be styled
 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style will be added
 	 */
-	addFeatureStyle(olFeature, olMap) {
+	addInternalFeatureStyle(olFeature, olMap) {
 		const styleType = this._detectStyleType(olFeature);
 		switch (styleType) {
 			case OlFeatureStyleTypes.MEASURE:
@@ -124,7 +124,7 @@ export class OlStyleService {
 	 * implementation of the StyleService
 	 * @param {OlFeatureStyleTypes} [styleType] the {@link OlFeatureStyleTypes}, which should be used for the update
 	 */
-	updateFeatureStyle(olFeature, olMap, properties, styleType = null) {
+	updateInternalFeatureStyle(olFeature, olMap, properties, styleType = null) {
 		const usingStyleType = styleType ? styleType : this._detectStyleType(olFeature);
 		const { OverlayService: overlayService } = $injector.inject('OverlayService');
 		if (usingStyleType === OlFeatureStyleTypes.MEASURE) {
@@ -139,7 +139,7 @@ export class OlStyleService {
 	 * @param {ol.Feature} olFeature the feature
 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style exists
 	 */
-	removeFeatureStyle(olFeature, olMap) {
+	removeInternalFeatureStyle(olFeature, olMap) {
 		const usingStyleType = this._detectStyleType(olFeature);
 		const { OverlayService: overlayService } = $injector.inject('OverlayService');
 		overlayService.remove(olFeature, olMap, usingStyleType);
@@ -236,8 +236,8 @@ export class OlStyleService {
 			 * up-to-date with the layer.
 			 */
 			if (isInternalStyleRequired(feature)) {
-				this.addFeatureStyle(feature, olMap);
-				this.updateFeatureStyle(feature, olMap, this._mapToStyleProperties(olVectorLayer));
+				this.addInternalFeatureStyle(feature, olMap);
+				this.updateInternalFeatureStyle(feature, olMap, this._mapToStyleProperties(olVectorLayer));
 
 				// if we have at least one style requiring feature, we register the styleEvent listener once
 				// and apply the style for all currently present features
@@ -267,14 +267,14 @@ export class OlStyleService {
 
 	_registerStyleEventListeners(olVectorSource, olLayer, olMap) {
 		const addFeatureListenerKey = olVectorSource.on('addfeature', (event) => {
-			this.addFeatureStyle(event.feature, olMap);
-			this.updateFeatureStyle(event.feature, olMap, this._mapToStyleProperties(olLayer));
+			this.addInternalFeatureStyle(event.feature, olMap);
+			this.updateInternalFeatureStyle(event.feature, olMap, this._mapToStyleProperties(olLayer));
 		});
 		const removeFeatureListenerKey = olVectorSource.on('removefeature', (event) => {
-			this.removeFeatureStyle(event.feature, olMap);
+			this.removeInternalFeatureStyle(event.feature, olMap);
 		});
 		const clearFeaturesListenerKey = olVectorSource.on('clear', () => {
-			olVectorSource.getFeatures().forEach((f) => this.removeFeatureStyle(f, olMap));
+			olVectorSource.getFeatures().forEach((f) => this.removeInternalFeatureStyle(f, olMap));
 		});
 
 		/**
@@ -282,14 +282,14 @@ export class OlStyleService {
 		 * which are not tracked by OpenLayers
 		 */
 		const layerListChangedListenerKey = olMap.getLayers().on(['add', 'remove'], () => {
-			olVectorSource.getFeatures().forEach((f) => this.updateFeatureStyle(f, olMap, this._mapToStyleProperties(olLayer)));
+			olVectorSource.getFeatures().forEach((f) => this.updateInternalFeatureStyle(f, olMap, this._mapToStyleProperties(olLayer)));
 		});
 
 		/**
 		 * Track layer changes of visibility, opacity and z-index
 		 */
 		const layerChangeListenerKey = olLayer.on(['change:zIndex', 'change:visible', 'change:opacity'], () => {
-			olVectorSource.getFeatures().forEach((f) => this.updateFeatureStyle(f, olMap, this._mapToStyleProperties(olLayer)));
+			olVectorSource.getFeatures().forEach((f) => this.updateInternalFeatureStyle(f, olMap, this._mapToStyleProperties(olLayer)));
 		});
 
 		return [addFeatureListenerKey, removeFeatureListenerKey, clearFeaturesListenerKey, layerChangeListenerKey, layerListChangedListenerKey];

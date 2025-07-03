@@ -137,7 +137,7 @@ describe('OlStyleService', () => {
 			};
 			const layerMock = {};
 
-			instanceUnderTest.addFeatureStyle(featureWithGeodesic, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(featureWithGeodesic, mapMock, layerMock);
 
 			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(propertySetterSpy).not.toHaveBeenCalledWith(GEODESIC_FEATURE_PROPERTY, jasmine.any(Object));
@@ -179,7 +179,7 @@ describe('OlStyleService', () => {
 				}
 			};
 			const layerMock = {};
-			instanceUnderTest.addFeatureStyle(featureWithoutGeodesic, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(featureWithoutGeodesic, mapMock, layerMock);
 
 			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(propertySetterSpy).toHaveBeenCalledWith(GEODESIC_FEATURE_PROPERTY, jasmine.any(Object));
@@ -214,19 +214,19 @@ describe('OlStyleService', () => {
 
 			let textStyle = null;
 			const styleSetterArraySpy = spyOn(featureWithStyleArray, 'setStyle').and.callFake((f) => (textStyle = f()));
-			instanceUnderTest.addFeatureStyle(featureWithStyleArray, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(featureWithStyleArray, mapMock, layerMock);
 			expect(styleSetterArraySpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(textStyle).toContain(jasmine.any(Style));
 
 			textStyle = null;
 			const styleSetterFunctionSpy = spyOn(featureWithStyleFunction, 'setStyle').and.callFake((f) => (textStyle = f()));
-			instanceUnderTest.addFeatureStyle(featureWithStyleFunction, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(featureWithStyleFunction, mapMock, layerMock);
 			expect(styleSetterFunctionSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(textStyle).toContain(jasmine.any(Style));
 
 			textStyle = null;
 			const styleSetterNoStyleSpy = spyOn(featureWithoutStyle, 'setStyle').and.callFake((f) => (textStyle = f()));
-			instanceUnderTest.addFeatureStyle(featureWithoutStyle, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(featureWithoutStyle, mapMock, layerMock);
 			expect(styleSetterNoStyleSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(textStyle).toContain(jasmine.any(Style));
 		});
@@ -255,7 +255,7 @@ describe('OlStyleService', () => {
 
 			let textStyle = null;
 			const styleSetterArraySpy = spyOn(featureWithStyleArray, 'setStyle').and.callFake((f) => (textStyle = f()));
-			instanceUnderTest.addFeatureStyle(featureWithStyleArray, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(featureWithStyleArray, mapMock, layerMock);
 			expect(styleSetterArraySpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(textStyle[0].getText().getText()).toBe('new text');
 			expect(textStyle).toContain(jasmine.any(Style));
@@ -284,7 +284,7 @@ describe('OlStyleService', () => {
 			let textStyle = null;
 			const styleSetterFunctionSpy = spyOn(feature, 'setStyle').and.callFake((styleFunction) => (textStyle = styleFunction()));
 			const addTextStyleSpy = spyOn(instanceUnderTest, '_addTextStyle').and.callThrough();
-			instanceUnderTest.addFeatureStyle(feature, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(feature, mapMock, layerMock);
 			expect(addTextStyleSpy).toHaveBeenCalledWith(feature);
 			expect(styleSetterFunctionSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(textStyle).toContain(jasmine.any(Style));
@@ -312,7 +312,7 @@ describe('OlStyleService', () => {
 			let textStyle = null;
 
 			const styleSetterNoStyleSpy = spyOn(featureWithoutStyle, 'setStyle').and.callFake((f) => (textStyle = f()));
-			instanceUnderTest.addFeatureStyle(featureWithoutStyle, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(featureWithoutStyle, mapMock, layerMock);
 
 			expect(styleSetterNoStyleSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(textStyle[0].getText().getText()).toBe('foo-name');
@@ -358,31 +358,31 @@ describe('OlStyleService', () => {
 
 			let markerStyle = null;
 			const styleSetterArraySpy = spyOn(featureWithStyleArray, 'setStyle').and.callFake((f) => (markerStyle = f()));
-			instanceUnderTest.addFeatureStyle(featureWithStyleArray, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(featureWithStyleArray, mapMock, layerMock);
 			expect(styleSetterArraySpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(markerStyle).toContain(jasmine.any(Style));
 
 			markerStyle = null;
 			const styleSetterWithoutTextStyleSpy = spyOn(featureWithoutTextStyle, 'setStyle').and.callFake((f) => (markerStyle = f()));
-			instanceUnderTest.addFeatureStyle(featureWithoutTextStyle, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(featureWithoutTextStyle, mapMock, layerMock);
 			expect(styleSetterWithoutTextStyleSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(markerStyle).toContain(jasmine.any(Style));
 
 			markerStyle = null;
 			const styleSetterFunctionSpy = spyOn(featureWithStyleFunction, 'setStyle').and.callFake((f) => (markerStyle = f()));
-			instanceUnderTest.addFeatureStyle(featureWithStyleFunction, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(featureWithStyleFunction, mapMock, layerMock);
 			expect(styleSetterFunctionSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(markerStyle).toContain(jasmine.any(Style));
 
 			markerStyle = null;
 			const styleSetterNoStyleSpy = spyOn(featureWithoutStyle, 'setStyle').and.callFake((f) => (markerStyle = f()));
-			instanceUnderTest.addFeatureStyle(featureWithoutStyle, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(featureWithoutStyle, mapMock, layerMock);
 			expect(styleSetterNoStyleSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(markerStyle).toContain(jasmine.any(Style));
 
 			markerStyle = null;
 			const styleSetterEmptyStyleSpy = spyOn(featureWithEmptyStyle, 'setStyle').and.callFake((f) => (markerStyle = f()));
-			instanceUnderTest.addFeatureStyle(featureWithEmptyStyle, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(featureWithEmptyStyle, mapMock, layerMock);
 			expect(styleSetterEmptyStyleSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(markerStyle).toContain(jasmine.any(Style));
 		});
@@ -432,7 +432,7 @@ describe('OlStyleService', () => {
 
 			let markerStyle = null;
 			const styleSetterFunctionSpy = spyOn(featureWithStyleFunction, 'setStyle').and.callFake((f) => (markerStyle = f()));
-			instanceUnderTest.addFeatureStyle(featureWithStyleFunction, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(featureWithStyleFunction, mapMock, layerMock);
 			expect(styleSetterFunctionSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(markerStyle).toContain(jasmine.any(Style));
 			// uses the existing color
@@ -465,7 +465,7 @@ describe('OlStyleService', () => {
 			let markerStyle = null;
 
 			const styleSetterNoStyleSpy = spyOn(featureWithoutStyle, 'setStyle').and.callFake((f) => (markerStyle = f()));
-			instanceUnderTest.addFeatureStyle(featureWithoutStyle, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(featureWithoutStyle, mapMock, layerMock);
 
 			expect(styleSetterNoStyleSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(markerStyle[0].getText().getText()).toBe('bar-name');
@@ -514,8 +514,8 @@ describe('OlStyleService', () => {
 
 			const layerMock = {};
 
-			instanceUnderTest.addFeatureStyle(lineFeature, mapMock, layerMock, OlFeatureStyleTypes.LINE);
-			instanceUnderTest.addFeatureStyle(polygonFeature, mapMock, layerMock, OlFeatureStyleTypes.POLYGON);
+			instanceUnderTest.addInternalFeatureStyle(lineFeature, mapMock, layerMock, OlFeatureStyleTypes.LINE);
+			instanceUnderTest.addInternalFeatureStyle(polygonFeature, mapMock, layerMock, OlFeatureStyleTypes.POLYGON);
 
 			expect(lineStyleSetterSpy).not.toHaveBeenCalled();
 			expect(polygonStyleSetterSpy).not.toHaveBeenCalled();
@@ -549,7 +549,7 @@ describe('OlStyleService', () => {
 				}
 			};
 
-			instanceUnderTest.addFeatureStyle(feature, mapMock);
+			instanceUnderTest.addInternalFeatureStyle(feature, mapMock);
 
 			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
 		});
@@ -577,7 +577,7 @@ describe('OlStyleService', () => {
 
 			const styleSetterNoStyleSpy = spyOn(routingFeature, 'setStyle').and.callThrough();
 			const addRoutingStyleSpy = spyOn(instanceUnderTest, '_addRoutingStyle').withArgs(routingFeature).and.callThrough();
-			instanceUnderTest.addFeatureStyle(routingFeature, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(routingFeature, mapMock, layerMock);
 
 			expect(addRoutingStyleSpy).toHaveBeenCalled();
 			expect(styleSetterNoStyleSpy).toHaveBeenCalledWith(jasmine.any(Function));
@@ -616,7 +616,7 @@ describe('OlStyleService', () => {
 
 			const layerMock = {};
 
-			instanceUnderTest.addFeatureStyle(feature, mapMock, layerMock);
+			instanceUnderTest.addInternalFeatureStyle(feature, mapMock, layerMock);
 
 			expect(styleSetterSpy).not.toHaveBeenCalledWith(jasmine.any(Array));
 			expect(propertySetterSpy).not.toHaveBeenCalledWith('overlays', jasmine.any(Object));
@@ -666,7 +666,7 @@ describe('OlStyleService', () => {
 			};
 			const updateSpy = spyOn(overlayServiceMock, 'update');
 
-			instanceUnderTest.updateFeatureStyle(feature, mapMock, { visible: true, opacity: 0.5, top: true });
+			instanceUnderTest.updateInternalFeatureStyle(feature, mapMock, { visible: true, opacity: 0.5, top: true });
 
 			expect(updateSpy).toHaveBeenCalledWith(feature, mapMock, 'measure', { visible: true, opacity: 0.5, top: true });
 		});
@@ -703,7 +703,7 @@ describe('OlStyleService', () => {
 				getSize: () => {}
 			};
 
-			instanceUnderTest.updateFeatureStyle(feature, mapMock, { visible: true, opacity: 0.5, top: true }, 'measure');
+			instanceUnderTest.updateInternalFeatureStyle(feature, mapMock, { visible: true, opacity: 0.5, top: true }, 'measure');
 
 			expect(updateSpy).toHaveBeenCalledWith(feature, mapMock, 'measure', { visible: true, opacity: 0.5, top: true });
 		});
@@ -736,7 +736,7 @@ describe('OlStyleService', () => {
 			};
 
 			const spy = spyOn(mapMock, 'getOverlays');
-			instanceUnderTest.updateFeatureStyle(feature, mapMock, { visible: true, opacity: 0.5, top: true }, 'foo');
+			instanceUnderTest.updateInternalFeatureStyle(feature, mapMock, { visible: true, opacity: 0.5, top: true }, 'foo');
 			expect(spy).not.toHaveBeenCalled();
 		});
 	});
@@ -768,7 +768,7 @@ describe('OlStyleService', () => {
 			};
 			const removeSpy = spyOn(overlayServiceMock, 'remove');
 
-			instanceUnderTest.removeFeatureStyle(feature, mapMock);
+			instanceUnderTest.removeInternalFeatureStyle(feature, mapMock);
 
 			expect(removeSpy).toHaveBeenCalledWith(feature, mapMock, 'measure');
 		});
@@ -798,7 +798,7 @@ describe('OlStyleService', () => {
 			};
 			const removeSpy = spyOn(overlayServiceMock, 'remove');
 
-			instanceUnderTest.removeFeatureStyle(feature, mapMock);
+			instanceUnderTest.removeInternalFeatureStyle(feature, mapMock);
 
 			expect(removeSpy).toHaveBeenCalledWith(feature, mapMock, null);
 		});
@@ -1002,7 +1002,7 @@ describe('OlStyleService', () => {
 				const olLayer = new VectorLayer({ source: olSource });
 				spyOn(instanceUnderTest, '_detectStyleType').and.returnValue(null);
 				const registerStyleEventListenersSpy = spyOn(instanceUnderTest, '_registerStyleEventListeners').and.callFake(() => []);
-				const styleServiceAddSpy = spyOn(instanceUnderTest, 'addFeatureStyle');
+				const styleServiceAddSpy = spyOn(instanceUnderTest, 'addInternalFeatureStyle');
 
 				instanceUnderTest._applyFeatureSpecificStyles(olLayer, olMap);
 
@@ -1020,7 +1020,7 @@ describe('OlStyleService', () => {
 				const olLayer = new VectorLayer({ source: olSource });
 				const detectStyleSpy = spyOn(instanceUnderTest, '_detectStyleType');
 				const registerStyleEventListenersSpy = spyOn(instanceUnderTest, '_registerStyleEventListeners').and.callFake(() => []);
-				const styleServiceAddSpy = spyOn(instanceUnderTest, 'addFeatureStyle');
+				const styleServiceAddSpy = spyOn(instanceUnderTest, 'addInternalFeatureStyle');
 
 				instanceUnderTest._applyFeatureSpecificStyles(olLayer, olMap);
 
@@ -1040,7 +1040,7 @@ describe('OlStyleService', () => {
 				const olLayer = new VectorLayer({ source: olSource });
 				const detectStyleSpy = spyOn(instanceUnderTest, '_detectStyleType');
 				const registerStyleEventListenersSpy = spyOn(instanceUnderTest, '_registerStyleEventListeners').and.callFake(() => []);
-				const styleServiceAddSpy = spyOn(instanceUnderTest, 'addFeatureStyle');
+				const styleServiceAddSpy = spyOn(instanceUnderTest, 'addInternalFeatureStyle');
 
 				instanceUnderTest._applyFeatureSpecificStyles(olLayer, olMap);
 
@@ -1061,19 +1061,19 @@ describe('OlStyleService', () => {
 				const olLayer = new VectorLayer({ source: olSource });
 				spyOn(instanceUnderTest, '_detectStyleType').and.returnValue(OlFeatureStyleTypes.NULL);
 				const registerStyleEventListenersSpy = spyOn(instanceUnderTest, '_registerStyleEventListeners').and.callFake(() => ['foo']);
-				const addFeatureStyleSpy = spyOn(instanceUnderTest, 'addFeatureStyle');
-				const updateFeatureStyleSpy = spyOn(instanceUnderTest, 'updateFeatureStyle');
+				const addInternalFeatureStyleSpy = spyOn(instanceUnderTest, 'addInternalFeatureStyle');
+				const updateInternalFeatureStyleSpy = spyOn(instanceUnderTest, 'updateInternalFeatureStyle');
 
 				instanceUnderTest._applyFeatureSpecificStyles(olLayer, olMap);
 
-				expect(addFeatureStyleSpy).toHaveBeenCalledWith(olFeature0, olMap);
-				expect(addFeatureStyleSpy).toHaveBeenCalledWith(olFeature1, olMap);
-				expect(updateFeatureStyleSpy).toHaveBeenCalledWith(
+				expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(olFeature0, olMap);
+				expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(olFeature1, olMap);
+				expect(updateInternalFeatureStyleSpy).toHaveBeenCalledWith(
 					olFeature0,
 					olMap,
 					jasmine.objectContaining({ top: jasmine.any(Boolean), opacity: jasmine.any(Number) })
 				);
-				expect(updateFeatureStyleSpy).toHaveBeenCalledWith(
+				expect(updateInternalFeatureStyleSpy).toHaveBeenCalledWith(
 					olFeature1,
 					olMap,
 					jasmine.objectContaining({ top: jasmine.any(Boolean), opacity: jasmine.any(Number) })
@@ -1089,13 +1089,13 @@ describe('OlStyleService', () => {
 				const olLayer = new VectorLayer({ source: olSource });
 				spyOn(instanceUnderTest, '_detectStyleType').and.returnValue(null);
 				const registerStyleEventListenersSpy = spyOn(instanceUnderTest, '_registerStyleEventListeners');
-				const addFeatureStyleSpy = spyOn(instanceUnderTest, 'addFeatureStyle');
-				const updateFeatureStyleSpy = spyOn(instanceUnderTest, 'updateFeatureStyle');
+				const addInternalFeatureStyleSpy = spyOn(instanceUnderTest, 'addInternalFeatureStyle');
+				const updateInternalFeatureStyleSpy = spyOn(instanceUnderTest, 'updateInternalFeatureStyle');
 
 				instanceUnderTest._applyFeatureSpecificStyles(olLayer, olMap);
 
-				expect(addFeatureStyleSpy).not.toHaveBeenCalled();
-				expect(updateFeatureStyleSpy).not.toHaveBeenCalled();
+				expect(addInternalFeatureStyleSpy).not.toHaveBeenCalled();
+				expect(updateInternalFeatureStyleSpy).not.toHaveBeenCalled();
 				expect(registerStyleEventListenersSpy).not.toHaveBeenCalled();
 			});
 
@@ -1114,13 +1114,13 @@ describe('OlStyleService', () => {
 					return null;
 				});
 				const registerStyleEventListenersSpy = spyOn(instanceUnderTest, '_registerStyleEventListeners').and.returnValue(['foo']);
-				const addFeatureStyleSpy = spyOn(instanceUnderTest, 'addFeatureStyle');
-				const updateFeatureStyleSpy = spyOn(instanceUnderTest, 'updateFeatureStyle');
+				const addInternalFeatureStyleSpy = spyOn(instanceUnderTest, 'addInternalFeatureStyle');
+				const updateInternalFeatureStyleSpy = spyOn(instanceUnderTest, 'updateInternalFeatureStyle');
 
 				instanceUnderTest._applyFeatureSpecificStyles(olLayer, olMap);
 
-				expect(addFeatureStyleSpy).toHaveBeenCalledTimes(1);
-				expect(updateFeatureStyleSpy).toHaveBeenCalledTimes(1);
+				expect(addInternalFeatureStyleSpy).toHaveBeenCalledTimes(1);
+				expect(updateInternalFeatureStyleSpy).toHaveBeenCalledTimes(1);
 				expect(registerStyleEventListenersSpy).toHaveBeenCalledOnceWith(olSource, olLayer, olMap);
 			});
 		});
@@ -1140,13 +1140,13 @@ describe('OlStyleService', () => {
 			expect(layerListChangedListenerKey).toBeDefined();
 		});
 
-		it('calls addFeatureStyle on "addFeature"', () => {
+		it('calls addInternalFeatureStyle on "addFeature"', () => {
 			const id = 'id';
 			const olMap = new Map();
 			const olSource = new VectorSource();
 			const olLayer = new VectorLayer({ id: id });
 			const olFeature = new Feature();
-			const styleServiceSpy = spyOn(instanceUnderTest, 'addFeatureStyle');
+			const styleServiceSpy = spyOn(instanceUnderTest, 'addInternalFeatureStyle');
 			instanceUnderTest._registerStyleEventListeners(olSource, olLayer, olMap);
 
 			olSource.dispatchEvent(new VectorSourceEvent('addfeature', olFeature));
@@ -1154,32 +1154,32 @@ describe('OlStyleService', () => {
 			expect(styleServiceSpy).toHaveBeenCalledWith(olFeature, olMap);
 		});
 
-		it('calls updateFeatureStyle on "addFeature" when layer is attached', () => {
+		it('calls updateInternalFeatureStyle on "addFeature" when layer is attached', () => {
 			const olMap = new Map();
 			const olSource = new VectorSource();
 			const olFeature = new Feature();
-			const addFeatureStyleSpy = spyOn(instanceUnderTest, 'addFeatureStyle');
-			const updateFeatureStyleSpy = spyOn(instanceUnderTest, 'updateFeatureStyle');
+			const addInternalFeatureStyleSpy = spyOn(instanceUnderTest, 'addInternalFeatureStyle');
+			const updateInternalFeatureStyleSpy = spyOn(instanceUnderTest, 'updateInternalFeatureStyle');
 			const olLayer = new VectorLayer();
 			instanceUnderTest._registerStyleEventListeners(olSource, olLayer, olMap);
 
 			olSource.dispatchEvent(new VectorSourceEvent('addfeature', olFeature));
 
-			expect(addFeatureStyleSpy).toHaveBeenCalledWith(olFeature, olMap);
-			expect(updateFeatureStyleSpy).toHaveBeenCalledWith(olFeature, olMap, jasmine.any(Object));
+			expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(olFeature, olMap);
+			expect(updateInternalFeatureStyleSpy).toHaveBeenCalledWith(olFeature, olMap, jasmine.any(Object));
 		});
 
 		it('calls #removeStyle on "removeFeature"', () => {
 			const olMap = new Map();
 			const olSource = new VectorSource();
 			const olFeature = new Feature();
-			const removeFeatureStyleSpy = spyOn(instanceUnderTest, 'removeFeatureStyle');
+			const removeInternalFeatureStyleSpy = spyOn(instanceUnderTest, 'removeInternalFeatureStyle');
 			const olLayer = new VectorLayer();
 			instanceUnderTest._registerStyleEventListeners(olSource, olLayer, olMap);
 
 			olSource.dispatchEvent(new VectorSourceEvent('removefeature', olFeature));
 
-			expect(removeFeatureStyleSpy).toHaveBeenCalledWith(olFeature, olMap);
+			expect(removeInternalFeatureStyleSpy).toHaveBeenCalledWith(olFeature, olMap);
 		});
 
 		it('calls #removeStyle on "clearFeatures"', () => {
@@ -1187,74 +1187,74 @@ describe('OlStyleService', () => {
 			const olFeature = new Feature();
 			const olSource = new VectorSource({ features: [olFeature] });
 			const olLayer = new VectorLayer();
-			const removeFeatureStyleSpy = spyOn(instanceUnderTest, 'removeFeatureStyle');
+			const removeInternalFeatureStyleSpy = spyOn(instanceUnderTest, 'removeInternalFeatureStyle');
 			instanceUnderTest._registerStyleEventListeners(olSource, olLayer, olMap);
 
 			olSource.dispatchEvent(new VectorSourceEvent('clear'));
 
-			expect(removeFeatureStyleSpy).toHaveBeenCalledWith(olFeature, olMap);
+			expect(removeInternalFeatureStyleSpy).toHaveBeenCalledWith(olFeature, olMap);
 		});
 
-		it('calls #updateFeatureStyle on layer "change:visible"', () => {
+		it('calls #updateInternalFeatureStyle on layer "change:visible"', () => {
 			const olMap = new Map();
 			const olFeature = new Feature();
 			const olSource = new VectorSource({ features: [olFeature] });
 			const olLayer = new VectorLayer();
-			const updateFeatureStyleSpy = spyOn(instanceUnderTest, 'updateFeatureStyle');
+			const updateInternalFeatureStyleSpy = spyOn(instanceUnderTest, 'updateInternalFeatureStyle');
 			instanceUnderTest._registerStyleEventListeners(olSource, olLayer, olMap);
 
 			olLayer.setVisible(false);
 
-			expect(updateFeatureStyleSpy).toHaveBeenCalledWith(olFeature, olMap, jasmine.any(Object));
+			expect(updateInternalFeatureStyleSpy).toHaveBeenCalledWith(olFeature, olMap, jasmine.any(Object));
 		});
 
-		it('calls #updateFeatureStyle on layer "change:opacity"', () => {
+		it('calls #updateInternalFeatureStyle on layer "change:opacity"', () => {
 			const olMap = new Map();
 			const olFeature = new Feature();
 			const olSource = new VectorSource({ features: [olFeature] });
 			const olLayer = new VectorLayer();
-			const updateFeatureStyleSpy = spyOn(instanceUnderTest, 'updateFeatureStyle');
+			const updateInternalFeatureStyleSpy = spyOn(instanceUnderTest, 'updateInternalFeatureStyle');
 			instanceUnderTest._registerStyleEventListeners(olSource, olLayer, olMap);
 
 			olLayer.setOpacity(0.42);
 
-			expect(updateFeatureStyleSpy).toHaveBeenCalledWith(olFeature, olMap, jasmine.any(Object));
+			expect(updateInternalFeatureStyleSpy).toHaveBeenCalledWith(olFeature, olMap, jasmine.any(Object));
 		});
 
-		it('calls #updateFeatureStyle on layer "change:zIndex"', () => {
+		it('calls #updateInternalFeatureStyle on layer "change:zIndex"', () => {
 			const olMap = new Map();
 			const olFeature = new Feature();
 			const olSource = new VectorSource({ features: [olFeature] });
 			const olLayer = new VectorLayer();
-			const updateFeatureStyleSpy = spyOn(instanceUnderTest, 'updateFeatureStyle');
+			const updateInternalFeatureStyleSpy = spyOn(instanceUnderTest, 'updateInternalFeatureStyle');
 			instanceUnderTest._registerStyleEventListeners(olSource, olLayer, olMap);
 
 			olLayer.setZIndex(1);
 
-			expect(updateFeatureStyleSpy).toHaveBeenCalledWith(olFeature, olMap, jasmine.any(Object));
+			expect(updateInternalFeatureStyleSpy).toHaveBeenCalledWith(olFeature, olMap, jasmine.any(Object));
 		});
 
-		it('calls #updateFeatureStyle when layers are added', () => {
+		it('calls #updateInternalFeatureStyle when layers are added', () => {
 			const olMap = new Map();
 			const olFeature = new Feature();
 			const olSource = new VectorSource({ features: [olFeature] });
 			const olLayer = new VectorLayer();
 			const otherOlLayer = new VectorLayer();
-			const updateFeatureStyleSpy = spyOn(instanceUnderTest, 'updateFeatureStyle');
+			const updateInternalFeatureStyleSpy = spyOn(instanceUnderTest, 'updateInternalFeatureStyle');
 			instanceUnderTest._registerStyleEventListeners(olSource, olLayer, olMap);
 
 			olMap.getLayers().dispatchEvent(new CollectionEvent('add', otherOlLayer));
 
-			expect(updateFeatureStyleSpy).toHaveBeenCalledWith(olFeature, olMap, jasmine.any(Object));
+			expect(updateInternalFeatureStyleSpy).toHaveBeenCalledWith(olFeature, olMap, jasmine.any(Object));
 		});
 
-		it('calls #updateFeatureStyle when layers are removed', () => {
+		it('calls #updateInternalFeatureStyle when layers are removed', () => {
 			const olMap = new Map();
 			const olFeature = new Feature();
 			const olSource = new VectorSource({ features: [olFeature] });
 			const olLayer = new VectorLayer();
 			const otherOlLayer = new VectorLayer();
-			const updateFeatureStyleSpy = spyOn(instanceUnderTest, 'updateFeatureStyle')
+			const updateInternalFeatureStyleSpy = spyOn(instanceUnderTest, 'updateInternalFeatureStyle')
 				.withArgs(olFeature, olMap, jasmine.any(Object))
 				.and.callFake(() => {});
 			instanceUnderTest._registerStyleEventListeners(olSource, olLayer, olMap);
@@ -1262,7 +1262,7 @@ describe('OlStyleService', () => {
 			olMap.addLayer(otherOlLayer);
 			olMap.removeLayer(otherOlLayer);
 
-			expect(updateFeatureStyleSpy).toHaveBeenCalledTimes(2);
+			expect(updateInternalFeatureStyleSpy).toHaveBeenCalledTimes(2);
 		});
 	});
 
