@@ -515,8 +515,8 @@ export class ShowCase extends MvuElement {
 					<div class="example row">
 						<ba-checkbox .title=${'checkbox title'} @toggle=${onToggle}><span>checkbox</span></ba-checkbox>
 						<ba-checkbox .checked=${true} .title=${'checkbox title'} @toggle=${onToggle}><span>checkbox checked</span></ba-checkbox>
+						<ba-checkbox .checked=${true} .type=${'eye'} .title=${'checkbox title'} @toggle=${onToggle}><span>checkbox eye</span></ba-checkbox>
 						<ba-checkbox .disabled=${true} .title=${'checkbox title'} @toggle=${onToggle}><span>checkbox disabled</span></ba-checkbox>
-						<ba-checkbox .checked=${true} .disabled=${true} .title=${'checkbox title'} @toggle=${onToggle}
 							><span>checkbox checked disabled</span></ba-checkbox
 						>
 					</div>

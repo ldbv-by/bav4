@@ -13,15 +13,13 @@ const Update_Title = 'update_title';
 const Update_Type = 'update_type';
 
 /**
- * Events:
- * - onToggle()
+ * * Basic checkbox component.
  *
- * Properties:
- * - `checked`
- * - `disabled`
- * - `title`
- * - `type`
- *
+ * @property {boolean} checked='false' - The state of the checkbox.
+ * @property {boolean} disabled=false - The checkbox react on user interactions or not.
+ * @property {string|null} title=null - The title of the checkbox.
+ * @property {'check'| 'eye'} type=check - The type of the checkbox.
+ * @fires toggle The onToggle event fires when the checkbox is clicked.
  *
  * @class
  * @author alsturm
@@ -134,7 +132,7 @@ export class Checkbox extends MvuElement {
 	}
 
 	/**
-	 * @property {string} title='' - The title of the button
+	 * @property {string} title='' - The title of the checkbox
 	 */
 	set title(value) {
 		this.signal(Update_Title, value);
@@ -167,6 +165,17 @@ export class Checkbox extends MvuElement {
 	}
 
 	/**
+	 * @property {string} type='check' - The type of the checkbox
+	 */
+	set type(value) {
+		this.signal(Update_Type, value);
+	}
+
+	get type() {
+		return this.getModel().type;
+	}
+
+	/**
 	 * @property {function} onToggle - Callback function
 	 */
 	set onToggle(callback) {
@@ -175,13 +184,5 @@ export class Checkbox extends MvuElement {
 
 	get onToggle() {
 		return this._onToggle;
-	}
-
-	set type(value) {
-		this.signal(Update_Type, value);
-	}
-
-	get type() {
-		return this.getModel().type;
 	}
 }
