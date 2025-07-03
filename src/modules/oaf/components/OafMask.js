@@ -83,6 +83,12 @@ export class OafMask extends MvuElement {
 			this.signal(Update_Show_Console, !showConsole);
 		};
 
+		const onDuplicateFilterGroup = (evt) => {
+			const group = this._findFilterGroupById(evt.target.getAttribute('group-id'));
+			const duplicate = { ...createDefaultFilterGroup(), oafFilters: [...group.oafFilters] };
+			this.signal(Update_Filter_Groups, [...this.getModel().filterGroups, duplicate]);
+		};
+
 		const onRemoveFilterGroup = (evt) => {
 			const groups = this._removeFilterGroup(evt.target.getAttribute('group-id'));
 			this.signal(Update_Filter_Groups, groups);
@@ -146,10 +152,11 @@ export class OafMask extends MvuElement {
 					(group, index) => html`
 						<ba-oaf-filter-group
 							group-id=${group.id}
-							@remove=${onRemoveFilterGroup}
 							.queryables=${capabilities.queryables}
 							.oafFilters=${group.oafFilters}
 							@change=${onFilterGroupChanged}
+							@duplicate=${onDuplicateFilterGroup}
+							@remove=${onRemoveFilterGroup}
 						></ba-oaf-filter-group>
 						${index < filterGroups.length - 1 ? orSeparatorHtml() : html`<div></div>`}
 					`
