@@ -215,7 +215,7 @@ const modifyLayerProps = (state, payload) => {
 		const active = [...state.active];
 
 		const currentIndex = active.indexOf(layer);
-		// //remove current layer
+		// remove current layer
 		active.splice(currentIndex, 1);
 
 		const updatedLayer = {
@@ -223,7 +223,7 @@ const modifyLayerProps = (state, payload) => {
 			props: replace ? { ...props } : { ...layer.props, ...props }
 		};
 
-		//add updated layer
+		// add updated layer
 		active.splice(updatedLayer.zIndex, 0, updatedLayer);
 
 		return {
