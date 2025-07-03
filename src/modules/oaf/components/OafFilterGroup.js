@@ -7,6 +7,8 @@ import { MvuElement } from '../../MvuElement';
 import { createDefaultOafFilter } from './oafUtils';
 import css from './oafFilterGroup.css';
 import { $injector } from '../../../injection';
+import closeSvg from '../../../assets/icons/x-square.svg';
+import cloneSvg from './assets/clone.svg';
 import { repeat } from 'lit-html/directives/repeat.js';
 
 const Update_Queryables = 'update_queryables';
@@ -61,7 +63,7 @@ export class OafFilterGroup extends MvuElement {
 		const onFilterChanged = (evt) => {
 			const changedOafFilter = evt.target;
 			const filters = this.oafFilters;
-			const changedFilterIndex = filters.findIndex((oafFilter) => oafFilter.queryable.name === evt.target.queryable.name);
+			const changedFilterIndex = filters.findIndex((oafFilter) => oafFilter.queryable.id === evt.target.queryable.id);
 
 			filters[changedFilterIndex] = {
 				...changedOafFilter.getModel(),
@@ -73,7 +75,7 @@ export class OafFilterGroup extends MvuElement {
 		};
 
 		const onRemoveFilter = (evt) => {
-			this._removeFilter(evt.target.queryable.name);
+			this._removeFilter(evt.target.queryable.id);
 		};
 
 		const onRemoveGroup = () => {
@@ -84,25 +86,22 @@ export class OafFilterGroup extends MvuElement {
 			<style>
 				${css}
 			</style>
-
 			<div class="filter-group">
-				<div class="title-bar">
-					<h2 class="title">${translate('oaf_group_title')}</h2>
-					<div class="btn-bar">
-						<select id="queryable-select" @change=${onAddFilter}>
-							<option selected>${translate('oaf_group_select_filter')}</option>
+				<div class="select-container">
+					<div class="ba-form-element">
+						<select id="queryable-select" required="" @change=${onAddFilter}>
+							<option selected="selected"></option>
 							${queryables
-								.filter((queryable) => !oafFilters.find((oafFilter) => oafFilter.queryable.name === queryable.name))
-								.map((queryable) => html`<option .value=${queryable.name}>${queryable.name}</option>`)}
+								.filter((queryable) => !oafFilters.find((oafFilter) => oafFilter.queryable.id === queryable.id))
+								.map((queryable) => html`<option .value=${queryable.id}>${queryable.title ? queryable.title : queryable.id}</option>`)}
 						</select>
-						<ba-button .type=${'primary'} class="duplicate-button" .label=${'DUP'}></ba-button>
-						<ba-button id="btn-remove-group" .type=${'primary'} class="remove-button" .label=${'X'} @click=${onRemoveGroup}></ba-button>
+						<label id="queryable-label" for="select" class="control-label">${translate('oaf_group_select_filter')}</label><i class="bar"></i>
 					</div>
 				</div>
 				<div class="filter-container">
 					${repeat(
 						oafFilters,
-						(oafFilter) => oafFilter.queryable.name,
+						(oafFilter) => oafFilter.queryable.id,
 						(oafFilter) =>
 							html`<ba-oaf-filter
 								.operator=${oafFilter.operator}
@@ -115,13 +114,17 @@ export class OafFilterGroup extends MvuElement {
 							></ba-oaf-filter>`
 					)}
 				</div>
+				<div class="button-container">
+					<ba-icon .type=${'primary'} .size=${2.5} class="duplicate-button" .icon=${cloneSvg}></ba-icon>
+					<ba-icon id="btn-remove-group" .size=${1.6} .type=${'primary'} class="remove-button" .icon=${closeSvg} @click=${onRemoveGroup}></ba-icon>
+				</div>
 			</div>
 		`;
 	}
 
-	_addFilter(queryableName) {
+	_addFilter(queryableId) {
 		const { queryables, oafFilters } = this.getModel();
-		const queryableToAdd = queryables.find((queryable) => queryable.name === queryableName);
+		const queryableToAdd = queryables.find((queryable) => queryable.id === queryableId);
 
 		if (queryableToAdd === undefined) {
 			return;
@@ -137,8 +140,8 @@ export class OafFilterGroup extends MvuElement {
 		]);
 	}
 
-	_removeFilter(queryableName) {
-		const changedFilters = this.getModel().oafFilters.filter((oafFilter) => oafFilter.queryable.name !== queryableName);
+	_removeFilter(queryableId) {
+		const changedFilters = this.getModel().oafFilters.filter((oafFilter) => oafFilter.queryable.id !== queryableId);
 		this.signal(Update_Filters, changedFilters);
 		this.dispatchEvent(new CustomEvent('change'));
 	}

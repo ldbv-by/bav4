@@ -392,6 +392,10 @@ export class ShowCase extends MvuElement {
 						<li><i>feature</i> components, which have already been implemented, but have not yet been given the most suitable place...</li>
 					</ul>
 				</div>
+				<h2>Test Area</h2>
+				<div class="section"></div>
+
+				<ba-vector-data-styling-test-panel></ba-vector-data-styling-test-panel>
 
 				<h2>Specific components</h2>
 

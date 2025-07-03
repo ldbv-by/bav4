@@ -189,7 +189,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 				? html`<ba-icon
 						.icon="${exclamationTriangleSvg}"
 						.title=${title}
-						.size=${'1'}
+						.size=${'1.2'}
 						.color=${'var(--secondary-color)'}
 						@click=${(e) => onClickStateHint(e, title)}
 						class="layer-state-icon"
@@ -285,9 +285,10 @@ export class LayerItem extends AbstractMvuContentPanel {
 				return html`<ba-icon
 						.icon="${timeSvg}"
 						.title=${translate('layerManager_time_travel_slider')}
-						.color=${'var(--secondary-color)'}
+						.color=${'var(--primary-color)'}
 						@click=${() => openSlider()}
 						class="time-travel-icon"
+						.size=${2}
 					></ba-icon>
 					<ba-value-select
 						.title=${translate('layerManager_time_travel_hint')}
@@ -304,7 +305,8 @@ export class LayerItem extends AbstractMvuContentPanel {
 				? html`<ba-icon
 						.icon="${oafSettingsSvg}"
 						.title=${translate('layerManager_oaf_settings')}
-						.color=${'var(--secondary-color)'}
+						.color=${'var(--primary-color)'}
+						.size=${1.4}
 						@click=${() => {
 							if (!this.#settingsBottomSheetActive) {
 								this._openSettingsBottomSheet(layerProperties.id);

@@ -105,7 +105,7 @@ describe('MiscContentPanel', () => {
 			expect(links[4].target).toEqual('_blank');
 			expect(links[4].querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_imprint');
 
-			expect(links[5].href).toEqual('https://www.ldbv.bayern.de/digitalisierung/bitv/index.html');
+			expect(links[5].href).toEqual('https://ldbv.bayern.de/service/barrierefreiheit_erklaerung/barrierefreiheit_ba.html');
 			expect(links[5].target).toEqual('_blank');
 			expect(links[5].querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_accessibility');
 

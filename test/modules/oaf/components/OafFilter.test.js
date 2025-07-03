@@ -21,9 +21,9 @@ describe('OafFilter', () => {
 		return TestUtils.render(OafFilter.tag, properties);
 	};
 
-	const createQueryable = (name, type) => {
+	const createQueryable = (id, type) => {
 		return {
-			name: name,
+			id: id,
 			type: type,
 			values: [],
 			finalList: false
@@ -38,8 +38,7 @@ describe('OafFilter', () => {
 				operator: getOperatorByName(CqlOperator.EQUALS),
 				value: null,
 				minValue: null,
-				maxValue: null,
-				useNegation: false
+				maxValue: null
 			});
 		});
 
@@ -53,7 +52,6 @@ describe('OafFilter', () => {
 			expect(element.maxValue).toBeNull();
 			expect(element.minValue).toBeNull();
 			expect(element.expression).toBe('');
-			expect(element.useNegation).toBeFalse();
 		});
 
 		it('updates values in model when initialized with queryable property as last', async () => {
@@ -81,14 +79,6 @@ describe('OafFilter', () => {
 			element.shadowRoot.querySelector('.remove-button').click();
 
 			expect(spy).toHaveBeenCalledTimes(1);
-		});
-
-		it('renders "Negate Filter" Button', async () => {
-			const element = await setup();
-
-			expect(element.shadowRoot.querySelector('.not-button.active')).toBeNull();
-			expect(element.shadowRoot.querySelector('.not-button')).not.toBeNull();
-			expect(element.shadowRoot.querySelector('.not-button').innerText).toBe('oaf_filter_not_button');
 		});
 	});
 
@@ -140,6 +130,23 @@ describe('OafFilter', () => {
 					element.operator = operator;
 					expect(operatorField.selectedOptions[0].innerText).toBe(operator.translationKey);
 				}
+			});
+
+			it('shows queryable title', async () => {
+				const element = await setup();
+				element.queryable = { ...createQueryable('foo', OafQueryableType.STRING), title: 'BAR' };
+				expect(element.shadowRoot.querySelector('.title').innerText).toBe('BAR');
+			});
+
+			it('shows queryable id when title is missing', async () => {
+				const element = await setup();
+				element.queryable = { ...createQueryable('foo', OafQueryableType.STRING) };
+
+				expect(element.shadowRoot.querySelector('.title').innerText).toBe('foo');
+				element.queryable = { ...createQueryable('foo', OafQueryableType.STRING), title: null };
+				expect(element.shadowRoot.querySelector('.title').innerText).toBe('foo');
+				element.queryable = { ...createQueryable('foo', OafQueryableType.STRING), title: '' };
+				expect(element.shadowRoot.querySelector('.title').innerText).toBe('foo');
 			});
 		});
 
@@ -207,26 +214,6 @@ describe('OafFilter', () => {
 				element.maxValue = 1;
 
 				expect(spy).toHaveBeenCalledOnceWith(jasmine.anything());
-			});
-		});
-
-		describe('"useNegation"', () => {
-			it('renders "Negate Filter" Button with class active when useNegation is true', async () => {
-				const element = await setup();
-				element.useNegation = true;
-
-				expect(element.shadowRoot.querySelector('.not-button.active')).not.toBeNull();
-			});
-
-			it('toggles property when "Negate Filter" button was clicked', async () => {
-				const element = await setup();
-				const button = element.shadowRoot.querySelector('.not-button');
-
-				expect(element.useNegation).toBeFalse();
-				button.click();
-				expect(element.useNegation).toBeTrue();
-				button.click();
-				expect(element.useNegation).toBeFalse();
 			});
 		});
 

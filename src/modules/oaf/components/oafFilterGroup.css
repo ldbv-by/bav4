@@ -1,54 +1,36 @@
 .filter-group {
-	background: #444;
-	border: 2px solid #222;
-	padding: 10px 20px;
-	min-height: 150px;
-}
-
-#queryable-select {
-	border-bottom: 1px solid;
-	padding-bottom: 5px;
-	background-color: #777;
-}
-
-.title-bar {
 	display: flex;
-	align-items: center;
-	margin-bottom: 8px;
+	margin-top: 0.3em;
+	border-bottom: 1px solid var(--header-background-color);
 }
 
-.title {
-	flex-grow: 1;
-}
-
-.btn-bar {
+.select-container {
+	min-width: 10em;
 	display: flex;
+}
+
+.select-container .ba-form-element {
+	margin: 0;
+	width: 11em;
+}
+
+.filter-container {
 	flex: 1.25;
+	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
-	justify-content: right;
-	ba-button {
-		margin-left: 10px;
-	}
-	ba-button::part(button),
-	select {
-		padding: 6px 10px;
-	}
+	gap: 0.5em;
+	margin-left: 0.5em;
 }
 
-.duplicate-button {
-	width: 80px;
+.button-container {
+	display: flex;
 }
 
 .remove-button::part(button) {
-	background-color: red;
-	color: #fff;
-}
-.filter-container {
-	display: flex;
-	flex-wrap: wrap;
+	height: 100%;
 }
 
-ba-oaf-filter {
-	flex: 0 1 calc(20% - 4px);
-	margin: 2px;
+.duplicate-button::part(button) {
+	height: 100%;
 }

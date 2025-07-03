@@ -12,10 +12,13 @@ import { isNumber, isString } from '../../../utils/checks';
  */
 export const CqlOperator = Object.freeze({
 	EQUALS: 'equals',
+	NOT_EQUALS: 'not_equals',
 	LIKE: 'like',
+	NOT_LIKE: 'not_like',
+	BETWEEN: 'between',
+	NOT_BETWEEN: 'not_between',
 	GREATER: 'greater',
-	LESSER: 'lesser',
-	BETWEEN: 'between'
+	LESS: 'less'
 });
 
 const operators = Object.freeze([
@@ -24,9 +27,28 @@ const operators = Object.freeze([
 		translationKey: 'oaf_operator_equals'
 	},
 	{
+		name: CqlOperator.NOT_EQUALS,
+		translationKey: 'oaf_operator_not_equals'
+	},
+	{
 		name: CqlOperator.LIKE,
 		translationKey: 'oaf_operator_like',
 		typeConstraints: [OafQueryableType.STRING]
+	},
+	{
+		name: CqlOperator.NOT_LIKE,
+		translationKey: 'oaf_operator_not_like',
+		typeConstraints: [OafQueryableType.STRING]
+	},
+	{
+		name: CqlOperator.BETWEEN,
+		translationKey: 'oaf_operator_between',
+		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT]
+	},
+	{
+		name: CqlOperator.NOT_BETWEEN,
+		translationKey: 'oaf_operator_not_between',
+		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT]
 	},
 	{
 		name: CqlOperator.GREATER,
@@ -34,13 +56,8 @@ const operators = Object.freeze([
 		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT]
 	},
 	{
-		name: CqlOperator.LESSER,
-		translationKey: 'oaf_operator_lesser',
-		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT]
-	},
-	{
-		name: CqlOperator.BETWEEN,
-		translationKey: 'oaf_operator_between',
+		name: CqlOperator.LESS,
+		translationKey: 'oaf_operator_less',
 		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT]
 	}
 ]);
@@ -124,33 +141,34 @@ export const createCqlExpression = (oafFilterGroups) => {
  * @returns {string} A CQL-2 Text expression for the provided OafFilter properties.
  */
 export const createCqlFilterExpression = (oafFilter) => {
-	const { value, minValue, maxValue, operator, useNegation } = oafFilter;
-	const { type, name } = oafFilter.queryable;
+	const { value, minValue, maxValue, operator } = oafFilter;
+	const { type, id } = oafFilter.queryable;
 	const useQuotes = type === OafQueryableType.DATE || type === OafQueryableType.STRING;
 
 	if (!Object.values(OafQueryableType).includes(type)) {
 		return '';
 	}
 
-	if (!isString(name) || name.trim() === '') {
+	if (!isString(id) || id.trim() === '') {
 		return '';
 	}
 
-	const equalOp = () => {
+	const equalOp = (negate) => {
 		const exprValue = value ?? '';
 
 		if (!useQuotes && !isNumber(exprValue)) {
 			return '';
 		}
 
-		const expression = useQuotes ? `${name} = '${exprValue}'` : `${name} = ${exprValue}`;
-		return useNegation ? `NOT(${expression})` : `(${expression})`;
+		const operator = negate ? '<>' : '=';
+		const expression = useQuotes ? `${id} ${operator} '${exprValue}'` : `${id} ${operator} ${exprValue}`;
+		return `(${expression})`;
 	};
 
-	const likeOp = () => {
+	const likeOp = (negate) => {
 		const exprValue = value ?? '';
-		const expression = `${name} LIKE '%${exprValue}%'`;
-		return useNegation ? `NOT(${expression})` : `(${expression})`;
+		const expression = `${id} LIKE '%${exprValue}%'`;
+		return negate ? `NOT(${expression})` : `(${expression})`;
 	};
 
 	const greaterOp = () => {
@@ -158,20 +176,18 @@ export const createCqlFilterExpression = (oafFilter) => {
 			return '';
 		}
 
-		const expression = `${name} > ${value}`;
-		return useNegation ? `NOT(${expression})` : `(${expression})`;
+		return `(${id} > ${value})`;
 	};
 
-	const lesserOp = () => {
+	const lessOp = () => {
 		if (!isNumber(value)) {
 			return '';
 		}
 
-		const expression = `${name} < ${value}`;
-		return useNegation ? `NOT(${expression})` : `(${expression})`;
+		return `(${id} < ${value})`;
 	};
 
-	const betweenOp = () => {
+	const betweenOp = (negate) => {
 		let exprMinValue = minValue === '' ? null : minValue;
 		let exprMaxValue = maxValue === '' ? null : maxValue;
 		let expression = null;
@@ -185,15 +201,15 @@ export const createCqlFilterExpression = (oafFilter) => {
 		}
 
 		if (exprMinValue !== null && exprMaxValue !== null) {
-			expression = `${name} <= ${exprMinValue} AND ${name} >= ${exprMaxValue}`;
+			expression = `${id} <= ${exprMinValue} AND ${id} >= ${exprMaxValue}`;
 		} else if (exprMinValue !== null) {
-			expression = `${name} <= ${exprMinValue}`;
+			expression = `${id} <= ${exprMinValue}`;
 		} else if (exprMaxValue !== null) {
-			expression = `${name} >= ${exprMaxValue}`;
+			expression = `${id} >= ${exprMaxValue}`;
 		}
 
 		if (expression !== null) {
-			return useNegation ? `NOT(${expression})` : `(${expression})`;
+			return negate ? `NOT(${expression})` : `(${expression})`;
 		}
 
 		return '';
@@ -201,15 +217,21 @@ export const createCqlFilterExpression = (oafFilter) => {
 
 	switch (operator.name) {
 		case CqlOperator.EQUALS:
-			return equalOp();
+			return equalOp(false);
+		case CqlOperator.NOT_EQUALS:
+			return equalOp(true);
 		case CqlOperator.LIKE:
-			return likeOp();
+			return likeOp(false);
+		case CqlOperator.NOT_LIKE:
+			return likeOp(true);
 		case CqlOperator.GREATER:
 			return greaterOp();
-		case CqlOperator.LESSER:
-			return lesserOp();
+		case CqlOperator.LESS:
+			return lessOp();
 		case CqlOperator.BETWEEN:
-			return betweenOp();
+			return betweenOp(false);
+		case CqlOperator.NOT_BETWEEN:
+			return betweenOp(true);
 		default:
 			return '';
 		// Add more value cases here...
@@ -239,7 +261,6 @@ export const createDefaultOafFilter = () => {
 		value: null,
 		minValue: null,
 		maxValue: null,
-		expression: '',
-		useNegation: false
+		expression: ''
 	};
 };
