@@ -623,50 +623,6 @@ describe('OlStyleService', () => {
 			expect(addOverlaySpy).not.toHaveBeenCalled();
 			expect(warnSpy).toHaveBeenCalledWith('Could not provide a style for unknown style-type');
 		});
-
-		describe('checks the `style` property of an ol.Feature', () => {
-			it('does nothing when a style is not available', () => {
-				const olFeature = new Feature({ geometry: new Point([0, 0]) });
-				spyOn(instanceUnderTest, '_detectStyleType').and.returnValue(null);
-
-				instanceUnderTest.addFeatureStyle(olFeature, {}, {});
-
-				expect(olFeature.getStyle()).toBeNull();
-			});
-
-			it('sets the correct style with baseColor', () => {
-				const olFeature = new Feature({ geometry: new Point([0, 0]) });
-				olFeature.set(asInternalProperty('style'), { baseColor: '#422100' });
-				spyOn(instanceUnderTest, '_detectStyleType').and.returnValue(null);
-
-				instanceUnderTest.addFeatureStyle(olFeature, {}, {});
-				const styleFunction = olFeature.getStyle();
-				const style = styleFunction(olFeature);
-
-				expect(style[0].getImage().getFill().getColor()).toEqual(jasmine.arrayContaining([66, 33, 0]));
-			});
-		});
-
-		describe('checks the `styleHint` property of an ol.Feature', () => {
-			it('does nothing when a StyleHint is not available', () => {
-				const olFeature = new Feature({ geometry: new Point([0, 0]) });
-				spyOn(instanceUnderTest, '_detectStyleType').and.returnValue(null);
-
-				instanceUnderTest.addFeatureStyle(olFeature, {}, {});
-
-				expect(olFeature.getStyle()).toBeNull();
-			});
-
-			it('sets the correct style for `StyleHint.HIGHLIGHT`', () => {
-				const olFeature = new Feature({ geometry: new Point([0, 0]) });
-				olFeature.set(asInternalProperty('styleHint'), StyleHint.HIGHLIGHT);
-				spyOn(instanceUnderTest, '_detectStyleType').and.returnValue(null);
-
-				instanceUnderTest.addFeatureStyle(olFeature, {}, {});
-
-				expect(olFeature.getStyle()).toEqual(highlightGeometryOrCoordinateFeatureStyleFunction());
-			});
-		});
 	});
 
 	describe('update feature style', () => {
@@ -1053,10 +1009,12 @@ describe('OlStyleService', () => {
 				expect(styleServiceAddSpy).not.toHaveBeenCalledWith(olFeature, olMap, olLayer);
 				expect(registerStyleEventListenersSpy).not.toHaveBeenCalledWith(olSource, olLayer, olMap);
 			});
+		});
 
+		describe('applies ba feature styles', () => {
 			it('with a feature with style property', () => {
 				const olMap = new Map();
-				const olFeature = new Feature();
+				const olFeature = new Feature({ geometry: new Point([0, 0]) });
 				olFeature.set(asInternalProperty('style'), { baseColor: '#ff0000' });
 				const olSource = new VectorSource({ features: [olFeature] });
 				const olLayer = new VectorLayer({ source: olSource });
@@ -1066,6 +1024,9 @@ describe('OlStyleService', () => {
 
 				instanceUnderTest._applyFeatureSpecificStyles(olLayer, olMap);
 
+				expect(olFeature.getStyle()(olFeature)[0].getImage().getFill().getColor()).toEqual([255, 0, 0]);
+
+				// does not apply internal styles
 				expect(detectStyleSpy).not.toHaveBeenCalledWith(olFeature, olMap, olLayer);
 				expect(styleServiceAddSpy).not.toHaveBeenCalledWith(olFeature, olMap, olLayer);
 				expect(registerStyleEventListenersSpy).not.toHaveBeenCalledWith(olSource, olLayer, olMap);
@@ -1083,13 +1044,15 @@ describe('OlStyleService', () => {
 
 				instanceUnderTest._applyFeatureSpecificStyles(olLayer, olMap);
 
+				expect(olFeature.getStyle()).toEqual(highlightGeometryOrCoordinateFeatureStyleFunction());
+				// does not apply internal styles
 				expect(detectStyleSpy).not.toHaveBeenCalledWith(olFeature, olMap, olLayer);
 				expect(styleServiceAddSpy).not.toHaveBeenCalledWith(olFeature, olMap, olLayer);
 				expect(registerStyleEventListenersSpy).not.toHaveBeenCalledWith(olSource, olLayer, olMap);
 			});
 		});
 
-		describe('checks if a feature needs a specific styling', () => {
+		describe('checks if a feature needs a internal styling', () => {
 			it('adds a style and registers style event listeners', () => {
 				const olMap = new Map();
 				const olFeature0 = new Feature();

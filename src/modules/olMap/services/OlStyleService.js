@@ -67,7 +67,7 @@ export class OlStyleService {
 	#defaultColorByLayerId = {};
 
 	/**
-	 * Adds (explicit or implicit) specified styles and overlays ({@link OverlayStyle}) to the specified feature.
+	 * Adds (explicit or implicit) specified internal styles and overlays ({@link OverlayStyle}) to the specified feature.
 	 *
 	 * Note: Use only within `olMap` module
 	 * @param {ol.Feature} olFeature the feature to be styled
@@ -75,7 +75,7 @@ export class OlStyleService {
 	 */
 	addFeatureStyle(olFeature, olMap) {
 		const styleType = this._detectStyleType(olFeature);
-
+		if (styleType) console.log(styleType);
 		switch (styleType) {
 			case OlFeatureStyleTypes.MEASURE:
 				this._addMeasureStyle(olFeature, olMap);
@@ -100,20 +100,6 @@ export class OlStyleService {
 			default:
 				console.warn('Could not provide a style for unknown style-type');
 				break;
-		}
-
-		const baStyleHint = olFeature.get(asInternalProperty('styleHint'));
-		const baStyle = olFeature.get(asInternalProperty('style'));
-
-		if (baStyleHint) {
-			switch (baStyleHint) {
-				case StyleHint.HIGHLIGHT:
-					olFeature.setStyle(highlightGeometryOrCoordinateFeatureStyleFunction()); // TODO: move highlightGeometryOrCoordinateFeatureStyleFunction to src/modules/olMap/utils/olStyleUtils.js
-					break;
-			}
-		}
-		if (baStyle?.baseColor) {
-			olFeature.setStyle(getDefaultStyleFunction(hexToRgb(baStyle.baseColor)));
 		}
 	}
 
@@ -173,6 +159,7 @@ export class OlStyleService {
 	 * @returns {ol.layer.Vector}
 	 */
 	applyStyle(olVectorLayer, olMap, vectorGeoResource) {
+		console.log('applyStyles');
 		this._applyLayerSpecificStyles(vectorGeoResource, olVectorLayer);
 
 		this._applyDefaultStyleOptionally(vectorGeoResource, olVectorLayer);
@@ -182,16 +169,16 @@ export class OlStyleService {
 
 	_applyLayerSpecificStyles(vectorGeoResource, olVectorLayer) {
 		const style = olVectorLayer.get('style') ?? vectorGeoResource.style;
+		console.log(style);
 		if (style?.baseColor) {
-			olVectorLayer
-				.getSource()
-				.getFeatures()
-				.forEach((f) => f.setStyle(null));
-
+			// olVectorLayer
+			// 	.getSource()
+			// 	.getFeatures()
+			// 	.forEach((f) => f.setStyle(null));
+			console.log('apply georesource or layer property style');
 			this._setBaseColorForLayer(olVectorLayer, [...hexToRgb(style.baseColor), 0.8]);
-		}
-
-		if (vectorGeoResource.hasStyleHint()) {
+		} else if (vectorGeoResource.hasStyleHint()) {
+			console.log('apply georesource property styleHint');
 			switch (vectorGeoResource.styleHint) {
 				case StyleHint.CLUSTER:
 					olVectorLayer.setStyle(defaultClusterStyleFunction());
@@ -216,6 +203,7 @@ export class OlStyleService {
 				.some((f) => !f.getStyle()) &&
 			!isLayerStyleDefined
 		) {
+			console.log('apply defaultStyle');
 			const color = vectorGeoResource?.sourceType === VectorSourceType.GPX ? this._nextColor() : this._getColorByLayerId(olVectorLayer);
 			olVectorLayer.setStyle(getDefaultStyleFunction(color));
 		}
@@ -239,13 +227,29 @@ export class OlStyleService {
 
 		const applyStyles = (feature) => {
 			this._sanitizeStyleFor(feature);
+			const baStyleHint = feature.get(asInternalProperty('styleHint'));
+			const baStyle = feature.get(asInternalProperty('style'));
 
+			if (baStyleHint) {
+				console.log('apply feature property styleHint');
+				switch (baStyleHint) {
+					case StyleHint.HIGHLIGHT:
+						feature.setStyle(highlightGeometryOrCoordinateFeatureStyleFunction()); // TODO: move highlightGeometryOrCoordinateFeatureStyleFunction to src/modules/olMap/utils/olStyleUtils.js
+						break;
+				}
+			}
+			if (baStyle?.baseColor) {
+				console.log('apply feature property style');
+
+				feature.setStyle(getDefaultStyleFunction(hexToRgb(baStyle.baseColor)));
+			}
 			/**
 			 * We check if an currently present and possible future features needs a specific styling.
 			 * If so, we apply the style and register an event listeners in order to keep the style (and overlays)
 			 * up-to-date with the layer.
 			 */
 			if (isStyleRequired(feature)) {
+				console.log('apply specific featureStyle');
 				this.addFeatureStyle(feature, olMap);
 				this.updateFeatureStyle(feature, olMap, this._mapToStyleProperties(olVectorLayer));
 
@@ -451,7 +455,7 @@ export class OlStyleService {
 		};
 
 		const newStyle = getMarkerStyleArray(getStyleOption(olFeature));
-
+		console.log(newStyle);
 		olFeature.setStyle(() => newStyle);
 	}
 
