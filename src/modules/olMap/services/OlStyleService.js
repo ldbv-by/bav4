@@ -204,7 +204,7 @@ export class OlStyleService {
 		const styleListeners = [];
 		const olVectorSource = olVectorLayer.getSource();
 
-		const isStyleRequired = (olFeature) => {
+		const isInternalStyleRequired = (olFeature) => {
 			const baStyleHint = olFeature.get(asInternalProperty('styleHint'));
 			const baStyle = olFeature.get(asInternalProperty('style'));
 			// no Style required, if we have a styleHint or style as property
@@ -231,11 +231,11 @@ export class OlStyleService {
 				feature.setStyle(getDefaultStyleFunction(hexToRgb(baStyle.baseColor)));
 			}
 			/**
-			 * We check if an currently present and possible future features needs a specific styling.
+			 * We check if an currently present and possible future features needs an internal styling.
 			 * If so, we apply the style and register an event listeners in order to keep the style (and overlays)
 			 * up-to-date with the layer.
 			 */
-			if (isStyleRequired(feature)) {
+			if (isInternalStyleRequired(feature)) {
 				this.addFeatureStyle(feature, olMap);
 				this.updateFeatureStyle(feature, olMap, this._mapToStyleProperties(olVectorLayer));
 
