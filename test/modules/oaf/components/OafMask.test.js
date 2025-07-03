@@ -198,7 +198,45 @@ describe('OafMask', () => {
 				expect(element.shadowRoot.querySelector('#console-btn-apply').label).toBe('oaf_mask_button_apply');
 			});
 
-			it('removes filter-group when "remove" Event received from filter-group', async () => {
+			it('duplicates filter-group in model when "duplicate" Event received', async () => {
+				const element = await setup();
+				element.shadowRoot.querySelector('#btn-add-filter-group').click();
+				const group = element.shadowRoot.querySelector('ba-oaf-filter-group');
+
+				group._addFilter('foo');
+				group.dispatchEvent(new CustomEvent('duplicate'));
+
+				const filterGroups = element.getModel().filterGroups;
+				expect(filterGroups).toHaveSize(2);
+				expect(filterGroups[0].oafFilters).toEqual(filterGroups[1].oafFilters);
+
+				// duplicate's id must differ!
+				expect(typeof filterGroups[0].id).toBe('number');
+				expect(typeof filterGroups[1].id).toBe('number');
+				expect(filterGroups[0].id).not.toEqual(filterGroups[1].id);
+			});
+
+			it('duplicates filter-group in DOM when "duplicate" Event received', async () => {
+				const element = await setup();
+				element.shadowRoot.querySelector('#btn-add-filter-group').click();
+				const group = element.shadowRoot.querySelector('ba-oaf-filter-group');
+
+				group._addFilter('foo');
+				group.dispatchEvent(new CustomEvent('duplicate'));
+
+				const filterGroups = element.shadowRoot.querySelectorAll('ba-oaf-filter-group');
+				expect(filterGroups).toHaveSize(2);
+				expect(filterGroups[0].oafFilters).toEqual(filterGroups[1].oafFilters);
+
+				const firstId = filterGroups[0].getAttribute('group-id');
+				const secondId = filterGroups[1].getAttribute('group-id');
+				// duplicate's id must differ!
+				expect(Number(firstId)).not.toBeNaN();
+				expect(Number(secondId)).not.toBeNaN();
+				expect(firstId).not.toBe(secondId);
+			});
+
+			it('removes filter-group from DOM when "remove" Event received', async () => {
 				const element = await setup();
 				const addFilterGroupbtn = element.shadowRoot.querySelector('#btn-add-filter-group');
 				addFilterGroupbtn.click();
@@ -214,7 +252,7 @@ describe('OafMask', () => {
 				expect(groupsAfterRemove[1]).toBe(groupsBeforeRemove[2]);
 			});
 
-			it('removes filter-group from model when "remove" Event received from filter-group', async () => {
+			it('removes filter-group from model when "remove" Event received', async () => {
 				const element = await setup();
 				const addFilterGroupbtn = element.shadowRoot.querySelector('#btn-add-filter-group');
 				addFilterGroupbtn.click();
@@ -265,7 +303,7 @@ describe('OafMask', () => {
 				const groups = element.shadowRoot.querySelectorAll('ba-oaf-filter-group');
 				const groupToChange = groups[1];
 
-				// assume method of oaf filter group invokes change event
+				// Assumes that _addFilter invokes change event
 				groupToChange._addFilter('foo');
 
 				const maskModel = element.getModel();

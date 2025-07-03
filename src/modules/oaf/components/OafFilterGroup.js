@@ -81,6 +81,10 @@ export class OafFilterGroup extends MvuElement {
 			this.dispatchEvent(new CustomEvent('remove'));
 		};
 
+		const onDuplicateGroup = () => {
+			this.dispatchEvent(new CustomEvent('duplicate'));
+		};
+
 		return html`
 			<style>
 				${css}
@@ -114,8 +118,8 @@ export class OafFilterGroup extends MvuElement {
 					)}
 				</div>
 				<div class="button-container">
-					<ba-icon .type=${'primary'} .size=${2.5} class="duplicate-button" .icon=${cloneSvg}></ba-icon>
-					<ba-icon id="btn-remove-group" .size=${1.6} .type=${'primary'} class="remove-button" .icon=${closeSvg} @click=${onRemoveGroup}></ba-icon>
+					<ba-icon id="btn-duplicate" .type=${'primary'} .size=${2.5} class="duplicate-button" .icon=${cloneSvg} @click=${onDuplicateGroup}></ba-icon>
+					<ba-icon id="btn-remove" .size=${1.6} .type=${'primary'} class="remove-button" .icon=${closeSvg} @click=${onRemoveGroup}></ba-icon>
 				</div>
 			</div>
 		`;
