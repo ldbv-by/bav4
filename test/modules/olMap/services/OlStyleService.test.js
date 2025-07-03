@@ -1109,7 +1109,7 @@ describe('OlStyleService', () => {
 				spyOn(instanceUnderTest, '_detectStyleType').and.callFake(() => {
 					if (firstTimeCall) {
 						firstTimeCall = false;
-						return OlFeatureStyleTypes.DEFAULT;
+						return OlFeatureStyleTypes.POINT;
 					}
 					return null;
 				});
