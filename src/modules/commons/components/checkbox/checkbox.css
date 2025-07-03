@@ -24,7 +24,7 @@ base from: https://codepen.io/avstorm/pen/vYYBxRM
 	transition: all 0.2s ease;
 	margin: auto 0;
 }
-.ba-checkbox span:first-child svg {
+.ba-checkbox.check span:first-child svg {
 	position: absolute;
 	z-index: 1;
 	fill: none;
@@ -41,6 +41,18 @@ base from: https://codepen.io/avstorm/pen/vYYBxRM
 	left: 0;
 	padding: 0.3em;
 }
+.ba-checkbox.eye span:first-child svg {
+	position: absolute;
+	z-index: 1;
+	fill: none;
+	transition: all var(--animation-duration-small-open) var(--animation-easing-open);
+	transition-delay: 0.1s;
+	transform: translate3d(0, 0, 0);
+	top: 0;
+	left: 0;
+	padding: 0.2em;
+}
+
 .ba-checkbox span:first-child:before {
 	content: '';
 	width: 100%;
@@ -90,6 +102,12 @@ base from: https://codepen.io/avstorm/pen/vYYBxRM
 	transform: scale(2.2);
 	opacity: 0;
 	transition: all 0.6s ease;
+}
+.input:checked + .ba-checkbox.eye span:first-child svg path {
+	fill: var(--text3);
+}
+.input:checked + .ba-checkbox.eye span:first-child svg path:first-child {
+	fill: var(--primary-color);
 }
 @keyframes check {
 	50% {
