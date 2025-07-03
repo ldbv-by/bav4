@@ -16,6 +16,7 @@ describe('Checkbox', () => {
 			expect(element.disabled).toBeFalse();
 			expect(element.checked).toBeFalse();
 			expect(element.title).toBe('');
+			expect(element.type).toBe('check');
 		});
 
 		it('renders the view', async () => {
@@ -27,6 +28,14 @@ describe('Checkbox', () => {
 			expect(element.shadowRoot.querySelector('.input').checked).toBeFalse();
 			expect(element.shadowRoot.querySelector('label').title).toBe('');
 			expect(element.shadowRoot.querySelector('.ba-checkbox span:first-child').getAttribute('part')).toBe('checkbox-background');
+			expect(element.shadowRoot.querySelectorAll('.ba-checkbox.check')).toHaveSize(1);
+			//has right svg
+			expect(element.shadowRoot.querySelectorAll('svg')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('svg')[0].getAttribute('viewBox')).toBe('0 0 12 9');
+			expect(element.shadowRoot.querySelectorAll('svg')[0].getAttribute('height')).toBe('100%');
+			expect(element.shadowRoot.querySelectorAll('svg')[0].getAttribute('width')).toBe('100%');
+			expect(element.shadowRoot.querySelectorAll('polyline')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('polyline')[0].getAttribute('points')).toBe('1 5 4 8 11 1');
 			//has slot tag?
 			expect(element.shadowRoot.querySelector('slot')).toBeTruthy();
 			//has slot assigned content?
@@ -82,6 +91,32 @@ describe('Checkbox', () => {
 			element.title = 'foo';
 
 			expect(label.title).toBe('foo');
+		});
+	});
+
+	describe("when property 'type' changes", () => {
+		it('updates the view', async () => {
+			const element = await TestUtils.render(Checkbox.tag);
+			expect(element.shadowRoot.querySelectorAll('.ba-checkbox.check')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.ba-checkbox.eye')).toHaveSize(0);
+			//has right svg
+			expect(element.shadowRoot.querySelectorAll('svg')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('svg')[0].getAttribute('viewBox')).toBe('0 0 12 9');
+			expect(element.shadowRoot.querySelectorAll('polyline')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('polyline')[0].getAttribute('points')).toBe('1 5 4 8 11 1');
+
+			element.type = 'eye';
+
+			expect(element.shadowRoot.querySelectorAll('.ba-checkbox.check')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.ba-checkbox.eye')).toHaveSize(1);
+			//has right svg
+			expect(element.shadowRoot.querySelectorAll('svg')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('svg')[0].getAttribute('viewBox')).toBe('0 0 16 16');
+			expect(element.shadowRoot.querySelectorAll('path')).toHaveSize(2);
+			expect(element.shadowRoot.querySelectorAll('path')[0].getAttribute('d')).toBe('M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0');
+			expect(element.shadowRoot.querySelectorAll('path')[1].getAttribute('d')).toBe(
+				'M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7'
+			);
 		});
 	});
 
