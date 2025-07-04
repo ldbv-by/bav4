@@ -209,7 +209,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 				case LayerState.LOADING:
 					return {
 						icon: loadingSvg,
-						color: 'var(--text4)',
+						color: 'var(--primary-color)',
 						title: translate(`layerManager_title_layerState_${state}`),
 						level: LevelTypes.INFO
 					};
