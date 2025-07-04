@@ -14,6 +14,7 @@ import '../modules/iframe';
 import '../modules/uiTheme';
 import '../modules/stackables';
 import '../modules/featureInfo';
+import '../modules/info';
 
 import { PublicComponent } from '../modules/public/components/PublicComponent';
 
