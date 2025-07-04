@@ -97,7 +97,7 @@ $injector
 	.register('ImportVectorDataService', ImportVectorDataService)
 	.register('ExportVectorDataService', OlExportVectorDataService)
 	.register('ImportWmsService', ImportWmsService)
-	.register('ImportOafService', ImportOafService)
+	.registerSingleton('ImportOafService', new ImportOafService())
 	.registerSingleton('SourceTypeService', new SourceTypeService())
 	.register('Mfp3Encoder', BvvMfp3Encoder)
 	.registerSingleton('SecurityService', new SecurityService())

@@ -41,18 +41,12 @@ import { DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS } from '../../../domain/layer
  * @author taulinger
  */
 export class LayerService {
-	#configService;
-
 	/**
 	 * @param {module:modules/olMap/services/LayerService~imageLoadFunctionProvider} [imageLoadFunctionProvider=getBvvBaaImageLoadFunction]
 	 */
 	constructor(imageLoadFunctionProvider = getBvvBaaImageLoadFunction, tileLoadFunctionProvider = getBvvTileLoadFunction) {
 		this._imageLoadFunctionProvider = imageLoadFunctionProvider;
 		this._tileLoadFunctionProvider = tileLoadFunctionProvider;
-
-		const { ConfigService: configService } = $injector.inject('ConfigService');
-
-		this.#configService = configService;
 	}
 
 	_registerUpdateIntervalHandler(olLayer, geoResource, olMap) {
@@ -80,7 +74,7 @@ export class LayerService {
 		};
 
 		const setUpdateIntervalForLayer = (intervalInSeconds) => {
-			if (intervalInSeconds >= this.#configService.getValue('MIN_LAYER_UPDATE_INTERVAL_SECONDS', DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS)) {
+			if (intervalInSeconds >= DEFAULT_MIN_LAYER_UPDATE_INTERVAL_SECONDS) {
 				const intervalId = setInterval(refreshSource, intervalInSeconds * 1_000);
 				olLayer.getSource().set(asInternalProperty('updateIntervalId'), intervalId);
 			}
