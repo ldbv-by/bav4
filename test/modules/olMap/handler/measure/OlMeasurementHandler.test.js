@@ -37,6 +37,7 @@ import { KML_EMPTY_CONTENT } from '../../../../../src/modules/olMap/formats/kml.
 import { PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../../../../src/modules/olMap/utils/olGeometryUtils.js';
 import { GeometryType } from '../../../../../src/domain/geometryTypes.js';
 import { setAdminAndFileId } from '../../../../../src/store/fileStorage/fileStorage.action.js';
+import { asInternalProperty } from '../../../../../src/utils/propertyUtils.js';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -2036,7 +2037,7 @@ describe('OlMeasurementHandler', () => {
 
 				element.dispatchEvent(new Event('pointerdown'));
 
-				expect(overlay.get('dragging')).toBeTrue();
+				expect(overlay.get(asInternalProperty('dragging'))).toBeTrue();
 			});
 
 			it('changes position of overlay on pointermove', () => {
@@ -2069,14 +2070,14 @@ describe('OlMeasurementHandler', () => {
 
 				element.dispatchEvent(new Event('pointerdown'));
 
-				expect(overlay.get('dragging')).toBeTrue();
+				expect(overlay.get(asInternalProperty('dragging'))).toBeTrue();
 
 				classUnderTest._vectorLayer = layerMock;
 				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 50, 500);
 				expect(overlay.get('manualPositioning')).toBeTrue();
 				expect(overlay.getPosition()).toEqual([50, 500]);
 				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP, 50, 500);
-				expect(overlay.get('dragging')).toBeFalse();
+				expect(overlay.get(asInternalProperty('dragging'))).toBeFalse();
 			});
 
 			it('change overlay-property on pointerup', () => {
@@ -2104,14 +2105,14 @@ describe('OlMeasurementHandler', () => {
 
 				element.dispatchEvent(new Event('pointerdown'));
 
-				expect(overlay.get('dragging')).toBeTrue();
+				expect(overlay.get(asInternalProperty('dragging'))).toBeTrue();
 
 				element.dispatchEvent(new Event('pointerup'));
 
-				expect(overlay.get('dragging')).toBeFalse();
+				expect(overlay.get(asInternalProperty('dragging'))).toBeFalse();
 			});
 
-			it('triggers overlay as dragable', () => {
+			it('triggers overlay as draggable', () => {
 				const state = { ...initialMeasureState, active: true };
 				setup(state);
 				const classUnderTest = new OlMeasurementHandler();
@@ -2135,10 +2136,10 @@ describe('OlMeasurementHandler', () => {
 				const element = overlay.getElement();
 
 				element.dispatchEvent(new Event('mouseenter'));
-				expect(overlay.get('dragable')).toBeTrue();
+				expect(overlay.get(asInternalProperty('draggable'))).toBeTrue();
 
 				element.dispatchEvent(new Event('mouseleave'));
-				expect(overlay.get('dragable')).toBeFalse();
+				expect(overlay.get(asInternalProperty('draggable'))).toBeFalse();
 			});
 		});
 	});

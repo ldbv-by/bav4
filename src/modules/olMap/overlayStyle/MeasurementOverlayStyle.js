@@ -12,6 +12,7 @@ import { DragPan } from 'ol/interaction';
 import { BaOverlay } from '../components/BaOverlay';
 import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
 import { unByKey } from 'ol/Observable';
+import { asInternalProperty } from '../../../utils/propertyUtils';
 
 export const saveManualOverlayPosition = (feature) => {
 	const draggableOverlayTypes = ['area', 'measurement'];
@@ -348,21 +349,21 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		if (dragPanInteraction) {
 			const handleMouseDown = () => {
 				dragPanInteraction.setActive(false);
-				overlay.set('dragging', true);
+				overlay.set(asInternalProperty('dragging'), true);
 				olMap.once(MapBrowserEventType.POINTERUP, handleMouseUp);
 			};
 
 			const handleMouseUp = () => {
 				dragPanInteraction.setActive(true);
-				overlay.set('dragging', false);
+				overlay.set(asInternalProperty('dragging'), false);
 			};
 
 			const handleMouseEnter = () => {
-				overlay.set('dragable', true);
+				overlay.set(asInternalProperty('draggable'), true);
 			};
 
 			const handleMouseLeave = () => {
-				overlay.set('dragable', false);
+				overlay.set(asInternalProperty('draggable'), false);
 			};
 			element.addEventListener(MapBrowserEventType.POINTERDOWN, handleMouseDown);
 			element.addEventListener(MapBrowserEventType.POINTERUP, handleMouseUp);

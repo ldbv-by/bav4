@@ -10,6 +10,7 @@ import { DragPan } from 'ol/interaction';
 import { PROJECTED_LENGTH_GEOMETRY_PROPERTY } from '../../../../src/modules/olMap/utils/olGeometryUtils.js';
 import { BaOverlayTypes } from '../../../../src/modules/olMap/components/BaOverlay.js';
 import { GEODESIC_CALCULATION_STATUS } from '../../../../src/modules/olMap/ol/geodesic/geodesicGeometry.js';
+import { asInternalProperty } from '../../../../src/utils/propertyUtils.js';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -1704,7 +1705,7 @@ describe('MeasurementOverlayStyle', () => {
 			classUnderTest._createDragOn(overlay, mapMock);
 			element.dispatchEvent(new Event('pointerdown'));
 
-			expect(draggingSpy).toHaveBeenCalledWith('dragging', true);
+			expect(draggingSpy).toHaveBeenCalledWith(asInternalProperty('dragging'), true);
 			expect(interactionSpy).toHaveBeenCalledWith(false);
 			expect(onceSpy).toHaveBeenCalledWith('pointerup', jasmine.any(Function));
 		});
@@ -1722,7 +1723,7 @@ describe('MeasurementOverlayStyle', () => {
 			classUnderTest._createDragOn(overlay, mapMock);
 			element.dispatchEvent(new Event('pointerup'));
 
-			expect(draggingSpy).toHaveBeenCalledWith('dragging', false);
+			expect(draggingSpy).toHaveBeenCalledWith(asInternalProperty('dragging'), false);
 			expect(interactionSpy).toHaveBeenCalledWith(true);
 		});
 
@@ -1738,7 +1739,7 @@ describe('MeasurementOverlayStyle', () => {
 			classUnderTest._createDragOn(overlay, mapMock);
 			element.dispatchEvent(new MouseEvent('mouseenter'));
 
-			expect(draggableSpy).toHaveBeenCalledWith('dragable', true);
+			expect(draggableSpy).toHaveBeenCalledWith(asInternalProperty('draggable'), true);
 		});
 
 		it('change overlay-property on mouseleave', () => {
@@ -1753,7 +1754,7 @@ describe('MeasurementOverlayStyle', () => {
 			classUnderTest._createDragOn(overlay, mapMock);
 			element.dispatchEvent(new MouseEvent('mouseleave'));
 
-			expect(draggableSpy).toHaveBeenCalledWith('dragable', false);
+			expect(draggableSpy).toHaveBeenCalledWith(asInternalProperty('draggable'), false);
 		});
 	});
 

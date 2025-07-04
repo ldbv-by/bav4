@@ -45,6 +45,7 @@ import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY, GeodesicGeometr
 import { setData } from '../../../../store/fileStorage/fileStorage.action';
 import { createDefaultLayerProperties } from '../../../../store/layers/layers.reducer';
 import { GeometryType } from '../../../../domain/geometryTypes';
+import { asInternalProperty } from '../../../../utils/propertyUtils';
 
 const defaultMeasurementStats = {
 	geometryType: null,
@@ -276,7 +277,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		};
 
 		const pointerUpHandler = () => {
-			const draggingOverlay = getOverlays(this._vectorLayer).find((o) => o.get('dragging') === true);
+			const draggingOverlay = getOverlays(this._vectorLayer).find((o) => o.get(asInternalProperty('dragging')) === true);
 			if (draggingOverlay) {
 				draggingOverlay.set('dragging', false);
 			}
@@ -720,11 +721,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			measureState.geometryType = this._select.getFeatures().getLength() === 0 ? null : this._select.getFeatures().item(0)?.getGeometry().getType();
 		}
 
-		const dragableOverlay = getOverlays(this._vectorLayer).find((o) => o.get('dragable') === true);
-		if (dragableOverlay) {
+		const draggableOverlay = getOverlays(this._vectorLayer).find((o) => o.get(asInternalProperty('draggable')) === true);
+		if (draggableOverlay) {
 			measureState.type = InteractionStateType.OVERLAY;
 		}
-		const draggingOverlay = getOverlays(this._vectorLayer).find((o) => o.get('dragging') === true);
+		const draggingOverlay = getOverlays(this._vectorLayer).find((o) => o.get(asInternalProperty('dragging')) === true);
 		if (draggingOverlay) {
 			draggingOverlay.setOffset([0, 0]);
 			draggingOverlay.set('manualPositioning', true);
