@@ -40,11 +40,11 @@ describe('OlDrawHandler', () => {
 			this.get = "I'm a StyleService.";
 		}
 
-		addFeatureStyle() {}
+		addInternalFeatureStyle() {}
 
-		updateFeatureStyle() {}
+		updateInternalFeatureStyle() {}
 
-		removeFeatureStyle() {}
+		removeInternalFeatureStyle() {}
 
 		getStyleFunction() {
 			const styleFunction = () => {
@@ -1151,7 +1151,7 @@ describe('OlDrawHandler', () => {
 			spyOn(fileStorageServiceMock, 'isAdminId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
-			const addFeatureStyleSpy = spyOn(classUnderTest._styleService, 'addFeatureStyle');
+			const addInternalFeatureStyleSpy = spyOn(classUnderTest._styleService, 'addInternalFeatureStyle');
 			let oldFeature;
 
 			classUnderTest.activate(map);
@@ -1160,7 +1160,7 @@ describe('OlDrawHandler', () => {
 			});
 
 			await TestUtils.timeout();
-			expect(addFeatureStyleSpy).toHaveBeenCalledWith(oldFeature, map, classUnderTest._vectorLayer);
+			expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(oldFeature, map, classUnderTest._vectorLayer);
 		});
 
 		it('updates style of old features onChange', async () => {
@@ -1175,7 +1175,7 @@ describe('OlDrawHandler', () => {
 			spyOn(fileStorageServiceMock, 'isFileId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
-			const updateFeatureStyleSpy = spyOn(classUnderTest._styleService, 'updateFeatureStyle');
+			const updateInternalFeatureStyleSpy = spyOn(classUnderTest._styleService, 'updateInternalFeatureStyle');
 			let oldFeature;
 
 			classUnderTest.activate(map);
@@ -1185,7 +1185,7 @@ describe('OlDrawHandler', () => {
 
 			await TestUtils.timeout();
 			oldFeature.getGeometry().dispatchEvent('change');
-			expect(updateFeatureStyleSpy).toHaveBeenCalledTimes(1);
+			expect(updateInternalFeatureStyleSpy).toHaveBeenCalledTimes(1);
 		});
 
 		it('adds a drawn feature to the selection, after adding to layer (on addFeature)', async () => {
@@ -2260,7 +2260,7 @@ describe('OlDrawHandler', () => {
 		});
 	});
 
-	describe('_updateFeatureStyle', () => {
+	describe('_updateInternalFeatureStyle', () => {
 		it('prevents style update, when selected feature is missing', () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();

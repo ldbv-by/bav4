@@ -35,9 +35,9 @@ describe('VectorLayerService', () => {
 	};
 
 	const styleService = {
-		addFeatureStyle: () => {},
-		removeFeatureStyle: () => {},
-		updateFeatureStyle: () => {},
+		addInternalFeatureStyle: () => {},
+		removeInternalFeatureStyle: () => {},
+		updateInternalFeatureStyle: () => {},
 		applyStyle: () => {}
 	};
 
