@@ -99,7 +99,7 @@ describe('OlStyleService', () => {
 		instanceUnderTest = new OlStyleService();
 	});
 
-	describe('add feature style', () => {
+	describe('add internal feature style', () => {
 		it('adds measure-style to feature with geodesic property', () => {
 			const addSpy = spyOn(overlayServiceMock, 'add');
 			const featureWithGeodesic = new Feature({
@@ -625,7 +625,7 @@ describe('OlStyleService', () => {
 		});
 	});
 
-	describe('update feature style', () => {
+	describe('update internal feature style', () => {
 		it('updates measure-style to feature with implicit style-type', () => {
 			const measureOverlayMock = { style: { opacity: 1, display: '' } };
 			const overlayMock = {
@@ -741,7 +741,7 @@ describe('OlStyleService', () => {
 		});
 	});
 
-	describe('removes feature styles', () => {
+	describe('removes internal feature styles', () => {
 		it('removes a style from measure feature', () => {
 			const feature = new Feature({
 				geometry: new Polygon([
@@ -804,8 +804,27 @@ describe('OlStyleService', () => {
 		});
 	});
 
+	const getFeature = (withStyle = true) => {
+		const feature = new Feature({ geometry: new Point([0, 0]) });
+		const style = new Style({
+			image: new Icon({
+				size: [42, 42],
+				anchor: [42, 42],
+				anchorXUnits: 'pixels',
+				anchorYUnits: 'pixels',
+				src: 'https://some.url/to/image/foo.png'
+			}),
+			text: new TextStyle({ text: 'foo', fill: new Fill({ color: [42, 21, 0] }), scale: 1.2 })
+		});
+
+		if (withStyle) {
+			feature.setStyle([style]);
+		}
+
+		return feature;
+	};
 	describe('applyStyle', () => {
-		it('calls return the ol.Layer', () => {
+		it('returns the ol.Layer', () => {
 			const olLayer = new VectorLayer({ source: new VectorSource() });
 			const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML);
 			const olMap = new Map();
@@ -878,28 +897,125 @@ describe('OlStyleService', () => {
 
 			expect(applyFeatureSpecificStylesSpy).toHaveBeenCalledWith(olLayer, olMap);
 		});
+
+		describe('cascades the styles to most specific style', () => {
+			it('uses existing feature style', () => {
+				const olFeature = getFeature();
+				const existingStyle = olFeature.getStyle();
+				const featureStyleSpy = spyOn(olFeature, 'setStyle').and.callThrough();
+				const olSource = new VectorSource({ features: [olFeature] });
+				const olLayer = new VectorLayer({ source: olSource });
+				olLayer.set('style', { baseColor: '#ff0000' });
+				olLayer.setStyle(null); // delete openLayers default styleFunction for simplified testability
+				spyOn(instanceUnderTest, '_sanitizeStyleFor').and.callFake(() => {});
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML)
+					.setStyleHint(StyleHint.HIGHLIGHT)
+					.setStyle({ baseColor: '#ff4200' });
+
+				const olMap = new Map();
+
+				instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
+
+				expect(featureStyleSpy).not.toHaveBeenCalled;
+				expect(olFeature.getStyle()).toEqual(existingStyle);
+			});
+
+			it('uses feature style property', () => {
+				const olFeature = getFeature(false);
+				olFeature.set(asInternalProperty('style'), { baseColor: '#ff0000' });
+				olFeature.set(asInternalProperty('styleHint'), StyleHint.HIGHLIGHT);
+
+				const olSource = new VectorSource({ features: [olFeature] });
+				const olLayer = new VectorLayer({ source: olSource });
+				olLayer.set('style', { baseColor: '#ffff00' });
+				olLayer.setStyle(null); // delete openLayers default styleFunction for simplified testability
+				spyOn(instanceUnderTest, '_sanitizeStyleFor').and.callFake(() => {});
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML)
+					.setStyleHint(StyleHint.HIGHLIGHT)
+					.setStyle({ baseColor: '#ff4200' });
+
+				const olMap = new Map();
+
+				instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
+
+				expect(olFeature.getStyle()(olFeature)[0].getImage().getFill().getColor()).toEqual([255, 0, 0]);
+			});
+
+			it('uses feature styleHint property', () => {
+				const olFeature = getFeature(false);
+				olFeature.set(asInternalProperty('styleHint'), StyleHint.HIGHLIGHT);
+
+				const olSource = new VectorSource({ features: [olFeature] });
+				const olLayer = new VectorLayer({ source: olSource });
+				olLayer.set('style', { baseColor: '#ff0000' });
+				olLayer.setStyle(null); // delete openLayers default styleFunction for simplified testability
+				spyOn(instanceUnderTest, '_sanitizeStyleFor').and.callFake(() => {});
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML)
+					.setStyleHint(StyleHint.HIGHLIGHT)
+					.setStyle({ baseColor: '#ff4200' });
+
+				const olMap = new Map();
+
+				instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
+
+				expect(olFeature.getStyle()).toEqual(highlightGeometryOrCoordinateFeatureStyleFunction());
+			});
+
+			it('uses layer style property', () => {
+				const olFeature = getFeature(false);
+
+				const olSource = new VectorSource({ features: [olFeature] });
+				const olLayer = new VectorLayer({ source: olSource });
+				olLayer.set('style', { baseColor: '#ffff00' });
+				olLayer.setStyle(null); // delete openLayers default styleFunction for simplified testability
+
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML)
+					.setStyleHint(StyleHint.HIGHLIGHT)
+					.setStyle({ baseColor: '#ff4200' });
+
+				const olMap = new Map();
+
+				instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
+
+				expect(olLayer.getStyle()(olFeature)[0].getImage().getFill().getColor()).toEqual([255, 255, 0, 0.8]);
+			});
+
+			it('uses geoResource style property', () => {
+				const olFeature = getFeature(false);
+
+				const olSource = new VectorSource({ features: [olFeature] });
+				const olLayer = new VectorLayer({ source: olSource });
+				olLayer.setStyle(null); // delete openLayers default styleFunction for simplified testability
+
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML)
+					.setStyleHint(StyleHint.HIGHLIGHT)
+					.setStyle({ baseColor: '#ff4200' });
+
+				const olMap = new Map();
+
+				instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
+
+				expect(olLayer.getStyle()(olFeature)[0].getImage().getFill().getColor()).toEqual([255, 66, 0, 0.8]);
+			});
+
+			it('uses geoResource styleHint property', () => {
+				const olFeature = getFeature(false);
+
+				const olSource = new VectorSource({ features: [olFeature] });
+				const olLayer = new VectorLayer({ source: olSource });
+
+				olLayer.setStyle(null); // delete openLayers default styleFunction for simplified testability
+				const vectorGeoResource = new VectorGeoResource('geoResourceId', 'geoResourceLabel', VectorSourceType.KML).setStyleHint(StyleHint.HIGHLIGHT);
+				const olMap = new Map();
+
+				instanceUnderTest.applyStyle(olLayer, olMap, vectorGeoResource);
+
+				expect(olLayer.getStyle()).toEqual(highlightGeometryOrCoordinateFeatureStyleFunction());
+			});
+		});
 	});
 
 	describe('apply default style', () => {
-		const getFeature = (withStyle = true) => {
-			const feature = new Feature();
-			const style = new Style({
-				image: new Icon({
-					size: [42, 42],
-					anchor: [42, 42],
-					anchorXUnits: 'pixels',
-					anchorYUnits: 'pixels',
-					src: 'https://some.url/to/image/foo.png'
-				}),
-				text: new TextStyle({ text: 'foo', fill: new Fill({ color: [42, 21, 0] }), scale: 1.2 })
-			});
-
-			if (withStyle) {
-				feature.setStyle([style]);
-			}
-
-			return feature;
-		};
 		describe('sets the layer style', () => {
 			it('when some feature have a style', () => {
 				const withoutStyle = false;
