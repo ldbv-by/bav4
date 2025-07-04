@@ -91,8 +91,6 @@ export class ImportOafService {
 	 */
 	async getFilterCapabilities(oafGeoResource) {
 		for (const [key, { created }] of this.#filterCapabilitiesCache) {
-			// if (Date.now() - created >= 60 * 60 * 1_000) {
-
 			if (Date.now() - created >= DEFAULT_OAF_CAPABILITIES_CACHE_DURATION_SECONDS * 1_000) {
 				this.#filterCapabilitiesCache.delete(key);
 			}

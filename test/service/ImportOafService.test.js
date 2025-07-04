@@ -125,20 +125,30 @@ describe('ImportOafService', () => {
 		});
 
 		it('calls the oafFilterCapabilitiesProvider and serves the second call from the cache', async () => {
-			const oafGeoResource = new OafGeoResource('id0', 'label0', 'url0', 'collectionId0', 12345);
+			const oafGeoResource0 = new OafGeoResource('id0', 'label0', 'url0', 'collectionId0', 12345);
+			const oafGeoResource1 = new OafGeoResource('id1', 'label1', 'url1', 'collectionId1', 12345);
 			const mockOafFilterCapabilities = { foo: 'bar' };
-			const oafFilterCapabilitiesProviderSpy = jasmine.createSpy().withArgs(oafGeoResource).and.resolveTo(mockOafFilterCapabilities);
+			const oafFilterCapabilitiesProviderSpy = jasmine.createSpy().and.callFake((geoResource) => {
+				switch (geoResource.id) {
+					case 'id0':
+						return mockOafFilterCapabilities;
+					default:
+						return null;
+				}
+			});
 			const instanceUnderTest = new ImportOafService(null, oafFilterCapabilitiesProviderSpy);
 
-			const result0 = await instanceUnderTest.getFilterCapabilities(oafGeoResource);
-			const result1 = await instanceUnderTest.getFilterCapabilities(oafGeoResource);
+			const result0 = await instanceUnderTest.getFilterCapabilities(oafGeoResource0);
+			const result1 = await instanceUnderTest.getFilterCapabilities(oafGeoResource0);
+			const result2 = await instanceUnderTest.getFilterCapabilities(oafGeoResource1);
 
 			expect(result0).toEqual(mockOafFilterCapabilities);
 			expect(result1).toEqual(mockOafFilterCapabilities);
-			expect(oafFilterCapabilitiesProviderSpy).toHaveBeenCalledTimes(1);
+			expect(result2).toBeNull();
+			expect(oafFilterCapabilitiesProviderSpy).toHaveBeenCalledTimes(2);
 		});
 
-		it('calls the oafFilterCapabilitiesProvider and serves the second call from the cache', async () => {
+		it('does only add valid results to the cache', async () => {
 			const oafGeoResource = new OafGeoResource('id0', 'label0', 'url0', 'collectionId0', 12345);
 			const oafFilterCapabilitiesProviderSpy = jasmine.createSpy().withArgs(oafGeoResource).and.resolveTo(null);
 			const instanceUnderTest = new ImportOafService(null, oafFilterCapabilitiesProviderSpy);
