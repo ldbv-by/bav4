@@ -32,11 +32,18 @@ import { bvvOafFilterCapabilitiesProvider, bvvOafGeoResourceProvider } from './p
  */
 
 /**
+ * Default OafCapabilities cache duration
+ * @constant
+ */
+export const DEFAULT_OAF_CAPABILITIES_CACHE_DURATION_SECONDS = 60 * 10; // 10min
+
+/**
  * Service for importing OGC API Feature services. Usually returns an array of {@link OafGeoResource}.
  * @class
  * @author taulinger
  */
 export class ImportOafService {
+	#filterCapabilitiesCache = new Map();
 	/**
 	 * @param {oafGeoResourceProvider} [oafGeoResourceProvider = bvvOafGeoResourceProvider]
 	 * @param {oafFilterCapabilitiesProvider} [oafFilterCapabilitiesProvider = bvvOafFilterCapabilitiesProvider]
@@ -83,6 +90,22 @@ export class ImportOafService {
 	 * @throws Will pass through the error of the provider
 	 */
 	async getFilterCapabilities(oafGeoResource) {
-		return this._oafFilterCapabilitiesProvider(oafGeoResource);
+		for (const [key, { created }] of this.#filterCapabilitiesCache) {
+			// if (Date.now() - created >= 60 * 60 * 1_000) {
+
+			if (Date.now() - created >= DEFAULT_OAF_CAPABILITIES_CACHE_DURATION_SECONDS * 1_000) {
+				this.#filterCapabilitiesCache.delete(key);
+			}
+		}
+
+		if (this.#filterCapabilitiesCache.has(oafGeoResource.id)) {
+			return this.#filterCapabilitiesCache.get(oafGeoResource.id).data;
+		}
+
+		const oafFilterCapabilities = await this._oafFilterCapabilitiesProvider(oafGeoResource);
+		if (oafFilterCapabilities) {
+			this.#filterCapabilitiesCache.set(oafGeoResource.id, { created: new Date().getTime(), data: oafFilterCapabilities });
+		}
+		return oafFilterCapabilities;
 	}
 }
