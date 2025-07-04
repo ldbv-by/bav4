@@ -1,5 +1,5 @@
 /**
- * @module modules/oaf/components/oafUtils
+ * @module modules/oaf/utils/oafUtils
  */
 import { createUniqueId } from '../../../utils/numberUtils';
 import { OafQueryableType } from '../../../domain/oaf';
@@ -18,7 +18,10 @@ export const CqlOperator = Object.freeze({
 	BETWEEN: 'between',
 	NOT_BETWEEN: 'not_between',
 	GREATER: 'greater',
-	LESS: 'less'
+	GREATER_EQUALS: 'greater_equals',
+	LESS: 'less',
+	LESS_EQUALS: 'less_equals',
+	NOT: 'not_'
 });
 
 const operators = Object.freeze([
@@ -56,8 +59,18 @@ const operators = Object.freeze([
 		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT]
 	},
 	{
+		name: CqlOperator.GREATER_EQUALS,
+		translationKey: 'oaf_operator_greater_equals',
+		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT]
+	},
+	{
 		name: CqlOperator.LESS,
 		translationKey: 'oaf_operator_less',
+		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT]
+	},
+	{
+		name: CqlOperator.LESS_EQUALS,
+		translationKey: 'oaf_operator_less_equals',
 		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT]
 	}
 ]);
@@ -109,7 +122,11 @@ export const createCqlExpression = (oafFilterGroups) => {
 
 		for (let j = 0; j < group.oafFilters.length; j++) {
 			const filter = group.oafFilters[j];
-			if (filter.expression === '' || filter.expression === null) continue;
+			filter.expression = createCqlFilterExpression(filter);
+
+			if (filter.expression === '' || filter.expression === null) {
+				continue;
+			}
 
 			if (groupExpression !== '') {
 				groupExpression += ' AND ';
@@ -171,20 +188,20 @@ export const createCqlFilterExpression = (oafFilter) => {
 		return negate ? `NOT(${expression})` : `(${expression})`;
 	};
 
-	const greaterOp = () => {
+	const greaterOp = (withEquals) => {
 		if (!isNumber(value)) {
 			return '';
 		}
 
-		return `(${id} > ${value})`;
+		return `(${id} ${withEquals ? '>=' : '>'} ${value})`;
 	};
 
-	const lessOp = () => {
+	const lessOp = (withEquals) => {
 		if (!isNumber(value)) {
 			return '';
 		}
 
-		return `(${id} < ${value})`;
+		return `(${id} ${withEquals ? '<=' : '<'} ${value})`;
 	};
 
 	const betweenOp = (negate) => {
@@ -201,11 +218,11 @@ export const createCqlFilterExpression = (oafFilter) => {
 		}
 
 		if (exprMinValue !== null && exprMaxValue !== null) {
-			expression = `${id} <= ${exprMinValue} AND ${id} >= ${exprMaxValue}`;
+			expression = `${id} >= ${exprMinValue} AND ${id} <= ${exprMaxValue}`;
 		} else if (exprMinValue !== null) {
-			expression = `${id} <= ${exprMinValue}`;
+			expression = `${id} >= ${exprMinValue}`;
 		} else if (exprMaxValue !== null) {
-			expression = `${id} >= ${exprMaxValue}`;
+			expression = `${id} <= ${exprMaxValue}`;
 		}
 
 		if (expression !== null) {
@@ -225,9 +242,13 @@ export const createCqlFilterExpression = (oafFilter) => {
 		case CqlOperator.NOT_LIKE:
 			return likeOp(true);
 		case CqlOperator.GREATER:
-			return greaterOp();
+			return greaterOp(false);
+		case CqlOperator.GREATER_EQUALS:
+			return greaterOp(true);
 		case CqlOperator.LESS:
-			return lessOp();
+			return lessOp(false);
+		case CqlOperator.LESS_EQUALS:
+			return lessOp(true);
 		case CqlOperator.BETWEEN:
 			return betweenOp(false);
 		case CqlOperator.NOT_BETWEEN:

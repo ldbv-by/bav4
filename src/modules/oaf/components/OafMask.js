@@ -2,7 +2,7 @@
  * @module modules/oaf/components/OafMask
  */
 import css from './oafMask.css';
-import { getOperatorDefinitions, createDefaultFilterGroup, createCqlExpression } from './oafUtils';
+import { getOperatorDefinitions, createDefaultFilterGroup, createCqlExpression } from '../utils/oafUtils';
 import { html, nothing } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { MvuElement } from '../../MvuElement';
@@ -30,6 +30,7 @@ export class OafMask extends MvuElement {
 	#translationService;
 	#geoResourceService;
 	#capabilitiesLoaded;
+	#parserService;
 
 	constructor() {
 		super({
@@ -43,13 +44,15 @@ export class OafMask extends MvuElement {
 			StoreService: storeService,
 			ImportOafService: importOafService,
 			TranslationService: translationService,
-			GeoResourceService: geoResourceService
-		} = $injector.inject('StoreService', 'ImportOafService', 'TranslationService', 'GeoResourceService');
+			GeoResourceService: geoResourceService,
+			OafMaskParserService: parserService
+		} = $injector.inject('StoreService', 'ImportOafService', 'TranslationService', 'GeoResourceService', 'OafMaskParserService');
 
 		this.#storeService = storeService;
 		this.#importOafService = importOafService;
 		this.#translationService = translationService;
 		this.#geoResourceService = geoResourceService;
+		this.#parserService = parserService;
 	}
 
 	onInitialize() {
@@ -206,8 +209,15 @@ export class OafMask extends MvuElement {
 		const layer = this._getLayer();
 		const geoResource = this.#geoResourceService.byId(layer.geoResourceId);
 		const capabilities = await this.#importOafService.getFilterCapabilities(geoResource);
+		const cqlString = layer.constraints.filter;
+
 		this.#capabilitiesLoaded = true;
 		this.signal(Update_Capabilities, capabilities);
+
+		if (cqlString && capabilities.queryables.length > 0) {
+			const parsedFilterGroups = this.#parserService.parse(cqlString, capabilities.queryables);
+			this.signal(Update_Filter_Groups, parsedFilterGroups);
+		}
 	}
 
 	get layerId() {
