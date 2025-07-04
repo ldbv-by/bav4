@@ -5,7 +5,33 @@ import { CqlLexer, CqlTokenType } from '../utils/CqlLexer';
 import { CqlOperator, createDefaultFilterGroup, createDefaultOafFilter, getOperatorByName } from '../utils/oafUtils';
 
 /**
- * Service to parse cql strings and convert them to a filter array, consumable by {@link OafMask}.
+ * Definition of an operator used in {@link OafFilter}
+ * @typedef {Object} OafOperatorDefinition
+ * @property {CqlOperator} name The unique name of the operator represented by an {@link CqlOperator} enum.
+ * @property {string} translationKey The translation key for localization.
+ * @property {Array<OafQueryableType>} typeConstraints The allowed types for this operator.
+ */
+
+/**
+ * A filter group object of a {@link OafMask}
+ * @typedef OafFilterGroupData
+ * @property {number} [id] The id of this filter group
+ * @property {Array<OafFilterData>} [oafFilters] The oafFilters associated with this filter group
+ */
+
+/**
+ * A filter object of a {@link OafFilterGroup}
+ * @typedef OafFilterData
+ * @property {OafQueryable} [queryable] The queryable associated with this filter
+ * @property {Object} [operator] The operator used in this filter
+ * @property {string|number|null} [value] The value for the filter
+ * @property {number|null}  [minValue] The minimum value for range filters
+ * @property {number|null}  [maxValue] The maximum value for range filters
+ * @property {string} [expression] The CQL expression for this filter
+ */
+
+/**
+ * Service to parse CQL strings and convert them to a filter array, consumable by {@link OafMask}.
  * @class
  * @author herrmutig
  */
@@ -17,10 +43,10 @@ export class OafMaskParserService {
 	}
 
 	/**
-	 * parses a cql string with the schema ([group([expression] AND [expression])] OR [group([expression] AND [expression])]).
+	 * Parses a CQL string with the schema ([group([expression] AND [expression])]) OR [group([expression] AND [expression])]).
 	 *
 	 * @param {string} string the cql string to parse
-	 * @returns {Array} An array of filters that can be consumed by {@link OafMask}
+	 * @returns {Array<OafFilterGroupData>} An array containing filter-groups that can be consumed by {@link OafMask}
 	 */
 	parse(string, queryables) {
 		const connectionTokenTypes = [CqlTokenType.And, CqlTokenType.Or];
@@ -114,6 +140,7 @@ export class OafMaskParserService {
 					throw new Error(`Expected a symbol named "${expr.symbol.value}" but got "${secondSymbol.value}".`);
 				}
 
+				//@ts-ignore
 				const operatorCombinationString = expr.operator.value + secondOperator.value;
 				const operatorCombination = { ...expr.operator };
 
@@ -166,6 +193,7 @@ export class OafMaskParserService {
 				let token = peek(0);
 
 				while (unconsumedTokens.length > 0 && token.type !== CqlTokenType.OpenBracket && token.type !== CqlTokenType.ClosedBracket) {
+					//@ts-ignore
 					if (connectionTokenTypes.includes(peek(0).type)) {
 						consume();
 						token = peek(0);
@@ -200,46 +228,40 @@ export class OafMaskParserService {
 				return null;
 			}
 
-			switch (expression.operator.type) {
-				case CqlTokenType.BinaryOperator: {
-					const oafFilter = {
-						...createDefaultOafFilter(),
-						operator: getOperatorByName(operatorName),
-						queryable: queryable,
-						value: expression.literal.value
-					};
+			if (expression.operator.type === CqlTokenType.BinaryOperator) {
+				const oafFilter = {
+					...createDefaultOafFilter(),
+					operator: getOperatorByName(operatorName),
+					queryable: queryable,
+					value: expression.literal.value
+				};
 
-					// Special Case "Contains" instead of "LIKE" as Operator.
-					if (
-						expression.operator.operatorName === CqlOperator.LIKE &&
-						oafFilter.value.charAt(0) === '%' &&
-						oafFilter.value.charAt(oafFilter.length - 1)
-					) {
-						oafFilter.value = oafFilter.value.slice(1, -1);
-					}
+				// Special Case "Contains" instead of "LIKE" as Operator.
+				if (
+					expression.operator.operatorName === CqlOperator.LIKE &&
+					oafFilter.value.charAt(0) === '%' &&
+					oafFilter.value.charAt(oafFilter.length - 1)
+				) {
+					oafFilter.value = oafFilter.value.slice(1, -1);
+				}
 
-					return oafFilter;
-				}
-				case CqlTokenType.ComparisonOperator: {
-					return {
-						...createDefaultOafFilter(),
-						operator: getOperatorByName(operatorName),
-						queryable: queryable,
-						minValue: expression.leftLiteral.value,
-						maxValue: expression.rightLiteral.value
-					};
-				}
-				default:
-					throw new Error(`Can not convert Expression to OafFilter - Unsupported operator of type: "${expression.operator.type}"`);
+				return oafFilter;
 			}
+
+			// Otherwise the operator is of CqlTokenType.ComparisonOperator
+			return {
+				...createDefaultOafFilter(),
+				operator: getOperatorByName(operatorName),
+				queryable: queryable,
+				minValue: expression.leftLiteral.value,
+				maxValue: expression.rightLiteral.value
+			};
 		};
 
 		validateBrackets();
-		// skip root, since it always is an array with 1 entry.
 		const filterGroupExpressions = parseUnconsumedTokens();
 		const result = [];
 
-		// Create Filter Groups
 		for (const filterExpressions of filterGroupExpressions) {
 			const filterGroup = createDefaultFilterGroup();
 

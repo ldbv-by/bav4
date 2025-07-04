@@ -5,6 +5,16 @@
 import { CqlOperator } from './oafUtils';
 
 /**
+ * Represents a piece of a CQL string (e.g. keyword, symbol)
+ * @typedef CqlToken
+ * @property {CqlTokenType} type The type of the token
+ * @property {string|number|boolean} value The value of the token.
+ * @property {number} startsAt The starting index of the token in the provided CQL string.
+ * @property {number} endsAt The ending index (exclusive) of the token in the provided CQL string.
+ * @property {string|null} operatorName The operator name if the token's type represents an operator, otherwise null.
+ */
+
+/**
  * Available Token Types the lexer can interpret
  * @readonly
  * @enum {string}
@@ -125,7 +135,7 @@ const CqlTokenSpecification = Object.freeze([
 ]);
 
 /**
- * Tokenizes a given cql string
+ * Tokenizes a given CQL string
  * @class
  * @author herrmutig
  */
@@ -133,9 +143,9 @@ export class CqlLexer {
 	constructor() {}
 
 	/**
-	 * tokenizes/lexes a given cql string.
+	 * Tokenizes/lexes a given CQL string.
 	 * @param {string} string
-	 * @returns { Array }
+	 * @returns { Array<CqlToken> }
 	 */
 	tokenize(string) {
 		let cursor = 0;
