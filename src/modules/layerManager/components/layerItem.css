@@ -173,7 +173,19 @@ ba-value-select {
 	margin-left: 0.5em;
 }
 
+.layer-state-icon.loading {
+	animation: spin 2s linear infinite;
+}
+
 .layer-state-icon::part(icon) {
 	position: relative;
 	top: 0.1em;
+}
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
 }

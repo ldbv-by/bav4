@@ -209,7 +209,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 				case LayerState.LOADING:
 					return {
 						icon: loadingSvg,
-						color: 'var(--primary-color)',
+						color: 'var(--text4)',
 						title: translate(`layerManager_title_layerState_${state}`),
 						level: LevelTypes.INFO
 					};
@@ -224,10 +224,11 @@ export class LayerItem extends AbstractMvuContentPanel {
 				? html`<ba-icon
 						.icon="${stateProperties.icon}"
 						.title="${stateProperties.title}"
-						.size=${'1.2'}
+						.size=${'1.3'}
 						.color="${stateProperties.color}"
+						.color_hover="${stateProperties.color}"
 						@click=${(e) => onClickStateHint(e, stateProperties)}
-						class="layer-state-icon"
+						class="layer-state-icon ${layerState}"
 					></ba-icon>`
 				: nothing;
 		};
@@ -439,6 +440,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 			<div class="ba-section divider">
 				<div class="ba-list-item">
 					<ba-checkbox
+						.type=${'eye'}
 						.title="${getVisibilityTitle()}"
 						class="ba-list-item__text"
 						tabindex="0"

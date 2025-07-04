@@ -166,7 +166,7 @@ describe('LayerItem', () => {
 				state: LayerState.INCOMPLETE_DATA
 			};
 			const element = await setup(layer);
-			const iconElement = element.shadowRoot.querySelector('ba-icon.layer-state-icon');
+			const iconElement = element.shadowRoot.querySelector('ba-icon.layer-state-icon.' + LayerState.INCOMPLETE_DATA);
 
 			expect(iconElement.title).toBe('layerManager_title_layerState_incomplete_data');
 			expect(iconElement.color).toBe('var(--warning-color)');
@@ -200,7 +200,7 @@ describe('LayerItem', () => {
 				state: LayerState.ERROR
 			};
 			const element = await setup(layer);
-			const iconElement = element.shadowRoot.querySelector('ba-icon.layer-state-icon');
+			const iconElement = element.shadowRoot.querySelector('ba-icon.layer-state-icon.' + LayerState.ERROR);
 
 			expect(iconElement.title).toBe('layerManager_title_layerState_error');
 			expect(iconElement.color).toBe('var(--error-color)');
@@ -234,7 +234,7 @@ describe('LayerItem', () => {
 				state: LayerState.LOADING
 			};
 			const element = await setup(layer);
-			const iconElement = element.shadowRoot.querySelector('ba-icon.layer-state-icon');
+			const iconElement = element.shadowRoot.querySelector('ba-icon.layer-state-icon.' + LayerState.LOADING);
 
 			expect(iconElement.title).toBe('layerManager_title_layerState_loading');
 			expect(iconElement.color).toBe('var(--primary-color)');
@@ -268,7 +268,7 @@ describe('LayerItem', () => {
 				state: LayerState.OK
 			};
 			const element = await setup(layer);
-			const iconElement = element.shadowRoot.querySelector('ba-icon.layer-state-icon');
+			const iconElement = element.shadowRoot.querySelector('ba-icon.layer-state-icon.' + LayerState.OK);
 
 			expect(iconElement).toBeNull();
 		});
