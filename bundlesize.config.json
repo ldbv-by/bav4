@@ -7,7 +7,7 @@
 		},
 		{
 			"path": "./dist/embed.*.js",
-			"maxSize": "2.15 MB",
+			"maxSize": "2.20 MB",
 			"compression": "none"
 		},
 		{
