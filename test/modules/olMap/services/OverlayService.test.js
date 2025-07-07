@@ -7,6 +7,7 @@ import { OlFeatureStyleTypes } from '../../../../src/modules/olMap/services/OlSt
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { measurementReducer } from '../../../../src/store/measurement/measurement.reducer';
+import { asInternalProperty } from '../../../../src/utils/propertyUtils.js';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -168,7 +169,7 @@ describe('OverlayService', () => {
 				])
 			});
 			feature.setId('measure_123');
-			feature.set('measurement', mockOverlay);
+			feature.set(asInternalProperty('measurement'), mockOverlay);
 			feature.set('area', mockOverlay);
 
 			const addOverlaySpy = jasmine.createSpy();
@@ -194,7 +195,7 @@ describe('OverlayService', () => {
 					]
 				])
 			});
-			feature.set('measurement', {});
+			feature.set(asInternalProperty('measurement'), {});
 			feature.set('area', {});
 
 			const propertySetterSpy = spyOn(feature, 'set');

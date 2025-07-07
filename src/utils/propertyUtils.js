@@ -39,6 +39,8 @@ export const LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS = Object.freeze([
 	'finishOnFirstPoint',
 	'displayruler',
 	'measurement',
+	'measurement_position_x',
+	'measurement_position_y',
 	'area',
 	'partitions',
 	'partition_delta',

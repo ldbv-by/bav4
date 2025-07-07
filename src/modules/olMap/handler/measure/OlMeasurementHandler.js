@@ -499,7 +499,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		const finishDistanceOverlay = (event) => {
 			const geometry = event.feature.getGeometry();
-			const distanceOverlay = event.feature.get('measurement');
+			const distanceOverlay = event.feature.get(asInternalProperty('measurement'));
 			distanceOverlay.getElement().static = true;
 			if (geometry instanceof Polygon && !this._sketchHandler.isFinishOnFirstPoint) {
 				const lineCoordinates = geometry.getCoordinates()[0].slice(0, -1);

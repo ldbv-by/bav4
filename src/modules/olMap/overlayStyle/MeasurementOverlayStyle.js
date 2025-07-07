@@ -15,7 +15,7 @@ import { unByKey } from 'ol/Observable';
 import { asInternalProperty } from '../../../utils/propertyUtils';
 
 export const saveManualOverlayPosition = (feature) => {
-	const draggableOverlayTypes = ['area', 'measurement'];
+	const draggableOverlayTypes = ['area', asInternalProperty('measurement')];
 	draggableOverlayTypes.forEach((t) => {
 		const overlay = feature.get(t);
 		if (overlay) {
@@ -108,7 +108,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	 * implementation of the OverlayStyle
 	 */
 	update(olFeature, olMap, properties = {}) {
-		const distanceOverlay = olFeature.get('measurement');
+		const distanceOverlay = olFeature.get(asInternalProperty('measurement'));
 		const measureGeometry = properties.geometry ? properties.geometry : olFeature.getGeometry();
 		if (distanceOverlay) {
 			this._updateOlOverlay(distanceOverlay, measureGeometry, '');
@@ -153,7 +153,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 
 		const featureOverlays = olFeature.get('overlays') || [];
 		featureOverlays.forEach((o) => olMap.removeOverlay(o));
-		olFeature.set('measurement', null);
+		olFeature.set(asInternalProperty('measurement'), null);
 		olFeature.set('area', null);
 		olFeature.set('partitions', null);
 		olFeature.set('overlays', []);
@@ -168,12 +168,12 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		const createNew = () => {
 			const isDraggable = !this.#environmentService.isTouch() && this._isActiveMeasurement();
 			const overlay = this._createOlOverlay(olMap, { offset: [0, -15], positioning: 'bottom-center' }, BaOverlayTypes.DISTANCE, isDraggable);
-			olFeature.set('measurement', overlay);
+			olFeature.set(asInternalProperty('measurement'), overlay);
 			this._add(overlay, olFeature, olMap);
 			return overlay;
 		};
 
-		const distanceOverlay = olFeature.get('measurement') || createNew();
+		const distanceOverlay = olFeature.get(asInternalProperty('measurement')) || createNew();
 		if (olFeature && !olFeature.getGeometry().get(PROJECTED_LENGTH_GEOMETRY_PROPERTY)) {
 			olFeature.getGeometry().set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, olFeature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY));
 		}
@@ -261,7 +261,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	}
 
 	_restoreManualOverlayPosition(olFeature) {
-		const draggableOverlayTypes = ['area', 'measurement'];
+		const draggableOverlayTypes = ['area', asInternalProperty('measurement')];
 		draggableOverlayTypes.forEach((t) => {
 			const overlay = olFeature.get(t);
 			if (overlay) {

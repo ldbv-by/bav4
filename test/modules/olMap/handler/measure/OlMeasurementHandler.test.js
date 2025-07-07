@@ -1156,10 +1156,10 @@ describe('OlMeasurementHandler', () => {
 			feature.getGeometry().dispatchEvent('change');
 			simulateDrawEvent('drawend', classUnderTest._draw, feature);
 
-			const baOverlay = feature.get('measurement').getElement();
+			const baOverlay = feature.get(asInternalProperty('measurement')).getElement();
 
 			expect(baOverlay.static).toBeTrue();
-			expect(feature.get('measurement').getOffset()).toEqual([0, -15]);
+			expect(feature.get(asInternalProperty('measurement')).getOffset()).toEqual([0, -15]);
 		});
 
 		it('feature gets valid id start drawing', () => {
@@ -1224,7 +1224,7 @@ describe('OlMeasurementHandler', () => {
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			feature.getGeometry().dispatchEvent('change');
 
-			const overlay = feature.get('measurement');
+			const overlay = feature.get(asInternalProperty('measurement'));
 
 			expect(overlay.getPosition()[0]).toBe(0);
 			expect(overlay.getPosition()[1]).toBeCloseTo(500, 0);
@@ -1249,7 +1249,7 @@ describe('OlMeasurementHandler', () => {
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			feature.getGeometry().dispatchEvent('change');
 
-			const overlay = feature.get('measurement');
+			const overlay = feature.get(asInternalProperty('measurement'));
 			expect(overlay.getPosition()[0]).toBe(0);
 			expect(overlay.getPosition()[1]).toBeCloseTo(500, 0);
 			snappedGeometry.setCoordinates([
@@ -2032,7 +2032,7 @@ describe('OlMeasurementHandler', () => {
 				simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 				feature.getGeometry().dispatchEvent('change');
 				simulateDrawEvent('drawend', classUnderTest._draw, feature);
-				const overlay = feature.get('measurement');
+				const overlay = feature.get(asInternalProperty('measurement'));
 				const element = overlay.getElement();
 
 				element.dispatchEvent(new Event('pointerdown'));
@@ -2065,7 +2065,7 @@ describe('OlMeasurementHandler', () => {
 				simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 				feature.getGeometry().dispatchEvent('change');
 				simulateDrawEvent('drawend', classUnderTest._draw, feature);
-				const overlay = feature.get('measurement');
+				const overlay = feature.get(asInternalProperty('measurement'));
 				const element = overlay.getElement();
 
 				element.dispatchEvent(new Event('pointerdown'));
@@ -2100,7 +2100,7 @@ describe('OlMeasurementHandler', () => {
 				simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 				feature.getGeometry().dispatchEvent('change');
 				simulateDrawEvent('drawend', classUnderTest._draw, feature);
-				const overlay = feature.get('measurement');
+				const overlay = feature.get(asInternalProperty('measurement'));
 				const element = overlay.getElement();
 
 				element.dispatchEvent(new Event('pointerdown'));
@@ -2132,7 +2132,7 @@ describe('OlMeasurementHandler', () => {
 				simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 				feature.getGeometry().dispatchEvent('change');
 				simulateDrawEvent('drawend', classUnderTest._draw, feature);
-				const overlay = feature.get('measurement');
+				const overlay = feature.get(asInternalProperty('measurement'));
 				const element = overlay.getElement();
 
 				element.dispatchEvent(new Event('mouseenter'));
