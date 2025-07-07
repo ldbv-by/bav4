@@ -22,6 +22,7 @@ describe('propertyUtils', () => {
 				'overlays',
 				'manualPositioning',
 				'dragging',
+				'draggable',
 				'geodesic',
 				'measurement_style_listeners',
 				'projectedLength'
@@ -40,7 +41,7 @@ describe('propertyUtils', () => {
 		it('prepends a key with the internal-property prefix', () => {
 			expect(asInternalProperty('key')).toBe('_ba_key');
 			expect(asInternalProperty('_ba_key')).toBe('_ba_key');
-			expect(asInternalProperty(21)).toBeNull();
+			expect(asInternalProperty(22)).toBeNull();
 		});
 	});
 
@@ -48,7 +49,7 @@ describe('propertyUtils', () => {
 		it('Checks if a given property key denotes an internal property', () => {
 			expect(isInternalProperty('key')).toBeFalse();
 			expect(isInternalProperty('_ba_key')).toBeTrue();
-			expect(isInternalProperty(21)).toBeFalse();
+			expect(isInternalProperty(22)).toBeFalse();
 		});
 	});
 });

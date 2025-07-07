@@ -45,6 +45,7 @@ export const LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS = Object.freeze([
 	'overlays',
 	'manualPositioning',
 	'dragging',
+	'draggable',
 	'geodesic',
 	'measurement_style_listeners',
 	'projectedLength'
