@@ -6,7 +6,7 @@ import { getUid } from 'ol';
 import { VectorSourceType } from '../../../domain/geoResources';
 import { StyleHint } from '../../../domain/styles';
 import { $injector } from '../../../injection/index';
-import { getContrastColorFrom, rgbToHex } from '../../../utils/colors';
+import { getContrastColorFrom, hexToRgb, rgbToHex } from '../../../utils/colors';
 import { highlightGeometryOrCoordinateFeatureStyleFunction } from '../handler/highlight/styleUtils';
 import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../ol/geodesic/geodesicGeometry';
 import {
@@ -67,14 +67,13 @@ export class OlStyleService {
 	#defaultColorByLayerId = {};
 
 	/**
-	 * Adds (explicit or implicit) specified styles and overlays ({@link OverlayStyle}) to the specified feature.
+	 * Adds (explicit or implicit) specified internal styles and overlays ({@link OverlayStyle}) to the specified feature.
 	 *
 	 * Note: Use only within `olMap` module
 	 * @param {ol.Feature} olFeature the feature to be styled
 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style will be added
-	 * @param {ol.Layer} olLayer the layer of the feature, used for layer-wide color in the default style
 	 */
-	addFeatureStyle(olFeature, olMap, olLayer) {
+	addInternalFeatureStyle(olFeature, olMap) {
 		const styleType = this._detectStyleType(olFeature);
 		switch (styleType) {
 			case OlFeatureStyleTypes.MEASURE:
@@ -94,24 +93,12 @@ export class OlStyleService {
 			case OlFeatureStyleTypes.GEOJSON:
 				this._addGeoJSONStyle(olFeature);
 				break;
-			case OlFeatureStyleTypes.DEFAULT:
-				this._addDefaultStyle(olFeature, olLayer);
-				break;
 			case OlFeatureStyleTypes.ROUTING:
 				this._addRoutingStyle(olFeature);
 				break;
 			default:
 				console.warn('Could not provide a style for unknown style-type');
 				break;
-		}
-
-		const styleHint = olFeature.get(asInternalProperty('styleHint'));
-		if (styleHint) {
-			switch (styleHint) {
-				case StyleHint.HIGHLIGHT:
-					olFeature.setStyle(highlightGeometryOrCoordinateFeatureStyleFunction()); // TODO: move highlightGeometryOrCoordinateFeatureStyleFunction to src/modules/olMap/utils/olStyleUtils.js
-					break;
-			}
 		}
 	}
 
@@ -137,7 +124,7 @@ export class OlStyleService {
 	 * implementation of the StyleService
 	 * @param {OlFeatureStyleTypes} [styleType] the {@link OlFeatureStyleTypes}, which should be used for the update
 	 */
-	updateFeatureStyle(olFeature, olMap, properties, styleType = null) {
+	updateInternalFeatureStyle(olFeature, olMap, properties, styleType = null) {
 		const usingStyleType = styleType ? styleType : this._detectStyleType(olFeature);
 		const { OverlayService: overlayService } = $injector.inject('OverlayService');
 		if (usingStyleType === OlFeatureStyleTypes.MEASURE) {
@@ -152,68 +139,117 @@ export class OlStyleService {
 	 * @param {ol.Feature} olFeature the feature
 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style exists
 	 */
-	removeFeatureStyle(olFeature, olMap) {
+	removeInternalFeatureStyle(olFeature, olMap) {
 		const usingStyleType = this._detectStyleType(olFeature);
 		const { OverlayService: overlayService } = $injector.inject('OverlayService');
 		overlayService.remove(olFeature, olMap, usingStyleType);
 	}
 
 	/**
-	 * Adds specific stylings (and overlays) for a vector layer in the following manner:
-	 * 1. The {@link StyleHint} of the GeoResource is applied on the `olVectorLayer`
-	 * 2. If the `olVectorLayer` contains features, the feature specific styling is applied (internal StyleTypes and the public {@link StyleHint})
+	 * Adds stylings (and overlays) to a vector layer.
+	 * The most specific styling is applied in the following manner:
+	 *
+	 * 1. If existing, the {@link StyleHint} of {@link AbstractVectorGeoResource} is applied on the `olVectorLayer`
+	 * 2. If {@link module:domain/styles~Style} of the {@link AbstractVectorGeoResource} or the {@link module:store/layers/layers_action~Layer} is applied on the `olVectorLayer`
+	 * 3. A DefaultStyle is applied to the {@link module:store/layers/layers_action~Layer} if the layer and ANY containing features does not have a style.
+	 * 4. If the `olVectorLayer` contains features, the most feature specific styling is applied in the following order:
+	 * 	a) {@link module:domain/styles~StyleHint} property of the feature -> b) internal StyleTypes -> c) {@link module:domain/styles~Style} property of the feature
 	 * @param {ol.layer.Vector} olVectorLayer
 	 * @param {ol.Map} olMap
-	 * @param {AbstractVectorGeoResource} vectorGeoResource
+	 * @param {module:domain/geoResources~AbstractVectorGeoResource} vectorGeoResource
 	 * @returns {ol.layer.Vector}
 	 */
 	applyStyle(olVectorLayer, olMap, vectorGeoResource) {
-		this._sanitizeStyles(olVectorLayer);
-		this._applyStyleHint(vectorGeoResource.styleHint, olVectorLayer);
+		this._applyLayerSpecificStyles(vectorGeoResource, olVectorLayer);
+
+		this._applyDefaultStyleOptionally(vectorGeoResource, olVectorLayer);
 
 		return this._applyFeatureSpecificStyles(olVectorLayer, olMap);
 	}
 
-	/**
-	 * Applies the style according to the given `StyleHint`
-	 * @param {StyleHint} styleHint
-	 * @param {ol.layer.Vector} olVectorLayer
-	 * @returns {ol.layer.Vector}
-	 */
-	_applyStyleHint(styleHint, olVectorLayer) {
-		switch (styleHint) {
-			case StyleHint.CLUSTER:
-				olVectorLayer.setStyle(defaultClusterStyleFunction());
-				break;
-			case StyleHint.HIGHLIGHT:
-				olVectorLayer.setStyle(highlightGeometryOrCoordinateFeatureStyleFunction()); // TODO: move highlightGeometryOrCoordinateFeatureStyleFunction to src/modules/olMap/utils/olStyleUtils.js
-				break;
+	_applyLayerSpecificStyles(vectorGeoResource, olVectorLayer) {
+		const style = olVectorLayer.get('style') ?? vectorGeoResource.style;
+		if (style?.baseColor) {
+			this._setBaseColorForLayer(olVectorLayer, [...hexToRgb(style.baseColor), 0.8]);
+		} else if (vectorGeoResource.hasStyleHint()) {
+			switch (vectorGeoResource.styleHint) {
+				case StyleHint.CLUSTER:
+					olVectorLayer.setStyle(defaultClusterStyleFunction());
+					break;
+				case StyleHint.HIGHLIGHT:
+					olVectorLayer.setStyle(highlightGeometryOrCoordinateFeatureStyleFunction()); // TODO: move highlightGeometryOrCoordinateFeatureStyleFunction to src/modules/olMap/utils/olStyleUtils.js
+					break;
+			}
+		}
+
+		return olVectorLayer;
+	}
+
+	_applyDefaultStyleOptionally(vectorGeoResource, olVectorLayer) {
+		const style = olVectorLayer.get('style') ?? vectorGeoResource.style;
+
+		const isLayerStyleDefined = style?.baseColor || vectorGeoResource.hasStyleHint();
+		if (
+			olVectorLayer
+				.getSource()
+				.getFeatures()
+				.some((f) => !f.getStyle()) &&
+			!isLayerStyleDefined
+		) {
+			const color = vectorGeoResource?.sourceType === VectorSourceType.GPX ? this._nextColor() : this._getColorByLayerId(olVectorLayer);
+			olVectorLayer.setStyle(getDefaultStyleFunction(color));
 		}
 		return olVectorLayer;
 	}
 
 	_applyFeatureSpecificStyles(olVectorLayer, olMap) {
-		const isStyleRequired = (olFeature) => this._detectStyleType(olFeature) !== null;
-		/**
-		 * We check if an currently present and possible future features needs a specific styling.
-		 * If so, we apply the style and register an event listeners in order to keep the style (and overlays)
-		 * up-to-date with the layer.
-		 */
-
+		const styleListeners = [];
 		const olVectorSource = olVectorLayer.getSource();
 
-		if (olVectorSource.getFeatures().some((feature) => isStyleRequired(feature))) {
-			// if we have at least one style requiring feature, we register the styleEvent listener once
-			// and apply the style for all currently present features
-			this._registerStyleEventListeners(olVectorSource, olVectorLayer, olMap);
+		const isInternalStyleRequired = (olFeature) => {
+			const baStyleHint = olFeature.get(asInternalProperty('styleHint'));
+			const baStyle = olFeature.get(asInternalProperty('style'));
+			// no Style required, if we have a styleHint or style as property
 
-			olVectorSource.getFeatures().forEach((feature) => {
-				if (isStyleRequired(feature)) {
-					this.addFeatureStyle(feature, olMap, olVectorLayer);
-					this.updateFeatureStyle(feature, olMap, this._mapToStyleProperties(olVectorLayer));
+			if (!!baStyleHint || !!baStyle) {
+				return false;
+			}
+			return this._detectStyleType(olFeature) !== null;
+		};
+
+		const applyStyles = (feature) => {
+			this._sanitizeStyleFor(feature);
+			const baStyleHint = feature.get(asInternalProperty('styleHint'));
+			const baStyle = feature.get(asInternalProperty('style'));
+
+			if (baStyleHint) {
+				switch (baStyleHint) {
+					case StyleHint.HIGHLIGHT:
+						feature.setStyle(highlightGeometryOrCoordinateFeatureStyleFunction()); // TODO: move highlightGeometryOrCoordinateFeatureStyleFunction to src/modules/olMap/utils/olStyleUtils.js
+						break;
 				}
-			});
-		}
+			}
+			if (baStyle?.baseColor) {
+				feature.setStyle(getDefaultStyleFunction(hexToRgb(baStyle.baseColor)));
+			}
+			/**
+			 * We check if an currently present and possible future features needs an internal styling.
+			 * If so, we apply the style and register an event listeners in order to keep the style (and overlays)
+			 * up-to-date with the layer.
+			 */
+			if (isInternalStyleRequired(feature)) {
+				this.addInternalFeatureStyle(feature, olMap);
+				this.updateInternalFeatureStyle(feature, olMap, this._mapToStyleProperties(olVectorLayer));
+
+				// if we have at least one style requiring feature, we register the styleEvent listener once
+				// and apply the style for all currently present features
+				if (styleListeners.length === 0) {
+					this._registerStyleEventListeners(olVectorSource, olVectorLayer, olMap).forEach((l) => styleListeners.push(l));
+				}
+			}
+		};
+
+		olVectorSource.getFeatures().forEach((f) => applyStyles(f));
 
 		return olVectorLayer;
 	}
@@ -233,14 +269,14 @@ export class OlStyleService {
 
 	_registerStyleEventListeners(olVectorSource, olLayer, olMap) {
 		const addFeatureListenerKey = olVectorSource.on('addfeature', (event) => {
-			this.addFeatureStyle(event.feature, olMap, olLayer);
-			this.updateFeatureStyle(event.feature, olMap, this._mapToStyleProperties(olLayer));
+			this.addInternalFeatureStyle(event.feature, olMap);
+			this.updateInternalFeatureStyle(event.feature, olMap, this._mapToStyleProperties(olLayer));
 		});
 		const removeFeatureListenerKey = olVectorSource.on('removefeature', (event) => {
-			this.removeFeatureStyle(event.feature, olMap);
+			this.removeInternalFeatureStyle(event.feature, olMap);
 		});
 		const clearFeaturesListenerKey = olVectorSource.on('clear', () => {
-			olVectorSource.getFeatures().forEach((f) => this.removeFeatureStyle(f, olMap));
+			olVectorSource.getFeatures().forEach((f) => this.removeInternalFeatureStyle(f, olMap));
 		});
 
 		/**
@@ -248,28 +284,17 @@ export class OlStyleService {
 		 * which are not tracked by OpenLayers
 		 */
 		const layerListChangedListenerKey = olMap.getLayers().on(['add', 'remove'], () => {
-			olVectorSource.getFeatures().forEach((f) => this.updateFeatureStyle(f, olMap, this._mapToStyleProperties(olLayer)));
+			olVectorSource.getFeatures().forEach((f) => this.updateInternalFeatureStyle(f, olMap, this._mapToStyleProperties(olLayer)));
 		});
 
 		/**
 		 * Track layer changes of visibility, opacity and z-index
 		 */
 		const layerChangeListenerKey = olLayer.on(['change:zIndex', 'change:visible', 'change:opacity'], () => {
-			olVectorSource.getFeatures().forEach((f) => this.updateFeatureStyle(f, olMap, this._mapToStyleProperties(olLayer)));
+			olVectorSource.getFeatures().forEach((f) => this.updateInternalFeatureStyle(f, olMap, this._mapToStyleProperties(olLayer)));
 		});
 
-		return { addFeatureListenerKey, removeFeatureListenerKey, clearFeaturesListenerKey, layerChangeListenerKey, layerListChangedListenerKey };
-	}
-
-	/**
-	 * Sanitizes the style of the present features of the vector layer.
-	 * The sanitizing prepares features with incompatible styling for the rendering in the
-	 * ol context.
-	 * @param {ol.layer.Vector} olVectorLayer
-	 */
-	_sanitizeStyles(olVectorLayer) {
-		const olVectorSource = olVectorLayer.getSource();
-		olVectorSource.getFeatures().forEach((feature) => this._sanitizeStyleFor(feature));
+		return [addFeatureListenerKey, removeFeatureListenerKey, clearFeaturesListenerKey, layerChangeListenerKey, layerListChangedListenerKey];
 	}
 
 	/**
@@ -371,22 +396,17 @@ export class OlStyleService {
 		olFeature.setStyle(styleFunction);
 	}
 
-	_addDefaultStyle(olFeature, olLayer) {
-		const isGPX = (layer) => {
-			const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
-			return geoResourceService.byId(layer.get('geoResourceId'))?.sourceType === VectorSourceType.GPX;
-		};
+	_getColorByLayerId(layer) {
+		const id = getUid(layer);
+		if (this.#defaultColorByLayerId[id] === undefined) {
+			this.#defaultColorByLayerId[id] = this._nextColor();
+		}
 
-		const getColorByLayerId = (layer) => {
-			const id = getUid(layer);
-			if (this.#defaultColorByLayerId[id] === undefined) {
-				this.#defaultColorByLayerId[id] = this._nextColor();
-			}
-			return [...this.#defaultColorByLayerId[id]];
-		};
+		return [...this.#defaultColorByLayerId[id]];
+	}
 
-		const color = olLayer && !isGPX(olLayer) ? getColorByLayerId(olLayer) : this._nextColor();
-		olFeature.setStyle(getDefaultStyleFunction(color));
+	_setBaseColorForLayer(olLayer, color) {
+		olLayer.setStyle(getDefaultStyleFunction(color));
 	}
 
 	_addGeoJSONStyle(olFeature) {
@@ -423,7 +443,6 @@ export class OlStyleService {
 		};
 
 		const newStyle = getMarkerStyleArray(getStyleOption(olFeature));
-
 		olFeature.setStyle(() => newStyle);
 	}
 
@@ -510,10 +529,8 @@ export class OlStyleService {
 			return styleType ?? null;
 		};
 
-		const defaultOrNull = (olFeature) => (olFeature.getStyle() === null ? OlFeatureStyleTypes.DEFAULT : null);
-
 		if (olFeature) {
-			for (const styleTypeFunction of [getStyleTypeFromId, getStyleTypeFromProperties, getStyleTypeFromTypeAttribute, defaultOrNull]) {
+			for (const styleTypeFunction of [getStyleTypeFromId, getStyleTypeFromProperties, getStyleTypeFromTypeAttribute]) {
 				const styleType = styleTypeFunction(olFeature);
 				if (styleType) {
 					return styleType;
