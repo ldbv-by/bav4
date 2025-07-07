@@ -2,6 +2,7 @@ import { Feature } from 'ol';
 import { LineString, Polygon } from 'ol/geom';
 import { DefaultIdPrefix, OlSketchHandler } from '../../../../src/modules/olMap/handler/OlSketchHandler';
 import { Tools } from '../../../../src/domain/tools';
+import { asInternalProperty } from '../../../../src/utils/propertyUtils';
 
 describe('OlSketchHandler', () => {
 	describe('constants', () => {
@@ -46,15 +47,15 @@ describe('OlSketchHandler', () => {
 		});
 
 		it('monitors feature changes', () => {
-			const feature = new Feature(
-				new LineString([
-					[0, 0],
-					[1, 1]
-				])
-			);
+			const feature = new Feature(new LineString([[0, 0]]));
 
 			const classUnderTest = new OlSketchHandler();
 			classUnderTest.activate(feature);
+
+			expect(classUnderTest.pointCount).toBe(1);
+
+			feature.setGeometry(new LineString([[0, 0]]));
+			feature.dispatchEvent('change');
 
 			expect(classUnderTest.pointCount).toBe(1);
 
@@ -167,7 +168,7 @@ describe('OlSketchHandler', () => {
 			classUnderTest.deactivate();
 
 			expect(classUnderTest._listener).toEqual(empty);
-			expect(feature.get('finishOnFirstPoint')).toBeUndefined();
+			expect(feature.get(asInternalProperty('finishOnFirstPoint'))).toBeUndefined();
 		});
 	});
 });

@@ -41,6 +41,7 @@ import CircleStyle from 'ol/style/Circle';
 import { hexToRgb } from '../../../../src/utils/colors';
 import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../../../src/modules/olMap/ol/geodesic/geodesicGeometry';
 import { isClockwise } from '../../../../src/modules/olMap/utils/olGeometryUtils';
+import { asInternalProperty } from '../../../../src/utils/propertyUtils';
 
 const Rgb_Black = [0, 0, 0];
 const Expected_Text_Font = 'normal 16px Open Sans';
@@ -275,9 +276,9 @@ describe('measureStyleFunction', () => {
 			]
 		]);
 		const unfinishedPolygonFeature = new Feature({ geometry: polygon });
-		unfinishedPolygonFeature.set('finishOnFirstPoint', false);
+		unfinishedPolygonFeature.set(asInternalProperty('finishOnFirstPoint'), false);
 		const finishedPolygonFeature = new Feature({ geometry: polygon });
-		finishedPolygonFeature.set('finishOnFirstPoint', true);
+		finishedPolygonFeature.set(asInternalProperty('finishOnFirstPoint'), true);
 
 		const styles = measureStyleFunction(unfinishedPolygonFeature, resolution);
 

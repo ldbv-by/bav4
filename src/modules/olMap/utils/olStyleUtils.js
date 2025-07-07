@@ -22,6 +22,7 @@ import { AssetSourceType, getAssetSource } from '../../../utils/assets';
 import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
 import { MultiLineString } from '../../../../node_modules/ol/geom';
 import { StyleSize } from '../../../domain/styles';
+import { asInternalProperty } from '../../../utils/propertyUtils';
 
 const Z_Point = 30;
 const Red_Color = [255, 0, 0];
@@ -428,7 +429,7 @@ const getRulerStyle = (feature) => {
 				return geodesic.area ? geodesic.getPolygon() : geodesic.getGeometry();
 			}
 			if (feature.getGeometry() instanceof Polygon) {
-				const finishOnFirstPoint = feature.get('finishOnFirstPoint') ?? true;
+				const finishOnFirstPoint = feature.get(asInternalProperty('finishOnFirstPoint')) ?? true;
 				if (finishOnFirstPoint) {
 					return feature.getGeometry();
 				} else {
