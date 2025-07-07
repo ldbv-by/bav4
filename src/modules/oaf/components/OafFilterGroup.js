@@ -4,7 +4,7 @@
 
 import { html } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
-import { createDefaultOafFilter } from './oafUtils';
+import { createDefaultOafFilter } from '../utils/oafUtils';
 import css from './oafFilterGroup.css';
 import { $injector } from '../../../injection';
 import closeSvg from '../../../assets/icons/x-square.svg';
@@ -66,8 +66,7 @@ export class OafFilterGroup extends MvuElement {
 			const changedFilterIndex = filters.findIndex((oafFilter) => oafFilter.queryable.id === evt.target.queryable.id);
 
 			filters[changedFilterIndex] = {
-				...changedOafFilter.getModel(),
-				expression: changedOafFilter.expression
+				...changedOafFilter.getModel()
 			};
 
 			this.signal(Update_Filters, filters);

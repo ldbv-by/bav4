@@ -7,7 +7,7 @@ import { html, nothing } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
 import closeSvg from './assets/clear.svg';
 import { isNumber, isString } from '../../../utils/checks';
-import { getOperatorDefinitions, getOperatorByName, createCqlFilterExpression, CqlOperator } from './oafUtils';
+import { getOperatorDefinitions, getOperatorByName, createCqlFilterExpression, CqlOperator } from '../utils/oafUtils';
 import { OafQueryableType } from '../../../domain/oaf';
 
 const Update_Queryable = 'update_queryable';
@@ -18,7 +18,7 @@ const Update_Max_Value = 'update_max_value';
 /**
  * A Filter for the OGC Feature API which filters a provided queryable
  *
- * @property {OafQueryable} queryable={} The queryable for this filter. Provides necessary definitions for the filter's display
+ * @property {OafQueryable}  queryable={} The queryable for this filter. Provides necessary definitions for the filter's display
  * @property {string} operator=equals The operator for this filter. Defines how the filter will be applied
  * @property {string|number|null} value=null The value of this filter.
  * @property {number|null} minValue=null The minValue of this filter. Optional, only used when available in provided queryable

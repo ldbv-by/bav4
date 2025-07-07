@@ -5,6 +5,7 @@ import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { layersReducer } from '../../../../src/store/layers/layers.reducer';
 import { addLayer } from '../../../../src/store/layers/layers.action';
+import { createDefaultFilterGroup, createDefaultOafFilter } from '../../../../src/modules/oaf/utils/oafUtils';
 
 window.customElements.define(OafMask.tag, OafMask);
 window.customElements.define(OafFilterGroup.tag, OafFilterGroup);
@@ -12,6 +13,13 @@ window.customElements.define(OafFilter.tag, OafFilter);
 
 describe('OafMask', () => {
 	let store;
+
+	const oafMaskParserServiceMock = {
+		// eslint-disable-next-line no-unused-vars
+		parse: (string) => {
+			return [];
+		}
+	};
 
 	const importOafServiceMock = {
 		getFilterCapabilities: async () => []
@@ -21,17 +29,18 @@ describe('OafMask', () => {
 		byId: () => {}
 	};
 
-	const setup = async (state = {}, properties = {}) => {
+	const setup = async (state = {}, properties = {}, layerProperties = {}) => {
 		store = TestUtils.setupStoreAndDi(state, { layers: layersReducer });
 		$injector
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('ImportOafService', importOafServiceMock)
-			.registerSingleton('TranslationService', { translate: (key) => key });
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('OafMaskParserService', oafMaskParserServiceMock);
 
-		const layerId = properties.layerId !== undefined ? properties.layerId : -1;
-		addLayer(layerId, { geoResourceId: `dummy ${layerId}` });
+		const layerId = layerProperties.layerId !== undefined ? layerProperties.layerId : -1;
+		addLayer(layerId, { geoResourceId: `dummy ${layerId}`, ...layerProperties });
 
-		return TestUtils.render(OafMask.tag, properties);
+		return TestUtils.renderAndLogLifecycle(OafMask.tag, { layerId, ...properties });
 	};
 
 	const fillImportOafServiceMock = (
@@ -77,9 +86,47 @@ describe('OafMask', () => {
 		});
 
 		it('updates layerId', async () => {
-			const element = await setup({}, { layerId: 10 });
+			const element = await setup({}, {}, { layerId: 10 });
 
 			expect(element.layerId).toBe(10);
+		});
+
+		it('it populates the model with filters when the active layer has a CQL string', async () => {
+			const fakeOafFilter = { ...createDefaultOafFilter(), value: 'foo' };
+			const fakeParsedFilterDef = [{ ...createDefaultFilterGroup(), oafFilters: [fakeOafFilter] }];
+			const parserServiceSpy = spyOn(oafMaskParserServiceMock, 'parse').and.returnValue(fakeParsedFilterDef);
+			fillImportOafServiceMock();
+
+			const element = await setup({}, {}, { constraints: { filter: 'awesome cql string' } });
+
+			expect(parserServiceSpy).toHaveBeenCalled();
+			expect(element.getModel().filterGroups[0].oafFilters[0].value).toBe('foo');
+		});
+
+		it('it skips parsingService when the active layer has no filter-query', async () => {
+			const fakeOafFilter = { ...createDefaultOafFilter(), value: 'foo' };
+			const fakeParsedFilterDef = [{ ...createDefaultFilterGroup(), oafFilters: [fakeOafFilter] }];
+			const parserServiceSpy = spyOn(oafMaskParserServiceMock, 'parse').and.returnValue(fakeParsedFilterDef);
+			fillImportOafServiceMock();
+
+			const element = await setup({}, {}, {});
+
+			expect(parserServiceSpy).not.toHaveBeenCalled();
+			expect(element.getModel().filterGroups).toHaveSize(0);
+		});
+
+		it('it skips parsingService when capabilities have no queryables', async () => {
+			fillImportOafServiceMock({
+				sampled: false,
+				totalNumberOfItems: 1,
+				queryables: []
+			});
+			const parserServiceSpy = spyOn(oafMaskParserServiceMock, 'parse');
+
+			const element = await setup({}, {}, {});
+
+			expect(parserServiceSpy).not.toHaveBeenCalled();
+			expect(element.getModel().filterGroups).toHaveSize(0);
 		});
 	});
 
