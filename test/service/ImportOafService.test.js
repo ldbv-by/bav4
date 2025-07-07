@@ -1,5 +1,5 @@
 import { $injector } from '../../src/injection';
-import { OafGeoResource } from '../../src/domain/geoResources';
+import { OafGeoResource, WmsGeoResource } from '../../src/domain/geoResources';
 import { DEFAULT_OAF_CAPABILITIES_CACHE_DURATION_SECONDS, ImportOafService } from '../../src/services/ImportOafService';
 import { getAttributionProviderForGeoResourceImportedByUrl } from '../../src/services/provider/attribution.provider';
 import { bvvOafFilterCapabilitiesProvider, bvvOafGeoResourceProvider } from '../../src/services/provider/oaf.provider';
@@ -124,7 +124,7 @@ describe('ImportOafService', () => {
 			jasmine.clock().uninstall();
 		});
 
-		it('calls the oafFilterCapabilitiesProvider and serves the second call from the cache', async () => {
+		it('calls the oafFilterCapabilitiesProvider for a OafGeoResource and serves the second call from the cache', async () => {
 			const oafGeoResource0 = new OafGeoResource('id0', 'label0', 'url0', 'collectionId0', 12345);
 			const oafGeoResource1 = new OafGeoResource('id1', 'label1', 'url1', 'collectionId1', 12345);
 			const mockOafFilterCapabilities = { foo: 'bar' };
@@ -146,6 +146,15 @@ describe('ImportOafService', () => {
 			expect(result1).toEqual(mockOafFilterCapabilities);
 			expect(result2).toBeNull();
 			expect(oafFilterCapabilitiesProviderSpy).toHaveBeenCalledTimes(2);
+		});
+
+		it('returns `null` for other GeoResources', async () => {
+			const oafGeoResource0 = new WmsGeoResource('id0', 'label0', 'url0', 'layer0', 'format0');
+			const oafFilterCapabilitiesProviderSpy = jasmine.createSpy();
+			const instanceUnderTest = new ImportOafService(null, oafFilterCapabilitiesProviderSpy);
+
+			await expectAsync(instanceUnderTest.getFilterCapabilities(oafGeoResource0)).toBeResolvedTo(null);
+			expect(oafFilterCapabilitiesProviderSpy).not.toHaveBeenCalled();
 		});
 
 		it('does only add valid results to the cache', async () => {

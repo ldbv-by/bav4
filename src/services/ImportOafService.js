@@ -1,6 +1,7 @@
 /**
  * @module services/ImportOafService
  */
+import { OafGeoResource } from '../domain/geoResources';
 import { $injector } from '../injection';
 
 import { getAttributionProviderForGeoResourceImportedByUrl } from './provider/attribution.provider';
@@ -84,26 +85,29 @@ export class ImportOafService {
 	}
 
 	/**
-	 * Returns the `OafFilterCapabilities` for a `OafGeoResource`
-	 * @param {OafGeoResource} oafGeoResource
+	 * Returns the `OafFilterCapabilities` for a `OafGeoResource`. Returns `null` for any other `GeoResource`.
+	 * @param {OafGeoResource|GeoResource} oafGeoResource
 	 * @returns {module:domain/oaf~OafFilterCapabilities|null} `OafFilterCapabilities` or null if none are available
 	 * @throws Will pass through the error of the provider
 	 */
 	async getFilterCapabilities(oafGeoResource) {
-		for (const [key, { created }] of this.#filterCapabilitiesCache) {
-			if (Date.now() - created >= DEFAULT_OAF_CAPABILITIES_CACHE_DURATION_SECONDS * 1_000) {
-				this.#filterCapabilitiesCache.delete(key);
+		if (oafGeoResource instanceof OafGeoResource) {
+			for (const [key, { created }] of this.#filterCapabilitiesCache) {
+				if (Date.now() - created >= DEFAULT_OAF_CAPABILITIES_CACHE_DURATION_SECONDS * 1_000) {
+					this.#filterCapabilitiesCache.delete(key);
+				}
 			}
-		}
 
-		if (this.#filterCapabilitiesCache.has(oafGeoResource.id)) {
-			return this.#filterCapabilitiesCache.get(oafGeoResource.id).data;
-		}
+			if (this.#filterCapabilitiesCache.has(oafGeoResource.id)) {
+				return this.#filterCapabilitiesCache.get(oafGeoResource.id).data;
+			}
 
-		const oafFilterCapabilities = await this._oafFilterCapabilitiesProvider(oafGeoResource);
-		if (oafFilterCapabilities) {
-			this.#filterCapabilitiesCache.set(oafGeoResource.id, { created: new Date().getTime(), data: oafFilterCapabilities });
+			const oafFilterCapabilities = await this._oafFilterCapabilitiesProvider(oafGeoResource);
+			if (oafFilterCapabilities) {
+				this.#filterCapabilitiesCache.set(oafGeoResource.id, { created: new Date().getTime(), data: oafFilterCapabilities });
+			}
+			return oafFilterCapabilities;
 		}
-		return oafFilterCapabilities;
+		return null;
 	}
 }
