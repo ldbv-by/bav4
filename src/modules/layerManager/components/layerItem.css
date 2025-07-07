@@ -187,6 +187,10 @@ ba-value-select {
 	display: inline-block;
 }
 
+.feature-count-badge::part(badge) {
+	margin-left: 0.4em;
+}
+
 @keyframes spin {
 	0% {
 		transform: rotate(0deg);
