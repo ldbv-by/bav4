@@ -690,7 +690,7 @@ describe('OlMeasurementHandler', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(
-				getLastDataWith('displayruler', 'false'),
+				getLastDataWith(asInternalProperty('displayruler'), 'false'),
 				4326
 			);
 			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
@@ -710,7 +710,7 @@ describe('OlMeasurementHandler', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(
-				getLastDataWith('displayruler', 'true'),
+				getLastDataWith(asInternalProperty('displayruler'), 'true'),
 				4326
 			);
 			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
@@ -926,7 +926,7 @@ describe('OlMeasurementHandler', () => {
 				classUnderTest._vectorLayer
 					.getSource()
 					.getFeatures()
-					.every((f) => f.get('displayruler') === 'false')
+					.every((f) => f.get(asInternalProperty('displayruler')) === 'false')
 			);
 			expect(updateOverlaysSpy).toHaveBeenCalledTimes(1);
 			expect(updateStyleSpy).toHaveBeenCalledTimes(1);
@@ -939,7 +939,7 @@ describe('OlMeasurementHandler', () => {
 				classUnderTest._vectorLayer
 					.getSource()
 					.getFeatures()
-					.every((f) => f.get('displayruler') === 'true')
+					.every((f) => f.get(asInternalProperty('displayruler')) === 'true')
 			);
 			expect(updateOverlaysSpy).toHaveBeenCalledTimes(1);
 			expect(updateStyleSpy).toHaveBeenCalledTimes(2);
@@ -1202,7 +1202,7 @@ describe('OlMeasurementHandler', () => {
 			feature.dispatchEvent('change');
 
 			expect(sketchStyleSpy).toHaveBeenCalled();
-			expect(feature.get('displayruler')).toBe('true');
+			expect(feature.get(asInternalProperty('displayruler'))).toBe('true');
 		});
 
 		it('positions tooltip content on the end of not closed Polygon', () => {
@@ -2396,7 +2396,7 @@ describe('OlMeasurementHandler', () => {
 
 			feature.dispatchEvent('change');
 
-			expect(feature.get('displayruler')).toBe('true');
+			expect(feature.get(asInternalProperty('displayruler'))).toBe('true');
 		});
 	});
 });

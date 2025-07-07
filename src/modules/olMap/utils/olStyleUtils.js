@@ -452,7 +452,9 @@ const getRulerStyle = (feature) => {
 export const renderLinearRulerSegments = (pixelCoordinates, state, contextRenderFunction) => {
 	const { MapService: mapService } = $injector.inject('MapService');
 	const geometry = state.geometry.clone();
-	const displayRuler = state.feature?.get('displayruler') ? state.feature.get('displayruler') === 'true' : true;
+	const displayRuler = state.feature?.get(asInternalProperty('displayruler'))
+		? state.feature.get(asInternalProperty('displayruler')) === 'true'
+		: true;
 	const lineString = getLineString(geometry);
 	const resolution = state.resolution;
 	const pixelRatio = state.pixelRatio;
@@ -551,7 +553,9 @@ export const renderLinearRulerSegments = (pixelCoordinates, state, contextRender
 
 export const renderGeodesicRulerSegments = (pixelCoordinates, state, contextRenderFunction, geodesic) => {
 	const geometry = state.geometry.clone();
-	const displayRuler = state.feature?.get('displayruler') ? state.feature.get('displayruler') === 'true' : true;
+	const displayRuler = state.feature?.get(asInternalProperty('displayruler'))
+		? state.feature.get(asInternalProperty('displayruler')) === 'true'
+		: true;
 	const resolution = state.resolution;
 	const pixelRatio = state.pixelRatio;
 

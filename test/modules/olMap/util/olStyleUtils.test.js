@@ -492,7 +492,7 @@ describe('renderLinearRulerSegments', () => {
 	const feature = new Feature({ geometry: geometry });
 
 	beforeEach(() => {
-		feature.unset('displayruler');
+		feature.unset(asInternalProperty('displayruler'));
 	});
 
 	const resolution = 1;
@@ -517,7 +517,7 @@ describe('renderLinearRulerSegments', () => {
 			[0, 0],
 			[0, 1]
 		];
-		feature.set('displayruler', 'false');
+		feature.set(asInternalProperty('displayruler'), 'false');
 		spyOn(mapServiceMock, 'calcLength').and.returnValue(1);
 
 		renderLinearRulerSegments(pixelCoordinates, stateMock, contextRenderer);
@@ -525,7 +525,7 @@ describe('renderLinearRulerSegments', () => {
 		expect(contextRenderer).toHaveBeenCalledWith(jasmine.any(Geometry), jasmine.any(Fill), jasmine.any(Stroke));
 		contextRenderer.calls.reset();
 
-		feature.set('displayruler', 'true');
+		feature.set(asInternalProperty('displayruler'), 'true');
 		renderLinearRulerSegments(pixelCoordinates, stateMock, contextRenderer);
 		expect(contextRenderer).toHaveBeenCalledTimes(1 + 1 + 1); //baseStroke + mainStroke + subStroke
 		expect(contextRenderer).toHaveBeenCalledWith(jasmine.any(Geometry), jasmine.any(Fill), jasmine.any(Stroke));
@@ -635,7 +635,7 @@ describe('renderGeodesicRulerSegments', () => {
 			[0, 0],
 			[0, 1]
 		];
-		feature.set('displayruler', 'false');
+		feature.set(asInternalProperty('displayruler'), 'false');
 		spyOn(mapServiceMock, 'calcLength').and.returnValue(1);
 
 		renderGeodesicRulerSegments(pixelCoordinates, stateMock, contextRenderer, geodesic);
@@ -643,7 +643,7 @@ describe('renderGeodesicRulerSegments', () => {
 		expect(contextRenderer).toHaveBeenCalledWith(jasmine.any(Geometry), jasmine.any(Fill), jasmine.any(Stroke));
 		contextRenderer.calls.reset();
 
-		feature.set('displayruler', 'true');
+		feature.set(asInternalProperty('displayruler'), 'true');
 		renderGeodesicRulerSegments(pixelCoordinates, stateMock, contextRenderer, geodesic);
 		expect(contextRenderer).toHaveBeenCalledTimes(1 + 1); //baseStroke +  tickStroke
 		expect(contextRenderer).toHaveBeenCalledWith(jasmine.any(Geometry), jasmine.any(Fill), jasmine.any(Stroke));

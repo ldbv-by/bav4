@@ -110,7 +110,7 @@ describe('MeasurementOverlayStyle', () => {
 							return 200;
 						case 'geodesic':
 							return { getCalculationStatus: () => 'foo' };
-						case 'displayruler':
+						case '_ba_displayruler':
 							return undefined;
 						default:
 							return [
@@ -196,7 +196,7 @@ describe('MeasurementOverlayStyle', () => {
 							return 200;
 						case 'geodesic':
 							return geodesicMock;
-						case 'displayruler':
+						case '_ba_displayruler':
 							return undefined;
 						default:
 							return [
@@ -274,7 +274,7 @@ describe('MeasurementOverlayStyle', () => {
 							return 200;
 						case 'geodesic':
 							return geodesicMock;
-						case 'displayruler':
+						case '_ba_displayruler':
 							return 'foo';
 						default:
 							return [
@@ -349,7 +349,7 @@ describe('MeasurementOverlayStyle', () => {
 							return 200;
 						case 'geodesic':
 							return geodesicMock;
-						case 'displayruler':
+						case '_ba_displayruler':
 							return 'true';
 						default:
 							return [
@@ -775,7 +775,7 @@ describe('MeasurementOverlayStyle', () => {
 							return [overlayMock1, overlayMock2];
 						case PROJECTED_LENGTH_GEOMETRY_PROPERTY:
 							return 200;
-						case 'displayruler':
+						case '_ba_displayruler':
 							return undefined;
 						default:
 							return [

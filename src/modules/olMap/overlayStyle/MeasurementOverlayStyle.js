@@ -208,7 +208,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	}
 
 	_createOrRemovePartitionOverlays(olFeature, olMap, simplifiedGeometry = null) {
-		const displayRuler = olFeature.get('displayruler') ? olFeature.get('displayruler') === 'true' : true;
+		const displayRuler = olFeature.get(asInternalProperty('displayruler')) ? olFeature.get(asInternalProperty('displayruler')) === 'true' : true;
 		const getOverlayGeometry = (feature) => {
 			const geodesic = feature.get(GEODESIC_FEATURE_PROPERTY);
 			if (geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE) {
