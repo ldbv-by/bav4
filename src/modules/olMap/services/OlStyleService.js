@@ -146,12 +146,14 @@ export class OlStyleService {
 	}
 
 	/**
-	 * Adds specific stylings (and overlays) for a vector layer in the following manner:
-	 * 1. The {@link module:domain/styles~Style} of the {@link AbstractVectorGeoResource} or the {@link module:store/layers/layers_action~Layer} is applied on the `olVectorLayer`
-	 * 2. The {@link StyleHint} of {@link AbstractVectorGeoResource} is applied on the `olVectorLayer`
+	 * Adds stylings (and overlays) to a vector layer.
+	 * The most specific styling is applied in the following manner:
+	 *
+	 * 1. If existing, the {@link StyleHint} of {@link AbstractVectorGeoResource} is applied on the `olVectorLayer`
+	 * 2. If {@link module:domain/styles~Style} of the {@link AbstractVectorGeoResource} or the {@link module:store/layers/layers_action~Layer} is applied on the `olVectorLayer`
 	 * 3. A DefaultStyle is applied to the {@link module:store/layers/layers_action~Layer} if the layer and ANY containing features does not have a style.
-	 * 3. If the `olVectorLayer` contains features, the feature specific styling is applied in the following order:
-	 * 	a) internal StyleTypes -> b) {@link module:domain/styles~Style} property of the feature -> c) {@link module:domain/styles~StyleHint} property of the feature
+	 * 4. If the `olVectorLayer` contains features, the most feature specific styling is applied in the following order:
+	 * 	a) {@link module:domain/styles~StyleHint} property of the feature -> b) internal StyleTypes -> c) {@link module:domain/styles~Style} property of the feature
 	 * @param {ol.layer.Vector} olVectorLayer
 	 * @param {ol.Map} olMap
 	 * @param {module:domain/geoResources~AbstractVectorGeoResource} vectorGeoResource
