@@ -15,6 +15,7 @@
  * @property {string} id The id of this queryable property
  * @property {string} [title] The title of this queryable property (human readable title)
  * @property {string} [description] The description of this queryable property
+ * @property {string} [pattern] Regex that defines the expected character combination
  * @property {OafQueryableType} type The type of this queryable property
  * @property {boolean} finalized Indicates whether the property values represents a complete list (enumeration) or is based on a sample
  * @property {Array<Object>} values The values of this queryable property. If the property `finalized` is `true`, these values represent an enumeration. Otherwise, a list with example entries.
