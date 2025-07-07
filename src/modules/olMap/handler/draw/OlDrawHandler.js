@@ -204,7 +204,7 @@ export class OlDrawHandler extends OlLayerHandler {
 					const onFeatureChange = (event) => {
 						const geometry = event.target.getGeometry();
 						setGeometryIsValid(isValidGeometry(geometry));
-						this._styleService.updateFeatureStyle(event.target, olMap);
+						this._styleService.updateInternalFeatureStyle(event.target, olMap);
 						this._setStatistic(event.target);
 					};
 
@@ -213,8 +213,8 @@ export class OlDrawHandler extends OlLayerHandler {
 						if (f.getId().startsWith(Tools.MEASURE)) {
 							f.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(f, olMap));
 						}
-						this._styleService.removeFeatureStyle(f, olMap);
-						this._styleService.addFeatureStyle(f, olMap, layer);
+						this._styleService.removeInternalFeatureStyle(f, olMap);
+						this._styleService.addInternalFeatureStyle(f, olMap, layer);
 						layer.getSource().addFeature(f);
 						f.on('change', onFeatureChange);
 					});

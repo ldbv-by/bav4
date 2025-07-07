@@ -508,7 +508,7 @@ describe('olLoadFunction.provider', () => {
 			});
 		});
 
-		it('updates the `state` property of the corresponding layers', async () => {
+		it('updates the `state` and the `props` property of the corresponding layers', async () => {
 			const geoResourceId = 'geoResourceId';
 			const olSource = new VectorSource();
 			const layerId = 'layerId';
@@ -528,11 +528,13 @@ describe('olLoadFunction.provider', () => {
 			await oafLoadFunction(extent, resolution, projection, jasmine.createSpy(), jasmine.createSpy());
 
 			expect(store.getState().layers.active[0].state).toBe(LayerState.INCOMPLETE_DATA);
+			expect(store.getState().layers.active[0].props.featureCount).toBe(10);
 			expect(olSource.get('incomplete_data')).toBeTrue();
 
 			await oafLoadFunction(extent, resolution, projection, jasmine.createSpy(), jasmine.createSpy());
 
 			expect(store.getState().layers.active[0].state).toBe(LayerState.OK);
+			expect(store.getState().layers.active[0].props.featureCount).toBe(1000);
 			expect(olSource.get('incomplete_data')).not.toBeDefined();
 		});
 
@@ -630,7 +632,7 @@ describe('olLoadFunction.provider', () => {
 			const olSource = new VectorSource();
 			const layerId = 'layerId';
 			const olLayer = new VectorLayer({ id: layerId, source: olSource });
-			addLayer(layerId, { geoResourceId });
+			addLayer(layerId, { geoResourceId, props: { featureCount: 10 } });
 			const removeLoadedExtentSpy = spyOn(olSource, 'removeLoadedExtent');
 			const extent = [0, 1, 2, 3];
 			const resolution = 42.42;
@@ -650,6 +652,7 @@ describe('olLoadFunction.provider', () => {
 			);
 
 			expect(store.getState().layers.active[0].state).toBe(LayerState.ERROR);
+			expect(store.getState().layers.active[0].props).toEqual({});
 			expect(successCbSpy).not.toHaveBeenCalled();
 			expect(failureCbSpy).toHaveBeenCalled();
 			expect(removeLoadedExtentSpy).toHaveBeenCalledWith(extent);

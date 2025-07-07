@@ -8,7 +8,7 @@ import { FailureCounter } from '../../../utils/FailureCounter';
 import { isString } from '../../../utils/checks';
 import GeoJSON from 'ol/format/GeoJSON';
 import { setFetching } from '../../../store/network/network.action';
-import { LayerState, modifyLayer } from '../../../store/layers/layers.action';
+import { LayerState, modifyLayer, modifyLayerProps } from '../../../store/layers/layers.action';
 import { queryParamsToString } from '../../../utils/urlUtils';
 
 const handleUnexpectedStatusCode = (geoResourceId, response) => {
@@ -201,6 +201,7 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 					switch (response.status) {
 						case 200: {
 							const geoJson = await response.json();
+							const props = { featureCount: geoJson.numberReturned };
 							if (geoJson.numberReturned < geoJson.numberMatched) {
 								modifyLayer(olLayer.get('id'), { state: LayerState.INCOMPLETE_DATA });
 								this.set('incomplete_data', true);
@@ -208,6 +209,7 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 								modifyLayer(olLayer.get('id'), { state: LayerState.OK });
 								this.unset('incomplete_data', true);
 							}
+							modifyLayerProps(olLayer.get('id'), props);
 							const features = new GeoJSON().readFeatures(geoJson).map((f) => {
 								// avoid ol displaying only one feature if ids are an empty string
 								if (isString(f.getId()) && f.getId().trim() === '') {
@@ -221,7 +223,7 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 							break;
 						}
 						default: {
-							modifyLayer(olLayer.get('id'), { state: LayerState.ERROR });
+							modifyLayer(olLayer.get('id'), { state: LayerState.ERROR, props: {} });
 							this.removeLoadedExtent(extent);
 							failure();
 							throw new UnavailableGeoResourceError(`Unexpected network status`, geoResourceId, response?.status);
