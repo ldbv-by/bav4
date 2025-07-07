@@ -218,13 +218,25 @@ export class LayerItem extends AbstractMvuContentPanel {
 			}
 		};
 
+		const getFeatureCountBadge = (featureCount, layerState) => {
+			return (featureCount || featureCount === 0) && layerState !== LayerState.LOADING
+				? html`<ba-badge
+						class="feature-count-badge"
+						.background=${'var(--secondary-color)'}
+						.label=${featureCount}
+						.title=${translate('layerManager_feature_count')}
+						.color=${'var(--text3)'}
+					></ba-badge>`
+				: html`<div class="feature-count-badge"></div>`;
+		};
+
 		const getStateHint = (layerState) => {
 			const stateProperties = getStateProperties(layerState);
 			return stateProperties
 				? html`<ba-icon
 						.icon="${stateProperties.icon}"
 						.title="${stateProperties.title}"
-						.size=${'1.3'}
+						.size=${'1.4'}
 						.color="${stateProperties.color}"
 						.color_hover="${stateProperties.color}"
 						@click=${(e) => onClickStateHint(e, stateProperties)}
@@ -448,7 +460,10 @@ export class LayerItem extends AbstractMvuContentPanel {
 						@toggle=${toggleVisibility}
 						>${layerItemProperties.loading
 							? html`<ba-spinner .label=${currentLabel}></ba-spinner>`
-							: html`${currentLabel}${getBadges(layerItemProperties.keywords)} ${getStateHint(layerProperties.state)}`}
+							: html`${currentLabel}${getBadges(layerItemProperties.keywords)}${getFeatureCountBadge(
+									layerProperties.props.featureCount,
+									layerProperties.state
+								)}${getStateHint(layerProperties.state)}`}
 					</ba-checkbox>
 					${getOafContent()} ${getTimestampContent()}
 					<div class="ba-list-item__after clear">

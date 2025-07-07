@@ -170,17 +170,23 @@ ba-value-select {
 }
 .layer-state-icon {
 	position: absolute;
-	margin-left: 0.5em;
+	margin-left: 0.4em;
+	top: -0.1em;
 }
 
 .layer-state-icon.loading {
-	animation: spin 2s linear infinite;
+	animation: spin 1.5s linear infinite;
 }
 
 .layer-state-icon::part(icon) {
 	position: relative;
 	top: 0.1em;
 }
+
+.feature-count-badge {
+	display: inline-block;
+}
+
 @keyframes spin {
 	0% {
 		transform: rotate(0deg);
