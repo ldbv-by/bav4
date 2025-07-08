@@ -19,6 +19,8 @@ describe('propertyUtils', () => {
 				'measurement_position_x',
 				'measurement_position_y',
 				'area',
+				'area_position_x',
+				'area_position_y',
 				'partitions',
 				'partition_delta',
 				'overlays',
