@@ -1,8 +1,7 @@
-import { asInternalProperty } from '../../../utils/propertyUtils';
-
 /**
  * @module modules/olMap/overlayStyle/OverlayStyle
  */
+import { asInternalProperty } from '../../../utils/propertyUtils';
 export const getOverlays = (layer) => {
 	const overlays = [];
 	layer
