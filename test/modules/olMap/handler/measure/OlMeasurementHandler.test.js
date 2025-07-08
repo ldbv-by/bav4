@@ -1133,10 +1133,10 @@ describe('OlMeasurementHandler', () => {
 			const updateSpy = spyOn(classUnderTest._overlayService, 'update').and.callThrough();
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			feature.getGeometry().dispatchEvent('change');
-			expect(feature.get('area')).toBeTruthy();
+			expect(feature.get(asInternalProperty('area'))).toBeTruthy();
 			simulateDrawEvent('drawend', classUnderTest._draw, feature);
 
-			expect(feature.get('area')).toBeFalsy();
+			expect(feature.get(asInternalProperty('area'))).toBeFalsy();
 			expect(updateSpy).toHaveBeenCalledWith(feature, jasmine.any(Map), 'measure', jasmine.objectContaining({ geometry: jasmine.any(Geometry) }));
 		});
 

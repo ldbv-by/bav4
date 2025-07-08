@@ -15,7 +15,7 @@ import { unByKey } from 'ol/Observable';
 import { asInternalProperty } from '../../../utils/propertyUtils';
 
 export const saveManualOverlayPosition = (feature) => {
-	const draggableOverlayTypes = ['area', asInternalProperty('measurement')];
+	const draggableOverlayTypes = [asInternalProperty('area'), asInternalProperty('measurement')];
 	draggableOverlayTypes.forEach((t) => {
 		const overlay = feature.get(t);
 		if (overlay) {
@@ -154,7 +154,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		const featureOverlays = olFeature.get('overlays') || [];
 		featureOverlays.forEach((o) => olMap.removeOverlay(o));
 		olFeature.set(asInternalProperty('measurement'), null);
-		olFeature.set('area', null);
+		olFeature.set(asInternalProperty('area'), null);
 		olFeature.set('partitions', null);
 		olFeature.set('overlays', []);
 	}
@@ -182,7 +182,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	}
 
 	_createOrRemoveAreaOverlay(olFeature, olMap) {
-		let areaOverlay = olFeature.get('area');
+		let areaOverlay = olFeature.get(asInternalProperty('area'));
 		if (olFeature.getGeometry() instanceof Polygon) {
 			if (olFeature.getGeometry().getArea()) {
 				const isDraggable = !this.#environmentService.isTouch() && this._isActiveMeasurement();
@@ -192,17 +192,17 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 					this._add(areaOverlay, olFeature, olMap);
 				}
 				this._updateOlOverlay(areaOverlay, olFeature.getGeometry());
-				olFeature.set('area', areaOverlay);
+				olFeature.set(asInternalProperty('area'), areaOverlay);
 			} else {
 				if (areaOverlay) {
 					this._remove(areaOverlay, olFeature, olMap);
-					olFeature.set('area', null);
+					olFeature.set(asInternalProperty('area'), null);
 				}
 			}
 		} else {
 			if (areaOverlay) {
 				this._remove(areaOverlay, olFeature, olMap);
-				olFeature.set('area', null);
+				olFeature.set(asInternalProperty('area'), null);
 			}
 		}
 	}
@@ -261,7 +261,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	}
 
 	_restoreManualOverlayPosition(olFeature) {
-		const draggableOverlayTypes = ['area', asInternalProperty('measurement')];
+		const draggableOverlayTypes = [asInternalProperty('area'), asInternalProperty('measurement')];
 		draggableOverlayTypes.forEach((t) => {
 			const overlay = olFeature.get(t);
 			if (overlay) {

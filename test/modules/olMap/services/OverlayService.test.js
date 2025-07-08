@@ -170,7 +170,7 @@ describe('OverlayService', () => {
 			});
 			feature.setId('measure_123');
 			feature.set(asInternalProperty('measurement'), mockOverlay);
-			feature.set('area', mockOverlay);
+			feature.set(asInternalProperty('area'), mockOverlay);
 
 			const addOverlaySpy = jasmine.createSpy();
 			const removeOverlaySpy = jasmine.createSpy();
@@ -180,7 +180,7 @@ describe('OverlayService', () => {
 
 			instanceUnderTest = new OverlayService();
 			instanceUnderTest.update(feature, mapMock, OlFeatureStyleTypes.MEASURE);
-			expect(propertySetterSpy).toHaveBeenCalledWith('area', mockOverlay);
+			expect(propertySetterSpy).toHaveBeenCalledWith(asInternalProperty('area'), mockOverlay);
 		});
 
 		it('leaves feature to be not updated due to undetectable style ', () => {
@@ -196,7 +196,7 @@ describe('OverlayService', () => {
 				])
 			});
 			feature.set(asInternalProperty('measurement'), {});
-			feature.set('area', {});
+			feature.set(asInternalProperty('area'), {});
 
 			const propertySetterSpy = spyOn(feature, 'set');
 
