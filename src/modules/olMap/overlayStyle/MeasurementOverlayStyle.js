@@ -256,7 +256,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 
 		olFeature.set(asInternalProperty('partitions'), partitions);
 		if (delta !== 1) {
-			olFeature.set('partition_delta', delta);
+			olFeature.set(asInternalProperty('partition_delta'), delta);
 		}
 	}
 
