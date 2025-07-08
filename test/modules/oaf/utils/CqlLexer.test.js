@@ -8,7 +8,7 @@ describe('CqlLexer', () => {
 
 	describe('Lexing', () => {
 		it('has all TokenTypes defined', () => {
-			expect(Object.keys(CqlTokenType)).toHaveSize(11);
+			expect(Object.keys(CqlTokenType)).toHaveSize(12);
 			expect(CqlTokenType.ComparisonOperator).toEqual('comparison_operator');
 			expect(CqlTokenType.BinaryOperator).toEqual('binary_operator');
 			expect(CqlTokenType.OpenBracket).toEqual('open_bracket');
@@ -17,6 +17,7 @@ describe('CqlLexer', () => {
 			expect(CqlTokenType.String).toEqual('string');
 			expect(CqlTokenType.Number).toEqual('number');
 			expect(CqlTokenType.Boolean).toEqual('boolean');
+			expect(CqlTokenType.Date).toEqual('date');
 			expect(CqlTokenType.And).toEqual('and');
 			expect(CqlTokenType.Or).toEqual('or');
 			expect(CqlTokenType.Not).toEqual('not');
@@ -42,10 +43,11 @@ describe('CqlLexer', () => {
 				// -- Symbol --
 				['mySymbol', { type: CqlTokenType.Symbol, value: 'mySymbol', operatorName: null, startsAt: 0, endsAt: 8 }],
 
-				//	// -- Literals --
+				// -- Literals --
 				["'25'", { type: CqlTokenType.String, value: '25', operatorName: null, startsAt: 0, endsAt: 4 }],
 				['25', { type: CqlTokenType.Number, value: 25, operatorName: null, startsAt: 0, endsAt: 2 }],
 				['true', { type: CqlTokenType.Boolean, value: true, operatorName: null, startsAt: 0, endsAt: 4 }],
+				["DATE('2010-05-05')", { type: CqlTokenType.Date, value: '2010-05-05', operatorName: null, startsAt: 0, endsAt: 18 }],
 
 				// -- Special Keywords --
 				['AND', { type: CqlTokenType.And, value: 'AND', operatorName: null, startsAt: 0, endsAt: 3 }],

@@ -106,7 +106,8 @@ export class OafMaskParserService {
 
 		const consumeLiteral = () => {
 			const literal = consume();
-			if (![CqlTokenType.String, CqlTokenType.Number, CqlTokenType.Boolean].includes(literal.type)) {
+			//@ts-ignore
+			if (![CqlTokenType.String, CqlTokenType.Number, CqlTokenType.Boolean, CqlTokenType.Date].includes(literal.type)) {
 				throw new Error(`Expected a literal type but got "${literal.type}".`);
 			}
 			return literal;

@@ -28,6 +28,7 @@ export const CqlTokenType = Object.freeze({
 	String: 'string',
 	Number: 'number',
 	Boolean: 'boolean',
+	Date: 'date',
 	And: 'and',
 	Or: 'or',
 	Not: 'not'
@@ -111,7 +112,14 @@ const CqlTokenSpecification = Object.freeze([
 		type: CqlTokenType.Or,
 		getValue: () => 'OR'
 	},
-
+	{
+		regex: /(?<!\w)DATE\(\s*'[^']*'\s*\)(?!\w)/i,
+		type: CqlTokenType.Date,
+		getValue: (tokenValue) => {
+			// Get the string inside the DATE literal and remove quotes
+			return /'[^']*'/.exec(tokenValue)[0].slice(1, -1);
+		}
+	},
 	{
 		regex: /\b(false|true)\b/i,
 		type: CqlTokenType.Boolean,
