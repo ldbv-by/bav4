@@ -775,14 +775,14 @@ describe('OlMeasurementHandler', () => {
 			await TestUtils.timeout();
 
 			//reset feature property to detect a change
-			oldFeature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, 0);
-			expect(oldFeature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY)).toBe(0);
+			oldFeature.set(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), 0);
+			expect(oldFeature.get(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY))).toBe(0);
 
 			oldFeature.dispatchEvent('change');
 			expect(updateOverlaysSpy).toHaveBeenCalledTimes(1);
-			expect(oldFeature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY)).toBe(1);
-			expect(styledOldFeature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY)).toBe(1);
-			expect(measureGeometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY)).toBe(1);
+			expect(oldFeature.get(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY))).toBe(1);
+			expect(styledOldFeature.get(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY))).toBe(1);
+			expect(measureGeometry.get(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY))).toBe(1);
 		});
 
 		it('adds a drawn feature to the selection, after adding to layer (on addFeature)', async () => {
@@ -1998,7 +1998,7 @@ describe('OlMeasurementHandler', () => {
 					]
 				]);
 				const feature = new Feature({ geometry: geometry });
-				feature.set('projectedLength', 0);
+				feature.set(asInternalProperty('projectedLength'), 0);
 				classUnderTest.activate(map);
 				simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 
@@ -2007,7 +2007,7 @@ describe('OlMeasurementHandler', () => {
 				feature.getGeometry().dispatchEvent('change');
 
 				expect(calcLengthSpy).toHaveBeenCalled();
-				expect(feature.get('projectedLength')).toBe(expectedLength);
+				expect(feature.get(asInternalProperty('projectedLength'))).toBe(expectedLength);
 			});
 		});
 

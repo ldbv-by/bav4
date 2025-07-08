@@ -162,8 +162,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					const onFeatureChange = (event) => {
 						const measureGeometry = this._createMeasureGeometry(event.target);
 						const projectedLength = this._mapService.calcLength(getLineString(measureGeometry)?.getCoordinates());
-						event.target.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
-						measureGeometry.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
+						event.target.set(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), projectedLength);
+						measureGeometry.set(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), projectedLength);
 						this._styleService.updateFeatureStyle(event.target, olMap, { geometry: measureGeometry }, OlFeatureStyleTypes.MEASURE);
 						this._setStatistic(event.target);
 					};
@@ -513,14 +513,14 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const onFeatureChange = (event) => {
 				const feature = event.target;
 				const measureGeometry = this._createMeasureGeometry(feature);
-				const projectedLength = measureGeometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY)
-					? measureGeometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY)
+				const projectedLength = measureGeometry.get(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY))
+					? measureGeometry.get(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY))
 					: this._mapService.calcLength(getLineString(measureGeometry)?.getCoordinates());
 				if (projectedLength) {
 					feature.set(asInternalProperty('displayruler'), `${this._storeService.getStore().getState().measurement.displayRuler}`);
-					feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
-					feature.getGeometry().set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
-					measureGeometry.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
+					feature.set(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), projectedLength);
+					feature.getGeometry().set(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), projectedLength);
+					measureGeometry.set(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), projectedLength);
 				}
 				this._overlayService.update(event.target, this._map, OlFeatureStyleTypes.MEASURE, { geometry: measureGeometry });
 				this._setStatistic(event.target);
@@ -597,10 +597,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const onFeatureChange = (event) => {
 				const measureGeometry = this._createMeasureGeometry(event.target);
 				const projectedLength = this._mapService.calcLength(getLineString(measureGeometry)?.getCoordinates());
-				feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
+				feature.set(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), projectedLength);
 				feature.set(asInternalProperty('displayruler'), `${this._storeService.getStore().getState().measurement.displayRuler}`);
-				feature.getGeometry().set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
-				measureGeometry.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, projectedLength);
+				feature.getGeometry().set(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), projectedLength);
+				measureGeometry.set(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), projectedLength);
 
 				this._overlayService.update(event.target, this._map, OlFeatureStyleTypes.MEASURE, { geometry: measureGeometry });
 				this._updateStatistic();

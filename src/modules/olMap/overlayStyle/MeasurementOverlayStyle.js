@@ -174,8 +174,10 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		};
 
 		const distanceOverlay = olFeature.get(asInternalProperty('measurement')) || createNew();
-		if (olFeature && !olFeature.getGeometry().get(PROJECTED_LENGTH_GEOMETRY_PROPERTY)) {
-			olFeature.getGeometry().set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, olFeature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY));
+		if (olFeature && !olFeature.getGeometry().get(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY))) {
+			olFeature
+				.getGeometry()
+				.set(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), olFeature.get(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY)));
 		}
 		this._updateOlOverlay(distanceOverlay, olFeature.getGeometry());
 		return distanceOverlay;
@@ -227,10 +229,10 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		};
 		const partitions = getPartitions();
 
-		const projectedLength = olFeature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY);
+		const projectedLength = olFeature.get(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY));
 		const resolution = olMap.getView().getResolution();
 
-		const delta = projectedLength ? getPartitionDelta(olFeature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY), resolution) : 1;
+		const delta = projectedLength ? getPartitionDelta(olFeature.get(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY)), resolution) : 1;
 		let partitionIndex = 0;
 		if (displayRuler) {
 			for (let i = delta; i < 1; i += delta, partitionIndex++) {
@@ -328,8 +330,8 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		if (!overlay.get(asInternalProperty('manualPositioning'))) {
 			if (element.type === BaOverlayTypes.DISTANCE_PARTITION) {
 				const feature = overlay.get('feature');
-				if (geometry && !geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY)) {
-					geometry.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, feature.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY));
+				if (geometry && !geometry.get(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY))) {
+					geometry.set(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), feature.get(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY)));
 				}
 				const geodesicPosition = getGeodesicPosition(feature, value);
 				overlay.setPosition(geodesicPosition ?? element.position);
