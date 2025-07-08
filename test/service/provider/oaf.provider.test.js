@@ -51,6 +51,7 @@ describe('bvvOafFilterCapabilitiesProvider', () => {
 				id: 'gemeinde_code',
 				type: 'string',
 				values: ['671139', '674147'],
+				pattern: '^\\d{5}$',
 				finalized: false
 			},
 			{

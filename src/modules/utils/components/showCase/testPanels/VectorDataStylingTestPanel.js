@@ -94,7 +94,7 @@ export class VectorDataStylingTestPanel extends MvuElement {
 
 		const add_DataSourceHasStyle = async () => {
 			const kml =
-				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name>Drawing</name><Placemark id="draw_marker_1751472597861"><Style><IconStyle><scale>1.125</scale><Icon><href>http://va45c152.va-lvg.bvv.bayern.de:8085/ba-backend/icons/255,0,0/marker.png</href><gx:w>48</gx:w><gx:h>48</gx:h></Icon><hotSpot x="24" y="0" xunits="pixels" yunits="pixels"/></IconStyle></Style><Point><coordinates>10.5564198,49.7764351</coordinates></Point></Placemark></Document></kml>';
+				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name>Drawing</name><Placemark id="draw_marker_1751472597861"><Style><IconStyle><scale>1.125</scale><Icon><href>https://services.atlas.bayern.de/icons/255,0,0/marker.png</href><gx:w>48</gx:w><gx:h>48</gx:h></Icon><hotSpot x="24" y="0" xunits="pixels" yunits="pixels"/></IconStyle></Style><Point><coordinates>10.5564198,49.7764351</coordinates></Point></Placemark></Document></kml>';
 			const vgr_GeoResourceStyle = new VectorGeoResource(`${createUniqueId()}`, 'Data Source has its own Style', VectorSourceType.KML)
 				.setSource(kml, 4326)
 				.setStyleHint(StyleHint.HIGHLIGHT)

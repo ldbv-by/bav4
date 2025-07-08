@@ -49,11 +49,11 @@ describe('OlMeasurementHandler', () => {
 			this.get = "I'm a StyleService.";
 		}
 
-		addFeatureStyle() {}
+		addInternalFeatureStyle() {}
 
-		updateFeatureStyle() {}
+		updateInternalFeatureStyle() {}
 
-		removeFeatureStyle() {}
+		removeInternalFeatureStyle() {}
 
 		getStyleFunction() {
 			const styleFunction = () => {
@@ -599,7 +599,7 @@ describe('OlMeasurementHandler', () => {
 			spyOn(fileStorageServiceMock, 'isAdminId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
-			const addFeatureStyleSpy = spyOn(classUnderTest._styleService, 'addFeatureStyle');
+			const addInternalFeatureStyleSpy = spyOn(classUnderTest._styleService, 'addInternalFeatureStyle');
 			let oldFeature;
 
 			classUnderTest.activate(map);
@@ -608,7 +608,7 @@ describe('OlMeasurementHandler', () => {
 			});
 
 			await TestUtils.timeout();
-			expect(addFeatureStyleSpy).toHaveBeenCalledWith(oldFeature, map, classUnderTest._vectorLayer);
+			expect(addInternalFeatureStyleSpy).toHaveBeenCalledWith(oldFeature, map, classUnderTest._vectorLayer);
 		});
 
 		it('adds geodesic property on old measurement features', async () => {
@@ -737,7 +737,7 @@ describe('OlMeasurementHandler', () => {
 			spyOn(fileStorageServiceMock, 'isFileId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
-			const updateOverlaysSpy = spyOn(classUnderTest._styleService, 'updateFeatureStyle');
+			const updateOverlaysSpy = spyOn(classUnderTest._styleService, 'updateInternalFeatureStyle');
 			let oldFeature;
 
 			classUnderTest.activate(map);
@@ -763,7 +763,7 @@ describe('OlMeasurementHandler', () => {
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
 			let oldFeature, styledOldFeature, measureGeometry;
-			const updateOverlaysSpy = spyOn(classUnderTest._styleService, 'updateFeatureStyle').and.callFake((f, m, props) => {
+			const updateOverlaysSpy = spyOn(classUnderTest._styleService, 'updateInternalFeatureStyle').and.callFake((f, m, props) => {
 				styledOldFeature = f;
 				measureGeometry = props.geometry;
 			});
@@ -914,7 +914,7 @@ describe('OlMeasurementHandler', () => {
 			spyOn(fileStorageServiceMock, 'isFileId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
-			const updateOverlaysSpy = spyOn(classUnderTest._styleService, 'updateFeatureStyle');
+			const updateOverlaysSpy = spyOn(classUnderTest._styleService, 'updateInternalFeatureStyle');
 			const updateStyleSpy = spyOn(classUnderTest, '_updateStyle').and.callThrough();
 			classUnderTest.activate(map);
 

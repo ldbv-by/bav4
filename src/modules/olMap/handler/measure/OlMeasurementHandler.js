@@ -164,7 +164,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 						const projectedLength = this._mapService.calcLength(getLineString(measureGeometry)?.getCoordinates());
 						event.target.set(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), projectedLength);
 						measureGeometry.set(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), projectedLength);
-						this._styleService.updateFeatureStyle(event.target, olMap, { geometry: measureGeometry }, OlFeatureStyleTypes.MEASURE);
+						this._styleService.updateInternalFeatureStyle(event.target, olMap, { geometry: measureGeometry }, OlFeatureStyleTypes.MEASURE);
 						this._setStatistic(event.target);
 					};
 					oldFeatures.forEach((f) => {
@@ -173,8 +173,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 						if (f.getId().startsWith(Tools.MEASURE)) {
 							f.set(asInternalProperty(GEODESIC_FEATURE_PROPERTY), new GeodesicGeometry(f, olMap));
 						}
-						this._styleService.removeFeatureStyle(f, olMap);
-						this._styleService.addFeatureStyle(f, olMap, layer);
+						this._styleService.removeInternalFeatureStyle(f, olMap);
+						this._styleService.addInternalFeatureStyle(f, olMap, layer);
 						f.on('change', onFeatureChange);
 					});
 					const displayRuler = !oldFeatures.some((f) => f.get(asInternalProperty('displayruler')) === 'false');
@@ -483,7 +483,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				f.set(asInternalProperty('displayruler'), `${displayRuler}`);
 				const measureGeometry = this._createMeasureGeometry(f);
 
-				this._styleService.updateFeatureStyle(f, this._map, { geometry: measureGeometry }, OlFeatureStyleTypes.MEASURE);
+				this._styleService.updateInternalFeatureStyle(f, this._map, { geometry: measureGeometry }, OlFeatureStyleTypes.MEASURE);
 			});
 	}
 
@@ -546,7 +546,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		draw.on('drawend', (event) => {
 			finishDistanceOverlay(event);
-			this._styleService.addFeatureStyle(event.feature, this._map, this._vectorLayer);
+			this._styleService.addInternalFeatureStyle(event.feature, this._map, this._vectorLayer);
 			this._activateModify(event.feature);
 		});
 

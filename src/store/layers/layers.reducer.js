@@ -6,6 +6,7 @@ export const LAYER_ADDED = 'layer/added';
 export const LAYER_REMOVED = 'layer/removed';
 export const LAYER_REMOVE_AND_SET = 'layer/removeAndSet';
 export const LAYER_MODIFIED = 'layer/modified';
+export const LAYER_PROPS_MODIFIED = 'layer/props/modified';
 export const LAYER_RESOURCES_READY = 'layer/resources/ready';
 export const LAYER_GEORESOURCE_CHANGED = 'layer/geoResource/changed';
 
@@ -95,6 +96,7 @@ export const createDefaultLayerProperties = () => ({
 	opacity: 1,
 	timestamp: null,
 	state: LayerState.OK,
+	props: {},
 	style: null,
 	constraints: createDefaultLayersConstraints(),
 	grChangedFlag: null
@@ -213,6 +215,35 @@ const modifyLayer = (state, payload) => {
 	};
 };
 
+const modifyLayerProps = (state, payload) => {
+	const { id, props, replace } = payload;
+
+	const layer = state.active.find((layer) => layer.id === id);
+	if (layer) {
+		const active = [...state.active];
+
+		const currentIndex = active.indexOf(layer);
+		// remove current layer
+		active.splice(currentIndex, 1);
+
+		const updatedLayer = {
+			...layer,
+			props: replace ? { ...props } : { ...layer.props, ...props }
+		};
+
+		// add updated layer
+		active.splice(updatedLayer.zIndex, 0, updatedLayer);
+
+		return {
+			...state,
+			active: sort(index(active))
+		};
+	}
+	return {
+		...state
+	};
+};
+
 const updateGrChangedFlags = (state, payload /* the geoResourceId*/) => {
 	return {
 		...state,
@@ -237,6 +268,9 @@ const applyActionSpecificUpdate = (state, action) => {
 		}
 		case LAYER_MODIFIED: {
 			return modifyLayer(state, payload);
+		}
+		case LAYER_PROPS_MODIFIED: {
+			return modifyLayerProps(state, payload);
 		}
 		case LAYER_GEORESOURCE_CHANGED: {
 			return updateGrChangedFlags(state, payload);
