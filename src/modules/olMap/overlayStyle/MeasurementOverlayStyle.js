@@ -62,7 +62,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		 * This must be done while the style is applied for the first time.
 		 */
 
-		const existingListeners = olFeature.get(STYLE_LISTENERS);
+		const existingListeners = olFeature.get(asInternalProperty(STYLE_LISTENERS));
 		if (existingListeners) {
 			// possible existing listeners, created in the drawing phase should be replaced to prevent broken references
 			unByKey(existingListeners);
@@ -81,7 +81,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 				: {};
 			this.update(olFeature, olMap, currentProperties);
 		});
-		olFeature.set(STYLE_LISTENERS, [listener]);
+		olFeature.set(asInternalProperty(STYLE_LISTENERS), [listener]);
 
 		this._createDistanceOverlay(olFeature, olMap);
 		this._createOrRemoveAreaOverlay(olFeature, olMap);
@@ -145,10 +145,10 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	 * @param {ol.map} olMap
 	 */
 	remove(olFeature, olMap) {
-		const styleListeners = olFeature.get(STYLE_LISTENERS);
+		const styleListeners = olFeature.get(asInternalProperty(STYLE_LISTENERS));
 		if (styleListeners?.length) {
 			unByKey(styleListeners);
-			olFeature.unset(STYLE_LISTENERS);
+			olFeature.unset(asInternalProperty(STYLE_LISTENERS));
 		}
 
 		const featureOverlays = olFeature.get(asInternalProperty('overlays')) || [];

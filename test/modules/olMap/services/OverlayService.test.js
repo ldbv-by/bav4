@@ -320,10 +320,10 @@ describe('OverlayService', () => {
 			});
 			feature.setId('measure_123');
 			feature.set(asInternalProperty('overlays'), [{}, {}]);
-			feature.set('measurement_style_listeners', [jasmine.createSpy()]);
+			feature.set(asInternalProperty('measurement_style_listeners'), [jasmine.createSpy()]);
 			const removeOverlaySpy = jasmine.createSpy();
 			const unsetSpy = spyOn(feature, 'unset')
-				.withArgs('measurement_style_listeners')
+				.withArgs(asInternalProperty('measurement_style_listeners'))
 				.and.callFake(() => {});
 			const viewMock = {
 				getResolution() {

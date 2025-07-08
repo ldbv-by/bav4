@@ -1029,8 +1029,8 @@ describe('MeasurementOverlayStyle', () => {
 		const feature = createFeature();
 		const listenerStub = jasmine.createSpy();
 
-		feature.set('measurement_style_listeners', [listenerStub]);
-		const unsetSpy = spyOn(feature, 'unset').withArgs('measurement_style_listeners').and.callThrough();
+		feature.set(asInternalProperty('measurement_style_listeners'), [listenerStub]);
+		const unsetSpy = spyOn(feature, 'unset').withArgs(asInternalProperty('measurement_style_listeners')).and.callThrough();
 
 		const classUnderTest = new MeasurementOverlayStyle();
 		classUnderTest.remove(feature, mapMock);
