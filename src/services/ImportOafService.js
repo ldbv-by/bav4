@@ -110,4 +110,36 @@ export class ImportOafService {
 		}
 		return null;
 	}
+
+	/**
+	 * Returns the `OafFilterCapabilities` for a `OafGeoResource` if they are already in the cache.
+	 * Returns `null` if the `OafFilterCapabilities` are not in the cache but requests them asynchronously so that they may be available in the future
+	 * Return `null` for any other `GeoResource` than `OafGeoResource`.
+	 * Note: This method does not check if the `OafFilterCapabilities` may have been expired.
+	 * @param {OafGeoResource|GeoResource} oafGeoResource
+	 * @param {boolean}[requestIfNotAvailable=true] `true` if a missing  `OafFilterCapabilities` object should be requested from the provider asynchronously
+	 * @returns {module:domain/oaf~OafFilterCapabilities|null} `OafFilterCapabilities` or null if none are available
+	 */
+	getFilterCapabilitiesFromCache(oafGeoResource, requestIfNotAvailable = true) {
+		if (oafGeoResource instanceof OafGeoResource) {
+			if (this.#filterCapabilitiesCache.has(oafGeoResource.id)) {
+				return this.#filterCapabilitiesCache.get(oafGeoResource.id).data;
+			}
+
+			if (requestIfNotAvailable) {
+				this._oafFilterCapabilitiesProvider(oafGeoResource)
+					// eslint-disable-next-line promise/prefer-await-to-then
+					.then((oafFilterCapabilities) => {
+						if (oafFilterCapabilities) {
+							this.#filterCapabilitiesCache.set(oafGeoResource.id, { created: new Date().getTime(), data: oafFilterCapabilities });
+						}
+					})
+					// eslint-disable-next-line promise/prefer-await-to-then
+					.catch((error) => {
+						console.warn(error);
+					});
+			}
+		}
+		return null;
+	}
 }

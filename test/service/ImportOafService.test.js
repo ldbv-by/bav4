@@ -3,6 +3,7 @@ import { OafGeoResource, WmsGeoResource } from '../../src/domain/geoResources';
 import { DEFAULT_OAF_CAPABILITIES_CACHE_DURATION_SECONDS, ImportOafService } from '../../src/services/ImportOafService';
 import { getAttributionProviderForGeoResourceImportedByUrl } from '../../src/services/provider/attribution.provider';
 import { bvvOafFilterCapabilitiesProvider, bvvOafGeoResourceProvider } from '../../src/services/provider/oaf.provider';
+import { TestUtils } from '../test-utils';
 
 describe('ImportOafService', () => {
 	const geoResourceService = {
@@ -131,9 +132,9 @@ describe('ImportOafService', () => {
 			const oafFilterCapabilitiesProviderSpy = jasmine.createSpy().and.callFake((geoResource) => {
 				switch (geoResource.id) {
 					case 'id0':
-						return mockOafFilterCapabilities;
+						return Promise.resolve(mockOafFilterCapabilities);
 					default:
-						return null;
+						return Promise.resolve(null);
 				}
 			});
 			const instanceUnderTest = new ImportOafService(null, oafFilterCapabilitiesProviderSpy);
@@ -191,10 +192,82 @@ describe('ImportOafService', () => {
 		it('passes the error of the underlying provider', async () => {
 			const msg = 'Something got wrong';
 			const oafGeoResource = new OafGeoResource('id0', 'label0', 'url0', 'collectionId0', 12345);
-			const oafFilterCapabilitiesProviderSpy = jasmine.createSpy().and.throwError(msg);
+			const oafFilterCapabilitiesProviderSpy = jasmine.createSpy().and.rejectWith(new Error(msg));
 			const instanceUnderTest = new ImportOafService(null, oafFilterCapabilitiesProviderSpy);
 
 			await expectAsync(instanceUnderTest.getFilterCapabilities(oafGeoResource)).toBeRejectedWithError(Error, msg);
+		});
+	});
+
+	describe('getFilterCapabilitiesFromCache', () => {
+		it('returns `null`, calls the oafFilterCapabilitiesProvider afterward and serves the second call from the cache', async () => {
+			const oafGeoResource0 = new OafGeoResource('id0', 'label0', 'url0', 'collectionId0', 12345);
+			const mockOafFilterCapabilities = { foo: 'bar' };
+			const oafFilterCapabilitiesProviderSpy = jasmine.createSpy().and.resolveTo(mockOafFilterCapabilities);
+
+			const instanceUnderTest = new ImportOafService(null, oafFilterCapabilitiesProviderSpy);
+
+			expect(instanceUnderTest.getFilterCapabilitiesFromCache(oafGeoResource0)).toBeNull();
+
+			await TestUtils.timeout();
+
+			expect(instanceUnderTest.getFilterCapabilitiesFromCache(oafGeoResource0)).toEqual(mockOafFilterCapabilities);
+		});
+
+		it('returns `null` and does NOT call the oafFilterCapabilitiesProvider afterward', async () => {
+			const oafGeoResource0 = new OafGeoResource('id0', 'label0', 'url0', 'collectionId0', 12345);
+			const mockOafFilterCapabilities = { foo: 'bar' };
+			const oafFilterCapabilitiesProviderSpy = jasmine.createSpy().and.resolveTo(mockOafFilterCapabilities);
+
+			const instanceUnderTest = new ImportOafService(null, oafFilterCapabilitiesProviderSpy);
+
+			expect(instanceUnderTest.getFilterCapabilitiesFromCache(oafGeoResource0, false)).toBeNull();
+
+			await TestUtils.timeout();
+
+			expect(oafFilterCapabilitiesProviderSpy).not.toHaveBeenCalled();
+		});
+
+		it('returns `null` for other GeoResources', async () => {
+			const oafGeoResource0 = new WmsGeoResource('id0', 'label0', 'url0', 'layer0', 'format0');
+			const oafFilterCapabilitiesProviderSpy = jasmine.createSpy();
+			const instanceUnderTest = new ImportOafService(null, oafFilterCapabilitiesProviderSpy);
+
+			expect(instanceUnderTest.getFilterCapabilitiesFromCache(oafGeoResource0)).toBeNull(null);
+
+			await TestUtils.timeout();
+
+			expect(oafFilterCapabilitiesProviderSpy).not.toHaveBeenCalled();
+		});
+
+		it('does only add valid results to the cache', async () => {
+			const oafGeoResource = new OafGeoResource('id0', 'label0', 'url0', 'collectionId0', 12345);
+			const oafFilterCapabilitiesProviderSpy = jasmine.createSpy().withArgs(oafGeoResource).and.resolveTo(null);
+			const instanceUnderTest = new ImportOafService(null, oafFilterCapabilitiesProviderSpy);
+
+			const result0 = instanceUnderTest.getFilterCapabilitiesFromCache(oafGeoResource);
+			const result1 = instanceUnderTest.getFilterCapabilitiesFromCache(oafGeoResource);
+
+			expect(result0).toBeNull();
+
+			await TestUtils.timeout();
+
+			expect(result1).toBeNull();
+			expect(oafFilterCapabilitiesProviderSpy).toHaveBeenCalledTimes(2);
+		});
+
+		it('logs the error of the underlying provider', async () => {
+			const warnSpy = spyOn(console, 'warn');
+			const msg = 'Something got wrong';
+			const oafGeoResource = new OafGeoResource('id0', 'label0', 'url0', 'collectionId0', 12345);
+			const oafFilterCapabilitiesProviderSpy = jasmine.createSpy().and.rejectWith(msg);
+			const instanceUnderTest = new ImportOafService(null, oafFilterCapabilitiesProviderSpy);
+
+			instanceUnderTest.getFilterCapabilitiesFromCache(oafGeoResource);
+
+			await TestUtils.timeout();
+
+			expect(warnSpy).toHaveBeenCalledWith(msg);
 		});
 	});
 });
