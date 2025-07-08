@@ -847,7 +847,7 @@ describe('LayerItem', () => {
 			expect(badge[0].label).toBe(0);
 		});
 
-		it('shows no feature cont badge because featureCount is undefined', async () => {
+		it('shows no feature count badge because featureCount is undefined', async () => {
 			const geoResourceId = 'geoResourceId0';
 			spyOn(geoResourceService, 'byId')
 				.withArgs(geoResourceId)
@@ -865,7 +865,7 @@ describe('LayerItem', () => {
 			expect(element.shadowRoot.querySelectorAll('ba-badge.feature-count-badge')).toHaveSize(0);
 		});
 
-		it('shows no feature cont badge while LayerState is loading', async () => {
+		it('shows no feature count badge while LayerState is loading', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
 				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
