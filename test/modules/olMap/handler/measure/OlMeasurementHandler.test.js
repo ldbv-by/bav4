@@ -2074,7 +2074,7 @@ describe('OlMeasurementHandler', () => {
 
 				classUnderTest._vectorLayer = layerMock;
 				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 50, 500);
-				expect(overlay.get('manualPositioning')).toBeTrue();
+				expect(overlay.get(asInternalProperty('manualPositioning'))).toBeTrue();
 				expect(overlay.getPosition()).toEqual([50, 500]);
 				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP, 50, 500);
 				expect(overlay.get(asInternalProperty('dragging'))).toBeFalse();

@@ -730,7 +730,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const draggingOverlay = getOverlays(this._vectorLayer).find((o) => o.get(asInternalProperty('dragging')) === true);
 		if (draggingOverlay) {
 			draggingOverlay.setOffset([0, 0]);
-			draggingOverlay.set('manualPositioning', true);
+			draggingOverlay.set(asInternalProperty('manualPositioning'), true);
 			draggingOverlay.setPosition(coordinate);
 
 			const parentFeature = draggingOverlay.get('feature');

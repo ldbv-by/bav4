@@ -19,7 +19,7 @@ export const saveManualOverlayPosition = (feature) => {
 	draggableOverlayTypes.forEach((t) => {
 		const overlay = feature.get(t);
 		if (overlay) {
-			if (overlay.get('manualPositioning')) {
+			if (overlay.get(asInternalProperty('manualPositioning'))) {
 				feature.set(t + '_position_x', overlay.getPosition()[0]);
 				feature.set(t + '_position_y', overlay.getPosition()[1]);
 			}
@@ -268,7 +268,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 				const posX = olFeature.get(t + '_position_x');
 				const posY = olFeature.get(t + '_position_y');
 				if (posX !== undefined && posY !== undefined) {
-					overlay.set('manualPositioning', true);
+					overlay.set(asInternalProperty('manualPositioning'), true);
 					overlay.setOffset([0, 0]);
 					overlay.setPosition([posX, posY]);
 				}
@@ -325,7 +325,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		const element = overlay.getElement();
 		element.value = value;
 		element.geometry = geometry;
-		if (!overlay.get('manualPositioning')) {
+		if (!overlay.get(asInternalProperty('manualPositioning'))) {
 			if (element.type === BaOverlayTypes.DISTANCE_PARTITION) {
 				const feature = overlay.get('feature');
 				if (geometry && !geometry.get(PROJECTED_LENGTH_GEOMETRY_PROPERTY)) {

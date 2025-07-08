@@ -1558,7 +1558,7 @@ describe('MeasurementOverlayStyle', () => {
 		const draggedOverlayMock = {
 			getPosition: () => [42, 21],
 			get(property) {
-				return property === 'manualPositioning';
+				return property === asInternalProperty('manualPositioning');
 			}
 		};
 		const staticOverlayMock = {
@@ -1643,7 +1643,7 @@ describe('MeasurementOverlayStyle', () => {
 		classUnderTest._restoreManualOverlayPosition(feature);
 
 		expect(actualPosition).toEqual([42, 21]);
-		expect(actualProperty).toEqual({ key: 'manualPositioning', value: true });
+		expect(actualProperty).toEqual({ key: asInternalProperty('manualPositioning'), value: true });
 	});
 
 	it('cannot restore manual overlay-position from the related feature', () => {
