@@ -2456,7 +2456,7 @@ describe('BvvMfp3Encoder', () => {
 						[40, 40]
 					]),
 					_ba_measurement: {},
-					geodesic: {
+					_ba_geodesic: {
 						getGeometry: () => {},
 						azimuthCircle: {
 							clone: () =>

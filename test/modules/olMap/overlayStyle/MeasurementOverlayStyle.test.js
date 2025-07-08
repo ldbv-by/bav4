@@ -108,7 +108,7 @@ describe('MeasurementOverlayStyle', () => {
 							return [overlayMock1, overlayMock2];
 						case PROJECTED_LENGTH_GEOMETRY_PROPERTY:
 							return 200;
-						case 'geodesic':
+						case '_ba_geodesic':
 							return { getCalculationStatus: () => 'foo' };
 						case '_ba_displayruler':
 							return undefined;
@@ -194,7 +194,7 @@ describe('MeasurementOverlayStyle', () => {
 							return [overlayMock1, overlayMock2];
 						case PROJECTED_LENGTH_GEOMETRY_PROPERTY:
 							return 200;
-						case 'geodesic':
+						case '_ba_geodesic':
 							return geodesicMock;
 						case '_ba_displayruler':
 							return undefined;
@@ -272,7 +272,7 @@ describe('MeasurementOverlayStyle', () => {
 							return [overlayMock1, overlayMock2];
 						case PROJECTED_LENGTH_GEOMETRY_PROPERTY:
 							return 200;
-						case 'geodesic':
+						case '_ba_geodesic':
 							return geodesicMock;
 						case '_ba_displayruler':
 							return 'foo';
@@ -347,7 +347,7 @@ describe('MeasurementOverlayStyle', () => {
 							return [overlayMock1, overlayMock2];
 						case PROJECTED_LENGTH_GEOMETRY_PROPERTY:
 							return 200;
-						case 'geodesic':
+						case '_ba_geodesic':
 							return geodesicMock;
 						case '_ba_displayruler':
 							return 'true';
@@ -835,7 +835,7 @@ describe('MeasurementOverlayStyle', () => {
 			const overlayMock = {
 				getElement: () => elementMock,
 				getPosition: () => [0, 0],
-				get: (key) => (key === 'feature' ? { get: (key) => (key === 'geodesic' ? geodesicMock : {}) } : null),
+				get: (key) => (key === 'feature' ? { get: (key) => (key === asInternalProperty('geodesic') ? geodesicMock : {}) } : null),
 				setPosition: () => {}
 			};
 			const featureMock = {

@@ -171,7 +171,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 						f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
 						layer.getSource().addFeature(f);
 						if (f.getId().startsWith(Tools.MEASURE)) {
-							f.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(f, olMap));
+							f.set(asInternalProperty(GEODESIC_FEATURE_PROPERTY), new GeodesicGeometry(f, olMap));
 						}
 						this._styleService.removeFeatureStyle(f, olMap);
 						this._styleService.addFeatureStyle(f, olMap, layer);
@@ -532,7 +532,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			};
 
 			this._sketchHandler.activate(event.feature, this._map, Tools.MEASURE + '_');
-			event.feature.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(event.feature, this._map, () => !this._sketchHandler.isFinishOnFirstPoint));
+			event.feature.set(
+				asInternalProperty(GEODESIC_FEATURE_PROPERTY),
+				new GeodesicGeometry(event.feature, this._map, () => !this._sketchHandler.isFinishOnFirstPoint)
+			);
 			event.feature.set(asInternalProperty('displayruler'), `${this._storeService.getStore().getState().measurement.displayRuler}`);
 			this._overlayService.add(this._sketchHandler.active, this._map, OlFeatureStyleTypes.MEASURE);
 			this._drawingListeners.push(event.feature.on('change', onFeatureChange));
@@ -590,7 +593,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._modify.setActive(true);
 		this._modifyActivated = true;
 		if (feature) {
-			feature.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(feature, this._map)); // refresh geodesic with the completed feature from the finished drawing
+			feature.set(asInternalProperty(GEODESIC_FEATURE_PROPERTY), new GeodesicGeometry(feature, this._map)); // refresh geodesic with the completed feature from the finished drawing
 			const onFeatureChange = (event) => {
 				const measureGeometry = this._createMeasureGeometry(event.target);
 				const projectedLength = this._mapService.calcLength(getLineString(measureGeometry)?.getCoordinates());
@@ -652,7 +655,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 	_createMeasureGeometry(feature) {
 		const getGeodesicGeometry = (feature) => {
-			const geodesic = feature.get(GEODESIC_FEATURE_PROPERTY);
+			const geodesic = feature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
 			return geodesic.getGeometry(); // always returns a MultiLineString
 		};
 
@@ -666,7 +669,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			return feature.getGeometry();
 		};
 
-		const geodesic = feature.get(GEODESIC_FEATURE_PROPERTY);
+		const geodesic = feature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
 
 		return geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE ? getGeodesicGeometry(feature) : getGeometry(feature);
 	}
@@ -681,8 +684,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	_getSketchStyleOptions() {
 		return {
 			LineString: (feature, resolution) => {
-				if (!feature.get(GEODESIC_FEATURE_PROPERTY)) {
-					feature.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(feature, this._map, () => true));
+				if (!feature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY))) {
+					feature.set(asInternalProperty(GEODESIC_FEATURE_PROPERTY), new GeodesicGeometry(feature, this._map, () => true));
 					feature.on('change', (e) =>
 						e.target.set(asInternalProperty('displayruler'), `${this._storeService.getStore().getState().measurement.displayRuler}`)
 					);

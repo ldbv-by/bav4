@@ -580,7 +580,7 @@ export class BvvMfp3Encoder {
 						const geometry = style.getGeometry()(olFeatureToEncode);
 						if (geometry) {
 							const mfpGeometry = geometry.clone(); // explicit clone, because changes may be added through transformations
-							const geodesicGeometry = olFeatureToEncode.get(GEODESIC_FEATURE_PROPERTY);
+							const geodesicGeometry = olFeatureToEncode.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
 							if (geodesicGeometry) {
 								// if the feature have a geodesic geometry, we have a measurement feature with explicit geodesic styling and
 								// the resulting style geometry must be transformed to mfp projection

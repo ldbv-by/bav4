@@ -67,6 +67,7 @@ import { Tools } from '../../../../domain/tools';
 import { GEODESIC_FEATURE_PROPERTY, GeodesicGeometry } from '../../ol/geodesic/geodesicGeometry';
 import { setData } from '../../../../store/fileStorage/fileStorage.action';
 import { createDefaultLayerProperties } from '../../../../store/layers/layers.reducer';
+import { asInternalProperty } from '../../../../utils/propertyUtils';
 
 export const MAX_SELECTION_SIZE = 1;
 
@@ -211,7 +212,7 @@ export class OlDrawHandler extends OlLayerHandler {
 					oldFeatures.forEach((f) => {
 						f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
 						if (f.getId().startsWith(Tools.MEASURE)) {
-							f.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(f, olMap));
+							f.set(asInternalProperty(GEODESIC_FEATURE_PROPERTY), new GeodesicGeometry(f, olMap));
 						}
 						this._styleService.removeFeatureStyle(f, olMap);
 						this._styleService.addFeatureStyle(f, olMap, layer);

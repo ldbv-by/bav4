@@ -628,8 +628,8 @@ describe('OlMeasurementHandler', () => {
 			await TestUtils.timeout();
 
 			const loadedFeatures = classUnderTest._vectorLayer.getSource().getFeatures();
-			expect(loadedFeatures.filter((f) => f.get(GEODESIC_FEATURE_PROPERTY) && f.getId().startsWith('measure_'))).toHaveSize(1);
-			expect(loadedFeatures.filter((f) => !f.get(GEODESIC_FEATURE_PROPERTY) && !f.getId().startsWith('measure_'))).toHaveSize(1);
+			expect(loadedFeatures.filter((f) => f.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY)) && f.getId().startsWith('measure_'))).toHaveSize(1);
+			expect(loadedFeatures.filter((f) => !f.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY)) && !f.getId().startsWith('measure_'))).toHaveSize(1);
 		});
 
 		const getLastDataWith = (property, value) => {
@@ -854,7 +854,7 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest.activate(map);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 
-			expect(feature.get(GEODESIC_FEATURE_PROPERTY)).toEqual(jasmine.any(GeodesicGeometry));
+			expect(feature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY))).toEqual(jasmine.any(GeodesicGeometry));
 		});
 
 		it("updates overlays while drawing on 'change:Resolution'", async () => {

@@ -150,7 +150,7 @@ describe('measureStyleFunction', () => {
 	const feature = new Feature({ geometry: geometry });
 	const featureWithGeodesic = new Feature({ geometry: geometry });
 	const geodesic = new GeodesicGeometry(featureWithGeodesic, mapMock);
-	featureWithGeodesic.set(GEODESIC_FEATURE_PROPERTY, geodesic);
+	featureWithGeodesic.set(asInternalProperty(GEODESIC_FEATURE_PROPERTY), geodesic);
 	const resolution = 1;
 	it('should create styles', () => {
 		const styles = measureStyleFunction(feature, resolution);
@@ -204,7 +204,7 @@ describe('measureStyleFunction', () => {
 		const lineFeature = new Feature({ geometry: geometry });
 		const geodesic = new GeodesicGeometry(lineFeature);
 		spyOn(geodesic, 'getCalculationStatus').and.returnValue(GEODESIC_CALCULATION_STATUS.ACTIVE);
-		lineFeature.set(GEODESIC_FEATURE_PROPERTY, geodesic);
+		lineFeature.set(asInternalProperty(GEODESIC_FEATURE_PROPERTY), geodesic);
 
 		const pointFeature = new Feature({ geometry: new Point([0, 0]) });
 		const circle = geometryFunction(lineFeature);
@@ -317,7 +317,7 @@ describe('measureStyleFunction', () => {
 		const feature = new Feature({ geometry: geometry });
 		const geodesic = new GeodesicGeometry(feature);
 		spyOn(geodesic, 'getCalculationStatus').and.returnValue(GEODESIC_CALCULATION_STATUS.ACTIVE);
-		feature.set(GEODESIC_FEATURE_PROPERTY, geodesic);
+		feature.set(asInternalProperty(GEODESIC_FEATURE_PROPERTY), geodesic);
 		const styles = measureStyleFunction(feature, resolution);
 
 		const rulerStyle = styles.find((style) => style.getRenderer != null);
@@ -336,7 +336,7 @@ describe('measureStyleFunction', () => {
 		const feature = new Feature({ geometry: polygon });
 		const geodesic = new GeodesicGeometry(feature);
 		spyOn(geodesic, 'getCalculationStatus').and.returnValue(GEODESIC_CALCULATION_STATUS.ACTIVE);
-		feature.set(GEODESIC_FEATURE_PROPERTY, geodesic);
+		feature.set(asInternalProperty(GEODESIC_FEATURE_PROPERTY), geodesic);
 		const styles = measureStyleFunction(feature, resolution);
 
 		expect(styles[1].getGeometryFunction()(feature)).toEqual(jasmine.any(MultiPolygon));
@@ -612,7 +612,7 @@ describe('renderGeodesicRulerSegments', () => {
 	const feature = new Feature({ geometry: geometry });
 	const featureWithGeodesic = new Feature({ geometry: geometry });
 	const geodesic = new GeodesicGeometry(featureWithGeodesic, mapMock);
-	featureWithGeodesic.set(GEODESIC_FEATURE_PROPERTY, geodesic);
+	featureWithGeodesic.set(asInternalProperty(GEODESIC_FEATURE_PROPERTY), geodesic);
 
 	const resolution = 1;
 	it('should call contextRenderer', () => {
@@ -1215,9 +1215,9 @@ describe('getSelectStyleFunction', () => {
 		const featureWithoutStyles = new Feature({ geometry: geometry });
 		featureWithEmptyFirstStyle.setStyle(() => []);
 		const styleFunction = getSelectStyleFunction();
-		featureWithStyle.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(featureWithStyle));
-		featureWithEmptyFirstStyle.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(featureWithEmptyFirstStyle));
-		featureWithoutStyles.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(featureWithoutStyles));
+		featureWithStyle.set(asInternalProperty(GEODESIC_FEATURE_PROPERTY), new GeodesicGeometry(featureWithStyle));
+		featureWithEmptyFirstStyle.set(asInternalProperty(GEODESIC_FEATURE_PROPERTY), new GeodesicGeometry(featureWithEmptyFirstStyle));
+		featureWithoutStyles.set(asInternalProperty(GEODESIC_FEATURE_PROPERTY), new GeodesicGeometry(featureWithoutStyles));
 
 		expect(styleFunction(featureWithStyle).length).toBe(3);
 		expect(

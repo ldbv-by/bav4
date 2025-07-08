@@ -423,7 +423,7 @@ const getRulerStyle = (feature) => {
 
 	return new Style({
 		geometry: (feature) => {
-			const geodesic = feature.get(GEODESIC_FEATURE_PROPERTY);
+			const geodesic = feature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
 
 			if (geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE) {
 				return geodesic.area ? geodesic.getPolygon() : geodesic.getGeometry();
@@ -439,7 +439,7 @@ const getRulerStyle = (feature) => {
 			return feature.getGeometry();
 		},
 		renderer: (pixelCoordinates, state) => {
-			const geodesic = state.feature.get(GEODESIC_FEATURE_PROPERTY);
+			const geodesic = state.feature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
 			const getContextRenderFunction = (state) =>
 				state.customContextRenderFunction ? state.customContextRenderFunction : getCanvasContextRenderFunction(state);
 			geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE
@@ -610,7 +610,7 @@ export const measureStyleFunction = (feature, resolution) => {
 		width: 3
 	});
 	const getGeodesicOrGeometry = (feature) => {
-		const geodesicGeometry = feature?.get(GEODESIC_FEATURE_PROPERTY)?.getGeometry();
+		const geodesicGeometry = feature?.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY))?.getGeometry();
 		return geodesicGeometry ?? feature.getGeometry();
 	};
 
@@ -638,7 +638,7 @@ export const measureStyleFunction = (feature, resolution) => {
 					return new Circle(coords[0], radius);
 				};
 				if (canShowAzimuthCircle(feature.getGeometry())) {
-					const geodesicGeometry = feature.get(GEODESIC_FEATURE_PROPERTY);
+					const geodesicGeometry = feature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
 					return geodesicGeometry ? geodesicGeometry.azimuthCircle : getCircle();
 				}
 			},
@@ -728,7 +728,7 @@ export const getSelectStyleFunction = () => {
 		const selectionStyles = featureStyles[0]
 			? featureStyles.concat([getAppendableVertexStyle(color)])
 			: [featureStyles, getAppendableVertexStyle(color)];
-		return feature.get(GEODESIC_FEATURE_PROPERTY) ? [geodesicConstructionLineStyle, ...selectionStyles] : selectionStyles;
+		return feature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY)) ? [geodesicConstructionLineStyle, ...selectionStyles] : selectionStyles;
 	};
 };
 

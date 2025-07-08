@@ -114,7 +114,7 @@ describe('OlStyleService', () => {
 				])
 			});
 			featureWithGeodesic.setId('measure_123');
-			featureWithGeodesic.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(featureWithGeodesic));
+			featureWithGeodesic.set(asInternalProperty(GEODESIC_FEATURE_PROPERTY), new GeodesicGeometry(featureWithGeodesic));
 			const addOverlaySpy = jasmine.createSpy();
 			const styleSetterSpy = spyOn(featureWithGeodesic, 'setStyle');
 			const propertySetterSpy = spyOn(featureWithGeodesic, 'set');
@@ -182,7 +182,7 @@ describe('OlStyleService', () => {
 			instanceUnderTest.addFeatureStyle(featureWithoutGeodesic, mapMock, layerMock);
 
 			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
-			expect(propertySetterSpy).toHaveBeenCalledWith(GEODESIC_FEATURE_PROPERTY, jasmine.any(Object));
+			expect(propertySetterSpy).toHaveBeenCalledWith(asInternalProperty(GEODESIC_FEATURE_PROPERTY), jasmine.any(Object));
 			expect(addSpy).toHaveBeenCalledWith(featureWithoutGeodesic, mapMock, 'measure');
 		});
 

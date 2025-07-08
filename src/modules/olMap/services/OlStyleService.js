@@ -452,8 +452,8 @@ export class OlStyleService {
 	_addMeasureStyle(olFeature, olMap) {
 		const { OverlayService: overlayService } = $injector.inject('OverlayService');
 
-		if (!olFeature.get(GEODESIC_FEATURE_PROPERTY)) {
-			olFeature.set(GEODESIC_FEATURE_PROPERTY, new GeodesicGeometry(olFeature, olMap));
+		if (!olFeature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY))) {
+			olFeature.set(asInternalProperty(GEODESIC_FEATURE_PROPERTY), new GeodesicGeometry(olFeature, olMap));
 		}
 
 		olFeature.setStyle(measureStyleFunction);
