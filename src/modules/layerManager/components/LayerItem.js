@@ -27,6 +27,7 @@ import { SwipeAlignment } from '../../../store/layers/layers.action';
 import { closeBottomSheet, openBottomSheet } from '../../../store/bottomSheet/bottomSheet.action';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 import { LAYER_ITEM_BOTTOM_SHEET_ID } from '../../../store/bottomSheet/bottomSheet.reducer';
+import { isNumber } from '../../../utils/checks';
 
 const Update_Layer_And_LayerItem = 'update_layer_and_layerItem';
 const Update_Layer_Collapsed = 'update_layer_collapsed';
@@ -219,7 +220,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 		};
 
 		const getFeatureCountBadge = (featureCount, layerState) => {
-			return (featureCount || featureCount === 0) && layerState !== LayerState.LOADING
+			return (featureCount || isNumber(featureCount)) && layerState !== LayerState.LOADING
 				? html`<ba-badge
 						class="feature-count-badge"
 						.background=${'var(--secondary-color)'}
