@@ -220,7 +220,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 		};
 
 		const getFeatureCountBadge = (featureCount, layerState) => {
-			return (featureCount || isNumber(featureCount)) && layerState !== LayerState.LOADING
+			return isNumber(featureCount) && layerState !== LayerState.LOADING
 				? html`<ba-badge
 						class="feature-count-badge"
 						.background=${'var(--secondary-color)'}
