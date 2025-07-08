@@ -1107,11 +1107,11 @@ describe('OlMeasurementHandler', () => {
 			spyOn(mapServiceMock, 'calcLength').and.returnValue(1234);
 			feature.getGeometry().dispatchEvent('change');
 
-			expect(feature.get('partitions').length).toBe(12);
+			expect(feature.get(asInternalProperty('partitions')).length).toBe(12);
 
 			map.getView().setZoom(13);
 
-			expect(feature.get('partitions').length).toBe(1);
+			expect(feature.get(asInternalProperty('partitions')).length).toBe(1);
 		});
 
 		it('removes area tooltip after finish drawing', () => {

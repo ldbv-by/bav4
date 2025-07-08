@@ -155,7 +155,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		featureOverlays.forEach((o) => olMap.removeOverlay(o));
 		olFeature.set(asInternalProperty('measurement'), null);
 		olFeature.set(asInternalProperty('area'), null);
-		olFeature.set('partitions', null);
+		olFeature.set(asInternalProperty('partitions'), null);
 		olFeature.set('overlays', []);
 	}
 
@@ -218,7 +218,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		};
 		const overlayGeometry = simplifiedGeometry ?? getOverlayGeometry(olFeature);
 		const getPartitions = () => {
-			const partitions = olFeature.get('partitions') || [];
+			const partitions = olFeature.get(asInternalProperty('partitions')) || [];
 			const cleanPartitions = (partitions) => {
 				partitions.forEach((p) => this._remove(p, olFeature, olMap));
 				return [];
@@ -254,7 +254,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 
 		this._justifyPlacement(overlayGeometry, partitions);
 
-		olFeature.set('partitions', partitions);
+		olFeature.set(asInternalProperty('partitions'), partitions);
 		if (delta !== 1) {
 			olFeature.set('partition_delta', delta);
 		}

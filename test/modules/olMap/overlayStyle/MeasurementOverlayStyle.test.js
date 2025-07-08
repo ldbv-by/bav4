@@ -49,13 +49,13 @@ describe('MeasurementOverlayStyle', () => {
 		const feature = new Feature();
 		feature.set(asInternalProperty('measurement'), {});
 		feature.set(asInternalProperty('area'), {});
-		feature.set('partitions', [{}, {}]);
+		feature.set(asInternalProperty('partitions'), [{}, {}]);
 		feature.set('overlays', [{}, {}, {}, {}]);
 		return feature;
 	};
 
 	const getPartition = (feature) => {
-		const partitionOverlays = feature.get('partitions');
+		const partitionOverlays = feature.get(asInternalProperty('partitions'));
 		const overlay = partitionOverlays[0];
 		return overlay?.getElement();
 	};
@@ -104,7 +104,7 @@ describe('MeasurementOverlayStyle', () => {
 			const featureMock = {
 				get: (key) => {
 					switch (key) {
-						case 'partitions':
+						case '_ba_partitions':
 							return [overlayMock1, overlayMock2];
 						case PROJECTED_LENGTH_GEOMETRY_PROPERTY:
 							return 200;
@@ -190,7 +190,7 @@ describe('MeasurementOverlayStyle', () => {
 			const featureMock = {
 				get: (key) => {
 					switch (key) {
-						case 'partitions':
+						case '_ba_partitions':
 							return [overlayMock1, overlayMock2];
 						case PROJECTED_LENGTH_GEOMETRY_PROPERTY:
 							return 200;
@@ -268,7 +268,7 @@ describe('MeasurementOverlayStyle', () => {
 			const featureMock = {
 				get: (key) => {
 					switch (key) {
-						case 'partitions':
+						case '_ba_partitions':
 							return [overlayMock1, overlayMock2];
 						case PROJECTED_LENGTH_GEOMETRY_PROPERTY:
 							return 200;
@@ -343,7 +343,7 @@ describe('MeasurementOverlayStyle', () => {
 			const featureMock = {
 				get: (key) => {
 					switch (key) {
-						case 'partitions':
+						case '_ba_partitions':
 							return [overlayMock1, overlayMock2];
 						case PROJECTED_LENGTH_GEOMETRY_PROPERTY:
 							return 200;
@@ -771,7 +771,7 @@ describe('MeasurementOverlayStyle', () => {
 			const featureMock = {
 				get: (key) => {
 					switch (key) {
-						case 'partitions':
+						case '_ba_partitions':
 							return [overlayMock1, overlayMock2];
 						case PROJECTED_LENGTH_GEOMETRY_PROPERTY:
 							return 200;
@@ -843,7 +843,7 @@ describe('MeasurementOverlayStyle', () => {
 					switch (key) {
 						case '_ba_measurement':
 							return overlayMock;
-						case 'partitions':
+						case '_ba_partitions':
 							return [overlayMock];
 						case PROJECTED_LENGTH_GEOMETRY_PROPERTY:
 							return 100;
@@ -1038,7 +1038,7 @@ describe('MeasurementOverlayStyle', () => {
 		expect(removeSpy).toHaveBeenCalledTimes(4);
 		expect(feature.get(asInternalProperty('measurement'))).toBeNull();
 		expect(feature.get(asInternalProperty('area'))).toBeNull();
-		expect(feature.get('partitions')).toBeNull();
+		expect(feature.get(asInternalProperty('partitions'))).toBeNull();
 		expect(feature.get('overlays')).toEqual([]);
 	});
 
@@ -1054,7 +1054,7 @@ describe('MeasurementOverlayStyle', () => {
 		expect(removeSpy).not.toHaveBeenCalled();
 		expect(feature.get(asInternalProperty('measurement'))).toBeNull();
 		expect(feature.get(asInternalProperty('area'))).toBeNull();
-		expect(feature.get('partitions')).toBeNull();
+		expect(feature.get(asInternalProperty('partitions'))).toBeNull();
 		expect(feature.get('overlays')).toEqual([]);
 	});
 
@@ -1313,7 +1313,7 @@ describe('MeasurementOverlayStyle', () => {
 		feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, 12345);
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock, geometry);
 
-		expect(feature.get('partitions').length).toBe(1);
+		expect(feature.get(asInternalProperty('partitions')).length).toBe(1);
 	});
 
 	it('creates partition tooltips for line in right-sector', () => {
@@ -1446,7 +1446,7 @@ describe('MeasurementOverlayStyle', () => {
 
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock, geometry);
 
-		expect(feature.get('partitions').length).toBe(12);
+		expect(feature.get(asInternalProperty('partitions')).length).toBe(12);
 	});
 
 	it('creates partition tooltips for not closed polygon', () => {
@@ -1475,7 +1475,7 @@ describe('MeasurementOverlayStyle', () => {
 		feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, 16000);
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock, geometry);
 
-		expect(feature.get('partitions').length).toBe(1);
+		expect(feature.get(asInternalProperty('partitions')).length).toBe(1);
 	});
 
 	it('removes partition tooltips after shrinking very long line', () => {
@@ -1501,7 +1501,7 @@ describe('MeasurementOverlayStyle', () => {
 		const feature = new Feature({ geometry: geometry });
 		feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, 123456);
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock, geometry);
-		expect(feature.get('partitions').length).toBe(12);
+		expect(feature.get(asInternalProperty('partitions')).length).toBe(12);
 
 		geometry.setCoordinates([
 			[0, 0],
@@ -1511,7 +1511,7 @@ describe('MeasurementOverlayStyle', () => {
 		feature.set(PROJECTED_LENGTH_GEOMETRY_PROPERTY, 12345);
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock, geometry);
 
-		expect(feature.get('partitions').length).toBe(1);
+		expect(feature.get(asInternalProperty('partitions')).length).toBe(1);
 	});
 
 	it('removes area overlay after change from polygon to line', () => {
