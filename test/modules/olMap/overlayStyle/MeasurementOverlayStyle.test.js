@@ -50,7 +50,7 @@ describe('MeasurementOverlayStyle', () => {
 		feature.set(asInternalProperty('measurement'), {});
 		feature.set(asInternalProperty('area'), {});
 		feature.set(asInternalProperty('partitions'), [{}, {}]);
-		feature.set('overlays', [{}, {}, {}, {}]);
+		feature.set(asInternalProperty('overlays'), [{}, {}, {}, {}]);
 		return feature;
 	};
 
@@ -954,9 +954,9 @@ describe('MeasurementOverlayStyle', () => {
 					}
 				}
 			];
-			const featureWithInvisibleOverlays = { get: (key) => (key === 'overlays' ? invisibleOverlays : {}), set: () => {} };
-			const featureWithVisibleOverlays = { get: (key) => (key === 'overlays' ? visibleOverlays : {}), set: () => {} };
-			const featureWithoutOverlays = { get: (key) => (key === 'overlays' ? [] : {}), set: () => {} };
+			const featureWithInvisibleOverlays = { get: (key) => (key === asInternalProperty('overlays') ? invisibleOverlays : {}), set: () => {} };
+			const featureWithVisibleOverlays = { get: (key) => (key === asInternalProperty('overlays') ? visibleOverlays : {}), set: () => {} };
+			const featureWithoutOverlays = { get: (key) => (key === asInternalProperty('overlays') ? [] : {}), set: () => {} };
 
 			const viewMock = { getResolution: () => 1, on: () => {} };
 			const mapMock = {
@@ -1039,7 +1039,7 @@ describe('MeasurementOverlayStyle', () => {
 		expect(feature.get(asInternalProperty('measurement'))).toBeNull();
 		expect(feature.get(asInternalProperty('area'))).toBeNull();
 		expect(feature.get(asInternalProperty('partitions'))).toBeNull();
-		expect(feature.get('overlays')).toEqual([]);
+		expect(feature.get(asInternalProperty('overlays'))).toEqual([]);
 	});
 
 	it('removes no overlays from feature with not synchronized overlays', () => {
@@ -1047,7 +1047,7 @@ describe('MeasurementOverlayStyle', () => {
 		const removeSpy = jasmine.createSpy();
 		const mapMock = { removeOverlay: removeSpy };
 		const feature = createFeature();
-		feature.set('overlays', undefined);
+		feature.set(asInternalProperty('overlays'), undefined);
 
 		const classUnderTest = new MeasurementOverlayStyle();
 		classUnderTest.remove(feature, mapMock);
@@ -1055,7 +1055,7 @@ describe('MeasurementOverlayStyle', () => {
 		expect(feature.get(asInternalProperty('measurement'))).toBeNull();
 		expect(feature.get(asInternalProperty('area'))).toBeNull();
 		expect(feature.get(asInternalProperty('partitions'))).toBeNull();
-		expect(feature.get('overlays')).toEqual([]);
+		expect(feature.get(asInternalProperty('overlays'))).toEqual([]);
 	});
 
 	it('creates overlay content for line', () => {

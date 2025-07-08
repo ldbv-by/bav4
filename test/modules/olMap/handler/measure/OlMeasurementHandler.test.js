@@ -1734,7 +1734,7 @@ describe('OlMeasurementHandler', () => {
 						[0, 500]
 					]
 				]),
-				overlays: [overlayMock]
+				_ba_overlays: [overlayMock]
 			});
 			const layerMock = {
 				getSource() {

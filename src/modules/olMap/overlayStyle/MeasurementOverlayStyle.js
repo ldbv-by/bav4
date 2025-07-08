@@ -69,7 +69,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		}
 
 		const listener = olMap.getView().on('change:resolution', () => {
-			const overlays = olFeature.get('overlays') ?? [];
+			const overlays = olFeature.get(asInternalProperty('overlays')) ?? [];
 			// current display/opacity property for all overlays of the feature are the same, therefore
 			// it is sufficient to only look at the first one
 			const overlay = overlays[0];
@@ -115,7 +115,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 			this._createOrRemoveAreaOverlay(olFeature, olMap);
 			this._createOrRemovePartitionOverlays(olFeature, olMap, measureGeometry);
 		}
-		const overlays = olFeature.get('overlays');
+		const overlays = olFeature.get(asInternalProperty('overlays'));
 		if (overlays) {
 			const isVisible = (properties) => {
 				if ('visible' in properties || 'top' in properties) {
@@ -151,12 +151,12 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 			olFeature.unset(STYLE_LISTENERS);
 		}
 
-		const featureOverlays = olFeature.get('overlays') || [];
+		const featureOverlays = olFeature.get(asInternalProperty('overlays')) || [];
 		featureOverlays.forEach((o) => olMap.removeOverlay(o));
 		olFeature.set(asInternalProperty('measurement'), null);
 		olFeature.set(asInternalProperty('area'), null);
 		olFeature.set(asInternalProperty('partitions'), null);
-		olFeature.set('overlays', []);
+		olFeature.set(asInternalProperty('overlays'), []);
 	}
 
 	_isActiveMeasurement() {

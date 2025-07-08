@@ -776,7 +776,7 @@ describe('OlStyleService', () => {
 			instanceUnderTest.addFeatureStyle(feature, mapMock, layerMock);
 
 			expect(styleSetterSpy).not.toHaveBeenCalledWith(jasmine.any(Array));
-			expect(propertySetterSpy).not.toHaveBeenCalledWith('overlays', jasmine.any(Object));
+			expect(propertySetterSpy).not.toHaveBeenCalledWith(asInternalProperty('overlays'), jasmine.any(Object));
 			expect(addOverlaySpy).not.toHaveBeenCalled();
 			expect(warnSpy).toHaveBeenCalledWith('Could not provide a style for unknown style-type');
 		});
@@ -824,7 +824,7 @@ describe('OlStyleService', () => {
 				])
 			});
 			feature.setId('measure_123');
-			feature.set('overlays', [overlayMock]);
+			feature.set(asInternalProperty('overlays'), [overlayMock]);
 			const viewMock = {
 				getResolution() {
 					return 50;

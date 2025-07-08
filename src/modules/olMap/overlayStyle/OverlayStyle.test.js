@@ -76,7 +76,7 @@ describe('OverlayStyle', () => {
 			expect(actualOverlays.length).toBe(3);
 		});
 
-		it("returns empty list, when overlays referenced other than in 'overlays'-property ", () => {
+		it("returns empty list, when overlays referenced other than in asInternalProperty('overlays')-property ", () => {
 			const featureMock = {
 				get: (key) => {
 					return key === 'somethingElse' ? [{}, {}, {}] : undefined;
