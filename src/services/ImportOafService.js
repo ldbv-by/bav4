@@ -39,7 +39,22 @@ import { bvvOafFilterCapabilitiesProvider, bvvOafGeoResourceProvider } from './p
 export const DEFAULT_OAF_CAPABILITIES_CACHE_DURATION_SECONDS = 60 * 10; // 10min
 
 /**
- * Service for importing OGC API Feature services. Usually returns an array of {@link OafGeoResource}.
+ * Service for importing OafGeoResource and OafFilterCapabilities,
+ *
+ * **OafFilterCapabilities Caching Strategy**
+ * - OafFilterCapabilities are cached by OafGeoResource ID to reduce redundant provider calls.
+ * - The cache uses a time-based expiry policy (default: 10 minutes).
+ * - Cache expiry is enforced only in {@link getFilterCapabilities}. The method {@link getFilterCapabilitiesFromCache} does NOT check for expiry and may return stale data.
+ * - If the cache grows large (many different GeoResources), there is currently no upper bound to the number of entries.
+ *
+ * **Error Handling**
+ * - Errors from provider calls in {@link getFilterCapabilities} are propagated to the caller.
+ * - In {@link getFilterCapabilitiesFromCache}, errors from asynchronous prefetches are logged as warnings but not propagated.
+ *
+ * **Usage Recommendations**
+ * - Use {@link getFilterCapabilities} when you need up-to-date capabilities and want to respect cache expiry.
+ * - Use {@link getFilterCapabilitiesFromCache} for fast cache lookups or to trigger background prefetching, but be aware that results may be stale.
+ *
  * @class
  * @author taulinger
  */
