@@ -4,7 +4,7 @@ import { OafFilter } from '../../../../src/modules/oaf/components/OafFilter';
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { layersReducer } from '../../../../src/store/layers/layers.reducer';
-import { addLayer } from '../../../../src/store/layers/layers.action';
+import { addLayer, LayerState } from '../../../../src/store/layers/layers.action';
 import { createDefaultFilterGroup, createDefaultOafFilter } from '../../../../src/modules/oaf/utils/oafUtils';
 
 window.customElements.define(OafMask.tag, OafMask);
@@ -73,6 +73,7 @@ describe('OafMask', () => {
 				filterGroups: [],
 				capabilities: [],
 				layerId: -1,
+				layerProperties: { featureCount: null, state: 'ok' },
 				showConsole: false
 			});
 		});
@@ -132,6 +133,7 @@ describe('OafMask', () => {
 
 	describe('when properties change', () => {
 		it('renders expert mode when showConsole is true', async () => {
+			fillImportOafServiceMock();
 			const element = await setup();
 			element.showConsole = true;
 
@@ -176,6 +178,11 @@ describe('OafMask', () => {
 			it('does not render a loading spinner', async () => {
 				const element = await setup();
 				expect(element.shadowRoot.querySelector('ba-spinner')).toBeNull();
+			});
+
+			it('shows filter results count', async () => {
+				const element = await setup({}, {}, { props: { featureCount: 42, state: LayerState.OK } });
+				expect(element.shadowRoot.querySelector('#filter-results').textContent).toContain('oaf_mask_filter_results 42');
 			});
 
 			it('does not render filter groups', async () => {

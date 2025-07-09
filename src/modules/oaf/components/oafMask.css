@@ -32,7 +32,7 @@
 #btn-expert-mode {
 	position: absolute;
 	width: 13em;
-	top: -3.3em;
+	top: -5.7em;
 	left: 8.5em;
 	border-radius: 2em 2em 0 0;
 	overflow: hidden;
@@ -73,7 +73,8 @@
 	justify-self: center;
 }
 
-.btn-bar {
+.btn-bar,
+.info-bar {
 	display: flex;
 	margin-top: 0.5em;
 	margin-bottom: 0.5em;
@@ -123,9 +124,23 @@
 	margin-left: 0.1em;
 }
 
+.loading {
+	animation: spin 2s linear infinite;
+	display: inline-block;
+}
+
 ba-spinner {
 	display: flex;
 	width: 8em;
 	align-items: center;
 	height: 3.6em;
+}
+
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
 }

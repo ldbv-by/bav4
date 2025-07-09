@@ -7,7 +7,8 @@ import {
 	createCqlExpression,
 	getOperatorByName,
 	getOperatorDefinitions,
-	CqlOperator
+	CqlOperator,
+	OafOperatorType
 } from '../../../../src/modules/oaf/utils/oafUtils';
 import { $injector } from '../../../../src/injection';
 import { OafQueryableType } from '../../../../src/domain/oaf';
@@ -63,16 +64,32 @@ describe('oafUtils', () => {
 
 		it('has a operator definition for every CqlOperator type', () => {
 			expect(allOperators.length).toBe(getOperatorDefinitions().length);
-			expect(getOperatorByName(CqlOperator.EQUALS)).toEqual(jasmine.objectContaining({ name: CqlOperator.EQUALS }));
-			expect(getOperatorByName(CqlOperator.NOT_EQUALS)).toEqual(jasmine.objectContaining({ name: CqlOperator.NOT_EQUALS }));
-			expect(getOperatorByName(CqlOperator.LIKE)).toEqual(jasmine.objectContaining({ name: CqlOperator.LIKE }));
-			expect(getOperatorByName(CqlOperator.NOT_LIKE)).toEqual(jasmine.objectContaining({ name: CqlOperator.NOT_LIKE }));
-			expect(getOperatorByName(CqlOperator.GREATER)).toEqual(jasmine.objectContaining({ name: CqlOperator.GREATER }));
-			expect(getOperatorByName(CqlOperator.GREATER_EQUALS)).toEqual(jasmine.objectContaining({ name: CqlOperator.GREATER_EQUALS }));
-			expect(getOperatorByName(CqlOperator.LESS)).toEqual(jasmine.objectContaining({ name: CqlOperator.LESS }));
-			expect(getOperatorByName(CqlOperator.LESS_EQUALS)).toEqual(jasmine.objectContaining({ name: CqlOperator.LESS_EQUALS }));
-			expect(getOperatorByName(CqlOperator.BETWEEN)).toEqual(jasmine.objectContaining({ name: CqlOperator.BETWEEN }));
-			expect(getOperatorByName(CqlOperator.NOT_BETWEEN)).toEqual(jasmine.objectContaining({ name: CqlOperator.NOT_BETWEEN }));
+			expect(getOperatorByName(CqlOperator.EQUALS)).toEqual(
+				jasmine.objectContaining({ name: CqlOperator.EQUALS, operatorType: OafOperatorType.Binary })
+			);
+			expect(getOperatorByName(CqlOperator.NOT_EQUALS)).toEqual(
+				jasmine.objectContaining({ name: CqlOperator.NOT_EQUALS, operatorType: OafOperatorType.Binary })
+			);
+			expect(getOperatorByName(CqlOperator.LIKE)).toEqual(jasmine.objectContaining({ name: CqlOperator.LIKE, operatorType: OafOperatorType.Binary }));
+			expect(getOperatorByName(CqlOperator.NOT_LIKE)).toEqual(
+				jasmine.objectContaining({ name: CqlOperator.NOT_LIKE, operatorType: OafOperatorType.Binary })
+			);
+			expect(getOperatorByName(CqlOperator.GREATER)).toEqual(
+				jasmine.objectContaining({ name: CqlOperator.GREATER, operatorType: OafOperatorType.Binary })
+			);
+			expect(getOperatorByName(CqlOperator.GREATER_EQUALS)).toEqual(
+				jasmine.objectContaining({ name: CqlOperator.GREATER_EQUALS, operatorType: OafOperatorType.Binary })
+			);
+			expect(getOperatorByName(CqlOperator.LESS)).toEqual(jasmine.objectContaining({ name: CqlOperator.LESS, operatorType: OafOperatorType.Binary }));
+			expect(getOperatorByName(CqlOperator.LESS_EQUALS)).toEqual(
+				jasmine.objectContaining({ name: CqlOperator.LESS_EQUALS, operatorType: OafOperatorType.Binary })
+			);
+			expect(getOperatorByName(CqlOperator.BETWEEN)).toEqual(
+				jasmine.objectContaining({ name: CqlOperator.BETWEEN, operatorType: OafOperatorType.Comparison })
+			);
+			expect(getOperatorByName(CqlOperator.NOT_BETWEEN)).toEqual(
+				jasmine.objectContaining({ name: CqlOperator.NOT_BETWEEN, operatorType: OafOperatorType.Comparison })
+			);
 		});
 	});
 

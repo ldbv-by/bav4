@@ -24,54 +24,69 @@ export const CqlOperator = Object.freeze({
 	NOT: 'not_'
 });
 
+export const OafOperatorType = Object.freeze({
+	Binary: 'binary',
+	Comparison: 'comparison'
+});
+
 const operators = Object.freeze([
 	{
 		name: CqlOperator.EQUALS,
-		translationKey: 'oaf_operator_equals'
+		translationKey: 'oaf_operator_equals',
+		operatorType: OafOperatorType.Binary
 	},
 	{
 		name: CqlOperator.NOT_EQUALS,
-		translationKey: 'oaf_operator_not_equals'
-	},
-	{
-		name: CqlOperator.LIKE,
-		translationKey: 'oaf_operator_like',
-		typeConstraints: [OafQueryableType.STRING]
-	},
-	{
-		name: CqlOperator.NOT_LIKE,
-		translationKey: 'oaf_operator_not_like',
-		typeConstraints: [OafQueryableType.STRING]
-	},
-	{
-		name: CqlOperator.BETWEEN,
-		translationKey: 'oaf_operator_between',
-		typeConstraints: [OafQueryableType.DATE, OafQueryableType.INTEGER, OafQueryableType.FLOAT]
-	},
-	{
-		name: CqlOperator.NOT_BETWEEN,
-		translationKey: 'oaf_operator_not_between',
-		typeConstraints: [OafQueryableType.DATE, OafQueryableType.INTEGER, OafQueryableType.FLOAT]
+		translationKey: 'oaf_operator_not_equals',
+		operatorType: OafOperatorType.Binary
 	},
 	{
 		name: CqlOperator.GREATER,
 		translationKey: 'oaf_operator_greater',
-		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT]
+		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT],
+		operatorType: OafOperatorType.Binary
 	},
 	{
 		name: CqlOperator.GREATER_EQUALS,
 		translationKey: 'oaf_operator_greater_equals',
-		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT]
+		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT],
+		operatorType: OafOperatorType.Binary
 	},
 	{
 		name: CqlOperator.LESS,
 		translationKey: 'oaf_operator_less',
-		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT]
+		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT],
+		operatorType: OafOperatorType.Binary
 	},
 	{
 		name: CqlOperator.LESS_EQUALS,
 		translationKey: 'oaf_operator_less_equals',
-		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT]
+		typeConstraints: [OafQueryableType.INTEGER, OafQueryableType.FLOAT],
+		operatorType: OafOperatorType.Binary
+	},
+	{
+		name: CqlOperator.LIKE,
+		translationKey: 'oaf_operator_like',
+		typeConstraints: [OafQueryableType.STRING],
+		operatorType: OafOperatorType.Binary
+	},
+	{
+		name: CqlOperator.NOT_LIKE,
+		translationKey: 'oaf_operator_not_like',
+		typeConstraints: [OafQueryableType.STRING],
+		operatorType: OafOperatorType.Binary
+	},
+	{
+		name: CqlOperator.BETWEEN,
+		translationKey: 'oaf_operator_between',
+		typeConstraints: [OafQueryableType.DATE, OafQueryableType.INTEGER, OafQueryableType.FLOAT],
+		operatorType: OafOperatorType.Comparison
+	},
+	{
+		name: CqlOperator.NOT_BETWEEN,
+		translationKey: 'oaf_operator_not_between',
+		typeConstraints: [OafQueryableType.DATE, OafQueryableType.INTEGER, OafQueryableType.FLOAT],
+		operatorType: OafOperatorType.Comparison
 	}
 ]);
 

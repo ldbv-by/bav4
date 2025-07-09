@@ -9,6 +9,7 @@ describe('i18n for header module', () => {
 		expect(map.oaf_mask_console_mode).toBe('Console View');
 		expect(map.oaf_mask_add_filter_group).toBe('Add Filter Group');
 		expect(map.oaf_mask_button_apply).toBe('Apply');
+		expect(map.oaf_mask_filter_results).toBe('Results:');
 		expect(map.oaf_group_select_filter).toBe('Select Filter...');
 		expect(map.oaf_mask_or).toBe('OR');
 		expect(map.oaf_filter_yes).toBe('Yes');
@@ -35,6 +36,7 @@ describe('i18n for header module', () => {
 		expect(map.oaf_mask_console_mode).toBe('Konsolen Ansicht');
 		expect(map.oaf_mask_add_filter_group).toBe('Neue Filtergruppe');
 		expect(map.oaf_mask_button_apply).toBe('Anwenden');
+		expect(map.oaf_mask_filter_results).toBe('Ergebnisse:');
 		expect(map.oaf_group_select_filter).toBe('Wähle Filter...');
 		expect(map.oaf_mask_or).toBe('ODER');
 		expect(map.oaf_filter_yes).toBe('Ja');
@@ -52,7 +54,7 @@ describe('i18n for header module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 21;
+		const expectedSize = 22;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
