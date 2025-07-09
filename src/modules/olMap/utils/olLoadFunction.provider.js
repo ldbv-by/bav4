@@ -179,13 +179,21 @@ export const getBvvOafLoadFunction = (geoResourceId, olLayer, credential = null)
 			if (oafGeoResource.limit) {
 				options['limit'] = oafGeoResource.limit;
 			}
-			options['bbox'] = `${extent.join(',')}`;
-			options['bbox-crs'] = crs;
-			if (oafGeoResource.hasFilter()) {
-				options['filter'] = oafGeoResource.filter;
-			}
-			if (olLayer.get('filter')) {
-				options['filter'] = olLayer.get('filter');
+
+			/**
+			 * If we have set a filter, we do not request a BoundingBox so that the filter is applied to all data
+			 */
+			if (!oafGeoResource.hasFilter() && !olLayer.get('filter')) {
+				options['bbox'] = `${extent.join(',')}`;
+				options['bbox-crs'] = crs;
+			} else {
+				if (oafGeoResource.hasFilter()) {
+					options['filter'] = oafGeoResource.filter;
+				}
+				// should overwrite the filter of the OafGeoResource
+				if (olLayer.get('filter')) {
+					options['filter'] = olLayer.get('filter');
+				}
 			}
 
 			const url = `${oafGeoResource.url}${oafGeoResource.url.endsWith('/') ? '' : '/'}collections/${oafGeoResource.collectionId}/items?${queryParamsToString(options)}`;

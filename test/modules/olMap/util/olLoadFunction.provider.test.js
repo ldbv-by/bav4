@@ -576,7 +576,7 @@ describe('olLoadFunction.provider', () => {
 			const projection = new Projection({ code: 'EPSG:3857' });
 			const response = new Response(mockResponsePayload);
 			const filterExpr = "(((name LIKE '%Foo%')))";
-			const expectedUrl = `https://url.de/collections/collectionId/items?f=json&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2F3857&bbox=0%2C1%2C2%2C3&bbox-crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2F3857&filter=(((name%20LIKE%20'%25Foo%25')))`;
+			const expectedUrl = `https://url.de/collections/collectionId/items?f=json&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2F3857&filter=(((name%20LIKE%20'%25Foo%25')))`;
 			const successCbSpy = jasmine.createSpy();
 			const failureCbSpy = jasmine.createSpy();
 			const geoResource = new OafGeoResource('id', 'label', 'https://url.de', 'collectionId', 4326).setFilter(filterExpr);
@@ -606,7 +606,37 @@ describe('olLoadFunction.provider', () => {
 			const resolution = 42.42;
 			const projection = new Projection({ code: 'EPSG:3857' });
 			const response = new Response(mockResponsePayload);
-			const expectedUrl = `https://url.de/collections/collectionId/items?f=json&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2F3857&bbox=0%2C1%2C2%2C3&bbox-crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2F3857&filter=(((name%20LIKE%20'%25Foo%25')))`;
+			const expectedUrl = `https://url.de/collections/collectionId/items?f=json&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2F3857&filter=(((name%20LIKE%20'%25Foo%25')))`;
+			const successCbSpy = jasmine.createSpy();
+			const failureCbSpy = jasmine.createSpy();
+			const geoResource = new OafGeoResource('id', 'label', 'https://url.de', 'collectionId', 4326);
+			spyOn(geoResourceService, 'byId').and.returnValue(geoResource);
+			spyOn(httpService, 'get')
+				.withArgs(
+					expectedUrl,
+					{
+						timeout: 15_000
+					},
+					{ response: [responseInterceptor] }
+				)
+				.and.resolveTo(response);
+			const oafLoadFunction = getBvvOafLoadFunction(geoResourceId, olLayer)./*Usually done by the ol.source */ bind(olSource);
+
+			await oafLoadFunction(extent, resolution, projection, successCbSpy, failureCbSpy);
+
+			expect(olSource.getFeatures()).toHaveSize(10);
+		});
+
+		it('ensures that the `filter` expr. of the olLayer overwrites the `filter` expr. of a OafGeoResource', async () => {
+			const geoResourceId = 'geoResourceId';
+			const olSource = new VectorSource();
+			const filterExpr = "(((name LIKE '%Foo%')))";
+			const olLayer = new VectorLayer({ source: olSource, properties: { filter: filterExpr } });
+			const extent = [0, 1, 2, 3];
+			const resolution = 42.42;
+			const projection = new Projection({ code: 'EPSG:3857' });
+			const response = new Response(mockResponsePayload);
+			const expectedUrl = `https://url.de/collections/collectionId/items?f=json&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FEPSG%2F0%2F3857&filter=(((name%20LIKE%20'%25Foo%25')))`;
 			const successCbSpy = jasmine.createSpy();
 			const failureCbSpy = jasmine.createSpy();
 			const geoResource = new OafGeoResource('id', 'label', 'https://url.de', 'collectionId', 4326).setFilter('filterExprFromGeoResource');

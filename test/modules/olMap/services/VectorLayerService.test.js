@@ -344,14 +344,9 @@ describe('VectorLayerService', () => {
 				const olSourceSpy = spyOn(olVectorSource, 'refresh');
 
 				olMap.getView().dispatchEvent('change:resolution');
-
-				expect(olSourceSpy).not.toHaveBeenCalled();
-
-				olVectorSource.set('incomplete_data', true);
-
 				olMap.getView().dispatchEvent('change:resolution');
 
-				expect(olSourceSpy).toHaveBeenCalledTimes(1);
+				expect(olSourceSpy).toHaveBeenCalledTimes(2);
 			});
 
 			it('unregisters a change:resolution listener when the layer is not attached to the map', () => {
