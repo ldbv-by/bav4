@@ -174,14 +174,12 @@ export class VectorLayerService {
 		});
 
 		/**
-		 * The bbox strategy prevents the loading of an extent that lies within the previously loaded extent when a higher resolution is requested.
-		 * If not all possible features have been loaded yet, a reload of the features is forced.
+		 * The `bbox` strategy prevents the loading of an extent that lies within the previously loaded extent when a higher resolution is requested.
+		 * But in our case we want to make sure that for each resolution the features are reloaded.
 		 */
 		const key = olMap.getView().on('change:resolution', () => {
 			if (olMap.getLayers().getArray().includes(olVectorLayer)) {
-				if (vs.get('incomplete_data')) {
-					vs.refresh();
-				}
+				vs.refresh();
 			} else {
 				this._unregisterOlListener(key);
 			}
