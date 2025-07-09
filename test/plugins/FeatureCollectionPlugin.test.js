@@ -81,7 +81,7 @@ describe('FeatureCollectionPlugin', () => {
 			expect(store.getState().layers.active[0].constraints.cloneable).toBeFalse();
 			expect(store.getState().layers.active[0].props.featureCount).toBe(2);
 			expect(geoResourceServiceAddOrReplaceSpy).toHaveBeenCalledWith(
-				new VectorGeoResource(FEATURE_COLLECTION_GEORESOURCE_ID, `global_featureCollection_layer_label (2)`)
+				new VectorGeoResource(FEATURE_COLLECTION_GEORESOURCE_ID, `global_featureCollection_layer_label`)
 					.setFeatures([feature0, feature1])
 					.markAsLocalData(true)
 					.setHidden(true)
