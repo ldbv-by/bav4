@@ -796,6 +796,98 @@ describe('LayerItem', () => {
 			expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe('label0');
 		});
 
+		it('shows a badge with the number of the features', async () => {
+			const geoResourceId = 'geoResourceId0';
+			spyOn(geoResourceService, 'byId')
+				.withArgs(geoResourceId)
+				.and.returnValue(new VectorGeoResource(geoResourceId, 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: geoResourceId,
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				props: {
+					featureCount: 10
+				}
+			};
+			const element = await setup(layer);
+
+			expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(0);
+
+			const badge = element.shadowRoot.querySelectorAll('ba-badge.feature-count-badge');
+			expect(badge).toHaveSize(1);
+			expect(badge[0].label).toBe(10);
+			expect(badge[0].title).toBe('layerManager_feature_count');
+			expect(badge[0].color).toBe('var(--text3)');
+			expect(badge[0].background).toBe('var(--secondary-color)');
+		});
+
+		it('shows a badge with the number of the features when featureCount is 0', async () => {
+			const geoResourceId = 'geoResourceId0';
+			spyOn(geoResourceService, 'byId')
+				.withArgs(geoResourceId)
+				.and.returnValue(new VectorGeoResource(geoResourceId, 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: geoResourceId,
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				props: {
+					featureCount: 0
+				}
+			};
+			const element = await setup(layer);
+			expect(element.shadowRoot.querySelectorAll('ba-badge.feature-count-badge')).toHaveSize(1);
+			const badge = element.shadowRoot.querySelectorAll('ba-badge.feature-count-badge');
+			expect(badge).toHaveSize(1);
+			expect(badge[0].label).toBe(0);
+		});
+
+		it('shows no feature count badge because featureCount is undefined', async () => {
+			const geoResourceId = 'geoResourceId0';
+			spyOn(geoResourceService, 'byId')
+				.withArgs(geoResourceId)
+				.and.returnValue(new VectorGeoResource(geoResourceId, 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: geoResourceId,
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				props: {}
+			};
+			const element = await setup(layer);
+			expect(element.shadowRoot.querySelectorAll('ba-badge.feature-count-badge')).toHaveSize(0);
+		});
+
+		it('shows no feature count badge while LayerState is loading', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			spyOn(geoResourceService, 'getKeywords').withArgs('geoResourceId0').and.returnValue(['keyword0']);
+
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				state: LayerState.LOADING,
+				props: {
+					featureCount: 10
+				}
+			};
+			const element = await setup(layer);
+			expect(element.shadowRoot.querySelectorAll('ba-icon.layer-state-icon.' + LayerState.LOADING)).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-badge.feature-count-badge')).toHaveSize(0);
+		});
+
 		it('contains no layerSwipe buttons', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')

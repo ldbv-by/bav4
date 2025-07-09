@@ -39,7 +39,8 @@ export const provide = (lang) => {
 				layerManager_compare_right_title: 'Set layer on right side',
 				layerManager_title_layerState_incomplete_data: 'Data loaded incomplete',
 				layerManager_title_layerState_loading: 'Data loading...',
-				layerManager_title_layerState_error: 'Data could not be loaded'
+				layerManager_title_layerState_error: 'Data could not be loaded',
+				layerManager_feature_count: 'Number of features'
 			};
 
 		case 'de':
@@ -81,7 +82,8 @@ export const provide = (lang) => {
 				layerManager_compare_right_title: 'Ebene auf die rechte Seite setzen',
 				layerManager_title_layerState_incomplete_data: 'Daten wurden nur teilweise geladen',
 				layerManager_title_layerState_loading: 'Daten werden geladen...',
-				layerManager_title_layerState_error: 'Daten konnten nicht geladen werden'
+				layerManager_title_layerState_error: 'Daten konnten nicht geladen werden',
+				layerManager_feature_count: 'Anzahl der Elemente'
 			};
 
 		default:
