@@ -113,9 +113,17 @@ export class ImportOafService {
 
 	/**
 	 * Returns the `OafFilterCapabilities` for a `OafGeoResource` if they are already in the cache.
-	 * Returns `null` if the `OafFilterCapabilities` are not in the cache but requests them asynchronously so that they may be available in the future
-	 * Return `null` for any other `GeoResource` than `OafGeoResource`.
-	 * Note: This method does not check if the `OafFilterCapabilities` may have been expired.
+	 *
+	 * Returns `null` if the `OafFilterCapabilities` are not in the cache but requests them asynchronously so that they may be available in the future.
+	 *
+	 * Returns `null` for any other `GeoResource` than `OafGeoResource`.
+	 *
+	 * **Cache Expiry Behaviour:**
+	 * This method does **not** check whether the cached `OafFilterCapabilities` entry has expired. If an entry exists in the cache, it will be returned even if it is older than the current cache duration.
+	 * Expired cache entries are only cleaned up in {@link getFilterCapabilities}. If you require up-to-date capabilities with respect to cache expiry, use {@link getFilterCapabilities} instead.
+	 *
+	 * Note: This method is primarily intended for synchronous cache lookups and optional background (asynchronous) prefetching.
+	 *
 	 * @param {OafGeoResource|GeoResource} oafGeoResource
 	 * @param {boolean}[requestIfNotAvailable=true] `true` if a missing  `OafFilterCapabilities` object should be requested from the provider asynchronously
 	 * @returns {module:domain/oaf~OafFilterCapabilities|null} `OafFilterCapabilities` or null if none are available
