@@ -185,6 +185,7 @@ ba-value-select {
 
 .feature-count-badge {
 	display: inline-block;
+	height: 1px;
 }
 
 .feature-count-badge::part(badge) {

@@ -227,7 +227,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 						.label=${featureCount}
 						.title=${translate('layerManager_feature_count')}
 						.color=${'var(--text3)'}
-						.size=${'0.9'}
+						.size=${'0.8'}
 					></ba-badge>`
 				: html`<div class="feature-count-badge"></div>`;
 		};
