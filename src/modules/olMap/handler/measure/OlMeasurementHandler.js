@@ -46,6 +46,7 @@ import { setData } from '../../../../store/fileStorage/fileStorage.action';
 import { createDefaultLayerProperties } from '../../../../store/layers/layers.reducer';
 import { GeometryType } from '../../../../domain/geometryTypes';
 import { asInternalProperty } from '../../../../utils/propertyUtils';
+import { getInternalLegacyPropertyOptionally } from '../../utils/olMapUtils';
 
 const defaultMeasurementStats = {
 	geometryType: null,
@@ -177,7 +178,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 						this._styleService.addInternalFeatureStyle(f, olMap, layer);
 						f.on('change', onFeatureChange);
 					});
-					const displayRuler = !oldFeatures.some((f) => f.get(asInternalProperty('displayruler')) === 'false');
+					const displayRuler = !oldFeatures.some((f) => getInternalLegacyPropertyOptionally(f, 'displayruler') === 'false');
 					const hasMeasurementFeature = oldFeatures.some((f) => f.getId().startsWith(Tools.MEASURE + '_'));
 					setDisplayRuler(displayRuler);
 					const oldLayerId = oldLayer.get('id');

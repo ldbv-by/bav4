@@ -2,6 +2,7 @@
  * @module modules/olMap/utils/olMapUtils
  */
 import LayerGroup from '../../../../node_modules/ol/layer/Group';
+import { asInternalProperty, LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS } from '../../../utils/propertyUtils';
 
 /**
  * @module modules/olMap/utils/olMapUtils
@@ -120,4 +121,26 @@ export const getLayerByFeature = (map, olFeature) => {
 		return map.getAllLayers().filter((l) => (l.getSource().hasFeature ? l.getSource().hasFeature(olFeature) : false))[0] ?? null;
 	}
 	return null;
+};
+
+/**
+ * Gets the value of an (potential legacy) internal feature property.
+ *
+ * If the key is known as legacy internal property, the value of the key is
+ * returned whether or not the key is in legacy notation (without internal prefix).
+ * @param {Feature} olFeature the feature
+ * @param {String} key the key of the (potential legacy) internal property
+ * @returns {any}
+ *
+ * HINT/TODO: the scope of this method is on feature-level, as soon as other utility-method on feature-level are available
+ * we have to move this method to olFeatureUtils.js
+ */
+export const getInternalLegacyPropertyOptionally = (olFeature, key) => {
+	if (!olFeature) {
+		return null;
+	}
+	if (LEGACY_INTERNAL_FEATURE_PROPERTY_KEYS.includes(key)) {
+		return olFeature.get(asInternalProperty(key)) ?? olFeature.get(key);
+	}
+	return olFeature.get(asInternalProperty(key));
 };

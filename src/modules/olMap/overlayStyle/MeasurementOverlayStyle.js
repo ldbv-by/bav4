@@ -13,6 +13,7 @@ import { BaOverlay } from '../components/BaOverlay';
 import { GEODESIC_CALCULATION_STATUS, GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
 import { unByKey } from 'ol/Observable';
 import { asInternalProperty } from '../../../utils/propertyUtils';
+import { getInternalLegacyPropertyOptionally } from '../utils/olMapUtils';
 
 export const saveManualOverlayPosition = (feature) => {
 	const draggableOverlayTypes = [asInternalProperty('area'), asInternalProperty('measurement')];
@@ -210,7 +211,8 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	}
 
 	_createOrRemovePartitionOverlays(olFeature, olMap, simplifiedGeometry = null) {
-		const displayRuler = olFeature.get(asInternalProperty('displayruler')) ? olFeature.get(asInternalProperty('displayruler')) === 'true' : true;
+		const displayRulerFromFeature = getInternalLegacyPropertyOptionally(olFeature, 'displayruler');
+		const displayRuler = displayRulerFromFeature ? displayRulerFromFeature === 'true' : true;
 		const getOverlayGeometry = (feature) => {
 			const geodesic = feature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
 			if (geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE) {
