@@ -330,7 +330,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		const element = overlay.getElement();
 		element.value = value;
 		element.geometry = geometry;
-		if (!overlay.get(asInternalProperty('manualPositioning'))) {
+		if (!getInternalLegacyPropertyOptionally(overlay, 'manualPositioning')) {
 			if (element.type === BaOverlayTypes.DISTANCE_PARTITION) {
 				const feature = overlay.get('feature');
 				if (geometry && !geometry.get(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY))) {
