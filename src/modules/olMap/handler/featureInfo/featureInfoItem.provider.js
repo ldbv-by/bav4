@@ -27,12 +27,16 @@ export const bvvFeatureInfoProvider = (olFeature, layerProperties) => {
 		MapService: mapService,
 		SecurityService: securityService,
 		GeoResourceService: geoResourceService,
-		TranslationService: translationService
-	} = $injector.inject('MapService', 'SecurityService', 'GeoResourceService', 'TranslationService');
+		TranslationService: translationService,
+		ImportOafService: importOafService
+	} = $injector.inject('MapService', 'SecurityService', 'GeoResourceService', 'TranslationService', 'ImportOafService');
 	const translate = (key) => translationService.translate(key);
 	const geometryStatistic = getStats(olFeature.getGeometry());
 	const elevationProfileCoordinates = getLineString(olFeature.getGeometry())?.getCoordinates() ?? [];
 	const exportDataAsKML = new KML().writeFeatures([olFeature], { featureProjection: 'EPSG:' + mapService.getSrid() });
+	const geoRes = geoResourceService.byId(layerProperties.geoResourceId);
+	const oafCapabilities = importOafService.getFilterCapabilitiesFromCache(geoRes);
+	const replaceOafQueryableIdByTitle = (id) => oafCapabilities?.queryables?.find((q) => q.id === id)?.title ?? id;
 
 	const getPropertiesTable = (props) => {
 		const entries = Object.entries(props)
@@ -49,7 +53,7 @@ export const bvvFeatureInfoProvider = (olFeature, layerProperties) => {
 							${entries.map((entry) => {
 								const [key, value] = entry;
 								return html`<tr>
-									<td>${key}</td>
+									<td>${replaceOafQueryableIdByTitle(key)}</td>
 									<td>${unsafeHTML(securityService.sanitizeHtml(value))}</td>
 								</tr>`;
 							})}
@@ -77,7 +81,6 @@ export const bvvFeatureInfoProvider = (olFeature, layerProperties) => {
 			: html`${geometryContent} ${propertiesTable}`;
 	};
 
-	const geoRes = geoResourceService.byId(layerProperties.geoResourceId);
 	const name = geoRes
 		? olFeature.get('name')
 			? `${securityService.sanitizeHtml(olFeature.get('name'))} - ${geoRes.label}`
