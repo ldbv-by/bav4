@@ -49,6 +49,16 @@ describe('SearchableSelect', () => {
 			element.options = null;
 			expect(element.options).toHaveSize(0);
 		});
+
+		it('sets the width of the input field using the dropdown width', async () => {
+			const element = await TestUtils.render(SearchableSelect.tag);
+			const dropdown = element.shadowRoot.querySelector('.dropdown');
+			dropdown.style.width = '150px';
+			element._setInputWidth();
+			const input = element.shadowRoot.querySelector('#search-input');
+			expect(input.style.width).toBe('150px');
+			expect(dropdown.style.minWidth).toBe('150px');
+		});
 	});
 
 	describe('when member methods called', () => {

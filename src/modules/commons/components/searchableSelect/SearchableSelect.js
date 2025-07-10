@@ -72,6 +72,26 @@ export class SearchableSelect extends MvuElement {
 		this.observeModel('selected', () => this.#dispatchSelectEvents());
 	}
 
+	/**
+	 * @override
+	 */
+	onAfterRender(firstTime) {
+		if (firstTime) {
+			this._setInputWidth();
+		}
+	}
+
+	/**
+	 * sets the width of the input field using the dropdown width
+	 */
+	_setInputWidth() {
+		const dropdown = this.shadowRoot.querySelector('.dropdown');
+		const input = this.shadowRoot.querySelector('#search-input');
+		const dropdownRect = dropdown.getBoundingClientRect();
+		input.style.width = dropdownRect.width + 'px';
+		dropdown.style.minWidth = dropdownRect.width + 'px';
+	}
+
 	onDisconnect() {
 		document.removeEventListener('click', this.#onPointerCancelActionListener);
 		this.#keyActionMapper.deactivate();
@@ -217,7 +237,6 @@ export class SearchableSelect extends MvuElement {
 
 		dropdown.classList.add('visible');
 		dropdown.classList.remove('hidden');
-		dropdown.style.width = dropdownAncestorRect.width + 'px';
 
 		// Calculate foldout direction of dropdown
 		const foldoutUpwards = 0 > viewportHeight - (dropdown.clientHeight + dropdownAncestorRect.y + dropdownAncestorRect.height);

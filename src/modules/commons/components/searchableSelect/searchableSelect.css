@@ -1,4 +1,6 @@
 :host {
+	--searchable-select-min-width: 7em;
+	--searchable-select-max-with: 20em;
 	width: 100%;
 }
 
@@ -13,18 +15,24 @@
 }
 
 .hidden {
-	display: none;
+	visible: hidden;
+	overflow: hidden;
+	height: 0;
 }
 
 .visible {
 	display: block;
 }
+.dropdown {
+	min-width: var(--searchable-select-min-width);
+	max-width: var(--searchable-select-max-with);
+}
 
 .option {
 	background-color: var(--primary-bg-color);
-	border-bottom: 1px solid var(--text1);
-	min-height: 20px;
-	padding: 8px 15px;
+	border-bottom: 1px dotted var(--header-background-color);
+	min-height: 1.25em;
+	padding: 0.5em 1em;
 }
 
 .option.hovered,
@@ -36,11 +44,12 @@
 	display: block;
 	mask: url('./assets/caret-down-fill.svg');
 	-webkit-mask: url('./assets/caret-down-fill.svg');
+	mask-size: contain;
 	background-color: var(--primary-color);
-	width: 1em;
-	height: 1em;
+	width: 0.8em;
+	height: 0.8em;
 	position: relative;
-	top: 0.3em;
+	top: 0.5em;
 	border: none;
 }
 
@@ -51,12 +60,14 @@
 	width: inherit;
 
 	input {
-		padding: 3px 0px 3px 8px;
+		padding: 0.2em 0 0.5em 0.5em;
 		border: none;
+		min-width: var(--searchable-select-min-width);
+		max-width: var(--searchable-select-max-with);
 	}
 
 	#search-input-toggler {
-		padding: 3px 8px;
+		padding: 0.2em 0.5em;
 		background-color: var(--primary-bg-color);
 	}
 }
@@ -68,8 +79,9 @@
 
 	.dropdown-header {
 		cursor: default;
-		background-color: black;
-		height: 40px;
-		padding: 10px;
+		background-color: var(--secondary-color);
+		color: var(--text3);
+		height: 2.5em;
+		padding: 0.6em;
 	}
 }
