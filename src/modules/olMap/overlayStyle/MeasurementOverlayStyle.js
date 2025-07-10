@@ -16,13 +16,13 @@ import { asInternalProperty } from '../../../utils/propertyUtils';
 import { getInternalLegacyPropertyOptionally } from '../utils/olMapUtils';
 
 export const saveManualOverlayPosition = (feature) => {
-	const draggableOverlayTypes = [asInternalProperty('area'), asInternalProperty('measurement')];
-	draggableOverlayTypes.forEach((t) => {
-		const overlay = feature.get(t);
+	const draggableOverlayTypes = ['area', 'measurement'];
+	draggableOverlayTypes.forEach((overlayType) => {
+		const overlay = feature.get(asInternalProperty(overlayType));
 		if (overlay) {
 			if (overlay.get(asInternalProperty('manualPositioning'))) {
-				feature.set(t + '_position_x', overlay.getPosition()[0]);
-				feature.set(t + '_position_y', overlay.getPosition()[1]);
+				feature.set(asInternalProperty(overlayType + '_position_x'), overlay.getPosition()[0]);
+				feature.set(asInternalProperty(overlayType + '_position_y'), overlay.getPosition()[1]);
 			}
 		}
 	});
@@ -109,7 +109,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	 * implementation of the OverlayStyle
 	 */
 	update(olFeature, olMap, properties = {}) {
-		const distanceOverlay = olFeature.get(asInternalProperty('measurement'));
+		const distanceOverlay = getInternalLegacyPropertyOptionally(olFeature, 'measurement');
 		const measureGeometry = properties.geometry ? properties.geometry : olFeature.getGeometry();
 		if (distanceOverlay) {
 			this._updateOlOverlay(distanceOverlay, measureGeometry, '');
@@ -174,6 +174,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 			return overlay;
 		};
 
+		// create new if distanceOverlay does not exists or exists as legacy property
 		const distanceOverlay = olFeature.get(asInternalProperty('measurement')) || createNew();
 		if (olFeature && !olFeature.getGeometry().get(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY))) {
 			olFeature

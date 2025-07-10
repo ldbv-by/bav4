@@ -620,7 +620,7 @@ describe('MeasurementOverlayStyle', () => {
 			const elementMock = { style: { display: false, opacity: false } };
 			const overlayMock = { getElement: () => elementMock, getPosition: () => [0, 0] };
 			const featureMock = {
-				get: (key) => (key === asInternalProperty('measurement') ? null : [overlayMock]),
+				get: (key) => (['_ba_measurement', 'measurement'].includes(key) ? null : [overlayMock]),
 				getGeometry: () =>
 					new LineString([
 						[0, 0],
@@ -655,7 +655,7 @@ describe('MeasurementOverlayStyle', () => {
 			const featureSpy = spyOn(featureMock, 'get').withArgs(jasmine.any(String)).and.callThrough();
 			classUnderTest.update(featureMock, mapMock);
 
-			expect(featureSpy).toHaveBeenCalledTimes(2);
+			expect(featureSpy).toHaveBeenCalledTimes(3);
 		});
 
 		it('removes area overlay', () => {

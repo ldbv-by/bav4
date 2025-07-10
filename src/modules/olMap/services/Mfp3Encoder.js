@@ -24,6 +24,7 @@ import { QueryParameters } from '../../../domain/queryParameters';
 import { GEODESIC_FEATURE_PROPERTY } from '../ol/geodesic/geodesicGeometry';
 import { HIGHLIGHT_LAYER_ID } from '../../../plugins/HighlightPlugin';
 import { asInternalProperty } from '../../../utils/propertyUtils';
+import { getInternalLegacyPropertyOptionally } from '../utils/olMapUtils';
 
 const UnitsRatio = 39.37; //inches per meter
 const PointsPerInch = 72; // PostScript points 1/72"
@@ -450,7 +451,7 @@ export class BvvMfp3Encoder {
 				// todo: currently only the fallback-style for measurement-features is encodable
 				// and the fallbackStyle is forced by calling the styleFunction with resolution = null
 				const getExplicitFallbackStyleForMeasurement = (f) => featureStyles(f, null);
-				const isMeasurementFeature = feature.get(asInternalProperty('measurement')) != null;
+				const isMeasurementFeature = getInternalLegacyPropertyOptionally(feature, 'measurement') != null;
 				return isMeasurementFeature ? getExplicitFallbackStyleForMeasurement(feature) : featureStyles(feature, resolution);
 			}
 
