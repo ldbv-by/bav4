@@ -322,9 +322,7 @@ describe('OverlayService', () => {
 			feature.set(asInternalProperty('overlays'), [{}, {}]);
 			feature.set(asInternalProperty('measurement_style_listeners'), [jasmine.createSpy()]);
 			const removeOverlaySpy = jasmine.createSpy();
-			const unsetSpy = spyOn(feature, 'unset')
-				.withArgs(asInternalProperty('measurement_style_listeners'))
-				.and.callFake(() => {});
+			const unsetSpy = spyOn(feature, 'unset').and.callFake(() => {});
 			const viewMock = {
 				getResolution() {
 					return 50;
@@ -342,7 +340,7 @@ describe('OverlayService', () => {
 			instanceUnderTest.remove(feature, mapMock, OlFeatureStyleTypes.MEASURE);
 
 			expect(removeOverlaySpy).toHaveBeenCalledTimes(2);
-			expect(unsetSpy).toHaveBeenCalled();
+			expect(unsetSpy).toHaveBeenCalledWith(asInternalProperty('measurement_style_listeners'));
 		});
 	});
 });

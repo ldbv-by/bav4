@@ -1035,16 +1035,16 @@ describe('MeasurementOverlayStyle', () => {
 		const listenerStub = jasmine.createSpy();
 
 		feature.set(asInternalProperty('measurement_style_listeners'), [listenerStub]);
-		const unsetSpy = spyOn(feature, 'unset').withArgs(asInternalProperty('measurement_style_listeners')).and.callThrough();
+		const unsetSpy = spyOn(feature, 'unset').and.callThrough();
 
 		const classUnderTest = new MeasurementOverlayStyle();
 		classUnderTest.remove(feature, mapMock);
-		expect(unsetSpy).toHaveBeenCalled();
+		expect(unsetSpy).toHaveBeenCalledWith(asInternalProperty('measurement_style_listeners'));
+		expect(unsetSpy).toHaveBeenCalledWith(asInternalProperty('measurement'));
+		expect(unsetSpy).toHaveBeenCalledWith(asInternalProperty('area'));
+		expect(unsetSpy).toHaveBeenCalledWith(asInternalProperty('partitions'));
+		expect(unsetSpy).toHaveBeenCalledWith(asInternalProperty('overlays'));
 		expect(removeSpy).toHaveBeenCalledTimes(4);
-		expect(feature.get(asInternalProperty('measurement'))).toBeNull();
-		expect(feature.get(asInternalProperty('area'))).toBeNull();
-		expect(feature.get(asInternalProperty('partitions'))).toBeNull();
-		expect(feature.get(asInternalProperty('overlays'))).toEqual([]);
 	});
 
 	it('removes no overlays from feature with not synchronized overlays', () => {
@@ -1057,10 +1057,10 @@ describe('MeasurementOverlayStyle', () => {
 		const classUnderTest = new MeasurementOverlayStyle();
 		classUnderTest.remove(feature, mapMock);
 		expect(removeSpy).not.toHaveBeenCalled();
-		expect(feature.get(asInternalProperty('measurement'))).toBeNull();
-		expect(feature.get(asInternalProperty('area'))).toBeNull();
-		expect(feature.get(asInternalProperty('partitions'))).toBeNull();
-		expect(feature.get(asInternalProperty('overlays'))).toEqual([]);
+		expect(feature.get(asInternalProperty('measurement'))).toBeUndefined();
+		expect(feature.get(asInternalProperty('area'))).toBeUndefined();
+		expect(feature.get(asInternalProperty('partitions'))).toBeUndefined();
+		expect(feature.get(asInternalProperty('overlays'))).toBeUndefined();
 	});
 
 	it('creates overlay content for line', () => {

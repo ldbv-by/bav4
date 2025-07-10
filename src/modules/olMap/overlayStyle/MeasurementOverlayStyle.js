@@ -154,10 +154,10 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 
 		const featureOverlays = olFeature.get(asInternalProperty('overlays')) || [];
 		featureOverlays.forEach((o) => olMap.removeOverlay(o));
-		olFeature.set(asInternalProperty('measurement'), null);
-		olFeature.set(asInternalProperty('area'), null);
-		olFeature.set(asInternalProperty('partitions'), null);
-		olFeature.set(asInternalProperty('overlays'), []);
+		olFeature.unset(asInternalProperty('measurement'));
+		olFeature.unset(asInternalProperty('area'));
+		olFeature.unset(asInternalProperty('partitions'));
+		olFeature.unset(asInternalProperty('overlays'));
 	}
 
 	_isActiveMeasurement() {
