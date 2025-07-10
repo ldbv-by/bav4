@@ -14,6 +14,7 @@ const Update_Selected = 'update_selected';
 const Update_Search = 'update_search';
 const Update_Max_Entries = 'update_max_entries';
 const Update_Show_Caret = 'update_show_caret';
+const Update_Is_Responsive = 'update_is_responsive';
 const Update_Dropdown_Header = 'update_dropdown_header';
 
 /**
@@ -26,6 +27,7 @@ const Update_Dropdown_Header = 'update_dropdown_header';
  * @property {string|null} selected=null - The currently selected option.
  * @property {string} search='' - The search term to filter through the provided options
  * @property {boolean} showCaret=true - Shows a caret on the search field
+ * @property {boolean} isResponsive=false - The Select adjusts to the width of your container.
  * @property {Array<String>} options - Unfiltered options the user can choose from
  * @property {function(changedState)} onChange - The Change callback function when the search input changes
  * @property {function(selectedState)} onSelect - The Selected callback function when the user chose an option from the dropdown
@@ -59,6 +61,7 @@ export class SearchableSelect extends MvuElement {
 			options: [],
 			filteredOptions: [],
 			showCaret: true,
+			isResponsive: false,
 			dropdownHeader: null
 		});
 
@@ -76,7 +79,8 @@ export class SearchableSelect extends MvuElement {
 	 * @override
 	 */
 	onAfterRender(firstTime) {
-		if (firstTime) {
+		const { isResponsive } = this.getModel();
+		if (firstTime && !isResponsive) {
 			this._setInputWidth();
 		}
 	}
@@ -115,14 +119,16 @@ export class SearchableSelect extends MvuElement {
 				return { ...model, maxEntries: data };
 			case Update_Show_Caret:
 				return { ...model, showCaret: data };
+			case Update_Is_Responsive:
+				return { ...model, isResponsive: data };
 		}
 	}
 
 	createView(model) {
-		const { search, showCaret, placeholder, filteredOptions, maxEntries, dropdownHeader } = model;
+		const { search, showCaret, placeholder, filteredOptions, maxEntries, dropdownHeader, isResponsive } = model;
 
 		const onSearchInputClicked = () => {
-			this._showDropdown(document.documentElement.clientHeight);
+			this._showDropdown(document.documentElement.clientHeight, isResponsive);
 		};
 
 		const onSearchInputTogglerClicked = (evt) => {
@@ -132,7 +138,7 @@ export class SearchableSelect extends MvuElement {
 			if (isDropdownVisible) {
 				this.#cancelAction();
 			} else {
-				this._showDropdown(document.documentElement.clientHeight);
+				this._showDropdown(document.documentElement.clientHeight, isResponsive);
 			}
 		};
 
@@ -146,7 +152,7 @@ export class SearchableSelect extends MvuElement {
 
 		const onSearchInputChange = (evt) => {
 			this.signal(Update_Search, evt.currentTarget.value);
-			this._showDropdown(document.documentElement.clientHeight);
+			this._showDropdown(document.documentElement.clientHeight, isResponsive);
 		};
 
 		const onPointerEnterOption = (evt) => {
@@ -164,8 +170,15 @@ export class SearchableSelect extends MvuElement {
 			this.#confirmAction();
 		};
 
+		const getHostStyle = () => {
+			return isResponsive
+				? html` :host { width: 100%; } `
+				: html` :host { --searchable-select-min-width: 7em; --searchable-select-max-with: 20em; } `;
+		};
+
 		return html`
 			<style>
+				${getHostStyle()}
 				${css}
 			</style>
 			<div class="searchable-select" @pointerenter=${onPointerEnter} @pointerleave=${onPointerLeave} @click=${onSearchInputClicked}>
@@ -230,13 +243,16 @@ export class SearchableSelect extends MvuElement {
 		document.removeEventListener('click', this.#onPointerCancelActionListener);
 	}
 
-	_showDropdown(viewportHeight) {
+	_showDropdown(viewportHeight, isResponsive) {
 		const dropdown = this.shadowRoot.querySelector('.dropdown');
 		const dropdownAncestor = this.shadowRoot.querySelector('.searchable-select');
 		const dropdownAncestorRect = dropdownAncestor.getBoundingClientRect();
 
 		dropdown.classList.add('visible');
 		dropdown.classList.remove('hidden');
+		if (isResponsive) {
+			dropdown.style.width = dropdownAncestorRect.width + 'px';
+		}
 
 		// Calculate foldout direction of dropdown
 		const foldoutUpwards = 0 > viewportHeight - (dropdown.clientHeight + dropdownAncestorRect.y + dropdownAncestorRect.height);
@@ -412,6 +428,10 @@ export class SearchableSelect extends MvuElement {
 
 	set showCaret(value) {
 		this.signal(Update_Show_Caret, value === true);
+	}
+
+	set isResponsive(value) {
+		this.signal(Update_Is_Responsive, value === true);
 	}
 
 	/**
