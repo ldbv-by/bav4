@@ -266,12 +266,12 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	}
 
 	_restoreManualOverlayPosition(olFeature) {
-		const draggableOverlayTypes = [asInternalProperty('area'), asInternalProperty('measurement')];
+		const draggableOverlayTypes = ['area', 'measurement'];
 		draggableOverlayTypes.forEach((t) => {
-			const overlay = olFeature.get(t);
+			const overlay = getInternalLegacyPropertyOptionally(olFeature, t);
 			if (overlay) {
-				const posX = olFeature.get(t + '_position_x');
-				const posY = olFeature.get(t + '_position_y');
+				const posX = getInternalLegacyPropertyOptionally(olFeature, t + '_position_x');
+				const posY = getInternalLegacyPropertyOptionally(olFeature, t + '_position_y');
 				if (posX !== undefined && posY !== undefined) {
 					overlay.set(asInternalProperty('manualPositioning'), true);
 					overlay.setOffset([0, 0]);
