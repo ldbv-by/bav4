@@ -277,13 +277,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			clickAction(selectableFeatures);
 		};
 
-		const pointerUpHandler = () => {
-			const draggingOverlay = getOverlays(this._vectorLayer).find((o) => o.get('dragging') === true);
-			if (draggingOverlay) {
-				draggingOverlay.set(asInternalProperty('dragging'), false);
-			}
-		};
-
 		const pointerMoveHandler = (event) => {
 			this._lastPointerMoveEvent = event;
 
@@ -318,7 +311,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 			this._mapListeners.push(olMap.on(MapBrowserEventType.CLICK, clickHandler));
 			this._mapListeners.push(olMap.on(MapBrowserEventType.POINTERMOVE, pointerMoveHandler));
-			this._mapListeners.push(olMap.on(MapBrowserEventType.POINTERUP, pointerUpHandler));
 			this._mapListeners.push(olMap.on(MapBrowserEventType.DBLCLICK, () => false));
 			this._registeredObservers = this._register(this._storeService.getStore());
 			this._keyActionMapper.activate();

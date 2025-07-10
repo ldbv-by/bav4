@@ -2080,38 +2080,6 @@ describe('OlMeasurementHandler', () => {
 				expect(overlay.get(asInternalProperty('dragging'))).toBeFalse();
 			});
 
-			it('change overlay-property on pointerup', () => {
-				const state = { ...initialMeasureState, active: true };
-				setup(state);
-				const classUnderTest = new OlMeasurementHandler();
-				const map = setupMap();
-				classUnderTest.activate(map);
-
-				const geometry = new Polygon([
-					[
-						[0, 0],
-						[500, 0],
-						[550, 550],
-						[0, 500],
-						[0, 500]
-					]
-				]);
-				const feature = new Feature({ geometry: geometry });
-				simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-				feature.getGeometry().dispatchEvent('change');
-				simulateDrawEvent('drawend', classUnderTest._draw, feature);
-				const overlay = feature.get(asInternalProperty('measurement'));
-				const element = overlay.getElement();
-
-				element.dispatchEvent(new Event('pointerdown'));
-
-				expect(overlay.get(asInternalProperty('dragging'))).toBeTrue();
-
-				element.dispatchEvent(new Event('pointerup'));
-
-				expect(overlay.get(asInternalProperty('dragging'))).toBeFalse();
-			});
-
 			it('triggers overlay as draggable', () => {
 				const state = { ...initialMeasureState, active: true };
 				setup(state);
