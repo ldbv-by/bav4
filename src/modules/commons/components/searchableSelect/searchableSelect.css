@@ -15,17 +15,12 @@
 }
 
 .hidden {
-	visible: hidden;
 	overflow: hidden;
 	height: 0;
 }
 
 .visible {
 	display: block;
-}
-.dropdown {
-	min-width: var(--searchable-select-min-width);
-	max-width: var(--searchable-select-max-with);
 }
 
 .option {
@@ -76,6 +71,8 @@
 	/* width is controlled in js to fit parent container's width (see _showDropdown(viewportHeight)) */
 	position: absolute;
 	z-index: var(--z-mapbuttons);
+	min-width: var(--searchable-select-min-width);
+	max-width: var(--searchable-select-max-with);
 
 	.dropdown-header {
 		cursor: default;
