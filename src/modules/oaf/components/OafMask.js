@@ -66,10 +66,13 @@ export class OafMask extends MvuElement {
 		this.observe(
 			(store) => store.layers.active.find((l) => l.id === this.layerId),
 			(layer) => {
-				this.signal(Update_Layer_Properties, { featureCount: layer.props?.featureCount ?? null, state: layer.state });
+				const properties = this.getModel().layerProperties;
+				this.signal(Update_Layer_Properties, { ...properties, featureCount: layer.props?.featureCount ?? null, state: layer.state });
 			}
 		);
 
+		const geoResource = this.#geoResourceService.byId(this._getLayer().geoResourceId);
+		this.signal(Update_Layer_Properties, { ...this.getModel().layerProperties, title: geoResource.label });
 		this._requestFilterCapabilities();
 	}
 
@@ -229,7 +232,7 @@ export class OafMask extends MvuElement {
 			</style>
 			<h3 class="header">
 				<span class="icon"> </span>
-				<span class="text">${translate('oaf_mask_title')}</span>
+				<span class="text">${layerProperties.title ?? translate('oaf_mask_title')}</span>
 			</h3>
 			${content()}
 		`;
