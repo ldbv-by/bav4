@@ -4,7 +4,7 @@ import { OafFilter } from '../../../../src/modules/oaf/components/OafFilter';
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { layersReducer } from '../../../../src/store/layers/layers.reducer';
-import { addLayer } from '../../../../src/store/layers/layers.action';
+import { addLayer, LayerState } from '../../../../src/store/layers/layers.action';
 import { createDefaultFilterGroup, createDefaultOafFilter } from '../../../../src/modules/oaf/utils/oafUtils';
 
 window.customElements.define(OafMask.tag, OafMask);
@@ -26,7 +26,9 @@ describe('OafMask', () => {
 	};
 
 	const geoResourceServiceMock = {
-		byId: () => {}
+		byId: () => ({
+			label: 'GeoResource'
+		})
 	};
 
 	const setup = async (state = {}, properties = {}, layerProperties = {}) => {
@@ -73,6 +75,7 @@ describe('OafMask', () => {
 				filterGroups: [],
 				capabilities: [],
 				layerId: -1,
+				layerProperties: { title: geoResourceServiceMock.byId().label, featureCount: null, state: 'ok' },
 				showConsole: false
 			});
 		});
@@ -132,6 +135,7 @@ describe('OafMask', () => {
 
 	describe('when properties change', () => {
 		it('renders expert mode when showConsole is true', async () => {
+			fillImportOafServiceMock();
 			const element = await setup();
 			element.showConsole = true;
 
@@ -176,6 +180,11 @@ describe('OafMask', () => {
 			it('does not render a loading spinner', async () => {
 				const element = await setup();
 				expect(element.shadowRoot.querySelector('ba-spinner')).toBeNull();
+			});
+
+			it('shows filter results count', async () => {
+				const element = await setup({}, {}, { props: { featureCount: 42, state: LayerState.OK } });
+				expect(element.shadowRoot.querySelector('#filter-results').textContent).toContain('oaf_mask_filter_results 42');
 			});
 
 			it('does not render filter groups', async () => {
@@ -236,7 +245,45 @@ describe('OafMask', () => {
 				expect(element.shadowRoot.querySelector('#console-btn-apply').label).toBe('oaf_mask_button_apply');
 			});
 
-			it('removes filter-group when "remove" Event received from filter-group', async () => {
+			it('duplicates filter-group in model when "duplicate" Event received', async () => {
+				const element = await setup();
+				element.shadowRoot.querySelector('#btn-add-filter-group').click();
+				const group = element.shadowRoot.querySelector('ba-oaf-filter-group');
+
+				group._addFilter('foo');
+				group.dispatchEvent(new CustomEvent('duplicate'));
+
+				const filterGroups = element.getModel().filterGroups;
+				expect(filterGroups).toHaveSize(2);
+				expect(filterGroups[0].oafFilters).toEqual(filterGroups[1].oafFilters);
+
+				// duplicate's id must differ!
+				expect(typeof filterGroups[0].id).toBe('number');
+				expect(typeof filterGroups[1].id).toBe('number');
+				expect(filterGroups[0].id).not.toEqual(filterGroups[1].id);
+			});
+
+			it('duplicates filter-group in DOM when "duplicate" Event received', async () => {
+				const element = await setup();
+				element.shadowRoot.querySelector('#btn-add-filter-group').click();
+				const group = element.shadowRoot.querySelector('ba-oaf-filter-group');
+
+				group._addFilter('foo');
+				group.dispatchEvent(new CustomEvent('duplicate'));
+
+				const filterGroups = element.shadowRoot.querySelectorAll('ba-oaf-filter-group');
+				expect(filterGroups).toHaveSize(2);
+				expect(filterGroups[0].oafFilters).toEqual(filterGroups[1].oafFilters);
+
+				const firstId = filterGroups[0].getAttribute('group-id');
+				const secondId = filterGroups[1].getAttribute('group-id');
+				// duplicate's id must differ!
+				expect(Number(firstId)).not.toBeNaN();
+				expect(Number(secondId)).not.toBeNaN();
+				expect(firstId).not.toBe(secondId);
+			});
+
+			it('removes filter-group from DOM when "remove" Event received', async () => {
 				const element = await setup();
 				const addFilterGroupbtn = element.shadowRoot.querySelector('#btn-add-filter-group');
 				addFilterGroupbtn.click();
@@ -252,7 +299,7 @@ describe('OafMask', () => {
 				expect(groupsAfterRemove[1]).toBe(groupsBeforeRemove[2]);
 			});
 
-			it('removes filter-group from model when "remove" Event received from filter-group', async () => {
+			it('removes filter-group from model when "remove" Event received', async () => {
 				const element = await setup();
 				const addFilterGroupbtn = element.shadowRoot.querySelector('#btn-add-filter-group');
 				addFilterGroupbtn.click();
@@ -303,7 +350,7 @@ describe('OafMask', () => {
 				const groups = element.shadowRoot.querySelectorAll('ba-oaf-filter-group');
 				const groupToChange = groups[1];
 
-				// assume method of oaf filter group invokes change event
+				// Assumes that _addFilter invokes change event
 				groupToChange._addFilter('foo');
 
 				const maskModel = element.getModel();

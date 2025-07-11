@@ -7,7 +7,7 @@ import { html, nothing } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
 import closeSvg from './assets/clear.svg';
 import { isNumber, isString } from '../../../utils/checks';
-import { getOperatorDefinitions, getOperatorByName, createCqlFilterExpression, CqlOperator } from '../utils/oafUtils';
+import { getOperatorDefinitions, getOperatorByName, createCqlFilterExpression, OafOperator, OafOperatorType } from '../utils/oafUtils';
 import { OafQueryableType } from '../../../domain/oaf';
 
 const Update_Queryable = 'update_queryable';
@@ -36,7 +36,7 @@ export class OafFilter extends MvuElement {
 	constructor() {
 		super({
 			queryable: {},
-			operator: getOperatorByName(CqlOperator.EQUALS),
+			operator: getOperatorByName(OafOperator.EQUALS),
 			value: null,
 			minValue: null,
 			maxValue: null
@@ -119,43 +119,13 @@ export class OafFilter extends MvuElement {
 			</div>`;
 		};
 
-		const getTimeInputHtml = () => {
-			return html`<div data-type="time">
-				${operator.name === CqlOperator.BETWEEN
-					? html`<ba-searchable-select
-								class="min-value-input"
-								@select=${(evt) => onMinValueChanged(evt, evt.target.selected)}
-								.selected=${minValue}
-								.options=${queryableValues}
-								.placeholder=${translate('oaf_filter_input_placeholder')}
-							>
-							</ba-searchable-select>
-							<ba-searchable-select
-								class="max-value-input"
-								@select=${(evt) => onMaxValueChanged(evt, evt.target.selected)}
-								.selected=${maxValue}
-								.options=${queryableValues}
-								.placeholder=${translate('oaf_filter_input_placeholder')}
-							>
-							</ba-searchable-select> `
-					: html`<ba-searchable-select
-							class="value-input"
-							@select=${(evt) => onValueChanged(evt, evt.target.selected)}
-							.selected=${value}
-							.options=${queryableValues}
-							.placeholder=${translate('oaf_filter_input_placeholder')}
-						>
-						</ba-searchable-select>`}
-			</div>`;
-		};
-
 		const getNumberInputHtml = () => {
 			const step = type === 'integer' ? '1' : '0.1';
 			const minRange = model.queryable.minValue;
 			const maxRange = model.queryable.maxValue;
 
 			const content = () => {
-				if (operator.name === CqlOperator.BETWEEN) {
+				if (operator.operatorType === OafOperatorType.Comparison) {
 					return html`
 						<input
 							type="text"
@@ -204,6 +174,37 @@ export class OafFilter extends MvuElement {
 			</select>`;
 		};
 
+		const getDateInputHtml = () => {
+			if (operator.operatorType === OafOperatorType.Comparison) {
+				return html`
+					<input
+						type="date"
+						.placeholder=${translate('oaf_filter_input_placeholder')}
+						class="min-value-input"
+						.value=${minValue}
+						@input=${(evt) => onMinValueChanged(evt, evt.target.value)}
+					/>
+					<input
+						type="date"
+						.placeholder=${translate('oaf_filter_input_placeholder')}
+						class="max-value-input"
+						.value=${maxValue}
+						@input=${(evt) => onMaxValueChanged(evt, evt.target.value)}
+					/>
+				`;
+			}
+
+			return html`<div data-type=${OafQueryableType.DATE}>
+				<input
+					type="date"
+					.placeholder=${translate('oaf_filter_input_placeholder')}
+					class="value-input"
+					.value=${value}
+					@input=${(evt) => onValueChanged(evt, evt.target.value)}
+				/>
+			</div>`;
+		};
+
 		const getInputHtml = () => {
 			const content = () => {
 				switch (type) {
@@ -215,9 +216,7 @@ export class OafFilter extends MvuElement {
 					case OafQueryableType.BOOLEAN:
 						return getBooleanInputHtml();
 					case OafQueryableType.DATE:
-						return html`<div data-type=${OafQueryableType.DATE}></div>`;
-					case 'time':
-						return getTimeInputHtml();
+						return getDateInputHtml();
 				}
 				return nothing;
 			};
